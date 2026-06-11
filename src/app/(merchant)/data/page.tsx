@@ -1,0 +1,345 @@
+import Link from "next/link";
+
+import {
+  formatCurrency,
+  formatDateTime,
+  formatPercent,
+  formatShortDate,
+  gameTypeLabel,
+  goalLabel,
+  leadStatusLabel,
+} from "@/lib/format";
+import { getCampaignDataView, getMerchantDashboard, getPrimaryCampaignId } from "@/lib/store";
+
+type DataPageProps = {
+  searchParams: Promise<{
+    campaign?: string;
+  }>;
+};
+
+function buildDailySeries(values: string[], labels: string[]) {
+  return labels.map((label) => ({
+    label,
+    value: values.filter((item) => item.startsWith(label)).length,
+  }));
+}
+
+function buildLastDays(referenceDates: string[], days = 7) {
+  const latest = referenceDates.length
+    ? new Date(referenceDates.sort((a, b) => a.localeCompare(b)).at(-1) ?? new Date().toISOString())
+    : new Date();
+
+  return Array.from({ length: days }, (_, index) => {
+    const date = new Date(latest);
+    date.setDate(latest.getDate() - (days - index - 1));
+    return date.toISOString().slice(0, 10);
+  });
+}
+
+function Histogram({
+  title,
+  eyebrow,
+  bars,
+  color,
+}: {
+  title: string;
+  eyebrow: string;
+  bars: Array<{ label: string; value: number }>;
+  color: string;
+}) {
+  const max = Math.max(...bars.map((bar) => bar.value), 1);
+
+  return (
+    <div className="rounded-[32px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+      <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">{eyebrow}</p>
+      <h2 className="mt-2 text-2xl font-semibold text-[#111827]">{title}</h2>
+      <div className="mt-6 flex h-[240px] items-end gap-3">
+        {bars.map((bar) => (
+          <div key={bar.label} className="flex min-w-0 flex-1 flex-col items-center gap-3">
+            <span className="text-sm font-semibold text-[#111827]">{bar.value}</span>
+            <div className="flex h-full w-full items-end rounded-[18px] bg-[#f3f6fb] p-1">
+              <div
+                className="w-full rounded-[14px]"
+                style={{
+                  height: `${Math.max((bar.value / max) * 100, bar.value > 0 ? 10 : 0)}%`,
+                  backgroundColor: color,
+                }}
+              />
+            </div>
+            <span className="text-center text-xs text-[#7b8496]">
+              {formatShortDate(`${bar.label}T00:00:00.000Z`)}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default async function DataPage({ searchParams }: DataPageProps) {
+  const params = await searchParams;
+  const dashboard = getMerchantDashboard();
+  const selectedCampaignId = params.campaign ?? getPrimaryCampaignId();
+  const dataView = selectedCampaignId ? getCampaignDataView(selectedCampaignId) : null;
+
+  if (!dataView) {
+    return (
+      <div className="rounded-[32px] border border-[#dbe4f0] bg-white p-8 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+        <h1 className="text-3xl font-semibold text-[#111827]">Aucune campagne sélectionnée</h1>
+      </div>
+    );
+  }
+
+  const allDates = [
+    ...dataView.leads.map((lead) => lead.createdAt),
+    ...dataView.events.map((event) => event.createdAt),
+  ];
+  const dayKeys = buildLastDays(allDates);
+  const participationsPerDay = buildDailySeries(
+    dataView.leads.map((lead) => lead.createdAt.slice(0, 10)),
+    dayKeys,
+  );
+  const redeemedPerDay = buildDailySeries(
+    dataView.events
+      .filter((event) => event.eventType === "prize_redeemed")
+      .map((event) => event.createdAt.slice(0, 10)),
+    dayKeys,
+  );
+
+  return (
+    <div className="space-y-6">
+      <section className="overflow-hidden rounded-[34px] border border-[#dbe4f0] bg-white shadow-[0_20px_50px_rgba(122,136,166,0.14)]">
+        <div className="px-6 py-7 xl:px-8">
+          <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
+            <div>
+              <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">
+                Données campagne
+              </p>
+              <h1 className="mt-3 font-display text-5xl font-semibold leading-none text-[#0f1728]">
+                {dataView.performance.campaign.title}
+              </h1>
+              <p className="mt-4 max-w-3xl text-sm leading-7 text-[#5c6577]">
+                Visualisez les indicateurs clés, le stock de dotation et les données de saisie
+                exportables pour chaque activation.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              <div className="rounded-[22px] bg-[#f7f9fc] px-5 py-4 text-sm text-[#4f5b70]">
+                {goalLabel(dataView.performance.campaign.goalType)} ·{" "}
+                {gameTypeLabel(dataView.performance.campaign.gameType)}
+              </div>
+              <Link
+                href={`/campaigns/${dataView.performance.campaign.id}/edit`}
+                className="inline-flex rounded-[22px] bg-[#2f6df6] px-5 py-4 text-sm font-semibold text-white shadow-[0_16px_32px_rgba(47,109,246,0.22)]"
+              >
+                Modifier la campagne
+              </Link>
+            </div>
+          </div>
+
+          <div className="mt-6 flex flex-wrap gap-3">
+            {dashboard.campaigns.map((item) => (
+              <Link
+                key={item.campaign.id}
+                href={`/data?campaign=${item.campaign.id}`}
+                className={`rounded-[18px] px-4 py-3 text-sm font-semibold ${
+                  item.campaign.id === dataView.performance.campaign.id
+                    ? "bg-[#111827] text-white"
+                    : "border border-[#d7e0ed] bg-[#f8fafc] text-[#182033]"
+                }`}
+              >
+                {item.campaign.title}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="grid gap-4 md:grid-cols-3 xl:grid-cols-6">
+        {[
+          ["Scans", String(dataView.performance.kpis.scans)],
+          ["Leads", String(dataView.performance.kpis.leads)],
+          ["Actions", String(dataView.performance.kpis.actions)],
+          ["Conversion", formatPercent(dataView.performance.kpis.conversionRate)],
+          ["Lots retirés", String(dataView.performance.kpis.redeemed)],
+          ["Coût / lead", formatCurrency(dataView.performance.kpis.costPerLead)],
+        ].map(([label, value]) => (
+          <div
+            key={label}
+            className="rounded-[28px] border border-[#dbe4f0] bg-white p-5 shadow-[0_14px_36px_rgba(122,136,166,0.08)]"
+          >
+            <p className="text-xs uppercase tracking-[0.24em] text-[#7b8496]">{label}</p>
+            <p className="mt-4 text-3xl font-semibold text-[#111827]">{value}</p>
+          </div>
+        ))}
+      </section>
+
+      <section className="grid gap-6 xl:grid-cols-2">
+        <Histogram
+          eyebrow="Participations"
+          title="Évolution du nombre de participations par jour"
+          bars={participationsPerDay}
+          color={dataView.performance.campaign.accent.signal}
+        />
+        <Histogram
+          eyebrow="Lots récupérés"
+          title="Évolution du nombre de lots récupérés par jour"
+          bars={redeemedPerDay}
+          color="#111827"
+        />
+      </section>
+
+      <section className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
+        <div className="space-y-6">
+          <div className="rounded-[32px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+            <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Performance</p>
+            <h2 className="mt-2 text-2xl font-semibold text-[#111827]">Tunnel et engagement</h2>
+
+            <div className="mt-6 space-y-4">
+              {[
+                { label: "Scans", value: dataView.performance.kpis.scans, width: 100 },
+                {
+                  label: "Leads créés",
+                  value: dataView.performance.kpis.leads,
+                  width: Math.max(dataView.performance.kpis.conversionRate, 10),
+                },
+                {
+                  label: "Actions marketing",
+                  value: dataView.performance.kpis.actions,
+                  width: Math.max(dataView.performance.kpis.actionRate, 10),
+                },
+                {
+                  label: "Lots retirés",
+                  value: dataView.performance.kpis.redeemed,
+                  width: Math.max(dataView.performance.kpis.redemptionRate, 10),
+                },
+              ].map((row) => (
+                <div key={row.label}>
+                  <div className="mb-2 flex items-center justify-between text-sm text-[#556173]">
+                    <span>{row.label}</span>
+                    <span className="font-semibold text-[#111827]">{row.value}</span>
+                  </div>
+                  <div className="h-3 rounded-full bg-[#eef2f7]">
+                    <div
+                      className="h-3 rounded-full"
+                      style={{
+                        width: `${row.width}%`,
+                        backgroundColor: dataView.performance.campaign.accent.signal,
+                      }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-[32px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+            <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Dotation</p>
+            <h2 className="mt-2 text-2xl font-semibold text-[#111827]">Stock et probabilité</h2>
+
+            <div className="mt-6 space-y-3">
+              {dataView.performance.prizes.map((prize) => (
+                <div
+                  key={prize.id}
+                  className="flex items-center justify-between rounded-[24px] border border-[#e4eaf2] bg-[#f8fafc] px-4 py-4"
+                >
+                  <div>
+                    <p className="font-semibold text-[#111827]">{prize.label}</p>
+                    <p className="mt-1 text-sm text-[#7b8496]">
+                      Probabilité {prize.probability}% · coût {formatCurrency(prize.estimatedUnitCost)}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm text-[#7b8496]">Restant</p>
+                    <p className="mt-1 text-xl font-semibold text-[#111827]">
+                      {prize.remainingQuantity ?? "Illimité"}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-6">
+          <div className="rounded-[32px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">
+                  Saisies et export
+                </p>
+                <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
+                  Contacts, statuts et consentements
+                </h2>
+              </div>
+              <Link
+                href={`/api/merchant/leads?format=csv&campaign=${dataView.performance.campaign.id}`}
+                className="rounded-[18px] border border-[#d7e0ed] px-4 py-3 text-sm font-semibold text-[#182033]"
+              >
+                Export CSV
+              </Link>
+            </div>
+
+            <div className="mt-5 overflow-x-auto">
+              <table className="min-w-full text-left text-sm">
+                <thead className="text-xs uppercase tracking-[0.2em] text-[#7b8496]">
+                  <tr>
+                    <th className="border-b border-[#e4eaf2] px-3 py-3">Lead</th>
+                    <th className="border-b border-[#e4eaf2] px-3 py-3">Statut</th>
+                    <th className="border-b border-[#e4eaf2] px-3 py-3">Lot</th>
+                    <th className="border-b border-[#e4eaf2] px-3 py-3">Consentement</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {dataView.leads.map((lead) => (
+                    <tr key={lead.id}>
+                      <td className="border-b border-[#eef2f7] px-3 py-4">
+                        <div className="font-semibold text-[#111827]">{lead.firstName}</div>
+                        <div className="text-[#7b8496]">{lead.email}</div>
+                      </td>
+                      <td className="border-b border-[#eef2f7] px-3 py-4 text-[#556173]">
+                        {leadStatusLabel(lead.status)}
+                      </td>
+                      <td className="border-b border-[#eef2f7] px-3 py-4 text-[#556173]">
+                        {lead.prizeLabel}
+                      </td>
+                      <td className="border-b border-[#eef2f7] px-3 py-4 text-[#556173]">
+                        {formatDateTime(lead.consentTimestamp)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="rounded-[32px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+            <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Chronologie</p>
+            <h2 className="mt-2 text-2xl font-semibold text-[#111827]">Derniers événements</h2>
+
+            <div className="mt-6 space-y-3">
+              {dataView.events.slice(0, 6).map((event) => (
+                <div
+                  key={event.id}
+                  className="flex items-start gap-3 rounded-[24px] border border-[#e4eaf2] bg-[#f8fafc] px-4 py-4"
+                >
+                  <span
+                    className="mt-1 h-3 w-3 rounded-full"
+                    style={{ backgroundColor: dataView.performance.campaign.accent.signal }}
+                  />
+                  <div>
+                    <p className="font-semibold capitalize text-[#111827]">
+                      {event.eventType.replaceAll("_", " ")}
+                    </p>
+                    <p className="mt-1 text-sm text-[#7b8496]">{formatDateTime(event.createdAt)}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}

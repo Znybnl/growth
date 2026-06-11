@@ -1,0 +1,494 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+
+import { BrandMark } from "@/components/brand-mark";
+import { ScratchGame } from "@/components/public/scratch-game";
+import { WheelOfFortune } from "@/components/public/wheel-of-fortune";
+import { formatDateTime } from "@/lib/format";
+import { DrawResult, PublicCampaign } from "@/lib/types";
+
+type CampaignExperienceProps = {
+  campaignId: string;
+  initialCampaign: PublicCampaign;
+};
+
+type FlowStep = "welcome" | "collect" | "action" | "game" | "result";
+
+type WheelSegment = {
+  id: string;
+  label: string;
+  tone: "win" | "lose";
+};
+
+const buttonSizeMap = {
+  sm: "px-4 py-3 text-sm",
+  md: "px-5 py-4 text-sm",
+  lg: "px-6 py-5 text-base",
+};
+
+function buildWheelSegments(campaign: PublicCampaign) {
+  const winners = campaign.prizes.map((prize) => ({
+    id: prize.id,
+    label: prize.label.toUpperCase().slice(0, 18),
+    tone: "win" as const,
+  }));
+  const losers = Array.from({ length: Math.max(3, winners.length) }, (_, index) => ({
+    id: `lose-${index}`,
+    label: index % 2 === 0 ? "PERDU" : "BONUS",
+    tone: "lose" as const,
+  }));
+  const segments: WheelSegment[] = [];
+  const maxLength = Math.max(winners.length, losers.length);
+
+  for (let index = 0; index < maxLength; index += 1) {
+    if (losers[index]) {
+      segments.push(losers[index]);
+    }
+
+    if (winners[index]) {
+      segments.push(winners[index]);
+    }
+  }
+
+  return segments;
+}
+
+export function CampaignExperience({
+  campaignId,
+  initialCampaign,
+}: CampaignExperienceProps) {
+  const [campaign, setCampaign] = useState(initialCampaign);
+  const [step, setStep] = useState<FlowStep>("welcome");
+  const [firstName, setFirstName] = useState("");
+  const [email, setEmail] = useState("");
+  const [consent, setConsent] = useState(false);
+  const [drawResult, setDrawResult] = useState<DrawResult | null>(null);
+  const [didLogFormStart, setDidLogFormStart] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRedeeming, setIsRedeeming] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [currentActionIndex, setCurrentActionIndex] = useState(0);
+
+  const segments = useMemo(() => buildWheelSegments(campaign), [campaign]);
+  const winner = Boolean(drawResult?.prize);
+  const scratchLabel = drawResult?.prize?.label ?? "Participation enregistrée";
+  const winningSegmentId =
+    drawResult?.prize?.id ?? segments.find((segment) => segment.tone === "lose")?.id ?? "lose-0";
+  const currentAction = campaign.actions[currentActionIndex];
+  const hasActions = campaign.actions.length > 0;
+  const previewButtonClass = buttonSizeMap[campaign.presentation.button.size];
+  const logoAlignmentClass =
+    campaign.presentation.logo.align === "left"
+      ? "justify-start"
+      : campaign.presentation.logo.align === "right"
+        ? "justify-end"
+        : "justify-center";
+  const headingAlignmentClass =
+    campaign.presentation.heading.align === "left"
+      ? "text-left"
+      : campaign.presentation.heading.align === "right"
+        ? "text-right"
+        : "text-center";
+  const headingFontClass =
+    campaign.presentation.heading.fontFamily === "serif"
+      ? "font-serif"
+      : campaign.presentation.heading.fontFamily === "sans"
+        ? "font-sans"
+        : "font-display";
+
+  useEffect(() => {
+    async function loadCampaign() {
+      const response = await fetch(`/api/public/campaign/${campaignId}`);
+
+      if (!response.ok) {
+        return;
+      }
+
+      const payload = (await response.json()) as { campaign: PublicCampaign };
+      setCampaign(payload.campaign);
+    }
+
+    void loadCampaign();
+  }, [campaignId]);
+
+  async function trackEvent(eventType: string, leadId?: string) {
+    await fetch("/api/public/event", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        campaignId,
+        leadId,
+        eventType,
+      }),
+    });
+  }
+
+  function openCollectStep() {
+    if (!didLogFormStart) {
+      setDidLogFormStart(true);
+      void trackEvent("form_started");
+    }
+
+    setStep("collect");
+  }
+
+  async function submitLead(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError(null);
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("/api/public/draw", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          campaignId,
+          firstName,
+          email,
+          marketingConsent: consent,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Impossible de valider la participation.");
+      }
+
+      const payload = (await response.json()) as DrawResult;
+      setDrawResult(payload);
+      setCurrentActionIndex(0);
+      setStep(payload.campaign.actions.length ? "action" : "game");
+    } catch (submitError) {
+      setError(
+        submitError instanceof Error ? submitError.message : "Une erreur est survenue.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  async function continueAfterAction() {
+    if (!drawResult) {
+      return;
+    }
+
+    const isLastAction = currentActionIndex >= campaign.actions.length - 1;
+
+    if (!isLastAction) {
+      setCurrentActionIndex((current) => current + 1);
+      return;
+    }
+
+    setStep("game");
+  }
+
+  async function redeemPrize() {
+    if (!drawResult) {
+      return;
+    }
+
+    setIsRedeeming(true);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/public/redeem", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          leadId: drawResult.lead.id,
+        }),
+      });
+
+      const payload = (await response.json()) as { error?: string; lead?: DrawResult["lead"] };
+
+      if (!response.ok || !payload.lead) {
+        throw new Error(payload.error ?? "Le lot ne peut pas être retiré.");
+      }
+
+      setDrawResult({
+        ...drawResult,
+        lead: payload.lead,
+      });
+    } catch (redeemError) {
+      setError(
+        redeemError instanceof Error ? redeemError.message : "Le lot ne peut pas être retiré.",
+      );
+    } finally {
+      setIsRedeeming(false);
+    }
+  }
+
+  return (
+    <div
+      className="min-h-screen overflow-hidden"
+      style={{
+        background:
+          campaign.presentation.background.mode === "image" &&
+          campaign.presentation.background.imageUrl
+            ? `linear-gradient(rgba(5,10,21,0.42), rgba(5,10,21,0.7)), url(${campaign.presentation.background.imageUrl}) center/cover`
+            : `radial-gradient(circle at 50% 0%, ${campaign.accent.signal}44, transparent 26%), linear-gradient(180deg, ${campaign.presentation.background.color}, #090c14 72%)`,
+      }}
+    >
+      <div className="mx-auto flex min-h-screen max-w-[480px] flex-col px-4 pb-8 pt-5 text-white">
+        <div className={`flex ${logoAlignmentClass}`}>
+          <div
+            style={{
+              width: `${Math.max(40, campaign.presentation.logo.sizePercent)}%`,
+              marginBottom: `${campaign.presentation.logo.marginBottomPx}px`,
+            }}
+          >
+            <BrandMark
+              logoText={campaign.merchantLogoText}
+              logoUrl={campaign.logoUrl}
+              size="lg"
+              className="h-auto w-full rounded-[24px]"
+            />
+          </div>
+        </div>
+
+        <div className="rounded-[34px] border border-white/10 bg-white/7 px-5 py-6 backdrop-blur">
+          <div className={headingAlignmentClass}>
+            <h1
+              className={`${headingFontClass} font-semibold leading-[0.95]`}
+              style={{
+                color: campaign.presentation.heading.textColor,
+                fontSize: `${campaign.presentation.heading.fontSizePx}px`,
+              }}
+            >
+              {campaign.subtitle}
+            </h1>
+          </div>
+
+          <div className="mt-6">
+            {campaign.gameType === "wheel" ? (
+              <WheelOfFortune
+                key={`${campaign.id}-${drawResult?.lead.id ?? "welcome"}`}
+                accent={campaign.accent}
+                wheelStyle={campaign.presentation.wheel}
+                segments={segments}
+                winningSegmentId={winningSegmentId}
+                canSpin={step === "game"}
+                onSpinEnd={() => setStep("result")}
+              />
+            ) : (
+              <ScratchGame
+                key={`${campaign.id}-${drawResult?.lead.id ?? "welcome"}`}
+                accent={campaign.accent}
+                resultLabel={scratchLabel}
+                enabled={step === "game"}
+                onReveal={() => setStep("result")}
+              />
+            )}
+          </div>
+
+          {step === "welcome" ? (
+            <div className="mt-7 rounded-[28px] border border-white/10 bg-black/16 p-5 text-center">
+              <button
+                type="button"
+                onClick={openCollectStep}
+                className={`w-full rounded-[22px] border font-semibold ${previewButtonClass}`}
+                style={{
+                  backgroundColor: campaign.presentation.button.backgroundColor,
+                  color: campaign.presentation.button.textColor,
+                  borderColor: campaign.presentation.button.borderColor,
+                }}
+              >
+                {campaign.ctaLabel}
+              </button>
+            </div>
+          ) : null}
+
+          {step === "collect" ? (
+            <form
+              className="mt-7 rounded-[30px] border border-white/10 bg-black/16 p-5"
+              onSubmit={submitLead}
+            >
+              <p className="text-xs uppercase tracking-[0.24em] text-white/48">Participation</p>
+              <div className="mt-4 space-y-4">
+                <label className="block text-sm">
+                  <span className="mb-2 block text-white/70">Prénom</span>
+                  <input
+                    value={firstName}
+                    onChange={(event) => setFirstName(event.target.value)}
+                    required
+                    className="w-full rounded-[22px] border border-white/12 bg-black/18 px-4 py-4 outline-none placeholder:text-white/35"
+                    placeholder="Léa"
+                  />
+                </label>
+                <label className="block text-sm">
+                  <span className="mb-2 block text-white/70">E-mail</span>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    required
+                    className="w-full rounded-[22px] border border-white/12 bg-black/18 px-4 py-4 outline-none placeholder:text-white/35"
+                    placeholder="lea@exemple.fr"
+                  />
+                </label>
+                <label className="flex items-start gap-3 rounded-[22px] border border-white/12 bg-black/14 p-4 text-sm leading-6 text-white/72">
+                  <input
+                    type="checkbox"
+                    checked={consent}
+                    onChange={(event) => setConsent(event.target.checked)}
+                    required
+                    className="mt-1 h-4 w-4"
+                  />
+                  <span>
+                    J&apos;accepte de recevoir les offres du commerce. Mes données sont utilisées
+                    pour l&apos;animation et je peux me désinscrire à tout moment.
+                  </span>
+                </label>
+              </div>
+
+              {error ? (
+                <div className="mt-4 rounded-[20px] border border-[#ff8f70]/30 bg-[#ff8f70]/12 px-4 py-3 text-sm text-white">
+                  {error}
+                </div>
+              ) : null}
+
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className={`mt-5 w-full rounded-[22px] border font-semibold disabled:opacity-60 ${previewButtonClass}`}
+                style={{
+                  backgroundColor: campaign.presentation.button.backgroundColor,
+                  color: campaign.presentation.button.textColor,
+                  borderColor: campaign.presentation.button.borderColor,
+                }}
+              >
+                {isSubmitting ? "Préparation..." : "Continuer"}
+              </button>
+            </form>
+          ) : null}
+
+          {step === "action" && drawResult && currentAction ? (
+            <div className="mt-7 rounded-[30px] border border-white/10 bg-black/16 p-5">
+              <p className="text-xs uppercase tracking-[0.24em] text-white/48">
+                Étape {currentActionIndex + 1} sur {campaign.actions.length}
+              </p>
+              <h2 className="mt-3 text-2xl font-semibold">{currentAction.label}</h2>
+              <p className="mt-3 text-sm leading-7 text-white/72">
+                Ouvrez le lien dans un nouvel onglet, puis revenez ici pour poursuivre votre
+                participation.
+              </p>
+              <div className="mt-5 space-y-3">
+                <a
+                  href={currentAction.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={() => void trackEvent("social_clicked", drawResult.lead.id)}
+                  className={`block w-full rounded-[22px] border text-center font-semibold ${previewButtonClass}`}
+                  style={{
+                    backgroundColor: campaign.presentation.button.backgroundColor,
+                    color: campaign.presentation.button.textColor,
+                    borderColor: campaign.presentation.button.borderColor,
+                  }}
+                >
+                  {currentAction.label}
+                </a>
+                <button
+                  type="button"
+                  onClick={continueAfterAction}
+                  className="w-full rounded-[22px] border border-[#111827] bg-[#111827] px-5 py-4 text-sm font-semibold text-white"
+                >
+                  J&apos;ai terminé, je continue
+                </button>
+              </div>
+            </div>
+          ) : null}
+
+          {step === "game" ? (
+            <div className="mt-7 rounded-[30px] border border-white/10 bg-black/16 p-5 text-center">
+              <p className="text-xs uppercase tracking-[0.24em] text-white/48">Prêt à jouer</p>
+              <h2 className="mt-3 text-2xl font-semibold">
+                {campaign.gameType === "wheel" ? "Faites tourner la roue" : "Grattez votre ticket"}
+              </h2>
+            </div>
+          ) : null}
+
+          {step === "result" && drawResult ? (
+            <div className="mt-7 rounded-[30px] border border-white/10 bg-black/16 p-5">
+              <p className="text-xs uppercase tracking-[0.24em] text-white/48">
+                {winner ? "Lot gagné" : "Participation enregistrée"}
+              </p>
+              <h2 className="mt-3 text-3xl font-semibold">
+                {winner ? drawResult.prize?.label : "Pas de lot cette fois"}
+              </h2>
+              <p className="mt-3 text-sm leading-7 text-white/72">
+                {winner
+                  ? "Montrez cet écran au comptoir pour finaliser la remise du lot."
+                  : "Merci pour votre participation. Revenez vite pour une prochaine animation."}
+              </p>
+
+              {winner ? (
+                <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                  <div className="rounded-[22px] bg-white/8 p-4">
+                    <p className="text-xs uppercase tracking-[0.24em] text-white/46">Code</p>
+                    <p className="mt-2 text-2xl font-semibold">{drawResult.lead.redemptionCode}</p>
+                  </div>
+                  <div className="rounded-[22px] bg-white/8 p-4">
+                    <p className="text-xs uppercase tracking-[0.24em] text-white/46">Statut</p>
+                    <p className="mt-2 text-2xl font-semibold">
+                      {drawResult.lead.status === "redeemed" ? "Retiré" : "À retirer"}
+                    </p>
+                  </div>
+                </div>
+              ) : null}
+
+              {winner && campaign.rewardRules.purchaseRequired ? (
+                <div className="mt-4 rounded-[22px] border border-white/10 bg-white/8 px-4 py-4 text-sm text-white/78">
+                  Retrait du lot soumis à une condition d&apos;achat.
+                </div>
+              ) : null}
+
+              {winner && drawResult.lead.rewardAvailableAt ? (
+                <div className="mt-4 rounded-[22px] border border-white/10 bg-white/8 px-4 py-4 text-sm text-white/78">
+                  Disponible à partir du {formatDateTime(drawResult.lead.rewardAvailableAt)}
+                </div>
+              ) : null}
+
+              {winner && drawResult.lead.rewardExpiresAt ? (
+                <div className="mt-4 rounded-[22px] border border-white/10 bg-white/8 px-4 py-4 text-sm text-white/78">
+                  Valable jusqu&apos;au {formatDateTime(drawResult.lead.rewardExpiresAt)}
+                </div>
+              ) : null}
+
+              {error ? (
+                <div className="mt-4 rounded-[20px] border border-[#ff8f70]/30 bg-[#ff8f70]/12 px-4 py-3 text-sm text-white">
+                  {error}
+                </div>
+              ) : null}
+
+              {winner ? (
+                <button
+                  type="button"
+                  onClick={redeemPrize}
+                  disabled={drawResult.lead.status === "redeemed" || isRedeeming}
+                  className={`mt-5 w-full rounded-[22px] border font-semibold disabled:opacity-60 ${previewButtonClass}`}
+                  style={{
+                    backgroundColor: campaign.presentation.button.backgroundColor,
+                    color: campaign.presentation.button.textColor,
+                    borderColor: campaign.presentation.button.borderColor,
+                  }}
+                >
+                  {isRedeeming
+                    ? "Validation..."
+                    : drawResult.lead.status === "redeemed"
+                      ? "Lot déjà retiré"
+                      : "Valider le retrait"}
+                </button>
+              ) : null}
+            </div>
+          ) : null}
+
+          {hasActions ? (
+            <div className="mt-5 rounded-[22px] border border-white/10 bg-white/8 px-4 py-4 text-xs uppercase tracking-[0.22em] text-white/72">
+              Parcours : {campaign.actions.map((action) => action.label).join(" · ")}
+            </div>
+          ) : null}
+        </div>
+      </div>
+    </div>
+  );
+}

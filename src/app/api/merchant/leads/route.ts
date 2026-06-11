@@ -1,0 +1,46 @@
+import { NextRequest, NextResponse } from "next/server";
+
+import { getMerchantLeads } from "@/lib/store";
+
+export async function GET(request: NextRequest) {
+  const campaignId = request.nextUrl.searchParams.get("campaign") ?? undefined;
+  const leads = getMerchantLeads(campaignId);
+  const format = request.nextUrl.searchParams.get("format");
+
+  if (format === "csv") {
+    const header = [
+      "lead_id",
+      "prenom",
+      "email",
+      "campaign_title",
+      "goal_type",
+      "prize_label",
+      "status",
+      "consent_timestamp",
+    ];
+    const rows = leads.map((lead) =>
+      [
+        lead.id,
+        lead.firstName,
+        lead.email,
+        lead.campaignTitle,
+        lead.goalType,
+        lead.prizeLabel,
+        lead.status,
+        lead.consentTimestamp,
+      ]
+        .map((value) => `"${String(value).replaceAll('"', '""')}"`)
+        .join(","),
+    );
+    const csv = [header.join(","), ...rows].join("\n");
+
+    return new Response(csv, {
+      headers: {
+        "Content-Type": "text/csv; charset=utf-8",
+        "Content-Disposition": 'attachment; filename="merchant-leads.csv"',
+      },
+    });
+  }
+
+  return NextResponse.json(leads);
+}
