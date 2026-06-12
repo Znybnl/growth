@@ -1,11 +1,24 @@
 import Link from "next/link";
 
+import { requireAuthenticatedSession } from "@/lib/auth";
 import { formatCurrency, formatPercent, gameTypeLabel, goalLabel } from "@/lib/format";
 import { getMerchantDashboard } from "@/lib/store";
 
-export default function CampaignsPage() {
-  const dashboard = getMerchantDashboard();
-  const activeCount = dashboard.campaigns.filter((item) => item.campaign.isActive).length;
+export default async function CampaignsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>;
+}) {
+  const session = await requireAuthenticatedSession();
+  const params = await searchParams;
+  const query = params.q?.trim().toLowerCase() ?? "";
+  const dashboard = await getMerchantDashboard(session.merchant.id, session.merchant);
+  const campaigns = query
+    ? dashboard.campaigns.filter((item) =>
+        `${item.campaign.title} ${item.campaign.subtitle}`.toLowerCase().includes(query),
+      )
+    : dashboard.campaigns;
+  const activeCount = campaigns.filter((item) => item.campaign.isActive).length;
 
   return (
     <div className="space-y-6">
@@ -26,7 +39,7 @@ export default function CampaignsPage() {
 
           <div className="flex flex-wrap gap-3">
             <div className="rounded-[22px] bg-[#f7f9fc] px-5 py-4 text-sm text-[#4f5b70]">
-              {activeCount} actives · {dashboard.campaigns.length} au total
+              {activeCount} actives · {campaigns.length} au total
             </div>
           </div>
         </div>
@@ -44,7 +57,7 @@ export default function CampaignsPage() {
         </div>
 
         <div className="mt-0 space-y-4 lg:mt-4 lg:space-y-0">
-          {dashboard.campaigns.map((item) => (
+          {campaigns.map((item) => (
             <article
               key={item.campaign.id}
               className="rounded-[28px] border border-[#e4eaf2] bg-[#fbfcfe] p-5 lg:rounded-none lg:border-x-0 lg:border-b-0 lg:border-t lg:bg-transparent lg:px-5 lg:py-5"
@@ -129,6 +142,18 @@ export default function CampaignsPage() {
                 >
                   Ouvrir la campagne
                 </Link>
+                <a
+                  href={`/api/campaigns/${item.campaign.id}/qr`}
+                  className="rounded-[18px] border border-[#d7e0ed] px-4 py-3 text-sm font-semibold text-[#182033]"
+                >
+                  Exporter le QR code
+                </a>
+                <a
+                  href={`/api/campaigns/${item.campaign.id}/poster`}
+                  className="rounded-[18px] bg-[#2f6df6] px-4 py-3 text-sm font-semibold !text-white"
+                >
+                  Télécharger l&apos;affiche A4
+                </a>
               </div>
             </article>
           ))}

@@ -121,6 +121,25 @@ export function actionKindLabel(kind: ActionKind) {
   }
 }
 
+export function actionKindCta(kind: ActionKind) {
+  switch (kind) {
+    case "google":
+      return "Laisser un avis Google";
+    case "instagram":
+      return "Ouvrir Instagram";
+    case "facebook":
+      return "Ouvrir Facebook";
+    case "tiktok":
+      return "Ouvrir TikTok";
+    case "tripadvisor":
+      return "Ouvrir Tripadvisor";
+    case "crm":
+      return "Partager mes coordonnees";
+    default:
+      return "Ouvrir le lien";
+  }
+}
+
 export function textAlignLabel(align: TextAlign) {
   switch (align) {
     case "left":

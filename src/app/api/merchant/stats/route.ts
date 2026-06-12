@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 
+import { requireAuthenticatedSession } from "@/lib/auth";
 import { getMerchantDashboard } from "@/lib/store";
 
 export async function GET() {
-  return NextResponse.json(getMerchantDashboard());
+  const session = await requireAuthenticatedSession();
+  return NextResponse.json(await getMerchantDashboard(session.merchant.id, session.merchant));
 }

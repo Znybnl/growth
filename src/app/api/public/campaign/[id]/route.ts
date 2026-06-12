@@ -10,13 +10,13 @@ type RouteProps = {
 
 export async function GET(_: Request, { params }: RouteProps) {
   const { id } = await params;
-  const campaign = getPublicCampaign(id);
+  const campaign = await getPublicCampaign(id);
 
   if (!campaign) {
     return NextResponse.json({ error: "Campaign not found" }, { status: 404 });
   }
 
-  recordEvent(id, "scan");
+  await recordEvent(id, "scan");
 
   return NextResponse.json({ campaign });
 }

@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { requireAuthenticatedSession } from "@/lib/auth";
 import {
   formatCurrency,
   formatDateTime,
@@ -10,11 +11,29 @@ import {
 } from "@/lib/format";
 import { getMerchantDashboard, getMerchantLeads } from "@/lib/store";
 
-export default function DashboardPage() {
-  const dashboard = getMerchantDashboard();
-  const recentLeads = getMerchantLeads().slice(0, 5);
-  const activeCampaigns = dashboard.campaigns.filter((item) => item.campaign.isActive);
-  const bestCampaign = [...dashboard.campaigns].sort(
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>;
+}) {
+  const session = await requireAuthenticatedSession();
+  const params = await searchParams;
+  const query = params.q?.trim().toLowerCase() ?? "";
+  const dashboard = await getMerchantDashboard(session.merchant.id, session.merchant);
+  const filteredCampaigns = query
+    ? dashboard.campaigns.filter((item) =>
+        `${item.campaign.title} ${item.campaign.subtitle}`.toLowerCase().includes(query),
+      )
+    : dashboard.campaigns;
+  const merchantCampaignIds = new Set(filteredCampaigns.map((item) => item.campaign.id));
+  const recentLeads = (await getMerchantLeads(session.merchant.id))
+    .filter((lead) => merchantCampaignIds.has(lead.campaignId))
+    .filter((lead) =>
+      query ? `${lead.firstName} ${lead.email} ${lead.campaignTitle}`.toLowerCase().includes(query) : true,
+    )
+    .slice(0, 5);
+  const activeCampaigns = filteredCampaigns.filter((item) => item.campaign.isActive);
+  const bestCampaign = [...filteredCampaigns].sort(
     (left, right) => right.kpis.conversionRate - left.kpis.conversionRate,
   )[0];
 
@@ -30,8 +49,8 @@ export default function DashboardPage() {
               Pilotez vos activations magasin
             </h1>
             <p className="mt-4 max-w-3xl text-sm leading-7 text-[#5c6577]">
-              Suivez vos campagnes en direct, comparez les mécaniques qui performent et
-              lancez rapidement une nouvelle activation roue ou ticket à gratter.
+              Suivez vos campagnes en direct, comparez les mécaniques qui performent et lancez
+              rapidement une nouvelle activation.
             </p>
           </div>
 
@@ -42,10 +61,6 @@ export default function DashboardPage() {
             >
               Créer une campagne
             </Link>
-            <div className="rounded-[24px] bg-[#f6f9ff] px-5 py-4 text-sm text-[#4f5b70]">
-              {activeCampaigns.length} campagnes actives, {dashboard.totalLeads} leads collectés
-              et {dashboard.totalRedeemed} lots remis.
-            </div>
           </div>
         </div>
       </section>
@@ -53,9 +68,19 @@ export default function DashboardPage() {
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {[
           ["Campagnes actives", String(activeCampaigns.length)],
-          ["Leads totaux", String(dashboard.totalLeads)],
-          ["Lots retirés", String(dashboard.totalRedeemed)],
-          ["Conversion moyenne", formatPercent(dashboard.averageConversion)],
+          ["Leads totaux", String(filteredCampaigns.reduce((total, item) => total + item.kpis.leads, 0))],
+          ["Lots retirés", String(filteredCampaigns.reduce((total, item) => total + item.kpis.redeemed, 0))],
+          [
+            "Conversion moyenne",
+            formatPercent(
+              filteredCampaigns.length
+                ? Math.round(
+                    filteredCampaigns.reduce((total, item) => total + item.kpis.conversionRate, 0) /
+                      filteredCampaigns.length,
+                  )
+                : 0,
+            ),
+          ],
         ].map(([label, value]) => (
           <div
             key={label}
@@ -68,7 +93,7 @@ export default function DashboardPage() {
       </section>
 
       <section className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-        <div className="rounded-[32px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+        <div className="min-h-[350px] rounded-[32px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
           <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
               <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">
@@ -92,7 +117,7 @@ export default function DashboardPage() {
               <span>Conversion</span>
             </div>
 
-            {dashboard.campaigns.map((item) => (
+            {filteredCampaigns.map((item) => (
               <div
                 key={item.campaign.id}
                 className="grid grid-cols-[1.5fr_0.85fr_0.7fr_0.7fr_0.9fr] items-center gap-3 border-t border-[#edf1f6] px-5 py-5 text-sm"
@@ -148,7 +173,7 @@ export default function DashboardPage() {
             </div>
           ) : null}
 
-          <div className="rounded-[32px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+          <div className="min-h-[350px] rounded-[32px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">

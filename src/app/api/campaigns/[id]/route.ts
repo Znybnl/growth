@@ -13,7 +13,7 @@ export async function PATCH(request: Request, { params }: RouteProps) {
   const body = (await request.json()) as { isActive: boolean };
 
   try {
-    const campaign = toggleCampaign(id, body.isActive);
+    const campaign = await toggleCampaign(id, body.isActive);
     return NextResponse.json({ campaign });
   } catch (error) {
     return NextResponse.json(

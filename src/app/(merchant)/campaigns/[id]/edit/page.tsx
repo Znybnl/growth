@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 
 import { CampaignEditor } from "@/components/merchant/campaign-editor";
-import { getCampaignPerformance, getMerchantDashboard, getMerchantProfile } from "@/lib/store";
+import { requireAuthenticatedSession } from "@/lib/auth";
+import { getCampaignPerformance, getMerchantDashboard } from "@/lib/store";
 
 type CampaignEditPageProps = {
   params: Promise<{
@@ -11,17 +12,17 @@ type CampaignEditPageProps = {
 
 export default async function CampaignEditPage({ params }: CampaignEditPageProps) {
   const { id } = await params;
-  const merchant = getMerchantProfile();
-  const dashboard = getMerchantDashboard();
-  const campaign = getCampaignPerformance(id);
+  const session = await requireAuthenticatedSession();
+  const dashboard = await getMerchantDashboard(session.merchant.id, session.merchant);
+  const campaign = await getCampaignPerformance(id, session.merchant);
 
-  if (!campaign) {
+  if (!campaign || campaign.campaign.merchantId !== session.merchant.id) {
     notFound();
   }
 
   return (
     <CampaignEditor
-      merchant={merchant}
+      merchant={session.merchant}
       initialCampaign={campaign}
       campaignLibrary={dashboard.campaigns}
     />

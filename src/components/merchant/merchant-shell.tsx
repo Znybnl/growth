@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
+import { SignOutButton } from "@/components/auth/sign-out-button";
 import { BrandMark } from "@/components/brand-mark";
 import { Merchant } from "@/lib/types";
 
@@ -20,7 +21,21 @@ const navItems = [
 
 export function MerchantShell({ children, merchant }: MerchantShellProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [query, setQuery] = useState(searchParams.get("q") ?? "");
+
+  function submitSearch(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const params = new URLSearchParams(searchParams.toString());
+    if (query.trim()) {
+      params.set("q", query.trim());
+    } else {
+      params.delete("q");
+    }
+    router.push(`${pathname}?${params.toString()}`);
+  }
 
   return (
     <div className="h-screen overflow-hidden bg-[#edf2f8] text-[#10131a]">
@@ -41,9 +56,17 @@ export function MerchantShell({ children, merchant }: MerchantShellProps) {
             </div>
           </div>
 
-          <div className="mt-5 rounded-[22px] border border-[#e6ebf4] bg-[#fbfcfe] px-4 py-3 text-sm text-[#9aa1b1]">
-            Rechercher une campagne, un lead ou un lot.
-          </div>
+          <form
+            onSubmit={submitSearch}
+            className="mt-5 rounded-[22px] border border-[#e6ebf4] bg-[#fbfcfe] px-4 py-3"
+          >
+            <input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Rechercher une campagne, un lead ou un lot"
+              className="w-full bg-transparent text-sm text-[#10131a] outline-none placeholder:text-[#9aa1b1]"
+            />
+          </form>
 
           <nav className="mt-6 space-y-2">
             {navItems.map((item) => {
@@ -84,8 +107,11 @@ export function MerchantShell({ children, merchant }: MerchantShellProps) {
               <BrandMark logoText={merchant.logoText} logoUrl={merchant.logoUrl} size="sm" />
               <div>
                 <p className="text-sm font-semibold text-[#141821]">Admin magasin</p>
-                <p className="text-sm text-[#9aa1b1]">Session active</p>
+                <p className="text-sm text-[#9aa1b1]">{merchant.companyName}</p>
               </div>
+            </div>
+            <div className="mt-4">
+              <SignOutButton />
             </div>
           </div>
         </div>
@@ -106,19 +132,17 @@ export function MerchantShell({ children, merchant }: MerchantShellProps) {
               </span>
             </button>
 
-            <div className="hidden min-w-0 flex-1 items-center rounded-[20px] border border-[#edf1f6] bg-[#f7f9fc] px-4 py-3 md:flex">
-              <span className="text-sm text-[#a0a7b7]">
-                Rechercher une campagne, un lead ou un lot
-              </span>
-            </div>
-
-            <div className="ml-auto flex items-center gap-3 rounded-[20px] border border-[#edf1f6] bg-[#fbfcfe] px-3 py-2">
-              <BrandMark logoText={merchant.logoText} logoUrl={merchant.logoUrl} size="sm" />
-              <div className="hidden md:block">
-                <p className="text-sm font-semibold text-[#141821]">Marque</p>
-                <p className="text-xs text-[#9aa1b1]">Espace actif</p>
-              </div>
-            </div>
+            <form
+              onSubmit={submitSearch}
+              className="hidden min-w-0 flex-1 items-center rounded-[20px] border border-[#edf1f6] bg-[#f7f9fc] px-4 py-3 md:flex"
+            >
+              <input
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Rechercher une campagne, un lead ou un lot"
+                className="w-full bg-transparent text-sm text-[#10131a] outline-none placeholder:text-[#a0a7b7]"
+              />
+            </form>
           </div>
         </header>
 

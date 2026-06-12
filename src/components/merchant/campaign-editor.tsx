@@ -8,6 +8,7 @@ import { BrandMark } from "@/components/brand-mark";
 import { ScratchGame } from "@/components/public/scratch-game";
 import { WheelOfFortune } from "@/components/public/wheel-of-fortune";
 import {
+  actionKindCta,
   actionKindLabel,
   buttonSizeLabel,
   gameTypeLabel,
@@ -83,8 +84,8 @@ const gameModes: Array<{
 
 const buttonSizeMap = {
   sm: "px-4 py-3 text-sm",
-  md: "px-5 py-4 text-sm",
-  lg: "px-6 py-5 text-base",
+  md: "px-5 py-4 text-base",
+  lg: "px-6 py-5 text-lg",
 };
 
 function createPrizeId() {
@@ -113,7 +114,7 @@ function createDefaultAction(merchant: Merchant): CampaignAction {
   return {
     id: createActionId(),
     kind: "google",
-    label: "Partager mon expérience sur Google",
+    label: actionKindCta("google"),
     url: merchant.googleReviewUrl ?? "https://google.com",
   };
 }
@@ -122,7 +123,7 @@ function createDefaultState(merchant: Merchant): EditorState {
   return {
     merchantId: merchant.id,
     title: "Animation boutique · trafic magasin",
-    subtitle: "Participez à notre jeu 100% gagnant !",
+    subtitle: "Jouez et gagnez.",
     goalType: "review_prompt",
     gameType: "scratch",
     ctaLabel: "Je participe",
@@ -153,10 +154,14 @@ function createDefaultState(merchant: Merchant): EditorState {
         align: "center",
       },
       button: {
-        backgroundColor: "#8d9ae8",
+        backgroundColor: "#c59920",
         textColor: "#ffffff",
         borderColor: "#f4c14a",
         size: "md",
+        textSizePx: 18,
+      },
+      layout: {
+        blockSpacingPx: 28,
       },
       wheel: {
         rimColor: "#f4c14a",
@@ -244,6 +249,14 @@ function buildPreviewSegments(prizes: EditorState["prizes"]): PreviewSegment[] {
   return losers.flatMap((loser, index) => (labels[index] ? [loser, labels[index]] : [loser]));
 }
 
+function syncActionLabel(kind: ActionKind, currentLabel?: string) {
+  if (kind === "custom" && currentLabel?.trim()) {
+    return currentLabel;
+  }
+
+  return actionKindCta(kind);
+}
+
 function uploadAsDataUrl(
   event: ChangeEvent<HTMLInputElement>,
   onLoaded: (value: string) => void,
@@ -279,6 +292,9 @@ export function CampaignEditor({
   const previewSegments = useMemo(() => buildPreviewSegments(form.prizes), [form.prizes]);
   const previewPrize = form.prizes[0]?.label || "Cadeau surprise";
   const previewCtaClass = buttonSizeMap[form.presentation.button.size];
+  const logoWidthPx = Math.round(
+    Math.max(72, Math.min(260, form.presentation.logo.sizePercent * 1.6)),
+  );
   const campaignOptions = campaignLibrary.filter(
     (item) => item.campaign.id !== initialCampaign?.campaign.id,
   );
@@ -351,8 +367,8 @@ export function CampaignEditor({
         ...current.actions,
         {
           id: createActionId(),
-          kind: "custom",
-          label: "Nouvelle action",
+          kind: "instagram",
+          label: actionKindCta("instagram"),
           url: "https://",
         },
       ],
@@ -362,9 +378,19 @@ export function CampaignEditor({
   function updateAction(actionId: string, patch: Partial<CampaignAction>) {
     setForm((current) => ({
       ...current,
-      actions: current.actions.map((action) =>
-        action.id === actionId ? { ...action, ...patch } : action,
-      ),
+      actions: current.actions.map((action) => {
+        if (action.id !== actionId) {
+          return action;
+        }
+
+        const nextAction = { ...action, ...patch };
+
+        if (patch.kind) {
+          nextAction.label = syncActionLabel(patch.kind, patch.label ?? action.label);
+        }
+
+        return nextAction;
+      }),
     }));
   }
 
@@ -416,7 +442,11 @@ export function CampaignEditor({
       logoUrl: imported.logoUrl,
       accent: imported.accent,
       presentation: imported.presentation,
-      actions: imported.actions.map((action) => ({ ...action, id: createActionId() })),
+      actions: imported.actions.map((action) => ({
+        ...action,
+        id: createActionId(),
+        label: syncActionLabel(action.kind, action.label),
+      })),
       rewardRules: imported.rewardRules,
       prizes: imported.prizes.map((prize) => ({ ...prize, id: createPrizeId() })),
     }));
@@ -447,9 +477,10 @@ export function CampaignEditor({
           ...form,
           targetUrl: normalizeUrl(form.targetUrl ?? ""),
           actions: form.actions
-            .filter((action) => action.label.trim() && action.url.trim())
+            .filter((action) => action.url.trim())
             .map((action) => ({
               ...action,
+              label: syncActionLabel(action.kind, action.label),
               url: normalizeUrl(action.url),
             })),
         }),
@@ -516,7 +547,7 @@ export function CampaignEditor({
                   Identité de campagne
                 </p>
                 <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
-                  Message, objectif et pilotage
+                  Cadrez la campagne et son parcours
                 </h2>
               </div>
               <label className="inline-flex items-center gap-2 rounded-full bg-[#f4f7fb] px-3 py-2 text-sm font-medium text-[#3e4758]">
@@ -557,16 +588,181 @@ export function CampaignEditor({
                   <option value="social_follow">Social / trafic</option>
                 </select>
               </label>
-
-              <div className="rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 text-sm text-[#5e6778]">
-                <span className="block text-[#616b7c]">KPI principal</span>
-                <span className="mt-2 block font-semibold text-[#111827]">{form.successMetric}</span>
-              </div>
             </div>
 
             <div className="mt-5 rounded-[24px] bg-[#f7f9fc] px-4 py-4 text-sm text-[#4f596c]">
               <span className="font-semibold text-[#152033]">{goalLabel(form.goalType)}</span> :{" "}
               {goalDescription(form.goalType)}
+            </div>
+
+            <div className="mt-5 rounded-[28px] border border-[#dbe4f0] bg-[#f8fafc] p-4">
+              <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">
+                Message public
+              </p>
+              <label className="mt-3 block text-sm">
+                <span className="mb-2 block text-[#616b7c]">Phrase affichée sur la page publique</span>
+                <textarea
+                  value={form.subtitle}
+                  onChange={(event) => setField("subtitle", event.target.value)}
+                  rows={3}
+                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
+                />
+              </label>
+            </div>
+
+            <div className="mt-8 flex items-center justify-between gap-3">
+              <div>
+                <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">
+                  Actions marketing
+                </p>
+                <h3 className="mt-2 text-xl font-semibold text-[#111827]">
+                  Ordre des actions et ouverture en nouvel onglet
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={addAction}
+                className="rounded-[20px] border border-[#111827] bg-[#111827] px-4 py-3 text-sm font-semibold text-white"
+              >
+                Ajouter une action
+              </button>
+            </div>
+
+            <div className="mt-4 space-y-4">
+              {form.actions.map((action, index) => (
+                <div
+                  key={action.id}
+                  className="rounded-[24px] border border-[#dbe4f0] bg-[#f8fafc] p-4"
+                >
+                  <div className="grid gap-4 md:grid-cols-[0.95fr_1.45fr]">
+                    <label className="text-sm">
+                      <span className="mb-2 block text-[#616b7c]">Canal</span>
+                      <select
+                        value={action.kind}
+                        onChange={(event) =>
+                          updateAction(action.id, { kind: event.target.value as ActionKind })
+                        }
+                        className="w-full rounded-[18px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
+                      >
+                        {actionKindOptions.map((kind) => (
+                          <option key={kind} value={kind}>
+                            {actionKindLabel(kind)}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+
+                    <label className="text-sm">
+                      <span className="mb-2 block text-[#616b7c]">Lien</span>
+                      <input
+                        value={action.url}
+                        onChange={(event) => updateAction(action.id, { url: event.target.value })}
+                        className="w-full rounded-[18px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
+                        placeholder="https://..."
+                      />
+                    </label>
+                  </div>
+
+                  <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                    <button
+                      type="button"
+                      onClick={() => moveAction(action.id, "up")}
+                      disabled={index === 0}
+                      className="rounded-[18px] border border-[#d7e0ed] bg-white px-3 py-3 text-sm font-semibold text-[#182033] disabled:opacity-40"
+                    >
+                      Monter
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => moveAction(action.id, "down")}
+                      disabled={index === form.actions.length - 1}
+                      className="rounded-[18px] border border-[#d7e0ed] bg-white px-3 py-3 text-sm font-semibold text-[#182033] disabled:opacity-40"
+                    >
+                      Descendre
+                    </button>
+                    <a
+                      href={normalizeUrl(action.url)}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center justify-center rounded-[18px] border border-[#2f6df6] bg-white px-3 py-3 text-sm font-semibold text-[#2f6df6]"
+                    >
+                      Tester
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => removeAction(action.id)}
+                      className="rounded-[18px] border border-[#111827] bg-[#111827] px-4 py-3 text-sm font-semibold text-white"
+                    >
+                      Retirer
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="rounded-[30px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+            <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Mécanique de jeu</p>
+            <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
+              Choisissez l&apos;expérience client
+            </h2>
+
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+              {gameModes.map((mode) => {
+                const active = form.gameType === mode.value;
+
+                return (
+                  <button
+                    key={mode.value}
+                    type="button"
+                    onClick={() => setField("gameType", mode.value)}
+                    className={`rounded-[28px] border p-5 text-left transition ${
+                      active
+                        ? "border-[#2f6df6] bg-[#eff4ff] shadow-[0_16px_30px_rgba(47,109,246,0.16)]"
+                        : "border-[#d7e0ed] bg-[#f9fbfd]"
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="text-xs uppercase tracking-[0.24em] text-[#7b8496]">
+                          {mode.eyebrow}
+                        </p>
+                        <h3 className="mt-3 text-xl font-semibold text-[#111827]">{mode.title}</h3>
+                        <p className="mt-2 text-sm leading-6 text-[#576173]">
+                          {mode.description}
+                        </p>
+                      </div>
+                      <span
+                        className={`mt-1 h-5 w-5 rounded-full border-4 ${
+                          active ? "border-[#2f6df6] bg-white" : "border-[#d5dcea] bg-transparent"
+                        }`}
+                      />
+                    </div>
+
+                    <div
+                      className={`mt-5 overflow-hidden rounded-[26px] border ${
+                        active ? "border-[#b7cbff]" : "border-[#dde5f1]"
+                      }`}
+                    >
+                      {mode.value === "wheel" ? (
+                        <div className="flex h-[180px] items-center justify-center bg-[radial-gradient(circle_at_top,#2047b833,transparent_58%),linear-gradient(180deg,#0f1728,#1d2941)]">
+                          <div className="relative h-32 w-32 rounded-full border-[10px] border-[#f4c14a] bg-[conic-gradient(#f4c14a_0_20%,#1b2842_20_40%,#eef2ff_40_60%,#8795db_60_80%,#f4c14a_80_100%)] shadow-[0_24px_36px_rgba(15,23,40,0.35)]">
+                            <div className="absolute left-1/2 top-1/2 h-8 w-8 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/90" />
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex h-[180px] items-center justify-center bg-[linear-gradient(180deg,#111827,#1b2842)] p-6">
+                          <div className="w-full max-w-[220px] rounded-[28px] border border-white/10 bg-[#eef2ff] p-4 shadow-[0_24px_36px_rgba(15,23,40,0.35)]">
+                            <div className="h-20 rounded-[18px] bg-[linear-gradient(135deg,#c9ced8,#eef2ff,#b8bfcb)]" />
+                            <div className="mt-4 h-4 w-24 rounded-full bg-[#1b2842]/15" />
+                            <div className="mt-2 h-4 w-32 rounded-full bg-[#1b2842]/10" />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </section>
 
@@ -607,187 +803,35 @@ export function CampaignEditor({
           </section>
 
           <section className="rounded-[30px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">
-                  Actions marketing
-                </p>
-                <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
-                  Ordre et liens d&apos;activation
-                </h2>
-              </div>
-              <button
-                type="button"
-                onClick={addAction}
-                className="rounded-[20px] bg-[#111827] px-4 py-3 text-sm font-semibold text-white"
-              >
-                Ajouter une action
-              </button>
-            </div>
-
-            <div className="mt-6 space-y-4">
-              {form.actions.map((action, index) => (
-                <div
-                  key={action.id}
-                  className="rounded-[24px] border border-[#dbe4f0] bg-[#f8fafc] p-4"
-                >
-                  <div className="grid gap-4 md:grid-cols-[0.8fr_1fr_auto]">
-                    <label className="text-sm">
-                      <span className="mb-2 block text-[#616b7c]">Canal</span>
-                      <select
-                        value={action.kind}
-                        onChange={(event) =>
-                          updateAction(action.id, { kind: event.target.value as ActionKind })
-                        }
-                        className="w-full rounded-[18px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
-                      >
-                        {actionKindOptions.map((kind) => (
-                          <option key={kind} value={kind}>
-                            {actionKindLabel(kind)}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-
-                    <label className="text-sm">
-                      <span className="mb-2 block text-[#616b7c]">Libellé</span>
-                      <input
-                        value={action.label}
-                        onChange={(event) => updateAction(action.id, { label: event.target.value })}
-                        className="w-full rounded-[18px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
-                      />
-                    </label>
-
-                    <div className="flex items-end gap-2">
-                      <button
-                        type="button"
-                        onClick={() => moveAction(action.id, "up")}
-                        disabled={index === 0}
-                        className="rounded-[18px] border border-[#d7e0ed] bg-white px-3 py-3 text-sm font-semibold text-[#182033] disabled:opacity-40"
-                      >
-                        Monter
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => moveAction(action.id, "down")}
-                        disabled={index === form.actions.length - 1}
-                        className="rounded-[18px] border border-[#d7e0ed] bg-white px-3 py-3 text-sm font-semibold text-[#182033] disabled:opacity-40"
-                      >
-                        Descendre
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="mt-4 grid gap-4 md:grid-cols-[1fr_auto]">
-                    <label className="text-sm">
-                      <span className="mb-2 block text-[#616b7c]">Lien</span>
-                      <input
-                        value={action.url}
-                        onChange={(event) => updateAction(action.id, { url: event.target.value })}
-                        className="w-full rounded-[18px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
-                        placeholder="https://..."
-                      />
-                    </label>
-                    <button
-                      type="button"
-                      onClick={() => removeAction(action.id)}
-                      className="self-end rounded-[18px] border border-[#111827] bg-[#111827] px-4 py-3 text-sm font-semibold text-white"
-                    >
-                      Retirer
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <section className="rounded-[30px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
-            <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Contenu public</p>
-            <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
-              Message public et bouton
-            </h2>
-
-            <div className="mt-6 grid gap-4">
-              <label className="text-sm">
-                <span className="mb-2 block text-[#616b7c]">Message public</span>
-                <textarea
-                  value={form.subtitle}
-                  onChange={(event) => setField("subtitle", event.target.value)}
-                  rows={3}
-                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
-                />
-              </label>
-
-              <label className="text-sm">
-                <span className="mb-2 block text-[#616b7c]">Libellé du bouton</span>
-                <input
-                  value={form.ctaLabel}
-                  onChange={(event) => setField("ctaLabel", event.target.value)}
-                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
-                />
-              </label>
-            </div>
-          </section>
-
-          <section className="rounded-[30px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
-            <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Mécanique de jeu</p>
-            <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
-              Choisissez l&apos;expérience client
-            </h2>
-
-            <div className="mt-6 grid gap-4 md:grid-cols-2">
-              {gameModes.map((mode) => {
-                const active = form.gameType === mode.value;
-
-                return (
-                  <button
-                    key={mode.value}
-                    type="button"
-                    onClick={() => setField("gameType", mode.value)}
-                    className={`rounded-[28px] border p-5 text-left transition ${
-                      active
-                        ? "border-[#2f6df6] bg-[#eff4ff] shadow-[0_16px_30px_rgba(47,109,246,0.16)]"
-                        : "border-[#d7e0ed] bg-[#f9fbfd]"
-                    }`}
-                  >
-                    <p className="text-xs uppercase tracking-[0.24em] text-[#7b8496]">
-                      {mode.eyebrow}
-                    </p>
-                    <div className="mt-4 flex items-start justify-between gap-4">
-                      <div>
-                        <h3 className="text-xl font-semibold text-[#111827]">{mode.title}</h3>
-                        <p className="mt-2 text-sm leading-6 text-[#576173]">
-                          {mode.description}
-                        </p>
-                      </div>
-                      <span
-                        className={`mt-1 h-5 w-5 rounded-full border-4 ${
-                          active ? "border-[#2f6df6] bg-white" : "border-[#d5dcea] bg-transparent"
-                        }`}
-                      />
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </section>
-
-          <section className="rounded-[30px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
             <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Logo</p>
             <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
               Personnalisation du logo
             </h2>
 
             <div className="mt-6 grid gap-4 md:grid-cols-2">
-              <label className="text-sm md:col-span-2">
-                <span className="mb-2 block text-[#616b7c]">Importer un logo</span>
+              <label className="group relative flex min-h-[132px] cursor-pointer flex-col justify-between rounded-[24px] border border-dashed border-[#cfd9ea] bg-[#f7f9fc] p-4 text-sm transition hover:border-[#2f6df6] hover:bg-[#eef4ff] md:col-span-2">
+                <div>
+                  <span className="mb-2 block text-[#616b7c]">Importer un logo</span>
+                  <p className="max-w-md text-sm leading-6 text-[#516073]">
+                    D?posez un fichier PNG, JPG ou SVG pour remplacer le logo affich? sur la
+                    campagne publique.
+                  </p>
+                </div>
+                <div className="mt-4 flex items-center justify-between gap-3">
+                  <span className="inline-flex rounded-full bg-white px-3 py-2 text-xs font-semibold text-[#214ccf] shadow-sm">
+                    {form.logoUrl ? "Logo charg?" : "Aucun logo"}
+                  </span>
+                  <span className="rounded-[16px] bg-[#2f6df6] px-4 py-2 text-xs font-semibold text-white shadow-[0_10px_18px_rgba(47,109,246,0.2)]">
+                    Choisir un fichier
+                  </span>
+                </div>
                 <input
                   type="file"
                   accept="image/*"
                   onChange={(event) =>
                     uploadAsDataUrl(event, (value) => setField("logoUrl", value))
                   }
-                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 text-sm outline-none"
+                  className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                 />
               </label>
 
@@ -940,8 +984,21 @@ export function CampaignEditor({
                 />
               </label>
 
-              <label className="text-sm">
-                <span className="mb-2 block text-[#616b7c]">Importer une image de fond</span>
+              <label className="group relative flex min-h-[132px] cursor-pointer flex-col justify-between rounded-[24px] border border-dashed border-[#cfd9ea] bg-[#f7f9fc] p-4 text-sm transition hover:border-[#2f6df6] hover:bg-[#eef4ff]">
+                <div>
+                  <span className="mb-2 block text-[#616b7c]">Importer une image de fond</span>
+                  <p className="max-w-md text-sm leading-6 text-[#516073]">
+                    Ajoutez une image pour donner plus de relief ? la page publique.
+                  </p>
+                </div>
+                <div className="mt-4 flex items-center justify-between gap-3">
+                  <span className="inline-flex rounded-full bg-white px-3 py-2 text-xs font-semibold text-[#214ccf] shadow-sm">
+                    {form.presentation.background.imageUrl ? "Image charg?e" : "Aucune image"}
+                  </span>
+                  <span className="rounded-[16px] bg-[#2f6df6] px-4 py-2 text-xs font-semibold text-white shadow-[0_10px_18px_rgba(47,109,246,0.2)]">
+                    Choisir un fichier
+                  </span>
+                </div>
                 <input
                   type="file"
                   accept="image/*"
@@ -960,9 +1017,45 @@ export function CampaignEditor({
                       })),
                     )
                   }
-                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 text-sm outline-none"
+                  className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                 />
               </label>
+            </div>
+          </section>
+
+          <section className="rounded-[30px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+            <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Espacement</p>
+            <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
+              Distance entre les blocs publics
+            </h2>
+
+            <div className="mt-6 grid gap-4 md:grid-cols-[1fr_auto] md:items-end">
+              <label className="text-sm">
+                <span className="mb-2 block text-[#616b7c]">Espacement entre les blocs (px)</span>
+                <input
+                  type="number"
+                  min={0}
+                  max={72}
+                  value={form.presentation.layout.blockSpacingPx}
+                  onChange={(event) =>
+                    setForm((current) => ({
+                      ...current,
+                      presentation: {
+                        ...current.presentation,
+                        layout: {
+                          ...current.presentation.layout,
+                          blockSpacingPx: Number(event.target.value || 0),
+                        },
+                      },
+                    }))
+                  }
+                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                />
+              </label>
+              <div className="rounded-[22px] bg-[#f7f9fc] px-4 py-3 text-sm text-[#5c6577]">
+                Ajuste le rythme vertical entre le logo, le message, le jeu et le bouton sur la
+                page publique.
+              </div>
             </div>
           </section>
 
@@ -1096,6 +1189,15 @@ export function CampaignEditor({
             </h2>
 
             <div className="mt-6 grid gap-4 md:grid-cols-2">
+              <label className="text-sm md:col-span-2">
+                <span className="mb-2 block text-[#616b7c]">Libell? du bouton</span>
+                <input
+                  value={form.ctaLabel}
+                  onChange={(event) => setField("ctaLabel", event.target.value)}
+                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                />
+              </label>
+
               <label className="text-sm">
                 <span className="mb-2 block text-[#616b7c]">Couleur du fond</span>
                 <input
@@ -1193,6 +1295,29 @@ export function CampaignEditor({
                   })}
                 </div>
               </div>
+
+              <label className="text-sm md:col-span-2">
+                <span className="mb-2 block text-[#616b7c]">Taille du texte (px)</span>
+                <input
+                  type="number"
+                  min={12}
+                  max={32}
+                  value={form.presentation.button.textSizePx}
+                  onChange={(event) =>
+                    setForm((current) => ({
+                      ...current,
+                      presentation: {
+                        ...current.presentation,
+                        button: {
+                          ...current.presentation.button,
+                          textSizePx: Number(event.target.value || 18),
+                        },
+                      },
+                    }))
+                  }
+                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                />
+              </label>
             </div>
           </section>
 
@@ -1509,14 +1634,28 @@ export function CampaignEditor({
                 <h2 className="mt-2 text-2xl font-semibold text-[#111827]">Rendu public</h2>
               </div>
               {form.id ? (
-                <Link
-                  href={`/campaign/${form.id}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="pointer-events-auto rounded-[18px] border border-[#111827] bg-[#111827] px-4 py-3 text-sm font-semibold !text-white"
-                >
-                  Ouvrir
-                </Link>
+                <div className="pointer-events-auto flex flex-wrap justify-end gap-2">
+                  <a
+                    href={`/api/campaigns/${form.id}/qr`}
+                    className="rounded-[18px] border border-[#d7e0ed] bg-white px-4 py-3 text-sm font-semibold text-[#182033]"
+                  >
+                    QR
+                  </a>
+                  <a
+                    href={`/api/campaigns/${form.id}/poster`}
+                    className="rounded-[18px] bg-[#2f6df6] px-4 py-3 text-sm font-semibold !text-white"
+                  >
+                    Affiche A4
+                  </a>
+                  <Link
+                    href={`/campaign/${form.id}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="rounded-[18px] border border-[#111827] bg-[#111827] px-4 py-3 text-sm font-semibold !text-white"
+                  >
+                    Ouvrir
+                  </Link>
+                </div>
               ) : null}
             </div>
 
@@ -1534,15 +1673,15 @@ export function CampaignEditor({
                 <div className={`flex ${logoAlignmentClass}`}>
                   <div
                     style={{
-                      width: `${Math.max(40, form.presentation.logo.sizePercent)}%`,
-                      marginBottom: `${form.presentation.logo.marginBottomPx}px`,
+                      marginBottom: `${form.presentation.logo.marginBottomPx + form.presentation.layout.blockSpacingPx}px`,
                     }}
                   >
                     <BrandMark
                       logoText={merchant.logoText}
                       logoUrl={form.logoUrl}
                       size="lg"
-                      className="h-auto w-full rounded-[24px]"
+                      variant="transparent"
+                      imageWidthPx={logoWidthPx}
                     />
                   </div>
                 </div>
@@ -1559,7 +1698,7 @@ export function CampaignEditor({
                   </h3>
                 </div>
 
-                <div className="mt-6">
+                <div style={{ marginTop: `${form.presentation.layout.blockSpacingPx}px` }}>
                   {form.gameType === "wheel" ? (
                     <WheelOfFortune
                       accent={form.accent}
@@ -1583,33 +1722,18 @@ export function CampaignEditor({
 
                 <button
                   type="button"
-                  className={`mt-6 w-full rounded-[24px] border font-semibold ${previewCtaClass}`}
+                  className={`w-full rounded-[24px] border font-semibold ${previewCtaClass}`}
                   style={{
+                    marginTop: `${form.presentation.layout.blockSpacingPx}px`,
                     backgroundColor: form.presentation.button.backgroundColor,
                     color: form.presentation.button.textColor,
                     borderColor: form.presentation.button.borderColor,
+                    fontSize: `${form.presentation.button.textSizePx}px`,
                   }}
                 >
                   {form.ctaLabel}
                 </button>
 
-                {!!form.actions.length ? (
-                  <div className="mt-5 rounded-[24px] border border-white/10 bg-black/20 p-4 text-white">
-                    <p className="text-xs uppercase tracking-[0.24em] text-white/60">
-                      Parcours d&apos;actions
-                    </p>
-                    <div className="mt-3 space-y-2 text-sm">
-                      {form.actions.map((action, index) => (
-                        <div key={action.id} className="flex items-center justify-between gap-3">
-                          <span>
-                            {index + 1}. {action.label}
-                          </span>
-                          <span className="text-white/60">{actionKindLabel(action.kind)}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ) : null}
               </div>
             </div>
           </section>

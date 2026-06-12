@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { requireAuthenticatedSession } from "@/lib/auth";
 import {
   formatCurrency,
   formatDateTime,
@@ -18,20 +19,28 @@ type DataPageProps = {
 };
 
 function buildDailySeries(values: string[], labels: string[]) {
+  const counts = new Map<string, number>();
+
+  for (const value of values) {
+    counts.set(value, (counts.get(value) ?? 0) + 1);
+  }
+
   return labels.map((label) => ({
     label,
-    value: values.filter((item) => item.startsWith(label)).length,
+    value: counts.get(label) ?? 0,
   }));
 }
 
 function buildLastDays(referenceDates: string[], days = 7) {
   const latest = referenceDates.length
-    ? new Date(referenceDates.sort((a, b) => a.localeCompare(b)).at(-1) ?? new Date().toISOString())
+    ? new Date(
+        referenceDates.sort((a, b) => a.localeCompare(b)).at(-1) ?? new Date().toISOString(),
+      )
     : new Date();
 
   return Array.from({ length: days }, (_, index) => {
-    const date = new Date(latest);
-    date.setDate(latest.getDate() - (days - index - 1));
+    const date = new Date(Date.UTC(latest.getUTCFullYear(), latest.getUTCMonth(), latest.getUTCDate()));
+    date.setUTCDate(latest.getUTCDate() - (days - index - 1));
     return date.toISOString().slice(0, 10);
   });
 }
@@ -53,9 +62,9 @@ function Histogram({
     <div className="rounded-[32px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
       <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">{eyebrow}</p>
       <h2 className="mt-2 text-2xl font-semibold text-[#111827]">{title}</h2>
-      <div className="mt-6 flex h-[240px] items-end gap-3">
+      <div className="mt-6 grid h-[240px] grid-cols-7 gap-3">
         {bars.map((bar) => (
-          <div key={bar.label} className="flex min-w-0 flex-1 flex-col items-center gap-3">
+          <div key={bar.label} className="flex min-w-0 flex-col items-center justify-end gap-3">
             <span className="text-sm font-semibold text-[#111827]">{bar.value}</span>
             <div className="flex h-full w-full items-end rounded-[18px] bg-[#f3f6fb] p-1">
               <div
@@ -63,6 +72,7 @@ function Histogram({
                 style={{
                   height: `${Math.max((bar.value / max) * 100, bar.value > 0 ? 10 : 0)}%`,
                   backgroundColor: color,
+                  minHeight: bar.value > 0 ? "10px" : "0px",
                 }}
               />
             </div>
@@ -77,12 +87,15 @@ function Histogram({
 }
 
 export default async function DataPage({ searchParams }: DataPageProps) {
+  const session = await requireAuthenticatedSession();
   const params = await searchParams;
-  const dashboard = getMerchantDashboard();
-  const selectedCampaignId = params.campaign ?? getPrimaryCampaignId();
-  const dataView = selectedCampaignId ? getCampaignDataView(selectedCampaignId) : null;
+  const dashboard = await getMerchantDashboard(session.merchant.id, session.merchant);
+  const selectedCampaignId = params.campaign ?? dashboard.campaigns[0]?.campaign.id ?? getPrimaryCampaignId();
+  const dataView = selectedCampaignId
+    ? await getCampaignDataView(selectedCampaignId, session.merchant)
+    : null;
 
-  if (!dataView) {
+  if (!dataView || dataView.performance.campaign.merchantId !== session.merchant.id) {
     return (
       <div className="rounded-[32px] border border-[#dbe4f0] bg-white p-8 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
         <h1 className="text-3xl font-semibold text-[#111827]">Aucune campagne sélectionnée</h1>
@@ -95,6 +108,15 @@ export default async function DataPage({ searchParams }: DataPageProps) {
     ...dataView.events.map((event) => event.createdAt),
   ];
   const dayKeys = buildLastDays(allDates);
+  const performanceMax = Math.max(
+    dataView.performance.kpis.scans,
+    dataView.performance.kpis.leads,
+    dataView.performance.kpis.actions,
+    dataView.performance.kpis.redeemed,
+    1,
+  );
+  const performanceWidth = (value: number) =>
+    value > 0 ? Math.max((value / performanceMax) * 100, 10) : 0;
   const participationsPerDay = buildDailySeries(
     dataView.leads.map((lead) => lead.createdAt.slice(0, 10)),
     dayKeys,
@@ -131,7 +153,8 @@ export default async function DataPage({ searchParams }: DataPageProps) {
               </div>
               <Link
                 href={`/campaigns/${dataView.performance.campaign.id}/edit`}
-                className="inline-flex rounded-[22px] bg-[#2f6df6] px-5 py-4 text-sm font-semibold text-white shadow-[0_16px_32px_rgba(47,109,246,0.22)]"
+                className="inline-flex rounded-[22px] bg-[#2f6df6] px-5 py-4 text-sm font-semibold !text-white shadow-[0_16px_32px_rgba(47,109,246,0.22)]"
+                style={{ color: "#ffffff" }}
               >
                 Modifier la campagne
               </Link>
@@ -145,9 +168,14 @@ export default async function DataPage({ searchParams }: DataPageProps) {
                 href={`/data?campaign=${item.campaign.id}`}
                 className={`rounded-[18px] px-4 py-3 text-sm font-semibold ${
                   item.campaign.id === dataView.performance.campaign.id
-                    ? "bg-[#111827] text-white"
+                    ? "bg-[#111827] !text-white"
                     : "border border-[#d7e0ed] bg-[#f8fafc] text-[#182033]"
                 }`}
+                style={
+                  item.campaign.id === dataView.performance.campaign.id
+                    ? { color: "#ffffff" }
+                    : undefined
+                }
               >
                 {item.campaign.title}
               </Link>
@@ -198,21 +226,21 @@ export default async function DataPage({ searchParams }: DataPageProps) {
 
             <div className="mt-6 space-y-4">
               {[
-                { label: "Scans", value: dataView.performance.kpis.scans, width: 100 },
+                { label: "Scans", value: dataView.performance.kpis.scans, width: performanceWidth(dataView.performance.kpis.scans) },
                 {
                   label: "Leads créés",
                   value: dataView.performance.kpis.leads,
-                  width: Math.max(dataView.performance.kpis.conversionRate, 10),
+                  width: performanceWidth(dataView.performance.kpis.leads),
                 },
                 {
                   label: "Actions marketing",
                   value: dataView.performance.kpis.actions,
-                  width: Math.max(dataView.performance.kpis.actionRate, 10),
+                  width: performanceWidth(dataView.performance.kpis.actions),
                 },
                 {
                   label: "Lots retirés",
                   value: dataView.performance.kpis.redeemed,
-                  width: Math.max(dataView.performance.kpis.redemptionRate, 10),
+                  width: performanceWidth(dataView.performance.kpis.redeemed),
                 },
               ].map((row) => (
                 <div key={row.label}>

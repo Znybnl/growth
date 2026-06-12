@@ -5,6 +5,8 @@ type BrandMarkProps = {
   logoUrl?: string;
   size?: "sm" | "md" | "lg";
   className?: string;
+  variant?: "default" | "transparent";
+  imageWidthPx?: number;
 };
 
 const sizeMap = {
@@ -18,15 +20,43 @@ export function BrandMark({
   logoUrl,
   size = "md",
   className = "",
+  variant = "default",
+  imageWidthPx,
 }: BrandMarkProps) {
-  const sizing = sizeMap[size];
+  const sizing = className.includes("w-full") ? "w-full" : sizeMap[size];
 
   if (logoUrl) {
+    if (variant === "transparent") {
+      return (
+        <div
+          className={`relative inline-block shrink-0 ${className}`}
+          style={{ width: `${imageWidthPx ?? 180}px` }}
+        >
+          <Image
+            src={logoUrl}
+            alt="Logo"
+            width={imageWidthPx ?? 180}
+            height={imageWidthPx ?? 180}
+            unoptimized
+            className="block h-auto w-full object-contain"
+          />
+        </div>
+      );
+    }
+
     return (
       <div
         className={`relative ${sizing} overflow-hidden border border-black/6 bg-white shadow-[0_10px_24px_rgba(0,0,0,0.08)] ${className}`}
       >
-        <Image src={logoUrl} alt="Logo" fill unoptimized className="object-cover" />
+        <Image src={logoUrl} alt="Logo" fill unoptimized className="object-contain p-3" />
+      </div>
+    );
+  }
+
+  if (variant === "transparent") {
+    return (
+      <div className={`inline-flex shrink-0 items-center justify-center ${className}`}>
+        <span className="text-sm font-semibold text-white">{logoText}</span>
       </div>
     );
   }

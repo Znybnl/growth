@@ -32,10 +32,51 @@ export interface Merchant {
   companyName: string;
   logoText: string;
   logoUrl?: string;
+  city?: string;
+  contactName?: string;
+  phone?: string;
+  onboardingCompleted?: boolean;
+  preferredGoals?: string[];
+  diffusionSupport?: string[];
   googleReviewUrl?: string;
   instagramUrl?: string;
   defaultPrizeCost?: number;
   createdAt: string;
+}
+
+export interface MerchantUser {
+  id: string;
+  merchantId: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  createdAt: string;
+}
+
+export interface MerchantSignUpInput {
+  companyName: string;
+  city: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  password: string;
+  confirmPassword: string;
+}
+
+export interface MerchantSignInInput {
+  email: string;
+  password: string;
+}
+
+export interface MerchantOnboardingInput {
+  companyName: string;
+  city: string;
+  contactName: string;
+  phone: string;
+  preferredGoals: string[];
+  diffusionSupport: string[];
 }
 
 export interface CampaignAccent {
@@ -68,6 +109,11 @@ export interface CampaignButtonSettings {
   textColor: string;
   borderColor: string;
   size: ButtonSize;
+  textSizePx: number;
+}
+
+export interface CampaignLayoutSettings {
+  blockSpacingPx: number;
 }
 
 export interface CampaignWheelSettings {
@@ -83,6 +129,7 @@ export interface CampaignPresentation {
   background: CampaignBackgroundSettings;
   heading: CampaignHeadingSettings;
   button: CampaignButtonSettings;
+  layout: CampaignLayoutSettings;
   wheel: CampaignWheelSettings;
 }
 

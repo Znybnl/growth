@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import { requireAuthenticatedSession } from "@/lib/auth";
 import { getMerchantLeads } from "@/lib/store";
 
 export async function GET(request: NextRequest) {
+  const session = await requireAuthenticatedSession();
   const campaignId = request.nextUrl.searchParams.get("campaign") ?? undefined;
-  const leads = getMerchantLeads(campaignId);
+  const leads = await getMerchantLeads(session.merchant.id, campaignId);
   const format = request.nextUrl.searchParams.get("format");
 
   if (format === "csv") {

@@ -14,7 +14,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const lead = redeemLeadPrize(body.leadId);
+    const lead = await redeemLeadPrize(body.leadId);
     return NextResponse.json({ lead });
   } catch (error) {
     return NextResponse.json(

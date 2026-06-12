@@ -1,4 +1,25 @@
 import {
+  drawForLeadInSupabase,
+  getSupabaseCampaignDataView,
+  getSupabaseCampaignPerformance,
+  getSupabaseMerchantDashboard,
+  getSupabaseMerchantLeads,
+  getSupabasePublicCampaign,
+  markActionConfirmedInSupabase,
+  recordEventInSupabase,
+  redeemLeadPrizeInSupabase,
+  toggleCampaignInSupabase,
+  updateCampaignSetupInSupabase,
+} from "@/lib/campaign-repository";
+import {
+  authenticateMerchantInSupabase,
+  createMerchantAccountInSupabase,
+  getSupabaseMerchantProfile,
+  getSupabaseMerchantUser,
+  updateMerchantOnboardingInSupabase,
+} from "@/lib/merchant-account-repository";
+import { isSupabaseConfigured } from "@/lib/supabase";
+import {
   Campaign,
   CampaignAction,
   CampaignDataView,
@@ -18,12 +39,17 @@ import {
   Merchant,
   MerchantDashboardData,
   MerchantLeadRow,
+  MerchantOnboardingInput,
+  MerchantSignInInput,
+  MerchantSignUpInput,
+  MerchantUser,
   Prize,
   PublicCampaign,
 } from "@/lib/types";
 
 type Store = {
   merchants: Merchant[];
+  users: MerchantUser[];
   campaigns: Campaign[];
   prizes: Prize[];
   leads: Lead[];
@@ -52,6 +78,7 @@ type CampaignPresentationOverrides = {
   background?: Partial<CampaignBackgroundSettings>;
   heading?: Partial<CampaignHeadingSettings>;
   button?: Partial<CampaignButtonSettings>;
+  layout?: Partial<{ blockSpacingPx: number }>;
   wheel?: Partial<CampaignWheelSettings>;
 };
 
@@ -81,7 +108,12 @@ function createPresentation(overrides?: CampaignPresentationOverrides): Campaign
       textColor: "#ffffff",
       borderColor: "#2f6df6",
       size: "md",
+      textSizePx: 18,
       ...overrides?.button,
+    },
+    layout: {
+      blockSpacingPx: 28,
+      ...overrides?.layout,
     },
     wheel: {
       rimColor: "#f4c14a",
@@ -116,11 +148,29 @@ const merchantSeed: Merchant = {
   companyName: "Maison Sora",
   logoText: "MS",
   logoUrl: defaultLogoUrl,
+  city: "Paris Marais",
+  contactName: "Pierre-Henri Brunelle",
+  phone: "01 40 00 00 00",
+  onboardingCompleted: true,
+  preferredGoals: ["Avis Google", "Collecte CRM"],
+  diffusionSupport: ["QR code vitrine et comptoir", "Script équipe magasin"],
   googleReviewUrl: "https://g.page/r/CampaignReview",
   instagramUrl: "https://instagram.com/maisonsora",
   defaultPrizeCost: 3.4,
   createdAt: "2026-06-01T08:00:00.000Z",
 };
+
+const userSeed: MerchantUser[] = [
+  {
+    id: "user-maison-sora-admin",
+    merchantId: merchantSeed.id,
+    firstName: "Pierre-Henri",
+    lastName: "Brunelle",
+    email: "camille@maisonsora.fr",
+    password: "demo1234",
+    createdAt: "2026-06-01T08:00:00.000Z",
+  },
+];
 
 const campaignSeed: Campaign[] = [
   {
@@ -147,6 +197,10 @@ const campaignSeed: Campaign[] = [
         backgroundColor: "#8d9ae8",
         textColor: "#ffffff",
         borderColor: "#f5b93d",
+        textSizePx: 18,
+      },
+      layout: {
+        blockSpacingPx: 30,
       },
     }),
     actions: [
@@ -186,6 +240,10 @@ const campaignSeed: Campaign[] = [
         backgroundColor: "#8d9ae8",
         textColor: "#ffffff",
         borderColor: "#8d9ae8",
+        textSizePx: 18,
+      },
+      layout: {
+        blockSpacingPx: 30,
       },
       wheel: {
         rimColor: "#f4c14a",
@@ -236,6 +294,10 @@ const campaignSeed: Campaign[] = [
         backgroundColor: "#ff7f50",
         textColor: "#ffffff",
         borderColor: "#ff7f50",
+        textSizePx: 18,
+      },
+      layout: {
+        blockSpacingPx: 30,
       },
     }),
     actions: [],
@@ -385,6 +447,7 @@ const eventSeed: CampaignEvent[] = [
 function createSeededStore(): Store {
   return {
     merchants: [merchantSeed],
+    users: userSeed,
     campaigns: campaignSeed,
     prizes: prizeSeed,
     leads: leadSeed,
@@ -451,6 +514,7 @@ function normalizeCampaign(rawCampaign: Campaign | (Partial<Campaign> & Record<s
 function normalizeStore(rawStore: Store): Store {
   return {
     merchants: rawStore.merchants?.length ? rawStore.merchants : [merchantSeed],
+    users: rawStore.users?.length ? rawStore.users : userSeed,
     campaigns: (rawStore.campaigns ?? campaignSeed).map((campaign) => normalizeCampaign(campaign)),
     prizes: (rawStore.prizes ?? prizeSeed).map((prize) => ({
       ...prize,
@@ -475,6 +539,14 @@ function getCampaign(id: string) {
 
 function getMerchant(id: string) {
   return store.merchants.find((merchant) => merchant.id === id);
+}
+
+function getUser(id: string) {
+  return store.users.find((user) => user.id === id);
+}
+
+function getUserByEmail(email: string) {
+  return store.users.find((user) => user.email === email.trim().toLowerCase());
 }
 
 function getCampaignPrizes(campaignId: string) {
@@ -526,7 +598,7 @@ function generateId(prefix: string) {
   return `${prefix}-${crypto.randomUUID().slice(0, 8)}`;
 }
 
-export function recordEvent(
+function recordEventInMemory(
   campaignId: string,
   eventType: CampaignEvent["eventType"],
   leadId?: string,
@@ -649,7 +721,7 @@ function choosePrize(campaign: Campaign, prizes: Prize[]) {
   return null;
 }
 
-export function getMerchantProfile(merchantId = merchantSeed.id) {
+function getMerchantProfileFromMemory(merchantId = merchantSeed.id) {
   const merchant = getMerchant(merchantId);
 
   if (!merchant) {
@@ -657,6 +729,173 @@ export function getMerchantProfile(merchantId = merchantSeed.id) {
   }
 
   return clone(merchant);
+}
+
+function getMerchantUserFromMemory(userId: string) {
+  const user = getUser(userId);
+
+  return user ? clone(user) : null;
+}
+
+function getMerchantUserByEmailFromMemory(email: string) {
+  const user = getUserByEmail(email);
+
+  return user ? clone(user) : null;
+}
+
+function createMerchantAccountInMemory(input: MerchantSignUpInput) {
+  const email = input.email.trim().toLowerCase();
+
+  if (getUserByEmail(email)) {
+    throw new Error("Un compte existe déjà avec cette adresse e-mail.");
+  }
+
+  if (input.password !== input.confirmPassword) {
+    throw new Error("Les mots de passe ne correspondent pas.");
+  }
+
+  const merchantId = generateId("merchant");
+  const userId = generateId("user");
+  const firstName = input.firstName.trim();
+  const lastName = input.lastName.trim();
+  const companyName = input.companyName.trim();
+  const city = input.city.trim();
+  const phone = input.phone.trim();
+
+  const merchant: Merchant = {
+    id: merchantId,
+    companyName,
+    logoText: companyName.slice(0, 2).toUpperCase(),
+    logoUrl: defaultLogoUrl,
+    city,
+    contactName: `${firstName} ${lastName}`.trim(),
+    phone,
+    onboardingCompleted: false,
+    preferredGoals: [],
+    diffusionSupport: [],
+    googleReviewUrl: "",
+    instagramUrl: "",
+    defaultPrizeCost: 3,
+    createdAt: new Date().toISOString(),
+  };
+
+  const user: MerchantUser = {
+    id: userId,
+    merchantId,
+    firstName,
+    lastName,
+    email,
+    password: input.password,
+    createdAt: new Date().toISOString(),
+  };
+
+  store.merchants.unshift(merchant);
+  store.users.unshift(user);
+
+  return {
+    user: clone(user),
+    merchant: clone(merchant),
+  };
+}
+
+function authenticateMerchantInMemory(input: MerchantSignInInput) {
+  const user = getUserByEmail(input.email);
+
+  if (!user || user.password !== input.password) {
+    throw new Error("Identifiants invalides.");
+  }
+
+  const merchant = getMerchant(user.merchantId);
+
+  if (!merchant) {
+    throw new Error("Marchand introuvable.");
+  }
+
+  return {
+    user: clone(user),
+    merchant: clone(merchant),
+  };
+}
+
+function updateMerchantOnboardingInMemory(userId: string, input: MerchantOnboardingInput) {
+  const user = getUser(userId);
+
+  if (!user) {
+    throw new Error("Utilisateur introuvable.");
+  }
+
+  const merchant = getMerchant(user.merchantId);
+
+  if (!merchant) {
+    throw new Error("Marchand introuvable.");
+  }
+
+  merchant.companyName = input.companyName.trim();
+  merchant.logoText = input.companyName.trim().slice(0, 2).toUpperCase();
+  merchant.city = input.city.trim();
+  merchant.contactName = input.contactName.trim();
+  merchant.phone = input.phone.trim();
+  merchant.preferredGoals = input.preferredGoals;
+  merchant.diffusionSupport = input.diffusionSupport;
+  merchant.onboardingCompleted = true;
+
+  return clone(merchant);
+}
+
+export async function getMerchantProfile(merchantId = merchantSeed.id) {
+  if (isSupabaseConfigured()) {
+    const merchant = await getSupabaseMerchantProfile(merchantId);
+
+    if (merchant) {
+      return merchant;
+    }
+  }
+
+  return getMerchantProfileFromMemory(merchantId);
+}
+
+export async function getMerchantUser(userId: string) {
+  if (isSupabaseConfigured()) {
+    const user = await getSupabaseMerchantUser(userId);
+
+    if (user) {
+      return user;
+    }
+  }
+
+  return getMerchantUserFromMemory(userId);
+}
+
+export async function getMerchantUserByEmail(email: string) {
+  if (isSupabaseConfigured()) {
+    throw new Error("Recherche directe par email non exposee en mode Supabase.");
+  }
+
+  return getMerchantUserByEmailFromMemory(email);
+}
+
+export async function createMerchantAccount(input: MerchantSignUpInput) {
+  if (isSupabaseConfigured()) {
+    return createMerchantAccountInSupabase(input);
+  }
+
+  return createMerchantAccountInMemory(input);
+}
+
+export async function authenticateMerchant(input: MerchantSignInInput) {
+  if (isSupabaseConfigured()) {
+    return authenticateMerchantInSupabase(input);
+  }
+
+  return authenticateMerchantInMemory(input);
+}
+
+export async function updateMerchantOnboarding(userId: string, input: MerchantOnboardingInput) {
+  if (isSupabaseConfigured()) {
+    return updateMerchantOnboardingInSupabase(userId, input);
+  }
+
+  return updateMerchantOnboardingInMemory(userId, input);
 }
 
 export function listCampaigns() {
@@ -667,7 +906,7 @@ export function getPrimaryCampaignId() {
   return store.campaigns.find((campaign) => campaign.isActive)?.id ?? store.campaigns[0]?.id;
 }
 
-export function getPublicCampaign(id: string) {
+function getPublicCampaignFromMemory(id: string) {
   const campaign = getCampaign(id);
 
   if (!campaign || !campaign.isActive) {
@@ -677,7 +916,7 @@ export function getPublicCampaign(id: string) {
   return clone(toPublicCampaign(campaign));
 }
 
-export function getCampaignPerformance(campaignId: string) {
+function getCampaignPerformanceFromMemory(campaignId: string) {
   const campaign = getCampaign(campaignId);
 
   if (!campaign) {
@@ -687,8 +926,11 @@ export function getCampaignPerformance(campaignId: string) {
   return buildPerformance(campaign);
 }
 
-export function getMerchantDashboard(merchantId = merchantSeed.id): MerchantDashboardData {
-  const merchant = getMerchant(merchantId);
+function getMerchantDashboardFromMemory(
+  merchantId = merchantSeed.id,
+  fallbackMerchant?: Merchant,
+): MerchantDashboardData {
+  const merchant = getMerchant(merchantId) ?? fallbackMerchant;
 
   if (!merchant) {
     throw new Error("Marchand introuvable");
@@ -716,7 +958,7 @@ export function getMerchantDashboard(merchantId = merchantSeed.id): MerchantDash
   };
 }
 
-export function getMerchantLeads(campaignId?: string) {
+function getMerchantLeadsFromMemory(campaignId?: string) {
   return clone(
     store.leads
       .filter((lead) => (campaignId ? lead.campaignId === campaignId : true))
@@ -725,8 +967,8 @@ export function getMerchantLeads(campaignId?: string) {
   );
 }
 
-export function getCampaignDataView(campaignId: string): CampaignDataView | null {
-  const performance = getCampaignPerformance(campaignId);
+function getCampaignDataViewFromMemory(campaignId: string): CampaignDataView | null {
+  const performance = getCampaignPerformanceFromMemory(campaignId);
 
   if (!performance) {
     return null;
@@ -734,7 +976,7 @@ export function getCampaignDataView(campaignId: string): CampaignDataView | null
 
   return {
     performance,
-    leads: getMerchantLeads(campaignId),
+    leads: getMerchantLeadsFromMemory(campaignId),
     events: clone(
       store.events
         .filter((event) => event.campaignId === campaignId)
@@ -743,7 +985,7 @@ export function getCampaignDataView(campaignId: string): CampaignDataView | null
   };
 }
 
-export function drawForLead(input: DrawRequest): DrawResult {
+function drawForLeadFromMemory(input: DrawRequest): DrawResult {
   const campaign = getCampaign(input.campaignId);
 
   if (!campaign || !campaign.isActive) {
@@ -787,11 +1029,11 @@ export function drawForLead(input: DrawRequest): DrawResult {
   }
 
   store.leads.push(lead);
-  recordEvent(campaign.id, "lead_created", lead.id);
-  recordEvent(campaign.id, "game_played", lead.id);
+  recordEventInMemory(campaign.id, "lead_created", lead.id);
+  recordEventInMemory(campaign.id, "game_played", lead.id);
 
   if (prize) {
-    recordEvent(campaign.id, "prize_won", lead.id, { prizeId: prize.id });
+    recordEventInMemory(campaign.id, "prize_won", lead.id, { prizeId: prize.id });
   }
 
   return {
@@ -801,7 +1043,7 @@ export function drawForLead(input: DrawRequest): DrawResult {
   };
 }
 
-export function markActionConfirmed(leadId: string) {
+function markActionConfirmedInMemory(leadId: string) {
   const lead = store.leads.find((item) => item.id === leadId);
 
   if (!lead) {
@@ -813,7 +1055,7 @@ export function markActionConfirmed(leadId: string) {
   return clone(lead);
 }
 
-export function redeemLeadPrize(leadId: string) {
+function redeemLeadPrizeInMemory(leadId: string) {
   const lead = store.leads.find((item) => item.id === leadId);
 
   if (!lead) {
@@ -834,17 +1076,17 @@ export function redeemLeadPrize(leadId: string) {
 
   if (lead.rewardExpiresAt && new Date(lead.rewardExpiresAt).getTime() < Date.now()) {
     lead.status = "expired";
-    recordEvent(lead.campaignId, "prize_expired", lead.id);
+    recordEventInMemory(lead.campaignId, "prize_expired", lead.id);
     throw new Error("Lot expiré");
   }
 
   lead.status = "redeemed";
-  recordEvent(lead.campaignId, "prize_redeemed", lead.id);
+  recordEventInMemory(lead.campaignId, "prize_redeemed", lead.id);
 
   return clone(lead);
 }
 
-export function updateCampaignSetup(input: CampaignSetupInput) {
+function updateCampaignSetupInMemory(input: CampaignSetupInput) {
   const existing = input.id ? getCampaign(input.id) : undefined;
 
   if (existing) {
@@ -915,7 +1157,7 @@ export function updateCampaignSetup(input: CampaignSetupInput) {
   return clone(campaign);
 }
 
-export function toggleCampaign(id: string, isActive: boolean) {
+function toggleCampaignInMemory(id: string, isActive: boolean) {
   const campaign = getCampaign(id);
 
   if (!campaign) {
@@ -925,4 +1167,103 @@ export function toggleCampaign(id: string, isActive: boolean) {
   campaign.isActive = isActive;
 
   return clone(campaign);
+}
+
+export async function recordEvent(
+  campaignId: string,
+  eventType: CampaignEvent["eventType"],
+  leadId?: string,
+  metadata?: CampaignEvent["metadata"],
+) {
+  if (isSupabaseConfigured()) {
+    return recordEventInSupabase(campaignId, eventType, leadId, metadata);
+  }
+
+  return recordEventInMemory(campaignId, eventType, leadId, metadata);
+}
+
+export async function getPublicCampaign(id: string) {
+  if (isSupabaseConfigured()) {
+    return getSupabasePublicCampaign(id);
+  }
+
+  return getPublicCampaignFromMemory(id);
+}
+
+export async function getCampaignPerformance(campaignId: string, fallbackMerchant?: Merchant) {
+  if (isSupabaseConfigured()) {
+    return getSupabaseCampaignPerformance(campaignId, fallbackMerchant);
+  }
+
+  return getCampaignPerformanceFromMemory(campaignId);
+}
+
+export async function getMerchantDashboard(
+  merchantId = merchantSeed.id,
+  fallbackMerchant?: Merchant,
+) {
+  if (isSupabaseConfigured() && fallbackMerchant) {
+    return getSupabaseMerchantDashboard(fallbackMerchant);
+  }
+
+  return getMerchantDashboardFromMemory(merchantId, fallbackMerchant);
+}
+
+export async function getMerchantLeads(merchantId = merchantSeed.id, campaignId?: string) {
+  if (isSupabaseConfigured()) {
+    return getSupabaseMerchantLeads(merchantId, campaignId);
+  }
+
+  return getMerchantLeadsFromMemory(campaignId);
+}
+
+export async function getCampaignDataView(campaignId: string, fallbackMerchant?: Merchant) {
+  if (isSupabaseConfigured()) {
+    return getSupabaseCampaignDataView(campaignId, fallbackMerchant);
+  }
+
+  return getCampaignDataViewFromMemory(campaignId);
+}
+
+export async function drawForLead(input: DrawRequest, fallbackMerchant?: Merchant) {
+  if (isSupabaseConfigured()) {
+    const merchant = fallbackMerchant ?? (await getMerchantProfile());
+    return drawForLeadInSupabase(input, merchant);
+  }
+
+  return drawForLeadFromMemory(input);
+}
+
+export async function markActionConfirmed(leadId: string) {
+  if (isSupabaseConfigured()) {
+    return markActionConfirmedInSupabase(leadId);
+  }
+
+  return markActionConfirmedInMemory(leadId);
+}
+
+export async function redeemLeadPrize(leadId: string) {
+  if (isSupabaseConfigured()) {
+    return redeemLeadPrizeInSupabase(leadId);
+  }
+
+  return redeemLeadPrizeInMemory(leadId);
+}
+
+export async function updateCampaignSetup(input: CampaignSetupInput) {
+  if (isSupabaseConfigured()) {
+    const campaignId = await updateCampaignSetupInSupabase(input);
+    return getCampaignPerformance(campaignId, await getMerchantProfile(input.merchantId));
+  }
+
+  return updateCampaignSetupInMemory(input);
+}
+
+export async function toggleCampaign(id: string, isActive: boolean) {
+  if (isSupabaseConfigured()) {
+    await toggleCampaignInSupabase(id, isActive);
+    return null;
+  }
+
+  return toggleCampaignInMemory(id, isActive);
 }

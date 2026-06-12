@@ -20,7 +20,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const result = drawForLead(body);
+    const result = await drawForLead(body);
     return NextResponse.json(result, { status: 201 });
   } catch (error) {
     return NextResponse.json(

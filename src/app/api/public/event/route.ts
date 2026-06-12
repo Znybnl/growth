@@ -17,13 +17,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "campaignId and eventType are required" }, { status: 400 });
   }
 
-  const event = recordEvent(body.campaignId, body.eventType, body.leadId, body.metadata);
+  const event = await recordEvent(body.campaignId, body.eventType, body.leadId, body.metadata);
 
   if (
     body.leadId &&
     (body.eventType === "review_confirmed" || body.eventType === "social_clicked")
   ) {
-    markActionConfirmed(body.leadId);
+    await markActionConfirmed(body.leadId);
   }
 
   return NextResponse.json({ event }, { status: 201 });

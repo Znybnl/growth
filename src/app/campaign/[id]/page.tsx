@@ -11,7 +11,7 @@ type CampaignPageProps = {
 
 export default async function CampaignPage({ params }: CampaignPageProps) {
   const { id } = await params;
-  const campaign = getPublicCampaign(id);
+  const campaign = await getPublicCampaign(id);
 
   if (!campaign) {
     notFound();

@@ -1,12 +1,17 @@
 import { MerchantShell } from "@/components/merchant/merchant-shell";
-import { getMerchantProfile } from "@/lib/store";
+import { requireAuthenticatedSession } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
-export default function MerchantLayout({
+export default async function MerchantLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const merchant = getMerchantProfile();
+  const session = await requireAuthenticatedSession();
 
-  return <MerchantShell merchant={merchant}>{children}</MerchantShell>;
+  if (!session.merchant.onboardingCompleted) {
+    redirect("/onboarding");
+  }
+
+  return <MerchantShell merchant={session.merchant}>{children}</MerchantShell>;
 }

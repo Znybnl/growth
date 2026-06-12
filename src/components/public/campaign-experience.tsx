@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { BrandMark } from "@/components/brand-mark";
 import { ScratchGame } from "@/components/public/scratch-game";
 import { WheelOfFortune } from "@/components/public/wheel-of-fortune";
-import { formatDateTime } from "@/lib/format";
+import { actionKindCta, formatDateTime } from "@/lib/format";
 import { DrawResult, PublicCampaign } from "@/lib/types";
 
 type CampaignExperienceProps = {
@@ -23,8 +23,8 @@ type WheelSegment = {
 
 const buttonSizeMap = {
   sm: "px-4 py-3 text-sm",
-  md: "px-5 py-4 text-sm",
-  lg: "px-6 py-5 text-base",
+  md: "px-5 py-4 text-base",
+  lg: "px-6 py-5 text-lg",
 };
 
 function buildWheelSegments(campaign: PublicCampaign) {
@@ -72,12 +72,15 @@ export function CampaignExperience({
 
   const segments = useMemo(() => buildWheelSegments(campaign), [campaign]);
   const winner = Boolean(drawResult?.prize);
-  const scratchLabel = drawResult?.prize?.label ?? "Participation enregistrée";
+  const scratchLabel = drawResult?.prize?.label ?? "Perdu :(";
   const winningSegmentId =
     drawResult?.prize?.id ?? segments.find((segment) => segment.tone === "lose")?.id ?? "lose-0";
   const currentAction = campaign.actions[currentActionIndex];
-  const hasActions = campaign.actions.length > 0;
   const previewButtonClass = buttonSizeMap[campaign.presentation.button.size];
+  const logoWidthPx = Math.round(
+    Math.max(72, Math.min(260, campaign.presentation.logo.sizePercent * 1.6)),
+  );
+  const blockSpacingPx = campaign.presentation.layout.blockSpacingPx;
   const logoAlignmentClass =
     campaign.presentation.logo.align === "left"
       ? "justify-start"
@@ -229,24 +232,23 @@ export function CampaignExperience({
             : `radial-gradient(circle at 50% 0%, ${campaign.accent.signal}44, transparent 26%), linear-gradient(180deg, ${campaign.presentation.background.color}, #090c14 72%)`,
       }}
     >
-      <div className="mx-auto flex min-h-screen max-w-[480px] flex-col px-4 pb-8 pt-5 text-white">
+      <div className="mx-auto flex min-h-screen max-w-[480px] flex-col px-4 pb-14 pt-10 text-white">
         <div className={`flex ${logoAlignmentClass}`}>
-          <div
-            style={{
-              width: `${Math.max(40, campaign.presentation.logo.sizePercent)}%`,
-              marginBottom: `${campaign.presentation.logo.marginBottomPx}px`,
-            }}
-          >
+          <div style={{ marginBottom: `${campaign.presentation.logo.marginBottomPx + blockSpacingPx}px` }}>
             <BrandMark
               logoText={campaign.merchantLogoText}
               logoUrl={campaign.logoUrl}
               size="lg"
-              className="h-auto w-full rounded-[24px]"
+              variant="transparent"
+              imageWidthPx={logoWidthPx}
             />
           </div>
         </div>
 
-        <div className="rounded-[34px] border border-white/10 bg-white/7 px-5 py-6 backdrop-blur">
+        <div
+          className="rounded-[34px] border border-white/10 bg-white/7 px-5 py-7 backdrop-blur"
+          style={{ marginTop: `${blockSpacingPx}px` }}
+        >
           <div className={headingAlignmentClass}>
             <h1
               className={`${headingFontClass} font-semibold leading-[0.95]`}
@@ -259,7 +261,7 @@ export function CampaignExperience({
             </h1>
           </div>
 
-          <div className="mt-6">
+          <div style={{ marginTop: `${blockSpacingPx}px` }}>
             {campaign.gameType === "wheel" ? (
               <WheelOfFortune
                 key={`${campaign.id}-${drawResult?.lead.id ?? "welcome"}`}
@@ -282,7 +284,10 @@ export function CampaignExperience({
           </div>
 
           {step === "welcome" ? (
-            <div className="mt-7 rounded-[28px] border border-white/10 bg-black/16 p-5 text-center">
+            <div
+              className="rounded-[28px] border border-white/10 bg-black/16 p-5 text-center"
+              style={{ marginTop: `${blockSpacingPx}px` }}
+            >
               <button
                 type="button"
                 onClick={openCollectStep}
@@ -291,6 +296,7 @@ export function CampaignExperience({
                   backgroundColor: campaign.presentation.button.backgroundColor,
                   color: campaign.presentation.button.textColor,
                   borderColor: campaign.presentation.button.borderColor,
+                  fontSize: `${campaign.presentation.button.textSizePx}px`,
                 }}
               >
                 {campaign.ctaLabel}
@@ -300,7 +306,8 @@ export function CampaignExperience({
 
           {step === "collect" ? (
             <form
-              className="mt-7 rounded-[30px] border border-white/10 bg-black/16 p-5"
+              className="rounded-[30px] border border-white/10 bg-black/16 p-5"
+              style={{ marginTop: `${blockSpacingPx}px` }}
               onSubmit={submitLead}
             >
               <p className="text-xs uppercase tracking-[0.24em] text-white/48">Participation</p>
@@ -355,6 +362,7 @@ export function CampaignExperience({
                   backgroundColor: campaign.presentation.button.backgroundColor,
                   color: campaign.presentation.button.textColor,
                   borderColor: campaign.presentation.button.borderColor,
+                  fontSize: `${campaign.presentation.button.textSizePx}px`,
                 }}
               >
                 {isSubmitting ? "Préparation..." : "Continuer"}
@@ -363,11 +371,16 @@ export function CampaignExperience({
           ) : null}
 
           {step === "action" && drawResult && currentAction ? (
-            <div className="mt-7 rounded-[30px] border border-white/10 bg-black/16 p-5">
+            <div
+              className="rounded-[30px] border border-white/10 bg-black/16 p-5"
+              style={{ marginTop: `${blockSpacingPx}px` }}
+            >
               <p className="text-xs uppercase tracking-[0.24em] text-white/48">
                 Étape {currentActionIndex + 1} sur {campaign.actions.length}
               </p>
-              <h2 className="mt-3 text-2xl font-semibold">{currentAction.label}</h2>
+              <h2 className="mt-3 text-2xl font-semibold">
+                {actionKindCta(currentAction.kind)}
+              </h2>
               <p className="mt-3 text-sm leading-7 text-white/72">
                 Ouvrez le lien dans un nouvel onglet, puis revenez ici pour poursuivre votre
                 participation.
@@ -379,13 +392,14 @@ export function CampaignExperience({
                   rel="noreferrer"
                   onClick={() => void trackEvent("social_clicked", drawResult.lead.id)}
                   className={`block w-full rounded-[22px] border text-center font-semibold ${previewButtonClass}`}
-                  style={{
-                    backgroundColor: campaign.presentation.button.backgroundColor,
-                    color: campaign.presentation.button.textColor,
-                    borderColor: campaign.presentation.button.borderColor,
-                  }}
-                >
-                  {currentAction.label}
+                style={{
+                  backgroundColor: campaign.presentation.button.backgroundColor,
+                  color: campaign.presentation.button.textColor,
+                  borderColor: campaign.presentation.button.borderColor,
+                  fontSize: `${campaign.presentation.button.textSizePx}px`,
+                }}
+              >
+                  {actionKindCta(currentAction.kind)}
                 </a>
                 <button
                   type="button"
@@ -399,7 +413,10 @@ export function CampaignExperience({
           ) : null}
 
           {step === "game" ? (
-            <div className="mt-7 rounded-[30px] border border-white/10 bg-black/16 p-5 text-center">
+            <div
+              className="rounded-[30px] border border-white/10 bg-black/16 p-5 text-center"
+              style={{ marginTop: `${blockSpacingPx}px` }}
+            >
               <p className="text-xs uppercase tracking-[0.24em] text-white/48">Prêt à jouer</p>
               <h2 className="mt-3 text-2xl font-semibold">
                 {campaign.gameType === "wheel" ? "Faites tourner la roue" : "Grattez votre ticket"}
@@ -408,12 +425,15 @@ export function CampaignExperience({
           ) : null}
 
           {step === "result" && drawResult ? (
-            <div className="mt-7 rounded-[30px] border border-white/10 bg-black/16 p-5">
+            <div
+              className="rounded-[30px] border border-white/10 bg-black/16 p-5"
+              style={{ marginTop: `${blockSpacingPx}px` }}
+            >
               <p className="text-xs uppercase tracking-[0.24em] text-white/48">
-                {winner ? "Lot gagné" : "Participation enregistrée"}
+                {winner ? "Lot gagné" : "Perdu :("}
               </p>
               <h2 className="mt-3 text-3xl font-semibold">
-                {winner ? drawResult.prize?.label : "Pas de lot cette fois"}
+                {winner ? drawResult.prize?.label : "Perdu :("}
               </h2>
               <p className="mt-3 text-sm leading-7 text-white/72">
                 {winner
@@ -442,7 +462,15 @@ export function CampaignExperience({
                 </div>
               ) : null}
 
-              {winner && drawResult.lead.rewardAvailableAt ? (
+              {winner && campaign.rewardRules.availabilityDurationDays === 0 ? (
+                <div className="mt-4 rounded-[22px] border border-white/10 bg-white/8 px-4 py-4 text-sm text-white/78">
+                  Disponible dès maintenant au comptoir.
+                </div>
+              ) : null}
+
+              {winner &&
+              campaign.rewardRules.availabilityDurationDays > 0 &&
+              drawResult.lead.rewardAvailableAt ? (
                 <div className="mt-4 rounded-[22px] border border-white/10 bg-white/8 px-4 py-4 text-sm text-white/78">
                   Disponible à partir du {formatDateTime(drawResult.lead.rewardAvailableAt)}
                 </div>
@@ -466,12 +494,13 @@ export function CampaignExperience({
                   onClick={redeemPrize}
                   disabled={drawResult.lead.status === "redeemed" || isRedeeming}
                   className={`mt-5 w-full rounded-[22px] border font-semibold disabled:opacity-60 ${previewButtonClass}`}
-                  style={{
-                    backgroundColor: campaign.presentation.button.backgroundColor,
-                    color: campaign.presentation.button.textColor,
-                    borderColor: campaign.presentation.button.borderColor,
-                  }}
-                >
+                style={{
+                  backgroundColor: campaign.presentation.button.backgroundColor,
+                  color: campaign.presentation.button.textColor,
+                  borderColor: campaign.presentation.button.borderColor,
+                  fontSize: `${campaign.presentation.button.textSizePx}px`,
+                }}
+              >
                   {isRedeeming
                     ? "Validation..."
                     : drawResult.lead.status === "redeemed"
@@ -482,11 +511,6 @@ export function CampaignExperience({
             </div>
           ) : null}
 
-          {hasActions ? (
-            <div className="mt-5 rounded-[22px] border border-white/10 bg-white/8 px-4 py-4 text-xs uppercase tracking-[0.22em] text-white/72">
-              Parcours : {campaign.actions.map((action) => action.label).join(" · ")}
-            </div>
-          ) : null}
         </div>
       </div>
     </div>
