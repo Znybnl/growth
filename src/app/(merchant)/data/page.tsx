@@ -103,6 +103,9 @@ export default async function DataPage({ searchParams }: DataPageProps) {
     );
   }
 
+  const sortedLeads = [...dataView.leads].sort((a, b) =>
+    b.consentTimestamp.localeCompare(a.consentTimestamp),
+  );
   const allDates = [
     ...dataView.leads.map((lead) => lead.createdAt),
     ...dataView.events.map((event) => event.createdAt),
@@ -320,7 +323,7 @@ export default async function DataPage({ searchParams }: DataPageProps) {
                   </tr>
                 </thead>
                 <tbody>
-                  {dataView.leads.map((lead) => (
+                  {sortedLeads.map((lead) => (
                     <tr key={lead.id}>
                       <td className="border-b border-[#eef2f7] px-3 py-4">
                         <div className="font-semibold text-[#111827]">{lead.firstName}</div>

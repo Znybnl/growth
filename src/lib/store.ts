@@ -5,6 +5,8 @@ import {
   getSupabaseMerchantDashboard,
   getSupabaseMerchantLeads,
   getSupabasePublicCampaign,
+  deleteCampaignInSupabase,
+  duplicateCampaignInSupabase,
   markActionConfirmedInSupabase,
   recordEventInSupabase,
   redeemLeadPrizeInSupabase,
@@ -56,23 +58,6 @@ type Store = {
   events: CampaignEvent[];
 };
 
-const defaultLogoUrl =
-  "data:image/svg+xml;utf8," +
-  encodeURIComponent(`
-    <svg xmlns="http://www.w3.org/2000/svg" width="220" height="220" viewBox="0 0 220 220">
-      <defs>
-        <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#132238"/>
-          <stop offset="100%" stop-color="#243a57"/>
-        </linearGradient>
-      </defs>
-      <rect width="220" height="220" rx="56" fill="url(#bg)"/>
-      <rect x="28" y="28" width="164" height="164" rx="38" fill="#f4efe6" opacity="0.95"/>
-      <text x="110" y="118" text-anchor="middle" font-size="72" font-family="Georgia, serif" font-weight="700" fill="#132238">MS</text>
-      <text x="110" y="154" text-anchor="middle" font-size="18" font-family="Arial, sans-serif" letter-spacing="4" fill="#786746">MAISON</text>
-    </svg>
-  `);
-
 type CampaignPresentationOverrides = {
   logo?: Partial<CampaignLogoSettings>;
   background?: Partial<CampaignBackgroundSettings>;
@@ -108,7 +93,8 @@ function createPresentation(overrides?: CampaignPresentationOverrides): Campaign
       textColor: "#ffffff",
       borderColor: "#2f6df6",
       size: "md",
-      textSizePx: 18,
+      textSizePx: 24,
+      isBold: true,
       ...overrides?.button,
     },
     layout: {
@@ -147,7 +133,7 @@ const merchantSeed: Merchant = {
   id: "merchant-maison-sora",
   companyName: "Maison Sora",
   logoText: "MS",
-  logoUrl: defaultLogoUrl,
+  logoUrl: undefined,
   city: "Paris Marais",
   contactName: "Pierre-Henri Brunelle",
   phone: "01 40 00 00 00",
@@ -190,14 +176,16 @@ const campaignSeed: Campaign[] = [
       signal: "#f5b93d",
     },
     gameType: "scratch",
-    logoUrl: defaultLogoUrl,
+    logoMode: "text",
+    logoText: merchantSeed.companyName,
+    logoUrl: undefined,
     presentation: createPresentation({
       background: { color: "#121317" },
       button: {
         backgroundColor: "#8d9ae8",
         textColor: "#ffffff",
         borderColor: "#f5b93d",
-        textSizePx: 18,
+        textSizePx: 24,
       },
       layout: {
         blockSpacingPx: 30,
@@ -233,14 +221,16 @@ const campaignSeed: Campaign[] = [
       signal: "#8d9ae8",
     },
     gameType: "wheel",
-    logoUrl: defaultLogoUrl,
+    logoMode: "text",
+    logoText: merchantSeed.companyName,
+    logoUrl: undefined,
     presentation: createPresentation({
       background: { color: "#1e2231" },
       button: {
         backgroundColor: "#8d9ae8",
         textColor: "#ffffff",
         borderColor: "#8d9ae8",
-        textSizePx: 18,
+        textSizePx: 24,
       },
       layout: {
         blockSpacingPx: 30,
@@ -287,14 +277,16 @@ const campaignSeed: Campaign[] = [
       signal: "#ff7f50",
     },
     gameType: "scratch",
-    logoUrl: defaultLogoUrl,
+    logoMode: "text",
+    logoText: merchantSeed.companyName,
+    logoUrl: undefined,
     presentation: createPresentation({
       background: { color: "#171210" },
       button: {
         backgroundColor: "#ff7f50",
         textColor: "#ffffff",
         borderColor: "#ff7f50",
-        textSizePx: 18,
+        textSizePx: 24,
       },
       layout: {
         blockSpacingPx: 30,
@@ -469,6 +461,7 @@ function normalizeCampaign(rawCampaign: Campaign | (Partial<Campaign> & Record<s
       : goalType === "review_prompt"
         ? merchantSeed.googleReviewUrl
         : merchantSeed.instagramUrl;
+  const presentation = rawCampaign.presentation ?? fallback.presentation;
 
   return {
     id: rawCampaign.id ?? fallback.id,
@@ -483,8 +476,19 @@ function normalizeCampaign(rawCampaign: Campaign | (Partial<Campaign> & Record<s
     createdAt: rawCampaign.createdAt ?? fallback.createdAt,
     accent: rawCampaign.accent ?? fallback.accent,
     gameType: rawCampaign.gameType ?? fallback.gameType,
-    logoUrl: rawCampaign.logoUrl ?? merchantSeed.logoUrl,
-    presentation: rawCampaign.presentation ?? fallback.presentation,
+    logoMode: rawCampaign.logoMode ?? fallback.logoMode ?? "text",
+    logoText:
+      typeof rawCampaign.logoText === "string" && rawCampaign.logoText.trim()
+        ? rawCampaign.logoText
+        : fallback.logoText ?? merchantSeed.companyName,
+    logoUrl: rawCampaign.logoUrl,
+    presentation: {
+      ...presentation,
+      button: {
+        ...presentation.button,
+        isBold: presentation.button.isBold ?? true,
+      },
+    },
     actions:
       rawCampaign.actions ??
       (targetUrl
@@ -561,11 +565,11 @@ function toLeadRow(lead: Lead): MerchantLeadRow {
     ...lead,
     campaignTitle: campaign?.title ?? "Campagne",
     goalType: campaign?.goalType ?? "lead_capture",
-    prizeLabel: prize?.label ?? "Aucun lot",
+    prizeLabel: lead.prizeId ? prize?.label ?? "Lot inconnu" : "Perdu",
   };
 }
 
-function toPublicCampaign(campaign: Campaign): PublicCampaign {
+function toPublicCampaign(campaign: Campaign, actions = campaign.actions): PublicCampaign {
   const merchant = getMerchant(campaign.merchantId);
 
   if (!merchant) {
@@ -582,14 +586,16 @@ function toPublicCampaign(campaign: Campaign): PublicCampaign {
     targetUrl: campaign.targetUrl,
     merchantName: merchant.companyName,
     merchantLogoText: merchant.logoText,
-    logoUrl: campaign.logoUrl ?? merchant.logoUrl,
+    logoMode: campaign.logoMode ?? "text",
+    logoText: campaign.logoText ?? merchant.companyName,
+    logoUrl: campaign.logoUrl,
     accent: campaign.accent,
     prizes: getCampaignPrizes(campaign.id).map((prize) => ({
       id: prize.id,
       label: prize.label,
     })),
     presentation: campaign.presentation,
-    actions: campaign.actions,
+    actions,
     rewardRules: campaign.rewardRules,
   };
 }
@@ -766,7 +772,7 @@ function createMerchantAccountInMemory(input: MerchantSignUpInput) {
     id: merchantId,
     companyName,
     logoText: companyName.slice(0, 2).toUpperCase(),
-    logoUrl: defaultLogoUrl,
+    logoUrl: undefined,
     city,
     contactName: `${firstName} ${lastName}`.trim(),
     phone,
@@ -963,7 +969,7 @@ function getMerchantLeadsFromMemory(campaignId?: string) {
     store.leads
       .filter((lead) => (campaignId ? lead.campaignId === campaignId : true))
       .map((lead) => toLeadRow(lead))
-      .sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
+      .sort((a, b) => b.consentTimestamp.localeCompare(a.consentTimestamp)),
   );
 }
 
@@ -992,11 +998,17 @@ function drawForLeadFromMemory(input: DrawRequest): DrawResult {
     throw new Error("Campagne indisponible");
   }
 
+  const email = input.email.trim().toLowerCase();
+  const previousParticipations = store.leads.filter(
+    (lead) => lead.campaignId === campaign.id && lead.email === email,
+  ).length;
+  const actionForVisit = campaign.actions[previousParticipations];
+
   const lead: Lead = {
     id: generateId("lead"),
     campaignId: campaign.id,
     firstName: input.firstName.trim(),
-    email: input.email.trim().toLowerCase(),
+    email,
     marketingConsent: input.marketingConsent,
     consentTimestamp: new Date().toISOString(),
     status: "lost",
@@ -1039,7 +1051,7 @@ function drawForLeadFromMemory(input: DrawRequest): DrawResult {
   return {
     lead: clone(lead),
     prize: prize ? clone(prize) : null,
-    campaign: toPublicCampaign(campaign),
+    campaign: toPublicCampaign(campaign, actionForVisit ? [actionForVisit] : []),
   };
 }
 
@@ -1099,6 +1111,8 @@ function updateCampaignSetupInMemory(input: CampaignSetupInput) {
     existing.isActive = input.isActive;
     existing.accent = input.accent;
     existing.gameType = input.gameType;
+    existing.logoMode = input.logoMode;
+    existing.logoText = input.logoText;
     existing.logoUrl = input.logoUrl;
     existing.presentation = input.presentation;
     existing.actions = input.actions;
@@ -1133,6 +1147,8 @@ function updateCampaignSetupInMemory(input: CampaignSetupInput) {
     isActive: input.isActive,
     accent: input.accent,
     gameType: input.gameType,
+    logoMode: input.logoMode,
+    logoText: input.logoText,
     logoUrl: input.logoUrl,
     createdAt: new Date().toISOString(),
     presentation: input.presentation,
@@ -1155,6 +1171,56 @@ function updateCampaignSetupInMemory(input: CampaignSetupInput) {
   });
 
   return clone(campaign);
+}
+
+function deleteCampaignInMemory(id: string) {
+  const campaign = getCampaign(id);
+
+  if (!campaign) {
+    throw new Error("Campagne introuvable");
+  }
+
+  store.events = store.events.filter((event) => event.campaignId !== id);
+  store.leads = store.leads.filter((lead) => lead.campaignId !== id);
+  store.prizes = store.prizes.filter((prize) => prize.campaignId !== id);
+  store.campaigns = store.campaigns.filter((item) => item.id !== id);
+
+  return clone(campaign);
+}
+
+function duplicateCampaignInMemory(id: string, merchantId = merchantSeed.id) {
+  const campaign = store.campaigns.find((item) => item.id === id && item.merchantId === merchantId);
+
+  if (!campaign) {
+    throw new Error("Campagne introuvable");
+  }
+
+  const campaignId = generateId("camp");
+  const duplicate: Campaign = {
+    ...clone(campaign),
+    id: campaignId,
+    title: `${campaign.title} (copie)`,
+    isActive: false,
+    createdAt: new Date().toISOString(),
+    actions: campaign.actions.map((action) => ({
+      ...action,
+      id: generateId("action"),
+    })),
+  };
+
+  store.campaigns.unshift(duplicate);
+  store.prizes
+    .filter((prize) => prize.campaignId === id)
+    .forEach((prize) => {
+      store.prizes.push({
+        ...clone(prize),
+        id: generateId("prize"),
+        campaignId,
+        remainingQuantity: prize.totalQuantity,
+      });
+    });
+
+  return clone(duplicate);
 }
 
 function toggleCampaignInMemory(id: string, isActive: boolean) {
@@ -1266,4 +1332,22 @@ export async function toggleCampaign(id: string, isActive: boolean) {
   }
 
   return toggleCampaignInMemory(id, isActive);
+}
+
+export async function deleteCampaign(id: string) {
+  if (isSupabaseConfigured()) {
+    await deleteCampaignInSupabase(id);
+    return null;
+  }
+
+  return deleteCampaignInMemory(id);
+}
+
+export async function duplicateCampaign(id: string, fallbackMerchant: Merchant) {
+  if (isSupabaseConfigured()) {
+    const campaignId = await duplicateCampaignInSupabase(id, fallbackMerchant);
+    return getCampaignPerformance(campaignId, fallbackMerchant);
+  }
+
+  return duplicateCampaignInMemory(id, fallbackMerchant.id);
 }

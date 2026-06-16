@@ -130,7 +130,9 @@ function createDefaultState(merchant: Merchant): EditorState {
     successMetric: goalMetricMap.review_prompt,
     targetUrl: merchant.googleReviewUrl,
     isActive: true,
-    logoUrl: merchant.logoUrl,
+    logoMode: "text",
+    logoText: merchant.companyName,
+    logoUrl: undefined,
     accent: {
       ink: "#111827",
       paper: "#eef2ff",
@@ -158,7 +160,8 @@ function createDefaultState(merchant: Merchant): EditorState {
         textColor: "#ffffff",
         borderColor: "#f4c14a",
         size: "md",
-        textSizePx: 18,
+        textSizePx: 24,
+        isBold: true,
       },
       layout: {
         blockSpacingPx: 28,
@@ -214,9 +217,17 @@ function toEditorState(merchant: Merchant, campaign?: CampaignPerformance | null
     successMetric: campaign.campaign.successMetric,
     targetUrl: campaign.campaign.targetUrl,
     isActive: campaign.campaign.isActive,
-    logoUrl: campaign.campaign.logoUrl ?? merchant.logoUrl,
+    logoMode: campaign.campaign.logoMode ?? (campaign.campaign.logoUrl ? "image" : "text"),
+    logoText: campaign.campaign.logoText ?? merchant.companyName,
+    logoUrl: campaign.campaign.logoUrl,
     accent: campaign.campaign.accent,
-    presentation: campaign.campaign.presentation,
+    presentation: {
+      ...campaign.campaign.presentation,
+      button: {
+        ...campaign.campaign.presentation.button,
+        isBold: campaign.campaign.presentation.button.isBold ?? true,
+      },
+    },
     actions: campaign.campaign.actions,
     rewardRules: campaign.campaign.rewardRules,
     prizes: campaign.prizes.map((prize) => ({
@@ -439,6 +450,8 @@ export function CampaignEditor({
       subtitle: imported.subtitle,
       ctaLabel: imported.ctaLabel,
       targetUrl: imported.targetUrl,
+      logoMode: imported.logoMode,
+      logoText: imported.logoText,
       logoUrl: imported.logoUrl,
       accent: imported.accent,
       presentation: imported.presentation,
@@ -593,21 +606,6 @@ export function CampaignEditor({
             <div className="mt-5 rounded-[24px] bg-[#f7f9fc] px-4 py-4 text-sm text-[#4f596c]">
               <span className="font-semibold text-[#152033]">{goalLabel(form.goalType)}</span> :{" "}
               {goalDescription(form.goalType)}
-            </div>
-
-            <div className="mt-5 rounded-[28px] border border-[#dbe4f0] bg-[#f8fafc] p-4">
-              <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">
-                Message public
-              </p>
-              <label className="mt-3 block text-sm">
-                <span className="mb-2 block text-[#616b7c]">Phrase affichée sur la page publique</span>
-                <textarea
-                  value={form.subtitle}
-                  onChange={(event) => setField("subtitle", event.target.value)}
-                  rows={3}
-                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
-                />
-              </label>
             </div>
 
             <div className="mt-8 flex items-center justify-between gap-3">
@@ -809,17 +807,65 @@ export function CampaignEditor({
             </h2>
 
             <div className="mt-6 grid gap-4 md:grid-cols-2">
+              <div className="text-sm md:col-span-2">
+                <span className="mb-3 block text-[#616b7c]">Type de logo</span>
+                <div className="grid gap-3 md:grid-cols-3">
+                  {[
+                    { value: "text", label: "Texte" },
+                    { value: "image", label: "Image" },
+                    { value: "none", label: "Aucun" },
+                  ].map((mode) => {
+                    const active = form.logoMode === mode.value;
+
+                    return (
+                      <button
+                        key={mode.value}
+                        type="button"
+                        onClick={() =>
+                          setForm((current) => ({
+                            ...current,
+                            logoMode: mode.value as EditorState["logoMode"],
+                            logoText:
+                              mode.value === "text"
+                                ? current.logoText?.trim() || merchant.companyName
+                                : current.logoText,
+                          }))
+                        }
+                        className={`rounded-[20px] border px-4 py-3 text-sm font-semibold ${
+                          active
+                            ? "border-[#2f6df6] bg-[#eff4ff] text-[#214ccf]"
+                            : "border-[#d7e0ed] bg-[#f7f9fc] text-[#182033]"
+                        }`}
+                      >
+                        {mode.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {form.logoMode === "text" ? (
+                <label className="text-sm md:col-span-2">
+                  <span className="mb-2 block text-[#616b7c]">Texte affiché à la place du logo</span>
+                  <input
+                    value={form.logoText ?? merchant.companyName}
+                    onChange={(event) => setField("logoText", event.target.value)}
+                    className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                  />
+                </label>
+              ) : null}
+
               <label className="group relative flex min-h-[132px] cursor-pointer flex-col justify-between rounded-[24px] border border-dashed border-[#cfd9ea] bg-[#f7f9fc] p-4 text-sm transition hover:border-[#2f6df6] hover:bg-[#eef4ff] md:col-span-2">
                 <div>
                   <span className="mb-2 block text-[#616b7c]">Importer un logo</span>
                   <p className="max-w-md text-sm leading-6 text-[#516073]">
-                    D?posez un fichier PNG, JPG ou SVG pour remplacer le logo affich? sur la
+                    Déposez un fichier PNG, JPG ou SVG pour remplacer le logo affiché sur la
                     campagne publique.
                   </p>
                 </div>
                 <div className="mt-4 flex items-center justify-between gap-3">
                   <span className="inline-flex rounded-full bg-white px-3 py-2 text-xs font-semibold text-[#214ccf] shadow-sm">
-                    {form.logoUrl ? "Logo charg?" : "Aucun logo"}
+                    {form.logoUrl ? "Logo chargé" : "Aucun logo"}
                   </span>
                   <span className="rounded-[16px] bg-[#2f6df6] px-4 py-2 text-xs font-semibold text-white shadow-[0_10px_18px_rgba(47,109,246,0.2)]">
                     Choisir un fichier
@@ -829,11 +875,37 @@ export function CampaignEditor({
                   type="file"
                   accept="image/*"
                   onChange={(event) =>
-                    uploadAsDataUrl(event, (value) => setField("logoUrl", value))
+                    uploadAsDataUrl(event, (value) =>
+                      setForm((current) => ({ ...current, logoUrl: value, logoMode: "image" })),
+                    )
                   }
                   className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                 />
               </label>
+
+              {form.logoMode === "image" && form.logoUrl ? (
+                <div className="rounded-[24px] border border-[#e1e8f2] bg-[#f8fafc] p-4 md:col-span-2">
+                  <span className="mb-3 block text-sm text-[#616b7c]">Aperçu du logo</span>
+                  <div className="flex min-h-[160px] items-center justify-center rounded-[20px] bg-white p-4">
+                    <img
+                      src={form.logoUrl}
+                      alt="Aperçu du logo"
+                      className="max-h-[140px] max-w-full object-contain"
+                    />
+                  </div>
+                </div>
+              ) : null}
+
+              {form.logoMode === "text" ? (
+                <div className="rounded-[24px] border border-[#e1e8f2] bg-[#111827] p-4 md:col-span-2">
+                  <span className="mb-3 block text-sm text-white/70">Aperçu du texte logo</span>
+                  <div className="flex min-h-[120px] items-center justify-center rounded-[20px] border border-white/10 bg-white/8 px-5 text-center">
+                    <span className="font-display text-3xl font-semibold text-white">
+                      {form.logoText?.trim() || merchant.companyName}
+                    </span>
+                  </div>
+                </div>
+              ) : null}
 
               <label className="text-sm">
                 <span className="mb-2 block text-[#616b7c]">Taille du logo (%)</span>
@@ -988,12 +1060,12 @@ export function CampaignEditor({
                 <div>
                   <span className="mb-2 block text-[#616b7c]">Importer une image de fond</span>
                   <p className="max-w-md text-sm leading-6 text-[#516073]">
-                    Ajoutez une image pour donner plus de relief ? la page publique.
+                    Ajoutez une image pour donner plus de relief à la page publique.
                   </p>
                 </div>
                 <div className="mt-4 flex items-center justify-between gap-3">
                   <span className="inline-flex rounded-full bg-white px-3 py-2 text-xs font-semibold text-[#214ccf] shadow-sm">
-                    {form.presentation.background.imageUrl ? "Image charg?e" : "Aucune image"}
+                    {form.presentation.background.imageUrl ? "Image chargée" : "Aucune image"}
                   </span>
                   <span className="rounded-[16px] bg-[#2f6df6] px-4 py-2 text-xs font-semibold text-white shadow-[0_10px_18px_rgba(47,109,246,0.2)]">
                     Choisir un fichier
@@ -1020,6 +1092,16 @@ export function CampaignEditor({
                   className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                 />
               </label>
+
+              {form.presentation.background.imageUrl ? (
+                <div className="rounded-[24px] border border-[#e1e8f2] bg-[#f8fafc] p-4 md:col-span-2">
+                  <span className="mb-3 block text-sm text-[#616b7c]">Aperçu de l&apos;image de fond</span>
+                  <div
+                    className="min-h-[220px] rounded-[20px] border border-white bg-cover bg-center shadow-inner"
+                    style={{ backgroundImage: `url("${form.presentation.background.imageUrl}")` }}
+                  />
+                </div>
+              ) : null}
             </div>
           </section>
 
@@ -1066,6 +1148,16 @@ export function CampaignEditor({
             </h2>
 
             <div className="mt-6 grid gap-4 md:grid-cols-2">
+              <label className="text-sm md:col-span-2">
+                <span className="mb-2 block text-[#616b7c]">Phrase affichée sur la page publique</span>
+                <textarea
+                  value={form.subtitle}
+                  onChange={(event) => setField("subtitle", event.target.value)}
+                  rows={3}
+                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                />
+              </label>
+
               <label className="text-sm">
                 <span className="mb-2 block text-[#616b7c]">Couleur du texte</span>
                 <input
@@ -1182,6 +1274,109 @@ export function CampaignEditor({
             </div>
           </section>
 
+          {form.gameType === "wheel" ? (
+            <section className="rounded-[30px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+              <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Roue de la fortune</p>
+              <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
+                Couleurs de la roue
+              </h2>
+
+              <div className="mt-6 grid gap-4 md:grid-cols-2">
+                {[
+                  ["rimColor", "Couleur du contour"],
+                  ["winColor", "Couleur gain 1"],
+                  ["alternateWinColor", "Couleur gain 2"],
+                  ["loseColor", "Couleur perdu 1"],
+                  ["alternateLoseColor", "Couleur perdu 2"],
+                ].map(([key, label]) => (
+                  <label key={key} className="text-sm">
+                    <span className="mb-2 block text-[#616b7c]">{label}</span>
+                    <input
+                      type="color"
+                      value={form.presentation.wheel[key as keyof typeof form.presentation.wheel]}
+                      onChange={(event) =>
+                        setForm((current) => ({
+                          ...current,
+                          presentation: {
+                            ...current.presentation,
+                            wheel: {
+                              ...current.presentation.wheel,
+                              [key]: event.target.value,
+                            },
+                          },
+                        }))
+                      }
+                      className="h-14 w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none"
+                    />
+                  </label>
+                ))}
+              </div>
+            </section>
+          ) : (
+            <section className="rounded-[30px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+              <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Ticket à gratter</p>
+              <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
+                Personnalisation du ticket
+              </h2>
+
+              <div className="mt-6 grid gap-4 md:grid-cols-2">
+                <label className="text-sm">
+                  <span className="mb-2 block text-[#616b7c]">Couleur du fond du ticket</span>
+                  <input
+                    type="color"
+                    value={form.accent.paper}
+                    onChange={(event) =>
+                      setForm((current) => ({
+                        ...current,
+                        accent: {
+                          ...current.accent,
+                          paper: event.target.value,
+                        },
+                      }))
+                    }
+                    className="h-14 w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none"
+                  />
+                </label>
+
+                <label className="text-sm">
+                  <span className="mb-2 block text-[#616b7c]">Couleur de révélation</span>
+                  <input
+                    type="color"
+                    value={form.accent.signal}
+                    onChange={(event) =>
+                      setForm((current) => ({
+                        ...current,
+                        accent: {
+                          ...current.accent,
+                          signal: event.target.value,
+                        },
+                      }))
+                    }
+                    className="h-14 w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none"
+                  />
+                </label>
+
+                <label className="text-sm md:col-span-2">
+                  <span className="mb-2 block text-[#616b7c]">Couleur du texte du ticket</span>
+                  <input
+                    type="color"
+                    value={form.accent.ink}
+                    onChange={(event) =>
+                      setForm((current) => ({
+                        ...current,
+                        accent: {
+                          ...current.accent,
+                          ink: event.target.value,
+                        },
+                      }))
+                    }
+                    className="h-14 w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none"
+                  />
+                </label>
+              </div>
+            </section>
+          )}
+
           <section className="rounded-[30px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
             <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Bouton public</p>
             <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
@@ -1190,7 +1385,7 @@ export function CampaignEditor({
 
             <div className="mt-6 grid gap-4 md:grid-cols-2">
               <label className="text-sm md:col-span-2">
-                <span className="mb-2 block text-[#616b7c]">Libell? du bouton</span>
+                <span className="mb-2 block text-[#616b7c]">Libellé du bouton</span>
                 <input
                   value={form.ctaLabel}
                   onChange={(event) => setField("ctaLabel", event.target.value)}
@@ -1310,7 +1505,7 @@ export function CampaignEditor({
                         ...current.presentation,
                         button: {
                           ...current.presentation.button,
-                          textSizePx: Number(event.target.value || 18),
+                          textSizePx: Number(event.target.value || 24),
                         },
                       },
                     }))
@@ -1318,111 +1513,28 @@ export function CampaignEditor({
                   className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
                 />
               </label>
+
+              <label className="flex items-center gap-3 rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 text-sm text-[#182033] md:col-span-2">
+                <input
+                  type="checkbox"
+                  checked={form.presentation.button.isBold}
+                  onChange={(event) =>
+                    setForm((current) => ({
+                      ...current,
+                      presentation: {
+                        ...current.presentation,
+                        button: {
+                          ...current.presentation.button,
+                          isBold: event.target.checked,
+                        },
+                      },
+                    }))
+                  }
+                />
+                <span className="font-semibold">Texte du bouton en gras</span>
+              </label>
             </div>
           </section>
-
-          {form.gameType === "wheel" ? (
-            <section className="rounded-[30px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
-              <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Roue de la fortune</p>
-              <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
-                Couleurs de la roue
-              </h2>
-
-              <div className="mt-6 grid gap-4 md:grid-cols-2">
-                {[
-                  ["rimColor", "Couleur du contour"],
-                  ["winColor", "Couleur gain 1"],
-                  ["alternateWinColor", "Couleur gain 2"],
-                  ["loseColor", "Couleur perdu 1"],
-                  ["alternateLoseColor", "Couleur perdu 2"],
-                ].map(([key, label]) => (
-                  <label key={key} className="text-sm">
-                    <span className="mb-2 block text-[#616b7c]">{label}</span>
-                    <input
-                      type="color"
-                      value={form.presentation.wheel[key as keyof typeof form.presentation.wheel]}
-                      onChange={(event) =>
-                        setForm((current) => ({
-                          ...current,
-                          presentation: {
-                            ...current.presentation,
-                            wheel: {
-                              ...current.presentation.wheel,
-                              [key]: event.target.value,
-                            },
-                          },
-                        }))
-                      }
-                      className="h-14 w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none"
-                    />
-                  </label>
-                ))}
-              </div>
-            </section>
-          ) : (
-            <section className="rounded-[30px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
-              <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Ticket à gratter</p>
-              <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
-                Personnalisation du ticket
-              </h2>
-
-              <div className="mt-6 grid gap-4 md:grid-cols-2">
-                <label className="text-sm">
-                  <span className="mb-2 block text-[#616b7c]">Couleur du fond du ticket</span>
-                  <input
-                    type="color"
-                    value={form.accent.paper}
-                    onChange={(event) =>
-                      setForm((current) => ({
-                        ...current,
-                        accent: {
-                          ...current.accent,
-                          paper: event.target.value,
-                        },
-                      }))
-                    }
-                    className="h-14 w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none"
-                  />
-                </label>
-
-                <label className="text-sm">
-                  <span className="mb-2 block text-[#616b7c]">Couleur de révélation</span>
-                  <input
-                    type="color"
-                    value={form.accent.signal}
-                    onChange={(event) =>
-                      setForm((current) => ({
-                        ...current,
-                        accent: {
-                          ...current.accent,
-                          signal: event.target.value,
-                        },
-                      }))
-                    }
-                    className="h-14 w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none"
-                  />
-                </label>
-
-                <label className="text-sm md:col-span-2">
-                  <span className="mb-2 block text-[#616b7c]">Couleur du texte du ticket</span>
-                  <input
-                    type="color"
-                    value={form.accent.ink}
-                    onChange={(event) =>
-                      setForm((current) => ({
-                        ...current,
-                        accent: {
-                          ...current.accent,
-                          ink: event.target.value,
-                        },
-                      }))
-                    }
-                    className="h-14 w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none"
-                  />
-                </label>
-              </div>
-            </section>
-          )}
 
           <section className="rounded-[30px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
             <div className="flex items-center justify-between gap-3">
@@ -1663,28 +1775,50 @@ export function CampaignEditor({
               <div
                 className="mx-auto min-h-[860px] w-full max-w-[520px] overflow-hidden rounded-[38px] border border-[#ced7e6] px-4 pb-6 pt-5 shadow-[0_30px_70px_rgba(18,24,39,0.18)]"
                 style={{
-                  background:
+                  backgroundColor: form.presentation.background.color,
+                  backgroundImage:
                     form.presentation.background.mode === "image" &&
                     form.presentation.background.imageUrl
-                      ? `linear-gradient(rgba(15,23,40,0.32), rgba(15,23,40,0.52)), url(${form.presentation.background.imageUrl}) center/cover`
-                      : form.presentation.background.color,
+                      ? `linear-gradient(rgba(15,23,40,0.32), rgba(15,23,40,0.52)), url("${form.presentation.background.imageUrl}")`
+                      : undefined,
+                  backgroundPosition: "center",
+                  backgroundSize: "cover",
                 }}
               >
-                <div className={`flex ${logoAlignmentClass}`}>
-                  <div
-                    style={{
-                      marginBottom: `${form.presentation.logo.marginBottomPx + form.presentation.layout.blockSpacingPx}px`,
-                    }}
-                  >
-                    <BrandMark
-                      logoText={merchant.logoText}
-                      logoUrl={form.logoUrl}
-                      size="lg"
-                      variant="transparent"
-                      imageWidthPx={logoWidthPx}
-                    />
+                {form.logoMode === "image" && form.logoUrl ? (
+                  <div className={`flex ${logoAlignmentClass}`}>
+                    <div
+                      style={{
+                        marginBottom: `${form.presentation.logo.marginBottomPx + form.presentation.layout.blockSpacingPx}px`,
+                      }}
+                    >
+                      <BrandMark
+                        logoText={merchant.logoText}
+                        logoUrl={form.logoUrl}
+                        size="lg"
+                        variant="transparent"
+                        imageWidthPx={logoWidthPx}
+                      />
+                    </div>
                   </div>
-                </div>
+                ) : null}
+
+                {form.logoMode === "text" ? (
+                  <div className={`flex ${logoAlignmentClass}`}>
+                    <div
+                      style={{
+                        marginBottom: `${form.presentation.logo.marginBottomPx + form.presentation.layout.blockSpacingPx}px`,
+                      }}
+                    >
+                      <BrandMark
+                        logoText={form.logoText?.trim() || merchant.companyName}
+                        size="lg"
+                        variant="transparent"
+                        imageWidthPx={logoWidthPx}
+                      />
+                    </div>
+                  </div>
+                ) : null}
 
                 <div className={headingAlignmentClass}>
                   <h3
@@ -1729,6 +1863,7 @@ export function CampaignEditor({
                     color: form.presentation.button.textColor,
                     borderColor: form.presentation.button.borderColor,
                     fontSize: `${form.presentation.button.textSizePx}px`,
+                    fontWeight: form.presentation.button.isBold ? 700 : 400,
                   }}
                 >
                   {form.ctaLabel}

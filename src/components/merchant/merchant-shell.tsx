@@ -6,6 +6,7 @@ import { useState } from "react";
 
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { BrandMark } from "@/components/brand-mark";
+import { APP_NAME, APP_TAGLINE } from "@/lib/branding";
 import { Merchant } from "@/lib/types";
 
 type MerchantShellProps = {
@@ -45,28 +46,29 @@ export function MerchantShell({ children, merchant }: MerchantShellProps) {
         }`}
       >
         <div className="flex h-full flex-col px-5 py-5">
-          <div className="flex items-center gap-3 rounded-[26px] bg-[#f7f9fc] p-3">
-            <BrandMark logoText={merchant.logoText} logoUrl={merchant.logoUrl} size="md" />
-            <div className="min-w-0">
-              <p className="text-xs uppercase tracking-[0.24em] text-[#8c93a4]">
-                Espace marchand
-              </p>
-              <h1 className="truncate text-base font-semibold">{merchant.companyName}</h1>
-              <p className="mt-1 text-sm text-[#98a0b0]">Activation locale</p>
+          <div className="rounded-[26px] bg-[#f7f9fc] p-3">
+            <div className="mb-3 flex items-center gap-3 border-b border-[#e7edf6] pb-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#121826] text-sm font-semibold uppercase tracking-[0.2em] text-white shadow-[0_10px_24px_rgba(18,24,38,0.16)]">
+                OK
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs uppercase tracking-[0.24em] text-[#8c93a4]">Application</p>
+                <h1 className="truncate text-base font-semibold">{APP_NAME}</h1>
+                <p className="mt-1 text-sm text-[#98a0b0]">{APP_TAGLINE}</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <BrandMark logoText={merchant.logoText} logoUrl={merchant.logoUrl} size="md" />
+              <div className="min-w-0">
+                <p className="text-xs uppercase tracking-[0.24em] text-[#8c93a4]">
+                  Espace marchand
+                </p>
+                <h2 className="truncate text-base font-semibold">{merchant.companyName}</h2>
+                <p className="mt-1 text-sm text-[#98a0b0]">Compte boutique</p>
+              </div>
             </div>
           </div>
-
-          <form
-            onSubmit={submitSearch}
-            className="mt-5 rounded-[22px] border border-[#e6ebf4] bg-[#fbfcfe] px-4 py-3"
-          >
-            <input
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Rechercher une campagne, un lead ou un lot"
-              className="w-full bg-transparent text-sm text-[#10131a] outline-none placeholder:text-[#9aa1b1]"
-            />
-          </form>
 
           <nav className="mt-6 space-y-2">
             {navItems.map((item) => {

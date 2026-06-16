@@ -1,5 +1,7 @@
 "use client";
 
+import { APP_NAME, APP_TAGLINE } from "@/lib/branding";
+
 type AuthShellProps = {
   eyebrow: string;
   title: string;
@@ -23,7 +25,18 @@ export function AuthShell({
     <div className="h-screen overflow-hidden bg-[#f3f6fb]">
       <div className="grid h-full xl:grid-cols-2">
         <section className="flex h-full items-center justify-center bg-white px-6 py-8 lg:px-12">
-          <div className="w-full max-w-[430px]">{children}</div>
+          <div className="w-full max-w-[430px]">
+            <div className="mb-8 flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#1f5fd6] text-sm font-semibold uppercase tracking-[0.2em] text-white shadow-[0_10px_24px_rgba(31,95,214,0.22)]">
+                OK
+              </div>
+              <div>
+                <p className="text-xl font-semibold tracking-tight text-[#1f5fd6]">{APP_NAME}</p>
+                <p className="text-sm text-[#7b8496]">{APP_TAGLINE}</p>
+              </div>
+            </div>
+            {children}
+          </div>
         </section>
 
         <section className="relative hidden h-full overflow-hidden bg-[linear-gradient(180deg,#1f5fd6_0%,#1a58ca_100%)] xl:flex xl:flex-col xl:items-center xl:justify-center">
@@ -35,13 +48,13 @@ export function AuthShell({
           <div className="relative flex w-full max-w-[620px] flex-1 items-center justify-center px-14">
             <div className="relative h-[390px] w-full max-w-[420px]">
               <div className="absolute left-[4%] top-[20%] flex h-20 w-20 items-center justify-center rounded-full border border-white/16 bg-white shadow-[0_16px_35px_rgba(6,31,86,0.18)]">
-                <span className="text-3xl text-[#2f6df6]">◎</span>
+                <span className="text-3xl text-[#2f6df6]">O</span>
               </div>
               <div className="absolute left-[10%] top-[54%] flex h-20 w-20 items-center justify-center rounded-full border border-white/16 bg-white shadow-[0_16px_35px_rgba(6,31,86,0.18)]">
-                <span className="text-3xl text-[#34a853]">G</span>
+                <span className="text-3xl text-[#34a853]">K</span>
               </div>
               <div className="absolute left-[12%] top-[6%] flex h-20 w-20 items-center justify-center rounded-full border border-white/16 bg-white shadow-[0_16px_35px_rgba(6,31,86,0.18)]">
-                <span className="text-3xl text-[#f6c04b]">✦</span>
+                <span className="text-3xl text-[#f6c04b]">O</span>
               </div>
               <div className="absolute left-[23%] top-[38%] h-4 w-[138px] rounded-full bg-white/16" />
               <div className="absolute left-[46%] top-[10%] w-[54%] rounded-[26px] bg-white p-5 shadow-[0_30px_55px_rgba(8,30,84,0.18)]">

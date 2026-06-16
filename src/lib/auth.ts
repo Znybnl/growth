@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 
 import { getMerchantProfile, getMerchantUser } from "@/lib/store";
 
-const SESSION_COOKIE = "growth_session";
+const SESSION_COOKIE = "okado_session";
 
 export async function getSessionUserId() {
   const cookieStore = await cookies();

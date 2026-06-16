@@ -8,23 +8,6 @@ import {
   MerchantUser,
 } from "@/lib/types";
 
-const defaultLogoUrl =
-  "data:image/svg+xml;utf8," +
-  encodeURIComponent(`
-    <svg xmlns="http://www.w3.org/2000/svg" width="220" height="220" viewBox="0 0 220 220">
-      <defs>
-        <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#132238"/>
-          <stop offset="100%" stop-color="#243a57"/>
-        </linearGradient>
-      </defs>
-      <rect width="220" height="220" rx="56" fill="url(#bg)"/>
-      <rect x="28" y="28" width="164" height="164" rx="38" fill="#f4efe6" opacity="0.95"/>
-      <text x="110" y="118" text-anchor="middle" font-size="72" font-family="Georgia, serif" font-weight="700" fill="#132238">MS</text>
-      <text x="110" y="154" text-anchor="middle" font-size="18" font-family="Arial, sans-serif" letter-spacing="4" fill="#786746">MAISON</text>
-    </svg>
-  `);
-
 type MerchantRow = {
   id: string;
   company_name: string;
@@ -156,7 +139,7 @@ export async function createMerchantAccountInSupabase(input: MerchantSignUpInput
     id: merchantId,
     company_name: companyName,
     logo_text: companyName.slice(0, 2).toUpperCase(),
-    logo_url: defaultLogoUrl,
+    logo_url: null,
     city,
     contact_name: `${firstName} ${lastName}`.trim(),
     phone,
@@ -202,7 +185,7 @@ export async function createMerchantAccountInSupabase(input: MerchantSignUpInput
       id: merchantId,
       companyName,
       logoText: companyName.slice(0, 2).toUpperCase(),
-      logoUrl: defaultLogoUrl,
+      logoUrl: undefined,
       city,
       contactName: `${firstName} ${lastName}`.trim(),
       phone,

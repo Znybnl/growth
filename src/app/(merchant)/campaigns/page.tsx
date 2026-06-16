@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { DeleteCampaignButton } from "@/components/merchant/delete-campaign-button";
+import { DuplicateCampaignButton } from "@/components/merchant/duplicate-campaign-button";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import { formatCurrency, formatPercent, gameTypeLabel, goalLabel } from "@/lib/format";
 import { getMerchantDashboard } from "@/lib/store";
@@ -154,6 +156,11 @@ export default async function CampaignsPage({
                 >
                   Télécharger l&apos;affiche A4
                 </a>
+                <DuplicateCampaignButton campaignId={item.campaign.id} />
+                <DeleteCampaignButton
+                  campaignId={item.campaign.id}
+                  campaignTitle={item.campaign.title}
+                />
               </div>
             </article>
           ))}

@@ -68,14 +68,13 @@ export function CampaignExperience({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isRedeeming, setIsRedeeming] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [currentActionIndex, setCurrentActionIndex] = useState(0);
 
   const segments = useMemo(() => buildWheelSegments(campaign), [campaign]);
   const winner = Boolean(drawResult?.prize);
   const scratchLabel = drawResult?.prize?.label ?? "Perdu :(";
   const winningSegmentId =
     drawResult?.prize?.id ?? segments.find((segment) => segment.tone === "lose")?.id ?? "lose-0";
-  const currentAction = campaign.actions[currentActionIndex];
+  const currentAction = campaign.actions[0];
   const previewButtonClass = buttonSizeMap[campaign.presentation.button.size];
   const logoWidthPx = Math.round(
     Math.max(72, Math.min(260, campaign.presentation.logo.sizePercent * 1.6)),
@@ -159,8 +158,8 @@ export function CampaignExperience({
 
       const payload = (await response.json()) as DrawResult;
       setDrawResult(payload);
-      setCurrentActionIndex(0);
-      setStep(payload.campaign.actions.length ? "action" : "game");
+      setCampaign(payload.campaign);
+      setStep(payload.campaign.actions[0] ? "action" : "game");
     } catch (submitError) {
       setError(
         submitError instanceof Error ? submitError.message : "Une erreur est survenue.",
@@ -172,13 +171,6 @@ export function CampaignExperience({
 
   async function continueAfterAction() {
     if (!drawResult) {
-      return;
-    }
-
-    const isLastAction = currentActionIndex >= campaign.actions.length - 1;
-
-    if (!isLastAction) {
-      setCurrentActionIndex((current) => current + 1);
       return;
     }
 
@@ -225,25 +217,43 @@ export function CampaignExperience({
     <div
       className="min-h-screen overflow-hidden"
       style={{
-        background:
+        backgroundColor: campaign.presentation.background.color,
+        backgroundImage:
           campaign.presentation.background.mode === "image" &&
           campaign.presentation.background.imageUrl
-            ? `linear-gradient(rgba(5,10,21,0.42), rgba(5,10,21,0.7)), url(${campaign.presentation.background.imageUrl}) center/cover`
+            ? `linear-gradient(rgba(5,10,21,0.42), rgba(5,10,21,0.7)), url("${campaign.presentation.background.imageUrl}")`
             : `radial-gradient(circle at 50% 0%, ${campaign.accent.signal}44, transparent 26%), linear-gradient(180deg, ${campaign.presentation.background.color}, #090c14 72%)`,
+        backgroundPosition: "center",
+        backgroundSize: "cover",
       }}
     >
       <div className="mx-auto flex min-h-screen max-w-[480px] flex-col px-4 pb-14 pt-10 text-white">
-        <div className={`flex ${logoAlignmentClass}`}>
-          <div style={{ marginBottom: `${campaign.presentation.logo.marginBottomPx + blockSpacingPx}px` }}>
-            <BrandMark
-              logoText={campaign.merchantLogoText}
-              logoUrl={campaign.logoUrl}
-              size="lg"
-              variant="transparent"
-              imageWidthPx={logoWidthPx}
-            />
+        {campaign.logoMode === "image" && campaign.logoUrl ? (
+          <div className={`flex ${logoAlignmentClass}`}>
+            <div style={{ marginBottom: `${campaign.presentation.logo.marginBottomPx + blockSpacingPx}px` }}>
+              <BrandMark
+                logoText={campaign.merchantLogoText}
+                logoUrl={campaign.logoUrl}
+                size="lg"
+                variant="transparent"
+                imageWidthPx={logoWidthPx}
+              />
+            </div>
           </div>
-        </div>
+        ) : null}
+
+        {campaign.logoMode === "text" ? (
+          <div className={`flex ${logoAlignmentClass}`}>
+            <div style={{ marginBottom: `${campaign.presentation.logo.marginBottomPx + blockSpacingPx}px` }}>
+              <BrandMark
+                logoText={campaign.logoText ?? campaign.merchantName}
+                size="lg"
+                variant="transparent"
+                imageWidthPx={logoWidthPx}
+              />
+            </div>
+          </div>
+        ) : null}
 
         <div
           className="rounded-[34px] border border-white/10 bg-white/7 px-5 py-7 backdrop-blur"
@@ -297,6 +307,7 @@ export function CampaignExperience({
                   color: campaign.presentation.button.textColor,
                   borderColor: campaign.presentation.button.borderColor,
                   fontSize: `${campaign.presentation.button.textSizePx}px`,
+                  fontWeight: campaign.presentation.button.isBold ? 700 : 400,
                 }}
               >
                 {campaign.ctaLabel}
@@ -363,6 +374,7 @@ export function CampaignExperience({
                   color: campaign.presentation.button.textColor,
                   borderColor: campaign.presentation.button.borderColor,
                   fontSize: `${campaign.presentation.button.textSizePx}px`,
+                  fontWeight: campaign.presentation.button.isBold ? 700 : 400,
                 }}
               >
                 {isSubmitting ? "Préparation..." : "Continuer"}
@@ -376,7 +388,7 @@ export function CampaignExperience({
               style={{ marginTop: `${blockSpacingPx}px` }}
             >
               <p className="text-xs uppercase tracking-[0.24em] text-white/48">
-                Étape {currentActionIndex + 1} sur {campaign.actions.length}
+                Action marketing
               </p>
               <h2 className="mt-3 text-2xl font-semibold">
                 {actionKindCta(currentAction.kind)}
@@ -397,6 +409,7 @@ export function CampaignExperience({
                   color: campaign.presentation.button.textColor,
                   borderColor: campaign.presentation.button.borderColor,
                   fontSize: `${campaign.presentation.button.textSizePx}px`,
+                  fontWeight: campaign.presentation.button.isBold ? 700 : 400,
                 }}
               >
                   {actionKindCta(currentAction.kind)}
@@ -499,6 +512,7 @@ export function CampaignExperience({
                   color: campaign.presentation.button.textColor,
                   borderColor: campaign.presentation.button.borderColor,
                   fontSize: `${campaign.presentation.button.textSizePx}px`,
+                  fontWeight: campaign.presentation.button.isBold ? 700 : 400,
                 }}
               >
                   {isRedeeming

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Manrope, Syne } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 
+import { APP_DESCRIPTION, APP_NAME_CAPITALIZED } from "@/lib/branding";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -16,9 +17,8 @@ const syne = Syne({
 });
 
 export const metadata: Metadata = {
-  title: "Retail Activation MVP",
-  description:
-    "MVP de plateforme d'activation client en magasin inspiré des meilleurs outils CRM locaux.",
+  title: APP_NAME_CAPITALIZED,
+  description: APP_DESCRIPTION,
 };
 
 export default function RootLayout({

@@ -3,7 +3,10 @@ import path from "node:path";
 
 type CampaignLocalSettings = {
   buttonTextSizePx?: number;
+  buttonIsBold?: boolean;
   blockSpacingPx?: number;
+  logoMode?: "none" | "image" | "text";
+  logoText?: string;
 };
 
 type CampaignLocalSettingsStore = Record<string, CampaignLocalSettings>;

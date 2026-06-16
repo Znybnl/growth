@@ -6,7 +6,9 @@ import { getMerchantLeads } from "@/lib/store";
 export async function GET(request: NextRequest) {
   const session = await requireAuthenticatedSession();
   const campaignId = request.nextUrl.searchParams.get("campaign") ?? undefined;
-  const leads = await getMerchantLeads(session.merchant.id, campaignId);
+  const leads = (await getMerchantLeads(session.merchant.id, campaignId)).sort((a, b) =>
+    b.consentTimestamp.localeCompare(a.consentTimestamp),
+  );
   const format = request.nextUrl.searchParams.get("format");
 
   if (format === "csv") {

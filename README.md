@@ -1,4 +1,4 @@
-# Retail Activation MVP
+# okado
 
 Prototype Next.js construit a partir de la SFD `SFD_MVP_activation_client_magasin_v2.docx`.
 

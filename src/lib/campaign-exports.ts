@@ -82,7 +82,8 @@ export async function createCampaignPosterSvg(
   const gameLabel = escapeXml(gameTypeLabel(campaign.gameType));
   const goal = escapeXml(goalLabel(campaign.goalType));
   const firstPrize = prizes[0]?.label ? escapeXml(prizes[0].label) : "Cadeau surprise";
-  const logoUrl = campaign.logoUrl ?? merchant.logoUrl;
+  const logoUrl = campaign.logoUrl;
+  const logoText = escapeXml(campaign.logoText ?? merchant.companyName);
   const headingSize = clamp(campaign.presentation.heading.fontSizePx * 1.7, 42, 78);
   const headingColor = campaign.presentation.heading.textColor;
   const bgColor = campaign.presentation.background.color || "#111827";
@@ -93,6 +94,7 @@ export async function createCampaignPosterSvg(
   const buttonText = campaign.presentation.button.textColor;
   const buttonBorder = campaign.presentation.button.borderColor;
   const buttonFontSize = clamp(campaign.presentation.button.textSizePx, 16, 34);
+  const buttonFontWeight = campaign.presentation.button.isBold ? 700 : 400;
   const prizeText =
     campaign.rewardRules.isWinningEveryTime
       ? "Jeu 100 % gagnant"
@@ -121,15 +123,16 @@ export async function createCampaignPosterSvg(
       `
       : "";
 
-  const logoMarkup = logoUrl
+  const logoMarkup = campaign.logoMode === "image" && logoUrl
     ? `
       <rect x="86" y="72" width="132" height="132" rx="34" fill="rgba(255,255,255,0.12)"/>
       <image href="${logoUrl}" x="98" y="84" width="108" height="108" preserveAspectRatio="xMidYMid meet"/>
     `
-    : `
-      <rect x="86" y="72" width="132" height="132" rx="34" fill="#ffffff"/>
-      <text x="152" y="152" text-anchor="middle" fill="${ink}" font-family="Arial, sans-serif" font-size="42" font-weight="700">${escapeXml(merchant.logoText)}</text>
-    `;
+    : campaign.logoMode === "text"
+      ? `
+        <text x="86" y="138" fill="#ffffff" font-family="Georgia, 'Times New Roman', serif" font-size="42" font-weight="700">${logoText}</text>
+      `
+      : "";
 
   return `
     <svg xmlns="http://www.w3.org/2000/svg" width="${A4_WIDTH}" height="${A4_HEIGHT}" viewBox="0 0 ${A4_WIDTH} ${A4_HEIGHT}">
@@ -181,7 +184,7 @@ export async function createCampaignPosterSvg(
       </g>
       <image href="${qrDataUrl}" x="124" y="776" width="200" height="200"/>
       <rect x="356" y="786" width="310" height="74" rx="24" fill="${buttonBg}" stroke="${buttonBorder}" stroke-width="3"/>
-      <text x="511" y="833" text-anchor="middle" fill="${buttonText}" font-family="Arial, sans-serif" font-size="${buttonFontSize}" font-weight="700">${cta}</text>
+      <text x="511" y="833" text-anchor="middle" fill="${buttonText}" font-family="Arial, sans-serif" font-size="${buttonFontSize}" font-weight="${buttonFontWeight}">${cta}</text>
       <text x="356" y="904" fill="#111827" font-family="Arial, sans-serif" font-size="18" letter-spacing="3">SCANNEZ POUR JOUER</text>
       <text x="356" y="940" fill="#4b5563" font-family="Arial, sans-serif" font-size="27" font-weight="700">${merchantName}</text>
       <text x="356" y="978" fill="#6b7280" font-family="Arial, sans-serif" font-size="20">Parcours mobile plein écran, lot instantané, retrait en boutique</text>

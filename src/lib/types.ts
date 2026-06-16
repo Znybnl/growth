@@ -2,6 +2,7 @@ export type GoalType = "lead_capture" | "review_prompt" | "social_follow";
 export type GameType = "wheel" | "scratch";
 export type TextAlign = "left" | "center" | "right";
 export type TextFont = "display" | "sans" | "serif";
+export type LogoMode = "none" | "image" | "text";
 export type ButtonSize = "sm" | "md" | "lg";
 export type BackgroundMode = "color" | "image";
 export type ActionKind =
@@ -110,6 +111,7 @@ export interface CampaignButtonSettings {
   borderColor: string;
   size: ButtonSize;
   textSizePx: number;
+  isBold: boolean;
 }
 
 export interface CampaignLayoutSettings {
@@ -161,6 +163,8 @@ export interface Campaign {
   createdAt: string;
   accent: CampaignAccent;
   gameType: GameType;
+  logoMode?: LogoMode;
+  logoText?: string;
   logoUrl?: string;
   presentation: CampaignPresentation;
   actions: CampaignAction[];
@@ -218,6 +222,8 @@ export interface PublicCampaign {
   targetUrl?: string;
   merchantName: string;
   merchantLogoText: string;
+  logoMode?: LogoMode;
+  logoText?: string;
   logoUrl?: string;
   accent: CampaignAccent;
   prizes: PublicCampaignPrize[];
@@ -293,6 +299,8 @@ export interface CampaignSetupInput {
   isActive: boolean;
   accent: CampaignAccent;
   gameType: GameType;
+  logoMode?: LogoMode;
+  logoText?: string;
   logoUrl?: string;
   presentation: CampaignPresentation;
   actions: CampaignAction[];

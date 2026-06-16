@@ -134,7 +134,7 @@ export function actionKindCta(kind: ActionKind) {
     case "tripadvisor":
       return "Ouvrir Tripadvisor";
     case "crm":
-      return "Partager mes coordonnees";
+      return "Partager mes coordonnées";
     default:
       return "Ouvrir le lien";
   }

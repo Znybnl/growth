@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { APP_NAME } from "@/lib/branding";
+
 export function SignInForm() {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -43,21 +45,13 @@ export function SignInForm() {
 
   return (
     <form className="flex h-full flex-col justify-center" onSubmit={handleSubmit}>
-      <div className="mb-10 flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#1f5fd6] text-lg font-semibold text-white shadow-[0_10px_24px_rgba(31,95,214,0.22)]">
-          •
-        </div>
-        <div>
-          <p className="text-2xl font-semibold tracking-tight text-[#1f5fd6]">dotwork</p>
-        </div>
-      </div>
-
       <div>
         <h1 className="text-[46px] font-semibold leading-[1.02] tracking-[-0.04em] text-[#0f1728]">
-          Log in to your Account
+          Connectez-vous a {APP_NAME}
         </h1>
         <p className="mt-4 text-base leading-7 text-[#6b7280]">
-          Welcome back! Select method to log in:
+          Retrouvez vos campagnes, vos leads et vos performances depuis votre espace
+          marchand.
         </p>
       </div>
 
@@ -82,7 +76,7 @@ export function SignInForm() {
 
       <div className="mt-8 flex items-center gap-4">
         <div className="h-px flex-1 bg-[#e7ecf4]" />
-        <span className="text-sm text-[#9ca3af]">or continue with email</span>
+        <span className="text-sm text-[#9ca3af]">ou continuez par email</span>
         <div className="h-px flex-1 bg-[#e7ecf4]" />
       </div>
 

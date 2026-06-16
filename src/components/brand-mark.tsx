@@ -55,8 +55,13 @@ export function BrandMark({
 
   if (variant === "transparent") {
     return (
-      <div className={`inline-flex shrink-0 items-center justify-center ${className}`}>
-        <span className="text-sm font-semibold text-white">{logoText}</span>
+      <div
+        className={`inline-flex shrink-0 items-center justify-center text-center ${className}`}
+        style={{ maxWidth: `${imageWidthPx ?? 240}px` }}
+      >
+        <span className="font-display text-3xl font-semibold leading-none text-white drop-shadow-[0_8px_18px_rgba(0,0,0,0.28)]">
+          {logoText}
+        </span>
       </div>
     );
   }
