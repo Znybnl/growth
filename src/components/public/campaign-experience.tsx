@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 
 import { BrandMark } from "@/components/brand-mark";
@@ -66,7 +67,6 @@ export function CampaignExperience({
   const [drawResult, setDrawResult] = useState<DrawResult | null>(null);
   const [didLogFormStart, setDidLogFormStart] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isRedeeming, setIsRedeeming] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const segments = useMemo(() => buildWheelSegments(campaign), [campaign]);
@@ -76,6 +76,29 @@ export function CampaignExperience({
     drawResult?.prize?.id ?? segments.find((segment) => segment.tone === "lose")?.id ?? "lose-0";
   const currentAction = campaign.actions[0];
   const previewButtonClass = buttonSizeMap[campaign.presentation.button.size];
+  const redemptionCode = drawResult?.lead.redemptionCode;
+  const qrPath = redemptionCode
+    ? `/api/public/redeem/${encodeURIComponent(redemptionCode)}/qr`
+    : "";
+  const publicOrigin = typeof window === "undefined" ? "" : window.location.origin;
+  const redeemUrl =
+    redemptionCode && publicOrigin
+      ? `${publicOrigin}/redeem/${encodeURIComponent(redemptionCode)}`
+      : "";
+  const emailSubject = encodeURIComponent(`Votre gain ${campaign.merchantName}`);
+  const emailBody = encodeURIComponent(
+    [
+      `Bonjour ${drawResult?.lead.firstName ?? ""},`,
+      "",
+      `Votre lot : ${drawResult?.prize?.label ?? "Cadeau"}`,
+      `Code de retrait : ${redemptionCode ?? ""}`,
+      redeemUrl ? `QR code de retrait : ${redeemUrl}` : "",
+      "",
+      "Pr\u00e9sentez ce QR code au restaurant pour r\u00e9cup\u00e9rer votre gain.",
+    ]
+      .filter(Boolean)
+      .join("\n"),
+  );
   const logoWidthPx = Math.round(
     Math.max(72, Math.min(260, campaign.presentation.logo.sizePercent * 1.6)),
   );
@@ -181,42 +204,6 @@ export function CampaignExperience({
     }
 
     setStep("game");
-  }
-
-  async function redeemPrize() {
-    if (!drawResult) {
-      return;
-    }
-
-    setIsRedeeming(true);
-    setError(null);
-
-    try {
-      const response = await fetch("/api/public/redeem", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          leadId: drawResult.lead.id,
-        }),
-      });
-
-      const payload = (await response.json()) as { error?: string; lead?: DrawResult["lead"] };
-
-      if (!response.ok || !payload.lead) {
-        throw new Error(payload.error ?? "Le lot ne peut pas être retiré.");
-      }
-
-      setDrawResult({
-        ...drawResult,
-        lead: payload.lead,
-      });
-    } catch (redeemError) {
-      setError(
-        redeemError instanceof Error ? redeemError.message : "Le lot ne peut pas être retiré.",
-      );
-    } finally {
-      setIsRedeeming(false);
-    }
   }
 
   return (
@@ -471,21 +458,60 @@ export function CampaignExperience({
                   <div className="rounded-[22px] bg-white/8 p-4">
                     <p className="text-xs uppercase tracking-[0.24em] text-white/46">Statut</p>
                     <p className="mt-2 text-2xl font-semibold">
-                      {drawResult.lead.status === "redeemed" ? "Retiré" : "À retirer"}
+                      {drawResult.lead.status === "redeemed" ? "Retir\u00e9" : "\u00c0 retirer"}
                     </p>
+                  </div>
+                </div>
+              ) : null}
+
+              {winner && redemptionCode ? (
+                <div className="mt-5 rounded-[26px] border border-white/10 bg-white p-4 text-[#111827]">
+                  <div className="grid items-center gap-4 sm:grid-cols-[150px_1fr]">
+                    <Image
+                      src={qrPath}
+                      alt={`QR code de retrait ${redemptionCode}`}
+                      width={150}
+                      height={150}
+                      unoptimized
+                      className="mx-auto h-[150px] w-[150px] rounded-[18px]"
+                    />
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.24em] text-[#6b7280]">
+                        QR code de retrait
+                      </p>
+                      <p className="mt-2 text-sm leading-6 text-[#4b5563]">
+                        Enregistrez ce QR code ou envoyez-le par email. Le restaurant le scannera au
+                        moment de remettre le lot.
+                      </p>
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        <a
+                          href={qrPath}
+                          download={`qr-lot-${redemptionCode}.svg`}
+                          className="rounded-[16px] bg-[#111827] px-4 py-3 text-sm font-semibold text-white"
+                        >
+                          Enregistrer
+                        </a>
+                        <a
+                          href={`mailto:${encodeURIComponent(drawResult.lead.email)}?subject=${emailSubject}&body=${emailBody}`}
+                          className="rounded-[16px] border border-[#d7e0ed] px-4 py-3 text-sm font-semibold text-[#111827]"
+                        >
+                          Envoyer par email
+                        </a>
+                      </div>
+                    </div>
                   </div>
                 </div>
               ) : null}
 
               {winner && campaign.rewardRules.purchaseRequired ? (
                 <div className="mt-4 rounded-[22px] border border-white/10 bg-white/8 px-4 py-4 text-sm text-white/78">
-                  Retrait du lot soumis à une condition d&apos;achat.
+                  {"Retrait du lot soumis \u00e0 une condition d'achat."}
                 </div>
               ) : null}
 
               {winner && campaign.rewardRules.availabilityDurationDays === 0 ? (
                 <div className="mt-4 rounded-[22px] border border-white/10 bg-white/8 px-4 py-4 text-sm text-white/78">
-                  Disponible dès maintenant au comptoir.
+                  {"Disponible d\u00e8s maintenant au comptoir."}
                 </div>
               ) : null}
 
@@ -493,7 +519,7 @@ export function CampaignExperience({
               campaign.rewardRules.availabilityDurationDays > 0 &&
               drawResult.lead.rewardAvailableAt ? (
                 <div className="mt-4 rounded-[22px] border border-white/10 bg-white/8 px-4 py-4 text-sm text-white/78">
-                  Disponible à partir du {formatDateTime(drawResult.lead.rewardAvailableAt)}
+                  {"Disponible \u00e0 partir du"} {formatDateTime(drawResult.lead.rewardAvailableAt)}
                 </div>
               ) : null}
 
@@ -510,25 +536,9 @@ export function CampaignExperience({
               ) : null}
 
               {winner ? (
-                <button
-                  type="button"
-                  onClick={redeemPrize}
-                  disabled={drawResult.lead.status === "redeemed" || isRedeeming}
-                  className={`mt-5 w-full rounded-[22px] border font-semibold disabled:opacity-60 ${previewButtonClass}`}
-                style={{
-                  backgroundColor: campaign.presentation.button.backgroundColor,
-                  color: campaign.presentation.button.textColor,
-                  borderColor: campaign.presentation.button.borderColor,
-                  fontSize: `${campaign.presentation.button.textSizePx}px`,
-                  fontWeight: campaign.presentation.button.isBold ? 700 : 400,
-                }}
-              >
-                  {isRedeeming
-                    ? "Validation..."
-                    : drawResult.lead.status === "redeemed"
-                      ? "Lot déjà retiré"
-                      : "Valider le retrait"}
-                </button>
+                <div className="mt-5 rounded-[22px] border border-white/10 bg-white/8 px-4 py-4 text-center text-sm leading-6 text-white/78">
+                  {"Le retrait sera valid\u00e9 une seule fois par le restaurant au moment du scan."}
+                </div>
               ) : null}
             </div>
           ) : null}

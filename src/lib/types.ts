@@ -26,7 +26,8 @@ export type EventType =
   | "game_played"
   | "prize_won"
   | "prize_redeemed"
-  | "prize_expired";
+  | "prize_expired"
+  | "prize_reset";
 
 export interface Merchant {
   id: string;
@@ -143,6 +144,18 @@ export interface CampaignWheelSettings {
   alternateLoseColor: string;
 }
 
+export interface CampaignPosterSettings {
+  logoUrl?: string;
+  logoSizePercent: number;
+  backgroundImageUrl?: string;
+  headline: string;
+  headlineTextColor: string;
+  headlineFontSizePx: number;
+  headlineFontFamily: TextFont;
+  wheel: CampaignWheelSettings;
+  footerBackgroundColor: string;
+}
+
 export interface CampaignPresentation {
   logo: CampaignLogoSettings;
   background: CampaignBackgroundSettings;
@@ -150,6 +163,7 @@ export interface CampaignPresentation {
   button: CampaignButtonSettings;
   layout: CampaignLayoutSettings;
   wheel: CampaignWheelSettings;
+  poster: CampaignPosterSettings;
 }
 
 export interface CampaignAction {

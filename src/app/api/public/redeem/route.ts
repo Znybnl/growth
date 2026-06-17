@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
 
-import { redeemLeadPrize } from "@/lib/store";
+import { requireAuthenticatedSession } from "@/lib/auth";
+import { getMerchantLeads, redeemLeadPrize } from "@/lib/store";
 
 type RedeemBody = {
   leadId: string;
 };
 
 export async function POST(request: Request) {
+  const session = await requireAuthenticatedSession();
   const body = (await request.json()) as RedeemBody;
 
   if (!body.leadId) {
@@ -14,8 +16,15 @@ export async function POST(request: Request) {
   }
 
   try {
-    const lead = await redeemLeadPrize(body.leadId);
-    return NextResponse.json({ lead });
+    const leads = await getMerchantLeads(session.merchant.id);
+    const existingLead = leads.find((item) => item.id === body.leadId);
+
+    if (!existingLead) {
+      return NextResponse.json({ error: "Gain introuvable" }, { status: 404 });
+    }
+
+    const updatedLead = await redeemLeadPrize(body.leadId);
+    return NextResponse.json({ lead: updatedLead });
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Redeem failed" },

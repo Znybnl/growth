@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { LeadPrizeActions } from "@/components/merchant/lead-prize-actions";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import {
   formatCurrency,
@@ -326,6 +327,7 @@ export default async function DataPage({ searchParams }: DataPageProps) {
                     <th className="border-b border-[#e4eaf2] px-3 py-3">Lead</th>
                     <th className="border-b border-[#e4eaf2] px-3 py-3">Statut</th>
                     <th className="border-b border-[#e4eaf2] px-3 py-3">Lot</th>
+                    <th className="border-b border-[#e4eaf2] px-3 py-3">Retrait</th>
                     <th className="border-b border-[#e4eaf2] px-3 py-3">Consentement</th>
                   </tr>
                 </thead>
@@ -341,6 +343,18 @@ export default async function DataPage({ searchParams }: DataPageProps) {
                       </td>
                       <td className="border-b border-[#eef2f7] px-3 py-4 text-[#556173]">
                         {lead.prizeLabel}
+                        {lead.redemptionCode ? (
+                          <div className="mt-1 font-mono text-xs text-[#7b8496]">
+                            {lead.redemptionCode}
+                          </div>
+                        ) : null}
+                      </td>
+                      <td className="border-b border-[#eef2f7] px-3 py-4 text-[#556173]">
+                        <LeadPrizeActions
+                          leadId={lead.id}
+                          status={lead.status}
+                          hasPrize={Boolean(lead.prizeId)}
+                        />
                       </td>
                       <td className="border-b border-[#eef2f7] px-3 py-4 text-[#556173]">
                         {formatDateTime(lead.consentTimestamp)}

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useMemo, useState } from "react";
@@ -88,6 +89,9 @@ const buttonSizeMap = {
   lg: "px-6 py-5 text-lg",
 };
 
+const defaultPosterBackground =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='1700' viewBox='0 0 1200 1700'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%23111827'/%3E%3Cstop offset='.56' stop-color='%232b3a67'/%3E%3Cstop offset='1' stop-color='%23c59920'/%3E%3C/linearGradient%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='0 .12'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3C/defs%3E%3Crect width='1200' height='1700' fill='url(%23g)'/%3E%3Ccircle cx='960' cy='230' r='360' fill='%23ffffff' opacity='.13'/%3E%3Ccircle cx='170' cy='1220' r='300' fill='%23ffffff' opacity='.1'/%3E%3Cpath d='M0 1180 C260 1080 520 1120 780 1000 C980 908 1100 840 1200 850 L1200 1700 L0 1700 Z' fill='%230f172a' opacity='.52'/%3E%3Crect width='1200' height='1700' filter='url(%23grain)' opacity='.38'/%3E%3C/svg%3E";
+
 function createPrizeId() {
   return `local-prize-${crypto.randomUUID().slice(0, 8)}`;
 }
@@ -173,6 +177,23 @@ function createDefaultState(merchant: Merchant): EditorState {
         loseColor: "#1b2842",
         alternateLoseColor: "#8795db",
       },
+      poster: {
+        logoUrl: undefined,
+        logoSizePercent: 100,
+        backgroundImageUrl: defaultPosterBackground,
+        headline: "Scannez, jouez, récupérez votre cadeau",
+        headlineTextColor: "#ffffff",
+        headlineFontSizePx: 42,
+        headlineFontFamily: "display",
+        wheel: {
+          rimColor: "#f4c14a",
+          winColor: "#f4c14a",
+          alternateWinColor: "#eef2ff",
+          loseColor: "#1b2842",
+          alternateLoseColor: "#8795db",
+        },
+        footerBackgroundColor: "#8d9ae8",
+      },
     },
     actions: [createDefaultAction(merchant)],
     rewardRules: {
@@ -226,6 +247,18 @@ function toEditorState(merchant: Merchant, campaign?: CampaignPerformance | null
       button: {
         ...campaign.campaign.presentation.button,
         isBold: campaign.campaign.presentation.button.isBold ?? true,
+      },
+      poster: campaign.campaign.presentation.poster ?? {
+        logoUrl: campaign.campaign.logoUrl,
+        logoSizePercent: campaign.campaign.presentation.logo.sizePercent,
+        backgroundImageUrl:
+          campaign.campaign.presentation.background.imageUrl || defaultPosterBackground,
+        headline: campaign.campaign.subtitle,
+        headlineTextColor: campaign.campaign.presentation.heading.textColor,
+        headlineFontSizePx: campaign.campaign.presentation.heading.fontSizePx,
+        headlineFontFamily: campaign.campaign.presentation.heading.fontFamily,
+        wheel: campaign.campaign.presentation.wheel,
+        footerBackgroundColor: campaign.campaign.accent.signal,
       },
     },
     actions: campaign.campaign.actions,
@@ -887,9 +920,11 @@ export function CampaignEditor({
                 <div className="rounded-[24px] border border-[#e1e8f2] bg-[#f8fafc] p-4 md:col-span-2">
                   <span className="mb-3 block text-sm text-[#616b7c]">Aperçu du logo</span>
                   <div className="flex min-h-[160px] items-center justify-center rounded-[20px] bg-white p-4">
-                    <img
+                    <Image
                       src={form.logoUrl}
                       alt="Aperçu du logo"
+                      width={240}
+                      height={140}
                       className="max-h-[140px] max-w-full object-contain"
                     />
                   </div>
@@ -1102,6 +1137,315 @@ export function CampaignEditor({
                   />
                 </div>
               ) : null}
+            </div>
+          </section>
+
+          <section className="rounded-[30px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+            <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+              <div>
+                <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Affiche A4</p>
+                <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
+                  Personnalisation de l&apos;affiche
+                </h2>
+              </div>
+              <button
+                type="button"
+                onClick={() =>
+                  setForm((current) => ({
+                    ...current,
+                    presentation: {
+                      ...current.presentation,
+                      poster: {
+                        ...current.presentation.poster,
+                        logoUrl: current.logoUrl,
+                        logoSizePercent: current.presentation.logo.sizePercent,
+                        backgroundImageUrl:
+                          current.presentation.background.imageUrl || defaultPosterBackground,
+                        headline: current.subtitle,
+                        headlineTextColor: current.presentation.heading.textColor,
+                        headlineFontSizePx: current.presentation.heading.fontSizePx,
+                        headlineFontFamily: current.presentation.heading.fontFamily,
+                        wheel: current.presentation.wheel,
+                        footerBackgroundColor: current.accent.signal,
+                      },
+                    },
+                  }))
+                }
+                className="rounded-[18px] border border-[#d7e0ed] px-4 py-3 text-sm font-semibold text-[#182033]"
+              >
+                Reprendre les réglages publics
+              </button>
+            </div>
+
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+              <label className="group relative flex min-h-[132px] cursor-pointer flex-col justify-between rounded-[24px] border border-dashed border-[#cfd9ea] bg-[#f7f9fc] p-4 text-sm transition hover:border-[#2f6df6] hover:bg-[#eef4ff]">
+                <div>
+                  <span className="mb-2 block text-[#616b7c]">Logo de l&apos;affiche</span>
+                  <p className="max-w-md text-sm leading-6 text-[#516073]">
+                    Par défaut, le logo de la campagne publique est utilisé.
+                  </p>
+                </div>
+                <div className="mt-4 flex items-center justify-between gap-3">
+                  <span className="inline-flex rounded-full bg-white px-3 py-2 text-xs font-semibold text-[#214ccf] shadow-sm">
+                    {form.presentation.poster.logoUrl ? "Logo chargé" : "Logo public"}
+                  </span>
+                  <span className="rounded-[16px] bg-[#2f6df6] px-4 py-2 text-xs font-semibold text-white shadow-[0_10px_18px_rgba(47,109,246,0.2)]">
+                    Choisir un fichier
+                  </span>
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(event) =>
+                    uploadAsDataUrl(event, (value) =>
+                      setForm((current) => ({
+                        ...current,
+                        presentation: {
+                          ...current.presentation,
+                          poster: {
+                            ...current.presentation.poster,
+                            logoUrl: value,
+                          },
+                        },
+                      })),
+                    )
+                  }
+                  className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                />
+              </label>
+
+              <label className="text-sm">
+                <span className="mb-2 block text-[#616b7c]">Taille du logo affiche (%)</span>
+                <input
+                  type="number"
+                  min={40}
+                  max={180}
+                  value={form.presentation.poster.logoSizePercent}
+                  onChange={(event) =>
+                    setForm((current) => ({
+                      ...current,
+                      presentation: {
+                        ...current.presentation,
+                        poster: {
+                          ...current.presentation.poster,
+                          logoSizePercent: Number(event.target.value || 100),
+                        },
+                      },
+                    }))
+                  }
+                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                />
+              </label>
+
+              <label className="group relative flex min-h-[132px] cursor-pointer flex-col justify-between rounded-[24px] border border-dashed border-[#cfd9ea] bg-[#f7f9fc] p-4 text-sm transition hover:border-[#2f6df6] hover:bg-[#eef4ff] md:col-span-2">
+                <div>
+                  <span className="mb-2 block text-[#616b7c]">Image de fond de l&apos;affiche</span>
+                  <p className="max-w-md text-sm leading-6 text-[#516073]">
+                    Une image par défaut est déjà appliquée pour générer une affiche prête à imprimer.
+                  </p>
+                </div>
+                <div className="mt-4 flex items-center justify-between gap-3">
+                  <span className="inline-flex rounded-full bg-white px-3 py-2 text-xs font-semibold text-[#214ccf] shadow-sm">
+                    {form.presentation.poster.backgroundImageUrl ? "Image chargée" : "Image par défaut"}
+                  </span>
+                  <span className="rounded-[16px] bg-[#2f6df6] px-4 py-2 text-xs font-semibold text-white shadow-[0_10px_18px_rgba(47,109,246,0.2)]">
+                    Choisir un fichier
+                  </span>
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(event) =>
+                    uploadAsDataUrl(event, (value) =>
+                      setForm((current) => ({
+                        ...current,
+                        presentation: {
+                          ...current.presentation,
+                          poster: {
+                            ...current.presentation.poster,
+                            backgroundImageUrl: value,
+                          },
+                        },
+                      })),
+                    )
+                  }
+                  className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                />
+              </label>
+
+              {form.presentation.poster.backgroundImageUrl ? (
+                <div className="rounded-[24px] border border-[#e1e8f2] bg-[#f8fafc] p-4 md:col-span-2">
+                  <span className="mb-3 block text-sm text-[#616b7c]">Aperçu du fond d&apos;affiche</span>
+                  <div
+                    className="min-h-[240px] rounded-[20px] border border-white bg-cover bg-center shadow-inner"
+                    style={{
+                      backgroundImage: `url("${form.presentation.poster.backgroundImageUrl}")`,
+                    }}
+                  />
+                </div>
+              ) : null}
+
+              <label className="text-sm md:col-span-2">
+                <span className="mb-2 block text-[#616b7c]">Texte sous le logo</span>
+                <textarea
+                  rows={3}
+                  value={form.presentation.poster.headline}
+                  onChange={(event) =>
+                    setForm((current) => ({
+                      ...current,
+                      presentation: {
+                        ...current.presentation,
+                        poster: {
+                          ...current.presentation.poster,
+                          headline: event.target.value,
+                        },
+                      },
+                    }))
+                  }
+                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                />
+              </label>
+
+              <label className="text-sm">
+                <span className="mb-2 block text-[#616b7c]">Couleur du texte</span>
+                <input
+                  type="color"
+                  value={form.presentation.poster.headlineTextColor}
+                  onChange={(event) =>
+                    setForm((current) => ({
+                      ...current,
+                      presentation: {
+                        ...current.presentation,
+                        poster: {
+                          ...current.presentation.poster,
+                          headlineTextColor: event.target.value,
+                        },
+                      },
+                    }))
+                  }
+                  className="h-14 w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none"
+                />
+              </label>
+
+              <label className="text-sm">
+                <span className="mb-2 block text-[#616b7c]">Taille du texte (px)</span>
+                <input
+                  type="number"
+                  min={24}
+                  max={84}
+                  value={form.presentation.poster.headlineFontSizePx}
+                  onChange={(event) =>
+                    setForm((current) => ({
+                      ...current,
+                      presentation: {
+                        ...current.presentation,
+                        poster: {
+                          ...current.presentation.poster,
+                          headlineFontSizePx: Number(event.target.value || 42),
+                        },
+                      },
+                    }))
+                  }
+                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                />
+              </label>
+
+              <div className="text-sm">
+                <span className="mb-3 block text-[#616b7c]">Police du texte</span>
+                <div className="grid gap-3">
+                  {textFontOptions.map((font) => {
+                    const active = form.presentation.poster.headlineFontFamily === font;
+
+                    return (
+                      <button
+                        key={font}
+                        type="button"
+                        onClick={() =>
+                          setForm((current) => ({
+                            ...current,
+                            presentation: {
+                              ...current.presentation,
+                              poster: {
+                                ...current.presentation.poster,
+                                headlineFontFamily: font,
+                              },
+                            },
+                          }))
+                        }
+                        className={`rounded-[20px] border px-4 py-3 text-left text-sm font-semibold ${
+                          active
+                            ? "border-[#2f6df6] bg-[#eff4ff] text-[#214ccf]"
+                            : "border-[#d7e0ed] bg-[#f7f9fc] text-[#182033]"
+                        }`}
+                      >
+                        {textFontLabel(font)}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <label className="text-sm">
+                <span className="mb-2 block text-[#616b7c]">Couleur du bandeau inférieur</span>
+                <input
+                  type="color"
+                  value={form.presentation.poster.footerBackgroundColor}
+                  onChange={(event) =>
+                    setForm((current) => ({
+                      ...current,
+                      presentation: {
+                        ...current.presentation,
+                        poster: {
+                          ...current.presentation.poster,
+                          footerBackgroundColor: event.target.value,
+                        },
+                      },
+                    }))
+                  }
+                  className="h-14 w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none"
+                />
+              </label>
+
+              <div className="md:col-span-2">
+                <span className="mb-3 block text-sm text-[#616b7c]">Couleurs de la roue sur l&apos;affiche</span>
+                <div className="grid gap-4 md:grid-cols-2">
+                  {[
+                    ["rimColor", "Contour"],
+                    ["winColor", "Gain 1"],
+                    ["alternateWinColor", "Gain 2"],
+                    ["loseColor", "Perdu 1"],
+                    ["alternateLoseColor", "Perdu 2"],
+                  ].map(([key, label]) => (
+                    <label key={key} className="text-sm">
+                      <span className="mb-2 block text-[#616b7c]">{label}</span>
+                      <input
+                        type="color"
+                        value={
+                          form.presentation.poster.wheel[
+                            key as keyof typeof form.presentation.poster.wheel
+                          ]
+                        }
+                        onChange={(event) =>
+                          setForm((current) => ({
+                            ...current,
+                            presentation: {
+                              ...current.presentation,
+                              poster: {
+                                ...current.presentation.poster,
+                                wheel: {
+                                  ...current.presentation.poster.wheel,
+                                  [key]: event.target.value,
+                                },
+                              },
+                            },
+                          }))
+                        }
+                        className="h-14 w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none"
+                      />
+                    </label>
+                  ))}
+                </div>
+              </div>
             </div>
           </section>
 

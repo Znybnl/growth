@@ -1,3 +1,4 @@
+import { CampaignPosterSettings } from "@/lib/types";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
@@ -7,6 +8,7 @@ type CampaignLocalSettings = {
   blockSpacingPx?: number;
   logoMode?: "none" | "image" | "text";
   logoText?: string;
+  poster?: CampaignPosterSettings;
 };
 
 type CampaignLocalSettingsStore = Record<string, CampaignLocalSettings>;

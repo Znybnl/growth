@@ -56,16 +56,8 @@ export function SignInForm() {
         </p>
       </div>
 
-      <div className="mt-8 grid gap-3 sm:grid-cols-2">
+      <div className="mt-8">
         <GoogleAuthButton mode="signin" nextPath="/" />
-        <button
-          type="button"
-          disabled
-          className="flex h-14 items-center justify-center gap-3 rounded-xl border border-[#e3e8f1] bg-white text-base font-medium text-[#111827] opacity-60"
-        >
-          <span className="text-lg text-[#1f5fd6]">f</span>
-          <span>Facebook</span>
-        </button>
       </div>
 
       <div className="mt-8 flex items-center gap-4">

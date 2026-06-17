@@ -1,20 +1,8 @@
 import type { Metadata } from "next";
-import { Manrope, Syne } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 
 import { APP_DESCRIPTION, APP_NAME_CAPITALIZED } from "@/lib/branding";
 import "./globals.css";
-
-const manrope = Manrope({
-  variable: "--font-manrope",
-  subsets: ["latin"],
-});
-
-const syne = Syne({
-  variable: "--font-display",
-  subsets: ["latin"],
-  weight: ["500", "600", "700", "800"],
-});
 
 export const metadata: Metadata = {
   title: APP_NAME_CAPITALIZED,
@@ -27,7 +15,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" className={`${manrope.variable} ${syne.variable} h-full`}>
+    <html lang="fr" className="h-full">
       <body className="min-h-full">
         {children}
         <Analytics />

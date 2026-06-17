@@ -137,7 +137,8 @@ create table if not exists public.campaign_events (
       'game_played',
       'prize_won',
       'prize_redeemed',
-      'prize_expired'
+      'prize_expired',
+      'prize_reset'
     )
   ),
   metadata jsonb not null default '{}'::jsonb,
@@ -161,6 +162,7 @@ create index if not exists leads_status_idx on public.leads (status);
 create index if not exists leads_prize_id_idx on public.leads (prize_id);
 create index if not exists leads_created_at_idx on public.leads (created_at);
 create index if not exists leads_reward_expires_at_idx on public.leads (reward_expires_at);
+create unique index if not exists leads_redemption_code_unique_idx on public.leads (redemption_code) where redemption_code is not null;
 
 create index if not exists campaign_events_campaign_id_idx on public.campaign_events (campaign_id);
 create index if not exists campaign_events_lead_id_idx on public.campaign_events (lead_id);

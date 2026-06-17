@@ -168,6 +168,14 @@ function toCampaign(
   localSettings: CampaignLocalSettings = {},
 ): Campaign {
   void prizes;
+  const wheel = {
+    rimColor: row.wheel_rim_color,
+    winColor: row.wheel_win_color,
+    alternateWinColor: row.wheel_alternate_win_color,
+    loseColor: row.wheel_lose_color,
+    alternateLoseColor: row.wheel_alternate_lose_color,
+  };
+
   return {
     id: row.id,
     merchantId: row.merchant_id,
@@ -217,11 +225,18 @@ function toCampaign(
         blockSpacingPx: localSettings.blockSpacingPx ?? 28,
       },
       wheel: {
-        rimColor: row.wheel_rim_color,
-        winColor: row.wheel_win_color,
-        alternateWinColor: row.wheel_alternate_win_color,
-        loseColor: row.wheel_lose_color,
-        alternateLoseColor: row.wheel_alternate_lose_color,
+        ...wheel,
+      },
+      poster: localSettings.poster ?? {
+        logoUrl: row.logo_url ?? undefined,
+        logoSizePercent: row.logo_size_percent,
+        backgroundImageUrl: row.background_image_url ?? "",
+        headline: row.subtitle,
+        headlineTextColor: row.heading_text_color,
+        headlineFontSizePx: row.heading_font_size_px,
+        headlineFontFamily: row.heading_font_family,
+        wheel,
+        footerBackgroundColor: row.accent_signal,
       },
     },
     actions: actions
@@ -651,6 +666,7 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
     blockSpacingPx: input.presentation.layout.blockSpacingPx,
     logoMode: input.logoMode,
     logoText: input.logoText,
+    poster: input.presentation.poster,
   });
 
   return campaignId;
@@ -862,4 +878,18 @@ export async function redeemLeadPrizeInSupabase(leadId: string) {
   await supabase.from("leads").update({ status: "redeemed" }).eq("id", leadId);
   await recordEventInSupabase(lead.campaignId, "prize_redeemed", lead.id);
   return { ...lead, status: "redeemed" as const };
+}
+
+export async function resetLeadPrizeInSupabase(leadId: string) {
+  const supabase = getSupabaseAdmin();
+  const { data } = await supabase.from("leads").select("*").eq("id", leadId).maybeSingle();
+  if (!data) throw new Error("Lead introuvable");
+  const lead = toLead(data as LeadRow);
+  if (!lead.prizeId) throw new Error("Aucun lot a reinitialiser");
+
+  const { error } = await supabase.from("leads").update({ status: "claimed" }).eq("id", leadId);
+  if (error) throw new Error("Le lot n'a pas pu etre reinitialise");
+
+  await recordEventInSupabase(lead.campaignId, "prize_reset", lead.id);
+  return { ...lead, status: "claimed" as const };
 }

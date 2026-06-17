@@ -10,6 +10,7 @@ import {
   markActionConfirmedInSupabase,
   recordEventInSupabase,
   redeemLeadPrizeInSupabase,
+  resetLeadPrizeInSupabase,
   toggleCampaignInSupabase,
   updateCampaignSetupInSupabase,
 } from "@/lib/campaign-repository";
@@ -34,6 +35,7 @@ import {
   CampaignButtonSettings,
   CampaignHeadingSettings,
   CampaignLogoSettings,
+  CampaignPosterSettings,
   CampaignRewardRules,
   CampaignWheelSettings,
   CampaignSetupInput,
@@ -68,9 +70,19 @@ type CampaignPresentationOverrides = {
   button?: Partial<CampaignButtonSettings>;
   layout?: Partial<{ blockSpacingPx: number }>;
   wheel?: Partial<CampaignWheelSettings>;
+  poster?: Partial<CampaignPosterSettings>;
 };
 
 function createPresentation(overrides?: CampaignPresentationOverrides): CampaignPresentation {
+  const wheel = {
+    rimColor: "#f4c14a",
+    winColor: "#f4c14a",
+    alternateWinColor: "#eef2ff",
+    loseColor: "#1b2842",
+    alternateLoseColor: "#8795db",
+    ...overrides?.wheel,
+  };
+
   return {
     logo: {
       sizePercent: 100,
@@ -105,12 +117,19 @@ function createPresentation(overrides?: CampaignPresentationOverrides): Campaign
       ...overrides?.layout,
     },
     wheel: {
-      rimColor: "#f4c14a",
-      winColor: "#f4c14a",
-      alternateWinColor: "#eef2ff",
-      loseColor: "#1b2842",
-      alternateLoseColor: "#8795db",
-      ...overrides?.wheel,
+      ...wheel,
+    },
+    poster: {
+      logoUrl: undefined,
+      logoSizePercent: 100,
+      backgroundImageUrl: "",
+      headline: "Scannez, jouez, récupérez votre cadeau",
+      headlineTextColor: "#ffffff",
+      headlineFontSizePx: 42,
+      headlineFontFamily: "display",
+      wheel,
+      footerBackgroundColor: "#8d9ae8",
+      ...overrides?.poster,
     },
   };
 }
@@ -467,6 +486,13 @@ function normalizeCampaign(rawCampaign: Campaign | (Partial<Campaign> & Record<s
         ? merchantSeed.googleReviewUrl
         : merchantSeed.instagramUrl;
   const presentation = rawCampaign.presentation ?? fallback.presentation;
+  const wheel = {
+    rimColor: presentation.wheel?.rimColor ?? "#f4c14a",
+    winColor: presentation.wheel?.winColor ?? "#f4c14a",
+    alternateWinColor: presentation.wheel?.alternateWinColor ?? "#eef2ff",
+    loseColor: presentation.wheel?.loseColor ?? "#1b2842",
+    alternateLoseColor: presentation.wheel?.alternateLoseColor ?? "#8795db",
+  };
 
   return {
     id: rawCampaign.id ?? fallback.id,
@@ -489,9 +515,21 @@ function normalizeCampaign(rawCampaign: Campaign | (Partial<Campaign> & Record<s
     logoUrl: rawCampaign.logoUrl,
     presentation: {
       ...presentation,
+      wheel,
       button: {
         ...presentation.button,
         isBold: presentation.button.isBold ?? true,
+      },
+      poster: presentation.poster ?? {
+        logoUrl: rawCampaign.logoUrl,
+        logoSizePercent: presentation.logo?.sizePercent ?? 100,
+        backgroundImageUrl: presentation.background?.imageUrl ?? "",
+        headline: rawCampaign.subtitle ?? fallback.subtitle,
+        headlineTextColor: presentation.heading?.textColor ?? "#ffffff",
+        headlineFontSizePx: presentation.heading?.fontSizePx ?? 42,
+        headlineFontFamily: presentation.heading?.fontFamily ?? "display",
+        wheel,
+        footerBackgroundColor: rawCampaign.accent?.signal ?? fallback.accent.signal,
       },
     },
     actions:
@@ -1154,6 +1192,23 @@ function redeemLeadPrizeInMemory(leadId: string) {
   return clone(lead);
 }
 
+function resetLeadPrizeInMemory(leadId: string) {
+  const lead = store.leads.find((item) => item.id === leadId);
+
+  if (!lead) {
+    throw new Error("Lead introuvable");
+  }
+
+  if (!lead.prizeId) {
+    throw new Error("Aucun lot à réinitialiser");
+  }
+
+  lead.status = "claimed";
+  recordEventInMemory(lead.campaignId, "prize_reset", lead.id);
+
+  return clone(lead);
+}
+
 function updateCampaignSetupInMemory(input: CampaignSetupInput) {
   const existing = input.id ? getCampaign(input.id) : undefined;
 
@@ -1370,6 +1425,14 @@ export async function redeemLeadPrize(leadId: string) {
   }
 
   return redeemLeadPrizeInMemory(leadId);
+}
+
+export async function resetLeadPrize(leadId: string) {
+  if (isSupabaseConfigured()) {
+    return resetLeadPrizeInSupabase(leadId);
+  }
+
+  return resetLeadPrizeInMemory(leadId);
 }
 
 export async function updateCampaignSetup(input: CampaignSetupInput) {
