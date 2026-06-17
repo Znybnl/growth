@@ -103,6 +103,9 @@ export function CampaignExperience({
     Math.max(72, Math.min(260, campaign.presentation.logo.sizePercent * 1.6)),
   );
   const blockSpacingPx = campaign.presentation.layout.blockSpacingPx;
+  const logoTextSpacingPx = Math.max(0, campaign.presentation.logo.marginBottomPx);
+  const gameSpacingPx = Math.max(18, blockSpacingPx - 6);
+  const panelSpacingPx = Math.max(24, blockSpacingPx + 6);
   const logoAlignmentClass =
     campaign.presentation.logo.align === "left"
       ? "justify-start"
@@ -223,7 +226,7 @@ export function CampaignExperience({
       <div className="mx-auto flex min-h-screen max-w-[480px] flex-col px-4 pb-14 pt-10 text-white">
         {campaign.logoMode === "image" && campaign.logoUrl ? (
           <div className={`flex ${logoAlignmentClass}`}>
-            <div style={{ marginBottom: `${campaign.presentation.logo.marginBottomPx + blockSpacingPx}px` }}>
+            <div style={{ marginBottom: `${logoTextSpacingPx}px` }}>
               <BrandMark
                 logoText={campaign.merchantLogoText}
                 logoUrl={campaign.logoUrl}
@@ -237,7 +240,7 @@ export function CampaignExperience({
 
         {campaign.logoMode === "text" ? (
           <div className={`flex ${logoAlignmentClass}`}>
-            <div style={{ marginBottom: `${campaign.presentation.logo.marginBottomPx + blockSpacingPx}px` }}>
+            <div style={{ marginBottom: `${logoTextSpacingPx}px` }}>
               <BrandMark
                 logoText={campaign.logoText ?? campaign.merchantName}
                 size="lg"
@@ -264,7 +267,7 @@ export function CampaignExperience({
             </h1>
           </div>
 
-          <div style={{ marginTop: `${blockSpacingPx}px` }}>
+          <div style={{ marginTop: `${gameSpacingPx}px` }}>
             {campaign.gameType === "wheel" ? (
               <WheelOfFortune
                 key={`${campaign.id}-${drawResult?.lead.id ?? "welcome"}`}
@@ -289,7 +292,7 @@ export function CampaignExperience({
           {step === "welcome" ? (
             <div
               className="rounded-[28px] border border-white/10 bg-black/16 p-5 text-center"
-              style={{ marginTop: `${blockSpacingPx}px` }}
+              style={{ marginTop: `${panelSpacingPx}px` }}
             >
               <button
                 type="button"
@@ -311,7 +314,7 @@ export function CampaignExperience({
           {step === "collect" ? (
             <form
               className="rounded-[30px] border border-white/10 bg-black/16 p-5"
-              style={{ marginTop: `${blockSpacingPx}px` }}
+              style={{ marginTop: `${panelSpacingPx}px` }}
               onSubmit={submitLead}
             >
               <p className="text-xs uppercase tracking-[0.24em] text-white/48">Participation</p>
@@ -378,7 +381,7 @@ export function CampaignExperience({
           {step === "action" && drawResult && currentAction ? (
             <div
               className="rounded-[30px] border border-white/10 bg-black/16 p-5"
-              style={{ marginTop: `${blockSpacingPx}px` }}
+              style={{ marginTop: `${panelSpacingPx}px` }}
             >
               <p className="text-xs uppercase tracking-[0.24em] text-white/48">
                 Action marketing
@@ -423,7 +426,7 @@ export function CampaignExperience({
           {step === "game" ? (
             <div
               className="rounded-[30px] border border-white/10 bg-black/16 p-5 text-center"
-              style={{ marginTop: `${blockSpacingPx}px` }}
+              style={{ marginTop: `${panelSpacingPx}px` }}
             >
               <p className="text-xs uppercase tracking-[0.24em] text-white/48">Prêt à jouer</p>
               <h2 className="mt-3 text-2xl font-semibold">
@@ -435,7 +438,7 @@ export function CampaignExperience({
           {step === "result" && drawResult ? (
             <div
               className="rounded-[30px] border border-white/10 bg-black/16 p-5"
-              style={{ marginTop: `${blockSpacingPx}px` }}
+              style={{ marginTop: `${panelSpacingPx}px` }}
             >
               <p className="text-xs uppercase tracking-[0.24em] text-white/48">
                 {winner ? "Lot gagné" : "Perdu :("}

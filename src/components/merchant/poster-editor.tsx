@@ -174,7 +174,7 @@ export function PosterEditor({ campaign, merchant, prizes }: PosterEditorProps) 
                 Personnaliser l&apos;affiche A4
               </h1>
               <p className="mt-3 max-w-3xl text-sm leading-7 text-[#5c6577]">
-                Cet écran ne modifie que l&apos;affiche imprimable. La page publique reste
+                Cet écran ne modifie que l&apos;affiche imprimable. La page de jeu reste
                 paramétrée dans l&apos;éditeur de campagne.
               </p>
             </div>

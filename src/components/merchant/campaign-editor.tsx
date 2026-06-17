@@ -3,24 +3,25 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, useMemo, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
 
 import { BrandMark } from "@/components/brand-mark";
 import { ScratchGame } from "@/components/public/scratch-game";
 import { WheelOfFortune } from "@/components/public/wheel-of-fortune";
 import {
+  actionKindAccent,
   actionKindCta,
   actionKindLabel,
+  actionKindMonogram,
   buttonSizeLabel,
   gameTypeLabel,
-  goalDescription,
-  goalLabel,
   textAlignLabel,
   textFontLabel,
 } from "@/lib/format";
 import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
 import {
   ActionKind,
+  BackgroundLibraryAsset,
   CampaignAction,
   CampaignPerformance,
   CampaignSetupInput,
@@ -335,6 +336,9 @@ export function CampaignEditor({
 }: CampaignEditorProps) {
   const router = useRouter();
   const [form, setForm] = useState<EditorState>(toEditorState(merchant, initialCampaign));
+  const [backgroundLibrary, setBackgroundLibrary] = useState<BackgroundLibraryAsset[]>([]);
+  const [isLibraryLoading, setIsLibraryLoading] = useState(true);
+  const [libraryMessage, setLibraryMessage] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [importSource, setImportSource] = useState("");
@@ -368,8 +372,64 @@ export function CampaignEditor({
         ? "font-sans"
         : "font-display";
 
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadBackgroundLibrary() {
+      try {
+        setIsLibraryLoading(true);
+        const response = await fetch("/api/background-library", { cache: "no-store" });
+        const payload = (await response.json()) as {
+          error?: string;
+          items?: BackgroundLibraryAsset[];
+        };
+
+        if (!response.ok) {
+          throw new Error(payload.error ?? "Chargement de la bibliothèque impossible.");
+        }
+
+        if (!cancelled) {
+          setBackgroundLibrary(payload.items ?? []);
+          setLibraryMessage(null);
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setLibraryMessage(
+            error instanceof Error
+              ? error.message
+              : "Chargement de la bibliothèque impossible.",
+          );
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLibraryLoading(false);
+        }
+      }
+    }
+
+    loadBackgroundLibrary();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   function setField<K extends keyof EditorState>(key: K, value: EditorState[K]) {
     setForm((current) => ({ ...current, [key]: value }));
+  }
+
+  function selectBackgroundImage(imageUrl: string) {
+    setForm((current) => ({
+      ...current,
+      presentation: {
+        ...current.presentation,
+        background: {
+          ...current.presentation.background,
+          mode: "image",
+          imageUrl,
+        },
+      },
+    }));
   }
 
   function updatePrize(
@@ -642,11 +702,6 @@ export function CampaignEditor({
               </label>
             </div>
 
-            <div className="mt-5 rounded-[24px] bg-[#f7f9fc] px-4 py-4 text-sm text-[#4f596c]">
-              <span className="font-semibold text-[#152033]">{goalLabel(form.goalType)}</span> :{" "}
-              {goalDescription(form.goalType)}
-            </div>
-
             <div className="mt-8 flex items-center justify-between gap-3">
               <div>
                 <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">
@@ -671,6 +726,46 @@ export function CampaignEditor({
                   key={action.id}
                   className="rounded-[24px] border border-[#dbe4f0] bg-[#f8fafc] p-4"
                 >
+                  <div className="mb-4 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <span className="rounded-full border border-[#d7e0ed] bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[#64748b]">
+                        Action {index + 1}
+                      </span>
+                      <span
+                        className="inline-flex h-10 min-w-10 items-center justify-center rounded-2xl px-3 text-xs font-black uppercase tracking-[0.08em]"
+                        style={{
+                          backgroundColor: actionKindAccent(action.kind).background,
+                          color: actionKindAccent(action.kind).text,
+                        }}
+                      >
+                        {actionKindMonogram(action.kind)}
+                      </span>
+                      <span className="text-sm font-semibold text-[#111827]">
+                        {actionKindLabel(action.kind)}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => moveAction(action.id, "up")}
+                        disabled={index === 0}
+                      className="rounded-[14px] border border-[#d7e0ed] bg-white px-3 py-2 text-sm font-semibold text-[#182033] disabled:opacity-40"
+                      aria-label={`Monter l'action ${index + 1}`}
+                    >
+                        ⌃
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => moveAction(action.id, "down")}
+                        disabled={index === form.actions.length - 1}
+                      className="rounded-[14px] border border-[#d7e0ed] bg-white px-3 py-2 text-sm font-semibold text-[#182033] disabled:opacity-40"
+                      aria-label={`Descendre l'action ${index + 1}`}
+                    >
+                        ⌄
+                      </button>
+                    </div>
+                  </div>
+
                   <div className="grid gap-4 md:grid-cols-[0.95fr_1.45fr]">
                     <label className="text-sm">
                       <span className="mb-2 block text-[#616b7c]">Canal</span>
@@ -700,23 +795,7 @@ export function CampaignEditor({
                     </label>
                   </div>
 
-                  <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                    <button
-                      type="button"
-                      onClick={() => moveAction(action.id, "up")}
-                      disabled={index === 0}
-                      className="rounded-[18px] border border-[#d7e0ed] bg-white px-3 py-3 text-sm font-semibold text-[#182033] disabled:opacity-40"
-                    >
-                      Monter
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => moveAction(action.id, "down")}
-                      disabled={index === form.actions.length - 1}
-                      className="rounded-[18px] border border-[#d7e0ed] bg-white px-3 py-3 text-sm font-semibold text-[#182033] disabled:opacity-40"
-                    >
-                      Descendre
-                    </button>
+                  <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-2">
                     <a
                       href={normalizeUrl(action.url)}
                       target="_blank"
@@ -899,16 +978,50 @@ export function CampaignEditor({
                   <span className="mb-2 block text-[#616b7c]">Importer un logo</span>
                   <p className="max-w-md text-sm leading-6 text-[#516073]">
                     Déposez un fichier PNG, JPG ou SVG pour remplacer le logo affiché sur la
-                    campagne publique.
+                    page de jeu.
                   </p>
                 </div>
-                <div className="mt-4 flex items-center justify-between gap-3">
-                  <span className="inline-flex rounded-full bg-white px-3 py-2 text-xs font-semibold text-[#214ccf] shadow-sm">
-                    {form.logoUrl ? "Logo chargé" : "Aucun logo"}
-                  </span>
-                  <span className="rounded-[16px] bg-[#2f6df6] px-4 py-2 text-xs font-semibold text-white shadow-[0_10px_18px_rgba(47,109,246,0.2)]">
-                    Choisir un fichier
-                  </span>
+                <div className="mt-4 grid gap-4 md:grid-cols-[auto_1fr] md:items-center">
+                  <div
+                    className="flex min-h-[132px] items-center justify-center overflow-hidden rounded-[20px] border border-white/20 p-4"
+                    style={{
+                      backgroundColor: form.presentation.background.color,
+                      backgroundImage:
+                        form.presentation.background.mode === "image" &&
+                        form.presentation.background.imageUrl
+                          ? `linear-gradient(rgba(5,10,21,0.26), rgba(5,10,21,0.42)), url("${form.presentation.background.imageUrl}")`
+                          : undefined,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                    }}
+                  >
+                    {form.logoMode === "image" && form.logoUrl ? (
+                      <Image
+                        src={form.logoUrl}
+                        alt="Aperçu du logo"
+                        width={240}
+                        height={140}
+                        className="max-h-[110px] max-w-[180px] object-contain"
+                      />
+                    ) : form.logoMode === "text" ? (
+                      <span className="px-4 text-center font-display text-3xl font-semibold text-white">
+                        {form.logoText?.trim() || merchant.companyName}
+                      </span>
+                    ) : (
+                      <span className="text-sm font-medium text-white/72">Aucun logo affiché</span>
+                    )}
+                  </div>
+                  <div className="space-y-3">
+                    <span className="inline-flex rounded-full bg-white px-3 py-2 text-xs font-semibold text-[#214ccf] shadow-sm">
+                      {form.logoUrl ? "Logo chargé" : "Aucun logo"}
+                    </span>
+                    <span className="block rounded-[16px] bg-[#2f6df6] px-4 py-2 text-center text-xs font-semibold text-white shadow-[0_10px_18px_rgba(47,109,246,0.2)]">
+                      Choisir un fichier
+                    </span>
+                    <p className="text-xs leading-5 text-[#64748b]">
+                      L’aperçu reprend le fond actuellement sélectionné pour la page de jeu.
+                    </p>
+                  </div>
                 </div>
                 <input
                   type="file"
@@ -921,32 +1034,6 @@ export function CampaignEditor({
                   className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                 />
               </label>
-
-              {form.logoMode === "image" && form.logoUrl ? (
-                <div className="rounded-[24px] border border-[#e1e8f2] bg-[#f8fafc] p-4 md:col-span-2">
-                  <span className="mb-3 block text-sm text-[#616b7c]">Aperçu du logo</span>
-                  <div className="flex min-h-[160px] items-center justify-center rounded-[20px] bg-white p-4">
-                    <Image
-                      src={form.logoUrl}
-                      alt="Aperçu du logo"
-                      width={240}
-                      height={140}
-                      className="max-h-[140px] max-w-full object-contain"
-                    />
-                  </div>
-                </div>
-              ) : null}
-
-              {form.logoMode === "text" ? (
-                <div className="rounded-[24px] border border-[#e1e8f2] bg-[#111827] p-4 md:col-span-2">
-                  <span className="mb-3 block text-sm text-white/70">Aperçu du texte logo</span>
-                  <div className="flex min-h-[120px] items-center justify-center rounded-[20px] border border-white/10 bg-white/8 px-5 text-center">
-                    <span className="font-display text-3xl font-semibold text-white">
-                      {form.logoText?.trim() || merchant.companyName}
-                    </span>
-                  </div>
-                </div>
-              ) : null}
 
               <label className="text-sm">
                 <span className="mb-2 block text-[#616b7c]">Taille du logo (%)</span>
@@ -1036,6 +1123,10 @@ export function CampaignEditor({
             <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
               Couleur ou image de fond
             </h2>
+            <p className="mt-3 max-w-3xl text-sm leading-7 text-[#5c6577]">
+              Gardez une couleur unie ou piochez un visuel dans votre bibliothèque pour habiller
+              la page de jeu sans casser le parcours de configuration.
+            </p>
 
             <div className="mt-6 grid gap-4 md:grid-cols-2">
               <div className="text-sm md:col-span-2">
@@ -1097,42 +1188,116 @@ export function CampaignEditor({
                 />
               </label>
 
-              <label className="group relative flex min-h-[132px] cursor-pointer flex-col justify-between rounded-[24px] border border-dashed border-[#cfd9ea] bg-[#f7f9fc] p-4 text-sm transition hover:border-[#2f6df6] hover:bg-[#eef4ff]">
-                <div>
-                  <span className="mb-2 block text-[#616b7c]">Importer une image de fond</span>
-                  <p className="max-w-md text-sm leading-6 text-[#516073]">
-                    Ajoutez une image pour donner plus de relief à la page publique.
-                  </p>
+              <div className="rounded-[24px] border border-[#e1e8f2] bg-[#f8fafc] p-4 md:col-span-2">
+                <div className="grid gap-4 lg:grid-cols-[0.92fr_1.08fr]">
+                  <label className="group relative flex min-h-[156px] cursor-pointer flex-col justify-between rounded-[24px] border border-dashed border-[#cfd9ea] bg-white p-4 text-sm transition hover:border-[#2f6df6] hover:bg-[#eef4ff]">
+                    <div>
+                      <span className="mb-2 block text-[#616b7c]">Importer une image de fond</span>
+                      <p className="max-w-md text-sm leading-6 text-[#516073]">
+                        Chargez un visuel spécifique pour cette campagne. Il prendra le dessus sur
+                        le simple aplat de couleur.
+                      </p>
+                    </div>
+                    <div className="mt-4 flex items-center justify-between gap-3">
+                      <span className="inline-flex rounded-full bg-[#eef4ff] px-3 py-2 text-xs font-semibold text-[#214ccf] shadow-sm">
+                        {form.presentation.background.imageUrl ? "Image chargée" : "Aucune image"}
+                      </span>
+                      <span className="rounded-[16px] bg-[#2f6df6] px-4 py-2 text-xs font-semibold text-white shadow-[0_10px_18px_rgba(47,109,246,0.2)]">
+                        Choisir un fichier
+                      </span>
+                    </div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(event) =>
+                        uploadAsDataUrl(event, (value) => selectBackgroundImage(value))
+                      }
+                      className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                    />
+                  </label>
+
+                  <div className="rounded-[24px] border border-[#e1e8f2] bg-white p-4">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <div>
+                        <span className="block text-sm font-semibold text-[#182033]">
+                          Bibliothèque d&apos;images
+                        </span>
+                        <p className="mt-1 text-sm leading-6 text-[#64748b]">
+                          Sélectionnez un fond existant ou administrez votre bibliothèque dédiée.
+                        </p>
+                      </div>
+                      <Link
+                        href="/backgrounds"
+                        className="rounded-[16px] border border-[#111827] bg-[#111827] px-4 py-2 text-sm font-semibold !text-white"
+                      >
+                        Gérer la bibliothèque
+                      </Link>
+                    </div>
+
+                    {libraryMessage ? (
+                      <div className="mt-4 rounded-[18px] border border-[#f3d4d4] bg-[#fff4f4] px-4 py-3 text-sm text-[#9d3131]">
+                        {libraryMessage}
+                      </div>
+                    ) : null}
+
+                    <div className="mt-4 grid max-h-[320px] gap-3 overflow-y-auto pr-1 sm:grid-cols-2">
+                      {isLibraryLoading ? (
+                        <div className="rounded-[20px] border border-[#dbe4f0] bg-[#f7f9fc] px-4 py-6 text-sm text-[#64748b] sm:col-span-2">
+                          Chargement de la bibliothèque…
+                        </div>
+                      ) : backgroundLibrary.length === 0 ? (
+                        <div className="rounded-[20px] border border-[#dbe4f0] bg-[#f7f9fc] px-4 py-6 text-sm text-[#64748b] sm:col-span-2">
+                          Aucune image disponible pour le moment.
+                        </div>
+                      ) : (
+                        backgroundLibrary.map((asset) => {
+                          const active =
+                            form.presentation.background.mode === "image" &&
+                            form.presentation.background.imageUrl === asset.imageUrl;
+
+                          return (
+                            <button
+                              key={asset.id}
+                              type="button"
+                              onClick={() => selectBackgroundImage(asset.imageUrl)}
+                              className={`overflow-hidden rounded-[22px] border text-left transition ${
+                                active
+                                  ? "border-[#2f6df6] bg-[#eef4ff] shadow-[0_14px_28px_rgba(47,109,246,0.16)]"
+                                  : "border-[#dbe4f0] bg-[#f8fafc] hover:border-[#9bb8ff] hover:bg-white"
+                              }`}
+                            >
+                              <div className="relative aspect-[4/5] overflow-hidden">
+                                <Image
+                                  src={asset.thumbnailUrl}
+                                  alt={asset.label}
+                                  fill
+                                  unoptimized
+                                  className="object-cover"
+                                />
+                                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#091120]/82 via-[#091120]/20 to-transparent p-3">
+                                  <div className="flex items-center justify-between gap-3">
+                                    <div>
+                                      <p className="text-sm font-semibold text-white">
+                                        {asset.label}
+                                      </p>
+                                      <p className="text-xs uppercase tracking-[0.18em] text-white/72">
+                                        {asset.category}
+                                      </p>
+                                    </div>
+                                    <span className="rounded-full bg-white/14 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-white backdrop-blur">
+                                      {asset.source === "built-in" ? "Base" : "Upload"}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            </button>
+                          );
+                        })
+                      )}
+                    </div>
+                  </div>
                 </div>
-                <div className="mt-4 flex items-center justify-between gap-3">
-                  <span className="inline-flex rounded-full bg-white px-3 py-2 text-xs font-semibold text-[#214ccf] shadow-sm">
-                    {form.presentation.background.imageUrl ? "Image chargée" : "Aucune image"}
-                  </span>
-                  <span className="rounded-[16px] bg-[#2f6df6] px-4 py-2 text-xs font-semibold text-white shadow-[0_10px_18px_rgba(47,109,246,0.2)]">
-                    Choisir un fichier
-                  </span>
-                </div>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(event) =>
-                    uploadAsDataUrl(event, (value) =>
-                      setForm((current) => ({
-                        ...current,
-                        presentation: {
-                          ...current.presentation,
-                          background: {
-                            ...current.presentation.background,
-                            imageUrl: value,
-                            mode: "image",
-                          },
-                        },
-                      })),
-                    )
-                  }
-                  className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-                />
-              </label>
+              </div>
 
               {form.presentation.background.imageUrl ? (
                 <div className="rounded-[24px] border border-[#e1e8f2] bg-[#f8fafc] p-4 md:col-span-2">
@@ -1460,10 +1625,10 @@ export function CampaignEditor({
           <section className="rounded-[30px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
             <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Espacement</p>
             <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
-              Distance entre les blocs publics
+              Ecartement des blocs
             </h2>
 
-            <div className="mt-6 grid gap-4 md:grid-cols-[1fr_auto] md:items-end">
+            <div className="mt-6">
               <label className="text-sm">
                 <span className="mb-2 block text-[#616b7c]">Espacement entre les blocs (px)</span>
                 <input
@@ -1486,22 +1651,18 @@ export function CampaignEditor({
                   className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
                 />
               </label>
-              <div className="rounded-[22px] bg-[#f7f9fc] px-4 py-3 text-sm text-[#5c6577]">
-                Ajuste le rythme vertical entre le logo, le message, le jeu et le bouton sur la
-                page publique.
-              </div>
             </div>
           </section>
 
           <section className="rounded-[30px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
             <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Phrase d&apos;entête</p>
             <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
-              Style du message public
+              Style du texte principal
             </h2>
 
             <div className="mt-6 grid gap-4 md:grid-cols-2">
               <label className="text-sm md:col-span-2">
-                <span className="mb-2 block text-[#616b7c]">Phrase affichée sur la page publique</span>
+                <span className="mb-2 block text-[#616b7c]">Phrase affichée sur la page de jeu</span>
                 <textarea
                   value={form.subtitle}
                   onChange={(event) => setField("subtitle", event.target.value)}
@@ -1906,25 +2067,6 @@ export function CampaignEditor({
             </div>
 
             <div className="mt-6 grid gap-4 md:grid-cols-2">
-              <label className="text-sm">
-                <span className="mb-2 block text-[#616b7c]">Validité du lot (minutes)</span>
-                <input
-                  type="number"
-                  min={1}
-                  value={form.rewardRules.rewardExpiryMinutes}
-                  onChange={(event) =>
-                    setForm((current) => ({
-                      ...current,
-                      rewardRules: {
-                        ...current.rewardRules,
-                        rewardExpiryMinutes: Number(event.target.value || 20),
-                      },
-                    }))
-                  }
-                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
-                />
-              </label>
-
               <label className="text-sm">
                 <span className="mb-2 block text-[#616b7c]">Cadeau disponible dans (heures)</span>
                 <input

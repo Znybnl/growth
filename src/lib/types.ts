@@ -116,6 +116,18 @@ export interface CampaignBackgroundSettings {
   imageUrl?: string;
 }
 
+export interface BackgroundLibraryAsset {
+  id: string;
+  label: string;
+  category: string;
+  imageUrl: string;
+  thumbnailUrl: string;
+  source: "built-in" | "uploaded";
+  width?: number;
+  height?: number;
+  createdAt?: string;
+}
+
 export interface CampaignHeadingSettings {
   textColor: string;
   fontSizePx: number;

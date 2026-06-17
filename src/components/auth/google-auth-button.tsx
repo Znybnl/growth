@@ -21,7 +21,9 @@ export function GoogleAuthButton({
 
   async function handleClick() {
     if (!isConfigured) {
-      setError("Google Auth n'est pas encore configuré.");
+      setError(
+        "Google Auth n'est pas configuré : ajoutez NEXT_PUBLIC_SUPABASE_ANON_KEY dans .env.local.",
+      );
       return;
     }
 

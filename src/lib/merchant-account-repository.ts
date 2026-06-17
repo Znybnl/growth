@@ -45,6 +45,15 @@ type GoogleMerchantProfile = {
   fullName: string;
 };
 
+type AuthSyncInput = {
+  email: string;
+  password?: string;
+  firstName: string;
+  lastName: string;
+  merchantId: string;
+  merchantUserId: string;
+};
+
 const DEMO_MERCHANT_LOGIN = {
   email: "camille@maisonsora.fr",
   password: "demo1234",
@@ -52,6 +61,121 @@ const DEMO_MERCHANT_LOGIN = {
 
 function generateId(prefix: string) {
   return `${prefix}-${crypto.randomUUID().slice(0, 8)}`;
+}
+
+function isDuplicateAuthUserError(message: string) {
+  const normalized = message.toLowerCase();
+  return normalized.includes("already been registered") || normalized.includes("already exists");
+}
+
+async function findSupabaseAuthUserByEmailOrMerchantUserId(
+  email: string,
+  merchantUserId: string,
+) {
+  const supabase = getSupabaseAdmin();
+  let page = 1;
+
+  while (true) {
+    const { data, error } = await supabase.auth.admin.listUsers({
+      page,
+      perPage: 200,
+    });
+
+    if (error) {
+      throw new Error("Lecture des utilisateurs Supabase Auth impossible.");
+    }
+
+    const users = data.users ?? [];
+    const match =
+      users.find(
+        (user) =>
+          user.email?.toLowerCase() === email ||
+          user.app_metadata?.merchant_user_id === merchantUserId,
+      ) ?? null;
+
+    if (match) {
+      return match;
+    }
+
+    if (users.length < 200) {
+      return null;
+    }
+
+    page += 1;
+  }
+}
+
+async function ensureSupabaseAuthUser(input: AuthSyncInput) {
+  const supabase = getSupabaseAdmin();
+  const email = input.email.trim().toLowerCase();
+  const existingUser = await findSupabaseAuthUserByEmailOrMerchantUserId(
+    email,
+    input.merchantUserId,
+  );
+
+  const appMetadata = {
+    merchant_id: input.merchantId,
+    merchant_user_id: input.merchantUserId,
+    source: "okado-merchant",
+  };
+  const userMetadata = {
+    first_name: input.firstName,
+    last_name: input.lastName,
+    full_name: `${input.firstName} ${input.lastName}`.trim(),
+  };
+
+  if (existingUser) {
+    const updatePayload: {
+      app_metadata: typeof appMetadata;
+      email?: string;
+      password?: string;
+      user_metadata: typeof userMetadata;
+    } = {
+      app_metadata: appMetadata,
+      user_metadata: userMetadata,
+    };
+
+    if (existingUser.email?.toLowerCase() !== email) {
+      updatePayload.email = email;
+    }
+
+    if (input.password) {
+      updatePayload.password = input.password;
+    }
+
+    const { error } = await supabase.auth.admin.updateUserById(existingUser.id, updatePayload);
+
+    if (error) {
+      throw new Error("Mise a jour de l'utilisateur Supabase Auth impossible.");
+    }
+
+    return existingUser.id;
+  }
+
+  const { data, error } = await supabase.auth.admin.createUser({
+    email,
+    password: input.password ?? crypto.randomUUID(),
+    email_confirm: true,
+    app_metadata: appMetadata,
+    user_metadata: userMetadata,
+  });
+
+  if (error) {
+    if (isDuplicateAuthUserError(error.message)) {
+      const duplicateUser = await findSupabaseAuthUserByEmailOrMerchantUserId(
+        email,
+        input.merchantUserId,
+      );
+
+      if (duplicateUser) {
+        return duplicateUser.id;
+      }
+    }
+
+    throw new Error("Creation de l'utilisateur Supabase Auth impossible.");
+  }
+
+  return data.user.id;
 }
 
 function toMerchant(row: MerchantRow): Merchant {
@@ -190,6 +314,21 @@ export async function createMerchantAccountInSupabase(input: MerchantSignUpInput
     throw new Error("Creation du compte impossible.");
   }
 
+  try {
+    await ensureSupabaseAuthUser({
+      email,
+      password: input.password,
+      firstName,
+      lastName,
+      merchantId,
+      merchantUserId: userId,
+    });
+  } catch (error) {
+    await supabase.from("merchant_users").delete().eq("id", userId);
+    await supabase.from("merchants").delete().eq("id", merchantId);
+    throw error;
+  }
+
   return {
     user: {
       id: userId,
@@ -256,6 +395,15 @@ export async function authenticateMerchantInSupabase(input: MerchantSignInInput)
     throw new Error("Identifiants invalides.");
   }
 
+  await ensureSupabaseAuthUser({
+    email,
+    password: input.password,
+    firstName: data.first_name,
+    lastName: data.last_name,
+    merchantId: data.merchant_id,
+    merchantUserId: data.id,
+  });
+
   const merchant = await getSupabaseMerchantProfile(data.merchant_id);
 
   if (!merchant) {
@@ -295,6 +443,14 @@ export async function authenticateOrProvisionMerchantWithGoogle(
   }
 
   if (existingUser.data) {
+    await ensureSupabaseAuthUser({
+      email,
+      firstName: existingUser.data.first_name,
+      lastName: existingUser.data.last_name,
+      merchantId: existingUser.data.merchant_id,
+      merchantUserId: existingUser.data.id,
+    });
+
     const merchant = await getSupabaseMerchantProfile(existingUser.data.merchant_id);
 
     if (!merchant) {
@@ -353,6 +509,14 @@ export async function authenticateOrProvisionMerchantWithGoogle(
     await supabase.from("merchants").delete().eq("id", merchantId);
     throw new Error("Creation du compte Google impossible.");
   }
+
+  await ensureSupabaseAuthUser({
+    email,
+    firstName: firstName || fullName || "Compte",
+    lastName,
+    merchantId,
+    merchantUserId: userId,
+  });
 
   return {
     user: {
@@ -493,6 +657,14 @@ export async function updateMerchantAccountInSupabase(
     throw new Error("Mise a jour du profil utilisateur impossible.");
   }
 
+  await ensureSupabaseAuthUser({
+    email,
+    firstName: input.firstName.trim(),
+    lastName: input.lastName.trim(),
+    merchantId: userQuery.data.merchant_id,
+    merchantUserId: userId,
+  });
+
   const [merchant, user] = await Promise.all([
     getSupabaseMerchantProfile(userQuery.data.merchant_id),
     getSupabaseMerchantUser(userId),
@@ -503,4 +675,47 @@ export async function updateMerchantAccountInSupabase(
   }
 
   return { merchant, user };
+}
+
+export async function syncMerchantUsersToSupabaseAuthInSupabase() {
+  const supabase = getSupabaseAdmin();
+  const { data, error } = await supabase
+    .from("merchant_users")
+    .select("id, merchant_id, first_name, last_name, email")
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    throw new Error("Lecture des comptes marchands impossible.");
+  }
+
+  const merchantUsers =
+    (data as Array<{
+      id: string;
+      merchant_id: string;
+      first_name: string;
+      last_name: string;
+      email: string;
+    }> | null) ?? [];
+
+  const synced: string[] = [];
+
+  for (const user of merchantUsers) {
+    await ensureSupabaseAuthUser({
+      email: user.email,
+      password:
+        user.email.toLowerCase() === DEMO_MERCHANT_LOGIN.email
+          ? DEMO_MERCHANT_LOGIN.password
+          : undefined,
+      firstName: user.first_name,
+      lastName: user.last_name,
+      merchantId: user.merchant_id,
+      merchantUserId: user.id,
+    });
+    synced.push(user.email);
+  }
+
+  return {
+    total: synced.length,
+    emails: synced,
+  };
 }

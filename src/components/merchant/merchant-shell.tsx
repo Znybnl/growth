@@ -17,6 +17,7 @@ type MerchantShellProps = {
 const navItems = [
   { href: "/", label: "Dashboard" },
   { href: "/campaigns", label: "Campagnes" },
+  { href: "/backgrounds", label: "Bibliothèque" },
   { href: "/data", label: "Données" },
   { href: "/account", label: "Compte" },
 ];
