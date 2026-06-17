@@ -21,7 +21,11 @@ export async function POST(request: Request) {
 
   if (
     body.leadId &&
-    (body.eventType === "review_confirmed" || body.eventType === "social_clicked")
+    [
+      "review_clicked",
+      "review_confirmed",
+      "social_clicked",
+    ].includes(body.eventType)
   ) {
     await markActionConfirmed(body.leadId);
   }

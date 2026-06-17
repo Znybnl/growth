@@ -349,10 +349,22 @@ async function fetchCampaignDependencies(campaignIds: string[]) {
   }
 
   const [{ data: actions }, { data: prizes }, { data: leads }, { data: events }] = await Promise.all([
-    supabase.from("campaign_actions").select("*").in("campaign_id", campaignIds),
-    supabase.from("prizes").select("*").in("campaign_id", campaignIds),
-    supabase.from("leads").select("*").in("campaign_id", campaignIds),
-    supabase.from("campaign_events").select("*").in("campaign_id", campaignIds),
+    supabase
+      .from("campaign_actions")
+      .select("id,campaign_id,position,kind,label,url,created_at")
+      .in("campaign_id", campaignIds),
+    supabase
+      .from("prizes")
+      .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at")
+      .in("campaign_id", campaignIds),
+    supabase
+      .from("leads")
+      .select("id,campaign_id,first_name,email,phone,marketing_consent,consent_timestamp,prize_id,status,created_at,action_confirmed,redemption_code,reward_available_at,reward_expires_at")
+      .in("campaign_id", campaignIds),
+    supabase
+      .from("campaign_events")
+      .select("id,campaign_id,lead_id,event_type,metadata,created_at")
+      .in("campaign_id", campaignIds),
   ]);
 
   return {
@@ -452,20 +464,21 @@ export async function getSupabaseCampaignPerformance(
   const { data } = await supabase.from("campaigns").select("*").eq("id", campaignId).maybeSingle();
   if (!data) return null;
   const row = data as CampaignRow;
-  const merchant =
+  const [merchant, { actions, prizes, leads, events }, localSettings] = await Promise.all([
     fallbackMerchant && fallbackMerchant.id === row.merchant_id
-      ? fallbackMerchant
-      : await (async () => {
+      ? Promise.resolve(fallbackMerchant)
+      : (async () => {
           const merchantResult = await supabase
             .from("merchants")
             .select("*")
             .eq("id", row.merchant_id)
             .maybeSingle();
           return merchantResult.data ? toMerchant(merchantResult.data as MerchantRow) : null;
-        })();
+        })(),
+    fetchCampaignDependencies([campaignId]),
+    getCampaignLocalSettings(campaignId),
+  ]);
   if (!merchant) return null;
-  const { actions, prizes, leads, events } = await fetchCampaignDependencies([campaignId]);
-  const localSettings = await getCampaignLocalSettings(campaignId);
   return buildPerformanceBundle(
     merchant,
     [row],

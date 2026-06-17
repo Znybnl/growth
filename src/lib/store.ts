@@ -21,6 +21,7 @@ import {
   updateMerchantOnboardingInSupabase,
 } from "@/lib/merchant-account-repository";
 import { isSupabaseConfigured } from "@/lib/supabase";
+import { cache } from "react";
 import {
   Campaign,
   CampaignAction,
@@ -848,7 +849,7 @@ function updateMerchantOnboardingInMemory(userId: string, input: MerchantOnboard
   return clone(merchant);
 }
 
-export async function getMerchantProfile(merchantId = merchantSeed.id) {
+export const getMerchantProfile = cache(async function getMerchantProfile(merchantId = merchantSeed.id) {
   if (isSupabaseConfigured()) {
     const merchant = await getSupabaseMerchantProfile(merchantId);
 
@@ -858,9 +859,9 @@ export async function getMerchantProfile(merchantId = merchantSeed.id) {
   }
 
   return getMerchantProfileFromMemory(merchantId);
-}
+});
 
-export async function getMerchantUser(userId: string) {
+export const getMerchantUser = cache(async function getMerchantUser(userId: string) {
   if (isSupabaseConfigured()) {
     const user = await getSupabaseMerchantUser(userId);
 
@@ -870,7 +871,7 @@ export async function getMerchantUser(userId: string) {
   }
 
   return getMerchantUserFromMemory(userId);
-}
+});
 
 export async function getMerchantUserByEmail(email: string) {
   if (isSupabaseConfigured()) {
@@ -1248,23 +1249,23 @@ export async function recordEvent(
   return recordEventInMemory(campaignId, eventType, leadId, metadata);
 }
 
-export async function getPublicCampaign(id: string) {
+export const getPublicCampaign = cache(async function getPublicCampaign(id: string) {
   if (isSupabaseConfigured()) {
     return getSupabasePublicCampaign(id);
   }
 
   return getPublicCampaignFromMemory(id);
-}
+});
 
-export async function getCampaignPerformance(campaignId: string, fallbackMerchant?: Merchant) {
+export const getCampaignPerformance = cache(async function getCampaignPerformance(campaignId: string, fallbackMerchant?: Merchant) {
   if (isSupabaseConfigured()) {
     return getSupabaseCampaignPerformance(campaignId, fallbackMerchant);
   }
 
   return getCampaignPerformanceFromMemory(campaignId);
-}
+});
 
-export async function getMerchantDashboard(
+export const getMerchantDashboard = cache(async function getMerchantDashboard(
   merchantId = merchantSeed.id,
   fallbackMerchant?: Merchant,
 ) {
@@ -1273,23 +1274,23 @@ export async function getMerchantDashboard(
   }
 
   return getMerchantDashboardFromMemory(merchantId, fallbackMerchant);
-}
+});
 
-export async function getMerchantLeads(merchantId = merchantSeed.id, campaignId?: string) {
+export const getMerchantLeads = cache(async function getMerchantLeads(merchantId = merchantSeed.id, campaignId?: string) {
   if (isSupabaseConfigured()) {
     return getSupabaseMerchantLeads(merchantId, campaignId);
   }
 
   return getMerchantLeadsFromMemory(campaignId);
-}
+});
 
-export async function getCampaignDataView(campaignId: string, fallbackMerchant?: Merchant) {
+export const getCampaignDataView = cache(async function getCampaignDataView(campaignId: string, fallbackMerchant?: Merchant) {
   if (isSupabaseConfigured()) {
     return getSupabaseCampaignDataView(campaignId, fallbackMerchant);
   }
 
   return getCampaignDataViewFromMemory(campaignId);
-}
+});
 
 export async function drawForLead(input: DrawRequest, fallbackMerchant?: Merchant) {
   if (isSupabaseConfigured()) {

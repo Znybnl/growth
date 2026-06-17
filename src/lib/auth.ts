@@ -1,16 +1,17 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { cache } from "react";
 
 import { getMerchantProfile, getMerchantUser } from "@/lib/store";
 
 const SESSION_COOKIE = "okado_session";
 
-export async function getSessionUserId() {
+export const getSessionUserId = cache(async function getSessionUserId() {
   const cookieStore = await cookies();
   return cookieStore.get(SESSION_COOKIE)?.value ?? null;
-}
+});
 
-export async function getAuthenticatedSession() {
+export const getAuthenticatedSession = cache(async function getAuthenticatedSession() {
   const userId = await getSessionUserId();
 
   if (!userId) {
@@ -26,7 +27,7 @@ export async function getAuthenticatedSession() {
   const merchant = await getMerchantProfile(user.merchantId);
 
   return { user, merchant };
-}
+});
 
 export async function requireAuthenticatedSession() {
   const session = await getAuthenticatedSession();

@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { GoogleAuthButton } from "@/components/auth/google-auth-button";
+
 export function SignUpForm() {
   const router = useRouter();
   const [form, setForm] = useState({
@@ -65,6 +67,16 @@ export function SignUpForm() {
           Commencez par votre boutique, puis finalisez votre onboarding pour créer votre première
           campagne.
         </p>
+      </div>
+
+      <div className="mt-8">
+        <GoogleAuthButton mode="signup" nextPath="/onboarding" />
+      </div>
+
+      <div className="mt-8 flex items-center gap-4">
+        <div className="h-px flex-1 bg-[#e7ecf4]" />
+        <span className="text-sm text-[#9ca3af]">ou continuez avec le formulaire</span>
+        <div className="h-px flex-1 bg-[#e7ecf4]" />
       </div>
 
       <div className="mt-8 grid gap-4 md:grid-cols-2">

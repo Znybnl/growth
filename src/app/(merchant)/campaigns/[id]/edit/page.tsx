@@ -13,8 +13,10 @@ type CampaignEditPageProps = {
 export default async function CampaignEditPage({ params }: CampaignEditPageProps) {
   const { id } = await params;
   const session = await requireAuthenticatedSession();
-  const dashboard = await getMerchantDashboard(session.merchant.id, session.merchant);
-  const campaign = await getCampaignPerformance(id, session.merchant);
+  const [dashboard, campaign] = await Promise.all([
+    getMerchantDashboard(session.merchant.id, session.merchant),
+    getCampaignPerformance(id, session.merchant),
+  ]);
 
   if (!campaign || campaign.campaign.merchantId !== session.merchant.id) {
     notFound();

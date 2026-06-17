@@ -89,11 +89,18 @@ function Histogram({
 export default async function DataPage({ searchParams }: DataPageProps) {
   const session = await requireAuthenticatedSession();
   const params = await searchParams;
-  const dashboard = await getMerchantDashboard(session.merchant.id, session.merchant);
-  const selectedCampaignId = params.campaign ?? dashboard.campaigns[0]?.campaign.id ?? getPrimaryCampaignId();
-  const dataView = selectedCampaignId
-    ? await getCampaignDataView(selectedCampaignId, session.merchant)
-    : null;
+  const initialSelectedCampaignId = params.campaign ?? undefined;
+  const [dashboard, initialDataView] = await Promise.all([
+    getMerchantDashboard(session.merchant.id, session.merchant),
+    initialSelectedCampaignId
+      ? getCampaignDataView(initialSelectedCampaignId, session.merchant)
+      : Promise.resolve(null),
+  ]);
+  const selectedCampaignId =
+    initialSelectedCampaignId ?? dashboard.campaigns[0]?.campaign.id ?? getPrimaryCampaignId();
+  const dataView =
+    initialDataView ??
+    (selectedCampaignId ? await getCampaignDataView(selectedCampaignId, session.merchant) : null);
 
   if (!dataView || dataView.performance.campaign.merchantId !== session.merchant.id) {
     return (

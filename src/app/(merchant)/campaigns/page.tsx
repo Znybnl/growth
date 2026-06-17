@@ -1,7 +1,6 @@
 import Link from "next/link";
 
-import { DeleteCampaignButton } from "@/components/merchant/delete-campaign-button";
-import { DuplicateCampaignButton } from "@/components/merchant/duplicate-campaign-button";
+import { CampaignActionsMenu } from "@/components/merchant/campaign-actions-menu";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import { formatCurrency, formatPercent, gameTypeLabel, goalLabel } from "@/lib/format";
 import { getMerchantDashboard } from "@/lib/store";
@@ -123,18 +122,12 @@ export default async function CampaignsPage({
                 </div>
               </div>
 
-              <div className="mt-5 flex flex-wrap gap-3">
-                <Link
-                  href={`/data?campaign=${item.campaign.id}`}
-                  className="rounded-[18px] bg-[#111827] px-4 py-3 text-sm font-semibold !text-white"
-                >
-                  Voir les données
-                </Link>
+              <div className="mt-5 flex flex-wrap items-start gap-3">
                 <Link
                   href={`/campaigns/${item.campaign.id}/edit`}
-                  className="rounded-[18px] border border-[#d7e0ed] px-4 py-3 text-sm font-semibold text-[#182033]"
+                  className="rounded-[18px] bg-[#2f6df6] px-4 py-3 text-sm font-semibold !text-white shadow-[0_16px_32px_rgba(47,109,246,0.22)]"
                 >
-                  Paramétrer
+                  Modifier
                 </Link>
                 <Link
                   href={`/campaign/${item.campaign.id}`}
@@ -142,22 +135,16 @@ export default async function CampaignsPage({
                   rel="noreferrer"
                   className="rounded-[18px] border border-[#d7e0ed] px-4 py-3 text-sm font-semibold text-[#182033]"
                 >
-                  Ouvrir la campagne
+                  Ouvrir
                 </Link>
-                <a
-                  href={`/api/campaigns/${item.campaign.id}/qr`}
+                <Link
+                  href={`/data?campaign=${item.campaign.id}`}
                   className="rounded-[18px] border border-[#d7e0ed] px-4 py-3 text-sm font-semibold text-[#182033]"
                 >
-                  Exporter le QR code
-                </a>
-                <a
-                  href={`/api/campaigns/${item.campaign.id}/poster`}
-                  className="rounded-[18px] bg-[#2f6df6] px-4 py-3 text-sm font-semibold !text-white"
-                >
-                  Télécharger l&apos;affiche A4
-                </a>
-                <DuplicateCampaignButton campaignId={item.campaign.id} />
-                <DeleteCampaignButton
+                  Données
+                </Link>
+
+                <CampaignActionsMenu
                   campaignId={item.campaign.id}
                   campaignTitle={item.campaign.title}
                 />

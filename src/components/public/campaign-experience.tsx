@@ -98,6 +98,12 @@ export function CampaignExperience({
       : campaign.presentation.heading.fontFamily === "sans"
         ? "font-sans"
         : "font-display";
+  const actionEventType =
+    campaign.goalType === "review_prompt"
+      ? "review_clicked"
+      : campaign.goalType === "social_follow"
+        ? "social_clicked"
+        : null;
 
   useEffect(() => {
     async function loadCampaign() {
@@ -402,7 +408,9 @@ export function CampaignExperience({
                   href={currentAction.url}
                   target="_blank"
                   rel="noreferrer"
-                  onClick={() => void trackEvent("social_clicked", drawResult.lead.id)}
+                  onClick={() =>
+                    actionEventType ? void trackEvent(actionEventType, drawResult.lead.id) : undefined
+                  }
                   className={`block w-full rounded-[22px] border text-center font-semibold ${previewButtonClass}`}
                 style={{
                   backgroundColor: campaign.presentation.button.backgroundColor,

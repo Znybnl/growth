@@ -22,10 +22,10 @@ export function AuthShell({
   children,
 }: AuthShellProps) {
   return (
-    <div className="h-screen overflow-hidden bg-[#f3f6fb]">
-      <div className="grid h-full xl:grid-cols-2">
-        <section className="flex h-full items-center justify-center bg-white px-6 py-8 lg:px-12">
-          <div className="w-full max-w-[430px]">
+    <div className="min-h-screen overflow-x-hidden bg-[#f3f6fb]">
+      <div className="grid min-h-screen xl:grid-cols-[minmax(0,1.05fr)_minmax(420px,0.95fr)]">
+        <section className="flex min-h-screen justify-center overflow-y-auto bg-white px-4 py-8 sm:px-6 lg:px-10 xl:px-12 xl:py-10">
+          <div className="flex w-full max-w-[760px] flex-col justify-center">
             <div className="mb-8 flex items-center gap-3">
               <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#1f5fd6] text-sm font-semibold uppercase tracking-[0.2em] text-white shadow-[0_10px_24px_rgba(31,95,214,0.22)]">
                 OK
@@ -35,11 +35,13 @@ export function AuthShell({
                 <p className="text-sm text-[#7b8496]">{APP_TAGLINE}</p>
               </div>
             </div>
-            {children}
+            <div className="rounded-[32px] border border-[#e6ecf5] bg-white p-0 sm:p-1">
+              {children}
+            </div>
           </div>
         </section>
 
-        <section className="relative hidden h-full overflow-hidden bg-[linear-gradient(180deg,#1f5fd6_0%,#1a58ca_100%)] xl:flex xl:flex-col xl:items-center xl:justify-center">
+        <section className="relative hidden min-h-screen overflow-hidden bg-[linear-gradient(180deg,#1f5fd6_0%,#1a58ca_100%)] xl:flex xl:flex-col xl:items-center xl:justify-center">
           <div className="absolute inset-0">
             <div className="absolute left-1/2 top-[18%] h-[460px] w-[460px] -translate-x-1/2 rounded-full bg-[#2c7be7]" />
             <div className="absolute left-1/2 top-[26%] h-[320px] w-[320px] -translate-x-1/2 rounded-full border border-white/10" />

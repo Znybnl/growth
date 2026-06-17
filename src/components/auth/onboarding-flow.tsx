@@ -10,23 +10,23 @@ const steps = [
   {
     id: "profil",
     label: "Profil",
-    title: "Renseignez l'identite de votre boutique",
+    title: "Renseignez l'identité de votre boutique",
     description:
-      "On pose les informations utiles pour l'equipe et pour vos prochaines campagnes.",
+      "On pose les informations utiles pour l'équipe et pour vos prochaines campagnes.",
   },
   {
     id: "objectifs",
     label: "Objectifs",
-    title: "Choisissez vos priorites marketing",
+    title: "Choisissez vos priorités marketing",
     description:
-      "Selectionnez les leviers qui comptent vraiment pour vos prochaines activations locales.",
+      "Sélectionnez les leviers qui comptent vraiment pour vos prochaines activations locales.",
   },
   {
     id: "diffusion",
     label: "Diffusion",
-    title: "Preparez la diffusion en magasin",
+    title: "Préparez la diffusion en magasin",
     description:
-      "Validez les supports terrain pour arriver sur la creation de campagne avec un cadre propre.",
+      "Validez les supports terrain pour arriver sur la création de campagne avec un cadre propre.",
   },
 ] as const;
 
@@ -34,14 +34,14 @@ const goalOptions = [
   "Avis Google et reputation locale",
   "Instagram, TikTok, Facebook",
   "Collecte CRM et opt-in",
-  "Retour en boutique avec cadeaux differes",
+  "Retour en boutique avec cadeaux différés",
 ];
 
 const diffusionOptions = [
   "QR code vitrine et comptoir",
   "NFC sur support table ou borne",
   "Script equipe magasin",
-  "Dotation et regles de retrait",
+  "Dotation et règles de retrait",
 ];
 
 type OnboardingFlowProps = {
@@ -113,7 +113,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 px-1 py-2 sm:px-5 sm:py-4">
       <div className="flex flex-col gap-6 rounded-[36px] border border-[#dbe4f0] bg-white/90 p-6 shadow-[0_28px_60px_rgba(108,126,156,0.16)]">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
@@ -121,10 +121,10 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
               Onboarding marchand
             </p>
             <h1 className="mt-3 font-display text-5xl leading-[0.94] text-[#121826]">
-              Preparez votre espace en 3 etapes
+              Préparez votre espace en 3 étapes
             </h1>
             <p className="mt-4 max-w-[62ch] text-sm leading-7 text-[#5c6577]">
-              Un tunnel court, sans detour, pour arriver sur la creation de campagne avec une base
+              Un tunnel court, sans détour, pour arriver sur la création de campagne avec une base
               propre et exploitable.
             </p>
           </div>
@@ -138,7 +138,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
               />
             </div>
             <p className="mt-4 text-sm text-white/76">
-              Etape {activeIndex + 1} sur {steps.length}
+              Étape {activeIndex + 1} sur {steps.length}
             </p>
             <p className="mt-2 text-2xl font-semibold">{activeStep.label}</p>
           </div>
@@ -170,10 +170,10 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
                           : "bg-[#eef2f7] text-[#667084]"
                     }`}
                   >
-                    {completed ? "✓" : index + 1}
+                    {completed ? "OK" : index + 1}
                   </span>
                   <div>
-                    <p className="text-xs uppercase tracking-[0.24em] text-[#7b8496]">Etape</p>
+                    <p className="text-xs uppercase tracking-[0.24em] text-[#7b8496]">Étape</p>
                     <p className="mt-1 text-lg font-semibold text-[#111827]">{step.label}</p>
                   </div>
                 </div>
@@ -186,7 +186,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
 
       <div className="grid gap-6 lg:grid-cols-[0.42fr_0.58fr]">
         <div className="rounded-[34px] bg-[linear-gradient(180deg,#1e56e9,#1236aa)] p-6 text-white shadow-[0_28px_60px_rgba(20,53,143,0.28)]">
-          <p className="text-xs uppercase tracking-[0.28em] text-white/58">Etape active</p>
+          <p className="text-xs uppercase tracking-[0.28em] text-white/58">Étape active</p>
           <h2 className="mt-3 font-display text-4xl leading-[0.98]">{activeStep.title}</h2>
           <p className="mt-4 text-sm leading-7 text-white/78">{activeStep.description}</p>
 
@@ -253,7 +253,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
                   />
                 </label>
                 <label className="text-sm">
-                  <span className="mb-2 block text-[#616b7c]">Referent campagne</span>
+                  <span className="mb-2 block text-[#616b7c]">Référent campagne</span>
                   <input
                     value={contactName}
                     onChange={(event) => setContactName(event.target.value)}
@@ -261,7 +261,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
                   />
                 </label>
                 <label className="text-sm">
-                  <span className="mb-2 block text-[#616b7c]">Telephone magasin</span>
+                  <span className="mb-2 block text-[#616b7c]">Téléphone magasin</span>
                   <input
                     value={phone}
                     onChange={(event) => setPhone(event.target.value)}
@@ -276,7 +276,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
             <div>
               <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Objectifs</p>
               <h2 className="mt-2 text-3xl font-semibold text-[#111827]">
-                Leviers a activer en priorite
+                Leviers à activer en priorité
               </h2>
               <div className="mt-6 grid gap-4 md:grid-cols-2">
                 {goalOptions.map((choice) => (
@@ -301,7 +301,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
             <div>
               <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Diffusion</p>
               <h2 className="mt-2 text-3xl font-semibold text-[#111827]">
-                Supports a prevoir pour le lancement
+                Supports à prévoir pour le lancement
               </h2>
               <div className="mt-6 space-y-3">
                 {diffusionOptions.map((item) => (
@@ -351,7 +351,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
                 onClick={goNext}
                 className="rounded-[20px] bg-[#2f6df6] px-5 py-3 text-sm font-semibold text-white shadow-[0_16px_32px_rgba(47,109,246,0.22)]"
               >
-                Etape suivante
+                Étape suivante
               </button>
             ) : (
               <button

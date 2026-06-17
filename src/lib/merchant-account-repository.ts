@@ -35,6 +35,13 @@ type MerchantUserRow = {
   created_at: string;
 };
 
+type GoogleMerchantProfile = {
+  email: string;
+  firstName: string;
+  lastName: string;
+  fullName: string;
+};
+
 function generateId(prefix: string) {
   return `${prefix}-${crypto.randomUUID().slice(0, 8)}`;
 }
@@ -222,6 +229,119 @@ export async function authenticateMerchantInSupabase(input: MerchantSignInInput)
   return {
     user: toMerchantUser(data),
     merchant,
+  };
+}
+
+function deriveCompanyName(profile: GoogleMerchantProfile) {
+  const trimmedName = profile.fullName.trim();
+
+  if (trimmedName) {
+    return trimmedName;
+  }
+
+  const localPart = profile.email.split("@")[0]?.trim();
+  return localPart ? localPart.slice(0, 48) : "Mon commerce";
+}
+
+export async function authenticateOrProvisionMerchantWithGoogle(
+  profile: GoogleMerchantProfile,
+) {
+  const supabase = getSupabaseAdmin();
+  const email = profile.email.trim().toLowerCase();
+  const existingUser = await supabase
+    .from("merchant_users")
+    .select("id, merchant_id, first_name, last_name, email, password_hash, created_at")
+    .eq("email", email)
+    .maybeSingle<MerchantUserRow>();
+
+  if (existingUser.error) {
+    throw new Error("Connexion Google impossible.");
+  }
+
+  if (existingUser.data) {
+    const merchant = await getSupabaseMerchantProfile(existingUser.data.merchant_id);
+
+    if (!merchant) {
+      throw new Error("Marchand introuvable.");
+    }
+
+    return {
+      user: toMerchantUser(existingUser.data),
+      merchant,
+    };
+  }
+
+  const merchantId = generateId("merchant");
+  const userId = generateId("user");
+  const firstName = profile.firstName.trim();
+  const lastName = profile.lastName.trim();
+  const fullName = profile.fullName.trim();
+  const companyName = deriveCompanyName(profile);
+  const contactName = fullName || `${firstName} ${lastName}`.trim();
+  const createdAt = new Date().toISOString();
+
+  const merchantInsert = await supabase.from("merchants").insert({
+    id: merchantId,
+    company_name: companyName,
+    logo_text: companyName.slice(0, 2).toUpperCase(),
+    logo_url: null,
+    city: "",
+    contact_name: contactName,
+    phone: "",
+    onboarding_completed: false,
+    preferred_goals: [],
+    diffusion_support: [],
+    google_review_url: "",
+    instagram_url: "",
+    default_prize_cost: 3,
+    created_at: createdAt,
+  });
+
+  if (merchantInsert.error) {
+    throw new Error("Creation du marchand impossible.");
+  }
+
+  const userInsert = await supabase.from("merchant_users").insert({
+    id: userId,
+    merchant_id: merchantId,
+    first_name: firstName || fullName || "Compte",
+    last_name: lastName,
+    email,
+    password_hash: hashPassword(crypto.randomUUID()),
+    created_at: createdAt,
+  });
+
+  if (userInsert.error) {
+    await supabase.from("merchants").delete().eq("id", merchantId);
+    throw new Error("Creation du compte Google impossible.");
+  }
+
+  return {
+    user: {
+      id: userId,
+      merchantId,
+      firstName: firstName || fullName || "Compte",
+      lastName,
+      email,
+      password: "",
+      createdAt,
+    },
+    merchant: {
+      id: merchantId,
+      companyName,
+      logoText: companyName.slice(0, 2).toUpperCase(),
+      logoUrl: undefined,
+      city: undefined,
+      contactName: contactName || undefined,
+      phone: undefined,
+      onboardingCompleted: false,
+      preferredGoals: [],
+      diffusionSupport: [],
+      googleReviewUrl: "",
+      instagramUrl: "",
+      defaultPrizeCost: 3,
+      createdAt,
+    },
   };
 }
 

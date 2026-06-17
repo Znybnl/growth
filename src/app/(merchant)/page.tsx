@@ -19,14 +19,17 @@ export default async function DashboardPage({
   const session = await requireAuthenticatedSession();
   const params = await searchParams;
   const query = params.q?.trim().toLowerCase() ?? "";
-  const dashboard = await getMerchantDashboard(session.merchant.id, session.merchant);
+  const [dashboard, merchantLeads] = await Promise.all([
+    getMerchantDashboard(session.merchant.id, session.merchant),
+    getMerchantLeads(session.merchant.id),
+  ]);
   const filteredCampaigns = query
     ? dashboard.campaigns.filter((item) =>
         `${item.campaign.title} ${item.campaign.subtitle}`.toLowerCase().includes(query),
       )
     : dashboard.campaigns;
   const merchantCampaignIds = new Set(filteredCampaigns.map((item) => item.campaign.id));
-  const recentLeads = (await getMerchantLeads(session.merchant.id))
+  const recentLeads = merchantLeads
     .filter((lead) => merchantCampaignIds.has(lead.campaignId))
     .filter((lead) =>
       query ? `${lead.firstName} ${lead.email} ${lead.campaignTitle}`.toLowerCase().includes(query) : true,

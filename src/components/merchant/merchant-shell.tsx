@@ -6,7 +6,7 @@ import { useState } from "react";
 
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { BrandMark } from "@/components/brand-mark";
-import { APP_NAME, APP_TAGLINE } from "@/lib/branding";
+import { APP_NAME_CAPITALIZED } from "@/lib/branding";
 import { Merchant } from "@/lib/types";
 
 type MerchantShellProps = {
@@ -40,32 +40,30 @@ export function MerchantShell({ children, merchant }: MerchantShellProps) {
 
   return (
     <div className="h-screen overflow-hidden bg-[#edf2f8] text-[#10131a]">
+      {menuOpen ? (
+        <button
+          type="button"
+          aria-label="Fermer le menu"
+          className="fixed inset-0 z-30 bg-[#0f1728]/28 md:hidden"
+          onClick={() => setMenuOpen(false)}
+        />
+      ) : null}
+
       <aside
         className={`fixed inset-y-0 left-0 z-40 w-[304px] border-r border-[#dfe6f0] bg-white shadow-[0_20px_60px_rgba(120,132,158,0.14)] transition-transform duration-200 md:translate-x-0 ${
           menuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         <div className="flex h-full flex-col px-5 py-5">
-          <div className="rounded-[26px] bg-[#f7f9fc] p-3">
-            <div className="mb-3 flex items-center gap-3 border-b border-[#e7edf6] pb-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#121826] text-sm font-semibold uppercase tracking-[0.2em] text-white shadow-[0_10px_24px_rgba(18,24,38,0.16)]">
+          <div className="px-2 py-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-[18px] bg-[#121826] text-sm font-semibold uppercase tracking-[0.24em] text-white shadow-[0_12px_24px_rgba(18,24,38,0.18)]">
                 OK
               </div>
               <div className="min-w-0">
-                <p className="text-xs uppercase tracking-[0.24em] text-[#8c93a4]">Application</p>
-                <h1 className="truncate text-base font-semibold">{APP_NAME}</h1>
-                <p className="mt-1 text-sm text-[#98a0b0]">{APP_TAGLINE}</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <BrandMark logoText={merchant.logoText} logoUrl={merchant.logoUrl} size="md" />
-              <div className="min-w-0">
-                <p className="text-xs uppercase tracking-[0.24em] text-[#8c93a4]">
-                  Espace marchand
-                </p>
-                <h2 className="truncate text-base font-semibold">{merchant.companyName}</h2>
-                <p className="mt-1 text-sm text-[#98a0b0]">Compte boutique</p>
+                <h1 className="truncate font-display text-[28px] leading-none tracking-[-0.05em] text-[#121826]">
+                  {APP_NAME_CAPITALIZED}
+                </h1>
               </div>
             </div>
           </div>
