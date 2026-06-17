@@ -1,5 +1,3 @@
-import sharp from "sharp";
-
 import { builtInBackgroundAssets } from "@/lib/background-library";
 import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/supabase";
 import { BackgroundLibraryAsset } from "@/lib/types";
@@ -108,6 +106,7 @@ export async function createBackgroundAsset(input: CreateBackgroundAssetInput) {
 
   const supabase = getSupabaseAdmin();
   const assetId = generateId("bg");
+  const sharp = (await import("sharp")).default;
   const optimized = sharp(input.fileBuffer, { failOn: "none" }).rotate();
   const metadata = await optimized.metadata();
   const output = await optimized
