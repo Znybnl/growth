@@ -1140,6 +1140,7 @@ export function CampaignEditor({
             </div>
           </section>
 
+          {false ? (
           <section className="rounded-[30px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
             <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
               <div>
@@ -1448,6 +1449,7 @@ export function CampaignEditor({
               </div>
             </div>
           </section>
+          ) : null}
 
           <section className="rounded-[30px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
             <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Espacement</p>
@@ -2097,12 +2099,12 @@ export function CampaignEditor({
                   >
                     QR
                   </a>
-                  <a
-                    href={`/api/campaigns/${form.id}/poster`}
+                  <Link
+                    href={`/campaigns/${form.id}/poster`}
                     className="rounded-[18px] bg-[#2f6df6] px-4 py-3 text-sm font-semibold !text-white"
                   >
-                    Affiche A4
-                  </a>
+                    Affiche
+                  </Link>
                   <Link
                     href={`/campaign/${form.id}`}
                     target="_blank"
