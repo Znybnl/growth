@@ -8,7 +8,7 @@ type CampaignLocalSettings = {
   blockSpacingPx?: number;
   logoMode?: "none" | "image" | "text";
   logoText?: string;
-  poster?: CampaignPosterSettings;
+  poster?: Partial<CampaignPosterSettings>;
 };
 
 type CampaignLocalSettingsStore = Record<string, CampaignLocalSettings>;

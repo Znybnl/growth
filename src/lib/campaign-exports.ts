@@ -1,5 +1,10 @@
 import QRCode from "qrcode";
 
+import {
+  buildPosterWheelSegments,
+  createPosterSettingsDefaults,
+  normalizePosterSettings,
+} from "@/lib/poster-utils";
 import { CampaignPerformance } from "@/lib/types";
 
 const A4_WIDTH = 794;
@@ -35,7 +40,10 @@ function splitLines(text: string, maxChars: number) {
     current = word;
   }
 
-  if (current) lines.push(current);
+  if (current) {
+    lines.push(current);
+  }
+
   return lines;
 }
 
@@ -66,8 +74,22 @@ export async function createCampaignPosterSvg(
   performance: CampaignPerformance,
   publicUrl: string,
 ) {
-  const { campaign, merchant } = performance;
-  const poster = campaign.presentation.poster;
+  const { campaign, merchant, prizes } = performance;
+  const poster = normalizePosterSettings(
+    campaign.presentation.poster,
+    createPosterSettingsDefaults({
+      logoUrl: campaign.logoUrl,
+      logoSizePercent: campaign.presentation.logo.sizePercent,
+      logoBottomMarginPx: campaign.presentation.logo.marginBottomPx,
+      backgroundImageUrl: campaign.presentation.background.imageUrl ?? "",
+      headline: campaign.subtitle,
+      headlineTextColor: campaign.presentation.heading.textColor,
+      headlineFontSizePx: campaign.presentation.heading.fontSizePx,
+      headlineFontFamily: campaign.presentation.heading.fontFamily,
+      wheel: campaign.presentation.wheel,
+      footerBackgroundColor: campaign.accent.signal,
+    }),
+  );
   const qrDataUrl = await QRCode.toDataURL(publicUrl, {
     margin: 1,
     width: 720,
@@ -78,13 +100,35 @@ export async function createCampaignPosterSvg(
   });
 
   const wheel = poster.wheel;
+  const wheelSegments = buildPosterWheelSegments(prizes, wheel);
   const headingFamily = fontFamily(poster.headlineFontFamily);
-  const headlineLines = splitLines(poster.headline || campaign.subtitle || campaign.title, 18).slice(0, 3);
+  const headlineLines = splitLines(
+    poster.headline || campaign.subtitle || campaign.title,
+    18,
+  ).slice(0, 3);
   const headingSize = clamp(poster.headlineFontSizePx * 1.16, 34, 76);
   const logoUrl = poster.logoUrl || campaign.logoUrl || merchant.logoUrl;
   const logoWidth = clamp((poster.logoSizePercent / 100) * 210, 92, 310);
   const logoHeight = clamp((poster.logoSizePercent / 100) * 90, 48, 145);
   const gameIsWheel = campaign.gameType === "wheel";
+
+  const headlineStartY = 60 + logoHeight + poster.logoBottomMarginPx + headingSize * 0.88;
+  const headlineEndY =
+    headlineStartY +
+    headlineLines.length * headingSize +
+    Math.max(0, headlineLines.length - 1) * 7;
+  const wheelCenterX = 397;
+  const wheelCenterY = clamp(headlineEndY + 215, 532, 584);
+  const wheelRadius = 232;
+  const scratchX = 118;
+  const scratchY = clamp(headlineEndY + 56, 338, 420);
+  const qrX = gameIsWheel ? 450 : 430;
+  const qrY = gameIsWheel ? clamp(wheelCenterY + 74, 612, 684) : clamp(scratchY + 228, 604, 670);
+  const qrSize = 214;
+  const scanLabelY = gameIsWheel ? clamp(wheelCenterY + 110, 644, 720) : clamp(scratchY + 292, 706, 756);
+  const footerY = 942;
+  const actionLabel = gameIsWheel ? "Faites tourner" : "Grattez";
+  const actionBody = gameIsWheel ? "la roue" : "le ticket";
 
   const backgroundMarkup = poster.backgroundImageUrl
     ? `
@@ -98,10 +142,11 @@ export async function createCampaignPosterSvg(
     : `<text x="${A4_WIDTH / 2}" y="116" text-anchor="middle" fill="#ffffff" font-family="${headingFamily}" font-size="${clamp(logoWidth * 0.28, 28, 62)}" font-weight="900">${escapeXml(campaign.logoText ?? merchant.companyName)}</text>`;
 
   const headlineMarkup = headlineLines
-    .map((line, index) => `
+    .map(
+      (line, index) => `
       <text
         x="${A4_WIDTH / 2}"
-        y="${190 + index * (headingSize + 7)}"
+        y="${headlineStartY + index * (headingSize + 7)}"
         text-anchor="middle"
         fill="${poster.headlineTextColor}"
         font-family="${headingFamily}"
@@ -110,20 +155,10 @@ export async function createCampaignPosterSvg(
         paint-order="stroke"
         stroke="rgba(9,12,20,0.34)"
         stroke-width="6"
-      >${escapeXml(line)}</text>`)
+      >${escapeXml(line)}</text>`,
+    )
     .join("");
 
-  const wheelCenterX = 397;
-  const wheelCenterY = 548;
-  const wheelRadius = 235;
-  const wheelSegments = [
-    { color: wheel.winColor, label: "GAGNE" },
-    { color: wheel.loseColor, label: "PERDU" },
-    { color: wheel.alternateWinColor, label: "GAGNE" },
-    { color: wheel.alternateLoseColor, label: "PERDU" },
-    { color: wheel.winColor, label: "CADEAU" },
-    { color: wheel.loseColor, label: "PERDU" },
-  ];
   const wheelMarkup = wheelSegments
     .map((segment, index) => {
       const angle = (index * 60 - 90) * (Math.PI / 180);
@@ -132,10 +167,20 @@ export async function createCampaignPosterSvg(
       const y1 = wheelCenterY + Math.sin(angle) * wheelRadius;
       const x2 = wheelCenterX + Math.cos(nextAngle) * wheelRadius;
       const y2 = wheelCenterY + Math.sin(nextAngle) * wheelRadius;
+      const lines = splitLines(segment.label, 10).slice(0, 2);
+      const fontSize = lines.length > 1 ? 22 : 26;
+      const firstDy = lines.length > 1 ? -10 : 0;
 
       return `
         <path d="M ${wheelCenterX} ${wheelCenterY} L ${x1.toFixed(1)} ${y1.toFixed(1)} A ${wheelRadius} ${wheelRadius} 0 0 1 ${x2.toFixed(1)} ${y2.toFixed(1)} Z" fill="${segment.color}"/>
-        <text x="${wheelCenterX}" y="${wheelCenterY - 138}" fill="#ffffff" font-family="Arial, sans-serif" font-size="29" font-weight="900" text-anchor="middle" transform="rotate(${index * 60 - 60} ${wheelCenterX} ${wheelCenterY})">${segment.label}</text>
+        <text x="${wheelCenterX}" y="${wheelCenterY - 140}" fill="${segment.textColor}" font-family="Arial, sans-serif" font-size="${fontSize}" font-weight="900" text-anchor="middle" transform="rotate(${index * 60 - 60} ${wheelCenterX} ${wheelCenterY})">
+          ${lines
+            .map(
+              (line, lineIndex) =>
+                `<tspan x="${wheelCenterX}" dy="${lineIndex === 0 ? firstDy : 26}">${escapeXml(line)}</tspan>`,
+            )
+            .join("")}
+        </text>
       `;
     })
     .join("");
@@ -143,7 +188,7 @@ export async function createCampaignPosterSvg(
   const gameMarkup = gameIsWheel
     ? `
       <g filter="url(#shadowStrong)">
-        <circle cx="${wheelCenterX}" cy="${wheelCenterY}" r="${wheelRadius + 28}" fill="${wheel.rimColor}"/>
+        <circle cx="${wheelCenterX}" cy="${wheelCenterY}" r="${wheelRadius + 26}" fill="${wheel.rimColor}"/>
         <circle cx="${wheelCenterX}" cy="${wheelCenterY}" r="${wheelRadius}" fill="#111827"/>
         ${wheelMarkup}
         <circle cx="${wheelCenterX}" cy="${wheelCenterY}" r="46" fill="#111827"/>
@@ -152,31 +197,30 @@ export async function createCampaignPosterSvg(
       </g>
     `
     : `
-      <g filter="url(#shadowStrong)" transform="translate(118 342) rotate(-3 280 210)">
-        <rect x="0" y="0" width="560" height="380" rx="34" fill="#111827"/>
-        <rect x="24" y="24" width="512" height="332" rx="28" fill="#ffffff"/>
-        <rect x="54" y="76" width="452" height="186" rx="28" fill="url(#scratchMetal)"/>
-        <text x="280" y="172" text-anchor="middle" fill="#111827" font-family="Arial, sans-serif" font-size="34" font-weight="900">GRATTEZ ICI</text>
-        <text x="280" y="306" text-anchor="middle" fill="#111827" font-family="Arial, sans-serif" font-size="29" font-weight="900">TICKET À GRATTER</text>
+      <g filter="url(#shadowStrong)" transform="translate(${scratchX} ${scratchY}) rotate(-3 280 210)">
+        <rect x="0" y="0" width="560" height="376" rx="34" fill="#ffffff" stroke="#111827" stroke-width="10"/>
+        <rect x="24" y="24" width="512" height="328" rx="28" fill="#f8fafc"/>
+        <text x="280" y="78" text-anchor="middle" fill="#111827" font-family="Arial, sans-serif" font-size="22" font-weight="900" letter-spacing="3">TICKET À GRATTER</text>
+        <rect x="58" y="106" width="444" height="170" rx="28" fill="url(#scratchMetal)"/>
+        <text x="280" y="202" text-anchor="middle" fill="#111827" font-family="Arial, sans-serif" font-size="34" font-weight="900">GRATTEZ ICI</text>
+        <rect x="120" y="298" width="320" height="40" rx="14" fill="#111827"/>
+        <text x="280" y="324" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="20" font-weight="900">${escapeXml(prizes[0]?.label ?? "Cadeau surprise")}</text>
       </g>
     `;
-
-  const qrX = gameIsWheel ? 452 : 428;
-  const qrY = gameIsWheel ? 622 : 604;
-  const qrSize = 220;
-  const actionLabel = gameIsWheel ? "Faites tourner" : "Grattez";
-  const actionBody = gameIsWheel ? "la roue" : "le ticket";
 
   return `
     <svg xmlns="http://www.w3.org/2000/svg" width="${A4_WIDTH}" height="${A4_HEIGHT}" viewBox="0 0 ${A4_WIDTH} ${A4_HEIGHT}">
       <defs>
         <filter id="shadowStrong" x="-24%" y="-24%" width="148%" height="148%">
-          <feDropShadow dx="0" dy="22" stdDeviation="24" flood-color="#020617" flood-opacity="0.44"/>
+          <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#020617" flood-opacity="0.32"/>
+        </filter>
+        <filter id="shadowMild" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#020617" flood-opacity="0.18"/>
         </filter>
         <linearGradient id="scratchMetal" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#d9dee8"/>
-          <stop offset="42%" stop-color="#ffffff"/>
-          <stop offset="100%" stop-color="#aeb8c9"/>
+          <stop offset="0%" stop-color="#dde3ee"/>
+          <stop offset="45%" stop-color="#ffffff"/>
+          <stop offset="100%" stop-color="#b5bfd2"/>
         </linearGradient>
         <pattern id="dotPattern" width="18" height="18" patternUnits="userSpaceOnUse">
           <circle cx="4" cy="4" r="2.4" fill="#ffffff" opacity="0.68"/>
@@ -191,34 +235,36 @@ export async function createCampaignPosterSvg(
       ${headlineMarkup}
       ${gameMarkup}
 
-      <g filter="url(#shadowStrong)" transform="translate(100 660) rotate(-5)">
+      <g filter="url(#shadowMild)" transform="translate(100 ${scanLabelY}) rotate(-5)">
         <rect width="210" height="78" rx="10" fill="#05070c"/>
         <text x="105" y="32" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="25" font-weight="900">SCANNEZ</text>
         <text x="105" y="63" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="25" font-weight="900">POUR JOUER</text>
       </g>
 
       <g filter="url(#shadowStrong)" transform="translate(${qrX} ${qrY}) rotate(-4 ${qrSize / 2} ${qrSize / 2})">
-        <rect x="-12" y="-12" width="${qrSize + 24}" height="${qrSize + 24}" rx="28" fill="#111827"/>
+        <rect x="-10" y="-10" width="${qrSize + 20}" height="${qrSize + 20}" rx="28" fill="#111827"/>
         <rect x="0" y="0" width="${qrSize}" height="${qrSize}" rx="18" fill="#ffffff"/>
         <image href="${qrDataUrl}" x="16" y="16" width="${qrSize - 32}" height="${qrSize - 32}"/>
       </g>
 
-      <rect x="0" y="964" width="${A4_WIDTH}" height="159" fill="#111827"/>
-      <rect x="0" y="1058" width="${A4_WIDTH}" height="65" fill="${poster.footerBackgroundColor}"/>
-      <g transform="translate(84 990)">
-        <text x="28" y="28" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="30" font-weight="900">1</text>
-        <text x="72" y="20" fill="#ffffff" font-family="Arial, sans-serif" font-size="22" font-weight="900">Scannez</text>
-        <text x="72" y="47" fill="rgba(255,255,255,0.82)" font-family="Arial, sans-serif" font-size="17">le QR code</text>
-      </g>
-      <g transform="translate(310 990)">
-        <text x="28" y="28" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="30" font-weight="900">2</text>
-        <text x="72" y="20" fill="#ffffff" font-family="Arial, sans-serif" font-size="22" font-weight="900">${actionLabel}</text>
-        <text x="72" y="47" fill="rgba(255,255,255,0.82)" font-family="Arial, sans-serif" font-size="17">${actionBody}</text>
-      </g>
-      <g transform="translate(536 990)">
-        <text x="28" y="28" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="30" font-weight="900">3</text>
-        <text x="72" y="20" fill="#ffffff" font-family="Arial, sans-serif" font-size="22" font-weight="900">Récupérez</text>
-        <text x="72" y="47" fill="rgba(255,255,255,0.82)" font-family="Arial, sans-serif" font-size="17">votre cadeau</text>
+      <rect x="0" y="${footerY}" width="${A4_WIDTH}" height="${A4_HEIGHT - footerY}" fill="${poster.footerBackgroundColor}"/>
+      <g transform="translate(54 972)">
+        <rect width="686" height="106" rx="22" fill="rgba(255,255,255,0.94)"/>
+        <g transform="translate(30 24)">
+          <text x="20" y="28" text-anchor="middle" fill="#111827" font-family="Arial, sans-serif" font-size="30" font-weight="900">1</text>
+          <text x="58" y="20" fill="#111827" font-family="Arial, sans-serif" font-size="22" font-weight="900">Scannez</text>
+          <text x="58" y="47" fill="#4b5563" font-family="Arial, sans-serif" font-size="17">le QR code</text>
+        </g>
+        <g transform="translate(246 24)">
+          <text x="20" y="28" text-anchor="middle" fill="#111827" font-family="Arial, sans-serif" font-size="30" font-weight="900">2</text>
+          <text x="58" y="20" fill="#111827" font-family="Arial, sans-serif" font-size="22" font-weight="900">${actionLabel}</text>
+          <text x="58" y="47" fill="#4b5563" font-family="Arial, sans-serif" font-size="17">${actionBody}</text>
+        </g>
+        <g transform="translate(472 24)">
+          <text x="20" y="28" text-anchor="middle" fill="#111827" font-family="Arial, sans-serif" font-size="30" font-weight="900">3</text>
+          <text x="58" y="20" fill="#111827" font-family="Arial, sans-serif" font-size="22" font-weight="900">Récupérez</text>
+          <text x="58" y="47" fill="#4b5563" font-family="Arial, sans-serif" font-size="17">votre cadeau</text>
+        </g>
       </g>
     </svg>
   `;

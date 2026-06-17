@@ -147,6 +147,7 @@ export interface CampaignWheelSettings {
 export interface CampaignPosterSettings {
   logoUrl?: string;
   logoSizePercent: number;
+  logoBottomMarginPx: number;
   backgroundImageUrl?: string;
   headline: string;
   headlineTextColor: string;

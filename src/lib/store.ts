@@ -23,6 +23,7 @@ import {
   updateMerchantOnboardingInSupabase,
 } from "@/lib/merchant-account-repository";
 import { isSupabaseConfigured } from "@/lib/supabase";
+import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
 import { cache } from "react";
 import {
   Campaign,
@@ -122,6 +123,7 @@ function createPresentation(overrides?: CampaignPresentationOverrides): Campaign
     poster: {
       logoUrl: undefined,
       logoSizePercent: 100,
+      logoBottomMarginPx: 28,
       backgroundImageUrl: "",
       headline: "Scannez, jouez, récupérez votre cadeau",
       headlineTextColor: "#ffffff",
@@ -520,17 +522,21 @@ function normalizeCampaign(rawCampaign: Campaign | (Partial<Campaign> & Record<s
         ...presentation.button,
         isBold: presentation.button.isBold ?? true,
       },
-      poster: presentation.poster ?? {
-        logoUrl: rawCampaign.logoUrl,
-        logoSizePercent: presentation.logo?.sizePercent ?? 100,
-        backgroundImageUrl: presentation.background?.imageUrl ?? "",
-        headline: rawCampaign.subtitle ?? fallback.subtitle,
-        headlineTextColor: presentation.heading?.textColor ?? "#ffffff",
-        headlineFontSizePx: presentation.heading?.fontSizePx ?? 42,
-        headlineFontFamily: presentation.heading?.fontFamily ?? "display",
-        wheel,
-        footerBackgroundColor: rawCampaign.accent?.signal ?? fallback.accent.signal,
-      },
+      poster: normalizePosterSettings(
+        presentation.poster,
+        createPosterSettingsDefaults({
+          logoUrl: rawCampaign.logoUrl,
+          logoSizePercent: presentation.logo?.sizePercent ?? 100,
+          logoBottomMarginPx: presentation.logo?.marginBottomPx ?? 28,
+          backgroundImageUrl: presentation.background?.imageUrl ?? "",
+          headline: rawCampaign.subtitle ?? fallback.subtitle,
+          headlineTextColor: presentation.heading?.textColor ?? "#ffffff",
+          headlineFontSizePx: presentation.heading?.fontSizePx ?? 42,
+          headlineFontFamily: presentation.heading?.fontFamily ?? "display",
+          wheel,
+          footerBackgroundColor: rawCampaign.accent?.signal ?? fallback.accent.signal,
+        }),
+      ),
     },
     actions:
       rawCampaign.actions ??

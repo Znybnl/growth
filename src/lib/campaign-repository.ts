@@ -19,6 +19,7 @@ import {
   getCampaignLocalSettings,
   setCampaignLocalSettings,
 } from "@/lib/campaign-local-settings";
+import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
 import { getSupabaseAdmin } from "@/lib/supabase";
 
 type CampaignRow = {
@@ -227,17 +228,21 @@ function toCampaign(
       wheel: {
         ...wheel,
       },
-      poster: localSettings.poster ?? {
-        logoUrl: row.logo_url ?? undefined,
-        logoSizePercent: row.logo_size_percent,
-        backgroundImageUrl: row.background_image_url ?? "",
-        headline: row.subtitle,
-        headlineTextColor: row.heading_text_color,
-        headlineFontSizePx: row.heading_font_size_px,
-        headlineFontFamily: row.heading_font_family,
-        wheel,
-        footerBackgroundColor: row.accent_signal,
-      },
+      poster: normalizePosterSettings(
+        localSettings.poster,
+        createPosterSettingsDefaults({
+          logoUrl: row.logo_url ?? undefined,
+          logoSizePercent: row.logo_size_percent,
+          logoBottomMarginPx: row.logo_margin_bottom_px,
+          backgroundImageUrl: row.background_image_url ?? "",
+          headline: row.subtitle,
+          headlineTextColor: row.heading_text_color,
+          headlineFontSizePx: row.heading_font_size_px,
+          headlineFontFamily: row.heading_font_family,
+          wheel,
+          footerBackgroundColor: row.accent_signal,
+        }),
+      ),
     },
     actions: actions
       .sort((a, b) => a.position - b.position)

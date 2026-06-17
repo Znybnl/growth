@@ -18,6 +18,7 @@ import {
   textAlignLabel,
   textFontLabel,
 } from "@/lib/format";
+import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
 import {
   ActionKind,
   CampaignAction,
@@ -180,6 +181,7 @@ function createDefaultState(merchant: Merchant): EditorState {
       poster: {
         logoUrl: undefined,
         logoSizePercent: 100,
+        logoBottomMarginPx: 28,
         backgroundImageUrl: defaultPosterBackground,
         headline: "Scannez, jouez, récupérez votre cadeau",
         headlineTextColor: "#ffffff",
@@ -248,18 +250,22 @@ function toEditorState(merchant: Merchant, campaign?: CampaignPerformance | null
         ...campaign.campaign.presentation.button,
         isBold: campaign.campaign.presentation.button.isBold ?? true,
       },
-      poster: campaign.campaign.presentation.poster ?? {
-        logoUrl: campaign.campaign.logoUrl,
-        logoSizePercent: campaign.campaign.presentation.logo.sizePercent,
-        backgroundImageUrl:
-          campaign.campaign.presentation.background.imageUrl || defaultPosterBackground,
-        headline: campaign.campaign.subtitle,
-        headlineTextColor: campaign.campaign.presentation.heading.textColor,
-        headlineFontSizePx: campaign.campaign.presentation.heading.fontSizePx,
-        headlineFontFamily: campaign.campaign.presentation.heading.fontFamily,
-        wheel: campaign.campaign.presentation.wheel,
-        footerBackgroundColor: campaign.campaign.accent.signal,
-      },
+      poster: normalizePosterSettings(
+        campaign.campaign.presentation.poster,
+        createPosterSettingsDefaults({
+          logoUrl: campaign.campaign.logoUrl,
+          logoSizePercent: campaign.campaign.presentation.logo.sizePercent,
+          logoBottomMarginPx: campaign.campaign.presentation.logo.marginBottomPx,
+          backgroundImageUrl:
+            campaign.campaign.presentation.background.imageUrl || defaultPosterBackground,
+          headline: campaign.campaign.subtitle,
+          headlineTextColor: campaign.campaign.presentation.heading.textColor,
+          headlineFontSizePx: campaign.campaign.presentation.heading.fontSizePx,
+          headlineFontFamily: campaign.campaign.presentation.heading.fontFamily,
+          wheel: campaign.campaign.presentation.wheel,
+          footerBackgroundColor: campaign.campaign.accent.signal,
+        }),
+      ),
     },
     actions: campaign.campaign.actions,
     rewardRules: campaign.campaign.rewardRules,
