@@ -2,6 +2,7 @@ import { hashPassword, verifyPassword } from "@/lib/passwords";
 import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/supabase";
 import {
   Merchant,
+  MerchantAccountSettingsInput,
   MerchantOnboardingInput,
   MerchantSignInInput,
   MerchantSignUpInput,
@@ -13,9 +14,11 @@ type MerchantRow = {
   company_name: string;
   logo_text: string;
   logo_url: string | null;
+  industry: string | null;
   city: string | null;
   contact_name: string | null;
   phone: string | null;
+  website_url: string | null;
   onboarding_completed: boolean | null;
   preferred_goals: string[] | null;
   diffusion_support: string[] | null;
@@ -52,9 +55,11 @@ function toMerchant(row: MerchantRow): Merchant {
     companyName: row.company_name,
     logoText: row.logo_text,
     logoUrl: row.logo_url ?? undefined,
+    industry: row.industry ?? undefined,
     city: row.city ?? undefined,
     contactName: row.contact_name ?? undefined,
     phone: row.phone ?? undefined,
+    websiteUrl: row.website_url ?? undefined,
     onboardingCompleted: row.onboarding_completed ?? false,
     preferredGoals: row.preferred_goals ?? [],
     diffusionSupport: row.diffusion_support ?? [],
@@ -147,9 +152,11 @@ export async function createMerchantAccountInSupabase(input: MerchantSignUpInput
     company_name: companyName,
     logo_text: companyName.slice(0, 2).toUpperCase(),
     logo_url: null,
+    industry: "",
     city,
     contact_name: `${firstName} ${lastName}`.trim(),
     phone,
+    website_url: "",
     onboarding_completed: false,
     preferred_goals: [],
     diffusion_support: [],
@@ -193,9 +200,11 @@ export async function createMerchantAccountInSupabase(input: MerchantSignUpInput
       companyName,
       logoText: companyName.slice(0, 2).toUpperCase(),
       logoUrl: undefined,
+      industry: undefined,
       city,
       contactName: `${firstName} ${lastName}`.trim(),
       phone,
+      websiteUrl: undefined,
       onboardingCompleted: false,
       preferredGoals: [],
       diffusionSupport: [],
@@ -285,9 +294,11 @@ export async function authenticateOrProvisionMerchantWithGoogle(
     company_name: companyName,
     logo_text: companyName.slice(0, 2).toUpperCase(),
     logo_url: null,
+    industry: "",
     city: "",
     contact_name: contactName,
     phone: "",
+    website_url: "",
     onboarding_completed: false,
     preferred_goals: [],
     diffusion_support: [],
@@ -331,9 +342,11 @@ export async function authenticateOrProvisionMerchantWithGoogle(
       companyName,
       logoText: companyName.slice(0, 2).toUpperCase(),
       logoUrl: undefined,
+      industry: undefined,
       city: undefined,
       contactName: contactName || undefined,
       phone: undefined,
+      websiteUrl: undefined,
       onboardingCompleted: false,
       preferredGoals: [],
       diffusionSupport: [],
@@ -386,4 +399,81 @@ export async function updateMerchantOnboardingInSupabase(
   }
 
   return merchant;
+}
+
+export async function updateMerchantAccountInSupabase(
+  userId: string,
+  input: MerchantAccountSettingsInput,
+) {
+  const supabase = getSupabaseAdmin();
+  const userQuery = await supabase
+    .from("merchant_users")
+    .select("id, merchant_id")
+    .eq("id", userId)
+    .single<{ id: string; merchant_id: string }>();
+
+  if (userQuery.error || !userQuery.data) {
+    throw new Error("Utilisateur introuvable.");
+  }
+
+  const email = input.email.trim().toLowerCase();
+  const existingUser = await supabase
+    .from("merchant_users")
+    .select("id")
+    .eq("email", email)
+    .neq("id", userId)
+    .maybeSingle<{ id: string }>();
+
+  if (existingUser.error) {
+    throw new Error("Verification de l'adresse e-mail impossible.");
+  }
+
+  if (existingUser.data) {
+    throw new Error("Cette adresse e-mail est deja utilisee.");
+  }
+
+  const companyName = input.companyName.trim();
+  const merchantUpdate = await supabase
+    .from("merchants")
+    .update({
+      company_name: companyName,
+      logo_text: companyName.slice(0, 2).toUpperCase(),
+      industry: input.industry.trim(),
+      city: input.city.trim(),
+      contact_name: input.contactName.trim(),
+      phone: input.phone.trim(),
+      website_url: input.websiteUrl.trim(),
+      google_review_url: input.googleReviewUrl.trim(),
+      instagram_url: input.instagramUrl.trim(),
+      default_prize_cost: input.defaultPrizeCost,
+    })
+    .eq("id", userQuery.data.merchant_id);
+
+  if (merchantUpdate.error) {
+    throw new Error("Mise a jour du compte impossible.");
+  }
+
+  const userUpdate = await supabase
+    .from("merchant_users")
+    .update({
+      first_name: input.firstName.trim(),
+      last_name: input.lastName.trim(),
+      email,
+    })
+    .eq("id", userId);
+
+  if (userUpdate.error) {
+    throw new Error("Mise a jour du profil utilisateur impossible.");
+  }
+
+  const [merchant, user] = await Promise.all([
+    getSupabaseMerchantProfile(userQuery.data.merchant_id),
+    getSupabaseMerchantUser(userId),
+  ]);
+
+  if (!merchant || !user) {
+    throw new Error("Compte introuvable apres mise a jour.");
+  }
+
+  return { merchant, user };
 }

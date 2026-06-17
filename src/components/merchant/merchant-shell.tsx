@@ -18,6 +18,7 @@ const navItems = [
   { href: "/", label: "Dashboard" },
   { href: "/campaigns", label: "Campagnes" },
   { href: "/data", label: "Données" },
+  { href: "/account", label: "Compte" },
 ];
 
 export function MerchantShell({ children, merchant }: MerchantShellProps) {

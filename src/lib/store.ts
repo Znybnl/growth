@@ -18,6 +18,7 @@ import {
   createMerchantAccountInSupabase,
   getSupabaseMerchantProfile,
   getSupabaseMerchantUser,
+  updateMerchantAccountInSupabase,
   updateMerchantOnboardingInSupabase,
 } from "@/lib/merchant-account-repository";
 import { isSupabaseConfigured } from "@/lib/supabase";
@@ -40,6 +41,7 @@ import {
   DrawResult,
   Lead,
   Merchant,
+  MerchantAccountSettingsInput,
   MerchantDashboardData,
   MerchantLeadRow,
   MerchantOnboardingInput,
@@ -135,9 +137,11 @@ const merchantSeed: Merchant = {
   companyName: "Maison Sora",
   logoText: "MS",
   logoUrl: undefined,
+  industry: "Mode et maison",
   city: "Paris Marais",
   contactName: "Pierre-Henri Brunelle",
   phone: "01 40 00 00 00",
+  websiteUrl: "https://maisonsora.fr",
   onboardingCompleted: true,
   preferredGoals: ["Avis Google", "Collecte CRM"],
   diffusionSupport: ["QR code vitrine et comptoir", "Script équipe magasin"],
@@ -774,9 +778,11 @@ function createMerchantAccountInMemory(input: MerchantSignUpInput) {
     companyName,
     logoText: companyName.slice(0, 2).toUpperCase(),
     logoUrl: undefined,
+    industry: "",
     city,
     contactName: `${firstName} ${lastName}`.trim(),
     phone,
+    websiteUrl: "",
     onboardingCompleted: false,
     preferredGoals: [],
     diffusionSupport: [],
@@ -849,6 +855,47 @@ function updateMerchantOnboardingInMemory(userId: string, input: MerchantOnboard
   return clone(merchant);
 }
 
+function updateMerchantAccountInMemory(userId: string, input: MerchantAccountSettingsInput) {
+  const user = getUser(userId);
+
+  if (!user) {
+    throw new Error("Utilisateur introuvable.");
+  }
+
+  const email = input.email.trim().toLowerCase();
+  const duplicate = store.users.find((item) => item.email === email && item.id !== userId);
+
+  if (duplicate) {
+    throw new Error("Cette adresse e-mail est deja utilisee.");
+  }
+
+  const merchant = getMerchant(user.merchantId);
+
+  if (!merchant) {
+    throw new Error("Marchand introuvable.");
+  }
+
+  user.firstName = input.firstName.trim();
+  user.lastName = input.lastName.trim();
+  user.email = email;
+
+  merchant.companyName = input.companyName.trim();
+  merchant.logoText = input.companyName.trim().slice(0, 2).toUpperCase();
+  merchant.industry = input.industry.trim();
+  merchant.city = input.city.trim();
+  merchant.contactName = input.contactName.trim();
+  merchant.phone = input.phone.trim();
+  merchant.websiteUrl = input.websiteUrl.trim();
+  merchant.googleReviewUrl = input.googleReviewUrl.trim();
+  merchant.instagramUrl = input.instagramUrl.trim();
+  merchant.defaultPrizeCost = input.defaultPrizeCost;
+
+  return {
+    merchant: clone(merchant),
+    user: clone(user),
+  };
+}
+
 export const getMerchantProfile = cache(async function getMerchantProfile(merchantId = merchantSeed.id) {
   if (isSupabaseConfigured()) {
     const merchant = await getSupabaseMerchantProfile(merchantId);
@@ -903,6 +950,14 @@ export async function updateMerchantOnboarding(userId: string, input: MerchantOn
   }
 
   return updateMerchantOnboardingInMemory(userId, input);
+}
+
+export async function updateMerchantAccount(userId: string, input: MerchantAccountSettingsInput) {
+  if (isSupabaseConfigured()) {
+    return updateMerchantAccountInSupabase(userId, input);
+  }
+
+  return updateMerchantAccountInMemory(userId, input);
 }
 
 export function listCampaigns() {

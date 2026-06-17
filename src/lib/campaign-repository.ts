@@ -118,9 +118,11 @@ type MerchantRow = {
   company_name: string;
   logo_text: string;
   logo_url: string | null;
+  industry: string | null;
   city: string | null;
   contact_name: string | null;
   phone: string | null;
+  website_url: string | null;
   onboarding_completed: boolean | null;
   preferred_goals: string[] | null;
   diffusion_support: string[] | null;
@@ -140,9 +142,11 @@ function toMerchant(row: MerchantRow): Merchant {
     companyName: row.company_name,
     logoText: row.logo_text,
     logoUrl: row.logo_url ?? undefined,
+    industry: row.industry ?? undefined,
     city: row.city ?? undefined,
     contactName: row.contact_name ?? undefined,
     phone: row.phone ?? undefined,
+    websiteUrl: row.website_url ?? undefined,
     onboardingCompleted: row.onboarding_completed ?? false,
     preferredGoals: row.preferred_goals ?? [],
     diffusionSupport: row.diffusion_support ?? [],

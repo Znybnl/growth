@@ -33,9 +33,11 @@ export interface Merchant {
   companyName: string;
   logoText: string;
   logoUrl?: string;
+  industry?: string;
   city?: string;
   contactName?: string;
   phone?: string;
+  websiteUrl?: string;
   onboardingCompleted?: boolean;
   preferredGoals?: string[];
   diffusionSupport?: string[];
@@ -78,6 +80,21 @@ export interface MerchantOnboardingInput {
   phone: string;
   preferredGoals: string[];
   diffusionSupport: string[];
+}
+
+export interface MerchantAccountSettingsInput {
+  companyName: string;
+  industry: string;
+  city: string;
+  contactName: string;
+  phone: string;
+  websiteUrl: string;
+  googleReviewUrl: string;
+  instagramUrl: string;
+  defaultPrizeCost: number;
+  firstName: string;
+  lastName: string;
+  email: string;
 }
 
 export interface CampaignAccent {
