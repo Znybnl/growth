@@ -1,19 +1,25 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useMemo, useState } from "react";
 
 import { GoogleAuthButton } from "@/components/auth/google-auth-button";
 import { APP_NAME } from "@/lib/branding";
 
 export function SignInForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const authError = useMemo(() => {
+    return searchParams.get("error") === "google_oauth"
+      ? "La connexion Google a échoué. Vérifiez la configuration Supabase / Google puis réessayez."
+      : null;
+  }, [searchParams]);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -107,9 +113,9 @@ export function SignInForm() {
         </Link>
       </div>
 
-      {error ? (
+      {error || authError ? (
         <div className="mt-4 rounded-xl border border-[#f6c4bb] bg-[#fff1ee] px-4 py-3 text-sm text-[#8b2c18]">
-          {error}
+          {error || authError}
         </div>
       ) : null}
 

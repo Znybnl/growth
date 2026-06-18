@@ -1,66 +1,12 @@
 import { NextResponse } from "next/server";
 
-import { SESSION_COOKIE } from "@/lib/auth";
-import { authenticateOrProvisionMerchantWithGoogle } from "@/lib/merchant-account-repository";
-import { getSupabaseOAuthClient, isSupabaseOAuthConfigured } from "@/lib/supabase";
-
-function sanitizeNextPath(rawNext: string | null) {
-  if (!rawNext || !rawNext.startsWith("/")) {
-    return "/";
-  }
-
-  return rawNext;
-}
-
-function splitName(fullName: string) {
-  const parts = fullName.trim().split(/\s+/).filter(Boolean);
-  const firstName = parts[0] ?? "";
-  const lastName = parts.slice(1).join(" ");
-
-  return { firstName, lastName };
-}
-
 export async function GET(request: Request) {
   const url = new URL(request.url);
-  const origin = url.origin;
-  const next = sanitizeNextPath(url.searchParams.get("next"));
-  const code = url.searchParams.get("code");
+  const redirectUrl = new URL("/connexion/google/callback", url.origin);
 
-  if (!isSupabaseOAuthConfigured() || !code) {
-    return NextResponse.redirect(new URL("/connexion?error=google_oauth", origin));
-  }
-
-  const supabase = getSupabaseOAuthClient();
-  const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-
-  if (error || !data.user?.email) {
-    return NextResponse.redirect(new URL("/connexion?error=google_oauth", origin));
-  }
-
-  const metadata = data.user.user_metadata ?? {};
-  const fullName =
-    typeof metadata.full_name === "string"
-      ? metadata.full_name
-      : typeof metadata.name === "string"
-        ? metadata.name
-        : "";
-  const { firstName, lastName } = splitName(fullName);
-  const session = await authenticateOrProvisionMerchantWithGoogle({
-    email: data.user.email,
-    firstName: typeof metadata.given_name === "string" ? metadata.given_name : firstName,
-    lastName: typeof metadata.family_name === "string" ? metadata.family_name : lastName,
-    fullName,
+  url.searchParams.forEach((value, key) => {
+    redirectUrl.searchParams.set(key, value);
   });
 
-  const redirectPath = session.merchant.onboardingCompleted ? next : "/onboarding";
-  const response = NextResponse.redirect(new URL(redirectPath, origin));
-
-  response.cookies.set(SESSION_COOKIE, session.user.id, {
-    httpOnly: true,
-    sameSite: "lax",
-    path: "/",
-    secure: process.env.NODE_ENV === "production",
-  });
-
-  return response;
+  return NextResponse.redirect(redirectUrl);
 }

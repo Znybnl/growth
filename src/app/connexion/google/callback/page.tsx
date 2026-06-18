@@ -1,0 +1,11 @@
+import { Suspense } from "react";
+
+import { GoogleCallbackClient } from "@/components/auth/google-callback-client";
+
+export default function GoogleCallbackPage() {
+  return (
+    <Suspense fallback={null}>
+      <GoogleCallbackClient />
+    </Suspense>
+  );
+}
