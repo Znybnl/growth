@@ -543,7 +543,7 @@ export async function authenticateOrProvisionMerchantWithGoogle(
     .maybeSingle<MerchantUserRow>();
 
   if (existingUser.error) {
-    throw new Error("Connexion Google impossible.");
+    throw new Error(`Connexion Google impossible: ${existingUser.error.message}`);
   }
 
   if (existingUser.data) {
@@ -596,7 +596,7 @@ export async function authenticateOrProvisionMerchantWithGoogle(
   });
 
   if (merchantInsert.error) {
-    throw new Error("Creation du marchand impossible.");
+    throw new Error(`Création du marchand impossible: ${merchantInsert.error.message}`);
   }
 
   const userInsert = await supabase.from("merchant_users").insert({
@@ -611,7 +611,7 @@ export async function authenticateOrProvisionMerchantWithGoogle(
 
   if (userInsert.error) {
     await supabase.from("merchants").delete().eq("id", merchantId);
-    throw new Error("Creation du compte Google impossible.");
+    throw new Error(`Création du compte Google impossible: ${userInsert.error.message}`);
   }
 
   await ensureSupabaseAuthUser({

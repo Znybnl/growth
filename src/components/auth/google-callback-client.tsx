@@ -74,10 +74,12 @@ export function GoogleCallbackClient() {
 
         router.replace(payload.redirectPath || next);
         router.refresh();
-      } catch {
+      } catch (error) {
         const message =
-          searchParams.get("error_description") ||
-          "Échec de finalisation de la session Google ou de création du compte marchand.";
+          error instanceof Error
+            ? error.message
+            : searchParams.get("error_description") ||
+              "Échec de finalisation de la session Google ou de création du compte marchand.";
         router.replace(buildAuthErrorUrl(message));
       }
     }
