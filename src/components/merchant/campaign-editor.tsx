@@ -18,6 +18,10 @@ import {
   textAlignLabel,
   textFontLabel,
 } from "@/lib/format";
+import {
+  createCampaignEmailDefaults,
+  normalizeCampaignEmailSettings,
+} from "@/lib/email-settings";
 import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
 import {
   ActionKind,
@@ -197,6 +201,7 @@ function createDefaultState(merchant: Merchant): EditorState {
         },
         footerBackgroundColor: "#8d9ae8",
       },
+      email: createCampaignEmailDefaults(merchant),
     },
     actions: [createDefaultAction(merchant)],
     rewardRules: {
@@ -266,6 +271,10 @@ function toEditorState(merchant: Merchant, campaign?: CampaignPerformance | null
           wheel: campaign.campaign.presentation.wheel,
           footerBackgroundColor: campaign.campaign.accent.signal,
         }),
+      ),
+      email: normalizeCampaignEmailSettings(
+        campaign.campaign.presentation.email,
+        createCampaignEmailDefaults(merchant),
       ),
     },
     actions: campaign.campaign.actions,

@@ -68,6 +68,7 @@ export function CampaignExperience({
   const [didLogFormStart, setDidLogFormStart] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [sellerTapCount, setSellerTapCount] = useState(0);
 
   const segments = useMemo(() => buildWheelSegments(campaign), [campaign]);
   const winner = Boolean(drawResult?.prize);
@@ -85,20 +86,6 @@ export function CampaignExperience({
     redemptionCode && publicOrigin
       ? `${publicOrigin}/redeem/${encodeURIComponent(redemptionCode)}`
       : "";
-  const emailSubject = encodeURIComponent(`Votre gain ${campaign.merchantName}`);
-  const emailBody = encodeURIComponent(
-    [
-      `Bonjour ${drawResult?.lead.firstName ?? ""},`,
-      "",
-      `Votre lot : ${drawResult?.prize?.label ?? "Cadeau"}`,
-      `Code de retrait : ${redemptionCode ?? ""}`,
-      redeemUrl ? `QR code de retrait : ${redeemUrl}` : "",
-      "",
-      "Pr\u00e9sentez ce QR code au restaurant pour r\u00e9cup\u00e9rer votre gain.",
-    ]
-      .filter(Boolean)
-      .join("\n"),
-  );
   const logoWidthPx = Math.round(
     Math.max(72, Math.min(260, campaign.presentation.logo.sizePercent * 1.6)),
   );
@@ -189,6 +176,7 @@ export function CampaignExperience({
       }
 
       const payload = (await response.json()) as DrawResult;
+      setSellerTapCount(0);
       setDrawResult(payload);
       setCampaign(payload.campaign);
       setStep(payload.campaign.actions[0] ? "action" : "game");
@@ -208,6 +196,12 @@ export function CampaignExperience({
 
     setStep("game");
   }
+
+  function revealSellerShortcut() {
+    setSellerTapCount((current) => Math.min(current + 1, 5));
+  }
+
+  const sellerShortcutVisible = sellerTapCount >= 5;
 
   return (
     <div
@@ -456,7 +450,13 @@ export function CampaignExperience({
                 <div className="mt-5 grid gap-3 sm:grid-cols-2">
                   <div className="rounded-[22px] bg-white/8 p-4">
                     <p className="text-xs uppercase tracking-[0.24em] text-white/46">Code</p>
-                    <p className="mt-2 text-2xl font-semibold">{drawResult.lead.redemptionCode}</p>
+                    <button
+                      type="button"
+                      onClick={revealSellerShortcut}
+                      className="mt-2 text-left text-2xl font-semibold"
+                    >
+                      {drawResult.lead.redemptionCode}
+                    </button>
                   </div>
                   <div className="rounded-[22px] bg-white/8 p-4">
                     <p className="text-xs uppercase tracking-[0.24em] text-white/46">Statut</p>
@@ -483,8 +483,8 @@ export function CampaignExperience({
                         QR code de retrait
                       </p>
                       <p className="mt-2 text-sm leading-6 text-[#4b5563]">
-                        Enregistrez ce QR code ou envoyez-le par email. Le restaurant le scannera au
-                        moment de remettre le lot.
+                        Enregistrez ce QR code. Un email récapitulatif avec le code de retrait est
+                        également envoyé automatiquement au gagnant si la messagerie est configurée.
                       </p>
                       <div className="mt-4 flex flex-wrap gap-2">
                         <a
@@ -494,13 +494,23 @@ export function CampaignExperience({
                         >
                           Enregistrer
                         </a>
-                        <a
-                          href={`mailto:${encodeURIComponent(drawResult.lead.email)}?subject=${emailSubject}&body=${emailBody}`}
-                          className="rounded-[16px] border border-[#d7e0ed] px-4 py-3 text-sm font-semibold text-[#111827]"
-                        >
-                          Envoyer par email
-                        </a>
+                        {sellerShortcutVisible && redeemUrl ? (
+                          <a
+                            href={redeemUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="rounded-[16px] border border-[#d7e0ed] px-4 py-3 text-sm font-semibold text-[#111827]"
+                          >
+                            Accès vendeur
+                          </a>
+                        ) : null}
                       </div>
+                      {!sellerShortcutVisible ? (
+                        <p className="mt-3 text-xs leading-5 text-[#6b7280]">
+                          Appuyez 5 fois sur le code de retrait pour révéler l&apos;accès vendeur
+                          de secours.
+                        </p>
+                      ) : null}
                     </div>
                   </div>
                 </div>

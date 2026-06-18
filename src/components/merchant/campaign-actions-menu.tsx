@@ -61,6 +61,13 @@ export function CampaignActionsMenu({
               Personnaliser l&apos;affiche
             </a>
             <a
+              href={`/campaigns/${campaignId}/email`}
+              className="rounded-[16px] border border-[#d7e0ed] px-4 py-3 text-sm font-semibold text-[#182033]"
+              onClick={() => setOpen(false)}
+            >
+              Personnaliser l&apos;email client
+            </a>
+            <a
               href={`/api/campaigns/${campaignId}/poster`}
               className="rounded-[16px] bg-[#2f6df6] px-4 py-3 text-sm font-semibold !text-white"
               onClick={() => setOpen(false)}

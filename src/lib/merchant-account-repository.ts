@@ -59,6 +59,27 @@ const DEMO_MERCHANT_LOGIN = {
   password: "demo1234",
 } as const;
 
+const DEMO_MERCHANT_PROFILE = {
+  merchantId: "merchant-maison-sora",
+  merchantUserId: "user-maison-sora-admin",
+  companyName: "Maison Sora",
+  logoText: "MS",
+  industry: "Mode et maison",
+  city: "Paris Marais",
+  contactName: "Pierre-Henri Brunelle",
+  phone: "01 40 00 00 00",
+  websiteUrl: "https://maisonsora.fr",
+  onboardingCompleted: true,
+  preferredGoals: ["Avis Google", "Collecte CRM"],
+  diffusionSupport: ["QR code vitrine et comptoir", "Script équipe magasin"],
+  googleReviewUrl: "https://g.page/r/CampaignReview",
+  instagramUrl: "https://instagram.com/maisonsora",
+  defaultPrizeCost: 3.4,
+  firstName: "Pierre-Henri",
+  lastName: "Brunelle",
+  createdAt: "2026-06-01T08:00:00.000Z",
+} as const;
+
 function generateId(prefix: string) {
   return `${prefix}-${crypto.randomUUID().slice(0, 8)}`;
 }
@@ -247,6 +268,89 @@ export async function getSupabaseMerchantUser(userId: string) {
   }
 
   return toMerchantUser(data);
+}
+
+export async function ensureDemoMerchantInSupabase() {
+  if (!isSupabaseConfigured()) {
+    return null;
+  }
+
+  const supabase = getSupabaseAdmin();
+  const createdAt = DEMO_MERCHANT_PROFILE.createdAt;
+  const merchantUpsert = await supabase.from("merchants").upsert({
+    id: DEMO_MERCHANT_PROFILE.merchantId,
+    company_name: DEMO_MERCHANT_PROFILE.companyName,
+    logo_text: DEMO_MERCHANT_PROFILE.logoText,
+    logo_url: null,
+    industry: DEMO_MERCHANT_PROFILE.industry,
+    city: DEMO_MERCHANT_PROFILE.city,
+    contact_name: DEMO_MERCHANT_PROFILE.contactName,
+    phone: DEMO_MERCHANT_PROFILE.phone,
+    website_url: DEMO_MERCHANT_PROFILE.websiteUrl,
+    onboarding_completed: DEMO_MERCHANT_PROFILE.onboardingCompleted,
+    preferred_goals: [...DEMO_MERCHANT_PROFILE.preferredGoals],
+    diffusion_support: [...DEMO_MERCHANT_PROFILE.diffusionSupport],
+    google_review_url: DEMO_MERCHANT_PROFILE.googleReviewUrl,
+    instagram_url: DEMO_MERCHANT_PROFILE.instagramUrl,
+    default_prize_cost: DEMO_MERCHANT_PROFILE.defaultPrizeCost,
+    created_at: createdAt,
+  });
+
+  if (merchantUpsert.error) {
+    throw new Error(`Synchronisation du marchand démo impossible: ${merchantUpsert.error.message}`);
+  }
+
+  const existingMerchantUserQuery = await supabase
+    .from("merchant_users")
+    .select("id")
+    .eq("email", DEMO_MERCHANT_LOGIN.email)
+    .maybeSingle();
+
+  if (existingMerchantUserQuery.error) {
+    throw new Error(
+      `Lecture de l'utilisateur démo impossible: ${existingMerchantUserQuery.error.message}`,
+    );
+  }
+
+  const resolvedMerchantUserId =
+    existingMerchantUserQuery.data?.id ?? DEMO_MERCHANT_PROFILE.merchantUserId;
+  const merchantUserPayload = {
+    merchant_id: DEMO_MERCHANT_PROFILE.merchantId,
+    first_name: DEMO_MERCHANT_PROFILE.firstName,
+    last_name: DEMO_MERCHANT_PROFILE.lastName,
+    email: DEMO_MERCHANT_LOGIN.email,
+    password_hash: hashPassword(DEMO_MERCHANT_LOGIN.password),
+    created_at: createdAt,
+  };
+  const merchantUserResult = existingMerchantUserQuery.data
+    ? await supabase
+        .from("merchant_users")
+        .update(merchantUserPayload)
+        .eq("id", resolvedMerchantUserId)
+    : await supabase.from("merchant_users").insert({
+        id: resolvedMerchantUserId,
+        ...merchantUserPayload,
+      });
+
+  if (merchantUserResult.error) {
+    throw new Error(
+      `Synchronisation de l'utilisateur démo impossible: ${merchantUserResult.error.message}`,
+    );
+  }
+
+  await ensureSupabaseAuthUser({
+    email: DEMO_MERCHANT_LOGIN.email,
+    password: DEMO_MERCHANT_LOGIN.password,
+    firstName: DEMO_MERCHANT_PROFILE.firstName,
+    lastName: DEMO_MERCHANT_PROFILE.lastName,
+    merchantId: DEMO_MERCHANT_PROFILE.merchantId,
+    merchantUserId: resolvedMerchantUserId,
+  });
+
+  return {
+    merchantId: DEMO_MERCHANT_PROFILE.merchantId,
+    merchantUserId: resolvedMerchantUserId,
+  };
 }
 
 export async function createMerchantAccountInSupabase(input: MerchantSignUpInput) {

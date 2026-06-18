@@ -210,6 +210,3 @@ begin
     v_previous_participations;
 end;
 $$;
-
-comment on function public.draw_campaign_prize_and_create_lead(text, text, text, text, boolean)
-  is 'Tirage serveur transactionnel : verrouille les lots, attribue un gain sans sur-allocation et crée le lead.';

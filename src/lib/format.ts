@@ -4,6 +4,7 @@ import {
   GameType,
   GoalType,
   LeadStatus,
+  RewardEmailDeliveryStatus,
   TextAlign,
   TextFont,
 } from "@/lib/types";
@@ -118,6 +119,27 @@ export function actionKindLabel(kind: ActionKind) {
       return "Données clients";
     default:
       return "Personnalisé";
+  }
+}
+
+export function rewardEmailStatusLabel(status?: RewardEmailDeliveryStatus) {
+  switch (status) {
+    case "queued":
+      return "En file";
+    case "sent":
+      return "Envoyé";
+    case "delivered":
+      return "Distribué";
+    case "bounced":
+      return "Bounce";
+    case "complained":
+      return "Plainte";
+    case "suppressed":
+      return "Bloqué";
+    case "failed":
+      return "Échec";
+    default:
+      return "Non envoyé";
   }
 }
 

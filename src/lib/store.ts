@@ -4,6 +4,7 @@ import {
   getSupabaseCampaignPerformance,
   getSupabaseMerchantDashboard,
   getSupabaseMerchantLeads,
+  getSupabaseMerchantSupportOverview,
   getSupabasePublicCampaign,
   deleteCampaignInSupabase,
   duplicateCampaignInSupabase,
@@ -29,6 +30,7 @@ import {
   Campaign,
   CampaignAction,
   CampaignDataView,
+  CampaignEmailSettings,
   CampaignEvent,
   CampaignPerformance,
   CampaignPresentation,
@@ -47,6 +49,7 @@ import {
   MerchantAccountSettingsInput,
   MerchantDashboardData,
   MerchantLeadRow,
+  MerchantSupportOverview,
   MerchantOnboardingInput,
   MerchantSignInInput,
   MerchantSignUpInput,
@@ -54,6 +57,7 @@ import {
   Prize,
   PublicCampaign,
 } from "@/lib/types";
+import { createCampaignEmailDefaults, normalizeCampaignEmailSettings } from "@/lib/email-settings";
 
 type Store = {
   merchants: Merchant[];
@@ -72,6 +76,7 @@ type CampaignPresentationOverrides = {
   layout?: Partial<{ blockSpacingPx: number }>;
   wheel?: Partial<CampaignWheelSettings>;
   poster?: Partial<CampaignPosterSettings>;
+  email?: Partial<CampaignEmailSettings>;
 };
 
 function createPresentation(overrides?: CampaignPresentationOverrides): CampaignPresentation {
@@ -133,6 +138,7 @@ function createPresentation(overrides?: CampaignPresentationOverrides): Campaign
       footerBackgroundColor: "#8d9ae8",
       ...overrides?.poster,
     },
+    email: normalizeCampaignEmailSettings(overrides?.email, createCampaignEmailDefaults(merchantSeed)),
   };
 }
 
@@ -537,6 +543,10 @@ function normalizeCampaign(rawCampaign: Campaign | (Partial<Campaign> & Record<s
           footerBackgroundColor: rawCampaign.accent?.signal ?? fallback.accent.signal,
         }),
       ),
+      email: normalizeCampaignEmailSettings(
+        presentation.email,
+        createCampaignEmailDefaults(merchantSeed),
+      ),
     },
     actions:
       rawCampaign.actions ??
@@ -615,6 +625,10 @@ function toLeadRow(lead: Lead): MerchantLeadRow {
     campaignTitle: campaign?.title ?? "Campagne",
     goalType: campaign?.goalType ?? "lead_capture",
     prizeLabel: lead.prizeId ? prize?.label ?? "Lot inconnu" : "Perdu",
+    emailDeliveryStatus: undefined,
+    emailSentAt: undefined,
+    emailDeliveredAt: undefined,
+    emailErrorMessage: undefined,
   };
 }
 
@@ -1407,6 +1421,41 @@ export const getCampaignDataView = cache(async function getCampaignDataView(camp
   }
 
   return getCampaignDataViewFromMemory(campaignId);
+});
+
+export const getMerchantSupportOverview = cache(async function getMerchantSupportOverview(
+  merchantId = merchantSeed.id,
+  fallbackMerchant?: Merchant,
+) {
+  if (isSupabaseConfigured() && fallbackMerchant) {
+    return getSupabaseMerchantSupportOverview(fallbackMerchant);
+  }
+
+  const leads = getMerchantLeadsFromMemory();
+  const campaigns = getMerchantDashboardFromMemory(merchantId, fallbackMerchant).campaigns;
+  const campaignTitleById = new Map(campaigns.map((item) => [item.campaign.id, item.campaign.title]));
+
+  const pendingClaims: MerchantSupportOverview["pendingClaims"] = leads
+    .filter((lead) => lead.status === "claimed" && lead.redemptionCode)
+    .slice(0, 30)
+    .map((lead) => ({
+      leadId: lead.id,
+      campaignId: lead.campaignId,
+      campaignTitle: campaignTitleById.get(lead.campaignId) ?? "Campagne",
+      firstName: lead.firstName,
+      email: lead.email,
+      prizeLabel: lead.prizeLabel,
+      redemptionCode: lead.redemptionCode ?? "",
+      status: lead.status,
+      availableAt: lead.rewardAvailableAt,
+      expiresAt: lead.rewardExpiresAt,
+    }));
+
+  return {
+    failedEmails: [],
+    webhooks: [],
+    pendingClaims,
+  };
 });
 
 export async function drawForLead(input: DrawRequest, fallbackMerchant?: Merchant) {

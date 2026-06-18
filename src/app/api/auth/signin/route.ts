@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { SESSION_COOKIE } from "@/lib/auth";
+import { ensureDemoMerchantInSupabase } from "@/lib/merchant-account-repository";
 import { authenticateMerchant, getMerchantProfile, getMerchantUserByEmail } from "@/lib/store";
 import { MerchantSignInInput } from "@/lib/types";
 
@@ -18,13 +19,15 @@ export async function POST(request: Request) {
 
     if (isDemoLogin) {
       const cookieStore = await cookies();
-      const merchant = await getMerchantProfile();
+      const demoSync = await ensureDemoMerchantInSupabase();
+      const merchant = await getMerchantProfile("merchant-maison-sora");
+      const sessionUserId = demoSync?.merchantUserId ?? "user-maison-sora-admin";
 
       if (!merchant) {
         throw new Error("Marchand introuvable.");
       }
 
-      cookieStore.set(SESSION_COOKIE, "user-maison-sora-admin", {
+      cookieStore.set(SESSION_COOKIE, sessionUserId, {
         httpOnly: true,
         sameSite: "lax",
         path: "/",
@@ -33,7 +36,7 @@ export async function POST(request: Request) {
       return NextResponse.json({
         merchant,
         user: {
-          id: "user-maison-sora-admin",
+          id: sessionUserId,
           merchantId: merchant.id,
           firstName: "Pierre-Henri",
           lastName: "Brunelle",

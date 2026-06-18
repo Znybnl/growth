@@ -15,6 +15,14 @@ export type ActionKind =
   | "custom";
 
 export type LeadStatus = "claimed" | "redeemed" | "expired" | "lost";
+export type RewardEmailDeliveryStatus =
+  | "queued"
+  | "sent"
+  | "delivered"
+  | "bounced"
+  | "complained"
+  | "suppressed"
+  | "failed";
 
 export type EventType =
   | "scan"
@@ -170,6 +178,18 @@ export interface CampaignPosterSettings {
   footerBackgroundColor: string;
 }
 
+export interface CampaignEmailSettings {
+  senderName: string;
+  replyTo: string;
+  subject: string;
+  preheader: string;
+  headline: string;
+  body: string;
+  buttonLabel: string;
+  footerNote: string;
+  accentColor: string;
+}
+
 export interface CampaignPresentation {
   logo: CampaignLogoSettings;
   background: CampaignBackgroundSettings;
@@ -178,6 +198,7 @@ export interface CampaignPresentation {
   layout: CampaignLayoutSettings;
   wheel: CampaignWheelSettings;
   poster: CampaignPosterSettings;
+  email: CampaignEmailSettings;
 }
 
 export interface CampaignAction {
@@ -252,6 +273,78 @@ export interface CampaignEvent {
   createdAt: string;
 }
 
+export interface RewardEmailDelivery {
+  id: string;
+  leadId: string;
+  campaignId: string;
+  resendEmailId?: string;
+  recipientEmail: string;
+  senderEmail?: string;
+  replyToEmail?: string;
+  subject: string;
+  status: RewardEmailDeliveryStatus;
+  errorMessage?: string;
+  sentAt?: string;
+  deliveredAt?: string;
+  bouncedAt?: string;
+  complainedAt?: string;
+  lastEventAt?: string;
+  metadata?: Record<string, string | number | boolean | null>;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface RewardEmailEvent {
+  id: string;
+  rewardEmailDeliveryId?: string;
+  resendEmailId?: string;
+  eventType: string;
+  payload?: Record<string, unknown>;
+  createdAt: string;
+}
+
+export interface MerchantFailedEmailItem {
+  deliveryId: string;
+  campaignId: string;
+  campaignTitle: string;
+  leadId: string;
+  leadFirstName: string;
+  recipientEmail: string;
+  status: RewardEmailDeliveryStatus;
+  errorMessage?: string;
+  lastEventAt: string;
+}
+
+export interface MerchantWebhookItem {
+  id: string;
+  createdAt: string;
+  eventType: string;
+  resendEmailId?: string;
+  campaignTitle?: string;
+  recipientEmail?: string;
+  deliveryStatus?: RewardEmailDeliveryStatus;
+  summary?: string;
+}
+
+export interface MerchantPendingClaimItem {
+  leadId: string;
+  campaignId: string;
+  campaignTitle: string;
+  firstName: string;
+  email: string;
+  prizeLabel: string;
+  redemptionCode: string;
+  status: LeadStatus;
+  availableAt?: string;
+  expiresAt?: string;
+}
+
+export interface MerchantSupportOverview {
+  failedEmails: MerchantFailedEmailItem[];
+  webhooks: MerchantWebhookItem[];
+  pendingClaims: MerchantPendingClaimItem[];
+}
+
 export interface PublicCampaignPrize {
   id: string;
   label: string;
@@ -324,6 +417,10 @@ export interface MerchantLeadRow extends Lead {
   campaignTitle: string;
   goalType: GoalType;
   prizeLabel: string;
+  emailDeliveryStatus?: RewardEmailDeliveryStatus;
+  emailSentAt?: string;
+  emailDeliveredAt?: string;
+  emailErrorMessage?: string;
 }
 
 export interface CampaignDataView {

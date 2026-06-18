@@ -11,16 +11,27 @@ import {
   Lead,
   Merchant,
   MerchantDashboardData,
+  MerchantFailedEmailItem,
   MerchantLeadRow,
+  MerchantPendingClaimItem,
+  MerchantSupportOverview,
+  MerchantWebhookItem,
   Prize,
   PublicCampaign,
+  RewardEmailDelivery,
+  RewardEmailEvent,
 } from "@/lib/types";
 import {
   getCampaignLocalSettings,
   setCampaignLocalSettings,
 } from "@/lib/campaign-local-settings";
+import {
+  createCampaignEmailDefaults,
+  normalizeCampaignEmailSettings,
+} from "@/lib/email-settings";
 import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
 import { getSupabaseAdmin } from "@/lib/supabase";
+import { WebhookEventPayload } from "resend";
 
 type CampaignRow = {
   id: string;
@@ -150,6 +161,44 @@ type MerchantRow = {
   created_at: string;
 };
 
+type RewardEmailDeliveryRow = {
+  id: string;
+  campaign_id: string;
+  lead_id: string;
+  resend_email_id: string | null;
+  recipient_email: string;
+  sender_email: string | null;
+  reply_to_email: string | null;
+  subject: string;
+  status: "queued" | "sent" | "delivered" | "bounced" | "complained" | "suppressed" | "failed";
+  error_message: string | null;
+  sent_at: string | null;
+  delivered_at: string | null;
+  bounced_at: string | null;
+  complained_at: string | null;
+  last_event_at: string | null;
+  metadata: Record<string, string | number | boolean | null>;
+  created_at: string;
+  updated_at: string;
+};
+
+type RewardEmailDeliverySummaryRow = {
+  lead_id: string;
+  status: RewardEmailDeliveryRow["status"];
+  sent_at: string | null;
+  delivered_at: string | null;
+  error_message: string | null;
+};
+
+type RewardEmailEventRow = {
+  id: string;
+  reward_email_delivery_id: string | null;
+  resend_email_id: string | null;
+  event_type: string;
+  payload: Record<string, unknown> | null;
+  created_at: string;
+};
+
 function generateId(prefix: string) {
   return `${prefix}-${crypto.randomUUID().slice(0, 8)}`;
 }
@@ -179,8 +228,42 @@ function clone<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T;
 }
 
+function extractWebhookSummary(payload?: Record<string, unknown> | null) {
+  if (!payload) {
+    return "";
+  }
+
+  const data =
+    "data" in payload && typeof payload.data === "object" && payload.data !== null
+      ? (payload.data as Record<string, unknown>)
+      : null;
+
+  const firstString = (...values: Array<unknown>) =>
+    values.find((value) => typeof value === "string" && value.trim().length > 0) as
+      | string
+      | undefined;
+
+  return (
+    firstString(
+      data?.reason,
+      data?.message,
+      data?.response,
+      data?.["bounce"] && typeof data.bounce === "object"
+        ? (data.bounce as Record<string, unknown>).message
+        : undefined,
+      data?.["failed"] && typeof data.failed === "object"
+        ? (data.failed as Record<string, unknown>).reason
+        : undefined,
+      data?.["suppressed"] && typeof data.suppressed === "object"
+        ? (data.suppressed as Record<string, unknown>).message
+        : undefined,
+    ) ?? ""
+  );
+}
+
 function toCampaign(
   row: CampaignRow,
+  merchant: Merchant,
   actions: ActionRow[],
   prizes: PrizeRow[],
   localSettings: CampaignLocalSettings = {},
@@ -260,6 +343,10 @@ function toCampaign(
           footerBackgroundColor: row.accent_signal,
         }),
       ),
+      email: normalizeCampaignEmailSettings(
+        localSettings.email,
+        createCampaignEmailDefaults(merchant),
+      ),
     },
     actions: actions
       .sort((a, b) => a.position - b.position)
@@ -319,6 +406,59 @@ function toEvent(row: EventRow): CampaignEvent {
     metadata: row.metadata,
     createdAt: row.created_at,
   };
+}
+
+function toRewardEmailDelivery(row: RewardEmailDeliveryRow): RewardEmailDelivery {
+  return {
+    id: row.id,
+    leadId: row.lead_id,
+    campaignId: row.campaign_id,
+    resendEmailId: row.resend_email_id ?? undefined,
+    recipientEmail: row.recipient_email,
+    senderEmail: row.sender_email ?? undefined,
+    replyToEmail: row.reply_to_email ?? undefined,
+    subject: row.subject,
+    status: row.status,
+    errorMessage: row.error_message ?? undefined,
+    sentAt: row.sent_at ?? undefined,
+    deliveredAt: row.delivered_at ?? undefined,
+    bouncedAt: row.bounced_at ?? undefined,
+    complainedAt: row.complained_at ?? undefined,
+    lastEventAt: row.last_event_at ?? undefined,
+    metadata: row.metadata,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+function toRewardEmailEvent(row: RewardEmailEventRow): RewardEmailEvent {
+  return {
+    id: row.id,
+    rewardEmailDeliveryId: row.reward_email_delivery_id ?? undefined,
+    resendEmailId: row.resend_email_id ?? undefined,
+    eventType: row.event_type,
+    payload: row.payload ?? undefined,
+    createdAt: row.created_at,
+  };
+}
+
+function enrichLeadRowsWithEmailDeliveries(
+  leads: MerchantLeadRow[],
+  deliveries: RewardEmailDeliverySummaryRow[],
+) {
+  const deliveryMap = new Map(deliveries.map((item) => [item.lead_id, item]));
+
+  return leads.map((lead) => {
+    const delivery = deliveryMap.get(lead.id);
+
+    return {
+      ...lead,
+      emailDeliveryStatus: delivery?.status,
+      emailSentAt: delivery?.sent_at ?? undefined,
+      emailDeliveredAt: delivery?.delivered_at ?? undefined,
+      emailErrorMessage: delivery?.error_message ?? undefined,
+    };
+  });
 }
 
 function toPublicCampaign(
@@ -433,6 +573,7 @@ function buildPerformanceBundle(
     const campaignEvents = eventRows.filter((item) => item.campaign_id === campaignId).map(toEvent);
     const campaign = toCampaign(
       row,
+      merchant,
       campaignActions,
       campaignPrizes.map((item) => ({
         id: item.id,
@@ -552,13 +693,17 @@ export async function getSupabaseMerchantLeads(
   const campaigns = (campaignsData as Array<{ id: string; title: string; goal_type: Campaign["goalType"] }> | null) ?? [];
   const campaignIds = campaignId ? [campaignId] : campaigns.map((item) => item.id);
   if (!campaignIds.length) return [];
-  const [{ data: leadsData }, { data: prizesData }] = await Promise.all([
+  const [{ data: leadsData }, { data: prizesData }, { data: deliveriesData }] = await Promise.all([
     supabase.from("leads").select("*").in("campaign_id", campaignIds),
     supabase.from("prizes").select("id,label,campaign_id,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at").in("campaign_id", campaignIds),
+    supabase
+      .from("reward_email_deliveries")
+      .select("lead_id,status,sent_at,delivered_at,error_message")
+      .in("campaign_id", campaignIds),
   ]);
   const prizes = ((prizesData as PrizeRow[] | null) ?? []).map(toPrize);
   const campaignMap = new Map(campaigns.map((item) => [item.id, item]));
-  return ((leadsData as LeadRow[] | null) ?? [])
+  const leads = ((leadsData as LeadRow[] | null) ?? [])
     .map(toLead)
     .map((lead) => ({
       ...lead,
@@ -569,6 +714,11 @@ export async function getSupabaseMerchantLeads(
         : "Perdu",
     }))
     .sort((a, b) => b.consentTimestamp.localeCompare(a.consentTimestamp));
+
+  return enrichLeadRowsWithEmailDeliveries(
+    leads,
+    (deliveriesData as RewardEmailDeliverySummaryRow[] | null) ?? [],
+  );
 }
 
 export async function getSupabaseCampaignDataView(
@@ -578,19 +728,29 @@ export async function getSupabaseCampaignDataView(
   const performance = await getSupabaseCampaignPerformance(campaignId, merchant);
   if (!performance) return null;
   const supabase = getSupabaseAdmin();
-  const [{ data: leadsData }, { data: eventsData }] = await Promise.all([
+  const [{ data: leadsData }, { data: eventsData }, { data: deliveriesData }] = await Promise.all([
     supabase.from("leads").select("*").eq("campaign_id", campaignId),
     supabase.from("campaign_events").select("*").eq("campaign_id", campaignId),
+    supabase
+      .from("reward_email_deliveries")
+      .select("lead_id,status,sent_at,delivered_at,error_message")
+      .eq("campaign_id", campaignId),
   ]);
   const prizes = performance.prizes;
-  const leads = ((leadsData as LeadRow[] | null) ?? []).map(toLead).map((lead) => ({
-    ...lead,
-    campaignTitle: performance.campaign.title,
-    goalType: performance.campaign.goalType,
-    prizeLabel: lead.prizeId
-      ? prizes.find((item) => item.id === lead.prizeId)?.label ?? "Lot inconnu"
-      : "Perdu",
-  })).sort((a, b) => b.consentTimestamp.localeCompare(a.consentTimestamp));
+  const leads = enrichLeadRowsWithEmailDeliveries(
+    ((leadsData as LeadRow[] | null) ?? [])
+      .map(toLead)
+      .map((lead) => ({
+        ...lead,
+        campaignTitle: performance.campaign.title,
+        goalType: performance.campaign.goalType,
+        prizeLabel: lead.prizeId
+          ? prizes.find((item) => item.id === lead.prizeId)?.label ?? "Lot inconnu"
+          : "Perdu",
+      }))
+      .sort((a, b) => b.consentTimestamp.localeCompare(a.consentTimestamp)),
+    (deliveriesData as RewardEmailDeliverySummaryRow[] | null) ?? [],
+  );
   const events = ((eventsData as EventRow[] | null) ?? []).map(toEvent).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   return { performance, leads, events };
 }
@@ -639,15 +799,31 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
     is_winning_every_time: input.rewardRules.isWinningEveryTime,
   };
 
-  const { data: existingPrizesData } = await supabase.from("prizes").select("*").eq("campaign_id", campaignId);
+  const existingPrizesQuery = await supabase.from("prizes").select("*").eq("campaign_id", campaignId);
+  if (existingPrizesQuery.error) {
+    throw new Error(`Lecture des lots existants impossible: ${existingPrizesQuery.error.message}`);
+  }
+
+  const { data: existingPrizesData } = existingPrizesQuery;
   const existingPrizes = (existingPrizesData as PrizeRow[] | null) ?? [];
   const remainingMap = new Map(existingPrizes.map((item) => [item.id, item.remaining_quantity]));
 
   const upsert = await supabase.from("campaigns").upsert(payload).select("*").single();
-  if (upsert.error || !upsert.data) throw new Error("La campagne n'a pas pu etre enregistree.");
+  if (upsert.error || !upsert.data) {
+    throw new Error(
+      `La campagne n'a pas pu etre enregistree: ${upsert.error?.message ?? "ligne absente"}`,
+    );
+  }
 
-  await supabase.from("campaign_actions").delete().eq("campaign_id", campaignId);
-  await supabase.from("prizes").delete().eq("campaign_id", campaignId);
+  const deleteActions = await supabase.from("campaign_actions").delete().eq("campaign_id", campaignId);
+  if (deleteActions.error) {
+    throw new Error(`Suppression des actions impossible: ${deleteActions.error.message}`);
+  }
+
+  const deletePrizes = await supabase.from("prizes").delete().eq("campaign_id", campaignId);
+  if (deletePrizes.error) {
+    throw new Error(`Suppression des lots impossible: ${deletePrizes.error.message}`);
+  }
 
   if (input.actions.length) {
     const actionsInsert = input.actions.map((action, index) => ({
@@ -659,7 +835,9 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
       url: action.url,
     }));
     const actionsResult = await supabase.from("campaign_actions").insert(actionsInsert);
-    if (actionsResult.error) throw new Error("Les actions n'ont pas pu etre enregistrees.");
+    if (actionsResult.error) {
+      throw new Error(`Les actions n'ont pas pu etre enregistrees: ${actionsResult.error.message}`);
+    }
   }
 
   const prizesInsert = input.prizes.map((prize) => {
@@ -679,7 +857,9 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
   });
   if (prizesInsert.length) {
     const prizeResult = await supabase.from("prizes").insert(prizesInsert);
-    if (prizeResult.error) throw new Error("Les lots n'ont pas pu etre enregistres.");
+    if (prizeResult.error) {
+      throw new Error(`Les lots n'ont pas pu etre enregistres: ${prizeResult.error.message}`);
+    }
   }
 
   await setCampaignLocalSettings(campaignId, {
@@ -689,6 +869,7 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
     logoMode: input.logoMode,
     logoText: input.logoText,
     poster: input.presentation.poster,
+    email: input.presentation.email,
   });
 
   return campaignId;
@@ -802,7 +983,9 @@ export async function drawForLeadInSupabase(input: DrawRequest, merchant: Mercha
     .single<DrawLeadRpcRow>();
 
   if (error || !data) {
-    throw new Error("Impossible de valider la participation.");
+    throw new Error(
+      `Impossible de valider la participation: ${error?.message ?? "réponse vide de la RPC"}`,
+    );
   }
 
   const lead: Lead = {
@@ -843,11 +1026,19 @@ export async function redeemLeadPrizeInSupabase(leadId: string) {
   if (lead.rewardAvailableAt && new Date(lead.rewardAvailableAt).getTime() > Date.now()) throw new Error("Lot pas encore disponible");
   if (lead.rewardExpiresAt && new Date(lead.rewardExpiresAt).getTime() < Date.now()) {
     await supabase.from("leads").update({ status: "expired" }).eq("id", leadId);
-    await recordEventInSupabase(lead.campaignId, "prize_expired", lead.id);
+    try {
+      await recordEventInSupabase(lead.campaignId, "prize_expired", lead.id);
+    } catch (error) {
+      console.error("Prize expiration event logging failed", error);
+    }
     throw new Error("Lot expire");
   }
   await supabase.from("leads").update({ status: "redeemed" }).eq("id", leadId);
-  await recordEventInSupabase(lead.campaignId, "prize_redeemed", lead.id);
+  try {
+    await recordEventInSupabase(lead.campaignId, "prize_redeemed", lead.id);
+  } catch (error) {
+    console.error("Prize redeemed event logging failed", error);
+  }
   return { ...lead, status: "redeemed" as const };
 }
 
@@ -861,6 +1052,507 @@ export async function resetLeadPrizeInSupabase(leadId: string) {
   const { error } = await supabase.from("leads").update({ status: "claimed" }).eq("id", leadId);
   if (error) throw new Error("Le lot n'a pas pu etre reinitialise");
 
-  await recordEventInSupabase(lead.campaignId, "prize_reset", lead.id);
+  try {
+    await recordEventInSupabase(lead.campaignId, "prize_reset", lead.id);
+  } catch (eventError) {
+    console.error("Prize reset event logging failed", eventError);
+  }
   return { ...lead, status: "claimed" as const };
+}
+
+export async function getSupabaseLeadRewardEmailHistory(leadId: string, merchantId: string) {
+  const supabase = getSupabaseAdmin();
+  const { data: leadData, error: leadError } = await supabase
+    .from("leads")
+    .select("*")
+    .eq("id", leadId)
+    .maybeSingle();
+
+  if (leadError || !leadData) {
+    throw new Error("Lead introuvable");
+  }
+
+  const lead = toLead(leadData as LeadRow);
+  const { data: campaignData, error: campaignError } = await supabase
+    .from("campaigns")
+    .select("id,merchant_id,title")
+    .eq("id", lead.campaignId)
+    .maybeSingle();
+
+  if (campaignError || !campaignData || campaignData.merchant_id !== merchantId) {
+    throw new Error("Accès refusé");
+  }
+
+  const { data: deliveryData, error: deliveryError } = await supabase
+    .from("reward_email_deliveries")
+    .select("*")
+    .eq("lead_id", leadId)
+    .maybeSingle();
+
+  if (deliveryError) {
+    throw new Error(`Lecture du suivi e-mail impossible: ${deliveryError.message}`);
+  }
+
+  if (!deliveryData) {
+    return {
+      lead,
+      delivery: null,
+      events: [] as RewardEmailEvent[],
+    };
+  }
+
+  const { data: eventsData, error: eventsError } = await supabase
+    .from("reward_email_events")
+    .select("*")
+    .eq("reward_email_delivery_id", deliveryData.id)
+    .order("created_at", { ascending: false });
+
+  if (eventsError) {
+    throw new Error(`Lecture des événements e-mail impossible: ${eventsError.message}`);
+  }
+
+  return {
+    lead,
+    delivery: toRewardEmailDelivery(deliveryData as RewardEmailDeliveryRow),
+    events: ((eventsData as RewardEmailEventRow[] | null) ?? []).map(toRewardEmailEvent),
+  };
+}
+
+export async function getSupabaseRewardEmailResendPayload(leadId: string, merchant: Merchant) {
+  const history = await getSupabaseLeadRewardEmailHistory(leadId, merchant.id);
+  const lead = history.lead;
+
+  if (!lead.prizeId || !lead.redemptionCode) {
+    throw new Error("Aucun lot gagnant à renvoyer");
+  }
+
+  const performance = await getSupabaseCampaignPerformance(lead.campaignId, merchant);
+
+  if (!performance || performance.campaign.merchantId !== merchant.id) {
+    throw new Error("Campagne introuvable");
+  }
+
+  const prize = performance.prizes.find((item) => item.id === lead.prizeId);
+
+  if (!prize) {
+    throw new Error("Lot introuvable");
+  }
+
+  const delivery = history.delivery;
+
+  if (delivery?.sentAt) {
+    const cooldownMs = 2 * 60 * 1000;
+    const sentAtMs = new Date(delivery.sentAt).getTime();
+
+    if (Date.now() - sentAtMs < cooldownMs) {
+      throw new Error("Attendez 2 minutes avant de renvoyer un e-mail.");
+    }
+  }
+
+  if (delivery?.status === "queued") {
+    throw new Error("Un e-mail est déjà en cours d'envoi.");
+  }
+
+  return {
+    lead,
+    campaign: performance.campaign,
+    merchant: performance.merchant,
+    prize,
+  };
+}
+
+type RewardEmailDeliveryInput = {
+  campaignId: string;
+  leadId: string;
+  recipientEmail: string;
+  senderEmail: string;
+  replyToEmail?: string;
+  subject: string;
+  metadata?: Record<string, string | number | boolean | null>;
+};
+
+export async function upsertRewardEmailDeliveryInSupabase(input: RewardEmailDeliveryInput) {
+  const supabase = getSupabaseAdmin();
+  const payload = {
+    campaign_id: input.campaignId,
+    lead_id: input.leadId,
+    recipient_email: input.recipientEmail,
+    sender_email: input.senderEmail,
+    reply_to_email: input.replyToEmail ?? null,
+    subject: input.subject,
+    status: "queued",
+    error_message: null,
+    metadata: input.metadata ?? {},
+    last_event_at: new Date().toISOString(),
+  };
+
+  const { data, error } = await supabase
+    .from("reward_email_deliveries")
+    .upsert(payload, { onConflict: "lead_id" })
+    .select("*")
+    .single();
+
+  if (error || !data) {
+    throw new Error(`Enregistrement de l'email impossible: ${error?.message ?? "ligne absente"}`);
+  }
+
+  return data as RewardEmailDeliveryRow;
+}
+
+export async function markRewardEmailSentInSupabase(
+  deliveryId: string,
+  resendEmailId: string | null,
+) {
+  const supabase = getSupabaseAdmin();
+  const now = new Date().toISOString();
+  const { error } = await supabase
+    .from("reward_email_deliveries")
+    .update({
+      resend_email_id: resendEmailId,
+      status: "sent",
+      sent_at: now,
+      last_event_at: now,
+      error_message: null,
+    })
+    .eq("id", deliveryId);
+
+  if (error) {
+    throw new Error(`Mise à jour de l'email envoyé impossible: ${error.message}`);
+  }
+}
+
+export async function markRewardEmailFailedInSupabase(deliveryId: string, errorMessage: string) {
+  const supabase = getSupabaseAdmin();
+  const now = new Date().toISOString();
+  const { error } = await supabase
+    .from("reward_email_deliveries")
+    .update({
+      status: "failed",
+      error_message: errorMessage,
+      last_event_at: now,
+    })
+    .eq("id", deliveryId);
+
+  if (error) {
+    throw new Error(`Mise à jour de l'email en échec impossible: ${error.message}`);
+  }
+}
+
+function mapWebhookDeliveryStatus(event: WebhookEventPayload) {
+  switch (event.type) {
+    case "email.sent":
+      return "sent";
+    case "email.delivered":
+      return "delivered";
+    case "email.bounced":
+      return "bounced";
+    case "email.complained":
+      return "complained";
+    case "email.suppressed":
+      return "suppressed";
+    case "email.failed":
+      return "failed";
+    default:
+      return null;
+  }
+}
+
+function isRewardEmailWebhookEvent(
+  event: WebhookEventPayload,
+): event is Extract<
+  WebhookEventPayload,
+  {
+    data: {
+      email_id: string;
+    };
+  }
+> {
+  return "data" in event && typeof event.data === "object" && event.data !== null && "email_id" in event.data;
+}
+
+export async function syncRewardEmailWebhookInSupabase(event: WebhookEventPayload) {
+  const resendEmailId = isRewardEmailWebhookEvent(event) ? event.data.email_id : null;
+  const deliveryStatus = mapWebhookDeliveryStatus(event);
+  const supabase = getSupabaseAdmin();
+  let deliveryId: string | null = null;
+
+  if (resendEmailId) {
+    const timestamp = event.created_at ?? new Date().toISOString();
+    const deliveryUpdate: Record<string, string | null> = {
+      resend_email_id: resendEmailId,
+      last_event_at: timestamp,
+    };
+
+    if (deliveryStatus) {
+      deliveryUpdate.status = deliveryStatus;
+    }
+
+    if (event.type === "email.delivered") {
+      deliveryUpdate.delivered_at = timestamp;
+    }
+
+    if (event.type === "email.bounced") {
+      deliveryUpdate.bounced_at = timestamp;
+      deliveryUpdate.error_message = event.data.bounce.message;
+    }
+
+    if (event.type === "email.complained") {
+      deliveryUpdate.complained_at = timestamp;
+    }
+
+    if (event.type === "email.failed") {
+      deliveryUpdate.error_message = event.data.failed.reason;
+    }
+
+    if (event.type === "email.suppressed") {
+      deliveryUpdate.error_message = event.data.suppressed.message;
+    }
+
+    const { data: deliveryData, error: deliveryError } = await supabase
+      .from("reward_email_deliveries")
+      .update(deliveryUpdate)
+      .eq("resend_email_id", resendEmailId)
+      .select("id")
+      .maybeSingle();
+
+    if (deliveryError) {
+      throw new Error(`Synchronisation email impossible: ${deliveryError.message}`);
+    }
+
+    deliveryId =
+      deliveryData && typeof deliveryData === "object" && "id" in deliveryData
+        ? String(deliveryData.id)
+        : null;
+  }
+
+  const { error: eventError } = await supabase.from("reward_email_events").insert({
+    reward_email_delivery_id: deliveryId,
+    resend_email_id: resendEmailId,
+    event_type: event.type,
+    payload: event,
+  });
+
+  if (eventError) {
+    throw new Error(`Archivage du webhook email impossible: ${eventError.message}`);
+  }
+}
+
+export async function getSupabaseMerchantSupportOverview(
+  merchant: Merchant,
+): Promise<MerchantSupportOverview> {
+  const supabase = getSupabaseAdmin();
+  const { data: campaignRows, error: campaignError } = await supabase
+    .from("campaigns")
+    .select("id,title")
+    .eq("merchant_id", merchant.id);
+
+  if (campaignError) {
+    throw new Error(`Lecture des campagnes support impossible: ${campaignError.message}`);
+  }
+
+  const campaigns = (campaignRows ?? []) as Array<{ id: string; title: string }>;
+  const campaignIds = campaigns.map((item) => item.id);
+  const campaignTitleById = new Map(campaigns.map((item) => [item.id, item.title]));
+
+  if (!campaignIds.length) {
+    return {
+      failedEmails: [],
+      webhooks: [],
+      pendingClaims: [],
+    };
+  }
+
+  const [failedEmailResult, pendingClaimResult, deliveryResult, webhookResult] = await Promise.all([
+    supabase
+      .from("reward_email_deliveries")
+      .select("id,campaign_id,lead_id,recipient_email,status,error_message,last_event_at")
+      .in("campaign_id", campaignIds)
+      .in("status", ["failed", "bounced", "complained", "suppressed"])
+      .order("last_event_at", { ascending: false })
+      .limit(20),
+    supabase
+      .from("leads")
+      .select(
+        "id,campaign_id,first_name,email,prize_id,status,redemption_code,reward_available_at,reward_expires_at",
+      )
+      .in("campaign_id", campaignIds)
+      .eq("status", "claimed")
+      .not("prize_id", "is", null)
+      .order("created_at", { ascending: false })
+      .limit(30),
+    supabase
+      .from("reward_email_deliveries")
+      .select("id,campaign_id,lead_id,recipient_email,status")
+      .in("campaign_id", campaignIds),
+    supabase
+      .from("reward_email_events")
+      .select("id,reward_email_delivery_id,resend_email_id,event_type,payload,created_at")
+      .order("created_at", { ascending: false })
+      .limit(30),
+  ]);
+
+  if (failedEmailResult.error) {
+    throw new Error(`Lecture des e-mails en échec impossible: ${failedEmailResult.error.message}`);
+  }
+  if (pendingClaimResult.error) {
+    throw new Error(`Lecture des gains en attente impossible: ${pendingClaimResult.error.message}`);
+  }
+  if (deliveryResult.error) {
+    throw new Error(`Lecture des e-mails impossible: ${deliveryResult.error.message}`);
+  }
+  if (webhookResult.error) {
+    throw new Error(`Lecture des webhooks impossible: ${webhookResult.error.message}`);
+  }
+
+  const deliveryRows = (deliveryResult.data ?? []) as Array<{
+    id: string;
+    campaign_id: string;
+    lead_id: string;
+    recipient_email: string;
+    status: RewardEmailDelivery["status"];
+  }>;
+  const deliveryById = new Map(deliveryRows.map((row) => [row.id, row]));
+
+  const leadIds = new Set<string>();
+  for (const row of (failedEmailResult.data ?? []) as Array<{ lead_id: string }>) {
+    leadIds.add(row.lead_id);
+  }
+  for (const row of (pendingClaimResult.data ?? []) as Array<{ id: string }>) {
+    leadIds.add(row.id);
+  }
+  for (const row of deliveryRows) {
+    leadIds.add(row.lead_id);
+  }
+
+  const { data: leadRows, error: leadError } = await supabase
+    .from("leads")
+    .select("id,first_name,email,prize_id")
+    .in("id", Array.from(leadIds));
+
+  if (leadError) {
+    throw new Error(`Lecture des leads support impossible: ${leadError.message}`);
+  }
+
+  const prizeIds = new Set<string>();
+  for (const row of (leadRows ?? []) as Array<{ prize_id: string | null }>) {
+    if (row.prize_id) {
+      prizeIds.add(row.prize_id);
+    }
+  }
+  for (const row of (pendingClaimResult.data ?? []) as Array<{ prize_id: string | null }>) {
+    if (row.prize_id) {
+      prizeIds.add(row.prize_id);
+    }
+  }
+
+  const { data: prizeRows, error: prizeError } = await supabase
+    .from("prizes")
+    .select("id,label")
+    .in("id", Array.from(prizeIds));
+
+  if (prizeError) {
+    throw new Error(`Lecture des dotations support impossible: ${prizeError.message}`);
+  }
+
+  const leadById = new Map(
+    ((leadRows ?? []) as Array<{ id: string; first_name: string; email: string; prize_id: string | null }>).map(
+      (row) => [row.id, row],
+    ),
+  );
+  const prizeLabelById = new Map(
+    ((prizeRows ?? []) as Array<{ id: string; label: string }>).map((row) => [row.id, row.label]),
+  );
+
+  const failedEmails: MerchantFailedEmailItem[] = (
+    (failedEmailResult.data ?? []) as Array<{
+      id: string;
+      campaign_id: string;
+      lead_id: string;
+      recipient_email: string;
+      status: RewardEmailDelivery["status"];
+      error_message: string | null;
+      last_event_at: string | null;
+    }>
+  ).map((row) => {
+    const lead = leadById.get(row.lead_id);
+
+    return {
+      deliveryId: row.id,
+      campaignId: row.campaign_id,
+      campaignTitle: campaignTitleById.get(row.campaign_id) ?? "Campagne inconnue",
+      leadId: row.lead_id,
+      leadFirstName: lead?.first_name ?? "Client inconnu",
+      recipientEmail: row.recipient_email,
+      status: row.status,
+      errorMessage: row.error_message ?? undefined,
+      lastEventAt: row.last_event_at ?? new Date().toISOString(),
+    };
+  });
+
+  const pendingClaims: MerchantPendingClaimItem[] = (
+    (pendingClaimResult.data ?? []) as Array<{
+      id: string;
+      campaign_id: string;
+      first_name: string;
+      email: string;
+      prize_id: string | null;
+      status: Lead["status"];
+      redemption_code: string | null;
+      reward_available_at: string | null;
+      reward_expires_at: string | null;
+    }>
+  )
+    .filter((row) => row.prize_id && row.redemption_code)
+    .map((row) => ({
+      leadId: row.id,
+      campaignId: row.campaign_id,
+      campaignTitle: campaignTitleById.get(row.campaign_id) ?? "Campagne inconnue",
+      firstName: row.first_name,
+      email: row.email,
+      prizeLabel: prizeLabelById.get(row.prize_id ?? "") ?? "Lot inconnu",
+      redemptionCode: row.redemption_code ?? "",
+      status: row.status,
+      availableAt: row.reward_available_at ?? undefined,
+      expiresAt: row.reward_expires_at ?? undefined,
+    }));
+
+  const webhookItems = (
+    (webhookResult.data ?? []) as Array<{
+      id: string;
+      reward_email_delivery_id: string | null;
+      resend_email_id: string | null;
+      event_type: string;
+      payload: Record<string, unknown> | null;
+      created_at: string;
+    }>
+  )
+    .map((row) => {
+      const delivery = row.reward_email_delivery_id
+        ? deliveryById.get(row.reward_email_delivery_id)
+        : undefined;
+
+      if (!delivery || !campaignTitleById.has(delivery.campaign_id)) {
+        return null;
+      }
+
+      return {
+        id: row.id,
+        createdAt: row.created_at,
+        eventType: row.event_type,
+        resendEmailId: row.resend_email_id ?? undefined,
+        campaignTitle: campaignTitleById.get(delivery.campaign_id) ?? undefined,
+        recipientEmail: delivery.recipient_email,
+        deliveryStatus: delivery.status,
+        summary: extractWebhookSummary(row.payload),
+      };
+    })
+    .filter((item) => item !== null);
+
+  const webhooks: MerchantWebhookItem[] = webhookItems;
+
+  return {
+    failedEmails,
+    webhooks,
+    pendingClaims,
+  };
 }

@@ -19,6 +19,7 @@ const navItems = [
   { href: "/campaigns", label: "Campagnes" },
   { href: "/backgrounds", label: "Bibliothèque" },
   { href: "/data", label: "Données" },
+  { href: "/support", label: "Support" },
   { href: "/account", label: "Compte" },
 ];
 

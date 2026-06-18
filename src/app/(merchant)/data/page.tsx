@@ -3,6 +3,7 @@ import Link from "next/link";
 import { LeadPrizeActions } from "@/components/merchant/lead-prize-actions";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import {
+  rewardEmailStatusLabel,
   formatCurrency,
   formatDateTime,
   formatPercent,
@@ -11,11 +12,17 @@ import {
   goalLabel,
   leadStatusLabel,
 } from "@/lib/format";
-import { getCampaignDataView, getMerchantDashboard, getPrimaryCampaignId } from "@/lib/store";
+import {
+  getCampaignDataView,
+  getMerchantDashboard,
+  getMerchantLeads,
+  getPrimaryCampaignId,
+} from "@/lib/store";
 
 type DataPageProps = {
   searchParams: Promise<{
     campaign?: string;
+    code?: string;
   }>;
 };
 
@@ -90,17 +97,28 @@ function Histogram({
 export default async function DataPage({ searchParams }: DataPageProps) {
   const session = await requireAuthenticatedSession();
   const params = await searchParams;
+  const codeQuery = params.code?.trim() ?? "";
   const initialSelectedCampaignId = params.campaign ?? undefined;
-  const [dashboard, initialDataView] = await Promise.all([
+  const [dashboard, allLeads, initialDataView] = await Promise.all([
     getMerchantDashboard(session.merchant.id, session.merchant),
+    codeQuery ? getMerchantLeads(session.merchant.id) : Promise.resolve([]),
     initialSelectedCampaignId
       ? getCampaignDataView(initialSelectedCampaignId, session.merchant)
       : Promise.resolve(null),
   ]);
+  const matchedLead =
+    codeQuery.length > 0
+      ? allLeads.find((lead) =>
+          (lead.redemptionCode ?? "").toLowerCase().includes(codeQuery.toLowerCase()),
+        ) ?? null
+      : null;
   const selectedCampaignId =
-    initialSelectedCampaignId ?? dashboard.campaigns[0]?.campaign.id ?? getPrimaryCampaignId();
+    matchedLead?.campaignId ??
+    initialSelectedCampaignId ??
+    dashboard.campaigns[0]?.campaign.id ??
+    getPrimaryCampaignId();
   const dataView =
-    initialDataView ??
+    (initialDataView && initialSelectedCampaignId === selectedCampaignId ? initialDataView : null) ??
     (selectedCampaignId ? await getCampaignDataView(selectedCampaignId, session.merchant) : null);
 
   if (!dataView || dataView.performance.campaign.merchantId !== session.merchant.id) {
@@ -114,6 +132,11 @@ export default async function DataPage({ searchParams }: DataPageProps) {
   const sortedLeads = [...dataView.leads].sort((a, b) =>
     b.consentTimestamp.localeCompare(a.consentTimestamp),
   );
+  const filteredLeads = codeQuery
+    ? sortedLeads.filter((lead) =>
+        (lead.redemptionCode ?? "").toLowerCase().includes(codeQuery.toLowerCase()),
+      )
+    : sortedLeads;
   const allDates = [
     ...dataView.leads.map((lead) => lead.createdAt),
     ...dataView.events.map((event) => event.createdAt),
@@ -173,10 +196,20 @@ export default async function DataPage({ searchParams }: DataPageProps) {
           </div>
 
           <div className="mt-6 flex flex-wrap gap-3">
+            <form className="min-w-[280px] flex-1">
+              <input type="hidden" name="campaign" value={dataView.performance.campaign.id} />
+              <input
+                type="search"
+                name="code"
+                defaultValue={codeQuery}
+                placeholder="Rechercher par code de retrait"
+                className="w-full rounded-[18px] border border-[#d7e0ed] bg-white px-4 py-3 text-sm text-[#182033] outline-none"
+              />
+            </form>
             {dashboard.campaigns.map((item) => (
               <Link
                 key={item.campaign.id}
-                href={`/data?campaign=${item.campaign.id}`}
+                href={`/data?campaign=${item.campaign.id}${codeQuery ? `&code=${encodeURIComponent(codeQuery)}` : ""}`}
                 className={`rounded-[18px] px-4 py-3 text-sm font-semibold ${
                   item.campaign.id === dataView.performance.campaign.id
                     ? "bg-[#111827] !text-white"
@@ -192,6 +225,11 @@ export default async function DataPage({ searchParams }: DataPageProps) {
               </Link>
             ))}
           </div>
+          {codeQuery && !matchedLead ? (
+            <p className="mt-4 text-sm font-semibold text-[#c2410c]">
+              Aucun gain trouvé pour le code « {codeQuery} ».
+            </p>
+          ) : null}
         </div>
       </section>
 
@@ -327,12 +365,13 @@ export default async function DataPage({ searchParams }: DataPageProps) {
                     <th className="border-b border-[#e4eaf2] px-3 py-3">Lead</th>
                     <th className="border-b border-[#e4eaf2] px-3 py-3">Statut</th>
                     <th className="border-b border-[#e4eaf2] px-3 py-3">Lot</th>
+                    <th className="border-b border-[#e4eaf2] px-3 py-3">Email gain</th>
                     <th className="border-b border-[#e4eaf2] px-3 py-3">Retrait</th>
                     <th className="border-b border-[#e4eaf2] px-3 py-3">Consentement</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {sortedLeads.map((lead) => (
+                  {filteredLeads.map((lead) => (
                     <tr key={lead.id}>
                       <td className="border-b border-[#eef2f7] px-3 py-4">
                         <div className="font-semibold text-[#111827]">{lead.firstName}</div>
@@ -350,10 +389,31 @@ export default async function DataPage({ searchParams }: DataPageProps) {
                         ) : null}
                       </td>
                       <td className="border-b border-[#eef2f7] px-3 py-4 text-[#556173]">
+                        <div className="font-semibold text-[#111827]">
+                          {rewardEmailStatusLabel(lead.emailDeliveryStatus)}
+                        </div>
+                        {lead.emailDeliveredAt ? (
+                          <div className="mt-1 text-xs text-[#7b8496]">
+                            Distribué le {formatDateTime(lead.emailDeliveredAt)}
+                          </div>
+                        ) : lead.emailSentAt ? (
+                          <div className="mt-1 text-xs text-[#7b8496]">
+                            Envoyé le {formatDateTime(lead.emailSentAt)}
+                          </div>
+                        ) : null}
+                        {lead.emailErrorMessage ? (
+                          <div className="mt-1 text-xs font-semibold text-[#c2410c]">
+                            {lead.emailErrorMessage}
+                          </div>
+                        ) : null}
+                      </td>
+                      <td className="border-b border-[#eef2f7] px-3 py-4 text-[#556173]">
                         <LeadPrizeActions
                           leadId={lead.id}
                           status={lead.status}
                           hasPrize={Boolean(lead.prizeId)}
+                          emailDeliveryStatus={lead.emailDeliveryStatus}
+                          emailSentAt={lead.emailSentAt}
                         />
                       </td>
                       <td className="border-b border-[#eef2f7] px-3 py-4 text-[#556173]">

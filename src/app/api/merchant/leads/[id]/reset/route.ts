@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { requireAuthenticatedSession } from "@/lib/auth";
+import { logSupportEvent } from "@/lib/support-log";
 import { getMerchantLeads, resetLeadPrize } from "@/lib/store";
 
 export async function POST(
@@ -18,8 +19,20 @@ export async function POST(
 
   try {
     const updatedLead = await resetLeadPrize(id);
+    logSupportEvent("info", "prize-reset-from-merchant", {
+      merchantId: session.merchant.id,
+      leadId: id,
+      status: updatedLead.status,
+    });
+
     return NextResponse.json({ lead: updatedLead });
   } catch (error) {
+    logSupportEvent("error", "prize-reset-merchant-failed", {
+      merchantId: session.merchant.id,
+      leadId: id,
+      error: error instanceof Error ? error.message : "Réinitialisation impossible",
+    });
+
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Réinitialisation impossible" },
       { status: 400 },

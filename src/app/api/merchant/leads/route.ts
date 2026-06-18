@@ -20,6 +20,10 @@ export async function GET(request: NextRequest) {
       "goal_type",
       "prize_label",
       "status",
+      "email_status",
+      "email_sent_at",
+      "email_delivered_at",
+      "email_error",
       "consent_timestamp",
     ];
     const rows = leads.map((lead) =>
@@ -31,6 +35,10 @@ export async function GET(request: NextRequest) {
         lead.goalType,
         lead.prizeLabel,
         lead.status,
+        lead.emailDeliveryStatus ?? "",
+        lead.emailSentAt ?? "",
+        lead.emailDeliveredAt ?? "",
+        lead.emailErrorMessage ?? "",
         lead.consentTimestamp,
       ]
         .map((value) => `"${String(value).replaceAll('"', '""')}"`)

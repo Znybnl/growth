@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { requireAuthenticatedSession } from "@/lib/auth";
+import { logSupportEvent } from "@/lib/support-log";
 import { getMerchantLeads, redeemLeadPrize } from "@/lib/store";
 
 export async function POST(
@@ -18,11 +19,24 @@ export async function POST(
 
   try {
     const updatedLead = await redeemLeadPrize(id);
+    logSupportEvent("info", "prize-redeemed-from-merchant", {
+      merchantId: session.merchant.id,
+      leadId: id,
+      status: updatedLead.status,
+    });
+
     return NextResponse.json({ lead: updatedLead });
   } catch (error) {
+    logSupportEvent("error", "prize-redeem-merchant-failed", {
+      merchantId: session.merchant.id,
+      leadId: id,
+      error: error instanceof Error ? error.message : "Retrait impossible",
+    });
+
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Retrait impossible" },
       { status: 400 },
     );
   }
 }
+
