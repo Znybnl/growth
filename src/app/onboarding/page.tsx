@@ -8,14 +8,14 @@ export default async function OnboardingPage() {
   return (
     <AuthShell
       eyebrow="Onboarding boutique"
-      title="Cadrez votre dispositif avant la première campagne."
-      description="Un onboarding court, pensé pour les marchands, afin de préparer la marque, les objectifs et la diffusion terrain."
-      asideTitle="Pourquoi cet onboarding"
-      asideBody="Il structure votre lancement sans vous noyer dans des réglages techniques."
+      title="Cadrez votre dispositif avant la premiere campagne."
+      description="Un onboarding en 4 etapes pour poser la marque, les objectifs, la logique de dotation et les supports terrain."
+      asideTitle="Ce que l'on prepare"
+      asideBody="L'idee est d'arriver sur la creation de campagne avec des choix deja clairs et directement reutilisables."
       asideItems={[
-        "Définir vos canaux prioritaires",
-        "Préparer vos supports de diffusion magasin",
-        "Arriver sur la création de campagne avec une base propre",
+        "Definir vos canaux prioritaires",
+        "Fixer une base de dotation et de cout moyen",
+        "Preparer les points de diffusion en magasin",
       ]}
     >
       <OnboardingFlow merchant={session.merchant} />

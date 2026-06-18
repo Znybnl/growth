@@ -10,23 +10,30 @@ const steps = [
   {
     id: "profil",
     label: "Profil",
-    title: "Renseignez l'identité de votre boutique",
+    title: "Renseignez l'identite de votre boutique",
     description:
-      "On pose les informations utiles pour l'équipe et pour vos prochaines campagnes.",
+      "On pose la base de votre espace marchand : enseigne, ville et contact de reference.",
   },
   {
     id: "objectifs",
     label: "Objectifs",
-    title: "Choisissez vos priorités marketing",
+    title: "Choisissez vos priorites marketing",
     description:
-      "Sélectionnez les leviers qui comptent vraiment pour vos prochaines activations locales.",
+      "Selectionnez les leviers que vous voulez activer en premier dans vos campagnes magasin.",
   },
   {
-    id: "diffusion",
-    label: "Diffusion",
-    title: "Préparez la diffusion en magasin",
+    id: "dotation",
+    label: "Dotation",
+    title: "Cadrez votre niveau de recompense",
     description:
-      "Validez les supports terrain pour arriver sur la création de campagne avec un cadre propre.",
+      "Definissez un cout moyen de lot pour retrouver des campagnes pre-remplies et un ROI plus lisible.",
+  },
+  {
+    id: "terrain",
+    label: "Terrain",
+    title: "Preparez vos supports de diffusion",
+    description:
+      "Clarifiez ou le QR code sera visible et comment l'equipe en boutique presentera le jeu.",
   },
 ] as const;
 
@@ -34,14 +41,15 @@ const goalOptions = [
   "Avis Google et reputation locale",
   "Instagram, TikTok, Facebook",
   "Collecte CRM et opt-in",
-  "Retour en boutique avec cadeaux différés",
+  "Retour en boutique avec cadeaux differes",
 ];
 
-const diffusionOptions = [
-  "QR code vitrine et comptoir",
-  "NFC sur support table ou borne",
-  "Script equipe magasin",
-  "Dotation et règles de retrait",
+const terrainOptions = [
+  "QR code en vitrine",
+  "QR code au comptoir ou a l'encaissement",
+  "QR code sur table, packaging ou support imprime",
+  "NFC sur borne ou support table",
+  "Script equipe pour presenter le jeu",
 ];
 
 type OnboardingFlowProps = {
@@ -55,6 +63,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
   const [city, setCity] = useState(merchant.city ?? "");
   const [contactName, setContactName] = useState(merchant.contactName ?? "");
   const [phone, setPhone] = useState(merchant.phone ?? "");
+  const [defaultPrizeCost, setDefaultPrizeCost] = useState(merchant.defaultPrizeCost ?? 3);
   const [preferredGoals, setPreferredGoals] = useState<string[]>(merchant.preferredGoals ?? []);
   const [diffusionSupport, setDiffusionSupport] = useState<string[]>(
     merchant.diffusionSupport ?? [],
@@ -93,6 +102,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
           city,
           contactName,
           phone,
+          defaultPrizeCost,
           preferredGoals,
           diffusionSupport,
         }),
@@ -103,7 +113,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
         throw new Error(payload.error ?? "Onboarding impossible.");
       }
 
-      router.push("/");
+      router.push("/campaigns/new");
       router.refresh();
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : "Onboarding impossible.");
@@ -121,11 +131,11 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
               Onboarding marchand
             </p>
             <h1 className="mt-3 font-display text-5xl leading-[0.94] text-[#121826]">
-              Préparez votre espace en 3 étapes
+              Preparez votre espace en 4 etapes
             </h1>
             <p className="mt-4 max-w-[62ch] text-sm leading-7 text-[#5c6577]">
-              Un tunnel court, sans détour, pour arriver sur la création de campagne avec une base
-              propre et exploitable.
+              L&apos;objectif est simple : arriver sur la creation de campagne avec un cadre propre,
+              une logique de dotation definie et des supports terrain deja pensés.
             </p>
           </div>
 
@@ -138,13 +148,13 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
               />
             </div>
             <p className="mt-4 text-sm text-white/76">
-              Étape {activeIndex + 1} sur {steps.length}
+              Etape {activeIndex + 1} sur {steps.length}
             </p>
             <p className="mt-2 text-2xl font-semibold">{activeStep.label}</p>
           </div>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {steps.map((step, index) => {
             const active = index === activeIndex;
             const completed = index < activeIndex;
@@ -173,7 +183,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
                     {completed ? "OK" : index + 1}
                   </span>
                   <div>
-                    <p className="text-xs uppercase tracking-[0.24em] text-[#7b8496]">Étape</p>
+                    <p className="text-xs uppercase tracking-[0.24em] text-[#7b8496]">Etape</p>
                     <p className="mt-1 text-lg font-semibold text-[#111827]">{step.label}</p>
                   </div>
                 </div>
@@ -186,7 +196,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
 
       <div className="grid gap-6 lg:grid-cols-[0.42fr_0.58fr]">
         <div className="rounded-[34px] bg-[linear-gradient(180deg,#1e56e9,#1236aa)] p-6 text-white shadow-[0_28px_60px_rgba(20,53,143,0.28)]">
-          <p className="text-xs uppercase tracking-[0.28em] text-white/58">Étape active</p>
+          <p className="text-xs uppercase tracking-[0.28em] text-white/58">Etape active</p>
           <h2 className="mt-3 font-display text-4xl leading-[0.98]">{activeStep.title}</h2>
           <p className="mt-4 text-sm leading-7 text-white/78">{activeStep.description}</p>
 
@@ -204,7 +214,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
 
             {activeStep.id === "objectifs" ? (
               <div className="grid gap-3 sm:grid-cols-2">
-                {goalOptions.slice(0, 4).map((item) => (
+                {goalOptions.map((item) => (
                   <div key={item} className="rounded-[20px] bg-white/12 px-4 py-4 text-sm">
                     {item}
                   </div>
@@ -212,9 +222,28 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
               </div>
             ) : null}
 
-            {activeStep.id === "diffusion" ? (
+            {activeStep.id === "dotation" ? (
               <div className="space-y-3">
-                {diffusionOptions.map((item) => (
+                <div className="rounded-[24px] bg-white/12 px-4 py-4">
+                  <p className="text-xs uppercase tracking-[0.22em] text-white/62">
+                    Cout moyen
+                  </p>
+                  <p className="mt-2 text-3xl font-semibold">{defaultPrizeCost.toFixed(2)} EUR</p>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="rounded-[20px] bg-white/10 px-4 py-4 text-sm">
+                    Petits cadeaux immediats
+                  </div>
+                  <div className="rounded-[20px] bg-white/10 px-4 py-4 text-sm">
+                    Bons retour boutique
+                  </div>
+                </div>
+              </div>
+            ) : null}
+
+            {activeStep.id === "terrain" ? (
+              <div className="space-y-3">
+                {terrainOptions.map((item) => (
                   <div
                     key={item}
                     className="flex items-center justify-between rounded-[20px] bg-white/12 px-4 py-4 text-sm"
@@ -253,7 +282,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
                   />
                 </label>
                 <label className="text-sm">
-                  <span className="mb-2 block text-[#616b7c]">Référent campagne</span>
+                  <span className="mb-2 block text-[#616b7c]">Referent campagne</span>
                   <input
                     value={contactName}
                     onChange={(event) => setContactName(event.target.value)}
@@ -261,7 +290,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
                   />
                 </label>
                 <label className="text-sm">
-                  <span className="mb-2 block text-[#616b7c]">Téléphone magasin</span>
+                  <span className="mb-2 block text-[#616b7c]">Telephone magasin</span>
                   <input
                     value={phone}
                     onChange={(event) => setPhone(event.target.value)}
@@ -276,7 +305,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
             <div>
               <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Objectifs</p>
               <h2 className="mt-2 text-3xl font-semibold text-[#111827]">
-                Leviers à activer en priorité
+                Leviers a activer en priorite
               </h2>
               <div className="mt-6 grid gap-4 md:grid-cols-2">
                 {goalOptions.map((choice) => (
@@ -297,14 +326,70 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
             </div>
           ) : null}
 
-          {activeStep.id === "diffusion" ? (
+          {activeStep.id === "dotation" ? (
             <div>
-              <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Diffusion</p>
+              <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Dotation</p>
               <h2 className="mt-2 text-3xl font-semibold text-[#111827]">
-                Supports à prévoir pour le lancement
+                Base de travail pour vos futures campagnes
               </h2>
+              <div className="mt-6 grid gap-5">
+                <label className="text-sm">
+                  <span className="mb-2 block text-[#616b7c]">Cout moyen d&apos;un lot</span>
+                  <input
+                    type="number"
+                    min={0}
+                    step="0.1"
+                    value={defaultPrizeCost}
+                    onChange={(event) =>
+                      setDefaultPrizeCost(Math.max(0, Number(event.target.value || 0)))
+                    }
+                    className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                  />
+                </label>
+
+                <div className="grid gap-4 md:grid-cols-2">
+                  {[
+                    {
+                      title: "Petits gains immediats",
+                      body: "Cafe offert, dessert, goodies ou avantage simple a retirer au comptoir.",
+                    },
+                    {
+                      title: "Retours en boutique",
+                      body: "Bon de reduction ou cadeau differe pour faire revenir le client dans quelques jours.",
+                    },
+                  ].map((card) => (
+                    <div
+                      key={card.title}
+                      className="rounded-[24px] border border-[#dbe4f0] bg-[#fbfcfe] p-5"
+                    >
+                      <p className="text-lg font-semibold text-[#111827]">{card.title}</p>
+                      <p className="mt-3 text-sm leading-7 text-[#5d6577]">{card.body}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="rounded-[24px] border border-[#e4eaf2] bg-[#f8fafc] p-5 text-sm leading-7 text-[#556173]">
+                  Cette valeur sert de base dans le configurateur de campagne pour pre-remplir le
+                  cout unitaire des lots et rendre le cout par lead plus parlant des le dashboard.
+                </div>
+              </div>
+            </div>
+          ) : null}
+
+          {activeStep.id === "terrain" ? (
+            <div>
+              <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">
+                Supports terrain
+              </p>
+              <h2 className="mt-2 text-3xl font-semibold text-[#111827]">
+                Ou vos clients vont-ils voir le jeu ?
+              </h2>
+              <p className="mt-4 text-sm leading-7 text-[#5c6577]">
+                Ici, on ne parle pas d&apos;un kit QR technique. On prepare simplement les points de
+                contact terrain : emplacement du QR code, support imprime et discours equipe.
+              </p>
               <div className="mt-6 space-y-3">
-                {diffusionOptions.map((item) => (
+                {terrainOptions.map((item) => (
                   <label
                     key={item}
                     className="flex items-center gap-3 rounded-[22px] border border-[#dbe4f0] bg-[#fbfcfe] px-4 py-4 text-sm text-[#364055]"
@@ -351,7 +436,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
                 onClick={goNext}
                 className="rounded-[20px] bg-[#2f6df6] px-5 py-3 text-sm font-semibold text-white shadow-[0_16px_32px_rgba(47,109,246,0.22)]"
               >
-                Étape suivante
+                Etape suivante
               </button>
             ) : (
               <button
@@ -360,7 +445,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
                 disabled={isSaving}
                 className="rounded-[20px] bg-[#121826] px-5 py-3 text-sm font-semibold text-white shadow-[0_16px_32px_rgba(18,24,38,0.16)] disabled:opacity-60"
               >
-                {isSaving ? "Enregistrement..." : "Terminer l'onboarding"}
+                {isSaving ? "Enregistrement..." : "Terminer le paramétrage"}
               </button>
             )}
           </div>

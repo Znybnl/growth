@@ -79,6 +79,7 @@ export interface MerchantOnboardingInput {
   city: string;
   contactName: string;
   phone: string;
+  defaultPrizeCost: number;
   preferredGoals: string[];
   diffusionSupport: string[];
 }

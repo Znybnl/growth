@@ -105,6 +105,23 @@ type LeadRow = {
   reward_expires_at: string | null;
 };
 
+type DrawLeadRpcRow = {
+  lead_id: string;
+  campaign_id: string;
+  first_name: string;
+  email: string;
+  marketing_consent: boolean;
+  consent_timestamp: string;
+  prize_id: string | null;
+  status: Lead["status"];
+  created_at: string;
+  action_confirmed: boolean;
+  redemption_code: string | null;
+  reward_available_at: string | null;
+  reward_expires_at: string | null;
+  action_index: number;
+};
+
 type EventRow = {
   id: string;
   campaign_id: string;
@@ -768,97 +785,46 @@ export async function markActionConfirmedInSupabase(leadId: string) {
   return toLead(data as LeadRow);
 }
 
-function choosePrize(prizes: Prize[], isWinningEveryTime: boolean) {
-  const available = prizes.filter((prize) => prize.remainingQuantity === null || prize.remainingQuantity > 0);
-  if (!available.length) return null;
-  const roll = Math.random() * 100;
-  let cursor = 0;
-
-  if (isWinningEveryTime) {
-    for (const prize of available) {
-      cursor += Math.max(1, prize.probability);
-      if (roll <= cursor) return prize;
-    }
-    return available[0];
-  }
-
-  for (const prize of available) {
-    cursor += prize.probability;
-    if (roll <= cursor) return prize;
-  }
-  return null;
-}
-
 export async function drawForLeadInSupabase(input: DrawRequest, merchant: Merchant): Promise<DrawResult> {
   const performance = await getSupabaseCampaignPerformance(input.campaignId, merchant);
   if (!performance || !performance.campaign.isActive) throw new Error("Campagne indisponible");
   const { campaign, prizes } = performance;
-  const prize = choosePrize(prizes, campaign.rewardRules.isWinningEveryTime);
-  const leadId = generateId("lead");
-  const email = input.email.trim().toLowerCase();
   const supabase = getSupabaseAdmin();
-  const { count: previousParticipations } = await supabase
-    .from("leads")
-    .select("id", { count: "exact", head: true })
-    .eq("campaign_id", campaign.id)
-    .eq("email", email);
-  const actionForVisit = campaign.actions[previousParticipations ?? 0];
+  const leadId = generateId("lead");
+  const { data, error } = await supabase
+    .rpc("draw_campaign_prize_and_create_lead", {
+      p_campaign_id: campaign.id,
+      p_lead_id: leadId,
+      p_first_name: input.firstName,
+      p_email: input.email,
+      p_marketing_consent: input.marketingConsent,
+    })
+    .single<DrawLeadRpcRow>();
+
+  if (error || !data) {
+    throw new Error("Impossible de valider la participation.");
+  }
+
   const lead: Lead = {
-    id: leadId,
-    campaignId: campaign.id,
-    firstName: input.firstName.trim(),
-    email,
-    marketingConsent: input.marketingConsent,
-    consentTimestamp: new Date().toISOString(),
-    status: "lost",
-    createdAt: new Date().toISOString(),
-    actionConfirmed: false,
+    id: data.lead_id,
+    campaignId: data.campaign_id,
+    firstName: data.first_name,
+    email: data.email,
+    marketingConsent: data.marketing_consent,
+    consentTimestamp: data.consent_timestamp,
+    prizeId: data.prize_id ?? undefined,
+    status: data.status,
+    createdAt: data.created_at,
+    actionConfirmed: data.action_confirmed,
+    redemptionCode: data.redemption_code ?? undefined,
+    rewardAvailableAt: data.reward_available_at ?? undefined,
+    rewardExpiresAt: data.reward_expires_at ?? undefined,
   };
-
-  if (prize) {
-    const now = Date.now();
-    const availableAt = new Date(now + campaign.rewardRules.availableAfterHours * 60 * 60 * 1000);
-    const expiresAt =
-      campaign.rewardRules.availabilityDurationDays > 0
-        ? new Date(availableAt.getTime() + campaign.rewardRules.availabilityDurationDays * 24 * 60 * 60 * 1000)
-        : new Date(now + campaign.rewardRules.rewardExpiryMinutes * 60 * 1000);
-    lead.prizeId = prize.id;
-    lead.status = "claimed";
-    lead.redemptionCode = `SORA-${Math.floor(1000 + Math.random() * 9000)}`;
-    lead.rewardAvailableAt = availableAt.toISOString();
-    lead.rewardExpiresAt = expiresAt.toISOString();
-  }
-
-  const { error } = await supabase.from("leads").insert({
-    id: lead.id,
-    campaign_id: lead.campaignId,
-    first_name: lead.firstName,
-    email: lead.email,
-    phone: null,
-    marketing_consent: lead.marketingConsent,
-    consent_timestamp: lead.consentTimestamp,
-    prize_id: lead.prizeId ?? null,
-    status: lead.status,
-    created_at: lead.createdAt,
-    action_confirmed: lead.actionConfirmed,
-    redemption_code: lead.redemptionCode ?? null,
-    reward_available_at: lead.rewardAvailableAt ?? null,
-    reward_expires_at: lead.rewardExpiresAt ?? null,
-  });
-  if (error) throw new Error("Impossible de valider la participation.");
-
-  if (prize && prize.remainingQuantity !== null) {
-    await supabase
-      .from("prizes")
-      .update({ remaining_quantity: Math.max((prize.remainingQuantity ?? 1) - 1, 0) })
-      .eq("id", prize.id);
-  }
-
-  await recordEventInSupabase(campaign.id, "lead_created", lead.id);
-  await recordEventInSupabase(campaign.id, "game_played", lead.id);
-  if (prize) {
-    await recordEventInSupabase(campaign.id, "prize_won", lead.id, { prizeId: prize.id });
-  }
+  const prize = data.prize_id
+    ? prizes.find((item) => item.id === data.prize_id) ?? null
+    : null;
+  const actionForVisit =
+    typeof data.action_index === "number" ? campaign.actions[data.action_index] : undefined;
 
   return {
     lead,

@@ -573,6 +573,7 @@ export async function updateMerchantOnboardingInSupabase(
       city: input.city.trim(),
       contact_name: input.contactName.trim(),
       phone: input.phone.trim(),
+      default_prize_cost: input.defaultPrizeCost,
       preferred_goals: input.preferredGoals,
       diffusion_support: input.diffusionSupport,
       onboarding_completed: true,

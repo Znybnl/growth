@@ -892,6 +892,7 @@ function updateMerchantOnboardingInMemory(userId: string, input: MerchantOnboard
   merchant.city = input.city.trim();
   merchant.contactName = input.contactName.trim();
   merchant.phone = input.phone.trim();
+  merchant.defaultPrizeCost = input.defaultPrizeCost;
   merchant.preferredGoals = input.preferredGoals;
   merchant.diffusionSupport = input.diffusionSupport;
   merchant.onboardingCompleted = true;
