@@ -9,6 +9,13 @@ function readString(value: unknown) {
   return typeof value === "string" ? value : "";
 }
 
+function buildAuthErrorUrl(message: string) {
+  const url = new URL("/connexion", window.location.origin);
+  url.searchParams.set("error", "google_oauth");
+  url.searchParams.set("reason", message);
+  return url.toString();
+}
+
 export function GoogleCallbackClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -21,9 +28,14 @@ export function GoogleCallbackClient() {
       const code = searchParams.get("code");
       const next = searchParams.get("next") || "/";
       const providerError = searchParams.get("error");
+      const providerErrorDescription = searchParams.get("error_description");
 
       if (providerError || !code) {
-        router.replace("/connexion?error=google_oauth");
+        router.replace(
+          buildAuthErrorUrl(
+            providerErrorDescription || providerError || "Code de retour Google introuvable.",
+          ),
+        );
         return;
       }
 
@@ -32,7 +44,7 @@ export function GoogleCallbackClient() {
         const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
         if (error || !data.user?.email) {
-          throw error ?? new Error("Session Google introuvable.");
+          throw error ?? new Error("Session Google introuvable ou code PKCE invalide.");
         }
 
         if (!cancelled) {
@@ -63,7 +75,10 @@ export function GoogleCallbackClient() {
         router.replace(payload.redirectPath || next);
         router.refresh();
       } catch {
-        router.replace("/connexion?error=google_oauth");
+        const message =
+          searchParams.get("error_description") ||
+          "Échec de finalisation de la session Google ou de création du compte marchand.";
+        router.replace(buildAuthErrorUrl(message));
       }
     }
 
@@ -86,4 +101,3 @@ export function GoogleCallbackClient() {
     </main>
   );
 }
-

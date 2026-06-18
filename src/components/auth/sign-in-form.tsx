@@ -16,8 +16,9 @@ export function SignInForm() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const authError = useMemo(() => {
+    const reason = searchParams.get("reason");
     return searchParams.get("error") === "google_oauth"
-      ? "La connexion Google a échoué. Vérifiez la configuration Supabase / Google puis réessayez."
+      ? reason || "La connexion Google a échoué. Vérifiez la configuration Supabase / Google puis réessayez."
       : null;
   }, [searchParams]);
 
