@@ -32,7 +32,7 @@ export function GoogleAuthButton({
 
     try {
       const supabase = getSupabaseBrowserClient();
-      const redirectTo = new URL("/connexion/google/callback", window.location.origin);
+      const redirectTo = new URL("/api/auth/google/callback", window.location.origin);
       redirectTo.searchParams.set("next", nextPath);
 
       const { error: oauthError } = await supabase.auth.signInWithOAuth({
