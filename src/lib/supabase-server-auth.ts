@@ -27,6 +27,12 @@ export function createRouteSupabaseClient({
   }
 
   return createServerClient(supabaseUrl, supabaseAnonKey, {
+    cookieOptions: {
+      name: "sb-okado-auth",
+      path: "/",
+      sameSite: "lax",
+      secure: new URL(request.url).protocol === "https:",
+    },
     cookies: {
       getAll() {
         return Array.from(cookieMap.entries()).map(([name, value]) => ({ name, value }));
@@ -40,4 +46,3 @@ export function createRouteSupabaseClient({
     },
   });
 }
-
