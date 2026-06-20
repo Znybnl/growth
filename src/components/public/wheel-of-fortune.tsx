@@ -33,9 +33,12 @@ type WheelOfFortuneProps = {
     textColor?: string;
     borderColor?: string;
   };
+  immersive?: boolean;
 };
 
 const SVG_SIZE = 640;
+const SVG_VIEWBOX_INSET = 4;
+const SVG_VIEWBOX_SIZE = SVG_SIZE - SVG_VIEWBOX_INSET * 2;
 const CENTER = SVG_SIZE / 2;
 const OUTER_RADIUS = 304;
 const INNER_RADIUS = 76;
@@ -141,6 +144,7 @@ export function WheelOfFortune({
   onButtonClick,
   onSpinEnd,
   buttonStyle,
+  immersive = false,
 }: WheelOfFortuneProps) {
   const [rotation, setRotation] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
@@ -158,7 +162,7 @@ export function WheelOfFortune({
     loseColor: wheelStyle?.loseColor ?? "#edf2f7",
     alternateLoseColor: wheelStyle?.alternateLoseColor ?? "#e7edf3",
   };
-  const wheelSize = "min(200vw, 185vh, 1800px)";
+  const wheelSize = immersive ? "min(1320px, max(760px, 186vw))" : "100%";
 
   useEffect(() => {
     if (!isSpinning || !onSpinEnd) {
@@ -193,17 +197,19 @@ export function WheelOfFortune({
   }
 
   return (
-    <div className="relative h-full w-full overflow-hidden">
+    <div className="relative h-full w-full overflow-visible">
       <div
-        className="absolute left-1/2 aspect-square -translate-x-1/2 -translate-y-1/2"
-        style={{ width: wheelSize, top: "62%" }}
+        className={`absolute left-1/2 aspect-square -translate-x-1/2 -translate-y-1/2 ${
+          immersive ? "top-[82%] sm:top-[76%] lg:top-[69%]" : ""
+        }`}
+        style={{ width: wheelSize, top: immersive ? undefined : "62%" }}
       >
         <div
           className="absolute inset-0 rounded-full transition-transform duration-[4200ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
           style={{ transform: `rotate(${rotation}deg)` }}
         >
           <svg
-            viewBox={`0 0 ${SVG_SIZE} ${SVG_SIZE}`}
+            viewBox={`${SVG_VIEWBOX_INSET} ${SVG_VIEWBOX_INSET} ${SVG_VIEWBOX_SIZE} ${SVG_VIEWBOX_SIZE}`}
             className="h-full w-full overflow-visible"
             aria-hidden="true"
           >
