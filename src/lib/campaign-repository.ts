@@ -792,6 +792,7 @@ export async function getSupabaseCampaignDataView(
 
 export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
   const supabase = getSupabaseAdmin();
+  const isNewCampaign = !input.id;
   const campaignId = input.id ?? generateId("camp");
   const payload = {
     id: campaignId,
@@ -862,7 +863,10 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
 
   if (input.actions.length) {
     const actionsInsert = input.actions.map((action, index) => ({
-      id: action.id || generateId("action"),
+      id:
+        !isNewCampaign && action.id && !action.id.startsWith("local-action-")
+          ? action.id
+          : generateId("action"),
       campaign_id: campaignId,
       position: index,
       kind: action.kind,
@@ -876,7 +880,13 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
   }
 
   const prizesInsert = input.prizes.map((prize) => {
-    const prizeId = prize.id ?? generateId("prize");
+    const prizeId =
+      !isNewCampaign &&
+      prize.id &&
+      !prize.id.startsWith("local-prize-") &&
+      !prize.id.startsWith("default-prize-")
+        ? prize.id
+        : generateId("prize");
     const remaining = remainingMap.has(prizeId)
       ? remainingMap.get(prizeId)
       : prize.totalQuantity ?? null;

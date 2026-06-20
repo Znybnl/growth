@@ -187,6 +187,10 @@ export function CampaignExperience({
       : campaign.presentation.heading.fontFamily === "sans"
         ? "font-sans"
         : "font-display";
+  const showBottomState =
+    (stage === "idle" && campaign.gameType !== "wheel") ||
+    (stage === "ready" && campaign.gameType !== "wheel") ||
+    stage === "lost";
 
   useEffect(() => {
     async function loadCampaign() {
@@ -324,7 +328,7 @@ export function CampaignExperience({
         backgroundSize: "cover",
       }}
     >
-      <div className="relative mx-auto flex min-h-screen max-w-[460px] flex-col px-4 pb-0 pt-8 sm:px-6">
+      <div className="relative mx-auto flex h-screen max-w-[960px] flex-col overflow-hidden px-4 pb-0 pt-8 sm:px-6">
         {(campaign.logoMode === "image" && campaign.logoUrl) ||
         campaign.logoMode === "text" ? (
           <div className={`flex ${logoAlignmentClass}`}>
@@ -353,12 +357,20 @@ export function CampaignExperience({
           </h1>
         </div>
 
-        <div style={{ marginTop: `${Math.max(6, Math.round(blockSpacingPx * 0.2))}px` }}>
-          {campaign.gameType === "wheel" ? (
+        {campaign.gameType === "wheel" ? (
+          <div
+            className="relative mt-3 min-h-0 flex-1 overflow-hidden"
+            style={{ minHeight: "min(52vh, 520px)" }}
+          >
             <WheelOfFortune
               key={`${campaign.id}-${drawSession?.id ?? "idle"}`}
               accent={campaign.accent}
               wheelStyle={campaign.presentation.wheel}
+              buttonStyle={{
+                backgroundColor: campaign.presentation.button.backgroundColor,
+                textColor: campaign.presentation.button.textColor,
+                borderColor: campaign.presentation.button.borderColor,
+              }}
               segments={segments}
               winningSegmentId={winningSegmentId}
               canSpin={stage === "ready"}
@@ -367,7 +379,9 @@ export function CampaignExperience({
               onButtonClick={() => void openActionAndTrack()}
               onSpinEnd={() => void handleGameReveal()}
             />
-          ) : (
+          </div>
+        ) : (
+          <div style={{ marginTop: `${Math.max(6, Math.round(blockSpacingPx * 0.2))}px` }}>
             <ScratchGame
               key={`${campaign.id}-${drawSession?.id ?? "idle"}`}
               accent={campaign.accent}
@@ -375,10 +389,10 @@ export function CampaignExperience({
               enabled={stage === "ready"}
               onReveal={() => void handleGameReveal()}
             />
-          )}
-        </div>
+          </div>
+        )}
 
-        <div className="mt-8 space-y-4">
+        {showBottomState ? <div className="mt-8 space-y-4">
           {stage === "idle" && campaign.gameType !== "wheel" ? (
             <button
               type="button"
@@ -412,7 +426,7 @@ export function CampaignExperience({
               </p>
             </div>
           ) : null}
-        </div>
+        </div> : null}
       </div>
 
       <PublicModal open={stage === "intro"}>

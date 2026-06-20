@@ -28,6 +28,11 @@ type WheelOfFortuneProps = {
   buttonLabel?: string;
   onButtonClick?: () => void;
   onSpinEnd?: () => void;
+  buttonStyle?: {
+    backgroundColor?: string;
+    textColor?: string;
+    borderColor?: string;
+  };
 };
 
 const SVG_SIZE = 640;
@@ -135,6 +140,7 @@ export function WheelOfFortune({
   buttonLabel = "JOUER",
   onButtonClick,
   onSpinEnd,
+  buttonStyle,
 }: WheelOfFortuneProps) {
   const [rotation, setRotation] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
@@ -152,6 +158,7 @@ export function WheelOfFortune({
     loseColor: wheelStyle?.loseColor ?? "#edf2f7",
     alternateLoseColor: wheelStyle?.alternateLoseColor ?? "#e7edf3",
   };
+  const wheelSize = "min(200vw, 185vh, 1800px)";
 
   useEffect(() => {
     if (!isSpinning || !onSpinEnd) {
@@ -186,8 +193,11 @@ export function WheelOfFortune({
   }
 
   return (
-    <div className="relative left-1/2 h-[470px] w-screen -translate-x-1/2 overflow-hidden">
-      <div className="absolute left-1/2 top-[30px] h-[700px] w-[700px] -translate-x-1/2">
+    <div className="relative h-full w-full overflow-hidden">
+      <div
+        className="absolute left-1/2 aspect-square -translate-x-1/2 -translate-y-1/2"
+        style={{ width: wheelSize, top: "62%" }}
+      >
         <div
           className="absolute inset-0 rounded-full transition-transform duration-[4200ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
           style={{ transform: `rotate(${rotation}deg)` }}
@@ -273,30 +283,45 @@ export function WheelOfFortune({
           </svg>
         </div>
 
-        <div
-          className="pointer-events-none absolute left-1/2 top-[206px] z-30 h-[132px] w-[72px] -translate-x-1/2"
-          style={{
-            clipPath:
-              "polygon(50% 0, 88% 24%, 63% 100%, 37% 100%, 12% 24%)",
-            background:
-              "linear-gradient(180deg, #ffffff 0%, #f8fafc 62%, #ffffff 100%)",
-            filter: "drop-shadow(0 12px 18px rgba(15,23,42,0.2))",
-          }}
-        />
-        <div
-          className="pointer-events-none absolute left-1/2 top-[314px] z-30 h-[30px] w-[54px] -translate-x-1/2 rounded-b-[22px] bg-white"
-        />
+        <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center">
+          <div
+            className="absolute"
+            style={{
+              top: "29.5%",
+              left: "50%",
+              width: "10.3%",
+              height: "18.9%",
+              transform: "translateX(-50%)",
+              clipPath: "polygon(50% 0, 88% 24%, 63% 100%, 37% 100%, 12% 24%)",
+              background: "linear-gradient(180deg, #ffffff 0%, #f8fafc 62%, #ffffff 100%)",
+              filter: "drop-shadow(0 12px 18px rgba(15,23,42,0.2))",
+            }}
+          />
+          <div
+            className="absolute rounded-b-[22px] bg-white"
+            style={{
+              top: "44.9%",
+              left: "50%",
+              width: "7.7%",
+              height: "4.3%",
+              transform: "translateX(-50%)",
+            }}
+          />
+        </div>
 
         <button
           type="button"
           onClick={handleCentralButton}
           disabled={!buttonEnabled || isSpinning || hasSpun}
-          className="absolute left-1/2 top-1/2 z-40 flex h-[108px] w-[108px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-[4px] border-white text-[19px] font-black uppercase text-white shadow-[0_16px_30px_rgba(15,23,42,0.16)] transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-75"
+          className="absolute left-1/2 top-1/2 z-40 flex aspect-square w-[15.4%] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-[4px] text-[19px] font-black uppercase shadow-[0_16px_30px_rgba(15,23,42,0.16)] transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-75"
           style={{
             background:
               buttonEnabled && !hasSpun
-                ? `linear-gradient(180deg, ${accent.signal}, ${colors.rimColor})`
+                ? `linear-gradient(180deg, ${buttonStyle?.backgroundColor ?? accent.signal}, ${buttonStyle?.backgroundColor ?? colors.rimColor})`
                 : "linear-gradient(180deg, #aeb8c7, #7f8a9d)",
+            color: buttonStyle?.textColor ?? "#ffffff",
+            borderColor: buttonStyle?.borderColor ?? "#ffffff",
+            fontSize: "clamp(1rem, 2.5vw, 1.75rem)",
           }}
         >
           {isSpinning ? "..." : buttonLabel}

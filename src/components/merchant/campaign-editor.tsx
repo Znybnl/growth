@@ -135,7 +135,7 @@ function createDefaultState(merchant: Merchant): EditorState {
     title: "Animation boutique · trafic magasin",
     subtitle: "Jouez et gagnez.",
     goalType: "review_prompt",
-    gameType: "scratch",
+    gameType: "wheel",
     ctaLabel: "Je participe",
     successMetric: goalMetricMap.review_prompt,
     targetUrl: merchant.googleReviewUrl,
@@ -228,6 +228,41 @@ function createDefaultState(merchant: Merchant): EditorState {
       },
     ],
   };
+}
+
+function SaveFeedbackDialog({
+  open,
+  title,
+  description,
+  onClose,
+}: {
+  open: boolean;
+  title: string;
+  description: string;
+  onClose: () => void;
+}) {
+  if (!open) {
+    return null;
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#0f1220]/52 px-4 pb-4 pt-10 backdrop-blur-[6px] sm:items-center sm:p-6">
+      <div className="w-full max-w-[420px] rounded-[34px] bg-white p-6 text-[#111827] shadow-[0_34px_90px_rgba(18,24,39,0.24)]">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#eef4ff] text-3xl text-[#2f6df6]">
+          ✓
+        </div>
+        <h2 className="mt-5 text-center text-2xl font-semibold text-[#0f1728]">{title}</h2>
+        <p className="mt-3 text-center text-sm leading-7 text-[#5c6577]">{description}</p>
+        <button
+          type="button"
+          onClick={onClose}
+          className="mt-6 w-full rounded-[20px] border border-[#111827] bg-[#111827] px-4 py-3 text-sm font-semibold text-white"
+        >
+          Continuer
+        </button>
+      </div>
+    </div>
+  );
 }
 
 function toEditorState(merchant: Merchant, campaign?: CampaignPerformance | null): EditorState {
@@ -350,6 +385,10 @@ export function CampaignEditor({
   const [libraryMessage, setLibraryMessage] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+  const [savedCampaignId, setSavedCampaignId] = useState<string | null>(
+    initialCampaign?.campaign.id ?? null,
+  );
   const [importSource, setImportSource] = useState("");
 
   const previewSegments = useMemo(() => buildPreviewSegments(form.prizes), [form.prizes]);
@@ -576,6 +615,10 @@ export function CampaignEditor({
   async function saveCampaign() {
     setIsSaving(true);
     setMessage(null);
+    setSaveDialogOpen(false);
+    if (form.id !== "__legacy_save__") {
+      return handleSaveCampaign();
+    }
 
     try {
       if (!form.prizes.length) {
@@ -607,6 +650,14 @@ export function CampaignEditor({
         }),
       });
 
+      const payload = (await response.json().catch(() => null)) as
+        | {
+            error?: string;
+            campaign?: CampaignPerformance | null;
+          }
+        | null;
+      void payload;
+
       if (!response.ok) {
         throw new Error("La campagne n'a pas pu être enregistrée.");
       }
@@ -623,8 +674,75 @@ export function CampaignEditor({
     }
   }
 
+  async function handleSaveCampaign() {
+    setIsSaving(true);
+    setMessage(null);
+    setSaveDialogOpen(false);
+
+    try {
+      if (!form.prizes.length) {
+        throw new Error("Ajoutez au moins un lot.");
+      }
+
+      if (
+        form.rewardRules.isWinningEveryTime &&
+        !form.prizes.some((prize) => prize.totalQuantity === null)
+      ) {
+        throw new Error(
+          "Pour un jeu 100% gagnant, au moins un lot doit avoir un stock illimité.",
+        );
+      }
+
+      const response = await fetch("/api/campaigns/setup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...form,
+          targetUrl: normalizeUrl(form.targetUrl ?? ""),
+          actions: form.actions
+            .filter((action) => action.url.trim())
+            .map((action) => ({
+              ...action,
+              label: syncActionLabel(action.kind, action.label),
+              url: normalizeUrl(action.url),
+            })),
+        }),
+      });
+
+      const payload = (await response.json().catch(() => null)) as
+        | {
+            error?: string;
+            campaign?: CampaignPerformance | null;
+          }
+        | null;
+
+      if (!response.ok) {
+        throw new Error(payload?.error || "La campagne n'a pas pu être enregistrée.");
+      }
+
+      const nextCampaignId = payload?.campaign?.campaign.id ?? form.id ?? null;
+
+      if (nextCampaignId) {
+        setSavedCampaignId(nextCampaignId);
+        setForm((current) => ({
+          ...current,
+          id: nextCampaignId,
+        }));
+      }
+
+      setSaveDialogOpen(true);
+      router.refresh();
+    } catch (error) {
+      setMessage(
+        error instanceof Error ? error.message : "La campagne n'a pas pu être enregistrée.",
+      );
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-24 xl:pb-0">
       <section className="overflow-hidden rounded-[32px] border border-[#dbe4f0] bg-white shadow-[0_22px_50px_rgba(122,136,166,0.14)]">
         <div className="grid gap-6 px-6 py-6 xl:grid-cols-[1.2fr_0.8fr] xl:px-8">
           <div>
@@ -1197,7 +1315,8 @@ export function CampaignEditor({
                 />
               </label>
 
-              <div className="rounded-[24px] border border-[#e1e8f2] bg-[#f8fafc] p-4 md:col-span-2">
+              {form.presentation.background.mode === "image" ? (
+                <div className="rounded-[24px] border border-[#e1e8f2] bg-[#f8fafc] p-4 md:col-span-2">
                 <div className="grid gap-4 lg:grid-cols-[0.92fr_1.08fr]">
                   <label className="group relative flex min-h-[156px] cursor-pointer flex-col justify-between rounded-[24px] border border-dashed border-[#cfd9ea] bg-white p-4 text-sm transition hover:border-[#2f6df6] hover:bg-[#eef4ff]">
                     <div>
@@ -1306,9 +1425,11 @@ export function CampaignEditor({
                     </div>
                   </div>
                 </div>
-              </div>
+                </div>
+              ) : null}
 
-              {form.presentation.background.imageUrl ? (
+              {form.presentation.background.mode === "image" &&
+              form.presentation.background.imageUrl ? (
                 <div className="rounded-[24px] border border-[#e1e8f2] bg-[#f8fafc] p-4 md:col-span-2">
                   <span className="mb-3 block text-sm text-[#616b7c]">Aperçu de l&apos;image de fond</span>
                   <div
@@ -1804,6 +1925,27 @@ export function CampaignEditor({
               </h2>
 
               <div className="mt-6 grid gap-4 md:grid-cols-2">
+                <label className="text-sm">
+                  <span className="mb-2 block text-[#616b7c]">Couleur du bouton Jouer</span>
+                  <input
+                    type="color"
+                    value={form.presentation.button.backgroundColor}
+                    onChange={(event) =>
+                      setForm((current) => ({
+                        ...current,
+                        presentation: {
+                          ...current.presentation,
+                          button: {
+                            ...current.presentation.button,
+                            backgroundColor: event.target.value,
+                          },
+                        },
+                      }))
+                    }
+                    className="h-14 w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none"
+                  />
+                </label>
+
                 {[
                   ["rimColor", "Couleur du contour"],
                   ["winColor", "Couleur gain 1"],
@@ -1899,11 +2041,12 @@ export function CampaignEditor({
             </section>
           )}
 
-          <section className="rounded-[30px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
-            <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Bouton public</p>
-            <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
-              Personnalisation du bouton
-            </h2>
+          {form.gameType !== "wheel" ? (
+            <section className="rounded-[30px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+              <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Bouton public</p>
+              <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
+                Personnalisation du bouton
+              </h2>
 
             <div className="mt-6 grid gap-4 md:grid-cols-2">
               <label className="text-sm md:col-span-2">
@@ -2056,7 +2199,8 @@ export function CampaignEditor({
                 <span className="font-semibold">Texte du bouton en gras</span>
               </label>
             </div>
-          </section>
+            </section>
+          ) : null}
 
           <section className="rounded-[30px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
             <div className="flex items-center justify-between gap-3">
@@ -2341,6 +2485,11 @@ export function CampaignEditor({
                     <WheelOfFortune
                       accent={form.accent}
                       wheelStyle={form.presentation.wheel}
+                      buttonStyle={{
+                        backgroundColor: form.presentation.button.backgroundColor,
+                        textColor: form.presentation.button.textColor,
+                        borderColor: form.presentation.button.borderColor,
+                      }}
                       segments={previewSegments}
                       winningSegmentId={
                         previewSegments.find((segment) => segment.tone === "win")?.id ??
@@ -2358,26 +2507,52 @@ export function CampaignEditor({
                   )}
                 </div>
 
-                <button
-                  type="button"
-                  className={`w-full rounded-[24px] border font-semibold ${previewCtaClass}`}
-                  style={{
-                    marginTop: `${form.presentation.layout.blockSpacingPx}px`,
-                    backgroundColor: form.presentation.button.backgroundColor,
-                    color: form.presentation.button.textColor,
-                    borderColor: form.presentation.button.borderColor,
-                    fontSize: `${form.presentation.button.textSizePx}px`,
-                    fontWeight: form.presentation.button.isBold ? 700 : 400,
-                  }}
-                >
-                  {form.ctaLabel}
-                </button>
+                {form.gameType !== "wheel" ? (
+                  <button
+                    type="button"
+                    className={`w-full rounded-[24px] border font-semibold ${previewCtaClass}`}
+                    style={{
+                      marginTop: `${form.presentation.layout.blockSpacingPx}px`,
+                      backgroundColor: form.presentation.button.backgroundColor,
+                      color: form.presentation.button.textColor,
+                      borderColor: form.presentation.button.borderColor,
+                      fontSize: `${form.presentation.button.textSizePx}px`,
+                      fontWeight: form.presentation.button.isBold ? 700 : 400,
+                    }}
+                  >
+                    {form.ctaLabel}
+                  </button>
+                ) : null}
 
               </div>
             </div>
           </section>
         </div>
       </div>
+      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30 px-4 pb-4 xl:hidden">
+        <div className="pointer-events-auto mx-auto max-w-[720px] rounded-[28px] border border-[#dbe4f0] bg-white/96 p-3 shadow-[0_18px_44px_rgba(122,136,166,0.16)] backdrop-blur">
+          <button
+            type="button"
+            onClick={saveCampaign}
+            disabled={isSaving}
+            className="w-full rounded-[20px] border border-[#111827] bg-[#111827] px-4 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-70"
+          >
+            {isSaving ? "Enregistrement..." : "Enregistrer"}
+          </button>
+        </div>
+      </div>
+      <SaveFeedbackDialog
+        open={saveDialogOpen}
+        title="Campagne enregistrée"
+        description="Vos modifications ont bien été prises en compte."
+        onClose={() => {
+          setSaveDialogOpen(false);
+
+          if (!initialCampaign && savedCampaignId) {
+            router.replace(`/campaigns/${savedCampaignId}/edit`);
+          }
+        }}
+      />
     </div>
   );
 }
