@@ -328,7 +328,7 @@ export function CampaignExperience({
         backgroundSize: "cover",
       }}
     >
-      <div className="relative mx-auto flex h-screen max-w-[960px] flex-col px-4 pb-0 pt-8 sm:px-6">
+      <div className="relative mx-auto flex h-screen max-w-[960px] flex-col overflow-hidden px-4 pb-0 pt-8 sm:px-6">
         {(campaign.logoMode === "image" && campaign.logoUrl) ||
         campaign.logoMode === "text" ? (
           <div className={`flex ${logoAlignmentClass}`}>
@@ -359,29 +359,26 @@ export function CampaignExperience({
 
         {campaign.gameType === "wheel" ? (
           <div
-            className="relative mt-2 min-h-0 flex-1 overflow-hidden"
-            style={{ minHeight: "clamp(360px, 56vh, 720px)" }}
+            className="relative mt-3 min-h-0 flex-1 overflow-hidden"
+            style={{ minHeight: "min(52vh, 520px)" }}
           >
-            <div className="absolute inset-y-0 left-1/2 w-[calc(100vw+2rem)] -translate-x-1/2 overflow-hidden sm:w-[calc(100vw+3rem)]">
-              <WheelOfFortune
-                key={`${campaign.id}-${drawSession?.id ?? "idle"}`}
-                accent={campaign.accent}
-                wheelStyle={campaign.presentation.wheel}
-                buttonStyle={{
-                  backgroundColor: campaign.presentation.button.backgroundColor,
-                  textColor: campaign.presentation.button.textColor,
-                  borderColor: campaign.presentation.button.borderColor,
-                }}
-                segments={segments}
-                winningSegmentId={winningSegmentId}
-                canSpin={stage === "ready"}
-                buttonEnabled={stage === "idle" || stage === "ready"}
-                buttonLabel="JOUER"
-                immersive
-                onButtonClick={() => void openActionAndTrack()}
-                onSpinEnd={() => void handleGameReveal()}
-              />
-            </div>
+            <WheelOfFortune
+              key={`${campaign.id}-${drawSession?.id ?? "idle"}`}
+              accent={campaign.accent}
+              wheelStyle={campaign.presentation.wheel}
+              buttonStyle={{
+                backgroundColor: campaign.presentation.button.backgroundColor,
+                textColor: campaign.presentation.button.textColor,
+                borderColor: campaign.presentation.button.borderColor,
+              }}
+              segments={segments}
+              winningSegmentId={winningSegmentId}
+              canSpin={stage === "ready"}
+              buttonEnabled={stage === "idle" || stage === "ready"}
+              buttonLabel="JOUER"
+              onButtonClick={() => void openActionAndTrack()}
+              onSpinEnd={() => void handleGameReveal()}
+            />
           </div>
         ) : (
           <div style={{ marginTop: `${Math.max(6, Math.round(blockSpacingPx * 0.2))}px` }}>
