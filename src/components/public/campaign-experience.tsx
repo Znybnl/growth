@@ -28,7 +28,6 @@ type WheelSegment = {
 type ExperienceStage =
   | "idle"
   | "intro"
-  | "preparing"
   | "ready"
   | "collect"
   | "success"
@@ -302,25 +301,19 @@ export function CampaignExperience({
   const backgroundStyle =
     campaign.presentation.background.mode === "image" &&
     campaign.presentation.background.imageUrl
-      ? `linear-gradient(rgba(255,255,255,0.78), rgba(255,255,255,0.86)), url("${campaign.presentation.background.imageUrl}")`
-      : `radial-gradient(circle at top, ${campaign.accent.signal}22, transparent 28%), linear-gradient(180deg, #fffdfd, ${campaign.presentation.background.color}12 120%)`;
+      ? `linear-gradient(rgba(0,0,0,0.08), rgba(0,0,0,0.18)), url("${campaign.presentation.background.imageUrl}")`
+      : `radial-gradient(circle at 50% 8%, ${campaign.accent.signal}33, transparent 32%), linear-gradient(180deg, transparent, rgba(255,255,255,0.08))`;
 
   return (
     <div
       className="relative min-h-screen overflow-hidden"
       style={{
-        backgroundColor: "#fffafc",
+        backgroundColor: campaign.presentation.background.color,
         backgroundImage: backgroundStyle,
         backgroundPosition: "center",
         backgroundSize: "cover",
       }}
     >
-      <div
-        className="pointer-events-none absolute -left-16 top-24 h-72 w-72 rounded-full blur-3xl"
-        style={{ backgroundColor: `${campaign.accent.signal}18` }}
-      />
-      <div className="pointer-events-none absolute -right-24 bottom-10 h-80 w-80 rounded-full bg-[#f1d9ff]/40 blur-3xl" />
-
       <div className="relative mx-auto flex min-h-screen max-w-[460px] flex-col px-4 pb-12 pt-8 sm:px-6">
         {(campaign.logoMode === "image" && campaign.logoUrl) ||
         campaign.logoMode === "text" ? (
@@ -358,6 +351,9 @@ export function CampaignExperience({
               segments={segments}
               winningSegmentId={winningSegmentId}
               canSpin={stage === "ready"}
+              buttonEnabled={stage === "idle" || stage === "ready"}
+              buttonLabel="JOUER"
+              onButtonClick={() => void openActionAndTrack()}
               onSpinEnd={() => void handleGameReveal()}
             />
           ) : (
@@ -372,7 +368,7 @@ export function CampaignExperience({
         </div>
 
         <div className="mt-8 space-y-4">
-          {stage === "idle" ? (
+          {stage === "idle" && campaign.gameType !== "wheel" ? (
             <button
               type="button"
               onClick={openActionAndTrack}
@@ -388,11 +384,9 @@ export function CampaignExperience({
             </button>
           ) : null}
 
-          {stage === "ready" ? (
+          {stage === "ready" && campaign.gameType !== "wheel" ? (
             <div className="rounded-[28px] border border-white/70 bg-white/72 px-5 py-4 text-center text-sm text-[#62697a] shadow-[0_18px_40px_rgba(17,24,39,0.06)] backdrop-blur">
-              {campaign.gameType === "wheel"
-                ? "Touchez le centre de la roue pour lancer votre partie."
-                : "Grattez le ticket pour révéler immédiatement votre résultat."}
+              Grattez le ticket pour révéler immédiatement votre résultat.
             </div>
           ) : null}
 
