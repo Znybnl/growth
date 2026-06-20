@@ -46,8 +46,8 @@ begin
     select *
       from public.draw_sessions
      where draw_sessions.campaign_id = p_campaign_id
-       and status = 'pending'
-       and expires_at <= v_now
+       and draw_sessions.status = 'pending'
+       and draw_sessions.expires_at <= v_now
      for update
   loop
     if v_expired_session.prize_id is not null then

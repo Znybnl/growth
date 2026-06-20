@@ -36,10 +36,16 @@ type ExperienceStage =
 function buildWheelSegments(campaign: PublicCampaign) {
   const winners = campaign.prizes.map((prize) => ({
     id: prize.id,
-    label: prize.label.toUpperCase().slice(0, 20),
+    label: prize.label.toUpperCase(),
     tone: "win" as const,
   }));
-  const losers = Array.from({ length: Math.max(4, winners.length || 4) }, (_, index) => ({
+  const minimumSegmentCount = 10;
+  const loserCount = Math.max(
+    minimumSegmentCount - winners.length,
+    winners.length,
+    minimumSegmentCount,
+  );
+  const losers = Array.from({ length: loserCount }, (_, index) => ({
     id: `lose-${index}`,
     label: index % 2 === 0 ? "PERDU" : "DOMMAGE",
     tone: "lose" as const,
@@ -143,6 +149,7 @@ export function CampaignExperience({
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [actionVisited, setActionVisited] = useState(false);
 
   const segments = useMemo(() => buildWheelSegments(campaign), [campaign]);
   const winningSegmentId =
@@ -220,7 +227,8 @@ export function CampaignExperience({
       });
 
       if (!response.ok) {
-        throw new Error("Impossible de préparer la partie.");
+        const payload = (await response.json().catch(() => null)) as { error?: string } | null;
+        throw new Error(payload?.error ?? "Impossible de préparer la partie.");
       }
 
       const payload = (await response.json()) as CreateDrawSessionResult;
@@ -238,6 +246,8 @@ export function CampaignExperience({
   }
 
   async function openActionAndTrack() {
+    setActionVisited(false);
+    setError(null);
     setStage("intro");
   }
 
@@ -342,7 +352,7 @@ export function CampaignExperience({
           </h1>
         </div>
 
-        <div style={{ marginTop: `${Math.max(28, blockSpacingPx + 16)}px` }}>
+        <div style={{ marginTop: `${Math.max(6, Math.round(blockSpacingPx * 0.2))}px` }}>
           {campaign.gameType === "wheel" ? (
             <WheelOfFortune
               key={`${campaign.id}-${drawSession?.id ?? "idle"}`}
@@ -428,10 +438,12 @@ export function CampaignExperience({
               rel="noreferrer"
               onClick={() => {
                 if (currentAction.kind === "google") {
+                  setActionVisited(true);
                   void trackEvent("review_clicked");
                   return;
                 }
 
+                setActionVisited(true);
                 void trackEvent("social_clicked");
               }}
               className="block w-full rounded-[20px] border border-[#f3b229] bg-[#f3b229] px-5 py-4 text-center text-lg font-semibold text-[#111827] shadow-[0_12px_22px_rgba(243,178,41,0.28)]"
@@ -439,14 +451,16 @@ export function CampaignExperience({
               {actionLabel(currentAction.kind)}
             </a>
           ) : null}
-          <button
-            type="button"
-            onClick={() => void handleSpinStart()}
-            disabled={isLoading}
-            className="w-full rounded-[20px] bg-[#111827] px-5 py-4 text-lg font-semibold text-white shadow-[0_12px_24px_rgba(17,24,39,0.16)] disabled:opacity-60"
-          >
-            {isLoading ? "Préparation..." : "Jouer"}
-          </button>
+          {!currentAction || actionVisited ? (
+            <button
+              type="button"
+              onClick={() => void handleSpinStart()}
+              disabled={isLoading}
+              className="w-full rounded-[20px] bg-[#111827] px-5 py-4 text-lg font-semibold text-white shadow-[0_12px_24px_rgba(17,24,39,0.16)] disabled:opacity-60"
+            >
+              {isLoading ? "Préparation..." : "Jouer"}
+            </button>
+          ) : null}
         </div>
         {error ? (
           <div className="mt-4 rounded-[18px] bg-[#fff1f0] px-4 py-3 text-sm text-[#b42318]">

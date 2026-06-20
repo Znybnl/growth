@@ -34,6 +34,7 @@ const SVG_SIZE = 640;
 const CENTER = SVG_SIZE / 2;
 const OUTER_RADIUS = 304;
 const INNER_RADIUS = 62;
+const MAX_LABEL_LINES = 3;
 
 function polarToCartesian(radius: number, angleInDegrees: number) {
   const radians = ((angleInDegrees - 90) * Math.PI) / 180;
@@ -78,6 +79,28 @@ function readableTextColor(fill: string, fallback: string) {
   return luminance > 0.68 ? "#111827" : "#ffffff";
 }
 
+function wrapSegmentLabel(label: string) {
+  const words = label.trim().split(/\s+/).filter(Boolean);
+  const lines: string[] = [];
+
+  for (const word of words) {
+    const current = lines[lines.length - 1] ?? "";
+    const candidate = current ? `${current} ${word}` : word;
+
+    if (!current) {
+      lines.push(word);
+    } else if (candidate.length <= 10) {
+      lines[lines.length - 1] = candidate;
+    } else if (lines.length < MAX_LABEL_LINES) {
+      lines.push(word);
+    } else {
+      lines[lines.length - 1] = `${current.slice(0, Math.max(0, current.length - 1))}…`;
+    }
+  }
+
+  return lines.length ? lines : [label];
+}
+
 export function WheelOfFortune({
   accent,
   wheelStyle,
@@ -103,7 +126,7 @@ export function WheelOfFortune({
     winColor: wheelStyle?.winColor ?? accent.signal,
     alternateWinColor: wheelStyle?.alternateWinColor ?? accent.paper,
     loseColor: wheelStyle?.loseColor ?? "#edf2f7",
-    alternateLoseColor: wheelStyle?.alternateLoseColor ?? "#ffffff",
+    alternateLoseColor: wheelStyle?.alternateLoseColor ?? "#e7edf3",
   };
 
   useEffect(() => {
@@ -139,8 +162,8 @@ export function WheelOfFortune({
   }
 
   return (
-    <div className="relative left-1/2 h-[560px] w-screen -translate-x-1/2 overflow-hidden">
-      <div className="absolute left-1/2 top-[88px] h-[700px] w-[700px] -translate-x-1/2">
+    <div className="relative left-1/2 h-[500px] w-screen -translate-x-1/2 overflow-hidden">
+      <div className="absolute left-1/2 top-[68px] h-[700px] w-[700px] -translate-x-1/2">
         <div
           className="absolute inset-0 rounded-full transition-transform duration-[4200ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
           style={{ transform: `rotate(${rotation}deg)` }}
@@ -162,6 +185,7 @@ export function WheelOfFortune({
               const endAngle = startAngle + segmentAngle - 2.4;
               const midAngle = startAngle + (endAngle - startAngle) / 2;
               const textPoint = polarToCartesian(195, midAngle);
+              const labelLines = wrapSegmentLabel(segment.label);
               const fillColor =
                 segment.tone === "win"
                   ? index % 2 === 0
@@ -190,28 +214,35 @@ export function WheelOfFortune({
                     x={textPoint.x}
                     y={textPoint.y}
                     fill={textColor}
-                    fontSize="24"
+                    fontSize={labelLines.length > 1 ? "20" : "24"}
                     fontWeight="850"
                     textAnchor="middle"
                     dominantBaseline="middle"
                     transform={`rotate(${midAngle + 90} ${textPoint.x} ${textPoint.y})`}
                   >
-                    {segment.label}
+                    {labelLines.map((line, lineIndex) => (
+                      <tspan
+                        key={`${segment.id}-${line}`}
+                        x={textPoint.x}
+                        dy={lineIndex === 0 ? `${-(labelLines.length - 1) * 10}px` : "20px"}
+                      >
+                        {line}
+                      </tspan>
+                    ))}
                   </text>
                 </g>
               );
             })}
-            <circle cx={CENTER} cy={CENTER} r="70" fill="#ffffff" opacity="0.94" />
           </svg>
         </div>
 
         <div
-          className="pointer-events-none absolute left-1/2 top-[30px] z-10 h-[292px] w-[124px] -translate-x-1/2 bg-white drop-shadow-[0_18px_22px_rgba(15,23,42,0.18)]"
+          className="pointer-events-none absolute left-1/2 top-[-4px] z-10 h-[336px] w-[154px] -translate-x-1/2 bg-white drop-shadow-[0_18px_22px_rgba(15,23,42,0.18)]"
           style={{
-            clipPath: "polygon(50% 100%, 0 0, 100% 0)",
+            clipPath: "polygon(50% 100%, 5% 0, 95% 0)",
           }}
         />
-        <div className="pointer-events-none absolute left-1/2 top-[282px] z-20 h-10 w-10 -translate-x-1/2 rounded-full bg-white shadow-[0_6px_14px_rgba(15,23,42,0.16)]" />
+        <div className="pointer-events-none absolute left-1/2 top-[278px] z-20 h-14 w-14 -translate-x-1/2 rounded-full bg-white shadow-[0_6px_14px_rgba(15,23,42,0.16)]" />
 
         <button
           type="button"
