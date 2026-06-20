@@ -33,7 +33,7 @@ type WheelOfFortuneProps = {
 const SVG_SIZE = 640;
 const CENTER = SVG_SIZE / 2;
 const OUTER_RADIUS = 304;
-const INNER_RADIUS = 62;
+const INNER_RADIUS = 104;
 const MAX_LABEL_LINES = 3;
 
 function polarToCartesian(radius: number, angleInDegrees: number) {
@@ -101,6 +101,30 @@ function wrapSegmentLabel(label: string) {
   return lines.length ? lines : [label];
 }
 
+function segmentTextStyles(labelLines: string[]) {
+  if (labelLines.length >= 3) {
+    return {
+      fontSize: 17,
+      lineHeight: 16,
+      initialOffset: -16,
+    };
+  }
+
+  if (labelLines.length === 2) {
+    return {
+      fontSize: 20,
+      lineHeight: 18,
+      initialOffset: -9,
+    };
+  }
+
+  return {
+    fontSize: 23,
+    lineHeight: 0,
+    initialOffset: 0,
+  };
+}
+
 export function WheelOfFortune({
   accent,
   wheelStyle,
@@ -162,17 +186,8 @@ export function WheelOfFortune({
   }
 
   return (
-    <div className="relative left-1/2 h-[500px] w-screen -translate-x-1/2 overflow-hidden">
-      <div className="absolute left-1/2 top-[68px] h-[700px] w-[700px] -translate-x-1/2">
-        <div
-          className="pointer-events-none absolute left-1/2 top-[6px] z-20 h-[82px] w-[54px] -translate-x-1/2 drop-shadow-[0_14px_18px_rgba(15,23,42,0.22)]"
-          style={{
-            clipPath: "polygon(50% 100%, 0 0, 100% 0)",
-            background:
-              "linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(249,250,251,0.98) 100%)",
-          }}
-        />
-
+    <div className="relative left-1/2 h-[560px] w-screen -translate-x-1/2 overflow-hidden">
+      <div className="absolute left-1/2 top-[68px] h-[760px] w-[760px] -translate-x-1/2">
         <div
           className="absolute inset-0 rounded-full transition-transform duration-[4200ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
           style={{ transform: `rotate(${rotation}deg)` }}
@@ -184,17 +199,25 @@ export function WheelOfFortune({
           >
             <defs>
               <radialGradient id="okado-wheel-gloss" cx="50%" cy="28%" r="68%">
-                <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
-                <stop offset="54%" stopColor="#ffffff" stopOpacity="0.18" />
-                <stop offset="100%" stopColor="#000000" stopOpacity="0.08" />
+                <stop offset="0%" stopColor="#ffffff" stopOpacity="0.82" />
+                <stop offset="52%" stopColor="#ffffff" stopOpacity="0.12" />
+                <stop offset="100%" stopColor="#000000" stopOpacity="0.06" />
+              </radialGradient>
+              <radialGradient id="okado-wheel-depth" cx="50%" cy="38%" r="70%">
+                <stop offset="0%" stopColor="#ffffff" stopOpacity="0" />
+                <stop offset="70%" stopColor="#0f172a" stopOpacity="0.02" />
+                <stop offset="100%" stopColor="#020617" stopOpacity="0.14" />
               </radialGradient>
             </defs>
+            <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 12} fill="rgba(255,255,255,0.9)" />
+            <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 2} fill="rgba(255,255,255,0.55)" />
             {segments.map((segment, index) => {
               const startAngle = index * segmentAngle + 1.2;
               const endAngle = startAngle + segmentAngle - 2.4;
               const midAngle = startAngle + (endAngle - startAngle) / 2;
-              const textPoint = polarToCartesian(195, midAngle);
+              const textPoint = polarToCartesian(208, midAngle);
               const labelLines = wrapSegmentLabel(segment.label);
+              const textStyles = segmentTextStyles(labelLines);
               const fillColor =
                 segment.tone === "win"
                   ? index % 2 === 0
@@ -210,20 +233,20 @@ export function WheelOfFortune({
                   <path
                     d={describeSlice(startAngle, endAngle)}
                     fill={fillColor}
-                    stroke="rgba(255,255,255,0.92)"
-                    strokeWidth="8"
+                    stroke="rgba(255,255,255,0.85)"
+                    strokeWidth="5"
                     strokeLinejoin="round"
                   />
                   <path
                     d={describeSlice(startAngle, endAngle)}
                     fill="url(#okado-wheel-gloss)"
-                    opacity="0.5"
+                    opacity="0.42"
                   />
                   <text
                     x={textPoint.x}
                     y={textPoint.y}
                     fill={textColor}
-                    fontSize={labelLines.length > 1 ? "20" : "24"}
+                    fontSize={String(textStyles.fontSize)}
                     fontWeight="850"
                     textAnchor="middle"
                     dominantBaseline="middle"
@@ -233,7 +256,11 @@ export function WheelOfFortune({
                       <tspan
                         key={`${segment.id}-${line}`}
                         x={textPoint.x}
-                        dy={lineIndex === 0 ? `${-(labelLines.length - 1) * 10}px` : "20px"}
+                        dy={
+                          lineIndex === 0
+                            ? `${textStyles.initialOffset}px`
+                            : `${textStyles.lineHeight}px`
+                        }
                       >
                         {line}
                       </tspan>
@@ -242,14 +269,32 @@ export function WheelOfFortune({
                 </g>
               );
             })}
+            <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 4} fill="url(#okado-wheel-depth)" />
           </svg>
         </div>
+
+        <div
+          className="pointer-events-none absolute left-1/2 top-1/2 z-20 h-[152px] w-[152px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white shadow-[0_24px_44px_rgba(15,23,42,0.18)]"
+        />
+        <div
+          className="pointer-events-none absolute left-1/2 top-[178px] z-30 h-[172px] w-[92px] -translate-x-1/2"
+          style={{
+            clipPath:
+              "polygon(50% 0, 86% 20%, 63% 100%, 37% 100%, 14% 20%)",
+            background:
+              "linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(246,247,250,0.98) 100%)",
+            filter: "drop-shadow(0 12px 18px rgba(15,23,42,0.12))",
+          }}
+        />
+        <div
+          className="pointer-events-none absolute left-1/2 top-[312px] z-30 h-[30px] w-[54px] -translate-x-1/2 rounded-b-[20px] bg-white"
+        />
 
         <button
           type="button"
           onClick={handleCentralButton}
           disabled={!buttonEnabled || isSpinning || hasSpun}
-          className="absolute left-1/2 top-1/2 z-30 flex h-[108px] w-[108px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-[10px] border-white text-[19px] font-black uppercase text-white shadow-[0_18px_36px_rgba(15,23,42,0.22)] transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-75"
+          className="absolute left-1/2 top-1/2 z-40 flex h-[108px] w-[108px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-[8px] border-white text-[19px] font-black uppercase text-white shadow-[0_18px_36px_rgba(15,23,42,0.18)] transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-75"
           style={{
             background:
               buttonEnabled && !hasSpun
