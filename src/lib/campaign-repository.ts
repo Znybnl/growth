@@ -1003,11 +1003,11 @@ export async function markActionConfirmedInSupabase(leadId: string) {
 
 export async function createDrawSessionInSupabase(
   input: CreateDrawSessionRequest,
-  merchant: Merchant,
+  merchant?: Merchant,
 ): Promise<CreateDrawSessionResult> {
   const performance = await getSupabaseCampaignPerformance(input.campaignId, merchant);
   if (!performance || !performance.campaign.isActive) throw new Error("Campagne indisponible");
-  const { campaign, prizes } = performance;
+  const { campaign, merchant: campaignMerchant, prizes } = performance;
   const supabase = getSupabaseAdmin();
   const sessionId = generateId("session");
   const { data, error } = await supabase
@@ -1036,13 +1036,13 @@ export async function createDrawSessionInSupabase(
   return {
     session,
     prize,
-    campaign: toPublicCampaign(campaign, merchant, prizes),
+    campaign: toPublicCampaign(campaign, campaignMerchant, prizes),
   };
 }
 
 export async function finalizeDrawSessionInSupabase(
   input: FinalizeDrawSessionRequest,
-  merchant: Merchant,
+  merchant?: Merchant,
 ): Promise<DrawResult> {
   const supabase = getSupabaseAdmin();
   const leadId = generateId("lead");
@@ -1067,7 +1067,7 @@ export async function finalizeDrawSessionInSupabase(
     throw new Error("Campagne indisponible");
   }
 
-  const { campaign, prizes } = performance;
+  const { campaign, merchant: campaignMerchant, prizes } = performance;
   const lead: Lead = {
     id: data.lead_id,
     campaignId: data.campaign_id,
@@ -1092,7 +1092,12 @@ export async function finalizeDrawSessionInSupabase(
   return {
     lead,
     prize,
-    campaign: toPublicCampaign(campaign, merchant, prizes, actionForVisit ? [actionForVisit] : []),
+    campaign: toPublicCampaign(
+      campaign,
+      campaignMerchant,
+      prizes,
+      actionForVisit ? [actionForVisit] : [],
+    ),
   };
 }
 

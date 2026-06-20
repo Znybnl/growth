@@ -45,7 +45,7 @@ begin
   for v_expired_session in
     select *
       from public.draw_sessions
-     where campaign_id = p_campaign_id
+     where draw_sessions.campaign_id = p_campaign_id
        and status = 'pending'
        and expires_at <= v_now
      for update

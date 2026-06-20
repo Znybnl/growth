@@ -1564,8 +1564,7 @@ export async function createDrawSession(
   fallbackMerchant?: Merchant,
 ) {
   if (isSupabaseConfigured()) {
-    const merchant = fallbackMerchant ?? (await getMerchantProfile());
-    return createDrawSessionInSupabase(input, merchant);
+    return createDrawSessionInSupabase(input, fallbackMerchant);
   }
 
   return createDrawSessionFromMemory(input);
@@ -1576,8 +1575,7 @@ export async function finalizeDrawSession(
   fallbackMerchant?: Merchant,
 ) {
   if (isSupabaseConfigured()) {
-    const merchant = fallbackMerchant ?? (await getMerchantProfile());
-    return finalizeDrawSessionInSupabase(input, merchant);
+    return finalizeDrawSessionInSupabase(input, fallbackMerchant);
   }
 
   return finalizeDrawSessionFromMemory(input);

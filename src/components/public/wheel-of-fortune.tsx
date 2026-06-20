@@ -139,12 +139,10 @@ export function WheelOfFortune({
   }
 
   return (
-    <div className="relative mx-auto h-[520px] w-full max-w-[480px] overflow-hidden">
-      <div className="pointer-events-none absolute left-1/2 top-6 h-[420px] w-[420px] -translate-x-1/2 rounded-full bg-white/35 blur-3xl" />
-
-      <div className="absolute left-1/2 top-[72px] h-[620px] w-[620px] -translate-x-1/2">
+    <div className="relative left-1/2 h-[560px] w-screen -translate-x-1/2 overflow-hidden">
+      <div className="absolute left-1/2 top-[88px] h-[700px] w-[700px] -translate-x-1/2">
         <div
-          className="absolute inset-0 rounded-full shadow-[0_28px_70px_rgba(15,23,42,0.18)] transition-transform duration-[4200ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
+          className="absolute inset-0 rounded-full transition-transform duration-[4200ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
           style={{ transform: `rotate(${rotation}deg)` }}
         >
           <svg
@@ -159,8 +157,6 @@ export function WheelOfFortune({
                 <stop offset="100%" stopColor="#000000" stopOpacity="0.08" />
               </radialGradient>
             </defs>
-            <circle cx={CENTER} cy={CENTER} r="314" fill="rgba(255,255,255,0.34)" />
-            <circle cx={CENTER} cy={CENTER} r="306" fill="rgba(255,255,255,0.50)" />
             {segments.map((segment, index) => {
               const startAngle = index * segmentAngle + 1.2;
               const endAngle = startAngle + segmentAngle - 2.4;
@@ -209,19 +205,19 @@ export function WheelOfFortune({
           </svg>
         </div>
 
-        <div className="pointer-events-none absolute left-1/2 top-1 -translate-x-1/2">
-          <div
-            className="h-0 w-0 border-x-[42px] border-b-[210px] border-x-transparent drop-shadow-[0_18px_22px_rgba(15,23,42,0.18)]"
-            style={{ borderBottomColor: colors.rimColor }}
-          />
-          <div className="absolute bottom-4 left-1/2 h-7 w-7 -translate-x-1/2 rounded-full bg-white shadow-[0_3px_10px_rgba(15,23,42,0.18)]" />
-        </div>
+        <div
+          className="pointer-events-none absolute left-1/2 top-[30px] z-10 h-[292px] w-[124px] -translate-x-1/2 bg-white drop-shadow-[0_18px_22px_rgba(15,23,42,0.18)]"
+          style={{
+            clipPath: "polygon(50% 100%, 0 0, 100% 0)",
+          }}
+        />
+        <div className="pointer-events-none absolute left-1/2 top-[282px] z-20 h-10 w-10 -translate-x-1/2 rounded-full bg-white shadow-[0_6px_14px_rgba(15,23,42,0.16)]" />
 
         <button
           type="button"
           onClick={handleCentralButton}
           disabled={!buttonEnabled || isSpinning || hasSpun}
-          className="absolute left-1/2 top-1/2 z-10 flex h-[104px] w-[104px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-[8px] border-white/75 text-[19px] font-black uppercase text-white shadow-[0_18px_36px_rgba(15,23,42,0.22)] transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-75"
+          className="absolute left-1/2 top-1/2 z-30 flex h-[108px] w-[108px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-[10px] border-white text-[19px] font-black uppercase text-white shadow-[0_18px_36px_rgba(15,23,42,0.22)] transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-75"
           style={{
             background:
               buttonEnabled && !hasSpun
