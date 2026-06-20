@@ -12,23 +12,25 @@ import { Merchant } from "@/lib/types";
 type MerchantShellProps = {
   children: React.ReactNode;
   merchant: Merchant;
+  isSaasAdmin: boolean;
 };
 
 const navItems = [
   { href: "/", label: "Dashboard" },
   { href: "/campaigns", label: "Campagnes" },
-  { href: "/backgrounds", label: "Bibliothèque" },
+  { href: "/backgrounds", label: "Bibliothèque", adminOnly: true },
   { href: "/data", label: "Données" },
-  { href: "/support", label: "Support" },
+  { href: "/support", label: "Supervision", adminOnly: true },
   { href: "/account", label: "Compte" },
 ];
 
-export function MerchantShell({ children, merchant }: MerchantShellProps) {
+export function MerchantShell({ children, merchant, isSaasAdmin }: MerchantShellProps) {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [menuOpen, setMenuOpen] = useState(false);
   const [query, setQuery] = useState(searchParams.get("q") ?? "");
+  const visibleNavItems = navItems.filter((item) => !item.adminOnly || isSaasAdmin);
 
   function submitSearch(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -72,7 +74,7 @@ export function MerchantShell({ children, merchant }: MerchantShellProps) {
           </div>
 
           <nav className="mt-6 space-y-2">
-            {navItems.map((item) => {
+            {visibleNavItems.map((item) => {
               const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
 
               return (

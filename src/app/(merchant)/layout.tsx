@@ -1,5 +1,6 @@
 import { MerchantShell } from "@/components/merchant/merchant-shell";
 import { requireAuthenticatedSession } from "@/lib/auth";
+import { isSaasAdminEmail } from "@/lib/admin";
 import { redirect } from "next/navigation";
 
 export default async function MerchantLayout({
@@ -13,5 +14,12 @@ export default async function MerchantLayout({
     redirect("/onboarding");
   }
 
-  return <MerchantShell merchant={session.merchant}>{children}</MerchantShell>;
+  return (
+    <MerchantShell
+      merchant={session.merchant}
+      isSaasAdmin={isSaasAdminEmail(session.user.email)}
+    >
+      {children}
+    </MerchantShell>
+  );
 }

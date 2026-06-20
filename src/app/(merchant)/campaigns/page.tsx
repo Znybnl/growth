@@ -42,6 +42,12 @@ export default async function CampaignsPage({
             <div className="rounded-[22px] bg-[#f7f9fc] px-5 py-4 text-sm text-[#4f5b70]">
               {activeCount} actives · {campaigns.length} au total
             </div>
+            <Link
+              href="/campaigns/new"
+              className="inline-flex items-center justify-center rounded-[22px] bg-[#2f6df6] px-5 py-4 text-sm font-semibold !text-white shadow-[0_16px_32px_rgba(47,109,246,0.22)]"
+            >
+              Créer une campagne
+            </Link>
           </div>
         </div>
       </section>

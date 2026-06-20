@@ -1,6 +1,8 @@
 import { requireAuthenticatedSession } from "@/lib/auth";
+import { isSaasAdminEmail } from "@/lib/admin";
 import { formatDateTime, leadStatusLabel, rewardEmailStatusLabel } from "@/lib/format";
 import { getMerchantSupportOverview } from "@/lib/store";
+import { redirect } from "next/navigation";
 
 function StatusBadge({
   label,
@@ -27,13 +29,18 @@ function StatusBadge({
 
 export default async function SupportPage() {
   const session = await requireAuthenticatedSession();
+
+  if (!isSaasAdminEmail(session.user.email)) {
+    redirect("/");
+  }
+
   const overview = await getMerchantSupportOverview(session.merchant.id, session.merchant);
 
   return (
     <div className="space-y-6">
       <section className="overflow-hidden rounded-[34px] border border-[#dbe4f0] bg-white shadow-[0_20px_50px_rgba(122,136,166,0.14)]">
         <div className="px-6 py-7 xl:px-8">
-          <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Support</p>
+          <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Supervision</p>
           <h1 className="mt-3 font-display text-5xl font-semibold leading-none text-[#0f1728]">
             Centre de supervision
           </h1>

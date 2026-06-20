@@ -156,11 +156,11 @@ function createDefaultState(merchant: Merchant): EditorState {
       },
       background: {
         mode: "color",
-        color: "#111827",
+        color: "#ffffff",
         imageUrl: "",
       },
       heading: {
-        textColor: "#ffffff",
+        textColor: "#1f2937",
         fontSizePx: 40,
         fontFamily: "display",
         align: "center",
@@ -653,7 +653,7 @@ export function CampaignEditor({
               disabled={isSaving}
               className="rounded-[20px] bg-[#2f6df6] px-5 py-3 text-sm font-semibold !text-white shadow-[0_16px_32px_rgba(47,109,246,0.22)] disabled:opacity-60"
             >
-              {isSaving ? "Enregistrement..." : "Enregistrer la campagne"}
+              {isSaving ? "Enregistrement..." : "Enregistrer"}
             </button>
           </div>
         </div>
@@ -717,7 +717,7 @@ export function CampaignEditor({
                   Actions marketing
                 </p>
                 <h3 className="mt-2 text-xl font-semibold text-[#111827]">
-                  Ordre des actions et ouverture en nouvel onglet
+                  Ordre des actions pour chaque participation
                 </h3>
               </div>
               <button
@@ -2318,6 +2318,7 @@ export function CampaignEditor({
                         size="lg"
                         variant="transparent"
                         imageWidthPx={logoWidthPx}
+                        textColor={form.presentation.heading.textColor}
                       />
                     </div>
                   </div>

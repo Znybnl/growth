@@ -7,6 +7,7 @@ type BrandMarkProps = {
   className?: string;
   variant?: "default" | "transparent";
   imageWidthPx?: number;
+  textColor?: string;
 };
 
 const sizeMap = {
@@ -22,6 +23,7 @@ export function BrandMark({
   className = "",
   variant = "default",
   imageWidthPx,
+  textColor = "#ffffff",
 }: BrandMarkProps) {
   const sizing = className.includes("w-full") ? "w-full" : sizeMap[size];
 
@@ -59,7 +61,10 @@ export function BrandMark({
         className={`inline-flex shrink-0 items-center justify-center text-center ${className}`}
         style={{ maxWidth: `${imageWidthPx ?? 240}px` }}
       >
-        <span className="font-display text-3xl font-semibold leading-none text-white drop-shadow-[0_8px_18px_rgba(0,0,0,0.28)]">
+        <span
+          className="font-display text-3xl font-semibold leading-none drop-shadow-[0_8px_18px_rgba(0,0,0,0.28)]"
+          style={{ color: textColor }}
+        >
           {logoText}
         </span>
       </div>

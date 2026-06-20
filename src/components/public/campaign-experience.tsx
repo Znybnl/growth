@@ -335,6 +335,7 @@ export function CampaignExperience({
                 size="lg"
                 variant="transparent"
                 imageWidthPx={logoWidthPx}
+                textColor={campaign.presentation.heading.textColor}
               />
             </div>
           </div>

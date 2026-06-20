@@ -105,12 +105,12 @@ function createPresentation(overrides?: CampaignPresentationOverrides): Campaign
     },
     background: {
       mode: "color",
-      color: "#111827",
+      color: "#ffffff",
       imageUrl: undefined,
       ...overrides?.background,
     },
     heading: {
-      textColor: "#ffffff",
+      textColor: "#1f2937",
       fontSizePx: 42,
       fontFamily: "display",
       align: "center",

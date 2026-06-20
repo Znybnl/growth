@@ -165,6 +165,15 @@ export function WheelOfFortune({
     <div className="relative left-1/2 h-[500px] w-screen -translate-x-1/2 overflow-hidden">
       <div className="absolute left-1/2 top-[68px] h-[700px] w-[700px] -translate-x-1/2">
         <div
+          className="pointer-events-none absolute left-1/2 top-[6px] z-20 h-[82px] w-[54px] -translate-x-1/2 drop-shadow-[0_14px_18px_rgba(15,23,42,0.22)]"
+          style={{
+            clipPath: "polygon(50% 100%, 0 0, 100% 0)",
+            background:
+              "linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(249,250,251,0.98) 100%)",
+          }}
+        />
+
+        <div
           className="absolute inset-0 rounded-full transition-transform duration-[4200ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
           style={{ transform: `rotate(${rotation}deg)` }}
         >
@@ -235,14 +244,6 @@ export function WheelOfFortune({
             })}
           </svg>
         </div>
-
-        <div
-          className="pointer-events-none absolute left-1/2 top-[-4px] z-10 h-[336px] w-[154px] -translate-x-1/2 bg-white drop-shadow-[0_18px_22px_rgba(15,23,42,0.18)]"
-          style={{
-            clipPath: "polygon(50% 100%, 5% 0, 95% 0)",
-          }}
-        />
-        <div className="pointer-events-none absolute left-1/2 top-[278px] z-20 h-14 w-14 -translate-x-1/2 rounded-full bg-white shadow-[0_6px_14px_rgba(15,23,42,0.16)]" />
 
         <button
           type="button"
