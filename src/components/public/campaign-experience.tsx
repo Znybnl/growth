@@ -359,7 +359,7 @@ export function CampaignExperience({
 
         {campaign.gameType === "wheel" ? (
           <div
-            className="relative mt-3 min-h-0 flex-1 overflow-hidden"
+            className="relative mt-[184px] min-h-0 flex-1 overflow-hidden sm:mt-20 lg:mt-8"
             style={{ minHeight: "min(52vh, 520px)" }}
           >
             <div className="absolute inset-y-0 left-1/2 w-[calc(100vw+2rem)] -translate-x-1/2 overflow-hidden sm:w-[calc(100vw+3rem)]">
@@ -377,6 +377,7 @@ export function CampaignExperience({
                 canSpin={stage === "ready"}
                 buttonEnabled={stage === "idle" || stage === "ready"}
                 buttonLabel="JOUER"
+                framing="public"
                 onButtonClick={() => void openActionAndTrack()}
                 onSpinEnd={() => void handleGameReveal()}
               />

@@ -33,6 +33,7 @@ type WheelOfFortuneProps = {
     textColor?: string;
     borderColor?: string;
   };
+  framing?: "default" | "public";
 };
 
 const SVG_SIZE = 640;
@@ -141,6 +142,7 @@ export function WheelOfFortune({
   onButtonClick,
   onSpinEnd,
   buttonStyle,
+  framing = "default",
 }: WheelOfFortuneProps) {
   const [rotation, setRotation] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
@@ -159,6 +161,7 @@ export function WheelOfFortune({
     alternateLoseColor: wheelStyle?.alternateLoseColor ?? "#e7edf3",
   };
   const wheelSize = "min(200vw, 185vh, 1800px)";
+  const wheelTop = framing === "public" ? "78%" : "62%";
 
   useEffect(() => {
     if (!isSpinning || !onSpinEnd) {
@@ -196,7 +199,7 @@ export function WheelOfFortune({
     <div className="relative h-full w-full overflow-hidden">
       <div
         className="absolute left-1/2 aspect-square -translate-x-1/2 -translate-y-1/2"
-        style={{ width: wheelSize, top: "62%" }}
+        style={{ width: wheelSize, top: wheelTop }}
       >
         <div
           className="absolute inset-0 rounded-full transition-transform duration-[4200ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
