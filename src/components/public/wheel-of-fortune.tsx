@@ -186,8 +186,8 @@ export function WheelOfFortune({
   }
 
   return (
-    <div className="relative left-1/2 h-[560px] w-screen -translate-x-1/2 overflow-hidden">
-      <div className="absolute left-1/2 top-[68px] h-[760px] w-[760px] -translate-x-1/2">
+    <div className="relative left-1/2 h-[640px] w-screen -translate-x-1/2 overflow-hidden">
+      <div className="absolute left-1/2 top-[56px] h-[800px] w-[800px] -translate-x-1/2">
         <div
           className="absolute inset-0 rounded-full transition-transform duration-[4200ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
           style={{ transform: `rotate(${rotation}deg)` }}
@@ -274,27 +274,27 @@ export function WheelOfFortune({
         </div>
 
         <div
-          className="pointer-events-none absolute left-1/2 top-1/2 z-20 h-[152px] w-[152px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white shadow-[0_24px_44px_rgba(15,23,42,0.18)]"
+          className="pointer-events-none absolute left-1/2 top-1/2 z-20 h-[132px] w-[132px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white shadow-[0_20px_38px_rgba(15,23,42,0.16)]"
         />
         <div
-          className="pointer-events-none absolute left-1/2 top-[178px] z-30 h-[172px] w-[92px] -translate-x-1/2"
+          className="pointer-events-none absolute left-1/2 top-[236px] z-30 h-[150px] w-[74px] -translate-x-1/2"
           style={{
             clipPath:
-              "polygon(50% 0, 86% 20%, 63% 100%, 37% 100%, 14% 20%)",
+              "polygon(50% 0, 84% 18%, 62% 100%, 38% 100%, 16% 18%)",
             background:
               "linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(246,247,250,0.98) 100%)",
-            filter: "drop-shadow(0 12px 18px rgba(15,23,42,0.12))",
+            filter: "drop-shadow(0 10px 14px rgba(15,23,42,0.1))",
           }}
         />
         <div
-          className="pointer-events-none absolute left-1/2 top-[312px] z-30 h-[30px] w-[54px] -translate-x-1/2 rounded-b-[20px] bg-white"
+          className="pointer-events-none absolute left-1/2 top-[358px] z-30 h-[28px] w-[46px] -translate-x-1/2 rounded-b-[18px] bg-white"
         />
 
         <button
           type="button"
           onClick={handleCentralButton}
           disabled={!buttonEnabled || isSpinning || hasSpun}
-          className="absolute left-1/2 top-1/2 z-40 flex h-[108px] w-[108px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-[8px] border-white text-[19px] font-black uppercase text-white shadow-[0_18px_36px_rgba(15,23,42,0.18)] transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-75"
+          className="absolute left-1/2 top-1/2 z-40 flex h-[108px] w-[108px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-[4px] border-white text-[19px] font-black uppercase text-white shadow-[0_16px_30px_rgba(15,23,42,0.16)] transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-75"
           style={{
             background:
               buttonEnabled && !hasSpun
