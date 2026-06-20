@@ -160,8 +160,7 @@ export function WheelOfFortune({
     loseColor: wheelStyle?.loseColor ?? "#edf2f7",
     alternateLoseColor: wheelStyle?.alternateLoseColor ?? "#e7edf3",
   };
-  const wheelSize = "min(200vw, 185vh, 1800px)";
-  const wheelTop = framing === "public" ? "78%" : "62%";
+  const wheelTop = framing === "public" ? undefined : "62%";
 
   useEffect(() => {
     if (!isSpinning || !onSpinEnd) {
@@ -198,8 +197,12 @@ export function WheelOfFortune({
   return (
     <div className="relative h-full w-full overflow-hidden">
       <div
-        className="absolute left-1/2 aspect-square -translate-x-1/2 -translate-y-1/2"
-        style={{ width: wheelSize, top: wheelTop }}
+        className={`absolute left-1/2 aspect-square -translate-x-1/2 -translate-y-1/2 ${
+          framing === "public"
+            ? "top-[78%] w-[200vw] max-w-none sm:top-[74%] sm:w-[168vw] md:top-[70%] md:w-[146vw] lg:top-[67%] lg:w-[132vw] xl:top-[64%] xl:w-[116vw] 2xl:w-[108vw]"
+            : "w-full"
+        }`}
+        style={{ top: wheelTop }}
       >
         <div
           className="absolute inset-0 rounded-full transition-transform duration-[4200ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
