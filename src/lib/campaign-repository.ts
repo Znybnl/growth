@@ -6,8 +6,12 @@ import {
   CampaignKpi,
   CampaignPerformance,
   CampaignSetupInput,
+  CreateDrawSessionRequest,
+  CreateDrawSessionResult,
+  DrawSession,
   DrawRequest,
   DrawResult,
+  FinalizeDrawSessionRequest,
   Lead,
   Merchant,
   MerchantDashboardData,
@@ -116,6 +120,15 @@ type LeadRow = {
   reward_expires_at: string | null;
 };
 
+type DrawSessionRow = {
+  id: string;
+  campaign_id: string;
+  prize_id: string | null;
+  status: DrawSession["status"];
+  created_at: string;
+  expires_at: string;
+};
+
 type DrawLeadRpcRow = {
   lead_id: string;
   campaign_id: string;
@@ -132,6 +145,17 @@ type DrawLeadRpcRow = {
   reward_expires_at: string | null;
   action_index: number;
 };
+
+type CreateDrawSessionRpcRow = {
+  session_id: string;
+  campaign_id: string;
+  prize_id: string | null;
+  status: DrawSession["status"];
+  created_at: string;
+  expires_at: string;
+};
+
+type FinalizeDrawSessionRpcRow = DrawLeadRpcRow;
 
 type EventRow = {
   id: string;
@@ -394,6 +418,17 @@ function toLead(row: LeadRow): Lead {
     redemptionCode: row.redemption_code ?? undefined,
     rewardAvailableAt: row.reward_available_at ?? undefined,
     rewardExpiresAt: row.reward_expires_at ?? undefined,
+  };
+}
+
+function toDrawSession(row: DrawSessionRow): DrawSession {
+  return {
+    id: row.id,
+    campaignId: row.campaign_id,
+    prizeId: row.prize_id ?? undefined,
+    status: row.status,
+    createdAt: row.created_at,
+    expiresAt: row.expires_at,
   };
 }
 
@@ -964,6 +999,101 @@ export async function markActionConfirmedInSupabase(leadId: string) {
     .maybeSingle();
   if (error || !data) return null;
   return toLead(data as LeadRow);
+}
+
+export async function createDrawSessionInSupabase(
+  input: CreateDrawSessionRequest,
+  merchant: Merchant,
+): Promise<CreateDrawSessionResult> {
+  const performance = await getSupabaseCampaignPerformance(input.campaignId, merchant);
+  if (!performance || !performance.campaign.isActive) throw new Error("Campagne indisponible");
+  const { campaign, prizes } = performance;
+  const supabase = getSupabaseAdmin();
+  const sessionId = generateId("session");
+  const { data, error } = await supabase
+    .rpc("create_draw_session", {
+      p_campaign_id: campaign.id,
+      p_session_id: sessionId,
+    })
+    .single<CreateDrawSessionRpcRow>();
+
+  if (error || !data) {
+    throw new Error(
+      `Impossible de préparer la partie: ${error?.message ?? "réponse vide de la RPC"}`,
+    );
+  }
+
+  const session = toDrawSession({
+    id: data.session_id,
+    campaign_id: data.campaign_id,
+    prize_id: data.prize_id,
+    status: data.status,
+    created_at: data.created_at,
+    expires_at: data.expires_at,
+  });
+  const prize = data.prize_id ? prizes.find((item) => item.id === data.prize_id) ?? null : null;
+
+  return {
+    session,
+    prize,
+    campaign: toPublicCampaign(campaign, merchant, prizes),
+  };
+}
+
+export async function finalizeDrawSessionInSupabase(
+  input: FinalizeDrawSessionRequest,
+  merchant: Merchant,
+): Promise<DrawResult> {
+  const supabase = getSupabaseAdmin();
+  const leadId = generateId("lead");
+  const { data, error } = await supabase
+    .rpc("finalize_draw_session_and_create_lead", {
+      p_session_id: input.sessionId,
+      p_lead_id: leadId,
+      p_first_name: input.firstName,
+      p_email: input.email,
+      p_marketing_consent: Boolean(input.marketingConsent),
+    })
+    .single<FinalizeDrawSessionRpcRow>();
+
+  if (error || !data) {
+    throw new Error(
+      `Impossible de finaliser la participation: ${error?.message ?? "réponse vide de la RPC"}`,
+    );
+  }
+
+  const performance = await getSupabaseCampaignPerformance(data.campaign_id, merchant);
+  if (!performance) {
+    throw new Error("Campagne indisponible");
+  }
+
+  const { campaign, prizes } = performance;
+  const lead: Lead = {
+    id: data.lead_id,
+    campaignId: data.campaign_id,
+    firstName: data.first_name,
+    email: data.email,
+    marketingConsent: data.marketing_consent,
+    consentTimestamp: data.consent_timestamp,
+    prizeId: data.prize_id ?? undefined,
+    status: data.status,
+    createdAt: data.created_at,
+    actionConfirmed: data.action_confirmed,
+    redemptionCode: data.redemption_code ?? undefined,
+    rewardAvailableAt: data.reward_available_at ?? undefined,
+    rewardExpiresAt: data.reward_expires_at ?? undefined,
+  };
+  const prize = data.prize_id
+    ? prizes.find((item) => item.id === data.prize_id) ?? null
+    : null;
+  const actionForVisit =
+    typeof data.action_index === "number" ? campaign.actions[data.action_index] : undefined;
+
+  return {
+    lead,
+    prize,
+    campaign: toPublicCampaign(campaign, merchant, prizes, actionForVisit ? [actionForVisit] : []),
+  };
 }
 
 export async function drawForLeadInSupabase(input: DrawRequest, merchant: Merchant): Promise<DrawResult> {

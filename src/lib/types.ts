@@ -377,6 +377,32 @@ export interface DrawRequest {
   marketingConsent: boolean;
 }
 
+export interface DrawSession {
+  id: string;
+  campaignId: string;
+  prizeId?: string;
+  status: "pending" | "completed" | "expired";
+  createdAt: string;
+  expiresAt: string;
+}
+
+export interface CreateDrawSessionRequest {
+  campaignId: string;
+}
+
+export interface CreateDrawSessionResult {
+  session: DrawSession;
+  prize: Prize | null;
+  campaign: PublicCampaign;
+}
+
+export interface FinalizeDrawSessionRequest {
+  sessionId: string;
+  firstName: string;
+  email: string;
+  marketingConsent?: boolean;
+}
+
 export interface DrawResult {
   lead: Lead;
   prize: Prize | null;

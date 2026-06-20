@@ -108,9 +108,9 @@ export function MerchantShell({ children, merchant }: MerchantShellProps) {
             <p className="text-xs uppercase tracking-[0.24em] text-[#8c93a4]">Compte</p>
             <div className="mt-3 flex items-center gap-3">
               <BrandMark logoText={merchant.logoText} logoUrl={merchant.logoUrl} size="sm" />
-              <div>
+              <div className="min-w-0">
                 <p className="text-sm font-semibold text-[#141821]">Admin magasin</p>
-                <p className="text-sm text-[#9aa1b1]">{merchant.companyName}</p>
+                <p className="truncate text-sm text-[#9aa1b1]">{merchant.companyName}</p>
               </div>
             </div>
             <div className="mt-4">
@@ -120,12 +120,12 @@ export function MerchantShell({ children, merchant }: MerchantShellProps) {
         </div>
       </aside>
 
-      <div className="flex h-screen flex-col md:ml-[304px]">
+      <div className="flex h-screen min-w-0 flex-col md:ml-[304px]">
         <header className="sticky top-0 z-30 border-b border-[#dfe6f0] bg-white/92 backdrop-blur">
           <div className="flex items-center gap-4 px-4 py-4 md:px-7">
             <button
               type="button"
-              className="inline-flex h-11 w-11 items-center justify-center rounded-[18px] border border-[#e4e9f2] bg-[#f7f9fc] md:hidden"
+              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[18px] border border-[#e4e9f2] bg-[#f7f9fc] md:hidden"
               onClick={() => setMenuOpen((current) => !current)}
             >
               <span className="space-y-1">
@@ -143,13 +143,15 @@ export function MerchantShell({ children, merchant }: MerchantShellProps) {
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="Rechercher une campagne, un lead ou un lot"
-                className="w-full bg-transparent text-sm text-[#10131a] outline-none placeholder:text-[#a0a7b7]"
+                className="w-full min-w-0 bg-transparent text-sm text-[#10131a] outline-none placeholder:text-[#a0a7b7]"
               />
             </form>
           </div>
         </header>
 
-        <main className="min-h-0 flex-1 overflow-y-auto px-3 py-6 md:px-6">{children}</main>
+        <main className="min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden px-3 py-6 md:px-6">
+          {children}
+        </main>
       </div>
     </div>
   );

@@ -1,5 +1,7 @@
 import {
+  createDrawSessionInSupabase,
   drawForLeadInSupabase,
+  finalizeDrawSessionInSupabase,
   getSupabaseCampaignDataView,
   getSupabaseCampaignPerformance,
   getSupabaseMerchantDashboard,
@@ -42,8 +44,12 @@ import {
   CampaignRewardRules,
   CampaignWheelSettings,
   CampaignSetupInput,
+  CreateDrawSessionRequest,
+  CreateDrawSessionResult,
+  DrawSession,
   DrawRequest,
   DrawResult,
+  FinalizeDrawSessionRequest,
   Lead,
   Merchant,
   MerchantAccountSettingsInput,
@@ -66,6 +72,7 @@ type Store = {
   prizes: Prize[];
   leads: Lead[];
   events: CampaignEvent[];
+  drawSessions: DrawSession[];
 };
 
 type CampaignPresentationOverrides = {
@@ -476,6 +483,7 @@ function createSeededStore(): Store {
     prizes: prizeSeed,
     leads: leadSeed,
     events: eventSeed,
+    drawSessions: [],
   };
 }
 
@@ -586,6 +594,7 @@ function normalizeStore(rawStore: Store): Store {
     })),
     leads: rawStore.leads ?? [],
     events: rawStore.events ?? [],
+    drawSessions: rawStore.drawSessions ?? [],
   };
 }
 
@@ -751,6 +760,14 @@ function decrementPrize(prize: Prize) {
   prize.remainingQuantity -= 1;
 }
 
+function incrementPrize(prize: Prize) {
+  if (prize.remainingQuantity === null) {
+    return;
+  }
+
+  prize.remainingQuantity += 1;
+}
+
 function choosePrize(campaign: Campaign, prizes: Prize[]) {
   const available = prizes.filter(isPrizeAvailable);
 
@@ -788,6 +805,68 @@ function choosePrize(campaign: Campaign, prizes: Prize[]) {
   }
 
   return null;
+}
+
+function expireDrawSessionsFromMemory() {
+  const now = Date.now();
+
+  for (const session of store.drawSessions) {
+    if (session.status !== "pending" || new Date(session.expiresAt).getTime() > now) {
+      continue;
+    }
+
+    session.status = "expired";
+
+    if (session.prizeId) {
+      const prize = store.prizes.find((item) => item.id === session.prizeId);
+
+      if (prize) {
+        incrementPrize(prize);
+      }
+    }
+  }
+}
+
+function buildLeadFromSession(
+  campaign: Campaign,
+  session: DrawSession,
+  input: FinalizeDrawSessionRequest,
+): Lead {
+  const now = new Date();
+  const lead: Lead = {
+    id: generateId("lead"),
+    campaignId: campaign.id,
+    firstName: input.firstName.trim(),
+    email: input.email.trim().toLowerCase(),
+    marketingConsent: Boolean(input.marketingConsent),
+    consentTimestamp: now.toISOString(),
+    status: "lost",
+    createdAt: now.toISOString(),
+    actionConfirmed: false,
+  };
+
+  if (!session.prizeId) {
+    return lead;
+  }
+
+  const availableAt = new Date(
+    now.getTime() + campaign.rewardRules.availableAfterHours * 60 * 60 * 1000,
+  );
+  const expiresAt =
+    campaign.rewardRules.availabilityDurationDays > 0
+      ? new Date(
+          availableAt.getTime() +
+            campaign.rewardRules.availabilityDurationDays * 24 * 60 * 60 * 1000,
+        )
+      : new Date(now.getTime() + campaign.rewardRules.rewardExpiryMinutes * 60 * 1000);
+
+  lead.prizeId = session.prizeId;
+  lead.status = "claimed";
+  lead.redemptionCode = `SORA-${Math.floor(1000 + Math.random() * 9000)}`;
+  lead.rewardAvailableAt = availableAt.toISOString();
+  lead.rewardExpiresAt = expiresAt.toISOString();
+
+  return lead;
 }
 
 function getMerchantProfileFromMemory(merchantId = merchantSeed.id) {
@@ -1106,58 +1185,60 @@ function getCampaignDataViewFromMemory(campaignId: string): CampaignDataView | n
   };
 }
 
-function drawForLeadFromMemory(input: DrawRequest): DrawResult {
+function createDrawSessionFromMemory(input: CreateDrawSessionRequest): CreateDrawSessionResult {
+  expireDrawSessionsFromMemory();
   const campaign = getCampaign(input.campaignId);
 
   if (!campaign || !campaign.isActive) {
     throw new Error("Campagne indisponible");
   }
 
-  const email = input.email.trim().toLowerCase();
-  const previousParticipations = store.leads.filter(
-    (lead) => lead.campaignId === campaign.id && lead.email === email,
-  ).length;
-  const actionForVisit = campaign.actions[previousParticipations];
-
-  const lead: Lead = {
-    id: generateId("lead"),
+  const prize = choosePrize(campaign, getCampaignPrizes(campaign.id));
+  const session: DrawSession = {
+    id: generateId("session"),
     campaignId: campaign.id,
-    firstName: input.firstName.trim(),
-    email,
-    marketingConsent: input.marketingConsent,
-    consentTimestamp: new Date().toISOString(),
-    status: "lost",
+    prizeId: prize?.id,
+    status: "pending",
     createdAt: new Date().toISOString(),
-    actionConfirmed: false,
+    expiresAt: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
   };
 
-  const prize = choosePrize(campaign, getCampaignPrizes(campaign.id));
+  store.drawSessions.push(session);
+  recordEventInMemory(campaign.id, "game_played");
 
-  if (prize) {
-    const now = Date.now();
-    const availableAt = new Date(
-      now + campaign.rewardRules.availableAfterHours * 60 * 60 * 1000,
-    );
-    const expiresAt =
-      campaign.rewardRules.availabilityDurationDays > 0
-        ? new Date(
-            availableAt.getTime() +
-              campaign.rewardRules.availabilityDurationDays * 24 * 60 * 60 * 1000,
-          )
-        : new Date(
-            now + campaign.rewardRules.rewardExpiryMinutes * 60 * 1000,
-          );
+  return {
+    session: clone(session),
+    prize: prize ? clone(prize) : null,
+    campaign: toPublicCampaign(campaign),
+  };
+}
 
-    lead.prizeId = prize.id;
-    lead.status = "claimed";
-    lead.redemptionCode = `SORA-${Math.floor(1000 + Math.random() * 9000)}`;
-    lead.rewardAvailableAt = availableAt.toISOString();
-    lead.rewardExpiresAt = expiresAt.toISOString();
+function finalizeDrawSessionFromMemory(input: FinalizeDrawSessionRequest): DrawResult {
+  expireDrawSessionsFromMemory();
+  const session = store.drawSessions.find((item) => item.id === input.sessionId);
+
+  if (!session || session.status !== "pending") {
+    throw new Error("Session de jeu introuvable ou expirée.");
   }
 
+  const campaign = getCampaign(session.campaignId);
+
+  if (!campaign || !campaign.isActive) {
+    throw new Error("Campagne indisponible");
+  }
+
+  const lead = buildLeadFromSession(campaign, session, input);
+  const previousParticipations = store.leads.filter(
+    (item) => item.campaignId === campaign.id && item.email === lead.email,
+  ).length;
+  const actionForVisit = campaign.actions[previousParticipations];
+  const prize = lead.prizeId
+    ? getCampaignPrizes(campaign.id).find((item) => item.id === lead.prizeId) ?? null
+    : null;
+
   store.leads.push(lead);
+  session.status = "completed";
   recordEventInMemory(campaign.id, "lead_created", lead.id);
-  recordEventInMemory(campaign.id, "game_played", lead.id);
 
   if (prize) {
     recordEventInMemory(campaign.id, "prize_won", lead.id, { prizeId: prize.id });
@@ -1168,6 +1249,17 @@ function drawForLeadFromMemory(input: DrawRequest): DrawResult {
     prize: prize ? clone(prize) : null,
     campaign: toPublicCampaign(campaign, actionForVisit ? [actionForVisit] : []),
   };
+}
+
+function drawForLeadFromMemory(input: DrawRequest): DrawResult {
+  const preview = createDrawSessionFromMemory({ campaignId: input.campaignId });
+
+  return finalizeDrawSessionFromMemory({
+    sessionId: preview.session.id,
+    firstName: input.firstName,
+    email: input.email,
+    marketingConsent: input.marketingConsent,
+  });
 }
 
 function markActionConfirmedInMemory(leadId: string) {
@@ -1465,6 +1557,30 @@ export async function drawForLead(input: DrawRequest, fallbackMerchant?: Merchan
   }
 
   return drawForLeadFromMemory(input);
+}
+
+export async function createDrawSession(
+  input: CreateDrawSessionRequest,
+  fallbackMerchant?: Merchant,
+) {
+  if (isSupabaseConfigured()) {
+    const merchant = fallbackMerchant ?? (await getMerchantProfile());
+    return createDrawSessionInSupabase(input, merchant);
+  }
+
+  return createDrawSessionFromMemory(input);
+}
+
+export async function finalizeDrawSession(
+  input: FinalizeDrawSessionRequest,
+  fallbackMerchant?: Merchant,
+) {
+  if (isSupabaseConfigured()) {
+    const merchant = fallbackMerchant ?? (await getMerchantProfile());
+    return finalizeDrawSessionInSupabase(input, merchant);
+  }
+
+  return finalizeDrawSessionFromMemory(input);
 }
 
 export async function markActionConfirmed(leadId: string) {
