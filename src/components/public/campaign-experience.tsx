@@ -359,7 +359,7 @@ export function CampaignExperience({
 
         {campaign.gameType === "wheel" ? (
           <div
-            className="relative left-1/2 mt-[184px] min-h-0 w-screen -translate-x-1/2 flex-1 overflow-hidden sm:mt-20 lg:mt-8"
+            className="relative left-1/2 mt-[40px] min-h-0 w-screen -translate-x-1/2 flex-1 overflow-hidden sm:mt-20 lg:mt-8"
             style={{ minHeight: "min(52vh, 520px)" }}
           >
             <div className="absolute inset-0 overflow-hidden">
