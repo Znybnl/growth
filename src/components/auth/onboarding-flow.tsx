@@ -12,7 +12,7 @@ const steps = [
     label: "Profil",
     title: "Renseignez l'identite de votre boutique",
     description:
-      "On pose la base de votre espace marchand : enseigne, ville et contact de reference.",
+      "On pose la base de votre espace marchand : enseigne, secteur, ville et contact de reference.",
   },
   {
     id: "objectifs",
@@ -22,18 +22,11 @@ const steps = [
       "Selectionnez les leviers que vous voulez activer en premier dans vos campagnes magasin.",
   },
   {
-    id: "dotation",
-    label: "Dotation",
-    title: "Cadrez votre niveau de recompense",
+    id: "reseaux",
+    label: "Réseaux",
+    title: "Renseignez vos liens de participation",
     description:
-      "Definissez un cout moyen de lot pour retrouver des campagnes pre-remplies et un ROI plus lisible.",
-  },
-  {
-    id: "terrain",
-    label: "Terrain",
-    title: "Preparez vos supports de diffusion",
-    description:
-      "Clarifiez ou le QR code sera visible et comment l'equipe en boutique presentera le jeu.",
+      "Ces URLs seront reprises par defaut dans les actions marketing de vos futures campagnes.",
   },
 ] as const;
 
@@ -44,14 +37,6 @@ const goalOptions = [
   "Retour en boutique avec cadeaux differes",
 ];
 
-const terrainOptions = [
-  "QR code en vitrine",
-  "QR code au comptoir ou a l'encaissement",
-  "QR code sur table, packaging ou support imprime",
-  "NFC sur borne ou support table",
-  "Script equipe pour presenter le jeu",
-];
-
 type OnboardingFlowProps = {
   merchant: Merchant;
 };
@@ -59,15 +44,22 @@ type OnboardingFlowProps = {
 export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
   const router = useRouter();
   const [activeIndex, setActiveIndex] = useState(0);
-  const [companyName, setCompanyName] = useState(merchant.companyName);
+  const [companyName, setCompanyName] = useState(
+    merchant.onboardingCompleted || merchant.companyName !== merchant.contactName
+      ? merchant.companyName
+      : "",
+  );
+  const [industry, setIndustry] = useState(merchant.industry ?? "Restauration");
   const [city, setCity] = useState(merchant.city ?? "");
   const [contactName, setContactName] = useState(merchant.contactName ?? "");
   const [phone, setPhone] = useState(merchant.phone ?? "");
-  const [defaultPrizeCost, setDefaultPrizeCost] = useState(merchant.defaultPrizeCost ?? 3);
+  const defaultPrizeCost = merchant.defaultPrizeCost ?? 3;
   const [preferredGoals, setPreferredGoals] = useState<string[]>(merchant.preferredGoals ?? []);
-  const [diffusionSupport, setDiffusionSupport] = useState<string[]>(
-    merchant.diffusionSupport ?? [],
-  );
+  const [googleReviewUrl, setGoogleReviewUrl] = useState(merchant.googleReviewUrl ?? "");
+  const [instagramUrl, setInstagramUrl] = useState(merchant.instagramUrl ?? "");
+  const [facebookUrl, setFacebookUrl] = useState(merchant.facebookUrl ?? "");
+  const [tiktokUrl, setTiktokUrl] = useState(merchant.tiktokUrl ?? "");
+  const [tripadvisorUrl, setTripadvisorUrl] = useState(merchant.tripadvisorUrl ?? "");
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -99,12 +91,18 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           companyName,
+          industry,
           city,
           contactName,
           phone,
           defaultPrizeCost,
           preferredGoals,
-          diffusionSupport,
+          diffusionSupport: [],
+          googleReviewUrl,
+          instagramUrl,
+          facebookUrl,
+          tiktokUrl,
+          tripadvisorUrl,
         }),
       });
       const payload = (await response.json()) as { error?: string };
@@ -131,11 +129,11 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
               Onboarding marchand
             </p>
             <h1 className="mt-3 font-display text-5xl leading-[0.94] text-[#121826]">
-              Preparez votre espace en 4 etapes
+              Preparez votre espace en 3 etapes
             </h1>
             <p className="mt-4 max-w-[62ch] text-sm leading-7 text-[#5c6577]">
-              L&apos;objectif est simple : arriver sur la creation de campagne avec un cadre propre,
-              une logique de dotation definie et des supports terrain deja pensés.
+              L&apos;objectif est simple : arriver sur la creation de campagne avec un profil propre,
+              des objectifs clairs et vos liens marketing deja preconfigures.
             </p>
           </div>
 
@@ -154,7 +152,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
           </div>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <div className="hidden gap-4 md:grid md:grid-cols-2 xl:grid-cols-3">
           {steps.map((step, index) => {
             const active = index === activeIndex;
             const completed = index < activeIndex;
@@ -195,7 +193,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[0.42fr_0.58fr]">
-        <div className="rounded-[34px] bg-[linear-gradient(180deg,#1e56e9,#1236aa)] p-6 text-white shadow-[0_28px_60px_rgba(20,53,143,0.28)]">
+        <div className="hidden rounded-[34px] bg-[linear-gradient(180deg,#1e56e9,#1236aa)] p-6 text-white shadow-[0_28px_60px_rgba(20,53,143,0.28)] lg:block">
           <p className="text-xs uppercase tracking-[0.28em] text-white/58">Etape active</p>
           <h2 className="mt-3 font-display text-4xl leading-[0.98]">{activeStep.title}</h2>
           <p className="mt-4 text-sm leading-7 text-white/78">{activeStep.description}</p>
@@ -222,34 +220,11 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
               </div>
             ) : null}
 
-            {activeStep.id === "dotation" ? (
+            {activeStep.id === "reseaux" ? (
               <div className="space-y-3">
-                <div className="rounded-[24px] bg-white/12 px-4 py-4">
-                  <p className="text-xs uppercase tracking-[0.22em] text-white/62">
-                    Cout moyen
-                  </p>
-                  <p className="mt-2 text-3xl font-semibold">{defaultPrizeCost.toFixed(2)} EUR</p>
-                </div>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-[20px] bg-white/10 px-4 py-4 text-sm">
-                    Petits cadeaux immediats
-                  </div>
-                  <div className="rounded-[20px] bg-white/10 px-4 py-4 text-sm">
-                    Bons retour boutique
-                  </div>
-                </div>
-              </div>
-            ) : null}
-
-            {activeStep.id === "terrain" ? (
-              <div className="space-y-3">
-                {terrainOptions.map((item) => (
-                  <div
-                    key={item}
-                    className="flex items-center justify-between rounded-[20px] bg-white/12 px-4 py-4 text-sm"
-                  >
-                    <span>{item}</span>
-                    <span className="h-3 w-3 rounded-full bg-white/80" />
+                {["Avis Google", "Instagram", "Facebook", "TikTok", "Tripadvisor"].map((item) => (
+                  <div key={item} className="rounded-[20px] bg-white/12 px-4 py-4 text-sm">
+                    {item}
                   </div>
                 ))}
               </div>
@@ -270,6 +245,14 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
                   <input
                     value={companyName}
                     onChange={(event) => setCompanyName(event.target.value)}
+                    className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                  />
+                </label>
+                <label className="text-sm">
+                  <span className="mb-2 block text-[#616b7c]">Secteur d&apos;activite</span>
+                  <input
+                    value={industry}
+                    onChange={(event) => setIndustry(event.target.value)}
                     className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
                   />
                 </label>
@@ -326,82 +309,67 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
             </div>
           ) : null}
 
-          {activeStep.id === "dotation" ? (
+          {activeStep.id === "reseaux" ? (
             <div>
-              <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Dotation</p>
+              <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Réseaux</p>
               <h2 className="mt-2 text-3xl font-semibold text-[#111827]">
-                Base de travail pour vos futures campagnes
+                Liens repris par defaut dans vos campagnes
               </h2>
-              <div className="mt-6 grid gap-5">
+              <p className="mt-4 text-sm leading-7 text-[#5c6577]">
+                Renseignez uniquement les canaux que vous utilisez. Lors de l&apos;ajout d&apos;une
+                action marketing dans une campagne, le bon lien sera pre-rempli automatiquement.
+              </p>
+              <div className="mt-6 grid gap-4 md:grid-cols-2">
                 <label className="text-sm">
-                  <span className="mb-2 block text-[#616b7c]">Cout moyen d&apos;un lot</span>
+                  <span className="mb-2 block text-[#616b7c]">Lien Google Avis</span>
                   <input
-                    type="number"
-                    min={0}
-                    step="0.1"
-                    value={defaultPrizeCost}
-                    onChange={(event) =>
-                      setDefaultPrizeCost(Math.max(0, Number(event.target.value || 0)))
-                    }
+                    type="url"
+                    value={googleReviewUrl}
+                    onChange={(event) => setGoogleReviewUrl(event.target.value)}
+                    placeholder="https://g.page/..."
                     className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
                   />
                 </label>
-
-                <div className="grid gap-4 md:grid-cols-2">
-                  {[
-                    {
-                      title: "Petits gains immediats",
-                      body: "Cafe offert, dessert, goodies ou avantage simple a retirer au comptoir.",
-                    },
-                    {
-                      title: "Retours en boutique",
-                      body: "Bon de reduction ou cadeau differe pour faire revenir le client dans quelques jours.",
-                    },
-                  ].map((card) => (
-                    <div
-                      key={card.title}
-                      className="rounded-[24px] border border-[#dbe4f0] bg-[#fbfcfe] p-5"
-                    >
-                      <p className="text-lg font-semibold text-[#111827]">{card.title}</p>
-                      <p className="mt-3 text-sm leading-7 text-[#5d6577]">{card.body}</p>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="rounded-[24px] border border-[#e4eaf2] bg-[#f8fafc] p-5 text-sm leading-7 text-[#556173]">
-                  Cette valeur sert de base dans le configurateur de campagne pour pre-remplir le
-                  cout unitaire des lots et rendre le cout par lead plus parlant des le dashboard.
-                </div>
-              </div>
-            </div>
-          ) : null}
-
-          {activeStep.id === "terrain" ? (
-            <div>
-              <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">
-                Supports terrain
-              </p>
-              <h2 className="mt-2 text-3xl font-semibold text-[#111827]">
-                Ou vos clients vont-ils voir le jeu ?
-              </h2>
-              <p className="mt-4 text-sm leading-7 text-[#5c6577]">
-                Ici, on ne parle pas d&apos;un kit QR technique. On prepare simplement les points de
-                contact terrain : emplacement du QR code, support imprime et discours equipe.
-              </p>
-              <div className="mt-6 space-y-3">
-                {terrainOptions.map((item) => (
-                  <label
-                    key={item}
-                    className="flex items-center gap-3 rounded-[22px] border border-[#dbe4f0] bg-[#fbfcfe] px-4 py-4 text-sm text-[#364055]"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={diffusionSupport.includes(item)}
-                      onChange={() => toggleItem(diffusionSupport, item, setDiffusionSupport)}
-                    />
-                    <span>{item}</span>
-                  </label>
-                ))}
+                <label className="text-sm">
+                  <span className="mb-2 block text-[#616b7c]">Instagram</span>
+                  <input
+                    type="url"
+                    value={instagramUrl}
+                    onChange={(event) => setInstagramUrl(event.target.value)}
+                    placeholder="https://instagram.com/..."
+                    className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                  />
+                </label>
+                <label className="text-sm">
+                  <span className="mb-2 block text-[#616b7c]">Facebook</span>
+                  <input
+                    type="url"
+                    value={facebookUrl}
+                    onChange={(event) => setFacebookUrl(event.target.value)}
+                    placeholder="https://facebook.com/..."
+                    className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                  />
+                </label>
+                <label className="text-sm">
+                  <span className="mb-2 block text-[#616b7c]">TikTok</span>
+                  <input
+                    type="url"
+                    value={tiktokUrl}
+                    onChange={(event) => setTiktokUrl(event.target.value)}
+                    placeholder="https://tiktok.com/@..."
+                    className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                  />
+                </label>
+                <label className="text-sm md:col-span-2">
+                  <span className="mb-2 block text-[#616b7c]">Tripadvisor</span>
+                  <input
+                    type="url"
+                    value={tripadvisorUrl}
+                    onChange={(event) => setTripadvisorUrl(event.target.value)}
+                    placeholder="https://tripadvisor.com/..."
+                    className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                  />
+                </label>
               </div>
             </div>
           ) : null}

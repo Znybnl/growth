@@ -52,6 +52,9 @@ export interface Merchant {
   diffusionSupport?: string[];
   googleReviewUrl?: string;
   instagramUrl?: string;
+  facebookUrl?: string;
+  tiktokUrl?: string;
+  tripadvisorUrl?: string;
   defaultPrizeCost?: number;
   createdAt: string;
 }
@@ -84,12 +87,18 @@ export interface MerchantSignInInput {
 
 export interface MerchantOnboardingInput {
   companyName: string;
+  industry: string;
   city: string;
   contactName: string;
   phone: string;
   defaultPrizeCost: number;
   preferredGoals: string[];
   diffusionSupport: string[];
+  googleReviewUrl: string;
+  instagramUrl: string;
+  facebookUrl: string;
+  tiktokUrl: string;
+  tripadvisorUrl: string;
 }
 
 export interface MerchantAccountSettingsInput {
@@ -101,6 +110,9 @@ export interface MerchantAccountSettingsInput {
   websiteUrl: string;
   googleReviewUrl: string;
   instagramUrl: string;
+  facebookUrl: string;
+  tiktokUrl: string;
+  tripadvisorUrl: string;
   defaultPrizeCost: number;
   firstName: string;
   lastName: string;

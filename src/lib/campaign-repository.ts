@@ -181,6 +181,9 @@ type MerchantRow = {
   diffusion_support: string[] | null;
   google_review_url: string | null;
   instagram_url: string | null;
+  facebook_url: string | null;
+  tiktok_url: string | null;
+  tripadvisor_url: string | null;
   default_prize_cost: number | null;
   created_at: string;
 };
@@ -243,6 +246,9 @@ function toMerchant(row: MerchantRow): Merchant {
     diffusionSupport: row.diffusion_support ?? [],
     googleReviewUrl: row.google_review_url ?? undefined,
     instagramUrl: row.instagram_url ?? undefined,
+    facebookUrl: row.facebook_url ?? undefined,
+    tiktokUrl: row.tiktok_url ?? undefined,
+    tripadvisorUrl: row.tripadvisor_url ?? undefined,
     defaultPrizeCost: row.default_prize_cost ?? undefined,
     createdAt: row.created_at,
   };

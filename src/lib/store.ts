@@ -181,6 +181,9 @@ const merchantSeed: Merchant = {
   diffusionSupport: ["QR code vitrine et comptoir", "Script équipe magasin"],
   googleReviewUrl: "https://g.page/r/CampaignReview",
   instagramUrl: "https://instagram.com/maisonsora",
+  facebookUrl: "https://facebook.com/maisonsora",
+  tiktokUrl: "https://tiktok.com/@maisonsora",
+  tripadvisorUrl: "https://tripadvisor.com/",
   defaultPrizeCost: 3.4,
   createdAt: "2026-06-01T08:00:00.000Z",
 };
@@ -925,6 +928,9 @@ function createMerchantAccountInMemory(input: MerchantSignUpInput) {
     diffusionSupport: [],
     googleReviewUrl: "",
     instagramUrl: "",
+    facebookUrl: "",
+    tiktokUrl: "",
+    tripadvisorUrl: "",
     defaultPrizeCost: 3,
     createdAt: new Date().toISOString(),
   };
@@ -982,12 +988,18 @@ function updateMerchantOnboardingInMemory(userId: string, input: MerchantOnboard
 
   merchant.companyName = input.companyName.trim();
   merchant.logoText = input.companyName.trim().slice(0, 2).toUpperCase();
+  merchant.industry = input.industry.trim();
   merchant.city = input.city.trim();
   merchant.contactName = input.contactName.trim();
   merchant.phone = input.phone.trim();
   merchant.defaultPrizeCost = input.defaultPrizeCost;
   merchant.preferredGoals = input.preferredGoals;
   merchant.diffusionSupport = input.diffusionSupport;
+  merchant.googleReviewUrl = input.googleReviewUrl.trim();
+  merchant.instagramUrl = input.instagramUrl.trim();
+  merchant.facebookUrl = input.facebookUrl.trim();
+  merchant.tiktokUrl = input.tiktokUrl.trim();
+  merchant.tripadvisorUrl = input.tripadvisorUrl.trim();
   merchant.onboardingCompleted = true;
 
   return clone(merchant);
@@ -1026,6 +1038,9 @@ function updateMerchantAccountInMemory(userId: string, input: MerchantAccountSet
   merchant.websiteUrl = input.websiteUrl.trim();
   merchant.googleReviewUrl = input.googleReviewUrl.trim();
   merchant.instagramUrl = input.instagramUrl.trim();
+  merchant.facebookUrl = input.facebookUrl.trim();
+  merchant.tiktokUrl = input.tiktokUrl.trim();
+  merchant.tripadvisorUrl = input.tripadvisorUrl.trim();
   merchant.defaultPrizeCost = input.defaultPrizeCost;
 
   return {

@@ -15,6 +15,9 @@ create table if not exists public.merchants (
   diffusion_support text[] not null default '{}',
   google_review_url text not null default '',
   instagram_url text not null default '',
+  facebook_url text not null default '',
+  tiktok_url text not null default '',
+  tripadvisor_url text not null default '',
   default_prize_cost numeric(10, 2) not null default 3,
   created_at timestamptz not null default now()
 );

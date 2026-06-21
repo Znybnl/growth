@@ -24,6 +24,9 @@ type MerchantRow = {
   diffusion_support: string[] | null;
   google_review_url: string | null;
   instagram_url: string | null;
+  facebook_url: string | null;
+  tiktok_url: string | null;
+  tripadvisor_url: string | null;
   default_prize_cost: number | null;
   created_at: string;
 };
@@ -74,6 +77,9 @@ const DEMO_MERCHANT_PROFILE = {
   diffusionSupport: ["QR code vitrine et comptoir", "Script équipe magasin"],
   googleReviewUrl: "https://g.page/r/CampaignReview",
   instagramUrl: "https://instagram.com/maisonsora",
+  facebookUrl: "https://facebook.com/maisonsora",
+  tiktokUrl: "https://tiktok.com/@maisonsora",
+  tripadvisorUrl: "https://tripadvisor.com/",
   defaultPrizeCost: 3.4,
   firstName: "Pierre-Henri",
   lastName: "Brunelle",
@@ -215,6 +221,9 @@ function toMerchant(row: MerchantRow): Merchant {
     diffusionSupport: row.diffusion_support ?? [],
     googleReviewUrl: row.google_review_url ?? undefined,
     instagramUrl: row.instagram_url ?? undefined,
+    facebookUrl: row.facebook_url ?? undefined,
+    tiktokUrl: row.tiktok_url ?? undefined,
+    tripadvisorUrl: row.tripadvisor_url ?? undefined,
     defaultPrizeCost: row.default_prize_cost ?? undefined,
     createdAt: row.created_at,
   };
@@ -292,6 +301,9 @@ export async function ensureDemoMerchantInSupabase() {
     diffusion_support: [...DEMO_MERCHANT_PROFILE.diffusionSupport],
     google_review_url: DEMO_MERCHANT_PROFILE.googleReviewUrl,
     instagram_url: DEMO_MERCHANT_PROFILE.instagramUrl,
+    facebook_url: DEMO_MERCHANT_PROFILE.facebookUrl,
+    tiktok_url: DEMO_MERCHANT_PROFILE.tiktokUrl,
+    tripadvisor_url: DEMO_MERCHANT_PROFILE.tripadvisorUrl,
     default_prize_cost: DEMO_MERCHANT_PROFILE.defaultPrizeCost,
     created_at: createdAt,
   });
@@ -395,6 +407,9 @@ export async function createMerchantAccountInSupabase(input: MerchantSignUpInput
     diffusion_support: [],
     google_review_url: "",
     instagram_url: "",
+    facebook_url: "",
+    tiktok_url: "",
+    tripadvisor_url: "",
     default_prize_cost: 3,
     created_at: createdAt,
   });
@@ -458,6 +473,9 @@ export async function createMerchantAccountInSupabase(input: MerchantSignUpInput
       diffusionSupport: [],
       googleReviewUrl: "",
       instagramUrl: "",
+      facebookUrl: "",
+      tiktokUrl: "",
+      tripadvisorUrl: "",
       defaultPrizeCost: 3,
       createdAt,
     },
@@ -591,6 +609,9 @@ export async function authenticateOrProvisionMerchantWithGoogle(
     diffusion_support: [],
     google_review_url: "",
     instagram_url: "",
+    facebook_url: "",
+    tiktok_url: "",
+    tripadvisor_url: "",
     default_prize_cost: 3,
     created_at: createdAt,
   });
@@ -647,6 +668,9 @@ export async function authenticateOrProvisionMerchantWithGoogle(
       diffusionSupport: [],
       googleReviewUrl: "",
       instagramUrl: "",
+      facebookUrl: "",
+      tiktokUrl: "",
+      tripadvisorUrl: "",
       defaultPrizeCost: 3,
       createdAt,
     },
@@ -674,12 +698,18 @@ export async function updateMerchantOnboardingInSupabase(
     .update({
       company_name: companyName,
       logo_text: companyName.slice(0, 2).toUpperCase(),
+      industry: input.industry.trim(),
       city: input.city.trim(),
       contact_name: input.contactName.trim(),
       phone: input.phone.trim(),
       default_prize_cost: input.defaultPrizeCost,
       preferred_goals: input.preferredGoals,
       diffusion_support: input.diffusionSupport,
+      google_review_url: input.googleReviewUrl.trim(),
+      instagram_url: input.instagramUrl.trim(),
+      facebook_url: input.facebookUrl.trim(),
+      tiktok_url: input.tiktokUrl.trim(),
+      tripadvisor_url: input.tripadvisorUrl.trim(),
       onboarding_completed: true,
     })
     .eq("id", userQuery.data.merchant_id);
@@ -741,6 +771,9 @@ export async function updateMerchantAccountInSupabase(
       website_url: input.websiteUrl.trim(),
       google_review_url: input.googleReviewUrl.trim(),
       instagram_url: input.instagramUrl.trim(),
+      facebook_url: input.facebookUrl.trim(),
+      tiktok_url: input.tiktokUrl.trim(),
+      tripadvisor_url: input.tripadvisorUrl.trim(),
       default_prize_cost: input.defaultPrizeCost,
     })
     .eq("id", userQuery.data.merchant_id);

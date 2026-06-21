@@ -120,12 +120,33 @@ function normalizeUrl(url: string) {
   return `https://${trimmed}`;
 }
 
+function defaultActionUrl(merchant: Merchant, kind: ActionKind) {
+  switch (kind) {
+    case "google":
+      return merchant.googleReviewUrl ?? "https://google.com";
+    case "instagram":
+      return merchant.instagramUrl ?? "https://instagram.com";
+    case "facebook":
+      return merchant.facebookUrl ?? "https://facebook.com";
+    case "tiktok":
+      return merchant.tiktokUrl ?? "https://tiktok.com";
+    case "tripadvisor":
+      return merchant.tripadvisorUrl ?? "https://tripadvisor.com";
+    case "crm":
+      return merchant.websiteUrl ?? "https://";
+    case "custom":
+      return "https://";
+    default:
+      return "https://";
+  }
+}
+
 function createDefaultAction(merchant: Merchant): CampaignAction {
   return {
     id: createActionId(),
     kind: "google",
     label: actionKindCta("google"),
-    url: merchant.googleReviewUrl ?? "https://google.com",
+    url: defaultActionUrl(merchant, "google"),
   };
 }
 
@@ -527,7 +548,7 @@ export function CampaignEditor({
           id: createActionId(),
           kind: "instagram",
           label: actionKindCta("instagram"),
-          url: "https://",
+          url: defaultActionUrl(merchant, "instagram"),
         },
       ],
     }));
@@ -545,6 +566,7 @@ export function CampaignEditor({
 
         if (patch.kind) {
           nextAction.label = syncActionLabel(patch.kind, patch.label ?? action.label);
+          nextAction.url = patch.url ?? defaultActionUrl(merchant, patch.kind);
         }
 
         return nextAction;

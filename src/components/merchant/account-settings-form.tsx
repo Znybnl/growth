@@ -19,6 +19,9 @@ export function AccountSettingsForm({ merchant, user }: AccountSettingsFormProps
     websiteUrl: merchant.websiteUrl ?? "",
     googleReviewUrl: merchant.googleReviewUrl ?? "",
     instagramUrl: merchant.instagramUrl ?? "",
+    facebookUrl: merchant.facebookUrl ?? "",
+    tiktokUrl: merchant.tiktokUrl ?? "",
+    tripadvisorUrl: merchant.tripadvisorUrl ?? "",
     defaultPrizeCost: merchant.defaultPrizeCost ?? 3,
     firstName: user.firstName,
     lastName: user.lastName,
@@ -121,6 +124,18 @@ export function AccountSettingsForm({ merchant, user }: AccountSettingsFormProps
           <label className="text-sm">
             <span className="mb-2 block text-[#616b7c]">Instagram</span>
             <input type="url" value={form.instagramUrl} onChange={(event) => updateField("instagramUrl", event.target.value)} placeholder="https://instagram.com/..." className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-4 outline-none" />
+          </label>
+          <label className="text-sm">
+            <span className="mb-2 block text-[#616b7c]">Facebook</span>
+            <input type="url" value={form.facebookUrl} onChange={(event) => updateField("facebookUrl", event.target.value)} placeholder="https://facebook.com/..." className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-4 outline-none" />
+          </label>
+          <label className="text-sm">
+            <span className="mb-2 block text-[#616b7c]">TikTok</span>
+            <input type="url" value={form.tiktokUrl} onChange={(event) => updateField("tiktokUrl", event.target.value)} placeholder="https://tiktok.com/@..." className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-4 outline-none" />
+          </label>
+          <label className="text-sm">
+            <span className="mb-2 block text-[#616b7c]">Tripadvisor</span>
+            <input type="url" value={form.tripadvisorUrl} onChange={(event) => updateField("tripadvisorUrl", event.target.value)} placeholder="https://tripadvisor.com/..." className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-4 outline-none" />
           </label>
           <label className="text-sm md:max-w-[260px]">
             <span className="mb-2 block text-[#616b7c]">Coût par lot par défaut (€)</span>
