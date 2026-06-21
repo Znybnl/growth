@@ -95,9 +95,6 @@ const buttonSizeMap = {
   lg: "px-6 py-5 text-lg",
 };
 
-const defaultPosterBackground =
-  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='1700' viewBox='0 0 1200 1700'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%23111827'/%3E%3Cstop offset='.56' stop-color='%232b3a67'/%3E%3Cstop offset='1' stop-color='%23c59920'/%3E%3C/linearGradient%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='0 .12'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3C/defs%3E%3Crect width='1200' height='1700' fill='url(%23g)'/%3E%3Ccircle cx='960' cy='230' r='360' fill='%23ffffff' opacity='.13'/%3E%3Ccircle cx='170' cy='1220' r='300' fill='%23ffffff' opacity='.1'/%3E%3Cpath d='M0 1180 C260 1080 520 1120 780 1000 C980 908 1100 840 1200 850 L1200 1700 L0 1700 Z' fill='%230f172a' opacity='.52'/%3E%3Crect width='1200' height='1700' filter='url(%23grain)' opacity='.38'/%3E%3C/svg%3E";
-
 function createPrizeId() {
   return `local-prize-${crypto.randomUUID().slice(0, 8)}`;
 }
@@ -208,7 +205,7 @@ function createDefaultState(merchant: Merchant): EditorState {
         logoUrl: undefined,
         logoSizePercent: 100,
         logoBottomMarginPx: 28,
-        backgroundImageUrl: defaultPosterBackground,
+        backgroundImageUrl: "",
         headline: "Scannez, jouez, récupérez votre cadeau",
         headlineTextColor: "#ffffff",
         headlineFontSizePx: 42,
@@ -286,6 +283,114 @@ function SaveFeedbackDialog({
   );
 }
 
+function BackgroundLibraryDialog({
+  open,
+  onClose,
+  items,
+  isLoading,
+  error,
+  selectedImageUrl,
+  onSelect,
+}: {
+  open: boolean;
+  onClose: () => void;
+  items: BackgroundLibraryAsset[];
+  isLoading: boolean;
+  error: string | null;
+  selectedImageUrl?: string;
+  onSelect: (imageUrl: string) => void;
+}) {
+  if (!open) {
+    return null;
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#0f1220]/52 px-4 pb-4 pt-10 backdrop-blur-[6px] sm:items-center sm:p-6">
+      <div className="w-full max-w-5xl rounded-[34px] bg-white p-6 text-[#111827] shadow-[0_34px_90px_rgba(18,24,39,0.24)]">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Bibliothèque</p>
+            <h2 className="mt-2 text-2xl font-semibold text-[#0f1728]">
+              Sélectionnez une image de fond
+            </h2>
+            <p className="mt-2 text-sm leading-7 text-[#5c6577]">
+              Choisissez un visuel existant de la plateforme pour l’utiliser sur la page de jeu.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-[18px] border border-[#d7e0ed] px-4 py-2 text-sm font-semibold text-[#182033]"
+          >
+            Fermer
+          </button>
+        </div>
+
+        {error ? (
+          <div className="mt-4 rounded-[18px] border border-[#f3d4d4] bg-[#fff4f4] px-4 py-3 text-sm text-[#9d3131]">
+            {error}
+          </div>
+        ) : null}
+
+        <div className="mt-6 grid max-h-[68vh] gap-4 overflow-y-auto pr-1 sm:grid-cols-2 lg:grid-cols-3">
+          {isLoading ? (
+            <div className="rounded-[20px] border border-[#dbe4f0] bg-[#f7f9fc] px-4 py-6 text-sm text-[#64748b] sm:col-span-2 lg:col-span-3">
+              Chargement de la bibliothèque…
+            </div>
+          ) : items.length === 0 ? (
+            <div className="rounded-[20px] border border-[#dbe4f0] bg-[#f7f9fc] px-4 py-6 text-sm text-[#64748b] sm:col-span-2 lg:col-span-3">
+              Aucune image disponible pour le moment.
+            </div>
+          ) : (
+            items.map((asset) => {
+              const active = selectedImageUrl === asset.imageUrl;
+
+              return (
+                <button
+                  key={asset.id}
+                  type="button"
+                  onClick={() => {
+                    onSelect(asset.imageUrl);
+                    onClose();
+                  }}
+                  className={`overflow-hidden rounded-[22px] border text-left transition ${
+                    active
+                      ? "border-[#2f6df6] bg-[#eef4ff] shadow-[0_14px_28px_rgba(47,109,246,0.16)]"
+                      : "border-[#dbe4f0] bg-[#f8fafc] hover:border-[#9bb8ff] hover:bg-white"
+                  }`}
+                >
+                  <div className="relative aspect-[4/5] overflow-hidden">
+                    <Image
+                      src={asset.thumbnailUrl}
+                      alt={asset.label}
+                      fill
+                      unoptimized
+                      className="object-cover"
+                    />
+                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#091120]/82 via-[#091120]/20 to-transparent p-3">
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <p className="text-sm font-semibold text-white">{asset.label}</p>
+                          <p className="text-xs uppercase tracking-[0.18em] text-white/72">
+                            {asset.category}
+                          </p>
+                        </div>
+                        <span className="rounded-full bg-white/14 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-white backdrop-blur">
+                          {asset.source === "built-in" ? "Base" : "Upload"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              );
+            })
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function toEditorState(merchant: Merchant, campaign?: CampaignPerformance | null): EditorState {
   if (!campaign) {
     return createDefaultState(merchant);
@@ -315,11 +420,10 @@ function toEditorState(merchant: Merchant, campaign?: CampaignPerformance | null
       poster: normalizePosterSettings(
         campaign.campaign.presentation.poster,
         createPosterSettingsDefaults({
-          logoUrl: campaign.campaign.logoUrl,
+          logoUrl: undefined,
           logoSizePercent: campaign.campaign.presentation.logo.sizePercent,
           logoBottomMarginPx: campaign.campaign.presentation.logo.marginBottomPx,
-          backgroundImageUrl:
-            campaign.campaign.presentation.background.imageUrl || defaultPosterBackground,
+          backgroundImageUrl: "",
           headline: campaign.campaign.subtitle,
           headlineTextColor: campaign.campaign.presentation.heading.textColor,
           headlineFontSizePx: campaign.campaign.presentation.heading.fontSizePx,
@@ -346,23 +450,39 @@ function toEditorState(merchant: Merchant, campaign?: CampaignPerformance | null
 }
 
 function buildPreviewSegments(prizes: EditorState["prizes"]): PreviewSegment[] {
-  const labels = prizes
-    .slice(0, 4)
-    .map((prize) => prize.label.trim())
-    .filter(Boolean)
-    .map((label, index) => ({
-      id: `preview-win-${index}`,
-      label: label.toUpperCase().slice(0, 18),
+  const winners = prizes
+    .map((prize, index) => ({
+      id: prize.id || `preview-win-${index}`,
+      label: prize.label.trim().toUpperCase(),
       tone: "win" as const,
-    }));
+    }))
+    .filter((prize) => prize.label);
 
-  const losers = Array.from({ length: Math.max(4, labels.length) }, (_, index) => ({
+  const minimumSegmentCount = 10;
+  const loserCount = Math.max(
+    minimumSegmentCount - winners.length,
+    winners.length,
+    minimumSegmentCount,
+  );
+  const losers = Array.from({ length: loserCount }, (_, index) => ({
     id: `preview-lose-${index}`,
-    label: index % 2 === 0 ? "PERDU" : "BONUS",
+    label: index % 2 === 0 ? "PERDU" : "DOMMAGE",
     tone: "lose" as const,
   }));
+  const segments: PreviewSegment[] = [];
+  const maxLength = Math.max(winners.length, losers.length);
 
-  return losers.flatMap((loser, index) => (labels[index] ? [loser, labels[index]] : [loser]));
+  for (let index = 0; index < maxLength; index += 1) {
+    if (losers[index]) {
+      segments.push(losers[index]);
+    }
+
+    if (winners[index]) {
+      segments.push(winners[index]);
+    }
+  }
+
+  return segments.length ? segments : losers;
 }
 
 function syncActionLabel(kind: ActionKind, currentLabel?: string) {
@@ -410,6 +530,7 @@ export function CampaignEditor({
   const [savedCampaignId, setSavedCampaignId] = useState<string | null>(
     initialCampaign?.campaign.id ?? null,
   );
+  const [backgroundLibraryDialogOpen, setBackgroundLibraryDialogOpen] = useState(false);
   const [importSource, setImportSource] = useState("");
 
   const previewSegments = useMemo(() => buildPreviewSegments(form.prizes), [form.prizes]);
@@ -787,6 +908,24 @@ export function CampaignEditor({
             >
               Retour aux campagnes
             </Link>
+            {savedCampaignId ? (
+              <>
+                <Link
+                  href={`/campaign/${savedCampaignId}`}
+                  target="_blank"
+                  className="rounded-[20px] border border-[#111827] bg-[#111827] px-4 py-3 text-sm font-semibold !text-white"
+                >
+                  Voir la campagne
+                </Link>
+                <Link
+                  href={`/campaigns/${savedCampaignId}/poster`}
+                  target="_blank"
+                  className="rounded-[20px] border border-[#d7e0ed] px-4 py-3 text-sm font-semibold text-[#182033]"
+                >
+                  Voir l&apos;affiche
+                </Link>
+              </>
+            ) : null}
             <button
               type="button"
               onClick={saveCampaign}
@@ -1122,6 +1261,7 @@ export function CampaignEditor({
                 </label>
               ) : null}
 
+              {form.logoMode === "image" ? (
               <label className="group relative flex min-h-[132px] cursor-pointer flex-col justify-between rounded-[24px] border border-dashed border-[#cfd9ea] bg-[#f7f9fc] p-4 text-sm transition hover:border-[#2f6df6] hover:bg-[#eef4ff] md:col-span-2">
                 <div>
                   <span className="mb-2 block text-[#616b7c]">Importer un logo</span>
@@ -1144,7 +1284,7 @@ export function CampaignEditor({
                       backgroundPosition: "center",
                     }}
                   >
-                    {form.logoMode === "image" && form.logoUrl ? (
+                    {form.logoUrl ? (
                       <Image
                         src={form.logoUrl}
                         alt="Aperçu du logo"
@@ -1152,10 +1292,6 @@ export function CampaignEditor({
                         height={140}
                         className="max-h-[110px] max-w-[180px] object-contain"
                       />
-                    ) : form.logoMode === "text" ? (
-                      <span className="px-4 text-center font-display text-3xl font-semibold text-white">
-                        {form.logoText?.trim() || merchant.companyName}
-                      </span>
                     ) : (
                       <span className="text-sm font-medium text-white/72">Aucun logo affiché</span>
                     )}
@@ -1183,7 +1319,9 @@ export function CampaignEditor({
                   className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                 />
               </label>
+              ) : null}
 
+              {form.logoMode !== "none" ? (
               <label className="text-sm">
                 <span className="mb-2 block text-[#616b7c]">Taille du logo (%)</span>
                 <input
@@ -1206,7 +1344,9 @@ export function CampaignEditor({
                   className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
                 />
               </label>
+              ) : null}
 
+              {form.logoMode !== "none" ? (
               <label className="text-sm">
                 <span className="mb-2 block text-[#616b7c]">Marge basse du logo (px)</span>
                 <input
@@ -1229,7 +1369,9 @@ export function CampaignEditor({
                   className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
                 />
               </label>
+              ) : null}
 
+              {form.logoMode !== "none" ? (
               <div className="text-sm md:col-span-2">
                 <span className="mb-3 block text-[#616b7c]">Alignement du logo</span>
                 <div className="grid gap-3 md:grid-cols-3">
@@ -1264,6 +1406,7 @@ export function CampaignEditor({
                   })}
                 </div>
               </div>
+              ) : null}
             </div>
           </section>
 
@@ -1316,6 +1459,7 @@ export function CampaignEditor({
                 </div>
               </div>
 
+              {form.presentation.background.mode === "color" ? (
               <label className="text-sm">
                 <span className="mb-2 block text-[#616b7c]">Couleur de fond</span>
                 <input
@@ -1336,115 +1480,48 @@ export function CampaignEditor({
                   className="h-14 w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none"
                 />
               </label>
+              ) : null}
 
               {form.presentation.background.mode === "image" ? (
                 <div className="rounded-[24px] border border-[#e1e8f2] bg-[#f8fafc] p-4 md:col-span-2">
-                <div className="grid gap-4 lg:grid-cols-[0.92fr_1.08fr]">
-                  <label className="group relative flex min-h-[156px] cursor-pointer flex-col justify-between rounded-[24px] border border-dashed border-[#cfd9ea] bg-white p-4 text-sm transition hover:border-[#2f6df6] hover:bg-[#eef4ff]">
-                    <div>
-                      <span className="mb-2 block text-[#616b7c]">Importer une image de fond</span>
-                      <p className="max-w-md text-sm leading-6 text-[#516073]">
-                        Chargez un visuel spécifique pour cette campagne. Il prendra le dessus sur
-                        le simple aplat de couleur.
-                      </p>
-                    </div>
-                    <div className="mt-4 flex items-center justify-between gap-3">
-                      <span className="inline-flex rounded-full bg-[#eef4ff] px-3 py-2 text-xs font-semibold text-[#214ccf] shadow-sm">
-                        {form.presentation.background.imageUrl ? "Image chargée" : "Aucune image"}
-                      </span>
-                      <span className="rounded-[16px] bg-[#2f6df6] px-4 py-2 text-xs font-semibold text-white shadow-[0_10px_18px_rgba(47,109,246,0.2)]">
-                        Choisir un fichier
-                      </span>
-                    </div>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(event) =>
-                        uploadAsDataUrl(event, (value) => selectBackgroundImage(value))
-                      }
-                      className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-                    />
-                  </label>
-
-                  <div className="rounded-[24px] border border-[#e1e8f2] bg-white p-4">
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <div>
-                        <span className="block text-sm font-semibold text-[#182033]">
-                          Bibliothèque d&apos;images
-                        </span>
-                        <p className="mt-1 text-sm leading-6 text-[#64748b]">
-                          Sélectionnez un fond existant ou administrez votre bibliothèque dédiée.
-                        </p>
-                      </div>
-                      <Link
-                        href="/backgrounds"
-                        className="rounded-[16px] border border-[#111827] bg-[#111827] px-4 py-2 text-sm font-semibold !text-white"
+                <div className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
+                  <div className="rounded-[24px] border border-[#e1e8f2] bg-white p-5">
+                    <span className="block text-sm font-semibold text-[#182033]">
+                      Bibliothèque d&apos;images
+                    </span>
+                    <p className="mt-2 text-sm leading-6 text-[#64748b]">
+                      Ouvrez la bibliothèque pour choisir une image existante de la plateforme.
+                    </p>
+                    <div className="mt-4 flex flex-wrap items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setBackgroundLibraryDialogOpen(true)}
+                        className="rounded-[18px] border border-[#111827] bg-[#111827] px-4 py-3 text-sm font-semibold text-white"
                       >
-                        Gérer la bibliothèque
-                      </Link>
+                        Ouvrir la bibliothèque
+                      </button>
+                      <span className="inline-flex rounded-full bg-[#eef4ff] px-3 py-2 text-xs font-semibold text-[#214ccf] shadow-sm">
+                        {form.presentation.background.imageUrl ? "Image sélectionnée" : "Aucune image"}
+                      </span>
                     </div>
-
                     {libraryMessage ? (
                       <div className="mt-4 rounded-[18px] border border-[#f3d4d4] bg-[#fff4f4] px-4 py-3 text-sm text-[#9d3131]">
                         {libraryMessage}
                       </div>
                     ) : null}
+                  </div>
 
-                    <div className="mt-4 grid max-h-[320px] gap-3 overflow-y-auto pr-1 sm:grid-cols-2">
-                      {isLibraryLoading ? (
-                        <div className="rounded-[20px] border border-[#dbe4f0] bg-[#f7f9fc] px-4 py-6 text-sm text-[#64748b] sm:col-span-2">
-                          Chargement de la bibliothèque…
-                        </div>
-                      ) : backgroundLibrary.length === 0 ? (
-                        <div className="rounded-[20px] border border-[#dbe4f0] bg-[#f7f9fc] px-4 py-6 text-sm text-[#64748b] sm:col-span-2">
-                          Aucune image disponible pour le moment.
-                        </div>
-                      ) : (
-                        backgroundLibrary.map((asset) => {
-                          const active =
-                            form.presentation.background.mode === "image" &&
-                            form.presentation.background.imageUrl === asset.imageUrl;
-
-                          return (
-                            <button
-                              key={asset.id}
-                              type="button"
-                              onClick={() => selectBackgroundImage(asset.imageUrl)}
-                              className={`overflow-hidden rounded-[22px] border text-left transition ${
-                                active
-                                  ? "border-[#2f6df6] bg-[#eef4ff] shadow-[0_14px_28px_rgba(47,109,246,0.16)]"
-                                  : "border-[#dbe4f0] bg-[#f8fafc] hover:border-[#9bb8ff] hover:bg-white"
-                              }`}
-                            >
-                              <div className="relative aspect-[4/5] overflow-hidden">
-                                <Image
-                                  src={asset.thumbnailUrl}
-                                  alt={asset.label}
-                                  fill
-                                  unoptimized
-                                  className="object-cover"
-                                />
-                                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#091120]/82 via-[#091120]/20 to-transparent p-3">
-                                  <div className="flex items-center justify-between gap-3">
-                                    <div>
-                                      <p className="text-sm font-semibold text-white">
-                                        {asset.label}
-                                      </p>
-                                      <p className="text-xs uppercase tracking-[0.18em] text-white/72">
-                                        {asset.category}
-                                      </p>
-                                    </div>
-                                    <span className="rounded-full bg-white/14 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-white backdrop-blur">
-                                      {asset.source === "built-in" ? "Base" : "Upload"}
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-                            </button>
-                          );
-                        })
-                      )}
-                    </div>
+                  <div className="rounded-[24px] border border-[#e1e8f2] bg-white p-4">
+                    <span className="mb-3 block text-sm text-[#616b7c]">Aperçu du fond</span>
+                    <div
+                      className="min-h-[220px] rounded-[20px] border border-white bg-cover bg-center shadow-inner"
+                      style={{
+                        backgroundColor: form.presentation.background.color,
+                        backgroundImage: form.presentation.background.imageUrl
+                          ? `url("${form.presentation.background.imageUrl}")`
+                          : undefined,
+                      }}
+                    />
                   </div>
                 </div>
                 </div>
@@ -1483,8 +1560,7 @@ export function CampaignEditor({
                         ...current.presentation.poster,
                         logoUrl: current.logoUrl,
                         logoSizePercent: current.presentation.logo.sizePercent,
-                        backgroundImageUrl:
-                          current.presentation.background.imageUrl || defaultPosterBackground,
+                        backgroundImageUrl: current.presentation.background.imageUrl || "",
                         headline: current.subtitle,
                         headlineTextColor: current.presentation.heading.textColor,
                         headlineFontSizePx: current.presentation.heading.fontSizePx,
@@ -2502,7 +2578,12 @@ export function CampaignEditor({
                   </h3>
                 </div>
 
-                <div style={{ marginTop: `${form.presentation.layout.blockSpacingPx}px` }}>
+                <div
+                  style={{
+                    marginTop: `${form.presentation.layout.blockSpacingPx}px`,
+                    height: form.gameType === "wheel" ? "560px" : undefined,
+                  }}
+                >
                   {form.gameType === "wheel" ? (
                     <WheelOfFortune
                       accent={form.accent}
@@ -2513,11 +2594,13 @@ export function CampaignEditor({
                         borderColor: form.presentation.button.borderColor,
                       }}
                       segments={previewSegments}
+                      buttonEnabled
                       winningSegmentId={
                         previewSegments.find((segment) => segment.tone === "win")?.id ??
                         previewSegments[0]?.id ??
                         "win"
                       }
+                      framing="editor"
                     />
                   ) : (
                     <ScratchGame
@@ -2553,16 +2636,47 @@ export function CampaignEditor({
       </div>
       <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30 px-4 pb-4 xl:hidden">
         <div className="pointer-events-auto mx-auto max-w-[720px] rounded-[28px] border border-[#dbe4f0] bg-white/96 p-3 shadow-[0_18px_44px_rgba(122,136,166,0.16)] backdrop-blur">
-          <button
-            type="button"
-            onClick={saveCampaign}
-            disabled={isSaving}
-            className="w-full rounded-[20px] border border-[#111827] bg-[#111827] px-4 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-70"
-          >
-            {isSaving ? "Enregistrement..." : "Enregistrer"}
-          </button>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {savedCampaignId ? (
+              <>
+                <Link
+                  href={`/campaign/${savedCampaignId}`}
+                  target="_blank"
+                  className="inline-flex items-center justify-center rounded-[20px] border border-[#111827] bg-[#111827] px-4 py-3 text-sm font-semibold !text-white"
+                >
+                  Voir la campagne
+                </Link>
+                <Link
+                  href={`/campaigns/${savedCampaignId}/poster`}
+                  target="_blank"
+                  className="inline-flex items-center justify-center rounded-[20px] border border-[#d7e0ed] px-4 py-3 text-sm font-semibold text-[#182033]"
+                >
+                  Voir l&apos;affiche
+                </Link>
+              </>
+            ) : null}
+            <button
+              type="button"
+              onClick={saveCampaign}
+              disabled={isSaving}
+              className={`rounded-[20px] border border-[#111827] bg-[#111827] px-4 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-70 ${
+                savedCampaignId ? "sm:col-span-2" : "w-full"
+              }`}
+            >
+              {isSaving ? "Enregistrement..." : "Enregistrer"}
+            </button>
+          </div>
         </div>
       </div>
+      <BackgroundLibraryDialog
+        open={backgroundLibraryDialogOpen}
+        onClose={() => setBackgroundLibraryDialogOpen(false)}
+        items={backgroundLibrary}
+        isLoading={isLibraryLoading}
+        error={libraryMessage}
+        selectedImageUrl={form.presentation.background.imageUrl}
+        onSelect={selectBackgroundImage}
+      />
       <SaveFeedbackDialog
         open={saveDialogOpen}
         title="Campagne enregistrée"

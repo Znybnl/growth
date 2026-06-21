@@ -33,7 +33,7 @@ type WheelOfFortuneProps = {
     textColor?: string;
     borderColor?: string;
   };
-  framing?: "default" | "public";
+  framing?: "default" | "public" | "editor";
 };
 
 const SVG_SIZE = 640;
@@ -160,7 +160,8 @@ export function WheelOfFortune({
     loseColor: wheelStyle?.loseColor ?? "#edf2f7",
     alternateLoseColor: wheelStyle?.alternateLoseColor ?? "#e7edf3",
   };
-  const wheelTop = framing === "public" ? undefined : "62%";
+  const wheelTop =
+    framing === "public" ? undefined : framing === "editor" ? "83%" : "62%";
 
   useEffect(() => {
     if (!isSpinning || !onSpinEnd) {
@@ -199,7 +200,9 @@ export function WheelOfFortune({
       <div
         className={`absolute left-1/2 aspect-square -translate-x-1/2 -translate-y-1/2 ${
           framing === "public"
-            ? "top-[78%] w-[200vw] max-w-none sm:top-[74%] sm:w-[168vw] md:top-[70%] md:w-[146vw] lg:top-[67%] lg:w-[132vw] xl:top-[64%] xl:w-[116vw] 2xl:w-[108vw]"
+            ? "top-[78%] w-[200vw] max-w-none sm:top-[74%] sm:w-[168vw] md:top-[70%] md:w-[146vw] lg:top-[72%] lg:w-[82vw] xl:top-[73%] xl:w-[64vw] 2xl:top-[74%] 2xl:w-[54vw]"
+            : framing === "editor"
+              ? "w-[186%] max-w-none"
             : "w-full"
         }`}
         style={{ top: wheelTop }}

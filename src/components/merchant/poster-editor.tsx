@@ -9,6 +9,7 @@ import {
   buildPosterWheelSegments,
   createPosterSettingsDefaults,
   normalizePosterSettings,
+  splitPosterSegmentLines,
 } from "@/lib/poster-utils";
 import {
   Campaign,
@@ -79,16 +80,16 @@ function splitLines(text: string, maxChars: number) {
   return lines;
 }
 
-export function PosterEditor({ campaign, merchant, prizes }: PosterEditorProps) {
+export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
   const router = useRouter();
   const [poster, setPoster] = useState<CampaignPosterSettings>(() =>
     normalizePosterSettings(
       campaign.presentation.poster,
       createPosterSettingsDefaults({
-        logoUrl: campaign.logoUrl,
+        logoUrl: undefined,
         logoSizePercent: campaign.presentation.logo.sizePercent,
         logoBottomMarginPx: campaign.presentation.logo.marginBottomPx,
-        backgroundImageUrl: campaign.presentation.background.imageUrl ?? "",
+        backgroundImageUrl: "",
         headline: campaign.subtitle,
         headlineTextColor: campaign.presentation.heading.textColor,
         headlineFontSizePx: campaign.presentation.heading.fontSizePx,
@@ -113,11 +114,11 @@ export function PosterEditor({ campaign, merchant, prizes }: PosterEditorProps) 
     [poster.wheel, prizes],
   );
   const headlineLines = useMemo(
-    () => splitLines(poster.headline || campaign.subtitle || campaign.title, 16).slice(0, 3),
+    () => splitLines(poster.headline || campaign.subtitle || campaign.title, 24).slice(0, 3),
     [campaign.subtitle, campaign.title, poster.headline],
   );
   const logoWidth = Math.max(90, poster.logoSizePercent * 1.4);
-  const headlineMarginTop = Math.max(10, poster.logoBottomMarginPx * 0.55);
+  const headlineMarginTop = poster.logoUrl ? Math.max(10, poster.logoBottomMarginPx * 0.55) : 0;
   const previewHeadlineSize = Math.max(22, poster.headlineFontSizePx * 0.6);
   const scratchTop = headlineLines.length >= 3 ? "50%" : "48%";
   const wheelTop = headlineLines.length >= 3 ? "45%" : "43%";
@@ -216,7 +217,7 @@ export function PosterEditor({ campaign, merchant, prizes }: PosterEditorProps) 
               </div>
               <div className="mt-4 flex items-center justify-between gap-3">
                 <span className="inline-flex rounded-full bg-white px-3 py-2 text-xs font-semibold text-[#214ccf] shadow-sm">
-                  {poster.logoUrl ? "Logo chargé" : "Logo campagne"}
+                  {poster.logoUrl ? "Logo chargé" : "Aucun logo"}
                 </span>
                 <span className="rounded-[8px] bg-[#2f6df6] px-4 py-2 text-xs font-semibold text-white">
                   Choisir
@@ -327,7 +328,7 @@ export function PosterEditor({ campaign, merchant, prizes }: PosterEditorProps) 
               </div>
               <div className="mt-4 flex items-center justify-between gap-3">
                 <span className="inline-flex rounded-full bg-white px-3 py-2 text-xs font-semibold text-[#214ccf] shadow-sm">
-                  {poster.backgroundImageUrl ? "Image chargée" : "Image par défaut"}
+                  {poster.backgroundImageUrl ? "Image chargée" : "Aucune image"}
                 </span>
                 <span className="rounded-[8px] bg-[#2f6df6] px-4 py-2 text-xs font-semibold text-white">
                   Choisir
@@ -422,16 +423,9 @@ export function PosterEditor({ campaign, merchant, prizes }: PosterEditorProps) 
                     className="mx-auto max-h-[88px] object-contain"
                     style={{ width: `${logoWidth}px` }}
                   />
-                ) : (
-                  <div
-                    className="mx-auto font-display font-black text-white"
-                    style={{ fontSize: `${Math.max(22, poster.logoSizePercent * 0.3)}px` }}
-                  >
-                    {campaign.logoText ?? merchant.companyName}
-                  </div>
-                )}
+                ) : null}
                 <div
-                  className={`mx-auto max-w-[92%] text-balance font-black leading-[0.98] ${fontClass(poster.headlineFontFamily)}`}
+                  className={`mx-auto w-full max-w-full px-4 text-balance font-black leading-[0.98] ${fontClass(poster.headlineFontFamily)}`}
                   style={{
                     marginTop: `${headlineMarginTop}px`,
                     color: poster.headlineTextColor,
@@ -464,7 +458,7 @@ export function PosterEditor({ campaign, merchant, prizes }: PosterEditorProps) 
                           className="max-w-[98px] -rotate-90 text-center text-[11px] font-black uppercase leading-[0.92]"
                           style={{ color: segment.textColor }}
                         >
-                          {splitLines(segment.label, 10).slice(0, 2).map((line) => (
+                          {splitPosterSegmentLines(segment.label).map((line) => (
                             <div key={line}>{line}</div>
                           ))}
                         </div>

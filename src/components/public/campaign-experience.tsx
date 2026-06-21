@@ -328,7 +328,7 @@ export function CampaignExperience({
         backgroundSize: "cover",
       }}
     >
-      <div className="relative mx-auto flex h-screen max-w-[960px] flex-col overflow-hidden px-4 pb-0 pt-8 sm:px-6">
+      <div className="relative mx-auto flex h-screen w-full flex-col overflow-hidden px-4 pb-0 pt-8 sm:px-6">
         {(campaign.logoMode === "image" && campaign.logoUrl) ||
         campaign.logoMode === "text" ? (
           <div className={`flex ${logoAlignmentClass}`}>

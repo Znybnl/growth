@@ -43,7 +43,41 @@ function formatSegmentLabel(label: string) {
   }
 
   const upper = compact.toUpperCase();
-  return upper.length > 22 ? `${upper.slice(0, 21)}...` : upper;
+  return upper.length > 18 ? `${upper.slice(0, 17)}...` : upper;
+}
+
+export function splitPosterSegmentLines(label: string) {
+  const words = formatSegmentLabel(label).split(/\s+/).filter(Boolean);
+  const lines: string[] = [];
+  let current = "";
+
+  for (const word of words) {
+    const next = current ? `${current} ${word}` : word;
+
+    if (next.length <= 8 || !current) {
+      current = next;
+      continue;
+    }
+
+    lines.push(current);
+    current = word;
+
+    if (lines.length === 1 && current.length > 8) {
+      current = `${current.slice(0, 7)}…`;
+    }
+  }
+
+  if (current) {
+    lines.push(current);
+  }
+
+  const truncated = lines.slice(0, 2);
+
+  if (lines.length > 2) {
+    truncated[1] = `${truncated[1].slice(0, Math.max(0, truncated[1].length - 1))}…`;
+  }
+
+  return truncated;
 }
 
 export function getPosterReadableTextColor(backgroundColor: string) {

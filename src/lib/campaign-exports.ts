@@ -4,6 +4,7 @@ import {
   buildPosterWheelSegments,
   createPosterSettingsDefaults,
   normalizePosterSettings,
+  splitPosterSegmentLines,
 } from "@/lib/poster-utils";
 import { CampaignPerformance } from "@/lib/types";
 
@@ -74,14 +75,14 @@ export async function createCampaignPosterSvg(
   performance: CampaignPerformance,
   publicUrl: string,
 ) {
-  const { campaign, merchant, prizes } = performance;
+  const { campaign, prizes } = performance;
   const poster = normalizePosterSettings(
     campaign.presentation.poster,
     createPosterSettingsDefaults({
-      logoUrl: campaign.logoUrl,
+      logoUrl: undefined,
       logoSizePercent: campaign.presentation.logo.sizePercent,
       logoBottomMarginPx: campaign.presentation.logo.marginBottomPx,
-      backgroundImageUrl: campaign.presentation.background.imageUrl ?? "",
+      backgroundImageUrl: "",
       headline: campaign.subtitle,
       headlineTextColor: campaign.presentation.heading.textColor,
       headlineFontSizePx: campaign.presentation.heading.fontSizePx,
@@ -104,15 +105,16 @@ export async function createCampaignPosterSvg(
   const headingFamily = fontFamily(poster.headlineFontFamily);
   const headlineLines = splitLines(
     poster.headline || campaign.subtitle || campaign.title,
-    18,
+    24,
   ).slice(0, 3);
   const headingSize = clamp(poster.headlineFontSizePx * 1.16, 34, 76);
-  const logoUrl = poster.logoUrl || campaign.logoUrl || merchant.logoUrl;
+  const logoUrl = poster.logoUrl;
   const logoWidth = clamp((poster.logoSizePercent / 100) * 210, 92, 310);
-  const logoHeight = clamp((poster.logoSizePercent / 100) * 90, 48, 145);
+  const logoHeight = logoUrl ? clamp((poster.logoSizePercent / 100) * 90, 48, 145) : 0;
   const gameIsWheel = campaign.gameType === "wheel";
 
-  const headlineStartY = 60 + logoHeight + poster.logoBottomMarginPx + headingSize * 0.88;
+  const headlineStartY =
+    60 + logoHeight + (logoUrl ? poster.logoBottomMarginPx : 0) + headingSize * 0.88;
   const headlineEndY =
     headlineStartY +
     headlineLines.length * headingSize +
@@ -139,7 +141,7 @@ export async function createCampaignPosterSvg(
 
   const logoMarkup = logoUrl
     ? `<image href="${logoUrl}" x="${(A4_WIDTH - logoWidth) / 2}" y="60" width="${logoWidth}" height="${logoHeight}" preserveAspectRatio="xMidYMid meet"/>`
-    : `<text x="${A4_WIDTH / 2}" y="116" text-anchor="middle" fill="#ffffff" font-family="${headingFamily}" font-size="${clamp(logoWidth * 0.28, 28, 62)}" font-weight="900">${escapeXml(campaign.logoText ?? merchant.companyName)}</text>`;
+    : ``;
 
   const headlineMarkup = headlineLines
     .map(
@@ -167,7 +169,7 @@ export async function createCampaignPosterSvg(
       const y1 = wheelCenterY + Math.sin(angle) * wheelRadius;
       const x2 = wheelCenterX + Math.cos(nextAngle) * wheelRadius;
       const y2 = wheelCenterY + Math.sin(nextAngle) * wheelRadius;
-      const lines = splitLines(segment.label, 10).slice(0, 2);
+      const lines = splitPosterSegmentLines(segment.label);
       const fontSize = lines.length > 1 ? 22 : 26;
       const firstDy = lines.length > 1 ? -10 : 0;
 
@@ -251,19 +253,19 @@ export async function createCampaignPosterSvg(
       <g transform="translate(54 972)">
         <rect width="686" height="106" rx="22" fill="rgba(255,255,255,0.94)"/>
         <g transform="translate(30 24)">
-          <text x="20" y="28" text-anchor="middle" fill="#111827" font-family="Arial, sans-serif" font-size="30" font-weight="900">1</text>
-          <text x="58" y="20" fill="#111827" font-family="Arial, sans-serif" font-size="22" font-weight="900">Scannez</text>
-          <text x="58" y="47" fill="#4b5563" font-family="Arial, sans-serif" font-size="17">le QR code</text>
+          <text x="76" y="18" text-anchor="middle" fill="#111827" font-family="Arial, sans-serif" font-size="30" font-weight="900">1</text>
+          <text x="76" y="50" text-anchor="middle" fill="#111827" font-family="Arial, sans-serif" font-size="22" font-weight="900">Scannez</text>
+          <text x="76" y="74" text-anchor="middle" fill="#4b5563" font-family="Arial, sans-serif" font-size="17">le QR code</text>
         </g>
         <g transform="translate(246 24)">
-          <text x="20" y="28" text-anchor="middle" fill="#111827" font-family="Arial, sans-serif" font-size="30" font-weight="900">2</text>
-          <text x="58" y="20" fill="#111827" font-family="Arial, sans-serif" font-size="22" font-weight="900">${actionLabel}</text>
-          <text x="58" y="47" fill="#4b5563" font-family="Arial, sans-serif" font-size="17">${actionBody}</text>
+          <text x="76" y="18" text-anchor="middle" fill="#111827" font-family="Arial, sans-serif" font-size="30" font-weight="900">2</text>
+          <text x="76" y="50" text-anchor="middle" fill="#111827" font-family="Arial, sans-serif" font-size="22" font-weight="900">${actionLabel}</text>
+          <text x="76" y="74" text-anchor="middle" fill="#4b5563" font-family="Arial, sans-serif" font-size="17">${actionBody}</text>
         </g>
         <g transform="translate(472 24)">
-          <text x="20" y="28" text-anchor="middle" fill="#111827" font-family="Arial, sans-serif" font-size="30" font-weight="900">3</text>
-          <text x="58" y="20" fill="#111827" font-family="Arial, sans-serif" font-size="22" font-weight="900">Récupérez</text>
-          <text x="58" y="47" fill="#4b5563" font-family="Arial, sans-serif" font-size="17">votre cadeau</text>
+          <text x="76" y="18" text-anchor="middle" fill="#111827" font-family="Arial, sans-serif" font-size="30" font-weight="900">3</text>
+          <text x="76" y="50" text-anchor="middle" fill="#111827" font-family="Arial, sans-serif" font-size="22" font-weight="900">Récupérez</text>
+          <text x="76" y="74" text-anchor="middle" fill="#4b5563" font-family="Arial, sans-serif" font-size="17">votre cadeau</text>
         </g>
       </g>
     </svg>
