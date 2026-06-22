@@ -361,9 +361,13 @@ function toCampaign(
       poster: normalizePosterSettings(
         localSettings.poster,
         createPosterSettingsDefaults({
+          logoMode: row.logo_url ? "image" : "text",
+          logoText: row.title,
           logoUrl: row.logo_url ?? undefined,
           logoSizePercent: row.logo_size_percent,
           logoBottomMarginPx: row.logo_margin_bottom_px,
+          backgroundMode: row.background_mode,
+          backgroundColor: row.background_color,
           backgroundImageUrl: row.background_image_url ?? "",
           headline: row.subtitle,
           headlineTextColor: row.heading_text_color,

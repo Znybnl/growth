@@ -122,40 +122,64 @@ export function buildPosterSvg(args: {
     24,
   ).slice(0, 3);
   const headingSize = clamp(poster.headlineFontSizePx * 1.16, 34, 76);
-  const logoUrl = poster.logoUrl;
+  const logoMode = poster.logoMode ?? "none";
+  const logoUrl = logoMode === "image" ? poster.logoUrl || campaign.logoUrl : undefined;
+  const logoText =
+    logoMode === "text"
+      ? (poster.logoText ?? campaign.logoText ?? campaign.title ?? "").trim()
+      : "";
   const logoWidth = clamp((poster.logoSizePercent / 100) * 210, 92, 310);
   const logoHeight = logoUrl ? clamp((poster.logoSizePercent / 100) * 90, 48, 145) : 0;
+  const logoTextSize = clamp((poster.logoSizePercent / 100) * 52, 30, 84);
+  const logoBlockHeight =
+    logoMode === "image" && logoUrl
+      ? logoHeight
+      : logoMode === "text" && logoText
+        ? logoTextSize
+        : 0;
   const gameIsWheel = campaign.gameType === "wheel";
+  const usesBackgroundImage =
+    poster.backgroundMode === "image" && Boolean(poster.backgroundImageUrl);
 
   const headlineStartY =
-    60 + logoHeight + (logoUrl ? poster.logoBottomMarginPx : 0) + headingSize * 0.88;
+    60 +
+    logoBlockHeight +
+    (logoBlockHeight ? poster.logoBottomMarginPx : 0) +
+    headingSize * 0.88;
   const headlineEndY =
     headlineStartY +
     headlineLines.length * headingSize +
     Math.max(0, headlineLines.length - 1) * 7;
   const wheelCenterX = 397;
-  const wheelCenterY = clamp(headlineEndY + 215, 532, 584);
+  const wheelCenterY = clamp(headlineEndY + 286, 594, 656);
   const wheelRadius = 232;
   const scratchX = 118;
-  const scratchY = clamp(headlineEndY + 56, 338, 420);
+  const scratchY = clamp(headlineEndY + 118, 392, 482);
   const qrX = gameIsWheel ? 450 : 430;
-  const qrY = gameIsWheel ? clamp(wheelCenterY + 74, 612, 684) : clamp(scratchY + 228, 604, 670);
+  const qrY = gameIsWheel
+    ? clamp(wheelCenterY + 76, 640, 710)
+    : clamp(scratchY + 228, 632, 700);
   const qrSize = 214;
-  const scanLabelY = gameIsWheel ? clamp(wheelCenterY + 110, 644, 720) : clamp(scratchY + 292, 706, 756);
-  const footerY = 942;
+  const scanLabelY = gameIsWheel
+    ? clamp(wheelCenterY + 116, 674, 744)
+    : clamp(scratchY + 292, 730, 782);
+  const footerY = 904;
   const actionLabel = gameIsWheel ? "Faites tourner" : "Grattez";
   const actionBody = gameIsWheel ? "la roue" : "le ticket";
 
-  const backgroundMarkup = poster.backgroundImageUrl
+  const backgroundMarkup = usesBackgroundImage
     ? `
       <image href="${poster.backgroundImageUrl}" x="0" y="0" width="${A4_WIDTH}" height="${A4_HEIGHT}" preserveAspectRatio="xMidYMid slice"/>
       <rect width="${A4_WIDTH}" height="${A4_HEIGHT}" fill="rgba(9,12,20,0.18)"/>
     `
-    : `<rect width="${A4_WIDTH}" height="${A4_HEIGHT}" fill="${campaign.presentation.background.color || "#ffffff"}"/>`;
+    : `<rect width="${A4_WIDTH}" height="${A4_HEIGHT}" fill="${poster.backgroundColor || campaign.presentation.background.color || "#ffffff"}"/>`;
 
-  const logoMarkup = logoUrl
-    ? `<image href="${logoUrl}" x="${(A4_WIDTH - logoWidth) / 2}" y="60" width="${logoWidth}" height="${logoHeight}" preserveAspectRatio="xMidYMid meet"/>`
-    : ``;
+  const logoMarkup =
+    logoMode === "image" && logoUrl
+      ? `<image href="${logoUrl}" x="${(A4_WIDTH - logoWidth) / 2}" y="60" width="${logoWidth}" height="${logoHeight}" preserveAspectRatio="xMidYMid meet"/>`
+      : logoMode === "text" && logoText
+        ? `<text x="${A4_WIDTH / 2}" y="${60 + logoTextSize * 0.82}" text-anchor="middle" fill="${poster.headlineTextColor}" font-family="${headingFamily}" font-size="${logoTextSize}" font-weight="900">${escapeXml(logoText)}</text>`
+        : ``;
 
   const headlineMarkup = headlineLines
     .map(
@@ -189,11 +213,11 @@ export function buildPosterSvg(args: {
 
       return `
         <path d="M ${wheelCenterX} ${wheelCenterY} L ${x1.toFixed(1)} ${y1.toFixed(1)} A ${wheelRadius} ${wheelRadius} 0 0 1 ${x2.toFixed(1)} ${y2.toFixed(1)} Z" fill="${segment.color}"/>
-        <text x="${wheelCenterX}" y="${wheelCenterY - 140}" fill="${segment.textColor}" font-family="Arial, sans-serif" font-size="${fontSize}" font-weight="900" text-anchor="middle" transform="rotate(${index * 60 - 60} ${wheelCenterX} ${wheelCenterY})">
+        <text x="${wheelCenterX}" y="${wheelCenterY - 144}" fill="${segment.textColor}" font-family="Arial, sans-serif" font-size="${fontSize}" font-weight="900" text-anchor="middle" transform="rotate(${index * 60 - 60} ${wheelCenterX} ${wheelCenterY})">
           ${lines
             .map(
               (line, lineIndex) =>
-                `<tspan x="${wheelCenterX}" dy="${lineIndex === 0 ? firstDy : 26}">${escapeXml(line)}</tspan>`,
+                `<tspan x="${wheelCenterX}" dy="${lineIndex === 0 ? firstDy : 24}">${escapeXml(line)}</tspan>`,
             )
             .join("")}
         </text>
@@ -204,11 +228,11 @@ export function buildPosterSvg(args: {
   const gameMarkup = gameIsWheel
     ? `
       <g filter="url(#shadowStrong)">
-        <circle cx="${wheelCenterX}" cy="${wheelCenterY}" r="${wheelRadius + 26}" fill="${wheel.rimColor}"/>
+        <circle cx="${wheelCenterX}" cy="${wheelCenterY}" r="${wheelRadius + 26}" fill="${wheel.winColor}"/>
         <circle cx="${wheelCenterX}" cy="${wheelCenterY}" r="${wheelRadius}" fill="#111827"/>
         ${wheelMarkup}
         <circle cx="${wheelCenterX}" cy="${wheelCenterY}" r="46" fill="#111827"/>
-        <circle cx="${wheelCenterX}" cy="${wheelCenterY}" r="30" fill="${wheel.rimColor}"/>
+        <circle cx="${wheelCenterX}" cy="${wheelCenterY}" r="30" fill="${wheel.winColor}"/>
         <path d="M ${wheelCenterX - 28} ${wheelCenterY - wheelRadius - 62} L ${wheelCenterX + 28} ${wheelCenterY - wheelRadius - 62} L ${wheelCenterX} ${wheelCenterY - wheelRadius - 8} Z" fill="#ffffff"/>
       </g>
     `
@@ -244,8 +268,14 @@ export function buildPosterSvg(args: {
       </defs>
 
       ${backgroundMarkup}
+      ${
+        usesBackgroundImage
+          ? `
       <rect width="${A4_WIDTH}" height="${A4_HEIGHT}" fill="url(#dotPattern)" opacity="0.28"/>
       <rect width="${A4_WIDTH}" height="${A4_HEIGHT}" fill="rgba(0,0,0,0.07)"/>
+      `
+          : ""
+      }
 
       ${logoMarkup}
       ${headlineMarkup}
@@ -264,19 +294,19 @@ export function buildPosterSvg(args: {
       </g>
 
       <rect x="0" y="${footerY}" width="${A4_WIDTH}" height="${A4_HEIGHT - footerY}" fill="${poster.footerBackgroundColor}"/>
-      <g transform="translate(54 972)">
-        <rect width="686" height="106" rx="22" fill="rgba(255,255,255,0.94)"/>
-        <g transform="translate(30 24)">
+      <g transform="translate(54 936)">
+        <rect width="686" height="154" rx="24" fill="rgba(255,255,255,0.94)"/>
+        <g transform="translate(30 36)">
           <text x="76" y="18" text-anchor="middle" fill="#111827" font-family="Arial, sans-serif" font-size="30" font-weight="900">1</text>
           <text x="76" y="50" text-anchor="middle" fill="#111827" font-family="Arial, sans-serif" font-size="22" font-weight="900">Scannez</text>
           <text x="76" y="74" text-anchor="middle" fill="#4b5563" font-family="Arial, sans-serif" font-size="17">le QR code</text>
         </g>
-        <g transform="translate(246 24)">
+        <g transform="translate(246 36)">
           <text x="76" y="18" text-anchor="middle" fill="#111827" font-family="Arial, sans-serif" font-size="30" font-weight="900">2</text>
           <text x="76" y="50" text-anchor="middle" fill="#111827" font-family="Arial, sans-serif" font-size="22" font-weight="900">${actionLabel}</text>
           <text x="76" y="74" text-anchor="middle" fill="#4b5563" font-family="Arial, sans-serif" font-size="17">${actionBody}</text>
         </g>
-        <g transform="translate(472 24)">
+        <g transform="translate(472 36)">
           <text x="76" y="18" text-anchor="middle" fill="#111827" font-family="Arial, sans-serif" font-size="30" font-weight="900">3</text>
           <text x="76" y="50" text-anchor="middle" fill="#111827" font-family="Arial, sans-serif" font-size="22" font-weight="900">Récupérez</text>
           <text x="76" y="74" text-anchor="middle" fill="#4b5563" font-family="Arial, sans-serif" font-size="17">votre cadeau</text>

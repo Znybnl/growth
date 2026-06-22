@@ -188,9 +188,13 @@ export interface CampaignWheelSettings {
 }
 
 export interface CampaignPosterSettings {
+  logoMode?: LogoMode;
+  logoText?: string;
   logoUrl?: string;
   logoSizePercent: number;
   logoBottomMarginPx: number;
+  backgroundMode?: BackgroundMode;
+  backgroundColor?: string;
   backgroundImageUrl?: string;
   headline: string;
   headlineTextColor: string;

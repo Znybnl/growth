@@ -27,10 +27,14 @@ export async function createCampaignPosterSvg(
   const poster = normalizePosterSettings(
     campaign.presentation.poster,
     createPosterSettingsDefaults({
-      logoUrl: undefined,
+      logoMode: campaign.logoMode ?? "text",
+      logoText: campaign.logoText ?? campaign.title,
+      logoUrl: campaign.logoUrl,
       logoSizePercent: campaign.presentation.logo.sizePercent,
       logoBottomMarginPx: campaign.presentation.logo.marginBottomPx,
-      backgroundImageUrl: "",
+      backgroundMode: campaign.presentation.background.mode,
+      backgroundColor: campaign.presentation.background.color,
+      backgroundImageUrl: campaign.presentation.background.imageUrl ?? "",
       headline: campaign.subtitle,
       headlineTextColor: campaign.presentation.heading.textColor,
       headlineFontSizePx: campaign.presentation.heading.fontSizePx,

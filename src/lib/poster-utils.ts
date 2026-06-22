@@ -63,7 +63,7 @@ export function splitPosterSegmentLines(label: string) {
     current = word;
 
     if (lines.length === 1 && current.length > 8) {
-      current = `${current.slice(0, 7)}…`;
+      current = `${current.slice(0, 7)}...`;
     }
   }
 
@@ -74,7 +74,7 @@ export function splitPosterSegmentLines(label: string) {
   const truncated = lines.slice(0, 2);
 
   if (lines.length > 2) {
-    truncated[1] = `${truncated[1].slice(0, Math.max(0, truncated[1].length - 1))}…`;
+    truncated[1] = `${truncated[1].slice(0, Math.max(0, truncated[1].length - 1))}...`;
   }
 
   return truncated;
@@ -96,9 +96,13 @@ export function getPosterReadableTextColor(backgroundColor: string) {
 }
 
 export function createPosterSettingsDefaults(input: {
+  logoMode?: "none" | "image" | "text";
+  logoText?: string;
   logoUrl?: string;
   logoSizePercent?: number;
   logoBottomMarginPx?: number;
+  backgroundMode?: "color" | "image";
+  backgroundColor?: string;
   backgroundImageUrl?: string;
   headline?: string;
   headlineTextColor?: string;
@@ -108,9 +112,13 @@ export function createPosterSettingsDefaults(input: {
   footerBackgroundColor?: string;
 }): CampaignPosterSettings {
   return {
+    logoMode: input.logoMode ?? (input.logoUrl ? "image" : input.logoText ? "text" : "none"),
+    logoText: input.logoText ?? "",
     logoUrl: input.logoUrl,
     logoSizePercent: input.logoSizePercent ?? 100,
     logoBottomMarginPx: input.logoBottomMarginPx ?? 28,
+    backgroundMode: input.backgroundMode ?? (input.backgroundImageUrl ? "image" : "color"),
+    backgroundColor: input.backgroundColor ?? "#ffffff",
     backgroundImageUrl: input.backgroundImageUrl ?? "",
     headline: input.headline ?? "",
     headlineTextColor: input.headlineTextColor ?? "#ffffff",
@@ -131,6 +139,10 @@ export function normalizePosterSettings(
     ...defaults,
     ...poster,
     logoBottomMarginPx: clamp(poster?.logoBottomMarginPx ?? defaults.logoBottomMarginPx, 0, 120),
+    logoMode: poster?.logoMode ?? defaults.logoMode,
+    logoText: poster?.logoText ?? defaults.logoText,
+    backgroundMode: poster?.backgroundMode ?? defaults.backgroundMode,
+    backgroundColor: poster?.backgroundColor ?? defaults.backgroundColor,
     wheel: {
       ...defaults.wheel,
       ...poster?.wheel,
@@ -142,9 +154,7 @@ export function buildPosterWheelSegments(
   prizes: Array<Pick<Prize, "label">>,
   wheel: CampaignWheelSettings,
 ): PosterWheelSegment[] {
-  const winningLabels = prizes
-    .map((prize) => formatSegmentLabel(prize.label))
-    .filter(Boolean);
+  const winningLabels = prizes.map((prize) => formatSegmentLabel(prize.label)).filter(Boolean);
 
   const resolvedWinningLabels = [
     winningLabels[0] ?? "CADEAU",
@@ -155,8 +165,8 @@ export function buildPosterWheelSegments(
   const segments = [
     { color: wheel.winColor, label: resolvedWinningLabels[0] },
     { color: wheel.loseColor, label: "PERDU !" },
-    { color: wheel.alternateWinColor, label: resolvedWinningLabels[1] },
-    { color: wheel.alternateLoseColor, label: "PERDU !" },
+    { color: wheel.winColor, label: resolvedWinningLabels[1] },
+    { color: wheel.loseColor, label: "PERDU !" },
     { color: wheel.winColor, label: resolvedWinningLabels[2] },
     { color: wheel.loseColor, label: "PERDU !" },
   ];

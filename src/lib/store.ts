@@ -547,9 +547,16 @@ function normalizeCampaign(rawCampaign: Campaign | (Partial<Campaign> & Record<s
       poster: normalizePosterSettings(
         presentation.poster,
         createPosterSettingsDefaults({
+          logoMode: rawCampaign.logoMode ?? fallback.logoMode ?? "text",
+          logoText:
+            typeof rawCampaign.logoText === "string" && rawCampaign.logoText.trim()
+              ? rawCampaign.logoText
+              : fallback.logoText ?? merchantSeed.companyName,
           logoUrl: rawCampaign.logoUrl,
           logoSizePercent: presentation.logo?.sizePercent ?? 100,
           logoBottomMarginPx: presentation.logo?.marginBottomPx ?? 28,
+          backgroundMode: presentation.background?.mode ?? "color",
+          backgroundColor: presentation.background?.color ?? "#ffffff",
           backgroundImageUrl: presentation.background?.imageUrl ?? "",
           headline: rawCampaign.subtitle ?? fallback.subtitle,
           headlineTextColor: presentation.heading?.textColor ?? "#ffffff",

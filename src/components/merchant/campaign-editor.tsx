@@ -202,9 +202,13 @@ function createDefaultState(merchant: Merchant): EditorState {
         alternateLoseColor: "#8795db",
       },
       poster: {
+        logoMode: "text",
+        logoText: merchant.companyName,
         logoUrl: undefined,
         logoSizePercent: 100,
         logoBottomMarginPx: 28,
+        backgroundMode: "color",
+        backgroundColor: "#ffffff",
         backgroundImageUrl: "",
         headline: "Scannez, jouez, récupérez votre cadeau",
         headlineTextColor: "#ffffff",
@@ -419,13 +423,17 @@ function toEditorState(merchant: Merchant, campaign?: CampaignPerformance | null
       },
       poster: normalizePosterSettings(
         campaign.campaign.presentation.poster,
-        createPosterSettingsDefaults({
-          logoUrl: undefined,
-          logoSizePercent: campaign.campaign.presentation.logo.sizePercent,
-          logoBottomMarginPx: campaign.campaign.presentation.logo.marginBottomPx,
-          backgroundImageUrl: "",
-          headline: campaign.campaign.subtitle,
-          headlineTextColor: campaign.campaign.presentation.heading.textColor,
+    createPosterSettingsDefaults({
+      logoMode: campaign.campaign.logoMode ?? "text",
+      logoText: campaign.campaign.logoText ?? merchant.companyName,
+      logoUrl: undefined,
+      logoSizePercent: campaign.campaign.presentation.logo.sizePercent,
+      logoBottomMarginPx: campaign.campaign.presentation.logo.marginBottomPx,
+      backgroundMode: campaign.campaign.presentation.background.mode,
+      backgroundColor: campaign.campaign.presentation.background.color,
+      backgroundImageUrl: "",
+      headline: campaign.campaign.subtitle,
+      headlineTextColor: campaign.campaign.presentation.heading.textColor,
           headlineFontSizePx: campaign.campaign.presentation.heading.fontSizePx,
           headlineFontFamily: campaign.campaign.presentation.heading.fontFamily,
           wheel: campaign.campaign.presentation.wheel,
@@ -890,14 +898,14 @@ export function CampaignEditor({
         <div className="grid gap-6 px-6 py-6 xl:grid-cols-[1.2fr_0.8fr] xl:px-8">
           <div>
             <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">
-              Paramétrage campagne
+              Paramétrage de l’animation
             </p>
             <h1 className="mt-3 font-display text-5xl font-semibold leading-none text-[#0f1728]">
               {initialCampaign ? "Ajuster votre campagne" : "Créer une nouvelle campagne"}
             </h1>
             <p className="mt-4 max-w-3xl text-sm leading-7 text-[#5c6577]">
-              Structurez votre mécanique, personnalisez le rendu public et préparez un parcours
-              marchand cohérent sur toutes les pages.
+              Structurez la mécanique de votre jeu concours tout en personnalisant le rendu
+              graphique.
             </p>
           </div>
 
@@ -947,7 +955,7 @@ export function CampaignEditor({
                   Identité de campagne
                 </p>
                 <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
-                  Cadrez la campagne et son parcours
+                  Nommez votre animation
                 </h2>
               </div>
               <label className="inline-flex items-center gap-2 rounded-full bg-[#f4f7fb] px-3 py-2 text-sm font-medium text-[#3e4758]">
@@ -960,7 +968,7 @@ export function CampaignEditor({
               </label>
             </div>
 
-            <div className="mt-6 grid gap-4 md:grid-cols-2">
+            <div className="mt-6 grid gap-4 md:grid-cols-1">
               <label className="text-sm">
                 <span className="mb-2 block text-[#616b7c]">Nom de campagne</span>
                 <input
@@ -969,28 +977,11 @@ export function CampaignEditor({
                   className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
                 />
               </label>
-
-              <label className="text-sm">
-                <span className="mb-2 block text-[#616b7c]">Objectif principal</span>
-                <select
-                  value={form.goalType}
-                  onChange={(event) =>
-                    setForm((current) => ({
-                      ...current,
-                      goalType: event.target.value as GoalType,
-                      successMetric: goalMetricMap[event.target.value as GoalType],
-                    }))
-                  }
-                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
-                >
-                  <option value="lead_capture">Collecte CRM</option>
-                  <option value="review_prompt">Avis Google</option>
-                  <option value="social_follow">Social / trafic</option>
-                </select>
-              </label>
             </div>
+          </section>
 
-            <div className="mt-8 flex items-center justify-between gap-3">
+          <section className="rounded-[30px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+            <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">
                   Actions marketing
@@ -998,6 +989,11 @@ export function CampaignEditor({
                 <h3 className="mt-2 text-xl font-semibold text-[#111827]">
                   Ordre des actions pour chaque participation
                 </h3>
+                <p className="mt-3 max-w-3xl text-sm leading-7 text-[#5c6577]">
+                  Un client pourrait jouer plusieurs fois durant la durée de votre campagne.
+                  Définissez l’objectif de sa première participation et ainsi de suite. Si il ne
+                  peut participer qu’une seule fois, limitez-vous à une seule action.
+                </p>
               </div>
               <button
                 type="button"
@@ -1054,7 +1050,11 @@ export function CampaignEditor({
                     </div>
                   </div>
 
-                  <div className="grid gap-4 md:grid-cols-[0.95fr_1.45fr]">
+                  <div
+                    className={`grid gap-4 ${
+                      action.kind === "crm" ? "md:grid-cols-1" : "md:grid-cols-[0.95fr_1.45fr]"
+                    }`}
+                  >
                     <label className="text-sm">
                       <span className="mb-2 block text-[#616b7c]">Canal</span>
                       <select
@@ -1069,35 +1069,41 @@ export function CampaignEditor({
                             {actionKindLabel(kind)}
                           </option>
                         ))}
-                      </select>
-                    </label>
+                        </select>
+                      </label>
 
-                    <label className="text-sm">
-                      <span className="mb-2 block text-[#616b7c]">Lien</span>
-                      <input
-                        value={action.url}
-                        onChange={(event) => updateAction(action.id, { url: event.target.value })}
-                        className="w-full rounded-[18px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
-                        placeholder="https://..."
-                      />
-                    </label>
+                    {action.kind !== "crm" ? (
+                      <label className="text-sm">
+                        <span className="mb-2 block text-[#616b7c]">Lien</span>
+                        <div className="flex items-center gap-2">
+                          <input
+                            value={action.url}
+                            onChange={(event) => updateAction(action.id, { url: event.target.value })}
+                            className="w-full rounded-[18px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
+                            placeholder="https://..."
+                          />
+                          <a
+                            href={normalizeUrl(action.url)}
+                            target="_blank"
+                            rel="noreferrer"
+                            aria-label={`Ouvrir le lien de l'action ${index + 1}`}
+                            className="inline-flex h-[48px] w-[48px] shrink-0 items-center justify-center rounded-[18px] border border-[#d7e0ed] bg-white text-lg font-semibold text-[#182033]"
+                          >
+                            ↗
+                          </a>
+                        </div>
+                      </label>
+                    ) : null}
                   </div>
 
-                  <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-2">
-                    <a
-                      href={normalizeUrl(action.url)}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-center justify-center rounded-[18px] border border-[#2f6df6] bg-white px-3 py-3 text-sm font-semibold text-[#2f6df6]"
-                    >
-                      Tester
-                    </a>
+                  <div className="mt-4 flex justify-end">
                     <button
                       type="button"
                       onClick={() => removeAction(action.id)}
-                      className="rounded-[18px] border border-[#111827] bg-[#111827] px-4 py-3 text-sm font-semibold text-white"
+                      aria-label={`Supprimer l'action ${index + 1}`}
+                      className="inline-flex h-[48px] w-[48px] items-center justify-center rounded-[18px] border border-[#111827] bg-[#111827] text-lg font-semibold text-white"
                     >
-                      Retirer
+                      ×
                     </button>
                   </div>
                 </div>
@@ -2046,10 +2052,9 @@ export function CampaignEditor({
 
                 {[
                   ["rimColor", "Couleur du contour"],
-                  ["winColor", "Couleur gain 1"],
-                  ["alternateWinColor", "Couleur gain 2"],
-                  ["loseColor", "Couleur perdu 1"],
-                  ["alternateLoseColor", "Couleur perdu 2"],
+                  ["winColor", "Couleur gain"],
+                  ["loseColor", "Couleur perdu foncé"],
+                  ["alternateLoseColor", "Couleur perdu clair"],
                 ].map(([key, label]) => (
                   <label key={key} className="text-sm">
                     <span className="mb-2 block text-[#616b7c]">{label}</span>
