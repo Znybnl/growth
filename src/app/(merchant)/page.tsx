@@ -9,7 +9,161 @@ import {
   goalLabel,
   leadStatusLabel,
 } from "@/lib/format";
-import { getMerchantDashboard, getMerchantLeads } from "@/lib/store";
+import { getCampaignDataView, getMerchantDashboard, getMerchantLeads } from "@/lib/store";
+
+function buildLastDays(referenceDates: string[], days = 7) {
+  const latest = referenceDates.length
+    ? new Date(
+        referenceDates.sort((a, b) => a.localeCompare(b)).at(-1) ?? new Date().toISOString(),
+      )
+    : new Date();
+
+  return Array.from({ length: days }, (_, index) => {
+    const date = new Date(
+      Date.UTC(latest.getUTCFullYear(), latest.getUTCMonth(), latest.getUTCDate()),
+    );
+    date.setUTCDate(latest.getUTCDate() - (days - index - 1));
+    return date.toISOString().slice(0, 10);
+  });
+}
+
+function buildDailySeries(values: string[], labels: string[]) {
+  const counts = new Map<string, number>();
+
+  for (const value of values) {
+    counts.set(value, (counts.get(value) ?? 0) + 1);
+  }
+
+  return labels.map((label) => ({
+    label,
+    value: counts.get(label) ?? 0,
+  }));
+}
+
+function LineChart({
+  title,
+  eyebrow,
+  series,
+}: {
+  title: string;
+  eyebrow: string;
+  series: Array<{
+    label: string;
+    color: string;
+    values: Array<{ label: string; value: number }>;
+  }>;
+}) {
+  const labels = series[0]?.values.map((item) => item.label) ?? [];
+  const max = Math.max(
+    ...series.flatMap((item) => item.values.map((value) => value.value)),
+    1,
+  );
+
+  function buildPath(values: Array<{ label: string; value: number }>) {
+    if (!values.length) return "";
+    return values
+      .map((item, index) => {
+        const x = values.length === 1 ? 320 : (index / (values.length - 1)) * 640;
+        const y = 220 - (item.value / max) * 180;
+        return `${index === 0 ? "M" : "L"} ${x} ${y}`;
+      })
+      .join(" ");
+  }
+
+  return (
+    <section className="rounded-[32px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">{eyebrow}</p>
+          <h2 className="mt-2 text-2xl font-semibold text-[#111827]">{title}</h2>
+        </div>
+        <div className="flex flex-wrap gap-3">
+          {series.map((item) => (
+            <div
+              key={item.label}
+              className="flex items-center gap-2 rounded-full bg-[#f7f9fc] px-3 py-2 text-sm text-[#556173]"
+            >
+              <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: item.color }} />
+              {item.label}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-6 overflow-x-auto">
+        <div className="min-w-[640px]">
+          <svg viewBox="0 0 640 260" className="h-[260px] w-full">
+            {[0, 1, 2, 3].map((row) => {
+              const y = 40 + row * 45;
+              return (
+                <line
+                  key={row}
+                  x1="0"
+                  y1={y}
+                  x2="640"
+                  y2={y}
+                  stroke="#e8eef6"
+                  strokeDasharray="6 8"
+                />
+              );
+            })}
+
+            {series.map((item) => (
+              <g key={item.label}>
+                <path
+                  d={buildPath(item.values)}
+                  fill="none"
+                  stroke={item.color}
+                  strokeWidth="4"
+                  strokeLinecap="round"
+                />
+                {item.values.map((value, index) => {
+                  const x =
+                    item.values.length === 1 ? 320 : (index / (item.values.length - 1)) * 640;
+                  const y = 220 - (value.value / max) * 180;
+                  return (
+                    <g key={`${item.label}-${value.label}`}>
+                      <circle cx={x} cy={y} r="6" fill={item.color} />
+                      <text
+                        x={x}
+                        y={y - 14}
+                        textAnchor="middle"
+                        fontSize="12"
+                        fill="#111827"
+                        fontWeight="700"
+                      >
+                        {value.value}
+                      </text>
+                    </g>
+                  );
+                })}
+              </g>
+            ))}
+
+            {labels.map((label, index) => {
+              const x = labels.length === 1 ? 320 : (index / (labels.length - 1)) * 640;
+              return (
+                <text
+                  key={label}
+                  x={x}
+                  y="252"
+                  textAnchor="middle"
+                  fontSize="12"
+                  fill="#7b8496"
+                >
+                  {new Intl.DateTimeFormat("fr-FR", {
+                    day: "2-digit",
+                    month: "2-digit",
+                  }).format(new Date(`${label}T00:00:00.000Z`))}
+                </text>
+              );
+            })}
+          </svg>
+        </div>
+      </div>
+    </section>
+  );
+}
 
 export default async function DashboardPage({
   searchParams,
@@ -44,6 +198,27 @@ export default async function DashboardPage({
   const bestCampaign = [...filteredCampaigns].sort(
     (left, right) => right.kpis.conversionRate - left.kpis.conversionRate,
   )[0];
+  const activityViews = await Promise.all(
+    filteredCampaigns.map((item) => getCampaignDataView(item.campaign.id, session.merchant)),
+  );
+  const dashboardDates = activityViews.flatMap((view) =>
+    view ? [...view.events.map((event) => event.createdAt), ...view.leads.map((lead) => lead.createdAt)] : [],
+  );
+  const dayKeys = buildLastDays(dashboardDates);
+  const scansSeries = buildDailySeries(
+    activityViews.flatMap((view) =>
+      view
+        ? view.events
+            .filter((event) => event.eventType === "scan")
+            .map((event) => event.createdAt.slice(0, 10))
+        : [],
+    ),
+    dayKeys,
+  );
+  const participationsSeries = buildDailySeries(
+    activityViews.flatMap((view) => (view ? view.leads.map((lead) => lead.createdAt.slice(0, 10)) : [])),
+    dayKeys,
+  );
 
   return (
     <div className="min-w-0 space-y-6 overflow-x-hidden">
@@ -107,6 +282,23 @@ export default async function DashboardPage({
           </div>
         ))}
       </section>
+
+      <LineChart
+        eyebrow="Activité 7 jours"
+        title="Scans et participations par jour"
+        series={[
+          {
+            label: "Scans",
+            color: "#2f6df6",
+            values: scansSeries,
+          },
+          {
+            label: "Participations",
+            color: "#111827",
+            values: participationsSeries,
+          },
+        ]}
+      />
 
       <section className="grid min-w-0 gap-6 xl:grid-cols-[1.15fr_0.85fr]">
         <div className="min-w-0 min-h-[350px] rounded-[32px] border border-[#dbe4f0] bg-white p-5 shadow-[0_18px_44px_rgba(122,136,166,0.1)] md:p-6">

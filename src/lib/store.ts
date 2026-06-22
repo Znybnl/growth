@@ -13,8 +13,10 @@ import {
   markActionConfirmedInSupabase,
   recordEventInSupabase,
   redeemLeadPrizeInSupabase,
+  resetPrizeStockInSupabase,
   resetLeadPrizeInSupabase,
   toggleCampaignInSupabase,
+  updatePrizeStockInSupabase,
   updateCampaignSetupInSupabase,
 } from "@/lib/campaign-repository";
 import {
@@ -172,9 +174,12 @@ const merchantSeed: Merchant = {
   logoText: "MS",
   logoUrl: undefined,
   industry: "Mode et maison",
+  restaurantType: "Brasserie",
   city: "Paris Marais",
+  address: "12 rue du Marais, 75004 Paris",
   contactName: "Pierre-Henri Brunelle",
   phone: "01 40 00 00 00",
+  restaurantEmail: "contact@maisonsora.fr",
   websiteUrl: "https://maisonsora.fr",
   onboardingCompleted: true,
   preferredGoals: ["Avis Google", "Collecte CRM"],
@@ -911,7 +916,7 @@ function createMerchantAccountInMemory(input: MerchantSignUpInput) {
   const lastName = input.lastName.trim();
   const companyName = input.companyName.trim();
   const city = input.city.trim();
-  const phone = input.phone.trim();
+  const phone = (input.phone ?? "").trim();
 
   const merchant: Merchant = {
     id: merchantId,
@@ -919,9 +924,12 @@ function createMerchantAccountInMemory(input: MerchantSignUpInput) {
     logoText: companyName.slice(0, 2).toUpperCase(),
     logoUrl: undefined,
     industry: "",
+    restaurantType: "Brasserie",
     city,
+    address: "",
     contactName: `${firstName} ${lastName}`.trim(),
     phone,
+    restaurantEmail: "",
     websiteUrl: "",
     onboardingCompleted: false,
     preferredGoals: [],
@@ -989,9 +997,13 @@ function updateMerchantOnboardingInMemory(userId: string, input: MerchantOnboard
   merchant.companyName = input.companyName.trim();
   merchant.logoText = input.companyName.trim().slice(0, 2).toUpperCase();
   merchant.industry = input.industry.trim();
+  merchant.restaurantType = input.restaurantType.trim();
   merchant.city = input.city.trim();
+  merchant.address = input.address.trim();
   merchant.contactName = input.contactName.trim();
   merchant.phone = input.phone.trim();
+  merchant.restaurantEmail = input.restaurantEmail.trim().toLowerCase();
+  merchant.websiteUrl = input.websiteUrl.trim();
   merchant.defaultPrizeCost = input.defaultPrizeCost;
   merchant.preferredGoals = input.preferredGoals;
   merchant.diffusionSupport = input.diffusionSupport;
@@ -1032,9 +1044,12 @@ function updateMerchantAccountInMemory(userId: string, input: MerchantAccountSet
   merchant.companyName = input.companyName.trim();
   merchant.logoText = input.companyName.trim().slice(0, 2).toUpperCase();
   merchant.industry = input.industry.trim();
+  merchant.restaurantType = input.restaurantType.trim();
   merchant.city = input.city.trim();
+  merchant.address = input.address.trim();
   merchant.contactName = input.contactName.trim();
   merchant.phone = input.phone.trim();
+  merchant.restaurantEmail = input.restaurantEmail.trim().toLowerCase();
   merchant.websiteUrl = input.websiteUrl.trim();
   merchant.googleReviewUrl = input.googleReviewUrl.trim();
   merchant.instagramUrl = input.instagramUrl.trim();
@@ -1337,6 +1352,30 @@ function resetLeadPrizeInMemory(leadId: string) {
   return clone(lead);
 }
 
+function updatePrizeStockInMemory(prizeId: string, remainingQuantity: number | null) {
+  const prize = store.prizes.find((item) => item.id === prizeId);
+
+  if (!prize) {
+    throw new Error("Dotation introuvable");
+  }
+
+  prize.remainingQuantity = remainingQuantity;
+
+  return clone(prize);
+}
+
+function resetPrizeStockInMemory(prizeId: string) {
+  const prize = store.prizes.find((item) => item.id === prizeId);
+
+  if (!prize) {
+    throw new Error("Dotation introuvable");
+  }
+
+  prize.remainingQuantity = prize.totalQuantity;
+
+  return clone(prize);
+}
+
 function updateCampaignSetupInMemory(input: CampaignSetupInput) {
   const existing = input.id ? getCampaign(input.id) : undefined;
 
@@ -1618,6 +1657,22 @@ export async function resetLeadPrize(leadId: string) {
   }
 
   return resetLeadPrizeInMemory(leadId);
+}
+
+export async function updatePrizeStock(prizeId: string, remainingQuantity: number | null) {
+  if (isSupabaseConfigured()) {
+    return updatePrizeStockInSupabase(prizeId, remainingQuantity);
+  }
+
+  return updatePrizeStockInMemory(prizeId, remainingQuantity);
+}
+
+export async function resetPrizeStock(prizeId: string) {
+  if (isSupabaseConfigured()) {
+    return resetPrizeStockInSupabase(prizeId);
+  }
+
+  return resetPrizeStockInMemory(prizeId);
 }
 
 export async function updateCampaignSetup(input: CampaignSetupInput) {

@@ -1211,6 +1211,52 @@ export async function resetLeadPrizeInSupabase(leadId: string) {
   return { ...lead, status: "claimed" as const };
 }
 
+export async function updatePrizeStockInSupabase(
+  prizeId: string,
+  remainingQuantity: number | null,
+) {
+  const supabase = getSupabaseAdmin();
+  const { data, error } = await supabase
+    .from("prizes")
+    .update({ remaining_quantity: remainingQuantity })
+    .eq("id", prizeId)
+    .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at")
+    .maybeSingle();
+
+  if (error || !data) {
+    throw new Error("Le stock n'a pas pu être mis à jour");
+  }
+
+  return toPrize(data as PrizeRow);
+}
+
+export async function resetPrizeStockInSupabase(prizeId: string) {
+  const supabase = getSupabaseAdmin();
+  const { data: prizeData, error: prizeError } = await supabase
+    .from("prizes")
+    .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at")
+    .eq("id", prizeId)
+    .maybeSingle();
+
+  if (prizeError || !prizeData) {
+    throw new Error("Dotation introuvable");
+  }
+
+  const prize = prizeData as PrizeRow;
+  const { data, error } = await supabase
+    .from("prizes")
+    .update({ remaining_quantity: prize.total_quantity })
+    .eq("id", prizeId)
+    .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at")
+    .maybeSingle();
+
+  if (error || !data) {
+    throw new Error("Le stock n'a pas pu être réinitialisé");
+  }
+
+  return toPrize(data as PrizeRow);
+}
+
 export async function getSupabaseLeadRewardEmailHistory(leadId: string, merchantId: string) {
   const supabase = getSupabaseAdmin();
   const { data: leadData, error: leadError } = await supabase

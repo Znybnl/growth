@@ -43,9 +43,12 @@ export interface Merchant {
   logoText: string;
   logoUrl?: string;
   industry?: string;
+  restaurantType?: string;
   city?: string;
+  address?: string;
   contactName?: string;
   phone?: string;
+  restaurantEmail?: string;
   websiteUrl?: string;
   onboardingCompleted?: boolean;
   preferredGoals?: string[];
@@ -75,7 +78,7 @@ export interface MerchantSignUpInput {
   firstName: string;
   lastName: string;
   email: string;
-  phone: string;
+  phone?: string;
   password: string;
   confirmPassword: string;
 }
@@ -88,9 +91,13 @@ export interface MerchantSignInInput {
 export interface MerchantOnboardingInput {
   companyName: string;
   industry: string;
+  restaurantType: string;
   city: string;
   contactName: string;
   phone: string;
+  restaurantEmail: string;
+  websiteUrl: string;
+  address: string;
   defaultPrizeCost: number;
   preferredGoals: string[];
   diffusionSupport: string[];
@@ -104,9 +111,12 @@ export interface MerchantOnboardingInput {
 export interface MerchantAccountSettingsInput {
   companyName: string;
   industry: string;
+  restaurantType: string;
   city: string;
+  address: string;
   contactName: string;
   phone: string;
+  restaurantEmail: string;
   websiteUrl: string;
   googleReviewUrl: string;
   instagramUrl: string;

@@ -7,11 +7,12 @@ import { useState } from "react";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { BrandMark } from "@/components/brand-mark";
 import { APP_NAME_CAPITALIZED } from "@/lib/branding";
-import { Merchant } from "@/lib/types";
+import { Merchant, MerchantUser } from "@/lib/types";
 
 type MerchantShellProps = {
   children: React.ReactNode;
   merchant: Merchant;
+  user: MerchantUser;
   isSaasAdmin: boolean;
 };
 
@@ -24,7 +25,7 @@ const navItems = [
   { href: "/account", label: "Compte" },
 ];
 
-export function MerchantShell({ children, merchant, isSaasAdmin }: MerchantShellProps) {
+export function MerchantShell({ children, merchant, user, isSaasAdmin }: MerchantShellProps) {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -111,7 +112,9 @@ export function MerchantShell({ children, merchant, isSaasAdmin }: MerchantShell
             <div className="mt-3 flex items-center gap-3">
               <BrandMark logoText={merchant.logoText} logoUrl={merchant.logoUrl} size="sm" />
               <div className="min-w-0">
-                <p className="text-sm font-semibold text-[#141821]">Admin magasin</p>
+                <p className="text-sm font-semibold text-[#141821]">
+                  {`${user.firstName} ${user.lastName}`.trim()}
+                </p>
                 <p className="truncate text-sm text-[#9aa1b1]">{merchant.companyName}</p>
               </div>
             </div>

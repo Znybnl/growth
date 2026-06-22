@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import sharp from "sharp";
 
 import { requireAuthenticatedSession } from "@/lib/auth";
 import { createCampaignPosterSvg } from "@/lib/campaign-exports";
@@ -20,11 +21,12 @@ export async function GET(request: Request, context: RouteContext) {
   const origin = new URL(request.url).origin;
   const publicUrl = `${origin}/campaign/${performance.campaign.id}`;
   const posterSvg = await createCampaignPosterSvg(performance, publicUrl);
+  const posterPng = await sharp(Buffer.from(posterSvg)).png().toBuffer();
 
-  return new NextResponse(posterSvg, {
+  return new NextResponse(new Uint8Array(posterPng), {
     headers: {
-      "Content-Type": "image/svg+xml; charset=utf-8",
-      "Content-Disposition": `attachment; filename="${performance.campaign.id}-affiche-a4.svg"`,
+      "Content-Type": "image/png",
+      "Content-Disposition": `attachment; filename="${performance.campaign.id}-affiche-a4.png"`,
       "Cache-Control": "no-store",
     },
   });

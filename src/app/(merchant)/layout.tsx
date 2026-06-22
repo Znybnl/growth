@@ -17,6 +17,7 @@ export default async function MerchantLayout({
   return (
     <MerchantShell
       merchant={session.merchant}
+      user={session.user}
       isSaasAdmin={isSaasAdminEmail(session.user.email)}
     >
       {children}

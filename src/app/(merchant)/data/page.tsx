@@ -1,6 +1,8 @@
 import Link from "next/link";
 
+import { DataSearchForm } from "@/components/merchant/data-search-form";
 import { LeadPrizeActions } from "@/components/merchant/lead-prize-actions";
+import { PrizeStockActions } from "@/components/merchant/prize-stock-actions";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import {
   rewardEmailStatusLabel,
@@ -18,10 +20,12 @@ import {
   getMerchantLeads,
   getPrimaryCampaignId,
 } from "@/lib/store";
+import { CampaignAction, CampaignEvent, MerchantLeadRow } from "@/lib/types";
 
 type DataPageProps = {
   searchParams: Promise<{
     campaign?: string;
+    q?: string;
     code?: string;
   }>;
 };
@@ -47,7 +51,9 @@ function buildLastDays(referenceDates: string[], days = 7) {
     : new Date();
 
   return Array.from({ length: days }, (_, index) => {
-    const date = new Date(Date.UTC(latest.getUTCFullYear(), latest.getUTCMonth(), latest.getUTCDate()));
+    const date = new Date(
+      Date.UTC(latest.getUTCFullYear(), latest.getUTCMonth(), latest.getUTCDate()),
+    );
     date.setUTCDate(latest.getUTCDate() - (days - index - 1));
     return date.toISOString().slice(0, 10);
   });
@@ -94,22 +100,93 @@ function Histogram({
   );
 }
 
+function eventLabel(eventType: CampaignEvent["eventType"]) {
+  switch (eventType) {
+    case "scan":
+      return "Scan";
+    case "form_started":
+      return "Formulaire démarré";
+    case "lead_created":
+      return "Lead créé";
+    case "review_clicked":
+      return "Avis Google ouvert";
+    case "review_confirmed":
+      return "Avis confirmé";
+    case "social_clicked":
+      return "Action marketing ouverte";
+    case "game_played":
+      return "Partie lancée";
+    case "prize_won":
+      return "Lot gagné";
+    case "prize_redeemed":
+      return "Lot récupéré";
+    case "prize_expired":
+      return "Lot expiré";
+    case "prize_reset":
+      return "Lot réinitialisé";
+    default:
+      return String(eventType).replaceAll("_", " ");
+  }
+}
+
+function buildActionVolumes(leads: MerchantLeadRow[], actions: CampaignAction[]) {
+  if (!actions.length) {
+    return [];
+  }
+
+  const volumes = new Map(
+    actions.map((action, index) => [
+      action.id,
+      {
+        id: action.id,
+        label: `Action ${index + 1}`,
+        kind: action.kind,
+        value: 0,
+      },
+    ]),
+  );
+
+  const byEmail = new Map<string, number>();
+  const chronologicalLeads = [...leads].sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+
+  for (const lead of chronologicalLeads) {
+    const key = lead.email.trim().toLowerCase();
+    const actionIndex = byEmail.get(key) ?? 0;
+    const action = actions[actionIndex];
+
+    if (action) {
+      const current = volumes.get(action.id);
+      if (current) {
+        current.value += 1;
+      }
+    }
+
+    byEmail.set(key, actionIndex + 1);
+  }
+
+  return Array.from(volumes.values());
+}
+
 export default async function DataPage({ searchParams }: DataPageProps) {
   const session = await requireAuthenticatedSession();
   const params = await searchParams;
-  const codeQuery = params.code?.trim() ?? "";
+  const query = params.q?.trim() ?? params.code?.trim() ?? "";
+  const normalizedQuery = query.toLowerCase();
   const initialSelectedCampaignId = params.campaign ?? undefined;
   const [dashboard, allLeads, initialDataView] = await Promise.all([
     getMerchantDashboard(session.merchant.id, session.merchant),
-    codeQuery ? getMerchantLeads(session.merchant.id) : Promise.resolve([]),
+    query ? getMerchantLeads(session.merchant.id) : Promise.resolve([]),
     initialSelectedCampaignId
       ? getCampaignDataView(initialSelectedCampaignId, session.merchant)
       : Promise.resolve(null),
   ]);
   const matchedLead =
-    codeQuery.length > 0
+    query.length > 0
       ? allLeads.find((lead) =>
-          (lead.redemptionCode ?? "").toLowerCase().includes(codeQuery.toLowerCase()),
+          [lead.redemptionCode ?? "", lead.email, lead.firstName]
+            .join(" ")
+            .toLowerCase()
+            .includes(normalizedQuery),
         ) ?? null
       : null;
   const selectedCampaignId =
@@ -119,7 +196,9 @@ export default async function DataPage({ searchParams }: DataPageProps) {
     getPrimaryCampaignId();
   const dataView =
     (initialDataView && initialSelectedCampaignId === selectedCampaignId ? initialDataView : null) ??
-    (selectedCampaignId ? await getCampaignDataView(selectedCampaignId, session.merchant) : null);
+    (selectedCampaignId
+      ? await getCampaignDataView(selectedCampaignId, session.merchant)
+      : null);
 
   if (!dataView || dataView.performance.campaign.merchantId !== session.merchant.id) {
     return (
@@ -132,9 +211,12 @@ export default async function DataPage({ searchParams }: DataPageProps) {
   const sortedLeads = [...dataView.leads].sort((a, b) =>
     b.consentTimestamp.localeCompare(a.consentTimestamp),
   );
-  const filteredLeads = codeQuery
+  const filteredLeads = query
     ? sortedLeads.filter((lead) =>
-        (lead.redemptionCode ?? "").toLowerCase().includes(codeQuery.toLowerCase()),
+        [lead.redemptionCode ?? "", lead.email, lead.firstName, lead.prizeLabel]
+          .join(" ")
+          .toLowerCase()
+          .includes(normalizedQuery),
       )
     : sortedLeads;
   const allDates = [
@@ -161,6 +243,12 @@ export default async function DataPage({ searchParams }: DataPageProps) {
       .map((event) => event.createdAt.slice(0, 10)),
     dayKeys,
   );
+  const actionVolumes = buildActionVolumes(
+    dataView.leads,
+    dataView.performance.campaign.actions,
+  );
+  const actionVolumeMax = Math.max(...actionVolumes.map((item) => item.value), 1);
+  const leadById = new Map(dataView.leads.map((lead) => [lead.id, lead]));
 
   return (
     <div className="space-y-6">
@@ -196,21 +284,15 @@ export default async function DataPage({ searchParams }: DataPageProps) {
           </div>
 
           <div className="mt-6 flex flex-wrap gap-3">
-            <form className="min-w-[280px] flex-1">
-              <input type="hidden" name="campaign" value={dataView.performance.campaign.id} />
-              <input
-                type="search"
-                name="code"
-                defaultValue={codeQuery}
-                placeholder="Rechercher par code de retrait"
-                className="w-full rounded-[18px] border border-[#d7e0ed] bg-white px-4 py-3 text-sm text-[#182033] outline-none"
-              />
-            </form>
+            <DataSearchForm
+              campaignId={dataView.performance.campaign.id}
+              initialValue={query}
+            />
             {dashboard.campaigns.map((item) => (
               <Link
                 key={item.campaign.id}
-                href={`/data?campaign=${item.campaign.id}${codeQuery ? `&code=${encodeURIComponent(codeQuery)}` : ""}`}
-                className={`rounded-[18px] px-4 py-3 text-sm font-semibold ${
+                href={`/data?campaign=${item.campaign.id}${query ? `&q=${encodeURIComponent(query)}` : ""}`}
+                className={`cursor-pointer rounded-[18px] px-4 py-3 text-sm font-semibold ${
                   item.campaign.id === dataView.performance.campaign.id
                     ? "bg-[#111827] !text-white"
                     : "border border-[#d7e0ed] bg-[#f8fafc] text-[#182033]"
@@ -225,9 +307,9 @@ export default async function DataPage({ searchParams }: DataPageProps) {
               </Link>
             ))}
           </div>
-          {codeQuery && !matchedLead ? (
+          {query && !filteredLeads.length ? (
             <p className="mt-4 text-sm font-semibold text-[#c2410c]">
-              Aucun gain trouvé pour le code « {codeQuery} ».
+              Aucun résultat pour « {query} ».
             </p>
           ) : null}
         </div>
@@ -267,7 +349,7 @@ export default async function DataPage({ searchParams }: DataPageProps) {
         />
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
+      <section className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
         <div className="space-y-6">
           <div className="rounded-[32px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
             <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Performance</p>
@@ -275,7 +357,11 @@ export default async function DataPage({ searchParams }: DataPageProps) {
 
             <div className="mt-6 space-y-4">
               {[
-                { label: "Scans", value: dataView.performance.kpis.scans, width: performanceWidth(dataView.performance.kpis.scans) },
+                {
+                  label: "Scans",
+                  value: dataView.performance.kpis.scans,
+                  width: performanceWidth(dataView.performance.kpis.scans),
+                },
                 {
                   label: "Leads créés",
                   value: dataView.performance.kpis.leads,
@@ -312,27 +398,41 @@ export default async function DataPage({ searchParams }: DataPageProps) {
           </div>
 
           <div className="rounded-[32px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
-            <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Dotation</p>
-            <h2 className="mt-2 text-2xl font-semibold text-[#111827]">Stock et probabilité</h2>
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Dotation</p>
+                <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
+                  Stock et probabilités
+                </h2>
+              </div>
+            </div>
 
             <div className="mt-6 space-y-3">
               {dataView.performance.prizes.map((prize) => (
                 <div
                   key={prize.id}
-                  className="flex items-center justify-between rounded-[24px] border border-[#e4eaf2] bg-[#f8fafc] px-4 py-4"
+                  className="rounded-[24px] border border-[#e4eaf2] bg-[#f8fafc] px-4 py-4"
                 >
-                  <div>
-                    <p className="font-semibold text-[#111827]">{prize.label}</p>
-                    <p className="mt-1 text-sm text-[#7b8496]">
-                      Probabilité {prize.probability}% · coût {formatCurrency(prize.estimatedUnitCost)}
-                    </p>
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="font-semibold text-[#111827]">{prize.label}</p>
+                      <p className="mt-1 text-sm text-[#7b8496]">
+                        Probabilité {prize.probability}% · coût{" "}
+                        {formatCurrency(prize.estimatedUnitCost)}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm text-[#7b8496]">Restant</p>
+                      <p className="mt-1 text-xl font-semibold text-[#111827]">
+                        {prize.remainingQuantity ?? "Illimité"}
+                      </p>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm text-[#7b8496]">Restant</p>
-                    <p className="mt-1 text-xl font-semibold text-[#111827]">
-                      {prize.remainingQuantity ?? "Illimité"}
-                    </p>
-                  </div>
+                  <PrizeStockActions
+                    prizeId={prize.id}
+                    remainingQuantity={prize.remainingQuantity}
+                    totalQuantity={prize.totalQuantity}
+                  />
                 </div>
               ))}
             </div>
@@ -340,116 +440,155 @@ export default async function DataPage({ searchParams }: DataPageProps) {
         </div>
 
         <div className="space-y-6">
-          <div className="rounded-[32px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">
-                  Saisies et export
-                </p>
-                <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
-                  Contacts, statuts et consentements
-                </h2>
-              </div>
-              <Link
-                href={`/api/merchant/leads?format=csv&campaign=${dataView.performance.campaign.id}`}
-                className="rounded-[18px] border border-[#d7e0ed] px-4 py-3 text-sm font-semibold text-[#182033]"
-              >
-                Export CSV
-              </Link>
-            </div>
+          {actionVolumes.length > 1 ? (
+            <div className="rounded-[32px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+              <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">
+                Actions marketing
+              </p>
+              <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
+                Volume par action
+              </h2>
 
-            <div className="mt-5 overflow-x-auto">
-              <table className="min-w-full text-left text-sm">
-                <thead className="text-xs uppercase tracking-[0.2em] text-[#7b8496]">
-                  <tr>
-                    <th className="border-b border-[#e4eaf2] px-3 py-3">Lead</th>
-                    <th className="border-b border-[#e4eaf2] px-3 py-3">Statut</th>
-                    <th className="border-b border-[#e4eaf2] px-3 py-3">Lot</th>
-                    <th className="border-b border-[#e4eaf2] px-3 py-3">Email gain</th>
-                    <th className="border-b border-[#e4eaf2] px-3 py-3">Retrait</th>
-                    <th className="border-b border-[#e4eaf2] px-3 py-3">Consentement</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredLeads.map((lead) => (
-                    <tr key={lead.id}>
-                      <td className="border-b border-[#eef2f7] px-3 py-4">
-                        <div className="font-semibold text-[#111827]">{lead.firstName}</div>
-                        <div className="text-[#7b8496]">{lead.email}</div>
-                      </td>
-                      <td className="border-b border-[#eef2f7] px-3 py-4 text-[#556173]">
-                        {leadStatusLabel(lead.status)}
-                      </td>
-                      <td className="border-b border-[#eef2f7] px-3 py-4 text-[#556173]">
-                        {lead.prizeLabel}
-                        {lead.redemptionCode ? (
-                          <div className="mt-1 font-mono text-xs text-[#7b8496]">
-                            {lead.redemptionCode}
-                          </div>
-                        ) : null}
-                      </td>
-                      <td className="border-b border-[#eef2f7] px-3 py-4 text-[#556173]">
-                        <div className="font-semibold text-[#111827]">
-                          {rewardEmailStatusLabel(lead.emailDeliveryStatus)}
-                        </div>
-                        {lead.emailDeliveredAt ? (
-                          <div className="mt-1 text-xs text-[#7b8496]">
-                            Distribué le {formatDateTime(lead.emailDeliveredAt)}
-                          </div>
-                        ) : lead.emailSentAt ? (
-                          <div className="mt-1 text-xs text-[#7b8496]">
-                            Envoyé le {formatDateTime(lead.emailSentAt)}
-                          </div>
-                        ) : null}
-                        {lead.emailErrorMessage ? (
-                          <div className="mt-1 text-xs font-semibold text-[#c2410c]">
-                            {lead.emailErrorMessage}
-                          </div>
-                        ) : null}
-                      </td>
-                      <td className="border-b border-[#eef2f7] px-3 py-4 text-[#556173]">
-                        <LeadPrizeActions
-                          leadId={lead.id}
-                          status={lead.status}
-                          hasPrize={Boolean(lead.prizeId)}
-                          emailDeliveryStatus={lead.emailDeliveryStatus}
-                          emailSentAt={lead.emailSentAt}
-                        />
-                      </td>
-                      <td className="border-b border-[#eef2f7] px-3 py-4 text-[#556173]">
-                        {formatDateTime(lead.consentTimestamp)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <div className="mt-6 space-y-4">
+                {actionVolumes.map((item) => (
+                  <div key={item.id}>
+                    <div className="mb-2 flex items-center justify-between gap-3 text-sm">
+                      <div className="min-w-0">
+                        <p className="font-semibold text-[#111827]">{item.label}</p>
+                        <p className="truncate text-[#7b8496]">{item.kind}</p>
+                      </div>
+                      <span className="font-semibold text-[#111827]">{item.value}</span>
+                    </div>
+                    <div className="h-3 rounded-full bg-[#eef2f7]">
+                      <div
+                        className="h-3 rounded-full"
+                        style={{
+                          width: `${item.value > 0 ? Math.max((item.value / actionVolumeMax) * 100, 10) : 0}%`,
+                          backgroundColor: dataView.performance.campaign.accent.signal,
+                        }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          ) : null}
 
           <div className="rounded-[32px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
             <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Chronologie</p>
             <h2 className="mt-2 text-2xl font-semibold text-[#111827]">Derniers événements</h2>
 
-            <div className="mt-6 space-y-3">
-              {dataView.events.slice(0, 6).map((event) => (
-                <div
-                  key={event.id}
-                  className="flex items-start gap-3 rounded-[24px] border border-[#e4eaf2] bg-[#f8fafc] px-4 py-4"
-                >
-                  <span
-                    className="mt-1 h-3 w-3 rounded-full"
-                    style={{ backgroundColor: dataView.performance.campaign.accent.signal }}
-                  />
-                  <div>
-                    <p className="font-semibold capitalize text-[#111827]">
-                      {event.eventType.replaceAll("_", " ")}
+            <div className="mt-5 space-y-2">
+              {dataView.events.slice(0, 8).map((event) => {
+                const lead = event.leadId ? leadById.get(event.leadId) : undefined;
+
+                return (
+                  <div
+                    key={event.id}
+                    className="flex items-center gap-3 rounded-[18px] border border-[#e4eaf2] bg-[#f8fafc] px-4 py-3"
+                  >
+                    <span
+                      className="h-2.5 w-2.5 shrink-0 rounded-full"
+                      style={{ backgroundColor: dataView.performance.campaign.accent.signal }}
+                    />
+                    <p className="min-w-0 flex-1 truncate text-sm text-[#556173]">
+                      <span className="font-semibold text-[#111827]">{eventLabel(event.eventType)}</span>
+                      {lead ? ` · ${lead.firstName}` : ""}
                     </p>
-                    <p className="mt-1 text-sm text-[#7b8496]">{formatDateTime(event.createdAt)}</p>
+                    <span className="shrink-0 text-xs text-[#7b8496]">
+                      {formatDateTime(event.createdAt)}
+                    </span>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="rounded-[32px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">
+              Saisies et export
+            </p>
+            <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
+              Contacts, statuts et consentements
+            </h2>
+          </div>
+          <Link
+            href={`/api/merchant/leads?format=csv&campaign=${dataView.performance.campaign.id}`}
+            className="inline-flex cursor-pointer rounded-[18px] border border-[#d7e0ed] px-4 py-3 text-sm font-semibold text-[#182033]"
+          >
+            Export CSV
+          </Link>
+        </div>
+
+        <div className="mt-5 overflow-x-auto">
+          <table className="min-w-full text-left text-sm">
+            <thead className="text-xs uppercase tracking-[0.2em] text-[#7b8496]">
+              <tr>
+                <th className="border-b border-[#e4eaf2] px-3 py-3">Lead</th>
+                <th className="border-b border-[#e4eaf2] px-3 py-3">Statut</th>
+                <th className="border-b border-[#e4eaf2] px-3 py-3">Lot</th>
+                <th className="border-b border-[#e4eaf2] px-3 py-3">Email gain</th>
+                <th className="border-b border-[#e4eaf2] px-3 py-3">Retrait</th>
+                <th className="border-b border-[#e4eaf2] px-3 py-3">Consentement</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredLeads.map((lead) => (
+                <tr key={lead.id}>
+                  <td className="border-b border-[#eef2f7] px-3 py-4">
+                    <div className="font-semibold text-[#111827]">{lead.firstName}</div>
+                    <div className="text-[#7b8496]">{lead.email}</div>
+                  </td>
+                  <td className="border-b border-[#eef2f7] px-3 py-4 text-[#556173]">
+                    {leadStatusLabel(lead.status)}
+                  </td>
+                  <td className="border-b border-[#eef2f7] px-3 py-4 text-[#556173]">
+                    {lead.prizeLabel}
+                    {lead.redemptionCode ? (
+                      <div className="mt-1 font-mono text-xs text-[#7b8496]">
+                        {lead.redemptionCode}
+                      </div>
+                    ) : null}
+                  </td>
+                  <td className="border-b border-[#eef2f7] px-3 py-4 text-[#556173]">
+                    <div className="font-semibold text-[#111827]">
+                      {rewardEmailStatusLabel(lead.emailDeliveryStatus)}
+                    </div>
+                    {lead.emailDeliveredAt ? (
+                      <div className="mt-1 text-xs text-[#7b8496]">
+                        Distribué le {formatDateTime(lead.emailDeliveredAt)}
+                      </div>
+                    ) : lead.emailSentAt ? (
+                      <div className="mt-1 text-xs text-[#7b8496]">
+                        Envoyé le {formatDateTime(lead.emailSentAt)}
+                      </div>
+                    ) : null}
+                    {lead.emailErrorMessage ? (
+                      <div className="mt-1 text-xs font-semibold text-[#c2410c]">
+                        {lead.emailErrorMessage}
+                      </div>
+                    ) : null}
+                  </td>
+                  <td className="border-b border-[#eef2f7] px-3 py-4 text-[#556173]">
+                    <LeadPrizeActions
+                      leadId={lead.id}
+                      status={lead.status}
+                      hasPrize={Boolean(lead.prizeId)}
+                      emailDeliveryStatus={lead.emailDeliveryStatus}
+                      emailSentAt={lead.emailSentAt}
+                    />
+                  </td>
+                  <td className="border-b border-[#eef2f7] px-3 py-4 text-[#556173]">
+                    {formatDateTime(lead.consentTimestamp)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </section>
     </div>

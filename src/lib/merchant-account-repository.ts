@@ -15,9 +15,12 @@ type MerchantRow = {
   logo_text: string;
   logo_url: string | null;
   industry: string | null;
+  restaurant_type: string | null;
   city: string | null;
+  address: string | null;
   contact_name: string | null;
   phone: string | null;
+  restaurant_email: string | null;
   website_url: string | null;
   onboarding_completed: boolean | null;
   preferred_goals: string[] | null;
@@ -68,9 +71,12 @@ const DEMO_MERCHANT_PROFILE = {
   companyName: "Maison Sora",
   logoText: "MS",
   industry: "Mode et maison",
+  restaurantType: "Brasserie",
   city: "Paris Marais",
+  address: "12 rue du Marais, 75004 Paris",
   contactName: "Pierre-Henri Brunelle",
   phone: "01 40 00 00 00",
+  restaurantEmail: "contact@maisonsora.fr",
   websiteUrl: "https://maisonsora.fr",
   onboardingCompleted: true,
   preferredGoals: ["Avis Google", "Collecte CRM"],
@@ -212,9 +218,12 @@ function toMerchant(row: MerchantRow): Merchant {
     logoText: row.logo_text,
     logoUrl: row.logo_url ?? undefined,
     industry: row.industry ?? undefined,
+    restaurantType: row.restaurant_type ?? undefined,
     city: row.city ?? undefined,
+    address: row.address ?? undefined,
     contactName: row.contact_name ?? undefined,
     phone: row.phone ?? undefined,
+    restaurantEmail: row.restaurant_email ?? undefined,
     websiteUrl: row.website_url ?? undefined,
     onboardingCompleted: row.onboarding_completed ?? false,
     preferredGoals: row.preferred_goals ?? [],
@@ -292,9 +301,12 @@ export async function ensureDemoMerchantInSupabase() {
     logo_text: DEMO_MERCHANT_PROFILE.logoText,
     logo_url: null,
     industry: DEMO_MERCHANT_PROFILE.industry,
+    restaurant_type: DEMO_MERCHANT_PROFILE.restaurantType,
     city: DEMO_MERCHANT_PROFILE.city,
+    address: DEMO_MERCHANT_PROFILE.address,
     contact_name: DEMO_MERCHANT_PROFILE.contactName,
     phone: DEMO_MERCHANT_PROFILE.phone,
+    restaurant_email: DEMO_MERCHANT_PROFILE.restaurantEmail,
     website_url: DEMO_MERCHANT_PROFILE.websiteUrl,
     onboarding_completed: DEMO_MERCHANT_PROFILE.onboardingCompleted,
     preferred_goals: [...DEMO_MERCHANT_PROFILE.preferredGoals],
@@ -389,7 +401,7 @@ export async function createMerchantAccountInSupabase(input: MerchantSignUpInput
   const lastName = input.lastName.trim();
   const companyName = input.companyName.trim();
   const city = input.city.trim();
-  const phone = input.phone.trim();
+  const phone = (input.phone ?? "").trim();
   const createdAt = new Date().toISOString();
 
   const merchantInsert = await supabase.from("merchants").insert({
@@ -398,9 +410,12 @@ export async function createMerchantAccountInSupabase(input: MerchantSignUpInput
     logo_text: companyName.slice(0, 2).toUpperCase(),
     logo_url: null,
     industry: "",
+    restaurant_type: "Brasserie",
     city,
+    address: "",
     contact_name: `${firstName} ${lastName}`.trim(),
     phone,
+    restaurant_email: "",
     website_url: "",
     onboarding_completed: false,
     preferred_goals: [],
@@ -464,9 +479,12 @@ export async function createMerchantAccountInSupabase(input: MerchantSignUpInput
       logoText: companyName.slice(0, 2).toUpperCase(),
       logoUrl: undefined,
       industry: undefined,
+      restaurantType: "Brasserie",
       city,
+      address: undefined,
       contactName: `${firstName} ${lastName}`.trim(),
       phone,
+      restaurantEmail: undefined,
       websiteUrl: undefined,
       onboardingCompleted: false,
       preferredGoals: [],
@@ -600,9 +618,12 @@ export async function authenticateOrProvisionMerchantWithGoogle(
     logo_text: companyName.slice(0, 2).toUpperCase(),
     logo_url: null,
     industry: "",
+    restaurant_type: "Brasserie",
     city: "",
+    address: "",
     contact_name: contactName,
     phone: "",
+    restaurant_email: "",
     website_url: "",
     onboarding_completed: false,
     preferred_goals: [],
@@ -659,9 +680,12 @@ export async function authenticateOrProvisionMerchantWithGoogle(
       logoText: companyName.slice(0, 2).toUpperCase(),
       logoUrl: undefined,
       industry: undefined,
+      restaurantType: "Brasserie",
       city: undefined,
+      address: undefined,
       contactName: contactName || undefined,
       phone: undefined,
+      restaurantEmail: undefined,
       websiteUrl: undefined,
       onboardingCompleted: false,
       preferredGoals: [],
@@ -699,9 +723,13 @@ export async function updateMerchantOnboardingInSupabase(
       company_name: companyName,
       logo_text: companyName.slice(0, 2).toUpperCase(),
       industry: input.industry.trim(),
+      restaurant_type: input.restaurantType.trim(),
       city: input.city.trim(),
+      address: input.address.trim(),
       contact_name: input.contactName.trim(),
       phone: input.phone.trim(),
+      restaurant_email: input.restaurantEmail.trim().toLowerCase(),
+      website_url: input.websiteUrl.trim(),
       default_prize_cost: input.defaultPrizeCost,
       preferred_goals: input.preferredGoals,
       diffusion_support: input.diffusionSupport,
@@ -765,9 +793,12 @@ export async function updateMerchantAccountInSupabase(
       company_name: companyName,
       logo_text: companyName.slice(0, 2).toUpperCase(),
       industry: input.industry.trim(),
+      restaurant_type: input.restaurantType.trim(),
       city: input.city.trim(),
+      address: input.address.trim(),
       contact_name: input.contactName.trim(),
       phone: input.phone.trim(),
+      restaurant_email: input.restaurantEmail.trim().toLowerCase(),
       website_url: input.websiteUrl.trim(),
       google_review_url: input.googleReviewUrl.trim(),
       instagram_url: input.instagramUrl.trim(),

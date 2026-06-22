@@ -6,6 +6,40 @@ import { useState } from "react";
 
 import { GoogleAuthButton } from "@/components/auth/google-auth-button";
 
+function FieldLabel({
+  children,
+  required = true,
+}: {
+  children: string;
+  required?: boolean;
+}) {
+  return (
+    <span className="mb-2 block text-[#616b7c]">
+      {children}
+      {required ? <span className="ml-1 text-[#d92d20]">*</span> : null}
+    </span>
+  );
+}
+
+const signUpFields: Array<{
+  key: "companyName" | "city" | "firstName" | "lastName" | "email" | "phone";
+  label: string;
+  placeholder: string;
+  required: boolean;
+}> = [
+  { key: "companyName", label: "Nom de l’enseigne", placeholder: "Maison Sora", required: true },
+  { key: "city", label: "Ville / boutique", placeholder: "Paris Marais", required: true },
+  { key: "firstName", label: "Prénom", placeholder: "Camille", required: true },
+  { key: "lastName", label: "Nom", placeholder: "Martin", required: true },
+  {
+    key: "email",
+    label: "E-mail professionnel",
+    placeholder: "camille@maisonsora.fr",
+    required: true,
+  },
+  { key: "phone", label: "Téléphone", placeholder: "06 00 00 00 00", required: false },
+];
+
 export function SignUpForm() {
   const router = useRouter();
   const [form, setForm] = useState({
@@ -57,15 +91,18 @@ export function SignUpForm() {
   }
 
   return (
-    <form className="mx-auto flex max-w-[620px] flex-col justify-center py-6" onSubmit={handleSubmit}>
+    <form
+      className="mx-auto flex max-w-[620px] flex-col justify-center py-6"
+      onSubmit={handleSubmit}
+    >
       <div>
         <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Créer un compte</p>
         <h1 className="mt-3 font-display text-5xl leading-[0.95] text-[#121826]">
           Ouvrez votre espace marchand
         </h1>
         <p className="mt-4 text-sm leading-8 text-[#586174]">
-          Commencez par votre boutique, puis finalisez votre onboarding pour créer votre première
-          campagne.
+          Commencez par votre restaurant ou votre boutique, puis finalisez votre onboarding pour
+          créer votre première campagne.
         </p>
       </div>
 
@@ -80,28 +117,21 @@ export function SignUpForm() {
       </div>
 
       <div className="mt-8 grid gap-4 md:grid-cols-2">
-        {[
-          ["companyName", "Nom de l’enseigne", "Maison Sora"],
-          ["city", "Ville / boutique", "Paris Marais"],
-          ["firstName", "Prénom", "Camille"],
-          ["lastName", "Nom", "Martin"],
-          ["email", "E-mail professionnel", "camille@maisonsora.fr"],
-          ["phone", "Téléphone", "06 00 00 00 00"],
-        ].map(([key, label, placeholder]) => (
-          <label key={key} className="text-sm">
-            <span className="mb-2 block text-[#616b7c]">{label}</span>
+        {signUpFields.map((field) => (
+          <label key={field.key} className="text-sm">
+            <FieldLabel required={field.required}>{field.label}</FieldLabel>
             <input
-              type={key === "email" ? "email" : "text"}
-              value={form[key as keyof typeof form]}
-              onChange={(event) => updateField(key as keyof typeof form, event.target.value)}
-              placeholder={placeholder}
+              type={field.key === "email" ? "email" : "text"}
+              value={form[field.key]}
+              onChange={(event) => updateField(field.key, event.target.value)}
+              placeholder={field.placeholder}
               className="w-full rounded-[22px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-4 outline-none"
-              required
+              required={field.required}
             />
           </label>
         ))}
         <label className="text-sm">
-          <span className="mb-2 block text-[#616b7c]">Mot de passe</span>
+          <FieldLabel>Mot de passe</FieldLabel>
           <input
             type="password"
             value={form.password}
@@ -112,7 +142,7 @@ export function SignUpForm() {
           />
         </label>
         <label className="text-sm">
-          <span className="mb-2 block text-[#616b7c]">Confirmer le mot de passe</span>
+          <FieldLabel>Confirmer le mot de passe</FieldLabel>
           <input
             type="password"
             value={form.confirmPassword}
@@ -126,7 +156,12 @@ export function SignUpForm() {
 
       <div className="mt-6 rounded-[24px] border border-[#dbe4f0] bg-[#fbfcfe] px-4 py-4 text-sm leading-7 text-[#475063]">
         <label className="flex items-start gap-3">
-          <input type="checkbox" className="mt-1" checked={accept} onChange={(event) => setAccept(event.target.checked)} />
+          <input
+            type="checkbox"
+            className="mt-1"
+            checked={accept}
+            onChange={(event) => setAccept(event.target.checked)}
+          />
           <span>
             J’accepte les conditions d’utilisation et je souhaite recevoir les conseils de mise en
             route de la plateforme.

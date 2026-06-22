@@ -131,7 +131,7 @@ export function LeadPrizeActions({
           type="button"
           onClick={() => submit("redeem")}
           disabled={isPending || status === "redeemed"}
-          className="rounded-[14px] bg-[#111827] px-3 py-2 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-45"
+          className="cursor-pointer rounded-[14px] bg-[#111827] px-3 py-2 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-45"
         >
           Marquer récupéré
         </button>
@@ -139,7 +139,7 @@ export function LeadPrizeActions({
           type="button"
           onClick={() => submit("reset")}
           disabled={isPending || status === "claimed"}
-          className="rounded-[14px] border border-[#d7e0ed] bg-white px-3 py-2 text-xs font-semibold text-[#182033] disabled:cursor-not-allowed disabled:opacity-45"
+          className="cursor-pointer rounded-[14px] border border-[#d7e0ed] bg-white px-3 py-2 text-xs font-semibold text-[#182033] disabled:cursor-not-allowed disabled:opacity-45"
         >
           Réinitialiser
         </button>
@@ -147,7 +147,7 @@ export function LeadPrizeActions({
           type="button"
           onClick={resendEmail}
           disabled={resendDisabled}
-          className="rounded-[14px] bg-[#2f6df6] px-3 py-2 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-45"
+          className="cursor-pointer rounded-[14px] bg-[#2f6df6] px-3 py-2 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-45"
         >
           {isResending ? "Renvoi..." : cooldownActive ? "Patientez 2 min" : "Renvoyer e-mail"}
         </button>
@@ -160,7 +160,7 @@ export function LeadPrizeActions({
             }
             setIsHistoryOpen(false);
           }}
-          className="rounded-[14px] border border-[#d7e0ed] bg-white px-3 py-2 text-xs font-semibold text-[#182033]"
+          className="cursor-pointer rounded-[14px] border border-[#d7e0ed] bg-white px-3 py-2 text-xs font-semibold text-[#182033]"
         >
           {isHistoryOpen ? "Masquer" : "Historique e-mail"}
         </button>
@@ -188,7 +188,7 @@ export function LeadPrizeActions({
             <button
               type="button"
               onClick={() => void loadHistory(false)}
-              className="rounded-[12px] border border-[#d7e0ed] bg-white px-3 py-2 text-[11px] font-semibold text-[#182033]"
+              className="cursor-pointer rounded-[12px] border border-[#d7e0ed] bg-white px-3 py-2 text-[11px] font-semibold text-[#182033]"
             >
               Actualiser
             </button>

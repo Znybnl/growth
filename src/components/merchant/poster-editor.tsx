@@ -6,22 +6,22 @@ import { useRouter } from "next/navigation";
 import { ChangeEvent, useMemo, useState } from "react";
 
 import {
-  buildPosterWheelSegments,
+  buildPosterSvg,
+  createPosterPreviewQrDataUrl,
+} from "@/lib/poster-render";
+import {
   createPosterSettingsDefaults,
   normalizePosterSettings,
-  splitPosterSegmentLines,
 } from "@/lib/poster-utils";
 import {
   Campaign,
   CampaignPosterSettings,
-  Merchant,
   Prize,
   TextFont,
 } from "@/lib/types";
 
 type PosterEditorProps = {
   campaign: Campaign;
-  merchant: Merchant;
   prizes: Prize[];
 };
 
@@ -44,40 +44,10 @@ function uploadAsDataUrl(
   reader.readAsDataURL(file);
 }
 
-function fontClass(font: TextFont) {
-  if (font === "serif") return "font-serif";
-  if (font === "sans") return "font-sans";
-  return "font-display";
-}
-
 function fontLabel(font: TextFont) {
   if (font === "serif") return "Serif";
   if (font === "sans") return "Sans";
   return "Display";
-}
-
-function splitLines(text: string, maxChars: number) {
-  const words = text.trim().split(/\s+/).filter(Boolean);
-  const lines: string[] = [];
-  let current = "";
-
-  for (const word of words) {
-    const next = current ? `${current} ${word}` : word;
-
-    if (next.length <= maxChars || !current) {
-      current = next;
-      continue;
-    }
-
-    lines.push(current);
-    current = word;
-  }
-
-  if (current) {
-    lines.push(current);
-  }
-
-  return lines;
 }
 
 export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
@@ -102,28 +72,20 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
-  const wheelStyle = useMemo(
-    () => ({
-      background: `conic-gradient(${poster.wheel.winColor} 0 60deg, ${poster.wheel.loseColor} 60deg 120deg, ${poster.wheel.alternateWinColor} 120deg 180deg, ${poster.wheel.alternateLoseColor} 180deg 240deg, ${poster.wheel.winColor} 240deg 300deg, ${poster.wheel.loseColor} 300deg 360deg)`,
-      borderColor: poster.wheel.rimColor,
-    }),
-    [poster.wheel],
+  const previewPosterSvg = useMemo(
+    () =>
+      buildPosterSvg({
+        campaign,
+        poster,
+        prizes,
+        qrDataUrl: createPosterPreviewQrDataUrl(),
+      }),
+    [campaign, poster, prizes],
   );
-  const wheelSegments = useMemo(
-    () => buildPosterWheelSegments(prizes, poster.wheel),
-    [poster.wheel, prizes],
+  const previewPosterUrl = useMemo(
+    () => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(previewPosterSvg)}`,
+    [previewPosterSvg],
   );
-  const headlineLines = useMemo(
-    () => splitLines(poster.headline || campaign.subtitle || campaign.title, 24).slice(0, 3),
-    [campaign.subtitle, campaign.title, poster.headline],
-  );
-  const logoWidth = Math.max(90, poster.logoSizePercent * 1.4);
-  const headlineMarginTop = poster.logoUrl ? Math.max(10, poster.logoBottomMarginPx * 0.55) : 0;
-  const previewHeadlineSize = Math.max(22, poster.headlineFontSizePx * 0.6);
-  const scratchTop = headlineLines.length >= 3 ? "50%" : "48%";
-  const wheelTop = headlineLines.length >= 3 ? "45%" : "43%";
-  const scanTop = campaign.gameType === "wheel" ? "60%" : "65%";
-  const qrTop = campaign.gameType === "wheel" ? "57%" : "61%";
 
   function updatePoster(patch: Partial<CampaignPosterSettings>) {
     setPoster((current) => ({ ...current, ...patch }));
@@ -402,130 +364,14 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
           </div>
 
           <div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-[8px] bg-[#0b1020] p-4">
-            <div
-              className="relative aspect-[794/1123] max-h-full w-full max-w-[440px] overflow-hidden rounded-[18px] border-[10px] border-[#20242f] bg-cover bg-center shadow-[0_26px_80px_rgba(0,0,0,0.42)]"
-              style={{
-                backgroundColor: campaign.presentation.background.color,
-                backgroundImage: poster.backgroundImageUrl
-                  ? `linear-gradient(rgba(9,12,20,0.06), rgba(9,12,20,0.26)), url("${poster.backgroundImageUrl}")`
-                  : undefined,
-              }}
-            >
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_14%,rgba(255,255,255,0.18),transparent_28%),linear-gradient(180deg,rgba(0,0,0,0.02),rgba(0,0,0,0.16))]" />
-              <div className="absolute left-[10%] right-[10%] top-[5.4%] z-10 text-center">
-                {poster.logoUrl ? (
-                  <Image
-                    src={poster.logoUrl}
-                    alt="Logo affiche"
-                    width={260}
-                    height={120}
-                    unoptimized
-                    className="mx-auto max-h-[88px] object-contain"
-                    style={{ width: `${logoWidth}px` }}
-                  />
-                ) : null}
-                <div
-                  className={`mx-auto w-full max-w-full px-4 text-balance font-black leading-[0.98] ${fontClass(poster.headlineFontFamily)}`}
-                  style={{
-                    marginTop: `${headlineMarginTop}px`,
-                    color: poster.headlineTextColor,
-                    fontSize: `${previewHeadlineSize}px`,
-                    textShadow: "0 3px 0 rgba(0,0,0,0.24)",
-                  }}
-                >
-                  {headlineLines.map((line) => (
-                    <div key={line}>{line}</div>
-                  ))}
-                </div>
-              </div>
-
-              {campaign.gameType === "wheel" ? (
-                <div
-                  className="absolute left-1/2 z-10 h-[43%] w-[78%] -translate-x-1/2 -translate-y-1/2 rounded-full border-[16px] shadow-[0_18px_34px_rgba(0,0,0,0.26)]"
-                  style={{ ...wheelStyle, top: wheelTop }}
-                >
-                  <div className="absolute inset-[9%] rounded-full border-[8px] border-black/70" />
-                  {wheelSegments.map((segment, index) => (
-                    <div
-                      key={`${segment.label}-${index}`}
-                      className="absolute left-1/2 top-1/2"
-                      style={{
-                        transform: `translate(-50%, -50%) rotate(${index * 60 - 60}deg)`,
-                      }}
-                    >
-                      <div className="flex w-[160px] -translate-y-[128px] justify-center">
-                        <div
-                          className="max-w-[98px] -rotate-90 text-center text-[11px] font-black uppercase leading-[0.92]"
-                          style={{ color: segment.textColor }}
-                        >
-                          {splitPosterSegmentLines(segment.label).map((line) => (
-                            <div key={line}>{line}</div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                  <div className="absolute left-1/2 top-1/2 h-[15%] w-[15%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#111827] ring-8 ring-white/18" />
-                  <div className="absolute left-1/2 top-[1%] -translate-x-1/2">
-                    <div className="h-0 w-0 border-l-[18px] border-r-[18px] border-t-0 border-b-[34px] border-l-transparent border-r-transparent border-b-white" />
-                  </div>
-                </div>
-              ) : (
-                <div
-                  className="absolute left-1/2 z-10 w-[72%] -translate-x-1/2 -translate-y-1/2 rotate-[-4deg] rounded-[22px] border-[6px] border-[#111827]/90 bg-white p-3 shadow-[0_18px_32px_rgba(0,0,0,0.24)]"
-                  style={{ top: scratchTop }}
-                >
-                  <div className="rounded-[18px] bg-[#f8fafc] p-4 text-center">
-                    <p className="text-xs font-black uppercase tracking-[0.22em] text-[#111827]">
-                      Ticket à gratter
-                    </p>
-                    <div className="mt-4 rounded-[16px] bg-[linear-gradient(135deg,#dde3ee,#ffffff,#b5bfd2)] px-4 py-8 text-[24px] font-black text-[#111827] shadow-inner">
-                      Grattez ici
-                    </div>
-                    <div className="mt-4 rounded-[12px] bg-[#111827] px-3 py-2 text-sm font-black uppercase tracking-[0.08em] text-white">
-                      {prizes[0]?.label ?? "Cadeau surprise"}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              <div
-                className="absolute left-[11%] z-20 -rotate-3 rounded-[10px] bg-black px-4 py-3 text-center text-[15px] font-black uppercase leading-tight text-white shadow-[0_10px_20px_rgba(0,0,0,0.18)]"
-                style={{ top: scanTop }}
-              >
-                Scannez
-                <br />
-                pour jouer
-              </div>
-              <div
-                className="absolute right-[12%] z-30 h-[28%] w-[42%] rotate-[-4deg] rounded-[14px] border-[6px] border-[#111827] bg-white p-3 shadow-[0_12px_26px_rgba(0,0,0,0.24)]"
-                style={{ top: qrTop }}
-              >
-                <div className="h-full w-full rounded-[6px] bg-[radial-gradient(#111827_1.5px,transparent_1.5px)] [background-size:8px_8px]" />
-              </div>
-
-              <div
-                className="absolute bottom-0 left-0 right-0 z-20 px-6 pb-6 pt-5"
-                style={{ backgroundColor: poster.footerBackgroundColor }}
-              >
-                <div className="grid grid-cols-3 gap-3 rounded-[18px] bg-white/94 px-3 py-4 text-center text-[#111827] shadow-[0_12px_24px_rgba(0,0,0,0.16)]">
-                  {[
-                    ["1", "Scannez", "le QR code"],
-                    [
-                      "2",
-                      campaign.gameType === "wheel" ? "Faites tourner" : "Grattez",
-                      campaign.gameType === "wheel" ? "la roue" : "le ticket",
-                    ],
-                    ["3", "Récupérez", "votre cadeau"],
-                  ].map(([step, title, body]) => (
-                    <div key={step} className="min-w-0">
-                      <div className="text-xl font-black">{step}</div>
-                      <div className="mt-1 text-[11px] font-black uppercase leading-tight">{title}</div>
-                      <div className="text-[10px] font-semibold leading-tight text-[#4b5563]">{body}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+            <div className="relative aspect-[794/1123] max-h-full w-full max-w-[440px] overflow-hidden rounded-[18px] border-[10px] border-[#20242f] shadow-[0_26px_80px_rgba(0,0,0,0.42)]">
+              <Image
+                src={previewPosterUrl}
+                alt="Prévisualisation affiche"
+                fill
+                unoptimized
+                className="object-contain"
+              />
             </div>
           </div>
         </div>
@@ -533,3 +379,4 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
     </div>
   );
 }
+
