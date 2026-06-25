@@ -10,6 +10,7 @@ type CampaignLocalSettings = {
   blockSpacingPx?: number;
   logoMode?: "none" | "image" | "text";
   logoText?: string;
+  prizeSettings?: Record<string, { usageConditions?: string }>;
   poster?: Partial<CampaignPosterSettings>;
   email?: Partial<CampaignEmailSettings>;
 };

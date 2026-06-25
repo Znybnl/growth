@@ -215,7 +215,7 @@ export function AccountSettingsForm({ merchant, user }: AccountSettingsFormProps
       </section>
 
       <section className="rounded-[32px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)] md:p-8">
-        <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Canaux et paramètres</p>
+        <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Canaux marketing</p>
         <div className="mt-6 grid gap-4 md:grid-cols-2">
           <label className="text-sm">
             <span className="mb-2 block text-[#616b7c]">URL avis Google</span>
@@ -267,6 +267,12 @@ export function AccountSettingsForm({ merchant, user }: AccountSettingsFormProps
               className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-4 outline-none"
             />
           </label>
+        </div>
+      </section>
+
+      <section className="rounded-[32px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)] md:p-8">
+        <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Paramètres</p>
+        <div className="mt-6 grid gap-4 md:grid-cols-2">
           <label className="text-sm md:max-w-[260px]">
             <span className="mb-2 block text-[#616b7c]">Coût par lot par défaut (€)</span>
             <input

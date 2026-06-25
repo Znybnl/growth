@@ -21,24 +21,31 @@ function clamp(value: number, min: number, max: number) {
 }
 
 function splitLines(text: string, maxChars: number) {
-  const words = text.trim().split(/\s+/).filter(Boolean);
   const lines: string[] = [];
-  let current = "";
+  const paragraphs = text
+    .split(/\r?\n/)
+    .map((part) => part.trim())
+    .filter(Boolean);
 
-  for (const word of words) {
-    const next = current ? `${current} ${word}` : word;
+  for (const paragraph of paragraphs.length ? paragraphs : [text.trim()]) {
+    const words = paragraph.split(/\s+/).filter(Boolean);
+    let current = "";
 
-    if (next.length <= maxChars || !current) {
-      current = next;
-      continue;
+    for (const word of words) {
+      const next = current ? `${current} ${word}` : word;
+
+      if (next.length <= maxChars || !current) {
+        current = next;
+        continue;
+      }
+
+      lines.push(current);
+      current = word;
     }
 
-    lines.push(current);
-    current = word;
-  }
-
-  if (current) {
-    lines.push(current);
+    if (current) {
+      lines.push(current);
+    }
   }
 
   return lines;
@@ -120,7 +127,7 @@ export function buildPosterSvg(args: {
   const headlineLines = splitLines(
     poster.headline || campaign.subtitle || campaign.title,
     24,
-  ).slice(0, 3);
+  ).slice(0, 4);
   const headingSize = clamp(poster.headlineFontSizePx * 1.16, 34, 76);
   const logoMode = poster.logoMode ?? "none";
   const logoUrl = logoMode === "image" ? poster.logoUrl || campaign.logoUrl : undefined;
@@ -151,19 +158,18 @@ export function buildPosterSvg(args: {
     headlineLines.length * headingSize +
     Math.max(0, headlineLines.length - 1) * 7;
   const wheelCenterX = 397;
-  const wheelCenterY = clamp(headlineEndY + 286, 594, 656);
+  const wheelCenterY = clamp(headlineEndY + 320, 626, 692);
   const wheelRadius = 232;
   const scratchX = 118;
-  const scratchY = clamp(headlineEndY + 118, 392, 482);
-  const qrX = gameIsWheel ? 450 : 430;
+  const scratchY = clamp(headlineEndY + 138, 420, 510);
+  const qrX = gameIsWheel ? 438 : 418;
   const qrY = gameIsWheel
-    ? clamp(wheelCenterY + 76, 640, 710)
-    : clamp(scratchY + 228, 632, 700);
-  const qrSize = 214;
+    ? clamp(wheelCenterY + 40, 626, 700)
+    : clamp(scratchY + 212, 620, 692);
+  const qrSize = 248;
   const scanLabelY = gameIsWheel
-    ? clamp(wheelCenterY + 116, 674, 744)
-    : clamp(scratchY + 292, 730, 782);
-  const footerY = 904;
+    ? clamp(wheelCenterY + 72, 650, 726)
+    : clamp(scratchY + 252, 694, 754);
   const actionLabel = gameIsWheel ? "Faites tourner" : "Grattez";
   const actionBody = gameIsWheel ? "la roue" : "le ticket";
 
@@ -208,19 +214,30 @@ export function buildPosterSvg(args: {
       const x2 = wheelCenterX + Math.cos(nextAngle) * wheelRadius;
       const y2 = wheelCenterY + Math.sin(nextAngle) * wheelRadius;
       const lines = splitPosterSegmentLines(segment.label);
-      const fontSize = lines.length > 1 ? 22 : 26;
-      const firstDy = lines.length > 1 ? -10 : 0;
+      const textAngle = index * 60 - 60;
+      const textY = wheelCenterY - 132;
+      const fontSize = lines.length > 2 ? 20 : 22;
 
       return `
         <path d="M ${wheelCenterX} ${wheelCenterY} L ${x1.toFixed(1)} ${y1.toFixed(1)} A ${wheelRadius} ${wheelRadius} 0 0 1 ${x2.toFixed(1)} ${y2.toFixed(1)} Z" fill="${segment.color}"/>
-        <text x="${wheelCenterX}" y="${wheelCenterY - 144}" fill="${segment.textColor}" font-family="Arial, sans-serif" font-size="${fontSize}" font-weight="900" text-anchor="middle" transform="rotate(${index * 60 - 60} ${wheelCenterX} ${wheelCenterY})">
-          ${lines
-            .map(
-              (line, lineIndex) =>
-                `<tspan x="${wheelCenterX}" dy="${lineIndex === 0 ? firstDy : 24}">${escapeXml(line)}</tspan>`,
-            )
-            .join("")}
-        </text>
+        <g transform="rotate(${textAngle} ${wheelCenterX} ${wheelCenterY})">
+          <text
+            x="${wheelCenterX}"
+            y="${textY}"
+            fill="${segment.textColor}"
+            font-family="Arial, sans-serif"
+            font-size="${fontSize}"
+            font-weight="900"
+            text-anchor="middle"
+          >
+            ${lines
+              .map(
+                (line, lineIndex) =>
+                  `<tspan x="${wheelCenterX}" dy="${lineIndex === 0 ? 0 : 22}">${escapeXml(line)}</tspan>`,
+              )
+              .join("")}
+          </text>
+        </g>
       `;
     })
     .join("");
@@ -228,7 +245,7 @@ export function buildPosterSvg(args: {
   const gameMarkup = gameIsWheel
     ? `
       <g filter="url(#shadowStrong)">
-        <circle cx="${wheelCenterX}" cy="${wheelCenterY}" r="${wheelRadius + 26}" fill="${wheel.winColor}"/>
+        <circle cx="${wheelCenterX}" cy="${wheelCenterY}" r="${wheelRadius + 26}" fill="${wheel.rimColor}"/>
         <circle cx="${wheelCenterX}" cy="${wheelCenterY}" r="${wheelRadius}" fill="#111827"/>
         ${wheelMarkup}
         <circle cx="${wheelCenterX}" cy="${wheelCenterY}" r="46" fill="#111827"/>
@@ -281,7 +298,7 @@ export function buildPosterSvg(args: {
       ${headlineMarkup}
       ${gameMarkup}
 
-      <g filter="url(#shadowMild)" transform="translate(100 ${scanLabelY}) rotate(-5)">
+      <g filter="url(#shadowMild)" transform="translate(132 ${scanLabelY}) rotate(-4)">
         <rect width="210" height="78" rx="10" fill="#05070c"/>
         <text x="105" y="32" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="25" font-weight="900">SCANNEZ</text>
         <text x="105" y="63" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="25" font-weight="900">POUR JOUER</text>
@@ -293,7 +310,6 @@ export function buildPosterSvg(args: {
         <image href="${qrDataUrl}" x="16" y="16" width="${qrSize - 32}" height="${qrSize - 32}"/>
       </g>
 
-      <rect x="0" y="${footerY}" width="${A4_WIDTH}" height="${A4_HEIGHT - footerY}" fill="${poster.footerBackgroundColor}"/>
       <g transform="translate(54 936)">
         <rect width="686" height="154" rx="24" fill="rgba(255,255,255,0.94)"/>
         <g transform="translate(30 36)">

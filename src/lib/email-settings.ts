@@ -11,6 +11,7 @@ type RewardEmailVariables = {
   rewardAvailability: string;
   rewardExpiry: string;
   purchaseCondition: string;
+  usageConditions: string;
 };
 
 function replaceVariables(template: string, variables: RewardEmailVariables) {
@@ -35,6 +36,16 @@ function paragraphize(text: string) {
     .filter(Boolean);
 }
 
+function hasUsageConditionsPlaceholder(settings: CampaignEmailSettings) {
+  return [
+    settings.subject,
+    settings.preheader,
+    settings.headline,
+    settings.body,
+    settings.footerNote,
+  ].some((value) => value.includes("{{usageConditions}}"));
+}
+
 export function renderEmailTemplate(template: string, variables: RewardEmailVariables) {
   return replaceVariables(template, variables);
 }
@@ -44,7 +55,7 @@ export function createCampaignEmailDefaults(merchant: Merchant): CampaignEmailSe
     senderName: merchant.companyName,
     replyTo: "",
     subject: "{{merchantName}} · votre lot est prêt",
-    preheader: "Conservez ce QR code pour retirer votre cadeau en boutique.",
+    preheader: "Conservez ce QR code pour retirer votre cadeau au restaurant.",
     headline: "Votre lot est prêt, {{firstName}}",
     body: [
       "Vous avez gagné {{prizeLabel}} dans la campagne {{campaignTitle}}.",
@@ -52,6 +63,7 @@ export function createCampaignEmailDefaults(merchant: Merchant): CampaignEmailSe
       "{{rewardAvailability}}",
       "{{rewardExpiry}}",
       "{{purchaseCondition}}",
+      "{{usageConditions}}",
     ].join("\n\n"),
     buttonLabel: "Ouvrir mon QR code",
     footerNote:
@@ -81,12 +93,18 @@ export function renderRewardEmailText(
   settings: CampaignEmailSettings,
   variables: RewardEmailVariables,
 ) {
+  const shouldAppendUsageConditions =
+    Boolean(variables.usageConditions.trim()) && !hasUsageConditionsPlaceholder(settings);
+
   return [
     renderEmailTemplate(settings.headline, variables),
     "",
     renderEmailTemplate(settings.body, variables),
+    shouldAppendUsageConditions ? `Conditions d'utilisation : ${variables.usageConditions}` : "",
     "",
-    settings.buttonLabel ? `${renderEmailTemplate(settings.buttonLabel, variables)} : ${variables.redeemUrl}` : variables.redeemUrl,
+    settings.buttonLabel
+      ? `${renderEmailTemplate(settings.buttonLabel, variables)} : ${variables.redeemUrl}`
+      : variables.redeemUrl,
     "",
     renderEmailTemplate(settings.footerNote, variables),
     variables.qrUrl ? `QR code : ${variables.qrUrl}` : "",
@@ -109,6 +127,14 @@ export function renderRewardEmailHtml(
   );
   const buttonLabel = escapeHtml(renderEmailTemplate(settings.buttonLabel, variables));
   const accentColor = settings.accentColor;
+  const shouldAppendUsageConditions =
+    Boolean(variables.usageConditions.trim()) && !hasUsageConditionsPlaceholder(settings);
+  const usageConditionsBlock = shouldAppendUsageConditions
+    ? `<div style="margin:20px 0 0;padding:18px;border-radius:18px;background:#fff8e8;border:1px solid #f2ddb0;">
+          <p style="margin:0 0 8px;font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:#8a6a18;">Conditions d'utilisation</p>
+          <p style="margin:0;font-size:15px;line-height:1.7;color:#4b5563;">${escapeHtml(variables.usageConditions).replaceAll("\n", "<br />")}</p>
+        </div>`
+    : "";
 
   return `
     <div style="display:none;max-height:0;overflow:hidden;opacity:0;">${preheader}</div>
@@ -122,7 +148,8 @@ export function renderRewardEmailHtml(
               `<p style="margin:0 0 16px;font-size:16px;line-height:1.7;color:#374151;">${block}</p>`,
           )
           .join("")}
-        <div style="margin:0 0 18px;padding:18px;border-radius:18px;background:#f8fafc;border:1px solid #e4eaf2;">
+        ${usageConditionsBlock}
+        <div style="margin:20px 0 18px;padding:18px;border-radius:18px;background:#f8fafc;border:1px solid #e4eaf2;">
           <p style="margin:0 0 8px;font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:#7b8496;">Code de retrait</p>
           <p style="margin:0;font-size:28px;font-weight:700;letter-spacing:0.08em;">${escapeHtml(variables.redemptionCode)}</p>
         </div>

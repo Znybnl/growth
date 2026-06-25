@@ -25,6 +25,7 @@ export async function POST(request: Request, { params }: LeadResendEmailRoutePro
       leadFirstName: payload.lead.firstName,
       leadEmail: payload.lead.email,
       prizeLabel: payload.prize.label,
+      usageConditions: payload.prize.usageConditions,
       redemptionCode: payload.lead.redemptionCode ?? "",
       rewardAvailableAt: payload.lead.rewardAvailableAt,
       rewardExpiresAt: payload.lead.rewardExpiresAt,

@@ -48,36 +48,22 @@ function formatSegmentLabel(label: string) {
 
 export function splitPosterSegmentLines(label: string) {
   const words = formatSegmentLabel(label).split(/\s+/).filter(Boolean);
-  const lines: string[] = [];
-  let current = "";
-
-  for (const word of words) {
-    const next = current ? `${current} ${word}` : word;
-
-    if (next.length <= 8 || !current) {
-      current = next;
-      continue;
+  const verticalWords = words.slice(0, 3).map((word) => {
+    if (word.length <= 9) {
+      return word;
     }
 
-    lines.push(current);
-    current = word;
+    return `${word.slice(0, 8)}…`;
+  });
 
-    if (lines.length === 1 && current.length > 8) {
-      current = `${current.slice(0, 7)}...`;
-    }
+  if (words.length > 3 && verticalWords.length) {
+    const lastIndex = verticalWords.length - 1;
+    verticalWords[lastIndex] = verticalWords[lastIndex].endsWith("…")
+      ? verticalWords[lastIndex]
+      : `${verticalWords[lastIndex].slice(0, Math.max(0, verticalWords[lastIndex].length - 1))}…`;
   }
 
-  if (current) {
-    lines.push(current);
-  }
-
-  const truncated = lines.slice(0, 2);
-
-  if (lines.length > 2) {
-    truncated[1] = `${truncated[1].slice(0, Math.max(0, truncated[1].length - 1))}...`;
-  }
-
-  return truncated;
+  return verticalWords.length ? verticalWords : ["CADEAU"];
 }
 
 export function getPosterReadableTextColor(backgroundColor: string) {
@@ -127,7 +113,7 @@ export function createPosterSettingsDefaults(input: {
     wheel: {
       ...input.wheel,
     },
-    footerBackgroundColor: input.footerBackgroundColor ?? "#8d9ae8",
+    footerBackgroundColor: input.footerBackgroundColor ?? "transparent",
   };
 }
 

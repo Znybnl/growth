@@ -4,6 +4,7 @@ import {
   finalizeDrawSessionInSupabase,
   getSupabaseCampaignDataView,
   getSupabaseCampaignPerformance,
+  getSupabaseMerchantCampaignLibrary,
   getSupabaseMerchantDashboard,
   getSupabaseMerchantLeads,
   getSupabaseMerchantSupportOverview,
@@ -36,6 +37,7 @@ import {
   CampaignDataView,
   CampaignEmailSettings,
   CampaignEvent,
+  CampaignLibraryItem,
   CampaignPerformance,
   CampaignPresentation,
   CampaignBackgroundSettings,
@@ -649,6 +651,7 @@ function toLeadRow(lead: Lead): MerchantLeadRow {
     campaignTitle: campaign?.title ?? "Campagne",
     goalType: campaign?.goalType ?? "lead_capture",
     prizeLabel: lead.prizeId ? prize?.label ?? "Lot inconnu" : "Perdu",
+    prizeUsageConditions: lead.prizeId ? prize?.usageConditions : undefined,
     emailDeliveryStatus: undefined,
     emailSentAt: undefined,
     emailDeliveredAt: undefined,
@@ -1250,6 +1253,30 @@ function createDrawSessionFromMemory(input: CreateDrawSessionRequest): CreateDra
   };
 }
 
+function getMerchantCampaignLibraryFromMemory(
+  merchantId = merchantSeed.id,
+  fallbackMerchant?: Merchant,
+): CampaignLibraryItem[] {
+  const merchant = getMerchant(merchantId) ?? fallbackMerchant;
+
+  if (!merchant) {
+    throw new Error("Marchand introuvable");
+  }
+
+  return clone(
+    store.campaigns
+      .filter((campaign) => campaign.merchantId === merchantId)
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+      .map((campaign) => ({
+        id: campaign.id,
+        title: campaign.title,
+        gameType: campaign.gameType,
+        isActive: campaign.isActive,
+        createdAt: campaign.createdAt,
+      })),
+  );
+}
+
 function finalizeDrawSessionFromMemory(input: FinalizeDrawSessionRequest): DrawResult {
   expireDrawSessionsFromMemory();
   const session = store.drawSessions.find((item) => item.id === input.sessionId);
@@ -1413,6 +1440,7 @@ function updateCampaignSetupInMemory(input: CampaignSetupInput) {
         remainingQuantity: prize.totalQuantity ?? null,
         probability: prize.probability,
         estimatedUnitCost: prize.estimatedUnitCost,
+        usageConditions: prize.usageConditions,
       });
     });
 
@@ -1452,6 +1480,7 @@ function updateCampaignSetupInMemory(input: CampaignSetupInput) {
       remainingQuantity: prize.totalQuantity ?? null,
       probability: prize.probability,
       estimatedUnitCost: prize.estimatedUnitCost,
+      usageConditions: prize.usageConditions,
     });
   });
 
@@ -1558,6 +1587,17 @@ export const getMerchantDashboard = cache(async function getMerchantDashboard(
   }
 
   return getMerchantDashboardFromMemory(merchantId, fallbackMerchant);
+});
+
+export const getMerchantCampaignLibrary = cache(async function getMerchantCampaignLibrary(
+  merchantId = merchantSeed.id,
+  fallbackMerchant?: Merchant,
+) {
+  if (isSupabaseConfigured()) {
+    return getSupabaseMerchantCampaignLibrary(fallbackMerchant?.id ?? merchantId);
+  }
+
+  return getMerchantCampaignLibraryFromMemory(merchantId, fallbackMerchant);
 });
 
 export const getMerchantLeads = cache(async function getMerchantLeads(merchantId = merchantSeed.id, campaignId?: string) {

@@ -29,6 +29,7 @@ type SendRewardEmailInput = {
   rewardAvailableAt?: string;
   rewardExpiresAt?: string;
   purchaseRequired?: boolean;
+  usageConditions?: string;
   emailSettings: CampaignEmailSettings;
 };
 
@@ -72,6 +73,7 @@ export async function sendRewardEmail(input: SendRewardEmailInput) {
   const purchaseMessage = input.purchaseRequired
     ? "Retrait du lot soumis à une condition d'achat."
     : "";
+  const usageConditionsMessage = input.usageConditions?.trim() ?? "";
   const variables = resolveRewardEmailVariables({
     firstName: input.leadFirstName,
     merchantName: input.merchantName,
@@ -83,6 +85,7 @@ export async function sendRewardEmail(input: SendRewardEmailInput) {
     rewardAvailability: availabilityMessage,
     rewardExpiry: expiryMessage,
     purchaseCondition: purchaseMessage,
+    usageConditions: usageConditionsMessage,
   });
   const subject = renderEmailTemplate(input.emailSettings.subject, variables);
   const delivery = await upsertRewardEmailDeliveryInSupabase({

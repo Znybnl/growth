@@ -271,6 +271,7 @@ export interface Prize {
   remainingQuantity: null | number;
   probability: number;
   estimatedUnitCost: number;
+  usageConditions?: string;
 }
 
 export interface Lead {
@@ -288,6 +289,7 @@ export interface Lead {
   redemptionCode?: string;
   rewardAvailableAt?: string;
   rewardExpiresAt?: string;
+  prizeUsageConditions?: string;
 }
 
 export interface CampaignEvent {
@@ -457,6 +459,14 @@ export interface CampaignPerformance {
   kpis: CampaignKpi;
 }
 
+export interface CampaignLibraryItem {
+  id: string;
+  title: string;
+  gameType: GameType;
+  isActive: boolean;
+  createdAt: string;
+}
+
 export interface MerchantDashboardData {
   merchant: Merchant;
   campaigns: CampaignPerformance[];
@@ -469,6 +479,7 @@ export interface MerchantLeadRow extends Lead {
   campaignTitle: string;
   goalType: GoalType;
   prizeLabel: string;
+  prizeUsageConditions?: string;
   emailDeliveryStatus?: RewardEmailDeliveryStatus;
   emailSentAt?: string;
   emailDeliveredAt?: string;
@@ -505,5 +516,6 @@ export interface CampaignSetupInput {
     totalQuantity: null | number;
     probability: number;
     estimatedUnitCost: number;
+    usageConditions?: string;
   }>;
 }

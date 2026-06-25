@@ -27,14 +27,14 @@ export default async function CampaignsPage({
         <div className="flex flex-col gap-5 px-6 py-7 xl:flex-row xl:items-end xl:justify-between xl:px-8">
           <div>
             <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">
-              Gestion des campagnes
+              Gestion des animations
             </p>
             <h1 className="mt-3 font-display text-5xl font-semibold leading-none text-[#0f1728]">
               Toutes vos activations
             </h1>
             <p className="mt-4 max-w-3xl text-sm leading-7 text-[#5c6577]">
-              Retrouvez les campagnes actives et passées, comparez leurs performances et accédez
-              directement au paramétrage ou au parcours public.
+              Retrouvez vos jeux en cours et terminés, comparez leurs performances et accédez à
+              leur paramétrage.
             </p>
           </div>
 

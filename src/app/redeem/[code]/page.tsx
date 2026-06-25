@@ -78,11 +78,21 @@ export default async function RedeemPage({ params }: RedeemPageProps) {
           </div>
         ) : null}
 
+        {lead.prizeUsageConditions ? (
+          <div className="mt-5 rounded-[22px] border border-[#f2ddb0] bg-[#fff8e8] p-4 text-sm leading-7 text-[#6c5313]">
+            <p className="text-xs uppercase tracking-[0.24em] text-[#8a6a18]">
+              Conditions d&apos;utilisation
+            </p>
+            <p className="mt-2 whitespace-pre-line">{lead.prizeUsageConditions}</p>
+          </div>
+        ) : null}
+
         <div className="mt-7 flex flex-col gap-4 border-t border-[#e4eaf2] pt-6 sm:flex-row sm:items-center sm:justify-between">
           <LeadPrizeActions
             leadId={lead.id}
             status={lead.status}
             hasPrize={Boolean(lead.prizeId)}
+            usageConditions={lead.prizeUsageConditions}
             compact
           />
           <Link href="/data" className="text-sm font-semibold text-[#2f6df6]">

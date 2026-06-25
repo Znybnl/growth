@@ -58,7 +58,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
         headlineFontSizePx: campaign.presentation.heading.fontSizePx,
         headlineFontFamily: campaign.presentation.heading.fontFamily,
         wheel: campaign.presentation.wheel,
-        footerBackgroundColor: campaign.accent.signal,
+        footerBackgroundColor: "transparent",
       }),
     ),
   );
@@ -90,7 +90,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
       wheel: {
         ...current.wheel,
         [key]: value,
-        ...(key === "winColor" ? { rimColor: value, alternateWinColor: value } : {}),
+        ...(key === "winColor" ? { alternateWinColor: value } : {}),
         ...(key === "loseColor" ? { alternateLoseColor: value } : {}),
       },
     }));
@@ -203,7 +203,9 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
 
             {poster.logoMode === "text" ? (
               <label className="text-sm md:col-span-2">
-                <span className="mb-2 block text-[#616b7c]">Texte affiché</span>
+                <span className="mb-2 block text-[#616b7c]">
+                  Texte affiché à la place du logo
+                </span>
                 <input
                   value={poster.logoText ?? ""}
                   onChange={(event) => updatePoster({ logoText: event.target.value })}
@@ -272,11 +274,20 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                 </label>
               </>
             ) : null}
+          </div>
+        </section>
 
+        <section className="rounded-[8px] border border-[#dbe4f0] bg-white p-6 shadow-[0_16px_42px_rgba(122,136,166,0.1)]">
+          <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Phrase d&apos;entête</p>
+          <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
+            Style du texte principal
+          </h2>
+
+          <div className="mt-6 grid gap-4 md:grid-cols-2">
             <label className="text-sm md:col-span-2">
               <span className="mb-2 block text-[#616b7c]">Texte sous le logo</span>
               <textarea
-                rows={3}
+                rows={4}
                 value={poster.headline}
                 onChange={(event) => updatePoster({ headline: event.target.value })}
                 className="w-full rounded-[8px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
@@ -334,7 +345,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
 
         <section className="rounded-[8px] border border-[#dbe4f0] bg-white p-6 shadow-[0_16px_42px_rgba(122,136,166,0.1)]">
           <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Visuel affiche</p>
-          <h2 className="mt-2 text-2xl font-semibold text-[#111827]">Fond et bandeau</h2>
+          <h2 className="mt-2 text-2xl font-semibold text-[#111827]">Fond</h2>
 
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             <div className="text-sm md:col-span-2">
@@ -409,16 +420,6 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                 />
               </label>
             ) : null}
-
-            <label className="text-sm">
-              <span className="mb-2 block text-[#616b7c]">Couleur du bandeau inférieur</span>
-              <input
-                type="color"
-                value={poster.footerBackgroundColor}
-                onChange={(event) => updatePoster({ footerBackgroundColor: event.target.value })}
-                className="h-14 w-full rounded-[8px] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none"
-              />
-            </label>
           </div>
         </section>
 
@@ -426,7 +427,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
           <section className="rounded-[8px] border border-[#dbe4f0] bg-white p-6 shadow-[0_16px_42px_rgba(122,136,166,0.1)]">
             <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Couleur de la roue</p>
             <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
-              Réglez les 2 couleurs de la roue
+              Réglez la roue de l&apos;affiche
             </h2>
 
             <div className="mt-6 grid gap-4 md:grid-cols-2">
@@ -449,6 +450,16 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                   className="h-14 w-full rounded-[8px] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none"
                 />
               </label>
+
+              <label className="text-sm md:col-span-2">
+                <span className="mb-2 block text-[#616b7c]">Couleur de la bordure de la roue</span>
+                <input
+                  type="color"
+                  value={poster.wheel.rimColor}
+                  onChange={(event) => updateWheel("rimColor", event.target.value)}
+                  className="h-14 w-full rounded-[8px] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none"
+                />
+              </label>
             </div>
           </section>
         ) : null}
@@ -463,7 +474,8 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
             </div>
             <a
               href={`/api/campaigns/${campaign.id}/poster`}
-              className="rounded-[8px] bg-[#111827] px-4 py-3 text-sm font-semibold text-white"
+              className="rounded-[8px] bg-[#111827] px-4 py-3 text-sm font-semibold !text-white"
+              style={{ color: "#ffffff" }}
             >
               Télécharger le PNG
             </a>

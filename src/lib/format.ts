@@ -116,7 +116,7 @@ export function actionKindLabel(kind: ActionKind) {
     case "tripadvisor":
       return "Tripadvisor";
     case "crm":
-      return "Données clients";
+      return "Collecte email";
     default:
       return "Personnalisé";
   }
@@ -194,7 +194,7 @@ export function actionKindCta(kind: ActionKind) {
     case "tripadvisor":
       return "Ouvrir Tripadvisor";
     case "crm":
-      return "Partager mes coordonnées";
+      return "Partager mon e-mail";
     default:
       return "Ouvrir le lien";
   }

@@ -50,13 +50,13 @@ export function MerchantShell({ children, merchant, user, isSaasAdmin }: Merchan
         <button
           type="button"
           aria-label="Fermer le menu"
-          className="fixed inset-0 z-30 bg-[#0f1728]/28 md:hidden"
+          className="fixed inset-0 z-30 bg-[#0f1728]/28 lg:hidden"
           onClick={() => setMenuOpen(false)}
         />
       ) : null}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-40 w-[304px] border-r border-[#dfe6f0] bg-white shadow-[0_20px_60px_rgba(120,132,158,0.14)] transition-transform duration-200 md:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-40 w-[304px] border-r border-[#dfe6f0] bg-white shadow-[0_20px_60px_rgba(120,132,158,0.14)] transition-transform duration-200 lg:translate-x-0 ${
           menuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -125,12 +125,12 @@ export function MerchantShell({ children, merchant, user, isSaasAdmin }: Merchan
         </div>
       </aside>
 
-      <div className="flex h-screen min-w-0 flex-col md:ml-[304px]">
+      <div className="flex h-screen min-w-0 flex-col lg:ml-[304px]">
         <header className="sticky top-0 z-30 border-b border-[#dfe6f0] bg-white/92 backdrop-blur">
-          <div className="flex items-center gap-4 px-4 py-4 md:px-7">
+          <div className="flex items-center gap-4 px-4 py-4 lg:px-7">
             <button
               type="button"
-              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[18px] border border-[#e4e9f2] bg-[#f7f9fc] md:hidden"
+              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[18px] border border-[#e4e9f2] bg-[#f7f9fc] lg:hidden"
               onClick={() => setMenuOpen((current) => !current)}
             >
               <span className="space-y-1">
@@ -142,7 +142,7 @@ export function MerchantShell({ children, merchant, user, isSaasAdmin }: Merchan
 
             <form
               onSubmit={submitSearch}
-              className="hidden min-w-0 flex-1 items-center rounded-[20px] border border-[#edf1f6] bg-[#f7f9fc] px-4 py-3 md:flex"
+              className="hidden min-w-0 flex-1 items-center rounded-[20px] border border-[#edf1f6] bg-[#f7f9fc] px-4 py-3 lg:flex"
             >
               <input
                 value={query}
@@ -154,7 +154,7 @@ export function MerchantShell({ children, merchant, user, isSaasAdmin }: Merchan
           </div>
         </header>
 
-        <main className="min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden px-3 py-6 md:px-6">
+        <main className="min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden px-3 py-6 lg:px-6">
           {children}
         </main>
       </div>

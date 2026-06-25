@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
-import { deleteCampaign, toggleCampaign } from "@/lib/store";
+import { getAuthenticatedSession } from "@/lib/auth";
+import { deleteCampaign, getCampaignPerformance, toggleCampaign } from "@/lib/store";
 
 type RouteProps = {
   params: Promise<{
@@ -18,6 +19,31 @@ export async function PATCH(request: Request, { params }: RouteProps) {
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Update failed" },
+      { status: 400 },
+    );
+  }
+}
+
+export async function GET(_request: Request, { params }: RouteProps) {
+  const session = await getAuthenticatedSession();
+
+  if (!session) {
+    return NextResponse.json({ error: "Authentification requise" }, { status: 401 });
+  }
+
+  const { id } = await params;
+
+  try {
+    const campaign = await getCampaignPerformance(id, session.merchant);
+
+    if (!campaign || campaign.campaign.merchantId !== session.merchant.id) {
+      return NextResponse.json({ error: "Campagne introuvable" }, { status: 404 });
+    }
+
+    return NextResponse.json({ campaign });
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Lecture impossible" },
       { status: 400 },
     );
   }

@@ -42,6 +42,7 @@ export async function POST(request: Request) {
           leadFirstName: result.lead.firstName,
           leadEmail: result.lead.email,
           prizeLabel: result.prize.label,
+          usageConditions: result.prize.usageConditions,
           redemptionCode: result.lead.redemptionCode,
           rewardAvailableAt: result.lead.rewardAvailableAt,
           rewardExpiresAt: result.lead.rewardExpiresAt,
@@ -71,4 +72,3 @@ export async function POST(request: Request) {
     );
   }
 }
-

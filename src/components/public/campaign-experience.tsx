@@ -160,6 +160,9 @@ export function CampaignExperience({
   const currentAction = campaign.actions[0];
   const scratchLabel = previewResult?.prize?.label ?? "Perdu :(";
   const redemptionCode = drawResult?.lead.redemptionCode;
+  const previewUsageConditions = previewResult?.prize?.usageConditions?.trim();
+  const resolvedUsageConditions =
+    drawResult?.prize?.usageConditions?.trim() || previewUsageConditions || "";
   const qrPath = redemptionCode
     ? `/api/public/redeem/${encodeURIComponent(redemptionCode)}/qr`
     : "";
@@ -497,6 +500,14 @@ export function CampaignExperience({
         <div className="mt-5 rounded-[22px] bg-[#f6f7fb] px-5 py-4 text-base leading-7 text-[#475067]">
           Vos informations sont nécessaires pour valider et envoyer votre gain.
         </div>
+        {previewUsageConditions ? (
+          <div className="mt-4 rounded-[22px] bg-[#fff8e8] px-5 py-4 text-left text-sm leading-7 text-[#6c5313]">
+            <p className="text-xs uppercase tracking-[0.2em] text-[#8a6a18]">
+              Conditions d&apos;utilisation
+            </p>
+            <p className="mt-2 whitespace-pre-line">{previewUsageConditions}</p>
+          </div>
+        ) : null}
         <form className="mt-5 space-y-4" onSubmit={submitWinnerForm}>
           <input
             value={firstName}
@@ -559,6 +570,15 @@ export function CampaignExperience({
           {campaign.rewardRules.purchaseRequired ? (
             <div className="mt-4 rounded-[22px] bg-[#f7f7fb] px-5 py-4 text-left text-sm leading-6 text-[#61687a]">
               Le retrait du lot est soumis à une condition d’achat.
+            </div>
+          ) : null}
+
+          {resolvedUsageConditions ? (
+            <div className="mt-4 rounded-[22px] bg-[#fff8e8] px-5 py-4 text-left text-sm leading-6 text-[#6c5313]">
+              <p className="text-xs uppercase tracking-[0.2em] text-[#8a6a18]">
+                Conditions d&apos;utilisation
+              </p>
+              <p className="mt-2 whitespace-pre-line">{resolvedUsageConditions}</p>
             </div>
           ) : null}
 

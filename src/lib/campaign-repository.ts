@@ -3,6 +3,7 @@ import {
   CampaignAction,
   CampaignDataView,
   CampaignEvent,
+  CampaignLibraryItem,
   CampaignKpi,
   CampaignPerformance,
   CampaignSetupInput,
@@ -428,6 +429,7 @@ function toLead(row: LeadRow): Lead {
     redemptionCode: row.redemption_code ?? undefined,
     rewardAvailableAt: row.reward_available_at ?? undefined,
     rewardExpiresAt: row.reward_expires_at ?? undefined,
+    prizeUsageConditions: undefined,
   };
 }
 
@@ -612,8 +614,15 @@ function buildPerformanceBundle(
 ) {
   return campaignRows.map((row) => {
     const campaignId = row.id;
+    const localSettings = localSettingsByCampaignId[campaignId] ?? {};
     const campaignActions = actionRows.filter((item) => item.campaign_id === campaignId);
-    const campaignPrizes = prizeRows.filter((item) => item.campaign_id === campaignId).map(toPrize);
+    const campaignPrizes = prizeRows
+      .filter((item) => item.campaign_id === campaignId)
+      .map(toPrize)
+      .map((prize) => ({
+        ...prize,
+        usageConditions: localSettings.prizeSettings?.[prize.id]?.usageConditions,
+      }));
     const campaignLeads = leadRows.filter((item) => item.campaign_id === campaignId).map(toLead);
     const campaignEvents = eventRows.filter((item) => item.campaign_id === campaignId).map(toEvent);
     const campaign = toCampaign(
@@ -630,7 +639,7 @@ function buildPerformanceBundle(
         estimated_unit_cost: item.estimatedUnitCost,
         created_at: "",
       })),
-      localSettingsByCampaignId[campaignId],
+      localSettings,
     );
 
     return {
@@ -681,6 +690,35 @@ export async function getSupabaseMerchantDashboard(
     totalRedeemed,
     averageConversion,
   };
+}
+
+export async function getSupabaseMerchantCampaignLibrary(
+  merchantId: string,
+): Promise<CampaignLibraryItem[]> {
+  const supabase = getSupabaseAdmin();
+  const { data, error } = await supabase
+    .from("campaigns")
+    .select("id,title,game_type,is_active,created_at")
+    .eq("merchant_id", merchantId)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    throw new Error(`Lecture des campagnes impossible: ${error.message}`);
+  }
+
+  return ((data as Array<{
+    id: string;
+    title: string;
+    game_type: Campaign["gameType"];
+    is_active: boolean;
+    created_at: string;
+  }> | null) ?? []).map((item) => ({
+    id: item.id,
+    title: item.title,
+    gameType: item.game_type,
+    isActive: item.is_active,
+    createdAt: item.created_at,
+  }));
 }
 
 export async function getSupabaseCampaignPerformance(
@@ -750,14 +788,17 @@ export async function getSupabaseMerchantLeads(
   const campaignMap = new Map(campaigns.map((item) => [item.id, item]));
   const leads = ((leadsData as LeadRow[] | null) ?? [])
     .map(toLead)
-    .map((lead) => ({
-      ...lead,
-      campaignTitle: campaignMap.get(lead.campaignId)?.title ?? "Campagne",
-      goalType: campaignMap.get(lead.campaignId)?.goal_type ?? "lead_capture",
-      prizeLabel: lead.prizeId
-        ? prizes.find((item) => item.id === lead.prizeId)?.label ?? "Lot inconnu"
-        : "Perdu",
-    }))
+      .map((lead) => ({
+        ...lead,
+        campaignTitle: campaignMap.get(lead.campaignId)?.title ?? "Campagne",
+        goalType: campaignMap.get(lead.campaignId)?.goal_type ?? "lead_capture",
+        prizeLabel: lead.prizeId
+          ? prizes.find((item) => item.id === lead.prizeId)?.label ?? "Lot inconnu"
+          : "Perdu",
+        prizeUsageConditions: lead.prizeId
+          ? prizes.find((item) => item.id === lead.prizeId)?.usageConditions
+          : undefined,
+      }))
     .sort((a, b) => b.consentTimestamp.localeCompare(a.consentTimestamp));
 
   return enrichLeadRowsWithEmailDeliveries(
@@ -792,6 +833,9 @@ export async function getSupabaseCampaignDataView(
         prizeLabel: lead.prizeId
           ? prizes.find((item) => item.id === lead.prizeId)?.label ?? "Lot inconnu"
           : "Perdu",
+        prizeUsageConditions: lead.prizeId
+          ? prizes.find((item) => item.id === lead.prizeId)?.usageConditions
+          : undefined,
       }))
       .sort((a, b) => b.consentTimestamp.localeCompare(a.consentTimestamp)),
     (deliveriesData as RewardEmailDeliverySummaryRow[] | null) ?? [],
@@ -923,6 +967,14 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
     blockSpacingPx: input.presentation.layout.blockSpacingPx,
     logoMode: input.logoMode,
     logoText: input.logoText,
+    prizeSettings: Object.fromEntries(
+      prizesInsert.map((prize, index) => [
+        prize.id,
+        {
+          usageConditions: input.prizes[index]?.usageConditions?.trim() || undefined,
+        },
+      ]),
+    ),
     poster: input.presentation.poster,
     email: input.presentation.email,
   });

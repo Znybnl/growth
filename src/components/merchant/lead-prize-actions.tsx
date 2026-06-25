@@ -10,6 +10,7 @@ type LeadPrizeActionsProps = {
   leadId: string;
   status: LeadStatus;
   hasPrize: boolean;
+  usageConditions?: string;
   emailDeliveryStatus?: RewardEmailDelivery["status"];
   emailSentAt?: string;
   compact?: boolean;
@@ -31,6 +32,7 @@ export function LeadPrizeActions({
   leadId,
   status,
   hasPrize,
+  usageConditions,
   emailDeliveryStatus,
   compact = false,
 }: LeadPrizeActionsProps) {
@@ -235,6 +237,14 @@ export function LeadPrizeActions({
           ) : null}
 
           <div className="mt-3 text-xs text-[#7b8496]">Statut du lot : {leadStatusLabel(status)}</div>
+          {usageConditions?.trim() ? (
+            <div className="mt-3 rounded-[14px] border border-[#f2ddb0] bg-[#fff8e8] px-3 py-3 text-xs leading-6 text-[#6c5313]">
+              <p className="font-semibold uppercase tracking-[0.16em] text-[#8a6a18]">
+                Conditions d&apos;utilisation
+              </p>
+              <p className="mt-1 whitespace-pre-line">{usageConditions.trim()}</p>
+            </div>
+          ) : null}
         </div>
       ) : null}
     </div>
