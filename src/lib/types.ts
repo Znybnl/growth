@@ -24,6 +24,16 @@ export type RewardEmailDeliveryStatus =
   | "suppressed"
   | "failed";
 
+export type MerchantSubscriptionStatus =
+  | "trialing"
+  | "active"
+  | "past_due"
+  | "canceled"
+  | "unpaid"
+  | "incomplete"
+  | "incomplete_expired"
+  | "paused";
+
 export type EventType =
   | "scan"
   | "form_started"
@@ -59,7 +69,31 @@ export interface Merchant {
   tiktokUrl?: string;
   tripadvisorUrl?: string;
   defaultPrizeCost?: number;
+  stripeCustomerId?: string;
+  stripeSubscriptionId?: string;
+  stripeSubscriptionStatus?: MerchantSubscriptionStatus;
+  trialStartDate?: string;
+  trialEndDate?: string;
+  subscriptionCurrentPeriodEnd?: string;
+  subscriptionCancelAtPeriodEnd?: boolean;
   createdAt: string;
+}
+
+export interface MerchantBillingSummary {
+  trialStartDate?: string;
+  trialEndDate?: string;
+  subscriptionStatus?: MerchantSubscriptionStatus;
+  subscriptionCurrentPeriodEnd?: string;
+  subscriptionCancelAtPeriodEnd: boolean;
+  stripeCustomerId?: string;
+  stripeSubscriptionId?: string;
+  hasPaymentMethodOnFile: boolean;
+  isTrialActive: boolean;
+  isSubscribed: boolean;
+  isPastDue: boolean;
+  isBillingLocked: boolean;
+  daysLeftInTrial: number;
+  nextBillingDate?: string;
 }
 
 export interface MerchantUser {

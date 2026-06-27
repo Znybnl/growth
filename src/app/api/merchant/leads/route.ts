@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { requireAuthenticatedSession } from "@/lib/auth";
+import { assertMerchantBillingAccess } from "@/lib/billing";
 import { getMerchantLeads } from "@/lib/store";
 
 export async function GET(request: NextRequest) {
@@ -12,6 +13,15 @@ export async function GET(request: NextRequest) {
   const format = request.nextUrl.searchParams.get("format");
 
   if (format === "csv") {
+    try {
+      assertMerchantBillingAccess(session.merchant, "csv_export");
+    } catch (error) {
+      return NextResponse.json(
+        { error: error instanceof Error ? error.message : "Export indisponible" },
+        { status: 403 },
+      );
+    }
+
     const header = [
       "lead_id",
       "prenom",

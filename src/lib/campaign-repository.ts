@@ -26,6 +26,7 @@ import {
   RewardEmailDelivery,
   RewardEmailEvent,
 } from "@/lib/types";
+import { assertMerchantBillingAccess } from "@/lib/billing";
 import {
   getCampaignLocalSettings,
   setCampaignLocalSettings,
@@ -186,6 +187,13 @@ type MerchantRow = {
   tiktok_url: string | null;
   tripadvisor_url: string | null;
   default_prize_cost: number | null;
+  stripe_customer_id: string | null;
+  stripe_subscription_id: string | null;
+  stripe_subscription_status: Merchant["stripeSubscriptionStatus"] | null;
+  trial_start_date: string | null;
+  trial_end_date: string | null;
+  subscription_current_period_end: string | null;
+  subscription_cancel_at_period_end: boolean | null;
   created_at: string;
 };
 
@@ -251,6 +259,13 @@ function toMerchant(row: MerchantRow): Merchant {
     tiktokUrl: row.tiktok_url ?? undefined,
     tripadvisorUrl: row.tripadvisor_url ?? undefined,
     defaultPrizeCost: row.default_prize_cost ?? undefined,
+    stripeCustomerId: row.stripe_customer_id ?? undefined,
+    stripeSubscriptionId: row.stripe_subscription_id ?? undefined,
+    stripeSubscriptionStatus: row.stripe_subscription_status ?? undefined,
+    trialStartDate: row.trial_start_date ?? undefined,
+    trialEndDate: row.trial_end_date ?? undefined,
+    subscriptionCurrentPeriodEnd: row.subscription_current_period_end ?? undefined,
+    subscriptionCancelAtPeriodEnd: row.subscription_cancel_at_period_end ?? false,
     createdAt: row.created_at,
   };
 }
@@ -760,6 +775,7 @@ export async function getSupabasePublicCampaign(
 ): Promise<PublicCampaign | null> {
   const performance = await getSupabaseCampaignPerformance(campaignId);
   if (!performance || !performance.campaign.isActive) return null;
+  assertMerchantBillingAccess(performance.merchant, "campaign_public");
   return toPublicCampaign(performance.campaign, performance.merchant, performance.prizes);
 }
 
@@ -1079,6 +1095,7 @@ export async function createDrawSessionInSupabase(
 ): Promise<CreateDrawSessionResult> {
   const performance = await getSupabaseCampaignPerformance(input.campaignId, merchant);
   if (!performance || !performance.campaign.isActive) throw new Error("Campagne indisponible");
+  assertMerchantBillingAccess(performance.merchant, "campaign_public");
   const { campaign, merchant: campaignMerchant, prizes } = performance;
   const supabase = getSupabaseAdmin();
   const sessionId = generateId("session");
@@ -1138,6 +1155,7 @@ export async function finalizeDrawSessionInSupabase(
   if (!performance) {
     throw new Error("Campagne indisponible");
   }
+  assertMerchantBillingAccess(performance.merchant, "campaign_public");
 
   const { campaign, merchant: campaignMerchant, prizes } = performance;
   const lead: Lead = {
@@ -1176,6 +1194,7 @@ export async function finalizeDrawSessionInSupabase(
 export async function drawForLeadInSupabase(input: DrawRequest, merchant: Merchant): Promise<DrawResult> {
   const performance = await getSupabaseCampaignPerformance(input.campaignId, merchant);
   if (!performance || !performance.campaign.isActive) throw new Error("Campagne indisponible");
+  assertMerchantBillingAccess(performance.merchant, "campaign_public");
   const { campaign, prizes } = performance;
   const supabase = getSupabaseAdmin();
   const leadId = generateId("lead");

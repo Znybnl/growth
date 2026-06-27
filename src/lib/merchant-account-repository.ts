@@ -3,11 +3,15 @@ import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/supabase";
 import {
   Merchant,
   MerchantAccountSettingsInput,
+  MerchantBillingSummary,
   MerchantOnboardingInput,
   MerchantSignInInput,
   MerchantSignUpInput,
+  MerchantSubscriptionStatus,
   MerchantUser,
 } from "@/lib/types";
+import { getMerchantBillingSummary } from "@/lib/billing";
+import Stripe from "stripe";
 
 type MerchantRow = {
   id: string;
@@ -31,6 +35,13 @@ type MerchantRow = {
   tiktok_url: string | null;
   tripadvisor_url: string | null;
   default_prize_cost: number | null;
+  stripe_customer_id: string | null;
+  stripe_subscription_id: string | null;
+  stripe_subscription_status: MerchantSubscriptionStatus | null;
+  trial_start_date: string | null;
+  trial_end_date: string | null;
+  subscription_current_period_end: string | null;
+  subscription_cancel_at_period_end: boolean | null;
   created_at: string;
 };
 
@@ -234,6 +245,13 @@ function toMerchant(row: MerchantRow): Merchant {
     tiktokUrl: row.tiktok_url ?? undefined,
     tripadvisorUrl: row.tripadvisor_url ?? undefined,
     defaultPrizeCost: row.default_prize_cost ?? undefined,
+    stripeCustomerId: row.stripe_customer_id ?? undefined,
+    stripeSubscriptionId: row.stripe_subscription_id ?? undefined,
+    stripeSubscriptionStatus: row.stripe_subscription_status ?? undefined,
+    trialStartDate: row.trial_start_date ?? undefined,
+    trialEndDate: row.trial_end_date ?? undefined,
+    subscriptionCurrentPeriodEnd: row.subscription_current_period_end ?? undefined,
+    subscriptionCancelAtPeriodEnd: row.subscription_cancel_at_period_end ?? false,
     createdAt: row.created_at,
   };
 }
@@ -295,6 +313,7 @@ export async function ensureDemoMerchantInSupabase() {
 
   const supabase = getSupabaseAdmin();
   const createdAt = DEMO_MERCHANT_PROFILE.createdAt;
+  const trialEndDate = new Date(Date.parse(createdAt) + 30 * 24 * 60 * 60 * 1000).toISOString();
   const merchantUpsert = await supabase.from("merchants").upsert({
     id: DEMO_MERCHANT_PROFILE.merchantId,
     company_name: DEMO_MERCHANT_PROFILE.companyName,
@@ -317,6 +336,8 @@ export async function ensureDemoMerchantInSupabase() {
     tiktok_url: DEMO_MERCHANT_PROFILE.tiktokUrl,
     tripadvisor_url: DEMO_MERCHANT_PROFILE.tripadvisorUrl,
     default_prize_cost: DEMO_MERCHANT_PROFILE.defaultPrizeCost,
+    trial_start_date: createdAt,
+    trial_end_date: trialEndDate,
     created_at: createdAt,
   });
 
@@ -403,6 +424,7 @@ export async function createMerchantAccountInSupabase(input: MerchantSignUpInput
   const city = input.city.trim();
   const phone = (input.phone ?? "").trim();
   const createdAt = new Date().toISOString();
+  const trialEndDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 
   const merchantInsert = await supabase.from("merchants").insert({
     id: merchantId,
@@ -426,6 +448,8 @@ export async function createMerchantAccountInSupabase(input: MerchantSignUpInput
     tiktok_url: "",
     tripadvisor_url: "",
     default_prize_cost: 3,
+    trial_start_date: createdAt,
+    trial_end_date: trialEndDate,
     created_at: createdAt,
   });
 
@@ -495,6 +519,9 @@ export async function createMerchantAccountInSupabase(input: MerchantSignUpInput
       tiktokUrl: "",
       tripadvisorUrl: "",
       defaultPrizeCost: 3,
+      trialStartDate: createdAt,
+      trialEndDate,
+      subscriptionCancelAtPeriodEnd: false,
       createdAt,
     },
   };
@@ -611,6 +638,7 @@ export async function authenticateOrProvisionMerchantWithGoogle(
   const companyName = deriveCompanyName(profile);
   const contactName = fullName || `${firstName} ${lastName}`.trim();
   const createdAt = new Date().toISOString();
+  const trialEndDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 
   const merchantInsert = await supabase.from("merchants").insert({
     id: merchantId,
@@ -634,6 +662,8 @@ export async function authenticateOrProvisionMerchantWithGoogle(
     tiktok_url: "",
     tripadvisor_url: "",
     default_prize_cost: 3,
+    trial_start_date: createdAt,
+    trial_end_date: trialEndDate,
     created_at: createdAt,
   });
 
@@ -696,9 +726,103 @@ export async function authenticateOrProvisionMerchantWithGoogle(
       tiktokUrl: "",
       tripadvisorUrl: "",
       defaultPrizeCost: 3,
+      trialStartDate: createdAt,
+      trialEndDate,
+      subscriptionCancelAtPeriodEnd: false,
       createdAt,
     },
   };
+}
+
+export async function setMerchantStripeCustomerIdInSupabase(
+  merchantId: string,
+  stripeCustomerId: string,
+) {
+  const supabase = getSupabaseAdmin();
+  const { error } = await supabase
+    .from("merchants")
+    .update({ stripe_customer_id: stripeCustomerId })
+    .eq("id", merchantId);
+
+  if (error) {
+    throw new Error(`Enregistrement du client Stripe impossible: ${error.message}`);
+  }
+}
+
+export async function findMerchantByStripeCustomerIdInSupabase(stripeCustomerId: string) {
+  const supabase = getSupabaseAdmin();
+  const { data, error } = await supabase
+    .from("merchants")
+    .select("*")
+    .eq("stripe_customer_id", stripeCustomerId)
+    .maybeSingle<MerchantRow>();
+
+  if (error || !data) {
+    return null;
+  }
+
+  return toMerchant(data);
+}
+
+export async function updateMerchantBillingFromStripeSubscriptionInSupabase(
+  merchantId: string,
+  subscription: Stripe.Subscription,
+) {
+  const supabase = getSupabaseAdmin();
+  const customerId =
+    typeof subscription.customer === "string" ? subscription.customer : subscription.customer.id;
+  const currentPeriodEndValue = subscription.items.data
+    .map((item) => item.current_period_end)
+    .filter((value): value is number => typeof value === "number")
+    .sort((left, right) => left - right)[0];
+  const currentPeriodEnd =
+    typeof currentPeriodEndValue === "number"
+      ? new Date(currentPeriodEndValue * 1000).toISOString()
+      : null;
+  const trialEnd =
+    typeof subscription.trial_end === "number"
+      ? new Date(subscription.trial_end * 1000).toISOString()
+      : null;
+  const trialStart =
+    typeof subscription.trial_start === "number"
+      ? new Date(subscription.trial_start * 1000).toISOString()
+      : null;
+
+  const { error } = await supabase
+    .from("merchants")
+    .update({
+      stripe_customer_id: customerId,
+      stripe_subscription_id: subscription.id,
+      stripe_subscription_status: subscription.status,
+      trial_start_date: trialStart,
+      trial_end_date: trialEnd,
+      subscription_current_period_end: currentPeriodEnd,
+      subscription_cancel_at_period_end: subscription.cancel_at_period_end,
+    })
+    .eq("id", merchantId);
+
+  if (error) {
+    throw new Error(`Synchronisation de l'abonnement Stripe impossible: ${error.message}`);
+  }
+}
+
+export async function markMerchantSubscriptionCanceledInSupabase(subscriptionId: string) {
+  const supabase = getSupabaseAdmin();
+  const { error } = await supabase
+    .from("merchants")
+    .update({
+      stripe_subscription_status: "canceled",
+      subscription_cancel_at_period_end: true,
+    })
+    .eq("stripe_subscription_id", subscriptionId);
+
+  if (error) {
+    throw new Error(`Résiliation Stripe impossible à enregistrer: ${error.message}`);
+  }
+}
+
+export function getMerchantBillingForAccount(merchant: Merchant): MerchantBillingSummary {
+  return getMerchantBillingSummary(merchant);
 }
 
 export async function updateMerchantOnboardingInSupabase(
