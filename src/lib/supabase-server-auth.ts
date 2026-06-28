@@ -1,6 +1,8 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse } from "next/server";
 
+import { SUPABASE_AUTH_COOKIE_NAME } from "@/lib/supabase-auth-config";
+
 type CreateRouteSupabaseClientArgs = {
   request: Request;
   response: NextResponse;
@@ -28,7 +30,7 @@ export function createRouteSupabaseClient({
 
   return createServerClient(supabaseUrl, supabaseAnonKey, {
     cookieOptions: {
-      name: "sb-okado-auth",
+      name: SUPABASE_AUTH_COOKIE_NAME,
       path: "/",
       sameSite: "lax",
       secure: new URL(request.url).protocol === "https:",

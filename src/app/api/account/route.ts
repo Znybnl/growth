@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 
 import { getAuthenticatedSession } from "@/lib/auth";
+import { parseMerchantAccountSettingsInput } from "@/lib/merchant-input";
 import { updateMerchantAccount } from "@/lib/store";
-import { MerchantAccountSettingsInput } from "@/lib/types";
 
 export async function POST(request: Request) {
   try {
@@ -12,7 +12,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Authentification requise" }, { status: 401 });
     }
 
-    const body = (await request.json()) as MerchantAccountSettingsInput;
+    const body = parseMerchantAccountSettingsInput(await request.json());
     const account = await updateMerchantAccount(session.user.id, body);
 
     return NextResponse.json(account);

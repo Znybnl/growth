@@ -1,5 +1,6 @@
 import {
   createDrawSessionInSupabase,
+  deleteCampaignForMerchantInSupabase,
   drawForLeadInSupabase,
   finalizeDrawSessionInSupabase,
   getSupabaseCampaignDataView,
@@ -17,6 +18,7 @@ import {
   resetPrizeStockInSupabase,
   resetLeadPrizeInSupabase,
   toggleCampaignInSupabase,
+  toggleCampaignForMerchantInSupabase,
   updatePrizeStockInSupabase,
   updateCampaignSetupInSupabase,
 } from "@/lib/campaign-repository";
@@ -25,10 +27,11 @@ import {
   createMerchantAccountInSupabase,
   getSupabaseMerchantProfile,
   getSupabaseMerchantUser,
+  getSupabaseMerchantUserByEmail,
   updateMerchantAccountInSupabase,
   updateMerchantOnboardingInSupabase,
 } from "@/lib/merchant-account-repository";
-import { isSupabaseConfigured } from "@/lib/supabase";
+import { assertDataBackendAvailable } from "@/lib/supabase";
 import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
 import { cache } from "react";
 import {
@@ -618,6 +621,40 @@ function normalizeStore(rawStore: Store): Store {
 const store = normalizeStore(globalThis.__retailActivationStore ?? createSeededStore());
 globalThis.__retailActivationStore = store;
 
+function getDataBackend(operation: string) {
+  return assertDataBackendAvailable(operation);
+}
+
+async function resolveMerchantForSupabase(
+  merchantId: string,
+  fallbackMerchant?: Merchant,
+): Promise<Merchant> {
+  if (fallbackMerchant?.id === merchantId) {
+    return fallbackMerchant;
+  }
+
+  const merchant = await getSupabaseMerchantProfile(merchantId);
+
+  if (!merchant) {
+    throw new Error("Marchand introuvable");
+  }
+
+  return merchant;
+}
+
+async function resolveCampaignMerchantForSupabase(
+  campaignId: string,
+  fallbackMerchant?: Merchant,
+): Promise<Merchant> {
+  const performance = await getSupabaseCampaignPerformance(campaignId, fallbackMerchant);
+
+  if (!performance) {
+    throw new Error("Campagne introuvable");
+  }
+
+  return performance.merchant;
+}
+
 function clone<T>(value: T): T {
   return structuredClone(value);
 }
@@ -1075,39 +1112,31 @@ function updateMerchantAccountInMemory(userId: string, input: MerchantAccountSet
 }
 
 export const getMerchantProfile = cache(async function getMerchantProfile(merchantId = merchantSeed.id) {
-  if (isSupabaseConfigured()) {
-    const merchant = await getSupabaseMerchantProfile(merchantId);
-
-    if (merchant) {
-      return merchant;
-    }
+  if (getDataBackend("la lecture du profil marchand") === "supabase") {
+    return getSupabaseMerchantProfile(merchantId);
   }
 
   return getMerchantProfileFromMemory(merchantId);
 });
 
 export const getMerchantUser = cache(async function getMerchantUser(userId: string) {
-  if (isSupabaseConfigured()) {
-    const user = await getSupabaseMerchantUser(userId);
-
-    if (user) {
-      return user;
-    }
+  if (getDataBackend("la lecture de l'utilisateur marchand") === "supabase") {
+    return getSupabaseMerchantUser(userId);
   }
 
   return getMerchantUserFromMemory(userId);
 });
 
 export async function getMerchantUserByEmail(email: string) {
-  if (isSupabaseConfigured()) {
-    throw new Error("Recherche directe par email non exposee en mode Supabase.");
+  if (getDataBackend("la recherche de l'utilisateur marchand") === "supabase") {
+    return getSupabaseMerchantUserByEmail(email);
   }
 
   return getMerchantUserByEmailFromMemory(email);
 }
 
 export async function createMerchantAccount(input: MerchantSignUpInput) {
-  if (isSupabaseConfigured()) {
+  if (getDataBackend("la création de compte marchand") === "supabase") {
     return createMerchantAccountInSupabase(input);
   }
 
@@ -1115,7 +1144,7 @@ export async function createMerchantAccount(input: MerchantSignUpInput) {
 }
 
 export async function authenticateMerchant(input: MerchantSignInInput) {
-  if (isSupabaseConfigured()) {
+  if (getDataBackend("la connexion marchand") === "supabase") {
     return authenticateMerchantInSupabase(input);
   }
 
@@ -1123,7 +1152,7 @@ export async function authenticateMerchant(input: MerchantSignInInput) {
 }
 
 export async function updateMerchantOnboarding(userId: string, input: MerchantOnboardingInput) {
-  if (isSupabaseConfigured()) {
+  if (getDataBackend("la mise à jour de l'onboarding") === "supabase") {
     return updateMerchantOnboardingInSupabase(userId, input);
   }
 
@@ -1131,7 +1160,7 @@ export async function updateMerchantOnboarding(userId: string, input: MerchantOn
 }
 
 export async function updateMerchantAccount(userId: string, input: MerchantAccountSettingsInput) {
-  if (isSupabaseConfigured()) {
+  if (getDataBackend("la mise à jour du compte marchand") === "supabase") {
     return updateMerchantAccountInSupabase(userId, input);
   }
 
@@ -1555,7 +1584,7 @@ export async function recordEvent(
   leadId?: string,
   metadata?: CampaignEvent["metadata"],
 ) {
-  if (isSupabaseConfigured()) {
+  if (getDataBackend("l'enregistrement d'un événement campagne") === "supabase") {
     return recordEventInSupabase(campaignId, eventType, leadId, metadata);
   }
 
@@ -1563,7 +1592,7 @@ export async function recordEvent(
 }
 
 export const getPublicCampaign = cache(async function getPublicCampaign(id: string) {
-  if (isSupabaseConfigured()) {
+  if (getDataBackend("la lecture d'une campagne publique") === "supabase") {
     return getSupabasePublicCampaign(id);
   }
 
@@ -1571,7 +1600,7 @@ export const getPublicCampaign = cache(async function getPublicCampaign(id: stri
 });
 
 export const getCampaignPerformance = cache(async function getCampaignPerformance(campaignId: string, fallbackMerchant?: Merchant) {
-  if (isSupabaseConfigured()) {
+  if (getDataBackend("la lecture des performances campagne") === "supabase") {
     return getSupabaseCampaignPerformance(campaignId, fallbackMerchant);
   }
 
@@ -1582,8 +1611,10 @@ export const getMerchantDashboard = cache(async function getMerchantDashboard(
   merchantId = merchantSeed.id,
   fallbackMerchant?: Merchant,
 ) {
-  if (isSupabaseConfigured() && fallbackMerchant) {
-    return getSupabaseMerchantDashboard(fallbackMerchant);
+  if (getDataBackend("la lecture du dashboard marchand") === "supabase") {
+    return getSupabaseMerchantDashboard(
+      await resolveMerchantForSupabase(merchantId, fallbackMerchant),
+    );
   }
 
   return getMerchantDashboardFromMemory(merchantId, fallbackMerchant);
@@ -1593,7 +1624,7 @@ export const getMerchantCampaignLibrary = cache(async function getMerchantCampai
   merchantId = merchantSeed.id,
   fallbackMerchant?: Merchant,
 ) {
-  if (isSupabaseConfigured()) {
+  if (getDataBackend("la lecture de la bibliothèque de campagnes") === "supabase") {
     return getSupabaseMerchantCampaignLibrary(fallbackMerchant?.id ?? merchantId);
   }
 
@@ -1601,7 +1632,7 @@ export const getMerchantCampaignLibrary = cache(async function getMerchantCampai
 });
 
 export const getMerchantLeads = cache(async function getMerchantLeads(merchantId = merchantSeed.id, campaignId?: string) {
-  if (isSupabaseConfigured()) {
+  if (getDataBackend("la lecture des leads") === "supabase") {
     return getSupabaseMerchantLeads(merchantId, campaignId);
   }
 
@@ -1609,7 +1640,7 @@ export const getMerchantLeads = cache(async function getMerchantLeads(merchantId
 });
 
 export const getCampaignDataView = cache(async function getCampaignDataView(campaignId: string, fallbackMerchant?: Merchant) {
-  if (isSupabaseConfigured()) {
+  if (getDataBackend("la lecture des données campagne") === "supabase") {
     return getSupabaseCampaignDataView(campaignId, fallbackMerchant);
   }
 
@@ -1620,8 +1651,10 @@ export const getMerchantSupportOverview = cache(async function getMerchantSuppor
   merchantId = merchantSeed.id,
   fallbackMerchant?: Merchant,
 ) {
-  if (isSupabaseConfigured() && fallbackMerchant) {
-    return getSupabaseMerchantSupportOverview(fallbackMerchant);
+  if (getDataBackend("la lecture de la supervision") === "supabase") {
+    return getSupabaseMerchantSupportOverview(
+      await resolveMerchantForSupabase(merchantId, fallbackMerchant),
+    );
   }
 
   const leads = getMerchantLeadsFromMemory();
@@ -1652,8 +1685,9 @@ export const getMerchantSupportOverview = cache(async function getMerchantSuppor
 });
 
 export async function drawForLead(input: DrawRequest, fallbackMerchant?: Merchant) {
-  if (isSupabaseConfigured()) {
-    const merchant = fallbackMerchant ?? (await getMerchantProfile());
+  if (getDataBackend("la participation à un jeu") === "supabase") {
+    const merchant =
+      fallbackMerchant ?? (await resolveCampaignMerchantForSupabase(input.campaignId));
     return drawForLeadInSupabase(input, merchant);
   }
 
@@ -1664,7 +1698,7 @@ export async function createDrawSession(
   input: CreateDrawSessionRequest,
   fallbackMerchant?: Merchant,
 ) {
-  if (isSupabaseConfigured()) {
+  if (getDataBackend("la préparation d'une partie") === "supabase") {
     return createDrawSessionInSupabase(input, fallbackMerchant);
   }
 
@@ -1675,7 +1709,7 @@ export async function finalizeDrawSession(
   input: FinalizeDrawSessionRequest,
   fallbackMerchant?: Merchant,
 ) {
-  if (isSupabaseConfigured()) {
+  if (getDataBackend("la finalisation d'une partie") === "supabase") {
     return finalizeDrawSessionInSupabase(input, fallbackMerchant);
   }
 
@@ -1683,7 +1717,7 @@ export async function finalizeDrawSession(
 }
 
 export async function markActionConfirmed(leadId: string) {
-  if (isSupabaseConfigured()) {
+  if (getDataBackend("la confirmation d'une action marketing") === "supabase") {
     return markActionConfirmedInSupabase(leadId);
   }
 
@@ -1691,7 +1725,7 @@ export async function markActionConfirmed(leadId: string) {
 }
 
 export async function redeemLeadPrize(leadId: string) {
-  if (isSupabaseConfigured()) {
+  if (getDataBackend("le retrait d'un lot") === "supabase") {
     return redeemLeadPrizeInSupabase(leadId);
   }
 
@@ -1699,7 +1733,7 @@ export async function redeemLeadPrize(leadId: string) {
 }
 
 export async function resetLeadPrize(leadId: string) {
-  if (isSupabaseConfigured()) {
+  if (getDataBackend("la réinitialisation d'un lot") === "supabase") {
     return resetLeadPrizeInSupabase(leadId);
   }
 
@@ -1707,7 +1741,7 @@ export async function resetLeadPrize(leadId: string) {
 }
 
 export async function updatePrizeStock(prizeId: string, remainingQuantity: number | null) {
-  if (isSupabaseConfigured()) {
+  if (getDataBackend("la mise à jour du stock d'un lot") === "supabase") {
     return updatePrizeStockInSupabase(prizeId, remainingQuantity);
   }
 
@@ -1715,7 +1749,7 @@ export async function updatePrizeStock(prizeId: string, remainingQuantity: numbe
 }
 
 export async function resetPrizeStock(prizeId: string) {
-  if (isSupabaseConfigured()) {
+  if (getDataBackend("la remise à zéro du stock d'un lot") === "supabase") {
     return resetPrizeStockInSupabase(prizeId);
   }
 
@@ -1723,16 +1757,24 @@ export async function resetPrizeStock(prizeId: string) {
 }
 
 export async function updateCampaignSetup(input: CampaignSetupInput) {
-  if (isSupabaseConfigured()) {
+  if (getDataBackend("la mise à jour d'une campagne") === "supabase") {
     const campaignId = await updateCampaignSetupInSupabase(input);
-    return getCampaignPerformance(campaignId, await getMerchantProfile(input.merchantId));
+    return getCampaignPerformance(
+      campaignId,
+      await resolveMerchantForSupabase(input.merchantId),
+    );
   }
 
   return updateCampaignSetupInMemory(input);
 }
 
-export async function toggleCampaign(id: string, isActive: boolean) {
-  if (isSupabaseConfigured()) {
+export async function toggleCampaign(id: string, isActive: boolean, merchantId?: string) {
+  if (getDataBackend("l'activation d'une campagne") === "supabase") {
+    if (merchantId) {
+      await toggleCampaignForMerchantInSupabase(id, isActive, merchantId);
+      return null;
+    }
+
     await toggleCampaignInSupabase(id, isActive);
     return null;
   }
@@ -1740,8 +1782,13 @@ export async function toggleCampaign(id: string, isActive: boolean) {
   return toggleCampaignInMemory(id, isActive);
 }
 
-export async function deleteCampaign(id: string) {
-  if (isSupabaseConfigured()) {
+export async function deleteCampaign(id: string, merchantId?: string) {
+  if (getDataBackend("la suppression d'une campagne") === "supabase") {
+    if (merchantId) {
+      await deleteCampaignForMerchantInSupabase(id, merchantId);
+      return null;
+    }
+
     await deleteCampaignInSupabase(id);
     return null;
   }
@@ -1750,7 +1797,7 @@ export async function deleteCampaign(id: string) {
 }
 
 export async function duplicateCampaign(id: string, fallbackMerchant: Merchant) {
-  if (isSupabaseConfigured()) {
+  if (getDataBackend("la duplication d'une campagne") === "supabase") {
     const campaignId = await duplicateCampaignInSupabase(id, fallbackMerchant);
     return getCampaignPerformance(campaignId, fallbackMerchant);
   }

@@ -4,6 +4,7 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const allowInsecureLocalTls = process.env.ALLOW_INSECURE_LOCAL_TLS === "true";
+const allowMemoryStoreFallback = process.env.ALLOW_MEMORY_STORE_FALLBACK;
 
 export function allowLocalTlsBypass() {
   if (
@@ -21,6 +22,28 @@ export function isSupabaseConfigured() {
 
 export function isSupabaseOAuthConfigured() {
   return Boolean(supabaseUrl && supabaseAnonKey);
+}
+
+export function isMemoryStoreFallbackAllowed() {
+  if (allowMemoryStoreFallback != null) {
+    return allowMemoryStoreFallback === "true";
+  }
+
+  return process.env.NODE_ENV !== "production";
+}
+
+export function assertDataBackendAvailable(operation: string): "supabase" | "memory" {
+  if (isSupabaseConfigured()) {
+    return "supabase";
+  }
+
+  if (isMemoryStoreFallbackAllowed()) {
+    return "memory";
+  }
+
+  throw new Error(
+    `Supabase n'est pas configuré pour ${operation}. Le fallback mémoire est désactivé dans cet environnement.`,
+  );
 }
 
 export function getSupabaseAdmin() {

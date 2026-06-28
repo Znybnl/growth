@@ -1,4 +1,5 @@
 import { hashPassword, verifyPassword } from "@/lib/passwords";
+import { getStripeClient } from "@/lib/stripe";
 import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/supabase";
 import {
   Merchant,
@@ -11,6 +12,7 @@ import {
   MerchantUser,
 } from "@/lib/types";
 import { getMerchantBillingSummary } from "@/lib/billing";
+import type { User as SupabaseAuthUser } from "@supabase/supabase-js";
 import Stripe from "stripe";
 
 type MerchantRow = {
@@ -69,6 +71,13 @@ type AuthSyncInput = {
   lastName: string;
   merchantId: string;
   merchantUserId: string;
+};
+
+type AuthIdentityInput = {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
 };
 
 const DEMO_MERCHANT_LOGIN = {
@@ -222,6 +231,44 @@ async function ensureSupabaseAuthUser(input: AuthSyncInput) {
   return data.user.id;
 }
 
+async function createSupabaseAuthIdentity(input: AuthIdentityInput) {
+  const supabase = getSupabaseAdmin();
+  const email = input.email.trim().toLowerCase();
+
+  const { data, error } = await supabase.auth.admin.createUser({
+    email,
+    password: input.password,
+    email_confirm: true,
+    app_metadata: {
+      source: "okado-merchant",
+    },
+    user_metadata: {
+      first_name: input.firstName,
+      last_name: input.lastName,
+      full_name: `${input.firstName} ${input.lastName}`.trim(),
+    },
+  });
+
+  if (error || !data.user) {
+    if (error && isDuplicateAuthUserError(error.message)) {
+      throw new Error("Un compte existe deja avec cette adresse e-mail.");
+    }
+
+    throw new Error("Creation de l'utilisateur Supabase Auth impossible.");
+  }
+
+  return data.user.id;
+}
+
+async function deleteSupabaseAuthUserById(authUserId: string) {
+  const supabase = getSupabaseAdmin();
+  const { error } = await supabase.auth.admin.deleteUser(authUserId);
+
+  if (error) {
+    throw new Error("Suppression de l'utilisateur Supabase Auth impossible.");
+  }
+}
+
 function toMerchant(row: MerchantRow): Merchant {
   return {
     id: row.id,
@@ -304,6 +351,65 @@ export async function getSupabaseMerchantUser(userId: string) {
   }
 
   return toMerchantUser(data);
+}
+
+export async function getSupabaseMerchantUserByEmail(email: string) {
+  if (!isSupabaseConfigured()) {
+    return null;
+  }
+
+  const supabase = getSupabaseAdmin();
+  const normalizedEmail = email.trim().toLowerCase();
+  const { data, error } = await supabase
+    .from("merchant_users")
+    .select("id, merchant_id, first_name, last_name, email, password_hash, created_at")
+    .eq("email", normalizedEmail)
+    .maybeSingle<MerchantUserRow>();
+
+  if (error || !data) {
+    return null;
+  }
+
+  return toMerchantUser(data);
+}
+
+export async function resolveMerchantSessionFromAuthUser(
+  authUser: Pick<SupabaseAuthUser, "email" | "app_metadata">,
+) {
+  const merchantUserId =
+    typeof authUser.app_metadata?.merchant_user_id === "string"
+      ? authUser.app_metadata.merchant_user_id
+      : null;
+  let merchantUser = merchantUserId ? await getSupabaseMerchantUser(merchantUserId) : null;
+
+  if (!merchantUser && authUser.email) {
+    merchantUser = await getSupabaseMerchantUserByEmail(authUser.email);
+  }
+
+  if (!merchantUser) {
+    throw new Error("Compte marchand introuvable.");
+  }
+
+  if (!merchantUserId || merchantUserId !== merchantUser.id) {
+    await ensureSupabaseAuthUser({
+      email: merchantUser.email,
+      firstName: merchantUser.firstName,
+      lastName: merchantUser.lastName,
+      merchantId: merchantUser.merchantId,
+      merchantUserId: merchantUser.id,
+    });
+  }
+
+  const merchant = await getSupabaseMerchantProfile(merchantUser.merchantId);
+
+  if (!merchant) {
+    throw new Error("Marchand introuvable.");
+  }
+
+  return {
+    user: merchantUser,
+    merchant,
+  };
 }
 
 export async function ensureDemoMerchantInSupabase() {
@@ -425,54 +531,60 @@ export async function createMerchantAccountInSupabase(input: MerchantSignUpInput
   const phone = (input.phone ?? "").trim();
   const createdAt = new Date().toISOString();
   const trialEndDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
-
-  const merchantInsert = await supabase.from("merchants").insert({
-    id: merchantId,
-    company_name: companyName,
-    logo_text: companyName.slice(0, 2).toUpperCase(),
-    logo_url: null,
-    industry: "",
-    restaurant_type: "Brasserie",
-    city,
-    address: "",
-    contact_name: `${firstName} ${lastName}`.trim(),
-    phone,
-    restaurant_email: "",
-    website_url: "",
-    onboarding_completed: false,
-    preferred_goals: [],
-    diffusion_support: [],
-    google_review_url: "",
-    instagram_url: "",
-    facebook_url: "",
-    tiktok_url: "",
-    tripadvisor_url: "",
-    default_prize_cost: 3,
-    trial_start_date: createdAt,
-    trial_end_date: trialEndDate,
-    created_at: createdAt,
-  });
-
-  if (merchantInsert.error) {
-    throw new Error("Creation du marchand impossible.");
-  }
-
-  const userInsert = await supabase.from("merchant_users").insert({
-    id: userId,
-    merchant_id: merchantId,
-    first_name: firstName,
-    last_name: lastName,
+  const authUserId = await createSupabaseAuthIdentity({
     email,
-    password_hash: hashPassword(input.password),
-    created_at: createdAt,
+    password: input.password,
+    firstName,
+    lastName,
   });
-
-  if (userInsert.error) {
-    await supabase.from("merchants").delete().eq("id", merchantId);
-    throw new Error("Creation du compte impossible.");
-  }
 
   try {
+    const merchantInsert = await supabase.from("merchants").insert({
+      id: merchantId,
+      company_name: companyName,
+      logo_text: companyName.slice(0, 2).toUpperCase(),
+      logo_url: null,
+      industry: "",
+      restaurant_type: "Brasserie",
+      city,
+      address: "",
+      contact_name: `${firstName} ${lastName}`.trim(),
+      phone,
+      restaurant_email: "",
+      website_url: "",
+      onboarding_completed: false,
+      preferred_goals: [],
+      diffusion_support: [],
+      google_review_url: "",
+      instagram_url: "",
+      facebook_url: "",
+      tiktok_url: "",
+      tripadvisor_url: "",
+      default_prize_cost: 3,
+      trial_start_date: createdAt,
+      trial_end_date: trialEndDate,
+      created_at: createdAt,
+    });
+
+    if (merchantInsert.error) {
+      throw new Error("Creation du marchand impossible.");
+    }
+
+    const userInsert = await supabase.from("merchant_users").insert({
+      id: userId,
+      merchant_id: merchantId,
+      first_name: firstName,
+      last_name: lastName,
+      email,
+      password_hash: hashPassword(input.password),
+      created_at: createdAt,
+    });
+
+    if (userInsert.error) {
+      await supabase.from("merchants").delete().eq("id", merchantId);
+      throw new Error("Creation du compte impossible.");
+    }
+
     await ensureSupabaseAuthUser({
       email,
       password: input.password,
@@ -484,6 +596,7 @@ export async function createMerchantAccountInSupabase(input: MerchantSignUpInput
   } catch (error) {
     await supabase.from("merchant_users").delete().eq("id", userId);
     await supabase.from("merchants").delete().eq("id", merchantId);
+    await deleteSupabaseAuthUserById(authUserId);
     throw error;
   }
 
@@ -762,6 +875,35 @@ export async function findMerchantByStripeCustomerIdInSupabase(stripeCustomerId:
   }
 
   return toMerchant(data);
+}
+
+export async function syncMerchantBillingFromStripeCustomerIdInSupabase(
+  stripeCustomerId: string,
+) {
+  const merchant = await findMerchantByStripeCustomerIdInSupabase(stripeCustomerId);
+
+  if (!merchant) {
+    throw new Error("Marchand Stripe introuvable.");
+  }
+
+  const stripe = getStripeClient();
+  const subscriptions = await stripe.subscriptions.list({
+    customer: stripeCustomerId,
+    status: "all",
+    limit: 20,
+  });
+
+  const subscription =
+    subscriptions.data.find((item) =>
+      ["active", "trialing", "past_due", "unpaid", "incomplete", "paused"].includes(item.status),
+    ) ?? subscriptions.data[0];
+
+  if (!subscription) {
+    return merchant;
+  }
+
+  await updateMerchantBillingFromStripeSubscriptionInSupabase(merchant.id, subscription);
+  return getSupabaseMerchantProfile(merchant.id);
 }
 
 export async function updateMerchantBillingFromStripeSubscriptionInSupabase(

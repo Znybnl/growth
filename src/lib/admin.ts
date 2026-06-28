@@ -10,3 +10,9 @@ export function isSaasAdminEmail(email?: string | null) {
 
   return SAAS_ADMIN_EMAILS.has(email.trim().toLowerCase());
 }
+
+export function assertSaasAdminEmail(email?: string | null) {
+  if (!isSaasAdminEmail(email)) {
+    throw new Error("Accès réservé à l'administration.");
+  }
+}

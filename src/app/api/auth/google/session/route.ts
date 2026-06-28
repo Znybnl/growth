@@ -1,7 +1,5 @@
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-import { SESSION_COOKIE } from "@/lib/auth";
 import { authenticateOrProvisionMerchantWithGoogle } from "@/lib/merchant-account-repository";
 
 type GoogleSessionBody = {
@@ -27,14 +25,6 @@ export async function POST(request: Request) {
       fullName: body.fullName?.trim() ?? "",
     });
 
-    const cookieStore = await cookies();
-    cookieStore.set(SESSION_COOKIE, session.user.id, {
-      httpOnly: true,
-      sameSite: "lax",
-      path: "/",
-      secure: process.env.NODE_ENV === "production",
-    });
-
     return NextResponse.json({
       merchant: session.merchant,
       user: {
@@ -54,4 +44,3 @@ export async function POST(request: Request) {
     );
   }
 }
-

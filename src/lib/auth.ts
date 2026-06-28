@@ -1,32 +1,26 @@
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { cache } from "react";
 
-import { getMerchantProfile, getMerchantUser } from "@/lib/store";
-
-const SESSION_COOKIE = "okado_session";
-
-export const getSessionUserId = cache(async function getSessionUserId() {
-  const cookieStore = await cookies();
-  return cookieStore.get(SESSION_COOKIE)?.value ?? null;
-});
+import { resolveMerchantSessionFromAuthUser } from "@/lib/merchant-account-repository";
+import { createAppRouterSupabaseServerClient } from "@/lib/supabase-server";
+import { LEGACY_SESSION_COOKIE } from "@/lib/supabase-auth-config";
 
 export const getAuthenticatedSession = cache(async function getAuthenticatedSession() {
-  const userId = await getSessionUserId();
+  const supabase = await createAppRouterSupabaseServerClient();
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
 
-  if (!userId) {
+  if (error || !user) {
     return null;
   }
 
-  const user = await getMerchantUser(userId);
-
-  if (!user) {
+  try {
+    return await resolveMerchantSessionFromAuthUser(user);
+  } catch {
     return null;
   }
-
-  const merchant = await getMerchantProfile(user.merchantId);
-
-  return { user, merchant };
 });
 
 export async function requireAuthenticatedSession() {
@@ -53,4 +47,4 @@ export async function redirectAuthenticatedMerchant() {
   redirect("/");
 }
 
-export { SESSION_COOKIE };
+export const SESSION_COOKIE = LEGACY_SESSION_COOKIE;

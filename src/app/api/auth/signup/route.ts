@@ -1,23 +1,35 @@
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-import { SESSION_COOKIE } from "@/lib/auth";
 import { createMerchantAccount } from "@/lib/store";
+import { createRouteSupabaseClient } from "@/lib/supabase-server-auth";
 import { MerchantSignUpInput } from "@/lib/types";
 
+function copyCookies(from: NextResponse, to: NextResponse) {
+  for (const cookie of from.cookies.getAll()) {
+    to.cookies.set(cookie);
+  }
+}
+
 export async function POST(request: Request) {
+  const provisionalResponse = NextResponse.json({});
+
   try {
     const body = (await request.json()) as MerchantSignUpInput;
     const session = await createMerchantAccount(body);
-    const cookieStore = await cookies();
-
-    cookieStore.set(SESSION_COOKIE, session.user.id, {
-      httpOnly: true,
-      sameSite: "lax",
-      path: "/",
+    const supabase = createRouteSupabaseClient({
+      request,
+      response: provisionalResponse,
+    });
+    const signInResult = await supabase.auth.signInWithPassword({
+      email: body.email.trim().toLowerCase(),
+      password: body.password,
     });
 
-    return NextResponse.json(
+    if (signInResult.error || !signInResult.data.user) {
+      throw new Error(signInResult.error?.message ?? "Connexion automatique impossible.");
+    }
+
+    const response = NextResponse.json(
       {
         merchant: session.merchant,
         user: {
@@ -31,6 +43,9 @@ export async function POST(request: Request) {
       },
       { status: 201 },
     );
+
+    copyCookies(provisionalResponse, response);
+    return response;
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Inscription impossible." },

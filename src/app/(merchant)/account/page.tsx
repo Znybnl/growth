@@ -2,10 +2,40 @@ import { AccountSettingsForm } from "@/components/merchant/account-settings-form
 import { BillingSubscriptionCard } from "@/components/merchant/billing-subscription-card";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import { getMerchantBillingSummary } from "@/lib/billing";
+import { syncMerchantBillingFromStripeCustomerIdInSupabase } from "@/lib/merchant-account-repository";
 
-export default async function AccountPage() {
+type AccountPageProps = {
+  searchParams?: Promise<{
+    billing?: string;
+  }>;
+};
+
+export default async function AccountPage({ searchParams }: AccountPageProps) {
   const session = await requireAuthenticatedSession();
-  const billing = getMerchantBillingSummary(session.merchant);
+  const resolvedSearchParams = searchParams ? await searchParams : undefined;
+  let merchant = session.merchant;
+
+  const shouldAttemptStripeSync = Boolean(
+    merchant.stripeCustomerId &&
+      (resolvedSearchParams?.billing === "success" ||
+        (!merchant.stripeSubscriptionId && !merchant.stripeSubscriptionStatus)),
+  );
+
+  if (shouldAttemptStripeSync && merchant.stripeCustomerId) {
+    try {
+      const syncedMerchant = await syncMerchantBillingFromStripeCustomerIdInSupabase(
+        merchant.stripeCustomerId,
+      );
+
+      if (syncedMerchant) {
+        merchant = syncedMerchant;
+      }
+    } catch (error) {
+      console.error("Stripe billing sync failed on account page", error);
+    }
+  }
+
+  const billing = getMerchantBillingSummary(merchant);
 
   return (
     <div className="space-y-6">
@@ -27,7 +57,7 @@ export default async function AccountPage() {
       </section>
 
       <BillingSubscriptionCard billing={billing} />
-      <AccountSettingsForm merchant={session.merchant} user={session.user} />
+      <AccountSettingsForm merchant={merchant} user={session.user} />
     </div>
   );
 }

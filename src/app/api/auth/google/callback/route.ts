@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 
-import { SESSION_COOKIE } from "@/lib/auth";
 import { authenticateOrProvisionMerchantWithGoogle } from "@/lib/merchant-account-repository";
 import { createRouteSupabaseClient } from "@/lib/supabase-server-auth";
 
@@ -75,13 +74,6 @@ export async function GET(request: Request) {
     for (const cookie of provisionalResponse.cookies.getAll()) {
       response.cookies.set(cookie);
     }
-
-    response.cookies.set(SESSION_COOKIE, session.user.id, {
-      httpOnly: true,
-      sameSite: "lax",
-      path: "/",
-      secure: process.env.NODE_ENV === "production",
-    });
 
     return response;
   } catch (error) {

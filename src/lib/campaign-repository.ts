@@ -864,6 +864,23 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
   const supabase = getSupabaseAdmin();
   const isNewCampaign = !input.id;
   const campaignId = input.id ?? generateId("camp");
+
+  if (!isNewCampaign) {
+    const { data: existingCampaign, error: existingCampaignError } = await supabase
+      .from("campaigns")
+      .select("id,merchant_id")
+      .eq("id", campaignId)
+      .maybeSingle();
+
+    if (existingCampaignError) {
+      throw new Error(`Lecture de la campagne impossible: ${existingCampaignError.message}`);
+    }
+
+    if (!existingCampaign || existingCampaign.merchant_id !== input.merchantId) {
+      throw new Error("Campagne introuvable");
+    }
+  }
+
   const payload = {
     id: campaignId,
     merchant_id: input.merchantId,
@@ -1041,8 +1058,32 @@ export async function duplicateCampaignInSupabase(id: string, merchant: Merchant
 
 export async function toggleCampaignInSupabase(id: string, isActive: boolean) {
   const supabase = getSupabaseAdmin();
-  const { error } = await supabase.from("campaigns").update({ is_active: isActive }).eq("id", id);
+  const { error, data } = await supabase
+    .from("campaigns")
+    .update({ is_active: isActive })
+    .eq("id", id)
+    .select("id")
+    .maybeSingle();
+
+  if (error || !data) throw new Error("Campagne introuvable");
+}
+
+export async function toggleCampaignForMerchantInSupabase(
+  id: string,
+  isActive: boolean,
+  merchantId: string,
+) {
+  const supabase = getSupabaseAdmin();
+  const { error, data } = await supabase
+    .from("campaigns")
+    .update({ is_active: isActive })
+    .eq("id", id)
+    .eq("merchant_id", merchantId)
+    .select("id")
+    .maybeSingle();
+
   if (error) throw new Error("Campagne introuvable");
+  if (!data) throw new Error("Campagne introuvable");
 }
 
 export async function deleteCampaignInSupabase(id: string) {
@@ -1054,6 +1095,33 @@ export async function deleteCampaignInSupabase(id: string) {
   await supabase.from("prizes").delete().eq("campaign_id", id);
 
   const { error } = await supabase.from("campaigns").delete().eq("id", id);
+  if (error) throw new Error("Campagne introuvable");
+}
+
+export async function deleteCampaignForMerchantInSupabase(id: string, merchantId: string) {
+  const supabase = getSupabaseAdmin();
+  const { data: campaign, error: campaignError } = await supabase
+    .from("campaigns")
+    .select("id")
+    .eq("id", id)
+    .eq("merchant_id", merchantId)
+    .maybeSingle();
+
+  if (campaignError || !campaign) {
+    throw new Error("Campagne introuvable");
+  }
+
+  await supabase.from("campaign_events").delete().eq("campaign_id", id);
+  await supabase.from("leads").delete().eq("campaign_id", id);
+  await supabase.from("campaign_actions").delete().eq("campaign_id", id);
+  await supabase.from("prizes").delete().eq("campaign_id", id);
+
+  const { error } = await supabase
+    .from("campaigns")
+    .delete()
+    .eq("id", id)
+    .eq("merchant_id", merchantId);
+
   if (error) throw new Error("Campagne introuvable");
 }
 

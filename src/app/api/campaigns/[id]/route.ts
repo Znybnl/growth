@@ -10,11 +10,17 @@ type RouteProps = {
 };
 
 export async function PATCH(request: Request, { params }: RouteProps) {
+  const session = await getAuthenticatedSession();
+
+  if (!session) {
+    return NextResponse.json({ error: "Authentification requise" }, { status: 401 });
+  }
+
   const { id } = await params;
   const body = (await request.json()) as { isActive: boolean };
 
   try {
-    const campaign = await toggleCampaign(id, body.isActive);
+    const campaign = await toggleCampaign(id, body.isActive, session.merchant.id);
     return NextResponse.json({ campaign });
   } catch (error) {
     return NextResponse.json(
@@ -50,10 +56,16 @@ export async function GET(_request: Request, { params }: RouteProps) {
 }
 
 export async function DELETE(_request: Request, { params }: RouteProps) {
+  const session = await getAuthenticatedSession();
+
+  if (!session) {
+    return NextResponse.json({ error: "Authentification requise" }, { status: 401 });
+  }
+
   const { id } = await params;
 
   try {
-    await deleteCampaign(id);
+    await deleteCampaign(id, session.merchant.id);
     return NextResponse.json({ id });
   } catch (error) {
     return NextResponse.json(

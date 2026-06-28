@@ -3,6 +3,8 @@
 import { createBrowserClient } from "@supabase/ssr";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+import { SUPABASE_AUTH_COOKIE_NAME } from "@/lib/supabase-auth-config";
+
 let browserClient: SupabaseClient | null = null;
 
 export function getSupabaseBrowserClient() {
@@ -16,7 +18,7 @@ export function getSupabaseBrowserClient() {
   if (!browserClient) {
     browserClient = createBrowserClient(supabaseUrl, supabaseAnonKey, {
       cookieOptions: {
-        name: "sb-okado-auth",
+        name: SUPABASE_AUTH_COOKIE_NAME,
         path: "/",
         sameSite: "lax",
         secure: window.location.protocol === "https:",

@@ -1,5 +1,15 @@
 import { NextResponse } from "next/server";
 
+import {
+  assertPublicRateLimit,
+  getPublicErrorStatus,
+  getPublicRetryAfter,
+  isValidPublicEmail,
+  isValidPublicFirstName,
+  isValidPublicIdentifier,
+  normalizePublicEmail,
+  normalizePublicFirstName,
+} from "@/lib/public-api";
 import { sendRewardEmail } from "@/lib/reward-email";
 import { logSupportEvent } from "@/lib/support-log";
 import { drawForLead } from "@/lib/store";
@@ -13,8 +23,16 @@ type DrawBody = {
 
 export async function POST(request: Request) {
   const body = (await request.json()) as DrawBody;
+  const campaignId = body.campaignId?.trim() ?? "";
+  const firstName = normalizePublicFirstName(body.firstName ?? "");
+  const email = normalizePublicEmail(body.email ?? "");
 
-  if (!body.campaignId || !body.firstName || !body.email || !body.marketingConsent) {
+  if (
+    !isValidPublicIdentifier(campaignId) ||
+    !isValidPublicFirstName(firstName) ||
+    !isValidPublicEmail(email) ||
+    !body.marketingConsent
+  ) {
     return NextResponse.json(
       { error: "campaignId, firstName, email and marketingConsent are required" },
       { status: 400 },
@@ -22,7 +40,18 @@ export async function POST(request: Request) {
   }
 
   try {
-    const result = await drawForLead(body);
+    assertPublicRateLimit(request, {
+      key: `draw-legacy:${campaignId}:${email}`,
+      limit: 6,
+      windowMs: 10 * 60 * 1000,
+    });
+
+    const result = await drawForLead({
+      ...body,
+      campaignId,
+      firstName,
+      email,
+    });
     logSupportEvent("info", "draw-created", {
       campaignId: result.campaign.id,
       leadId: result.lead.id,
@@ -61,14 +90,18 @@ export async function POST(request: Request) {
     return NextResponse.json(result, { status: 201 });
   } catch (error) {
     logSupportEvent("error", "draw-failed", {
-      campaignId: body.campaignId,
-      email: body.email,
+      campaignId,
+      email,
       error: error instanceof Error ? error.message : "Draw failed",
     });
 
+    const retryAfter = getPublicRetryAfter(error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Draw failed" },
-      { status: 400 },
+      {
+        status: getPublicErrorStatus(error),
+        headers: retryAfter ? { "Retry-After": retryAfter } : undefined,
+      },
     );
   }
 }
