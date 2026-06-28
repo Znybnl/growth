@@ -28,7 +28,7 @@ function formatCurrency(value: number) {
 export function BillingSubscriptionCard({ billing }: BillingSubscriptionCardProps) {
   const [isLoading, setIsLoading] = useState<"checkout" | "portal" | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const priceLabel = useMemo(() => `${formatCurrency(24)} / mois`, []);
+  const priceLabel = useMemo(() => `${formatCurrency(20)} / mois`, []);
 
   async function redirectTo(endpoint: "/api/stripe/checkout-session" | "/api/stripe/portal-session") {
     setError(null);
@@ -65,8 +65,8 @@ export function BillingSubscriptionCard({ billing }: BillingSubscriptionCardProp
             Votre plan Okado Pro
           </h2>
           <p className="mt-3 max-w-2xl text-sm leading-7 text-[#5c6577]">
-            Gérez votre essai gratuit, activez votre abonnement mensuel et laissez Stripe
-            administrer vos paiements et vos factures.
+            Gérez votre essai gratuit, activez votre abonnement mensuel et gardez vos jeux
+            concours actifs sans interruption.
           </p>
         </div>
 
@@ -99,9 +99,7 @@ export function BillingSubscriptionCard({ billing }: BillingSubscriptionCardProp
             </div>
           ) : billing.isTrialActive ? (
             <div className="rounded-[24px] border border-[#cfe9d8] bg-[#effaf3] p-5 text-sm text-[#19633f]">
-              <p className="font-semibold">
-                Vous êtes actuellement en période d’essai gratuit.
-              </p>
+              <p className="font-semibold">Vous êtes actuellement en période d’essai gratuit.</p>
               <p className="mt-2 leading-7">
                 Il vous reste{" "}
                 <span className="font-semibold">{billing.daysLeftInTrial} jour(s)</span> pour
@@ -131,7 +129,7 @@ export function BillingSubscriptionCard({ billing }: BillingSubscriptionCardProp
             <ul className="mt-4 space-y-2 text-sm leading-7 text-[#5c6577]">
               <li>Jeux publics actifs et sans interruption</li>
               <li>Exports CSV et données de campagne disponibles</li>
-              <li>Factures et carte bancaire gérées dans Stripe</li>
+              <li>Suivi complet de vos animations depuis un seul compte</li>
             </ul>
           </div>
         </div>
@@ -158,10 +156,10 @@ export function BillingSubscriptionCard({ billing }: BillingSubscriptionCardProp
                 className="inline-flex w-full items-center justify-center rounded-[18px] bg-[#2f6df6] px-5 py-4 text-sm font-semibold !text-white transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isLoading === "checkout"
-                  ? "Redirection vers Stripe..."
+                  ? "Redirection vers le paiement..."
                   : billing.isTrialActive
                     ? "Activer l’abonnement dès maintenant"
-                    : "Passer à la version Pro (24€/mois)"}
+                    : "Passer à la version Pro (20€/mois)"}
               </button>
             )}
           </div>

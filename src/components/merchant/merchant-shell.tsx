@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { BrandMark } from "@/components/brand-mark";
 import { APP_NAME_CAPITALIZED } from "@/lib/branding";
+import { getMerchantBillingSummary } from "@/lib/billing";
 import { Merchant, MerchantUser } from "@/lib/types";
 
 type MerchantShellProps = {
@@ -32,6 +33,7 @@ export function MerchantShell({ children, merchant, user, isSaasAdmin }: Merchan
   const [menuOpen, setMenuOpen] = useState(false);
   const [query, setQuery] = useState(searchParams.get("q") ?? "");
   const visibleNavItems = navItems.filter((item) => !item.adminOnly || isSaasAdmin);
+  const billing = useMemo(() => getMerchantBillingSummary(merchant), [merchant]);
 
   function submitSearch(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -118,6 +120,23 @@ export function MerchantShell({ children, merchant, user, isSaasAdmin }: Merchan
                 <p className="truncate text-sm text-[#9aa1b1]">{merchant.companyName}</p>
               </div>
             </div>
+
+            {billing.isSubscribed ? (
+              <div className="mt-4 rounded-[18px] border border-[#d7eadf] bg-[#f1fbf5] px-3 py-3 text-sm text-[#1c6b45]">
+                Abonnement actif
+              </div>
+            ) : billing.isTrialActive ? (
+              <div className="mt-4 rounded-[18px] border border-[#d9e7ff] bg-[#f4f8ff] px-3 py-3 text-sm text-[#2450c8]">
+                Essai gratuit :
+                <span className="font-semibold"> {billing.daysLeftInTrial} jour(s) restants</span>
+              </div>
+            ) : (
+              <div className="mt-4 rounded-[18px] border border-[#f3c9c1] bg-[#fff1ee] px-3 py-3 text-sm text-[#8b2c18]">
+                Votre période d’essai est terminée. Activez votre abonnement pour relancer vos
+                jeux.
+              </div>
+            )}
+
             <div className="mt-4">
               <SignOutButton />
             </div>
