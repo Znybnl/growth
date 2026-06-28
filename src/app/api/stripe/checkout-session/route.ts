@@ -2,9 +2,8 @@ import { NextResponse } from "next/server";
 
 import { requireAuthenticatedSession } from "@/lib/auth";
 import { getMerchantBillingSummary } from "@/lib/billing";
-import {
-  setMerchantStripeCustomerIdInSupabase,
-} from "@/lib/merchant-account-repository";
+import { setMerchantStripeCustomerIdInSupabase } from "@/lib/merchant-account-repository";
+import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
 import { logSupportEvent } from "@/lib/support-log";
 import { getStripeClient, getStripeMonthlyPriceId } from "@/lib/stripe";
 
@@ -18,17 +17,18 @@ function toUnixTimestamp(value?: string) {
 }
 
 export async function POST(request: Request) {
-  const session = await requireAuthenticatedSession();
-  const billing = getMerchantBillingSummary(session.merchant);
-
-  if (billing.isSubscribed) {
-    return NextResponse.json(
-      { error: "Un abonnement actif existe déjà pour ce compte." },
-      { status: 400 },
-    );
-  }
-
   try {
+    assertTrustedMutationRequest(request);
+    const session = await requireAuthenticatedSession();
+    const billing = getMerchantBillingSummary(session.merchant);
+
+    if (billing.isSubscribed) {
+      return NextResponse.json(
+        { error: "Un abonnement actif existe déjà pour ce compte." },
+        { status: 400 },
+      );
+    }
+
     const stripe = getStripeClient();
     const origin = new URL(request.url).origin;
     const priceId = getStripeMonthlyPriceId();
@@ -85,14 +85,9 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ url: checkoutSession.url });
   } catch (error) {
-    logSupportEvent("error", "stripe-checkout-failed", {
-      merchantId: session.merchant.id,
-      error: error instanceof Error ? error.message : "Stripe checkout impossible",
-    });
-
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Création du paiement impossible." },
-      { status: 500 },
+      { status: getRequestSecurityErrorStatus(error) === 403 ? 403 : 500 },
     );
   }
 }

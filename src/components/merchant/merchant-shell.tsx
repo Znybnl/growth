@@ -104,6 +104,7 @@ export function MerchantShell({ children, merchant, user, isSaasAdmin }: Merchan
 
           <Link
             href="/campaigns/new"
+            prefetch={false}
             className="mt-6 inline-flex items-center justify-center rounded-[22px] bg-[#2f6df6] px-4 py-4 text-sm font-semibold !text-white shadow-[0_16px_32px_rgba(47,109,246,0.24)]"
           >
             Créer une campagne

@@ -1217,6 +1217,35 @@ function getMerchantDashboardFromMemory(
           campaigns.length,
       )
     : 0;
+  const campaignIds = new Set(campaigns.map((item) => item.campaign.id));
+  const relevantLeads = store.leads.filter((lead) => campaignIds.has(lead.campaignId));
+  const relevantEvents = store.events.filter((event) => campaignIds.has(event.campaignId));
+  const referenceDates = [
+    ...relevantLeads.map((lead) => lead.createdAt),
+    ...relevantEvents.map((event) => event.createdAt),
+  ];
+  const latest = referenceDates.length
+    ? new Date([...referenceDates].sort((a, b) => a.localeCompare(b)).at(-1) ?? new Date().toISOString())
+    : new Date();
+  const dayKeys = Array.from({ length: 30 }, (_, index) => {
+    const date = new Date(Date.UTC(latest.getUTCFullYear(), latest.getUTCMonth(), latest.getUTCDate()));
+    date.setUTCDate(latest.getUTCDate() - (30 - index - 1));
+    return date.toISOString().slice(0, 10);
+  });
+  const scansByDay = new Map<string, number>();
+  const participationsByDay = new Map<string, number>();
+
+  for (const event of relevantEvents) {
+    if (event.eventType === "scan") {
+      const day = event.createdAt.slice(0, 10);
+      scansByDay.set(day, (scansByDay.get(day) ?? 0) + 1);
+    }
+  }
+
+  for (const lead of relevantLeads) {
+    const day = lead.createdAt.slice(0, 10);
+    participationsByDay.set(day, (participationsByDay.get(day) ?? 0) + 1);
+  }
 
   return {
     merchant: clone(merchant),
@@ -1224,6 +1253,11 @@ function getMerchantDashboardFromMemory(
     totalLeads,
     totalRedeemed,
     averageConversion,
+    activityPoints: dayKeys.map((label) => ({
+      label,
+      scans: scansByDay.get(label) ?? 0,
+      participations: participationsByDay.get(label) ?? 0,
+    })),
   };
 }
 

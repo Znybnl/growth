@@ -1,14 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 
 import { GoogleAuthButton } from "@/components/auth/google-auth-button";
 import { APP_NAME } from "@/lib/branding";
 
 export function SignInForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -42,8 +41,7 @@ export function SignInForm() {
         throw new Error(payload.error ?? "Connexion impossible.");
       }
 
-      router.push(payload.merchant?.onboardingCompleted ? "/" : "/onboarding");
-      router.refresh();
+      window.location.assign(payload.merchant?.onboardingCompleted ? "/" : "/onboarding");
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : "Connexion impossible.");
     } finally {

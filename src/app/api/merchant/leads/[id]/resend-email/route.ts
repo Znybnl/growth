@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { requireAuthenticatedSession } from "@/lib/auth";
 import { getSupabaseRewardEmailResendPayload } from "@/lib/campaign-repository";
+import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
 import { sendRewardEmail } from "@/lib/reward-email";
 
 type LeadResendEmailRouteProps = {
@@ -11,10 +12,10 @@ type LeadResendEmailRouteProps = {
 };
 
 export async function POST(request: Request, { params }: LeadResendEmailRouteProps) {
-  const session = await requireAuthenticatedSession();
-  const { id } = await params;
-
   try {
+    assertTrustedMutationRequest(request);
+    const session = await requireAuthenticatedSession();
+    const { id } = await params;
     const payload = await getSupabaseRewardEmailResendPayload(id, session.merchant);
     const result = await sendRewardEmail({
       origin: new URL(request.url).origin,
@@ -37,7 +38,7 @@ export async function POST(request: Request, { params }: LeadResendEmailRoutePro
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Renvoi impossible" },
-      { status: 400 },
+      { status: getRequestSecurityErrorStatus(error) },
     );
   }
 }

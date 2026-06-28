@@ -507,6 +507,11 @@ export interface MerchantDashboardData {
   totalLeads: number;
   totalRedeemed: number;
   averageConversion: number;
+  activityPoints: Array<{
+    label: string;
+    scans: number;
+    participations: number;
+  }>;
 }
 
 export interface MerchantLeadRow extends Lead {

@@ -183,6 +183,7 @@ function LeadsExportSection({
         </div>
         <Link
           href={`/api/merchant/leads?format=csv&campaign=${campaignId}`}
+          prefetch={false}
           className="inline-flex cursor-pointer rounded-[18px] border border-[#d7e0ed] px-4 py-3 text-sm font-semibold text-[#182033]"
         >
           Export CSV
@@ -369,6 +370,7 @@ export default async function DataPage({ searchParams }: DataPageProps) {
             <div className="flex flex-wrap gap-3">
               <Link
                 href={`/campaigns/${dataView.performance.campaign.id}/edit`}
+                prefetch={false}
                 className="inline-flex rounded-[22px] bg-[#2f6df6] px-5 py-4 text-sm font-semibold !text-white shadow-[0_16px_32px_rgba(47,109,246,0.22)]"
                 style={{ color: "#ffffff" }}
               >
@@ -389,6 +391,7 @@ export default async function DataPage({ searchParams }: DataPageProps) {
                 <Link
                   key={item.campaign.id}
                   href={`/data?campaign=${item.campaign.id}${query ? `&q=${encodeURIComponent(query)}` : ""}`}
+                  prefetch={false}
                   className={`cursor-pointer rounded-[18px] px-4 py-3 text-sm font-semibold ${
                     item.campaign.id === dataView.performance.campaign.id
                       ? "bg-[#111827] !text-white"

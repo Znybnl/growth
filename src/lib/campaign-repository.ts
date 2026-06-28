@@ -618,6 +618,51 @@ async function fetchCampaignDependencies(campaignIds: string[]) {
   };
 }
 
+function buildLastDays(referenceDates: string[], days = 30) {
+  const latest = referenceDates.length
+    ? new Date(
+        [...referenceDates].sort((a, b) => a.localeCompare(b)).at(-1) ?? new Date().toISOString(),
+      )
+    : new Date();
+
+  return Array.from({ length: days }, (_, index) => {
+    const date = new Date(
+      Date.UTC(latest.getUTCFullYear(), latest.getUTCMonth(), latest.getUTCDate()),
+    );
+    date.setUTCDate(latest.getUTCDate() - (days - index - 1));
+    return date.toISOString().slice(0, 10);
+  });
+}
+
+function countByDay(values: string[]) {
+  const counts = new Map<string, number>();
+
+  for (const value of values) {
+    counts.set(value, (counts.get(value) ?? 0) + 1);
+  }
+
+  return counts;
+}
+
+function buildDashboardActivityPoints(leads: LeadRow[], events: EventRow[]) {
+  const dayKeys = buildLastDays([
+    ...leads.map((lead) => lead.created_at),
+    ...events.map((event) => event.created_at),
+  ]);
+  const scansByDay = countByDay(
+    events
+      .filter((event) => event.event_type === "scan")
+      .map((event) => event.created_at.slice(0, 10)),
+  );
+  const participationsByDay = countByDay(leads.map((lead) => lead.created_at.slice(0, 10)));
+
+  return dayKeys.map((label) => ({
+    label,
+    scans: scansByDay.get(label) ?? 0,
+    participations: participationsByDay.get(label) ?? 0,
+  }));
+}
+
 function buildPerformanceBundle(
   merchant: Merchant,
   campaignRows: CampaignRow[],
@@ -704,6 +749,7 @@ export async function getSupabaseMerchantDashboard(
     totalLeads,
     totalRedeemed,
     averageConversion,
+    activityPoints: buildDashboardActivityPoints(leads, events),
   };
 }
 

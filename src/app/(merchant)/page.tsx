@@ -10,36 +10,7 @@ import {
   goalLabel,
   leadStatusLabel,
 } from "@/lib/format";
-import { getCampaignDataView, getMerchantDashboard, getMerchantLeads } from "@/lib/store";
-
-function buildLastDays(referenceDates: string[], days = 30) {
-  const latest = referenceDates.length
-    ? new Date(
-        referenceDates.sort((a, b) => a.localeCompare(b)).at(-1) ?? new Date().toISOString(),
-      )
-    : new Date();
-
-  return Array.from({ length: days }, (_, index) => {
-    const date = new Date(
-      Date.UTC(latest.getUTCFullYear(), latest.getUTCMonth(), latest.getUTCDate()),
-    );
-    date.setUTCDate(latest.getUTCDate() - (days - index - 1));
-    return date.toISOString().slice(0, 10);
-  });
-}
-
-function buildDailySeries(values: string[], labels: string[]) {
-  const counts = new Map<string, number>();
-
-  for (const value of values) {
-    counts.set(value, (counts.get(value) ?? 0) + 1);
-  }
-
-  return labels.map((label) => ({
-    label,
-    value: counts.get(label) ?? 0,
-  }));
-}
+import { getMerchantDashboard, getMerchantLeads } from "@/lib/store";
 
 export default async function DashboardPage({
   searchParams,
@@ -74,39 +45,7 @@ export default async function DashboardPage({
   const bestCampaign = [...filteredCampaigns].sort(
     (left, right) => right.kpis.conversionRate - left.kpis.conversionRate,
   )[0];
-  const activityViews = await Promise.all(
-    filteredCampaigns.map((item) => getCampaignDataView(item.campaign.id, session.merchant)),
-  );
-  const dashboardDates = activityViews.flatMap((view) =>
-    view
-      ? [
-          ...view.events.map((event) => event.createdAt),
-          ...view.leads.map((lead) => lead.createdAt),
-        ]
-      : [],
-  );
-  const dayKeys = buildLastDays(dashboardDates, 30);
-  const scansSeries = buildDailySeries(
-    activityViews.flatMap((view) =>
-      view
-        ? view.events
-            .filter((event) => event.eventType === "scan")
-            .map((event) => event.createdAt.slice(0, 10))
-        : [],
-    ),
-    dayKeys,
-  );
-  const participationsSeries = buildDailySeries(
-    activityViews.flatMap((view) =>
-      view ? view.leads.map((lead) => lead.createdAt.slice(0, 10)) : []
-    ),
-    dayKeys,
-  );
-  const activityPoints = dayKeys.map((label, index) => ({
-    label,
-    scans: scansSeries[index]?.value ?? 0,
-    participations: participationsSeries[index]?.value ?? 0,
-  }));
+  const activityPoints = dashboard.activityPoints;
 
   return (
     <div className="min-w-0 space-y-6 overflow-x-hidden">

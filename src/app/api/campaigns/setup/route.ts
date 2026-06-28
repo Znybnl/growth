@@ -2,10 +2,12 @@ import { NextResponse } from "next/server";
 
 import { getAuthenticatedSession } from "@/lib/auth";
 import { parseCampaignSetupInput } from "@/lib/merchant-input";
+import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
 import { updateCampaignSetup } from "@/lib/store";
 
 export async function POST(request: Request) {
   try {
+    assertTrustedMutationRequest(request);
     const session = await getAuthenticatedSession();
 
     if (!session) {
@@ -20,7 +22,7 @@ export async function POST(request: Request) {
     console.error("Campaign setup failed", error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Sauvegarde impossible." },
-      { status: 500 },
+      { status: getRequestSecurityErrorStatus(error) === 403 ? 403 : 500 },
     );
   }
 }

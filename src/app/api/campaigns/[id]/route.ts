@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { getAuthenticatedSession } from "@/lib/auth";
+import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
 import { deleteCampaign, getCampaignPerformance, toggleCampaign } from "@/lib/store";
 
 type RouteProps = {
@@ -10,22 +11,22 @@ type RouteProps = {
 };
 
 export async function PATCH(request: Request, { params }: RouteProps) {
-  const session = await getAuthenticatedSession();
-
-  if (!session) {
-    return NextResponse.json({ error: "Authentification requise" }, { status: 401 });
-  }
-
-  const { id } = await params;
-  const body = (await request.json()) as { isActive: boolean };
-
   try {
+    assertTrustedMutationRequest(request);
+    const session = await getAuthenticatedSession();
+
+    if (!session) {
+      return NextResponse.json({ error: "Authentification requise" }, { status: 401 });
+    }
+
+    const { id } = await params;
+    const body = (await request.json()) as { isActive: boolean };
     const campaign = await toggleCampaign(id, body.isActive, session.merchant.id);
     return NextResponse.json({ campaign });
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Update failed" },
-      { status: 400 },
+      { status: getRequestSecurityErrorStatus(error) },
     );
   }
 }
@@ -56,21 +57,21 @@ export async function GET(_request: Request, { params }: RouteProps) {
 }
 
 export async function DELETE(_request: Request, { params }: RouteProps) {
-  const session = await getAuthenticatedSession();
-
-  if (!session) {
-    return NextResponse.json({ error: "Authentification requise" }, { status: 401 });
-  }
-
-  const { id } = await params;
-
   try {
+    assertTrustedMutationRequest(_request);
+    const session = await getAuthenticatedSession();
+
+    if (!session) {
+      return NextResponse.json({ error: "Authentification requise" }, { status: 401 });
+    }
+
+    const { id } = await params;
     await deleteCampaign(id, session.merchant.id);
     return NextResponse.json({ id });
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Delete failed" },
-      { status: 400 },
+      { status: getRequestSecurityErrorStatus(error) },
     );
   }
 }

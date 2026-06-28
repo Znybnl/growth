@@ -2,10 +2,12 @@ import { NextResponse } from "next/server";
 
 import { getAuthenticatedSession } from "@/lib/auth";
 import { parseMerchantAccountSettingsInput } from "@/lib/merchant-input";
+import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
 import { updateMerchantAccount } from "@/lib/store";
 
 export async function POST(request: Request) {
   try {
+    assertTrustedMutationRequest(request);
     const session = await getAuthenticatedSession();
 
     if (!session) {
@@ -19,7 +21,7 @@ export async function POST(request: Request) {
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Mise a jour impossible." },
-      { status: 400 },
+      { status: getRequestSecurityErrorStatus(error) },
     );
   }
 }

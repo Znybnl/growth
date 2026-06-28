@@ -72,8 +72,7 @@ export function GoogleCallbackClient() {
           throw new Error(payload.error ?? "Connexion Google impossible.");
         }
 
-        router.replace(payload.redirectPath || next);
-        router.refresh();
+        window.location.replace(payload.redirectPath || next);
       } catch (error) {
         const message =
           error instanceof Error

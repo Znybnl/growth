@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { GoogleAuthButton } from "@/components/auth/google-auth-button";
@@ -41,7 +40,6 @@ const signUpFields: Array<{
 ];
 
 export function SignUpForm() {
-  const router = useRouter();
   const [form, setForm] = useState({
     companyName: "",
     city: "",
@@ -81,8 +79,7 @@ export function SignUpForm() {
         throw new Error(payload.error ?? "Inscription impossible.");
       }
 
-      router.push("/onboarding");
-      router.refresh();
+      window.location.assign("/onboarding");
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : "Inscription impossible.");
     } finally {

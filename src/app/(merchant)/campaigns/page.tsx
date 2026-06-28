@@ -44,6 +44,7 @@ export default async function CampaignsPage({
             </div>
             <Link
               href="/campaigns/new"
+              prefetch={false}
               className="inline-flex items-center justify-center rounded-[22px] bg-[#2f6df6] px-5 py-4 text-sm font-semibold !text-white shadow-[0_16px_32px_rgba(47,109,246,0.22)]"
             >
               Créer une campagne
@@ -131,12 +132,14 @@ export default async function CampaignsPage({
               <div className="mt-5 flex flex-wrap items-start gap-3">
                 <Link
                   href={`/campaigns/${item.campaign.id}/edit`}
+                  prefetch={false}
                   className="rounded-[18px] bg-[#2f6df6] px-4 py-3 text-sm font-semibold !text-white shadow-[0_16px_32px_rgba(47,109,246,0.22)]"
                 >
                   Modifier
                 </Link>
                 <Link
                   href={`/campaign/${item.campaign.id}`}
+                  prefetch={false}
                   target="_blank"
                   rel="noreferrer"
                   className="rounded-[18px] border border-[#d7e0ed] px-4 py-3 text-sm font-semibold text-[#182033]"
@@ -145,6 +148,7 @@ export default async function CampaignsPage({
                 </Link>
                 <Link
                   href={`/data?campaign=${item.campaign.id}`}
+                  prefetch={false}
                   className="rounded-[18px] border border-[#d7e0ed] px-4 py-3 text-sm font-semibold text-[#182033]"
                 >
                   Données

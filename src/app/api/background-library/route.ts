@@ -7,6 +7,7 @@ import {
 import { getAuthenticatedSession } from "@/lib/auth";
 import { assertSaasAdminEmail } from "@/lib/admin";
 import { assertBackgroundUpload } from "@/lib/merchant-input";
+import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
 
 export async function GET() {
   try {
@@ -28,6 +29,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    assertTrustedMutationRequest(request);
     const session = await getAuthenticatedSession();
 
     if (!session) {
@@ -62,7 +64,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Création impossible." },
-      { status: isForbidden ? 403 : 500 },
+      { status: isForbidden ? 403 : getRequestSecurityErrorStatus(error) === 403 ? 403 : 500 },
     );
   }
 }

@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { getAuthenticatedSession } from "@/lib/auth";
 import { assertSaasAdminEmail } from "@/lib/admin";
 import { deleteBackgroundAsset } from "@/lib/background-library-repository";
+import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
 
 type BackgroundLibraryRouteContext = {
   params: Promise<{
@@ -15,6 +16,7 @@ export async function DELETE(
   context: BackgroundLibraryRouteContext,
 ) {
   try {
+    assertTrustedMutationRequest(_request);
     const session = await getAuthenticatedSession();
 
     if (!session) {
@@ -31,7 +33,7 @@ export async function DELETE(
 
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Suppression impossible." },
-      { status: isForbidden ? 403 : 500 },
+      { status: isForbidden ? 403 : getRequestSecurityErrorStatus(error) === 403 ? 403 : 500 },
     );
   }
 }

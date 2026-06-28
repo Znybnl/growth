@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { requireAuthenticatedSession } from "@/lib/auth";
+import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
 import { logSupportEvent } from "@/lib/support-log";
 import { getMerchantLeads, redeemLeadPrize } from "@/lib/store";
 
@@ -9,14 +10,15 @@ type RedeemBody = {
 };
 
 export async function POST(request: Request) {
-  const session = await requireAuthenticatedSession();
-  const body = (await request.json()) as RedeemBody;
-
-  if (!body.leadId) {
-    return NextResponse.json({ error: "leadId is required" }, { status: 400 });
-  }
-
   try {
+    assertTrustedMutationRequest(request);
+    const session = await requireAuthenticatedSession();
+    const body = (await request.json()) as RedeemBody;
+
+    if (!body.leadId) {
+      return NextResponse.json({ error: "leadId is required" }, { status: 400 });
+    }
+
     const leads = await getMerchantLeads(session.merchant.id);
     const existingLead = leads.find((item) => item.id === body.leadId);
 
@@ -34,15 +36,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ lead: updatedLead });
   } catch (error) {
     logSupportEvent("error", "prize-redeem-public-failed", {
-      merchantId: session.merchant.id,
-      leadId: body.leadId,
       error: error instanceof Error ? error.message : "Redeem failed",
     });
 
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Redeem failed" },
-      { status: 400 },
+      { status: getRequestSecurityErrorStatus(error) },
     );
   }
 }
-
