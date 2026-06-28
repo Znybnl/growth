@@ -168,6 +168,16 @@ type EventRow = {
   created_at: string;
 };
 
+type CampaignOverviewRpcRow = CampaignRow & {
+  scans_count: number;
+  leads_count: number;
+  actions_count: number;
+  games_count: number;
+  wins_count: number;
+  redeemed_count: number;
+  estimated_spend: number;
+};
+
 type MerchantRow = {
   id: string;
   company_name: string;
@@ -663,6 +673,31 @@ function buildDashboardActivityPoints(leads: LeadRow[], events: EventRow[]) {
   }));
 }
 
+function toOverviewKpis(row: CampaignOverviewRpcRow): CampaignKpi {
+  const scans = Number(row.scans_count) || 0;
+  const leads = Number(row.leads_count) || 0;
+  const actions = Number(row.actions_count) || 0;
+  const games = Number(row.games_count) || 0;
+  const wins = Number(row.wins_count) || 0;
+  const redeemed = Number(row.redeemed_count) || 0;
+  const estimatedSpend = Number(Number(row.estimated_spend || 0).toFixed(2));
+
+  return {
+    scans,
+    leads,
+    actions,
+    games,
+    wins,
+    redeemed,
+    conversionRate: scans ? Math.round((leads / scans) * 100) : 0,
+    actionRate: leads ? Math.round((actions / leads) * 100) : 0,
+    redemptionRate: wins ? Math.round((redeemed / wins) * 100) : 0,
+    estimatedSpend,
+    costPerLead: leads ? Number((estimatedSpend / leads).toFixed(2)) : 0,
+    costPerRedeemed: redeemed ? Number((estimatedSpend / redeemed).toFixed(2)) : 0,
+  };
+}
+
 function buildPerformanceBundle(
   merchant: Merchant,
   campaignRows: CampaignRow[],
@@ -736,6 +771,71 @@ export async function getSupabaseMerchantDashboard(
     leads,
     events,
     localSettingsByCampaignId,
+  );
+  const totalLeads = campaigns.reduce((total, item) => total + item.kpis.leads, 0);
+  const totalRedeemed = campaigns.reduce((total, item) => total + item.kpis.redeemed, 0);
+  const averageConversion = campaigns.length
+    ? Math.round(campaigns.reduce((total, item) => total + item.kpis.conversionRate, 0) / campaigns.length)
+    : 0;
+
+  return {
+    merchant: clone(merchant),
+    campaigns,
+    totalLeads,
+    totalRedeemed,
+    averageConversion,
+    activityPoints: buildDashboardActivityPoints(leads, events),
+  };
+}
+
+export async function getSupabaseMerchantCampaignOverview(
+  merchant: Merchant,
+): Promise<MerchantDashboardData> {
+  const supabase = getSupabaseAdmin();
+  const overviewResult = await supabase.rpc("get_merchant_campaign_overview", {
+    p_merchant_id: merchant.id,
+  });
+
+  if (!overviewResult.error) {
+    const rows = (overviewResult.data as CampaignOverviewRpcRow[] | null) ?? [];
+    const campaigns = rows.map((row) => ({
+      campaign: toCampaign(row, merchant, [], []),
+      merchant: clone(merchant),
+      prizes: [],
+      kpis: toOverviewKpis(row),
+    }));
+    const totalLeads = campaigns.reduce((total, item) => total + item.kpis.leads, 0);
+    const totalRedeemed = campaigns.reduce((total, item) => total + item.kpis.redeemed, 0);
+    const averageConversion = campaigns.length
+      ? Math.round(campaigns.reduce((total, item) => total + item.kpis.conversionRate, 0) / campaigns.length)
+      : 0;
+
+    return {
+      merchant: clone(merchant),
+      campaigns,
+      totalLeads,
+      totalRedeemed,
+      averageConversion,
+      activityPoints: [],
+    };
+  }
+
+  const { data: campaignsData } = await supabase
+    .from("campaigns")
+    .select("*")
+    .eq("merchant_id", merchant.id)
+    .order("created_at", { ascending: false });
+
+  const campaignRows = (campaignsData as CampaignRow[] | null) ?? [];
+  const campaignIds = campaignRows.map((campaign) => campaign.id);
+  const { actions, prizes, leads, events } = await fetchCampaignDependencies(campaignIds);
+  const campaigns = buildPerformanceBundle(
+    merchant,
+    campaignRows,
+    actions,
+    prizes,
+    leads,
+    events,
   );
   const totalLeads = campaigns.reduce((total, item) => total + item.kpis.leads, 0);
   const totalRedeemed = campaigns.reduce((total, item) => total + item.kpis.redeemed, 0);

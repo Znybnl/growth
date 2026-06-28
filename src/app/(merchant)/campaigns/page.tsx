@@ -3,7 +3,7 @@ import Link from "next/link";
 import { CampaignActionsMenu } from "@/components/merchant/campaign-actions-menu";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import { formatCurrency, formatPercent, gameTypeLabel, goalLabel } from "@/lib/format";
-import { getMerchantDashboard } from "@/lib/store";
+import { getMerchantCampaignOverview } from "@/lib/store";
 
 export default async function CampaignsPage({
   searchParams,
@@ -13,7 +13,7 @@ export default async function CampaignsPage({
   const session = await requireAuthenticatedSession();
   const params = await searchParams;
   const query = params.q?.trim().toLowerCase() ?? "";
-  const dashboard = await getMerchantDashboard(session.merchant.id, session.merchant);
+  const dashboard = await getMerchantCampaignOverview(session.merchant.id, session.merchant);
   const campaigns = query
     ? dashboard.campaigns.filter((item) =>
         `${item.campaign.title} ${item.campaign.subtitle}`.toLowerCase().includes(query),

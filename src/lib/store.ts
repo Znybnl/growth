@@ -6,6 +6,7 @@ import {
   getSupabaseCampaignDataView,
   getSupabaseCampaignPerformance,
   getSupabaseMerchantCampaignLibrary,
+  getSupabaseMerchantCampaignOverview,
   getSupabaseMerchantDashboard,
   getSupabaseMerchantLeads,
   getSupabaseMerchantSupportOverview,
@@ -1647,6 +1648,19 @@ export const getMerchantDashboard = cache(async function getMerchantDashboard(
 ) {
   if (getDataBackend("la lecture du dashboard marchand") === "supabase") {
     return getSupabaseMerchantDashboard(
+      await resolveMerchantForSupabase(merchantId, fallbackMerchant),
+    );
+  }
+
+  return getMerchantDashboardFromMemory(merchantId, fallbackMerchant);
+});
+
+export const getMerchantCampaignOverview = cache(async function getMerchantCampaignOverview(
+  merchantId = merchantSeed.id,
+  fallbackMerchant?: Merchant,
+) {
+  if (getDataBackend("la lecture de la liste des campagnes") === "supabase") {
+    return getSupabaseMerchantCampaignOverview(
       await resolveMerchantForSupabase(merchantId, fallbackMerchant),
     );
   }
