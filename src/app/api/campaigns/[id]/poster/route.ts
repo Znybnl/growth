@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { requireAuthenticatedSession } from "@/lib/auth";
+import { getAuthenticatedSession } from "@/lib/auth";
 import { createCampaignPosterSvg } from "@/lib/campaign-exports";
 import { getCampaignPerformance } from "@/lib/store";
 
@@ -13,7 +13,12 @@ type RouteContext = {
 
 export async function GET(request: Request, context: RouteContext) {
   try {
-    const session = await requireAuthenticatedSession();
+    const session = await getAuthenticatedSession();
+
+    if (!session) {
+      return NextResponse.json({ error: "Authentification requise." }, { status: 401 });
+    }
+
     const { id } = await context.params;
     const performance = await getCampaignPerformance(id, session.merchant);
 
