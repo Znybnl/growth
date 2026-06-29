@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { requireAuthenticatedSession } from "@/lib/auth";
+import { getAuthenticatedSession } from "@/lib/auth";
 import { getMerchantBillingSummary } from "@/lib/billing";
 import { setMerchantStripeCustomerIdInSupabase } from "@/lib/merchant-account-repository";
 import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
@@ -19,7 +19,12 @@ function toUnixTimestamp(value?: string) {
 export async function POST(request: Request) {
   try {
     assertTrustedMutationRequest(request);
-    const session = await requireAuthenticatedSession();
+    const session = await getAuthenticatedSession();
+
+    if (!session) {
+      return NextResponse.json({ error: "Authentification requise." }, { status: 401 });
+    }
+
     const billing = getMerchantBillingSummary(session.merchant);
 
     if (billing.isSubscribed) {

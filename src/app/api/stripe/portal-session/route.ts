@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { requireAuthenticatedSession } from "@/lib/auth";
+import { getAuthenticatedSession } from "@/lib/auth";
 import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
 import { logSupportEvent } from "@/lib/support-log";
 import { getStripeClient } from "@/lib/stripe";
@@ -8,7 +8,11 @@ import { getStripeClient } from "@/lib/stripe";
 export async function POST(request: Request) {
   try {
     assertTrustedMutationRequest(request);
-    const session = await requireAuthenticatedSession();
+    const session = await getAuthenticatedSession();
+
+    if (!session) {
+      return NextResponse.json({ error: "Authentification requise." }, { status: 401 });
+    }
 
     if (!session.merchant.stripeCustomerId) {
       return NextResponse.json(

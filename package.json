@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "smoke:critical": "node scripts/smoke-critical-flows.mjs"
+    "smoke:critical": "node scripts/smoke-critical-flows.mjs",
+    "smoke:security": "node scripts/smoke-security.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.0",
