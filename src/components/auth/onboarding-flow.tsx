@@ -10,6 +10,7 @@ import {
   businessLabel,
   isRestaurantIndustry,
 } from "@/lib/merchant-options";
+import { GoogleReviewPlacePicker } from "@/components/merchant/google-review-place-picker";
 import { Merchant } from "@/lib/types";
 
 const steps = [
@@ -233,16 +234,14 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
               campagnes.
             </p>
             <div className="mt-6 grid gap-4 md:grid-cols-2">
-              <label className="text-sm">
-                <span className="mb-2 block text-[#616b7c]">Lien Google Avis</span>
-                <input
-                  type="url"
+              <div className="md:col-span-2">
+                <GoogleReviewPlacePicker
                   value={googleReviewUrl}
-                  onChange={(event) => setGoogleReviewUrl(event.target.value)}
-                  placeholder="https://g.page/..."
-                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                  onChange={setGoogleReviewUrl}
+                  defaultQuery={companyName}
+                  city={city}
                 />
-              </label>
+              </div>
               <label className="text-sm">
                 <span className="mb-2 block text-[#616b7c]">Instagram</span>
                 <input

@@ -40,6 +40,10 @@ npm install
 npm run dev
 ```
 
+## Variables utiles
+
+- `GOOGLE_PLACES_API_KEY` : cle serveur Google Places API utilisee pour rechercher un etablissement et generer automatiquement le lien d'avis Google.
+
 ## Verification effectuee
 
 - `npm run lint`
