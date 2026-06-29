@@ -7,14 +7,13 @@ import { ChangeEvent, useMemo, useState } from "react";
 
 import { buildPosterSvg, createPosterPreviewQrDataUrl } from "@/lib/poster-render";
 import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
-import { Campaign, CampaignPosterSettings, PosterTemplateId, Prize, TextFont } from "@/lib/types";
+import { Campaign, CampaignPosterSettings, PosterTemplateId, Prize } from "@/lib/types";
 
 type PosterEditorProps = {
   campaign: Campaign;
   prizes: Prize[];
 };
 
-const textFontOptions: TextFont[] = ["display", "sans", "serif"];
 const posterTemplates: Array<{
   id: PosterTemplateId;
   label: string;
@@ -84,35 +83,50 @@ function uploadAsDataUrl(
   reader.readAsDataURL(file);
 }
 
-function fontLabel(font: TextFont) {
-  if (font === "serif") return "Serif";
-  if (font === "sans") return "Sans";
-  return "Display";
-}
-
 export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
   const router = useRouter();
-  const [poster, setPoster] = useState<CampaignPosterSettings>(() =>
-    normalizePosterSettings(
+  const [poster, setPoster] = useState<CampaignPosterSettings>(() => {
+    const normalizedPoster = normalizePosterSettings(
       campaign.presentation.poster,
       createPosterSettingsDefaults({
+        templateId: "classic-wheel",
         logoMode: campaign.logoMode ?? "text",
         logoText: campaign.logoText ?? campaign.title,
         logoUrl: campaign.logoUrl,
         logoSizePercent: campaign.presentation.logo.sizePercent,
         logoBottomMarginPx: campaign.presentation.logo.marginBottomPx,
-        backgroundMode: campaign.presentation.background.mode,
-        backgroundColor: campaign.presentation.background.color,
-        backgroundImageUrl: campaign.presentation.background.imageUrl ?? "",
+        backgroundMode: "color",
+        backgroundColor: "#fff6ee",
+        backgroundImageUrl: "",
         headline: campaign.subtitle,
-        headlineTextColor: campaign.presentation.heading.textColor,
+        headlineTextColor: "#050644",
         headlineFontSizePx: campaign.presentation.heading.fontSizePx,
-        headlineFontFamily: campaign.presentation.heading.fontFamily,
+        headlineFontFamily: "display",
         wheel: campaign.presentation.wheel,
         footerBackgroundColor: "transparent",
       }),
-    ),
-  );
+    );
+
+    if (campaign.presentation.poster?.templateId) {
+      return normalizedPoster;
+    }
+
+    const template = posterTemplates[0];
+
+    return {
+      ...normalizedPoster,
+      templateId: template.id,
+      backgroundMode: "color",
+      backgroundColor: template.backgroundColor,
+      backgroundImageUrl: "",
+      headlineTextColor: template.headlineTextColor,
+      headlineFontFamily: "display",
+      wheel: {
+        ...normalizedPoster.wheel,
+        ...template.wheel,
+      },
+    };
+  });
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
@@ -157,6 +171,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
       templateId,
       backgroundMode: "color",
       backgroundColor: template.backgroundColor,
+      backgroundImageUrl: "",
       headlineTextColor: template.headlineTextColor,
       wheel: {
         ...current.wheel,
@@ -444,110 +459,9 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
               />
             </label>
 
-            <div className="md:col-span-2">
-              <span className="mb-3 block text-sm text-[#616b7c]">Police</span>
-              <div className="grid gap-3 md:grid-cols-3">
-                {textFontOptions.map((font) => {
-                  const active = poster.headlineFontFamily === font;
-                  return (
-                    <button
-                      key={font}
-                      type="button"
-                      onClick={() => updatePoster({ headlineFontFamily: font })}
-                      className={`rounded-[8px] border px-4 py-3 text-left text-sm font-semibold ${
-                        active
-                          ? "border-[#2f6df6] bg-[#eff4ff] text-[#214ccf]"
-                          : "border-[#d7e0ed] bg-[#f7f9fc] text-[#182033]"
-                      }`}
-                    >
-                      {fontLabel(font)}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
           </div>
         </section>
 
-        <section className="rounded-[8px] border border-[#dbe4f0] bg-white p-6 shadow-[0_16px_42px_rgba(122,136,166,0.1)]">
-          <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Visuel affiche</p>
-          <h2 className="mt-2 text-2xl font-semibold text-[#111827]">Fond</h2>
-
-          <div className="mt-6 grid gap-4 md:grid-cols-2">
-            <div className="text-sm md:col-span-2">
-              <span className="mb-3 block text-[#616b7c]">Type de fond</span>
-              <div className="grid gap-3 md:grid-cols-2">
-                {[
-                  { value: "color", label: "Couleur de fond" },
-                  { value: "image", label: "Image de fond" },
-                ].map((mode) => {
-                  const active = (poster.backgroundMode ?? "color") === mode.value;
-
-                  return (
-                    <button
-                      key={mode.value}
-                      type="button"
-                      onClick={() =>
-                        updatePoster({
-                          backgroundMode: mode.value as CampaignPosterSettings["backgroundMode"],
-                        })
-                      }
-                      className={`rounded-[8px] border px-4 py-3 text-sm font-semibold ${
-                        active
-                          ? "border-[#2f6df6] bg-[#eff4ff] text-[#214ccf]"
-                          : "border-[#d7e0ed] bg-[#f7f9fc] text-[#182033]"
-                      }`}
-                    >
-                      {mode.label}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {poster.backgroundMode === "color" ? (
-              <label className="text-sm">
-                <span className="mb-2 block text-[#616b7c]">Couleur de fond</span>
-                <input
-                  type="color"
-                  value={poster.backgroundColor ?? "#ffffff"}
-                  onChange={(event) => updatePoster({ backgroundColor: event.target.value })}
-                  className="h-14 w-full rounded-[8px] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none"
-                />
-              </label>
-            ) : null}
-
-            {poster.backgroundMode === "image" ? (
-              <label className="group relative flex min-h-[132px] cursor-pointer flex-col justify-between rounded-[8px] border border-dashed border-[#cfd9ea] bg-[#f7f9fc] p-4 text-sm transition hover:border-[#2f6df6] hover:bg-[#eef4ff] md:col-span-2">
-                <div>
-                  <span className="mb-2 block text-[#616b7c]">Image de fond de l&apos;affiche</span>
-                  <p className="max-w-md text-sm leading-6 text-[#516073]">
-                    Utilisez un visuel fort pour obtenir un rendu plus proche d&apos;un flyer
-                    final.
-                  </p>
-                </div>
-                <div className="mt-4 flex items-center justify-between gap-3">
-                  <span className="inline-flex rounded-full bg-white px-3 py-2 text-xs font-semibold text-[#214ccf] shadow-sm">
-                    {poster.backgroundImageUrl ? "Image chargée" : "Aucune image"}
-                  </span>
-                  <span className="rounded-[8px] bg-[#2f6df6] px-4 py-2 text-xs font-semibold text-white">
-                    Choisir
-                  </span>
-                </div>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(event) =>
-                    uploadAsDataUrl(event, (value) =>
-                      updatePoster({ backgroundMode: "image", backgroundImageUrl: value }),
-                    )
-                  }
-                  className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-                />
-              </label>
-            ) : null}
-          </div>
-        </section>
 
         {campaign.gameType === "wheel" ? (
           <section className="rounded-[8px] border border-[#dbe4f0] bg-white p-6 shadow-[0_16px_42px_rgba(122,136,166,0.1)]">

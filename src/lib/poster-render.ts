@@ -3,6 +3,8 @@ import { Campaign, CampaignPosterSettings, PosterTemplateId, Prize } from "@/lib
 
 const A4_WIDTH = 794;
 const A4_HEIGHT = 1123;
+const SAFE_FONT = "DejaVu Sans, Liberation Sans, sans-serif";
+const SAFE_DISPLAY_FONT = "DejaVu Sans, Liberation Sans, sans-serif";
 
 type TemplateConfig = {
   id: PosterTemplateId;
@@ -145,11 +147,11 @@ function splitLines(text: string, maxChars: number) {
 function fontFamily(font: "display" | "sans" | "serif") {
   switch (font) {
     case "serif":
-      return "Georgia, 'Times New Roman', serif";
+      return "DejaVu Serif, Liberation Serif, serif";
     case "sans":
-      return "Arial, sans-serif";
+      return SAFE_FONT;
     default:
-      return "'Arial Black', Impact, Arial, sans-serif";
+      return SAFE_DISPLAY_FONT;
   }
 }
 
@@ -228,14 +230,7 @@ export function createPosterPreviewQrDataUrl() {
 }
 
 function renderBackground(poster: CampaignPosterSettings, template: TemplateConfig) {
-  const baseColor = poster.backgroundMode === "color" ? poster.backgroundColor || template.background : template.background;
-
-  if (poster.backgroundMode === "image" && poster.backgroundImageUrl) {
-    return `
-      <image href="${escapeXml(poster.backgroundImageUrl)}" x="0" y="0" width="${A4_WIDTH}" height="${A4_HEIGHT}" preserveAspectRatio="xMidYMid slice"/>
-      <rect width="${A4_WIDTH}" height="${A4_HEIGHT}" fill="${template.background}" opacity="0.2"/>
-    `;
-  }
+  const baseColor = template.background;
 
   if (template.id === "soft-gradient-wheel") {
     return `
@@ -282,15 +277,15 @@ function renderLogo(campaign: Campaign, poster: CampaignPosterSettings, template
   if (template.logoVariant === "lined") {
     return `
       <line x1="220" y1="${centerY}" x2="318" y2="${centerY}" stroke="${template.accentDark}" stroke-width="8"/>
-      <circle cx="${A4_WIDTH / 2}" cy="${centerY}" r="${logoSize / 2}" fill="${poster.backgroundMode === "color" ? poster.backgroundColor || template.background : template.background}" stroke="${template.accent}" stroke-width="9"/>
-      <text x="${A4_WIDTH / 2}" y="${centerY + fontSize * 0.34}" text-anchor="middle" fill="${template.accent}" font-family="Arial, sans-serif" font-size="${fontSize}" font-weight="500">${text}</text>
+      <circle cx="${A4_WIDTH / 2}" cy="${centerY}" r="${logoSize / 2}" fill="${template.background}" stroke="${template.accent}" stroke-width="9"/>
+      <text x="${A4_WIDTH / 2}" y="${centerY + fontSize * 0.34}" text-anchor="middle" fill="${template.accent}" font-family="${SAFE_FONT}" font-size="${fontSize}" font-weight="500">${text}</text>
       <line x1="476" y1="${centerY}" x2="574" y2="${centerY}" stroke="${template.accentDark}" stroke-width="8"/>
     `;
   }
 
   return `
-    <circle cx="${A4_WIDTH / 2}" cy="${centerY}" r="${logoSize / 2}" fill="${template.id === "terracotta-wheel" ? template.accent : poster.backgroundColor || template.background}" stroke="${template.accent}" stroke-width="${template.id === "terracotta-wheel" ? 0 : 7}"/>
-    <text x="${A4_WIDTH / 2}" y="${centerY + fontSize * 0.34}" text-anchor="middle" fill="${template.id === "terracotta-wheel" ? "#ffffff" : template.accent}" font-family="Arial, sans-serif" font-size="${fontSize}" font-weight="500">${text}</text>
+    <circle cx="${A4_WIDTH / 2}" cy="${centerY}" r="${logoSize / 2}" fill="${template.id === "terracotta-wheel" ? template.accent : template.background}" stroke="${template.accent}" stroke-width="${template.id === "terracotta-wheel" ? 0 : 7}"/>
+    <text x="${A4_WIDTH / 2}" y="${centerY + fontSize * 0.34}" text-anchor="middle" fill="${template.id === "terracotta-wheel" ? "#ffffff" : template.accent}" font-family="${SAFE_FONT}" font-size="${fontSize}" font-weight="500">${text}</text>
   `;
 }
 
@@ -361,7 +356,7 @@ function renderWheel(template: TemplateConfig, poster: CampaignPosterSettings, p
           text-anchor="middle"
           dominant-baseline="middle"
           fill="${index % 2 === 0 ? "#ffffff" : template.accentDark}"
-          font-family="Arial, sans-serif"
+          font-family="${SAFE_FONT}"
           font-size="18"
           font-weight="900"
         >${escapeXml(label)}</text>
@@ -385,8 +380,8 @@ function renderScratch(template: TemplateConfig) {
     <g filter="url(#posterShadow)" transform="translate(92 520) rotate(-4 305 170)">
       <rect x="0" y="0" width="610" height="330" rx="34" fill="#ffffff" stroke="${template.accent}" stroke-width="8"/>
       <rect x="34" y="62" width="542" height="178" rx="28" fill="url(#scratchMetal)"/>
-      <text x="305" y="162" text-anchor="middle" fill="${template.accentDark}" font-family="Arial, sans-serif" font-size="44" font-weight="900">GRATTEZ ICI</text>
-      <text x="305" y="286" text-anchor="middle" fill="${template.accent}" font-family="Arial, sans-serif" font-size="28" font-weight="900">DÉCOUVREZ VOTRE CADEAU</text>
+      <text x="305" y="162" text-anchor="middle" fill="${template.accentDark}" font-family="${SAFE_FONT}" font-size="44" font-weight="900">GRATTEZ ICI</text>
+      <text x="305" y="286" text-anchor="middle" fill="${template.accent}" font-family="${SAFE_FONT}" font-size="28" font-weight="900">DÉCOUVREZ VOTRE CADEAU</text>
     </g>
   `;
 }
@@ -400,7 +395,7 @@ function renderQrAndCta(qrDataUrl: string, template: TemplateConfig) {
     </g>
     <g filter="url(#posterShadow)" transform="translate(${template.ctaX} ${template.ctaY}) rotate(${template.ctaRotation} ${template.ctaWidth / 2} ${template.ctaHeight / 2})">
       <rect width="${template.ctaWidth}" height="${template.ctaHeight}" rx="24" fill="${template.accent}" stroke="#ffffff" stroke-width="7"/>
-      <text x="${template.ctaWidth / 2}" y="${template.ctaHeight / 2 + 13}" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="31" font-weight="900" letter-spacing="1">SCANNEZ POUR JOUER</text>
+      <text x="${template.ctaWidth / 2}" y="${template.ctaHeight / 2 + 13}" text-anchor="middle" fill="#ffffff" font-family="${SAFE_FONT}" font-size="31" font-weight="900" letter-spacing="1">SCANNEZ POUR JOUER</text>
     </g>
   `;
 }
@@ -416,21 +411,21 @@ function renderSteps(template: TemplateConfig, gameType: Campaign["gameType"]) {
       <line x1="498" y1="28" x2="498" y2="104" stroke="${template.accent}" stroke-width="2"/>
       <g transform="translate(44 24)">
         <circle cx="110" cy="23" r="21" fill="${template.accent}"/>
-        <text x="110" y="30" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="20" font-weight="900">1</text>
-        <text x="112" y="74" text-anchor="middle" fill="${template.accentDark}" font-family="Arial, sans-serif" font-size="27" font-weight="900">Scannez</text>
+        <text x="110" y="30" text-anchor="middle" fill="#ffffff" font-family="${SAFE_FONT}" font-size="20" font-weight="900">1</text>
+        <text x="112" y="74" text-anchor="middle" fill="${template.accentDark}" font-family="${SAFE_FONT}" font-size="27" font-weight="900">Scannez</text>
         <path d="M20 12 h40 a8 8 0 0 1 8 8 v60 a8 8 0 0 1 -8 8 h-40 a8 8 0 0 1 -8 -8 v-60 a8 8 0 0 1 8 -8 Z M28 26 h24 M28 40 h8 M44 40 h8 M28 54 h8 M44 54 h8 M28 68 h24" fill="none" stroke="#05070c" stroke-width="4" stroke-linecap="round"/>
       </g>
       <g transform="translate(316 24)">
         <circle cx="72" cy="23" r="21" fill="${template.accent}"/>
-        <text x="72" y="30" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="20" font-weight="900">2</text>
-        <text x="110" y="74" text-anchor="middle" fill="${template.accentDark}" font-family="Arial, sans-serif" font-size="27" font-weight="900">${action}</text>
+        <text x="72" y="30" text-anchor="middle" fill="#ffffff" font-family="${SAFE_FONT}" font-size="20" font-weight="900">2</text>
+        <text x="110" y="74" text-anchor="middle" fill="${template.accentDark}" font-family="${SAFE_FONT}" font-size="27" font-weight="900">${action}</text>
         <circle cx="28" cy="50" r="30" fill="none" stroke="#05070c" stroke-width="4"/>
         <path d="M28 20 v60 M-2 50 h60 M8 30 l40 40 M48 30 l-40 40" stroke="#05070c" stroke-width="3"/>
       </g>
       <g transform="translate(536 24)">
         <circle cx="62" cy="23" r="21" fill="${template.accent}"/>
-        <text x="62" y="30" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="20" font-weight="900">3</text>
-        <text x="118" y="74" text-anchor="middle" fill="${template.accentDark}" font-family="Arial, sans-serif" font-size="27" font-weight="900">${gift}</text>
+        <text x="62" y="30" text-anchor="middle" fill="#ffffff" font-family="${SAFE_FONT}" font-size="20" font-weight="900">3</text>
+        <text x="118" y="74" text-anchor="middle" fill="${template.accentDark}" font-family="${SAFE_FONT}" font-size="27" font-weight="900">${gift}</text>
         <path d="M18 42 h72 v46 h-72 Z M12 30 h84 v18 h-84 Z M54 30 v58 M34 30 c-26 -22 12 -32 20 0 M58 30 c8 -32 46 -22 20 0" fill="none" stroke="#05070c" stroke-width="4" stroke-linejoin="round"/>
       </g>
     </g>
@@ -470,3 +465,4 @@ export function buildPosterSvg(args: {
     </svg>
   `;
 }
+

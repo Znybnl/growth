@@ -24,25 +24,46 @@ export async function createCampaignPosterSvg(
   publicUrl: string,
 ) {
   const { campaign } = performance;
-  const poster = normalizePosterSettings(
+  const hasExplicitPosterTemplate = Boolean(campaign.presentation.poster?.templateId);
+  const normalizedPoster = normalizePosterSettings(
     campaign.presentation.poster,
     createPosterSettingsDefaults({
+      templateId: "classic-wheel",
       logoMode: campaign.logoMode ?? "text",
       logoText: campaign.logoText ?? campaign.title,
       logoUrl: campaign.logoUrl,
       logoSizePercent: campaign.presentation.logo.sizePercent,
       logoBottomMarginPx: campaign.presentation.logo.marginBottomPx,
-      backgroundMode: campaign.presentation.background.mode,
-      backgroundColor: campaign.presentation.background.color,
-      backgroundImageUrl: campaign.presentation.background.imageUrl ?? "",
+      backgroundMode: "color",
+      backgroundColor: "#fff6ee",
+      backgroundImageUrl: "",
       headline: campaign.subtitle,
-      headlineTextColor: campaign.presentation.heading.textColor,
+      headlineTextColor: "#050644",
       headlineFontSizePx: campaign.presentation.heading.fontSizePx,
-      headlineFontFamily: campaign.presentation.heading.fontFamily,
+      headlineFontFamily: "display",
       wheel: campaign.presentation.wheel,
       footerBackgroundColor: campaign.accent.signal,
     }),
   );
+  const poster = hasExplicitPosterTemplate
+    ? normalizedPoster
+    : {
+        ...normalizedPoster,
+        templateId: "classic-wheel" as const,
+        backgroundMode: "color" as const,
+        backgroundColor: "#fff6ee",
+        backgroundImageUrl: "",
+        headlineTextColor: "#050644",
+        headlineFontFamily: "display" as const,
+        wheel: {
+          ...normalizedPoster.wheel,
+          winColor: "#5438c8",
+          loseColor: "#fff7ef",
+          alternateWinColor: "#fff7ef",
+          alternateLoseColor: "#fff7ef",
+          rimColor: "#3c3c3c",
+        },
+      };
 
   const qrDataUrl = await QRCode.toDataURL(publicUrl, {
     margin: 1,
