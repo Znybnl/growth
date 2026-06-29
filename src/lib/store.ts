@@ -34,6 +34,7 @@ import {
   updateMerchantOnboardingInSupabase,
 } from "@/lib/merchant-account-repository";
 import { assertDataBackendAvailable } from "@/lib/supabase";
+import { getMemorySupportLogs } from "@/lib/support-log";
 import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
 import { cache } from "react";
 import {
@@ -1710,10 +1711,12 @@ export const getCampaignDataView = cache(async function getCampaignDataView(camp
 export const getMerchantSupportOverview = cache(async function getMerchantSupportOverview(
   merchantId = merchantSeed.id,
   fallbackMerchant?: Merchant,
+  options: { includeAllMerchants?: boolean } = {},
 ) {
   if (getDataBackend("la lecture de la supervision") === "supabase") {
     return getSupabaseMerchantSupportOverview(
       await resolveMerchantForSupabase(merchantId, fallbackMerchant),
+      options,
     );
   }
 
@@ -1741,6 +1744,36 @@ export const getMerchantSupportOverview = cache(async function getMerchantSuppor
     failedEmails: [],
     webhooks: [],
     pendingClaims,
+    businessLogs: getMemorySupportLogs()
+      .filter((entry) => options.includeAllMerchants || entry.payload?.merchantId === merchantId)
+      .slice(0, 50)
+      .map((entry) => ({
+        id: entry.id,
+        createdAt: entry.createdAt,
+        level: entry.level,
+        event: entry.event,
+        merchantId:
+          typeof entry.payload?.merchantId === "string" ? entry.payload.merchantId : undefined,
+        campaignId:
+          typeof entry.payload?.campaignId === "string" ? entry.payload.campaignId : undefined,
+        leadId: typeof entry.payload?.leadId === "string" ? entry.payload.leadId : undefined,
+        email:
+          typeof entry.payload?.email === "string"
+            ? entry.payload.email
+            : typeof entry.payload?.recipientEmail === "string"
+              ? entry.payload.recipientEmail
+              : undefined,
+        redemptionCode:
+          typeof entry.payload?.redemptionCode === "string"
+            ? entry.payload.redemptionCode
+            : undefined,
+        summary:
+          typeof entry.payload?.error === "string"
+            ? entry.payload.error
+            : typeof entry.payload?.status === "string"
+              ? entry.payload.status
+              : undefined,
+      })),
   };
 });
 

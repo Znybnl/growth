@@ -43,6 +43,12 @@ function includesQuery(values: Array<string | undefined>, query: string) {
   return values.some((value) => value?.toLowerCase().includes(query));
 }
 
+function supportLogTone(level: "info" | "warn" | "error") {
+  if (level === "error") return "danger";
+  if (level === "warn") return "warning";
+  return "neutral";
+}
+
 export default async function SupportPage({ searchParams }: SupportPageProps) {
   const session = await requireAuthenticatedSession();
   const params = await searchParams;
@@ -51,7 +57,9 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
     redirect("/");
   }
 
-  const overview = await getMerchantSupportOverview(session.merchant.id, session.merchant);
+  const overview = await getMerchantSupportOverview(session.merchant.id, session.merchant, {
+    includeAllMerchants: true,
+  });
   const query = params.q?.trim().toLowerCase() ?? "";
   const status = params.status?.trim() ?? "all";
   const section = params.section?.trim() ?? "all";
@@ -110,6 +118,25 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
               ),
           )
         : [],
+    businessLogs:
+      section === "all" || section === "logs"
+        ? overview.businessLogs.filter(
+            (item) =>
+              (status === "all" || item.level === status || item.event === status) &&
+              includesQuery(
+                [
+                  item.event,
+                  item.summary,
+                  item.merchantId,
+                  item.campaignId,
+                  item.leadId,
+                  item.email,
+                  item.redemptionCode,
+                ],
+                query,
+              ),
+          )
+        : [],
   };
   const hasFilter = Boolean(query || status !== "all" || section !== "all");
 
@@ -128,11 +155,12 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
         </div>
       </section>
 
-      <section className="grid gap-4 md:grid-cols-3">
+      <section className="grid gap-4 md:grid-cols-4">
         {[
           ["E-mails en échec", String(filteredOverview.failedEmails.length)],
           ["Webhooks reçus", String(filteredOverview.webhooks.length)],
           ["Gains sans retrait", String(filteredOverview.pendingClaims.length)],
+          ["Logs métier", String(filteredOverview.businessLogs.length)],
         ].map(([label, value]) => (
           <div
             key={label}
@@ -167,6 +195,7 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
               <option value="emails">E-mails</option>
               <option value="webhooks">Webhooks</option>
               <option value="claims">Gains sans retrait</option>
+              <option value="logs">Journal métier</option>
             </select>
           </label>
 
@@ -186,6 +215,9 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
               <option value="redeemed">Gain retiré</option>
               <option value="email.delivered">Webhook livré</option>
               <option value="email.bounced">Webhook rebond</option>
+              <option value="info">Log info</option>
+              <option value="warn">Log attention</option>
+              <option value="error">Log erreur</option>
             </select>
           </label>
 
@@ -208,7 +240,7 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
         </form>
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-3">
+      <section className="grid gap-6 xl:grid-cols-4">
         <article className="rounded-[32px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)] xl:col-span-1">
           <div className="flex items-center justify-between gap-3">
             <div>
@@ -350,6 +382,64 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
                 {hasFilter
                   ? "Aucun gain ne correspond aux filtres."
                   : "Aucun gain en attente de retrait."}
+              </p>
+            )}
+          </div>
+        </article>
+
+        <article className="rounded-[32px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)] xl:col-span-1">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Journal</p>
+              <h2 className="mt-2 text-2xl font-semibold text-[#111827]">Logs métier</h2>
+            </div>
+            <StatusBadge label={`${filteredOverview.businessLogs.length} lignes`} />
+          </div>
+
+          <div className="mt-6 space-y-3">
+            {filteredOverview.businessLogs.length ? (
+              filteredOverview.businessLogs.map((item) => (
+                <div
+                  key={item.id}
+                  className="rounded-[24px] border border-[#edf1f6] bg-[#fbfcfe] p-4"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="break-all text-sm font-semibold text-[#111827]">{item.event}</p>
+                      <p className="mt-1 text-xs uppercase tracking-[0.2em] text-[#94a3b8]">
+                        {formatDateTime(item.createdAt)}
+                      </p>
+                    </div>
+                    <StatusBadge label={item.level} tone={supportLogTone(item.level)} />
+                  </div>
+                  {item.summary ? (
+                    <p className="mt-3 text-sm leading-6 text-[#64748b]">{item.summary}</p>
+                  ) : null}
+                  <div className="mt-3 flex flex-wrap gap-2 text-xs text-[#64748b]">
+                    {item.campaignId ? (
+                      <span className="rounded-full bg-white px-3 py-1">
+                        Campagne {item.campaignId}
+                      </span>
+                    ) : null}
+                    {item.leadId ? (
+                      <span className="rounded-full bg-white px-3 py-1">Lead {item.leadId}</span>
+                    ) : null}
+                    {item.email ? (
+                      <span className="rounded-full bg-white px-3 py-1">{item.email}</span>
+                    ) : null}
+                    {item.redemptionCode ? (
+                      <span className="rounded-full bg-white px-3 py-1">
+                        Code {item.redemptionCode}
+                      </span>
+                    ) : null}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="rounded-[24px] border border-dashed border-[#dbe4f0] bg-[#fbfcfe] px-4 py-8 text-sm text-[#64748b]">
+                {hasFilter
+                  ? "Aucun log ne correspond aux filtres."
+                  : "Aucun log métier récent."}
               </p>
             )}
           </div>

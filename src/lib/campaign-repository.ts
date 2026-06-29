@@ -15,6 +15,7 @@ import {
   FinalizeDrawSessionRequest,
   Lead,
   Merchant,
+  MerchantBusinessLogItem,
   MerchantDashboardData,
   MerchantFailedEmailItem,
   MerchantLeadRow,
@@ -1994,12 +1995,18 @@ export async function syncRewardEmailWebhookInSupabase(event: WebhookEventPayloa
 
 export async function getSupabaseMerchantSupportOverview(
   merchant: Merchant,
+  options: { includeAllMerchants?: boolean } = {},
 ): Promise<MerchantSupportOverview> {
   const supabase = getSupabaseAdmin();
-  const { data: campaignRows, error: campaignError } = await supabase
+  const campaignQuery = supabase
     .from("campaigns")
-    .select("id,title")
-    .eq("merchant_id", merchant.id);
+    .select("id,title,merchant_id");
+
+  if (!options.includeAllMerchants) {
+    campaignQuery.eq("merchant_id", merchant.id);
+  }
+
+  const { data: campaignRows, error: campaignError } = await campaignQuery;
 
   if (campaignError) {
     throw new Error(`Lecture des campagnes support impossible: ${campaignError.message}`);
@@ -2014,10 +2021,21 @@ export async function getSupabaseMerchantSupportOverview(
       failedEmails: [],
       webhooks: [],
       pendingClaims: [],
+      businessLogs: [],
     };
   }
 
-  const [failedEmailResult, pendingClaimResult, deliveryResult, webhookResult] = await Promise.all([
+  const businessLogQuery = supabase
+    .from("business_logs")
+    .select("id,level,event,merchant_id,campaign_id,lead_id,email,redemption_code,summary,created_at")
+    .order("created_at", { ascending: false })
+    .limit(50);
+
+  if (!options.includeAllMerchants) {
+    businessLogQuery.eq("merchant_id", merchant.id);
+  }
+
+  const [failedEmailResult, pendingClaimResult, deliveryResult, webhookResult, businessLogResult] = await Promise.all([
     supabase
       .from("reward_email_deliveries")
       .select("id,campaign_id,lead_id,recipient_email,status,error_message,last_event_at")
@@ -2044,6 +2062,7 @@ export async function getSupabaseMerchantSupportOverview(
       .select("id,reward_email_delivery_id,resend_email_id,event_type,payload,created_at")
       .order("created_at", { ascending: false })
       .limit(30),
+    businessLogQuery,
   ]);
 
   if (failedEmailResult.error) {
@@ -2058,6 +2077,7 @@ export async function getSupabaseMerchantSupportOverview(
   if (webhookResult.error) {
     throw new Error(`Lecture des webhooks impossible: ${webhookResult.error.message}`);
   }
+  const businessLogsAvailable = !businessLogResult.error;
 
   const deliveryRows = (deliveryResult.data ?? []) as Array<{
     id: string;
@@ -2204,10 +2224,38 @@ export async function getSupabaseMerchantSupportOverview(
     .filter((item) => item !== null);
 
   const webhooks: MerchantWebhookItem[] = webhookItems;
+  const businessLogs: MerchantBusinessLogItem[] = businessLogsAvailable
+    ? (
+        (businessLogResult.data ?? []) as Array<{
+          id: string;
+          level: MerchantBusinessLogItem["level"];
+          event: string;
+          merchant_id: string | null;
+          campaign_id: string | null;
+          lead_id: string | null;
+          email: string | null;
+          redemption_code: string | null;
+          summary: string | null;
+          created_at: string;
+        }>
+      ).map((row) => ({
+        id: row.id,
+        createdAt: row.created_at,
+        level: row.level,
+        event: row.event,
+        merchantId: row.merchant_id ?? undefined,
+        campaignId: row.campaign_id ?? undefined,
+        leadId: row.lead_id ?? undefined,
+        email: row.email ?? undefined,
+        redemptionCode: row.redemption_code ?? undefined,
+        summary: row.summary ?? undefined,
+      }))
+    : [];
 
   return {
     failedEmails,
     webhooks,
     pendingClaims,
+    businessLogs,
   };
 }

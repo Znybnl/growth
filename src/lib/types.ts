@@ -401,10 +401,24 @@ export interface MerchantPendingClaimItem {
   expiresAt?: string;
 }
 
+export interface MerchantBusinessLogItem {
+  id: string;
+  createdAt: string;
+  level: "info" | "warn" | "error";
+  event: string;
+  merchantId?: string;
+  campaignId?: string;
+  leadId?: string;
+  email?: string;
+  redemptionCode?: string;
+  summary?: string;
+}
+
 export interface MerchantSupportOverview {
   failedEmails: MerchantFailedEmailItem[];
   webhooks: MerchantWebhookItem[];
   pendingClaims: MerchantPendingClaimItem[];
+  businessLogs: MerchantBusinessLogItem[];
 }
 
 export interface PublicCampaignPrize {
