@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import sharp from "sharp";
 
 import { requireAuthenticatedSession } from "@/lib/auth";
 import { createCampaignPosterSvg } from "@/lib/campaign-exports";
@@ -25,6 +24,7 @@ export async function GET(request: Request, context: RouteContext) {
     const origin = new URL(request.url).origin;
     const publicUrl = `${origin}/campaign/${performance.campaign.id}`;
     const posterSvg = await createCampaignPosterSvg(performance, publicUrl);
+    const { default: sharp } = await import("sharp");
     const posterPng = await sharp(Buffer.from(posterSvg), {
       failOn: "none",
       limitInputPixels: false,
