@@ -4,6 +4,14 @@ import { formatDateTime, leadStatusLabel, rewardEmailStatusLabel } from "@/lib/f
 import { getMerchantSupportOverview } from "@/lib/store";
 import { redirect } from "next/navigation";
 
+type SupportPageProps = {
+  searchParams: Promise<{
+    q?: string;
+    status?: string;
+    section?: string;
+  }>;
+};
+
 function StatusBadge({
   label,
   tone = "neutral",
@@ -27,14 +35,83 @@ function StatusBadge({
   );
 }
 
-export default async function SupportPage() {
+function includesQuery(values: Array<string | undefined>, query: string) {
+  if (!query) {
+    return true;
+  }
+
+  return values.some((value) => value?.toLowerCase().includes(query));
+}
+
+export default async function SupportPage({ searchParams }: SupportPageProps) {
   const session = await requireAuthenticatedSession();
+  const params = await searchParams;
 
   if (!isSaasAdminEmail(session.user.email)) {
     redirect("/");
   }
 
   const overview = await getMerchantSupportOverview(session.merchant.id, session.merchant);
+  const query = params.q?.trim().toLowerCase() ?? "";
+  const status = params.status?.trim() ?? "all";
+  const section = params.section?.trim() ?? "all";
+  const filteredOverview = {
+    failedEmails:
+      section === "all" || section === "emails"
+        ? overview.failedEmails.filter(
+            (item) =>
+              (status === "all" || item.status === status) &&
+              includesQuery(
+                [
+                  item.campaignTitle,
+                  item.leadFirstName,
+                  item.recipientEmail,
+                  item.errorMessage,
+                  item.deliveryId,
+                  item.leadId,
+                ],
+                query,
+              ),
+          )
+        : [],
+    webhooks:
+      section === "all" || section === "webhooks"
+        ? overview.webhooks.filter(
+            (item) =>
+              (status === "all" || item.deliveryStatus === status || item.eventType === status) &&
+              includesQuery(
+                [
+                  item.eventType,
+                  item.resendEmailId,
+                  item.campaignTitle,
+                  item.recipientEmail,
+                  item.deliveryStatus,
+                  item.summary,
+                ],
+                query,
+              ),
+          )
+        : [],
+    pendingClaims:
+      section === "all" || section === "claims"
+        ? overview.pendingClaims.filter(
+            (item) =>
+              (status === "all" || item.status === status) &&
+              includesQuery(
+                [
+                  item.campaignTitle,
+                  item.firstName,
+                  item.email,
+                  item.prizeLabel,
+                  item.redemptionCode,
+                  item.status,
+                ],
+                query,
+              ),
+          )
+        : [],
+  };
+  const hasFilter = Boolean(query || status !== "all" || section !== "all");
 
   return (
     <div className="space-y-6">
@@ -53,9 +130,9 @@ export default async function SupportPage() {
 
       <section className="grid gap-4 md:grid-cols-3">
         {[
-          ["E-mails en échec", String(overview.failedEmails.length)],
-          ["Webhooks reçus", String(overview.webhooks.length)],
-          ["Gains sans retrait", String(overview.pendingClaims.length)],
+          ["E-mails en échec", String(filteredOverview.failedEmails.length)],
+          ["Webhooks reçus", String(filteredOverview.webhooks.length)],
+          ["Gains sans retrait", String(filteredOverview.pendingClaims.length)],
         ].map(([label, value]) => (
           <div
             key={label}
@@ -67,6 +144,70 @@ export default async function SupportPage() {
         ))}
       </section>
 
+      <section className="rounded-[28px] border border-[#dbe4f0] bg-white p-5 shadow-[0_14px_36px_rgba(122,136,166,0.08)]">
+        <form className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_220px_220px_auto]" action="/support">
+          <label className="text-sm">
+            <span className="mb-2 block text-[#616b7c]">Recherche support</span>
+            <input
+              name="q"
+              defaultValue={params.q ?? ""}
+              placeholder="E-mail, code retrait, campagne, lead..."
+              className="w-full rounded-[18px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+            />
+          </label>
+
+          <label className="text-sm">
+            <span className="mb-2 block text-[#616b7c]">Section</span>
+            <select
+              name="section"
+              defaultValue={section}
+              className="w-full rounded-[18px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+            >
+              <option value="all">Toutes</option>
+              <option value="emails">E-mails</option>
+              <option value="webhooks">Webhooks</option>
+              <option value="claims">Gains sans retrait</option>
+            </select>
+          </label>
+
+          <label className="text-sm">
+            <span className="mb-2 block text-[#616b7c]">Statut / événement</span>
+            <select
+              name="status"
+              defaultValue={status}
+              className="w-full rounded-[18px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+            >
+              <option value="all">Tous</option>
+              <option value="failed">E-mail en échec</option>
+              <option value="bounced">Rebond</option>
+              <option value="complained">Plainte</option>
+              <option value="suppressed">Supprimé</option>
+              <option value="claimed">Gain à retirer</option>
+              <option value="redeemed">Gain retiré</option>
+              <option value="email.delivered">Webhook livré</option>
+              <option value="email.bounced">Webhook rebond</option>
+            </select>
+          </label>
+
+          <div className="flex items-end gap-2">
+            <button
+              type="submit"
+              className="rounded-[18px] bg-[#111827] px-5 py-3 text-sm font-semibold !text-white"
+            >
+              Filtrer
+            </button>
+            {hasFilter ? (
+              <a
+                href="/support"
+                className="rounded-[18px] border border-[#d7e0ed] px-5 py-3 text-sm font-semibold text-[#182033]"
+              >
+                Effacer
+              </a>
+            ) : null}
+          </div>
+        </form>
+      </section>
+
       <section className="grid gap-6 xl:grid-cols-3">
         <article className="rounded-[32px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)] xl:col-span-1">
           <div className="flex items-center justify-between gap-3">
@@ -74,12 +215,12 @@ export default async function SupportPage() {
               <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">E-mails</p>
               <h2 className="mt-2 text-2xl font-semibold text-[#111827]">En échec</h2>
             </div>
-            <StatusBadge label={`${overview.failedEmails.length} à traiter`} tone="danger" />
+            <StatusBadge label={`${filteredOverview.failedEmails.length} à traiter`} tone="danger" />
           </div>
 
           <div className="mt-6 space-y-3">
-            {overview.failedEmails.length ? (
-              overview.failedEmails.map((item) => (
+            {filteredOverview.failedEmails.length ? (
+              filteredOverview.failedEmails.map((item) => (
                 <div
                   key={item.deliveryId}
                   className="rounded-[24px] border border-[#edf1f6] bg-[#fbfcfe] p-4"
@@ -103,7 +244,9 @@ export default async function SupportPage() {
               ))
             ) : (
               <p className="rounded-[24px] border border-dashed border-[#dbe4f0] bg-[#fbfcfe] px-4 py-8 text-sm text-[#64748b]">
-                Aucun e-mail en échec sur les dernières campagnes.
+                {hasFilter
+                  ? "Aucun e-mail ne correspond aux filtres."
+                  : "Aucun e-mail en échec sur les dernières campagnes."}
               </p>
             )}
           </div>
@@ -115,12 +258,12 @@ export default async function SupportPage() {
               <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Webhooks</p>
               <h2 className="mt-2 text-2xl font-semibold text-[#111827]">Reçus récemment</h2>
             </div>
-            <StatusBadge label={`${overview.webhooks.length} événements`} />
+            <StatusBadge label={`${filteredOverview.webhooks.length} événements`} />
           </div>
 
           <div className="mt-6 space-y-3">
-            {overview.webhooks.length ? (
-              overview.webhooks.map((item) => (
+            {filteredOverview.webhooks.length ? (
+              filteredOverview.webhooks.map((item) => (
                 <div
                   key={item.id}
                   className="rounded-[24px] border border-[#edf1f6] bg-[#fbfcfe] p-4"
@@ -156,7 +299,9 @@ export default async function SupportPage() {
               ))
             ) : (
               <p className="rounded-[24px] border border-dashed border-[#dbe4f0] bg-[#fbfcfe] px-4 py-8 text-sm text-[#64748b]">
-                Aucun webhook archivé pour le moment.
+                {hasFilter
+                  ? "Aucun webhook ne correspond aux filtres."
+                  : "Aucun webhook archivé pour le moment."}
               </p>
             )}
           </div>
@@ -168,12 +313,12 @@ export default async function SupportPage() {
               <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Gains</p>
               <h2 className="mt-2 text-2xl font-semibold text-[#111827]">Sans retrait</h2>
             </div>
-            <StatusBadge label={`${overview.pendingClaims.length} en attente`} tone="warning" />
+            <StatusBadge label={`${filteredOverview.pendingClaims.length} en attente`} tone="warning" />
           </div>
 
           <div className="mt-6 space-y-3">
-            {overview.pendingClaims.length ? (
-              overview.pendingClaims.map((item) => (
+            {filteredOverview.pendingClaims.length ? (
+              filteredOverview.pendingClaims.map((item) => (
                 <div
                   key={item.leadId}
                   className="rounded-[24px] border border-[#edf1f6] bg-[#fbfcfe] p-4"
@@ -202,7 +347,9 @@ export default async function SupportPage() {
               ))
             ) : (
               <p className="rounded-[24px] border border-dashed border-[#dbe4f0] bg-[#fbfcfe] px-4 py-8 text-sm text-[#64748b]">
-                Aucun gain en attente de retrait.
+                {hasFilter
+                  ? "Aucun gain ne correspond aux filtres."
+                  : "Aucun gain en attente de retrait."}
               </p>
             )}
           </div>
