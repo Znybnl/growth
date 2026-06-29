@@ -3,8 +3,8 @@ import { Campaign, CampaignPosterSettings, PosterTemplateId, Prize } from "@/lib
 
 const A4_WIDTH = 794;
 const A4_HEIGHT = 1123;
-const SAFE_FONT = "DejaVu Sans, Liberation Sans, sans-serif";
-const SAFE_DISPLAY_FONT = "DejaVu Sans, Liberation Sans, sans-serif";
+const SAFE_FONT = "sans-serif";
+const SAFE_DISPLAY_FONT = "sans-serif";
 
 type TemplateConfig = {
   id: PosterTemplateId;
@@ -147,7 +147,7 @@ function splitLines(text: string, maxChars: number) {
 function fontFamily(font: "display" | "sans" | "serif") {
   switch (font) {
     case "serif":
-      return "DejaVu Serif, Liberation Serif, serif";
+      return "serif";
     case "sans":
       return SAFE_FONT;
     default:
@@ -292,7 +292,7 @@ function renderLogo(campaign: Campaign, poster: CampaignPosterSettings, template
 function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, template: TemplateConfig) {
   const headline = poster.headline || campaign.subtitle || "Faites tourner la roue";
   const family = fontFamily(poster.headlineFontFamily);
-  const color = poster.headlineTextColor || template.headline;
+  const color = template.headline;
   const size = clamp(poster.headlineFontSizePx * template.headlineSizeMultiplier, 46, 94);
   const maxChars = template.id === "soft-gradient-wheel" ? 18 : 16;
   const lines = splitLines(headline.toUpperCase(), maxChars).slice(0, 3);
@@ -329,33 +329,29 @@ function renderWheel(template: TemplateConfig, poster: CampaignPosterSettings, p
   const cx = template.wheelX;
   const cy = template.wheelY;
   const radius = template.wheelRadius;
-  const colors = [
-    poster.wheel.winColor || template.accent,
-    poster.wheel.loseColor || "#fff7ef",
-    poster.wheel.winColor || template.accent,
-    poster.wheel.loseColor || "#fff7ef",
-    poster.wheel.winColor || template.accent,
-    poster.wheel.loseColor || "#fff7ef",
-  ];
+  const primaryColor = template.accent;
+  const secondaryColor = "#fff7ef";
+  const rimColor = template.id === "terracotta-wheel" ? template.accentDark : template.accentDark;
 
   const slices = segments
     .map((segment, index) => {
       const start = index * 60;
       const end = start + 60;
-      const fill = index % 2 === 0 ? colors[index] : "#fff7ef";
+      const isPrimarySegment = index % 2 === 0;
+      const fill = isPrimarySegment ? primaryColor : secondaryColor;
       const labelAngle = start + 30;
       const labelPoint = polarToCartesian(cx, cy, radius * 0.58, labelAngle);
       const label = segment.label.replace(" !", "").slice(0, 12);
 
       return `
-        <path d="${segmentPath(cx, cy, radius, start, end)}" fill="${fill}" stroke="${poster.wheel.rimColor || template.accentDark}" stroke-width="2"/>
+        <path d="${segmentPath(cx, cy, radius, start, end)}" fill="${fill}" stroke="${rimColor}" stroke-width="2"/>
         <text
           x="${labelPoint.x.toFixed(1)}"
           y="${labelPoint.y.toFixed(1)}"
           transform="rotate(${labelAngle} ${labelPoint.x.toFixed(1)} ${labelPoint.y.toFixed(1)})"
           text-anchor="middle"
           dominant-baseline="middle"
-          fill="${index % 2 === 0 ? "#ffffff" : template.accentDark}"
+          fill="${isPrimarySegment ? "#ffffff" : template.accentDark}"
           font-family="${SAFE_FONT}"
           font-size="18"
           font-weight="900"
@@ -367,7 +363,7 @@ function renderWheel(template: TemplateConfig, poster: CampaignPosterSettings, p
   return `
     <g filter="url(#posterShadow)">
       <circle cx="${cx}" cy="${cy}" r="${radius + 36}" fill="#fff7ef" opacity="0.88"/>
-      <circle cx="${cx}" cy="${cy}" r="${radius}" fill="#ffffff" stroke="${poster.wheel.rimColor || template.accentDark}" stroke-width="9"/>
+      <circle cx="${cx}" cy="${cy}" r="${radius}" fill="#ffffff" stroke="${rimColor}" stroke-width="9"/>
       ${slices}
       <circle cx="${cx}" cy="${cy}" r="33" fill="${template.accentDark}"/>
       <path d="M ${cx - 32} ${cy - radius - 50} L ${cx + 32} ${cy - radius - 50} L ${cx} ${cy - radius + 8} Z" fill="${template.accentDark}"/>
@@ -395,7 +391,7 @@ function renderQrAndCta(qrDataUrl: string, template: TemplateConfig) {
     </g>
     <g filter="url(#posterShadow)" transform="translate(${template.ctaX} ${template.ctaY}) rotate(${template.ctaRotation} ${template.ctaWidth / 2} ${template.ctaHeight / 2})">
       <rect width="${template.ctaWidth}" height="${template.ctaHeight}" rx="24" fill="${template.accent}" stroke="#ffffff" stroke-width="7"/>
-      <text x="${template.ctaWidth / 2}" y="${template.ctaHeight / 2 + 13}" text-anchor="middle" fill="#ffffff" font-family="${SAFE_FONT}" font-size="31" font-weight="900" letter-spacing="1">SCANNEZ POUR JOUER</text>
+      <text x="${template.ctaWidth / 2}" y="${template.ctaHeight / 2 + 11}" text-anchor="middle" fill="#ffffff" font-family="${SAFE_FONT}" font-size="26" font-weight="900" letter-spacing="0.5">SCANNEZ POUR JOUER</text>
     </g>
   `;
 }
