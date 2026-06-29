@@ -67,6 +67,7 @@ export default async function DashboardPage({
           <div className="flex flex-col gap-3 xl:items-end">
             <Link
               href="/campaigns/new"
+              prefetch={false}
               className="inline-flex rounded-[22px] bg-[#2f6df6] px-5 py-4 text-sm font-semibold !text-white shadow-[0_16px_32px_rgba(47,109,246,0.22)]"
             >
               Créer une campagne
@@ -128,7 +129,7 @@ export default async function DashboardPage({
                   À surveiller aujourd&apos;hui
                 </h2>
               </div>
-              <Link href="/campaigns" className="text-sm font-semibold text-[#2f6df6]">
+              <Link href="/campaigns" prefetch={false} className="text-sm font-semibold text-[#2f6df6]">
                 Voir toutes les campagnes
               </Link>
             </div>
@@ -266,7 +267,7 @@ export default async function DashboardPage({
                   Leads récents
                 </h2>
               </div>
-              <Link href="/data" className="text-sm font-semibold text-[#2f6df6]">
+              <Link href="/data" prefetch={false} className="text-sm font-semibold text-[#2f6df6]">
                 Ouvrir les données
               </Link>
             </div>

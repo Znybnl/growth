@@ -84,6 +84,7 @@ export function MerchantShell({ children, merchant, user, isSaasAdmin }: Merchan
                 <Link
                   key={item.href}
                   href={item.href}
+                  prefetch={false}
                   className={`flex items-center justify-between rounded-[20px] px-4 py-3 text-sm font-medium transition ${
                     active
                       ? "bg-[#eff4ff] text-[#214ccf]"

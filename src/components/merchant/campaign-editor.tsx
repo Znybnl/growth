@@ -1561,6 +1561,7 @@ export function CampaignEditor({
           <div className="flex flex-wrap items-start justify-start gap-3 xl:justify-end">
             <Link
               href="/campaigns"
+              prefetch={false}
               className="rounded-[20px] border border-[#d7e0ed] px-4 py-3 text-sm font-semibold text-[#182033]"
             >
               Retour aux campagnes
@@ -1569,6 +1570,7 @@ export function CampaignEditor({
               <>
                 <Link
                   href={`/campaign/${savedCampaignId}`}
+                  prefetch={false}
                   target="_blank"
                   className="rounded-[20px] border border-[#111827] bg-[#111827] px-4 py-3 text-sm font-semibold !text-white"
                 >
@@ -1576,6 +1578,7 @@ export function CampaignEditor({
                 </Link>
                 <Link
                   href={`/campaigns/${savedCampaignId}/poster`}
+                  prefetch={false}
                   target="_blank"
                   className="rounded-[20px] border border-[#d7e0ed] px-4 py-3 text-sm font-semibold text-[#182033]"
                 >
@@ -3171,12 +3174,14 @@ export function CampaignEditor({
                   </a>
                   <Link
                     href={`/campaigns/${form.id}/poster`}
+                    prefetch={false}
                     className="rounded-[18px] bg-[#2f6df6] px-4 py-3 text-sm font-semibold !text-white"
                   >
                     Affiche
                   </Link>
                   <Link
                     href={`/campaign/${form.id}`}
+                    prefetch={false}
                     target="_blank"
                     rel="noreferrer"
                     className="rounded-[18px] border border-[#111827] bg-[#111827] px-4 py-3 text-sm font-semibold !text-white"
@@ -3198,6 +3203,7 @@ export function CampaignEditor({
               <>
                 <Link
                   href={`/campaign/${savedCampaignId}`}
+                  prefetch={false}
                   target="_blank"
                   className="inline-flex items-center justify-center rounded-[20px] border border-[#111827] bg-[#111827] px-4 py-3 text-sm font-semibold !text-white"
                 >
@@ -3205,6 +3211,7 @@ export function CampaignEditor({
                 </Link>
                 <Link
                   href={`/campaigns/${savedCampaignId}/poster`}
+                  prefetch={false}
                   target="_blank"
                   className="inline-flex items-center justify-center rounded-[20px] border border-[#d7e0ed] px-4 py-3 text-sm font-semibold text-[#182033]"
                 >

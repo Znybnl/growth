@@ -116,6 +116,7 @@ export function EmailEditor({ campaign, merchant }: EmailEditorProps) {
             <div className="flex flex-wrap gap-3">
               <Link
                 href={`/campaigns/${campaign.id}/edit`}
+                prefetch={false}
                 className="rounded-[8px] border border-[#d7e0ed] px-4 py-3 text-sm font-semibold text-[#182033]"
               >
                 Revenir à la campagne
