@@ -178,6 +178,23 @@ type CampaignOverviewRpcRow = CampaignRow & {
   estimated_spend: number;
 };
 
+type CampaignOverviewLeadRow = {
+  campaign_id: string;
+  prize_id: string | null;
+  status: Lead["status"];
+};
+
+type CampaignOverviewEventRow = {
+  campaign_id: string;
+  event_type: CampaignEvent["eventType"];
+};
+
+type CampaignOverviewPrizeRow = {
+  id: string;
+  campaign_id: string;
+  estimated_unit_cost: number;
+};
+
 type MerchantRow = {
   id: string;
   company_name: string;
@@ -698,6 +715,89 @@ function toOverviewKpis(row: CampaignOverviewRpcRow): CampaignKpi {
   };
 }
 
+function computeOverviewKpisFromRows(
+  campaign: Campaign,
+  leads: CampaignOverviewLeadRow[],
+  events: CampaignOverviewEventRow[],
+  estimatedCostByPrizeId: Map<string, number>,
+): CampaignKpi {
+  const scans = events.filter((event) => event.event_type === "scan").length;
+  const actions =
+    campaign.goalType === "review_prompt"
+      ? events.filter((event) =>
+          ["review_clicked", "review_confirmed"].includes(event.event_type),
+        ).length
+      : campaign.goalType === "social_follow"
+        ? events.filter((event) => event.event_type === "social_clicked").length
+        : leads.length;
+  const games = events.filter((event) => event.event_type === "game_played").length;
+  const wins = leads.filter((lead) => Boolean(lead.prize_id)).length;
+  const redeemed = leads.filter((lead) => lead.status === "redeemed").length;
+  const estimatedSpend = leads.reduce((total, lead) => {
+    if (!lead.prize_id) return total;
+    return total + (estimatedCostByPrizeId.get(lead.prize_id) ?? 0);
+  }, 0);
+
+  return {
+    scans,
+    leads: leads.length,
+    actions,
+    games,
+    wins,
+    redeemed,
+    conversionRate: scans ? Math.round((leads.length / scans) * 100) : 0,
+    actionRate: leads.length ? Math.round((actions / leads.length) * 100) : 0,
+    redemptionRate: wins ? Math.round((redeemed / wins) * 100) : 0,
+    estimatedSpend: Number(estimatedSpend.toFixed(2)),
+    costPerLead: leads.length ? Number((estimatedSpend / leads.length).toFixed(2)) : 0,
+    costPerRedeemed: redeemed ? Number((estimatedSpend / redeemed).toFixed(2)) : 0,
+  };
+}
+
+function buildCampaignOverviewFallbackBundle(
+  merchant: Merchant,
+  campaignRows: CampaignRow[],
+  leadRows: CampaignOverviewLeadRow[],
+  eventRows: CampaignOverviewEventRow[],
+  prizeRows: CampaignOverviewPrizeRow[],
+) {
+  const leadsByCampaignId = new Map<string, CampaignOverviewLeadRow[]>();
+  const eventsByCampaignId = new Map<string, CampaignOverviewEventRow[]>();
+  const estimatedCostByPrizeId = new Map<string, number>();
+
+  for (const lead of leadRows) {
+    const campaignLeads = leadsByCampaignId.get(lead.campaign_id) ?? [];
+    campaignLeads.push(lead);
+    leadsByCampaignId.set(lead.campaign_id, campaignLeads);
+  }
+
+  for (const event of eventRows) {
+    const campaignEvents = eventsByCampaignId.get(event.campaign_id) ?? [];
+    campaignEvents.push(event);
+    eventsByCampaignId.set(event.campaign_id, campaignEvents);
+  }
+
+  for (const prize of prizeRows) {
+    estimatedCostByPrizeId.set(prize.id, Number(prize.estimated_unit_cost) || 0);
+  }
+
+  return campaignRows.map((row) => {
+    const campaign = toCampaign(row, merchant, [], []);
+
+    return {
+      campaign,
+      merchant: clone(merchant),
+      prizes: [],
+      kpis: computeOverviewKpisFromRows(
+        campaign,
+        leadsByCampaignId.get(row.id) ?? [],
+        eventsByCampaignId.get(row.id) ?? [],
+        estimatedCostByPrizeId,
+      ),
+    } satisfies CampaignPerformance;
+  });
+}
+
 function buildPerformanceBundle(
   merchant: Merchant,
   campaignRows: CampaignRow[],
@@ -828,14 +928,39 @@ export async function getSupabaseMerchantCampaignOverview(
 
   const campaignRows = (campaignsData as CampaignRow[] | null) ?? [];
   const campaignIds = campaignRows.map((campaign) => campaign.id);
-  const { actions, prizes, leads, events } = await fetchCampaignDependencies(campaignIds);
-  const campaigns = buildPerformanceBundle(
+
+  if (!campaignIds.length) {
+    return {
+      merchant: clone(merchant),
+      campaigns: [],
+      totalLeads: 0,
+      totalRedeemed: 0,
+      averageConversion: 0,
+      activityPoints: [],
+    };
+  }
+
+  const [{ data: leadsData }, { data: eventsData }, { data: prizesData }] = await Promise.all([
+    supabase
+      .from("leads")
+      .select("campaign_id,prize_id,status")
+      .in("campaign_id", campaignIds),
+    supabase
+      .from("campaign_events")
+      .select("campaign_id,event_type")
+      .in("campaign_id", campaignIds),
+    supabase
+      .from("prizes")
+      .select("id,campaign_id,estimated_unit_cost")
+      .in("campaign_id", campaignIds),
+  ]);
+
+  const campaigns = buildCampaignOverviewFallbackBundle(
     merchant,
     campaignRows,
-    actions,
-    prizes,
-    leads,
-    events,
+    (leadsData as CampaignOverviewLeadRow[] | null) ?? [],
+    (eventsData as CampaignOverviewEventRow[] | null) ?? [],
+    (prizesData as CampaignOverviewPrizeRow[] | null) ?? [],
   );
   const totalLeads = campaigns.reduce((total, item) => total + item.kpis.leads, 0);
   const totalRedeemed = campaigns.reduce((total, item) => total + item.kpis.redeemed, 0);
@@ -849,7 +974,7 @@ export async function getSupabaseMerchantCampaignOverview(
     totalLeads,
     totalRedeemed,
     averageConversion,
-    activityPoints: buildDashboardActivityPoints(leads, events),
+    activityPoints: [],
   };
 }
 
