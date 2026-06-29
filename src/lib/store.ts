@@ -5,6 +5,7 @@ import {
   finalizeDrawSessionInSupabase,
   getSupabaseCampaignDataView,
   getSupabaseCampaignPerformance,
+  getSupabaseCampaignSetupPerformance,
   getSupabaseMerchantCampaignLibrary,
   getSupabaseMerchantCampaignOverview,
   getSupabaseMerchantDashboard,
@@ -1637,6 +1638,17 @@ export const getPublicCampaign = cache(async function getPublicCampaign(id: stri
 export const getCampaignPerformance = cache(async function getCampaignPerformance(campaignId: string, fallbackMerchant?: Merchant) {
   if (getDataBackend("la lecture des performances campagne") === "supabase") {
     return getSupabaseCampaignPerformance(campaignId, fallbackMerchant);
+  }
+
+  return getCampaignPerformanceFromMemory(campaignId);
+});
+
+export const getCampaignSetupPerformance = cache(async function getCampaignSetupPerformance(
+  campaignId: string,
+  fallbackMerchant?: Merchant,
+) {
+  if (getDataBackend("la lecture du paramétrage campagne") === "supabase") {
+    return getSupabaseCampaignSetupPerformance(campaignId, fallbackMerchant);
   }
 
   return getCampaignPerformanceFromMemory(campaignId);

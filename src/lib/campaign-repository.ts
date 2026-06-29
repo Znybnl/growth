@@ -916,6 +916,50 @@ export async function getSupabaseCampaignPerformance(
   )[0] ?? null;
 }
 
+export async function getSupabaseCampaignSetupPerformance(
+  campaignId: string,
+  fallbackMerchant?: Merchant,
+): Promise<CampaignPerformance | null> {
+  const supabase = getSupabaseAdmin();
+  const { data } = await supabase.from("campaigns").select("*").eq("id", campaignId).maybeSingle();
+  if (!data) return null;
+
+  const row = data as CampaignRow;
+  const [merchant, actionsResult, prizesResult, localSettings] = await Promise.all([
+    fallbackMerchant && fallbackMerchant.id === row.merchant_id
+      ? Promise.resolve(fallbackMerchant)
+      : (async () => {
+          const merchantResult = await supabase
+            .from("merchants")
+            .select("*")
+            .eq("id", row.merchant_id)
+            .maybeSingle();
+          return merchantResult.data ? toMerchant(merchantResult.data as MerchantRow) : null;
+        })(),
+    supabase
+      .from("campaign_actions")
+      .select("id,campaign_id,position,kind,label,url,created_at")
+      .eq("campaign_id", campaignId),
+    supabase
+      .from("prizes")
+      .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at")
+      .eq("campaign_id", campaignId),
+    getCampaignLocalSettings(campaignId),
+  ]);
+
+  if (!merchant) return null;
+
+  return buildPerformanceBundle(
+    merchant,
+    [row],
+    (actionsResult.data as ActionRow[] | null) ?? [],
+    (prizesResult.data as PrizeRow[] | null) ?? [],
+    [],
+    [],
+    { [campaignId]: localSettings },
+  )[0] ?? null;
+}
+
 export async function getSupabasePublicCampaign(
   campaignId: string,
 ): Promise<PublicCampaign | null> {
