@@ -1,3 +1,6 @@
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+
 import QRCode from "qrcode";
 
 import { buildPosterSvg } from "@/lib/poster-render";
@@ -6,6 +9,16 @@ import {
   normalizePosterSettings,
 } from "@/lib/poster-utils";
 import { CampaignPerformance } from "@/lib/types";
+
+let posterFontDataUrlPromise: Promise<string | undefined> | undefined;
+
+async function getPosterFontDataUrl() {
+  posterFontDataUrlPromise ??= readFile(path.join(process.cwd(), "public", "fonts", "geist-regular.ttf"))
+    .then((buffer) => `data:font/truetype;base64,${buffer.toString("base64")}`)
+    .catch(() => undefined);
+
+  return posterFontDataUrlPromise;
+}
 
 export async function createCampaignQrSvg(url: string) {
   return QRCode.toString(url, {
@@ -73,11 +86,13 @@ export async function createCampaignPosterSvg(
       light: "#ffffff",
     },
   });
+  const embeddedFontDataUrl = await getPosterFontDataUrl();
 
   return buildPosterSvg({
     campaign,
     poster,
     prizes: performance.prizes,
     qrDataUrl,
+    embeddedFontDataUrl,
   });
 }

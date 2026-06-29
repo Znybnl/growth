@@ -3,8 +3,9 @@ import { Campaign, CampaignPosterSettings, PosterTemplateId, Prize } from "@/lib
 
 const A4_WIDTH = 794;
 const A4_HEIGHT = 1123;
-const SAFE_FONT = "sans-serif";
-const SAFE_DISPLAY_FONT = "sans-serif";
+const POSTER_FONT_FAMILY = "OkadoPoster";
+const SAFE_FONT = `${POSTER_FONT_FAMILY}, sans-serif`;
+const SAFE_DISPLAY_FONT = `${POSTER_FONT_FAMILY}, sans-serif`;
 
 type TemplateConfig = {
   id: PosterTemplateId;
@@ -433,15 +434,34 @@ export function buildPosterSvg(args: {
   poster: CampaignPosterSettings;
   prizes: Prize[] | Array<Pick<Prize, "label">>;
   qrDataUrl: string;
+  embeddedFontDataUrl?: string;
 }) {
-  const { campaign, poster, prizes, qrDataUrl } = args;
+  const { campaign, poster, prizes, qrDataUrl, embeddedFontDataUrl } = args;
   const template = TEMPLATE_CONFIGS[poster.templateId ?? "classic-wheel"] ?? TEMPLATE_CONFIGS["classic-wheel"];
   const gameMarkup =
     campaign.gameType === "wheel" ? renderWheel(template, poster, prizes) : renderScratch(template);
+  const fontFace = embeddedFontDataUrl
+    ? `
+        @font-face {
+          font-family: '${POSTER_FONT_FAMILY}';
+          src: url('${embeddedFontDataUrl}') format('truetype');
+          font-weight: 400 900;
+          font-style: normal;
+        }
+      `
+    : "";
 
   return `
     <svg xmlns="http://www.w3.org/2000/svg" width="${A4_WIDTH}" height="${A4_HEIGHT}" viewBox="0 0 ${A4_WIDTH} ${A4_HEIGHT}">
       <defs>
+        <style>
+          <![CDATA[
+            ${fontFace}
+            text {
+              font-family: '${POSTER_FONT_FAMILY}', sans-serif;
+            }
+          ]]>
+        </style>
         <filter id="posterShadow" x="-25%" y="-25%" width="150%" height="150%">
           <feDropShadow dx="0" dy="14" stdDeviation="14" flood-color="#020617" flood-opacity="0.25"/>
         </filter>
