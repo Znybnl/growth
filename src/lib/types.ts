@@ -5,6 +5,7 @@ export type TextFont = "display" | "sans" | "serif";
 export type LogoMode = "none" | "image" | "text";
 export type ButtonSize = "sm" | "md" | "lg";
 export type BackgroundMode = "color" | "image";
+export type PosterTemplateId = "classic-wheel" | "soft-gradient-wheel" | "terracotta-wheel";
 export type ActionKind =
   | "google"
   | "instagram"
@@ -222,6 +223,7 @@ export interface CampaignWheelSettings {
 }
 
 export interface CampaignPosterSettings {
+  templateId?: PosterTemplateId;
   logoMode?: LogoMode;
   logoText?: string;
   logoUrl?: string;

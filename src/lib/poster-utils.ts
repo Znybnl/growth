@@ -1,4 +1,10 @@
-import { CampaignPosterSettings, CampaignWheelSettings, Prize, TextFont } from "@/lib/types";
+import {
+  CampaignPosterSettings,
+  CampaignWheelSettings,
+  PosterTemplateId,
+  Prize,
+  TextFont,
+} from "@/lib/types";
 
 export type PosterWheelSegment = {
   color: string;
@@ -82,6 +88,7 @@ export function getPosterReadableTextColor(backgroundColor: string) {
 }
 
 export function createPosterSettingsDefaults(input: {
+  templateId?: PosterTemplateId;
   logoMode?: "none" | "image" | "text";
   logoText?: string;
   logoUrl?: string;
@@ -98,6 +105,7 @@ export function createPosterSettingsDefaults(input: {
   footerBackgroundColor?: string;
 }): CampaignPosterSettings {
   return {
+    templateId: input.templateId ?? "classic-wheel",
     logoMode: input.logoMode ?? (input.logoUrl ? "image" : input.logoText ? "text" : "none"),
     logoText: input.logoText ?? "",
     logoUrl: input.logoUrl,
@@ -124,6 +132,7 @@ export function normalizePosterSettings(
   return {
     ...defaults,
     ...poster,
+    templateId: poster?.templateId ?? defaults.templateId ?? "classic-wheel",
     logoBottomMarginPx: clamp(poster?.logoBottomMarginPx ?? defaults.logoBottomMarginPx, 0, 120),
     logoMode: poster?.logoMode ?? defaults.logoMode,
     logoText: poster?.logoText ?? defaults.logoText,

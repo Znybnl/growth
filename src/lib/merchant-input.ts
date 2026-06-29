@@ -8,6 +8,7 @@ import {
   LogoMode,
   MerchantAccountSettingsInput,
   MerchantOnboardingInput,
+  PosterTemplateId,
   TextAlign,
   TextFont,
 } from "@/lib/types";
@@ -28,6 +29,11 @@ const TEXT_ALIGNS = new Set<TextAlign>(["left", "center", "right"]);
 const TEXT_FONTS = new Set<TextFont>(["display", "sans", "serif"]);
 const BUTTON_SIZES = new Set<ButtonSize>(["sm", "md", "lg"]);
 const BACKGROUND_MODES = new Set<BackgroundMode>(["color", "image"]);
+const POSTER_TEMPLATE_IDS = new Set<PosterTemplateId>([
+  "classic-wheel",
+  "soft-gradient-wheel",
+  "terracotta-wheel",
+]);
 const ALLOWED_BACKGROUND_MIME_TYPES = new Set([
   "image/jpeg",
   "image/png",
@@ -355,6 +361,7 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
         alternateLoseColor: normalizeColor(wheel.alternateLoseColor, "#8795db"),
       },
       poster: {
+        templateId: normalizeEnum(poster.templateId, POSTER_TEMPLATE_IDS, "classic-wheel"),
         logoMode: normalizeEnum(poster.logoMode, LOGO_MODES, "text"),
         logoText: normalizeString(poster.logoText, 120) || undefined,
         logoUrl: normalizeUrl(poster.logoUrl) || undefined,

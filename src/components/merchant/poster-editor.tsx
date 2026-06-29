@@ -7,7 +7,7 @@ import { ChangeEvent, useMemo, useState } from "react";
 
 import { buildPosterSvg, createPosterPreviewQrDataUrl } from "@/lib/poster-render";
 import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
-import { Campaign, CampaignPosterSettings, Prize, TextFont } from "@/lib/types";
+import { Campaign, CampaignPosterSettings, PosterTemplateId, Prize, TextFont } from "@/lib/types";
 
 type PosterEditorProps = {
   campaign: Campaign;
@@ -15,6 +15,57 @@ type PosterEditorProps = {
 };
 
 const textFontOptions: TextFont[] = ["display", "sans", "serif"];
+const posterTemplates: Array<{
+  id: PosterTemplateId;
+  label: string;
+  description: string;
+  backgroundColor: string;
+  headlineTextColor: string;
+  wheel: Pick<CampaignPosterSettings["wheel"], "winColor" | "alternateWinColor" | "loseColor" | "alternateLoseColor" | "rimColor">;
+}> = [
+  {
+    id: "classic-wheel",
+    label: "Classique blanc",
+    description: "Fond clair, grand titre impactant, QR code très visible.",
+    backgroundColor: "#fff6ee",
+    headlineTextColor: "#050644",
+    wheel: {
+      winColor: "#5438c8",
+      alternateWinColor: "#fff7ef",
+      loseColor: "#fff7ef",
+      alternateLoseColor: "#fff7ef",
+      rimColor: "#3c3c3c",
+    },
+  },
+  {
+    id: "soft-gradient-wheel",
+    label: "Gradient clair",
+    description: "Look plus premium avec roue + QR en superposition.",
+    backgroundColor: "#f4f3ff",
+    headlineTextColor: "#050644",
+    wheel: {
+      winColor: "#4b35c9",
+      alternateWinColor: "#fff7ef",
+      loseColor: "#fff7ef",
+      alternateLoseColor: "#fff7ef",
+      rimColor: "#403c70",
+    },
+  },
+  {
+    id: "terracotta-wheel",
+    label: "Terracotta",
+    description: "Palette chaude pour un rendu restaurant plus chaleureux.",
+    backgroundColor: "#ddc9b8",
+    headlineTextColor: "#a82c1d",
+    wheel: {
+      winColor: "#a83222",
+      alternateWinColor: "#f8e4d8",
+      loseColor: "#f8e4d8",
+      alternateLoseColor: "#f8e4d8",
+      rimColor: "#2b1d18",
+    },
+  },
+];
 
 function uploadAsDataUrl(
   event: ChangeEvent<HTMLInputElement>,
@@ -96,6 +147,24 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
     }));
   }
 
+  function selectTemplate(templateId: PosterTemplateId) {
+    const template = posterTemplates.find((item) => item.id === templateId);
+
+    if (!template) return;
+
+    setPoster((current) => ({
+      ...current,
+      templateId,
+      backgroundMode: "color",
+      backgroundColor: template.backgroundColor,
+      headlineTextColor: template.headlineTextColor,
+      wheel: {
+        ...current.wheel,
+        ...template.wheel,
+      },
+    }));
+  }
+
   async function savePoster() {
     setIsSaving(true);
     setMessage(null);
@@ -160,6 +229,62 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
             </div>
           ) : null}
         </section>
+
+        {campaign.gameType === "wheel" ? (
+          <section className="rounded-[8px] border border-[#dbe4f0] bg-white p-6 shadow-[0_16px_42px_rgba(122,136,166,0.1)]">
+            <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Template</p>
+            <h2 className="mt-2 text-2xl font-semibold text-[#111827]">Choisir le design de l&apos;affiche</h2>
+            <div className="mt-6 grid gap-4 md:grid-cols-3">
+              {posterTemplates.map((template) => {
+                const active = (poster.templateId ?? "classic-wheel") === template.id;
+
+                return (
+                  <button
+                    key={template.id}
+                    type="button"
+                    onClick={() => selectTemplate(template.id)}
+                    className={`group overflow-hidden rounded-[12px] border text-left transition ${
+                      active
+                        ? "border-[#2f6df6] bg-[#eff4ff] shadow-[0_14px_34px_rgba(47,109,246,0.18)]"
+                        : "border-[#d7e0ed] bg-white hover:border-[#2f6df6]"
+                    }`}
+                  >
+                    <span
+                      className="relative block h-32"
+                      style={{ background: template.backgroundColor }}
+                    >
+                      <span
+                        className="absolute left-5 top-5 h-16 w-16 rounded-full border-[6px]"
+                        style={{
+                          borderColor: template.wheel.rimColor,
+                          background: `conic-gradient(${template.wheel.winColor} 0 60deg, #fff7ef 60deg 120deg, ${template.wheel.winColor} 120deg 180deg, #fff7ef 180deg 240deg, ${template.wheel.winColor} 240deg 300deg, #fff7ef 300deg 360deg)`,
+                        }}
+                      />
+                      <span
+                        className="absolute bottom-5 right-5 h-16 w-16 rounded-[12px] border-4 bg-white"
+                        style={{ borderColor: template.wheel.winColor }}
+                      />
+                      <span
+                        className="absolute left-24 top-7 text-2xl font-black italic"
+                        style={{ color: template.headlineTextColor }}
+                      >
+                        QR
+                      </span>
+                    </span>
+                    <span className="block p-4">
+                      <span className="block text-sm font-semibold text-[#111827]">
+                        {template.label}
+                      </span>
+                      <span className="mt-1 block text-xs leading-5 text-[#5c6577]">
+                        {template.description}
+                      </span>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+        ) : null}
 
         <section className="rounded-[8px] border border-[#dbe4f0] bg-white p-6 shadow-[0_16px_42px_rgba(122,136,166,0.1)]">
           <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Logo</p>
