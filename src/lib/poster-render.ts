@@ -47,7 +47,7 @@ const TEMPLATE_CONFIGS: Record<PosterTemplateId, TemplateConfig> = {
     qrX: 408,
     qrY: 512,
     qrSize: 292,
-    ctaX: 392,
+    ctaX: 369,
     ctaY: 812,
     ctaWidth: 370,
     ctaHeight: 86,
@@ -407,23 +407,29 @@ function renderSteps(template: TemplateConfig, gameType: Campaign["gameType"]) {
       <line x1="285" y1="28" x2="285" y2="104" stroke="${template.accent}" stroke-width="2"/>
       <line x1="498" y1="28" x2="498" y2="104" stroke="${template.accent}" stroke-width="2"/>
       <g transform="translate(44 24)">
-        <circle cx="110" cy="23" r="21" fill="${template.accent}"/>
-        <text x="110" y="30" text-anchor="middle" fill="#ffffff" font-family="${SAFE_FONT}" font-size="20" font-weight="900">1</text>
-        <text x="112" y="74" text-anchor="middle" fill="${template.accentDark}" font-family="${SAFE_FONT}" font-size="27" font-weight="900">Scannez</text>
-        <path d="M20 12 h40 a8 8 0 0 1 8 8 v60 a8 8 0 0 1 -8 8 h-40 a8 8 0 0 1 -8 -8 v-60 a8 8 0 0 1 8 -8 Z M28 26 h24 M28 40 h8 M44 40 h8 M28 54 h8 M44 54 h8 M28 68 h24" fill="none" stroke="#05070c" stroke-width="4" stroke-linecap="round"/>
+        <circle cx="112" cy="20" r="15" fill="${template.accent}"/>
+        <text x="112" y="25" text-anchor="middle" fill="#ffffff" font-family="${SAFE_FONT}" font-size="14" font-weight="900">1</text>
+        <text x="126" y="78" text-anchor="middle" fill="${template.accentDark}" font-family="${SAFE_FONT}" font-size="18" font-weight="900">Scannez</text>
+        <g transform="translate(18 20) scale(0.64)">
+          <path d="M20 12 h40 a8 8 0 0 1 8 8 v60 a8 8 0 0 1 -8 8 h-40 a8 8 0 0 1 -8 -8 v-60 a8 8 0 0 1 8 -8 Z M28 26 h24 M28 40 h8 M44 40 h8 M28 54 h8 M44 54 h8 M28 68 h24" fill="none" stroke="#05070c" stroke-width="4" stroke-linecap="round"/>
+        </g>
       </g>
       <g transform="translate(316 24)">
-        <circle cx="72" cy="23" r="21" fill="${template.accent}"/>
-        <text x="72" y="30" text-anchor="middle" fill="#ffffff" font-family="${SAFE_FONT}" font-size="20" font-weight="900">2</text>
-        <text x="110" y="74" text-anchor="middle" fill="${template.accentDark}" font-family="${SAFE_FONT}" font-size="27" font-weight="900">${action}</text>
-        <circle cx="28" cy="50" r="30" fill="none" stroke="#05070c" stroke-width="4"/>
-        <path d="M28 20 v60 M-2 50 h60 M8 30 l40 40 M48 30 l-40 40" stroke="#05070c" stroke-width="3"/>
+        <circle cx="74" cy="20" r="15" fill="${template.accent}"/>
+        <text x="74" y="25" text-anchor="middle" fill="#ffffff" font-family="${SAFE_FONT}" font-size="14" font-weight="900">2</text>
+        <text x="116" y="78" text-anchor="middle" fill="${template.accentDark}" font-family="${SAFE_FONT}" font-size="18" font-weight="900">${action}</text>
+        <g transform="translate(9 19) scale(0.64)">
+          <circle cx="28" cy="50" r="30" fill="none" stroke="#05070c" stroke-width="4"/>
+          <path d="M28 20 v60 M-2 50 h60 M8 30 l40 40 M48 30 l-40 40" stroke="#05070c" stroke-width="3"/>
+        </g>
       </g>
       <g transform="translate(536 24)">
-        <circle cx="62" cy="23" r="21" fill="${template.accent}"/>
-        <text x="62" y="30" text-anchor="middle" fill="#ffffff" font-family="${SAFE_FONT}" font-size="20" font-weight="900">3</text>
-        <text x="118" y="74" text-anchor="middle" fill="${template.accentDark}" font-family="${SAFE_FONT}" font-size="27" font-weight="900">${gift}</text>
-        <path d="M18 42 h72 v46 h-72 Z M12 30 h84 v18 h-84 Z M54 30 v58 M34 30 c-26 -22 12 -32 20 0 M58 30 c8 -32 46 -22 20 0" fill="none" stroke="#05070c" stroke-width="4" stroke-linejoin="round"/>
+        <circle cx="62" cy="20" r="15" fill="${template.accent}"/>
+        <text x="62" y="25" text-anchor="middle" fill="#ffffff" font-family="${SAFE_FONT}" font-size="14" font-weight="900">3</text>
+        <text x="128" y="78" text-anchor="middle" fill="${template.accentDark}" font-family="${SAFE_FONT}" font-size="18" font-weight="900">${gift}</text>
+        <g transform="translate(21 39) scale(0.64)">
+          <path d="M18 42 h72 v46 h-72 Z M12 30 h84 v18 h-84 Z M54 30 v58 M34 30 c-26 -22 12 -32 20 0 M58 30 c8 -32 46 -22 20 0" fill="none" stroke="#05070c" stroke-width="4" stroke-linejoin="round"/>
+        </g>
       </g>
     </g>
   `;
@@ -434,18 +440,30 @@ export function buildPosterSvg(args: {
   poster: CampaignPosterSettings;
   prizes: Prize[] | Array<Pick<Prize, "label">>;
   qrDataUrl: string;
-  embeddedFontDataUrl?: string;
+  embeddedFontHref?: string;
 }) {
-  const { campaign, poster, prizes, qrDataUrl, embeddedFontDataUrl } = args;
+  const { campaign, poster, prizes, qrDataUrl, embeddedFontHref } = args;
   const template = TEMPLATE_CONFIGS[poster.templateId ?? "classic-wheel"] ?? TEMPLATE_CONFIGS["classic-wheel"];
   const gameMarkup =
     campaign.gameType === "wheel" ? renderWheel(template, poster, prizes) : renderScratch(template);
-  const fontFace = embeddedFontDataUrl
+  const fontFace = embeddedFontHref
     ? `
         @font-face {
           font-family: '${POSTER_FONT_FAMILY}';
-          src: url('${embeddedFontDataUrl}') format('truetype');
-          font-weight: 400 900;
+          src: url('${embeddedFontHref}') format('truetype');
+          font-weight: 400;
+          font-style: normal;
+        }
+        @font-face {
+          font-family: '${POSTER_FONT_FAMILY}';
+          src: url('${embeddedFontHref}') format('truetype');
+          font-weight: 700;
+          font-style: normal;
+        }
+        @font-face {
+          font-family: '${POSTER_FONT_FAMILY}';
+          src: url('${embeddedFontHref}') format('truetype');
+          font-weight: 900;
           font-style: normal;
         }
       `
