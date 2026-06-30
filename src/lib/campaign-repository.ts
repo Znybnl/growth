@@ -1143,20 +1143,69 @@ export async function getSupabaseCampaignDataView(
   campaignId: string,
   merchant?: Merchant,
 ): Promise<CampaignDataView | null> {
-  const performance = await getSupabaseCampaignPerformance(campaignId, merchant);
-  if (!performance) return null;
   const supabase = getSupabaseAdmin();
-  const [{ data: leadsData }, { data: eventsData }, { data: deliveriesData }] = await Promise.all([
+  const { data: campaignData } = await supabase
+    .from("campaigns")
+    .select("*")
+    .eq("id", campaignId)
+    .maybeSingle();
+
+  if (!campaignData) return null;
+
+  const row = campaignData as CampaignRow;
+  const [
+    resolvedMerchant,
+    actionsResult,
+    prizesResult,
+    leadsResult,
+    eventsResult,
+    deliveriesResult,
+    localSettings,
+  ] = await Promise.all([
+    merchant && merchant.id === row.merchant_id
+      ? Promise.resolve(merchant)
+      : (async () => {
+          const merchantResult = await supabase
+            .from("merchants")
+            .select("*")
+            .eq("id", row.merchant_id)
+            .maybeSingle();
+          return merchantResult.data ? toMerchant(merchantResult.data as MerchantRow) : null;
+        })(),
+    supabase
+      .from("campaign_actions")
+      .select("id,campaign_id,position,kind,label,url,created_at")
+      .eq("campaign_id", campaignId),
+    supabase
+      .from("prizes")
+      .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at")
+      .eq("campaign_id", campaignId),
     supabase.from("leads").select("*").eq("campaign_id", campaignId),
     supabase.from("campaign_events").select("*").eq("campaign_id", campaignId),
     supabase
       .from("reward_email_deliveries")
       .select("lead_id,status,sent_at,delivered_at,error_message")
       .eq("campaign_id", campaignId),
+    getCampaignLocalSettings(campaignId),
   ]);
+
+  if (!resolvedMerchant) return null;
+
+  const performance = buildPerformanceBundle(
+    resolvedMerchant,
+    [row],
+    (actionsResult.data as ActionRow[] | null) ?? [],
+    (prizesResult.data as PrizeRow[] | null) ?? [],
+    (leadsResult.data as LeadRow[] | null) ?? [],
+    (eventsResult.data as EventRow[] | null) ?? [],
+    { [campaignId]: localSettings },
+  )[0];
+
+  if (!performance) return null;
+
   const prizes = performance.prizes;
   const leads = enrichLeadRowsWithEmailDeliveries(
-    ((leadsData as LeadRow[] | null) ?? [])
+    ((leadsResult.data as LeadRow[] | null) ?? [])
       .map(toLead)
       .map((lead) => ({
         ...lead,
@@ -1170,9 +1219,11 @@ export async function getSupabaseCampaignDataView(
           : undefined,
       }))
       .sort((a, b) => b.consentTimestamp.localeCompare(a.consentTimestamp)),
-    (deliveriesData as RewardEmailDeliverySummaryRow[] | null) ?? [],
+    (deliveriesResult.data as RewardEmailDeliverySummaryRow[] | null) ?? [],
   );
-  const events = ((eventsData as EventRow[] | null) ?? []).map(toEvent).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  const events = ((eventsResult.data as EventRow[] | null) ?? [])
+    .map(toEvent)
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   return { performance, leads, events };
 }
 

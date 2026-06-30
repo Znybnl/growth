@@ -14,7 +14,7 @@ import {
 } from "@/lib/format";
 import {
   getCampaignDataView,
-  getMerchantDashboard,
+  getMerchantCampaignLibrary,
   getMerchantLeads,
   getPrimaryCampaignId,
 } from "@/lib/store";
@@ -272,8 +272,8 @@ export default async function DataPage({ searchParams }: DataPageProps) {
   const query = params.q?.trim() ?? params.code?.trim() ?? "";
   const normalizedQuery = query.toLowerCase();
   const initialSelectedCampaignId = params.campaign ?? undefined;
-  const [dashboard, allLeads, initialDataView] = await Promise.all([
-    getMerchantDashboard(session.merchant.id, session.merchant),
+  const [campaignOptions, allLeads, initialDataView] = await Promise.all([
+    getMerchantCampaignLibrary(session.merchant.id, session.merchant),
     query ? getMerchantLeads(session.merchant.id) : Promise.resolve([]),
     initialSelectedCampaignId
       ? getCampaignDataView(initialSelectedCampaignId, session.merchant)
@@ -291,7 +291,7 @@ export default async function DataPage({ searchParams }: DataPageProps) {
   const selectedCampaignId =
     matchedLead?.campaignId ??
     initialSelectedCampaignId ??
-    dashboard.campaigns[0]?.campaign.id ??
+    campaignOptions[0]?.id ??
     getPrimaryCampaignId();
   const dataView =
     (initialDataView && initialSelectedCampaignId === selectedCampaignId ? initialDataView : null) ??
@@ -387,23 +387,23 @@ export default async function DataPage({ searchParams }: DataPageProps) {
               />
             </div>
             <div className="mt-3 flex flex-wrap gap-3">
-              {dashboard.campaigns.map((item) => (
+              {campaignOptions.map((item) => (
                 <Link
-                  key={item.campaign.id}
-                  href={`/data?campaign=${item.campaign.id}${query ? `&q=${encodeURIComponent(query)}` : ""}`}
+                  key={item.id}
+                  href={`/data?campaign=${item.id}${query ? `&q=${encodeURIComponent(query)}` : ""}`}
                   prefetch={false}
                   className={`cursor-pointer rounded-[18px] px-4 py-3 text-sm font-semibold ${
-                    item.campaign.id === dataView.performance.campaign.id
+                    item.id === dataView.performance.campaign.id
                       ? "bg-[#111827] !text-white"
                       : "border border-[#d7e0ed] bg-[#f8fafc] text-[#182033]"
                   }`}
                   style={
-                    item.campaign.id === dataView.performance.campaign.id
+                    item.id === dataView.performance.campaign.id
                       ? { color: "#ffffff" }
                       : undefined
                   }
                 >
-                  {item.campaign.title}
+                  {item.title}
                 </Link>
               ))}
             </div>
