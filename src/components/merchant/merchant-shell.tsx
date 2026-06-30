@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useMemo, useState } from "react";
+import posthog from "posthog-js";
+import { useEffect, useMemo, useState } from "react";
 
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { BrandMark } from "@/components/brand-mark";
@@ -34,6 +35,25 @@ export function MerchantShell({ children, merchant, user, isSaasAdmin }: Merchan
   const [query, setQuery] = useState(searchParams.get("q") ?? "");
   const visibleNavItems = navItems.filter((item) => !item.adminOnly || isSaasAdmin);
   const billing = useMemo(() => getMerchantBillingSummary(merchant), [merchant]);
+
+  useEffect(() => {
+    if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) {
+      return;
+    }
+
+    posthog.identify(`${merchant.id}:${user.id}`, {
+      merchantId: merchant.id,
+      merchantUserId: user.id,
+      email: user.email,
+      companyName: merchant.companyName,
+      isSaasAdmin,
+      billingStatus: billing.isSubscribed
+        ? "subscribed"
+        : billing.isTrialActive
+          ? "trial"
+          : "locked",
+    });
+  }, [billing.isSubscribed, billing.isTrialActive, isSaasAdmin, merchant.companyName, merchant.id, user.email, user.id]);
 
   function submitSearch(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();

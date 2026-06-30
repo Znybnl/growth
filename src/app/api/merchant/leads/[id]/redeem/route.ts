@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { requireAuthenticatedSession } from "@/lib/auth";
+import { captureProductEvent, merchantDistinctId } from "@/lib/product-analytics";
 import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
 import { logSupportEvent } from "@/lib/support-log";
 import { getMerchantLeads, redeemLeadPrize } from "@/lib/store";
@@ -21,15 +22,26 @@ export async function POST(
     }
 
     const updatedLead = await redeemLeadPrize(id);
-    logSupportEvent("info", "prize-redeemed-from-merchant", {
+    logSupportEvent("info", "prize_redeemed", {
       merchantId: session.merchant.id,
       leadId: id,
       status: updatedLead.status,
     });
+    await captureProductEvent(
+      "prize_redeemed",
+      merchantDistinctId(session.merchant.id, session.user.id),
+      {
+        merchantId: session.merchant.id,
+        merchantUserId: session.user.id,
+        leadId: id,
+        campaignId: updatedLead.campaignId,
+        source: "merchant",
+      },
+    );
 
     return NextResponse.json({ lead: updatedLead });
   } catch (error) {
-    logSupportEvent("error", "prize-redeem-merchant-failed", {
+    logSupportEvent("error", "prize_redeem_failed", {
       error: error instanceof Error ? error.message : "Retrait impossible",
     });
 

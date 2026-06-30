@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { captureProductEvent, merchantDistinctId } from "@/lib/product-analytics";
 import { createMerchantAccount } from "@/lib/store";
 import { createRouteSupabaseClient } from "@/lib/supabase-server-auth";
 import { MerchantSignUpInput } from "@/lib/types";
@@ -28,6 +29,17 @@ export async function POST(request: Request) {
     if (signInResult.error || !signInResult.data.user) {
       throw new Error(signInResult.error?.message ?? "Connexion automatique impossible.");
     }
+
+    await captureProductEvent(
+      "signup_completed",
+      merchantDistinctId(session.merchant.id, session.user.id),
+      {
+        merchantId: session.merchant.id,
+        merchantUserId: session.user.id,
+        companyName: session.merchant.companyName,
+        authProvider: "email",
+      },
+    );
 
     const response = NextResponse.json(
       {

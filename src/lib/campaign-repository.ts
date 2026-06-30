@@ -1139,6 +1139,89 @@ export async function getSupabaseMerchantLeads(
   );
 }
 
+export async function getSupabaseMerchantRecentLeads(
+  merchantId: string,
+  limit = 5,
+  query = "",
+): Promise<MerchantLeadRow[]> {
+  const supabase = getSupabaseAdmin();
+  const normalizedQuery = query.trim().toLowerCase();
+  const { data: campaignsData } = await supabase
+    .from("campaigns")
+    .select("id,title,goal_type")
+    .eq("merchant_id", merchantId);
+
+  const campaigns =
+    (campaignsData as Array<{ id: string; title: string; goal_type: Campaign["goalType"] }> | null) ?? [];
+  const campaignIds = campaigns.map((item) => item.id);
+
+  if (!campaignIds.length) {
+    return [];
+  }
+
+  let leadsQuery = supabase
+    .from("leads")
+    .select("*")
+    .in("campaign_id", campaignIds)
+    .order("created_at", { ascending: false })
+    .limit(normalizedQuery ? Math.max(limit * 4, 20) : limit);
+
+  if (normalizedQuery) {
+    const escapedQuery = normalizedQuery.replaceAll("%", "\\%").replaceAll("_", "\\_");
+    leadsQuery = leadsQuery.or(
+      `first_name.ilike.%${escapedQuery}%,email.ilike.%${escapedQuery}%,redemption_code.ilike.%${escapedQuery}%`,
+    );
+  }
+
+  const { data: leadsData } = await leadsQuery;
+  const leadRows = (leadsData as LeadRow[] | null) ?? [];
+  const prizeIds = [...new Set(leadRows.map((lead) => lead.prize_id).filter(Boolean) as string[])];
+
+  const [{ data: prizesData }, { data: deliveriesData }] = await Promise.all([
+    prizeIds.length
+      ? supabase
+          .from("prizes")
+          .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at")
+          .in("id", prizeIds)
+      : Promise.resolve({ data: [] }),
+    leadRows.length
+      ? supabase
+          .from("reward_email_deliveries")
+          .select("lead_id,status,sent_at,delivered_at,error_message")
+          .in(
+            "lead_id",
+            leadRows.map((lead) => lead.id),
+          )
+      : Promise.resolve({ data: [] }),
+  ]);
+
+  const prizes = ((prizesData as PrizeRow[] | null) ?? []).map(toPrize);
+  const campaignMap = new Map(campaigns.map((item) => [item.id, item]));
+  const leads = leadRows
+    .map(toLead)
+    .map((lead) => ({
+      ...lead,
+      campaignTitle: campaignMap.get(lead.campaignId)?.title ?? "Campagne",
+      goalType: campaignMap.get(lead.campaignId)?.goal_type ?? "lead_capture",
+      prizeLabel: lead.prizeId
+        ? prizes.find((item) => item.id === lead.prizeId)?.label ?? "Lot inconnu"
+        : "Perdu",
+    }))
+    .filter((lead) =>
+      normalizedQuery
+        ? `${lead.firstName} ${lead.email} ${lead.campaignTitle} ${lead.redemptionCode ?? ""}`
+            .toLowerCase()
+            .includes(normalizedQuery)
+        : true,
+    )
+    .slice(0, limit);
+
+  return enrichLeadRowsWithEmailDeliveries(
+    leads,
+    (deliveriesData as RewardEmailDeliverySummaryRow[] | null) ?? [],
+  );
+}
+
 export async function getSupabaseCampaignDataView(
   campaignId: string,
   merchant?: Merchant,

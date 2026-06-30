@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { getAuthenticatedSession } from "@/lib/auth";
 import { createCampaignPosterSvg } from "@/lib/campaign-exports";
+import { captureProductEvent, merchantDistinctId } from "@/lib/product-analytics";
 import { getCampaignPerformance } from "@/lib/store";
 
 export const runtime = "nodejs";
@@ -36,6 +37,17 @@ export async function GET(request: Request, context: RouteContext) {
     })
       .png()
       .toBuffer();
+    await captureProductEvent(
+      "poster_downloaded",
+      merchantDistinctId(session.merchant.id, session.user.id),
+      {
+        merchantId: session.merchant.id,
+        merchantUserId: session.user.id,
+        campaignId: performance.campaign.id,
+        template: performance.campaign.presentation.poster.templateId ?? "default",
+        format: "png",
+      },
+    );
 
     return new NextResponse(new Uint8Array(posterPng), {
       headers: {

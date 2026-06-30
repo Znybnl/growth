@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { requireAuthenticatedSession } from "@/lib/auth";
+import { captureProductEvent, merchantDistinctId } from "@/lib/product-analytics";
 import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
 import { logSupportEvent } from "@/lib/support-log";
 import { getMerchantLeads, redeemLeadPrize } from "@/lib/store";
@@ -27,15 +28,26 @@ export async function POST(request: Request) {
     }
 
     const updatedLead = await redeemLeadPrize(body.leadId);
-    logSupportEvent("info", "prize-redeemed-from-public", {
+    logSupportEvent("info", "prize_redeemed", {
       merchantId: session.merchant.id,
       leadId: body.leadId,
       status: updatedLead.status,
     });
+    await captureProductEvent(
+      "prize_redeemed",
+      merchantDistinctId(session.merchant.id, session.user.id),
+      {
+        merchantId: session.merchant.id,
+        merchantUserId: session.user.id,
+        leadId: body.leadId,
+        campaignId: updatedLead.campaignId,
+        source: "public_redeem_button",
+      },
+    );
 
     return NextResponse.json({ lead: updatedLead });
   } catch (error) {
-    logSupportEvent("error", "prize-redeem-public-failed", {
+    logSupportEvent("error", "prize_redeem_failed", {
       error: error instanceof Error ? error.message : "Redeem failed",
     });
 

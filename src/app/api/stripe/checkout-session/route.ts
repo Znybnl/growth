@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { getAuthenticatedSession } from "@/lib/auth";
 import { getMerchantBillingSummary } from "@/lib/billing";
 import { setMerchantStripeCustomerIdInSupabase } from "@/lib/merchant-account-repository";
+import { captureProductEvent, merchantDistinctId } from "@/lib/product-analytics";
 import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
 import { logSupportEvent } from "@/lib/support-log";
 import { getStripeClient, getStripeMonthlyPriceId } from "@/lib/stripe";
@@ -80,13 +81,24 @@ export async function POST(request: Request) {
       allow_promotion_codes: false,
     });
 
-    logSupportEvent("info", "stripe-checkout-created", {
+    logSupportEvent("info", "stripe_checkout_created", {
       merchantId: session.merchant.id,
       merchantUserId: session.user.id,
       stripeCustomerId: customerId,
       stripeCheckoutSessionId: checkoutSession.id,
       hasTrial: Boolean(trialEnd),
     });
+    await captureProductEvent(
+      "stripe_checkout_started",
+      merchantDistinctId(session.merchant.id, session.user.id),
+      {
+        merchantId: session.merchant.id,
+        merchantUserId: session.user.id,
+        stripeCustomerId: customerId,
+        stripeCheckoutSessionId: checkoutSession.id,
+        hasTrial: Boolean(trialEnd),
+      },
+    );
 
     return NextResponse.json({ url: checkoutSession.url });
   } catch (error) {

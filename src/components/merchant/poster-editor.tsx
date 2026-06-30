@@ -20,6 +20,7 @@ const posterTemplates: Array<{
   description: string;
   backgroundColor: string;
   headlineTextColor: string;
+  headlineFontSizePx: number;
   wheel: Pick<CampaignPosterSettings["wheel"], "winColor" | "alternateWinColor" | "loseColor" | "alternateLoseColor" | "rimColor">;
 }> = [
   {
@@ -28,6 +29,7 @@ const posterTemplates: Array<{
     description: "Fond clair, grand titre impactant, QR code très visible.",
     backgroundColor: "#fff6ee",
     headlineTextColor: "#050644",
+    headlineFontSizePx: 50,
     wheel: {
       winColor: "#5438c8",
       alternateWinColor: "#fff7ef",
@@ -42,6 +44,7 @@ const posterTemplates: Array<{
     description: "Look plus premium avec roue + QR en superposition.",
     backgroundColor: "#f4f3ff",
     headlineTextColor: "#050644",
+    headlineFontSizePx: 40,
     wheel: {
       winColor: "#4b35c9",
       alternateWinColor: "#fff7ef",
@@ -56,6 +59,7 @@ const posterTemplates: Array<{
     description: "Palette chaude pour un rendu restaurant plus chaleureux.",
     backgroundColor: "#ddc9b8",
     headlineTextColor: "#a82c1d",
+    headlineFontSizePx: 50,
     wheel: {
       winColor: "#a83222",
       alternateWinColor: "#f8e4d8",
@@ -83,6 +87,34 @@ function uploadAsDataUrl(
   reader.readAsDataURL(file);
 }
 
+function getPosterTemplate(templateId?: PosterTemplateId) {
+  return posterTemplates.find((template) => template.id === templateId) ?? posterTemplates[0];
+}
+
+function applyTemplateDefaults(
+  poster: CampaignPosterSettings,
+  template = getPosterTemplate(poster.templateId),
+  options: { preserveWinColor?: boolean } = {},
+): CampaignPosterSettings {
+  const winColor = options.preserveWinColor ? poster.wheel.winColor : template.wheel.winColor;
+
+  return {
+    ...poster,
+    templateId: template.id,
+    backgroundMode: "color",
+    backgroundColor: template.backgroundColor,
+    backgroundImageUrl: "",
+    headlineTextColor: template.headlineTextColor,
+    headlineFontSizePx: template.headlineFontSizePx,
+    wheel: {
+      ...poster.wheel,
+      ...template.wheel,
+      winColor,
+      alternateWinColor: winColor,
+    },
+  };
+}
+
 export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
   const router = useRouter();
   const [poster, setPoster] = useState<CampaignPosterSettings>(() => {
@@ -91,7 +123,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
       createPosterSettingsDefaults({
         templateId: "classic-wheel",
         logoMode: campaign.logoMode ?? "text",
-        logoText: campaign.logoText ?? campaign.title,
+        logoText: campaign.logoText ?? "",
         logoUrl: campaign.logoUrl,
         logoSizePercent: campaign.presentation.logo.sizePercent,
         logoBottomMarginPx: campaign.presentation.logo.marginBottomPx,
@@ -100,34 +132,35 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
         backgroundImageUrl: "",
         headline: campaign.subtitle,
         headlineTextColor: "#050644",
-        headlineFontSizePx: campaign.presentation.heading.fontSizePx,
+        headlineFontSizePx: 50,
         headlineFontFamily: "display",
-        wheel: campaign.presentation.wheel,
+        wheel: posterTemplates[0].wheel,
         footerBackgroundColor: "transparent",
       }),
     );
 
     if (campaign.presentation.poster?.templateId) {
-      return normalizedPoster;
+      const hasCustomWinColor =
+        Boolean(campaign.presentation.poster.wheel?.winColor) &&
+        campaign.presentation.poster.wheel?.winColor !== campaign.presentation.wheel.winColor;
+
+      return applyTemplateDefaults(normalizedPoster, undefined, {
+        preserveWinColor: hasCustomWinColor,
+      });
     }
 
     const template = posterTemplates[0];
 
-    return {
-      ...normalizedPoster,
-      templateId: template.id,
-      backgroundMode: "color",
-      backgroundColor: template.backgroundColor,
-      backgroundImageUrl: "",
-      headlineTextColor: template.headlineTextColor,
-      headlineFontFamily: "display",
-      wheel: {
-        ...normalizedPoster.wheel,
-        ...template.wheel,
+    return applyTemplateDefaults(
+      {
+        ...normalizedPoster,
+        headlineFontFamily: "display",
       },
-    };
+      template,
+    );
   });
   const [isSaving, setIsSaving] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
   const previewPosterSvg = useMemo(
@@ -173,6 +206,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
       backgroundColor: template.backgroundColor,
       backgroundImageUrl: "",
       headlineTextColor: template.headlineTextColor,
+      headlineFontSizePx: template.headlineFontSizePx,
       wheel: {
         ...current.wheel,
         ...template.wheel,
@@ -202,6 +236,47 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
       setMessage(error instanceof Error ? error.message : "Enregistrement impossible.");
     } finally {
       setIsSaving(false);
+    }
+  }
+
+  async function downloadPoster() {
+    setIsDownloading(true);
+    setMessage(null);
+
+    try {
+      const saveResponse = await fetch(`/api/campaigns/${campaign.id}/poster-settings`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(poster),
+      });
+      const savePayload = (await saveResponse.json()) as { error?: string };
+
+      if (!saveResponse.ok) {
+        throw new Error(savePayload.error ?? "Enregistrement impossible.");
+      }
+
+      router.refresh();
+
+      const response = await fetch(`/api/campaigns/${campaign.id}/poster?ts=${Date.now()}`);
+
+      if (!response.ok) {
+        throw new Error("Téléchargement impossible.");
+      }
+
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = objectUrl;
+      link.download = `${campaign.id}-affiche-a4.png`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(objectUrl);
+      setMessage("Affiche enregistrée et téléchargement lancé.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Téléchargement impossible.");
+    } finally {
+      setIsDownloading(false);
     }
   }
 
@@ -276,14 +351,23 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                         }}
                       />
                       <span
-                        className="absolute bottom-5 right-5 h-16 w-16 rounded-[12px] border-4 bg-white"
+                        className="absolute bottom-5 right-5 grid h-16 w-16 grid-cols-5 gap-0.5 rounded-[12px] border-4 bg-white p-2"
                         style={{ borderColor: template.wheel.winColor }}
-                      />
-                      <span
-                        className="absolute left-24 top-7 text-2xl font-black italic"
-                        style={{ color: template.headlineTextColor }}
                       >
-                        QR
+                        {Array.from({ length: 25 }).map((_, index) => (
+                          <span
+                            key={index}
+                            className="rounded-[1px]"
+                            style={{
+                              backgroundColor:
+                                [0, 1, 3, 4, 5, 9, 11, 12, 14, 15, 18, 20, 21, 23, 24].includes(
+                                  index,
+                                )
+                                  ? "#111827"
+                                  : "transparent",
+                            }}
+                          />
+                        ))}
                       </span>
                     </span>
                     <span className="block p-4">
@@ -325,7 +409,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                           logoMode: mode.value as CampaignPosterSettings["logoMode"],
                           logoText:
                             mode.value === "text"
-                              ? poster.logoText || campaign.logoText || campaign.title
+                              ? poster.logoText || campaign.logoText || ""
                               : poster.logoText,
                         })
                       }
@@ -480,26 +564,6 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                   className="h-14 w-full rounded-[8px] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none"
                 />
               </label>
-
-              <label className="text-sm">
-                <span className="mb-2 block text-[#616b7c]">Couleur perdu</span>
-                <input
-                  type="color"
-                  value={poster.wheel.loseColor}
-                  onChange={(event) => updateWheel("loseColor", event.target.value)}
-                  className="h-14 w-full rounded-[8px] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none"
-                />
-              </label>
-
-              <label className="text-sm md:col-span-2">
-                <span className="mb-2 block text-[#616b7c]">Couleur de la bordure de la roue</span>
-                <input
-                  type="color"
-                  value={poster.wheel.rimColor}
-                  onChange={(event) => updateWheel("rimColor", event.target.value)}
-                  className="h-14 w-full rounded-[8px] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none"
-                />
-              </label>
             </div>
           </section>
         ) : null}
@@ -514,6 +578,11 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
             </div>
             <a
               href={`/api/campaigns/${campaign.id}/poster`}
+              aria-busy={isDownloading}
+              onClick={(event) => {
+                event.preventDefault();
+                void downloadPoster();
+              }}
               className="rounded-[8px] bg-[#111827] px-4 py-3 text-sm font-semibold !text-white"
               style={{ color: "#ffffff" }}
             >

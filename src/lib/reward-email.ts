@@ -12,6 +12,7 @@ import {
   resolveRewardEmailVariables,
 } from "@/lib/email-settings";
 import { formatDateTime } from "@/lib/format";
+import { captureProductEvent } from "@/lib/product-analytics";
 import { logSupportEvent } from "@/lib/support-log";
 import { allowLocalTlsBypass } from "@/lib/supabase";
 import { CampaignEmailSettings } from "@/lib/types";
@@ -117,7 +118,13 @@ export async function sendRewardEmail(input: SendRewardEmailInput) {
     }
 
     await markRewardEmailSentInSupabase(delivery.id, result.data?.id ?? null);
-    logSupportEvent("info", "reward-email-sent", {
+    await captureProductEvent("reward_email_sent", `lead:${input.leadId}`, {
+      campaignId: input.campaignId,
+      leadId: input.leadId,
+      deliveryId: delivery.id,
+      hasResendEmailId: Boolean(result.data?.id),
+    });
+    logSupportEvent("info", "reward_email_sent", {
       campaignId: input.campaignId,
       leadId: input.leadId,
       deliveryId: delivery.id,
@@ -132,7 +139,13 @@ export async function sendRewardEmail(input: SendRewardEmailInput) {
   } catch (error) {
     const message = error instanceof Error ? error.message : "Envoi Resend impossible";
     await markRewardEmailFailedInSupabase(delivery.id, message);
-    logSupportEvent("error", "reward-email-failed", {
+    await captureProductEvent("reward_email_failed", `lead:${input.leadId}`, {
+      campaignId: input.campaignId,
+      leadId: input.leadId,
+      deliveryId: delivery.id,
+      error: message.slice(0, 240),
+    });
+    logSupportEvent("error", "reward_email_failed", {
       campaignId: input.campaignId,
       leadId: input.leadId,
       deliveryId: delivery.id,

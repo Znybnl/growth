@@ -6,6 +6,7 @@ import {
   markMerchantSubscriptionCanceledInSupabase,
   updateMerchantBillingFromStripeSubscriptionInSupabase,
 } from "@/lib/merchant-account-repository";
+import { captureProductEvent } from "@/lib/product-analytics";
 import { logSupportEvent } from "@/lib/support-log";
 import { getStripeClient, getStripeWebhookSecret } from "@/lib/stripe";
 
@@ -131,14 +132,28 @@ export async function POST(request: Request) {
         break;
     }
 
-    logSupportEvent("info", "stripe-webhook-received", {
+    if (merchantId) {
+      await captureProductEvent("billing_webhook_received", merchantId, {
+        merchantId,
+        stripeEventType: event.type,
+      });
+
+      if (["checkout.session.completed", "invoice.paid", "customer.subscription.updated"].includes(event.type)) {
+        await captureProductEvent("subscription_active", merchantId, {
+          merchantId,
+          stripeEventType: event.type,
+        });
+      }
+    }
+
+    logSupportEvent("info", "stripe_webhook_received", {
       type: event.type,
       merchantId,
     });
 
     return NextResponse.json({ received: true });
   } catch (error) {
-    logSupportEvent("error", "stripe-webhook-invalid", {
+    logSupportEvent("error", "stripe_webhook_invalid", {
       error: error instanceof Error ? error.message : "Webhook Stripe invalide",
     });
 

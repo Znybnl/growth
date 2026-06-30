@@ -8,13 +8,86 @@ import {
   createPosterSettingsDefaults,
   normalizePosterSettings,
 } from "@/lib/poster-utils";
-import { CampaignPerformance } from "@/lib/types";
+import { CampaignPerformance, CampaignPosterSettings, PosterTemplateId } from "@/lib/types";
 
 let posterFontHref: string | undefined;
 
 function getPosterFontHref() {
   posterFontHref ??= pathToFileURL(path.join(process.cwd(), "public", "fonts", "geist-regular.ttf")).href;
   return posterFontHref;
+}
+
+const POSTER_TEMPLATE_DEFAULTS: Record<
+  PosterTemplateId,
+  {
+    backgroundColor: string;
+    headlineTextColor: string;
+    headlineFontSizePx: number;
+    wheel: CampaignPosterSettings["wheel"];
+  }
+> = {
+  "classic-wheel": {
+    backgroundColor: "#fff6ee",
+    headlineTextColor: "#050644",
+    headlineFontSizePx: 50,
+    wheel: {
+      winColor: "#5438c8",
+      alternateWinColor: "#fff7ef",
+      loseColor: "#fff7ef",
+      alternateLoseColor: "#fff7ef",
+      rimColor: "#3c3c3c",
+    },
+  },
+  "soft-gradient-wheel": {
+    backgroundColor: "#f4f3ff",
+    headlineTextColor: "#050644",
+    headlineFontSizePx: 40,
+    wheel: {
+      winColor: "#4b35c9",
+      alternateWinColor: "#fff7ef",
+      loseColor: "#fff7ef",
+      alternateLoseColor: "#fff7ef",
+      rimColor: "#403c70",
+    },
+  },
+  "terracotta-wheel": {
+    backgroundColor: "#ddc9b8",
+    headlineTextColor: "#a82c1d",
+    headlineFontSizePx: 50,
+    wheel: {
+      winColor: "#a83222",
+      alternateWinColor: "#f8e4d8",
+      loseColor: "#f8e4d8",
+      alternateLoseColor: "#f8e4d8",
+      rimColor: "#2b1d18",
+    },
+  },
+};
+
+function applyPosterTemplateDefaults(
+  poster: CampaignPosterSettings,
+  campaignWheel: CampaignPosterSettings["wheel"],
+) {
+  const templateId = poster.templateId ?? "classic-wheel";
+  const template = POSTER_TEMPLATE_DEFAULTS[templateId] ?? POSTER_TEMPLATE_DEFAULTS["classic-wheel"];
+  const hasCustomWinColor = poster.wheel.winColor && poster.wheel.winColor !== campaignWheel.winColor;
+  const winColor = hasCustomWinColor ? poster.wheel.winColor : template.wheel.winColor;
+
+  return {
+    ...poster,
+    templateId,
+    backgroundMode: "color" as const,
+    backgroundColor: template.backgroundColor,
+    backgroundImageUrl: "",
+    headlineTextColor: template.headlineTextColor,
+    headlineFontSizePx: template.headlineFontSizePx,
+    wheel: {
+      ...poster.wheel,
+      ...template.wheel,
+      winColor,
+      alternateWinColor: winColor,
+    },
+  };
 }
 
 export async function createCampaignQrSvg(url: string) {
@@ -40,7 +113,7 @@ export async function createCampaignPosterSvg(
     createPosterSettingsDefaults({
       templateId: "classic-wheel",
       logoMode: campaign.logoMode ?? "text",
-      logoText: campaign.logoText ?? campaign.title,
+      logoText: campaign.logoText ?? "",
       logoUrl: campaign.logoUrl,
       logoSizePercent: campaign.presentation.logo.sizePercent,
       logoBottomMarginPx: campaign.presentation.logo.marginBottomPx,
@@ -49,31 +122,22 @@ export async function createCampaignPosterSvg(
       backgroundImageUrl: "",
       headline: campaign.subtitle,
       headlineTextColor: "#050644",
-      headlineFontSizePx: campaign.presentation.heading.fontSizePx,
+      headlineFontSizePx: 50,
       headlineFontFamily: "display",
-      wheel: campaign.presentation.wheel,
+      wheel: POSTER_TEMPLATE_DEFAULTS["classic-wheel"].wheel,
       footerBackgroundColor: campaign.accent.signal,
     }),
   );
   const poster = hasExplicitPosterTemplate
-    ? normalizedPoster
-    : {
-        ...normalizedPoster,
-        templateId: "classic-wheel" as const,
-        backgroundMode: "color" as const,
-        backgroundColor: "#fff6ee",
-        backgroundImageUrl: "",
-        headlineTextColor: "#050644",
-        headlineFontFamily: "display" as const,
-        wheel: {
-          ...normalizedPoster.wheel,
-          winColor: "#5438c8",
-          loseColor: "#fff7ef",
-          alternateWinColor: "#fff7ef",
-          alternateLoseColor: "#fff7ef",
-          rimColor: "#3c3c3c",
+    ? applyPosterTemplateDefaults(normalizedPoster, campaign.presentation.wheel)
+    : applyPosterTemplateDefaults(
+        {
+          ...normalizedPoster,
+          templateId: "classic-wheel" as const,
+          headlineFontFamily: "display" as const,
         },
-      };
+        campaign.presentation.wheel,
+      );
 
   const qrDataUrl = await QRCode.toDataURL(publicUrl, {
     margin: 1,

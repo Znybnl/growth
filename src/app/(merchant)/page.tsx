@@ -10,7 +10,7 @@ import {
   goalLabel,
   leadStatusLabel,
 } from "@/lib/format";
-import { getMerchantDashboard, getMerchantLeads } from "@/lib/store";
+import { getMerchantDashboard, getMerchantRecentLeads } from "@/lib/store";
 
 export default async function DashboardPage({
   searchParams,
@@ -22,7 +22,7 @@ export default async function DashboardPage({
   const query = params.q?.trim().toLowerCase() ?? "";
   const [dashboard, merchantLeads] = await Promise.all([
     getMerchantDashboard(session.merchant.id, session.merchant),
-    getMerchantLeads(session.merchant.id),
+    getMerchantRecentLeads(session.merchant.id, 5, query),
   ]);
 
   const filteredCampaigns = query
@@ -32,14 +32,7 @@ export default async function DashboardPage({
     : dashboard.campaigns;
 
   const merchantCampaignIds = new Set(filteredCampaigns.map((item) => item.campaign.id));
-  const recentLeads = merchantLeads
-    .filter((lead) => merchantCampaignIds.has(lead.campaignId))
-    .filter((lead) =>
-      query
-        ? `${lead.firstName} ${lead.email} ${lead.campaignTitle}`.toLowerCase().includes(query)
-        : true,
-    )
-    .slice(0, 5);
+  const recentLeads = merchantLeads.filter((lead) => merchantCampaignIds.has(lead.campaignId));
 
   const activeCampaigns = filteredCampaigns.filter((item) => item.campaign.isActive);
   const bestCampaign = [...filteredCampaigns].sort(

@@ -1,58 +1,100 @@
-# okado
+# Okado
 
-Prototype Next.js construit a partir de la SFD `SFD_MVP_activation_client_magasin_v2.docx`.
-
-## Ce qui est livre
-
-- Dashboard marchand par defaut `/` avec sidebar, KPI, campagnes prioritaires et leads recents.
-- Ecrans dedies `campaigns`, `campaigns/new`, `campaigns/[id]/edit` et `data`.
-- Parcours client mobile `campaign/[id]` : branding, formulaire, etape d'activation, roue de la chance et redemption.
-- Endpoints mockes alignes sur la SFD pour preparer le branchement Supabase / Vercel.
+Application SaaS BtoB pour créer et piloter des animations locales en boutique ou restaurant : roue de la fortune, ticket à gratter, QR code, collecte de leads, dotations, retrait de lots et suivi marchand.
 
 ## Stack
 
 - Next.js App Router
 - React 19
-- Tailwind CSS v4
-- Store mock en memoire dans `src/lib/store.ts`
+- Supabase Auth, Database et Storage
+- Stripe Checkout et Customer Portal
+- Resend pour les emails transactionnels
+- Vercel Analytics et PostHog EU
 
-## Routes principales
-
-- `/`
-- `/campaigns`
-- `/campaigns/new`
-- `/campaigns/[id]/edit`
-- `/data`
-- `/campaign/camp-sora-review`
-- `/api/public/campaign/[id]`
-- `/api/public/event`
-- `/api/public/draw`
-- `/api/public/redeem`
-- `/api/merchant/stats`
-- `/api/merchant/leads`
-- `/api/campaigns/setup`
-- `/api/campaigns/[id]`
-
-## Demarrage
+## Démarrage local
 
 ```bash
 npm install
 npm run dev
 ```
 
-## Variables utiles
+Avant de lancer l'application, compléter `.env.local` à partir de `.env.example`.
 
-- `GOOGLE_PLACES_API_KEY` : cle serveur Google Places API utilisee pour rechercher un etablissement et generer automatiquement le lien d'avis Google.
+## Variables d'environnement critiques
 
-## Verification effectuee
+- `NEXT_PUBLIC_SUPABASE_URL` : URL du projet Supabase.
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` : clé publique Supabase utilisée par le navigateur et le SSR.
+- `SUPABASE_SERVICE_ROLE_KEY` : clé serveur Supabase pour les opérations privilégiées.
+- `RESEND_API_KEY` : clé API Resend.
+- `RESEND_FROM_EMAIL` : expéditeur validé, par exemple `OKADO <noreply@okado.app>`.
+- `RESEND_WEBHOOK_SECRET` : secret du webhook Resend.
+- `STRIPE_SECRET_KEY` : clé API Stripe serveur.
+- `STRIPE_PRICE_ID_MONTHLY` : identifiant du prix mensuel Stripe, actuellement 20 euros/mois.
+- `STRIPE_WEBHOOK_SECRET` : secret de signature du webhook Stripe.
+- `GOOGLE_PLACES_API_KEY` : clé serveur Google Places API pour générer les liens d'avis Google.
+- `NEXT_PUBLIC_POSTHOG_KEY` : clé projet PostHog exposable côté navigateur.
+- `NEXT_PUBLIC_POSTHOG_HOST` : host PostHog, `https://eu.i.posthog.com` pour la région EU.
+- `ALLOW_INSECURE_LOCAL_TLS` : uniquement pour certains postes locaux avec inspection TLS, jamais en production.
+
+## Contrôle Go-To-Market technique
+
+Lancer avant un déploiement ou une validation de production :
+
+```bash
+npm run check:gotomarket
+```
+
+Pour vérifier aussi que les endpoints de production répondent :
+
+```bash
+npm run check:gotomarket -- --live
+```
+
+Le script vérifie les variables critiques, les conventions Stripe, Supabase et Resend, et bloque notamment l'utilisation de `@resend.dev` qui limite les emails aux adresses de test.
+
+## Webhooks production
+
+Configurer les endpoints suivants dans les outils externes :
+
+- Stripe : `https://app.okado.app/api/webhooks/stripe`
+- Resend : `https://app.okado.app/api/webhooks/resend`
+
+Événements Stripe attendus :
+
+- `checkout.session.completed`
+- `customer.subscription.updated`
+- `customer.subscription.deleted`
+- `invoice.paid`
+- `invoice.payment_failed`
+
+## Authentification Supabase
+
+Configuration minimale production :
+
+- Site URL : `https://app.okado.app`
+- Redirect URL Google app : `https://app.okado.app/api/auth/google/callback`
+- Redirect URI Google Console : `https://aeespnvqrfgzuuhchnnp.supabase.co/auth/v1/callback`
+
+## Vérifications avant premiers clients pilotes
 
 - `npm run lint`
 - `npm run build`
-- Verification navigateur sur `/`, `/campaigns` et `/campaign/camp-sora-review`
+- `npm run check:gotomarket -- --live`
+- `npm run smoke:critical` sur l'environnement cible
+- `npm run smoke:security` sur l'environnement cible
+- Backup/export Supabase effectué avant ouverture pilote
 
-## Etape suivante recommandee
+Documents d'exploitation :
 
-1. Remplacer `src/lib/store.ts` par un repository Supabase.
-2. Ajouter Supabase Auth pour le back-office marchand.
-3. Persister `campaign_events`, leads, prizes et redemption en base.
-4. Connecter une vraie generation QR et l'upload media via Supabase Storage.
+- `GO_LIVE_CHECKLIST.md` : checklist opérationnelle avant ouverture pilote.
+- `SECURITY_AUDIT.md` : matrice de sécurité et points de contrôle API/RLS.
+- `PILOT_PLAYBOOK.md` : support d'exploitation pour les premiers restaurants pilotes.
+
+## Critères No-Go
+
+- Connexion email ou Google instable.
+- Sauvegarde campagne impossible.
+- Paiement Stripe non répercuté dans Supabase.
+- Email de gain Resend non envoyé ou domaine non validé.
+- Retrait QR utilisable plusieurs fois.
+- Un marchand peut accéder aux données d'un autre marchand.

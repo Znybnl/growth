@@ -255,13 +255,24 @@ function renderBackground(poster: CampaignPosterSettings, template: TemplateConf
   `;
 }
 
+function getLogoLayout(poster: CampaignPosterSettings, template: TemplateConfig) {
+  const logoSize = clamp((poster.logoSizePercent / 100) * 112, 72, 170);
+  const logoY = template.id === "classic-wheel" ? 48 : 38;
+
+  return {
+    logoSize,
+    logoY,
+    bottomY: logoY + logoSize + poster.logoBottomMarginPx,
+  };
+}
+
 function renderLogo(campaign: Campaign, poster: CampaignPosterSettings, template: TemplateConfig) {
   const logoMode = poster.logoMode ?? "none";
   const logoUrl = logoMode === "image" ? poster.logoUrl || campaign.logoUrl : undefined;
   const logoText =
-    logoMode === "text" ? (poster.logoText ?? campaign.logoText ?? campaign.title ?? "").trim() : "";
-  const logoSize = clamp((poster.logoSizePercent / 100) * 112, 72, 170);
-  const logoY = template.id === "classic-wheel" ? 48 : 38;
+    logoMode === "text" ? (poster.logoText ?? campaign.logoText ?? "").trim() : "";
+  const { logoSize, logoY } = getLogoLayout(poster, template);
+  const accent = poster.wheel.winColor || template.accent;
 
   if (logoMode === "image" && logoUrl) {
     return `<image href="${escapeXml(logoUrl)}" x="${(A4_WIDTH - logoSize * 1.7) / 2}" y="${logoY}" width="${logoSize * 1.7}" height="${logoSize}" preserveAspectRatio="xMidYMid meet"/>`;
@@ -278,31 +289,34 @@ function renderLogo(campaign: Campaign, poster: CampaignPosterSettings, template
   if (template.logoVariant === "lined") {
     return `
       <line x1="220" y1="${centerY}" x2="318" y2="${centerY}" stroke="${template.accentDark}" stroke-width="8"/>
-      <circle cx="${A4_WIDTH / 2}" cy="${centerY}" r="${logoSize / 2}" fill="${template.background}" stroke="${template.accent}" stroke-width="9"/>
-      <text x="${A4_WIDTH / 2}" y="${centerY + fontSize * 0.34}" text-anchor="middle" fill="${template.accent}" font-family="${SAFE_FONT}" font-size="${fontSize}" font-weight="500">${text}</text>
+      <circle cx="${A4_WIDTH / 2}" cy="${centerY}" r="${logoSize / 2}" fill="${template.background}" stroke="${accent}" stroke-width="9"/>
+      <text x="${A4_WIDTH / 2}" y="${centerY + fontSize * 0.34}" text-anchor="middle" fill="${accent}" font-family="${SAFE_FONT}" font-size="${fontSize}" font-weight="500">${text}</text>
       <line x1="476" y1="${centerY}" x2="574" y2="${centerY}" stroke="${template.accentDark}" stroke-width="8"/>
     `;
   }
 
   return `
-    <circle cx="${A4_WIDTH / 2}" cy="${centerY}" r="${logoSize / 2}" fill="${template.id === "terracotta-wheel" ? template.accent : template.background}" stroke="${template.accent}" stroke-width="${template.id === "terracotta-wheel" ? 0 : 7}"/>
-    <text x="${A4_WIDTH / 2}" y="${centerY + fontSize * 0.34}" text-anchor="middle" fill="${template.id === "terracotta-wheel" ? "#ffffff" : template.accent}" font-family="${SAFE_FONT}" font-size="${fontSize}" font-weight="500">${text}</text>
+    <circle cx="${A4_WIDTH / 2}" cy="${centerY}" r="${logoSize / 2}" fill="${template.id === "terracotta-wheel" ? accent : template.background}" stroke="${accent}" stroke-width="${template.id === "terracotta-wheel" ? 0 : 7}"/>
+    <text x="${A4_WIDTH / 2}" y="${centerY + fontSize * 0.34}" text-anchor="middle" fill="${template.id === "terracotta-wheel" ? "#ffffff" : accent}" font-family="${SAFE_FONT}" font-size="${fontSize}" font-weight="500">${text}</text>
   `;
 }
 
 function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, template: TemplateConfig) {
   const headline = poster.headline || campaign.subtitle || "Faites tourner la roue";
   const family = fontFamily(poster.headlineFontFamily);
-  const color = template.headline;
+  const color = poster.headlineTextColor || template.headline;
   const size = clamp(poster.headlineFontSizePx * template.headlineSizeMultiplier, 46, 94);
   const maxChars = template.id === "soft-gradient-wheel" ? 18 : 16;
   const lines = splitLines(headline.toUpperCase(), maxChars).slice(0, 3);
+  const logoAwareHeadlineY = template.headlineY + (poster.logoBottomMarginPx - 28);
+  const firstLineY = Math.max(logoAwareHeadlineY, getLogoLayout(poster, template).bottomY + size * 0.15);
+  const accent = poster.wheel.winColor || template.accent;
 
   return lines
     .map((line, index) => {
-      const y = template.headlineY + index * (size * 0.92);
+      const y = firstLineY + index * (size * 0.92);
       const rotation = template.id === "terracotta-wheel" ? -3 : template.id === "classic-wheel" ? -2 : 0;
-      const accent = index % 2 === 1 ? template.accent : color;
+      const fill = index % 2 === 1 ? accent : color;
 
       return `
         <text
@@ -310,7 +324,7 @@ function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, temp
           y="${y}"
           transform="rotate(${rotation} ${A4_WIDTH / 2} ${y})"
           text-anchor="middle"
-          fill="${accent}"
+          fill="${fill}"
           font-family="${family}"
           font-size="${size}"
           font-weight="900"
@@ -330,16 +344,13 @@ function renderWheel(template: TemplateConfig, poster: CampaignPosterSettings, p
   const cx = template.wheelX;
   const cy = template.wheelY;
   const radius = template.wheelRadius;
-  const primaryColor = template.accent;
-  const secondaryColor = "#fff7ef";
-  const rimColor = template.id === "terracotta-wheel" ? template.accentDark : template.accentDark;
+  const rimColor = poster.wheel.rimColor || template.accentDark;
 
   const slices = segments
     .map((segment, index) => {
       const start = index * 60;
       const end = start + 60;
-      const isPrimarySegment = index % 2 === 0;
-      const fill = isPrimarySegment ? primaryColor : secondaryColor;
+      const fill = segment.color;
       const labelAngle = start + 30;
       const labelPoint = polarToCartesian(cx, cy, radius * 0.58, labelAngle);
       const label = segment.label.replace(" !", "").slice(0, 12);
@@ -352,7 +363,7 @@ function renderWheel(template: TemplateConfig, poster: CampaignPosterSettings, p
           transform="rotate(${labelAngle} ${labelPoint.x.toFixed(1)} ${labelPoint.y.toFixed(1)})"
           text-anchor="middle"
           dominant-baseline="middle"
-          fill="${isPrimarySegment ? "#ffffff" : template.accentDark}"
+          fill="${segment.textColor}"
           font-family="${SAFE_FONT}"
           font-size="18"
           font-weight="900"
@@ -384,6 +395,7 @@ function renderScratch(template: TemplateConfig) {
 }
 
 function renderQrAndCta(qrDataUrl: string, template: TemplateConfig) {
+  const accent = template.accent;
   return `
     <g filter="url(#posterShadow)" transform="translate(${template.qrX} ${template.qrY})">
       <rect x="-18" y="-18" width="${template.qrSize + 36}" height="${template.qrSize + 36}" rx="28" fill="${template.qrFrame}"/>
@@ -391,7 +403,7 @@ function renderQrAndCta(qrDataUrl: string, template: TemplateConfig) {
       <image href="${escapeXml(qrDataUrl)}" x="18" y="18" width="${template.qrSize - 36}" height="${template.qrSize - 36}"/>
     </g>
     <g filter="url(#posterShadow)" transform="translate(${template.ctaX} ${template.ctaY}) rotate(${template.ctaRotation} ${template.ctaWidth / 2} ${template.ctaHeight / 2})">
-      <rect width="${template.ctaWidth}" height="${template.ctaHeight}" rx="24" fill="${template.accent}" stroke="#ffffff" stroke-width="7"/>
+      <rect width="${template.ctaWidth}" height="${template.ctaHeight}" rx="24" fill="${accent}" stroke="#ffffff" stroke-width="7"/>
       <text x="${template.ctaWidth / 2}" y="${template.ctaHeight / 2 + 11}" text-anchor="middle" fill="#ffffff" font-family="${SAFE_FONT}" font-size="26" font-weight="900" letter-spacing="0.5">SCANNEZ POUR JOUER</text>
     </g>
   `;
@@ -443,7 +455,12 @@ export function buildPosterSvg(args: {
   embeddedFontHref?: string;
 }) {
   const { campaign, poster, prizes, qrDataUrl, embeddedFontHref } = args;
-  const template = TEMPLATE_CONFIGS[poster.templateId ?? "classic-wheel"] ?? TEMPLATE_CONFIGS["classic-wheel"];
+  const baseTemplate = TEMPLATE_CONFIGS[poster.templateId ?? "classic-wheel"] ?? TEMPLATE_CONFIGS["classic-wheel"];
+  const template = {
+    ...baseTemplate,
+    accent: poster.wheel.winColor || baseTemplate.accent,
+    qrFrame: poster.wheel.winColor || baseTemplate.qrFrame,
+  };
   const gameMarkup =
     campaign.gameType === "wheel" ? renderWheel(template, poster, prizes) : renderScratch(template);
   const fontFace = embeddedFontHref

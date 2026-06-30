@@ -10,6 +10,7 @@ import {
   normalizePublicEmail,
   normalizePublicFirstName,
 } from "@/lib/public-api";
+import { captureProductEvent } from "@/lib/product-analytics";
 import { sendRewardEmail } from "@/lib/reward-email";
 import { logSupportEvent } from "@/lib/support-log";
 import { drawForLead } from "@/lib/store";
@@ -52,12 +53,20 @@ export async function POST(request: Request) {
       firstName,
       email,
     });
-    logSupportEvent("info", "draw-created", {
+    logSupportEvent("info", "draw_finalized", {
       campaignId: result.campaign.id,
       leadId: result.lead.id,
       email: result.lead.email,
       prizeId: result.lead.prizeId,
       status: result.lead.status,
+    });
+    await captureProductEvent("draw_finalized", `public:${result.campaign.id}`, {
+      campaignId: result.campaign.id,
+      gameType: result.campaign.gameType,
+      leadId: result.lead.id,
+      hasPrize: Boolean(result.prize),
+      leadStatus: result.lead.status,
+      legacyFlow: true,
     });
 
     if (result.prize && result.lead.redemptionCode) {
@@ -79,7 +88,7 @@ export async function POST(request: Request) {
           emailSettings: result.campaign.presentation.email,
         });
       } catch (emailError) {
-        logSupportEvent("error", "draw-email-failed", {
+        logSupportEvent("error", "reward_email_failed", {
           campaignId: result.campaign.id,
           leadId: result.lead.id,
           error: emailError instanceof Error ? emailError.message : "Envoi e-mail impossible",
@@ -89,7 +98,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json(result, { status: 201 });
   } catch (error) {
-    logSupportEvent("error", "draw-failed", {
+    logSupportEvent("error", "draw_finalize_failed", {
       campaignId,
       email,
       error: error instanceof Error ? error.message : "Draw failed",

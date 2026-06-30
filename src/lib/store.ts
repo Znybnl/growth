@@ -10,6 +10,7 @@ import {
   getSupabaseMerchantCampaignOverview,
   getSupabaseMerchantDashboard,
   getSupabaseMerchantLeads,
+  getSupabaseMerchantRecentLeads,
   getSupabaseMerchantSupportOverview,
   getSupabasePublicCampaign,
   deleteCampaignInSupabase,
@@ -74,6 +75,7 @@ import {
   PublicCampaign,
 } from "@/lib/types";
 import { createCampaignEmailDefaults, normalizeCampaignEmailSettings } from "@/lib/email-settings";
+import { unstable_cache } from "next/cache";
 
 type Store = {
   merchants: Merchant[];
@@ -1339,8 +1341,38 @@ function getMerchantCampaignLibraryFromMemory(
         gameType: campaign.gameType,
         isActive: campaign.isActive,
         createdAt: campaign.createdAt,
-      })),
+    })),
   );
+}
+
+const MERCHANT_NAVIGATION_CACHE_SECONDS = 15;
+
+function merchantCampaignsTag(merchantId: string) {
+  return `merchant:${merchantId}:campaigns`;
+}
+
+function getCachedSupabaseMerchantCampaignOverview(merchant: Merchant) {
+  return getSupabaseMerchantCampaignOverview(merchant);
+}
+
+function getCachedSupabaseMerchantCampaignLibrary(merchantId: string) {
+  return unstable_cache(
+    () => getSupabaseMerchantCampaignLibrary(merchantId),
+    ["merchant-campaign-library", merchantId],
+    {
+      tags: [merchantCampaignsTag(merchantId)],
+      revalidate: MERCHANT_NAVIGATION_CACHE_SECONDS,
+    },
+  )();
+}
+
+function getCachedSupabaseCampaignSetupPerformance(campaignId: string, fallbackMerchant?: Merchant) {
+  return getSupabaseCampaignSetupPerformance(campaignId, fallbackMerchant);
+}
+
+function invalidateCampaignNavigationCache(merchantId?: string, campaignId?: string) {
+  void merchantId;
+  void campaignId;
 }
 
 function finalizeDrawSessionFromMemory(input: FinalizeDrawSessionRequest): DrawResult {
@@ -1649,7 +1681,7 @@ export const getCampaignSetupPerformance = cache(async function getCampaignSetup
   fallbackMerchant?: Merchant,
 ) {
   if (getDataBackend("la lecture du paramétrage campagne") === "supabase") {
-    return getSupabaseCampaignSetupPerformance(campaignId, fallbackMerchant);
+    return getCachedSupabaseCampaignSetupPerformance(campaignId, fallbackMerchant);
   }
 
   return getCampaignPerformanceFromMemory(campaignId);
@@ -1673,7 +1705,7 @@ export const getMerchantCampaignOverview = cache(async function getMerchantCampa
   fallbackMerchant?: Merchant,
 ) {
   if (getDataBackend("la lecture de la liste des campagnes") === "supabase") {
-    return getSupabaseMerchantCampaignOverview(
+    return getCachedSupabaseMerchantCampaignOverview(
       await resolveMerchantForSupabase(merchantId, fallbackMerchant),
     );
   }
@@ -1686,7 +1718,7 @@ export const getMerchantCampaignLibrary = cache(async function getMerchantCampai
   fallbackMerchant?: Merchant,
 ) {
   if (getDataBackend("la lecture de la bibliothèque de campagnes") === "supabase") {
-    return getSupabaseMerchantCampaignLibrary(fallbackMerchant?.id ?? merchantId);
+    return getCachedSupabaseMerchantCampaignLibrary(fallbackMerchant?.id ?? merchantId);
   }
 
   return getMerchantCampaignLibraryFromMemory(merchantId, fallbackMerchant);
@@ -1698,6 +1730,26 @@ export const getMerchantLeads = cache(async function getMerchantLeads(merchantId
   }
 
   return getMerchantLeadsFromMemory(campaignId);
+});
+
+export const getMerchantRecentLeads = cache(async function getMerchantRecentLeads(
+  merchantId = merchantSeed.id,
+  limit = 5,
+  query = "",
+) {
+  if (getDataBackend("la lecture des leads récents") === "supabase") {
+    return getSupabaseMerchantRecentLeads(merchantId, limit, query);
+  }
+
+  const normalizedQuery = query.trim().toLowerCase();
+
+  return getMerchantLeadsFromMemory()
+    .filter((lead) =>
+      normalizedQuery
+        ? `${lead.firstName} ${lead.email} ${lead.campaignTitle}`.toLowerCase().includes(normalizedQuery)
+        : true,
+    )
+    .slice(0, limit);
 });
 
 export const getCampaignDataView = cache(async function getCampaignDataView(campaignId: string, fallbackMerchant?: Merchant) {
@@ -1852,6 +1904,7 @@ export async function resetPrizeStock(prizeId: string) {
 export async function updateCampaignSetup(input: CampaignSetupInput) {
   if (getDataBackend("la mise à jour d'une campagne") === "supabase") {
     const campaignId = await updateCampaignSetupInSupabase(input);
+    invalidateCampaignNavigationCache(input.merchantId, campaignId);
     return getCampaignPerformance(
       campaignId,
       await resolveMerchantForSupabase(input.merchantId),
@@ -1865,10 +1918,12 @@ export async function toggleCampaign(id: string, isActive: boolean, merchantId?:
   if (getDataBackend("l'activation d'une campagne") === "supabase") {
     if (merchantId) {
       await toggleCampaignForMerchantInSupabase(id, isActive, merchantId);
+      invalidateCampaignNavigationCache(merchantId, id);
       return null;
     }
 
     await toggleCampaignInSupabase(id, isActive);
+    invalidateCampaignNavigationCache(undefined, id);
     return null;
   }
 
@@ -1879,10 +1934,12 @@ export async function deleteCampaign(id: string, merchantId?: string) {
   if (getDataBackend("la suppression d'une campagne") === "supabase") {
     if (merchantId) {
       await deleteCampaignForMerchantInSupabase(id, merchantId);
+      invalidateCampaignNavigationCache(merchantId, id);
       return null;
     }
 
     await deleteCampaignInSupabase(id);
+    invalidateCampaignNavigationCache(undefined, id);
     return null;
   }
 
@@ -1892,6 +1949,7 @@ export async function deleteCampaign(id: string, merchantId?: string) {
 export async function duplicateCampaign(id: string, fallbackMerchant: Merchant) {
   if (getDataBackend("la duplication d'une campagne") === "supabase") {
     const campaignId = await duplicateCampaignInSupabase(id, fallbackMerchant);
+    invalidateCampaignNavigationCache(fallbackMerchant.id, campaignId);
     return getCampaignPerformance(campaignId, fallbackMerchant);
   }
 

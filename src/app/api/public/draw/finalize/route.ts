@@ -10,6 +10,7 @@ import {
   normalizePublicEmail,
   normalizePublicFirstName,
 } from "@/lib/public-api";
+import { captureProductEvent } from "@/lib/product-analytics";
 import { sendRewardEmail } from "@/lib/reward-email";
 import { finalizeDrawSession } from "@/lib/store";
 import { logSupportEvent } from "@/lib/support-log";
@@ -45,12 +46,19 @@ export async function POST(request: Request) {
       firstName,
       email,
     })) as DrawResult;
-    logSupportEvent("info", "draw-finalized", {
+    logSupportEvent("info", "draw_finalized", {
       campaignId: result.campaign.id,
       leadId: result.lead.id,
       email: result.lead.email,
       prizeId: result.lead.prizeId,
       status: result.lead.status,
+    });
+    await captureProductEvent("draw_finalized", `public:${result.campaign.id}`, {
+      campaignId: result.campaign.id,
+      gameType: result.campaign.gameType,
+      leadId: result.lead.id,
+      hasPrize: Boolean(result.prize),
+      leadStatus: result.lead.status,
     });
 
     if (result.prize && result.lead.redemptionCode) {
@@ -72,7 +80,7 @@ export async function POST(request: Request) {
           emailSettings: result.campaign.presentation.email,
         });
       } catch (emailError) {
-        logSupportEvent("error", "draw-finalize-email-failed", {
+        logSupportEvent("error", "reward_email_failed", {
           campaignId: result.campaign.id,
           leadId: result.lead.id,
           error: emailError instanceof Error ? emailError.message : "Envoi e-mail impossible",
@@ -82,7 +90,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json(result, { status: 201 });
   } catch (error) {
-    logSupportEvent("error", "draw-finalize-failed", {
+    logSupportEvent("error", "draw_finalize_failed", {
       sessionId,
       email,
       error: error instanceof Error ? error.message : "Draw finalize failed",

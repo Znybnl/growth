@@ -139,6 +139,36 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
         : [],
   };
   const hasFilter = Boolean(query || status !== "all" || section !== "all");
+  const errorLogsCount = overview.businessLogs.filter((item) => item.level === "error").length;
+  const failedEmailCount = overview.failedEmails.length;
+  const pendingClaimCount = overview.pendingClaims.length;
+  const webhookCount = overview.webhooks.length;
+  const healthItems = [
+    {
+      label: "E-mails en échec",
+      value: failedEmailCount,
+      tone: failedEmailCount ? "danger" : "success",
+      detail: failedEmailCount ? "À traiter avant pilote" : "Aucun blocage récent",
+    },
+    {
+      label: "Webhooks reçus",
+      value: webhookCount,
+      tone: webhookCount ? "success" : "warning",
+      detail: webhookCount ? "Synchronisation active" : "Aucun signal récent",
+    },
+    {
+      label: "Gains sans retrait",
+      value: pendingClaimCount,
+      tone: pendingClaimCount ? "warning" : "success",
+      detail: pendingClaimCount ? "Suivi vendeur requis" : "Aucun gain en attente",
+    },
+    {
+      label: "Erreurs métier",
+      value: errorLogsCount,
+      tone: errorLogsCount ? "danger" : "success",
+      detail: errorLogsCount ? "Investigation support" : "Aucune erreur récente",
+    },
+  ] as const;
 
   return (
     <div className="space-y-6">
@@ -170,6 +200,35 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
             <p className="mt-4 text-3xl font-semibold text-[#111827]">{value}</p>
           </div>
         ))}
+      </section>
+
+      <section className="rounded-[32px] border border-[#dbe4f0] bg-[#101827] p-6 text-white shadow-[0_18px_44px_rgba(15,23,42,0.16)]">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.28em] text-[#9fb0d0]">Santé production</p>
+            <h2 className="mt-2 text-3xl font-semibold">Signaux support à surveiller</h2>
+          </div>
+          <p className="max-w-2xl text-sm leading-6 text-[#c7d2ea]">
+            Synthèse des points qui peuvent bloquer un pilote : délivrabilité e-mail,
+            synchronisation webhook, lots non retirés et erreurs métier récentes.
+          </p>
+        </div>
+
+        <div className="mt-6 grid gap-3 md:grid-cols-4">
+          {healthItems.map((item) => (
+            <div key={item.label} className="rounded-[24px] bg-white/8 p-4 ring-1 ring-white/10">
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-sm font-semibold text-white">{item.label}</p>
+                <StatusBadge
+                  label={item.tone === "success" ? "OK" : item.tone === "warning" ? "À suivre" : "Action"}
+                  tone={item.tone}
+                />
+              </div>
+              <p className="mt-4 text-3xl font-semibold">{item.value}</p>
+              <p className="mt-2 text-sm text-[#c7d2ea]">{item.detail}</p>
+            </div>
+          ))}
+        </div>
       </section>
 
       <section className="rounded-[28px] border border-[#dbe4f0] bg-white p-5 shadow-[0_14px_36px_rgba(122,136,166,0.08)]">
