@@ -4,6 +4,12 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@font-face {
+  font-family: "Anton";
+  src: url("/fonts/anton-regular.ttf") format("truetype");
+  font-display: swap;
+}
+
 :root {
   --color-linen-canvas: #fcfcfc;
   --color-sky-wash: #f0f4fe;

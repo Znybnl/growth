@@ -214,6 +214,7 @@ type MerchantRow = {
   facebook_url: string | null;
   tiktok_url: string | null;
   tripadvisor_url: string | null;
+  custom_url: string | null;
   default_prize_cost: number | null;
   stripe_customer_id: string | null;
   stripe_subscription_id: string | null;
@@ -267,6 +268,32 @@ function generateId(prefix: string) {
   return `${prefix}-${crypto.randomUUID().slice(0, 8)}`;
 }
 
+function generateNeutralRedemptionCode() {
+  return `OK-${crypto.randomUUID().replaceAll("-", "").slice(0, 8).toUpperCase()}`;
+}
+
+async function normalizeRedemptionCodeIfNeeded(leadId: string, redemptionCode: string | null) {
+  if (!redemptionCode?.startsWith("SORA-")) {
+    return redemptionCode ?? undefined;
+  }
+
+  const supabase = getSupabaseAdmin();
+  const nextCode = generateNeutralRedemptionCode();
+  const { data, error } = await supabase
+    .from("leads")
+    .update({ redemption_code: nextCode })
+    .eq("id", leadId)
+    .select("redemption_code")
+    .single<{ redemption_code: string | null }>();
+
+  if (error) {
+    console.error("[neutral_redemption_code_update_failed]", error);
+    return redemptionCode;
+  }
+
+  return data.redemption_code ?? nextCode;
+}
+
 function toMerchant(row: MerchantRow): Merchant {
   return {
     id: row.id,
@@ -286,6 +313,7 @@ function toMerchant(row: MerchantRow): Merchant {
     facebookUrl: row.facebook_url ?? undefined,
     tiktokUrl: row.tiktok_url ?? undefined,
     tripadvisorUrl: row.tripadvisor_url ?? undefined,
+    customUrl: row.custom_url ?? undefined,
     defaultPrizeCost: row.default_prize_cost ?? undefined,
     stripeCustomerId: row.stripe_customer_id ?? undefined,
     stripeSubscriptionId: row.stripe_subscription_id ?? undefined,
@@ -1668,6 +1696,10 @@ export async function finalizeDrawSessionInSupabase(
   assertMerchantBillingAccess(performance.merchant, "campaign_public");
 
   const { campaign, merchant: campaignMerchant, prizes } = performance;
+  const redemptionCode = await normalizeRedemptionCodeIfNeeded(
+    data.lead_id,
+    data.redemption_code,
+  );
   const lead: Lead = {
     id: data.lead_id,
     campaignId: data.campaign_id,
@@ -1679,7 +1711,7 @@ export async function finalizeDrawSessionInSupabase(
     status: data.status,
     createdAt: data.created_at,
     actionConfirmed: data.action_confirmed,
-    redemptionCode: data.redemption_code ?? undefined,
+    redemptionCode,
     rewardAvailableAt: data.reward_available_at ?? undefined,
     rewardExpiresAt: data.reward_expires_at ?? undefined,
   };
@@ -1724,6 +1756,10 @@ export async function drawForLeadInSupabase(input: DrawRequest, merchant: Mercha
     );
   }
 
+  const redemptionCode = await normalizeRedemptionCodeIfNeeded(
+    data.lead_id,
+    data.redemption_code,
+  );
   const lead: Lead = {
     id: data.lead_id,
     campaignId: data.campaign_id,
@@ -1735,7 +1771,7 @@ export async function drawForLeadInSupabase(input: DrawRequest, merchant: Mercha
     status: data.status,
     createdAt: data.created_at,
     actionConfirmed: data.action_confirmed,
-    redemptionCode: data.redemption_code ?? undefined,
+    redemptionCode,
     rewardAvailableAt: data.reward_available_at ?? undefined,
     rewardExpiresAt: data.reward_expires_at ?? undefined,
   };

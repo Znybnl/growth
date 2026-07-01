@@ -32,7 +32,7 @@ export function GoogleReviewPlacePicker({
   const [places, setPlaces] = useState<GoogleReviewPlace[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
-  const [manualMode, setManualMode] = useState(Boolean(value) && !isGoogleGeneratedReviewUrl(value));
+  const [manualMode, setManualMode] = useState(false);
 
   const selectedPlaceId = useMemo(() => {
     try {
@@ -74,8 +74,7 @@ export function GoogleReviewPlacePicker({
         setPlaces(payload.places ?? []);
 
         if (payload.configured === false) {
-          setManualMode(true);
-          setMessage("Recherche Google non configurée. Collez votre lien d'avis manuellement.");
+          setMessage("Recherche Google non configurée. Vérifiez la configuration Google Places.");
         } else if (!(payload.places ?? []).length) {
           setMessage("Aucun établissement trouvé. Essayez avec le nom exact ou ajoutez la ville.");
         }
@@ -161,23 +160,6 @@ export function GoogleReviewPlacePicker({
           Lien d&apos;avis Google généré automatiquement.
         </div>
       ) : null}
-
-      <details
-        className="rounded-[20px] border border-[#e1e7f0] bg-white px-4 py-3"
-        open={manualMode}
-        onToggle={(event) => setManualMode(event.currentTarget.open)}
-      >
-        <summary className="cursor-pointer text-sm font-semibold text-[#182033]">
-          Coller manuellement un lien d&apos;avis Google
-        </summary>
-        <input
-          type="url"
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-          placeholder="https://search.google.com/local/writereview?placeid=..."
-          className="mt-3 w-full rounded-[18px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 text-sm outline-none transition focus:border-[#2f6df6] focus:ring-4 focus:ring-[#2f6df6]/10"
-        />
-      </details>
     </div>
   );
 }

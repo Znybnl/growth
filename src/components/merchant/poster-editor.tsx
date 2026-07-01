@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useMemo, useState } from "react";
@@ -173,11 +172,6 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
       }),
     [campaign, poster, prizes],
   );
-  const previewPosterUrl = useMemo(
-    () => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(previewPosterSvg)}`,
-    [previewPosterSvg],
-  );
-
   function updatePoster(patch: Partial<CampaignPosterSettings>) {
     setPoster((current) => ({ ...current, ...patch }));
   }
@@ -592,12 +586,10 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
 
           <div className="flex min-h-0 flex-1 items-center justify-center overflow-auto rounded-[var(--radius-card)] bg-[#eef3fb] p-4">
             <div className="relative aspect-[794/1123] w-full max-w-[470px] overflow-hidden rounded-[18px] border border-[#d7e0ed] bg-white shadow-[0_24px_50px_rgba(17,24,39,0.14)]">
-              <Image
-                src={previewPosterUrl}
-                alt="Prévisualisation affiche"
-                fill
-                unoptimized
-                className="object-contain"
+              <div
+                aria-label="Prévisualisation affiche"
+                className="h-full w-full [&_svg]:h-full [&_svg]:w-full"
+                dangerouslySetInnerHTML={{ __html: previewPosterSvg }}
               />
             </div>
           </div>

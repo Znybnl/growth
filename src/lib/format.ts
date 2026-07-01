@@ -118,7 +118,7 @@ export function actionKindLabel(kind: ActionKind) {
     case "crm":
       return "Collecte email";
     default:
-      return "Personnalisé";
+      return "Lien personnalisé";
   }
 }
 
@@ -196,7 +196,7 @@ export function actionKindCta(kind: ActionKind) {
     case "crm":
       return "Partager mon e-mail";
     default:
-      return "Ouvrir le lien";
+      return "Ouvrir le lien personnalisé";
   }
 }
 

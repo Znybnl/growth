@@ -18,6 +18,7 @@ create table if not exists public.merchants (
   facebook_url text not null default '',
   tiktok_url text not null default '',
   tripadvisor_url text not null default '',
+  custom_url text not null default '',
   default_prize_cost numeric(10, 2) not null default 3,
   created_at timestamptz not null default now()
 );

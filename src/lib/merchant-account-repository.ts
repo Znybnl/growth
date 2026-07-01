@@ -36,6 +36,7 @@ type MerchantRow = {
   facebook_url: string | null;
   tiktok_url: string | null;
   tripadvisor_url: string | null;
+  custom_url: string | null;
   default_prize_cost: number | null;
   stripe_customer_id: string | null;
   stripe_subscription_id: string | null;
@@ -106,6 +107,7 @@ const DEMO_MERCHANT_PROFILE = {
   facebookUrl: "https://facebook.com/maisonsora",
   tiktokUrl: "https://tiktok.com/@maisonsora",
   tripadvisorUrl: "https://tripadvisor.com/",
+  customUrl: "https://maisonsora.fr",
   defaultPrizeCost: 3.4,
   firstName: "Pierre-Henri",
   lastName: "Brunelle",
@@ -291,6 +293,7 @@ function toMerchant(row: MerchantRow): Merchant {
     facebookUrl: row.facebook_url ?? undefined,
     tiktokUrl: row.tiktok_url ?? undefined,
     tripadvisorUrl: row.tripadvisor_url ?? undefined,
+    customUrl: row.custom_url ?? undefined,
     defaultPrizeCost: row.default_prize_cost ?? undefined,
     stripeCustomerId: row.stripe_customer_id ?? undefined,
     stripeSubscriptionId: row.stripe_subscription_id ?? undefined,
@@ -441,6 +444,7 @@ export async function ensureDemoMerchantInSupabase() {
     facebook_url: DEMO_MERCHANT_PROFILE.facebookUrl,
     tiktok_url: DEMO_MERCHANT_PROFILE.tiktokUrl,
     tripadvisor_url: DEMO_MERCHANT_PROFILE.tripadvisorUrl,
+    custom_url: DEMO_MERCHANT_PROFILE.customUrl,
     default_prize_cost: DEMO_MERCHANT_PROFILE.defaultPrizeCost,
     trial_start_date: createdAt,
     trial_end_date: trialEndDate,
@@ -560,6 +564,7 @@ export async function createMerchantAccountInSupabase(input: MerchantSignUpInput
       facebook_url: "",
       tiktok_url: "",
       tripadvisor_url: "",
+      custom_url: "",
       default_prize_cost: 3,
       trial_start_date: createdAt,
       trial_end_date: trialEndDate,
@@ -631,6 +636,7 @@ export async function createMerchantAccountInSupabase(input: MerchantSignUpInput
       facebookUrl: "",
       tiktokUrl: "",
       tripadvisorUrl: "",
+      customUrl: "",
       defaultPrizeCost: 3,
       trialStartDate: createdAt,
       trialEndDate,
@@ -774,6 +780,7 @@ export async function authenticateOrProvisionMerchantWithGoogle(
     facebook_url: "",
     tiktok_url: "",
     tripadvisor_url: "",
+    custom_url: "",
     default_prize_cost: 3,
     trial_start_date: createdAt,
     trial_end_date: trialEndDate,
@@ -838,6 +845,7 @@ export async function authenticateOrProvisionMerchantWithGoogle(
       facebookUrl: "",
       tiktokUrl: "",
       tripadvisorUrl: "",
+      customUrl: "",
       defaultPrizeCost: 3,
       trialStartDate: createdAt,
       trialEndDate,
@@ -1004,6 +1012,7 @@ export async function updateMerchantOnboardingInSupabase(
       facebook_url: input.facebookUrl.trim(),
       tiktok_url: input.tiktokUrl.trim(),
       tripadvisor_url: input.tripadvisorUrl.trim(),
+      custom_url: input.customUrl.trim(),
       onboarding_completed: true,
     })
     .eq("id", userQuery.data.merchant_id);
@@ -1071,6 +1080,7 @@ export async function updateMerchantAccountInSupabase(
       facebook_url: input.facebookUrl.trim(),
       tiktok_url: input.tiktokUrl.trim(),
       tripadvisor_url: input.tripadvisorUrl.trim(),
+      custom_url: input.customUrl.trim(),
       default_prize_cost: input.defaultPrizeCost,
     })
     .eq("id", userQuery.data.merchant_id);

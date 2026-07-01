@@ -5,7 +5,6 @@ import { useState } from "react";
 import {
   INDUSTRY_OPTIONS,
   RESTAURANT_TYPE_OPTIONS,
-  businessLabel,
   isRestaurantIndustry,
 } from "@/lib/merchant-options";
 import {
@@ -43,6 +42,7 @@ export function AccountSettingsForm({
     facebookUrl: merchant.facebookUrl ?? "",
     tiktokUrl: merchant.tiktokUrl ?? "",
     tripadvisorUrl: merchant.tripadvisorUrl ?? "",
+    customUrl: merchant.customUrl ?? "",
     defaultPrizeCost: merchant.defaultPrizeCost ?? 3,
     firstName: user.firstName,
     lastName: user.lastName,
@@ -69,7 +69,10 @@ export function AccountSettingsForm({
       const response = await fetch("/api/account", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          ...form,
+          restaurantType: isRestaurantIndustry(form.industry) ? form.restaurantType : "",
+        }),
       });
       const payload = (await response.json()) as { error?: string };
 
@@ -85,7 +88,6 @@ export function AccountSettingsForm({
     }
   }
 
-  const placeLabel = businessLabel(form.industry);
   const isRestaurant = isRestaurantIndustry(form.industry);
 
   return (
@@ -152,22 +154,22 @@ export function AccountSettingsForm({
               ))}
             </select>
           </label>
-          <label className="text-sm">
-            <span className="mb-2 block text-[#616b7c]">
-              Type de {isRestaurant ? "restaurant" : placeLabel}
-            </span>
-            <select
-              value={form.restaurantType}
-              onChange={(event) => updateField("restaurantType", event.target.value)}
-              className="w-full rounded-[12px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-4 outline-none"
-            >
-              {RESTAURANT_TYPE_OPTIONS.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-          </label>
+          {isRestaurant ? (
+            <label className="text-sm">
+              <span className="mb-2 block text-[#616b7c]">Type de restaurant</span>
+              <select
+                value={form.restaurantType}
+                onChange={(event) => updateField("restaurantType", event.target.value)}
+                className="w-full rounded-[12px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-4 outline-none"
+              >
+                {RESTAURANT_TYPE_OPTIONS.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
           <label className="text-sm">
             <span className="mb-2 block text-[#616b7c]">
               Ville / {isRestaurant ? "restaurant" : "boutique"}
@@ -277,22 +279,13 @@ export function AccountSettingsForm({
               className="w-full rounded-[12px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-4 outline-none"
             />
           </label>
-        </div>
-      </section>
-
-      <section className="okado-card p-6 md:p-8">
-        <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Paramètres</p>
-        <div className="mt-6 grid gap-4 md:grid-cols-2">
-          <label className="text-sm md:max-w-[260px]">
-            <span className="mb-2 block text-[#616b7c]">Coût par lot par défaut (€)</span>
+          <label className="text-sm md:col-span-2">
+            <span className="mb-2 block text-[#616b7c]">Lien personnalisé</span>
             <input
-              type="number"
-              min="0"
-              step="0.1"
-              value={form.defaultPrizeCost}
-              onChange={(event) =>
-                updateField("defaultPrizeCost", Number(event.target.value || 0))
-              }
+              type="url"
+              value={form.customUrl}
+              onChange={(event) => updateField("customUrl", event.target.value)}
+              placeholder="https://..."
               className="w-full rounded-[12px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-4 outline-none"
             />
           </label>

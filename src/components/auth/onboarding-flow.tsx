@@ -96,6 +96,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
           facebookUrl,
           tiktokUrl,
           tripadvisorUrl,
+          customUrl: "",
         }),
       });
       const payload = (await response.json()) as { error?: string };

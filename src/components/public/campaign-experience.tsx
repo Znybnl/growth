@@ -772,20 +772,20 @@ export function CampaignExperience({
 
       <PublicModal open={stage === "success" && Boolean(drawResult)}>
         <div className="text-center">
-          <h2 className="text-[2rem] font-semibold leading-[1.05] text-[#121826]">
+          <h2 className="text-[1.75rem] font-semibold leading-[1.05] text-[#121826]">
             Merci pour votre participation !
           </h2>
-          <div className="mx-auto mt-6 flex h-24 w-24 items-center justify-center rounded-full bg-[#f7f7fb] text-5xl shadow-[0_20px_45px_rgba(17,24,39,0.10)]">
+          <div className="mx-auto mt-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#f7f7fb] text-3xl shadow-[0_16px_34px_rgba(17,24,39,0.10)]">
             ✉
           </div>
-          <p className="mt-6 text-xl leading-8 text-[#1a2f76]">
+          <p className="mt-4 text-lg leading-7 text-[#1a2f76]">
             On vient de vous envoyer un e-mail pour récupérer votre cadeau.
           </p>
-          <p className="mt-4 text-base leading-7 text-[#61687a]">
+          <p className="mt-2 text-sm leading-6 text-[#61687a]">
             Pas de mail en vue ? Jetez un œil dans vos spams ou dans l’onglet Promotions.
           </p>
 
-          <div className="mt-6 rounded-[22px] bg-[#fff4cb] px-5 py-4 text-left text-[1rem] leading-7 text-[#4d3810]">
+          <div className="mt-4 rounded-[18px] bg-[#fff4cb] px-4 py-3 text-left text-sm leading-6 text-[#4d3810]">
             {campaign.rewardRules.availabilityDurationDays === 0 ? (
               <p>Disponible dès maintenant au comptoir.</p>
             ) : (
@@ -797,13 +797,13 @@ export function CampaignExperience({
           </div>
 
           {campaign.rewardRules.purchaseRequired ? (
-            <div className="mt-4 rounded-[22px] bg-[#f7f7fb] px-5 py-4 text-left text-sm leading-6 text-[#61687a]">
+            <div className="mt-3 rounded-[18px] bg-[#f7f7fb] px-4 py-3 text-left text-sm leading-6 text-[#61687a]">
               Le retrait du lot est soumis à une condition d’achat.
             </div>
           ) : null}
 
           {resolvedUsageConditions ? (
-            <div className="mt-4 rounded-[22px] bg-[#fff8e8] px-5 py-4 text-left text-sm leading-6 text-[#6c5313]">
+            <div className="mt-3 rounded-[18px] bg-[#fff8e8] px-4 py-3 text-left text-sm leading-6 text-[#6c5313]">
               <p className="text-xs uppercase tracking-[0.2em] text-[#8a6a18]">
                 Conditions d&apos;utilisation
               </p>
@@ -812,27 +812,28 @@ export function CampaignExperience({
           ) : null}
 
           {redemptionCode ? (
-            <div className="mt-5 rounded-[24px] border border-[#e5e7ef] bg-[#fafbff] p-4">
+            <div className="mt-4 rounded-[20px] border border-[#e5e7ef] bg-[#fafbff] p-3">
               <p className="text-xs uppercase tracking-[0.24em] text-[#8b93a5]">Code de retrait</p>
-              <p className="mt-2 text-2xl font-semibold text-[#121826]">{redemptionCode}</p>
+              <p className="mt-1 text-xl font-semibold text-[#121826]">{redemptionCode}</p>
               {qrPath ? (
-                <div className="mt-4 flex items-center gap-4 rounded-[18px] bg-white p-3 text-left">
+                <div className="mt-3 flex items-center gap-3 rounded-[16px] bg-white p-3 text-left">
                   <Image
                     src={qrPath}
                     alt={`QR code ${redemptionCode}`}
-                    width={92}
-                    height={92}
+                    width={78}
+                    height={78}
                     unoptimized
-                    className="h-[92px] w-[92px] rounded-[14px]"
+                    className="h-[78px] w-[78px] rounded-[12px]"
                   />
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm leading-6 text-[#61687a]">
+                    <p className="text-xs leading-5 text-[#61687a]">
                       Vous pouvez également enregistrer votre QR code immédiatement.
                     </p>
                     <a
                       href={qrPath}
                       download={`qr-lot-${redemptionCode}.svg`}
-                      className="mt-3 inline-flex rounded-[16px] bg-[#111827] px-4 py-3 text-sm font-semibold text-white"
+                      className="mt-2 inline-flex rounded-[14px] bg-[#111827] px-4 py-2.5 text-sm font-semibold !text-white"
+                      style={{ color: "#ffffff" }}
                     >
                       Enregistrer le QR code
                     </a>

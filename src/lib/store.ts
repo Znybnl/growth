@@ -199,6 +199,7 @@ const merchantSeed: Merchant = {
   facebookUrl: "https://facebook.com/maisonsora",
   tiktokUrl: "https://tiktok.com/@maisonsora",
   tripadvisorUrl: "https://tripadvisor.com/",
+  customUrl: "https://maisonsora.fr",
   defaultPrizeCost: 3.4,
   createdAt: "2026-06-01T08:00:00.000Z",
 };
@@ -987,6 +988,7 @@ function createMerchantAccountInMemory(input: MerchantSignUpInput) {
     facebookUrl: "",
     tiktokUrl: "",
     tripadvisorUrl: "",
+    customUrl: "",
     defaultPrizeCost: 3,
     createdAt: new Date().toISOString(),
   };
@@ -1060,6 +1062,7 @@ function updateMerchantOnboardingInMemory(userId: string, input: MerchantOnboard
   merchant.facebookUrl = input.facebookUrl.trim();
   merchant.tiktokUrl = input.tiktokUrl.trim();
   merchant.tripadvisorUrl = input.tripadvisorUrl.trim();
+  merchant.customUrl = input.customUrl.trim();
   merchant.onboardingCompleted = true;
 
   return clone(merchant);
@@ -1104,6 +1107,7 @@ function updateMerchantAccountInMemory(userId: string, input: MerchantAccountSet
   merchant.facebookUrl = input.facebookUrl.trim();
   merchant.tiktokUrl = input.tiktokUrl.trim();
   merchant.tripadvisorUrl = input.tripadvisorUrl.trim();
+  merchant.customUrl = input.customUrl.trim();
   merchant.defaultPrizeCost = input.defaultPrizeCost;
 
   return {
