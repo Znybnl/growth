@@ -3,7 +3,7 @@ import { Campaign, CampaignPosterSettings, PosterTemplateId, Prize } from "@/lib
 
 const A4_WIDTH = 794;
 const A4_HEIGHT = 1123;
-const SAFE_FONT = "Geist, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif";
+const SAFE_FONT = "Inter, Geist, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif";
 const SAFE_DISPLAY_FONT = SAFE_FONT;
 
 type TemplateConfig = {

@@ -281,44 +281,44 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
   }
 
   return (
-    <div className="grid min-h-[calc(100vh-120px)] gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(420px,0.72fr)]">
-      <div className="space-y-6">
-        <section className="okado-card p-6 md:p-8">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <div>
-              <p className="okado-label">Atelier affiche</p>
-              <h1 className="mt-3 font-display text-4xl font-semibold text-[#111827] md:text-5xl">
-                Personnaliser l&apos;affiche A4
-              </h1>
-              <p className="mt-3 max-w-3xl text-sm leading-7 text-[#5c6577]">
-                Cet écran ne modifie que l&apos;affiche imprimable. La page de jeu reste
-                paramétrée dans l&apos;éditeur de campagne.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Link
-                href={`/campaigns/${campaign.id}/edit`}
-                prefetch={false}
-                className="rounded-[var(--radius-card)] border border-[#d7e0ed] bg-white px-4 py-3 text-sm font-semibold text-[#182033] transition hover:border-[#111827]"
-              >
-                Revenir à la campagne
-              </Link>
-              <button
-                type="button"
-                onClick={savePoster}
-                disabled={isSaving}
-                className="rounded-[var(--radius-card)] bg-[#111827] px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_28px_rgba(17,24,39,0.2)] transition hover:-translate-y-0.5 disabled:opacity-60"
-              >
-                {isSaving ? "Enregistrement..." : "Enregistrer"}
-              </button>
-            </div>
-          </div>
+    <div className="space-y-6">
+      <header className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div>
+          <p className="okado-label">Atelier affiche</p>
+          <h1 className="mt-3 font-display text-4xl font-semibold text-[#111827] md:text-5xl">
+            Personnaliser l&apos;affiche A4
+          </h1>
+          <p className="mt-3 max-w-3xl text-sm leading-7 text-[#5c6577]">
+            Cet écran ne modifie que l&apos;affiche imprimable. La page de jeu reste
+            paramétrée dans l&apos;éditeur de campagne.
+          </p>
           {message ? (
-            <div className="mt-5 rounded-[var(--radius-card)] border border-[#dbe4f0] bg-[#f7f9fc] px-4 py-3 text-sm font-semibold text-[#182033]">
+            <div className="mt-5 rounded-[var(--radius-card)] border border-[#dbe4f0] bg-white px-4 py-3 text-sm font-semibold text-[#182033] shadow-[0_10px_28px_rgba(122,136,166,0.10)]">
               {message}
             </div>
           ) : null}
-        </section>
+        </div>
+        <div className="flex flex-wrap gap-3">
+          <Link
+            href={`/campaigns/${campaign.id}/edit`}
+            prefetch={false}
+            className="rounded-[var(--radius-card)] border border-[#d7e0ed] bg-white px-4 py-3 text-sm font-semibold text-[#182033] transition hover:border-[#111827]"
+          >
+            Revenir à la campagne
+          </Link>
+          <button
+            type="button"
+            onClick={savePoster}
+            disabled={isSaving}
+            className="rounded-[var(--radius-card)] bg-[#111827] px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_28px_rgba(17,24,39,0.2)] transition hover:-translate-y-0.5 disabled:opacity-60"
+          >
+            {isSaving ? "Enregistrement..." : "Enregistrer"}
+          </button>
+        </div>
+      </header>
+
+      <div className="grid min-h-[calc(100vh-220px)] gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(420px,0.72fr)]">
+        <div className="space-y-6">
 
         {campaign.gameType === "wheel" ? (
           <section className="okado-card p-6 md:p-8">
@@ -340,18 +340,18 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                     }`}
                   >
                     <span
-                      className="relative block h-32"
+                      className="relative block h-[220px] overflow-hidden"
                       style={{ background: template.backgroundColor }}
                     >
                       <span
-                        className="absolute left-5 top-5 h-16 w-16 rounded-full border-[6px]"
+                        className="absolute -left-6 top-5 h-[200px] w-[200px] rounded-full border-[10px] shadow-[0_18px_34px_rgba(17,24,39,0.16)]"
                         style={{
                           borderColor: template.wheel.rimColor,
                           background: `conic-gradient(${template.wheel.winColor} 0 60deg, #fff7ef 60deg 120deg, ${template.wheel.winColor} 120deg 180deg, #fff7ef 180deg 240deg, ${template.wheel.winColor} 240deg 300deg, #fff7ef 300deg 360deg)`,
                         }}
                       />
                       <span
-                        className="absolute bottom-5 right-5 grid h-16 w-16 grid-cols-5 gap-0.5 rounded-[12px] border-4 bg-white p-2"
+                        className="absolute bottom-5 right-5 grid h-20 w-20 grid-cols-5 gap-0.5 rounded-[14px] border-4 bg-white p-2"
                         style={{ borderColor: template.wheel.winColor }}
                       >
                         {Array.from({ length: 25 }).map((_, index) => (
@@ -603,6 +603,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
           </div>
         </div>
       </aside>
+    </div>
     </div>
   );
 }
