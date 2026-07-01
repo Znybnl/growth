@@ -1,5 +1,5 @@
 import path from "node:path";
-import { pathToFileURL } from "node:url";
+import { readFileSync } from "node:fs";
 
 import QRCode from "qrcode";
 
@@ -10,11 +10,15 @@ import {
 } from "@/lib/poster-utils";
 import { CampaignPerformance, CampaignPosterSettings, PosterTemplateId } from "@/lib/types";
 
-let posterFontHref: string | undefined;
+let posterFontDataUrl: string | undefined;
 
-function getPosterFontHref() {
-  posterFontHref ??= pathToFileURL(path.join(process.cwd(), "public", "fonts", "geist-regular.ttf")).href;
-  return posterFontHref;
+function getPosterFontDataUrl() {
+  if (!posterFontDataUrl) {
+    const fontBuffer = readFileSync(path.join(process.cwd(), "public", "fonts", "geist-regular.ttf"));
+    posterFontDataUrl = `data:font/truetype;charset=utf-8;base64,${fontBuffer.toString("base64")}`;
+  }
+
+  return posterFontDataUrl;
 }
 
 const POSTER_TEMPLATE_DEFAULTS: Record<
@@ -147,7 +151,7 @@ export async function createCampaignPosterSvg(
       light: "#ffffff",
     },
   });
-  const embeddedFontHref = getPosterFontHref();
+  const embeddedFontHref = getPosterFontDataUrl();
 
   return buildPosterSvg({
     campaign,

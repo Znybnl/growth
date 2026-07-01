@@ -1907,7 +1907,7 @@ export function CampaignEditor({
                       Choisir un fichier
                     </span>
                     <p className="text-xs leading-5 text-[#64748b]">
-                      L&apos;aper?u reprend le fond actuellement s?lectionn? pour la page de jeu.
+                      L&apos;aperçu reprend le fond actuellement sélectionné pour la page de jeu.
                     </p>
                   </div>
                 </div>
@@ -3168,7 +3168,6 @@ export function CampaignEditor({
                   <Link
                     href={`/campaigns/${form.id}/poster`}
                     prefetch={false}
-                    target="_blank"
                     className="inline-flex h-10 items-center rounded-[8px] border border-[#d7e0ed] bg-white px-4 text-sm font-semibold text-[#182033] transition hover:bg-linen-canvas"
                   >
                     Voir l&apos;affiche
@@ -3206,7 +3205,6 @@ export function CampaignEditor({
                 <Link
                   href={`/campaigns/${savedCampaignId}/poster`}
                   prefetch={false}
-                  target="_blank"
                   className="inline-flex items-center justify-center rounded-[20px] border border-[#d7e0ed] px-4 py-3 text-sm font-semibold text-[#182033]"
                 >
                   Voir l&apos;affiche

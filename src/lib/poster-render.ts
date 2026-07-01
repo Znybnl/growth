@@ -272,7 +272,6 @@ function renderLogo(campaign: Campaign, poster: CampaignPosterSettings, template
   const logoText =
     logoMode === "text" ? (poster.logoText ?? campaign.logoText ?? "").trim() : "";
   const { logoSize, logoY } = getLogoLayout(poster, template);
-  const accent = poster.wheel.winColor || template.accent;
 
   if (logoMode === "image" && logoUrl) {
     return `<image href="${escapeXml(logoUrl)}" x="${(A4_WIDTH - logoSize * 1.7) / 2}" y="${logoY}" width="${logoSize * 1.7}" height="${logoSize}" preserveAspectRatio="xMidYMid meet"/>`;
@@ -285,19 +284,10 @@ function renderLogo(campaign: Campaign, poster: CampaignPosterSettings, template
   const text = escapeXml(logoText.toUpperCase());
   const fontSize = clamp(logoSize * 0.32, 22, 44);
   const centerY = logoY + logoSize / 2;
-
-  if (template.logoVariant === "lined") {
-    return `
-      <line x1="220" y1="${centerY}" x2="318" y2="${centerY}" stroke="${template.accentDark}" stroke-width="8"/>
-      <circle cx="${A4_WIDTH / 2}" cy="${centerY}" r="${logoSize / 2}" fill="${template.background}" stroke="${accent}" stroke-width="9"/>
-      <text x="${A4_WIDTH / 2}" y="${centerY + fontSize * 0.34}" text-anchor="middle" fill="${accent}" font-family="${SAFE_FONT}" font-size="${fontSize}" font-weight="500">${text}</text>
-      <line x1="476" y1="${centerY}" x2="574" y2="${centerY}" stroke="${template.accentDark}" stroke-width="8"/>
-    `;
-  }
+  const logoTextColor = poster.headlineTextColor || template.headline;
 
   return `
-    <circle cx="${A4_WIDTH / 2}" cy="${centerY}" r="${logoSize / 2}" fill="${template.id === "terracotta-wheel" ? accent : template.background}" stroke="${accent}" stroke-width="${template.id === "terracotta-wheel" ? 0 : 7}"/>
-    <text x="${A4_WIDTH / 2}" y="${centerY + fontSize * 0.34}" text-anchor="middle" fill="${template.id === "terracotta-wheel" ? "#ffffff" : accent}" font-family="${SAFE_FONT}" font-size="${fontSize}" font-weight="500">${text}</text>
+    <text x="${A4_WIDTH / 2}" y="${centerY + fontSize * 0.34}" text-anchor="middle" fill="${logoTextColor}" font-family="${SAFE_FONT}" font-size="${fontSize}" font-weight="800">${text}</text>
   `;
 }
 
@@ -486,7 +476,7 @@ export function buildPosterSvg(args: {
       `
     : "";
 
-  return `
+  return `<?xml version="1.0" encoding="UTF-8"?>
     <svg xmlns="http://www.w3.org/2000/svg" width="${A4_WIDTH}" height="${A4_HEIGHT}" viewBox="0 0 ${A4_WIDTH} ${A4_HEIGHT}">
       <defs>
         <style>

@@ -50,9 +50,10 @@ export default async function CampaignsPage({
       </section>
 
       <section className="okado-card p-4 md:p-6">
-        <div className="hidden grid-cols-[1.55fr_0.8fr_0.55fr_0.6fr_0.85fr_1.75fr] gap-3 rounded-[8px] bg-linen-canvas px-5 py-4 text-[11px] uppercase tracking-[0.24em] text-[#7b8496] lg:grid">
+        <div className="hidden grid-cols-[1.45fr_0.7fr_0.5fr_0.5fr_0.55fr_0.75fr_1.65fr] gap-3 rounded-[8px] bg-linen-canvas px-5 py-4 text-[11px] uppercase tracking-[0.24em] text-[#7b8496] lg:grid">
           <span>Campagne</span>
           <span>Jeu</span>
+          <span>Scans</span>
           <span>Leads</span>
           <span>Conv.</span>
           <span>Coût / lead</span>
@@ -65,7 +66,7 @@ export default async function CampaignsPage({
               key={item.campaign.id}
               className="rounded-[8px] border border-border bg-linen-canvas p-5 lg:rounded-none lg:border-x-0 lg:border-b-0 lg:border-t lg:bg-transparent lg:px-5 lg:py-5"
             >
-              <div className="hidden grid-cols-[1.55fr_0.8fr_0.55fr_0.6fr_0.85fr_1.75fr] items-center gap-3 lg:grid">
+              <div className="hidden grid-cols-[1.45fr_0.7fr_0.5fr_0.5fr_0.55fr_0.75fr_1.65fr] items-center gap-3 lg:grid">
                 <div className="min-w-0">
                   <div className="flex items-center gap-3">
                     <span
@@ -83,6 +84,7 @@ export default async function CampaignsPage({
                   </div>
                 </div>
                 <span className="text-[#556173]">{gameTypeLabel(item.campaign.gameType)}</span>
+                <span className="font-semibold text-[#111827]">{item.kpis.scans}</span>
                 <span className="font-semibold text-[#111827]">{item.kpis.leads}</span>
                 <span className="font-semibold text-[#111827]">
                   {formatPercent(item.kpis.conversionRate)}
@@ -105,7 +107,7 @@ export default async function CampaignsPage({
                     rel="noreferrer"
                     className="inline-flex min-h-9 items-center justify-center rounded-[12px] border border-[#d7e0ed] bg-[#fbfcfe] px-3 text-sm font-semibold text-[#182033] transition hover:border-[#c5d2e5] hover:bg-[#f8fbff]"
                   >
-                    Ouvrir
+                    Prévisualiser
                   </Link>
                   <Link
                     href={`/data?campaign=${item.campaign.id}`}
@@ -145,6 +147,14 @@ export default async function CampaignsPage({
                     </p>
                   </div>
                   <div className="rounded-[8px] bg-white px-4 py-3">
+                    <p className="text-[#7b8496]">Scans</p>
+                    <p className="mt-1 font-semibold text-[#111827]">{item.kpis.scans}</p>
+                  </div>
+                  <div className="rounded-[8px] bg-white px-4 py-3">
+                    <p className="text-[#7b8496]">Leads</p>
+                    <p className="mt-1 font-semibold text-[#111827]">{item.kpis.leads}</p>
+                  </div>
+                  <div className="rounded-[8px] bg-white px-4 py-3">
                     <p className="text-[#7b8496]">Conversion</p>
                     <p className="mt-1 font-semibold text-[#111827]">
                       {formatPercent(item.kpis.conversionRate)}
@@ -168,7 +178,7 @@ export default async function CampaignsPage({
                   rel="noreferrer"
                   className="inline-flex min-h-[44px] items-center justify-center rounded-[12px] border border-[#d7e0ed] bg-[#fbfcfe] px-4 py-3 text-sm font-semibold text-[#182033] transition hover:border-[#c5d2e5] hover:bg-[#f8fbff]"
                 >
-                  Ouvrir
+                  Prévisualiser
                 </Link>
                 <Link
                   href={`/data?campaign=${item.campaign.id}`}
