@@ -22,7 +22,6 @@ export default async function CampaignPosterPage({ params }: CampaignPosterPageP
   return (
     <PosterEditor
       campaign={performance.campaign}
-      merchant={performance.merchant}
       prizes={performance.prizes}
     />
   );

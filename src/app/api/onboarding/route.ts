@@ -1,25 +1,38 @@
 import { NextResponse } from "next/server";
 
 import { getAuthenticatedSession } from "@/lib/auth";
+import { parseMerchantOnboardingInput } from "@/lib/merchant-input";
+import { captureProductEvent, merchantDistinctId } from "@/lib/product-analytics";
+import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
 import { updateMerchantOnboarding } from "@/lib/store";
-import { MerchantOnboardingInput } from "@/lib/types";
 
 export async function POST(request: Request) {
   try {
+    assertTrustedMutationRequest(request);
     const session = await getAuthenticatedSession();
 
     if (!session) {
       return NextResponse.json({ error: "Authentification requise" }, { status: 401 });
     }
 
-    const body = (await request.json()) as MerchantOnboardingInput;
+    const body = parseMerchantOnboardingInput(await request.json());
     const merchant = await updateMerchantOnboarding(session.user.id, body);
+    await captureProductEvent(
+      "onboarding_completed",
+      merchantDistinctId(session.merchant.id, session.user.id),
+      {
+        merchantId: session.merchant.id,
+        merchantUserId: session.user.id,
+        industry: merchant.industry,
+        restaurantType: merchant.restaurantType,
+      },
+    );
 
     return NextResponse.json({ merchant });
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Onboarding impossible." },
-      { status: 400 },
+      { status: getRequestSecurityErrorStatus(error) },
     );
   }
 }

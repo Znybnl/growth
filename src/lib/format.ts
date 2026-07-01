@@ -4,6 +4,7 @@ import {
   GameType,
   GoalType,
   LeadStatus,
+  RewardEmailDeliveryStatus,
   TextAlign,
   TextFont,
 } from "@/lib/types";
@@ -115,9 +116,68 @@ export function actionKindLabel(kind: ActionKind) {
     case "tripadvisor":
       return "Tripadvisor";
     case "crm":
-      return "Données clients";
+      return "Collecte email";
     default:
       return "Personnalisé";
+  }
+}
+
+export function rewardEmailStatusLabel(status?: RewardEmailDeliveryStatus) {
+  switch (status) {
+    case "queued":
+      return "En file";
+    case "sent":
+      return "Envoyé";
+    case "delivered":
+      return "Distribué";
+    case "bounced":
+      return "Bounce";
+    case "complained":
+      return "Plainte";
+    case "suppressed":
+      return "Bloqué";
+    case "failed":
+      return "Échec";
+    default:
+      return "Non envoyé";
+  }
+}
+
+export function actionKindMonogram(kind: ActionKind) {
+  switch (kind) {
+    case "google":
+      return "G";
+    case "instagram":
+      return "IG";
+    case "facebook":
+      return "f";
+    case "tiktok":
+      return "TT";
+    case "tripadvisor":
+      return "TA";
+    case "crm":
+      return "CRM";
+    default:
+      return "LIEN";
+  }
+}
+
+export function actionKindAccent(kind: ActionKind) {
+  switch (kind) {
+    case "google":
+      return { background: "#fef3c7", text: "#b45309" };
+    case "instagram":
+      return { background: "#fae8ff", text: "#a21caf" };
+    case "facebook":
+      return { background: "#dbeafe", text: "#1d4ed8" };
+    case "tiktok":
+      return { background: "#e5e7eb", text: "#111827" };
+    case "tripadvisor":
+      return { background: "#dcfce7", text: "#166534" };
+    case "crm":
+      return { background: "#ede9fe", text: "#6d28d9" };
+    default:
+      return { background: "#e2e8f0", text: "#334155" };
   }
 }
 
@@ -134,7 +194,7 @@ export function actionKindCta(kind: ActionKind) {
     case "tripadvisor":
       return "Ouvrir Tripadvisor";
     case "crm":
-      return "Partager mes coordonnées";
+      return "Partager mon e-mail";
     default:
       return "Ouvrir le lien";
   }

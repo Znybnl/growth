@@ -1,17 +1,28 @@
 import {
+  createDrawSessionInSupabase,
+  deleteCampaignForMerchantInSupabase,
   drawForLeadInSupabase,
+  finalizeDrawSessionInSupabase,
   getSupabaseCampaignDataView,
   getSupabaseCampaignPerformance,
+  getSupabaseCampaignSetupPerformance,
+  getSupabaseMerchantCampaignLibrary,
+  getSupabaseMerchantCampaignOverview,
   getSupabaseMerchantDashboard,
   getSupabaseMerchantLeads,
+  getSupabaseMerchantRecentLeads,
+  getSupabaseMerchantSupportOverview,
   getSupabasePublicCampaign,
   deleteCampaignInSupabase,
   duplicateCampaignInSupabase,
   markActionConfirmedInSupabase,
   recordEventInSupabase,
   redeemLeadPrizeInSupabase,
+  resetPrizeStockInSupabase,
   resetLeadPrizeInSupabase,
   toggleCampaignInSupabase,
+  toggleCampaignForMerchantInSupabase,
+  updatePrizeStockInSupabase,
   updateCampaignSetupInSupabase,
 } from "@/lib/campaign-repository";
 import {
@@ -19,17 +30,21 @@ import {
   createMerchantAccountInSupabase,
   getSupabaseMerchantProfile,
   getSupabaseMerchantUser,
+  getSupabaseMerchantUserByEmail,
   updateMerchantAccountInSupabase,
   updateMerchantOnboardingInSupabase,
 } from "@/lib/merchant-account-repository";
-import { isSupabaseConfigured } from "@/lib/supabase";
+import { assertDataBackendAvailable } from "@/lib/supabase";
+import { getMemorySupportLogs } from "@/lib/support-log";
 import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
 import { cache } from "react";
 import {
   Campaign,
   CampaignAction,
   CampaignDataView,
+  CampaignEmailSettings,
   CampaignEvent,
+  CampaignLibraryItem,
   CampaignPerformance,
   CampaignPresentation,
   CampaignBackgroundSettings,
@@ -40,13 +55,18 @@ import {
   CampaignRewardRules,
   CampaignWheelSettings,
   CampaignSetupInput,
+  CreateDrawSessionRequest,
+  CreateDrawSessionResult,
+  DrawSession,
   DrawRequest,
   DrawResult,
+  FinalizeDrawSessionRequest,
   Lead,
   Merchant,
   MerchantAccountSettingsInput,
   MerchantDashboardData,
   MerchantLeadRow,
+  MerchantSupportOverview,
   MerchantOnboardingInput,
   MerchantSignInInput,
   MerchantSignUpInput,
@@ -54,6 +74,8 @@ import {
   Prize,
   PublicCampaign,
 } from "@/lib/types";
+import { createCampaignEmailDefaults, normalizeCampaignEmailSettings } from "@/lib/email-settings";
+import { unstable_cache } from "next/cache";
 
 type Store = {
   merchants: Merchant[];
@@ -62,6 +84,7 @@ type Store = {
   prizes: Prize[];
   leads: Lead[];
   events: CampaignEvent[];
+  drawSessions: DrawSession[];
 };
 
 type CampaignPresentationOverrides = {
@@ -72,6 +95,7 @@ type CampaignPresentationOverrides = {
   layout?: Partial<{ blockSpacingPx: number }>;
   wheel?: Partial<CampaignWheelSettings>;
   poster?: Partial<CampaignPosterSettings>;
+  email?: Partial<CampaignEmailSettings>;
 };
 
 function createPresentation(overrides?: CampaignPresentationOverrides): CampaignPresentation {
@@ -93,12 +117,12 @@ function createPresentation(overrides?: CampaignPresentationOverrides): Campaign
     },
     background: {
       mode: "color",
-      color: "#111827",
+      color: "#ffffff",
       imageUrl: undefined,
       ...overrides?.background,
     },
     heading: {
-      textColor: "#ffffff",
+      textColor: "#1f2937",
       fontSizePx: 42,
       fontFamily: "display",
       align: "center",
@@ -133,6 +157,7 @@ function createPresentation(overrides?: CampaignPresentationOverrides): Campaign
       footerBackgroundColor: "#8d9ae8",
       ...overrides?.poster,
     },
+    email: normalizeCampaignEmailSettings(overrides?.email, createCampaignEmailDefaults(merchantSeed)),
   };
 }
 
@@ -159,15 +184,21 @@ const merchantSeed: Merchant = {
   logoText: "MS",
   logoUrl: undefined,
   industry: "Mode et maison",
+  restaurantType: "Brasserie",
   city: "Paris Marais",
+  address: "12 rue du Marais, 75004 Paris",
   contactName: "Pierre-Henri Brunelle",
   phone: "01 40 00 00 00",
+  restaurantEmail: "contact@maisonsora.fr",
   websiteUrl: "https://maisonsora.fr",
   onboardingCompleted: true,
   preferredGoals: ["Avis Google", "Collecte CRM"],
   diffusionSupport: ["QR code vitrine et comptoir", "Script équipe magasin"],
   googleReviewUrl: "https://g.page/r/CampaignReview",
   instagramUrl: "https://instagram.com/maisonsora",
+  facebookUrl: "https://facebook.com/maisonsora",
+  tiktokUrl: "https://tiktok.com/@maisonsora",
+  tripadvisorUrl: "https://tripadvisor.com/",
   defaultPrizeCost: 3.4,
   createdAt: "2026-06-01T08:00:00.000Z",
 };
@@ -470,6 +501,7 @@ function createSeededStore(): Store {
     prizes: prizeSeed,
     leads: leadSeed,
     events: eventSeed,
+    drawSessions: [],
   };
 }
 
@@ -525,9 +557,16 @@ function normalizeCampaign(rawCampaign: Campaign | (Partial<Campaign> & Record<s
       poster: normalizePosterSettings(
         presentation.poster,
         createPosterSettingsDefaults({
+          logoMode: rawCampaign.logoMode ?? fallback.logoMode ?? "text",
+          logoText:
+            typeof rawCampaign.logoText === "string" && rawCampaign.logoText.trim()
+              ? rawCampaign.logoText
+              : fallback.logoText ?? merchantSeed.companyName,
           logoUrl: rawCampaign.logoUrl,
           logoSizePercent: presentation.logo?.sizePercent ?? 100,
           logoBottomMarginPx: presentation.logo?.marginBottomPx ?? 28,
+          backgroundMode: presentation.background?.mode ?? "color",
+          backgroundColor: presentation.background?.color ?? "#ffffff",
           backgroundImageUrl: presentation.background?.imageUrl ?? "",
           headline: rawCampaign.subtitle ?? fallback.subtitle,
           headlineTextColor: presentation.heading?.textColor ?? "#ffffff",
@@ -536,6 +575,10 @@ function normalizeCampaign(rawCampaign: Campaign | (Partial<Campaign> & Record<s
           wheel,
           footerBackgroundColor: rawCampaign.accent?.signal ?? fallback.accent.signal,
         }),
+      ),
+      email: normalizeCampaignEmailSettings(
+        presentation.email,
+        createCampaignEmailDefaults(merchantSeed),
       ),
     },
     actions:
@@ -576,11 +619,46 @@ function normalizeStore(rawStore: Store): Store {
     })),
     leads: rawStore.leads ?? [],
     events: rawStore.events ?? [],
+    drawSessions: rawStore.drawSessions ?? [],
   };
 }
 
 const store = normalizeStore(globalThis.__retailActivationStore ?? createSeededStore());
 globalThis.__retailActivationStore = store;
+
+function getDataBackend(operation: string) {
+  return assertDataBackendAvailable(operation);
+}
+
+async function resolveMerchantForSupabase(
+  merchantId: string,
+  fallbackMerchant?: Merchant,
+): Promise<Merchant> {
+  if (fallbackMerchant?.id === merchantId) {
+    return fallbackMerchant;
+  }
+
+  const merchant = await getSupabaseMerchantProfile(merchantId);
+
+  if (!merchant) {
+    throw new Error("Marchand introuvable");
+  }
+
+  return merchant;
+}
+
+async function resolveCampaignMerchantForSupabase(
+  campaignId: string,
+  fallbackMerchant?: Merchant,
+): Promise<Merchant> {
+  const performance = await getSupabaseCampaignPerformance(campaignId, fallbackMerchant);
+
+  if (!performance) {
+    throw new Error("Campagne introuvable");
+  }
+
+  return performance.merchant;
+}
 
 function clone<T>(value: T): T {
   return structuredClone(value);
@@ -615,6 +693,11 @@ function toLeadRow(lead: Lead): MerchantLeadRow {
     campaignTitle: campaign?.title ?? "Campagne",
     goalType: campaign?.goalType ?? "lead_capture",
     prizeLabel: lead.prizeId ? prize?.label ?? "Lot inconnu" : "Perdu",
+    prizeUsageConditions: lead.prizeId ? prize?.usageConditions : undefined,
+    emailDeliveryStatus: undefined,
+    emailSentAt: undefined,
+    emailDeliveredAt: undefined,
+    emailErrorMessage: undefined,
   };
 }
 
@@ -733,6 +816,14 @@ function decrementPrize(prize: Prize) {
   prize.remainingQuantity -= 1;
 }
 
+function incrementPrize(prize: Prize) {
+  if (prize.remainingQuantity === null) {
+    return;
+  }
+
+  prize.remainingQuantity += 1;
+}
+
 function choosePrize(campaign: Campaign, prizes: Prize[]) {
   const available = prizes.filter(isPrizeAvailable);
 
@@ -770,6 +861,68 @@ function choosePrize(campaign: Campaign, prizes: Prize[]) {
   }
 
   return null;
+}
+
+function expireDrawSessionsFromMemory() {
+  const now = Date.now();
+
+  for (const session of store.drawSessions) {
+    if (session.status !== "pending" || new Date(session.expiresAt).getTime() > now) {
+      continue;
+    }
+
+    session.status = "expired";
+
+    if (session.prizeId) {
+      const prize = store.prizes.find((item) => item.id === session.prizeId);
+
+      if (prize) {
+        incrementPrize(prize);
+      }
+    }
+  }
+}
+
+function buildLeadFromSession(
+  campaign: Campaign,
+  session: DrawSession,
+  input: FinalizeDrawSessionRequest,
+): Lead {
+  const now = new Date();
+  const lead: Lead = {
+    id: generateId("lead"),
+    campaignId: campaign.id,
+    firstName: input.firstName.trim(),
+    email: input.email.trim().toLowerCase(),
+    marketingConsent: Boolean(input.marketingConsent),
+    consentTimestamp: now.toISOString(),
+    status: "lost",
+    createdAt: now.toISOString(),
+    actionConfirmed: false,
+  };
+
+  if (!session.prizeId) {
+    return lead;
+  }
+
+  const availableAt = new Date(
+    now.getTime() + campaign.rewardRules.availableAfterHours * 60 * 60 * 1000,
+  );
+  const expiresAt =
+    campaign.rewardRules.availabilityDurationDays > 0
+      ? new Date(
+          availableAt.getTime() +
+            campaign.rewardRules.availabilityDurationDays * 24 * 60 * 60 * 1000,
+        )
+      : new Date(now.getTime() + campaign.rewardRules.rewardExpiryMinutes * 60 * 1000);
+
+  lead.prizeId = session.prizeId;
+  lead.status = "claimed";
+  lead.redemptionCode = `SORA-${Math.floor(1000 + Math.random() * 9000)}`;
+  lead.rewardAvailableAt = availableAt.toISOString();
+  lead.rewardExpiresAt = expiresAt.toISOString();
+
+  return lead;
 }
 
 function getMerchantProfileFromMemory(merchantId = merchantSeed.id) {
@@ -811,7 +964,7 @@ function createMerchantAccountInMemory(input: MerchantSignUpInput) {
   const lastName = input.lastName.trim();
   const companyName = input.companyName.trim();
   const city = input.city.trim();
-  const phone = input.phone.trim();
+  const phone = (input.phone ?? "").trim();
 
   const merchant: Merchant = {
     id: merchantId,
@@ -819,15 +972,21 @@ function createMerchantAccountInMemory(input: MerchantSignUpInput) {
     logoText: companyName.slice(0, 2).toUpperCase(),
     logoUrl: undefined,
     industry: "",
+    restaurantType: "Brasserie",
     city,
+    address: "",
     contactName: `${firstName} ${lastName}`.trim(),
     phone,
+    restaurantEmail: "",
     websiteUrl: "",
     onboardingCompleted: false,
     preferredGoals: [],
     diffusionSupport: [],
     googleReviewUrl: "",
     instagramUrl: "",
+    facebookUrl: "",
+    tiktokUrl: "",
+    tripadvisorUrl: "",
     defaultPrizeCost: 3,
     createdAt: new Date().toISOString(),
   };
@@ -885,11 +1044,22 @@ function updateMerchantOnboardingInMemory(userId: string, input: MerchantOnboard
 
   merchant.companyName = input.companyName.trim();
   merchant.logoText = input.companyName.trim().slice(0, 2).toUpperCase();
+  merchant.industry = input.industry.trim();
+  merchant.restaurantType = input.restaurantType.trim();
   merchant.city = input.city.trim();
+  merchant.address = input.address.trim();
   merchant.contactName = input.contactName.trim();
   merchant.phone = input.phone.trim();
+  merchant.restaurantEmail = input.restaurantEmail.trim().toLowerCase();
+  merchant.websiteUrl = input.websiteUrl.trim();
+  merchant.defaultPrizeCost = input.defaultPrizeCost;
   merchant.preferredGoals = input.preferredGoals;
   merchant.diffusionSupport = input.diffusionSupport;
+  merchant.googleReviewUrl = input.googleReviewUrl.trim();
+  merchant.instagramUrl = input.instagramUrl.trim();
+  merchant.facebookUrl = input.facebookUrl.trim();
+  merchant.tiktokUrl = input.tiktokUrl.trim();
+  merchant.tripadvisorUrl = input.tripadvisorUrl.trim();
   merchant.onboardingCompleted = true;
 
   return clone(merchant);
@@ -922,12 +1092,18 @@ function updateMerchantAccountInMemory(userId: string, input: MerchantAccountSet
   merchant.companyName = input.companyName.trim();
   merchant.logoText = input.companyName.trim().slice(0, 2).toUpperCase();
   merchant.industry = input.industry.trim();
+  merchant.restaurantType = input.restaurantType.trim();
   merchant.city = input.city.trim();
+  merchant.address = input.address.trim();
   merchant.contactName = input.contactName.trim();
   merchant.phone = input.phone.trim();
+  merchant.restaurantEmail = input.restaurantEmail.trim().toLowerCase();
   merchant.websiteUrl = input.websiteUrl.trim();
   merchant.googleReviewUrl = input.googleReviewUrl.trim();
   merchant.instagramUrl = input.instagramUrl.trim();
+  merchant.facebookUrl = input.facebookUrl.trim();
+  merchant.tiktokUrl = input.tiktokUrl.trim();
+  merchant.tripadvisorUrl = input.tripadvisorUrl.trim();
   merchant.defaultPrizeCost = input.defaultPrizeCost;
 
   return {
@@ -937,39 +1113,31 @@ function updateMerchantAccountInMemory(userId: string, input: MerchantAccountSet
 }
 
 export const getMerchantProfile = cache(async function getMerchantProfile(merchantId = merchantSeed.id) {
-  if (isSupabaseConfigured()) {
-    const merchant = await getSupabaseMerchantProfile(merchantId);
-
-    if (merchant) {
-      return merchant;
-    }
+  if (getDataBackend("la lecture du profil marchand") === "supabase") {
+    return getSupabaseMerchantProfile(merchantId);
   }
 
   return getMerchantProfileFromMemory(merchantId);
 });
 
 export const getMerchantUser = cache(async function getMerchantUser(userId: string) {
-  if (isSupabaseConfigured()) {
-    const user = await getSupabaseMerchantUser(userId);
-
-    if (user) {
-      return user;
-    }
+  if (getDataBackend("la lecture de l'utilisateur marchand") === "supabase") {
+    return getSupabaseMerchantUser(userId);
   }
 
   return getMerchantUserFromMemory(userId);
 });
 
 export async function getMerchantUserByEmail(email: string) {
-  if (isSupabaseConfigured()) {
-    throw new Error("Recherche directe par email non exposee en mode Supabase.");
+  if (getDataBackend("la recherche de l'utilisateur marchand") === "supabase") {
+    return getSupabaseMerchantUserByEmail(email);
   }
 
   return getMerchantUserByEmailFromMemory(email);
 }
 
 export async function createMerchantAccount(input: MerchantSignUpInput) {
-  if (isSupabaseConfigured()) {
+  if (getDataBackend("la création de compte marchand") === "supabase") {
     return createMerchantAccountInSupabase(input);
   }
 
@@ -977,7 +1145,7 @@ export async function createMerchantAccount(input: MerchantSignUpInput) {
 }
 
 export async function authenticateMerchant(input: MerchantSignInInput) {
-  if (isSupabaseConfigured()) {
+  if (getDataBackend("la connexion marchand") === "supabase") {
     return authenticateMerchantInSupabase(input);
   }
 
@@ -985,7 +1153,7 @@ export async function authenticateMerchant(input: MerchantSignInInput) {
 }
 
 export async function updateMerchantOnboarding(userId: string, input: MerchantOnboardingInput) {
-  if (isSupabaseConfigured()) {
+  if (getDataBackend("la mise à jour de l'onboarding") === "supabase") {
     return updateMerchantOnboardingInSupabase(userId, input);
   }
 
@@ -993,7 +1161,7 @@ export async function updateMerchantOnboarding(userId: string, input: MerchantOn
 }
 
 export async function updateMerchantAccount(userId: string, input: MerchantAccountSettingsInput) {
-  if (isSupabaseConfigured()) {
+  if (getDataBackend("la mise à jour du compte marchand") === "supabase") {
     return updateMerchantAccountInSupabase(userId, input);
   }
 
@@ -1050,6 +1218,35 @@ function getMerchantDashboardFromMemory(
           campaigns.length,
       )
     : 0;
+  const campaignIds = new Set(campaigns.map((item) => item.campaign.id));
+  const relevantLeads = store.leads.filter((lead) => campaignIds.has(lead.campaignId));
+  const relevantEvents = store.events.filter((event) => campaignIds.has(event.campaignId));
+  const referenceDates = [
+    ...relevantLeads.map((lead) => lead.createdAt),
+    ...relevantEvents.map((event) => event.createdAt),
+  ];
+  const latest = referenceDates.length
+    ? new Date([...referenceDates].sort((a, b) => a.localeCompare(b)).at(-1) ?? new Date().toISOString())
+    : new Date();
+  const dayKeys = Array.from({ length: 30 }, (_, index) => {
+    const date = new Date(Date.UTC(latest.getUTCFullYear(), latest.getUTCMonth(), latest.getUTCDate()));
+    date.setUTCDate(latest.getUTCDate() - (30 - index - 1));
+    return date.toISOString().slice(0, 10);
+  });
+  const scansByDay = new Map<string, number>();
+  const participationsByDay = new Map<string, number>();
+
+  for (const event of relevantEvents) {
+    if (event.eventType === "scan") {
+      const day = event.createdAt.slice(0, 10);
+      scansByDay.set(day, (scansByDay.get(day) ?? 0) + 1);
+    }
+  }
+
+  for (const lead of relevantLeads) {
+    const day = lead.createdAt.slice(0, 10);
+    participationsByDay.set(day, (participationsByDay.get(day) ?? 0) + 1);
+  }
 
   return {
     merchant: clone(merchant),
@@ -1057,6 +1254,11 @@ function getMerchantDashboardFromMemory(
     totalLeads,
     totalRedeemed,
     averageConversion,
+    activityPoints: dayKeys.map((label) => ({
+      label,
+      scans: scansByDay.get(label) ?? 0,
+      participations: participationsByDay.get(label) ?? 0,
+    })),
   };
 }
 
@@ -1087,58 +1289,114 @@ function getCampaignDataViewFromMemory(campaignId: string): CampaignDataView | n
   };
 }
 
-function drawForLeadFromMemory(input: DrawRequest): DrawResult {
+function createDrawSessionFromMemory(input: CreateDrawSessionRequest): CreateDrawSessionResult {
+  expireDrawSessionsFromMemory();
   const campaign = getCampaign(input.campaignId);
 
   if (!campaign || !campaign.isActive) {
     throw new Error("Campagne indisponible");
   }
 
-  const email = input.email.trim().toLowerCase();
-  const previousParticipations = store.leads.filter(
-    (lead) => lead.campaignId === campaign.id && lead.email === email,
-  ).length;
-  const actionForVisit = campaign.actions[previousParticipations];
-
-  const lead: Lead = {
-    id: generateId("lead"),
+  const prize = choosePrize(campaign, getCampaignPrizes(campaign.id));
+  const session: DrawSession = {
+    id: generateId("session"),
     campaignId: campaign.id,
-    firstName: input.firstName.trim(),
-    email,
-    marketingConsent: input.marketingConsent,
-    consentTimestamp: new Date().toISOString(),
-    status: "lost",
+    prizeId: prize?.id,
+    status: "pending",
     createdAt: new Date().toISOString(),
-    actionConfirmed: false,
+    expiresAt: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
   };
 
-  const prize = choosePrize(campaign, getCampaignPrizes(campaign.id));
+  store.drawSessions.push(session);
+  recordEventInMemory(campaign.id, "game_played");
 
-  if (prize) {
-    const now = Date.now();
-    const availableAt = new Date(
-      now + campaign.rewardRules.availableAfterHours * 60 * 60 * 1000,
-    );
-    const expiresAt =
-      campaign.rewardRules.availabilityDurationDays > 0
-        ? new Date(
-            availableAt.getTime() +
-              campaign.rewardRules.availabilityDurationDays * 24 * 60 * 60 * 1000,
-          )
-        : new Date(
-            now + campaign.rewardRules.rewardExpiryMinutes * 60 * 1000,
-          );
+  return {
+    session: clone(session),
+    prize: prize ? clone(prize) : null,
+    campaign: toPublicCampaign(campaign),
+  };
+}
 
-    lead.prizeId = prize.id;
-    lead.status = "claimed";
-    lead.redemptionCode = `SORA-${Math.floor(1000 + Math.random() * 9000)}`;
-    lead.rewardAvailableAt = availableAt.toISOString();
-    lead.rewardExpiresAt = expiresAt.toISOString();
+function getMerchantCampaignLibraryFromMemory(
+  merchantId = merchantSeed.id,
+  fallbackMerchant?: Merchant,
+): CampaignLibraryItem[] {
+  const merchant = getMerchant(merchantId) ?? fallbackMerchant;
+
+  if (!merchant) {
+    throw new Error("Marchand introuvable");
   }
 
+  return clone(
+    store.campaigns
+      .filter((campaign) => campaign.merchantId === merchantId)
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+      .map((campaign) => ({
+        id: campaign.id,
+        title: campaign.title,
+        gameType: campaign.gameType,
+        isActive: campaign.isActive,
+        createdAt: campaign.createdAt,
+    })),
+  );
+}
+
+const MERCHANT_NAVIGATION_CACHE_SECONDS = 15;
+
+function merchantCampaignsTag(merchantId: string) {
+  return `merchant:${merchantId}:campaigns`;
+}
+
+function getCachedSupabaseMerchantCampaignOverview(merchant: Merchant) {
+  return getSupabaseMerchantCampaignOverview(merchant);
+}
+
+function getCachedSupabaseMerchantCampaignLibrary(merchantId: string) {
+  return unstable_cache(
+    () => getSupabaseMerchantCampaignLibrary(merchantId),
+    ["merchant-campaign-library", merchantId],
+    {
+      tags: [merchantCampaignsTag(merchantId)],
+      revalidate: MERCHANT_NAVIGATION_CACHE_SECONDS,
+    },
+  )();
+}
+
+function getCachedSupabaseCampaignSetupPerformance(campaignId: string, fallbackMerchant?: Merchant) {
+  return getSupabaseCampaignSetupPerformance(campaignId, fallbackMerchant);
+}
+
+function invalidateCampaignNavigationCache(merchantId?: string, campaignId?: string) {
+  void merchantId;
+  void campaignId;
+}
+
+function finalizeDrawSessionFromMemory(input: FinalizeDrawSessionRequest): DrawResult {
+  expireDrawSessionsFromMemory();
+  const session = store.drawSessions.find((item) => item.id === input.sessionId);
+
+  if (!session || session.status !== "pending") {
+    throw new Error("Session de jeu introuvable ou expirée.");
+  }
+
+  const campaign = getCampaign(session.campaignId);
+
+  if (!campaign || !campaign.isActive) {
+    throw new Error("Campagne indisponible");
+  }
+
+  const lead = buildLeadFromSession(campaign, session, input);
+  const previousParticipations = store.leads.filter(
+    (item) => item.campaignId === campaign.id && item.email === lead.email,
+  ).length;
+  const actionForVisit = campaign.actions[previousParticipations];
+  const prize = lead.prizeId
+    ? getCampaignPrizes(campaign.id).find((item) => item.id === lead.prizeId) ?? null
+    : null;
+
   store.leads.push(lead);
+  session.status = "completed";
   recordEventInMemory(campaign.id, "lead_created", lead.id);
-  recordEventInMemory(campaign.id, "game_played", lead.id);
 
   if (prize) {
     recordEventInMemory(campaign.id, "prize_won", lead.id, { prizeId: prize.id });
@@ -1149,6 +1407,17 @@ function drawForLeadFromMemory(input: DrawRequest): DrawResult {
     prize: prize ? clone(prize) : null,
     campaign: toPublicCampaign(campaign, actionForVisit ? [actionForVisit] : []),
   };
+}
+
+function drawForLeadFromMemory(input: DrawRequest): DrawResult {
+  const preview = createDrawSessionFromMemory({ campaignId: input.campaignId });
+
+  return finalizeDrawSessionFromMemory({
+    sessionId: preview.session.id,
+    firstName: input.firstName,
+    email: input.email,
+    marketingConsent: input.marketingConsent,
+  });
 }
 
 function markActionConfirmedInMemory(leadId: string) {
@@ -1211,6 +1480,30 @@ function resetLeadPrizeInMemory(leadId: string) {
   return clone(lead);
 }
 
+function updatePrizeStockInMemory(prizeId: string, remainingQuantity: number | null) {
+  const prize = store.prizes.find((item) => item.id === prizeId);
+
+  if (!prize) {
+    throw new Error("Dotation introuvable");
+  }
+
+  prize.remainingQuantity = remainingQuantity;
+
+  return clone(prize);
+}
+
+function resetPrizeStockInMemory(prizeId: string) {
+  const prize = store.prizes.find((item) => item.id === prizeId);
+
+  if (!prize) {
+    throw new Error("Dotation introuvable");
+  }
+
+  prize.remainingQuantity = prize.totalQuantity;
+
+  return clone(prize);
+}
+
 function updateCampaignSetupInMemory(input: CampaignSetupInput) {
   const existing = input.id ? getCampaign(input.id) : undefined;
 
@@ -1241,6 +1534,7 @@ function updateCampaignSetupInMemory(input: CampaignSetupInput) {
         remainingQuantity: prize.totalQuantity ?? null,
         probability: prize.probability,
         estimatedUnitCost: prize.estimatedUnitCost,
+        usageConditions: prize.usageConditions,
       });
     });
 
@@ -1280,6 +1574,7 @@ function updateCampaignSetupInMemory(input: CampaignSetupInput) {
       remainingQuantity: prize.totalQuantity ?? null,
       probability: prize.probability,
       estimatedUnitCost: prize.estimatedUnitCost,
+      usageConditions: prize.usageConditions,
     });
   });
 
@@ -1354,7 +1649,7 @@ export async function recordEvent(
   leadId?: string,
   metadata?: CampaignEvent["metadata"],
 ) {
-  if (isSupabaseConfigured()) {
+  if (getDataBackend("l'enregistrement d'un événement campagne") === "supabase") {
     return recordEventInSupabase(campaignId, eventType, leadId, metadata);
   }
 
@@ -1362,7 +1657,7 @@ export async function recordEvent(
 }
 
 export const getPublicCampaign = cache(async function getPublicCampaign(id: string) {
-  if (isSupabaseConfigured()) {
+  if (getDataBackend("la lecture d'une campagne publique") === "supabase") {
     return getSupabasePublicCampaign(id);
   }
 
@@ -1370,8 +1665,19 @@ export const getPublicCampaign = cache(async function getPublicCampaign(id: stri
 });
 
 export const getCampaignPerformance = cache(async function getCampaignPerformance(campaignId: string, fallbackMerchant?: Merchant) {
-  if (isSupabaseConfigured()) {
+  if (getDataBackend("la lecture des performances campagne") === "supabase") {
     return getSupabaseCampaignPerformance(campaignId, fallbackMerchant);
+  }
+
+  return getCampaignPerformanceFromMemory(campaignId);
+});
+
+export const getCampaignSetupPerformance = cache(async function getCampaignSetupPerformance(
+  campaignId: string,
+  fallbackMerchant?: Merchant,
+) {
+  if (getDataBackend("la lecture du paramétrage campagne") === "supabase") {
+    return getCachedSupabaseCampaignSetupPerformance(campaignId, fallbackMerchant);
   }
 
   return getCampaignPerformanceFromMemory(campaignId);
@@ -1381,40 +1687,178 @@ export const getMerchantDashboard = cache(async function getMerchantDashboard(
   merchantId = merchantSeed.id,
   fallbackMerchant?: Merchant,
 ) {
-  if (isSupabaseConfigured() && fallbackMerchant) {
-    return getSupabaseMerchantDashboard(fallbackMerchant);
+  if (getDataBackend("la lecture du dashboard marchand") === "supabase") {
+    return getSupabaseMerchantDashboard(
+      await resolveMerchantForSupabase(merchantId, fallbackMerchant),
+    );
   }
 
   return getMerchantDashboardFromMemory(merchantId, fallbackMerchant);
 });
 
+export const getMerchantCampaignOverview = cache(async function getMerchantCampaignOverview(
+  merchantId = merchantSeed.id,
+  fallbackMerchant?: Merchant,
+) {
+  if (getDataBackend("la lecture de la liste des campagnes") === "supabase") {
+    return getCachedSupabaseMerchantCampaignOverview(
+      await resolveMerchantForSupabase(merchantId, fallbackMerchant),
+    );
+  }
+
+  return getMerchantDashboardFromMemory(merchantId, fallbackMerchant);
+});
+
+export const getMerchantCampaignLibrary = cache(async function getMerchantCampaignLibrary(
+  merchantId = merchantSeed.id,
+  fallbackMerchant?: Merchant,
+) {
+  if (getDataBackend("la lecture de la bibliothèque de campagnes") === "supabase") {
+    return getCachedSupabaseMerchantCampaignLibrary(fallbackMerchant?.id ?? merchantId);
+  }
+
+  return getMerchantCampaignLibraryFromMemory(merchantId, fallbackMerchant);
+});
+
 export const getMerchantLeads = cache(async function getMerchantLeads(merchantId = merchantSeed.id, campaignId?: string) {
-  if (isSupabaseConfigured()) {
+  if (getDataBackend("la lecture des leads") === "supabase") {
     return getSupabaseMerchantLeads(merchantId, campaignId);
   }
 
   return getMerchantLeadsFromMemory(campaignId);
 });
 
+export const getMerchantRecentLeads = cache(async function getMerchantRecentLeads(
+  merchantId = merchantSeed.id,
+  limit = 5,
+  query = "",
+) {
+  if (getDataBackend("la lecture des leads récents") === "supabase") {
+    return getSupabaseMerchantRecentLeads(merchantId, limit, query);
+  }
+
+  const normalizedQuery = query.trim().toLowerCase();
+
+  return getMerchantLeadsFromMemory()
+    .filter((lead) =>
+      normalizedQuery
+        ? `${lead.firstName} ${lead.email} ${lead.campaignTitle}`.toLowerCase().includes(normalizedQuery)
+        : true,
+    )
+    .slice(0, limit);
+});
+
 export const getCampaignDataView = cache(async function getCampaignDataView(campaignId: string, fallbackMerchant?: Merchant) {
-  if (isSupabaseConfigured()) {
+  if (getDataBackend("la lecture des données campagne") === "supabase") {
     return getSupabaseCampaignDataView(campaignId, fallbackMerchant);
   }
 
   return getCampaignDataViewFromMemory(campaignId);
 });
 
+export const getMerchantSupportOverview = cache(async function getMerchantSupportOverview(
+  merchantId = merchantSeed.id,
+  fallbackMerchant?: Merchant,
+  options: { includeAllMerchants?: boolean } = {},
+) {
+  if (getDataBackend("la lecture de la supervision") === "supabase") {
+    return getSupabaseMerchantSupportOverview(
+      await resolveMerchantForSupabase(merchantId, fallbackMerchant),
+      options,
+    );
+  }
+
+  const leads = getMerchantLeadsFromMemory();
+  const campaigns = getMerchantDashboardFromMemory(merchantId, fallbackMerchant).campaigns;
+  const campaignTitleById = new Map(campaigns.map((item) => [item.campaign.id, item.campaign.title]));
+
+  const pendingClaims: MerchantSupportOverview["pendingClaims"] = leads
+    .filter((lead) => lead.status === "claimed" && lead.redemptionCode)
+    .slice(0, 30)
+    .map((lead) => ({
+      leadId: lead.id,
+      campaignId: lead.campaignId,
+      campaignTitle: campaignTitleById.get(lead.campaignId) ?? "Campagne",
+      firstName: lead.firstName,
+      email: lead.email,
+      prizeLabel: lead.prizeLabel,
+      redemptionCode: lead.redemptionCode ?? "",
+      status: lead.status,
+      availableAt: lead.rewardAvailableAt,
+      expiresAt: lead.rewardExpiresAt,
+    }));
+
+  return {
+    failedEmails: [],
+    webhooks: [],
+    pendingClaims,
+    businessLogs: getMemorySupportLogs()
+      .filter((entry) => options.includeAllMerchants || entry.payload?.merchantId === merchantId)
+      .slice(0, 50)
+      .map((entry) => ({
+        id: entry.id,
+        createdAt: entry.createdAt,
+        level: entry.level,
+        event: entry.event,
+        merchantId:
+          typeof entry.payload?.merchantId === "string" ? entry.payload.merchantId : undefined,
+        campaignId:
+          typeof entry.payload?.campaignId === "string" ? entry.payload.campaignId : undefined,
+        leadId: typeof entry.payload?.leadId === "string" ? entry.payload.leadId : undefined,
+        email:
+          typeof entry.payload?.email === "string"
+            ? entry.payload.email
+            : typeof entry.payload?.recipientEmail === "string"
+              ? entry.payload.recipientEmail
+              : undefined,
+        redemptionCode:
+          typeof entry.payload?.redemptionCode === "string"
+            ? entry.payload.redemptionCode
+            : undefined,
+        summary:
+          typeof entry.payload?.error === "string"
+            ? entry.payload.error
+            : typeof entry.payload?.status === "string"
+              ? entry.payload.status
+              : undefined,
+      })),
+  };
+});
+
 export async function drawForLead(input: DrawRequest, fallbackMerchant?: Merchant) {
-  if (isSupabaseConfigured()) {
-    const merchant = fallbackMerchant ?? (await getMerchantProfile());
+  if (getDataBackend("la participation à un jeu") === "supabase") {
+    const merchant =
+      fallbackMerchant ?? (await resolveCampaignMerchantForSupabase(input.campaignId));
     return drawForLeadInSupabase(input, merchant);
   }
 
   return drawForLeadFromMemory(input);
 }
 
+export async function createDrawSession(
+  input: CreateDrawSessionRequest,
+  fallbackMerchant?: Merchant,
+) {
+  if (getDataBackend("la préparation d'une partie") === "supabase") {
+    return createDrawSessionInSupabase(input, fallbackMerchant);
+  }
+
+  return createDrawSessionFromMemory(input);
+}
+
+export async function finalizeDrawSession(
+  input: FinalizeDrawSessionRequest,
+  fallbackMerchant?: Merchant,
+) {
+  if (getDataBackend("la finalisation d'une partie") === "supabase") {
+    return finalizeDrawSessionInSupabase(input, fallbackMerchant);
+  }
+
+  return finalizeDrawSessionFromMemory(input);
+}
+
 export async function markActionConfirmed(leadId: string) {
-  if (isSupabaseConfigured()) {
+  if (getDataBackend("la confirmation d'une action marketing") === "supabase") {
     return markActionConfirmedInSupabase(leadId);
   }
 
@@ -1422,7 +1866,7 @@ export async function markActionConfirmed(leadId: string) {
 }
 
 export async function redeemLeadPrize(leadId: string) {
-  if (isSupabaseConfigured()) {
+  if (getDataBackend("le retrait d'un lot") === "supabase") {
     return redeemLeadPrizeInSupabase(leadId);
   }
 
@@ -1430,34 +1874,68 @@ export async function redeemLeadPrize(leadId: string) {
 }
 
 export async function resetLeadPrize(leadId: string) {
-  if (isSupabaseConfigured()) {
+  if (getDataBackend("la réinitialisation d'un lot") === "supabase") {
     return resetLeadPrizeInSupabase(leadId);
   }
 
   return resetLeadPrizeInMemory(leadId);
 }
 
+export async function updatePrizeStock(prizeId: string, remainingQuantity: number | null) {
+  if (getDataBackend("la mise à jour du stock d'un lot") === "supabase") {
+    return updatePrizeStockInSupabase(prizeId, remainingQuantity);
+  }
+
+  return updatePrizeStockInMemory(prizeId, remainingQuantity);
+}
+
+export async function resetPrizeStock(prizeId: string) {
+  if (getDataBackend("la remise à zéro du stock d'un lot") === "supabase") {
+    return resetPrizeStockInSupabase(prizeId);
+  }
+
+  return resetPrizeStockInMemory(prizeId);
+}
+
 export async function updateCampaignSetup(input: CampaignSetupInput) {
-  if (isSupabaseConfigured()) {
+  if (getDataBackend("la mise à jour d'une campagne") === "supabase") {
     const campaignId = await updateCampaignSetupInSupabase(input);
-    return getCampaignPerformance(campaignId, await getMerchantProfile(input.merchantId));
+    invalidateCampaignNavigationCache(input.merchantId, campaignId);
+    return getCampaignPerformance(
+      campaignId,
+      await resolveMerchantForSupabase(input.merchantId),
+    );
   }
 
   return updateCampaignSetupInMemory(input);
 }
 
-export async function toggleCampaign(id: string, isActive: boolean) {
-  if (isSupabaseConfigured()) {
+export async function toggleCampaign(id: string, isActive: boolean, merchantId?: string) {
+  if (getDataBackend("l'activation d'une campagne") === "supabase") {
+    if (merchantId) {
+      await toggleCampaignForMerchantInSupabase(id, isActive, merchantId);
+      invalidateCampaignNavigationCache(merchantId, id);
+      return null;
+    }
+
     await toggleCampaignInSupabase(id, isActive);
+    invalidateCampaignNavigationCache(undefined, id);
     return null;
   }
 
   return toggleCampaignInMemory(id, isActive);
 }
 
-export async function deleteCampaign(id: string) {
-  if (isSupabaseConfigured()) {
+export async function deleteCampaign(id: string, merchantId?: string) {
+  if (getDataBackend("la suppression d'une campagne") === "supabase") {
+    if (merchantId) {
+      await deleteCampaignForMerchantInSupabase(id, merchantId);
+      invalidateCampaignNavigationCache(merchantId, id);
+      return null;
+    }
+
     await deleteCampaignInSupabase(id);
+    invalidateCampaignNavigationCache(undefined, id);
     return null;
   }
 
@@ -1465,8 +1943,9 @@ export async function deleteCampaign(id: string) {
 }
 
 export async function duplicateCampaign(id: string, fallbackMerchant: Merchant) {
-  if (isSupabaseConfigured()) {
+  if (getDataBackend("la duplication d'une campagne") === "supabase") {
     const campaignId = await duplicateCampaignInSupabase(id, fallbackMerchant);
+    invalidateCampaignNavigationCache(fallbackMerchant.id, campaignId);
     return getCampaignPerformance(campaignId, fallbackMerchant);
   }
 

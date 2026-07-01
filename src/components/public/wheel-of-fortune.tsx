@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 type WheelSegment = {
   id: string;
@@ -24,13 +24,23 @@ type WheelOfFortuneProps = {
   segments: WheelSegment[];
   winningSegmentId: string;
   canSpin?: boolean;
+  buttonEnabled?: boolean;
+  buttonLabel?: string;
+  onButtonClick?: () => void;
   onSpinEnd?: () => void;
+  buttonStyle?: {
+    backgroundColor?: string;
+    textColor?: string;
+    borderColor?: string;
+  };
+  framing?: "default" | "public" | "editor";
 };
 
-const SVG_SIZE = 420;
+const SVG_SIZE = 640;
 const CENTER = SVG_SIZE / 2;
-const OUTER_RADIUS = 182;
-const INNER_RADIUS = 34;
+const OUTER_RADIUS = 304;
+const INNER_RADIUS = 76;
+const MAX_LABEL_LINES = 3;
 
 function polarToCartesian(radius: number, angleInDegrees: number) {
   const radians = ((angleInDegrees - 90) * Math.PI) / 180;
@@ -60,13 +70,79 @@ function describeSlice(startAngle: number, endAngle: number) {
   ].join(" ");
 }
 
+function readableTextColor(fill: string, fallback: string) {
+  const hex = fill.replace("#", "");
+
+  if (hex.length !== 6) {
+    return fallback;
+  }
+
+  const red = Number.parseInt(hex.slice(0, 2), 16);
+  const green = Number.parseInt(hex.slice(2, 4), 16);
+  const blue = Number.parseInt(hex.slice(4, 6), 16);
+  const luminance = (0.299 * red + 0.587 * green + 0.114 * blue) / 255;
+
+  return luminance > 0.68 ? "#111827" : "#ffffff";
+}
+
+function wrapSegmentLabel(label: string) {
+  const words = label.trim().split(/\s+/).filter(Boolean);
+  const lines: string[] = [];
+
+  for (const word of words) {
+    const current = lines[lines.length - 1] ?? "";
+    const candidate = current ? `${current} ${word}` : word;
+
+    if (!current) {
+      lines.push(word);
+    } else if (candidate.length <= 10) {
+      lines[lines.length - 1] = candidate;
+    } else if (lines.length < MAX_LABEL_LINES) {
+      lines.push(word);
+    } else {
+      lines[lines.length - 1] = `${current.slice(0, Math.max(0, current.length - 1))}…`;
+    }
+  }
+
+  return lines.length ? lines : [label];
+}
+
+function segmentTextStyles(labelLines: string[]) {
+  if (labelLines.length >= 3) {
+    return {
+      fontSize: 17,
+      lineHeight: 16,
+      initialOffset: -16,
+    };
+  }
+
+  if (labelLines.length === 2) {
+    return {
+      fontSize: 20,
+      lineHeight: 18,
+      initialOffset: -9,
+    };
+  }
+
+  return {
+    fontSize: 23,
+    lineHeight: 0,
+    initialOffset: 0,
+  };
+}
+
 export function WheelOfFortune({
   accent,
   wheelStyle,
   segments,
   winningSegmentId,
   canSpin = false,
+  buttonEnabled = false,
+  buttonLabel = "JOUER",
+  onButtonClick,
   onSpinEnd,
+  buttonStyle,
+  framing = "default",
 }: WheelOfFortuneProps) {
   const [rotation, setRotation] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
@@ -77,23 +153,15 @@ export function WheelOfFortune({
     0,
     segments.findIndex((segment) => segment.id === winningSegmentId),
   );
-
   const colors = {
     rimColor: wheelStyle?.rimColor ?? accent.signal,
     winColor: wheelStyle?.winColor ?? accent.signal,
     alternateWinColor: wheelStyle?.alternateWinColor ?? accent.paper,
-    loseColor: wheelStyle?.loseColor ?? "#1b2842",
-    alternateLoseColor: wheelStyle?.alternateLoseColor ?? "#8795db",
+    loseColor: wheelStyle?.loseColor ?? "#edf2f7",
+    alternateLoseColor: wheelStyle?.alternateLoseColor ?? "#e7edf3",
   };
-
-  const lights = useMemo(
-    () =>
-      Array.from({ length: 22 }, (_, index) => {
-        const angle = (360 / 22) * index;
-        return polarToCartesian(198, angle);
-      }),
-    [],
-  );
+  const wheelTop =
+    framing === "public" ? undefined : framing === "editor" ? "83%" : "62%";
 
   useEffect(() => {
     if (!isSpinning || !onSpinEnd) {
@@ -104,18 +172,23 @@ export function WheelOfFortune({
       setIsSpinning(false);
       setHasSpun(true);
       onSpinEnd();
-    }, 4600);
+    }, 4400);
 
     return () => window.clearTimeout(timeout);
   }, [isSpinning, onSpinEnd]);
 
-  function spinWheel() {
-    if (!canSpin || isSpinning || hasSpun) {
+  function handleCentralButton() {
+    if (isSpinning || hasSpun || !buttonEnabled) {
+      return;
+    }
+
+    if (!canSpin) {
+      onButtonClick?.();
       return;
     }
 
     const centerOffset = targetIndex * segmentAngle + segmentAngle / 2;
-    const randomJitter = (Math.random() - 0.5) * Math.min(8, segmentAngle * 0.18);
+    const randomJitter = (Math.random() - 0.5) * Math.min(7, segmentAngle * 0.14);
     const finalRotation = 360 * 6 + (360 - centerOffset) + randomJitter;
 
     setRotation(finalRotation);
@@ -123,113 +196,146 @@ export function WheelOfFortune({
   }
 
   return (
-    <div className="relative mx-auto w-full max-w-[360px]">
-      <div className="absolute inset-x-6 top-0 h-16 rounded-full bg-white/16 blur-2xl" />
+    <div className="relative h-full w-full overflow-hidden">
       <div
-        className="relative mx-auto aspect-square w-full rounded-full border-[14px] shadow-[0_28px_90px_rgba(0,0,0,0.35)]"
-        style={{
-          borderColor: colors.rimColor,
-          backgroundColor: "#10131a",
-        }}
+        className={`absolute left-1/2 aspect-square -translate-x-1/2 -translate-y-1/2 ${
+          framing === "public"
+            ? "top-[78%] w-[200vw] max-w-none sm:top-[74%] sm:w-[168vw] md:top-[70%] md:w-[146vw] lg:top-[72%] lg:w-[82vw] xl:top-[73%] xl:w-[64vw] 2xl:top-[74%] 2xl:w-[54vw]"
+            : framing === "editor"
+              ? "w-[186%] max-w-none"
+            : "w-full"
+        }`}
+        style={{ top: wheelTop }}
       >
-        <svg
-          viewBox={`0 0 ${SVG_SIZE} ${SVG_SIZE}`}
-          className="absolute inset-0 h-full w-full rounded-full"
-        >
-          {lights.map((light, index) => (
-            <circle
-              key={index}
-              cx={light.x}
-              cy={light.y}
-              r="7"
-              fill={index % 2 === 0 ? "#fff3c9" : "#ffffff"}
-              opacity={0.95}
-            />
-          ))}
-        </svg>
-
         <div
-          className="absolute inset-[18px] rounded-full transition-transform duration-[4200ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
+          className="absolute inset-0 rounded-full transition-transform duration-[4200ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
           style={{ transform: `rotate(${rotation}deg)` }}
         >
           <svg
             viewBox={`0 0 ${SVG_SIZE} ${SVG_SIZE}`}
-            className="h-full w-full rounded-full"
+            className="h-full w-full overflow-visible"
+            aria-hidden="true"
           >
+            <defs>
+              <radialGradient id="okado-wheel-gloss" cx="50%" cy="28%" r="68%">
+                <stop offset="0%" stopColor="#ffffff" stopOpacity="0.82" />
+                <stop offset="52%" stopColor="#ffffff" stopOpacity="0.12" />
+                <stop offset="100%" stopColor="#000000" stopOpacity="0.06" />
+              </radialGradient>
+              <radialGradient id="okado-wheel-depth" cx="50%" cy="38%" r="70%">
+                <stop offset="0%" stopColor="#ffffff" stopOpacity="0" />
+                <stop offset="70%" stopColor="#0f172a" stopOpacity="0.02" />
+                <stop offset="100%" stopColor="#020617" stopOpacity="0.14" />
+              </radialGradient>
+            </defs>
+            <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 12} fill="rgba(255,255,255,0.9)" />
+            <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 2} fill="rgba(255,255,255,0.55)" />
             {segments.map((segment, index) => {
-              const startAngle = index * segmentAngle;
-              const endAngle = startAngle + segmentAngle;
-              const midAngle = startAngle + segmentAngle / 2;
-              const textPoint = polarToCartesian(118, midAngle);
-              const isFlipped = midAngle > 90 && midAngle < 270;
-              const textRotation = isFlipped ? midAngle + 180 : midAngle;
+              const startAngle = index * segmentAngle + 1.2;
+              const endAngle = startAngle + segmentAngle - 2.4;
+              const midAngle = startAngle + (endAngle - startAngle) / 2;
+              const textPoint = polarToCartesian(208, midAngle);
+              const labelLines = wrapSegmentLabel(segment.label);
+              const textStyles = segmentTextStyles(labelLines);
+              const fillColor =
+                segment.tone === "win"
+                  ? index % 2 === 0
+                    ? colors.winColor
+                    : colors.alternateWinColor
+                  : index % 2 === 0
+                    ? colors.loseColor
+                    : colors.alternateLoseColor;
+              const textColor = readableTextColor(fillColor, segment.tone === "win" ? accent.ink : "#111827");
 
               return (
                 <g key={segment.id}>
                   <path
                     d={describeSlice(startAngle, endAngle)}
-                    fill={
-                      segment.tone === "win"
-                        ? index % 2 === 0
-                          ? colors.winColor
-                          : colors.alternateWinColor
-                        : index % 2 === 0
-                          ? colors.loseColor
-                          : colors.alternateLoseColor
-                    }
-                    stroke="#10131a"
-                    strokeWidth="4"
+                    fill={fillColor}
+                    stroke="rgba(255,255,255,0.85)"
+                    strokeWidth="5"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d={describeSlice(startAngle, endAngle)}
+                    fill="url(#okado-wheel-gloss)"
+                    opacity="0.42"
                   />
                   <text
                     x={textPoint.x}
                     y={textPoint.y}
-                    fill={segment.tone === "win" ? accent.ink : "white"}
-                    fontSize="18"
-                    fontWeight="800"
+                    fill={textColor}
+                    fontSize={String(textStyles.fontSize)}
+                    fontWeight="850"
                     textAnchor="middle"
                     dominantBaseline="middle"
-                    transform={`rotate(${textRotation} ${textPoint.x} ${textPoint.y})`}
+                    transform={`rotate(${midAngle + 90} ${textPoint.x} ${textPoint.y})`}
                   >
-                    {segment.label}
+                    {labelLines.map((line, lineIndex) => (
+                      <tspan
+                        key={`${segment.id}-${line}`}
+                        x={textPoint.x}
+                        dy={
+                          lineIndex === 0
+                            ? `${textStyles.initialOffset}px`
+                            : `${textStyles.lineHeight}px`
+                        }
+                      >
+                        {line}
+                      </tspan>
+                    ))}
                   </text>
                 </g>
               );
             })}
-            <circle cx={CENTER} cy={CENTER} r="36" fill="#ffffff" opacity="0.98" />
-            <circle cx={CENTER} cy={CENTER} r="16" fill={colors.rimColor} />
+            <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 4} fill="url(#okado-wheel-depth)" />
           </svg>
         </div>
 
-        <div className="absolute left-1/2 top-1.5 -translate-x-1/2">
+        <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center">
           <div
-            className="h-0 w-0 border-x-[18px] border-b-[34px] border-x-transparent"
-            style={{ borderBottomColor: colors.rimColor }}
+            className="absolute"
+            style={{
+              top: "29.5%",
+              left: "50%",
+              width: "10.3%",
+              height: "18.9%",
+              transform: "translateX(-50%)",
+              clipPath: "polygon(50% 0, 88% 24%, 63% 100%, 37% 100%, 12% 24%)",
+              background: "linear-gradient(180deg, #ffffff 0%, #f8fafc 62%, #ffffff 100%)",
+              filter: "drop-shadow(0 12px 18px rgba(15,23,42,0.2))",
+            }}
           />
           <div
-            className="mx-auto -mt-1.5 h-5 w-5 rounded-full border-4 bg-white"
-            style={{ borderColor: colors.rimColor }}
+            className="absolute rounded-b-[22px] bg-white"
+            style={{
+              top: "44.9%",
+              left: "50%",
+              width: "7.7%",
+              height: "4.3%",
+              transform: "translateX(-50%)",
+            }}
           />
         </div>
-      </div>
 
-      {canSpin ? (
         <button
           type="button"
-          onClick={spinWheel}
-          disabled={isSpinning || hasSpun}
-          className="mt-6 w-full rounded-[22px] border px-5 py-4 text-sm font-semibold text-white transition disabled:opacity-60"
+          onClick={handleCentralButton}
+          disabled={!buttonEnabled || isSpinning || hasSpun}
+          className="absolute left-1/2 top-1/2 z-40 flex aspect-square w-[15.4%] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-[4px] text-[19px] font-black uppercase shadow-[0_16px_30px_rgba(15,23,42,0.16)] transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-75"
           style={{
-            backgroundColor: "#111827",
-            borderColor: "#111827",
+            background:
+              buttonEnabled && !hasSpun
+                ? `linear-gradient(180deg, ${buttonStyle?.backgroundColor ?? accent.signal}, ${buttonStyle?.backgroundColor ?? colors.rimColor})`
+                : "linear-gradient(180deg, #aeb8c7, #7f8a9d)",
+            color: buttonStyle?.textColor ?? "#ffffff",
+            borderColor: buttonStyle?.borderColor ?? "#ffffff",
+            fontSize: "clamp(1rem, 2.5vw, 1.75rem)",
           }}
         >
-          {isSpinning
-            ? "La roue tourne..."
-            : hasSpun
-              ? "Résultat révélé"
-              : "Faire tourner la roue"}
+          {isSpinning ? "..." : buttonLabel}
         </button>
-      ) : null}
+      </div>
     </div>
   );
 }

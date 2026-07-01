@@ -1,4 +1,10 @@
-import { CampaignPosterSettings, CampaignWheelSettings, Prize, TextFont } from "@/lib/types";
+import {
+  CampaignPosterSettings,
+  CampaignWheelSettings,
+  PosterTemplateId,
+  Prize,
+  TextFont,
+} from "@/lib/types";
 
 export type PosterWheelSegment = {
   color: string;
@@ -43,7 +49,27 @@ function formatSegmentLabel(label: string) {
   }
 
   const upper = compact.toUpperCase();
-  return upper.length > 22 ? `${upper.slice(0, 21)}...` : upper;
+  return upper.length > 18 ? `${upper.slice(0, 17)}...` : upper;
+}
+
+export function splitPosterSegmentLines(label: string) {
+  const words = formatSegmentLabel(label).split(/\s+/).filter(Boolean);
+  const verticalWords = words.slice(0, 3).map((word) => {
+    if (word.length <= 9) {
+      return word;
+    }
+
+    return `${word.slice(0, 8)}…`;
+  });
+
+  if (words.length > 3 && verticalWords.length) {
+    const lastIndex = verticalWords.length - 1;
+    verticalWords[lastIndex] = verticalWords[lastIndex].endsWith("…")
+      ? verticalWords[lastIndex]
+      : `${verticalWords[lastIndex].slice(0, Math.max(0, verticalWords[lastIndex].length - 1))}…`;
+  }
+
+  return verticalWords.length ? verticalWords : ["CADEAU"];
 }
 
 export function getPosterReadableTextColor(backgroundColor: string) {
@@ -62,9 +88,14 @@ export function getPosterReadableTextColor(backgroundColor: string) {
 }
 
 export function createPosterSettingsDefaults(input: {
+  templateId?: PosterTemplateId;
+  logoMode?: "none" | "image" | "text";
+  logoText?: string;
   logoUrl?: string;
   logoSizePercent?: number;
   logoBottomMarginPx?: number;
+  backgroundMode?: "color" | "image";
+  backgroundColor?: string;
   backgroundImageUrl?: string;
   headline?: string;
   headlineTextColor?: string;
@@ -74,9 +105,14 @@ export function createPosterSettingsDefaults(input: {
   footerBackgroundColor?: string;
 }): CampaignPosterSettings {
   return {
+    templateId: input.templateId ?? "classic-wheel",
+    logoMode: input.logoMode ?? (input.logoUrl ? "image" : input.logoText ? "text" : "none"),
+    logoText: input.logoText ?? "",
     logoUrl: input.logoUrl,
     logoSizePercent: input.logoSizePercent ?? 100,
     logoBottomMarginPx: input.logoBottomMarginPx ?? 28,
+    backgroundMode: input.backgroundMode ?? (input.backgroundImageUrl ? "image" : "color"),
+    backgroundColor: input.backgroundColor ?? "#ffffff",
     backgroundImageUrl: input.backgroundImageUrl ?? "",
     headline: input.headline ?? "",
     headlineTextColor: input.headlineTextColor ?? "#ffffff",
@@ -85,7 +121,7 @@ export function createPosterSettingsDefaults(input: {
     wheel: {
       ...input.wheel,
     },
-    footerBackgroundColor: input.footerBackgroundColor ?? "#8d9ae8",
+    footerBackgroundColor: input.footerBackgroundColor ?? "transparent",
   };
 }
 
@@ -96,7 +132,12 @@ export function normalizePosterSettings(
   return {
     ...defaults,
     ...poster,
+    templateId: poster?.templateId ?? defaults.templateId ?? "classic-wheel",
     logoBottomMarginPx: clamp(poster?.logoBottomMarginPx ?? defaults.logoBottomMarginPx, 0, 120),
+    logoMode: poster?.logoMode ?? defaults.logoMode,
+    logoText: poster?.logoText ?? defaults.logoText,
+    backgroundMode: poster?.backgroundMode ?? defaults.backgroundMode,
+    backgroundColor: poster?.backgroundColor ?? defaults.backgroundColor,
     wheel: {
       ...defaults.wheel,
       ...poster?.wheel,
@@ -108,9 +149,7 @@ export function buildPosterWheelSegments(
   prizes: Array<Pick<Prize, "label">>,
   wheel: CampaignWheelSettings,
 ): PosterWheelSegment[] {
-  const winningLabels = prizes
-    .map((prize) => formatSegmentLabel(prize.label))
-    .filter(Boolean);
+  const winningLabels = prizes.map((prize) => formatSegmentLabel(prize.label)).filter(Boolean);
 
   const resolvedWinningLabels = [
     winningLabels[0] ?? "CADEAU",
@@ -121,8 +160,8 @@ export function buildPosterWheelSegments(
   const segments = [
     { color: wheel.winColor, label: resolvedWinningLabels[0] },
     { color: wheel.loseColor, label: "PERDU !" },
-    { color: wheel.alternateWinColor, label: resolvedWinningLabels[1] },
-    { color: wheel.alternateLoseColor, label: "PERDU !" },
+    { color: wheel.winColor, label: resolvedWinningLabels[1] },
+    { color: wheel.loseColor, label: "PERDU !" },
     { color: wheel.winColor, label: resolvedWinningLabels[2] },
     { color: wheel.loseColor, label: "PERDU !" },
   ];
