@@ -19,7 +19,8 @@ type EmailEditorProps = {
 const sampleData = {
   firstName: "Léa",
   prizeLabel: "Boisson offerte",
-  redemptionCode: "SORA-AB12CD34",
+  playedDate: "22 juin 2026",
+  redemptionCode: "OK-AB12CD34",
   rewardAvailability: "Disponible dès maintenant au comptoir.",
   rewardExpiry: "Valable jusqu'au 22 juin 2026 à 18:00.",
   purchaseCondition: "",
@@ -31,6 +32,7 @@ function replaceVariables(template: string, campaign: Campaign, merchant: Mercha
     .replaceAll("{{merchantName}}", merchant.companyName)
     .replaceAll("{{campaignTitle}}", campaign.title)
     .replaceAll("{{prizeLabel}}", sampleData.prizeLabel)
+    .replaceAll("{{playedDate}}", sampleData.playedDate)
     .replaceAll("{{redemptionCode}}", sampleData.redemptionCode)
     .replaceAll("{{rewardAvailability}}", sampleData.rewardAvailability)
     .replaceAll("{{rewardExpiry}}", sampleData.rewardExpiry)

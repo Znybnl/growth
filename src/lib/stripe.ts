@@ -23,11 +23,24 @@ export function getStripeMonthlyPriceId() {
 }
 
 export function getStripeWebhookSecret() {
-  const secret = process.env.STRIPE_WEBHOOK_SECRET;
+  const secret = getStripeWebhookSecrets()[0];
 
   if (!secret) {
     throw new Error("STRIPE_WEBHOOK_SECRET manquant.");
   }
 
   return secret;
+}
+
+export function getStripeWebhookSecrets() {
+  const configuredSecrets = [
+    process.env.STRIPE_WEBHOOK_SECRET,
+    process.env.STRIPE_WEBHOOK_SECRET_TEST,
+    process.env.STRIPE_WEBHOOK_SECRET_LOCAL,
+  ]
+    .flatMap((value) => value?.split(",") ?? [])
+    .map((value) => value.trim())
+    .filter(Boolean);
+
+  return Array.from(new Set(configuredSecrets));
 }

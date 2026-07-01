@@ -52,6 +52,23 @@ function buildAvailabilityMessage(input: SendRewardEmailInput) {
   return "Disponible dès maintenant au comptoir.";
 }
 
+function formatPlayedDate(value: string) {
+  return new Intl.DateTimeFormat("fr-FR", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  }).format(new Date(value));
+}
+
+function formatSenderAddress(email: string, senderName: string) {
+  const safeSenderName = senderName
+    .trim()
+    .replace(/[\r\n<>]/g, "")
+    .replaceAll('"', "'");
+
+  return safeSenderName ? `${safeSenderName} <${email}>` : email;
+}
+
 export async function sendRewardEmail(input: SendRewardEmailInput) {
   allowLocalTlsBypass();
 
@@ -67,6 +84,10 @@ export async function sendRewardEmail(input: SendRewardEmailInput) {
 
   const redeemUrl = `${input.origin}/redeem/${encodeURIComponent(input.redemptionCode)}`;
   const qrUrl = `${input.origin}/api/public/redeem/${encodeURIComponent(input.redemptionCode)}/qr`;
+  const senderAddress = formatSenderAddress(
+    from,
+    input.emailSettings.senderName || input.merchantName,
+  );
   const availabilityMessage = buildAvailabilityMessage(input);
   const expiryMessage = input.rewardExpiresAt
     ? `Valable jusqu'au ${formatDateTime(input.rewardExpiresAt)}.`
@@ -80,6 +101,7 @@ export async function sendRewardEmail(input: SendRewardEmailInput) {
     merchantName: input.merchantName,
     campaignTitle: input.campaignTitle,
     prizeLabel: input.prizeLabel,
+    playedDate: formatPlayedDate(new Date().toISOString()),
     redemptionCode: input.redemptionCode,
     redeemUrl,
     qrUrl,
@@ -93,7 +115,7 @@ export async function sendRewardEmail(input: SendRewardEmailInput) {
     campaignId: input.campaignId,
     leadId: input.leadId,
     recipientEmail: input.leadEmail,
-    senderEmail: from,
+    senderEmail: senderAddress,
     replyToEmail: input.emailSettings.replyTo,
     subject,
     metadata: {
@@ -105,7 +127,7 @@ export async function sendRewardEmail(input: SendRewardEmailInput) {
 
   try {
     const result = await resend.emails.send({
-      from,
+      from: senderAddress,
       to: input.leadEmail,
       subject,
       replyTo: input.emailSettings.replyTo || undefined,

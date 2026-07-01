@@ -427,7 +427,7 @@ const leadSeed: Lead[] = [
     status: "redeemed",
     createdAt: "2026-06-08T08:32:00.000Z",
     actionConfirmed: true,
-    redemptionCode: "SORA-4012",
+    redemptionCode: "OK-4012",
     rewardAvailableAt: "2026-06-08T08:32:00.000Z",
     rewardExpiresAt: "2026-06-08T08:50:00.000Z",
   },
@@ -453,7 +453,7 @@ const leadSeed: Lead[] = [
     status: "claimed",
     createdAt: "2026-06-10T12:05:00.000Z",
     actionConfirmed: true,
-    redemptionCode: "SORA-5099",
+    redemptionCode: "OK-5099",
     rewardAvailableAt: "2026-06-11T12:05:00.000Z",
     rewardExpiresAt: "2026-06-25T12:05:00.000Z",
   },
@@ -918,7 +918,7 @@ function buildLeadFromSession(
 
   lead.prizeId = session.prizeId;
   lead.status = "claimed";
-  lead.redemptionCode = `SORA-${Math.floor(1000 + Math.random() * 9000)}`;
+  lead.redemptionCode = `OK-${Math.random().toString(36).slice(2, 10).toUpperCase()}`;
   lead.rewardAvailableAt = availableAt.toISOString();
   lead.rewardExpiresAt = expiresAt.toISOString();
 

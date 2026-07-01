@@ -13,7 +13,7 @@ import {
 } from "@/lib/merchant-account-repository";
 import { captureProductEvent } from "@/lib/product-analytics";
 import { logSupportEvent } from "@/lib/support-log";
-import { getStripeClient, getStripeWebhookSecret } from "@/lib/stripe";
+import { getStripeClient, getStripeWebhookSecrets } from "@/lib/stripe";
 
 function getCustomerId(
   customer: string | Stripe.Customer | Stripe.DeletedCustomer | null,
@@ -103,6 +103,25 @@ function getInvoiceIdFromCharge(charge: Stripe.Charge) {
     : chargeWithInvoice.invoice?.id;
 }
 
+function constructStripeEvent(stripe: Stripe, payload: string, signature: string) {
+  const secrets = getStripeWebhookSecrets();
+  let lastError: unknown;
+
+  if (!secrets.length) {
+    throw new Error("STRIPE_WEBHOOK_SECRET manquant.");
+  }
+
+  for (const secret of secrets) {
+    try {
+      return stripe.webhooks.constructEvent(payload, signature, secret);
+    } catch (error) {
+      lastError = error;
+    }
+  }
+
+  throw lastError instanceof Error ? lastError : new Error("Signature Stripe invalide.");
+}
+
 async function getInvoiceIdFromRefund(refund: Stripe.Refund) {
   const chargeId = typeof refund.charge === "string" ? refund.charge : refund.charge?.id;
 
@@ -126,7 +145,7 @@ export async function POST(request: Request) {
 
   try {
     const stripe = getStripeClient();
-    const event = stripe.webhooks.constructEvent(payload, signature, getStripeWebhookSecret());
+    const event = constructStripeEvent(stripe, payload, signature);
     let merchantId: string | undefined;
 
     switch (event.type) {

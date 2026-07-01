@@ -5,6 +5,7 @@ type RewardEmailVariables = {
   merchantName: string;
   campaignTitle: string;
   prizeLabel: string;
+  playedDate: string;
   redemptionCode: string;
   redeemUrl: string;
   qrUrl: string;
@@ -46,6 +47,49 @@ function hasUsageConditionsPlaceholder(settings: CampaignEmailSettings) {
   ].some((value) => value.includes("{{usageConditions}}"));
 }
 
+function upgradeLegacyDefaultSettings(
+  input: Partial<CampaignEmailSettings> | undefined,
+  defaults: CampaignEmailSettings,
+) {
+  if (!input) {
+    return undefined;
+  }
+
+  const upgraded = { ...input };
+
+  if (
+    upgraded.subject === "{{merchantName}} · votre lot est prêt" ||
+    upgraded.subject === "{{merchantName}} Â· votre lot est prÃªt"
+  ) {
+    upgraded.subject = defaults.subject;
+  }
+
+  if (
+    upgraded.headline === "Votre lot est prêt, {{firstName}}" ||
+    upgraded.headline === "Votre lot est prÃªt, {{firstName}}"
+  ) {
+    upgraded.headline = defaults.headline;
+  }
+
+  if (
+    upgraded.body?.includes("Vous avez gagné {{prizeLabel}} dans la campagne {{campaignTitle}}") ||
+    upgraded.body?.includes("Vous avez gagnÃ© {{prizeLabel}} dans la campagne {{campaignTitle}}")
+  ) {
+    upgraded.body = defaults.body;
+  }
+
+  if (
+    upgraded.footerNote ===
+      "Présentez ce QR code au comptoir. Il ne pourra être consommé qu'une seule fois." ||
+    upgraded.footerNote ===
+      "PrÃ©sentez ce QR code au comptoir. Il ne pourra Ãªtre consommÃ© qu'une seule fois."
+  ) {
+    upgraded.footerNote = defaults.footerNote;
+  }
+
+  return upgraded;
+}
+
 export function renderEmailTemplate(template: string, variables: RewardEmailVariables) {
   return replaceVariables(template, variables);
 }
@@ -54,20 +98,19 @@ export function createCampaignEmailDefaults(merchant: Merchant): CampaignEmailSe
   return {
     senderName: merchant.companyName,
     replyTo: "",
-    subject: "{{merchantName}} · votre lot est prêt",
-    preheader: "Conservez ce QR code pour retirer votre cadeau au restaurant.",
-    headline: "Votre lot est prêt, {{firstName}}",
+    subject: "{{merchantName}} · récupérez votre lot",
+    preheader: "Conservez ce QR code pour récupérer votre cadeau.",
+    headline: "Votre lot vous attend, {{firstName}}",
     body: [
-      "Vous avez gagné {{prizeLabel}} dans la campagne {{campaignTitle}}.",
-      "Code de retrait : {{redemptionCode}}.",
+      "Vous avez gagné {{prizeLabel}} chez {{merchantName}} le {{playedDate}}.",
+      "Ce coupon sera valable lors de votre prochaine visite. Rendez-vous sur place demain et montrez le QR code ci-dessous au personnel de l'établissement pour récupérer votre cadeau.",
       "{{rewardAvailability}}",
       "{{rewardExpiry}}",
       "{{purchaseCondition}}",
       "{{usageConditions}}",
     ].join("\n\n"),
     buttonLabel: "Ouvrir mon QR code",
-    footerNote:
-      "Présentez ce QR code au comptoir. Il ne pourra être consommé qu'une seule fois.",
+    footerNote: "Le QR code ne pourra être utilisé qu'une seule fois.",
     accentColor: "#111827",
   };
 }
@@ -76,16 +119,18 @@ export function normalizeCampaignEmailSettings(
   input: Partial<CampaignEmailSettings> | undefined,
   defaults: CampaignEmailSettings,
 ): CampaignEmailSettings {
+  const upgradedInput = upgradeLegacyDefaultSettings(input, defaults);
+
   return {
-    senderName: input?.senderName?.trim() || defaults.senderName,
-    replyTo: input?.replyTo?.trim() || defaults.replyTo,
-    subject: input?.subject?.trim() || defaults.subject,
-    preheader: input?.preheader?.trim() || defaults.preheader,
-    headline: input?.headline?.trim() || defaults.headline,
-    body: input?.body?.trim() || defaults.body,
-    buttonLabel: input?.buttonLabel?.trim() || defaults.buttonLabel,
-    footerNote: input?.footerNote?.trim() || defaults.footerNote,
-    accentColor: input?.accentColor || defaults.accentColor,
+    senderName: upgradedInput?.senderName?.trim() || defaults.senderName,
+    replyTo: upgradedInput?.replyTo?.trim() || defaults.replyTo,
+    subject: upgradedInput?.subject?.trim() || defaults.subject,
+    preheader: upgradedInput?.preheader?.trim() || defaults.preheader,
+    headline: upgradedInput?.headline?.trim() || defaults.headline,
+    body: upgradedInput?.body?.trim() || defaults.body,
+    buttonLabel: upgradedInput?.buttonLabel?.trim() || defaults.buttonLabel,
+    footerNote: upgradedInput?.footerNote?.trim() || defaults.footerNote,
+    accentColor: upgradedInput?.accentColor || defaults.accentColor,
   };
 }
 
@@ -103,8 +148,8 @@ export function renderRewardEmailText(
     shouldAppendUsageConditions ? `Conditions d'utilisation : ${variables.usageConditions}` : "",
     "",
     settings.buttonLabel
-      ? `${renderEmailTemplate(settings.buttonLabel, variables)} : ${variables.redeemUrl}`
-      : variables.redeemUrl,
+      ? `${renderEmailTemplate(settings.buttonLabel, variables)} : ${variables.qrUrl}`
+      : variables.qrUrl,
     "",
     renderEmailTemplate(settings.footerNote, variables),
     variables.qrUrl ? `QR code : ${variables.qrUrl}` : "",
@@ -156,7 +201,7 @@ export function renderRewardEmailHtml(
         <div style="margin:24px 0;">
           <img src="${variables.qrUrl}" alt="QR code de retrait" width="180" height="180" style="display:block;width:180px;height:180px;border-radius:20px;border:1px solid #dbe4f0;background:#ffffff;" />
         </div>
-        <a href="${variables.redeemUrl}" style="display:inline-block;padding:14px 20px;border-radius:16px;background:${accentColor};color:#ffffff;text-decoration:none;font-weight:700;">${buttonLabel}</a>
+        <a href="${variables.qrUrl}" style="display:inline-block;padding:14px 20px;border-radius:16px;background:${accentColor};color:#ffffff;text-decoration:none;font-weight:700;">${buttonLabel}</a>
         ${footerBlocks
           .map(
             (block) =>
