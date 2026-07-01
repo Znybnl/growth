@@ -1,9 +1,25 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { GoogleAuthButton } from "@/components/auth/google-auth-button";
+
+function readReferralCodeFromBrowser() {
+  if (typeof window === "undefined") {
+    return "";
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const ref = params.get("ref")?.trim();
+  const cookieRef = document.cookie
+    .split(";")
+    .map((item) => item.trim())
+    .find((item) => item.startsWith("okado_referral="))
+    ?.split("=")[1];
+
+  return ref || (cookieRef ? decodeURIComponent(cookieRef) : "");
+}
 
 function FieldLabel({
   children,
@@ -51,8 +67,20 @@ export function SignUpForm() {
     confirmPassword: "",
   });
   const [accept, setAccept] = useState(true);
+  const [referralCode] = useState(readReferralCodeFromBrowser);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const ref = new URLSearchParams(window.location.search).get("ref")?.trim();
+
+    if (!ref) {
+      return;
+    }
+
+    const expires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toUTCString();
+    document.cookie = `okado_referral=${encodeURIComponent(ref)}; expires=${expires}; path=/; SameSite=Lax`;
+  }, []);
 
   function updateField(key: keyof typeof form, value: string) {
     setForm((current) => ({ ...current, [key]: value }));
@@ -71,7 +99,7 @@ export function SignUpForm() {
       const response = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, referralCode }),
       });
       const payload = (await response.json()) as { error?: string };
 
@@ -106,6 +134,12 @@ export function SignUpForm() {
       <div className="mt-8">
         <GoogleAuthButton mode="signup" nextPath="/onboarding" />
       </div>
+
+      {referralCode ? (
+        <div className="mt-4 rounded-[20px] border border-[#d9e7ff] bg-[#f4f8ff] px-4 py-3 text-sm text-[#2450c8]">
+          Code parrainage appliqué : <span className="font-semibold">{referralCode}</span>
+        </div>
+      ) : null}
 
       <div className="mt-8 flex items-center gap-4">
         <div className="h-px flex-1 bg-[#e7ecf4]" />

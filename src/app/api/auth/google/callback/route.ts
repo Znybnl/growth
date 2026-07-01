@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { createAffiliateReferralForMerchant } from "@/lib/affiliate-repository";
 import { authenticateOrProvisionMerchantWithGoogle } from "@/lib/merchant-account-repository";
 import { createRouteSupabaseClient } from "@/lib/supabase-server-auth";
 
@@ -30,6 +31,7 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const origin = url.origin;
   const next = sanitizeNextPath(url.searchParams.get("next"));
+  const referralCode = url.searchParams.get("ref")?.trim() ?? "";
   const code = url.searchParams.get("code");
   const providerError =
     url.searchParams.get("error_description") ||
@@ -67,6 +69,14 @@ export async function GET(request: Request) {
       lastName: typeof metadata.family_name === "string" ? metadata.family_name : lastName,
       fullName,
     });
+
+    if (referralCode) {
+      await createAffiliateReferralForMerchant({
+        referredMerchantId: session.merchant.id,
+        referralCode,
+        source: "google_signup",
+      });
+    }
 
     const redirectPath = session.merchant.onboardingCompleted ? next : "/onboarding";
     const response = NextResponse.redirect(new URL(redirectPath, origin));

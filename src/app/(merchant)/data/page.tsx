@@ -71,14 +71,14 @@ function Histogram({
   const max = Math.max(...bars.map((bar) => bar.value), 1);
 
   return (
-    <div className="rounded-[32px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+    <div className="okado-card p-6">
       <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">{eyebrow}</p>
       <h2 className="mt-2 text-2xl font-semibold text-[#111827]">{title}</h2>
       <div className="mt-6 grid h-[240px] grid-cols-7 gap-3">
         {bars.map((bar) => (
           <div key={bar.label} className="flex min-w-0 flex-col items-center justify-end gap-3">
             <span className="text-sm font-semibold text-[#111827]">{bar.value}</span>
-            <div className="flex h-full w-full items-end rounded-[18px] bg-[#f3f6fb] p-1">
+            <div className="flex h-full w-full items-end rounded-[8px] bg-[#f3f6fb] p-1">
               <div
                 className="w-full rounded-[14px]"
                 style={{
@@ -165,6 +165,21 @@ function buildActionVolumes(leads: MerchantLeadRow[], actions: CampaignAction[])
   return Array.from(volumes.values());
 }
 
+function leadStatusTone(status: MerchantLeadRow["status"]) {
+  switch (status) {
+    case "redeemed":
+      return "bg-[#ecfdf3] text-[#047857]";
+    case "claimed":
+      return "bg-[#eff6ff] text-[#1d4ed8]";
+    case "lost":
+      return "bg-[#f3f4f6] text-[#4b5563]";
+    case "expired":
+      return "bg-[#fff7ed] text-[#c2410c]";
+    default:
+      return "bg-[#f8fafc] text-[#505b6e]";
+  }
+}
+
 function LeadsExportSection({
   campaignId,
   leads,
@@ -173,7 +188,7 @@ function LeadsExportSection({
   leads: MerchantLeadRow[];
 }) {
   return (
-    <section className="rounded-[32px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+    <section className="okado-card p-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Saisies et export</p>
@@ -184,7 +199,7 @@ function LeadsExportSection({
         <Link
           href={`/api/merchant/leads?format=csv&campaign=${campaignId}`}
           prefetch={false}
-          className="inline-flex cursor-pointer rounded-[18px] border border-[#d7e0ed] px-4 py-3 text-sm font-semibold text-[#182033]"
+          className="inline-flex cursor-pointer rounded-[12px] border border-[#d7e0ed] px-4 py-3 text-sm font-semibold text-[#182033]"
         >
           Export CSV
         </Link>
@@ -210,7 +225,9 @@ function LeadsExportSection({
                   <div className="text-[#7b8496]">{lead.email}</div>
                 </td>
                 <td className="border-b border-[#eef2f7] px-3 py-4 text-[#556173]">
-                  {leadStatusLabel(lead.status)}
+                  <span className={`inline-flex rounded-full px-3 py-1.5 text-xs font-semibold ${leadStatusTone(lead.status)}`}>
+                    {leadStatusLabel(lead.status)}
+                  </span>
                 </td>
                 <td className="border-b border-[#eef2f7] px-3 py-4 text-[#556173]">
                   {lead.prizeLabel}
@@ -301,7 +318,7 @@ export default async function DataPage({ searchParams }: DataPageProps) {
 
   if (!dataView || dataView.performance.campaign.merchantId !== session.merchant.id) {
     return (
-      <div className="rounded-[32px] border border-[#dbe4f0] bg-white p-8 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+      <div className="okado-card p-8">
         <h1 className="text-3xl font-semibold text-[#111827]">Aucune campagne sélectionnée</h1>
       </div>
     );
@@ -326,7 +343,6 @@ export default async function DataPage({ searchParams }: DataPageProps) {
   const performanceMax = Math.max(
     dataView.performance.kpis.scans,
     dataView.performance.kpis.leads,
-    dataView.performance.kpis.actions,
     dataView.performance.kpis.redeemed,
     1,
   );
@@ -351,8 +367,8 @@ export default async function DataPage({ searchParams }: DataPageProps) {
 
   return (
     <div className="space-y-6">
-      <section className="overflow-hidden rounded-[34px] border border-[#dbe4f0] bg-white shadow-[0_20px_50px_rgba(122,136,166,0.14)]">
-        <div className="px-6 py-7 xl:px-8">
+      <section className="px-1 py-2">
+        <div>
           <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
             <div>
               <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">
@@ -371,7 +387,7 @@ export default async function DataPage({ searchParams }: DataPageProps) {
               <Link
                 href={`/campaigns/${dataView.performance.campaign.id}/edit`}
                 prefetch={false}
-                className="inline-flex rounded-[22px] bg-[#2f6df6] px-5 py-4 text-sm font-semibold !text-white shadow-[0_16px_32px_rgba(47,109,246,0.22)]"
+                className="inline-flex rounded-[12px] bg-[#2f6df6] px-5 py-4 text-sm font-semibold !text-white shadow-[0_16px_32px_rgba(47,109,246,0.22)]"
                 style={{ color: "#ffffff" }}
               >
                 Modifier la campagne
@@ -392,7 +408,7 @@ export default async function DataPage({ searchParams }: DataPageProps) {
                   key={item.id}
                   href={`/data?campaign=${item.id}${query ? `&q=${encodeURIComponent(query)}` : ""}`}
                   prefetch={false}
-                  className={`cursor-pointer rounded-[18px] px-4 py-3 text-sm font-semibold ${
+                  className={`cursor-pointer rounded-[12px] px-4 py-3 text-sm font-semibold ${
                     item.id === dataView.performance.campaign.id
                       ? "bg-[#111827] !text-white"
                       : "border border-[#d7e0ed] bg-[#f8fafc] text-[#182033]"
@@ -416,18 +432,17 @@ export default async function DataPage({ searchParams }: DataPageProps) {
         </div>
       </section>
 
-      <section className="grid gap-4 md:grid-cols-3 xl:grid-cols-6">
+      <section className="grid gap-4 md:grid-cols-3 xl:grid-cols-5">
         {[
           ["Scans", String(dataView.performance.kpis.scans)],
           ["Leads", String(dataView.performance.kpis.leads)],
-          ["Actions", String(dataView.performance.kpis.actions)],
           ["Conversion", formatPercent(dataView.performance.kpis.conversionRate)],
           ["Lots retirés", String(dataView.performance.kpis.redeemed)],
           ["Coût / lead", formatCurrency(dataView.performance.kpis.costPerLead)],
         ].map(([label, value]) => (
           <div
             key={label}
-            className="rounded-[28px] border border-[#dbe4f0] bg-white p-5 shadow-[0_14px_36px_rgba(122,136,166,0.08)]"
+            className="okado-card p-5"
           >
             <p className="text-xs uppercase tracking-[0.24em] text-[#7b8496]">{label}</p>
             <p className="mt-4 text-3xl font-semibold text-[#111827]">{value}</p>
@@ -457,7 +472,7 @@ export default async function DataPage({ searchParams }: DataPageProps) {
 
       <section className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
         <div className="space-y-6">
-          <div className="rounded-[32px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+          <div className="okado-card p-6">
             <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Performance</p>
             <h2 className="mt-2 text-2xl font-semibold text-[#111827]">Tunnel et engagement</h2>
 
@@ -472,11 +487,6 @@ export default async function DataPage({ searchParams }: DataPageProps) {
                   label: "Leads créés",
                   value: dataView.performance.kpis.leads,
                   width: performanceWidth(dataView.performance.kpis.leads),
-                },
-                {
-                  label: "Actions marketing",
-                  value: dataView.performance.kpis.actions,
-                  width: performanceWidth(dataView.performance.kpis.actions),
                 },
                 {
                   label: "Lots retirés",
@@ -503,7 +513,7 @@ export default async function DataPage({ searchParams }: DataPageProps) {
             </div>
           </div>
 
-          <div className="rounded-[32px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+          <div className="okado-card p-6">
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Dotation</p>
@@ -517,7 +527,7 @@ export default async function DataPage({ searchParams }: DataPageProps) {
               {dataView.performance.prizes.map((prize) => (
                 <div
                   key={prize.id}
-                  className="rounded-[24px] border border-[#e4eaf2] bg-[#f8fafc] px-4 py-4"
+                  className="rounded-[8px] border border-border bg-linen-canvas px-4 py-4"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div>
@@ -547,7 +557,7 @@ export default async function DataPage({ searchParams }: DataPageProps) {
 
         <div className="space-y-6">
           {actionVolumes.length > 1 ? (
-            <div className="rounded-[32px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+            <div className="okado-card p-6">
               <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">
                 Actions marketing
               </p>
@@ -580,7 +590,7 @@ export default async function DataPage({ searchParams }: DataPageProps) {
             </div>
           ) : null}
 
-          <div className="rounded-[32px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+          <div className="okado-card p-6">
             <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Chronologie</p>
             <h2 className="mt-2 text-2xl font-semibold text-[#111827]">Derniers événements</h2>
 
@@ -591,7 +601,7 @@ export default async function DataPage({ searchParams }: DataPageProps) {
                 return (
                   <div
                     key={event.id}
-                    className="flex items-center gap-3 rounded-[18px] border border-[#e4eaf2] bg-[#f8fafc] px-4 py-3"
+                    className="flex items-center gap-3 rounded-[8px] border border-border bg-linen-canvas px-4 py-3"
                   >
                     <span
                       className="h-2.5 w-2.5 shrink-0 rounded-full"

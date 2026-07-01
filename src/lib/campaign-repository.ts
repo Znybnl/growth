@@ -571,7 +571,13 @@ function toPublicCampaign(
     logoText: campaign.logoText ?? merchant.companyName,
     logoUrl: campaign.logoUrl,
     accent: campaign.accent,
-    prizes: prizes.map((prize) => ({ id: prize.id, label: prize.label })),
+    prizes: prizes.map((prize) => ({
+      id: prize.id,
+      label: prize.label,
+      totalQuantity: prize.totalQuantity,
+      remainingQuantity: prize.remainingQuantity,
+      probability: prize.probability,
+    })),
     presentation: campaign.presentation,
     actions,
     rewardRules: campaign.rewardRules,
@@ -580,14 +586,7 @@ function toPublicCampaign(
 
 function computeKpis(campaign: Campaign, prizes: Prize[], leads: Lead[], events: CampaignEvent[]): CampaignKpi {
   const scans = events.filter((event) => event.eventType === "scan").length;
-  const actions =
-    campaign.goalType === "review_prompt"
-      ? events.filter((event) =>
-          ["review_clicked", "review_confirmed"].includes(event.eventType),
-        ).length
-      : campaign.goalType === "social_follow"
-        ? events.filter((event) => event.eventType === "social_clicked").length
-        : leads.length;
+  const actions = events.filter((event) => event.eventType === "review_clicked").length;
   const games = events.filter((event) => event.eventType === "game_played").length;
   const wins = leads.filter((lead) => Boolean(lead.prizeId)).length;
   const redeemed = leads.filter((lead) => lead.status === "redeemed").length;
@@ -723,14 +722,7 @@ function computeOverviewKpisFromRows(
   estimatedCostByPrizeId: Map<string, number>,
 ): CampaignKpi {
   const scans = events.filter((event) => event.event_type === "scan").length;
-  const actions =
-    campaign.goalType === "review_prompt"
-      ? events.filter((event) =>
-          ["review_clicked", "review_confirmed"].includes(event.event_type),
-        ).length
-      : campaign.goalType === "social_follow"
-        ? events.filter((event) => event.event_type === "social_clicked").length
-        : leads.length;
+  const actions = events.filter((event) => event.event_type === "review_clicked").length;
   const games = events.filter((event) => event.event_type === "game_played").length;
   const wins = leads.filter((lead) => Boolean(lead.prize_id)).length;
   const redeemed = leads.filter((lead) => lead.status === "redeemed").length;

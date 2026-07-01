@@ -67,12 +67,12 @@ const TEMPLATE_CONFIGS: Record<PosterTemplateId, TemplateConfig> = {
     wheelX: 272,
     wheelY: 716,
     wheelRadius: 260,
-    qrX: 392,
-    qrY: 482,
-    qrSize: 312,
-    ctaX: 374,
-    ctaY: 810,
-    ctaWidth: 394,
+    qrX: 408,
+    qrY: 512,
+    qrSize: 292,
+    ctaX: 369,
+    ctaY: 812,
+    ctaWidth: 370,
     ctaHeight: 86,
     ctaRotation: 0,
     headlineY: 292,
@@ -91,12 +91,12 @@ const TEMPLATE_CONFIGS: Record<PosterTemplateId, TemplateConfig> = {
     wheelY: 790,
     wheelRadius: 310,
     qrX: 408,
-    qrY: 520,
-    qrSize: 282,
-    ctaX: 350,
-    ctaY: 792,
-    ctaWidth: 360,
-    ctaHeight: 76,
+    qrY: 512,
+    qrSize: 292,
+    ctaX: 369,
+    ctaY: 812,
+    ctaWidth: 370,
+    ctaHeight: 86,
     ctaRotation: 0,
     headlineY: 258,
     headlineSizeMultiplier: 1.34,
@@ -411,35 +411,35 @@ function renderQrAndCta(qrDataUrl: string, template: TemplateConfig) {
 
 function renderSteps(template: TemplateConfig, gameType: Campaign["gameType"]) {
   const action = gameType === "wheel" ? "Jouez" : "Grattez";
-  const gift = template.id === "terracotta-wheel" ? "Gagner" : "Gagnez";
+  const gift = "Gagnez";
 
   return `
-    <g transform="translate(38 952)">
-      <rect width="718" height="132" rx="22" fill="rgba(255,255,255,0.96)" stroke="#fff0e8" stroke-width="4"/>
-      <line x1="285" y1="28" x2="285" y2="104" stroke="${template.accent}" stroke-width="2"/>
-      <line x1="498" y1="28" x2="498" y2="104" stroke="${template.accent}" stroke-width="2"/>
-      <g transform="translate(44 24)">
-        <circle cx="112" cy="20" r="15" fill="${template.accent}"/>
-        <text x="112" y="25" text-anchor="middle" fill="#ffffff" font-family="${SAFE_FONT}" font-size="14" font-weight="900">1</text>
-        <text x="126" y="78" text-anchor="middle" fill="${template.accentDark}" font-family="${SAFE_FONT}" font-size="18" font-weight="900">Scannez</text>
-        <g transform="translate(18 20) scale(0.64)">
+    <g transform="translate(28 954)">
+      <rect width="738" height="124" rx="22" fill="rgba(255,255,255,0.96)" stroke="#fff0e8" stroke-width="4"/>
+      <line x1="246" y1="24" x2="246" y2="100" stroke="${template.accent}" stroke-width="2"/>
+      <line x1="492" y1="24" x2="492" y2="100" stroke="${template.accent}" stroke-width="2"/>
+      <g transform="translate(0 0)">
+        <circle cx="146" cy="38" r="17" fill="${template.accent}"/>
+        <text x="146" y="44" text-anchor="middle" fill="#ffffff" font-family="${SAFE_FONT}" font-size="16" font-weight="900">1</text>
+        <text x="168" y="90" text-anchor="middle" fill="${template.accentDark}" font-family="${SAFE_FONT}" font-size="22" font-weight="900">Scannez</text>
+        <g transform="translate(46 35) scale(0.56)">
           <path d="M20 12 h40 a8 8 0 0 1 8 8 v60 a8 8 0 0 1 -8 8 h-40 a8 8 0 0 1 -8 -8 v-60 a8 8 0 0 1 8 -8 Z M28 26 h24 M28 40 h8 M44 40 h8 M28 54 h8 M44 54 h8 M28 68 h24" fill="none" stroke="#05070c" stroke-width="4" stroke-linecap="round"/>
         </g>
       </g>
-      <g transform="translate(316 24)">
-        <circle cx="74" cy="20" r="15" fill="${template.accent}"/>
-        <text x="74" y="25" text-anchor="middle" fill="#ffffff" font-family="${SAFE_FONT}" font-size="14" font-weight="900">2</text>
-        <text x="116" y="78" text-anchor="middle" fill="${template.accentDark}" font-family="${SAFE_FONT}" font-size="18" font-weight="900">${action}</text>
-        <g transform="translate(9 19) scale(0.64)">
+      <g transform="translate(246 0)">
+        <circle cx="146" cy="38" r="17" fill="${template.accent}"/>
+        <text x="146" y="44" text-anchor="middle" fill="#ffffff" font-family="${SAFE_FONT}" font-size="16" font-weight="900">2</text>
+        <text x="168" y="90" text-anchor="middle" fill="${template.accentDark}" font-family="${SAFE_FONT}" font-size="22" font-weight="900">${action}</text>
+        <g transform="translate(50 34) scale(0.56)">
           <circle cx="28" cy="50" r="30" fill="none" stroke="#05070c" stroke-width="4"/>
           <path d="M28 20 v60 M-2 50 h60 M8 30 l40 40 M48 30 l-40 40" stroke="#05070c" stroke-width="3"/>
         </g>
       </g>
-      <g transform="translate(536 24)">
-        <circle cx="62" cy="20" r="15" fill="${template.accent}"/>
-        <text x="62" y="25" text-anchor="middle" fill="#ffffff" font-family="${SAFE_FONT}" font-size="14" font-weight="900">3</text>
-        <text x="128" y="78" text-anchor="middle" fill="${template.accentDark}" font-family="${SAFE_FONT}" font-size="18" font-weight="900">${gift}</text>
-        <g transform="translate(21 39) scale(0.64)">
+      <g transform="translate(492 0)">
+        <circle cx="146" cy="38" r="17" fill="${template.accent}"/>
+        <text x="146" y="44" text-anchor="middle" fill="#ffffff" font-family="${SAFE_FONT}" font-size="16" font-weight="900">3</text>
+        <text x="168" y="90" text-anchor="middle" fill="${template.accentDark}" font-family="${SAFE_FONT}" font-size="22" font-weight="900">${gift}</text>
+        <g transform="translate(48 47) scale(0.56)">
           <path d="M18 42 h72 v46 h-72 Z M12 30 h84 v18 h-84 Z M54 30 v58 M34 30 c-26 -22 12 -32 20 0 M58 30 c8 -32 46 -22 20 0" fill="none" stroke="#05070c" stroke-width="4" stroke-linejoin="round"/>
         </g>
       </g>

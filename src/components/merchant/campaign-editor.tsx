@@ -15,6 +15,7 @@ import {
 } from "react";
 
 import { BrandMark } from "@/components/brand-mark";
+import { Switch } from "@/components/ui/switch";
 import {
   actionKindCta,
   actionKindLabel,
@@ -1543,9 +1544,8 @@ export function CampaignEditor({
 
   return (
     <div className="space-y-6 pb-24 xl:pb-0">
-      <section className="overflow-hidden rounded-[32px] border border-[#dbe4f0] bg-white shadow-[0_22px_50px_rgba(122,136,166,0.14)]">
-        <div className="grid gap-6 px-6 py-6 xl:grid-cols-[1.2fr_0.8fr] xl:px-8">
-          <div>
+      <section className="grid gap-6 px-1 py-2 xl:grid-cols-[1.2fr_0.8fr]">
+          <div className="min-w-0">
             <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">
               Param&eacute;trage de l&apos;animation
             </p>
@@ -1562,43 +1562,23 @@ export function CampaignEditor({
             <Link
               href="/campaigns"
               prefetch={false}
-              className="rounded-[20px] border border-[#d7e0ed] px-4 py-3 text-sm font-semibold text-[#182033]"
+              className="rounded-[8px] border border-[#d7e0ed] px-4 py-3 text-sm font-semibold text-[#182033] transition hover:bg-linen-canvas"
             >
               Retour aux campagnes
             </Link>
-            {savedCampaignId ? (
-              <>
-                <Link
-                  href={`/campaign/${savedCampaignId}`}
-                  prefetch={false}
-                  target="_blank"
-                  className="rounded-[20px] border border-[#111827] bg-[#111827] px-4 py-3 text-sm font-semibold !text-white"
-                >
-                  Voir la campagne
-                </Link>
-                <Link
-                  href={`/campaigns/${savedCampaignId}/poster`}
-                  prefetch={false}
-                  target="_blank"
-                  className="rounded-[20px] border border-[#d7e0ed] px-4 py-3 text-sm font-semibold text-[#182033]"
-                >
-                  Voir l&apos;affiche
-                </Link>
-              </>
-            ) : null}
             <button
               type="button"
               onClick={saveCampaign}
               disabled={isSaving}
-              className="rounded-[20px] bg-[#2f6df6] px-5 py-3 text-sm font-semibold !text-white shadow-[0_16px_32px_rgba(47,109,246,0.22)] disabled:opacity-60"
+              className="rounded-[8px] bg-[#2f6df6] px-5 py-3 text-sm font-semibold !text-white shadow-[0_16px_32px_rgba(47,109,246,0.22)] disabled:opacity-60"
             >
               {isSaving ? "Enregistrement..." : "Enregistrer"}
             </button>
           </div>
-        </div>
       </section>
 
-      <section className="rounded-[30px] border border-[#dbe4f0] bg-white p-5 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+      {false ? (
+      <section className="okado-card p-5">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Interface</p>
@@ -1637,9 +1617,11 @@ export function CampaignEditor({
         </div>
       </section>
 
+      ) : null}
+
       <div className="grid gap-6 xl:grid-cols-[1fr_0.96fr]">
         <div className="space-y-6">
-          <section className="rounded-[30px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+          <section className="okado-card p-6">
             <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
               <div>
                 <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">
@@ -1671,7 +1653,7 @@ export function CampaignEditor({
             </div>
           </section>
 
-          <section className="rounded-[30px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+          <section className="okado-card p-6">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">
@@ -1708,11 +1690,22 @@ export function CampaignEditor({
             </div>
           </section>
 
-          <section className="rounded-[30px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+          <section className="okado-card p-6">
             <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Mécanique de jeu</p>
             <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
               Choisissez l&apos;expérience client
             </h2>
+
+            <div className="mt-4 flex justify-start md:justify-end">
+              <label className="flex items-center gap-3 rounded-[8px] border border-border bg-linen-canvas px-3 py-2 text-sm font-semibold text-[#182033]">
+                <span>Mode expert</span>
+                <Switch
+                  checked={isExpertMode}
+                  onCheckedChange={setIsExpertMode}
+                  aria-label="Activer le mode expert"
+                />
+              </label>
+            </div>
 
             <div className="mt-6 grid gap-4 md:grid-cols-2">
               {gameModes.map((mode) => {
@@ -1774,7 +1767,7 @@ export function CampaignEditor({
           </section>
 
           {isExpertMode ? (
-          <section className="rounded-[30px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+          <section className="okado-card p-6">
             <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
               <div>
                 <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">
@@ -1816,7 +1809,7 @@ export function CampaignEditor({
           </section>
           ) : null}
 
-          <section className="rounded-[30px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+          <section className="okado-card p-6">
             <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Logo</p>
             <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
               Personnalisation du logo
@@ -2020,7 +2013,7 @@ export function CampaignEditor({
             </div>
           </section>
 
-          <section className="rounded-[30px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+          <section className="okado-card p-6">
             <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Phrase d&apos;entête</p>
             <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
               Style du texte principal
@@ -2158,7 +2151,7 @@ export function CampaignEditor({
           </section>
 
           {isExpertMode ? (
-            <section className="rounded-[30px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+            <section className="okado-card p-6">
               <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Fond</p>
               <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
                 Couleur ou image de fond
@@ -2301,7 +2294,7 @@ export function CampaignEditor({
             </section>
           ) : null}
           {false ? (
-          <section className="rounded-[30px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+          <section className="okado-card p-6">
             <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
               <div>
                 <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Affiche A4</p>
@@ -2611,7 +2604,7 @@ export function CampaignEditor({
           ) : null}
 
           {isExpertMode ? (
-          <section className="rounded-[30px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+          <section className="okado-card p-6">
             <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Espacement</p>
             <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
               Ecartement des blocs
@@ -2645,7 +2638,7 @@ export function CampaignEditor({
           ) : null}
           {false ? (
 
-          <section className="rounded-[30px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+          <section className="okado-card p-6">
             <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Phrase d&apos;entête</p>
             <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
               Style du texte principal
@@ -2780,7 +2773,7 @@ export function CampaignEditor({
           ) : null}
 
           {form.gameType === "wheel" ? (
-            <section className="rounded-[30px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+            <section className="okado-card p-6">
               <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Roue de la fortune</p>
               <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
                 Couleurs de la roue
@@ -2826,7 +2819,7 @@ export function CampaignEditor({
               </div>
             </section>
           ) : (
-            <section className="rounded-[30px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+            <section className="okado-card p-6">
               <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Ticket à gratter</p>
               <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
                 Personnalisation du ticket
@@ -2891,7 +2884,7 @@ export function CampaignEditor({
           )}
 
           {form.gameType !== "wheel" ? (
-            <section className="rounded-[30px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+            <section className="okado-card p-6">
               <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Bouton public</p>
               <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
                 Personnalisation du bouton
@@ -3051,7 +3044,7 @@ export function CampaignEditor({
             </section>
           ) : null}
 
-          <section className="rounded-[30px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+          <section className="okado-card p-6">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Dotation</p>
@@ -3156,7 +3149,7 @@ export function CampaignEditor({
         </div>
 
         <div className="space-y-6 xl:sticky xl:top-6 xl:self-start">
-          <section className="pointer-events-none rounded-[30px] border border-[#dbe4f0] bg-white p-5 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+          <section className="pointer-events-none okado-card p-5">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">
@@ -3168,25 +3161,26 @@ export function CampaignEditor({
                 <div className="pointer-events-auto flex flex-wrap justify-end gap-2">
                   <a
                     href={`/api/campaigns/${form.id}/qr`}
-                    className="rounded-[18px] border border-[#d7e0ed] bg-white px-4 py-3 text-sm font-semibold text-[#182033]"
+                    className="inline-flex h-10 items-center rounded-[8px] border border-[#d7e0ed] bg-white px-4 text-sm font-semibold text-[#182033] transition hover:bg-linen-canvas"
                   >
                     QR
                   </a>
                   <Link
                     href={`/campaigns/${form.id}/poster`}
                     prefetch={false}
-                    className="rounded-[18px] bg-[#2f6df6] px-4 py-3 text-sm font-semibold !text-white"
+                    target="_blank"
+                    className="inline-flex h-10 items-center rounded-[8px] border border-[#d7e0ed] bg-white px-4 text-sm font-semibold text-[#182033] transition hover:bg-linen-canvas"
                   >
-                    Affiche
+                    Voir l&apos;affiche
                   </Link>
                   <Link
                     href={`/campaign/${form.id}`}
                     prefetch={false}
                     target="_blank"
                     rel="noreferrer"
-                    className="rounded-[18px] border border-[#111827] bg-[#111827] px-4 py-3 text-sm font-semibold !text-white"
+                    className="inline-flex h-10 items-center rounded-[8px] border border-[#111827] bg-[#111827] px-4 text-sm font-semibold !text-white"
                   >
-                    Ouvrir
+                    Voir la campagne
                   </Link>
                 </div>
               ) : null}

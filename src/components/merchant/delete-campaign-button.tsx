@@ -3,11 +3,14 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { cn } from "@/lib/utils";
+
 type DeleteCampaignButtonProps = {
   campaignId: string;
   campaignTitle: string;
   className?: string;
   onDone?: () => void;
+  variant?: "default" | "menu";
 };
 
 export function DeleteCampaignButton({
@@ -15,6 +18,7 @@ export function DeleteCampaignButton({
   campaignTitle,
   className,
   onDone,
+  variant = "default",
 }: DeleteCampaignButtonProps) {
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
@@ -50,16 +54,27 @@ export function DeleteCampaignButton({
     }
   }
 
+  const isMenu = variant === "menu";
+
   return (
     <button
       type="button"
       onClick={deleteCampaign}
       disabled={isDeleting}
-      className={`inline-flex w-full cursor-pointer items-center gap-3 rounded-[16px] border border-[#f0d8d8] bg-white px-4 py-3 text-left text-sm font-semibold text-[#b42318] transition hover:border-[#e7b4b4] hover:bg-[#fff7f7] disabled:cursor-not-allowed disabled:opacity-60 ${className ?? ""}`}
+      className={cn(
+        "inline-flex w-full cursor-pointer items-center text-left text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60",
+        isMenu
+          ? "min-h-9 gap-2 rounded-[8px] border border-transparent bg-transparent px-2.5 py-2 text-[#b42318] hover:bg-[#fff7f7]"
+          : "gap-3 rounded-[16px] border border-[#f0d8d8] bg-white px-4 py-3 text-[#b42318] hover:border-[#e7b4b4] hover:bg-[#fff7f7]",
+        className,
+      )}
     >
       <span
         aria-hidden="true"
-        className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#fff1f1] text-[#b42318]"
+        className={cn(
+          "inline-flex shrink-0 items-center justify-center text-[#b42318]",
+          isMenu ? "h-4 w-4" : "h-8 w-8 rounded-full bg-[#fff1f1]",
+        )}
       >
         <svg viewBox="0 0 24 24" className="h-4 w-4 fill-none stroke-current stroke-[1.8]">
           <path d="M4 7h16" />

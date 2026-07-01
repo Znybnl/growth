@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { createAffiliateReferralForMerchant } from "@/lib/affiliate-repository";
 import { authenticateOrProvisionMerchantWithGoogle } from "@/lib/merchant-account-repository";
 
 type GoogleSessionBody = {
@@ -7,6 +8,7 @@ type GoogleSessionBody = {
   firstName?: string;
   lastName?: string;
   fullName?: string;
+  referralCode?: string;
 };
 
 export async function POST(request: Request) {
@@ -24,6 +26,14 @@ export async function POST(request: Request) {
       lastName: body.lastName?.trim() ?? "",
       fullName: body.fullName?.trim() ?? "",
     });
+
+    if (body.referralCode?.trim()) {
+      await createAffiliateReferralForMerchant({
+        referredMerchantId: session.merchant.id,
+        referralCode: body.referralCode,
+        source: "google_signup",
+      });
+    }
 
     return NextResponse.json({
       merchant: session.merchant,

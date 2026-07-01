@@ -97,6 +97,93 @@ export interface MerchantBillingSummary {
   nextBillingDate?: string;
 }
 
+export type AffiliateAccountStatus = "active" | "disabled";
+export type AffiliateReferralStatus = "registered" | "trialing" | "active" | "canceled";
+export type AffiliateCommissionStatus = "pending" | "payable" | "paid" | "void";
+
+export interface AffiliateAccount {
+  id: string;
+  merchantId: string;
+  code: string;
+  status: AffiliateAccountStatus;
+  commissionRateBps: number;
+  commissionDurationMonths: number;
+  payoutDetails?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AffiliateReferralItem {
+  id: string;
+  affiliateMerchantId: string;
+  referredMerchantId: string;
+  referredMerchantName: string;
+  referredMerchantEmail?: string;
+  status: AffiliateReferralStatus;
+  firstSubscriptionPaidAt?: string;
+  commissionEligibleUntil?: string;
+  createdAt: string;
+  totalCommissionCents: number;
+  paidCommissionCents: number;
+  pendingCommissionCents: number;
+}
+
+export interface AffiliateSummary {
+  account: AffiliateAccount;
+  referralLinkPath: string;
+  totals: {
+    referrals: number;
+    activeReferrals: number;
+    pendingCommissionCents: number;
+    paidCommissionCents: number;
+    totalCommissionCents: number;
+  };
+  referrals: AffiliateReferralItem[];
+}
+
+export interface AffiliateAdminCommissionItem {
+  id: string;
+  affiliateMerchantId: string;
+  affiliateMerchantName: string;
+  referredMerchantId: string;
+  referredMerchantName: string;
+  stripeInvoiceId: string;
+  stripeSubscriptionId?: string;
+  invoicePaidAt: string;
+  invoiceAmountCents: number;
+  commissionAmountCents: number;
+  currency: string;
+  status: AffiliateCommissionStatus;
+  createdAt: string;
+}
+
+export interface AffiliateAdminAccountItem {
+  id: string;
+  merchantId: string;
+  merchantName: string;
+  merchantEmail?: string;
+  code: string;
+  status: AffiliateAccountStatus;
+  commissionRateBps: number;
+  commissionDurationMonths: number;
+  referralCount: number;
+  pendingCommissionCents: number;
+  paidCommissionCents: number;
+}
+
+export interface AffiliateAdminOverview {
+  totals: {
+    affiliates: number;
+    activeAffiliates: number;
+    referrals: number;
+    pendingCommissionCents: number;
+    payableCommissionCents: number;
+    paidCommissionCents: number;
+  };
+  accounts: AffiliateAdminAccountItem[];
+  commissions: AffiliateAdminCommissionItem[];
+}
+
 export interface MerchantUser {
   id: string;
   merchantId: string;
@@ -116,6 +203,7 @@ export interface MerchantSignUpInput {
   phone?: string;
   password: string;
   confirmPassword: string;
+  referralCode?: string;
 }
 
 export interface MerchantSignInInput {
@@ -426,6 +514,9 @@ export interface MerchantSupportOverview {
 export interface PublicCampaignPrize {
   id: string;
   label: string;
+  totalQuantity: null | number;
+  remainingQuantity: null | number;
+  probability: number;
 }
 
 export interface PublicCampaign {

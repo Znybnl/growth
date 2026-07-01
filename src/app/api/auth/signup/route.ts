@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { createAffiliateReferralForMerchant } from "@/lib/affiliate-repository";
 import { captureProductEvent, merchantDistinctId } from "@/lib/product-analytics";
 import { createMerchantAccount } from "@/lib/store";
 import { createRouteSupabaseClient } from "@/lib/supabase-server-auth";
@@ -28,6 +29,17 @@ export async function POST(request: Request) {
 
     if (signInResult.error || !signInResult.data.user) {
       throw new Error(signInResult.error?.message ?? "Connexion automatique impossible.");
+    }
+
+    const referralCode =
+      body.referralCode?.trim() || request.headers.get("x-okado-referral-code") || "";
+
+    if (referralCode) {
+      await createAffiliateReferralForMerchant({
+        referredMerchantId: session.merchant.id,
+        referralCode,
+        source: "signup",
+      });
     }
 
     await captureProductEvent(

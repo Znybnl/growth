@@ -136,6 +136,224 @@ function PublicModal({
   );
 }
 
+function RulesModal({
+  campaign,
+  open,
+  onClose,
+}: {
+  campaign: PublicCampaign;
+  open: boolean;
+  onClose: () => void;
+}) {
+  if (!open) {
+    return null;
+  }
+
+  const prizeRows = campaign.prizes.map((prize) => ({
+    ...prize,
+    stockLabel:
+      prize.remainingQuantity === null
+        ? "Illimité"
+        : `${Math.max(0, prize.remainingQuantity)} disponible${
+            prize.remainingQuantity > 1 ? "s" : ""
+          }`,
+  }));
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#0f1220]/58 px-4 pb-4 pt-10 backdrop-blur-[6px] sm:items-center sm:p-6">
+      <div className="flex max-h-[88vh] w-full max-w-[760px] flex-col overflow-hidden rounded-[30px] bg-white text-[#111827] shadow-[0_34px_90px_rgba(18,24,39,0.28)]">
+        <div className="flex items-start justify-between gap-4 border-b border-[#edf0f6] px-6 py-5">
+          <div>
+            <p className="text-xs uppercase tracking-[0.26em] text-[#8b93a5]">
+              Conditions d&apos;utilisation
+            </p>
+            <h2 className="mt-2 text-2xl font-semibold leading-tight">
+              CGU et règlement du jeu
+            </h2>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-full border border-[#dfe4ef] px-4 py-2 text-sm font-semibold text-[#111827]"
+          >
+            Fermer
+          </button>
+        </div>
+
+        <div className="space-y-6 overflow-y-auto px-6 py-5 text-sm leading-7 text-[#4b5567]">
+          <section>
+            <h3 className="text-base font-semibold text-[#111827]">
+              Préambule et définitions
+            </h3>
+            <p className="mt-2">
+              Le présent document régit les conditions de participation aux jeux-concours
+              phygitaux ci-après « le Jeu », déployés en point de vente via la solution
+              logicielle Okado.
+            </p>
+            <p className="mt-2">
+              La Société Organisatrice, ci-après « le Marchand », est l&apos;établissement
+              professionnel au sein duquel le Jeu est déployé. Elle définit les règles
+              spécifiques, les dotations et assume l&apos;entière responsabilité légale de
+              l&apos;organisation du Jeu.
+            </p>
+            <p className="mt-2">
+              Le Prestataire Technique, ci-après « l&apos;Éditeur », est la société BRUNELLE
+              PEROLS INVESTISSEMENT, éditrice de la solution SaaS Okado, agissant
+              exclusivement en tant que fournisseur d&apos;infrastructure technique.
+            </p>
+            <p className="mt-2">
+              Le Participant est toute personne physique, obligatoirement majeure,
+              participant au Jeu via le scan d&apos;un QR Code en point de vente.
+            </p>
+          </section>
+
+          <section>
+            <h3 className="text-base font-semibold text-[#111827]">
+              Article 1 - Objet et acceptation
+            </h3>
+            <p className="mt-2">
+              La participation au Jeu implique l&apos;acceptation expresse, pleine et entière,
+              sans réserve, du présent règlement par le Participant. Ce règlement régit les
+              relations entre le Participant et la Société Organisatrice. L&apos;Éditeur de la
+              solution Okado est un tiers à cette relation.
+            </p>
+          </section>
+
+          <section>
+            <h3 className="text-base font-semibold text-[#111827]">
+              Article 2 - Mécanique du jeu et participation
+            </h3>
+            <p className="mt-2">
+              La participation au Jeu s&apos;effectue exclusivement en scannant le QR Code mis
+              à disposition au sein de l&apos;établissement de la Société Organisatrice. Selon
+              le paramétrage défini sous la seule responsabilité de la Société
+              Organisatrice, le Participant pourra être invité à consulter des liens
+              externes, tels que la fiche Google Business Profile de l&apos;établissement.
+            </p>
+            <p className="mt-2">
+              Il est expressément précisé que le dépôt d&apos;un avis en ligne est strictement
+              facultatif. Il ne constitue en aucun cas une condition de participation, ni
+              une obligation pour valider l&apos;obtention d&apos;un gain. L&apos;Éditeur décline toute
+              responsabilité quant à l&apos;utilisation de cette fonctionnalité par la Société
+              Organisatrice au regard des conditions d&apos;utilisation des plateformes tierces,
+              notamment Google.
+            </p>
+          </section>
+
+          <section>
+            <h3 className="text-base font-semibold text-[#111827]">
+              Article 3 - Désignation des gagnants et responsabilité des lots
+            </h3>
+            <p className="mt-2">
+              L&apos;attribution des gains est gérée automatiquement dès la soumission du
+              formulaire, via un algorithme de tirage au sort aléatoire tenant compte des
+              probabilités et des stocks paramétrés par la Société Organisatrice.
+            </p>
+            <p className="mt-2">
+              La Société Organisatrice est seule responsable de la fourniture, de la
+              conformité et de la remise des lots. La responsabilité du Prestataire
+              Technique ne saurait être engagée pour toute réclamation relative à une
+              rupture de stock, un défaut du lot, un refus de remise par le personnel en
+              magasin, ou tout litige lié à l&apos;exécution du Jeu.
+            </p>
+          </section>
+
+          <section>
+            <h3 className="text-base font-semibold text-[#111827]">
+              Article 4 - Modalités de récupération des lots
+            </h3>
+            <p className="mt-2">
+              En cas de gain, le Participant reçoit un e-mail de confirmation à l&apos;adresse
+              renseignée lors de sa participation, contenant un QR Code unique et personnel.
+              Le Participant doit présenter ce QR Code au personnel de la Société
+              Organisatrice. La remise du lot n&apos;est définitive qu&apos;après validation de ce QR
+              Code par le personnel habilité, par scan direct ou via la plateforme de gestion
+              Okado.
+            </p>
+          </section>
+
+          <section>
+            <h3 className="text-base font-semibold text-[#111827]">
+              Article 5 - Prévention de la fraude et litiges techniques
+            </h3>
+            <p className="mt-2">
+              La participation est strictement nominative et limitée à une participation par
+              jour et par établissement. La Société Organisatrice se réserve le droit
+              d&apos;annuler la participation ou de refuser la remise d&apos;un lot à toute personne
+              ayant tenté de frauder. En cas de dysfonctionnement technique temporaire de la
+              plateforme Okado ou de l&apos;appareil du Participant empêchant la validation,
+              aucune compensation ne pourra être exigée.
+            </p>
+          </section>
+
+          <section>
+            <h3 className="text-base font-semibold text-[#111827]">
+              Article 6 - Protection des données personnelles
+            </h3>
+            <p className="mt-2">
+              Dans le cadre du Jeu, des données à caractère personnel sont collectées. La
+              Société Organisatrice agit en tant que Responsable de traitement. Le
+              Prestataire Technique héberge ces données de manière sécurisée pour le compte
+              exclusif de la Société Organisatrice.
+            </p>
+            <p className="mt-2">
+              Conformément à la réglementation applicable, le Participant dispose d&apos;un droit
+              d&apos;accès, de rectification, de portabilité et d&apos;effacement de ses données. Pour
+              exercer ces droits, le Participant doit s&apos;adresser directement à la Société
+              Organisatrice par le biais de ses coordonnées habituelles.
+            </p>
+          </section>
+
+          <section>
+            <h3 className="text-base font-semibold text-[#111827]">
+              Article 7 - Limites de responsabilité technique
+            </h3>
+            <p className="mt-2">
+              Le Prestataire Technique met en œuvre les moyens nécessaires au bon
+              fonctionnement de l&apos;infrastructure du Jeu. Sa responsabilité ne saurait être
+              engagée en cas de non-réception de l&apos;e-mail de confirmation de gain due à une
+              erreur de saisie, à un filtrage anti-spam, à une défaillance du fournisseur de
+              messagerie, à une interruption réseau, au dysfonctionnement du smartphone du
+              Participant ou à un bogue technique temporaire.
+            </p>
+          </section>
+
+          <section>
+            <h3 className="text-base font-semibold text-[#111827]">
+              Article 8 - Lots, stocks disponibles et probabilités de gain
+            </h3>
+            <p className="mt-2">
+              Les gains sont attribués dans la limite des quantités de stock disponibles au
+              moment de la participation. Lorsqu&apos;un lot n&apos;est plus disponible, il ne peut
+              plus être attribué, même si sa probabilité de gain est indiquée ci-dessous.
+            </p>
+            <div className="mt-4 overflow-hidden rounded-[18px] border border-[#e5e9f2]">
+              {prizeRows.length ? (
+                prizeRows.map((prize) => (
+                  <div
+                    key={prize.id}
+                    className="grid grid-cols-[1fr_auto] gap-3 border-b border-[#eef1f7] px-4 py-3 last:border-b-0"
+                  >
+                    <div>
+                      <p className="font-semibold text-[#111827]">{prize.label}</p>
+                      <p className="text-xs text-[#7b8496]">Stock : {prize.stockLabel}</p>
+                    </div>
+                    <p className="text-right font-semibold text-[#111827]">
+                      {prize.probability} %
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <p className="px-4 py-3 text-[#7b8496]">Aucun lot configuré.</p>
+              )}
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function CampaignExperience({
   campaignId,
   initialCampaign,
@@ -150,6 +368,7 @@ export function CampaignExperience({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [actionVisited, setActionVisited] = useState(false);
+  const [rulesOpen, setRulesOpen] = useState(false);
 
   const segments = useMemo(() => buildWheelSegments(campaign), [campaign]);
   const winningSegmentId =
@@ -434,6 +653,16 @@ export function CampaignExperience({
           ) : null}
         </div> : null}
       </div>
+
+      <button
+        type="button"
+        onClick={() => setRulesOpen(true)}
+        className="fixed bottom-4 right-4 z-20 rounded-full border border-white/70 bg-white/82 px-4 py-2 text-sm font-semibold text-[#111827] shadow-[0_14px_34px_rgba(17,24,39,0.12)] backdrop-blur"
+      >
+        Règlement
+      </button>
+
+      <RulesModal campaign={campaign} open={rulesOpen} onClose={() => setRulesOpen(false)} />
 
       <PublicModal open={stage === "intro"}>
         <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-[#f7f7fb] text-4xl font-semibold text-[#1a2f76] shadow-[0_20px_45px_rgba(17,24,39,0.10)]">

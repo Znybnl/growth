@@ -96,7 +96,7 @@ export function BackgroundLibraryManager({
 
   return (
     <div className="space-y-6">
-      <section className="rounded-[30px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+      <section className="px-1 py-2">
         <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Bibliothèque</p>
         <h1 className="mt-2 text-3xl font-semibold text-[#111827]">
           Gérer les images de fond
@@ -108,7 +108,7 @@ export function BackgroundLibraryManager({
 
         <form
           onSubmit={submitAsset}
-          className="mt-6 grid gap-4 rounded-[24px] border border-[#e4ebf5] bg-[#f8fafc] p-4 xl:grid-cols-[0.95fr_1.05fr]"
+          className="mt-6 grid gap-4 rounded-[8px] border border-[#e4ebf5] bg-[#f8fafc] p-4 xl:grid-cols-[0.95fr_1.05fr]"
         >
           <div className="grid gap-4">
             <label className="text-sm">
@@ -116,7 +116,7 @@ export function BackgroundLibraryManager({
               <input
                 value={label}
                 onChange={(event) => setLabel(event.target.value)}
-                className="w-full rounded-[18px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
+                className="w-full rounded-[12px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
                 placeholder="Sunset Cocktail"
                 required
               />
@@ -126,7 +126,7 @@ export function BackgroundLibraryManager({
               <input
                 value={category}
                 onChange={(event) => setCategory(event.target.value)}
-                className="w-full rounded-[18px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
+                className="w-full rounded-[12px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
                 placeholder="Food"
                 required
               />
@@ -135,7 +135,7 @@ export function BackgroundLibraryManager({
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full rounded-[18px] bg-[#111827] px-5 py-3 text-sm font-semibold text-white disabled:opacity-60"
+                className="w-full rounded-[12px] bg-[#111827] px-5 py-3 text-sm font-semibold text-white disabled:opacity-60"
               >
                 {isSubmitting ? "Optimisation..." : "Ajouter à la bibliothèque"}
               </button>
@@ -143,7 +143,7 @@ export function BackgroundLibraryManager({
           </div>
 
           <div className="grid gap-4">
-            <label className="group relative flex min-h-[232px] cursor-pointer flex-col justify-between overflow-hidden rounded-[24px] border border-dashed border-[#cfd9ea] bg-white p-4 transition hover:border-[#2f6df6] hover:bg-[#eef4ff]">
+            <label className="group relative flex min-h-[232px] cursor-pointer flex-col justify-between overflow-hidden rounded-[8px] border border-dashed border-[#cfd9ea] bg-white p-4 transition hover:border-[#2f6df6] hover:bg-[#eef4ff]">
               <div>
                 <span className="mb-2 block text-sm text-[#616b7c]">Image</span>
                 <p className="max-w-md text-sm leading-6 text-[#516073]">
@@ -154,11 +154,11 @@ export function BackgroundLibraryManager({
 
               {localPreviewUrl ? (
                 <div
-                  className="mt-4 min-h-[140px] rounded-[20px] border border-white bg-cover bg-center shadow-inner"
+                  className="mt-4 min-h-[140px] rounded-[8px] border border-white bg-cover bg-center shadow-inner"
                   style={{ backgroundImage: `url("${localPreviewUrl}")` }}
                 />
               ) : (
-                <div className="mt-4 flex min-h-[140px] items-center justify-center rounded-[20px] border border-dashed border-[#dbe4f0] bg-[#f8fafc] text-sm font-medium text-[#748095]">
+                <div className="mt-4 flex min-h-[140px] items-center justify-center rounded-[8px] border border-dashed border-[#dbe4f0] bg-[#f8fafc] text-sm font-medium text-[#748095]">
                   Aperçu du visuel importé
                 </div>
               )}
@@ -188,13 +188,13 @@ export function BackgroundLibraryManager({
         </form>
 
         {message ? (
-          <div className="mt-4 rounded-[18px] border border-[#dbe4f0] bg-[#f7f9fc] px-4 py-3 text-sm font-medium text-[#182033]">
+          <div className="mt-4 rounded-[8px] border border-[#dbe4f0] bg-[#f7f9fc] px-4 py-3 text-sm font-medium text-[#182033]">
             {message}
           </div>
         ) : null}
       </section>
 
-      <section className="rounded-[30px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
+      <section className="okado-card p-6">
         <div className="flex items-center justify-between gap-3">
           <div>
             <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Catalogue</p>
@@ -208,7 +208,7 @@ export function BackgroundLibraryManager({
           {items.map((item) => (
             <article
               key={item.id}
-              className="overflow-hidden rounded-[24px] border border-[#e3e9f3] bg-[#f8fafc]"
+              className="overflow-hidden rounded-[8px] border border-[#e3e9f3] bg-[#f8fafc]"
             >
               <div className="relative aspect-[4/5] overflow-hidden bg-[#e8eef8]">
                 <Image

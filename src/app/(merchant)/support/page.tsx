@@ -172,13 +172,13 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
 
   return (
     <div className="space-y-6">
-      <section className="overflow-hidden rounded-[34px] border border-[#dbe4f0] bg-white shadow-[0_20px_50px_rgba(122,136,166,0.14)]">
-        <div className="px-6 py-7 xl:px-8">
-          <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Supervision</p>
-          <h1 className="mt-3 font-display text-5xl font-semibold leading-none text-[#0f1728]">
+      <section className="px-1 py-2">
+        <div>
+          <p className="okado-label">Supervision</p>
+          <h1 className="mt-3 font-display text-5xl font-semibold leading-none text-midnight-ink">
             Centre de supervision
           </h1>
-          <p className="mt-4 max-w-3xl text-sm leading-7 text-[#5c6577]">
+          <p className="mt-4 max-w-3xl text-sm leading-7 text-ash">
             Retrouvez les e-mails en échec, les webhooks Resend reçus et les gains encore en
             attente de retrait depuis un seul écran support.
           </p>
@@ -194,7 +194,7 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
         ].map(([label, value]) => (
           <div
             key={label}
-            className="rounded-[28px] border border-[#dbe4f0] bg-white p-5 shadow-[0_14px_36px_rgba(122,136,166,0.08)]"
+            className="okado-card p-5"
           >
             <p className="text-xs uppercase tracking-[0.24em] text-[#7b8496]">{label}</p>
             <p className="mt-4 text-3xl font-semibold text-[#111827]">{value}</p>
@@ -202,7 +202,7 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
         ))}
       </section>
 
-      <section className="rounded-[32px] border border-[#dbe4f0] bg-[#101827] p-6 text-white shadow-[0_18px_44px_rgba(15,23,42,0.16)]">
+      <section className="rounded-[8px] border border-[#dbe4f0] bg-[#101827] p-6 text-white shadow-[0_18px_44px_rgba(15,23,42,0.16)]">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-xs uppercase tracking-[0.28em] text-[#9fb0d0]">Santé production</p>
@@ -216,7 +216,7 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
 
         <div className="mt-6 grid gap-3 md:grid-cols-4">
           {healthItems.map((item) => (
-            <div key={item.label} className="rounded-[24px] bg-white/8 p-4 ring-1 ring-white/10">
+            <div key={item.label} className="rounded-[8px] bg-white/8 p-4 ring-1 ring-white/10">
               <div className="flex items-center justify-between gap-3">
                 <p className="text-sm font-semibold text-white">{item.label}</p>
                 <StatusBadge
@@ -231,7 +231,7 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
         </div>
       </section>
 
-      <section className="rounded-[28px] border border-[#dbe4f0] bg-white p-5 shadow-[0_14px_36px_rgba(122,136,166,0.08)]">
+      <section className="okado-card p-5">
         <form className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_220px_220px_auto]" action="/support">
           <label className="text-sm">
             <span className="mb-2 block text-[#616b7c]">Recherche support</span>
@@ -239,7 +239,7 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
               name="q"
               defaultValue={params.q ?? ""}
               placeholder="E-mail, code retrait, campagne, lead..."
-              className="w-full rounded-[18px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+              className="w-full rounded-[12px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
             />
           </label>
 
@@ -248,7 +248,7 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
             <select
               name="section"
               defaultValue={section}
-              className="w-full rounded-[18px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+              className="w-full rounded-[12px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
             >
               <option value="all">Toutes</option>
               <option value="emails">E-mails</option>
@@ -263,7 +263,7 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
             <select
               name="status"
               defaultValue={status}
-              className="w-full rounded-[18px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+              className="w-full rounded-[12px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
             >
               <option value="all">Tous</option>
               <option value="failed">E-mail en échec</option>
@@ -283,14 +283,14 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
           <div className="flex items-end gap-2">
             <button
               type="submit"
-              className="rounded-[18px] bg-[#111827] px-5 py-3 text-sm font-semibold !text-white"
+              className="rounded-[12px] bg-[#111827] px-5 py-3 text-sm font-semibold !text-white"
             >
               Filtrer
             </button>
             {hasFilter ? (
               <a
                 href="/support"
-                className="rounded-[18px] border border-[#d7e0ed] px-5 py-3 text-sm font-semibold text-[#182033]"
+                className="rounded-[12px] border border-[#d7e0ed] px-5 py-3 text-sm font-semibold text-[#182033]"
               >
                 Effacer
               </a>
@@ -300,7 +300,7 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
       </section>
 
       <section className="grid gap-6 xl:grid-cols-4">
-        <article className="rounded-[32px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)] xl:col-span-1">
+        <article className="okado-card p-6 xl:col-span-1">
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">E-mails</p>
@@ -314,7 +314,7 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
               filteredOverview.failedEmails.map((item) => (
                 <div
                   key={item.deliveryId}
-                  className="rounded-[24px] border border-[#edf1f6] bg-[#fbfcfe] p-4"
+                  className="rounded-[8px] border border-[#edf1f6] bg-[#fbfcfe] p-4"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
@@ -334,7 +334,7 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
                 </div>
               ))
             ) : (
-              <p className="rounded-[24px] border border-dashed border-[#dbe4f0] bg-[#fbfcfe] px-4 py-8 text-sm text-[#64748b]">
+              <p className="rounded-[8px] border border-dashed border-[#dbe4f0] bg-[#fbfcfe] px-4 py-8 text-sm text-[#64748b]">
                 {hasFilter
                   ? "Aucun e-mail ne correspond aux filtres."
                   : "Aucun e-mail en échec sur les dernières campagnes."}
@@ -343,7 +343,7 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
           </div>
         </article>
 
-        <article className="rounded-[32px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)] xl:col-span-1">
+        <article className="okado-card p-6 xl:col-span-1">
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Webhooks</p>
@@ -357,7 +357,7 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
               filteredOverview.webhooks.map((item) => (
                 <div
                   key={item.id}
-                  className="rounded-[24px] border border-[#edf1f6] bg-[#fbfcfe] p-4"
+                  className="rounded-[8px] border border-[#edf1f6] bg-[#fbfcfe] p-4"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
@@ -389,7 +389,7 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
                 </div>
               ))
             ) : (
-              <p className="rounded-[24px] border border-dashed border-[#dbe4f0] bg-[#fbfcfe] px-4 py-8 text-sm text-[#64748b]">
+              <p className="rounded-[8px] border border-dashed border-[#dbe4f0] bg-[#fbfcfe] px-4 py-8 text-sm text-[#64748b]">
                 {hasFilter
                   ? "Aucun webhook ne correspond aux filtres."
                   : "Aucun webhook archivé pour le moment."}
@@ -398,7 +398,7 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
           </div>
         </article>
 
-        <article className="rounded-[32px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)] xl:col-span-1">
+        <article className="okado-card p-6 xl:col-span-1">
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Gains</p>
@@ -412,7 +412,7 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
               filteredOverview.pendingClaims.map((item) => (
                 <div
                   key={item.leadId}
-                  className="rounded-[24px] border border-[#edf1f6] bg-[#fbfcfe] p-4"
+                  className="rounded-[8px] border border-[#edf1f6] bg-[#fbfcfe] p-4"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
@@ -437,7 +437,7 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
                 </div>
               ))
             ) : (
-              <p className="rounded-[24px] border border-dashed border-[#dbe4f0] bg-[#fbfcfe] px-4 py-8 text-sm text-[#64748b]">
+              <p className="rounded-[8px] border border-dashed border-[#dbe4f0] bg-[#fbfcfe] px-4 py-8 text-sm text-[#64748b]">
                 {hasFilter
                   ? "Aucun gain ne correspond aux filtres."
                   : "Aucun gain en attente de retrait."}
@@ -446,7 +446,7 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
           </div>
         </article>
 
-        <article className="rounded-[32px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)] xl:col-span-1">
+        <article className="okado-card p-6 xl:col-span-1">
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Journal</p>
@@ -460,7 +460,7 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
               filteredOverview.businessLogs.map((item) => (
                 <div
                   key={item.id}
-                  className="rounded-[24px] border border-[#edf1f6] bg-[#fbfcfe] p-4"
+                  className="rounded-[8px] border border-[#edf1f6] bg-[#fbfcfe] p-4"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
@@ -495,7 +495,7 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
                 </div>
               ))
             ) : (
-              <p className="rounded-[24px] border border-dashed border-[#dbe4f0] bg-[#fbfcfe] px-4 py-8 text-sm text-[#64748b]">
+              <p className="rounded-[8px] border border-dashed border-[#dbe4f0] bg-[#fbfcfe] px-4 py-8 text-sm text-[#64748b]">
                 {hasFilter
                   ? "Aucun log ne correspond aux filtres."
                   : "Aucun log métier récent."}

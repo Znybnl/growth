@@ -55,7 +55,7 @@ export function BillingSubscriptionCard({ billing }: BillingSubscriptionCardProp
   }
 
   return (
-    <section className="rounded-[32px] border border-[#dbe4f0] bg-white p-6 shadow-[0_18px_44px_rgba(122,136,166,0.1)] md:p-8">
+    <section className="okado-card p-6 md:p-8">
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div>
           <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">
@@ -82,7 +82,7 @@ export function BillingSubscriptionCard({ billing }: BillingSubscriptionCardProp
       <div className="mt-6 grid gap-4 lg:grid-cols-[minmax(0,1.3fr)_minmax(300px,0.7fr)]">
         <div className="space-y-4">
           {billing.isSubscribed ? (
-            <div className="rounded-[24px] border border-[#cfe9d8] bg-[#effaf3] p-5 text-sm text-[#19633f]">
+            <div className="rounded-[8px] border border-[#cfe9d8] bg-[#effaf3] p-5 text-sm text-[#19633f]">
               <p className="font-semibold">Abonnement actif (Plan Pro)</p>
               <p className="mt-2 leading-7">
                 Votre prochaine facture est prévue le{" "}
@@ -98,7 +98,7 @@ export function BillingSubscriptionCard({ billing }: BillingSubscriptionCardProp
               ) : null}
             </div>
           ) : billing.isTrialActive ? (
-            <div className="rounded-[24px] border border-[#cfe9d8] bg-[#effaf3] p-5 text-sm text-[#19633f]">
+            <div className="rounded-[8px] border border-[#cfe9d8] bg-[#effaf3] p-5 text-sm text-[#19633f]">
               <p className="font-semibold">Vous êtes actuellement en période d’essai gratuit.</p>
               <p className="mt-2 leading-7">
                 Il vous reste{" "}
@@ -114,7 +114,7 @@ export function BillingSubscriptionCard({ billing }: BillingSubscriptionCardProp
               </p>
             </div>
           ) : (
-            <div className="rounded-[24px] border border-[#f3c9c1] bg-[#fff1ee] p-5 text-sm text-[#8b2c18]">
+            <div className="rounded-[8px] border border-[#f3c9c1] bg-[#fff1ee] p-5 text-sm text-[#8b2c18]">
               <p className="font-semibold">Votre période d’essai est terminée.</p>
               <p className="mt-2 leading-7">
                 Vos jeux concours sont actuellement suspendus en boutique et l’export de vos
@@ -123,7 +123,7 @@ export function BillingSubscriptionCard({ billing }: BillingSubscriptionCardProp
             </div>
           )}
 
-          <div className="rounded-[24px] border border-[#dbe4f0] bg-[#f8fbff] p-5">
+          <div className="rounded-[8px] border border-border bg-linen-canvas p-5">
             <p className="text-sm font-semibold text-[#0f1728]">Plan mensuel</p>
             <p className="mt-2 text-3xl font-semibold text-[#0f1728]">{priceLabel}</p>
             <ul className="mt-4 space-y-2 text-sm leading-7 text-[#5c6577]">
@@ -134,7 +134,7 @@ export function BillingSubscriptionCard({ billing }: BillingSubscriptionCardProp
           </div>
         </div>
 
-        <div className="rounded-[24px] border border-[#dbe4f0] bg-white p-5 shadow-[0_18px_36px_rgba(122,136,166,0.08)]">
+        <div className="rounded-[8px] border border-border bg-white p-5 shadow-[0_18px_36px_rgba(122,136,166,0.08)]">
           <p className="text-sm font-semibold text-[#0f1728]">Actions</p>
           <div className="mt-4 space-y-3">
             {billing.isSubscribed ? (
@@ -142,7 +142,7 @@ export function BillingSubscriptionCard({ billing }: BillingSubscriptionCardProp
                 type="button"
                 onClick={() => redirectTo("/api/stripe/portal-session")}
                 disabled={isLoading !== null}
-                className="inline-flex w-full items-center justify-center rounded-[18px] bg-[#0f1728] px-5 py-4 text-sm font-semibold !text-white transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex w-full items-center justify-center rounded-[12px] bg-[#0f1728] px-5 py-4 text-sm font-semibold !text-white transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isLoading === "portal"
                   ? "Ouverture du portail..."
@@ -153,7 +153,7 @@ export function BillingSubscriptionCard({ billing }: BillingSubscriptionCardProp
                 type="button"
                 onClick={() => redirectTo("/api/stripe/checkout-session")}
                 disabled={isLoading !== null}
-                className="inline-flex w-full items-center justify-center rounded-[18px] bg-[#2f6df6] px-5 py-4 text-sm font-semibold !text-white transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex w-full items-center justify-center rounded-[12px] bg-[#2f6df6] px-5 py-4 text-sm font-semibold !text-white transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isLoading === "checkout"
                   ? "Redirection vers le paiement..."
@@ -190,7 +190,7 @@ export function BillingSubscriptionCard({ billing }: BillingSubscriptionCardProp
           </dl>
 
           {error ? (
-            <div className="mt-4 rounded-[18px] border border-[#f3c9c1] bg-[#fff1ee] px-4 py-3 text-sm text-[#8b2c18]">
+            <div className="mt-4 rounded-[8px] border border-[#f3c9c1] bg-[#fff1ee] px-4 py-3 text-sm text-[#8b2c18]">
               {error}
             </div>
           ) : null}

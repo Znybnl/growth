@@ -39,19 +39,43 @@ export default async function DashboardPage({
     (left, right) => right.kpis.conversionRate - left.kpis.conversionRate,
   )[0];
   const activityPoints = dashboard.activityPoints;
+  const getCampaignStatus = (item: (typeof filteredCampaigns)[number]) => {
+    if (!item.campaign.isActive) {
+      return { label: "Désactivée", color: "#98a2b3" };
+    }
+
+    if (item.prizes.some((prize) => prize.remainingQuantity === 0)) {
+      return { label: "Stock épuisé", color: "#f59e0b" };
+    }
+
+    return { label: "Active", color: "#12b76a" };
+  };
+  const leadStatusTone = (status: (typeof recentLeads)[number]["status"]) => {
+    switch (status) {
+      case "redeemed":
+        return "bg-[#ecfdf3] text-[#047857]";
+      case "claimed":
+        return "bg-[#eff6ff] text-[#1d4ed8]";
+      case "lost":
+        return "bg-[#f3f4f6] text-[#4b5563]";
+      case "expired":
+        return "bg-[#fff7ed] text-[#c2410c]";
+      default:
+        return "bg-white text-[#505b6e]";
+    }
+  };
 
   return (
-    <div className="min-w-0 space-y-6 overflow-x-hidden">
-      <section className="overflow-hidden rounded-[34px] border border-[#dbe4f0] bg-white shadow-[0_20px_50px_rgba(122,136,166,0.14)]">
-        <div className="grid gap-6 px-6 py-7 xl:grid-cols-[1.2fr_0.8fr] xl:px-8">
+    <div className="min-w-0 space-y-5 overflow-x-hidden">
+      <section className="grid gap-5 px-1 py-2 xl:grid-cols-[1.2fr_0.8fr]">
           <div className="min-w-0">
-            <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">
+            <p className="okado-label">
               Vue d&apos;ensemble
             </p>
-            <h1 className="mt-3 font-display text-[2.4rem] font-semibold leading-none text-[#0f1728] md:text-5xl">
+            <h1 className="mt-3 font-display text-[2.4rem] font-semibold leading-[1.03] text-midnight-ink md:text-[56px]">
               Pilotez vos activations
             </h1>
-            <p className="mt-4 max-w-3xl text-sm leading-7 text-[#5c6577]">
+            <p className="mt-4 max-w-3xl text-sm leading-6 text-ash">
               Suivez vos campagnes en direct, comparez les mécaniques qui performent et lancez
               rapidement une nouvelle activation.
             </p>
@@ -61,12 +85,11 @@ export default async function DashboardPage({
             <Link
               href="/campaigns/new"
               prefetch={false}
-              className="inline-flex rounded-[22px] bg-[#2f6df6] px-5 py-4 text-sm font-semibold !text-white shadow-[0_16px_32px_rgba(47,109,246,0.22)]"
+              className="inline-flex h-11 items-center rounded-[12px] bg-[linear-gradient(rgb(59,130,246)_0%,rgb(20,90,255)_100%)] px-5 text-sm font-semibold !text-white"
             >
               Créer une campagne
             </Link>
           </div>
-        </div>
       </section>
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -96,10 +119,12 @@ export default async function DashboardPage({
         ].map(([label, value]) => (
           <div
             key={label}
-            className="rounded-[28px] border border-[#dbe4f0] bg-white p-5 shadow-[0_14px_36px_rgba(122,136,166,0.08)]"
+            className="okado-card p-4"
           >
-            <p className="text-xs uppercase tracking-[0.24em] text-[#7b8496]">{label}</p>
-            <p className="mt-4 text-3xl font-semibold text-[#111827]">{value}</p>
+            <p className="okado-label">{label}</p>
+            <p className="mt-4 text-3xl font-semibold tracking-[-0.04em] text-[#111827] md:text-4xl">
+              {value}
+            </p>
           </div>
         ))}
       </section>
@@ -112,13 +137,13 @@ export default async function DashboardPage({
             points={activityPoints}
           />
 
-          <div className="min-w-0 min-h-[350px] rounded-[32px] border border-[#dbe4f0] bg-white p-5 shadow-[0_18px_44px_rgba(122,136,166,0.1)] md:p-6">
+          <div className="okado-card min-h-[350px] min-w-0 p-5 md:p-6">
             <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
               <div className="min-w-0">
-                <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">
+                <p className="okado-label">
                   Campagnes prioritaires
                 </p>
-                <h2 className="mt-2 text-[1.9rem] font-semibold leading-tight text-[#111827] md:text-2xl">
+                <h2 className="mt-2 text-[22px] font-semibold leading-tight tracking-[-0.22px] text-graphite">
                   À surveiller aujourd&apos;hui
                 </h2>
               </div>
@@ -127,12 +152,12 @@ export default async function DashboardPage({
               </Link>
             </div>
 
-            <div className="mt-6 hidden overflow-hidden rounded-[28px] border border-[#e4eaf2] md:block">
+            <div className="mt-6 hidden overflow-hidden rounded-[8px] border border-border md:block">
               <div className="grid grid-cols-[1.5fr_0.85fr_0.7fr_0.7fr_0.9fr] gap-3 bg-[#f7f9fc] px-5 py-4 text-[11px] uppercase tracking-[0.24em] text-[#7c8597]">
                 <span>Campagne</span>
                 <span>Mécanique</span>
-                <span>Leads</span>
-                <span>Actions</span>
+                <span>Scans</span>
+                <span>Lead</span>
                 <span>Conversion</span>
               </div>
 
@@ -145,7 +170,8 @@ export default async function DashboardPage({
                     <div className="flex items-center gap-3">
                       <span
                         className="h-3 w-3 rounded-full"
-                        style={{ backgroundColor: item.campaign.accent.signal }}
+                        title={getCampaignStatus(item).label}
+                        style={{ backgroundColor: getCampaignStatus(item).color }}
                       />
                       <div className="min-w-0">
                         <p className="truncate font-semibold text-[#111827]">
@@ -158,8 +184,8 @@ export default async function DashboardPage({
                     </div>
                   </div>
                   <span className="text-[#556173]">{gameTypeLabel(item.campaign.gameType)}</span>
+                  <span className="font-semibold text-[#111827]">{item.kpis.scans}</span>
                   <span className="font-semibold text-[#111827]">{item.kpis.leads}</span>
-                  <span className="font-semibold text-[#111827]">{item.kpis.actions}</span>
                   <span className="font-semibold text-[#111827]">
                     {formatPercent(item.kpis.conversionRate)}
                   </span>
@@ -171,13 +197,14 @@ export default async function DashboardPage({
               {filteredCampaigns.map((item) => (
                 <div
                   key={item.campaign.id}
-                  className="rounded-[24px] border border-[#e4eaf2] bg-[#f8fafc] p-4"
+                  className="rounded-[8px] border border-border bg-linen-canvas p-4"
                 >
                   <div className="flex items-start gap-3">
-                    <span
-                      className="mt-1 h-3 w-3 shrink-0 rounded-full"
-                      style={{ backgroundColor: item.campaign.accent.signal }}
-                    />
+                      <span
+                        className="mt-1 h-3 w-3 shrink-0 rounded-full"
+                        title={getCampaignStatus(item).label}
+                        style={{ backgroundColor: getCampaignStatus(item).color }}
+                      />
                     <div className="min-w-0">
                       <p className="truncate font-semibold text-[#111827]">
                         {item.campaign.title}
@@ -189,7 +216,7 @@ export default async function DashboardPage({
                   </div>
 
                   <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
-                    <div className="rounded-[18px] bg-white px-3 py-3">
+                    <div className="rounded-[8px] bg-white px-3 py-3">
                       <p className="text-[11px] uppercase tracking-[0.18em] text-[#7c8597]">
                         Mécanique
                       </p>
@@ -197,7 +224,7 @@ export default async function DashboardPage({
                         {gameTypeLabel(item.campaign.gameType)}
                       </p>
                     </div>
-                    <div className="rounded-[18px] bg-white px-3 py-3">
+                    <div className="rounded-[8px] bg-white px-3 py-3">
                       <p className="text-[11px] uppercase tracking-[0.18em] text-[#7c8597]">
                         Conversion
                       </p>
@@ -205,17 +232,17 @@ export default async function DashboardPage({
                         {formatPercent(item.kpis.conversionRate)}
                       </p>
                     </div>
-                    <div className="rounded-[18px] bg-white px-3 py-3">
+                    <div className="rounded-[8px] bg-white px-3 py-3">
                       <p className="text-[11px] uppercase tracking-[0.18em] text-[#7c8597]">
                         Leads
                       </p>
                       <p className="mt-2 font-semibold text-[#111827]">{item.kpis.leads}</p>
                     </div>
-                    <div className="rounded-[18px] bg-white px-3 py-3">
+                    <div className="rounded-[8px] bg-white px-3 py-3">
                       <p className="text-[11px] uppercase tracking-[0.18em] text-[#7c8597]">
-                        Actions
+                        Scans
                       </p>
-                      <p className="mt-2 font-semibold text-[#111827]">{item.kpis.actions}</p>
+                      <p className="mt-2 font-semibold text-[#111827]">{item.kpis.scans}</p>
                     </div>
                   </div>
                 </div>
@@ -226,7 +253,7 @@ export default async function DashboardPage({
 
         <div className="min-w-0 space-y-6">
           {bestCampaign ? (
-            <div className="rounded-[32px] border border-[#dbe4f0] bg-white p-5 shadow-[0_18px_44px_rgba(122,136,166,0.1)] md:p-6">
+            <div className="okado-card p-5 md:p-6">
               <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">
                 Meilleure campagne
               </p>
@@ -234,13 +261,13 @@ export default async function DashboardPage({
                 {bestCampaign.campaign.title}
               </h2>
               <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                <div className="rounded-[24px] bg-[#f7f9fc] p-4">
-                  <p className="text-sm text-[#7b8496]">Conversion scan ? lead</p>
+                <div className="rounded-[8px] bg-linen-canvas p-4">
+                  <p className="text-sm text-[#7b8496]">Conversion scan → lead</p>
                   <p className="mt-2 text-3xl font-semibold text-[#111827]">
                     {formatPercent(bestCampaign.kpis.conversionRate)}
                   </p>
                 </div>
-                <div className="rounded-[24px] bg-[#f7f9fc] p-4">
+                <div className="rounded-[8px] bg-linen-canvas p-4">
                   <p className="text-sm text-[#7b8496]">Coût par lead</p>
                   <p className="mt-2 text-3xl font-semibold text-[#111827]">
                     {formatCurrency(bestCampaign.kpis.costPerLead)}
@@ -250,7 +277,7 @@ export default async function DashboardPage({
             </div>
           ) : null}
 
-          <div className="min-w-0 min-h-[350px] rounded-[32px] border border-[#dbe4f0] bg-white p-5 shadow-[0_18px_44px_rgba(122,136,166,0.1)] md:p-6">
+          <div className="okado-card min-h-[350px] min-w-0 p-5 md:p-6">
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">
                 <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">
@@ -269,14 +296,14 @@ export default async function DashboardPage({
               {recentLeads.map((lead) => (
                 <div
                   key={lead.id}
-                  className="rounded-[24px] border border-[#e4eaf2] bg-[#f8fafc] p-4"
+                  className="rounded-[8px] border border-border bg-linen-canvas p-4"
                 >
                   <div className="flex items-center justify-between gap-3">
                     <div className="min-w-0">
                       <p className="truncate font-semibold text-[#111827]">{lead.firstName}</p>
                       <p className="truncate text-sm text-[#7b8496]">{lead.email}</p>
                     </div>
-                    <span className="rounded-full bg-white px-3 py-2 text-xs font-semibold text-[#505b6e]">
+                    <span className={`rounded-full px-3 py-2 text-xs font-semibold ${leadStatusTone(lead.status)}`}>
                       {leadStatusLabel(lead.status)}
                     </span>
                   </div>
