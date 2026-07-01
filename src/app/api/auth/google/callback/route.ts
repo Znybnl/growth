@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 
-import { SESSION_COOKIE } from "@/lib/auth";
+import { createAffiliateReferralForMerchant } from "@/lib/affiliate-repository";
 import { authenticateOrProvisionMerchantWithGoogle } from "@/lib/merchant-account-repository";
-import { getSupabaseOAuthClient, isSupabaseOAuthConfigured } from "@/lib/supabase";
+import { createRouteSupabaseClient } from "@/lib/supabase-server-auth";
 
 function sanitizeNextPath(rawNext: string | null) {
   if (!rawNext || !rawNext.startsWith("/")) {
@@ -20,47 +20,78 @@ function splitName(fullName: string) {
   return { firstName, lastName };
 }
 
+function buildErrorRedirect(origin: string, message: string) {
+  const redirectUrl = new URL("/connexion", origin);
+  redirectUrl.searchParams.set("error", "google_oauth");
+  redirectUrl.searchParams.set("reason", message);
+  return redirectUrl;
+}
+
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const origin = url.origin;
   const next = sanitizeNextPath(url.searchParams.get("next"));
+  const referralCode = url.searchParams.get("ref")?.trim() ?? "";
   const code = url.searchParams.get("code");
+  const providerError =
+    url.searchParams.get("error_description") ||
+    url.searchParams.get("error") ||
+    "Connexion Google impossible.";
 
-  if (!isSupabaseOAuthConfigured() || !code) {
-    return NextResponse.redirect(new URL("/connexion?error=google_oauth", origin));
+  if (!code) {
+    return NextResponse.redirect(buildErrorRedirect(origin, providerError));
   }
 
-  const supabase = getSupabaseOAuthClient();
-  const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+  const provisionalResponse = NextResponse.redirect(new URL(next, origin));
 
-  if (error || !data.user?.email) {
-    return NextResponse.redirect(new URL("/connexion?error=google_oauth", origin));
+  try {
+    const supabase = createRouteSupabaseClient({
+      request,
+      response: provisionalResponse,
+    });
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+
+    if (error || !data.user?.email) {
+      throw error ?? new Error("Session Google introuvable ou code PKCE invalide.");
+    }
+
+    const metadata = data.user.user_metadata ?? {};
+    const fullName =
+      typeof metadata.full_name === "string"
+        ? metadata.full_name
+        : typeof metadata.name === "string"
+          ? metadata.name
+          : "";
+    const { firstName, lastName } = splitName(fullName);
+    const session = await authenticateOrProvisionMerchantWithGoogle({
+      email: data.user.email,
+      firstName: typeof metadata.given_name === "string" ? metadata.given_name : firstName,
+      lastName: typeof metadata.family_name === "string" ? metadata.family_name : lastName,
+      fullName,
+    });
+
+    if (referralCode) {
+      await createAffiliateReferralForMerchant({
+        referredMerchantId: session.merchant.id,
+        referralCode,
+        source: "google_signup",
+      });
+    }
+
+    const redirectPath = session.merchant.onboardingCompleted ? next : "/onboarding";
+    const response = NextResponse.redirect(new URL(redirectPath, origin));
+
+    for (const cookie of provisionalResponse.cookies.getAll()) {
+      response.cookies.set(cookie);
+    }
+
+    return response;
+  } catch (error) {
+    return NextResponse.redirect(
+      buildErrorRedirect(
+        origin,
+        error instanceof Error ? error.message : "Connexion Google impossible.",
+      ),
+    );
   }
-
-  const metadata = data.user.user_metadata ?? {};
-  const fullName =
-    typeof metadata.full_name === "string"
-      ? metadata.full_name
-      : typeof metadata.name === "string"
-        ? metadata.name
-        : "";
-  const { firstName, lastName } = splitName(fullName);
-  const session = await authenticateOrProvisionMerchantWithGoogle({
-    email: data.user.email,
-    firstName: typeof metadata.given_name === "string" ? metadata.given_name : firstName,
-    lastName: typeof metadata.family_name === "string" ? metadata.family_name : lastName,
-    fullName,
-  });
-
-  const redirectPath = session.merchant.onboardingCompleted ? next : "/onboarding";
-  const response = NextResponse.redirect(new URL(redirectPath, origin));
-
-  response.cookies.set(SESSION_COOKIE, session.user.id, {
-    httpOnly: true,
-    sameSite: "lax",
-    path: "/",
-    secure: process.env.NODE_ENV === "production",
-  });
-
-  return response;
 }

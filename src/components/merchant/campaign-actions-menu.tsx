@@ -1,77 +1,93 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import {
+  Download,
+  ImageIcon,
+  Mail,
+  MoreVertical,
+  QrCode,
+} from "lucide-react";
 
 import { DeleteCampaignButton } from "@/components/merchant/delete-campaign-button";
 import { DuplicateCampaignButton } from "@/components/merchant/duplicate-campaign-button";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 type CampaignActionsMenuProps = {
   campaignId: string;
   campaignTitle: string;
 };
 
+const itemClass =
+  "min-h-9 cursor-pointer gap-2 rounded-[8px] px-2.5 py-2 text-sm font-medium text-[#182033] focus:bg-linen-canvas";
+
 export function CampaignActionsMenu({
   campaignId,
   campaignTitle,
 }: CampaignActionsMenuProps) {
-  const [open, setOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-
-    function handlePointerDown(event: PointerEvent) {
-      if (!containerRef.current?.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    }
-
-    document.addEventListener("pointerdown", handlePointerDown);
-    return () => document.removeEventListener("pointerdown", handlePointerDown);
-  }, [open]);
-
   return (
-    <div ref={containerRef} className="relative">
-      <button
-        type="button"
-        onClick={() => setOpen((current) => !current)}
-        className="cursor-pointer rounded-[18px] border border-[#d7e0ed] bg-white px-4 py-3 text-sm font-semibold text-[#182033]"
-        aria-expanded={open}
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          className="h-9 w-9 rounded-[8px] border-border bg-white text-[#182033] hover:bg-linen-canvas"
+          aria-label="Ouvrir les actions de la campagne"
+        >
+          <MoreVertical className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        align="end"
+        sideOffset={8}
+        className="w-[min(264px,calc(100vw-24px))] rounded-[8px] border-border bg-white p-1.5 shadow-[0_18px_40px_rgba(122,136,166,0.14)]"
       >
-        Plus
-      </button>
+        <DropdownMenuItem className={itemClass} asChild>
+          <a href={`/api/campaigns/${campaignId}/qr`}>
+            <QrCode className="h-4 w-4" />
+            Exporter le QR code
+          </a>
+        </DropdownMenuItem>
+        <DropdownMenuItem className={itemClass} asChild>
+          <a href={`/campaigns/${campaignId}/poster`}>
+            <ImageIcon className="h-4 w-4" />
+            Personnaliser l&apos;affiche
+          </a>
+        </DropdownMenuItem>
+        <DropdownMenuItem className={itemClass} asChild>
+          <a href={`/campaigns/${campaignId}/email`}>
+            <Mail className="h-4 w-4" />
+            Personnaliser l&apos;email
+          </a>
+        </DropdownMenuItem>
+        <DropdownMenuItem className={itemClass} asChild>
+          <a href={`/api/campaigns/${campaignId}/poster`}>
+            <Download className="h-4 w-4" />
+            Télécharger l&apos;affiche A4
+          </a>
+        </DropdownMenuItem>
 
-      {open ? (
-        <div className="absolute right-0 top-[calc(100%+12px)] z-20 min-w-[220px] rounded-[22px] border border-[#dfe6f0] bg-white p-3 shadow-[0_18px_40px_rgba(122,136,166,0.14)]">
-          <div className="flex flex-col gap-2">
-            <a
-              href={`/api/campaigns/${campaignId}/qr`}
-              className="rounded-[16px] border border-[#d7e0ed] px-4 py-3 text-sm font-semibold text-[#182033]"
-              onClick={() => setOpen(false)}
-            >
-              Exporter le QR code
-            </a>
-            <a
-              href={`/campaigns/${campaignId}/poster`}
-              className="rounded-[16px] border border-[#d7e0ed] px-4 py-3 text-sm font-semibold text-[#182033]"
-              onClick={() => setOpen(false)}
-            >
-              Personnaliser l&apos;affiche
-            </a>
-            <a
-              href={`/api/campaigns/${campaignId}/poster`}
-              className="rounded-[16px] bg-[#2f6df6] px-4 py-3 text-sm font-semibold !text-white"
-              onClick={() => setOpen(false)}
-            >
-              Télécharger l&apos;affiche A4
-            </a>
-            <DuplicateCampaignButton campaignId={campaignId} />
-            <DeleteCampaignButton campaignId={campaignId} campaignTitle={campaignTitle} />
-          </div>
+        <DropdownMenuSeparator />
+
+        <div className="space-y-1">
+          <DuplicateCampaignButton
+            campaignId={campaignId}
+            variant="menu"
+          />
+          <DeleteCampaignButton
+            campaignId={campaignId}
+            campaignTitle={campaignTitle}
+            variant="menu"
+          />
         </div>
-      ) : null}
-    </div>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

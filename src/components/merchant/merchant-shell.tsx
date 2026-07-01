@@ -1,17 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { usePathname } from "next/navigation";
+import posthog from "posthog-js";
+import { useEffect, useMemo, useState } from "react";
 
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { BrandMark } from "@/components/brand-mark";
+import { Button } from "@/components/ui/button";
 import { APP_NAME_CAPITALIZED } from "@/lib/branding";
-import { Merchant } from "@/lib/types";
+import { getMerchantBillingSummary } from "@/lib/billing";
+import { Merchant, MerchantUser } from "@/lib/types";
 
 type MerchantShellProps = {
   children: React.ReactNode;
   merchant: Merchant;
+  user: MerchantUser;
+  isSaasAdmin: boolean;
 };
 
 const navItems = [
@@ -21,96 +26,168 @@ const navItems = [
   { href: "/account", label: "Compte" },
 ];
 
-export function MerchantShell({ children, merchant }: MerchantShellProps) {
-  const pathname = usePathname();
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [query, setQuery] = useState(searchParams.get("q") ?? "");
+const adminNavItems = [
+  { href: "/backgrounds", label: "Bibliothèque" },
+  { href: "/affiliates", label: "Affiliation" },
+  { href: "/support", label: "Supervision" },
+];
 
-  function submitSearch(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const params = new URLSearchParams(searchParams.toString());
-    if (query.trim()) {
-      params.set("q", query.trim());
-    } else {
-      params.delete("q");
+export function MerchantShell({ children, merchant, user, isSaasAdmin }: MerchantShellProps) {
+  const pathname = usePathname();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const billing = useMemo(() => getMerchantBillingSummary(merchant), [merchant]);
+
+  useEffect(() => {
+    if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) {
+      return;
     }
-    router.push(`${pathname}?${params.toString()}`);
+
+    posthog.identify(`${merchant.id}:${user.id}`, {
+      merchantId: merchant.id,
+      merchantUserId: user.id,
+      email: user.email,
+      companyName: merchant.companyName,
+      isSaasAdmin,
+      billingStatus: billing.isSubscribed
+        ? "subscribed"
+        : billing.isTrialActive
+          ? "trial"
+          : "locked",
+    });
+  }, [
+    billing.isSubscribed,
+    billing.isTrialActive,
+    isSaasAdmin,
+    merchant.companyName,
+    merchant.id,
+    user.email,
+    user.id,
+  ]);
+
+  function isActive(href: string) {
+    return href === "/" ? pathname === "/" : pathname.startsWith(href);
   }
 
   return (
-    <div className="h-screen overflow-hidden bg-[#edf2f8] text-[#10131a]">
+    <div className="h-screen overflow-hidden bg-linen-canvas text-midnight-ink">
       {menuOpen ? (
         <button
           type="button"
           aria-label="Fermer le menu"
-          className="fixed inset-0 z-30 bg-[#0f1728]/28 md:hidden"
+          className="fixed inset-0 z-30 bg-midnight-ink/20 lg:hidden"
           onClick={() => setMenuOpen(false)}
         />
       ) : null}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-40 w-[304px] border-r border-[#dfe6f0] bg-white shadow-[0_20px_60px_rgba(120,132,158,0.14)] transition-transform duration-200 md:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-40 w-[288px] border-r border-border bg-linen-canvas/92 backdrop-blur-sm transition-transform duration-200 lg:translate-x-0 ${
           menuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="flex h-full flex-col px-5 py-5">
-          <div className="px-2 py-3">
+        <div className="flex h-full flex-col px-4 py-5">
+          <div className="px-2 py-2">
             <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-[18px] bg-[#121826] text-sm font-semibold uppercase tracking-[0.24em] text-white shadow-[0_12px_24px_rgba(18,24,38,0.18)]">
+              <div className="flex h-10 w-10 items-center justify-center rounded-[8px] bg-primary-action-accent text-xs font-semibold uppercase tracking-[0.18em] text-white">
                 OK
               </div>
-              <div className="min-w-0">
-                <h1 className="truncate font-display text-[28px] leading-none tracking-[-0.05em] text-[#121826]">
-                  {APP_NAME_CAPITALIZED}
-                </h1>
-              </div>
+              <h1 className="truncate text-[22px] font-semibold leading-none tracking-[-0.05em] text-midnight-ink">
+                {APP_NAME_CAPITALIZED}
+              </h1>
             </div>
           </div>
 
-          <nav className="mt-6 space-y-2">
+          <nav className="mt-6 space-y-1">
             {navItems.map((item) => {
-              const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+              const active = isActive(item.href);
 
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex items-center justify-between rounded-[20px] px-4 py-3 text-sm font-medium transition ${
+                  prefetch={false}
+                  className={`flex h-9 items-center justify-between rounded-full px-3 text-sm transition ${
                     active
-                      ? "bg-[#eff4ff] text-[#214ccf]"
-                      : "text-[#5d6577] hover:bg-[#f5f7fb] hover:text-[#141821]"
+                      ? "bg-sky-wash font-medium text-graphite"
+                      : "text-slate hover:bg-sky-wash/70 hover:text-graphite"
                   }`}
                   onClick={() => setMenuOpen(false)}
                 >
                   <span>{item.label}</span>
                   <span
-                    className={`h-2.5 w-2.5 rounded-full ${
-                      active ? "bg-[#2f6df6]" : "bg-[#d9deea]"
-                    }`}
+                    className={`h-2 w-2 rounded-full ${active ? "bg-signal-blue" : "bg-border"}`}
                   />
                 </Link>
               );
             })}
           </nav>
 
-          <Link
-            href="/campaigns/new"
-            className="mt-6 inline-flex items-center justify-center rounded-[22px] bg-[#2f6df6] px-4 py-4 text-sm font-semibold !text-white shadow-[0_16px_32px_rgba(47,109,246,0.24)]"
-          >
-            Créer une campagne
-          </Link>
+          {isSaasAdmin ? (
+            <div className="mt-5 rounded-[8px] border border-border bg-white p-2 shadow-[var(--shadow-product-card)]">
+              <p className="px-2 pb-2 text-[10px] font-medium uppercase tracking-[0.13px] text-fog">
+                Administration
+              </p>
+              <nav className="space-y-1">
+                {adminNavItems.map((item) => {
+                  const active = isActive(item.href);
 
-          <div className="mt-auto rounded-[24px] border border-[#e6ebf4] bg-[#fbfcfe] p-4">
-            <p className="text-xs uppercase tracking-[0.24em] text-[#8c93a4]">Compte</p>
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      prefetch={false}
+                      className={`flex h-8 items-center justify-between rounded-full px-3 text-sm transition ${
+                        active
+                          ? "bg-primary-action-accent text-white"
+                          : "text-slate hover:bg-sky-wash hover:text-graphite"
+                      }`}
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      <span>{item.label}</span>
+                      <span className={`h-2 w-2 rounded-full ${active ? "bg-white" : "bg-border"}`} />
+                    </Link>
+                  );
+                })}
+              </nav>
+            </div>
+          ) : null}
+
+          <Button
+            asChild
+            className="mt-6 h-11 rounded-[12px] border border-primary-action-accent bg-white/80 px-4 text-sm font-medium text-primary-action-accent hover:bg-sky-wash hover:text-primary-action-accent"
+          >
+            <Link href="/campaigns/new" prefetch={false}>
+              Créer une campagne
+            </Link>
+          </Button>
+
+          <div className="mt-auto rounded-[8px] border border-border bg-white p-3 shadow-[var(--shadow-product-card)]">
+            <p className="text-[10px] uppercase tracking-[0.13px] text-fog">Compte</p>
             <div className="mt-3 flex items-center gap-3">
               <BrandMark logoText={merchant.logoText} logoUrl={merchant.logoUrl} size="sm" />
-              <div>
-                <p className="text-sm font-semibold text-[#141821]">Admin magasin</p>
-                <p className="text-sm text-[#9aa1b1]">{merchant.companyName}</p>
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-graphite">
+                  {`${user.firstName} ${user.lastName}`.trim()}
+                </p>
+                <p className="truncate text-xs text-ash">{merchant.companyName}</p>
               </div>
             </div>
+
+            {billing.isSubscribed ? (
+              <div className="mt-4 rounded-[4px] bg-[#16ca2e]/10 px-2 py-2 text-xs font-medium text-[#16ca2e]">
+                Abonnement actif
+              </div>
+            ) : billing.isTrialActive ? (
+              <div className="mt-4 rounded-[4px] bg-[#145aff]/10 px-2 py-2 text-xs font-medium text-signal-blue">
+                Essai gratuit :
+                <span className="font-semibold"> {billing.daysLeftInTrial} jour(s) restants</span>
+              </div>
+            ) : (
+              <div className="mt-4 rounded-[4px] bg-[#f26052]/10 px-2 py-2 text-xs font-medium text-coral-alert">
+                Votre période d&apos;essai est terminée. Activez votre abonnement pour relancer vos
+                jeux.
+              </div>
+            )}
+
             <div className="mt-4">
               <SignOutButton />
             </div>
@@ -118,36 +195,27 @@ export function MerchantShell({ children, merchant }: MerchantShellProps) {
         </div>
       </aside>
 
-      <div className="flex h-screen flex-col md:ml-[304px]">
-        <header className="sticky top-0 z-30 border-b border-[#dfe6f0] bg-white/92 backdrop-blur">
-          <div className="flex items-center gap-4 px-4 py-4 md:px-7">
+      <div className="flex h-screen min-w-0 flex-col lg:ml-[288px]">
+        <header className="sticky top-0 z-30 border-b border-border bg-linen-canvas/84 backdrop-blur-sm">
+          <div className="flex min-h-[56px] items-center gap-4 px-4 py-3 lg:px-7">
             <button
               type="button"
-              className="inline-flex h-11 w-11 items-center justify-center rounded-[18px] border border-[#e4e9f2] bg-[#f7f9fc] md:hidden"
+              className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] border border-border bg-white lg:hidden"
               onClick={() => setMenuOpen((current) => !current)}
             >
               <span className="space-y-1">
-                <span className="block h-0.5 w-4 bg-[#11131a]" />
-                <span className="block h-0.5 w-4 bg-[#11131a]" />
-                <span className="block h-0.5 w-4 bg-[#11131a]" />
+                <span className="block h-0.5 w-4 bg-graphite" />
+                <span className="block h-0.5 w-4 bg-graphite" />
+                <span className="block h-0.5 w-4 bg-graphite" />
               </span>
             </button>
-
-            <form
-              onSubmit={submitSearch}
-              className="hidden min-w-0 flex-1 items-center rounded-[20px] border border-[#edf1f6] bg-[#f7f9fc] px-4 py-3 md:flex"
-            >
-              <input
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="Rechercher une campagne, un lead ou un lot"
-                className="w-full bg-transparent text-sm text-[#10131a] outline-none placeholder:text-[#a0a7b7]"
-              />
-            </form>
+            <div className="flex-1" />
           </div>
         </header>
 
-        <main className="min-h-0 flex-1 overflow-y-auto px-3 py-6 md:px-6">{children}</main>
+        <main className="min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden px-3 py-5 lg:px-6">
+          {children}
+        </main>
       </div>
     </div>
   );

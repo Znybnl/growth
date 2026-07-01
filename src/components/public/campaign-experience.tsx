@@ -6,15 +6,18 @@ import { useEffect, useMemo, useState } from "react";
 import { BrandMark } from "@/components/brand-mark";
 import { ScratchGame } from "@/components/public/scratch-game";
 import { WheelOfFortune } from "@/components/public/wheel-of-fortune";
-import { actionKindCta, formatDateTime } from "@/lib/format";
-import { DrawResult, PublicCampaign } from "@/lib/types";
+import {
+  CreateDrawSessionResult,
+  DrawResult,
+  DrawSession,
+  FinalizeDrawSessionRequest,
+  PublicCampaign,
+} from "@/lib/types";
 
 type CampaignExperienceProps = {
   campaignId: string;
   initialCampaign: PublicCampaign;
 };
-
-type FlowStep = "welcome" | "collect" | "action" | "game" | "result";
 
 type WheelSegment = {
   id: string;
@@ -22,21 +25,29 @@ type WheelSegment = {
   tone: "win" | "lose";
 };
 
-const buttonSizeMap = {
-  sm: "px-4 py-3 text-sm",
-  md: "px-5 py-4 text-base",
-  lg: "px-6 py-5 text-lg",
-};
+type ExperienceStage =
+  | "idle"
+  | "intro"
+  | "ready"
+  | "collect"
+  | "success"
+  | "lost";
 
 function buildWheelSegments(campaign: PublicCampaign) {
   const winners = campaign.prizes.map((prize) => ({
     id: prize.id,
-    label: prize.label.toUpperCase().slice(0, 18),
+    label: prize.label.toUpperCase(),
     tone: "win" as const,
   }));
-  const losers = Array.from({ length: Math.max(3, winners.length) }, (_, index) => ({
+  const minimumSegmentCount = 10;
+  const loserCount = Math.max(
+    minimumSegmentCount - winners.length,
+    winners.length,
+    minimumSegmentCount,
+  );
+  const losers = Array.from({ length: loserCount }, (_, index) => ({
     id: `lose-${index}`,
-    label: index % 2 === 0 ? "PERDU" : "BONUS",
+    label: index % 2 === 0 ? "PERDU" : "DOMMAGE",
     tone: "lose" as const,
   }));
   const segments: WheelSegment[] = [];
@@ -52,7 +63,295 @@ function buildWheelSegments(campaign: PublicCampaign) {
     }
   }
 
-  return segments;
+  return segments.length ? segments : losers;
+}
+
+function actionLabel(kind?: PublicCampaign["actions"][number]["kind"]) {
+  switch (kind) {
+    case "google":
+      return "Écrire un avis";
+    case "instagram":
+      return "Voir Instagram";
+    case "facebook":
+      return "Voir Facebook";
+    case "tiktok":
+      return "Voir TikTok";
+    case "tripadvisor":
+      return "Voir Tripadvisor";
+    case "crm":
+      return "Découvrir l’offre";
+    default:
+      return "Ouvrir le lien";
+  }
+}
+
+function actionIcon(kind?: PublicCampaign["actions"][number]["kind"]) {
+  switch (kind) {
+    case "google":
+      return "G";
+    case "instagram":
+      return "◎";
+    case "facebook":
+      return "f";
+    case "tiktok":
+      return "♪";
+    case "tripadvisor":
+      return "★";
+    case "crm":
+      return "@";
+    default:
+      return "→";
+  }
+}
+
+function formatDate(value?: string) {
+  if (!value) {
+    return null;
+  }
+
+  return new Intl.DateTimeFormat("fr-FR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(new Date(value));
+}
+
+function PublicModal({
+  open,
+  children,
+}: {
+  open: boolean;
+  children: React.ReactNode;
+}) {
+  if (!open) {
+    return null;
+  }
+
+  return (
+    <div className="fixed inset-0 z-40 flex items-end justify-center bg-[#0f1220]/52 px-4 pb-4 pt-10 backdrop-blur-[6px] sm:items-center sm:p-6">
+      <div className="w-full max-w-[390px] rounded-[34px] bg-white p-6 text-[#111827] shadow-[0_34px_90px_rgba(18,24,39,0.24)]">
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function RulesModal({
+  campaign,
+  open,
+  onClose,
+}: {
+  campaign: PublicCampaign;
+  open: boolean;
+  onClose: () => void;
+}) {
+  if (!open) {
+    return null;
+  }
+
+  const prizeRows = campaign.prizes.map((prize) => ({
+    ...prize,
+    stockLabel:
+      prize.remainingQuantity === null
+        ? "Illimité"
+        : `${Math.max(0, prize.remainingQuantity)} disponible${
+            prize.remainingQuantity > 1 ? "s" : ""
+          }`,
+  }));
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#0f1220]/58 px-4 pb-4 pt-10 backdrop-blur-[6px] sm:items-center sm:p-6">
+      <div className="flex max-h-[88vh] w-full max-w-[760px] flex-col overflow-hidden rounded-[30px] bg-white text-[#111827] shadow-[0_34px_90px_rgba(18,24,39,0.28)]">
+        <div className="flex items-start justify-between gap-4 border-b border-[#edf0f6] px-6 py-5">
+          <div>
+            <p className="text-xs uppercase tracking-[0.26em] text-[#8b93a5]">
+              Conditions d&apos;utilisation
+            </p>
+            <h2 className="mt-2 text-2xl font-semibold leading-tight">
+              CGU et règlement du jeu
+            </h2>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-full border border-[#dfe4ef] px-4 py-2 text-sm font-semibold text-[#111827]"
+          >
+            Fermer
+          </button>
+        </div>
+
+        <div className="space-y-6 overflow-y-auto px-6 py-5 text-sm leading-7 text-[#4b5567]">
+          <section>
+            <h3 className="text-base font-semibold text-[#111827]">
+              Préambule et définitions
+            </h3>
+            <p className="mt-2">
+              Le présent document régit les conditions de participation aux jeux-concours
+              phygitaux ci-après « le Jeu », déployés en point de vente via la solution
+              logicielle Okado.
+            </p>
+            <p className="mt-2">
+              La Société Organisatrice, ci-après « le Marchand », est l&apos;établissement
+              professionnel au sein duquel le Jeu est déployé. Elle définit les règles
+              spécifiques, les dotations et assume l&apos;entière responsabilité légale de
+              l&apos;organisation du Jeu.
+            </p>
+            <p className="mt-2">
+              Le Prestataire Technique, ci-après « l&apos;Éditeur », est la société BRUNELLE
+              PEROLS INVESTISSEMENT, éditrice de la solution SaaS Okado, agissant
+              exclusivement en tant que fournisseur d&apos;infrastructure technique.
+            </p>
+            <p className="mt-2">
+              Le Participant est toute personne physique, obligatoirement majeure,
+              participant au Jeu via le scan d&apos;un QR Code en point de vente.
+            </p>
+          </section>
+
+          <section>
+            <h3 className="text-base font-semibold text-[#111827]">
+              Article 1 - Objet et acceptation
+            </h3>
+            <p className="mt-2">
+              La participation au Jeu implique l&apos;acceptation expresse, pleine et entière,
+              sans réserve, du présent règlement par le Participant. Ce règlement régit les
+              relations entre le Participant et la Société Organisatrice. L&apos;Éditeur de la
+              solution Okado est un tiers à cette relation.
+            </p>
+          </section>
+
+          <section>
+            <h3 className="text-base font-semibold text-[#111827]">
+              Article 2 - Mécanique du jeu et participation
+            </h3>
+            <p className="mt-2">
+              La participation au Jeu s&apos;effectue exclusivement en scannant le QR Code mis
+              à disposition au sein de l&apos;établissement de la Société Organisatrice. Selon
+              le paramétrage défini sous la seule responsabilité de la Société
+              Organisatrice, le Participant pourra être invité à consulter des liens
+              externes, tels que la fiche Google Business Profile de l&apos;établissement.
+            </p>
+            <p className="mt-2">
+              Il est expressément précisé que le dépôt d&apos;un avis en ligne est strictement
+              facultatif. Il ne constitue en aucun cas une condition de participation, ni
+              une obligation pour valider l&apos;obtention d&apos;un gain. L&apos;Éditeur décline toute
+              responsabilité quant à l&apos;utilisation de cette fonctionnalité par la Société
+              Organisatrice au regard des conditions d&apos;utilisation des plateformes tierces,
+              notamment Google.
+            </p>
+          </section>
+
+          <section>
+            <h3 className="text-base font-semibold text-[#111827]">
+              Article 3 - Désignation des gagnants et responsabilité des lots
+            </h3>
+            <p className="mt-2">
+              L&apos;attribution des gains est gérée automatiquement dès la soumission du
+              formulaire, via un algorithme de tirage au sort aléatoire tenant compte des
+              probabilités et des stocks paramétrés par la Société Organisatrice.
+            </p>
+            <p className="mt-2">
+              La Société Organisatrice est seule responsable de la fourniture, de la
+              conformité et de la remise des lots. La responsabilité du Prestataire
+              Technique ne saurait être engagée pour toute réclamation relative à une
+              rupture de stock, un défaut du lot, un refus de remise par le personnel en
+              magasin, ou tout litige lié à l&apos;exécution du Jeu.
+            </p>
+          </section>
+
+          <section>
+            <h3 className="text-base font-semibold text-[#111827]">
+              Article 4 - Modalités de récupération des lots
+            </h3>
+            <p className="mt-2">
+              En cas de gain, le Participant reçoit un e-mail de confirmation à l&apos;adresse
+              renseignée lors de sa participation, contenant un QR Code unique et personnel.
+              Le Participant doit présenter ce QR Code au personnel de la Société
+              Organisatrice. La remise du lot n&apos;est définitive qu&apos;après validation de ce QR
+              Code par le personnel habilité, par scan direct ou via la plateforme de gestion
+              Okado.
+            </p>
+          </section>
+
+          <section>
+            <h3 className="text-base font-semibold text-[#111827]">
+              Article 5 - Prévention de la fraude et litiges techniques
+            </h3>
+            <p className="mt-2">
+              La participation est strictement nominative et limitée à une participation par
+              jour et par établissement. La Société Organisatrice se réserve le droit
+              d&apos;annuler la participation ou de refuser la remise d&apos;un lot à toute personne
+              ayant tenté de frauder. En cas de dysfonctionnement technique temporaire de la
+              plateforme Okado ou de l&apos;appareil du Participant empêchant la validation,
+              aucune compensation ne pourra être exigée.
+            </p>
+          </section>
+
+          <section>
+            <h3 className="text-base font-semibold text-[#111827]">
+              Article 6 - Protection des données personnelles
+            </h3>
+            <p className="mt-2">
+              Dans le cadre du Jeu, des données à caractère personnel sont collectées. La
+              Société Organisatrice agit en tant que Responsable de traitement. Le
+              Prestataire Technique héberge ces données de manière sécurisée pour le compte
+              exclusif de la Société Organisatrice.
+            </p>
+            <p className="mt-2">
+              Conformément à la réglementation applicable, le Participant dispose d&apos;un droit
+              d&apos;accès, de rectification, de portabilité et d&apos;effacement de ses données. Pour
+              exercer ces droits, le Participant doit s&apos;adresser directement à la Société
+              Organisatrice par le biais de ses coordonnées habituelles.
+            </p>
+          </section>
+
+          <section>
+            <h3 className="text-base font-semibold text-[#111827]">
+              Article 7 - Limites de responsabilité technique
+            </h3>
+            <p className="mt-2">
+              Le Prestataire Technique met en œuvre les moyens nécessaires au bon
+              fonctionnement de l&apos;infrastructure du Jeu. Sa responsabilité ne saurait être
+              engagée en cas de non-réception de l&apos;e-mail de confirmation de gain due à une
+              erreur de saisie, à un filtrage anti-spam, à une défaillance du fournisseur de
+              messagerie, à une interruption réseau, au dysfonctionnement du smartphone du
+              Participant ou à un bogue technique temporaire.
+            </p>
+          </section>
+
+          <section>
+            <h3 className="text-base font-semibold text-[#111827]">
+              Article 8 - Lots, stocks disponibles et probabilités de gain
+            </h3>
+            <p className="mt-2">
+              Les gains sont attribués dans la limite des quantités de stock disponibles au
+              moment de la participation. Lorsqu&apos;un lot n&apos;est plus disponible, il ne peut
+              plus être attribué, même si sa probabilité de gain est indiquée ci-dessous.
+            </p>
+            <div className="mt-4 overflow-hidden rounded-[18px] border border-[#e5e9f2]">
+              {prizeRows.length ? (
+                prizeRows.map((prize) => (
+                  <div
+                    key={prize.id}
+                    className="grid grid-cols-[1fr_auto] gap-3 border-b border-[#eef1f7] px-4 py-3 last:border-b-0"
+                  >
+                    <div>
+                      <p className="font-semibold text-[#111827]">{prize.label}</p>
+                      <p className="text-xs text-[#7b8496]">Stock : {prize.stockLabel}</p>
+                    </div>
+                    <p className="text-right font-semibold text-[#111827]">
+                      {prize.probability} %
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <p className="px-4 py-3 text-[#7b8496]">Aucun lot configuré.</p>
+              )}
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export function CampaignExperience({
@@ -60,49 +359,38 @@ export function CampaignExperience({
   initialCampaign,
 }: CampaignExperienceProps) {
   const [campaign, setCampaign] = useState(initialCampaign);
-  const [step, setStep] = useState<FlowStep>("welcome");
+  const [stage, setStage] = useState<ExperienceStage>("idle");
+  const [drawSession, setDrawSession] = useState<DrawSession | null>(null);
+  const [previewResult, setPreviewResult] = useState<CreateDrawSessionResult | null>(null);
+  const [drawResult, setDrawResult] = useState<DrawResult | null>(null);
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
-  const [consent, setConsent] = useState(false);
-  const [drawResult, setDrawResult] = useState<DrawResult | null>(null);
-  const [didLogFormStart, setDidLogFormStart] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [actionVisited, setActionVisited] = useState(false);
+  const [rulesOpen, setRulesOpen] = useState(false);
 
   const segments = useMemo(() => buildWheelSegments(campaign), [campaign]);
-  const winner = Boolean(drawResult?.prize);
-  const scratchLabel = drawResult?.prize?.label ?? "Perdu :(";
   const winningSegmentId =
-    drawResult?.prize?.id ?? segments.find((segment) => segment.tone === "lose")?.id ?? "lose-0";
+    previewResult?.prize?.id ??
+    drawResult?.prize?.id ??
+    segments.find((segment) => segment.tone === "lose")?.id ??
+    "lose-0";
   const currentAction = campaign.actions[0];
-  const previewButtonClass = buttonSizeMap[campaign.presentation.button.size];
+  const scratchLabel = previewResult?.prize?.label ?? "Perdu :(";
   const redemptionCode = drawResult?.lead.redemptionCode;
+  const previewUsageConditions = previewResult?.prize?.usageConditions?.trim();
+  const resolvedUsageConditions =
+    drawResult?.prize?.usageConditions?.trim() || previewUsageConditions || "";
   const qrPath = redemptionCode
     ? `/api/public/redeem/${encodeURIComponent(redemptionCode)}/qr`
     : "";
-  const publicOrigin = typeof window === "undefined" ? "" : window.location.origin;
-  const redeemUrl =
-    redemptionCode && publicOrigin
-      ? `${publicOrigin}/redeem/${encodeURIComponent(redemptionCode)}`
-      : "";
-  const emailSubject = encodeURIComponent(`Votre gain ${campaign.merchantName}`);
-  const emailBody = encodeURIComponent(
-    [
-      `Bonjour ${drawResult?.lead.firstName ?? ""},`,
-      "",
-      `Votre lot : ${drawResult?.prize?.label ?? "Cadeau"}`,
-      `Code de retrait : ${redemptionCode ?? ""}`,
-      redeemUrl ? `QR code de retrait : ${redeemUrl}` : "",
-      "",
-      "Pr\u00e9sentez ce QR code au restaurant pour r\u00e9cup\u00e9rer votre gain.",
-    ]
-      .filter(Boolean)
-      .join("\n"),
-  );
+  const availableDate = formatDate(drawResult?.lead.rewardAvailableAt);
+  const expiryDate = formatDate(drawResult?.lead.rewardExpiresAt);
+  const blockSpacingPx = campaign.presentation.layout.blockSpacingPx;
   const logoWidthPx = Math.round(
     Math.max(72, Math.min(260, campaign.presentation.logo.sizePercent * 1.6)),
   );
-  const blockSpacingPx = campaign.presentation.layout.blockSpacingPx;
   const logoAlignmentClass =
     campaign.presentation.logo.align === "left"
       ? "justify-start"
@@ -121,12 +409,10 @@ export function CampaignExperience({
       : campaign.presentation.heading.fontFamily === "sans"
         ? "font-sans"
         : "font-display";
-  const actionEventType =
-    campaign.goalType === "review_prompt"
-      ? "review_clicked"
-      : campaign.goalType === "social_follow"
-        ? "social_clicked"
-        : null;
+  const showBottomState =
+    (stage === "idle" && campaign.gameType !== "wheel") ||
+    (stage === "ready" && campaign.gameType !== "wheel") ||
+    stage === "lost";
 
   useEffect(() => {
     async function loadCampaign() {
@@ -155,396 +441,408 @@ export function CampaignExperience({
     });
   }
 
-  function openCollectStep() {
-    if (!didLogFormStart) {
-      setDidLogFormStart(true);
-      void trackEvent("form_started");
-    }
-
-    setStep("collect");
-  }
-
-  async function submitLead(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function prepareSession() {
     setError(null);
-    setIsSubmitting(true);
+    setIsLoading(true);
 
     try {
-      const response = await fetch("/api/public/draw", {
+      const response = await fetch("/api/public/draw/session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          campaignId,
-          firstName,
-          email,
-          marketingConsent: consent,
-        }),
+        body: JSON.stringify({ campaignId }),
       });
 
       if (!response.ok) {
-        throw new Error("Impossible de valider la participation.");
+        const payload = (await response.json().catch(() => null)) as { error?: string } | null;
+        throw new Error(payload?.error ?? "Impossible de préparer la partie.");
       }
 
-      const payload = (await response.json()) as DrawResult;
-      setDrawResult(payload);
+      const payload = (await response.json()) as CreateDrawSessionResult;
+      setPreviewResult(payload);
+      setDrawSession(payload.session);
       setCampaign(payload.campaign);
-      setStep(payload.campaign.actions[0] ? "action" : "game");
+      setStage("ready");
+    } catch (sessionError) {
+      setError(
+        sessionError instanceof Error ? sessionError.message : "Une erreur est survenue.",
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function openActionAndTrack() {
+    setActionVisited(false);
+    setError(null);
+    setStage("intro");
+  }
+
+  async function handleSpinStart() {
+    if (drawSession || isLoading) {
+      return;
+    }
+
+    await prepareSession();
+  }
+
+  async function submitWinnerForm(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!drawSession) {
+      return;
+    }
+
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      const payload: FinalizeDrawSessionRequest = {
+        sessionId: drawSession.id,
+        firstName,
+        email,
+        marketingConsent: false,
+      };
+      const response = await fetch("/api/public/draw/finalize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error("Impossible d’enregistrer vos coordonnées.");
+      }
+
+      const result = (await response.json()) as DrawResult;
+      setDrawResult(result);
+      setCampaign(result.campaign);
+      setStage("success");
     } catch (submitError) {
       setError(
         submitError instanceof Error ? submitError.message : "Une erreur est survenue.",
       );
     } finally {
-      setIsSubmitting(false);
+      setIsLoading(false);
     }
   }
 
-  async function continueAfterAction() {
-    if (!drawResult) {
+  async function handleGameReveal() {
+    if (previewResult?.prize) {
+      setStage("collect");
+      await trackEvent("form_started");
       return;
     }
 
-    setStep("game");
+    setStage("lost");
   }
+
+  const backgroundStyle =
+    campaign.presentation.background.mode === "image" &&
+    campaign.presentation.background.imageUrl
+      ? `linear-gradient(rgba(0,0,0,0.08), rgba(0,0,0,0.18)), url("${campaign.presentation.background.imageUrl}")`
+      : `radial-gradient(circle at 50% 8%, ${campaign.accent.signal}33, transparent 32%), linear-gradient(180deg, transparent, rgba(255,255,255,0.08))`;
 
   return (
     <div
-      className="min-h-screen overflow-hidden"
+      className="relative min-h-screen overflow-hidden"
       style={{
         backgroundColor: campaign.presentation.background.color,
-        backgroundImage:
-          campaign.presentation.background.mode === "image" &&
-          campaign.presentation.background.imageUrl
-            ? `linear-gradient(rgba(5,10,21,0.42), rgba(5,10,21,0.7)), url("${campaign.presentation.background.imageUrl}")`
-            : `radial-gradient(circle at 50% 0%, ${campaign.accent.signal}44, transparent 26%), linear-gradient(180deg, ${campaign.presentation.background.color}, #090c14 72%)`,
+        backgroundImage: backgroundStyle,
         backgroundPosition: "center",
         backgroundSize: "cover",
       }}
     >
-      <div className="mx-auto flex min-h-screen max-w-[480px] flex-col px-4 pb-14 pt-10 text-white">
-        {campaign.logoMode === "image" && campaign.logoUrl ? (
+      <div className="relative mx-auto flex h-screen w-full flex-col overflow-hidden px-4 pb-0 pt-8 sm:px-6">
+        {(campaign.logoMode === "image" && campaign.logoUrl) ||
+        campaign.logoMode === "text" ? (
           <div className={`flex ${logoAlignmentClass}`}>
-            <div style={{ marginBottom: `${campaign.presentation.logo.marginBottomPx + blockSpacingPx}px` }}>
+            <div style={{ marginBottom: `${campaign.presentation.logo.marginBottomPx}px` }}>
               <BrandMark
-                logoText={campaign.merchantLogoText}
-                logoUrl={campaign.logoUrl}
+                logoText={campaign.logoText ?? campaign.merchantLogoText}
+                logoUrl={campaign.logoMode === "image" ? campaign.logoUrl : undefined}
                 size="lg"
                 variant="transparent"
                 imageWidthPx={logoWidthPx}
+                textColor={campaign.presentation.heading.textColor}
               />
             </div>
           </div>
         ) : null}
 
-        {campaign.logoMode === "text" ? (
-          <div className={`flex ${logoAlignmentClass}`}>
-            <div style={{ marginBottom: `${campaign.presentation.logo.marginBottomPx + blockSpacingPx}px` }}>
-              <BrandMark
-                logoText={campaign.logoText ?? campaign.merchantName}
-                size="lg"
-                variant="transparent"
-                imageWidthPx={logoWidthPx}
-              />
-            </div>
-          </div>
-        ) : null}
+        <div className={headingAlignmentClass}>
+          <h1
+            className={`${headingFontClass} font-semibold leading-[0.96] text-[#151826]`}
+            style={{
+              color: campaign.presentation.heading.textColor,
+              fontSize: `${campaign.presentation.heading.fontSizePx}px`,
+            }}
+          >
+            {campaign.subtitle}
+          </h1>
+        </div>
 
-        <div
-          className="rounded-[34px] border border-white/10 bg-white/7 px-5 py-7 backdrop-blur"
-          style={{ marginTop: `${blockSpacingPx}px` }}
-        >
-          <div className={headingAlignmentClass}>
-            <h1
-              className={`${headingFontClass} font-semibold leading-[0.95]`}
-              style={{
-                color: campaign.presentation.heading.textColor,
-                fontSize: `${campaign.presentation.heading.fontSizePx}px`,
-              }}
-            >
-              {campaign.subtitle}
-            </h1>
-          </div>
-
-          <div style={{ marginTop: `${blockSpacingPx}px` }}>
-            {campaign.gameType === "wheel" ? (
+        {campaign.gameType === "wheel" ? (
+          <div
+            className="relative left-1/2 mt-[40px] min-h-0 w-screen -translate-x-1/2 flex-1 overflow-hidden sm:mt-20 lg:mt-8"
+            style={{ minHeight: "min(52vh, 520px)" }}
+          >
+            <div className="absolute inset-0 overflow-hidden">
               <WheelOfFortune
-                key={`${campaign.id}-${drawResult?.lead.id ?? "welcome"}`}
+                key={`${campaign.id}-${drawSession?.id ?? "idle"}`}
                 accent={campaign.accent}
                 wheelStyle={campaign.presentation.wheel}
+                buttonStyle={{
+                  backgroundColor: campaign.presentation.button.backgroundColor,
+                  textColor: campaign.presentation.button.textColor,
+                  borderColor: campaign.presentation.button.borderColor,
+                }}
                 segments={segments}
                 winningSegmentId={winningSegmentId}
-                canSpin={step === "game"}
-                onSpinEnd={() => setStep("result")}
+                canSpin={stage === "ready"}
+                buttonEnabled={stage === "idle" || stage === "ready"}
+                buttonLabel="JOUER"
+                framing="public"
+                onButtonClick={() => void openActionAndTrack()}
+                onSpinEnd={() => void handleGameReveal()}
               />
+            </div>
+          </div>
+        ) : (
+          <div style={{ marginTop: `${Math.max(6, Math.round(blockSpacingPx * 0.2))}px` }}>
+            <ScratchGame
+              key={`${campaign.id}-${drawSession?.id ?? "idle"}`}
+              accent={campaign.accent}
+              resultLabel={scratchLabel}
+              enabled={stage === "ready"}
+              onReveal={() => void handleGameReveal()}
+            />
+          </div>
+        )}
+
+        {showBottomState ? <div className="mt-8 space-y-4">
+          {stage === "idle" && campaign.gameType !== "wheel" ? (
+            <button
+              type="button"
+              onClick={openActionAndTrack}
+              className="w-full rounded-[24px] border px-6 py-4 text-lg font-semibold shadow-[0_22px_34px_rgba(17,24,39,0.08)]"
+              style={{
+                backgroundColor: campaign.presentation.button.backgroundColor,
+                color: campaign.presentation.button.textColor,
+                borderColor: campaign.presentation.button.borderColor,
+                fontSize: `${campaign.presentation.button.textSizePx}px`,
+              }}
+            >
+              Jouer
+            </button>
+          ) : null}
+
+          {stage === "ready" && campaign.gameType !== "wheel" ? (
+            <div className="rounded-[28px] border border-white/70 bg-white/72 px-5 py-4 text-center text-sm text-[#62697a] shadow-[0_18px_40px_rgba(17,24,39,0.06)] backdrop-blur">
+              Grattez le ticket pour révéler immédiatement votre résultat.
+            </div>
+          ) : null}
+
+          {stage === "lost" ? (
+            <div className="rounded-[32px] border border-white/80 bg-white/84 p-6 text-center shadow-[0_24px_48px_rgba(17,24,39,0.08)] backdrop-blur">
+              <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#f3f4f8] text-3xl">
+                :(
+              </div>
+              <h2 className="mt-5 text-3xl font-semibold text-[#141826]">Perdu :(</h2>
+              <p className="mt-3 text-base leading-7 text-[#61687a]">
+                Merci pour votre participation. Revenez bientôt pour une nouvelle chance.
+              </p>
+            </div>
+          ) : null}
+        </div> : null}
+      </div>
+
+      <button
+        type="button"
+        onClick={() => setRulesOpen(true)}
+        className="fixed bottom-4 right-4 z-20 rounded-full border border-white/70 bg-white/82 px-4 py-2 text-sm font-semibold text-[#111827] shadow-[0_14px_34px_rgba(17,24,39,0.12)] backdrop-blur"
+      >
+        Règlement
+      </button>
+
+      <RulesModal campaign={campaign} open={rulesOpen} onClose={() => setRulesOpen(false)} />
+
+      <PublicModal open={stage === "intro"}>
+        <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-[#f7f7fb] text-4xl font-semibold text-[#1a2f76] shadow-[0_20px_45px_rgba(17,24,39,0.10)]">
+          {actionIcon(currentAction?.kind)}
+        </div>
+        <h2 className="mt-6 text-center text-[2rem] font-semibold leading-[1.05] text-[#121826]">
+          {currentAction ? "Avant de jouer" : "Prêt à jouer ?"}
+        </h2>
+        <p className="mt-4 text-center text-lg leading-8 text-[#5f6678]">
+          {currentAction?.kind === "google"
+            ? `Partagez votre expérience dans l’enseigne puis revenez ici pour ${
+                campaign.gameType === "wheel" ? "lancer la roue" : "gratter le ticket"
+              }.`
+            : currentAction
+              ? "Découvrez le lien du commerce dans un nouvel onglet, puis revenez ici pour jouer."
+              : "Touchez Jouer pour préparer votre partie et découvrir votre résultat."}
+        </p>
+        <div className="mt-6 space-y-3">
+          {currentAction ? (
+            <a
+              href={currentAction.url}
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => {
+                if (currentAction.kind === "google") {
+                  setActionVisited(true);
+                  void trackEvent("review_clicked");
+                  return;
+                }
+
+                setActionVisited(true);
+                void trackEvent("social_clicked");
+              }}
+              className="block w-full rounded-[20px] border border-[#f3b229] bg-[#f3b229] px-5 py-4 text-center text-lg font-semibold text-[#111827] shadow-[0_12px_22px_rgba(243,178,41,0.28)]"
+            >
+              {actionLabel(currentAction.kind)}
+            </a>
+          ) : null}
+          {!currentAction || actionVisited ? (
+            <button
+              type="button"
+              onClick={() => void handleSpinStart()}
+              disabled={isLoading}
+              className="w-full rounded-[20px] bg-[#111827] px-5 py-4 text-lg font-semibold text-white shadow-[0_12px_24px_rgba(17,24,39,0.16)] disabled:opacity-60"
+            >
+              {isLoading ? "Préparation..." : "Jouer"}
+            </button>
+          ) : null}
+        </div>
+        {error ? (
+          <div className="mt-4 rounded-[18px] bg-[#fff1f0] px-4 py-3 text-sm text-[#b42318]">
+            {error}
+          </div>
+        ) : null}
+      </PublicModal>
+
+      <PublicModal open={stage === "collect"}>
+        <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-[#f7f7fb] text-4xl shadow-[0_20px_45px_rgba(17,24,39,0.10)]">
+          🎁
+        </div>
+        <h2 className="mt-6 text-center text-[2rem] font-semibold leading-[1.05] text-[#121826]">
+          Félicitations ! Vous avez remporté {previewResult?.prize?.label}
+        </h2>
+        <div className="mt-5 rounded-[22px] bg-[#f6f7fb] px-5 py-4 text-base leading-7 text-[#475067]">
+          Vos informations sont nécessaires pour valider et envoyer votre gain.
+        </div>
+        {previewUsageConditions ? (
+          <div className="mt-4 rounded-[22px] bg-[#fff8e8] px-5 py-4 text-left text-sm leading-7 text-[#6c5313]">
+            <p className="text-xs uppercase tracking-[0.2em] text-[#8a6a18]">
+              Conditions d&apos;utilisation
+            </p>
+            <p className="mt-2 whitespace-pre-line">{previewUsageConditions}</p>
+          </div>
+        ) : null}
+        <form className="mt-5 space-y-4" onSubmit={submitWinnerForm}>
+          <input
+            value={firstName}
+            onChange={(event) => setFirstName(event.target.value)}
+            required
+            placeholder="Prénom"
+            className="w-full rounded-[18px] border border-[#d8dce5] px-4 py-4 text-lg text-[#111827] outline-none placeholder:text-[#99a1b2]"
+          />
+          <input
+            type="email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            required
+            placeholder="E-mail"
+            className="w-full rounded-[18px] border border-[#d8dce5] px-4 py-4 text-lg text-[#111827] outline-none placeholder:text-[#99a1b2]"
+          />
+
+          {error ? (
+            <div className="rounded-[18px] bg-[#fff1f0] px-4 py-3 text-sm text-[#b42318]">
+              {error}
+            </div>
+          ) : null}
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full rounded-[18px] bg-[#111827] px-5 py-4 text-lg font-semibold text-white disabled:opacity-60"
+          >
+            {isLoading ? "Enregistrement..." : "Enregistrer"}
+          </button>
+        </form>
+      </PublicModal>
+
+      <PublicModal open={stage === "success" && Boolean(drawResult)}>
+        <div className="text-center">
+          <h2 className="text-[2rem] font-semibold leading-[1.05] text-[#121826]">
+            Merci pour votre participation !
+          </h2>
+          <div className="mx-auto mt-6 flex h-24 w-24 items-center justify-center rounded-full bg-[#f7f7fb] text-5xl shadow-[0_20px_45px_rgba(17,24,39,0.10)]">
+            ✉
+          </div>
+          <p className="mt-6 text-xl leading-8 text-[#1a2f76]">
+            On vient de vous envoyer un e-mail pour récupérer votre cadeau.
+          </p>
+          <p className="mt-4 text-base leading-7 text-[#61687a]">
+            Pas de mail en vue ? Jetez un œil dans vos spams ou dans l’onglet Promotions.
+          </p>
+
+          <div className="mt-6 rounded-[22px] bg-[#fff4cb] px-5 py-4 text-left text-[1rem] leading-7 text-[#4d3810]">
+            {campaign.rewardRules.availabilityDurationDays === 0 ? (
+              <p>Disponible dès maintenant au comptoir.</p>
             ) : (
-              <ScratchGame
-                key={`${campaign.id}-${drawResult?.lead.id ?? "welcome"}`}
-                accent={campaign.accent}
-                resultLabel={scratchLabel}
-                enabled={step === "game"}
-                onReveal={() => setStep("result")}
-              />
+              <p>
+                Vous avez entre le {availableDate ?? "maintenant"} et le {expiryDate ?? "bientôt"}{" "}
+                pour venir le récupérer.
+              </p>
             )}
           </div>
 
-          {step === "welcome" ? (
-            <div
-              className="rounded-[28px] border border-white/10 bg-black/16 p-5 text-center"
-              style={{ marginTop: `${blockSpacingPx}px` }}
-            >
-              <button
-                type="button"
-                onClick={openCollectStep}
-                className={`w-full rounded-[22px] border font-semibold ${previewButtonClass}`}
-                style={{
-                  backgroundColor: campaign.presentation.button.backgroundColor,
-                  color: campaign.presentation.button.textColor,
-                  borderColor: campaign.presentation.button.borderColor,
-                  fontSize: `${campaign.presentation.button.textSizePx}px`,
-                  fontWeight: campaign.presentation.button.isBold ? 700 : 400,
-                }}
-              >
-                {campaign.ctaLabel}
-              </button>
+          {campaign.rewardRules.purchaseRequired ? (
+            <div className="mt-4 rounded-[22px] bg-[#f7f7fb] px-5 py-4 text-left text-sm leading-6 text-[#61687a]">
+              Le retrait du lot est soumis à une condition d’achat.
             </div>
           ) : null}
 
-          {step === "collect" ? (
-            <form
-              className="rounded-[30px] border border-white/10 bg-black/16 p-5"
-              style={{ marginTop: `${blockSpacingPx}px` }}
-              onSubmit={submitLead}
-            >
-              <p className="text-xs uppercase tracking-[0.24em] text-white/48">Participation</p>
-              <div className="mt-4 space-y-4">
-                <label className="block text-sm">
-                  <span className="mb-2 block text-white/70">Prénom</span>
-                  <input
-                    value={firstName}
-                    onChange={(event) => setFirstName(event.target.value)}
-                    required
-                    className="w-full rounded-[22px] border border-white/12 bg-black/18 px-4 py-4 outline-none placeholder:text-white/35"
-                    placeholder="Léa"
-                  />
-                </label>
-                <label className="block text-sm">
-                  <span className="mb-2 block text-white/70">E-mail</span>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(event) => setEmail(event.target.value)}
-                    required
-                    className="w-full rounded-[22px] border border-white/12 bg-black/18 px-4 py-4 outline-none placeholder:text-white/35"
-                    placeholder="lea@exemple.fr"
-                  />
-                </label>
-                <label className="flex items-start gap-3 rounded-[22px] border border-white/12 bg-black/14 p-4 text-sm leading-6 text-white/72">
-                  <input
-                    type="checkbox"
-                    checked={consent}
-                    onChange={(event) => setConsent(event.target.checked)}
-                    required
-                    className="mt-1 h-4 w-4"
-                  />
-                  <span>
-                    J&apos;accepte de recevoir les offres du commerce. Mes données sont utilisées
-                    pour l&apos;animation et je peux me désinscrire à tout moment.
-                  </span>
-                </label>
-              </div>
-
-              {error ? (
-                <div className="mt-4 rounded-[20px] border border-[#ff8f70]/30 bg-[#ff8f70]/12 px-4 py-3 text-sm text-white">
-                  {error}
-                </div>
-              ) : null}
-
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className={`mt-5 w-full rounded-[22px] border font-semibold disabled:opacity-60 ${previewButtonClass}`}
-                style={{
-                  backgroundColor: campaign.presentation.button.backgroundColor,
-                  color: campaign.presentation.button.textColor,
-                  borderColor: campaign.presentation.button.borderColor,
-                  fontSize: `${campaign.presentation.button.textSizePx}px`,
-                  fontWeight: campaign.presentation.button.isBold ? 700 : 400,
-                }}
-              >
-                {isSubmitting ? "Préparation..." : "Continuer"}
-              </button>
-            </form>
-          ) : null}
-
-          {step === "action" && drawResult && currentAction ? (
-            <div
-              className="rounded-[30px] border border-white/10 bg-black/16 p-5"
-              style={{ marginTop: `${blockSpacingPx}px` }}
-            >
-              <p className="text-xs uppercase tracking-[0.24em] text-white/48">
-                Action marketing
+          {resolvedUsageConditions ? (
+            <div className="mt-4 rounded-[22px] bg-[#fff8e8] px-5 py-4 text-left text-sm leading-6 text-[#6c5313]">
+              <p className="text-xs uppercase tracking-[0.2em] text-[#8a6a18]">
+                Conditions d&apos;utilisation
               </p>
-              <h2 className="mt-3 text-2xl font-semibold">
-                {actionKindCta(currentAction.kind)}
-              </h2>
-              <p className="mt-3 text-sm leading-7 text-white/72">
-                Ouvrez le lien dans un nouvel onglet, puis revenez ici pour poursuivre votre
-                participation.
-              </p>
-              <div className="mt-5 space-y-3">
-                <a
-                  href={currentAction.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  onClick={() =>
-                    actionEventType ? void trackEvent(actionEventType, drawResult.lead.id) : undefined
-                  }
-                  className={`block w-full rounded-[22px] border text-center font-semibold ${previewButtonClass}`}
-                style={{
-                  backgroundColor: campaign.presentation.button.backgroundColor,
-                  color: campaign.presentation.button.textColor,
-                  borderColor: campaign.presentation.button.borderColor,
-                  fontSize: `${campaign.presentation.button.textSizePx}px`,
-                  fontWeight: campaign.presentation.button.isBold ? 700 : 400,
-                }}
-              >
-                  {actionKindCta(currentAction.kind)}
-                </a>
-                <button
-                  type="button"
-                  onClick={continueAfterAction}
-                  className="w-full rounded-[22px] border border-[#111827] bg-[#111827] px-5 py-4 text-sm font-semibold text-white"
-                >
-                  J&apos;ai terminé, je continue
-                </button>
-              </div>
+              <p className="mt-2 whitespace-pre-line">{resolvedUsageConditions}</p>
             </div>
           ) : null}
 
-          {step === "game" ? (
-            <div
-              className="rounded-[30px] border border-white/10 bg-black/16 p-5 text-center"
-              style={{ marginTop: `${blockSpacingPx}px` }}
-            >
-              <p className="text-xs uppercase tracking-[0.24em] text-white/48">Prêt à jouer</p>
-              <h2 className="mt-3 text-2xl font-semibold">
-                {campaign.gameType === "wheel" ? "Faites tourner la roue" : "Grattez votre ticket"}
-              </h2>
-            </div>
-          ) : null}
-
-          {step === "result" && drawResult ? (
-            <div
-              className="rounded-[30px] border border-white/10 bg-black/16 p-5"
-              style={{ marginTop: `${blockSpacingPx}px` }}
-            >
-              <p className="text-xs uppercase tracking-[0.24em] text-white/48">
-                {winner ? "Lot gagné" : "Perdu :("}
-              </p>
-              <h2 className="mt-3 text-3xl font-semibold">
-                {winner ? drawResult.prize?.label : "Perdu :("}
-              </h2>
-              <p className="mt-3 text-sm leading-7 text-white/72">
-                {winner
-                  ? "Montrez cet écran au comptoir pour finaliser la remise du lot."
-                  : "Merci pour votre participation. Revenez vite pour une prochaine animation."}
-              </p>
-
-              {winner ? (
-                <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-[22px] bg-white/8 p-4">
-                    <p className="text-xs uppercase tracking-[0.24em] text-white/46">Code</p>
-                    <p className="mt-2 text-2xl font-semibold">{drawResult.lead.redemptionCode}</p>
-                  </div>
-                  <div className="rounded-[22px] bg-white/8 p-4">
-                    <p className="text-xs uppercase tracking-[0.24em] text-white/46">Statut</p>
-                    <p className="mt-2 text-2xl font-semibold">
-                      {drawResult.lead.status === "redeemed" ? "Retir\u00e9" : "\u00c0 retirer"}
+          {redemptionCode ? (
+            <div className="mt-5 rounded-[24px] border border-[#e5e7ef] bg-[#fafbff] p-4">
+              <p className="text-xs uppercase tracking-[0.24em] text-[#8b93a5]">Code de retrait</p>
+              <p className="mt-2 text-2xl font-semibold text-[#121826]">{redemptionCode}</p>
+              {qrPath ? (
+                <div className="mt-4 flex items-center gap-4 rounded-[18px] bg-white p-3 text-left">
+                  <Image
+                    src={qrPath}
+                    alt={`QR code ${redemptionCode}`}
+                    width={92}
+                    height={92}
+                    unoptimized
+                    className="h-[92px] w-[92px] rounded-[14px]"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm leading-6 text-[#61687a]">
+                      Vous pouvez également enregistrer votre QR code immédiatement.
                     </p>
+                    <a
+                      href={qrPath}
+                      download={`qr-lot-${redemptionCode}.svg`}
+                      className="mt-3 inline-flex rounded-[16px] bg-[#111827] px-4 py-3 text-sm font-semibold text-white"
+                    >
+                      Enregistrer le QR code
+                    </a>
                   </div>
-                </div>
-              ) : null}
-
-              {winner && redemptionCode ? (
-                <div className="mt-5 rounded-[26px] border border-white/10 bg-white p-4 text-[#111827]">
-                  <div className="grid items-center gap-4 sm:grid-cols-[150px_1fr]">
-                    <Image
-                      src={qrPath}
-                      alt={`QR code de retrait ${redemptionCode}`}
-                      width={150}
-                      height={150}
-                      unoptimized
-                      className="mx-auto h-[150px] w-[150px] rounded-[18px]"
-                    />
-                    <div>
-                      <p className="text-xs uppercase tracking-[0.24em] text-[#6b7280]">
-                        QR code de retrait
-                      </p>
-                      <p className="mt-2 text-sm leading-6 text-[#4b5563]">
-                        Enregistrez ce QR code ou envoyez-le par email. Le restaurant le scannera au
-                        moment de remettre le lot.
-                      </p>
-                      <div className="mt-4 flex flex-wrap gap-2">
-                        <a
-                          href={qrPath}
-                          download={`qr-lot-${redemptionCode}.svg`}
-                          className="rounded-[16px] bg-[#111827] px-4 py-3 text-sm font-semibold text-white"
-                        >
-                          Enregistrer
-                        </a>
-                        <a
-                          href={`mailto:${encodeURIComponent(drawResult.lead.email)}?subject=${emailSubject}&body=${emailBody}`}
-                          className="rounded-[16px] border border-[#d7e0ed] px-4 py-3 text-sm font-semibold text-[#111827]"
-                        >
-                          Envoyer par email
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ) : null}
-
-              {winner && campaign.rewardRules.purchaseRequired ? (
-                <div className="mt-4 rounded-[22px] border border-white/10 bg-white/8 px-4 py-4 text-sm text-white/78">
-                  {"Retrait du lot soumis \u00e0 une condition d'achat."}
-                </div>
-              ) : null}
-
-              {winner && campaign.rewardRules.availabilityDurationDays === 0 ? (
-                <div className="mt-4 rounded-[22px] border border-white/10 bg-white/8 px-4 py-4 text-sm text-white/78">
-                  {"Disponible d\u00e8s maintenant au comptoir."}
-                </div>
-              ) : null}
-
-              {winner &&
-              campaign.rewardRules.availabilityDurationDays > 0 &&
-              drawResult.lead.rewardAvailableAt ? (
-                <div className="mt-4 rounded-[22px] border border-white/10 bg-white/8 px-4 py-4 text-sm text-white/78">
-                  {"Disponible \u00e0 partir du"} {formatDateTime(drawResult.lead.rewardAvailableAt)}
-                </div>
-              ) : null}
-
-              {winner && drawResult.lead.rewardExpiresAt ? (
-                <div className="mt-4 rounded-[22px] border border-white/10 bg-white/8 px-4 py-4 text-sm text-white/78">
-                  Valable jusqu&apos;au {formatDateTime(drawResult.lead.rewardExpiresAt)}
-                </div>
-              ) : null}
-
-              {error ? (
-                <div className="mt-4 rounded-[20px] border border-[#ff8f70]/30 bg-[#ff8f70]/12 px-4 py-3 text-sm text-white">
-                  {error}
-                </div>
-              ) : null}
-
-              {winner ? (
-                <div className="mt-5 rounded-[22px] border border-white/10 bg-white/8 px-4 py-4 text-center text-sm leading-6 text-white/78">
-                  {"Le retrait sera valid\u00e9 une seule fois par le restaurant au moment du scan."}
                 </div>
               ) : null}
             </div>
           ) : null}
-
         </div>
-      </div>
+      </PublicModal>
     </div>
   );
 }

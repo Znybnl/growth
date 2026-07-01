@@ -32,6 +32,15 @@ export function GoogleAuthButton({
       const supabase = getSupabaseBrowserClient();
       const redirectTo = new URL("/api/auth/google/callback", window.location.origin);
       redirectTo.searchParams.set("next", nextPath);
+      const referralCode = document.cookie
+        .split(";")
+        .map((item) => item.trim())
+        .find((item) => item.startsWith("okado_referral="))
+        ?.split("=")[1];
+
+      if (referralCode) {
+        redirectTo.searchParams.set("ref", decodeURIComponent(referralCode));
+      }
 
       const { error: oauthError } = await supabase.auth.signInWithOAuth({
         provider: "google",

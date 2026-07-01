@@ -3,24 +3,42 @@ import {
   CampaignAction,
   CampaignDataView,
   CampaignEvent,
+  CampaignLibraryItem,
   CampaignKpi,
   CampaignPerformance,
   CampaignSetupInput,
+  CreateDrawSessionRequest,
+  CreateDrawSessionResult,
+  DrawSession,
   DrawRequest,
   DrawResult,
+  FinalizeDrawSessionRequest,
   Lead,
   Merchant,
+  MerchantBusinessLogItem,
   MerchantDashboardData,
+  MerchantFailedEmailItem,
   MerchantLeadRow,
+  MerchantPendingClaimItem,
+  MerchantSupportOverview,
+  MerchantWebhookItem,
   Prize,
   PublicCampaign,
+  RewardEmailDelivery,
+  RewardEmailEvent,
 } from "@/lib/types";
+import { assertMerchantBillingAccess } from "@/lib/billing";
 import {
   getCampaignLocalSettings,
   setCampaignLocalSettings,
 } from "@/lib/campaign-local-settings";
+import {
+  createCampaignEmailDefaults,
+  normalizeCampaignEmailSettings,
+} from "@/lib/email-settings";
 import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
 import { getSupabaseAdmin } from "@/lib/supabase";
+import { WebhookEventPayload } from "resend";
 
 type CampaignRow = {
   id: string;
@@ -105,6 +123,43 @@ type LeadRow = {
   reward_expires_at: string | null;
 };
 
+type DrawSessionRow = {
+  id: string;
+  campaign_id: string;
+  prize_id: string | null;
+  status: DrawSession["status"];
+  created_at: string;
+  expires_at: string;
+};
+
+type DrawLeadRpcRow = {
+  lead_id: string;
+  campaign_id: string;
+  first_name: string;
+  email: string;
+  marketing_consent: boolean;
+  consent_timestamp: string;
+  prize_id: string | null;
+  status: Lead["status"];
+  created_at: string;
+  action_confirmed: boolean;
+  redemption_code: string | null;
+  reward_available_at: string | null;
+  reward_expires_at: string | null;
+  action_index: number;
+};
+
+type CreateDrawSessionRpcRow = {
+  session_id: string;
+  campaign_id: string;
+  prize_id: string | null;
+  status: DrawSession["status"];
+  created_at: string;
+  expires_at: string;
+};
+
+type FinalizeDrawSessionRpcRow = DrawLeadRpcRow;
+
 type EventRow = {
   id: string;
   campaign_id: string;
@@ -112,6 +167,33 @@ type EventRow = {
   event_type: CampaignEvent["eventType"];
   metadata: Record<string, string | number | boolean | null>;
   created_at: string;
+};
+
+type CampaignOverviewRpcRow = CampaignRow & {
+  scans_count: number;
+  leads_count: number;
+  actions_count: number;
+  games_count: number;
+  wins_count: number;
+  redeemed_count: number;
+  estimated_spend: number;
+};
+
+type CampaignOverviewLeadRow = {
+  campaign_id: string;
+  prize_id: string | null;
+  status: Lead["status"];
+};
+
+type CampaignOverviewEventRow = {
+  campaign_id: string;
+  event_type: CampaignEvent["eventType"];
+};
+
+type CampaignOverviewPrizeRow = {
+  id: string;
+  campaign_id: string;
+  estimated_unit_cost: number;
 };
 
 type MerchantRow = {
@@ -129,7 +211,55 @@ type MerchantRow = {
   diffusion_support: string[] | null;
   google_review_url: string | null;
   instagram_url: string | null;
+  facebook_url: string | null;
+  tiktok_url: string | null;
+  tripadvisor_url: string | null;
   default_prize_cost: number | null;
+  stripe_customer_id: string | null;
+  stripe_subscription_id: string | null;
+  stripe_subscription_status: Merchant["stripeSubscriptionStatus"] | null;
+  trial_start_date: string | null;
+  trial_end_date: string | null;
+  subscription_current_period_end: string | null;
+  subscription_cancel_at_period_end: boolean | null;
+  created_at: string;
+};
+
+type RewardEmailDeliveryRow = {
+  id: string;
+  campaign_id: string;
+  lead_id: string;
+  resend_email_id: string | null;
+  recipient_email: string;
+  sender_email: string | null;
+  reply_to_email: string | null;
+  subject: string;
+  status: "queued" | "sent" | "delivered" | "bounced" | "complained" | "suppressed" | "failed";
+  error_message: string | null;
+  sent_at: string | null;
+  delivered_at: string | null;
+  bounced_at: string | null;
+  complained_at: string | null;
+  last_event_at: string | null;
+  metadata: Record<string, string | number | boolean | null>;
+  created_at: string;
+  updated_at: string;
+};
+
+type RewardEmailDeliverySummaryRow = {
+  lead_id: string;
+  status: RewardEmailDeliveryRow["status"];
+  sent_at: string | null;
+  delivered_at: string | null;
+  error_message: string | null;
+};
+
+type RewardEmailEventRow = {
+  id: string;
+  reward_email_delivery_id: string | null;
+  resend_email_id: string | null;
+  event_type: string;
+  payload: Record<string, unknown> | null;
   created_at: string;
 };
 
@@ -153,7 +283,17 @@ function toMerchant(row: MerchantRow): Merchant {
     diffusionSupport: row.diffusion_support ?? [],
     googleReviewUrl: row.google_review_url ?? undefined,
     instagramUrl: row.instagram_url ?? undefined,
+    facebookUrl: row.facebook_url ?? undefined,
+    tiktokUrl: row.tiktok_url ?? undefined,
+    tripadvisorUrl: row.tripadvisor_url ?? undefined,
     defaultPrizeCost: row.default_prize_cost ?? undefined,
+    stripeCustomerId: row.stripe_customer_id ?? undefined,
+    stripeSubscriptionId: row.stripe_subscription_id ?? undefined,
+    stripeSubscriptionStatus: row.stripe_subscription_status ?? undefined,
+    trialStartDate: row.trial_start_date ?? undefined,
+    trialEndDate: row.trial_end_date ?? undefined,
+    subscriptionCurrentPeriodEnd: row.subscription_current_period_end ?? undefined,
+    subscriptionCancelAtPeriodEnd: row.subscription_cancel_at_period_end ?? false,
     createdAt: row.created_at,
   };
 }
@@ -162,8 +302,42 @@ function clone<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T;
 }
 
+function extractWebhookSummary(payload?: Record<string, unknown> | null) {
+  if (!payload) {
+    return "";
+  }
+
+  const data =
+    "data" in payload && typeof payload.data === "object" && payload.data !== null
+      ? (payload.data as Record<string, unknown>)
+      : null;
+
+  const firstString = (...values: Array<unknown>) =>
+    values.find((value) => typeof value === "string" && value.trim().length > 0) as
+      | string
+      | undefined;
+
+  return (
+    firstString(
+      data?.reason,
+      data?.message,
+      data?.response,
+      data?.["bounce"] && typeof data.bounce === "object"
+        ? (data.bounce as Record<string, unknown>).message
+        : undefined,
+      data?.["failed"] && typeof data.failed === "object"
+        ? (data.failed as Record<string, unknown>).reason
+        : undefined,
+      data?.["suppressed"] && typeof data.suppressed === "object"
+        ? (data.suppressed as Record<string, unknown>).message
+        : undefined,
+    ) ?? ""
+  );
+}
+
 function toCampaign(
   row: CampaignRow,
+  merchant: Merchant,
   actions: ActionRow[],
   prizes: PrizeRow[],
   localSettings: CampaignLocalSettings = {},
@@ -231,9 +405,13 @@ function toCampaign(
       poster: normalizePosterSettings(
         localSettings.poster,
         createPosterSettingsDefaults({
+          logoMode: row.logo_url ? "image" : "text",
+          logoText: row.title,
           logoUrl: row.logo_url ?? undefined,
           logoSizePercent: row.logo_size_percent,
           logoBottomMarginPx: row.logo_margin_bottom_px,
+          backgroundMode: row.background_mode,
+          backgroundColor: row.background_color,
           backgroundImageUrl: row.background_image_url ?? "",
           headline: row.subtitle,
           headlineTextColor: row.heading_text_color,
@@ -242,6 +420,10 @@ function toCampaign(
           wheel,
           footerBackgroundColor: row.accent_signal,
         }),
+      ),
+      email: normalizeCampaignEmailSettings(
+        localSettings.email,
+        createCampaignEmailDefaults(merchant),
       ),
     },
     actions: actions
@@ -290,6 +472,18 @@ function toLead(row: LeadRow): Lead {
     redemptionCode: row.redemption_code ?? undefined,
     rewardAvailableAt: row.reward_available_at ?? undefined,
     rewardExpiresAt: row.reward_expires_at ?? undefined,
+    prizeUsageConditions: undefined,
+  };
+}
+
+function toDrawSession(row: DrawSessionRow): DrawSession {
+  return {
+    id: row.id,
+    campaignId: row.campaign_id,
+    prizeId: row.prize_id ?? undefined,
+    status: row.status,
+    createdAt: row.created_at,
+    expiresAt: row.expires_at,
   };
 }
 
@@ -302,6 +496,59 @@ function toEvent(row: EventRow): CampaignEvent {
     metadata: row.metadata,
     createdAt: row.created_at,
   };
+}
+
+function toRewardEmailDelivery(row: RewardEmailDeliveryRow): RewardEmailDelivery {
+  return {
+    id: row.id,
+    leadId: row.lead_id,
+    campaignId: row.campaign_id,
+    resendEmailId: row.resend_email_id ?? undefined,
+    recipientEmail: row.recipient_email,
+    senderEmail: row.sender_email ?? undefined,
+    replyToEmail: row.reply_to_email ?? undefined,
+    subject: row.subject,
+    status: row.status,
+    errorMessage: row.error_message ?? undefined,
+    sentAt: row.sent_at ?? undefined,
+    deliveredAt: row.delivered_at ?? undefined,
+    bouncedAt: row.bounced_at ?? undefined,
+    complainedAt: row.complained_at ?? undefined,
+    lastEventAt: row.last_event_at ?? undefined,
+    metadata: row.metadata,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+function toRewardEmailEvent(row: RewardEmailEventRow): RewardEmailEvent {
+  return {
+    id: row.id,
+    rewardEmailDeliveryId: row.reward_email_delivery_id ?? undefined,
+    resendEmailId: row.resend_email_id ?? undefined,
+    eventType: row.event_type,
+    payload: row.payload ?? undefined,
+    createdAt: row.created_at,
+  };
+}
+
+function enrichLeadRowsWithEmailDeliveries(
+  leads: MerchantLeadRow[],
+  deliveries: RewardEmailDeliverySummaryRow[],
+) {
+  const deliveryMap = new Map(deliveries.map((item) => [item.lead_id, item]));
+
+  return leads.map((lead) => {
+    const delivery = deliveryMap.get(lead.id);
+
+    return {
+      ...lead,
+      emailDeliveryStatus: delivery?.status,
+      emailSentAt: delivery?.sent_at ?? undefined,
+      emailDeliveredAt: delivery?.delivered_at ?? undefined,
+      emailErrorMessage: delivery?.error_message ?? undefined,
+    };
+  });
 }
 
 function toPublicCampaign(
@@ -324,7 +571,13 @@ function toPublicCampaign(
     logoText: campaign.logoText ?? merchant.companyName,
     logoUrl: campaign.logoUrl,
     accent: campaign.accent,
-    prizes: prizes.map((prize) => ({ id: prize.id, label: prize.label })),
+    prizes: prizes.map((prize) => ({
+      id: prize.id,
+      label: prize.label,
+      totalQuantity: prize.totalQuantity,
+      remainingQuantity: prize.remainingQuantity,
+      probability: prize.probability,
+    })),
     presentation: campaign.presentation,
     actions,
     rewardRules: campaign.rewardRules,
@@ -333,14 +586,7 @@ function toPublicCampaign(
 
 function computeKpis(campaign: Campaign, prizes: Prize[], leads: Lead[], events: CampaignEvent[]): CampaignKpi {
   const scans = events.filter((event) => event.eventType === "scan").length;
-  const actions =
-    campaign.goalType === "review_prompt"
-      ? events.filter((event) =>
-          ["review_clicked", "review_confirmed"].includes(event.eventType),
-        ).length
-      : campaign.goalType === "social_follow"
-        ? events.filter((event) => event.eventType === "social_clicked").length
-        : leads.length;
+  const actions = events.filter((event) => event.eventType === "review_clicked").length;
   const games = events.filter((event) => event.eventType === "game_played").length;
   const wins = leads.filter((lead) => Boolean(lead.prizeId)).length;
   const redeemed = leads.filter((lead) => lead.status === "redeemed").length;
@@ -399,6 +645,152 @@ async function fetchCampaignDependencies(campaignIds: string[]) {
   };
 }
 
+function buildLastDays(referenceDates: string[], days = 30) {
+  const latest = referenceDates.length
+    ? new Date(
+        [...referenceDates].sort((a, b) => a.localeCompare(b)).at(-1) ?? new Date().toISOString(),
+      )
+    : new Date();
+
+  return Array.from({ length: days }, (_, index) => {
+    const date = new Date(
+      Date.UTC(latest.getUTCFullYear(), latest.getUTCMonth(), latest.getUTCDate()),
+    );
+    date.setUTCDate(latest.getUTCDate() - (days - index - 1));
+    return date.toISOString().slice(0, 10);
+  });
+}
+
+function countByDay(values: string[]) {
+  const counts = new Map<string, number>();
+
+  for (const value of values) {
+    counts.set(value, (counts.get(value) ?? 0) + 1);
+  }
+
+  return counts;
+}
+
+function buildDashboardActivityPoints(leads: LeadRow[], events: EventRow[]) {
+  const dayKeys = buildLastDays([
+    ...leads.map((lead) => lead.created_at),
+    ...events.map((event) => event.created_at),
+  ]);
+  const scansByDay = countByDay(
+    events
+      .filter((event) => event.event_type === "scan")
+      .map((event) => event.created_at.slice(0, 10)),
+  );
+  const participationsByDay = countByDay(leads.map((lead) => lead.created_at.slice(0, 10)));
+
+  return dayKeys.map((label) => ({
+    label,
+    scans: scansByDay.get(label) ?? 0,
+    participations: participationsByDay.get(label) ?? 0,
+  }));
+}
+
+function toOverviewKpis(row: CampaignOverviewRpcRow): CampaignKpi {
+  const scans = Number(row.scans_count) || 0;
+  const leads = Number(row.leads_count) || 0;
+  const actions = Number(row.actions_count) || 0;
+  const games = Number(row.games_count) || 0;
+  const wins = Number(row.wins_count) || 0;
+  const redeemed = Number(row.redeemed_count) || 0;
+  const estimatedSpend = Number(Number(row.estimated_spend || 0).toFixed(2));
+
+  return {
+    scans,
+    leads,
+    actions,
+    games,
+    wins,
+    redeemed,
+    conversionRate: scans ? Math.round((leads / scans) * 100) : 0,
+    actionRate: leads ? Math.round((actions / leads) * 100) : 0,
+    redemptionRate: wins ? Math.round((redeemed / wins) * 100) : 0,
+    estimatedSpend,
+    costPerLead: leads ? Number((estimatedSpend / leads).toFixed(2)) : 0,
+    costPerRedeemed: redeemed ? Number((estimatedSpend / redeemed).toFixed(2)) : 0,
+  };
+}
+
+function computeOverviewKpisFromRows(
+  campaign: Campaign,
+  leads: CampaignOverviewLeadRow[],
+  events: CampaignOverviewEventRow[],
+  estimatedCostByPrizeId: Map<string, number>,
+): CampaignKpi {
+  const scans = events.filter((event) => event.event_type === "scan").length;
+  const actions = events.filter((event) => event.event_type === "review_clicked").length;
+  const games = events.filter((event) => event.event_type === "game_played").length;
+  const wins = leads.filter((lead) => Boolean(lead.prize_id)).length;
+  const redeemed = leads.filter((lead) => lead.status === "redeemed").length;
+  const estimatedSpend = leads.reduce((total, lead) => {
+    if (!lead.prize_id) return total;
+    return total + (estimatedCostByPrizeId.get(lead.prize_id) ?? 0);
+  }, 0);
+
+  return {
+    scans,
+    leads: leads.length,
+    actions,
+    games,
+    wins,
+    redeemed,
+    conversionRate: scans ? Math.round((leads.length / scans) * 100) : 0,
+    actionRate: leads.length ? Math.round((actions / leads.length) * 100) : 0,
+    redemptionRate: wins ? Math.round((redeemed / wins) * 100) : 0,
+    estimatedSpend: Number(estimatedSpend.toFixed(2)),
+    costPerLead: leads.length ? Number((estimatedSpend / leads.length).toFixed(2)) : 0,
+    costPerRedeemed: redeemed ? Number((estimatedSpend / redeemed).toFixed(2)) : 0,
+  };
+}
+
+function buildCampaignOverviewFallbackBundle(
+  merchant: Merchant,
+  campaignRows: CampaignRow[],
+  leadRows: CampaignOverviewLeadRow[],
+  eventRows: CampaignOverviewEventRow[],
+  prizeRows: CampaignOverviewPrizeRow[],
+) {
+  const leadsByCampaignId = new Map<string, CampaignOverviewLeadRow[]>();
+  const eventsByCampaignId = new Map<string, CampaignOverviewEventRow[]>();
+  const estimatedCostByPrizeId = new Map<string, number>();
+
+  for (const lead of leadRows) {
+    const campaignLeads = leadsByCampaignId.get(lead.campaign_id) ?? [];
+    campaignLeads.push(lead);
+    leadsByCampaignId.set(lead.campaign_id, campaignLeads);
+  }
+
+  for (const event of eventRows) {
+    const campaignEvents = eventsByCampaignId.get(event.campaign_id) ?? [];
+    campaignEvents.push(event);
+    eventsByCampaignId.set(event.campaign_id, campaignEvents);
+  }
+
+  for (const prize of prizeRows) {
+    estimatedCostByPrizeId.set(prize.id, Number(prize.estimated_unit_cost) || 0);
+  }
+
+  return campaignRows.map((row) => {
+    const campaign = toCampaign(row, merchant, [], []);
+
+    return {
+      campaign,
+      merchant: clone(merchant),
+      prizes: [],
+      kpis: computeOverviewKpisFromRows(
+        campaign,
+        leadsByCampaignId.get(row.id) ?? [],
+        eventsByCampaignId.get(row.id) ?? [],
+        estimatedCostByPrizeId,
+      ),
+    } satisfies CampaignPerformance;
+  });
+}
+
 function buildPerformanceBundle(
   merchant: Merchant,
   campaignRows: CampaignRow[],
@@ -410,12 +802,20 @@ function buildPerformanceBundle(
 ) {
   return campaignRows.map((row) => {
     const campaignId = row.id;
+    const localSettings = localSettingsByCampaignId[campaignId] ?? {};
     const campaignActions = actionRows.filter((item) => item.campaign_id === campaignId);
-    const campaignPrizes = prizeRows.filter((item) => item.campaign_id === campaignId).map(toPrize);
+    const campaignPrizes = prizeRows
+      .filter((item) => item.campaign_id === campaignId)
+      .map(toPrize)
+      .map((prize) => ({
+        ...prize,
+        usageConditions: localSettings.prizeSettings?.[prize.id]?.usageConditions,
+      }));
     const campaignLeads = leadRows.filter((item) => item.campaign_id === campaignId).map(toLead);
     const campaignEvents = eventRows.filter((item) => item.campaign_id === campaignId).map(toEvent);
     const campaign = toCampaign(
       row,
+      merchant,
       campaignActions,
       campaignPrizes.map((item) => ({
         id: item.id,
@@ -427,7 +827,7 @@ function buildPerformanceBundle(
         estimated_unit_cost: item.estimatedUnitCost,
         created_at: "",
       })),
-      localSettingsByCampaignId[campaignId],
+      localSettings,
     );
 
     return {
@@ -477,7 +877,127 @@ export async function getSupabaseMerchantDashboard(
     totalLeads,
     totalRedeemed,
     averageConversion,
+    activityPoints: buildDashboardActivityPoints(leads, events),
   };
+}
+
+export async function getSupabaseMerchantCampaignOverview(
+  merchant: Merchant,
+): Promise<MerchantDashboardData> {
+  const supabase = getSupabaseAdmin();
+  const overviewResult = await supabase.rpc("get_merchant_campaign_overview", {
+    p_merchant_id: merchant.id,
+  });
+
+  if (!overviewResult.error) {
+    const rows = (overviewResult.data as CampaignOverviewRpcRow[] | null) ?? [];
+    const campaigns = rows.map((row) => ({
+      campaign: toCampaign(row, merchant, [], []),
+      merchant: clone(merchant),
+      prizes: [],
+      kpis: toOverviewKpis(row),
+    }));
+    const totalLeads = campaigns.reduce((total, item) => total + item.kpis.leads, 0);
+    const totalRedeemed = campaigns.reduce((total, item) => total + item.kpis.redeemed, 0);
+    const averageConversion = campaigns.length
+      ? Math.round(campaigns.reduce((total, item) => total + item.kpis.conversionRate, 0) / campaigns.length)
+      : 0;
+
+    return {
+      merchant: clone(merchant),
+      campaigns,
+      totalLeads,
+      totalRedeemed,
+      averageConversion,
+      activityPoints: [],
+    };
+  }
+
+  const { data: campaignsData } = await supabase
+    .from("campaigns")
+    .select("*")
+    .eq("merchant_id", merchant.id)
+    .order("created_at", { ascending: false });
+
+  const campaignRows = (campaignsData as CampaignRow[] | null) ?? [];
+  const campaignIds = campaignRows.map((campaign) => campaign.id);
+
+  if (!campaignIds.length) {
+    return {
+      merchant: clone(merchant),
+      campaigns: [],
+      totalLeads: 0,
+      totalRedeemed: 0,
+      averageConversion: 0,
+      activityPoints: [],
+    };
+  }
+
+  const [{ data: leadsData }, { data: eventsData }, { data: prizesData }] = await Promise.all([
+    supabase
+      .from("leads")
+      .select("campaign_id,prize_id,status")
+      .in("campaign_id", campaignIds),
+    supabase
+      .from("campaign_events")
+      .select("campaign_id,event_type")
+      .in("campaign_id", campaignIds),
+    supabase
+      .from("prizes")
+      .select("id,campaign_id,estimated_unit_cost")
+      .in("campaign_id", campaignIds),
+  ]);
+
+  const campaigns = buildCampaignOverviewFallbackBundle(
+    merchant,
+    campaignRows,
+    (leadsData as CampaignOverviewLeadRow[] | null) ?? [],
+    (eventsData as CampaignOverviewEventRow[] | null) ?? [],
+    (prizesData as CampaignOverviewPrizeRow[] | null) ?? [],
+  );
+  const totalLeads = campaigns.reduce((total, item) => total + item.kpis.leads, 0);
+  const totalRedeemed = campaigns.reduce((total, item) => total + item.kpis.redeemed, 0);
+  const averageConversion = campaigns.length
+    ? Math.round(campaigns.reduce((total, item) => total + item.kpis.conversionRate, 0) / campaigns.length)
+    : 0;
+
+  return {
+    merchant: clone(merchant),
+    campaigns,
+    totalLeads,
+    totalRedeemed,
+    averageConversion,
+    activityPoints: [],
+  };
+}
+
+export async function getSupabaseMerchantCampaignLibrary(
+  merchantId: string,
+): Promise<CampaignLibraryItem[]> {
+  const supabase = getSupabaseAdmin();
+  const { data, error } = await supabase
+    .from("campaigns")
+    .select("id,title,game_type,is_active,created_at")
+    .eq("merchant_id", merchantId)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    throw new Error(`Lecture des campagnes impossible: ${error.message}`);
+  }
+
+  return ((data as Array<{
+    id: string;
+    title: string;
+    game_type: Campaign["gameType"];
+    is_active: boolean;
+    created_at: string;
+  }> | null) ?? []).map((item) => ({
+    id: item.id,
+    title: item.title,
+    gameType: item.game_type,
+    isActive: item.is_active,
+    createdAt: item.created_at,
+  }));
 }
 
 export async function getSupabaseCampaignPerformance(
@@ -514,11 +1034,56 @@ export async function getSupabaseCampaignPerformance(
   )[0] ?? null;
 }
 
+export async function getSupabaseCampaignSetupPerformance(
+  campaignId: string,
+  fallbackMerchant?: Merchant,
+): Promise<CampaignPerformance | null> {
+  const supabase = getSupabaseAdmin();
+  const { data } = await supabase.from("campaigns").select("*").eq("id", campaignId).maybeSingle();
+  if (!data) return null;
+
+  const row = data as CampaignRow;
+  const [merchant, actionsResult, prizesResult, localSettings] = await Promise.all([
+    fallbackMerchant && fallbackMerchant.id === row.merchant_id
+      ? Promise.resolve(fallbackMerchant)
+      : (async () => {
+          const merchantResult = await supabase
+            .from("merchants")
+            .select("*")
+            .eq("id", row.merchant_id)
+            .maybeSingle();
+          return merchantResult.data ? toMerchant(merchantResult.data as MerchantRow) : null;
+        })(),
+    supabase
+      .from("campaign_actions")
+      .select("id,campaign_id,position,kind,label,url,created_at")
+      .eq("campaign_id", campaignId),
+    supabase
+      .from("prizes")
+      .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at")
+      .eq("campaign_id", campaignId),
+    getCampaignLocalSettings(campaignId),
+  ]);
+
+  if (!merchant) return null;
+
+  return buildPerformanceBundle(
+    merchant,
+    [row],
+    (actionsResult.data as ActionRow[] | null) ?? [],
+    (prizesResult.data as PrizeRow[] | null) ?? [],
+    [],
+    [],
+    { [campaignId]: localSettings },
+  )[0] ?? null;
+}
+
 export async function getSupabasePublicCampaign(
   campaignId: string,
 ): Promise<PublicCampaign | null> {
   const performance = await getSupabaseCampaignPerformance(campaignId);
   if (!performance || !performance.campaign.isActive) return null;
+  assertMerchantBillingAccess(performance.merchant, "campaign_public");
   return toPublicCampaign(performance.campaign, performance.merchant, performance.prizes);
 }
 
@@ -535,13 +1100,96 @@ export async function getSupabaseMerchantLeads(
   const campaigns = (campaignsData as Array<{ id: string; title: string; goal_type: Campaign["goalType"] }> | null) ?? [];
   const campaignIds = campaignId ? [campaignId] : campaigns.map((item) => item.id);
   if (!campaignIds.length) return [];
-  const [{ data: leadsData }, { data: prizesData }] = await Promise.all([
+  const [{ data: leadsData }, { data: prizesData }, { data: deliveriesData }] = await Promise.all([
     supabase.from("leads").select("*").in("campaign_id", campaignIds),
     supabase.from("prizes").select("id,label,campaign_id,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at").in("campaign_id", campaignIds),
+    supabase
+      .from("reward_email_deliveries")
+      .select("lead_id,status,sent_at,delivered_at,error_message")
+      .in("campaign_id", campaignIds),
   ]);
   const prizes = ((prizesData as PrizeRow[] | null) ?? []).map(toPrize);
   const campaignMap = new Map(campaigns.map((item) => [item.id, item]));
-  return ((leadsData as LeadRow[] | null) ?? [])
+  const leads = ((leadsData as LeadRow[] | null) ?? [])
+    .map(toLead)
+      .map((lead) => ({
+        ...lead,
+        campaignTitle: campaignMap.get(lead.campaignId)?.title ?? "Campagne",
+        goalType: campaignMap.get(lead.campaignId)?.goal_type ?? "lead_capture",
+        prizeLabel: lead.prizeId
+          ? prizes.find((item) => item.id === lead.prizeId)?.label ?? "Lot inconnu"
+          : "Perdu",
+        prizeUsageConditions: lead.prizeId
+          ? prizes.find((item) => item.id === lead.prizeId)?.usageConditions
+          : undefined,
+      }))
+    .sort((a, b) => b.consentTimestamp.localeCompare(a.consentTimestamp));
+
+  return enrichLeadRowsWithEmailDeliveries(
+    leads,
+    (deliveriesData as RewardEmailDeliverySummaryRow[] | null) ?? [],
+  );
+}
+
+export async function getSupabaseMerchantRecentLeads(
+  merchantId: string,
+  limit = 5,
+  query = "",
+): Promise<MerchantLeadRow[]> {
+  const supabase = getSupabaseAdmin();
+  const normalizedQuery = query.trim().toLowerCase();
+  const { data: campaignsData } = await supabase
+    .from("campaigns")
+    .select("id,title,goal_type")
+    .eq("merchant_id", merchantId);
+
+  const campaigns =
+    (campaignsData as Array<{ id: string; title: string; goal_type: Campaign["goalType"] }> | null) ?? [];
+  const campaignIds = campaigns.map((item) => item.id);
+
+  if (!campaignIds.length) {
+    return [];
+  }
+
+  let leadsQuery = supabase
+    .from("leads")
+    .select("*")
+    .in("campaign_id", campaignIds)
+    .order("created_at", { ascending: false })
+    .limit(normalizedQuery ? Math.max(limit * 4, 20) : limit);
+
+  if (normalizedQuery) {
+    const escapedQuery = normalizedQuery.replaceAll("%", "\\%").replaceAll("_", "\\_");
+    leadsQuery = leadsQuery.or(
+      `first_name.ilike.%${escapedQuery}%,email.ilike.%${escapedQuery}%,redemption_code.ilike.%${escapedQuery}%`,
+    );
+  }
+
+  const { data: leadsData } = await leadsQuery;
+  const leadRows = (leadsData as LeadRow[] | null) ?? [];
+  const prizeIds = [...new Set(leadRows.map((lead) => lead.prize_id).filter(Boolean) as string[])];
+
+  const [{ data: prizesData }, { data: deliveriesData }] = await Promise.all([
+    prizeIds.length
+      ? supabase
+          .from("prizes")
+          .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at")
+          .in("id", prizeIds)
+      : Promise.resolve({ data: [] }),
+    leadRows.length
+      ? supabase
+          .from("reward_email_deliveries")
+          .select("lead_id,status,sent_at,delivered_at,error_message")
+          .in(
+            "lead_id",
+            leadRows.map((lead) => lead.id),
+          )
+      : Promise.resolve({ data: [] }),
+  ]);
+
+  const prizes = ((prizesData as PrizeRow[] | null) ?? []).map(toPrize);
+  const campaignMap = new Map(campaigns.map((item) => [item.id, item]));
+  const leads = leadRows
     .map(toLead)
     .map((lead) => ({
       ...lead,
@@ -551,36 +1199,130 @@ export async function getSupabaseMerchantLeads(
         ? prizes.find((item) => item.id === lead.prizeId)?.label ?? "Lot inconnu"
         : "Perdu",
     }))
-    .sort((a, b) => b.consentTimestamp.localeCompare(a.consentTimestamp));
+    .filter((lead) =>
+      normalizedQuery
+        ? `${lead.firstName} ${lead.email} ${lead.campaignTitle} ${lead.redemptionCode ?? ""}`
+            .toLowerCase()
+            .includes(normalizedQuery)
+        : true,
+    )
+    .slice(0, limit);
+
+  return enrichLeadRowsWithEmailDeliveries(
+    leads,
+    (deliveriesData as RewardEmailDeliverySummaryRow[] | null) ?? [],
+  );
 }
 
 export async function getSupabaseCampaignDataView(
   campaignId: string,
   merchant?: Merchant,
 ): Promise<CampaignDataView | null> {
-  const performance = await getSupabaseCampaignPerformance(campaignId, merchant);
-  if (!performance) return null;
   const supabase = getSupabaseAdmin();
-  const [{ data: leadsData }, { data: eventsData }] = await Promise.all([
+  const { data: campaignData } = await supabase
+    .from("campaigns")
+    .select("*")
+    .eq("id", campaignId)
+    .maybeSingle();
+
+  if (!campaignData) return null;
+
+  const row = campaignData as CampaignRow;
+  const [
+    resolvedMerchant,
+    actionsResult,
+    prizesResult,
+    leadsResult,
+    eventsResult,
+    deliveriesResult,
+    localSettings,
+  ] = await Promise.all([
+    merchant && merchant.id === row.merchant_id
+      ? Promise.resolve(merchant)
+      : (async () => {
+          const merchantResult = await supabase
+            .from("merchants")
+            .select("*")
+            .eq("id", row.merchant_id)
+            .maybeSingle();
+          return merchantResult.data ? toMerchant(merchantResult.data as MerchantRow) : null;
+        })(),
+    supabase
+      .from("campaign_actions")
+      .select("id,campaign_id,position,kind,label,url,created_at")
+      .eq("campaign_id", campaignId),
+    supabase
+      .from("prizes")
+      .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at")
+      .eq("campaign_id", campaignId),
     supabase.from("leads").select("*").eq("campaign_id", campaignId),
     supabase.from("campaign_events").select("*").eq("campaign_id", campaignId),
+    supabase
+      .from("reward_email_deliveries")
+      .select("lead_id,status,sent_at,delivered_at,error_message")
+      .eq("campaign_id", campaignId),
+    getCampaignLocalSettings(campaignId),
   ]);
+
+  if (!resolvedMerchant) return null;
+
+  const performance = buildPerformanceBundle(
+    resolvedMerchant,
+    [row],
+    (actionsResult.data as ActionRow[] | null) ?? [],
+    (prizesResult.data as PrizeRow[] | null) ?? [],
+    (leadsResult.data as LeadRow[] | null) ?? [],
+    (eventsResult.data as EventRow[] | null) ?? [],
+    { [campaignId]: localSettings },
+  )[0];
+
+  if (!performance) return null;
+
   const prizes = performance.prizes;
-  const leads = ((leadsData as LeadRow[] | null) ?? []).map(toLead).map((lead) => ({
-    ...lead,
-    campaignTitle: performance.campaign.title,
-    goalType: performance.campaign.goalType,
-    prizeLabel: lead.prizeId
-      ? prizes.find((item) => item.id === lead.prizeId)?.label ?? "Lot inconnu"
-      : "Perdu",
-  })).sort((a, b) => b.consentTimestamp.localeCompare(a.consentTimestamp));
-  const events = ((eventsData as EventRow[] | null) ?? []).map(toEvent).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  const leads = enrichLeadRowsWithEmailDeliveries(
+    ((leadsResult.data as LeadRow[] | null) ?? [])
+      .map(toLead)
+      .map((lead) => ({
+        ...lead,
+        campaignTitle: performance.campaign.title,
+        goalType: performance.campaign.goalType,
+        prizeLabel: lead.prizeId
+          ? prizes.find((item) => item.id === lead.prizeId)?.label ?? "Lot inconnu"
+          : "Perdu",
+        prizeUsageConditions: lead.prizeId
+          ? prizes.find((item) => item.id === lead.prizeId)?.usageConditions
+          : undefined,
+      }))
+      .sort((a, b) => b.consentTimestamp.localeCompare(a.consentTimestamp)),
+    (deliveriesResult.data as RewardEmailDeliverySummaryRow[] | null) ?? [],
+  );
+  const events = ((eventsResult.data as EventRow[] | null) ?? [])
+    .map(toEvent)
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   return { performance, leads, events };
 }
 
 export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
   const supabase = getSupabaseAdmin();
+  const isNewCampaign = !input.id;
   const campaignId = input.id ?? generateId("camp");
+
+  if (!isNewCampaign) {
+    const { data: existingCampaign, error: existingCampaignError } = await supabase
+      .from("campaigns")
+      .select("id,merchant_id")
+      .eq("id", campaignId)
+      .maybeSingle();
+
+    if (existingCampaignError) {
+      throw new Error(`Lecture de la campagne impossible: ${existingCampaignError.message}`);
+    }
+
+    if (!existingCampaign || existingCampaign.merchant_id !== input.merchantId) {
+      throw new Error("Campagne introuvable");
+    }
+  }
+
   const payload = {
     id: campaignId,
     merchant_id: input.merchantId,
@@ -622,19 +1364,38 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
     is_winning_every_time: input.rewardRules.isWinningEveryTime,
   };
 
-  const { data: existingPrizesData } = await supabase.from("prizes").select("*").eq("campaign_id", campaignId);
+  const existingPrizesQuery = await supabase.from("prizes").select("*").eq("campaign_id", campaignId);
+  if (existingPrizesQuery.error) {
+    throw new Error(`Lecture des lots existants impossible: ${existingPrizesQuery.error.message}`);
+  }
+
+  const { data: existingPrizesData } = existingPrizesQuery;
   const existingPrizes = (existingPrizesData as PrizeRow[] | null) ?? [];
   const remainingMap = new Map(existingPrizes.map((item) => [item.id, item.remaining_quantity]));
 
   const upsert = await supabase.from("campaigns").upsert(payload).select("*").single();
-  if (upsert.error || !upsert.data) throw new Error("La campagne n'a pas pu etre enregistree.");
+  if (upsert.error || !upsert.data) {
+    throw new Error(
+      `La campagne n'a pas pu etre enregistree: ${upsert.error?.message ?? "ligne absente"}`,
+    );
+  }
 
-  await supabase.from("campaign_actions").delete().eq("campaign_id", campaignId);
-  await supabase.from("prizes").delete().eq("campaign_id", campaignId);
+  const deleteActions = await supabase.from("campaign_actions").delete().eq("campaign_id", campaignId);
+  if (deleteActions.error) {
+    throw new Error(`Suppression des actions impossible: ${deleteActions.error.message}`);
+  }
+
+  const deletePrizes = await supabase.from("prizes").delete().eq("campaign_id", campaignId);
+  if (deletePrizes.error) {
+    throw new Error(`Suppression des lots impossible: ${deletePrizes.error.message}`);
+  }
 
   if (input.actions.length) {
     const actionsInsert = input.actions.map((action, index) => ({
-      id: action.id || generateId("action"),
+      id:
+        !isNewCampaign && action.id && !action.id.startsWith("local-action-")
+          ? action.id
+          : generateId("action"),
       campaign_id: campaignId,
       position: index,
       kind: action.kind,
@@ -642,11 +1403,19 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
       url: action.url,
     }));
     const actionsResult = await supabase.from("campaign_actions").insert(actionsInsert);
-    if (actionsResult.error) throw new Error("Les actions n'ont pas pu etre enregistrees.");
+    if (actionsResult.error) {
+      throw new Error(`Les actions n'ont pas pu etre enregistrees: ${actionsResult.error.message}`);
+    }
   }
 
   const prizesInsert = input.prizes.map((prize) => {
-    const prizeId = prize.id ?? generateId("prize");
+    const prizeId =
+      !isNewCampaign &&
+      prize.id &&
+      !prize.id.startsWith("local-prize-") &&
+      !prize.id.startsWith("default-prize-")
+        ? prize.id
+        : generateId("prize");
     const remaining = remainingMap.has(prizeId)
       ? remainingMap.get(prizeId)
       : prize.totalQuantity ?? null;
@@ -662,7 +1431,9 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
   });
   if (prizesInsert.length) {
     const prizeResult = await supabase.from("prizes").insert(prizesInsert);
-    if (prizeResult.error) throw new Error("Les lots n'ont pas pu etre enregistres.");
+    if (prizeResult.error) {
+      throw new Error(`Les lots n'ont pas pu etre enregistres: ${prizeResult.error.message}`);
+    }
   }
 
   await setCampaignLocalSettings(campaignId, {
@@ -671,7 +1442,16 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
     blockSpacingPx: input.presentation.layout.blockSpacingPx,
     logoMode: input.logoMode,
     logoText: input.logoText,
+    prizeSettings: Object.fromEntries(
+      prizesInsert.map((prize, index) => [
+        prize.id,
+        {
+          usageConditions: input.prizes[index]?.usageConditions?.trim() || undefined,
+        },
+      ]),
+    ),
     poster: input.presentation.poster,
+    email: input.presentation.email,
   });
 
   return campaignId;
@@ -720,8 +1500,32 @@ export async function duplicateCampaignInSupabase(id: string, merchant: Merchant
 
 export async function toggleCampaignInSupabase(id: string, isActive: boolean) {
   const supabase = getSupabaseAdmin();
-  const { error } = await supabase.from("campaigns").update({ is_active: isActive }).eq("id", id);
+  const { error, data } = await supabase
+    .from("campaigns")
+    .update({ is_active: isActive })
+    .eq("id", id)
+    .select("id")
+    .maybeSingle();
+
+  if (error || !data) throw new Error("Campagne introuvable");
+}
+
+export async function toggleCampaignForMerchantInSupabase(
+  id: string,
+  isActive: boolean,
+  merchantId: string,
+) {
+  const supabase = getSupabaseAdmin();
+  const { error, data } = await supabase
+    .from("campaigns")
+    .update({ is_active: isActive })
+    .eq("id", id)
+    .eq("merchant_id", merchantId)
+    .select("id")
+    .maybeSingle();
+
   if (error) throw new Error("Campagne introuvable");
+  if (!data) throw new Error("Campagne introuvable");
 }
 
 export async function deleteCampaignInSupabase(id: string) {
@@ -733,6 +1537,33 @@ export async function deleteCampaignInSupabase(id: string) {
   await supabase.from("prizes").delete().eq("campaign_id", id);
 
   const { error } = await supabase.from("campaigns").delete().eq("id", id);
+  if (error) throw new Error("Campagne introuvable");
+}
+
+export async function deleteCampaignForMerchantInSupabase(id: string, merchantId: string) {
+  const supabase = getSupabaseAdmin();
+  const { data: campaign, error: campaignError } = await supabase
+    .from("campaigns")
+    .select("id")
+    .eq("id", id)
+    .eq("merchant_id", merchantId)
+    .maybeSingle();
+
+  if (campaignError || !campaign) {
+    throw new Error("Campagne introuvable");
+  }
+
+  await supabase.from("campaign_events").delete().eq("campaign_id", id);
+  await supabase.from("leads").delete().eq("campaign_id", id);
+  await supabase.from("campaign_actions").delete().eq("campaign_id", id);
+  await supabase.from("prizes").delete().eq("campaign_id", id);
+
+  const { error } = await supabase
+    .from("campaigns")
+    .delete()
+    .eq("id", id)
+    .eq("merchant_id", merchantId);
+
   if (error) throw new Error("Campagne introuvable");
 }
 
@@ -768,97 +1599,151 @@ export async function markActionConfirmedInSupabase(leadId: string) {
   return toLead(data as LeadRow);
 }
 
-function choosePrize(prizes: Prize[], isWinningEveryTime: boolean) {
-  const available = prizes.filter((prize) => prize.remainingQuantity === null || prize.remainingQuantity > 0);
-  if (!available.length) return null;
-  const roll = Math.random() * 100;
-  let cursor = 0;
+export async function createDrawSessionInSupabase(
+  input: CreateDrawSessionRequest,
+  merchant?: Merchant,
+): Promise<CreateDrawSessionResult> {
+  const performance = await getSupabaseCampaignPerformance(input.campaignId, merchant);
+  if (!performance || !performance.campaign.isActive) throw new Error("Campagne indisponible");
+  assertMerchantBillingAccess(performance.merchant, "campaign_public");
+  const { campaign, merchant: campaignMerchant, prizes } = performance;
+  const supabase = getSupabaseAdmin();
+  const sessionId = generateId("session");
+  const { data, error } = await supabase
+    .rpc("create_draw_session", {
+      p_campaign_id: campaign.id,
+      p_session_id: sessionId,
+    })
+    .single<CreateDrawSessionRpcRow>();
 
-  if (isWinningEveryTime) {
-    for (const prize of available) {
-      cursor += Math.max(1, prize.probability);
-      if (roll <= cursor) return prize;
-    }
-    return available[0];
+  if (error || !data) {
+    throw new Error(
+      `Impossible de préparer la partie: ${error?.message ?? "réponse vide de la RPC"}`,
+    );
   }
 
-  for (const prize of available) {
-    cursor += prize.probability;
-    if (roll <= cursor) return prize;
+  const session = toDrawSession({
+    id: data.session_id,
+    campaign_id: data.campaign_id,
+    prize_id: data.prize_id,
+    status: data.status,
+    created_at: data.created_at,
+    expires_at: data.expires_at,
+  });
+  const prize = data.prize_id ? prizes.find((item) => item.id === data.prize_id) ?? null : null;
+
+  return {
+    session,
+    prize,
+    campaign: toPublicCampaign(campaign, campaignMerchant, prizes),
+  };
+}
+
+export async function finalizeDrawSessionInSupabase(
+  input: FinalizeDrawSessionRequest,
+  merchant?: Merchant,
+): Promise<DrawResult> {
+  const supabase = getSupabaseAdmin();
+  const leadId = generateId("lead");
+  const { data, error } = await supabase
+    .rpc("finalize_draw_session_and_create_lead", {
+      p_session_id: input.sessionId,
+      p_lead_id: leadId,
+      p_first_name: input.firstName,
+      p_email: input.email,
+      p_marketing_consent: Boolean(input.marketingConsent),
+    })
+    .single<FinalizeDrawSessionRpcRow>();
+
+  if (error || !data) {
+    throw new Error(
+      `Impossible de finaliser la participation: ${error?.message ?? "réponse vide de la RPC"}`,
+    );
   }
-  return null;
+
+  const performance = await getSupabaseCampaignPerformance(data.campaign_id, merchant);
+  if (!performance) {
+    throw new Error("Campagne indisponible");
+  }
+  assertMerchantBillingAccess(performance.merchant, "campaign_public");
+
+  const { campaign, merchant: campaignMerchant, prizes } = performance;
+  const lead: Lead = {
+    id: data.lead_id,
+    campaignId: data.campaign_id,
+    firstName: data.first_name,
+    email: data.email,
+    marketingConsent: data.marketing_consent,
+    consentTimestamp: data.consent_timestamp,
+    prizeId: data.prize_id ?? undefined,
+    status: data.status,
+    createdAt: data.created_at,
+    actionConfirmed: data.action_confirmed,
+    redemptionCode: data.redemption_code ?? undefined,
+    rewardAvailableAt: data.reward_available_at ?? undefined,
+    rewardExpiresAt: data.reward_expires_at ?? undefined,
+  };
+  const prize = data.prize_id
+    ? prizes.find((item) => item.id === data.prize_id) ?? null
+    : null;
+  const actionForVisit =
+    typeof data.action_index === "number" ? campaign.actions[data.action_index] : undefined;
+
+  return {
+    lead,
+    prize,
+    campaign: toPublicCampaign(
+      campaign,
+      campaignMerchant,
+      prizes,
+      actionForVisit ? [actionForVisit] : [],
+    ),
+  };
 }
 
 export async function drawForLeadInSupabase(input: DrawRequest, merchant: Merchant): Promise<DrawResult> {
   const performance = await getSupabaseCampaignPerformance(input.campaignId, merchant);
   if (!performance || !performance.campaign.isActive) throw new Error("Campagne indisponible");
+  assertMerchantBillingAccess(performance.merchant, "campaign_public");
   const { campaign, prizes } = performance;
-  const prize = choosePrize(prizes, campaign.rewardRules.isWinningEveryTime);
-  const leadId = generateId("lead");
-  const email = input.email.trim().toLowerCase();
   const supabase = getSupabaseAdmin();
-  const { count: previousParticipations } = await supabase
-    .from("leads")
-    .select("id", { count: "exact", head: true })
-    .eq("campaign_id", campaign.id)
-    .eq("email", email);
-  const actionForVisit = campaign.actions[previousParticipations ?? 0];
+  const leadId = generateId("lead");
+  const { data, error } = await supabase
+    .rpc("draw_campaign_prize_and_create_lead", {
+      p_campaign_id: campaign.id,
+      p_lead_id: leadId,
+      p_first_name: input.firstName,
+      p_email: input.email,
+      p_marketing_consent: input.marketingConsent,
+    })
+    .single<DrawLeadRpcRow>();
+
+  if (error || !data) {
+    throw new Error(
+      `Impossible de valider la participation: ${error?.message ?? "réponse vide de la RPC"}`,
+    );
+  }
+
   const lead: Lead = {
-    id: leadId,
-    campaignId: campaign.id,
-    firstName: input.firstName.trim(),
-    email,
-    marketingConsent: input.marketingConsent,
-    consentTimestamp: new Date().toISOString(),
-    status: "lost",
-    createdAt: new Date().toISOString(),
-    actionConfirmed: false,
+    id: data.lead_id,
+    campaignId: data.campaign_id,
+    firstName: data.first_name,
+    email: data.email,
+    marketingConsent: data.marketing_consent,
+    consentTimestamp: data.consent_timestamp,
+    prizeId: data.prize_id ?? undefined,
+    status: data.status,
+    createdAt: data.created_at,
+    actionConfirmed: data.action_confirmed,
+    redemptionCode: data.redemption_code ?? undefined,
+    rewardAvailableAt: data.reward_available_at ?? undefined,
+    rewardExpiresAt: data.reward_expires_at ?? undefined,
   };
-
-  if (prize) {
-    const now = Date.now();
-    const availableAt = new Date(now + campaign.rewardRules.availableAfterHours * 60 * 60 * 1000);
-    const expiresAt =
-      campaign.rewardRules.availabilityDurationDays > 0
-        ? new Date(availableAt.getTime() + campaign.rewardRules.availabilityDurationDays * 24 * 60 * 60 * 1000)
-        : new Date(now + campaign.rewardRules.rewardExpiryMinutes * 60 * 1000);
-    lead.prizeId = prize.id;
-    lead.status = "claimed";
-    lead.redemptionCode = `SORA-${Math.floor(1000 + Math.random() * 9000)}`;
-    lead.rewardAvailableAt = availableAt.toISOString();
-    lead.rewardExpiresAt = expiresAt.toISOString();
-  }
-
-  const { error } = await supabase.from("leads").insert({
-    id: lead.id,
-    campaign_id: lead.campaignId,
-    first_name: lead.firstName,
-    email: lead.email,
-    phone: null,
-    marketing_consent: lead.marketingConsent,
-    consent_timestamp: lead.consentTimestamp,
-    prize_id: lead.prizeId ?? null,
-    status: lead.status,
-    created_at: lead.createdAt,
-    action_confirmed: lead.actionConfirmed,
-    redemption_code: lead.redemptionCode ?? null,
-    reward_available_at: lead.rewardAvailableAt ?? null,
-    reward_expires_at: lead.rewardExpiresAt ?? null,
-  });
-  if (error) throw new Error("Impossible de valider la participation.");
-
-  if (prize && prize.remainingQuantity !== null) {
-    await supabase
-      .from("prizes")
-      .update({ remaining_quantity: Math.max((prize.remainingQuantity ?? 1) - 1, 0) })
-      .eq("id", prize.id);
-  }
-
-  await recordEventInSupabase(campaign.id, "lead_created", lead.id);
-  await recordEventInSupabase(campaign.id, "game_played", lead.id);
-  if (prize) {
-    await recordEventInSupabase(campaign.id, "prize_won", lead.id, { prizeId: prize.id });
-  }
+  const prize = data.prize_id
+    ? prizes.find((item) => item.id === data.prize_id) ?? null
+    : null;
+  const actionForVisit =
+    typeof data.action_index === "number" ? campaign.actions[data.action_index] : undefined;
 
   return {
     lead,
@@ -877,11 +1762,19 @@ export async function redeemLeadPrizeInSupabase(leadId: string) {
   if (lead.rewardAvailableAt && new Date(lead.rewardAvailableAt).getTime() > Date.now()) throw new Error("Lot pas encore disponible");
   if (lead.rewardExpiresAt && new Date(lead.rewardExpiresAt).getTime() < Date.now()) {
     await supabase.from("leads").update({ status: "expired" }).eq("id", leadId);
-    await recordEventInSupabase(lead.campaignId, "prize_expired", lead.id);
+    try {
+      await recordEventInSupabase(lead.campaignId, "prize_expired", lead.id);
+    } catch (error) {
+      console.error("Prize expiration event logging failed", error);
+    }
     throw new Error("Lot expire");
   }
   await supabase.from("leads").update({ status: "redeemed" }).eq("id", leadId);
-  await recordEventInSupabase(lead.campaignId, "prize_redeemed", lead.id);
+  try {
+    await recordEventInSupabase(lead.campaignId, "prize_redeemed", lead.id);
+  } catch (error) {
+    console.error("Prize redeemed event logging failed", error);
+  }
   return { ...lead, status: "redeemed" as const };
 }
 
@@ -895,6 +1788,600 @@ export async function resetLeadPrizeInSupabase(leadId: string) {
   const { error } = await supabase.from("leads").update({ status: "claimed" }).eq("id", leadId);
   if (error) throw new Error("Le lot n'a pas pu etre reinitialise");
 
-  await recordEventInSupabase(lead.campaignId, "prize_reset", lead.id);
+  try {
+    await recordEventInSupabase(lead.campaignId, "prize_reset", lead.id);
+  } catch (eventError) {
+    console.error("Prize reset event logging failed", eventError);
+  }
   return { ...lead, status: "claimed" as const };
+}
+
+export async function updatePrizeStockInSupabase(
+  prizeId: string,
+  remainingQuantity: number | null,
+) {
+  const supabase = getSupabaseAdmin();
+  const { data, error } = await supabase
+    .from("prizes")
+    .update({ remaining_quantity: remainingQuantity })
+    .eq("id", prizeId)
+    .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at")
+    .maybeSingle();
+
+  if (error || !data) {
+    throw new Error("Le stock n'a pas pu être mis à jour");
+  }
+
+  return toPrize(data as PrizeRow);
+}
+
+export async function resetPrizeStockInSupabase(prizeId: string) {
+  const supabase = getSupabaseAdmin();
+  const { data: prizeData, error: prizeError } = await supabase
+    .from("prizes")
+    .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at")
+    .eq("id", prizeId)
+    .maybeSingle();
+
+  if (prizeError || !prizeData) {
+    throw new Error("Dotation introuvable");
+  }
+
+  const prize = prizeData as PrizeRow;
+  const { data, error } = await supabase
+    .from("prizes")
+    .update({ remaining_quantity: prize.total_quantity })
+    .eq("id", prizeId)
+    .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at")
+    .maybeSingle();
+
+  if (error || !data) {
+    throw new Error("Le stock n'a pas pu être réinitialisé");
+  }
+
+  return toPrize(data as PrizeRow);
+}
+
+export async function getSupabaseLeadRewardEmailHistory(leadId: string, merchantId: string) {
+  const supabase = getSupabaseAdmin();
+  const { data: leadData, error: leadError } = await supabase
+    .from("leads")
+    .select("*")
+    .eq("id", leadId)
+    .maybeSingle();
+
+  if (leadError || !leadData) {
+    throw new Error("Lead introuvable");
+  }
+
+  const lead = toLead(leadData as LeadRow);
+  const { data: campaignData, error: campaignError } = await supabase
+    .from("campaigns")
+    .select("id,merchant_id,title")
+    .eq("id", lead.campaignId)
+    .maybeSingle();
+
+  if (campaignError || !campaignData || campaignData.merchant_id !== merchantId) {
+    throw new Error("Accès refusé");
+  }
+
+  const { data: deliveryData, error: deliveryError } = await supabase
+    .from("reward_email_deliveries")
+    .select("*")
+    .eq("lead_id", leadId)
+    .maybeSingle();
+
+  if (deliveryError) {
+    throw new Error(`Lecture du suivi e-mail impossible: ${deliveryError.message}`);
+  }
+
+  if (!deliveryData) {
+    return {
+      lead,
+      delivery: null,
+      events: [] as RewardEmailEvent[],
+    };
+  }
+
+  const { data: eventsData, error: eventsError } = await supabase
+    .from("reward_email_events")
+    .select("*")
+    .eq("reward_email_delivery_id", deliveryData.id)
+    .order("created_at", { ascending: false });
+
+  if (eventsError) {
+    throw new Error(`Lecture des événements e-mail impossible: ${eventsError.message}`);
+  }
+
+  return {
+    lead,
+    delivery: toRewardEmailDelivery(deliveryData as RewardEmailDeliveryRow),
+    events: ((eventsData as RewardEmailEventRow[] | null) ?? []).map(toRewardEmailEvent),
+  };
+}
+
+export async function getSupabaseRewardEmailResendPayload(leadId: string, merchant: Merchant) {
+  const history = await getSupabaseLeadRewardEmailHistory(leadId, merchant.id);
+  const lead = history.lead;
+
+  if (!lead.prizeId || !lead.redemptionCode) {
+    throw new Error("Aucun lot gagnant à renvoyer");
+  }
+
+  const performance = await getSupabaseCampaignPerformance(lead.campaignId, merchant);
+
+  if (!performance || performance.campaign.merchantId !== merchant.id) {
+    throw new Error("Campagne introuvable");
+  }
+
+  const prize = performance.prizes.find((item) => item.id === lead.prizeId);
+
+  if (!prize) {
+    throw new Error("Lot introuvable");
+  }
+
+  const delivery = history.delivery;
+
+  if (delivery?.sentAt) {
+    const cooldownMs = 2 * 60 * 1000;
+    const sentAtMs = new Date(delivery.sentAt).getTime();
+
+    if (Date.now() - sentAtMs < cooldownMs) {
+      throw new Error("Attendez 2 minutes avant de renvoyer un e-mail.");
+    }
+  }
+
+  if (delivery?.status === "queued") {
+    throw new Error("Un e-mail est déjà en cours d'envoi.");
+  }
+
+  return {
+    lead,
+    campaign: performance.campaign,
+    merchant: performance.merchant,
+    prize,
+  };
+}
+
+type RewardEmailDeliveryInput = {
+  campaignId: string;
+  leadId: string;
+  recipientEmail: string;
+  senderEmail: string;
+  replyToEmail?: string;
+  subject: string;
+  metadata?: Record<string, string | number | boolean | null>;
+};
+
+export async function upsertRewardEmailDeliveryInSupabase(input: RewardEmailDeliveryInput) {
+  const supabase = getSupabaseAdmin();
+  const payload = {
+    campaign_id: input.campaignId,
+    lead_id: input.leadId,
+    recipient_email: input.recipientEmail,
+    sender_email: input.senderEmail,
+    reply_to_email: input.replyToEmail ?? null,
+    subject: input.subject,
+    status: "queued",
+    error_message: null,
+    metadata: input.metadata ?? {},
+    last_event_at: new Date().toISOString(),
+  };
+
+  const { data, error } = await supabase
+    .from("reward_email_deliveries")
+    .upsert(payload, { onConflict: "lead_id" })
+    .select("*")
+    .single();
+
+  if (error || !data) {
+    throw new Error(`Enregistrement de l'email impossible: ${error?.message ?? "ligne absente"}`);
+  }
+
+  return data as RewardEmailDeliveryRow;
+}
+
+export async function markRewardEmailSentInSupabase(
+  deliveryId: string,
+  resendEmailId: string | null,
+) {
+  const supabase = getSupabaseAdmin();
+  const now = new Date().toISOString();
+  const { error } = await supabase
+    .from("reward_email_deliveries")
+    .update({
+      resend_email_id: resendEmailId,
+      status: "sent",
+      sent_at: now,
+      last_event_at: now,
+      error_message: null,
+    })
+    .eq("id", deliveryId);
+
+  if (error) {
+    throw new Error(`Mise à jour de l'email envoyé impossible: ${error.message}`);
+  }
+}
+
+export async function markRewardEmailFailedInSupabase(deliveryId: string, errorMessage: string) {
+  const supabase = getSupabaseAdmin();
+  const now = new Date().toISOString();
+  const { error } = await supabase
+    .from("reward_email_deliveries")
+    .update({
+      status: "failed",
+      error_message: errorMessage,
+      last_event_at: now,
+    })
+    .eq("id", deliveryId);
+
+  if (error) {
+    throw new Error(`Mise à jour de l'email en échec impossible: ${error.message}`);
+  }
+}
+
+function mapWebhookDeliveryStatus(event: WebhookEventPayload) {
+  switch (event.type) {
+    case "email.sent":
+      return "sent";
+    case "email.delivered":
+      return "delivered";
+    case "email.bounced":
+      return "bounced";
+    case "email.complained":
+      return "complained";
+    case "email.suppressed":
+      return "suppressed";
+    case "email.failed":
+      return "failed";
+    default:
+      return null;
+  }
+}
+
+function isRewardEmailWebhookEvent(
+  event: WebhookEventPayload,
+): event is Extract<
+  WebhookEventPayload,
+  {
+    data: {
+      email_id: string;
+    };
+  }
+> {
+  return "data" in event && typeof event.data === "object" && event.data !== null && "email_id" in event.data;
+}
+
+export async function syncRewardEmailWebhookInSupabase(event: WebhookEventPayload) {
+  const resendEmailId = isRewardEmailWebhookEvent(event) ? event.data.email_id : null;
+  const deliveryStatus = mapWebhookDeliveryStatus(event);
+  const supabase = getSupabaseAdmin();
+  let deliveryId: string | null = null;
+
+  if (resendEmailId) {
+    const timestamp = event.created_at ?? new Date().toISOString();
+    const deliveryUpdate: Record<string, string | null> = {
+      resend_email_id: resendEmailId,
+      last_event_at: timestamp,
+    };
+
+    if (deliveryStatus) {
+      deliveryUpdate.status = deliveryStatus;
+    }
+
+    if (event.type === "email.delivered") {
+      deliveryUpdate.delivered_at = timestamp;
+    }
+
+    if (event.type === "email.bounced") {
+      deliveryUpdate.bounced_at = timestamp;
+      deliveryUpdate.error_message = event.data.bounce.message;
+    }
+
+    if (event.type === "email.complained") {
+      deliveryUpdate.complained_at = timestamp;
+    }
+
+    if (event.type === "email.failed") {
+      deliveryUpdate.error_message = event.data.failed.reason;
+    }
+
+    if (event.type === "email.suppressed") {
+      deliveryUpdate.error_message = event.data.suppressed.message;
+    }
+
+    const { data: deliveryData, error: deliveryError } = await supabase
+      .from("reward_email_deliveries")
+      .update(deliveryUpdate)
+      .eq("resend_email_id", resendEmailId)
+      .select("id")
+      .maybeSingle();
+
+    if (deliveryError) {
+      throw new Error(`Synchronisation email impossible: ${deliveryError.message}`);
+    }
+
+    deliveryId =
+      deliveryData && typeof deliveryData === "object" && "id" in deliveryData
+        ? String(deliveryData.id)
+        : null;
+  }
+
+  const { error: eventError } = await supabase.from("reward_email_events").insert({
+    reward_email_delivery_id: deliveryId,
+    resend_email_id: resendEmailId,
+    event_type: event.type,
+    payload: event,
+  });
+
+  if (eventError) {
+    throw new Error(`Archivage du webhook email impossible: ${eventError.message}`);
+  }
+}
+
+export async function getSupabaseMerchantSupportOverview(
+  merchant: Merchant,
+  options: { includeAllMerchants?: boolean } = {},
+): Promise<MerchantSupportOverview> {
+  const supabase = getSupabaseAdmin();
+  const campaignQuery = supabase
+    .from("campaigns")
+    .select("id,title,merchant_id");
+
+  if (!options.includeAllMerchants) {
+    campaignQuery.eq("merchant_id", merchant.id);
+  }
+
+  const { data: campaignRows, error: campaignError } = await campaignQuery;
+
+  if (campaignError) {
+    throw new Error(`Lecture des campagnes support impossible: ${campaignError.message}`);
+  }
+
+  const campaigns = (campaignRows ?? []) as Array<{ id: string; title: string }>;
+  const campaignIds = campaigns.map((item) => item.id);
+  const campaignTitleById = new Map(campaigns.map((item) => [item.id, item.title]));
+
+  if (!campaignIds.length) {
+    return {
+      failedEmails: [],
+      webhooks: [],
+      pendingClaims: [],
+      businessLogs: [],
+    };
+  }
+
+  const businessLogQuery = supabase
+    .from("business_logs")
+    .select("id,level,event,merchant_id,campaign_id,lead_id,email,redemption_code,summary,created_at")
+    .order("created_at", { ascending: false })
+    .limit(50);
+
+  if (!options.includeAllMerchants) {
+    businessLogQuery.eq("merchant_id", merchant.id);
+  }
+
+  const [failedEmailResult, pendingClaimResult, deliveryResult, webhookResult, businessLogResult] = await Promise.all([
+    supabase
+      .from("reward_email_deliveries")
+      .select("id,campaign_id,lead_id,recipient_email,status,error_message,last_event_at")
+      .in("campaign_id", campaignIds)
+      .in("status", ["failed", "bounced", "complained", "suppressed"])
+      .order("last_event_at", { ascending: false })
+      .limit(20),
+    supabase
+      .from("leads")
+      .select(
+        "id,campaign_id,first_name,email,prize_id,status,redemption_code,reward_available_at,reward_expires_at",
+      )
+      .in("campaign_id", campaignIds)
+      .eq("status", "claimed")
+      .not("prize_id", "is", null)
+      .order("created_at", { ascending: false })
+      .limit(30),
+    supabase
+      .from("reward_email_deliveries")
+      .select("id,campaign_id,lead_id,recipient_email,status")
+      .in("campaign_id", campaignIds),
+    supabase
+      .from("reward_email_events")
+      .select("id,reward_email_delivery_id,resend_email_id,event_type,payload,created_at")
+      .order("created_at", { ascending: false })
+      .limit(30),
+    businessLogQuery,
+  ]);
+
+  if (failedEmailResult.error) {
+    throw new Error(`Lecture des e-mails en échec impossible: ${failedEmailResult.error.message}`);
+  }
+  if (pendingClaimResult.error) {
+    throw new Error(`Lecture des gains en attente impossible: ${pendingClaimResult.error.message}`);
+  }
+  if (deliveryResult.error) {
+    throw new Error(`Lecture des e-mails impossible: ${deliveryResult.error.message}`);
+  }
+  if (webhookResult.error) {
+    throw new Error(`Lecture des webhooks impossible: ${webhookResult.error.message}`);
+  }
+  const businessLogsAvailable = !businessLogResult.error;
+
+  const deliveryRows = (deliveryResult.data ?? []) as Array<{
+    id: string;
+    campaign_id: string;
+    lead_id: string;
+    recipient_email: string;
+    status: RewardEmailDelivery["status"];
+  }>;
+  const deliveryById = new Map(deliveryRows.map((row) => [row.id, row]));
+
+  const leadIds = new Set<string>();
+  for (const row of (failedEmailResult.data ?? []) as Array<{ lead_id: string }>) {
+    leadIds.add(row.lead_id);
+  }
+  for (const row of (pendingClaimResult.data ?? []) as Array<{ id: string }>) {
+    leadIds.add(row.id);
+  }
+  for (const row of deliveryRows) {
+    leadIds.add(row.lead_id);
+  }
+
+  const { data: leadRows, error: leadError } = await supabase
+    .from("leads")
+    .select("id,first_name,email,prize_id")
+    .in("id", Array.from(leadIds));
+
+  if (leadError) {
+    throw new Error(`Lecture des leads support impossible: ${leadError.message}`);
+  }
+
+  const prizeIds = new Set<string>();
+  for (const row of (leadRows ?? []) as Array<{ prize_id: string | null }>) {
+    if (row.prize_id) {
+      prizeIds.add(row.prize_id);
+    }
+  }
+  for (const row of (pendingClaimResult.data ?? []) as Array<{ prize_id: string | null }>) {
+    if (row.prize_id) {
+      prizeIds.add(row.prize_id);
+    }
+  }
+
+  const { data: prizeRows, error: prizeError } = await supabase
+    .from("prizes")
+    .select("id,label")
+    .in("id", Array.from(prizeIds));
+
+  if (prizeError) {
+    throw new Error(`Lecture des dotations support impossible: ${prizeError.message}`);
+  }
+
+  const leadById = new Map(
+    ((leadRows ?? []) as Array<{ id: string; first_name: string; email: string; prize_id: string | null }>).map(
+      (row) => [row.id, row],
+    ),
+  );
+  const prizeLabelById = new Map(
+    ((prizeRows ?? []) as Array<{ id: string; label: string }>).map((row) => [row.id, row.label]),
+  );
+
+  const failedEmails: MerchantFailedEmailItem[] = (
+    (failedEmailResult.data ?? []) as Array<{
+      id: string;
+      campaign_id: string;
+      lead_id: string;
+      recipient_email: string;
+      status: RewardEmailDelivery["status"];
+      error_message: string | null;
+      last_event_at: string | null;
+    }>
+  ).map((row) => {
+    const lead = leadById.get(row.lead_id);
+
+    return {
+      deliveryId: row.id,
+      campaignId: row.campaign_id,
+      campaignTitle: campaignTitleById.get(row.campaign_id) ?? "Campagne inconnue",
+      leadId: row.lead_id,
+      leadFirstName: lead?.first_name ?? "Client inconnu",
+      recipientEmail: row.recipient_email,
+      status: row.status,
+      errorMessage: row.error_message ?? undefined,
+      lastEventAt: row.last_event_at ?? new Date().toISOString(),
+    };
+  });
+
+  const pendingClaims: MerchantPendingClaimItem[] = (
+    (pendingClaimResult.data ?? []) as Array<{
+      id: string;
+      campaign_id: string;
+      first_name: string;
+      email: string;
+      prize_id: string | null;
+      status: Lead["status"];
+      redemption_code: string | null;
+      reward_available_at: string | null;
+      reward_expires_at: string | null;
+    }>
+  )
+    .filter((row) => row.prize_id && row.redemption_code)
+    .map((row) => ({
+      leadId: row.id,
+      campaignId: row.campaign_id,
+      campaignTitle: campaignTitleById.get(row.campaign_id) ?? "Campagne inconnue",
+      firstName: row.first_name,
+      email: row.email,
+      prizeLabel: prizeLabelById.get(row.prize_id ?? "") ?? "Lot inconnu",
+      redemptionCode: row.redemption_code ?? "",
+      status: row.status,
+      availableAt: row.reward_available_at ?? undefined,
+      expiresAt: row.reward_expires_at ?? undefined,
+    }));
+
+  const webhookItems = (
+    (webhookResult.data ?? []) as Array<{
+      id: string;
+      reward_email_delivery_id: string | null;
+      resend_email_id: string | null;
+      event_type: string;
+      payload: Record<string, unknown> | null;
+      created_at: string;
+    }>
+  )
+    .map((row) => {
+      const delivery = row.reward_email_delivery_id
+        ? deliveryById.get(row.reward_email_delivery_id)
+        : undefined;
+
+      if (!delivery || !campaignTitleById.has(delivery.campaign_id)) {
+        return null;
+      }
+
+      return {
+        id: row.id,
+        createdAt: row.created_at,
+        eventType: row.event_type,
+        resendEmailId: row.resend_email_id ?? undefined,
+        campaignTitle: campaignTitleById.get(delivery.campaign_id) ?? undefined,
+        recipientEmail: delivery.recipient_email,
+        deliveryStatus: delivery.status,
+        summary: extractWebhookSummary(row.payload),
+      };
+    })
+    .filter((item) => item !== null);
+
+  const webhooks: MerchantWebhookItem[] = webhookItems;
+  const businessLogs: MerchantBusinessLogItem[] = businessLogsAvailable
+    ? (
+        (businessLogResult.data ?? []) as Array<{
+          id: string;
+          level: MerchantBusinessLogItem["level"];
+          event: string;
+          merchant_id: string | null;
+          campaign_id: string | null;
+          lead_id: string | null;
+          email: string | null;
+          redemption_code: string | null;
+          summary: string | null;
+          created_at: string;
+        }>
+      ).map((row) => ({
+        id: row.id,
+        createdAt: row.created_at,
+        level: row.level,
+        event: row.event,
+        merchantId: row.merchant_id ?? undefined,
+        campaignId: row.campaign_id ?? undefined,
+        leadId: row.lead_id ?? undefined,
+        email: row.email ?? undefined,
+        redemptionCode: row.redemption_code ?? undefined,
+        summary: row.summary ?? undefined,
+      }))
+    : [];
+
+  return {
+    failedEmails,
+    webhooks,
+    pendingClaims,
+    businessLogs,
+  };
 }

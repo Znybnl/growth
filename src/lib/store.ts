@@ -642,6 +642,9 @@ function toPublicCampaign(campaign: Campaign, actions = campaign.actions): Publi
     prizes: getCampaignPrizes(campaign.id).map((prize) => ({
       id: prize.id,
       label: prize.label,
+      totalQuantity: prize.totalQuantity,
+      remainingQuantity: prize.remainingQuantity,
+      probability: prize.probability,
     })),
     presentation: campaign.presentation,
     actions,
@@ -678,14 +681,7 @@ function computeKpis(campaign: Campaign) {
   const leads = store.leads.filter((lead) => lead.campaignId === campaign.id);
   const events = store.events.filter((event) => event.campaignId === campaign.id);
   const scans = events.filter((event) => event.eventType === "scan").length;
-  const actions =
-    campaign.goalType === "review_prompt"
-      ? events.filter((event) =>
-          ["review_clicked", "review_confirmed"].includes(event.eventType),
-        ).length
-      : campaign.goalType === "social_follow"
-        ? events.filter((event) => event.eventType === "social_clicked").length
-        : leads.length;
+  const actions = events.filter((event) => event.eventType === "review_clicked").length;
   const games = events.filter((event) => event.eventType === "game_played").length;
   const wins = leads.filter((lead) => Boolean(lead.prizeId)).length;
   const redeemed = leads.filter((lead) => lead.status === "redeemed").length;
