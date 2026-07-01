@@ -45,11 +45,18 @@ function ensurePosterFontConfig() {
   <alias>
     <family>sans-serif</family>
     <prefer>
+      <family>Inter</family>
       <family>Geist</family>
       <family>DejaVu Sans</family>
       <family>Liberation Sans</family>
       <family>Arial</family>
     </prefer>
+  </alias>
+  <alias>
+    <family>Inter</family>
+    <default>
+      <family>sans-serif</family>
+    </default>
   </alias>
   <alias>
     <family>Geist</family>
