@@ -3,9 +3,8 @@ import { Campaign, CampaignPosterSettings, PosterTemplateId, Prize } from "@/lib
 
 const A4_WIDTH = 794;
 const A4_HEIGHT = 1123;
-const POSTER_FONT_FAMILY = "OkadoPoster";
-const SAFE_FONT = `${POSTER_FONT_FAMILY}, sans-serif`;
-const SAFE_DISPLAY_FONT = `${POSTER_FONT_FAMILY}, sans-serif`;
+const SAFE_FONT = "DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif";
+const SAFE_DISPLAY_FONT = SAFE_FONT;
 
 type TemplateConfig = {
   id: PosterTemplateId;
@@ -442,9 +441,8 @@ export function buildPosterSvg(args: {
   poster: CampaignPosterSettings;
   prizes: Prize[] | Array<Pick<Prize, "label">>;
   qrDataUrl: string;
-  embeddedFontHref?: string;
 }) {
-  const { campaign, poster, prizes, qrDataUrl, embeddedFontHref } = args;
+  const { campaign, poster, prizes, qrDataUrl } = args;
   const baseTemplate = TEMPLATE_CONFIGS[poster.templateId ?? "classic-wheel"] ?? TEMPLATE_CONFIGS["classic-wheel"];
   const template = {
     ...baseTemplate,
@@ -453,37 +451,13 @@ export function buildPosterSvg(args: {
   };
   const gameMarkup =
     campaign.gameType === "wheel" ? renderWheel(template, poster, prizes) : renderScratch(template);
-  const fontFace = embeddedFontHref
-    ? `
-        @font-face {
-          font-family: '${POSTER_FONT_FAMILY}';
-          src: url('${embeddedFontHref}') format('truetype');
-          font-weight: 400;
-          font-style: normal;
-        }
-        @font-face {
-          font-family: '${POSTER_FONT_FAMILY}';
-          src: url('${embeddedFontHref}') format('truetype');
-          font-weight: 700;
-          font-style: normal;
-        }
-        @font-face {
-          font-family: '${POSTER_FONT_FAMILY}';
-          src: url('${embeddedFontHref}') format('truetype');
-          font-weight: 900;
-          font-style: normal;
-        }
-      `
-    : "";
-
   return `<?xml version="1.0" encoding="UTF-8"?>
     <svg xmlns="http://www.w3.org/2000/svg" width="${A4_WIDTH}" height="${A4_HEIGHT}" viewBox="0 0 ${A4_WIDTH} ${A4_HEIGHT}">
       <defs>
         <style>
           <![CDATA[
-            ${fontFace}
             text {
-              font-family: '${POSTER_FONT_FAMILY}', sans-serif;
+              font-family: ${SAFE_FONT};
             }
           ]]>
         </style>
