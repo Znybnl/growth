@@ -281,13 +281,13 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
   }
 
   return (
-    <div className="grid min-h-[calc(100vh-120px)] gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(460px,0.8fr)]">
+    <div className="grid min-h-[calc(100vh-120px)] gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(420px,0.72fr)]">
       <div className="space-y-6">
-        <section className="rounded-[8px] border border-[#dbe4f0] bg-white p-6 shadow-[0_16px_42px_rgba(122,136,166,0.1)]">
+        <section className="okado-card p-6 md:p-8">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div>
-              <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Atelier affiche</p>
-              <h1 className="mt-3 text-4xl font-semibold text-[#111827]">
+              <p className="okado-label">Atelier affiche</p>
+              <h1 className="mt-3 font-display text-4xl font-semibold text-[#111827] md:text-5xl">
                 Personnaliser l&apos;affiche A4
               </h1>
               <p className="mt-3 max-w-3xl text-sm leading-7 text-[#5c6577]">
@@ -299,7 +299,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
               <Link
                 href={`/campaigns/${campaign.id}/edit`}
                 prefetch={false}
-                className="rounded-[8px] border border-[#d7e0ed] px-4 py-3 text-sm font-semibold text-[#182033]"
+                className="rounded-[var(--radius-card)] border border-[#d7e0ed] bg-white px-4 py-3 text-sm font-semibold text-[#182033] transition hover:border-[#111827]"
               >
                 Revenir à la campagne
               </Link>
@@ -307,23 +307,23 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                 type="button"
                 onClick={savePoster}
                 disabled={isSaving}
-                className="rounded-[8px] bg-[#111827] px-5 py-3 text-sm font-semibold text-white disabled:opacity-60"
+                className="rounded-[var(--radius-card)] bg-[#111827] px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_28px_rgba(17,24,39,0.2)] transition hover:-translate-y-0.5 disabled:opacity-60"
               >
                 {isSaving ? "Enregistrement..." : "Enregistrer"}
               </button>
             </div>
           </div>
           {message ? (
-            <div className="mt-5 rounded-[8px] border border-[#dbe4f0] bg-[#f7f9fc] px-4 py-3 text-sm font-semibold text-[#182033]">
+            <div className="mt-5 rounded-[var(--radius-card)] border border-[#dbe4f0] bg-[#f7f9fc] px-4 py-3 text-sm font-semibold text-[#182033]">
               {message}
             </div>
           ) : null}
         </section>
 
         {campaign.gameType === "wheel" ? (
-          <section className="rounded-[8px] border border-[#dbe4f0] bg-white p-6 shadow-[0_16px_42px_rgba(122,136,166,0.1)]">
-            <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Template</p>
-            <h2 className="mt-2 text-2xl font-semibold text-[#111827]">Choisir le design de l&apos;affiche</h2>
+          <section className="okado-card p-6 md:p-8">
+            <p className="okado-label">Template</p>
+            <h2 className="mt-2 font-display text-2xl font-semibold text-[#111827]">Choisir le design de l&apos;affiche</h2>
             <div className="mt-6 grid gap-4 md:grid-cols-3">
               {posterTemplates.map((template) => {
                 const active = (poster.templateId ?? "classic-wheel") === template.id;
@@ -333,7 +333,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                     key={template.id}
                     type="button"
                     onClick={() => selectTemplate(template.id)}
-                    className={`group overflow-hidden rounded-[12px] border text-left transition ${
+                    className={`group overflow-hidden rounded-[var(--radius-card)] border text-left transition hover:-translate-y-0.5 ${
                       active
                         ? "border-[#2f6df6] bg-[#eff4ff] shadow-[0_14px_34px_rgba(47,109,246,0.18)]"
                         : "border-[#d7e0ed] bg-white hover:border-[#2f6df6]"
@@ -385,9 +385,9 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
           </section>
         ) : null}
 
-        <section className="rounded-[8px] border border-[#dbe4f0] bg-white p-6 shadow-[0_16px_42px_rgba(122,136,166,0.1)]">
-          <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Logo</p>
-          <h2 className="mt-2 text-2xl font-semibold text-[#111827]">Personnalisation du logo</h2>
+        <section className="okado-card p-6 md:p-8">
+          <p className="okado-label">Logo</p>
+          <h2 className="mt-2 font-display text-2xl font-semibold text-[#111827]">Personnalisation du logo</h2>
 
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             <div className="text-sm md:col-span-2">
@@ -413,7 +413,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                               : poster.logoText,
                         })
                       }
-                      className={`rounded-[8px] border px-4 py-3 text-sm font-semibold ${
+                      className={`rounded-[var(--radius-card)] border px-4 py-3 text-sm font-semibold transition hover:-translate-y-0.5 ${
                         active
                           ? "border-[#2f6df6] bg-[#eff4ff] text-[#214ccf]"
                           : "border-[#d7e0ed] bg-[#f7f9fc] text-[#182033]"
@@ -434,13 +434,13 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                 <input
                   value={poster.logoText ?? ""}
                   onChange={(event) => updatePoster({ logoText: event.target.value })}
-                  className="w-full rounded-[8px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                  className="w-full rounded-[var(--radius-card)] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none transition focus:border-[#2f6df6] focus:bg-white"
                 />
               </label>
             ) : null}
 
             {poster.logoMode === "image" ? (
-              <label className="group relative flex min-h-[132px] cursor-pointer flex-col justify-between rounded-[8px] border border-dashed border-[#cfd9ea] bg-[#f7f9fc] p-4 text-sm transition hover:border-[#2f6df6] hover:bg-[#eef4ff] md:col-span-2">
+              <label className="group relative flex min-h-[132px] cursor-pointer flex-col justify-between rounded-[var(--radius-card)] border border-dashed border-[#cfd9ea] bg-[#f7f9fc] p-4 text-sm transition hover:border-[#2f6df6] hover:bg-[#eef4ff] md:col-span-2">
                 <div>
                   <span className="mb-2 block text-[#616b7c]">Importer le logo affiche</span>
                   <p className="max-w-md text-sm leading-6 text-[#516073]">
@@ -451,7 +451,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                   <span className="inline-flex rounded-full bg-white px-3 py-2 text-xs font-semibold text-[#214ccf] shadow-sm">
                     {poster.logoUrl || campaign.logoUrl ? "Logo chargé" : "Aucun logo"}
                   </span>
-                  <span className="rounded-[8px] bg-[#2f6df6] px-4 py-2 text-xs font-semibold text-white">
+                  <span className="rounded-[var(--radius-card)] bg-[#2f6df6] px-4 py-2 text-xs font-semibold text-white">
                     Choisir
                   </span>
                 </div>
@@ -480,7 +480,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                     onChange={(event) =>
                       updatePoster({ logoSizePercent: Number(event.target.value || 100) })
                     }
-                    className="w-full rounded-[8px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                    className="w-full rounded-[var(--radius-card)] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none transition focus:border-[#2f6df6] focus:bg-white"
                   />
                 </label>
 
@@ -494,7 +494,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                     onChange={(event) =>
                       updatePoster({ logoBottomMarginPx: Number(event.target.value || 0) })
                     }
-                    className="w-full rounded-[8px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                    className="w-full rounded-[var(--radius-card)] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none transition focus:border-[#2f6df6] focus:bg-white"
                   />
                 </label>
               </>
@@ -502,9 +502,9 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
           </div>
         </section>
 
-        <section className="rounded-[8px] border border-[#dbe4f0] bg-white p-6 shadow-[0_16px_42px_rgba(122,136,166,0.1)]">
-          <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Phrase d&apos;entête</p>
-          <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
+        <section className="okado-card p-6 md:p-8">
+          <p className="okado-label">Phrase d&apos;entête</p>
+          <h2 className="mt-2 font-display text-2xl font-semibold text-[#111827]">
             Style du texte principal
           </h2>
 
@@ -515,7 +515,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                 rows={4}
                 value={poster.headline}
                 onChange={(event) => updatePoster({ headline: event.target.value })}
-                className="w-full rounded-[8px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                className="w-full rounded-[var(--radius-card)] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none transition focus:border-[#2f6df6] focus:bg-white"
               />
             </label>
 
@@ -525,7 +525,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                 type="color"
                 value={poster.headlineTextColor}
                 onChange={(event) => updatePoster({ headlineTextColor: event.target.value })}
-                className="h-14 w-full rounded-[8px] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none"
+                className="h-14 w-full rounded-[var(--radius-card)] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none"
               />
             </label>
 
@@ -539,7 +539,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                 onChange={(event) =>
                   updatePoster({ headlineFontSizePx: Number(event.target.value || 42) })
                 }
-                className="w-full rounded-[8px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                className="w-full rounded-[var(--radius-card)] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none transition focus:border-[#2f6df6] focus:bg-white"
               />
             </label>
 
@@ -548,9 +548,9 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
 
 
         {campaign.gameType === "wheel" ? (
-          <section className="rounded-[8px] border border-[#dbe4f0] bg-white p-6 shadow-[0_16px_42px_rgba(122,136,166,0.1)]">
-            <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Couleur de la roue</p>
-            <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
+          <section className="okado-card p-6 md:p-8">
+            <p className="okado-label">Couleur de la roue</p>
+            <h2 className="mt-2 font-display text-2xl font-semibold text-[#111827]">
               Réglez la roue de l&apos;affiche
             </h2>
 
@@ -561,7 +561,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                   type="color"
                   value={poster.wheel.winColor}
                   onChange={(event) => updateWheel("winColor", event.target.value)}
-                  className="h-14 w-full rounded-[8px] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none"
+                  className="h-14 w-full rounded-[var(--radius-card)] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none"
                 />
               </label>
             </div>
@@ -570,11 +570,11 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
       </div>
 
       <aside className="xl:sticky xl:top-6 xl:h-[calc(100vh-48px)]">
-        <div className="flex h-full flex-col rounded-[8px] border border-[#dbe4f0] bg-white p-5 shadow-[0_24px_70px_rgba(17,24,39,0.08)]">
+        <div className="okado-card flex h-full flex-col p-5">
           <div className="mb-4 flex items-center justify-between gap-3">
             <div>
-              <p className="text-xs uppercase tracking-[0.24em] text-[#7b8496]">Prévisualisation</p>
-              <h2 className="mt-1 text-xl font-semibold text-[#111827]">Affiche A4</h2>
+              <p className="okado-label">Prévisualisation</p>
+              <h2 className="mt-1 font-display text-xl font-semibold text-[#111827]">Affiche A4</h2>
             </div>
             <a
               href={`/api/campaigns/${campaign.id}/poster`}
@@ -583,14 +583,14 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                 event.preventDefault();
                 void downloadPoster();
               }}
-              className="rounded-[8px] bg-[#111827] px-4 py-3 text-sm font-semibold !text-white"
+              className="rounded-[var(--radius-card)] bg-[#111827] px-4 py-3 text-sm font-semibold !text-white shadow-[0_12px_28px_rgba(17,24,39,0.2)] transition hover:-translate-y-0.5"
               style={{ color: "#ffffff" }}
             >
               Télécharger le PNG
             </a>
           </div>
 
-          <div className="flex min-h-0 flex-1 items-center justify-center overflow-auto rounded-[8px] bg-[#eef3fb] p-4">
+          <div className="flex min-h-0 flex-1 items-center justify-center overflow-auto rounded-[var(--radius-card)] bg-[#eef3fb] p-4">
             <div className="relative aspect-[794/1123] w-full max-w-[470px] overflow-hidden rounded-[18px] border border-[#d7e0ed] bg-white shadow-[0_24px_50px_rgba(17,24,39,0.14)]">
               <Image
                 src={previewPosterUrl}
