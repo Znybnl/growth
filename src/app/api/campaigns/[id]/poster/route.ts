@@ -1,4 +1,7 @@
 import { NextResponse } from "next/server";
+import { mkdirSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
 
 import { getAuthenticatedSession } from "@/lib/auth";
 import { createCampaignPosterSvg } from "@/lib/campaign-exports";
@@ -11,6 +14,58 @@ export const dynamic = "force-dynamic";
 type RouteContext = {
   params: Promise<{ id: string }>;
 };
+
+let fontConfigReady = false;
+
+function escapeXmlAttribute(value: string) {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+}
+
+function ensurePosterFontConfig() {
+  if (fontConfigReady) return;
+
+  const fontDir = path.join(process.cwd(), "public", "fonts");
+  const configDir = path.join(tmpdir(), "okado-fontconfig");
+  const cacheDir = path.join(tmpdir(), "okado-font-cache");
+  const configFile = path.join(configDir, "fonts.conf");
+
+  mkdirSync(configDir, { recursive: true });
+  mkdirSync(cacheDir, { recursive: true });
+  writeFileSync(
+    configFile,
+    `<?xml version="1.0"?>
+<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+<fontconfig>
+  <dir>${escapeXmlAttribute(fontDir)}</dir>
+  <cachedir>${escapeXmlAttribute(cacheDir)}</cachedir>
+  <alias>
+    <family>sans-serif</family>
+    <prefer>
+      <family>Geist</family>
+      <family>DejaVu Sans</family>
+      <family>Liberation Sans</family>
+      <family>Arial</family>
+    </prefer>
+  </alias>
+  <alias>
+    <family>Geist</family>
+    <default>
+      <family>sans-serif</family>
+    </default>
+  </alias>
+</fontconfig>
+`,
+    "utf8",
+  );
+
+  process.env.FONTCONFIG_PATH = configDir;
+  process.env.FONTCONFIG_FILE = configFile;
+  fontConfigReady = true;
+}
 
 export async function GET(request: Request, context: RouteContext) {
   try {
@@ -30,6 +85,7 @@ export async function GET(request: Request, context: RouteContext) {
     const origin = new URL(request.url).origin;
     const publicUrl = `${origin}/campaign/${performance.campaign.id}`;
     const posterSvg = await createCampaignPosterSvg(performance, publicUrl);
+    ensurePosterFontConfig();
     const { default: sharp } = await import("sharp");
     const posterPng = await sharp(Buffer.from(posterSvg), {
       failOn: "none",
