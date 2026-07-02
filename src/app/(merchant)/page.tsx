@@ -12,6 +12,8 @@ import {
 } from "@/lib/format";
 import { getMerchantDashboard, getMerchantRecentLeads } from "@/lib/store";
 
+export const dynamic = "force-dynamic";
+
 export default async function DashboardPage({
   searchParams,
 }: {
