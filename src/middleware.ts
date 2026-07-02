@@ -9,7 +9,7 @@ export function middleware(request: NextRequest) {
   if (host && MARKETING_HOSTS.has(host) && pathname === "/") {
     const url = request.nextUrl.clone();
     url.pathname = "/index";
-    return NextResponse.rewrite(url);
+    return NextResponse.redirect(url);
   }
 
   return NextResponse.next();
