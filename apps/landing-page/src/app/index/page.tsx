@@ -23,6 +23,8 @@ import {
 
 import { LandingDemo, LocalizedPrice } from "@/components/marketing/landing-demo";
 
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://app.okado.app";
+
 export const metadata: Metadata = {
   title: "Okado | Digitalisez le trafic de votre point de vente",
   description:
@@ -246,7 +248,7 @@ export default function IndexPage() {
     <main className="min-h-screen bg-white font-sans text-[#0f172b]">
       <div className="border-b border-[#e5e7eb] bg-[#6c00f6] px-4 py-2 text-center text-sm font-medium text-white">
         30 jours d’essai gratuit, sans carte bancaire.{" "}
-        <Link href="/inscription" className="font-bold text-white underline underline-offset-4">
+        <Link href={`${APP_URL}/inscription`} className="font-bold text-white underline underline-offset-4">
           Créer mon compte
         </Link>
       </div>
@@ -270,12 +272,12 @@ export default function IndexPage() {
           </nav>
           <div className="flex items-center gap-3">
             <Link
-              href="/connexion"
+              href={`${APP_URL}/connexion`}
               className="hidden text-sm font-semibold text-[#0f172b] transition hover:text-[#6c00f6] sm:inline-flex"
             >
               Connexion
             </Link>
-            <PurpleButton href="/inscription">Essai gratuit</PurpleButton>
+            <PurpleButton href={`${APP_URL}/inscription`}>Essai gratuit</PurpleButton>
           </div>
         </div>
       </header>
@@ -294,7 +296,7 @@ export default function IndexPage() {
             minutes.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <PurpleButton href="/inscription">Lancer mon essai gratuit de 30 jours</PurpleButton>
+            <PurpleButton href={`${APP_URL}/inscription`}>Lancer mon essai gratuit de 30 jours</PurpleButton>
             <GhostLink href="#demo">Essayer la démo interactive</GhostLink>
           </div>
           <p className="mt-4 text-sm text-[#90a1b9]">
@@ -346,7 +348,7 @@ export default function IndexPage() {
                 </h3>
                 <p className="mt-3 flex-1 text-sm leading-6 text-[#475569]">{feature.text}</p>
                 <Link
-                  href="/inscription"
+                  href={`${APP_URL}/inscription`}
                   className="mt-6 inline-flex w-full items-center justify-center rounded-[8px] bg-[linear-gradient(to_right,#6c00f6_0%,#4f46e5_100%)] px-4 py-2.5 text-sm font-semibold !text-white"
                 >
                   Explorer
@@ -402,7 +404,7 @@ export default function IndexPage() {
               coupon au comptoir. Un gain ne peut être récupéré qu’une seule fois.
             </p>
             <div className="mt-8">
-              <GhostLink href="/inscription">Tester le parcours</GhostLink>
+              <GhostLink href={`${APP_URL}/inscription`}>Tester le parcours</GhostLink>
             </div>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -430,7 +432,7 @@ export default function IndexPage() {
                 <p className="text-sm font-semibold text-[#7f22fe]">Formule Pro</p>
                 <LocalizedPrice />
                 <div className="mt-7">
-                  <PurpleButton href="/inscription">Commencer mon essai gratuit</PurpleButton>
+                  <PurpleButton href={`${APP_URL}/inscription`}>Commencer mon essai gratuit</PurpleButton>
                 </div>
               </div>
               <div className="grid gap-3">
@@ -443,11 +445,6 @@ export default function IndexPage() {
                   </div>
                 ))}
               </div>
-            </div>
-            <div className="border-t border-[#e5e7eb] bg-[#f8fafc] px-6 py-4 text-sm text-[#475569] md:px-10">
-              Version Canada : le tarif s’adapte automatiquement lorsque le navigateur indique une
-              localisation canadienne. La facturation finale reste calculée par Stripe selon le pays
-              et les taxes applicables.
             </div>
           </div>
         </div>
@@ -501,7 +498,7 @@ export default function IndexPage() {
             client. Testez toutes les fonctionnalités gratuitement pendant 30 jours.
           </p>
           <div className="mt-8">
-            <PurpleButton href="/inscription">Créer mon compte gratuitement</PurpleButton>
+            <PurpleButton href={`${APP_URL}/inscription`}>Créer mon compte gratuitement</PurpleButton>
           </div>
         </div>
       </section>
@@ -518,7 +515,7 @@ export default function IndexPage() {
           <div>
             <p className="text-sm font-semibold text-[#0f172b]">Liens utiles</p>
             <div className="mt-4 grid gap-3 text-sm text-[#475569]">
-              <Link href="/connexion">Se connecter au back-office</Link>
+              <Link href={`${APP_URL}/connexion`}>Se connecter au back-office</Link>
               <a href="#tarifs">Tarifs & fonctionnalités</a>
               <a href="mailto:contact@okado.app">Support client</a>
             </div>

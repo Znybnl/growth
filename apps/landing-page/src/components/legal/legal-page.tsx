@@ -18,7 +18,7 @@ export function LegalPage({
     <main className="min-h-screen bg-[#f8fafc] px-5 py-10 text-[#0f172b] md:py-16">
       <div className="mx-auto max-w-4xl">
         <Link
-          href="/index"
+          href="/"
           className="inline-flex rounded-[8px] border border-[#dbe3ef] bg-white px-4 py-2 text-sm font-semibold text-[#0f172b] shadow-sm transition hover:border-[#6c00f6] hover:text-[#6c00f6]"
         >
           Retour à Okado

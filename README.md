@@ -11,6 +11,22 @@ Application SaaS BtoB pour créer et piloter des animations locales en boutique 
 - Resend pour les emails transactionnels
 - Vercel Analytics et PostHog EU
 
+## Structure du monorepo
+
+Le dépôt contient désormais deux applications séparées afin de déployer proprement le site marketing et le SaaS :
+
+```txt
+apps/
+├── landing-page/  # okado.app et www.okado.app
+└── web-app/       # app.okado.app
+```
+
+Configuration Vercel recommandée :
+
+- Projet landing : Root Directory `apps/landing-page`, domaines `okado.app` et `www.okado.app`.
+- Projet SaaS : Root Directory `apps/web-app`, domaine `app.okado.app`.
+- Variable landing optionnelle : `NEXT_PUBLIC_APP_URL=https://app.okado.app`.
+
 ## Démarrage local
 
 ```bash
@@ -18,7 +34,18 @@ npm install
 npm run dev
 ```
 
-Avant de lancer l'application, compléter `.env.local` à partir de `.env.example`.
+Par défaut, `npm run dev` lance le SaaS depuis `apps/web-app`.
+
+Commandes utiles :
+
+```bash
+npm run dev:web
+npm run dev:landing
+npm run build:web
+npm run build:landing
+```
+
+Avant de lancer l'application SaaS, compléter `apps/web-app/.env.local` à partir de `apps/web-app/.env.example`.
 
 ## Variables d'environnement critiques
 
