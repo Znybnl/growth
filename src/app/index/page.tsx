@@ -9,7 +9,6 @@ import {
   ChevronDown,
   Download,
   Gift,
-  Landmark,
   Mail,
   QrCode,
   ScanLine,
@@ -18,8 +17,11 @@ import {
   Star,
   Store,
   Trophy,
+  Utensils,
   type LucideIcon,
 } from "lucide-react";
+
+import { LandingDemo, LocalizedPrice } from "@/components/marketing/landing-demo";
 
 export const metadata: Metadata = {
   title: "Okado | Digitalisez le trafic de votre point de vente",
@@ -33,20 +35,22 @@ export const metadata: Metadata = {
     "avis Google",
     "génération de leads physiques",
     "phygital",
-    "concession automobile JPO",
+    "restaurant",
+    "commerce local",
+    "concession automobile",
   ],
   alternates: {
-    canonical: "https://propice.app",
+    canonical: "https://okado.app",
   },
   openGraph: {
     title: "Okado | Digitalisez le trafic de votre point de vente",
     description:
       "Créez des jeux concours sur QR Code, capturez des prospects locaux et animez votre point de vente en quelques minutes.",
-    url: "https://propice.app",
+    url: "https://okado.app",
     siteName: "Okado",
     images: [
       {
-        url: "https://propice.app/og-image.png",
+        url: "https://okado.app/og-image.png",
         width: 1200,
         height: 630,
         alt: "Interface Okado avec roue de la fortune et affiche QR Code",
@@ -66,7 +70,7 @@ const features = [
   {
     icon: Mail,
     title: "Capture de données qualifiées",
-    text: "Avant de jouer, le visiteur laisse son prénom et son e-mail. Vous construisez une base locale exploitable pour relancer vos clients et mesurer votre trafic physique.",
+    text: "Avant de recevoir son lot, le visiteur laisse son prénom et son e-mail. Vous construisez une base locale exploitable pour relancer vos clients et mesurer votre trafic physique.",
   },
   {
     icon: Star,
@@ -82,22 +86,28 @@ const features = [
 
 const useCases = [
   {
+    icon: Utensils,
+    label: "Restauration",
+    title: "Animez vos tables, files d’attente et passages au comptoir.",
+    text: "Le client joue pendant l’attente et tente de gagner un café, une remise ou un cadeau valable lors de sa prochaine visite.",
+  },
+  {
     icon: Store,
-    label: "Commerces & restaurants",
-    title: "Animez vos files d’attente et créez de la récurrence.",
-    text: "Placez l’affiche au comptoir ou sur vos tables. Le client joue pendant l’attente et tente de gagner un café, une remise ou un cadeau valable lors de sa prochaine visite.",
+    label: "Commerces",
+    title: "Transformez le passage en boutique en relation client durable.",
+    text: "Collectez des contacts qualifiés, stimulez vos avis Google et créez une raison simple de revenir en magasin.",
   },
   {
     icon: Car,
     label: "Concessions automobiles",
     title: "Capturez le trafic fantôme de vos journées portes ouvertes.",
-    text: "Lors des pics d’affluence, tous les visiteurs ne parlent pas à un vendeur. Okado transforme ces passages anonymes en leads qualifiés et activables par vos équipes.",
+    text: "Lors des pics d’affluence, tous les visiteurs ne parlent pas à un vendeur. Okado transforme ces passages anonymes en leads activables.",
   },
   {
-    icon: Landmark,
-    label: "Mairies & associations",
-    title: "Dynamisez le commerce local pendant vos événements.",
-    text: "Marchés, braderies, fêtes de printemps : fédérez les commerçants autour d’un jeu simple à déployer et lisible pour les habitants.",
+    icon: Building2,
+    label: "Evènementiel et association",
+    title: "Animez vos événements sans complexité opérationnelle.",
+    text: "Salons, clubs, associations, opérations locales : déployez un jeu lisible, mobile et mesurable en quelques minutes.",
   },
 ];
 
@@ -134,9 +144,9 @@ const faqs = [
 ];
 
 const trustSegments: Array<{ label: string; icon: LucideIcon }> = [
+  { label: "Restauration", icon: Utensils },
   { label: "Boutiques de quartier", icon: Store },
   { label: "Concessions automobiles", icon: Car },
-  { label: "Mairies & communes", icon: Building2 },
   { label: "Salons & instituts", icon: Sparkles },
 ];
 
@@ -189,7 +199,7 @@ function PurpleButton({
   return (
     <Link
       href={href}
-      className="inline-flex items-center justify-center gap-2 rounded-[8px] bg-[linear-gradient(to_right,#6c00f6_0%,#4f46e5_100%)] px-5 py-3 text-[15px] font-semibold text-white shadow-[0_0_24px_rgba(108,0,246,0.18)] transition hover:-translate-y-0.5 hover:shadow-[0_0_30px_rgba(108,0,246,0.26)]"
+      className="inline-flex items-center justify-center gap-2 rounded-[8px] bg-[linear-gradient(to_right,#6c00f6_0%,#4f46e5_100%)] px-5 py-3 text-[15px] font-semibold !text-white shadow-[0_0_24px_rgba(108,0,246,0.18)] transition hover:-translate-y-0.5 hover:shadow-[0_0_30px_rgba(108,0,246,0.26)]"
     >
       {children}
       <ArrowRight className="h-4 w-4" />
@@ -206,106 +216,6 @@ function GhostLink({ href, children }: { href: string; children: React.ReactNode
       {children}
       <span className="text-[#6c00f6]">→</span>
     </Link>
-  );
-}
-
-function ProductMockup() {
-  return (
-    <div className="relative mx-auto mt-16 max-w-[1040px]">
-      <div className="absolute left-[10%] top-10 h-48 w-48 rounded-full bg-[#fb64b6]/18 blur-3xl" />
-      <div className="absolute right-[14%] top-4 h-56 w-56 rounded-full bg-[#6c00f6]/15 blur-3xl" />
-      <div className="relative grid gap-5 rounded-[24px] border border-[#e5e7eb] bg-white p-5 shadow-[0_0_24px_rgba(55,65,81,0.10)] md:grid-cols-[0.9fr_1.1fr] md:p-8">
-        <div className="rounded-[20px] border border-[#e5e7eb] bg-[#f8fafc] p-4">
-          <div className="mx-auto max-w-[270px] overflow-hidden rounded-[28px] border-[10px] border-[#0f172b] bg-white shadow-[0_20px_50px_rgba(15,23,43,0.18)]">
-            <div className="bg-[linear-gradient(180deg,#ffffff_0%,#f1f5f9_100%)] px-6 py-7 text-center">
-              <p className="text-2xl font-bold tracking-[-0.05em] text-[#0f172b]">
-                La petite cuillère
-              </p>
-              <p className="mt-5 text-[28px] font-bold leading-[1.05] tracking-[-0.04em] text-[#0f172b]">
-                Jouez et gagnez.
-              </p>
-            </div>
-            <div className="relative h-[285px] overflow-hidden bg-white">
-              <div className="absolute left-1/2 top-10 h-[350px] w-[350px] -translate-x-1/2 rounded-full border-[10px] border-[#eef2ff] bg-[conic-gradient(from_0deg,#9aa7e6_0_36deg,#0f172b_36deg_72deg,#f8fafc_72deg_108deg,#0f172b_108deg_144deg,#f8fafc_144deg_180deg,#9aa7e6_180deg_216deg,#0f172b_216deg_252deg,#f8fafc_252deg_288deg,#0f172b_288deg_324deg,#9aa7e6_324deg_360deg)] shadow-[inset_0_0_38px_rgba(15,23,43,0.14)]" />
-              <div className="absolute left-1/2 top-[145px] h-24 w-24 -translate-x-1/2 rounded-full border-4 border-[#6c00f6] bg-white shadow-[0_14px_30px_rgba(15,23,43,0.16)]" />
-              <div className="absolute left-1/2 top-[172px] -translate-x-1/2 text-sm font-semibold text-[#6c00f6]">
-                JOUER
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="grid content-between gap-5">
-          <div className="rounded-[20px] border border-[#e5e7eb] bg-white p-5 shadow-[0_0_24px_rgba(55,65,81,0.08)]">
-            <div className="flex items-center justify-between border-b border-[#e5e7eb] pb-4">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#7f22fe]">
-                  Campagne active
-                </p>
-                <p className="mt-1 text-xl font-semibold text-[#0f172b]">Avis Google comptoir</p>
-              </div>
-              <span className="rounded-[4px] bg-[#7f22fe]/10 px-2 py-1 text-xs font-medium text-[#7f22fe]">
-                100% gagnant
-              </span>
-            </div>
-            <div className="mt-5 grid gap-3 sm:grid-cols-3">
-              {[
-                ["Scans", "1 248"],
-                ["Leads", "312"],
-                ["Lots retirés", "86"],
-              ].map(([label, value]) => (
-                <div key={label} className="rounded-[14px] border border-[#e5e7eb] bg-[#f8fafc] p-4">
-                  <p className="text-xs text-[#90a1b9]">{label}</p>
-                  <p className="mt-2 text-2xl font-bold text-[#0f172b]">{value}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="grid gap-5 sm:grid-cols-[1fr_0.9fr]">
-            <div className="rounded-[20px] border border-[#e5e7eb] bg-white p-5 shadow-[0_0_24px_rgba(55,65,81,0.08)]">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#7f22fe]">
-                Affiche A4
-              </p>
-              <div className="mt-4 rounded-[16px] bg-[#f1f5f9] p-4">
-                <div className="mx-auto grid h-28 w-28 grid-cols-7 gap-1 rounded-[12px] border-4 border-white bg-white p-2 shadow-sm">
-                  {Array.from({ length: 49 }).map((_, index) => (
-                    <span
-                      key={index}
-                      className="rounded-[1px]"
-                      style={{
-                        backgroundColor:
-                          [0, 1, 3, 6, 8, 10, 12, 14, 18, 20, 21, 24, 26, 28, 30, 33, 35, 38, 40, 42, 45, 47, 48].includes(
-                            index,
-                          )
-                            ? "#0f172b"
-                            : "transparent",
-                      }}
-                    />
-                  ))}
-                </div>
-                <div className="mx-auto mt-4 w-fit rounded-[8px] bg-[#6c00f6] px-4 py-2 text-xs font-bold text-white">
-                  SCANNEZ POUR JOUER
-                </div>
-              </div>
-            </div>
-            <div className="rounded-[20px] border border-[#e5e7eb] bg-[#0f172b] p-5 text-white shadow-[0_0_24px_rgba(55,65,81,0.10)]">
-              <p className="text-sm font-medium text-white/60">Workflow terrain</p>
-              <div className="mt-5 space-y-4">
-                {["Scanner", "Jouer", "Récupérer"].map((item, index) => (
-                  <div key={item} className="flex items-center gap-3">
-                    <span className="grid h-7 w-7 place-items-center rounded-full bg-white text-xs font-bold text-[#6c00f6]">
-                      {index + 1}
-                    </span>
-                    <span className="text-sm font-semibold">{item}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
   );
 }
 
@@ -336,7 +246,7 @@ export default function IndexPage() {
     <main className="min-h-screen bg-white font-sans text-[#0f172b]">
       <div className="border-b border-[#e5e7eb] bg-[#6c00f6] px-4 py-2 text-center text-sm font-medium text-white">
         30 jours d’essai gratuit, sans carte bancaire.{" "}
-        <Link href="/inscription" className="underline underline-offset-4">
+        <Link href="/inscription" className="font-bold text-white underline underline-offset-4">
           Créer mon compte
         </Link>
       </div>
@@ -385,12 +295,14 @@ export default function IndexPage() {
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <PurpleButton href="/inscription">Lancer mon essai gratuit de 30 jours</PurpleButton>
-            <GhostLink href="#fonctionnalites">Voir comment ça marche</GhostLink>
+            <GhostLink href="#demo">Essayer la démo interactive</GhostLink>
           </div>
           <p className="mt-4 text-sm text-[#90a1b9]">
             Inscription instantanée. Aucune carte bancaire requise.
           </p>
-          <ProductMockup />
+          <div id="demo">
+            <LandingDemo />
+          </div>
         </div>
       </section>
 
@@ -435,7 +347,7 @@ export default function IndexPage() {
                 <p className="mt-3 flex-1 text-sm leading-6 text-[#475569]">{feature.text}</p>
                 <Link
                   href="/inscription"
-                  className="mt-6 inline-flex w-full items-center justify-center rounded-[8px] bg-[linear-gradient(to_right,#6c00f6_0%,#4f46e5_100%)] px-4 py-2.5 text-sm font-semibold text-white"
+                  className="mt-6 inline-flex w-full items-center justify-center rounded-[8px] bg-[linear-gradient(to_right,#6c00f6_0%,#4f46e5_100%)] px-4 py-2.5 text-sm font-semibold !text-white"
                 >
                   Explorer
                 </Link>
@@ -452,7 +364,7 @@ export default function IndexPage() {
             title="Une solution adaptée à vos ambitions."
             text="Okado sert les usages du quotidien comme les temps forts : comptoir, événement local, journée portes ouvertes ou animation multi-commerçants."
           />
-          <div className="mt-14 grid gap-5 lg:grid-cols-3">
+          <div className="mt-14 grid gap-5 lg:grid-cols-4">
             {useCases.map((useCase) => (
               <article
                 key={useCase.label}
@@ -516,13 +428,7 @@ export default function IndexPage() {
             <div className="grid gap-8 p-6 md:grid-cols-[0.9fr_1.1fr] md:p-10">
               <div>
                 <p className="text-sm font-semibold text-[#7f22fe]">Formule Pro</p>
-                <div className="mt-4 flex items-end gap-2">
-                  <span className="text-6xl font-bold tracking-[-0.06em] text-[#0f172b]">20€</span>
-                  <span className="pb-2 text-sm font-medium text-[#475569]">HT / mois</span>
-                </div>
-                <p className="mt-4 text-sm leading-6 text-[#475569]">
-                  Soit 24,00 € TTC en France avec TVA à 20%. Sans engagement.
-                </p>
+                <LocalizedPrice />
                 <div className="mt-7">
                   <PurpleButton href="/inscription">Commencer mon essai gratuit</PurpleButton>
                 </div>
@@ -539,8 +445,9 @@ export default function IndexPage() {
               </div>
             </div>
             <div className="border-t border-[#e5e7eb] bg-[#f8fafc] px-6 py-4 text-sm text-[#475569] md:px-10">
-              Canada : tarif adapté en devises locales avec calcul des taxes au moment de la
-              facturation.
+              Version Canada : le tarif s’adapte automatiquement lorsque le navigateur indique une
+              localisation canadienne. La facturation finale reste calculée par Stripe selon le pays
+              et les taxes applicables.
             </div>
           </div>
         </div>
@@ -590,7 +497,7 @@ export default function IndexPage() {
             Prêt à redynamiser votre point de vente dès aujourd’hui ?
           </h2>
           <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-[#475569]">
-            Rejoignez les commerçants, concessions et collectivités qui modernisent leur relation
+            Rejoignez les restaurateurs, commerçants, concessions qui modernisent leur relation
             client. Testez toutes les fonctionnalités gratuitement pendant 30 jours.
           </p>
           <div className="mt-8">
