@@ -199,6 +199,7 @@ const merchantSeed: Merchant = {
   facebookUrl: "https://facebook.com/maisonsora",
   tiktokUrl: "https://tiktok.com/@maisonsora",
   tripadvisorUrl: "https://tripadvisor.com/",
+  customLinkUrl: "",
   defaultPrizeCost: 3.4,
   createdAt: "2026-06-01T08:00:00.000Z",
 };
@@ -427,7 +428,7 @@ const leadSeed: Lead[] = [
     status: "redeemed",
     createdAt: "2026-06-08T08:32:00.000Z",
     actionConfirmed: true,
-    redemptionCode: "SORA-4012",
+    redemptionCode: "OK-4012",
     rewardAvailableAt: "2026-06-08T08:32:00.000Z",
     rewardExpiresAt: "2026-06-08T08:50:00.000Z",
   },
@@ -453,7 +454,7 @@ const leadSeed: Lead[] = [
     status: "claimed",
     createdAt: "2026-06-10T12:05:00.000Z",
     actionConfirmed: true,
-    redemptionCode: "SORA-5099",
+    redemptionCode: "OK-5099",
     rewardAvailableAt: "2026-06-11T12:05:00.000Z",
     rewardExpiresAt: "2026-06-25T12:05:00.000Z",
   },
@@ -918,7 +919,7 @@ function buildLeadFromSession(
 
   lead.prizeId = session.prizeId;
   lead.status = "claimed";
-  lead.redemptionCode = `SORA-${Math.floor(1000 + Math.random() * 9000)}`;
+  lead.redemptionCode = `OK-${Math.random().toString(36).slice(2, 10).toUpperCase()}`;
   lead.rewardAvailableAt = availableAt.toISOString();
   lead.rewardExpiresAt = expiresAt.toISOString();
 
@@ -987,6 +988,7 @@ function createMerchantAccountInMemory(input: MerchantSignUpInput) {
     facebookUrl: "",
     tiktokUrl: "",
     tripadvisorUrl: "",
+    customLinkUrl: "",
     defaultPrizeCost: 3,
     createdAt: new Date().toISOString(),
   };
@@ -1060,6 +1062,7 @@ function updateMerchantOnboardingInMemory(userId: string, input: MerchantOnboard
   merchant.facebookUrl = input.facebookUrl.trim();
   merchant.tiktokUrl = input.tiktokUrl.trim();
   merchant.tripadvisorUrl = input.tripadvisorUrl.trim();
+  merchant.customLinkUrl = input.customLinkUrl.trim();
   merchant.onboardingCompleted = true;
 
   return clone(merchant);
@@ -1104,6 +1107,7 @@ function updateMerchantAccountInMemory(userId: string, input: MerchantAccountSet
   merchant.facebookUrl = input.facebookUrl.trim();
   merchant.tiktokUrl = input.tiktokUrl.trim();
   merchant.tripadvisorUrl = input.tripadvisorUrl.trim();
+  merchant.customLinkUrl = input.customLinkUrl.trim();
   merchant.defaultPrizeCost = input.defaultPrizeCost;
 
   return {

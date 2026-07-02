@@ -214,6 +214,7 @@ type MerchantRow = {
   facebook_url: string | null;
   tiktok_url: string | null;
   tripadvisor_url: string | null;
+  custom_link_url: string | null;
   default_prize_cost: number | null;
   stripe_customer_id: string | null;
   stripe_subscription_id: string | null;
@@ -286,6 +287,7 @@ function toMerchant(row: MerchantRow): Merchant {
     facebookUrl: row.facebook_url ?? undefined,
     tiktokUrl: row.tiktok_url ?? undefined,
     tripadvisorUrl: row.tripadvisor_url ?? undefined,
+    customLinkUrl: row.custom_link_url ?? undefined,
     defaultPrizeCost: row.default_prize_cost ?? undefined,
     stripeCustomerId: row.stripe_customer_id ?? undefined,
     stripeSubscriptionId: row.stripe_subscription_id ?? undefined,

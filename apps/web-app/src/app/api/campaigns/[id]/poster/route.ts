@@ -43,8 +43,18 @@ function ensurePosterFontConfig() {
   <dir>${escapeXmlAttribute(fontDir)}</dir>
   <cachedir>${escapeXmlAttribute(cacheDir)}</cachedir>
   <alias>
+    <family>Anton</family>
+    <prefer>
+      <family>Anton</family>
+      <family>Inter</family>
+      <family>Geist</family>
+      <family>DejaVu Sans</family>
+    </prefer>
+  </alias>
+  <alias>
     <family>sans-serif</family>
     <prefer>
+      <family>Anton</family>
       <family>Inter</family>
       <family>Geist</family>
       <family>DejaVu Sans</family>

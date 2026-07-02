@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { DashboardActivityChart } from "@/components/merchant/dashboard-activity-chart";
+import { DashboardCampaignActionsMenu } from "@/components/merchant/dashboard-campaign-actions-menu";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import {
   formatCurrency,
@@ -155,18 +156,19 @@ export default async function DashboardPage({
             </div>
 
             <div className="mt-6 hidden overflow-hidden rounded-[8px] border border-border md:block">
-              <div className="grid grid-cols-[1.5fr_0.85fr_0.7fr_0.7fr_0.9fr] gap-3 bg-[#f7f9fc] px-5 py-4 text-[11px] uppercase tracking-[0.24em] text-[#7c8597]">
+              <div className="grid grid-cols-[1.5fr_0.85fr_0.7fr_0.7fr_0.9fr_auto] gap-3 bg-[#f7f9fc] px-5 py-4 text-[11px] uppercase tracking-[0.24em] text-[#7c8597]">
                 <span>Campagne</span>
                 <span>Mécanique</span>
                 <span>Scans</span>
                 <span>Lead</span>
                 <span>Conversion</span>
+                <span className="sr-only">Actions</span>
               </div>
 
               {filteredCampaigns.map((item) => (
                 <div
                   key={item.campaign.id}
-                  className="grid grid-cols-[1.5fr_0.85fr_0.7fr_0.7fr_0.9fr] items-center gap-3 border-t border-[#edf1f6] px-5 py-5 text-sm"
+                  className="grid grid-cols-[1.5fr_0.85fr_0.7fr_0.7fr_0.9fr_auto] items-center gap-3 border-t border-[#edf1f6] px-5 py-5 text-sm"
                 >
                   <div className="min-w-0">
                     <div className="flex items-center gap-3">
@@ -191,6 +193,7 @@ export default async function DashboardPage({
                   <span className="font-semibold text-[#111827]">
                     {formatPercent(item.kpis.conversionRate)}
                   </span>
+                  <DashboardCampaignActionsMenu campaignId={item.campaign.id} />
                 </div>
               ))}
             </div>
@@ -201,20 +204,23 @@ export default async function DashboardPage({
                   key={item.campaign.id}
                   className="rounded-[8px] border border-border bg-linen-canvas p-4"
                 >
-                  <div className="flex items-start gap-3">
-                      <span
-                        className="mt-1 h-3 w-3 shrink-0 rounded-full"
-                        title={getCampaignStatus(item).label}
-                        style={{ backgroundColor: getCampaignStatus(item).color }}
-                      />
-                    <div className="min-w-0">
-                      <p className="truncate font-semibold text-[#111827]">
-                        {item.campaign.title}
-                      </p>
-                      <p className="truncate text-sm text-[#7a8496]">
-                        {goalLabel(item.campaign.goalType)}
-                      </p>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex min-w-0 items-start gap-3">
+                        <span
+                          className="mt-1 h-3 w-3 shrink-0 rounded-full"
+                          title={getCampaignStatus(item).label}
+                          style={{ backgroundColor: getCampaignStatus(item).color }}
+                        />
+                      <div className="min-w-0">
+                        <p className="truncate font-semibold text-[#111827]">
+                          {item.campaign.title}
+                        </p>
+                        <p className="truncate text-sm text-[#7a8496]">
+                          {goalLabel(item.campaign.goalType)}
+                        </p>
+                      </div>
                     </div>
+                    <DashboardCampaignActionsMenu campaignId={item.campaign.id} />
                   </div>
 
                   <div className="mt-4 grid grid-cols-2 gap-3 text-sm">

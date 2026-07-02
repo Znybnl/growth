@@ -69,6 +69,7 @@ export interface Merchant {
   facebookUrl?: string;
   tiktokUrl?: string;
   tripadvisorUrl?: string;
+  customLinkUrl?: string;
   defaultPrizeCost?: number;
   stripeCustomerId?: string;
   stripeSubscriptionId?: string;
@@ -229,6 +230,7 @@ export interface MerchantOnboardingInput {
   facebookUrl: string;
   tiktokUrl: string;
   tripadvisorUrl: string;
+  customLinkUrl: string;
 }
 
 export interface MerchantAccountSettingsInput {
@@ -246,6 +248,7 @@ export interface MerchantAccountSettingsInput {
   facebookUrl: string;
   tiktokUrl: string;
   tripadvisorUrl: string;
+  customLinkUrl: string;
   defaultPrizeCost: number;
   firstName: string;
   lastName: string;

@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { AffiliateReferralCard } from "@/components/merchant/affiliate-referral-card";
+import { GoogleReviewPlacePicker } from "@/components/merchant/google-review-place-picker";
 import {
   INDUSTRY_OPTIONS,
   RESTAURANT_TYPE_OPTIONS,
@@ -14,14 +16,15 @@ import {
   MerchantAccountSettingsInput,
   MerchantUser,
 } from "@/lib/types";
-import { AffiliateReferralCard } from "@/components/merchant/affiliate-referral-card";
-import { GoogleReviewPlacePicker } from "@/components/merchant/google-review-place-picker";
 
 type AccountSettingsFormProps = {
   merchant: Merchant;
   user: MerchantUser;
   affiliateSummary?: AffiliateSummary | null;
 };
+
+const inputClass =
+  "w-full rounded-[12px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-4 outline-none";
 
 export function AccountSettingsForm({
   merchant,
@@ -43,6 +46,7 @@ export function AccountSettingsForm({
     facebookUrl: merchant.facebookUrl ?? "",
     tiktokUrl: merchant.tiktokUrl ?? "",
     tripadvisorUrl: merchant.tripadvisorUrl ?? "",
+    customLinkUrl: merchant.customLinkUrl ?? "",
     defaultPrizeCost: merchant.defaultPrizeCost ?? 3,
     firstName: user.firstName,
     lastName: user.lastName,
@@ -51,6 +55,9 @@ export function AccountSettingsForm({
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+
+  const placeLabel = businessLabel(form.industry);
+  const isRestaurant = isRestaurantIndustry(form.industry);
 
   function updateField<Key extends keyof MerchantAccountSettingsInput>(
     key: Key,
@@ -85,9 +92,6 @@ export function AccountSettingsForm({
     }
   }
 
-  const placeLabel = businessLabel(form.industry);
-  const isRestaurant = isRestaurantIndustry(form.industry);
-
   return (
     <form className="space-y-6" onSubmit={handleSubmit}>
       <section className="okado-card p-6 md:p-8">
@@ -98,7 +102,7 @@ export function AccountSettingsForm({
             <input
               value={form.firstName}
               onChange={(event) => updateField("firstName", event.target.value)}
-              className="w-full rounded-[12px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-4 outline-none"
+              className={inputClass}
               required
             />
           </label>
@@ -107,7 +111,7 @@ export function AccountSettingsForm({
             <input
               value={form.lastName}
               onChange={(event) => updateField("lastName", event.target.value)}
-              className="w-full rounded-[12px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-4 outline-none"
+              className={inputClass}
               required
             />
           </label>
@@ -117,7 +121,7 @@ export function AccountSettingsForm({
               type="email"
               value={form.email}
               onChange={(event) => updateField("email", event.target.value)}
-              className="w-full rounded-[12px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-4 outline-none"
+              className={inputClass}
               required
             />
           </label>
@@ -134,16 +138,16 @@ export function AccountSettingsForm({
             <input
               value={form.companyName}
               onChange={(event) => updateField("companyName", event.target.value)}
-              className="w-full rounded-[12px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-4 outline-none"
+              className={inputClass}
               required
             />
           </label>
           <label className="text-sm">
-            <span className="mb-2 block text-[#616b7c]">Secteur d’activité</span>
+            <span className="mb-2 block text-[#616b7c]">Secteur d&apos;activité</span>
             <select
               value={form.industry}
               onChange={(event) => updateField("industry", event.target.value)}
-              className="w-full rounded-[12px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-4 outline-none"
+              className={inputClass}
             >
               {INDUSTRY_OPTIONS.map((option) => (
                 <option key={option} value={option}>
@@ -152,22 +156,22 @@ export function AccountSettingsForm({
               ))}
             </select>
           </label>
-          <label className="text-sm">
-            <span className="mb-2 block text-[#616b7c]">
-              Type de {isRestaurant ? "restaurant" : placeLabel}
-            </span>
-            <select
-              value={form.restaurantType}
-              onChange={(event) => updateField("restaurantType", event.target.value)}
-              className="w-full rounded-[12px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-4 outline-none"
-            >
-              {RESTAURANT_TYPE_OPTIONS.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-          </label>
+          {isRestaurant ? (
+            <label className="text-sm">
+              <span className="mb-2 block text-[#616b7c]">Type de restaurant</span>
+              <select
+                value={form.restaurantType}
+                onChange={(event) => updateField("restaurantType", event.target.value)}
+                className={inputClass}
+              >
+                {RESTAURANT_TYPE_OPTIONS.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
           <label className="text-sm">
             <span className="mb-2 block text-[#616b7c]">
               Ville / {isRestaurant ? "restaurant" : "boutique"}
@@ -175,7 +179,7 @@ export function AccountSettingsForm({
             <input
               value={form.city}
               onChange={(event) => updateField("city", event.target.value)}
-              className="w-full rounded-[12px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-4 outline-none"
+              className={inputClass}
               required
             />
           </label>
@@ -184,7 +188,7 @@ export function AccountSettingsForm({
             <input
               value={form.address}
               onChange={(event) => updateField("address", event.target.value)}
-              className="w-full rounded-[12px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-4 outline-none"
+              className={inputClass}
             />
           </label>
           <label className="text-sm">
@@ -192,35 +196,41 @@ export function AccountSettingsForm({
             <input
               value={form.contactName}
               onChange={(event) => updateField("contactName", event.target.value)}
-              className="w-full rounded-[12px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-4 outline-none"
+              className={inputClass}
               required
             />
           </label>
           <label className="text-sm">
-            <span className="mb-2 block text-[#616b7c]">Téléphone du restaurant</span>
+            <span className="mb-2 block text-[#616b7c]">
+              Téléphone du {isRestaurant ? "restaurant" : placeLabel}
+            </span>
             <input
               value={form.phone}
               onChange={(event) => updateField("phone", event.target.value)}
-              className="w-full rounded-[12px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-4 outline-none"
+              className={inputClass}
             />
           </label>
           <label className="text-sm">
-            <span className="mb-2 block text-[#616b7c]">E-mail du restaurant</span>
+            <span className="mb-2 block text-[#616b7c]">
+              E-mail du {isRestaurant ? "restaurant" : placeLabel}
+            </span>
             <input
               type="email"
               value={form.restaurantEmail}
               onChange={(event) => updateField("restaurantEmail", event.target.value)}
-              className="w-full rounded-[12px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-4 outline-none"
+              className={inputClass}
             />
           </label>
           <label className="text-sm">
-            <span className="mb-2 block text-[#616b7c]">Site internet du restaurant</span>
+            <span className="mb-2 block text-[#616b7c]">
+              Site internet du {isRestaurant ? "restaurant" : placeLabel}
+            </span>
             <input
               type="url"
               value={form.websiteUrl}
               onChange={(event) => updateField("websiteUrl", event.target.value)}
               placeholder="https://..."
-              className="w-full rounded-[12px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-4 outline-none"
+              className={inputClass}
             />
           </label>
         </div>
@@ -244,7 +254,7 @@ export function AccountSettingsForm({
               value={form.instagramUrl}
               onChange={(event) => updateField("instagramUrl", event.target.value)}
               placeholder="https://instagram.com/..."
-              className="w-full rounded-[12px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-4 outline-none"
+              className={inputClass}
             />
           </label>
           <label className="text-sm">
@@ -254,7 +264,7 @@ export function AccountSettingsForm({
               value={form.facebookUrl}
               onChange={(event) => updateField("facebookUrl", event.target.value)}
               placeholder="https://facebook.com/..."
-              className="w-full rounded-[12px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-4 outline-none"
+              className={inputClass}
             />
           </label>
           <label className="text-sm">
@@ -264,7 +274,7 @@ export function AccountSettingsForm({
               value={form.tiktokUrl}
               onChange={(event) => updateField("tiktokUrl", event.target.value)}
               placeholder="https://tiktok.com/@..."
-              className="w-full rounded-[12px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-4 outline-none"
+              className={inputClass}
             />
           </label>
           <label className="text-sm">
@@ -274,26 +284,17 @@ export function AccountSettingsForm({
               value={form.tripadvisorUrl}
               onChange={(event) => updateField("tripadvisorUrl", event.target.value)}
               placeholder="https://tripadvisor.com/..."
-              className="w-full rounded-[12px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-4 outline-none"
+              className={inputClass}
             />
           </label>
-        </div>
-      </section>
-
-      <section className="okado-card p-6 md:p-8">
-        <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Paramètres</p>
-        <div className="mt-6 grid gap-4 md:grid-cols-2">
-          <label className="text-sm md:max-w-[260px]">
-            <span className="mb-2 block text-[#616b7c]">Coût par lot par défaut (€)</span>
+          <label className="text-sm md:col-span-2">
+            <span className="mb-2 block text-[#616b7c]">Lien personnalisé</span>
             <input
-              type="number"
-              min="0"
-              step="0.1"
-              value={form.defaultPrizeCost}
-              onChange={(event) =>
-                updateField("defaultPrizeCost", Number(event.target.value || 0))
-              }
-              className="w-full rounded-[12px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-4 outline-none"
+              type="url"
+              value={form.customLinkUrl}
+              onChange={(event) => updateField("customLinkUrl", event.target.value)}
+              placeholder="https://..."
+              className={inputClass}
             />
           </label>
         </div>

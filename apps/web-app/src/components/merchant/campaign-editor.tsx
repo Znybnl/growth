@@ -201,7 +201,7 @@ function defaultActionUrl(merchant: Merchant, kind: ActionKind) {
     case "crm":
       return merchant.websiteUrl ?? "https://";
     case "custom":
-      return "https://";
+      return merchant.customLinkUrl ?? "https://";
     default:
       return "https://";
   }

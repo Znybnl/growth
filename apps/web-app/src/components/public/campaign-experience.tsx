@@ -832,7 +832,7 @@ export function CampaignExperience({
                     <a
                       href={qrPath}
                       download={`qr-lot-${redemptionCode}.svg`}
-                      className="mt-3 inline-flex rounded-[16px] bg-[#111827] px-4 py-3 text-sm font-semibold text-white"
+                      className="mt-3 inline-flex rounded-[16px] bg-[#111827] px-4 py-3 text-sm font-semibold !text-white"
                     >
                       Enregistrer le QR code
                     </a>

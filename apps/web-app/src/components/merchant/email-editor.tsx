@@ -19,7 +19,7 @@ type EmailEditorProps = {
 const sampleData = {
   firstName: "Léa",
   prizeLabel: "Boisson offerte",
-  redemptionCode: "SORA-AB12CD34",
+  redemptionCode: "OK-AB12CD34",
   rewardAvailability: "Disponible dès maintenant au comptoir.",
   rewardExpiry: "Valable jusqu'au 22 juin 2026 à 18:00.",
   purchaseCondition: "",

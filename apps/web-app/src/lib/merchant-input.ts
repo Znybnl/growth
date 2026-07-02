@@ -181,6 +181,7 @@ export function parseMerchantOnboardingInput(input: unknown): MerchantOnboarding
     facebookUrl: normalizeUrl(payload.facebookUrl),
     tiktokUrl: normalizeUrl(payload.tiktokUrl),
     tripadvisorUrl: normalizeUrl(payload.tripadvisorUrl),
+    customLinkUrl: normalizeUrl(payload.customLinkUrl),
   };
 }
 
@@ -202,6 +203,7 @@ export function parseMerchantAccountSettingsInput(input: unknown): MerchantAccou
     facebookUrl: normalizeUrl(payload.facebookUrl),
     tiktokUrl: normalizeUrl(payload.tiktokUrl),
     tripadvisorUrl: normalizeUrl(payload.tripadvisorUrl),
+    customLinkUrl: normalizeUrl(payload.customLinkUrl),
     defaultPrizeCost: normalizeNumber(payload.defaultPrizeCost, {
       min: 0,
       max: 100000,

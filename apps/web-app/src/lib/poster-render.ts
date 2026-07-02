@@ -4,7 +4,7 @@ import { Campaign, CampaignPosterSettings, PosterTemplateId, Prize } from "@/lib
 const A4_WIDTH = 794;
 const A4_HEIGHT = 1123;
 const SAFE_FONT = "Inter, Geist, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif";
-const SAFE_DISPLAY_FONT = SAFE_FONT;
+const SAFE_DISPLAY_FONT = "Anton, Inter, Geist, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif";
 
 type TemplateConfig = {
   id: PosterTemplateId;
@@ -456,6 +456,12 @@ export function buildPosterSvg(args: {
       <defs>
         <style>
           <![CDATA[
+            @font-face {
+              font-family: Anton;
+              src: url("/fonts/anton-regular.ttf") format("truetype");
+              font-weight: 400;
+              font-style: normal;
+            }
             text {
               font-family: ${SAFE_FONT};
             }

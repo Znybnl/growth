@@ -1,5 +1,6 @@
 export const INDUSTRY_OPTIONS = [
   "Restauration",
+  "Automobile",
   "Retail",
   "Beauté",
   "Sport",
@@ -13,6 +14,10 @@ export const RESTAURANT_TYPE_OPTIONS = [
   "Restauration rapide",
   "Gastronomique",
   "Bar à tapas",
+  "Cuisine traditionnelle",
+  "Cuisine du monde",
+  "Boulangerie",
+  "Glacier",
   "Bistrot",
   "Coffee shop",
   "Food court",
