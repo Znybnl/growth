@@ -92,6 +92,8 @@ const useCases = [
     label: "Restauration",
     title: "Animez vos tables, files d’attente et passages au comptoir.",
     text: "Le client joue pendant l’attente et tente de gagner un café, une remise ou un cadeau valable lors de sa prochaine visite.",
+    href: "/restaurants",
+    cta: "Voir la page dédiée aux restaurants",
   },
   {
     icon: Store,
@@ -384,6 +386,14 @@ export default function IndexPage() {
                   {useCase.title}
                 </h3>
                 <p className="mt-4 text-sm leading-7 text-[#475569]">{useCase.text}</p>
+                {useCase.href ? (
+                  <Link
+                    href={useCase.href}
+                    className="mt-5 inline-flex text-sm font-semibold text-[#145aff] underline-offset-4 hover:underline"
+                  >
+                    {useCase.cta}
+                  </Link>
+                ) : null}
               </article>
             ))}
           </div>
@@ -525,7 +535,6 @@ export default function IndexPage() {
             <div className="mt-4 grid gap-3 text-sm text-[#475569]">
               <Link href="/campaign/reglement">Règlement général des jeux & CGU</Link>
               <Link href="/cgv">CGV & DPA</Link>
-              <span>France & Canada</span>
             </div>
           </div>
         </div>

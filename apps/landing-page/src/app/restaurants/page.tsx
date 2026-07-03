@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     canonical: "https://okado.app/restaurants",
   },
   openGraph: {
-    title: "Okado Restaurants | Plus d'avis Google, de leads et de retours clients",
+    title: "Okado Restaurants | Plus d'avis Google, de contacts clients et de retours",
     description:
       "Transformez vos clients en salle en avis Google, contacts qualifiés et prochaines visites grâce à une animation QR code ludique.",
     url: "https://okado.app/restaurants",
@@ -113,6 +113,52 @@ const marketProofs = [
     label: "de rétention client peut fortement améliorer la rentabilité.",
     source: "Harvard Business Review / Bain",
     href: "https://hbr.org/2014/10/the-value-of-keeping-the-right-customers",
+  },
+];
+
+const pilotSimulation = [
+  {
+    value: "200",
+    label: "scans en salle",
+    detail: "affiche, chevalet, ticket ou comptoir",
+  },
+  {
+    value: "80",
+    label: "participations",
+    detail: "clients qui entrent dans le parcours",
+  },
+  {
+    value: "35",
+    label: "contacts clients",
+    detail: "prénom et e-mail exploitables",
+  },
+  {
+    value: "12",
+    label: "coupons présentés",
+    detail: "retours mesurables en restaurant",
+  },
+];
+
+const conversionObjections = [
+  {
+    question: "Est-ce que mon équipe devra expliquer le jeu ?",
+    answer:
+      "Non. Le parcours est pensé pour être compris seul : le client scanne, réalise l'action demandée, joue, puis reçoit son coupon par e-mail.",
+  },
+  {
+    question: "Est-ce que les lots vont coûter trop cher ?",
+    answer:
+      "Vous choisissez des lots compatibles avec votre marge : café, topping, dessert, boisson, remise limitée ou avantage valable uniquement lors d'une prochaine visite.",
+  },
+  {
+    question: "Est-ce autorisé pour les avis Google ?",
+    answer:
+      "Okado ne conditionne pas le gain à un avis positif. L'avis peut faire partie du parcours, mais la mécanique de jeu reste indépendante.",
+  },
+  {
+    question: "Est-ce que je garde mes données clients ?",
+    answer:
+      "Oui. Les contacts collectés appartiennent au restaurant. Okado fournit l'outil de collecte, de suivi et d'export.",
   },
 ];
 
@@ -284,7 +330,7 @@ const implementationPlan = [
   {
     day: "Semaine 1",
     title: "Observer les données",
-    text: "Suivez les scans, leads, lots gagnés et lots retirés pour identifier les meilleurs emplacements.",
+    text: "Suivez les scans, contacts clients, lots gagnés et lots retirés pour identifier les meilleurs emplacements.",
   },
   {
     day: "Semaine 2",
@@ -489,12 +535,12 @@ export default function RestaurantsPage() {
               Marketing terrain pour restaurants
             </span>
             <h1 className="mx-auto mt-7 max-w-4xl text-[42px] font-black leading-[1.03] tracking-[-0.06em] text-[#0f172b] md:text-[64px]">
-              Plus d&apos;avis Google. Plus de clients qui reviennent.
+              Transformez chaque table en avis Google, contact client et prochaine visite.
             </h1>
             <p className="mx-auto mt-6 max-w-3xl text-lg leading-8 text-[#475569]">
-              Okado transforme vos tables, files d&apos;attente et passages au comptoir en avis Google,
-              contacts e-mail et prochaines visites. Vos clients scannent, jouent, reçoivent leur
-              lot par e-mail et reviennent le récupérer en restaurant.
+              Okado installe une animation QR code simple dans votre restaurant : le client scanne,
+              réalise une action marketing, joue, reçoit son coupon par e-mail et revient le présenter
+              à votre équipe.
             </p>
             <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
               <PrimaryButton href={`${APP_URL}/inscription`}>Créer mon animation restaurant</PrimaryButton>
@@ -506,11 +552,25 @@ export default function RestaurantsPage() {
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
-            <div className="mt-8 grid max-w-2xl gap-3 sm:grid-cols-3">
+            <div className="mx-auto mt-8 grid max-w-3xl gap-3 sm:grid-cols-3">
               {["30 jours d'essai", "Affiche QR incluse", "Retrait sécurisé"].map((item) => (
                 <div key={item} className="flex items-center gap-2 text-sm font-semibold text-[#31190b]">
-                <Check className="h-4 w-4 text-[#16a34a]" />
+                  <Check className="h-4 w-4 text-[#16a34a]" />
                   {item}
+                </div>
+              ))}
+            </div>
+            <div className="mx-auto mt-10 grid max-w-4xl gap-3 rounded-[28px] border border-[#f0dfcf] bg-white/82 p-4 text-left shadow-[0_22px_60px_rgba(49,25,11,0.08)] backdrop-blur sm:grid-cols-3">
+              {[
+                ["Avis Google", "Demandez au bon moment, avec un lien direct."],
+                ["Contacts clients", "Collectez prénom et e-mail sans friction."],
+                ["Retours mesurés", "Suivez les coupons récupérés en restaurant."],
+              ].map(([title, text]) => (
+                <div key={title} className="rounded-[18px] bg-[#fffaf4] p-4">
+                  <p className="text-sm font-black uppercase tracking-[0.14em] text-[#6c00f6]">
+                    {title}
+                  </p>
+                  <p className="mt-2 text-sm leading-6 text-[#475569]">{text}</p>
                 </div>
               ))}
             </div>
@@ -520,6 +580,37 @@ export default function RestaurantsPage() {
 
       <section id="demo" className="mx-auto max-w-[1200px] px-5 pb-18 md:pb-24">
         <LandingDemo />
+      </section>
+
+      <section className="mx-auto max-w-[1200px] px-5 pb-18 md:pb-24">
+        <div className="grid gap-5 rounded-[32px] border border-[#f0dfcf] bg-white p-6 shadow-[0_24px_80px_rgba(49,25,11,0.08)] md:grid-cols-[0.85fr_1.15fr] md:p-8">
+          <div>
+            <span className="rounded-[4px] bg-[#6c00f6]/10 px-2 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-[#6c00f6]">
+              Simulation pilote
+            </span>
+            <h2 className="mt-5 text-3xl font-black leading-[1.08] tracking-[-0.055em] md:text-[44px]">
+              Une animation test doit prouver qu&apos;elle crée des retours.
+            </h2>
+            <p className="mt-4 leading-8 text-[#475569]">
+              Sur un premier mois, l&apos;objectif n&apos;est pas de deviner : c&apos;est de mesurer combien
+              de clients scannent, jouent, laissent leurs coordonnées et reviennent avec leur coupon.
+            </p>
+            <div className="mt-6">
+              <PrimaryButton href={`${APP_URL}/inscription`}>Lancer un test 30 jours</PrimaryButton>
+            </div>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {pilotSimulation.map((item) => (
+              <div key={item.label} className="rounded-[22px] bg-[#fffaf4] p-5">
+                <p className="text-5xl font-black tracking-[-0.07em] text-[#6c00f6]">{item.value}</p>
+                <p className="mt-2 text-base font-black tracking-[-0.03em] text-[#0f172b]">
+                  {item.label}
+                </p>
+                <p className="mt-2 text-sm leading-6 text-[#64748b]">{item.detail}</p>
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
 
       <section className="mx-auto max-w-[1200px] px-5 py-18 md:py-24">
@@ -569,6 +660,11 @@ export default function RestaurantsPage() {
                 </p>
               </a>
             ))}
+          </div>
+          <div className="mt-10 flex justify-center">
+            <PrimaryButton href={`${APP_URL}/inscription`}>
+              Tester l&apos;animation dans mon restaurant
+            </PrimaryButton>
           </div>
         </div>
       </section>
@@ -700,6 +796,15 @@ export default function RestaurantsPage() {
             </article>
           ))}
         </div>
+        <div className="mt-10 rounded-[28px] border border-[#f0dfcf] bg-[#fffaf4] p-6 text-center shadow-[0_22px_60px_rgba(49,25,11,0.08)]">
+          <p className="mx-auto max-w-2xl text-lg font-black leading-7 tracking-[-0.04em] text-[#31190b]">
+            Créez la campagne, choisissez le modèle d&apos;affiche, imprimez et placez le QR code en salle.
+            Pas de brief créa, pas d&apos;outil externe, pas d&apos;attente.
+          </p>
+          <div className="mt-5">
+            <PrimaryButton href={`${APP_URL}/inscription`}>Créer mon affiche QR</PrimaryButton>
+          </div>
+        </div>
       </section>
 
       <section className="bg-[#f8fafc] px-5 py-18 md:py-24">
@@ -755,22 +860,26 @@ export default function RestaurantsPage() {
               Calculez le ROI avec des données terrain, pas avec des impressions.
             </h2>
             <p className="mt-5 leading-8 text-[#475569]">
-              Okado suit les scans, participations, leads, lots gagnés et retraits. Vous pouvez relier
-              l&apos;effort marketing à des retours concrets : contacts collectés, avis déclenchés et clients revenus.
+              Okado suit les scans, participations, contacts clients, lots gagnés et retraits. Vous pouvez
+              relier l&apos;effort marketing à des retours concrets : avis déclenchés, coupons envoyés et
+              clients revenus.
             </p>
             <p className="mt-4 rounded-[18px] border border-[#e5e7eb] bg-white p-4 text-sm font-semibold leading-6 text-[#334155]">
-              Plutôt que d&apos;annoncer un taux de retour universel, Okado vous aide à mesurer votre
-              propre avant/après : nombre de coupons envoyés, coupons présentés en restaurant et lots
-              réellement récupérés.
+              Sans jeu, le retour client dépend souvent du hasard ou de l&apos;habitude. Avec une mécanique
+              datée, un coupon e-mail et un QR code de retrait, vous créez une raison claire de revenir
+              et vous mesurez ce qui se passe réellement.
             </p>
           </div>
           <div className="rounded-[28px] border border-[#e5e7eb] bg-white p-6 shadow-[0_22px_70px_rgba(15,23,43,0.08)]">
+            <p className="text-sm font-black uppercase tracking-[0.16em] text-[#6c00f6]">
+              Exemple de mois pilote
+            </p>
             <div className="grid gap-4 sm:grid-cols-2">
               {[
                 ["300", "scans mensuels"],
                 ["35%", "participation"],
-                ["105", "leads collectés"],
-                ["15", "coupons récupérés"],
+                ["105", "contacts clients"],
+                ["15", "coupons présentés"],
               ].map(([value, label]) => (
                 <div key={label} className="rounded-[18px] bg-[#fffaf4] p-5">
                   <p className="text-4xl font-black tracking-[-0.06em] text-[#6c00f6]">{value}</p>
@@ -786,6 +895,11 @@ export default function RestaurantsPage() {
                 15 clients qui reviennent avec un panier moyen de 22 € représentent 330 € de chiffre
                 d&apos;affaires additionnel potentiel, hors valeur des avis et des contacts collectés.
               </p>
+            </div>
+            <div className="mt-5 grid gap-3 rounded-[18px] border border-[#e5e7eb] bg-[#f8fafc] p-4 text-sm font-semibold text-[#334155] sm:grid-cols-3">
+              <span>1 affiche posée</span>
+              <span>1 lot maîtrisé</span>
+              <span>1 tableau de suivi</span>
             </div>
           </div>
         </div>
@@ -907,6 +1021,39 @@ export default function RestaurantsPage() {
         </div>
       </section>
 
+      <section className="mx-auto max-w-[1200px] px-5 py-18 md:py-24">
+        <SectionTitle
+          eyebrow="Objections fréquentes"
+          title="Ce qui bloque souvent les restaurateurs avant de lancer."
+          text="Une bonne animation ne doit pas compliquer le service. Elle doit être simple pour le client, claire pour l'équipe et rentable pour le restaurant."
+        />
+        <div className="mt-12 grid gap-5 md:grid-cols-2">
+          {conversionObjections.map((item) => (
+            <article
+              key={item.question}
+              className="rounded-[24px] border border-[#f0dfcf] bg-white p-6 shadow-[0_22px_60px_rgba(49,25,11,0.08)]"
+            >
+              <div className="flex items-start gap-4">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[10px] bg-[#6c00f6]/10">
+                  <Check className="h-5 w-5 text-[#6c00f6]" />
+                </span>
+                <div>
+                  <h3 className="text-xl font-black tracking-[-0.04em] text-[#0f172b]">
+                    {item.question}
+                  </h3>
+                  <p className="mt-3 leading-7 text-[#64748b]">{item.answer}</p>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+        <div className="mt-10 flex justify-center">
+          <PrimaryButton href={`${APP_URL}/inscription`}>
+            Créer une animation sans engagement
+          </PrimaryButton>
+        </div>
+      </section>
+
       <section id="faq" className="mx-auto max-w-[980px] px-5 py-18 md:py-24">
         <SectionTitle
           eyebrow="FAQ restaurants"
@@ -938,7 +1085,7 @@ export default function RestaurantsPage() {
               </h2>
               <p className="mt-5 max-w-2xl leading-8 text-white/72">
                 Créez une campagne, imprimez votre affiche, placez-la en salle et suivez vos scans,
-                leads, avis et retraits depuis votre espace Okado.
+                contacts clients, avis et retraits depuis votre espace Okado.
               </p>
             </div>
             <div className="flex flex-col gap-3">

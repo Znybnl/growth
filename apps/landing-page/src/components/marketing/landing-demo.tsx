@@ -123,10 +123,6 @@ export function LandingDemo() {
   };
 
   const complete = () => {
-    if (!firstName.trim() || !email.trim()) {
-      return;
-    }
-
     setStep("done");
   };
 
@@ -148,13 +144,13 @@ export function LandingDemo() {
 
               {hasModal ? (
                 <div
-                  className="absolute inset-0 z-20 bg-[#0f172b]/48 backdrop-blur-[2px]"
+                  className="absolute inset-0 z-30 bg-[#0f172b]/55 backdrop-blur-[2px]"
                   aria-hidden="true"
                 />
               ) : null}
 
               {step === "action" && (
-                <div className="absolute left-5 right-5 top-[126px] z-30 rounded-[18px] border border-[#e5e7eb] bg-white/95 p-4 text-center shadow-[0_20px_45px_rgba(15,23,43,0.18)] backdrop-blur">
+                <div className="absolute left-5 right-5 top-[126px] z-40 rounded-[18px] border border-[#e5e7eb] bg-white/95 p-4 text-center shadow-[0_20px_45px_rgba(15,23,43,0.18)] backdrop-blur">
                   <Star className="mx-auto h-8 w-8 text-[#d6a51f]" />
                   <p className="mt-3 text-base font-black tracking-[-0.03em] text-[#0f172b]">
                     Laissez un avis Google
@@ -173,7 +169,7 @@ export function LandingDemo() {
               )}
 
               {step === "form" && (
-                <div className="absolute left-5 right-5 top-[108px] z-30 rounded-[18px] border border-[#e5e7eb] bg-white/95 p-4 text-center shadow-[0_20px_45px_rgba(15,23,43,0.18)] backdrop-blur">
+                <div className="absolute left-5 right-5 top-[108px] z-40 rounded-[18px] border border-[#e5e7eb] bg-white/95 p-4 text-center shadow-[0_20px_45px_rgba(15,23,43,0.18)] backdrop-blur">
                   <Gift className="mx-auto h-8 w-8 text-[#6c00f6]" />
                   <p className="mt-3 text-base font-black tracking-[-0.03em] text-[#0f172b]">
                     Bravo, vous avez gagné 1 dessert.
@@ -208,7 +204,7 @@ export function LandingDemo() {
               )}
 
               {step === "done" && (
-                <div className="absolute left-5 right-5 top-[132px] z-30 rounded-[18px] border border-[#e5e7eb] bg-white/95 p-4 text-center shadow-[0_20px_45px_rgba(15,23,43,0.18)] backdrop-blur">
+                <div className="absolute left-5 right-5 top-[132px] z-40 rounded-[18px] border border-[#e5e7eb] bg-white/95 p-4 text-center shadow-[0_20px_45px_rgba(15,23,43,0.18)] backdrop-blur">
                   <Mail className="mx-auto h-8 w-8 text-[#6c00f6]" />
                   <p className="mt-3 text-base font-black tracking-[-0.03em] text-[#0f172b]">
                     Coupon envoyé par e-mail.
@@ -336,7 +332,7 @@ export function LandingDemo() {
                     cursor={{ stroke: "#145aff", strokeWidth: 1, strokeDasharray: "4 6" }}
                     content={
                       <ChartTooltipContent
-                        className="min-w-[170px] rounded-[8px] border-[#0f172b] bg-[#0f172b] px-3 py-2 text-sm text-white shadow-[0_18px_36px_rgba(15,23,40,0.24)] [&_.text-muted-foreground]:text-white/70"
+                        className="min-w-[170px] rounded-[8px] border-[#0f172b] bg-[#0f172b] px-3 py-2 text-sm text-white shadow-[0_18px_36px_rgba(15,23,40,0.24)] [&_*]:!text-white [&_.text-muted-foreground]:!text-white/70"
                         indicator="dot"
                       />
                     }
