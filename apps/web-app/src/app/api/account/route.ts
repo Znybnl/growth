@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { getAuthenticatedSession } from "@/lib/auth";
+import { syncMerchantContactToBrevo } from "@/lib/brevo";
 import { parseMerchantAccountSettingsInput } from "@/lib/merchant-input";
 import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
 import { updateMerchantAccount } from "@/lib/store";
@@ -16,6 +17,11 @@ export async function POST(request: Request) {
 
     const body = parseMerchantAccountSettingsInput(await request.json());
     const account = await updateMerchantAccount(session.user.id, body);
+    await syncMerchantContactToBrevo({
+      merchant: account.merchant,
+      user: account.user,
+      source: "account",
+    });
 
     return NextResponse.json(account);
   } catch (error) {

@@ -245,6 +245,7 @@ export function AccountSettingsForm({
               onChange={(nextUrl) => updateField("googleReviewUrl", nextUrl)}
               defaultQuery={form.companyName}
               city={form.city}
+              allowManualInput={false}
             />
           </div>
           <label className="text-sm">

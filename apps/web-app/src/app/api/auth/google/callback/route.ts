@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { createAffiliateReferralForMerchant } from "@/lib/affiliate-repository";
+import { syncMerchantContactToBrevo } from "@/lib/brevo";
 import { authenticateOrProvisionMerchantWithGoogle } from "@/lib/merchant-account-repository";
 import { createRouteSupabaseClient } from "@/lib/supabase-server-auth";
 
@@ -77,6 +78,11 @@ export async function GET(request: Request) {
         source: "google_signup",
       });
     }
+    await syncMerchantContactToBrevo({
+      merchant: session.merchant,
+      user: session.user,
+      source: "google",
+    });
 
     const redirectPath = session.merchant.onboardingCompleted ? next : "/onboarding";
     const response = NextResponse.redirect(new URL(redirectPath, origin));

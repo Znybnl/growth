@@ -1,5 +1,7 @@
 "use client";
 
+import { Star } from "lucide-react";
+
 import { APP_NAME, APP_TAGLINE } from "@/lib/branding";
 
 type AuthShellProps = {
@@ -28,7 +30,7 @@ export function AuthShell({
           <div className="flex w-full max-w-[760px] flex-col justify-center">
             <div className="mb-8 flex items-center gap-3">
               <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#1f5fd6] text-sm font-semibold uppercase tracking-[0.2em] text-white shadow-[0_10px_24px_rgba(31,95,214,0.22)]">
-                OK
+                <Star className="h-5 w-5 fill-white text-white" aria-hidden="true" />
               </div>
               <div>
                 <p className="text-xl font-semibold tracking-tight text-[#1f5fd6]">{APP_NAME}</p>

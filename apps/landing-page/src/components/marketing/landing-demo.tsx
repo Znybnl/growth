@@ -98,6 +98,7 @@ export function LandingDemo() {
   const [rotation, setRotation] = useState(16);
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
+  const hasModal = step === "action" || step === "form" || step === "done";
 
   const kpis = useMemo(
     () => [
@@ -139,11 +140,18 @@ export function LandingDemo() {
           <div className="mx-auto max-w-[300px] overflow-hidden rounded-[32px] border-[10px] border-[#0f172b] bg-white shadow-[0_20px_50px_rgba(15,23,43,0.18)]">
             <div className="relative min-h-[560px] overflow-hidden bg-[radial-gradient(circle_at_top,#fff7ed_0%,#ffffff_42%,#eef2ff_100%)] px-5 py-7 text-center">
               <p className="text-[24px] font-black tracking-[-0.05em] text-[#0f172b]">
-                La petite cuillère
+                Le bistro
               </p>
-              <p className="mt-4 text-[31px] font-black leading-[1.03] tracking-[-0.05em] text-[#0f172b]">
+              <p className="mt-8 text-[31px] font-black leading-[1.03] tracking-[-0.05em] text-[#0f172b]">
                 Jouez et gagnez.
               </p>
+
+              {hasModal ? (
+                <div
+                  className="absolute inset-0 z-20 bg-[#0f172b]/48 backdrop-blur-[2px]"
+                  aria-hidden="true"
+                />
+              ) : null}
 
               {step === "action" && (
                 <div className="absolute left-5 right-5 top-[126px] z-30 rounded-[18px] border border-[#e5e7eb] bg-white/95 p-4 text-center shadow-[0_20px_45px_rgba(15,23,43,0.18)] backdrop-blur">

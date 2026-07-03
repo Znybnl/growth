@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Star } from "lucide-react";
 import posthog from "posthog-js";
 import { useEffect, useMemo, useState } from "react";
 
@@ -88,7 +89,7 @@ export function MerchantShell({ children, merchant, user, isSaasAdmin }: Merchan
           <div className="px-2 py-2">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-[8px] bg-primary-action-accent text-xs font-semibold uppercase tracking-[0.18em] text-white">
-                OK
+                <Star className="h-5 w-5 fill-white text-white" aria-hidden="true" />
               </div>
               <h1 className="truncate text-[22px] font-semibold leading-none tracking-[-0.05em] text-midnight-ink">
                 {APP_NAME_CAPITALIZED}

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { createAffiliateReferralForMerchant } from "@/lib/affiliate-repository";
+import { syncMerchantContactToBrevo } from "@/lib/brevo";
 import { captureProductEvent, merchantDistinctId } from "@/lib/product-analytics";
 import { createMerchantAccount } from "@/lib/store";
 import { createRouteSupabaseClient } from "@/lib/supabase-server-auth";
@@ -52,6 +53,11 @@ export async function POST(request: Request) {
         authProvider: "email",
       },
     );
+    await syncMerchantContactToBrevo({
+      merchant: session.merchant,
+      user: session.user,
+      source: "signup",
+    });
 
     const response = NextResponse.json(
       {

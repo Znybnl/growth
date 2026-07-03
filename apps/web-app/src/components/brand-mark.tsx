@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { Star } from "lucide-react";
 
 type BrandMarkProps = {
   logoText: string;
@@ -26,6 +27,7 @@ export function BrandMark({
   textColor = "#ffffff",
 }: BrandMarkProps) {
   const sizing = className.includes("w-full") ? "w-full" : sizeMap[size];
+  const isOkadoFallback = logoText.trim().toUpperCase() === "OK";
 
   if (logoUrl) {
     if (variant === "transparent") {
@@ -73,9 +75,15 @@ export function BrandMark({
 
   return (
     <div
-      className={`flex ${sizing} items-center justify-center bg-white text-sm font-semibold text-[#10131a] shadow-[0_10px_24px_rgba(0,0,0,0.08)] ${className}`}
+      className={`flex ${sizing} items-center justify-center text-sm font-semibold shadow-[0_10px_24px_rgba(0,0,0,0.08)] ${
+        isOkadoFallback ? "bg-primary-action-accent text-white" : "bg-white text-[#10131a]"
+      } ${className}`}
     >
-      {logoText}
+      {isOkadoFallback ? (
+        <Star className="h-5 w-5 fill-white text-white" aria-hidden="true" />
+      ) : (
+        logoText
+      )}
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import { BrevoSyncButton } from "@/components/merchant/brevo-sync-button";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import { isSaasAdminEmail } from "@/lib/admin";
 import { formatDateTime, leadStatusLabel, rewardEmailStatusLabel } from "@/lib/format";
@@ -230,6 +231,8 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
           ))}
         </div>
       </section>
+
+      <BrevoSyncButton />
 
       <section className="okado-card p-5">
         <form className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_220px_220px_auto]" action="/support">

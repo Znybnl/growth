@@ -15,6 +15,7 @@ type GoogleReviewPlacePickerProps = {
   defaultQuery?: string;
   city?: string;
   compact?: boolean;
+  allowManualInput?: boolean;
 };
 
 function isGoogleGeneratedReviewUrl(value: string) {
@@ -27,12 +28,15 @@ export function GoogleReviewPlacePicker({
   defaultQuery = "",
   city = "",
   compact = false,
+  allowManualInput = true,
 }: GoogleReviewPlacePickerProps) {
   const [query, setQuery] = useState(defaultQuery);
   const [places, setPlaces] = useState<GoogleReviewPlace[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
-  const [manualMode, setManualMode] = useState(Boolean(value) && !isGoogleGeneratedReviewUrl(value));
+  const [manualMode, setManualMode] = useState(
+    allowManualInput && Boolean(value) && !isGoogleGeneratedReviewUrl(value),
+  );
 
   const selectedPlaceId = useMemo(() => {
     try {
@@ -74,8 +78,14 @@ export function GoogleReviewPlacePicker({
         setPlaces(payload.places ?? []);
 
         if (payload.configured === false) {
-          setManualMode(true);
-          setMessage("Recherche Google non configurée. Collez votre lien d'avis manuellement.");
+          if (allowManualInput) {
+            setManualMode(true);
+          }
+          setMessage(
+            allowManualInput
+              ? "Recherche Google non configurée. Collez votre lien d'avis manuellement."
+              : "Recherche Google non configurée. Renseignez un lien personnalisé dans le champ dédié.",
+          );
         } else if (!(payload.places ?? []).length) {
           setMessage("Aucun établissement trouvé. Essayez avec le nom exact ou ajoutez la ville.");
         }
@@ -94,7 +104,7 @@ export function GoogleReviewPlacePicker({
       controller.abort();
       window.clearTimeout(timeoutId);
     };
-  }, [city, manualMode, query]);
+  }, [allowManualInput, city, manualMode, query]);
 
   return (
     <div className={compact ? "space-y-3" : "space-y-4"}>
@@ -162,22 +172,24 @@ export function GoogleReviewPlacePicker({
         </div>
       ) : null}
 
-      <details
-        className="rounded-[20px] border border-[#e1e7f0] bg-white px-4 py-3"
-        open={manualMode}
-        onToggle={(event) => setManualMode(event.currentTarget.open)}
-      >
-        <summary className="cursor-pointer text-sm font-semibold text-[#182033]">
-          Coller manuellement un lien d&apos;avis Google
-        </summary>
-        <input
-          type="url"
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-          placeholder="https://search.google.com/local/writereview?placeid=..."
-          className="mt-3 w-full rounded-[18px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 text-sm outline-none transition focus:border-[#2f6df6] focus:ring-4 focus:ring-[#2f6df6]/10"
-        />
-      </details>
+      {allowManualInput ? (
+        <details
+          className="rounded-[20px] border border-[#e1e7f0] bg-white px-4 py-3"
+          open={manualMode}
+          onToggle={(event) => setManualMode(event.currentTarget.open)}
+        >
+          <summary className="cursor-pointer text-sm font-semibold text-[#182033]">
+            Coller manuellement un lien d&apos;avis Google
+          </summary>
+          <input
+            type="url"
+            value={value}
+            onChange={(event) => onChange(event.target.value)}
+            placeholder="https://search.google.com/local/writereview?placeid=..."
+            className="mt-3 w-full rounded-[18px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 text-sm outline-none transition focus:border-[#2f6df6] focus:ring-4 focus:ring-[#2f6df6]/10"
+          />
+        </details>
+      ) : null}
     </div>
   );
 }

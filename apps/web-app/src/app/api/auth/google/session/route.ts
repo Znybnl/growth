@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { createAffiliateReferralForMerchant } from "@/lib/affiliate-repository";
+import { syncMerchantContactToBrevo } from "@/lib/brevo";
 import { authenticateOrProvisionMerchantWithGoogle } from "@/lib/merchant-account-repository";
 
 type GoogleSessionBody = {
@@ -34,6 +35,11 @@ export async function POST(request: Request) {
         source: "google_signup",
       });
     }
+    await syncMerchantContactToBrevo({
+      merchant: session.merchant,
+      user: session.user,
+      source: "google",
+    });
 
     return NextResponse.json({
       merchant: session.merchant,
