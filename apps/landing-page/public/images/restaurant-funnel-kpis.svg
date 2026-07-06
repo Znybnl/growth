@@ -1,0 +1,158 @@
+<svg width="1800" height="920" viewBox="0 0 1800 920" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="cardShadow" x="-20%" y="-20%" width="140%" height="150%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="22" stdDeviation="22" flood-color="#0F2F6B" flood-opacity="0.14"/>
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#0F172A" flood-opacity="0.08"/>
+    </filter>
+    <filter id="softShadow" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#1D4ED8" flood-opacity="0.18"/>
+    </filter>
+    <linearGradient id="background" x1="0" y1="0" x2="1800" y2="920" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF8ED"/>
+      <stop offset="0.52" stop-color="#FFFDF8"/>
+      <stop offset="1" stop-color="#FFF1D2"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#1E7BFF"/>
+      <stop offset="1" stop-color="#0047D8"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#FFD86A"/>
+      <stop offset="1" stop-color="#E5A500"/>
+    </linearGradient>
+    <radialGradient id="shine" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1216 610) rotate(145) scale(780 310)">
+      <stop stop-color="#FFE7A6" stop-opacity="0.45"/>
+      <stop offset="1" stop-color="#FFE7A6" stop-opacity="0"/>
+    </radialGradient>
+    <style>
+      .label { font-family: Arial, Helvetica, sans-serif; font-weight: 800; fill: #071D49; letter-spacing: -1px; }
+      .value { font-family: Arial, Helvetica, sans-serif; font-weight: 900; fill: url(#blue); letter-spacing: -7px; }
+      .small-line { stroke: #E9D7B3; stroke-width: 4; stroke-linecap: round; }
+      .arrow { fill: url(#blue); filter: url(#softShadow); }
+      .step-title { font-family: Arial, Helvetica, sans-serif; font-weight: 900; fill: #071D49; }
+    </style>
+  </defs>
+
+  <rect width="1800" height="920" fill="url(#background)"/>
+  <ellipse cx="1090" cy="718" rx="786" ry="280" fill="url(#shine)"/>
+  <path d="M0 744C190 788 304 872 496 899C760 937 1004 848 1248 825C1460 805 1617 842 1800 759V920H0V744Z" fill="#FFF6E3" opacity="0.72"/>
+
+  <!-- Restaurant line art -->
+  <g opacity="0.33">
+    <path d="M31 0V99M98 0V98" class="small-line"/>
+    <path d="M18 99C18 70 48 47 80 47C112 47 142 70 142 99" class="small-line"/>
+    <path d="M78 98C78 60 118 29 161 29C203 29 243 60 243 98" class="small-line"/>
+    <path d="M1660 47C1680 20 1723 20 1743 50C1779 48 1800 74 1797 105C1794 138 1761 154 1722 141C1694 164 1650 154 1641 119C1612 101 1625 66 1660 47Z" stroke="#E9D7B3" stroke-width="4"/>
+    <path d="M1660 119L1651 184M1701 118L1694 181M1741 116L1726 179" class="small-line"/>
+    <path d="M1566 55C1596 93 1557 113 1589 155M1618 91C1639 116 1607 136 1631 164M1547 176C1588 178 1613 202 1626 237" class="small-line"/>
+    <path d="M1694 203C1737 202 1768 227 1789 260M1713 236C1754 238 1785 262 1800 295" class="small-line"/>
+  </g>
+
+  <!-- decorative dots -->
+  <g fill="#E7B647" opacity="0.75">
+    <circle cx="31" cy="842" r="3"/><circle cx="51" cy="842" r="3"/><circle cx="71" cy="842" r="3"/>
+    <circle cx="31" cy="862" r="3"/><circle cx="51" cy="862" r="3"/><circle cx="71" cy="862" r="3"/>
+    <circle cx="31" cy="882" r="3"/><circle cx="51" cy="882" r="3"/><circle cx="71" cy="882" r="3"/>
+    <circle cx="1730" cy="704" r="3"/><circle cx="1750" cy="704" r="3"/><circle cx="1770" cy="704" r="3"/>
+    <circle cx="1730" cy="724" r="3"/><circle cx="1750" cy="724" r="3"/><circle cx="1770" cy="724" r="3"/>
+    <circle cx="1730" cy="744" r="3"/><circle cx="1750" cy="744" r="3"/><circle cx="1770" cy="744" r="3"/>
+  </g>
+
+  <!-- arrows -->
+  <path class="arrow" d="M446 448H500V418L577 482L500 546V516H446V448Z"/>
+  <path class="arrow" d="M890 448H944V418L1021 482L944 546V516H890V448Z"/>
+  <path class="arrow" d="M1334 448H1388V418L1465 482L1388 546V516H1334V448Z"/>
+
+  <!-- Cards -->
+  <g filter="url(#cardShadow)">
+    <rect x="90" y="190" width="360" height="570" rx="38" fill="white"/>
+    <rect x="90" y="735" width="360" height="25" rx="12.5" fill="url(#blue)"/>
+  </g>
+  <g filter="url(#cardShadow)">
+    <rect x="522" y="190" width="360" height="570" rx="38" fill="white"/>
+    <rect x="522" y="735" width="360" height="25" rx="12.5" fill="url(#gold)"/>
+  </g>
+  <g filter="url(#cardShadow)">
+    <rect x="954" y="190" width="360" height="570" rx="38" fill="white"/>
+    <rect x="954" y="735" width="360" height="25" rx="12.5" fill="url(#blue)"/>
+  </g>
+  <g filter="url(#cardShadow)">
+    <rect x="1386" y="190" width="360" height="570" rx="38" fill="white"/>
+    <rect x="1386" y="735" width="360" height="25" rx="12.5" fill="url(#gold)"/>
+  </g>
+
+  <!-- QR icon -->
+  <g transform="translate(178 249)" filter="url(#softShadow)">
+    <rect x="0" y="0" width="190" height="190" rx="26" fill="white"/>
+    <path d="M18 55V22C18 9.85 27.85 0 40 0H73" stroke="#1264F4" stroke-width="9" stroke-linecap="round"/>
+    <path d="M172 55V22C172 9.85 162.15 0 150 0H117" stroke="#1264F4" stroke-width="9" stroke-linecap="round"/>
+    <path d="M18 135V168C18 180.15 27.85 190 40 190H73" stroke="#1264F4" stroke-width="9" stroke-linecap="round"/>
+    <path d="M172 135V168C172 180.15 162.15 190 150 190H117" stroke="#1264F4" stroke-width="9" stroke-linecap="round"/>
+    <g fill="#0F1B2F">
+      <rect x="42" y="40" width="35" height="35"/><rect x="51" y="49" width="17" height="17" fill="white"/>
+      <rect x="112" y="40" width="35" height="35"/><rect x="121" y="49" width="17" height="17" fill="white"/>
+      <rect x="42" y="111" width="35" height="35"/><rect x="51" y="120" width="17" height="17" fill="white"/>
+      <rect x="88" y="42" width="9" height="9"/><rect x="99" y="42" width="18" height="9"/>
+      <rect x="88" y="60" width="20" height="9"/><rect x="132" y="83" width="14" height="14"/>
+      <rect x="88" y="87" width="9" height="30"/><rect x="101" y="101" width="18" height="9"/>
+      <rect x="126" y="111" width="21" height="9"/><rect x="88" y="132" width="13" height="13"/>
+      <rect x="111" y="132" width="9" height="14"/><rect x="133" y="133" width="14" height="14"/>
+      <rect x="102" y="76" width="13" height="13"/><rect x="66" y="88" width="14" height="14"/>
+    </g>
+  </g>
+
+  <!-- Wheel icon -->
+  <g transform="translate(608 220)" filter="url(#softShadow)">
+    <rect x="80" y="206" width="96" height="34" rx="10" fill="#071D49"/>
+    <circle cx="128" cy="110" r="96" fill="url(#gold)" stroke="#BD8600" stroke-width="4"/>
+    <circle cx="128" cy="110" r="72" fill="white"/>
+    <path d="M128 38A72 72 0 0 1 190 74L128 110Z" fill="#1264F4"/>
+    <path d="M190 74A72 72 0 0 1 190 146L128 110Z" fill="#FFFFFF"/>
+    <path d="M190 146A72 72 0 0 1 128 182L128 110Z" fill="#D9A003"/>
+    <path d="M128 182A72 72 0 0 1 66 146L128 110Z" fill="#1264F4"/>
+    <path d="M66 146A72 72 0 0 1 66 74L128 110Z" fill="#FFFFFF"/>
+    <path d="M66 74A72 72 0 0 1 128 38L128 110Z" fill="#1264F4"/>
+    <circle cx="128" cy="110" r="23" fill="url(#gold)" stroke="white" stroke-width="7"/>
+    <g fill="white">
+      <circle cx="128" cy="22" r="5"/><circle cx="172" cy="34" r="5"/><circle cx="205" cy="67" r="5"/>
+      <circle cx="216" cy="110" r="5"/><circle cx="205" cy="153" r="5"/><circle cx="172" cy="186" r="5"/>
+      <circle cx="128" cy="198" r="5"/><circle cx="84" cy="186" r="5"/><circle cx="51" cy="153" r="5"/>
+      <circle cx="40" cy="110" r="5"/><circle cx="51" cy="67" r="5"/><circle cx="84" cy="34" r="5"/>
+    </g>
+    <path d="M129 -3C145 -3 158 10 158 26C158 42 129 83 129 83C129 83 100 42 100 26C100 10 113 -3 129 -3Z" fill="#1264F4" stroke="#0047D8" stroke-width="4"/>
+    <circle cx="129" cy="25" r="8" fill="#A8CBFF"/>
+  </g>
+
+  <!-- Contact icon -->
+  <g transform="translate(1034 266)" filter="url(#softShadow)">
+    <path d="M91 0L184 79V211H0V79L91 0Z" fill="#F1F1F1" stroke="#D9DDE5" stroke-width="4"/>
+    <rect x="22" y="34" width="140" height="116" rx="8" fill="url(#blue)"/>
+    <circle cx="92" cy="78" r="24" fill="white"/>
+    <path d="M43 139C51 112 133 112 141 139V150H43V139Z" fill="white"/>
+    <path d="M0 79L92 148L184 79V211H0V79Z" fill="white" stroke="#D9DDE5" stroke-width="4"/>
+  </g>
+
+  <!-- Return/reward icon -->
+  <g transform="translate(1460 266)" filter="url(#softShadow)">
+    <path d="M26 94C35 54 70 24 113 24C156 24 191 54 200 94H26Z" fill="#071D49"/>
+    <ellipse cx="113" cy="105" rx="98" ry="18" fill="#071D49"/>
+    <path d="M69 47C88 32 115 27 143 35" stroke="white" stroke-width="9" stroke-linecap="round" opacity="0.9"/>
+    <path d="M92 0C80 23 80 41 91 56M130 0C118 23 118 41 129 56M169 0C157 23 157 41 168 56" stroke="#071D49" stroke-width="6" stroke-linecap="round"/>
+    <rect x="112" y="90" width="144" height="92" rx="10" fill="url(#gold)" stroke="#D99400" stroke-width="4"/>
+    <path d="M123 104H245V169H123V104Z" stroke="white" stroke-width="4" stroke-dasharray="12 12"/>
+    <path d="M184 116L198 148H231L204 168L215 201L184 181L153 201L164 168L137 148H170L184 116Z" fill="white"/>
+  </g>
+
+  <!-- Values -->
+  <text class="value" x="270" y="612" text-anchor="middle" font-size="152">200</text>
+  <text class="label" x="270" y="681" text-anchor="middle" font-size="48">scans</text>
+
+  <text class="value" x="702" y="612" text-anchor="middle" font-size="152">160</text>
+  <text class="label" x="702" y="681" text-anchor="middle" font-size="48">participations</text>
+
+  <text class="value" x="1134" y="612" text-anchor="middle" font-size="152">70</text>
+  <text class="label" x="1134" y="681" text-anchor="middle" font-size="48">contacts</text>
+
+  <text class="value" x="1566" y="612" text-anchor="middle" font-size="152">24</text>
+  <text class="label" x="1566" y="681" text-anchor="middle" font-size="48">retours</text>
+</svg>

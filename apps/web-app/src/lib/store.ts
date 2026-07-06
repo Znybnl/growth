@@ -909,13 +909,9 @@ function buildLeadFromSession(
   const availableAt = new Date(
     now.getTime() + campaign.rewardRules.availableAfterHours * 60 * 60 * 1000,
   );
-  const expiresAt =
-    campaign.rewardRules.availabilityDurationDays > 0
-      ? new Date(
-          availableAt.getTime() +
-            campaign.rewardRules.availabilityDurationDays * 24 * 60 * 60 * 1000,
-        )
-      : new Date(now.getTime() + campaign.rewardRules.rewardExpiryMinutes * 60 * 1000);
+  const withdrawalDurationMs =
+    Math.max(1, campaign.rewardRules.availabilityDurationDays) * 24 * 60 * 60 * 1000;
+  const expiresAt = new Date(availableAt.getTime() + withdrawalDurationMs);
 
   lead.prizeId = session.prizeId;
   lead.status = "claimed";

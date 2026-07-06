@@ -60,9 +60,17 @@ export async function POST(request: Request) {
     return NextResponse.json({ campaign }, { status: 201 });
   } catch (error) {
     console.error("Campaign setup failed", error);
+    const status = getRequestSecurityErrorStatus(error) === 403 ? 403 : 500;
+    const message =
+      status === 403
+        ? "Votre session de sécurité n'est plus valide ou la page a été ouverte depuis une adresse non autorisée. Rechargez la page depuis votre espace Okado puis réessayez."
+        : error instanceof Error
+          ? error.message
+          : "Sauvegarde impossible.";
+
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Sauvegarde impossible." },
-      { status: getRequestSecurityErrorStatus(error) === 403 ? 403 : 500 },
+      { error: message },
+      { status },
     );
   }
 }

@@ -52,7 +52,12 @@ export function DashboardCampaignActionsMenu({
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem className={itemClass} asChild>
-          <Link href={`/campaign/${campaignId}`} prefetch={false}>
+          <Link
+            href={`/campaign/${campaignId}`}
+            prefetch={false}
+            target="_blank"
+            rel="noreferrer"
+          >
             <Eye className="h-4 w-4" />
             Prévisualiser
           </Link>

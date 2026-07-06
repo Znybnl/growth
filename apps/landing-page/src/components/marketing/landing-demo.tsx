@@ -11,18 +11,28 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
-const prizes = [
-  "Dessert",
-  "Perdu",
-  "Cafe",
-  "Perdu",
-  "Remise",
-  "Perdu",
-  "Boisson",
-  "Perdu",
-  "Surprise",
-  "Perdu",
+const wheelSegments = [
+  { label: "Dessert", fill: "#9aa7e6" },
+  { label: "Perdu", fill: "#162238" },
+  { label: "Café", fill: "#f8fafc" },
+  { label: "Perdu", fill: "#162238" },
+  { label: "Remise", fill: "#f8fafc" },
+  { label: "Perdu", fill: "#162238" },
+  { label: "Boisson", fill: "#9aa7e6" },
+  { label: "Perdu", fill: "#162238" },
+  { label: "Surprise", fill: "#f8fafc" },
+  { label: "Perdu", fill: "#162238" },
 ];
+
+const wheelGradient = `conic-gradient(from 0deg, ${wheelSegments
+  .map((segment, index) => {
+    const start = index * 36;
+    const end = start + 36;
+    return `${segment.fill} ${start}deg ${end}deg`;
+  })
+  .join(", ")})`;
+const winningSegmentCenterDegrees = 18;
+const winningRotationDegrees = 360 - winningSegmentCenterDegrees;
 
 const demoChartConfig = {
   scans: {
@@ -118,8 +128,14 @@ export function LandingDemo() {
 
   const startSpin = () => {
     setStep("spinning");
-    setRotation((value) => value + 1440 + 34);
-    window.setTimeout(() => setStep("form"), 1150);
+    setRotation((value) => {
+      const normalizedRotation = ((value % 360) + 360) % 360;
+      const rotationToWinningSegment =
+        (winningRotationDegrees - normalizedRotation + 360) % 360;
+
+      return value + 4 * 360 + rotationToWinningSegment;
+    });
+    window.setTimeout(() => setStep("form"), 2100);
   };
 
   const complete = () => {
@@ -217,20 +233,33 @@ export function LandingDemo() {
 
               <div className="relative mt-10 h-[330px]">
                 <div
-                  className="absolute left-1/2 top-0 h-[410px] w-[410px] -translate-x-1/2 rounded-full border-[10px] border-white bg-[conic-gradient(from_0deg,#9aa7e6_0_36deg,#162238_36deg_72deg,#f8fafc_72deg_108deg,#162238_108deg_144deg,#f8fafc_144deg_180deg,#9aa7e6_180deg_216deg,#162238_216deg_252deg,#f8fafc_252deg_288deg,#162238_288deg_324deg,#9aa7e6_324deg_360deg)] shadow-[inset_0_0_38px_rgba(15,23,43,0.14),0_22px_55px_rgba(15,23,43,0.16)] transition-transform duration-1000 ease-out"
-                  style={{ transform: `translateX(-50%) rotate(${rotation}deg)` }}
+                  className="absolute left-1/2 top-[66px] h-[410px] w-[410px] -translate-x-1/2 rounded-full border-[10px] border-white shadow-[inset_0_0_38px_rgba(15,23,43,0.14),0_22px_55px_rgba(15,23,43,0.16)] transition-transform duration-[1650ms]"
+                  style={{
+                    background: wheelGradient,
+                    transform: `rotate(${rotation}deg)`,
+                    transitionTimingFunction: "cubic-bezier(0.12, 0.86, 0.08, 1)",
+                  }}
                 >
-                  {prizes.map((prize, index) => (
+                  {wheelSegments.map((segment, index) => (
                     <span
-                      key={`${prize}-${index}`}
-                      className="absolute left-1/2 top-1/2 origin-center text-[12px] font-black uppercase leading-[0.95] tracking-[-0.03em]"
+                      key={`${segment.label}-${index}`}
+                      className="absolute left-1/2 top-1/2 h-0 w-0 origin-center"
                       style={{
-                        color: index % 2 === 1 ? "#ffffff" : "#0f172b",
-                        transform: `rotate(${index * 36 + 18}deg) translateY(-145px) translateX(-50%)`,
-                        writingMode: "vertical-rl",
+                        transform: `rotate(${index * 36 + winningSegmentCenterDegrees}deg)`,
                       }}
                     >
-                      {prize}
+                      <span
+                        className="absolute left-0 top-0 whitespace-nowrap text-[14px] font-black uppercase leading-none tracking-[-0.05em]"
+                        style={{
+                          color: "#ffffff",
+                          textShadow:
+                            "0 1px 0 rgba(15,23,43,0.78), 0 -1px 0 rgba(15,23,43,0.62), 1px 0 0 rgba(15,23,43,0.62), -1px 0 0 rgba(15,23,43,0.62), 0 5px 12px rgba(15,23,43,0.28)",
+                          transform: "translate(-50%, -158px)",
+                          writingMode: "vertical-rl",
+                        }}
+                      >
+                        {segment.label}
+                      </span>
                     </span>
                   ))}
                 </div>

@@ -11,6 +11,15 @@ type RateLimitBucket = {
   resetAt: number;
 };
 
+type DailyParticipationLock = {
+  campaignId: string;
+  dateKey: string;
+};
+
+const DAILY_PARTICIPATION_MESSAGE =
+  "Vous avez déjà participé aujourd'hui. Revenez demain pour tenter votre chance à nouveau.";
+const DAILY_PARTICIPATION_COOKIE_PREFIX = "okado_played";
+
 declare global {
   var __okadoPublicRateLimitStore: Map<string, RateLimitBucket> | undefined;
 }
@@ -27,6 +36,106 @@ const PUBLIC_EVENT_TYPES = new Set<EventType>([
   "review_confirmed",
   "social_clicked",
 ]);
+
+function toBase64Url(value: string) {
+  return Buffer.from(value, "utf8")
+    .toString("base64")
+    .replaceAll("+", "-")
+    .replaceAll("/", "_")
+    .replaceAll("=", "");
+}
+
+function fromBase64Url(value: string) {
+  const padded = `${value}${"=".repeat((4 - (value.length % 4)) % 4)}`;
+  return Buffer.from(padded.replaceAll("-", "+").replaceAll("_", "/"), "base64").toString("utf8");
+}
+
+function getTodayKey(now = new Date()) {
+  return now.toISOString().slice(0, 10);
+}
+
+function getTomorrowStart(now = new Date()) {
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1));
+}
+
+export function createDailyParticipationError() {
+  const error = new Error(DAILY_PARTICIPATION_MESSAGE);
+  (error as Error & { code?: string; status?: number; retryAfterSeconds?: number }).code =
+    "already_played_today";
+  (error as Error & { code?: string; status?: number; retryAfterSeconds?: number }).status = 409;
+  (error as Error & { code?: string; status?: number; retryAfterSeconds?: number })
+    .retryAfterSeconds = Math.max(1, Math.ceil((getTomorrowStart().getTime() - Date.now()) / 1000));
+  return error;
+}
+
+export function isDailyParticipationError(error: unknown) {
+  return (
+    error instanceof Error &&
+    "code" in error &&
+    (error as Error & { code?: string }).code === "already_played_today"
+  );
+}
+
+export function getDailyParticipationCookieName(campaignId: string) {
+  return `${DAILY_PARTICIPATION_COOKIE_PREFIX}_${toBase64Url(campaignId.trim()).slice(0, 80)}`;
+}
+
+export function getDailyParticipationCookieValue(campaignId: string, now = new Date()) {
+  return toBase64Url(JSON.stringify({ campaignId: campaignId.trim(), dateKey: getTodayKey(now) }));
+}
+
+export function getDailyParticipationCookieOptions(now = new Date()) {
+  return {
+    httpOnly: true,
+    sameSite: "lax" as const,
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: Math.max(60, Math.ceil((getTomorrowStart(now).getTime() - now.getTime()) / 1000)),
+  };
+}
+
+function parseDailyParticipationCookie(value?: string | null) {
+  if (!value) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(fromBase64Url(value)) as DailyParticipationLock;
+  } catch {
+    return null;
+  }
+}
+
+export function assertDailyParticipationCookie(
+  cookieValue: string | undefined,
+  campaignId: string,
+  now = new Date(),
+) {
+  const lock = parseDailyParticipationCookie(cookieValue);
+
+  if (lock?.campaignId === campaignId.trim() && lock.dateKey === getTodayKey(now)) {
+    throw createDailyParticipationError();
+  }
+}
+
+export function assertDailyParticipationDeviceLock(
+  request: Request,
+  campaignId: string,
+  now = new Date(),
+) {
+  const storageKey = `daily-play:${campaignId.trim()}:${getTodayKey(now)}:${getPublicClientFingerprint(
+    request,
+  )}`;
+
+  if (rateLimitStore.has(storageKey)) {
+    throw createDailyParticipationError();
+  }
+
+  rateLimitStore.set(storageKey, {
+    count: 1,
+    resetAt: getTomorrowStart(now).getTime(),
+  });
+}
 
 export function isAllowedPublicEventType(value: string): value is EventType {
   return PUBLIC_EVENT_TYPES.has(value as EventType);

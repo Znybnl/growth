@@ -10,6 +10,30 @@ function extractOrigin(value: string | null) {
   }
 }
 
+function isLocalhost(hostname: string) {
+  return hostname === "localhost" || hostname === "127.0.0.1" || hostname === "::1";
+}
+
+function areEquivalentDevelopmentOrigins(left: string | null, right: string) {
+  if (!left || process.env.NODE_ENV === "production") {
+    return false;
+  }
+
+  try {
+    const leftUrl = new URL(left);
+    const rightUrl = new URL(right);
+
+    return (
+      leftUrl.protocol === rightUrl.protocol &&
+      leftUrl.port === rightUrl.port &&
+      isLocalhost(leftUrl.hostname) &&
+      isLocalhost(rightUrl.hostname)
+    );
+  } catch {
+    return false;
+  }
+}
+
 export function assertTrustedMutationRequest(request: Request) {
   const requestOrigin = new URL(request.url).origin;
   const originHeader = request.headers.get("origin");
@@ -22,6 +46,13 @@ export function assertTrustedMutationRequest(request: Request) {
   }
 
   if (refererOrigin && refererOrigin === requestOrigin) {
+    return;
+  }
+
+  if (
+    areEquivalentDevelopmentOrigins(origin, requestOrigin) ||
+    areEquivalentDevelopmentOrigins(refererOrigin, requestOrigin)
+  ) {
     return;
   }
 

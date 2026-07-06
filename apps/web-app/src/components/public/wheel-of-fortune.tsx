@@ -200,7 +200,7 @@ export function WheelOfFortune({
       <div
         className={`absolute left-1/2 aspect-square -translate-x-1/2 -translate-y-1/2 ${
           framing === "public"
-            ? "top-[78%] w-[200vw] max-w-none sm:top-[74%] sm:w-[168vw] md:top-[70%] md:w-[146vw] lg:top-[72%] lg:w-[82vw] xl:top-[73%] xl:w-[64vw] 2xl:top-[74%] 2xl:w-[54vw]"
+            ? "top-[70%] w-[172vw] max-w-none sm:top-[68%] sm:w-[144vw] md:top-[66%] md:w-[122vw] lg:top-[68%] lg:w-[70vw] xl:top-[68%] xl:w-[54vw] 2xl:top-[68%] 2xl:w-[48vw]"
             : framing === "editor"
               ? "w-[186%] max-w-none"
             : "w-full"
@@ -228,8 +228,7 @@ export function WheelOfFortune({
                 <stop offset="100%" stopColor="#020617" stopOpacity="0.14" />
               </radialGradient>
             </defs>
-            <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 12} fill="rgba(255,255,255,0.9)" />
-            <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 2} fill="rgba(255,255,255,0.55)" />
+            <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 10} fill="#ffffff" />
             {segments.map((segment, index) => {
               const startAngle = index * segmentAngle + 1.2;
               const endAngle = startAngle + segmentAngle - 2.4;

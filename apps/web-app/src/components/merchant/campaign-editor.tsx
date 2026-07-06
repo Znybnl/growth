@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
+import { ChevronDown, ChevronUp, SquareArrowOutUpRight, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
   ChangeEvent,
@@ -164,6 +165,11 @@ const buttonSizeMap = {
   lg: "px-6 py-5 text-lg",
 };
 
+const wheelDefaultSubtitle = "Faites tournez la roue pour jouer !";
+const scratchDefaultSubtitle = "Grattez le ticket pour jouer !";
+const defaultScratchTicketColor = "#f7f7f7";
+const defaultScratchTextColor = "#ffffff";
+
 function createPrizeId() {
   return `local-prize-${crypto.randomUUID().slice(0, 8)}`;
 }
@@ -184,6 +190,28 @@ function normalizeUrl(url: string) {
   }
 
   return `https://${trimmed}`;
+}
+
+function readableCampaignSaveError(message: string | undefined) {
+  if (!message) {
+    return "Impossible d'enregistrer l'animation. Vérifiez les champs obligatoires puis réessayez.";
+  }
+
+  if (message.toLowerCase().includes("origine de requ")) {
+    return "Votre session de sécurité n'est plus valide ou la page a été ouverte depuis une adresse non autorisée. Rechargez la page depuis votre espace Okado puis réessayez.";
+  }
+
+  if (message.toLowerCase().includes("bloqu")) {
+    return "Votre session de sécurité n'est plus valide ou la page a été ouverte depuis une adresse non autorisée. Rechargez la page depuis votre espace Okado puis réessayez.";
+  }
+
+  if (message.toLowerCase().includes("dotation") || message.toLowerCase().includes("lot")) {
+    return message.startsWith("Impossible")
+      ? message
+      : `Impossible d'enregistrer : ${message}`;
+  }
+
+  return message;
 }
 
 function defaultActionUrl(merchant: Merchant, kind: ActionKind) {
@@ -220,7 +248,7 @@ function createDefaultState(merchant: Merchant): EditorState {
   return {
     merchantId: merchant.id,
     title: "Animation restaurant",
-    subtitle: "Jouez et gagnez.",
+    subtitle: wheelDefaultSubtitle,
     goalType: "review_prompt",
     gameType: "wheel",
     ctaLabel: "Je participe",
@@ -238,7 +266,7 @@ function createDefaultState(merchant: Merchant): EditorState {
     presentation: {
       logo: {
         sizePercent: 100,
-        marginBottomPx: 18,
+        marginBottomPx: 40,
         align: "center",
       },
       background: {
@@ -256,7 +284,7 @@ function createDefaultState(merchant: Merchant): EditorState {
         backgroundColor: "#c59920",
         textColor: "#ffffff",
         borderColor: "#f4c14a",
-        size: "md",
+        size: "sm",
         textSizePx: 24,
         isBold: true,
       },
@@ -298,28 +326,11 @@ function createDefaultState(merchant: Merchant): EditorState {
     rewardRules: {
       rewardExpiryMinutes: 20,
       purchaseRequired: false,
-      availableAfterHours: 0,
-      availabilityDurationDays: 0,
+      availableAfterHours: 24,
+      availabilityDurationDays: 30,
       isWinningEveryTime: false,
     },
-    prizes: [
-      {
-        id: "default-prize-1",
-        label: "Bon d'achat 15 €",
-        totalQuantity: 20,
-        probability: 25,
-        estimatedUnitCost: 15,
-        usageConditions: "",
-      },
-      {
-        id: "default-prize-2",
-        label: "Cadeau surprise",
-        totalQuantity: null,
-        probability: 25,
-        estimatedUnitCost: 4,
-        usageConditions: "",
-      },
-    ],
+    prizes: [],
   };
 }
 
@@ -327,11 +338,13 @@ function SaveFeedbackDialog({
   open,
   title,
   description,
+  tone = "info",
   onClose,
 }: {
   open: boolean;
   title: string;
   description: string;
+  tone?: "info" | "error";
   onClose: () => void;
 }) {
   if (!open) {
@@ -341,8 +354,12 @@ function SaveFeedbackDialog({
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#0f1220]/52 px-4 pb-4 pt-10 backdrop-blur-[6px] sm:items-center sm:p-6">
       <div className="w-full max-w-[420px] rounded-[34px] bg-white p-6 text-[#111827] shadow-[0_34px_90px_rgba(18,24,39,0.24)]">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#eef4ff] text-3xl text-[#2f6df6]">
-          ✓
+        <div
+          className={`mx-auto flex h-16 w-16 items-center justify-center rounded-full text-3xl ${
+            tone === "error" ? "bg-[#fff1f2] text-[#be123c]" : "bg-[#eef4ff] text-[#2f6df6]"
+          }`}
+        >
+          {tone === "error" ? "!" : "✓"}
         </div>
         <h2 className="mt-5 text-center text-2xl font-semibold text-[#0f1728]">{title}</h2>
         <p className="mt-3 text-center text-sm leading-7 text-[#5c6577]">{description}</p>
@@ -513,7 +530,7 @@ function PrizeConditionsDialog({
             onChange={(event) => onChange(event.target.value)}
             rows={7}
             placeholder="Ex. valable hors menu midi, une seule utilisation par table, hors jours fériés..."
-            className="w-full rounded-[22px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-4 outline-none"
+            className="w-full rounded-[22px] border border-[#d7e0ed] bg-white px-4 py-4 outline-none"
           />
         </label>
 
@@ -580,9 +597,13 @@ const CampaignLivePreview = memo(function CampaignLivePreview({
           </div>
         ) : null}
 
+        {preview.logoMode === "none" || (preview.logoMode === "image" && !preview.logoUrl) ? (
+          <div aria-hidden="true" className="h-5" />
+        ) : null}
+
         <div className={preview.headingAlignmentClass}>
           <h3
-            className={`${preview.headingFontClass} font-semibold leading-[0.95]`}
+            className={`${preview.headingFontClass} whitespace-pre-line font-semibold leading-[0.95]`}
             style={{
               color: preview.headingTextColor,
               fontSize: `${preview.headingFontSizePx}px`,
@@ -659,10 +680,10 @@ const CampaignActionCard = memo(function CampaignActionCard({
   onMove: (actionId: string, direction: "up" | "down") => void;
 }) {
   return (
-    <div className="rounded-[24px] border border-[#dbe4f0] bg-[#f8fafc] p-4">
+    <div className="rounded-[24px] border border-[#dbe4f0] bg-white p-4 shadow-[0_12px_30px_rgba(122,136,166,0.08)]">
       <div className="mb-4 flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <span className="rounded-full border border-[#d7e0ed] bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[#64748b]">
+          <span className="rounded-[8px] border border-[#d7e0ed] bg-[#f7f9fc] px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-[#64748b]">
             Action {index + 1}
           </span>
         </div>
@@ -671,32 +692,28 @@ const CampaignActionCard = memo(function CampaignActionCard({
             type="button"
             onClick={() => onMove(action.id, "up")}
             disabled={index === 0}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-[14px] border border-[#d7e0ed] bg-white text-[#182033] disabled:opacity-40"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-[8px] border border-[#d7e0ed] bg-white text-[#182033] transition hover:bg-linen-canvas disabled:opacity-40"
             aria-label={`Monter l'action ${index + 1}`}
             title="Monter"
           >
-            <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" aria-hidden="true">
-              <path d="M5 12.5L10 7.5L15 12.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+            <ChevronUp className="h-4 w-4" aria-hidden="true" />
           </button>
           <button
             type="button"
             onClick={() => onMove(action.id, "down")}
             disabled={index === totalActions - 1}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-[14px] border border-[#d7e0ed] bg-white text-[#182033] disabled:opacity-40"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-[8px] border border-[#d7e0ed] bg-white text-[#182033] transition hover:bg-linen-canvas disabled:opacity-40"
             aria-label={`Descendre l'action ${index + 1}`}
             title="Descendre"
           >
-            <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" aria-hidden="true">
-              <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+            <ChevronDown className="h-4 w-4" aria-hidden="true" />
           </button>
         </div>
       </div>
 
       <div
         className={`grid gap-4 ${
-                  action.kind === "crm" ? "md:grid-cols-[0.72fr_auto]" : "md:grid-cols-[0.72fr_1.45fr_auto]"
+                  action.kind === "crm" ? "md:grid-cols-[0.74fr_auto]" : "md:grid-cols-[0.72fr_1fr_auto]"
         }`}
       >
         <label className="text-sm">
@@ -734,12 +751,9 @@ const CampaignActionCard = memo(function CampaignActionCard({
               rel="noreferrer"
               aria-label={`Ouvrir le lien de l'action ${index + 1}`}
               title="Ouvrir le lien"
-              className="inline-flex h-[48px] w-[48px] shrink-0 cursor-pointer items-center justify-center rounded-[18px] border border-[#d7e0ed] bg-white text-[#182033]"
+              className="inline-flex h-[48px] w-[48px] shrink-0 cursor-pointer items-center justify-center rounded-[8px] border border-[#d7e0ed] bg-white text-[#182033] transition hover:bg-linen-canvas"
             >
-              <svg viewBox="0 0 20 20" className="h-5 w-5" fill="none" aria-hidden="true">
-                <path d="M7 13L13 7M8.5 7H13V11.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M12 12.5V14C12 14.6 11.6 15 11 15H6C5.4 15 5 14.6 5 14V9C5 8.4 5.4 8 6 8H7.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+              <SquareArrowOutUpRight className="h-5 w-5" aria-hidden="true" />
             </a>
           ) : null}
           <button
@@ -747,11 +761,9 @@ const CampaignActionCard = memo(function CampaignActionCard({
             onClick={() => onRemove(action.id)}
             aria-label={`Supprimer l'action ${index + 1}`}
             title="Supprimer"
-            className="inline-flex h-[48px] w-[48px] cursor-pointer items-center justify-center rounded-[18px] border border-[#111827] bg-[#111827] text-white"
+            className="inline-flex h-[48px] w-[48px] cursor-pointer items-center justify-center rounded-[8px] border border-[#111827] bg-[#111827] text-white transition hover:bg-[#273142]"
           >
-            <svg viewBox="0 0 20 20" className="h-5 w-5" fill="none" aria-hidden="true">
-              <path d="M6.5 6.5L13.5 13.5M13.5 6.5L6.5 13.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-            </svg>
+            <Trash2 className="h-5 w-5" aria-hidden="true" />
           </button>
         </div>
       </div>
@@ -863,7 +875,22 @@ function toEditorState(merchant: Merchant, campaign: CampaignPerformance | null)
     logoMode: campaign.campaign.logoMode ?? (campaign.campaign.logoUrl ? "image" : "text"),
     logoText: campaign.campaign.logoText ?? merchant.companyName,
     logoUrl: campaign.campaign.logoUrl,
-    accent: campaign.campaign.accent,
+    accent:
+      campaign.campaign.gameType === "scratch"
+        ? {
+            ...campaign.campaign.accent,
+            paper:
+              campaign.campaign.accent.paper === "#eef2ff" ||
+              campaign.campaign.accent.paper === "#939393" ||
+              campaign.campaign.accent.paper === ""
+                ? defaultScratchTicketColor
+                : campaign.campaign.accent.paper,
+            ink:
+              campaign.campaign.accent.ink === "#111827" || campaign.campaign.accent.ink === ""
+                ? defaultScratchTextColor
+                : campaign.campaign.accent.ink,
+          }
+        : campaign.campaign.accent,
     presentation: {
       ...campaign.campaign.presentation,
       button: {
@@ -1016,7 +1043,13 @@ export function CampaignEditor({
   const [libraryMessage, setLibraryMessage] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [messageTone, setMessageTone] = useState<"info" | "error">("info");
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+  const [saveDialogTone, setSaveDialogTone] = useState<"info" | "error">("info");
+  const [saveDialogTitle, setSaveDialogTitle] = useState("Campagne enregistrée");
+  const [saveDialogDescription, setSaveDialogDescription] = useState(
+    "Vos modifications ont bien été prises en compte.",
+  );
   const [savedCampaignId, setSavedCampaignId] = useState<string | null>(
     initialCampaign?.campaign.id ?? null,
   );
@@ -1027,7 +1060,7 @@ export function CampaignEditor({
   const [editingPrizeConditionsId, setEditingPrizeConditionsId] = useState<string | null>(null);
 
   const previewSegments = useMemo(() => buildPreviewSegments(form.prizes), [form.prizes]);
-  const previewPrize = form.prizes[0].label || "Cadeau surprise";
+  const previewPrize = form.prizes[0]?.label || "Cadeau surprise";
   const previewCtaClass = buttonSizeMap[form.presentation.button.size];
   const logoWidthPx = Math.round(
     Math.max(72, Math.min(260, form.presentation.logo.sizePercent * 1.6)),
@@ -1235,6 +1268,40 @@ export function CampaignEditor({
     setForm((current) => ({ ...current, [key]: value }));
   }
 
+  function setGameType(gameType: GameType) {
+    setForm((current) => {
+      const currentSubtitle = current.subtitle.trim();
+      const shouldSyncSubtitle =
+        currentSubtitle === wheelDefaultSubtitle || currentSubtitle === scratchDefaultSubtitle;
+
+      return {
+        ...current,
+        gameType,
+        subtitle: shouldSyncSubtitle
+          ? gameType === "wheel"
+            ? wheelDefaultSubtitle
+            : scratchDefaultSubtitle
+          : current.subtitle,
+        accent:
+          gameType === "scratch"
+            ? {
+                ...current.accent,
+                paper:
+                  current.accent.paper === "#eef2ff" ||
+                  current.accent.paper === "#939393" ||
+                  current.accent.paper === ""
+                    ? defaultScratchTicketColor
+                    : current.accent.paper,
+                ink:
+                  current.accent.ink === "#111827" || current.accent.ink === ""
+                    ? defaultScratchTextColor
+                    : current.accent.ink,
+              }
+            : current.accent,
+      };
+    });
+  }
+
   function updatePrimaryWheelColor(nextColor: string) {
     setForm((current) => ({
       ...current,
@@ -1295,10 +1362,7 @@ export function CampaignEditor({
   const removePrize = useCallback((prizeId: string | undefined) => {
     setForm((current) => ({
       ...current,
-      prizes:
-        current.prizes.length <= 1
-          ? current.prizes
-          : current.prizes.filter((prize) => prize.id !== prizeId),
+      prizes: current.prizes.filter((prize) => prize.id !== prizeId),
     }));
   }, []);
 
@@ -1416,6 +1480,7 @@ export function CampaignEditor({
   async function saveCampaign() {
     setIsSaving(true);
     setMessage(null);
+    setMessageTone("info");
     setSaveDialogOpen(false);
     if (form.id !== "__legacy_save__") {
       return handleSaveCampaign();
@@ -1423,7 +1488,7 @@ export function CampaignEditor({
 
     try {
       if (!form.prizes.length) {
-        throw new Error("Ajoutez au moins un lot.");
+        throw new Error("Ajoutez au moins un lot dans la section Dotation.");
       }
 
       if (
@@ -1457,19 +1522,24 @@ export function CampaignEditor({
             campaign: CampaignPerformance | null;
           }
         | null;
-      void payload;
-
       if (!response.ok) {
-        throw new Error("La campagne n'a pas pu être enregistrée.");
+        throw new Error(payload?.error || "La campagne n'a pas pu être enregistrée.");
       }
 
+      setMessageTone("info");
       setMessage("Campagne enregistrée.");
       router.push("/campaigns");
       router.refresh();
     } catch (error) {
-      setMessage(
+      const readableError = readableCampaignSaveError(
         error instanceof Error ? error.message : "La campagne n'a pas pu être enregistrée.",
       );
+      setMessageTone("error");
+      setMessage(readableError);
+      setSaveDialogTone("error");
+      setSaveDialogTitle("Enregistrement impossible");
+      setSaveDialogDescription(readableError);
+      setSaveDialogOpen(true);
     } finally {
       setIsSaving(false);
     }
@@ -1478,11 +1548,12 @@ export function CampaignEditor({
   async function handleSaveCampaign() {
     setIsSaving(true);
     setMessage(null);
+    setMessageTone("info");
     setSaveDialogOpen(false);
 
     try {
       if (!form.prizes.length) {
-        throw new Error("Ajoutez au moins un lot.");
+        throw new Error("Ajoutez au moins un lot dans la section Dotation.");
       }
 
       if (
@@ -1531,12 +1602,21 @@ export function CampaignEditor({
         }));
       }
 
+      setSaveDialogTone("info");
+      setSaveDialogTitle("Campagne enregistrée");
+      setSaveDialogDescription("Vos modifications ont bien été prises en compte.");
       setSaveDialogOpen(true);
       router.refresh();
     } catch (error) {
-      setMessage(
+      const readableError = readableCampaignSaveError(
         error instanceof Error ? error.message : "La campagne n'a pas pu être enregistrée.",
       );
+      setMessageTone("error");
+      setMessage(readableError);
+      setSaveDialogTone("error");
+      setSaveDialogTitle("Enregistrement impossible");
+      setSaveDialogDescription(readableError);
+      setSaveDialogOpen(true);
     } finally {
       setIsSaving(false);
     }
@@ -1631,13 +1711,13 @@ export function CampaignEditor({
                   Nommez votre animation
                 </h2>
               </div>
-              <label className="inline-flex items-center gap-2 rounded-full bg-[#f4f7fb] px-3 py-2 text-sm font-medium text-[#3e4758]">
-                <input
-                  type="checkbox"
+              <label className="inline-flex items-center gap-3 rounded-[8px] border border-border bg-linen-canvas px-3 py-2 text-sm font-semibold text-[#182033]">
+                <span>Campagne active</span>
+                <Switch
                   checked={form.isActive}
-                  onChange={(event) => setField("isActive", event.target.checked)}
+                  onCheckedChange={(checked) => setField("isActive", checked)}
+                  aria-label="Activer la campagne"
                 />
-                Campagne active
               </label>
             </div>
 
@@ -1647,7 +1727,7 @@ export function CampaignEditor({
                 <input
                   value={form.title}
                   onChange={(event) => setField("title", event.target.value)}
-                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
                 />
               </label>
             </div>
@@ -1692,12 +1772,12 @@ export function CampaignEditor({
 
           <section className="okado-card p-6">
             <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Mécanique de jeu</p>
-            <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
-              Choisissez l&apos;expérience client
-            </h2>
+            <div className="mt-2 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <h2 className="text-2xl font-semibold text-[#111827]">
+                Choisissez l&apos;expérience client
+              </h2>
 
-            <div className="mt-4 flex justify-start md:justify-end">
-              <label className="flex items-center gap-3 rounded-[8px] border border-border bg-linen-canvas px-3 py-2 text-sm font-semibold text-[#182033]">
+              <label className="flex w-fit items-center gap-3 rounded-[8px] border border-border bg-linen-canvas px-3 py-2 text-sm font-semibold text-[#182033]">
                 <span>Mode expert</span>
                 <Switch
                   checked={isExpertMode}
@@ -1715,7 +1795,7 @@ export function CampaignEditor({
                   <button
                     key={mode.value}
                     type="button"
-                    onClick={() => setField("gameType", mode.value)}
+                    onClick={() => setGameType(mode.value)}
                     className={`rounded-[28px] border p-5 text-left transition ${
                       active
                          ? "border-[#2f6df6] bg-[#eff4ff] shadow-[0_16px_30px_rgba(47,109,246,0.16)]"
@@ -1732,11 +1812,6 @@ export function CampaignEditor({
                           {mode.description}
                         </p>
                       </div>
-                      <span
-                        className={`mt-1 h-5 w-5 rounded-full border-4 ${
-                        active ? "border-[#2f6df6] bg-white" : "border-[#d5dcea] bg-transparent"
-                        }`}
-                      />
                     </div>
 
                     <div
@@ -1784,7 +1859,7 @@ export function CampaignEditor({
                 value={importSource}
                 onChange={(event) => setImportSource(event.target.value)}
                 disabled={isCampaignLibraryLoading}
-                className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                className="w-full rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
               >
                 <option value="">Selectionner une campagne</option>
                 {campaignOptions.map((item) => (
@@ -1859,7 +1934,7 @@ export function CampaignEditor({
                   <input
                     value={form.logoText ?? merchant.companyName}
                     onChange={(event) => setField("logoText", event.target.value)}
-                    className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                    className="w-full rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
                   />
                 </label>
               ) : null}
@@ -1944,7 +2019,7 @@ export function CampaignEditor({
                       },
                     }))
                   }
-                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
                 />
               </label>
               ) : null}
@@ -1969,7 +2044,7 @@ export function CampaignEditor({
                       },
                     }))
                   }
-                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
                 />
               </label>
               ) : null}
@@ -2026,7 +2101,7 @@ export function CampaignEditor({
                   value={form.subtitle}
                   onChange={(event) => setField("subtitle", event.target.value)}
                   rows={3}
-                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
                 />
               </label>
 
@@ -2072,7 +2147,7 @@ export function CampaignEditor({
                           },
                         }))
                       }
-                      className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                      className="w-full rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
                     />
                   </label>
 
@@ -2386,7 +2461,7 @@ export function CampaignEditor({
                       },
                     }))
                   }
-                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
                 />
               </label>
 
@@ -2455,7 +2530,7 @@ export function CampaignEditor({
                       },
                     }))
                   }
-                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
                 />
               </label>
 
@@ -2499,7 +2574,7 @@ export function CampaignEditor({
                       },
                     }))
                   }
-                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
                 />
               </label>
 
@@ -2630,7 +2705,7 @@ export function CampaignEditor({
                       },
                     }))
                   }
-                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
                 />
               </label>
             </div>
@@ -2651,7 +2726,7 @@ export function CampaignEditor({
                   value={form.subtitle}
                   onChange={(event) => setField("subtitle", event.target.value)}
                   rows={3}
-                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
                 />
               </label>
 
@@ -2695,7 +2770,7 @@ export function CampaignEditor({
                       },
                     }))
                   }
-                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
                 />
               </label>
 
@@ -2818,7 +2893,7 @@ export function CampaignEditor({
                 ))}
               </div>
             </section>
-          ) : (
+          ) : isExpertMode ? (
             <section className="okado-card p-6">
               <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Ticket à gratter</p>
               <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
@@ -2881,9 +2956,9 @@ export function CampaignEditor({
                 </label>
               </div>
             </section>
-          )}
+          ) : null}
 
-          {form.gameType !== "wheel" ? (
+          {form.gameType !== "wheel" && isExpertMode ? (
             <section className="okado-card p-6">
               <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Bouton public</p>
               <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
@@ -2896,7 +2971,7 @@ export function CampaignEditor({
                 <input
                   value={form.ctaLabel}
                   onChange={(event) => setField("ctaLabel", event.target.value)}
-                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
                 />
               </label>
 
@@ -3017,7 +3092,7 @@ export function CampaignEditor({
                       },
                     }))
                   }
-                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
                 />
               </label>
 
@@ -3077,7 +3152,7 @@ export function CampaignEditor({
                       },
                     }))
                   }
-                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
                 />
               </label>
 
@@ -3096,11 +3171,11 @@ export function CampaignEditor({
                       },
                     }))
                   }
-                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
                 />
               </label>
 
-              <div className="space-y-3 rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] p-4 text-sm text-[#182033]">
+              <div className="space-y-3 rounded-[20px] border border-[#d7e0ed] bg-white p-4 text-sm text-[#182033]">
                 <label className="flex items-center gap-3">
                   <input
                     type="checkbox"
@@ -3129,6 +3204,12 @@ export function CampaignEditor({
             </div>
 
             <div className="mt-4 space-y-4">
+              {form.prizes.length === 0 ? (
+                <div className="rounded-[24px] border border-dashed border-[#cfd9ea] bg-white px-5 py-6 text-sm leading-6 text-[#5c6577]">
+                  Aucun lot n&apos;est encore configur&eacute;. Ajoutez au moins un lot pour pouvoir
+                  enregistrer l&apos;animation.
+                </div>
+              ) : null}
               {form.prizes.map((prize) => (
                 <CampaignPrizeRow
                   key={prize.id}
@@ -3142,8 +3223,17 @@ export function CampaignEditor({
           </section>
 
           {message ? (
-            <section className="rounded-[24px] border border-[#dbe4f0] bg-white px-5 py-4 text-sm text-[#182033] shadow-[0_18px_44px_rgba(122,136,166,0.1)]">
-              {message}
+            <section
+              className={`rounded-[24px] border px-5 py-4 text-sm shadow-[0_18px_44px_rgba(122,136,166,0.1)] ${
+                messageTone === "error"
+                  ? "border-[#fecaca] bg-[#fff1f2] text-[#9f1239]"
+                  : "border-[#dbe4f0] bg-white text-[#182033]"
+              }`}
+            >
+              <div className="font-semibold">
+                {messageTone === "error" ? "Enregistrement impossible" : "Information"}
+              </div>
+              <p className="mt-1 leading-6">{message}</p>
             </section>
           ) : null}
         </div>
@@ -3246,12 +3336,13 @@ export function CampaignEditor({
       />
       <SaveFeedbackDialog
         open={saveDialogOpen}
-        title="Campagne enregistrée"
-        description="Vos modifications ont bien été prises en compte."
+        title={saveDialogTitle}
+        description={saveDialogDescription}
+        tone={saveDialogTone}
         onClose={() => {
           setSaveDialogOpen(false);
 
-          if (!initialCampaign && savedCampaignId) {
+          if (saveDialogTone !== "error" && !initialCampaign && savedCampaignId) {
             router.replace(`/campaigns/${savedCampaignId}/edit`);
           }
         }}

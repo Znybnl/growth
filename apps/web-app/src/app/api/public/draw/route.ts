@@ -1,9 +1,15 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 import {
+  assertDailyParticipationCookie,
+  assertDailyParticipationDeviceLock,
   assertPublicRateLimit,
+  getDailyParticipationCookieName,
+  getDailyParticipationCookieOptions,
+  getDailyParticipationCookieValue,
   getPublicErrorStatus,
   getPublicRetryAfter,
+  isDailyParticipationError,
   isValidPublicEmail,
   isValidPublicFirstName,
   isValidPublicIdentifier,
@@ -22,7 +28,7 @@ type DrawBody = {
   marketingConsent: boolean;
 };
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   const body = (await request.json()) as DrawBody;
   const campaignId = body.campaignId?.trim() ?? "";
   const firstName = normalizePublicFirstName(body.firstName ?? "");
@@ -41,6 +47,9 @@ export async function POST(request: Request) {
   }
 
   try {
+    const cookieName = getDailyParticipationCookieName(campaignId);
+    assertDailyParticipationCookie(request.cookies.get(cookieName)?.value, campaignId);
+
     assertPublicRateLimit(request, {
       key: `draw-legacy:${campaignId}:${email}`,
       limit: 6,
@@ -53,6 +62,7 @@ export async function POST(request: Request) {
       firstName,
       email,
     });
+    assertDailyParticipationDeviceLock(request, campaignId);
     logSupportEvent("info", "draw_finalized", {
       campaignId: result.campaign.id,
       leadId: result.lead.id,
@@ -96,7 +106,13 @@ export async function POST(request: Request) {
       }
     }
 
-    return NextResponse.json(result, { status: 201 });
+    const response = NextResponse.json(result, { status: 201 });
+    response.cookies.set(
+      cookieName,
+      getDailyParticipationCookieValue(campaignId),
+      getDailyParticipationCookieOptions(),
+    );
+    return response;
   } catch (error) {
     logSupportEvent("error", "draw_finalize_failed", {
       campaignId,
@@ -106,7 +122,10 @@ export async function POST(request: Request) {
 
     const retryAfter = getPublicRetryAfter(error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Draw failed" },
+      {
+        error: error instanceof Error ? error.message : "Draw failed",
+        code: isDailyParticipationError(error) ? "already_played_today" : undefined,
+      },
       {
         status: getPublicErrorStatus(error),
         headers: retryAfter ? { "Retry-After": retryAfter } : undefined,

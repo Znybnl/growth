@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -123,17 +124,17 @@ const pilotSimulation = [
     detail: "affiche, chevalet, ticket ou comptoir",
   },
   {
-    value: "80",
+    value: "140",
     label: "participations",
     detail: "clients qui entrent dans le parcours",
   },
   {
-    value: "35",
+    value: "70",
     label: "contacts clients",
     detail: "prénom et e-mail exploitables",
   },
   {
-    value: "12",
+    value: "20",
     label: "coupons présentés",
     detail: "retours mesurables en restaurant",
   },
@@ -443,6 +444,173 @@ function SectionTitle({
   );
 }
 
+function QrIllustration({ className = "" }: { className?: string }) {
+  const activeCells = new Set([
+    "4-0",
+    "6-0",
+    "4-1",
+    "8-1",
+    "3-2",
+    "5-2",
+    "7-2",
+    "4-3",
+    "8-3",
+    "3-4",
+    "5-4",
+    "6-4",
+    "1-5",
+    "4-5",
+    "7-5",
+    "5-6",
+    "8-6",
+    "3-7",
+    "4-7",
+    "6-7",
+    "8-7",
+    "4-8",
+    "6-8",
+  ]);
+
+  return (
+    <div
+      className={`grid aspect-square grid-cols-9 gap-[3px] rounded-[16px] border border-[#e5e7eb] bg-white p-3 shadow-[0_14px_35px_rgba(15,23,43,0.12)] ${className}`}
+      aria-label="Illustration de QR code"
+    >
+      {Array.from({ length: 81 }).map((_, index) => {
+        const x = index % 9;
+        const y = Math.floor(index / 9);
+        const topLeftFinder = x <= 2 && y <= 2;
+        const topRightFinder = x >= 6 && y <= 2;
+        const bottomLeftFinder = x <= 2 && y >= 6;
+        const finder = topLeftFinder || topRightFinder || bottomLeftFinder;
+        const center =
+          (x === 1 && y === 1) || (x === 7 && y === 1) || (x === 1 && y === 7);
+        const finderBorder = finder && !center;
+        const active = finderBorder || activeCells.has(`${x}-${y}`);
+
+        return (
+          <span
+            key={`${x}-${y}`}
+            className={`rounded-[2px] ${active ? "bg-[#0f172b]" : "bg-transparent"}`}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+function RestaurantQrPhotoVisual() {
+  return (
+    <div className="relative min-h-[330px] overflow-hidden rounded-[24px] border border-[#e5e7eb] bg-[#31190b] shadow-[0_24px_70px_rgba(49,25,11,0.18)] sm:col-span-2">
+      <Image
+        src="/images/restaurant-a5-counter.png"
+        alt="Affiche A5 Okado positionnée sur un comptoir de restaurant"
+        fill
+        sizes="(min-width: 768px) 58vw, 100vw"
+        className="object-cover"
+      />
+      <div className="absolute inset-x-0 bottom-0 bg-[linear-gradient(180deg,transparent,rgba(15,23,43,0.78))] p-5 text-white">
+        <p className="text-lg font-black tracking-[-0.04em]">
+          Une mise en place visible en salle
+        </p>
+        <p className="mt-1 max-w-md text-sm leading-6 text-white/78">
+          Table, caisse, vitrine ou ticket : le support QR doit se voir sans gêner le service.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function MiniWheel() {
+  return null;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function RestaurantTableVisual() {
+  return (
+    <div className="relative overflow-hidden rounded-[24px] border border-[#e5e7eb] bg-[radial-gradient(circle_at_top_left,#ffe8c7_0%,#fffaf4_38%,#ffffff_100%)] p-5 sm:col-span-2">
+      <div className="absolute -right-12 -top-16 h-40 w-40 rounded-full bg-[#145aff]/10" />
+      <div className="grid gap-4 sm:grid-cols-[0.85fr_1.15fr] sm:items-center">
+        <div className="rounded-[22px] bg-white p-5 shadow-[0_16px_45px_rgba(49,25,11,0.12)]">
+          <p className="text-sm font-black uppercase tracking-[0.16em] text-[#31190b]">
+            Chevalet de table
+          </p>
+          <div className="mt-4 flex items-center gap-4">
+            <QrIllustration className="h-24 w-24" />
+            <div>
+              <p className="text-lg font-black tracking-[-0.04em] text-[#0f172b]">
+                Scannez pour jouer
+              </p>
+              <p className="mt-2 text-sm leading-6 text-[#64748b]">
+                Le client comprend l&apos;action sans explication de l&apos;équipe.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="relative mx-auto h-56 w-40 overflow-hidden rounded-[28px] border-[8px] border-[#0f172b] bg-white p-4 shadow-[0_18px_45px_rgba(15,23,43,0.18)]">
+          <p className="text-center text-sm font-black tracking-[-0.03em] text-[#0f172b]">
+            Le bistro
+          </p>
+          <div className="mx-auto mt-5 h-28 w-28">
+            <MiniWheel />
+          </div>
+          <button
+            type="button"
+            className="mx-auto mt-5 block rounded-[10px] bg-[#145aff] px-5 py-2 text-xs font-black text-white"
+          >
+            JOUER
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function PosterSectionVisual() {
+  return (
+    <div className="relative overflow-hidden rounded-[32px] border border-[#f0dfcf] bg-[linear-gradient(135deg,#fffaf4_0%,#ffffff_58%,#eef4ff_100%)] p-6 shadow-[0_24px_80px_rgba(49,25,11,0.10)] md:p-8">
+      <div className="absolute -left-16 bottom-0 h-52 w-52 rounded-full bg-[#d6a51f]/18 blur-2xl" />
+      <div className="relative grid gap-6 md:grid-cols-[0.9fr_1.1fr] md:items-center">
+        <div>
+          <p className="text-sm font-black uppercase tracking-[0.16em] text-[#6c00f6]">
+            Support prêt à imprimer
+          </p>
+          <h3 className="mt-4 max-w-lg text-3xl font-black leading-[1.05] tracking-[-0.055em] text-[#0f172b] md:text-[44px]">
+            Une affiche QR propre, cohérente avec votre jeu.
+          </h3>
+          <p className="mt-4 max-w-xl leading-8 text-[#64748b]">
+            Le QR code est lisible, le visuel de jeu est identifiable et les trois étapes restent
+            compréhensibles depuis une table, une vitrine ou un comptoir.
+          </p>
+        </div>
+        <div className="relative mx-auto aspect-[4/5] w-full max-w-[360px] rounded-[28px] border border-[#e5e7eb] bg-white p-5 shadow-[0_22px_60px_rgba(15,23,43,0.16)]">
+          <p className="text-center text-xs font-black uppercase tracking-[0.18em] text-[#6c00f6]">
+            Votre logo
+          </p>
+          <p className="mx-auto mt-4 max-w-[220px] text-center text-3xl font-black uppercase italic leading-[0.95] tracking-[-0.05em] text-[#0f172b]">
+            Faites tourner la roue
+          </p>
+          <div className="absolute bottom-24 left-[-40px] h-48 w-48">
+            <MiniWheel />
+          </div>
+          <div className="absolute right-6 top-[43%] rounded-[22px] border-[8px] border-[#145aff] bg-white p-3 shadow-[0_18px_38px_rgba(15,23,43,0.18)]">
+            <QrIllustration className="h-28 w-28 border-0 p-1 shadow-none" />
+            <div className="mt-3 rounded-[12px] bg-[#145aff] px-4 py-2 text-center text-xs font-black uppercase text-white">
+              Scannez pour jouer
+            </div>
+          </div>
+          <div className="absolute inset-x-5 bottom-5 grid grid-cols-3 rounded-[18px] border border-[#f0dfcf] bg-white/92 p-3 text-center text-xs font-black text-[#31190b] shadow-[0_12px_30px_rgba(49,25,11,0.08)]">
+            <span>1 Scan</span>
+            <span>2 Joue</span>
+            <span>3 Gagne</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function JsonLd() {
   const jsonLd = {
     "@context": "https://schema.org",
@@ -560,7 +728,7 @@ export default function RestaurantsPage() {
                 </div>
               ))}
             </div>
-            <div className="mx-auto mt-10 grid max-w-4xl gap-3 rounded-[28px] border border-[#f0dfcf] bg-white/82 p-4 text-left shadow-[0_22px_60px_rgba(49,25,11,0.08)] backdrop-blur sm:grid-cols-3">
+            <div className="hidden">
               {[
                 ["Avis Google", "Demandez au bon moment, avec un lien direct."],
                 ["Contacts clients", "Collectez prénom et e-mail sans friction."],
@@ -575,14 +743,13 @@ export default function RestaurantsPage() {
               ))}
             </div>
           </div>
+          <div id="demo" className="mt-12">
+            <LandingDemo />
+          </div>
         </div>
       </section>
 
-      <section id="demo" className="mx-auto max-w-[1200px] px-5 pb-18 md:pb-24">
-        <LandingDemo />
-      </section>
-
-      <section className="mx-auto max-w-[1200px] px-5 pb-18 md:pb-24">
+      <section className="hidden">
         <div className="grid gap-5 rounded-[32px] border border-[#f0dfcf] bg-white p-6 shadow-[0_24px_80px_rgba(49,25,11,0.08)] md:grid-cols-[0.85fr_1.15fr] md:p-8">
           <div>
             <span className="rounded-[4px] bg-[#6c00f6]/10 px-2 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-[#6c00f6]">
@@ -850,6 +1017,34 @@ export default function RestaurantsPage() {
         </div>
       </section>
 
+      <section className="mx-auto max-w-[1200px] px-5 py-18 md:py-24">
+        <div className="grid gap-6 rounded-[32px] border border-[#f0dfcf] bg-white p-6 shadow-[0_24px_80px_rgba(49,25,11,0.08)] md:grid-cols-[0.8fr_1.2fr] md:p-8">
+          <div>
+            <span className="rounded-[4px] bg-[#6c00f6]/10 px-2 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-[#6c00f6]">
+              Simulation pilote
+            </span>
+            <h2 className="mt-5 text-3xl font-black leading-[1.08] tracking-[-0.055em] md:text-[44px]">
+              Une animation test doit prouver qu&apos;elle crée des retours.
+            </h2>
+            <p className="mt-4 leading-8 text-[#475569]">
+              Sur un premier mois, mesurez combien de clients scannent, jouent, laissent leurs
+              coordonnées et reviennent avec leur coupon.
+            </p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-4">
+            {pilotSimulation.map((item) => (
+              <div key={item.label} className="rounded-[22px] bg-[#fffaf4] p-5">
+                <p className="text-4xl font-black tracking-[-0.07em] text-[#6c00f6]">{item.value}</p>
+                <p className="mt-2 text-sm font-black tracking-[-0.03em] text-[#0f172b]">
+                  {item.label}
+                </p>
+                <p className="mt-2 text-xs leading-5 text-[#64748b]">{item.detail}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section id="roi" className="bg-[#f8fafc] px-5 py-18 md:py-24">
         <div className="mx-auto grid max-w-[1200px] gap-8 md:grid-cols-[0.95fr_1.05fr] md:items-center">
           <div>
@@ -877,9 +1072,9 @@ export default function RestaurantsPage() {
             <div className="grid gap-4 sm:grid-cols-2">
               {[
                 ["300", "scans mensuels"],
-                ["35%", "participation"],
+                ["70%", "participation"],
                 ["105", "contacts clients"],
-                ["15", "coupons présentés"],
+                ["24", "coupons présentés"],
               ].map(([value, label]) => (
                 <div key={label} className="rounded-[18px] bg-[#fffaf4] p-5">
                   <p className="text-4xl font-black tracking-[-0.06em] text-[#6c00f6]">{value}</p>
@@ -892,7 +1087,7 @@ export default function RestaurantsPage() {
                 Exemple
               </p>
               <p className="mt-3 text-lg font-black leading-7">
-                15 clients qui reviennent avec un panier moyen de 22 € représentent 330 € de chiffre
+                24 clients qui reviennent avec un panier moyen de 22 € représentent 528 € de chiffre
                 d&apos;affaires additionnel potentiel, hors valeur des avis et des contacts collectés.
               </p>
             </div>
@@ -947,6 +1142,7 @@ export default function RestaurantsPage() {
             </p>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
+            <RestaurantQrPhotoVisual />
             {placementIdeas.map((item) => (
               <div
                 key={item}

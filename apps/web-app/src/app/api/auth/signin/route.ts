@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 
-import { resolveMerchantSessionFromAuthUser } from "@/lib/merchant-account-repository";
+import {
+  ensureDemoMerchantInSupabase,
+  resolveMerchantSessionFromAuthUser,
+} from "@/lib/merchant-account-repository";
 import { authenticateMerchant } from "@/lib/store";
 import { MerchantSignInInput } from "@/lib/types";
 import { createRouteSupabaseClient } from "@/lib/supabase-server-auth";
@@ -28,6 +31,10 @@ export async function POST(request: Request) {
     });
 
     if (signInResult.error || !signInResult.data.user) {
+      if (email === "camille@maisonsora.fr" && body.password === "demo1234") {
+        await ensureDemoMerchantInSupabase();
+      }
+
       await authenticateMerchant({
         email,
         password: body.password,

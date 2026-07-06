@@ -74,7 +74,7 @@ const TEMPLATE_CONFIGS: Record<PosterTemplateId, TemplateConfig> = {
     ctaWidth: 370,
     ctaHeight: 86,
     ctaRotation: 0,
-    headlineY: 292,
+    headlineY: 250,
     headlineSizeMultiplier: 1.52,
   },
   "terracotta-wheel": {
@@ -401,6 +401,9 @@ function renderQrAndCta(qrDataUrl: string, template: TemplateConfig) {
 function renderSteps(template: TemplateConfig, gameType: Campaign["gameType"]) {
   const action = gameType === "wheel" ? "Jouez" : "Grattez";
   const gift = "Gagnez";
+  const iconCenterY = 68;
+  const iconScale = 0.52;
+  const iconTop = iconCenterY - 24;
 
   return `
     <g transform="translate(28 954)">
@@ -411,7 +414,7 @@ function renderSteps(template: TemplateConfig, gameType: Campaign["gameType"]) {
         <circle cx="146" cy="38" r="17" fill="${template.accent}"/>
         <text x="146" y="44" text-anchor="middle" fill="#ffffff" font-family="${SAFE_FONT}" font-size="16" font-weight="900">1</text>
         <text x="168" y="90" text-anchor="middle" fill="${template.accentDark}" font-family="${SAFE_FONT}" font-size="22" font-weight="900">Scannez</text>
-        <g transform="translate(46 35) scale(0.56)">
+        <g transform="translate(51 ${iconTop}) scale(${iconScale})">
           <path d="M20 12 h40 a8 8 0 0 1 8 8 v60 a8 8 0 0 1 -8 8 h-40 a8 8 0 0 1 -8 -8 v-60 a8 8 0 0 1 8 -8 Z M28 26 h24 M28 40 h8 M44 40 h8 M28 54 h8 M44 54 h8 M28 68 h24" fill="none" stroke="#05070c" stroke-width="4" stroke-linecap="round"/>
         </g>
       </g>
@@ -419,7 +422,7 @@ function renderSteps(template: TemplateConfig, gameType: Campaign["gameType"]) {
         <circle cx="146" cy="38" r="17" fill="${template.accent}"/>
         <text x="146" y="44" text-anchor="middle" fill="#ffffff" font-family="${SAFE_FONT}" font-size="16" font-weight="900">2</text>
         <text x="168" y="90" text-anchor="middle" fill="${template.accentDark}" font-family="${SAFE_FONT}" font-size="22" font-weight="900">${action}</text>
-        <g transform="translate(50 34) scale(0.56)">
+        <g transform="translate(57 ${iconTop}) scale(${iconScale})">
           <circle cx="28" cy="50" r="30" fill="none" stroke="#05070c" stroke-width="4"/>
           <path d="M28 20 v60 M-2 50 h60 M8 30 l40 40 M48 30 l-40 40" stroke="#05070c" stroke-width="3"/>
         </g>
@@ -428,7 +431,7 @@ function renderSteps(template: TemplateConfig, gameType: Campaign["gameType"]) {
         <circle cx="146" cy="38" r="17" fill="${template.accent}"/>
         <text x="146" y="44" text-anchor="middle" fill="#ffffff" font-family="${SAFE_FONT}" font-size="16" font-weight="900">3</text>
         <text x="168" y="90" text-anchor="middle" fill="${template.accentDark}" font-family="${SAFE_FONT}" font-size="22" font-weight="900">${gift}</text>
-        <g transform="translate(48 47) scale(0.56)">
+        <g transform="translate(47 ${iconTop}) scale(${iconScale})">
           <path d="M18 42 h72 v46 h-72 Z M12 30 h84 v18 h-84 Z M54 30 v58 M34 30 c-26 -22 12 -32 20 0 M58 30 c8 -32 46 -22 20 0" fill="none" stroke="#05070c" stroke-width="4" stroke-linejoin="round"/>
         </g>
       </g>
@@ -441,8 +444,9 @@ export function buildPosterSvg(args: {
   poster: CampaignPosterSettings;
   prizes: Prize[] | Array<Pick<Prize, "label">>;
   qrDataUrl: string;
+  displayFontSource?: string;
 }) {
-  const { campaign, poster, prizes, qrDataUrl } = args;
+  const { campaign, poster, prizes, qrDataUrl, displayFontSource = "/fonts/anton-regular.ttf" } = args;
   const baseTemplate = TEMPLATE_CONFIGS[poster.templateId ?? "classic-wheel"] ?? TEMPLATE_CONFIGS["classic-wheel"];
   const template = {
     ...baseTemplate,
@@ -458,7 +462,7 @@ export function buildPosterSvg(args: {
           <![CDATA[
             @font-face {
               font-family: Anton;
-              src: url("/fonts/anton-regular.ttf") format("truetype");
+              src: url("${displayFontSource}") format("truetype");
               font-weight: 400;
               font-style: normal;
             }

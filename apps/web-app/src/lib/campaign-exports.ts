@@ -1,4 +1,6 @@
 import QRCode from "qrcode";
+import { readFileSync } from "node:fs";
+import path from "node:path";
 
 import { buildPosterSvg } from "@/lib/poster-render";
 import {
@@ -53,6 +55,20 @@ const POSTER_TEMPLATE_DEFAULTS: Record<
     },
   },
 };
+
+let antonFontDataUri: string | null = null;
+
+function getAntonFontDataUri() {
+  if (antonFontDataUri) {
+    return antonFontDataUri;
+  }
+
+  const fontPath = path.join(process.cwd(), "public", "fonts", "anton-regular.ttf");
+  const fontBuffer = readFileSync(fontPath);
+  antonFontDataUri = `data:font/truetype;base64,${fontBuffer.toString("base64")}`;
+
+  return antonFontDataUri;
+}
 
 function applyPosterTemplateDefaults(
   poster: CampaignPosterSettings,
@@ -142,5 +158,6 @@ export async function createCampaignPosterSvg(
     poster,
     prizes: performance.prizes,
     qrDataUrl,
+    displayFontSource: getAntonFontDataUri(),
   });
 }

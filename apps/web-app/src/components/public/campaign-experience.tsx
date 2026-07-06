@@ -31,7 +31,27 @@ type ExperienceStage =
   | "ready"
   | "collect"
   | "success"
-  | "lost";
+  | "lost"
+  | "blocked";
+
+function withHexAlpha(color: string | undefined, alpha: string) {
+  const normalized = color?.trim();
+
+  if (!normalized) {
+    return `#5b27d9${alpha}`;
+  }
+
+  if (/^#[0-9a-f]{3}$/i.test(normalized)) {
+    const [, r, g, b] = normalized;
+    return `#${r}${r}${g}${g}${b}${b}${alpha}`;
+  }
+
+  if (/^#[0-9a-f]{6}$/i.test(normalized)) {
+    return `${normalized}${alpha}`;
+  }
+
+  return normalized;
+}
 
 function buildWheelSegments(campaign: PublicCampaign) {
   const winners = campaign.prizes.map((prize) => ({
@@ -411,8 +431,7 @@ export function CampaignExperience({
         : "font-display";
   const showBottomState =
     (stage === "idle" && campaign.gameType !== "wheel") ||
-    (stage === "ready" && campaign.gameType !== "wheel") ||
-    stage === "lost";
+    (stage === "ready" && campaign.gameType !== "wheel");
 
   useEffect(() => {
     async function loadCampaign() {
@@ -453,7 +472,14 @@ export function CampaignExperience({
       });
 
       if (!response.ok) {
-        const payload = (await response.json().catch(() => null)) as { error?: string } | null;
+        const payload = (await response.json().catch(() => null)) as {
+          error?: string;
+          code?: string;
+        } | null;
+        if (payload?.code === "already_played_today") {
+          setStage("blocked");
+          return;
+        }
         throw new Error(payload?.error ?? "Impossible de préparer la partie.");
       }
 
@@ -538,7 +564,7 @@ export function CampaignExperience({
     campaign.presentation.background.mode === "image" &&
     campaign.presentation.background.imageUrl
       ? `linear-gradient(rgba(0,0,0,0.08), rgba(0,0,0,0.18)), url("${campaign.presentation.background.imageUrl}")`
-      : `radial-gradient(circle at 50% 8%, ${campaign.accent.signal}33, transparent 32%), linear-gradient(180deg, transparent, rgba(255,255,255,0.08))`;
+      : `radial-gradient(circle at 50% 50%, ${withHexAlpha(campaign.presentation.wheel.loseColor ?? campaign.accent.signal, "33")}, transparent 50%), linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.08))`;
 
   return (
     <div
@@ -567,9 +593,14 @@ export function CampaignExperience({
           </div>
         ) : null}
 
+        {campaign.logoMode === "none" ||
+        (campaign.logoMode === "image" && !campaign.logoUrl) ? (
+          <div aria-hidden="true" className="h-5" />
+        ) : null}
+
         <div className={headingAlignmentClass}>
           <h1
-            className={`${headingFontClass} font-semibold leading-[0.96] text-[#151826]`}
+            className={`${headingFontClass} whitespace-pre-line font-semibold leading-[0.96] text-[#151826]`}
             style={{
               color: campaign.presentation.heading.textColor,
               fontSize: `${campaign.presentation.heading.fontSizePx}px`,
@@ -640,7 +671,7 @@ export function CampaignExperience({
             </div>
           ) : null}
 
-          {stage === "lost" ? (
+          {false ? (
             <div className="rounded-[32px] border border-white/80 bg-white/84 p-6 text-center shadow-[0_24px_48px_rgba(17,24,39,0.08)] backdrop-blur">
               <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#f3f4f8] text-3xl">
                 :(
@@ -663,6 +694,38 @@ export function CampaignExperience({
       </button>
 
       <RulesModal campaign={campaign} open={rulesOpen} onClose={() => setRulesOpen(false)} />
+
+      <PublicModal open={stage === "lost"}>
+        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#f3f4f8] text-3xl font-semibold text-[#141826] shadow-[0_20px_45px_rgba(17,24,39,0.10)]">
+          !
+        </div>
+        <h2 className="mt-6 text-center text-[2rem] font-semibold leading-[1.05] text-[#121826]">
+          Perdu
+        </h2>
+        <p className="mt-4 text-center text-lg leading-8 text-[#5f6678]">
+          Merci pour votre participation. Revenez bientôt pour une nouvelle chance.
+        </p>
+      </PublicModal>
+
+      <PublicModal open={stage === "blocked"}>
+        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#f3f4f8] text-3xl font-semibold text-[#141826] shadow-[0_20px_45px_rgba(17,24,39,0.10)]">
+          !
+        </div>
+        <h2 className="mt-6 text-center text-[2rem] font-semibold leading-[1.05] text-[#121826]">
+          Vous avez déjà joué aujourd&apos;hui
+        </h2>
+        <p className="mt-4 text-center text-lg leading-8 text-[#5f6678]">
+          Une seule participation est possible par jour. Revenez demain pour tenter votre chance
+          à nouveau.
+        </p>
+        <button
+          type="button"
+          onClick={() => setStage("idle")}
+          className="mt-6 w-full rounded-[20px] bg-[#111827] px-5 py-4 text-lg font-semibold text-white shadow-[0_12px_24px_rgba(17,24,39,0.16)]"
+        >
+          Compris
+        </button>
+      </PublicModal>
 
       <PublicModal open={stage === "intro"}>
         <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-[#f7f7fb] text-4xl font-semibold text-[#1a2f76] shadow-[0_20px_45px_rgba(17,24,39,0.10)]">
@@ -786,14 +849,10 @@ export function CampaignExperience({
           </p>
 
           <div className="mt-6 rounded-[22px] bg-[#fff4cb] px-5 py-4 text-left text-[1rem] leading-7 text-[#4d3810]">
-            {campaign.rewardRules.availabilityDurationDays === 0 ? (
-              <p>Disponible dès maintenant au comptoir.</p>
-            ) : (
-              <p>
-                Vous avez entre le {availableDate ?? "maintenant"} et le {expiryDate ?? "bientôt"}{" "}
-                pour venir le récupérer.
-              </p>
-            )}
+            <p>
+              Vous avez entre le {availableDate ?? "maintenant"} et le {expiryDate ?? "bientôt"}{" "}
+              pour venir le récupérer.
+            </p>
           </div>
 
           {campaign.rewardRules.purchaseRequired ? (
