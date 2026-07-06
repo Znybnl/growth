@@ -286,7 +286,7 @@ export function LandingDemo() {
           </button>
         </div>
 
-        <div className="grid content-center gap-5">
+        <div className="hidden content-center gap-5 md:grid">
           <div className="rounded-[20px] border border-[#e5e7eb] bg-white p-5 text-left shadow-[0_0_24px_rgba(55,65,81,0.08)]">
             <div className="flex flex-col gap-4 border-b border-[#e5e7eb] pb-4 sm:flex-row sm:items-center sm:justify-between">
               <div>

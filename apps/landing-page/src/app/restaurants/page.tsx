@@ -119,21 +119,25 @@ const marketProofs = [
 
 const pilotSimulation = [
   {
+    icon: QrCode,
     value: "200",
     label: "scans en salle",
     detail: "affiche, chevalet, ticket ou comptoir",
   },
   {
+    icon: Trophy,
     value: "140",
     label: "participations",
     detail: "clients qui entrent dans le parcours",
   },
   {
+    icon: Mail,
     value: "70",
     label: "contacts clients",
     detail: "prénom et e-mail exploitables",
   },
   {
+    icon: Ticket,
     value: "20",
     label: "coupons présentés",
     detail: "retours mesurables en restaurant",
@@ -703,7 +707,7 @@ export default function RestaurantsPage() {
               Marketing terrain pour restaurants
             </span>
             <h1 className="mx-auto mt-7 max-w-4xl text-[42px] font-black leading-[1.03] tracking-[-0.06em] text-[#0f172b] md:text-[64px]">
-              Transformez chaque table en avis Google, contact client et prochaine visite.
+              Transformez chaque table en avis Google, et fidélisez vos clients
             </h1>
             <p className="mx-auto mt-6 max-w-3xl text-lg leading-8 text-[#475569]">
               Okado installe une animation QR code simple dans votre restaurant : le client scanne,
@@ -908,18 +912,21 @@ export default function RestaurantsPage() {
             <div className="rounded-[22px] bg-[#fffaf4] p-5">
               <Star className="h-10 w-10 fill-[#d6a51f] text-[#d6a51f]" />
               <p className="mt-5 text-2xl font-black tracking-[-0.05em]">
-                Exemple de séquence avis Google
+                Exemple de séquence
               </p>
-              <div className="mt-5 space-y-3 text-sm leading-6 text-[#475569]">
-                <p>
-                  <strong className="text-[#0f172b]">Participation 1 :</strong> laisser un avis Google.
-                </p>
-                <p>
-                  <strong className="text-[#0f172b]">Participation 2 :</strong> suivre Instagram.
-                </p>
-                <p>
-                  <strong className="text-[#0f172b]">Participation 3 :</strong> collecte e-mail ou lien personnalisé.
-                </p>
+              <div className="mt-5 grid gap-3">
+                {[
+                  ["Participation 1", "Laisser un avis Google."],
+                  ["Participation 2", "Suivre Instagram."],
+                  ["Participation 3", "Collecte e-mail ou lien personnalisé."],
+                ].map(([title, text]) => (
+                  <div key={title} className="rounded-[16px] border border-[#f0dfcf] bg-white p-4">
+                    <p className="text-xs font-black uppercase tracking-[0.16em] text-[#6c00f6]">
+                      {title}
+                    </p>
+                    <p className="mt-2 text-sm font-semibold leading-6 text-[#475569]">{text}</p>
+                  </div>
+                ))}
               </div>
               <p className="mt-5 rounded-[14px] bg-white p-4 text-sm font-semibold text-[#31190b]">
                 Objectif : créer une croissance progressive des avis sans sollicitation lourde au moment du service.
@@ -1034,7 +1041,12 @@ export default function RestaurantsPage() {
           <div className="grid gap-3 sm:grid-cols-4">
             {pilotSimulation.map((item) => (
               <div key={item.label} className="rounded-[22px] bg-[#fffaf4] p-5">
-                <p className="text-4xl font-black tracking-[-0.07em] text-[#6c00f6]">{item.value}</p>
+                <div className="flex items-start justify-between gap-3">
+                  <p className="text-4xl font-black tracking-[-0.07em] text-[#6c00f6]">{item.value}</p>
+                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[12px] bg-white text-[#6c00f6] shadow-[0_12px_24px_rgba(49,25,11,0.08)]">
+                    <item.icon className="h-5 w-5" aria-hidden="true" />
+                  </span>
+                </div>
                 <p className="mt-2 text-sm font-black tracking-[-0.03em] text-[#0f172b]">
                   {item.label}
                 </p>
@@ -1067,7 +1079,7 @@ export default function RestaurantsPage() {
           </div>
           <div className="rounded-[28px] border border-[#e5e7eb] bg-white p-6 shadow-[0_22px_70px_rgba(15,23,43,0.08)]">
             <p className="text-sm font-black uppercase tracking-[0.16em] text-[#6c00f6]">
-              Exemple de mois pilote
+              Mois pilote
             </p>
             <div className="grid gap-4 sm:grid-cols-2">
               {[
@@ -1083,18 +1095,10 @@ export default function RestaurantsPage() {
               ))}
             </div>
             <div className="mt-5 rounded-[18px] bg-[#31190b] p-5 text-white">
-              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#ffddb4]">
-                Exemple
-              </p>
               <p className="mt-3 text-lg font-black leading-7">
                 24 clients qui reviennent avec un panier moyen de 22 € représentent 528 € de chiffre
                 d&apos;affaires additionnel potentiel, hors valeur des avis et des contacts collectés.
               </p>
-            </div>
-            <div className="mt-5 grid gap-3 rounded-[18px] border border-[#e5e7eb] bg-[#f8fafc] p-4 text-sm font-semibold text-[#334155] sm:grid-cols-3">
-              <span>1 affiche posée</span>
-              <span>1 lot maîtrisé</span>
-              <span>1 tableau de suivi</span>
             </div>
           </div>
         </div>
@@ -1103,7 +1107,7 @@ export default function RestaurantsPage() {
       <section className="mx-auto max-w-[1200px] px-5 py-18 md:py-24">
         <SectionTitle
           eyebrow="Mise en place"
-          title="Une méthode de lancement restaurant en moins d'une journée."
+          title="Une méthode de lancement restaurant en moins de 10 minutes."
           text="L'objectif n'est pas d'ajouter une charge à l'équipe. L'animation doit être compréhensible sans explication et pilotable depuis un tableau de bord simple."
         />
         <div className="mt-12 grid gap-4">
@@ -1141,17 +1145,32 @@ export default function RestaurantsPage() {
               qui génèrent le plus de scans et de participations.
             </p>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <RestaurantQrPhotoVisual />
-            {placementIdeas.map((item) => (
-              <div
-                key={item}
-                className="flex items-center gap-3 rounded-[18px] border border-[#e5e7eb] bg-[#f8fafc] p-4 text-sm font-semibold text-[#334155]"
-              >
-                <MapPin className="h-5 w-5 text-[#6c00f6]" />
-                {item}
-              </div>
-            ))}
+          <div className="grid gap-5 lg:grid-cols-[1.05fr_0.95fr]">
+            <div className="lg:row-span-2">
+              <RestaurantQrPhotoVisual />
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+              {placementIdeas.slice(0, 4).map((item) => (
+                <div
+                  key={item}
+                  className="flex items-center gap-3 rounded-[18px] border border-[#e5e7eb] bg-[#f8fafc] p-4 text-sm font-semibold text-[#334155]"
+                >
+                  <MapPin className="h-5 w-5 text-[#6c00f6]" />
+                  {item}
+                </div>
+              ))}
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+              {placementIdeas.slice(4).map((item) => (
+                <div
+                  key={item}
+                  className="flex items-center gap-3 rounded-[18px] border border-[#f0dfcf] bg-[#fffaf4] p-4 text-sm font-semibold text-[#334155]"
+                >
+                  <MapPin className="h-5 w-5 text-[#d6a51f]" />
+                  {item}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -1162,24 +1181,42 @@ export default function RestaurantsPage() {
           title="Pourquoi utiliser un jeu QR code plutôt qu'une simple carte de fidélité ?"
           text="Le point clé n'est pas seulement la récompense : c'est la donnée, la mesure et le moment de participation."
         />
-        <div className="mt-12 overflow-hidden rounded-[28px] border border-[#f0dfcf] bg-white shadow-[0_22px_70px_rgba(49,25,11,0.08)]">
-          <div className="grid grid-cols-4 bg-[#31190b] px-5 py-4 text-sm font-black uppercase tracking-[0.12em] text-white">
-            <span>Solution</span>
-            <span>Force</span>
-            <span>Limite</span>
-            <span>Terrain</span>
-          </div>
+        <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-5">
           {comparisonRows.map((row) => (
-            <div
+            <article
               key={row[0]}
-              className="grid grid-cols-4 gap-4 border-t border-[#f0dfcf] px-5 py-4 text-sm text-[#475569]"
+              className={`rounded-[24px] border p-5 shadow-[0_18px_50px_rgba(49,25,11,0.07)] ${
+                row[0] === "Okado"
+                  ? "border-[#6c00f6]/30 bg-[#6c00f6] text-white"
+                  : "border-[#f0dfcf] bg-white text-[#475569]"
+              }`}
             >
-              {row.map((cell, index) => (
-                <span key={cell} className={index === 0 ? "font-black text-[#0f172b]" : ""}>
-                  {cell}
-                </span>
-              ))}
-            </div>
+              <p
+                className={`text-lg font-black tracking-[-0.04em] ${
+                  row[0] === "Okado" ? "text-white" : "text-[#0f172b]"
+                }`}
+              >
+                {row[0]}
+              </p>
+              <div className="mt-5 space-y-4 text-sm leading-6">
+                {[
+                  ["Force", row[1]],
+                  ["Limite", row[2]],
+                  ["Terrain", row[3]],
+                ].map(([label, value]) => (
+                  <div key={label}>
+                    <p
+                      className={`text-[11px] font-black uppercase tracking-[0.16em] ${
+                        row[0] === "Okado" ? "text-white/60" : "text-[#94a3b8]"
+                      }`}
+                    >
+                      {label}
+                    </p>
+                    <p className="mt-1 font-semibold">{value}</p>
+                  </div>
+                ))}
+              </div>
+            </article>
           ))}
         </div>
       </section>
