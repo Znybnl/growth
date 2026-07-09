@@ -3,6 +3,9 @@ import { NextResponse } from "next/server";
 import { createAffiliateReferralForMerchant } from "@/lib/affiliate-repository";
 import { syncMerchantContactToBrevo } from "@/lib/brevo";
 import { captureProductEvent, merchantDistinctId } from "@/lib/product-analytics";
+import { getPublicErrorStatus } from "@/lib/public-api";
+import { assertPersistentPublicRateLimit } from "@/lib/public-security-store";
+import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
 import { createMerchantAccount } from "@/lib/store";
 import { createRouteSupabaseClient } from "@/lib/supabase-server-auth";
 import { MerchantSignUpInput } from "@/lib/types";
@@ -17,7 +20,13 @@ export async function POST(request: Request) {
   const provisionalResponse = NextResponse.json({});
 
   try {
+    assertTrustedMutationRequest(request);
     const body = (await request.json()) as MerchantSignUpInput;
+    await assertPersistentPublicRateLimit(request, {
+      key: `auth-signup:${body.email?.trim().toLowerCase() ?? "unknown"}`,
+      limit: 5,
+      windowMs: 30 * 60 * 1000,
+    });
     const session = await createMerchantAccount(body);
     const supabase = createRouteSupabaseClient({
       request,
@@ -79,7 +88,7 @@ export async function POST(request: Request) {
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Inscription impossible." },
-      { status: 400 },
+      { status: getRequestSecurityErrorStatus(error) === 403 ? 403 : getPublicErrorStatus(error) },
     );
   }
 }

@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 
 import {
-  assertPublicRateLimit,
   getPublicErrorStatus,
   getPublicRetryAfter,
   isValidPublicEmail,
@@ -10,6 +9,7 @@ import {
   normalizePublicEmail,
   normalizePublicFirstName,
 } from "@/lib/public-api";
+import { assertPersistentPublicRateLimit } from "@/lib/public-security-store";
 import { captureProductEvent } from "@/lib/product-analytics";
 import { sendRewardEmail } from "@/lib/reward-email";
 import { finalizeDrawSession } from "@/lib/store";
@@ -34,7 +34,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    assertPublicRateLimit(request, {
+    await assertPersistentPublicRateLimit(request, {
       key: `draw-finalize:${sessionId}:${email}`,
       limit: 6,
       windowMs: 10 * 60 * 1000,

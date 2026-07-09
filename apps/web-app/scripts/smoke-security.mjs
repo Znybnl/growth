@@ -83,6 +83,24 @@ async function main() {
   });
   console.log("✓ Entrées publiques invalides refusées");
 
+  await expectStatus("/api/auth/signin", [403], {
+    method: "POST",
+    headers: { Origin: "https://evil.example" },
+    body: JSON.stringify({ email, password }),
+  });
+  await expectStatus("/api/auth/signup", [403], {
+    method: "POST",
+    headers: { Origin: "https://evil.example" },
+    body: JSON.stringify({
+      firstName: "Evil",
+      lastName: "Origin",
+      email: "evil@example.com",
+      password: "demo1234",
+      companyName: "Evil",
+    }),
+  });
+  console.log("✓ Auth cross-origin refusée");
+
   await signIn();
   console.log("✓ Session marchand standard ouverte");
 

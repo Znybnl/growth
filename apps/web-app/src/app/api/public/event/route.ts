@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 
 import {
-  assertPublicRateLimit,
   getPublicErrorStatus,
   getPublicRetryAfter,
   isAllowedPublicEventType,
   isValidPublicIdentifier,
   sanitizePublicMetadata,
 } from "@/lib/public-api";
+import { assertPersistentPublicRateLimit } from "@/lib/public-security-store";
 import { markActionConfirmed, recordEvent } from "@/lib/store";
 import { EventType } from "@/lib/types";
 
@@ -26,7 +26,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    assertPublicRateLimit(request, {
+    await assertPersistentPublicRateLimit(request, {
       key: `public-event:${body.campaignId.trim()}:${body.eventType}`,
       limit: 40,
       windowMs: 60 * 1000,

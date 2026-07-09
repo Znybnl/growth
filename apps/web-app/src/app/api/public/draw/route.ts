@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 import {
   assertDailyParticipationCookie,
-  assertDailyParticipationDeviceLock,
-  assertPublicRateLimit,
   getDailyParticipationCookieName,
   getDailyParticipationCookieOptions,
   getDailyParticipationCookieValue,
@@ -16,6 +14,10 @@ import {
   normalizePublicEmail,
   normalizePublicFirstName,
 } from "@/lib/public-api";
+import {
+  assertPersistentDailyParticipationLock,
+  assertPersistentPublicRateLimit,
+} from "@/lib/public-security-store";
 import { captureProductEvent } from "@/lib/product-analytics";
 import { sendRewardEmail } from "@/lib/reward-email";
 import { logSupportEvent } from "@/lib/support-log";
@@ -50,19 +52,19 @@ export async function POST(request: NextRequest) {
     const cookieName = getDailyParticipationCookieName(campaignId);
     assertDailyParticipationCookie(request.cookies.get(cookieName)?.value, campaignId);
 
-    assertPublicRateLimit(request, {
+    await assertPersistentPublicRateLimit(request, {
       key: `draw-legacy:${campaignId}:${email}`,
       limit: 6,
       windowMs: 10 * 60 * 1000,
     });
 
+    await assertPersistentDailyParticipationLock(request, campaignId);
     const result = await drawForLead({
       ...body,
       campaignId,
       firstName,
       email,
     });
-    assertDailyParticipationDeviceLock(request, campaignId);
     logSupportEvent("info", "draw_finalized", {
       campaignId: result.campaign.id,
       leadId: result.lead.id,

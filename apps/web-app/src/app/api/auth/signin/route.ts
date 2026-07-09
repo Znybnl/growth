@@ -4,8 +4,11 @@ import {
   ensureDemoMerchantInSupabase,
   resolveMerchantSessionFromAuthUser,
 } from "@/lib/merchant-account-repository";
+import { getPublicErrorStatus } from "@/lib/public-api";
 import { authenticateMerchant } from "@/lib/store";
 import { MerchantSignInInput } from "@/lib/types";
+import { assertPersistentPublicRateLimit } from "@/lib/public-security-store";
+import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
 import { createRouteSupabaseClient } from "@/lib/supabase-server-auth";
 
 function copyCookies(from: NextResponse, to: NextResponse) {
@@ -18,8 +21,14 @@ export async function POST(request: Request) {
   const provisionalResponse = NextResponse.json({});
 
   try {
+    assertTrustedMutationRequest(request);
     const body = (await request.json()) as MerchantSignInInput;
     const email = body.email.trim().toLowerCase();
+    await assertPersistentPublicRateLimit(request, {
+      key: `auth-signin:${email}`,
+      limit: 8,
+      windowMs: 10 * 60 * 1000,
+    });
     const supabase = createRouteSupabaseClient({
       request,
       response: provisionalResponse,
@@ -68,7 +77,7 @@ export async function POST(request: Request) {
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Connexion impossible." },
-      { status: 400 },
+      { status: getRequestSecurityErrorStatus(error) === 403 ? 403 : getPublicErrorStatus(error) },
     );
   }
 }

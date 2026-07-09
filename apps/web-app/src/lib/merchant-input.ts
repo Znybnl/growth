@@ -111,7 +111,7 @@ function normalizeImageSource(value: unknown) {
     return "";
   }
 
-  if (/^data:image\/(png|jpe?g|webp|gif|svg\+xml);base64,[a-z0-9+/=\s]+$/i.test(input)) {
+  if (/^data:image\/(png|jpe?g|webp|gif);base64,[a-z0-9+/=\s]+$/i.test(input)) {
     return input.replace(/\s/g, "");
   }
 

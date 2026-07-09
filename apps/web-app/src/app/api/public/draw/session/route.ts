@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import {
-  assertPublicRateLimit,
   assertDailyParticipationCookie,
-  assertDailyParticipationDeviceLock,
   getDailyParticipationCookieName,
   getDailyParticipationCookieOptions,
   getDailyParticipationCookieValue,
@@ -12,6 +10,10 @@ import {
   isDailyParticipationError,
   isValidPublicIdentifier,
 } from "@/lib/public-api";
+import {
+  assertPersistentDailyParticipationLock,
+  assertPersistentPublicRateLimit,
+} from "@/lib/public-security-store";
 import { captureProductEvent } from "@/lib/product-analytics";
 import { createDrawSession } from "@/lib/store";
 import { logSupportEvent } from "@/lib/support-log";
@@ -29,14 +31,14 @@ export async function POST(request: NextRequest) {
     const cookieName = getDailyParticipationCookieName(campaignId);
     assertDailyParticipationCookie(request.cookies.get(cookieName)?.value, campaignId);
 
-    assertPublicRateLimit(request, {
+    await assertPersistentPublicRateLimit(request, {
       key: `draw-session:${campaignId}`,
       limit: 12,
       windowMs: 60 * 1000,
     });
 
+    await assertPersistentDailyParticipationLock(request, campaignId);
     const result = (await createDrawSession({ campaignId })) as CreateDrawSessionResult;
-    assertDailyParticipationDeviceLock(request, campaignId);
     logSupportEvent("info", "draw_started", {
       campaignId: result.campaign.id,
       sessionId: result.session.id,

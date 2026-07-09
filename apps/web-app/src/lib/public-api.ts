@@ -68,6 +68,14 @@ export function createDailyParticipationError() {
   return error;
 }
 
+export function createPublicRateLimitError(retryAfterSeconds: number) {
+  const error = new Error("Trop de tentatives. Réessayez dans un instant.");
+  (error as Error & { status?: number; retryAfterSeconds?: number }).status = 429;
+  (error as Error & { status?: number; retryAfterSeconds?: number }).retryAfterSeconds =
+    Math.max(1, retryAfterSeconds);
+  return error;
+}
+
 export function isDailyParticipationError(error: unknown) {
   return (
     error instanceof Error &&
@@ -165,11 +173,7 @@ export function assertPublicRateLimit(request: Request, options: RateLimitOption
 
   if (bucket.count >= options.limit) {
     const retryAfterSeconds = Math.max(1, Math.ceil((bucket.resetAt - now) / 1000));
-    const error = new Error("Trop de tentatives. Réessayez dans un instant.");
-    (error as Error & { status?: number; retryAfterSeconds?: number }).status = 429;
-    (error as Error & { status?: number; retryAfterSeconds?: number }).retryAfterSeconds =
-      retryAfterSeconds;
-    throw error;
+    throw createPublicRateLimitError(retryAfterSeconds);
   }
 
   bucket.count += 1;

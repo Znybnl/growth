@@ -203,6 +203,54 @@ function checkConventions(issues) {
   }
 }
 
+function checkSecurityHardeningFiles(issues) {
+  const repoRoot = path.resolve(root, "../..");
+  const migrationPath = path.join(
+    repoRoot,
+    "supabase",
+    "migrations",
+    "20260710_security_p0_hardening.sql",
+  );
+  const publicSecurityStorePath = path.join(root, "src", "lib", "public-security-store.ts");
+
+  if (!fs.existsSync(migrationPath)) {
+    pushIssue(
+      issues,
+      "error",
+      "Migration P0 sécurité introuvable.",
+      "Ajouter et jouer supabase/migrations/20260710_security_p0_hardening.sql.",
+    );
+    return;
+  }
+
+  const migration = fs.readFileSync(migrationPath, "utf8");
+  for (const expected of [
+    "enable row level security",
+    "public.public_rate_limits",
+    "public.daily_participation_locks",
+    "consume_public_rate_limit",
+    "claim_daily_participation_lock",
+  ]) {
+    if (!migration.includes(expected)) {
+      pushIssue(
+        issues,
+        "error",
+        `Migration P0 sécurité incomplète: ${expected} absent.`,
+        "Vérifier la migration de durcissement avant go-live.",
+      );
+    }
+  }
+
+  if (!fs.existsSync(publicSecurityStorePath)) {
+    pushIssue(
+      issues,
+      "error",
+      "Helper de rate-limit persistant introuvable.",
+      "Restaurer src/lib/public-security-store.ts.",
+    );
+  }
+}
+
 function printReport(issues) {
   console.log("\nOkado Go-To-Market technical check");
   console.log("==================================\n");
@@ -238,6 +286,7 @@ loadDotenvLocal();
 const issues = [];
 checkRequiredEnv(issues);
 checkConventions(issues);
+checkSecurityHardeningFiles(issues);
 
 if (shouldCheckLive) {
   await checkLiveEndpoint(issues);
