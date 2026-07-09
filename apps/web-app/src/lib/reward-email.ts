@@ -10,6 +10,7 @@ import {
   renderRewardEmailHtml,
   renderRewardEmailText,
   resolveRewardEmailVariables,
+  upgradeLegacyRewardEmailSettings,
 } from "@/lib/email-settings";
 import { formatDateTime } from "@/lib/format";
 import { captureProductEvent } from "@/lib/product-analytics";
@@ -27,6 +28,7 @@ type SendRewardEmailInput = {
   leadEmail: string;
   prizeLabel: string;
   redemptionCode: string;
+  rewardWonAt?: string;
   rewardAvailableAt?: string;
   rewardExpiresAt?: string;
   purchaseRequired?: boolean;
@@ -52,6 +54,11 @@ function buildAvailabilityMessage(input: SendRewardEmailInput) {
   return "Disponible dès maintenant au comptoir.";
 }
 
+function formatSenderName(name: string, email: string) {
+  const safeName = name.replace(/[<>"]/g, "").trim() || "Okado";
+  return `${safeName} <${email}>`;
+}
+
 export async function sendRewardEmail(input: SendRewardEmailInput) {
   allowLocalTlsBypass();
 
@@ -68,6 +75,7 @@ export async function sendRewardEmail(input: SendRewardEmailInput) {
   const redeemUrl = `${input.origin}/redeem/${encodeURIComponent(input.redemptionCode)}`;
   const qrUrl = `${input.origin}/api/public/redeem/${encodeURIComponent(input.redemptionCode)}/qr`;
   const availabilityMessage = buildAvailabilityMessage(input);
+  const rewardDate = formatDateTime(input.rewardWonAt ?? new Date().toISOString());
   const expiryMessage = input.rewardExpiresAt
     ? `Valable jusqu'au ${formatDateTime(input.rewardExpiresAt)}.`
     : "";
@@ -85,16 +93,18 @@ export async function sendRewardEmail(input: SendRewardEmailInput) {
     qrUrl,
     rewardAvailability: availabilityMessage,
     rewardExpiry: expiryMessage,
+    rewardDate,
     purchaseCondition: purchaseMessage,
     usageConditions: usageConditionsMessage,
   });
-  const subject = renderEmailTemplate(input.emailSettings.subject, variables);
+  const emailSettings = upgradeLegacyRewardEmailSettings(input.emailSettings, input.merchantName);
+  const subject = renderEmailTemplate(emailSettings.subject, variables);
   const delivery = await upsertRewardEmailDeliveryInSupabase({
     campaignId: input.campaignId,
     leadId: input.leadId,
     recipientEmail: input.leadEmail,
     senderEmail: from,
-    replyToEmail: input.emailSettings.replyTo,
+    replyToEmail: emailSettings.replyTo,
     subject,
     metadata: {
       redemptionCode: input.redemptionCode,
@@ -105,12 +115,12 @@ export async function sendRewardEmail(input: SendRewardEmailInput) {
 
   try {
     const result = await resend.emails.send({
-      from,
+      from: formatSenderName(emailSettings.senderName || input.merchantName, from),
       to: input.leadEmail,
       subject,
-      replyTo: input.emailSettings.replyTo || undefined,
-      text: renderRewardEmailText(input.emailSettings, variables),
-      html: renderRewardEmailHtml(input.emailSettings, variables),
+      replyTo: emailSettings.replyTo || undefined,
+      text: renderRewardEmailText(emailSettings, variables),
+      html: renderRewardEmailHtml(emailSettings, variables),
     });
 
     if (result.error) {

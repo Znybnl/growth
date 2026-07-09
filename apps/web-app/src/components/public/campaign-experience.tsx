@@ -54,11 +54,14 @@ function withHexAlpha(color: string | undefined, alpha: string) {
 }
 
 function buildWheelSegments(campaign: PublicCampaign) {
-  const winners = campaign.prizes.map((prize) => ({
-    id: prize.id,
-    label: prize.label.toUpperCase(),
-    tone: "win" as const,
-  }));
+  const winners = campaign.prizes.flatMap((prize) => {
+    const visualCount = prize.probability >= 20 ? 2 : 1;
+    return Array.from({ length: visualCount }, (_, index) => ({
+      id: index === 0 ? prize.id : `${prize.id}-visual-${index}`,
+      label: prize.label.toUpperCase(),
+      tone: "win" as const,
+    }));
+  });
   const minimumSegmentCount = 10;
   const loserCount = Math.max(
     minimumSegmentCount - winners.length,
@@ -86,11 +89,27 @@ function buildWheelSegments(campaign: PublicCampaign) {
   return segments.length ? segments : losers;
 }
 
-function buildRestaurantPopHeadingLines(text: string) {
-  return text
+function getRestaurantPopTextLines(text: string) {
+  const lines = text
     .split(/\r?\n/)
     .map((line) => line.trim())
-    .filter(Boolean)
+    .filter(Boolean);
+
+  if (lines.length !== 1) {
+    return lines;
+  }
+
+  const words = lines[0].split(/\s+/).filter(Boolean);
+
+  if (words.length < 3) {
+    return lines;
+  }
+
+  return [words.slice(0, -1).join(" "), words.slice(-1).join(" ")];
+}
+
+function buildRestaurantPopHeadingLines(text: string) {
+  return getRestaurantPopTextLines(text)
     .map((line, lineIndex) => {
       const parts = line.split(/(\s+)/).map((part) => ({
         text: part,
@@ -414,6 +433,7 @@ export function CampaignExperience({
   const [error, setError] = useState<string | null>(null);
   const [actionVisited, setActionVisited] = useState(false);
   const [rulesOpen, setRulesOpen] = useState(false);
+  const [autoSpinKey, setAutoSpinKey] = useState<string | null>(null);
 
   const segments = useMemo(() => buildWheelSegments(campaign), [campaign]);
   const winningSegmentId =
@@ -491,7 +511,7 @@ export function CampaignExperience({
     });
   }
 
-  async function prepareSession() {
+  async function prepareSession(nextStage: ExperienceStage = "ready") {
     setError(null);
     setIsLoading(true);
 
@@ -518,7 +538,7 @@ export function CampaignExperience({
       setPreviewResult(payload);
       setDrawSession(payload.session);
       setCampaign(payload.campaign);
-      setStage("ready");
+      setStage(nextStage);
     } catch (sessionError) {
       setError(
         sessionError instanceof Error ? sessionError.message : "Une erreur est survenue.",
@@ -531,15 +551,23 @@ export function CampaignExperience({
   async function openActionAndTrack() {
     setActionVisited(false);
     setError(null);
-    setStage("intro");
-  }
-
-  async function handleSpinStart() {
-    if (drawSession || isLoading) {
+    if (drawSession) {
+      setStage("intro");
       return;
     }
 
-    await prepareSession();
+    await prepareSession("intro");
+  }
+
+  async function launchPreparedGame() {
+    if (!drawSession) {
+      await prepareSession("ready");
+      setAutoSpinKey(`spin-${Date.now()}`);
+      return;
+    }
+
+    setStage("ready");
+    setAutoSpinKey(`spin-${drawSession.id}`);
   }
 
   async function submitWinnerForm(event: React.FormEvent<HTMLFormElement>) {
@@ -653,7 +681,7 @@ export function CampaignExperience({
             style={{
               color: campaign.presentation.heading.textColor,
               fontSize: `${campaign.presentation.heading.fontSizePx}px`,
-              fontWeight: campaign.presentation.heading.fontWeight ?? 500,
+              fontWeight: campaign.presentation.heading.fontWeight ?? 600,
             }}
           >
             {isRestaurantPopTemplate
@@ -700,6 +728,7 @@ export function CampaignExperience({
                 buttonLabel="JOUER"
                 framing="public"
                 onButtonClick={() => void openActionAndTrack()}
+                autoSpinKey={autoSpinKey}
                 onSpinEnd={() => void handleGameReveal()}
               />
             </div>
@@ -835,9 +864,9 @@ export function CampaignExperience({
           {!currentAction || actionVisited ? (
             <button
               type="button"
-              onClick={() => void handleSpinStart()}
+              onClick={() => void launchPreparedGame()}
               disabled={isLoading}
-              className="w-full rounded-[20px] bg-[#111827] px-5 py-4 text-lg font-semibold text-white shadow-[0_12px_24px_rgba(17,24,39,0.16)] disabled:opacity-60"
+              className="w-full rounded-[20px] bg-[#111827] px-5 py-4 text-xl font-semibold text-white shadow-[0_12px_24px_rgba(17,24,39,0.16)] disabled:opacity-60"
             >
               {isLoading ? "Préparation..." : "Jouer"}
             </button>
@@ -930,7 +959,7 @@ export function CampaignExperience({
           ) : null}
 
           {resolvedUsageConditions ? (
-            <div className="mt-4 rounded-[22px] bg-[#fff8e8] px-5 py-4 text-left text-sm leading-6 text-[#6c5313]">
+            <div className="mt-4 rounded-[22px] bg-[#fff4cb] px-5 py-4 text-left text-[1rem] leading-7 text-[#4d3810]">
               <p className="text-xs uppercase tracking-[0.2em] text-[#8a6a18]">
                 Conditions d&apos;utilisation
               </p>

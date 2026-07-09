@@ -11,6 +11,13 @@ type RedeemPageProps = {
   }>;
 };
 
+function isRewardExpired(status: string, rewardExpiresAt?: string) {
+  return (
+    status === "expired" ||
+    (rewardExpiresAt ? new Date(rewardExpiresAt).getTime() < Date.now() : false)
+  );
+}
+
 export default async function RedeemPage({ params }: RedeemPageProps) {
   const session = await requireAuthenticatedSession();
   const { code } = await params;
@@ -93,6 +100,7 @@ export default async function RedeemPage({ params }: RedeemPageProps) {
             status={lead.status}
             hasPrize={Boolean(lead.prizeId)}
             usageConditions={lead.prizeUsageConditions}
+            isExpired={isRewardExpired(lead.status, lead.rewardExpiresAt)}
             compact
           />
           <Link href="/data" className="text-sm font-semibold text-[#2f6df6]">

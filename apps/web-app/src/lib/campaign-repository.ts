@@ -388,7 +388,7 @@ function toCampaign(
         textColor: row.heading_text_color,
         fontSizePx: row.heading_font_size_px,
         fontFamily: localSettings.headingFontFamily ?? row.heading_font_family,
-        fontWeight: localSettings.headingFontWeight ?? 500,
+        fontWeight: localSettings.headingFontWeight ?? 600,
         align: row.heading_align,
       },
       button: {
@@ -1448,7 +1448,7 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
     buttonIsBold: input.presentation.button.isBold,
     blockSpacingPx: input.presentation.layout.blockSpacingPx,
     headingFontFamily: input.presentation.heading.fontFamily,
-    headingFontWeight: input.presentation.heading.fontWeight ?? 500,
+    headingFontWeight: input.presentation.heading.fontWeight ?? 600,
     gamePageTemplateId: input.presentation.layout.templateId ?? "classic",
     logoMode: input.logoMode,
     logoText: input.logoText,

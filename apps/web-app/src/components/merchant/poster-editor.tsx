@@ -120,6 +120,8 @@ function applyTemplateDefaults(
 
 export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
   const router = useRouter();
+  const campaignPrimaryColor = campaign.presentation.wheel.loseColor;
+  const campaignGainColor = campaign.presentation.wheel.winColor;
   const [poster, setPoster] = useState<CampaignPosterSettings>(() => {
     const normalizedPoster = normalizePosterSettings(
       campaign.presentation.poster,
@@ -134,23 +136,51 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
         backgroundColor: "#fff6ee",
         backgroundImageUrl: "",
         headline: campaign.subtitle,
-        headlineTextColor: "#050644",
+        headlineTextColor: campaignGainColor,
         headlineFontSizePx: 50,
         headlineFontFamily: "display",
-        wheel: posterTemplates[0].wheel,
+        wheel: {
+          ...posterTemplates[0].wheel,
+          winColor: campaignPrimaryColor,
+          alternateWinColor: campaignPrimaryColor,
+        },
         footerBackgroundColor: "transparent",
       }),
     );
 
     if (campaign.presentation.poster?.templateId) {
+      const template = getPosterTemplate(campaign.presentation.poster.templateId);
+      const storedWinColor = campaign.presentation.poster.wheel?.winColor;
+      const storedHeadlineTextColor = campaign.presentation.poster.headlineTextColor;
       const hasCustomWinColor =
-        Boolean(campaign.presentation.poster.wheel?.winColor) &&
-        campaign.presentation.poster.wheel?.winColor !== campaign.presentation.wheel.winColor;
+        Boolean(storedWinColor) &&
+        storedWinColor !== template.wheel.winColor &&
+        storedWinColor !== campaignPrimaryColor;
+      const hasCustomHeadlineTextColor =
+        Boolean(storedHeadlineTextColor) &&
+        storedHeadlineTextColor !== template.headlineTextColor &&
+        storedHeadlineTextColor !== campaignGainColor;
 
-      return applyTemplateDefaults(normalizedPoster, undefined, {
-        preserveWinColor: hasCustomWinColor,
-        preserveHeadlineTextColor: true,
-      });
+      return applyTemplateDefaults(
+        {
+          ...normalizedPoster,
+          headlineTextColor: hasCustomHeadlineTextColor
+            ? normalizedPoster.headlineTextColor
+            : campaignGainColor,
+          wheel: {
+            ...normalizedPoster.wheel,
+            winColor: hasCustomWinColor ? normalizedPoster.wheel.winColor : campaignPrimaryColor,
+            alternateWinColor: hasCustomWinColor
+              ? normalizedPoster.wheel.winColor
+              : campaignPrimaryColor,
+          },
+        },
+        template,
+        {
+          preserveWinColor: hasCustomWinColor,
+          preserveHeadlineTextColor: true,
+        },
+      );
     }
 
     const template = posterTemplates[0];
@@ -158,9 +188,16 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
     return applyTemplateDefaults(
       {
         ...normalizedPoster,
+        headlineTextColor: campaignGainColor,
         headlineFontFamily: "display",
+        wheel: {
+          ...normalizedPoster.wheel,
+          winColor: campaignPrimaryColor,
+          alternateWinColor: campaignPrimaryColor,
+        },
       },
       template,
+      { preserveWinColor: true, preserveHeadlineTextColor: true },
     );
   });
   const [isSaving, setIsSaving] = useState(false);

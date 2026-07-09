@@ -11,6 +11,7 @@ type LeadPrizeActionsProps = {
   status: LeadStatus;
   hasPrize: boolean;
   usageConditions?: string;
+  isExpired?: boolean;
   emailDeliveryStatus?: RewardEmailDelivery["status"];
   emailSentAt?: string;
   compact?: boolean;
@@ -33,6 +34,7 @@ export function LeadPrizeActions({
   status,
   hasPrize,
   usageConditions,
+  isExpired = false,
   emailDeliveryStatus,
   compact = false,
 }: LeadPrizeActionsProps) {
@@ -132,7 +134,8 @@ export function LeadPrizeActions({
         <button
           type="button"
           onClick={() => submit("redeem")}
-          disabled={isPending || status === "redeemed"}
+          disabled={isPending || status === "redeemed" || isExpired}
+          title={isExpired ? "Lot expiré" : undefined}
           className="cursor-pointer rounded-[14px] bg-[#111827] px-3 py-2 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-45"
         >
           Marquer récupéré

@@ -28,6 +28,7 @@ type WheelOfFortuneProps = {
   buttonLabel?: string;
   onButtonClick?: () => void;
   onSpinEnd?: () => void;
+  autoSpinKey?: string | null;
   buttonStyle?: {
     backgroundColor?: string;
     textColor?: string;
@@ -142,6 +143,7 @@ export function WheelOfFortune({
   buttonLabel = "JOUER",
   onButtonClick,
   onSpinEnd,
+  autoSpinKey,
   buttonStyle,
   framing = "default",
   pageTemplate = "classic",
@@ -191,6 +193,48 @@ export function WheelOfFortune({
     return () => window.clearTimeout(timeout);
   }, [isSpinning, onSpinEnd]);
 
+  function startSpin() {
+    if (isSpinning || hasSpun || !buttonEnabled || !canSpin) {
+      return;
+    }
+
+    const centerOffset = targetIndex * segmentAngle + segmentAngle / 2;
+    const randomJitter = (Math.random() - 0.5) * Math.min(7, segmentAngle * 0.14);
+    const finalRotation = 360 * 6 + (360 - centerOffset) + randomJitter;
+
+    setRotation(finalRotation);
+    setIsSpinning(true);
+  }
+
+  useEffect(() => {
+    if (!autoSpinKey || !canSpin || !buttonEnabled) {
+      return;
+    }
+
+    const timeout = window.setTimeout(() => {
+      if (isSpinning || hasSpun) {
+        return;
+      }
+
+      const centerOffset = targetIndex * segmentAngle + segmentAngle / 2;
+      const randomJitter = (Math.random() - 0.5) * Math.min(7, segmentAngle * 0.14);
+      const finalRotation = 360 * 6 + (360 - centerOffset) + randomJitter;
+
+      setRotation(finalRotation);
+      setIsSpinning(true);
+    }, 0);
+
+    return () => window.clearTimeout(timeout);
+  }, [
+    autoSpinKey,
+    canSpin,
+    buttonEnabled,
+    hasSpun,
+    isSpinning,
+    segmentAngle,
+    targetIndex,
+  ]);
+
   function handleCentralButton() {
     if (isSpinning || hasSpun || !buttonEnabled) {
       return;
@@ -201,12 +245,7 @@ export function WheelOfFortune({
       return;
     }
 
-    const centerOffset = targetIndex * segmentAngle + segmentAngle / 2;
-    const randomJitter = (Math.random() - 0.5) * Math.min(7, segmentAngle * 0.14);
-    const finalRotation = 360 * 6 + (360 - centerOffset) + randomJitter;
-
-    setRotation(finalRotation);
-    setIsSpinning(true);
+    startSpin();
   }
 
   return (

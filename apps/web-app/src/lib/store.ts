@@ -125,8 +125,8 @@ function createPresentation(overrides?: CampaignPresentationOverrides): Campaign
     heading: {
       textColor: "#1f2937",
       fontSizePx: 42,
-      fontFamily: "anton",
-      fontWeight: 500,
+      fontFamily: "display",
+      fontWeight: 600,
       align: "center",
       ...overrides?.heading,
     },

@@ -45,7 +45,6 @@ export function GoogleReviewPlacePicker({
       return "";
     }
   }, [value]);
-
   useEffect(() => {
     if (manualMode) return;
 
@@ -165,12 +164,6 @@ export function GoogleReviewPlacePicker({
           </div>
         ) : null}
       </div>
-
-      {value && isGoogleGeneratedReviewUrl(value) ? (
-        <div className="rounded-[18px] border border-[#cce7d5] bg-[#effaf3] px-4 py-3 text-sm text-[#1f7d53]">
-          Lien d&apos;avis Google généré automatiquement.
-        </div>
-      ) : null}
 
       {allowManualInput ? (
         <details

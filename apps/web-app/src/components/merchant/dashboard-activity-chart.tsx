@@ -152,7 +152,7 @@ export function DashboardActivityChart({
             cursor={{ stroke: "#145aff", strokeWidth: 1, strokeDasharray: "4 6" }}
             content={
               <ChartTooltipContent
-                className="min-w-[210px] rounded-[8px] border-border bg-[#14141e] px-4 py-3 text-sm text-white shadow-[0_18px_36px_rgba(15,23,40,0.24)] [&_.text-muted-foreground]:text-white/70"
+                className="min-w-[210px] rounded-[8px] border-border bg-white px-4 py-3 text-sm text-[#111827] shadow-[0_18px_36px_rgba(15,23,40,0.18)] [&_.text-muted-foreground]:text-[#111827]"
                 indicator="dot"
                 labelFormatter={(_, payload) => {
                   const label = payload?.[0]?.payload?.label;

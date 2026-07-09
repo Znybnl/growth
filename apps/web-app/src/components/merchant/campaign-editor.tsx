@@ -231,11 +231,27 @@ function withHexAlpha(color: string | undefined, alpha: string) {
   return normalized;
 }
 
-function buildRestaurantPopHeadingLines(text: string) {
-  return text
+function getRestaurantPopTextLines(text: string) {
+  const lines = text
     .split(/\r?\n/)
     .map((line) => line.trim())
-    .filter(Boolean)
+    .filter(Boolean);
+
+  if (lines.length !== 1) {
+    return lines;
+  }
+
+  const words = lines[0].split(/\s+/).filter(Boolean);
+
+  if (words.length < 3) {
+    return lines;
+  }
+
+  return [words.slice(0, -1).join(" "), words.slice(-1).join(" ")];
+}
+
+function buildRestaurantPopHeadingLines(text: string) {
+  return getRestaurantPopTextLines(text)
     .map((line, lineIndex) => {
       const parts = line.split(/(\s+)/).map((part) => ({
         text: part,
@@ -341,8 +357,8 @@ function createDefaultState(merchant: Merchant): EditorState {
       heading: {
         textColor: "#1f2937",
         fontSizePx: 40,
-        fontFamily: "anton",
-        fontWeight: 500,
+        fontFamily: "display",
+        fontWeight: 600,
         align: "center",
       },
       button: {
@@ -374,13 +390,13 @@ function createDefaultState(merchant: Merchant): EditorState {
         backgroundColor: "#ffffff",
         backgroundImageUrl: "",
         headline: "Scannez, jouez, récupérez votre cadeau",
-        headlineTextColor: "#ffffff",
+        headlineTextColor: "#f4c14a",
         headlineFontSizePx: 42,
         headlineFontFamily: "display",
         wheel: {
-          rimColor: "#f4c14a",
-          winColor: "#f4c14a",
-          alternateWinColor: "#eef2ff",
+          rimColor: "#1b2842",
+          winColor: "#1b2842",
+          alternateWinColor: "#1b2842",
           loseColor: "#1b2842",
           alternateLoseColor: "#8795db",
         },
@@ -983,8 +999,8 @@ function toEditorState(merchant: Merchant, campaign: CampaignPerformance | null)
       ...campaign.campaign.presentation,
       heading: {
         ...campaign.campaign.presentation.heading,
-        fontFamily: campaign.campaign.presentation.heading.fontFamily ?? "anton",
-        fontWeight: campaign.campaign.presentation.heading.fontWeight ?? 500,
+        fontFamily: campaign.campaign.presentation.heading.fontFamily ?? "display",
+        fontWeight: campaign.campaign.presentation.heading.fontWeight ?? 600,
         align: "center",
       },
       button: {
@@ -998,20 +1014,25 @@ function toEditorState(merchant: Merchant, campaign: CampaignPerformance | null)
       },
       poster: normalizePosterSettings(
         campaign.campaign.presentation.poster,
-    createPosterSettingsDefaults({
-      logoMode: campaign.campaign.logoMode ?? "text",
-      logoText: campaign.campaign.logoText ?? merchant.companyName,
-      logoUrl: undefined,
-      logoSizePercent: campaign.campaign.presentation.logo.sizePercent,
-      logoBottomMarginPx: campaign.campaign.presentation.logo.marginBottomPx,
-      backgroundMode: campaign.campaign.presentation.background.mode,
-      backgroundColor: campaign.campaign.presentation.background.color,
-      backgroundImageUrl: "",
-      headline: campaign.campaign.subtitle,
-      headlineTextColor: campaign.campaign.presentation.heading.textColor,
+        createPosterSettingsDefaults({
+          logoMode: campaign.campaign.logoMode ?? "text",
+          logoText: campaign.campaign.logoText ?? merchant.companyName,
+          logoUrl: undefined,
+          logoSizePercent: campaign.campaign.presentation.logo.sizePercent,
+          logoBottomMarginPx: campaign.campaign.presentation.logo.marginBottomPx,
+          backgroundMode: campaign.campaign.presentation.background.mode,
+          backgroundColor: campaign.campaign.presentation.background.color,
+          backgroundImageUrl: "",
+          headline: campaign.campaign.subtitle,
+          headlineTextColor: campaign.campaign.presentation.wheel.winColor,
           headlineFontSizePx: campaign.campaign.presentation.heading.fontSizePx,
           headlineFontFamily: campaign.campaign.presentation.heading.fontFamily,
-          wheel: campaign.campaign.presentation.wheel,
+          wheel: {
+            ...campaign.campaign.presentation.wheel,
+            winColor: campaign.campaign.presentation.wheel.loseColor,
+            alternateWinColor: campaign.campaign.presentation.wheel.loseColor,
+            rimColor: campaign.campaign.presentation.wheel.loseColor,
+          },
           footerBackgroundColor: campaign.campaign.accent.signal,
         }),
       ),
@@ -1217,7 +1238,7 @@ export function CampaignEditor({
       headingFontClass,
       headingTextColor: form.presentation.heading.textColor,
       headingFontSizePx: form.presentation.heading.fontSizePx,
-      headingFontWeight: form.presentation.heading.fontWeight ?? 500,
+      headingFontWeight: form.presentation.heading.fontWeight ?? 600,
       subtitle: form.subtitle,
       blockSpacingPx: form.presentation.layout.blockSpacingPx,
       gamePageTemplateId: form.presentation.layout.templateId ?? "classic",
@@ -2539,10 +2560,15 @@ export function CampaignEditor({
                         logoSizePercent: current.presentation.logo.sizePercent,
                         backgroundImageUrl: current.presentation.background.imageUrl || "",
                         headline: current.subtitle,
-                        headlineTextColor: current.presentation.heading.textColor,
+                        headlineTextColor: current.presentation.wheel.winColor,
                         headlineFontSizePx: current.presentation.heading.fontSizePx,
                         headlineFontFamily: current.presentation.heading.fontFamily,
-                        wheel: current.presentation.wheel,
+                        wheel: {
+                          ...current.presentation.wheel,
+                          winColor: current.presentation.wheel.loseColor,
+                          alternateWinColor: current.presentation.wheel.loseColor,
+                          rimColor: current.presentation.wheel.loseColor,
+                        },
                         footerBackgroundColor: current.accent.signal,
                       },
                     },
@@ -2980,11 +3006,17 @@ export function CampaignEditor({
                   />
                 </label>
 
-                {(isExpertMode ? [
-                  ["rimColor", "Couleur du contour"],
-                  ["winColor", "Couleur du gain"],
-                  ["alternateLoseColor", "Couleur perdu clair"],
-                ] : []).map(([key, label]) => (
+                {[
+                  ...(form.presentation.layout.templateId === "restaurant-pop" || isExpertMode
+                    ? [["winColor", "Couleur du gain"]]
+                    : []),
+                  ...(isExpertMode
+                    ? [
+                        ["rimColor", "Couleur du contour"],
+                        ["alternateLoseColor", "Couleur perdu clair"],
+                      ]
+                    : []),
+                ].map(([key, label]) => (
                   <label key={key} className="text-sm">
                     <span className="mb-2 block text-[#616b7c]">{label}</span>
                     <input

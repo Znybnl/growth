@@ -10,6 +10,7 @@ type RewardEmailVariables = {
   qrUrl: string;
   rewardAvailability: string;
   rewardExpiry: string;
+  rewardDate: string;
   purchaseCondition: string;
   usageConditions: string;
 };
@@ -51,24 +52,51 @@ export function renderEmailTemplate(template: string, variables: RewardEmailVari
 }
 
 export function createCampaignEmailDefaults(merchant: Merchant): CampaignEmailSettings {
+  return createCampaignEmailDefaultsForMerchantName(merchant.companyName);
+}
+
+function createCampaignEmailDefaultsForMerchantName(companyName: string): CampaignEmailSettings {
   return {
-    senderName: merchant.companyName,
+    senderName: companyName,
     replyTo: "",
-    subject: "{{merchantName}} · votre lot est prêt",
+    subject: "{{merchantName}} · récupérez votre lot",
     preheader: "Conservez ce QR code pour retirer votre cadeau au restaurant.",
-    headline: "Votre lot est prêt, {{firstName}}",
+    headline: "Récupérez votre lot, {{firstName}}",
     body: [
-      "Vous avez gagné {{prizeLabel}} dans la campagne {{campaignTitle}}.",
-      "Code de retrait : {{redemptionCode}}.",
+      "Vous avez gagné {{prizeLabel}} chez {{merchantName}} le {{rewardDate}}.",
+      "Ce coupon sera valable lors de votre prochaine visite. Rendez-vous sur place demain et montrez le QR code ci-dessous au personnel de l'établissement pour récupérer votre cadeau.",
       "{{rewardAvailability}}",
       "{{rewardExpiry}}",
       "{{purchaseCondition}}",
       "{{usageConditions}}",
     ].join("\n\n"),
-    buttonLabel: "Ouvrir mon QR code",
+    buttonLabel: "Voir mon QR code",
     footerNote:
       "Présentez ce QR code au comptoir. Il ne pourra être consommé qu'une seule fois.",
     accentColor: "#111827",
+  };
+}
+
+export function upgradeLegacyRewardEmailSettings(
+  settings: CampaignEmailSettings,
+  merchantName: string,
+): CampaignEmailSettings {
+  const defaults = createCampaignEmailDefaultsForMerchantName(merchantName);
+  const hasLegacyBody =
+    settings.body.includes("dans la campagne {{campaignTitle}}") ||
+    settings.body.includes("Code de retrait");
+
+  return {
+    ...settings,
+    subject: settings.subject
+      .replace("votre lot est prêt", "récupérez votre lot")
+      .replace("votre lot est prÃªt", "récupérez votre lot"),
+    headline: settings.headline
+      .replace("Votre lot est prêt", "Récupérez votre lot")
+      .replace("Votre lot est prÃªt", "Récupérez votre lot"),
+    body: hasLegacyBody ? defaults.body : settings.body,
+    buttonLabel:
+      settings.buttonLabel === "Ouvrir mon QR code" ? defaults.buttonLabel : settings.buttonLabel,
   };
 }
 
@@ -103,8 +131,8 @@ export function renderRewardEmailText(
     shouldAppendUsageConditions ? `Conditions d'utilisation : ${variables.usageConditions}` : "",
     "",
     settings.buttonLabel
-      ? `${renderEmailTemplate(settings.buttonLabel, variables)} : ${variables.redeemUrl}`
-      : variables.redeemUrl,
+      ? `${renderEmailTemplate(settings.buttonLabel, variables)} : ${variables.qrUrl}`
+      : variables.qrUrl,
     "",
     renderEmailTemplate(settings.footerNote, variables),
     variables.qrUrl ? `QR code : ${variables.qrUrl}` : "",
@@ -156,7 +184,7 @@ export function renderRewardEmailHtml(
         <div style="margin:24px 0;">
           <img src="${variables.qrUrl}" alt="QR code de retrait" width="180" height="180" style="display:block;width:180px;height:180px;border-radius:20px;border:1px solid #dbe4f0;background:#ffffff;" />
         </div>
-        <a href="${variables.redeemUrl}" style="display:inline-block;padding:14px 20px;border-radius:16px;background:${accentColor};color:#ffffff;text-decoration:none;font-weight:700;">${buttonLabel}</a>
+        <a href="${variables.qrUrl}" target="_blank" style="display:inline-block;padding:14px 20px;border-radius:16px;background:${accentColor};color:#ffffff;text-decoration:none;font-weight:700;">${buttonLabel}</a>
         ${footerBlocks
           .map(
             (block) =>

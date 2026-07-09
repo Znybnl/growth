@@ -57,6 +57,13 @@ function buildLastDays(referenceDates: string[], days = 7) {
   });
 }
 
+function isRewardExpired(status: string, rewardExpiresAt?: string) {
+  return (
+    status === "expired" ||
+    (rewardExpiresAt ? new Date(rewardExpiresAt).getTime() < Date.now() : false)
+  );
+}
+
 function Histogram({
   title,
   eyebrow,
@@ -267,6 +274,7 @@ function LeadsExportSection({
                     status={lead.status}
                     hasPrize={Boolean(lead.prizeId)}
                     usageConditions={lead.prizeUsageConditions}
+                    isExpired={isRewardExpired(lead.status, lead.rewardExpiresAt)}
                     emailDeliveryStatus={lead.emailDeliveryStatus}
                     emailSentAt={lead.emailSentAt}
                   />

@@ -92,6 +92,7 @@ export async function POST(request: NextRequest) {
           prizeLabel: result.prize.label,
           usageConditions: result.prize.usageConditions,
           redemptionCode: result.lead.redemptionCode,
+          rewardWonAt: result.lead.createdAt,
           rewardAvailableAt: result.lead.rewardAvailableAt,
           rewardExpiresAt: result.lead.rewardExpiresAt,
           purchaseRequired: result.campaign.rewardRules.purchaseRequired,
