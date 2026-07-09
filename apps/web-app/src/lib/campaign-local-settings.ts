@@ -1,4 +1,9 @@
-import { CampaignEmailSettings, CampaignPosterSettings } from "@/lib/types";
+import {
+  CampaignEmailSettings,
+  CampaignPosterSettings,
+  GamePageTemplateId,
+  TextFont,
+} from "@/lib/types";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
@@ -8,6 +13,9 @@ type CampaignLocalSettings = {
   buttonTextSizePx?: number;
   buttonIsBold?: boolean;
   blockSpacingPx?: number;
+  headingFontFamily?: TextFont;
+  headingFontWeight?: number;
+  gamePageTemplateId?: GamePageTemplateId;
   logoMode?: "none" | "image" | "text";
   logoText?: string;
   prizeSettings?: Record<string, { usageConditions?: string }>;

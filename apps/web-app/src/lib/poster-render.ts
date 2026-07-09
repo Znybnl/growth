@@ -1,5 +1,5 @@
 import { buildPosterWheelSegments } from "@/lib/poster-utils";
-import { Campaign, CampaignPosterSettings, PosterTemplateId, Prize } from "@/lib/types";
+import { Campaign, CampaignPosterSettings, PosterTemplateId, Prize, TextFont } from "@/lib/types";
 
 const A4_WIDTH = 794;
 const A4_HEIGHT = 1123;
@@ -144,8 +144,11 @@ function splitLines(text: string, maxChars: number) {
   return lines;
 }
 
-function fontFamily(font: "display" | "sans" | "serif") {
+function fontFamily(font: TextFont) {
   switch (font) {
+    case "anton":
+    case "display":
+      return SAFE_DISPLAY_FONT;
     case "serif":
       return "serif";
     case "sans":
@@ -255,7 +258,7 @@ function renderBackground(poster: CampaignPosterSettings, template: TemplateConf
 }
 
 function getLogoLayout(poster: CampaignPosterSettings, template: TemplateConfig) {
-  const logoSize = clamp((poster.logoSizePercent / 100) * 112, 72, 170);
+  const logoSize = clamp((poster.logoSizePercent / 100) * 170, 72, 300);
   const logoY = template.id === "classic-wheel" ? 48 : 38;
 
   return {
@@ -273,7 +276,7 @@ function renderLogo(campaign: Campaign, poster: CampaignPosterSettings, template
   const { logoSize, logoY } = getLogoLayout(poster, template);
 
   if (logoMode === "image" && logoUrl) {
-    return `<image href="${escapeXml(logoUrl)}" x="${(A4_WIDTH - logoSize * 1.7) / 2}" y="${logoY}" width="${logoSize * 1.7}" height="${logoSize}" preserveAspectRatio="xMidYMid meet"/>`;
+    return `<image href="${escapeXml(logoUrl)}" x="${(A4_WIDTH - logoSize * 1.9) / 2}" y="${logoY}" width="${logoSize * 1.9}" height="${logoSize}" preserveAspectRatio="xMidYMid meet"/>`;
   }
 
   if (logoMode !== "text" || !logoText) {
@@ -281,7 +284,7 @@ function renderLogo(campaign: Campaign, poster: CampaignPosterSettings, template
   }
 
   const text = escapeXml(logoText.toUpperCase());
-  const fontSize = clamp(logoSize * 0.32, 22, 44);
+  const fontSize = clamp(logoSize * 0.32, 22, 68);
   const centerY = logoY + logoSize / 2;
   const logoTextColor = poster.headlineTextColor || template.headline;
 

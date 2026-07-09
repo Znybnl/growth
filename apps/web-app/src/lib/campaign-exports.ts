@@ -73,11 +73,18 @@ function getAntonFontDataUri() {
 function applyPosterTemplateDefaults(
   poster: CampaignPosterSettings,
   campaignWheel: CampaignPosterSettings["wheel"],
+  options: { preserveWinColor?: boolean; preserveHeadlineTextColor?: boolean } = {},
 ) {
   const templateId = poster.templateId ?? "classic-wheel";
   const template = POSTER_TEMPLATE_DEFAULTS[templateId] ?? POSTER_TEMPLATE_DEFAULTS["classic-wheel"];
   const hasCustomWinColor = poster.wheel.winColor && poster.wheel.winColor !== campaignWheel.winColor;
-  const winColor = hasCustomWinColor ? poster.wheel.winColor : template.wheel.winColor;
+  const winColor =
+    options.preserveWinColor || hasCustomWinColor
+      ? poster.wheel.winColor
+      : template.wheel.winColor;
+  const headlineTextColor = options.preserveHeadlineTextColor
+    ? poster.headlineTextColor
+    : template.headlineTextColor;
 
   return {
     ...poster,
@@ -85,7 +92,7 @@ function applyPosterTemplateDefaults(
     backgroundMode: "color" as const,
     backgroundColor: template.backgroundColor,
     backgroundImageUrl: "",
-    headlineTextColor: template.headlineTextColor,
+    headlineTextColor,
     headlineFontSizePx: template.headlineFontSizePx,
     wheel: {
       ...poster.wheel,
@@ -135,7 +142,10 @@ export async function createCampaignPosterSvg(
     }),
   );
   const poster = hasExplicitPosterTemplate
-    ? applyPosterTemplateDefaults(normalizedPoster, campaign.presentation.wheel)
+    ? applyPosterTemplateDefaults(normalizedPoster, campaign.presentation.wheel, {
+        preserveWinColor: true,
+        preserveHeadlineTextColor: true,
+      })
     : applyPosterTemplateDefaults(
         {
           ...normalizedPoster,

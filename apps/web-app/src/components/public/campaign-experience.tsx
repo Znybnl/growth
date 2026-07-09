@@ -86,6 +86,31 @@ function buildWheelSegments(campaign: PublicCampaign) {
   return segments.length ? segments : losers;
 }
 
+function buildRestaurantPopHeadingLines(text: string) {
+  return text
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line, lineIndex) => {
+      const parts = line.split(/(\s+)/).map((part) => ({
+        text: part,
+        secondary: lineIndex === 1 || /gagn|gain|cadeau/i.test(part),
+      }));
+      if (!parts.some((part) => part.secondary)) {
+        const lastWordIndex = [...parts]
+          .map((part, index) => ({ part, index }))
+          .reverse()
+          .find(({ part }) => part.text.trim())?.index;
+
+        if (lastWordIndex != null) {
+          parts[lastWordIndex].secondary = true;
+        }
+      }
+
+      return parts;
+    });
+}
+
 function actionLabel(kind?: PublicCampaign["actions"][number]["kind"]) {
   switch (kind) {
     case "google":
@@ -408,8 +433,12 @@ export function CampaignExperience({
   const availableDate = formatDate(drawResult?.lead.rewardAvailableAt);
   const expiryDate = formatDate(drawResult?.lead.rewardExpiresAt);
   const blockSpacingPx = campaign.presentation.layout.blockSpacingPx;
+  const pageTemplate = campaign.presentation.layout.templateId ?? "classic";
+  const isRestaurantPopTemplate = pageTemplate === "restaurant-pop";
+  const primaryColor = campaign.presentation.wheel.loseColor ?? campaign.accent.signal;
+  const secondaryColor = campaign.presentation.wheel.winColor ?? "#073b72";
   const logoWidthPx = Math.round(
-    Math.max(72, Math.min(260, campaign.presentation.logo.sizePercent * 1.6)),
+    Math.max(56, Math.min(720, campaign.presentation.logo.sizePercent * 3)),
   );
   const logoAlignmentClass =
     campaign.presentation.logo.align === "left"
@@ -424,7 +453,9 @@ export function CampaignExperience({
         ? "text-right"
         : "text-center";
   const headingFontClass =
-    campaign.presentation.heading.fontFamily === "serif"
+    campaign.presentation.heading.fontFamily === "anton"
+      ? "font-anton"
+      : campaign.presentation.heading.fontFamily === "serif"
       ? "font-serif"
       : campaign.presentation.heading.fontFamily === "sans"
         ? "font-sans"
@@ -564,7 +595,10 @@ export function CampaignExperience({
     campaign.presentation.background.mode === "image" &&
     campaign.presentation.background.imageUrl
       ? `linear-gradient(rgba(0,0,0,0.08), rgba(0,0,0,0.18)), url("${campaign.presentation.background.imageUrl}")`
-      : `radial-gradient(circle at 50% 50%, ${withHexAlpha(campaign.presentation.wheel.loseColor ?? campaign.accent.signal, "33")}, transparent 50%), linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.08))`;
+      : isRestaurantPopTemplate
+        ? `radial-gradient(circle at -10% -8%, ${withHexAlpha(primaryColor, "f2")} 0 18%, transparent 19%), radial-gradient(circle at 110% 0%, ${withHexAlpha(secondaryColor, "f2")} 0 13%, transparent 14%), radial-gradient(circle at 0% 80%, ${withHexAlpha(primaryColor, "20")} 0 20%, transparent 21%), radial-gradient(circle at 100% 78%, ${withHexAlpha(secondaryColor, "40")} 0 18%, transparent 19%), linear-gradient(180deg, #fff2dd 0%, #fffaf1 46%, #fff4e5 100%)`
+        : `radial-gradient(circle at 50% 50%, ${withHexAlpha(primaryColor, "33")}, transparent 50%), linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.08))`;
+  const restaurantPopHeadingLines = buildRestaurantPopHeadingLines(campaign.subtitle);
 
   return (
     <div
@@ -576,6 +610,21 @@ export function CampaignExperience({
         backgroundSize: "cover",
       }}
     >
+      {isRestaurantPopTemplate ? (
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div
+            className="absolute right-0 top-[18%] h-28 w-16 opacity-35"
+            style={{
+              backgroundImage: `radial-gradient(circle, ${withHexAlpha(primaryColor, "40")} 1.8px, transparent 2px)`,
+              backgroundSize: "12px 12px",
+            }}
+          />
+          <div
+            className="absolute -bottom-10 -left-12 h-48 w-48 rounded-full opacity-80"
+            style={{ background: withHexAlpha(primaryColor, "22") }}
+          />
+        </div>
+      ) : null}
       <div className="relative mx-auto flex h-screen w-full flex-col overflow-hidden px-4 pb-0 pt-8 sm:px-6">
         {(campaign.logoMode === "image" && campaign.logoUrl) ||
         campaign.logoMode === "text" ? (
@@ -600,13 +649,31 @@ export function CampaignExperience({
 
         <div className={headingAlignmentClass}>
           <h1
-            className={`${headingFontClass} whitespace-pre-line font-semibold leading-[0.96] text-[#151826]`}
+            className={`${headingFontClass} whitespace-pre-line ${isRestaurantPopTemplate ? "tracking-[0.038em] drop-shadow-[0_5px_0_rgba(0,0,0,0.08)]" : ""} leading-[1] text-[#151826]`}
             style={{
               color: campaign.presentation.heading.textColor,
               fontSize: `${campaign.presentation.heading.fontSizePx}px`,
+              fontWeight: campaign.presentation.heading.fontWeight ?? 500,
             }}
           >
-            {campaign.subtitle}
+            {isRestaurantPopTemplate
+              ? restaurantPopHeadingLines.map((line, lineIndex) => (
+                  <span key={`heading-line-${lineIndex}`} className="block">
+                    {line.map((part, partIndex) => (
+                      <span
+                        key={`heading-line-${lineIndex}-${partIndex}`}
+                        style={{
+                          color: part.secondary
+                            ? secondaryColor
+                            : campaign.presentation.heading.textColor || primaryColor,
+                        }}
+                      >
+                        {part.text}
+                      </span>
+                    ))}
+                  </span>
+                ))
+              : campaign.subtitle}
           </h1>
         </div>
 
@@ -620,10 +687,11 @@ export function CampaignExperience({
                 key={`${campaign.id}-${drawSession?.id ?? "idle"}`}
                 accent={campaign.accent}
                 wheelStyle={campaign.presentation.wheel}
+                pageTemplate={pageTemplate}
                 buttonStyle={{
-                  backgroundColor: campaign.presentation.button.backgroundColor,
+                  backgroundColor: primaryColor,
                   textColor: campaign.presentation.button.textColor,
-                  borderColor: campaign.presentation.button.borderColor,
+                  borderColor: secondaryColor,
                 }}
                 segments={segments}
                 winningSegmentId={winningSegmentId}

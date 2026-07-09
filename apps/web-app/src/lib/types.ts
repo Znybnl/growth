@@ -1,11 +1,12 @@
 export type GoalType = "lead_capture" | "review_prompt" | "social_follow";
 export type GameType = "wheel" | "scratch";
 export type TextAlign = "left" | "center" | "right";
-export type TextFont = "display" | "sans" | "serif";
+export type TextFont = "anton" | "display" | "sans" | "serif";
 export type LogoMode = "none" | "image" | "text";
 export type ButtonSize = "sm" | "md" | "lg";
 export type BackgroundMode = "color" | "image";
 export type PosterTemplateId = "classic-wheel" | "soft-gradient-wheel" | "terracotta-wheel";
+export type GamePageTemplateId = "classic" | "restaurant-pop";
 export type ActionKind =
   | "google"
   | "instagram"
@@ -289,6 +290,7 @@ export interface CampaignHeadingSettings {
   textColor: string;
   fontSizePx: number;
   fontFamily: TextFont;
+  fontWeight?: number;
   align: TextAlign;
 }
 
@@ -303,6 +305,7 @@ export interface CampaignButtonSettings {
 
 export interface CampaignLayoutSettings {
   blockSpacingPx: number;
+  templateId?: GamePageTemplateId;
 }
 
 export interface CampaignWheelSettings {

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, useMemo, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
 
 import { buildPosterSvg, createPosterPreviewQrDataUrl } from "@/lib/poster-render";
 import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
@@ -94,9 +94,12 @@ function getPosterTemplate(templateId?: PosterTemplateId) {
 function applyTemplateDefaults(
   poster: CampaignPosterSettings,
   template = getPosterTemplate(poster.templateId),
-  options: { preserveWinColor?: boolean } = {},
+  options: { preserveWinColor?: boolean; preserveHeadlineTextColor?: boolean } = {},
 ): CampaignPosterSettings {
   const winColor = options.preserveWinColor ? poster.wheel.winColor : template.wheel.winColor;
+  const headlineTextColor = options.preserveHeadlineTextColor
+    ? poster.headlineTextColor
+    : template.headlineTextColor;
 
   return {
     ...poster,
@@ -104,7 +107,7 @@ function applyTemplateDefaults(
     backgroundMode: "color",
     backgroundColor: template.backgroundColor,
     backgroundImageUrl: "",
-    headlineTextColor: template.headlineTextColor,
+    headlineTextColor,
     headlineFontSizePx: template.headlineFontSizePx,
     wheel: {
       ...poster.wheel,
@@ -146,6 +149,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
 
       return applyTemplateDefaults(normalizedPoster, undefined, {
         preserveWinColor: hasCustomWinColor,
+        preserveHeadlineTextColor: true,
       });
     }
 
@@ -162,6 +166,26 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [draftWinColor, setDraftWinColor] = useState(poster.wheel.winColor);
+
+  useEffect(() => {
+    if (draftWinColor === poster.wheel.winColor) {
+      return;
+    }
+
+    const timeout = window.setTimeout(() => {
+      setPoster((current) => ({
+        ...current,
+        wheel: {
+          ...current.wheel,
+          winColor: draftWinColor,
+          alternateWinColor: draftWinColor,
+        },
+      }));
+    }, 200);
+
+    return () => window.clearTimeout(timeout);
+  }, [draftWinColor, poster.wheel.winColor]);
 
   const previewPosterSvg = useMemo(
     () =>
@@ -205,11 +229,12 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
       backgroundMode: "color",
       backgroundColor: template.backgroundColor,
       backgroundImageUrl: "",
-      headlineTextColor: template.headlineTextColor,
       headlineFontSizePx: template.headlineFontSizePx,
       wheel: {
         ...current.wheel,
         ...template.wheel,
+        winColor: current.wheel.winColor,
+        alternateWinColor: current.wheel.winColor,
       },
     }));
   }
@@ -455,6 +480,18 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                     Choisir
                   </span>
                 </div>
+                {poster.logoUrl || campaign.logoUrl ? (
+                  <div className="mt-4 flex min-h-[86px] items-center justify-center rounded-[18px] border border-white bg-white/80 p-3 shadow-inner">
+                    <Image
+                      src={poster.logoUrl || campaign.logoUrl || ""}
+                      alt="Aperçu du logo"
+                      width={220}
+                      height={92}
+                      unoptimized
+                      className="max-h-[70px] w-auto object-contain"
+                    />
+                  </div>
+                ) : null}
                 <input
                   type="file"
                   accept="image/*"
@@ -475,7 +512,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                   <input
                     type="number"
                     min={40}
-                    max={180}
+                    max={240}
                     value={poster.logoSizePercent}
                     onChange={(event) =>
                       updatePoster({ logoSizePercent: Number(event.target.value || 100) })
@@ -559,8 +596,9 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                 <span className="mb-2 block text-[#616b7c]">Couleur gain</span>
                 <input
                   type="color"
-                  value={poster.wheel.winColor}
-                  onChange={(event) => updateWheel("winColor", event.target.value)}
+                  value={draftWinColor}
+                  onChange={(event) => setDraftWinColor(event.target.value)}
+                  onBlur={() => updateWheel("winColor", draftWinColor)}
                   className="h-14 w-full rounded-[var(--radius-card)] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none"
                 />
               </label>

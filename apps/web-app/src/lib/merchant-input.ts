@@ -3,6 +3,7 @@ import {
   BackgroundMode,
   ButtonSize,
   CampaignSetupInput,
+  GamePageTemplateId,
   GameType,
   GoalType,
   LogoMode,
@@ -26,9 +27,10 @@ const ACTION_KINDS = new Set<ActionKind>([
 ]);
 const LOGO_MODES = new Set<LogoMode>(["none", "image", "text"]);
 const TEXT_ALIGNS = new Set<TextAlign>(["left", "center", "right"]);
-const TEXT_FONTS = new Set<TextFont>(["display", "sans", "serif"]);
+const TEXT_FONTS = new Set<TextFont>(["anton", "display", "sans", "serif"]);
 const BUTTON_SIZES = new Set<ButtonSize>(["sm", "md", "lg"]);
 const BACKGROUND_MODES = new Set<BackgroundMode>(["color", "image"]);
+const GAME_PAGE_TEMPLATE_IDS = new Set<GamePageTemplateId>(["classic", "restaurant-pop"]);
 const POSTER_TEMPLATE_IDS = new Set<PosterTemplateId>([
   "classic-wheel",
   "soft-gradient-wheel",
@@ -100,6 +102,20 @@ function normalizeUrl(value: unknown) {
   } catch {
     throw new Error("URL invalide.");
   }
+}
+
+function normalizeImageSource(value: unknown) {
+  const input = typeof value === "string" ? value.trim() : "";
+
+  if (!input) {
+    return "";
+  }
+
+  if (/^data:image\/(png|jpe?g|webp|gif|svg\+xml);base64,[a-z0-9+/=\s]+$/i.test(input)) {
+    return input.replace(/\s/g, "");
+  }
+
+  return normalizeUrl(input);
 }
 
 function normalizeStringArray(value: unknown, maxItems: number, maxLength: number) {
@@ -301,7 +317,7 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
     gameType: normalizeEnum(payload.gameType, GAME_TYPES, "wheel"),
     logoMode: normalizeEnum(payload.logoMode, LOGO_MODES, "text"),
     logoText: normalizeString(payload.logoText, 120) || undefined,
-    logoUrl: normalizeUrl(payload.logoUrl) || undefined,
+    logoUrl: normalizeImageSource(payload.logoUrl) || undefined,
     presentation: {
       logo: {
         sizePercent: normalizeNumber(logo.sizePercent, {
@@ -331,7 +347,13 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
           fallback: 42,
           integer: true,
         }),
-        fontFamily: normalizeEnum(heading.fontFamily, TEXT_FONTS, "display"),
+        fontFamily: normalizeEnum(heading.fontFamily, TEXT_FONTS, "anton"),
+        fontWeight: normalizeNumber(heading.fontWeight, {
+          min: 300,
+          max: 900,
+          fallback: 500,
+          integer: true,
+        }),
         align: normalizeEnum(heading.align, TEXT_ALIGNS, "center"),
       },
       button: {
@@ -351,12 +373,13 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
         blockSpacingPx: normalizeNumber(layout.blockSpacingPx, {
           min: 0,
           max: 160,
-          fallback: 28,
+          fallback: 40,
           integer: true,
         }),
+        templateId: normalizeEnum(layout.templateId, GAME_PAGE_TEMPLATE_IDS, "classic"),
       },
       wheel: {
-        rimColor: normalizeColor(wheel.rimColor, "#f4c14a"),
+        rimColor: normalizeColor(wheel.rimColor, "#bac0ca"),
         winColor: normalizeColor(wheel.winColor, "#f4c14a"),
         alternateWinColor: normalizeColor(wheel.alternateWinColor, "#eef2ff"),
         loseColor: normalizeColor(wheel.loseColor, "#1b2842"),
@@ -366,7 +389,7 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
         templateId: normalizeEnum(poster.templateId, POSTER_TEMPLATE_IDS, "classic-wheel"),
         logoMode: normalizeEnum(poster.logoMode, LOGO_MODES, "text"),
         logoText: normalizeString(poster.logoText, 120) || undefined,
-        logoUrl: normalizeUrl(poster.logoUrl) || undefined,
+        logoUrl: normalizeImageSource(poster.logoUrl) || undefined,
         logoSizePercent: normalizeNumber(poster.logoSizePercent, {
           min: 10,
           max: 240,
@@ -390,7 +413,7 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
           fallback: 42,
           integer: true,
         }),
-        headlineFontFamily: normalizeEnum(poster.headlineFontFamily, TEXT_FONTS, "display"),
+        headlineFontFamily: normalizeEnum(poster.headlineFontFamily, TEXT_FONTS, "anton"),
         wheel: {
           rimColor: normalizeColor(ensureObject(poster.wheel).rimColor, "#f4c14a"),
           winColor: normalizeColor(ensureObject(poster.wheel).winColor, "#f4c14a"),

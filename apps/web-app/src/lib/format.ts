@@ -215,6 +215,8 @@ export function textAlignLabel(align: TextAlign) {
 
 export function textFontLabel(font: TextFont) {
   switch (font) {
+    case "anton":
+      return "Anton";
     case "display":
       return "Display";
     case "serif":

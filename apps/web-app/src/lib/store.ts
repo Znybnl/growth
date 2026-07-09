@@ -51,6 +51,7 @@ import {
   CampaignButtonSettings,
   CampaignHeadingSettings,
   CampaignLogoSettings,
+  CampaignLayoutSettings,
   CampaignPosterSettings,
   CampaignRewardRules,
   CampaignWheelSettings,
@@ -92,7 +93,7 @@ type CampaignPresentationOverrides = {
   background?: Partial<CampaignBackgroundSettings>;
   heading?: Partial<CampaignHeadingSettings>;
   button?: Partial<CampaignButtonSettings>;
-  layout?: Partial<{ blockSpacingPx: number }>;
+  layout?: Partial<CampaignLayoutSettings>;
   wheel?: Partial<CampaignWheelSettings>;
   poster?: Partial<CampaignPosterSettings>;
   email?: Partial<CampaignEmailSettings>;
@@ -100,7 +101,7 @@ type CampaignPresentationOverrides = {
 
 function createPresentation(overrides?: CampaignPresentationOverrides): CampaignPresentation {
   const wheel = {
-    rimColor: "#f4c14a",
+    rimColor: "#bac0ca",
     winColor: "#f4c14a",
     alternateWinColor: "#eef2ff",
     loseColor: "#1b2842",
@@ -124,7 +125,8 @@ function createPresentation(overrides?: CampaignPresentationOverrides): Campaign
     heading: {
       textColor: "#1f2937",
       fontSizePx: 42,
-      fontFamily: "display",
+      fontFamily: "anton",
+      fontWeight: 500,
       align: "center",
       ...overrides?.heading,
     },
@@ -138,7 +140,8 @@ function createPresentation(overrides?: CampaignPresentationOverrides): Campaign
       ...overrides?.button,
     },
     layout: {
-      blockSpacingPx: 28,
+      blockSpacingPx: 40,
+      templateId: "classic",
       ...overrides?.layout,
     },
     wheel: {

@@ -34,6 +34,7 @@ type WheelOfFortuneProps = {
     borderColor?: string;
   };
   framing?: "default" | "public" | "editor";
+  pageTemplate?: "classic" | "restaurant-pop";
 };
 
 const SVG_SIZE = 640;
@@ -143,15 +144,27 @@ export function WheelOfFortune({
   onSpinEnd,
   buttonStyle,
   framing = "default",
+  pageTemplate = "classic",
 }: WheelOfFortuneProps) {
   const [rotation, setRotation] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
   const [hasSpun, setHasSpun] = useState(false);
 
-  const segmentAngle = 360 / segments.length;
+  const isRestaurantPopTemplate = pageTemplate === "restaurant-pop";
+  const baseVisualSegments = isRestaurantPopTemplate ? segments.slice(0, 10) : segments;
+  const winningVisualIndex = baseVisualSegments.findIndex(
+    (segment) => segment.id === winningSegmentId,
+  );
+  const visualSegments =
+    isRestaurantPopTemplate && winningVisualIndex === -1
+      ? [segments.find((segment) => segment.id === winningSegmentId) ?? baseVisualSegments[0], ...baseVisualSegments]
+          .filter(Boolean)
+          .slice(0, 10)
+      : baseVisualSegments;
+  const segmentAngle = 360 / visualSegments.length;
   const targetIndex = Math.max(
     0,
-    segments.findIndex((segment) => segment.id === winningSegmentId),
+    visualSegments.findIndex((segment) => segment.id === winningSegmentId),
   );
   const colors = {
     rimColor: wheelStyle?.rimColor ?? accent.signal,
@@ -160,6 +173,7 @@ export function WheelOfFortune({
     loseColor: wheelStyle?.loseColor ?? "#edf2f7",
     alternateLoseColor: wheelStyle?.alternateLoseColor ?? "#e7edf3",
   };
+  const warmNeutral = "#fff0d2";
   const wheelTop =
     framing === "public" ? undefined : framing === "editor" ? "83%" : "62%";
 
@@ -200,10 +214,14 @@ export function WheelOfFortune({
       <div
         className={`absolute left-1/2 aspect-square -translate-x-1/2 -translate-y-1/2 ${
           framing === "public"
-            ? "top-[70%] w-[172vw] max-w-none sm:top-[68%] sm:w-[144vw] md:top-[66%] md:w-[122vw] lg:top-[68%] lg:w-[70vw] xl:top-[68%] xl:w-[54vw] 2xl:top-[68%] 2xl:w-[48vw]"
+            ? isRestaurantPopTemplate
+              ? "top-[70%] w-[142vw] max-w-none drop-shadow-[0_34px_48px_rgba(15,23,42,0.24)] sm:top-[68%] sm:w-[118vw] md:top-[66%] md:w-[98vw] lg:top-[68%] lg:w-[52vw] xl:top-[68%] xl:w-[42vw] 2xl:top-[68%] 2xl:w-[38vw]"
+              : "top-[70%] w-[172vw] max-w-none sm:top-[68%] sm:w-[144vw] md:top-[66%] md:w-[122vw] lg:top-[68%] lg:w-[70vw] xl:top-[68%] xl:w-[54vw] 2xl:top-[68%] 2xl:w-[48vw]"
             : framing === "editor"
-              ? "w-[186%] max-w-none"
-            : "w-full"
+              ? isRestaurantPopTemplate
+                ? "w-[150%] max-w-none drop-shadow-[0_24px_42px_rgba(15,23,42,0.18)]"
+                : "w-[186%] max-w-none"
+              : "w-full"
         }`}
         style={{ top: wheelTop }}
       >
@@ -228,8 +246,46 @@ export function WheelOfFortune({
                 <stop offset="100%" stopColor="#020617" stopOpacity="0.14" />
               </radialGradient>
             </defs>
-            <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 10} fill="#ffffff" />
-            {segments.map((segment, index) => {
+            {isRestaurantPopTemplate ? (
+              <>
+                <circle
+                  cx={CENTER}
+                  cy={CENTER}
+                  r={OUTER_RADIUS + 24}
+                  fill="#fff8eb"
+                  stroke="rgba(255,255,255,0.95)"
+                  strokeWidth="16"
+                />
+                <circle
+                  cx={CENTER}
+                  cy={CENTER}
+                  r={OUTER_RADIUS + 16}
+                  fill="none"
+                  stroke={colors.rimColor}
+                  strokeWidth="7"
+                  opacity="0.95"
+                />
+                <circle
+                  cx={CENTER}
+                  cy={CENTER}
+                  r={OUTER_RADIUS + 2}
+                  fill="none"
+                  stroke="rgba(122,85,26,0.16)"
+                  strokeWidth="2"
+                />
+              </>
+            ) : (
+              <circle
+                cx={CENTER}
+                cy={CENTER}
+                r={OUTER_RADIUS + 18}
+                fill="#ffffff"
+                stroke={colors.rimColor}
+                strokeWidth="4"
+                opacity="0.98"
+              />
+            )}
+            {visualSegments.map((segment, index) => {
               const startAngle = index * segmentAngle + 1.2;
               const endAngle = startAngle + segmentAngle - 2.4;
               const midAngle = startAngle + (endAngle - startAngle) / 2;
@@ -237,13 +293,19 @@ export function WheelOfFortune({
               const labelLines = wrapSegmentLabel(segment.label);
               const textStyles = segmentTextStyles(labelLines);
               const fillColor =
-                segment.tone === "win"
-                  ? index % 2 === 0
+                isRestaurantPopTemplate
+                  ? segment.tone === "win"
                     ? colors.winColor
-                    : colors.alternateWinColor
-                  : index % 2 === 0
-                    ? colors.loseColor
-                    : colors.alternateLoseColor;
+                    : index % 2 === 0
+                      ? colors.loseColor
+                      : warmNeutral
+                  : segment.tone === "win"
+                    ? index % 2 === 0
+                      ? colors.winColor
+                      : colors.alternateWinColor
+                    : index % 2 === 0
+                      ? colors.loseColor
+                      : colors.alternateLoseColor;
               const textColor = readableTextColor(fillColor, segment.tone === "win" ? accent.ink : "#111827");
 
               return (
@@ -288,6 +350,22 @@ export function WheelOfFortune({
               );
             })}
             <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 4} fill="url(#okado-wheel-depth)" />
+            {isRestaurantPopTemplate
+              ? Array.from({ length: 18 }, (_, beadIndex) => {
+                  const bead = polarToCartesian(OUTER_RADIUS + 5, beadIndex * 20);
+                  return (
+                    <circle
+                      key={`bead-${beadIndex}`}
+                      cx={bead.x}
+                      cy={bead.y}
+                      r="5.2"
+                      fill="#fff2d7"
+                      stroke={colors.rimColor}
+                      strokeWidth="1"
+                    />
+                  );
+                })
+              : null}
           </svg>
         </div>
 
@@ -301,7 +379,9 @@ export function WheelOfFortune({
               height: "18.9%",
               transform: "translateX(-50%)",
               clipPath: "polygon(50% 0, 88% 24%, 63% 100%, 37% 100%, 12% 24%)",
-              background: "linear-gradient(180deg, #ffffff 0%, #f8fafc 62%, #ffffff 100%)",
+              background: isRestaurantPopTemplate
+                ? `linear-gradient(180deg, ${colors.loseColor} 0%, ${colors.loseColor} 68%, #ffffff 69%, #ffffff 100%)`
+                : "linear-gradient(180deg, #ffffff 0%, #f8fafc 62%, #ffffff 100%)",
               filter: "drop-shadow(0 12px 18px rgba(15,23,42,0.2))",
             }}
           />
@@ -321,15 +401,22 @@ export function WheelOfFortune({
           type="button"
           onClick={handleCentralButton}
           disabled={!buttonEnabled || isSpinning || hasSpun}
-          className="absolute left-1/2 top-1/2 z-40 flex aspect-square w-[15.4%] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-[4px] text-[19px] font-black uppercase shadow-[0_16px_30px_rgba(15,23,42,0.16)] transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-75"
+          className={`absolute left-1/2 top-1/2 z-40 flex aspect-square ${isRestaurantPopTemplate ? "w-[18.5%]" : "w-[15.4%]"} -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-[4px] text-[19px] font-black uppercase transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-75 ${isRestaurantPopTemplate ? "font-anton shadow-[0_20px_34px_rgba(15,23,42,0.24)] [text-shadow:0_3px_0_rgba(0,0,0,0.18)]" : "shadow-[0_16px_30px_rgba(15,23,42,0.16)]"}`}
           style={{
             background:
               buttonEnabled && !hasSpun
                 ? `linear-gradient(180deg, ${buttonStyle?.backgroundColor ?? accent.signal}, ${buttonStyle?.backgroundColor ?? colors.rimColor})`
                 : "linear-gradient(180deg, #aeb8c7, #7f8a9d)",
             color: buttonStyle?.textColor ?? "#ffffff",
-            borderColor: buttonStyle?.borderColor ?? "#ffffff",
-            fontSize: "clamp(1rem, 2.5vw, 1.75rem)",
+            borderColor: isRestaurantPopTemplate
+              ? colors.winColor
+              : buttonStyle?.borderColor ?? "#ffffff",
+            fontSize: isRestaurantPopTemplate
+              ? "clamp(1.12rem, 2.9vw, 2.05rem)"
+              : "clamp(1rem, 2.5vw, 1.75rem)",
+            boxShadow: isRestaurantPopTemplate
+              ? "inset 0 0 0 8px rgba(255,255,255,0.78), inset 0 -11px 18px rgba(0,0,0,0.18), 0 18px 34px rgba(15,23,42,0.24)"
+              : undefined,
           }}
         >
           {isSpinning ? "..." : buttonLabel}

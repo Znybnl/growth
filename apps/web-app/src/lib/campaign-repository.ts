@@ -387,7 +387,8 @@ function toCampaign(
       heading: {
         textColor: row.heading_text_color,
         fontSizePx: row.heading_font_size_px,
-        fontFamily: row.heading_font_family,
+        fontFamily: localSettings.headingFontFamily ?? row.heading_font_family,
+        fontWeight: localSettings.headingFontWeight ?? 500,
         align: row.heading_align,
       },
       button: {
@@ -399,7 +400,8 @@ function toCampaign(
         isBold: localSettings.buttonIsBold ?? true,
       },
       layout: {
-        blockSpacingPx: localSettings.blockSpacingPx ?? 28,
+        blockSpacingPx: localSettings.blockSpacingPx ?? 40,
+        templateId: localSettings.gamePageTemplateId ?? "classic",
       },
       wheel: {
         ...wheel,
@@ -1348,7 +1350,10 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
     background_image_url: input.presentation.background.imageUrl || null,
     heading_text_color: input.presentation.heading.textColor,
     heading_font_size_px: input.presentation.heading.fontSizePx,
-    heading_font_family: input.presentation.heading.fontFamily,
+    heading_font_family:
+      input.presentation.heading.fontFamily === "anton"
+        ? "display"
+        : input.presentation.heading.fontFamily,
     heading_align: input.presentation.heading.align,
     button_background_color: input.presentation.button.backgroundColor,
     button_text_color: input.presentation.button.textColor,
@@ -1442,6 +1447,9 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
     buttonTextSizePx: input.presentation.button.textSizePx,
     buttonIsBold: input.presentation.button.isBold,
     blockSpacingPx: input.presentation.layout.blockSpacingPx,
+    headingFontFamily: input.presentation.heading.fontFamily,
+    headingFontWeight: input.presentation.heading.fontWeight ?? 500,
+    gamePageTemplateId: input.presentation.layout.templateId ?? "classic",
     logoMode: input.logoMode,
     logoText: input.logoText,
     prizeSettings: Object.fromEntries(

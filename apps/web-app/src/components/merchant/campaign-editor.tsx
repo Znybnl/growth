@@ -37,6 +37,7 @@ import {
   CampaignLibraryItem,
   CampaignPerformance,
   CampaignSetupInput,
+  GamePageTemplateId,
   GameType,
   GoalType,
   Merchant,
@@ -100,8 +101,10 @@ type CampaignEditorPreviewModel = {
   headingFontClass: string;
   headingTextColor: string;
   headingFontSizePx: number;
+  headingFontWeight: number;
   subtitle: string;
   blockSpacingPx: number;
+  gamePageTemplateId: GamePageTemplateId;
   gameType: GameType;
   accent: EditorState["accent"];
   wheelStyle: EditorState["presentation"]["wheel"];
@@ -130,7 +133,24 @@ const actionKindOptions: ActionKind[] = [
 ];
 
 const textAlignOptions: TextAlign[] = ["left", "center", "right"];
-const textFontOptions: TextFont[] = ["display", "sans", "serif"];
+const textFontOptions: TextFont[] = ["anton", "display", "sans", "serif"];
+const headingFontWeightOptions = [400, 500, 600, 700, 800, 900];
+const gamePageTemplateOptions: Array<{
+  value: GamePageTemplateId;
+  title: string;
+  description: string;
+}> = [
+  {
+    value: "classic",
+    title: "Classique",
+    description: "Un rendu sobre, centré sur votre logo, votre message et la roue.",
+  },
+  {
+    value: "restaurant-pop",
+    title: "Restaurant pop",
+    description: "Un univers plus événementiel avec formes, contraste et roue façon jeu concours.",
+  },
+];
 
 const goalMetricMap: Record<GoalType, string> = {
   lead_capture: "Nouveaux contacts opt-in",
@@ -190,6 +210,50 @@ function normalizeUrl(url: string) {
   }
 
   return `https://${trimmed}`;
+}
+
+function withHexAlpha(color: string | undefined, alpha: string) {
+  const normalized = color?.trim();
+
+  if (!normalized) {
+    return `#5b27d9${alpha}`;
+  }
+
+  if (/^#[0-9a-f]{3}$/i.test(normalized)) {
+    const [, r, g, b] = normalized;
+    return `#${r}${r}${g}${g}${b}${b}${alpha}`;
+  }
+
+  if (/^#[0-9a-f]{6}$/i.test(normalized)) {
+    return `${normalized}${alpha}`;
+  }
+
+  return normalized;
+}
+
+function buildRestaurantPopHeadingLines(text: string) {
+  return text
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line, lineIndex) => {
+      const parts = line.split(/(\s+)/).map((part) => ({
+        text: part,
+        secondary: lineIndex === 1 || /gagn|gain|cadeau/i.test(part),
+      }));
+      if (!parts.some((part) => part.secondary)) {
+        const lastWordIndex = [...parts]
+          .map((part, index) => ({ part, index }))
+          .reverse()
+          .find(({ part }) => part.text.trim())?.index;
+
+        if (lastWordIndex != null) {
+          parts[lastWordIndex].secondary = true;
+        }
+      }
+
+      return parts;
+    });
 }
 
 function readableCampaignSaveError(message: string | undefined) {
@@ -277,7 +341,8 @@ function createDefaultState(merchant: Merchant): EditorState {
       heading: {
         textColor: "#1f2937",
         fontSizePx: 40,
-        fontFamily: "display",
+        fontFamily: "anton",
+        fontWeight: 500,
         align: "center",
       },
       button: {
@@ -289,10 +354,11 @@ function createDefaultState(merchant: Merchant): EditorState {
         isBold: true,
       },
       layout: {
-        blockSpacingPx: 28,
+        blockSpacingPx: 40,
+        templateId: "classic",
       },
       wheel: {
-        rimColor: "#f4c14a",
+        rimColor: deriveLighterHex("#1b2842"),
         winColor: "#f4c14a",
         alternateWinColor: "#eef2ff",
         loseColor: "#1b2842",
@@ -555,10 +621,13 @@ const CampaignLivePreview = memo(function CampaignLivePreview({
   merchant: Merchant;
   preview: CampaignEditorPreviewModel;
 }) {
+  const isRestaurantPopTemplate = preview.gamePageTemplateId === "restaurant-pop";
+  const restaurantPopHeadingLines = buildRestaurantPopHeadingLines(preview.subtitle);
+
   return (
     <div className="mt-6">
       <div
-        className="mx-auto min-h-[700px] w-full max-w-[450px] overflow-hidden rounded-[38px] border border-[#ced7e6] px-4 pb-6 pt-5 shadow-[0_30px_70px_rgba(18,24,39,0.18)]"
+        className="mx-auto min-h-[600px] w-full max-w-[450px] overflow-hidden rounded-[38px] border border-[#ced7e6] px-4 pb-6 pt-5 shadow-[0_30px_70px_rgba(18,24,39,0.18)]"
         style={preview.backgroundStyle}
       >
         {preview.logoMode === "image" && preview.logoUrl ? (
@@ -603,26 +672,45 @@ const CampaignLivePreview = memo(function CampaignLivePreview({
 
         <div className={preview.headingAlignmentClass}>
           <h3
-            className={`${preview.headingFontClass} whitespace-pre-line font-semibold leading-[0.95]`}
+            className={`${preview.headingFontClass} whitespace-pre-line ${isRestaurantPopTemplate ? "tracking-[0.038em] drop-shadow-[0_4px_0_rgba(0,0,0,0.08)]" : ""} leading-[1]`}
             style={{
               color: preview.headingTextColor,
               fontSize: `${preview.headingFontSizePx}px`,
+              fontWeight: preview.headingFontWeight,
             }}
           >
-            {preview.subtitle}
+            {isRestaurantPopTemplate
+              ? restaurantPopHeadingLines.map((line, lineIndex) => (
+                  <span key={`preview-heading-line-${lineIndex}`} className="block">
+                    {line.map((part, partIndex) => (
+                      <span
+                        key={`preview-heading-line-${lineIndex}-${partIndex}`}
+                        style={{
+                          color: part.secondary
+                            ? preview.wheelStyle.winColor
+                            : preview.headingTextColor,
+                        }}
+                      >
+                        {part.text}
+                      </span>
+                    ))}
+                  </span>
+                ))
+              : preview.subtitle}
           </h3>
         </div>
 
         <div
           style={{
             marginTop: `${preview.blockSpacingPx}px`,
-            height: preview.gameType === "wheel" ? "560px" : undefined,
+            height: preview.gameType === "wheel" ? "470px" : undefined,
           }}
         >
           {preview.gameType === "wheel" ? (
             <WheelOfFortune
               accent={preview.accent}
               wheelStyle={preview.wheelStyle}
+              pageTemplate={preview.gamePageTemplateId}
               buttonStyle={{
                 backgroundColor: preview.buttonStyle.backgroundColor,
                 textColor: preview.buttonStyle.textColor,
@@ -893,9 +981,20 @@ function toEditorState(merchant: Merchant, campaign: CampaignPerformance | null)
         : campaign.campaign.accent,
     presentation: {
       ...campaign.campaign.presentation,
+      heading: {
+        ...campaign.campaign.presentation.heading,
+        fontFamily: campaign.campaign.presentation.heading.fontFamily ?? "anton",
+        fontWeight: campaign.campaign.presentation.heading.fontWeight ?? 500,
+        align: "center",
+      },
       button: {
         ...campaign.campaign.presentation.button,
         isBold: campaign.campaign.presentation.button.isBold ?? true,
+      },
+      layout: {
+        ...campaign.campaign.presentation.layout,
+        blockSpacingPx: campaign.campaign.presentation.layout.blockSpacingPx ?? 40,
+        templateId: campaign.campaign.presentation.layout.templateId ?? "classic",
       },
       poster: normalizePosterSettings(
         campaign.campaign.presentation.poster,
@@ -1063,7 +1162,7 @@ export function CampaignEditor({
   const previewPrize = form.prizes[0]?.label || "Cadeau surprise";
   const previewCtaClass = buttonSizeMap[form.presentation.button.size];
   const logoWidthPx = Math.round(
-    Math.max(72, Math.min(260, form.presentation.logo.sizePercent * 1.6)),
+    Math.max(56, Math.min(720, form.presentation.logo.sizePercent * 3)),
   );
   const campaignOptions = campaignLibraryItems.filter(
     (item) => item.id !== initialCampaign?.campaign.id,
@@ -1083,7 +1182,9 @@ export function CampaignEditor({
         ? "text-right"
         : "text-center";
   const headingFontClass =
-    form.presentation.heading.fontFamily === "serif"
+    form.presentation.heading.fontFamily === "anton"
+      ? "font-anton"
+      : form.presentation.heading.fontFamily === "serif"
       ? "font-serif"
       : form.presentation.heading.fontFamily === "sans"
         ? "font-sans"
@@ -1099,7 +1200,9 @@ export function CampaignEditor({
         backgroundImage:
           form.presentation.background.mode === "image" && form.presentation.background.imageUrl
             ? `linear-gradient(rgba(15,23,40,0.32), rgba(15,23,40,0.52)), url("${form.presentation.background.imageUrl}")`
-            : "",
+            : (form.presentation.layout.templateId ?? "classic") === "restaurant-pop"
+              ? `radial-gradient(circle at -10% -8%, ${withHexAlpha(form.presentation.wheel.loseColor, "f2")} 0 18%, transparent 19%), radial-gradient(circle at 110% 0%, ${withHexAlpha(form.presentation.wheel.winColor, "f2")} 0 13%, transparent 14%), linear-gradient(180deg, #fff2dd 0%, #fffaf1 48%, #fff4e5 100%)`
+              : "",
         backgroundPosition: "center",
         backgroundSize: "cover",
       },
@@ -1114,15 +1217,23 @@ export function CampaignEditor({
       headingFontClass,
       headingTextColor: form.presentation.heading.textColor,
       headingFontSizePx: form.presentation.heading.fontSizePx,
+      headingFontWeight: form.presentation.heading.fontWeight ?? 500,
       subtitle: form.subtitle,
       blockSpacingPx: form.presentation.layout.blockSpacingPx,
+      gamePageTemplateId: form.presentation.layout.templateId ?? "classic",
       gameType: form.gameType,
       accent: form.accent,
       wheelStyle: form.presentation.wheel,
       buttonStyle: {
-        backgroundColor: form.presentation.button.backgroundColor,
+        backgroundColor:
+          form.gameType === "wheel"
+            ? form.presentation.wheel.loseColor
+            : form.presentation.button.backgroundColor,
         textColor: form.presentation.button.textColor,
-        borderColor: form.presentation.button.borderColor,
+        borderColor:
+          form.gameType === "wheel"
+            ? form.presentation.wheel.rimColor
+            : form.presentation.button.borderColor,
         textSizePx: form.presentation.button.textSizePx,
         isBold: form.presentation.button.isBold ?? true,
       },
@@ -1149,8 +1260,10 @@ export function CampaignEditor({
     form.presentation.button.textColor,
     form.presentation.button.textSizePx,
     form.presentation.heading.fontSizePx,
+    form.presentation.heading.fontWeight,
     form.presentation.heading.textColor,
     form.presentation.layout.blockSpacingPx,
+    form.presentation.layout.templateId,
     form.presentation.logo.marginBottomPx,
     form.presentation.wheel,
     form.subtitle,
@@ -1311,6 +1424,7 @@ export function CampaignEditor({
           ...current.presentation.wheel,
           loseColor: nextColor,
           alternateLoseColor: deriveLighterHex(nextColor),
+          rimColor: deriveLighterHex(nextColor),
         },
       },
     }));
@@ -1839,6 +1953,49 @@ export function CampaignEditor({
                 );
               })}
             </div>
+
+            <div className="mt-6">
+              <p className="text-xs uppercase tracking-[0.24em] text-[#7b8496]">
+                Template de page de jeu
+              </p>
+              <div className="mt-3 grid gap-3 md:grid-cols-2">
+                {gamePageTemplateOptions.map((template) => {
+                  const active =
+                    (form.presentation.layout.templateId ?? "classic") === template.value;
+
+                  return (
+                    <button
+                      key={template.value}
+                      type="button"
+                      onClick={() =>
+                        setForm((current) => ({
+                          ...current,
+                          presentation: {
+                            ...current.presentation,
+                            layout: {
+                              ...current.presentation.layout,
+                              templateId: template.value,
+                            },
+                          },
+                        }))
+                      }
+                      className={`rounded-[22px] border p-4 text-left transition ${
+                        active
+                          ? "border-[#2f6df6] bg-[#eff4ff] shadow-[0_14px_26px_rgba(47,109,246,0.12)]"
+                          : "border-[#d7e0ed] bg-white hover:border-[#b8c5da]"
+                      }`}
+                    >
+                      <span className="text-sm font-semibold text-[#111827]">
+                        {template.title}
+                      </span>
+                      <span className="mt-1 block text-sm leading-6 text-[#5c6577]">
+                        {template.description}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           </section>
 
           {isExpertMode ? (
@@ -2186,40 +2343,32 @@ export function CampaignEditor({
                     </div>
                   </div>
 
-                  <div className="text-sm">
-                    <span className="mb-3 block text-[#616b7c]">Alignement du texte</span>
-                    <div className="grid gap-3">
-                      {textAlignOptions.map((align) => {
-                        const active = form.presentation.heading.align === align;
+                  <label className="text-sm">
+                    <span className="mb-2 block text-[#616b7c]">Épaisseur du texte</span>
+                    <select
+                      value={form.presentation.heading.fontWeight ?? 500}
+                      onChange={(event) =>
+                        setForm((current) => ({
+                          ...current,
+                          presentation: {
+                            ...current.presentation,
+                            heading: {
+                              ...current.presentation.heading,
+                              fontWeight: Number(event.target.value),
+                            },
+                          },
+                        }))
+                      }
+                      className="w-full rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
+                    >
+                      {headingFontWeightOptions.map((weight) => (
+                        <option key={weight} value={weight}>
+                          {weight}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
 
-                        return (
-                          <button
-                            key={align}
-                            type="button"
-                            onClick={() =>
-                              setForm((current) => ({
-                                ...current,
-                                presentation: {
-                                  ...current.presentation,
-                                  heading: {
-                                    ...current.presentation.heading,
-                                    align,
-                                  },
-                                },
-                              }))
-                            }
-                            className={`rounded-[20px] border px-4 py-3 text-left text-sm font-semibold ${
-                              active
-                                 ? "border-[#2f6df6] bg-[#eff4ff] text-[#214ccf]"
-                                : "border-[#d7e0ed] bg-[#f7f9fc] text-[#182033]"
-                            }`}
-                          >
-                            {textAlignLabel(align)}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
                 </>
               ) : null}
             </div>
@@ -2809,40 +2958,6 @@ export function CampaignEditor({
                 </div>
               </div>
 
-              <div className="text-sm">
-                <span className="mb-3 block text-[#616b7c]">Alignement du texte</span>
-                <div className="grid gap-3">
-                  {textAlignOptions.map((align) => {
-                    const active = form.presentation.heading.align === align;
-
-                    return (
-                      <button
-                        key={align}
-                        type="button"
-                        onClick={() =>
-                          setForm((current) => ({
-                            ...current,
-                            presentation: {
-                              ...current.presentation,
-                              heading: {
-                                ...current.presentation.heading,
-                                align,
-                              },
-                            },
-                          }))
-                        }
-                        className={`rounded-[20px] border px-4 py-3 text-left text-sm font-semibold ${
-                          active
-                             ? "border-[#2f6df6] bg-[#eff4ff] text-[#214ccf]"
-                            : "border-[#d7e0ed] bg-[#f7f9fc] text-[#182033]"
-                        }`}
-                      >
-                        {textAlignLabel(align)}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
             </div>
           </section>
           ) : null}
