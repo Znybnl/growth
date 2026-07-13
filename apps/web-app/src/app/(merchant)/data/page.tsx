@@ -335,7 +335,7 @@ export default async function DataPage({ searchParams }: DataPageProps) {
   }
 
   const sortedLeads = [...dataView.leads].sort((a, b) =>
-    b.consentTimestamp.localeCompare(a.consentTimestamp),
+    (b.consentTimestamp ?? b.createdAt).localeCompare(a.consentTimestamp ?? a.createdAt),
   );
   const filteredLeads = query
     ? sortedLeads.filter((lead) =>
