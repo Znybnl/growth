@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+
 import { AuthShell } from "@/components/auth/auth-shell";
 import { SignInForm } from "@/components/auth/sign-in-form";
 import { redirectAuthenticatedMerchant } from "@/lib/auth";
@@ -18,7 +20,9 @@ export default async function SignInPage() {
         "Suivi des leads, lots et performances journalières",
       ]}
     >
-      <SignInForm />
+      <Suspense fallback={null}>
+        <SignInForm />
+      </Suspense>
     </AuthShell>
   );
 }
