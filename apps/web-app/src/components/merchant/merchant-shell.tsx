@@ -29,6 +29,7 @@ const navItems = [
 
 const adminNavItems = [
   { href: "/backgrounds", label: "Bibliothèque" },
+  { href: "/admin", label: "Pilotage" },
   { href: "/affiliates", label: "Affiliation" },
   { href: "/support", label: "Supervision" },
 ];
