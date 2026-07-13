@@ -48,6 +48,7 @@ export function AccountSettingsForm({
     tripadvisorUrl: merchant.tripadvisorUrl ?? "",
     customLinkUrl: merchant.customLinkUrl ?? "",
     defaultPrizeCost: merchant.defaultPrizeCost ?? 3,
+    timeZone: merchant.timeZone ?? "Europe/Paris",
     firstName: user.firstName,
     lastName: user.lastName,
     email: user.email,
