@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { DashboardActivityChart } from "@/components/merchant/dashboard-activity-chart";
 import { DashboardCampaignActionsMenu } from "@/components/merchant/dashboard-campaign-actions-menu";
+import { DashboardOperationalAlerts } from "@/components/merchant/dashboard-operational-alerts";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import {
   formatCurrency,
@@ -75,7 +76,7 @@ export default async function DashboardPage({
             <p className="okado-label">
               Vue d&apos;ensemble
             </p>
-            <h1 className="mt-3 font-display text-[2.4rem] font-semibold leading-[1.03] text-midnight-ink md:text-[56px]">
+            <h1 className="okado-page-title mt-3">
               Pilotez vos activations
             </h1>
             <p className="mt-4 max-w-3xl text-sm leading-6 text-ash">
@@ -88,7 +89,7 @@ export default async function DashboardPage({
             <Link
               href="/campaigns/new"
               prefetch={false}
-              className="inline-flex h-11 items-center rounded-[12px] bg-[linear-gradient(rgb(59,130,246)_0%,rgb(20,90,255)_100%)] px-5 text-sm font-semibold !text-white"
+              className="okado-filled-action h-11 px-5"
             >
               Créer une campagne
             </Link>
@@ -125,12 +126,14 @@ export default async function DashboardPage({
             className="okado-card p-4"
           >
             <p className="okado-label">{label}</p>
-            <p className="mt-4 text-3xl font-semibold tracking-[-0.04em] text-[#111827] md:text-4xl">
+            <p className="mt-4 text-3xl font-semibold tracking-[-0.04em] text-graphite md:text-4xl">
               {value}
             </p>
           </div>
         ))}
       </section>
+
+      <DashboardOperationalAlerts />
 
       <section className="grid min-w-0 gap-6 xl:grid-cols-[1.15fr_0.85fr]">
         <div className="min-w-0 space-y-6">
@@ -146,17 +149,17 @@ export default async function DashboardPage({
                 <p className="okado-label">
                   Campagnes prioritaires
                 </p>
-                <h2 className="mt-2 text-[22px] font-semibold leading-tight tracking-[-0.22px] text-graphite">
+                <h2 className="okado-section-title mt-2">
                   À surveiller aujourd&apos;hui
                 </h2>
               </div>
-              <Link href="/campaigns" prefetch={false} className="text-sm font-semibold text-[#2f6df6]">
+              <Link href="/campaigns" prefetch={false} className="okado-link text-sm">
                 Voir toutes les campagnes
               </Link>
             </div>
 
             <div className="mt-6 hidden overflow-hidden rounded-[8px] border border-border md:block">
-              <div className="grid grid-cols-[1.5fr_0.85fr_0.7fr_0.7fr_0.9fr_auto] gap-3 bg-[#f7f9fc] px-5 py-4 text-[11px] uppercase tracking-[0.24em] text-[#7c8597]">
+              <div className="okado-table-header grid grid-cols-[1.5fr_0.85fr_0.7fr_0.7fr_0.9fr_auto] gap-3 px-5 py-4">
                 <span>Campagne</span>
                 <span>Mécanique</span>
                 <span>Scans</span>
@@ -173,10 +176,16 @@ export default async function DashboardPage({
                   <div className="min-w-0">
                     <div className="flex items-center gap-3">
                       <span
-                        className="h-3 w-3 rounded-full"
-                        title={getCampaignStatus(item).label}
-                        style={{ backgroundColor: getCampaignStatus(item).color }}
-                      />
+                        className={`okado-status-badge ${
+                          !item.campaign.isActive
+                            ? "okado-status-muted"
+                            : item.prizes.some((prize) => prize.remainingQuantity === 0)
+                              ? "okado-status-warning"
+                              : "okado-status-active"
+                        }`}
+                      >
+                        {getCampaignStatus(item).label}
+                      </span>
                       <div className="min-w-0">
                         <p className="truncate font-semibold text-[#111827]">
                           {item.campaign.title}
@@ -188,9 +197,9 @@ export default async function DashboardPage({
                     </div>
                   </div>
                   <span className="text-[#556173]">{gameTypeLabel(item.campaign.gameType)}</span>
-                  <span className="font-semibold text-[#111827]">{item.kpis.scans}</span>
-                  <span className="font-semibold text-[#111827]">{item.kpis.leads}</span>
-                  <span className="font-semibold text-[#111827]">
+                  <span className="font-semibold text-graphite">{item.kpis.scans}</span>
+                  <span className="font-semibold text-graphite">{item.kpis.leads}</span>
+                  <span className="font-semibold text-graphite">
                     {formatPercent(item.kpis.conversionRate)}
                   </span>
                   <DashboardCampaignActionsMenu campaignId={item.campaign.id} />
@@ -212,7 +221,7 @@ export default async function DashboardPage({
                           style={{ backgroundColor: getCampaignStatus(item).color }}
                         />
                       <div className="min-w-0">
-                        <p className="truncate font-semibold text-[#111827]">
+                        <p className="truncate font-semibold text-graphite">
                           {item.campaign.title}
                         </p>
                         <p className="truncate text-sm text-[#7a8496]">
@@ -262,10 +271,10 @@ export default async function DashboardPage({
         <div className="min-w-0 space-y-6">
           {bestCampaign ? (
             <div className="okado-card p-5 md:p-6">
-              <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">
+              <p className="okado-label">
                 Meilleure campagne
               </p>
-              <h2 className="mt-2 text-[1.9rem] font-semibold leading-tight text-[#111827] md:text-2xl">
+              <h2 className="okado-section-title mt-2">
                 {bestCampaign.campaign.title}
               </h2>
               <div className="mt-5 grid gap-4 sm:grid-cols-2">
@@ -288,14 +297,14 @@ export default async function DashboardPage({
           <div className="okado-card min-h-[350px] min-w-0 p-5 md:p-6">
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">
-                <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">
+                <p className="okado-label">
                   Dernières saisies
                 </p>
-                <h2 className="mt-2 text-[1.9rem] font-semibold leading-tight text-[#111827] md:text-2xl">
+                <h2 className="okado-section-title mt-2">
                   Leads récents
                 </h2>
               </div>
-              <Link href="/data" prefetch={false} className="text-sm font-semibold text-[#2f6df6]">
+              <Link href="/data" prefetch={false} className="okado-link text-sm">
                 Ouvrir les données
               </Link>
             </div>

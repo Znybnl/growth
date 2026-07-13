@@ -36,6 +36,13 @@ const POSTER_TEMPLATE_IDS = new Set<PosterTemplateId>([
   "soft-gradient-wheel",
   "terracotta-wheel",
 ]);
+const MERCHANT_TIME_ZONES = new Set([
+  "Europe/Paris",
+  "America/Toronto",
+  "America/Winnipeg",
+  "America/Edmonton",
+  "America/Vancouver",
+]);
 const ALLOWED_BACKGROUND_MIME_TYPES = new Set([
   "image/jpeg",
   "image/png",
@@ -220,6 +227,7 @@ export function parseMerchantAccountSettingsInput(input: unknown): MerchantAccou
     tiktokUrl: normalizeUrl(payload.tiktokUrl),
     tripadvisorUrl: normalizeUrl(payload.tripadvisorUrl),
     customLinkUrl: normalizeUrl(payload.customLinkUrl),
+    timeZone: normalizeEnum(payload.timeZone, MERCHANT_TIME_ZONES, "Europe/Paris"),
     defaultPrizeCost: normalizeNumber(payload.defaultPrizeCost, {
       min: 0,
       max: 100000,
@@ -270,7 +278,7 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
       totalQuantity: normalizeNullableInteger(prize.totalQuantity, 0, 1000000),
       probability: normalizeNumber(prize.probability, {
         min: 0,
-        max: 1000000,
+        max: 100,
         fallback: 0,
       }),
       estimatedUnitCost: normalizeNumber(prize.estimatedUnitCost, {
@@ -281,6 +289,14 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
       usageConditions: normalizeMultiline(prize.usageConditions, 1200),
     };
   });
+
+  const totalProbability = sanitizedPrizes.reduce((total, prize) => total + prize.probability, 0);
+  if (!rewardRules.isWinningEveryTime && totalProbability > 100) {
+    throw new Error("Le total des probabilités ne peut pas dépasser 100 %.");
+  }
+  if (rewardRules.isWinningEveryTime && totalProbability <= 0) {
+    throw new Error("Ajoutez une probabilité supérieure à 0 pour au moins un lot.");
+  }
 
   const sanitizedActions = actions.slice(0, 12).map((item) => {
     const action = ensureObject(item);
@@ -460,6 +476,12 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
         min: 0,
         max: 365,
         fallback: 0,
+        integer: true,
+      }),
+      participationIntervalDays: normalizeNumber(rewardRules.participationIntervalDays, {
+        min: 1,
+        max: 365,
+        fallback: 1,
         integer: true,
       }),
       isWinningEveryTime: Boolean(rewardRules.isWinningEveryTime),

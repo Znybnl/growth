@@ -44,6 +44,7 @@ export type EventType =
   | "review_confirmed"
   | "social_clicked"
   | "game_played"
+  | "game_lost"
   | "prize_won"
   | "prize_redeemed"
   | "prize_expired"
@@ -71,6 +72,7 @@ export interface Merchant {
   tiktokUrl?: string;
   tripadvisorUrl?: string;
   customLinkUrl?: string;
+  timeZone?: string;
   defaultPrizeCost?: number;
   stripeCustomerId?: string;
   stripeSubscriptionId?: string;
@@ -250,6 +252,7 @@ export interface MerchantAccountSettingsInput {
   tiktokUrl: string;
   tripadvisorUrl: string;
   customLinkUrl: string;
+  timeZone: string;
   defaultPrizeCost: number;
   firstName: string;
   lastName: string;
@@ -369,6 +372,7 @@ export interface CampaignRewardRules {
   purchaseRequired: boolean;
   availableAfterHours: number;
   availabilityDurationDays: number;
+  participationIntervalDays: number;
   isWinningEveryTime: boolean;
 }
 
@@ -411,7 +415,7 @@ export interface Lead {
   email: string;
   phone?: string;
   marketingConsent: boolean;
-  consentTimestamp: string;
+  consentTimestamp?: string;
   prizeId?: string;
   status: LeadStatus;
   createdAt: string;
@@ -420,6 +424,7 @@ export interface Lead {
   rewardAvailableAt?: string;
   rewardExpiresAt?: string;
   prizeUsageConditions?: string;
+  prizeLabelSnapshot?: string;
 }
 
 export interface CampaignEvent {
@@ -642,6 +647,18 @@ export interface CampaignDataView {
   performance: CampaignPerformance;
   leads: MerchantLeadRow[];
   events: CampaignEvent[];
+  leadTotal: number;
+  leadOffset: number;
+  leadLimit: number;
+  dailyStats: Array<{
+    label: string;
+    participations: number;
+    redeemed: number;
+  }>;
+  actionVolumes: Array<{
+    actionIndex: number;
+    value: number;
+  }>;
 }
 
 export interface CampaignSetupInput {

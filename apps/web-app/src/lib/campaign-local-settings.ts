@@ -13,6 +13,7 @@ type CampaignLocalSettings = {
   buttonTextSizePx?: number;
   buttonIsBold?: boolean;
   blockSpacingPx?: number;
+  participationIntervalDays?: number;
   headingFontFamily?: TextFont;
   headingFontWeight?: number;
   gamePageTemplateId?: GamePageTemplateId;
@@ -103,6 +104,10 @@ export async function getCampaignLocalSettings(campaignId: string) {
       return supabaseSettings;
     }
 
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("Les réglages de campagne sont indisponibles en base de données.");
+    }
+
     const fileStore = await readFileStore();
     const fallback = fileStore[campaignId];
 
@@ -127,6 +132,10 @@ export async function setCampaignLocalSettings(
 
     if (saved) {
       return saved;
+    }
+
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("Les réglages de campagne ne peuvent pas être enregistrés hors de la base de données.");
     }
   }
 

@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
+import { randomUUID } from "crypto";
 
 import {
   getPublicErrorStatus,
   getPublicRetryAfter,
+  isDailyParticipationError,
   isValidPublicEmail,
   isValidPublicFirstName,
   isValidPublicIdentifier,
@@ -13,6 +15,7 @@ import { assertPersistentPublicRateLimit } from "@/lib/public-security-store";
 import { captureProductEvent } from "@/lib/product-analytics";
 import { sendRewardEmail } from "@/lib/reward-email";
 import { finalizeDrawSession } from "@/lib/store";
+import { rememberPublicCampaignParticipant } from "@/lib/store";
 import { logSupportEvent } from "@/lib/support-log";
 import { DrawResult, FinalizeDrawSessionRequest } from "@/lib/types";
 
@@ -61,6 +64,21 @@ export async function POST(request: Request) {
       leadStatus: result.lead.status,
     });
 
+    let participantToken: string | null = null;
+    try {
+      participantToken = await rememberPublicCampaignParticipant(
+        result.campaign.id,
+        result.lead.email,
+        randomUUID(),
+      );
+    } catch (identityError) {
+      logSupportEvent("error", "player_identity_failed", {
+        campaignId: result.campaign.id,
+        leadId: result.lead.id,
+        error: identityError instanceof Error ? identityError.message : "Player identity failed",
+      });
+    }
+
     if (result.prize && result.lead.redemptionCode) {
       try {
         await sendRewardEmail({
@@ -89,7 +107,21 @@ export async function POST(request: Request) {
       }
     }
 
-    return NextResponse.json(result, { status: 201 });
+    const response = NextResponse.json(result, { status: 201 });
+    if (participantToken) {
+      response.cookies.set(
+        `okado_player_${encodeURIComponent(result.campaign.id).slice(0, 80)}`,
+        participantToken,
+        {
+          httpOnly: true,
+          sameSite: "lax",
+          secure: process.env.NODE_ENV === "production",
+          path: "/",
+          maxAge: 90 * 24 * 60 * 60,
+        },
+      );
+    }
+    return response;
   } catch (error) {
     logSupportEvent("error", "draw_finalize_failed", {
       sessionId,
@@ -98,10 +130,16 @@ export async function POST(request: Request) {
     });
 
     const retryAfter = getPublicRetryAfter(error);
+    const message = error instanceof Error ? error.message : "Draw finalize failed";
+    const participationBlocked =
+      isDailyParticipationError(error) || /déjà participé|deja participe/i.test(message);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Draw finalize failed" },
       {
-        status: getPublicErrorStatus(error),
+        error: message,
+        code: participationBlocked ? "participation_cooldown" : undefined,
+      },
+      {
+        status: participationBlocked ? 409 : getPublicErrorStatus(error),
         headers: retryAfter ? { "Retry-After": retryAfter } : undefined,
       },
     );

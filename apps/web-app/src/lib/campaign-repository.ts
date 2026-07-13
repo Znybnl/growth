@@ -113,7 +113,7 @@ type LeadRow = {
   email: string;
   phone: string | null;
   marketing_consent: boolean;
-  consent_timestamp: string;
+  consent_timestamp: string | null;
   prize_id: string | null;
   status: Lead["status"];
   created_at: string;
@@ -121,6 +121,8 @@ type LeadRow = {
   redemption_code: string | null;
   reward_available_at: string | null;
   reward_expires_at: string | null;
+  prize_label_snapshot?: string | null;
+  prize_usage_conditions_snapshot?: string | null;
 };
 
 type DrawSessionRow = {
@@ -138,7 +140,7 @@ type DrawLeadRpcRow = {
   first_name: string;
   email: string;
   marketing_consent: boolean;
-  consent_timestamp: string;
+  consent_timestamp: string | null;
   prize_id: string | null;
   status: Lead["status"];
   created_at: string;
@@ -167,6 +169,24 @@ type EventRow = {
   event_type: CampaignEvent["eventType"];
   metadata: Record<string, string | number | boolean | null>;
   created_at: string;
+};
+
+type CampaignDataSummaryRpcRow = {
+  scans_count: number;
+  leads_count: number;
+  actions_count: number;
+  games_count: number;
+  wins_count: number;
+  redeemed_count: number;
+  estimated_spend: number;
+  daily_stats: Array<{ label: string; participations: number; redeemed: number }> | null;
+  action_volumes: Array<{ actionIndex: number; value: number }> | null;
+};
+
+export type CampaignDataViewOptions = {
+  leadLimit?: number;
+  leadOffset?: number;
+  query?: string;
 };
 
 type CampaignOverviewRpcRow = CampaignRow & {
@@ -215,6 +235,7 @@ type MerchantRow = {
   tiktok_url: string | null;
   tripadvisor_url: string | null;
   custom_link_url: string | null;
+  time_zone: string | null;
   default_prize_cost: number | null;
   stripe_customer_id: string | null;
   stripe_subscription_id: string | null;
@@ -242,6 +263,9 @@ type RewardEmailDeliveryRow = {
   bounced_at: string | null;
   complained_at: string | null;
   last_event_at: string | null;
+  retry_count?: number;
+  next_retry_at?: string | null;
+  last_retry_at?: string | null;
   metadata: Record<string, string | number | boolean | null>;
   created_at: string;
   updated_at: string;
@@ -268,6 +292,24 @@ function generateId(prefix: string) {
   return `${prefix}-${crypto.randomUUID().slice(0, 8)}`;
 }
 
+function isMissingAtomicCampaignSaveRpc(error: { code?: string; message?: string } | null) {
+  return Boolean(
+    error &&
+      (error.code === "PGRST202" ||
+        error.message?.includes("save_campaign_setup") ||
+        error.message?.includes("function public.save_campaign_setup")),
+  );
+}
+
+function isMissingCampaignDataSummaryRpc(error: { code?: string; message?: string } | null) {
+  return Boolean(
+    error &&
+      (error.code === "PGRST202" ||
+        error.message?.includes("get_campaign_data_summary") ||
+        error.message?.includes("function public.get_campaign_data_summary")),
+  );
+}
+
 function toMerchant(row: MerchantRow): Merchant {
   return {
     id: row.id,
@@ -288,6 +330,7 @@ function toMerchant(row: MerchantRow): Merchant {
     tiktokUrl: row.tiktok_url ?? undefined,
     tripadvisorUrl: row.tripadvisor_url ?? undefined,
     customLinkUrl: row.custom_link_url ?? undefined,
+    timeZone: row.time_zone ?? "Europe/Paris",
     defaultPrizeCost: row.default_prize_cost ?? undefined,
     stripeCustomerId: row.stripe_customer_id ?? undefined,
     stripeSubscriptionId: row.stripe_subscription_id ?? undefined,
@@ -443,6 +486,7 @@ function toCampaign(
       purchaseRequired: row.purchase_required,
       availableAfterHours: row.available_after_hours,
       availabilityDurationDays: row.availability_duration_days,
+      participationIntervalDays: localSettings.participationIntervalDays ?? 1,
       isWinningEveryTime: row.is_winning_every_time,
     },
   };
@@ -468,7 +512,7 @@ function toLead(row: LeadRow): Lead {
     email: row.email,
     phone: row.phone ?? undefined,
     marketingConsent: row.marketing_consent,
-    consentTimestamp: row.consent_timestamp,
+    consentTimestamp: row.consent_timestamp ?? undefined,
     prizeId: row.prize_id ?? undefined,
     status: row.status,
     createdAt: row.created_at,
@@ -476,7 +520,8 @@ function toLead(row: LeadRow): Lead {
     redemptionCode: row.redemption_code ?? undefined,
     rewardAvailableAt: row.reward_available_at ?? undefined,
     rewardExpiresAt: row.reward_expires_at ?? undefined,
-    prizeUsageConditions: undefined,
+    prizeUsageConditions: row.prize_usage_conditions_snapshot ?? undefined,
+    prizeLabelSnapshot: row.prize_label_snapshot ?? undefined,
   };
 }
 
@@ -633,7 +678,7 @@ async function fetchCampaignDependencies(campaignIds: string[]) {
       .in("campaign_id", campaignIds),
     supabase
       .from("leads")
-      .select("id,campaign_id,first_name,email,phone,marketing_consent,consent_timestamp,prize_id,status,created_at,action_confirmed,redemption_code,reward_available_at,reward_expires_at")
+      .select("id,campaign_id,first_name,email,phone,marketing_consent,consent_timestamp,prize_id,status,created_at,action_confirmed,redemption_code,reward_available_at,reward_expires_at,prize_label_snapshot,prize_usage_conditions_snapshot")
       .in("campaign_id", campaignIds),
     supabase
       .from("campaign_events")
@@ -646,6 +691,48 @@ async function fetchCampaignDependencies(campaignIds: string[]) {
     prizes: (prizes as PrizeRow[] | null) ?? [],
     leads: (leads as LeadRow[] | null) ?? [],
     events: (events as EventRow[] | null) ?? [],
+  };
+}
+
+function toCampaignOverview(row: CampaignRow, merchant: Merchant): Campaign {
+  const campaign = toCampaign(row, merchant, [], []);
+
+  // The campaigns list never renders uploaded assets. Keeping data URLs here makes the
+  // RSC response and Next cache grow with every logo/background uploaded by a merchant.
+  return {
+    ...campaign,
+    logoUrl: undefined,
+    presentation: {
+      ...campaign.presentation,
+      background: {
+        ...campaign.presentation.background,
+        imageUrl: "",
+      },
+      poster: {
+        ...campaign.presentation.poster,
+        logoUrl: undefined,
+        backgroundImageUrl: "",
+      },
+    },
+  };
+}
+
+async function fetchCampaignConfiguration(campaignId: string) {
+  const supabase = getSupabaseAdmin();
+  const [{ data: actions }, { data: prizes }] = await Promise.all([
+    supabase
+      .from("campaign_actions")
+      .select("id,campaign_id,position,kind,label,url,created_at")
+      .eq("campaign_id", campaignId),
+    supabase
+      .from("prizes")
+      .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at")
+      .eq("campaign_id", campaignId),
+  ]);
+
+  return {
+    actions: (actions as ActionRow[] | null) ?? [],
+    prizes: (prizes as PrizeRow[] | null) ?? [],
   };
 }
 
@@ -779,7 +866,7 @@ function buildCampaignOverviewFallbackBundle(
   }
 
   return campaignRows.map((row) => {
-    const campaign = toCampaign(row, merchant, [], []);
+    const campaign = toCampaignOverview(row, merchant);
 
     return {
       campaign,
@@ -895,9 +982,13 @@ export async function getSupabaseMerchantCampaignOverview(
 
   if (!overviewResult.error) {
     const rows = (overviewResult.data as CampaignOverviewRpcRow[] | null) ?? [];
+    const overviewMerchant = {
+      ...merchant,
+      logoUrl: undefined,
+    };
     const campaigns = rows.map((row) => ({
-      campaign: toCampaign(row, merchant, [], []),
-      merchant: clone(merchant),
+      campaign: toCampaignOverview(row, overviewMerchant),
+      merchant: clone(overviewMerchant),
       prizes: [],
       kpis: toOverviewKpis(row),
     }));
@@ -908,7 +999,7 @@ export async function getSupabaseMerchantCampaignOverview(
       : 0;
 
     return {
-      merchant: clone(merchant),
+      merchant: clone(overviewMerchant),
       campaigns,
       totalLeads,
       totalRedeemed,
@@ -927,8 +1018,9 @@ export async function getSupabaseMerchantCampaignOverview(
   const campaignIds = campaignRows.map((campaign) => campaign.id);
 
   if (!campaignIds.length) {
+    const overviewMerchant = { ...merchant, logoUrl: undefined };
     return {
-      merchant: clone(merchant),
+      merchant: clone(overviewMerchant),
       campaigns: [],
       totalLeads: 0,
       totalRedeemed: 0,
@@ -953,7 +1045,7 @@ export async function getSupabaseMerchantCampaignOverview(
   ]);
 
   const campaigns = buildCampaignOverviewFallbackBundle(
-    merchant,
+    { ...merchant, logoUrl: undefined },
     campaignRows,
     (leadsData as CampaignOverviewLeadRow[] | null) ?? [],
     (eventsData as CampaignOverviewEventRow[] | null) ?? [],
@@ -966,7 +1058,7 @@ export async function getSupabaseMerchantCampaignOverview(
     : 0;
 
   return {
-    merchant: clone(merchant),
+    merchant: clone({ ...merchant, logoUrl: undefined }),
     campaigns,
     totalLeads,
     totalRedeemed,
@@ -1012,7 +1104,7 @@ export async function getSupabaseCampaignPerformance(
   const { data } = await supabase.from("campaigns").select("*").eq("id", campaignId).maybeSingle();
   if (!data) return null;
   const row = data as CampaignRow;
-  const [merchant, { actions, prizes, leads, events }, localSettings] = await Promise.all([
+  const [merchant, { actions, prizes }, localSettings] = await Promise.all([
     fallbackMerchant && fallbackMerchant.id === row.merchant_id
       ? Promise.resolve(fallbackMerchant)
       : (async () => {
@@ -1023,7 +1115,7 @@ export async function getSupabaseCampaignPerformance(
             .maybeSingle();
           return merchantResult.data ? toMerchant(merchantResult.data as MerchantRow) : null;
         })(),
-    fetchCampaignDependencies([campaignId]),
+    fetchCampaignConfiguration(campaignId),
     getCampaignLocalSettings(campaignId),
   ]);
   if (!merchant) return null;
@@ -1032,8 +1124,8 @@ export async function getSupabaseCampaignPerformance(
     [row],
     actions,
     prizes,
-    leads,
-    events,
+    [],
+    [],
     { [campaignId]: localSettings },
   )[0] ?? null;
 }
@@ -1084,11 +1176,67 @@ export async function getSupabaseCampaignSetupPerformance(
 
 export async function getSupabasePublicCampaign(
   campaignId: string,
+  participantToken?: string,
 ): Promise<PublicCampaign | null> {
   const performance = await getSupabaseCampaignPerformance(campaignId);
-  if (!performance || !performance.campaign.isActive) return null;
+  if (!performance) return null;
+  if (!performance.campaign.isActive) {
+    throw new Error("Cette animation est momentanément indisponible.");
+  }
   assertMerchantBillingAccess(performance.merchant, "campaign_public");
-  return toPublicCampaign(performance.campaign, performance.merchant, performance.prizes);
+
+  let actions = performance.campaign.actions;
+  if (participantToken) {
+    const supabase = getSupabaseAdmin();
+    const { data: identity } = await supabase
+      .from("player_campaign_identities")
+      .select("email")
+      .eq("token", participantToken)
+      .eq("campaign_id", campaignId)
+      .gt("expires_at", new Date().toISOString())
+      .maybeSingle();
+
+    if (identity?.email) {
+      const { count } = await supabase
+        .from("leads")
+        .select("id", { count: "exact", head: true })
+        .eq("campaign_id", campaignId)
+        .ilike("email", identity.email);
+      const nextAction = performance.campaign.actions[count ?? 0];
+      actions = nextAction ? [nextAction] : [];
+    }
+  }
+
+  return toPublicCampaign(performance.campaign, performance.merchant, performance.prizes, actions);
+}
+
+export async function createPublicCampaignIdentity(
+  campaignId: string,
+  email: string,
+  token: string,
+) {
+  const supabase = getSupabaseAdmin();
+  const expiresAt = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString();
+  const { data, error } = await supabase
+    .from("player_campaign_identities")
+    .upsert(
+      {
+        token,
+        campaign_id: campaignId,
+        email: email.trim().toLowerCase(),
+        expires_at: expiresAt,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "campaign_id,email" },
+    )
+    .select("token")
+    .single();
+
+  if (error || !data?.token) {
+    throw new Error(error?.message || "Impossible de mémoriser la prochaine action.");
+  }
+
+  return data.token;
 }
 
 export async function getSupabaseMerchantLeads(
@@ -1121,13 +1269,13 @@ export async function getSupabaseMerchantLeads(
         campaignTitle: campaignMap.get(lead.campaignId)?.title ?? "Campagne",
         goalType: campaignMap.get(lead.campaignId)?.goal_type ?? "lead_capture",
         prizeLabel: lead.prizeId
-          ? prizes.find((item) => item.id === lead.prizeId)?.label ?? "Lot inconnu"
+          ? lead.prizeLabelSnapshot ?? prizes.find((item) => item.id === lead.prizeId)?.label ?? "Lot inconnu"
           : "Perdu",
         prizeUsageConditions: lead.prizeId
-          ? prizes.find((item) => item.id === lead.prizeId)?.usageConditions
+          ? lead.prizeUsageConditions ?? prizes.find((item) => item.id === lead.prizeId)?.usageConditions
           : undefined,
       }))
-    .sort((a, b) => b.consentTimestamp.localeCompare(a.consentTimestamp));
+    .sort((a, b) => (b.consentTimestamp ?? b.createdAt).localeCompare(a.consentTimestamp ?? a.createdAt));
 
   return enrichLeadRowsWithEmailDeliveries(
     leads,
@@ -1200,7 +1348,7 @@ export async function getSupabaseMerchantRecentLeads(
       campaignTitle: campaignMap.get(lead.campaignId)?.title ?? "Campagne",
       goalType: campaignMap.get(lead.campaignId)?.goal_type ?? "lead_capture",
       prizeLabel: lead.prizeId
-        ? prizes.find((item) => item.id === lead.prizeId)?.label ?? "Lot inconnu"
+        ? lead.prizeLabelSnapshot ?? prizes.find((item) => item.id === lead.prizeId)?.label ?? "Lot inconnu"
         : "Perdu",
     }))
     .filter((lead) =>
@@ -1218,7 +1366,37 @@ export async function getSupabaseMerchantRecentLeads(
   );
 }
 
-export async function getSupabaseCampaignDataView(
+export async function findSupabaseMerchantLeadCampaign(
+  merchantId: string,
+  query: string,
+): Promise<string | null> {
+  const normalizedQuery = query.trim();
+  if (!normalizedQuery) return null;
+
+  const supabase = getSupabaseAdmin();
+  const { data: campaignsData } = await supabase
+    .from("campaigns")
+    .select("id")
+    .eq("merchant_id", merchantId);
+  const campaignIds = ((campaignsData as Array<{ id: string }> | null) ?? []).map((item) => item.id);
+  if (!campaignIds.length) return null;
+
+  const escapedQuery = normalizedQuery.replaceAll("%", "\\%").replaceAll("_", "\\_");
+  const { data } = await supabase
+    .from("leads")
+    .select("campaign_id")
+    .in("campaign_id", campaignIds)
+    .or(
+      `first_name.ilike.%${escapedQuery}%,email.ilike.%${escapedQuery}%,redemption_code.ilike.%${escapedQuery}%`,
+    )
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  return (data as { campaign_id: string } | null)?.campaign_id ?? null;
+}
+
+async function getSupabaseCampaignDataViewLegacy(
   campaignId: string,
   merchant?: Merchant,
 ): Promise<CampaignDataView | null> {
@@ -1291,19 +1469,216 @@ export async function getSupabaseCampaignDataView(
         campaignTitle: performance.campaign.title,
         goalType: performance.campaign.goalType,
         prizeLabel: lead.prizeId
-          ? prizes.find((item) => item.id === lead.prizeId)?.label ?? "Lot inconnu"
+          ? lead.prizeLabelSnapshot ?? prizes.find((item) => item.id === lead.prizeId)?.label ?? "Lot inconnu"
           : "Perdu",
         prizeUsageConditions: lead.prizeId
-          ? prizes.find((item) => item.id === lead.prizeId)?.usageConditions
+          ? lead.prizeUsageConditions ?? prizes.find((item) => item.id === lead.prizeId)?.usageConditions
           : undefined,
       }))
-      .sort((a, b) => b.consentTimestamp.localeCompare(a.consentTimestamp)),
+      .sort((a, b) => (b.consentTimestamp ?? b.createdAt).localeCompare(a.consentTimestamp ?? a.createdAt)),
     (deliveriesResult.data as RewardEmailDeliverySummaryRow[] | null) ?? [],
   );
   const events = ((eventsResult.data as EventRow[] | null) ?? [])
     .map(toEvent)
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-  return { performance, leads, events };
+  const latestDates = [...leads.map((lead) => lead.createdAt), ...events.map((event) => event.createdAt)];
+  const latestDate = latestDates.sort((a, b) => a.localeCompare(b)).at(-1) ?? new Date().toISOString();
+  const baseDate = new Date(latestDate);
+  const dailyStats = Array.from({ length: 7 }, (_, index) => {
+    const date = new Date(Date.UTC(baseDate.getUTCFullYear(), baseDate.getUTCMonth(), baseDate.getUTCDate()));
+    date.setUTCDate(date.getUTCDate() - (6 - index));
+    const label = date.toISOString().slice(0, 10);
+
+    return {
+      label,
+      participations: leads.filter((lead) => lead.createdAt.slice(0, 10) === label).length,
+      redeemed: events.filter(
+        (event) => event.eventType === "prize_redeemed" && event.createdAt.slice(0, 10) === label,
+      ).length,
+    };
+  });
+  const actionVolumes = performance.campaign.actions.map((_, actionIndex) => ({
+    actionIndex,
+    value: 0,
+  }));
+  const leadVisitByEmail = new Map<string, number>();
+  for (const lead of [...leads].sort((a, b) => a.createdAt.localeCompare(b.createdAt))) {
+    const key = lead.email.trim().toLowerCase();
+    const actionIndex = leadVisitByEmail.get(key) ?? 0;
+    if (actionVolumes[actionIndex]) {
+      actionVolumes[actionIndex].value += 1;
+    }
+    leadVisitByEmail.set(key, actionIndex + 1);
+  }
+
+  return {
+    performance,
+    leads,
+    events,
+    leadTotal: leads.length,
+    leadOffset: 0,
+    leadLimit: leads.length || 50,
+    dailyStats,
+    actionVolumes,
+  };
+}
+
+export async function getSupabaseCampaignDataView(
+  campaignId: string,
+  merchant?: Merchant,
+  options: CampaignDataViewOptions = {},
+): Promise<CampaignDataView | null> {
+  const supabase = getSupabaseAdmin();
+  const leadLimit = Math.min(Math.max(options.leadLimit ?? 50, 10), 100);
+  const leadOffset = Math.max(options.leadOffset ?? 0, 0);
+  const query = options.query?.trim() ?? "";
+  const { data: campaignData } = await supabase
+    .from("campaigns")
+    .select("*")
+    .eq("id", campaignId)
+    .maybeSingle();
+
+  if (!campaignData) return null;
+
+  const row = campaignData as CampaignRow;
+  let leadsQuery = supabase
+    .from("leads")
+    .select("*", { count: "exact" })
+    .eq("campaign_id", campaignId)
+    .order("created_at", { ascending: false })
+    .range(leadOffset, leadOffset + leadLimit - 1);
+
+  if (query) {
+    const escapedQuery = query.replaceAll("%", "\\%").replaceAll("_", "\\_");
+    leadsQuery = leadsQuery.or(
+      `first_name.ilike.%${escapedQuery}%,email.ilike.%${escapedQuery}%,redemption_code.ilike.%${escapedQuery}%`,
+    );
+  }
+
+  const [
+    resolvedMerchant,
+    actionsResult,
+    prizesResult,
+    summaryResult,
+    leadsResult,
+    eventsResult,
+    localSettings,
+  ] = await Promise.all([
+    merchant && merchant.id === row.merchant_id
+      ? Promise.resolve(merchant)
+      : (async () => {
+          const merchantResult = await supabase
+            .from("merchants")
+            .select("*")
+            .eq("id", row.merchant_id)
+            .maybeSingle();
+          return merchantResult.data ? toMerchant(merchantResult.data as MerchantRow) : null;
+        })(),
+    supabase
+      .from("campaign_actions")
+      .select("id,campaign_id,position,kind,label,url,created_at")
+      .eq("campaign_id", campaignId),
+    supabase
+      .from("prizes")
+      .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at")
+      .eq("campaign_id", campaignId),
+    supabase.rpc("get_campaign_data_summary", { p_campaign_id: campaignId }),
+    leadsQuery,
+    supabase
+      .from("campaign_events")
+      .select("id,campaign_id,lead_id,event_type,metadata,created_at")
+      .eq("campaign_id", campaignId)
+      .order("created_at", { ascending: false })
+      .limit(8),
+    getCampaignLocalSettings(campaignId),
+  ]);
+
+  if (isMissingCampaignDataSummaryRpc(summaryResult.error)) {
+    return getSupabaseCampaignDataViewLegacy(campaignId, merchant);
+  }
+
+  if (summaryResult.error) {
+    throw new Error(`Lecture des indicateurs impossible: ${summaryResult.error.message}`);
+  }
+
+  if (!resolvedMerchant) return null;
+
+  const performance = buildPerformanceBundle(
+    resolvedMerchant,
+    [row],
+    (actionsResult.data as ActionRow[] | null) ?? [],
+    (prizesResult.data as PrizeRow[] | null) ?? [],
+    [],
+    [],
+    { [campaignId]: localSettings },
+  )[0];
+
+  if (!performance) return null;
+
+  const summary = (summaryResult.data as CampaignDataSummaryRpcRow[] | null)?.[0];
+  if (!summary) {
+    throw new Error("Les indicateurs de campagne sont indisponibles.");
+  }
+
+  performance.kpis = {
+    scans: Number(summary.scans_count) || 0,
+    leads: Number(summary.leads_count) || 0,
+    actions: Number(summary.actions_count) || 0,
+    games: Number(summary.games_count) || 0,
+    wins: Number(summary.wins_count) || 0,
+    redeemed: Number(summary.redeemed_count) || 0,
+    conversionRate: summary.scans_count
+      ? Math.round((Number(summary.leads_count) / Number(summary.scans_count)) * 100)
+      : 0,
+    actionRate: summary.leads_count
+      ? Math.round((Number(summary.actions_count) / Number(summary.leads_count)) * 100)
+      : 0,
+    redemptionRate: summary.wins_count
+      ? Math.round((Number(summary.redeemed_count) / Number(summary.wins_count)) * 100)
+      : 0,
+    estimatedSpend: Number(Number(summary.estimated_spend || 0).toFixed(2)),
+    costPerLead: summary.leads_count
+      ? Number((Number(summary.estimated_spend || 0) / Number(summary.leads_count)).toFixed(2))
+      : 0,
+    costPerRedeemed: summary.redeemed_count
+      ? Number((Number(summary.estimated_spend || 0) / Number(summary.redeemed_count)).toFixed(2))
+      : 0,
+  };
+
+  const leadRows = (leadsResult.data as LeadRow[] | null) ?? [];
+  const leadIds = leadRows.map((lead) => lead.id);
+  const { data: deliveriesData } = leadIds.length
+    ? await supabase
+        .from("reward_email_deliveries")
+        .select("lead_id,status,sent_at,delivered_at,error_message")
+        .in("lead_id", leadIds)
+    : { data: [] };
+  const prizes = performance.prizes;
+  const leads = enrichLeadRowsWithEmailDeliveries(
+    leadRows.map(toLead).map((lead) => ({
+      ...lead,
+      campaignTitle: performance.campaign.title,
+      goalType: performance.campaign.goalType,
+      prizeLabel: lead.prizeId
+        ? lead.prizeLabelSnapshot ?? prizes.find((item) => item.id === lead.prizeId)?.label ?? "Lot inconnu"
+        : "Perdu",
+      prizeUsageConditions: lead.prizeId
+        ? lead.prizeUsageConditions ?? prizes.find((item) => item.id === lead.prizeId)?.usageConditions
+        : undefined,
+    })),
+    (deliveriesData as RewardEmailDeliverySummaryRow[] | null) ?? [],
+  );
+
+  return {
+    performance,
+    leads,
+    events: ((eventsResult.data as EventRow[] | null) ?? []).map(toEvent),
+    leadTotal: leadsResult.count ?? 0,
+    leadOffset,
+    leadLimit,
+    dailyStats: summary.daily_stats ?? [],
+    actionVolumes: summary.action_volumes ?? [],
+  };
 }
 
 export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
@@ -1380,6 +1755,76 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
   const existingPrizes = (existingPrizesData as PrizeRow[] | null) ?? [];
   const remainingMap = new Map(existingPrizes.map((item) => [item.id, item.remaining_quantity]));
 
+  const atomicActions = input.actions.map((action, index) => ({
+    id:
+      !isNewCampaign && action.id && !action.id.startsWith("local-action-")
+        ? action.id
+        : generateId("action"),
+    campaign_id: campaignId,
+    position: index,
+    kind: action.kind,
+    label: action.label,
+    url: action.url,
+  }));
+  const atomicPrizes = input.prizes.map((prize) => {
+    const prizeId =
+      !isNewCampaign &&
+      prize.id &&
+      !prize.id.startsWith("local-prize-") &&
+      !prize.id.startsWith("default-prize-")
+        ? prize.id
+        : generateId("prize");
+    const remaining = remainingMap.has(prizeId)
+      ? remainingMap.get(prizeId)
+      : prize.totalQuantity ?? null;
+
+    return {
+      id: prizeId,
+      campaign_id: campaignId,
+      label: prize.label,
+      total_quantity: prize.totalQuantity ?? null,
+      remaining_quantity: prize.totalQuantity === null ? null : remaining ?? prize.totalQuantity ?? null,
+      probability: prize.probability,
+      estimated_unit_cost: prize.estimatedUnitCost,
+    };
+  });
+  const localSettings = {
+    buttonTextSizePx: input.presentation.button.textSizePx,
+    buttonIsBold: input.presentation.button.isBold,
+    blockSpacingPx: input.presentation.layout.blockSpacingPx,
+    participationIntervalDays: input.rewardRules.participationIntervalDays,
+    headingFontFamily: input.presentation.heading.fontFamily,
+    headingFontWeight: input.presentation.heading.fontWeight ?? 600,
+    gamePageTemplateId: input.presentation.layout.templateId ?? "classic",
+    logoMode: input.logoMode,
+    logoText: input.logoText,
+    prizeSettings: Object.fromEntries(
+      atomicPrizes.map((prize, index) => [
+        prize.id,
+        {
+          usageConditions: input.prizes[index]?.usageConditions?.trim() || undefined,
+        },
+      ]),
+    ),
+    poster: input.presentation.poster,
+    email: input.presentation.email,
+  };
+
+  const atomicSave = await supabase.rpc("save_campaign_setup", {
+    p_campaign: payload,
+    p_actions: atomicActions,
+    p_prizes: atomicPrizes,
+    p_settings: localSettings,
+  });
+
+  if (!atomicSave.error) {
+    return campaignId;
+  }
+
+  if (!isMissingAtomicCampaignSaveRpc(atomicSave.error)) {
+    throw new Error(`La campagne n'a pas pu être enregistrée: ${atomicSave.error.message}`);
+  }
+
   const upsert = await supabase.from("campaigns").upsert(payload).select("*").single();
   if (upsert.error || !upsert.data) {
     throw new Error(
@@ -1443,26 +1888,7 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
     }
   }
 
-  await setCampaignLocalSettings(campaignId, {
-    buttonTextSizePx: input.presentation.button.textSizePx,
-    buttonIsBold: input.presentation.button.isBold,
-    blockSpacingPx: input.presentation.layout.blockSpacingPx,
-    headingFontFamily: input.presentation.heading.fontFamily,
-    headingFontWeight: input.presentation.heading.fontWeight ?? 600,
-    gamePageTemplateId: input.presentation.layout.templateId ?? "classic",
-    logoMode: input.logoMode,
-    logoText: input.logoText,
-    prizeSettings: Object.fromEntries(
-      prizesInsert.map((prize, index) => [
-        prize.id,
-        {
-          usageConditions: input.prizes[index]?.usageConditions?.trim() || undefined,
-        },
-      ]),
-    ),
-    poster: input.presentation.poster,
-    email: input.presentation.email,
-  });
+  await setCampaignLocalSettings(campaignId, localSettings);
 
   return campaignId;
 }
@@ -1510,14 +1936,18 @@ export async function duplicateCampaignInSupabase(id: string, merchant: Merchant
 
 export async function toggleCampaignInSupabase(id: string, isActive: boolean) {
   const supabase = getSupabaseAdmin();
-  const { error, data } = await supabase
+  const { data: campaign } = await supabase
     .from("campaigns")
-    .update({ is_active: isActive })
+    .select("merchant_id")
     .eq("id", id)
-    .select("id")
     .maybeSingle();
-
-  if (error || !data) throw new Error("Campagne introuvable");
+  if (!campaign) throw new Error("Campagne introuvable");
+  const { error } = await supabase.rpc("set_campaign_active_state", {
+    p_campaign_id: id,
+    p_merchant_id: campaign.merchant_id,
+    p_is_active: isActive,
+  });
+  if (error) throw new Error(error.message || "Campagne introuvable");
 }
 
 export async function toggleCampaignForMerchantInSupabase(
@@ -1526,20 +1956,24 @@ export async function toggleCampaignForMerchantInSupabase(
   merchantId: string,
 ) {
   const supabase = getSupabaseAdmin();
-  const { error, data } = await supabase
-    .from("campaigns")
-    .update({ is_active: isActive })
-    .eq("id", id)
-    .eq("merchant_id", merchantId)
-    .select("id")
-    .maybeSingle();
-
-  if (error) throw new Error("Campagne introuvable");
-  if (!data) throw new Error("Campagne introuvable");
+  const { error } = await supabase.rpc("set_campaign_active_state", {
+    p_campaign_id: id,
+    p_merchant_id: merchantId,
+    p_is_active: isActive,
+  });
+  if (error) throw new Error(error.message || "Campagne introuvable");
 }
 
 export async function deleteCampaignInSupabase(id: string) {
   const supabase = getSupabaseAdmin();
+
+  const { count } = await supabase
+    .from("leads")
+    .select("id", { count: "exact", head: true })
+    .eq("campaign_id", id);
+  if ((count ?? 0) > 0) {
+    throw new Error("Cette animation possède des participations ou des gains. Désactivez-la plutôt que de la supprimer.");
+  }
 
   await supabase.from("campaign_events").delete().eq("campaign_id", id);
   await supabase.from("leads").delete().eq("campaign_id", id);
@@ -1561,6 +1995,14 @@ export async function deleteCampaignForMerchantInSupabase(id: string, merchantId
 
   if (campaignError || !campaign) {
     throw new Error("Campagne introuvable");
+  }
+
+  const { count } = await supabase
+    .from("leads")
+    .select("id", { count: "exact", head: true })
+    .eq("campaign_id", id);
+  if ((count ?? 0) > 0) {
+    throw new Error("Cette animation possède des participations ou des gains. Désactivez-la plutôt que de la supprimer.");
   }
 
   await supabase.from("campaign_events").delete().eq("campaign_id", id);
@@ -1597,14 +2039,11 @@ export async function recordEventInSupabase(
   return toEvent(event);
 }
 
-export async function markActionConfirmedInSupabase(leadId: string) {
+export async function markActionConfirmedInSupabase(leadId: string, campaignId?: string) {
   const supabase = getSupabaseAdmin();
-  const { data, error } = await supabase
-    .from("leads")
-    .update({ action_confirmed: true })
-    .eq("id", leadId)
-    .select("*")
-    .maybeSingle();
+  let query = supabase.from("leads").update({ action_confirmed: true }).eq("id", leadId);
+  if (campaignId) query = query.eq("campaign_id", campaignId);
+  const { data, error } = await query.select("*").maybeSingle();
   if (error || !data) return null;
   return toLead(data as LeadRow);
 }
@@ -1654,6 +2093,26 @@ export async function finalizeDrawSessionInSupabase(
   merchant?: Merchant,
 ): Promise<DrawResult> {
   const supabase = getSupabaseAdmin();
+  const { data: sessionRow } = await supabase
+    .from("draw_sessions")
+    .select("campaign_id")
+    .eq("id", input.sessionId)
+    .maybeSingle();
+  if (!sessionRow) {
+    throw new Error("Session de jeu introuvable ou expirée.");
+  }
+
+  // Check billing before persisting the lead. This prevents a valid draw from
+  // being recorded while the API returns a billing error to the player.
+  const initialPerformance = await getSupabaseCampaignPerformance(
+    sessionRow.campaign_id,
+    merchant,
+  );
+  if (!initialPerformance || !initialPerformance.campaign.isActive) {
+    throw new Error("Cette animation est momentanément indisponible.");
+  }
+  assertMerchantBillingAccess(initialPerformance.merchant, "campaign_public");
+
   const leadId = generateId("lead");
   const { data, error } = await supabase
     .rpc("finalize_draw_session_and_create_lead", {
@@ -1671,20 +2130,14 @@ export async function finalizeDrawSessionInSupabase(
     );
   }
 
-  const performance = await getSupabaseCampaignPerformance(data.campaign_id, merchant);
-  if (!performance) {
-    throw new Error("Campagne indisponible");
-  }
-  assertMerchantBillingAccess(performance.merchant, "campaign_public");
-
-  const { campaign, merchant: campaignMerchant, prizes } = performance;
+  const { campaign, merchant: campaignMerchant, prizes } = initialPerformance;
   const lead: Lead = {
     id: data.lead_id,
     campaignId: data.campaign_id,
     firstName: data.first_name,
     email: data.email,
     marketingConsent: data.marketing_consent,
-    consentTimestamp: data.consent_timestamp,
+    consentTimestamp: data.consent_timestamp ?? undefined,
     prizeId: data.prize_id ?? undefined,
     status: data.status,
     createdAt: data.created_at,
@@ -1740,7 +2193,7 @@ export async function drawForLeadInSupabase(input: DrawRequest, merchant: Mercha
     firstName: data.first_name,
     email: data.email,
     marketingConsent: data.marketing_consent,
-    consentTimestamp: data.consent_timestamp,
+    consentTimestamp: data.consent_timestamp ?? undefined,
     prizeId: data.prize_id ?? undefined,
     status: data.status,
     createdAt: data.created_at,
@@ -1764,46 +2217,24 @@ export async function drawForLeadInSupabase(input: DrawRequest, merchant: Mercha
 
 export async function redeemLeadPrizeInSupabase(leadId: string) {
   const supabase = getSupabaseAdmin();
-  const { data } = await supabase.from("leads").select("*").eq("id", leadId).maybeSingle();
-  if (!data) throw new Error("Lead introuvable");
-  const lead = toLead(data as LeadRow);
-  if (lead.status === "redeemed") throw new Error("Lot deja retire");
-  if (!lead.prizeId) throw new Error("Aucun lot a retirer");
-  if (lead.rewardAvailableAt && new Date(lead.rewardAvailableAt).getTime() > Date.now()) throw new Error("Lot pas encore disponible");
-  if (lead.rewardExpiresAt && new Date(lead.rewardExpiresAt).getTime() < Date.now()) {
-    await supabase.from("leads").update({ status: "expired" }).eq("id", leadId);
-    try {
-      await recordEventInSupabase(lead.campaignId, "prize_expired", lead.id);
-    } catch (error) {
-      console.error("Prize expiration event logging failed", error);
-    }
-    throw new Error("Lot expire");
+  const { data, error } = await supabase
+    .rpc("redeem_campaign_lead_prize", { p_lead_id: leadId })
+    .single<Omit<LeadRow, "phone">>();
+  if (error || !data) {
+    throw new Error(error?.message || "Le lot n'a pas pu être marqué comme récupéré.");
   }
-  await supabase.from("leads").update({ status: "redeemed" }).eq("id", leadId);
-  try {
-    await recordEventInSupabase(lead.campaignId, "prize_redeemed", lead.id);
-  } catch (error) {
-    console.error("Prize redeemed event logging failed", error);
-  }
-  return { ...lead, status: "redeemed" as const };
+  return toLead({ ...data, phone: null } as LeadRow);
 }
 
 export async function resetLeadPrizeInSupabase(leadId: string) {
   const supabase = getSupabaseAdmin();
-  const { data } = await supabase.from("leads").select("*").eq("id", leadId).maybeSingle();
-  if (!data) throw new Error("Lead introuvable");
-  const lead = toLead(data as LeadRow);
-  if (!lead.prizeId) throw new Error("Aucun lot a reinitialiser");
-
-  const { error } = await supabase.from("leads").update({ status: "claimed" }).eq("id", leadId);
-  if (error) throw new Error("Le lot n'a pas pu etre reinitialise");
-
-  try {
-    await recordEventInSupabase(lead.campaignId, "prize_reset", lead.id);
-  } catch (eventError) {
-    console.error("Prize reset event logging failed", eventError);
+  const { data, error } = await supabase
+    .rpc("reset_campaign_lead_prize", { p_lead_id: leadId })
+    .single<Omit<LeadRow, "phone">>();
+  if (error || !data) {
+    throw new Error(error?.message || "Le lot n'a pas pu être réinitialisé.");
   }
-  return { ...lead, status: "claimed" as const };
+  return toLead({ ...data, phone: null } as LeadRow);
 }
 
 export async function updatePrizeStockInSupabase(
@@ -1811,6 +2242,20 @@ export async function updatePrizeStockInSupabase(
   remainingQuantity: number | null,
 ) {
   const supabase = getSupabaseAdmin();
+  const { data: current, error: currentError } = await supabase
+    .from("prizes")
+    .select("id,total_quantity")
+    .eq("id", prizeId)
+    .maybeSingle();
+  if (currentError || !current) {
+    throw new Error("Dotation introuvable");
+  }
+  if (
+    remainingQuantity !== null &&
+    (current.total_quantity === null || remainingQuantity > current.total_quantity)
+  ) {
+    throw new Error("Le stock doit être compris entre 0 et la quantité initiale.");
+  }
   const { data, error } = await supabase
     .from("prizes")
     .update({ remaining_quantity: remainingQuantity })
@@ -1827,6 +2272,17 @@ export async function updatePrizeStockInSupabase(
 
 export async function resetPrizeStockInSupabase(prizeId: string) {
   const supabase = getSupabaseAdmin();
+  const { data: protectedReset, error: protectedResetError } = await supabase
+    .rpc("reset_campaign_prize_stock", { p_prize_id: prizeId })
+    .single<PrizeRow>();
+
+  if (protectedResetError || !protectedReset) {
+    throw new Error(protectedResetError?.message || "Le stock n'a pas pu être réinitialisé.");
+  }
+
+  return toPrize(protectedReset);
+
+  /* Legacy implementation retained below only until the next cleanup migration.
   const { data: prizeData, error: prizeError } = await supabase
     .from("prizes")
     .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at")
@@ -1849,7 +2305,7 @@ export async function resetPrizeStockInSupabase(prizeId: string) {
     throw new Error("Le stock n'a pas pu être réinitialisé");
   }
 
-  return toPrize(data as PrizeRow);
+  return toPrize(data as PrizeRow); */
 }
 
 export async function getSupabaseLeadRewardEmailHistory(leadId: string, merchantId: string) {
@@ -1918,17 +2374,30 @@ export async function getSupabaseRewardEmailResendPayload(leadId: string, mercha
     throw new Error("Aucun lot gagnant à renvoyer");
   }
 
+  if (lead.status !== "claimed") {
+    throw new Error("Seuls les gains disponibles peuvent être renvoyés.");
+  }
+  if (lead.rewardExpiresAt && new Date(lead.rewardExpiresAt).getTime() < Date.now()) {
+    throw new Error("Ce gain est expiré. Réinitialisez-le avant de renvoyer l’e-mail.");
+  }
+
   const performance = await getSupabaseCampaignPerformance(lead.campaignId, merchant);
 
   if (!performance || performance.campaign.merchantId !== merchant.id) {
     throw new Error("Campagne introuvable");
   }
 
-  const prize = performance.prizes.find((item) => item.id === lead.prizeId);
+  const savedPrize = performance.prizes.find((item) => item.id === lead.prizeId);
 
-  if (!prize) {
+  if (!savedPrize) {
     throw new Error("Lot introuvable");
   }
+
+  const prize: Prize = {
+    ...savedPrize,
+    label: lead.prizeLabelSnapshot ?? savedPrize.label,
+    usageConditions: lead.prizeUsageConditions ?? savedPrize.usageConditions,
+  };
 
   const delivery = history.delivery;
 
@@ -2004,6 +2473,7 @@ export async function markRewardEmailSentInSupabase(
       status: "sent",
       sent_at: now,
       last_event_at: now,
+      next_retry_at: null,
       error_message: null,
     })
     .eq("id", deliveryId);
@@ -2014,6 +2484,17 @@ export async function markRewardEmailSentInSupabase(
 }
 
 export async function markRewardEmailFailedInSupabase(deliveryId: string, errorMessage: string) {
+  const { error: retryError } = await getSupabaseAdmin().rpc("schedule_reward_email_retry", {
+    p_delivery_id: deliveryId,
+    p_error_message: errorMessage,
+  });
+  if (retryError) {
+    throw new Error(`Mise à jour de l'e-mail en échec impossible: ${retryError.message}`);
+  }
+  return;
+
+  /*
+  Legacy non-retry implementation.
   const supabase = getSupabaseAdmin();
   const now = new Date().toISOString();
   const { error } = await supabase
@@ -2027,7 +2508,23 @@ export async function markRewardEmailFailedInSupabase(deliveryId: string, errorM
 
   if (error) {
     throw new Error(`Mise à jour de l'email en échec impossible: ${error.message}`);
+  } */
+}
+
+export async function getSupabaseRetryableRewardEmailCandidates(limit = 20) {
+  const { data, error } = await getSupabaseAdmin()
+    .from("reward_email_deliveries")
+    .select("lead_id,campaign_id")
+    .eq("status", "failed")
+    .not("next_retry_at", "is", null)
+    .lte("next_retry_at", new Date().toISOString())
+    .order("next_retry_at", { ascending: true })
+    .limit(Math.max(1, Math.min(limit, 50)));
+
+  if (error) {
+    throw new Error(`Lecture des relances e-mail impossible: ${error.message}`);
   }
+  return (data ?? []) as Array<{ lead_id: string; campaign_id: string }>;
 }
 
 function mapWebhookDeliveryStatus(event: WebhookEventPayload) {
@@ -2115,6 +2612,11 @@ export async function syncRewardEmailWebhookInSupabase(event: WebhookEventPayloa
       deliveryData && typeof deliveryData === "object" && "id" in deliveryData
         ? String(deliveryData.id)
         : null;
+
+    if (deliveryId && event.type === "email.failed") {
+      const retryReason = event.data.failed.reason || "Échec Resend";
+      await markRewardEmailFailedInSupabase(deliveryId, retryReason);
+    }
   }
 
   const { error: eventError } = await supabase.from("reward_email_events").insert({

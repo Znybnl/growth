@@ -14,6 +14,8 @@ type RateLimitBucket = {
 type DailyParticipationLock = {
   campaignId: string;
   dateKey: string;
+  expiresAt?: string;
+  participationIntervalDays?: number;
 };
 
 const DAILY_PARTICIPATION_MESSAGE =
@@ -35,6 +37,7 @@ const PUBLIC_EVENT_TYPES = new Set<EventType>([
   "review_clicked",
   "review_confirmed",
   "social_clicked",
+  "game_lost",
 ]);
 
 function toBase64Url(value: string) {
@@ -58,8 +61,13 @@ function getTomorrowStart(now = new Date()) {
   return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1));
 }
 
-export function createDailyParticipationError() {
-  const error = new Error(DAILY_PARTICIPATION_MESSAGE);
+export function createDailyParticipationError(participationIntervalDays = 1) {
+  const intervalDays = Math.max(1, Math.min(365, participationIntervalDays));
+  const message =
+    intervalDays === 1
+      ? DAILY_PARTICIPATION_MESSAGE
+      : `Vous avez déjà participé à cette animation. Vous pourrez rejouer dans ${intervalDays} jours.`;
+  const error = new Error(message);
   (error as Error & { code?: string; status?: number; retryAfterSeconds?: number }).code =
     "already_played_today";
   (error as Error & { code?: string; status?: number; retryAfterSeconds?: number }).status = 409;
@@ -88,17 +96,35 @@ export function getDailyParticipationCookieName(campaignId: string) {
   return `${DAILY_PARTICIPATION_COOKIE_PREFIX}_${toBase64Url(campaignId.trim()).slice(0, 80)}`;
 }
 
-export function getDailyParticipationCookieValue(campaignId: string, now = new Date()) {
-  return toBase64Url(JSON.stringify({ campaignId: campaignId.trim(), dateKey: getTodayKey(now) }));
+export function getDailyParticipationCookieValue(
+  campaignId: string,
+  participationIntervalDays = 1,
+  now = new Date(),
+) {
+  const expiresAt = new Date(
+    now.getTime() + Math.max(1, Math.min(365, participationIntervalDays)) * 24 * 60 * 60 * 1000,
+  );
+
+  return toBase64Url(
+    JSON.stringify({
+      campaignId: campaignId.trim(),
+      dateKey: getTodayKey(now),
+      expiresAt: expiresAt.toISOString(),
+      participationIntervalDays: Math.max(1, Math.min(365, participationIntervalDays)),
+    }),
+  );
 }
 
-export function getDailyParticipationCookieOptions(now = new Date()) {
+export function getDailyParticipationCookieOptions(participationIntervalDays = 1) {
   return {
     httpOnly: true,
     sameSite: "lax" as const,
     secure: process.env.NODE_ENV === "production",
     path: "/",
-    maxAge: Math.max(60, Math.ceil((getTomorrowStart(now).getTime() - now.getTime()) / 1000)),
+    maxAge: Math.max(
+      60,
+      Math.ceil(Math.max(1, Math.min(365, participationIntervalDays)) * 24 * 60 * 60),
+    ),
   };
 }
 
@@ -121,8 +147,12 @@ export function assertDailyParticipationCookie(
 ) {
   const lock = parseDailyParticipationCookie(cookieValue);
 
-  if (lock?.campaignId === campaignId.trim() && lock.dateKey === getTodayKey(now)) {
-    throw createDailyParticipationError();
+  const isStillLocked = lock?.expiresAt
+    ? new Date(lock.expiresAt).getTime() > now.getTime()
+    : lock?.dateKey === getTodayKey(now);
+
+  if (lock?.campaignId === campaignId.trim() && isStillLocked) {
+    throw createDailyParticipationError(lock.participationIntervalDays ?? 1);
   }
 }
 

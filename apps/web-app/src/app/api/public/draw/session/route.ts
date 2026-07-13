@@ -13,6 +13,7 @@ import {
 import {
   assertPersistentDailyParticipationLock,
   assertPersistentPublicRateLimit,
+  releasePersistentDailyParticipationLock,
 } from "@/lib/public-security-store";
 import { captureProductEvent } from "@/lib/product-analytics";
 import { createDrawSession } from "@/lib/store";
@@ -22,6 +23,7 @@ import { CreateDrawSessionRequest, CreateDrawSessionResult } from "@/lib/types";
 export async function POST(request: NextRequest) {
   const body = (await request.json()) as CreateDrawSessionRequest;
   const campaignId = body.campaignId?.trim() ?? "";
+  let dailyLockClaimed = false;
 
   if (!isValidPublicIdentifier(campaignId)) {
     return NextResponse.json({ error: "campaignId is required" }, { status: 400 });
@@ -38,6 +40,7 @@ export async function POST(request: NextRequest) {
     });
 
     await assertPersistentDailyParticipationLock(request, campaignId);
+    dailyLockClaimed = true;
     const result = (await createDrawSession({ campaignId })) as CreateDrawSessionResult;
     logSupportEvent("info", "draw_started", {
       campaignId: result.campaign.id,
@@ -54,11 +57,17 @@ export async function POST(request: NextRequest) {
     const response = NextResponse.json(result, { status: 201 });
     response.cookies.set(
       cookieName,
-      getDailyParticipationCookieValue(campaignId),
-      getDailyParticipationCookieOptions(),
+      getDailyParticipationCookieValue(
+        campaignId,
+        result.campaign.rewardRules.participationIntervalDays,
+      ),
+      getDailyParticipationCookieOptions(result.campaign.rewardRules.participationIntervalDays),
     );
     return response;
   } catch (error) {
+    if (dailyLockClaimed) {
+      await releasePersistentDailyParticipationLock(request, campaignId);
+    }
     logSupportEvent("error", "draw_start_failed", {
       campaignId,
       error: error instanceof Error ? error.message : "Draw session failed",

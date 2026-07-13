@@ -18,6 +18,10 @@ function hashFingerprint(value: string) {
   return createHash("sha256").update(value).digest("hex");
 }
 
+export function getPublicFingerprintHash(request: Request) {
+  return hashFingerprint(getPublicClientFingerprint(request));
+}
+
 function normalizeRetryAfter(value: unknown) {
   const numeric = Number(value);
   return Number.isFinite(numeric) && numeric > 0 ? Math.ceil(numeric) : 1;
@@ -37,7 +41,7 @@ export async function assertPersistentPublicRateLimit(
   }
 
   const supabase = getSupabaseAdmin();
-  const client = hashFingerprint(getPublicClientFingerprint(request));
+  const client = getPublicFingerprintHash(request);
   const { data, error } = await supabase.rpc("consume_public_rate_limit", {
     p_key: `${options.key}:${client}`,
     p_limit: options.limit,
@@ -67,7 +71,7 @@ export async function assertPersistentDailyParticipationLock(
   const supabase = getSupabaseAdmin();
   const { data, error } = await supabase.rpc("claim_daily_participation_lock", {
     p_campaign_id: campaignId.trim(),
-    p_fingerprint_hash: hashFingerprint(getPublicClientFingerprint(request)),
+    p_fingerprint_hash: getPublicFingerprintHash(request),
   });
 
   if (error) {
@@ -78,8 +82,24 @@ export async function assertPersistentDailyParticipationLock(
 
   if (!result?.allowed) {
     const dailyError = createDailyParticipationError();
+    dailyError.message = "Vous avez déjà participé à cette animation. Réessayez lorsque le délai configuré est écoulé.";
     (dailyError as Error & { retryAfterSeconds?: number }).retryAfterSeconds =
       normalizeRetryAfter(result?.retry_after_seconds);
     throw dailyError;
+  }
+}
+
+export async function releasePersistentDailyParticipationLock(request: Request, campaignId: string) {
+  if (!isSupabaseConfigured()) {
+    return;
+  }
+
+  const { error } = await getSupabaseAdmin().rpc("release_daily_participation_lock", {
+    p_campaign_id: campaignId.trim(),
+    p_fingerprint_hash: getPublicFingerprintHash(request),
+  });
+
+  if (error) {
+    console.error("Unable to release daily participation lock", error);
   }
 }

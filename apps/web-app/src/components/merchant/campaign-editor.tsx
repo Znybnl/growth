@@ -73,6 +73,7 @@ type CampaignEditorProps = {
   merchant: Merchant;
   initialCampaign?: CampaignPerformance | null;
   campaignLibrary?: CampaignLibraryItem[];
+  deferInlineAssets?: boolean;
 };
 
 type EditorState = CampaignSetupInput;
@@ -232,10 +233,22 @@ function withHexAlpha(color: string | undefined, alpha: string) {
 }
 
 function getRestaurantPopTextLines(text: string) {
-  const lines = text
+  const rawLines = text
     .split(/\r?\n/)
     .map((line) => line.trim())
     .filter(Boolean);
+
+  // Keep French punctuation with the preceding word so it cannot become a lone line.
+  const lines = rawLines.reduce<string[]>((normalizedLines, line) => {
+    if (/^[!?.,;:]+$/.test(line) && normalizedLines.length > 0) {
+      const previousLineIndex = normalizedLines.length - 1;
+      normalizedLines[previousLineIndex] = `${normalizedLines[previousLineIndex]}\u00a0${line}`;
+      return normalizedLines;
+    }
+
+    normalizedLines.push(line);
+    return normalizedLines;
+  }, []);
 
   if (lines.length !== 1) {
     return lines;
@@ -247,7 +260,15 @@ function getRestaurantPopTextLines(text: string) {
     return lines;
   }
 
-  return [words.slice(0, -1).join(" "), words.slice(-1).join(" ")];
+  const joinIndex = words.findIndex((word) => /^(pour|et|puis|avec)$/i.test(word));
+
+  if (joinIndex > 0 && joinIndex < words.length - 1) {
+    const secondLine = words.slice(joinIndex).join(" ").replace(/\s+([!?.,;:])/g, "\u00a0$1");
+    return [words.slice(0, joinIndex).join(" "), secondLine];
+  }
+
+  const lastWord = words.at(-1)?.replace(/\s+([!?.,;:])/g, "\u00a0$1") ?? "";
+  return [words.slice(0, -1).join(" "), lastWord];
 }
 
 function buildRestaurantPopHeadingLines(text: string) {
@@ -255,18 +276,8 @@ function buildRestaurantPopHeadingLines(text: string) {
     .map((line, lineIndex) => {
       const parts = line.split(/(\s+)/).map((part) => ({
         text: part,
-        secondary: lineIndex === 1 || /gagn|gain|cadeau/i.test(part),
+        secondary: lineIndex === 1,
       }));
-      if (!parts.some((part) => part.secondary)) {
-        const lastWordIndex = [...parts]
-          .map((part, index) => ({ part, index }))
-          .reverse()
-          .find(({ part }) => part.text.trim())?.index;
-
-        if (lastWordIndex != null) {
-          parts[lastWordIndex].secondary = true;
-        }
-      }
 
       return parts;
     });
@@ -410,6 +421,7 @@ function createDefaultState(merchant: Merchant): EditorState {
       purchaseRequired: false,
       availableAfterHours: 24,
       availabilityDurationDays: 30,
+      participationIntervalDays: 1,
       isWinningEveryTime: false,
     },
     prizes: [],
@@ -889,7 +901,7 @@ const CampaignPrizeRow = memo(function CampaignPrizeRow({
   onOpenConditions: (prizeId: string | undefined) => void;
 }) {
   return (
-    <div className="grid gap-3 rounded-[24px] border border-[#dbe4f0] bg-white p-4 md:grid-cols-[1.35fr_0.6fr_0.6fr_0.6fr_auto] md:items-center">
+    <div className="grid gap-3 rounded-[24px] border border-[#dbe4f0] bg-white p-4 md:grid-cols-[1.5fr_0.7fr_0.7fr_0.7fr_1.15fr_56px] md:items-center">
       <label className="text-sm">
         <span className="mb-2 block text-[#616b7c] md:hidden">Dotation</span>
         <input
@@ -904,7 +916,7 @@ const CampaignPrizeRow = memo(function CampaignPrizeRow({
         <input
           type="number"
           min={0}
-    value={prize.totalQuantity ?? ""}
+          value={prize.totalQuantity ?? ""}
           placeholder="Illimité"
           onChange={(event) =>
             onUpdate(prize.id, {
@@ -941,22 +953,24 @@ const CampaignPrizeRow = memo(function CampaignPrizeRow({
         />
       </label>
 
-      <div className="flex flex-wrap items-center justify-end gap-2">
+      <div className="flex flex-wrap items-center justify-end gap-2 md:justify-start">
         <button
           type="button"
           onClick={() => onOpenConditions(prize.id)}
-          className="rounded-[18px] border border-[#d7e0ed] bg-white px-4 py-3 text-sm font-semibold text-[#182033]"
+          className="min-h-[48px] rounded-[18px] border border-[#d7e0ed] bg-white px-4 py-3 text-sm font-semibold text-[#182033] transition hover:bg-linen-canvas"
         >
           Conditions
         </button>
-        <button
-          type="button"
-          onClick={() => onRemove(prize.id)}
-          className="rounded-[18px] border border-[#111827] bg-[#111827] px-4 py-3 text-sm font-semibold text-white"
-        >
-          Retirer
-        </button>
       </div>
+      <button
+        type="button"
+        onClick={() => onRemove(prize.id)}
+        aria-label={`Supprimer le lot ${prize.label || ""}`.trim()}
+        title="Supprimer"
+        className="inline-flex h-[48px] w-[48px] cursor-pointer items-center justify-center justify-self-end rounded-[8px] border border-[#111827] bg-[#111827] text-white transition hover:bg-[#273142] md:justify-self-start"
+      >
+        <Trash2 className="h-5 w-5" aria-hidden="true" />
+      </button>
     </div>
   );
 });
@@ -1151,6 +1165,7 @@ export function CampaignEditor({
   merchant,
   initialCampaign = null,
   campaignLibrary = [],
+  deferInlineAssets = false,
 }: CampaignEditorProps) {
   const router = useRouter();
   const [form, setForm] = useState<EditorState>(toEditorState(merchant, initialCampaign));
@@ -1298,6 +1313,65 @@ export function CampaignEditor({
     previewSegments,
   ]);
   const deferredPreview = useDeferredValue(previewModel);
+
+  useEffect(() => {
+    const campaignId = initialCampaign?.campaign.id;
+
+    if (!deferInlineAssets || !campaignId) {
+      return;
+    }
+
+    let cancelled = false;
+
+    async function loadDeferredAssets() {
+      try {
+        const response = await fetch(`/api/campaigns/${campaignId}/assets`, {
+          cache: "no-store",
+        });
+        const payload = (await response.json().catch(() => null)) as
+          | {
+              assets: {
+                logoUrl?: string;
+                backgroundImageUrl?: string;
+                posterLogoUrl?: string;
+                posterBackgroundImageUrl?: string;
+              };
+            }
+          | null;
+
+        if (!response.ok || !payload?.assets || cancelled) {
+          return;
+        }
+
+        setForm((current) => ({
+          ...current,
+          logoUrl: payload.assets.logoUrl ?? current.logoUrl,
+          presentation: {
+            ...current.presentation,
+            background: {
+              ...current.presentation.background,
+              imageUrl: payload.assets.backgroundImageUrl ?? current.presentation.background.imageUrl,
+            },
+            poster: {
+              ...current.presentation.poster,
+              logoUrl: payload.assets.posterLogoUrl ?? current.presentation.poster.logoUrl,
+              backgroundImageUrl:
+                payload.assets.posterBackgroundImageUrl ??
+                current.presentation.poster.backgroundImageUrl,
+            },
+          },
+        }));
+      } catch {
+        // The editor remains usable when an uploaded asset cannot be reloaded.
+      }
+    }
+
+    void loadDeferredAssets();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [deferInlineAssets, initialCampaign?.campaign.id]);
 
   useEffect(() => {
     let cancelled = false;
@@ -1761,13 +1835,13 @@ export function CampaignEditor({
     <div className="space-y-6 pb-24 xl:pb-0">
       <section className="grid gap-6 px-1 py-2 xl:grid-cols-[1.2fr_0.8fr]">
           <div className="min-w-0">
-            <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">
+            <p className="okado-label">
               Param&eacute;trage de l&apos;animation
             </p>
-            <h1 className="mt-3 font-display text-5xl font-semibold leading-none text-[#0f1728]">
+            <h1 className="okado-page-title mt-3">
               {initialCampaign ? "Ajuster votre campagne" : "Créer votre campagne"}
             </h1>
-            <p className="mt-4 max-w-3xl text-sm leading-7 text-[#5c6577]">
+            <p className="mt-4 max-w-3xl text-sm leading-7 text-ash">
               Structurez la mécanique de votre jeu concours tout en personnalisant le rendu
               graphique.
             </p>
@@ -1777,7 +1851,7 @@ export function CampaignEditor({
             <Link
               href="/campaigns"
               prefetch={false}
-              className="rounded-[8px] border border-[#d7e0ed] px-4 py-3 text-sm font-semibold text-[#182033] transition hover:bg-linen-canvas"
+              className="okado-secondary-action px-4 py-3"
             >
               Retour aux campagnes
             </Link>
@@ -1785,7 +1859,7 @@ export function CampaignEditor({
               type="button"
               onClick={saveCampaign}
               disabled={isSaving}
-              className="rounded-[8px] bg-[#2f6df6] px-5 py-3 text-sm font-semibold !text-white shadow-[0_16px_32px_rgba(47,109,246,0.22)] disabled:opacity-60"
+              className="okado-filled-action px-5 py-3 disabled:opacity-60"
             >
               {isSaving ? "Enregistrement..." : "Enregistrer"}
             </button>
@@ -1839,7 +1913,7 @@ export function CampaignEditor({
           <section className="okado-card p-6">
             <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
               <div>
-                <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">
+                <p className="okado-label">
                   Identit de campagne
                 </p>
                 <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
@@ -3322,6 +3396,33 @@ export function CampaignEditor({
                 />
               </label>
 
+              {isExpertMode ? (
+                <label className="text-sm">
+                  <span className="mb-2 block text-[#616b7c]">
+                    Délai entre deux participations (jours)
+                  </span>
+                  <input
+                    type="number"
+                    min={1}
+                    max={365}
+                    value={form.rewardRules.participationIntervalDays}
+                    onChange={(event) =>
+                      setForm((current) => ({
+                        ...current,
+                        rewardRules: {
+                          ...current.rewardRules,
+                          participationIntervalDays: Math.max(1, Number(event.target.value || 1)),
+                        },
+                      }))
+                    }
+                    className="w-full rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
+                  />
+                  <span className="mt-2 block text-xs leading-5 text-[#7b8496]">
+                    Ce délai est aussi contrôlé par l&apos;adresse e-mail du participant.
+                  </span>
+                </label>
+              ) : null}
+
               <div className="space-y-3 rounded-[20px] border border-[#d7e0ed] bg-white p-4 text-sm text-[#182033]">
                 <label className="flex items-center gap-3">
                   <input
@@ -3342,7 +3443,7 @@ export function CampaignEditor({
               </div>
             </div>
 
-            <div className="mt-6 hidden grid-cols-[1.5fr_0.7fr_0.7fr_0.7fr_0.5fr] gap-3 rounded-[22px] bg-[#f7f9fc] px-4 py-3 text-[11px] uppercase tracking-[0.24em] text-[#7b8496] md:grid">
+            <div className="mt-6 hidden grid-cols-[1.5fr_0.7fr_0.7fr_0.7fr_1.15fr_56px] gap-3 rounded-[22px] bg-[#f7f9fc] px-4 py-3 text-[11px] uppercase tracking-[0.24em] text-[#7b8496] md:grid">
               <span>Dotation</span>
               <span>Stock</span>
               <span>Probabilité</span>
@@ -3392,20 +3493,20 @@ export function CampaignEditor({
                 <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">
                   Prévisualisation mobile
                 </p>
-                <h2 className="mt-2 text-2xl font-semibold text-[#111827]">Rendu public</h2>
+                <h2 className="okado-section-title mt-2">Rendu public</h2>
               </div>
               {form.id ? (
                 <div className="pointer-events-auto flex flex-wrap justify-end gap-2">
                   <a
                     href={`/api/campaigns/${form.id}/qr`}
-                    className="inline-flex h-10 items-center rounded-[8px] border border-[#d7e0ed] bg-white px-4 text-sm font-semibold text-[#182033] transition hover:bg-linen-canvas"
+                    className="okado-secondary-action h-10 px-4"
                   >
                     QR
                   </a>
                   <Link
                     href={`/campaigns/${form.id}/poster`}
                     prefetch={false}
-                    className="inline-flex h-10 items-center rounded-[8px] border border-[#d7e0ed] bg-white px-4 text-sm font-semibold text-[#182033] transition hover:bg-linen-canvas"
+                    className="okado-secondary-action h-10 px-4"
                   >
                     Voir l&apos;affiche
                   </Link>
@@ -3414,7 +3515,7 @@ export function CampaignEditor({
                     prefetch={false}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex h-10 items-center rounded-[8px] border border-[#111827] bg-[#111827] px-4 text-sm font-semibold !text-white"
+                    className="okado-primary-action h-10 px-4"
                   >
                     Voir la campagne
                   </Link>
@@ -3427,7 +3528,7 @@ export function CampaignEditor({
         </div>
       </div>
       <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30 px-4 pb-4 xl:hidden">
-        <div className="pointer-events-auto mx-auto max-w-[720px] rounded-[28px] border border-[#dbe4f0] bg-white/96 p-3 shadow-[0_18px_44px_rgba(122,136,166,0.16)] backdrop-blur">
+        <div className="pointer-events-auto mx-auto max-w-[720px] rounded-[8px] border border-border bg-white/96 p-3 shadow-product-card backdrop-blur">
           <div className="grid gap-3 sm:grid-cols-2">
             {savedCampaignId ? (
               <>
@@ -3435,14 +3536,14 @@ export function CampaignEditor({
                   href={`/campaign/${savedCampaignId}`}
                   prefetch={false}
                   target="_blank"
-                  className="inline-flex items-center justify-center rounded-[20px] border border-[#111827] bg-[#111827] px-4 py-3 text-sm font-semibold !text-white"
+                  className="okado-primary-action px-4 py-3"
                 >
                   Voir la campagne
                 </Link>
                 <Link
                   href={`/campaigns/${savedCampaignId}/poster`}
                   prefetch={false}
-                  className="inline-flex items-center justify-center rounded-[20px] border border-[#d7e0ed] px-4 py-3 text-sm font-semibold text-[#182033]"
+                  className="okado-secondary-action px-4 py-3"
                 >
                   Voir l&apos;affiche
                 </Link>
@@ -3452,7 +3553,7 @@ export function CampaignEditor({
               type="button"
               onClick={saveCampaign}
               disabled={isSaving}
-              className={`rounded-[20px] border border-[#111827] bg-[#111827] px-4 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-70 ${
+              className={`okado-filled-action px-4 py-3 disabled:cursor-not-allowed disabled:opacity-70 ${
                 savedCampaignId ? "sm:col-span-2" : "w-full"
               }`}
             >

@@ -90,10 +90,22 @@ function buildWheelSegments(campaign: PublicCampaign) {
 }
 
 function getRestaurantPopTextLines(text: string) {
-  const lines = text
+  const rawLines = text
     .split(/\r?\n/)
     .map((line) => line.trim())
     .filter(Boolean);
+
+  // Keep French punctuation with the preceding word so it cannot become a lone line.
+  const lines = rawLines.reduce<string[]>((normalizedLines, line) => {
+    if (/^[!?.,;:]+$/.test(line) && normalizedLines.length > 0) {
+      const previousLineIndex = normalizedLines.length - 1;
+      normalizedLines[previousLineIndex] = `${normalizedLines[previousLineIndex]}\u00a0${line}`;
+      return normalizedLines;
+    }
+
+    normalizedLines.push(line);
+    return normalizedLines;
+  }, []);
 
   if (lines.length !== 1) {
     return lines;
@@ -105,7 +117,15 @@ function getRestaurantPopTextLines(text: string) {
     return lines;
   }
 
-  return [words.slice(0, -1).join(" "), words.slice(-1).join(" ")];
+  const joinIndex = words.findIndex((word) => /^(pour|et|puis|avec)$/i.test(word));
+
+  if (joinIndex > 0 && joinIndex < words.length - 1) {
+    const secondLine = words.slice(joinIndex).join(" ").replace(/\s+([!?.,;:])/g, "\u00a0$1");
+    return [words.slice(0, joinIndex).join(" "), secondLine];
+  }
+
+  const lastWord = words.at(-1)?.replace(/\s+([!?.,;:])/g, "\u00a0$1") ?? "";
+  return [words.slice(0, -1).join(" "), lastWord];
 }
 
 function buildRestaurantPopHeadingLines(text: string) {
@@ -113,18 +133,8 @@ function buildRestaurantPopHeadingLines(text: string) {
     .map((line, lineIndex) => {
       const parts = line.split(/(\s+)/).map((part) => ({
         text: part,
-        secondary: lineIndex === 1 || /gagn|gain|cadeau/i.test(part),
+        secondary: lineIndex === 1,
       }));
-      if (!parts.some((part) => part.secondary)) {
-        const lastWordIndex = [...parts]
-          .map((part, index) => ({ part, index }))
-          .reverse()
-          .find(({ part }) => part.text.trim())?.index;
-
-        if (lastWordIndex != null) {
-          parts[lastWordIndex].secondary = true;
-        }
-      }
 
       return parts;
     });
@@ -424,11 +434,15 @@ export function CampaignExperience({
 }: CampaignExperienceProps) {
   const [campaign, setCampaign] = useState(initialCampaign);
   const [stage, setStage] = useState<ExperienceStage>("idle");
+  const [blockedMessage, setBlockedMessage] = useState(
+    "Une seule participation est possible par jour. Revenez demain pour tenter votre chance à nouveau.",
+  );
   const [drawSession, setDrawSession] = useState<DrawSession | null>(null);
   const [previewResult, setPreviewResult] = useState<CreateDrawSessionResult | null>(null);
   const [drawResult, setDrawResult] = useState<DrawResult | null>(null);
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
+  const [marketingConsent, setMarketingConsent] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [actionVisited, setActionVisited] = useState(false);
@@ -528,6 +542,9 @@ export function CampaignExperience({
           code?: string;
         } | null;
         if (payload?.code === "already_played_today") {
+          setBlockedMessage(
+            payload.error ?? "Vous avez déjà participé à cette animation. Réessayez plus tard.",
+          );
           setStage("blocked");
           return;
         }
@@ -584,7 +601,7 @@ export function CampaignExperience({
         sessionId: drawSession.id,
         firstName,
         email,
-        marketingConsent: false,
+        marketingConsent,
       };
       const response = await fetch("/api/public/draw/finalize", {
         method: "POST",
@@ -593,10 +610,24 @@ export function CampaignExperience({
       });
 
       if (!response.ok) {
-        throw new Error("Impossible d’enregistrer vos coordonnées.");
+        const failure = (await response.json().catch(() => null)) as {
+          error?: string;
+          code?: string;
+        } | null;
+        if (failure?.code === "participation_cooldown") {
+          setBlockedMessage(
+            failure.error ?? "Vous avez déjà participé à cette animation. Revenez plus tard.",
+          );
+          setStage("blocked");
+          return;
+        }
+        throw new Error(failure?.error ?? "Impossible d’enregistrer vos coordonnées.");
       }
 
       const result = (await response.json()) as DrawResult;
+      if (actionVisited && currentAction?.kind === "google") {
+        void trackEvent("review_confirmed", result.lead.id);
+      }
       setDrawResult(result);
       setCampaign(result.campaign);
       setStage("success");
@@ -616,6 +647,7 @@ export function CampaignExperience({
       return;
     }
 
+    void trackEvent("game_lost");
     setStage("lost");
   }
 
@@ -809,11 +841,10 @@ export function CampaignExperience({
           !
         </div>
         <h2 className="mt-6 text-center text-[2rem] font-semibold leading-[1.05] text-[#121826]">
-          Vous avez déjà joué aujourd&apos;hui
+          Participation déjà enregistrée
         </h2>
         <p className="mt-4 text-center text-lg leading-8 text-[#5f6678]">
-          Une seule participation est possible par jour. Revenez demain pour tenter votre chance
-          à nouveau.
+          {blockedMessage}
         </p>
         <button
           type="button"
@@ -913,6 +944,18 @@ export function CampaignExperience({
             placeholder="E-mail"
             className="w-full rounded-[18px] border border-[#d8dce5] px-4 py-4 text-lg text-[#111827] outline-none placeholder:text-[#99a1b2]"
           />
+          <label className="flex cursor-pointer items-start gap-3 rounded-[18px] bg-[#f6f7fb] px-4 py-3 text-left text-sm leading-6 text-[#475067]">
+            <input
+              type="checkbox"
+              checked={marketingConsent}
+              onChange={(event) => setMarketingConsent(event.target.checked)}
+              className="mt-1 h-4 w-4 accent-[#111827]"
+            />
+            <span>
+              J&apos;accepte de recevoir des actualités et offres de la part de cet établissement.
+              Cette option est facultative.
+            </span>
+          </label>
 
           {error ? (
             <div className="rounded-[18px] bg-[#fff1f0] px-4 py-3 text-sm text-[#b42318]">
@@ -939,10 +982,10 @@ export function CampaignExperience({
             ✉
           </div>
           <p className="mt-6 text-xl leading-8 text-[#1a2f76]">
-            On vient de vous envoyer un e-mail pour récupérer votre cadeau.
+            Votre gain est enregistré. Nous vous envoyons un e-mail avec les informations de retrait.
           </p>
           <p className="mt-4 text-base leading-7 text-[#61687a]">
-            Pas de mail en vue ? Jetez un œil dans vos spams ou dans l’onglet Promotions.
+            Vous pouvez aussi conserver le QR code ci-dessous. Si l’e-mail tarde à arriver, regardez vos spams ou l’onglet Promotions.
           </p>
 
           <div className="mt-6 rounded-[22px] bg-[#fff4cb] px-5 py-4 text-left text-[1rem] leading-7 text-[#4d3810]">

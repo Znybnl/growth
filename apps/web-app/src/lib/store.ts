@@ -9,10 +9,12 @@ import {
   getSupabaseMerchantCampaignLibrary,
   getSupabaseMerchantCampaignOverview,
   getSupabaseMerchantDashboard,
+  findSupabaseMerchantLeadCampaign,
   getSupabaseMerchantLeads,
   getSupabaseMerchantRecentLeads,
   getSupabaseMerchantSupportOverview,
   getSupabasePublicCampaign,
+  createPublicCampaignIdentity,
   deleteCampaignInSupabase,
   duplicateCampaignInSupabase,
   markActionConfirmedInSupabase,
@@ -76,7 +78,7 @@ import {
   PublicCampaign,
 } from "@/lib/types";
 import { createCampaignEmailDefaults, normalizeCampaignEmailSettings } from "@/lib/email-settings";
-import { unstable_cache } from "next/cache";
+import { revalidateTag, unstable_cache } from "next/cache";
 
 type Store = {
   merchants: Merchant[];
@@ -172,6 +174,7 @@ function createRewardRules(
     purchaseRequired: false,
     availableAfterHours: 0,
     availabilityDurationDays: 0,
+    participationIntervalDays: 1,
     isWinningEveryTime: false,
     ...overrides,
   };
@@ -836,11 +839,17 @@ function choosePrize(campaign: Campaign, prizes: Prize[]) {
   }
 
   if (campaign.rewardRules.isWinningEveryTime) {
-    const roll = Math.random() * 100;
+    const weighted = available.filter((prize) => prize.probability > 0);
+    const totalWeight = weighted.reduce((total, prize) => total + prize.probability, 0);
+    if (!weighted.length || totalWeight <= 0) {
+      return null;
+    }
+
+    const roll = Math.random() * totalWeight;
     let cursor = 0;
 
-    for (const prize of available) {
-      cursor += Math.max(1, prize.probability);
+    for (const prize of weighted) {
+      cursor += prize.probability;
 
       if (roll <= cursor) {
         decrementPrize(prize);
@@ -848,8 +857,8 @@ function choosePrize(campaign: Campaign, prizes: Prize[]) {
       }
     }
 
-    decrementPrize(available[0]);
-    return available[0];
+    decrementPrize(weighted[0]);
+    return weighted[0];
   }
 
   const roll = Math.random() * 100;
@@ -899,7 +908,7 @@ function buildLeadFromSession(
     firstName: input.firstName.trim(),
     email: input.email.trim().toLowerCase(),
     marketingConsent: Boolean(input.marketingConsent),
-    consentTimestamp: now.toISOString(),
+      consentTimestamp: input.marketingConsent ? now.toISOString() : undefined,
     status: "lost",
     createdAt: now.toISOString(),
     actionConfirmed: false,
@@ -1270,25 +1279,68 @@ function getMerchantLeadsFromMemory(campaignId?: string) {
     store.leads
       .filter((lead) => (campaignId ? lead.campaignId === campaignId : true))
       .map((lead) => toLeadRow(lead))
-      .sort((a, b) => b.consentTimestamp.localeCompare(a.consentTimestamp)),
+      .sort((a, b) => (b.consentTimestamp ?? b.createdAt).localeCompare(a.consentTimestamp ?? a.createdAt)),
   );
 }
 
-function getCampaignDataViewFromMemory(campaignId: string): CampaignDataView | null {
+function getCampaignDataViewFromMemory(
+  campaignId: string,
+  options: { leadLimit?: number; leadOffset?: number; query?: string } = {},
+): CampaignDataView | null {
   const performance = getCampaignPerformanceFromMemory(campaignId);
 
   if (!performance) {
     return null;
   }
 
+  const query = options.query?.trim().toLowerCase() ?? "";
+  const allLeads = getMerchantLeadsFromMemory(campaignId).filter((lead) =>
+    query
+      ? [lead.redemptionCode ?? "", lead.email, lead.firstName, lead.prizeLabel]
+          .join(" ")
+          .toLowerCase()
+          .includes(query)
+      : true,
+  );
+  const leadOffset = Math.max(options.leadOffset ?? 0, 0);
+  const leadLimit = Math.min(Math.max(options.leadLimit ?? 50, 10), 100);
+  const allEvents = clone(
+    store.events
+      .filter((event) => event.campaignId === campaignId)
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
+  );
+  const latestDate = [
+    ...allLeads.map((lead) => lead.createdAt),
+    ...allEvents.map((event) => event.createdAt),
+  ]
+    .sort((a, b) => a.localeCompare(b))
+    .at(-1) ?? new Date().toISOString();
+  const reference = new Date(latestDate);
+  const dailyStats = Array.from({ length: 7 }, (_, index) => {
+    const date = new Date(
+      Date.UTC(reference.getUTCFullYear(), reference.getUTCMonth(), reference.getUTCDate()),
+    );
+    date.setUTCDate(date.getUTCDate() - (6 - index));
+    const label = date.toISOString().slice(0, 10);
+
+    return {
+      label,
+      participations: allLeads.filter((lead) => lead.createdAt.slice(0, 10) === label).length,
+      redeemed: allEvents.filter(
+        (event) => event.eventType === "prize_redeemed" && event.createdAt.slice(0, 10) === label,
+      ).length,
+    };
+  });
+
   return {
     performance,
-    leads: getMerchantLeadsFromMemory(campaignId),
-    events: clone(
-      store.events
-        .filter((event) => event.campaignId === campaignId)
-        .sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
-    ),
+    leads: allLeads.slice(leadOffset, leadOffset + leadLimit),
+    events: allEvents.slice(0, 8),
+    leadTotal: allLeads.length,
+    leadOffset,
+    leadLimit,
+    dailyStats,
+    actionVolumes: [],
   };
 }
 
@@ -1351,7 +1403,14 @@ function merchantCampaignsTag(merchantId: string) {
 }
 
 function getCachedSupabaseMerchantCampaignOverview(merchant: Merchant) {
-  return getSupabaseMerchantCampaignOverview(merchant);
+  return unstable_cache(
+    () => getSupabaseMerchantCampaignOverview(merchant),
+    ["merchant-campaign-overview", merchant.id],
+    {
+      tags: [merchantCampaignsTag(merchant.id)],
+      revalidate: MERCHANT_NAVIGATION_CACHE_SECONDS,
+    },
+  )();
 }
 
 function getCachedSupabaseMerchantCampaignLibrary(merchantId: string) {
@@ -1370,8 +1429,15 @@ function getCachedSupabaseCampaignSetupPerformance(campaignId: string, fallbackM
 }
 
 function invalidateCampaignNavigationCache(merchantId?: string, campaignId?: string) {
-  void merchantId;
   void campaignId;
+
+  if (merchantId) {
+    revalidateTag(merchantCampaignsTag(merchantId), { expire: 0 });
+  }
+}
+
+export function invalidateMerchantCampaignOverview(merchantId: string) {
+  invalidateCampaignNavigationCache(merchantId);
 }
 
 function finalizeDrawSessionFromMemory(input: FinalizeDrawSessionRequest): DrawResult {
@@ -1423,8 +1489,10 @@ function drawForLeadFromMemory(input: DrawRequest): DrawResult {
   });
 }
 
-function markActionConfirmedInMemory(leadId: string) {
-  const lead = store.leads.find((item) => item.id === leadId);
+function markActionConfirmedInMemory(leadId: string, campaignId?: string) {
+  const lead = store.leads.find(
+    (item) => item.id === leadId && (!campaignId || item.campaignId === campaignId),
+  );
 
   if (!lead) {
     return null;
@@ -1659,9 +1727,12 @@ export async function recordEvent(
   return recordEventInMemory(campaignId, eventType, leadId, metadata);
 }
 
-export const getPublicCampaign = cache(async function getPublicCampaign(id: string) {
+export const getPublicCampaign = cache(async function getPublicCampaign(
+  id: string,
+  participantToken?: string,
+) {
   if (getDataBackend("la lecture d'une campagne publique") === "supabase") {
-    return getSupabasePublicCampaign(id);
+    return getSupabasePublicCampaign(id, participantToken);
   }
 
   return getPublicCampaignFromMemory(id);
@@ -1731,6 +1802,36 @@ export const getMerchantLeads = cache(async function getMerchantLeads(merchantId
   return getMerchantLeadsFromMemory(campaignId);
 });
 
+export async function rememberPublicCampaignParticipant(
+  campaignId: string,
+  email: string,
+  token: string,
+) {
+  if (getDataBackend("la mémorisation du parcours joueur") === "supabase") {
+    return createPublicCampaignIdentity(campaignId, email, token);
+  }
+  return token;
+}
+
+export const findMerchantLeadCampaign = cache(async function findMerchantLeadCampaign(
+  merchantId = merchantSeed.id,
+  query = "",
+) {
+  if (getDataBackend("la recherche d'un lead") === "supabase") {
+    return findSupabaseMerchantLeadCampaign(merchantId, query);
+  }
+
+  const normalizedQuery = query.trim().toLowerCase();
+  return (
+    getMerchantLeadsFromMemory().find((lead) =>
+      [lead.redemptionCode ?? "", lead.email, lead.firstName]
+        .join(" ")
+        .toLowerCase()
+        .includes(normalizedQuery),
+    )?.campaignId ?? null
+  );
+});
+
 export const getMerchantRecentLeads = cache(async function getMerchantRecentLeads(
   merchantId = merchantSeed.id,
   limit = 5,
@@ -1751,12 +1852,16 @@ export const getMerchantRecentLeads = cache(async function getMerchantRecentLead
     .slice(0, limit);
 });
 
-export const getCampaignDataView = cache(async function getCampaignDataView(campaignId: string, fallbackMerchant?: Merchant) {
+export const getCampaignDataView = cache(async function getCampaignDataView(
+  campaignId: string,
+  fallbackMerchant?: Merchant,
+  options: { leadLimit?: number; leadOffset?: number; query?: string } = {},
+) {
   if (getDataBackend("la lecture des données campagne") === "supabase") {
-    return getSupabaseCampaignDataView(campaignId, fallbackMerchant);
+    return getSupabaseCampaignDataView(campaignId, fallbackMerchant, options);
   }
 
-  return getCampaignDataViewFromMemory(campaignId);
+  return getCampaignDataViewFromMemory(campaignId, options);
 });
 
 export const getMerchantSupportOverview = cache(async function getMerchantSupportOverview(
@@ -1860,12 +1965,12 @@ export async function finalizeDrawSession(
   return finalizeDrawSessionFromMemory(input);
 }
 
-export async function markActionConfirmed(leadId: string) {
+export async function markActionConfirmed(leadId: string, campaignId?: string) {
   if (getDataBackend("la confirmation d'une action marketing") === "supabase") {
-    return markActionConfirmedInSupabase(leadId);
+    return markActionConfirmedInSupabase(leadId, campaignId);
   }
 
-  return markActionConfirmedInMemory(leadId);
+  return markActionConfirmedInMemory(leadId, campaignId);
 }
 
 export async function redeemLeadPrize(leadId: string) {
