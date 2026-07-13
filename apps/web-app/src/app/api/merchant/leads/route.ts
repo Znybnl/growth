@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
   const session = await requireAuthenticatedSession();
   const campaignId = request.nextUrl.searchParams.get("campaign") ?? undefined;
   const leads = (await getMerchantLeads(session.merchant.id, campaignId)).sort((a, b) =>
-    b.consentTimestamp.localeCompare(a.consentTimestamp),
+    (b.consentTimestamp ?? b.createdAt).localeCompare(a.consentTimestamp ?? a.createdAt),
   );
   const format = request.nextUrl.searchParams.get("format");
 
@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
         lead.emailSentAt ?? "",
         lead.emailDeliveredAt ?? "",
         lead.emailErrorMessage ?? "",
-        lead.consentTimestamp,
+        lead.consentTimestamp ?? "",
       ]
         .map((value) => `"${String(value).replaceAll('"', '""')}"`)
         .join(","),
