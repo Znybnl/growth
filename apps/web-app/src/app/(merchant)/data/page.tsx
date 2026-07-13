@@ -280,7 +280,9 @@ function LeadsExportSection({
                   />
                 </td>
                 <td className="border-b border-[#eef2f7] px-3 py-4 text-[#556173]">
-                  {formatDateTime(lead.consentTimestamp)}
+                  {lead.marketingConsent && lead.consentTimestamp
+                    ? formatDateTime(lead.consentTimestamp)
+                    : "Non"}
                 </td>
               </tr>
             ))}
