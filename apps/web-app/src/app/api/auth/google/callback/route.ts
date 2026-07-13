@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { createAffiliateReferralForMerchant } from "@/lib/affiliate-repository";
+import { notifyAdministratorsOfMerchantSignup } from "@/lib/admin-notifications";
 import { syncMerchantContactToBrevo } from "@/lib/brevo";
 import { authenticateOrProvisionMerchantWithGoogle } from "@/lib/merchant-account-repository";
 import { createRouteSupabaseClient } from "@/lib/supabase-server-auth";
@@ -83,6 +84,14 @@ export async function GET(request: Request) {
       user: session.user,
       source: "google",
     });
+    if (session.isNew) {
+      await notifyAdministratorsOfMerchantSignup({
+        merchant: session.merchant,
+        user: session.user,
+        origin,
+        provider: "google",
+      }).catch(() => undefined);
+    }
 
     const redirectPath = session.merchant.onboardingCompleted ? next : "/onboarding";
     const response = NextResponse.redirect(new URL(redirectPath, origin));

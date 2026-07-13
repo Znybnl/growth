@@ -61,7 +61,7 @@ export function AffiliateAccountSettingsForm({
           <select
             name="status"
             defaultValue={status}
-            className="rounded-[14px] border border-[#d7e0ed] bg-white px-3 py-2 outline-none"
+            className="rounded-[12px] border border-[#cfcfcf] bg-white px-3 py-2 outline-none"
           >
             <option value="disabled">Désactivé</option>
             <option value="active">Activé</option>
@@ -76,7 +76,7 @@ export function AffiliateAccountSettingsForm({
             max="100"
             step="1"
             defaultValue={commissionRateBps / 100}
-            className="w-20 rounded-[14px] border border-[#d7e0ed] bg-white px-3 py-2 outline-none"
+            className="w-20 rounded-[12px] border border-[#cfcfcf] bg-white px-3 py-2 outline-none"
           />
         </label>
         <label className="text-xs">
@@ -88,13 +88,13 @@ export function AffiliateAccountSettingsForm({
             max="120"
             step="1"
             defaultValue={commissionDurationMonths}
-            className="w-20 rounded-[14px] border border-[#d7e0ed] bg-white px-3 py-2 outline-none"
+            className="w-20 rounded-[12px] border border-[#cfcfcf] bg-white px-3 py-2 outline-none"
           />
         </label>
         <button
           type="submit"
           disabled={isLoading}
-          className="rounded-[14px] bg-[#111827] px-4 py-2 text-xs font-semibold text-white disabled:opacity-60"
+          className="okado-primary-action px-4 py-2 text-xs disabled:opacity-60"
         >
           {isLoading ? "..." : "Enregistrer"}
         </button>

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { createAffiliateReferralForMerchant } from "@/lib/affiliate-repository";
+import { notifyAdministratorsOfMerchantSignup } from "@/lib/admin-notifications";
 import { syncMerchantContactToBrevo } from "@/lib/brevo";
 import { captureProductEvent, merchantDistinctId } from "@/lib/product-analytics";
 import { getPublicErrorStatus } from "@/lib/public-api";
@@ -8,6 +9,7 @@ import { assertPersistentPublicRateLimit } from "@/lib/public-security-store";
 import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
 import { createMerchantAccount } from "@/lib/store";
 import { createRouteSupabaseClient } from "@/lib/supabase-server-auth";
+import { logSupportEvent } from "@/lib/support-log";
 import { MerchantSignUpInput } from "@/lib/types";
 
 function copyCookies(from: NextResponse, to: NextResponse) {
@@ -67,6 +69,24 @@ export async function POST(request: Request) {
       user: session.user,
       source: "signup",
     });
+    try {
+      await notifyAdministratorsOfMerchantSignup({
+        merchant: session.merchant,
+        user: session.user,
+        origin: new URL(request.url).origin,
+        provider: "email",
+      });
+      await logSupportEvent("info", "merchant_signup_admin_notified", {
+        merchantId: session.merchant.id,
+        merchantUserId: session.user.id,
+      });
+    } catch (notificationError) {
+      await logSupportEvent("warn", "merchant_signup_admin_notification_failed", {
+        merchantId: session.merchant.id,
+        merchantUserId: session.user.id,
+        error: notificationError instanceof Error ? notificationError.message : "Unknown error",
+      });
+    }
 
     const response = NextResponse.json(
       {

@@ -121,11 +121,11 @@ export function SignUpForm() {
       onSubmit={handleSubmit}
     >
       <div>
-        <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Créer un compte</p>
-        <h1 className="mt-3 font-display text-5xl leading-[0.95] text-[#121826]">
+        <p className="okado-label">Créer un compte</p>
+        <h1 className="okado-page-title mt-3">
           Ouvrez votre espace marchand
         </h1>
-        <p className="mt-4 text-sm leading-8 text-[#586174]">
+        <p className="mt-4 text-sm leading-8 text-ash">
           Commencez par votre restaurant ou votre boutique, puis finalisez votre onboarding pour
           créer votre première campagne.
         </p>
@@ -136,14 +136,14 @@ export function SignUpForm() {
       </div>
 
       {referralCode ? (
-        <div className="mt-4 rounded-[20px] border border-[#d9e7ff] bg-[#f4f8ff] px-4 py-3 text-sm text-[#2450c8]">
+        <div className="mt-4 rounded-[8px] border border-signal-blue/20 bg-signal-blue/10 px-4 py-3 text-sm text-signal-blue">
           Code parrainage appliqué : <span className="font-semibold">{referralCode}</span>
         </div>
       ) : null}
 
       <div className="mt-8 flex items-center gap-4">
         <div className="h-px flex-1 bg-[#e7ecf4]" />
-        <span className="text-sm text-[#9ca3af]">ou continuez avec le formulaire</span>
+        <span className="text-sm text-fog">ou continuez avec le formulaire</span>
         <div className="h-px flex-1 bg-[#e7ecf4]" />
       </div>
 
@@ -156,7 +156,7 @@ export function SignUpForm() {
               value={form[field.key]}
               onChange={(event) => updateField(field.key, event.target.value)}
               placeholder={field.placeholder}
-              className="w-full rounded-[22px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-4 outline-none"
+              className="w-full rounded-[12px] border border-[#cfcfcf] bg-white px-4 py-4 text-graphite outline-none transition placeholder:text-fog focus:border-signal-blue focus:shadow-[0_0_0_3px_rgba(0,153,255,1)]"
               required={field.required}
             />
           </label>
@@ -168,7 +168,7 @@ export function SignUpForm() {
             value={form.password}
             onChange={(event) => updateField("password", event.target.value)}
             placeholder="••••••••••"
-            className="w-full rounded-[22px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-4 outline-none"
+            className="w-full rounded-[12px] border border-[#cfcfcf] bg-white px-4 py-4 text-graphite outline-none transition placeholder:text-fog focus:border-signal-blue focus:shadow-[0_0_0_3px_rgba(0,153,255,1)]"
             required
           />
         </label>
@@ -179,13 +179,13 @@ export function SignUpForm() {
             value={form.confirmPassword}
             onChange={(event) => updateField("confirmPassword", event.target.value)}
             placeholder="••••••••••"
-            className="w-full rounded-[22px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-4 outline-none"
+            className="w-full rounded-[12px] border border-[#cfcfcf] bg-white px-4 py-4 text-graphite outline-none transition placeholder:text-fog focus:border-signal-blue focus:shadow-[0_0_0_3px_rgba(0,153,255,1)]"
             required
           />
         </label>
       </div>
 
-      <div className="mt-6 rounded-[24px] border border-[#dbe4f0] bg-[#fbfcfe] px-4 py-4 text-sm leading-7 text-[#475063]">
+      <div className="mt-6 rounded-[8px] border border-border bg-linen-canvas px-4 py-4 text-sm leading-7 text-ash">
         <label className="flex items-start gap-3">
           <input
             type="checkbox"
@@ -201,7 +201,7 @@ export function SignUpForm() {
       </div>
 
       {error ? (
-        <div className="mt-4 rounded-[20px] border border-[#f6c4bb] bg-[#fff1ee] px-4 py-3 text-sm text-[#8b2c18]">
+        <div className="mt-4 rounded-[8px] border border-coral-alert/30 bg-coral-alert/10 px-4 py-3 text-sm text-coral-alert">
           {error}
         </div>
       ) : null}
@@ -210,13 +210,13 @@ export function SignUpForm() {
         <button
           type="submit"
           disabled={isLoading}
-          className="inline-flex items-center justify-center rounded-[22px] bg-[#121826] px-5 py-4 text-sm font-semibold text-white disabled:opacity-60"
+          className="okado-filled-action inline-flex items-center justify-center px-5 py-4 disabled:opacity-60"
         >
           {isLoading ? "Création..." : "Créer mon compte"}
         </button>
         <Link
           href="/connexion"
-          className="inline-flex items-center justify-center rounded-[22px] border border-[#d7e0ed] px-5 py-4 text-sm font-semibold text-[#182033]"
+          className="okado-primary-action inline-flex items-center justify-center px-5 py-4"
         >
           J’ai déjà un compte
         </Link>

@@ -13,9 +13,9 @@ import {
   leadStatusLabel,
 } from "@/lib/format";
 import {
+  findMerchantLeadCampaign,
   getCampaignDataView,
   getMerchantCampaignLibrary,
-  getMerchantLeads,
   getPrimaryCampaignId,
 } from "@/lib/store";
 import { CampaignAction, CampaignEvent, MerchantLeadRow } from "@/lib/types";
@@ -25,37 +25,9 @@ type DataPageProps = {
     campaign?: string;
     q?: string;
     code?: string;
+    page?: string;
   }>;
 };
-
-function buildDailySeries(values: string[], labels: string[]) {
-  const counts = new Map<string, number>();
-
-  for (const value of values) {
-    counts.set(value, (counts.get(value) ?? 0) + 1);
-  }
-
-  return labels.map((label) => ({
-    label,
-    value: counts.get(label) ?? 0,
-  }));
-}
-
-function buildLastDays(referenceDates: string[], days = 7) {
-  const latest = referenceDates.length
-    ? new Date(
-        referenceDates.sort((a, b) => a.localeCompare(b)).at(-1) ?? new Date().toISOString(),
-      )
-    : new Date();
-
-  return Array.from({ length: days }, (_, index) => {
-    const date = new Date(
-      Date.UTC(latest.getUTCFullYear(), latest.getUTCMonth(), latest.getUTCDate()),
-    );
-    date.setUTCDate(latest.getUTCDate() - (days - index - 1));
-    return date.toISOString().slice(0, 10);
-  });
-}
 
 function isRewardExpired(status: string, rewardExpiresAt?: string) {
   return (
@@ -79,13 +51,13 @@ function Histogram({
 
   return (
     <div className="okado-card p-6">
-      <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">{eyebrow}</p>
-      <h2 className="mt-2 text-2xl font-semibold text-[#111827]">{title}</h2>
+      <p className="okado-label">{eyebrow}</p>
+      <h2 className="okado-section-title mt-2">{title}</h2>
       <div className="mt-6 grid h-[240px] grid-cols-7 gap-3">
         {bars.map((bar) => (
           <div key={bar.label} className="flex min-w-0 flex-col items-center justify-end gap-3">
-            <span className="text-sm font-semibold text-[#111827]">{bar.value}</span>
-            <div className="flex h-full w-full items-end rounded-[8px] bg-[#f3f6fb] p-1">
+            <span className="text-sm font-semibold text-graphite">{bar.value}</span>
+            <div className="flex h-full w-full items-end rounded-[8px] bg-sky-wash p-1">
               <div
                 className="w-full rounded-[14px]"
                 style={{
@@ -95,7 +67,7 @@ function Histogram({
                 }}
               />
             </div>
-            <span className="text-center text-xs text-[#7b8496]">
+            <span className="text-center text-xs text-ash">
               {formatShortDate(`${bar.label}T00:00:00.000Z`)}
             </span>
           </div>
@@ -134,42 +106,22 @@ function eventLabel(eventType: CampaignEvent["eventType"]) {
   }
 }
 
-function buildActionVolumes(leads: MerchantLeadRow[], actions: CampaignAction[]) {
+function buildActionVolumes(
+  volumes: Array<{ actionIndex: number; value: number }>,
+  actions: CampaignAction[],
+) {
   if (!actions.length) {
     return [];
   }
 
-  const volumes = new Map(
-    actions.map((action, index) => [
-      action.id,
-      {
-        id: action.id,
-        label: `Action ${index + 1}`,
-        kind: action.kind,
-        value: 0,
-      },
-    ]),
-  );
+  const byIndex = new Map(volumes.map((item) => [item.actionIndex, item.value]));
 
-  const byEmail = new Map<string, number>();
-  const chronologicalLeads = [...leads].sort((a, b) => a.createdAt.localeCompare(b.createdAt));
-
-  for (const lead of chronologicalLeads) {
-    const key = lead.email.trim().toLowerCase();
-    const actionIndex = byEmail.get(key) ?? 0;
-    const action = actions[actionIndex];
-
-    if (action) {
-      const current = volumes.get(action.id);
-      if (current) {
-        current.value += 1;
-      }
-    }
-
-    byEmail.set(key, actionIndex + 1);
-  }
-
-  return Array.from(volumes.values());
+  return actions.map((action, index) => ({
+    id: action.id,
+    label: `Action ${index + 1}`,
+    kind: action.kind,
+    value: byIndex.get(index) ?? 0,
+  }));
 }
 
 function leadStatusTone(status: MerchantLeadRow["status"]) {
@@ -190,23 +142,39 @@ function leadStatusTone(status: MerchantLeadRow["status"]) {
 function LeadsExportSection({
   campaignId,
   leads,
+  total,
+  offset,
+  limit,
+  query,
 }: {
   campaignId: string;
   leads: MerchantLeadRow[];
+  total: number;
+  offset: number;
+  limit: number;
+  query: string;
 }) {
+  const currentPage = Math.floor(offset / limit) + 1;
+  const totalPages = Math.max(1, Math.ceil(total / limit));
+  const pageHref = (page: number) => {
+    const params = new URLSearchParams({ campaign: campaignId, page: String(page) });
+    if (query) params.set("q", query);
+    return `/data?${params.toString()}`;
+  };
+
   return (
     <section className="okado-card p-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Saisies et export</p>
-          <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
+          <p className="okado-label">Saisies et export</p>
+          <h2 className="okado-section-title mt-2">
             Contacts, statuts et consentements
           </h2>
         </div>
         <Link
           href={`/api/merchant/leads?format=csv&campaign=${campaignId}`}
           prefetch={false}
-          className="inline-flex cursor-pointer rounded-[12px] border border-[#d7e0ed] px-4 py-3 text-sm font-semibold text-[#182033]"
+          className="okado-primary-action cursor-pointer px-4 py-3"
         >
           Export CSV
         </Link>
@@ -214,32 +182,32 @@ function LeadsExportSection({
 
       <div className="mt-5 overflow-x-auto">
         <table className="min-w-full text-left text-sm">
-          <thead className="text-xs uppercase tracking-[0.2em] text-[#7b8496]">
+          <thead className="okado-table-header">
             <tr>
-              <th className="border-b border-[#e4eaf2] px-3 py-3">Lead</th>
-              <th className="border-b border-[#e4eaf2] px-3 py-3">Statut</th>
-              <th className="border-b border-[#e4eaf2] px-3 py-3">Lot</th>
-              <th className="border-b border-[#e4eaf2] px-3 py-3">Email gain</th>
-              <th className="border-b border-[#e4eaf2] px-3 py-3">Retrait</th>
-              <th className="border-b border-[#e4eaf2] px-3 py-3">Consentement</th>
+              <th className="px-3 py-3">Lead</th>
+              <th className="px-3 py-3">Statut</th>
+              <th className="px-3 py-3">Lot</th>
+              <th className="px-3 py-3">Email gain</th>
+              <th className="px-3 py-3">Retrait</th>
+              <th className="px-3 py-3">Consentement</th>
             </tr>
           </thead>
           <tbody>
             {leads.map((lead) => (
               <tr key={lead.id}>
                 <td className="border-b border-[#eef2f7] px-3 py-4">
-                  <div className="font-semibold text-[#111827]">{lead.firstName}</div>
-                  <div className="text-[#7b8496]">{lead.email}</div>
+                  <div className="font-semibold text-graphite">{lead.firstName}</div>
+                  <div className="text-ash">{lead.email}</div>
                 </td>
-                <td className="border-b border-[#eef2f7] px-3 py-4 text-[#556173]">
+                <td className="border-b border-[#eef2f7] px-3 py-4 text-slate">
                   <span className={`inline-flex rounded-full px-3 py-1.5 text-xs font-semibold ${leadStatusTone(lead.status)}`}>
                     {leadStatusLabel(lead.status)}
                   </span>
                 </td>
-                <td className="border-b border-[#eef2f7] px-3 py-4 text-[#556173]">
+                <td className="border-b border-[#eef2f7] px-3 py-4 text-slate">
                   {lead.prizeLabel}
                   {lead.redemptionCode ? (
-                    <div className="mt-1 font-mono text-xs text-[#7b8496]">
+                    <div className="mt-1 font-mono text-xs text-ash">
                       {lead.redemptionCode}
                     </div>
                   ) : null}
@@ -249,16 +217,16 @@ function LeadsExportSection({
                     </div>
                   ) : null}
                 </td>
-                <td className="border-b border-[#eef2f7] px-3 py-4 text-[#556173]">
-                  <div className="font-semibold text-[#111827]">
+                <td className="border-b border-[#eef2f7] px-3 py-4 text-slate">
+                  <div className="font-semibold text-graphite">
                     {rewardEmailStatusLabel(lead.emailDeliveryStatus)}
                   </div>
                   {lead.emailDeliveredAt ? (
-                    <div className="mt-1 text-xs text-[#7b8496]">
+                    <div className="mt-1 text-xs text-ash">
                       Distribué le {formatDateTime(lead.emailDeliveredAt)}
                     </div>
                   ) : lead.emailSentAt ? (
-                    <div className="mt-1 text-xs text-[#7b8496]">
+                    <div className="mt-1 text-xs text-ash">
                       Envoyé le {formatDateTime(lead.emailSentAt)}
                     </div>
                   ) : null}
@@ -268,7 +236,7 @@ function LeadsExportSection({
                     </div>
                   ) : null}
                 </td>
-                <td className="border-b border-[#eef2f7] px-3 py-4 text-[#556173]">
+                <td className="border-b border-[#eef2f7] px-3 py-4 text-slate">
                   <LeadPrizeActions
                     leadId={lead.id}
                     status={lead.status}
@@ -279,7 +247,7 @@ function LeadsExportSection({
                     emailSentAt={lead.emailSentAt}
                   />
                 </td>
-                <td className="border-b border-[#eef2f7] px-3 py-4 text-[#556173]">
+                <td className="border-b border-[#eef2f7] px-3 py-4 text-slate">
                   {lead.marketingConsent && lead.consentTimestamp
                     ? formatDateTime(lead.consentTimestamp)
                     : "Non"}
@@ -289,6 +257,28 @@ function LeadsExportSection({
           </tbody>
         </table>
       </div>
+      {total > limit ? (
+        <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-5 text-sm">
+          <p className="text-ash">
+            {offset + 1}-{Math.min(offset + leads.length, total)} sur {total} saisies
+          </p>
+          <div className="flex items-center gap-2">
+            {currentPage > 1 ? (
+              <Link href={pageHref(currentPage - 1)} prefetch={false} className="okado-secondary-action px-3 py-2">
+                Précédent
+              </Link>
+            ) : null}
+            <span className="rounded-[8px] bg-linen-canvas px-3 py-2 font-semibold text-graphite">
+              Page {currentPage} / {totalPages}
+            </span>
+            {currentPage < totalPages ? (
+              <Link href={pageHref(currentPage + 1)} prefetch={false} className="okado-secondary-action px-3 py-2">
+                Suivant
+              </Link>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }
@@ -297,59 +287,35 @@ export default async function DataPage({ searchParams }: DataPageProps) {
   const session = await requireAuthenticatedSession();
   const params = await searchParams;
   const query = params.q?.trim() ?? params.code?.trim() ?? "";
-  const normalizedQuery = query.toLowerCase();
   const initialSelectedCampaignId = params.campaign ?? undefined;
-  const [campaignOptions, allLeads, initialDataView] = await Promise.all([
+  const requestedPage = Number.parseInt(params.page ?? "1", 10);
+  const currentPage = Number.isFinite(requestedPage) ? Math.max(requestedPage, 1) : 1;
+  const leadLimit = 50;
+  const [campaignOptions, matchedCampaignId] = await Promise.all([
     getMerchantCampaignLibrary(session.merchant.id, session.merchant),
-    query ? getMerchantLeads(session.merchant.id) : Promise.resolve([]),
-    initialSelectedCampaignId
-      ? getCampaignDataView(initialSelectedCampaignId, session.merchant)
-      : Promise.resolve(null),
+    query ? findMerchantLeadCampaign(session.merchant.id, query) : Promise.resolve(null),
   ]);
-  const matchedLead =
-    query.length > 0
-      ? allLeads.find((lead) =>
-          [lead.redemptionCode ?? "", lead.email, lead.firstName]
-            .join(" ")
-            .toLowerCase()
-            .includes(normalizedQuery),
-        ) ?? null
-      : null;
   const selectedCampaignId =
-    matchedLead?.campaignId ??
+    matchedCampaignId ??
     initialSelectedCampaignId ??
     campaignOptions[0]?.id ??
     getPrimaryCampaignId();
-  const dataView =
-    (initialDataView && initialSelectedCampaignId === selectedCampaignId ? initialDataView : null) ??
-    (selectedCampaignId
-      ? await getCampaignDataView(selectedCampaignId, session.merchant)
-      : null);
+  const dataView = selectedCampaignId
+    ? await getCampaignDataView(selectedCampaignId, session.merchant, {
+        leadLimit,
+        leadOffset: (currentPage - 1) * leadLimit,
+        query,
+      })
+    : null;
 
   if (!dataView || dataView.performance.campaign.merchantId !== session.merchant.id) {
     return (
       <div className="okado-card p-8">
-        <h1 className="text-3xl font-semibold text-[#111827]">Aucune campagne sélectionnée</h1>
+        <h1 className="okado-section-title">Aucune campagne sélectionnée</h1>
       </div>
     );
   }
 
-  const sortedLeads = [...dataView.leads].sort((a, b) =>
-    (b.consentTimestamp ?? b.createdAt).localeCompare(a.consentTimestamp ?? a.createdAt),
-  );
-  const filteredLeads = query
-    ? sortedLeads.filter((lead) =>
-        [lead.redemptionCode ?? "", lead.email, lead.firstName, lead.prizeLabel]
-          .join(" ")
-          .toLowerCase()
-          .includes(normalizedQuery),
-      )
-    : sortedLeads;
-  const allDates = [
-    ...dataView.leads.map((lead) => lead.createdAt),
-    ...dataView.events.map((event) => event.createdAt),
-  ];
-  const dayKeys = buildLastDays(allDates);
   const performanceMax = Math.max(
     dataView.performance.kpis.scans,
     dataView.performance.kpis.leads,
@@ -358,18 +324,16 @@ export default async function DataPage({ searchParams }: DataPageProps) {
   );
   const performanceWidth = (value: number) =>
     value > 0 ? Math.max((value / performanceMax) * 100, 10) : 0;
-  const participationsPerDay = buildDailySeries(
-    dataView.leads.map((lead) => lead.createdAt.slice(0, 10)),
-    dayKeys,
-  );
-  const redeemedPerDay = buildDailySeries(
-    dataView.events
-      .filter((event) => event.eventType === "prize_redeemed")
-      .map((event) => event.createdAt.slice(0, 10)),
-    dayKeys,
-  );
+  const participationsPerDay = dataView.dailyStats.map((item) => ({
+    label: item.label,
+    value: item.participations,
+  }));
+  const redeemedPerDay = dataView.dailyStats.map((item) => ({
+    label: item.label,
+    value: item.redeemed,
+  }));
   const actionVolumes = buildActionVolumes(
-    dataView.leads,
+    dataView.actionVolumes,
     dataView.performance.campaign.actions,
   );
   const actionVolumeMax = Math.max(...actionVolumes.map((item) => item.value), 1);
@@ -381,13 +345,11 @@ export default async function DataPage({ searchParams }: DataPageProps) {
         <div>
           <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
             <div>
-              <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">
-                Données campagne
-              </p>
-              <h1 className="mt-3 font-display text-5xl font-semibold leading-none text-[#0f1728]">
+              <p className="okado-label">Données campagne</p>
+              <h1 className="okado-page-title mt-3">
                 {dataView.performance.campaign.title}
               </h1>
-              <p className="mt-4 max-w-3xl text-sm leading-7 text-[#5c6577]">
+              <p className="mt-4 max-w-3xl text-sm leading-7 text-ash">
                 Visualisez les indicateurs clés, le stock de dotation et les données de saisie
                 exportables pour chaque activation.
               </p>
@@ -397,8 +359,7 @@ export default async function DataPage({ searchParams }: DataPageProps) {
               <Link
                 href={`/campaigns/${dataView.performance.campaign.id}/edit`}
                 prefetch={false}
-                className="inline-flex rounded-[12px] bg-[#2f6df6] px-5 py-4 text-sm font-semibold !text-white shadow-[0_16px_32px_rgba(47,109,246,0.22)]"
-                style={{ color: "#ffffff" }}
+                className="okado-filled-action px-5 py-4"
               >
                 Modifier la campagne
               </Link>
@@ -420,8 +381,8 @@ export default async function DataPage({ searchParams }: DataPageProps) {
                   prefetch={false}
                   className={`cursor-pointer rounded-[12px] px-4 py-3 text-sm font-semibold ${
                     item.id === dataView.performance.campaign.id
-                      ? "bg-[#111827] !text-white"
-                      : "border border-[#d7e0ed] bg-[#f8fafc] text-[#182033]"
+                      ? "bg-primary-action-accent !text-white"
+                      : "okado-secondary-action"
                   }`}
                   style={
                     item.id === dataView.performance.campaign.id
@@ -434,7 +395,7 @@ export default async function DataPage({ searchParams }: DataPageProps) {
               ))}
             </div>
           </div>
-          {query && !filteredLeads.length ? (
+          {query && dataView.leadTotal === 0 ? (
             <p className="mt-4 text-sm font-semibold text-[#c2410c]">
               Aucun résultat pour « {query} ».
             </p>
@@ -454,8 +415,8 @@ export default async function DataPage({ searchParams }: DataPageProps) {
             key={label}
             className="okado-card p-5"
           >
-            <p className="text-xs uppercase tracking-[0.24em] text-[#7b8496]">{label}</p>
-            <p className="mt-4 text-3xl font-semibold text-[#111827]">{value}</p>
+            <p className="okado-label tracking-[0.18em]">{label}</p>
+            <p className="mt-4 text-3xl font-semibold text-graphite">{value}</p>
           </div>
         ))}
       </section>
@@ -463,13 +424,13 @@ export default async function DataPage({ searchParams }: DataPageProps) {
       <section className="grid gap-6 xl:grid-cols-2">
         <Histogram
           eyebrow="Participations"
-          title="Évolution du nombre de participations par jour"
+          title="Évolution des participations par jour"
           bars={participationsPerDay}
           color={dataView.performance.campaign.accent.signal}
         />
         <Histogram
           eyebrow="Lots récupérés"
-          title="Évolution du nombre de lots récupérés par jour"
+          title="Évolution des lots récupérés par jour"
           bars={redeemedPerDay}
           color="#111827"
         />
@@ -477,14 +438,18 @@ export default async function DataPage({ searchParams }: DataPageProps) {
 
       <LeadsExportSection
         campaignId={dataView.performance.campaign.id}
-        leads={filteredLeads}
+        leads={dataView.leads}
+        total={dataView.leadTotal}
+        offset={dataView.leadOffset}
+        limit={dataView.leadLimit}
+        query={query}
       />
 
       <section className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
         <div className="space-y-6">
           <div className="okado-card p-6">
-            <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Performance</p>
-            <h2 className="mt-2 text-2xl font-semibold text-[#111827]">Tunnel et engagement</h2>
+            <p className="okado-label">Performance</p>
+            <h2 className="okado-section-title mt-2">Tunnel et engagement</h2>
 
             <div className="mt-6 space-y-4">
               {[
@@ -505,11 +470,11 @@ export default async function DataPage({ searchParams }: DataPageProps) {
                 },
               ].map((row) => (
                 <div key={row.label}>
-                  <div className="mb-2 flex items-center justify-between text-sm text-[#556173]">
+                  <div className="mb-2 flex items-center justify-between text-sm text-slate">
                     <span>{row.label}</span>
-                    <span className="font-semibold text-[#111827]">{row.value}</span>
+                    <span className="font-semibold text-graphite">{row.value}</span>
                   </div>
-                  <div className="h-3 rounded-full bg-[#eef2f7]">
+                  <div className="h-3 rounded-full bg-sky-wash">
                     <div
                       className="h-3 rounded-full"
                       style={{
@@ -526,8 +491,8 @@ export default async function DataPage({ searchParams }: DataPageProps) {
           <div className="okado-card p-6">
             <div className="flex items-center justify-between gap-4">
               <div>
-                <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Dotation</p>
-                <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
+                <p className="okado-label">Dotation</p>
+                <h2 className="okado-section-title mt-2">
                   Stock et probabilités
                 </h2>
               </div>
@@ -541,15 +506,15 @@ export default async function DataPage({ searchParams }: DataPageProps) {
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <p className="font-semibold text-[#111827]">{prize.label}</p>
-                      <p className="mt-1 text-sm text-[#7b8496]">
+                      <p className="font-semibold text-graphite">{prize.label}</p>
+                      <p className="mt-1 text-sm text-ash">
                         Probabilité {prize.probability}% · coût{" "}
                         {formatCurrency(prize.estimatedUnitCost)}
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm text-[#7b8496]">Restant</p>
-                      <p className="mt-1 text-xl font-semibold text-[#111827]">
+                      <p className="text-sm text-ash">Restant</p>
+                      <p className="mt-1 text-xl font-semibold text-graphite">
                         {prize.remainingQuantity ?? "Illimité"}
                       </p>
                     </div>
@@ -568,10 +533,10 @@ export default async function DataPage({ searchParams }: DataPageProps) {
         <div className="space-y-6">
           {actionVolumes.length > 1 ? (
             <div className="okado-card p-6">
-              <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">
+              <p className="okado-label">
                 Actions marketing
               </p>
-              <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
+              <h2 className="okado-section-title mt-2">
                 Volume par action
               </h2>
 
@@ -580,12 +545,12 @@ export default async function DataPage({ searchParams }: DataPageProps) {
                   <div key={item.id}>
                     <div className="mb-2 flex items-center justify-between gap-3 text-sm">
                       <div className="min-w-0">
-                        <p className="font-semibold text-[#111827]">{item.label}</p>
-                        <p className="truncate text-[#7b8496]">{item.kind}</p>
+                        <p className="font-semibold text-graphite">{item.label}</p>
+                        <p className="truncate text-ash">{item.kind}</p>
                       </div>
-                      <span className="font-semibold text-[#111827]">{item.value}</span>
+                      <span className="font-semibold text-graphite">{item.value}</span>
                     </div>
-                    <div className="h-3 rounded-full bg-[#eef2f7]">
+                    <div className="h-3 rounded-full bg-sky-wash">
                       <div
                         className="h-3 rounded-full"
                         style={{
@@ -601,8 +566,8 @@ export default async function DataPage({ searchParams }: DataPageProps) {
           ) : null}
 
           <div className="okado-card p-6">
-            <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Chronologie</p>
-            <h2 className="mt-2 text-2xl font-semibold text-[#111827]">Derniers événements</h2>
+            <p className="okado-label">Chronologie</p>
+            <h2 className="okado-section-title mt-2">Derniers événements</h2>
 
             <div className="mt-5 space-y-2">
               {dataView.events.slice(0, 8).map((event) => {
@@ -617,13 +582,13 @@ export default async function DataPage({ searchParams }: DataPageProps) {
                       className="h-2.5 w-2.5 shrink-0 rounded-full"
                       style={{ backgroundColor: dataView.performance.campaign.accent.signal }}
                     />
-                    <p className="min-w-0 flex-1 truncate text-sm text-[#556173]">
-                      <span className="font-semibold text-[#111827]">
+                    <p className="min-w-0 flex-1 truncate text-sm text-slate">
+                      <span className="font-semibold text-graphite">
                         {eventLabel(event.eventType)}
                       </span>
                       {lead ? ` · ${lead.firstName}` : ""}
                     </p>
-                    <span className="shrink-0 text-xs text-[#7b8496]">
+                    <span className="shrink-0 text-xs text-ash">
                       {formatDateTime(event.createdAt)}
                     </span>
                   </div>

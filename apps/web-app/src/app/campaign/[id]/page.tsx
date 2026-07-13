@@ -44,7 +44,11 @@ export default async function CampaignPage({ params }: CampaignPageProps) {
   } catch (error) {
     const message = error instanceof Error ? error.message : "Cette campagne est indisponible.";
 
-    if (message.toLowerCase().includes("abonnement") || message.toLowerCase().includes("essai")) {
+    if (
+      message.toLowerCase().includes("abonnement") ||
+      message.toLowerCase().includes("essai") ||
+      message.toLowerCase().includes("indisponible")
+    ) {
       return <SuspendedCampaignNotice message={message} />;
     }
 

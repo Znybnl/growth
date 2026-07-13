@@ -745,6 +745,7 @@ export async function authenticateOrProvisionMerchantWithGoogle(
     return {
       user: toMerchantUser(existingUser.data),
       merchant,
+      isNew: false,
     };
   }
 
@@ -850,6 +851,7 @@ export async function authenticateOrProvisionMerchantWithGoogle(
       subscriptionCancelAtPeriodEnd: false,
       createdAt,
     },
+    isNew: true,
   };
 }
 
@@ -1079,6 +1081,7 @@ export async function updateMerchantAccountInSupabase(
       tiktok_url: input.tiktokUrl.trim(),
       tripadvisor_url: input.tripadvisorUrl.trim(),
       custom_link_url: input.customLinkUrl.trim(),
+      time_zone: input.timeZone.trim() || "Europe/Paris",
       default_prize_cost: input.defaultPrizeCost,
     })
     .eq("id", userQuery.data.merchant_id);

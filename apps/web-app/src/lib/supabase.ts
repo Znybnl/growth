@@ -1,10 +1,11 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const allowInsecureLocalTls = process.env.ALLOW_INSECURE_LOCAL_TLS === "true";
 const allowMemoryStoreFallback = process.env.ALLOW_MEMORY_STORE_FALLBACK;
+let supabaseAdmin: SupabaseClient | undefined;
 
 export function allowLocalTlsBypass() {
   if (
@@ -53,12 +54,15 @@ export function getSupabaseAdmin() {
 
   allowLocalTlsBypass();
 
-  return createClient(supabaseUrl, supabaseServiceRoleKey, {
+  // Reuse the server-side client within the runtime instead of recreating it for each query.
+  supabaseAdmin ??= createClient(supabaseUrl, supabaseServiceRoleKey, {
     auth: {
       persistSession: false,
       autoRefreshToken: false,
     },
   });
+
+  return supabaseAdmin;
 }
 
 export function getSupabaseOAuthClient() {

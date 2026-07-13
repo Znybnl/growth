@@ -28,8 +28,8 @@ const navItems = [
 ];
 
 const adminNavItems = [
-  { href: "/backgrounds", label: "Bibliothèque" },
   { href: "/admin", label: "Pilotage" },
+  { href: "/backgrounds", label: "Bibliothèque" },
   { href: "/affiliates", label: "Affiliation" },
   { href: "/support", label: "Supervision" },
 ];
@@ -37,6 +37,13 @@ const adminNavItems = [
 export function MerchantShell({ children, merchant, user, isSaasAdmin }: MerchantShellProps) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [merchantAlerts, setMerchantAlerts] = useState({
+    emailCount: 0,
+    emailCampaignId: null as string | null,
+    lowStockCount: 0,
+    exhaustedStockCount: 0,
+  });
+  const failedRewardEmails = merchantAlerts.emailCount;
   const billing = useMemo(() => getMerchantBillingSummary(merchant), [merchant]);
 
   useEffect(() => {
@@ -65,6 +72,38 @@ export function MerchantShell({ children, merchant, user, isSaasAdmin }: Merchan
     user.email,
     user.id,
   ]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadMerchantAlerts() {
+      try {
+        const response = await fetch("/api/merchant/email-alerts");
+        if (!response.ok) return;
+        const payload = (await response.json()) as {
+          emailCount?: number;
+          emailCampaignId?: string | null;
+          lowStockCount?: number;
+          exhaustedStockCount?: number;
+        };
+        if (!cancelled) {
+          setMerchantAlerts({
+            emailCount: payload.emailCount ?? 0,
+            emailCampaignId: payload.emailCampaignId ?? null,
+            lowStockCount: payload.lowStockCount ?? 0,
+            exhaustedStockCount: payload.exhaustedStockCount ?? 0,
+          });
+        }
+      } catch {
+        // Alerts are non-blocking and must never affect navigation.
+      }
+    }
+
+    void loadMerchantAlerts();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   function isActive(href: string) {
     return href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -125,7 +164,7 @@ export function MerchantShell({ children, merchant, user, isSaasAdmin }: Merchan
 
           {isSaasAdmin ? (
             <div className="mt-5 rounded-[8px] border border-border bg-white p-2 shadow-[var(--shadow-product-card)]">
-              <p className="px-2 pb-2 text-[10px] font-medium uppercase tracking-[0.13px] text-fog">
+              <p className="px-2 pb-2 text-[10px] font-semibold uppercase tracking-[0.13px] text-ash">
                 Administration
               </p>
               <nav className="space-y-1">
@@ -140,12 +179,16 @@ export function MerchantShell({ children, merchant, user, isSaasAdmin }: Merchan
                       className={`flex h-8 items-center justify-between rounded-full px-3 text-sm transition ${
                         active
                           ? "bg-primary-action-accent text-white"
-                          : "text-slate hover:bg-sky-wash hover:text-graphite"
+                          : "text-midnight-ink hover:bg-sky-wash hover:text-graphite"
                       }`}
+                      style={active ? { color: "#ffffff" } : undefined}
                       onClick={() => setMenuOpen(false)}
                     >
-                      <span>{item.label}</span>
-                      <span className={`h-2 w-2 rounded-full ${active ? "bg-white" : "bg-border"}`} />
+                      <span style={active ? { color: "#ffffff" } : undefined}>{item.label}</span>
+                      <span
+                        className={`h-2 w-2 rounded-full ${active ? "bg-white" : "bg-border"}`}
+                        style={active ? { backgroundColor: "#ffffff" } : undefined}
+                      />
                     </Link>
                   );
                 })}
@@ -155,7 +198,7 @@ export function MerchantShell({ children, merchant, user, isSaasAdmin }: Merchan
 
           <Button
             asChild
-            className="mt-6 h-11 rounded-[12px] border border-primary-action-accent bg-white/80 px-4 text-sm font-medium text-primary-action-accent hover:bg-sky-wash hover:text-primary-action-accent"
+            className="okado-primary-action mt-6 h-11 px-4"
           >
             <Link href="/campaigns/new" prefetch={false}>
               Créer une campagne
@@ -189,6 +232,40 @@ export function MerchantShell({ children, merchant, user, isSaasAdmin }: Merchan
                 jeux.
               </div>
             )}
+
+            {merchantAlerts.exhaustedStockCount > 0 ? (
+              <Link
+                href="/data"
+                className="mt-3 block rounded-[4px] bg-[#f26052]/10 px-2 py-2 text-xs font-medium text-coral-alert"
+              >
+                {merchantAlerts.exhaustedStockCount} lot
+                {merchantAlerts.exhaustedStockCount > 1 ? "s" : ""} epuise
+                {merchantAlerts.exhaustedStockCount > 1 ? "s" : ""}
+              </Link>
+            ) : null}
+
+            {merchantAlerts.lowStockCount > 0 ? (
+              <Link
+                href="/data"
+                className="mt-3 block rounded-[4px] bg-[#f59e0b]/10 px-2 py-2 text-xs font-medium text-[#a15c00]"
+              >
+                Stock faible sur {merchantAlerts.lowStockCount} lot
+                {merchantAlerts.lowStockCount > 1 ? "s" : ""}
+              </Link>
+            ) : null}
+
+            {merchantAlerts.emailCount > 0 ? (
+              <Link
+                href={
+                  merchantAlerts.emailCampaignId
+                    ? `/data?campaign=${encodeURIComponent(merchantAlerts.emailCampaignId)}`
+                    : "/data"
+                }
+                className="mt-3 block rounded-[4px] bg-[#f59e0b]/10 px-2 py-2 text-xs font-medium text-[#a15c00]"
+              >
+                {failedRewardEmails} e-mail{failedRewardEmails > 1 ? "s" : ""} de gain à vérifier
+              </Link>
+            ) : null}
 
             <div className="mt-4">
               <SignOutButton />

@@ -30,7 +30,7 @@ function StatusBadge({
           : "bg-[#f3f6fb] text-[#475569]";
 
   return (
-    <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${toneClass}`}>
+    <span className={`okado-status-badge ${toneClass}`}>
       {label}
     </span>
   );
@@ -176,7 +176,7 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
       <section className="px-1 py-2">
         <div>
           <p className="okado-label">Supervision</p>
-          <h1 className="mt-3 font-display text-5xl font-semibold leading-none text-midnight-ink">
+          <h1 className="okado-page-title mt-3">
             Centre de supervision
           </h1>
           <p className="mt-4 max-w-3xl text-sm leading-7 text-ash">
@@ -197,16 +197,16 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
             key={label}
             className="okado-card p-5"
           >
-            <p className="text-xs uppercase tracking-[0.24em] text-[#7b8496]">{label}</p>
-            <p className="mt-4 text-3xl font-semibold text-[#111827]">{value}</p>
+            <p className="okado-label tracking-[0.18em]">{label}</p>
+            <p className="mt-4 text-3xl font-semibold text-graphite">{value}</p>
           </div>
         ))}
       </section>
 
-      <section className="rounded-[8px] border border-[#dbe4f0] bg-[#101827] p-6 text-white shadow-[0_18px_44px_rgba(15,23,42,0.16)]">
+      <section className="rounded-[8px] border border-border bg-primary-action-accent p-6 text-white shadow-product-card">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="text-xs uppercase tracking-[0.28em] text-[#9fb0d0]">Santé production</p>
+            <p className="okado-label text-[#9fb0d0]">Santé production</p>
             <h2 className="mt-2 text-3xl font-semibold">Signaux support à surveiller</h2>
           </div>
           <p className="max-w-2xl text-sm leading-6 text-[#c7d2ea]">
@@ -237,21 +237,21 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
       <section className="okado-card p-5">
         <form className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_220px_220px_auto]" action="/support">
           <label className="text-sm">
-            <span className="mb-2 block text-[#616b7c]">Recherche support</span>
+            <span className="mb-2 block text-ash">Recherche support</span>
             <input
               name="q"
               defaultValue={params.q ?? ""}
               placeholder="E-mail, code retrait, campagne, lead..."
-              className="w-full rounded-[12px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+              className="w-full rounded-[12px] border border-[#cfcfcf] bg-white px-4 py-3 outline-none"
             />
           </label>
 
           <label className="text-sm">
-            <span className="mb-2 block text-[#616b7c]">Section</span>
+            <span className="mb-2 block text-ash">Section</span>
             <select
               name="section"
               defaultValue={section}
-              className="w-full rounded-[12px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+              className="w-full rounded-[12px] border border-[#cfcfcf] bg-white px-4 py-3 outline-none"
             >
               <option value="all">Toutes</option>
               <option value="emails">E-mails</option>
@@ -262,11 +262,11 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
           </label>
 
           <label className="text-sm">
-            <span className="mb-2 block text-[#616b7c]">Statut / événement</span>
+            <span className="mb-2 block text-ash">Statut / événement</span>
             <select
               name="status"
               defaultValue={status}
-              className="w-full rounded-[12px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+              className="w-full rounded-[12px] border border-[#cfcfcf] bg-white px-4 py-3 outline-none"
             >
               <option value="all">Tous</option>
               <option value="failed">E-mail en échec</option>
@@ -286,14 +286,14 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
           <div className="flex items-end gap-2">
             <button
               type="submit"
-              className="rounded-[12px] bg-[#111827] px-5 py-3 text-sm font-semibold !text-white"
+              className="okado-primary-action px-5 py-3"
             >
               Filtrer
             </button>
             {hasFilter ? (
               <a
                 href="/support"
-                className="rounded-[12px] border border-[#d7e0ed] px-5 py-3 text-sm font-semibold text-[#182033]"
+                className="okado-secondary-action px-5 py-3"
               >
                 Effacer
               </a>
@@ -302,12 +302,12 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
         </form>
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-4">
+      <section className="grid gap-6 xl:grid-cols-3">
         <article className="okado-card p-6 xl:col-span-1">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">E-mails</p>
-              <h2 className="mt-2 text-2xl font-semibold text-[#111827]">En échec</h2>
+              <p className="okado-label">E-mails</p>
+              <h2 className="okado-section-title mt-2">En échec</h2>
             </div>
             <StatusBadge label={`${filteredOverview.failedEmails.length} à traiter`} tone="danger" />
           </div>
@@ -321,17 +321,17 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="text-sm font-semibold text-[#111827]">{item.campaignTitle}</p>
-                      <p className="text-sm text-[#5c6577]">
+                      <p className="text-sm font-semibold text-graphite">{item.campaignTitle}</p>
+                      <p className="text-sm text-ash">
                         {item.leadFirstName} · {item.recipientEmail}
                       </p>
                     </div>
                     <StatusBadge label={rewardEmailStatusLabel(item.status)} tone="danger" />
                   </div>
-                  <p className="mt-3 text-sm text-[#7b8496]">
+                  <p className="mt-3 text-sm text-ash">
                     {item.errorMessage || "Erreur de délivrabilité non précisée."}
                   </p>
-                  <p className="mt-3 text-xs uppercase tracking-[0.2em] text-[#94a3b8]">
+                  <p className="mt-3 okado-label text-fog">
                     Dernier événement {formatDateTime(item.lastEventAt)}
                   </p>
                 </div>
@@ -349,8 +349,8 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
         <article className="okado-card p-6 xl:col-span-1">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Webhooks</p>
-              <h2 className="mt-2 text-2xl font-semibold text-[#111827]">Reçus récemment</h2>
+              <p className="okado-label">Webhooks</p>
+              <h2 className="okado-section-title mt-2">Reçus récemment</h2>
             </div>
             <StatusBadge label={`${filteredOverview.webhooks.length} événements`} />
           </div>
@@ -364,8 +364,8 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="text-sm font-semibold text-[#111827]">{item.eventType}</p>
-                      <p className="text-sm text-[#5c6577]">
+                      <p className="text-sm font-semibold text-graphite">{item.eventType}</p>
+                      <p className="text-sm text-ash">
                         {item.campaignTitle || "Campagne inconnue"}
                         {item.recipientEmail ? ` · ${item.recipientEmail}` : ""}
                       </p>
@@ -384,9 +384,9 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
                     />
                   </div>
                   {item.summary ? (
-                    <p className="mt-3 text-sm text-[#7b8496]">{item.summary}</p>
+                    <p className="mt-3 text-sm text-ash">{item.summary}</p>
                   ) : null}
-                  <p className="mt-3 text-xs uppercase tracking-[0.2em] text-[#94a3b8]">
+                  <p className="mt-3 okado-label text-fog">
                     {formatDateTime(item.createdAt)}
                   </p>
                 </div>
@@ -404,8 +404,8 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
         <article className="okado-card p-6 xl:col-span-1">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Gains</p>
-              <h2 className="mt-2 text-2xl font-semibold text-[#111827]">Sans retrait</h2>
+              <p className="okado-label">Gains</p>
+              <h2 className="okado-section-title mt-2">Sans retrait</h2>
             </div>
             <StatusBadge label={`${filteredOverview.pendingClaims.length} en attente`} tone="warning" />
           </div>
@@ -419,20 +419,20 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="text-sm font-semibold text-[#111827]">{item.prizeLabel}</p>
-                      <p className="text-sm text-[#5c6577]">
+                      <p className="text-sm font-semibold text-graphite">{item.prizeLabel}</p>
+                      <p className="text-sm text-ash">
                         {item.campaignTitle} · {item.firstName} · {item.email}
                       </p>
                     </div>
                     <StatusBadge label={leadStatusLabel(item.status)} tone="warning" />
                   </div>
                   <div className="mt-3 flex flex-wrap gap-2 text-xs text-[#64748b]">
-                    <span className="rounded-full bg-white px-3 py-1">Code {item.redemptionCode}</span>
-                    <span className="rounded-full bg-white px-3 py-1">
+                    <span className="rounded-[4px] bg-white px-3 py-1">Code {item.redemptionCode}</span>
+                    <span className="rounded-[4px] bg-white px-3 py-1">
                       Disponible {item.availableAt ? formatDateTime(item.availableAt) : "immédiatement"}
                     </span>
                     {item.expiresAt ? (
-                      <span className="rounded-full bg-white px-3 py-1">
+                      <span className="rounded-[4px] bg-white px-3 py-1">
                         Expire {formatDateTime(item.expiresAt)}
                       </span>
                     ) : null}
@@ -449,54 +449,51 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
           </div>
         </article>
 
-        <article className="okado-card p-6 xl:col-span-1">
+        <article className="okado-card p-6 xl:col-span-3">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Journal</p>
-              <h2 className="mt-2 text-2xl font-semibold text-[#111827]">Logs métier</h2>
+              <p className="okado-label">Journal</p>
+              <h2 className="okado-section-title mt-2">Logs métier</h2>
             </div>
             <StatusBadge label={`${filteredOverview.businessLogs.length} lignes`} />
           </div>
 
-          <div className="mt-6 space-y-3">
+          <div className="mt-6 overflow-x-auto">
             {filteredOverview.businessLogs.length ? (
-              filteredOverview.businessLogs.map((item) => (
-                <div
-                  key={item.id}
-                  className="rounded-[8px] border border-[#edf1f6] bg-[#fbfcfe] p-4"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="break-all text-sm font-semibold text-[#111827]">{item.event}</p>
-                      <p className="mt-1 text-xs uppercase tracking-[0.2em] text-[#94a3b8]">
+              <table className="min-w-[900px] w-full text-left text-sm">
+                <thead className="okado-table-header">
+                  <tr>
+                    <th className="px-3 py-3">Date</th>
+                    <th className="px-3 py-3">Evenement</th>
+                    <th className="px-3 py-3">Niveau</th>
+                    <th className="px-3 py-3">Contexte</th>
+                    <th className="px-3 py-3">Detail</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredOverview.businessLogs.map((item) => (
+                    <tr key={item.id} className="border-b border-[#eef2f7] align-top text-slate">
+                      <td className="whitespace-nowrap px-3 py-3 text-xs text-ash">
                         {formatDateTime(item.createdAt)}
-                      </p>
-                    </div>
-                    <StatusBadge label={item.level} tone={supportLogTone(item.level)} />
-                  </div>
-                  {item.summary ? (
-                    <p className="mt-3 text-sm leading-6 text-[#64748b]">{item.summary}</p>
-                  ) : null}
-                  <div className="mt-3 flex flex-wrap gap-2 text-xs text-[#64748b]">
-                    {item.campaignId ? (
-                      <span className="rounded-full bg-white px-3 py-1">
-                        Campagne {item.campaignId}
-                      </span>
-                    ) : null}
-                    {item.leadId ? (
-                      <span className="rounded-full bg-white px-3 py-1">Lead {item.leadId}</span>
-                    ) : null}
-                    {item.email ? (
-                      <span className="rounded-full bg-white px-3 py-1">{item.email}</span>
-                    ) : null}
-                    {item.redemptionCode ? (
-                      <span className="rounded-full bg-white px-3 py-1">
-                        Code {item.redemptionCode}
-                      </span>
-                    ) : null}
-                  </div>
-                </div>
-              ))
+                      </td>
+                      <td className="max-w-[220px] break-all px-3 py-3 font-semibold text-graphite">
+                        {item.event}
+                      </td>
+                      <td className="px-3 py-3">
+                        <StatusBadge label={item.level} tone={supportLogTone(item.level)} />
+                      </td>
+                      <td className="max-w-[280px] px-3 py-3 text-xs text-ash">
+                        {[item.campaignId && `Campagne ${item.campaignId}`, item.leadId && `Lead ${item.leadId}`, item.email, item.redemptionCode && `Code ${item.redemptionCode}`]
+                          .filter(Boolean)
+                          .join(" · ") || "-"}
+                      </td>
+                      <td className="max-w-[420px] px-3 py-3 text-xs leading-5 text-ash">
+                        {item.summary || "-"}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             ) : (
               <p className="rounded-[8px] border border-dashed border-[#dbe4f0] bg-[#fbfcfe] px-4 py-8 text-sm text-[#64748b]">
                 {hasFilter

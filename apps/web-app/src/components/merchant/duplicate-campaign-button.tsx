@@ -54,16 +54,16 @@ export function DuplicateCampaignButton({
       className={cn(
         "inline-flex w-full cursor-pointer items-center text-left text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60",
         isMenu
-          ? "min-h-9 gap-2 rounded-[8px] border border-transparent bg-transparent px-2.5 py-2 text-[#182033] hover:bg-linen-canvas"
-          : "gap-3 rounded-[16px] border border-[#d7e0ed] bg-white px-4 py-3 text-[#182033] hover:border-[#c5d2e5] hover:bg-[#f8fbff]",
+          ? "min-h-9 gap-2 rounded-[8px] border border-transparent bg-transparent px-2.5 py-2 text-graphite hover:bg-sky-wash"
+          : "gap-3 rounded-[12px] border border-border bg-white px-4 py-3 text-graphite hover:border-[#c5d2e5] hover:bg-sky-wash",
         className,
       )}
     >
       <span
         aria-hidden="true"
         className={cn(
-          "inline-flex shrink-0 items-center justify-center text-[#182033]",
-          isMenu ? "h-4 w-4" : "h-8 w-8 rounded-full bg-[#f3f6fb]",
+          "inline-flex shrink-0 items-center justify-center text-graphite",
+          isMenu ? "h-4 w-4" : "h-8 w-8 rounded-full bg-sky-wash",
         )}
       >
         <svg viewBox="0 0 24 24" className="h-4 w-4 fill-none stroke-current stroke-[1.8]">

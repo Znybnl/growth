@@ -3,7 +3,11 @@ import { NextResponse } from "next/server";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
 import { logSupportEvent } from "@/lib/support-log";
-import { getMerchantLeads, resetLeadPrize } from "@/lib/store";
+import {
+  getMerchantLeads,
+  invalidateMerchantCampaignOverview,
+  resetLeadPrize,
+} from "@/lib/store";
 
 export async function POST(
   request: Request,
@@ -21,6 +25,7 @@ export async function POST(
     }
 
     const updatedLead = await resetLeadPrize(id);
+    invalidateMerchantCampaignOverview(session.merchant.id);
     logSupportEvent("info", "prize-reset-from-merchant", {
       merchantId: session.merchant.id,
       leadId: id,

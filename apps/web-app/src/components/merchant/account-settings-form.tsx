@@ -24,7 +24,7 @@ type AccountSettingsFormProps = {
 };
 
 const inputClass =
-  "w-full rounded-[12px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-4 outline-none";
+  "w-full rounded-[12px] border border-[#cfcfcf] bg-white px-4 py-4 text-graphite outline-none transition focus:border-signal-blue focus:shadow-[0_0_0_3px_rgba(0,153,255,0.16)]";
 
 export function AccountSettingsForm({
   merchant,
@@ -47,8 +47,8 @@ export function AccountSettingsForm({
     tiktokUrl: merchant.tiktokUrl ?? "",
     tripadvisorUrl: merchant.tripadvisorUrl ?? "",
     customLinkUrl: merchant.customLinkUrl ?? "",
-    defaultPrizeCost: merchant.defaultPrizeCost ?? 3,
     timeZone: merchant.timeZone ?? "Europe/Paris",
+    defaultPrizeCost: merchant.defaultPrizeCost ?? 3,
     firstName: user.firstName,
     lastName: user.lastName,
     email: user.email,
@@ -96,10 +96,10 @@ export function AccountSettingsForm({
   return (
     <form className="space-y-6" onSubmit={handleSubmit}>
       <section className="okado-card p-6 md:p-8">
-        <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Utilisateur</p>
+        <p className="okado-label">Utilisateur</p>
         <div className="mt-6 grid gap-4 md:grid-cols-2">
           <label className="text-sm">
-            <span className="mb-2 block text-[#616b7c]">Prénom</span>
+            <span className="mb-2 block text-ash">Prénom</span>
             <input
               value={form.firstName}
               onChange={(event) => updateField("firstName", event.target.value)}
@@ -108,7 +108,7 @@ export function AccountSettingsForm({
             />
           </label>
           <label className="text-sm">
-            <span className="mb-2 block text-[#616b7c]">Nom</span>
+            <span className="mb-2 block text-ash">Nom</span>
             <input
               value={form.lastName}
               onChange={(event) => updateField("lastName", event.target.value)}
@@ -117,7 +117,7 @@ export function AccountSettingsForm({
             />
           </label>
           <label className="text-sm md:col-span-2">
-            <span className="mb-2 block text-[#616b7c]">E-mail de connexion</span>
+            <span className="mb-2 block text-ash">E-mail de connexion</span>
             <input
               type="email"
               value={form.email}
@@ -130,12 +130,12 @@ export function AccountSettingsForm({
       </section>
 
       <section className="okado-card p-6 md:p-8">
-        <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">
+        <p className="okado-label">
           {isRestaurant ? "Restaurant" : "Commerce"}
         </p>
         <div className="mt-6 grid gap-4 md:grid-cols-2">
           <label className="text-sm">
-            <span className="mb-2 block text-[#616b7c]">Nom du commerce</span>
+            <span className="mb-2 block text-ash">Nom du commerce</span>
             <input
               value={form.companyName}
               onChange={(event) => updateField("companyName", event.target.value)}
@@ -144,7 +144,7 @@ export function AccountSettingsForm({
             />
           </label>
           <label className="text-sm">
-            <span className="mb-2 block text-[#616b7c]">Secteur d&apos;activité</span>
+            <span className="mb-2 block text-ash">Secteur d&apos;activité</span>
             <select
               value={form.industry}
               onChange={(event) => updateField("industry", event.target.value)}
@@ -159,7 +159,7 @@ export function AccountSettingsForm({
           </label>
           {isRestaurant ? (
             <label className="text-sm">
-              <span className="mb-2 block text-[#616b7c]">Type de restaurant</span>
+              <span className="mb-2 block text-ash">Type de restaurant</span>
               <select
                 value={form.restaurantType}
                 onChange={(event) => updateField("restaurantType", event.target.value)}
@@ -174,7 +174,7 @@ export function AccountSettingsForm({
             </label>
           ) : null}
           <label className="text-sm">
-            <span className="mb-2 block text-[#616b7c]">
+            <span className="mb-2 block text-ash">
               Ville / {isRestaurant ? "restaurant" : "boutique"}
             </span>
             <input
@@ -184,8 +184,22 @@ export function AccountSettingsForm({
               required
             />
           </label>
+          <label className="text-sm">
+            <span className="mb-2 block text-ash">Fuseau horaire du commerce</span>
+            <select
+              value={form.timeZone}
+              onChange={(event) => updateField("timeZone", event.target.value)}
+              className={inputClass}
+            >
+              <option value="Europe/Paris">France métropolitaine</option>
+              <option value="America/Toronto">Canada - Est</option>
+              <option value="America/Winnipeg">Canada - Centre</option>
+              <option value="America/Edmonton">Canada - Rocheuses</option>
+              <option value="America/Vancouver">Canada - Pacifique</option>
+            </select>
+          </label>
           <label className="text-sm md:col-span-2">
-            <span className="mb-2 block text-[#616b7c]">Adresse</span>
+            <span className="mb-2 block text-ash">Adresse</span>
             <input
               value={form.address}
               onChange={(event) => updateField("address", event.target.value)}
@@ -193,7 +207,7 @@ export function AccountSettingsForm({
             />
           </label>
           <label className="text-sm">
-            <span className="mb-2 block text-[#616b7c]">Contact principal</span>
+            <span className="mb-2 block text-ash">Contact principal</span>
             <input
               value={form.contactName}
               onChange={(event) => updateField("contactName", event.target.value)}
@@ -202,7 +216,7 @@ export function AccountSettingsForm({
             />
           </label>
           <label className="text-sm">
-            <span className="mb-2 block text-[#616b7c]">
+            <span className="mb-2 block text-ash">
               Téléphone du {isRestaurant ? "restaurant" : placeLabel}
             </span>
             <input
@@ -212,7 +226,7 @@ export function AccountSettingsForm({
             />
           </label>
           <label className="text-sm">
-            <span className="mb-2 block text-[#616b7c]">
+            <span className="mb-2 block text-ash">
               E-mail du {isRestaurant ? "restaurant" : placeLabel}
             </span>
             <input
@@ -223,7 +237,7 @@ export function AccountSettingsForm({
             />
           </label>
           <label className="text-sm">
-            <span className="mb-2 block text-[#616b7c]">
+            <span className="mb-2 block text-ash">
               Site internet du {isRestaurant ? "restaurant" : placeLabel}
             </span>
             <input
@@ -238,7 +252,7 @@ export function AccountSettingsForm({
       </section>
 
       <section className="okado-card p-6 md:p-8">
-        <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Canaux marketing</p>
+        <p className="okado-label">Canaux marketing</p>
         <div className="mt-6 grid gap-4 md:grid-cols-2">
           <div className="md:col-span-2">
             <GoogleReviewPlacePicker
@@ -250,7 +264,7 @@ export function AccountSettingsForm({
             />
           </div>
           <label className="text-sm">
-            <span className="mb-2 block text-[#616b7c]">Instagram</span>
+            <span className="mb-2 block text-ash">Instagram</span>
             <input
               type="url"
               value={form.instagramUrl}
@@ -260,7 +274,7 @@ export function AccountSettingsForm({
             />
           </label>
           <label className="text-sm">
-            <span className="mb-2 block text-[#616b7c]">Facebook</span>
+            <span className="mb-2 block text-ash">Facebook</span>
             <input
               type="url"
               value={form.facebookUrl}
@@ -270,7 +284,7 @@ export function AccountSettingsForm({
             />
           </label>
           <label className="text-sm">
-            <span className="mb-2 block text-[#616b7c]">TikTok</span>
+            <span className="mb-2 block text-ash">TikTok</span>
             <input
               type="url"
               value={form.tiktokUrl}
@@ -280,7 +294,7 @@ export function AccountSettingsForm({
             />
           </label>
           <label className="text-sm">
-            <span className="mb-2 block text-[#616b7c]">Tripadvisor</span>
+            <span className="mb-2 block text-ash">Tripadvisor</span>
             <input
               type="url"
               value={form.tripadvisorUrl}
@@ -290,7 +304,7 @@ export function AccountSettingsForm({
             />
           </label>
           <label className="text-sm md:col-span-2">
-            <span className="mb-2 block text-[#616b7c]">Lien personnalisé</span>
+            <span className="mb-2 block text-ash">Lien personnalisé</span>
             <input
               type="url"
               value={form.customLinkUrl}
@@ -306,13 +320,13 @@ export function AccountSettingsForm({
         <AffiliateReferralCard summary={affiliateSummary} />
       ) : (
         <section className="okado-card p-6 md:p-8">
-          <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Parrainage</p>
-          <h2 className="mt-3 font-display text-3xl font-semibold text-[#0f1728]">
+          <p className="okado-label">Parrainage</p>
+          <h2 className="mt-3 font-display text-3xl font-semibold text-graphite">
             Programme d&apos;affiliation
           </h2>
-          <p className="mt-4 max-w-2xl text-sm leading-7 text-[#5c6577]">
+          <p className="mt-4 max-w-2xl text-sm leading-7 text-ash">
             Le programme d&apos;affiliation n&apos;est pas encore activé sur votre compte. Contactez{" "}
-            <a className="font-semibold text-[#2450c8]" href="mailto:contact@okado.app">
+            <a className="okado-link" href="mailto:contact@okado.app">
               contact@okado.app
             </a>{" "}
             pour rejoindre le programme d&apos;affiliation.
@@ -335,7 +349,7 @@ export function AccountSettingsForm({
         <button
           type="submit"
           disabled={isSaving}
-          className="inline-flex items-center justify-center rounded-[12px] bg-[#2f6df6] px-6 py-4 text-sm font-semibold !text-white shadow-[0_16px_32px_rgba(47,109,246,0.24)] disabled:opacity-60"
+          className="okado-filled-action px-6 py-4 disabled:opacity-60"
         >
           {isSaving ? "Enregistrement..." : "Enregistrer les modifications"}
         </button>

@@ -97,36 +97,36 @@ export function BackgroundLibraryManager({
   return (
     <div className="space-y-6">
       <section className="px-1 py-2">
-        <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Bibliothèque</p>
-        <h1 className="mt-2 text-3xl font-semibold text-[#111827]">
+        <p className="okado-label">Bibliothèque</p>
+        <h1 className="okado-page-title mt-3">
           Gérer les images de fond
         </h1>
-        <p className="mt-3 max-w-3xl text-sm leading-7 text-[#5c6577]">
+        <p className="mt-4 max-w-3xl text-sm leading-7 text-ash">
           Chaque image ajoutée est automatiquement réduite et convertie en WebP pour la page de
           jeu.
         </p>
 
         <form
           onSubmit={submitAsset}
-          className="mt-6 grid gap-4 rounded-[8px] border border-[#e4ebf5] bg-[#f8fafc] p-4 xl:grid-cols-[0.95fr_1.05fr]"
+          className="okado-card mt-6 grid gap-4 p-4 xl:grid-cols-[0.95fr_1.05fr]"
         >
           <div className="grid gap-4">
             <label className="text-sm">
-              <span className="mb-2 block text-[#616b7c]">Nom</span>
+              <span className="mb-2 block text-ash">Nom</span>
               <input
                 value={label}
                 onChange={(event) => setLabel(event.target.value)}
-                className="w-full rounded-[12px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
+                className="w-full rounded-[12px] border border-[#cfcfcf] bg-white px-4 py-3 outline-none"
                 placeholder="Sunset Cocktail"
                 required
               />
             </label>
             <label className="text-sm">
-              <span className="mb-2 block text-[#616b7c]">Catégorie</span>
+              <span className="mb-2 block text-ash">Catégorie</span>
               <input
                 value={category}
                 onChange={(event) => setCategory(event.target.value)}
-                className="w-full rounded-[12px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
+                className="w-full rounded-[12px] border border-[#cfcfcf] bg-white px-4 py-3 outline-none"
                 placeholder="Food"
                 required
               />
@@ -135,7 +135,7 @@ export function BackgroundLibraryManager({
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full rounded-[12px] bg-[#111827] px-5 py-3 text-sm font-semibold text-white disabled:opacity-60"
+                className="okado-primary-action w-full px-5 py-3 disabled:opacity-60"
               >
                 {isSubmitting ? "Optimisation..." : "Ajouter à la bibliothèque"}
               </button>
@@ -143,10 +143,10 @@ export function BackgroundLibraryManager({
           </div>
 
           <div className="grid gap-4">
-            <label className="group relative flex min-h-[232px] cursor-pointer flex-col justify-between overflow-hidden rounded-[8px] border border-dashed border-[#cfd9ea] bg-white p-4 transition hover:border-[#2f6df6] hover:bg-[#eef4ff]">
+            <label className="group relative flex min-h-[232px] cursor-pointer flex-col justify-between overflow-hidden rounded-[8px] border border-dashed border-[#cfd9ea] bg-white p-4 transition hover:border-signal-blue hover:bg-sky-wash">
               <div>
-                <span className="mb-2 block text-sm text-[#616b7c]">Image</span>
-                <p className="max-w-md text-sm leading-6 text-[#516073]">
+                <span className="mb-2 block text-sm text-ash">Image</span>
+                <p className="max-w-md text-sm leading-6 text-slate">
                   Ajoutez un fond vertical. Il sera optimisé automatiquement pour l’éditeur et la
                   page de jeu.
                 </p>
@@ -158,16 +158,16 @@ export function BackgroundLibraryManager({
                   style={{ backgroundImage: `url("${localPreviewUrl}")` }}
                 />
               ) : (
-                <div className="mt-4 flex min-h-[140px] items-center justify-center rounded-[8px] border border-dashed border-[#dbe4f0] bg-[#f8fafc] text-sm font-medium text-[#748095]">
+                <div className="mt-4 flex min-h-[140px] items-center justify-center rounded-[8px] border border-dashed border-border bg-sky-wash text-sm font-medium text-ash">
                   Aperçu du visuel importé
                 </div>
               )}
 
               <div className="mt-4 flex items-center justify-between gap-3">
-                <span className="inline-flex rounded-full bg-[#eef4ff] px-3 py-2 text-xs font-semibold text-[#214ccf] shadow-sm">
+                <span className="okado-status-badge okado-status-muted">
                   {file ? file.name : "Aucun fichier"}
                 </span>
-                <span className="rounded-[16px] bg-[#2f6df6] px-4 py-2 text-xs font-semibold text-white shadow-[0_10px_18px_rgba(47,109,246,0.2)]">
+                <span className="okado-filled-action px-4 py-2 text-xs">
                   Choisir un fichier
                 </span>
               </div>
@@ -188,7 +188,7 @@ export function BackgroundLibraryManager({
         </form>
 
         {message ? (
-          <div className="mt-4 rounded-[8px] border border-[#dbe4f0] bg-[#f7f9fc] px-4 py-3 text-sm font-medium text-[#182033]">
+          <div className="mt-4 rounded-[8px] border border-border bg-sky-wash px-4 py-3 text-sm font-medium text-graphite">
             {message}
           </div>
         ) : null}
@@ -197,8 +197,8 @@ export function BackgroundLibraryManager({
       <section className="okado-card p-6">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Catalogue</p>
-            <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
+            <p className="okado-label">Catalogue</p>
+            <h2 className="okado-section-title mt-2">
               {items.length} visuels disponibles
             </h2>
           </div>
@@ -208,7 +208,7 @@ export function BackgroundLibraryManager({
           {items.map((item) => (
             <article
               key={item.id}
-              className="overflow-hidden rounded-[8px] border border-[#e3e9f3] bg-[#f8fafc]"
+              className="okado-compact-card overflow-hidden"
             >
               <div className="relative aspect-[4/5] overflow-hidden bg-[#e8eef8]">
                 <Image
@@ -222,10 +222,10 @@ export function BackgroundLibraryManager({
               <div className="space-y-3 p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <h3 className="text-lg font-semibold text-[#111827]">{item.label}</h3>
-                    <p className="text-sm text-[#64748b]">{item.category}</p>
+                    <h3 className="text-lg font-semibold text-graphite">{item.label}</h3>
+                    <p className="text-sm text-ash">{item.category}</p>
                   </div>
-                  <span className="rounded-full bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#64748b]">
+                  <span className="okado-status-badge okado-status-muted">
                     {item.source === "built-in" ? "Base" : "Upload"}
                   </span>
                 </div>
@@ -235,7 +235,7 @@ export function BackgroundLibraryManager({
                     href={item.imageUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="rounded-[16px] border border-[#2f6df6] bg-white px-4 py-2 text-sm font-semibold text-[#2f6df6]"
+                    className="okado-primary-action px-4 py-2"
                   >
                     Ouvrir
                   </a>
@@ -243,7 +243,7 @@ export function BackgroundLibraryManager({
                     <button
                       type="button"
                       onClick={() => removeAsset(item)}
-                      className="rounded-[16px] border border-[#111827] bg-[#111827] px-4 py-2 text-sm font-semibold text-white"
+                      className="rounded-[12px] border border-[#b42318] bg-white px-4 py-2 text-sm font-semibold text-[#b42318] transition hover:bg-[#fff7f7]"
                     >
                       Supprimer
                     </button>

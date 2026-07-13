@@ -194,11 +194,20 @@ async function cleanupSmokeCampaign() {
     console.log(`✓ Nettoyage campagne smoke: ${createdCampaignId}`);
     createdCampaignId = null;
   } catch (error) {
-    console.warn(
-      `Nettoyage campagne smoke impossible (${createdCampaignId}): ${
-        error instanceof Error ? error.message : error
-      }`,
-    );
+    try {
+      await request(`/api/campaigns/${createdCampaignId}`, {
+        method: "PATCH",
+        body: JSON.stringify({ isActive: false }),
+      });
+      console.log(`✓ Campagne smoke archivée: ${createdCampaignId}`);
+      createdCampaignId = null;
+    } catch (archiveError) {
+      console.warn(
+        `Nettoyage campagne smoke impossible (${createdCampaignId}): ${
+          archiveError instanceof Error ? archiveError.message : error
+        }`,
+      );
+    }
   }
 }
 
@@ -234,6 +243,23 @@ async function main() {
   await request(`/campaign/${campaignId}`, { headers: { Accept: "text/html" } });
   await request(`/api/public/campaign/${campaignId}`);
   console.log("✓ Publication page de jeu");
+
+  await request(`/api/campaigns/${campaignId}`, {
+    method: "PATCH",
+    body: JSON.stringify({ isActive: false }),
+  });
+  let pausedCampaignBlocked = false;
+  try {
+    await request(`/api/public/campaign/${campaignId}`);
+  } catch {
+    pausedCampaignBlocked = true;
+  }
+  assert(pausedCampaignBlocked, "Une animation en pause reste accessible publiquement.");
+  await request(`/api/campaigns/${campaignId}`, {
+    method: "PATCH",
+    body: JSON.stringify({ isActive: true }),
+  });
+  console.log("✓ Pause publique et réactivation contrôlées");
 
   const drawSession = await request("/api/public/draw/session", {
     method: "POST",

@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 import { getPublicCampaign, recordEvent } from "@/lib/store";
 
@@ -8,12 +8,13 @@ type RouteProps = {
   }>;
 };
 
-export async function GET(_: Request, { params }: RouteProps) {
+export async function GET(request: NextRequest, { params }: RouteProps) {
   const { id } = await params;
   let campaign = null;
 
   try {
-    campaign = await getPublicCampaign(id);
+    const participantCookie = `okado_player_${encodeURIComponent(id).slice(0, 80)}`;
+    campaign = await getPublicCampaign(id, request.cookies.get(participantCookie)?.value);
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Campagne indisponible" },
@@ -25,7 +26,21 @@ export async function GET(_: Request, { params }: RouteProps) {
     return NextResponse.json({ error: "Campaign not found" }, { status: 404 });
   }
 
-  await recordEvent(id, "scan");
+  const scanCookie = `okado_scan_${encodeURIComponent(id).slice(0, 80)}`;
+  const alreadyCounted = request.cookies.get(scanCookie)?.value === "1";
+  if (!alreadyCounted) {
+    await recordEvent(id, "scan");
+  }
 
-  return NextResponse.json({ campaign });
+  const response = NextResponse.json({ campaign });
+  if (!alreadyCounted) {
+    response.cookies.set(scanCookie, "1", {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: 6 * 60 * 60,
+    });
+  }
+  return response;
 }

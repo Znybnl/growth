@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { createAffiliateReferralForMerchant } from "@/lib/affiliate-repository";
+import { notifyAdministratorsOfMerchantSignup } from "@/lib/admin-notifications";
 import { syncMerchantContactToBrevo } from "@/lib/brevo";
 import { authenticateOrProvisionMerchantWithGoogle } from "@/lib/merchant-account-repository";
 import { getPublicErrorStatus } from "@/lib/public-api";
@@ -84,6 +85,14 @@ export async function POST(request: Request) {
       user: session.user,
       source: "google",
     });
+    if (session.isNew) {
+      await notifyAdministratorsOfMerchantSignup({
+        merchant: session.merchant,
+        user: session.user,
+        origin: new URL(request.url).origin,
+        provider: "google",
+      }).catch(() => undefined);
+    }
 
     const response = NextResponse.json({
       merchant: session.merchant,

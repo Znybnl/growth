@@ -50,7 +50,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
             <p className="okado-label">
               Compte & facturation
             </p>
-            <h1 className="mt-3 font-display text-5xl font-semibold leading-none text-midnight-ink">
+            <h1 className="okado-page-title mt-3">
               Votre espace marchand
             </h1>
             <p className="mt-4 max-w-3xl text-sm leading-7 text-ash">

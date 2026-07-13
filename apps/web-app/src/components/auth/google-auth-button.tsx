@@ -68,7 +68,7 @@ export function GoogleAuthButton({
         type="button"
         onClick={handleClick}
         disabled={isLoading}
-        className="flex h-14 w-full items-center justify-center gap-3 rounded-xl border border-[#e3e8f1] bg-white text-base font-medium text-[#111827] transition hover:border-[#d2dbeb] hover:bg-[#f8fbff] disabled:cursor-not-allowed disabled:opacity-60"
+        className="flex h-14 w-full items-center justify-center gap-3 rounded-[12px] border border-[#cfcfcf] bg-white text-base font-medium text-graphite transition hover:border-primary-action-accent hover:bg-sky-wash disabled:cursor-not-allowed disabled:opacity-60"
       >
         <span className="text-lg text-[#34a853]">G</span>
         <span>
@@ -81,7 +81,7 @@ export function GoogleAuthButton({
       </button>
 
       {error ? (
-        <div className="rounded-xl border border-[#f6c4bb] bg-[#fff1ee] px-4 py-3 text-sm text-[#8b2c18]">
+        <div className="rounded-[8px] border border-coral-alert/30 bg-coral-alert/10 px-4 py-3 text-sm text-coral-alert">
           {error}
         </div>
       ) : null}

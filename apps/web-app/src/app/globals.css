@@ -145,9 +145,7 @@ html {
 body {
   min-height: 100%;
   margin: 0;
-  background:
-    var(--gradient-page-wash),
-    var(--background);
+  background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
   font-size: 14px;
@@ -178,6 +176,13 @@ select {
   box-shadow: var(--shadow-product-card);
 }
 
+.okado-compact-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
+  box-shadow: var(--shadow-product-card);
+}
+
 .okado-feature-card {
   border: 1px solid rgba(207, 207, 207, 0.45);
   border-radius: 40px;
@@ -191,6 +196,150 @@ select {
   letter-spacing: 0.13px;
   text-transform: uppercase;
   color: var(--color-fog);
+}
+
+.okado-page-title {
+  color: var(--color-midnight-ink);
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  line-height: 1.05;
+}
+
+.okado-section-title {
+  color: var(--color-graphite);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.22px;
+  line-height: 1.25;
+}
+
+.okado-muted {
+  color: var(--color-ash);
+}
+
+.okado-link {
+  color: var(--color-signal-blue);
+  font-weight: 600;
+}
+
+.okado-primary-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-primary-action-accent);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--color-primary-action-accent) !important;
+  font-size: 14px;
+  font-weight: 500;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+.okado-primary-action:hover {
+  background: var(--color-sky-wash);
+  color: var(--color-primary-action-accent) !important;
+}
+
+.okado-filled-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: var(--gradient-hero-blue-fade);
+  color: #ffffff !important;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow:
+    rgba(20, 90, 255, 0.1) 0px 0px 50px -28px,
+    rgba(0, 0, 0, 0.18) 0px 0px 3px -1px;
+}
+
+.okado-secondary-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #ffffff;
+  color: var(--color-primary-action-accent);
+  font-size: 14px;
+  font-weight: 500;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease;
+}
+
+.okado-secondary-action:hover {
+  border-color: #cfcfcf;
+  background: var(--color-sky-wash);
+}
+
+.okado-status-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.okado-status-active {
+  background: rgba(22, 202, 46, 0.1);
+  color: var(--color-emerald-status);
+}
+
+.okado-status-warning {
+  background: rgba(255, 166, 77, 0.14);
+  color: #b86200;
+}
+
+.okado-status-muted {
+  background: var(--color-sky-wash);
+  color: var(--color-steel);
+}
+
+.okado-status-danger {
+  background: rgba(242, 96, 82, 0.12);
+  color: var(--color-coral-alert);
+}
+
+.okado-table-header {
+  border-radius: 8px;
+  background: var(--color-sky-wash);
+  color: var(--color-ash);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.13px;
+  text-transform: uppercase;
+}
+
+.okado-card :where(input:not([type="color"]), textarea, select),
+.okado-compact-card :where(input:not([type="color"]), textarea, select) {
+  border-color: #cfcfcf;
+  border-radius: 12px !important;
+  background: #ffffff;
+  color: var(--color-graphite);
+}
+
+.okado-card :where(input:not([type="color"]), textarea, select):focus,
+.okado-compact-card :where(input:not([type="color"]), textarea, select):focus {
+  border-color: var(--color-signal-blue);
+  box-shadow: 0 0 0 3px rgba(0, 153, 255, 0.16);
+}
+
+.okado-card :where(label.group, .okado-upload-zone) {
+  border-radius: 8px !important;
+}
+
+.okado-card :where(.okado-choice, .okado-form-panel) {
+  border-radius: 8px !important;
 }
 
 .grain {

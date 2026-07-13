@@ -65,7 +65,7 @@ export function DeleteCampaignButton({
         "inline-flex w-full cursor-pointer items-center text-left text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60",
         isMenu
           ? "min-h-9 gap-2 rounded-[8px] border border-transparent bg-transparent px-2.5 py-2 text-[#b42318] hover:bg-[#fff7f7]"
-          : "gap-3 rounded-[16px] border border-[#f0d8d8] bg-white px-4 py-3 text-[#b42318] hover:border-[#e7b4b4] hover:bg-[#fff7f7]",
+          : "gap-3 rounded-[12px] border border-[#f0d8d8] bg-white px-4 py-3 text-[#b42318] hover:border-[#e7b4b4] hover:bg-[#fff7f7]",
         className,
       )}
     >

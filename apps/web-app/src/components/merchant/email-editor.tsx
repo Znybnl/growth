@@ -101,14 +101,14 @@ export function EmailEditor({ campaign, merchant }: EmailEditorProps) {
   return (
     <div className="grid min-h-[calc(100vh-120px)] gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(420px,0.78fr)]">
       <div className="space-y-6">
-        <section className="rounded-[8px] border border-[#dbe4f0] bg-white p-6 shadow-[0_16px_42px_rgba(122,136,166,0.1)]">
+        <section className="okado-card p-6">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div>
-              <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Atelier email</p>
-              <h1 className="mt-3 text-4xl font-semibold text-[#111827]">
+              <p className="okado-label">Atelier email</p>
+              <h1 className="okado-page-title mt-3">
                 Personnaliser l&apos;email de gain
               </h1>
-              <p className="mt-3 max-w-3xl text-sm leading-7 text-[#5c6577]">
+              <p className="mt-3 max-w-3xl text-sm leading-7 text-ash">
                 Cet écran pilote le message envoyé automatiquement au gagnant avec son QR code,
                 son code de retrait et le lien de validation.
               </p>
@@ -117,7 +117,7 @@ export function EmailEditor({ campaign, merchant }: EmailEditorProps) {
               <Link
                 href={`/campaigns/${campaign.id}/edit`}
                 prefetch={false}
-                className="rounded-[8px] border border-[#d7e0ed] px-4 py-3 text-sm font-semibold text-[#182033]"
+                className="okado-primary-action px-4 py-3"
               >
                 Revenir à la campagne
               </Link>
@@ -125,22 +125,22 @@ export function EmailEditor({ campaign, merchant }: EmailEditorProps) {
                 type="button"
                 onClick={saveEmailSettings}
                 disabled={isSaving}
-                className="rounded-[8px] bg-[#111827] px-5 py-3 text-sm font-semibold text-white disabled:opacity-60"
+                className="okado-filled-action px-5 py-3 disabled:opacity-60"
               >
                 {isSaving ? "Enregistrement..." : "Enregistrer"}
               </button>
             </div>
           </div>
           {message ? (
-            <div className="mt-5 rounded-[8px] border border-[#dbe4f0] bg-[#f7f9fc] px-4 py-3 text-sm font-semibold text-[#182033]">
+            <div className="mt-5 rounded-[8px] border border-border bg-linen-canvas px-4 py-3 text-sm font-semibold text-graphite">
               {message}
             </div>
           ) : null}
         </section>
 
-        <section className="rounded-[8px] border border-[#dbe4f0] bg-white p-6 shadow-[0_16px_42px_rgba(122,136,166,0.1)]">
-          <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Expédition</p>
-          <h2 className="mt-2 text-2xl font-semibold text-[#111827]">Objet, expéditeur et reply-to</h2>
+        <section className="okado-card p-6">
+          <p className="okado-label">Expédition</p>
+          <h2 className="okado-section-title mt-2">Objet, expéditeur et reply-to</h2>
 
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             <label className="text-sm">
@@ -183,9 +183,9 @@ export function EmailEditor({ campaign, merchant }: EmailEditorProps) {
           </div>
         </section>
 
-        <section className="rounded-[8px] border border-[#dbe4f0] bg-white p-6 shadow-[0_16px_42px_rgba(122,136,166,0.1)]">
-          <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Contenu</p>
-          <h2 className="mt-2 text-2xl font-semibold text-[#111827]">Message envoyé au client</h2>
+        <section className="okado-card p-6">
+          <p className="okado-label">Contenu</p>
+          <h2 className="okado-section-title mt-2">Message envoyé au client</h2>
 
           <div className="mt-4 rounded-[8px] border border-[#e1e8f1] bg-[#f7f9fc] px-4 py-4 text-sm leading-7 text-[#516073]">
             Variables disponibles :

@@ -2,7 +2,7 @@
 
 import { Star } from "lucide-react";
 
-import { APP_NAME, APP_TAGLINE } from "@/lib/branding";
+import { APP_NAME_CAPITALIZED, APP_TAGLINE } from "@/lib/branding";
 
 type AuthShellProps = {
   eyebrow: string;
@@ -24,26 +24,28 @@ export function AuthShell({
   children,
 }: AuthShellProps) {
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[#f3f6fb]">
-      <div className="grid min-h-screen xl:grid-cols-[minmax(0,1.05fr)_minmax(420px,0.95fr)]">
-        <section className="flex min-h-screen justify-center overflow-y-auto bg-white px-4 py-8 sm:px-6 lg:px-10 xl:px-12 xl:py-10">
+    <div className="min-h-screen overflow-x-hidden bg-linen-canvas">
+      <div className="grid min-h-screen lg:grid-cols-[minmax(0,1.05fr)_minmax(420px,0.95fr)]">
+        <section className="flex min-h-screen justify-center overflow-y-auto bg-linen-canvas px-4 py-8 sm:px-6 lg:px-10 xl:px-12 xl:py-10">
           <div className="flex w-full max-w-[760px] flex-col justify-center">
             <div className="mb-8 flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#1f5fd6] text-sm font-semibold uppercase tracking-[0.2em] text-white shadow-[0_10px_24px_rgba(31,95,214,0.22)]">
+              <div className="flex h-11 w-11 items-center justify-center rounded-[12px] bg-[var(--gradient-hero-blue-fade)] text-sm font-semibold uppercase tracking-[0.2em] text-white shadow-sm">
                 <Star className="h-5 w-5 fill-white text-white" aria-hidden="true" />
               </div>
               <div>
-                <p className="text-xl font-semibold tracking-tight text-[#1f5fd6]">{APP_NAME}</p>
-                <p className="text-sm text-[#7b8496]">{APP_TAGLINE}</p>
+                <p className="text-2xl font-semibold tracking-[-0.04em] text-signal-blue">
+                  {APP_NAME_CAPITALIZED}
+                </p>
+                <p className="text-sm text-ash">{APP_TAGLINE}</p>
               </div>
             </div>
-            <div className="rounded-[32px] border border-[#e6ecf5] bg-white p-0 sm:p-1">
+            <div className="okado-card p-0 sm:p-1">
               {children}
             </div>
           </div>
         </section>
 
-        <section className="relative hidden min-h-screen overflow-hidden bg-[linear-gradient(180deg,#1f5fd6_0%,#1a58ca_100%)] xl:flex xl:flex-col xl:items-center xl:justify-center">
+        <section className="relative hidden min-h-screen overflow-hidden bg-[var(--gradient-hero-blue-fade)] lg:flex lg:flex-col lg:items-center lg:justify-center">
           <div className="absolute inset-0">
             <div className="absolute left-1/2 top-[18%] h-[460px] w-[460px] -translate-x-1/2 rounded-full bg-[#2c7be7]" />
             <div className="absolute left-1/2 top-[26%] h-[320px] w-[320px] -translate-x-1/2 rounded-full border border-white/10" />
@@ -52,7 +54,7 @@ export function AuthShell({
           <div className="relative flex w-full max-w-[620px] flex-1 items-center justify-center px-14">
             <div className="relative h-[390px] w-full max-w-[420px]">
               <div className="absolute left-[4%] top-[20%] flex h-20 w-20 items-center justify-center rounded-full border border-white/16 bg-white shadow-[0_16px_35px_rgba(6,31,86,0.18)]">
-                <span className="text-3xl text-[#2f6df6]">O</span>
+                <span className="text-3xl text-signal-blue">O</span>
               </div>
               <div className="absolute left-[10%] top-[54%] flex h-20 w-20 items-center justify-center rounded-full border border-white/16 bg-white shadow-[0_16px_35px_rgba(6,31,86,0.18)]">
                 <span className="text-3xl text-[#34a853]">K</span>
@@ -61,7 +63,7 @@ export function AuthShell({
                 <span className="text-3xl text-[#f6c04b]">O</span>
               </div>
               <div className="absolute left-[23%] top-[38%] h-4 w-[138px] rounded-full bg-white/16" />
-              <div className="absolute left-[46%] top-[10%] w-[54%] rounded-[26px] bg-white p-5 shadow-[0_30px_55px_rgba(8,30,84,0.18)]">
+              <div className="absolute left-[46%] top-[10%] w-[54%] rounded-[16px] bg-white p-5 shadow-product-card">
                 <div className="flex items-center gap-2">
                   <span className="h-2.5 w-2.5 rounded-full bg-[#ff6b6b]" />
                   <span className="h-2.5 w-2.5 rounded-full bg-[#ffd166]" />
@@ -71,7 +73,7 @@ export function AuthShell({
                   {[0, 1, 2].map((item) => (
                     <div
                       key={item}
-                      className="flex items-center gap-3 rounded-[18px] border border-[#eef3fb] bg-[#fbfdff] px-3 py-3"
+                      className="flex items-center gap-3 rounded-[8px] border border-border bg-linen-canvas px-3 py-3"
                     >
                       <div className="h-10 w-10 rounded-full bg-[#e5ecfa]" />
                       <div className="flex-1">
@@ -86,7 +88,7 @@ export function AuthShell({
           </div>
 
           <div className="relative w-full max-w-[620px] px-14 pb-16 text-center text-white">
-            <p className="text-[30px] font-semibold leading-tight">{asideTitle}</p>
+            <p className="text-[30px] font-semibold leading-tight tracking-[-0.03em]">{asideTitle}</p>
             <p className="mt-4 text-base text-white/72">{asideBody}</p>
             <div className="mt-8 flex items-center justify-center gap-3">
               {[0, 1, 2].map((dot) => (

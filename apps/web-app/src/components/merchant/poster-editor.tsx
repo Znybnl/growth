@@ -91,6 +91,10 @@ function getPosterTemplate(templateId?: PosterTemplateId) {
   return posterTemplates.find((template) => template.id === templateId) ?? posterTemplates[0];
 }
 
+function isTemplateDefaultWinColor(color: string | undefined) {
+  return posterTemplates.some((template) => template.wheel.winColor === color);
+}
+
 function applyTemplateDefaults(
   poster: CampaignPosterSettings,
   template = getPosterTemplate(poster.templateId),
@@ -154,8 +158,9 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
       const storedHeadlineTextColor = campaign.presentation.poster.headlineTextColor;
       const hasCustomWinColor =
         Boolean(storedWinColor) &&
-        storedWinColor !== template.wheel.winColor &&
-        storedWinColor !== campaignPrimaryColor;
+        !isTemplateDefaultWinColor(storedWinColor) &&
+        storedWinColor !== campaignPrimaryColor &&
+        storedWinColor !== campaignGainColor;
       const hasCustomHeadlineTextColor =
         Boolean(storedHeadlineTextColor) &&
         storedHeadlineTextColor !== template.headlineTextColor &&
@@ -347,15 +352,15 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
       <header className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <p className="okado-label">Atelier affiche</p>
-          <h1 className="mt-3 font-display text-4xl font-semibold text-[#111827] md:text-5xl">
+          <h1 className="okado-page-title mt-3">
             Personnaliser l&apos;affiche A4
           </h1>
-          <p className="mt-3 max-w-3xl text-sm leading-7 text-[#5c6577]">
+          <p className="mt-3 max-w-3xl text-sm leading-7 text-ash">
             Cet écran ne modifie que l&apos;affiche imprimable. La page de jeu reste
             paramétrée dans l&apos;éditeur de campagne.
           </p>
           {message ? (
-            <div className="mt-5 rounded-[var(--radius-card)] border border-[#dbe4f0] bg-white px-4 py-3 text-sm font-semibold text-[#182033] shadow-[0_10px_28px_rgba(122,136,166,0.10)]">
+            <div className="mt-5 rounded-[8px] border border-border bg-white px-4 py-3 text-sm font-semibold text-graphite shadow-product-card">
               {message}
             </div>
           ) : null}
@@ -364,7 +369,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
           <Link
             href={`/campaigns/${campaign.id}/edit`}
             prefetch={false}
-            className="rounded-[var(--radius-card)] border border-[#d7e0ed] bg-white px-4 py-3 text-sm font-semibold text-[#182033] transition hover:border-[#111827]"
+            className="okado-primary-action px-4 py-3"
           >
             Revenir à la campagne
           </Link>
@@ -372,7 +377,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
             type="button"
             onClick={savePoster}
             disabled={isSaving}
-            className="rounded-[var(--radius-card)] bg-[#111827] px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_28px_rgba(17,24,39,0.2)] transition hover:-translate-y-0.5 disabled:opacity-60"
+            className="okado-filled-action px-5 py-3 disabled:opacity-60"
           >
             {isSaving ? "Enregistrement..." : "Enregistrer"}
           </button>

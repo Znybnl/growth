@@ -2,7 +2,11 @@ import { NextResponse } from "next/server";
 
 import { requireAuthenticatedSession } from "@/lib/auth";
 import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
-import { getMerchantDashboard, resetPrizeStock } from "@/lib/store";
+import {
+  getMerchantDashboard,
+  invalidateMerchantCampaignOverview,
+  resetPrizeStock,
+} from "@/lib/store";
 
 export async function POST(
   request: Request,
@@ -22,6 +26,7 @@ export async function POST(
     }
 
     const prize = await resetPrizeStock(id);
+    invalidateMerchantCampaignOverview(session.merchant.id);
     return NextResponse.json({ prize });
   } catch (error) {
     return NextResponse.json(

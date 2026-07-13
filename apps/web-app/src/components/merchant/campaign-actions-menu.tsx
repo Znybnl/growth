@@ -1,7 +1,9 @@
 "use client";
 
 import {
+  BarChart3,
   Download,
+  Eye,
   ImageIcon,
   Mail,
   MoreVertical,
@@ -25,7 +27,7 @@ type CampaignActionsMenuProps = {
 };
 
 const itemClass =
-  "min-h-9 cursor-pointer gap-2 rounded-[8px] px-2.5 py-2 text-sm font-medium text-[#182033] focus:bg-linen-canvas";
+  "min-h-9 cursor-pointer gap-2 rounded-[8px] px-2.5 py-2 text-sm font-medium text-graphite focus:bg-sky-wash";
 
 export function CampaignActionsMenu({
   campaignId,
@@ -38,7 +40,7 @@ export function CampaignActionsMenu({
           type="button"
           variant="outline"
           size="icon"
-          className="h-9 w-9 rounded-[8px] border-border bg-white text-[#182033] hover:bg-linen-canvas"
+          className="h-9 w-9 rounded-[8px] border-border bg-white text-graphite hover:bg-sky-wash"
           aria-label="Ouvrir les actions de la campagne"
         >
           <MoreVertical className="h-4 w-4" />
@@ -47,8 +49,21 @@ export function CampaignActionsMenu({
       <DropdownMenuContent
         align="end"
         sideOffset={8}
-        className="w-[min(264px,calc(100vw-24px))] rounded-[8px] border-border bg-white p-1.5 shadow-[0_18px_40px_rgba(122,136,166,0.14)]"
+        className="w-[min(264px,calc(100vw-24px))] rounded-[8px] border-border bg-white p-1.5 shadow-product-card"
       >
+        <DropdownMenuItem className={itemClass} asChild>
+          <a href={`/campaign/${campaignId}`} target="_blank" rel="noreferrer">
+            <Eye className="h-4 w-4" />
+            Prévisualiser
+          </a>
+        </DropdownMenuItem>
+        <DropdownMenuItem className={itemClass} asChild>
+          <a href={`/data?campaign=${campaignId}`}>
+            <BarChart3 className="h-4 w-4" />
+            Données
+          </a>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
         <DropdownMenuItem className={itemClass} asChild>
           <a href={`/api/campaigns/${campaignId}/qr`}>
             <QrCode className="h-4 w-4" />

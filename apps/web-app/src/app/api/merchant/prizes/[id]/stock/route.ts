@@ -2,7 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { requireAuthenticatedSession } from "@/lib/auth";
 import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
-import { getMerchantDashboard, updatePrizeStock } from "@/lib/store";
+import {
+  getMerchantDashboard,
+  invalidateMerchantCampaignOverview,
+  updatePrizeStock,
+} from "@/lib/store";
 
 export async function PATCH(
   request: NextRequest,
@@ -33,6 +37,7 @@ export async function PATCH(
     }
 
     const prize = await updatePrizeStock(id, body.remainingQuantity ?? null);
+    invalidateMerchantCampaignOverview(session.merchant.id);
     return NextResponse.json({ prize });
   } catch (error) {
     return NextResponse.json(

@@ -51,7 +51,7 @@ export function AffiliateCommissionActions({
           type="button"
           disabled={isLoading !== null || currentStatus === action.status}
           onClick={() => void updateStatus(action.status)}
-          className="rounded-full border border-[#dbe4f0] bg-white px-3 py-2 text-xs font-semibold text-[#111827] transition hover:border-[#2f6df6] hover:text-[#2f6df6] disabled:cursor-not-allowed disabled:opacity-45"
+          className="rounded-[12px] border border-border bg-white px-3 py-2 text-xs font-semibold text-graphite transition hover:border-signal-blue hover:text-signal-blue disabled:cursor-not-allowed disabled:opacity-45"
         >
           {isLoading === action.status ? "..." : action.label}
         </button>

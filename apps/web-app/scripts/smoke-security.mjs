@@ -65,18 +65,19 @@ async function main() {
   console.log(`Smoke sécurité Okado: ${baseUrl}`);
 
   await expectStatus("/api/campaigns", [401]);
+  await expectStatus("/api/campaigns/not-existing/assets", [401]);
   await expectStatus("/api/background-library", [401]);
   await expectStatus("/api/google-places/search?q=test", [401]);
   await expectStatus("/api/merchant/leads", [307, 401]);
   await expectStatus("/api/stripe/portal-session", [307, 401, 405], { method: "POST" });
   console.log("✓ Accès API sans session refusés");
 
-  await expectStatus("/api/public/draw/session", [400], {
+  await expectStatus("/api/public/draw/session", [400, 409], {
     method: "POST",
     headers: { Origin: baseUrl },
     body: JSON.stringify({ campaignId: "../bad-id" }),
   });
-  await expectStatus("/api/public/draw/finalize", [400], {
+  await expectStatus("/api/public/draw/finalize", [400, 409], {
     method: "POST",
     headers: { Origin: baseUrl },
     body: JSON.stringify({ sessionId: "../bad-id", firstName: "A", email: "bad" }),

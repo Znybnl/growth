@@ -31,6 +31,9 @@ const steps = [
   },
 ] as const;
 
+const inputClass =
+  "w-full rounded-[12px] border border-[#cfcfcf] bg-white px-4 py-3 text-graphite outline-none transition focus:border-signal-blue focus:shadow-[0_0_0_3px_rgba(0,153,255,1)]";
+
 type OnboardingFlowProps = {
   merchant: Merchant;
 };
@@ -115,16 +118,16 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
 
   return (
     <div className="space-y-6 px-1 py-2 sm:px-5 sm:py-4">
-      <div className="rounded-[36px] border border-[#dbe4f0] bg-white/90 p-6 shadow-[0_28px_60px_rgba(108,126,156,0.16)]">
-        <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Bienvenue</p>
-        <h1 className="mt-3 font-display text-5xl leading-[0.94] text-[#121826]">
+      <div className="okado-card p-6">
+        <p className="okado-label">Bienvenue</p>
+        <h1 className="okado-page-title mt-3">
           Préparez votre espace en 3 étapes
         </h1>
       </div>
 
-      <div className="rounded-[34px] border border-[#dbe4f0] bg-white p-6 shadow-[0_28px_60px_rgba(108,126,156,0.12)]">
-        <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">{activeStep.label}</p>
-        <h2 className="mt-2 text-3xl font-semibold text-[#111827]">{activeStep.title}</h2>
+      <div className="okado-card p-6">
+        <p className="okado-label">{activeStep.label}</p>
+        <h2 className="okado-section-title mt-2">{activeStep.title}</h2>
 
         {activeStep.id === "profil" ? (
           <div className="mt-6 grid gap-4 md:grid-cols-2">
@@ -133,7 +136,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
               <input
                 value={companyName}
                 onChange={(event) => setCompanyName(event.target.value)}
-                className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                className={inputClass}
               />
             </label>
             <label className="text-sm">
@@ -141,7 +144,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
               <select
                 value={industry}
                 onChange={(event) => setIndustry(event.target.value)}
-                className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                className={inputClass}
               >
                 {INDUSTRY_OPTIONS.map((option) => (
                   <option key={option} value={option}>
@@ -157,7 +160,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
               <input
                 value={city}
                 onChange={(event) => setCity(event.target.value)}
-                className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                className={inputClass}
               />
             </label>
             <label className="text-sm">
@@ -165,7 +168,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
               <input
                 value={contactName}
                 onChange={(event) => setContactName(event.target.value)}
-                className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                className={inputClass}
               />
             </label>
           </div>
@@ -180,7 +183,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
               <select
                 value={restaurantType}
                 onChange={(event) => setRestaurantType(event.target.value)}
-                className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                className={inputClass}
               >
                 {RESTAURANT_TYPE_OPTIONS.map((option) => (
                   <option key={option} value={option}>
@@ -194,7 +197,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
               <input
                 value={phone}
                 onChange={(event) => setPhone(event.target.value)}
-                className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                className={inputClass}
               />
             </label>
             <label className="text-sm">
@@ -203,7 +206,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
                 type="email"
                 value={restaurantEmail}
                 onChange={(event) => setRestaurantEmail(event.target.value)}
-                className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                className={inputClass}
               />
             </label>
             <label className="text-sm">
@@ -213,7 +216,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
                 value={websiteUrl}
                 onChange={(event) => setWebsiteUrl(event.target.value)}
                 placeholder="https://..."
-                className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                className={inputClass}
               />
             </label>
             <label className="text-sm md:col-span-2">
@@ -221,7 +224,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
               <input
                 value={address}
                 onChange={(event) => setAddress(event.target.value)}
-                className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                className={inputClass}
               />
             </label>
           </div>
@@ -229,7 +232,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
 
         {activeStep.id === "reseaux" ? (
           <div>
-            <p className="mt-4 text-sm leading-7 text-[#5c6577]">
+            <p className="mt-4 text-sm leading-7 text-ash">
               Ces liens seront repris par défaut dans les actions marketing de vos futures
               campagnes.
             </p>
@@ -249,7 +252,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
                   value={instagramUrl}
                   onChange={(event) => setInstagramUrl(event.target.value)}
                   placeholder="https://instagram.com/..."
-                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                  className={inputClass}
                 />
               </label>
               <label className="text-sm">
@@ -259,7 +262,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
                   value={facebookUrl}
                   onChange={(event) => setFacebookUrl(event.target.value)}
                   placeholder="https://facebook.com/..."
-                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                  className={inputClass}
                 />
               </label>
               <label className="text-sm">
@@ -269,7 +272,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
                   value={tiktokUrl}
                   onChange={(event) => setTiktokUrl(event.target.value)}
                   placeholder="https://tiktok.com/@..."
-                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                  className={inputClass}
                 />
               </label>
               <label className="text-sm md:col-span-2">
@@ -279,7 +282,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
                   value={tripadvisorUrl}
                   onChange={(event) => setTripadvisorUrl(event.target.value)}
                   placeholder="https://tripadvisor.com/..."
-                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                  className={inputClass}
                 />
               </label>
             </div>
@@ -287,7 +290,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
         ) : null}
 
         {error ? (
-          <div className="mt-6 rounded-[20px] border border-[#f6c4bb] bg-[#fff1ee] px-4 py-3 text-sm text-[#8b2c18]">
+          <div className="mt-6 rounded-[8px] border border-coral-alert/30 bg-coral-alert/10 px-4 py-3 text-sm text-coral-alert">
             {error}
           </div>
         ) : null}
@@ -298,13 +301,13 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
               type="button"
               onClick={goBack}
               disabled={activeIndex === 0}
-              className="rounded-[20px] border border-[#d7e0ed] px-5 py-3 text-sm font-semibold text-[#182033] disabled:opacity-40"
+              className="okado-primary-action px-5 py-3 disabled:opacity-40"
             >
               Retour
             </button>
             <Link
               href="/campaigns/new"
-              className="rounded-[20px] border border-[#d7e0ed] px-5 py-3 text-sm font-semibold text-[#182033]"
+              className="okado-primary-action px-5 py-3"
             >
               Passer
             </Link>
@@ -314,7 +317,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
             <button
               type="button"
               onClick={goNext}
-              className="rounded-[20px] bg-[#2f6df6] px-5 py-3 text-sm font-semibold text-white shadow-[0_16px_32px_rgba(47,109,246,0.22)]"
+              className="okado-filled-action px-5 py-3"
             >
               Étape suivante
             </button>
@@ -323,7 +326,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
               type="button"
               onClick={saveOnboarding}
               disabled={isSaving}
-              className="rounded-[20px] bg-[#121826] px-5 py-3 text-sm font-semibold text-white shadow-[0_16px_32px_rgba(18,24,38,0.16)] disabled:opacity-60"
+              className="okado-filled-action px-5 py-3 disabled:opacity-60"
             >
               {isSaving ? "Enregistrement..." : "Terminer"}
             </button>

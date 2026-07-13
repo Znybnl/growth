@@ -31,7 +31,7 @@ export async function POST(request: Request) {
       gameType: savedCampaign.gameType,
       isActive: savedCampaign.isActive,
     });
-    await captureProductEvent(
+    void captureProductEvent(
       body.id ? "campaign_saved" : "campaign_created",
       merchantDistinctId(session.merchant.id, session.user.id),
       {
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
       },
     );
     if (savedCampaign.isActive) {
-      await captureProductEvent(
+      void captureProductEvent(
         "campaign_published",
         merchantDistinctId(session.merchant.id, session.user.id),
         {

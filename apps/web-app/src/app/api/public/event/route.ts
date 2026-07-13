@@ -33,23 +33,23 @@ export async function POST(request: Request) {
     });
 
     const sanitizedLeadId = body.leadId?.trim() || undefined;
+    const confirmsAction =
+      sanitizedLeadId &&
+      ["review_clicked", "review_confirmed", "social_clicked"].includes(body.eventType);
+
+    if (confirmsAction) {
+      const confirmedLead = await markActionConfirmed(sanitizedLeadId, body.campaignId.trim());
+      if (!confirmedLead) {
+        return NextResponse.json({ error: "Participation introuvable pour cette animation" }, { status: 404 });
+      }
+    }
+
     const event = await recordEvent(
       body.campaignId.trim(),
       body.eventType,
       sanitizedLeadId,
       sanitizePublicMetadata(body.metadata),
     );
-
-    if (
-      sanitizedLeadId &&
-      [
-        "review_clicked",
-        "review_confirmed",
-        "social_clicked",
-      ].includes(body.eventType)
-    ) {
-      await markActionConfirmed(sanitizedLeadId);
-    }
 
     return NextResponse.json({ event }, { status: 201 });
   } catch (error) {

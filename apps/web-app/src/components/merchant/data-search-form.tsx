@@ -16,6 +16,7 @@ export function DataSearchForm({ campaignId, initialValue }: DataSearchFormProps
   function apply(nextValue: string) {
     const params = new URLSearchParams(searchParams.toString());
     params.set("campaign", campaignId);
+    params.delete("page");
 
     const trimmed = nextValue.trim();
     if (trimmed) {

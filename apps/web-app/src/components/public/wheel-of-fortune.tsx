@@ -178,6 +178,12 @@ export function WheelOfFortune({
   const warmNeutral = "#fff0d2";
   const wheelTop =
     framing === "public" ? undefined : framing === "editor" ? "83%" : "62%";
+  const wheelFrameSizeClass =
+    framing === "public"
+      ? "top-[70%] w-[142vw] max-w-none sm:top-[68%] sm:w-[118vw] md:top-[66%] md:w-[98vw] lg:top-[68%] lg:w-[52vw] xl:top-[68%] xl:w-[42vw] 2xl:top-[68%] 2xl:w-[38vw]"
+      : framing === "editor"
+        ? "w-[150%] max-w-none"
+        : "w-full";
 
   useEffect(() => {
     if (!isSpinning || !onSpinEnd) {
@@ -251,16 +257,10 @@ export function WheelOfFortune({
   return (
     <div className="relative h-full w-full overflow-hidden">
       <div
-        className={`absolute left-1/2 aspect-square -translate-x-1/2 -translate-y-1/2 ${
-          framing === "public"
-            ? isRestaurantPopTemplate
-              ? "top-[70%] w-[142vw] max-w-none drop-shadow-[0_34px_48px_rgba(15,23,42,0.24)] sm:top-[68%] sm:w-[118vw] md:top-[66%] md:w-[98vw] lg:top-[68%] lg:w-[52vw] xl:top-[68%] xl:w-[42vw] 2xl:top-[68%] 2xl:w-[38vw]"
-              : "top-[70%] w-[172vw] max-w-none sm:top-[68%] sm:w-[144vw] md:top-[66%] md:w-[122vw] lg:top-[68%] lg:w-[70vw] xl:top-[68%] xl:w-[54vw] 2xl:top-[68%] 2xl:w-[48vw]"
-            : framing === "editor"
-              ? isRestaurantPopTemplate
-                ? "w-[150%] max-w-none drop-shadow-[0_24px_42px_rgba(15,23,42,0.18)]"
-                : "w-[186%] max-w-none"
-              : "w-full"
+        className={`absolute left-1/2 aspect-square -translate-x-1/2 -translate-y-1/2 ${wheelFrameSizeClass} ${
+          isRestaurantPopTemplate
+            ? "drop-shadow-[0_28px_42px_rgba(15,23,42,0.24)]"
+            : "drop-shadow-[0_20px_34px_rgba(15,23,42,0.16)]"
         }`}
         style={{ top: wheelTop }}
       >
@@ -290,27 +290,27 @@ export function WheelOfFortune({
                 <circle
                   cx={CENTER}
                   cy={CENTER}
-                  r={OUTER_RADIUS + 24}
+                  r={OUTER_RADIUS + 9}
                   fill="#fff8eb"
-                  stroke="rgba(255,255,255,0.95)"
-                  strokeWidth="16"
-                />
-                <circle
-                  cx={CENTER}
-                  cy={CENTER}
-                  r={OUTER_RADIUS + 16}
-                  fill="none"
-                  stroke={colors.rimColor}
-                  strokeWidth="7"
-                  opacity="0.95"
+                  stroke="#fffdf7"
+                  strokeWidth="13"
                 />
                 <circle
                   cx={CENTER}
                   cy={CENTER}
                   r={OUTER_RADIUS + 2}
                   fill="none"
-                  stroke="rgba(122,85,26,0.16)"
-                  strokeWidth="2"
+                  stroke={colors.rimColor}
+                  strokeWidth="4"
+                  opacity="0.95"
+                />
+                <circle
+                  cx={CENTER}
+                  cy={CENTER}
+                  r={OUTER_RADIUS - 5}
+                  fill="none"
+                  stroke="rgba(111,78,37,0.18)"
+                  strokeWidth="1.5"
                 />
               </>
             ) : (
@@ -390,17 +390,20 @@ export function WheelOfFortune({
             })}
             <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 4} fill="url(#okado-wheel-depth)" />
             {isRestaurantPopTemplate
-              ? Array.from({ length: 18 }, (_, beadIndex) => {
-                  const bead = polarToCartesian(OUTER_RADIUS + 5, beadIndex * 20);
+              ? Array.from({ length: visualSegments.length }, (_, beadIndex) => {
+                  const bead = polarToCartesian(
+                    OUTER_RADIUS + 9,
+                    beadIndex * segmentAngle + segmentAngle / 2,
+                  );
                   return (
                     <circle
                       key={`bead-${beadIndex}`}
                       cx={bead.x}
                       cy={bead.y}
-                      r="5.2"
-                      fill="#fff2d7"
-                      stroke={colors.rimColor}
-                      strokeWidth="1"
+                      r="3.5"
+                      fill="#fffdf7"
+                      stroke="rgba(111,78,37,0.38)"
+                      strokeWidth="1.2"
                     />
                   );
                 })
@@ -412,35 +415,47 @@ export function WheelOfFortune({
           <div
             className="absolute"
             style={{
-              top: "29.5%",
+              top: "31.2%",
               left: "50%",
-              width: "10.3%",
-              height: "18.9%",
+              width: isRestaurantPopTemplate ? "12.4%" : "10.3%",
+              height: isRestaurantPopTemplate ? "20.4%" : "18.9%",
               transform: "translateX(-50%)",
-              clipPath: "polygon(50% 0, 88% 24%, 63% 100%, 37% 100%, 12% 24%)",
+              clipPath: "polygon(50% 0, 88% 16%, 72% 76%, 50% 100%, 28% 76%, 12% 16%)",
               background: isRestaurantPopTemplate
-                ? `linear-gradient(180deg, ${colors.loseColor} 0%, ${colors.loseColor} 68%, #ffffff 69%, #ffffff 100%)`
+                ? "#fffdf7"
                 : "linear-gradient(180deg, #ffffff 0%, #f8fafc 62%, #ffffff 100%)",
               filter: "drop-shadow(0 12px 18px rgba(15,23,42,0.2))",
             }}
-          />
-          <div
-            className="absolute rounded-b-[22px] bg-white"
-            style={{
-              top: "44.9%",
-              left: "50%",
-              width: "7.7%",
-              height: "4.3%",
-              transform: "translateX(-50%)",
-            }}
-          />
+          >
+            {isRestaurantPopTemplate ? (
+              <div
+                className="absolute inset-[9%]"
+                style={{
+                  clipPath: "polygon(50% 0, 82% 18%, 67% 73%, 50% 94%, 33% 73%, 18% 18%)",
+                  background: `linear-gradient(180deg, ${colors.rimColor}, ${colors.winColor})`,
+                }}
+              />
+            ) : null}
+          </div>
+          {!isRestaurantPopTemplate ? (
+            <div
+              className="absolute rounded-b-[22px] bg-white"
+              style={{
+                top: "44.9%",
+                left: "50%",
+                width: "7.7%",
+                height: "4.3%",
+                transform: "translateX(-50%)",
+              }}
+            />
+          ) : null}
         </div>
 
         <button
           type="button"
           onClick={handleCentralButton}
           disabled={!buttonEnabled || isSpinning || hasSpun}
-          className={`absolute left-1/2 top-1/2 z-40 flex aspect-square ${isRestaurantPopTemplate ? "w-[18.5%]" : "w-[15.4%]"} -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-[4px] text-[19px] font-black uppercase transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-75 ${isRestaurantPopTemplate ? "font-anton shadow-[0_20px_34px_rgba(15,23,42,0.24)] [text-shadow:0_3px_0_rgba(0,0,0,0.18)]" : "shadow-[0_16px_30px_rgba(15,23,42,0.16)]"}`}
+          className={`absolute left-1/2 top-1/2 z-40 flex aspect-square ${isRestaurantPopTemplate ? "w-[19.5%]" : "w-[17.8%]"} -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-[4px] text-[19px] font-black uppercase transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-75 ${isRestaurantPopTemplate ? "font-anton shadow-[0_20px_34px_rgba(15,23,42,0.24)] [text-shadow:0_3px_0_rgba(0,0,0,0.18)]" : "shadow-[0_16px_30px_rgba(15,23,42,0.16)]"}`}
           style={{
             background:
               buttonEnabled && !hasSpun
@@ -454,7 +469,7 @@ export function WheelOfFortune({
               ? "clamp(1.12rem, 2.9vw, 2.05rem)"
               : "clamp(1rem, 2.5vw, 1.75rem)",
             boxShadow: isRestaurantPopTemplate
-              ? "inset 0 0 0 8px rgba(255,255,255,0.78), inset 0 -11px 18px rgba(0,0,0,0.18), 0 18px 34px rgba(15,23,42,0.24)"
+              ? "inset 0 0 0 4px rgba(255,255,255,0.74), inset 0 -11px 18px rgba(0,0,0,0.2), 0 18px 34px rgba(15,23,42,0.24)"
               : undefined,
           }}
         >
