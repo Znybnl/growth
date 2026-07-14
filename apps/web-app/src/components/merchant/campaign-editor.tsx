@@ -134,7 +134,15 @@ const actionKindOptions: ActionKind[] = [
 ];
 
 const textAlignOptions: TextAlign[] = ["left", "center", "right"];
-const textFontOptions: TextFont[] = ["anton", "display", "sans", "serif"];
+const textFontOptions: TextFont[] = [
+  "anton",
+  "display",
+  "serif",
+  "cormorant",
+  "fredoka",
+  "inter",
+  "bebas",
+];
 const headingFontWeightOptions = [400, 500, 600, 700, 800, 900];
 const gamePageTemplateOptions: Array<{
   value: GamePageTemplateId;
@@ -148,7 +156,7 @@ const gamePageTemplateOptions: Array<{
   },
   {
     value: "restaurant-pop",
-    title: "Restaurant pop",
+    title: "Visuel pop",
     description: "Un univers plus événementiel avec formes, contraste et roue façon jeu concours.",
   },
 ];
@@ -901,9 +909,9 @@ const CampaignPrizeRow = memo(function CampaignPrizeRow({
   onOpenConditions: (prizeId: string | undefined) => void;
 }) {
   return (
-    <div className="grid gap-3 rounded-[24px] border border-[#dbe4f0] bg-white p-4 md:grid-cols-[1.5fr_0.7fr_0.7fr_0.7fr_1.15fr_56px] md:items-center">
+    <div className="grid gap-3 rounded-[24px] border border-[#dbe4f0] bg-white p-4 xl:grid-cols-[minmax(180px,1.5fr)_minmax(100px,.7fr)_minmax(130px,.9fr)_minmax(120px,.85fr)_minmax(120px,1.15fr)_56px] xl:items-center">
       <label className="text-sm">
-        <span className="mb-2 block text-[#616b7c] md:hidden">Dotation</span>
+        <span className="mb-2 block text-[#616b7c] xl:hidden">Dotation</span>
         <input
           value={prize.label}
           onChange={(event) => onUpdate(prize.id, { label: event.target.value })}
@@ -912,7 +920,7 @@ const CampaignPrizeRow = memo(function CampaignPrizeRow({
       </label>
 
       <label className="text-sm">
-        <span className="mb-2 block text-[#616b7c] md:hidden">Stock</span>
+        <span className="mb-2 block text-[#616b7c] xl:hidden">Stock</span>
         <input
           type="number"
           min={0}
@@ -928,7 +936,7 @@ const CampaignPrizeRow = memo(function CampaignPrizeRow({
       </label>
 
       <label className="text-sm">
-        <span className="mb-2 block text-[#616b7c] md:hidden">Probabilité</span>
+        <span className="mb-2 block text-[#616b7c] xl:hidden">Probabilité de gain (%)</span>
         <input
           type="number"
           min={0}
@@ -940,7 +948,7 @@ const CampaignPrizeRow = memo(function CampaignPrizeRow({
       </label>
 
       <label className="text-sm">
-        <span className="mb-2 block text-[#616b7c] md:hidden">Coût unitaire</span>
+        <span className="mb-2 block text-[#616b7c] xl:hidden">Coût unitaire</span>
         <input
           type="number"
           min={0}
@@ -953,7 +961,7 @@ const CampaignPrizeRow = memo(function CampaignPrizeRow({
         />
       </label>
 
-      <div className="flex flex-wrap items-center justify-end gap-2 md:justify-start">
+      <div className="flex flex-wrap items-center justify-end gap-2 xl:justify-start">
         <button
           type="button"
           onClick={() => onOpenConditions(prize.id)}
@@ -967,7 +975,7 @@ const CampaignPrizeRow = memo(function CampaignPrizeRow({
         onClick={() => onRemove(prize.id)}
         aria-label={`Supprimer le lot ${prize.label || ""}`.trim()}
         title="Supprimer"
-        className="inline-flex h-[48px] w-[48px] cursor-pointer items-center justify-center justify-self-end rounded-[8px] border border-[#111827] bg-[#111827] text-white transition hover:bg-[#273142] md:justify-self-start"
+        className="inline-flex h-[48px] w-[48px] cursor-pointer items-center justify-center justify-self-end rounded-[8px] border border-[#111827] bg-[#111827] text-white transition hover:bg-[#273142] xl:justify-self-start"
       >
         <Trash2 className="h-5 w-5" aria-hidden="true" />
       </button>
@@ -1236,11 +1244,17 @@ export function CampaignEditor({
   const headingFontClass =
     form.presentation.heading.fontFamily === "anton"
       ? "font-anton"
-      : form.presentation.heading.fontFamily === "serif"
-      ? "font-serif"
-      : form.presentation.heading.fontFamily === "sans"
-        ? "font-sans"
-        : "font-display";
+      : form.presentation.heading.fontFamily === "serif" || form.presentation.heading.fontFamily === "cormorant"
+        ? form.presentation.heading.fontFamily === "cormorant"
+          ? "font-cormorant"
+          : "font-serif"
+        : form.presentation.heading.fontFamily === "fredoka"
+          ? "font-fredoka"
+          : form.presentation.heading.fontFamily === "inter" || form.presentation.heading.fontFamily === "sans"
+            ? "font-inter"
+            : form.presentation.heading.fontFamily === "bebas"
+              ? "font-bebas"
+              : "font-display";
   const previewModel = useMemo<CampaignEditorPreviewModel>(() => {
     const winningSegmentId =
       previewSegments.find((segment) => segment.tone === "win")?.id ?? previewSegments[0]?.id ?? "win";
@@ -3131,7 +3145,9 @@ export function CampaignEditor({
                   ...(isExpertMode
                     ? [
                         ["rimColor", "Couleur du contour"],
-                        ["alternateLoseColor", "Couleur perdu clair"],
+                        ...(form.presentation.layout.templateId === "restaurant-pop"
+                          ? []
+                          : [["alternateLoseColor", "Couleur perdu clair"]]),
                       ]
                     : []),
                 ].map(([key, label]) => (
@@ -3461,9 +3477,6 @@ export function CampaignEditor({
                     }
                     className="w-full rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
                   />
-                  <span className="mt-2 block text-xs leading-5 text-[#7b8496]">
-                    Ce délai est aussi contrôlé par l&apos;adresse e-mail du participant.
-                  </span>
                 </label>
               ) : null}
 
@@ -3487,10 +3500,10 @@ export function CampaignEditor({
               </div>
             </div>
 
-            <div className="mt-6 hidden grid-cols-[1.5fr_0.7fr_0.7fr_0.7fr_1.15fr_56px] gap-3 rounded-[22px] bg-[#f7f9fc] px-4 py-3 text-[11px] uppercase tracking-[0.24em] text-[#7b8496] md:grid">
+            <div className="mt-6 hidden grid-cols-[minmax(180px,1.5fr)_minmax(100px,.7fr)_minmax(130px,.9fr)_minmax(120px,.85fr)_minmax(120px,1.15fr)_56px] gap-3 rounded-[22px] bg-[#f7f9fc] px-4 py-3 text-[11px] uppercase tracking-[0.24em] text-[#7b8496] xl:grid">
               <span>Dotation</span>
               <span>Stock</span>
-              <span>Probabilité</span>
+              <span>Probabilité de gain (%)</span>
               <span>Coût unitaire</span>
               <span />
             </div>

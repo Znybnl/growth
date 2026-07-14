@@ -221,10 +221,18 @@ export function textFontLabel(font: TextFont) {
       return "Display";
     case "serif":
       return "Serif";
+    case "cormorant":
+      return "Cormorant Garamond";
+    case "fredoka":
+      return "Fredoka";
+    case "inter":
+      return "Inter";
+    case "bebas":
+      return "Bebas Neue";
     case "sans":
-      return "Sans";
+      return "Display";
     default:
-      return "Sans";
+      return "Display";
   }
 }
 

@@ -1,7 +1,16 @@
 export type GoalType = "lead_capture" | "review_prompt" | "social_follow";
 export type GameType = "wheel" | "scratch";
 export type TextAlign = "left" | "center" | "right";
-export type TextFont = "anton" | "display" | "sans" | "serif";
+export type TextFont =
+  | "anton"
+  | "display"
+  | "serif"
+  | "cormorant"
+  | "fredoka"
+  | "inter"
+  | "bebas"
+  // Conservé pour lire les campagnes créées avant la refonte des polices.
+  | "sans";
 export type LogoMode = "none" | "image" | "text";
 export type ButtonSize = "sm" | "md" | "lg";
 export type BackgroundMode = "color" | "image";

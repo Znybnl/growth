@@ -27,7 +27,17 @@ const ACTION_KINDS = new Set<ActionKind>([
 ]);
 const LOGO_MODES = new Set<LogoMode>(["none", "image", "text"]);
 const TEXT_ALIGNS = new Set<TextAlign>(["left", "center", "right"]);
-const TEXT_FONTS = new Set<TextFont>(["anton", "display", "sans", "serif"]);
+const TEXT_FONTS = new Set<TextFont>([
+  "anton",
+  "display",
+  "serif",
+  "cormorant",
+  "fredoka",
+  "inter",
+  "bebas",
+  // Compatibilité avec les campagnes historiques.
+  "sans",
+]);
 const BUTTON_SIZES = new Set<ButtonSize>(["sm", "md", "lg"]);
 const BACKGROUND_MODES = new Set<BackgroundMode>(["color", "image"]);
 const GAME_PAGE_TEMPLATE_IDS = new Set<GamePageTemplateId>(["classic", "restaurant-pop"]);

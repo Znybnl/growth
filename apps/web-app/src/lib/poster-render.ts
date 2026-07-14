@@ -151,6 +151,14 @@ function fontFamily(font: TextFont) {
       return SAFE_DISPLAY_FONT;
     case "serif":
       return "serif";
+    case "cormorant":
+      return "Cormorant Garamond, Georgia, serif";
+    case "fredoka":
+      return "Fredoka, Inter, sans-serif";
+    case "inter":
+      return SAFE_FONT;
+    case "bebas":
+      return "Bebas Neue, Anton, sans-serif";
     case "sans":
       return SAFE_FONT;
     default:

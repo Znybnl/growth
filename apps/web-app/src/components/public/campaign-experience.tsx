@@ -489,11 +489,17 @@ export function CampaignExperience({
   const headingFontClass =
     campaign.presentation.heading.fontFamily === "anton"
       ? "font-anton"
-      : campaign.presentation.heading.fontFamily === "serif"
-      ? "font-serif"
-      : campaign.presentation.heading.fontFamily === "sans"
-        ? "font-sans"
-        : "font-display";
+      : campaign.presentation.heading.fontFamily === "serif" || campaign.presentation.heading.fontFamily === "cormorant"
+        ? campaign.presentation.heading.fontFamily === "cormorant"
+          ? "font-cormorant"
+          : "font-serif"
+        : campaign.presentation.heading.fontFamily === "fredoka"
+          ? "font-fredoka"
+          : campaign.presentation.heading.fontFamily === "inter" || campaign.presentation.heading.fontFamily === "sans"
+            ? "font-inter"
+            : campaign.presentation.heading.fontFamily === "bebas"
+              ? "font-bebas"
+              : "font-display";
   const showBottomState =
     (stage === "idle" && campaign.gameType !== "wheel") ||
     (stage === "ready" && campaign.gameType !== "wheel");
