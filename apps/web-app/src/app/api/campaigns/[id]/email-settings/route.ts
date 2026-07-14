@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { requireAuthenticatedSession } from "@/lib/auth";
+import { parseCampaignSetupInput } from "@/lib/merchant-input";
 import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
 import { getCampaignPerformance, updateCampaignSetup } from "@/lib/store";
 import { CampaignEmailSettings } from "@/lib/types";
@@ -24,7 +25,7 @@ export async function POST(request: Request, { params }: EmailSettingsRouteProps
     }
 
     const campaign = performance.campaign;
-    const updatedCampaign = await updateCampaignSetup({
+    const input = parseCampaignSetupInput({
       id: campaign.id,
       merchantId: campaign.merchantId,
       title: campaign.title,
@@ -52,7 +53,8 @@ export async function POST(request: Request, { params }: EmailSettingsRouteProps
         probability: prize.probability,
         estimatedUnitCost: prize.estimatedUnitCost,
       })),
-    });
+    }, session.merchant.id);
+    const updatedCampaign = await updateCampaignSetup(input);
 
     return NextResponse.json({ campaign: updatedCampaign });
   } catch (error) {

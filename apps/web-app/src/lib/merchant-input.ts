@@ -48,6 +48,7 @@ const ALLOWED_BACKGROUND_MIME_TYPES = new Set([
   "image/png",
   "image/webp",
 ]);
+const MAX_INLINE_IMAGE_BYTES = 2 * 1024 * 1024;
 
 function ensureObject(value: unknown) {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
@@ -118,8 +119,21 @@ function normalizeImageSource(value: unknown) {
     return "";
   }
 
-  if (/^data:image\/(png|jpe?g|webp|gif);base64,[a-z0-9+/=\s]+$/i.test(input)) {
-    return input.replace(/\s/g, "");
+  const inlineImage = /^data:image\/(png|jpe?g|webp|gif);base64,([a-z0-9+/=\s]+)$/i.exec(input);
+  if (inlineImage) {
+    const encoded = inlineImage[2].replace(/\s/g, "");
+    const paddingLength = encoded.endsWith("==") ? 2 : encoded.endsWith("=") ? 1 : 0;
+    const estimatedBytes = Math.floor((encoded.length * 3) / 4) - paddingLength;
+
+    if (estimatedBytes > MAX_INLINE_IMAGE_BYTES) {
+      throw new Error("Image trop volumineuse. Importez une image de 2 Mo maximum.");
+    }
+
+    return `data:image/${inlineImage[1].toLowerCase()};base64,${encoded}`;
+  }
+
+  if (input.toLowerCase().startsWith("data:")) {
+    throw new Error("Image invalide. Utilisez une image PNG, JPEG, WebP ou GIF.");
   }
 
   return normalizeUrl(input);
@@ -353,7 +367,7 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
       background: {
         mode: normalizeEnum(background.mode, BACKGROUND_MODES, "color"),
         color: normalizeColor(background.color, "#ffffff"),
-        imageUrl: normalizeUrl(background.imageUrl) || undefined,
+        imageUrl: normalizeImageSource(background.imageUrl) || undefined,
       },
       heading: {
         textColor: normalizeColor(heading.textColor, "#1f2937"),
@@ -420,7 +434,7 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
         }),
         backgroundMode: normalizeEnum(poster.backgroundMode, BACKGROUND_MODES, "color"),
         backgroundColor: normalizeColor(poster.backgroundColor, "#ffffff"),
-        backgroundImageUrl: normalizeUrl(poster.backgroundImageUrl) || undefined,
+        backgroundImageUrl: normalizeImageSource(poster.backgroundImageUrl) || undefined,
         headline: normalizeMultiline(poster.headline, 240),
         headlineTextColor: normalizeColor(poster.headlineTextColor, "#ffffff"),
         headlineFontSizePx: normalizeNumber(poster.headlineFontSizePx, {
