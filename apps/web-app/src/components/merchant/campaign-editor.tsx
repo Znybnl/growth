@@ -1112,13 +1112,29 @@ function syncActionLabel(kind: ActionKind, currentLabel: string) {
   return actionKindCta(kind);
 }
 
+const MAX_UPLOAD_IMAGE_BYTES = 2 * 1024 * 1024;
+const ACCEPTED_IMAGE_TYPES = new Set(["image/png", "image/jpeg", "image/webp", "image/gif"]);
+
 function uploadAsDataUrl(
   event: ChangeEvent<HTMLInputElement>,
   onLoaded: (value: string) => void,
+  onError?: (message: string) => void,
 ) {
   const file = event.target.files?.[0];
 
   if (!file) {
+    return;
+  }
+
+  if (file.type && !ACCEPTED_IMAGE_TYPES.has(file.type)) {
+    event.target.value = "";
+    onError?.("Format d'image non pris en charge. Utilisez un PNG, JPEG, WebP ou GIF.");
+    return;
+  }
+
+  if (file.size > MAX_UPLOAD_IMAGE_BYTES) {
+    event.target.value = "";
+    onError?.("Image trop volumineuse. Importez une image de 2 Mo maximum.");
     return;
   }
 
@@ -2235,15 +2251,22 @@ export function CampaignEditor({
                     </span>
                     <p className="text-xs leading-5 text-[#64748b]">
                       L&apos;aperçu reprend le fond actuellement sélectionné pour la page de jeu.
+                      Formats PNG, JPEG, WebP ou GIF, 2 Mo maximum.
                     </p>
                   </div>
                 </div>
                 <input
                   type="file"
-                  accept="image/*"
+                  accept="image/png,image/jpeg,image/webp,image/gif"
                   onChange={(event) =>
-                    uploadAsDataUrl(event, (value) =>
-                      setForm((current) => ({ ...current, logoUrl: value, logoMode: "image" })),
+                    uploadAsDataUrl(
+                      event,
+                      (value) =>
+                        setForm((current) => ({ ...current, logoUrl: value, logoMode: "image" })),
+                      (error) => {
+                        setMessage(error);
+                        setMessageTone("error");
+                      },
                     )
                   }
                   className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
@@ -2551,26 +2574,33 @@ export function CampaignEditor({
                         </span>
                         <p className="mt-2 text-sm leading-6 text-[#64748b]">
                           Chargez votre propre image ou sélectionnez un visuel existant dans la bibliothèque publique.
+                          Formats PNG, JPEG, WebP ou GIF, 2 Mo maximum.
                         </p>
                         <div className="mt-4 flex flex-wrap items-center gap-3">
                           <label className="cursor-pointer rounded-[18px] border border-[#d7e0ed] bg-white px-4 py-3 text-sm font-semibold text-[#182033]">
                             Importer une image
                             <input
                               type="file"
-                              accept="image/*"
+                              accept="image/png,image/jpeg,image/webp,image/gif"
                               onChange={(event) =>
-                                uploadAsDataUrl(event, (value) =>
-                                  setForm((current) => ({
-                                    ...current,
-                                    presentation: {
-                                      ...current.presentation,
-                                      background: {
-                                        ...current.presentation.background,
-                                        mode: "image",
-                                        imageUrl: value,
+                                uploadAsDataUrl(
+                                  event,
+                                  (value) =>
+                                    setForm((current) => ({
+                                      ...current,
+                                      presentation: {
+                                        ...current.presentation,
+                                        background: {
+                                          ...current.presentation.background,
+                                          mode: "image",
+                                          imageUrl: value,
+                                        },
                                       },
-                                    },
-                                  }))
+                                    })),
+                                  (error) => {
+                                    setMessage(error);
+                                    setMessageTone("error");
+                                  },
                                 )
                               }
                               className="hidden"
@@ -2660,6 +2690,7 @@ export function CampaignEditor({
                   <span className="mb-2 block text-[#616b7c]">Logo de l&apos;affiche</span>
                   <p className="max-w-md text-sm leading-6 text-[#516073]">
                     Par défaut, le logo de la campagne publique est utilisé.
+                    Formats PNG, JPEG, WebP ou GIF, 2 Mo maximum.
                   </p>
                 </div>
                 <div className="mt-4 flex items-center justify-between gap-3">
@@ -2672,19 +2703,25 @@ export function CampaignEditor({
                 </div>
                 <input
                   type="file"
-                  accept="image/*"
+                  accept="image/png,image/jpeg,image/webp,image/gif"
                   onChange={(event) =>
-                    uploadAsDataUrl(event, (value) =>
-                      setForm((current) => ({
-                        ...current,
-                        presentation: {
-                          ...current.presentation,
-                          poster: {
-                            ...current.presentation.poster,
-                            logoUrl: value,
+                    uploadAsDataUrl(
+                      event,
+                      (value) =>
+                        setForm((current) => ({
+                          ...current,
+                          presentation: {
+                            ...current.presentation,
+                            poster: {
+                              ...current.presentation.poster,
+                              logoUrl: value,
+                            },
                           },
-                        },
-                      })),
+                        })),
+                      (error) => {
+                        setMessage(error);
+                        setMessageTone("error");
+                      },
                     )
                   }
                   className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
@@ -2719,6 +2756,7 @@ export function CampaignEditor({
                   <span className="mb-2 block text-[#616b7c]">Image de fond de l&apos;affiche</span>
                   <p className="max-w-md text-sm leading-6 text-[#516073]">
                     Une image par d&eacute;faut est appliqu&eacute;e tant qu&apos;aucun visuel personnalis&eacute; n&apos;est s&eacute;lectionn&eacute;.
+                    Formats PNG, JPEG, WebP ou GIF, 2 Mo maximum.
                   </p>
                 </div>
                 <div className="mt-4 flex items-center justify-between gap-3">
@@ -2731,19 +2769,25 @@ export function CampaignEditor({
                 </div>
                 <input
                   type="file"
-                  accept="image/*"
+                  accept="image/png,image/jpeg,image/webp,image/gif"
                   onChange={(event) =>
-                    uploadAsDataUrl(event, (value) =>
-                      setForm((current) => ({
-                        ...current,
-                        presentation: {
-                          ...current.presentation,
-                          poster: {
-                            ...current.presentation.poster,
-                            backgroundImageUrl: value,
+                    uploadAsDataUrl(
+                      event,
+                      (value) =>
+                        setForm((current) => ({
+                          ...current,
+                          presentation: {
+                            ...current.presentation,
+                            poster: {
+                              ...current.presentation.poster,
+                              backgroundImageUrl: value,
+                            },
                           },
-                        },
-                      })),
+                        })),
+                      (error) => {
+                        setMessage(error);
+                        setMessageTone("error");
+                      },
                     )
                   }
                   className="absolute inset-0 h-full w-full cursor-pointer opacity-0"

@@ -70,13 +70,29 @@ const posterTemplates: Array<{
   },
 ];
 
+const MAX_UPLOAD_IMAGE_BYTES = 2 * 1024 * 1024;
+const ACCEPTED_IMAGE_TYPES = new Set(["image/png", "image/jpeg", "image/webp", "image/gif"]);
+
 function uploadAsDataUrl(
   event: ChangeEvent<HTMLInputElement>,
   onLoaded: (value: string) => void,
+  onError?: (message: string) => void,
 ) {
   const file = event.target.files?.[0];
 
   if (!file) return;
+
+  if (file.type && !ACCEPTED_IMAGE_TYPES.has(file.type)) {
+    event.target.value = "";
+    onError?.("Format d'image non pris en charge. Utilisez un PNG, JPEG, WebP ou GIF.");
+    return;
+  }
+
+  if (file.size > MAX_UPLOAD_IMAGE_BYTES) {
+    event.target.value = "";
+    onError?.("Image trop volumineuse. Importez une image de 2 Mo maximum.");
+    return;
+  }
 
   const reader = new FileReader();
   reader.onload = () => {
@@ -511,7 +527,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                 <div>
                   <span className="mb-2 block text-[#616b7c]">Importer le logo affiche</span>
                   <p className="max-w-md text-sm leading-6 text-[#516073]">
-                    PNG, JPG ou SVG. Le logo restera centré en haut de l&apos;affiche.
+                    PNG, JPEG, WebP ou GIF, 2 Mo maximum. Le logo restera centré en haut de l&apos;affiche.
                   </p>
                 </div>
                 <div className="mt-4 flex items-center justify-between gap-3">
@@ -536,10 +552,12 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                 ) : null}
                 <input
                   type="file"
-                  accept="image/*"
+                  accept="image/png,image/jpeg,image/webp,image/gif"
                   onChange={(event) =>
-                    uploadAsDataUrl(event, (value) =>
-                      updatePoster({ logoMode: "image", logoUrl: value }),
+                    uploadAsDataUrl(
+                      event,
+                      (value) => updatePoster({ logoMode: "image", logoUrl: value }),
+                      setMessage,
                     )
                   }
                   className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
