@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { isSaasAdminEmail } from "@/lib/admin";
@@ -53,6 +54,11 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
         <p className="mt-4 max-w-3xl text-sm leading-7 text-ash">
           Suivez les comptes marchands, l&apos;activation produit et les alertes qui demandent une action.
         </p>
+        <div className="mt-5 flex flex-wrap gap-3">
+          <Link href="/admin/prize-suggestions" className="okado-secondary-action px-4 py-2.5 text-sm">
+            Gérer les suggestions de lots
+          </Link>
+        </div>
       </header>
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

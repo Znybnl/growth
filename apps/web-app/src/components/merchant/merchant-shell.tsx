@@ -29,6 +29,7 @@ const navItems = [
 
 const adminNavItems = [
   { href: "/admin", label: "Pilotage" },
+  { href: "/admin/prize-suggestions", label: "Suggestions de lots" },
   { href: "/backgrounds", label: "Bibliothèque" },
   { href: "/affiliates", label: "Affiliation" },
   { href: "/support", label: "Supervision" },

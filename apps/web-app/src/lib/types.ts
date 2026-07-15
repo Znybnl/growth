@@ -59,6 +59,20 @@ export type EventType =
   | "prize_expired"
   | "prize_reset";
 
+export interface PrizeSuggestion {
+  id: string;
+  industry: string;
+  label: string;
+  description: string;
+  probability: number;
+  estimatedUnitCost: number;
+  icon: string;
+  isActive: boolean;
+  sortOrder: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export interface Merchant {
   id: string;
   companyName: string;

@@ -6,6 +6,7 @@ import Link from "next/link";
 import {
   BadgePercent,
   Coffee,
+  Gift,
   Plus,
   Sandwich,
   Soup,
@@ -15,7 +16,6 @@ import {
   SquareArrowOutUpRight,
   Trash2,
   UtensilsCrossed,
-  type LucideIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
@@ -54,6 +54,7 @@ import {
   GameType,
   GoalType,
   Merchant,
+  PrizeSuggestion,
   TextAlign,
   TextFont,
 } from "@/lib/types";
@@ -88,73 +89,6 @@ type CampaignEditorProps = {
   campaignLibrary?: CampaignLibraryItem[];
   deferInlineAssets?: boolean;
 };
-
-type PrizeSuggestion = {
-  id: string;
-  label: string;
-  description: string;
-  probability: number;
-  estimatedUnitCost: number;
-  icon: LucideIcon;
-  iconClassName: string;
-};
-
-const RESTAURANT_PRIZE_SUGGESTIONS: PrizeSuggestion[] = [
-  {
-    id: "coffee",
-    label: "Un café offert",
-    description: "Un geste simple, facile à délivrer au comptoir.",
-    probability: 20,
-    estimatedUnitCost: 0.7,
-    icon: Coffee,
-    iconClassName: "bg-[#fff3df] text-[#b9680b]",
-  },
-  {
-    id: "dessert",
-    label: "Un dessert offert",
-    description: "Une attention à forte valeur perçue pour une prochaine visite.",
-    probability: 10,
-    estimatedUnitCost: 3.5,
-    icon: Sparkles,
-    iconClassName: "bg-[#f4eaff] text-[#7a3fd1]",
-  },
-  {
-    id: "soft-drink",
-    label: "Une boisson offerte",
-    description: "Idéal pour créer un retour rapide en établissement.",
-    probability: 12,
-    estimatedUnitCost: 1.5,
-    icon: Soup,
-    iconClassName: "bg-[#e6f6ff] text-[#1576b6]",
-  },
-  {
-    id: "discount-10",
-    label: "Une r\u00e9duction de 10 %",
-    description: "Un avantage imm\u00e9diat, simple \u00e0 expliquer et \u00e0 utiliser.",
-    probability: 50,
-    estimatedUnitCost: 2,
-    icon: BadgePercent,
-    iconClassName: "bg-[#e9f7ec] text-[#258348]",
-  },
-  {
-    id: "menu-upgrade",
-    label: "Un supplément offert",
-    description: "Un avantage maîtrisé, facile à intégrer à une commande.",
-    probability: 15,
-    estimatedUnitCost: 1.2,
-    icon: Sandwich,
-    iconClassName: "bg-[#e9f7ec] text-[#258348]",
-  },
-  {
-    id: "daily-menu",
-    label: "Menu du jour offert",
-    description: "Entr\u00e9e + plat ou plat + dessert, pour une prochaine visite.",
-    probability: 2,
-    estimatedUnitCost: 12,
-    icon: UtensilsCrossed,
-    iconClassName: "bg-[#eef1ff] text-[#4058c8]",
-  },
-];
 
 type EditorState = CampaignSetupInput;
 
@@ -733,12 +667,14 @@ function PrizeConditionsDialog({
 function PrizeSuggestionDialog({
   open,
   suggestions,
+  industry,
   remainingProbability,
   onAdd,
   onClose,
 }: {
   open: boolean;
   suggestions: PrizeSuggestion[];
+  industry?: string;
   remainingProbability: number;
   onAdd: (suggestion: PrizeSuggestion) => void;
   onClose: () => void;
@@ -754,7 +690,7 @@ function PrizeSuggestionDialog({
           <div>
             <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Suggestions de lots</p>
             <h2 className="mt-2 text-2xl font-semibold text-[#0f1728]">
-              Dotations pensées pour la restauration
+              Dotations suggérées pour {industry || "votre secteur"}
             </h2>
             <p className="mt-2 max-w-2xl text-sm leading-7 text-[#5c6577]">
               Ajoutez un lot prêt à paramétrer, puis ajustez son stock, ses conditions et sa probabilité.
@@ -772,7 +708,8 @@ function PrizeSuggestionDialog({
 
         <div className="mt-6 grid max-h-[66vh] gap-4 overflow-y-auto pr-1 sm:grid-cols-2 lg:grid-cols-3">
           {suggestions.map((suggestion) => {
-            const Icon = suggestion.icon;
+            const iconStyle = getPrizeSuggestionIcon(suggestion.icon);
+            const Icon = iconStyle.Icon;
             const canAdd = suggestion.probability <= remainingProbability;
 
             return (
@@ -780,7 +717,7 @@ function PrizeSuggestionDialog({
                 key={suggestion.id}
                 className="flex min-h-[238px] flex-col rounded-[24px] border border-[#dbe4f0] bg-white p-5 shadow-[0_10px_28px_rgba(24,39,75,0.06)]"
               >
-                <div className={`flex h-16 w-16 items-center justify-center rounded-[20px] ${suggestion.iconClassName}`}>
+                <div className={`flex h-16 w-16 items-center justify-center rounded-[20px] ${iconStyle.className}`}>
                   <Icon className="h-8 w-8" aria-hidden="true" />
                 </div>
                 <div className="mt-5 flex items-start justify-between gap-3">
@@ -816,6 +753,20 @@ function PrizeSuggestionDialog({
       </div>
     </div>
   );
+}
+
+function getPrizeSuggestionIcon(icon: string) {
+  const icons = {
+    coffee: { Icon: Coffee, className: "bg-[#fff3df] text-[#b9680b]" },
+    dessert: { Icon: Sparkles, className: "bg-[#f4eaff] text-[#7a3fd1]" },
+    drink: { Icon: Soup, className: "bg-[#e6f6ff] text-[#1576b6]" },
+    discount: { Icon: BadgePercent, className: "bg-[#e9f7ec] text-[#258348]" },
+    supplement: { Icon: Sandwich, className: "bg-[#e9f7ec] text-[#258348]" },
+    menu: { Icon: UtensilsCrossed, className: "bg-[#eef1ff] text-[#4058c8]" },
+    gift: { Icon: Gift, className: "bg-[#eef1ff] text-[#4058c8]" },
+  } as const;
+
+  return icons[icon as keyof typeof icons] ?? icons.gift;
 }
 
 const CampaignLivePreview = memo(function CampaignLivePreview({
@@ -1386,6 +1337,32 @@ export function CampaignEditor({
   const [isExpertMode, setIsExpertMode] = useState(false);
   const [editingPrizeConditionsId, setEditingPrizeConditionsId] = useState<string | null>(null);
   const [prizeSuggestionsOpen, setPrizeSuggestionsOpen] = useState(false);
+  const [prizeSuggestions, setPrizeSuggestions] = useState<PrizeSuggestion[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    const industry = merchant.industry?.trim();
+
+    if (!industry) {
+      return;
+    }
+
+    fetch(`/api/prize-suggestions?industry=${encodeURIComponent(industry)}`)
+      .then(async (response) => {
+        if (!response.ok) throw new Error("Lecture impossible.");
+        return (await response.json()) as { suggestions?: PrizeSuggestion[] };
+      })
+      .then((payload) => {
+        if (!cancelled) setPrizeSuggestions(payload.suggestions ?? []);
+      })
+      .catch(() => {
+        if (!cancelled) setPrizeSuggestions([]);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [merchant.industry]);
 
   const previewSegments = useMemo(() => buildPreviewSegments(form.prizes), [form.prizes]);
   const totalPrizeProbability = useMemo(
@@ -1393,13 +1370,6 @@ export function CampaignEditor({
     [form.prizes],
   );
   const remainingPrizeProbability = Math.max(0, 100 - totalPrizeProbability);
-  const prizeSuggestions = useMemo(
-    () =>
-      merchant.industry?.trim().toLocaleLowerCase("fr-FR") === "restauration"
-        ? RESTAURANT_PRIZE_SUGGESTIONS
-        : [],
-    [merchant.industry],
-  );
   const previewPrize = form.prizes[0]?.label || "Cadeau surprise";
   const previewCtaClass = buttonSizeMap[form.presentation.button.size];
   const logoWidthPx = Math.round(
@@ -3882,6 +3852,7 @@ export function CampaignEditor({
       <PrizeSuggestionDialog
         open={prizeSuggestionsOpen}
         suggestions={prizeSuggestions}
+        industry={merchant.industry}
         remainingProbability={remainingPrizeProbability}
         onAdd={addSuggestedPrize}
         onClose={() => setPrizeSuggestionsOpen(false)}
