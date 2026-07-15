@@ -96,6 +96,14 @@ const useCases = [
     cta: "Voir la page dédiée aux restaurants",
   },
   {
+    icon: Sparkles,
+    label: "Instituts de beauté",
+    title: "Transformez chaque rendez-vous en fidélisation locale.",
+    text: "Déclenchez des avis Google, collectez des contacts et créez une raison simple de revenir pour une prochaine prestation.",
+    href: "/instituts-beaute",
+    cta: "Voir la page dédiée aux instituts",
+  },
+  {
     icon: Store,
     label: "Commerces",
     title: "Transformez le passage en boutique en relation client durable.",
@@ -368,7 +376,7 @@ export default function IndexPage() {
             title="Une solution adaptée à vos ambitions."
             text="Okado sert les usages du quotidien comme les temps forts : comptoir, événement local, journée portes ouvertes ou animation multi-commerçants."
           />
-          <div className="mt-14 grid gap-5 lg:grid-cols-4">
+          <div className="mt-14 grid gap-5 md:grid-cols-2 xl:grid-cols-5">
             {useCases.map((useCase) => (
               <article
                 key={useCase.label}

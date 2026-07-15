@@ -24,13 +24,28 @@ const wheelSegments = [
   { label: "Perdu", fill: "#162238" },
 ];
 
-const wheelGradient = `conic-gradient(from 0deg, ${wheelSegments
+const beautyWheelSegments = [
+  { label: "Soin", fill: "#edb9c8" },
+  { label: "Perdu", fill: "#3b1936" },
+  { label: "-10%", fill: "#fff8f2" },
+  { label: "Perdu", fill: "#3b1936" },
+  { label: "Mini soin", fill: "#edb9c8" },
+  { label: "Perdu", fill: "#3b1936" },
+  { label: "15€", fill: "#fff8f2" },
+  { label: "Perdu", fill: "#3b1936" },
+  { label: "Trousse", fill: "#edb9c8" },
+  { label: "Perdu", fill: "#3b1936" },
+];
+
+function createWheelGradient(segments: typeof wheelSegments) {
+  return `conic-gradient(from 0deg, ${segments
   .map((segment, index) => {
     const start = index * 36;
     const end = start + 36;
     return `${segment.fill} ${start}deg ${end}deg`;
   })
   .join(", ")})`;
+}
 const winningSegmentCenterDegrees = 18;
 const winningRotationDegrees = 360 - winningSegmentCenterDegrees;
 
@@ -103,12 +118,19 @@ export function LocalizedPrice() {
   );
 }
 
-export function LandingDemo() {
+export function LandingDemo({ variant = "restaurant" }: { variant?: "restaurant" | "beauty" }) {
   const [step, setStep] = useState<"intro" | "action" | "spinning" | "form" | "done">("intro");
   const [rotation, setRotation] = useState(16);
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
   const hasModal = step === "action" || step === "form" || step === "done";
+  const isBeauty = variant === "beauty";
+  const segments = isBeauty ? beautyWheelSegments : wheelSegments;
+  const wheelGradient = createWheelGradient(segments);
+  const accentColor = isBeauty ? "#9b3e62" : "#d6a51f";
+  const businessName = isBeauty ? "L'atelier beauté" : "Le bistro";
+  const gameHeading = isBeauty ? "Prenez soin de vous." : "Jouez et gagnez.";
+  const rewardLabel = isBeauty ? "un soin découverte" : "1 dessert";
 
   const kpis = useMemo(
     () => [
@@ -152,10 +174,10 @@ export function LandingDemo() {
           <div className="mx-auto max-w-[300px] overflow-hidden rounded-[32px] border-[10px] border-[#0f172b] bg-white shadow-[0_20px_50px_rgba(15,23,43,0.18)]">
             <div className="relative min-h-[560px] overflow-hidden bg-[radial-gradient(circle_at_top,#fff7ed_0%,#ffffff_42%,#eef2ff_100%)] px-5 py-7 text-center">
               <p className="text-[24px] font-black tracking-[-0.05em] text-[#0f172b]">
-                Le bistro
+                {businessName}
               </p>
               <p className="mt-8 text-[31px] font-black leading-[1.03] tracking-[-0.05em] text-[#0f172b]">
-                Jouez et gagnez.
+                {gameHeading}
               </p>
 
               {hasModal ? (
@@ -167,7 +189,7 @@ export function LandingDemo() {
 
               {step === "action" && (
                 <div className="absolute left-5 right-5 top-[126px] z-40 rounded-[18px] border border-[#e5e7eb] bg-white/95 p-4 text-center shadow-[0_20px_45px_rgba(15,23,43,0.18)] backdrop-blur">
-                  <Star className="mx-auto h-8 w-8 text-[#d6a51f]" />
+                  <Star className="mx-auto h-8 w-8" style={{ color: accentColor }} />
                   <p className="mt-3 text-base font-black tracking-[-0.03em] text-[#0f172b]">
                     Laissez un avis Google
                   </p>
@@ -177,7 +199,8 @@ export function LandingDemo() {
                   <button
                     type="button"
                     onClick={startSpin}
-                    className="mt-3 rounded-[10px] bg-[#d6a51f] px-4 py-2 text-xs font-black text-white"
+                    className="mt-3 rounded-[10px] px-4 py-2 text-xs font-black text-white"
+                    style={{ backgroundColor: accentColor }}
                   >
                     Écrire un avis
                   </button>
@@ -188,7 +211,7 @@ export function LandingDemo() {
                 <div className="absolute left-5 right-5 top-[108px] z-40 rounded-[18px] border border-[#e5e7eb] bg-white/95 p-4 text-center shadow-[0_20px_45px_rgba(15,23,43,0.18)] backdrop-blur">
                   <Gift className="mx-auto h-8 w-8 text-[#6c00f6]" />
                   <p className="mt-3 text-base font-black tracking-[-0.03em] text-[#0f172b]">
-                    Bravo, vous avez gagné 1 dessert.
+                    Bravo, vous avez gagné {rewardLabel}.
                   </p>
                   <p className="mt-1 text-xs leading-5 text-[#475569]">
                     Renseignez vos coordonnées pour recevoir le coupon.
@@ -240,7 +263,7 @@ export function LandingDemo() {
                     transitionTimingFunction: "cubic-bezier(0.12, 0.86, 0.08, 1)",
                   }}
                 >
-                  {wheelSegments.map((segment, index) => (
+                  {segments.map((segment, index) => (
                     <span
                       key={`${segment.label}-${index}`}
                       className="absolute left-1/2 top-1/2 h-0 w-0 origin-center"
@@ -269,7 +292,8 @@ export function LandingDemo() {
                   type="button"
                   onClick={step === "intro" ? () => setStep("action") : startSpin}
                   disabled={step === "spinning" || step === "form" || step === "done"}
-                  className="absolute left-1/2 top-[215px] z-20 grid h-28 w-28 -translate-x-1/2 place-items-center rounded-full border-[6px] border-white bg-[#d6a51f] text-sm font-black uppercase text-white shadow-[0_18px_34px_rgba(15,23,43,0.22)] transition hover:scale-105 disabled:cursor-not-allowed disabled:opacity-80"
+                  className="absolute left-1/2 top-[215px] z-20 grid h-28 w-28 -translate-x-1/2 place-items-center rounded-full border-[6px] border-white text-sm font-black uppercase text-white shadow-[0_18px_34px_rgba(15,23,43,0.22)] transition hover:scale-105 disabled:cursor-not-allowed disabled:opacity-80"
+                  style={{ backgroundColor: accentColor }}
                 >
                   {step === "spinning" ? <RotateCw className="h-6 w-6 animate-spin" /> : "Jouer"}
                 </button>
