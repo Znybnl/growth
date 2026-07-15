@@ -3,7 +3,20 @@
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronDown, ChevronUp, SquareArrowOutUpRight, Trash2 } from "lucide-react";
+import {
+  Coffee,
+  Gift,
+  Pizza,
+  Plus,
+  Sandwich,
+  Soup,
+  Sparkles,
+  ChevronDown,
+  ChevronUp,
+  SquareArrowOutUpRight,
+  Trash2,
+  type LucideIcon,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
   ChangeEvent,
@@ -75,6 +88,73 @@ type CampaignEditorProps = {
   campaignLibrary?: CampaignLibraryItem[];
   deferInlineAssets?: boolean;
 };
+
+type PrizeSuggestion = {
+  id: string;
+  label: string;
+  description: string;
+  probability: number;
+  estimatedUnitCost: number;
+  icon: LucideIcon;
+  iconClassName: string;
+};
+
+const RESTAURANT_PRIZE_SUGGESTIONS: PrizeSuggestion[] = [
+  {
+    id: "coffee",
+    label: "Un café offert",
+    description: "Un geste simple, facile à délivrer au comptoir.",
+    probability: 20,
+    estimatedUnitCost: 0.7,
+    icon: Coffee,
+    iconClassName: "bg-[#fff3df] text-[#b9680b]",
+  },
+  {
+    id: "dessert",
+    label: "Un dessert offert",
+    description: "Une attention à forte valeur perçue pour une prochaine visite.",
+    probability: 10,
+    estimatedUnitCost: 3.5,
+    icon: Sparkles,
+    iconClassName: "bg-[#f4eaff] text-[#7a3fd1]",
+  },
+  {
+    id: "soft-drink",
+    label: "Une boisson offerte",
+    description: "Idéal pour créer un retour rapide en établissement.",
+    probability: 12,
+    estimatedUnitCost: 1.5,
+    icon: Soup,
+    iconClassName: "bg-[#e6f6ff] text-[#1576b6]",
+  },
+  {
+    id: "pizza",
+    label: "Une part de pizza offerte",
+    description: "Un lot adapté aux pizzerias et à la restauration rapide.",
+    probability: 8,
+    estimatedUnitCost: 2.2,
+    icon: Pizza,
+    iconClassName: "bg-[#fff0e8] text-[#c65f1a]",
+  },
+  {
+    id: "menu-upgrade",
+    label: "Un supplément offert",
+    description: "Un avantage maîtrisé, facile à intégrer à une commande.",
+    probability: 15,
+    estimatedUnitCost: 1.2,
+    icon: Sandwich,
+    iconClassName: "bg-[#e9f7ec] text-[#258348]",
+  },
+  {
+    id: "surprise",
+    label: "Un cadeau surprise",
+    description: "Une dotation flexible pour dynamiser les temps forts.",
+    probability: 5,
+    estimatedUnitCost: 4,
+    icon: Gift,
+    iconClassName: "bg-[#eef1ff] text-[#4058c8]",
+  },
+];
 
 type EditorState = CampaignSetupInput;
 
@@ -650,6 +730,94 @@ function PrizeConditionsDialog({
   );
 }
 
+function PrizeSuggestionDialog({
+  open,
+  suggestions,
+  remainingProbability,
+  onAdd,
+  onClose,
+}: {
+  open: boolean;
+  suggestions: PrizeSuggestion[];
+  remainingProbability: number;
+  onAdd: (suggestion: PrizeSuggestion) => void;
+  onClose: () => void;
+}) {
+  if (!open) {
+    return null;
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#0f1220]/52 px-4 pb-4 pt-10 backdrop-blur-[6px] sm:items-center sm:p-6">
+      <div className="w-full max-w-5xl rounded-[34px] bg-white p-6 text-[#111827] shadow-[0_34px_90px_rgba(18,24,39,0.24)]">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Suggestions de lots</p>
+            <h2 className="mt-2 text-2xl font-semibold text-[#0f1728]">
+              Dotations pensées pour la restauration
+            </h2>
+            <p className="mt-2 max-w-2xl text-sm leading-7 text-[#5c6577]">
+              Ajoutez un lot prêt à paramétrer, puis ajustez son stock, ses conditions et sa probabilité.
+              Il reste {remainingProbability} % de probabilité disponible.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-[18px] border border-[#d7e0ed] px-4 py-2 text-sm font-semibold text-[#182033]"
+          >
+            Fermer
+          </button>
+        </div>
+
+        <div className="mt-6 grid max-h-[66vh] gap-4 overflow-y-auto pr-1 sm:grid-cols-2 lg:grid-cols-3">
+          {suggestions.map((suggestion) => {
+            const Icon = suggestion.icon;
+            const canAdd = suggestion.probability <= remainingProbability;
+
+            return (
+              <article
+                key={suggestion.id}
+                className="flex min-h-[238px] flex-col rounded-[24px] border border-[#dbe4f0] bg-white p-5 shadow-[0_10px_28px_rgba(24,39,75,0.06)]"
+              >
+                <div className={`flex h-16 w-16 items-center justify-center rounded-[20px] ${suggestion.iconClassName}`}>
+                  <Icon className="h-8 w-8" aria-hidden="true" />
+                </div>
+                <div className="mt-5 flex items-start justify-between gap-3">
+                  <h3 className="text-base font-semibold text-[#182033]">{suggestion.label}</h3>
+                  <span className="shrink-0 rounded-full bg-[#eef4ff] px-2.5 py-1 text-xs font-semibold text-[#214ccf]">
+                    {suggestion.probability} %
+                  </span>
+                </div>
+                <p className="mt-2 text-sm leading-6 text-[#64748b]">{suggestion.description}</p>
+                <div className="mt-auto flex items-center justify-between gap-3 pt-5">
+                  <span className="text-xs font-medium text-[#7b8496]">
+                    Coût estimé : {suggestion.estimatedUnitCost.toLocaleString("fr-FR")} €
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => onAdd(suggestion)}
+                    disabled={!canAdd}
+                    title={
+                      canAdd
+                        ? "Ajouter ce lot"
+                        : "Ajustez les probabilités avant d'ajouter ce lot"
+                    }
+                    className="inline-flex items-center gap-2 rounded-[16px] bg-[#111827] px-3 py-2 text-sm font-semibold text-white transition hover:bg-[#273142] disabled:cursor-not-allowed disabled:bg-[#cbd5e1]"
+                  >
+                    <Plus className="h-4 w-4" aria-hidden="true" />
+                    Ajouter
+                  </button>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const CampaignLivePreview = memo(function CampaignLivePreview({
   merchant,
   preview,
@@ -1217,8 +1385,21 @@ export function CampaignEditor({
   const [isImportingCampaign, setIsImportingCampaign] = useState(false);
   const [isExpertMode, setIsExpertMode] = useState(false);
   const [editingPrizeConditionsId, setEditingPrizeConditionsId] = useState<string | null>(null);
+  const [prizeSuggestionsOpen, setPrizeSuggestionsOpen] = useState(false);
 
   const previewSegments = useMemo(() => buildPreviewSegments(form.prizes), [form.prizes]);
+  const totalPrizeProbability = useMemo(
+    () => form.prizes.reduce((total, prize) => total + (Number(prize.probability) || 0), 0),
+    [form.prizes],
+  );
+  const remainingPrizeProbability = Math.max(0, 100 - totalPrizeProbability);
+  const prizeSuggestions = useMemo(
+    () =>
+      merchant.industry?.trim().toLocaleLowerCase("fr-FR") === "restauration"
+        ? RESTAURANT_PRIZE_SUGGESTIONS
+        : [],
+    [merchant.industry],
+  );
   const previewPrize = form.prizes[0]?.label || "Cadeau surprise";
   const previewCtaClass = buttonSizeMap[form.presentation.button.size];
   const logoWidthPx = Math.round(
@@ -1782,6 +1963,31 @@ export function CampaignEditor({
     } finally {
       setIsSaving(false);
     }
+  }
+
+  function addSuggestedPrize(suggestion: PrizeSuggestion) {
+    if (suggestion.probability > remainingPrizeProbability) {
+      setMessage(
+        "Ajustez les probabilités existantes avant d'ajouter ce lot : le total ne peut pas dépasser 100 %.",
+      );
+      setMessageTone("error");
+      return;
+    }
+
+    setForm((current) => ({
+      ...current,
+      prizes: [
+        ...current.prizes,
+        {
+          id: createPrizeId(),
+          label: suggestion.label,
+          totalQuantity: null,
+          probability: suggestion.probability,
+          estimatedUnitCost: suggestion.estimatedUnitCost,
+          usageConditions: "",
+        },
+      ],
+    }));
   }
 
   async function handleSaveCampaign() {
@@ -3408,13 +3614,25 @@ export function CampaignEditor({
                   Lots, validité et conditions
                 </h2>
               </div>
-              <button
-                type="button"
-                onClick={addPrize}
-                className="rounded-[20px] bg-[#111827] px-4 py-3 text-sm font-semibold text-white"
-              >
-                Ajouter un lot
-              </button>
+              <div className="flex flex-wrap items-center justify-end gap-3">
+                {prizeSuggestions.length > 0 ? (
+                  <button
+                    type="button"
+                    onClick={() => setPrizeSuggestionsOpen(true)}
+                    className="inline-flex items-center gap-2 rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-3 text-sm font-semibold text-[#182033] transition hover:bg-[#f7f9fc]"
+                  >
+                    <Sparkles className="h-4 w-4 text-[#2f6df6]" aria-hidden="true" />
+                    Suggérer des lots
+                  </button>
+                ) : null}
+                <button
+                  type="button"
+                  onClick={addPrize}
+                  className="rounded-[20px] bg-[#111827] px-4 py-3 text-sm font-semibold text-white"
+                >
+                  Ajouter un lot
+                </button>
+              </div>
             </div>
 
             <div className="mt-6 grid gap-4 md:grid-cols-2">
@@ -3525,6 +3743,37 @@ export function CampaignEditor({
                 />
               ))}
             </div>
+
+            <div className="mt-3 hidden grid-cols-[minmax(180px,1.5fr)_minmax(100px,.7fr)_minmax(130px,.9fr)_minmax(120px,.85fr)_minmax(120px,1.15fr)_56px] gap-3 xl:grid">
+              <span />
+              <span />
+              <div
+                className={`rounded-[16px] border px-3 py-2 text-center text-sm font-semibold ${
+                  totalPrizeProbability > 100
+                    ? "border-[#fecaca] bg-[#fff1f2] text-[#be123c]"
+                    : totalPrizeProbability === 100
+                      ? "border-[#bbf7d0] bg-[#f0fdf4] text-[#15803d]"
+                      : "border-[#dbe4f0] bg-[#f7f9fc] text-[#64748b]"
+                }`}
+              >
+                Total : {totalPrizeProbability} %
+              </div>
+              <span />
+              <span />
+              <span />
+            </div>
+
+            <div
+              className={`mt-4 rounded-[16px] border px-4 py-3 text-sm font-semibold xl:hidden ${
+                totalPrizeProbability > 100
+                  ? "border-[#fecaca] bg-[#fff1f2] text-[#be123c]"
+                  : totalPrizeProbability === 100
+                    ? "border-[#bbf7d0] bg-[#f0fdf4] text-[#15803d]"
+                    : "border-[#dbe4f0] bg-[#f7f9fc] text-[#64748b]"
+              }`}
+            >
+              Total des probabilités de gain : {totalPrizeProbability} %
+            </div>
           </section>
 
           {message ? (
@@ -3629,6 +3878,13 @@ export function CampaignEditor({
           }
         }}
         onClose={() => setEditingPrizeConditionsId(null)}
+      />
+      <PrizeSuggestionDialog
+        open={prizeSuggestionsOpen}
+        suggestions={prizeSuggestions}
+        remainingProbability={remainingPrizeProbability}
+        onAdd={addSuggestedPrize}
+        onClose={() => setPrizeSuggestionsOpen(false)}
       />
       <BackgroundLibraryDialog
         open={backgroundLibraryDialogOpen}
