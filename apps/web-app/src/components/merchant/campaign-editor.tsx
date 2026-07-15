@@ -4,9 +4,8 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import {
+  BadgePercent,
   Coffee,
-  Gift,
-  Pizza,
   Plus,
   Sandwich,
   Soup,
@@ -15,6 +14,7 @@ import {
   ChevronUp,
   SquareArrowOutUpRight,
   Trash2,
+  UtensilsCrossed,
   type LucideIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -128,13 +128,13 @@ const RESTAURANT_PRIZE_SUGGESTIONS: PrizeSuggestion[] = [
     iconClassName: "bg-[#e6f6ff] text-[#1576b6]",
   },
   {
-    id: "pizza",
-    label: "Une part de pizza offerte",
-    description: "Un lot adapté aux pizzerias et à la restauration rapide.",
-    probability: 8,
-    estimatedUnitCost: 2.2,
-    icon: Pizza,
-    iconClassName: "bg-[#fff0e8] text-[#c65f1a]",
+    id: "discount-10",
+    label: "Une r\u00e9duction de 10 %",
+    description: "Un avantage imm\u00e9diat, simple \u00e0 expliquer et \u00e0 utiliser.",
+    probability: 50,
+    estimatedUnitCost: 2,
+    icon: BadgePercent,
+    iconClassName: "bg-[#e9f7ec] text-[#258348]",
   },
   {
     id: "menu-upgrade",
@@ -146,12 +146,12 @@ const RESTAURANT_PRIZE_SUGGESTIONS: PrizeSuggestion[] = [
     iconClassName: "bg-[#e9f7ec] text-[#258348]",
   },
   {
-    id: "surprise",
-    label: "Un cadeau surprise",
-    description: "Une dotation flexible pour dynamiser les temps forts.",
-    probability: 5,
-    estimatedUnitCost: 4,
-    icon: Gift,
+    id: "daily-menu",
+    label: "Menu du jour offert",
+    description: "Entr\u00e9e + plat ou plat + dessert, pour une prochaine visite.",
+    probability: 2,
+    estimatedUnitCost: 12,
+    icon: UtensilsCrossed,
     iconClassName: "bg-[#eef1ff] text-[#4058c8]",
   },
 ];
