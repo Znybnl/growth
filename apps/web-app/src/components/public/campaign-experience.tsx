@@ -789,7 +789,10 @@ export function CampaignExperience({
         </div>
 
         {campaign.gameType === "wheel" ? (
-          <div className="relative left-1/2 mt-[40px] h-[101.5vw] min-h-0 w-screen -translate-x-1/2 overflow-hidden sm:mt-20 sm:h-[86.8vw] md:h-[74.2vw] lg:mt-8 lg:h-[38.2vw] xl:h-[30.9vw] 2xl:h-[27.9vw]">
+          <div
+            className="relative left-1/2 mt-[40px] min-h-0 w-screen -translate-x-1/2 flex-1 overflow-hidden sm:mt-20 lg:mt-8"
+            style={{ minHeight: "min(52vh, 520px)" }}
+          >
             <div className="absolute inset-0 overflow-hidden">
               <WheelOfFortune
                 key={`${campaign.id}-${drawSession?.id ?? "idle"}`}
