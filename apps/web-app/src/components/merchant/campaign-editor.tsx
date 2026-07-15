@@ -43,6 +43,7 @@ import {
   normalizeCampaignEmailSettings,
 } from "@/lib/email-settings";
 import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
+import { buildWheelVisualSegments, WheelVisualSegment } from "@/lib/wheel-segments";
 import {
   ActionKind,
   BackgroundLibraryAsset,
@@ -92,11 +93,7 @@ type CampaignEditorProps = {
 
 type EditorState = CampaignSetupInput;
 
-type PreviewSegment = {
-  id: string;
-  label: string;
-  tone: "win" | "lose";
-};
+type PreviewSegment = WheelVisualSegment;
 
 type CampaignEditorPreviewModel = {
   formId: string;
@@ -1196,39 +1193,13 @@ function toEditorState(merchant: Merchant, campaign: CampaignPerformance | null)
 }
 
 function buildPreviewSegments(prizes: EditorState["prizes"]): PreviewSegment[] {
-  const winners = prizes
-    .map((prize, index) => ({
+  return buildWheelVisualSegments(
+    prizes.map((prize, index) => ({
       id: prize.id || `preview-win-${index}`,
-      label: prize.label.trim().toUpperCase(),
-      tone: "win" as const,
-    }))
-    .filter((prize) => prize.label);
-
-  const minimumSegmentCount = 10;
-  const loserCount = Math.max(
-    minimumSegmentCount - winners.length,
-    winners.length,
-    minimumSegmentCount,
+      label: prize.label,
+      probability: prize.probability,
+    })),
   );
-  const losers = Array.from({ length: loserCount }, (_, index) => ({
-    id: `preview-lose-${index}`,
-    label: index % 2 === 0 ? "PERDU" : "DOMMAGE",
-    tone: "lose" as const,
-  }));
-  const segments: PreviewSegment[] = [];
-  const maxLength = Math.max(winners.length, losers.length);
-
-  for (let index = 0; index < maxLength; index += 1) {
-    if (losers[index]) {
-      segments.push(losers[index]);
-    }
-
-    if (winners[index]) {
-      segments.push(winners[index]);
-    }
-  }
-
-  return segments.length ? segments : losers;
 }
 
 function syncActionLabel(kind: ActionKind, currentLabel: string) {

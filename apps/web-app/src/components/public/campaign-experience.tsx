@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { BrandMark } from "@/components/brand-mark";
 import { ScratchGame } from "@/components/public/scratch-game";
 import { WheelOfFortune } from "@/components/public/wheel-of-fortune";
+import { buildWheelVisualSegments } from "@/lib/wheel-segments";
 import {
   CreateDrawSessionResult,
   DrawResult,
@@ -17,12 +18,6 @@ import {
 type CampaignExperienceProps = {
   campaignId: string;
   initialCampaign: PublicCampaign;
-};
-
-type WheelSegment = {
-  id: string;
-  label: string;
-  tone: "win" | "lose";
 };
 
 type ExperienceStage =
@@ -54,84 +49,7 @@ function withHexAlpha(color: string | undefined, alpha: string) {
 }
 
 function buildWheelSegments(campaign: PublicCampaign) {
-  const minimumSegmentCount = 10;
-  const prizes = campaign.prizes.filter((prize) => prize.probability > 0);
-  const winningProbability = prizes.reduce((total, prize) => total + prize.probability, 0);
-  const lossProbability = Math.max(0, 100 - winningProbability);
-  const buckets = [
-    ...prizes.map((prize) => ({
-      id: prize.id,
-      label: prize.label.toUpperCase(),
-      tone: "win" as const,
-      weight: prize.probability,
-    })),
-    ...(lossProbability > 0 || prizes.length === 0
-      ? [{ id: "lose", label: "PERDU", tone: "lose" as const, weight: Math.max(1, lossProbability) }]
-      : []),
-  ];
-
-  if (!buckets.length) {
-    return [];
-  }
-
-  // Ten slices keep the wheel readable while reflecting the configured odds.
-  const slotCount = Math.max(minimumSegmentCount, buckets.length);
-  const denominator = Math.max(100, winningProbability);
-  const counts = buckets.map(() => 1);
-  const idealCounts = buckets.map((bucket) => (bucket.weight / denominator) * slotCount);
-
-  while (counts.reduce((total, count) => total + count, 0) < slotCount) {
-    let selectedIndex = 0;
-    let highestDifference = Number.NEGATIVE_INFINITY;
-
-    for (let index = 0; index < buckets.length; index += 1) {
-      const difference = idealCounts[index] - counts[index];
-      if (difference > highestDifference) {
-        highestDifference = difference;
-        selectedIndex = index;
-      }
-    }
-
-    counts[selectedIndex] += 1;
-  }
-
-  // Smooth weighted round-robin spreads the same reward around the wheel.
-  const scores = buckets.map(() => 0);
-  const remaining = [...counts];
-  const occurrences = buckets.map(() => 0);
-  const segments: WheelSegment[] = [];
-
-  for (let slotIndex = 0; slotIndex < slotCount; slotIndex += 1) {
-    for (let index = 0; index < buckets.length; index += 1) {
-      if (remaining[index] > 0) {
-        scores[index] += counts[index];
-      }
-    }
-
-    let selectedIndex = -1;
-    let highestScore = Number.NEGATIVE_INFINITY;
-    for (let index = 0; index < buckets.length; index += 1) {
-      if (remaining[index] > 0 && scores[index] > highestScore) {
-        highestScore = scores[index];
-        selectedIndex = index;
-      }
-    }
-
-    const bucket = buckets[selectedIndex];
-    const occurrence = occurrences[selectedIndex];
-    occurrences[selectedIndex] += 1;
-    remaining[selectedIndex] -= 1;
-    scores[selectedIndex] -= slotCount;
-
-    segments.push({
-      id: occurrence === 0 ? bucket.id : `${bucket.id}-visual-${occurrence}`,
-      label:
-        bucket.tone === "lose" ? (occurrence % 2 === 0 ? "PERDU" : "DOMMAGE") : bucket.label,
-      tone: bucket.tone,
-    });
-  }
-
-  return segments;
+  return buildWheelVisualSegments(campaign.prizes);
 }
 
 function getRestaurantPopTextLines(text: string) {

@@ -339,9 +339,7 @@ export function WheelOfFortune({
                       ? colors.loseColor
                       : warmNeutral
                   : segment.tone === "win"
-                    ? index % 2 === 0
-                      ? colors.winColor
-                      : colors.alternateWinColor
+                    ? colors.winColor
                     : index % 2 === 0
                       ? colors.loseColor
                       : colors.alternateLoseColor;
