@@ -87,6 +87,22 @@ function readableTextColor(fill: string, fallback: string) {
   return luminance > 0.68 ? "#111827" : "#ffffff";
 }
 
+function deriveLighterHex(hex: string, ratio = 0.76) {
+  const normalized = hex.replace("#", "");
+
+  if (!/^[0-9a-f]{6}$/i.test(normalized)) {
+    return "#edf2f7";
+  }
+
+  const channels = [0, 2, 4].map((offset) => Number.parseInt(normalized.slice(offset, offset + 2), 16));
+  const lightened = channels
+    .map((channel) => Math.round(channel + (255 - channel) * ratio))
+    .map((channel) => channel.toString(16).padStart(2, "0"))
+    .join("");
+
+  return `#${lightened}`;
+}
+
 function wrapSegmentLabel(label: string) {
   const words = label.trim().split(/\s+/).filter(Boolean);
   const lines: string[] = [];
@@ -175,7 +191,7 @@ export function WheelOfFortune({
     loseColor: wheelStyle?.loseColor ?? "#edf2f7",
     alternateLoseColor: wheelStyle?.alternateLoseColor ?? "#e7edf3",
   };
-  const warmNeutral = "#fff0d2";
+  const classicLightColor = deriveLighterHex(colors.loseColor);
   const wheelTop =
     framing === "public" ? undefined : framing === "editor" ? "83%" : "62%";
   const wheelFrameSizeClass =
@@ -331,18 +347,14 @@ export function WheelOfFortune({
               const textPoint = polarToCartesian(208, midAngle);
               const labelLines = wrapSegmentLabel(segment.label);
               const textStyles = segmentTextStyles(labelLines);
-              const fillColor =
-                isRestaurantPopTemplate
-                  ? segment.tone === "win"
-                    ? colors.winColor
-                    : index % 2 === 0
-                      ? colors.loseColor
-                      : warmNeutral
-                  : segment.tone === "win"
-                    ? colors.winColor
-                    : index % 2 === 0
-                      ? colors.loseColor
-                      : colors.alternateLoseColor;
+              // Colors are an aesthetic rhythm, independent from the winning outcome.
+              const fillColor = isRestaurantPopTemplate
+                ? index % 2 === 0
+                  ? colors.loseColor
+                  : colors.winColor
+                : index % 2 === 0
+                  ? colors.loseColor
+                  : classicLightColor;
               const textColor = readableTextColor(fillColor, segment.tone === "win" ? accent.ink : "#111827");
 
               return (

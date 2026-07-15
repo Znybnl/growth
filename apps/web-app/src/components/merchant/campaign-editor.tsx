@@ -3287,14 +3287,14 @@ export function CampaignEditor({
 
                 {[
                   ...(form.presentation.layout.templateId === "restaurant-pop" || isExpertMode
-                    ? [["winColor", "Couleur du gain"]]
+                    ? [["winColor", "Couleur secondaire"]]
                     : []),
                   ...(isExpertMode
                     ? [
                         ["rimColor", "Couleur du contour"],
                         ...(form.presentation.layout.templateId === "restaurant-pop"
                           ? []
-                          : [["alternateLoseColor", "Couleur perdu clair"]]),
+                          : [["alternateLoseColor", "Couleur principale claire"]]),
                       ]
                     : []),
                 ].map(([key, label]) => (
