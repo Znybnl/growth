@@ -1,6 +1,6 @@
 "use client";
 
-import { Coffee, Gift, Percent, Pizza, Plus, Save, Soup, Sparkles, Trash2, UtensilsCrossed } from "lucide-react";
+import { CirclePlus, Coffee, Gift, Percent, Plus, Save, Soup, Sparkles, Trash2, UtensilsCrossed } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,7 @@ const ICON_OPTIONS = [
   { value: "dessert", label: "Dessert", Icon: Sparkles },
   { value: "drink", label: "Boisson", Icon: Soup },
   { value: "discount", label: "Réduction", Icon: Percent },
-  { value: "supplement", label: "Supplément", Icon: Pizza },
+  { value: "supplement", label: "Supplément", Icon: CirclePlus },
   { value: "menu", label: "Menu", Icon: UtensilsCrossed },
   { value: "gift", label: "Cadeau", Icon: Gift },
 ] as const;
@@ -36,12 +36,21 @@ export function PrizeSuggestionsManager({ initialSuggestions }: { initialSuggest
   const [suggestions, setSuggestions] = useState(initialSuggestions);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [form, setForm] = useState<SuggestionForm>(createEmptyForm());
+  const [industryFilter, setIndustryFilter] = useState("all");
   const [message, setMessage] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
   const selected = useMemo(
     () => suggestions.find((suggestion) => suggestion.id === selectedId) ?? null,
     [selectedId, suggestions],
+  );
+
+  const visibleSuggestions = useMemo(
+    () =>
+      suggestions
+        .filter((suggestion) => industryFilter === "all" || suggestion.industry === industryFilter)
+        .sort((a, b) => b.probability - a.probability || a.sortOrder - b.sortOrder || a.label.localeCompare(b.label, "fr")),
+    [industryFilter, suggestions],
   );
 
   function startCreate() {
@@ -130,11 +139,24 @@ export function PrizeSuggestionsManager({ initialSuggestions }: { initialSuggest
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_430px]">
         <section className="okado-card overflow-hidden">
-          <div className="border-b border-[#e8edf5] px-5 py-4">
+          <div className="flex flex-col gap-3 border-b border-[#e8edf5] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm font-semibold text-graphite">Catalogue actif et brouillons</p>
+            <label className="flex items-center gap-2 text-sm font-medium text-[#44516a]">
+              Secteur
+              <select
+                value={industryFilter}
+                onChange={(event) => setIndustryFilter(event.target.value)}
+                className="h-9 min-w-40 bg-white py-1"
+              >
+                <option value="all">Tous les secteurs</option>
+                {INDUSTRY_OPTIONS.map((industry) => (
+                  <option key={industry} value={industry}>{industry}</option>
+                ))}
+              </select>
+            </label>
           </div>
           <div className="grid gap-3 p-4 sm:grid-cols-2">
-            {suggestions.map((suggestion) => {
+            {visibleSuggestions.map((suggestion) => {
               const icon = ICON_OPTIONS.find((item) => item.value === suggestion.icon) ?? ICON_OPTIONS.at(-1)!;
               const Icon = icon.Icon;
               return (
@@ -152,7 +174,7 @@ export function PrizeSuggestionsManager({ initialSuggestions }: { initialSuggest
                 </article>
               );
             })}
-            {!suggestions.length ? <p className="col-span-full px-2 py-12 text-center text-sm text-ash">Aucune suggestion. Ajoutez le premier lot pour un secteur.</p> : null}
+            {!visibleSuggestions.length ? <p className="col-span-full px-2 py-12 text-center text-sm text-ash">Aucune suggestion pour ce secteur. Ajoutez le premier lot.</p> : null}
           </div>
         </section>
 

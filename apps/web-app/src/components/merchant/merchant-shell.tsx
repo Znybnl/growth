@@ -107,7 +107,9 @@ export function MerchantShell({ children, merchant, user, isSaasAdmin }: Merchan
   }, []);
 
   function isActive(href: string) {
-    return href === "/" ? pathname === "/" : pathname.startsWith(href);
+    if (href === "/") return pathname === "/";
+    // The administration overview must not remain active on its child pages.
+    return href === "/admin" ? pathname === "/admin" : pathname === href || pathname.startsWith(`${href}/`);
   }
 
   return (

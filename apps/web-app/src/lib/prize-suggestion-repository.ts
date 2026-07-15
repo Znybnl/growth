@@ -85,6 +85,8 @@ export async function getPrizeSuggestions(industry: string, includeInactive = fa
     .from("prize_suggestions")
     .select("*")
     .ilike("industry", normalizeIndustry(industry))
+    // Surface the most likely prizes first in the merchant suggestion dialog.
+    .order("probability", { ascending: false })
     .order("sort_order", { ascending: true })
     .order("created_at", { ascending: true });
 
@@ -102,6 +104,7 @@ export async function getAllPrizeSuggestions() {
     .from("prize_suggestions")
     .select("*")
     .order("industry", { ascending: true })
+    .order("probability", { ascending: false })
     .order("sort_order", { ascending: true })
     .order("created_at", { ascending: true });
   if (error) throw new Error("Lecture des suggestions de lots impossible.");

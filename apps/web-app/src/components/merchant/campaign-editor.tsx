@@ -8,7 +8,7 @@ import {
   Coffee,
   Gift,
   Plus,
-  Sandwich,
+  CirclePlus,
   Soup,
   Sparkles,
   ChevronDown,
@@ -758,7 +758,7 @@ function getPrizeSuggestionIcon(icon: string) {
     dessert: { Icon: Sparkles, className: "bg-[#f4eaff] text-[#7a3fd1]" },
     drink: { Icon: Soup, className: "bg-[#e6f6ff] text-[#1576b6]" },
     discount: { Icon: BadgePercent, className: "bg-[#e9f7ec] text-[#258348]" },
-    supplement: { Icon: Sandwich, className: "bg-[#e9f7ec] text-[#258348]" },
+    supplement: { Icon: CirclePlus, className: "bg-[#e9f7ec] text-[#258348]" },
     menu: { Icon: UtensilsCrossed, className: "bg-[#eef1ff] text-[#4058c8]" },
     gift: { Icon: Gift, className: "bg-[#eef1ff] text-[#4058c8]" },
   } as const;
