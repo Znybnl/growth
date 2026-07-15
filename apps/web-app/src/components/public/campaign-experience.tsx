@@ -54,39 +54,84 @@ function withHexAlpha(color: string | undefined, alpha: string) {
 }
 
 function buildWheelSegments(campaign: PublicCampaign) {
-  const winners = campaign.prizes.flatMap((prize) => {
-    const visualCount = prize.probability >= 20 ? 2 : 1;
-    return Array.from({ length: visualCount }, (_, index) => ({
-      id: index === 0 ? prize.id : `${prize.id}-visual-${index}`,
+  const minimumSegmentCount = 10;
+  const prizes = campaign.prizes.filter((prize) => prize.probability > 0);
+  const winningProbability = prizes.reduce((total, prize) => total + prize.probability, 0);
+  const lossProbability = Math.max(0, 100 - winningProbability);
+  const buckets = [
+    ...prizes.map((prize) => ({
+      id: prize.id,
       label: prize.label.toUpperCase(),
       tone: "win" as const,
-    }));
-  });
-  const minimumSegmentCount = 10;
-  const loserCount = Math.max(
-    minimumSegmentCount - winners.length,
-    winners.length,
-    minimumSegmentCount,
-  );
-  const losers = Array.from({ length: loserCount }, (_, index) => ({
-    id: `lose-${index}`,
-    label: index % 2 === 0 ? "PERDU" : "DOMMAGE",
-    tone: "lose" as const,
-  }));
-  const segments: WheelSegment[] = [];
-  const maxLength = Math.max(winners.length, losers.length);
+      weight: prize.probability,
+    })),
+    ...(lossProbability > 0 || prizes.length === 0
+      ? [{ id: "lose", label: "PERDU", tone: "lose" as const, weight: Math.max(1, lossProbability) }]
+      : []),
+  ];
 
-  for (let index = 0; index < maxLength; index += 1) {
-    if (losers[index]) {
-      segments.push(losers[index]);
-    }
-
-    if (winners[index]) {
-      segments.push(winners[index]);
-    }
+  if (!buckets.length) {
+    return [];
   }
 
-  return segments.length ? segments : losers;
+  // Ten slices keep the wheel readable while reflecting the configured odds.
+  const slotCount = Math.max(minimumSegmentCount, buckets.length);
+  const denominator = Math.max(100, winningProbability);
+  const counts = buckets.map(() => 1);
+  const idealCounts = buckets.map((bucket) => (bucket.weight / denominator) * slotCount);
+
+  while (counts.reduce((total, count) => total + count, 0) < slotCount) {
+    let selectedIndex = 0;
+    let highestDifference = Number.NEGATIVE_INFINITY;
+
+    for (let index = 0; index < buckets.length; index += 1) {
+      const difference = idealCounts[index] - counts[index];
+      if (difference > highestDifference) {
+        highestDifference = difference;
+        selectedIndex = index;
+      }
+    }
+
+    counts[selectedIndex] += 1;
+  }
+
+  // Smooth weighted round-robin spreads the same reward around the wheel.
+  const scores = buckets.map(() => 0);
+  const remaining = [...counts];
+  const occurrences = buckets.map(() => 0);
+  const segments: WheelSegment[] = [];
+
+  for (let slotIndex = 0; slotIndex < slotCount; slotIndex += 1) {
+    for (let index = 0; index < buckets.length; index += 1) {
+      if (remaining[index] > 0) {
+        scores[index] += counts[index];
+      }
+    }
+
+    let selectedIndex = -1;
+    let highestScore = Number.NEGATIVE_INFINITY;
+    for (let index = 0; index < buckets.length; index += 1) {
+      if (remaining[index] > 0 && scores[index] > highestScore) {
+        highestScore = scores[index];
+        selectedIndex = index;
+      }
+    }
+
+    const bucket = buckets[selectedIndex];
+    const occurrence = occurrences[selectedIndex];
+    occurrences[selectedIndex] += 1;
+    remaining[selectedIndex] -= 1;
+    scores[selectedIndex] -= slotCount;
+
+    segments.push({
+      id: occurrence === 0 ? bucket.id : `${bucket.id}-visual-${occurrence}`,
+      label:
+        bucket.tone === "lose" ? (occurrence % 2 === 0 ? "PERDU" : "DOMMAGE") : bucket.label,
+      tone: bucket.tone,
+    });
+  }
+
+  return segments;
 }
 
 function getRestaurantPopTextLines(text: string) {
@@ -744,10 +789,7 @@ export function CampaignExperience({
         </div>
 
         {campaign.gameType === "wheel" ? (
-          <div
-            className="relative left-1/2 mt-[40px] min-h-0 w-screen -translate-x-1/2 flex-1 overflow-hidden sm:mt-20 lg:mt-8"
-            style={{ minHeight: "min(52vh, 520px)" }}
-          >
+          <div className="relative left-1/2 mt-[40px] h-[101.5vw] min-h-0 w-screen -translate-x-1/2 overflow-hidden sm:mt-20 sm:h-[86.8vw] md:h-[74.2vw] lg:mt-8 lg:h-[38.2vw] xl:h-[30.9vw] 2xl:h-[27.9vw]">
             <div className="absolute inset-0 overflow-hidden">
               <WheelOfFortune
                 key={`${campaign.id}-${drawSession?.id ?? "idle"}`}
@@ -757,7 +799,10 @@ export function CampaignExperience({
                 buttonStyle={{
                   backgroundColor: primaryColor,
                   textColor: campaign.presentation.button.textColor,
-                  borderColor: secondaryColor,
+                  borderColor:
+                    pageTemplate === "restaurant-pop"
+                      ? secondaryColor
+                      : campaign.presentation.wheel.rimColor,
                 }}
                 segments={segments}
                 winningSegmentId={winningSegmentId}
