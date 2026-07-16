@@ -15,7 +15,11 @@ export type LogoMode = "none" | "image" | "text";
 export type ButtonSize = "sm" | "md" | "lg";
 export type BackgroundMode = "color" | "image";
 export type PosterTemplateId = "classic-wheel" | "soft-gradient-wheel" | "terracotta-wheel";
-export type GamePageTemplateId = "classic" | "restaurant-pop";
+export type GamePageTemplateId =
+  | "classic"
+  | "restaurant-pop"
+  | "cosmic-orbit"
+  | "sunburst-festival";
 export type ActionKind =
   | "google"
   | "instagram"

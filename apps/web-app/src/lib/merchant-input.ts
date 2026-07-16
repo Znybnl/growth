@@ -40,7 +40,12 @@ const TEXT_FONTS = new Set<TextFont>([
 ]);
 const BUTTON_SIZES = new Set<ButtonSize>(["sm", "md", "lg"]);
 const BACKGROUND_MODES = new Set<BackgroundMode>(["color", "image"]);
-const GAME_PAGE_TEMPLATE_IDS = new Set<GamePageTemplateId>(["classic", "restaurant-pop"]);
+const GAME_PAGE_TEMPLATE_IDS = new Set<GamePageTemplateId>([
+  "classic",
+  "restaurant-pop",
+  "cosmic-orbit",
+  "sunburst-festival",
+]);
 const POSTER_TEMPLATE_IDS = new Set<PosterTemplateId>([
   "classic-wheel",
   "soft-gradient-wheel",

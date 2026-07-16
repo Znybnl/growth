@@ -72,6 +72,18 @@ const WheelOfFortune = dynamic(
   },
 );
 
+const ImmersiveWheel = dynamic(
+  () => import("@/components/public/immersive-wheel").then((mod) => mod.ImmersiveWheel),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-full min-h-[420px] w-full items-center justify-center rounded-[32px] bg-white/70 text-sm text-[#7b8496]">
+        Chargement de la prévisualisation...
+      </div>
+    ),
+  },
+);
+
 const ScratchGame = dynamic(
   () => import("@/components/public/scratch-game").then((mod) => mod.ScratchGame),
   {
@@ -169,6 +181,16 @@ const gamePageTemplateOptions: Array<{
     value: "restaurant-pop",
     title: "Visuel pop",
     description: "Un univers plus événementiel avec formes, contraste et roue façon jeu concours.",
+  },
+  {
+    value: "cosmic-orbit",
+    title: "Orbit néon",
+    description: "Un univers nocturne et lumineux, inspiré des bornes de jeu contemporaines.",
+  },
+  {
+    value: "sunburst-festival",
+    title: "Soleil pop",
+    description: "Un graphisme solaire, joyeux et très lisible sur mobile comme sur tablette.",
   },
 ];
 
@@ -774,6 +796,13 @@ const CampaignLivePreview = memo(function CampaignLivePreview({
   preview: CampaignEditorPreviewModel;
 }) {
   const isRestaurantPopTemplate = preview.gamePageTemplateId === "restaurant-pop";
+  const isCosmicTemplate = preview.gamePageTemplateId === "cosmic-orbit";
+  const isImmersiveTemplate =
+    isCosmicTemplate || preview.gamePageTemplateId === "sunburst-festival";
+  const previewHeadingTextColor =
+    isCosmicTemplate && preview.headingTextColor.toLowerCase() === "#1f2937"
+      ? "#f8fbff"
+      : preview.headingTextColor;
   const restaurantPopHeadingLines = buildRestaurantPopHeadingLines(preview.subtitle);
 
   return (
@@ -826,7 +855,7 @@ const CampaignLivePreview = memo(function CampaignLivePreview({
           <h3
             className={`${preview.headingFontClass} whitespace-pre-line ${isRestaurantPopTemplate ? "tracking-[0.038em] drop-shadow-[0_4px_0_rgba(0,0,0,0.08)]" : ""} leading-[1]`}
             style={{
-              color: preview.headingTextColor,
+              color: previewHeadingTextColor,
               fontSize: `${preview.headingFontSizePx}px`,
               fontWeight: preview.headingFontWeight,
             }}
@@ -840,7 +869,7 @@ const CampaignLivePreview = memo(function CampaignLivePreview({
                         style={{
                           color: part.secondary
                             ? preview.wheelStyle.winColor
-                            : preview.headingTextColor,
+                            : previewHeadingTextColor,
                         }}
                       >
                         {part.text}
@@ -859,20 +888,39 @@ const CampaignLivePreview = memo(function CampaignLivePreview({
           }}
         >
           {preview.gameType === "wheel" ? (
-            <WheelOfFortune
-              accent={preview.accent}
-              wheelStyle={preview.wheelStyle}
-              pageTemplate={preview.gamePageTemplateId}
-              buttonStyle={{
-                backgroundColor: preview.buttonStyle.backgroundColor,
-                textColor: preview.buttonStyle.textColor,
-                borderColor: preview.buttonStyle.borderColor,
-              }}
-              segments={preview.previewSegments}
-              buttonEnabled
-              winningSegmentId={preview.winningSegmentId}
-              framing="editor"
-            />
+            isImmersiveTemplate ? (
+              <ImmersiveWheel
+                accent={preview.accent}
+                wheelStyle={preview.wheelStyle}
+                template={preview.gamePageTemplateId as "cosmic-orbit" | "sunburst-festival"}
+                buttonStyle={{
+                  backgroundColor: preview.buttonStyle.backgroundColor,
+                  textColor: preview.buttonStyle.textColor,
+                  borderColor: preview.buttonStyle.borderColor,
+                }}
+                segments={preview.previewSegments}
+                buttonEnabled
+                winningSegmentId={preview.winningSegmentId}
+                framing="editor"
+              />
+            ) : (
+              <WheelOfFortune
+                accent={preview.accent}
+                wheelStyle={preview.wheelStyle}
+                pageTemplate={
+                  preview.gamePageTemplateId === "restaurant-pop" ? "restaurant-pop" : "classic"
+                }
+                buttonStyle={{
+                  backgroundColor: preview.buttonStyle.backgroundColor,
+                  textColor: preview.buttonStyle.textColor,
+                  borderColor: preview.buttonStyle.borderColor,
+                }}
+                segments={preview.previewSegments}
+                buttonEnabled
+                winningSegmentId={preview.winningSegmentId}
+                framing="editor"
+              />
+            )
           ) : (
             <ScratchGame
               accent={preview.accent}
@@ -1390,7 +1438,11 @@ export function CampaignEditor({
             ? `linear-gradient(rgba(15,23,40,0.32), rgba(15,23,40,0.52)), url("${form.presentation.background.imageUrl}")`
             : (form.presentation.layout.templateId ?? "classic") === "restaurant-pop"
               ? `radial-gradient(circle at -10% -8%, ${withHexAlpha(form.presentation.wheel.loseColor, "f2")} 0 18%, transparent 19%), radial-gradient(circle at 110% 0%, ${withHexAlpha(form.presentation.wheel.winColor, "f2")} 0 13%, transparent 14%), linear-gradient(180deg, #fff2dd 0%, #fffaf1 48%, #fff4e5 100%)`
-              : "",
+              : (form.presentation.layout.templateId ?? "classic") === "cosmic-orbit"
+                ? `radial-gradient(circle at 50% 112%, ${withHexAlpha(form.presentation.wheel.loseColor, "52")} 0 24%, transparent 43%), radial-gradient(circle at 9% 12%, ${withHexAlpha(form.presentation.wheel.winColor, "2b")} 0 14%, transparent 25%), linear-gradient(155deg, #07142e 0%, #0b1d42 55%, #071126 100%)`
+                : (form.presentation.layout.templateId ?? "classic") === "sunburst-festival"
+                  ? `radial-gradient(circle at 12% 10%, ${withHexAlpha(form.presentation.wheel.loseColor, "33")} 0 12%, transparent 13%), radial-gradient(circle at 94% 18%, ${withHexAlpha(form.presentation.wheel.winColor, "38")} 0 14%, transparent 15%), linear-gradient(180deg, #fffdf5 0%, #fff8e8 56%, #fff2ce 100%)`
+                  : "",
         backgroundPosition: "center",
         backgroundSize: "cover",
       },

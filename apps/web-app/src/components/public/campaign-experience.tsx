@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 
 import { BrandMark } from "@/components/brand-mark";
+import { ImmersiveWheel } from "@/components/public/immersive-wheel";
 import { ScratchGame } from "@/components/public/scratch-game";
 import { WheelOfFortune } from "@/components/public/wheel-of-fortune";
 import { buildWheelVisualSegments } from "@/lib/wheel-segments";
@@ -432,8 +433,15 @@ export function CampaignExperience({
   const blockSpacingPx = campaign.presentation.layout.blockSpacingPx;
   const pageTemplate = campaign.presentation.layout.templateId ?? "classic";
   const isRestaurantPopTemplate = pageTemplate === "restaurant-pop";
+  const isCosmicTemplate = pageTemplate === "cosmic-orbit";
+  const isSunburstTemplate = pageTemplate === "sunburst-festival";
+  const isImmersiveTemplate = isCosmicTemplate || isSunburstTemplate;
   const primaryColor = campaign.presentation.wheel.loseColor ?? campaign.accent.signal;
   const secondaryColor = campaign.presentation.wheel.winColor ?? "#073b72";
+  const headingTextColor =
+    isCosmicTemplate && campaign.presentation.heading.textColor.toLowerCase() === "#1f2937"
+      ? "#f8fbff"
+      : campaign.presentation.heading.textColor;
   const logoWidthPx = Math.round(
     Math.max(56, Math.min(720, campaign.presentation.logo.sizePercent * 3)),
   );
@@ -624,7 +632,11 @@ export function CampaignExperience({
     campaign.presentation.background.mode === "image" &&
     campaign.presentation.background.imageUrl
       ? `linear-gradient(rgba(0,0,0,0.08), rgba(0,0,0,0.18)), url("${campaign.presentation.background.imageUrl}")`
-      : isRestaurantPopTemplate
+      : isCosmicTemplate
+        ? `radial-gradient(circle at 50% 112%, ${withHexAlpha(primaryColor, "52")} 0 24%, transparent 43%), radial-gradient(circle at 9% 12%, ${withHexAlpha(secondaryColor, "2b")} 0 14%, transparent 25%), linear-gradient(155deg, #07142e 0%, #0b1d42 55%, #071126 100%)`
+        : isSunburstTemplate
+          ? `radial-gradient(circle at 12% 10%, ${withHexAlpha(primaryColor, "33")} 0 12%, transparent 13%), radial-gradient(circle at 94% 18%, ${withHexAlpha(secondaryColor, "38")} 0 14%, transparent 15%), linear-gradient(180deg, #fffdf5 0%, #fff8e8 56%, #fff2ce 100%)`
+        : isRestaurantPopTemplate
         ? `radial-gradient(circle at -10% -8%, ${withHexAlpha(primaryColor, "f2")} 0 18%, transparent 19%), radial-gradient(circle at 110% 0%, ${withHexAlpha(secondaryColor, "f2")} 0 13%, transparent 14%), radial-gradient(circle at 0% 80%, ${withHexAlpha(primaryColor, "20")} 0 20%, transparent 21%), radial-gradient(circle at 100% 78%, ${withHexAlpha(secondaryColor, "40")} 0 18%, transparent 19%), linear-gradient(180deg, #fff2dd 0%, #fffaf1 46%, #fff4e5 100%)`
         : `radial-gradient(circle at 50% 50%, ${withHexAlpha(primaryColor, "33")}, transparent 50%), linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.08))`;
   const restaurantPopHeadingLines = buildRestaurantPopHeadingLines(campaign.subtitle);
@@ -639,18 +651,18 @@ export function CampaignExperience({
         backgroundSize: "cover",
       }}
     >
-      {isRestaurantPopTemplate ? (
+      {isRestaurantPopTemplate || isSunburstTemplate || isCosmicTemplate ? (
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
           <div
             className="absolute right-0 top-[18%] h-28 w-16 opacity-35"
             style={{
-              backgroundImage: `radial-gradient(circle, ${withHexAlpha(primaryColor, "40")} 1.8px, transparent 2px)`,
+              backgroundImage: `radial-gradient(circle, ${withHexAlpha(primaryColor, isCosmicTemplate ? "70" : "40")} 1.8px, transparent 2px)`,
               backgroundSize: "12px 12px",
             }}
           />
           <div
             className="absolute -bottom-10 -left-12 h-48 w-48 rounded-full opacity-80"
-            style={{ background: withHexAlpha(primaryColor, "22") }}
+            style={{ background: withHexAlpha(primaryColor, isCosmicTemplate ? "2e" : "22") }}
           />
         </div>
       ) : null}
@@ -665,7 +677,7 @@ export function CampaignExperience({
                 size="lg"
                 variant="transparent"
                 imageWidthPx={logoWidthPx}
-                textColor={campaign.presentation.heading.textColor}
+                textColor={headingTextColor}
               />
             </div>
           </div>
@@ -680,7 +692,7 @@ export function CampaignExperience({
           <h1
             className={`${headingFontClass} whitespace-pre-line ${isRestaurantPopTemplate ? "tracking-[0.038em] drop-shadow-[0_5px_0_rgba(0,0,0,0.08)]" : ""} leading-[1] text-[#151826]`}
             style={{
-              color: campaign.presentation.heading.textColor,
+              color: headingTextColor,
               fontSize: `${campaign.presentation.heading.fontSizePx}px`,
               fontWeight: campaign.presentation.heading.fontWeight ?? 600,
             }}
@@ -694,7 +706,7 @@ export function CampaignExperience({
                         style={{
                           color: part.secondary
                             ? secondaryColor
-                            : campaign.presentation.heading.textColor || primaryColor,
+                            : headingTextColor || primaryColor,
                         }}
                       >
                         {part.text}
@@ -712,29 +724,52 @@ export function CampaignExperience({
             style={{ minHeight: "min(52vh, 520px)" }}
           >
             <div className="absolute inset-0 overflow-hidden">
-              <WheelOfFortune
-                key={`${campaign.id}-${drawSession?.id ?? "idle"}`}
-                accent={campaign.accent}
-                wheelStyle={campaign.presentation.wheel}
-                pageTemplate={pageTemplate}
-                buttonStyle={{
-                  backgroundColor: primaryColor,
-                  textColor: campaign.presentation.button.textColor,
-                  borderColor:
-                    pageTemplate === "restaurant-pop"
-                      ? secondaryColor
-                      : campaign.presentation.wheel.rimColor,
-                }}
-                segments={segments}
-                winningSegmentId={winningSegmentId}
-                canSpin={stage === "ready"}
-                buttonEnabled={stage === "idle" || stage === "ready"}
-                buttonLabel="JOUER"
-                framing="public"
-                onButtonClick={() => void openActionAndTrack()}
-                autoSpinKey={autoSpinKey}
-                onSpinEnd={() => void handleGameReveal()}
-              />
+              {isImmersiveTemplate ? (
+                <ImmersiveWheel
+                  key={`${campaign.id}-${drawSession?.id ?? "idle"}`}
+                  accent={campaign.accent}
+                  wheelStyle={campaign.presentation.wheel}
+                  template={pageTemplate}
+                  buttonStyle={{
+                    backgroundColor: primaryColor,
+                    textColor: campaign.presentation.button.textColor,
+                    borderColor: campaign.presentation.wheel.rimColor,
+                  }}
+                  segments={segments}
+                  winningSegmentId={winningSegmentId}
+                  canSpin={stage === "ready"}
+                  buttonEnabled={stage === "idle" || stage === "ready"}
+                  buttonLabel="JOUER"
+                  framing="public"
+                  onButtonClick={() => void openActionAndTrack()}
+                  autoSpinKey={autoSpinKey}
+                  onSpinEnd={() => void handleGameReveal()}
+                />
+              ) : (
+                <WheelOfFortune
+                  key={`${campaign.id}-${drawSession?.id ?? "idle"}`}
+                  accent={campaign.accent}
+                  wheelStyle={campaign.presentation.wheel}
+                  pageTemplate={pageTemplate === "restaurant-pop" ? "restaurant-pop" : "classic"}
+                  buttonStyle={{
+                    backgroundColor: primaryColor,
+                    textColor: campaign.presentation.button.textColor,
+                    borderColor:
+                      pageTemplate === "restaurant-pop"
+                        ? secondaryColor
+                        : campaign.presentation.wheel.rimColor,
+                  }}
+                  segments={segments}
+                  winningSegmentId={winningSegmentId}
+                  canSpin={stage === "ready"}
+                  buttonEnabled={stage === "idle" || stage === "ready"}
+                  buttonLabel="JOUER"
+                  framing="public"
+                  onButtonClick={() => void openActionAndTrack()}
+                  autoSpinKey={autoSpinKey}
+                  onSpinEnd={() => void handleGameReveal()}
+                />
+              )}
             </div>
           </div>
         ) : (
