@@ -3,6 +3,14 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   allowedDevOrigins: ["127.0.0.1"],
   serverExternalPackages: ["sharp"],
+  turbopack: {
+    // Recharts imports this subpath through victory-vendor. Pinning the
+    // resolver to d3-shape's ESM entry avoids a clean-build Turbopack export
+    // analysis failure on Vercel (symbolWye is a valid d3-shape export).
+    resolveAlias: {
+      "victory-vendor/d3-shape": "d3-shape",
+    },
+  },
   async headers() {
     return [
       {
@@ -48,3 +56,4 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
