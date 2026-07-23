@@ -2,21 +2,6 @@
 
 import { useMemo, useState } from "react";
 import { CalendarDays } from "lucide-react";
-import {
-  CartesianGrid,
-  Line,
-  LineChart,
-  XAxis,
-  YAxis,
-} from "recharts";
-
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-import { cn } from "@/lib/utils";
 
 type ActivityPoint = {
   label: string;
@@ -35,17 +20,6 @@ const PERIOD_OPTIONS = [
   { value: 14, label: "14 derniers jours" },
   { value: 30, label: "30 derniers jours" },
 ] as const;
-
-const chartConfig = {
-  scans: {
-    label: "Scans",
-    color: "#145aff",
-  },
-  participations: {
-    label: "Participations",
-    color: "#0f1f3d",
-  },
-} satisfies ChartConfig;
 
 function formatShortDate(value: string) {
   return new Intl.DateTimeFormat("fr-FR", {
@@ -69,6 +43,29 @@ export function DashboardActivityChart({
       date: formatShortDate(point.label),
     }));
   }, [period, points]);
+
+  const chartWidth = 900;
+  const chartHeight = 330;
+  const plot = { left: 48, right: 24, top: 24, bottom: 44 };
+  const maxValue = Math.max(
+    1,
+    ...data.flatMap((point) => [point.scans, point.participations]),
+  );
+  const xFor = (index: number) =>
+    plot.left +
+    (index * (chartWidth - plot.left - plot.right)) /
+      Math.max(1, data.length - 1);
+  const yFor = (value: number) =>
+    plot.top +
+    (chartHeight - plot.top - plot.bottom) * (1 - value / maxValue);
+  const scanPoints = data.map((point, index) => `${xFor(index)},${yFor(point.scans)}`).join(" ");
+  const participationPoints = data
+    .map((point, index) => `${xFor(index)},${yFor(point.participations)}`)
+    .join(" ");
+  const yTicks = Array.from({ length: 5 }, (_, index) => {
+    const value = Math.round((maxValue * (4 - index)) / 4);
+    return { value, y: yFor(value) };
+  });
 
   return (
     <section className="okado-card overflow-hidden p-0">
@@ -108,78 +105,69 @@ export function DashboardActivityChart({
         </span>
       </div>
 
-      <ChartContainer
-        config={chartConfig}
-        className={cn("h-[330px] w-full px-2 pb-3 pt-1")}
-        initialDimension={{ width: 900, height: 330 }}
-      >
-        <LineChart
-          accessibilityLayer
-          data={data}
-          margin={{ left: 10, right: 24, top: 24, bottom: 12 }}
+      <div className="h-[330px] w-full px-2 pb-3 pt-1">
+        <svg
+          viewBox={`0 0 ${chartWidth} ${chartHeight}`}
+          className="h-full w-full"
+          role="img"
+          aria-label={`${title} : évolution des scans et participations`}
         >
           <defs>
             <filter id="okado-chart-shadow" x="-20%" y="-20%" width="140%" height="140%">
-              <feDropShadow
-                dx="0"
-                dy="10"
-                stdDeviation="8"
-                floodColor="#145aff"
-                floodOpacity="0.14"
-              />
+              <feDropShadow dx="0" dy="10" stdDeviation="8" floodColor="#145aff" floodOpacity="0.14" />
             </filter>
           </defs>
-          <CartesianGrid
-            vertical
-            strokeDasharray="4 8"
-            stroke="#dfe6f2"
-          />
-          <XAxis
-            dataKey="date"
-            tickLine={false}
-            axisLine={false}
-            tickMargin={12}
-            interval="preserveStartEnd"
-          />
-          <YAxis
-            width={32}
-            tickLine={false}
-            axisLine={false}
-            tickMargin={8}
-            allowDecimals={false}
-          />
-          <ChartTooltip
-            cursor={{ stroke: "#145aff", strokeWidth: 1, strokeDasharray: "4 6" }}
-            content={
-              <ChartTooltipContent
-                className="min-w-[210px] rounded-[8px] border-border bg-white px-4 py-3 text-sm text-[#111827] shadow-[0_18px_36px_rgba(15,23,40,0.18)] [&_.text-muted-foreground]:text-[#111827]"
-                indicator="dot"
-                labelFormatter={(_, payload) => {
-                  const label = payload?.[0]?.payload?.label;
-                  return label ? formatShortDate(label) : "";
-                }}
+          {yTicks.map((tick) => (
+            <g key={`y-${tick.value}`}>
+              <line
+                x1={plot.left}
+                x2={chartWidth - plot.right}
+                y1={tick.y}
+                y2={tick.y}
+                stroke="#dfe6f2"
+                strokeDasharray="4 8"
               />
-            }
-          />
-          <Line
-            dataKey="scans"
-            type="monotone"
-            stroke="var(--color-scans)"
-            strokeWidth={3}
-            dot={false}
-            activeDot={{ r: 6, strokeWidth: 4, stroke: "#ffffff" }}
-            filter="url(#okado-chart-shadow)"
-          />
-          <Line
-            dataKey="participations"
-            type="monotone"
-            stroke="var(--color-participations)"
-            strokeWidth={3}
-            dot={false}
-            activeDot={{ r: 6, strokeWidth: 4, stroke: "#ffffff" }}
-          />
-        </LineChart>
-      </ChartContainer>
+              <text x={plot.left - 12} y={tick.y + 4} textAnchor="end" fill="#7b8496" fontSize="12">
+                {tick.value}
+              </text>
+            </g>
+          ))}
+          {data.map((point, index) => (
+            <g key={point.label}>
+              <line
+                x1={xFor(index)}
+                x2={xFor(index)}
+                y1={plot.top}
+                y2={chartHeight - plot.bottom}
+                stroke="#dfe6f2"
+                strokeDasharray="4 8"
+              />
+              <text
+                x={xFor(index)}
+                y={chartHeight - 14}
+                textAnchor="middle"
+                fill="#7b8496"
+                fontSize="12"
+              >
+                {point.date}
+              </text>
+            </g>
+          ))}
+          <polyline points={scanPoints} fill="none" stroke="#145aff" strokeWidth="3" strokeLinejoin="round" strokeLinecap="round" filter="url(#okado-chart-shadow)" />
+          <polyline points={participationPoints} fill="none" stroke="#0f1f3d" strokeWidth="3" strokeLinejoin="round" strokeLinecap="round" />
+          {data.map((point, index) => (
+            <g key={`points-${point.label}`}>
+              <circle cx={xFor(index)} cy={yFor(point.scans)} r="4.5" fill="#145aff" stroke="#ffffff" strokeWidth="3">
+                <title>{`${formatShortDate(point.label)} · Scans : ${point.scans}`}</title>
+              </circle>
+              <circle cx={xFor(index)} cy={yFor(point.participations)} r="4.5" fill="#0f1f3d" stroke="#ffffff" strokeWidth="3">
+                <title>{`${formatShortDate(point.label)} · Participations : ${point.participations}`}</title>
+              </circle>
+            </g>
+          ))}
+        </svg>
+      </div>
     </section>
   );
 }
+
