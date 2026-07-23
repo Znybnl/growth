@@ -18,7 +18,7 @@ import {
   getMerchantCampaignLibrary,
   getPrimaryCampaignId,
 } from "@/lib/store";
-import { CampaignAction, CampaignEvent, MerchantLeadRow } from "@/lib/types";
+import { CampaignAction, CampaignEvent, MerchantLeadRow, RewardEmailDeliveryStatus } from "@/lib/types";
 
 type DataPageProps = {
   searchParams: Promise<{
@@ -26,6 +26,7 @@ type DataPageProps = {
     q?: string;
     code?: string;
     page?: string;
+    emailStatus?: string;
   }>;
 };
 
@@ -146,6 +147,7 @@ function LeadsExportSection({
   offset,
   limit,
   query,
+  emailStatus,
 }: {
   campaignId: string;
   leads: MerchantLeadRow[];
@@ -153,12 +155,14 @@ function LeadsExportSection({
   offset: number;
   limit: number;
   query: string;
+  emailStatus?: "attention";
 }) {
   const currentPage = Math.floor(offset / limit) + 1;
   const totalPages = Math.max(1, Math.ceil(total / limit));
   const pageHref = (page: number) => {
     const params = new URLSearchParams({ campaign: campaignId, page: String(page) });
     if (query) params.set("q", query);
+    if (emailStatus) params.set("emailStatus", emailStatus);
     return `/data?${params.toString()}`;
   };
 
@@ -187,7 +191,7 @@ function LeadsExportSection({
               <th className="px-3 py-3">Lead</th>
               <th className="px-3 py-3">Statut</th>
               <th className="px-3 py-3">Lot</th>
-              <th className="px-3 py-3">Email gain</th>
+              <th className="w-[150px] max-w-[150px] px-3 py-3">Email gain</th>
               <th className="px-3 py-3">Retrait</th>
               <th className="px-3 py-3">Consentement</th>
             </tr>
@@ -217,21 +221,26 @@ function LeadsExportSection({
                     </div>
                   ) : null}
                 </td>
-                <td className="border-b border-[#eef2f7] px-3 py-4 text-slate">
-                  <div className="font-semibold text-graphite">
-                    {rewardEmailStatusLabel(lead.emailDeliveryStatus)}
+                <td className="w-[150px] max-w-[150px] border-b border-[#eef2f7] px-3 py-4 align-top text-slate">
+                  <div className="w-[140px] max-w-[140px] overflow-hidden">
+                    <span
+                      className={`inline-flex max-w-full truncate rounded-full px-3 py-1.5 text-xs font-semibold ${rewardEmailTone(lead.emailDeliveryStatus)}`}
+                      title={rewardEmailStatusLabel(lead.emailDeliveryStatus)}
+                    >
+                      {rewardEmailStatusLabel(lead.emailDeliveryStatus)}
+                    </span>
                   </div>
                   {lead.emailDeliveredAt ? (
-                    <div className="mt-1 text-xs text-ash">
+                    <div className="mt-1 truncate text-xs text-ash">
                       Distribué le {formatDateTime(lead.emailDeliveredAt)}
                     </div>
                   ) : lead.emailSentAt ? (
-                    <div className="mt-1 text-xs text-ash">
+                    <div className="mt-1 truncate text-xs text-ash">
                       Envoyé le {formatDateTime(lead.emailSentAt)}
                     </div>
                   ) : null}
                   {lead.emailErrorMessage ? (
-                    <div className="mt-1 text-xs font-semibold text-[#c2410c]">
+                    <div className="mt-1 max-w-[140px] truncate text-xs font-semibold text-[#c2410c]" title={lead.emailErrorMessage}>
                       {lead.emailErrorMessage}
                     </div>
                   ) : null}
@@ -283,10 +292,29 @@ function LeadsExportSection({
   );
 }
 
+function rewardEmailTone(status?: RewardEmailDeliveryStatus) {
+  switch (status) {
+    case "delivered":
+      return "bg-[#ecfdf3] text-[#047857]";
+    case "sent":
+      return "bg-[#eff6ff] text-[#1d4ed8]";
+    case "queued":
+      return "bg-[#fff7ed] text-[#c2410c]";
+    case "failed":
+    case "bounced":
+    case "complained":
+    case "suppressed":
+      return "bg-[#fff1f2] text-[#be123c]";
+    default:
+      return "bg-[#f3f4f6] text-[#4b5563]";
+  }
+}
+
 export default async function DataPage({ searchParams }: DataPageProps) {
   const session = await requireAuthenticatedSession();
   const params = await searchParams;
   const query = params.q?.trim() ?? params.code?.trim() ?? "";
+  const emailStatus = params.emailStatus === "attention" ? "attention" : undefined;
   const initialSelectedCampaignId = params.campaign ?? undefined;
   const requestedPage = Number.parseInt(params.page ?? "1", 10);
   const currentPage = Number.isFinite(requestedPage) ? Math.max(requestedPage, 1) : 1;
@@ -305,6 +333,7 @@ export default async function DataPage({ searchParams }: DataPageProps) {
         leadLimit,
         leadOffset: (currentPage - 1) * leadLimit,
         query,
+        emailStatus,
       })
     : null;
 
@@ -345,7 +374,7 @@ export default async function DataPage({ searchParams }: DataPageProps) {
         <div>
           <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
             <div>
-              <p className="okado-label">Données campagne</p>
+              <p className="okado-label">Données de campagne</p>
               <h1 className="okado-page-title mt-3">
                 {dataView.performance.campaign.title}
               </h1>
@@ -377,7 +406,7 @@ export default async function DataPage({ searchParams }: DataPageProps) {
               {campaignOptions.map((item) => (
                 <Link
                   key={item.id}
-                  href={`/data?campaign=${item.id}${query ? `&q=${encodeURIComponent(query)}` : ""}`}
+                  href={`/data?campaign=${item.id}${query ? `&q=${encodeURIComponent(query)}` : ""}${emailStatus ? `&emailStatus=${emailStatus}` : ""}`}
                   prefetch={false}
                   className={`cursor-pointer rounded-[12px] px-4 py-3 text-sm font-semibold ${
                     item.id === dataView.performance.campaign.id
@@ -395,7 +424,16 @@ export default async function DataPage({ searchParams }: DataPageProps) {
               ))}
             </div>
           </div>
-          {query && dataView.leadTotal === 0 ? (
+          {emailStatus === "attention" ? (
+            <div className="mt-4 rounded-[14px] border border-[#f0dfaa] bg-[#fff9e8] px-4 py-3 text-sm text-[#74570b]">
+              Cette vue affiche uniquement les e-mails en échec pour un gain attribué et encore à retirer. Renvoyez l’e-mail ou consultez son historique pour résoudre l’alerte.
+            </div>
+          ) : null}
+          {emailStatus === "attention" && dataView.leadTotal === 0 ? (
+            <p className="mt-4 text-sm font-semibold text-[#18864b]">
+              Aucun e-mail à traiter pour cette campagne.
+            </p>
+          ) : query && dataView.leadTotal === 0 ? (
             <p className="mt-4 text-sm font-semibold text-[#c2410c]">
               Aucun résultat pour « {query} ».
             </p>
@@ -443,6 +481,7 @@ export default async function DataPage({ searchParams }: DataPageProps) {
         offset={dataView.leadOffset}
         limit={dataView.leadLimit}
         query={query}
+        emailStatus={emailStatus}
       />
 
       <section className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
@@ -601,3 +640,4 @@ export default async function DataPage({ searchParams }: DataPageProps) {
     </div>
   );
 }
+

@@ -212,6 +212,16 @@ function checkSecurityHardeningFiles(issues) {
     "20260710_security_p0_hardening.sql",
   );
   const publicSecurityStorePath = path.join(root, "src", "lib", "public-security-store.ts");
+  const expressRedeemRoutePath = path.join(
+    root,
+    "src",
+    "app",
+    "api",
+    "public",
+    "redeem",
+    "[code]",
+    "route.ts",
+  );
 
   if (!fs.existsSync(migrationPath)) {
     pushIssue(
@@ -247,6 +257,71 @@ function checkSecurityHardeningFiles(issues) {
       "error",
       "Helper de rate-limit persistant introuvable.",
       "Restaurer src/lib/public-security-store.ts.",
+    );
+  }
+
+  const redemptionPinMigrationPath = path.join(
+    repoRoot,
+    "supabase",
+    "migrations",
+    "20260723_redemption_pin.sql",
+  );
+  if (!fs.existsSync(redemptionPinMigrationPath)) {
+    pushIssue(
+      issues,
+      "error",
+      "Migration PIN de retrait introuvable.",
+      "Ajouter et jouer supabase/migrations/20260723_redemption_pin.sql.",
+    );
+  } else if (!fs.readFileSync(redemptionPinMigrationPath, "utf8").includes("redemption_pin_hash")) {
+    pushIssue(
+      issues,
+      "error",
+      "Migration PIN de retrait incomplète: redemption_pin_hash absent.",
+      "Vérifier la migration avant go-live.",
+    );
+  }
+
+  const queryIndexesMigrationPath = path.join(
+    repoRoot,
+    "supabase",
+    "migrations",
+    "20260723_phase0_query_indexes.sql",
+  );
+  if (!fs.existsSync(queryIndexesMigrationPath)) {
+    pushIssue(
+      issues,
+      "error",
+      "Migration des index Phase 0 introuvable.",
+      "Ajouter et jouer supabase/migrations/20260723_phase0_query_indexes.sql.",
+    );
+  } else {
+    const queryIndexesMigration = fs.readFileSync(queryIndexesMigrationPath, "utf8");
+    for (const expected of ["reward_email_deliveries_campaign_status_idx", "leads_campaign_status_prize_idx"]) {
+      if (!queryIndexesMigration.includes(expected)) {
+        pushIssue(
+          issues,
+          "error",
+          `Migration des index Phase 0 incomplète: ${expected} absent.`,
+          "Vérifier la migration des index avant go-live.",
+        );
+      }
+    }
+  }
+
+  if (!fs.existsSync(expressRedeemRoutePath)) {
+    pushIssue(
+      issues,
+      "error",
+      "Route de retrait express introuvable.",
+      "Restaurer la validation publique du code et du PIN commerçant.",
+    );
+  } else if (!fs.readFileSync(expressRedeemRoutePath, "utf8").includes("assertPersistentPublicRateLimit")) {
+    pushIssue(
+      issues,
+      "error",
+      "La validation express n'utilise pas le rate limit persistant.",
+      "Ne pas ouvrir le retrait PIN sur un rate limit en mémoire.",
     );
   }
 }
@@ -293,3 +368,4 @@ if (shouldCheckLive) {
 }
 
 printReport(issues);
+

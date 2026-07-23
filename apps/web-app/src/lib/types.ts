@@ -19,7 +19,9 @@ export type GamePageTemplateId =
   | "classic"
   | "restaurant-pop"
   | "cosmic-orbit"
-  | "sunburst-festival";
+  | "sunburst-festival"
+  | "scratch-vault"
+  | "scratch-confetti";
 export type ActionKind =
   | "google"
   | "instagram"
@@ -48,6 +50,17 @@ export type MerchantSubscriptionStatus =
   | "incomplete"
   | "incomplete_expired"
   | "paused";
+
+export type MerchantLocationStatus = "active" | "archived";
+export type MerchantWorkspaceRole = "owner" | "admin" | "manager" | "cashier" | "analyst";
+
+export interface MerchantWorkspace {
+  id: string;
+  name: string;
+  slug: string;
+  defaultTimeZone: string;
+  createdAt: string;
+}
 
 export type EventType =
   | "scan"
@@ -79,6 +92,9 @@ export interface PrizeSuggestion {
 
 export interface Merchant {
   id: string;
+  workspaceId?: string;
+  locationCode?: string;
+  locationStatus?: MerchantLocationStatus;
   companyName: string;
   logoText: string;
   logoUrl?: string;
@@ -101,6 +117,7 @@ export interface Merchant {
   customLinkUrl?: string;
   timeZone?: string;
   defaultPrizeCost?: number;
+  redemptionPinConfigured?: boolean;
   stripeCustomerId?: string;
   stripeSubscriptionId?: string;
   stripeSubscriptionStatus?: MerchantSubscriptionStatus;
@@ -218,6 +235,8 @@ export interface AffiliateAdminOverview {
 export interface MerchantUser {
   id: string;
   merchantId: string;
+  workspaceId?: string;
+  role?: MerchantWorkspaceRole;
   firstName: string;
   lastName: string;
   email: string;
@@ -263,6 +282,17 @@ export interface MerchantOnboardingInput {
   customLinkUrl: string;
 }
 
+export interface MerchantLocationAccess {
+  merchant: Merchant;
+  role: MerchantWorkspaceRole;
+}
+
+export interface MerchantSessionContext {
+  workspace?: MerchantWorkspace;
+  locations: MerchantLocationAccess[];
+  activeLocationId: string;
+}
+
 export interface MerchantAccountSettingsInput {
   companyName: string;
   industry: string;
@@ -281,6 +311,7 @@ export interface MerchantAccountSettingsInput {
   customLinkUrl: string;
   timeZone: string;
   defaultPrizeCost: number;
+  redemptionPin?: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -443,6 +474,12 @@ export interface Lead {
   phone?: string;
   marketingConsent: boolean;
   consentTimestamp?: string;
+  consentPolicyVersion?: string;
+  consentSource?: string;
+  campaignConfigurationVersion?: string;
+  redeemedAt?: string;
+  redeemedByUserId?: string;
+  purchaseVerified?: boolean;
   prizeId?: string;
   status: LeadStatus;
   createdAt: string;
@@ -591,6 +628,8 @@ export interface DrawSession {
   status: "pending" | "completed" | "expired";
   createdAt: string;
   expiresAt: string;
+  configurationVersion?: string;
+  configurationSnapshot?: Record<string, unknown>;
 }
 
 export interface CreateDrawSessionRequest {
@@ -670,6 +709,36 @@ export interface MerchantLeadRow extends Lead {
   emailErrorMessage?: string;
 }
 
+export type CashierRedemptionStatus =
+  | "available"
+  | "redeemed"
+  | "expired"
+  | "not_available"
+  | "invalid";
+
+export interface CashierRedemptionContext {
+  status: CashierRedemptionStatus;
+  leadId?: string;
+  campaignId?: string;
+  campaignTitle?: string;
+  firstName?: string;
+  maskedEmail?: string;
+  prizeLabel?: string;
+  prizeUsageConditions?: string;
+  redemptionCode?: string;
+  rewardAvailableAt?: string;
+  rewardExpiresAt?: string;
+  purchaseRequired?: boolean;
+  redeemedAt?: string;
+  purchaseVerified?: boolean;
+}
+
+export interface PublicRedemptionContext extends CashierRedemptionContext {
+  merchantId: string;
+  merchantName: string;
+  merchantCity?: string;
+}
+
 export interface CampaignDataView {
   performance: CampaignPerformance;
   leads: MerchantLeadRow[];
@@ -691,6 +760,7 @@ export interface CampaignDataView {
 export interface CampaignSetupInput {
   id?: string;
   merchantId: string;
+  creationMode?: "editor" | "wizard";
   title: string;
   subtitle: string;
   goalType: GoalType;
@@ -715,3 +785,4 @@ export interface CampaignSetupInput {
     usageConditions?: string;
   }>;
 }
+

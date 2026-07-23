@@ -26,14 +26,15 @@ export async function GET(request: NextRequest, { params }: RouteProps) {
     return NextResponse.json({ error: "Campaign not found" }, { status: 404 });
   }
 
+  const isPreview = request.nextUrl.searchParams.get("preview") === "1";
   const scanCookie = `okado_scan_${encodeURIComponent(id).slice(0, 80)}`;
   const alreadyCounted = request.cookies.get(scanCookie)?.value === "1";
-  if (!alreadyCounted) {
+  if (!isPreview && !alreadyCounted) {
     await recordEvent(id, "scan");
   }
 
   const response = NextResponse.json({ campaign });
-  if (!alreadyCounted) {
+  if (!isPreview && !alreadyCounted) {
     response.cookies.set(scanCookie, "1", {
       httpOnly: true,
       sameSite: "lax",
@@ -44,3 +45,4 @@ export async function GET(request: NextRequest, { params }: RouteProps) {
   }
   return response;
 }
+

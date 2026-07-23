@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { getAuthenticatedSession } from "@/lib/auth";
+import { CampaignComplianceError } from "@/lib/campaign-compliance";
 import { parseCampaignSetupInput } from "@/lib/merchant-input";
 import { captureProductEvent, merchantDistinctId } from "@/lib/product-analytics";
 import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
@@ -30,6 +31,7 @@ export async function POST(request: Request) {
       campaignId: savedCampaign.id,
       gameType: savedCampaign.gameType,
       isActive: savedCampaign.isActive,
+      creationMode: body.creationMode ?? "editor",
     });
     void captureProductEvent(
       body.id ? "campaign_saved" : "campaign_created",
@@ -42,6 +44,7 @@ export async function POST(request: Request) {
         actionsCount: body.actions.length,
         prizesCount: body.prizes.length,
         isActive: savedCampaign.isActive,
+        creationMode: body.creationMode ?? "editor",
       },
     );
     if (savedCampaign.isActive) {
@@ -53,6 +56,7 @@ export async function POST(request: Request) {
           merchantUserId: session.user.id,
           campaignId: savedCampaign.id,
           gameType: savedCampaign.gameType,
+          creationMode: body.creationMode ?? "editor",
         },
       );
     }
@@ -60,7 +64,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ campaign }, { status: 201 });
   } catch (error) {
     console.error("Campaign setup failed", error);
-    const status = getRequestSecurityErrorStatus(error) === 403 ? 403 : 500;
+    const status = getRequestSecurityErrorStatus(error) === 403
+      ? 403
+      : error instanceof CampaignComplianceError
+        ? error.status
+        : 500;
     const message =
       status === 403
         ? "Votre session de sécurité n'est plus valide ou la page a été ouverte depuis une adresse non autorisée. Rechargez la page depuis votre espace Okado puis réessayez."
@@ -74,3 +82,4 @@ export async function POST(request: Request) {
     );
   }
 }
+

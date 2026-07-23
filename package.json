@@ -17,7 +17,10 @@
     "lint:web": "npm run lint -w @okado/web-app",
     "lint:landing": "npm run lint -w @okado/landing-page",
     "check:gotomarket": "npm run check:gotomarket -w @okado/web-app",
+    "check:dependencies": "npm run check:dependencies -w @okado/web-app",
+    "check:supabase": "npm run check:supabase -w @okado/web-app",
     "smoke:critical": "npm run smoke:critical -w @okado/web-app",
     "smoke:security": "npm run smoke:security -w @okado/web-app"
   }
 }
+

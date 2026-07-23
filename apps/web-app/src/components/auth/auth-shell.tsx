@@ -29,7 +29,10 @@ export function AuthShell({
         <section className="flex min-h-screen justify-center overflow-y-auto bg-linen-canvas px-4 py-8 sm:px-6 lg:px-10 xl:px-12 xl:py-10">
           <div className="flex w-full max-w-[760px] flex-col justify-center">
             <div className="mb-8 flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-[12px] bg-[var(--gradient-hero-blue-fade)] text-sm font-semibold uppercase tracking-[0.2em] text-white shadow-sm">
+              <div
+                className="flex h-11 w-11 items-center justify-center rounded-[12px] text-sm font-semibold uppercase tracking-[0.2em] text-white shadow-sm"
+                style={{ background: "var(--gradient-hero-blue-fade)" }}
+              >
                 <Star className="h-5 w-5 fill-white text-white" aria-hidden="true" />
               </div>
               <div>
@@ -45,7 +48,10 @@ export function AuthShell({
           </div>
         </section>
 
-        <section className="relative hidden min-h-screen overflow-hidden bg-[var(--gradient-hero-blue-fade)] lg:flex lg:flex-col lg:items-center lg:justify-center">
+        <section
+          className="relative hidden min-h-screen overflow-hidden lg:flex lg:flex-col lg:items-center lg:justify-center"
+          style={{ background: "var(--gradient-hero-blue-fade)" }}
+        >
           <div className="absolute inset-0">
             <div className="absolute left-1/2 top-[18%] h-[460px] w-[460px] -translate-x-1/2 rounded-full bg-[#2c7be7]" />
             <div className="absolute left-1/2 top-[26%] h-[320px] w-[320px] -translate-x-1/2 rounded-full border border-white/10" />
@@ -112,3 +118,4 @@ export function AuthShell({
     </div>
   );
 }
+

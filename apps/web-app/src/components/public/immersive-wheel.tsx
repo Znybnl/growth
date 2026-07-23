@@ -167,7 +167,7 @@ export function ImmersiveWheel({
   }
 
   return (
-    <div className="relative h-full w-full overflow-hidden">
+    <div className="relative h-full w-full overflow-hidden" style={{ containerType: "inline-size" }}>
       <div
         className={`absolute left-1/2 aspect-square -translate-x-1/2 -translate-y-1/2 ${wheelSizeClass}`}
         style={{ filter: isCosmic ? "drop-shadow(0 28px 45px rgba(0,0,0,0.38))" : "drop-shadow(0 22px 34px rgba(20,31,61,0.22))" }}
@@ -260,7 +260,7 @@ export function ImmersiveWheel({
             background: buttonEnabled && !hasSpun ? `linear-gradient(145deg, ${primary}, ${withAlpha(primary, "cc")})` : "#94a3b8",
             color: buttonStyle?.textColor ?? "#ffffff",
             borderColor: isCosmic ? secondary : "#fffdf7",
-            fontSize: "clamp(1rem, 2.65vw, 2rem)",
+            fontSize: isCosmic ? "clamp(0.72rem, 4.2cqw, 1.22rem)" : "clamp(0.78rem, 4.5cqw, 1.32rem)",
             boxShadow: isCosmic
               ? `inset 0 0 0 4px ${withAlpha(secondary, "70")}, inset 0 -12px 18px rgba(0,0,0,0.26), 0 15px 28px rgba(0,0,0,0.35)`
               : `inset 0 -10px 15px rgba(0,0,0,0.14), 0 14px 24px ${withAlpha(primary, "40")}`,
@@ -272,3 +272,4 @@ export function ImmersiveWheel({
     </div>
   );
 }
+

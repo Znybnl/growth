@@ -8,7 +8,7 @@ import {
   sanitizePublicMetadata,
 } from "@/lib/public-api";
 import { assertPersistentPublicRateLimit } from "@/lib/public-security-store";
-import { markActionConfirmed, recordEvent } from "@/lib/store";
+import { getPublicCampaign, recordEvent } from "@/lib/store";
 import { EventType } from "@/lib/types";
 
 type EventBody = {
@@ -26,28 +26,25 @@ export async function POST(request: Request) {
   }
 
   try {
+    const campaignId = body.campaignId.trim();
+    const campaign = await getPublicCampaign(campaignId);
+    if (!campaign) {
+      return NextResponse.json({ error: "Animation introuvable" }, { status: 404 });
+    }
+
     await assertPersistentPublicRateLimit(request, {
-      key: `public-event:${body.campaignId.trim()}:${body.eventType}`,
+      key: `public-event:${campaignId}:${body.eventType}`,
       limit: 40,
       windowMs: 60 * 1000,
     });
 
-    const sanitizedLeadId = body.leadId?.trim() || undefined;
-    const confirmsAction =
-      sanitizedLeadId &&
-      ["review_clicked", "review_confirmed", "social_clicked"].includes(body.eventType);
-
-    if (confirmsAction) {
-      const confirmedLead = await markActionConfirmed(sanitizedLeadId, body.campaignId.trim());
-      if (!confirmedLead) {
-        return NextResponse.json({ error: "Participation introuvable pour cette animation" }, { status: 404 });
-      }
-    }
-
     const event = await recordEvent(
-      body.campaignId.trim(),
+      campaignId,
       body.eventType,
-      sanitizedLeadId,
+      // A public browser must not be able to attach an arbitrary lead to an
+      // analytics event or mutate that lead's action state. Lead association
+      // is reserved for trusted server-side flows.
+      undefined,
       sanitizePublicMetadata(body.metadata),
     );
 
@@ -64,3 +61,4 @@ export async function POST(request: Request) {
     );
   }
 }
+

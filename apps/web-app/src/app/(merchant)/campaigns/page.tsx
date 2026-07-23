@@ -34,9 +34,12 @@ export default async function CampaignsPage({
         </div>
 
         <div className="flex flex-wrap gap-3">
-          <div className="okado-secondary-action px-5 py-4">
+          <div className="flex items-center px-2 py-3 text-sm font-semibold text-ash">
             {activeCount} actives · {campaigns.length} au total
           </div>
+          <Link href="/campaigns/new/guided" prefetch={false} className="okado-secondary-action px-5 py-4">
+            Assistant guidé
+          </Link>
           <Link href="/campaigns/new" prefetch={false} className="okado-filled-action px-5 py-4">
             Créer une campagne
           </Link>
@@ -161,3 +164,4 @@ export default async function CampaignsPage({
     </div>
   );
 }
+

@@ -5,8 +5,10 @@ import { useEffect, useMemo, useState } from "react";
 
 import { BrandMark } from "@/components/brand-mark";
 import { ImmersiveWheel } from "@/components/public/immersive-wheel";
+import { ImmersiveScratchTicket } from "@/components/public/immersive-scratch-ticket";
 import { ScratchGame } from "@/components/public/scratch-game";
 import { WheelOfFortune } from "@/components/public/wheel-of-fortune";
+import { fluidType } from "@/lib/responsive";
 import { buildWheelVisualSegments } from "@/lib/wheel-segments";
 import {
   CreateDrawSessionResult,
@@ -19,6 +21,7 @@ import {
 type CampaignExperienceProps = {
   campaignId: string;
   initialCampaign: PublicCampaign;
+  isPreview?: boolean;
 };
 
 type ExperienceStage =
@@ -166,7 +169,7 @@ function PublicModal({
   }
 
   return (
-    <div className="fixed inset-0 z-40 flex items-end justify-center bg-[#0f1220]/52 px-4 pb-4 pt-10 backdrop-blur-[6px] sm:items-center sm:p-6">
+    <div role="dialog" aria-modal="true" aria-label="Fenêtre de participation" className="fixed inset-0 z-40 flex items-end justify-center bg-[#0f1220]/52 px-4 pb-4 pt-10 backdrop-blur-[6px] sm:items-center sm:p-6">
       <div className="w-full max-w-[390px] rounded-[34px] bg-white p-6 text-[#111827] shadow-[0_34px_90px_rgba(18,24,39,0.24)]">
         {children}
       </div>
@@ -198,14 +201,14 @@ function RulesModal({
   }));
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#0f1220]/58 px-4 pb-4 pt-10 backdrop-blur-[6px] sm:items-center sm:p-6">
+    <div role="dialog" aria-modal="true" aria-labelledby="rules-modal-title" className="fixed inset-0 z-50 flex items-end justify-center bg-[#0f1220]/58 px-4 pb-4 pt-10 backdrop-blur-[6px] sm:items-center sm:p-6">
       <div className="flex max-h-[88vh] w-full max-w-[760px] flex-col overflow-hidden rounded-[30px] bg-white text-[#111827] shadow-[0_34px_90px_rgba(18,24,39,0.28)]">
         <div className="flex items-start justify-between gap-4 border-b border-[#edf0f6] px-6 py-5">
           <div>
             <p className="text-xs uppercase tracking-[0.26em] text-[#8b93a5]">
               Conditions d&apos;utilisation
             </p>
-            <h2 className="mt-2 text-2xl font-semibold leading-tight">
+            <h2 id="rules-modal-title" className="mt-2 text-2xl font-semibold leading-tight">
               CGU et règlement du jeu
             </h2>
           </div>
@@ -395,6 +398,7 @@ function RulesModal({
 export function CampaignExperience({
   campaignId,
   initialCampaign,
+  isPreview = false,
 }: CampaignExperienceProps) {
   const [campaign, setCampaign] = useState(initialCampaign);
   const [stage, setStage] = useState<ExperienceStage>("idle");
@@ -431,15 +435,20 @@ export function CampaignExperience({
   const availableDate = formatDate(drawResult?.lead.rewardAvailableAt);
   const expiryDate = formatDate(drawResult?.lead.rewardExpiresAt);
   const blockSpacingPx = campaign.presentation.layout.blockSpacingPx;
-  const pageTemplate = campaign.presentation.layout.templateId ?? "classic";
+  const pageTemplate = campaign.gameType === "scratch"
+    ? "classic"
+    : campaign.presentation.layout.templateId ?? "classic";
   const isRestaurantPopTemplate = pageTemplate === "restaurant-pop";
   const isCosmicTemplate = pageTemplate === "cosmic-orbit";
   const isSunburstTemplate = pageTemplate === "sunburst-festival";
   const isImmersiveTemplate = isCosmicTemplate || isSunburstTemplate;
+  const isScratchVaultTemplate = pageTemplate === "scratch-vault";
+  const isScratchConfettiTemplate = pageTemplate === "scratch-confetti";
+  const isImmersiveScratchTemplate = isScratchVaultTemplate || isScratchConfettiTemplate;
   const primaryColor = campaign.presentation.wheel.loseColor ?? campaign.accent.signal;
   const secondaryColor = campaign.presentation.wheel.winColor ?? "#073b72";
   const headingTextColor =
-    isCosmicTemplate && campaign.presentation.heading.textColor.toLowerCase() === "#1f2937"
+    isCosmicTemplate || (isScratchVaultTemplate && campaign.presentation.heading.textColor.toLowerCase() === "#1f2937")
       ? "#f8fbff"
       : campaign.presentation.heading.textColor;
   const logoWidthPx = Math.round(
@@ -477,169 +486,18 @@ export function CampaignExperience({
 
   useEffect(() => {
     async function loadCampaign() {
-      const response = await fetch(`/api/public/campaign/${campaignId}`);
-
-      if (!response.ok) {
-        return;
-      }
-
-      const payload = (await response.json()) as { campaign: PublicCampaign };
-      setCampaign(payload.campaign);
-    }
-
-    void loadCampaign();
-  }, [campaignId]);
-
-  async function trackEvent(eventType: string, leadId?: string) {
-    await fetch("/api/public/event", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        campaignId,
-        leadId,
-        eventType,
-      }),
-    });
-  }
-
-  async function prepareSession(nextStage: ExperienceStage = "ready") {
-    setError(null);
-    setIsLoading(true);
-
-    try {
-      const response = await fetch("/api/public/draw/session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ campaignId }),
-      });
-
-      if (!response.ok) {
-        const payload = (await response.json().catch(() => null)) as {
-          error?: string;
-          code?: string;
-        } | null;
-        if (payload?.code === "already_played_today") {
-          setBlockedMessage(
-            payload.error ?? "Vous avez déjà participé à cette animation. Réessayez plus tard.",
-          );
-          setStage("blocked");
-          return;
-        }
-        throw new Error(payload?.error ?? "Impossible de préparer la partie.");
-      }
-
-      const payload = (await response.json()) as CreateDrawSessionResult;
-      setPreviewResult(payload);
-      setDrawSession(payload.session);
-      setCampaign(payload.campaign);
-      setStage(nextStage);
-    } catch (sessionError) {
-      setError(
-        sessionError instanceof Error ? sessionError.message : "Une erreur est survenue.",
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
-  async function openActionAndTrack() {
-    setActionVisited(false);
-    setError(null);
-    if (drawSession) {
-      setStage("intro");
-      return;
-    }
-
-    await prepareSession("intro");
-  }
-
-  async function launchPreparedGame() {
-    if (!drawSession) {
-      await prepareSession("ready");
-      setAutoSpinKey(`spin-${Date.now()}`);
-      return;
-    }
-
-    setStage("ready");
-    setAutoSpinKey(`spin-${drawSession.id}`);
-  }
-
-  async function submitWinnerForm(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!drawSession) {
-      return;
-    }
-
-    setError(null);
-    setIsLoading(true);
-
-    try {
-      const payload: FinalizeDrawSessionRequest = {
-        sessionId: drawSession.id,
-        firstName,
-        email,
-        marketingConsent,
-      };
-      const response = await fetch("/api/public/draw/finalize", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const failure = (await response.json().catch(() => null)) as {
-          error?: string;
-          code?: string;
-        } | null;
-        if (failure?.code === "participation_cooldown") {
-          setBlockedMessage(
-            failure.error ?? "Vous avez déjà participé à cette animation. Revenez plus tard.",
-          );
-          setStage("blocked");
-          return;
-        }
-        throw new Error(failure?.error ?? "Impossible d’enregistrer vos coordonnées.");
-      }
-
-      const result = (await response.json()) as DrawResult;
-      if (actionVisited && currentAction?.kind === "google") {
-        void trackEvent("review_confirmed", result.lead.id);
-      }
-      setDrawResult(result);
-      setCampaign(result.campaign);
-      setStage("success");
-    } catch (submitError) {
-      setError(
-        submitError instanceof Error ? submitError.message : "Une erreur est survenue.",
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
-  async function handleGameReveal() {
-    if (previewResult?.prize) {
-      setStage("collect");
-      await trackEvent("form_started");
-      return;
-    }
-
-    void trackEvent("game_lost");
-    setStage("lost");
-  }
-
-  const backgroundStyle =
-    campaign.presentation.background.mode === "image" &&
-    campaign.presentation.background.imageUrl
-      ? `linear-gradient(rgba(0,0,0,0.08), rgba(0,0,0,0.18)), url("${campaign.presentation.background.imageUrl}")`
-      : isCosmicTemplate
-        ? `radial-gradient(circle at 50% 112%, ${withHexAlpha(primaryColor, "52")} 0 24%, transparent 43%), radial-gradient(circle at 9% 12%, ${withHexAlpha(secondaryColor, "2b")} 0 14%, transparent 25%), linear-gradient(155deg, #07142e 0%, #0b1d42 55%, #071126 100%)`
-        : isSunburstTemplate
-          ? `radial-gradient(circle at 12% 10%, ${withHexAlpha(primaryColor, "33")} 0 12%, transparent 13%), radial-gradient(circle at 94% 18%, ${withHexAlpha(secondaryColor, "38")} 0 14%, transparent 15%), linear-gradient(180deg, #fffdf5 0%, #fff8e8 56%, #fff2ce 100%)`
-        : isRestaurantPopTemplate
-        ? `radial-gradient(circle at -10% -8%, ${withHexAlpha(primaryColor, "f2")} 0 18%, transparent 19%), radial-gradient(circle at 110% 0%, ${withHexAlpha(secondaryColor, "f2")} 0 13%, transparent 14%), radial-gradient(circle at 0% 80%, ${withHexAlpha(primaryColor, "20")} 0 20%, transparent 21%), radial-gradient(circle at 100% 78%, ${withHexAlpha(secondaryColor, "40")} 0 18%, transparent 19%), linear-gradient(180deg, #fff2dd 0%, #fffaf1 46%, #fff4e5 100%)`
-        : `radial-gradient(circle at 50% 50%, ${withHexAlpha(primaryColor, "33")}, transparent 50%), linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.08))`;
-  const restaurantPopHeadingLines = buildRestaurantPopHeadingLines(campaign.subtitle);
+      const response = await fetch(
+      …1586 tokens truncated…urantPopHeadingLines(campaign.subtitle);
+  const headingFontSize = fluidType(campaign.presentation.heading.fontSizePx, {
+    minRatio: 0.82,
+    maxRatio: 1.08,
+    viewportStep: 0.3,
+  });
+  const buttonFontSize = fluidType(campaign.presentation.button.textSizePx, {
+    minRatio: 0.86,
+    maxRatio: 1.08,
+    viewportStep: 0.24,
+  });
 
   return (
     <div
@@ -651,22 +509,22 @@ export function CampaignExperience({
         backgroundSize: "cover",
       }}
     >
-      {isRestaurantPopTemplate || isSunburstTemplate || isCosmicTemplate ? (
+      {isRestaurantPopTemplate || isSunburstTemplate || isCosmicTemplate || isScratchVaultTemplate || isScratchConfettiTemplate ? (
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
           <div
             className="absolute right-0 top-[18%] h-28 w-16 opacity-35"
             style={{
-              backgroundImage: `radial-gradient(circle, ${withHexAlpha(primaryColor, isCosmicTemplate ? "70" : "40")} 1.8px, transparent 2px)`,
+              backgroundImage: `radial-gradient(circle, ${withHexAlpha(primaryColor, isCosmicTemplate || isScratchVaultTemplate ? "70" : "40")} 1.8px, transparent 2px)`,
               backgroundSize: "12px 12px",
             }}
           />
           <div
             className="absolute -bottom-10 -left-12 h-48 w-48 rounded-full opacity-80"
-            style={{ background: withHexAlpha(primaryColor, isCosmicTemplate ? "2e" : "22") }}
+            style={{ background: withHexAlpha(primaryColor, isCosmicTemplate || isScratchVaultTemplate ? "2e" : "22") }}
           />
         </div>
       ) : null}
-      <div className="relative mx-auto flex h-screen w-full flex-col overflow-hidden px-4 pb-0 pt-8 sm:px-6">
+      <div className="relative mx-auto flex h-screen w-full flex-col overflow-hidden px-4 pb-0 pt-12 sm:px-6 sm:pt-14">
         {(campaign.logoMode === "image" && campaign.logoUrl) ||
         campaign.logoMode === "text" ? (
           <div className={`flex ${logoAlignmentClass}`}>
@@ -693,7 +551,7 @@ export function CampaignExperience({
             className={`${headingFontClass} whitespace-pre-line ${isRestaurantPopTemplate ? "tracking-[0.038em] drop-shadow-[0_5px_0_rgba(0,0,0,0.08)]" : ""} leading-[1] text-[#151826]`}
             style={{
               color: headingTextColor,
-              fontSize: `${campaign.presentation.heading.fontSizePx}px`,
+              fontSize: headingFontSize,
               fontWeight: campaign.presentation.heading.fontWeight ?? 600,
             }}
           >
@@ -774,13 +632,24 @@ export function CampaignExperience({
           </div>
         ) : (
           <div style={{ marginTop: `${Math.max(6, Math.round(blockSpacingPx * 0.2))}px` }}>
-            <ScratchGame
-              key={`${campaign.id}-${drawSession?.id ?? "idle"}`}
-              accent={campaign.accent}
-              resultLabel={scratchLabel}
-              enabled={stage === "ready"}
-              onReveal={() => void handleGameReveal()}
-            />
+            {isImmersiveScratchTemplate ? (
+              <ImmersiveScratchTicket
+                key={`${campaign.id}-${drawSession?.id ?? "idle"}`}
+                accent={campaign.accent}
+                resultLabel={scratchLabel}
+                enabled={stage === "ready"}
+                onReveal={() => void handleGameReveal()}
+                template={pageTemplate as "scratch-vault" | "scratch-confetti"}
+              />
+            ) : (
+              <ScratchGame
+                key={`${campaign.id}-${drawSession?.id ?? "idle"}`}
+                accent={campaign.accent}
+                resultLabel={scratchLabel}
+                enabled={stage === "ready"}
+                onReveal={() => void handleGameReveal()}
+              />
+            )}
           </div>
         )}
 
@@ -794,7 +663,7 @@ export function CampaignExperience({
                 backgroundColor: campaign.presentation.button.backgroundColor,
                 color: campaign.presentation.button.textColor,
                 borderColor: campaign.presentation.button.borderColor,
-                fontSize: `${campaign.presentation.button.textSizePx}px`,
+                fontSize: buttonFontSize,
               }}
             >
               Jouer
@@ -871,9 +740,7 @@ export function CampaignExperience({
         </h2>
         <p className="mt-4 text-center text-lg leading-8 text-[#5f6678]">
           {currentAction?.kind === "google"
-            ? `Partagez votre expérience dans l’enseigne puis revenez ici pour ${
-                campaign.gameType === "wheel" ? "lancer la roue" : "gratter le ticket"
-              }.`
+            ? "Votre retour aide l’établissement à progresser. Vous pouvez jouer dans tous les cas."
             : currentAction
               ? "Découvrez le lien du commerce dans un nouvel onglet, puis revenez ici pour jouer."
               : "Touchez Jouer pour préparer votre partie et découvrir votre résultat."}
@@ -899,16 +766,22 @@ export function CampaignExperience({
               {actionLabel(currentAction.kind)}
             </a>
           ) : null}
-          {!currentAction || actionVisited ? (
-            <button
-              type="button"
-              onClick={() => void launchPreparedGame()}
-              disabled={isLoading}
-              className="w-full rounded-[20px] bg-[#111827] px-5 py-4 text-xl font-semibold text-white shadow-[0_12px_24px_rgba(17,24,39,0.16)] disabled:opacity-60"
-            >
-              {isLoading ? "Préparation..." : "Jouer"}
-            </button>
-          ) : null}
+          <button
+            type="button"
+            onClick={() => void launchPreparedGame()}
+            disabled={isLoading}
+            className={
+              actionVisited || !currentAction
+                ? "w-full rounded-[20px] bg-[#111827] px-5 py-4 text-xl font-semibold text-white shadow-[0_12px_24px_rgba(17,24,39,0.16)] disabled:opacity-60"
+                : "w-full rounded-[12px] bg-transparent px-3 py-2 text-sm font-medium text-[#61687a] underline decoration-[#c4c9d4] underline-offset-4 transition hover:text-[#111827] disabled:opacity-60"
+            }
+          >
+            {isLoading
+              ? "Préparation..."
+              : actionVisited || !currentAction
+                ? "Jouer"
+                : "Jouer maintenant"}
+          </button>
         </div>
         {error ? (
           <div className="mt-4 rounded-[18px] bg-[#fff1f0] px-4 py-3 text-sm text-[#b42318]">
@@ -943,7 +816,9 @@ export function CampaignExperience({
             placeholder="Prénom"
             className="w-full rounded-[18px] border border-[#d8dce5] px-4 py-4 text-lg text-[#111827] outline-none placeholder:text-[#99a1b2]"
           />
+          <label className="sr-only" htmlFor="winner-first-name">Prénom</label>
           <input
+            id="winner-first-name"
             type="email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
@@ -952,7 +827,9 @@ export function CampaignExperience({
             className="w-full rounded-[18px] border border-[#d8dce5] px-4 py-4 text-lg text-[#111827] outline-none placeholder:text-[#99a1b2]"
           />
           <label className="flex cursor-pointer items-start gap-3 rounded-[18px] bg-[#f6f7fb] px-4 py-3 text-left text-sm leading-6 text-[#475067]">
-            <input
+          <label className="sr-only" htmlFor="winner-email">E-mail</label>
+          <input
+            id="winner-email"
               type="checkbox"
               checked={marketingConsent}
               onChange={(event) => setMarketingConsent(event.target.checked)}
@@ -1052,3 +929,4 @@ export function CampaignExperience({
     </div>
   );
 }
+

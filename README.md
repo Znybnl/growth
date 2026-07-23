@@ -107,6 +107,8 @@ Configuration minimale production :
 - `npm run lint`
 - `npm run build`
 - `npm run check:gotomarket -- --live`
+- `npm run check:dependencies`
+- `npm run check:supabase`
 - `npm run smoke:critical` sur l'environnement cible
 - `npm run smoke:security` sur l'environnement cible
 - Backup/export Supabase effectué avant ouverture pilote
@@ -116,6 +118,8 @@ Documents d'exploitation :
 - `GO_LIVE_CHECKLIST.md` : checklist opérationnelle avant ouverture pilote.
 - `SECURITY_AUDIT.md` : matrice de sécurité et points de contrôle API/RLS.
 - `PILOT_PLAYBOOK.md` : support d'exploitation pour les premiers restaurants pilotes.
+- `docs/BACKUP_RESTORE.md` : procédure de sauvegarde, restauration et rollback.
+- `SECURITY_EXCEPTIONS.md` : exception temporaire npm audit et date de revue.
 
 ## Critères No-Go
 
@@ -125,3 +129,4 @@ Documents d'exploitation :
 - Email de gain Resend non envoyé ou domaine non validé.
 - Retrait QR utilisable plusieurs fois.
 - Un marchand peut accéder aux données d'un autre marchand.
+

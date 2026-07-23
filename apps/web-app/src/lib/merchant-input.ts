@@ -45,6 +45,8 @@ const GAME_PAGE_TEMPLATE_IDS = new Set<GamePageTemplateId>([
   "restaurant-pop",
   "cosmic-orbit",
   "sunburst-festival",
+  "scratch-vault",
+  "scratch-confetti",
 ]);
 const POSTER_TEMPLATE_IDS = new Set<PosterTemplateId>([
   "classic-wheel",
@@ -262,6 +264,10 @@ export function parseMerchantAccountSettingsInput(input: unknown): MerchantAccou
       max: 100000,
       fallback: 0,
     }),
+    redemptionPin:
+      /^\d{4,6}$/.test(normalizeString(payload.redemptionPin, 6))
+        ? normalizeString(payload.redemptionPin, 6)
+        : undefined,
     firstName: normalizeString(payload.firstName, 80),
     lastName: normalizeString(payload.lastName, 80),
     email: normalizeEmail(payload.email, true),
@@ -320,11 +326,14 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
   });
 
   const totalProbability = sanitizedPrizes.reduce((total, prize) => total + prize.probability, 0);
-  if (!rewardRules.isWinningEveryTime && totalProbability > 100) {
+  if (sanitizedPrizes.some((prize) => prize.totalQuantity !== null && prize.totalQuantity <= 0)) {
+    throw new Error("La quantité d’un lot doit être supérieure à 0 (ou illimitée).");
+  }
+  if (totalProbability > 100.0001) {
     throw new Error("Le total des probabilités ne peut pas dépasser 100 %.");
   }
-  if (rewardRules.isWinningEveryTime && totalProbability <= 0) {
-    throw new Error("Ajoutez une probabilité supérieure à 0 pour au moins un lot.");
+  if (rewardRules.isWinningEveryTime && totalProbability < 99.9999) {
+    throw new Error("Un jeu 100 % gagnant doit totaliser exactement 100 % de probabilités.");
   }
 
   const sanitizedActions = actions.slice(0, 12).map((item) => {
@@ -347,6 +356,7 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
   return {
     id: normalizeString(payload.id, 120) || undefined,
     merchantId,
+    creationMode: payload.creationMode === "wizard" ? "wizard" : "editor",
     title,
     subtitle: normalizeMultiline(payload.subtitle, 240),
     goalType: normalizeEnum(payload.goalType, GOAL_TYPES, "review_prompt"),
@@ -540,3 +550,4 @@ export function assertBackgroundUpload(file: File, label: string, category: stri
     throw new Error("Le fichier doit peser moins de 8 Mo.");
   }
 }
+

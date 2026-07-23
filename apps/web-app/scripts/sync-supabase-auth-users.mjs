@@ -54,8 +54,7 @@ async function listAllAuthUsers() {
   return users;
 }
 
-async function findAuthUser(email, merchantUserId) {
-  const users = await listAllAuthUsers();
+function findAuthUser(users, email, merchantUserId) {
   return (
     users.find(
       (user) =>
@@ -65,9 +64,9 @@ async function findAuthUser(email, merchantUserId) {
   );
 }
 
-async function ensureAuthUser(user) {
+async function ensureAuthUser(user, authUsers) {
   const email = user.email.trim().toLowerCase();
-  const existing = await findAuthUser(email, user.id);
+  const existing = findAuthUser(authUsers, email, user.id);
   const payload = {
     app_metadata: {
       merchant_id: user.merchant_id,
@@ -118,9 +117,11 @@ if (error) {
 }
 
 const results = [];
+const authUsers = await listAllAuthUsers();
 
 for (const merchantUser of merchantUsers ?? []) {
-  results.push(await ensureAuthUser(merchantUser));
+  results.push(await ensureAuthUser(merchantUser, authUsers));
 }
 
 console.log(JSON.stringify({ total: results.length, results }, null, 2));
+

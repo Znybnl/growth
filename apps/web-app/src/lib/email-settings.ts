@@ -1,5 +1,62 @@
 import { CampaignEmailSettings, Merchant } from "@/lib/types";
 
+const EMAIL_VARIABLE_PATTERN = /\{\{\s*(\w+)\s*\}\}/g;
+
+export const CAMPAIGN_EMAIL_VARIABLES = [
+  "firstName",
+  "merchantName",
+  "campaignTitle",
+  "prizeLabel",
+  "redemptionCode",
+  "redeemUrl",
+  "qrUrl",
+  "rewardAvailability",
+  "rewardExpiry",
+  "rewardDate",
+  "purchaseCondition",
+  "usageConditions",
+] as const;
+
+const REQUIRED_CAMPAIGN_EMAIL_VARIABLES = [
+  "prizeLabel",
+  "rewardAvailability",
+  "rewardExpiry",
+  "purchaseCondition",
+  "usageConditions",
+] as const;
+
+export function validateCampaignEmailSettings(settings: CampaignEmailSettings): string[] {
+  const errors: string[] = [];
+  const content = [settings.subject, settings.preheader, settings.headline, settings.body, settings.footerNote]
+    .filter(Boolean)
+    .join("\n");
+
+  if (!settings.senderName.trim()) errors.push("Renseignez un nom d’expéditeur.");
+  if (!settings.subject.trim()) errors.push("L’objet de l’e-mail est obligatoire.");
+  if (!settings.headline.trim()) errors.push("Le titre principal de l’e-mail est obligatoire.");
+  if (!settings.body.trim()) errors.push("Le contenu principal de l’e-mail est obligatoire.");
+  if (!settings.buttonLabel.trim()) errors.push("Le libellé du bouton de retrait est obligatoire.");
+
+  if (settings.replyTo.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(settings.replyTo.trim())) {
+    errors.push("L’adresse de réponse n’est pas valide.");
+  }
+
+  for (const variable of REQUIRED_CAMPAIGN_EMAIL_VARIABLES) {
+    if (!new RegExp(`\\{\\{\\s*${variable}\\s*\\}\\}`).test(content)) {
+      errors.push(`L’information « ${variable} » doit rester présente dans l’e-mail.`);
+    }
+  }
+
+  const unknownVariables = Array.from(content.matchAll(EMAIL_VARIABLE_PATTERN))
+    .map((match) => match[1])
+    .filter((variable, index, variables) => !CAMPAIGN_EMAIL_VARIABLES.includes(variable as (typeof CAMPAIGN_EMAIL_VARIABLES)[number]) && variables.indexOf(variable) === index);
+  if (unknownVariables.length) {
+    errors.push(`Variable(s) non reconnue(s) : ${unknownVariables.map((variable) => `{{${variable}}}`).join(", ")}.`);
+  }
+
+  return errors;
+}
+
 type RewardEmailVariables = {
   firstName: string;
   merchantName: string;
@@ -52,7 +109,10 @@ export function renderEmailTemplate(template: string, variables: RewardEmailVari
 }
 
 export function createCampaignEmailDefaults(merchant: Merchant): CampaignEmailSettings {
-  return createCampaignEmailDefaultsForMerchantName(merchant.companyName);
+  return {
+    ...createCampaignEmailDefaultsForMerchantName(merchant.companyName),
+    replyTo: merchant.restaurantEmail ?? "",
+  };
 }
 
 function createCampaignEmailDefaultsForMerchantName(companyName: string): CampaignEmailSettings {
@@ -199,3 +259,4 @@ export function renderRewardEmailHtml(
 export function resolveRewardEmailVariables(variables: RewardEmailVariables) {
   return variables;
 }
+

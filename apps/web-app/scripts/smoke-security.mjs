@@ -69,6 +69,9 @@ async function main() {
   await expectStatus("/api/background-library", [401]);
   await expectStatus("/api/google-places/search?q=test", [401]);
   await expectStatus("/api/merchant/leads", [307, 401]);
+  await expectStatus("/api/merchant/locations", [307, 401]);
+  await expectStatus("/api/merchant/cashier/lookup", [307, 401], { method: "POST", body: JSON.stringify({ code: "OK-TEST" }) });
+  await expectStatus("/api/merchant/cashier/redeem", [307, 401], { method: "POST", body: JSON.stringify({ leadId: "lead-test", idempotencyKey: "test" }) });
   await expectStatus("/api/stripe/portal-session", [307, 401, 405], { method: "POST" });
   console.log("✓ Accès API sans session refusés");
 
@@ -141,3 +144,4 @@ main().catch((error) => {
   console.error(error instanceof Error ? error.message : error);
   process.exit(1);
 });
+

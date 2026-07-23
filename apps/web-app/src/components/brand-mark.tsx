@@ -9,6 +9,7 @@ type BrandMarkProps = {
   variant?: "default" | "transparent";
   imageWidthPx?: number;
   textColor?: string;
+  textClassName?: string;
 };
 
 const sizeMap = {
@@ -25,6 +26,7 @@ export function BrandMark({
   variant = "default",
   imageWidthPx,
   textColor = "#ffffff",
+  textClassName = "text-3xl",
 }: BrandMarkProps) {
   const sizing = className.includes("w-full") ? "w-full" : sizeMap[size];
   const isOkadoFallback = logoText.trim().toUpperCase() === "OK";
@@ -64,7 +66,7 @@ export function BrandMark({
         style={{ maxWidth: `${imageWidthPx ?? 240}px` }}
       >
         <span
-          className="font-display text-3xl font-semibold leading-none drop-shadow-[0_8px_18px_rgba(0,0,0,0.28)]"
+          className={`font-display ${textClassName} font-semibold leading-none drop-shadow-[0_8px_18px_rgba(0,0,0,0.28)]`}
           style={{ color: textColor }}
         >
           {logoText}
@@ -87,3 +89,4 @@ export function BrandMark({
     </div>
   );
 }
+

@@ -34,15 +34,18 @@ export function ScratchGame({
 
     context.globalCompositeOperation = "source-over";
     context.clearRect(0, 0, canvas.width, canvas.height);
-    context.fillStyle = accent.signal;
+    const foilGradient = context.createLinearGradient(0, 0, canvas.width, canvas.height);
+    foilGradient.addColorStop(0, "#6b4305");
+    foilGradient.addColorStop(0.2, "#b87912");
+    foilGradient.addColorStop(0.46, "#f4ce68");
+    foilGradient.addColorStop(0.7, "#a96608");
+    foilGradient.addColorStop(1, "#5b3503");
+    context.fillStyle = foilGradient;
     context.fillRect(0, 0, canvas.width, canvas.height);
-    context.fillStyle = "#fff8e8";
+    context.fillStyle = "rgba(255,248,232,0.88)";
     context.font = "800 30px sans-serif";
     context.textAlign = "center";
     context.fillText("GRATTEZ ICI", canvas.width / 2, 86);
-    context.fillStyle = "rgba(255,248,232,0.88)";
-    context.font = "500 15px sans-serif";
-    context.fillText("Révélez votre lot", canvas.width / 2, 112);
     checksRef.current = 0;
     setRevealed(false);
   }, [accent.signal, resultLabel]);
@@ -101,59 +104,61 @@ export function ScratchGame({
 
   return (
     <div className="mx-auto w-full max-w-[360px]">
-      <div className="relative overflow-hidden rounded-[34px] border border-white/12 bg-white/6 p-4 shadow-[0_30px_80px_rgba(0,0,0,0.28)] backdrop-blur">
-        <div className="absolute inset-x-12 top-3 h-12 rounded-full bg-white/18 blur-2xl" />
+      <div className="relative overflow-hidden rounded-[26px] border border-[#6e4306]/70 shadow-[0_24px_46px_rgba(78,47,4,0.32)]">
         <div
-          className="relative rounded-[28px] p-5"
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 opacity-80"
           style={{
-            background: `linear-gradient(180deg, ${accent.paper}, ${accent.paper}dd)`,
-            color: accent.ink,
+            background:
+              "linear-gradient(115deg, rgba(255,255,255,0.28), transparent 24%, transparent 66%, rgba(255,255,255,0.16)), repeating-linear-gradient(0deg, rgba(255,255,255,0.08) 0 1px, transparent 1px 5px)",
+          }}
+        />
+        <div
+          className="relative h-[208px] overflow-hidden"
+          style={{
+            background: "linear-gradient(135deg, #7a4a05 0%, #b8750b 34%, #6d4004 68%, #a96808 100%)",
           }}
         >
-          <p className="text-[11px] uppercase tracking-[0.24em] text-black/44">Ticket à gratter</p>
-          <p className="mt-3 text-sm leading-6 text-black/55">
-            Glissez le doigt sur la zone dorée pour révéler votre résultat.
-          </p>
-
-          <div className="relative mt-5 h-[180px] overflow-hidden rounded-[26px] border border-black/8 bg-[radial-gradient(circle_at_top,#ffffffaa,transparent_58%)]">
-            <div className="absolute inset-0 flex items-center justify-center px-6 text-center">
-              <p className="text-3xl font-semibold leading-tight">{resultLabel}</p>
-            </div>
-
-            {!revealed ? (
-              <canvas
-                ref={canvasRef}
-                width={320}
-                height={180}
-                className="absolute inset-0 h-full w-full touch-none rounded-[26px]"
-                onPointerDown={(event) => {
-                  if (!enabled) {
-                    return;
-                  }
-
-                  isDrawingRef.current = true;
-                  const point = getCoordinates(event);
-                  scratch(point.x, point.y);
-                }}
-                onPointerMove={(event) => {
-                  if (!isDrawingRef.current || !enabled) {
-                    return;
-                  }
-
-                  const point = getCoordinates(event);
-                  scratch(point.x, point.y);
-                }}
-                onPointerUp={() => {
-                  isDrawingRef.current = false;
-                }}
-                onPointerLeave={() => {
-                  isDrawingRef.current = false;
-                }}
-              />
-            ) : null}
+          <div className="absolute inset-0 flex items-center justify-center px-6 text-center">
+            <p className="text-3xl font-semibold leading-tight text-[#fff8e8] drop-shadow-[0_2px_2px_rgba(72,40,0,0.35)]">
+              {resultLabel}
+            </p>
           </div>
+
+          {!revealed ? (
+            <canvas
+              ref={canvasRef}
+              width={320}
+              height={208}
+              className="absolute inset-0 h-full w-full touch-none"
+              onPointerDown={(event) => {
+                if (!enabled) {
+                  return;
+                }
+
+                isDrawingRef.current = true;
+                const point = getCoordinates(event);
+                scratch(point.x, point.y);
+              }}
+              onPointerMove={(event) => {
+                if (!isDrawingRef.current || !enabled) {
+                  return;
+                }
+
+                const point = getCoordinates(event);
+                scratch(point.x, point.y);
+              }}
+              onPointerUp={() => {
+                isDrawingRef.current = false;
+              }}
+              onPointerLeave={() => {
+                isDrawingRef.current = false;
+              }}
+            />
+          ) : null}
         </div>
       </div>
     </div>
   );
 }
+

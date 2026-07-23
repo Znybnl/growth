@@ -117,6 +117,7 @@ export function LeadPrizeActions({
       setEmailMessage("E-mail renvoyé.");
       setResendLocked(true);
       await loadHistory(false);
+      window.dispatchEvent(new CustomEvent("merchant-alerts-refresh"));
       router.refresh();
     } catch (resendError) {
       setError(resendError instanceof Error ? resendError.message : "Renvoi impossible");
@@ -253,3 +254,4 @@ export function LeadPrizeActions({
     </div>
   );
 }
+

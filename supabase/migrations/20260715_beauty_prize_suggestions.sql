@@ -8,7 +8,7 @@ insert into public.prize_suggestions (
     'Beauté',
     'Une réduction de 10 %',
     'Valable sur la prochaine prestation, pour encourager un retour rapide.',
-    35,
+    40,
     3.00,
     'discount',
     true,
@@ -17,9 +17,9 @@ insert into public.prize_suggestions (
   (
     'ps-beauty-mini-product',
     'Beauté',
-    'Un mini-produit beauté offert',
+    'Un échantillon offert',
     'Format découverte ou échantillon premium à remettre au salon.',
-    25,
+    40,
     2.50,
     'gift',
     true,
@@ -39,7 +39,7 @@ insert into public.prize_suggestions (
   (
     'ps-beauty-credit-15',
     'Beauté',
-    '15 € offerts sur une prestation',
+    '15€ offerts sur une prestation',
     'Un crédit à utiliser lors d''un prochain rendez-vous.',
     10,
     15.00,
@@ -52,7 +52,7 @@ insert into public.prize_suggestions (
     'Beauté',
     'Un soin premium offert',
     'Un soin ciblé à forte valeur perçue, à réserver selon les disponibilités.',
-    8,
+    5,
     25.00,
     'dessert',
     true,
@@ -90,3 +90,4 @@ on conflict (id) do update set
   is_active = excluded.is_active,
   sort_order = excluded.sort_order,
   updated_at = timezone('utc', now());
+

@@ -14,9 +14,9 @@ export default function NotFound() {
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           <Link
             href="/"
-            className="rounded-full bg-black px-5 py-3 text-sm font-semibold text-white"
+            className="rounded-full bg-black px-5 py-3 text-sm font-semibold !text-white"
           >
-            Retour produit
+            Retour à l&apos;accueil
           </Link>
           <Link
             href="/merchant"
@@ -29,3 +29,4 @@ export default function NotFound() {
     </div>
   );
 }
+

@@ -226,6 +226,11 @@ async function main() {
   await request("/campaigns");
   console.log("✓ Navigation dashboard/campagnes");
 
+  const locations = await request("/api/merchant/locations");
+  assert(Array.isArray(locations.body?.locations), "Liste des sites invalide.");
+  assert(locations.body.locations.length >= 1, "Aucun site marchand disponible.");
+  console.log(`✓ Périmètre site: ${locations.body.locations.length} site(s)`);
+
   const library = await request("/api/campaigns");
   assert(Array.isArray(library.body?.campaigns), "Liste campagnes invalide.");
   console.log(`✓ Liste campagnes: ${library.body.campaigns.length} élément(s)`);
@@ -293,12 +298,32 @@ async function main() {
   console.log("✓ QR code et page retrait");
 
   await request(`/api/merchant/leads?campaign=${encodeURIComponent(campaignId)}`);
-  await request(`/api/merchant/leads/${lead.id}/redeem`, { method: "POST" });
+  const cashierLookup = await request("/api/merchant/cashier/lookup", {
+    method: "POST",
+    body: JSON.stringify({ code: lead.redemptionCode }),
+  });
+  assert(cashierLookup.body?.context?.status === "available", "Le code caisse devrait être valide.");
+  const cashierRedeem = await request("/api/merchant/cashier/redeem", {
+    method: "POST",
+    body: JSON.stringify({
+      leadId: lead.id,
+      purchaseConfirmed: false,
+      idempotencyKey: `smoke-cashier-${Date.now()}`,
+    }),
+  });
+  assert(cashierRedeem.body?.context?.status === "redeemed", "Le retrait caisse n'est pas confirmé.");
   console.log("✓ Retrait vendeur");
 
   let doubleRedeemBlocked = false;
   try {
-    await request(`/api/merchant/leads/${lead.id}/redeem`, { method: "POST" });
+    await request("/api/merchant/cashier/redeem", {
+      method: "POST",
+      body: JSON.stringify({
+        leadId: lead.id,
+        purchaseConfirmed: false,
+        idempotencyKey: `smoke-cashier-double-${Date.now()}`,
+      }),
+    });
   } catch {
     doubleRedeemBlocked = true;
   }
@@ -315,3 +340,4 @@ main().catch((error) => {
     process.exit(1);
   });
 });
+

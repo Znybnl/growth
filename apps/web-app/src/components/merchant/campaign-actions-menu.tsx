@@ -12,6 +12,7 @@ import {
 
 import { DeleteCampaignButton } from "@/components/merchant/delete-campaign-button";
 import { DuplicateCampaignButton } from "@/components/merchant/duplicate-campaign-button";
+import { DuplicateCampaignToLocationsButton } from "@/components/merchant/duplicate-campaign-to-locations-button";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -52,7 +53,7 @@ export function CampaignActionsMenu({
         className="w-[min(264px,calc(100vw-24px))] rounded-[8px] border-border bg-white p-1.5 shadow-product-card"
       >
         <DropdownMenuItem className={itemClass} asChild>
-          <a href={`/campaign/${campaignId}`} target="_blank" rel="noreferrer">
+          <a href={`/campaign/${campaignId}?preview=1`} target="_blank" rel="noreferrer">
             <Eye className="h-4 w-4" />
             Prévisualiser
           </a>
@@ -79,7 +80,7 @@ export function CampaignActionsMenu({
         <DropdownMenuItem className={itemClass} asChild>
           <a href={`/campaigns/${campaignId}/email`}>
             <Mail className="h-4 w-4" />
-            Personnaliser l&apos;email
+            Personnaliser l&apos;e-mail de gain
           </a>
         </DropdownMenuItem>
         <DropdownMenuItem className={itemClass} asChild>
@@ -96,6 +97,7 @@ export function CampaignActionsMenu({
             campaignId={campaignId}
             variant="menu"
           />
+          <DuplicateCampaignToLocationsButton campaignId={campaignId} />
           <DeleteCampaignButton
             campaignId={campaignId}
             campaignTitle={campaignTitle}
@@ -106,3 +108,4 @@ export function CampaignActionsMenu({
     </DropdownMenu>
   );
 }
+

@@ -12,21 +12,24 @@ import {
   goalLabel,
   leadStatusLabel,
 } from "@/lib/format";
-import { getMerchantDashboard, getMerchantRecentLeads } from "@/lib/store";
+import { getMerchantDashboard, getMerchantRecentLeads, getMerchantWorkspaceDashboard } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string }>;
+  searchParams: Promise<{ q?: string; scope?: string }>;
 }) {
   const session = await requireAuthenticatedSession();
   const params = await searchParams;
   const query = params.q?.trim().toLowerCase() ?? "";
+  const isWorkspaceView = params.scope === "all" && session.locations.length > 1;
   const [dashboard, merchantLeads] = await Promise.all([
-    getMerchantDashboard(session.merchant.id, session.merchant),
-    getMerchantRecentLeads(session.merchant.id, 5, query),
+    isWorkspaceView
+      ? getMerchantWorkspaceDashboard(session.user.id, session.merchant)
+      : getMerchantDashboard(session.merchant.id, session.merchant),
+    isWorkspaceView ? Promise.resolve([]) : getMerchantRecentLeads(session.merchant.id, 5, query),
   ]);
 
   const filteredCampaigns = query
@@ -85,7 +88,23 @@ export default async function DashboardPage({
             </p>
           </div>
 
-          <div className="flex flex-col gap-3 xl:items-end">
+          <div className="flex flex-wrap gap-3 xl:items-end xl:justify-end">
+            {session.locations.length > 1 ? (
+              <Link
+                href={isWorkspaceView ? "/" : "/?scope=all"}
+                prefetch={false}
+                className="okado-secondary-action h-11 px-5"
+              >
+                {isWorkspaceView ? "Voir le site actif" : "Tous les sites"}
+              </Link>
+            ) : null}
+            <Link
+              href="/campaigns/new/guided"
+              prefetch={false}
+              className="okado-secondary-action h-11 px-5"
+            >
+              Assistant guidé
+            </Link>
             <Link
               href="/campaigns/new"
               prefetch={false}
@@ -337,4 +356,5 @@ export default async function DashboardPage({
     </div>
   );
 }
+
 

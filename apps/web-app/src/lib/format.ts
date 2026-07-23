@@ -186,13 +186,13 @@ export function actionKindCta(kind: ActionKind) {
     case "google":
       return "Laisser un avis Google";
     case "instagram":
-      return "Ouvrir Instagram";
+      return "Suivre sur Instagram";
     case "facebook":
       return "Ouvrir Facebook";
     case "tiktok":
       return "Ouvrir TikTok";
     case "tripadvisor":
-      return "Ouvrir Tripadvisor";
+      return "Laisser un avis Tripadvisor";
     case "crm":
       return "Partager mon e-mail";
     default:
@@ -246,3 +246,4 @@ export function buttonSizeLabel(size: ButtonSize) {
       return "Moyen";
   }
 }
+

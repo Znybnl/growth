@@ -13,10 +13,14 @@ import {
   getSupabaseMerchantLeads,
   getSupabaseMerchantRecentLeads,
   getSupabaseMerchantSupportOverview,
+  findSupabaseMerchantLeadByRedemptionCode,
+  findSupabasePublicRedemptionContextByCode,
+  redeemSupabaseCashierLeadPrize,
   getSupabasePublicCampaign,
   createPublicCampaignIdentity,
   deleteCampaignInSupabase,
   duplicateCampaignInSupabase,
+  duplicateCampaignToMerchantInSupabase,
   markActionConfirmedInSupabase,
   recordEventInSupabase,
   redeemLeadPrizeInSupabase,
@@ -33,15 +37,21 @@ import {
   getSupabaseMerchantProfile,
   getSupabaseMerchantUser,
   getSupabaseMerchantUserByEmail,
+  createSupabaseMerchantLocation,
+  archiveSupabaseMerchantLocation,
+  getSupabaseMerchantWorkspaceContext,
   updateMerchantAccountInSupabase,
   updateMerchantOnboardingInSupabase,
+  verifySupabaseMerchantRedemptionPin,
 } from "@/lib/merchant-account-repository";
 import { assertDataBackendAvailable } from "@/lib/supabase";
+import { assertCampaignCanPublish } from "@/lib/campaign-compliance";
 import { getMemorySupportLogs } from "@/lib/support-log";
 import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
 import { cache } from "react";
 import {
   Campaign,
+  CashierRedemptionContext,
   CampaignAction,
   CampaignDataView,
   CampaignEmailSettings,
@@ -66,6 +76,8 @@ import {
   FinalizeDrawSessionRequest,
   Lead,
   Merchant,
+  MerchantLocationAccess,
+  MerchantWorkspace,
   MerchantAccountSettingsInput,
   MerchantDashboardData,
   MerchantLeadRow,
@@ -76,9 +88,11 @@ import {
   MerchantUser,
   Prize,
   PublicCampaign,
+  PublicRedemptionContext,
 } from "@/lib/types";
 import { createCampaignEmailDefaults, normalizeCampaignEmailSettings } from "@/lib/email-settings";
 import { revalidateTag, unstable_cache } from "next/cache";
+import { hashPassword, verifyPassword } from "@/lib/passwords";
 
 type Store = {
   merchants: Merchant[];
@@ -186,6 +200,9 @@ function createAction(id: string, label: string, url: string, kind: CampaignActi
 
 const merchantSeed: Merchant = {
   id: "merchant-maison-sora",
+  workspaceId: "workspace-merchant-maison-sora",
+  locationCode: "SORA-PAR",
+  locationStatus: "active",
   companyName: "Maison Sora",
   logoText: "MS",
   logoUrl: undefined,
@@ -210,10 +227,16 @@ const merchantSeed: Merchant = {
   createdAt: "2026-06-01T08:00:00.000Z",
 };
 
+const memoryRedemptionPinHashes = new Map<string, string>([
+  [merchantSeed.id, hashPassword("2468")],
+]);
+
 const userSeed: MerchantUser[] = [
   {
     id: "user-maison-sora-admin",
     merchantId: merchantSeed.id,
+    workspaceId: merchantSeed.workspaceId,
+    role: "owner",
     firstName: "Pierre-Henri",
     lastName: "Brunelle",
     email: "camille@maisonsora.fr",
@@ -577,997 +600,7 @@ function normalizeCampaign(rawCampaign: Campaign | (Partial<Campaign> & Record<s
           backgroundImageUrl: presentation.background?.imageUrl ?? "",
           headline: rawCampaign.subtitle ?? fallback.subtitle,
           headlineTextColor: presentation.heading?.textColor ?? "#ffffff",
-          headlineFontSizePx: presentation.heading?.fontSizePx ?? 42,
-          headlineFontFamily: presentation.heading?.fontFamily ?? "display",
-          wheel,
-          footerBackgroundColor: rawCampaign.accent?.signal ?? fallback.accent.signal,
-        }),
-      ),
-      email: normalizeCampaignEmailSettings(
-        presentation.email,
-        createCampaignEmailDefaults(merchantSeed),
-      ),
-    },
-    actions:
-      rawCampaign.actions ??
-      (targetUrl
-        ? [
-            createAction(
-              `action-${rawCampaign.id ?? fallback.id}-1`,
-              goalType === "review_prompt"
-                ? "Partager mon expérience sur Google"
-                : "Découvrir notre univers",
-              targetUrl,
-              goalType === "review_prompt" ? "google" : "instagram",
-            ),
-          ]
-        : []),
-    rewardRules:
-      rawCampaign.rewardRules ??
-      createRewardRules({
-        rewardExpiryMinutes:
-          typeof (rawCampaign as { rewardExpiryMinutes?: unknown }).rewardExpiryMinutes ===
-          "number"
-            ? ((rawCampaign as { rewardExpiryMinutes: number }).rewardExpiryMinutes ?? 20)
-            : fallback.rewardRules.rewardExpiryMinutes,
-      }),
-  };
-}
-
-function normalizeStore(rawStore: Store): Store {
-  return {
-    merchants: rawStore.merchants?.length ? rawStore.merchants : [merchantSeed],
-    users: rawStore.users?.length ? rawStore.users : userSeed,
-    campaigns: (rawStore.campaigns ?? campaignSeed).map((campaign) => normalizeCampaign(campaign)),
-    prizes: (rawStore.prizes ?? prizeSeed).map((prize) => ({
-      ...prize,
-      totalQuantity: prize.totalQuantity ?? null,
-      remainingQuantity: prize.remainingQuantity ?? prize.totalQuantity ?? null,
-    })),
-    leads: rawStore.leads ?? [],
-    events: rawStore.events ?? [],
-    drawSessions: rawStore.drawSessions ?? [],
-  };
-}
-
-const store = normalizeStore(globalThis.__retailActivationStore ?? createSeededStore());
-globalThis.__retailActivationStore = store;
-
-function getDataBackend(operation: string) {
-  return assertDataBackendAvailable(operation);
-}
-
-async function resolveMerchantForSupabase(
-  merchantId: string,
-  fallbackMerchant?: Merchant,
-): Promise<Merchant> {
-  if (fallbackMerchant?.id === merchantId) {
-    return fallbackMerchant;
-  }
-
-  const merchant = await getSupabaseMerchantProfile(merchantId);
-
-  if (!merchant) {
-    throw new Error("Marchand introuvable");
-  }
-
-  return merchant;
-}
-
-async function resolveCampaignMerchantForSupabase(
-  campaignId: string,
-  fallbackMerchant?: Merchant,
-): Promise<Merchant> {
-  const performance = await getSupabaseCampaignPerformance(campaignId, fallbackMerchant);
-
-  if (!performance) {
-    throw new Error("Campagne introuvable");
-  }
-
-  return performance.merchant;
-}
-
-function clone<T>(value: T): T {
-  return structuredClone(value);
-}
-
-function getCampaign(id: string) {
-  return store.campaigns.find((campaign) => campaign.id === id);
-}
-
-function getMerchant(id: string) {
-  return store.merchants.find((merchant) => merchant.id === id);
-}
-
-function getUser(id: string) {
-  return store.users.find((user) => user.id === id);
-}
-
-function getUserByEmail(email: string) {
-  return store.users.find((user) => user.email === email.trim().toLowerCase());
-}
-
-function getCampaignPrizes(campaignId: string) {
-  return store.prizes.filter((prize) => prize.campaignId === campaignId);
-}
-
-function toLeadRow(lead: Lead): MerchantLeadRow {
-  const campaign = getCampaign(lead.campaignId);
-  const prize = store.prizes.find((item) => item.id === lead.prizeId);
-
-  return {
-    ...lead,
-    campaignTitle: campaign?.title ?? "Campagne",
-    goalType: campaign?.goalType ?? "lead_capture",
-    prizeLabel: lead.prizeId ? prize?.label ?? "Lot inconnu" : "Perdu",
-    prizeUsageConditions: lead.prizeId ? prize?.usageConditions : undefined,
-    emailDeliveryStatus: undefined,
-    emailSentAt: undefined,
-    emailDeliveredAt: undefined,
-    emailErrorMessage: undefined,
-  };
-}
-
-function toPublicCampaign(campaign: Campaign, actions = campaign.actions): PublicCampaign {
-  const merchant = getMerchant(campaign.merchantId);
-
-  if (!merchant) {
-    throw new Error("Marchand introuvable");
-  }
-
-  return {
-    id: campaign.id,
-    title: campaign.title,
-    subtitle: campaign.subtitle,
-    goalType: campaign.goalType,
-    gameType: campaign.gameType,
-    ctaLabel: campaign.ctaLabel,
-    targetUrl: campaign.targetUrl,
-    merchantName: merchant.companyName,
-    merchantLogoText: merchant.logoText,
-    logoMode: campaign.logoMode ?? "text",
-    logoText: campaign.logoText ?? merchant.companyName,
-    logoUrl: campaign.logoUrl,
-    accent: campaign.accent,
-    prizes: getCampaignPrizes(campaign.id).map((prize) => ({
-      id: prize.id,
-      label: prize.label,
-      totalQuantity: prize.totalQuantity,
-      remainingQuantity: prize.remainingQuantity,
-      probability: prize.probability,
-    })),
-    presentation: campaign.presentation,
-    actions,
-    rewardRules: campaign.rewardRules,
-  };
-}
-
-function generateId(prefix: string) {
-  return `${prefix}-${crypto.randomUUID().slice(0, 8)}`;
-}
-
-function recordEventInMemory(
-  campaignId: string,
-  eventType: CampaignEvent["eventType"],
-  leadId?: string,
-  metadata?: CampaignEvent["metadata"],
-) {
-  const event: CampaignEvent = {
-    id: generateId("evt"),
-    campaignId,
-    leadId,
-    eventType,
-    metadata,
-    createdAt: new Date().toISOString(),
-  };
-
-  store.events.push(event);
-
-  return clone(event);
-}
-
-function computeKpis(campaign: Campaign) {
-  const prizes = getCampaignPrizes(campaign.id);
-  const leads = store.leads.filter((lead) => lead.campaignId === campaign.id);
-  const events = store.events.filter((event) => event.campaignId === campaign.id);
-  const scans = events.filter((event) => event.eventType === "scan").length;
-  const actions = events.filter((event) => event.eventType === "review_clicked").length;
-  const games = events.filter((event) => event.eventType === "game_played").length;
-  const wins = leads.filter((lead) => Boolean(lead.prizeId)).length;
-  const redeemed = leads.filter((lead) => lead.status === "redeemed").length;
-  const estimatedSpend = leads.reduce((total, lead) => {
-    const prize = prizes.find((item) => item.id === lead.prizeId);
-    return total + (prize ? prize.estimatedUnitCost : 0);
-  }, 0);
-
-  return {
-    scans,
-    leads: leads.length,
-    actions,
-    games,
-    wins,
-    redeemed,
-    conversionRate: scans ? Math.round((leads.length / scans) * 100) : 0,
-    actionRate: leads.length ? Math.round((actions / leads.length) * 100) : 0,
-    redemptionRate: wins ? Math.round((redeemed / wins) * 100) : 0,
-    estimatedSpend: Number(estimatedSpend.toFixed(2)),
-    costPerLead: leads.length ? Number((estimatedSpend / leads.length).toFixed(2)) : 0,
-    costPerRedeemed: redeemed ? Number((estimatedSpend / redeemed).toFixed(2)) : 0,
-  };
-}
-
-function buildPerformance(campaign: Campaign): CampaignPerformance {
-  const merchant = getMerchant(campaign.merchantId);
-
-  if (!merchant) {
-    throw new Error("Marchand introuvable");
-  }
-
-  return {
-    campaign: clone(campaign),
-    merchant: clone(merchant),
-    prizes: clone(getCampaignPrizes(campaign.id)),
-    kpis: computeKpis(campaign),
-  };
-}
-
-function isPrizeAvailable(prize: Prize) {
-  return prize.remainingQuantity === null || prize.remainingQuantity > 0;
-}
-
-function decrementPrize(prize: Prize) {
-  if (prize.remainingQuantity === null) {
-    return;
-  }
-
-  prize.remainingQuantity -= 1;
-}
-
-function incrementPrize(prize: Prize) {
-  if (prize.remainingQuantity === null) {
-    return;
-  }
-
-  prize.remainingQuantity += 1;
-}
-
-function choosePrize(campaign: Campaign, prizes: Prize[]) {
-  const available = prizes.filter(isPrizeAvailable);
-
-  if (!available.length) {
-    return null;
-  }
-
-  if (campaign.rewardRules.isWinningEveryTime) {
-    const weighted = available.filter((prize) => prize.probability > 0);
-    const totalWeight = weighted.reduce((total, prize) => total + prize.probability, 0);
-    if (!weighted.length || totalWeight <= 0) {
-      return null;
-    }
-
-    const roll = Math.random() * totalWeight;
-    let cursor = 0;
-
-    for (const prize of weighted) {
-      cursor += prize.probability;
-
-      if (roll <= cursor) {
-        decrementPrize(prize);
-        return prize;
-      }
-    }
-
-    decrementPrize(weighted[0]);
-    return weighted[0];
-  }
-
-  const roll = Math.random() * 100;
-  let cursor = 0;
-
-  for (const prize of available) {
-    cursor += prize.probability;
-
-    if (roll <= cursor) {
-      decrementPrize(prize);
-      return prize;
-    }
-  }
-
-  return null;
-}
-
-function expireDrawSessionsFromMemory() {
-  const now = Date.now();
-
-  for (const session of store.drawSessions) {
-    if (session.status !== "pending" || new Date(session.expiresAt).getTime() > now) {
-      continue;
-    }
-
-    session.status = "expired";
-
-    if (session.prizeId) {
-      const prize = store.prizes.find((item) => item.id === session.prizeId);
-
-      if (prize) {
-        incrementPrize(prize);
-      }
-    }
-  }
-}
-
-function buildLeadFromSession(
-  campaign: Campaign,
-  session: DrawSession,
-  input: FinalizeDrawSessionRequest,
-): Lead {
-  const now = new Date();
-  const lead: Lead = {
-    id: generateId("lead"),
-    campaignId: campaign.id,
-    firstName: input.firstName.trim(),
-    email: input.email.trim().toLowerCase(),
-    marketingConsent: Boolean(input.marketingConsent),
-      consentTimestamp: input.marketingConsent ? now.toISOString() : undefined,
-    status: "lost",
-    createdAt: now.toISOString(),
-    actionConfirmed: false,
-  };
-
-  if (!session.prizeId) {
-    return lead;
-  }
-
-  const availableAt = new Date(
-    now.getTime() + campaign.rewardRules.availableAfterHours * 60 * 60 * 1000,
-  );
-  const withdrawalDurationMs =
-    Math.max(1, campaign.rewardRules.availabilityDurationDays) * 24 * 60 * 60 * 1000;
-  const expiresAt = new Date(availableAt.getTime() + withdrawalDurationMs);
-
-  lead.prizeId = session.prizeId;
-  lead.status = "claimed";
-  lead.redemptionCode = `OK-${Math.random().toString(36).slice(2, 10).toUpperCase()}`;
-  lead.rewardAvailableAt = availableAt.toISOString();
-  lead.rewardExpiresAt = expiresAt.toISOString();
-
-  return lead;
-}
-
-function getMerchantProfileFromMemory(merchantId = merchantSeed.id) {
-  const merchant = getMerchant(merchantId);
-
-  if (!merchant) {
-    throw new Error("Marchand introuvable");
-  }
-
-  return clone(merchant);
-}
-
-function getMerchantUserFromMemory(userId: string) {
-  const user = getUser(userId);
-
-  return user ? clone(user) : null;
-}
-
-function getMerchantUserByEmailFromMemory(email: string) {
-  const user = getUserByEmail(email);
-
-  return user ? clone(user) : null;
-}
-
-function createMerchantAccountInMemory(input: MerchantSignUpInput) {
-  const email = input.email.trim().toLowerCase();
-
-  if (getUserByEmail(email)) {
-    throw new Error("Un compte existe déjà avec cette adresse e-mail.");
-  }
-
-  if (input.password !== input.confirmPassword) {
-    throw new Error("Les mots de passe ne correspondent pas.");
-  }
-
-  const merchantId = generateId("merchant");
-  const userId = generateId("user");
-  const firstName = input.firstName.trim();
-  const lastName = input.lastName.trim();
-  const companyName = input.companyName.trim();
-  const city = input.city.trim();
-  const phone = (input.phone ?? "").trim();
-
-  const merchant: Merchant = {
-    id: merchantId,
-    companyName,
-    logoText: companyName.slice(0, 2).toUpperCase(),
-    logoUrl: undefined,
-    industry: "",
-    restaurantType: "Brasserie",
-    city,
-    address: "",
-    contactName: `${firstName} ${lastName}`.trim(),
-    phone,
-    restaurantEmail: "",
-    websiteUrl: "",
-    onboardingCompleted: false,
-    preferredGoals: [],
-    diffusionSupport: [],
-    googleReviewUrl: "",
-    instagramUrl: "",
-    facebookUrl: "",
-    tiktokUrl: "",
-    tripadvisorUrl: "",
-    customLinkUrl: "",
-    defaultPrizeCost: 3,
-    createdAt: new Date().toISOString(),
-  };
-
-  const user: MerchantUser = {
-    id: userId,
-    merchantId,
-    firstName,
-    lastName,
-    email,
-    password: input.password,
-    createdAt: new Date().toISOString(),
-  };
-
-  store.merchants.unshift(merchant);
-  store.users.unshift(user);
-
-  return {
-    user: clone(user),
-    merchant: clone(merchant),
-  };
-}
-
-function authenticateMerchantInMemory(input: MerchantSignInInput) {
-  const user = getUserByEmail(input.email);
-
-  if (!user || user.password !== input.password) {
-    throw new Error("Identifiants invalides.");
-  }
-
-  const merchant = getMerchant(user.merchantId);
-
-  if (!merchant) {
-    throw new Error("Marchand introuvable.");
-  }
-
-  return {
-    user: clone(user),
-    merchant: clone(merchant),
-  };
-}
-
-function updateMerchantOnboardingInMemory(userId: string, input: MerchantOnboardingInput) {
-  const user = getUser(userId);
-
-  if (!user) {
-    throw new Error("Utilisateur introuvable.");
-  }
-
-  const merchant = getMerchant(user.merchantId);
-
-  if (!merchant) {
-    throw new Error("Marchand introuvable.");
-  }
-
-  merchant.companyName = input.companyName.trim();
-  merchant.logoText = input.companyName.trim().slice(0, 2).toUpperCase();
-  merchant.industry = input.industry.trim();
-  merchant.restaurantType = input.restaurantType.trim();
-  merchant.city = input.city.trim();
-  merchant.address = input.address.trim();
-  merchant.contactName = input.contactName.trim();
-  merchant.phone = input.phone.trim();
-  merchant.restaurantEmail = input.restaurantEmail.trim().toLowerCase();
-  merchant.websiteUrl = input.websiteUrl.trim();
-  merchant.defaultPrizeCost = input.defaultPrizeCost;
-  merchant.preferredGoals = input.preferredGoals;
-  merchant.diffusionSupport = input.diffusionSupport;
-  merchant.googleReviewUrl = input.googleReviewUrl.trim();
-  merchant.instagramUrl = input.instagramUrl.trim();
-  merchant.facebookUrl = input.facebookUrl.trim();
-  merchant.tiktokUrl = input.tiktokUrl.trim();
-  merchant.tripadvisorUrl = input.tripadvisorUrl.trim();
-  merchant.customLinkUrl = input.customLinkUrl.trim();
-  merchant.onboardingCompleted = true;
-
-  return clone(merchant);
-}
-
-function updateMerchantAccountInMemory(userId: string, input: MerchantAccountSettingsInput) {
-  const user = getUser(userId);
-
-  if (!user) {
-    throw new Error("Utilisateur introuvable.");
-  }
-
-  const email = input.email.trim().toLowerCase();
-  const duplicate = store.users.find((item) => item.email === email && item.id !== userId);
-
-  if (duplicate) {
-    throw new Error("Cette adresse e-mail est deja utilisee.");
-  }
-
-  const merchant = getMerchant(user.merchantId);
-
-  if (!merchant) {
-    throw new Error("Marchand introuvable.");
-  }
-
-  user.firstName = input.firstName.trim();
-  user.lastName = input.lastName.trim();
-  user.email = email;
-
-  merchant.companyName = input.companyName.trim();
-  merchant.logoText = input.companyName.trim().slice(0, 2).toUpperCase();
-  merchant.industry = input.industry.trim();
-  merchant.restaurantType = input.restaurantType.trim();
-  merchant.city = input.city.trim();
-  merchant.address = input.address.trim();
-  merchant.contactName = input.contactName.trim();
-  merchant.phone = input.phone.trim();
-  merchant.restaurantEmail = input.restaurantEmail.trim().toLowerCase();
-  merchant.websiteUrl = input.websiteUrl.trim();
-  merchant.googleReviewUrl = input.googleReviewUrl.trim();
-  merchant.instagramUrl = input.instagramUrl.trim();
-  merchant.facebookUrl = input.facebookUrl.trim();
-  merchant.tiktokUrl = input.tiktokUrl.trim();
-  merchant.tripadvisorUrl = input.tripadvisorUrl.trim();
-  merchant.customLinkUrl = input.customLinkUrl.trim();
-  merchant.defaultPrizeCost = input.defaultPrizeCost;
-
-  return {
-    merchant: clone(merchant),
-    user: clone(user),
-  };
-}
-
-export const getMerchantProfile = cache(async function getMerchantProfile(merchantId = merchantSeed.id) {
-  if (getDataBackend("la lecture du profil marchand") === "supabase") {
-    return getSupabaseMerchantProfile(merchantId);
-  }
-
-  return getMerchantProfileFromMemory(merchantId);
-});
-
-export const getMerchantUser = cache(async function getMerchantUser(userId: string) {
-  if (getDataBackend("la lecture de l'utilisateur marchand") === "supabase") {
-    return getSupabaseMerchantUser(userId);
-  }
-
-  return getMerchantUserFromMemory(userId);
-});
-
-export async function getMerchantUserByEmail(email: string) {
-  if (getDataBackend("la recherche de l'utilisateur marchand") === "supabase") {
-    return getSupabaseMerchantUserByEmail(email);
-  }
-
-  return getMerchantUserByEmailFromMemory(email);
-}
-
-export async function createMerchantAccount(input: MerchantSignUpInput) {
-  if (getDataBackend("la création de compte marchand") === "supabase") {
-    return createMerchantAccountInSupabase(input);
-  }
-
-  return createMerchantAccountInMemory(input);
-}
-
-export async function authenticateMerchant(input: MerchantSignInInput) {
-  if (getDataBackend("la connexion marchand") === "supabase") {
-    return authenticateMerchantInSupabase(input);
-  }
-
-  return authenticateMerchantInMemory(input);
-}
-
-export async function updateMerchantOnboarding(userId: string, input: MerchantOnboardingInput) {
-  if (getDataBackend("la mise à jour de l'onboarding") === "supabase") {
-    return updateMerchantOnboardingInSupabase(userId, input);
-  }
-
-  return updateMerchantOnboardingInMemory(userId, input);
-}
-
-export async function updateMerchantAccount(userId: string, input: MerchantAccountSettingsInput) {
-  if (getDataBackend("la mise à jour du compte marchand") === "supabase") {
-    return updateMerchantAccountInSupabase(userId, input);
-  }
-
-  return updateMerchantAccountInMemory(userId, input);
-}
-
-export function listCampaigns() {
-  return clone(store.campaigns);
-}
-
-export function getPrimaryCampaignId() {
-  return store.campaigns.find((campaign) => campaign.isActive)?.id ?? store.campaigns[0]?.id;
-}
-
-function getPublicCampaignFromMemory(id: string) {
-  const campaign = getCampaign(id);
-
-  if (!campaign || !campaign.isActive) {
-    return null;
-  }
-
-  return clone(toPublicCampaign(campaign));
-}
-
-function getCampaignPerformanceFromMemory(campaignId: string) {
-  const campaign = getCampaign(campaignId);
-
-  if (!campaign) {
-    return null;
-  }
-
-  return buildPerformance(campaign);
-}
-
-function getMerchantDashboardFromMemory(
-  merchantId = merchantSeed.id,
-  fallbackMerchant?: Merchant,
-): MerchantDashboardData {
-  const merchant = getMerchant(merchantId) ?? fallbackMerchant;
-
-  if (!merchant) {
-    throw new Error("Marchand introuvable");
-  }
-
-  const campaigns = store.campaigns
-    .filter((campaign) => campaign.merchantId === merchantId)
-    .map((campaign) => buildPerformance(campaign));
-
-  const totalLeads = campaigns.reduce((total, item) => total + item.kpis.leads, 0);
-  const totalRedeemed = campaigns.reduce((total, item) => total + item.kpis.redeemed, 0);
-  const averageConversion = campaigns.length
-    ? Math.round(
-        campaigns.reduce((total, item) => total + item.kpis.conversionRate, 0) /
-          campaigns.length,
-      )
-    : 0;
-  const campaignIds = new Set(campaigns.map((item) => item.campaign.id));
-  const relevantLeads = store.leads.filter((lead) => campaignIds.has(lead.campaignId));
-  const relevantEvents = store.events.filter((event) => campaignIds.has(event.campaignId));
-  const referenceDates = [
-    ...relevantLeads.map((lead) => lead.createdAt),
-    ...relevantEvents.map((event) => event.createdAt),
-  ];
-  const latest = referenceDates.length
-    ? new Date([...referenceDates].sort((a, b) => a.localeCompare(b)).at(-1) ?? new Date().toISOString())
-    : new Date();
-  const dayKeys = Array.from({ length: 30 }, (_, index) => {
-    const date = new Date(Date.UTC(latest.getUTCFullYear(), latest.getUTCMonth(), latest.getUTCDate()));
-    date.setUTCDate(latest.getUTCDate() - (30 - index - 1));
-    return date.toISOString().slice(0, 10);
-  });
-  const scansByDay = new Map<string, number>();
-  const participationsByDay = new Map<string, number>();
-
-  for (const event of relevantEvents) {
-    if (event.eventType === "scan") {
-      const day = event.createdAt.slice(0, 10);
-      scansByDay.set(day, (scansByDay.get(day) ?? 0) + 1);
-    }
-  }
-
-  for (const lead of relevantLeads) {
-    const day = lead.createdAt.slice(0, 10);
-    participationsByDay.set(day, (participationsByDay.get(day) ?? 0) + 1);
-  }
-
-  return {
-    merchant: clone(merchant),
-    campaigns,
-    totalLeads,
-    totalRedeemed,
-    averageConversion,
-    activityPoints: dayKeys.map((label) => ({
-      label,
-      scans: scansByDay.get(label) ?? 0,
-      participations: participationsByDay.get(label) ?? 0,
-    })),
-  };
-}
-
-function getMerchantLeadsFromMemory(campaignId?: string) {
-  return clone(
-    store.leads
-      .filter((lead) => (campaignId ? lead.campaignId === campaignId : true))
-      .map((lead) => toLeadRow(lead))
-      .sort((a, b) => (b.consentTimestamp ?? b.createdAt).localeCompare(a.consentTimestamp ?? a.createdAt)),
-  );
-}
-
-function getCampaignDataViewFromMemory(
-  campaignId: string,
-  options: { leadLimit?: number; leadOffset?: number; query?: string } = {},
-): CampaignDataView | null {
-  const performance = getCampaignPerformanceFromMemory(campaignId);
-
-  if (!performance) {
-    return null;
-  }
-
-  const query = options.query?.trim().toLowerCase() ?? "";
-  const allLeads = getMerchantLeadsFromMemory(campaignId).filter((lead) =>
-    query
-      ? [lead.redemptionCode ?? "", lead.email, lead.firstName, lead.prizeLabel]
-          .join(" ")
-          .toLowerCase()
-          .includes(query)
-      : true,
-  );
-  const leadOffset = Math.max(options.leadOffset ?? 0, 0);
-  const leadLimit = Math.min(Math.max(options.leadLimit ?? 50, 10), 100);
-  const allEvents = clone(
-    store.events
-      .filter((event) => event.campaignId === campaignId)
-      .sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
-  );
-  const latestDate = [
-    ...allLeads.map((lead) => lead.createdAt),
-    ...allEvents.map((event) => event.createdAt),
-  ]
-    .sort((a, b) => a.localeCompare(b))
-    .at(-1) ?? new Date().toISOString();
-  const reference = new Date(latestDate);
-  const dailyStats = Array.from({ length: 7 }, (_, index) => {
-    const date = new Date(
-      Date.UTC(reference.getUTCFullYear(), reference.getUTCMonth(), reference.getUTCDate()),
-    );
-    date.setUTCDate(date.getUTCDate() - (6 - index));
-    const label = date.toISOString().slice(0, 10);
-
-    return {
-      label,
-      participations: allLeads.filter((lead) => lead.createdAt.slice(0, 10) === label).length,
-      redeemed: allEvents.filter(
-        (event) => event.eventType === "prize_redeemed" && event.createdAt.slice(0, 10) === label,
-      ).length,
-    };
-  });
-
-  return {
-    performance,
-    leads: allLeads.slice(leadOffset, leadOffset + leadLimit),
-    events: allEvents.slice(0, 8),
-    leadTotal: allLeads.length,
-    leadOffset,
-    leadLimit,
-    dailyStats,
-    actionVolumes: [],
-  };
-}
-
-function createDrawSessionFromMemory(input: CreateDrawSessionRequest): CreateDrawSessionResult {
-  expireDrawSessionsFromMemory();
-  const campaign = getCampaign(input.campaignId);
-
-  if (!campaign || !campaign.isActive) {
-    throw new Error("Campagne indisponible");
-  }
-
-  const prize = choosePrize(campaign, getCampaignPrizes(campaign.id));
-  const session: DrawSession = {
-    id: generateId("session"),
-    campaignId: campaign.id,
-    prizeId: prize?.id,
-    status: "pending",
-    createdAt: new Date().toISOString(),
-    expiresAt: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
-  };
-
-  store.drawSessions.push(session);
-  recordEventInMemory(campaign.id, "game_played");
-
-  return {
-    session: clone(session),
-    prize: prize ? clone(prize) : null,
-    campaign: toPublicCampaign(campaign),
-  };
-}
-
-function getMerchantCampaignLibraryFromMemory(
-  merchantId = merchantSeed.id,
-  fallbackMerchant?: Merchant,
-): CampaignLibraryItem[] {
-  const merchant = getMerchant(merchantId) ?? fallbackMerchant;
-
-  if (!merchant) {
-    throw new Error("Marchand introuvable");
-  }
-
-  return clone(
-    store.campaigns
-      .filter((campaign) => campaign.merchantId === merchantId)
-      .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
-      .map((campaign) => ({
-        id: campaign.id,
-        title: campaign.title,
-        gameType: campaign.gameType,
-        isActive: campaign.isActive,
-        createdAt: campaign.createdAt,
-    })),
-  );
-}
-
-const MERCHANT_NAVIGATION_CACHE_SECONDS = 15;
-
-function merchantCampaignsTag(merchantId: string) {
-  return `merchant:${merchantId}:campaigns`;
-}
-
-function getCachedSupabaseMerchantCampaignOverview(merchant: Merchant) {
-  return unstable_cache(
-    () => getSupabaseMerchantCampaignOverview(merchant),
-    ["merchant-campaign-overview", merchant.id],
-    {
-      tags: [merchantCampaignsTag(merchant.id)],
-      revalidate: MERCHANT_NAVIGATION_CACHE_SECONDS,
-    },
-  )();
-}
-
-function getCachedSupabaseMerchantCampaignLibrary(merchantId: string) {
-  return unstable_cache(
-    () => getSupabaseMerchantCampaignLibrary(merchantId),
-    ["merchant-campaign-library", merchantId],
-    {
-      tags: [merchantCampaignsTag(merchantId)],
-      revalidate: MERCHANT_NAVIGATION_CACHE_SECONDS,
-    },
-  )();
-}
-
-function getCachedSupabaseCampaignSetupPerformance(campaignId: string, fallbackMerchant?: Merchant) {
-  return getSupabaseCampaignSetupPerformance(campaignId, fallbackMerchant);
-}
-
-function invalidateCampaignNavigationCache(merchantId?: string, campaignId?: string) {
-  void campaignId;
-
-  if (merchantId) {
-    revalidateTag(merchantCampaignsTag(merchantId), { expire: 0 });
-  }
-}
-
-export function invalidateMerchantCampaignOverview(merchantId: string) {
-  invalidateCampaignNavigationCache(merchantId);
-}
-
-function finalizeDrawSessionFromMemory(input: FinalizeDrawSessionRequest): DrawResult {
-  expireDrawSessionsFromMemory();
-  const session = store.drawSessions.find((item) => item.id === input.sessionId);
-
-  if (!session || session.status !== "pending") {
-    throw new Error("Session de jeu introuvable ou expirée.");
-  }
-
-  const campaign = getCampaign(session.campaignId);
-
-  if (!campaign || !campaign.isActive) {
-    throw new Error("Campagne indisponible");
-  }
-
-  const lead = buildLeadFromSession(campaign, session, input);
-  const previousParticipations = store.leads.filter(
-    (item) => item.campaignId === campaign.id && item.email === lead.email,
-  ).length;
-  const actionForVisit = campaign.actions[previousParticipations];
-  const prize = lead.prizeId
-    ? getCampaignPrizes(campaign.id).find((item) => item.id === lead.prizeId) ?? null
-    : null;
-
-  store.leads.push(lead);
-  session.status = "completed";
-  recordEventInMemory(campaign.id, "lead_created", lead.id);
-
-  if (prize) {
-    recordEventInMemory(campaign.id, "prize_won", lead.id, { prizeId: prize.id });
-  }
-
-  return {
-    lead: clone(lead),
-    prize: prize ? clone(prize) : null,
-    campaign: toPublicCampaign(campaign, actionForVisit ? [actionForVisit] : []),
-  };
-}
-
-function drawForLeadFromMemory(input: DrawRequest): DrawResult {
-  const preview = createDrawSessionFromMemory({ campaignId: input.campaignId });
-
-  return finalizeDrawSessionFromMemory({
-    sessionId: preview.session.id,
-    firstName: input.firstName,
-    email: input.email,
-    marketingConsent: input.marketingConsent,
-  });
-}
-
-function markActionConfirmedInMemory(leadId: string, campaignId?: string) {
-  const lead = store.leads.find(
-    (item) => item.id === leadId && (!campaignId || item.campaignId === campaignId),
-  );
-
-  if (!lead) {
-    return null;
-  }
-
-  lead.actionConfirmed = true;
-
-  return clone(lead);
-}
-
-function redeemLeadPrizeInMemory(leadId: string) {
-  const lead = store.leads.find((item) => item.id === leadId);
-
-  if (!lead) {
-    throw new Error("Lead introuvable");
-  }
-
-  if (lead.status === "redeemed") {
-    throw new Error("Lot déjà retiré");
-  }
-
-  if (!lead.prizeId) {
-    throw new Error("Aucun lot à retirer");
-  }
-
-  if (lead.rewardAvailableAt && new Date(lead.rewardAvailableAt).getTime() > Date.now()) {
-    throw new Error("Lot pas encore disponible");
-  }
-
-  if (lead.rewardExpiresAt && new Date(lead.rewardExpiresAt).getTime() < Date.now()) {
-    lead.status = "expired";
-    recordEventInMemory(lead.campaignId, "prize_expired", lead.id);
-    throw new Error("Lot expiré");
-  }
-
-  lead.status = "redeemed";
-  recordEventInMemory(lead.campaignId, "prize_redeemed", lead.id);
-
-  return clone(lead);
-}
-
-function resetLeadPrizeInMemory(leadId: string) {
-  const lead = store.leads.find((item) => item.id === leadId);
-
-  if (!lead) {
-    throw new Error("Lead introuvable");
-  }
-
-  if (!lead.prizeId) {
-    throw new Error("Aucun lot à réinitialiser");
-  }
-
-  lead.status = "claimed";
-  recordEventInMemory(lead.campaignId, "prize_reset", lead.id);
-
-  return clone(lead);
-}
-
-function updatePrizeStockInMemory(prizeId: string, remainingQuantity: number | null) {
-  const prize = store.prizes.find((item) => item.id === prizeId);
-
-  if (!prize) {
-    throw new Error("Dotation introuvable");
-  }
-
-  prize.remainingQuantity = remainingQuantity;
-
-  return clone(prize);
-}
-
-function resetPrizeStockInMemory(prizeId: string) {
-  const prize = store.prizes.find((item) => item.id === prizeId);
-
-  if (!prize) {
-    throw new Error("Dotation introuvable");
+          headlineFontSizePx: presentation.heading?.fontSizePx ?? 42,…9472 tokens truncated…n introuvable");
   }
 
   prize.remainingQuantity = prize.totalQuantity;
@@ -1770,6 +803,38 @@ export const getMerchantDashboard = cache(async function getMerchantDashboard(
   return getMerchantDashboardFromMemory(merchantId, fallbackMerchant);
 });
 
+export const getMerchantWorkspaceDashboard = cache(async function getMerchantWorkspaceDashboard(
+  userId: string,
+  activeMerchant: Merchant,
+) {
+  const context = await getMerchantWorkspaceContext(userId, activeMerchant);
+  const dashboards = await Promise.all(
+    context.locations.map(({ merchant }) => getMerchantDashboard(merchant.id, merchant)),
+  );
+  const campaigns = dashboards.flatMap((dashboard) => dashboard.campaigns);
+  const activityByDay = new Map<string, { scans: number; participations: number }>();
+  dashboards.forEach((dashboard) => {
+    dashboard.activityPoints.forEach((point) => {
+      const current = activityByDay.get(point.label) ?? { scans: 0, participations: 0 };
+      activityByDay.set(point.label, {
+        scans: current.scans + point.scans,
+        participations: current.participations + point.participations,
+      });
+    });
+  });
+
+  return {
+    merchant: activeMerchant,
+    campaigns,
+    totalLeads: dashboards.reduce((total, dashboard) => total + dashboard.totalLeads, 0),
+    totalRedeemed: dashboards.reduce((total, dashboard) => total + dashboard.totalRedeemed, 0),
+    averageConversion: campaigns.length
+      ? Math.round(campaigns.reduce((total, item) => total + item.kpis.conversionRate, 0) / campaigns.length)
+      : 0,
+    activityPoints: [...activityByDay.entries()].map(([label, values]) => ({ label, ...values })),
+  } satisfies MerchantDashboardData;
+});
+
 export const getMerchantCampaignOverview = cache(async function getMerchantCampaignOverview(
   merchantId = merchantSeed.id,
   fallbackMerchant?: Merchant,
@@ -1855,7 +920,7 @@ export const getMerchantRecentLeads = cache(async function getMerchantRecentLead
 export const getCampaignDataView = cache(async function getCampaignDataView(
   campaignId: string,
   fallbackMerchant?: Merchant,
-  options: { leadLimit?: number; leadOffset?: number; query?: string } = {},
+  options: { leadLimit?: number; leadOffset?: number; query?: string; emailStatus?: "attention" } = {},
 ) {
   if (getDataBackend("la lecture des données campagne") === "supabase") {
     return getSupabaseCampaignDataView(campaignId, fallbackMerchant, options);
@@ -1981,6 +1046,28 @@ export async function redeemLeadPrize(leadId: string) {
   return redeemLeadPrizeInMemory(leadId);
 }
 
+export async function findMerchantLeadByRedemptionCode(merchantId: string, code: string) {
+  if (getDataBackend("la recherche caisse d'un code") === "supabase") {
+    return findSupabaseMerchantLeadByRedemptionCode(merchantId, code);
+  }
+
+  return findMerchantLeadByRedemptionCodeInMemory(merchantId, code);
+}
+
+export async function redeemMerchantLeadPrizeFromCashier(input: {
+  leadId: string;
+  merchantId: string;
+  operatorUserId: string;
+  purchaseConfirmed: boolean;
+  idempotencyKey: string;
+}) {
+  if (getDataBackend("le retrait caisse d'un lot") === "supabase") {
+    return redeemSupabaseCashierLeadPrize(input);
+  }
+
+  return redeemMerchantLeadPrizeInMemory(input);
+}
+
 export async function resetLeadPrize(leadId: string) {
   if (getDataBackend("la réinitialisation d'un lot") === "supabase") {
     return resetLeadPrizeInSupabase(leadId);
@@ -2006,6 +1093,8 @@ export async function resetPrizeStock(prizeId: string) {
 }
 
 export async function updateCampaignSetup(input: CampaignSetupInput) {
+  assertCampaignCanPublish(input);
+
   if (getDataBackend("la mise à jour d'une campagne") === "supabase") {
     const campaignId = await updateCampaignSetupInSupabase(input);
     invalidateCampaignNavigationCache(input.merchantId, campaignId);
@@ -2059,3 +1148,42 @@ export async function duplicateCampaign(id: string, fallbackMerchant: Merchant) 
 
   return duplicateCampaignInMemory(id, fallbackMerchant.id);
 }
+
+export async function duplicateCampaignToLocations(
+  id: string,
+  userId: string,
+  sourceMerchant: Merchant,
+  targetLocationIds: string[],
+) {
+  const uniqueTargetIds = [...new Set(targetLocationIds)].filter((locationId) => locationId !== sourceMerchant.id);
+  if (!uniqueTargetIds.length) throw new Error("Sélectionnez au moins un autre site.");
+
+  const context = sourceMerchant.workspaceId
+    ? await getMerchantWorkspaceContext(userId, sourceMerchant)
+    : { locations: [{ merchant: sourceMerchant, role: "owner" as const }] };
+  const targetMerchants = context.locations
+    .map(({ merchant }) => merchant)
+    .filter((merchant) => uniqueTargetIds.includes(merchant.id));
+  if (targetMerchants.length !== uniqueTargetIds.length) throw new Error("Un site sélectionné n'est pas accessible.");
+
+  if (getDataBackend("la duplication multi-site") === "supabase") {
+    const duplicatedIds = [];
+    for (const targetMerchant of targetMerchants) {
+      duplicatedIds.push(await duplicateCampaignToMerchantInSupabase(id, sourceMerchant, targetMerchant));
+    }
+    return duplicatedIds;
+  }
+
+  const source = store.campaigns.find((campaign) => campaign.id === id && campaign.merchantId === sourceMerchant.id);
+  if (!source) throw new Error("Campagne source introuvable.");
+  return targetMerchants.map((targetMerchant) => {
+    const duplicate = duplicateCampaignInMemory(id, sourceMerchant.id);
+    const created = store.campaigns.find((campaign) => campaign.id === duplicate.id);
+    if (created) {
+      created.merchantId = targetMerchant.id;
+      created.title = `${source.title} · ${targetMerchant.city ?? targetMerchant.companyName}`;
+    }
+    return duplicate.id;
+  });
+}
+

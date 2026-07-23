@@ -6,8 +6,10 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
 import {
+  CAMPAIGN_EMAIL_VARIABLES,
   createCampaignEmailDefaults,
   normalizeCampaignEmailSettings,
+  validateCampaignEmailSettings,
 } from "@/lib/email-settings";
 import { Campaign, CampaignEmailSettings, Merchant } from "@/lib/types";
 
@@ -54,6 +56,7 @@ export function EmailEditor({ campaign, merchant }: EmailEditorProps) {
   );
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const validationErrors = useMemo(() => validateCampaignEmailSettings(email), [email]);
 
   const preview = useMemo(
     () => ({
@@ -74,6 +77,11 @@ export function EmailEditor({ campaign, merchant }: EmailEditorProps) {
   }
 
   async function saveEmailSettings() {
+    if (validationErrors.length) {
+      setMessage("Corrigez les informations obligatoires avant d’enregistrer.");
+      return;
+    }
+
     setIsSaving(true);
     setMessage(null);
 
@@ -83,10 +91,10 @@ export function EmailEditor({ campaign, merchant }: EmailEditorProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(email),
       });
-      const payload = (await response.json()) as { error?: string };
+      const payload = (await response.json()) as { error?: string; details?: string[] };
 
       if (!response.ok) {
-        throw new Error(payload.error ?? "Enregistrement impossible.");
+        throw new Error(payload.details?.join(" ") || payload.error || "Enregistrement impossible.");
       }
 
       setMessage("Email enregistré.");
@@ -98,11 +106,16 @@ export function EmailEditor({ campaign, merchant }: EmailEditorProps) {
     }
   }
 
+  function restoreRecommendedEmail() {
+    setEmail(normalizeCampaignEmailSettings(createCampaignEmailDefaults(merchant), createCampaignEmailDefaults(merchant)));
+    setMessage("Modèle recommandé restauré. Enregistrez pour l’appliquer.");
+  }
+
   return (
     <div className="grid min-h-[calc(100vh-120px)] gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(420px,0.78fr)]">
       <div className="space-y-6">
-        <section className="okado-card p-6">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <section className="px-1 py-2">
+          <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
             <div>
               <p className="okado-label">Atelier email</p>
               <h1 className="okado-page-title mt-3">
@@ -123,8 +136,15 @@ export function EmailEditor({ campaign, merchant }: EmailEditorProps) {
               </Link>
               <button
                 type="button"
+                onClick={restoreRecommendedEmail}
+                className="okado-primary-action px-4 py-3"
+              >
+                Restaurer le modèle
+              </button>
+              <button
+                type="button"
                 onClick={saveEmailSettings}
-                disabled={isSaving}
+                disabled={isSaving || validationErrors.length > 0}
                 className="okado-filled-action px-5 py-3 disabled:opacity-60"
               >
                 {isSaving ? "Enregistrement..." : "Enregistrer"}
@@ -134,6 +154,14 @@ export function EmailEditor({ campaign, merchant }: EmailEditorProps) {
           {message ? (
             <div className="mt-5 rounded-[8px] border border-border bg-linen-canvas px-4 py-3 text-sm font-semibold text-graphite">
               {message}
+            </div>
+          ) : null}
+          {validationErrors.length ? (
+            <div role="alert" className="mt-5 rounded-[8px] border border-[#f2c8c8] bg-[#fff4f4] px-4 py-4 text-sm text-[#a11a1a]">
+              <p className="font-semibold">Informations obligatoires manquantes</p>
+              <ul className="mt-2 list-disc space-y-1 pl-5 leading-6">
+                {validationErrors.map((validationError) => <li key={validationError}>{validationError}</li>)}
+              </ul>
             </div>
           ) : null}
         </section>
@@ -188,9 +216,9 @@ export function EmailEditor({ campaign, merchant }: EmailEditorProps) {
           <h2 className="okado-section-title mt-2">Message envoyé au client</h2>
 
           <div className="mt-4 rounded-[8px] border border-[#e1e8f1] bg-[#f7f9fc] px-4 py-4 text-sm leading-7 text-[#516073]">
-            Variables disponibles :
+            Les blocs de retrait (code, QR code et lien) sont ajoutés automatiquement et ne peuvent pas être supprimés. Variables disponibles :
             <span className="ml-2 font-mono text-[13px]">
-              {"{{firstName}}, {{merchantName}}, {{campaignTitle}}, {{prizeLabel}}, {{redemptionCode}}, {{rewardAvailability}}, {{rewardExpiry}}, {{purchaseCondition}}"}
+              {CAMPAIGN_EMAIL_VARIABLES.map((variable) => `{{${variable}}}`).join(", ")}
             </span>
           </div>
 
@@ -327,3 +355,4 @@ export function EmailEditor({ campaign, merchant }: EmailEditorProps) {
     </div>
   );
 }
+

@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { AccountSettingsForm } from "@/components/merchant/account-settings-form";
 import { BillingSubscriptionCard } from "@/components/merchant/billing-subscription-card";
 import { getAffiliateSummaryForMerchant } from "@/lib/affiliate-repository";
@@ -62,6 +64,33 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
       </section>
 
       <BillingSubscriptionCard billing={billing} />
+      <section id="communication" className="okado-card p-6 md:p-8">
+        <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
+          <div>
+            <p className="okado-label">Communication</p>
+            <h2 className="okado-section-title mt-2">E-mails de gain</h2>
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-ash">
+              Le modèle recommandé est utilisé automatiquement pour chaque campagne. Le nom de votre
+              commerce et son adresse de contact servent de valeurs par défaut.
+            </p>
+          </div>
+          <Link href="/campaigns" className="okado-primary-action shrink-0 px-4 py-3">
+            Gérer depuis une campagne
+          </Link>
+        </div>
+        <div className="mt-5 grid gap-3 sm:grid-cols-2">
+          <div className="rounded-[8px] border border-border bg-linen-canvas px-4 py-3">
+            <p className="okado-label">Expéditeur</p>
+            <p className="mt-1 text-sm font-semibold text-graphite">{merchant.companyName}</p>
+          </div>
+          <div className="rounded-[8px] border border-border bg-linen-canvas px-4 py-3">
+            <p className="okado-label">Adresse de réponse</p>
+            <p className="mt-1 text-sm font-semibold text-graphite">
+              {merchant.restaurantEmail || "À renseigner dans les informations du commerce"}
+            </p>
+          </div>
+        </div>
+      </section>
       <AccountSettingsForm
         merchant={merchant}
         user={session.user}
@@ -70,3 +99,4 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
     </div>
   );
 }
+

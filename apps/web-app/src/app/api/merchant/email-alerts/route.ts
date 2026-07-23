@@ -28,28 +28,47 @@ export async function GET() {
     });
   }
 
-  const [deliveryResult, prizeResult, latestAttentionResult] = await Promise.all([
+  const [deliveryResult, prizeResult] = await Promise.all([
     supabase
       .from("reward_email_deliveries")
-      .select("id", { count: "exact", head: true })
+      .select("id,campaign_id,lead_id,status,updated_at")
       .in("campaign_id", campaignIds)
       .in("status", ATTENTION_STATUSES),
     supabase
       .from("prizes")
       .select("campaign_id, total_quantity, remaining_quantity")
       .in("campaign_id", campaignIds),
-    supabase
-      .from("reward_email_deliveries")
-      .select("campaign_id")
-      .in("campaign_id", campaignIds)
-      .in("status", ATTENTION_STATUSES)
-      .order("updated_at", { ascending: false })
-      .limit(1),
   ]);
 
-  if (deliveryResult.error || prizeResult.error || latestAttentionResult.error) {
+  if (deliveryResult.error || prizeResult.error) {
     return NextResponse.json({ error: "Lecture des alertes impossible" }, { status: 500 });
   }
+
+  // Une ligne d’e-mail n’est actionnable que si elle concerne un gain réel
+  // encore disponible. Les anciens enregistrements créés pour un participant
+  // perdant (prize_id NULL) ne doivent jamais maintenir une alerte permanente.
+  const deliveryRows = deliveryResult.data ?? [];
+  const leadIds = [...new Set(deliveryRows.map((delivery) => delivery.lead_id))];
+  const { data: leadRows, error: leadError } = leadIds.length
+    ? await supabase
+        .from("leads")
+        .select("id,prize_id,status")
+        .in("id", leadIds)
+    : { data: [], error: null };
+
+  if (leadError) {
+    return NextResponse.json({ error: "Lecture des alertes impossible" }, { status: 500 });
+  }
+
+  const actionableLeadIds = new Set(
+    (leadRows ?? [])
+      .filter((lead) => Boolean(lead.prize_id) && lead.status === "claimed")
+      .map((lead) => lead.id),
+  );
+  const actionableDeliveries = deliveryRows.filter((delivery) => actionableLeadIds.has(delivery.lead_id));
+  const latestAttention = [...actionableDeliveries].sort((a, b) =>
+    String(b.updated_at ?? "").localeCompare(String(a.updated_at ?? "")),
+  )[0];
 
   const stockAlerts = (prizeResult.data ?? []).reduce(
     (counts, prize) => {
@@ -67,10 +86,11 @@ export async function GET() {
   );
 
   return NextResponse.json({
-    emailCount: deliveryResult.count ?? 0,
-    emailCampaignId: latestAttentionResult.data?.[0]?.campaign_id ?? null,
+    emailCount: actionableDeliveries.length,
+    emailCampaignId: latestAttention?.campaign_id ?? null,
     lowStockCount: stockAlerts.low,
     exhaustedStockCount: stockAlerts.exhausted,
     stockCampaignId: stockAlerts.campaignId,
   });
 }
+

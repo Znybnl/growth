@@ -53,7 +53,7 @@ export function DashboardCampaignActionsMenu({
         </DropdownMenuItem>
         <DropdownMenuItem className={itemClass} asChild>
           <Link
-            href={`/campaign/${campaignId}`}
+            href={`/campaign/${campaignId}?preview=1`}
             prefetch={false}
             target="_blank"
             rel="noreferrer"
@@ -66,3 +66,4 @@ export function DashboardCampaignActionsMenu({
     </DropdownMenu>
   );
 }
+

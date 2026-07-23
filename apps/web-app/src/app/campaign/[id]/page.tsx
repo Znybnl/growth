@@ -8,6 +8,9 @@ type CampaignPageProps = {
   params: Promise<{
     id: string;
   }>;
+  searchParams: Promise<{
+    preview?: string;
+  }>;
 };
 
 function SuspendedCampaignNotice({ message }: { message: string }) {
@@ -35,8 +38,10 @@ function SuspendedCampaignNotice({ message }: { message: string }) {
   );
 }
 
-export default async function CampaignPage({ params }: CampaignPageProps) {
+export default async function CampaignPage({ params, searchParams }: CampaignPageProps) {
   const { id } = await params;
+  const { preview } = await searchParams;
+  const isPreview = preview === "1";
   let campaign = null;
 
   try {
@@ -59,5 +64,6 @@ export default async function CampaignPage({ params }: CampaignPageProps) {
     notFound();
   }
 
-  return <CampaignExperience campaignId={id} initialCampaign={campaign} />;
+  return <CampaignExperience campaignId={id} initialCampaign={campaign} isPreview={isPreview} />;
 }
+

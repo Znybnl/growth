@@ -271,7 +271,7 @@ export function WheelOfFortune({
   }
 
   return (
-    <div className="relative h-full w-full overflow-hidden">
+    <div className="relative h-full w-full overflow-hidden" style={{ containerType: "inline-size" }}>
       <div
         className={`absolute left-1/2 aspect-square -translate-x-1/2 -translate-y-1/2 ${wheelFrameSizeClass} ${
           isRestaurantPopTemplate
@@ -476,8 +476,8 @@ export function WheelOfFortune({
               ? colors.winColor
               : buttonStyle?.borderColor ?? "#ffffff",
             fontSize: isRestaurantPopTemplate
-              ? "clamp(1.12rem, 2.9vw, 2.05rem)"
-              : "clamp(1rem, 2.5vw, 1.75rem)",
+              ? "clamp(0.82rem, 4.8cqw, 1.65rem)"
+              : "clamp(0.78rem, 4.2cqw, 1.45rem)",
             boxShadow: isRestaurantPopTemplate
               ? "inset 0 0 0 4px rgba(255,255,255,0.74), inset 0 -11px 18px rgba(0,0,0,0.2), 0 18px 34px rgba(15,23,42,0.24)"
               : undefined,
@@ -489,3 +489,4 @@ export function WheelOfFortune({
     </div>
   );
 }
+

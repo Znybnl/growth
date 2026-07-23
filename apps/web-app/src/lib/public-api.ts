@@ -35,7 +35,6 @@ const PUBLIC_EVENT_TYPES = new Set<EventType>([
   "scan",
   "form_started",
   "review_clicked",
-  "review_confirmed",
   "social_clicked",
   "game_lost",
 ]);
@@ -270,3 +269,4 @@ export function getPublicRetryAfter(error: unknown) {
 
   return null;
 }
+

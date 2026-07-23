@@ -18,9 +18,12 @@ export default async function MerchantLayout({
     <MerchantShell
       merchant={session.merchant}
       user={session.user}
+      locations={session.locations}
+      activeLocationId={session.activeLocationId}
       isSaasAdmin={isSaasAdminEmail(session.user.email)}
     >
       {children}
     </MerchantShell>
   );
 }
+

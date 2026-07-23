@@ -8,23 +8,28 @@ import { useEffect, useMemo, useState } from "react";
 
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { BrandMark } from "@/components/brand-mark";
+import { LocationSwitcher } from "@/components/merchant/location-switcher";
 import { Button } from "@/components/ui/button";
 import { APP_NAME_CAPITALIZED } from "@/lib/branding";
 import { getMerchantBillingSummary } from "@/lib/billing";
-import { Merchant, MerchantUser } from "@/lib/types";
+import { Merchant, MerchantLocationAccess, MerchantUser } from "@/lib/types";
 
 type MerchantShellProps = {
   children: React.ReactNode;
   merchant: Merchant;
   user: MerchantUser;
+  locations: MerchantLocationAccess[];
+  activeLocationId: string;
   isSaasAdmin: boolean;
 };
 
 const navItems = [
   { href: "/", label: "Dashboard" },
   { href: "/campaigns", label: "Campagnes" },
+  { href: "/caisse", label: "Caisse" },
   { href: "/data", label: "Données" },
   { href: "/account", label: "Compte" },
+  { href: "/locations", label: "Multi-sites" },
 ];
 
 const adminNavItems = [
@@ -35,7 +40,7 @@ const adminNavItems = [
   { href: "/support", label: "Supervision" },
 ];
 
-export function MerchantShell({ children, merchant, user, isSaasAdmin }: MerchantShellProps) {
+export function MerchantShell({ children, merchant, user, locations, activeLocationId, isSaasAdmin }: MerchantShellProps) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [merchantAlerts, setMerchantAlerts] = useState({
@@ -101,10 +106,15 @@ export function MerchantShell({ children, merchant, user, isSaasAdmin }: Merchan
     }
 
     void loadMerchantAlerts();
+    const handleAlertsRefresh = () => {
+      void loadMerchantAlerts();
+    };
+    window.addEventListener("merchant-alerts-refresh", handleAlertsRefresh);
     return () => {
       cancelled = true;
+      window.removeEventListener("merchant-alerts-refresh", handleAlertsRefresh);
     };
-  }, []);
+  }, [pathname]);
 
   function isActive(href: string) {
     if (href === "/") return pathname === "/";
@@ -164,6 +174,26 @@ export function MerchantShell({ children, merchant, user, isSaasAdmin }: Merchan
               );
             })}
           </nav>
+          <Link
+            href="/caisse"
+            prefetch={false}
+            className="mt-5 flex items-center justify-center rounded-[8px] bg-[#111827] px-4 py-3 text-sm font-semibold !text-white transition hover:bg-[#273142]"
+          >
+            Ouvrir la caisse
+          </Link>
+
+          <Button asChild className="okado-primary-action mt-5 h-11 px-4">
+            <Link href="/campaigns/new" prefetch={false}>
+              Créer une campagne
+            </Link>
+          </Button>
+          <Link
+            href="/campaigns/new/guided"
+            prefetch={false}
+            className="mt-2 flex h-10 items-center justify-center rounded-[8px] border border-border bg-white px-4 text-sm font-medium text-graphite transition hover:bg-linen-canvas"
+          >
+            Assistant guidé
+          </Link>
 
           {isSaasAdmin ? (
             <div className="mt-5 rounded-[8px] border border-border bg-white p-2 shadow-[var(--shadow-product-card)]">
@@ -199,15 +229,6 @@ export function MerchantShell({ children, merchant, user, isSaasAdmin }: Merchan
             </div>
           ) : null}
 
-          <Button
-            asChild
-            className="okado-primary-action mt-6 h-11 px-4"
-          >
-            <Link href="/campaigns/new" prefetch={false}>
-              Créer une campagne
-            </Link>
-          </Button>
-
           <div className="mt-auto rounded-[8px] border border-border bg-white p-3 shadow-[var(--shadow-product-card)]">
             <p className="text-[10px] uppercase tracking-[0.13px] text-fog">Compte</p>
             <div className="mt-3 flex items-center gap-3">
@@ -216,7 +237,6 @@ export function MerchantShell({ children, merchant, user, isSaasAdmin }: Merchan
                 <p className="text-sm font-medium text-graphite">
                   {`${user.firstName} ${user.lastName}`.trim()}
                 </p>
-                <p className="truncate text-xs text-ash">{merchant.companyName}</p>
               </div>
             </div>
 
@@ -261,8 +281,8 @@ export function MerchantShell({ children, merchant, user, isSaasAdmin }: Merchan
               <Link
                 href={
                   merchantAlerts.emailCampaignId
-                    ? `/data?campaign=${encodeURIComponent(merchantAlerts.emailCampaignId)}`
-                    : "/data"
+                    ? `/data?campaign=${encodeURIComponent(merchantAlerts.emailCampaignId)}&emailStatus=attention`
+                    : "/data?emailStatus=attention"
                 }
                 className="mt-3 block rounded-[4px] bg-[#f59e0b]/10 px-2 py-2 text-xs font-medium text-[#a15c00]"
               >
@@ -292,6 +312,7 @@ export function MerchantShell({ children, merchant, user, isSaasAdmin }: Merchan
               </span>
             </button>
             <div className="flex-1" />
+            <LocationSwitcher locations={locations} activeLocationId={activeLocationId} />
           </div>
         </header>
 
@@ -302,3 +323,4 @@ export function MerchantShell({ children, merchant, user, isSaasAdmin }: Merchan
     </div>
   );
 }
+

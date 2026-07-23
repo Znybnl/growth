@@ -49,6 +49,7 @@ export function AccountSettingsForm({
     customLinkUrl: merchant.customLinkUrl ?? "",
     timeZone: merchant.timeZone ?? "Europe/Paris",
     defaultPrizeCost: merchant.defaultPrizeCost ?? 3,
+    redemptionPin: "",
     firstName: user.firstName,
     lastName: user.lastName,
     email: user.email,
@@ -316,6 +317,38 @@ export function AccountSettingsForm({
         </div>
       </section>
 
+      <section className="okado-card p-6 md:p-8">
+        <p className="okado-label">Validation express</p>
+        <h2 className="mt-3 font-display text-3xl font-semibold text-graphite">
+          PIN de validation du retrait
+        </h2>
+        <p className="mt-3 max-w-2xl text-sm leading-7 text-ash">
+          Ce PIN permet à un employé de valider un lot depuis le QR code, sans se connecter à Okado.
+          Il doit contenir 4 à 6 chiffres et ne sera jamais affiché après son enregistrement.
+        </p>
+        <div className="mt-5 grid gap-4 md:grid-cols-2 md:items-end">
+          <label className="text-sm">
+            <span className="mb-2 block text-ash">Nouveau PIN commerçant</span>
+            <input
+              type="password"
+              inputMode="numeric"
+              autoComplete="new-password"
+              pattern="[0-9]{4,6}"
+              maxLength={6}
+              value={form.redemptionPin ?? ""}
+              onChange={(event) => updateField("redemptionPin", event.target.value.replace(/\D/g, ""))}
+              placeholder="4 à 6 chiffres"
+              className={inputClass}
+            />
+          </label>
+          <p className="rounded-[12px] border border-[#dbe4f0] bg-[#f8fafc] px-4 py-3 text-sm text-ash">
+            {merchant.redemptionPinConfigured
+              ? "Un PIN est déjà configuré. Laissez ce champ vide pour le conserver."
+              : "Aucun PIN n’est configuré. Ajoutez-en un pour activer la validation express."}
+          </p>
+        </div>
+      </section>
+
       {affiliateSummary?.account.status === "active" ? (
         <AffiliateReferralCard summary={affiliateSummary} />
       ) : (
@@ -357,3 +390,4 @@ export function AccountSettingsForm({
     </form>
   );
 }
+

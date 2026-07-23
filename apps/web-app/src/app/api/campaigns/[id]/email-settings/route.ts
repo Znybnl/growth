@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { requireAuthenticatedSession } from "@/lib/auth";
+import { validateCampaignEmailSettings } from "@/lib/email-settings";
 import { parseCampaignSetupInput } from "@/lib/merchant-input";
 import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
 import { getCampaignPerformance, updateCampaignSetup } from "@/lib/store";
@@ -18,6 +19,13 @@ export async function POST(request: Request, { params }: EmailSettingsRouteProps
     const session = await requireAuthenticatedSession();
     const { id } = await params;
     const email = (await request.json()) as CampaignEmailSettings;
+    const emailErrors = validateCampaignEmailSettings(email);
+    if (emailErrors.length) {
+      return NextResponse.json(
+        { error: "L’e-mail contient des informations obligatoires manquantes.", details: emailErrors },
+        { status: 422 },
+      );
+    }
     const performance = await getCampaignPerformance(id, session.merchant);
 
     if (!performance || performance.campaign.merchantId !== session.merchant.id) {
@@ -64,3 +72,4 @@ export async function POST(request: Request, { params }: EmailSettingsRouteProps
     );
   }
 }
+
