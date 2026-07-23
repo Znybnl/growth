@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
     // analysis failure on Vercel (symbolWye is a valid d3-shape export).
     resolveAlias: {
       "victory-vendor/d3-shape": "d3-shape",
+      "d3-shape": "d3-shape/src/index.js",
     },
   },
   async headers() {
