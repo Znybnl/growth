@@ -5,6 +5,7 @@ import {
   CampaignEvent,
   CampaignLibraryItem,
   CampaignKpi,
+  CashierRedemptionContext,
   CampaignPerformance,
   CampaignSetupInput,
   CreateDrawSessionRequest,
@@ -24,6 +25,7 @@ import {
   MerchantWebhookItem,
   Prize,
   PublicCampaign,
+  PublicRedemptionContext,
   RewardEmailDelivery,
   RewardEmailEvent,
 } from "@/lib/types";
@@ -114,6 +116,12 @@ type LeadRow = {
   phone: string | null;
   marketing_consent: boolean;
   consent_timestamp: string | null;
+  consent_policy_version?: string | null;
+  consent_source?: string | null;
+  campaign_configuration_version?: string | null;
+  redeemed_at?: string | null;
+  redeemed_by_user_id?: string | null;
+  purchase_verified?: boolean | null;
   prize_id: string | null;
   status: Lead["status"];
   created_at: string;
@@ -125,6 +133,22 @@ type LeadRow = {
   prize_usage_conditions_snapshot?: string | null;
 };
 
+const redemptionLeadColumns = [
+  "id",
+  "campaign_id",
+  "first_name",
+  "email",
+  "redeemed_at",
+  "purchase_verified",
+  "prize_id",
+  "status",
+  "redemption_code",
+  "reward_available_at",
+  "reward_expires_at",
+  "prize_label_snapshot",
+  "prize_usage_conditions_snapshot",
+].join(",");
+
 type DrawSessionRow = {
   id: string;
   campaign_id: string;
@@ -132,6 +156,8 @@ type DrawSessionRow = {
   status: DrawSession["status"];
   created_at: string;
   expires_at: string;
+  configuration_version?: string | null;
+  configuration_snapshot?: Record<string, unknown> | null;
 };
 
 type DrawLeadRpcRow = {
@@ -171,6 +197,20 @@ type EventRow = {
   created_at: string;
 };
 
+type CashierRedeemRpcRow = {
+  id: string;
+  campaign_id: string;
+  first_name: string;
+  email: string;
+  prize_id: string | null;
+  status: Lead["status"];
+  redemption_code: string | null;
+  reward_available_at: string | null;
+  reward_expires_at: string | null;
+  redeemed_at: string | null;
+  purchase_verified: boolean | null;
+};
+
 type CampaignDataSummaryRpcRow = {
   scans_count: number;
   leads_count: number;
@@ -187,6 +227,7 @@ export type CampaignDataViewOptions = {
   leadLimit?: number;
   leadOffset?: number;
   query?: string;
+  emailStatus?: "attention";
 };
 
 type CampaignOverviewRpcRow = CampaignRow & {
@@ -513,6 +554,12 @@ function toLead(row: LeadRow): Lead {
     phone: row.phone ?? undefined,
     marketingConsent: row.marketing_consent,
     consentTimestamp: row.consent_timestamp ?? undefined,
+    consentPolicyVersion: row.consent_policy_version ?? undefined,
+    consentSource: row.consent_source ?? undefined,
+    campaignConfigurationVersion: row.campaign_configuration_version ?? undefined,
+    redeemedAt: row.redeemed_at ?? undefined,
+    redeemedByUserId: row.redeemed_by_user_id ?? undefined,
+    purchaseVerified: row.purchase_verified ?? undefined,
     prizeId: row.prize_id ?? undefined,
     status: row.status,
     createdAt: row.created_at,
@@ -533,6 +580,8 @@ function toDrawSession(row: DrawSessionRow): DrawSession {
     status: row.status,
     createdAt: row.created_at,
     expiresAt: row.expires_at,
+    configurationVersion: row.configuration_version ?? undefined,
+    configurationSnapshot: row.configuration_snapshot ?? undefined,
   };
 }
 
@@ -589,13 +638,20 @@ function enrichLeadRowsWithEmailDeliveries(
 
   return leads.map((lead) => {
     const delivery = deliveryMap.get(lead.id);
+    // Un lead sans lot ne peut pas être « À retirer ». Cette normalisation
+    // protège l’interface contre les anciennes données orphelines (par
+    // exemple après la suppression d’un lot) et les affiche comme perdues.
+    const normalizedLead =
+      !lead.prizeId && lead.status === "claimed" ? { ...lead, status: "lost" as const } : lead;
 
     return {
-      ...lead,
-      emailDeliveryStatus: delivery?.status,
-      emailSentAt: delivery?.sent_at ?? undefined,
-      emailDeliveredAt: delivery?.delivered_at ?? undefined,
-      emailErrorMessage: delivery?.error_message ?? undefined,
+      ...normalizedLead,
+      // Une participation perdante ne génère pas de gain e-mail à suivre,
+      // même si une ancienne ligne de livraison subsiste en base.
+      emailDeliveryStatus: normalizedLead.prizeId ? delivery?.status : undefined,
+      emailSentAt: normalizedLead.prizeId ? delivery?.sent_at ?? undefined : undefined,
+      emailDeliveredAt: normalizedLead.prizeId ? delivery?.delivered_at ?? undefined : undefined,
+      emailErrorMessage: normalizedLead.prizeId ? delivery?.error_message ?? undefined : undefined,
     };
   });
 }
@@ -678,7 +734,7 @@ async function fetchCampaignDependencies(campaignIds: string[]) {
       .in("campaign_id", campaignIds),
     supabase
       .from("leads")
-      .select("id,campaign_id,first_name,email,phone,marketing_consent,consent_timestamp,prize_id,status,created_at,action_confirmed,redemption_code,reward_available_at,reward_expires_at,prize_label_snapshot,prize_usage_conditions_snapshot")
+      .select("id,campaign_id,first_name,email,phone,marketing_consent,consent_timestamp,consent_policy_version,consent_source,campaign_configuration_version,prize_id,status,created_at,action_confirmed,redemption_code,reward_available_at,reward_expires_at,prize_label_snapshot,prize_usage_conditions_snapshot")
       .in("campaign_id", campaignIds),
     supabase
       .from("campaign_events")
@@ -737,11 +793,13 @@ async function fetchCampaignConfiguration(campaignId: string) {
 }
 
 function buildLastDays(referenceDates: string[], days = 30) {
-  const latest = referenceDates.length
+  const today = new Date();
+  const latestReference = referenceDates.length
     ? new Date(
-        [...referenceDates].sort((a, b) => a.localeCompare(b)).at(-1) ?? new Date().toISOString(),
+        [...referenceDates].sort((a, b) => a.localeCompare(b)).at(-1) ?? today.toISOString(),
       )
-    : new Date();
+    : null;
+  const latest = latestReference && latestReference > today ? latestReference : today;
 
   return Array.from({ length: days }, (_, index) => {
     const date = new Date(
@@ -1399,6 +1457,7 @@ export async function findSupabaseMerchantLeadCampaign(
 async function getSupabaseCampaignDataViewLegacy(
   campaignId: string,
   merchant?: Merchant,
+  options: CampaignDataViewOptions = {},
 ): Promise<CampaignDataView | null> {
   const supabase = getSupabaseAdmin();
   const { data: campaignData } = await supabase
@@ -1461,7 +1520,7 @@ async function getSupabaseCampaignDataViewLegacy(
   if (!performance) return null;
 
   const prizes = performance.prizes;
-  const leads = enrichLeadRowsWithEmailDeliveries(
+  const allLeads = enrichLeadRowsWithEmailDeliveries(
     ((leadsResult.data as LeadRow[] | null) ?? [])
       .map(toLead)
       .map((lead) => ({
@@ -1478,6 +1537,14 @@ async function getSupabaseCampaignDataViewLegacy(
       .sort((a, b) => (b.consentTimestamp ?? b.createdAt).localeCompare(a.consentTimestamp ?? a.createdAt)),
     (deliveriesResult.data as RewardEmailDeliverySummaryRow[] | null) ?? [],
   );
+  const leads = options.emailStatus === "attention"
+    ? allLeads.filter(
+        (lead) =>
+          Boolean(lead.prizeId) &&
+          lead.status === "claimed" &&
+          ["failed", "bounced", "complained", "suppressed"].includes(lead.emailDeliveryStatus ?? ""),
+      )
+    : allLeads;
   const events = ((eventsResult.data as EventRow[] | null) ?? [])
     .map(toEvent)
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
@@ -1540,6 +1607,38 @@ export async function getSupabaseCampaignDataView(
 
   if (!campaignData) return null;
 
+  let attentionLeadIds: string[] | null = null;
+  if (options.emailStatus === "attention") {
+    const { data: attentionDeliveries, error: attentionError } = await supabase
+      .from("reward_email_deliveries")
+      .select("lead_id")
+      .eq("campaign_id", campaignId)
+      .in("status", ["failed", "bounced", "complained", "suppressed"]);
+
+    if (attentionError) {
+      throw new Error(`Lecture des e-mails à traiter impossible: ${attentionError.message}`);
+    }
+
+    const candidateLeadIds = [...new Set((attentionDeliveries ?? []).map((delivery) => delivery.lead_id))];
+    if (candidateLeadIds.length) {
+      const { data: candidateLeads, error: candidateLeadError } = await supabase
+        .from("leads")
+        .select("id,prize_id,status")
+        .eq("campaign_id", campaignId)
+        .in("id", candidateLeadIds);
+
+      if (candidateLeadError) {
+        throw new Error(`Lecture des e-mails à traiter impossible: ${candidateLeadError.message}`);
+      }
+
+      attentionLeadIds = (candidateLeads ?? [])
+        .filter((lead) => Boolean(lead.prize_id) && lead.status === "claimed")
+        .map((lead) => lead.id);
+    } else {
+      attentionLeadIds = [];
+    }
+  }
+
   const row = campaignData as CampaignRow;
   let leadsQuery = supabase
     .from("leads")
@@ -1552,6 +1651,13 @@ export async function getSupabaseCampaignDataView(
     const escapedQuery = query.replaceAll("%", "\\%").replaceAll("_", "\\_");
     leadsQuery = leadsQuery.or(
       `first_name.ilike.%${escapedQuery}%,email.ilike.%${escapedQuery}%,redemption_code.ilike.%${escapedQuery}%`,
+    );
+  }
+
+  if (attentionLeadIds) {
+    leadsQuery = leadsQuery.in(
+      "id",
+      attentionLeadIds.length ? attentionLeadIds : ["00000000-0000-0000-0000-000000000000"],
     );
   }
 
@@ -1594,7 +1700,7 @@ export async function getSupabaseCampaignDataView(
   ]);
 
   if (isMissingCampaignDataSummaryRpc(summaryResult.error)) {
-    return getSupabaseCampaignDataViewLegacy(campaignId, merchant);
+    return getSupabaseCampaignDataViewLegacy(campaignId, merchant, options);
   }
 
   if (summaryResult.error) {
@@ -1679,6 +1785,28 @@ export async function getSupabaseCampaignDataView(
     dailyStats: summary.daily_stats ?? [],
     actionVolumes: summary.action_volumes ?? [],
   };
+}
+
+async function recordCampaignPublicationAudit(
+  campaignId: string,
+  input: CampaignSetupInput,
+  configurationVersion: string,
+  reason: string,
+) {
+  try {
+    const { error } = await getSupabaseAdmin().from("campaign_publication_audits").insert({
+      id: generateId("audit"),
+      campaign_id: campaignId,
+      merchant_id: input.merchantId,
+      status: input.isActive ? "active" : "draft",
+      configuration_version: configurationVersion,
+      validation_issues: [],
+      reason,
+    });
+    if (error) console.warn("Publication audit unavailable", error.message);
+  } catch (error) {
+    console.warn("Publication audit unavailable", error);
+  }
 }
 
 export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
@@ -1808,6 +1936,13 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
     ),
     poster: input.presentation.poster,
     email: input.presentation.email,
+    compliance: {
+      rulesVersion: 1,
+      status: input.isActive ? ("active" as const) : ("draft" as const),
+      lastSavedAt: new Date().toISOString(),
+      publishedAt: input.isActive ? new Date().toISOString() : undefined,
+      configurationVersion: generateId("cfg"),
+    },
   };
 
   const atomicSave = await supabase.rpc("save_campaign_setup", {
@@ -1818,6 +1953,12 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
   });
 
   if (!atomicSave.error) {
+    await recordCampaignPublicationAudit(
+      campaignId,
+      input,
+      localSettings.compliance.configurationVersion,
+      input.isActive ? "published" : "draft_saved",
+    );
     return campaignId;
   }
 
@@ -1889,6 +2030,12 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
   }
 
   await setCampaignLocalSettings(campaignId, localSettings);
+  await recordCampaignPublicationAudit(
+    campaignId,
+    input,
+    localSettings.compliance.configurationVersion,
+    input.isActive ? "published_fallback" : "draft_saved_fallback",
+  );
 
   return campaignId;
 }
@@ -1928,6 +2075,48 @@ export async function duplicateCampaignInSupabase(id: string, merchant: Merchant
       totalQuantity: prize.totalQuantity,
       probability: prize.probability,
       estimatedUnitCost: prize.estimatedUnitCost,
+    })),
+  });
+
+  return campaignId;
+}
+
+export async function duplicateCampaignToMerchantInSupabase(
+  id: string,
+  sourceMerchant: Merchant,
+  targetMerchant: Merchant,
+) {
+  const performance = await getSupabaseCampaignPerformance(id, sourceMerchant);
+  if (!performance || performance.campaign.merchantId !== sourceMerchant.id) {
+    throw new Error("Campagne source introuvable.");
+  }
+
+  const campaignId = generateId("camp");
+  await updateCampaignSetupInSupabase({
+    id: campaignId,
+    merchantId: targetMerchant.id,
+    title: `${performance.campaign.title} · ${targetMerchant.city ?? targetMerchant.companyName}`,
+    subtitle: performance.campaign.subtitle,
+    goalType: performance.campaign.goalType,
+    ctaLabel: performance.campaign.ctaLabel,
+    successMetric: performance.campaign.successMetric,
+    targetUrl: performance.campaign.targetUrl,
+    isActive: false,
+    accent: performance.campaign.accent,
+    gameType: performance.campaign.gameType,
+    logoMode: performance.campaign.logoMode,
+    logoText: performance.campaign.logoText,
+    logoUrl: performance.campaign.logoUrl,
+    presentation: performance.campaign.presentation,
+    actions: performance.campaign.actions.map((action) => ({ ...action, id: generateId("action") })),
+    rewardRules: performance.campaign.rewardRules,
+    prizes: performance.prizes.map((prize) => ({
+      id: generateId("prize"),
+      label: prize.label,
+      totalQuantity: prize.totalQuantity,
+      probability: prize.probability,
+      estimatedUnitCost: prize.estimatedUnitCost,
+      usageConditions: prize.usageConditions,
     })),
   });
 
@@ -2079,6 +2268,15 @@ export async function createDrawSessionInSupabase(
     created_at: data.created_at,
     expires_at: data.expires_at,
   });
+  const { data: snapshot } = await supabase
+    .from("draw_sessions")
+    .select("configuration_version,configuration_snapshot")
+    .eq("id", sessionId)
+    .maybeSingle<{ configuration_version: string | null; configuration_snapshot: Record<string, unknown> | null }>();
+  if (snapshot) {
+    session.configurationVersion = snapshot.configuration_version ?? undefined;
+    session.configurationSnapshot = snapshot.configuration_snapshot ?? undefined;
+  }
   const prize = data.prize_id ? prizes.find((item) => item.id === data.prize_id) ?? null : null;
 
   return {
@@ -2131,6 +2329,11 @@ export async function finalizeDrawSessionInSupabase(
   }
 
   const { campaign, merchant: campaignMerchant, prizes } = initialPerformance;
+  const { data: consentEvidence } = await supabase
+    .from("leads")
+    .select("consent_policy_version,consent_source,campaign_configuration_version")
+    .eq("id", data.lead_id)
+    .maybeSingle<{ consent_policy_version: string | null; consent_source: string | null; campaign_configuration_version: string | null }>();
   const lead: Lead = {
     id: data.lead_id,
     campaignId: data.campaign_id,
@@ -2138,6 +2341,9 @@ export async function finalizeDrawSessionInSupabase(
     email: data.email,
     marketingConsent: data.marketing_consent,
     consentTimestamp: data.consent_timestamp ?? undefined,
+    consentPolicyVersion: consentEvidence?.consent_policy_version ?? undefined,
+    consentSource: consentEvidence?.consent_source ?? undefined,
+    campaignConfigurationVersion: consentEvidence?.campaign_configuration_version ?? undefined,
     prizeId: data.prize_id ?? undefined,
     status: data.status,
     createdAt: data.created_at,
@@ -2226,6 +2432,200 @@ export async function redeemLeadPrizeInSupabase(leadId: string) {
   return toLead({ ...data, phone: null } as LeadRow);
 }
 
+function maskCashierEmail(email: string) {
+  const [localPart, domain] = email.split("@");
+  if (!localPart || !domain) return "Adresse masquée";
+  const visible = localPart.slice(0, 1);
+  return `${visible}${"•".repeat(Math.max(2, Math.min(localPart.length - 1, 4)))}@${domain}`;
+}
+
+type RedemptionCampaignRow = Pick<CampaignRow, "id" | "merchant_id" | "title" | "purchase_required">;
+type RedemptionPrizeRow = Pick<PrizeRow, "id" | "label">;
+
+function toCashierRedemptionContext(
+  lead: LeadRow,
+  campaign: RedemptionCampaignRow,
+  prize?: RedemptionPrizeRow | null,
+): CashierRedemptionContext {
+  const now = Date.now();
+  const availableAt = lead.reward_available_at ? new Date(lead.reward_available_at).getTime() : 0;
+  const expiresAt = lead.reward_expires_at ? new Date(lead.reward_expires_at).getTime() : 0;
+  const status: CashierRedemptionContext["status"] =
+    !lead.prize_id
+      ? "invalid"
+      : lead.status === "redeemed"
+        ? "redeemed"
+        : expiresAt > 0 && expiresAt < now
+          ? "expired"
+          : availableAt > now
+            ? "not_available"
+            : lead.status === "claimed"
+              ? "available"
+              : "invalid";
+
+  return {
+    status,
+    leadId: lead.id,
+    campaignId: lead.campaign_id,
+    campaignTitle: campaign.title,
+    firstName: lead.first_name,
+    maskedEmail: maskCashierEmail(lead.email),
+    prizeLabel: lead.prize_id
+      ? lead.prize_label_snapshot ?? prize?.label ?? "Lot"
+      : "Perdu",
+    prizeUsageConditions: lead.prize_usage_conditions_snapshot ?? undefined,
+    redemptionCode: lead.redemption_code ?? undefined,
+    rewardAvailableAt: lead.reward_available_at ?? undefined,
+    rewardExpiresAt: lead.reward_expires_at ?? undefined,
+    purchaseRequired: campaign.purchase_required,
+    redeemedAt: lead.redeemed_at ?? undefined,
+    purchaseVerified: lead.purchase_verified ?? undefined,
+  };
+}
+
+export async function findSupabaseMerchantLeadByRedemptionCode(
+  merchantId: string,
+  code: string,
+): Promise<CashierRedemptionContext | null> {
+  const normalizedCode = code.trim().toUpperCase();
+  if (!normalizedCode) return null;
+
+  const supabase = getSupabaseAdmin();
+  const { data: lead, error: leadError } = await supabase
+    .from("leads")
+    .select(redemptionLeadColumns)
+    .eq("redemption_code", normalizedCode)
+    .maybeSingle<LeadRow>();
+
+  if (leadError) throw new Error("Recherche du code impossible");
+  if (!lead) return null;
+
+  const [{ data: campaign, error: campaignError }, { data: prize }] = await Promise.all([
+    supabase
+      .from("campaigns")
+      .select("id,merchant_id,title,purchase_required")
+      .eq("id", lead.campaign_id)
+      .eq("merchant_id", merchantId)
+      .maybeSingle<{ id: string; merchant_id: string; title: string; purchase_required: boolean }>(),
+    lead.prize_id
+      ? supabase.from("prizes").select("id,label").eq("id", lead.prize_id).maybeSingle<{ id: string; label: string }>()
+      : Promise.resolve({ data: null }),
+  ]);
+
+  if (campaignError) throw new Error("Campagne du gain introuvable");
+  if (!campaign) return null;
+
+  return toCashierRedemptionContext(lead, campaign, prize);
+}
+
+export async function findSupabasePublicRedemptionContextByCode(
+  code: string,
+): Promise<PublicRedemptionContext | null> {
+  const normalizedCode = code.trim().toUpperCase();
+  if (!normalizedCode) return null;
+
+  const supabase = getSupabaseAdmin();
+  const { data: lead, error: leadError } = await supabase
+    .from("leads")
+    .select(redemptionLeadColumns)
+    .eq("redemption_code", normalizedCode)
+    .maybeSingle<LeadRow>();
+
+  if (leadError) throw new Error("Recherche du code impossible");
+  if (!lead) return null;
+
+  const { data: campaign, error: campaignError } = await supabase
+    .from("campaigns")
+    .select("id,merchant_id,title,purchase_required")
+    .eq("id", lead.campaign_id)
+    .maybeSingle<RedemptionCampaignRow>();
+  if (campaignError || !campaign) return null;
+
+  const [{ data: merchant, error: merchantError }, { data: prize }] = await Promise.all([
+    supabase
+      .from("merchants")
+      .select("id,company_name,city")
+      .eq("id", campaign.merchant_id)
+      .maybeSingle<{ id: string; company_name: string; city: string | null }>(),
+    lead.prize_id
+      ? supabase.from("prizes").select("id,label").eq("id", lead.prize_id).maybeSingle<RedemptionPrizeRow>()
+      : Promise.resolve({ data: null }),
+  ]);
+  if (merchantError || !merchant) return null;
+
+  const context = toCashierRedemptionContext(lead, campaign, prize);
+
+  return {
+    ...context,
+    merchantId: merchant.id,
+    merchantName: merchant.company_name,
+    merchantCity: merchant.city ?? undefined,
+  };
+}
+
+export async function redeemSupabaseCashierLeadPrize(input: {
+  leadId: string;
+  merchantId: string;
+  operatorUserId: string;
+  purchaseConfirmed: boolean;
+  idempotencyKey: string;
+}): Promise<CashierRedemptionContext> {
+  const supabase = getSupabaseAdmin();
+  const { data, error } = await supabase
+    .rpc("redeem_cashier_lead_prize", {
+      p_lead_id: input.leadId,
+      p_merchant_id: input.merchantId,
+      p_operator_user_id: input.operatorUserId,
+      p_purchase_confirmed: input.purchaseConfirmed,
+      p_idempotency_key: input.idempotencyKey,
+    })
+    .single<CashierRedeemRpcRow>();
+
+  if (error || !data) {
+    const functionUnavailable = /function|schema cache|does not exist|ambiguous/i.test(error?.message ?? "");
+    if (!functionUnavailable) {
+      throw new Error(error?.message || "Le retrait n'a pas pu être validé.");
+    }
+
+    const { data: leadCodeRow } = await supabase
+      .from("leads")
+      .select("redemption_code")
+      .eq("id", input.leadId)
+      .maybeSingle<{ redemption_code: string | null }>();
+    const before = leadCodeRow?.redemption_code
+      ? await findSupabaseMerchantLeadByRedemptionCode(input.merchantId, leadCodeRow.redemption_code)
+      : null;
+    if (!before?.leadId) throw new Error("Gain introuvable");
+    if (before.status === "redeemed") throw new Error("Lot déjà retiré");
+    if (before.status === "expired") throw new Error("Lot expiré");
+    if (before.status === "not_available") throw new Error("Lot pas encore disponible");
+    if (before.purchaseRequired && !input.purchaseConfirmed) {
+      throw new Error("Achat à confirmer avant le retrait");
+    }
+    await redeemLeadPrizeInSupabase(input.leadId);
+    return { ...before, status: "redeemed", purchaseVerified: input.purchaseConfirmed, redeemedAt: new Date().toISOString() };
+  }
+
+  const context = await findSupabaseMerchantLeadByRedemptionCode(
+    input.merchantId,
+    data.redemption_code ?? "",
+  );
+
+  return {
+    ...(context ?? {}),
+    status: "redeemed",
+    leadId: data.id,
+    campaignId: data.campaign_id,
+    firstName: data.first_name,
+    maskedEmail: maskCashierEmail(data.email),
+    redemptionCode: data.redemption_code ?? undefined,
+    rewardAvailableAt: data.reward_available_at ?? undefined,
+    rewardExpiresAt: data.reward_expires_at ?? undefined,
+    redeemedAt: data.redeemed_at ?? undefined,
+    purchaseVerified: data.purchase_verified ?? input.purchaseConfirmed,
+  };
+}
+
 export async function resetLeadPrizeInSupabase(leadId: string) {
   const supabase = getSupabaseAdmin();
   const { data, error } = await supabase
@@ -2249,12 +2649,6 @@ export async function updatePrizeStockInSupabase(
     .maybeSingle();
   if (currentError || !current) {
     throw new Error("Dotation introuvable");
-  }
-  if (
-    remainingQuantity !== null &&
-    (current.total_quantity === null || remainingQuantity > current.total_quantity)
-  ) {
-    throw new Error("Le stock doit être compris entre 0 et la quantité initiale.");
   }
   const { data, error } = await supabase
     .from("prizes")

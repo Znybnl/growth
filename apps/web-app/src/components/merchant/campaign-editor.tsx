@@ -43,6 +43,7 @@ import {
   normalizeCampaignEmailSettings,
 } from "@/lib/email-settings";
 import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
+import { fluidType } from "@/lib/responsive";
 import { buildWheelVisualSegments, WheelVisualSegment } from "@/lib/wheel-segments";
 import {
   ActionKind,
@@ -96,6 +97,21 @@ const ScratchGame = dynamic(
   },
 );
 
+const ImmersiveScratchTicket = dynamic(
+  () =>
+    import("@/components/public/immersive-scratch-ticket").then(
+      (mod) => mod.ImmersiveScratchTicket,
+    ),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex min-h-[320px] w-full items-center justify-center rounded-[28px] bg-white/70 text-sm text-[#7b8496]">
+        Chargement du ticket...
+      </div>
+    ),
+  },
+);
+
 type CampaignEditorProps = {
   merchant: Merchant;
   initialCampaign?: CampaignPerformance | null;
@@ -107,7 +123,7 @@ type EditorState = CampaignSetupInput;
 
 type PreviewSegment = WheelVisualSegment;
 
-type CampaignEditorPreviewModel = {
+export type CampaignEditorPreviewModel = {
   formId: string;
   backgroundStyle: {
     backgroundColor: string;
@@ -167,7 +183,7 @@ const textFontOptions: TextFont[] = [
   "bebas",
 ];
 const headingFontWeightOptions = [400, 500, 600, 700, 800, 900];
-const gamePageTemplateOptions: Array<{
+const wheelPageTemplateOptions: Array<{
   value: GamePageTemplateId;
   title: string;
   description: string;
@@ -226,6 +242,27 @@ const buttonSizeMap = {
   md: "px-5 py-4 text-base",
   lg: "px-6 py-5 text-lg",
 };
+const scratchPageTemplateOptions: Array<{
+  value: GamePageTemplateId;
+  title: string;
+  description: string;
+}> = [
+  {
+    value: "classic",
+    title: "Ticket classique",
+    description: "Le ticket historique, sobre et direct.",
+  },
+  {
+    value: "scratch-vault",
+    title: "Coffre néon",
+    description: "Un ticket de jeu de nuit, lumineux et immersif, avec une révélation façon coffre-fort.",
+  },
+  {
+    value: "scratch-confetti",
+    title: "Carte confettis",
+    description: "Une carte solaire et festive, pensée pour une interaction tactile très immédiate.",
+  },
+];
 
 const wheelDefaultSubtitle = "Faites tournez la roue pour jouer !";
 const scratchDefaultSubtitle = "Grattez le ticket pour jouer !";
@@ -388,7 +425,7 @@ function createDefaultState(merchant: Merchant): EditorState {
     targetUrl: merchant.googleReviewUrl,
     isActive: true,
     logoMode: "text",
-    logoText: merchant.companyName,
+    logoText: merchant.companyName || merchant.logoText,
     logoUrl: undefined,
     accent: {
       ink: "#111827",
@@ -788,34 +825,40 @@ function getPrizeSuggestionIcon(icon: string) {
   return icons[icon as keyof typeof icons] ?? icons.gift;
 }
 
-const CampaignLivePreview = memo(function CampaignLivePreview({
+export const CampaignLivePreview = memo(function CampaignLivePreview({
   merchant,
   preview,
+  compact = false,
+  flushTop = false,
 }: {
   merchant: Merchant;
   preview: CampaignEditorPreviewModel;
+  compact?: boolean;
+  flushTop?: boolean;
 }) {
   const isRestaurantPopTemplate = preview.gamePageTemplateId === "restaurant-pop";
   const isCosmicTemplate = preview.gamePageTemplateId === "cosmic-orbit";
   const isImmersiveTemplate =
     isCosmicTemplate || preview.gamePageTemplateId === "sunburst-festival";
-  const previewHeadingTextColor =
-    isCosmicTemplate && preview.headingTextColor.toLowerCase() === "#1f2937"
-      ? "#f8fbff"
-      : preview.headingTextColor;
+  const isImmersiveScratchTemplate =
+    preview.gamePageTemplateId === "scratch-vault" ||
+    preview.gamePageTemplateId === "scratch-confetti";
+  const previewScale = compact ? 0.8 : 1;
+  const scalePreviewValue = (value: number) => Math.round(value * previewScale);
+  const previewHeadingTextColor = isCosmicTemplate ? "#f8fbff" : preview.headingTextColor;
   const restaurantPopHeadingLines = buildRestaurantPopHeadingLines(preview.subtitle);
 
   return (
-    <div className="mt-6">
+    <div className={flushTop ? "" : "mt-6"}>
       <div
-        className="mx-auto min-h-[600px] w-full max-w-[450px] overflow-hidden rounded-[38px] border border-[#ced7e6] px-4 pb-6 pt-5 shadow-[0_30px_70px_rgba(18,24,39,0.18)]"
+        className={`mx-auto w-full overflow-hidden border border-[#ced7e6] shadow-[0_30px_70px_rgba(18,24,39,0.18)] ${compact ? "min-h-[480px] max-w-[360px] rounded-[30px] px-3 pb-5 pt-7" : "min-h-[600px] max-w-[450px] rounded-[38px] px-4 pb-6 pt-8"}`}
         style={preview.backgroundStyle}
       >
         {preview.logoMode === "image" && preview.logoUrl ? (
           <div className={`flex ${preview.logoAlignmentClass}`}>
             <div
               style={{
-                marginBottom: `${preview.logoBottomSpacingPx}px`,
+                marginBottom: `${scalePreviewValue(preview.logoBottomSpacingPx)}px`,
               }}
             >
               <BrandMark
@@ -823,7 +866,7 @@ const CampaignLivePreview = memo(function CampaignLivePreview({
                 logoUrl={preview.logoUrl}
                 size="lg"
                 variant="transparent"
-                imageWidthPx={preview.logoWidthPx}
+                imageWidthPx={scalePreviewValue(preview.logoWidthPx)}
               />
             </div>
           </div>
@@ -833,15 +876,16 @@ const CampaignLivePreview = memo(function CampaignLivePreview({
           <div className={`flex ${preview.logoAlignmentClass}`}>
             <div
               style={{
-                marginBottom: `${preview.logoBottomSpacingPx}px`,
+                marginBottom: `${scalePreviewValue(preview.logoBottomSpacingPx)}px`,
               }}
             >
               <BrandMark
                 logoText={preview.logoText}
                 size="lg"
                 variant="transparent"
-                imageWidthPx={preview.logoWidthPx}
-                textColor={preview.headingTextColor}
+                imageWidthPx={scalePreviewValue(preview.logoWidthPx)}
+                textColor={previewHeadingTextColor}
+                textClassName={compact ? "text-2xl" : undefined}
               />
             </div>
           </div>
@@ -856,7 +900,11 @@ const CampaignLivePreview = memo(function CampaignLivePreview({
             className={`${preview.headingFontClass} whitespace-pre-line ${isRestaurantPopTemplate ? "tracking-[0.038em] drop-shadow-[0_4px_0_rgba(0,0,0,0.08)]" : ""} leading-[1]`}
             style={{
               color: previewHeadingTextColor,
-              fontSize: `${preview.headingFontSizePx}px`,
+              fontSize: fluidType(scalePreviewValue(preview.headingFontSizePx), {
+                minRatio: 0.82,
+                maxRatio: 1.08,
+                viewportStep: 0.3,
+              }),
               fontWeight: preview.headingFontWeight,
             }}
           >
@@ -882,9 +930,18 @@ const CampaignLivePreview = memo(function CampaignLivePreview({
         </div>
 
         <div
+          className={
+            preview.gameType === "wheel"
+              ? compact
+                ? "-mx-3"
+                : "-mx-4"
+              : undefined
+          }
           style={{
-            marginTop: `${preview.blockSpacingPx}px`,
-            height: preview.gameType === "wheel" ? "470px" : undefined,
+            marginTop: `${scalePreviewValue(preview.blockSpacingPx)}px`,
+            height: preview.gameType === "wheel" ? compact ? "376px" : "470px" : undefined,
+            marginBottom:
+              preview.gameType === "wheel" ? (compact ? "-20px" : "-24px") : undefined,
           }}
         >
           {preview.gameType === "wheel" ? (
@@ -922,12 +979,22 @@ const CampaignLivePreview = memo(function CampaignLivePreview({
               />
             )
           ) : (
-            <ScratchGame
-              accent={preview.accent}
-              resultLabel={preview.previewPrize}
-              enabled={false}
-              onReveal={() => undefined}
-            />
+            isImmersiveScratchTemplate ? (
+              <ImmersiveScratchTicket
+                accent={preview.accent}
+                resultLabel={preview.previewPrize}
+                enabled={false}
+                onReveal={() => undefined}
+                template={preview.gamePageTemplateId as "scratch-vault" | "scratch-confetti"}
+              />
+            ) : (
+              <ScratchGame
+                accent={preview.accent}
+                resultLabel={preview.previewPrize}
+                enabled={false}
+                onReveal={() => undefined}
+              />
+            )
           )}
         </div>
 
@@ -936,11 +1003,15 @@ const CampaignLivePreview = memo(function CampaignLivePreview({
             type="button"
             className={`w-full rounded-[24px] border font-semibold ${preview.previewCtaClass}`}
             style={{
-              marginTop: `${preview.blockSpacingPx}px`,
+              marginTop: `${scalePreviewValue(preview.blockSpacingPx)}px`,
               backgroundColor: preview.buttonStyle.backgroundColor,
               color: preview.buttonStyle.textColor,
               borderColor: preview.buttonStyle.borderColor,
-              fontSize: `${preview.buttonStyle.textSizePx}px`,
+              fontSize: fluidType(scalePreviewValue(preview.buttonStyle.textSizePx), {
+                minRatio: 0.86,
+                maxRatio: 1.08,
+                viewportStep: 0.24,
+              }),
               fontWeight: preview.buttonStyle.isBold ? 700 : 400,
             }}
           >
@@ -1196,7 +1267,10 @@ function toEditorState(merchant: Merchant, campaign: CampaignPerformance | null)
       layout: {
         ...campaign.campaign.presentation.layout,
         blockSpacingPx: campaign.campaign.presentation.layout.blockSpacingPx ?? 40,
-        templateId: campaign.campaign.presentation.layout.templateId ?? "classic",
+        templateId:
+          campaign.campaign.gameType === "scratch"
+            ? "classic"
+            : campaign.campaign.presentation.layout.templateId ?? "classic",
       },
       poster: normalizePosterSettings(
         campaign.campaign.presentation.poster,
@@ -1248,6 +1322,94 @@ function buildPreviewSegments(prizes: EditorState["prizes"]): PreviewSegment[] {
       probability: prize.probability,
     })),
   );
+}
+
+export function buildCampaignLivePreviewModel(
+  form: CampaignSetupInput,
+  merchant: Merchant,
+): CampaignEditorPreviewModel {
+  const templateId = form.gameType === "scratch"
+    ? "classic"
+    : form.presentation.layout.templateId ?? "classic";
+  const previewSegments = buildPreviewSegments(form.prizes);
+  const winningSegmentId =
+    previewSegments.find((segment) => segment.tone === "win")?.id ?? previewSegments[0]?.id ?? "win";
+  const logoAlignmentClass =
+    form.presentation.logo.align === "left"
+      ? "justify-start"
+      : form.presentation.logo.align === "right"
+        ? "justify-end"
+        : "justify-center";
+  const headingAlignmentClass =
+    form.presentation.heading.align === "left"
+      ? "text-left"
+      : form.presentation.heading.align === "right"
+        ? "text-right"
+        : "text-center";
+  const headingFontClass =
+    form.presentation.heading.fontFamily === "anton"
+      ? "font-anton"
+      : form.presentation.heading.fontFamily === "serif" || form.presentation.heading.fontFamily === "cormorant"
+        ? form.presentation.heading.fontFamily === "cormorant"
+          ? "font-cormorant"
+          : "font-serif"
+        : form.presentation.heading.fontFamily === "fredoka"
+          ? "font-fredoka"
+          : form.presentation.heading.fontFamily === "inter" || form.presentation.heading.fontFamily === "sans"
+            ? "font-inter"
+            : form.presentation.heading.fontFamily === "bebas"
+              ? "font-bebas"
+              : "font-display";
+  const logoWidthPx = Math.round(Math.max(56, Math.min(720, form.presentation.logo.sizePercent * 3)));
+  const backgroundImage =
+    form.presentation.background.mode === "image" && form.presentation.background.imageUrl
+      ? `linear-gradient(rgba(15,23,40,0.32), rgba(15,23,40,0.52)), url("${form.presentation.background.imageUrl}")`
+      : templateId === "restaurant-pop"
+        ? `radial-gradient(circle at -10% -8%, ${withHexAlpha(form.presentation.wheel.loseColor, "f2")} 0 18%, transparent 19%), radial-gradient(circle at 110% 0%, ${withHexAlpha(form.presentation.wheel.winColor, "f2")} 0 13%, transparent 14%), linear-gradient(180deg, #fff2dd 0%, #fffaf1 48%, #fff4e5 100%)`
+        : templateId === "cosmic-orbit"
+          ? `radial-gradient(circle at 50% 112%, ${withHexAlpha(form.presentation.wheel.loseColor, "52")} 0 24%, transparent 43%), radial-gradient(circle at 9% 12%, ${withHexAlpha(form.presentation.wheel.winColor, "2b")} 0 14%, transparent 25%), linear-gradient(155deg, #07142e 0%, #0b1d42 55%, #071126 100%)`
+          : templateId === "sunburst-festival"
+            ? `radial-gradient(circle at 12% 10%, ${withHexAlpha(form.presentation.wheel.loseColor, "33")} 0 12%, transparent 13%), radial-gradient(circle at 94% 18%, ${withHexAlpha(form.presentation.wheel.winColor, "38")} 0 14%, transparent 15%), linear-gradient(180deg, #fffdf5 0%, #fff8e8 56%, #fff2ce 100%)`
+            : "";
+
+  return {
+    formId: form.id ?? "new-campaign",
+    backgroundStyle: {
+      backgroundColor: form.presentation.background.color,
+      backgroundImage,
+      backgroundPosition: "center",
+      backgroundSize: "cover",
+    },
+    logoMode: form.logoMode,
+    logoAlignmentClass,
+    logoBottomSpacingPx: form.presentation.logo.marginBottomPx + form.presentation.layout.blockSpacingPx,
+    logoWidthPx,
+    logoUrl: form.logoUrl ?? "",
+    logoText: form.logoText?.trim() || merchant.companyName,
+    headingAlignmentClass,
+    headingFontClass,
+    headingTextColor: templateId === "cosmic-orbit" ? "#f8fbff" : form.presentation.heading.textColor,
+    headingFontSizePx: form.presentation.heading.fontSizePx,
+    headingFontWeight: form.presentation.heading.fontWeight ?? 600,
+    subtitle: form.subtitle,
+    blockSpacingPx: form.presentation.layout.blockSpacingPx,
+    gamePageTemplateId: templateId,
+    gameType: form.gameType,
+    accent: form.accent,
+    wheelStyle: form.presentation.wheel,
+    buttonStyle: {
+      backgroundColor: form.gameType === "wheel" ? form.presentation.wheel.loseColor : form.presentation.button.backgroundColor,
+      textColor: form.presentation.button.textColor,
+      borderColor: form.gameType === "wheel" ? form.presentation.wheel.rimColor : form.presentation.button.borderColor,
+      textSizePx: form.presentation.button.textSizePx,
+      isBold: form.presentation.button.isBold ?? true,
+    },
+    previewSegments,
+    winningSegmentId,
+    previewPrize: form.prizes[0]?.label || "Cadeau surprise",
+    ctaLabel: form.ctaLabel,
+    previewCtaClass: buttonSizeMap[form.presentation.button.size],
+  };
 }
 
 function syncActionLabel(kind: ActionKind, currentLabel: string) {
@@ -1460,7 +1622,8 @@ export function CampaignEditor({
       headingFontWeight: form.presentation.heading.fontWeight ?? 600,
       subtitle: form.subtitle,
       blockSpacingPx: form.presentation.layout.blockSpacingPx,
-      gamePageTemplateId: form.presentation.layout.templateId ?? "classic",
+      gamePageTemplateId:
+        form.gameType === "scratch" ? "classic" : form.presentation.layout.templateId ?? "classic",
       gameType: form.gameType,
       accent: form.accent,
       wheelStyle: form.presentation.wheel,
@@ -1680,7 +1843,7 @@ export function CampaignEditor({
     setForm((current) => ({ ...current, [key]: value }));
   }
 
-  function setGameType(gameType: GameType) {
+function setGameType(gameType: GameType) {
     setForm((current) => {
       const currentSubtitle = current.subtitle.trim();
       const shouldSyncSubtitle =
@@ -1689,6 +1852,20 @@ export function CampaignEditor({
       return {
         ...current,
         gameType,
+        presentation: {
+          ...current.presentation,
+          layout: {
+            ...current.presentation.layout,
+            templateId:
+              gameType === "scratch"
+                ? "classic"
+                : current.presentation.layout.templateId === "restaurant-pop" ||
+                    current.presentation.layout.templateId === "cosmic-orbit" ||
+                    current.presentation.layout.templateId === "sunburst-festival"
+                  ? current.presentation.layout.templateId
+                  : "classic",
+          },
+        },
         subtitle: shouldSyncSubtitle
           ? gameType === "wheel"
             ? wheelDefaultSubtitle
@@ -1904,6 +2081,15 @@ export function CampaignEditor({
         throw new Error("Ajoutez au moins un lot dans la section Dotation.");
       }
 
+      if (form.prizes.some((prize) => prize.totalQuantity !== null && prize.totalQuantity <= 0)) {
+        throw new Error("La quantité d’un lot doit être supérieure à 0 (ou illimitée).");
+      }
+
+      const totalProbability = form.prizes.reduce((total, prize) => total + (Number(prize.probability) || 0), 0);
+      if (form.rewardRules.isWinningEveryTime && totalProbability < 99.9999) {
+        throw new Error("Un jeu 100 % gagnant doit totaliser exactement 100 % de probabilités.");
+      }
+
       if (
         form.rewardRules.isWinningEveryTime &&
         !form.prizes.some((prize) => prize.totalQuantity === null)
@@ -1992,6 +2178,15 @@ export function CampaignEditor({
     try {
       if (!form.prizes.length) {
         throw new Error("Ajoutez au moins un lot dans la section Dotation.");
+      }
+
+      if (form.prizes.some((prize) => prize.totalQuantity !== null && prize.totalQuantity <= 0)) {
+        throw new Error("La quantité d’un lot doit être supérieure à 0 (ou illimitée).");
+      }
+
+      const totalProbability = form.prizes.reduce((total, prize) => total + (Number(prize.probability) || 0), 0);
+      if (form.rewardRules.isWinningEveryTime && totalProbability < 99.9999) {
+        throw new Error("Un jeu 100 % gagnant doit totaliser exactement 100 % de probabilités.");
       }
 
       if (
@@ -2181,7 +2376,8 @@ export function CampaignEditor({
                   Ordre des actions pour chaque participation
                 </h3>
                 <p className="mt-3 max-w-3xl text-sm leading-7 text-[#5c6577]">
-                  Définissez un objectif pour chaque participation. Si le client ne peut jouer qu&apos;une fois, limitez-vous à une seule action.
+                  Définissez une invitation marketing pour chaque participation. Le jeu reste
+                  accessible sans cliquer sur un lien externe.
                 </p>
               </div>
               <button
@@ -2278,12 +2474,13 @@ export function CampaignEditor({
               })}
             </div>
 
+            {form.gameType === "wheel" ? (
             <div className="mt-6">
               <p className="text-xs uppercase tracking-[0.24em] text-[#7b8496]">
                 Template de page de jeu
               </p>
               <div className="mt-3 grid gap-3 md:grid-cols-2">
-                {gamePageTemplateOptions.map((template) => {
+                {(form.gameType === "wheel" ? wheelPageTemplateOptions : scratchPageTemplateOptions.slice(0, 1)).map((template) => {
                   const active =
                     (form.presentation.layout.templateId ?? "classic") === template.value;
 
@@ -2320,6 +2517,7 @@ export function CampaignEditor({
                 })}
               </div>
             </div>
+            ) : null}
           </section>
 
           {isExpertMode ? (
@@ -3810,13 +4008,13 @@ export function CampaignEditor({
                     Voir l&apos;affiche
                   </Link>
                   <Link
-                    href={`/campaign/${form.id}`}
+                    href={`/campaign/${form.id}?preview=1`}
                     prefetch={false}
                     target="_blank"
                     rel="noreferrer"
                     className="okado-primary-action h-10 px-4"
                   >
-                    Voir la campagne
+                    Prévisualiser
                   </Link>
                 </div>
               ) : null}
@@ -3832,12 +4030,12 @@ export function CampaignEditor({
             {savedCampaignId ? (
               <>
                 <Link
-                  href={`/campaign/${savedCampaignId}`}
+                  href={`/campaign/${savedCampaignId}?preview=1`}
                   prefetch={false}
                   target="_blank"
                   className="okado-primary-action px-4 py-3"
                 >
-                  Voir la campagne
+                  Prévisualiser
                 </Link>
                 <Link
                   href={`/campaigns/${savedCampaignId}/poster`}

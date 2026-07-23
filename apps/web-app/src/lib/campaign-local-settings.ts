@@ -22,6 +22,13 @@ type CampaignLocalSettings = {
   prizeSettings?: Record<string, { usageConditions?: string }>;
   poster?: Partial<CampaignPosterSettings>;
   email?: Partial<CampaignEmailSettings>;
+  compliance?: {
+    rulesVersion: number;
+    status: "draft" | "active";
+    lastSavedAt: string;
+    publishedAt?: string;
+    configurationVersion: string;
+  };
 };
 
 type CampaignLocalSettingsStore = Record<string, CampaignLocalSettings>;
