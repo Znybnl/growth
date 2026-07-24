@@ -125,7 +125,7 @@ export function GoogleReviewPlacePicker({
                   setMessage(null);
                 }
               }}
-              placeholder="Rechercher votre restaurant sur Google"
+              placeholder="Rechercher votre établissement sur Google"
               className="w-full rounded-[18px] border border-[#d7e0ed] bg-white px-4 py-3 text-sm outline-none transition focus:border-[#2f6df6] focus:ring-4 focus:ring-[#2f6df6]/10"
             />
           </div>
@@ -165,24 +165,6 @@ export function GoogleReviewPlacePicker({
         ) : null}
       </div>
 
-      {allowManualInput ? (
-        <details
-          className="rounded-[20px] border border-[#e1e7f0] bg-white px-4 py-3"
-          open={manualMode}
-          onToggle={(event) => setManualMode(event.currentTarget.open)}
-        >
-          <summary className="cursor-pointer text-sm font-semibold text-[#182033]">
-            Coller manuellement un lien d&apos;avis Google
-          </summary>
-          <input
-            type="url"
-            value={value}
-            onChange={(event) => onChange(event.target.value)}
-            placeholder="https://search.google.com/local/writereview?placeid=..."
-            className="mt-3 w-full rounded-[18px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 text-sm outline-none transition focus:border-[#2f6df6] focus:ring-4 focus:ring-[#2f6df6]/10"
-          />
-        </details>
-      ) : null}
     </div>
   );
 }

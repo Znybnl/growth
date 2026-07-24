@@ -30,6 +30,7 @@ import {
 
 import { BrandMark } from "@/components/brand-mark";
 import { CampaignEmailPreview } from "@/components/merchant/campaign-email-preview";
+import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
 import { Switch } from "@/components/ui/switch";
 import {
   actionKindCta,
@@ -46,6 +47,7 @@ import {
 import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
 import { fluidType } from "@/lib/responsive";
 import { buildWheelVisualSegments, WheelVisualSegment } from "@/lib/wheel-segments";
+import { isRestaurantIndustry } from "@/lib/merchant-options";
 import {
   ActionKind,
   BackgroundLibraryAsset,
@@ -228,7 +230,7 @@ const gameModes: Array<{
     eyebrow: "Animation visible",
     title: "Roue de la fortune",
     description:
-      "Un moment fort en caisse, sur borne ou sur affichage mobile plein écran pour générer du trafic en restaurant.",
+      "Un moment fort en caisse, sur borne ou sur affichage mobile plein écran pour générer du trafic en point de vente.",
   },
   {
     value: "scratch",
@@ -417,7 +419,7 @@ function createDefaultAction(merchant: Merchant): CampaignAction {
 function createDefaultState(merchant: Merchant): EditorState {
   return {
     merchantId: merchant.id,
-    title: "Animation restaurant",
+    title: `Animation ${isRestaurantIndustry(merchant.industry) ? "restaurant" : "commerce"}`,
     subtitle: wheelDefaultSubtitle,
     goalType: "review_prompt",
     gameType: "wheel",
@@ -494,7 +496,7 @@ function createDefaultState(merchant: Merchant): EditorState {
       },
       email: createCampaignEmailDefaults(merchant),
     },
-    actions: [createDefaultAction(merchant)],
+    actions: createDefaultActions(merchant),
     rewardRules: {
       rewardExpiryMinutes: 20,
       purchaseRequired: false,
@@ -719,6 +721,30 @@ function PrizeConditionsDialog({
       </div>
     </div>
   );
+}
+
+function createDefaultActions(merchant: Merchant): CampaignAction[] {
+  const actions = [createDefaultAction(merchant)];
+
+  if (merchant.instagramUrl?.trim()) {
+    actions.push({
+      id: createActionId(),
+      kind: "instagram",
+      label: actionKindCta("instagram"),
+      url: merchant.instagramUrl,
+    });
+  }
+
+  if (merchant.facebookUrl?.trim()) {
+    actions.push({
+      id: createActionId(),
+      kind: "facebook",
+      label: actionKindCta("facebook"),
+      url: merchant.facebookUrl,
+    });
+  }
+
+  return actions;
 }
 
 function PrizeSuggestionDialog({
@@ -1077,7 +1103,7 @@ const CampaignActionCard = memo(function CampaignActionCard({
         }`}
       >
         <label className="text-sm">
-          <span className="mb-2 block text-[#616b7c]">Canal</span>
+          <span className="mb-2 flex items-center gap-3 text-[#616b7c]"><SocialChannelIcon channel={action.kind} /><span>Canal</span></span>
           <select
             value={action.kind}
             onChange={(event) => onUpdate(action.id, { kind: event.target.value as ActionKind })}
@@ -2272,7 +2298,7 @@ function setGameType(gameType: GameType) {
             </p>
           </div>
 
-          <div className="flex flex-wrap items-start justify-start gap-3 xl:justify-end">
+          <div className="okado-action-row flex flex-wrap items-center justify-start gap-3 xl:justify-end">
             <Link
               href="/campaigns"
               prefetch={false}

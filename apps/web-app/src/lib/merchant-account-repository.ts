@@ -1394,6 +1394,7 @@ export async function updateMerchantOnboardingInSupabase(
       tiktok_url: input.tiktokUrl.trim(),
       tripadvisor_url: input.tripadvisorUrl.trim(),
       custom_link_url: input.customLinkUrl.trim(),
+      ...(input.redemptionPin ? { redemption_pin_hash: hashPassword(input.redemptionPin) } : {}),
       onboarding_completed: true,
     })
     .eq("id", userQuery.data.merchant_id);

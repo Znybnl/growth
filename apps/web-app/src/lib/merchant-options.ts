@@ -29,5 +29,5 @@ export function isRestaurantIndustry(industry?: string | null) {
 }
 
 export function businessLabel(industry?: string | null) {
-  return isRestaurantIndustry(industry) ? "restaurant" : "boutique";
+  return isRestaurantIndustry(industry) ? "restaurant" : "commerce";
 }

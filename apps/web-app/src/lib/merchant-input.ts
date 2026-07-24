@@ -236,6 +236,10 @@ export function parseMerchantOnboardingInput(input: unknown): MerchantOnboarding
     tiktokUrl: normalizeUrl(payload.tiktokUrl),
     tripadvisorUrl: normalizeUrl(payload.tripadvisorUrl),
     customLinkUrl: normalizeUrl(payload.customLinkUrl),
+    redemptionPin:
+      /^\d{4,6}$/.test(normalizeString(payload.redemptionPin, 6))
+        ? normalizeString(payload.redemptionPin, 6)
+        : undefined,
   };
 }
 

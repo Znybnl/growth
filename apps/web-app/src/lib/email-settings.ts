@@ -1,4 +1,5 @@
 import { CampaignEmailSettings, Merchant } from "@/lib/types";
+import { isRestaurantIndustry } from "@/lib/merchant-options";
 
 const EMAIL_VARIABLE_PATTERN = /\{\{\s*(\w+)\s*\}\}/g;
 
@@ -110,17 +111,23 @@ export function renderEmailTemplate(template: string, variables: RewardEmailVari
 
 export function createCampaignEmailDefaults(merchant: Merchant): CampaignEmailSettings {
   return {
-    ...createCampaignEmailDefaultsForMerchantName(merchant.companyName),
+    ...createCampaignEmailDefaultsForMerchantName(
+      merchant.companyName,
+      isRestaurantIndustry(merchant.industry) ? "restaurant" : "commerce",
+    ),
     replyTo: merchant.restaurantEmail ?? "",
   };
 }
 
-function createCampaignEmailDefaultsForMerchantName(companyName: string): CampaignEmailSettings {
+function createCampaignEmailDefaultsForMerchantName(
+  companyName: string,
+  businessNoun = "commerce",
+): CampaignEmailSettings {
   return {
     senderName: companyName,
     replyTo: "",
     subject: "{{merchantName}} · récupérez votre lot",
-    preheader: "Conservez ce QR code pour retirer votre cadeau au restaurant.",
+    preheader: `Conservez ce QR code pour retirer votre cadeau au ${businessNoun}.`,
     headline: "Récupérez votre lot, {{firstName}}",
     body: [
       "Vous avez gagné {{prizeLabel}} chez {{merchantName}} le {{rewardDate}}.",

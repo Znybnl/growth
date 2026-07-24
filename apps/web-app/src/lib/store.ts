@@ -1098,6 +1098,9 @@ function updateMerchantOnboardingInMemory(userId: string, input: MerchantOnboard
   merchant.tiktokUrl = input.tiktokUrl.trim();
   merchant.tripadvisorUrl = input.tripadvisorUrl.trim();
   merchant.customLinkUrl = input.customLinkUrl.trim();
+  if (input.redemptionPin) {
+    memoryRedemptionPinHashes.set(merchant.id, hashPassword(input.redemptionPin));
+  }
   merchant.onboardingCompleted = true;
 
   return clone(merchant);

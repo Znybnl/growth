@@ -33,8 +33,8 @@ export default async function CampaignsPage({
           </p>
         </div>
 
-        <div className="flex flex-wrap gap-3">
-          <div className="flex items-center px-2 py-3 text-sm font-semibold text-ash">
+        <div className="okado-action-row flex flex-wrap items-center gap-3">
+          <div className="flex min-h-[var(--okado-action-primary-height)] items-center px-2 text-sm font-semibold text-ash">
             {activeCount} actives · {campaigns.length} au total
           </div>
           <Link href="/campaigns/new/guided" prefetch={false} className="okado-secondary-action px-5">

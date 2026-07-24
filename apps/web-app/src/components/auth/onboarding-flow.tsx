@@ -6,8 +6,6 @@ import { useState } from "react";
 
 import {
   INDUSTRY_OPTIONS,
-  RESTAURANT_TYPE_OPTIONS,
-  businessLabel,
   isRestaurantIndustry,
 } from "@/lib/merchant-options";
 import { GoogleReviewPlacePicker } from "@/components/merchant/google-review-place-picker";
@@ -21,8 +19,8 @@ const steps = [
   },
   {
     id: "restaurant",
-    label: "Information restaurant",
-    title: "Coordonnées du restaurant",
+    label: "Coordonnées",
+    title: "Coordonnées du commerce",
   },
   {
     id: "reseaux",
@@ -41,12 +39,14 @@ type OnboardingFlowProps = {
 export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
   const router = useRouter();
   const [activeIndex, setActiveIndex] = useState(0);
-  const [companyName, setCompanyName] = useState(merchant.companyName ?? "");
+  const [companyName, setCompanyName] = useState(
+    merchant.onboardingCompleted ? merchant.companyName ?? "" : "",
+  );
   const [industry, setIndustry] = useState(merchant.industry ?? "Restauration");
   const [city, setCity] = useState(merchant.city ?? "");
   const [contactName, setContactName] = useState(merchant.contactName ?? "");
-  const [restaurantType, setRestaurantType] = useState(
-    merchant.restaurantType ?? "Brasserie",
+  const [restaurantType] = useState(
+    merchant.onboardingCompleted ? merchant.restaurantType ?? "" : "",
   );
   const [phone, setPhone] = useState(merchant.phone ?? "");
   const [restaurantEmail, setRestaurantEmail] = useState(merchant.restaurantEmail ?? "");
@@ -58,11 +58,11 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
   const [facebookUrl, setFacebookUrl] = useState(merchant.facebookUrl ?? "");
   const [tiktokUrl, setTiktokUrl] = useState(merchant.tiktokUrl ?? "");
   const [tripadvisorUrl, setTripadvisorUrl] = useState(merchant.tripadvisorUrl ?? "");
+  const [redemptionPin, setRedemptionPin] = useState("0000");
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
   const activeStep = steps[activeIndex];
-  const placeLabel = businessLabel(industry);
   const isRestaurant = isRestaurantIndustry(industry);
 
   function goNext() {
@@ -99,6 +99,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
           facebookUrl,
           tiktokUrl,
           tripadvisorUrl,
+          redemptionPin,
         }),
       });
       const payload = (await response.json()) as { error?: string };
@@ -155,7 +156,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
             </label>
             <label className="text-sm">
               <span className="mb-2 block text-[#616b7c]">
-                Ville / {isRestaurant ? "restaurant" : "boutique"}
+                Ville / {isRestaurant ? "restaurant" : "commerce"}
               </span>
               <input
                 value={city}
@@ -178,22 +179,8 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             <label className="text-sm">
               <span className="mb-2 block text-[#616b7c]">
-                Type de {isRestaurant ? "restaurant" : placeLabel}
+                Téléphone du {isRestaurant ? "restaurant" : "commerce"}
               </span>
-              <select
-                value={restaurantType}
-                onChange={(event) => setRestaurantType(event.target.value)}
-                className={inputClass}
-              >
-                {RESTAURANT_TYPE_OPTIONS.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="text-sm">
-              <span className="mb-2 block text-[#616b7c]">Téléphone du restaurant</span>
               <input
                 value={phone}
                 onChange={(event) => setPhone(event.target.value)}
@@ -201,7 +188,9 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
               />
             </label>
             <label className="text-sm">
-              <span className="mb-2 block text-[#616b7c]">E-mail du restaurant</span>
+              <span className="mb-2 block text-[#616b7c]">
+                E-mail du {isRestaurant ? "restaurant" : "commerce"}
+              </span>
               <input
                 type="email"
                 value={restaurantEmail}
@@ -210,7 +199,9 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
               />
             </label>
             <label className="text-sm">
-              <span className="mb-2 block text-[#616b7c]">Site internet du restaurant</span>
+              <span className="mb-2 block text-[#616b7c]">
+                Site internet du {isRestaurant ? "restaurant" : "commerce"}
+              </span>
               <input
                 type="url"
                 value={websiteUrl}
@@ -243,6 +234,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
                   onChange={setGoogleReviewUrl}
                   defaultQuery={companyName}
                   city={city}
+                  allowManualInput={false}
                 />
               </div>
               <label className="text-sm">
@@ -284,6 +276,22 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
                   placeholder="https://tripadvisor.com/..."
                   className={inputClass}
                 />
+              </label>
+              <label className="text-sm md:col-span-2">
+                <span className="mb-2 block text-[#616b7c]">PIN de validation du retrait</span>
+                <input
+                  type="password"
+                  inputMode="numeric"
+                  autoComplete="new-password"
+                  pattern="[0-9]{4,6}"
+                  maxLength={6}
+                  value={redemptionPin}
+                  onChange={(event) => setRedemptionPin(event.target.value.replace(/\D/g, ""))}
+                  className={inputClass}
+                />
+                <span className="mt-2 block text-xs leading-5 text-ash">
+                  Ce code de 4 à 6 chiffres est demandé à un employé pour valider un retrait. Il est prérempli à 0000 et pourra être modifié depuis Compte.
+                </span>
               </label>
             </div>
           </div>
