@@ -3,6 +3,14 @@
 import { ChevronDown, MapPin } from "lucide-react";
 import { useState } from "react";
 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { MerchantLocationAccess } from "@/lib/types";
 
 export function LocationSwitcher({
@@ -40,23 +48,38 @@ export function LocationSwitcher({
     }
   }
 
+  const activeLocation = locations.find(({ merchant }) => merchant.id === activeLocationId)?.merchant;
+
   return (
-    <label className="relative flex min-w-0 items-center gap-2 rounded-[12px] border border-border bg-white px-3 py-2 text-xs text-graphite shadow-[var(--shadow-product-card)]">
-      <MapPin className="h-3.5 w-3.5 shrink-0 text-primary-action-accent" />
-      <span className="sr-only">Site actif</span>
-      <select
-        value={activeLocationId}
+    <DropdownMenu>
+      <DropdownMenuTrigger
         disabled={isChanging}
-        onChange={(event) => void changeLocation(event.target.value)}
-        className="min-w-0 max-w-[190px] appearance-none bg-transparent pr-5 text-xs font-semibold outline-none"
+        className="inline-flex min-w-0 max-w-[260px] items-center gap-2 rounded-[12px] border border-border bg-white px-3 py-2 text-xs text-graphite shadow-[var(--shadow-product-card)] outline-none transition hover:bg-linen-canvas focus-visible:ring-2 focus-visible:ring-primary-action-accent/30 disabled:cursor-wait disabled:opacity-60"
       >
-        {locations.map(({ merchant }) => (
-          <option key={merchant.id} value={merchant.id}>
-            {merchant.companyName}{merchant.city ? ` · ${merchant.city}` : ""}
-          </option>
-        ))}
-      </select>
-      <ChevronDown className="pointer-events-none absolute right-2.5 h-3.5 w-3.5 text-ash" />
-    </label>
+        <MapPin className="h-3.5 w-3.5 shrink-0 text-primary-action-accent" />
+        <span className="sr-only">Site actif</span>
+        <span className="min-w-0 truncate text-left font-semibold">
+          {activeLocation?.companyName ?? "Choisir un site"}
+          {activeLocation?.city ? ` · ${activeLocation.city}` : ""}
+        </span>
+        <ChevronDown className="ml-auto h-3.5 w-3.5 shrink-0 text-ash" aria-hidden="true" />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="min-w-[240px] p-1.5">
+        <DropdownMenuLabel>Changer de site</DropdownMenuLabel>
+        <DropdownMenuRadioGroup
+          value={activeLocationId}
+          onValueChange={(locationId) => void changeLocation(locationId)}
+        >
+          {locations.map(({ merchant }) => (
+            <DropdownMenuRadioItem key={merchant.id} value={merchant.id} className="py-2">
+              <span className="min-w-0 truncate">
+                {merchant.companyName}
+                {merchant.city ? ` · ${merchant.city}` : ""}
+              </span>
+            </DropdownMenuRadioItem>
+          ))}
+        </DropdownMenuRadioGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

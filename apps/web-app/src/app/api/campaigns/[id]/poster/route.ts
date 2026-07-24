@@ -125,7 +125,7 @@ export async function GET(request: Request, context: RouteContext) {
     return new NextResponse(new Uint8Array(posterPng), {
       headers: {
         "Content-Type": "image/png",
-        "Content-Disposition": `attachment; filename="${performance.campaign.id}-affiche-a4.png"`,
+        "Content-Disposition": `attachment; filename="${performance.campaign.id}-affiche-a4-a5.png"`,
         "Cache-Control": "no-store",
       },
     });

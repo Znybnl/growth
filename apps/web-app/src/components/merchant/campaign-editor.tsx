@@ -3057,7 +3057,7 @@ function setGameType(gameType: GameType) {
           <section className="okado-card p-6">
             <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
               <div>
-                <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Affiche A4</p>
+                <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Affiche A4 / A5</p>
                 <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
                   Personnalisation de l&apos;affiche
                 </h2>
@@ -3536,13 +3536,15 @@ function setGameType(gameType: GameType) {
                 </label>
 
                 {[
-                  ...(form.presentation.layout.templateId === "restaurant-pop" || isExpertMode
+                  ...(form.presentation.layout.templateId !== "classic" &&
+                  (form.presentation.layout.templateId === "restaurant-pop" || isExpertMode)
                     ? [["winColor", "Couleur secondaire"]]
                     : []),
                   ...(isExpertMode
                     ? [
                         ["rimColor", "Couleur du contour"],
-                        ...(form.presentation.layout.templateId === "restaurant-pop"
+                        ...(form.presentation.layout.templateId === "restaurant-pop" ||
+                        form.presentation.layout.templateId === "classic"
                           ? []
                           : [["alternateLoseColor", "Couleur principale claire"]]),
                       ]
@@ -4005,7 +4007,7 @@ function setGameType(gameType: GameType) {
                     prefetch={false}
                     className="okado-secondary-action h-10 px-4"
                   >
-                    Voir l&apos;affiche
+                    Affiche
                   </Link>
                   <Link
                     href={`/campaign/${form.id}?preview=1`}
@@ -4042,7 +4044,7 @@ function setGameType(gameType: GameType) {
                   prefetch={false}
                   className="okado-secondary-action px-4 py-3"
                 >
-                  Voir l&apos;affiche
+                  Affiche
                 </Link>
               </>
             ) : null}

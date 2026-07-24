@@ -26,7 +26,7 @@ type MerchantShellProps = {
 const navItems = [
   { href: "/", label: "Dashboard" },
   { href: "/campaigns", label: "Campagnes" },
-  { href: "/caisse", label: "Caisse" },
+  { href: "/caisse", label: "Retrait" },
   { href: "/data", label: "Données" },
   { href: "/account", label: "Compte" },
   { href: "/locations", label: "Multi-sites" },
@@ -177,9 +177,9 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
           <Link
             href="/caisse"
             prefetch={false}
-            className="mt-5 flex items-center justify-center rounded-[8px] bg-[#111827] px-4 py-3 text-sm font-semibold !text-white transition hover:bg-[#273142]"
+            className="okado-secondary-action mt-5 flex items-center justify-center rounded-[8px] px-4 py-3 text-sm font-semibold"
           >
-            Ouvrir la caisse
+            Valider un retrait
           </Link>
 
           <Button asChild className="okado-primary-action mt-5 h-11 px-4">

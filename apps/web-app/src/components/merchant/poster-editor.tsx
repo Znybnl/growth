@@ -26,7 +26,7 @@ const posterTemplates: Array<{
   {
     id: "classic-wheel",
     label: "Classique blanc",
-    description: "Fond clair, grand titre impactant, QR code très visible.",
+    description: "Fond clair uni, avec titre impactant.",
     backgroundColor: "#fff6ee",
     headlineTextColor: "#050644",
     headlineFontSizePx: 50,
@@ -41,7 +41,7 @@ const posterTemplates: Array<{
   {
     id: "soft-gradient-wheel",
     label: "Gradient clair",
-    description: "Look plus premium avec roue + QR en superposition.",
+    description: "Design élégant et titre avec contour blanc.",
     backgroundColor: "#f4f3ff",
     headlineTextColor: "#050644",
     headlineFontSizePx: 40,
@@ -56,7 +56,7 @@ const posterTemplates: Array<{
   {
     id: "terracotta-wheel",
     label: "Terracotta",
-    description: "Palette chaude pour un rendu restaurant plus chaleureux.",
+    description: "Palette chaude pour un rendu plus chaleureux.",
     backgroundColor: "#ddc9b8",
     headlineTextColor: "#a82c1d",
     headlineFontSizePx: 50,
@@ -101,6 +101,53 @@ function uploadAsDataUrl(
     }
   };
   reader.readAsDataURL(file);
+}
+
+function downloadBlob(blob: Blob, fileName: string) {
+  const objectUrl = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = objectUrl;
+  link.download = fileName;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+}
+
+async function renderPosterSvgAsPng(svg: string) {
+  const svgBlob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
+  const svgUrl = URL.createObjectURL(svgBlob);
+
+  try {
+    const image = new window.Image();
+    image.decoding = "async";
+    await new Promise<void>((resolve, reject) => {
+      image.onload = () => resolve();
+      image.onerror = () => reject(new Error("Prévisualisation impossible à convertir en PNG."));
+      image.src = svgUrl;
+    });
+
+    const canvas = document.createElement("canvas");
+    canvas.width = 794;
+    canvas.height = 1123;
+    const context = canvas.getContext("2d");
+
+    if (!context) {
+      throw new Error("Conversion PNG indisponible dans ce navigateur.");
+    }
+
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+    const pngBlob = await new Promise<Blob>((resolve, reject) => {
+      canvas.toBlob((blob) => {
+        if (blob) resolve(blob);
+        else reject(new Error("Création du fichier PNG impossible."));
+      }, "image/png");
+    });
+
+    return pngBlob;
+  } finally {
+    URL.revokeObjectURL(svgUrl);
+  }
 }
 
 function getPosterTemplate(templateId?: PosterTemplateId) {
@@ -340,21 +387,21 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
 
       router.refresh();
 
-      const response = await fetch(`/api/campaigns/${campaign.id}/poster?ts=${Date.now()}`);
-
-      if (!response.ok) {
-        throw new Error("Téléchargement impossible.");
+      let blob: Blob | null = null;
+      try {
+        const response = await fetch(`/api/campaigns/${campaign.id}/poster?ts=${Date.now()}`);
+        if (response.ok) {
+          blob = await response.blob();
+        }
+      } catch {
+        // The local conversion below keeps the download available if the server export fails.
       }
 
-      const blob = await response.blob();
-      const objectUrl = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = objectUrl;
-      link.download = `${campaign.id}-affiche-a4.png`;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      URL.revokeObjectURL(objectUrl);
+      if (!blob) {
+        blob = await renderPosterSvgAsPng(previewPosterSvg);
+      }
+
+      downloadBlob(blob, `${campaign.id}-affiche-a4-a5.png`);
       setMessage("Affiche enregistrée et téléchargement lancé.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Téléchargement impossible.");
@@ -369,7 +416,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
         <div>
           <p className="okado-label">Atelier affiche</p>
           <h1 className="okado-page-title mt-3">
-            Personnaliser l&apos;affiche A4
+            Personnaliser l&apos;affiche A4 / A5
           </h1>
           <p className="mt-3 max-w-3xl text-sm leading-7 text-ash">
             Cet écran ne modifie que l&apos;affiche imprimable. La page de jeu reste
@@ -672,7 +719,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
           <div className="mb-4 flex items-center justify-between gap-3">
             <div>
               <p className="okado-label">Prévisualisation</p>
-              <h2 className="mt-1 font-display text-xl font-semibold text-[#111827]">Affiche A4</h2>
+              <h2 className="mt-1 font-display text-xl font-semibold text-[#111827]">Affiche A4 / A5</h2>
             </div>
             <a
               href={`/api/campaigns/${campaign.id}/poster`}

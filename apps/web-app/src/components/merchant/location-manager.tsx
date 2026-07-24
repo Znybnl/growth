@@ -62,7 +62,7 @@ export function LocationManager({
         <div className="relative flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#c8d1e3]">Réseau</p>
-            <h1 className="mt-3 text-3xl font-semibold tracking-[-0.04em]">Multi-sites au même endroit.</h1>
+            <h1 className="mt-3 text-3xl font-semibold tracking-[-0.04em]">Tous vos sites au même endroits.</h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-[#c8d1e3]">
               {workspace?.name ?? "Votre workspace"} · chaque campagne, QR et retrait reste rattaché au bon établissement.
             </p>

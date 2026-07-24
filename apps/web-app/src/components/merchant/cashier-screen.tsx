@@ -147,15 +147,14 @@ export function CashierScreen() {
 
   return (
     <div className="w-full space-y-6 pb-10">
-      <section className="flex flex-col gap-5 px-1 py-2 xl:flex-row xl:items-end xl:justify-between">
+      <section className="flex flex-col gap-5 px-1 py-2">
         <div>
-          <p className="okado-label">Caisse</p>
-          <h1 className="okado-page-title mt-3">Validez un retrait sans ralentir le comptoir</h1>
+          <p className="okado-label">Retrait</p>
+          <h1 className="okado-page-title mt-3">Validez un retrait</h1>
           <p className="mt-4 max-w-3xl text-sm leading-7 text-ash">
-            Scannez le QR code avec l’appareil photo du téléphone (hors outil) pour ouvrir la page légère de validation, ou saisissez le code ici si le scan n’est pas possible. Une seule confirmation suffit, chaque retrait est journalisé.
+            Saisissez le code de retrait ici pour ouvrir la page de validation. Une seule confirmation suffit, chaque retrait est journalisé.
           </p>
         </div>
-        <span className="okado-status-badge okado-status-active">Session sécurisée</span>
       </section>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
@@ -164,7 +163,7 @@ export function CashierScreen() {
           {success ? <div role="status" className="flex items-center gap-3 rounded-[18px] border border-[#b7e4c7] bg-[#f0fbf3] px-4 py-3 text-sm font-semibold text-[#126b40]"><Check className="h-5 w-5" />{success}<button type="button" onClick={reset} className="ml-auto rounded-[10px] bg-white px-3 py-2 text-xs text-[#126b40]">Nouveau</button></div> : null}
         </main>
 
-        <aside className="space-y-4"><section className="rounded-[26px] border border-[#e2e8f0] bg-white p-5 shadow-[0_14px_32px_rgba(18,24,39,0.04)]"><div className="flex items-center gap-2"><Sparkles className="h-4 w-4 text-[#b28719]" /><p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#7a8498]">Routine caisse</p></div><ol className="mt-4 space-y-4 text-sm text-[#526078]"><li className="flex gap-3"><span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#111827] text-xs font-semibold text-white">1</span><span>Scanner ou saisir le code.</span></li><li className="flex gap-3"><span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#111827] text-xs font-semibold text-white">2</span><span>Vérifier le lot et les conditions.</span></li><li className="flex gap-3"><span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#f4c14a] text-xs font-semibold text-[#111827]">3</span><span>Valider une seule fois.</span></li></ol></section><section className="rounded-[26px] border border-[#e2e8f0] bg-[#fbfcfe] p-5"><div className="flex items-center gap-2"><LockKeyhole className="h-4 w-4 text-[#526078]" /><p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#7a8498]">Sécurité</p></div><p className="mt-3 text-sm leading-6 text-[#667286]">Le retrait est limité à votre commerce et enregistré avec votre compte opérateur.</p></section></aside>
+        <aside className="space-y-4"><section className="rounded-[26px] border border-[#e2e8f0] bg-white p-5 shadow-[0_14px_32px_rgba(18,24,39,0.04)]"><div className="flex items-center gap-2"><Sparkles className="h-4 w-4 text-[#b28719]" /><p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#7a8498]">Routine caisse</p></div><ol className="mt-4 space-y-4 text-sm text-[#526078]"><li className="flex gap-3"><span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#111827] text-xs font-semibold text-white">1</span><span>Saisir le code.</span></li><li className="flex gap-3"><span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#111827] text-xs font-semibold text-white">2</span><span>Vérifier le lot et les conditions.</span></li><li className="flex gap-3"><span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#f4c14a] text-xs font-semibold text-[#111827]">3</span><span>Valider une seule fois.</span></li></ol></section><section className="rounded-[26px] border border-[#e2e8f0] bg-[#fbfcfe] p-5"><div className="flex items-center gap-2"><LockKeyhole className="h-4 w-4 text-[#526078]" /><p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#7a8498]">Sécurité</p></div><p className="mt-3 text-sm leading-6 text-[#667286]">Le retrait est limité à votre commerce et enregistré avec votre compte opérateur.</p></section></aside>
       </div>
     </div>
   );
