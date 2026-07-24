@@ -286,14 +286,14 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
           <div className="flex items-end gap-2">
             <button
               type="submit"
-              className="okado-primary-action px-5 py-3"
+              className="okado-primary-action px-5"
             >
               Filtrer
             </button>
             {hasFilter ? (
               <a
                 href="/support"
-                className="okado-secondary-action px-5 py-3"
+                className="okado-secondary-action px-5"
               >
                 Effacer
               </a>

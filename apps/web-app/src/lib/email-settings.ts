@@ -259,3 +259,4 @@ export function renderRewardEmailHtml(
 export function resolveRewardEmailVariables(variables: RewardEmailVariables) {
   return variables;
 }
+

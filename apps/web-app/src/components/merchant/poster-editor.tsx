@@ -411,7 +411,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="okado-poster-editor space-y-6">
       <header className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <p className="okado-label">Atelier affiche</p>
@@ -432,7 +432,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
           <Link
             href={`/campaigns/${campaign.id}/edit`}
             prefetch={false}
-            className="okado-primary-action px-4 py-3"
+            className="okado-primary-action px-4"
           >
             Revenir à la campagne
           </Link>
@@ -440,7 +440,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
             type="button"
             onClick={savePoster}
             disabled={isSaving}
-            className="okado-filled-action px-5 py-3 disabled:opacity-60"
+            className="okado-filled-action px-5 disabled:opacity-60"
           >
             {isSaving ? "Enregistrement..." : "Enregistrer"}
           </button>
@@ -453,7 +453,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
         {campaign.gameType === "wheel" ? (
           <section className="okado-card p-6 md:p-8">
             <p className="okado-label">Template</p>
-            <h2 className="mt-2 font-display text-2xl font-semibold text-[#111827]">Choisir le design de l&apos;affiche</h2>
+            <h2 className="okado-section-title mt-2">Choisir le design de l&apos;affiche</h2>
             <div className="mt-6 grid gap-4 md:grid-cols-3">
               {posterTemplates.map((template) => {
                 const active = (poster.templateId ?? "classic-wheel") === template.id;
@@ -517,7 +517,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
 
         <section className="okado-card p-6 md:p-8">
           <p className="okado-label">Logo</p>
-          <h2 className="mt-2 font-display text-2xl font-semibold text-[#111827]">Personnalisation du logo</h2>
+          <h2 className="okado-section-title mt-2">Personnalisation du logo</h2>
 
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             <div className="text-sm md:col-span-2">
@@ -648,7 +648,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
 
         <section className="okado-card p-6 md:p-8">
           <p className="okado-label">Phrase d&apos;entête</p>
-          <h2 className="mt-2 font-display text-2xl font-semibold text-[#111827]">
+          <h2 className="okado-section-title mt-2">
             Style du texte principal
           </h2>
 
@@ -694,7 +694,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
         {campaign.gameType === "wheel" ? (
           <section className="okado-card p-6 md:p-8">
             <p className="okado-label">Couleur de la roue</p>
-            <h2 className="mt-2 font-display text-2xl font-semibold text-[#111827]">
+            <h2 className="okado-section-title mt-2">
               Réglez la roue de l&apos;affiche
             </h2>
 
@@ -719,7 +719,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
           <div className="mb-4 flex items-center justify-between gap-3">
             <div>
               <p className="okado-label">Prévisualisation</p>
-              <h2 className="mt-1 font-display text-xl font-semibold text-[#111827]">Affiche A4 / A5</h2>
+              <h2 className="okado-section-title mt-1">Affiche A4 / A5</h2>
             </div>
             <a
               href={`/api/campaigns/${campaign.id}/poster`}
@@ -728,15 +728,15 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                 event.preventDefault();
                 void downloadPoster();
               }}
-              className="rounded-[var(--radius-card)] bg-[#111827] px-4 py-3 text-sm font-semibold !text-white shadow-[0_12px_28px_rgba(17,24,39,0.2)] transition hover:-translate-y-0.5"
+              className="okado-filled-action px-4 text-sm"
               style={{ color: "#ffffff" }}
             >
               Télécharger le PNG
             </a>
           </div>
 
-          <div className="flex min-h-0 flex-1 items-center justify-center overflow-auto rounded-[var(--radius-card)] bg-[#eef3fb] p-4">
-            <div className="relative aspect-[794/1123] w-full max-w-[470px] overflow-hidden rounded-[18px] border border-[#d7e0ed] bg-white shadow-[0_24px_50px_rgba(17,24,39,0.14)]">
+          <div className="flex min-h-0 flex-1 items-center justify-center overflow-auto rounded-[var(--okado-radius-card)] bg-[var(--okado-surface-muted)] p-4">
+            <div className="relative aspect-[794/1123] w-full max-w-[470px] overflow-hidden rounded-[var(--okado-radius-control)] border border-[var(--okado-border-control)] bg-white shadow-[var(--shadow-product-card)]">
               <Image
                 src={previewPosterUrl}
                 alt="Prévisualisation affiche"

@@ -135,7 +135,7 @@ export function BackgroundLibraryManager({
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="okado-primary-action w-full px-5 py-3 disabled:opacity-60"
+                className="okado-primary-action w-full px-5 disabled:opacity-60"
               >
                 {isSubmitting ? "Optimisation..." : "Ajouter à la bibliothèque"}
               </button>
@@ -167,7 +167,7 @@ export function BackgroundLibraryManager({
                 <span className="okado-status-badge okado-status-muted">
                   {file ? file.name : "Aucun fichier"}
                 </span>
-                <span className="okado-filled-action px-4 py-2 text-xs">
+                <span className="okado-filled-action okado-compact-action px-4 text-xs">
                   Choisir un fichier
                 </span>
               </div>
@@ -235,7 +235,7 @@ export function BackgroundLibraryManager({
                     href={item.imageUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="okado-primary-action px-4 py-2"
+                    className="okado-primary-action okado-compact-action px-4"
                   >
                     Ouvrir
                   </a>

@@ -7,7 +7,6 @@ import posthog from "posthog-js";
 import { useEffect, useMemo, useState } from "react";
 
 import { SignOutButton } from "@/components/auth/sign-out-button";
-import { BrandMark } from "@/components/brand-mark";
 import { LocationSwitcher } from "@/components/merchant/location-switcher";
 import { Button } from "@/components/ui/button";
 import { APP_NAME_CAPITALIZED } from "@/lib/branding";
@@ -26,7 +25,6 @@ type MerchantShellProps = {
 const navItems = [
   { href: "/", label: "Dashboard" },
   { href: "/campaigns", label: "Campagnes" },
-  { href: "/caisse", label: "Retrait" },
   { href: "/data", label: "Données" },
   { href: "/account", label: "Compte" },
   { href: "/locations", label: "Multi-sites" },
@@ -51,6 +49,7 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
   });
   const failedRewardEmails = merchantAlerts.emailCount;
   const billing = useMemo(() => getMerchantBillingSummary(merchant), [merchant]);
+  const accountInitials = `${user.firstName?.[0] ?? ""}${user.lastName?.[0] ?? ""}`.toUpperCase() || "OK";
 
   useEffect(() => {
     if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) {
@@ -177,12 +176,12 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
           <Link
             href="/caisse"
             prefetch={false}
-            className="okado-secondary-action mt-5 flex items-center justify-center rounded-[8px] px-4 py-3 text-sm font-semibold"
+            className="okado-secondary-action mt-5 flex items-center justify-center rounded-[8px] px-4 text-sm font-semibold"
           >
             Valider un retrait
           </Link>
 
-          <Button asChild className="okado-primary-action mt-5 h-11 px-4">
+          <Button asChild className="okado-primary-action mt-5 px-4">
             <Link href="/campaigns/new" prefetch={false}>
               Créer une campagne
             </Link>
@@ -196,11 +195,11 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
           </Link>
 
           {isSaasAdmin ? (
-            <div className="mt-5 rounded-[8px] border border-border bg-white p-2 shadow-[var(--shadow-product-card)]">
-              <p className="px-2 pb-2 text-[10px] font-semibold uppercase tracking-[0.13px] text-ash">
+            <div className="mt-4 rounded-[8px] border border-border bg-white p-1.5 shadow-[var(--shadow-product-card)]">
+              <p className="px-2 pb-1 text-[10px] font-semibold uppercase tracking-[0.13px] text-ash">
                 Administration
               </p>
-              <nav className="space-y-1">
+              <nav className="space-y-0.5">
                 {adminNavItems.map((item) => {
                   const active = isActive(item.href);
 
@@ -209,7 +208,7 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
                       key={item.href}
                       href={item.href}
                       prefetch={false}
-                      className={`flex h-8 items-center justify-between rounded-full px-3 text-sm transition ${
+                      className={`flex h-7 items-center justify-between rounded-full px-3 text-sm transition ${
                         active
                           ? "bg-primary-action-accent text-white"
                           : "text-midnight-ink hover:bg-sky-wash hover:text-graphite"
@@ -232,7 +231,18 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
           <div className="mt-auto rounded-[8px] border border-border bg-white p-3 shadow-[var(--shadow-product-card)]">
             <p className="text-[10px] uppercase tracking-[0.13px] text-fog">Compte</p>
             <div className="mt-3 flex items-center gap-3">
-              <BrandMark logoText={merchant.logoText} logoUrl={merchant.logoUrl} size="sm" />
+              {user.authProvider === "google" && user.avatarUrl ? (
+                <div
+                  role="img"
+                  aria-label="Photo de profil Google"
+                  className="h-10 w-10 rounded-full border border-border object-cover"
+                  style={{ backgroundImage: `url(${user.avatarUrl})`, backgroundPosition: "center", backgroundSize: "cover" }}
+                />
+              ) : (
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-action-accent text-xs font-semibold tracking-[0.08em] text-white">
+                  {accountInitials}
+                </div>
+              )}
               <div className="min-w-0">
                 <p className="text-sm font-medium text-graphite">
                   {`${user.firstName} ${user.lastName}`.trim()}

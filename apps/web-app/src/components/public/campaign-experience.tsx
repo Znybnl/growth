@@ -674,7 +674,7 @@ export function CampaignExperience({
 
   return (
     <div
-      className="relative min-h-screen overflow-hidden"
+      className="okado-public-experience relative min-h-screen overflow-hidden"
       style={{
         backgroundColor: campaign.presentation.background.color,
         backgroundImage: backgroundStyle,

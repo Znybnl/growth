@@ -94,7 +94,7 @@ export function AffiliateAccountSettingsForm({
         <button
           type="submit"
           disabled={isLoading}
-          className="okado-primary-action px-4 py-2 text-xs disabled:opacity-60"
+          className="okado-primary-action okado-compact-action px-4 text-xs disabled:opacity-60"
         >
           {isLoading ? "..." : "Enregistrer"}
         </button>

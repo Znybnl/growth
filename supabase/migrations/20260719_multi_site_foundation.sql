@@ -139,3 +139,4 @@ grant all on table public.merchant_workspace_memberships to service_role;
 grant all on table public.merchant_membership_locations to service_role;
 
 commit;
+

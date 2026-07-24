@@ -242,6 +242,9 @@ export interface MerchantUser {
   email: string;
   password: string;
   createdAt: string;
+  /** Avatar supplied by the identity provider (currently Google). */
+  avatarUrl?: string;
+  authProvider?: "google" | "email";
 }
 
 export interface MerchantSignUpInput {

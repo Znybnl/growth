@@ -70,3 +70,4 @@ left join pg_indexes indexes
   on indexes.schemaname = 'public'
  and indexes.indexname = expected.indexname
 order by expected.indexname;
+

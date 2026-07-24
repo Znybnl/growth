@@ -146,3 +146,4 @@ Preuves à construire : temps médian jusqu’au premier QR imprimé, taux scan�
 - aucun engagement commercial de type “plus d’avis garantis” tant que la boucle conformité/mesure n’est pas prouvée.
 
 **No-go pour une vente self-service à grande échelle ou franchise** tant que les rôles, multi-sites, planification, codes et lifecycle CRM ne sont pas traités.
+

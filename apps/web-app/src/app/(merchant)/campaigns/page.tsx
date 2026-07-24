@@ -37,10 +37,10 @@ export default async function CampaignsPage({
           <div className="flex items-center px-2 py-3 text-sm font-semibold text-ash">
             {activeCount} actives · {campaigns.length} au total
           </div>
-          <Link href="/campaigns/new/guided" prefetch={false} className="okado-secondary-action px-5 py-4">
+          <Link href="/campaigns/new/guided" prefetch={false} className="okado-secondary-action px-5">
             Assistant guidé
           </Link>
-          <Link href="/campaigns/new" prefetch={false} className="okado-filled-action px-5 py-4">
+          <Link href="/campaigns/new" prefetch={false} className="okado-filled-action px-5">
             Créer une campagne
           </Link>
         </div>
@@ -94,7 +94,7 @@ export default async function CampaignsPage({
                   <Link
                     href={`/campaigns/${item.campaign.id}/edit`}
                     prefetch={false}
-                    className="okado-primary-action min-h-9 px-3"
+                    className="okado-primary-action okado-compact-action px-3"
                   >
                     Modifier
                   </Link>
@@ -147,7 +147,7 @@ export default async function CampaignsPage({
                 <Link
                   href={`/campaigns/${item.campaign.id}/edit`}
                   prefetch={false}
-                  className="okado-primary-action min-h-[44px] px-4 py-3"
+                  className="okado-primary-action px-4"
                 >
                   Modifier
                 </Link>

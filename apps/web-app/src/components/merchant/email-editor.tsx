@@ -130,14 +130,14 @@ export function EmailEditor({ campaign, merchant }: EmailEditorProps) {
               <Link
                 href={`/campaigns/${campaign.id}/edit`}
                 prefetch={false}
-                className="okado-primary-action px-4 py-3"
+                className="okado-primary-action px-4"
               >
                 Revenir à la campagne
               </Link>
               <button
                 type="button"
                 onClick={restoreRecommendedEmail}
-                className="okado-primary-action px-4 py-3"
+                className="okado-primary-action px-4"
               >
                 Restaurer le modèle
               </button>
@@ -145,7 +145,7 @@ export function EmailEditor({ campaign, merchant }: EmailEditorProps) {
                 type="button"
                 onClick={saveEmailSettings}
                 disabled={isSaving || validationErrors.length > 0}
-                className="okado-filled-action px-5 py-3 disabled:opacity-60"
+                className="okado-filled-action px-5 disabled:opacity-60"
               >
                 {isSaving ? "Enregistrement..." : "Enregistrer"}
               </button>

@@ -71,6 +71,12 @@ export async function POST(request: Request) {
           ? metadata.family_name
           : body.lastName?.trim() || lastName,
       fullName,
+      avatarUrl:
+        typeof metadata.avatar_url === "string"
+          ? metadata.avatar_url
+          : typeof metadata.picture === "string"
+            ? metadata.picture
+            : undefined,
     });
 
     if (body.referralCode?.trim()) {

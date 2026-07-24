@@ -88,3 +88,4 @@ export function assertCampaignCanPublish(input: CampaignSetupInput) {
     throw new CampaignComplianceError(error instanceof Error ? error.message : "Campagne non publiable");
   }
 }
+

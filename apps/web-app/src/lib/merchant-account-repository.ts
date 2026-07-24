@@ -72,6 +72,7 @@ type GoogleMerchantProfile = {
   firstName: string;
   lastName: string;
   fullName: string;
+  avatarUrl?: string;
 };
 
 type AuthSyncInput = {
@@ -81,6 +82,8 @@ type AuthSyncInput = {
   lastName: string;
   merchantId: string;
   merchantUserId: string;
+  authProvider?: "google" | "email";
+  avatarUrl?: string;
 };
 
 type AuthIdentityInput = {
@@ -197,15 +200,23 @@ async function ensureSupabaseAuthUser(input: AuthSyncInput) {
     input.merchantUserId,
   );
 
+  const existingProvider =
+    existingUser?.app_metadata?.auth_provider ?? existingUser?.app_metadata?.provider;
   const appMetadata = {
     merchant_id: input.merchantId,
     merchant_user_id: input.merchantUserId,
     source: "okado-merchant",
+    auth_provider: input.authProvider ?? existingProvider ?? "email",
   };
   const userMetadata = {
     first_name: input.firstName,
     last_name: input.lastName,
     full_name: `${input.firstName} ${input.lastName}`.trim(),
+    ...(input.avatarUrl
+      ? { avatar_url: input.avatarUrl }
+      : typeof existingUser?.user_metadata?.avatar_url === "string"
+        ? { avatar_url: existingUser.user_metadata.avatar_url }
+        : {}),
   };
 
   if (existingUser) {
@@ -427,7 +438,7 @@ export async function getSupabaseMerchantUserByEmail(email: string) {
 }
 
 export async function resolveMerchantSessionFromAuthUser(
-  authUser: Pick<SupabaseAuthUser, "email" | "app_metadata">,
+  authUser: Pick<SupabaseAuthUser, "email" | "app_metadata" | "user_metadata">,
   activeLocationId?: string,
 ) {
   const merchantUserId =
@@ -484,8 +495,28 @@ export async function resolveMerchantSessionFromAuthUser(
     workspaceContext.locations.find(({ merchant: location }) => location.id === activeLocation.id)?.role ??
     "owner";
 
+  const authProvider: MerchantUser["authProvider"] =
+    authUser.app_metadata?.auth_provider === "google" ||
+    authUser.app_metadata?.provider === "google"
+      ? "google"
+      : "email";
+  const avatarUrl =
+    authProvider === "google"
+      ? (typeof authUser.user_metadata?.avatar_url === "string"
+          ? authUser.user_metadata.avatar_url
+          : typeof authUser.user_metadata?.picture === "string"
+            ? authUser.user_metadata.picture
+            : undefined)
+      : undefined;
+
   return {
-    user: { ...merchantUser, workspaceId: workspaceContext.workspace?.id, role: activeRole },
+    user: {
+      ...merchantUser,
+      workspaceId: workspaceContext.workspace?.id,
+      role: activeRole,
+      authProvider,
+      avatarUrl,
+    },
     merchant: activeMerchant,
     workspace: workspaceContext.workspace,
     locations: workspaceContext.locations,
@@ -876,6 +907,8 @@ export async function authenticateOrProvisionMerchantWithGoogle(
       lastName: existingUser.data.last_name,
       merchantId: existingUser.data.merchant_id,
       merchantUserId: existingUser.data.id,
+      authProvider: "google" as const,
+      avatarUrl: profile.avatarUrl,
     });
 
     const merchant = await getSupabaseMerchantProfile(existingUser.data.merchant_id);
@@ -954,6 +987,8 @@ export async function authenticateOrProvisionMerchantWithGoogle(
     lastName,
     merchantId,
     merchantUserId: userId,
+    authProvider: "google" as const,
+    avatarUrl: profile.avatarUrl,
   });
 
   return {
@@ -965,6 +1000,8 @@ export async function authenticateOrProvisionMerchantWithGoogle(
       email,
       password: "",
       createdAt,
+      authProvider: "google" as const,
+      avatarUrl: profile.avatarUrl,
     },
     merchant: {
       id: merchantId,

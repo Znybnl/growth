@@ -161,3 +161,4 @@ export function ScratchGame({
     </div>
   );
 }
+

@@ -210,13 +210,13 @@ export function SignUpForm() {
         <button
           type="submit"
           disabled={isLoading}
-          className="okado-filled-action inline-flex items-center justify-center px-5 py-4 disabled:opacity-60"
+          className="okado-filled-action okado-auth-action inline-flex items-center justify-center px-5 disabled:opacity-60"
         >
           {isLoading ? "Création..." : "Créer mon compte"}
         </button>
         <Link
           href="/connexion"
-          className="okado-primary-action inline-flex items-center justify-center px-5 py-4"
+          className="okado-primary-action okado-auth-action inline-flex items-center justify-center px-5"
         >
           J’ai déjà un compte
         </Link>

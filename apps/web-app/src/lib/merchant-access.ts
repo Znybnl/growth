@@ -16,3 +16,4 @@ export function assertMerchantRole(
     throw new Error("Votre rôle ne permet pas cette action.");
   }
 }
+
