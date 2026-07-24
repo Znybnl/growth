@@ -169,7 +169,7 @@ export default async function DashboardPage({
                   Campagnes prioritaires
                 </p>
                 <h2 className="okado-section-title mt-2">
-                  À surveiller aujourd&apos;hui
+                  Vos dernières campagnes
                 </h2>
               </div>
               <Link href="/campaigns" prefetch={false} className="okado-link text-sm">
@@ -178,7 +178,7 @@ export default async function DashboardPage({
             </div>
 
             <div className="mt-6 hidden overflow-hidden rounded-[8px] border border-border md:block">
-              <div className="okado-table-header grid grid-cols-[1.5fr_0.85fr_0.7fr_0.7fr_0.9fr_auto] gap-3 px-5 py-4">
+              <div className="okado-table-header grid grid-cols-[minmax(0,1.5fr)_0.85fr_0.7fr_0.7fr_0.9fr_auto] items-center gap-3 px-5 py-4">
                 <span>Campagne</span>
                 <span>Mécanique</span>
                 <span>Scans</span>
@@ -190,7 +190,7 @@ export default async function DashboardPage({
               {filteredCampaigns.map((item) => (
                 <div
                   key={item.campaign.id}
-                  className="grid grid-cols-[1.5fr_0.85fr_0.7fr_0.7fr_0.9fr_auto] items-center gap-3 border-t border-[#edf1f6] px-5 py-5 text-sm"
+                  className="grid grid-cols-[minmax(0,1.5fr)_0.85fr_0.7fr_0.7fr_0.9fr_auto] items-center gap-3 border-t border-[#edf1f6] px-5 py-5 text-sm"
                 >
                   <div className="min-w-0">
                     <div className="flex items-center gap-3">
