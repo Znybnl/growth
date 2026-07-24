@@ -283,6 +283,7 @@ export interface MerchantOnboardingInput {
   tiktokUrl: string;
   tripadvisorUrl: string;
   customLinkUrl: string;
+  redemptionPin?: string;
 }
 
 export interface MerchantLocationAccess {
