@@ -4,10 +4,9 @@ import { useState } from "react";
 
 import { AffiliateReferralCard } from "@/components/merchant/affiliate-referral-card";
 import { GoogleReviewPlacePicker } from "@/components/merchant/google-review-place-picker";
+import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
 import {
   INDUSTRY_OPTIONS,
-  RESTAURANT_TYPE_OPTIONS,
-  businessLabel,
   isRestaurantIndustry,
 } from "@/lib/merchant-options";
 import {
@@ -58,8 +57,8 @@ export function AccountSettingsForm({
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  const placeLabel = businessLabel(form.industry);
   const isRestaurant = isRestaurantIndustry(form.industry);
+  const placeLabel = isRestaurant ? "restaurant" : "commerce";
 
   function updateField<Key extends keyof MerchantAccountSettingsInput>(
     key: Key,
@@ -158,25 +157,9 @@ export function AccountSettingsForm({
               ))}
             </select>
           </label>
-          {isRestaurant ? (
-            <label className="text-sm">
-              <span className="mb-2 block text-ash">Type de restaurant</span>
-              <select
-                value={form.restaurantType}
-                onChange={(event) => updateField("restaurantType", event.target.value)}
-                className={inputClass}
-              >
-                {RESTAURANT_TYPE_OPTIONS.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </label>
-          ) : null}
           <label className="text-sm">
             <span className="mb-2 block text-ash">
-              Ville / {isRestaurant ? "restaurant" : "boutique"}
+              Ville / {isRestaurant ? "restaurant" : "commerce"}
             </span>
             <input
               value={form.city}
@@ -256,16 +239,21 @@ export function AccountSettingsForm({
         <p className="okado-label">Canaux marketing</p>
         <div className="mt-6 grid gap-4 md:grid-cols-2">
           <div className="md:col-span-2">
+            <div className="mb-3 flex items-center gap-3 text-sm font-semibold text-graphite">
+              <SocialChannelIcon channel="googleReview" />
+              <span>Avis Google</span>
+            </div>
             <GoogleReviewPlacePicker
               value={form.googleReviewUrl}
               onChange={(nextUrl) => updateField("googleReviewUrl", nextUrl)}
               defaultQuery={form.companyName}
               city={form.city}
+              compact
               allowManualInput={false}
             />
           </div>
           <label className="text-sm">
-            <span className="mb-2 block text-ash">Instagram</span>
+            <span className="mb-2 flex items-center gap-3 text-ash"><SocialChannelIcon channel="instagram" /><span>Instagram</span></span>
             <input
               type="url"
               value={form.instagramUrl}
@@ -275,7 +263,7 @@ export function AccountSettingsForm({
             />
           </label>
           <label className="text-sm">
-            <span className="mb-2 block text-ash">Facebook</span>
+            <span className="mb-2 flex items-center gap-3 text-ash"><SocialChannelIcon channel="facebook" /><span>Facebook</span></span>
             <input
               type="url"
               value={form.facebookUrl}
@@ -285,7 +273,7 @@ export function AccountSettingsForm({
             />
           </label>
           <label className="text-sm">
-            <span className="mb-2 block text-ash">TikTok</span>
+            <span className="mb-2 flex items-center gap-3 text-ash"><SocialChannelIcon channel="tiktok" /><span>TikTok</span></span>
             <input
               type="url"
               value={form.tiktokUrl}
@@ -295,7 +283,7 @@ export function AccountSettingsForm({
             />
           </label>
           <label className="text-sm">
-            <span className="mb-2 block text-ash">Tripadvisor</span>
+            <span className="mb-2 flex items-center gap-3 text-ash"><SocialChannelIcon channel="tripadvisor" /><span>Tripadvisor</span></span>
             <input
               type="url"
               value={form.tripadvisorUrl}
@@ -305,7 +293,7 @@ export function AccountSettingsForm({
             />
           </label>
           <label className="text-sm md:col-span-2">
-            <span className="mb-2 block text-ash">Lien personnalisé</span>
+            <span className="mb-2 flex items-center gap-3 text-ash"><SocialChannelIcon channel="custom" /><span>Lien personnalisé</span></span>
             <input
               type="url"
               value={form.customLinkUrl}
