@@ -621,7 +621,8 @@ function BackgroundLibraryDialog({
                     onClose();
                   }}
                   className={`overflow-hidden rounded-[22px] border text-left transition ${
-                    active                    ? "border-[#2f6df6] bg-[#eef4ff] shadow-[0_14px_28px_rgba(47,109,246,0.16)]"
+                    active
+                       ? "border-[#2f6df6] bg-[#eef4ff] shadow-[0_14px_28px_rgba(47,109,246,0.16)]"
                       : "border-[#dbe4f0] bg-[#f8fafc] hover:border-[#9bb8ff] hover:bg-white"
                   }`}
                 >
@@ -2036,7 +2037,7 @@ function setGameType(gameType: GameType) {
         return current;
       }
 
-      constnextActions = [...current.actions];
+      const nextActions = [...current.actions];
       const [action] = nextActions.splice(index, 1);
       nextActions.splice(targetIndex, 0, action);
 
@@ -2895,7 +2896,8 @@ function setGameType(gameType: GameType) {
                           </button>
                         );
                       })}
-                    </div>               </div>
+                    </div>
+                  </div>
 
                   <label className="text-sm">
                     <span className="mb-2 block text-[#616b7c]">Épaisseur du texte</span>
@@ -3255,7 +3257,8 @@ function setGameType(gameType: GameType) {
                         poster: {
                           ...current.presentation.poster,
                           headline: event.target.value,
-                        },               },
+                        },
+                      },
                     }))
                   }
                   className="w-full rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
