@@ -166,7 +166,7 @@ export function PrizeSuggestionsManager({ initialSuggestions }: { initialSuggest
                       <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] bg-[#eef4ff] text-[#2563eb]"><Icon className="h-5 w-5" /></span>
                       <div className="min-w-0"><p className="truncate font-semibold text-graphite">{suggestion.label}</p><p className="text-xs text-ash">{suggestion.industry}</p></div>
                     </div>
-                    <span className={`okado-status-badge ${suggestion.isActive ? "bg-[#ecfdf3] text-[#047857]" : "bg-[#f3f6fb] text-[#64748b]"}`}>{suggestion.isActive ? "Active" : "Masquée"}</span>
+                    <span className={`okado-status-badge ${suggestion.isActive ? "okado-status-active" : "okado-status-muted"}`}>{suggestion.isActive ? "Active" : "Masquée"}</span>
                   </div>
                   <p className="mt-3 line-clamp-2 min-h-10 text-sm leading-5 text-ash">{suggestion.description || "Sans description"}</p>
                   <div className="mt-4 flex items-center justify-between text-xs font-medium text-[#52627b]"><span>{suggestion.probability} % suggéré</span><span>{suggestion.estimatedUnitCost.toLocaleString("fr-FR")} €</span></div>

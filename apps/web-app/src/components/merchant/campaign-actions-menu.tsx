@@ -86,7 +86,7 @@ export function CampaignActionsMenu({
         <DropdownMenuItem className={itemClass} asChild>
           <a href={`/api/campaigns/${campaignId}/poster`}>
             <Download className="h-4 w-4" />
-            Télécharger l&apos;affiche A4
+            Télécharger l&apos;affiche A4 / A5
           </a>
         </DropdownMenuItem>
 

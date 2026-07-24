@@ -121,7 +121,7 @@ export function SignInForm() {
       <button
         type="submit"
         disabled={isLoading}
-        className="okado-filled-action mt-8 h-14 w-full text-base disabled:opacity-60"
+        className="okado-filled-action okado-auth-action mt-8 w-full text-base disabled:opacity-60"
       >
         {isLoading ? "Connexion..." : "Se connecter"}
       </button>

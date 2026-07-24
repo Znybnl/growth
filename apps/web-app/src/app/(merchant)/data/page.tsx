@@ -178,7 +178,7 @@ function LeadsExportSection({
         <Link
           href={`/api/merchant/leads?format=csv&campaign=${campaignId}`}
           prefetch={false}
-          className="okado-primary-action cursor-pointer px-4 py-3"
+          className="okado-primary-action cursor-pointer px-4"
         >
           Export CSV
         </Link>
@@ -273,7 +273,7 @@ function LeadsExportSection({
           </p>
           <div className="flex items-center gap-2">
             {currentPage > 1 ? (
-              <Link href={pageHref(currentPage - 1)} prefetch={false} className="okado-secondary-action px-3 py-2">
+              <Link href={pageHref(currentPage - 1)} prefetch={false} className="okado-secondary-action okado-compact-action px-3">
                 Précédent
               </Link>
             ) : null}
@@ -281,7 +281,7 @@ function LeadsExportSection({
               Page {currentPage} / {totalPages}
             </span>
             {currentPage < totalPages ? (
-              <Link href={pageHref(currentPage + 1)} prefetch={false} className="okado-secondary-action px-3 py-2">
+              <Link href={pageHref(currentPage + 1)} prefetch={false} className="okado-secondary-action okado-compact-action px-3">
                 Suivant
               </Link>
             ) : null}
@@ -388,7 +388,7 @@ export default async function DataPage({ searchParams }: DataPageProps) {
               <Link
                 href={`/campaigns/${dataView.performance.campaign.id}/edit`}
                 prefetch={false}
-                className="okado-filled-action px-5 py-4"
+                className="okado-filled-action px-5"
               >
                 Modifier la campagne
               </Link>

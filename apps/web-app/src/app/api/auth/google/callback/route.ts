@@ -70,6 +70,12 @@ export async function GET(request: Request) {
       firstName: typeof metadata.given_name === "string" ? metadata.given_name : firstName,
       lastName: typeof metadata.family_name === "string" ? metadata.family_name : lastName,
       fullName,
+      avatarUrl:
+        typeof metadata.avatar_url === "string"
+          ? metadata.avatar_url
+          : typeof metadata.picture === "string"
+            ? metadata.picture
+            : undefined,
     });
 
     if (referralCode) {

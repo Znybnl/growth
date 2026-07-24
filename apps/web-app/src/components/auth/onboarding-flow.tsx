@@ -301,13 +301,13 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
               type="button"
               onClick={goBack}
               disabled={activeIndex === 0}
-              className="okado-primary-action px-5 py-3 disabled:opacity-40"
+              className="okado-primary-action px-5 disabled:opacity-40"
             >
               Retour
             </button>
             <Link
               href="/campaigns/new"
-              className="okado-primary-action px-5 py-3"
+              className="okado-primary-action px-5"
             >
               Passer
             </Link>
@@ -317,7 +317,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
             <button
               type="button"
               onClick={goNext}
-              className="okado-filled-action px-5 py-3"
+              className="okado-filled-action px-5"
             >
               Étape suivante
             </button>
@@ -326,7 +326,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
               type="button"
               onClick={saveOnboarding}
               disabled={isSaving}
-              className="okado-filled-action px-5 py-3 disabled:opacity-60"
+              className="okado-filled-action px-5 disabled:opacity-60"
             >
               {isSaving ? "Enregistrement..." : "Terminer"}
             </button>

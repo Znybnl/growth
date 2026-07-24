@@ -85,7 +85,7 @@ export function AffiliateReferralCard({ summary }: AffiliateReferralCardProps) {
           <button
             type="button"
             onClick={() => void copyReferralLink()}
-            className="okado-filled-action mt-4 w-full px-4 py-4"
+            className="okado-filled-action mt-4 w-full px-4"
           >
             {copied ? "Lien copié" : "Copier le lien"}
           </button>

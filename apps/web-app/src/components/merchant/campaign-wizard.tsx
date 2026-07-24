@@ -462,23 +462,23 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
 
   if (savedCampaignId) {
     return (
-      <div className="mx-auto max-w-3xl rounded-[34px] border border-[#dce5ef] bg-white p-8 text-center shadow-[0_24px_70px_rgba(18,24,39,0.08)] sm:p-12">
+      <div className="okado-card mx-auto max-w-3xl p-8 text-center sm:p-12">
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#e9f8ec] text-[#18864b]"><Check className="h-8 w-8" /></div>
         <p className="mt-6 text-xs uppercase tracking-[0.24em] text-[#7a8498]">Campagne prête</p>
-        <h1 className="mt-3 text-3xl font-semibold tracking-[-0.03em] text-[#111827]">Votre animation est enregistrée.</h1>
+        <h1 className="okado-page-title mt-3">Votre animation est enregistrée.</h1>
         <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-[#626d82]">Vous pouvez maintenant vérifier le rendu public, imprimer le QR code ou ouvrir l’éditeur avancé pour aller plus loin.</p>
         <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <Link href={`/campaign/${savedCampaignId}?preview=1`} target="_blank" className="rounded-[16px] bg-[#111827] px-4 py-3 text-sm font-semibold !text-white">Prévisualiser</Link>
-          <Link href={`/campaigns/${savedCampaignId}/edit`} className="rounded-[16px] border border-[#d6dfeb] bg-white px-4 py-3 text-sm font-semibold text-[#182033]">Ouvrir l’éditeur</Link>
-          <Link href={`/campaigns/${savedCampaignId}/email`} className="rounded-[16px] border border-[#d6dfeb] bg-white px-4 py-3 text-sm font-semibold text-[#182033]">Personnaliser l’e-mail</Link>
-          <Link href="/campaigns" className="rounded-[16px] border border-[#d6dfeb] bg-white px-4 py-3 text-sm font-semibold text-[#182033]">Retour aux campagnes</Link>
+          <Link href={`/campaign/${savedCampaignId}?preview=1`} target="_blank" className="okado-filled-action px-4 text-sm">Prévisualiser</Link>
+          <Link href={`/campaigns/${savedCampaignId}/edit`} className="okado-secondary-action px-4 text-sm">Ouvrir l’éditeur</Link>
+          <Link href={`/campaigns/${savedCampaignId}/email`} className="okado-secondary-action px-4 text-sm">Personnaliser l’e-mail</Link>
+          <Link href="/campaigns" className="okado-secondary-action px-4 text-sm">Retour aux campagnes</Link>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 pb-10">
+    <div className="okado-wizard space-y-6 pb-10">
       <section className="flex flex-col gap-5 px-1 py-2 xl:flex-row xl:items-end xl:justify-between">
         <div>
           <p className="okado-label">Assistant guidé</p>
@@ -490,7 +490,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
       </section>
 
       <div className="grid gap-6 xl:items-start xl:grid-cols-[240px_minmax(0,1fr)_360px]">
-        <aside className="rounded-[28px] border border-[#e2e8f0] bg-white p-4 shadow-[0_14px_32px_rgba(18,24,39,0.04)]">
+        <aside className="okado-card p-4">
           <p className="px-3 text-[10px] uppercase tracking-[0.22em] text-[#8993a6]">Progression</p>
           <nav className="mt-4 space-y-1" aria-label="Étapes de création">
             {WIZARD_STEPS.map((item, index) => {
@@ -507,8 +507,8 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
           </nav>
         </aside>
 
-        <main className="min-w-0 rounded-[30px] border border-[#e2e8f0] bg-white p-5 shadow-[0_14px_32px_rgba(18,24,39,0.04)] sm:p-8">
-          <div className="flex items-start justify-between gap-4 border-b border-[#edf0f4] pb-5"><div><p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#b28719]">Étape {step.number}</p><h2 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-[#111827]">{step.title}</h2><p className="mt-2 text-sm text-[#7a8498]">{step.description}</p></div><div className="hidden rounded-full bg-[#fff7dd] p-3 text-[#b28719] sm:block"><Sparkles className="h-5 w-5" /></div></div>
+        <main className="okado-card min-w-0 p-5 sm:p-8">
+          <div className="flex items-start justify-between gap-4 border-b border-[#edf0f4] pb-5"><div><p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#b28719]">Étape {step.number}</p><h2 className="okado-section-title mt-2">{step.title}</h2><p className="mt-2 text-sm text-[#7a8498]">{step.description}</p></div><div className="hidden rounded-full bg-[#fff7dd] p-3 text-[#b28719] sm:block"><Sparkles className="h-5 w-5" /></div></div>
 
           {step.id === "identity" ? (
             <div className="mt-7 space-y-5">
@@ -550,7 +550,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
           ) : null}
 
           {error ? <div role="alert" className="mt-6 rounded-[16px] border border-[#f2c8c8] bg-[#fff4f4] px-4 py-3 text-sm leading-6 text-[#a11a1a]">{error}</div> : null}
-          <div className="mt-8 flex flex-col-reverse gap-3 border-t border-[#edf0f4] pt-5 sm:flex-row sm:items-center sm:justify-between"><button type="button" onClick={previousStep} disabled={stepIndex === 0 || isSaving} className="inline-flex items-center justify-center gap-2 rounded-[14px] border border-[#d6dfeb] bg-white px-4 py-3 text-sm font-semibold text-[#526078] disabled:cursor-not-allowed disabled:opacity-45"><ChevronLeft className="h-4 w-4" />Retour</button><div className="flex flex-col gap-3 sm:flex-row"><button type="button" onClick={() => void saveCampaign(false)} disabled={isSaving} className="rounded-[14px] border border-[#d6dfeb] bg-white px-4 py-3 text-sm font-semibold text-[#526078] disabled:opacity-50">{isSaving ? "Enregistrement…" : "Enregistrer le brouillon"}</button>{stepIndex < WIZARD_STEPS.length - 1 ? <button type="button" onClick={nextStep} className="inline-flex items-center justify-center gap-2 rounded-[14px] bg-[#111827] px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(17,24,39,0.14)]">Continuer<ChevronRight className="h-4 w-4" /></button> : <button type="button" onClick={() => void saveCampaign(true)} disabled={isSaving} className="inline-flex items-center justify-center gap-2 rounded-[14px] bg-[#b28719] px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(178,135,25,0.22)] disabled:opacity-50">{isSaving ? "Publication…" : "Publier la campagne"}<Check className="h-4 w-4" /></button>}</div></div>
+          <div className="mt-8 flex flex-col-reverse gap-3 border-t border-[#edf0f4] pt-5 sm:flex-row sm:items-center sm:justify-between"><button type="button" onClick={previousStep} disabled={stepIndex === 0 || isSaving} className="okado-secondary-action gap-2 px-4 text-sm disabled:opacity-45"><ChevronLeft className="h-4 w-4" />Retour</button><div className="flex flex-col gap-3 sm:flex-row"><button type="button" onClick={() => void saveCampaign(false)} disabled={isSaving} className="okado-secondary-action px-4 text-sm disabled:opacity-50">{isSaving ? "Enregistrement…" : "Enregistrer le brouillon"}</button>{stepIndex < WIZARD_STEPS.length - 1 ? <button type="button" onClick={nextStep} className="okado-filled-action gap-2 px-5 text-sm">Continuer<ChevronRight className="h-4 w-4" /></button> : <button type="button" onClick={() => void saveCampaign(true)} disabled={isSaving} className="okado-primary-action gap-2 px-5 text-sm disabled:opacity-50">{isSaving ? "Publication…" : "Publier la campagne"}<Check className="h-4 w-4" /></button>}</div></div>
         </main>
 
         <aside className="min-w-0">

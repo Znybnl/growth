@@ -12,18 +12,18 @@ type AdminPageProps = {
 
 function StatusBadge({ status }: { status: string | null }) {
   if (status === "active") {
-    return <span className="okado-status-badge bg-[#ecfdf3] text-[#047857]">Actif</span>;
+    return <span className="okado-status-badge okado-status-active">Actif</span>;
   }
   if (status === "trialing") {
-    return <span className="okado-status-badge bg-[#eff6ff] text-[#1d4ed8]">Essai</span>;
+    return <span className="okado-status-badge okado-status-info">Essai</span>;
   }
   if (status === "past_due" || status === "unpaid") {
-    return <span className="okado-status-badge bg-[#fff7ed] text-[#c2410c]">Paiement a suivre</span>;
+    return <span className="okado-status-badge okado-status-warning">Paiement a suivre</span>;
   }
   if (status === "canceled") {
-    return <span className="okado-status-badge bg-[#f3f4f6] text-[#64748b]">Resilie</span>;
+    return <span className="okado-status-badge okado-status-muted">Resilie</span>;
   }
-  return <span className="okado-status-badge bg-[#f3f6fb] text-[#475569]">Non active</span>;
+  return <span className="okado-status-badge okado-status-muted">Non active</span>;
 }
 
 function MetricCard({ label, value, detail }: { label: string; value: number; detail: string }) {
@@ -55,7 +55,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
           Suivez les comptes marchands, l&apos;activation produit et les alertes qui demandent une action.
         </p>
         <div className="mt-5 flex flex-wrap gap-3">
-          <Link href="/admin/prize-suggestions" className="okado-secondary-action px-4 py-2.5 text-sm">
+          <Link href="/admin/prize-suggestions" className="okado-secondary-action okado-compact-action px-4 text-sm">
             Gérer les suggestions de lots
           </Link>
         </div>
@@ -91,7 +91,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
               placeholder="Commerce, nom ou e-mail"
               className="h-10 min-w-0 flex-1 px-3 text-sm sm:w-72"
             />
-            <button type="submit" className="okado-secondary-action h-10 px-4 text-sm">Rechercher</button>
+            <button type="submit" className="okado-secondary-action okado-compact-action px-4 text-sm">Rechercher</button>
           </form>
         </div>
 
@@ -118,7 +118,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                   <td className="px-3 py-4 font-medium">{user.merchantName}</td>
                   <td className="px-3 py-4 text-ash">{formatDateTime(user.createdAt)}</td>
                   <td className="px-3 py-4">
-                    <span className={`okado-status-badge ${user.onboardingCompleted ? "bg-[#ecfdf3] text-[#047857]" : "bg-[#f3f6fb] text-[#475569]"}`}>
+                    <span className={`okado-status-badge ${user.onboardingCompleted ? "okado-status-active" : "okado-status-muted"}`}>
                       {user.onboardingCompleted ? "Termine" : "A finaliser"}
                     </span>
                   </td>

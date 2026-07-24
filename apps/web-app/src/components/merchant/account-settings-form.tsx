@@ -382,7 +382,7 @@ export function AccountSettingsForm({
         <button
           type="submit"
           disabled={isSaving}
-          className="okado-filled-action px-6 py-4 disabled:opacity-60"
+          className="okado-filled-action px-6 disabled:opacity-60"
         >
           {isSaving ? "Enregistrement..." : "Enregistrer les modifications"}
         </button>

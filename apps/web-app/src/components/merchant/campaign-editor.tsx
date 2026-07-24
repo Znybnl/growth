@@ -29,6 +29,7 @@ import {
 } from "react";
 
 import { BrandMark } from "@/components/brand-mark";
+import { CampaignEmailPreview } from "@/components/merchant/campaign-email-preview";
 import { Switch } from "@/components/ui/switch";
 import {
   actionKindCta,
@@ -2275,7 +2276,7 @@ function setGameType(gameType: GameType) {
             <Link
               href="/campaigns"
               prefetch={false}
-              className="okado-secondary-action px-4 py-3"
+              className="okado-secondary-action px-4"
             >
               Retour aux campagnes
             </Link>
@@ -2283,7 +2284,7 @@ function setGameType(gameType: GameType) {
               type="button"
               onClick={saveCampaign}
               disabled={isSaving}
-              className="okado-filled-action px-5 py-3 disabled:opacity-60"
+              className="okado-filled-action px-5 disabled:opacity-60"
             >
               {isSaving ? "Enregistrement..." : "Enregistrer"}
             </button>
@@ -3057,7 +3058,7 @@ function setGameType(gameType: GameType) {
           <section className="okado-card p-6">
             <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
               <div>
-                <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Affiche A4</p>
+                <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Affiche A4 / A5</p>
                 <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
                   Personnalisation de l&apos;affiche
                 </h2>
@@ -3536,13 +3537,15 @@ function setGameType(gameType: GameType) {
                 </label>
 
                 {[
-                  ...(form.presentation.layout.templateId === "restaurant-pop" || isExpertMode
+                  ...(form.presentation.layout.templateId !== "classic" &&
+                  (form.presentation.layout.templateId === "restaurant-pop" || isExpertMode)
                     ? [["winColor", "Couleur secondaire"]]
                     : []),
                   ...(isExpertMode
                     ? [
                         ["rimColor", "Couleur du contour"],
-                        ...(form.presentation.layout.templateId === "restaurant-pop"
+                        ...(form.presentation.layout.templateId === "restaurant-pop" ||
+                        form.presentation.layout.templateId === "classic"
                           ? []
                           : [["alternateLoseColor", "Couleur principale claire"]]),
                       ]
@@ -3967,6 +3970,8 @@ function setGameType(gameType: GameType) {
             </div>
           </section>
 
+          {form.id ? <CampaignEmailPreview merchant={merchant} form={form} /> : null}
+
           {message ? (
             <section
               className={`rounded-[24px] border px-5 py-4 text-sm shadow-[0_18px_44px_rgba(122,136,166,0.1)] ${
@@ -3996,23 +4001,23 @@ function setGameType(gameType: GameType) {
                 <div className="pointer-events-auto flex flex-wrap justify-end gap-2">
                   <a
                     href={`/api/campaigns/${form.id}/qr`}
-                    className="okado-secondary-action h-10 px-4"
+                    className="okado-secondary-action px-4"
                   >
                     QR
                   </a>
                   <Link
                     href={`/campaigns/${form.id}/poster`}
                     prefetch={false}
-                    className="okado-secondary-action h-10 px-4"
+                    className="okado-secondary-action px-4"
                   >
-                    Voir l&apos;affiche
+                    Affiche
                   </Link>
                   <Link
                     href={`/campaign/${form.id}?preview=1`}
                     prefetch={false}
                     target="_blank"
                     rel="noreferrer"
-                    className="okado-primary-action h-10 px-4"
+                    className="okado-primary-action px-4"
                   >
                     Prévisualiser
                   </Link>
@@ -4033,16 +4038,16 @@ function setGameType(gameType: GameType) {
                   href={`/campaign/${savedCampaignId}?preview=1`}
                   prefetch={false}
                   target="_blank"
-                  className="okado-primary-action px-4 py-3"
+                  className="okado-primary-action px-4"
                 >
                   Prévisualiser
                 </Link>
                 <Link
                   href={`/campaigns/${savedCampaignId}/poster`}
                   prefetch={false}
-                  className="okado-secondary-action px-4 py-3"
+                  className="okado-secondary-action px-4"
                 >
-                  Voir l&apos;affiche
+                  Affiche
                 </Link>
               </>
             ) : null}
@@ -4050,7 +4055,7 @@ function setGameType(gameType: GameType) {
               type="button"
               onClick={saveCampaign}
               disabled={isSaving}
-              className={`okado-filled-action px-4 py-3 disabled:cursor-not-allowed disabled:opacity-70 ${
+              className={`okado-filled-action px-4 disabled:cursor-not-allowed disabled:opacity-70 ${
                 savedCampaignId ? "sm:col-span-2" : "w-full"
               }`}
             >

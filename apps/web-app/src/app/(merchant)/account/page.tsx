@@ -74,7 +74,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
               commerce et son adresse de contact servent de valeurs par défaut.
             </p>
           </div>
-          <Link href="/campaigns" className="okado-primary-action shrink-0 px-4 py-3">
+          <Link href="/campaigns" className="okado-primary-action shrink-0 px-4">
             Gérer depuis une campagne
           </Link>
         </div>

@@ -123,12 +123,12 @@ export default async function AffiliatesPage({ searchParams }: AffiliatesPagePro
               <option value="void">Annulées</option>
             </select>
           </label>
-          <button className="okado-primary-action self-end px-5 py-3">
+          <button className="okado-primary-action self-end px-5">
             Filtrer
           </button>
           <a
             href={`/api/affiliates/commissions?${exportParams.toString()}`}
-            className="okado-secondary-action self-end px-5 py-3"
+            className="okado-secondary-action self-end px-5"
           >
             Export CSV
           </a>

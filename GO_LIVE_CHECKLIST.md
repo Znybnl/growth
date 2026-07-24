@@ -16,6 +16,8 @@ Note : l'exception TLS utilisée pour le check local ne doit pas être configur�
 
 ## 1. État du déploiement
 
+Le cahier détaillé des tests, preuves attendues et contrôles non vérifiables localement est dans [GO_TO_MARKET_TEST_PLAN.md](GO_TO_MARKET_TEST_PLAN.md).
+
 - [ ] Domaine `https://app.okado.app` accessible depuis un navigateur externe.
 - [ ] Certificat HTTPS valide sans erreur navigateur.
 - [ ] Dernier déploiement Vercel basé sur `main`.
