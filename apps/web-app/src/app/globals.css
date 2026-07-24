@@ -330,6 +330,11 @@ select {
   height: var(--okado-action-compact-height);
 }
 
+/* Adjacent page actions share one visual baseline, regardless of their semantic style. */
+.okado-action-row > :where(.okado-primary-action, .okado-filled-action, .okado-secondary-action) {
+  height: var(--okado-action-primary-height);
+}
+
 /* Text-sized actions are used in tables, toolbars and inline helpers. */
 .okado-primary-action.text-xs,
 .okado-filled-action.text-xs,
