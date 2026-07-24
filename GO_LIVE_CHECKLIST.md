@@ -18,27 +18,27 @@ Note : l'exception TLS utilisée pour le check local ne doit pas être configur�
 
 Le cahier détaillé des tests, preuves attendues et contrôles non vérifiables localement est dans [GO_TO_MARKET_TEST_PLAN.md](GO_TO_MARKET_TEST_PLAN.md).
 
-- [ ] Domaine `https://app.okado.app` accessible depuis un navigateur externe.
-- [ ] Certificat HTTPS valide sans erreur navigateur.
-- [ ] Dernier déploiement Vercel basé sur `main`.
-- [ ] Variables Vercel Production complètes : Supabase, Stripe, Resend, Google Places, PostHog EU.
+- [x] Domaine `https://app.okado.app` accessible depuis un navigateur externe.
+- [x] Certificat HTTPS valide sans erreur navigateur.
+- [x] Dernier déploiement Vercel basé sur `main`.
+- [x] Variables Vercel Production complètes : Supabase, Stripe, Resend, Google Places, PostHog EU.
 - [ ] `npm run check:gotomarket -w @okado/web-app -- --live` exécuté et documenté.
 
 ## 2. Authentification et accès
 
-- [ ] Connexion email/mot de passe OK.
-- [ ] Connexion Google OK avec un compte existant.
-- [ ] Connexion Google OK avec un nouveau compte.
-- [ ] Compte standard sans accès direct à `/support` et `/backgrounds`.
-- [ ] Compte admin autorisé avec accès Supervision et Bibliothèque.
+- [x] Connexion email/mot de passe OK.
+- [x] Connexion Google OK avec un compte existant.
+- [x] Connexion Google OK avec un nouveau compte.
+- [x] Compte standard sans accès direct à `/support` et `/backgrounds`.
+- [x] Compte admin autorisé avec accès Supervision et Bibliothèque.
 
 ## 3. Parcours marchand critique
 
-- [ ] Inscription puis onboarding complets.
-- [ ] Création d'une animation roue.
+- [x] Inscription puis onboarding complets.
+- [x] Création d'une animation roue.
 - [ ] Création d'une animation ticket à gratter.
-- [ ] Sauvegarde d'une animation existante.
-- [ ] Génération et téléchargement QR code.
+- [x] Sauvegarde d'une animation existante.
+- [x] Génération et téléchargement QR code.
 - [ ] Génération et téléchargement affiche PNG.
 - [ ] Export données depuis la page Données.
 
