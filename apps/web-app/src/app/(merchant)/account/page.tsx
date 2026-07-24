@@ -56,7 +56,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
               Votre espace marchand
             </h1>
             <p className="mt-4 max-w-3xl text-sm leading-7 text-ash">
-              Gérez les informations de votre utilisateur, de votre restaurant et de vos
+              Gérez les informations de votre utilisateur, de votre commerce et de vos
               réseaux marketing, puis pilotez votre abonnement depuis un seul écran.
             </p>
           </div>
