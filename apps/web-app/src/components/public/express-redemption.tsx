@@ -202,4 +202,3 @@ export function ExpressRedemption({ code, context: initialContext }: ExpressRede
     </main>
   );
 }
-

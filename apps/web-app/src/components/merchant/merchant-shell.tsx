@@ -323,4 +323,3 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
     </div>
   );
 }
-

@@ -6,4 +6,3 @@ export default async function CashierPage() {
 
   return <CashierScreen />;
 }
-

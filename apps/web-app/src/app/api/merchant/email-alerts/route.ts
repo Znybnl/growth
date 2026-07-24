@@ -93,4 +93,3 @@ export async function GET() {
     stockCampaignId: stockAlerts.campaignId,
   });
 }
-

@@ -147,4 +147,3 @@ create trigger draw_sessions_sync_lead_configuration
 revoke all on table public.campaign_publication_audits from public, anon, authenticated;
 
 commit;
-

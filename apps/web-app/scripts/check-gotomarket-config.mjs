@@ -368,4 +368,3 @@ if (shouldCheckLive) {
 }
 
 printReport(issues);
-

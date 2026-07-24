@@ -129,4 +129,3 @@ Documents d'exploitation :
 - Email de gain Resend non envoyé ou domaine non validé.
 - Retrait QR utilisable plusieurs fois.
 - Un marchand peut accéder aux données d'un autre marchand.
-

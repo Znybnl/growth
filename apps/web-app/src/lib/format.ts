@@ -246,4 +246,3 @@ export function buttonSizeLabel(size: ButtonSize) {
       return "Moyen";
   }
 }
-

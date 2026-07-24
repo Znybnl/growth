@@ -124,4 +124,3 @@ for (const merchantUser of merchantUsers ?? []) {
 }
 
 console.log(JSON.stringify({ total: results.length, results }, null, 2));
-

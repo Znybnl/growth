@@ -550,4 +550,3 @@ export function assertBackgroundUpload(file: File, label: string, category: stri
     throw new Error("Le fichier doit peser moins de 8 Mo.");
   }
 }
-

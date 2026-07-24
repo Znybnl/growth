@@ -49,4 +49,3 @@ if (
 console.log(
   "OK - Exception npm audit acceptée pour Next.js 16.2.11 et ses dépendances transitives sharp/postcss (revue 2026-08-06).",
 );
-

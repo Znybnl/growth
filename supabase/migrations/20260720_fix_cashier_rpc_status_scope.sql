@@ -105,4 +105,3 @@ revoke all on function public.redeem_cashier_lead_prize(text, text, text, boolea
 grant execute on function public.redeem_cashier_lead_prize(text, text, text, boolean, text) to service_role;
 
 commit;
-

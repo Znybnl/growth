@@ -155,4 +155,3 @@ export async function setCampaignLocalSettings(
   await writeFileStore(store);
   return store[campaignId];
 }
-

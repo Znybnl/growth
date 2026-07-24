@@ -489,4 +489,3 @@ export function WheelOfFortune({
     </div>
   );
 }
-

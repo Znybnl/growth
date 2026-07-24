@@ -463,7 +463,56 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
   if (savedCampaignId) {
     return (
       <div className="mx-auto max-w-3xl rounded-[34px] border border-[#dce5ef] bg-white p-8 text-center shadow-[0_24px_70px_rgba(18,24,39,0.08)] sm:p-12">
-        <div className="mx-au…1133 tokens truncated…et dans vos statistiques.</span><input autoFocus value={draft.title} onChange={(event) => patchDraft({ title: event.target.value })} placeholder="Ex. La roue gourmande de juin" className="mt-3 w-full rounded-[16px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm text-[#182033] outline-none transition focus:border-[#b28719] focus:ring-4 focus:ring-[#f4c14a]/15" /></label>
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#e9f8ec] text-[#18864b]"><Check className="h-8 w-8" /></div>
+        <p className="mt-6 text-xs uppercase tracking-[0.24em] text-[#7a8498]">Campagne prête</p>
+        <h1 className="mt-3 text-3xl font-semibold tracking-[-0.03em] text-[#111827]">Votre animation est enregistrée.</h1>
+        <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-[#626d82]">Vous pouvez maintenant vérifier le rendu public, imprimer le QR code ou ouvrir l’éditeur avancé pour aller plus loin.</p>
+        <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <Link href={`/campaign/${savedCampaignId}?preview=1`} target="_blank" className="rounded-[16px] bg-[#111827] px-4 py-3 text-sm font-semibold !text-white">Prévisualiser</Link>
+          <Link href={`/campaigns/${savedCampaignId}/edit`} className="rounded-[16px] border border-[#d6dfeb] bg-white px-4 py-3 text-sm font-semibold text-[#182033]">Ouvrir l’éditeur</Link>
+          <Link href={`/campaigns/${savedCampaignId}/email`} className="rounded-[16px] border border-[#d6dfeb] bg-white px-4 py-3 text-sm font-semibold text-[#182033]">Personnaliser l’e-mail</Link>
+          <Link href="/campaigns" className="rounded-[16px] border border-[#d6dfeb] bg-white px-4 py-3 text-sm font-semibold text-[#182033]">Retour aux campagnes</Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6 pb-10">
+      <section className="flex flex-col gap-5 px-1 py-2 xl:flex-row xl:items-end xl:justify-between">
+        <div>
+          <p className="okado-label">Assistant guidé</p>
+          <h1 className="okado-page-title mt-3">Créer une campagne</h1>
+          <p className="mt-4 max-w-3xl text-sm leading-7 text-ash">
+            Six étapes courtes, une vérification finale et un aperçu mobile pour comprendre exactement ce que vivra votre client.
+          </p>
+        </div>
+      </section>
+
+      <div className="grid gap-6 xl:items-start xl:grid-cols-[240px_minmax(0,1fr)_360px]">
+        <aside className="rounded-[28px] border border-[#e2e8f0] bg-white p-4 shadow-[0_14px_32px_rgba(18,24,39,0.04)]">
+          <p className="px-3 text-[10px] uppercase tracking-[0.22em] text-[#8993a6]">Progression</p>
+          <nav className="mt-4 space-y-1" aria-label="Étapes de création">
+            {WIZARD_STEPS.map((item, index) => {
+              const active = index === stepIndex;
+              const complete = index < stepIndex;
+              const visited = index <= furthestStepIndex;
+              return (
+                <button key={item.id} type="button" onClick={() => index <= furthestStepIndex && setStepIndex(index)} disabled={index > furthestStepIndex} className={`flex w-full items-start gap-3 rounded-[16px] px-3 py-3 text-left transition ${active ? "bg-[#111827] text-white" : visited ? "text-[#18864b] hover:bg-[#f5f8fb]" : "text-[#a0a9b9]"}`}>
+                  <span className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${active ? "bg-[#f4c14a] text-[#111827]" : complete ? "bg-[#e9f8ec] text-[#18864b]" : visited ? "bg-[#fff8e1] text-[#b28719]" : "bg-[#f2f4f7]"}`}>{complete ? <Check className="h-3.5 w-3.5" /> : item.number}</span>
+                  <span className="min-w-0"><span className="block text-sm font-semibold">{item.title}</span><span className={`mt-1 block text-[11px] leading-4 ${active ? "text-[#c8d1e3]" : "text-[#8b95a8]"}`}>{item.description}</span></span>
+                </button>
+              );
+            })}
+          </nav>
+        </aside>
+
+        <main className="min-w-0 rounded-[30px] border border-[#e2e8f0] bg-white p-5 shadow-[0_14px_32px_rgba(18,24,39,0.04)] sm:p-8">
+          <div className="flex items-start justify-between gap-4 border-b border-[#edf0f4] pb-5"><div><p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#b28719]">Étape {step.number}</p><h2 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-[#111827]">{step.title}</h2><p className="mt-2 text-sm text-[#7a8498]">{step.description}</p></div><div className="hidden rounded-full bg-[#fff7dd] p-3 text-[#b28719] sm:block"><Sparkles className="h-5 w-5" /></div></div>
+
+          {step.id === "identity" ? (
+            <div className="mt-7 space-y-5">
+              <label className="block"><span className="text-sm font-semibold text-[#182033]">Nom de l’animation</span><span className="mt-1 block text-xs text-[#8993a6]">Visible dans votre espace marchand et dans vos statistiques.</span><input autoFocus value={draft.title} onChange={(event) => patchDraft({ title: event.target.value })} placeholder="Ex. La roue gourmande de juin" className="mt-3 w-full rounded-[16px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm text-[#182033] outline-none transition focus:border-[#b28719] focus:ring-4 focus:ring-[#f4c14a]/15" /></label>
               <label className="block"><span className="text-sm font-semibold text-[#182033]">Promesse affichée au client</span><span className="mt-1 block text-xs text-[#8993a6]">Une phrase courte, concrète et facile à comprendre sur mobile.</span><textarea value={draft.subtitle} onChange={(event) => patchDraft({ subtitle: event.target.value })} rows={3} className="mt-3 w-full resize-none rounded-[16px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm leading-6 text-[#182033] outline-none transition focus:border-[#b28719] focus:ring-4 focus:ring-[#f4c14a]/15" /></label>
               <div className="grid gap-4 sm:grid-cols-2"><label className="block"><span className="text-sm font-semibold text-[#182033]">Objectif</span><select value={draft.goalType} onChange={(event) => { const goalType = event.target.value as WizardDraft["goalType"]; const actionKind = goalType === "social_follow" ? "instagram" : goalType === "lead_capture" ? "crm" : "google"; patchDraft({ goalType, successMetric: goalType === "social_follow" ? "Abonnements sociaux" : goalType === "lead_capture" ? "Leads collectés" : "Avis Google", actions: [{ ...(draft.actions[0] ?? { id: "wizard-action", url: "" }), kind: actionKind, label: actionKindCta(actionKind), url: goalType === "review_prompt" ? (merchant.googleReviewUrl || "https://google.com") : "" }] }); }} className="mt-3 w-full rounded-[16px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm text-[#182033]"><option value="review_prompt">Obtenir des avis</option><option value="lead_capture">Collecter des contacts</option><option value="social_follow">Gagner des abonnés</option></select></label><label className="block"><span className="text-sm font-semibold text-[#182033]">Texte du bouton de jeu</span><input value={draft.ctaLabel} onChange={(event) => patchDraft({ ctaLabel: event.target.value })} className="mt-3 w-full rounded-[16px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm text-[#182033]" /></label></div>
             </div>
@@ -514,4 +563,3 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
     </div>
   );
 }
-

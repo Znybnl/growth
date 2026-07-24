@@ -66,4 +66,3 @@ export default async function CampaignPage({ params, searchParams }: CampaignPag
 
   return <CampaignExperience campaignId={id} initialCampaign={campaign} isPreview={isPreview} />;
 }
-

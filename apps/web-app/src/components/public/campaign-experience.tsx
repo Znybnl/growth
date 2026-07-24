@@ -487,7 +487,174 @@ export function CampaignExperience({
   useEffect(() => {
     async function loadCampaign() {
       const response = await fetch(
-      …1586 tokens truncated…urantPopHeadingLines(campaign.subtitle);
+        `/api/public/campaign/${campaignId}${isPreview ? "?preview=1" : ""}`,
+      );
+
+      if (!response.ok) {
+        return;
+      }
+
+      const payload = (await response.json()) as { campaign: PublicCampaign };
+      setCampaign(payload.campaign);
+    }
+
+    void loadCampaign();
+  }, [campaignId, isPreview]);
+
+  async function trackEvent(eventType: string, leadId?: string) {
+    await fetch("/api/public/event", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        campaignId,
+        leadId,
+        eventType,
+      }),
+    });
+  }
+
+  async function prepareSession(nextStage: ExperienceStage = "ready") {
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      const response = await fetch("/api/public/draw/session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ campaignId }),
+      });
+
+      if (!response.ok) {
+        const payload = (await response.json().catch(() => null)) as {
+          error?: string;
+          code?: string;
+        } | null;
+        if (payload?.code === "already_played_today") {
+          setBlockedMessage(
+            payload.error ?? "Vous avez déjà participé à cette animation. Réessayez plus tard.",
+          );
+          setStage("blocked");
+          return;
+        }
+        throw new Error(payload?.error ?? "Impossible de préparer la partie.");
+      }
+
+      const payload = (await response.json()) as CreateDrawSessionResult;
+      setPreviewResult(payload);
+      setDrawSession(payload.session);
+      setCampaign(payload.campaign);
+      setStage(nextStage);
+    } catch (sessionError) {
+      setError(
+        sessionError instanceof Error ? sessionError.message : "Une erreur est survenue.",
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function openActionAndTrack() {
+    setActionVisited(false);
+    setError(null);
+    if (drawSession) {
+      setStage("intro");
+      return;
+    }
+
+    // An optional marketing action must never reserve a prize or gate access
+    // to the game. The draw session is prepared only when the player chooses
+    // to play.
+    setStage("intro");
+  }
+
+  async function launchPreparedGame() {
+    if (!drawSession) {
+      await prepareSession("ready");
+      setAutoSpinKey(`spin-${Date.now()}`);
+      return;
+    }
+
+    setStage("ready");
+    setAutoSpinKey(`spin-${drawSession.id}`);
+  }
+
+  async function submitWinnerForm(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!drawSession) {
+      return;
+    }
+
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      const payload: FinalizeDrawSessionRequest = {
+        sessionId: drawSession.id,
+        firstName,
+        email,
+        marketingConsent,
+      };
+      const response = await fetch("/api/public/draw/finalize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const failure = (await response.json().catch(() => null)) as {
+          error?: string;
+          code?: string;
+        } | null;
+        if (failure?.code === "participation_cooldown") {
+          setBlockedMessage(
+            failure.error ?? "Vous avez déjà participé à cette animation. Revenez plus tard.",
+          );
+          setStage("blocked");
+          return;
+        }
+        throw new Error(failure?.error ?? "Impossible d’enregistrer vos coordonnées.");
+      }
+
+      const result = (await response.json()) as DrawResult;
+      setDrawResult(result);
+      setCampaign(result.campaign);
+      setStage("success");
+    } catch (submitError) {
+      setError(
+        submitError instanceof Error ? submitError.message : "Une erreur est survenue.",
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function handleGameReveal() {
+    if (previewResult?.prize) {
+      setStage("collect");
+      await trackEvent("form_started");
+      return;
+    }
+
+    void trackEvent("game_lost");
+    setStage("lost");
+  }
+
+  const backgroundStyle =
+    campaign.presentation.background.mode === "image" &&
+    campaign.presentation.background.imageUrl
+      ? `linear-gradient(rgba(0,0,0,0.08), rgba(0,0,0,0.18)), url("${campaign.presentation.background.imageUrl}")`
+      : isScratchVaultTemplate
+        ? `radial-gradient(circle at 50% 108%, ${withHexAlpha(primaryColor, "38")} 0 27%, transparent 48%), radial-gradient(circle at 15% 10%, ${withHexAlpha(secondaryColor, "4d")} 0 12%, transparent 22%), linear-gradient(155deg, #071126 0%, #111b3b 56%, #071126 100%)`
+        : isScratchConfettiTemplate
+          ? `radial-gradient(circle at 12% 9%, ${withHexAlpha(primaryColor, "2b")} 0 10%, transparent 11%), radial-gradient(circle at 94% 12%, ${withHexAlpha(secondaryColor, "18")} 0 12%, transparent 13%), linear-gradient(180deg, #fffdf7 0%, #fff8ea 60%, #fff1cf 100%)`
+        : isCosmicTemplate
+        ? `radial-gradient(circle at 50% 112%, ${withHexAlpha(primaryColor, "52")} 0 24%, transparent 43%), radial-gradient(circle at 9% 12%, ${withHexAlpha(secondaryColor, "2b")} 0 14%, transparent 25%), linear-gradient(155deg, #07142e 0%, #0b1d42 55%, #071126 100%)`
+        : isSunburstTemplate
+          ? `radial-gradient(circle at 12% 10%, ${withHexAlpha(primaryColor, "33")} 0 12%, transparent 13%), radial-gradient(circle at 94% 18%, ${withHexAlpha(secondaryColor, "38")} 0 14%, transparent 15%), linear-gradient(180deg, #fffdf5 0%, #fff8e8 56%, #fff2ce 100%)`
+        : isRestaurantPopTemplate
+        ? `radial-gradient(circle at -10% -8%, ${withHexAlpha(primaryColor, "f2")} 0 18%, transparent 19%), radial-gradient(circle at 110% 0%, ${withHexAlpha(secondaryColor, "f2")} 0 13%, transparent 14%), radial-gradient(circle at 0% 80%, ${withHexAlpha(primaryColor, "20")} 0 20%, transparent 21%), radial-gradient(circle at 100% 78%, ${withHexAlpha(secondaryColor, "40")} 0 18%, transparent 19%), linear-gradient(180deg, #fff2dd 0%, #fffaf1 46%, #fff4e5 100%)`
+        : `radial-gradient(circle at 50% 50%, ${withHexAlpha(primaryColor, "33")}, transparent 50%), linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.08))`;
+  const restaurantPopHeadingLines = buildRestaurantPopHeadingLines(campaign.subtitle);
   const headingFontSize = fluidType(campaign.presentation.heading.fontSizePx, {
     minRatio: 0.82,
     maxRatio: 1.08,
@@ -929,4 +1096,3 @@ export function CampaignExperience({
     </div>
   );
 }
-

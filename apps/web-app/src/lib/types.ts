@@ -785,4 +785,3 @@ export interface CampaignSetupInput {
     usageConditions?: string;
   }>;
 }
-

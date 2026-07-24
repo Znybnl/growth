@@ -28,4 +28,3 @@ export async function POST(
     return NextResponse.json({ error: message }, { status: message.includes("rôle") ? 403 : getRequestSecurityErrorStatus(error) });
   }
 }
-

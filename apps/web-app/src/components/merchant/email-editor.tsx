@@ -355,4 +355,3 @@ export function EmailEditor({ campaign, merchant }: EmailEditorProps) {
     </div>
   );
 }
-

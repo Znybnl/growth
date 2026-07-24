@@ -56,4 +56,3 @@ export async function redirectAuthenticatedMerchant() {
 }
 
 export const SESSION_COOKIE = LEGACY_SESSION_COOKIE;
-

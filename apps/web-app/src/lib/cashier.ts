@@ -23,4 +23,3 @@ export function cashierStatusMessage(status: CashierRedemptionStatus) {
       return "Ce code ne correspond à aucun gain de ce commerce.";
   }
 }
-

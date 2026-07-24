@@ -23,4 +23,3 @@
     "smoke:security": "npm run smoke:security -w @okado/web-app"
   }
 }
-

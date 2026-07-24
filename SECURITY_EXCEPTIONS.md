@@ -21,4 +21,3 @@ Mesures compensatoires :
 - l’exception doit être revue dès qu’une version Next.js corrigeant `sharp` et `postcss` est publiée.
 
 Échéance de revue : 2026-08-06, ou immédiatement à la sortie d’un correctif Next.js.
-
