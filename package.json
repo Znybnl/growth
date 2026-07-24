@@ -21,5 +21,8 @@
     "check:supabase": "npm run check:supabase -w @okado/web-app",
     "smoke:critical": "npm run smoke:critical -w @okado/web-app",
     "smoke:security": "npm run smoke:security -w @okado/web-app"
+  },
+  "optionalDependencies": {
+    "lightningcss-linux-x64-gnu": "^1.32.0"
   }
 }
