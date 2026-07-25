@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, ChevronDown } from "lucide-react";
 
 type ActivityPoint = {
   label: string;
@@ -77,12 +77,12 @@ export function DashboardActivityChart({
           </h2>
         </div>
 
-        <label className="inline-flex h-11 items-center gap-2 self-start rounded-[12px] border border-border bg-linen-canvas px-3 text-sm font-semibold text-graphite shadow-[0_10px_24px_rgba(20,31,61,0.05)]">
+        <label className="relative inline-flex h-11 items-center gap-2 self-start rounded-[12px] border border-border bg-linen-canvas px-3 text-sm font-semibold text-graphite shadow-[0_10px_24px_rgba(20,31,61,0.05)] transition focus-within:border-signal-blue focus-within:ring-2 focus-within:ring-signal-blue/15">
           <CalendarDays className="h-4 w-4 text-signal-blue" />
           <select
             value={period}
             onChange={(event) => setPeriod(Number(event.target.value))}
-            className="cursor-pointer bg-transparent outline-none"
+            className="cursor-pointer appearance-none border-0 bg-transparent pr-5 outline-none focus:border-0 focus:outline-none focus:ring-0"
             aria-label="Période d'analyse"
           >
             {PERIOD_OPTIONS.map((option) => (
@@ -91,6 +91,10 @@ export function DashboardActivityChart({
               </option>
             ))}
           </select>
+          <ChevronDown
+            className="pointer-events-none absolute right-3 h-4 w-4 text-fog"
+            aria-hidden="true"
+          />
         </label>
       </div>
 
