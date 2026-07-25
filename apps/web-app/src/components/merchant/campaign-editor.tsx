@@ -3856,23 +3856,29 @@ function setGameType(gameType: GameType) {
             </div>
 
             <div className="mt-6 grid gap-4 md:grid-cols-2">
-              <label className="text-sm">
-                <span className="mb-2 block text-[#616b7c]">Cadeau disponible dans (heures)</span>
+              <label className="flex min-h-[92px] cursor-pointer items-start gap-3 rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-4 text-sm transition hover:border-[#b8c8e4]">
                 <input
-                  type="number"
-                  min={0}
-                  value={form.rewardRules.availableAfterHours}
+                  type="checkbox"
+                  checked={form.rewardRules.availableAfterHours > 0}
                   onChange={(event) =>
                     setForm((current) => ({
                       ...current,
                       rewardRules: {
                         ...current.rewardRules,
-                        availableAfterHours: Number(event.target.value || 0),
+                        availableAfterHours: event.target.checked ? 24 : 0,
                       },
                     }))
                   }
-                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
+                  className="mt-1 h-4 w-4 shrink-0 rounded border-[#cbd5e1] text-[#2f6df6] focus:ring-[#2f6df6]/20"
                 />
+                <span>
+                  <span className="block font-semibold text-[#182033]">
+                    Lot disponible lors d&apos;une prochaine visite
+                  </span>
+                  <span className="mt-1 block text-xs leading-5 text-[#7b8496]">
+                    Le lot sera disponible 24 h après la participation, à partir du lendemain.
+                  </span>
+                </span>
               </label>
 
               <label className="text-sm">
