@@ -1028,7 +1028,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
         {preview.gameType !== "wheel" ? (
           <button
             type="button"
-            className={`w-full rounded-[24px] border font-semibold ${preview.previewCtaClass}`}
+            className={`mx-auto block w-full max-w-[360px] rounded-[24px] border font-semibold ${preview.previewCtaClass}`}
             style={{
               marginTop: `${scalePreviewValue(preview.blockSpacingPx)}px`,
               backgroundColor: preview.buttonStyle.backgroundColor,
@@ -1098,16 +1098,16 @@ const CampaignActionCard = memo(function CampaignActionCard({
       </div>
 
       <div
-        className={`grid gap-4 ${
-                  action.kind === "crm" ? "md:grid-cols-[0.74fr_auto]" : "md:grid-cols-[0.72fr_1fr_auto]"
+        className={`grid items-end gap-4 ${
+          action.kind === "crm" ? "md:grid-cols-[0.74fr_auto]" : "md:grid-cols-[0.72fr_1fr_auto]"
         }`}
       >
-        <label className="text-sm">
-          <span className="mb-2 flex items-center gap-3 text-[#616b7c]"><SocialChannelIcon channel={action.kind} /><span>Canal</span></span>
+        <label className="flex h-full flex-col text-sm">
+          <span className="mb-2 flex min-h-6 items-center gap-3 text-[#616b7c]"><SocialChannelIcon channel={action.kind} /><span>Canal</span></span>
           <select
             value={action.kind}
             onChange={(event) => onUpdate(action.id, { kind: event.target.value as ActionKind })}
-            className="w-full rounded-[18px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
+            className="h-12 w-full rounded-[18px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
           >
             {actionKindOptions.map((kind) => (
               <option key={kind} value={kind}>
@@ -1118,12 +1118,12 @@ const CampaignActionCard = memo(function CampaignActionCard({
         </label>
 
         {action.kind !== "crm" ? (
-          <label className="text-sm">
-            <span className="mb-2 block text-[#616b7c]">Lien</span>
+          <label className="flex h-full flex-col text-sm">
+            <span className="mb-2 flex min-h-6 items-center text-[#616b7c]">Lien</span>
             <input
               value={action.url}
               onChange={(event) => onUpdate(action.id, { url: event.target.value })}
-              className="w-full rounded-[18px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
+              className="h-12 w-full rounded-[18px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
               placeholder="https://..."
             />
           </label>

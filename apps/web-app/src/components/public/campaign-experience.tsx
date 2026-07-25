@@ -440,7 +440,6 @@ export function CampaignExperience({
     : "";
   const availableDate = formatDate(drawResult?.lead.rewardAvailableAt);
   const expiryDate = formatDate(drawResult?.lead.rewardExpiresAt);
-  const blockSpacingPx = campaign.presentation.layout.blockSpacingPx;
   const pageTemplate = campaign.gameType === "scratch"
     ? "classic"
     : campaign.presentation.layout.templateId ?? "classic";
@@ -671,6 +670,7 @@ export function CampaignExperience({
     maxRatio: 1.08,
     viewportStep: 0.24,
   });
+  const publicCtaLabel = campaign.ctaLabel?.trim() || "Jouer";
 
   return (
     <div
@@ -804,7 +804,7 @@ export function CampaignExperience({
             </div>
           </div>
         ) : (
-          <div style={{ marginTop: `${Math.max(6, Math.round(blockSpacingPx * 0.2))}px` }}>
+          <div className="mt-[40px] sm:mt-20 lg:mt-8">
             {isImmersiveScratchTemplate ? (
               <ImmersiveScratchTicket
                 key={`${campaign.id}-${drawSession?.id ?? "idle"}`}
@@ -831,7 +831,7 @@ export function CampaignExperience({
             <button
               type="button"
               onClick={openActionAndTrack}
-              className="w-full rounded-[24px] border px-6 py-4 text-lg font-semibold shadow-[0_22px_34px_rgba(17,24,39,0.08)]"
+              className="mx-auto block w-full max-w-[360px] rounded-[24px] border px-6 py-4 text-lg font-semibold shadow-[0_22px_34px_rgba(17,24,39,0.08)]"
               style={{
                 backgroundColor: campaign.presentation.button.backgroundColor,
                 color: campaign.presentation.button.textColor,
@@ -839,7 +839,7 @@ export function CampaignExperience({
                 fontSize: buttonFontSize,
               }}
             >
-              Jouer
+              {publicCtaLabel}
             </button>
           ) : null}
 
