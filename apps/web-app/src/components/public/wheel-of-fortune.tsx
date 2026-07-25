@@ -196,10 +196,12 @@ export function WheelOfFortune({
     framing === "public" ? undefined : framing === "editor" ? "83%" : "62%";
   const wheelFrameSizeClass =
     framing === "public"
-      ? "top-[70%] w-[142vw] max-w-none sm:top-[68%] sm:w-[118vw] md:top-[66%] md:w-[98vw] lg:top-[68%] lg:w-[52vw] xl:top-[68%] xl:w-[42vw] 2xl:top-[68%] 2xl:w-[38vw]"
+      ? "top-0 w-[max(130vw,calc(100svh-240px))] max-w-none sm:w-[min(118vw,calc(100svh-220px))] md:w-[min(98vw,calc(100svh-220px))] lg:w-[min(52vw,calc(100svh-220px))] xl:w-[min(42vw,calc(100svh-220px))] 2xl:w-[min(38vw,calc(100svh-220px))]"
       : framing === "editor"
         ? "w-[150%] max-w-none"
         : "w-full";
+  const wheelTransformClass =
+    framing === "public" ? "-translate-x-1/2" : "-translate-x-1/2 -translate-y-1/2";
 
   useEffect(() => {
     if (!isSpinning || !onSpinEnd) {
@@ -273,7 +275,7 @@ export function WheelOfFortune({
   return (
     <div className="relative h-full w-full overflow-hidden" style={{ containerType: "inline-size" }}>
       <div
-        className={`absolute left-1/2 aspect-square -translate-x-1/2 -translate-y-1/2 ${wheelFrameSizeClass} ${
+        className={`absolute left-1/2 aspect-square ${wheelTransformClass} ${wheelFrameSizeClass} ${
           isRestaurantPopTemplate
             ? "drop-shadow-[0_28px_42px_rgba(15,23,42,0.24)]"
             : "drop-shadow-[0_20px_34px_rgba(15,23,42,0.16)]"
