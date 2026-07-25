@@ -50,7 +50,7 @@ export function SignInForm() {
   }
 
   return (
-    <form className="flex flex-col bg-white px-1 py-2 sm:px-6 sm:py-6" onSubmit={handleSubmit}>
+    <form className="flex flex-col bg-transparent px-1 py-2 sm:bg-white sm:px-6 sm:py-6" onSubmit={handleSubmit}>
       <div>
         <h1 className="okado-page-title">
           Connectez-vous à {APP_NAME}

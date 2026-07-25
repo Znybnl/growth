@@ -117,8 +117,8 @@ export function DashboardActivityChart({
               <feDropShadow dx="0" dy="10" stdDeviation="8" floodColor="#145aff" floodOpacity="0.14" />
             </filter>
           </defs>
-          {yTicks.map((tick) => (
-            <g key={`y-${tick.value}`}>
+          {yTicks.map((tick, index) => (
+            <g key={`y-${tick.value}-${index}`}>
               <line
                 x1={plot.left}
                 x2={chartWidth - plot.right}
