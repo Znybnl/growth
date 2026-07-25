@@ -273,7 +273,7 @@ export function WheelOfFortune({
   }
 
   return (
-    <div className="relative h-full w-full overflow-hidden" style={{ containerType: "inline-size" }}>
+    <div className="relative h-full w-full overflow-visible" style={{ containerType: "inline-size" }}>
       <div
         className={`absolute left-1/2 aspect-square ${wheelTransformClass} ${wheelFrameSizeClass} ${
           isRestaurantPopTemplate

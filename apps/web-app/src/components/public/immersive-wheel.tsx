@@ -169,7 +169,7 @@ export function ImmersiveWheel({
   }
 
   return (
-    <div className="relative h-full w-full overflow-hidden" style={{ containerType: "inline-size" }}>
+    <div className="relative h-full w-full overflow-visible" style={{ containerType: "inline-size" }}>
       <div
         className={`absolute left-1/2 aspect-square ${wheelTransformClass} ${wheelSizeClass}`}
         style={{ filter: isCosmic ? "drop-shadow(0 28px 45px rgba(0,0,0,0.38))" : "drop-shadow(0 22px 34px rgba(20,31,61,0.22))" }}
