@@ -143,11 +143,11 @@ export default async function CampaignsPage({
                 </div>
               </div>
 
-              <div className="mt-5 flex flex-col gap-3 rounded-[8px] border border-border bg-white p-3 sm:flex-row sm:flex-wrap sm:items-center lg:hidden">
+              <div className="mt-5 flex flex-row items-center gap-2 rounded-[8px] border border-border bg-white p-3 lg:hidden">
                 <Link
                   href={`/campaigns/${item.campaign.id}/edit`}
                   prefetch={false}
-                  className="okado-primary-action px-4"
+                  className="okado-primary-action min-w-0 flex-1 px-3 text-sm"
                 >
                   Modifier
                 </Link>

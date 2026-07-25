@@ -3,12 +3,6 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
-
-function readString(value: unknown) {
-  return typeof value === "string" ? value : "";
-}
-
 function buildAuthErrorUrl(message: string) {
   const url = new URL("/connexion", window.location.origin);
   url.searchParams.set("error", "google_oauth");
@@ -40,26 +34,16 @@ export function GoogleCallbackClient() {
       }
 
       try {
-        const supabase = getSupabaseBrowserClient();
-        const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-
-        if (error || !data.user?.email) {
-          throw error ?? new Error("Session Google introuvable ou code PKCE invalide.");
-        }
-
         if (!cancelled) {
           setMessage("Finalisation de votre espace marchand...");
         }
 
-        const metadata = data.user.user_metadata ?? {};
         const response = await fetch("/api/auth/google/session", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            email: data.user.email,
-            firstName: readString(metadata.given_name),
-            lastName: readString(metadata.family_name),
-            fullName: readString(metadata.full_name) || readString(metadata.name),
+            code,
+            referralCode: searchParams.get("ref") || undefined,
           }),
         });
 

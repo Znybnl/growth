@@ -42,7 +42,7 @@ export function AuthShell({
                 <p className="text-sm text-ash">{APP_TAGLINE}</p>
               </div>
             </div>
-            <div className="okado-card p-0 sm:p-1">
+            <div className="okado-card w-full overflow-hidden rounded-[var(--okado-radius-card)] p-0 sm:p-1">
               {children}
             </div>
           </div>

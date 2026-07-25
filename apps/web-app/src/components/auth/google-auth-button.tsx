@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 
-import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
-
 type GoogleAuthButtonProps = {
   mode: "signin" | "signup";
   nextPath?: string;
@@ -31,9 +29,8 @@ export function GoogleAuthButton({
     setIsLoading(true);
 
     try {
-      const supabase = getSupabaseBrowserClient();
-      const redirectTo = new URL("/api/auth/google/callback", window.location.origin);
-      redirectTo.searchParams.set("next", nextPath);
+      const startUrl = new URL("/api/auth/google/start", window.location.origin);
+      startUrl.searchParams.set("next", nextPath);
       const referralCode = document.cookie
         .split(";")
         .map((item) => item.trim())
@@ -41,19 +38,14 @@ export function GoogleAuthButton({
         ?.split("=")[1];
 
       if (referralCode) {
-        redirectTo.searchParams.set("ref", decodeURIComponent(referralCode));
+        startUrl.searchParams.set("ref", decodeURIComponent(referralCode));
       }
 
-      const { error: oauthError } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: redirectTo.toString(),
-        },
-      });
-
-      if (oauthError) {
-        throw oauthError;
-      }
+      // Start OAuth on the server so the PKCE verifier is written to an
+      // httpOnly cookie before the browser leaves the current page. This is
+      // reliable on mobile browsers where client-side storage can be cleared
+      // during the provider redirect.
+      window.location.assign(startUrl.toString());
     } catch (submitError) {
       setError(
         submitError instanceof Error ? submitError.message : "Connexion Google impossible.",

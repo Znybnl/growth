@@ -10,6 +10,7 @@ import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/l
 import { createRouteSupabaseClient } from "@/lib/supabase-server-auth";
 
 type GoogleSessionBody = {
+  code?: string;
   email?: string;
   firstName?: string;
   lastName?: string;
@@ -34,6 +35,14 @@ export async function POST(request: Request) {
       request,
       response: provisionalResponse,
     });
+    if (body.code?.trim()) {
+      const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(
+        body.code.trim(),
+      );
+      if (exchangeError) {
+        throw exchangeError;
+      }
+    }
     const { data, error } = await supabase.auth.getUser();
     const supabaseUser = data.user;
     const email = supabaseUser?.email?.trim().toLowerCase() ?? "";
