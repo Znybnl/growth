@@ -86,6 +86,63 @@ async function setSupabaseCampaignLocalSettings(
     ...current,
     ...settings,
   };
+};
+
+type CampaignLocalSettingsStore = Record<string, CampaignLocalSettings>;
+
+const storePath = path.join(process.cwd(), ".codex", "campaign-local-settings.json");
+
+let cache: CampaignLocalSettingsStore | null = null;
+
+async function readFileStore() {
+  if (cache) {
+    return cache;
+  }
+
+  try {
+    const raw = await readFile(storePath, "utf8");
+    cache = JSON.parse(raw) as CampaignLocalSettingsStore;
+  } catch {
+    cache = {};
+  }
+
+  return cache;
+}
+
+async function writeFileStore(store: CampaignLocalSettingsStore) {
+  cache = store;
+  await mkdir(path.dirname(storePath), { recursive: true });
+  await writeFile(storePath, JSON.stringify(store, null, 2), "utf8");
+}
+
+async function getSupabaseCampaignLocalSettings(campaignId: string) {
+  const supabase = getSupabaseAdmin();
+  const { data, error } = await supabase
+    .from("campaigns")
+    .select("campaign_local_settings")
+    .eq("id", campaignId)
+    .maybeSingle<{ campaign_local_settings: CampaignLocalSettings | null }>();
+
+  if (error) {
+    if (error.message.includes("campaign_local_settings")) {
+      return null;
+    }
+
+    throw new Error(`Lecture des réglages de campagne impossible: ${error.message}`);
+  }
+
+  return data?.campaign_local_settings ?? null;
+}
+
+async function setSupabaseCampaignLocalSettings(
+  campaignId: string,
+  settings: CampaignLocalSettings,
+) {
+  const current = (await getSupabaseCampaignLocalSettings(campaignId)) ?? {};
+  const next = {
+    ...current,
+    ...settings,
+  };
   const supabase = getSupabaseAdmin();
   const { error } = await supabase
     .from("campaigns")

@@ -459,6 +459,12 @@ select {
   padding-block: 0;
 }
 
+.okado-cashier button:not([class*="okado-"]) {
+  min-height: var(--okado-action-secondary-height);
+  border-radius: var(--okado-radius-control);
+  padding-block: 0;
+}
+
 .grain {
   position: relative;
 }

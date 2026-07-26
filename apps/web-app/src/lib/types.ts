@@ -297,6 +297,17 @@ export interface MerchantSessionContext {
   activeLocationId: string;
 }
 
+export interface MerchantLocationAccess {
+  merchant: Merchant;
+  role: MerchantWorkspaceRole;
+}
+
+export interface MerchantSessionContext {
+  workspace?: MerchantWorkspace;
+  locations: MerchantLocationAccess[];
+  activeLocationId: string;
+}
+
 export interface MerchantAccountSettingsInput {
   companyName: string;
   industry: string;

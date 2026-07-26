@@ -147,6 +147,14 @@ export function EmailEditor({ campaign, merchant }: EmailEditorProps) {
                 disabled={isSaving || validationErrors.length > 0}
                 className="okado-filled-action px-5 disabled:opacity-60"
               >
+                Restaurer le modèle
+              </button>
+              <button
+                type="button"
+                onClick={saveEmailSettings}
+                disabled={isSaving || validationErrors.length > 0}
+                className="okado-filled-action px-5 disabled:opacity-60"
+              >
                 {isSaving ? "Enregistrement..." : "Enregistrer"}
               </button>
             </div>
@@ -154,6 +162,14 @@ export function EmailEditor({ campaign, merchant }: EmailEditorProps) {
           {message ? (
             <div className="mt-5 rounded-[8px] border border-border bg-linen-canvas px-4 py-3 text-sm font-semibold text-graphite">
               {message}
+            </div>
+          ) : null}
+          {validationErrors.length ? (
+            <div role="alert" className="mt-5 rounded-[8px] border border-[#f2c8c8] bg-[#fff4f4] px-4 py-4 text-sm text-[#a11a1a]">
+              <p className="font-semibold">Informations obligatoires manquantes</p>
+              <ul className="mt-2 list-disc space-y-1 pl-5 leading-6">
+                {validationErrors.map((validationError) => <li key={validationError}>{validationError}</li>)}
+              </ul>
             </div>
           ) : null}
           {validationErrors.length ? (

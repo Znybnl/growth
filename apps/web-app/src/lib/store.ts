@@ -1341,6 +1341,204 @@ function getPublicCampaignFromMemory(id: string) {
     return null;
   }
 
+  const normalizedCode = code.trim().toUpperCase();
+  const lead = store.leads.find((item) => item.redemptionCode?.toUpperCase() === normalizedCode);
+  if (!lead) return null;
+
+  const campaign = getCampaign(lead.campaignId);
+  const merchant = campaign ? getMerchant(campaign.merchantId) : null;
+  if (!campaign || !merchant) return null;
+
+  if (!campaign) {
+    return null;
+  }
+
+  return buildPerformance(campaign);
+}
+
+function getMerchantDashboardFromMemory(
+  merchantId = merchantSeed.id,
+  fallbackMerchant?: Merchant,
+): MerchantDashboardData {
+  const merchant = getMerchant(merchantId) ?? fallbackMerchant;
+
+  if (!merchant) {
+    throw new Error("Marchand introuvable");
+  }
+
+  const campaigns = store.campaigns
+    .filter((campaign) => campaign.merchantId === merchantId)
+    .map((campaign) => buildPerformance(campaign));
+
+  const totalLeads = campaigns.reduce((total, item) => total + item.kpis.leads, 0);
+  const totalRedeemed = campaigns.reduce((total, item) => total + item.kpis.redeemed, 0);
+  const averageConversion = campaigns.length
+    ? Math.round(
+        campaigns.reduce((total, item) => total + item.kpis.conversionRate, 0) /
+          campaigns.length,
+      )
+    : 0;
+  const campaignIds = new Set(campaigns.map((item) => item.campaign.id));
+  const relevantLeads = store.leads.filter((lead) => campaignIds.has(lead.campaignId));
+  const relevantEvents = store.events.filter((event) => campaignIds.has(event.campaignId));
+  const referenceDates = [
+    ...relevantLeads.map((lead) => lead.createdAt),
+    ...relevantEvents.map((event) => event.createdAt),
+  ];
+  const today = new Date();
+  const latestReference = referenceDates.length
+    ? new Date([...referenceDates].sort((a, b) => a.localeCompare(b)).at(-1) ?? today.toISOString())
+    : null;
+  const latest = latestReference && latestReference > today ? latestReference : today;
+  const dayKeys = Array.from({ length: 30 }, (_, index) => {
+    const date = new Date(Date.UTC(latest.getUTCFullYear(), latest.getUTCMonth(), latest.getUTCDate()));
+    date.setUTCDate(latest.getUTCDate() - (30 - index - 1));
+    return date.toISOString().slice(0, 10);
+  });
+  const scansByDay = new Map<string, number>();
+  const participationsByDay = new Map<string, number>();
+
+  for (const event of relevantEvents) {
+    if (event.eventType === "scan") {
+      const day = event.createdAt.slice(0, 10);
+      scansByDay.set(day, (scansByDay.get(day) ?? 0) + 1);
+    }
+  }
+
+  for (const lead of relevantLeads) {
+    const day = lead.createdAt.slice(0, 10);
+    participationsByDay.set(day, (participationsByDay.get(day) ?? 0) + 1);
+  }
+
+  return {
+    ...context,
+    merchantId: merchant.id,
+    merchantName: merchant.companyName,
+    merchantCity: merchant.city,
+  };
+}
+
+function getMerchantLeadsFromMemory(campaignId?: string) {
+  return clone(
+    store.leads
+      .filter((lead) => (campaignId ? lead.campaignId === campaignId : true))
+      .map((lead) => toLeadRow(lead))
+      .sort((a, b) => (b.consentTimestamp ?? b.createdAt).localeCompare(a.consentTimestamp ?? a.createdAt)),
+  );
+}
+
+function getCampaignDataViewFromMemory(
+  campaignId: string,
+  options: { leadLimit?: number; leadOffset?: number; query?: string; emailStatus?: "attention" } = {},
+): CampaignDataView | null {
+  const performance = getCampaignPerformanceFromMemory(campaignId);
+
+  if (!performance) {
+    return null;
+  }
+
+  const storedHash = memoryRedemptionPinHashes.get(merchantId);
+  return Boolean(storedHash && /^\d{4,6}$/.test(pin) && verifyPassword(pin, storedHash));
+}
+
+function getMerchantWorkspaceLocationsInMemory(merchant: Merchant): MerchantLocationAccess[] {
+  const workspaceId = merchant.workspaceId ?? merchant.id;
+  return store.merchants
+    .filter((location) => (location.workspaceId ?? location.id) === workspaceId)
+    .filter((location) => location.locationStatus !== "archived")
+    .map((location) => ({ merchant: clone(location), role: "owner" as const }));
+}
+
+export async function getMerchantWorkspaceContext(userId: string, merchant: Merchant) {
+  if (getDataBackend("la lecture des sites") === "supabase") {
+    return getSupabaseMerchantWorkspaceContext(userId, merchant);
+  }
+
+  const locations = getMerchantWorkspaceLocationsInMemory(merchant);
+  return {
+    workspace: merchant.workspaceId
+      ? ({
+          id: merchant.workspaceId,
+          name: merchant.companyName,
+          slug: merchant.workspaceId,
+          defaultTimeZone: merchant.timeZone ?? "Europe/Paris",
+          createdAt: merchant.createdAt,
+        } satisfies MerchantWorkspace)
+      : undefined,
+    locations: locations.length ? locations : [{ merchant: clone(merchant), role: "owner" as const }],
+  };
+}
+
+export async function createMerchantLocation(input: {
+  workspaceId: string;
+  merchantUserId: string;
+  companyName: string;
+  city: string;
+  address?: string;
+  timeZone?: string;
+}) {
+  if (getDataBackend("la création d'un site") === "supabase") {
+    return createSupabaseMerchantLocation(input);
+  }
+
+  const source = store.merchants.find(
+    (merchant) => (merchant.workspaceId ?? merchant.id) === input.workspaceId,
+  );
+  const user = getUser(input.merchantUserId);
+  if (!source || !user) throw new Error("Workspace introuvable.");
+  const location: Merchant = {
+    ...clone(source),
+    id: generateId("merchant"),
+    companyName: input.companyName.trim(),
+    logoText: input.companyName.trim().slice(0, 2).toUpperCase(),
+    city: input.city.trim(),
+    address: input.address?.trim() ?? "",
+    locationCode: `${input.city.slice(0, 3)}-${Date.now().toString().slice(-3)}`.toUpperCase(),
+    locationStatus: "active",
+    workspaceId: input.workspaceId,
+    timeZone: input.timeZone ?? source.timeZone ?? "Europe/Paris",
+    createdAt: new Date().toISOString(),
+  };
+  store.merchants.unshift(location);
+  return clone(location);
+}
+
+export async function archiveMerchantLocation(input: {
+  workspaceId: string;
+  merchantUserId: string;
+  merchantId: string;
+}) {
+  if (getDataBackend("l'archivage d'un site") === "supabase") {
+    return archiveSupabaseMerchantLocation(input);
+  }
+
+  const locations = store.merchants.filter(
+    (merchant) => (merchant.workspaceId ?? merchant.id) === input.workspaceId && merchant.locationStatus !== "archived",
+  );
+  if (locations.length <= 1) throw new Error("Conservez au moins un site actif.");
+  const target = store.merchants.find(
+    (merchant) => merchant.id === input.merchantId && (merchant.workspaceId ?? merchant.id) === input.workspaceId,
+  );
+  if (!target) throw new Error("Site introuvable.");
+  target.locationStatus = "archived";
+  return clone(target);
+}
+
+export function listCampaigns() {
+  return clone(store.campaigns);
+}
+
+export function getPrimaryCampaignId() {
+  return store.campaigns.find((campaign) => campaign.isActive)?.id ?? store.campaigns[0]?.id;
+}
+
+function getPublicCampaignFromMemory(id: string) {
+  const campaign = getCampaign(id);
+
+  if (!campaign || !campaign.isActive) {
+    return null;
+  }
+
   return clone(toPublicCampaign(campaign));
 }
 
@@ -1784,6 +1982,99 @@ function resetLeadPrizeInMemory(leadId: string) {
   return clone(lead);
 }
 
+function findMerchantLeadByRedemptionCodeInMemory(
+  merchantId: string,
+  code: string,
+): CashierRedemptionContext | null {
+  const normalizedCode = code.trim().toUpperCase();
+  const lead = store.leads.find((item) => item.redemptionCode?.toUpperCase() === normalizedCode);
+  if (!lead) return null;
+
+  const performance = getCampaignPerformanceFromMemory(lead.campaignId);
+  if (!performance || performance.merchant.id !== merchantId) return null;
+  const leadRow = toLeadRow(lead);
+
+  const now = Date.now();
+  const availableAt = lead.rewardAvailableAt ? new Date(lead.rewardAvailableAt).getTime() : 0;
+  const expiresAt = lead.rewardExpiresAt ? new Date(lead.rewardExpiresAt).getTime() : 0;
+  const status: CashierRedemptionContext["status"] =
+    lead.status === "redeemed"
+      ? "redeemed"
+      : expiresAt > 0 && expiresAt < now
+        ? "expired"
+        : availableAt > now
+          ? "not_available"
+          : lead.status === "claimed"
+            ? "available"
+            : "invalid";
+
+  return {
+    status,
+    leadId: lead.id,
+    campaignId: lead.campaignId,
+    campaignTitle: performance.campaign.title,
+    firstName: lead.firstName,
+    maskedEmail: maskCashierEmailInMemory(lead.email),
+    prizeLabel: leadRow.prizeLabel,
+    prizeUsageConditions: leadRow.prizeUsageConditions,
+    redemptionCode: lead.redemptionCode,
+    rewardAvailableAt: lead.rewardAvailableAt,
+    rewardExpiresAt: lead.rewardExpiresAt,
+    purchaseRequired: performance.campaign.rewardRules.purchaseRequired,
+    redeemedAt: lead.redeemedAt,
+    purchaseVerified: lead.purchaseVerified,
+  };
+}
+
+function redeemMerchantLeadPrizeInMemory(input: {
+  leadId: string;
+  merchantId: string;
+  purchaseConfirmed: boolean;
+}): CashierRedemptionContext {
+  const lead = store.leads.find((item) => item.id === input.leadId);
+  if (!lead) throw new Error("Gain introuvable");
+
+  const performance = getCampaignPerformanceFromMemory(lead.campaignId);
+  if (!performance || performance.merchant.id !== input.merchantId) throw new Error("Gain introuvable");
+  if (performance.campaign.rewardRules.purchaseRequired && !input.purchaseConfirmed) {
+    throw new Error("Achat à confirmer avant le retrait");
+  }
+
+  const redeemedAt = new Date().toISOString();
+  lead.purchaseVerified = input.purchaseConfirmed;
+  lead.redeemedAt = redeemedAt;
+  lead.redeemedByUserId = undefined;
+  const updated = redeemLeadPrizeInMemory(input.leadId);
+  return findMerchantLeadByRedemptionCodeInMemory(input.merchantId, updated.redemptionCode ?? "") ?? {
+    status: "redeemed",
+    leadId: updated.id,
+    campaignId: updated.campaignId,
+    firstName: updated.firstName,
+    maskedEmail: maskCashierEmailInMemory(updated.email),
+    prizeLabel: toLeadRow(updated).prizeLabel,
+    redemptionCode: updated.redemptionCode,
+    purchaseVerified: input.purchaseConfirmed,
+    redeemedAt,
+  };
+}
+
+function resetLeadPrizeInMemory(leadId: string) {
+  const lead = store.leads.find((item) => item.id === leadId);
+
+  if (!lead) {
+    throw new Error("Lead introuvable");
+  }
+
+  if (!lead.prizeId) {
+    throw new Error("Aucun lot à réinitialiser");
+  }
+
+  lead.status = "claimed";
+  recordEventInMemory(lead.campaignId, "prize_reset", lead.id);
+
+  return clone(lead);
+}
+
 function updatePrizeStockInMemory(prizeId: string, remainingQuantity: number | null) {
   const prize = store.prizes.find((item) => item.id === prizeId);
 
@@ -2006,6 +2297,38 @@ export const getMerchantDashboard = cache(async function getMerchantDashboard(
 export const getMerchantWorkspaceDashboard = cache(async function getMerchantWorkspaceDashboard(
   userId: string,
   activeMerchant: Merchant,
+) {
+  const context = await getMerchantWorkspaceContext(userId, activeMerchant);
+  const dashboards = await Promise.all(
+    context.locations.map(({ merchant }) => getMerchantDashboard(merchant.id, merchant)),
+  );
+  const campaigns = dashboards.flatMap((dashboard) => dashboard.campaigns);
+  const activityByDay = new Map<string, { scans: number; participations: number }>();
+  dashboards.forEach((dashboard) => {
+    dashboard.activityPoints.forEach((point) => {
+      const current = activityByDay.get(point.label) ?? { scans: 0, participations: 0 };
+      activityByDay.set(point.label, {
+        scans: current.scans + point.scans,
+        participations: current.participations + point.participations,
+      });
+    });
+  });
+
+  return {
+    merchant: activeMerchant,
+    campaigns,
+    totalLeads: dashboards.reduce((total, dashboard) => total + dashboard.totalLeads, 0),
+    totalRedeemed: dashboards.reduce((total, dashboard) => total + dashboard.totalRedeemed, 0),
+    averageConversion: campaigns.length
+      ? Math.round(campaigns.reduce((total, item) => total + item.kpis.conversionRate, 0) / campaigns.length)
+      : 0,
+    activityPoints: [...activityByDay.entries()].map(([label, values]) => ({ label, ...values })),
+  } satisfies MerchantDashboardData;
+});
+
+export const getMerchantCampaignOverview = cache(async function getMerchantCampaignOverview(
+  merchantId = merchantSeed.id,
+  fallbackMerchant?: Merchant,
 ) {
   const context = await getMerchantWorkspaceContext(userId, activeMerchant);
   const dashboards = await Promise.all(
@@ -2273,6 +2596,28 @@ export async function resetLeadPrize(leadId: string) {
     return resetLeadPrizeInSupabase(leadId);
   }
 
+  return findMerchantLeadByRedemptionCodeInMemory(merchantId, code);
+}
+
+export async function redeemMerchantLeadPrizeFromCashier(input: {
+  leadId: string;
+  merchantId: string;
+  operatorUserId: string;
+  purchaseConfirmed: boolean;
+  idempotencyKey: string;
+}) {
+  if (getDataBackend("le retrait caisse d'un lot") === "supabase") {
+    return redeemSupabaseCashierLeadPrize(input);
+  }
+
+  return redeemMerchantLeadPrizeInMemory(input);
+}
+
+export async function resetLeadPrize(leadId: string) {
+  if (getDataBackend("la réinitialisation d'un lot") === "supabase") {
+    return resetLeadPrizeInSupabase(leadId);
+  }
+
   return resetLeadPrizeInMemory(leadId);
 }
 
@@ -2294,6 +2639,50 @@ export async function resetPrizeStock(prizeId: string) {
 
 export async function updateCampaignSetup(input: CampaignSetupInput) {
   assertCampaignCanPublish(input);
+
+  if (getDataBackend("la mise à jour d'une campagne") === "supabase") {
+    const campaignId = await updateCampaignSetupInSupabase(input);
+    invalidateCampaignNavigationCache(input.merchantId, campaignId);
+    return getCampaignPerformance(
+      campaignId,
+      await resolveMerchantForSupabase(input.merchantId),
+    );
+  }
+
+  return updateCampaignSetupInMemory(input);
+}
+
+export async function toggleCampaign(id: string, isActive: boolean, merchantId?: string) {
+  if (getDataBackend("l'activation d'une campagne") === "supabase") {
+    if (merchantId) {
+      await toggleCampaignForMerchantInSupabase(id, isActive, merchantId);
+      invalidateCampaignNavigationCache(merchantId, id);
+      return null;
+    }
+
+    await toggleCampaignInSupabase(id, isActive);
+    invalidateCampaignNavigationCache(undefined, id);
+    return null;
+  }
+
+  return toggleCampaignInMemory(id, isActive);
+}
+
+export async function deleteCampaign(id: string, merchantId?: string) {
+  if (getDataBackend("la suppression d'une campagne") === "supabase") {
+    if (merchantId) {
+      await deleteCampaignForMerchantInSupabase(id, merchantId);
+      invalidateCampaignNavigationCache(merchantId, id);
+      return null;
+    }
+
+    await deleteCampaignInSupabase(id);
+    invalidateCampaignNavigationCache(undefined, id);
+    return null;
+  }
+
+  return deleteCampaignInMemory(id);
+}
 
   if (getDataBackend("la mise à jour d'une campagne") === "supabase") {
     const campaignId = await updateCampaignSetupInSupabase(input);

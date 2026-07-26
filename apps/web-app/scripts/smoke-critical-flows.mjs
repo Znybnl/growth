@@ -311,6 +311,34 @@ async function main() {
       idempotencyKey: `smoke-cashier-${Date.now()}`,
     }),
   });
+  const lead = finalized.body?.lead;
+  assert(lead?.id, "Participation non enregistrée.");
+  assert(lead?.prizeId, "Le smoke test attend un lot gagnant.");
+  assert(lead?.redemptionCode, "Code de retrait manquant.");
+  console.log(`✓ Gain client: ${lead.redemptionCode}`);
+
+  await request(`/api/public/redeem/${encodeURIComponent(lead.redemptionCode)}/qr`, {
+    headers: { Accept: "image/svg+xml" },
+  });
+  await request(`/redeem/${encodeURIComponent(lead.redemptionCode)}`, {
+    headers: { Accept: "text/html" },
+  });
+  console.log("✓ QR code et page retrait");
+
+  await request(`/api/merchant/leads?campaign=${encodeURIComponent(campaignId)}`);
+  const cashierLookup = await request("/api/merchant/cashier/lookup", {
+    method: "POST",
+    body: JSON.stringify({ code: lead.redemptionCode }),
+  });
+  assert(cashierLookup.body?.context?.status === "available", "Le code caisse devrait être valide.");
+  const cashierRedeem = await request("/api/merchant/cashier/redeem", {
+    method: "POST",
+    body: JSON.stringify({
+      leadId: lead.id,
+      purchaseConfirmed: false,
+      idempotencyKey: `smoke-cashier-${Date.now()}`,
+    }),
+  });
   assert(cashierRedeem.body?.context?.status === "redeemed", "Le retrait caisse n'est pas confirmé.");
   console.log("✓ Retrait vendeur");
 

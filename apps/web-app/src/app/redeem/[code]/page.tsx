@@ -37,3 +37,4 @@ export default async function RedeemPage({ params }: RedeemPageProps) {
 
   return <ExpressRedemption code={code} context={context} />;
 }
+

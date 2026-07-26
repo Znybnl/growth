@@ -48,6 +48,12 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
   const [restaurantType] = useState(
     merchant.onboardingCompleted ? merchant.restaurantType ?? "" : "",
   );
+  const [industry, setIndustry] = useState(merchant.industry ?? "Restauration");
+  const [city, setCity] = useState(merchant.city ?? "");
+  const [contactName, setContactName] = useState(merchant.contactName ?? "");
+  const [restaurantType] = useState(
+    merchant.onboardingCompleted ? merchant.restaurantType ?? "" : "",
+  );
   const [phone, setPhone] = useState(merchant.phone ?? "");
   const [restaurantEmail, setRestaurantEmail] = useState(merchant.restaurantEmail ?? "");
   const [websiteUrl, setWebsiteUrl] = useState(merchant.websiteUrl ?? "");
@@ -179,6 +185,16 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             <label className="text-sm">
               <span className="mb-2 block text-[#616b7c]">
+                Ville / {isRestaurant ? "restaurant" : "commerce"}
+              </span>
+              <input
+                value={phone}
+                onChange={(event) => setPhone(event.target.value)}
+                className={inputClass}
+              />
+            </label>
+            <label className="text-sm">
+              <span className="mb-2 block text-[#616b7c]">
                 Téléphone du {isRestaurant ? "restaurant" : "commerce"}
               </span>
               <input
@@ -276,6 +292,22 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
                   placeholder="https://tripadvisor.com/..."
                   className={inputClass}
                 />
+              </label>
+              <label className="text-sm md:col-span-2">
+                <span className="mb-2 block text-[#616b7c]">PIN de validation du retrait</span>
+                <input
+                  type="password"
+                  inputMode="numeric"
+                  autoComplete="new-password"
+                  pattern="[0-9]{4,6}"
+                  maxLength={6}
+                  value={redemptionPin}
+                  onChange={(event) => setRedemptionPin(event.target.value.replace(/\D/g, ""))}
+                  className={inputClass}
+                />
+                <span className="mt-2 block text-xs leading-5 text-ash">
+                  Ce code de 4 à 6 chiffres est demandé à un employé pour valider un retrait. Il est prérempli à 0000 et pourra être modifié depuis Compte.
+                </span>
               </label>
               <label className="text-sm md:col-span-2">
                 <span className="mb-2 block text-[#616b7c]">PIN de validation du retrait</span>
