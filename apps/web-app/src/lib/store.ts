@@ -762,7 +762,7 @@ function toPublicCampaign(campaign: Campaign, actions = campaign.actions): Publi
       probability: prize.probability,
     })),
     presentation: campaign.presentation,
-    actions,
+    actions: actions.filter((action) => action.kind !== "crm"),
     rewardRules: campaign.rewardRules,
   };
 }
@@ -807,6 +807,8 @@ function computeKpis(campaign: Campaign) {
 
   return {
     scans,
+    contacts: leads.length,
+    optIns: leads.filter((lead) => lead.marketingConsent).length,
     leads: leads.length,
     actions,
     games,

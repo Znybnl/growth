@@ -625,7 +625,7 @@ export interface DrawRequest {
   campaignId: string;
   firstName: string;
   email: string;
-  marketingConsent: boolean;
+  marketingConsent?: boolean;
 }
 
 export interface DrawSession {
@@ -664,6 +664,11 @@ export interface DrawResult {
 
 export interface CampaignKpi {
   scans: number;
+  /** Total contacts captured after a participation (wins and losses). */
+  contacts: number;
+  /** Contacts that explicitly opted in to marketing communications. */
+  optIns: number;
+  /** @deprecated Use contacts; kept for backwards compatibility with existing dashboards. */
   leads: number;
   actions: number;
   games: number;

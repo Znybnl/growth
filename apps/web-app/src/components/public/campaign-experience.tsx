@@ -429,7 +429,11 @@ export function CampaignExperience({
     drawResult?.prize?.id ??
     segments.find((segment) => segment.tone === "lose")?.id ??
     "lose-0";
-  const currentAction = campaign.actions[0];
+  // CRM is a post-game collection mechanism, not an external pre-game action.
+  // Ignore legacy CRM actions so they cannot render as a broken empty link.
+  const currentAction = campaign.actions.find((action) => action.kind !== "crm");
+  const isLeadCapture = campaign.goalType === "lead_capture";
+  const isContactOnlySuccess = stage === "success" && Boolean(drawResult) && !drawResult?.prize;
   const scratchLabel = previewResult?.prize?.label ?? "Perdu :(";
   const redemptionCode = drawResult?.lead.redemptionCode;
   const previewUsageConditions = previewResult?.prize?.usageConditions?.trim();
@@ -643,7 +647,7 @@ export function CampaignExperience({
   }
 
   async function handleGameReveal() {
-    if (previewResult?.prize) {
+    if (previewResult?.prize || isLeadCapture) {
       setStage("collect");
       await trackEvent("form_started");
       return;
@@ -1001,10 +1005,14 @@ export function CampaignExperience({
           🎁
         </div>
         <h2 className="mt-6 text-center text-[2rem] font-semibold leading-[1.05] text-[#121826]">
-          Félicitations ! Vous avez remporté {previewResult?.prize?.label}
+          {previewResult?.prize
+            ? `Félicitations ! Vous avez remporté ${previewResult.prize.label}`
+            : "Merci pour votre participation"}
         </h2>
         <div className="mt-5 rounded-[22px] bg-[#f6f7fb] px-5 py-4 text-base leading-7 text-[#475067]">
-          Vos informations sont nécessaires pour valider et envoyer votre gain.
+          {previewResult?.prize
+            ? "Vos informations sont nécessaires pour valider et envoyer votre gain."
+            : "Laissez vos coordonnées pour recevoir les prochaines opportunités du commerce."}
         </div>
         {previewUsageConditions ? (
           <div className="mt-4 rounded-[22px] bg-[#fff8e8] px-5 py-4 text-left text-sm leading-7 text-[#6c5313]">
@@ -1071,26 +1079,30 @@ export function CampaignExperience({
             ✉
           </div>
           <p className="mt-4 text-lg leading-7 text-[#1a2f76]">
-            Vous recevrez votre gain par e-mail avec les informations de retrait
+            {isContactOnlySuccess
+              ? "Votre contact est bien enregistré."
+              : "Vous recevrez votre gain par e-mail avec les informations de retrait"}
           </p>
           <p className="mt-3 text-sm leading-6 text-[#61687a]">
-            Conservez ce QR code pour retirer votre gain. Si l’e-mail tarde à arriver, vérifiez vos spams.
+            {isContactOnlySuccess
+              ? "Merci pour votre confiance."
+              : "Conservez ce QR code pour retirer votre gain. Si l’e-mail tarde à arriver, vérifiez vos spams."}
           </p>
 
-          <div className="mt-4 rounded-[18px] bg-[#fff4cb] px-4 py-3 text-left text-sm leading-6 text-[#4d3810]">
+          {drawResult?.prize ? <div className="mt-4 rounded-[18px] bg-[#fff4cb] px-4 py-3 text-left text-sm leading-6 text-[#4d3810]">
             <p>
               Vous avez entre le {availableDate ?? "maintenant"} et le {expiryDate ?? "bientôt"}{" "}
               pour venir le récupérer.
             </p>
-          </div>
+          </div> : null}
 
-          {campaign.rewardRules.purchaseRequired ? (
+          {drawResult?.prize && campaign.rewardRules.purchaseRequired ? (
             <div className="mt-3 rounded-[18px] bg-[#f7f7fb] px-4 py-3 text-left text-sm leading-6 text-[#61687a]">
               Le retrait du lot est soumis à une condition d’achat.
             </div>
           ) : null}
 
-          {resolvedUsageConditions ? (
+          {drawResult?.prize && resolvedUsageConditions ? (
             <div className="mt-3 rounded-[18px] bg-[#fff4cb] px-4 py-3 text-left text-sm leading-6 text-[#4d3810]">
               <p className="text-xs uppercase tracking-[0.2em] text-[#8a6a18]">
                 Conditions d&apos;utilisation

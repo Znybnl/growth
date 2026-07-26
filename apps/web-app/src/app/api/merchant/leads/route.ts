@@ -34,6 +34,7 @@ export async function GET(request: NextRequest) {
       "email_sent_at",
       "email_delivered_at",
       "email_error",
+      "marketing_consent",
       "consent_timestamp",
     ];
     const rows = leads.map((lead) =>
@@ -49,6 +50,7 @@ export async function GET(request: NextRequest) {
         lead.emailSentAt ?? "",
         lead.emailDeliveredAt ?? "",
         lead.emailErrorMessage ?? "",
+        lead.marketingConsent ? "true" : "false",
         lead.consentTimestamp ?? "",
       ]
         .map((value) => `"${String(value).replaceAll('"', '""')}"`)

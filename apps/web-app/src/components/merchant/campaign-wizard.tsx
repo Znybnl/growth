@@ -221,7 +221,7 @@ function createWizardActions(
     ];
   }
 
-  return [createWizardAction("wizard-crm-action", "crm", "")];
+  return [];
 }
 
 function createWizardDraft(merchant: Merchant): WizardDraft {
@@ -979,8 +979,9 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                     <option value="social_follow">Gagner des abonnés</option>
                   </select>
                   <span className="mt-2 block text-xs leading-5 text-[#8993a6]">
-                    Cet objectif nous permet de proposer par défaut des actions,
-                    que vous pourrez modifier à l’étape 4.
+                    Les coordonnées sont demandées après le jeu, quel que soit le
+                    résultat. Le consentement marketing reste distinct et optionnel.
+                    Les actions proposées par défaut sont modifiables à l’étape 4.
                   </span>
                 </label>
               </div>
@@ -1408,9 +1409,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                           <option value="tripadvisor">
                             Laisser un avis Tripadvisor
                           </option>
-                          <option value="crm">
-                            Rejoindre le programme fidélité
-                          </option>
+                          <option value="crm">Collecte email</option>
                           <option value="custom">
                             Ouvrir un lien personnalisé
                           </option>
@@ -1433,7 +1432,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                       </label>
                     ) : (
                       <p className="mt-4 rounded-[12px] bg-[#f6f8fb] px-3 py-2 text-xs leading-5 text-[#69758a]">
-                        Cette action est gérée dans votre espace fidélité ;
+                        Les coordonnées sont collectées dans le formulaire après le jeu ;
                         aucun lien externe n’est requis.
                       </p>
                     )}

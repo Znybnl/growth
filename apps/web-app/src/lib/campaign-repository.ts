@@ -244,6 +244,7 @@ type CampaignOverviewLeadRow = {
   campaign_id: string;
   prize_id: string | null;
   status: Lead["status"];
+  marketing_consent: boolean | null;
 };
 
 type CampaignOverviewEventRow = {
@@ -702,6 +703,8 @@ function computeKpis(campaign: Campaign, prizes: Prize[], leads: Lead[], events:
 
   return {
     scans,
+    contacts: leads.length,
+    optIns: leads.filter((lead) => lead.marketingConsent).length,
     leads: leads.length,
     actions,
     games,
@@ -839,7 +842,7 @@ function buildDashboardActivityPoints(leads: LeadRow[], events: EventRow[]) {
   }));
 }
 
-function toOverviewKpis(row: CampaignOverviewRpcRow): CampaignKpi {
+function toOverviewKpis(row: CampaignOverviewRpcRow, optIns = 0): CampaignKpi {
   const scans = Number(row.scans_count) || 0;
   const leads = Number(row.leads_count) || 0;
   const actions = Number(row.actions_count) || 0;
@@ -850,6 +853,8 @@ function toOverviewKpis(row: CampaignOverviewRpcRow): CampaignKpi {
 
   return {
     scans,
+    contacts: leads,
+    optIns,
     leads,
     actions,
     games,
@@ -882,6 +887,8 @@ function computeOverviewKpisFromRows(
 
   return {
     scans,
+    contacts: leads.length,
+    optIns: leads.filter((lead) => lead.marketing_consent).length,
     leads: leads.length,
     actions,
     games,
@@ -1044,11 +1051,23 @@ export async function getSupabaseMerchantCampaignOverview(
       ...merchant,
       logoUrl: undefined,
     };
+    const campaignIds = rows.map((row) => row.id);
+    const { data: optInRows } = campaignIds.length
+      ? await supabase
+          .from("leads")
+          .select("campaign_id")
+          .eq("marketing_consent", true)
+          .in("campaign_id", campaignIds)
+      : { data: [] as Array<{ campaign_id: string }> };
+    const optInsByCampaignId = new Map<string, number>();
+    for (const row of (optInRows as Array<{ campaign_id: string }> | null) ?? []) {
+      optInsByCampaignId.set(row.campaign_id, (optInsByCampaignId.get(row.campaign_id) ?? 0) + 1);
+    }
     const campaigns = rows.map((row) => ({
       campaign: toCampaignOverview(row, overviewMerchant),
       merchant: clone(overviewMerchant),
       prizes: [],
-      kpis: toOverviewKpis(row),
+      kpis: toOverviewKpis(row, optInsByCampaignId.get(row.id) ?? 0),
     }));
     const totalLeads = campaigns.reduce((total, item) => total + item.kpis.leads, 0);
     const totalRedeemed = campaigns.reduce((total, item) => total + item.kpis.redeemed, 0);
@@ -1090,7 +1109,7 @@ export async function getSupabaseMerchantCampaignOverview(
   const [{ data: leadsData }, { data: eventsData }, { data: prizesData }] = await Promise.all([
     supabase
       .from("leads")
-      .select("campaign_id,prize_id,status")
+      .select("campaign_id,prize_id,status,marketing_consent")
       .in("campaign_id", campaignIds),
     supabase
       .from("campaign_events")
@@ -1243,7 +1262,9 @@ export async function getSupabasePublicCampaign(
   }
   assertMerchantBillingAccess(performance.merchant, "campaign_public");
 
-  let actions = performance.campaign.actions;
+  // CRM is collected in the post-game form. Never expose legacy CRM actions as
+  // pre-game links (they have no destination and would create a dead-end CTA).
+  let actions = performance.campaign.actions.filter((action) => action.kind !== "crm");
   if (participantToken) {
     const supabase = getSupabaseAdmin();
     const { data: identity } = await supabase
@@ -1260,7 +1281,7 @@ export async function getSupabasePublicCampaign(
         .select("id", { count: "exact", head: true })
         .eq("campaign_id", campaignId)
         .ilike("email", identity.email);
-      const nextAction = performance.campaign.actions[count ?? 0];
+      const nextAction = actions[count ?? 0];
       actions = nextAction ? [nextAction] : [];
     }
   }
@@ -1728,6 +1749,8 @@ export async function getSupabaseCampaignDataView(
 
   performance.kpis = {
     scans: Number(summary.scans_count) || 0,
+    contacts: Number(summary.leads_count) || 0,
+    optIns: 0,
     leads: Number(summary.leads_count) || 0,
     actions: Number(summary.actions_count) || 0,
     games: Number(summary.games_count) || 0,
@@ -1752,6 +1775,13 @@ export async function getSupabaseCampaignDataView(
   };
 
   const leadRows = (leadsResult.data as LeadRow[] | null) ?? [];
+  performance.kpis.contacts = Number(summary.leads_count) || leadRows.length;
+  const { count: optInsCount } = await supabase
+    .from("leads")
+    .select("id", { count: "exact", head: true })
+    .eq("campaign_id", campaignId)
+    .eq("marketing_consent", true);
+  performance.kpis.optIns = optInsCount ?? leadRows.filter((lead) => Boolean(lead.marketing_consent)).length;
   const leadIds = leadRows.map((lead) => lead.id);
   const { data: deliveriesData } = leadIds.length
     ? await supabase

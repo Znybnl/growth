@@ -27,7 +27,7 @@ type DrawBody = {
   campaignId: string;
   firstName: string;
   email: string;
-  marketingConsent: boolean;
+  marketingConsent?: boolean;
 };
 
 export async function POST(request: NextRequest) {
@@ -39,11 +39,10 @@ export async function POST(request: NextRequest) {
   if (
     !isValidPublicIdentifier(campaignId) ||
     !isValidPublicFirstName(firstName) ||
-    !isValidPublicEmail(email) ||
-    !body.marketingConsent
+    !isValidPublicEmail(email)
   ) {
     return NextResponse.json(
-      { error: "campaignId, firstName, email and marketingConsent are required" },
+      { error: "campaignId, firstName and email are required" },
       { status: 400 },
     );
   }
