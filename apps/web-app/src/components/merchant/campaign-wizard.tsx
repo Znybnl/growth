@@ -217,11 +217,11 @@ function createWizardDraft(merchant: Merchant): WizardDraft {
     isActive: false,
     logoMode: "text",
     logoText: merchant.companyName || merchant.logoText,
-    accent: { ink: "#111827", paper: "#fffaf1", signal: "#f4c14a" },
+    accent: { ink: "#111827", paper: "#eef2ff", signal: "#f4c14a" },
     gameType: "wheel",
     presentation: {
-      logo: { sizePercent: 100, marginBottomPx: 32, align: "center" },
-      background: { mode: "color", color: "#fffaf1", imageUrl: "" },
+      logo: { sizePercent: 100, marginBottomPx: 40, align: "center" },
+      background: { mode: "color", color: "#ffffff", imageUrl: "" },
       heading: {
         textColor: "#1f2937",
         fontSizePx: 40,
@@ -230,15 +230,15 @@ function createWizardDraft(merchant: Merchant): WizardDraft {
         align: "center",
       },
       button: {
-        backgroundColor: "#1b2842",
+        backgroundColor: "#c59920",
         textColor: "#ffffff",
-        borderColor: "#1b2842",
-        size: "md",
-        textSizePx: 22,
+        borderColor: "#f4c14a",
+        size: "sm",
+        textSizePx: 24,
         isBold: true,
       },
       layout: {
-        blockSpacingPx: 36,
+        blockSpacingPx: 40,
         templateId: "classic" as GamePageTemplateId,
       },
       wheel,
@@ -1026,7 +1026,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                   <ShieldCheck className="h-5 w-5 text-[#18864b]" />
                 </div>
                 <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  <label className="flex items-start gap-3 rounded-[16px] border border-[#e2e8f0] bg-white p-4 text-sm text-[#182033]">
+                  <label className="flex cursor-pointer items-start gap-3 rounded-[16px] border border-[#e2e8f0] bg-white p-4 text-sm text-[#182033]">
                     <input
                       type="checkbox"
                       checked={draft.rewardRules.isWinningEveryTime}

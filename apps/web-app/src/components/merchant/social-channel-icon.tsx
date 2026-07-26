@@ -1,5 +1,5 @@
 import {
-  AtSign,
+  Camera,
   Link,
   Map,
   Music,
@@ -14,7 +14,7 @@ type SocialChannel = ActionKind | "googleReview" | "custom";
 const channelIcons = {
   google: Star,
   googleReview: Star,
-  instagram: AtSign,
+  instagram: Camera,
   facebook: Users,
   tiktok: Music,
   tripadvisor: Map,

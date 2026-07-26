@@ -173,15 +173,6 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
               );
             })}
           </nav>
-          <Link
-            href="/caisse"
-            prefetch={false}
-            className="okado-secondary-action mt-5 flex items-center justify-center rounded-[8px] px-4 text-sm font-semibold"
-            onClick={() => setMenuOpen(false)}
-          >
-            Valider un retrait
-          </Link>
-
           <Button asChild className="okado-primary-action mt-5 px-4">
             <Link href="/campaigns/new" prefetch={false} onClick={() => setMenuOpen(false)}>
               Créer une campagne
@@ -194,6 +185,14 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
             onClick={() => setMenuOpen(false)}
           >
             Assistant guidé
+          </Link>
+          <Link
+            href="/caisse"
+            prefetch={false}
+            className="okado-secondary-action mt-2 flex items-center justify-center rounded-[8px] px-4 text-sm font-semibold"
+            onClick={() => setMenuOpen(false)}
+          >
+            Valider un retrait
           </Link>
 
           {isSaasAdmin ? (
