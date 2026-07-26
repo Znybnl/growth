@@ -494,8 +494,9 @@ export function CampaignExperience({
               ? "font-bebas"
               : "font-display";
   const showBottomState =
-    (stage === "idle" && campaign.gameType !== "wheel") ||
-    (stage === "ready" && campaign.gameType !== "wheel");
+    !isImmersiveScratchTemplate &&
+    ((stage === "idle" && campaign.gameType !== "wheel") ||
+      (stage === "ready" && campaign.gameType !== "wheel"));
 
   useEffect(() => {
     async function loadCampaign() {
@@ -714,7 +715,7 @@ export function CampaignExperience({
       <div className="relative mx-auto flex h-screen w-full flex-col overflow-hidden px-4 pb-0 pt-12 sm:px-6 sm:pt-14">
         {(campaign.logoMode === "image" && campaign.logoUrl) ||
         campaign.logoMode === "text" ||
-        campaign.gameType === "scratch" ? (
+        campaign.gameType === "scratch" && !isImmersiveScratchTemplate ? (
           <div className={`flex ${logoAlignmentClass}`}>
             <div style={{ marginBottom: `${campaign.presentation.logo.marginBottomPx}px` }}>
               <BrandMark
@@ -730,10 +731,11 @@ export function CampaignExperience({
         ) : null}
 
         {campaign.logoMode === "none" ||
-        (campaign.logoMode === "image" && !campaign.logoUrl) ? (
+        (campaign.logoMode === "image" && !campaign.logoUrl) && !isImmersiveScratchTemplate ? (
           <div aria-hidden="true" className="h-5" />
         ) : null}
 
+        {!isImmersiveScratchTemplate ? (
         <div className={headingAlignmentClass}>
           <h1
             className={`${headingFontClass} whitespace-pre-line ${isRestaurantPopTemplate ? "tracking-[0.038em] drop-shadow-[0_5px_0_rgba(0,0,0,0.08)]" : ""} leading-[1] text-[#151826]`}
@@ -763,6 +765,7 @@ export function CampaignExperience({
               : campaign.subtitle.trim() || "Grattez pour révéler votre cadeau"}
           </h1>
         </div>
+        ) : null}
 
         {campaign.gameType === "wheel" ? (
           <div
@@ -827,6 +830,13 @@ export function CampaignExperience({
                 resultLabel={scratchLabel}
                 enabled={stage === "ready"}
                 onReveal={() => void handleGameReveal()}
+                onStart={() => void openActionAndTrack()}
+                logoMode={campaign.logoMode}
+                logoText={campaign.logoText ?? campaign.merchantLogoText}
+                logoUrl={campaign.logoUrl}
+                headline={campaign.subtitle}
+                headingTextColor={headingTextColor}
+                logoWidthPx={logoWidthPx}
                 template={pageTemplate as "scratch-vault" | "scratch-confetti" | "scratch-coral" | "scratch-lilac" | "scratch-sunburst"}
               />
             ) : (

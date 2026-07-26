@@ -888,6 +888,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
     preview.gamePageTemplateId === "scratch-coral" ||
     preview.gamePageTemplateId === "scratch-lilac" ||
     preview.gamePageTemplateId === "scratch-sunburst";
+  const showStandardHeader = !isImmersiveScratchTemplate;
   const previewScale = compact ? 0.8 : 1;
   const scalePreviewValue = (value: number) => Math.round(value * previewScale);
   const previewHeadingTextColor = isCosmicTemplate ? "#f8fbff" : preview.headingTextColor;
@@ -899,6 +900,8 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
         className={`mx-auto w-full overflow-hidden border border-[#ced7e6] shadow-[0_30px_70px_rgba(18,24,39,0.18)] ${compact ? "min-h-[480px] max-w-[360px] rounded-[30px] px-3 pb-5 pt-7" : "min-h-[600px] max-w-[450px] rounded-[38px] px-4 pb-6 pt-8"}`}
         style={preview.backgroundStyle}
       >
+        {showStandardHeader ? (
+          <>
         {preview.logoMode === "image" && preview.logoUrl ? (
           <div className={`flex ${preview.logoAlignmentClass}`}>
             <div
@@ -992,6 +995,8 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
               : preview.subtitle.trim() || (preview.gameType === "scratch" ? "Grattez pour révéler votre cadeau" : "Découvrez votre animation")}
           </h3>
         </div>
+          </>
+        ) : null}
 
         <div
           className={
@@ -1049,6 +1054,12 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
                 resultLabel={preview.previewPrize}
                 enabled={false}
                 onReveal={() => undefined}
+                logoMode={preview.logoMode}
+                logoText={preview.logoText}
+                logoUrl={preview.logoUrl}
+                headline={preview.subtitle}
+                headingTextColor={previewHeadingTextColor}
+                logoWidthPx={scalePreviewValue(preview.logoWidthPx)}
                 template={preview.gamePageTemplateId as "scratch-vault" | "scratch-confetti" | "scratch-coral" | "scratch-lilac" | "scratch-sunburst"}
               />
             ) : (
@@ -1062,7 +1073,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
           )}
         </div>
 
-        {preview.gameType !== "wheel" ? (
+        {preview.gameType !== "wheel" && !isImmersiveScratchTemplate ? (
           <button
             type="button"
             className={`mx-auto block w-full max-w-[360px] rounded-[24px] border font-semibold ${preview.previewCtaClass}`}
