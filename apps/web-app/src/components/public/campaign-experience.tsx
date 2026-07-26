@@ -429,7 +429,11 @@ export function CampaignExperience({
     drawResult?.prize?.id ??
     segments.find((segment) => segment.tone === "lose")?.id ??
     "lose-0";
-  const currentAction = campaign.actions[0];
+  // CRM is a post-game collection mechanism, not an external pre-game action.
+  // Ignore legacy CRM actions so they cannot render as a broken empty link.
+  const currentAction = campaign.actions.find((action) => action.kind !== "crm");
+  const isLeadCapture = campaign.goalType === "lead_capture";
+  const isContactOnlySuccess = stage === "success" && Boolean(drawResult) && !drawResult?.prize;
   const scratchLabel = previewResult?.prize?.label ?? "Perdu :(";
   const redemptionCode = drawResult?.lead.redemptionCode;
   const previewUsageConditions = previewResult?.prize?.usageConditions?.trim();
@@ -482,239 +486,7 @@ export function CampaignExperience({
   const headingFontClass =
     campaign.presentation.heading.fontFamily === "anton"
       ? "font-anton"
-      : campaign.presentation.heading.fontFamily === "serif" || campaign.presentation.heading.fontFamily === "cormorant"
-        ? campaign.presentation.heading.fontFamily === "cormorant"
-          ? "font-cormorant"
-          : "font-serif"
-        : campaign.presentation.heading.fontFamily === "fredoka"
-          ? "font-fredoka"
-          : campaign.presentation.heading.fontFamily === "inter" || campaign.presentation.heading.fontFamily === "sans"
-            ? "font-inter"
-            : campaign.presentation.heading.fontFamily === "bebas"
-              ? "font-bebas"
-              : "font-display";
-  const showBottomState =
-    !isImmersiveScratchTemplate &&
-    ((stage === "idle" && campaign.gameType !== "wheel") ||
-      (stage === "ready" && campaign.gameType !== "wheel"));
-
-  useEffect(() => {
-    async function loadCampaign() {
-      const response = await fetch(
-        `/api/public/campaign/${campaignId}${isPreview ? "?preview=1" : ""}`,
-      );
-
-      if (!response.ok) {
-        return;
-      }
-
-      const payload = (await response.json()) as { campaign: PublicCampaign };
-      setCampaign(payload.campaign);
-    }
-
-    void loadCampaign();
-  }, [campaignId, isPreview]);
-
-  async function trackEvent(eventType: string, leadId?: string) {
-    await fetch("/api/public/event", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        campaignId,
-        leadId,
-        eventType,
-      }),
-    });
-  }
-
-  async function prepareSession(nextStage: ExperienceStage = "ready") {
-    setError(null);
-    setIsLoading(true);
-
-    try {
-      const response = await fetch("/api/public/draw/session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ campaignId }),
-      });
-
-      if (!response.ok) {
-        const payload = (await response.json().catch(() => null)) as {
-          error?: string;
-          code?: string;
-        } | null;
-        if (payload?.code === "already_played_today") {
-          setBlockedMessage(
-            payload.error ?? "Vous avez déjà participé à cette animation. Réessayez plus tard.",
-          );
-          setStage("blocked");
-          return;
-        }
-        throw new Error(payload?.error ?? "Impossible de préparer la partie.");
-      }
-
-      const payload = (await response.json()) as CreateDrawSessionResult;
-      setPreviewResult(payload);
-      setDrawSession(payload.session);
-      setCampaign(payload.campaign);
-      setStage(nextStage);
-    } catch (sessionError) {
-      setError(
-        sessionError instanceof Error ? sessionError.message : "Une erreur est survenue.",
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
-  async function openActionAndTrack() {
-    setActionVisited(false);
-    setError(null);
-    if (drawSession) {
-      setStage("intro");
-      return;
-    }
-
-    // An optional marketing action must never reserve a prize or gate access
-    // to the game. The draw session is prepared only when the player chooses
-    // to play.
-    setStage("intro");
-  }
-
-  async function launchPreparedGame() {
-    if (!drawSession) {
-      await prepareSession("ready");
-      setAutoSpinKey(`spin-${Date.now()}`);
-      return;
-    }
-
-    setStage("ready");
-    setAutoSpinKey(`spin-${drawSession.id}`);
-  }
-
-  async function submitWinnerForm(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!drawSession) {
-      return;
-    }
-
-    setError(null);
-    setIsLoading(true);
-
-    try {
-      const payload: FinalizeDrawSessionRequest = {
-        sessionId: drawSession.id,
-        firstName,
-        email,
-        marketingConsent,
-      };
-      const response = await fetch("/api/public/draw/finalize", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const failure = (await response.json().catch(() => null)) as {
-          error?: string;
-          code?: string;
-        } | null;
-        if (failure?.code === "participation_cooldown") {
-          setBlockedMessage(
-            failure.error ?? "Vous avez déjà participé à cette animation. Revenez plus tard.",
-          );
-          setStage("blocked");
-          return;
-        }
-        throw new Error(failure?.error ?? "Impossible d’enregistrer vos coordonnées.");
-      }
-
-      const result = (await response.json()) as DrawResult;
-      setDrawResult(result);
-      setCampaign(result.campaign);
-      setStage("success");
-    } catch (submitError) {
-      setError(
-        submitError instanceof Error ? submitError.message : "Une erreur est survenue.",
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
-  async function handleGameReveal() {
-    if (previewResult?.prize) {
-      setStage("collect");
-      await trackEvent("form_started");
-      return;
-    }
-
-    void trackEvent("game_lost");
-    setStage("lost");
-  }
-
-  const backgroundStyle =
-    campaign.presentation.background.mode === "image" &&
-    campaign.presentation.background.imageUrl
-      ? `linear-gradient(rgba(0,0,0,0.08), rgba(0,0,0,0.18)), url("${campaign.presentation.background.imageUrl}")`
-      : isScratchVaultTemplate
-        ? `radial-gradient(circle at 50% 108%, ${withHexAlpha(primaryColor, "58")} 0 27%, transparent 48%), radial-gradient(circle at 15% 10%, ${withHexAlpha(secondaryColor, "4d")} 0 12%, transparent 22%), linear-gradient(155deg, #071126 0%, #111b3b 56%, #071126 100%)`
-        : isScratchConfettiTemplate
-          ? `radial-gradient(circle at 12% 9%, ${withHexAlpha(primaryColor, "52")} 0 10%, transparent 11%), radial-gradient(circle at 94% 12%, ${withHexAlpha(secondaryColor, "30")} 0 12%, transparent 13%), linear-gradient(180deg, #f59e0b 0%, #f97316 58%, #ea580c 100%)`
-        : isScratchCoralTemplate
-          ? `radial-gradient(circle at 50% 0%, ${withHexAlpha(primaryColor, "24")} 0 18%, transparent 42%), linear-gradient(180deg, #fffaf5 0%, #ffffff 72%, #fff3e8 100%)`
-        : isScratchLilacTemplate
-          ? `radial-gradient(circle at 50% 0%, ${withHexAlpha(primaryColor, "2c")} 0 20%, transparent 44%), linear-gradient(180deg, #fffaff 0%, #f7edff 100%)`
-        : isScratchSunburstTemplate
-          ? `repeating-conic-gradient(from -18deg at 50% -2%, ${withHexAlpha(primaryColor, "52")} 0deg 12deg, transparent 12deg 24deg), linear-gradient(180deg, #fff4bf 0%, #ffdc58 68%, #fff0c5 100%)`
-        : isCosmicTemplate
-        ? `radial-gradient(circle at 50% 112%, ${withHexAlpha(primaryColor, "52")} 0 24%, transparent 43%), radial-gradient(circle at 9% 12%, ${withHexAlpha(secondaryColor, "2b")} 0 14%, transparent 25%), linear-gradient(155deg, #07142e 0%, #0b1d42 55%, #071126 100%)`
-        : isSunburstTemplate
-          ? `radial-gradient(circle at 12% 10%, ${withHexAlpha(primaryColor, "33")} 0 12%, transparent 13%), radial-gradient(circle at 94% 18%, ${withHexAlpha(secondaryColor, "38")} 0 14%, transparent 15%), linear-gradient(180deg, #fffdf5 0%, #fff8e8 56%, #fff2ce 100%)`
-        : isRestaurantPopTemplate
-        ? `radial-gradient(circle at -10% -8%, ${withHexAlpha(primaryColor, "f2")} 0 18%, transparent 19%), radial-gradient(circle at 110% 0%, ${withHexAlpha(secondaryColor, "f2")} 0 13%, transparent 14%), radial-gradient(circle at 0% 80%, ${withHexAlpha(primaryColor, "20")} 0 20%, transparent 21%), radial-gradient(circle at 100% 78%, ${withHexAlpha(secondaryColor, "40")} 0 18%, transparent 19%), linear-gradient(180deg, #fff2dd 0%, #fffaf1 46%, #fff4e5 100%)`
-        : `radial-gradient(circle at 50% 50%, ${withHexAlpha(primaryColor, "33")}, transparent 50%), linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.08))`;
-  const restaurantPopHeadingLines = buildRestaurantPopHeadingLines(campaign.subtitle);
-  const headingFontSize = fluidType(campaign.presentation.heading.fontSizePx, {
-    minRatio: 0.82,
-    maxRatio: 1.08,
-    viewportStep: 0.3,
-  });
-  const buttonFontSize = fluidType(campaign.presentation.button.textSizePx, {
-    minRatio: 0.86,
-    maxRatio: 1.08,
-    viewportStep: 0.24,
-  });
-  const publicCtaLabel = campaign.ctaLabel?.trim() || "Jouer";
-  const pageTopPaddingClass = isImmersiveScratchTemplate ? "pt-5 sm:pt-6" : "pt-12 sm:pt-14";
-
-  return (
-    <div
-      className="okado-public-experience relative min-h-screen overflow-hidden"
-      style={{
-        backgroundColor: campaign.presentation.background.color,
-        backgroundImage: backgroundStyle,
-        backgroundPosition: "center",
-        backgroundSize: "cover",
-      }}
-    >
-      {isRestaurantPopTemplate || isSunburstTemplate || isCosmicTemplate || isScratchVaultTemplate || isScratchConfettiTemplate || isScratchCoralTemplate || isScratchLilacTemplate || isScratchSunburstTemplate ? (
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div
-            className="absolute right-0 top-[18%] h-28 w-16 opacity-35"
-            style={{
-              backgroundImage: `radial-gradient(circle, ${withHexAlpha(primaryColor, isCosmicTemplate || isScratchVaultTemplate ? "70" : "40")} 1.8px, transparent 2px)`,
-              backgroundSize: "12px 12px",
-            }}
-          />
-          <div
-            className="absolute -bottom-10 -left-12 h-48 w-48 rounded-full opacity-80"
-            style={{ background: withHexAlpha(primaryColor, isCosmicTemplate || isScratchVaultTemplate ? "2e" : "22") }}
-          />
-        </div>
-      ) : null}
-      <div className={`relative mx-auto flex h-screen w-full flex-col overflow-hidden px-4 pb-0 sm:px-6 ${pageTopPaddingClass}`}>
-        {!isImmersiveScratchTemplate && ((campaign.logoMode === "image" && campaign.logoUrl) ||
+      : campaign…2477 tokens truncated…goMode === "image" && campaign.logoUrl) ||
         campaign.logoMode === "text" ||
         campaign.gameType === "scratch") ? (
           <div className={`flex ${logoAlignmentClass}`}>
@@ -1001,10 +773,14 @@ export function CampaignExperience({
           🎁
         </div>
         <h2 className="mt-6 text-center text-[2rem] font-semibold leading-[1.05] text-[#121826]">
-          Félicitations ! Vous avez remporté {previewResult?.prize?.label}
+          {previewResult?.prize
+            ? `Félicitations ! Vous avez remporté ${previewResult.prize.label}`
+            : "Merci pour votre participation"}
         </h2>
         <div className="mt-5 rounded-[22px] bg-[#f6f7fb] px-5 py-4 text-base leading-7 text-[#475067]">
-          Vos informations sont nécessaires pour valider et envoyer votre gain.
+          {previewResult?.prize
+            ? "Vos informations sont nécessaires pour valider et envoyer votre gain."
+            : "Laissez vos coordonnées pour recevoir les prochaines opportunités du commerce."}
         </div>
         {previewUsageConditions ? (
           <div className="mt-4 rounded-[22px] bg-[#fff8e8] px-5 py-4 text-left text-sm leading-7 text-[#6c5313]">
@@ -1071,26 +847,30 @@ export function CampaignExperience({
             ✉
           </div>
           <p className="mt-4 text-lg leading-7 text-[#1a2f76]">
-            Vous recevrez votre gain par e-mail avec les informations de retrait
+            {isContactOnlySuccess
+              ? "Votre contact est bien enregistré."
+              : "Vous recevrez votre gain par e-mail avec les informations de retrait"}
           </p>
           <p className="mt-3 text-sm leading-6 text-[#61687a]">
-            Conservez ce QR code pour retirer votre gain. Si l’e-mail tarde à arriver, vérifiez vos spams.
+            {isContactOnlySuccess
+              ? "Merci pour votre confiance."
+              : "Conservez ce QR code pour retirer votre gain. Si l’e-mail tarde à arriver, vérifiez vos spams."}
           </p>
 
-          <div className="mt-4 rounded-[18px] bg-[#fff4cb] px-4 py-3 text-left text-sm leading-6 text-[#4d3810]">
+          {drawResult?.prize ? <div className="mt-4 rounded-[18px] bg-[#fff4cb] px-4 py-3 text-left text-sm leading-6 text-[#4d3810]">
             <p>
               Vous avez entre le {availableDate ?? "maintenant"} et le {expiryDate ?? "bientôt"}{" "}
               pour venir le récupérer.
             </p>
-          </div>
+          </div> : null}
 
-          {campaign.rewardRules.purchaseRequired ? (
+          {drawResult?.prize && campaign.rewardRules.purchaseRequired ? (
             <div className="mt-3 rounded-[18px] bg-[#f7f7fb] px-4 py-3 text-left text-sm leading-6 text-[#61687a]">
               Le retrait du lot est soumis à une condition d’achat.
             </div>
           ) : null}
 
-          {resolvedUsageConditions ? (
+          {drawResult?.prize && resolvedUsageConditions ? (
             <div className="mt-3 rounded-[18px] bg-[#fff4cb] px-4 py-3 text-left text-sm leading-6 text-[#4d3810]">
               <p className="text-xs uppercase tracking-[0.2em] text-[#8a6a18]">
                 Conditions d&apos;utilisation
@@ -1134,3 +914,4 @@ export function CampaignExperience({
     </div>
   );
 }
+
