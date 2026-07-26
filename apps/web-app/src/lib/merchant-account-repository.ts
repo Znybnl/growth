@@ -501,4 +501,1050 @@ export async function resolveMerchantSessionFromAuthUser(
       ? "google"
       : "email";
   const avatarUrl =
-    authProvider === "gÁù<∂âûÀk∫wµÁ@ÄÄÄÄÄπΩ…ëï»†âç…ïÖ—ïë}Ö–à∞ÅÏÅÖÕçïπë•πúËÅ—…’îÅÙ§(ÄÄÄÄÄÄπ±•µ•–†ƒ§(ÄÄÄÄÄÄπµÖÂâïM•πù±îÒÏÅ•êËÅÕ—…•πúÏÅ›Ω…≠Õ¡Öçï}•êËÅÕ—…•πúÏÅ…Ω±îËÅ5ï…ç°Öπ—]Ω…≠Õ¡ÖçïIΩ±îÏÅÕ—Ö—’ÃËÅÕ—…•πúÅÙ¯†§Ï((ÄÄÄÅ•òÄ°µïµâï…Õ°•¡E’ï…‰πï……Ω»ÅÒÄÖµïµâï…Õ°•¡E’ï…‰πëÖ—Ñ§ÅÏ(ÄÄÄÄÄÅ…ï—’…∏ÅÏ(ÄÄÄÄÄÄÄÅ›Ω…≠Õ¡ÖçîËÅ’πëïô•πïê∞(ÄÄÄÄÄÄÄÅ±ΩçÖ—•ΩπÃËÅmÏÅµï…ç°Öπ–ËÅôÖ±±âÖç≠5ï…ç°Öπ–∞Å…Ω±îËÄâΩ›πï»àÅÖÃÅçΩπÕ–Åıt∞(ÄÄÄÄÄÅÙÏ(ÄÄÄÅÙ((ÄÄÄÅçΩπÕ–Åµïµâï…Õ°•¿ÄÙÅµïµâï…Õ°•¡E’ï…‰πëÖ—ÑÏ(ÄÄÄÅçΩπÕ–ÅmÏÅëÖ—ÑËÅ›Ω…≠Õ¡ÖçïIΩ‹ÅÙ∞ÅÏÅëÖ—ÑËÅ±ΩçÖ—•ΩπIΩ›ÃÅıtÄÙÅÖ›Ö•–ÅA…Ωµ•ÕîπÖ±∞°l(ÄÄÄÄÄÅÕ’¡ÖâÖÕî(ÄÄÄÄÄÄÄÄπô…Ω¥†âµï…ç°Öπ—}›Ω…≠Õ¡ÖçïÃà§(ÄÄÄÄÄÄÄÄπÕï±ïç–†â•ê∞ÅπÖµî∞ÅÕ±’ú∞ÅëïôÖ’±—}—•µï}ÈΩπî∞Åç…ïÖ—ïë}Ö–à§(ÄÄÄÄÄÄÄÄπïƒ†â•êà∞Åµïµâï…Õ°•¿π›Ω…≠Õ¡Öçï}•ê§(ÄÄÄÄÄÄÄÄπµÖÂâïM•πù±îÒ5ï…ç°Öπ—]Ω…≠Õ¡ÖçïIΩ‹¯†§∞(ÄÄÄÄÄÅÕ’¡ÖâÖÕî(ÄÄÄÄÄÄÄÄπô…Ω¥†âµï…ç°Öπ—}µïµâï…Õ°•¡}±ΩçÖ—•ΩπÃà§(ÄÄÄÄÄÄÄÄπÕï±ïç–†âµï…ç°Öπ—}•êà§(ÄÄÄÄÄÄÄÄπïƒ†âµïµâï…Õ°•¡}•êà∞Åµïµâï…Õ°•¿π•ê§∞(ÄÄÄÅt§Ï((ÄÄÄÅçΩπÕ–Å±ΩçÖ—•Ωπ%ëÃÄÙÄ°±ΩçÖ—•ΩπIΩ›ÃÄ¸¸Åmt§πµÖ¿†°…Ω‹§ÄÙ¯Å…Ω‹πµï…ç°Öπ—}•ê§Ï(ÄÄÄÅçΩπÕ–Å¡…Ωô•±ïÃÄÙÅÖ›Ö•–ÅA…Ωµ•ÕîπÖ±∞†(ÄÄÄÄÄÅ±ΩçÖ—•Ωπ%ëÃπµÖ¿†°±ΩçÖ—•Ωπ%ê§ÄÙ¯Åùï—M’¡ÖâÖÕï5ï…ç°Öπ—A…Ωô•±î°±ΩçÖ—•Ωπ%ê§§∞(ÄÄÄÄ§Ï(ÄÄÄÅçΩπÕ–Å±ΩçÖ—•ΩπÃÄÙÅ¡…Ωô•±ïÃ(ÄÄÄÄÄÄπô•±—ï»†°µï…ç°Öπ–§ËÅµï…ç°Öπ–Å•ÃÅ5ï…ç°Öπ–ÄÙ¯Å	ΩΩ±ïÖ∏°µï…ç°Öπ–§§(ÄÄÄÄÄÄπô•±—ï»†°µï…ç°Öπ–§ÄÙ¯Åµï…ç°Öπ–π±ΩçÖ—•ΩπM—Ö—’ÃÄÑÙÙÄâÖ…ç°•Ÿïêà§(ÄÄÄÄÄÄπµÖ¿†°µï…ç°Öπ–§ÄÙ¯Ä°ÏÅµï…ç°Öπ–∞Å…Ω±îËÅµïµâï…Õ°•¿π…Ω±îÅÙ§§Ï((ÄÄÄÅ…ï—’…∏ÅÏ(ÄÄÄÄÄÅ›Ω…≠Õ¡ÖçîËÅ›Ω…≠Õ¡ÖçïIΩ‹Ä¸Å—Ω5ï…ç°Öπ—]Ω…≠Õ¡Öçî°›Ω…≠Õ¡ÖçïIΩ‹§ÄËÅ’πëïô•πïê∞(ÄÄÄÄÄÅ±ΩçÖ—•ΩπÃË(ÄÄÄÄÄÄÄÅ±ΩçÖ—•ΩπÃπ±ïπù—†Ä¯Ä¿(ÄÄÄÄÄÄÄÄÄÄ¸Å±ΩçÖ—•ΩπÃ(ÄÄÄÄÄÄÄÄÄÄËÅmÏÅµï…ç°Öπ–ËÅôÖ±±âÖç≠5ï…ç°Öπ–∞Å…Ω±îËÅµïµâï…Õ°•¿π…Ω±îÅıt∞(ÄÄÄÅÙÏ(ÄÅÙÅçÖ—ç†ÅÏ(ÄÄÄÅ…ï—’…∏ÅÏ(ÄÄÄÄÄÅ›Ω…≠Õ¡ÖçîËÅ’πëïô•πïê∞(ÄÄÄÄÄÅ±ΩçÖ—•ΩπÃËÅmÏÅµï…ç°Öπ–ËÅôÖ±±âÖç≠5ï…ç°Öπ–∞Å…Ω±îËÄâΩ›πï»àÅÖÃÅçΩπÕ–Åıt∞(ÄÄÄÅÙÏ(ÄÅÙ)Ù()ï·¡Ω…–ÅÖÕÂπåÅô’πç—•Ω∏Åç…ïÖ—ïM’¡ÖâÖÕï5ï…ç°Öπ—1ΩçÖ—•Ω∏°•π¡’–ËÅÏ(ÄÅ›Ω…≠Õ¡Öçï%êËÅÕ—…•πúÏ(ÄÅµï…ç°Öπ—UÕï…%êËÅÕ—…•πúÏ(ÄÅçΩµ¡ÖπÂ9ÖµîËÅÕ—…•πúÏ(ÄÅç•—‰ËÅÕ—…•πúÏ(ÄÅÖëë…ïÕÃ¸ËÅÕ—…•πúÏ(ÄÅ—•µïiΩπî¸ËÅÕ—…•πúÏ)Ù§ÅÏ(ÄÅçΩπÕ–ÅÕ’¡ÖâÖÕîÄÙÅùï—M’¡ÖâÖÕïëµ•∏†§Ï(ÄÅçΩπÕ–Åµïµâï…Õ°•¿ÄÙÅÖ›Ö•–ÅÕ’¡ÖâÖÕî(ÄÄÄÄπô…Ω¥†âµï…ç°Öπ—}›Ω…≠Õ¡Öçï}µïµâï…Õ°•¡Ãà§(ÄÄÄÄπÕï±ïç–†â•ê∞Å…Ω±îà§(ÄÄÄÄπïƒ†â›Ω…≠Õ¡Öçï}•êà∞Å•π¡’–π›Ω…≠Õ¡Öçï%ê§(ÄÄÄÄπïƒ†âµï…ç°Öπ—}’Õï…}•êà∞Å•π¡’–πµï…ç°Öπ—UÕï…%ê§(ÄÄÄÄπïƒ†âÕ—Ö—’Ãà∞ÄâÖç—•Ÿîà§(ÄÄÄÄπµÖÂâïM•πù±îÒÏÅ•êËÅÕ—…•πúÏÅ…Ω±îËÅ5ï…ç°Öπ—]Ω…≠Õ¡ÖçïIΩ±îÅÙ¯†§Ï((ÄÅ•òÄ°µïµâï…Õ°•¿πï……Ω»ÅÒÄÖµïµâï…Õ°•¿πëÖ—ÑÅÒÄÖlâΩ›πï»à∞ÄâÖëµ•∏âtπ•πç±’ëïÃ°µïµâï…Õ°•¿πëÖ—Ñπ…Ω±î§§ÅÏ(ÄÄÄÅ—°…Ω‹Åπï‹Å……Ω»†âYΩ’ÃÅ∏ùÖŸïËÅ¡ÖÃÅ±ïÃÅë…Ω•—ÃÅ¡Ω’»ÅÖ©Ω’—ï»Å’∏ÅÕ•—î∏à§Ï(ÄÅÙ((ÄÅçΩπÕ–ÅçΩµ¡ÖπÂ9ÖµîÄÙÅ•π¡’–πçΩµ¡ÖπÂ9Öµîπ—…•¥†§Ï(ÄÅçΩπÕ–Åç•—‰ÄÙÅ•π¡’–πç•—‰π—…•¥†§Ï(ÄÅ•òÄ†ÖçΩµ¡ÖπÂ9ÖµîÅÒÄÖç•—‰§Å—°…Ω‹Åπï‹Å……Ω»†â1îÅπΩ¥Åë‘ÅÕ•—îÅï–Å±ÑÅŸ•±±îÅÕΩπ–Å…ï≈’•Ã∏à§Ï((ÄÅçΩπÕ–Åµï…ç°Öπ—%êÄÙÅùïπï…Ö—ï%ê†âµï…ç°Öπ–à§Ï(ÄÅçΩπÕ–Å±ΩçÖ—•ΩπΩëîÄÙÅÄëÌçΩµ¡ÖπÂ9ÖµîπÕ±•çî†¿∞ÄÃ•Ù¥ëÌç•—‰πÕ±•çî†¿∞ÄÃ•ıÄ(ÄÄÄÄππΩ…µÖ±•Èî†â9à§(ÄÄÄÄπ…ï¡±Öçî†Ωmq‘¿Ã¿¿µq‘¿ÃŸôtΩú∞Äàà§(ÄÄÄÄπ…ï¡±Öçî†ΩmyÑµË¿¥ÂtΩù§∞Äàà§(ÄÄÄÄπ—ΩU¡¡ï…ÖÕî†§(ÄÄÄÄπÕ±•çî†¿∞Ä‡§Ï(ÄÅçΩπÕ–Åç…ïÖ—ïë–ÄÙÅπï‹ÅÖ—î†§π—Ω%M=M—…•πú†§Ï(ÄÅçΩπÕ–Å•πÕï…–ÄÙÅÖ›Ö•–ÅÕ’¡ÖâÖÕî(ÄÄÄÄπô…Ω¥†âµï…ç°Öπ—Ãà§(ÄÄÄÄπ•πÕï…–°Ï(ÄÄÄÄÄÅ•êËÅµï…ç°Öπ—%ê∞(ÄÄÄÄÄÅ›Ω…≠Õ¡Öçï}•êËÅ•π¡’–π›Ω…≠Õ¡Öçï%ê∞(ÄÄÄÄÄÅ±ΩçÖ—•Ωπ}çΩëîËÅ±ΩçÖ—•ΩπΩëîÅÒÅµï…ç°Öπ—%êπÕ±•çî†¥ÿ§π—ΩU¡¡ï…ÖÕî†§∞(ÄÄÄÄÄÅ±ΩçÖ—•Ωπ}Õ—Ö—’ÃËÄâÖç—•Ÿîà∞(ÄÄÄÄÄÅçΩµ¡ÖπÂ}πÖµîËÅçΩµ¡ÖπÂ9Öµî∞(ÄÄÄÄÄÅ±ΩùΩ}—ï·–ËÅçΩµ¡ÖπÂ9ÖµîπÕ±•çî†¿∞Ä»§π—ΩU¡¡ï…ÖÕî†§∞(ÄÄÄÄÄÅ±ΩùΩ}’…∞ËÅπ’±∞∞(ÄÄÄÄÄÅ•πë’Õ—…‰ËÄàà∞(ÄÄÄÄÄÅ…ïÕ—Ö’…Öπ—}—Â¡îËÄâ	…ÖÕÕï…•îà∞(ÄÄÄÄÄÅç•—‰∞(ÄÄÄÄÄÅÖëë…ïÕÃËÅ•π¡’–πÖëë…ïÕÃ¸π—…•¥†§Ä¸¸Äàà∞(ÄÄÄÄÄÅçΩπ—Öç—}πÖµîËÄàà∞(ÄÄÄÄÄÅ¡°ΩπîËÄàà∞(ÄÄÄÄÄÅ…ïÕ—Ö’…Öπ—}ïµÖ•∞ËÄàà∞(ÄÄÄÄÄÅ›ïâÕ•—ï}’…∞ËÄàà∞(ÄÄÄÄÄÅΩπâΩÖ…ë•πù}çΩµ¡±ï—ïêËÅ—…’î∞(ÄÄÄÄÄÅ¡…ïôï……ïë}ùΩÖ±ÃËÅmt∞(ÄÄÄÄÄÅë•ôô’Õ•Ωπ}Õ’¡¡Ω…–ËÅmt∞(ÄÄÄÄÄÅùΩΩù±ï}…ïŸ•ï›}’…∞ËÄàà∞(ÄÄÄÄÄÅ•πÕ—Öù…Öµ}’…∞ËÄàà∞(ÄÄÄÄÄÅôÖçïâΩΩ≠}’…∞ËÄàà∞(ÄÄÄÄÄÅ—•≠—Ω≠}’…∞ËÄàà∞(ÄÄÄÄÄÅ—…•¡ÖëŸ•ÕΩ…}’…∞ËÄàà∞(ÄÄÄÄÄÅç’Õ—Ωµ}±•π≠}’…∞ËÄàà∞(ÄÄÄÄÄÅëïôÖ’±—}¡…•Èï}çΩÕ–ËÄÃ∞(ÄÄÄÄÄÅ—•µï}ÈΩπîËÅ•π¡’–π—•µïiΩπîÄ¸¸Äâ’…Ω¡îΩAÖ…•Ãà∞(ÄÄÄÄÄÅç…ïÖ—ïë}Ö–ËÅç…ïÖ—ïë–∞(ÄÄÄÅÙ§(ÄÄÄÄπÕï±ïç–†à®à§(ÄÄÄÄπÕ•πù±îÒ5ï…ç°Öπ—IΩ‹¯†§Ï((ÄÅ•òÄ°•πÕï…–πï……Ω»ÅÒÄÖ•πÕï…–πëÖ—Ñ§Å—°…Ω‹Åπï‹Å……Ω»†â1îÅÕ•—îÅ∏ùÑÅ¡ÖÃÅ¡‘É©—…îÅçÀß§∏à§Ï((ÄÅçΩπÕ–Åµïµâï…Õ°•¡ÃÄÙÅÖ›Ö•–ÅÕ’¡ÖâÖÕî(ÄÄÄÄπô…Ω¥†âµï…ç°Öπ—}›Ω…≠Õ¡Öçï}µïµâï…Õ°•¡Ãà§(ÄÄÄÄπÕï±ïç–†â•ê∞Å…Ω±îà§(ÄÄÄÄπïƒ†â›Ω…≠Õ¡Öçï}•êà∞Å•π¡’–π›Ω…≠Õ¡Öçï%ê§(ÄÄÄÄπ•∏†â…Ω±îà∞ÅlâΩ›πï»à∞ÄâÖëµ•∏ât§Ï(ÄÅ•òÄ°µïµâï…Õ°•¡ÃπëÖ—Ñ¸π±ïπù—†§ÅÏ(ÄÄÄÅÖ›Ö•–ÅÕ’¡ÖâÖÕîπô…Ω¥†âµï…ç°Öπ—}µïµâï…Õ°•¡}±ΩçÖ—•ΩπÃà§π•πÕï…–†(ÄÄÄÄÄÅµïµâï…Õ°•¡ÃπëÖ—ÑπµÖ¿†°•—ï¥§ÄÙ¯Ä°ÏÅµïµâï…Õ°•¡}•êËÅ•—ï¥π•ê∞Åµï…ç°Öπ—}•êËÅµï…ç°Öπ—%êÅÙ§§∞(ÄÄÄÄ§Ï(ÄÅÙ((ÄÅ…ï—’…∏Å—Ω5ï…ç°Öπ–°•πÕï…–πëÖ—Ñ§Ï)Ù()ï·¡Ω…–ÅÖÕÂπåÅô’πç—•Ω∏ÅÖ…ç°•ŸïM’¡ÖâÖÕï5ï…ç°Öπ—1ΩçÖ—•Ω∏°•π¡’–ËÅÏ(ÄÅ›Ω…≠Õ¡Öçï%êËÅÕ—…•πúÏ(ÄÅµï…ç°Öπ—UÕï…%êËÅÕ—…•πúÏ(ÄÅµï…ç°Öπ—%êËÅÕ—…•πúÏ)Ù§ÅÏ(ÄÅçΩπÕ–ÅÕ’¡ÖâÖÕîÄÙÅùï—M’¡ÖâÖÕïëµ•∏†§Ï(ÄÅçΩπÕ–Åµïµâï…Õ°•¿ÄÙÅÖ›Ö•–ÅÕ’¡ÖâÖÕî(ÄÄÄÄπô…Ω¥†âµï…ç°Öπ—}›Ω…≠Õ¡Öçï}µïµâï…Õ°•¡Ãà§(ÄÄÄÄπÕï±ïç–†â…Ω±îà§(ÄÄÄÄπïƒ†â›Ω…≠Õ¡Öçï}•êà∞Å•π¡’–π›Ω…≠Õ¡Öçï%ê§(ÄÄÄÄπïƒ†âµï…ç°Öπ—}’Õï…}•êà∞Å•π¡’–πµï…ç°Öπ—UÕï…%ê§(ÄÄÄÄπïƒ†âÕ—Ö—’Ãà∞ÄâÖç—•Ÿîà§(ÄÄÄÄπµÖÂâïM•πù±îÒÏÅ…Ω±îËÅ5ï…ç°Öπ—]Ω…≠Õ¡ÖçïIΩ±îÅÙ¯†§Ï(ÄÅ•òÄ°µïµâï…Õ°•¿πï……Ω»ÅÒÄÖµïµâï…Õ°•¿πëÖ—ÑÅÒÄÖlâΩ›πï»à∞ÄâÖëµ•∏âtπ•πç±’ëïÃ°µïµâï…Õ°•¿πëÖ—Ñπ…Ω±î§§ÅÏ(ÄÄÄÅ—°…Ω‹Åπï‹Å……Ω»†âYΩ’ÃÅ∏ùÖŸïËÅ¡ÖÃÅ±ïÃÅë…Ω•—ÃÅ¡Ω’»ÅÖ…ç°•Ÿï»Å’∏ÅÕ•—î∏à§Ï(ÄÅÙ((ÄÅçΩπÕ–ÅÖç—•ŸïΩ’π–ÄÙÅÖ›Ö•–ÅÕ’¡ÖâÖÕî(ÄÄÄÄπô…Ω¥†âµï…ç°Öπ—Ãà§(ÄÄÄÄπÕï±ïç–†â•êà∞ÅÏÅçΩ’π–ËÄâï·Öç–à∞Å°ïÖêËÅ—…’îÅÙ§(ÄÄÄÄπïƒ†â›Ω…≠Õ¡Öçï}•êà∞Å•π¡’–π›Ω…≠Õ¡Öçï%ê§(ÄÄÄÄπïƒ†â±ΩçÖ—•Ωπ}Õ—Ö—’Ãà∞ÄâÖç—•Ÿîà§Ï(ÄÅ•òÄ†°Öç—•ŸïΩ’π–πçΩ’π–Ä¸¸Ä¿§ÄÙÄƒ§Å—°…Ω‹Åπï‹Å……Ω»†âΩπÕï…ŸïËÅÖ‘ÅµΩ•πÃÅ’∏ÅÕ•—îÅÖç—•ò∏à§Ï((ÄÅçΩπÕ–Å’¡ëÖ—ïêÄÙÅÖ›Ö•–ÅÕ’¡ÖâÖÕî(ÄÄÄÄπô…Ω¥†âµï…ç°Öπ—Ãà§(ÄÄÄÄπ’¡ëÖ—î°ÏÅ±ΩçÖ—•Ωπ}Õ—Ö—’ÃËÄâÖ…ç°•ŸïêàÅÙ§(ÄÄÄÄπïƒ†â•êà∞Å•π¡’–πµï…ç°Öπ—%ê§(ÄÄÄÄπïƒ†â›Ω…≠Õ¡Öçï}•êà∞Å•π¡’–π›Ω…≠Õ¡Öçï%ê§(ÄÄÄÄπÕï±ïç–†à®à§(ÄÄÄÄπµÖÂâïM•πù±îÒ5ï…ç°Öπ—IΩ‹¯†§Ï(ÄÅ•òÄ°’¡ëÖ—ïêπï……Ω»ÅÒÄÖ’¡ëÖ—ïêπëÖ—Ñ§Å—°…Ω‹Åπï‹Å……Ω»†â1îÅÕ•—îÅ∏ùÑÅ¡ÖÃÅ¡‘É©—…îÅÖ…ç°•€§∏à§Ï(ÄÅ…ï—’…∏Å—Ω5ï…ç°Öπ–°’¡ëÖ—ïêπëÖ—Ñ§Ï)Ù()ï·¡Ω…–ÅÖÕÂπåÅô’πç—•Ω∏ÅÕï—5ï…ç°Öπ—M—…•¡ï’Õ—Ωµï…%ë%πM’¡ÖâÖÕî†(ÄÅµï…ç°Öπ—%êËÅÕ—…•πú∞(ÄÅÕ—…•¡ï’Õ—Ωµï…%êËÅÕ—…•πú∞(§ÅÏ(ÄÅçΩπÕ–ÅÕ’¡ÖâÖÕîÄÙÅùï—M’¡ÖâÖÕïëµ•∏†§Ï(ÄÅçΩπÕ–ÅÏÅï……Ω»ÅÙÄÙÅÖ›Ö•–ÅÕ’¡ÖâÖÕî(ÄÄÄÄπô…Ω¥†âµï…ç°Öπ—Ãà§(ÄÄÄÄπ’¡ëÖ—î°ÏÅÕ—…•¡ï}ç’Õ—Ωµï…}•êËÅÕ—…•¡ï’Õ—Ωµï…%êÅÙ§(ÄÄÄÄπïƒ†â•êà∞Åµï…ç°Öπ—%ê§Ï((ÄÅ•òÄ°ï……Ω»§ÅÏ(ÄÄÄÅ—°…Ω‹Åπï‹Å……Ω»°Åπ…ïù•Õ—…ïµïπ–Åë‘Åç±•ïπ–ÅM—…•¡îÅ•µ¡ΩÕÕ•â±îËÄëÌï……Ω»πµïÕÕÖùïıÄ§Ï(ÄÅÙ)Ù()ï·¡Ω…–ÅÖÕÂπåÅô’πç—•Ω∏Åô•πë5ï…ç°Öπ—	ÂM—…•¡ï’Õ—Ωµï…%ë%πM’¡ÖâÖÕî°Õ—…•¡ï’Õ—Ωµï…%êËÅÕ—…•πú§ÅÏ(ÄÅçΩπÕ–ÅÕ’¡ÖâÖÕîÄÙÅùï—M’¡ÖâÖÕïëµ•∏†§Ï(ÄÅçΩπÕ–ÅÏÅëÖ—Ñ∞Åï……Ω»ÅÙÄÙÅÖ›Ö•–ÅÕ’¡ÖâÖÕî(ÄÄÄÄπô…Ω¥†âµï…ç°Öπ—Ãà§(ÄÄÄÄπÕï±ïç–†à®à§(ÄÄÄÄπïƒ†âÕ—…•¡ï}ç’Õ—Ωµï…}•êà∞ÅÕ—…•¡ï’Õ—Ωµï…%ê§(ÄÄÄÄπµÖÂâïM•πù±îÒ5ï…ç°Öπ—IΩ‹¯†§Ï((ÄÅ•òÄ°ï……Ω»ÅÒÄÖëÖ—Ñ§ÅÏ(ÄÄÄÅ…ï—’…∏Åπ’±∞Ï(ÄÅÙ((ÄÅ…ï—’…∏Å—Ω5ï…ç°Öπ–°ëÖ—Ñ§Ï)Ù()ï·¡Ω…–ÅÖÕÂπåÅô’πç—•Ω∏ÅÕÂπç5ï…ç°Öπ—	•±±•πù…ΩµM—…•¡ï’Õ—Ωµï…%ë%πM’¡ÖâÖÕî†(ÄÅÕ—…•¡ï’Õ—Ωµï…%êËÅÕ—…•πú∞(§ÅÏ(ÄÅçΩπÕ–Åµï…ç°Öπ–ÄÙÅÖ›Ö•–Åô•πë5ï…ç°Öπ—	ÂM—…•¡ï’Õ—Ωµï…%ë%πM’¡ÖâÖÕî°Õ—…•¡ï’Õ—Ωµï…%ê§Ï((ÄÅ•òÄ†Öµï…ç°Öπ–§ÅÏ(ÄÄÄÅ—°…Ω‹Åπï‹Å……Ω»†â5Ö…ç°ÖπêÅM—…•¡îÅ•π—…Ω’ŸÖâ±î∏à§Ï(ÄÅÙ((ÄÅçΩπÕ–ÅÕ—…•¡îÄÙÅùï—M—…•¡ï±•ïπ–†§Ï(ÄÅçΩπÕ–ÅÕ’âÕç…•¡—•ΩπÃÄÙÅÖ›Ö•–ÅÕ—…•¡îπÕ’âÕç…•¡—•ΩπÃπ±•Õ–°Ï(ÄÄÄÅç’Õ—Ωµï»ËÅÕ—…•¡ï’Õ—Ωµï…%ê∞(ÄÄÄÅÕ—Ö—’ÃËÄâÖ±∞à∞(ÄÄÄÅ±•µ•–ËÄ»¿∞(ÄÅÙ§Ï((ÄÅçΩπÕ–ÅÕ’âÕç…•¡—•Ω∏ÄÙ(ÄÄÄÅÕ’âÕç…•¡—•ΩπÃπëÖ—Ñπô•πê†°•—ï¥§ÄÙ¯(ÄÄÄÄÄÅlâÖç—•Ÿîà∞Äâ—…•Ö±•πúà∞Äâ¡ÖÕ—}ë’îà∞Äâ’π¡Ö•êà∞Äâ•πçΩµ¡±ï—îà∞Äâ¡Ö’Õïêâtπ•πç±’ëïÃ°•—ï¥πÕ—Ö—’Ã§∞(ÄÄÄÄ§Ä¸¸ÅÕ’âÕç…•¡—•ΩπÃπëÖ—Öl¡tÏ((ÄÅ•òÄ†ÖÕ’âÕç…•¡—•Ω∏§ÅÏ(ÄÄÄÅ…ï—’…∏Åµï…ç°Öπ–Ï(ÄÅÙ((ÄÅÖ›Ö•–Å’¡ëÖ—ï5ï…ç°Öπ—	•±±•πù…ΩµM—…•¡ïM’âÕç…•¡—•Ωπ%πM’¡ÖâÖÕî°µï…ç°Öπ–π•ê∞ÅÕ’âÕç…•¡—•Ω∏§Ï(ÄÅ…ï—’…∏Åùï—M’¡ÖâÖÕï5ï…ç°Öπ—A…Ωô•±î°µï…ç°Öπ–π•ê§Ï)Ù()ï·¡Ω…–ÅÖÕÂπåÅô’πç—•Ω∏Å’¡ëÖ—ï5ï…ç°Öπ—	•±±•πù…ΩµM—…•¡ïM’âÕç…•¡—•Ωπ%πM’¡ÖâÖÕî†(ÄÅµï…ç°Öπ—%êËÅÕ—…•πú∞(ÄÅÕ’âÕç…•¡—•Ω∏ËÅM—…•¡îπM’âÕç…•¡—•Ω∏∞(§ÅÏ(ÄÅçΩπÕ–ÅÕ’¡ÖâÖÕîÄÙÅùï—M’¡ÖâÖÕïëµ•∏†§Ï(ÄÅçΩπÕ–Åç’Õ—Ωµï…%êÄÙ(ÄÄÄÅ—Â¡ïΩòÅÕ’âÕç…•¡—•Ω∏πç’Õ—Ωµï»ÄÙÙÙÄâÕ—…•πúàÄ¸ÅÕ’âÕç…•¡—•Ω∏πç’Õ—Ωµï»ÄËÅÕ’âÕç…•¡—•Ω∏πç’Õ—Ωµï»π•êÏ(ÄÅçΩπÕ–Åç’……ïπ—Aï…•ΩëπëYÖ±’îÄÙÅÕ’âÕç…•¡—•Ω∏π•—ïµÃπëÖ—Ñ(ÄÄÄÄπµÖ¿†°•—ï¥§ÄÙ¯Å•—ï¥πç’……ïπ—}¡ï…•Ωë}ïπê§(ÄÄÄÄπô•±—ï»†°ŸÖ±’î§ËÅŸÖ±’îÅ•ÃÅπ’µâï»ÄÙ¯Å—Â¡ïΩòÅŸÖ±’îÄÙÙÙÄâπ’µâï»à§(ÄÄÄÄπÕΩ…–†°±ïô–∞Å…•ù°–§ÄÙ¯Å±ïô–Ä¥Å…•ù°–•l¡tÏ(ÄÅçΩπÕ–Åç’……ïπ—Aï…•ΩëπêÄÙ(ÄÄÄÅ—Â¡ïΩòÅç’……ïπ—Aï…•ΩëπëYÖ±’îÄÙÙÙÄâπ’µâï»à(ÄÄÄÄÄÄ¸Åπï‹ÅÖ—î°ç’……ïπ—Aï…•ΩëπëYÖ±’îÄ®Äƒ¿¿¿§π—Ω%M=M—…•πú†§(ÄÄÄÄÄÄËÅπ’±∞Ï(ÄÅçΩπÕ–Å—…•Ö±πêÄÙ(ÄÄÄÅ—Â¡ïΩòÅÕ’âÕç…•¡—•Ω∏π—…•Ö±}ïπêÄÙÙÙÄâπ’µâï»à(ÄÄÄÄÄÄ¸Åπï‹ÅÖ—î°Õ’âÕç…•¡—•Ω∏π—…•Ö±}ïπêÄ®Äƒ¿¿¿§π—Ω%M=M—…•πú†§(ÄÄÄÄÄÄËÅπ’±∞Ï(ÄÅçΩπÕ–Å—…•Ö±M—Ö…–ÄÙ(ÄÄÄÅ—Â¡ïΩòÅÕ’âÕç…•¡—•Ω∏π—…•Ö±}Õ—Ö…–ÄÙÙÙÄâπ’µâï»à(ÄÄÄÄÄÄ¸Åπï‹ÅÖ—î°Õ’âÕç…•¡—•Ω∏π—…•Ö±}Õ—Ö…–Ä®Äƒ¿¿¿§π—Ω%M=M—…•πú†§(ÄÄÄÄÄÄËÅπ’±∞Ï((ÄÅçΩπÕ–ÅÏÅï……Ω»ÅÙÄÙÅÖ›Ö•–ÅÕ’¡ÖâÖÕî(ÄÄÄÄπô…Ω¥†âµï…ç°Öπ—Ãà§(ÄÄÄÄπ’¡ëÖ—î°Ï(ÄÄÄÄÄÅÕ—…•¡ï}ç’Õ—Ωµï…}•êËÅç’Õ—Ωµï…%ê∞(ÄÄÄÄÄÅÕ—…•¡ï}Õ’âÕç…•¡—•Ωπ}•êËÅÕ’âÕç…•¡—•Ω∏π•ê∞(ÄÄÄÄÄÅÕ—…•¡ï}Õ’âÕç…•¡—•Ωπ}Õ—Ö—’ÃËÅÕ’âÕç…•¡—•Ω∏πÕ—Ö—’Ã∞(ÄÄÄÄÄÅ—…•Ö±}Õ—Ö…—}ëÖ—îËÅ—…•Ö±M—Ö…–∞(ÄÄÄÄÄÅ—…•Ö±}ïπë}ëÖ—îËÅ—…•Ö±πê∞(ÄÄÄÄÄÅÕ’âÕç…•¡—•Ωπ}ç’……ïπ—}¡ï…•Ωë}ïπêËÅç’……ïπ—Aï…•Ωëπê∞(ÄÄÄÄÄÅÕ’âÕç…•¡—•Ωπ}çÖπçï±}Ö—}¡ï…•Ωë}ïπêËÅÕ’âÕç…•¡—•Ω∏πçÖπçï±}Ö—}¡ï…•Ωë}ïπê∞(ÄÄÄÅÙ§(ÄÄÄÄπïƒ†â•êà∞Åµï…ç°Öπ—%ê§Ï((ÄÅ•òÄ°ï……Ω»§ÅÏ(ÄÄÄÅ—°…Ω‹Åπï‹Å……Ω»°ÅMÂπç°…Ωπ•ÕÖ—•Ω∏ÅëîÅ∞ùÖâΩππïµïπ–ÅM—…•¡îÅ•µ¡ΩÕÕ•â±îËÄëÌï……Ω»πµïÕÕÖùïıÄ§Ï(ÄÅÙ)Ù()ï·¡Ω…–ÅÖÕÂπåÅô’πç—•Ω∏ÅµÖ…≠5ï…ç°Öπ—M’âÕç…•¡—•ΩπÖπçï±ïë%πM’¡ÖâÖÕî°Õ’âÕç…•¡—•Ωπ%êËÅÕ—…•πú§ÅÏ(ÄÅçΩπÕ–ÅÕ’¡ÖâÖÕîÄÙÅùï—M’¡ÖâÖÕïëµ•∏†§Ï(ÄÅçΩπÕ–ÅÏÅï……Ω»ÅÙÄÙÅÖ›Ö•–ÅÕ’¡ÖâÖÕî(ÄÄÄÄπô…Ω¥†âµï…ç°Öπ—Ãà§(ÄÄÄÄπ’¡ëÖ—î°Ï(ÄÄÄÄÄÅÕ—…•¡ï}Õ’âÕç…•¡—•Ωπ}Õ—Ö—’ÃËÄâçÖπçï±ïêà∞(ÄÄÄÄÄÅÕ’âÕç…•¡—•Ωπ}çÖπçï±}Ö—}¡ï…•Ωë}ïπêËÅ—…’î∞(ÄÄÄÅÙ§(ÄÄÄÄπïƒ†âÕ—…•¡ï}Õ’âÕç…•¡—•Ωπ}•êà∞ÅÕ’âÕç…•¡—•Ωπ%ê§Ï((ÄÅ•òÄ°ï……Ω»§ÅÏ(ÄÄÄÅ—°…Ω‹Åπï‹Å……Ω»°ÅK•Õ•±•Ö—•Ω∏ÅM—…•¡îÅ•µ¡ΩÕÕ•â±îÉÄÅïπ…ïù•Õ—…ï»ËÄëÌï……Ω»πµïÕÕÖùïıÄ§Ï(ÄÅÙ)Ù()ï·¡Ω…–Åô’πç—•Ω∏Åùï—5ï…ç°Öπ—	•±±•πùΩ…ççΩ’π–°µï…ç°Öπ–ËÅ5ï…ç°Öπ–§ËÅ5ï…ç°Öπ—	•±±•πùM’µµÖ…‰ÅÏ(ÄÅ…ï—’…∏Åùï—5ï…ç°Öπ—	•±±•πùM’µµÖ…‰°µï…ç°Öπ–§Ï)Ù()ï·¡Ω…–ÅÖÕÂπåÅô’πç—•Ω∏Å’¡ëÖ—ï5ï…ç°Öπ—=πâΩÖ…ë•πù%πM’¡ÖâÖÕî†(ÄÅ’Õï…%êËÅÕ—…•πú∞(ÄÅ•π¡’–ËÅ5ï…ç°Öπ—=πâΩÖ…ë•πù%π¡’–∞(§ÅÏ(ÄÅçΩπÕ–ÅÕ’¡ÖâÖÕîÄÙÅùï—M’¡ÖâÖÕïëµ•∏†§Ï(ÄÅçΩπÕ–Å’Õï…E’ï…‰ÄÙÅÖ›Ö•–ÅÕ’¡ÖâÖÕî(ÄÄÄÄπô…Ω¥†âµï…ç°Öπ—}’Õï…Ãà§(ÄÄÄÄπÕï±ïç–†âµï…ç°Öπ—}•êà§(ÄÄÄÄπïƒ†â•êà∞Å’Õï…%ê§(ÄÄÄÄπÕ•πù±îÒÏÅµï…ç°Öπ—}•êËÅÕ—…•πúÅÙ¯†§Ï((ÄÅ•òÄ°’Õï…E’ï…‰πï……Ω»ÅÒÄÖ’Õï…E’ï…‰πëÖ—Ñ§ÅÏ(ÄÄÄÅ—°…Ω‹Åπï‹Å……Ω»†âU—•±•ÕÖ—ï’»Å•π—…Ω’ŸÖâ±î∏à§Ï(ÄÅÙ((ÄÅçΩπÕ–ÅçΩµ¡ÖπÂ9ÖµîÄÙÅ•π¡’–πçΩµ¡ÖπÂ9Öµîπ—…•¥†§Ï(ÄÅçΩπÕ–Å’¡ëÖ—îÄÙÅÖ›Ö•–ÅÕ’¡ÖâÖÕî(ÄÄÄÄπô…Ω¥†âµï…ç°Öπ—Ãà§(ÄÄÄÄπ’¡ëÖ—î°Ï(ÄÄÄÄÄÅçΩµ¡ÖπÂ}πÖµîËÅçΩµ¡ÖπÂ9Öµî∞(ÄÄÄÄÄÅ±ΩùΩ}—ï·–ËÅçΩµ¡ÖπÂ9ÖµîπÕ±•çî†¿∞Ä»§π—ΩU¡¡ï…ÖÕî†§∞(ÄÄÄÄÄÅ•πë’Õ—…‰ËÅ•π¡’–π•πë’Õ—…‰π—…•¥†§∞(ÄÄÄÄÄÅ…ïÕ—Ö’…Öπ—}—Â¡îËÅ•π¡’–π…ïÕ—Ö’…Öπ—QÂ¡îπ—…•¥†§∞(ÄÄÄÄÄÅç•—‰ËÅ•π¡’–πç•—‰π—…•¥†§∞(ÄÄÄÄÄÅÖëë…ïÕÃËÅ•π¡’–πÖëë…ïÕÃπ—…•¥†§∞(ÄÄÄÄÄÅçΩπ—Öç—}πÖµîËÅ•π¡’–πçΩπ—Öç—9Öµîπ—…•¥†§∞(ÄÄÄÄÄÅ¡°ΩπîËÅ•π¡’–π¡°Ωπîπ—…•¥†§∞(ÄÄÄÄÄÅ…ïÕ—Ö’…Öπ—}ïµÖ•∞ËÅ•π¡’–π…ïÕ—Ö’…Öπ—µÖ•∞π—…•¥†§π—Ω1Ω›ï…ÖÕî†§∞(ÄÄÄÄÄÅ›ïâÕ•—ï}’…∞ËÅ•π¡’–π›ïâÕ•—ïU…∞π—…•¥†§∞(ÄÄÄÄÄÅëïôÖ’±—}¡…•Èï}çΩÕ–ËÅ•π¡’–πëïôÖ’±—A…•ÈïΩÕ–∞(ÄÄÄÄÄÅ¡…ïôï……ïë}ùΩÖ±ÃËÅ•π¡’–π¡…ïôï……ïëΩÖ±Ã∞(ÄÄÄÄÄÅë•ôô’Õ•Ωπ}Õ’¡¡Ω…–ËÅ•π¡’–πë•ôô’Õ•ΩπM’¡¡Ω…–∞(ÄÄÄÄÄÅùΩΩù±ï}…ïŸ•ï›}’…∞ËÅ•π¡’–πùΩΩù±ïIïŸ•ï›U…∞π—…•¥†§∞(ÄÄÄÄÄÅ•πÕ—Öù…Öµ}’…∞ËÅ•π¡’–π•πÕ—Öù…ÖµU…∞π—…•¥†§∞(ÄÄÄÄÄÅôÖçïâΩΩ≠}’…∞ËÅ•π¡’–πôÖçïâΩΩ≠U…∞π—…•¥†§∞(ÄÄÄÄÄÅ—•≠—Ω≠}’…∞ËÅ•π¡’–π—•≠—Ω≠U…∞π—…•¥†§∞(ÄÄÄÄÄÅ—…•¡ÖëŸ•ÕΩ…}’…∞ËÅ•π¡’–π—…•¡ÖëŸ•ÕΩ…U…∞π—…•¥†§∞(ÄÄÄÄÄÅç’Õ—Ωµ}±•π≠}’…∞ËÅ•π¡’–πç’Õ—Ωµ1•π≠U…∞π—…•¥†§∞(ÄÄÄÄÄÄ∏∏∏°•π¡’–π…ïëïµ¡—•ΩπA•∏Ä¸ÅÏÅ…ïëïµ¡—•Ωπ}¡•π}°ÖÕ†ËÅ°ÖÕ°AÖÕÕ›Ω…ê°•π¡’–π…ïëïµ¡—•ΩπA•∏§ÅÙÄËÅÌÙ§∞(ÄÄÄÄÄÅΩπâΩÖ…ë•πù}çΩµ¡±ï—ïêËÅ—…’î∞(ÄÄÄÅÙ§(ÄÄÄÄπïƒ†â•êà∞Å’Õï…E’ï…‰πëÖ—Ñπµï…ç°Öπ—}•ê§Ï((ÄÅ•òÄ°’¡ëÖ—îπï……Ω»§ÅÏ(ÄÄÄÅ—°…Ω‹Åπï‹Å……Ω»†â=πâΩÖ…ë•πúÅ•µ¡ΩÕÕ•â±î∏à§Ï(ÄÅÙ((ÄÅçΩπÕ–Åµï…ç°Öπ–ÄÙÅÖ›Ö•–Åùï—M’¡ÖâÖÕï5ï…ç°Öπ—A…Ωô•±î°’Õï…E’ï…‰πëÖ—Ñπµï…ç°Öπ—}•ê§Ï((ÄÅ•òÄ†Öµï…ç°Öπ–§ÅÏ(ÄÄÄÅ—°…Ω‹Åπï‹Å……Ω»†â5Ö…ç°ÖπêÅ•π—…Ω’ŸÖâ±î∏à§Ï(ÄÅÙ((ÄÅ…ï—’…∏Åµï…ç°Öπ–Ï)Ù()ï·¡Ω…–ÅÖÕÂπåÅô’πç—•Ω∏Å’¡ëÖ—ï5ï…ç°Öπ—ççΩ’π—%πM’¡ÖâÖÕî†(ÄÅ’Õï…%êËÅÕ—…•πú∞(ÄÅ•π¡’–ËÅ5ï…ç°Öπ—ççΩ’π—Mï——•πùÕ%π¡’–∞(§ÅÏ(ÄÅçΩπÕ–ÅÕ’¡ÖâÖÕîÄÙÅùï—M’¡ÖâÖÕïëµ•∏†§Ï(ÄÅçΩπÕ–Å’Õï…E’ï…‰ÄÙÅÖ›Ö•–ÅÕ’¡ÖâÖÕî(ÄÄÄÄπô…Ω¥†âµï…ç°Öπ—}’Õï…Ãà§(ÄÄÄÄπÕï±ïç–†â•ê∞Åµï…ç°Öπ—}•êà§(ÄÄÄÄπïƒ†â•êà∞Å’Õï…%ê§(ÄÄÄÄπÕ•πù±îÒÏÅ•êËÅÕ—…•πúÏÅµï…ç°Öπ—}•êËÅÕ—…•πúÅÙ¯†§Ï((ÄÅ•òÄ°’Õï…E’ï…‰πï……Ω»ÅÒÄÖ’Õï…E’ï…‰πëÖ—Ñ§ÅÏ(ÄÄÄÅ—°…Ω‹Åπï‹Å……Ω»†âU—•±•ÕÖ—ï’»Å•π—…Ω’ŸÖâ±î∏à§Ï(ÄÅÙ((ÄÅçΩπÕ–ÅïµÖ•∞ÄÙÅ•π¡’–πïµÖ•∞π—…•¥†§π—Ω1Ω›ï…ÖÕî†§Ï(ÄÅçΩπÕ–Åï·•Õ—•πùUÕï»ÄÙÅÖ›Ö•–ÅÕ’¡ÖâÖÕî(ÄÄÄÄπô…Ω¥†âµï…ç°Öπ—}’Õï…Ãà§(ÄÄÄÄπÕï±ïç–†â•êà§(ÄÄÄÄπïƒ†âïµÖ•∞à∞ÅïµÖ•∞§(ÄÄÄÄππïƒ†â•êà∞Å’Õï…%ê§(ÄÄÄÄπµÖÂâïM•πù±îÒÏÅ•êËÅÕ—…•πúÅÙ¯†§Ï((ÄÅ•òÄ°ï·•Õ—•πùUÕï»πï……Ω»§ÅÏ(ÄÄÄÅ—°…Ω‹Åπï‹Å……Ω»†âYï…•ô•çÖ—•Ω∏ÅëîÅ∞ùÖë…ïÕÕîÅîµµÖ•∞Å•µ¡ΩÕÕ•â±î∏à§Ï(ÄÅÙ((ÄÅ•òÄ°ï·•Õ—•πùUÕï»πëÖ—Ñ§ÅÏ(ÄÄÄÅ—°…Ω‹Åπï‹Å……Ω»†âï——îÅÖë…ïÕÕîÅîµµÖ•∞ÅïÕ–Åëï©ÑÅ’—•±•Õïî∏à§Ï(ÄÅÙ((ÄÅçΩπÕ–ÅçΩµ¡ÖπÂ9ÖµîÄÙÅ•π¡’–πçΩµ¡ÖπÂ9Öµîπ—…•¥†§Ï(ÄÅçΩπÕ–Åµï…ç°Öπ—U¡ëÖ—îÄÙÅÖ›Ö•–ÅÕ’¡ÖâÖÕî(ÄÄÄÄπô…Ω¥†âµï…ç°Öπ—Ãà§(ÄÄÄÄπ’¡ëÖ—î°Ï(ÄÄÄÄÄÅçΩµ¡ÖπÂ}πÖµîËÅçΩµ¡ÖπÂ9Öµî∞(ÄÄÄÄÄÅ±ΩùΩ}—ï·–ËÅçΩµ¡ÖπÂ9ÖµîπÕ±•çî†¿∞Ä»§π—ΩU¡¡ï…ÖÕî†§∞(ÄÄÄÄÄÅ•πë’Õ—…‰ËÅ•π¡’–π•πë’Õ—…‰π—…•¥†§∞(ÄÄÄÄÄÅ…ïÕ—Ö’…Öπ—}—Â¡îËÅ•π¡’–π…ïÕ—Ö’…Öπ—QÂ¡îπ—…•¥†§∞(ÄÄÄÄÄÅç•—‰ËÅ•π¡’–πç•—‰π—…•¥†§∞(ÄÄÄÄÄÅÖëë…ïÕÃËÅ•π¡’–πÖëë…ïÕÃπ—…•¥†§∞(ÄÄÄÄÄÅçΩπ—Öç—}πÖµîËÅ•π¡’–πçΩπ—Öç—9Öµîπ—…•¥†§∞(ÄÄÄÄÄÅ¡°ΩπîËÅ•π¡’–π¡°Ωπîπ—…•¥†§∞(ÄÄÄÄÄÅ…ïÕ—Ö’…Öπ—}ïµÖ•∞ËÅ•π¡’–π…ïÕ—Ö’…Öπ—µÖ•∞π—…•¥†§π—Ω1Ω›ï…ÖÕî†§∞(ÄÄÄÄÄÅ›ïâÕ•—ï}’…∞ËÅ•π¡’–π›ïâÕ•—ïU…∞π—…•¥†§∞(ÄÄÄÄÄÅùΩΩù±ï}…ïŸ•ï›}’…∞ËÅ•π¡’–πùΩΩù±ïIïŸ•ï›U…∞π—…•¥†§∞(ÄÄÄÄÄÅ•πÕ—Öù…Öµ}’…∞ËÅ•π¡’–π•πÕ—Öù…ÖµU…∞π—…•¥†§∞(ÄÄÄÄÄÅôÖçïâΩΩ≠}’…∞ËÅ•π¡’–πôÖçïâΩΩ≠U…∞π—…•¥†§∞(ÄÄÄÄÄÅ—•≠—Ω≠}’…∞ËÅ•π¡’–π—•≠—Ω≠U…∞π—…•¥†§∞(ÄÄÄÄÄÅ—…•¡ÖëŸ•ÕΩ…}’…∞ËÅ•π¡’–π—…•¡ÖëŸ•ÕΩ…U…∞π—…•¥†§∞(ÄÄÄÄÄÅç’Õ—Ωµ}±•π≠}’…∞ËÅ•π¡’–πç’Õ—Ωµ1•π≠U…∞π—…•¥†§∞(ÄÄÄÄÄÅ—•µï}ÈΩπîËÅ•π¡’–π—•µïiΩπîπ—…•¥†§ÅÒÄâ’…Ω¡îΩAÖ…•Ãà∞(ÄÄÄÄÄÅëïôÖ’±—}¡…•Èï}çΩÕ–ËÅ•π¡’–πëïôÖ’±—A…•ÈïΩÕ–∞(ÄÄÄÄÄÄ∏∏∏°•π¡’–π…ïëïµ¡—•ΩπA•∏Ä¸ÅÏÅ…ïëïµ¡—•Ωπ}¡•π}°ÖÕ†ËÅ°ÖÕ°AÖÕÕ›Ω…ê°•π¡’–π…ïëïµ¡—•ΩπA•∏§ÅÙÄËÅÌÙ§∞(ÄÄÄÅÙ§(ÄÄÄÄπïƒ†â•êà∞Å’Õï…E’ï…‰πëÖ—Ñπµï…ç°Öπ—}•ê§Ï((ÄÅ•òÄ°µï…ç°Öπ—U¡ëÖ—îπï……Ω»§ÅÏ(ÄÄÄÅ—°…Ω‹Åπï‹Å……Ω»†â5•ÕîÅÑÅ©Ω’»Åë‘ÅçΩµ¡—îÅ•µ¡ΩÕÕ•â±î∏à§Ï(ÄÅÙ((ÄÅçΩπÕ–Å’Õï…U¡ëÖ—îÄÙÅÖ›Ö•–ÅÕ’¡ÖâÖÕî(ÄÄÄÄπô…Ω¥†âµï…ç°Öπ—}’Õï…Ãà§(ÄÄÄÄπ’¡ëÖ—î°Ï(ÄÄÄÄÄÅô•…Õ—}πÖµîËÅ•π¡’–πô•…Õ—9Öµîπ—…•¥†§∞(ÄÄÄÄÄÅ±ÖÕ—}πÖµîËÅ•π¡’–π±ÖÕ—9Öµîπ—…•¥†§∞(ÄÄÄÄÄÅïµÖ•∞∞(ÄÄÄÅÙ§(ÄÄÄÄπïƒ†â•êà∞Å’Õï…%ê§Ï((ÄÅ•òÄ°’Õï…U¡ëÖ—îπï……Ω»§ÅÏ(ÄÄÄÅ—°…Ω‹Åπï‹Å……Ω»†â5•ÕîÅÑÅ©Ω’»Åë‘Å¡…Ωô•∞Å’—•±•ÕÖ—ï’»Å•µ¡ΩÕÕ•â±î∏à§Ï(ÄÅÙ((ÄÅÖ›Ö•–ÅïπÕ’…ïM’¡ÖâÖÕï’—°UÕï»°Ï(ÄÄÄÅïµÖ•∞∞(ÄÄÄÅô•…Õ—9ÖµîËÅ•π¡’–πô•…Õ—9Öµîπ—…•¥†§∞(ÄÄÄÅ±ÖÕ—9ÖµîËÅ•π¡’–π±ÖÕ—9Öµîπ—…•¥†§∞(ÄÄÄÅµï…ç°Öπ—%êËÅ’Õï…E’ï…‰πëÖ—Ñπµï…ç°Öπ—}•ê∞(ÄÄÄÅµï…ç°Öπ—UÕï…%êËÅ’Õï…%ê∞(ÄÅÙ§Ï((ÄÅçΩπÕ–Åmµï…ç°Öπ–∞Å’Õï…tÄÙÅÖ›Ö•–ÅA…Ωµ•ÕîπÖ±∞°l(ÄÄÄÅùï—M’¡ÖâÖÕï5ï…ç°Öπ—A…Ωô•±î°’Õï…E’ï…‰πëÖ—Ñπµï…ç°Öπ—}•ê§∞(ÄÄÄÅùï—M’¡ÖâÖÕï5ï…ç°Öπ—UÕï»°’Õï…%ê§∞(ÄÅt§Ï((ÄÅ•òÄ†Öµï…ç°Öπ–ÅÒÄÖ’Õï»§ÅÏ(ÄÄÄÅ—°…Ω‹Åπï‹Å……Ω»†âΩµ¡—îÅ•π—…Ω’ŸÖâ±îÅÖ¡…ïÃÅµ•ÕîÅÑÅ©Ω’»∏à§Ï(ÄÅÙ((ÄÅ…ï—’…∏ÅÏÅµï…ç°Öπ–∞Å’Õï»ÅÙÏ)Ù()ï·¡Ω…–ÅÖÕÂπåÅô’πç—•Ω∏ÅÕÂπç5ï…ç°Öπ—UÕï…ÕQΩM’¡ÖâÖÕï’—°%πM’¡ÖâÖÕî†§ÅÏ(ÄÅçΩπÕ–ÅÕ’¡ÖâÖÕîÄÙÅùï—M’¡ÖâÖÕïëµ•∏†§Ï(ÄÅçΩπÕ–ÅÏÅëÖ—Ñ∞Åï……Ω»ÅÙÄÙÅÖ›Ö•–ÅÕ’¡ÖâÖÕî(ÄÄÄÄπô…Ω¥†âµï…ç°Öπ—}’Õï…Ãà§(ÄÄÄÄπÕï±ïç–†â•ê∞Åµï…ç°Öπ—}•ê∞Åô•…Õ—}πÖµî∞Å±ÖÕ—}πÖµî∞ÅïµÖ•∞à§(ÄÄÄÄπΩ…ëï»†âç…ïÖ—ïë}Ö–à∞ÅÏÅÖÕçïπë•πúËÅ—…’îÅÙ§Ï((ÄÅ•òÄ°ï……Ω»§ÅÏ(ÄÄÄÅ—°…Ω‹Åπï‹Å……Ω»†â1ïç—’…îÅëïÃÅçΩµ¡—ïÃÅµÖ…ç°ÖπëÃÅ•µ¡ΩÕÕ•â±î∏à§Ï(ÄÅÙ((ÄÅçΩπÕ–Åµï…ç°Öπ—UÕï…ÃÄÙ(ÄÄÄÄ°ëÖ—ÑÅÖÃÅ……Ö‰ÒÏ(ÄÄÄÄÄÅ•êËÅÕ—…•πúÏ(ÄÄÄÄÄÅµï…ç°Öπ—}•êËÅÕ—…•πúÏ(ÄÄÄÄÄÅô•…Õ—}πÖµîËÅÕ—…•πúÏ(ÄÄÄÄÄÅ±ÖÕ—}πÖµîËÅÕ—…•πúÏ(ÄÄÄÄÄÅïµÖ•∞ËÅÕ—…•πúÏ(ÄÄÄÅÙ¯ÅÅπ’±∞§Ä¸¸ÅmtÏ((ÄÅçΩπÕ–ÅÕÂπçïêËÅÕ—…•πùmtÄÙÅmtÏ((ÄÅôΩ»Ä°çΩπÕ–Å’Õï»ÅΩòÅµï…ç°Öπ—UÕï…Ã§ÅÏ(ÄÄÄÅÖ›Ö•–ÅïπÕ’…ïM’¡ÖâÖÕï’—°UÕï»°Ï(ÄÄÄÄÄÅïµÖ•∞ËÅ’Õï»πïµÖ•∞∞(ÄÄÄÄÄÅ¡ÖÕÕ›Ω…êË(ÄÄÄÄÄÄÄÅ’Õï»πïµÖ•∞π—Ω1Ω›ï…ÖÕî†§ÄÙÙÙÅ5=}5I!9Q}1=%8πïµÖ•∞(ÄÄÄÄÄÄÄÄÄÄ¸Å5=}5I!9Q}1=%8π¡ÖÕÕ›Ω…ê(ÄÄÄÄÄÄÄÄÄÄËÅ’πëïô•πïê∞(ÄÄÄÄÄÅô•…Õ—9ÖµîËÅ’Õï»πô•…Õ—}πÖµî∞(ÄÄÄÄÄÅ±ÖÕ—9ÖµîËÅ’Õï»π±ÖÕ—}πÖµî∞(ÄÄÄÄÄÅµï…ç°Öπ—%êËÅ’Õï»πµï…ç°Öπ—}•ê∞(ÄÄÄÄÄÅµï…ç°Öπ—UÕï…%êËÅ’Õï»π•ê∞(ÄÄÄÅÙ§Ï(ÄÄÄÅÕÂπçïêπ¡’Õ†°’Õï»πïµÖ•∞§Ï(ÄÅÙ((ÄÅ…ï—’…∏ÅÏ(ÄÄÄÅ—Ω—Ö∞ËÅÕÂπçïêπ±ïπù—†∞(ÄÄÄÅïµÖ•±ÃËÅÕÂπçïê∞(ÄÅÙÏ)Ù
+    authProvider === "google"
+      ? (typeof authUser.user_metadata?.avatar_url === "string"
+          ? authUser.user_metadata.avatar_url
+          : typeof authUser.user_metadata?.picture === "string"
+            ? authUser.user_metadata.picture
+            : undefined)
+      : undefined;
+
+  return {
+    user: {
+      ...merchantUser,
+      workspaceId: workspaceContext.workspace?.id,
+      role: activeRole,
+      authProvider,
+      avatarUrl,
+    },
+    merchant: activeMerchant,
+    workspace: workspaceContext.workspace,
+    locations: workspaceContext.locations,
+    activeLocationId: activeMerchant.id,
+  };
+}
+
+export async function ensureDemoMerchantInSupabase() {
+  if (!isSupabaseConfigured()) {
+    return null;
+  }
+
+  const supabase = getSupabaseAdmin();
+  const createdAt = DEMO_MERCHANT_PROFILE.createdAt;
+  const trialEndDate = new Date(Date.parse(createdAt) + 30 * 24 * 60 * 60 * 1000).toISOString();
+  const workspaceId = `workspace-${DEMO_MERCHANT_PROFILE.merchantId}`;
+  const workspaceAvailable = await ensureMerchantWorkspaceRecord({
+    workspaceId,
+    name: DEMO_MERCHANT_PROFILE.companyName,
+    createdAt,
+  });
+  const merchantUpsert = await supabase.from("merchants").upsert({
+    id: DEMO_MERCHANT_PROFILE.merchantId,
+    ...(workspaceAvailable
+      ? {
+          workspace_id: workspaceId,
+          location_code: "SORA-PAR",
+          location_status: "active",
+          time_zone: "Europe/Paris",
+        }
+      : {}),
+    company_name: DEMO_MERCHANT_PROFILE.companyName,
+    logo_text: DEMO_MERCHANT_PROFILE.logoText,
+    logo_url: null,
+    industry: DEMO_MERCHANT_PROFILE.industry,
+    restaurant_type: DEMO_MERCHANT_PROFILE.restaurantType,
+    city: DEMO_MERCHANT_PROFILE.city,
+    address: DEMO_MERCHANT_PROFILE.address,
+    contact_name: DEMO_MERCHANT_PROFILE.contactName,
+    phone: DEMO_MERCHANT_PROFILE.phone,
+    restaurant_email: DEMO_MERCHANT_PROFILE.restaurantEmail,
+    website_url: DEMO_MERCHANT_PROFILE.websiteUrl,
+    onboarding_completed: DEMO_MERCHANT_PROFILE.onboardingCompleted,
+    preferred_goals: [...DEMO_MERCHANT_PROFILE.preferredGoals],
+    diffusion_support: [...DEMO_MERCHANT_PROFILE.diffusionSupport],
+    google_review_url: DEMO_MERCHANT_PROFILE.googleReviewUrl,
+    instagram_url: DEMO_MERCHANT_PROFILE.instagramUrl,
+    facebook_url: DEMO_MERCHANT_PROFILE.facebookUrl,
+    tiktok_url: DEMO_MERCHANT_PROFILE.tiktokUrl,
+    tripadvisor_url: DEMO_MERCHANT_PROFILE.tripadvisorUrl,
+    custom_link_url: DEMO_MERCHANT_PROFILE.customLinkUrl,
+    default_prize_cost: DEMO_MERCHANT_PROFILE.defaultPrizeCost,
+    trial_start_date: createdAt,
+    trial_end_date: trialEndDate,
+    created_at: createdAt,
+  });
+
+  if (merchantUpsert.error) {
+    throw new Error(`Synchronisation du marchand d√©mo impossible: ${merchantUpsert.error.message}`);
+  }
+
+  const existingMerchantUserQuery = await supabase
+    .from("merchant_users")
+    .select("id")
+    .eq("email", DEMO_MERCHANT_LOGIN.email)
+    .maybeSingle();
+
+  if (existingMerchantUserQuery.error) {
+    throw new Error(
+      `Lecture de l'utilisateur d√©mo impossible: ${existingMerchantUserQuery.error.message}`,
+    );
+  }
+
+  const resolvedMerchantUserId =
+    existingMerchantUserQuery.data?.id ?? DEMO_MERCHANT_PROFILE.merchantUserId;
+  const merchantUserPayload = {
+    merchant_id: DEMO_MERCHANT_PROFILE.merchantId,
+    first_name: DEMO_MERCHANT_PROFILE.firstName,
+    last_name: DEMO_MERCHANT_PROFILE.lastName,
+    email: DEMO_MERCHANT_LOGIN.email,
+    password_hash: hashPassword(DEMO_MERCHANT_LOGIN.password),
+    created_at: createdAt,
+  };
+  const merchantUserResult = existingMerchantUserQuery.data
+    ? await supabase
+        .from("merchant_users")
+        .update(merchantUserPayload)
+        .eq("id", resolvedMerchantUserId)
+    : await supabase.from("merchant_users").insert({
+        id: resolvedMerchantUserId,
+        ...merchantUserPayload,
+      });
+
+  if (merchantUserResult.error) {
+    throw new Error(
+      `Synchronisation de l'utilisateur d√©mo impossible: ${merchantUserResult.error.message}`,
+    );
+  }
+
+  await ensureSupabaseAuthUser({
+    email: DEMO_MERCHANT_LOGIN.email,
+    password: DEMO_MERCHANT_LOGIN.password,
+    firstName: DEMO_MERCHANT_PROFILE.firstName,
+    lastName: DEMO_MERCHANT_PROFILE.lastName,
+    merchantId: DEMO_MERCHANT_PROFILE.merchantId,
+    merchantUserId: resolvedMerchantUserId,
+  });
+
+  if (workspaceAvailable) {
+    const membership = await supabase.from("merchant_workspace_memberships").upsert(
+      {
+        id: `membership-${resolvedMerchantUserId}`,
+        workspace_id: workspaceId,
+        merchant_user_id: resolvedMerchantUserId,
+        role: "owner",
+        status: "active",
+        created_at: createdAt,
+      },
+      { onConflict: "workspace_id,merchant_user_id" },
+    );
+    if (!membership.error) {
+      await supabase.from("merchant_membership_locations").upsert(
+        { membership_id: `membership-${resolvedMerchantUserId}`, merchant_id: DEMO_MERCHANT_PROFILE.merchantId },
+        { onConflict: "membership_id,merchant_id" },
+      );
+    }
+  }
+
+  return {
+    merchantId: DEMO_MERCHANT_PROFILE.merchantId,
+    merchantUserId: resolvedMerchantUserId,
+  };
+}
+
+export async function createMerchantAccountInSupabase(input: MerchantSignUpInput) {
+  const supabase = getSupabaseAdmin();
+  const email = input.email.trim().toLowerCase();
+
+  if (input.password !== input.confirmPassword) {
+    throw new Error("Les mots de passe ne correspondent pas.");
+  }
+
+  const existing = await supabase
+    .from("merchant_users")
+    .select("id")
+    .eq("email", email)
+    .maybeSingle();
+
+  if (existing.data) {
+    throw new Error("Un compte existe deja avec cette adresse e-mail.");
+  }
+
+  const merchantId = generateId("merchant");
+  const userId = generateId("user");
+  const firstName = input.firstName.trim();
+  const lastName = input.lastName.trim();
+  const companyName = input.companyName.trim();
+  const city = input.city.trim();
+  const phone = (input.phone ?? "").trim();
+  const createdAt = new Date().toISOString();
+  const trialEndDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+  const workspaceId = `workspace-${merchantId}`;
+  const authUserId = await createSupabaseAuthIdentity({
+    email,
+    password: input.password,
+    firstName,
+    lastName,
+  });
+
+  try {
+    const workspaceAvailable = await ensureMerchantWorkspaceRecord({
+      workspaceId,
+      name: companyName,
+      createdAt,
+    });
+    const merchantInsert = await supabase.from("merchants").insert({
+      id: merchantId,
+      ...(workspaceAvailable
+        ? {
+            workspace_id: workspaceId,
+            location_code: `${city.slice(0, 3)}-${merchantId.slice(-4)}`.toUpperCase(),
+            location_status: "active",
+            time_zone: "Europe/Paris",
+          }
+        : {}),
+      company_name: companyName,
+      logo_text: companyName.slice(0, 2).toUpperCase(),
+      logo_url: null,
+      industry: "",
+      restaurant_type: "Brasserie",
+      city,
+      address: "",
+      contact_name: `${firstName} ${lastName}`.trim(),
+      phone,
+      restaurant_email: "",
+      website_url: "",
+      onboarding_completed: false,
+      preferred_goals: [],
+      diffusion_support: [],
+      google_review_url: "",
+      instagram_url: "",
+      facebook_url: "",
+      tiktok_url: "",
+      tripadvisor_url: "",
+      custom_link_url: "",
+      default_prize_cost: 3,
+      trial_start_date: createdAt,
+      trial_end_date: trialEndDate,
+      created_at: createdAt,
+    });
+
+    if (merchantInsert.error) {
+      throw new Error("Creation du marchand impossible.");
+    }
+
+    const userInsert = await supabase.from("merchant_users").insert({
+      id: userId,
+      merchant_id: merchantId,
+      first_name: firstName,
+      last_name: lastName,
+      email,
+      password_hash: hashPassword(input.password),
+      created_at: createdAt,
+    });
+
+    if (userInsert.error) {
+      await supabase.from("merchants").delete().eq("id", merchantId);
+      throw new Error("Creation du compte impossible.");
+    }
+
+    if (workspaceAvailable) {
+      const membershipId = `membership-${userId}`;
+      await supabase.from("merchant_workspace_memberships").insert({
+        id: membershipId,
+        workspace_id: workspaceId,
+        merchant_user_id: userId,
+        role: "owner",
+        status: "active",
+        created_at: createdAt,
+      });
+      await supabase.from("merchant_membership_locations").insert({
+        membership_id: membershipId,
+        merchant_id: merchantId,
+      });
+    }
+
+    await ensureSupabaseAuthUser({
+      email,
+      password: input.password,
+      firstName,
+      lastName,
+      merchantId,
+      merchantUserId: userId,
+    });
+  } catch (error) {
+    await supabase.from("merchant_users").delete().eq("id", userId);
+    await supabase.from("merchants").delete().eq("id", merchantId);
+    await deleteSupabaseAuthUserById(authUserId);
+    throw error;
+  }
+
+  return {
+    user: {
+      id: userId,
+      merchantId,
+      firstName,
+      lastName,
+      email,
+      password: "",
+      createdAt,
+    },
+    merchant: {
+      id: merchantId,
+      companyName,
+      logoText: companyName.slice(0, 2).toUpperCase(),
+      logoUrl: undefined,
+      industry: undefined,
+      restaurantType: "Brasserie",
+      city,
+      address: undefined,
+      contactName: `${firstName} ${lastName}`.trim(),
+      phone,
+      restaurantEmail: undefined,
+      websiteUrl: undefined,
+      onboardingCompleted: false,
+      preferredGoals: [],
+      diffusionSupport: [],
+      googleReviewUrl: "",
+      instagramUrl: "",
+      facebookUrl: "",
+      tiktokUrl: "",
+      tripadvisorUrl: "",
+      defaultPrizeCost: 3,
+      trialStartDate: createdAt,
+      trialEndDate,
+      subscriptionCancelAtPeriodEnd: false,
+      createdAt,
+    },
+  };
+}
+
+export async function authenticateMerchantInSupabase(input: MerchantSignInInput) {
+  const supabase = getSupabaseAdmin();
+  const email = input.email.trim().toLowerCase();
+  const { data, error } = await supabase
+    .from("merchant_users")
+    .select("*")
+    .eq("email", email)
+    .single<MerchantUserRow>();
+
+  const isDemoLogin =
+    email === DEMO_MERCHANT_LOGIN.email && input.password === DEMO_MERCHANT_LOGIN.password;
+
+  if (error || !data) {
+    throw new Error("Identifiants invalides.");
+  }
+
+  let isValidPassword = verifyPassword(input.password, data.password_hash);
+
+  if (!isValidPassword && isDemoLogin) {
+    const nextHash = hashPassword(DEMO_MERCHANT_LOGIN.password);
+    const { error: updateError } = await supabase
+      .from("merchant_users")
+      .update({ password_hash: nextHash })
+      .eq("id", data.id);
+
+    if (!updateError) {
+      data.password_hash = nextHash;
+      isValidPassword = true;
+    }
+  }
+
+  if (!isValidPassword) {
+    throw new Error("Identifiants invalides.");
+  }
+
+  await ensureSupabaseAuthUser({
+    email,
+    password: input.password,
+    firstName: data.first_name,
+    lastName: data.last_name,
+    merchantId: data.merchant_id,
+    merchantUserId: data.id,
+  });
+
+  const merchant = await getSupabaseMerchantProfile(data.merchant_id);
+
+  if (!merchant) {
+    throw new Error("Marchand introuvable.");
+  }
+
+  return {
+    user: toMerchantUser(data),
+    merchant,
+  };
+}
+
+function deriveCompanyName(profile: GoogleMerchantProfile) {
+  const trimmedName = profile.fullName.trim();
+
+  if (trimmedName) {
+    return trimmedName;
+  }
+
+  const localPart = profile.email.split("@")[0]?.trim();
+  return localPart ? localPart.slice(0, 48) : "Mon commerce";
+}
+
+export async function authenticateOrProvisionMerchantWithGoogle(
+  profile: GoogleMerchantProfile,
+) {
+  const supabase = getSupabaseAdmin();
+  const email = profile.email.trim().toLowerCase();
+  const existingUser = await supabase
+    .from("merchant_users")
+    .select("*")
+    .eq("email", email)
+    .maybeSingle<MerchantUserRow>();
+
+  if (existingUser.error) {
+    throw new Error(`Connexion Google impossible: ${existingUser.error.message}`);
+  }
+
+  if (existingUser.data) {
+    await ensureSupabaseAuthUser({
+      email,
+      firstName: existingUser.data.first_name,
+      lastName: existingUser.data.last_name,
+      merchantId: existingUser.data.merchant_id,
+      merchantUserId: existingUser.data.id,
+      authProvider: "google" as const,
+      avatarUrl: profile.avatarUrl,
+    });
+
+    const merchant = await getSupabaseMerchantProfile(existingUser.data.merchant_id);
+
+    if (!merchant) {
+      throw new Error("Marchand introuvable.");
+    }
+
+    return {
+      user: toMerchantUser(existingUser.data),
+      merchant,
+      isNew: false,
+    };
+  }
+
+  const merchantId = generateId("merchant");
+  const userId = generateId("user");
+  const firstName = profile.firstName.trim();
+  const lastName = profile.lastName.trim();
+  const fullName = profile.fullName.trim();
+  const companyName = deriveCompanyName(profile);
+  const contactName = fullName || `${firstName} ${lastName}`.trim();
+  const createdAt = new Date().toISOString();
+  const trialEndDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+
+  const merchantInsert = await supabase.from("merchants").insert({
+    id: merchantId,
+    company_name: companyName,
+    logo_text: companyName.slice(0, 2).toUpperCase(),
+    logo_url: null,
+    industry: "",
+    restaurant_type: "Brasserie",
+    city: "",
+    address: "",
+    contact_name: contactName,
+    phone: "",
+    restaurant_email: "",
+    website_url: "",
+    onboarding_completed: false,
+    preferred_goals: [],
+    diffusion_support: [],
+    google_review_url: "",
+    instagram_url: "",
+    facebook_url: "",
+    tiktok_url: "",
+    tripadvisor_url: "",
+    custom_link_url: "",
+    default_prize_cost: 3,
+    trial_start_date: createdAt,
+    trial_end_date: trialEndDate,
+    created_at: createdAt,
+  });
+
+  if (merchantInsert.error) {
+    throw new Error(`Cr√©ation du marchand impossible: ${merchantInsert.error.message}`);
+  }
+
+  const userInsert = await supabase.from("merchant_users").insert({
+    id: userId,
+    merchant_id: merchantId,
+    first_name: firstName || fullName || "Compte",
+    last_name: lastName,
+    email,
+    password_hash: hashPassword(crypto.randomUUID()),
+    created_at: createdAt,
+  });
+
+  if (userInsert.error) {
+    await supabase.from("merchants").delete().eq("id", merchantId);
+    throw new Error(`Cr√©ation du compte Google impossible: ${userInsert.error.message}`);
+  }
+
+  await ensureSupabaseAuthUser({
+    email,
+    firstName: firstName || fullName || "Compte",
+    lastName,
+    merchantId,
+    merchantUserId: userId,
+    authProvider: "google" as const,
+    avatarUrl: profile.avatarUrl,
+  });
+
+  return {
+    user: {
+      id: userId,
+      merchantId,
+      firstName: firstName || fullName || "Compte",
+      lastName,
+      email,
+      password: "",
+      createdAt,
+      authProvider: "google" as const,
+      avatarUrl: profile.avatarUrl,
+    },
+    merchant: {
+      id: merchantId,
+      companyName,
+      logoText: companyName.slice(0, 2).toUpperCase(),
+      logoUrl: undefined,
+      industry: undefined,
+      restaurantType: "Brasserie",
+      city: undefined,
+      address: undefined,
+      contactName: contactName || undefined,
+      phone: undefined,
+      restaurantEmail: undefined,
+      websiteUrl: undefined,
+      onboardingCompleted: false,
+      preferredGoals: [],
+      diffusionSupport: [],
+      googleReviewUrl: "",
+      instagramUrl: "",
+      facebookUrl: "",
+      tiktokUrl: "",
+      tripadvisorUrl: "",
+      defaultPrizeCost: 3,
+      trialStartDate: createdAt,
+      trialEndDate,
+      subscriptionCancelAtPeriodEnd: false,
+      createdAt,
+    },
+    isNew: true,
+  };
+}
+
+type MerchantWorkspaceRow = {
+  id: string;
+  name: string;
+  slug: string;
+  default_time_zone: string;
+  created_at: string;
+};
+
+function toMerchantWorkspace(row: MerchantWorkspaceRow): MerchantWorkspace {
+  return {
+    id: row.id,
+    name: row.name,
+    slug: row.slug,
+    defaultTimeZone: row.default_time_zone,
+    createdAt: row.created_at,
+  };
+}
+
+export async function getSupabaseMerchantWorkspaceContext(
+  merchantUserId: string,
+  fallbackMerchant: Merchant,
+) {
+  if (!isSupabaseConfigured()) {
+    return {
+      workspace: undefined,
+      locations: [{ merchant: fallbackMerchant, role: "owner" as const }],
+    };
+  }
+
+  try {
+    const supabase = getSupabaseAdmin();
+    const membershipQuery = await supabase
+      .from("merchant_workspace_memberships")
+      .select("id, workspace_id, role, status")
+      .eq("merchant_user_id", merchantUserId)
+      .eq("status", "active")
+      .order("created_at", { ascending: true })
+      .limit(1)
+      .maybeSingle<{ id: string; workspace_id: string; role: MerchantWorkspaceRole; status: string }>();
+
+    if (membershipQuery.error || !membershipQuery.data) {
+      return {
+        workspace: undefined,
+        locations: [{ merchant: fallbackMerchant, role: "owner" as const }],
+      };
+    }
+
+    const membership = membershipQuery.data;
+    const [{ data: workspaceRow }, { data: locationRows }] = await Promise.all([
+      supabase
+        .from("merchant_workspaces")
+        .select("id, name, slug, default_time_zone, created_at")
+        .eq("id", membership.workspace_id)
+        .maybeSingle<MerchantWorkspaceRow>(),
+      supabase
+        .from("merchant_membership_locations")
+        .select("merchant_id")
+        .eq("membership_id", membership.id),
+    ]);
+
+    const locationIds = (locationRows ?? []).map((row) => row.merchant_id);
+    const profiles = await Promise.all(
+      locationIds.map((locationId) => getSupabaseMerchantProfile(locationId)),
+    );
+    const locations = profiles
+      .filter((merchant): merchant is Merchant => Boolean(merchant))
+      .filter((merchant) => merchant.locationStatus !== "archived")
+      .map((merchant) => ({ merchant, role: membership.role }));
+
+    return {
+      workspace: workspaceRow ? toMerchantWorkspace(workspaceRow) : undefined,
+      locations:
+        locations.length > 0
+          ? locations
+          : [{ merchant: fallbackMerchant, role: membership.role }],
+    };
+  } catch {
+    return {
+      workspace: undefined,
+      locations: [{ merchant: fallbackMerchant, role: "owner" as const }],
+    };
+  }
+}
+
+export async function createSupabaseMerchantLocation(input: {
+  workspaceId: string;
+  merchantUserId: string;
+  companyName: string;
+  city: string;
+  address?: string;
+  timeZone?: string;
+}) {
+  const supabase = getSupabaseAdmin();
+  const membership = await supabase
+    .from("merchant_workspace_memberships")
+    .select("id, role")
+    .eq("workspace_id", input.workspaceId)
+    .eq("merchant_user_id", input.merchantUserId)
+    .eq("status", "active")
+    .maybeSingle<{ id: string; role: MerchantWorkspaceRole }>();
+
+  if (membership.error || !membership.data || !["owner", "admin"].includes(membership.data.role)) {
+    throw new Error("Vous n'avez pas les droits pour ajouter un site.");
+  }
+
+  const companyName = input.companyName.trim();
+  const city = input.city.trim();
+  if (!companyName || !city) throw new Error("Le nom du site et la ville sont requis.");
+
+  const merchantId = generateId("merchant");
+  const locationCode = `${companyName.slice(0, 3)}-${city.slice(0, 3)}`
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]/gi, "")
+    .toUpperCase()
+    .slice(0, 8);
+  const createdAt = new Date().toISOString();
+  const insert = await supabase
+    .from("merchants")
+    .insert({
+      id: merchantId,
+      workspace_id: input.workspaceId,
+      location_code: locationCode || merchantId.slice(-6).toUpperCase(),
+      location_status: "active",
+      company_name: companyName,
+      logo_text: companyName.slice(0, 2).toUpperCase(),
+      logo_url: null,
+      industry: "",
+      restaurant_type: "Brasserie",
+      city,
+      address: input.address?.trim() ?? "",
+      contact_name: "",
+      phone: "",
+      restaurant_email: "",
+      website_url: "",
+      onboarding_completed: true,
+      preferred_goals: [],
+      diffusion_support: [],
+      google_review_url: "",
+      instagram_url: "",
+      facebook_url: "",
+      tiktok_url: "",
+      tripadvisor_url: "",
+      custom_link_url: "",
+      default_prize_cost: 3,
+      time_zone: input.timeZone ?? "Europe/Paris",
+      created_at: createdAt,
+    })
+    .select("*")
+    .single<MerchantRow>();
+
+  if (insert.error || !insert.data) throw new Error("Le site n'a pas pu √™tre cr√©√©.");
+
+  const memberships = await supabase
+    .from("merchant_workspace_memberships")
+    .select("id, role")
+    .eq("workspace_id", input.workspaceId)
+    .in("role", ["owner", "admin"]);
+  if (memberships.data?.length) {
+    await supabase.from("merchant_membership_locations").insert(
+      memberships.data.map((item) => ({ membership_id: item.id, merchant_id: merchantId })),
+    );
+  }
+
+  return toMerchant(insert.data);
+}
+
+export async function archiveSupabaseMerchantLocation(input: {
+  workspaceId: string;
+  merchantUserId: string;
+  merchantId: string;
+}) {
+  const supabase = getSupabaseAdmin();
+  const membership = await supabase
+    .from("merchant_workspace_memberships")
+    .select("role")
+    .eq("workspace_id", input.workspaceId)
+    .eq("merchant_user_id", input.merchantUserId)
+    .eq("status", "active")
+    .maybeSingle<{ role: MerchantWorkspaceRole }>();
+  if (membership.error || !membership.data || !["owner", "admin"].includes(membership.data.role)) {
+    throw new Error("Vous n'avez pas les droits pour archiver un site.");
+  }
+
+  const activeCount = await supabase
+    .from("merchants")
+    .select("id", { count: "exact", head: true })
+    .eq("workspace_id", input.workspaceId)
+    .eq("location_status", "active");
+  if ((activeCount.count ?? 0) <= 1) throw new Error("Conservez au moins un site actif.");
+
+  const updated = await supabase
+    .from("merchants")
+    .update({ location_status: "archived" })
+    .eq("id", input.merchantId)
+    .eq("workspace_id", input.workspaceId)
+    .select("*")
+    .maybeSingle<MerchantRow>();
+  if (updated.error || !updated.data) throw new Error("Le site n'a pas pu √™tre archiv√©.");
+  return toMerchant(updated.data);
+}
+
+export async function setMerchantStripeCustomerIdInSupabase(
+  merchantId: string,
+  stripeCustomerId: string,
+) {
+  const supabase = getSupabaseAdmin();
+  const { error } = await supabase
+    .from("merchants")
+    .update({ stripe_customer_id: stripeCustomerId })
+    .eq("id", merchantId);
+
+  if (error) {
+    throw new Error(`Enregistrement du client Stripe impossible: ${error.message}`);
+  }
+}
+
+export async function findMerchantByStripeCustomerIdInSupabase(stripeCustomerId: string) {
+  const supabase = getSupabaseAdmin();
+  const { data, error } = await supabase
+    .from("merchants")
+    .select("*")
+    .eq("stripe_customer_id", stripeCustomerId)
+    .maybeSingle<MerchantRow>();
+
+  if (error || !data) {
+    return null;
+  }
+
+  return toMerchant(data);
+}
+
+export async function syncMerchantBillingFromStripeCustomerIdInSupabase(
+  stripeCustomerId: string,
+) {
+  const merchant = await findMerchantByStripeCustomerIdInSupabase(stripeCustomerId);
+
+  if (!merchant) {
+    throw new Error("Marchand Stripe introuvable.");
+  }
+
+  const stripe = getStripeClient();
+  const subscriptions = await stripe.subscriptions.list({
+    customer: stripeCustomerId,
+    status: "all",
+    limit: 20,
+  });
+
+  const subscription =
+    subscriptions.data.find((item) =>
+      ["active", "trialing", "past_due", "unpaid", "incomplete", "paused"].includes(item.status),
+    ) ?? subscriptions.data[0];
+
+  if (!subscription) {
+    return merchant;
+  }
+
+  await updateMerchantBillingFromStripeSubscriptionInSupabase(merchant.id, subscription);
+  return getSupabaseMerchantProfile(merchant.id);
+}
+
+export async function updateMerchantBillingFromStripeSubscriptionInSupabase(
+  merchantId: string,
+  subscription: Stripe.Subscription,
+) {
+  const supabase = getSupabaseAdmin();
+  const customerId =
+    typeof subscription.customer === "string" ? subscription.customer : subscription.customer.id;
+  const currentPeriodEndValue = subscription.items.data
+    .map((item) => item.current_period_end)
+    .filter((value): value is number => typeof value === "number")
+    .sort((left, right) => left - right)[0];
+  const currentPeriodEnd =
+    typeof currentPeriodEndValue === "number"
+      ? new Date(currentPeriodEndValue * 1000).toISOString()
+      : null;
+  const trialEnd =
+    typeof subscription.trial_end === "number"
+      ? new Date(subscription.trial_end * 1000).toISOString()
+      : null;
+  const trialStart =
+    typeof subscription.trial_start === "number"
+      ? new Date(subscription.trial_start * 1000).toISOString()
+      : null;
+
+  const { error } = await supabase
+    .from("merchants")
+    .update({
+      stripe_customer_id: customerId,
+      stripe_subscription_id: subscription.id,
+      stripe_subscription_status: subscription.status,
+      trial_start_date: trialStart,
+      trial_end_date: trialEnd,
+      subscription_current_period_end: currentPeriodEnd,
+      subscription_cancel_at_period_end: subscription.cancel_at_period_end,
+    })
+    .eq("id", merchantId);
+
+  if (error) {
+    throw new Error(`Synchronisation de l'abonnement Stripe impossible: ${error.message}`);
+  }
+}
+
+export async function markMerchantSubscriptionCanceledInSupabase(subscriptionId: string) {
+  const supabase = getSupabaseAdmin();
+  const { error } = await supabase
+    .from("merchants")
+    .update({
+      stripe_subscription_status: "canceled",
+      subscription_cancel_at_period_end: true,
+    })
+    .eq("stripe_subscription_id", subscriptionId);
+
+  if (error) {
+    throw new Error(`R√©siliation Stripe impossible √† enregistrer: ${error.message}`);
+  }
+}
+
+export function getMerchantBillingForAccount(merchant: Merchant): MerchantBillingSummary {
+  return getMerchantBillingSummary(merchant);
+}
+
+export async function updateMerchantOnboardingInSupabase(
+  userId: string,
+  input: MerchantOnboardingInput,
+) {
+  const supabase = getSupabaseAdmin();
+  const userQuery = await supabase
+    .from("merchant_users")
+    .select("merchant_id")
+    .eq("id", userId)
+    .single<{ merchant_id: string }>();
+
+  if (userQuery.error || !userQuery.data) {
+    throw new Error("Utilisateur introuvable.");
+  }
+
+  const companyName = input.companyName.trim();
+  const update = await supabase
+    .from("merchants")
+    .update({
+      company_name: companyName,
+      logo_text: companyName.slice(0, 2).toUpperCase(),
+      industry: input.industry.trim(),
+      restaurant_type: input.restaurantType.trim(),
+      city: input.city.trim(),
+      address: input.address.trim(),
+      contact_name: input.contactName.trim(),
+      phone: input.phone.trim(),
+      restaurant_email: input.restaurantEmail.trim().toLowerCase(),
+      website_url: input.websiteUrl.trim(),
+      default_prize_cost: input.defaultPrizeCost,
+      preferred_goals: input.preferredGoals,
+      diffusion_support: input.diffusionSupport,
+      google_review_url: input.googleReviewUrl.trim(),
+      instagram_url: input.instagramUrl.trim(),
+      facebook_url: input.facebookUrl.trim(),
+      tiktok_url: input.tiktokUrl.trim(),
+      tripadvisor_url: input.tripadvisorUrl.trim(),
+      custom_link_url: input.customLinkUrl.trim(),
+      ...(input.redemptionPin ? { redemption_pin_hash: hashPassword(input.redemptionPin) } : {}),
+      onboarding_completed: true,
+    })
+    .eq("id", userQuery.data.merchant_id);
+
+  if (update.error) {
+    throw new Error("Onboarding impossible.");
+  }
+
+  const merchant = await getSupabaseMerchantProfile(userQuery.data.merchant_id);
+
+  if (!merchant) {
+    throw new Error("Marchand introuvable.");
+  }
+
+  return merchant;
+}
+
+export async function updateMerchantAccountInSupabase(
+  userId: string,
+  input: MerchantAccountSettingsInput,
+) {
+  const supabase = getSupabaseAdmin();
+  const userQuery = await supabase
+    .from("merchant_users")
+    .select("id, merchant_id")
+    .eq("id", userId)
+    .single<{ id: string; merchant_id: string }>();
+
+  if (userQuery.error || !userQuery.data) {
+    throw new Error("Utilisateur introuvable.");
+  }
+
+  const email = input.email.trim().toLowerCase();
+  const existingUser = await supabase
+    .from("merchant_users")
+    .select("id")
+    .eq("email", email)
+    .neq("id", userId)
+    .maybeSingle<{ id: string }>();
+
+  if (existingUser.error) {
+    throw new Error("Verification de l'adresse e-mail impossible.");
+  }
+
+  if (existingUser.data) {
+    throw new Error("Cette adresse e-mail est deja utilisee.");
+  }
+
+  const companyName = input.companyName.trim();
+  const merchantUpdate = await supabase
+    .from("merchants")
+    .update({
+      company_name: companyName,
+      logo_text: companyName.slice(0, 2).toUpperCase(),
+      industry: input.industry.trim(),
+      restaurant_type: input.restaurantType.trim(),
+      city: input.city.trim(),
+      address: input.address.trim(),
+      contact_name: input.contactName.trim(),
+      phone: input.phone.trim(),
+      restaurant_email: input.restaurantEmail.trim().toLowerCase(),
+      website_url: input.websiteUrl.trim(),
+      google_review_url: input.googleReviewUrl.trim(),
+      instagram_url: input.instagramUrl.trim(),
+      facebook_url: input.facebookUrl.trim(),
+      tiktok_url: input.tiktokUrl.trim(),
+      tripadvisor_url: input.tripadvisorUrl.trim(),
+      custom_link_url: input.customLinkUrl.trim(),
+      time_zone: input.timeZone.trim() || "Europe/Paris",
+      default_prize_cost: input.defaultPrizeCost,
+      ...(input.redemptionPin ? { redemption_pin_hash: hashPassword(input.redemptionPin) } : {}),
+    })
+    .eq("id", userQuery.data.merchant_id);
+
+  if (merchantUpdate.error) {
+    throw new Error("Mise a jour du compte impossible.");
+  }
+
+  const userUpdate = await supabase
+    .from("merchant_users")
+    .update({
+      first_name: input.firstName.trim(),
+      last_name: input.lastName.trim(),
+      email,
+    })
+    .eq("id", userId);
+
+  if (userUpdate.error) {
+    throw new Error("Mise a jour du profil utilisateur impossible.");
+  }
+
+  await ensureSupabaseAuthUser({
+    email,
+    firstName: input.firstName.trim(),
+    lastName: input.lastName.trim(),
+    merchantId: userQuery.data.merchant_id,
+    merchantUserId: userId,
+  });
+
+  const [merchant, user] = await Promise.all([
+    getSupabaseMerchantProfile(userQuery.data.merchant_id),
+    getSupabaseMerchantUser(userId),
+  ]);
+
+  if (!merchant || !user) {
+    throw new Error("Compte introuvable apres mise a jour.");
+  }
+
+  return { merchant, user };
+}
+
+export async function syncMerchantUsersToSupabaseAuthInSupabase() {
+  const supabase = getSupabaseAdmin();
+  const { data, error } = await supabase
+    .from("merchant_users")
+    .select("id, merchant_id, first_name, last_name, email")
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    throw new Error("Lecture des comptes marchands impossible.");
+  }
+
+  const merchantUsers =
+    (data as Array<{
+      id: string;
+      merchant_id: string;
+      first_name: string;
+      last_name: string;
+      email: string;
+    }> | null) ?? [];
+
+  const synced: string[] = [];
+
+  for (const user of merchantUsers) {
+    await ensureSupabaseAuthUser({
+      email: user.email,
+      password:
+        user.email.toLowerCase() === DEMO_MERCHANT_LOGIN.email
+          ? DEMO_MERCHANT_LOGIN.password
+          : undefined,
+      firstName: user.first_name,
+      lastName: user.last_name,
+      merchantId: user.merchant_id,
+      merchantUserId: user.id,
+    });
+    synced.push(user.email);
+  }
+
+  return {
+    total: synced.length,
+    emails: synced,
+  };
+}

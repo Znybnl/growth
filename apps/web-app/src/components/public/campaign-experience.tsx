@@ -388,4 +388,749 @@ function RulesModal({
                     <p className="text-right font-semibold text-[#111827]">
                       {prize.probability} %
                     </p>
-         ëMt¶‰Ëkºwµç@€€€€Á…•Q•µÁ±…Ñ”€ôôô€‰É•ÍÑ…ÕÉ…¹ĞµÁ½Àˆ(€€€€€€€€€€€€€€€€€€€€€€€€üÍ•½¹‘…Éå½±½È(€€€€€€€€€€€€€€€€€€€€€€€€è…µÁ…¥¸¹ÁÉ•Í•¹Ñ…Ñ¥½¸¹İ¡••°¹É¥µ½±½È°(€€€€€€€€€€€€€€€€€õô(€€€€€€€€€€€€€€€€€Í•µ•¹ÑÌõíÍ•µ•¹ÑÍô(€€€€€€€€€€€€€€€€€İ¥¹¹¥¹M•µ•¹Ñ%õíİ¥¹¹¥¹M•µ•¹Ñ%‘ô(€€€€€€€€€€€€€€€€€…¹MÁ¥¸õíÍÑ…”€ôôô€‰É•…‘ä‰ô(€€€€€€€€€€€€€€€€€‰ÕÑÑ½¹¹…‰±•õíÍÑ…”€ôôô€‰¥‘±”ˆñğÍÑ…”€ôôô€‰É•…‘ä‰ô(€€€€€€€€€€€€€€€€€‰ÕÑÑ½¹1…‰•°ô‰)=UHˆ(€€€€€€€€€€€€€€€€€™É…µ¥¹œô‰ÁÕ‰±¥Œˆ(€€€€€€€€€€€€€€€€€½¹	ÕÑÑ½¹±¥¬õì ¤€ôøÙ½¥½Á•¹Ñ¥½¹¹‘QÉ…¬ ¥ô(€€€€€€€€€€€€€€€€€…ÕÑ½MÁ¥¹-•äõí…ÕÑ½MÁ¥¹-•åô(€€€€€€€€€€€€€€€€€½¹MÁ¥¹¹õì ¤€ôøÙ½¥¡…¹‘±•…µ•I•Ù•…° ¥ô(€€€€€€€€€€€€€€€€¼ø(€€€€€€€€€€€€€€¥ô(€€€€€€€€€€€€ğ½‘¥Øø(€€€€€€€€€€ğ½‘¥Øø(€€€€€€€€¤€è€ (€€€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”õí¥Í%µµ•ÉÍ¥Ù•MÉ…Ñ¡Q•µÁ±…Ñ”€ü€‰µĞ´Àˆ€è€‰µĞµlĞÁÁátÍ´éµĞ´ÈÀ±œéµĞ´à‰ôø(€€€€€€€€€€€í¥Í%µµ•ÉÍ¥Ù•MÉ…Ñ¡Q•µÁ±…Ñ”€ü€ (€€€€€€€€€€€€€€ñ%µµ•ÉÍ¥Ù•MÉ…Ñ¡Q¥­•Ğ(€€€€€€€€€€€€€€€­•äõí€‘í…µÁ…¥¸¹¥‘ô´‘í‘É…İM•ÍÍ¥½¸ü¹¥€üü€‰¥‘±”‰õô(€€€€€€€€€€€€€€€…•¹Ğõí…µÁ…¥¸¹…•¹Ñô(€€€€€€€€€€€€€€€É•ÍÕ±Ñ1…‰•°õíÍÉ…Ñ¡1…‰•±ô(€€€€€€€€€€€€€€€•¹…‰±•õíÍÑ…”€ôôô€‰É•…‘ä‰ô(€€€€€€€€€€€€€€€½¹I•Ù•…°õì ¤€ôøÙ½¥¡…¹‘±•…µ•I•Ù•…° ¥ô(€€€€€€€€€€€€€€€½¹MÑ…ÉĞõì ¤€ôøÙ½¥½Á•¹Ñ¥½¹¹‘QÉ…¬ ¥ô(€€€€€€€€€€€€€€€±½½5½‘”õí…µÁ…¥¸¹±½½5½‘•ô(€€€€€€€€€€€€€€€±½½Q•áĞõí…µÁ…¥¸¹±½½Q•áĞ€üü…µÁ…¥¸¹µ•É¡…¹Ñ1½½Q•áÑô(€€€€€€€€€€€€€€€±½½UÉ°õí…µÁ…¥¸¹±½½UÉ±ô(€€€€€€€€€€€€€€€¡•…‘±¥¹”õí…µÁ…¥¸¹ÍÕ‰Ñ¥Ñ±•ô(€€€€€€€€€€€€€€€¡•…‘¥¹Q•áÑ½±½Èõí¡•…‘¥¹Q•áÑ½±½Éô(€€€€€€€€€€€€€€€¡•…‘¥¹½¹Ñ±…ÍÌõí¡•…‘¥¹½¹Ñ±…ÍÍô(€€€€€€€€€€€€€€€¡•…‘¥¹½¹ÑM¥é”õí¡•…‘¥¹½¹ÑM¥é•ô(€€€€€€€€€€€€€€€¡•…‘¥¹½¹Ñ]•¥¡Ğõí…µÁ…¥¸¹ÁÉ•Í•¹Ñ…Ñ¥½¸¹¡•…‘¥¹œ¹™½¹Ñ]•¥¡Ğ€üü€ØÀÁô(€€€€€€€€€€€€€€€¡•…‘¥¹±¥¹µ•¹Ñ±…ÍÌõí¡•…‘¥¹±¥¹µ•¹Ñ±…ÍÍô(€€€€€€€€€€€€€€€±½½±¥¹µ•¹Ñ±…ÍÌõí±½½±¥¹µ•¹Ñ±…ÍÍô(€€€€€€€€€€€€€€€±½½	½ÑÑ½µMÁ…¥¹Aàõí…µÁ…¥¸¹ÁÉ•Í•¹Ñ…Ñ¥½¸¹±½¼¹µ…É¥¹	½ÑÑ½µAáô(€€€€€€€€€€€€€€€±½½]¥‘Ñ¡Aàõí±½½]¥‘Ñ¡Aáô(€€€€€€€€€€€€€€€Ñ•µÁ±…Ñ”õíÁ…•Q•µÁ±…Ñ”…Ì€‰ÍÉ…Ñ µÙ…Õ±Ğˆğ€‰ÍÉ…Ñ µ½¹™•ÑÑ¤ˆğ€‰ÍÉ…Ñ µ½É…°ˆğ€‰ÍÉ…Ñ µ±¥±…Œˆğ€‰ÍÉ…Ñ µÍÕ¹‰ÕÉÍĞ‰ô(€€€€€€€€€€€€€€¼ø(€€€€€€€€€€€€¤€è€ (€€€€€€€€€€€€€€ñMÉ…Ñ¡…µ”(€€€€€€€€€€€€€€€­•äõí€‘í…µÁ…¥¸¹¥‘ô´‘í‘É…İM•ÍÍ¥½¸ü¹¥€üü€‰¥‘±”‰õô(€€€€€€€€€€€€€€€…•¹Ğõí…µÁ…¥¸¹…•¹Ñô(€€€€€€€€€€€€€€€É•ÍÕ±Ñ1…‰•°õíÍÉ…Ñ¡1…‰•±ô(€€€€€€€€€€€€€€€•¹…‰±•õíÍÑ…”€ôôô€‰É•…‘ä‰ô(€€€€€€€€€€€€€€€½¹I•Ù•…°õì ¤€ôøÙ½¥¡…¹‘±•…µ•I•Ù•…° ¥ô(€€€€€€€€€€€€€€¼ø(€€€€€€€€€€€€¥ô(€€€€€€€€€€ğ½‘¥Øø(€€€€€€€€¥ô((€€€€€€€íÍ¡½İ	½ÑÑ½µMÑ…Ñ”€ü€ñ‘¥Ø±…ÍÍ9…µ”ô‰µĞ´àÍÁ…”µä´Ğˆø(€€€€€€€€€íÍÑ…”€ôôô€‰¥‘±”ˆ€˜˜…µÁ…¥¸¹…µ•QåÁ”€„ôô€‰İ¡••°ˆ€ü€ (€€€€€€€€€€€€ñ‰ÕÑÑ½¸(€€€€€€€€€€€€€ÑåÁ”ô‰‰ÕÑÑ½¸ˆ(€€€€€€€€€€€€€½¹±¥¬õí½Á•¹Ñ¥½¹¹‘QÉ…­ô(€€€€€€€€€€€€€±…ÍÍ9…µ”ô‰µàµ…ÕÑ¼‰±½¬Üµ™Õ±°µ…àµÜµlÌØÁÁátÉ½Õ¹‘•µlÈÑÁát‰½É‘•ÈÁà´ØÁä´ĞÑ•áĞµ±œ™½¹ĞµÍ•µ¥‰½±Í¡…‘½ÜµlÁ|ÈÉÁá|ÌÑÁá}É‰„ ÄÜ°ÈĞ°Ìä°À¸Àà¥tˆ(€€€€€€€€€€€€€ÍÑå±”õíì(€€€€€€€€€€€€€€€‰…­É½Õ¹‘½±½Èè…µÁ…¥¸¹ÁÉ•Í•¹Ñ…Ñ¥½¸¹‰ÕÑÑ½¸¹‰…­É½Õ¹‘½±½È°(€€€€€€€€€€€€€€€½±½Èè…µÁ…¥¸¹ÁÉ•Í•¹Ñ…Ñ¥½¸¹‰ÕÑÑ½¸¹Ñ•áÑ½±½È°(€€€€€€€€€€€€€€€‰½É‘•É½±½Èè…µÁ…¥¸¹ÁÉ•Í•¹Ñ…Ñ¥½¸¹‰ÕÑÑ½¸¹‰½É‘•É½±½È°(€€€€€€€€€€€€€€€™½¹ÑM¥é”è‰ÕÑÑ½¹½¹ÑM¥é”°(€€€€€€€€€€€€€õô(€€€€€€€€€€€€ø(€€€€€€€€€€€€€íÁÕ‰±¥Ñ…1…‰•±ô(€€€€€€€€€€€€ğ½‰ÕÑÑ½¸ø(€€€€€€€€€€¤€è¹Õ±±ô((€€€€€€€€€íÍÑ…”€ôôô€‰É•…‘äˆ€˜˜…µÁ…¥¸¹…µ•QåÁ”€„ôô€‰İ¡••°ˆ€ü€ (€€€€€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰É½Õ¹‘•µlÈáÁát‰½É‘•È‰½É‘•Èµİ¡¥Ñ”¼ÜÀ‰œµİ¡¥Ñ”¼ÜÈÁà´ÔÁä´ĞÑ•áĞµ•¹Ñ•ÈÑ•áĞµÍ´Ñ•áĞµlŒØÈØäİ…tÍ¡…‘½ÜµlÁ|ÄáÁá|ĞÁÁá}É‰„ ÄÜ°ÈĞ°Ìä°À¸ÀØ¥t‰…­‘É½Àµ‰±ÕÈˆø(€€€€€€€€€€€€€É…ÑÑ•è±”Ñ¥­•ĞÁ½ÕÈË¥Û¥±•È¥µ·¥‘¥…Ñ•µ•¹ĞÙ½ÑÉ”Ë¥ÍÕ±Ñ…Ğ¸(€€€€€€€€€€€€ğ½‘¥Øø(€€€€€€€€€€¤€è¹Õ±±ô((€€€€€€€€€í™…±Í”€ü€ (€€€€€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰É½Õ¹‘•µlÌÉÁát‰½É‘•È‰½É‘•Èµİ¡¥Ñ”¼àÀ‰œµİ¡¥Ñ”¼àĞÀ´ØÑ•áĞµ•¹Ñ•ÈÍ¡…‘½ÜµlÁ|ÈÑÁá|ĞáÁá}É‰„ ÄÜ°ÈĞ°Ìä°À¸Àà¥t‰…­‘É½Àµ‰±ÕÈˆø(€€€€€€€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰µàµ…ÕÑ¼™±•à ´ÈÀÜ´ÈÀ¥Ñ•µÌµ•¹Ñ•È©ÕÍÑ¥™äµ•¹Ñ•ÈÉ½Õ¹‘•µ™Õ±°‰œµl˜Í˜Ñ˜átÑ•áĞ´Íá°ˆø(€€€€€€€€€€€€€€€€è (€€€€€€€€€€€€€€ğ½‘¥Øø(€€€€€€€€€€€€€€ñ È±…ÍÍ9…µ”ô‰µĞ´ÔÑ•áĞ´Íá°™½¹ĞµÍ•µ¥‰½±Ñ•áĞµlŒÄĞÄàÈÙtˆùA•É‘Ô€è ğ½ Èø(€€€€€€€€€€€€€€ñÀ±…ÍÍ9…µ”ô‰µĞ´ÌÑ•áĞµ‰…Í”±•…‘¥¹œ´ÜÑ•áĞµlŒØÄØàİ…tˆø(€€€€€€€€€€€€€€€5•É¤Á½ÕÈÙ½ÑÉ”Á…ÉÑ¥¥Á…Ñ¥½¸¸I•Ù•¹•è‰¥•¹ÓÑĞÁ½ÕÈÕ¹”¹½ÕÙ•±±”¡…¹”¸(€€€€€€€€€€€€€€ğ½Àø(€€€€€€€€€€€€ğ½‘¥Øø(€€€€€€€€€€¤€è¹Õ±±ô(€€€€€€€€ğ½‘¥Øø€è¹Õ±±ô(€€€€€€ğ½‘¥Øø((€€€€€€ñ‰ÕÑÑ½¸(€€€€€€€ÑåÁ”ô‰‰ÕÑÑ½¸ˆ(€€€€€€€½¹±¥¬õì ¤€ôøÍ•ÑIÕ±•Í=Á•¸¡ÑÉÕ”¥ô(€€€€€€€±…ÍÍ9…µ”ô‰™¥á•‰½ÑÑ½´´ĞÉ¥¡Ğ´Ğè´ÈÀÉ½Õ¹‘•µ™Õ±°‰½É‘•È‰½É‘•Èµİ¡¥Ñ”¼ÜÀ‰œµİ¡¥Ñ”¼àÈÁà´ĞÁä´ÈÑ•áĞµÍ´™½¹ĞµÍ•µ¥‰½±Ñ•áĞµlŒÄÄÄàÈİtÍ¡…‘½ÜµlÁ|ÄÑÁá|ÌÑÁá}É‰„ ÄÜ°ÈĞ°Ìä°À¸ÄÈ¥t‰…­‘É½Àµ‰±ÕÈˆ(€€€€€€ø(€€€€€€€K¡±•µ•¹Ğ(€€€€€€ğ½‰ÕÑÑ½¸ø((€€€€€€ñIÕ±•Í5½‘…°…µÁ…¥¸õí…µÁ…¥¹ô½Á•¸õíÉÕ±•Í=Á•¹ô½¹±½Í”õì ¤€ôøÍ•ÑIÕ±•Í=Á•¸¡™…±Í”¥ô€¼ø((€€€€€€ñAÕ‰±¥5½‘…°½Á•¸õíÍÑ…”€ôôô€‰±½ÍĞ‰ôø(€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰µàµ…ÕÑ¼™±•à ´ÈÀÜ´ÈÀ¥Ñ•µÌµ•¹Ñ•È©ÕÍÑ¥™äµ•¹Ñ•ÈÉ½Õ¹‘•µ™Õ±°‰œµl˜Í˜Ñ˜átÑ•áĞ´Íá°™½¹ĞµÍ•µ¥‰½±Ñ•áĞµlŒÄĞÄàÈÙtÍ¡…‘½ÜµlÁ|ÈÁÁá|ĞÕÁá}É‰„ ÄÜ°ÈĞ°Ìä°À¸ÄÀ¥tˆø(€€€€€€€€€€„(€€€€€€€€ğ½‘¥Øø(€€€€€€€€ñ È±…ÍÍ9…µ”ô‰µĞ´ØÑ•áĞµ•¹Ñ•ÈÑ•áĞµlÉÉ•µt™½¹ĞµÍ•µ¥‰½±±•…‘¥¹œµlÄ¸ÀÕtÑ•áĞµlŒÄÈÄàÈÙtˆø(€€€€€€€€€A•É‘Ô(€€€€€€€€ğ½ Èø(€€€€€€€€ñÀ±…ÍÍ9…µ”ô‰µĞ´ĞÑ•áĞµ•¹Ñ•ÈÑ•áĞµ±œ±•…‘¥¹œ´àÑ•áĞµlŒÕ˜ØØÜátˆø(€€€€€€€€€5•É¤Á½ÕÈÙ½ÑÉ”Á…ÉÑ¥¥Á…Ñ¥½¸¸I•Ù•¹•è‰¥•¹ÓÑĞÁ½ÕÈÕ¹”¹½ÕÙ•±±”¡…¹”¸(€€€€€€€€ğ½Àø(€€€€€€ğ½AÕ‰±¥5½‘…°ø((€€€€€€ñAÕ‰±¥5½‘…°½Á•¸õíÍÑ…”€ôôô€‰‰±½­•‰ôø(€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰µàµ…ÕÑ¼™±•à ´ÈÀÜ´ÈÀ¥Ñ•µÌµ•¹Ñ•È©ÕÍÑ¥™äµ•¹Ñ•ÈÉ½Õ¹‘•µ™Õ±°‰œµl˜Í˜Ñ˜átÑ•áĞ´Íá°™½¹ĞµÍ•µ¥‰½±Ñ•áĞµlŒÄĞÄàÈÙtÍ¡…‘½ÜµlÁ|ÈÁÁá|ĞÕÁá}É‰„ ÄÜ°ÈĞ°Ìä°À¸ÄÀ¥tˆø(€€€€€€€€€€„(€€€€€€€€ğ½‘¥Øø(€€€€€€€€ñ È±…ÍÍ9…µ”ô‰µĞ´ØÑ•áĞµ•¹Ñ•ÈÑ•áĞµlÉÉ•µt™½¹ĞµÍ•µ¥‰½±±•…‘¥¹œµlÄ¸ÀÕtÑ•áĞµlŒÄÈÄàÈÙtˆø(€€€€€€€€€A…ÉÑ¥¥Á…Ñ¥½¸“¥«€•¹É•¥ÍÑË¥”(€€€€€€€€ğ½ Èø(€€€€€€€€ñÀ±…ÍÍ9…µ”ô‰µĞ´ĞÑ•áĞµ•¹Ñ•ÈÑ•áĞµ±œ±•…‘¥¹œ´àÑ•áĞµlŒÕ˜ØØÜátˆø(€€€€€€€€€í‰±½­•‘5•ÍÍ…•ô(€€€€€€€€ğ½Àø(€€€€€€€€ñ‰ÕÑÑ½¸(€€€€€€€€€ÑåÁ”ô‰‰ÕÑÑ½¸ˆ(€€€€€€€€€½¹±¥¬õì ¤€ôøÍ•ÑMÑ…” ‰¥‘±”ˆ¥ô(€€€€€€€€€±…ÍÍ9…µ”ô‰µĞ´ØÜµ™Õ±°É½Õ¹‘•µlÈÁÁát‰œµlŒÄÄÄàÈİtÁà´ÔÁä´ĞÑ•áĞµ±œ™½¹ĞµÍ•µ¥‰½±Ñ•áĞµİ¡¥Ñ”Í¡…‘½ÜµlÁ|ÄÉÁá|ÈÑÁá}É‰„ ÄÜ°ÈĞ°Ìä°À¸ÄØ¥tˆ(€€€€€€€€ø(€€€€€€€€€½µÁÉ¥Ì(€€€€€€€€ğ½‰ÕÑÑ½¸ø(€€€€€€ğ½AÕ‰±¥5½‘…°ø((€€€€€€ñAÕ‰±¥5½‘…°½Á•¸õíÍÑ…”€ôôô€‰¥¹ÑÉ¼‰ôø(€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰µàµ…ÕÑ¼™±•à ´ÈĞÜ´ÈĞ¥Ñ•µÌµ•¹Ñ•È©ÕÍÑ¥™äµ•¹Ñ•ÈÉ½Õ¹‘•µ™Õ±°‰œµl˜İ˜İ™‰tÑ•áĞ´Ñá°™½¹ĞµÍ•µ¥‰½±Ñ•áĞµlŒÅ„É˜ÜÙtÍ¡…‘½ÜµlÁ|ÈÁÁá|ĞÕÁá}É‰„ ÄÜ°ÈĞ°Ìä°À¸ÄÀ¥tˆø(€€€€€€€€€í…Ñ¥½¹%½¸¡ÕÉÉ•¹ÑÑ¥½¸ü¹­¥¹¥ô(€€€€€€€€ğ½‘¥Øø(€€€€€€€€ñ È±…ÍÍ9…µ”ô‰µĞ´ØÑ•áĞµ•¹Ñ•ÈÑ•áĞµlÉÉ•µt™½¹ĞµÍ•µ¥‰½±±•…‘¥¹œµlÄ¸ÀÕtÑ•áĞµlŒÄÈÄàÈÙtˆø(€€€€€€€€€íÕÉÉ•¹ÑÑ¥½¸€ü€‰Ù…¹Ğ‘”©½Õ•Èˆ€è€‰AË©Ğƒ€©½Õ•È€ü‰ô(€€€€€€€€ğ½ Èø(€€€€€€€€ñÀ±…ÍÍ9…µ”ô‰µĞ´ĞÑ•áĞµ•¹Ñ•ÈÑ•áĞµ±œ±•…‘¥¹œ´àÑ•áĞµlŒÕ˜ØØÜátˆø(€€€€€€€€€íÕÉÉ•¹ÑÑ¥½¸ü¹­¥¹€ôôô€‰½½±”ˆ(€€€€€€€€€€€€ü€‰Y½ÑÉ”É•Ñ½ÕÈ…¥‘”³Šg¥Ñ…‰±¥ÍÍ•µ•¹Ğƒ€ÁÉ½É•ÍÍ•È¸Y½ÕÌÁ½ÕÙ•è©½Õ•È‘…¹ÌÑ½ÕÌ±•Ì…Ì¸ˆ(€€€€€€€€€€€€èÕÉÉ•¹ÑÑ¥½¸(€€€€€€€€€€€€€€ü€‰¥½ÕÙÉ•è±”±¥•¸‘Ô½µµ•É”‘…¹ÌÕ¸¹½ÕÙ•°½¹±•Ğ°ÁÕ¥ÌÉ•Ù•¹•è¥¤Á½ÕÈ©½Õ•È¸ˆ(€€€€€€€€€€€€€€è€‰Q½Õ¡•è)½Õ•ÈÁ½ÕÈÁË¥Á…É•ÈÙ½ÑÉ”Á…ÉÑ¥”•Ğ“¥½ÕÙÉ¥ÈÙ½ÑÉ”Ë¥ÍÕ±Ñ…Ğ¸‰ô(€€€€€€€€ğ½Àø(€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰µĞ´ØÍÁ…”µä´Ìˆø(€€€€€€€€€íÕÉÉ•¹ÑÑ¥½¸€ü€ (€€€€€€€€€€€€ñ„(€€€€€€€€€€€€€¡É•˜õíÕÉÉ•¹ÑÑ¥½¸¹ÕÉ±ô(€€€€€€€€€€€€€Ñ…É•Ğô‰}‰±…¹¬ˆ(€€€€€€€€€€€€€É•°ô‰¹½É•™•ÉÉ•Èˆ(€€€€€€€€€€€€€½¹±¥¬õì ¤€ôøì(€€€€€€€€€€€€€€€¥˜€¡ÕÉÉ•¹ÑÑ¥½¸¹­¥¹€ôôô€‰½½±”ˆ¤ì(€€€€€€€€€€€€€€€€€Í•ÑÑ¥½¹Y¥Í¥Ñ•¡ÑÉÕ”¤ì(€€€€€€€€€€€€€€€€€Ù½¥ÑÉ…­Ù•¹Ğ ‰É•Ù¥•İ}±¥­•ˆ¤ì(€€€€€€€€€€€€€€€€€É•ÑÕÉ¸ì(€€€€€€€€€€€€€€€ô((€€€€€€€€€€€€€€€Í•ÑÑ¥½¹Y¥Í¥Ñ•¡ÑÉÕ”¤ì(€€€€€€€€€€€€€€€Ù½¥ÑÉ…­Ù•¹Ğ ‰Í½¥…±}±¥­•ˆ¤ì(€€€€€€€€€€€€€õô(€€€€€€€€€€€€€±…ÍÍ9…µ”ô‰‰±½¬Üµ™Õ±°É½Õ¹‘•µlÈÁÁát‰½É‘•È‰½É‘•Èµl˜ÍˆÈÈåt‰œµl˜ÍˆÈÈåtÁà´ÔÁä´ĞÑ•áĞµ•¹Ñ•ÈÑ•áĞµ±œ™½¹ĞµÍ•µ¥‰½±Ñ•áĞµlŒÄÄÄàÈİtÍ¡…‘½ÜµlÁ|ÄÉÁá|ÈÉÁá}É‰„ ÈĞÌ°ÄÜà°ĞÄ°À¸Èà¥tˆ(€€€€€€€€€€€€ø(€€€€€€€€€€€€€í…Ñ¥½¹1…‰•°¡ÕÉÉ•¹ÑÑ¥½¸¹­¥¹¥ô(€€€€€€€€€€€€ğ½„ø(€€€€€€€€€€¤€è¹Õ±±ô(€€€€€€€€€€ñ‰ÕÑÑ½¸(€€€€€€€€€€€ÑåÁ”ô‰‰ÕÑÑ½¸ˆ(€€€€€€€€€€€½¹±¥¬õì ¤€ôøÙ½¥±…Õ¹¡AÉ•Á…É•‘…µ” ¥ô(€€€€€€€€€€€‘¥Í…‰±•õí¥Í1½…‘¥¹ô(€€€€€€€€€€€±…ÍÍ9…µ”õì(€€€€€€€€€€€€€…Ñ¥½¹Y¥Í¥Ñ•ñğ€…ÕÉÉ•¹ÑÑ¥½¸(€€€€€€€€€€€€€€€€ü€‰Üµ™Õ±°É½Õ¹‘•µlÈÁÁát‰œµlŒÄÄÄàÈİtÁà´ÔÁä´ĞÑ•áĞµá°™½¹ĞµÍ•µ¥‰½±Ñ•áĞµİ¡¥Ñ”Í¡…‘½ÜµlÁ|ÄÉÁá|ÈÑÁá}É‰„ ÄÜ°ÈĞ°Ìä°À¸ÄØ¥t‘¥Í…‰±•é½Á…¥Ñä´ØÀˆ(€€€€€€€€€€€€€€€€è€‰Üµ™Õ±°É½Õ¹‘•µlÄÉÁát‰œµÑÉ…¹ÍÁ…É•¹ĞÁà´ÌÁä´ÈÑ•áĞµÍ´™½¹Ğµµ•‘¥Õ´Ñ•áĞµlŒØÄØàİ…tÕ¹‘•É±¥¹”‘•½É…Ñ¥½¸µlŒÑŒåÑtÕ¹‘•É±¥¹”µ½™™Í•Ğ´ĞÑÉ…¹Í¥Ñ¥½¸¡½Ù•ÈéÑ•áĞµlŒÄÄÄàÈİt‘¥Í…‰±•é½Á…¥Ñä´ØÀˆ(€€€€€€€€€€€ô(€€€€€€€€€€ø(€€€€€€€€€€€í¥Í1½…‘¥¹œ(€€€€€€€€€€€€€€ü€‰AË¥Á…É…Ñ¥½¸¸¸¸ˆ(€€€€€€€€€€€€€€è…Ñ¥½¹Y¥Í¥Ñ•ñğ€…ÕÉÉ•¹ÑÑ¥½¸(€€€€€€€€€€€€€€€€ü€‰)½Õ•Èˆ(€€€€€€€€€€€€€€€€è€‰)½Õ•Èµ…¥¹Ñ•¹…¹Ğ‰ô(€€€€€€€€€€ğ½‰ÕÑÑ½¸ø(€€€€€€€€ğ½‘¥Øø(€€€€€€€í•ÉÉ½È€ü€ (€€€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰µĞ´ĞÉ½Õ¹‘•µlÄáÁát‰œµl™™˜Å˜ÁtÁà´ĞÁä´ÌÑ•áĞµÍ´Ñ•áĞµlˆĞÈÌÄátˆø(€€€€€€€€€€€í•ÉÉ½Éô(€€€€€€€€€€ğ½‘¥Øø(€€€€€€€€¤€è¹Õ±±ô(€€€€€€ğ½AÕ‰±¥5½‘…°ø((€€€€€€ñAÕ‰±¥5½‘…°½Á•¸õíÍÑ…”€ôôô€‰½±±•Ğ‰ôø(€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰µàµ…ÕÑ¼™±•à ´ÈĞÜ´ÈĞ¥Ñ•µÌµ•¹Ñ•È©ÕÍÑ¥™äµ•¹Ñ•ÈÉ½Õ¹‘•µ™Õ±°‰œµl˜İ˜İ™‰tÑ•áĞ´Ñá°Í¡…‘½ÜµlÁ|ÈÁÁá|ĞÕÁá}É‰„ ÄÜ°ÈĞ°Ìä°À¸ÄÀ¥tˆø(€€€€€€€€€ƒÂ~:(€€€€€€€€ğ½‘¥Øø(€€€€€€€€ñ È±…ÍÍ9…µ”ô‰µĞ´ØÑ•áĞµ•¹Ñ•ÈÑ•áĞµlÉÉ•µt™½¹ĞµÍ•µ¥‰½±±•…‘¥¹œµlÄ¸ÀÕtÑ•áĞµlŒÄÈÄàÈÙtˆø(€€€€€€€€€¥±¥¥Ñ…Ñ¥½¹Ì€„Y½ÕÌ…Ù•èÉ•µÁ½ÉÓ¤íÁÉ•Ù¥•İI•ÍÕ±Ğü¹ÁÉ¥é”ü¹±…‰•±ô(€€€€€€€€ğ½ Èø(€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰µĞ´ÔÉ½Õ¹‘•µlÈÉÁát‰œµl˜Ù˜İ™‰tÁà´ÔÁä´ĞÑ•áĞµ‰…Í”±•…‘¥¹œ´ÜÑ•áĞµlŒĞÜÔÀØİtˆø(€€€€€€€€€Y½Ì¥¹™½Éµ…Ñ¥½¹ÌÍ½¹Ğ»¥•ÍÍ…¥É•ÌÁ½ÕÈÙ…±¥‘•È•Ğ•¹Ù½å•ÈÙ½ÑÉ”…¥¸¸(€€€€€€€€ğ½‘¥Øø(€€€€€€€íÁÉ•Ù¥•İUÍ…•½¹‘¥Ñ¥½¹Ì€ü€ (€€€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰µĞ´ĞÉ½Õ¹‘•µlÈÉÁát‰œµl™™˜á”átÁà´ÔÁä´ĞÑ•áĞµ±•™ĞÑ•áĞµÍ´±•…‘¥¹œ´ÜÑ•áĞµlŒÙŒÔÌÄÍtˆø(€€€€€€€€€€€€ñÀ±…ÍÍ9…µ”ô‰Ñ•áĞµáÌÕÁÁ•É…Í”ÑÉ…­¥¹œµlÀ¸É•µtÑ•áĞµlŒá„Ù„Äátˆø(€€€€€€€€€€€€€½¹‘¥Ñ¥½¹Ì™…Á½ÌíÕÑ¥±¥Í…Ñ¥½¸(€€€€€€€€€€€€ğ½Àø(€€€€€€€€€€€€ñÀ±…ÍÍ9…µ”ô‰µĞ´Èİ¡¥Ñ•ÍÁ…”µÁÉ”µ±¥¹”ˆùíÁÉ•Ù¥•İUÍ…•½¹‘¥Ñ¥½¹Íôğ½Àø(€€€€€€€€€€ğ½‘¥Øø(€€€€€€€€¤€è¹Õ±±ô(€€€€€€€€ñ™½É´±…ÍÍ9…µ”ô‰µĞ´ÔÍÁ…”µä´Ğˆ½¹MÕ‰µ¥ĞõíÍÕ‰µ¥Ñ]¥¹¹•É½Éµôø(€€€€€€€€€€ñ¥¹ÁÕĞ(€€€€€€€€€€€Ù…±Õ”õí™¥ÉÍÑ9…µ•ô(€€€€€€€€€€€½¹¡…¹”õì¡•Ù•¹Ğ¤€ôøÍ•Ñ¥ÉÍÑ9…µ”¡•Ù•¹Ğ¹Ñ…É•Ğ¹Ù…±Õ”¥ô(€€€€€€€€€€€É•ÅÕ¥É•(€€€€€€€€€€€Á±…•¡½±‘•Èô‰AË¥¹½´ˆ(€€€€€€€€€€€±…ÍÍ9…µ”ô‰Üµ™Õ±°É½Õ¹‘•µlÄáÁát‰½É‘•È‰½É‘•Èµlá‘”ÕtÁà´ĞÁä´ĞÑ•áĞµ±œÑ•áĞµlŒÄÄÄàÈİt½ÕÑ±¥¹”µ¹½¹”Á±…•¡½±‘•ÈéÑ•áĞµlŒäå„ÅˆÉtˆ(€€€€€€€€€€¼ø(€€€€€€€€€€ñ±…‰•°±…ÍÍ9…µ”ô‰ÍÈµ½¹±äˆ¡Ñµ±½Èô‰İ¥¹¹•Èµ™¥ÉÍĞµ¹…µ”ˆùAË¥¹½´ğ½±…‰•°ø(€€€€€€€€€€ñ¥¹ÁÕĞ(€€€€€€€€€€€¥ô‰İ¥¹¹•Èµ™¥ÉÍĞµ¹…µ”ˆ(€€€€€€€€€€€ÑåÁ”ô‰•µ…¥°ˆ(€€€€€€€€€€€Ù…±Õ”õí•µ…¥±ô(€€€€€€€€€€€½¹¡…¹”õì¡•Ù•¹Ğ¤€ôøÍ•Ñµ…¥°¡•Ù•¹Ğ¹Ñ…É•Ğ¹Ù…±Õ”¥ô(€€€€€€€€€€€É•ÅÕ¥É•(€€€€€€€€€€€Á±…•¡½±‘•Èô‰µµ…¥°ˆ(€€€€€€€€€€€±…ÍÍ9…µ”ô‰Üµ™Õ±°É½Õ¹‘•µlÄáÁát‰½É‘•È‰½É‘•Èµlá‘”ÕtÁà´ĞÁä´ĞÑ•áĞµ±œÑ•áĞµlŒÄÄÄàÈİt½ÕÑ±¥¹”µ¹½¹”Á±…•¡½±‘•ÈéÑ•áĞµlŒäå„ÅˆÉtˆ(€€€€€€€€€€¼ø(€€€€€€€€€€ñ±…‰•°±…ÍÍ9…µ”ô‰™±•àÕÉÍ½ÈµÁ½¥¹Ñ•È¥Ñ•µÌµÍÑ…ÉĞ…À´ÌÉ½Õ¹‘•µlÄáÁát‰œµl˜Ù˜İ™‰tÁà´ĞÁä´ÌÑ•áĞµ±•™ĞÑ•áĞµÍ´±•…‘¥¹œ´ØÑ•áĞµlŒĞÜÔÀØİtˆø(€€€€€€€€€€ñ±…‰•°±…ÍÍ9…µ”ô‰ÍÈµ½¹±äˆ¡Ñµ±½Èô‰İ¥¹¹•Èµ•µ…¥°ˆùµµ…¥°ğ½±…‰•°ø(€€€€€€€€€€ñ¥¹ÁÕĞ(€€€€€€€€€€€¥ô‰İ¥¹¹•Èµ•µ…¥°ˆ(€€€€€€€€€€€€€ÑåÁ”ô‰¡•­‰½àˆ(€€€€€€€€€€€€€¡•­•õíµ…É­•Ñ¥¹½¹Í•¹Ñô(€€€€€€€€€€€€€½¹¡…¹”õì¡•Ù•¹Ğ¤€ôøÍ•Ñ5…É­•Ñ¥¹½¹Í•¹Ğ¡•Ù•¹Ğ¹Ñ…É•Ğ¹¡•­•¥ô(€€€€€€€€€€€€€±…ÍÍ9…µ”ô‰µĞ´Ä ´ĞÜ´Ğ…•¹ĞµlŒÄÄÄàÈİtˆ(€€€€€€€€€€€€¼ø(€€€€€€€€€€€€ñÍÁ…¸ø(€€€€€€€€€€€€€(™…Á½Ìí…•ÁÑ”‘”É••Ù½¥È‘•Ì…ÑÕ…±¥Ó¥Ì•Ğ½™™É•Ì‘”±„Á…ÉĞ‘”•Ğƒ¥Ñ…‰±¥ÍÍ•µ•¹Ğ¸(€€€€€€€€€€€€ğ½ÍÁ…¸ø(€€€€€€€€€€ğ½±…‰•°ø((€€€€€€€€€í•ÉÉ½È€ü€ (€€€€€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰É½Õ¹‘•µlÄáÁát‰œµl™™˜Å˜ÁtÁà´ĞÁä´ÌÑ•áĞµÍ´Ñ•áĞµlˆĞÈÌÄátˆø(€€€€€€€€€€€€€í•ÉÉ½Éô(€€€€€€€€€€€€ğ½‘¥Øø(€€€€€€€€€€¤€è¹Õ±±ô((€€€€€€€€€€ñ‰ÕÑÑ½¸(€€€€€€€€€€€ÑåÁ”ô‰ÍÕ‰µ¥Ğˆ(€€€€€€€€€€€‘¥Í…‰±•õí¥Í1½…‘¥¹ô(€€€€€€€€€€€±…ÍÍ9…µ”ô‰Üµ™Õ±°É½Õ¹‘•µlÄáÁát‰œµlŒÄÄÄàÈİtÁà´ÔÁä´ĞÑ•áĞµ±œ™½¹ĞµÍ•µ¥‰½±Ñ•áĞµİ¡¥Ñ”‘¥Í…‰±•é½Á…¥Ñä´ØÀˆ(€€€€€€€€€€ø(€€€€€€€€€€€í¥Í1½…‘¥¹œ€ü€‰¹É•¥ÍÑÉ•µ•¹Ğ¸¸¸ˆ€è€‰¹É•¥ÍÑÉ•È‰ô(€€€€€€€€€€ğ½‰ÕÑÑ½¸ø(€€€€€€€€ğ½™½É´ø(€€€€€€ğ½AÕ‰±¥5½‘…°ø((€€€€€€ñAÕ‰±¥5½‘…°½Á•¸õíÍÑ…”€ôôô€‰ÍÕ•ÍÌˆ€˜˜	½½±•…¸¡‘É…İI•ÍÕ±Ğ¥ô½µÁ…Ğø(€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰Ñ•áĞµ•¹Ñ•Èˆø(€€€€€€€€€€ñ È±…ÍÍ9…µ”ô‰Ñ•áĞµlÄ¸ÜÕÉ•µt™½¹ĞµÍ•µ¥‰½±±•…‘¥¹œµlÄ¸ÀÕtÑ•áĞµlŒÄÈÄàÈÙtˆø(€€€€€€€€€€€5•É¤Á½ÕÈÙ½ÑÉ”Á…ÉÑ¥¥Á…Ñ¥½¸€„(€€€€€€€€€€ğ½ Èø(€€€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰µàµ…ÕÑ¼µĞ´Ğ™±•à ´ÄØÜ´ÄØ¥Ñ•µÌµ•¹Ñ•È©ÕÍÑ¥™äµ•¹Ñ•ÈÉ½Õ¹‘•µ™Õ±°‰œµl˜İ˜İ™‰tÑ•áĞ´Ñá°Í¡…‘½ÜµlÁ|ÄÙÁá|ÌÑÁá}É‰„ ÄÜ°ÈĞ°Ìä°À¸ÄÀ¥tˆø(€€€€€€€€€€€ƒŠr$(€€€€€€€€€€ğ½‘¥Øø(€€€€€€€€€€ñÀ±…ÍÍ9…µ”ô‰µĞ´ĞÑ•áĞµ±œ±•…‘¥¹œ´ÜÑ•áĞµlŒÅ„É˜ÜÙtˆø(€€€€€€€€€€€Y½ÕÌÉ••ÙÉ•èÙ½ÑÉ”…¥¸Á…È”µµ…¥°…Ù•Œ±•Ì¥¹™½Éµ…Ñ¥½¹Ì‘”É•ÑÉ…¥Ğ(€€€€€€€€€€ğ½Àø(€€€€€€€€€€ñÀ±…ÍÍ9…µ”ô‰µĞ´ÌÑ•áĞµÍ´±•…‘¥¹œ´ØÑ•áĞµlŒØÄØàİ…tˆø(€€€€€€€€€€€½¹Í•ÉÙ•è”EH½‘”Á½ÕÈÉ•Ñ¥É•ÈÙ½ÑÉ”…¥¸¸M¤³Še”µµ…¥°Ñ…É‘”ƒ€…ÉÉ¥Ù•È°Û¥É¥™¥•èÙ½ÌÍÁ…µÌ¸(€€€€€€€€€€ğ½Àø((€€€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰µĞ´ĞÉ½Õ¹‘•µlÄáÁát‰œµl™™˜Ñ‰tÁà´ĞÁä´ÌÑ•áĞµ±•™ĞÑ•áĞµÍ´±•…‘¥¹œ´ØÑ•áĞµlŒÑÌàÄÁtˆø(€€€€€€€€€€€€ñÀø(€€€€€€€€€€€€€Y½ÕÌ…Ù•è•¹ÑÉ”±”í…Ù…¥±…‰±•…Ñ”€üü€‰µ…¥¹Ñ•¹…¹Ğ‰ô•Ğ±”í•áÁ¥Éå…Ñ”€üü€‰‰¥•¹ÓÑĞ‰õìˆ€‰ô(€€€€€€€€€€€€€Á½ÕÈÙ•¹¥È±”Ë¥ÕÃ¥É•È¸(€€€€€€€€€€€€ğ½Àø(€€€€€€€€€€ğ½‘¥Øø((€€€€€€€€€í…µÁ…¥¸¹É•İ…É‘IÕ±•Ì¹ÁÕÉ¡…Í•I•ÅÕ¥É•€ü€ (€€€€€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰µĞ´ÌÉ½Õ¹‘•µlÄáÁát‰œµl˜İ˜İ™‰tÁà´ĞÁä´ÌÑ•áĞµ±•™ĞÑ•áĞµÍ´±•…‘¥¹œ´ØÑ•áĞµlŒØÄØàİ…tˆø(€€€€€€€€€€€€€1”É•ÑÉ…¥Ğ‘Ô±½Ğ•ÍĞÍ½Õµ¥Ìƒ€Õ¹”½¹‘¥Ñ¥½¸“Še…¡…Ğ¸(€€€€€€€€€€€€ğ½‘¥Øø(€€€€€€€€€€¤€è¹Õ±±ô((€€€€€€€€€íÉ•Í½±Ù•‘UÍ…•½¹‘¥Ñ¥½¹Ì€ü€ (€€€€€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰µĞ´ÌÉ½Õ¹‘•µlÄáÁát‰œµl™™˜Ñ‰tÁà´ĞÁä´ÌÑ•áĞµ±•™ĞÑ•áĞµÍ´±•…‘¥¹œ´ØÑ•áĞµlŒÑÌàÄÁtˆø(€€€€€€€€€€€€€€ñÀ±…ÍÍ9…µ”ô‰Ñ•áĞµáÌÕÁÁ•É…Í”ÑÉ…­¥¹œµlÀ¸É•µtÑ•áĞµlŒá„Ù„Äátˆø(€€€€€€€€€€€€€€€½¹‘¥Ñ¥½¹Ì™…Á½ÌíÕÑ¥±¥Í…Ñ¥½¸(€€€€€€€€€€€€€€ğ½Àø(€€€€€€€€€€€€€€ñÀ±…ÍÍ9…µ”ô‰µĞ´Èİ¡¥Ñ•ÍÁ…”µÁÉ”µ±¥¹”ˆùíÉ•Í½±Ù•‘UÍ…•½¹‘¥Ñ¥½¹Íôğ½Àø(€€€€€€€€€€€€ğ½‘¥Øø(€€€€€€€€€€¤€è¹Õ±±ô((€€€€€€€€€íÉ•‘•µÁÑ¥½¹½‘”€ü€ (€€€€€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰µĞ´ĞÉ½Õ¹‘•µlÈÁÁát‰½É‘•È‰½É‘•Èµl”Õ”İ•™t‰œµl™…™‰™™tÀ´Ìˆø(€€€€€€€€€€€€€€ñÀ±…ÍÍ9…µ”ô‰Ñ•áĞµáÌÕÁÁ•É…Í”ÑÉ…­¥¹œµlÀ¸ÈÑ•µtÑ•áĞµlŒáˆäÍ„Õtˆù½‘”‘”É•ÑÉ…¥Ğğ½Àø(€€€€€€€€€€€€€€ñÀ±…ÍÍ9…µ”ô‰µĞ´ÄÑ•áĞµá°™½¹ĞµÍ•µ¥‰½±Ñ•áĞµlŒÄÈÄàÈÙtˆùíÉ•‘•µÁÑ¥½¹½‘•ôğ½Àø(€€€€€€€€€€€€€íÅÉA…Ñ €ü€ (€€€€€€€€€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰µĞ´Ì™±•à¥Ñ•µÌµ•¹Ñ•È…À´ÌÉ½Õ¹‘•µlÄÙÁát‰œµİ¡¥Ñ”À´È¸ÔÑ•áĞµ±•™Ğˆø(€€€€€€€€€€€€€€€€€€ñ%µ…”(€€€€€€€€€€€€€€€€€€€ÍÉŒõíÅÉA…Ñ¡ô(€€€€€€€€€€€€€€€€€€€…±ĞõíEH½‘”€‘íÉ•‘•µÁÑ¥½¹½‘•õô(€€€€€€€€€€€€€€€€€€€İ¥‘Ñ õìàÁô(€€€€€€€€€€€€€€€€€€€¡•¥¡ĞõìàÁô(€€€€€€€€€€€€€€€€€€€Õ¹½ÁÑ¥µ¥é•(€€€€€€€€€€€€€€€€€€€±…ÍÍ9…µ”ô‰ ´ÈÀÜ´ÈÀÉ½Õ¹‘•µlÄÉÁátˆ(€€€€€€€€€€€€€€€€€€¼ø(€€€€€€€€€€€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰µ¥¸µÜ´À™±•à´Äˆø(€€€€€€€€€€€€€€€€€€€€ñÀ±…ÍÍ9…µ”ô‰Ñ•áĞµáÌ±•…‘¥¹œ´ÔÑ•áĞµlŒØÄØàİ…tˆø(€€€€€€€€€€€€€€€€€€€€€¹É•¥ÍÑÉ•èµ±”Á½ÕÈ±”É•ÑÉ½ÕÙ•È™…¥±•µ•¹Ğ¸(€€€€€€€€€€€€€€€€€€€€ğ½Àø(€€€€€€€€€€€€€€€€€€€€ñ„(€€€€€€€€€€€€€€€€€€€€€¡É•˜õíÅÉA…Ñ¡ô(€€€€€€€€€€€€€€€€€€€€€‘½İ¹±½…õíÅÈµ±½Ğ´‘íÉ•‘•µÁÑ¥½¹½‘•ô¹ÍÙô(€€€€€€€€€€€€€€€€€€€€€±…ÍÍ9…µ”ô‰µĞ´È¥¹±¥¹”µ™±•àÉ½Õ¹‘•µlÄÉÁát‰œµlŒÄÄÄàÈİtÁà´ÌÁä´ÈÑ•áĞµáÌ™½¹ĞµÍ•µ¥‰½±€…Ñ•áĞµİ¡¥Ñ”ˆ(€€€€€€€€€€€€€€€€€€€€ø(€€€€€€€€€€€€€€€€€€€€€¹É•¥ÍÑÉ•È(€€€€€€€€€€€€€€€€€€€€ğ½„ø(€€€€€€€€€€€€€€€€€€ğ½‘¥Øø(€€€€€€€€€€€€€€€€ğ½‘¥Øø(€€€€€€€€€€€€€€¤€è¹Õ±±ô(€€€€€€€€€€€€ğ½‘¥Øø(€€€€€€€€€€¤€è¹Õ±±ô(€€€€€€€€ğ½‘¥Øø(€€€€€€ğ½AÕ‰±¥5½‘…°ø(€€€€ğ½‘¥Øø(€€¤ì)ô(
+                  </div>
+                ))
+              ) : (
+                <p className="px-4 py-3 text-[#7b8496]">Aucun lot configurÃ©.</p>
+              )}
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function CampaignExperience({
+  campaignId,
+  initialCampaign,
+  isPreview = false,
+}: CampaignExperienceProps) {
+  const [campaign, setCampaign] = useState(initialCampaign);
+  const [stage, setStage] = useState<ExperienceStage>("idle");
+  const [blockedMessage, setBlockedMessage] = useState(
+    "Une seule participation est possible par jour. Revenez demain pour tenter votre chance Ã  nouveau.",
+  );
+  const [drawSession, setDrawSession] = useState<DrawSession | null>(null);
+  const [previewResult, setPreviewResult] = useState<CreateDrawSessionResult | null>(null);
+  const [drawResult, setDrawResult] = useState<DrawResult | null>(null);
+  const [firstName, setFirstName] = useState("");
+  const [email, setEmail] = useState("");
+  const [marketingConsent, setMarketingConsent] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [actionVisited, setActionVisited] = useState(false);
+  const [rulesOpen, setRulesOpen] = useState(false);
+  const [autoSpinKey, setAutoSpinKey] = useState<string | null>(null);
+
+  const segments = useMemo(() => buildWheelSegments(campaign), [campaign]);
+  const winningSegmentId =
+    previewResult?.prize?.id ??
+    drawResult?.prize?.id ??
+    segments.find((segment) => segment.tone === "lose")?.id ??
+    "lose-0";
+  const currentAction = campaign.actions[0];
+  const scratchLabel = previewResult?.prize?.label ?? "Perdu :(";
+  const redemptionCode = drawResult?.lead.redemptionCode;
+  const previewUsageConditions = previewResult?.prize?.usageConditions?.trim();
+  const resolvedUsageConditions =
+    drawResult?.prize?.usageConditions?.trim() || previewUsageConditions || "";
+  const qrPath = redemptionCode
+    ? `/api/public/redeem/${encodeURIComponent(redemptionCode)}/qr`
+    : "";
+  const availableDate = formatDate(drawResult?.lead.rewardAvailableAt);
+  const expiryDate = formatDate(drawResult?.lead.rewardExpiresAt);
+  const pageTemplate = campaign.presentation.layout.templateId ?? "classic";
+  const isRestaurantPopTemplate = pageTemplate === "restaurant-pop";
+  const isCosmicTemplate = pageTemplate === "cosmic-orbit";
+  const isSunburstTemplate = pageTemplate === "sunburst-festival";
+  const isImmersiveTemplate = isCosmicTemplate || isSunburstTemplate;
+  const isScratchVaultTemplate = pageTemplate === "scratch-vault";
+  const isScratchConfettiTemplate = pageTemplate === "scratch-confetti";
+  const isScratchCoralTemplate = pageTemplate === "scratch-coral";
+  const isScratchLilacTemplate = pageTemplate === "scratch-lilac";
+  const isScratchSunburstTemplate = pageTemplate === "scratch-sunburst";
+  const isImmersiveScratchTemplate =
+    isScratchVaultTemplate ||
+    isScratchConfettiTemplate ||
+    isScratchCoralTemplate ||
+    isScratchLilacTemplate ||
+    isScratchSunburstTemplate;
+  const primaryColor = campaign.gameType === "scratch"
+    ? campaign.accent.signal
+    : campaign.presentation.wheel.loseColor ?? campaign.accent.signal;
+  const secondaryColor = campaign.presentation.wheel.winColor ?? "#073b72";
+  const headingTextColor =
+    isCosmicTemplate || (isScratchVaultTemplate && campaign.presentation.heading.textColor.toLowerCase() === "#1f2937")
+      ? "#f8fbff"
+      : campaign.presentation.heading.textColor;
+  const logoWidthPx = Math.round(
+    Math.max(56, Math.min(720, campaign.presentation.logo.sizePercent * 3)),
+  );
+  const logoAlignmentClass =
+    campaign.presentation.logo.align === "left"
+      ? "justify-start"
+      : campaign.presentation.logo.align === "right"
+        ? "justify-end"
+        : "justify-center";
+  const headingAlignmentClass =
+    campaign.presentation.heading.align === "left"
+      ? "text-left"
+      : campaign.presentation.heading.align === "right"
+        ? "text-right"
+        : "text-center";
+  const headingFontClass =
+    campaign.presentation.heading.fontFamily === "anton"
+      ? "font-anton"
+      : campaign.presentation.heading.fontFamily === "serif" || campaign.presentation.heading.fontFamily === "cormorant"
+        ? campaign.presentation.heading.fontFamily === "cormorant"
+          ? "font-cormorant"
+          : "font-serif"
+        : campaign.presentation.heading.fontFamily === "fredoka"
+          ? "font-fredoka"
+          : campaign.presentation.heading.fontFamily === "inter" || campaign.presentation.heading.fontFamily === "sans"
+            ? "font-inter"
+            : campaign.presentation.heading.fontFamily === "bebas"
+              ? "font-bebas"
+              : "font-display";
+  const showBottomState =
+    !isImmersiveScratchTemplate &&
+    ((stage === "idle" && campaign.gameType !== "wheel") ||
+      (stage === "ready" && campaign.gameType !== "wheel"));
+
+  useEffect(() => {
+    async function loadCampaign() {
+      const response = await fetch(
+        `/api/public/campaign/${campaignId}${isPreview ? "?preview=1" : ""}`,
+      );
+
+      if (!response.ok) {
+        return;
+      }
+
+      const payload = (await response.json()) as { campaign: PublicCampaign };
+      setCampaign(payload.campaign);
+    }
+
+    void loadCampaign();
+  }, [campaignId, isPreview]);
+
+  async function trackEvent(eventType: string, leadId?: string) {
+    await fetch("/api/public/event", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        campaignId,
+        leadId,
+        eventType,
+      }),
+    });
+  }
+
+  async function prepareSession(nextStage: ExperienceStage = "ready") {
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      const response = await fetch("/api/public/draw/session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ campaignId }),
+      });
+
+      if (!response.ok) {
+        const payload = (await response.json().catch(() => null)) as {
+          error?: string;
+          code?: string;
+        } | null;
+        if (payload?.code === "already_played_today") {
+          setBlockedMessage(
+            payload.error ?? "Vous avez dÃ©jÃ  participÃ© Ã  cette animation. RÃ©essayez plus tard.",
+          );
+          setStage("blocked");
+          return;
+        }
+        throw new Error(payload?.error ?? "Impossible de prÃ©parer la partie.");
+      }
+
+      const payload = (await response.json()) as CreateDrawSessionResult;
+      setPreviewResult(payload);
+      setDrawSession(payload.session);
+      setCampaign(payload.campaign);
+      setStage(nextStage);
+    } catch (sessionError) {
+      setError(
+        sessionError instanceof Error ? sessionError.message : "Une erreur est survenue.",
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function openActionAndTrack() {
+    setActionVisited(false);
+    setError(null);
+    if (drawSession) {
+      setStage("intro");
+      return;
+    }
+
+    // An optional marketing action must never reserve a prize or gate access
+    // to the game. The draw session is prepared only when the player chooses
+    // to play.
+    setStage("intro");
+  }
+
+  async function launchPreparedGame() {
+    if (!drawSession) {
+      await prepareSession("ready");
+      setAutoSpinKey(`spin-${Date.now()}`);
+      return;
+    }
+
+    setStage("ready");
+    setAutoSpinKey(`spin-${drawSession.id}`);
+  }
+
+  async function submitWinnerForm(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!drawSession) {
+      return;
+    }
+
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      const payload: FinalizeDrawSessionRequest = {
+        sessionId: drawSession.id,
+        firstName,
+        email,
+        marketingConsent,
+      };
+      const response = await fetch("/api/public/draw/finalize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const failure = (await response.json().catch(() => null)) as {
+          error?: string;
+          code?: string;
+        } | null;
+        if (failure?.code === "participation_cooldown") {
+          setBlockedMessage(
+            failure.error ?? "Vous avez dÃ©jÃ  participÃ© Ã  cette animation. Revenez plus tard.",
+          );
+          setStage("blocked");
+          return;
+        }
+        throw new Error(failure?.error ?? "Impossible dâ€™enregistrer vos coordonnÃ©es.");
+      }
+
+      const result = (await response.json()) as DrawResult;
+      setDrawResult(result);
+      setCampaign(result.campaign);
+      setStage("success");
+    } catch (submitError) {
+      setError(
+        submitError instanceof Error ? submitError.message : "Une erreur est survenue.",
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function handleGameReveal() {
+    if (previewResult?.prize) {
+      setStage("collect");
+      await trackEvent("form_started");
+      return;
+    }
+
+    void trackEvent("game_lost");
+    setStage("lost");
+  }
+
+  const backgroundStyle =
+    campaign.presentation.background.mode === "image" &&
+    campaign.presentation.background.imageUrl
+      ? `linear-gradient(rgba(0,0,0,0.08), rgba(0,0,0,0.18)), url("${campaign.presentation.background.imageUrl}")`
+      : isScratchVaultTemplate
+        ? `radial-gradient(circle at 50% 108%, ${withHexAlpha(primaryColor, "58")} 0 27%, transparent 48%), radial-gradient(circle at 15% 10%, ${withHexAlpha(secondaryColor, "4d")} 0 12%, transparent 22%), linear-gradient(155deg, #071126 0%, #111b3b 56%, #071126 100%)`
+        : isScratchConfettiTemplate
+          ? `radial-gradient(circle at 12% 9%, ${withHexAlpha(primaryColor, "52")} 0 10%, transparent 11%), radial-gradient(circle at 94% 12%, ${withHexAlpha(secondaryColor, "30")} 0 12%, transparent 13%), linear-gradient(180deg, #f59e0b 0%, #f97316 58%, #ea580c 100%)`
+        : isScratchCoralTemplate
+          ? `radial-gradient(circle at 50% 0%, ${withHexAlpha(primaryColor, "24")} 0 18%, transparent 42%), linear-gradient(180deg, #fffaf5 0%, #ffffff 72%, #fff3e8 100%)`
+        : isScratchLilacTemplate
+          ? `radial-gradient(circle at 50% 0%, ${withHexAlpha(primaryColor, "2c")} 0 20%, transparent 44%), linear-gradient(180deg, #fffaff 0%, #f7edff 100%)`
+        : isScratchSunburstTemplate
+          ? `repeating-conic-gradient(from -18deg at 50% -2%, ${withHexAlpha(primaryColor, "52")} 0deg 12deg, transparent 12deg 24deg), linear-gradient(180deg, #fff4bf 0%, #ffdc58 68%, #fff0c5 100%)`
+        : isCosmicTemplate
+        ? `radial-gradient(circle at 50% 112%, ${withHexAlpha(primaryColor, "52")} 0 24%, transparent 43%), radial-gradient(circle at 9% 12%, ${withHexAlpha(secondaryColor, "2b")} 0 14%, transparent 25%), linear-gradient(155deg, #07142e 0%, #0b1d42 55%, #071126 100%)`
+        : isSunburstTemplate
+          ? `radial-gradient(circle at 12% 10%, ${withHexAlpha(primaryColor, "33")} 0 12%, transparent 13%), radial-gradient(circle at 94% 18%, ${withHexAlpha(secondaryColor, "38")} 0 14%, transparent 15%), linear-gradient(180deg, #fffdf5 0%, #fff8e8 56%, #fff2ce 100%)`
+        : isRestaurantPopTemplate
+        ? `radial-gradient(circle at -10% -8%, ${withHexAlpha(primaryColor, "f2")} 0 18%, transparent 19%), radial-gradient(circle at 110% 0%, ${withHexAlpha(secondaryColor, "f2")} 0 13%, transparent 14%), radial-gradient(circle at 0% 80%, ${withHexAlpha(primaryColor, "20")} 0 20%, transparent 21%), radial-gradient(circle at 100% 78%, ${withHexAlpha(secondaryColor, "40")} 0 18%, transparent 19%), linear-gradient(180deg, #fff2dd 0%, #fffaf1 46%, #fff4e5 100%)`
+        : `radial-gradient(circle at 50% 50%, ${withHexAlpha(primaryColor, "33")}, transparent 50%), linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.08))`;
+  const restaurantPopHeadingLines = buildRestaurantPopHeadingLines(campaign.subtitle);
+  const headingFontSize = fluidType(campaign.presentation.heading.fontSizePx, {
+    minRatio: 0.82,
+    maxRatio: 1.08,
+    viewportStep: 0.3,
+  });
+  const buttonFontSize = fluidType(campaign.presentation.button.textSizePx, {
+    minRatio: 0.86,
+    maxRatio: 1.08,
+    viewportStep: 0.24,
+  });
+  const publicCtaLabel = campaign.ctaLabel?.trim() || "Jouer";
+  const pageTopPaddingClass = isImmersiveScratchTemplate ? "pt-5 sm:pt-6" : "pt-12 sm:pt-14";
+
+  return (
+    <div
+      className="okado-public-experience relative min-h-screen overflow-hidden"
+      style={{
+        backgroundColor: campaign.presentation.background.color,
+        backgroundImage: backgroundStyle,
+        backgroundPosition: "center",
+        backgroundSize: "cover",
+      }}
+    >
+      {isRestaurantPopTemplate || isSunburstTemplate || isCosmicTemplate || isScratchVaultTemplate || isScratchConfettiTemplate || isScratchCoralTemplate || isScratchLilacTemplate || isScratchSunburstTemplate ? (
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div
+            className="absolute right-0 top-[18%] h-28 w-16 opacity-35"
+            style={{
+              backgroundImage: `radial-gradient(circle, ${withHexAlpha(primaryColor, isCosmicTemplate || isScratchVaultTemplate ? "70" : "40")} 1.8px, transparent 2px)`,
+              backgroundSize: "12px 12px",
+            }}
+          />
+          <div
+            className="absolute -bottom-10 -left-12 h-48 w-48 rounded-full opacity-80"
+            style={{ background: withHexAlpha(primaryColor, isCosmicTemplate || isScratchVaultTemplate ? "2e" : "22") }}
+          />
+        </div>
+      ) : null}
+      <div className={`relative mx-auto flex h-screen w-full flex-col overflow-hidden px-4 pb-0 sm:px-6 ${pageTopPaddingClass}`}>
+        {!isImmersiveScratchTemplate && ((campaign.logoMode === "image" && campaign.logoUrl) ||
+        campaign.logoMode === "text" ||
+        campaign.gameType === "scratch") ? (
+          <div className={`flex ${logoAlignmentClass}`}>
+            <div style={{ marginBottom: `${campaign.presentation.logo.marginBottomPx}px` }}>
+              <BrandMark
+                logoText={campaign.logoText ?? campaign.merchantLogoText}
+                logoUrl={campaign.logoMode === "image" ? campaign.logoUrl : undefined}
+                size="lg"
+                variant="transparent"
+                imageWidthPx={logoWidthPx}
+                textClassName={campaign.gameType === "wheel" ? "text-2xl" : undefined}
+                textColor={headingTextColor}
+              />
+            </div>
+          </div>
+        ) : null}
+
+        {campaign.logoMode === "none" ||
+        (campaign.logoMode === "image" && !campaign.logoUrl) && !isImmersiveScratchTemplate ? (
+          <div aria-hidden="true" className="h-5" />
+        ) : null}
+
+        {!isImmersiveScratchTemplate ? (
+        <div className={headingAlignmentClass}>
+          <h1
+            className={`${headingFontClass} whitespace-pre-line ${isRestaurantPopTemplate ? "tracking-[0.038em] drop-shadow-[0_5px_0_rgba(0,0,0,0.08)]" : ""} leading-[1] text-[#151826]`}
+            style={{
+              color: headingTextColor,
+              fontSize: headingFontSize,
+              fontWeight: campaign.presentation.heading.fontWeight ?? 600,
+            }}
+          >
+            {isRestaurantPopTemplate
+              ? restaurantPopHeadingLines.map((line, lineIndex) => (
+                  <span key={`heading-line-${lineIndex}`} className="block">
+                    {line.map((part, partIndex) => (
+                      <span
+                        key={`heading-line-${lineIndex}-${partIndex}`}
+                        style={{
+                          color: part.secondary
+                            ? secondaryColor
+                            : headingTextColor || primaryColor,
+                        }}
+                      >
+                        {part.text}
+                      </span>
+                    ))}
+                  </span>
+                ))
+              : campaign.subtitle.trim() || "Grattez pour rÃ©vÃ©ler votre cadeau"}
+          </h1>
+        </div>
+        ) : null}
+
+        {campaign.gameType === "wheel" ? (
+          <div
+            className="relative left-1/2 mt-[40px] min-h-0 w-screen -translate-x-1/2 flex-1 overflow-visible sm:mt-20 lg:mt-8"
+            style={{ minHeight: "min(52vh, 520px)" }}
+          >
+            <div className="absolute inset-0 overflow-visible">
+              {isImmersiveTemplate ? (
+                <ImmersiveWheel
+                  key={`${campaign.id}-${drawSession?.id ?? "idle"}`}
+                  accent={campaign.accent}
+                  wheelStyle={campaign.presentation.wheel}
+                  template={pageTemplate}
+                  buttonStyle={{
+                    backgroundColor: primaryColor,
+                    textColor: campaign.presentation.button.textColor,
+                    borderColor: campaign.presentation.wheel.rimColor,
+                  }}
+                  segments={segments}
+                  winningSegmentId={winningSegmentId}
+                  canSpin={stage === "ready"}
+                  buttonEnabled={stage === "idle" || stage === "ready"}
+                  buttonLabel="JOUER"
+                  framing="public"
+                  onButtonClick={() => void openActionAndTrack()}
+                  autoSpinKey={autoSpinKey}
+                  onSpinEnd={() => void handleGameReveal()}
+                />
+              ) : (
+                <WheelOfFortune
+                  key={`${campaign.id}-${drawSession?.id ?? "idle"}`}
+                  accent={campaign.accent}
+                  wheelStyle={campaign.presentation.wheel}
+                  pageTemplate={pageTemplate === "restaurant-pop" ? "restaurant-pop" : "classic"}
+                  buttonStyle={{
+                    backgroundColor: primaryColor,
+                    textColor: campaign.presentation.button.textColor,
+                    borderColor:
+                      pageTemplate === "restaurant-pop"
+                        ? secondaryColor
+                        : campaign.presentation.wheel.rimColor,
+                  }}
+                  segments={segments}
+                  winningSegmentId={winningSegmentId}
+                  canSpin={stage === "ready"}
+                  buttonEnabled={stage === "idle" || stage === "ready"}
+                  buttonLabel="JOUER"
+                  framing="public"
+                  onButtonClick={() => void openActionAndTrack()}
+                  autoSpinKey={autoSpinKey}
+                  onSpinEnd={() => void handleGameReveal()}
+                />
+              )}
+            </div>
+          </div>
+        ) : (
+          <div className={isImmersiveScratchTemplate ? "mt-0" : "mt-[40px] sm:mt-20 lg:mt-8"}>
+            {isImmersiveScratchTemplate ? (
+              <ImmersiveScratchTicket
+                key={`${campaign.id}-${drawSession?.id ?? "idle"}`}
+                accent={campaign.accent}
+                resultLabel={scratchLabel}
+                enabled={stage === "ready"}
+                onReveal={() => void handleGameReveal()}
+                onStart={() => void openActionAndTrack()}
+                logoMode={campaign.logoMode}
+                logoText={campaign.logoText ?? campaign.merchantLogoText}
+                logoUrl={campaign.logoUrl}
+                headline={campaign.subtitle}
+                headingTextColor={headingTextColor}
+                headingFontClass={headingFontClass}
+                headingFontSize={headingFontSize}
+                headingFontWeight={campaign.presentation.heading.fontWeight ?? 600}
+                headingAlignmentClass={headingAlignmentClass}
+                logoAlignmentClass={logoAlignmentClass}
+                logoBottomSpacingPx={campaign.presentation.logo.marginBottomPx}
+                logoWidthPx={logoWidthPx}
+                template={pageTemplate as "scratch-vault" | "scratch-confetti" | "scratch-coral" | "scratch-lilac" | "scratch-sunburst"}
+              />
+            ) : (
+              <ScratchGame
+                key={`${campaign.id}-${drawSession?.id ?? "idle"}`}
+                accent={campaign.accent}
+                resultLabel={scratchLabel}
+                enabled={stage === "ready"}
+                onReveal={() => void handleGameReveal()}
+              />
+            )}
+          </div>
+        )}
+
+        {showBottomState ? <div className="mt-8 space-y-4">
+          {stage === "idle" && campaign.gameType !== "wheel" ? (
+            <button
+              type="button"
+              onClick={openActionAndTrack}
+              className="mx-auto block w-full max-w-[360px] rounded-[24px] border px-6 py-4 text-lg font-semibold shadow-[0_22px_34px_rgba(17,24,39,0.08)]"
+              style={{
+                backgroundColor: campaign.presentation.button.backgroundColor,
+                color: campaign.presentation.button.textColor,
+                borderColor: campaign.presentation.button.borderColor,
+                fontSize: buttonFontSize,
+              }}
+            >
+              {publicCtaLabel}
+            </button>
+          ) : null}
+
+          {stage === "ready" && campaign.gameType !== "wheel" ? (
+            <div className="rounded-[28px] border border-white/70 bg-white/72 px-5 py-4 text-center text-sm text-[#62697a] shadow-[0_18px_40px_rgba(17,24,39,0.06)] backdrop-blur">
+              Grattez le ticket pour rÃ©vÃ©ler immÃ©diatement votre rÃ©sultat.
+            </div>
+          ) : null}
+
+          {false ? (
+            <div className="rounded-[32px] border border-white/80 bg-white/84 p-6 text-center shadow-[0_24px_48px_rgba(17,24,39,0.08)] backdrop-blur">
+              <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#f3f4f8] text-3xl">
+                :(
+              </div>
+              <h2 className="mt-5 text-3xl font-semibold text-[#141826]">Perdu :(</h2>
+              <p className="mt-3 text-base leading-7 text-[#61687a]">
+                Merci pour votre participation. Revenez bientÃ´t pour une nouvelle chance.
+              </p>
+            </div>
+          ) : null}
+        </div> : null}
+      </div>
+
+      <button
+        type="button"
+        onClick={() => setRulesOpen(true)}
+        className="fixed bottom-4 right-4 z-20 rounded-full border border-white/70 bg-white/82 px-4 py-2 text-sm font-semibold text-[#111827] shadow-[0_14px_34px_rgba(17,24,39,0.12)] backdrop-blur"
+      >
+        RÃ¨glement
+      </button>
+
+      <RulesModal campaign={campaign} open={rulesOpen} onClose={() => setRulesOpen(false)} />
+
+      <PublicModal open={stage === "lost"}>
+        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#f3f4f8] text-3xl font-semibold text-[#141826] shadow-[0_20px_45px_rgba(17,24,39,0.10)]">
+          !
+        </div>
+        <h2 className="mt-6 text-center text-[2rem] font-semibold leading-[1.05] text-[#121826]">
+          Perdu
+        </h2>
+        <p className="mt-4 text-center text-lg leading-8 text-[#5f6678]">
+          Merci pour votre participation. Revenez bientÃ´t pour une nouvelle chance.
+        </p>
+      </PublicModal>
+
+      <PublicModal open={stage === "blocked"}>
+        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#f3f4f8] text-3xl font-semibold text-[#141826] shadow-[0_20px_45px_rgba(17,24,39,0.10)]">
+          !
+        </div>
+        <h2 className="mt-6 text-center text-[2rem] font-semibold leading-[1.05] text-[#121826]">
+          Participation dÃ©jÃ  enregistrÃ©e
+        </h2>
+        <p className="mt-4 text-center text-lg leading-8 text-[#5f6678]">
+          {blockedMessage}
+        </p>
+        <button
+          type="button"
+          onClick={() => setStage("idle")}
+          className="mt-6 w-full rounded-[20px] bg-[#111827] px-5 py-4 text-lg font-semibold text-white shadow-[0_12px_24px_rgba(17,24,39,0.16)]"
+        >
+          Compris
+        </button>
+      </PublicModal>
+
+      <PublicModal open={stage === "intro"}>
+        <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-[#f7f7fb] text-4xl font-semibold text-[#1a2f76] shadow-[0_20px_45px_rgba(17,24,39,0.10)]">
+          {actionIcon(currentAction?.kind)}
+        </div>
+        <h2 className="mt-6 text-center text-[2rem] font-semibold leading-[1.05] text-[#121826]">
+          {currentAction ? "Avant de jouer" : "PrÃªt Ã  jouer ?"}
+        </h2>
+        <p className="mt-4 text-center text-lg leading-8 text-[#5f6678]">
+          {currentAction?.kind === "google"
+            ? "Votre retour aide lâ€™Ã©tablissement Ã  progresser. Vous pouvez jouer dans tous les cas."
+            : currentAction
+              ? "DÃ©couvrez le lien du commerce dans un nouvel onglet, puis revenez ici pour jouer."
+              : "Touchez Jouer pour prÃ©parer votre partie et dÃ©couvrir votre rÃ©sultat."}
+        </p>
+        <div className="mt-6 space-y-3">
+          {currentAction ? (
+            <a
+              href={currentAction.url}
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => {
+                if (currentAction.kind === "google") {
+                  setActionVisited(true);
+                  void trackEvent("review_clicked");
+                  return;
+                }
+
+                setActionVisited(true);
+                void trackEvent("social_clicked");
+              }}
+              className="block w-full rounded-[20px] border border-[#f3b229] bg-[#f3b229] px-5 py-4 text-center text-lg font-semibold text-[#111827] shadow-[0_12px_22px_rgba(243,178,41,0.28)]"
+            >
+              {actionLabel(currentAction.kind)}
+            </a>
+          ) : null}
+          <button
+            type="button"
+            onClick={() => void launchPreparedGame()}
+            disabled={isLoading}
+            className={
+              actionVisited || !currentAction
+                ? "w-full rounded-[20px] bg-[#111827] px-5 py-4 text-xl font-semibold text-white shadow-[0_12px_24px_rgba(17,24,39,0.16)] disabled:opacity-60"
+                : "w-full rounded-[12px] bg-transparent px-3 py-2 text-sm font-medium text-[#61687a] underline decoration-[#c4c9d4] underline-offset-4 transition hover:text-[#111827] disabled:opacity-60"
+            }
+          >
+            {isLoading
+              ? "PrÃ©paration..."
+              : actionVisited || !currentAction
+                ? "Jouer"
+                : "Jouer maintenant"}
+          </button>
+        </div>
+        {error ? (
+          <div className="mt-4 rounded-[18px] bg-[#fff1f0] px-4 py-3 text-sm text-[#b42318]">
+            {error}
+          </div>
+        ) : null}
+      </PublicModal>
+
+      <PublicModal open={stage === "collect"}>
+        <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-[#f7f7fb] text-4xl shadow-[0_20px_45px_rgba(17,24,39,0.10)]">
+          ğŸ
+        </div>
+        <h2 className="mt-6 text-center text-[2rem] font-semibold leading-[1.05] text-[#121826]">
+          FÃ©licitations ! Vous avez remportÃ© {previewResult?.prize?.label}
+        </h2>
+        <div className="mt-5 rounded-[22px] bg-[#f6f7fb] px-5 py-4 text-base leading-7 text-[#475067]">
+          Vos informations sont nÃ©cessaires pour valider et envoyer votre gain.
+        </div>
+        {previewUsageConditions ? (
+          <div className="mt-4 rounded-[22px] bg-[#fff8e8] px-5 py-4 text-left text-sm leading-7 text-[#6c5313]">
+            <p className="text-xs uppercase tracking-[0.2em] text-[#8a6a18]">
+              Conditions d&apos;utilisation
+            </p>
+            <p className="mt-2 whitespace-pre-line">{previewUsageConditions}</p>
+          </div>
+        ) : null}
+        <form className="mt-5 space-y-4" onSubmit={submitWinnerForm}>
+          <input
+            value={firstName}
+            onChange={(event) => setFirstName(event.target.value)}
+            required
+            placeholder="PrÃ©nom"
+            className="w-full rounded-[18px] border border-[#d8dce5] px-4 py-4 text-lg text-[#111827] outline-none placeholder:text-[#99a1b2]"
+          />
+          <label className="sr-only" htmlFor="winner-first-name">PrÃ©nom</label>
+          <input
+            id="winner-first-name"
+            type="email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            required
+            placeholder="E-mail"
+            className="w-full rounded-[18px] border border-[#d8dce5] px-4 py-4 text-lg text-[#111827] outline-none placeholder:text-[#99a1b2]"
+          />
+          <label className="flex cursor-pointer items-start gap-3 rounded-[18px] bg-[#f6f7fb] px-4 py-3 text-left text-sm leading-6 text-[#475067]">
+          <label className="sr-only" htmlFor="winner-email">E-mail</label>
+          <input
+            id="winner-email"
+              type="checkbox"
+              checked={marketingConsent}
+              onChange={(event) => setMarketingConsent(event.target.checked)}
+              className="mt-1 h-4 w-4 accent-[#111827]"
+            />
+            <span>
+              J&apos;accepte de recevoir des actualitÃ©s et offres de la part de cet Ã©tablissement.
+            </span>
+          </label>
+
+          {error ? (
+            <div className="rounded-[18px] bg-[#fff1f0] px-4 py-3 text-sm text-[#b42318]">
+              {error}
+            </div>
+          ) : null}
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full rounded-[18px] bg-[#111827] px-5 py-4 text-lg font-semibold text-white disabled:opacity-60"
+          >
+            {isLoading ? "Enregistrement..." : "Enregistrer"}
+          </button>
+        </form>
+      </PublicModal>
+
+      <PublicModal open={stage === "success" && Boolean(drawResult)} compact>
+        <div className="text-center">
+          <h2 className="text-[1.75rem] font-semibold leading-[1.05] text-[#121826]">
+            Merci pour votre participation !
+          </h2>
+          <div className="mx-auto mt-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#f7f7fb] text-4xl shadow-[0_16px_34px_rgba(17,24,39,0.10)]">
+            âœ‰
+          </div>
+          <p className="mt-4 text-lg leading-7 text-[#1a2f76]">
+            Vous recevrez votre gain par e-mail avec les informations de retrait
+          </p>
+          <p className="mt-3 text-sm leading-6 text-[#61687a]">
+            Conservez ce QR code pour retirer votre gain. Si lâ€™e-mail tarde Ã  arriver, vÃ©rifiez vos spams.
+          </p>
+
+          <div className="mt-4 rounded-[18px] bg-[#fff4cb] px-4 py-3 text-left text-sm leading-6 text-[#4d3810]">
+            <p>
+              Vous avez entre le {availableDate ?? "maintenant"} et le {expiryDate ?? "bientÃ´t"}{" "}
+              pour venir le rÃ©cupÃ©rer.
+            </p>
+          </div>
+
+          {campaign.rewardRules.purchaseRequired ? (
+            <div className="mt-3 rounded-[18px] bg-[#f7f7fb] px-4 py-3 text-left text-sm leading-6 text-[#61687a]">
+              Le retrait du lot est soumis Ã  une condition dâ€™achat.
+            </div>
+          ) : null}
+
+          {resolvedUsageConditions ? (
+            <div className="mt-3 rounded-[18px] bg-[#fff4cb] px-4 py-3 text-left text-sm leading-6 text-[#4d3810]">
+              <p className="text-xs uppercase tracking-[0.2em] text-[#8a6a18]">
+                Conditions d&apos;utilisation
+              </p>
+              <p className="mt-2 whitespace-pre-line">{resolvedUsageConditions}</p>
+            </div>
+          ) : null}
+
+          {redemptionCode ? (
+            <div className="mt-4 rounded-[20px] border border-[#e5e7ef] bg-[#fafbff] p-3">
+              <p className="text-xs uppercase tracking-[0.24em] text-[#8b93a5]">Code de retrait</p>
+              <p className="mt-1 text-xl font-semibold text-[#121826]">{redemptionCode}</p>
+              {qrPath ? (
+                <div className="mt-3 flex items-center gap-3 rounded-[16px] bg-white p-2.5 text-left">
+                  <Image
+                    src={qrPath}
+                    alt={`QR code ${redemptionCode}`}
+                    width={80}
+                    height={80}
+                    unoptimized
+                    className="h-20 w-20 rounded-[12px]"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs leading-5 text-[#61687a]">
+                      Enregistrez-le pour le retrouver facilement.
+                    </p>
+                    <a
+                      href={qrPath}
+                      download={`qr-lot-${redemptionCode}.svg`}
+                      className="mt-2 inline-flex rounded-[12px] bg-[#111827] px-3 py-2 text-xs font-semibold !text-white"
+                    >
+                      Enregistrer
+                    </a>
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
+        </div>
+      </PublicModal>
+    </div>
+  );
+}
