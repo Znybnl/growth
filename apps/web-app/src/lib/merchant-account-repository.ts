@@ -167,29 +167,6 @@ async function findSupabaseAuthUserByEmailOrMerchantUserId(
       page,
       perPage: 200,
     });
-    return !result.error;
-  } catch {
-    return false;
-  }
-}
-
-function isDuplicateAuthUserError(message: string) {
-  const normalized = message.toLowerCase();
-  return normalized.includes("already been registered") || normalized.includes("already exists");
-}
-
-async function findSupabaseAuthUserByEmailOrMerchantUserId(
-  email: string,
-  merchantUserId: string,
-) {
-  const supabase = getSupabaseAdmin();
-  let page = 1;
-
-  while (true) {
-    const { data, error } = await supabase.auth.admin.listUsers({
-      page,
-      perPage: 200,
-    });
 
     if (error) {
       throw new Error("Lecture des utilisateurs Supabase Auth impossible.");
@@ -388,18 +365,23 @@ function toMerchantUser(row: MerchantUserRow): MerchantUser {
   };
 }
 
-export async function verifySupabaseMerchantRedemptionPin(merchantId: string, pin: string) {
-  if (!/^\d{4,6}$/.test(pin)) return false;
+export async function getSupabaseMerchantProfile(merchantId: string) {
+  if (!isSupabaseConfigured()) {
+    return null;
+  }
 
   const supabase = getSupabaseAdmin();
   const { data, error } = await supabase
     .from("merchants")
-    .select("redemption_pin_hash")
+    .select("*")
     .eq("id", merchantId)
-    .maybeSingle<{ redemption_pin_hash: string | null }>();
+    .single<MerchantRow>();
 
-  if (error || !data?.redemption_pin_hash) return false;
-  return verifyPassword(pin, data.redemption_pin_hash);
+  if (error || !data) {
+    return null;
+  }
+
+  return toMerchant(data);
 }
 
 export async function verifySupabaseMerchantRedemptionPin(merchantId: string, pin: string) {
@@ -488,44 +470,6 @@ export async function resolveMerchantSessionFromAuthUser(
   if (!merchant) {
     throw new Error("Marchand introuvable.");
   }
-
-  const workspaceContext = await getSupabaseMerchantWorkspaceContext(merchantUser.id, merchant);
-  const activeLocation =
-    workspaceContext.locations.find(({ merchant: location }) => location.id === activeLocationId)?.merchant ??
-    workspaceContext.locations.find(({ merchant: location }) => location.id === merchant.id)?.merchant ??
-    merchant;
-  const activeMerchant: Merchant = {
-    ...activeLocation,
-    // Stripe/trial data remains backward-compatible on the original account
-    // while the workspace billing migration is rolled out.
-    stripeCustomerId: activeLocation.stripeCustomerId ?? merchant.stripeCustomerId,
-    stripeSubscriptionId: activeLocation.stripeSubscriptionId ?? merchant.stripeSubscriptionId,
-    stripeSubscriptionStatus:
-      activeLocation.stripeSubscriptionStatus ?? merchant.stripeSubscriptionStatus,
-    trialStartDate: activeLocation.trialStartDate ?? merchant.trialStartDate,
-    trialEndDate: activeLocation.trialEndDate ?? merchant.trialEndDate,
-    subscriptionCurrentPeriodEnd:
-      activeLocation.subscriptionCurrentPeriodEnd ?? merchant.subscriptionCurrentPeriodEnd,
-    subscriptionCancelAtPeriodEnd:
-      activeLocation.subscriptionCancelAtPeriodEnd ?? merchant.subscriptionCancelAtPeriodEnd,
-  };
-  const activeRole =
-    workspaceContext.locations.find(({ merchant: location }) => location.id === activeLocation.id)?.role ??
-    "owner";
-
-  const authProvider: MerchantUser["authProvider"] =
-    authUser.app_metadata?.auth_provider === "google" ||
-    authUser.app_metadata?.provider === "google"
-      ? "google"
-      : "email";
-  const avatarUrl =
-    authProvider === "google"
-      ? (typeof authUser.user_metadata?.avatar_url === "string"
-          ? authUser.user_metadata.avatar_url
-          : typeof authUser.user_metadata?.picture === "string"
-            ? authUser.user_metadata.picture
-            : undefined)
-      : undefined;
 
   const workspaceContext = await getSupabaseMerchantWorkspaceContext(merchantUser.id, merchant);
   const activeLocation =
@@ -701,26 +645,6 @@ export async function ensureDemoMerchantInSupabase() {
     }
   }
 
-  if (workspaceAvailable) {
-    const membership = await supabase.from("merchant_workspace_memberships").upsert(
-      {
-        id: `membership-${resolvedMerchantUserId}`,
-        workspace_id: workspaceId,
-        merchant_user_id: resolvedMerchantUserId,
-        role: "owner",
-        status: "active",
-        created_at: createdAt,
-      },
-      { onConflict: "workspace_id,merchant_user_id" },
-    );
-    if (!membership.error) {
-      await supabase.from("merchant_membership_locations").upsert(
-        { membership_id: `membership-${resolvedMerchantUserId}`, merchant_id: DEMO_MERCHANT_PROFILE.merchantId },
-        { onConflict: "membership_id,merchant_id" },
-      );
-    }
-  }
-
   return {
     merchantId: DEMO_MERCHANT_PROFILE.merchantId,
     merchantUserId: resolvedMerchantUserId,
@@ -784,12 +708,12 @@ export async function createMerchantAccountInSupabase(input: MerchantSignUpInput
       industry: "",
       restaurant_type: "Brasserie",
       city,
-      address: input.address?.trim() ?? "",
-      contact_name: "",
-      phone: "",
+      address: "",
+      contact_name: `${firstName} ${lastName}`.trim(),
+      phone,
       restaurant_email: "",
       website_url: "",
-      onboarding_completed: true,
+      onboarding_completed: false,
       preferred_goals: [],
       diffusion_support: [],
       google_review_url: "",
@@ -799,13 +723,14 @@ export async function createMerchantAccountInSupabase(input: MerchantSignUpInput
       tripadvisor_url: "",
       custom_link_url: "",
       default_prize_cost: 3,
-      time_zone: input.timeZone ?? "Europe/Paris",
+      trial_start_date: createdAt,
+      trial_end_date: trialEndDate,
       created_at: createdAt,
-    })
-    .select("*")
-    .single<MerchantRow>();
+    });
 
-  if (insert.error || !insert.data) throw new Error("Le site n'a pas pu être créé.");
+    if (merchantInsert.error) {
+      throw new Error("Creation du marchand impossible.");
+    }
 
     const userInsert = await supabase.from("merchant_users").insert({
       id: userId,
@@ -956,14 +881,13 @@ function deriveCompanyName(profile: GoogleMerchantProfile) {
     return trimmedName;
   }
 
-  return toMerchant(insert.data);
+  const localPart = profile.email.split("@")[0]?.trim();
+  return localPart ? localPart.slice(0, 48) : "Mon commerce";
 }
 
-export async function archiveSupabaseMerchantLocation(input: {
-  workspaceId: string;
-  merchantUserId: string;
-  merchantId: string;
-}) {
+export async function authenticateOrProvisionMerchantWithGoogle(
+  profile: GoogleMerchantProfile,
+) {
   const supabase = getSupabaseAdmin();
   const email = profile.email.trim().toLowerCase();
   const existingUser = await supabase
@@ -1295,29 +1219,6 @@ export async function archiveSupabaseMerchantLocation(input: {
   }
 
   const activeCount = await supabase
-    .from("merchants")
-    .select("id", { count: "exact", head: true })
-    .eq("workspace_id", input.workspaceId)
-    .eq("location_status", "active");
-  if ((activeCount.count ?? 0) <= 1) throw new Error("Conservez au moins un site actif.");
-
-  const updated = await supabase
-    .from("merchants")
-    .update({ location_status: "archived" })
-    .eq("id", input.merchantId)
-    .eq("workspace_id", input.workspaceId)
-    .select("*")
-    .maybeSingle<MerchantRow>();
-  if (updated.error || !updated.data) throw new Error("Le site n'a pas pu être archivé.");
-  return toMerchant(updated.data);
-}
-
-export async function setMerchantStripeCustomerIdInSupabase(
-  merchantId: string,
-  stripeCustomerId: string,
-) {
-  const supabase = getSupabaseAdmin();
-  const { error } = await supabase
     .from("merchants")
     .select("id", { count: "exact", head: true })
     .eq("workspace_id", input.workspaceId)

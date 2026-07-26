@@ -160,18 +160,41 @@ type DrawSessionRow = {
   configuration_snapshot?: Record<string, unknown> | null;
 };
 
-type CashierRedeemRpcRow = {
-  id: string;
+type DrawLeadRpcRow = {
+  lead_id: string;
   campaign_id: string;
   first_name: string;
   email: string;
+  marketing_consent: boolean;
+  consent_timestamp: string | null;
   prize_id: string | null;
   status: Lead["status"];
+  created_at: string;
+  action_confirmed: boolean;
   redemption_code: string | null;
   reward_available_at: string | null;
   reward_expires_at: string | null;
-  redeemed_at: string | null;
-  purchase_verified: boolean | null;
+  action_index: number;
+};
+
+type CreateDrawSessionRpcRow = {
+  session_id: string;
+  campaign_id: string;
+  prize_id: string | null;
+  status: DrawSession["status"];
+  created_at: string;
+  expires_at: string;
+};
+
+type FinalizeDrawSessionRpcRow = DrawLeadRpcRow;
+
+type EventRow = {
+  id: string;
+  campaign_id: string;
+  lead_id: string | null;
+  event_type: CampaignEvent["eventType"];
+  metadata: Record<string, string | number | boolean | null>;
+  created_at: string;
 };
 
 type CashierRedeemRpcRow = {
@@ -1786,28 +1809,6 @@ async function recordCampaignPublicationAudit(
   }
 }
 
-async function recordCampaignPublicationAudit(
-  campaignId: string,
-  input: CampaignSetupInput,
-  configurationVersion: string,
-  reason: string,
-) {
-  try {
-    const { error } = await getSupabaseAdmin().from("campaign_publication_audits").insert({
-      id: generateId("audit"),
-      campaign_id: campaignId,
-      merchant_id: input.merchantId,
-      status: input.isActive ? "active" : "draft",
-      configuration_version: configurationVersion,
-      validation_issues: [],
-      reason,
-    });
-    if (error) console.warn("Publication audit unavailable", error.message);
-  } catch (error) {
-    console.warn("Publication audit unavailable", error);
-  }
-}
-
 export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
   const supabase = getSupabaseAdmin();
   const isNewCampaign = !input.id;
@@ -2074,48 +2075,6 @@ export async function duplicateCampaignInSupabase(id: string, merchant: Merchant
       totalQuantity: prize.totalQuantity,
       probability: prize.probability,
       estimatedUnitCost: prize.estimatedUnitCost,
-    })),
-  });
-
-  return campaignId;
-}
-
-export async function duplicateCampaignToMerchantInSupabase(
-  id: string,
-  sourceMerchant: Merchant,
-  targetMerchant: Merchant,
-) {
-  const performance = await getSupabaseCampaignPerformance(id, sourceMerchant);
-  if (!performance || performance.campaign.merchantId !== sourceMerchant.id) {
-    throw new Error("Campagne source introuvable.");
-  }
-
-  const campaignId = generateId("camp");
-  await updateCampaignSetupInSupabase({
-    id: campaignId,
-    merchantId: targetMerchant.id,
-    title: `${performance.campaign.title} · ${targetMerchant.city ?? targetMerchant.companyName}`,
-    subtitle: performance.campaign.subtitle,
-    goalType: performance.campaign.goalType,
-    ctaLabel: performance.campaign.ctaLabel,
-    successMetric: performance.campaign.successMetric,
-    targetUrl: performance.campaign.targetUrl,
-    isActive: false,
-    accent: performance.campaign.accent,
-    gameType: performance.campaign.gameType,
-    logoMode: performance.campaign.logoMode,
-    logoText: performance.campaign.logoText,
-    logoUrl: performance.campaign.logoUrl,
-    presentation: performance.campaign.presentation,
-    actions: performance.campaign.actions.map((action) => ({ ...action, id: generateId("action") })),
-    rewardRules: performance.campaign.rewardRules,
-    prizes: performance.prizes.map((prize) => ({
-      id: generateId("prize"),
-      label: prize.label,
-      totalQuantity: prize.totalQuantity,
-      probability: prize.probability,
-      estimatedUnitCost: prize.estimatedUnitCost,
-      usageConditions: prize.usageConditions,
     })),
   });
 

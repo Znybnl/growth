@@ -106,13 +106,6 @@ export default async function DashboardPage({
               Assistant guidé
             </Link>
             <Link
-              href="/campaigns/new/guided"
-              prefetch={false}
-              className="okado-filled-action px-5"
-            >
-              Assistant guidé
-            </Link>
-            <Link
               href="/campaigns/new"
               prefetch={false}
               className="okado-filled-action px-5"

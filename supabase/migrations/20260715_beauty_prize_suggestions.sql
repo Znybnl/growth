@@ -90,4 +90,3 @@ on conflict (id) do update set
   is_active = excluded.is_active,
   sort_order = excluded.sort_order,
   updated_at = timezone('utc', now());
-

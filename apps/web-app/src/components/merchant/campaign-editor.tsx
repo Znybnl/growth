@@ -115,21 +115,6 @@ const ImmersiveScratchTicket = dynamic(
   },
 );
 
-const ImmersiveScratchTicket = dynamic(
-  () =>
-    import("@/components/public/immersive-scratch-ticket").then(
-      (mod) => mod.ImmersiveScratchTicket,
-    ),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="flex min-h-[320px] w-full items-center justify-center rounded-[28px] bg-white/70 text-sm text-[#7b8496]">
-        Chargement du ticket...
-      </div>
-    ),
-  },
-);
-
 type CampaignEditorProps = {
   merchant: Merchant;
   initialCampaign?: CampaignPerformance | null;
@@ -736,30 +721,6 @@ function PrizeConditionsDialog({
       </div>
     </div>
   );
-}
-
-function createDefaultActions(merchant: Merchant): CampaignAction[] {
-  const actions = [createDefaultAction(merchant)];
-
-  if (merchant.instagramUrl?.trim()) {
-    actions.push({
-      id: createActionId(),
-      kind: "instagram",
-      label: actionKindCta("instagram"),
-      url: merchant.instagramUrl,
-    });
-  }
-
-  if (merchant.facebookUrl?.trim()) {
-    actions.push({
-      id: createActionId(),
-      kind: "facebook",
-      label: actionKindCta("facebook"),
-      url: merchant.facebookUrl,
-    });
-  }
-
-  return actions;
 }
 
 function createDefaultActions(merchant: Merchant): CampaignAction[] {
@@ -1437,51 +1398,6 @@ export function buildCampaignLivePreviewModel(
           : templateId === "sunburst-festival"
             ? `radial-gradient(circle at 12% 10%, ${withHexAlpha(form.presentation.wheel.loseColor, "33")} 0 12%, transparent 13%), radial-gradient(circle at 94% 18%, ${withHexAlpha(form.presentation.wheel.winColor, "38")} 0 14%, transparent 15%), linear-gradient(180deg, #fffdf5 0%, #fff8e8 56%, #fff2ce 100%)`
             : "";
-
-  return {
-    formId: form.id ?? "new-campaign",
-    backgroundStyle: {
-      backgroundColor: form.presentation.background.color,
-      backgroundImage,
-      backgroundPosition: "center",
-      backgroundSize: "cover",
-    },
-    logoMode: form.logoMode,
-    logoAlignmentClass,
-    logoBottomSpacingPx: form.presentation.logo.marginBottomPx + form.presentation.layout.blockSpacingPx,
-    logoWidthPx,
-    logoUrl: form.logoUrl ?? "",
-    logoText: form.logoText?.trim() || merchant.companyName,
-    headingAlignmentClass,
-    headingFontClass,
-    headingTextColor: templateId === "cosmic-orbit" ? "#f8fbff" : form.presentation.heading.textColor,
-    headingFontSizePx: form.presentation.heading.fontSizePx,
-    headingFontWeight: form.presentation.heading.fontWeight ?? 600,
-    subtitle: form.subtitle,
-    blockSpacingPx: form.presentation.layout.blockSpacingPx,
-    gamePageTemplateId: templateId,
-    gameType: form.gameType,
-    accent: form.accent,
-    wheelStyle: form.presentation.wheel,
-    buttonStyle: {
-      backgroundColor: form.gameType === "wheel" ? form.presentation.wheel.loseColor : form.presentation.button.backgroundColor,
-      textColor: form.presentation.button.textColor,
-      borderColor: form.gameType === "wheel" ? form.presentation.wheel.rimColor : form.presentation.button.borderColor,
-      textSizePx: form.presentation.button.textSizePx,
-      isBold: form.presentation.button.isBold ?? true,
-    },
-    previewSegments,
-    winningSegmentId,
-    previewPrize: form.prizes[0]?.label || "Cadeau surprise",
-    ctaLabel: form.ctaLabel,
-    previewCtaClass: buttonSizeMap[form.presentation.button.size],
-  };
-}
-
-function syncActionLabel(kind: ActionKind, currentLabel: string) {
-  if (kind === "custom" && currentLabel.trim()) {
-    return currentLabel;
-  }
 
   return {
     formId: form.id ?? "new-campaign",
@@ -2210,20 +2126,6 @@ function setGameType(gameType: GameType) {
         );
       }
 
-      const totalProbability = form.prizes.reduce((total, prize) => total + (Number(prize.probability) || 0), 0);
-      if (form.rewardRules.isWinningEveryTime && totalProbability < 99.9999) {
-        throw new Error("Un jeu 100 % gagnant doit totaliser exactement 100 % de probabilités.");
-      }
-
-      if (
-        form.rewardRules.isWinningEveryTime &&
-        !form.prizes.some((prize) => prize.totalQuantity === null)
-      ) {
-        throw new Error(
-          "Pour un jeu 100% gagnant, au moins un lot doit avoir un stock illimité pour l'attribution.",
-        );
-      }
-
       const response = await fetch("/api/campaigns/setup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -2307,20 +2209,6 @@ function setGameType(gameType: GameType) {
 
       if (form.prizes.some((prize) => prize.totalQuantity !== null && prize.totalQuantity <= 0)) {
         throw new Error("La quantité d’un lot doit être supérieure à 0 (ou illimitée).");
-      }
-
-      const totalProbability = form.prizes.reduce((total, prize) => total + (Number(prize.probability) || 0), 0);
-      if (form.rewardRules.isWinningEveryTime && totalProbability < 99.9999) {
-        throw new Error("Un jeu 100 % gagnant doit totaliser exactement 100 % de probabilités.");
-      }
-
-      if (
-        form.rewardRules.isWinningEveryTime &&
-        !form.prizes.some((prize) => prize.totalQuantity === null)
-      ) {
-        throw new Error(
-          "Pour un jeu 100% gagnant, au moins un lot doit avoir un stock illimité.",
-        );
       }
 
       const totalProbability = form.prizes.reduce((total, prize) => total + (Number(prize.probability) || 0), 0);
@@ -4113,8 +4001,6 @@ function setGameType(gameType: GameType) {
               Total des probabilités de gain : {totalPrizeProbability} %
             </div>
           </section>
-
-          {form.id ? <CampaignEmailPreview merchant={merchant} form={form} /> : null}
 
           {form.id ? <CampaignEmailPreview merchant={merchant} form={form} /> : null}
 

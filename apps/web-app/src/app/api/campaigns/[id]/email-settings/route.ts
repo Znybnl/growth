@@ -31,11 +31,6 @@ export async function POST(request: Request, { params }: EmailSettingsRouteProps
     if (!performance || performance.campaign.merchantId !== session.merchant.id) {
       return NextResponse.json({ error: "Campagne introuvable" }, { status: 404 });
     }
-    const performance = await getCampaignPerformance(id, session.merchant);
-
-    if (!performance || performance.campaign.merchantId !== session.merchant.id) {
-      return NextResponse.json({ error: "Campagne introuvable" }, { status: 404 });
-    }
 
     const campaign = performance.campaign;
     const input = parseCampaignSetupInput({
