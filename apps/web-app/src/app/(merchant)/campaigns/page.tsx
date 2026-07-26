@@ -38,7 +38,7 @@ export default async function CampaignsPage({
             {activeCount} actives · {campaigns.length} au total
           </div>
           <Link href="/campaigns/new/guided" prefetch={false} className="okado-secondary-action px-5">
-            Assistant guidé
+            Assistant de création
           </Link>
           <Link href="/campaigns/new" prefetch={false} className="okado-filled-action px-5">
             Créer une campagne

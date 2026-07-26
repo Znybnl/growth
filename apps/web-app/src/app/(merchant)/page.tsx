@@ -103,7 +103,7 @@ export default async function DashboardPage({
               prefetch={false}
               className="okado-secondary-action px-5"
             >
-              Assistant guidé
+              Assistant de création
             </Link>
             <Link
               href="/campaigns/new"

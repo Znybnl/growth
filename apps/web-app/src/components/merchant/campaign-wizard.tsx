@@ -804,7 +804,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
     <div className="okado-wizard space-y-6 pb-10">
       <section className="flex flex-col gap-5 px-1 py-2 xl:flex-row xl:items-end xl:justify-between">
         <div>
-          <p className="okado-label">Assistant guidé</p>
+          <p className="okado-label">Assistant de création</p>
           <h1 className="okado-page-title mt-3">Créer une campagne</h1>
           <p className="mt-4 max-w-3xl text-sm leading-7 text-ash">
             Cinq étapes courtes et un aperçu mobile pour comprendre exactement

@@ -184,7 +184,7 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
             className="mt-2 flex h-10 items-center justify-center rounded-[8px] border border-border bg-white px-4 text-sm font-medium text-graphite transition hover:bg-linen-canvas"
             onClick={() => setMenuOpen(false)}
           >
-            Assistant guidé
+            Assistant de création
           </Link>
           <Link
             href="/caisse"
