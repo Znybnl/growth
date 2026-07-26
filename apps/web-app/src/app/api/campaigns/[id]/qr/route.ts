@@ -20,11 +20,12 @@ export async function GET(request: Request, context: RouteContext) {
   const origin = new URL(request.url).origin;
   const publicUrl = `${origin}/campaign/${performance.campaign.id}`;
   const qrSvg = await createCampaignQrSvg(publicUrl);
+  const inline = new URL(request.url).searchParams.get("inline") === "1";
 
   return new NextResponse(qrSvg, {
     headers: {
       "Content-Type": "image/svg+xml; charset=utf-8",
-      "Content-Disposition": `attachment; filename="${performance.campaign.id}-qr.svg"`,
+      "Content-Disposition": `${inline ? "inline" : "attachment"}; filename="${performance.campaign.id}-qr.svg"`,
       "Cache-Control": "no-store",
     },
   });

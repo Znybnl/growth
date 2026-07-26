@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import {
   BadgePercent,
@@ -39,7 +40,7 @@ import {
 } from "@/lib/types";
 
 type WizardStepId =
-  "identity" | "game" | "prizes" | "action" | "appearance" | "review";
+  "identity" | "game" | "prizes" | "action" | "appearance";
 
 type WizardStep = {
   id: WizardStepId;
@@ -86,12 +87,6 @@ const WIZARD_STEPS: WizardStep[] = [
     number: "05",
     title: "L’apparence",
     description: "Donnez à la campagne votre signature.",
-  },
-  {
-    id: "review",
-    number: "06",
-    title: "Vérifier",
-    description: "Relisez, testez, puis publiez sereinement.",
   },
 ];
 
@@ -755,8 +750,8 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
           Votre animation est enregistrée.
         </h1>
         <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-[#626d82]">
-          Vous pouvez maintenant vérifier le rendu public, imprimer le QR code
-          ou ouvrir l’éditeur avancé pour aller plus loin.
+          Votre campagne est prête. Prévisualisez-la, téléchargez son QR code
+          ou préparez son affiche.
         </p>
         <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <Link
@@ -772,18 +767,32 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
           >
             Ouvrir l’éditeur
           </Link>
-          <Link
-            href={`/campaigns/${savedCampaignId}/email`}
+          <a
+            href={`/api/campaigns/${savedCampaignId}/qr`}
+            download
             className="okado-secondary-action px-4 text-sm"
           >
-            Personnaliser l’e-mail
-          </Link>
+            Télécharger le QR code
+          </a>
           <Link
-            href="/campaigns"
+            href={`/campaigns/${savedCampaignId}/poster`}
             className="okado-secondary-action px-4 text-sm"
           >
-            Retour aux campagnes
+            Affiche
           </Link>
+        </div>
+        <div className="mx-auto mt-8 hidden w-fit rounded-[20px] border border-[#dbe4f0] bg-white p-4 shadow-[var(--shadow-product-card)] md:block">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.16em] text-[#8993a6]">
+            QR code de la campagne
+          </p>
+          <Image
+            src={`/api/campaigns/${savedCampaignId}/qr?inline=1`}
+            alt="QR code de la campagne"
+            width={192}
+            height={192}
+            unoptimized
+            className="h-48 w-48"
+          />
         </div>
       </div>
     );
@@ -796,8 +805,8 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
           <p className="okado-label">Assistant guidé</p>
           <h1 className="okado-page-title mt-3">Créer une campagne</h1>
           <p className="mt-4 max-w-3xl text-sm leading-7 text-ash">
-            Six étapes courtes, une vérification finale et un aperçu mobile pour
-            comprendre exactement ce que vivra votre client.
+            Cinq étapes courtes et un aperçu mobile pour comprendre exactement
+            ce que vivra votre client.
           </p>
         </div>
       </section>
@@ -1541,44 +1550,6 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                     </span>
                   )}
                 </div>
-              </div>
-            </div>
-          ) : null}
-
-          {step.id === "review" ? (
-            <div className="mt-7 space-y-5">
-              <div className="rounded-[20px] border border-[#dbe4f0] bg-[#f7f9fc] p-5">
-                <div className="flex items-start gap-3">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#e9f8ec] text-[#18864b]">
-                    <Check className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-[#182033]">
-                      E-mail de gain prêt
-                    </p>
-                    <p className="mt-1 text-sm leading-6 text-[#69758a]">
-                      Le modèle recommandé sera envoyé automatiquement aux
-                      gagnants avec le lot, les conditions de retrait, le code
-                      et le QR code.
-                    </p>
-                  </div>
-                </div>
-                <div className="mt-4 rounded-[14px] border border-[#e2e8f0] bg-white px-4 py-3">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#8993a6]">
-                    Objet généré
-                  </p>
-                  <p className="mt-1 text-sm font-semibold text-[#182033]">
-                    {draft.presentation.email.subject.replaceAll(
-                      "{{merchantName}}",
-                      merchant.companyName || "Votre commerce",
-                    )}
-                  </p>
-                </div>
-                <p className="mt-4 text-xs leading-5 text-[#7a8498]">
-                  La personnalisation avancée reste accessible après la
-                  création, depuis la campagne ou les réglages de communication
-                  du compte.
-                </p>
               </div>
             </div>
           ) : null}
