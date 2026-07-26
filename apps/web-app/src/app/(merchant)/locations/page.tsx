@@ -9,4 +9,3 @@ export default async function LocationsPage() {
   const context = await getMerchantWorkspaceContext(session.user.id, session.merchant);
   return <LocationManager workspace={context.workspace} locations={context.locations} />;
 }
-

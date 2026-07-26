@@ -126,10 +126,12 @@ export function ImmersiveWheel({
   const paleSecondary = blendWithWhite(secondary, isCosmic ? 0.2 : 0.75);
   const wheelSizeClass =
     framing === "public"
-      ? "top-[67%] w-[132vw] sm:top-[65%] sm:w-[104vw] lg:top-[65%] lg:w-[48vw] xl:w-[40vw]"
+      ? "top-2 w-[max(126vw,calc(100svh-240px))] sm:w-[min(104vw,calc(100svh-220px))] md:w-[min(96vw,calc(100svh-220px))] lg:w-[min(48vw,calc(100svh-220px))] xl:w-[min(40vw,calc(100svh-220px))]"
       : framing === "editor"
         ? "top-[65%] w-[112%]"
         : "top-1/2 w-full";
+  const wheelTransformClass =
+    framing === "public" ? "-translate-x-1/2" : "-translate-x-1/2 -translate-y-1/2";
 
   useEffect(() => {
     if (!isSpinning || !onSpinEnd) return;
@@ -167,9 +169,9 @@ export function ImmersiveWheel({
   }
 
   return (
-    <div className="relative h-full w-full overflow-hidden" style={{ containerType: "inline-size" }}>
+    <div className="relative h-full w-full overflow-visible" style={{ containerType: "inline-size" }}>
       <div
-        className={`absolute left-1/2 aspect-square -translate-x-1/2 -translate-y-1/2 ${wheelSizeClass}`}
+        className={`absolute left-1/2 aspect-square ${wheelTransformClass} ${wheelSizeClass}`}
         style={{ filter: isCosmic ? "drop-shadow(0 28px 45px rgba(0,0,0,0.38))" : "drop-shadow(0 22px 34px rgba(20,31,61,0.22))" }}
       >
         <div
@@ -272,4 +274,3 @@ export function ImmersiveWheel({
     </div>
   );
 }
-

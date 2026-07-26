@@ -6,4 +6,3 @@ export default async function GuidedNewCampaignPage() {
 
   return <CampaignWizard merchant={session.merchant} />;
 }
-

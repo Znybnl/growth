@@ -128,4 +128,3 @@ console.log(JSON.stringify({
   checks,
   note: "Les tables et RPC répondent avec la service role, et les lectures anonymes sont refusées. L’état exact des policies doit aussi être confirmé dans SQL Editor ou via supabase db lint sur la base cible.",
 }, null, 2));
-

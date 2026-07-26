@@ -6,4 +6,3 @@ create index if not exists reward_email_deliveries_campaign_status_idx
 
 create index if not exists leads_campaign_status_prize_idx
   on public.leads (campaign_id, status, prize_id);
-

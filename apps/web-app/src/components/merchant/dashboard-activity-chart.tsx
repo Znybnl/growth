@@ -1,7 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, ChevronDown } from "lucide-react";
+
+import { FieldSelect } from "@/components/ui/field";
 
 type ActivityPoint = {
   label: string;
@@ -77,12 +79,15 @@ export function DashboardActivityChart({
           </h2>
         </div>
 
-        <label className="inline-flex h-11 items-center gap-2 self-start rounded-[12px] border border-border bg-linen-canvas px-3 text-sm font-semibold text-graphite shadow-[0_10px_24px_rgba(20,31,61,0.05)]">
-          <CalendarDays className="h-4 w-4 text-signal-blue" />
-          <select
+        <div className="relative w-full shrink-0 self-start md:w-auto">
+          <CalendarDays
+            className="pointer-events-none absolute left-3 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-signal-blue"
+            aria-hidden="true"
+          />
+          <FieldSelect
             value={period}
             onChange={(event) => setPeriod(Number(event.target.value))}
-            className="cursor-pointer bg-transparent outline-none"
+            className="h-11 min-w-0 cursor-pointer appearance-none bg-linen-canvas pl-10 pr-10 font-semibold shadow-[0_10px_24px_rgba(20,31,61,0.05)] md:w-[190px]"
             aria-label="Période d'analyse"
           >
             {PERIOD_OPTIONS.map((option) => (
@@ -90,8 +95,12 @@ export function DashboardActivityChart({
                 {option.label}
               </option>
             ))}
-          </select>
-        </label>
+          </FieldSelect>
+          <ChevronDown
+            className="pointer-events-none absolute right-3 h-4 w-4 text-fog"
+            aria-hidden="true"
+          />
+        </div>
       </div>
 
       <div className="flex items-center gap-5 px-5 pt-4 text-sm text-graphite">
@@ -117,8 +126,8 @@ export function DashboardActivityChart({
               <feDropShadow dx="0" dy="10" stdDeviation="8" floodColor="#145aff" floodOpacity="0.14" />
             </filter>
           </defs>
-          {yTicks.map((tick) => (
-            <g key={`y-${tick.value}`}>
+          {yTicks.map((tick, index) => (
+            <g key={`y-${tick.value}-${index}`}>
               <line
                 x1={plot.left}
                 x2={chartWidth - plot.right}

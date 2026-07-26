@@ -47,6 +47,9 @@ const GAME_PAGE_TEMPLATE_IDS = new Set<GamePageTemplateId>([
   "sunburst-festival",
   "scratch-vault",
   "scratch-confetti",
+  "scratch-coral",
+  "scratch-lilac",
+  "scratch-sunburst",
 ]);
 const POSTER_TEMPLATE_IDS = new Set<PosterTemplateId>([
   "classic-wheel",

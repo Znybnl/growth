@@ -42,10 +42,6 @@ export function ScratchGame({
     foilGradient.addColorStop(1, "#5b3503");
     context.fillStyle = foilGradient;
     context.fillRect(0, 0, canvas.width, canvas.height);
-    context.fillStyle = "rgba(255,248,232,0.88)";
-    context.font = "800 30px sans-serif";
-    context.textAlign = "center";
-    context.fillText("GRATTEZ ICI", canvas.width / 2, 86);
     checksRef.current = 0;
     setRevealed(false);
   }, [accent.signal, resultLabel]);
@@ -120,7 +116,7 @@ export function ScratchGame({
           }}
         >
           <div className="absolute inset-0 flex items-center justify-center px-6 text-center">
-            <p className="text-3xl font-semibold leading-tight text-[#fff8e8] drop-shadow-[0_2px_2px_rgba(72,40,0,0.35)]">
+            <p className="text-3xl font-semibold leading-tight text-[#172033] drop-shadow-[0_1px_0_rgba(255,255,255,0.72)]">
               {resultLabel}
             </p>
           </div>
@@ -161,4 +157,3 @@ export function ScratchGame({
     </div>
   );
 }
-

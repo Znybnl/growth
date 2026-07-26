@@ -3,4 +3,3 @@ alter table public.merchants
 
 comment on column public.merchants.redemption_pin_hash is
   'Hash scrypt du PIN utilisé pour la validation express des retraits.';
-

@@ -48,11 +48,11 @@ export default async function DashboardPage({
   const activityPoints = dashboard.activityPoints;
   const getCampaignStatus = (item: (typeof filteredCampaigns)[number]) => {
     if (!item.campaign.isActive) {
-      return { label: "DÃ©sactivÃ©e", color: "#98a2b3" };
+      return { label: "Désactivée", color: "#98a2b3" };
     }
 
     if (item.prizes.some((prize) => prize.remainingQuantity === 0)) {
-      return { label: "Stock Ã©puisÃ©", color: "#f59e0b" };
+      return { label: "Stock épuisé", color: "#f59e0b" };
     }
 
     return { label: "Active", color: "#12b76a" };
@@ -83,7 +83,7 @@ export default async function DashboardPage({
               Pilotez vos activations
             </h1>
             <p className="mt-4 max-w-3xl text-sm leading-6 text-ash">
-              Suivez vos campagnes en direct, comparez les mÃ©caniques qui performent et lancez
+              Suivez vos campagnes en direct, comparez les mécaniques qui performent et lancez
               rapidement une nouvelle activation.
             </p>
           </div>
@@ -103,14 +103,14 @@ export default async function DashboardPage({
               prefetch={false}
               className="okado-secondary-action px-5"
             >
-              Assistant guidÃ©
+              Assistant de création
             </Link>
             <Link
               href="/campaigns/new"
               prefetch={false}
               className="okado-filled-action px-5"
             >
-              CrÃ©er une campagne
+              Créer une campagne
             </Link>
           </div>
       </section>
@@ -123,7 +123,7 @@ export default async function DashboardPage({
             String(filteredCampaigns.reduce((total, item) => total + item.kpis.leads, 0)),
           ],
           [
-            "Lots retirÃ©s",
+            "Lots retirés",
             String(filteredCampaigns.reduce((total, item) => total + item.kpis.redeemed, 0)),
           ],
           [
@@ -157,7 +157,7 @@ export default async function DashboardPage({
       <section className="grid min-w-0 gap-6 xl:grid-cols-[1.15fr_0.85fr]">
         <div className="min-w-0 space-y-6">
           <DashboardActivityChart
-            eyebrow="ActivitÃ© rÃ©cente"
+            eyebrow="Activité récente"
             title="Scans et participations par jour"
             points={activityPoints}
           />
@@ -169,7 +169,7 @@ export default async function DashboardPage({
                   Campagnes prioritaires
                 </p>
                 <h2 className="okado-section-title mt-2">
-                  Vos derniÃ¨res campagnes
+                  Vos dernières campagnes
                 </h2>
               </div>
               <Link href="/campaigns" prefetch={false} className="okado-link text-sm">
@@ -180,7 +180,7 @@ export default async function DashboardPage({
             <div className="mt-6 hidden overflow-hidden rounded-[8px] border border-border md:block">
               <div className="okado-table-header grid grid-cols-[minmax(0,1.5fr)_0.85fr_0.7fr_0.7fr_0.9fr_auto] items-center gap-3 px-5 py-4">
                 <span>Campagne</span>
-                <span>MÃ©canique</span>
+                <span>Mécanique</span>
                 <span>Scans</span>
                 <span>Lead</span>
                 <span>Conversion</span>
@@ -254,7 +254,7 @@ export default async function DashboardPage({
                   <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
                     <div className="rounded-[8px] bg-white px-3 py-3">
                       <p className="text-[11px] uppercase tracking-[0.18em] text-[#7c8597]">
-                        MÃ©canique
+                        Mécanique
                       </p>
                       <p className="mt-2 font-medium text-[#111827]">
                         {gameTypeLabel(item.campaign.gameType)}
@@ -298,13 +298,13 @@ export default async function DashboardPage({
               </h2>
               <div className="mt-5 grid gap-4 sm:grid-cols-2">
                 <div className="rounded-[8px] bg-linen-canvas p-4">
-                  <p className="text-sm text-[#7b8496]">Conversion scan â†’ lead</p>
+                  <p className="text-sm text-[#7b8496]">Conversion scan → lead</p>
                   <p className="mt-2 text-3xl font-semibold text-[#111827]">
                     {formatPercent(bestCampaign.kpis.conversionRate)}
                   </p>
                 </div>
                 <div className="rounded-[8px] bg-linen-canvas p-4">
-                  <p className="text-sm text-[#7b8496]">CoÃ»t par lead</p>
+                  <p className="text-sm text-[#7b8496]">Coût par lead</p>
                   <p className="mt-2 text-3xl font-semibold text-[#111827]">
                     {formatCurrency(bestCampaign.kpis.costPerLead)}
                   </p>
@@ -317,14 +317,14 @@ export default async function DashboardPage({
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">
                 <p className="okado-label">
-                  DerniÃ¨res saisies
+                  Dernières saisies
                 </p>
                 <h2 className="okado-section-title mt-2">
-                  Leads rÃ©cents
+                  Leads récents
                 </h2>
               </div>
               <Link href="/data" prefetch={false} className="okado-link text-sm">
-                Ouvrir les donnÃ©es
+                Ouvrir les données
               </Link>
             </div>
 

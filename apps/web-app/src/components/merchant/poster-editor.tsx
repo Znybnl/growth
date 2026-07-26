@@ -187,7 +187,10 @@ function applyTemplateDefaults(
 
 export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
   const router = useRouter();
-  const campaignPrimaryColor = campaign.presentation.wheel.loseColor;
+  const campaignPrimaryColor =
+    campaign.gameType === "scratch"
+      ? campaign.accent.signal
+      : campaign.presentation.wheel.loseColor;
   const campaignGainColor = campaign.presentation.wheel.winColor;
   const [poster, setPoster] = useState<CampaignPosterSettings>(() => {
     const normalizedPoster = normalizePosterSettings(
@@ -205,7 +208,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
         headline: campaign.subtitle,
         headlineTextColor: campaignGainColor,
         headlineFontSizePx: 50,
-        headlineFontFamily: "display",
+        headlineFontFamily: campaign.presentation.heading.fontFamily,
         wheel: {
           ...posterTemplates[0].wheel,
           winColor: campaignPrimaryColor,
@@ -223,7 +226,8 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
         Boolean(storedWinColor) &&
         !isTemplateDefaultWinColor(storedWinColor) &&
         storedWinColor !== campaignPrimaryColor &&
-        storedWinColor !== campaignGainColor;
+        storedWinColor !== campaignGainColor &&
+        storedWinColor !== campaign.presentation.wheel.loseColor;
       const hasCustomHeadlineTextColor =
         Boolean(storedHeadlineTextColor) &&
         storedHeadlineTextColor !== template.headlineTextColor &&
@@ -232,6 +236,10 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
       return applyTemplateDefaults(
         {
           ...normalizedPoster,
+          headlineFontFamily:
+            campaign.gameType === "scratch"
+              ? campaign.presentation.heading.fontFamily
+              : normalizedPoster.headlineFontFamily,
           headlineTextColor: hasCustomHeadlineTextColor
             ? normalizedPoster.headlineTextColor
             : campaignGainColor,
@@ -691,16 +699,15 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
         </section>
 
 
-        {campaign.gameType === "wheel" ? (
-          <section className="okado-card p-6 md:p-8">
-            <p className="okado-label">Couleur de la roue</p>
+        <section className="okado-card p-6 md:p-8">
+            <p className="okado-label">Couleur de l&apos;affiche</p>
             <h2 className="okado-section-title mt-2">
-              Réglez la roue de l&apos;affiche
+              Personnalisez la couleur principale de l&apos;affiche
             </h2>
 
             <div className="mt-6 grid gap-4 md:grid-cols-2">
               <label className="text-sm">
-                <span className="mb-2 block text-[#616b7c]">Couleur gain</span>
+                <span className="mb-2 block text-[#616b7c]">Couleur principale</span>
                 <input
                   type="color"
                   value={draftWinColor}
@@ -710,8 +717,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                 />
               </label>
             </div>
-          </section>
-        ) : null}
+        </section>
       </div>
 
       <aside className="xl:sticky xl:top-6 xl:h-[calc(100vh-48px)]">

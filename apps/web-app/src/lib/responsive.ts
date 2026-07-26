@@ -16,4 +16,3 @@ export function fluidType(
 
   return `clamp(${minRem}rem, calc(${baseRem}rem + ${viewportStep}vw), ${maxRem}rem)`;
 }
-

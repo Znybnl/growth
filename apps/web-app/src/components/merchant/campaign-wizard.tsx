@@ -20,7 +20,13 @@ import {
   Trash2,
   UtensilsCrossed,
 } from "lucide-react";
-import { type ReactNode, useEffect, useMemo, useState } from "react";
+import {
+  type ChangeEvent,
+  type ReactNode,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 import { BrandMark } from "@/components/brand-mark";
 import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
@@ -68,26 +74,26 @@ const WIZARD_STEPS: WizardStep[] = [
     id: "game",
     number: "02",
     title: "Le jeu",
-    description: "Choisissez lÃ¢â‚¬â„¢expÃƒÂ©rience la plus naturelle.",
+    description: "Choisissez lâ€™expÃ©rience la plus naturelle.",
   },
   {
     id: "prizes",
     number: "03",
     title: "Les lots",
-    description: "Cadrez les probabilitÃƒÂ©s et les stocks.",
+    description: "Cadrez les probabilitÃ©s et les stocks.",
   },
   {
     id: "action",
     number: "04",
-    title: "LÃ¢â‚¬â„¢action",
+    title: "Lâ€™action",
     description:
-      "Choisissez les actions proposÃƒÂ©es aprÃƒÂ¨s le jeu. Elles peuvent varier ÃƒÂ  chaque participation.",
+      "Choisissez les actions proposÃ©es aprÃ¨s le jeu. Elles peuvent varier Ã  chaque participation.",
   },
   {
     id: "appearance",
     number: "05",
-    title: "LÃ¢â‚¬â„¢apparence",
-    description: "Donnez ÃƒÂ  la campagne votre signature.",
+    title: "Lâ€™apparence",
+    description: "Donnez Ã  la campagne votre signature.",
   },
 ];
 
@@ -101,7 +107,7 @@ const GOOGLE_REVIEW_HOSTS = new Set([
 ]);
 
 const INCENTIVE_COPY_PATTERN =
-  /(?:avis|note|5\s*ÃƒÂ©toiles|bonne note).{0,80}(?:gagn(?:e|er|ÃƒÂ©)|cadeau|lot|rÃƒÂ©compens)|(?:gagn(?:e|er|ÃƒÂ©)|cadeau|lot|rÃƒÂ©compens).{0,80}(?:avis|note|5\s*ÃƒÂ©toiles|bonne note)/iu;
+  /(?:avis|note|5\s*Ã©toiles|bonne note).{0,80}(?:gagn(?:e|er|Ã©)|cadeau|lot|rÃ©compens)|(?:gagn(?:e|er|Ã©)|cadeau|lot|rÃ©compens).{0,80}(?:avis|note|5\s*Ã©toiles|bonne note)/iu;
 
 function normalizeUrl(value: string) {
   const trimmed = value.trim();
@@ -194,6 +200,27 @@ function createWizardActions(
     ];
   }
 
+  if (goalType === "lead_capture") {
+    const instagramUrl = merchant.instagramUrl?.trim();
+    return [
+      createWizardAction("wizard-crm-action", "crm", ""),
+      ...(instagramUrl
+        ? [
+            createWizardAction(
+              "wizard-instagram-action",
+              "instagram",
+              instagramUrl,
+            ),
+          ]
+        : []),
+      createWizardAction(
+        "wizard-google-action",
+        "google",
+        wizardActionUrl(merchant, "google"),
+      ),
+    ];
+  }
+
   return [createWizardAction("wizard-crm-action", "crm", "")];
 }
 
@@ -217,11 +244,11 @@ function createWizardDraft(merchant: Merchant): WizardDraft {
     isActive: false,
     logoMode: "text",
     logoText: merchant.companyName || merchant.logoText,
-    accent: { ink: "#111827", paper: "#fffaf1", signal: "#f4c14a" },
+    accent: { ink: "#111827", paper: "#eef2ff", signal: "#f4c14a" },
     gameType: "wheel",
     presentation: {
-      logo: { sizePercent: 100, marginBottomPx: 32, align: "center" },
-      background: { mode: "color", color: "#fffaf1", imageUrl: "" },
+      logo: { sizePercent: 100, marginBottomPx: 40, align: "center" },
+      background: { mode: "color", color: "#ffffff", imageUrl: "" },
       heading: {
         textColor: "#1f2937",
         fontSizePx: 40,
@@ -230,15 +257,15 @@ function createWizardDraft(merchant: Merchant): WizardDraft {
         align: "center",
       },
       button: {
-        backgroundColor: "#1b2842",
+        backgroundColor: "#c59920",
         textColor: "#ffffff",
-        borderColor: "#1b2842",
-        size: "md",
-        textSizePx: 22,
+        borderColor: "#f4c14a",
+        size: "sm",
+        textSizePx: 24,
         isBold: true,
       },
       layout: {
-        blockSpacingPx: 36,
+        blockSpacingPx: 40,
         templateId: "classic" as GamePageTemplateId,
       },
       wheel,
@@ -247,7 +274,7 @@ function createWizardDraft(merchant: Merchant): WizardDraft {
         logoText: merchant.companyName || merchant.logoText,
         backgroundMode: "color",
         backgroundColor: "#fffaf1",
-        headline: "Scannez, jouez, rÃƒÂ©cupÃƒÂ©rez votre cadeau",
+        headline: "Scannez, jouez, rÃ©cupÃ©rez votre cadeau",
         headlineTextColor: "#1b2842",
         wheel,
         footerBackgroundColor: "#f4c14a",
@@ -283,7 +310,7 @@ function validateStep(
 ): string | null {
   if (step === "identity") {
     if (draft.title.trim().length < 3)
-      return "Donnez un nom de trois caractÃƒÂ¨res minimum ÃƒÂ  votre animation.";
+      return "Donnez un nom de trois caractÃ¨res minimum Ã  votre animation.";
     if (!draft.subtitle.trim())
       return "Ajoutez une phrase courte pour expliquer la promesse du jeu.";
   }
@@ -298,21 +325,21 @@ function validateStep(
         (prize) => prize.totalQuantity !== null && prize.totalQuantity <= 0,
       )
     ) {
-      return "La quantitÃƒÂ© dÃ¢â‚¬â„¢un lot doit ÃƒÂªtre supÃƒÂ©rieure ÃƒÂ  0 (ou illimitÃƒÂ©e).";
+      return "La quantitÃ© dâ€™un lot doit Ãªtre supÃ©rieure Ã  0 (ou illimitÃ©e).";
     }
     const total = draft.prizes.reduce(
       (sum, prize) => sum + Number(prize.probability || 0),
       0,
     );
     if (total > 100.0001)
-      return "Le total des probabilitÃƒÂ©s ne peut pas dÃƒÂ©passer 100 %.";
+      return "Le total des probabilitÃ©s ne peut pas dÃ©passer 100 %.";
     if (draft.rewardRules.isWinningEveryTime && total < 99.9999)
-      return "Un jeu 100 % gagnant doit totaliser exactement 100 % de probabilitÃƒÂ©s.";
+      return "Un jeu 100 % gagnant doit totaliser exactement 100 % de probabilitÃ©s.";
   }
 
   if (step === "action" && actionEnabled) {
     if (!draft.actions.length)
-      return "Ajoutez au moins une action ÃƒÂ  proposer aprÃƒÂ¨s le jeu.";
+      return "Ajoutez au moins une action Ã  proposer aprÃ¨s le jeu.";
     for (const action of draft.actions) {
       if (action.kind === "crm") continue;
       if (!action.url.trim())
@@ -320,12 +347,12 @@ function validateStep(
       try {
         const parsed = new URL(normalizeUrl(action.url));
         if (parsed.protocol !== "https:")
-          return "Le lien doit utiliser HTTPS pour protÃƒÂ©ger les joueurs.";
+          return "Le lien doit utiliser HTTPS pour protÃ©ger les joueurs.";
         if (
           action.kind === "google" &&
           !GOOGLE_REVIEW_HOSTS.has(parsed.hostname.toLowerCase())
         ) {
-          return "Utilisez une adresse Google officielle pour lÃ¢â‚¬â„¢invitation ÃƒÂ  laisser un avis.";
+          return "Utilisez une adresse Google officielle pour lâ€™invitation Ã  laisser un avis.";
         }
         if (
           action.kind === "google" &&
@@ -333,7 +360,7 @@ function validateStep(
             INCENTIVE_COPY_PATTERN.test(copy),
           )
         ) {
-          return "LÃ¢â‚¬â„¢invitation ne peut pas promettre un lot en ÃƒÂ©change dÃ¢â‚¬â„¢un avis.";
+          return "Lâ€™invitation ne peut pas promettre un lot en Ã©change dâ€™un avis.";
         }
       } catch {
         return "Saisissez une adresse web valide.";
@@ -439,7 +466,7 @@ function PrizeSuggestionsPanel({
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#b28719]">
-              Suggestions adaptÃƒÂ©es
+              Suggestions adaptÃ©es
             </p>
             <h3
               id="wizard-prize-suggestions-title"
@@ -449,9 +476,9 @@ function PrizeSuggestionsPanel({
             </h3>
             <p className="mt-2 text-sm text-[#69758a]">
               {remainingProbability < 0
-                ? `Le total dÃƒÂ©passe 100 % de ${Math.abs(Math.round(remainingProbability))} point(s).`
+                ? `Le total dÃ©passe 100 % de ${Math.abs(Math.round(remainingProbability))} point(s).`
                 : `Il reste ${Math.round(remainingProbability)} % disponible.`}{" "}
-              Vous pourrez ajuster les probabilitÃƒÂ©s avant de continuer.
+              Vous pourrez ajuster les probabilitÃ©s avant de continuer.
             </p>
           </div>
           <button
@@ -470,1156 +497,6 @@ function PrizeSuggestionsPanel({
                 className="rounded-[18px] border border-[#e2e8f0] bg-[#fbfcfe] p-4"
               >
                 <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-center gap-2">
-                    {(() => {
-                      const iconStyle = getWizardPrizeSuggestionIcon(
-                        suggestion.icon,
-                      );
-                      const Icon = iconStyle.Icon;
-                      return (
-                        <span
-                          className={`flex h-9 w-9 items-center justify-center rounded-full ${iconStyle.className}`}
-                          aria-hidden="true"
-                        >
-                          <Icon className="h-4 w-4" />
-                        </span>
-                      );
-                    })()}
-                    <div>
-                      <p className="text-sm font-semibold text-[#182033]">
-                        {suggestion.label}
-                      </p>
-                      <p className="text-xs text-[#8993a6]">
-                        {suggestion.description}
-                      </p>
-                    </div>
-                  </div>
-                  <span className="text-xs font-semibold text-[#b28719]">
-                    {suggestion.probability} %
-                  </span>
-                </div>
-                <div className="mt-4 flex items-center justify-between gap-3">
-                  <span className="text-xs text-[#69758a]">
-                    CoÃƒÂ»t estimÃƒÂ© : {suggestion.estimatedUnitCost.toFixed(2)} Ã¢â€šÂ¬
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => onAdd(suggestion)}
-                    className="inline-flex items-center gap-1 rounded-[11px] bg-[#111827] px-3 py-2 text-xs font-semibold !text-white"
-                  >
-                    <Plus className="h-3.5 w-3.5" />
-                    Ajouter
-                  </button>
-                </div>
-              </div>
-            ))
-          ) : (
-            <p className="rounded-[16px] bg-[#f6f8fb] p-4 text-sm text-[#69758a]">
-              Aucune suggestion disponible pour cette activitÃƒÂ©.
-            </p>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export function CampaignWizard({ merchant }: { merchant: Merchant }) {
-  const [draft, setDraft] = useState<WizardDraft>(() =>
-    createWizardDraft(merchant),
-  );
-  const [stepIndex, setStepIndex] = useState(0);
-  const [furthestStepIndex, setFurthestStepIndex] = useState(0);
-  const actionEnabled = true;
-  const [prizeSuggestions, setPrizeSuggestions] = useState<PrizeSuggestion[]>(
-    [],
-  );
-  const [suggestionsOpen, setSuggestionsOpen] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
-  const [savedCampaignId, setSavedCampaignId] = useState<string | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    fetch(
-      `/api/prize-suggestions?industry=${encodeURIComponent(merchant.industry ?? "")}`,
-    )
-      .then(async (response) => {
-        if (!response.ok) throw new Error("Suggestions indisponibles");
-        return (await response.json()) as { suggestions?: PrizeSuggestion[] };
-      })
-      .then((payload) => {
-        if (!cancelled) setPrizeSuggestions(payload.suggestions ?? []);
-      })
-      .catch(() => {
-        if (!cancelled) setPrizeSuggestions([]);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [merchant.industry]);
-
-  const step = WIZARD_STEPS[stepIndex];
-  const totalProbability = useMemo(
-    () =>
-      draft.prizes.reduce(
-        (sum, prize) => sum + Number(prize.probability || 0),
-        0,
-      ),
-    [draft.prizes],
-  );
-
-  function patchDraft(patch: Partial<WizardDraft>) {
-    setDraft((current) => {
-      const next = { ...current, ...patch };
-      return patch.goalType
-        ? { ...next, actions: createWizardActions(merchant, patch.goalType) }
-        : next;
-    });
-    setError(null);
-  }
-
-  function patchAction(
-    index: number,
-    patch: Partial<WizardDraft["actions"][number]>,
-  ) {
-    setDraft((current) => ({
-      ...current,
-      actions: current.actions.map((action, actionIndex) => {
-        if (actionIndex !== index) return action;
-        const nextAction = { ...action, ...patch };
-        return patch.kind
-          ? { ...nextAction, url: wizardActionUrl(merchant, patch.kind) }
-          : nextAction;
-      }),
-    }));
-    setError(null);
-  }
-
-  function addAction() {
-    setDraft((current) => ({
-      ...current,
-      actions: [
-        ...current.actions,
-        {
-          id: `wizard-action-${Date.now()}`,
-          kind: "custom",
-          label: "DÃƒÂ©couvrir",
-          url: wizardActionUrl(merchant, "custom"),
-        },
-      ],
-    }));
-    setError(null);
-  }
-
-  function removeAction(index: number) {
-    setDraft((current) => ({
-      ...current,
-      actions: current.actions.filter(
-        (_, actionIndex) => actionIndex !== index,
-      ),
-    }));
-    setError(null);
-  }
-
-  function moveAction(index: number, direction: -1 | 1) {
-    setDraft((current) => {
-      const nextIndex = index + direction;
-      if (nextIndex < 0 || nextIndex >= current.actions.length) return current;
-      const actions = [...current.actions];
-      [actions[index], actions[nextIndex]] = [
-        actions[nextIndex],
-        actions[index],
-      ];
-      return { ...current, actions };
-    });
-    setError(null);
-  }
-
-  function addSuggestedPrize(suggestion: PrizeSuggestion) {
-    setDraft((current) => ({
-      ...current,
-      prizes: [
-        ...current.prizes,
-        {
-          id: `wizard-prize-${Date.now()}-${suggestion.id}`,
-          label: suggestion.label,
-          totalQuantity: null,
-          probability: suggestion.probability,
-          estimatedUnitCost: suggestion.estimatedUnitCost,
-          usageConditions: "",
-        },
-      ],
-    }));
-    setError(null);
-  }
-
-  function removePrize(prizeId: string | undefined) {
-    setDraft((current) => ({
-      ...current,
-      prizes: current.prizes.filter((prize) => prize.id !== prizeId),
-    }));
-    setError(null);
-  }
-
-  function nextStep() {
-    const validationError = validateStep(step.id, draft, actionEnabled);
-    if (validationError) {
-      setError(validationError);
-      return;
-    }
-    setError(null);
-    setStepIndex((current) => {
-      const next = Math.min(WIZARD_STEPS.length - 1, current + 1);
-      setFurthestStepIndex((furthest) => Math.max(furthest, next));
-      return next;
-    });
-  }
-
-  function previousStep() {
-    setError(null);
-    setStepIndex((current) => Math.max(0, current - 1));
-  }
-
-  async function saveCampaign(isActive: boolean) {
-    const blockingErrors = collectErrors(draft, actionEnabled);
-    const requiredForDraft = blockingErrors.filter(
-      (candidate) =>
-        candidate.step === "identity" || candidate.step === "prizes",
-    );
-    const errorsToShow = isActive ? blockingErrors : requiredForDraft;
-    if (errorsToShow.length) {
-      const first = errorsToShow[0];
-      setError(first.message);
-      setStepIndex(WIZARD_STEPS.findIndex((item) => item.id === first.step));
-      return;
-    }
-
-    setIsSaving(true);
-    setError(null);
-    try {
-      const response = await fetch("/api/campaigns/setup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...draft,
-          creationMode: "wizard",
-          isActive,
-          actions: actionEnabled
-            ? draft.actions.map((action) => ({
-                ...action,
-                url: normalizeUrl(action.url),
-              }))
-            : [],
-          prizes: draft.prizes.map((prize) => ({
-            ...prize,
-            probability: Number(prize.probability || 0),
-          })),
-        }),
-      });
-      const payload = (await response.json().catch(() => null)) as {
-        campaign?: { campaign?: { id?: string } };
-        error?: string;
-      } | null;
-      if (!response.ok)
-        throw new Error(
-          payload?.error || "La campagne nÃ¢â‚¬â„¢a pas pu ÃƒÂªtre enregistrÃƒÂ©e.",
-        );
-      const campaignId = payload?.campaign?.campaign?.id;
-      if (campaignId) setSavedCampaignId(campaignId);
-    } catch (saveError) {
-      setError(
-        saveError instanceof Error
-          ? saveError.message
-          : "La campagne nÃ¢â‚¬â„¢a pas pu ÃƒÂªtre enregistrÃƒÂ©e.",
-      );
-    } finally {
-      setIsSaving(false);
-    }
-  }
-
-  if (savedCampaignId) {
-    return (
-      <div className="okado-card mx-auto max-w-3xl p-8 text-center sm:p-12">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#e9f8ec] text-[#18864b]">
-          <Check className="h-8 w-8" />
-        </div>
-        <p className="mt-6 text-xs uppercase tracking-[0.24em] text-[#7a8498]">
-          Campagne prÃƒÂªte
-        </p>
-        <h1 className="okado-page-title mt-3">
-          Votre animation est enregistrÃƒÂ©e.
-        </h1>
-        <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-[#626d82]">
-          Votre campagne est prÃƒÂªte. PrÃƒÂ©visualisez-la, tÃƒÂ©lÃƒÂ©chargez son QR code
-          ou prÃƒÂ©parez son affiche.
-        </p>
-        <div className="okado-action-row mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <Link
-            href={`/campaign/${savedCampaignId}?preview=1`}
-            target="_blank"
-            className="okado-filled-action px-4 text-sm"
-          >
-            PrÃƒÂ©visualiser
-          </Link>
-          <Link
-            href={`/campaigns/${savedCampaignId}/edit`}
-            className="okado-secondary-action px-4 text-sm"
-          >
-            Ouvrir lÃ¢â‚¬â„¢ÃƒÂ©diteur
-          </Link>
-          <a
-            href={`/api/campaigns/${savedCampaignId}/qr`}
-            download
-            className="okado-secondary-action gap-2 px-4 text-sm"
-          >
-            <Download className="h-4 w-4" />
-            QR code
-          </a>
-          <Link
-            href={`/campaigns/${savedCampaignId}/poster`}
-            className="okado-secondary-action px-4 text-sm"
-          >
-            Affiche
-          </Link>
-        </div>
-        <div className="mx-auto mt-8 hidden w-fit rounded-[20px] border border-[#dbe4f0] bg-white p-4 shadow-[var(--shadow-product-card)] md:block">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.16em] text-[#8993a6]">
-            QR code de la campagne
-          </p>
-          <Image
-            src={`/api/campaigns/${savedCampaignId}/qr?inline=1`}
-            alt="QR code de la campagne"
-            width={192}
-            height={192}
-            unoptimized
-            className="h-48 w-48"
-          />
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="okado-wizard space-y-6 pb-10">
-      <section className="flex flex-col gap-5 px-1 py-2 xl:flex-row xl:items-end xl:justify-between">
-        <div>
-          <p className="okado-label">Assistant guidÃƒÂ©</p>
-          <h1 className="okado-page-title mt-3">CrÃƒÂ©er une campagne</h1>
-          <p className="mt-4 max-w-3xl text-sm leading-7 text-ash">
-            Cinq ÃƒÂ©tapes courtes et un aperÃƒÂ§u mobile pour comprendre exactement
-            ce que vivra votre client.
-          </p>
-        </div>
-      </section>
-
-      <div className="grid gap-6 xl:items-start xl:grid-cols-[240px_minmax(0,1fr)_360px]">
-        <aside className="okado-card p-4">
-          <p className="px-3 text-[10px] uppercase tracking-[0.22em] text-[#8993a6]">
-            Progression
-          </p>
-          <nav className="mt-4 space-y-1" aria-label="Ãƒâ€°tapes de crÃƒÂ©ation">
-            {WIZARD_STEPS.map((item, index) => {
-              const active = index === stepIndex;
-              const complete = index < stepIndex;
-              const visited = index <= furthestStepIndex;
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() =>
-                    index <= furthestStepIndex && setStepIndex(index)
-                  }
-                  disabled={index > furthestStepIndex}
-                  className={`flex w-full items-start gap-3 rounded-[16px] px-3 py-3 text-left transition ${active ? "bg-[#111827] text-white" : visited ? "text-[#18864b] hover:bg-[#f5f8fb]" : "text-[#a0a9b9]"}`}
-                >
-                  <span
-                    className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${active ? "bg-[#f4c14a] text-[#111827]" : complete ? "bg-[#e9f8ec] text-[#18864b]" : visited ? "bg-[#fff8e1] text-[#b28719]" : "bg-[#f2f4f7]"}`}
-                  >
-                    {complete ? <Check className="h-3.5 w-3.5" /> : item.number}
-                  </span>
-                  <span className="min-w-0">
-                    <span className="block text-sm font-semibold">
-                      {item.title}
-                    </span>
-                    <span
-                      className={`mt-1 block text-[11px] leading-4 ${active ? "text-[#c8d1e3]" : "text-[#8b95a8]"}`}
-                    >
-                      {item.description}
-                    </span>
-                  </span>
-                </button>
-              );
-            })}
-          </nav>
-        </aside>
-
-        <main className="okado-card min-w-0 p-5 sm:p-8">
-          <div className="flex items-start justify-between gap-4 border-b border-[#edf0f4] pb-5">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#b28719]">
-                Ãƒâ€°tape {step.number}
-              </p>
-              <h2 className="okado-section-title mt-2">{step.title}</h2>
-              <p className="mt-2 text-sm text-[#7a8498]">{step.description}</p>
-            </div>
-            <div className="hidden rounded-full bg-[#fff7dd] p-3 text-[#b28719] sm:block">
-              <Sparkles className="h-5 w-5" />
-            </div>
-          </div>
-
-          {step.id === "identity" ? (
-            <div className="mt-7 space-y-5">
-              <label className="block">
-                <span className="text-sm font-semibold text-[#182033]">
-                  Nom de lÃ¢â‚¬â„¢animation
-                </span>
-                <span className="mt-1 block text-xs text-[#8993a6]">
-                  Visible dans votre espace marchand et dans vos statistiques.
-                </span>
-                <input
-                  autoFocus
-                  value={draft.title}
-                  onChange={(event) =>
-                    patchDraft({ title: event.target.value })
-                  }
-                  placeholder="Ex. La roue gourmande de juin"
-                  className="mt-3 w-full rounded-[16px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm text-[#182033] outline-none transition focus:border-[#b28719] focus:ring-4 focus:ring-[#f4c14a]/15"
-                />
-              </label>
-              <label className="block">
-                <span className="text-sm font-semibold text-[#182033]">
-                  Promesse affichÃƒÂ©e au client
-                </span>
-                <span className="mt-1 block text-xs text-[#8993a6]">
-                  Une phrase courte, concrÃƒÂ¨te et facile ÃƒÂ  comprendre sur mobile.
-                </span>
-                <textarea
-                  value={draft.subtitle}
-                  onChange={(event) =>
-                    patchDraft({ subtitle: event.target.value })
-                  }
-                  rows={3}
-                  className="mt-3 w-full resize-none rounded-[16px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm leading-6 text-[#182033] outline-none transition focus:border-[#b28719] focus:ring-4 focus:ring-[#f4c14a]/15"
-                />
-              </label>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <label className="block">
-                  <span className="text-sm font-semibold text-[#182033]">
-                    Objectif
-                  </span>
-                  <select
-                    value={draft.goalType}
-                    onChange={(event) => {
-                      const goalType = event.target
-                        .value as WizardDraft["goalType"];
-                      const actionKind =
-                        goalType === "social_follow"
-                          ? "instagram"
-                          : goalType === "lead_capture"
-                            ? "crm"
-                            : "google";
-                      patchDraft({
-                        goalType,
-                        successMetric:
-                          goalType === "social_follow"
-                            ? "Abonnements sociaux"
-                            : goalType === "lead_capture"
-                              ? "Leads collectÃƒÂ©s"
-                              : "Avis Google",
-                        actions: [
-                          {
-                            ...(draft.actions[0] ?? {
-                              id: "wizard-action",
-                              url: "",
-                            }),
-                            kind: actionKind,
-                            label: actionKindCta(actionKind),
-                            url:
-                              goalType === "review_prompt"
-                                ? merchant.googleReviewUrl ||
-                                  "https://google.com"
-                                : "",
-                          },
-                        ],
-                      });
-                    }}
-                    className="mt-3 w-full rounded-[16px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm text-[#182033]"
-                  >
-                    <option value="review_prompt">Obtenir des avis</option>
-                    <option value="lead_capture">Collecter des contacts</option>
-                    <option value="social_follow">Gagner des abonnÃƒÂ©s</option>
-                  </select>
-                </label>
-                <label className="block">
-                  <span className="text-sm font-semibold text-[#182033]">
-                    Texte du bouton de jeu
-                  </span>
-                  <input
-                    value={draft.ctaLabel}
-                    onChange={(event) =>
-                      patchDraft({ ctaLabel: event.target.value })
-                    }
-                    className="mt-3 w-full rounded-[16px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm text-[#182033]"
-                  />
-                </label>
-              </div>
-            </div>
-          ) : null}
-
-          {step.id === "game" ? (
-            <div className="mt-7 space-y-5">
-              <div className="grid gap-4 sm:grid-cols-2">
-                {(
-                  [
-                    {
-                      value: "wheel",
-                      label: "Roue de la chance",
-                      text: "Un moment spectaculaire, idÃƒÂ©al sur un comptoir.",
-                    },
-                    {
-                      value: "scratch",
-                      label: "Ticket ÃƒÂ  gratter",
-                      text: "Un geste tactile simple et immÃƒÂ©diat sur mobile.",
-                    },
-                  ] as const
-                ).map((option) => (
-                  <button
-                    type="button"
-                    key={option.value}
-                    onClick={() =>
-                      patchDraft({
-                        gameType: option.value,
-                        subtitle:
-                          option.value === "wheel"
-                            ? "Faites tourner la roue pour tenter votre chance."
-                            : "Grattez le ticket pour tenter votre chance.",
-                      })
-                    }
-                    className={`rounded-[22px] border p-5 text-left transition ${draft.gameType === option.value ? "border-[#b28719] bg-[#fff8e1] shadow-[0_12px_28px_rgba(244,193,74,0.16)]" : "border-[#e2e8f0] bg-[#fbfcfe] hover:border-[#b8c5d8]"}`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-base font-semibold text-[#182033]">
-                        {option.label}
-                      </span>
-                      <span
-                        className={`h-3 w-3 rounded-full ${draft.gameType === option.value ? "bg-[#b28719] ring-4 ring-[#f4c14a]/30" : "bg-[#d7dfeb]"}`}
-                      />
-                    </div>
-                    <p className="mt-3 text-sm leading-6 text-[#7a8498]">
-                      {option.text}
-                    </p>
-                  </button>
-                ))}
-              </div>
-              <div className="rounded-[22px] border border-[#e2e8f0] bg-[#fbfcfe] p-5">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <p className="text-sm font-semibold text-[#182033]">
-                      Conditions de gain et de retrait
-                    </p>
-                    <p className="mt-1 text-xs leading-5 text-[#8993a6]">
-                      Les rÃƒÂ¨gles ci-dessous sÃ¢â‚¬â„¢appliquent immÃƒÂ©diatement au
-                      parcours client et au retrait en caisse.
-                    </p>
-                  </div>
-                  <ShieldCheck className="h-5 w-5 text-[#18864b]" />
-                </div>
-                <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  <label className="flex items-start gap-3 rounded-[16px] border border-[#e2e8f0] bg-white p-4 text-sm text-[#182033]">
-                    <input
-                      type="checkbox"
-                      checked={draft.rewardRules.isWinningEveryTime}
-                      onChange={(event) =>
-                        patchDraft({
-                          rewardRules: {
-                            ...draft.rewardRules,
-                            isWinningEveryTime: event.target.checked,
-                          },
-                        })
-                      }
-                      className="mt-0.5 h-4 w-4 accent-[#b28719]"
-                    />
-                    <span>
-                      <span className="block font-semibold">
-                        Jeu 100 % gagnant
-                      </span>
-                      <span className="mt-1 block text-xs leading-5 text-[#7a8498]">
-                        Chaque participation reÃƒÂ§oit un lot. Le total des
-                        probabilitÃƒÂ©s doit ÃƒÂªtre ÃƒÂ©gal ÃƒÂ  100 %.
-                      </span>
-                    </span>
-                  </label>
-                  <label className="flex items-start gap-3 rounded-[16px] border border-[#e2e8f0] bg-white p-4 text-sm text-[#182033]">
-                    <input
-                      type="checkbox"
-                      checked={draft.rewardRules.purchaseRequired}
-                      onChange={(event) =>
-                        patchDraft({
-                          rewardRules: {
-                            ...draft.rewardRules,
-                            purchaseRequired: event.target.checked,
-                          },
-                        })
-                      }
-                      className="mt-0.5 h-4 w-4 accent-[#b28719]"
-                    />
-                    <span>
-                      <span className="block font-semibold">
-                        Achat requis pour le retrait
-                      </span>
-                      <span className="mt-1 block text-xs leading-5 text-[#7a8498]">
-                        La caisse demandera une confirmation dÃ¢â‚¬â„¢achat avant de
-                        remettre le lot.
-                      </span>
-                    </span>
-                  </label>
-                  <label className="flex items-start gap-3 rounded-[16px] border border-[#e2e8f0] bg-white p-4 text-sm text-[#182033]">
-                    <input
-                      type="checkbox"
-                      checked={draft.rewardRules.availableAfterHours > 0}
-                      onChange={(event) =>
-                        patchDraft({
-                          rewardRules: {
-                            ...draft.rewardRules,
-                            availableAfterHours: event.target.checked ? 24 : 0,
-                          },
-                        })
-                      }
-                      className="mt-0.5 h-4 w-4 accent-[#b28719]"
-                    />
-                    <span>
-                      <span className="block font-semibold">
-                        Lot disponible lors d&apos;une prochaine visite
-                      </span>
-                      <span className="mt-1 block text-xs leading-5 text-[#7a8498]">
-                        Le lot sera disponible 24 h aprÃƒÂ¨s la participation, ÃƒÂ  partir du lendemain.
-                      </span>
-                    </span>
-                  </label>
-                </div>
-                <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                  <div
-                    className={`rounded-[14px] border px-4 py-3 ${draft.rewardRules.isWinningEveryTime ? "border-[#b7e4c7] bg-[#f0fbf3]" : "border-[#e2e8f0] bg-white"}`}
-                  >
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#8993a6]">
-                      Gain
-                    </p>
-                    <p className="mt-1 text-sm font-semibold text-[#182033]">
-                      {draft.rewardRules.isWinningEveryTime
-                        ? "Un lot ÃƒÂ  chaque participation"
-                        : "Gain selon les probabilitÃƒÂ©s"}
-                    </p>
-                  </div>
-                  <div
-                    className={`rounded-[14px] border px-4 py-3 ${draft.rewardRules.purchaseRequired ? "border-[#f0dfaa] bg-[#fff9e8]" : "border-[#e2e8f0] bg-white"}`}
-                  >
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#8993a6]">
-                      Retrait
-                    </p>
-                    <p className="mt-1 text-sm font-semibold text-[#182033]">
-                      {draft.rewardRules.purchaseRequired
-                        ? "Achat vÃƒÂ©rifiÃƒÂ© en caisse"
-                        : "Sans condition dÃ¢â‚¬â„¢achat"}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ) : null}
-
-          {step.id === "prizes" ? (
-            <div className="mt-7 space-y-4">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <p className="text-sm font-semibold text-[#182033]">
-                    Votre dotation
-                  </p>
-                  <p className="mt-1 text-xs text-[#8993a6]">
-                    La jauge doit rester ÃƒÂ  100 % maximum.
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`rounded-full px-3 py-1 text-xs font-semibold ${totalProbability > 100 ? "bg-[#fff0f0] text-[#b42318]" : "bg-[#e9f8ec] text-[#18864b]"}`}
-                  >
-                    {Math.round(totalProbability)} %
-                  </span>
-                  {prizeSuggestions.length ? (
-                    <button
-                      type="button"
-                      onClick={() => setSuggestionsOpen(true)}
-                      className="okado-secondary-action inline-flex items-center gap-1.5 px-3 py-2 text-xs"
-                    >
-                      <Sparkles className="h-3.5 w-3.5" />
-                      Suggestions de lots
-                    </button>
-                  ) : null}
-                </div>
-              </div>
-              {totalProbability > 100.0001 ? (
-                <div
-                  role="alert"
-                  className="rounded-[14px] border border-[#f2c8c8] bg-[#fff4f4] px-4 py-3 text-sm leading-6 text-[#a11a1a]"
-                >
-                  Le total des probabilitÃƒÂ©s dÃƒÂ©passe 100 %. Vous pouvez encore
-                  ajouter ou modifier des lots, mais rÃƒÂ©duisez ce total avant de
-                  continuer.
-                </div>
-              ) : null}
-              {draft.prizes.map((prize, index) => (
-                <div
-                  key={prize.id}
-                  className="rounded-[20px] border border-[#e2e8f0] bg-[#fbfcfe] p-4"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8993a6]">
-                      Lot {index + 1}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => removePrize(prize.id)}
-                      aria-label={`Supprimer ${prize.label || `le lot ${index + 1}`}`}
-                      className="rounded-[9px] p-1.5 text-[#8b95a8] transition hover:bg-[#fff0f0] hover:text-[#b42318]"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
-                  <div className="mt-2 grid gap-3 sm:grid-cols-[minmax(0,1fr)_120px_120px]">
-                    <label className="block">
-                      <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8993a6]">
-                        Nom du lot
-                      </span>
-                      <input
-                        value={prize.label}
-                        onChange={(event) =>
-                          setDraft((current) =>
-                            updatePrize(current, prize.id, {
-                              label: event.target.value,
-                            }),
-                          )
-                        }
-                        className="w-full rounded-[13px] border border-[#dbe3ed] bg-white px-3 py-3 text-sm text-[#182033]"
-                      />
-                    </label>
-                    <label className="block">
-                      <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8993a6]">
-                        ProbabilitÃƒÂ©
-                      </span>
-                      <input
-                        type="number"
-                        min={0}
-                        max={100}
-                        value={prize.probability}
-                        onChange={(event) =>
-                          setDraft((current) =>
-                            updatePrize(current, prize.id, {
-                              probability: Number(event.target.value || 0),
-                            }),
-                          )
-                        }
-                        className="mt-2 w-full rounded-[13px] border border-[#dbe3ed] bg-white px-3 py-3 text-sm text-[#182033]"
-                      />
-                    </label>
-                    <label className="block">
-                      <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8993a6]">
-                        Stock
-                      </span>
-                      <input
-                        type="number"
-                        min={0}
-                        placeholder="IllimitÃƒÂ©"
-                        value={prize.totalQuantity ?? ""}
-                        onChange={(event) =>
-                          setDraft((current) =>
-                            updatePrize(current, prize.id, {
-                              totalQuantity:
-                                event.target.value === ""
-                                  ? null
-                                  : Number(event.target.value),
-                            }),
-                          )
-                        }
-                        className="mt-2 w-full rounded-[13px] border border-[#dbe3ed] bg-white px-3 py-3 text-sm text-[#182033]"
-                      />
-                    </label>
-                  </div>
-                  <label className="mt-3 block">
-                    <span className="text-xs text-[#8993a6]">
-                      Conditions dÃ¢â‚¬â„¢utilisation (optionnel)
-                    </span>
-                    <input
-                      value={prize.usageConditions ?? ""}
-                      onChange={(event) =>
-                        setDraft((current) =>
-                          updatePrize(current, prize.id, {
-                            usageConditions: event.target.value,
-                          }),
-                        )
-                      }
-                      className="mt-2 w-full rounded-[13px] border border-[#dbe3ed] bg-white px-3 py-3 text-sm text-[#182033]"
-                    />
-                  </label>
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={() =>
-                  setDraft((current) => ({
-                    ...current,
-                    prizes: [
-                      ...current.prizes,
-                      {
-                        id: `wizard-prize-${Date.now()}`,
-                        label: "Nouveau lot",
-                        totalQuantity: null,
-                        probability: Math.max(
-                          0,
-                          Math.round(100 - totalProbability),
-                        ),
-                        estimatedUnitCost: merchant.defaultPrizeCost ?? 5,
-                        usageConditions: "",
-                      },
-                    ],
-                  }))
-                }
-                className="inline-flex items-center gap-2 rounded-[14px] border border-dashed border-[#b8c5d8] px-4 py-3 text-sm font-semibold text-[#526078] transition hover:border-[#b28719] hover:text-[#182033]"
-              >
-                <Gift className="h-4 w-4" />
-                Ajouter un lot
-              </button>
-            </div>
-          ) : null}
-
-          {step.id === "action" ? (
-            <div className="mt-7 space-y-5">
-              <div className="space-y-4">
-                {draft.actions.map((action, index) => (
-                  <div
-                    key={action.id ?? `wizard-action-${index}`}
-                    className="rounded-[20px] border border-[#e2e8f0] bg-white p-5"
-                  >
-                    <div className="flex items-center justify-between gap-3">
-                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#8993a6]">
-                        Action {index + 1}
-                      </p>
-                      <div className="flex items-center gap-1">
-                        <button
-                          type="button"
-                          onClick={() => moveAction(index, -1)}
-                          disabled={index === 0}
-                          aria-label="Monter lÃ¢â‚¬â„¢action"
-                          className="rounded-[9px] p-1.5 text-[#69758a] hover:bg-[#f2f4f7] disabled:opacity-30"
-                        >
-                          <ChevronUp className="h-4 w-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => moveAction(index, 1)}
-                          disabled={index === draft.actions.length - 1}
-                          aria-label="Descendre lÃ¢â‚¬â„¢action"
-                          className="rounded-[9px] p-1.5 text-[#69758a] hover:bg-[#f2f4f7] disabled:opacity-30"
-                        >
-                          <ChevronDown className="h-4 w-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => removeAction(index)}
-                          aria-label="Supprimer lÃ¢â‚¬â„¢action"
-                          className="rounded-[9px] p-1.5 text-[#69758a] hover:bg-[#fff0f0] hover:text-[#b42318]"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </div>
-                    <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                      <label className="block">
-                        <span className="flex items-center gap-3 text-sm font-semibold text-[#182033]">
-                          <SocialChannelIcon channel={action.kind} />
-                          <span>Action proposÃƒÂ©e</span>
-                        </span>
-                        <select
-                          value={action.kind}
-                          onChange={(event) => {
-                            const kind = event.target
-                              .value as WizardDraft["actions"][number]["kind"];
-                            patchAction(index, {
-                              kind,
-                              label: actionKindCta(kind),
-                              url:
-                                kind === "google"
-                                  ? merchant.googleReviewUrl || action.url
-                                  : action.url,
-                            });
-                          }}
-                          className="mt-3 w-full rounded-[14px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3 text-sm text-[#182033]"
-                        >
-                          <option value="google">Laisser un avis Google</option>
-                          <option value="instagram">
-                            Suivre sur Instagram
-                          </option>
-                          <option value="facebook">Suivre sur Facebook</option>
-                          <option value="tiktok">Suivre sur TikTok</option>
-                          <option value="tripadvisor">
-                            Laisser un avis Tripadvisor
-                          </option>
-                          <option value="crm">
-                            Rejoindre le programme fidÃƒÂ©litÃƒÂ©
-                          </option>
-                          <option value="custom">
-                            Ouvrir un lien personnalisÃƒÂ©
-                          </option>
-                        </select>
-                      </label>
-                      <label className="block">
-                        <span className="text-sm font-semibold text-[#182033]">
-                          Texte du bouton
-                        </span>
-                        <input
-                          value={action.label}
-                          onChange={(event) =>
-                            patchAction(index, { label: event.target.value })
-                          }
-                          className="mt-3 w-full rounded-[14px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3 text-sm text-[#182033]"
-                        />
-                      </label>
-                    </div>
-                    {action.kind !== "crm" ? (
-                      <label className="mt-4 block">
-                        <span className="text-sm font-semibold text-[#182033]">
-                          Lien de destination
-                        </span>
-                        <input
-                          value={action.url}
-                          onChange={(event) =>
-                            patchAction(index, { url: event.target.value })
-                          }
-                          placeholder="https://..."
-                          className="mt-3 w-full rounded-[14px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3 text-sm text-[#182033]"
-                        />
-                      </label>
-                    ) : (
-                      <p className="mt-4 rounded-[12px] bg-[#f6f8fb] px-3 py-2 text-xs leading-5 text-[#69758a]">
-                        Cette action est gÃƒÂ©rÃƒÂ©e dans votre espace fidÃƒÂ©litÃƒÂ© ;
-                        aucun lien externe nÃ¢â‚¬â„¢est requis.
-                      </p>
-                    )}
-                  </div>
-                ))}
-                <button
-                  type="button"
-                  onClick={addAction}
-                  className="inline-flex items-center gap-2 rounded-[14px] border border-dashed border-[#b8c5d8] px-4 py-3 text-sm font-semibold text-[#526078] hover:border-[#b28719] hover:text-[#182033]"
-                >
-                  <Plus className="h-4 w-4" />
-                  Ajouter une action
-                </button>
-              </div>
-            </div>
-          ) : null}
-
-          {step.id === "appearance" ? (
-            <div className="mt-7 space-y-5">
-              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                {(
-                  [
-                    {
-                      id: "classic",
-                      label: "Classique",
-                      text: "Sobre et lisible",
-                    },
-                    {
-                      id: "restaurant-pop",
-                      label: "Visuel pop",
-                      text: "Ãƒâ€°vÃƒÂ©nementiel et contrastÃƒÂ©",
-                    },
-                    {
-                      id: "cosmic-orbit",
-                      label: "Orbit nÃƒÂ©on",
-                      text: "Immersif et nocturne",
-                    },
-                    {
-                      id: "sunburst-festival",
-                      label: "Soleil pop",
-                      text: "Festif et lumineux",
-                    },
-                  ] as const
-                ).map((template) => (
-                  <button
-                    type="button"
-                    key={template.id}
-                    onClick={() =>
-                      patchDraft({
-                        presentation: {
-                          ...draft.presentation,
-                          layout: {
-                            ...draft.presentation.layout,
-                            templateId: template.id,
-                          },
-                        },
-                      })
-                    }
-                    className={`rounded-[20px] border p-4 text-left ${draft.presentation.layout.templateId === template.id ? "border-[#b28719] bg-[#fff8e1]" : "border-[#e2e8f0] bg-[#fbfcfe]"}`}
-                  >
-                    <span className="block text-sm font-semibold text-[#182033]">
-                      {template.label}
-                    </span>
-                    <span className="mt-1 block text-xs text-[#8993a6]">
-                      {template.text}
-                    </span>
-                  </button>
-                ))}
-              </div>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <label className="block">
-                  <span className="text-sm font-semibold text-[#182033]">
-                    Couleur de fond
-                  </span>
-                  <input
-                    type="color"
-                    value={draft.presentation.background.color}
-                    onChange={(event) =>
-                      patchDraft({
-                        presentation: {
-                          ...draft.presentation,
-                          background: {
-                            ...draft.presentation.background,
-                            color: event.target.value,
-                          },
-                        },
-                      })
-                    }
-                    className="mt-3 h-12 w-full rounded-[12px] border border-[#dbe3ed] bg-white p-1"
-                  />
-                </label>
-                <label className="block">
-                  <span className="text-sm font-semibold text-[#182033]">
-                    Couleur principale du bouton
-                  </span>
-                  <input
-                    type="color"
-                    value={
-                      draft.gameType === "wheel"
-                        ? draft.presentation.wheel.loseColor
-                        : draft.presentation.button.backgroundColor
-                    }
-                    onChange={(event) => {
-                      const color = event.target.value;
-                      setDraft((current) => ({
-                        ...current,
-                        presentation: {
-                          ...current.presentation,
-                          button: {
-                            ...current.presentation.button,
-                            backgroundColor: color,
-                            borderColor: color,
-                          },
-                          wheel:
-                            current.gameType === "wheel"
-                              ? {
-                                  ...current.presentation.wheel,
-                                  loseColor: color,
-                                }
-                              : current.presentation.wheel,
-                        },
-                      }));
-                    }}
-                    className="mt-3 h-12 w-full rounded-[12px] border border-[#dbe3ed] bg-white p-1"
-                  />
-                </label>
-              </div>
-              <div className="rounded-[20px] border border-[#e2e8f0] bg-[#fbfcfe] p-5">
-                <p className="text-sm font-semibold text-[#182033]">Logo</p>
-                <p className="mt-1 text-xs text-[#8993a6]">
-                  Nous utiliserons le logo du commerce si vous en avez dÃƒÂ©jÃƒÂ 
-                  configurÃƒÂ© un.
-                </p>
-                <div className="mt-4 flex min-w-0 items-center gap-3 rounded-[14px] border border-[#dbe3ed] bg-white px-3 py-2.5">
-                  {draft.logoUrl ? (
-                    <>
-                      <BrandMark
-                        logoText={draft.logoText || merchant.companyName}
-                        logoUrl={draft.logoUrl}
-                        size="sm"
-                      />
-                      <span className="min-w-0 truncate text-sm text-[#526078]">
-                        {draft.logoText || merchant.companyName}
-                      </span>
-                    </>
-                  ) : (
-                    <span className="min-w-0 truncate font-display text-base font-semibold text-[#182033]">
-                      {draft.logoText || merchant.companyName}
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-          ) : null}
-
-          {error ? (
-            <div
-              role="alert"
-              className="mt-6 rounded-[16px] border border-[#f2c8c8] bg-[#fff4f4] px-4 py-3 text-sm leading-6 text-[#a11a1a]"
-            >
-              {error}
-            </div>
-          ) : null}
-          <div className="mt-8 flex flex-col-reverse gap-3 border-t border-[#edf0f4] pt-5 sm:flex-row sm:items-center sm:justify-between">
-            <button
-              type="button"
-              onClick={previousStep}
-              disabled={stepIndex === 0 || isSaving}
-              className="okado-secondary-action gap-2 px-4 text-sm disabled:opacity-45"
-            >
-              <ChevronLeft className="h-4 w-4" />
-              Retour
-            </button>
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <button
-                type="button"
-                onClick={() => void saveCampaign(false)}
-                disabled={isSaving}
-                className="okado-secondary-action px-4 text-sm disabled:opacity-50"
-              >
-                {isSaving ? "EnregistrementÃ¢â‚¬Â¦" : "Enregistrer le brouillon"}
-              </button>
-              {stepIndex < WIZARD_STEPS.length - 1 ? (
-                <button
-                  type="button"
-                  onClick={nextStep}
-                  className="okado-filled-action gap-2 px-5 text-sm"
-                >
-                  Continuer
-                  <ChevronRight className="h-4 w-4" />
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => void saveCampaign(true)}
-                  disabled={isSaving}
-                  className="okado-primary-action gap-2 px-5 text-sm disabled:opacity-50"
-                >
-                  {isSaving ? "PublicationÃ¢â‚¬Â¦" : "Publier la campagne"}
-                  <Check className="h-4 w-4" />
-                </button>
-              )}
-            </div>
-          </div>
-        </main>
-
-        <aside className="min-w-0">
-          <div className="mx-auto w-full max-w-[360px] space-y-4">
-            <WizardGamePreview draft={draft} merchant={merchant} />
-          </div>
-        </aside>
-      </div>
-      <PrizeSuggestionsPanel
-        open={suggestionsOpen}
-        suggestions={prizeSuggestions}
-        remainingProbability={100 - totalProbability}
-        onAdd={addSuggestedPrize}
-        onClose={() => setSuggestionsOpen(false)}
-      />
-    </div>
-  );
-}
+                  <div c×nzÞÚ$z{-®éÜj×àÐ¢ÅG&6ƒ"6Æ74æÖSÒ&‚ÓBrÓB"óàÐ¢Âö'WGFöãàÐ¢ÂöF—càÐ¢ÂöF—càÐ¢ÆF—b6Æ74æÖSÒ&×BÓBw&–BvÓB#àÐ¢ÆÆ&VÂ6Æ74æÖSÒ&&Æö6²#àÐ¢Ç7â6Æ74æÖSÒ&fÆW‚—FV×2Ö6VçFW"vÓ2FW‡B×6ÒföçB×6VÖ–&öÆBFW‡BÕ²3ƒ#35Ò#àÐ¢Å6ö6–Ä6†ææVÄ–6öâ6†ææVÃ×¶7F–öâæ¶–æGÒóàÐ¢Ç7ãä7F–öâ&÷÷<:–SÂ÷7ãàÐ¢Â÷7ãàÐ¢Ç6VÆV7@Ð¢fÇVS×¶7F–öâæ¶–æGÐÐ¢öä6†ævS×²†WfVçB’Óâ°Ð¢6öç7B¶–æBÒWfVçBçF&vW@Ð¢çfÇVR2v—¦&DG&gE²&7F–öç2%Õ¶çVÖ&W%Õ²&¶–æB%Ó°Ð¢F6„7F–öâ†–æFW‚Â°Ð¢¶–æBÀÐ¢Æ&VÃ¢7F–öä¶–æD7F†¶–æB’ÀÐ¢W&Ã Ð¢¶–æBÓÓÒ&vöövÆR Ð¢òÖW&6†çBævöövÆU&Wf–WuW&ÂÇÂ7F–öâçW&ÀÐ¢¢7F–öâçW&ÂÀÐ¢Ò“°Ð¢×ÐÐ¢6Æ74æÖSÒ&×BÓ2rÖgVÆÂ&÷VæFVBÕ³G…Ò&÷&FW"&÷&FW"Õ²6F&S6VEÒ&rÕ²6f&f6fUÒ‚ÓB’Ó2FW‡B×6ÒFW‡BÕ²3ƒ#35Ò Ð¢àÐ¢Æ÷F–öâfÇVSÒ&vöövÆR#äÆ—76W"Vâf—2vöövÆSÂö÷F–öãàÐ¢Æ÷F–öâfÇVSÒ&–ç7Fw&Ò#àÐ¢7V—g&R7W"–ç7Fw&ÐÐ¢Âö÷F–öãàÐ¢Æ÷F–öâfÇVSÒ&f6V&öö²#å7V—g&R7W"f6V&öö³Âö÷F–öãàÐ¢Æ÷F–öâfÇVSÒ'F–·Fö²#å7V—g&R7W"F–µFö³Âö÷F–öãàÐ¢Æ÷F–öâfÇVSÒ'G&—Gf—6÷"#àÐ¢Æ—76W"Vâf—2G&—Gf—6÷ Ð¢Âö÷F–öãàÐ¢Æ÷F–öâfÇVSÒ&7&Ò#àÐ¢&V¦ö–æG&RÆR&öw&ÖÖRf–L:–Æ—L:Ð¢Âö÷F–öãàÐ¢Æ÷F–öâfÇVSÒ&7W7FöÒ#àÐ¢÷Wg&—"VâÆ–VâW'6öææÆ—<:Ð¢Âö÷F–öãàÐ¢Â÷6VÆV7CàÐ¢ÂöÆ&VÃàÐ¢ÂöF—càÐ¢¶7F–öâæ¶–æBÓÒ&7&Ò"ò€Ð¢ÆÆ&VÂ6Æ74æÖSÒ&×BÓB&Æö6²#àÐ¢Ç7â6Æ74æÖSÒ'FW‡B×6ÒföçB×6VÖ–&öÆBFW‡BÕ²3ƒ#35Ò#àÐ¢Æ–VâFRFW7F–æF–öàÐ¢Â÷7ãàÐ¢Æ–çW@Ð¢fÇVS×¶7F–öâçW&ÇÐÐ¢öä6†ævS×²†WfVçB’ÓàÐ¢F6„7F–öâ†–æFW‚Â²W&Ã¢WfVçBçF&vWBçfÇVRÒÐ¢ÐÐ¢Æ6V†öÆFW#Ò&‡GG3¢òòâââ Ð¢6Æ74æÖSÒ&×BÓ2rÖgVÆÂ&÷VæFVBÕ³G…Ò&÷&FW"&÷&FW"Õ²6F&S6VEÒ&rÕ²6f&f6fUÒ‚ÓB’Ó2FW‡B×6ÒFW‡BÕ²3ƒ#35Ò Ð¢óàÐ¢ÂöÆ&VÃàÐ¢’¢€Ð¢Ç6Æ74æÖSÒ&×BÓB&÷VæFVBÕ³'…Ò&rÕ²6cfc†f%Ò‚Ó2’Ó"FW‡B×‡2ÆVF–ærÓRFW‡BÕ²3c“sS†Ò#àÐ¢6WGFR7F–öâW7B|:—,:–RFç2f÷G&RW76Rf–L:–Æ—L:’°Ð¢V7VâÆ–VâW‡FW&æRî(	–W7B&WV—2àÐ¢Â÷àÐ¢—ÐÐ¢ÂöF—càÐ¢’—ÐÐ¢Æ'WGFöàÐ¢G—SÒ&'WGFöâ Ð¢öä6Æ–6³×¶FD7F–öçÐÐ¢6Æ74æÖSÒ&–æÆ–æRÖfÆW‚—FV×2Ö6VçFW"vÓ"&÷VæFVBÕ³G…Ò&÷&FW"&÷&FW"ÖF6†VB&÷&FW"Õ²6#†3VC…Ò‚ÓB’Ó2FW‡B×6ÒföçB×6VÖ–&öÆBFW‡BÕ²3S#cs…Ò†÷fW#¦&÷&FW"Õ²6##ƒs•Ò†÷fW#§FW‡BÕ²3ƒ#35Ò Ð¢àÐ¢ÅÇW26Æ74æÖSÒ&‚ÓBrÓB"óàÐ¢¦÷WFW"VæR7F–öàÐ¢Âö'WGFöãàÐ¢ÂöF—càÐ¢ÂöF—càÐ¢’¢çVÆÇÐÐ Ð¢·7FWæ–BÓÓÒ&V&æ6R"ò€Ð¢ÆF—b6Æ74æÖSÒ&×BÓr76R×’ÓR#àÐ¢ÆF—b6Æ74æÖSÒ&w&–BvÓB6Ó¦w&–BÖ6öÇ2Ó"†Ã¦w&–BÖ6öÇ2ÓB#àÐ¢²€Ð¢G&gBævÖUG—RÓÓÒ'67&F6‚ Ð¢ò°Ð¢²–C¢'67&F6‚×fVÇB"ÂÆ&VÃ¢$6öfg&Rì:–öâ"ÂFW‡C¢$æö7GW&æRWB–ÖÖW'6–b"ÒÀÐ¢²–C¢'67&F6‚Ö6öæfWGF’"ÂÆ&VÃ¢$6'FR6öæfWGF—2"ÂFW‡C¢%6öÆ—&RWBfW7F–b"ÒÀÐ¢²–C¢'67&F6‚Ö6÷&Â"ÂÆ&VÃ¢$6÷&–Â¦÷–WW‚"ÂFW‡C¢$6Æ—"WB6†ÆWW&WW‚"ÒÀÐ¢²–C¢'67&F6‚ÖÆ–Æ2"ÂÆ&VÃ¢$6FVRÆ–Æ2"ÂFW‡C¢$F÷W‚WB6ö×Æ–6R"ÒÀÐ¢²–C¢'67&F6‚×7Væ'W'7B"ÂÆ&VÃ¢%&–öç26öÆV–Â"ÂFW‡C¢,8–6ÆFçBWBf—6–&ÆR"ÒÀÐ¢Ò26öç7@Ð¢¢°Ð¢°Ð¢–C¢&6Æ76–2"ÀÐ¢Æ&VÃ¢$6Æ76—VR"ÀÐ¢FW‡C¢%6ö'&RWBÆ—6–&ÆR"ÀÐ¢ÒÀÐ¢°Ð¢–C¢'&W7FW&çB×÷"ÀÐ¢Æ&VÃ¢%f—7VVÂ÷"ÀÐ¢FW‡C¢,8—l:–æVÖVçF–VÂWB6öçG&7L:’"ÀÐ¢ÒÀÐ¢°Ð¢–C¢&6÷6Ö–2Ö÷&&—B"ÀÐ¢Æ&VÃ¢$÷&&—Bì:–öâ"ÀÐ¢FW‡C¢$–ÖÖW'6–bWBæö7GW&æR"ÀÐ¢ÒÀÐ¢°Ð¢–C¢'7Væ'W'7BÖfW7F—fÂ"ÀÐ¢Æ&VÃ¢%6öÆV–Â÷"ÀÐ¢FW‡C¢$fW7F–bWBÇVÖ–æWW‚"ÀÐ¢ÒÀÐ¢Ò26öç7@Ð¢’ç6Æ–6R‚’ç6÷'B‚†ÆVgBÂ&–v‡B’Óâ†ÆVgBæ–BÓÓÒ'67&F6‚Ö6÷&Â"òÓ¢&–v‡Bæ–BÓÓÒ'67&F6‚Ö6÷&Â"ò¢’’æÖ‚‡FV×ÆFR’Óâ€Ð¢Æ'WGFöàÐ¢G—SÒ&'WGFöâ Ð¢¶W“×·FV×ÆFRæ–GÐÐ¢öä6Æ–6³×²‚’ÓàÐ¢F6„G&gB‡°Ð¢&W6VçFF–öã¢°Ð¢ââæG&gBç&W6VçFF–öâÀÐ¢Æ–÷WC¢°Ð¢ââæG&gBç&W6VçFF–öâæÆ–÷WBÀÐ¢FV×ÆFT–C¢FV×ÆFRæ–BÀÐ¢ÒÀÐ¢ÒÀÐ¢ÒÐ¢ÐÐ¢6Æ74æÖS×¶&÷VæFVBÕ³#…Ò&÷&FW"ÓBFW‡BÖÆVgBG¶G&gBç&W6VçFF–öâæÆ–÷WBçFV×ÆFT–BÓÓÒFV×ÆFRæ–Bò&&÷&FW"Õ²6##ƒs•Ò&rÕ²6ffc†SÒ"¢&&÷&FW"Õ²6S&S†cÒ&rÕ²6f&f6fUÒ'ÖÐÐ¢àÐ¢Ç7â6Æ74æÖSÒ&&Æö6²FW‡B×6ÒföçB×6VÖ–&öÆBFW‡BÕ²3ƒ#35Ò#àÐ¢·FV×ÆFRæÆ&VÇÐÐ¢Â÷7ãàÐ¢Ç7â6Æ74æÖSÒ&×BÓ&Æö6²FW‡B×‡2FW‡BÕ²3ƒ““6eÒ#àÐ¢·FV×ÆFRçFW‡GÐÐ¢Â÷7ãàÐ¢Âö'WGFöãàÐ¢’—ÐÐ¢ÂöF—càÐ¢ÆF—b6Æ74æÖSÒ&w&–BvÓB6Ó¦w&–BÖ6öÇ2Ó"#àÐ¢ÆÆ&VÂ6Æ74æÖSÒ&&Æö6²#àÐ¢Ç7â6Æ74æÖSÒ'FW‡B×6ÒföçB×6VÖ–&öÆBFW‡BÕ²3ƒ#35Ò#àÐ¢6÷VÆWW"FRföæ@Ð¢Â÷7ãàÐ¢Æ–çW@Ð¢G—SÒ&6öÆ÷" Ð¢fÇVS×¶G&gBç&W6VçFF–öâæ&6¶w&÷VæBæ6öÆ÷'ÐÐ¢öä6†ævS×²†WfVçB’ÓàÐ¢F6„G&gB‡°Ð¢&W6VçFF–öã¢°Ð¢ââæG&gBç&W6VçFF–öâÀÐ¢&6¶w&÷VæC¢°Ð¢ââæG&gBç&W6VçFF–öâæ&6¶w&÷VæBÀÐ¢6öÆ÷#¢WfVçBçF&vWBçfÇVRÀÐ¢ÒÀÐ¢ÒÀÐ¢ÒÐ¢ÐÐ¢6Æ74æÖSÒ&×BÓ2‚Ó"rÖgVÆÂ&÷VæFVBÕ³'…Ò&÷&FW"&÷&FW"Õ²6F&S6VEÒ&r×v†—FRÓ Ð¢óàÐ¢ÂöÆ&VÃàÐ¢ÆÆ&VÂ6Æ74æÖSÒ&&Æö6²#àÐ¢Ç7â6Æ74æÖSÒ'FW‡B×6ÒföçB×6VÖ–&öÆBFW‡BÕ²3ƒ#35Ò#àÐ¢6÷VÆWW"&–æ6—ÆRGR&÷WFöàÐ¢Â÷7ãàÐ¢Æ–çW@Ð¢G—SÒ&6öÆ÷" Ð¢fÇVS×°Ð¢G&gBævÖUG—RÓÓÒ'v†VVÂ Ð¢òG&gBç&W6VçFF–öâçv†VVÂæÆ÷6T6öÆ÷ Ð¢¢G&gBç&W6VçFF–öâæ'WGFöâæ&6¶w&÷VæD6öÆ÷ Ð¢ÐÐ¢öä6†ævS×²†WfVçB’Óâ°Ð¢6öç7B6öÆ÷"ÒWfVçBçF&vWBçfÇVS°Ð¢6WDG&gB‚†7W'&VçB’Óâ‡°Ð¢ââæ7W'&VçBÀÐ¢&W6VçFF–öã¢°Ð¢ââæ7W'&VçBç&W6VçFF–öâÀÐ¢'WGFöã¢°Ð¢ââæ7W'&VçBç&W6VçFF–öâæ'WGFöâÀÐ¢&6¶w&÷VæD6öÆ÷#¢6öÆ÷"ÀÐ¢&÷&FW$6öÆ÷#¢6öÆ÷"ÀÐ¢ÒÀÐ¢v†VVÃ Ð¢7W'&VçBævÖUG—RÓÓÒ'v†VVÂ Ð¢ò°Ð¢ââæ7W'&VçBç&W6VçFF–öâçv†VVÂÀÐ¢Æ÷6T6öÆ÷#¢6öÆ÷"ÀÐ¢ÐÐ¢¢7W'&VçBç&W6VçFF–öâçv†VVÂÀÐ¢ÒÀÐ¢Ò’“°Ð¢×ÐÐ¢6Æ74æÖSÒ&×BÓ2‚Ó"rÖgVÆÂ&÷VæFVBÕ³'…Ò&÷&FW"&÷&FW"Õ²6F&S6VEÒ&r×v†—FRÓ Ð¢óàÐ¢ÂöÆ&VÃàÐ¢ÂöF—càÐ¢¶G&gBævÖUG—RÓÓÒ'67&F6‚"ò€Ð¢ÆÆ&VÂ6Æ74æÖSÒ&&Æö6²#àÐ¢Ç7â6Æ74æÖSÒ'FW‡B×6ÒföçB×6VÖ–&öÆBFW‡BÕ²3ƒ#35Ò#àÐ¢6÷VÆWW"&–æ6—ÆRGRF–6¶W@Ð¢Â÷7ãàÐ¢Ç7â6Æ74æÖSÒ&×BÓ&Æö6²FW‡B×‡2FW‡BÕ²3ƒ““6eÒ#àÐ¢VÆÆR6öÆ÷&RÆ¦öæR:w&GFW"WBÆW2:–Ì:–ÖVçG2w&†—VW2GRFV×ÆFRàÐ¢Â÷7ãàÐ¢Æ–çW@Ð¢G—SÒ&6öÆ÷" Ð¢fÇVS×¶G&gBæ66VçBç6–væÇÐÐ¢öä6†ævS×²†WfVçB’ÓàÐ¢F6„G&gB‡°Ð¢66VçC¢²ââæG&gBæ66VçBÂ6–væÃ¢WfVçBçF&vWBçfÇVRÒÀÐ¢ÒÐ¢ÐÐ¢6Æ74æÖSÒ&×BÓ2‚Ó"rÖgVÆÂ&÷VæFVBÕ³'…Ò&÷&FW"&÷&FW"Õ²6F&S6VEÒ&r×v†—FRÓ Ð¢óàÐ¢ÂöÆ&VÃàÐ¢’¢çVÆÇÐÐ¢ÆF—b6Æ74æÖSÒ'&÷VæFVBÕ³#…Ò&÷&FW"&÷&FW"Õ²6S&S†cÒ&rÕ²6f&f6fUÒÓR#àÐ¢Ç6Æ74æÖSÒ'FW‡B×6ÒföçB×6VÖ–&öÆBFW‡BÕ²3ƒ#35Ò#äÆövóÂ÷àÐ¢Ç6Æ74æÖSÒ&×BÓFW‡B×‡2FW‡BÕ²3ƒ““6eÒ#àÐ¢æ÷W2WF–Æ—6W&öç2ÆRÆövòGR6öÖÖW&6R6’f÷W2VâfW¢L:–¬: Ð¢6öæf–wW,:’VâàÐ¢Â÷àÐ¢ÆÆ&VÂ6Æ74æÖSÒ&×BÓB&Æö6²7W'6÷"×ö–çFW"#àÐ¢Ç7â6Æ74æÖSÒ'FW‡B×6ÒföçB×6VÖ–&öÆBFW‡BÕ²3ƒ#35Ò#àÐ¢6†&vW"VâÆövðÐ¢Â÷7ãàÐ¢Æ–çW@Ð¢G—SÒ&f–ÆR Ð¢66WCÒ&–ÖvR÷ærÆ–ÖvRö§VrÆ–ÖvR÷vV'Æ–ÖvRöv–b Ð¢öä6†ævS×¶†æFÆTÆövõWÆöGÐÐ¢6Æ74æÖSÒ&×BÓ2&Æö6²rÖgVÆÂ7W'6÷"×ö–çFW"&÷VæFVBÕ³G…Ò&÷&FW"&÷&FW"ÖF6†VB&÷&FW"Õ²6#†3VC…Ò&r×v†—FR‚Ó2’Ó2FW‡B×6ÒFW‡BÕ²3S#cs…Òf–ÆS¦×"Ó2f–ÆS§&÷VæFVBÕ³…Òf–ÆS¦&÷&FW"Óf–ÆS¦&rÕ²6VVc&feÒf–ÆS§‚Ó2f–ÆS§’Ó"f–ÆS§FW‡B×6Òf–ÆS¦föçB×6VÖ–&öÆBf–ÆS§FW‡BÕ²3ƒ#35Ò Ð¢óàÐ¢Ç7â6Æ74æÖSÒ&×BÓ"&Æö6²FW‡B×‡2FW‡BÕ²3ƒ““6eÒ#àÐ¢ärÂ¥rÂtT%÷Rt”b+r"ÖòÖ†–×VÒàÐ¢Â÷7ãàÐ¢ÂöÆ&VÃàÐ¢ÆF—b6Æ74æÖSÒ&×BÓBfÆW‚Ö–â×rÓ—FV×2Ö6VçFW"vÓ2&÷VæFVBÕ³G…Ò&÷&FW"&÷&FW"Õ²6F&S6VEÒ&r×v†—FR‚Ó2’Ó"ãR#àÐ¢¶G&gBæÆövõW&Âò€Ð¢ÃàÐ¢Ä'&æDÖ&°Ð¢ÆövõFW‡C×¶G&gBæÆövõFW‡BÇÂÖW&6†çBæ6ö×ç”æÖWÐÐ¢ÆövõW&Ã×¶G&gBæÆövõW&ÇÐÐ¢6—¦SÒ'6Ò Ð¢óàÐ¢Ç7â6Æ74æÖSÒ&Ö–â×rÓG'Væ6FRFW‡B×6ÒFW‡BÕ²3S#cs…Ò#àÐ¢¶G&gBæÆövõFW‡BÇÂÖW&6†çBæ6ö×ç”æÖWÐÐ¢Â÷7ãàÐ¢ÂóàÐ¢’¢€Ð¢Ç7â6Æ74æÖSÒ&Ö–â×rÓG'Væ6FRföçBÖF—7Æ’FW‡BÖ&6RföçB×6VÖ–&öÆBFW‡BÕ²3ƒ#35Ò#àÐ¢¶G&gBæÆövõFW‡BÇÂÖW&6†çBæ6ö×ç”æÖWÐÐ¢Â÷7ãàÐ¢—ÐÐ¢ÂöF—càÐ¢ÂöF—càÐ¢ÂöF—càÐ¢’¢çVÆÇÐÐ Ð¢¶W'&÷"ò€Ð¢ÆF—`Ð¢&öÆSÒ&ÆW'B Ð¢6Æ74æÖSÒ&×BÓb&÷VæFVBÕ³g…Ò&÷&FW"&÷&FW"Õ²6c&3†3…Ò&rÕ²6ffcFcEÒ‚ÓB’Ó2FW‡B×6ÒÆVF–ærÓbFW‡BÕ²6Ò Ð¢àÐ¢¶W'&÷'ÐÐ¢ÂöF—càÐ¢’¢çVÆÇÐÐ¢ÆF—b6Æ74æÖSÒ&×BÓ‚fÆW‚fÆW‚Ö6öÂ×&WfW'6RvÓ2&÷&FW"×B&÷&FW"Õ²6VFccEÒBÓR6Ó¦fÆW‚×&÷r6Ó¦—FV×2Ö6VçFW"6Ó¦§W7F–g’Ö&WGvVVâ#àÐ¢Æ'WGFöàÐ¢G—SÒ&'WGFöâ Ð¢öä6Æ–6³×·&Wf–÷W57FWÐÐ¢F—6&ÆVC×·7FW–æFW‚ÓÓÒÇÂ—56f–æwÐÐ¢6Æ74æÖSÒ&ö¶Fò×6V6öæF'’Ö7F–öâvÓ"‚ÓBFW‡B×6ÒF—6&ÆVC¦÷6—G’ÓCR Ð¢àÐ¢Ä6†Wg&öäÆVgB6Æ74æÖSÒ&‚ÓBrÓB"óàÐ¢&WF÷W Ð¢Âö'WGFöãàÐ¢ÆF—b6Æ74æÖSÒ&fÆW‚fÆW‚Ö6öÂvÓ26Ó¦fÆW‚×&÷r#àÐ¢Æ'WGFöàÐ¢G—SÒ&'WGFöâ Ð¢öä6Æ–6³×²‚’Óâfö–B6fT6×–vâ†fÇ6R—ÐÐ¢F—6&ÆVC×¶—56f–æwÐÐ¢6Æ74æÖSÒ&ö¶Fò×6V6öæF'’Ö7F–öâ‚ÓBFW‡B×6ÒF—6&ÆVC¦÷6—G’ÓS Ð¢àÐ¢¶—56f–ærò$Vç&Vv—7G&VÖVçN(
+b"¢$Vç&Vv—7G&W"ÆR'&÷V–ÆÆöâ'ÐÐ¢Âö'WGFöãàÐ¢·7FW–æFW‚Ât•¤$Eõ5DU2æÆVæwF‚Òò€Ð¢Æ'WGFöàÐ¢G—SÒ&'WGFöâ Ð¢öä6Æ–6³×¶æW‡E7FWÐÐ¢6Æ74æÖSÒ&ö¶FòÖf–ÆÆVBÖ7F–öâvÓ"‚ÓRFW‡B×6Ò Ð¢àÐ¢6öçF–çVW Ð¢Ä6†Wg&öå&–v‡B6Æ74æÖSÒ&‚ÓBrÓB"óàÐ¢Âö'WGFöãàÐ¢’¢€Ð¢Æ'WGFöàÐ¢G—SÒ&'WGFöâ Ð¢öä6Æ–6³×²‚’Óâfö–B6fT6×–vâ‡G'VR—ÐÐ¢F—6&ÆVC×¶—56f–æwÐÐ¢6Æ74æÖSÒ&ö¶Fò×&–Ö'’Ö7F–öâvÓ"‚ÓRFW‡B×6ÒF—6&ÆVC¦÷6—G’ÓS Ð¢àÐ¢¶—56f–ærò%V&Æ–6F–öî(
+b"¢%V&Æ–W"Æ6×væR'ÐÐ¢Ä6†V6²6Æ74æÖSÒ&‚ÓBrÓB"óàÐ¢Âö'WGFöãàÐ¢—ÐÐ¢ÂöF—càÐ¢ÂöF—càÐ¢ÂöÖ–ãàÐ Ð¢Æ6–FR6Æ74æÖSÒ&Ö–â×rÓ#àÐ¢ÆF—b6Æ74æÖSÒ&×‚ÖWFòrÖgVÆÂÖ‚×rÕ³3c…Ò76R×’ÓB#àÐ¢Åv—¦&DvÖU&Wf–WrG&gC×¶G&gGÒÖW&6†çC×¶ÖW&6†çGÒóàÐ¢ÂöF—càÐ¢Âö6–FSàÐ¢ÂöF—càÐ¢Å&—¦U7VvvW7F–öç5æVÀÐ¢÷Vã×·7VvvW7F–öç4÷VçÐÐ¢7VvvW7F–öç3×·&—¦U7VvvW7F–öç7ÐÐ¢&VÖ–æ–æu&ö&&–Æ—G“×³ÒF÷FÅ&ö&&–Æ—G—ÐÐ¢öäFC×¶FE7VvvW7FVE&—¦WÐÐ¢öä6Æ÷6S×²‚’Óâ6WE7VvvW7F–öç4÷Vâ†fÇ6R—ÐÐ¢óàÐ¢ÂöF—càÐ¢“°Ð§ÐÐ 

@@ -173,16 +173,8 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
               );
             })}
           </nav>
-          <Link
-            href="/caisse"
-            prefetch={false}
-            className="okado-secondary-action mt-5 flex items-center justify-center rounded-[8px] px-4 text-sm font-semibold"
-          >
-            Valider un retrait
-          </Link>
-
           <Button asChild className="okado-primary-action mt-5 px-4">
-            <Link href="/campaigns/new" prefetch={false}>
+            <Link href="/campaigns/new" prefetch={false} onClick={() => setMenuOpen(false)}>
               Créer une campagne
             </Link>
           </Button>
@@ -190,8 +182,17 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
             href="/campaigns/new/guided"
             prefetch={false}
             className="mt-2 flex h-10 items-center justify-center rounded-[8px] border border-border bg-white px-4 text-sm font-medium text-graphite transition hover:bg-linen-canvas"
+            onClick={() => setMenuOpen(false)}
           >
-            Assistant guidé
+            Assistant de création
+          </Link>
+          <Link
+            href="/caisse"
+            prefetch={false}
+            className="okado-secondary-action mt-2 flex items-center justify-center rounded-[8px] px-4 text-sm font-semibold"
+            onClick={() => setMenuOpen(false)}
+          >
+            Valider un retrait
           </Link>
 
           {isSaasAdmin ? (
@@ -270,6 +271,7 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
               <Link
                 href="/data"
                 className="mt-3 block rounded-[4px] bg-[#f26052]/10 px-2 py-2 text-xs font-medium text-coral-alert"
+                onClick={() => setMenuOpen(false)}
               >
                 {merchantAlerts.exhaustedStockCount} lot
                 {merchantAlerts.exhaustedStockCount > 1 ? "s" : ""} epuise
@@ -281,6 +283,7 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
               <Link
                 href="/data"
                 className="mt-3 block rounded-[4px] bg-[#f59e0b]/10 px-2 py-2 text-xs font-medium text-[#a15c00]"
+                onClick={() => setMenuOpen(false)}
               >
                 Stock faible sur {merchantAlerts.lowStockCount} lot
                 {merchantAlerts.lowStockCount > 1 ? "s" : ""}
@@ -295,6 +298,7 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
                     : "/data?emailStatus=attention"
                 }
                 className="mt-3 block rounded-[4px] bg-[#f59e0b]/10 px-2 py-2 text-xs font-medium text-[#a15c00]"
+                onClick={() => setMenuOpen(false)}
               >
                 {failedRewardEmails} e-mail{failedRewardEmails > 1 ? "s" : ""} de gain à vérifier
               </Link>
