@@ -27,6 +27,12 @@ type ImmersiveScratchTicketProps = {
   logoUrl?: string;
   headline?: string;
   headingTextColor?: string;
+  headingFontClass?: string;
+  headingFontSize?: string;
+  headingFontWeight?: number;
+  headingAlignmentClass?: string;
+  logoAlignmentClass?: string;
+  logoBottomSpacingPx?: number;
   logoWidthPx?: number;
 };
 
@@ -76,20 +82,6 @@ function GiftIllustration({ color }: { color: string }) {
   );
 }
 
-function HandIllustration({ color }: { color: string }) {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 220 220" className="h-full w-full">
-      <path
-        d="M112 180c-14-4-25-13-34-26l-29-42c-5-8-2-18 6-22 6-3 13-1 17 4l18 23V55c0-9 7-16 16-16s16 7 16 16v39l6-9c5-8 16-10 23-4 4 3 7 8 7 13v34l-4 17c-5 21-22 38-42 43Z"
-        fill={color}
-        opacity=".95"
-      />
-      <path d="M104 55v52M136 103V82M166 128v-29" fill="none" stroke="#ffffff" strokeWidth="6" strokeLinecap="round" />
-      <path d="M89 42c11-16 22-22 34-22" fill="none" stroke={color} strokeWidth="7" strokeLinecap="round" opacity=".5" />
-    </svg>
-  );
-}
-
 function ScratchMark({ color }: { color: string }) {
   return (
     <svg aria-hidden="true" viewBox="0 0 420 230" className="h-full w-full">
@@ -118,14 +110,23 @@ export function ImmersiveScratchTicket({
   logoUrl,
   headline,
   headingTextColor,
+  headingFontClass,
+  headingFontWeight = 600,
+  headingAlignmentClass = "text-center",
+  logoAlignmentClass = "justify-center",
+  logoBottomSpacingPx = 32,
   logoWidthPx = 170,
+  headingFontSize = "32px",
 }: ImmersiveScratchTicketProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const drawingRef = useRef(false);
   const revealedRef = useRef(false);
+  const scratchStartedRef = useRef(false);
   const checksRef = useRef(0);
   const [revealed, setRevealed] = useState(false);
+  const [scratchStarted, setScratchStarted] = useState(false);
   const isVault = template === "scratch-vault";
+  const isConfetti = template === "scratch-confetti";
   const isCoral = template === "scratch-coral";
   const isLilac = template === "scratch-lilac";
   const isSunburst = template === "scratch-sunburst";
@@ -140,15 +141,19 @@ export function ImmersiveScratchTicket({
             ? "#f59e0b"
             : configuredPrimary
       : configuredPrimary;
-  const ink = isSunburst ? "#3b2500" : accent.ink;
-  const displayHeadline = headline?.trim() || (isSunburst ? "Bravo ! Vous avez gagné un ticket" : "Grattez pour révéler votre gain");
-  const instruction = isLilac
-    ? "Grattez la carte pour révéler votre cadeau"
-    : isCoral
-      ? "Grattez pour voir votre récompense"
+  const ticketBaseColor = isLilac ? "#b85be5" : isVault ? "#171d38" : primary;
+  const illustrationColor = blendWithWhite(ticketBaseColor, 0.48);
+  const defaultInk = isVault || isConfetti
+    ? "#f8fbff"
+    : isLilac
+      ? "#4c1d95"
       : isSunburst
-        ? "Grattez pour révéler ce que vous avez gagné !"
-        : "Grattez le ticket pour découvrir votre gain";
+        ? "#3b2500"
+        : "#111827";
+  const ink = headingTextColor || defaultInk;
+  const resolvedHeadingFontClass = headingFontClass || (isLilac ? "font-fredoka" : "font-display");
+  const displayHeadline = headline?.trim() || (isSunburst ? "Bravo ! Vous avez gagné un ticket" : "Grattez pour révéler votre gain");
+  const instruction = "Grattez la carte pour révéler votre cadeau.";
 
   const surfaceClass = isSunburst
     ? "aspect-[1.18/1] w-full"
@@ -162,12 +167,12 @@ export function ImmersiveScratchTicket({
     if (!canvas || !context) return;
 
     const gradient = context.createLinearGradient(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-    const cover = isLilac ? "#b85be5" : isCoral ? primary : isSunburst ? "#ffe28a" : isVault ? "#171d38" : primary;
-    const highlight = isLilac ? "#e2a7fa" : isSunburst ? "#fff7d3" : blendWithWhite(cover, 0.34);
+    const cover = isLilac ? "#b85be5" : isVault ? "#171d38" : primary;
+    const highlight = isLilac ? "#e2a7fa" : isSunburst ? blendWithWhite(cover, 0.2) : blendWithWhite(cover, 0.34);
     gradient.addColorStop(0, cover);
     gradient.addColorStop(0.42, highlight);
     gradient.addColorStop(0.72, cover);
-    gradient.addColorStop(1, isSunburst ? "#f7b50b" : blendWithWhite(cover, 0.08));
+    gradient.addColorStop(1, isSunburst ? blendWithWhite(cover, 0.04) : blendWithWhite(cover, 0.08));
     context.globalCompositeOperation = "source-over";
     context.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     context.fillStyle = gradient;
@@ -186,7 +191,9 @@ export function ImmersiveScratchTicket({
     context.restore();
     checksRef.current = 0;
     revealedRef.current = false;
+    scratchStartedRef.current = false;
     setRevealed(false);
+    setScratchStarted(false);
   }, [isCoral, isLilac, isSunburst, isVault, primary, resultLabel]);
 
   function reveal() {
@@ -200,6 +207,11 @@ export function ImmersiveScratchTicket({
     const canvas = canvasRef.current;
     const context = canvas?.getContext("2d");
     if (!canvas || !context || !enabled || revealedRef.current) return;
+
+    if (!scratchStartedRef.current) {
+      scratchStartedRef.current = true;
+      setScratchStarted(true);
+    }
 
     context.globalCompositeOperation = "destination-out";
     context.beginPath();
@@ -224,61 +236,64 @@ export function ImmersiveScratchTicket({
     };
   }
 
-  const rootClass = isLilac
-    ? "bg-transparent px-6 pb-8 pt-7"
-    : isCoral
-      ? "bg-transparent px-5 pb-6 pt-7"
-      : isSunburst
-        ? "bg-transparent px-0 pb-8 pt-2"
-        : "bg-[#111936] px-5 pb-6 pt-6";
-
-  const logoColor = isLilac || isSunburst ? ink : headingTextColor;
+  const rootClass = isVault || isConfetti
+    ? "bg-transparent px-5 pt-4"
+    : isLilac
+      ? "bg-transparent px-6 pt-4"
+      : isCoral
+        ? "bg-transparent px-5 pt-4"
+        : isSunburst
+          ? "bg-transparent px-0 pt-4"
+          : "bg-[#111936] px-5 pt-4";
 
   return (
     <div className="mx-auto w-full max-w-[370px]">
       <div className={`relative overflow-hidden ${rootClass}`}>
-        {isSunburst ? (
-          <div className="relative z-10 mb-4 flex items-center justify-between px-2 text-xs font-semibold" style={{ color: ink }}>
-            <span>9:41</span>
-            <span aria-hidden="true" className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-current" />
-              <span className="h-2 w-5 rounded-full border border-current" />
-            </span>
-          </div>
-        ) : null}
-        <div className="relative z-10 text-center">
-          <div className="flex justify-center">
-            <BrandMark
-              logoText={logoText || "Votre commerce"}
-              logoUrl={logoMode === "image" ? logoUrl : undefined}
-              size="sm"
-              variant="transparent"
-              imageWidthPx={Math.min(logoWidthPx, 180)}
-              textColor={logoColor}
-            />
-          </div>
-          <h2 className={`mt-5 text-2xl font-semibold leading-[1.08] ${isLilac ? "font-fredoka" : "font-display"}`} style={{ color: logoColor }}>
+        <div className={`relative z-10 ${headingAlignmentClass}`}>
+          {logoMode !== "none" ? (
+            <div className={`flex ${logoAlignmentClass}`} style={{ marginBottom: `${Math.max(0, logoBottomSpacingPx)}px` }}>
+              <BrandMark
+                logoText={logoText || "Votre commerce"}
+                logoUrl={logoMode === "image" ? logoUrl : undefined}
+                size="sm"
+                variant="transparent"
+                imageWidthPx={Math.min(logoWidthPx, 280)}
+                textClassName="text-2xl"
+                textColor={ink}
+              />
+            </div>
+          ) : null}
+          <h2
+            className={`text-2xl leading-[1.08] ${resolvedHeadingFontClass}`}
+            style={{ color: ink, fontSize: headingFontSize, fontWeight: headingFontWeight }}
+          >
             {displayHeadline}
           </h2>
-          <p className="mx-auto mt-3 max-w-[270px] text-sm leading-5" style={{ color: isLilac || isSunburst ? withAlpha(ink, "b8") : withAlpha(headingTextColor || "#ffffff", "b8") }}>
+          <p
+            className={`mx-auto mt-9 max-w-[270px] text-sm leading-5 ${headingAlignmentClass}`}
+            style={{ color: withAlpha(ink, isVault || isConfetti ? "e0" : "d9") }}
+          >
             {instruction}
           </p>
         </div>
 
-        <div className={`relative z-10 mx-auto mt-7 overflow-hidden rounded-[26px] ${surfaceClass}`}>
+        <div className={`relative z-10 mx-auto mt-8 overflow-hidden rounded-[26px] ${surfaceClass}`}>
           <div className="absolute inset-0 flex items-center justify-center p-5">
-            {isLilac ? <GiftIllustration color="#7e2bb2" /> : null}
-            {isCoral ? <HandIllustration color="#ffffff" /> : null}
-            {isSunburst ? <ScratchMark color="#ffffff" /> : null}
-            {!isLilac && !isCoral && !isSunburst ? <GiftIllustration color={primary} /> : null}
+            {isLilac ? <GiftIllustration color={illustrationColor} /> : null}
+            {!isLilac && !isCoral && !isSunburst ? <GiftIllustration color={illustrationColor} /> : null}
           </div>
+          {isSunburst && !scratchStarted && !revealed ? (
+            <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center p-6">
+              <ScratchMark color={illustrationColor} />
+            </div>
+          ) : null}
           {!revealed ? (
             <canvas
               ref={canvasRef}
               width={CANVAS_WIDTH}
               height={CANVAS_HEIGHT}
               aria-label={instruction}
-              className="relative z-20 block h-full w-full touch-none cursor-crosshair opacity-[0.78]"
+              className={`relative z-20 block h-full w-full touch-none cursor-crosshair ${isSunburst ? "opacity-100" : "opacity-[0.78]"}`}
               onPointerDown={(event) => {
                 if (!enabled) {
                   onStart?.();
@@ -313,7 +328,10 @@ export function ImmersiveScratchTicket({
           )}
         </div>
 
-        <p className="relative z-10 mt-5 text-center text-xs leading-5" style={{ color: isLilac || isSunburst ? withAlpha(ink, "b0") : "rgba(255,255,255,.68)" }}>
+        <p
+          className="relative z-10 mt-4 text-center text-sm leading-5"
+          style={{ color: withAlpha(ink, isVault || isConfetti ? "d9" : "c7") }}
+        >
           {isCoral ? "Le gain sera disponible selon les conditions de retrait." : isSunburst ? "Votre gain sera confirmé après la révélation." : "Le résultat apparaît dès que la zone est suffisamment grattée."}
         </p>
       </div>

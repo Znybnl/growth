@@ -251,11 +251,6 @@ const scratchPageTemplateOptions: Array<{
   description: string;
 }> = [
   {
-    value: "classic",
-    title: "Ticket classique",
-    description: "Le ticket historique, sobre et direct.",
-  },
-  {
     value: "scratch-vault",
     title: "Coffre néon",
     description: "Un ticket de jeu de nuit, lumineux et immersif, avec une révélation façon coffre-fort.",
@@ -891,13 +886,24 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
   const showStandardHeader = !isImmersiveScratchTemplate;
   const previewScale = compact ? 0.8 : 1;
   const scalePreviewValue = (value: number) => Math.round(value * previewScale);
-  const previewHeadingTextColor = isCosmicTemplate ? "#f8fbff" : preview.headingTextColor;
+  const previewHeadingTextColor =
+    isCosmicTemplate ||
+    (preview.gamePageTemplateId === "scratch-vault" && preview.headingTextColor.toLowerCase() === "#1f2937")
+      ? "#f8fbff"
+      : preview.headingTextColor;
   const restaurantPopHeadingLines = buildRestaurantPopHeadingLines(preview.subtitle);
+  const previewFrameClass = isImmersiveScratchTemplate
+    ? compact
+      ? "aspect-[9/16] min-h-[498px] min-w-[280px] max-w-[320px] rounded-[30px] px-3 pb-5 pt-4"
+      : "aspect-[9/16] min-h-[568px] min-w-[320px] max-w-[390px] rounded-[38px] px-4 pb-6 pt-5"
+    : compact
+      ? "min-h-[480px] max-w-[360px] rounded-[30px] px-3 pb-5 pt-7"
+      : "min-h-[600px] max-w-[450px] rounded-[38px] px-4 pb-6 pt-8";
 
   return (
     <div className={flushTop ? "" : "mt-6"}>
       <div
-        className={`mx-auto w-full overflow-hidden border border-[#ced7e6] shadow-[0_30px_70px_rgba(18,24,39,0.18)] ${compact ? "min-h-[480px] max-w-[360px] rounded-[30px] px-3 pb-5 pt-7" : "min-h-[600px] max-w-[450px] rounded-[38px] px-4 pb-6 pt-8"}`}
+        className={`mx-auto w-full overflow-hidden border border-[#ced7e6] shadow-[0_30px_70px_rgba(18,24,39,0.18)] ${previewFrameClass}`}
         style={preview.backgroundStyle}
       >
         {showStandardHeader ? (
@@ -933,7 +939,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
                 variant="transparent"
                 imageWidthPx={scalePreviewValue(preview.logoWidthPx)}
                 textColor={previewHeadingTextColor}
-                textClassName={compact ? "text-2xl" : undefined}
+                textClassName={preview.gameType === "wheel" || compact ? "text-2xl" : undefined}
               />
             </div>
           </div>
@@ -1007,7 +1013,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
               : undefined
           }
           style={{
-            marginTop: `${scalePreviewValue(preview.blockSpacingPx)}px`,
+            marginTop: `${isImmersiveScratchTemplate ? 0 : scalePreviewValue(preview.blockSpacingPx)}px`,
             height: preview.gameType === "wheel" ? compact ? "376px" : "470px" : undefined,
             marginBottom:
               preview.gameType === "wheel" ? (compact ? "-20px" : "-24px") : undefined,
@@ -1059,6 +1065,18 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
                 logoUrl={preview.logoUrl}
                 headline={preview.subtitle}
                 headingTextColor={previewHeadingTextColor}
+                headingFontClass={preview.headingFontClass}
+                headingFontSize={fluidType(scalePreviewValue(preview.headingFontSizePx), {
+                  minRatio: 0.82,
+                  maxRatio: 1.08,
+                  viewportStep: 0.3,
+                })}
+                headingFontWeight={preview.headingFontWeight}
+                headingAlignmentClass={preview.headingAlignmentClass}
+                logoAlignmentClass={preview.logoAlignmentClass}
+                logoBottomSpacingPx={scalePreviewValue(
+                  Math.max(0, preview.logoBottomSpacingPx - preview.blockSpacingPx),
+                )}
                 logoWidthPx={scalePreviewValue(preview.logoWidthPx)}
                 template={preview.gamePageTemplateId as "scratch-vault" | "scratch-confetti" | "scratch-coral" | "scratch-lilac" | "scratch-sunburst"}
               />
@@ -1436,16 +1454,20 @@ export function buildCampaignLivePreviewModel(
       ? `linear-gradient(rgba(15,23,40,0.32), rgba(15,23,40,0.52)), url("${form.presentation.background.imageUrl}")`
       : templateId === "restaurant-pop"
         ? `radial-gradient(circle at -10% -8%, ${withHexAlpha(form.presentation.wheel.loseColor, "f2")} 0 18%, transparent 19%), radial-gradient(circle at 110% 0%, ${withHexAlpha(form.presentation.wheel.winColor, "f2")} 0 13%, transparent 14%), linear-gradient(180deg, #fff2dd 0%, #fffaf1 48%, #fff4e5 100%)`
-        : templateId === "cosmic-orbit"
-          ? `radial-gradient(circle at 50% 112%, ${withHexAlpha(form.presentation.wheel.loseColor, "52")} 0 24%, transparent 43%), radial-gradient(circle at 9% 12%, ${withHexAlpha(form.presentation.wheel.winColor, "2b")} 0 14%, transparent 25%), linear-gradient(155deg, #07142e 0%, #0b1d42 55%, #071126 100%)`
-          : templateId === "sunburst-festival"
+            : templateId === "cosmic-orbit"
+              ? `radial-gradient(circle at 50% 112%, ${withHexAlpha(form.presentation.wheel.loseColor, "52")} 0 24%, transparent 43%), radial-gradient(circle at 9% 12%, ${withHexAlpha(form.presentation.wheel.winColor, "2b")} 0 14%, transparent 25%), linear-gradient(155deg, #07142e 0%, #0b1d42 55%, #071126 100%)`
+              : templateId === "scratch-vault"
+                ? `radial-gradient(circle at 50% 108%, ${withHexAlpha(form.accent.signal, "58")} 0 27%, transparent 48%), radial-gradient(circle at 15% 10%, ${withHexAlpha(form.presentation.wheel.winColor, "4d")} 0 12%, transparent 22%), linear-gradient(155deg, #071126 0%, #111b3b 56%, #071126 100%)`
+                : templateId === "scratch-confetti"
+                  ? `radial-gradient(circle at 12% 9%, ${withHexAlpha(form.accent.signal, "52")} 0 10%, transparent 11%), radial-gradient(circle at 94% 12%, ${withHexAlpha(form.presentation.wheel.winColor, "30")} 0 12%, transparent 13%), linear-gradient(180deg, #f59e0b 0%, #f97316 58%, #ea580c 100%)`
+              : templateId === "sunburst-festival"
             ? `radial-gradient(circle at 12% 10%, ${withHexAlpha(form.presentation.wheel.loseColor, "33")} 0 12%, transparent 13%), radial-gradient(circle at 94% 18%, ${withHexAlpha(form.presentation.wheel.winColor, "38")} 0 14%, transparent 15%), linear-gradient(180deg, #fffdf5 0%, #fff8e8 56%, #fff2ce 100%)`
             : templateId === "scratch-coral"
               ? `radial-gradient(circle at 50% 0%, ${withHexAlpha(form.accent.signal, "24")} 0 18%, transparent 42%), linear-gradient(180deg, #fffaf5 0%, #ffffff 72%, #fff3e8 100%)`
               : templateId === "scratch-lilac"
                 ? `radial-gradient(circle at 50% 0%, ${withHexAlpha(form.accent.signal, "2c")} 0 20%, transparent 44%), linear-gradient(180deg, #fffaff 0%, #f7edff 100%)`
                 : templateId === "scratch-sunburst"
-                  ? `repeating-conic-gradient(from -18deg at 50% -2%, ${withHexAlpha(form.accent.signal, "1c")} 0deg 12deg, transparent 12deg 24deg), linear-gradient(180deg, #fff8d7 0%, #fff1b8 68%, #fff7e7 100%)`
+                  ? `repeating-conic-gradient(from -18deg at 50% -2%, ${withHexAlpha(form.accent.signal, "52")} 0deg 12deg, transparent 12deg 24deg), linear-gradient(180deg, #fff4bf 0%, #ffdc58 68%, #fff0c5 100%)`
             : "";
 
   return {
@@ -1676,8 +1698,12 @@ export function CampaignEditor({
             ? `linear-gradient(rgba(15,23,40,0.32), rgba(15,23,40,0.52)), url("${form.presentation.background.imageUrl}")`
             : (form.presentation.layout.templateId ?? "classic") === "restaurant-pop"
               ? `radial-gradient(circle at -10% -8%, ${withHexAlpha(form.presentation.wheel.loseColor, "f2")} 0 18%, transparent 19%), radial-gradient(circle at 110% 0%, ${withHexAlpha(form.presentation.wheel.winColor, "f2")} 0 13%, transparent 14%), linear-gradient(180deg, #fff2dd 0%, #fffaf1 48%, #fff4e5 100%)`
-              : (form.presentation.layout.templateId ?? "classic") === "cosmic-orbit"
-                ? `radial-gradient(circle at 50% 112%, ${withHexAlpha(form.presentation.wheel.loseColor, "52")} 0 24%, transparent 43%), radial-gradient(circle at 9% 12%, ${withHexAlpha(form.presentation.wheel.winColor, "2b")} 0 14%, transparent 25%), linear-gradient(155deg, #07142e 0%, #0b1d42 55%, #071126 100%)`
+                : (form.presentation.layout.templateId ?? "classic") === "cosmic-orbit"
+                  ? `radial-gradient(circle at 50% 112%, ${withHexAlpha(form.presentation.wheel.loseColor, "52")} 0 24%, transparent 43%), radial-gradient(circle at 9% 12%, ${withHexAlpha(form.presentation.wheel.winColor, "2b")} 0 14%, transparent 25%), linear-gradient(155deg, #07142e 0%, #0b1d42 55%, #071126 100%)`
+                : (form.presentation.layout.templateId ?? "classic") === "scratch-vault"
+                  ? `radial-gradient(circle at 50% 108%, ${withHexAlpha(form.accent.signal, "58")} 0 27%, transparent 48%), radial-gradient(circle at 15% 10%, ${withHexAlpha(form.presentation.wheel.winColor, "4d")} 0 12%, transparent 22%), linear-gradient(155deg, #071126 0%, #111b3b 56%, #071126 100%)`
+                : (form.presentation.layout.templateId ?? "classic") === "scratch-confetti"
+                  ? `radial-gradient(circle at 12% 9%, ${withHexAlpha(form.accent.signal, "52")} 0 10%, transparent 11%), radial-gradient(circle at 94% 12%, ${withHexAlpha(form.presentation.wheel.winColor, "30")} 0 12%, transparent 13%), linear-gradient(180deg, #f59e0b 0%, #f97316 58%, #ea580c 100%)`
                 : (form.presentation.layout.templateId ?? "classic") === "sunburst-festival"
                   ? `radial-gradient(circle at 12% 10%, ${withHexAlpha(form.presentation.wheel.loseColor, "33")} 0 12%, transparent 13%), radial-gradient(circle at 94% 18%, ${withHexAlpha(form.presentation.wheel.winColor, "38")} 0 14%, transparent 15%), linear-gradient(180deg, #fffdf5 0%, #fff8e8 56%, #fff2ce 100%)`
                   : (form.presentation.layout.templateId ?? "classic") === "scratch-coral"
@@ -1685,7 +1711,7 @@ export function CampaignEditor({
                     : (form.presentation.layout.templateId ?? "classic") === "scratch-lilac"
                       ? `radial-gradient(circle at 50% 0%, ${withHexAlpha(form.accent.signal, "2c")} 0 20%, transparent 44%), linear-gradient(180deg, #fffaff 0%, #f7edff 100%)`
                       : (form.presentation.layout.templateId ?? "classic") === "scratch-sunburst"
-                        ? `repeating-conic-gradient(from -18deg at 50% -2%, ${withHexAlpha(form.accent.signal, "1c")} 0deg 12deg, transparent 12deg 24deg), linear-gradient(180deg, #fff8d7 0%, #fff1b8 68%, #fff7e7 100%)`
+                        ? `repeating-conic-gradient(from -18deg at 50% -2%, ${withHexAlpha(form.accent.signal, "52")} 0deg 12deg, transparent 12deg 24deg), linear-gradient(180deg, #fff4bf 0%, #ffdc58 68%, #fff0c5 100%)`
                   : "",
         backgroundPosition: "center",
         backgroundSize: "cover",
@@ -1935,6 +1961,15 @@ function setGameType(gameType: GameType) {
         gameType,
         presentation: {
           ...current.presentation,
+          heading: {
+            ...current.presentation.heading,
+            fontSizePx:
+              gameType === "scratch" && current.presentation.heading.fontSizePx === 40
+                ? 32
+                : gameType === "wheel" && current.presentation.heading.fontSizePx === 32
+                  ? 40
+                  : current.presentation.heading.fontSizePx,
+          },
           layout: {
             ...current.presentation.layout,
             templateId:
@@ -2562,7 +2597,13 @@ function setGameType(gameType: GameType) {
                 Template de page de jeu
               </p>
               <div className="mt-3 grid gap-3 md:grid-cols-2">
-                {(form.gameType === "wheel" ? wheelPageTemplateOptions : scratchPageTemplateOptions).map((template) => {
+                {(form.gameType === "wheel"
+                  ? wheelPageTemplateOptions
+                  : [
+                      ...scratchPageTemplateOptions.filter((template) => template.value === "scratch-coral"),
+                      ...scratchPageTemplateOptions.filter((template) => template.value !== "scratch-coral"),
+                    ]
+                ).map((template) => {
                   const active =
                     (form.presentation.layout.templateId ?? "classic") === template.value;
 

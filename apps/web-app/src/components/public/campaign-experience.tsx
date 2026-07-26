@@ -658,15 +658,15 @@ export function CampaignExperience({
     campaign.presentation.background.imageUrl
       ? `linear-gradient(rgba(0,0,0,0.08), rgba(0,0,0,0.18)), url("${campaign.presentation.background.imageUrl}")`
       : isScratchVaultTemplate
-        ? `radial-gradient(circle at 50% 108%, ${withHexAlpha(primaryColor, "38")} 0 27%, transparent 48%), radial-gradient(circle at 15% 10%, ${withHexAlpha(secondaryColor, "4d")} 0 12%, transparent 22%), linear-gradient(155deg, #071126 0%, #111b3b 56%, #071126 100%)`
+        ? `radial-gradient(circle at 50% 108%, ${withHexAlpha(primaryColor, "58")} 0 27%, transparent 48%), radial-gradient(circle at 15% 10%, ${withHexAlpha(secondaryColor, "4d")} 0 12%, transparent 22%), linear-gradient(155deg, #071126 0%, #111b3b 56%, #071126 100%)`
         : isScratchConfettiTemplate
-          ? `radial-gradient(circle at 12% 9%, ${withHexAlpha(primaryColor, "2b")} 0 10%, transparent 11%), radial-gradient(circle at 94% 12%, ${withHexAlpha(secondaryColor, "18")} 0 12%, transparent 13%), linear-gradient(180deg, #fffdf7 0%, #fff8ea 60%, #fff1cf 100%)`
+          ? `radial-gradient(circle at 12% 9%, ${withHexAlpha(primaryColor, "52")} 0 10%, transparent 11%), radial-gradient(circle at 94% 12%, ${withHexAlpha(secondaryColor, "30")} 0 12%, transparent 13%), linear-gradient(180deg, #f59e0b 0%, #f97316 58%, #ea580c 100%)`
         : isScratchCoralTemplate
           ? `radial-gradient(circle at 50% 0%, ${withHexAlpha(primaryColor, "24")} 0 18%, transparent 42%), linear-gradient(180deg, #fffaf5 0%, #ffffff 72%, #fff3e8 100%)`
         : isScratchLilacTemplate
           ? `radial-gradient(circle at 50% 0%, ${withHexAlpha(primaryColor, "2c")} 0 20%, transparent 44%), linear-gradient(180deg, #fffaff 0%, #f7edff 100%)`
         : isScratchSunburstTemplate
-          ? `repeating-conic-gradient(from -18deg at 50% -2%, ${withHexAlpha(primaryColor, "1c")} 0deg 12deg, transparent 12deg 24deg), linear-gradient(180deg, #fff8d7 0%, #fff1b8 68%, #fff7e7 100%)`
+          ? `repeating-conic-gradient(from -18deg at 50% -2%, ${withHexAlpha(primaryColor, "52")} 0deg 12deg, transparent 12deg 24deg), linear-gradient(180deg, #fff4bf 0%, #ffdc58 68%, #fff0c5 100%)`
         : isCosmicTemplate
         ? `radial-gradient(circle at 50% 112%, ${withHexAlpha(primaryColor, "52")} 0 24%, transparent 43%), radial-gradient(circle at 9% 12%, ${withHexAlpha(secondaryColor, "2b")} 0 14%, transparent 25%), linear-gradient(155deg, #07142e 0%, #0b1d42 55%, #071126 100%)`
         : isSunburstTemplate
@@ -686,6 +686,7 @@ export function CampaignExperience({
     viewportStep: 0.24,
   });
   const publicCtaLabel = campaign.ctaLabel?.trim() || "Jouer";
+  const pageTopPaddingClass = isImmersiveScratchTemplate ? "pt-5 sm:pt-6" : "pt-12 sm:pt-14";
 
   return (
     <div
@@ -712,10 +713,10 @@ export function CampaignExperience({
           />
         </div>
       ) : null}
-      <div className="relative mx-auto flex h-screen w-full flex-col overflow-hidden px-4 pb-0 pt-12 sm:px-6 sm:pt-14">
-        {(campaign.logoMode === "image" && campaign.logoUrl) ||
+      <div className={`relative mx-auto flex h-screen w-full flex-col overflow-hidden px-4 pb-0 sm:px-6 ${pageTopPaddingClass}`}>
+        {!isImmersiveScratchTemplate && ((campaign.logoMode === "image" && campaign.logoUrl) ||
         campaign.logoMode === "text" ||
-        campaign.gameType === "scratch" && !isImmersiveScratchTemplate ? (
+        campaign.gameType === "scratch") ? (
           <div className={`flex ${logoAlignmentClass}`}>
             <div style={{ marginBottom: `${campaign.presentation.logo.marginBottomPx}px` }}>
               <BrandMark
@@ -724,6 +725,7 @@ export function CampaignExperience({
                 size="lg"
                 variant="transparent"
                 imageWidthPx={logoWidthPx}
+                textClassName={campaign.gameType === "wheel" ? "text-2xl" : undefined}
                 textColor={headingTextColor}
               />
             </div>
@@ -822,7 +824,7 @@ export function CampaignExperience({
             </div>
           </div>
         ) : (
-          <div className="mt-[40px] sm:mt-20 lg:mt-8">
+          <div className={isImmersiveScratchTemplate ? "mt-0" : "mt-[40px] sm:mt-20 lg:mt-8"}>
             {isImmersiveScratchTemplate ? (
               <ImmersiveScratchTicket
                 key={`${campaign.id}-${drawSession?.id ?? "idle"}`}
@@ -836,6 +838,12 @@ export function CampaignExperience({
                 logoUrl={campaign.logoUrl}
                 headline={campaign.subtitle}
                 headingTextColor={headingTextColor}
+                headingFontClass={headingFontClass}
+                headingFontSize={headingFontSize}
+                headingFontWeight={campaign.presentation.heading.fontWeight ?? 600}
+                headingAlignmentClass={headingAlignmentClass}
+                logoAlignmentClass={logoAlignmentClass}
+                logoBottomSpacingPx={campaign.presentation.logo.marginBottomPx}
                 logoWidthPx={logoWidthPx}
                 template={pageTemplate as "scratch-vault" | "scratch-confetti" | "scratch-coral" | "scratch-lilac" | "scratch-sunburst"}
               />

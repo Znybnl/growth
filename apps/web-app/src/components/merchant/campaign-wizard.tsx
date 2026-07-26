@@ -1012,6 +1012,15 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                         gameType: option.value,
                         presentation: {
                           ...draft.presentation,
+                          heading: {
+                            ...draft.presentation.heading,
+                            fontSizePx:
+                              option.value === "scratch" && draft.presentation.heading.fontSizePx === 40
+                                ? 32
+                                : option.value === "wheel" && draft.presentation.heading.fontSizePx === 32
+                                  ? 40
+                                  : draft.presentation.heading.fontSizePx,
+                          },
                           layout: {
                             ...draft.presentation.layout,
                             templateId:
@@ -1448,7 +1457,6 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                 {(
                   draft.gameType === "scratch"
                     ? [
-                        { id: "classic", label: "Ticket classique", text: "Sobre et direct" },
                         { id: "scratch-vault", label: "Coffre néon", text: "Nocturne et immersif" },
                         { id: "scratch-confetti", label: "Carte confettis", text: "Solaire et festif" },
                         { id: "scratch-coral", label: "Corail joyeux", text: "Clair et chaleureux" },
@@ -1477,7 +1485,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                       text: "Festif et lumineux",
                     },
                       ] as const
-                ).map((template) => (
+                ).slice().sort((left, right) => (left.id === "scratch-coral" ? -1 : right.id === "scratch-coral" ? 1 : 0)).map((template) => (
                   <button
                     type="button"
                     key={template.id}
