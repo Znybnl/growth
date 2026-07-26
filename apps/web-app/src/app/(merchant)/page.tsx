@@ -88,7 +88,7 @@ export default async function DashboardPage({
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-3 xl:items-end xl:justify-end">
+          <div className="okado-action-row flex flex-wrap items-center gap-3 xl:items-end xl:justify-end">
             {session.locations.length > 1 ? (
               <Link
                 href={isWorkspaceView ? "/" : "/?scope=all"}
