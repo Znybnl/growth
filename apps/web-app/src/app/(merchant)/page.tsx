@@ -119,8 +119,8 @@ export default async function DashboardPage({
         {[
           ["Campagnes actives", String(activeCampaigns.length)],
           [
-            "Leads totaux",
-            String(filteredCampaigns.reduce((total, item) => total + item.kpis.leads, 0)),
+            "Contacts totaux",
+            String(filteredCampaigns.reduce((total, item) => total + item.kpis.contacts, 0)),
           ],
           [
             "Lots retirés",
@@ -182,7 +182,7 @@ export default async function DashboardPage({
                 <span>Campagne</span>
                 <span>Mécanique</span>
                 <span>Scans</span>
-                <span>Lead</span>
+                <span>Contacts</span>
                 <span>Conversion</span>
                 <span className="sr-only">Actions</span>
               </div>
@@ -217,7 +217,7 @@ export default async function DashboardPage({
                   </div>
                   <span className="text-[#556173]">{gameTypeLabel(item.campaign.gameType)}</span>
                   <span className="font-semibold text-graphite">{item.kpis.scans}</span>
-                  <span className="font-semibold text-graphite">{item.kpis.leads}</span>
+                  <span className="font-semibold text-graphite">{item.kpis.contacts}</span>
                   <span className="font-semibold text-graphite">
                     {formatPercent(item.kpis.conversionRate)}
                   </span>
@@ -270,9 +270,9 @@ export default async function DashboardPage({
                     </div>
                     <div className="rounded-[8px] bg-white px-3 py-3">
                       <p className="text-[11px] uppercase tracking-[0.18em] text-[#7c8597]">
-                        Leads
+                        Contacts
                       </p>
-                      <p className="mt-2 font-semibold text-[#111827]">{item.kpis.leads}</p>
+                      <p className="mt-2 font-semibold text-[#111827]">{item.kpis.contacts}</p>
                     </div>
                     <div className="rounded-[8px] bg-white px-3 py-3">
                       <p className="text-[11px] uppercase tracking-[0.18em] text-[#7c8597]">
@@ -298,13 +298,13 @@ export default async function DashboardPage({
               </h2>
               <div className="mt-5 grid gap-4 sm:grid-cols-2">
                 <div className="rounded-[8px] bg-linen-canvas p-4">
-                  <p className="text-sm text-[#7b8496]">Conversion scan → lead</p>
+                  <p className="text-sm text-[#7b8496]">Conversion scan → contact</p>
                   <p className="mt-2 text-3xl font-semibold text-[#111827]">
                     {formatPercent(bestCampaign.kpis.conversionRate)}
                   </p>
                 </div>
                 <div className="rounded-[8px] bg-linen-canvas p-4">
-                  <p className="text-sm text-[#7b8496]">Coût par lead</p>
+                  <p className="text-sm text-[#7b8496]">Coût par contact</p>
                   <p className="mt-2 text-3xl font-semibold text-[#111827]">
                     {formatCurrency(bestCampaign.kpis.costPerLead)}
                   </p>
@@ -320,7 +320,7 @@ export default async function DashboardPage({
                   Dernières saisies
                 </p>
                 <h2 className="okado-section-title mt-2">
-                  Leads récents
+                  Contacts récents
                 </h2>
               </div>
               <Link href="/data" prefetch={false} className="okado-link text-sm">
@@ -356,4 +356,5 @@ export default async function DashboardPage({
     </div>
   );
 }
+
 
