@@ -38,7 +38,7 @@ export function formatShortDate(value: string) {
 export function goalLabel(goalType: GoalType) {
   switch (goalType) {
     case "lead_capture":
-      return "Collecte CRM";
+      return "Collecte email";
     case "review_prompt":
       return "Avis Google";
     case "social_follow":
@@ -55,7 +55,7 @@ export function goalDescription(goalType: GoalType) {
     case "social_follow":
       return "Visite du canal social puis participation.";
     case "lead_capture":
-      return "Participation directe après opt-in.";
+      return "Coordonnées collectées après le jeu ; consentement marketing distinct et optionnel.";
     default:
       return "Activation locale.";
   }
@@ -246,3 +246,4 @@ export function buttonSizeLabel(size: ButtonSize) {
       return "Moyen";
   }
 }
+
