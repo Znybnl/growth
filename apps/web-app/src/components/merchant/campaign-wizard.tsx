@@ -20,7 +20,13 @@ import {
   Trash2,
   UtensilsCrossed,
 } from "lucide-react";
-import { type ReactNode, useEffect, useMemo, useState } from "react";
+import {
+  type ChangeEvent,
+  type ReactNode,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 import { BrandMark } from "@/components/brand-mark";
 import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
@@ -190,6 +196,27 @@ function createWizardActions(
         "wizard-facebook-action",
         "facebook",
         wizardActionUrl(merchant, "facebook"),
+      ),
+    ];
+  }
+
+  if (goalType === "lead_capture") {
+    const instagramUrl = merchant.instagramUrl?.trim();
+    return [
+      createWizardAction("wizard-crm-action", "crm", ""),
+      ...(instagramUrl
+        ? [
+            createWizardAction(
+              "wizard-instagram-action",
+              "instagram",
+              instagramUrl,
+            ),
+          ]
+        : []),
+      createWizardAction(
+        "wizard-google-action",
+        "google",
+        wizardActionUrl(merchant, "google"),
       ),
     ];
   }
@@ -579,6 +606,28 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
     setError(null);
   }
 
+  function handleLogoUpload(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setError("Choisissez un fichier image pour le logo.");
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      setError("Le logo doit peser moins de 2 Mo.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        patchDraft({ logoMode: "image", logoUrl: reader.result });
+      }
+    };
+    reader.onerror = () => setError("Le logo n’a pas pu être chargé.");
+    reader.readAsDataURL(file);
+  }
+
   function patchAction(
     index: number,
     patch: Partial<WizardDraft["actions"][number]>,
@@ -903,65 +952,36 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                   className="mt-3 w-full resize-none rounded-[16px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm leading-6 text-[#182033] outline-none transition focus:border-[#b28719] focus:ring-4 focus:ring-[#f4c14a]/15"
                 />
               </label>
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-4">
                 <label className="block">
                   <span className="text-sm font-semibold text-[#182033]">
                     Objectif
                   </span>
-                  <select
-                    value={draft.goalType}
-                    onChange={(event) => {
-                      const goalType = event.target
-                        .value as WizardDraft["goalType"];
-                      const actionKind =
-                        goalType === "social_follow"
-                          ? "instagram"
-                          : goalType === "lead_capture"
-                            ? "crm"
-                            : "google";
-                      patchDraft({
-                        goalType,
-                        successMetric:
+                    <select
+                      value={draft.goalType}
+                      onChange={(event) => {
+                        const goalType = event.target
+                          .value as WizardDraft["goalType"];
+                        patchDraft({
+                          goalType,
+                          successMetric:
                           goalType === "social_follow"
                             ? "Abonnements sociaux"
                             : goalType === "lead_capture"
                               ? "Leads collectés"
                               : "Avis Google",
-                        actions: [
-                          {
-                            ...(draft.actions[0] ?? {
-                              id: "wizard-action",
-                              url: "",
-                            }),
-                            kind: actionKind,
-                            label: actionKindCta(actionKind),
-                            url:
-                              goalType === "review_prompt"
-                                ? merchant.googleReviewUrl ||
-                                  "https://google.com"
-                                : "",
-                          },
-                        ],
-                      });
-                    }}
-                    className="mt-3 w-full rounded-[16px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm text-[#182033]"
+                        });
+                      }}
+                      className="mt-3 w-full rounded-[16px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm text-[#182033]"
                   >
                     <option value="review_prompt">Obtenir des avis</option>
                     <option value="lead_capture">Collecter des contacts</option>
                     <option value="social_follow">Gagner des abonnés</option>
                   </select>
-                </label>
-                <label className="block">
-                  <span className="text-sm font-semibold text-[#182033]">
-                    Texte du bouton de jeu
+                  <span className="mt-2 block text-xs leading-5 text-[#8993a6]">
+                    Cet objectif nous permet de proposer par défaut des actions,
+                    que vous pourrez modifier à l’étape 4.
                   </span>
-                  <input
-                    value={draft.ctaLabel}
-                    onChange={(event) =>
-                      patchDraft({ ctaLabel: event.target.value })
-                    }
-                    className="mt-3 w-full rounded-[16px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm text-[#182033]"
-                  />
                 </label>
               </div>
             </div>
@@ -1332,7 +1352,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                         </button>
                       </div>
                     </div>
-                    <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                    <div className="mt-4 grid gap-4">
                       <label className="block">
                         <span className="flex items-center gap-3 text-sm font-semibold text-[#182033]">
                           <SocialChannelIcon channel={action.kind} />
@@ -1371,18 +1391,6 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                           </option>
                         </select>
                       </label>
-                      <label className="block">
-                        <span className="text-sm font-semibold text-[#182033]">
-                          Texte du bouton
-                        </span>
-                        <input
-                          value={action.label}
-                          onChange={(event) =>
-                            patchAction(index, { label: event.target.value })
-                          }
-                          className="mt-3 w-full rounded-[14px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3 text-sm text-[#182033]"
-                        />
-                      </label>
                     </div>
                     {action.kind !== "crm" ? (
                       <label className="mt-4 block">
@@ -1420,7 +1428,8 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
 
           {step.id === "appearance" ? (
             <div className="mt-7 space-y-5">
-              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              {draft.gameType !== "scratch" ? (
+                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 {(
                   [
                     {
@@ -1469,7 +1478,8 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                     </span>
                   </button>
                 ))}
-              </div>
+                </div>
+              ) : null}
               <div className="grid gap-4 sm:grid-cols-2">
                 <label className="block">
                   <span className="text-sm font-semibold text-[#182033]">
@@ -1534,6 +1544,20 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                   Nous utiliserons le logo du commerce si vous en avez déjà
                   configuré un.
                 </p>
+                <label className="mt-4 block cursor-pointer">
+                  <span className="text-sm font-semibold text-[#182033]">
+                    Charger un logo
+                  </span>
+                  <input
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp,image/gif"
+                    onChange={handleLogoUpload}
+                    className="mt-3 block w-full cursor-pointer rounded-[14px] border border-dashed border-[#b8c5d8] bg-white px-3 py-3 text-sm text-[#526078] file:mr-3 file:rounded-[10px] file:border-0 file:bg-[#eef2ff] file:px-3 file:py-2 file:text-sm file:font-semibold file:text-[#182033]"
+                  />
+                  <span className="mt-2 block text-xs text-[#8993a6]">
+                    PNG, JPG, WEBP ou GIF · 2 Mo maximum.
+                  </span>
+                </label>
                 <div className="mt-4 flex min-w-0 items-center gap-3 rounded-[14px] border border-[#dbe3ed] bg-white px-3 py-2.5">
                   {draft.logoUrl ? (
                     <>
