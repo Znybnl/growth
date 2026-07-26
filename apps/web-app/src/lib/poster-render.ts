@@ -383,12 +383,14 @@ function renderWheel(template: TemplateConfig, poster: CampaignPosterSettings, p
   `;
 }
 
-function renderScratch(template: TemplateConfig) {
+function renderScratch(template: TemplateConfig, poster: CampaignPosterSettings) {
+  const family = fontFamily(poster.headlineFontFamily);
+
   return `
     <g filter="url(#posterShadow)" transform="translate(92 520) rotate(-4 305 170)">
       <rect x="0" y="0" width="610" height="330" rx="34" fill="#ffffff" stroke="${template.accent}" stroke-width="8"/>
       <rect x="34" y="62" width="542" height="178" rx="28" fill="url(#scratchMetal)"/>
-      <text x="305" y="162" text-anchor="middle" fill="${template.accentDark}" font-family="${SAFE_FONT}" font-size="44" font-weight="900">GRATTEZ ICI</text>
+      <text x="305" y="162" text-anchor="middle" fill="${template.accentDark}" font-family="${family}" font-size="44" font-weight="900">GRATTEZ ICI</text>
       <text x="305" y="286" text-anchor="middle" fill="${template.accent}" font-family="${SAFE_FONT}" font-size="28" font-weight="900">DÉCOUVREZ VOTRE CADEAU</text>
     </g>
   `;
@@ -465,7 +467,7 @@ export function buildPosterSvg(args: {
     qrFrame: poster.wheel.winColor || baseTemplate.qrFrame,
   };
   const gameMarkup =
-    campaign.gameType === "wheel" ? renderWheel(template, poster, prizes) : renderScratch(template);
+    campaign.gameType === "wheel" ? renderWheel(template, poster, prizes) : renderScratch(template, poster);
   return `<?xml version="1.0" encoding="UTF-8"?>
     <svg xmlns="http://www.w3.org/2000/svg" width="${A4_WIDTH}" height="${A4_HEIGHT}" viewBox="0 0 ${A4_WIDTH} ${A4_HEIGHT}">
       <defs>

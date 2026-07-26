@@ -187,7 +187,10 @@ function applyTemplateDefaults(
 
 export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
   const router = useRouter();
-  const campaignPrimaryColor = campaign.presentation.wheel.loseColor;
+  const campaignPrimaryColor =
+    campaign.gameType === "scratch"
+      ? campaign.accent.signal
+      : campaign.presentation.wheel.loseColor;
   const campaignGainColor = campaign.presentation.wheel.winColor;
   const [poster, setPoster] = useState<CampaignPosterSettings>(() => {
     const normalizedPoster = normalizePosterSettings(
@@ -205,7 +208,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
         headline: campaign.subtitle,
         headlineTextColor: campaignGainColor,
         headlineFontSizePx: 50,
-        headlineFontFamily: "display",
+        headlineFontFamily: campaign.presentation.heading.fontFamily,
         wheel: {
           ...posterTemplates[0].wheel,
           winColor: campaignPrimaryColor,
@@ -223,7 +226,8 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
         Boolean(storedWinColor) &&
         !isTemplateDefaultWinColor(storedWinColor) &&
         storedWinColor !== campaignPrimaryColor &&
-        storedWinColor !== campaignGainColor;
+        storedWinColor !== campaignGainColor &&
+        storedWinColor !== campaign.presentation.wheel.loseColor;
       const hasCustomHeadlineTextColor =
         Boolean(storedHeadlineTextColor) &&
         storedHeadlineTextColor !== template.headlineTextColor &&
@@ -232,6 +236,10 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
       return applyTemplateDefaults(
         {
           ...normalizedPoster,
+          headlineFontFamily:
+            campaign.gameType === "scratch"
+              ? campaign.presentation.heading.fontFamily
+              : normalizedPoster.headlineFontFamily,
           headlineTextColor: hasCustomHeadlineTextColor
             ? normalizedPoster.headlineTextColor
             : campaignGainColor,
