@@ -225,12 +225,12 @@ export function ImmersiveScratchTicket({
   }
 
   const rootClass = isLilac
-    ? "rounded-[42px] border-[7px] border-[#1d1721] bg-[#fbf0ff] px-6 pb-8 pt-7 shadow-[0_28px_70px_rgba(84,42,112,0.22)]"
+    ? "bg-[#fbf0ff] px-6 pb-8 pt-7"
     : isCoral
-      ? "rounded-[28px] border border-[#e8e9ef] bg-white px-5 pb-6 pt-7 shadow-[0_24px_60px_rgba(31,41,55,0.12)]"
+      ? "bg-white px-5 pb-6 pt-7"
       : isSunburst
-        ? "rounded-[34px] border border-[#d97706]/60 bg-[#ffbe18] px-5 pb-8 pt-8 shadow-[0_26px_65px_rgba(180,101,0,0.28)]"
-        : "rounded-[30px] border border-[#33426d] bg-[#111936] px-5 pb-6 pt-6 shadow-[0_28px_70px_rgba(15,23,42,0.24)]";
+        ? "bg-[#ffbe18] px-5 pb-8 pt-8"
+        : "bg-[#111936] px-5 pb-6 pt-6";
 
   const logoColor = isLilac || isSunburst ? ink : headingTextColor;
 
