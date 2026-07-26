@@ -225,11 +225,11 @@ export function ImmersiveScratchTicket({
   }
 
   const rootClass = isLilac
-    ? "bg-[#fbf0ff] px-6 pb-8 pt-7"
+    ? "bg-transparent px-6 pb-8 pt-7"
     : isCoral
-      ? "bg-white px-5 pb-6 pt-7"
+      ? "bg-transparent px-5 pb-6 pt-7"
       : isSunburst
-        ? "bg-[#ffbe18] px-5 pb-8 pt-8"
+        ? "bg-transparent px-0 pb-8 pt-2"
         : "bg-[#111936] px-5 pb-6 pt-6";
 
   const logoColor = isLilac || isSunburst ? ink : headingTextColor;
@@ -238,7 +238,13 @@ export function ImmersiveScratchTicket({
     <div className="mx-auto w-full max-w-[370px]">
       <div className={`relative overflow-hidden ${rootClass}`}>
         {isSunburst ? (
-          <div aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-70" style={{ background: `repeating-conic-gradient(from -18deg at 50% -4%, rgba(255,255,255,.2) 0deg 12deg, transparent 12deg 24deg)` }} />
+          <div className="relative z-10 mb-4 flex items-center justify-between px-2 text-xs font-semibold" style={{ color: ink }}>
+            <span>9:41</span>
+            <span aria-hidden="true" className="flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-current" />
+              <span className="h-2 w-5 rounded-full border border-current" />
+            </span>
+          </div>
         ) : null}
         <div className="relative z-10 text-center">
           <div className="flex justify-center">
@@ -272,7 +278,7 @@ export function ImmersiveScratchTicket({
               width={CANVAS_WIDTH}
               height={CANVAS_HEIGHT}
               aria-label={instruction}
-              className="relative z-20 block h-full w-full touch-none cursor-crosshair"
+              className="relative z-20 block h-full w-full touch-none cursor-crosshair opacity-[0.78]"
               onPointerDown={(event) => {
                 if (!enabled) {
                   onStart?.();
