@@ -11,6 +11,7 @@ import {
   ChevronUp,
   CirclePlus,
   Coffee,
+  Download,
   Gift,
   Plus,
   ShieldCheck,
@@ -753,7 +754,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
           Votre campagne est prête. Prévisualisez-la, téléchargez son QR code
           ou préparez son affiche.
         </p>
-        <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="okado-action-row mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <Link
             href={`/campaign/${savedCampaignId}?preview=1`}
             target="_blank"
@@ -770,9 +771,10 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
           <a
             href={`/api/campaigns/${savedCampaignId}/qr`}
             download
-            className="okado-secondary-action px-4 text-sm"
+            className="okado-secondary-action gap-2 px-4 text-sm"
           >
-            Télécharger le QR code
+            <Download className="h-4 w-4" />
+            QR code
           </a>
           <Link
             href={`/campaigns/${savedCampaignId}/poster`}
