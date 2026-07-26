@@ -1014,7 +1014,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                   </div>
                   <ShieldCheck className="h-5 w-5 text-[#18864b]" />
                 </div>
-                <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   <label className="flex items-start gap-3 rounded-[16px] border border-[#e2e8f0] bg-white p-4 text-sm text-[#182033]">
                     <input
                       type="checkbox"
@@ -1060,6 +1060,29 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                       <span className="mt-1 block text-xs leading-5 text-[#7a8498]">
                         La caisse demandera une confirmation d’achat avant de
                         remettre le lot.
+                      </span>
+                    </span>
+                  </label>
+                  <label className="flex items-start gap-3 rounded-[16px] border border-[#e2e8f0] bg-white p-4 text-sm text-[#182033]">
+                    <input
+                      type="checkbox"
+                      checked={draft.rewardRules.availableAfterHours > 0}
+                      onChange={(event) =>
+                        patchDraft({
+                          rewardRules: {
+                            ...draft.rewardRules,
+                            availableAfterHours: event.target.checked ? 24 : 0,
+                          },
+                        })
+                      }
+                      className="mt-0.5 h-4 w-4 accent-[#b28719]"
+                    />
+                    <span>
+                      <span className="block font-semibold">
+                        Lot disponible lors d&apos;une prochaine visite
+                      </span>
+                      <span className="mt-1 block text-xs leading-5 text-[#7a8498]">
+                        Le lot sera disponible 24 h après la participation, à partir du lendemain.
                       </span>
                     </span>
                   </label>
