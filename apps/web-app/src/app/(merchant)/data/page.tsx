@@ -441,10 +441,11 @@ export default async function DataPage({ searchParams }: DataPageProps) {
         </div>
       </section>
 
-      <section className="grid gap-4 md:grid-cols-3 xl:grid-cols-5">
+      <section className="grid gap-4 md:grid-cols-3 xl:grid-cols-6">
         {[
           ["Scans", String(dataView.performance.kpis.scans)],
-          ["Leads", String(dataView.performance.kpis.leads)],
+          ["Contacts", String(dataView.performance.kpis.contacts)],
+          ["Opt-ins", String(dataView.performance.kpis.optIns)],
           ["Conversion", formatPercent(dataView.performance.kpis.conversionRate)],
           ["Lots retirés", String(dataView.performance.kpis.redeemed)],
           ["Coût / lead", formatCurrency(dataView.performance.kpis.costPerLead)],
@@ -498,9 +499,14 @@ export default async function DataPage({ searchParams }: DataPageProps) {
                   width: performanceWidth(dataView.performance.kpis.scans),
                 },
                 {
-                  label: "Leads créés",
-                  value: dataView.performance.kpis.leads,
-                  width: performanceWidth(dataView.performance.kpis.leads),
+                  label: "Contacts collectés",
+                  value: dataView.performance.kpis.contacts,
+                  width: performanceWidth(dataView.performance.kpis.contacts),
+                },
+                {
+                  label: "Opt-ins marketing",
+                  value: dataView.performance.kpis.optIns,
+                  width: performanceWidth(dataView.performance.kpis.optIns),
                 },
                 {
                   label: "Lots retirés",
@@ -640,3 +646,4 @@ export default async function DataPage({ searchParams }: DataPageProps) {
     </div>
   );
 }
+
