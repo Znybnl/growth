@@ -261,6 +261,21 @@ const scratchPageTemplateOptions: Array<{
     description: "Un ticket de jeu de nuit, lumineux et immersif, avec une révélation façon coffre-fort.",
   },
   {
+    value: "scratch-coral",
+    title: "Corail joyeux",
+    description: "Une carte claire avec un espace de révélation orange, inspirée des tickets cadeaux.",
+  },
+  {
+    value: "scratch-lilac",
+    title: "Cadeau lilas",
+    description: "Un univers violet doux avec un cadeau au centre, pour une expérience complice.",
+  },
+  {
+    value: "scratch-sunburst",
+    title: "Rayons soleil",
+    description: "Un ticket jaune éclatant avec des rayons graphiques et une révélation très visible.",
+  },
+  {
     value: "scratch-confetti",
     title: "Carte confettis",
     description: "Une carte solaire et festive, pensée pour une interaction tactile très immédiate.",
@@ -869,7 +884,10 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
     isCosmicTemplate || preview.gamePageTemplateId === "sunburst-festival";
   const isImmersiveScratchTemplate =
     preview.gamePageTemplateId === "scratch-vault" ||
-    preview.gamePageTemplateId === "scratch-confetti";
+    preview.gamePageTemplateId === "scratch-confetti" ||
+    preview.gamePageTemplateId === "scratch-coral" ||
+    preview.gamePageTemplateId === "scratch-lilac" ||
+    preview.gamePageTemplateId === "scratch-sunburst";
   const previewScale = compact ? 0.8 : 1;
   const scalePreviewValue = (value: number) => Math.round(value * previewScale);
   const previewHeadingTextColor = isCosmicTemplate ? "#f8fbff" : preview.headingTextColor;
@@ -918,6 +936,25 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
           </div>
         ) : null}
 
+        {preview.gameType === "scratch" && preview.logoMode === "none" ? (
+          <div className={`flex ${preview.logoAlignmentClass}`}>
+            <div
+              style={{
+                marginBottom: `${scalePreviewValue(preview.logoBottomSpacingPx)}px`,
+              }}
+            >
+              <BrandMark
+                logoText={preview.logoText || merchant.companyName}
+                size="lg"
+                variant="transparent"
+                imageWidthPx={scalePreviewValue(preview.logoWidthPx)}
+                textColor={previewHeadingTextColor}
+                textClassName={compact ? "text-2xl" : undefined}
+              />
+            </div>
+          </div>
+        ) : null}
+
         {preview.logoMode === "none" || (preview.logoMode === "image" && !preview.logoUrl) ? (
           <div aria-hidden="true" className="h-5" />
         ) : null}
@@ -952,7 +989,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
                     ))}
                   </span>
                 ))
-              : preview.subtitle}
+              : preview.subtitle.trim() || (preview.gameType === "scratch" ? "Grattez pour révéler votre cadeau" : "Découvrez votre animation")}
           </h3>
         </div>
 
@@ -1012,7 +1049,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
                 resultLabel={preview.previewPrize}
                 enabled={false}
                 onReveal={() => undefined}
-                template={preview.gamePageTemplateId as "scratch-vault" | "scratch-confetti"}
+                template={preview.gamePageTemplateId as "scratch-vault" | "scratch-confetti" | "scratch-coral" | "scratch-lilac" | "scratch-sunburst"}
               />
             ) : (
               <ScratchGame
@@ -1294,10 +1331,7 @@ function toEditorState(merchant: Merchant, campaign: CampaignPerformance | null)
       layout: {
         ...campaign.campaign.presentation.layout,
         blockSpacingPx: campaign.campaign.presentation.layout.blockSpacingPx ?? 40,
-        templateId:
-          campaign.campaign.gameType === "scratch"
-            ? "classic"
-            : campaign.campaign.presentation.layout.templateId ?? "classic",
+        templateId: campaign.campaign.presentation.layout.templateId ?? "classic",
       },
       poster: normalizePosterSettings(
         campaign.campaign.presentation.poster,
@@ -1355,9 +1389,7 @@ export function buildCampaignLivePreviewModel(
   form: CampaignSetupInput,
   merchant: Merchant,
 ): CampaignEditorPreviewModel {
-  const templateId = form.gameType === "scratch"
-    ? "classic"
-    : form.presentation.layout.templateId ?? "classic";
+  const templateId = form.presentation.layout.templateId ?? "classic";
   const previewSegments = buildPreviewSegments(form.prizes);
   const winningSegmentId =
     previewSegments.find((segment) => segment.tone === "win")?.id ?? previewSegments[0]?.id ?? "win";
@@ -1397,6 +1429,12 @@ export function buildCampaignLivePreviewModel(
           ? `radial-gradient(circle at 50% 112%, ${withHexAlpha(form.presentation.wheel.loseColor, "52")} 0 24%, transparent 43%), radial-gradient(circle at 9% 12%, ${withHexAlpha(form.presentation.wheel.winColor, "2b")} 0 14%, transparent 25%), linear-gradient(155deg, #07142e 0%, #0b1d42 55%, #071126 100%)`
           : templateId === "sunburst-festival"
             ? `radial-gradient(circle at 12% 10%, ${withHexAlpha(form.presentation.wheel.loseColor, "33")} 0 12%, transparent 13%), radial-gradient(circle at 94% 18%, ${withHexAlpha(form.presentation.wheel.winColor, "38")} 0 14%, transparent 15%), linear-gradient(180deg, #fffdf5 0%, #fff8e8 56%, #fff2ce 100%)`
+            : templateId === "scratch-coral"
+              ? `radial-gradient(circle at 50% 0%, ${withHexAlpha(form.accent.signal, "24")} 0 18%, transparent 42%), linear-gradient(180deg, #fffaf5 0%, #ffffff 72%, #fff3e8 100%)`
+              : templateId === "scratch-lilac"
+                ? `radial-gradient(circle at 50% 0%, ${withHexAlpha(form.accent.signal, "2c")} 0 20%, transparent 44%), linear-gradient(180deg, #fffaff 0%, #f7edff 100%)`
+                : templateId === "scratch-sunburst"
+                  ? `repeating-conic-gradient(from -18deg at 50% -2%, ${withHexAlpha(form.accent.signal, "1c")} 0deg 12deg, transparent 12deg 24deg), linear-gradient(180deg, #fff8d7 0%, #fff1b8 68%, #fff7e7 100%)`
             : "";
 
   return {
@@ -1631,6 +1669,12 @@ export function CampaignEditor({
                 ? `radial-gradient(circle at 50% 112%, ${withHexAlpha(form.presentation.wheel.loseColor, "52")} 0 24%, transparent 43%), radial-gradient(circle at 9% 12%, ${withHexAlpha(form.presentation.wheel.winColor, "2b")} 0 14%, transparent 25%), linear-gradient(155deg, #07142e 0%, #0b1d42 55%, #071126 100%)`
                 : (form.presentation.layout.templateId ?? "classic") === "sunburst-festival"
                   ? `radial-gradient(circle at 12% 10%, ${withHexAlpha(form.presentation.wheel.loseColor, "33")} 0 12%, transparent 13%), radial-gradient(circle at 94% 18%, ${withHexAlpha(form.presentation.wheel.winColor, "38")} 0 14%, transparent 15%), linear-gradient(180deg, #fffdf5 0%, #fff8e8 56%, #fff2ce 100%)`
+                  : (form.presentation.layout.templateId ?? "classic") === "scratch-coral"
+                    ? `radial-gradient(circle at 50% 0%, ${withHexAlpha(form.accent.signal, "24")} 0 18%, transparent 42%), linear-gradient(180deg, #fffaf5 0%, #ffffff 72%, #fff3e8 100%)`
+                    : (form.presentation.layout.templateId ?? "classic") === "scratch-lilac"
+                      ? `radial-gradient(circle at 50% 0%, ${withHexAlpha(form.accent.signal, "2c")} 0 20%, transparent 44%), linear-gradient(180deg, #fffaff 0%, #f7edff 100%)`
+                      : (form.presentation.layout.templateId ?? "classic") === "scratch-sunburst"
+                        ? `repeating-conic-gradient(from -18deg at 50% -2%, ${withHexAlpha(form.accent.signal, "1c")} 0deg 12deg, transparent 12deg 24deg), linear-gradient(180deg, #fff8d7 0%, #fff1b8 68%, #fff7e7 100%)`
                   : "",
         backgroundPosition: "center",
         backgroundSize: "cover",
@@ -1649,8 +1693,7 @@ export function CampaignEditor({
       headingFontWeight: form.presentation.heading.fontWeight ?? 600,
       subtitle: form.subtitle,
       blockSpacingPx: form.presentation.layout.blockSpacingPx,
-      gamePageTemplateId:
-        form.gameType === "scratch" ? "classic" : form.presentation.layout.templateId ?? "classic",
+      gamePageTemplateId: form.presentation.layout.templateId ?? "classic",
       gameType: form.gameType,
       accent: form.accent,
       wheelStyle: form.presentation.wheel,
@@ -1885,7 +1928,9 @@ function setGameType(gameType: GameType) {
             ...current.presentation.layout,
             templateId:
               gameType === "scratch"
-                ? "classic"
+                ? current.presentation.layout.templateId?.startsWith("scratch-")
+                  ? current.presentation.layout.templateId
+                  : "scratch-coral"
                 : current.presentation.layout.templateId === "restaurant-pop" ||
                     current.presentation.layout.templateId === "cosmic-orbit" ||
                     current.presentation.layout.templateId === "sunburst-festival"
@@ -2501,13 +2546,12 @@ function setGameType(gameType: GameType) {
               })}
             </div>
 
-            {form.gameType === "wheel" ? (
             <div className="mt-6">
               <p className="text-xs uppercase tracking-[0.24em] text-[#7b8496]">
                 Template de page de jeu
               </p>
               <div className="mt-3 grid gap-3 md:grid-cols-2">
-                {(form.gameType === "wheel" ? wheelPageTemplateOptions : scratchPageTemplateOptions.slice(0, 1)).map((template) => {
+                {(form.gameType === "wheel" ? wheelPageTemplateOptions : scratchPageTemplateOptions).map((template) => {
                   const active =
                     (form.presentation.layout.templateId ?? "classic") === template.value;
 
@@ -2544,6 +2588,26 @@ function setGameType(gameType: GameType) {
                 })}
               </div>
             </div>
+            {form.gameType === "scratch" ? (
+              <label className="mt-6 block max-w-md text-sm">
+                <span className="mb-1 block font-semibold text-[#111827]">
+                  Couleur principale du ticket
+                </span>
+                <span className="mb-3 block text-xs leading-5 text-[#69758a]">
+                  Elle définit la teinte de la zone à gratter et reste personnalisable.
+                </span>
+                <input
+                  type="color"
+                  value={form.accent.signal}
+                  onChange={(event) =>
+                    setForm((current) => ({
+                      ...current,
+                      accent: { ...current.accent, signal: event.target.value },
+                    }))
+                  }
+                  className="h-14 w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none"
+                />
+              </label>
             ) : null}
           </section>
 

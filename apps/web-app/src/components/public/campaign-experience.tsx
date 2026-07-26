@@ -440,17 +440,25 @@ export function CampaignExperience({
     : "";
   const availableDate = formatDate(drawResult?.lead.rewardAvailableAt);
   const expiryDate = formatDate(drawResult?.lead.rewardExpiresAt);
-  const pageTemplate = campaign.gameType === "scratch"
-    ? "classic"
-    : campaign.presentation.layout.templateId ?? "classic";
+  const pageTemplate = campaign.presentation.layout.templateId ?? "classic";
   const isRestaurantPopTemplate = pageTemplate === "restaurant-pop";
   const isCosmicTemplate = pageTemplate === "cosmic-orbit";
   const isSunburstTemplate = pageTemplate === "sunburst-festival";
   const isImmersiveTemplate = isCosmicTemplate || isSunburstTemplate;
   const isScratchVaultTemplate = pageTemplate === "scratch-vault";
   const isScratchConfettiTemplate = pageTemplate === "scratch-confetti";
-  const isImmersiveScratchTemplate = isScratchVaultTemplate || isScratchConfettiTemplate;
-  const primaryColor = campaign.presentation.wheel.loseColor ?? campaign.accent.signal;
+  const isScratchCoralTemplate = pageTemplate === "scratch-coral";
+  const isScratchLilacTemplate = pageTemplate === "scratch-lilac";
+  const isScratchSunburstTemplate = pageTemplate === "scratch-sunburst";
+  const isImmersiveScratchTemplate =
+    isScratchVaultTemplate ||
+    isScratchConfettiTemplate ||
+    isScratchCoralTemplate ||
+    isScratchLilacTemplate ||
+    isScratchSunburstTemplate;
+  const primaryColor = campaign.gameType === "scratch"
+    ? campaign.accent.signal
+    : campaign.presentation.wheel.loseColor ?? campaign.accent.signal;
   const secondaryColor = campaign.presentation.wheel.winColor ?? "#073b72";
   const headingTextColor =
     isCosmicTemplate || (isScratchVaultTemplate && campaign.presentation.heading.textColor.toLowerCase() === "#1f2937")
@@ -652,6 +660,12 @@ export function CampaignExperience({
         ? `radial-gradient(circle at 50% 108%, ${withHexAlpha(primaryColor, "38")} 0 27%, transparent 48%), radial-gradient(circle at 15% 10%, ${withHexAlpha(secondaryColor, "4d")} 0 12%, transparent 22%), linear-gradient(155deg, #071126 0%, #111b3b 56%, #071126 100%)`
         : isScratchConfettiTemplate
           ? `radial-gradient(circle at 12% 9%, ${withHexAlpha(primaryColor, "2b")} 0 10%, transparent 11%), radial-gradient(circle at 94% 12%, ${withHexAlpha(secondaryColor, "18")} 0 12%, transparent 13%), linear-gradient(180deg, #fffdf7 0%, #fff8ea 60%, #fff1cf 100%)`
+        : isScratchCoralTemplate
+          ? `radial-gradient(circle at 50% 0%, ${withHexAlpha(primaryColor, "24")} 0 18%, transparent 42%), linear-gradient(180deg, #fffaf5 0%, #ffffff 72%, #fff3e8 100%)`
+        : isScratchLilacTemplate
+          ? `radial-gradient(circle at 50% 0%, ${withHexAlpha(primaryColor, "2c")} 0 20%, transparent 44%), linear-gradient(180deg, #fffaff 0%, #f7edff 100%)`
+        : isScratchSunburstTemplate
+          ? `repeating-conic-gradient(from -18deg at 50% -2%, ${withHexAlpha(primaryColor, "1c")} 0deg 12deg, transparent 12deg 24deg), linear-gradient(180deg, #fff8d7 0%, #fff1b8 68%, #fff7e7 100%)`
         : isCosmicTemplate
         ? `radial-gradient(circle at 50% 112%, ${withHexAlpha(primaryColor, "52")} 0 24%, transparent 43%), radial-gradient(circle at 9% 12%, ${withHexAlpha(secondaryColor, "2b")} 0 14%, transparent 25%), linear-gradient(155deg, #07142e 0%, #0b1d42 55%, #071126 100%)`
         : isSunburstTemplate
@@ -682,7 +696,7 @@ export function CampaignExperience({
         backgroundSize: "cover",
       }}
     >
-      {isRestaurantPopTemplate || isSunburstTemplate || isCosmicTemplate || isScratchVaultTemplate || isScratchConfettiTemplate ? (
+      {isRestaurantPopTemplate || isSunburstTemplate || isCosmicTemplate || isScratchVaultTemplate || isScratchConfettiTemplate || isScratchCoralTemplate || isScratchLilacTemplate || isScratchSunburstTemplate ? (
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
           <div
             className="absolute right-0 top-[18%] h-28 w-16 opacity-35"
@@ -699,7 +713,8 @@ export function CampaignExperience({
       ) : null}
       <div className="relative mx-auto flex h-screen w-full flex-col overflow-hidden px-4 pb-0 pt-12 sm:px-6 sm:pt-14">
         {(campaign.logoMode === "image" && campaign.logoUrl) ||
-        campaign.logoMode === "text" ? (
+        campaign.logoMode === "text" ||
+        campaign.gameType === "scratch" ? (
           <div className={`flex ${logoAlignmentClass}`}>
             <div style={{ marginBottom: `${campaign.presentation.logo.marginBottomPx}px` }}>
               <BrandMark
@@ -745,7 +760,7 @@ export function CampaignExperience({
                     ))}
                   </span>
                 ))
-              : campaign.subtitle}
+              : campaign.subtitle.trim() || "Grattez pour révéler votre cadeau"}
           </h1>
         </div>
 
@@ -812,7 +827,7 @@ export function CampaignExperience({
                 resultLabel={scratchLabel}
                 enabled={stage === "ready"}
                 onReveal={() => void handleGameReveal()}
-                template={pageTemplate as "scratch-vault" | "scratch-confetti"}
+                template={pageTemplate as "scratch-vault" | "scratch-confetti" | "scratch-coral" | "scratch-lilac" | "scratch-sunburst"}
               />
             ) : (
               <ScratchGame

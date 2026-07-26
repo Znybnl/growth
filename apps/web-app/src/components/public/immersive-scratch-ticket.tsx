@@ -11,7 +11,12 @@ type ImmersiveScratchTicketProps = {
   resultLabel: string;
   enabled: boolean;
   onReveal: () => void;
-  template: "scratch-vault" | "scratch-confetti";
+  template:
+    | "scratch-vault"
+    | "scratch-confetti"
+    | "scratch-coral"
+    | "scratch-lilac"
+    | "scratch-sunburst";
 };
 
 const CANVAS_WIDTH = 720;
@@ -54,10 +59,23 @@ export function ImmersiveScratchTicket({
   const checksRef = useRef(0);
   const [revealed, setRevealed] = useState(false);
   const isVault = template === "scratch-vault";
-  const primary = accent.signal;
+  const isCoral = template === "scratch-coral";
+  const isLilac = template === "scratch-lilac";
+  const isSunburst = template === "scratch-sunburst";
+  const configuredPrimary = accent.signal;
+  const primary =
+    configuredPrimary.toLowerCase() === "#f4c14a"
+      ? isCoral
+        ? "#f97316"
+        : isLilac
+          ? "#a855f7"
+          : isSunburst
+            ? "#f59e0b"
+            : configuredPrimary
+      : configuredPrimary;
   const secondary = accent.ink;
   const coverColor = isVault ? "#161b34" : primary;
-  const coverTextColor = isVault ? "#ffffff" : readableTextColor(primary);
+  const coverTextColor = isVault || isLilac ? "#ffffff" : readableTextColor(primary);
   const foilHighlight = isVault ? withAlpha(primary, "d9") : blendWithWhite(primary, 0.35);
 
   useEffect(() => {
@@ -90,11 +108,23 @@ export function ImmersiveScratchTicket({
     context.fillStyle = coverTextColor;
     context.textAlign = "center";
     context.font = "700 43px Anton, sans-serif";
-    context.fillText(isVault ? "GRATTEZ LE COFFRE" : "GRATTEZ VOTRE CARTE", CANVAS_WIDTH / 2, 145);
+    context.fillText(
+      isVault
+        ? "GRATTEZ LE COFFRE"
+        : isCoral
+          ? "GRATTEZ POUR GAGNER"
+          : isLilac
+            ? "GRATTEZ LE CADEAU"
+            : isSunburst
+              ? "GRATTEZ ICI"
+              : "GRATTEZ VOTRE CARTE",
+      CANVAS_WIDTH / 2,
+      145,
+    );
     checksRef.current = 0;
     revealedRef.current = false;
     setRevealed(false);
-  }, [coverColor, coverTextColor, foilHighlight, isVault, primary, resultLabel]);
+  }, [coverColor, coverTextColor, foilHighlight, isCoral, isLilac, isSunburst, isVault, primary, resultLabel]);
 
   function reveal() {
     if (revealedRef.current) return;
@@ -136,12 +166,26 @@ export function ImmersiveScratchTicket({
     <div className="mx-auto w-full max-w-[430px]">
       <div
         className={`relative overflow-hidden rounded-[28px] border shadow-[0_28px_70px_rgba(15,23,42,0.24)] ${
-          isVault ? "border-[#33426d]" : "border-[#9a650d]"
+          isVault
+            ? "border-[#33426d]"
+            : isCoral
+              ? "border-[#f97316]/40"
+              : isLilac
+                ? "border-[#a855f7]/30"
+                : isSunburst
+                  ? "border-[#d97706]/50"
+                  : "border-[#9a650d]"
         }`}
         style={{
           background: isVault
             ? `linear-gradient(135deg, #080f24, ${withAlpha(primary, "c8")}, #070d1c)`
-            : `linear-gradient(135deg, #8c5a09, ${blendWithWhite(primary, 0.2)}, #b8730b)`,
+            : isCoral
+              ? `linear-gradient(160deg, #fffaf5, #ffffff 48%, ${withAlpha(primary, "20")})`
+              : isLilac
+                ? `linear-gradient(160deg, #fffaff, #f7edff 58%, ${withAlpha(primary, "24")})`
+                : isSunburst
+                  ? `radial-gradient(circle at 50% 118%, ${withAlpha(primary, "66")}, transparent 55%), linear-gradient(160deg, #fff8d7, #ffc928 58%, #f59e0b)`
+                  : `linear-gradient(135deg, #8c5a09, ${blendWithWhite(primary, 0.2)}, #b8730b)`,
         }}
       >
         <div
@@ -150,13 +194,19 @@ export function ImmersiveScratchTicket({
           style={{
             background: isVault
               ? `radial-gradient(circle at 80% 10%, ${withAlpha(primary, "42")}, transparent 42%), radial-gradient(circle at 8% 92%, ${withAlpha(primary, "30")}, transparent 38%)`
-              : "linear-gradient(115deg, rgba(255,255,255,0.28), transparent 24%, transparent 68%, rgba(255,255,255,0.16))",
+              : isCoral
+                ? "linear-gradient(115deg, rgba(255,255,255,0.64), transparent 24%, transparent 68%, rgba(249,115,22,0.12))"
+                : isLilac
+                  ? "radial-gradient(circle at 50% 15%, rgba(168,85,247,0.18), transparent 34%), linear-gradient(145deg, rgba(255,255,255,0.72), transparent 65%)"
+                  : isSunburst
+                    ? "repeating-conic-gradient(from -22deg at 50% 108%, rgba(255,255,255,0.16) 0deg 12deg, transparent 12deg 24deg)"
+                    : "linear-gradient(115deg, rgba(255,255,255,0.28), transparent 24%, transparent 68%, rgba(255,255,255,0.16))",
           }}
         />
 
         <div className="relative overflow-hidden">
           <div className="absolute inset-0 flex items-center justify-center px-6 text-center">
-            <p className="text-3xl font-semibold leading-tight" style={{ color: isVault ? "#f8fbff" : secondary }}>
+            <p className="text-3xl font-semibold leading-tight" style={{ color: isVault || isLilac ? "#f8fbff" : secondary }}>
               {resultLabel}
             </p>
           </div>
@@ -191,7 +241,7 @@ export function ImmersiveScratchTicket({
               className="relative flex aspect-[15/7] items-center justify-center px-6 text-center"
               style={{ background: withAlpha(primary, "22") }}
             >
-              <p className="font-display text-2xl font-semibold" style={{ color: isVault ? "#f8fbff" : secondary }}>
+              <p className="font-display text-2xl font-semibold" style={{ color: isVault || isLilac ? "#f8fbff" : secondary }}>
                 Lot révélé
               </p>
             </div>

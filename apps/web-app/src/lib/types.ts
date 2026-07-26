@@ -21,7 +21,10 @@ export type GamePageTemplateId =
   | "cosmic-orbit"
   | "sunburst-festival"
   | "scratch-vault"
-  | "scratch-confetti";
+  | "scratch-confetti"
+  | "scratch-coral"
+  | "scratch-lilac"
+  | "scratch-sunburst";
 export type ActionKind =
   | "google"
   | "instagram"

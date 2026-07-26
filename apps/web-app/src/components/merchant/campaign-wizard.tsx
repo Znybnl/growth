@@ -1010,6 +1010,22 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                     onClick={() =>
                       patchDraft({
                         gameType: option.value,
+                        presentation: {
+                          ...draft.presentation,
+                          layout: {
+                            ...draft.presentation.layout,
+                            templateId:
+                              option.value === "scratch"
+                                ? "scratch-coral"
+                                : draft.presentation.layout.templateId === "scratch-coral" ||
+                                    draft.presentation.layout.templateId === "scratch-lilac" ||
+                                    draft.presentation.layout.templateId === "scratch-sunburst" ||
+                                    draft.presentation.layout.templateId === "scratch-vault" ||
+                                    draft.presentation.layout.templateId === "scratch-confetti"
+                                  ? "classic"
+                                  : draft.presentation.layout.templateId,
+                          },
+                        },
                         subtitle:
                           option.value === "wheel"
                             ? "Faites tourner la roue pour tenter votre chance."
@@ -1428,10 +1444,18 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
 
           {step.id === "appearance" ? (
             <div className="mt-7 space-y-5">
-              {draft.gameType !== "scratch" ? (
-                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 {(
-                  [
+                  draft.gameType === "scratch"
+                    ? [
+                        { id: "classic", label: "Ticket classique", text: "Sobre et direct" },
+                        { id: "scratch-vault", label: "Coffre néon", text: "Nocturne et immersif" },
+                        { id: "scratch-confetti", label: "Carte confettis", text: "Solaire et festif" },
+                        { id: "scratch-coral", label: "Corail joyeux", text: "Clair et chaleureux" },
+                        { id: "scratch-lilac", label: "Cadeau lilas", text: "Doux et complice" },
+                        { id: "scratch-sunburst", label: "Rayons soleil", text: "Éclatant et visible" },
+                      ] as const
+                    : [
                     {
                       id: "classic",
                       label: "Classique",
@@ -1452,7 +1476,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                       label: "Soleil pop",
                       text: "Festif et lumineux",
                     },
-                  ] as const
+                      ] as const
                 ).map((template) => (
                   <button
                     type="button"
@@ -1478,8 +1502,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                     </span>
                   </button>
                 ))}
-                </div>
-              ) : null}
+              </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 <label className="block">
                   <span className="text-sm font-semibold text-[#182033]">
@@ -1538,6 +1561,26 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                   />
                 </label>
               </div>
+              {draft.gameType === "scratch" ? (
+                <label className="block">
+                  <span className="text-sm font-semibold text-[#182033]">
+                    Couleur principale du ticket
+                  </span>
+                  <span className="mt-1 block text-xs text-[#8993a6]">
+                    Elle colore la zone à gratter et les éléments graphiques du template.
+                  </span>
+                  <input
+                    type="color"
+                    value={draft.accent.signal}
+                    onChange={(event) =>
+                      patchDraft({
+                        accent: { ...draft.accent, signal: event.target.value },
+                      })
+                    }
+                    className="mt-3 h-12 w-full rounded-[12px] border border-[#dbe3ed] bg-white p-1"
+                  />
+                </label>
+              ) : null}
               <div className="rounded-[20px] border border-[#e2e8f0] bg-[#fbfcfe] p-5">
                 <p className="text-sm font-semibold text-[#182033]">Logo</p>
                 <p className="mt-1 text-xs text-[#8993a6]">
