@@ -2341,6 +2341,13 @@ export async function finalizeDrawSessionInSupabase(
   }
   assertMerchantBillingAccess(initialPerformance.merchant, "campaign_public");
 
+  const requiresContactCapture =
+    initialPerformance.campaign.goalType === "lead_capture" ||
+    initialPerformance.campaign.actions.some((action) => action.kind === "crm");
+  if (requiresContactCapture && input.marketingConsent !== true) {
+    throw new Error("Le consentement est obligatoire pour participer à cette campagne.");
+  }
+
   const leadId = generateId("lead");
   const { data, error } = await supabase
     .rpc("finalize_draw_session_and_create_lead", {

@@ -1607,6 +1607,12 @@ function finalizeDrawSessionFromMemory(input: FinalizeDrawSessionRequest): DrawR
     throw new Error("Campagne indisponible");
   }
 
+  const requiresContactCapture =
+    campaign.goalType === "lead_capture" || campaign.actions.some((action) => action.kind === "crm");
+  if (requiresContactCapture && input.marketingConsent !== true) {
+    throw new Error("Le consentement est obligatoire pour participer à cette campagne.");
+  }
+
   const lead = buildLeadFromSession(campaign, session, input);
   const previousParticipations = store.leads.filter(
     (item) => item.campaignId === campaign.id && item.email === lead.email,

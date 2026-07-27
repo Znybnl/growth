@@ -417,6 +417,7 @@ export function CampaignExperience({
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
   const [marketingConsent, setMarketingConsent] = useState(false);
+  const [contactCaptured, setContactCaptured] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [actionVisited, setActionVisited] = useState(false);
@@ -433,6 +434,8 @@ export function CampaignExperience({
   // Ignore legacy CRM actions so they cannot render as a broken empty link.
   const currentAction = campaign.actions.find((action) => action.kind !== "crm");
   const isLeadCapture = campaign.goalType === "lead_capture";
+  const requiresContactCapture =
+    isLeadCapture || campaign.actions.some((action) => action.kind === "crm");
   const isContactOnlySuccess = stage === "success" && Boolean(drawResult) && !drawResult?.prize;
   const scratchLabel = previewResult?.prize?.label ?? "Perdu :(";
   const redemptionCode = drawResult?.lead.redemptionCode;
@@ -501,6 +504,7 @@ export function CampaignExperience({
     !isImmersiveScratchTemplate &&
     ((stage === "idle" && campaign.gameType !== "wheel") ||
       (stage === "ready" && campaign.gameType !== "wheel"));
+  const isPreGameLeadCapture = requiresContactCapture && !drawSession;
 
   useEffect(() => {
     async function loadCampaign() {
@@ -574,6 +578,13 @@ export function CampaignExperience({
   async function openActionAndTrack() {
     setActionVisited(false);
     setError(null);
+
+    if (requiresContactCapture && !contactCaptured) {
+      setStage("collect");
+      await trackEvent("form_started");
+      return;
+    }
+
     if (drawSession) {
       setStage("intro");
       return;
@@ -596,8 +607,7 @@ export function CampaignExperience({
     setAutoSpinKey(`spin-${drawSession.id}`);
   }
 
-  async function submitWinnerForm(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function finalizeParticipant() {
     if (!drawSession) {
       return;
     }
@@ -646,8 +656,37 @@ export function CampaignExperience({
     }
   }
 
+  async function submitWinnerForm(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (requiresContactCapture && !marketingConsent) {
+      setError("Votre consentement est obligatoire pour participer à cette campagne.");
+      return;
+    }
+
+    if (!drawSession && requiresContactCapture) {
+      setError(null);
+      setContactCaptured(true);
+
+      if (currentAction) {
+        setStage("intro");
+      } else {
+        await prepareSession("ready");
+      }
+
+      return;
+    }
+
+    await finalizeParticipant();
+  }
+
   async function handleGameReveal() {
-    if (previewResult?.prize || isLeadCapture) {
+    if (requiresContactCapture) {
+      await finalizeParticipant();
+      return;
+    }
+
+    if (previewResult?.prize) {
       setStage("collect");
       await trackEvent("form_started");
       return;
@@ -973,7 +1012,7 @@ export function CampaignExperience({
                 setActionVisited(true);
                 void trackEvent("social_clicked");
               }}
-              className="block w-full rounded-[20px] border border-[#f3b229] bg-[#f3b229] px-5 py-4 text-center text-lg font-semibold text-[#111827] shadow-[0_12px_22px_rgba(243,178,41,0.28)]"
+              className="block w-full rounded-[20px] border border-[#f3b229] bg-[#f3b229] px-5 py-4 text-center text-lg font-semibold leading-7 text-[#111827] shadow-[0_12px_22px_rgba(243,178,41,0.28)]"
             >
               {actionLabel(currentAction.kind)}
             </a>
@@ -984,7 +1023,7 @@ export function CampaignExperience({
             disabled={isLoading}
             className={
               actionVisited
-                ? "w-full rounded-[20px] bg-[#111827] px-5 py-4 text-lg font-semibold text-white shadow-[0_12px_24px_rgba(17,24,39,0.16)] disabled:opacity-60"
+                ? "w-full rounded-[20px] bg-[#111827] px-5 py-4 text-lg font-semibold leading-7 text-white shadow-[0_12px_24px_rgba(17,24,39,0.16)] disabled:opacity-60"
                 : !currentAction
                   ? "w-full rounded-[20px] bg-[#111827] px-5 py-4 text-xl font-semibold text-white shadow-[0_12px_24px_rgba(17,24,39,0.16)] disabled:opacity-60"
                   : "w-full rounded-[12px] bg-transparent px-3 py-2 text-sm font-medium text-[#61687a] underline decoration-[#c4c9d4] underline-offset-4 transition hover:text-[#111827] disabled:opacity-60"
@@ -1009,16 +1048,20 @@ export function CampaignExperience({
           🎁
         </div>
         <h2 className="mt-6 text-center text-[2rem] font-semibold leading-[1.05] text-[#121826]">
-          {previewResult?.prize
+          {isPreGameLeadCapture
+            ? "Avant de jouer"
+            : previewResult?.prize
             ? `Félicitations ! Vous avez remporté ${previewResult.prize.label}`
             : "Merci pour votre participation"}
         </h2>
         <div className="mt-5 rounded-[22px] bg-[#f6f7fb] px-5 py-4 text-base leading-7 text-[#475067]">
-          {previewResult?.prize
+          {isPreGameLeadCapture
+            ? "Saisissez vos coordonnées et acceptez le consentement pour participer au jeu."
+            : previewResult?.prize
             ? "Vos informations sont nécessaires pour valider et envoyer votre gain."
             : "Laissez vos coordonnées pour recevoir les prochaines opportunités du commerce."}
         </div>
-        {previewUsageConditions ? (
+        {!isPreGameLeadCapture && previewUsageConditions ? (
           <div className="mt-4 rounded-[22px] bg-[#fff8e8] px-5 py-4 text-left text-sm leading-7 text-[#6c5313]">
             <p className="text-xs uppercase tracking-[0.2em] text-[#8a6a18]">
               Conditions d&apos;utilisation
@@ -1044,11 +1087,15 @@ export function CampaignExperience({
             placeholder="E-mail"
             className="w-full rounded-[18px] border border-[#d8dce5] px-4 py-4 text-lg text-[#111827] outline-none placeholder:text-[#99a1b2]"
           />
-          <label className="flex cursor-pointer items-start gap-3 rounded-[18px] bg-[#f6f7fb] px-4 py-3 text-left text-sm leading-6 text-[#475067]">
-          <label className="sr-only" htmlFor="winner-email">E-mail</label>
-          <input
-            id="winner-email"
+          <label
+            htmlFor="marketing-consent"
+            className="flex cursor-pointer items-start gap-3 rounded-[18px] bg-[#f6f7fb] px-4 py-3 text-left text-sm leading-6 text-[#475067]"
+          >
+            <input
+              id="marketing-consent"
               type="checkbox"
+              required={requiresContactCapture}
+              aria-required={requiresContactCapture}
               checked={marketingConsent}
               onChange={(event) => setMarketingConsent(event.target.checked)}
               className="mt-1 h-4 w-4 accent-[#111827]"
@@ -1069,7 +1116,13 @@ export function CampaignExperience({
             disabled={isLoading}
             className="w-full rounded-[18px] bg-[#111827] px-5 py-4 text-lg font-semibold text-white disabled:opacity-60"
           >
-            {isLoading ? "Enregistrement..." : "Enregistrer"}
+            {isLoading
+              ? isPreGameLeadCapture
+                ? "Préparation..."
+                : "Enregistrement..."
+              : isPreGameLeadCapture
+                ? "Continuer vers le jeu"
+                : "Enregistrer"}
           </button>
         </form>
       </PublicModal>

@@ -123,6 +123,7 @@ export function ImmersiveScratchTicket({
   const revealedRef = useRef(false);
   const checksRef = useRef(0);
   const [revealed, setRevealed] = useState(false);
+  const [hasTouched, setHasTouched] = useState(false);
   const isVault = template === "scratch-vault";
   const isConfetti = template === "scratch-confetti";
   const isCoral = template === "scratch-coral";
@@ -149,6 +150,7 @@ export function ImmersiveScratchTicket({
         ? "#3b2500"
         : "#111827";
   const ink = headingTextColor || defaultInk;
+  const resultInk = "#14213d";
   const resolvedHeadingFontClass = headingFontClass || (isLilac ? "font-fredoka" : "font-display");
   const displayHeadline = headline?.trim() || (isSunburst ? "Bravo ! Vous avez gagné un ticket" : "Grattez pour révéler votre gain");
   const instruction = "Grattez la carte pour révéler votre cadeau.";
@@ -190,6 +192,7 @@ export function ImmersiveScratchTicket({
     checksRef.current = 0;
     revealedRef.current = false;
     setRevealed(false);
+    setHasTouched(false);
   }, [isCoral, isLilac, isSunburst, isVault, primary, resultLabel]);
 
   function reveal() {
@@ -211,12 +214,22 @@ export function ImmersiveScratchTicket({
     checksRef.current += 1;
     if (checksRef.current % 9 !== 0) return;
 
+    checkReveal();
+  }
+
+  function checkReveal() {
+    const canvas = canvasRef.current;
+    const context = canvas?.getContext("2d");
+    if (!canvas || !context || revealedRef.current) return;
+
     const { data } = context.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     let cleared = 0;
+    let samples = 0;
     for (let index = 3; index < data.length; index += 20) {
+      samples += 1;
       if (data[index] === 0) cleared += 1;
     }
-    if (cleared / (data.length / 20) > 0.3) reveal();
+    if (samples > 0 && cleared / samples > 0.3) reveal();
   }
 
   function pointFromEvent(event: React.PointerEvent<HTMLCanvasElement>) {
@@ -269,7 +282,7 @@ export function ImmersiveScratchTicket({
         </div>
 
         <div className={`relative z-10 mx-auto mt-8 overflow-hidden rounded-[26px] ${surfaceClass}`}>
-          {!revealed ? (
+          {!revealed && !hasTouched ? (
             <div
               aria-hidden="true"
               className={`pointer-events-none absolute inset-0 z-30 flex items-center justify-center ${isSunburst ? "p-6" : "p-5"}`}
@@ -291,6 +304,7 @@ export function ImmersiveScratchTicket({
                   onStart?.();
                   return;
                 }
+                setHasTouched(true);
                 event.currentTarget.setPointerCapture(event.pointerId);
                 drawingRef.current = true;
                 scratch(...Object.values(pointFromEvent(event)) as [number, number]);
@@ -301,18 +315,19 @@ export function ImmersiveScratchTicket({
               }}
               onPointerUp={() => {
                 drawingRef.current = false;
+                checkReveal();
               }}
               onPointerCancel={() => {
                 drawingRef.current = false;
               }}
             />
           ) : (
-            <div className="relative z-30 flex h-full w-full items-center justify-center bg-white/78 p-6 text-center backdrop-blur-sm">
+            <div className="relative z-30 flex h-full w-full items-center justify-center bg-white/90 p-6 text-center backdrop-blur-sm">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.24em]" style={{ color: primary }}>
                   Votre gain
                 </p>
-                <p className="mt-3 text-2xl font-semibold" style={{ color: ink }}>
+                <p className="mt-3 text-2xl font-semibold" style={{ color: resultInk }}>
                   {resultLabel}
                 </p>
               </div>
