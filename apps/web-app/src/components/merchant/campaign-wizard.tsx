@@ -667,7 +667,599 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
       actions: current.actions.filter(
         (_, actionIndex) => actionIndex !== index,
       ),
-    }…6497 tokens truncated…          updatePrize(current, prize.id, {
+    }));
+    setError(null);
+  }
+
+  function moveAction(index: number, direction: -1 | 1) {
+    setDraft((current) => {
+      const nextIndex = index + direction;
+      if (nextIndex < 0 || nextIndex >= current.actions.length) return current;
+      const actions = [...current.actions];
+      [actions[index], actions[nextIndex]] = [
+        actions[nextIndex],
+        actions[index],
+      ];
+      return { ...current, actions };
+    });
+    setError(null);
+  }
+
+  function addSuggestedPrize(suggestion: PrizeSuggestion) {
+    setDraft((current) => ({
+      ...current,
+      prizes: [
+        ...current.prizes,
+        {
+          id: `wizard-prize-${Date.now()}-${suggestion.id}`,
+          label: suggestion.label,
+          totalQuantity: null,
+          probability: suggestion.probability,
+          estimatedUnitCost: suggestion.estimatedUnitCost,
+          usageConditions: "",
+        },
+      ],
+    }));
+    setError(null);
+  }
+
+  function removePrize(prizeId: string | undefined) {
+    setDraft((current) => ({
+      ...current,
+      prizes: current.prizes.filter((prize) => prize.id !== prizeId),
+    }));
+    setError(null);
+  }
+
+  function nextStep() {
+    const validationError = validateStep(step.id, draft, actionEnabled);
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+    setError(null);
+    setStepIndex((current) => {
+      const next = Math.min(WIZARD_STEPS.length - 1, current + 1);
+      setFurthestStepIndex((furthest) => Math.max(furthest, next));
+      return next;
+    });
+  }
+
+  function previousStep() {
+    setError(null);
+    setStepIndex((current) => Math.max(0, current - 1));
+  }
+
+  async function saveCampaign(isActive: boolean) {
+    const blockingErrors = collectErrors(draft, actionEnabled);
+    const requiredForDraft = blockingErrors.filter(
+      (candidate) =>
+        candidate.step === "identity" || candidate.step === "prizes",
+    );
+    const errorsToShow = isActive ? blockingErrors : requiredForDraft;
+    if (errorsToShow.length) {
+      const first = errorsToShow[0];
+      setError(first.message);
+      setStepIndex(WIZARD_STEPS.findIndex((item) => item.id === first.step));
+      return;
+    }
+
+    setIsSaving(true);
+    setError(null);
+    try {
+      const response = await fetch("/api/campaigns/setup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...draft,
+          creationMode: "wizard",
+          isActive,
+          actions: actionEnabled
+            ? draft.actions.map((action) => ({
+                ...action,
+                url: normalizeUrl(action.url),
+              }))
+            : [],
+          prizes: draft.prizes.map((prize) => ({
+            ...prize,
+            probability: Number(prize.probability || 0),
+          })),
+        }),
+      });
+      const payload = (await response.json().catch(() => null)) as {
+        campaign?: { campaign?: { id?: string } };
+        error?: string;
+      } | null;
+      if (!response.ok)
+        throw new Error(
+          payload?.error || "La campagne n’a pas pu être enregistrée.",
+        );
+      const campaignId = payload?.campaign?.campaign?.id;
+      if (campaignId) setSavedCampaignId(campaignId);
+    } catch (saveError) {
+      setError(
+        saveError instanceof Error
+          ? saveError.message
+          : "La campagne n’a pas pu être enregistrée.",
+      );
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  if (savedCampaignId) {
+    return (
+      <div className="okado-card mx-auto max-w-3xl p-8 text-center sm:p-12">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#e9f8ec] text-[#18864b]">
+          <Check className="h-8 w-8" />
+        </div>
+        <p className="mt-6 text-xs uppercase tracking-[0.24em] text-[#7a8498]">
+          Campagne prête
+        </p>
+        <h1 className="okado-page-title mt-3">
+          Votre animation est enregistrée.
+        </h1>
+        <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-[#626d82]">
+          Votre campagne est prête. Prévisualisez-la, téléchargez son QR code
+          ou préparez son affiche.
+        </p>
+        <div className="okado-action-row mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <Link
+            href={`/campaign/${savedCampaignId}?preview=1`}
+            target="_blank"
+            className="okado-filled-action px-4 text-sm"
+          >
+            Prévisualiser
+          </Link>
+          <Link
+            href={`/campaigns/${savedCampaignId}/edit`}
+            className="okado-secondary-action px-4 text-sm"
+          >
+            Ouvrir l’éditeur
+          </Link>
+          <a
+            href={`/api/campaigns/${savedCampaignId}/qr`}
+            download
+            className="okado-secondary-action gap-2 px-4 text-sm"
+          >
+            <Download className="h-4 w-4" />
+            QR code
+          </a>
+          <Link
+            href={`/campaigns/${savedCampaignId}/poster`}
+            className="okado-secondary-action px-4 text-sm"
+          >
+            Affiche
+          </Link>
+        </div>
+        <div className="mx-auto mt-8 hidden w-fit rounded-[20px] border border-[#dbe4f0] bg-white p-4 shadow-[var(--shadow-product-card)] md:block">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.16em] text-[#8993a6]">
+            QR code de la campagne
+          </p>
+          <Image
+            src={`/api/campaigns/${savedCampaignId}/qr?inline=1`}
+            alt="QR code de la campagne"
+            width={192}
+            height={192}
+            unoptimized
+            className="h-48 w-48"
+          />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="okado-wizard space-y-6 pb-10">
+      <section className="flex flex-col gap-5 px-1 py-2 xl:flex-row xl:items-end xl:justify-between">
+        <div>
+          <p className="okado-label">Assistant de création</p>
+          <h1 className="okado-page-title mt-3">Créer une campagne</h1>
+          <p className="mt-4 max-w-3xl text-sm leading-7 text-ash">
+            Cinq étapes courtes et un aperçu mobile pour comprendre exactement
+            ce que vivra votre client.
+          </p>
+        </div>
+      </section>
+
+      <div className="grid gap-6 xl:items-start xl:grid-cols-[240px_minmax(0,1fr)_360px]">
+        <aside className="okado-card p-4">
+          <p className="px-3 text-[10px] uppercase tracking-[0.22em] text-[#8993a6]">
+            Progression
+          </p>
+          <nav className="mt-4 space-y-1" aria-label="Étapes de création">
+            {WIZARD_STEPS.map((item, index) => {
+              const active = index === stepIndex;
+              const complete = index < stepIndex;
+              const visited = index <= furthestStepIndex;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() =>
+                    index <= furthestStepIndex && setStepIndex(index)
+                  }
+                  disabled={index > furthestStepIndex}
+                  className={`flex w-full items-start gap-3 rounded-[16px] px-3 py-3 text-left transition ${active ? "bg-[#111827] text-white" : visited ? "text-[#18864b] hover:bg-[#f5f8fb]" : "text-[#a0a9b9]"}`}
+                >
+                  <span
+                    className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${active ? "bg-[#f4c14a] text-[#111827]" : complete ? "bg-[#e9f8ec] text-[#18864b]" : visited ? "bg-[#fff8e1] text-[#b28719]" : "bg-[#f2f4f7]"}`}
+                  >
+                    {complete ? <Check className="h-3.5 w-3.5" /> : item.number}
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-sm font-semibold">
+                      {item.title}
+                    </span>
+                    <span
+                      className={`mt-1 block text-[11px] leading-4 ${active ? "text-[#c8d1e3]" : "text-[#8b95a8]"}`}
+                    >
+                      {item.description}
+                    </span>
+                  </span>
+                </button>
+              );
+            })}
+          </nav>
+        </aside>
+
+        <main className="okado-card min-w-0 p-5 sm:p-8">
+          <div className="flex items-start justify-between gap-4 border-b border-[#edf0f4] pb-5">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#b28719]">
+                Étape {step.number}
+              </p>
+              <h2 className="okado-section-title mt-2">{step.title}</h2>
+              <p className="mt-2 text-sm text-[#7a8498]">{step.description}</p>
+            </div>
+            <div className="hidden rounded-full bg-[#fff7dd] p-3 text-[#b28719] sm:block">
+              <Sparkles className="h-5 w-5" />
+            </div>
+          </div>
+
+          {step.id === "identity" ? (
+            <div className="mt-7 space-y-5">
+              <label className="block">
+                <span className="text-sm font-semibold text-[#182033]">
+                  Nom de l’animation
+                </span>
+                <span className="mt-1 block text-xs text-[#8993a6]">
+                  Visible dans votre espace marchand et dans vos statistiques.
+                </span>
+                <input
+                  autoFocus
+                  value={draft.title}
+                  onChange={(event) =>
+                    patchDraft({ title: event.target.value })
+                  }
+                  placeholder="Ex. La roue gourmande de juin"
+                  className="mt-3 w-full rounded-[16px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm text-[#182033] outline-none transition focus:border-[#b28719] focus:ring-4 focus:ring-[#f4c14a]/15"
+                />
+              </label>
+              <label className="block">
+                <span className="text-sm font-semibold text-[#182033]">
+                  Promesse affichée au client
+                </span>
+                <span className="mt-1 block text-xs text-[#8993a6]">
+                  Une phrase courte, concrète et facile à comprendre sur mobile.
+                </span>
+                <textarea
+                  value={draft.subtitle}
+                  onChange={(event) =>
+                    patchDraft({ subtitle: event.target.value })
+                  }
+                  rows={3}
+                  className="mt-3 w-full resize-none rounded-[16px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm leading-6 text-[#182033] outline-none transition focus:border-[#b28719] focus:ring-4 focus:ring-[#f4c14a]/15"
+                />
+              </label>
+              <div className="grid gap-4">
+                <label className="block">
+                  <span className="text-sm font-semibold text-[#182033]">
+                    Objectif
+                  </span>
+                    <select
+                      value={draft.goalType}
+                      onChange={(event) => {
+                        const goalType = event.target
+                          .value as WizardDraft["goalType"];
+                        patchDraft({
+                          goalType,
+                          successMetric:
+                          goalType === "social_follow"
+                            ? "Abonnements sociaux"
+                            : goalType === "lead_capture"
+                              ? "Leads collectés"
+                              : "Avis Google",
+                        });
+                      }}
+                      className="mt-3 w-full rounded-[16px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm text-[#182033]"
+                  >
+                    <option value="review_prompt">Obtenir des avis</option>
+                    <option value="lead_capture">Collecter des contacts</option>
+                    <option value="social_follow">Gagner des abonnés</option>
+                  </select>
+                  <span className="mt-2 block text-xs leading-5 text-[#8993a6]">
+                    Les coordonnées sont demandées après le jeu, quel que soit le
+                    résultat. Le consentement marketing reste distinct et optionnel.
+                    Les actions proposées par défaut sont modifiables à l’étape 4.
+                  </span>
+                </label>
+              </div>
+            </div>
+          ) : null}
+
+          {step.id === "game" ? (
+            <div className="mt-7 space-y-5">
+              <div className="grid gap-4 sm:grid-cols-2">
+                {(
+                  [
+                    {
+                      value: "wheel",
+                      label: "Roue de la chance",
+                      text: "Un moment spectaculaire, idéal sur un comptoir.",
+                    },
+                    {
+                      value: "scratch",
+                      label: "Ticket à gratter",
+                      text: "Un geste tactile simple et immédiat sur mobile.",
+                    },
+                  ] as const
+                ).map((option) => (
+                  <button
+                    type="button"
+                    key={option.value}
+                    onClick={() =>
+                      patchDraft({
+                        gameType: option.value,
+                        presentation: {
+                          ...draft.presentation,
+                          heading: {
+                            ...draft.presentation.heading,
+                            fontSizePx:
+                              option.value === "scratch" && draft.presentation.heading.fontSizePx === 40
+                                ? 32
+                                : option.value === "wheel" && draft.presentation.heading.fontSizePx === 32
+                                  ? 40
+                                  : draft.presentation.heading.fontSizePx,
+                          },
+                          layout: {
+                            ...draft.presentation.layout,
+                            templateId:
+                              option.value === "scratch"
+                                ? "scratch-coral"
+                                : draft.presentation.layout.templateId === "scratch-coral" ||
+                                    draft.presentation.layout.templateId === "scratch-lilac" ||
+                                    draft.presentation.layout.templateId === "scratch-sunburst" ||
+                                    draft.presentation.layout.templateId === "scratch-vault" ||
+                                    draft.presentation.layout.templateId === "scratch-confetti"
+                                  ? "classic"
+                                  : draft.presentation.layout.templateId,
+                          },
+                        },
+                        subtitle:
+                          option.value === "wheel"
+                            ? "Faites tourner la roue pour tenter votre chance."
+                            : "Grattez le ticket pour tenter votre chance.",
+                      })
+                    }
+                    className={`rounded-[22px] border p-5 text-left transition ${draft.gameType === option.value ? "border-[#b28719] bg-[#fff8e1] shadow-[0_12px_28px_rgba(244,193,74,0.16)]" : "border-[#e2e8f0] bg-[#fbfcfe] hover:border-[#b8c5d8]"}`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-base font-semibold text-[#182033]">
+                        {option.label}
+                      </span>
+                      <span
+                        className={`h-3 w-3 rounded-full ${draft.gameType === option.value ? "bg-[#b28719] ring-4 ring-[#f4c14a]/30" : "bg-[#d7dfeb]"}`}
+                      />
+                    </div>
+                    <p className="mt-3 text-sm leading-6 text-[#7a8498]">
+                      {option.text}
+                    </p>
+                  </button>
+                ))}
+              </div>
+              <div className="rounded-[22px] border border-[#e2e8f0] bg-[#fbfcfe] p-5">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-sm font-semibold text-[#182033]">
+                      Conditions de gain et de retrait
+                    </p>
+                    <p className="mt-1 text-xs leading-5 text-[#8993a6]">
+                      Les règles ci-dessous s’appliquent immédiatement au
+                      parcours client et au retrait en caisse.
+                    </p>
+                  </div>
+                  <ShieldCheck className="h-5 w-5 text-[#18864b]" />
+                </div>
+                <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  <label className="flex cursor-pointer items-start gap-3 rounded-[16px] border border-[#e2e8f0] bg-white p-4 text-sm text-[#182033]">
+                    <input
+                      type="checkbox"
+                      checked={draft.rewardRules.isWinningEveryTime}
+                      onChange={(event) =>
+                        patchDraft({
+                          rewardRules: {
+                            ...draft.rewardRules,
+                            isWinningEveryTime: event.target.checked,
+                          },
+                        })
+                      }
+                      className="mt-0.5 h-4 w-4 accent-[#b28719]"
+                    />
+                    <span>
+                      <span className="block font-semibold">
+                        Jeu 100 % gagnant
+                      </span>
+                      <span className="mt-1 block text-xs leading-5 text-[#7a8498]">
+                        Chaque participation reçoit un lot. Le total des
+                        probabilités doit être égal à 100 %.
+                      </span>
+                    </span>
+                  </label>
+                  <label className="flex items-start gap-3 rounded-[16px] border border-[#e2e8f0] bg-white p-4 text-sm text-[#182033]">
+                    <input
+                      type="checkbox"
+                      checked={draft.rewardRules.purchaseRequired}
+                      onChange={(event) =>
+                        patchDraft({
+                          rewardRules: {
+                            ...draft.rewardRules,
+                            purchaseRequired: event.target.checked,
+                          },
+                        })
+                      }
+                      className="mt-0.5 h-4 w-4 accent-[#b28719]"
+                    />
+                    <span>
+                      <span className="block font-semibold">
+                        Achat requis pour le retrait
+                      </span>
+                      <span className="mt-1 block text-xs leading-5 text-[#7a8498]">
+                        La caisse demandera une confirmation d’achat avant de
+                        remettre le lot.
+                      </span>
+                    </span>
+                  </label>
+                  <label className="flex items-start gap-3 rounded-[16px] border border-[#e2e8f0] bg-white p-4 text-sm text-[#182033]">
+                    <input
+                      type="checkbox"
+                      checked={draft.rewardRules.availableAfterHours > 0}
+                      onChange={(event) =>
+                        patchDraft({
+                          rewardRules: {
+                            ...draft.rewardRules,
+                            availableAfterHours: event.target.checked ? 24 : 0,
+                          },
+                        })
+                      }
+                      className="mt-0.5 h-4 w-4 accent-[#b28719]"
+                    />
+                    <span>
+                      <span className="block font-semibold">
+                        Lot disponible lors d&apos;une prochaine visite
+                      </span>
+                      <span className="mt-1 block text-xs leading-5 text-[#7a8498]">
+                        Le lot sera disponible 24 h après la participation, à partir du lendemain.
+                      </span>
+                    </span>
+                  </label>
+                </div>
+                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                  <div
+                    className={`rounded-[14px] border px-4 py-3 ${draft.rewardRules.isWinningEveryTime ? "border-[#b7e4c7] bg-[#f0fbf3]" : "border-[#e2e8f0] bg-white"}`}
+                  >
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#8993a6]">
+                      Gain
+                    </p>
+                    <p className="mt-1 text-sm font-semibold text-[#182033]">
+                      {draft.rewardRules.isWinningEveryTime
+                        ? "Un lot à chaque participation"
+                        : "Gain selon les probabilités"}
+                    </p>
+                  </div>
+                  <div
+                    className={`rounded-[14px] border px-4 py-3 ${draft.rewardRules.purchaseRequired ? "border-[#f0dfaa] bg-[#fff9e8]" : "border-[#e2e8f0] bg-white"}`}
+                  >
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#8993a6]">
+                      Retrait
+                    </p>
+                    <p className="mt-1 text-sm font-semibold text-[#182033]">
+                      {draft.rewardRules.purchaseRequired
+                        ? "Achat vérifié en caisse"
+                        : "Sans condition d’achat"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : null}
+
+          {step.id === "prizes" ? (
+            <div className="mt-7 space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold text-[#182033]">
+                    Votre dotation
+                  </p>
+                  <p className="mt-1 text-xs text-[#8993a6]">
+                    La jauge doit rester à 100 % maximum.
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`rounded-full px-3 py-1 text-xs font-semibold ${totalProbability > 100 ? "bg-[#fff0f0] text-[#b42318]" : "bg-[#e9f8ec] text-[#18864b]"}`}
+                  >
+                    {Math.round(totalProbability)} %
+                  </span>
+                  {prizeSuggestions.length ? (
+                    <button
+                      type="button"
+                      onClick={() => setSuggestionsOpen(true)}
+                      className="okado-secondary-action inline-flex items-center gap-1.5 px-3 py-2 text-xs"
+                    >
+                      <Sparkles className="h-3.5 w-3.5" />
+                      Suggestions de lots
+                    </button>
+                  ) : null}
+                </div>
+              </div>
+              {totalProbability > 100.0001 ? (
+                <div
+                  role="alert"
+                  className="rounded-[14px] border border-[#f2c8c8] bg-[#fff4f4] px-4 py-3 text-sm leading-6 text-[#a11a1a]"
+                >
+                  Le total des probabilités dépasse 100 %. Vous pouvez encore
+                  ajouter ou modifier des lots, mais réduisez ce total avant de
+                  continuer.
+                </div>
+              ) : null}
+              {draft.prizes.map((prize, index) => (
+                <div
+                  key={prize.id}
+                  className="rounded-[20px] border border-[#e2e8f0] bg-[#fbfcfe] p-4"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8993a6]">
+                      Lot {index + 1}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => removePrize(prize.id)}
+                      aria-label={`Supprimer ${prize.label || `le lot ${index + 1}`}`}
+                      className="rounded-[9px] p-1.5 text-[#8b95a8] transition hover:bg-[#fff0f0] hover:text-[#b42318]"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                  <div className="mt-2 grid gap-3 sm:grid-cols-[minmax(0,1fr)_120px_120px]">
+                    <label className="block">
+                      <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8993a6]">
+                        Nom du lot
+                      </span>
+                      <input
+                        value={prize.label}
+                        onChange={(event) =>
+                          setDraft((current) =>
+                            updatePrize(current, prize.id, {
+                              label: event.target.value,
+                            }),
+                          )
+                        }
+                        className="w-full rounded-[13px] border border-[#dbe3ed] bg-white px-3 py-3 text-sm text-[#182033]"
+                      />
+                    </label>
+                    <label className="block">
+                      <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8993a6]">
+                        Probabilité
+                      </span>
+                      <input
+                        type="number"
+                        min={0}
+                        max={100}
+                        value={prize.probability}
+                        onChange={(event) =>
+                          setDraft((current) =>
+                            updatePrize(current, prize.id, {
                               probability: Number(event.target.value || 0),
                             }),
                           )
