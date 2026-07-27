@@ -82,6 +82,32 @@ function GiftIllustration({ color }: { color: string }) {
   );
 }
 
+function VaultIllustration({ color }: { color: string }) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 220 220"
+      className="h-full w-full drop-shadow-[0_0_16px_rgba(134,232,255,0.34)]"
+    >
+      <g fill="none" stroke={color} strokeLinecap="round" strokeLinejoin="round">
+        <rect x="42" y="38" width="136" height="144" rx="18" fill={withAlpha(color, "22")} strokeWidth="6" />
+        <rect x="56" y="52" width="108" height="116" rx="11" fill={withAlpha(color, "12")} strokeWidth="4" />
+        <circle cx="110" cy="108" r="28" fill={withAlpha(color, "22")} strokeWidth="5" />
+        <circle cx="110" cy="108" r="8" fill={color} strokeWidth="4" />
+        <path d="M110 80v-10M110 146v-10M82 108H72M148 108h-10" strokeWidth="4" />
+        <path d="M138 136c11-6 17-14 17-25" strokeWidth="6" />
+        <path d="M155 111v16M155 127h-15" strokeWidth="5" />
+        <path d="M70 38v-9M150 38v-9" strokeWidth="4" />
+      </g>
+      <g fill={color} opacity=".86">
+        <circle cx="30" cy="62" r="4" />
+        <circle cx="192" cy="76" r="5" />
+        <path d="m188 150 6-12 6 12-6 12zM28 148l5-10 5 10-5 10z" />
+      </g>
+    </svg>
+  );
+}
+
 function ScratchMark({ color }: { color: string }) {
   return (
     <svg aria-hidden="true" viewBox="0 0 420 230" className="h-full w-full">
@@ -141,7 +167,11 @@ export function ImmersiveScratchTicket({
             : configuredPrimary
       : configuredPrimary;
   const ticketBaseColor = isLilac ? "#b85be5" : isVault ? "#171d38" : primary;
-  const illustrationColor = blendWithWhite(ticketBaseColor, 0.48);
+  const illustrationColor = isLilac
+    ? blendWithWhite(ticketBaseColor, 0.72)
+    : isVault
+      ? "#86e8ff"
+      : blendWithWhite(ticketBaseColor, 0.48);
   const defaultInk = isVault || isConfetti
     ? "#f8fbff"
     : isLilac
@@ -287,8 +317,9 @@ export function ImmersiveScratchTicket({
               aria-hidden="true"
               className={`pointer-events-none absolute inset-0 z-30 flex items-center justify-center ${isSunburst ? "p-6" : "p-5"}`}
             >
-              {isLilac ? <GiftIllustration color={illustrationColor} /> : null}
-              {!isLilac && !isCoral && !isSunburst ? <GiftIllustration color={illustrationColor} /> : null}
+              {isVault ? <VaultIllustration color={illustrationColor} /> : null}
+              {!isVault && isLilac ? <GiftIllustration color={illustrationColor} /> : null}
+              {!isVault && !isLilac && !isCoral && !isSunburst ? <GiftIllustration color={illustrationColor} /> : null}
               {isSunburst ? <ScratchMark color={illustrationColor} /> : null}
             </div>
           ) : null}
