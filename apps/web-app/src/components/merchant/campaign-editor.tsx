@@ -4138,3 +4138,121 @@ function setGameType(gameType: GameType) {
 
         <div className="space-y-6 xl:sticky xl:top-6 xl:self-start">
           <section className="pointer-events-none okado-card p-5">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">
+                  Prévisualisation mobile
+                </p>
+                <h2 className="okado-section-title mt-2">Rendu public</h2>
+              </div>
+              {form.id ? (
+                <div className="okado-action-row pointer-events-auto flex flex-wrap justify-end gap-2">
+                  <a
+                    href={`/api/campaigns/${form.id}/qr`}
+                    className="okado-secondary-action px-4"
+                  >
+                    QR
+                  </a>
+                  <Link
+                    href={`/campaigns/${form.id}/poster`}
+                    prefetch={false}
+                    className="okado-secondary-action px-4"
+                  >
+                    Affiche
+                  </Link>
+                  <Link
+                    href={`/campaign/${form.id}?preview=1`}
+                    prefetch={false}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="okado-primary-action px-4"
+                  >
+                    Prévisualiser
+                  </Link>
+                </div>
+              ) : null}
+            </div>
+
+            <CampaignLivePreview merchant={merchant} preview={deferredPreview} />
+          </section>
+        </div>
+      </div>
+      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30 px-4 pb-4 xl:hidden">
+        <div className="pointer-events-auto mx-auto max-w-[720px] rounded-[8px] border border-border bg-white/96 p-3 shadow-product-card backdrop-blur">
+          <div className="grid gap-3 sm:grid-cols-2">
+            {savedCampaignId ? (
+              <>
+                <Link
+                  href={`/campaign/${savedCampaignId}?preview=1`}
+                  prefetch={false}
+                  target="_blank"
+                  className="okado-primary-action px-4"
+                >
+                  Prévisualiser
+                </Link>
+                <Link
+                  href={`/campaigns/${savedCampaignId}/poster`}
+                  prefetch={false}
+                  className="okado-secondary-action px-4"
+                >
+                  Affiche
+                </Link>
+              </>
+            ) : null}
+            <button
+              type="button"
+              onClick={saveCampaign}
+              disabled={isSaving}
+              className={`okado-filled-action px-4 disabled:cursor-not-allowed disabled:opacity-70 ${
+                savedCampaignId ? "sm:col-span-2" : "w-full"
+              }`}
+            >
+              {isSaving ? "Enregistrement..." : "Enregistrer"}
+            </button>
+          </div>
+        </div>
+      </div>
+      <PrizeConditionsDialog
+        open={Boolean(editingPrize)}
+        prizeLabel={editingPrize?.label ?? ""}
+        value={editingPrize?.usageConditions ?? ""}
+        onChange={(nextValue) => {
+          if (editingPrize?.id) {
+            updatePrize(editingPrize.id, { usageConditions: nextValue });
+          }
+        }}
+        onClose={() => setEditingPrizeConditionsId(null)}
+      />
+      <PrizeSuggestionDialog
+        open={prizeSuggestionsOpen}
+        suggestions={prizeSuggestions}
+        industry={merchant.industry}
+        remainingProbability={remainingPrizeProbability}
+        onAdd={addSuggestedPrize}
+        onClose={() => setPrizeSuggestionsOpen(false)}
+      />
+      <BackgroundLibraryDialog
+        open={backgroundLibraryDialogOpen}
+        onClose={() => setBackgroundLibraryDialogOpen(false)}
+        items={backgroundLibrary}
+        isLoading={isLibraryLoading}
+        error={libraryMessage}
+        selectedImageUrl={form.presentation.background.imageUrl ?? ""}
+        onSelect={selectBackgroundImage}
+      />
+      <SaveFeedbackDialog
+        open={saveDialogOpen}
+        title={saveDialogTitle}
+        description={saveDialogDescription}
+        tone={saveDialogTone}
+        onClose={() => {
+          setSaveDialogOpen(false);
+
+          if (saveDialogTone !== "error" && !initialCampaign && savedCampaignId) {
+            router.replace(`/campaigns/${savedCampaignId}/edit`);
+          }
+        }}
+      />
+    </div>
+  );
+}

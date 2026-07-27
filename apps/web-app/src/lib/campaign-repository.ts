@@ -3058,3 +3058,267 @@ export async function syncRewardEmailWebhookInSupabase(event: WebhookEventPayloa
 
 export async function getSupabaseMerchantSupportOverview(
   merchant: Merchant,
+  options: { includeAllMerchants?: boolean } = {},
+): Promise<MerchantSupportOverview> {
+  const supabase = getSupabaseAdmin();
+  const campaignQuery = supabase
+    .from("campaigns")
+    .select("id,title,merchant_id");
+
+  if (!options.includeAllMerchants) {
+    campaignQuery.eq("merchant_id", merchant.id);
+  }
+
+  const { data: campaignRows, error: campaignError } = await campaignQuery;
+
+  if (campaignError) {
+    throw new Error(`Lecture des campagnes support impossible: ${campaignError.message}`);
+  }
+
+  const campaigns = (campaignRows ?? []) as Array<{ id: string; title: string }>;
+  const campaignIds = campaigns.map((item) => item.id);
+  const campaignTitleById = new Map(campaigns.map((item) => [item.id, item.title]));
+
+  if (!campaignIds.length) {
+    return {
+      failedEmails: [],
+      webhooks: [],
+      pendingClaims: [],
+      businessLogs: [],
+    };
+  }
+
+  const businessLogQuery = supabase
+    .from("business_logs")
+    .select("id,level,event,merchant_id,campaign_id,lead_id,email,redemption_code,summary,created_at")
+    .order("created_at", { ascending: false })
+    .limit(50);
+
+  if (!options.includeAllMerchants) {
+    businessLogQuery.eq("merchant_id", merchant.id);
+  }
+
+  const [failedEmailResult, pendingClaimResult, deliveryResult, webhookResult, businessLogResult] = await Promise.all([
+    supabase
+      .from("reward_email_deliveries")
+      .select("id,campaign_id,lead_id,recipient_email,status,error_message,last_event_at")
+      .in("campaign_id", campaignIds)
+      .in("status", ["failed", "bounced", "complained", "suppressed"])
+      .order("last_event_at", { ascending: false })
+      .limit(20),
+    supabase
+      .from("leads")
+      .select(
+        "id,campaign_id,first_name,email,prize_id,status,redemption_code,reward_available_at,reward_expires_at",
+      )
+      .in("campaign_id", campaignIds)
+      .eq("status", "claimed")
+      .not("prize_id", "is", null)
+      .order("created_at", { ascending: false })
+      .limit(30),
+    supabase
+      .from("reward_email_deliveries")
+      .select("id,campaign_id,lead_id,recipient_email,status")
+      .in("campaign_id", campaignIds),
+    supabase
+      .from("reward_email_events")
+      .select("id,reward_email_delivery_id,resend_email_id,event_type,payload,created_at")
+      .order("created_at", { ascending: false })
+      .limit(30),
+    businessLogQuery,
+  ]);
+
+  if (failedEmailResult.error) {
+    throw new Error(`Lecture des e-mails en échec impossible: ${failedEmailResult.error.message}`);
+  }
+  if (pendingClaimResult.error) {
+    throw new Error(`Lecture des gains en attente impossible: ${pendingClaimResult.error.message}`);
+  }
+  if (deliveryResult.error) {
+    throw new Error(`Lecture des e-mails impossible: ${deliveryResult.error.message}`);
+  }
+  if (webhookResult.error) {
+    throw new Error(`Lecture des webhooks impossible: ${webhookResult.error.message}`);
+  }
+  const businessLogsAvailable = !businessLogResult.error;
+
+  const deliveryRows = (deliveryResult.data ?? []) as Array<{
+    id: string;
+    campaign_id: string;
+    lead_id: string;
+    recipient_email: string;
+    status: RewardEmailDelivery["status"];
+  }>;
+  const deliveryById = new Map(deliveryRows.map((row) => [row.id, row]));
+
+  const leadIds = new Set<string>();
+  for (const row of (failedEmailResult.data ?? []) as Array<{ lead_id: string }>) {
+    leadIds.add(row.lead_id);
+  }
+  for (const row of (pendingClaimResult.data ?? []) as Array<{ id: string }>) {
+    leadIds.add(row.id);
+  }
+  for (const row of deliveryRows) {
+    leadIds.add(row.lead_id);
+  }
+
+  const { data: leadRows, error: leadError } = await supabase
+    .from("leads")
+    .select("id,first_name,email,prize_id")
+    .in("id", Array.from(leadIds));
+
+  if (leadError) {
+    throw new Error(`Lecture des leads support impossible: ${leadError.message}`);
+  }
+
+  const prizeIds = new Set<string>();
+  for (const row of (leadRows ?? []) as Array<{ prize_id: string | null }>) {
+    if (row.prize_id) {
+      prizeIds.add(row.prize_id);
+    }
+  }
+  for (const row of (pendingClaimResult.data ?? []) as Array<{ prize_id: string | null }>) {
+    if (row.prize_id) {
+      prizeIds.add(row.prize_id);
+    }
+  }
+
+  const { data: prizeRows, error: prizeError } = await supabase
+    .from("prizes")
+    .select("id,label")
+    .in("id", Array.from(prizeIds));
+
+  if (prizeError) {
+    throw new Error(`Lecture des dotations support impossible: ${prizeError.message}`);
+  }
+
+  const leadById = new Map(
+    ((leadRows ?? []) as Array<{ id: string; first_name: string; email: string; prize_id: string | null }>).map(
+      (row) => [row.id, row],
+    ),
+  );
+  const prizeLabelById = new Map(
+    ((prizeRows ?? []) as Array<{ id: string; label: string }>).map((row) => [row.id, row.label]),
+  );
+
+  const failedEmails: MerchantFailedEmailItem[] = (
+    (failedEmailResult.data ?? []) as Array<{
+      id: string;
+      campaign_id: string;
+      lead_id: string;
+      recipient_email: string;
+      status: RewardEmailDelivery["status"];
+      error_message: string | null;
+      last_event_at: string | null;
+    }>
+  ).map((row) => {
+    const lead = leadById.get(row.lead_id);
+
+    return {
+      deliveryId: row.id,
+      campaignId: row.campaign_id,
+      campaignTitle: campaignTitleById.get(row.campaign_id) ?? "Campagne inconnue",
+      leadId: row.lead_id,
+      leadFirstName: lead?.first_name ?? "Client inconnu",
+      recipientEmail: row.recipient_email,
+      status: row.status,
+      errorMessage: row.error_message ?? undefined,
+      lastEventAt: row.last_event_at ?? new Date().toISOString(),
+    };
+  });
+
+  const pendingClaims: MerchantPendingClaimItem[] = (
+    (pendingClaimResult.data ?? []) as Array<{
+      id: string;
+      campaign_id: string;
+      first_name: string;
+      email: string;
+      prize_id: string | null;
+      status: Lead["status"];
+      redemption_code: string | null;
+      reward_available_at: string | null;
+      reward_expires_at: string | null;
+    }>
+  )
+    .filter((row) => row.prize_id && row.redemption_code)
+    .map((row) => ({
+      leadId: row.id,
+      campaignId: row.campaign_id,
+      campaignTitle: campaignTitleById.get(row.campaign_id) ?? "Campagne inconnue",
+      firstName: row.first_name,
+      email: row.email,
+      prizeLabel: prizeLabelById.get(row.prize_id ?? "") ?? "Lot inconnu",
+      redemptionCode: row.redemption_code ?? "",
+      status: row.status,
+      availableAt: row.reward_available_at ?? undefined,
+      expiresAt: row.reward_expires_at ?? undefined,
+    }));
+
+  const webhookItems = (
+    (webhookResult.data ?? []) as Array<{
+      id: string;
+      reward_email_delivery_id: string | null;
+      resend_email_id: string | null;
+      event_type: string;
+      payload: Record<string, unknown> | null;
+      created_at: string;
+    }>
+  )
+    .map((row) => {
+      const delivery = row.reward_email_delivery_id
+        ? deliveryById.get(row.reward_email_delivery_id)
+        : undefined;
+
+      if (!delivery || !campaignTitleById.has(delivery.campaign_id)) {
+        return null;
+      }
+
+      return {
+        id: row.id,
+        createdAt: row.created_at,
+        eventType: row.event_type,
+        resendEmailId: row.resend_email_id ?? undefined,
+        campaignTitle: campaignTitleById.get(delivery.campaign_id) ?? undefined,
+        recipientEmail: delivery.recipient_email,
+        deliveryStatus: delivery.status,
+        summary: extractWebhookSummary(row.payload),
+      };
+    })
+    .filter((item) => item !== null);
+
+  const webhooks: MerchantWebhookItem[] = webhookItems;
+  const businessLogs: MerchantBusinessLogItem[] = businessLogsAvailable
+    ? (
+        (businessLogResult.data ?? []) as Array<{
+          id: string;
+          level: MerchantBusinessLogItem["level"];
+          event: string;
+          merchant_id: string | null;
+          campaign_id: string | null;
+          lead_id: string | null;
+          email: string | null;
+          redemption_code: string | null;
+          summary: string | null;
+          created_at: string;
+        }>
+      ).map((row) => ({
+        id: row.id,
+        createdAt: row.created_at,
+        level: row.level,
+        event: row.event,
+        merchantId: row.merchant_id ?? undefined,
+        campaignId: row.campaign_id ?? undefined,
+        leadId: row.lead_id ?? undefined,
+        email: row.email ?? undefined,
+        redemptionCode: row.redemption_code ?? undefined,
+        summary: row.summary ?? undefined,
+      }))
+    : [];
+
+  return {
+    failedEmails,
+    webhooks,
+    pendingClaims,
+    businessLogs,
+  };
+}

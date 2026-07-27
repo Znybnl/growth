@@ -1438,3 +1438,117 @@ export async function updateMerchantAccountInSupabase(
     .eq("email", email)
     .neq("id", userId)
     .maybeSingle<{ id: string }>();
+
+  if (existingUser.error) {
+    throw new Error("Verification de l'adresse e-mail impossible.");
+  }
+
+  if (existingUser.data) {
+    throw new Error("Cette adresse e-mail est deja utilisee.");
+  }
+
+  const companyName = input.companyName.trim();
+  const merchantUpdate = await supabase
+    .from("merchants")
+    .update({
+      company_name: companyName,
+      logo_text: companyName.slice(0, 2).toUpperCase(),
+      industry: input.industry.trim(),
+      restaurant_type: input.restaurantType.trim(),
+      city: input.city.trim(),
+      address: input.address.trim(),
+      contact_name: input.contactName.trim(),
+      phone: input.phone.trim(),
+      restaurant_email: input.restaurantEmail.trim().toLowerCase(),
+      website_url: input.websiteUrl.trim(),
+      google_review_url: input.googleReviewUrl.trim(),
+      instagram_url: input.instagramUrl.trim(),
+      facebook_url: input.facebookUrl.trim(),
+      tiktok_url: input.tiktokUrl.trim(),
+      tripadvisor_url: input.tripadvisorUrl.trim(),
+      custom_link_url: input.customLinkUrl.trim(),
+      time_zone: input.timeZone.trim() || "Europe/Paris",
+      default_prize_cost: input.defaultPrizeCost,
+      ...(input.redemptionPin ? { redemption_pin_hash: hashPassword(input.redemptionPin) } : {}),
+    })
+    .eq("id", userQuery.data.merchant_id);
+
+  if (merchantUpdate.error) {
+    throw new Error("Mise a jour du compte impossible.");
+  }
+
+  const userUpdate = await supabase
+    .from("merchant_users")
+    .update({
+      first_name: input.firstName.trim(),
+      last_name: input.lastName.trim(),
+      email,
+    })
+    .eq("id", userId);
+
+  if (userUpdate.error) {
+    throw new Error("Mise a jour du profil utilisateur impossible.");
+  }
+
+  await ensureSupabaseAuthUser({
+    email,
+    firstName: input.firstName.trim(),
+    lastName: input.lastName.trim(),
+    merchantId: userQuery.data.merchant_id,
+    merchantUserId: userId,
+  });
+
+  const [merchant, user] = await Promise.all([
+    getSupabaseMerchantProfile(userQuery.data.merchant_id),
+    getSupabaseMerchantUser(userId),
+  ]);
+
+  if (!merchant || !user) {
+    throw new Error("Compte introuvable apres mise a jour.");
+  }
+
+  return { merchant, user };
+}
+
+export async function syncMerchantUsersToSupabaseAuthInSupabase() {
+  const supabase = getSupabaseAdmin();
+  const { data, error } = await supabase
+    .from("merchant_users")
+    .select("id, merchant_id, first_name, last_name, email")
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    throw new Error("Lecture des comptes marchands impossible.");
+  }
+
+  const merchantUsers =
+    (data as Array<{
+      id: string;
+      merchant_id: string;
+      first_name: string;
+      last_name: string;
+      email: string;
+    }> | null) ?? [];
+
+  const synced: string[] = [];
+
+  for (const user of merchantUsers) {
+    await ensureSupabaseAuthUser({
+      email: user.email,
+      password:
+        user.email.toLowerCase() === DEMO_MERCHANT_LOGIN.email
+          ? DEMO_MERCHANT_LOGIN.password
+          : undefined,
+      firstName: user.first_name,
+      lastName: user.last_name,
+      merchantId: user.merchant_id,
+      merchantUserId: user.id,
+    });
+    synced.push(user.email);
+  }
+
+  return {
+    total: synced.length,
+    emails: synced,
+  };
+}

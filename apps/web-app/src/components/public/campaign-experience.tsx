@@ -1078,3 +1078,75 @@ export function CampaignExperience({
         <div className="text-center">
           <h2 className="text-[1.75rem] font-semibold leading-[1.05] text-[#121826]">
             Merci pour votre participation !
+          </h2>
+          <div className="mx-auto mt-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#f7f7fb] text-4xl shadow-[0_16px_34px_rgba(17,24,39,0.10)]">
+            ✉
+          </div>
+          <p className="mt-4 text-lg leading-7 text-[#1a2f76]">
+            {isContactOnlySuccess
+              ? "Votre contact est bien enregistré."
+              : "Vous recevrez votre gain par e-mail avec les informations de retrait"}
+          </p>
+          <p className="mt-3 text-sm leading-6 text-[#61687a]">
+            {isContactOnlySuccess
+              ? "Merci pour votre confiance."
+              : "Conservez ce QR code pour retirer votre gain. Si l’e-mail tarde à arriver, vérifiez vos spams."}
+          </p>
+
+          {drawResult?.prize ? <div className="mt-4 rounded-[18px] bg-[#fff4cb] px-4 py-3 text-left text-sm leading-6 text-[#4d3810]">
+            <p>
+              Vous avez entre le {availableDate ?? "maintenant"} et le {expiryDate ?? "bientôt"}{" "}
+              pour venir le récupérer.
+            </p>
+          </div> : null}
+
+          {drawResult?.prize && campaign.rewardRules.purchaseRequired ? (
+            <div className="mt-3 rounded-[18px] bg-[#f7f7fb] px-4 py-3 text-left text-sm leading-6 text-[#61687a]">
+              Le retrait du lot est soumis à une condition d’achat.
+            </div>
+          ) : null}
+
+          {drawResult?.prize && resolvedUsageConditions ? (
+            <div className="mt-3 rounded-[18px] bg-[#fff4cb] px-4 py-3 text-left text-sm leading-6 text-[#4d3810]">
+              <p className="text-xs uppercase tracking-[0.2em] text-[#8a6a18]">
+                Conditions d&apos;utilisation
+              </p>
+              <p className="mt-2 whitespace-pre-line">{resolvedUsageConditions}</p>
+            </div>
+          ) : null}
+
+          {redemptionCode ? (
+            <div className="mt-4 rounded-[20px] border border-[#e5e7ef] bg-[#fafbff] p-3">
+              <p className="text-xs uppercase tracking-[0.24em] text-[#8b93a5]">Code de retrait</p>
+              <p className="mt-1 text-xl font-semibold text-[#121826]">{redemptionCode}</p>
+              {qrPath ? (
+                <div className="mt-3 flex items-center gap-3 rounded-[16px] bg-white p-2.5 text-left">
+                  <Image
+                    src={qrPath}
+                    alt={`QR code ${redemptionCode}`}
+                    width={80}
+                    height={80}
+                    unoptimized
+                    className="h-20 w-20 rounded-[12px]"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs leading-5 text-[#61687a]">
+                      Enregistrez-le pour le retrouver facilement.
+                    </p>
+                    <a
+                      href={qrPath}
+                      download={`qr-lot-${redemptionCode}.svg`}
+                      className="mt-2 inline-flex rounded-[12px] bg-[#111827] px-3 py-2 text-xs font-semibold !text-white"
+                    >
+                      Enregistrer
+                    </a>
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
+        </div>
+      </PublicModal>
+    </div>
+  );
+}
