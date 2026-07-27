@@ -4146,7 +4146,7 @@ function setGameType(gameType: GameType) {
                 <h2 className="okado-section-title mt-2">Rendu public</h2>
               </div>
               {form.id ? (
-                <div className="pointer-events-auto flex flex-wrap justify-end gap-2">
+                <div className="okado-action-row pointer-events-auto flex flex-wrap justify-end gap-2">
                   <a
                     href={`/api/campaigns/${form.id}/qr`}
                     className="okado-secondary-action px-4"

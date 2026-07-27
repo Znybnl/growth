@@ -2590,6 +2590,7 @@ export async function findSupabasePublicRedemptionContextByCode(
     merchantId: merchant.id,
     merchantName: merchant.company_name,
     merchantCity: merchant.city ?? undefined,
+    email: lead.email,
   };
 }
 

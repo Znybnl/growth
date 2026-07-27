@@ -113,7 +113,7 @@ export function ExpressRedemption({ code, context: initialContext }: ExpressRede
             </p>
           </div>
           <span className="inline-flex items-center gap-1.5 rounded-full border border-[#dbe4f0] bg-white px-3 py-1.5 text-[11px] font-semibold text-[#667286]">
-            <LockKeyhole className="h-3.5 w-3.5" /> HTTPS
+            <LockKeyhole className="h-3.5 w-3.5" aria-label="Connexion sécurisée" />
           </span>
         </header>
 
@@ -130,11 +130,29 @@ export function ExpressRedemption({ code, context: initialContext }: ExpressRede
           </div>
 
           <div className="space-y-5 px-5 py-5 sm:px-7 sm:py-7">
+            {context.status === "not_available" ? (
+              <div role="alert" className="flex items-start gap-3 rounded-[18px] border-2 border-[#e5b83e] bg-[#fff8dc] px-4 py-4 text-sm leading-6 text-[#74570b]">
+                <CircleAlert className="mt-0.5 h-5 w-5 shrink-0" />
+                <div>
+                  <p className="font-semibold">Retrait pas encore disponible</p>
+                  <p className="mt-1">Ce lot pourra être retiré à partir du {formatDateTime(context.rewardAvailableAt)}.</p>
+                </div>
+              </div>
+            ) : context.status === "expired" ? (
+              <div role="alert" className="flex items-start gap-3 rounded-[18px] border-2 border-[#e5b83e] bg-[#fff8dc] px-4 py-4 text-sm leading-6 text-[#74570b]">
+                <CircleAlert className="mt-0.5 h-5 w-5 shrink-0" />
+                <div>
+                  <p className="font-semibold">Retrait impossible : période terminée</p>
+                  <p className="mt-1">La validité de ce lot a pris fin le {formatDateTime(context.rewardExpiresAt)}.</p>
+                </div>
+              </div>
+            ) : null}
+
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="rounded-[18px] border border-[#e5ebf2] bg-[#fbfcfe] p-4">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8993a6]">Bénéficiaire</p>
                 <p className="mt-2 text-sm font-semibold text-[#182033]">{context.firstName || "Client"}</p>
-                {context.maskedEmail ? <p className="mt-1 text-xs text-[#7a8498]">{context.maskedEmail}</p> : null}
+                {context.email || context.maskedEmail ? <p className="mt-1 break-all text-xs text-[#7a8498]">{context.email ?? context.maskedEmail}</p> : null}
               </div>
               <div className="rounded-[18px] border border-[#e5ebf2] bg-[#fbfcfe] p-4">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8993a6]">Code</p>
@@ -144,8 +162,8 @@ export function ExpressRedemption({ code, context: initialContext }: ExpressRede
 
             {context.rewardAvailableAt || context.rewardExpiresAt ? (
               <div className="rounded-[18px] border border-[#e5ebf2] bg-[#fbfcfe] px-4 py-3 text-sm leading-6 text-[#667286]">
-                {context.rewardAvailableAt ? <p>Disponible à partir du {formatDateTime(context.rewardAvailableAt)}</p> : null}
-                {context.rewardExpiresAt ? <p>Valable jusqu’au {formatDateTime(context.rewardExpiresAt)}</p> : null}
+                {context.rewardAvailableAt ? <p>Disponible à partir du <strong className="font-semibold text-[#182033]">{formatDateTime(context.rewardAvailableAt)}</strong></p> : null}
+                {context.rewardExpiresAt ? <p>Valable jusqu’au <strong className="font-semibold text-[#182033]">{formatDateTime(context.rewardExpiresAt)}</strong></p> : null}
               </div>
             ) : null}
 
@@ -153,13 +171,6 @@ export function ExpressRedemption({ code, context: initialContext }: ExpressRede
               <div className="rounded-[18px] border border-[#f0dfaa] bg-[#fff9e8] px-4 py-3 text-sm leading-6 text-[#6c5313]">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8a6a18]">Conditions de retrait</p>
                 <p className="mt-1 whitespace-pre-line">{context.prizeUsageConditions}</p>
-              </div>
-            ) : null}
-
-            {isAvailable ? (
-              <div className="rounded-[18px] border border-[#dbe4f0] bg-[#f8fafc] px-4 py-3 text-sm leading-6 text-[#667286]">
-                <p className="font-semibold text-[#182033]">Ce lot est réservé à ce client.</p>
-                <p className="mt-1">La validation finale est réservée au commerçant présent lors de la remise.</p>
               </div>
             ) : null}
 
@@ -197,7 +208,7 @@ export function ExpressRedemption({ code, context: initialContext }: ExpressRede
           </div>
         </section>
 
-        <p className="mt-4 px-2 text-center text-xs leading-5 text-[#8993a6]">Le client présente ce QR code. Seul le personnel du commerce peut confirmer le retrait avec le PIN commerçant.</p>
+        <p className="mt-4 px-2 text-center text-xs leading-5 text-[#8993a6]">Présentez ce QR code au personnel du commerce. Seul le personnel peut confirmer le retrait avec le PIN commerçant.</p>
       </div>
     </main>
   );

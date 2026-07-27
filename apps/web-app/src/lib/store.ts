@@ -1042,6 +1042,7 @@ function createMerchantAccountInMemory(input: MerchantSignUpInput) {
 
   store.merchants.unshift(merchant);
   store.users.unshift(user);
+  memoryRedemptionPinHashes.set(merchantId, hashPassword("0000"));
 
   return {
     user: clone(user),
@@ -1100,9 +1101,7 @@ function updateMerchantOnboardingInMemory(userId: string, input: MerchantOnboard
   merchant.tiktokUrl = input.tiktokUrl.trim();
   merchant.tripadvisorUrl = input.tripadvisorUrl.trim();
   merchant.customLinkUrl = input.customLinkUrl.trim();
-  if (input.redemptionPin) {
-    memoryRedemptionPinHashes.set(merchant.id, hashPassword(input.redemptionPin));
-  }
+  memoryRedemptionPinHashes.set(merchant.id, hashPassword(input.redemptionPin?.trim() || "0000"));
   merchant.onboardingCompleted = true;
 
   return clone(merchant);
@@ -1233,6 +1232,7 @@ export async function getPublicRedemptionContext(code: string): Promise<PublicRe
     merchantId: merchant.id,
     merchantName: merchant.companyName,
     merchantCity: merchant.city,
+    email: lead.email,
   };
 }
 

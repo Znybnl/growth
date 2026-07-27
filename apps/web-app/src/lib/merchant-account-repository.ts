@@ -569,6 +569,7 @@ export async function ensureDemoMerchantInSupabase() {
     tripadvisor_url: DEMO_MERCHANT_PROFILE.tripadvisorUrl,
     custom_link_url: DEMO_MERCHANT_PROFILE.customLinkUrl,
     default_prize_cost: DEMO_MERCHANT_PROFILE.defaultPrizeCost,
+    redemption_pin_hash: hashPassword("0000"),
     trial_start_date: createdAt,
     trial_end_date: trialEndDate,
     created_at: createdAt,
@@ -723,6 +724,7 @@ export async function createMerchantAccountInSupabase(input: MerchantSignUpInput
       tripadvisor_url: "",
       custom_link_url: "",
       default_prize_cost: 3,
+      redemption_pin_hash: hashPassword("0000"),
       trial_start_date: createdAt,
       trial_end_date: trialEndDate,
       created_at: createdAt,
@@ -957,6 +959,7 @@ export async function authenticateOrProvisionMerchantWithGoogle(
     tripadvisor_url: "",
     custom_link_url: "",
     default_prize_cost: 3,
+    redemption_pin_hash: hashPassword("0000"),
     trial_start_date: createdAt,
     trial_end_date: trialEndDate,
     created_at: createdAt,
@@ -1179,6 +1182,7 @@ export async function createSupabaseMerchantLocation(input: {
       tripadvisor_url: "",
       custom_link_url: "",
       default_prize_cost: 3,
+      redemption_pin_hash: hashPassword("0000"),
       time_zone: input.timeZone ?? "Europe/Paris",
       created_at: createdAt,
     })
@@ -1394,7 +1398,7 @@ export async function updateMerchantOnboardingInSupabase(
       tiktok_url: input.tiktokUrl.trim(),
       tripadvisor_url: input.tripadvisorUrl.trim(),
       custom_link_url: input.customLinkUrl.trim(),
-      ...(input.redemptionPin ? { redemption_pin_hash: hashPassword(input.redemptionPin) } : {}),
+      redemption_pin_hash: hashPassword(input.redemptionPin?.trim() || "0000"),
       onboarding_completed: true,
     })
     .eq("id", userQuery.data.merchant_id);
