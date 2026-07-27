@@ -599,7 +599,49 @@ function normalizeCampaign(rawCampaign: Campaign | (Partial<Campaign> & Record<s
           backgroundColor: presentation.background?.color ?? "#ffffff",
           backgroundImageUrl: presentation.background?.imageUrl ?? "",
           headline: rawCampaign.subtitle ?? fallback.subtitle,
-          headlineTextColor: presentation.heading?.textColor ?? "#ff…9678 tokens truncated…gnSetupInput) {
+          headlineTextColor: presentation.heading?.textColor ?? "#ffffff",
+          headlineFontSizePx: presentation.heading?.fontSizePx ?? 42,
+          headlineFontFamily: presentation.heading?.fontFamily ?? "display",
+          wheel,
+          footerBackgroundColor: rawCampaign.accent?.signal ?? fallback.accent.signal,
+        }),
+      ),
+      email: normalizeCampaignEmailSettings(
+        presentation.email,
+        createCampaignEmailDefaults(merchantSeed),
+      ),
+    },
+    actions:
+      rawCampaign.actions ??
+      (targetUrl
+        ? [
+            createAction(
+              `action-${rawCampaign.id ?? fallback.id}-1`,
+              goalType ===…9100 tokens truncated…InMemory(prizeId: string, remainingQuantity: number | null) {
+  const prize = store.prizes.find((item) => item.id === prizeId);
+
+  if (!prize) {
+    throw new Error("Dotation introuvable");
+  }
+
+  prize.remainingQuantity = remainingQuantity;
+
+  return clone(prize);
+}
+
+function resetPrizeStockInMemory(prizeId: string) {
+  const prize = store.prizes.find((item) => item.id === prizeId);
+
+  if (!prize) {
+    throw new Error("Dotation introuvable");
+  }
+
+  prize.remainingQuantity = prize.totalQuantity;
+
+  return clone(prize);
+}
+
+function updateCampaignSetupInMemory(input: CampaignSetupInput) {
   const existing = input.id ? getCampaign(input.id) : undefined;
 
   if (existing) {
@@ -1177,4 +1219,3 @@ export async function duplicateCampaignToLocations(
     return duplicate.id;
   });
 }
-

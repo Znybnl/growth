@@ -112,7 +112,7 @@ function actionLabel(kind?: PublicCampaign["actions"][number]["kind"]) {
     case "google":
       return "Écrire un avis";
     case "instagram":
-      return "Voir Instagram";
+      return "Suivez-nous sur Instagram";
     case "facebook":
       return "Voir Facebook";
     case "tiktok":
@@ -486,7 +486,14 @@ export function CampaignExperience({
   const headingFontClass =
     campaign.presentation.heading.fontFamily === "anton"
       ? "font-anton"
-      : campaign…2477 tokens truncated…goMode === "image" && campaign.logoUrl) ||
+      : campaign.presentation.heading.fontFamily === "serif" || campaign.presentation.heading.fontFamily === "cormorant"
+        ? campaign.presentation.heading.fontFamily === "cormorant"
+          ? "font-cormorant"
+          : "font-serif"
+        : campaign.presentation.heading.fontFamily === "fredoka"
+          ? "font-fredoka"
+          : campaign.presentation.heading.fontFamily === "inter" || campaign.presentation.heading.fontFamily === "sans"
+            ? "font…2298 tokens truncated…       {!isImmersiveScratchTemplate && ((campaign.logoMode === "image" && campaign.logoUrl) ||
         campaign.logoMode === "text" ||
         campaign.gameType === "scratch") ? (
           <div className={`flex ${logoAlignmentClass}`}>
@@ -718,10 +725,12 @@ export function CampaignExperience({
         </h2>
         <p className="mt-4 text-center text-lg leading-8 text-[#5f6678]">
           {currentAction?.kind === "google"
-            ? "Votre retour aide l’établissement à progresser. Vous pouvez jouer dans tous les cas."
-            : currentAction
-              ? "Découvrez le lien du commerce dans un nouvel onglet, puis revenez ici pour jouer."
-              : "Touchez Jouer pour préparer votre partie et découvrir votre résultat."}
+            ? "Laissez-nous un avis et revenez ici pour jouer."
+            : currentAction?.kind === "instagram"
+              ? "Suivez-nous sur Instagram pour découvrir les nouveautés du commerce, puis revenez ici pour jouer."
+              : currentAction
+                ? "Découvrez le lien du commerce dans un nouvel onglet, puis revenez ici pour jouer."
+                : "Touchez Jouer pour préparer votre partie et découvrir votre résultat."}
         </p>
         <div className="mt-6 space-y-3">
           {currentAction ? (
@@ -749,9 +758,11 @@ export function CampaignExperience({
             onClick={() => void launchPreparedGame()}
             disabled={isLoading}
             className={
-              actionVisited || !currentAction
-                ? "w-full rounded-[20px] bg-[#111827] px-5 py-4 text-xl font-semibold text-white shadow-[0_12px_24px_rgba(17,24,39,0.16)] disabled:opacity-60"
-                : "w-full rounded-[12px] bg-transparent px-3 py-2 text-sm font-medium text-[#61687a] underline decoration-[#c4c9d4] underline-offset-4 transition hover:text-[#111827] disabled:opacity-60"
+              actionVisited
+                ? "w-full rounded-[20px] bg-[#111827] px-5 py-4 text-lg font-semibold text-white shadow-[0_12px_24px_rgba(17,24,39,0.16)] disabled:opacity-60"
+                : !currentAction
+                  ? "w-full rounded-[20px] bg-[#111827] px-5 py-4 text-xl font-semibold text-white shadow-[0_12px_24px_rgba(17,24,39,0.16)] disabled:opacity-60"
+                  : "w-full rounded-[12px] bg-transparent px-3 py-2 text-sm font-medium text-[#61687a] underline decoration-[#c4c9d4] underline-offset-4 transition hover:text-[#111827] disabled:opacity-60"
             }
           >
             {isLoading
@@ -914,4 +925,3 @@ export function CampaignExperience({
     </div>
   );
 }
-

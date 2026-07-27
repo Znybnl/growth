@@ -647,7 +647,40 @@ function enrichLeadRowsWithEmailDeliveries(
 
     return {
       ...normalizedLead,
-…18669 tokens truncated…n'a pas pu être mis à jour");
+      // Une participation perdante ne génère pas de gain e-mail à suivre,
+      // même si une ancienne ligne de livraison subsiste en base.
+      emailDeliveryStatus: normalizedLead.prizeId ? delivery?.status : undefined,
+      emailSentAt: normalizedLead.prizeId ? delivery?.sent_at ?? undefined : undefined,
+      emailDeliveredAt: normalizedLead.prizeId ? delivery?.delivered_at ?? undefined : undefined,
+      emailErrorMessage: normalizedLead.prizeId ? delivery?.error_message ?? undefined : undefined,
+    };
+  });
+}
+
+function toPublicCampaign(
+  campaign: Campaign,
+  merchant: Merchant,
+  prizes: Prize[],
+  actions = campaign.ac…17858 tokens truncated…ntity: number | null,
+) {
+  const supabase = getSupabaseAdmin();
+  const { data: current, error: currentError } = await supabase
+    .from("prizes")
+    .select("id,total_quantity")
+    .eq("id", prizeId)
+    .maybeSingle();
+  if (currentError || !current) {
+    throw new Error("Dotation introuvable");
+  }
+  const { data, error } = await supabase
+    .from("prizes")
+    .update({ remaining_quantity: remainingQuantity })
+    .eq("id", prizeId)
+    .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at")
+    .maybeSingle();
+
+  if (error || !data) {
+    throw new Error("Le stock n'a pas pu être mis à jour");
   }
 
   return toPrize(data as PrizeRow);
@@ -1280,4 +1313,3 @@ export async function getSupabaseMerchantSupportOverview(
     businessLogs,
   };
 }
-

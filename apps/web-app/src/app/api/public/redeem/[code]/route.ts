@@ -83,6 +83,10 @@ export async function POST(request: Request, { params }: RedemptionRouteContext)
       return NextResponse.json({ authorized: true, context }, { status: 200 });
     }
 
+    if (context.status !== "available") {
+      return NextResponse.json({ error: "Ce lot ne peut pas être retiré en dehors de sa période de validité.", context }, { status: 409 });
+    }
+
     const redeemed = await redeemMerchantLeadPrizeFromCashier({
       leadId: context.leadId,
       merchantId: context.merchantId,

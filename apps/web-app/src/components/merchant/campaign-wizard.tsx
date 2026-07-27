@@ -638,7 +638,44 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
         if (actionIndex !== index) return action;
         const nextAction = { ...action, ...patch };
         return patch.kind
-          ? { ...nextAction, url: w…6919 tokens truncated…ck">
+          ? { ...nextAction, url: wizardActionUrl(merchant, patch.kind) }
+          : nextAction;
+      }),
+    }));
+    setError(null);
+  }
+
+  function addAction() {
+    setDraft((current) => ({
+      ...current,
+      actions: [
+        ...current.actions,
+        {
+          id: `wizard-action-${Date.now()}`,
+          kind: "custom",
+          label: "Découvrir",
+          url: wizardActionUrl(merchant, "custom"),
+        },
+      ],
+    }));
+    setError(null);
+  }
+
+  function removeAction(index: number) {
+    setDraft((current) => ({
+      ...current,
+      actions: current.actions.filter(
+        (_, actionIndex) => actionIndex !== index,
+      ),
+    }…6497 tokens truncated…          updatePrize(current, prize.id, {
+                              probability: Number(event.target.value || 0),
+                            }),
+                          )
+                        }
+                        className="mt-2 w-full rounded-[13px] border border-[#dbe3ed] bg-white px-3 py-3 text-sm text-[#182033]"
+                      />
+                    </label>
+                    <label className="block">
                       <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8993a6]">
                         Stock
                       </span>
@@ -1068,4 +1105,3 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
     </div>
   );
 }
-

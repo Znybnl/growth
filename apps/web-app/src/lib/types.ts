@@ -749,6 +749,7 @@ export interface PublicRedemptionContext extends CashierRedemptionContext {
   merchantId: string;
   merchantName: string;
   merchantCity?: string;
+  email?: string;
 }
 
 export interface CampaignDataView {
@@ -797,4 +798,3 @@ export interface CampaignSetupInput {
     usageConditions?: string;
   }>;
 }
-

@@ -121,10 +121,8 @@ export function ImmersiveScratchTicket({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const drawingRef = useRef(false);
   const revealedRef = useRef(false);
-  const scratchStartedRef = useRef(false);
   const checksRef = useRef(0);
   const [revealed, setRevealed] = useState(false);
-  const [scratchStarted, setScratchStarted] = useState(false);
   const isVault = template === "scratch-vault";
   const isConfetti = template === "scratch-confetti";
   const isCoral = template === "scratch-coral";
@@ -191,9 +189,7 @@ export function ImmersiveScratchTicket({
     context.restore();
     checksRef.current = 0;
     revealedRef.current = false;
-    scratchStartedRef.current = false;
     setRevealed(false);
-    setScratchStarted(false);
   }, [isCoral, isLilac, isSunburst, isVault, primary, resultLabel]);
 
   function reveal() {
@@ -207,11 +203,6 @@ export function ImmersiveScratchTicket({
     const canvas = canvasRef.current;
     const context = canvas?.getContext("2d");
     if (!canvas || !context || !enabled || revealedRef.current) return;
-
-    if (!scratchStartedRef.current) {
-      scratchStartedRef.current = true;
-      setScratchStarted(true);
-    }
 
     context.globalCompositeOperation = "destination-out";
     context.beginPath();
@@ -278,13 +269,14 @@ export function ImmersiveScratchTicket({
         </div>
 
         <div className={`relative z-10 mx-auto mt-8 overflow-hidden rounded-[26px] ${surfaceClass}`}>
-          <div className="absolute inset-0 flex items-center justify-center p-5">
-            {isLilac ? <GiftIllustration color={illustrationColor} /> : null}
-            {!isLilac && !isCoral && !isSunburst ? <GiftIllustration color={illustrationColor} /> : null}
-          </div>
-          {isSunburst && !scratchStarted && !revealed ? (
-            <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center p-6">
-              <ScratchMark color={illustrationColor} />
+          {!revealed ? (
+            <div
+              aria-hidden="true"
+              className={`pointer-events-none absolute inset-0 z-30 flex items-center justify-center ${isSunburst ? "p-6" : "p-5"}`}
+            >
+              {isLilac ? <GiftIllustration color={illustrationColor} /> : null}
+              {!isLilac && !isCoral && !isSunburst ? <GiftIllustration color={illustrationColor} /> : null}
+              {isSunburst ? <ScratchMark color={illustrationColor} /> : null}
             </div>
           ) : null}
           {!revealed ? (
