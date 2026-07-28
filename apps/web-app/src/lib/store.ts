@@ -252,6 +252,7 @@ const campaignSeed: Campaign[] = [
     title: "Ticket vitrine · avis authentiques",
     subtitle: "Partagez votre expérience puis découvrez instantanément votre lot.",
     goalType: "review_prompt",
+    emailCaptureEnabled: false,
     ctaLabel: "Je participe",
     successMetric: "Clics vers avis",
     targetUrl: merchantSeed.googleReviewUrl,
@@ -297,6 +298,7 @@ const campaignSeed: Campaign[] = [
     title: "Summer drop · traction Instagram",
     subtitle: "Découvrez nos réseaux puis tentez votre chance en sortie de caisse.",
     goalType: "social_follow",
+    emailCaptureEnabled: false,
     ctaLabel: "Je participe",
     successMetric: "Clics sociaux",
     targetUrl: merchantSeed.instagramUrl,
@@ -354,6 +356,7 @@ const campaignSeed: Campaign[] = [
     title: "Collectors club · base CRM locale",
     subtitle: "Laissez vos coordonnées et gagnez un avantage à utiliser plus tard en boutique.",
     goalType: "lead_capture",
+    emailCaptureEnabled: true,
     ctaLabel: "Je participe",
     successMetric: "Nouveaux contacts opt-in",
     isActive: false,
@@ -564,6 +567,10 @@ function normalizeCampaign(rawCampaign: Campaign | (Partial<Campaign> & Record<s
     title: rawCampaign.title ?? fallback.title,
     subtitle: rawCampaign.subtitle ?? fallback.subtitle,
     goalType,
+    emailCaptureEnabled:
+      typeof rawCampaign.emailCaptureEnabled === "boolean"
+        ? rawCampaign.emailCaptureEnabled
+        : goalType === "lead_capture" || (rawCampaign.actions ?? []).some((action) => action.kind === "crm"),
     ctaLabel: rawCampaign.ctaLabel ?? fallback.ctaLabel,
     successMetric: rawCampaign.successMetric ?? fallback.successMetric,
     targetUrl,
@@ -745,6 +752,7 @@ function toPublicCampaign(campaign: Campaign, actions = campaign.actions): Publi
     title: campaign.title,
     subtitle: campaign.subtitle,
     goalType: campaign.goalType,
+    emailCaptureEnabled: campaign.emailCaptureEnabled,
     gameType: campaign.gameType,
     ctaLabel: campaign.ctaLabel,
     targetUrl: campaign.targetUrl,
@@ -1343,7 +1351,8 @@ function getPublicCampaignFromMemory(id: string) {
     return null;
   }
 
-  return clone(toPublicCampaign(campaign));
+  const marketingActions = campaign.actions.filter((action) => action.kind !== "crm");
+  return clone(toPublicCampaign(campaign, marketingActions.length ? [marketingActions[0]] : []));
 }
 
 function getCampaignPerformanceFromMemory(campaignId: string) {
@@ -1607,8 +1616,7 @@ function finalizeDrawSessionFromMemory(input: FinalizeDrawSessionRequest): DrawR
     throw new Error("Campagne indisponible");
   }
 
-  const requiresContactCapture =
-    campaign.goalType === "lead_capture" || campaign.actions.some((action) => action.kind === "crm");
+  const requiresContactCapture = campaign.emailCaptureEnabled;
   if (requiresContactCapture && input.marketingConsent !== true) {
     throw new Error("Le consentement est obligatoire pour participer à cette campagne.");
   }
@@ -1617,7 +1625,8 @@ function finalizeDrawSessionFromMemory(input: FinalizeDrawSessionRequest): DrawR
   const previousParticipations = store.leads.filter(
     (item) => item.campaignId === campaign.id && item.email === lead.email,
   ).length;
-  const actionForVisit = campaign.actions[previousParticipations];
+  const marketingActions = campaign.actions.filter((action) => action.kind !== "crm");
+  const actionForVisit = marketingActions[previousParticipations];
   const prize = lead.prizeId
     ? getCampaignPrizes(campaign.id).find((item) => item.id === lead.prizeId) ?? null
     : null;
@@ -1823,6 +1832,7 @@ function updateCampaignSetupInMemory(input: CampaignSetupInput) {
     existing.title = input.title;
     existing.subtitle = input.subtitle;
     existing.goalType = input.goalType;
+    existing.emailCaptureEnabled = input.emailCaptureEnabled;
     existing.ctaLabel = input.ctaLabel;
     existing.successMetric = input.successMetric;
     existing.targetUrl = input.targetUrl;
@@ -1860,6 +1870,7 @@ function updateCampaignSetupInMemory(input: CampaignSetupInput) {
     title: input.title,
     subtitle: input.subtitle,
     goalType: input.goalType,
+    emailCaptureEnabled: input.emailCaptureEnabled,
     ctaLabel: input.ctaLabel,
     successMetric: input.successMetric,
     targetUrl: input.targetUrl,

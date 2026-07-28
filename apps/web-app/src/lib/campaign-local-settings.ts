@@ -10,6 +10,7 @@ import path from "node:path";
 import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/supabase";
 
 type CampaignLocalSettings = {
+  emailCaptureEnabled?: boolean;
   buttonTextSizePx?: number;
   buttonIsBold?: boolean;
   blockSpacingPx?: number;

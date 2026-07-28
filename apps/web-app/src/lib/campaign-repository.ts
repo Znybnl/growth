@@ -444,6 +444,9 @@ function toCampaign(
     title: row.title,
     subtitle: row.subtitle,
     goalType: row.goal_type,
+    emailCaptureEnabled:
+      localSettings.emailCaptureEnabled ??
+      (row.goal_type === "lead_capture" || actions.some((action) => action.kind === "crm")),
     ctaLabel: row.cta_label,
     successMetric: row.success_metric,
     targetUrl: row.target_url ?? undefined,
@@ -668,6 +671,7 @@ function toPublicCampaign(
     title: campaign.title,
     subtitle: campaign.subtitle,
     goalType: campaign.goalType,
+    emailCaptureEnabled: campaign.emailCaptureEnabled,
     gameType: campaign.gameType,
     ctaLabel: campaign.ctaLabel,
     targetUrl: campaign.targetUrl,
@@ -1262,9 +1266,13 @@ export async function getSupabasePublicCampaign(
   }
   assertMerchantBillingAccess(performance.merchant, "campaign_public");
 
-  // Keep CRM actions in the ordered public sequence. They are rendered as the
-  // pre-game contact form, never as an external link.
-  let actions = performance.campaign.actions;
+  // CRM is now a dedicated capture option, not a visit in the marketing
+  // sequence. Keep CRM rows in the merchant editor for backwards
+  // compatibility, but never count them as a visit or expose them publicly.
+  const marketingActions = performance.campaign.actions.filter(
+    (action) => action.kind !== "crm",
+  );
+  let actions = marketingActions.length ? [marketingActions[0]] : [];
   if (participantToken) {
     const supabase = getSupabaseAdmin();
     const { data: identity } = await supabase
@@ -1281,7 +1289,7 @@ export async function getSupabasePublicCampaign(
         .select("id", { count: "exact", head: true })
         .eq("campaign_id", campaignId)
         .ilike("email", identity.email);
-      const nextAction = actions[count ?? 0];
+      const nextAction = marketingActions[count ?? 0];
       actions = nextAction ? [nextAction] : [];
     }
   }
@@ -1947,6 +1955,7 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
     };
   });
   const localSettings = {
+    emailCaptureEnabled: input.emailCaptureEnabled,
     buttonTextSizePx: input.presentation.button.textSizePx,
     buttonIsBold: input.presentation.button.isBold,
     blockSpacingPx: input.presentation.layout.blockSpacingPx,
@@ -2084,6 +2093,7 @@ export async function duplicateCampaignInSupabase(id: string, merchant: Merchant
     title: `${performance.campaign.title} (copie)`,
     subtitle: performance.campaign.subtitle,
     goalType: performance.campaign.goalType,
+    emailCaptureEnabled: performance.campaign.emailCaptureEnabled,
     ctaLabel: performance.campaign.ctaLabel,
     successMetric: performance.campaign.successMetric,
     targetUrl: performance.campaign.targetUrl,
@@ -2128,6 +2138,7 @@ export async function duplicateCampaignToMerchantInSupabase(
     title: `${performance.campaign.title} · ${targetMerchant.city ?? targetMerchant.companyName}`,
     subtitle: performance.campaign.subtitle,
     goalType: performance.campaign.goalType,
+    emailCaptureEnabled: performance.campaign.emailCaptureEnabled,
     ctaLabel: performance.campaign.ctaLabel,
     successMetric: performance.campaign.successMetric,
     targetUrl: performance.campaign.targetUrl,
@@ -2341,9 +2352,7 @@ export async function finalizeDrawSessionInSupabase(
   }
   assertMerchantBillingAccess(initialPerformance.merchant, "campaign_public");
 
-  const requiresContactCapture =
-    initialPerformance.campaign.goalType === "lead_capture" ||
-    initialPerformance.campaign.actions.some((action) => action.kind === "crm");
+  const requiresContactCapture = initialPerformance.campaign.emailCaptureEnabled;
   if (requiresContactCapture && input.marketingConsent !== true) {
     throw new Error("Le consentement est obligatoire pour participer à cette campagne.");
   }
@@ -2392,8 +2401,9 @@ export async function finalizeDrawSessionInSupabase(
   const prize = data.prize_id
     ? prizes.find((item) => item.id === data.prize_id) ?? null
     : null;
+  const marketingActions = campaign.actions.filter((action) => action.kind !== "crm");
   const actionForVisit =
-    typeof data.action_index === "number" ? campaign.actions[data.action_index] : undefined;
+    typeof data.action_index === "number" ? marketingActions[data.action_index] : undefined;
 
   return {
     lead,
