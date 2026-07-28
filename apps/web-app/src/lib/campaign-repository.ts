@@ -502,4 +502,2830 @@ function toCampaign(
           backgroundMode: row.background_mode,
           backgroundColor: row.background_color,
           backgroundImageUrl: row.background_image_url ?? "",
-          headli€Õ¯Ê⁄$z{-ÆÈ‹j◊ùñ√Û¢7G&ñÊs∞–¢7V&¶V7C¢7G&ñÊs∞–¢÷WFFFÛ¢&V6˜&C«7G&ñÊr¬7G&ñÊr¬ÁV÷&W"¬&ˆˆ∆V‚¬ÁV∆√„∞–ß”∞–†–¶Wá˜'B7ñÊ2gVÊ7Fñˆ‚W6W'E&Wv&DV÷ñƒFV∆ófW'îñÂ7W&6RÜñÁWC¢&Wv&DV÷ñƒFV∆ófW'îñÁWBí∞–¢6ˆÁ7B7W&6R“vWE7W&6TF÷ñ‚Çì∞–¢6ˆÁ7Bñ∆ˆB“∞–¢6◊ñvÂˆñC¢ñÁWBÊ6◊ñv‰ñB¿–¢∆VEˆñC¢ñÁWBÊ∆VDñB¿–¢&V6óñVÁEˆV÷ñ√¢ñÁWBÁ&V6óñVÁDV÷ñ¬¿–¢6VÊFW%ˆV÷ñ√¢ñÁWBÁ6VÊFW$V÷ñ¬¿–¢&W«ï˜FıˆV÷ñ√¢ñÁWBÁ&W«ïFÙV÷ñ¬ÛÚÁV∆¬¿–¢7V&¶V7C¢ñÁWBÁ7V&¶V7B¿–¢7FGW3¢'VWVVB"¿–¢W'&˜%ˆ÷W76vS¢ÁV∆¬¿–¢÷WFFF¢ñÁWBÊ÷WFFFÛÚ∑“¿–¢∆7EˆWfVÁEˆC¢ÊWrFFRÇíÁFÙï4ı7G&ñÊrÇí¿–¢”∞–†–¢6ˆÁ7B≤FF¬W'&˜"““vóB7W&6P–¢Êg&ˆ“Ç'&Wv&EˆV÷ñ≈ˆFV∆ófW&ñW2"ê–¢ÁW6W'Báñ∆ˆB¬≤ˆ‰6ˆÊf∆ñ7C¢&∆VEˆñB"“ê–¢Á6V∆V7BÇ"¢"ê–¢Á6ñÊv∆RÇì∞–†–¢ñbÜW'&˜"«¬FFí∞–¢Fá&˜rÊWrW'&˜"ÜVÁ&Vvó7G&V÷VÁBFR¬vV÷ñ¬ñ◊˜76ñ&∆S¢G∂W'&˜#ÚÊ÷W76vRÛÚ&∆ñvÊR'6VÁFR'÷ì∞–¢––†–¢&WGW&‚FF2&Wv&DV÷ñƒFV∆ófW'ï&˜s∞–ß––†–¶Wá˜'B7ñÊ2gVÊ7Fñˆ‚÷&µ&Wv&DV÷ñ≈6VÁDñÂ7W&6RÄ–¢FV∆ófW'îñC¢7G&ñÊr¿–¢&W6VÊDV÷ñƒñC¢7G&ñÊr¬ÁV∆¬¿–¢í∞–¢6ˆÁ7B7W&6R“vWE7W&6TF÷ñ‚Çì∞–¢6ˆÁ7BÊ˜r“ÊWrFFRÇíÁFÙï4ı7G&ñÊrÇì∞–¢6ˆÁ7B≤W'&˜"““vóB7W&6P–¢Êg&ˆ“Ç'&Wv&EˆV÷ñ≈ˆFV∆ófW&ñW2"ê–¢ÁWFFRá∞–¢&W6VÊEˆV÷ñ≈ˆñC¢&W6VÊDV÷ñƒñB¿–¢7FGW3¢'6VÁB"¿–¢6VÁEˆC¢Ê˜r¿–¢∆7EˆWfVÁEˆC¢Ê˜r¿–¢ÊWáE˜&WG'ïˆC¢ÁV∆¬¿–¢W'&˜%ˆ÷W76vS¢ÁV∆¬¿–¢“ê–¢ÊWÇ&ñB"¬FV∆ófW'îñBì∞–†–¢ñbÜW'&˜"í∞–¢Fá&˜rÊWrW'&˜"Ü÷ó6R:¶˜W"FR¬vV÷ñ¬VÁf˜ú:íñ◊˜76ñ&∆S¢G∂W'&˜"Ê÷W76vW÷ì∞–¢––ß––†–¶Wá˜'B7ñÊ2gVÊ7Fñˆ‚÷&µ&Wv&DV÷ñƒfñ∆VDñÂ7W&6RÜFV∆ófW'îñC¢7G&ñÊr¬W'&˜$÷W76vS¢7G&ñÊrí∞–¢6ˆÁ7B≤W'&˜#¢&WG'îW'&˜"““vóBvWE7W&6TF÷ñ‚ÇíÁ'2Ç'66ÜVGV∆U˜&Wv&EˆV÷ñ≈˜&WG'í"¬∞–¢ˆFV∆ófW'ïˆñC¢FV∆ófW'îñB¿–¢ˆW'&˜%ˆ÷W76vS¢W'&˜$÷W76vR¿–¢“ì∞–¢ñbá&WG'îW'&˜"í∞–¢Fá&˜rÊWrW'&˜"Ü÷ó6R:¶˜W"FR¬vR÷÷ñ¬V‚:ñ6ÜV2ñ◊˜76ñ&∆S¢G∑&WG'îW'&˜"Ê÷W76vW÷ì∞–¢––¢&WGW&„∞–†–¢Ú†–¢∆Vv7íÊˆ‚◊&WG'íñ◊∆V÷VÁFFñˆ‚‡–¢6ˆÁ7B7W&6R“vWE7W&6TF÷ñ‚Çì∞–¢6ˆÁ7BÊ˜r“ÊWrFFRÇíÁFÙï4ı7G&ñÊrÇì∞–¢6ˆÁ7B≤W'&˜"““vóB7W&6P–¢Êg&ˆ“Ç'&Wv&EˆV÷ñ≈ˆFV∆ófW&ñW2"ê–¢ÁWFFRá∞–¢7FGW3¢&fñ∆VB"¿–¢W'&˜%ˆ÷W76vS¢W'&˜$÷W76vR¿–¢∆7EˆWfVÁEˆC¢Ê˜r¿–¢“ê–¢ÊWÇ&ñB"¬FV∆ófW'îñBì∞–†–¢ñbÜW'&˜"í∞–¢Fá&˜rÊWrW'&˜"Ü÷ó6R:¶˜W"FR¬vV÷ñ¬V‚:ñ6ÜV2ñ◊˜76ñ&∆S¢G∂W'&˜"Ê÷W76vW÷ì∞–¢“¢–ß––†–¶Wá˜'B7ñÊ2gVÊ7Fñˆ‚vWE7W&6U&WG'ñ&∆U&Wv&DV÷ñƒ6ÊFñFFW2Ü∆ñ÷óB“#í∞–¢6ˆÁ7B≤FF¬W'&˜"““vóBvWE7W&6TF÷ñ‚Çê–¢Êg&ˆ“Ç'&Wv&EˆV÷ñ≈ˆFV∆ófW&ñW2"ê–¢Á6V∆V7BÇ&∆VEˆñB∆6◊ñvÂˆñB"ê–¢ÊWÇ'7FGW2"¬&fñ∆VB"ê–¢ÊÊ˜BÇ&ÊWáE˜&WG'ïˆB"¬&ó2"¬ÁV∆¬ê–¢Ê«FRÇ&ÊWáE˜&WG'ïˆB"¬ÊWrFFRÇíÁFÙï4ı7G&ñÊrÇíê–¢Ê˜&FW"Ç&ÊWáE˜&WG'ïˆB"¬≤66VÊFñÊs¢G'VR“ê–¢Ê∆ñ÷óBÑ÷FÇÊ÷ÇÉ¬÷FÇÊ÷ñ‚Ü∆ñ÷óB¬Sííì∞–†–¢ñbÜW'&˜"í∞–¢Fá&˜rÊWrW'&˜"Ü∆V7GW&RFW2&V∆Ê6W2R÷÷ñ¬ñ◊˜76ñ&∆S¢G∂W'&˜"Ê÷W76vW÷ì∞–¢––¢&WGW&‚ÜFFÛÚµ“í2'&ì«≤∆VEˆñC¢7G&ñÊs≤6◊ñvÂˆñC¢7G&ñÊr”„∞–ß––†–¶gVÊ7Fñˆ‚÷vV&Üˆˆ¥FV∆ófW'ï7FGW2ÜWfVÁC¢vV&Üˆˆ¥WfVÁEñ∆ˆBí∞–¢7vóF6ÇÜWfVÁBÁGóRí∞–¢66R&V÷ñ¬Á6VÁB#†–¢&WGW&‚'6VÁB#∞–¢66R&V÷ñ¬ÊFV∆ófW&VB#†–¢&WGW&‚&FV∆ófW&VB#∞–¢66R&V÷ñ¬Ê&˜VÊ6VB#†–¢&WGW&‚&&˜VÊ6VB#∞–¢66R&V÷ñ¬Ê6ˆ◊∆ñÊVB#†–¢&WGW&‚&6ˆ◊∆ñÊVB#∞–¢66R&V÷ñ¬Á7W&W76VB#†–¢&WGW&‚'7W&W76VB#∞–¢66R&V÷ñ¬Êfñ∆VB#†–¢&WGW&‚&fñ∆VB#∞–¢FVfV«C†–¢&WGW&‚ÁV∆√∞–¢––ß––†–¶gVÊ7Fñˆ‚ó5&Wv&DV÷ñ≈vV&Üˆˆ¥WfVÁBÄ–¢WfVÁC¢vV&Üˆˆ¥WfVÁEñ∆ˆB¿–¢ì¢WfVÁBó2WáG&7C¿–¢vV&Üˆˆ¥WfVÁEñ∆ˆB¿–¢∞–¢FF¢∞–¢V÷ñ≈ˆñC¢7G&ñÊs∞–¢”∞–¢––£‚∞–¢&WGW&‚&FF"ñ‚WfVÁBbbGóVˆbWfVÁBÊFF””“&ˆ&¶V7B"bbWfVÁBÊFF”“ÁV∆¬bb&V÷ñ≈ˆñB"ñ‚WfVÁBÊFF∞–ß––†–¶Wá˜'B7ñÊ2gVÊ7Fñˆ‚7ñÊ5&Wv&DV÷ñ≈vV&Üˆˆ¥ñÂ7W&6RÜWfVÁC¢vV&Üˆˆ¥WfVÁEñ∆ˆBí∞–¢6ˆÁ7B&W6VÊDV÷ñƒñB“ó5&Wv&DV÷ñ≈vV&Üˆˆ¥WfVÁBÜWfVÁBíÚWfVÁBÊFFÊV÷ñ≈ˆñB¢ÁV∆√∞–¢6ˆÁ7BFV∆ófW'ï7FGW2“÷vV&Üˆˆ¥FV∆ófW'ï7FGW2ÜWfVÁBì∞–¢6ˆÁ7B7W&6R“vWE7W&6TF÷ñ‚Çì∞–¢∆WBFV∆ófW'îñC¢7G&ñÊr¬ÁV∆¬“ÁV∆√∞–†–¢ñbá&W6VÊDV÷ñƒñBí∞–¢6ˆÁ7BFñ÷W7F◊“WfVÁBÊ7&VFVEˆBÛÚÊWrFFRÇíÁFÙï4ı7G&ñÊrÇì∞–¢6ˆÁ7BFV∆ófW'ïWFFS¢&V6˜&C«7G&ñÊr¬7G&ñÊr¬ÁV∆√‚“∞–¢&W6VÊEˆV÷ñ≈ˆñC¢&W6VÊDV÷ñƒñB¿–¢∆7EˆWfVÁEˆC¢Fñ÷W7F◊¿–¢”∞–†–¢ñbÜFV∆ófW'ï7FGW2í∞–¢FV∆ófW'ïWFFRÁ7FGW2“FV∆ófW'ï7FGW3∞–¢––†–¢ñbÜWfVÁBÁGóR””“&V÷ñ¬ÊFV∆ófW&VB"í∞–¢FV∆ófW'ïWFFRÊFV∆ófW&VEˆB“Fñ÷W7F◊∞–¢––†–¢ñbÜWfVÁBÁGóR””“&V÷ñ¬Ê&˜VÊ6VB"í∞–¢FV∆ófW'ïWFFRÊ&˜VÊ6VEˆB“Fñ÷W7F◊∞–¢FV∆ófW'ïWFFRÊW'&˜%ˆ÷W76vR“WfVÁBÊFFÊ&˜VÊ6RÊ÷W76vS∞–¢––†–¢ñbÜWfVÁBÁGóR””“&V÷ñ¬Ê6ˆ◊∆ñÊVB"í∞–¢FV∆ófW'ïWFFRÊ6ˆ◊∆ñÊVEˆB“Fñ÷W7F◊∞–¢––†–¢ñbÜWfVÁBÁGóR””“&V÷ñ¬Êfñ∆VB"í∞–¢FV∆ófW'ïWFFRÊW'&˜%ˆ÷W76vR“WfVÁBÊFFÊfñ∆VBÁ&V6ˆ„∞–¢––†–¢ñbÜWfVÁBÁGóR””“&V÷ñ¬Á7W&W76VB"í∞–¢FV∆ófW'ïWFFRÊW'&˜%ˆ÷W76vR“WfVÁBÊFFÁ7W&W76VBÊ÷W76vS∞–¢––†–¢6ˆÁ7B≤FF¢FV∆ófW'îFF¬W'&˜#¢FV∆ófW'îW'&˜"““vóB7W&6P–¢Êg&ˆ“Ç'&Wv&EˆV÷ñ≈ˆFV∆ófW&ñW2"ê–¢ÁWFFRÜFV∆ófW'ïWFFRê–¢ÊWÇ'&W6VÊEˆV÷ñ≈ˆñB"¬&W6VÊDV÷ñƒñBê–¢Á6V∆V7BÇ&ñB"ê–¢Ê÷ñ&U6ñÊv∆RÇì∞–†–¢ñbÜFV∆ófW'îW'&˜"í∞–¢Fá&˜rÊWrW'&˜"Ü7ñÊ6á&ˆÊó6Fñˆ‚V÷ñ¬ñ◊˜76ñ&∆S¢G∂FV∆ófW'îW'&˜"Ê÷W76vW÷ì∞–¢––†–¢FV∆ófW'îñB––¢FV∆ófW'îFFbbGóVˆbFV∆ófW'îFF””“&ˆ&¶V7B"bb&ñB"ñ‚FV∆ófW'îFF–¢Ú7G&ñÊrÜFV∆ófW'îFFÊñBê–¢¢ÁV∆√∞–†–¢ñbÜFV∆ófW'îñBbbWfVÁBÁGóR””“&V÷ñ¬Êfñ∆VB"í∞–¢6ˆÁ7B&WG'ï&V6ˆ‚“WfVÁBÊFFÊfñ∆VBÁ&V6ˆ‚«¬,8ñ6ÜV2&W6VÊB#∞–¢vóB÷&µ&Wv&DV÷ñƒfñ∆VDñÂ7W&6RÜFV∆ófW'îñB¬&WG'ï&V6ˆ‚ì∞–¢––¢––†–¢6ˆÁ7B≤W'&˜#¢WfVÁDW'&˜"““vóB7W&6RÊg&ˆ“Ç'&Wv&EˆV÷ñ≈ˆWfVÁG2"íÊñÁ6W'Bá∞–¢&Wv&EˆV÷ñ≈ˆFV∆ófW'ïˆñC¢FV∆ófW'îñB¿–¢&W6VÊEˆV÷ñ≈ˆñC¢&W6VÊDV÷ñƒñB¿–¢WfVÁE˜GóS¢WfVÁBÁGóR¿–¢ñ∆ˆC¢WfVÁB¿–¢“ì∞–†–¢ñbÜWfVÁDW'&˜"í∞–¢Fá&˜rÊWrW'&˜"Ü&6ÜófvRGRvV&Üˆˆ≤V÷ñ¬ñ◊˜76ñ&∆S¢G∂WfVÁDW'&˜"Ê÷W76vW÷ì∞–¢––ß––†–¶Wá˜'B7ñÊ2gVÊ7Fñˆ‚vWE7W&6T÷W&6ÜÁE7W˜'D˜fW'fñWrÄ–¢÷W&6ÜÁC¢÷W&6ÜÁB¿–¢˜FñˆÁ3¢≤ñÊ6«VFT∆ƒ÷W&6ÜÁG3Û¢&ˆˆ∆V‚““∑“¿–¢ì¢&ˆ÷ó6Sƒ÷W&6ÜÁE7W˜'D˜fW'fñWs‚∞–¢6ˆÁ7B7W&6R“vWE7W&6TF÷ñ‚Çì∞–¢6ˆÁ7B6◊ñvÂVW'í“7W&6P–¢Êg&ˆ“Ç&6◊ñvÁ2"ê–¢Á6V∆V7BÇ&ñB«FóF∆R∆÷W&6ÜÁEˆñB"ì∞–†–¢ñbÇ˜FñˆÁ2ÊñÊ6«VFT∆ƒ÷W&6ÜÁG2í∞–¢6◊ñvÂVW'íÊWÇ&÷W&6ÜÁEˆñB"¬÷W&6ÜÁBÊñBì∞–¢––†–¢6ˆÁ7B≤FF¢6◊ñvÂ&˜w2¬W'&˜#¢6◊ñv‰W'&˜"““vóB6◊ñvÂVW'ì∞–†–¢ñbÜ6◊ñv‰W'&˜"í∞–¢Fá&˜rÊWrW'&˜"Ü∆V7GW&RFW26◊vÊW27W˜'Bñ◊˜76ñ&∆S¢G∂6◊ñv‰W'&˜"Ê÷W76vW÷ì∞–¢––†–¢6ˆÁ7B6◊ñvÁ2“Ü6◊ñvÂ&˜w2ÛÚµ“í2'&ì«≤ñC¢7G&ñÊs≤FóF∆S¢7G&ñÊr”„∞–¢6ˆÁ7B6◊ñv‰ñG2“6◊ñvÁ2Ê÷ÇÜóFV“í”‚óFV“ÊñBì∞–¢6ˆÁ7B6◊ñvÂFóF∆T'îñB“ÊWr÷Ü6◊ñvÁ2Ê÷ÇÜóFV“í”‚∂óFV“ÊñB¬óFV“ÁFóF∆U“íì∞–†–¢ñbÇ6◊ñv‰ñG2Ê∆VÊwFÇí∞–¢&WGW&‚∞–¢fñ∆VDV÷ñ«3¢µ“¿–¢vV&Üˆˆ∑3¢µ“¿–¢VÊFñÊt6∆ñ◊3¢µ“¿–¢'W6ñÊW74∆ˆw3¢µ“¿–¢”∞–¢––†–¢6ˆÁ7B'W6ñÊW74∆ˆuVW'í“7W&6P–¢Êg&ˆ“Ç&'W6ñÊW75ˆ∆ˆw2"ê–¢Á6V∆V7BÇ&ñB∆∆WfV¬∆WfVÁB∆÷W&6ÜÁEˆñB∆6◊ñvÂˆñB∆∆VEˆñB∆V÷ñ¬«&VFV◊FñˆÂˆ6ˆFR«7V÷÷'í∆7&VFVEˆB"ê–¢Ê˜&FW"Ç&7&VFVEˆB"¬≤66VÊFñÊs¢f«6R“ê–¢Ê∆ñ÷óBÉSì∞–†–¢ñbÇ˜FñˆÁ2ÊñÊ6«VFT∆ƒ÷W&6ÜÁG2í∞–¢'W6ñÊW74∆ˆuVW'íÊWÇ&÷W&6ÜÁEˆñB"¬÷W&6ÜÁBÊñBì∞–¢––†–¢6ˆÁ7B∂fñ∆VDV÷ñ≈&W7V«B¬VÊFñÊt6∆ñ’&W7V«B¬FV∆ófW'ï&W7V«B¬vV&Üˆˆµ&W7V«B¬'W6ñÊW74∆ˆu&W7V«E““vóB&ˆ÷ó6RÊ∆¬Ö∞–¢7W&6P–¢Êg&ˆ“Ç'&Wv&EˆV÷ñ≈ˆFV∆ófW&ñW2"ê–¢Á6V∆V7BÇ&ñB∆6◊ñvÂˆñB∆∆VEˆñB«&V6óñVÁEˆV÷ñ¬«7FGW2∆W'&˜%ˆ÷W76vR∆∆7EˆWfVÁEˆB"ê–¢Êñ‚Ç&6◊ñvÂˆñB"¬6◊ñv‰ñG2ê–¢Êñ‚Ç'7FGW2"¬≤&fñ∆VB"¬&&˜VÊ6VB"¬&6ˆ◊∆ñÊVB"¬'7W&W76VB%“ê–¢Ê˜&FW"Ç&∆7EˆWfVÁEˆB"¬≤66VÊFñÊs¢f«6R“ê–¢Ê∆ñ÷óBÉ#í¿–¢7W&6P–¢Êg&ˆ“Ç&∆VG2"ê–¢Á6V∆V7BÄ–¢&ñB∆6◊ñvÂˆñB∆fó'7EˆÊ÷R∆V÷ñ¬«&ó¶UˆñB«7FGW2«&VFV◊FñˆÂˆ6ˆFR«&Wv&Eˆfñ∆&∆UˆB«&Wv&EˆWáó&W5ˆB"¿–¢ê–¢Êñ‚Ç&6◊ñvÂˆñB"¬6◊ñv‰ñG2ê–¢ÊWÇ'7FGW2"¬&6∆ñ÷VB"ê–¢ÊÊ˜BÇ'&ó¶UˆñB"¬&ó2"¬ÁV∆¬ê–¢Ê˜&FW"Ç&7&VFVEˆB"¬≤66VÊFñÊs¢f«6R“ê–¢Ê∆ñ÷óBÉ3í¿–¢7W&6P–¢Êg&ˆ“Ç'&Wv&EˆV÷ñ≈ˆFV∆ófW&ñW2"ê–¢Á6V∆V7BÇ&ñB∆6◊ñvÂˆñB∆∆VEˆñB«&V6óñVÁEˆV÷ñ¬«7FGW2"ê–¢Êñ‚Ç&6◊ñvÂˆñB"¬6◊ñv‰ñG2í¿–¢7W&6P–¢Êg&ˆ“Ç'&Wv&EˆV÷ñ≈ˆWfVÁG2"ê–¢Á6V∆V7BÇ&ñB«&Wv&EˆV÷ñ≈ˆFV∆ófW'ïˆñB«&W6VÊEˆV÷ñ≈ˆñB∆WfVÁE˜GóR«ñ∆ˆB∆7&VFVEˆB"ê–¢Ê˜&FW"Ç&7&VFVEˆB"¬≤66VÊFñÊs¢f«6R“ê–¢Ê∆ñ÷óBÉ3í¿–¢'W6ñÊW74∆ˆuVW'í¿–¢“ì∞–†–¢ñbÜfñ∆VDV÷ñ≈&W7V«BÊW'&˜"í∞–¢Fá&˜rÊWrW'&˜"Ü∆V7GW&RFW2R÷÷ñ«2V‚:ñ6ÜV2ñ◊˜76ñ&∆S¢G∂fñ∆VDV÷ñ≈&W7V«BÊW'&˜"Ê÷W76vW÷ì∞–¢––¢ñbáVÊFñÊt6∆ñ’&W7V«BÊW'&˜"í∞–¢Fá&˜rÊWrW'&˜"Ü∆V7GW&RFW2vñÁ2V‚GFVÁFRñ◊˜76ñ&∆S¢G∑VÊFñÊt6∆ñ’&W7V«BÊW'&˜"Ê÷W76vW÷ì∞–¢––¢ñbÜFV∆ófW'ï&W7V«BÊW'&˜"í∞–¢Fá&˜rÊWrW'&˜"Ü∆V7GW&RFW2R÷÷ñ«2ñ◊˜76ñ&∆S¢G∂FV∆ófW'ï&W7V«BÊW'&˜"Ê÷W76vW÷ì∞–¢––¢ñbávV&Üˆˆµ&W7V«BÊW'&˜"í∞–¢Fá&˜rÊWrW'&˜"Ü∆V7GW&RFW2vV&Üˆˆ∑2ñ◊˜76ñ&∆S¢G∑vV&Üˆˆµ&W7V«BÊW'&˜"Ê÷W76vW÷ì∞–¢––¢6ˆÁ7B'W6ñÊW74∆ˆw4fñ∆&∆R“'W6ñÊW74∆ˆu&W7V«BÊW'&˜#∞–†–¢6ˆÁ7BFV∆ófW'ï&˜w2“ÜFV∆ófW'ï&W7V«BÊFFÛÚµ“í2'&ì«∞–¢ñC¢7G&ñÊs∞–¢6◊ñvÂˆñC¢7G&ñÊs∞–¢∆VEˆñC¢7G&ñÊs∞–¢&V6óñVÁEˆV÷ñ√¢7G&ñÊs∞–¢7FGW3¢&Wv&DV÷ñƒFV∆ófW'ï≤'7FGW2%”∞–¢”„∞–¢6ˆÁ7BFV∆ófW'î'îñB“ÊWr÷ÜFV∆ófW'ï&˜w2Ê÷Çá&˜rí”‚∑&˜rÊñB¬&˜u“íì∞–†–¢6ˆÁ7B∆VDñG2“ÊWr6WC«7G&ñÊs‚Çì∞–¢f˜"Ü6ˆÁ7B&˜rˆbÜfñ∆VDV÷ñ≈&W7V«BÊFFÛÚµ“í2'&ì«≤∆VEˆñC¢7G&ñÊr”‚í∞–¢∆VDñG2ÊFBá&˜rÊ∆VEˆñBì∞–¢––¢f˜"Ü6ˆÁ7B&˜rˆbáVÊFñÊt6∆ñ’&W7V«BÊFFÛÚµ“í2'&ì«≤ñC¢7G&ñÊr”‚í∞–¢∆VDñG2ÊFBá&˜rÊñBì∞–¢––¢f˜"Ü6ˆÁ7B&˜rˆbFV∆ófW'ï&˜w2í∞–¢∆VDñG2ÊFBá&˜rÊ∆VEˆñBì∞–¢––†–¢6ˆÁ7B≤FF¢∆VE&˜w2¬W'&˜#¢∆VDW'&˜"““vóB7W&6P–¢Êg&ˆ“Ç&∆VG2"ê–¢Á6V∆V7BÇ&ñB∆fó'7EˆÊ÷R∆V÷ñ¬«&ó¶UˆñB"ê–¢Êñ‚Ç&ñB"¬'&íÊg&ˆ“Ü∆VDñG2íì∞–†–¢ñbÜ∆VDW'&˜"í∞–¢Fá&˜rÊWrW'&˜"Ü∆V7GW&RFW2∆VG27W˜'Bñ◊˜76ñ&∆S¢G∂∆VDW'&˜"Ê÷W76vW÷ì∞–¢––†–¢6ˆÁ7B&ó¶TñG2“ÊWr6WC«7G&ñÊs‚Çì∞–¢f˜"Ü6ˆÁ7B&˜rˆbÜ∆VE&˜w2ÛÚµ“í2'&ì«≤&ó¶UˆñC¢7G&ñÊr¬ÁV∆¬”‚í∞–¢ñbá&˜rÁ&ó¶UˆñBí∞–¢&ó¶TñG2ÊFBá&˜rÁ&ó¶UˆñBì∞–¢––¢––¢f˜"Ü6ˆÁ7B&˜rˆbáVÊFñÊt6∆ñ’&W7V«BÊFFÛÚµ“í2'&ì«≤&ó¶UˆñC¢7G&ñÊr¬ÁV∆¬”‚í∞–¢ñbá&˜rÁ&ó¶UˆñBí∞–¢&ó¶TñG2ÊFBá&˜rÁ&ó¶UˆñBì∞–¢––¢––†–¢6ˆÁ7B≤FF¢&ó¶U&˜w2¬W'&˜#¢&ó¶TW'&˜"““vóB7W&6P–¢Êg&ˆ“Ç'&ó¶W2"ê–¢Á6V∆V7BÇ&ñB∆∆&V¬"ê–¢Êñ‚Ç&ñB"¬'&íÊg&ˆ“á&ó¶TñG2íì∞–†–¢ñbá&ó¶TW'&˜"í∞–¢Fá&˜rÊWrW'&˜"Ü∆V7GW&RFW2F˜FFñˆÁ27W˜'Bñ◊˜76ñ&∆S¢G∑&ó¶TW'&˜"Ê÷W76vW÷ì∞–¢––†–¢6ˆÁ7B∆VD'îñB“ÊWr÷Ä–¢ÇÜ∆VE&˜w2ÛÚµ“í2'&ì«≤ñC¢7G&ñÊs≤fó'7EˆÊ÷S¢7G&ñÊs≤V÷ñ√¢7G&ñÊs≤&ó¶UˆñC¢7G&ñÊr¬ÁV∆¬”‚íÊ÷Ä–¢á&˜rí”‚∑&˜rÊñB¬&˜u“¿–¢í¿–¢ì∞–¢6ˆÁ7B&ó¶T∆&Vƒ'îñB“ÊWr÷Ä–¢Çá&ó¶U&˜w2ÛÚµ“í2'&ì«≤ñC¢7G&ñÊs≤∆&V√¢7G&ñÊr”‚íÊ÷Çá&˜rí”‚∑&˜rÊñB¬&˜rÊ∆&V≈“í¿–¢ì∞–†–¢6ˆÁ7Bfñ∆VDV÷ñ«3¢÷W&6ÜÁDfñ∆VDV÷ñƒóFV’µ““Ä–¢Üfñ∆VDV÷ñ≈&W7V«BÊFFÛÚµ“í2'&ì«∞–¢ñC¢7G&ñÊs∞–¢6◊ñvÂˆñC¢7G&ñÊs∞–¢∆VEˆñC¢7G&ñÊs∞–¢&V6óñVÁEˆV÷ñ√¢7G&ñÊs∞–¢7FGW3¢&Wv&DV÷ñƒFV∆ófW'ï≤'7FGW2%”∞–¢W'&˜%ˆ÷W76vS¢7G&ñÊr¬ÁV∆√∞–¢∆7EˆWfVÁEˆC¢7G&ñÊr¬ÁV∆√∞–¢”‡–¢íÊ÷Çá&˜rí”‚∞–¢6ˆÁ7B∆VB“∆VD'îñBÊvWBá&˜rÊ∆VEˆñBì∞–†–¢&WGW&‚∞–¢FV∆ófW'îñC¢&˜rÊñB¿–¢6◊ñv‰ñC¢&˜rÊ6◊ñvÂˆñB¿–¢6◊ñvÂFóF∆S¢6◊ñvÂFóF∆T'îñBÊvWBá&˜rÊ6◊ñvÂˆñBíÛÚ$6◊vÊRñÊ6ˆÊÁVR"¿–¢∆VDñC¢&˜rÊ∆VEˆñB¿–¢∆VDfó'7DÊ÷S¢∆VCÚÊfó'7EˆÊ÷RÛÚ$6∆ñVÁBñÊ6ˆÊÁR"¿–¢&V6óñVÁDV÷ñ√¢&˜rÁ&V6óñVÁEˆV÷ñ¬¿–¢7FGW3¢&˜rÁ7FGW2¿–¢W'&˜$÷W76vS¢&˜rÊW'&˜%ˆ÷W76vRÛÚVÊFVfñÊVB¿–¢∆7DWfVÁDC¢&˜rÊ∆7EˆWfVÁEˆBÛÚÊWrFFRÇíÁFÙï4ı7G&ñÊrÇí¿–¢”∞–¢“ì∞–†–¢6ˆÁ7BVÊFñÊt6∆ñ◊3¢÷W&6ÜÁEVÊFñÊt6∆ñ‘óFV’µ““Ä–¢áVÊFñÊt6∆ñ’&W7V«BÊFFÛÚµ“í2'&ì«∞–¢ñC¢7G&ñÊs∞–¢6◊ñvÂˆñC¢7G&ñÊs∞–¢fó'7EˆÊ÷S¢7G&ñÊs∞–¢V÷ñ√¢7G&ñÊs∞–¢&ó¶UˆñC¢7G&ñÊr¬ÁV∆√∞–¢7FGW3¢∆VE≤'7FGW2%”∞–¢&VFV◊FñˆÂˆ6ˆFS¢7G&ñÊr¬ÁV∆√∞–¢&Wv&Eˆfñ∆&∆UˆC¢7G&ñÊr¬ÁV∆√∞–¢&Wv&EˆWáó&W5ˆC¢7G&ñÊr¬ÁV∆√∞–¢”‡–¢ê–¢Êfñ«FW"Çá&˜rí”‚&˜rÁ&ó¶UˆñBbb&˜rÁ&VFV◊FñˆÂˆ6ˆFRê–¢Ê÷Çá&˜rí”‚á∞–¢∆VDñC¢&˜rÊñB¿–¢6◊ñv‰ñC¢&˜rÊ6◊ñvÂˆñB¿–¢6◊ñvÂFóF∆S¢6◊ñvÂFóF∆T'îñBÊvWBá&˜rÊ6◊ñvÂˆñBíÛÚ$6◊vÊRñÊ6ˆÊÁVR"¿–¢fó'7DÊ÷S¢&˜rÊfó'7EˆÊ÷R¿–¢V÷ñ√¢&˜rÊV÷ñ¬¿–¢&ó¶T∆&V√¢&ó¶T∆&Vƒ'îñBÊvWBá&˜rÁ&ó¶UˆñBÛÚ""íÛÚ$∆˜BñÊ6ˆÊÁR"¿–¢&VFV◊Fñˆ‰6ˆFS¢&˜rÁ&VFV◊FñˆÂˆ6ˆFRÛÚ""¿–¢7FGW3¢&˜rÁ7FGW2¿–¢fñ∆&∆TC¢&˜rÁ&Wv&Eˆfñ∆&∆UˆBÛÚVÊFVfñÊVB¿–¢Wáó&W4C¢&˜rÁ&Wv&EˆWáó&W5ˆBÛÚVÊFVfñÊVB¿–¢“íì∞–†–¢6ˆÁ7BvV&Üˆˆ¥óFV◊2“Ä–¢ávV&Üˆˆµ&W7V«BÊFFÛÚµ“í2'&ì«∞–¢ñC¢7G&ñÊs∞–¢&Wv&EˆV÷ñ≈ˆFV∆ófW'ïˆñC¢7G&ñÊr¬ÁV∆√∞–¢&W6VÊEˆV÷ñ≈ˆñC¢7G&ñÊr¬ÁV∆√∞–¢WfVÁE˜GóS¢7G&ñÊs∞–¢ñ∆ˆC¢&V6˜&C«7G&ñÊr¬VÊ∂Ê˜v„‚¬ÁV∆√∞–¢7&VFVEˆC¢7G&ñÊs∞–¢”‡–¢ê–¢Ê÷Çá&˜rí”‚∞–¢6ˆÁ7BFV∆ófW'í“&˜rÁ&Wv&EˆV÷ñ≈ˆFV∆ófW'ïˆñ@–¢ÚFV∆ófW'î'îñBÊvWBá&˜rÁ&Wv&EˆV÷ñ≈ˆFV∆ófW'ïˆñBê–¢¢VÊFVfñÊVC∞–†–¢ñbÇFV∆ófW'í«¬6◊ñvÂFóF∆T'îñBÊÜ2ÜFV∆ófW'íÊ6◊ñvÂˆñBíí∞–¢&WGW&‚ÁV∆√∞–¢––†–¢&WGW&‚∞–¢ñC¢&˜rÊñB¿–¢7&VFVDC¢&˜rÊ7&VFVEˆB¿–¢WfVÁEGóS¢&˜rÊWfVÁE˜GóR¿–¢&W6VÊDV÷ñƒñC¢&˜rÁ&W6VÊEˆV÷ñ≈ˆñBÛÚVÊFVfñÊVB¿–¢6◊ñvÂFóF∆S¢6◊ñvÂFóF∆T'îñBÊvWBÜFV∆ófW'íÊ6◊ñvÂˆñBíÛÚVÊFVfñÊVB¿–¢&V6óñVÁDV÷ñ√¢FV∆ófW'íÁ&V6óñVÁEˆV÷ñ¬¿–¢FV∆ófW'ï7FGW3¢FV∆ófW'íÁ7FGW2¿–¢7V÷÷'ì¢WáG&7EvV&Üˆˆµ7V÷÷'íá&˜rÁñ∆ˆBí¿–¢”∞–¢“ê–¢Êfñ«FW"ÇÜóFV“í”‚óFV“”“ÁV∆¬ì∞–†–¢6ˆÁ7BvV&Üˆˆ∑3¢÷W&6ÜÁEvV&Üˆˆ¥óFV’µ““vV&Üˆˆ¥óFV◊3∞–¢6ˆÁ7B'W6ñÊW74∆ˆw3¢÷W&6ÜÁD'W6ñÊW74∆ˆtóFV’µ““'W6ñÊW74∆ˆw4fñ∆&∆P–¢ÚÄ–¢Ü'W6ñÊW74∆ˆu&W7V«BÊFFÛÚµ“í2'&ì«∞–¢ñC¢7G&ñÊs∞–¢∆WfV√¢÷W&6ÜÁD'W6ñÊW74∆ˆtóFV’≤&∆WfV¬%”∞–¢WfVÁC¢7G&ñÊs∞–¢÷W&6ÜÁEˆñC¢7G&ñÊr¬ÁV∆√∞–¢6◊ñvÂˆñC¢7G&ñÊr¬ÁV∆√∞–¢∆VEˆñC¢7G&ñÊr¬ÁV∆√∞–¢V÷ñ√¢7G&ñÊr¬ÁV∆√∞–¢&VFV◊FñˆÂˆ6ˆFS¢7G&ñÊr¬ÁV∆√∞–¢7V÷÷'ì¢7G&ñÊr¬ÁV∆√∞–¢7&VFVEˆC¢7G&ñÊs∞–¢”‡–¢íÊ÷Çá&˜rí”‚á∞–¢ñC¢&˜rÊñB¿–¢7&VFVDC¢&˜rÊ7&VFVEˆB¿–¢∆WfV√¢&˜rÊ∆WfV¬¿–¢WfVÁC¢&˜rÊWfVÁB¿–¢÷W&6ÜÁDñC¢&˜rÊ÷W&6ÜÁEˆñBÛÚVÊFVfñÊVB¿–¢6◊ñv‰ñC¢&˜rÊ6◊ñvÂˆñBÛÚVÊFVfñÊVB¿–¢∆VDñC¢&˜rÊ∆VEˆñBÛÚVÊFVfñÊVB¿–¢V÷ñ√¢&˜rÊV÷ñ¬ÛÚVÊFVfñÊVB¿–¢&VFV◊Fñˆ‰6ˆFS¢&˜rÁ&VFV◊FñˆÂˆ6ˆFRÛÚVÊFVfñÊVB¿–¢7V÷÷'ì¢&˜rÁ7V÷÷'íÛÚVÊFVfñÊVB¿–¢“íê–¢¢µ”∞–†–¢&WGW&‚∞–¢fñ∆VDV÷ñ«2¿–¢vV&Üˆˆ∑2¿–¢VÊFñÊt6∆ñ◊2¿–¢'W6ñÊW74∆ˆw2¿–¢”∞–ß––†
+          headline: row.subtitle,
+          headlineTextColor: row.heading_text_color,
+          headlineFontSizePx: row.heading_font_size_px,
+          headlineFontFamily: row.heading_font_family,
+          wheel,
+          footerBackgroundColor: row.accent_signal,
+        }),
+      ),
+      email: normalizeCampaignEmailSettings(
+        localSettings.email,
+        createCampaignEmailDefaults(merchant),
+      ),
+    },
+    actions: actions
+      .sort((a, b) => a.position - b.position)
+      .map((action) => ({
+        id: action.id,
+        kind: action.kind,
+        label: action.label,
+        url: action.url,
+      })),
+    rewardRules: {
+      rewardExpiryMinutes: row.reward_expiry_minutes,
+      purchaseRequired: row.purchase_required,
+      availableAfterHours: row.available_after_hours,
+      availabilityDurationDays: row.availability_duration_days,
+      participationIntervalDays: localSettings.participationIntervalDays ?? 1,
+      isWinningEveryTime: row.is_winning_every_time,
+    },
+  };
+}
+
+function toPrize(row: PrizeRow): Prize {
+  return {
+    id: row.id,
+    campaignId: row.campaign_id,
+    label: row.label,
+    totalQuantity: row.total_quantity,
+    remainingQuantity: row.remaining_quantity,
+    probability: Number(row.probability),
+    estimatedUnitCost: Number(row.estimated_unit_cost),
+  };
+}
+
+function toLead(row: LeadRow): Lead {
+  return {
+    id: row.id,
+    campaignId: row.campaign_id,
+    firstName: row.first_name,
+    email: row.email,
+    phone: row.phone ?? undefined,
+    marketingConsent: row.marketing_consent,
+    consentTimestamp: row.consent_timestamp ?? undefined,
+    consentPolicyVersion: row.consent_policy_version ?? undefined,
+    consentSource: row.consent_source ?? undefined,
+    campaignConfigurationVersion: row.campaign_configuration_version ?? undefined,
+    redeemedAt: row.redeemed_at ?? undefined,
+    redeemedByUserId: row.redeemed_by_user_id ?? undefined,
+    purchaseVerified: row.purchase_verified ?? undefined,
+    prizeId: row.prize_id ?? undefined,
+    status: row.status,
+    createdAt: row.created_at,
+    actionConfirmed: row.action_confirmed,
+    redemptionCode: row.redemption_code ?? undefined,
+    rewardAvailableAt: row.reward_available_at ?? undefined,
+    rewardExpiresAt: row.reward_expires_at ?? undefined,
+    prizeUsageConditions: row.prize_usage_conditions_snapshot ?? undefined,
+    prizeLabelSnapshot: row.prize_label_snapshot ?? undefined,
+  };
+}
+
+function toDrawSession(row: DrawSessionRow): DrawSession {
+  return {
+    id: row.id,
+    campaignId: row.campaign_id,
+    prizeId: row.prize_id ?? undefined,
+    status: row.status,
+    createdAt: row.created_at,
+    expiresAt: row.expires_at,
+    configurationVersion: row.configuration_version ?? undefined,
+    configurationSnapshot: row.configuration_snapshot ?? undefined,
+  };
+}
+
+function toEvent(row: EventRow): CampaignEvent {
+  return {
+    id: row.id,
+    campaignId: row.campaign_id,
+    leadId: row.lead_id ?? undefined,
+    eventType: row.event_type,
+    metadata: row.metadata,
+    createdAt: row.created_at,
+  };
+}
+
+function toRewardEmailDelivery(row: RewardEmailDeliveryRow): RewardEmailDelivery {
+  return {
+    id: row.id,
+    leadId: row.lead_id,
+    campaignId: row.campaign_id,
+    resendEmailId: row.resend_email_id ?? undefined,
+    recipientEmail: row.recipient_email,
+    senderEmail: row.sender_email ?? undefined,
+    replyToEmail: row.reply_to_email ?? undefined,
+    subject: row.subject,
+    status: row.status,
+    errorMessage: row.error_message ?? undefined,
+    sentAt: row.sent_at ?? undefined,
+    deliveredAt: row.delivered_at ?? undefined,
+    bouncedAt: row.bounced_at ?? undefined,
+    complainedAt: row.complained_at ?? undefined,
+    lastEventAt: row.last_event_at ?? undefined,
+    metadata: row.metadata,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+function toRewardEmailEvent(row: RewardEmailEventRow): RewardEmailEvent {
+  return {
+    id: row.id,
+    rewardEmailDeliveryId: row.reward_email_delivery_id ?? undefined,
+    resendEmailId: row.resend_email_id ?? undefined,
+    eventType: row.event_type,
+    payload: row.payload ?? undefined,
+    createdAt: row.created_at,
+  };
+}
+
+function enrichLeadRowsWithEmailDeliveries(
+  leads: MerchantLeadRow[],
+  deliveries: RewardEmailDeliverySummaryRow[],
+) {
+  const deliveryMap = new Map(deliveries.map((item) => [item.lead_id, item]));
+
+  return leads.map((lead) => {
+    const delivery = deliveryMap.get(lead.id);
+    // Un lead sans lot ne peut pas √™tre ¬´ √Ä retirer ¬ª. Cette normalisation
+    // prot√®ge l‚Äôinterface contre les anciennes donn√©es orphelines (par
+    // exemple apr√®s la suppression d‚Äôun lot) et les affiche comme perdues.
+    const normalizedLead =
+      !lead.prizeId && lead.status === "claimed" ? { ...lead, status: "lost" as const } : lead;
+
+    return {
+      ...normalizedLead,
+      // Une participation perdante ne g√©n√®re pas de gain e-mail √† suivre,
+      // m√™me si une ancienne ligne de livraison subsiste en base.
+      emailDeliveryStatus: normalizedLead.prizeId ? delivery?.status : undefined,
+      emailSentAt: normalizedLead.prizeId ? delivery?.sent_at ?? undefined : undefined,
+      emailDeliveredAt: normalizedLead.prizeId ? delivery?.delivered_at ?? undefined : undefined,
+      emailErrorMessage: normalizedLead.prizeId ? delivery?.error_message ?? undefined : undefined,
+    };
+  });
+}
+
+function toPublicCampaign(
+  campaign: Campaign,
+  merchant: Merchant,
+  prizes: Prize[],
+  actions = campaign.actions,
+): PublicCampaign {
+  return {
+    id: campaign.id,
+    title: campaign.title,
+    subtitle: campaign.subtitle,
+    goalType: campaign.goalType,
+    gameType: campaign.gameType,
+    ctaLabel: campaign.ctaLabel,
+    targetUrl: campaign.targetUrl,
+    merchantName: merchant.companyName,
+    merchantLogoText: merchant.logoText,
+    logoMode: campaign.logoMode ?? "text",
+    logoText: campaign.logoText ?? merchant.companyName,
+    logoUrl: campaign.logoUrl,
+    accent: campaign.accent,
+    prizes: prizes.map((prize) => ({
+      id: prize.id,
+      label: prize.label,
+      totalQuantity: prize.totalQuantity,
+      remainingQuantity: prize.remainingQuantity,
+      probability: prize.probability,
+    })),
+    presentation: campaign.presentation,
+    actions,
+    rewardRules: campaign.rewardRules,
+  };
+}
+
+function computeKpis(campaign: Campaign, prizes: Prize[], leads: Lead[], events: CampaignEvent[]): CampaignKpi {
+  const scans = events.filter((event) => event.eventType === "scan").length;
+  const actions = events.filter((event) => event.eventType === "review_clicked").length;
+  const games = events.filter((event) => event.eventType === "game_played").length;
+  const wins = leads.filter((lead) => Boolean(lead.prizeId)).length;
+  const redeemed = leads.filter((lead) => lead.status === "redeemed").length;
+  const estimatedSpend = leads.reduce((total, lead) => {
+    const prize = prizes.find((item) => item.id === lead.prizeId);
+    return total + (prize ? prize.estimatedUnitCost : 0);
+  }, 0);
+
+  return {
+    scans,
+    contacts: leads.length,
+    optIns: leads.filter((lead) => lead.marketingConsent).length,
+    leads: leads.length,
+    actions,
+    games,
+    wins,
+    redeemed,
+    conversionRate: scans ? Math.round((leads.length / scans) * 100) : 0,
+    actionRate: leads.length ? Math.round((actions / leads.length) * 100) : 0,
+    redemptionRate: wins ? Math.round((redeemed / wins) * 100) : 0,
+    estimatedSpend: Number(estimatedSpend.toFixed(2)),
+    costPerLead: leads.length ? Number((estimatedSpend / leads.length).toFixed(2)) : 0,
+    costPerRedeemed: redeemed ? Number((estimatedSpend / redeemed).toFixed(2)) : 0,
+  };
+}
+
+async function fetchCampaignDependencies(campaignIds: string[]) {
+  const supabase = getSupabaseAdmin();
+
+  if (!campaignIds.length) {
+    return { actions: [] as ActionRow[], prizes: [] as PrizeRow[], leads: [] as LeadRow[], events: [] as EventRow[] };
+  }
+
+  const [{ data: actions }, { data: prizes }, { data: leads }, { data: events }] = await Promise.all([
+    supabase
+      .from("campaign_actions")
+      .select("id,campaign_id,position,kind,label,url,created_at")
+      .in("campaign_id", campaignIds),
+    supabase
+      .from("prizes")
+      .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at")
+      .in("campaign_id", campaignIds),
+    supabase
+      .from("leads")
+      .select("id,campaign_id,first_name,email,phone,marketing_consent,consent_timestamp,consent_policy_version,consent_source,campaign_configuration_version,prize_id,status,created_at,action_confirmed,redemption_code,reward_available_at,reward_expires_at,prize_label_snapshot,prize_usage_conditions_snapshot")
+      .in("campaign_id", campaignIds),
+    supabase
+      .from("campaign_events")
+      .select("id,campaign_id,lead_id,event_type,metadata,created_at")
+      .in("campaign_id", campaignIds),
+  ]);
+
+  return {
+    actions: (actions as ActionRow[] | null) ?? [],
+    prizes: (prizes as PrizeRow[] | null) ?? [],
+    leads: (leads as LeadRow[] | null) ?? [],
+    events: (events as EventRow[] | null) ?? [],
+  };
+}
+
+function toCampaignOverview(row: CampaignRow, merchant: Merchant): Campaign {
+  const campaign = toCampaign(row, merchant, [], []);
+
+  // The campaigns list never renders uploaded assets. Keeping data URLs here makes the
+  // RSC response and Next cache grow with every logo/background uploaded by a merchant.
+  return {
+    ...campaign,
+    logoUrl: undefined,
+    presentation: {
+      ...campaign.presentation,
+      background: {
+        ...campaign.presentation.background,
+        imageUrl: "",
+      },
+      poster: {
+        ...campaign.presentation.poster,
+        logoUrl: undefined,
+        backgroundImageUrl: "",
+      },
+    },
+  };
+}
+
+async function fetchCampaignConfiguration(campaignId: string) {
+  const supabase = getSupabaseAdmin();
+  const [{ data: actions }, { data: prizes }] = await Promise.all([
+    supabase
+      .from("campaign_actions")
+      .select("id,campaign_id,position,kind,label,url,created_at")
+      .eq("campaign_id", campaignId),
+    supabase
+      .from("prizes")
+      .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at")
+      .eq("campaign_id", campaignId),
+  ]);
+
+  return {
+    actions: (actions as ActionRow[] | null) ?? [],
+    prizes: (prizes as PrizeRow[] | null) ?? [],
+  };
+}
+
+function buildLastDays(referenceDates: string[], days = 30) {
+  const today = new Date();
+  const latestReference = referenceDates.length
+    ? new Date(
+        [...referenceDates].sort((a, b) => a.localeCompare(b)).at(-1) ?? today.toISOString(),
+      )
+    : null;
+  const latest = latestReference && latestReference > today ? latestReference : today;
+
+  return Array.from({ length: days }, (_, index) => {
+    const date = new Date(
+      Date.UTC(latest.getUTCFullYear(), latest.getUTCMonth(), latest.getUTCDate()),
+    );
+    date.setUTCDate(latest.getUTCDate() - (days - index - 1));
+    return date.toISOString().slice(0, 10);
+  });
+}
+
+function countByDay(values: string[]) {
+  const counts = new Map<string, number>();
+
+  for (const value of values) {
+    counts.set(value, (counts.get(value) ?? 0) + 1);
+  }
+
+  return counts;
+}
+
+function buildDashboardActivityPoints(leads: LeadRow[], events: EventRow[]) {
+  const dayKeys = buildLastDays([
+    ...leads.map((lead) => lead.created_at),
+    ...events.map((event) => event.created_at),
+  ]);
+  const scansByDay = countByDay(
+    events
+      .filter((event) => event.event_type === "scan")
+      .map((event) => event.created_at.slice(0, 10)),
+  );
+  const participationsByDay = countByDay(leads.map((lead) => lead.created_at.slice(0, 10)));
+
+  return dayKeys.map((label) => ({
+    label,
+    scans: scansByDay.get(label) ?? 0,
+    participations: participationsByDay.get(label) ?? 0,
+  }));
+}
+
+function toOverviewKpis(row: CampaignOverviewRpcRow, optIns = 0): CampaignKpi {
+  const scans = Number(row.scans_count) || 0;
+  const leads = Number(row.leads_count) || 0;
+  const actions = Number(row.actions_count) || 0;
+  const games = Number(row.games_count) || 0;
+  const wins = Number(row.wins_count) || 0;
+  const redeemed = Number(row.redeemed_count) || 0;
+  const estimatedSpend = Number(Number(row.estimated_spend || 0).toFixed(2));
+
+  return {
+    scans,
+    contacts: leads,
+    optIns,
+    leads,
+    actions,
+    games,
+    wins,
+    redeemed,
+    conversionRate: scans ? Math.round((leads / scans) * 100) : 0,
+    actionRate: leads ? Math.round((actions / leads) * 100) : 0,
+    redemptionRate: wins ? Math.round((redeemed / wins) * 100) : 0,
+    estimatedSpend,
+    costPerLead: leads ? Number((estimatedSpend / leads).toFixed(2)) : 0,
+    costPerRedeemed: redeemed ? Number((estimatedSpend / redeemed).toFixed(2)) : 0,
+  };
+}
+
+function computeOverviewKpisFromRows(
+  campaign: Campaign,
+  leads: CampaignOverviewLeadRow[],
+  events: CampaignOverviewEventRow[],
+  estimatedCostByPrizeId: Map<string, number>,
+): CampaignKpi {
+  const scans = events.filter((event) => event.event_type === "scan").length;
+  const actions = events.filter((event) => event.event_type === "review_clicked").length;
+  const games = events.filter((event) => event.event_type === "game_played").length;
+  const wins = leads.filter((lead) => Boolean(lead.prize_id)).length;
+  const redeemed = leads.filter((lead) => lead.status === "redeemed").length;
+  const estimatedSpend = leads.reduce((total, lead) => {
+    if (!lead.prize_id) return total;
+    return total + (estimatedCostByPrizeId.get(lead.prize_id) ?? 0);
+  }, 0);
+
+  return {
+    scans,
+    contacts: leads.length,
+    optIns: leads.filter((lead) => lead.marketing_consent).length,
+    leads: leads.length,
+    actions,
+    games,
+    wins,
+    redeemed,
+    conversionRate: scans ? Math.round((leads.length / scans) * 100) : 0,
+    actionRate: leads.length ? Math.round((actions / leads.length) * 100) : 0,
+    redemptionRate: wins ? Math.round((redeemed / wins) * 100) : 0,
+    estimatedSpend: Number(estimatedSpend.toFixed(2)),
+    costPerLead: leads.length ? Number((estimatedSpend / leads.length).toFixed(2)) : 0,
+    costPerRedeemed: redeemed ? Number((estimatedSpend / redeemed).toFixed(2)) : 0,
+  };
+}
+
+function buildCampaignOverviewFallbackBundle(
+  merchant: Merchant,
+  campaignRows: CampaignRow[],
+  leadRows: CampaignOverviewLeadRow[],
+  eventRows: CampaignOverviewEventRow[],
+  prizeRows: CampaignOverviewPrizeRow[],
+) {
+  const leadsByCampaignId = new Map<string, CampaignOverviewLeadRow[]>();
+  const eventsByCampaignId = new Map<string, CampaignOverviewEventRow[]>();
+  const estimatedCostByPrizeId = new Map<string, number>();
+
+  for (const lead of leadRows) {
+    const campaignLeads = leadsByCampaignId.get(lead.campaign_id) ?? [];
+    campaignLeads.push(lead);
+    leadsByCampaignId.set(lead.campaign_id, campaignLeads);
+  }
+
+  for (const event of eventRows) {
+    const campaignEvents = eventsByCampaignId.get(event.campaign_id) ?? [];
+    campaignEvents.push(event);
+    eventsByCampaignId.set(event.campaign_id, campaignEvents);
+  }
+
+  for (const prize of prizeRows) {
+    estimatedCostByPrizeId.set(prize.id, Number(prize.estimated_unit_cost) || 0);
+  }
+
+  return campaignRows.map((row) => {
+    const campaign = toCampaignOverview(row, merchant);
+
+    return {
+      campaign,
+      merchant: clone(merchant),
+      prizes: [],
+      kpis: computeOverviewKpisFromRows(
+        campaign,
+        leadsByCampaignId.get(row.id) ?? [],
+        eventsByCampaignId.get(row.id) ?? [],
+        estimatedCostByPrizeId,
+      ),
+    } satisfies CampaignPerformance;
+  });
+}
+
+function buildPerformanceBundle(
+  merchant: Merchant,
+  campaignRows: CampaignRow[],
+  actionRows: ActionRow[],
+  prizeRows: PrizeRow[],
+  leadRows: LeadRow[],
+  eventRows: EventRow[],
+  localSettingsByCampaignId: Record<string, CampaignLocalSettings> = {},
+) {
+  return campaignRows.map((row) => {
+    const campaignId = row.id;
+    const localSettings = localSettingsByCampaignId[campaignId] ?? {};
+    const campaignActions = actionRows.filter((item) => item.campaign_id === campaignId);
+    const campaignPrizes = prizeRows
+      .filter((item) => item.campaign_id === campaignId)
+      .map(toPrize)
+      .map((prize) => ({
+        ...prize,
+        usageConditions: localSettings.prizeSettings?.[prize.id]?.usageConditions,
+      }));
+    const campaignLeads = leadRows.filter((item) => item.campaign_id === campaignId).map(toLead);
+    const campaignEvents = eventRows.filter((item) => item.campaign_id === campaignId).map(toEvent);
+    const campaign = toCampaign(
+      row,
+      merchant,
+      campaignActions,
+      campaignPrizes.map((item) => ({
+        id: item.id,
+        campaign_id: item.campaignId,
+        label: item.label,
+        total_quantity: item.totalQuantity,
+        remaining_quantity: item.remainingQuantity,
+        probability: item.probability,
+        estimated_unit_cost: item.estimatedUnitCost,
+        created_at: "",
+      })),
+      localSettings,
+    );
+
+    return {
+      campaign,
+      merchant: clone(merchant),
+      prizes: campaignPrizes,
+      kpis: computeKpis(campaign, campaignPrizes, campaignLeads, campaignEvents),
+    } satisfies CampaignPerformance;
+  });
+}
+
+export async function getSupabaseMerchantDashboard(
+  merchant: Merchant,
+): Promise<MerchantDashboardData> {
+  const supabase = getSupabaseAdmin();
+  const { data: campaignsData } = await supabase
+    .from("campaigns")
+    .select("*")
+    .eq("merchant_id", merchant.id)
+    .order("created_at", { ascending: false });
+
+  const campaignRows = (campaignsData as CampaignRow[] | null) ?? [];
+  const campaignIds = campaignRows.map((campaign) => campaign.id);
+  const localSettingsEntries = await Promise.all(
+    campaignIds.map(async (campaignId) => [campaignId, await getCampaignLocalSettings(campaignId)] as const),
+  );
+  const localSettingsByCampaignId = Object.fromEntries(localSettingsEntries);
+  const { actions, prizes, leads, events } = await fetchCampaignDependencies(campaignIds);
+  const campaigns = buildPerformanceBundle(
+    merchant,
+    campaignRows,
+    actions,
+    prizes,
+    leads,
+    events,
+    localSettingsByCampaignId,
+  );
+  const totalLeads = campaigns.reduce((total, item) => total + item.kpis.leads, 0);
+  const totalRedeemed = campaigns.reduce((total, item) => total + item.kpis.redeemed, 0);
+  const averageConversion = campaigns.length
+    ? Math.round(campaigns.reduce((total, item) => total + item.kpis.conversionRate, 0) / campaigns.length)
+    : 0;
+
+  return {
+    merchant: clone(merchant),
+    campaigns,
+    totalLeads,
+    totalRedeemed,
+    averageConversion,
+    activityPoints: buildDashboardActivityPoints(leads, events),
+  };
+}
+
+export async function getSupabaseMerchantCampaignOverview(
+  merchant: Merchant,
+): Promise<MerchantDashboardData> {
+  const supabase = getSupabaseAdmin();
+  const overviewResult = await supabase.rpc("get_merchant_campaign_overview", {
+    p_merchant_id: merchant.id,
+  });
+
+  if (!overviewResult.error) {
+    const rows = (overviewResult.data as CampaignOverviewRpcRow[] | null) ?? [];
+    const overviewMerchant = {
+      ...merchant,
+      logoUrl: undefined,
+    };
+    const campaignIds = rows.map((row) => row.id);
+    const { data: optInRows } = campaignIds.length
+      ? await supabase
+          .from("leads")
+          .select("campaign_id")
+          .eq("marketing_consent", true)
+          .in("campaign_id", campaignIds)
+      : { data: [] as Array<{ campaign_id: string }> };
+    const optInsByCampaignId = new Map<string, number>();
+    for (const row of (optInRows as Array<{ campaign_id: string }> | null) ?? []) {
+      optInsByCampaignId.set(row.campaign_id, (optInsByCampaignId.get(row.campaign_id) ?? 0) + 1);
+    }
+    const campaigns = rows.map((row) => ({
+      campaign: toCampaignOverview(row, overviewMerchant),
+      merchant: clone(overviewMerchant),
+      prizes: [],
+      kpis: toOverviewKpis(row, optInsByCampaignId.get(row.id) ?? 0),
+    }));
+    const totalLeads = campaigns.reduce((total, item) => total + item.kpis.leads, 0);
+    const totalRedeemed = campaigns.reduce((total, item) => total + item.kpis.redeemed, 0);
+    const averageConversion = campaigns.length
+      ? Math.round(campaigns.reduce((total, item) => total + item.kpis.conversionRate, 0) / campaigns.length)
+      : 0;
+
+    return {
+      merchant: clone(overviewMerchant),
+      campaigns,
+      totalLeads,
+      totalRedeemed,
+      averageConversion,
+      activityPoints: [],
+    };
+  }
+
+  const { data: campaignsData } = await supabase
+    .from("campaigns")
+    .select("*")
+    .eq("merchant_id", merchant.id)
+    .order("created_at", { ascending: false });
+
+  const campaignRows = (campaignsData as CampaignRow[] | null) ?? [];
+  const campaignIds = campaignRows.map((campaign) => campaign.id);
+
+  if (!campaignIds.length) {
+    const overviewMerchant = { ...merchant, logoUrl: undefined };
+    return {
+      merchant: clone(overviewMerchant),
+      campaigns: [],
+      totalLeads: 0,
+      totalRedeemed: 0,
+      averageConversion: 0,
+      activityPoints: [],
+    };
+  }
+
+  const [{ data: leadsData }, { data: eventsData }, { data: prizesData }] = await Promise.all([
+    supabase
+      .from("leads")
+      .select("campaign_id,prize_id,status,marketing_consent")
+      .in("campaign_id", campaignIds),
+    supabase
+      .from("campaign_events")
+      .select("campaign_id,event_type")
+      .in("campaign_id", campaignIds),
+    supabase
+      .from("prizes")
+      .select("id,campaign_id,estimated_unit_cost")
+      .in("campaign_id", campaignIds),
+  ]);
+
+  const campaigns = buildCampaignOverviewFallbackBundle(
+    { ...merchant, logoUrl: undefined },
+    campaignRows,
+    (leadsData as CampaignOverviewLeadRow[] | null) ?? [],
+    (eventsData as CampaignOverviewEventRow[] | null) ?? [],
+    (prizesData as CampaignOverviewPrizeRow[] | null) ?? [],
+  );
+  const totalLeads = campaigns.reduce((total, item) => total + item.kpis.leads, 0);
+  const totalRedeemed = campaigns.reduce((total, item) => total + item.kpis.redeemed, 0);
+  const averageConversion = campaigns.length
+    ? Math.round(campaigns.reduce((total, item) => total + item.kpis.conversionRate, 0) / campaigns.length)
+    : 0;
+
+  return {
+    merchant: clone({ ...merchant, logoUrl: undefined }),
+    campaigns,
+    totalLeads,
+    totalRedeemed,
+    averageConversion,
+    activityPoints: [],
+  };
+}
+
+export async function getSupabaseMerchantCampaignLibrary(
+  merchantId: string,
+): Promise<CampaignLibraryItem[]> {
+  const supabase = getSupabaseAdmin();
+  const { data, error } = await supabase
+    .from("campaigns")
+    .select("id,title,game_type,is_active,created_at")
+    .eq("merchant_id", merchantId)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    throw new Error(`Lecture des campagnes impossible: ${error.message}`);
+  }
+
+  return ((data as Array<{
+    id: string;
+    title: string;
+    game_type: Campaign["gameType"];
+    is_active: boolean;
+    created_at: string;
+  }> | null) ?? []).map((item) => ({
+    id: item.id,
+    title: item.title,
+    gameType: item.game_type,
+    isActive: item.is_active,
+    createdAt: item.created_at,
+  }));
+}
+
+export async function getSupabaseCampaignPerformance(
+  campaignId: string,
+  fallbackMerchant?: Merchant,
+): Promise<CampaignPerformance | null> {
+  const supabase = getSupabaseAdmin();
+  const { data } = await supabase.from("campaigns").select("*").eq("id", campaignId).maybeSingle();
+  if (!data) return null;
+  const row = data as CampaignRow;
+  const [merchant, { actions, prizes }, localSettings] = await Promise.all([
+    fallbackMerchant && fallbackMerchant.id === row.merchant_id
+      ? Promise.resolve(fallbackMerchant)
+      : (async () => {
+          const merchantResult = await supabase
+            .from("merchants")
+            .select("*")
+            .eq("id", row.merchant_id)
+            .maybeSingle();
+          return merchantResult.data ? toMerchant(merchantResult.data as MerchantRow) : null;
+        })(),
+    fetchCampaignConfiguration(campaignId),
+    getCampaignLocalSettings(campaignId),
+  ]);
+  if (!merchant) return null;
+  return buildPerformanceBundle(
+    merchant,
+    [row],
+    actions,
+    prizes,
+    [],
+    [],
+    { [campaignId]: localSettings },
+  )[0] ?? null;
+}
+
+export async function getSupabaseCampaignSetupPerformance(
+  campaignId: string,
+  fallbackMerchant?: Merchant,
+): Promise<CampaignPerformance | null> {
+  const supabase = getSupabaseAdmin();
+  const { data } = await supabase.from("campaigns").select("*").eq("id", campaignId).maybeSingle();
+  if (!data) return null;
+
+  const row = data as CampaignRow;
+  const [merchant, actionsResult, prizesResult, localSettings] = await Promise.all([
+    fallbackMerchant && fallbackMerchant.id === row.merchant_id
+      ? Promise.resolve(fallbackMerchant)
+      : (async () => {
+          const merchantResult = await supabase
+            .from("merchants")
+            .select("*")
+            .eq("id", row.merchant_id)
+            .maybeSingle();
+          return merchantResult.data ? toMerchant(merchantResult.data as MerchantRow) : null;
+        })(),
+    supabase
+      .from("campaign_actions")
+      .select("id,campaign_id,position,kind,label,url,created_at")
+      .eq("campaign_id", campaignId),
+    supabase
+      .from("prizes")
+      .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at")
+      .eq("campaign_id", campaignId),
+    getCampaignLocalSettings(campaignId),
+  ]);
+
+  if (!merchant) return null;
+
+  return buildPerformanceBundle(
+    merchant,
+    [row],
+    (actionsResult.data as ActionRow[] | null) ?? [],
+    (prizesResult.data as PrizeRow[] | null) ?? [],
+    [],
+    [],
+    { [campaignId]: localSettings },
+  )[0] ?? null;
+}
+
+export async function getSupabasePublicCampaign(
+  campaignId: string,
+  participantToken?: string,
+): Promise<PublicCampaign | null> {
+  const performance = await getSupabaseCampaignPerformance(campaignId);
+  if (!performance) return null;
+  if (!performance.campaign.isActive) {
+    throw new Error("Cette animation est momentan√©ment indisponible.");
+  }
+  assertMerchantBillingAccess(performance.merchant, "campaign_public");
+
+  // Keep CRM actions in the ordered public sequence. They are rendered as the
+  // pre-game contact form, never as an external link.
+  let actions = performance.campaign.actions;
+  if (participantToken) {
+    const supabase = getSupabaseAdmin();
+    const { data: identity } = await supabase
+      .from("player_campaign_identities")
+      .select("email")
+      .eq("token", participantToken)
+      .eq("campaign_id", campaignId)
+      .gt("expires_at", new Date().toISOString())
+      .maybeSingle();
+
+    if (identity?.email) {
+      const { count } = await supabase
+        .from("leads")
+        .select("id", { count: "exact", head: true })
+        .eq("campaign_id", campaignId)
+        .ilike("email", identity.email);
+      const nextAction = actions[count ?? 0];
+      actions = nextAction ? [nextAction] : [];
+    }
+  }
+
+  return toPublicCampaign(performance.campaign, performance.merchant, performance.prizes, actions);
+}
+
+export async function createPublicCampaignIdentity(
+  campaignId: string,
+  email: string,
+  token: string,
+) {
+  const supabase = getSupabaseAdmin();
+  const expiresAt = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString();
+  const { data, error } = await supabase
+    .from("player_campaign_identities")
+    .upsert(
+      {
+        token,
+        campaign_id: campaignId,
+        email: email.trim().toLowerCase(),
+        expires_at: expiresAt,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "campaign_id,email" },
+    )
+    .select("token")
+    .single();
+
+  if (error || !data?.token) {
+    throw new Error(error?.message || "Impossible de m√©moriser la prochaine action.");
+  }
+
+  return data.token;
+}
+
+export async function getSupabaseMerchantLeads(
+  merchantId: string,
+  campaignId?: string,
+): Promise<MerchantLeadRow[]> {
+  const supabase = getSupabaseAdmin();
+  const { data: campaignsData } = await supabase
+    .from("campaigns")
+    .select("id,title,goal_type")
+    .eq("merchant_id", merchantId);
+
+  const campaigns = (campaignsData as Array<{ id: string; title: string; goal_type: Campaign["goalType"] }> | null) ?? [];
+  const campaignIds = campaignId ? [campaignId] : campaigns.map((item) => item.id);
+  if (!campaignIds.length) return [];
+  const [{ data: leadsData }, { data: prizesData }, { data: deliveriesData }] = await Promise.all([
+    supabase.from("leads").select("*").in("campaign_id", campaignIds),
+    supabase.from("prizes").select("id,label,campaign_id,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at").in("campaign_id", campaignIds),
+    supabase
+      .from("reward_email_deliveries")
+      .select("lead_id,status,sent_at,delivered_at,error_message")
+      .in("campaign_id", campaignIds),
+  ]);
+  const prizes = ((prizesData as PrizeRow[] | null) ?? []).map(toPrize);
+  const campaignMap = new Map(campaigns.map((item) => [item.id, item]));
+  const leads = ((leadsData as LeadRow[] | null) ?? [])
+    .map(toLead)
+      .map((lead) => ({
+        ...lead,
+        campaignTitle: campaignMap.get(lead.campaignId)?.title ?? "Campagne",
+        goalType: campaignMap.get(lead.campaignId)?.goal_type ?? "lead_capture",
+        prizeLabel: lead.prizeId
+          ? lead.prizeLabelSnapshot ?? prizes.find((item) => item.id === lead.prizeId)?.label ?? "Lot inconnu"
+          : "Perdu",
+        prizeUsageConditions: lead.prizeId
+          ? lead.prizeUsageConditions ?? prizes.find((item) => item.id === lead.prizeId)?.usageConditions
+          : undefined,
+      }))
+    .sort((a, b) => (b.consentTimestamp ?? b.createdAt).localeCompare(a.consentTimestamp ?? a.createdAt));
+
+  return enrichLeadRowsWithEmailDeliveries(
+    leads,
+    (deliveriesData as RewardEmailDeliverySummaryRow[] | null) ?? [],
+  );
+}
+
+export async function getSupabaseMerchantRecentLeads(
+  merchantId: string,
+  limit = 5,
+  query = "",
+): Promise<MerchantLeadRow[]> {
+  const supabase = getSupabaseAdmin();
+  const normalizedQuery = query.trim().toLowerCase();
+  const { data: campaignsData } = await supabase
+    .from("campaigns")
+    .select("id,title,goal_type")
+    .eq("merchant_id", merchantId);
+
+  const campaigns =
+    (campaignsData as Array<{ id: string; title: string; goal_type: Campaign["goalType"] }> | null) ?? [];
+  const campaignIds = campaigns.map((item) => item.id);
+
+  if (!campaignIds.length) {
+    return [];
+  }
+
+  let leadsQuery = supabase
+    .from("leads")
+    .select("*")
+    .in("campaign_id", campaignIds)
+    .order("created_at", { ascending: false })
+    .limit(normalizedQuery ? Math.max(limit * 4, 20) : limit);
+
+  if (normalizedQuery) {
+    const escapedQuery = normalizedQuery.replaceAll("%", "\\%").replaceAll("_", "\\_");
+    leadsQuery = leadsQuery.or(
+      `first_name.ilike.%${escapedQuery}%,email.ilike.%${escapedQuery}%,redemption_code.ilike.%${escapedQuery}%`,
+    );
+  }
+
+  const { data: leadsData } = await leadsQuery;
+  const leadRows = (leadsData as LeadRow[] | null) ?? [];
+  const prizeIds = [...new Set(leadRows.map((lead) => lead.prize_id).filter(Boolean) as string[])];
+
+  const [{ data: prizesData }, { data: deliveriesData }] = await Promise.all([
+    prizeIds.length
+      ? supabase
+          .from("prizes")
+          .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at")
+          .in("id", prizeIds)
+      : Promise.resolve({ data: [] }),
+    leadRows.length
+      ? supabase
+          .from("reward_email_deliveries")
+          .select("lead_id,status,sent_at,delivered_at,error_message")
+          .in(
+            "lead_id",
+            leadRows.map((lead) => lead.id),
+          )
+      : Promise.resolve({ data: [] }),
+  ]);
+
+  const prizes = ((prizesData as PrizeRow[] | null) ?? []).map(toPrize);
+  const campaignMap = new Map(campaigns.map((item) => [item.id, item]));
+  const leads = leadRows
+    .map(toLead)
+    .map((lead) => ({
+      ...lead,
+      campaignTitle: campaignMap.get(lead.campaignId)?.title ?? "Campagne",
+      goalType: campaignMap.get(lead.campaignId)?.goal_type ?? "lead_capture",
+      prizeLabel: lead.prizeId
+        ? lead.prizeLabelSnapshot ?? prizes.find((item) => item.id === lead.prizeId)?.label ?? "Lot inconnu"
+        : "Perdu",
+    }))
+    .filter((lead) =>
+      normalizedQuery
+        ? `${lead.firstName} ${lead.email} ${lead.campaignTitle} ${lead.redemptionCode ?? ""}`
+            .toLowerCase()
+            .includes(normalizedQuery)
+        : true,
+    )
+    .slice(0, limit);
+
+  return enrichLeadRowsWithEmailDeliveries(
+    leads,
+    (deliveriesData as RewardEmailDeliverySummaryRow[] | null) ?? [],
+  );
+}
+
+export async function findSupabaseMerchantLeadCampaign(
+  merchantId: string,
+  query: string,
+): Promise<string | null> {
+  const normalizedQuery = query.trim();
+  if (!normalizedQuery) return null;
+
+  const supabase = getSupabaseAdmin();
+  const { data: campaignsData } = await supabase
+    .from("campaigns")
+    .select("id")
+    .eq("merchant_id", merchantId);
+  const campaignIds = ((campaignsData as Array<{ id: string }> | null) ?? []).map((item) => item.id);
+  if (!campaignIds.length) return null;
+
+  const escapedQuery = normalizedQuery.replaceAll("%", "\\%").replaceAll("_", "\\_");
+  const { data } = await supabase
+    .from("leads")
+    .select("campaign_id")
+    .in("campaign_id", campaignIds)
+    .or(
+      `first_name.ilike.%${escapedQuery}%,email.ilike.%${escapedQuery}%,redemption_code.ilike.%${escapedQuery}%`,
+    )
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  return (data as { campaign_id: string } | null)?.campaign_id ?? null;
+}
+
+async function getSupabaseCampaignDataViewLegacy(
+  campaignId: string,
+  merchant?: Merchant,
+  options: CampaignDataViewOptions = {},
+): Promise<CampaignDataView | null> {
+  const supabase = getSupabaseAdmin();
+  const { data: campaignData } = await supabase
+    .from("campaigns")
+    .select("*")
+    .eq("id", campaignId)
+    .maybeSingle();
+
+  if (!campaignData) return null;
+
+  const row = campaignData as CampaignRow;
+  const [
+    resolvedMerchant,
+    actionsResult,
+    prizesResult,
+    leadsResult,
+    eventsResult,
+    deliveriesResult,
+    localSettings,
+  ] = await Promise.all([
+    merchant && merchant.id === row.merchant_id
+      ? Promise.resolve(merchant)
+      : (async () => {
+          const merchantResult = await supabase
+            .from("merchants")
+            .select("*")
+            .eq("id", row.merchant_id)
+            .maybeSingle();
+          return merchantResult.data ? toMerchant(merchantResult.data as MerchantRow) : null;
+        })(),
+    supabase
+      .from("campaign_actions")
+      .select("id,campaign_id,position,kind,label,url,created_at")
+      .eq("campaign_id", campaignId),
+    supabase
+      .from("prizes")
+      .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at")
+      .eq("campaign_id", campaignId),
+    supabase.from("leads").select("*").eq("campaign_id", campaignId),
+    supabase.from("campaign_events").select("*").eq("campaign_id", campaignId),
+    supabase
+      .from("reward_email_deliveries")
+      .select("lead_id,status,sent_at,delivered_at,error_message")
+      .eq("campaign_id", campaignId),
+    getCampaignLocalSettings(campaignId),
+  ]);
+
+  if (!resolvedMerchant) return null;
+
+  const performance = buildPerformanceBundle(
+    resolvedMerchant,
+    [row],
+    (actionsResult.data as ActionRow[] | null) ?? [],
+    (prizesResult.data as PrizeRow[] | null) ?? [],
+    (leadsResult.data as LeadRow[] | null) ?? [],
+    (eventsResult.data as EventRow[] | null) ?? [],
+    { [campaignId]: localSettings },
+  )[0];
+
+  if (!performance) return null;
+
+  const prizes = performance.prizes;
+  const allLeads = enrichLeadRowsWithEmailDeliveries(
+    ((leadsResult.data as LeadRow[] | null) ?? [])
+      .map(toLead)
+      .map((lead) => ({
+        ...lead,
+        campaignTitle: performance.campaign.title,
+        goalType: performance.campaign.goalType,
+        prizeLabel: lead.prizeId
+          ? lead.prizeLabelSnapshot ?? prizes.find((item) => item.id === lead.prizeId)?.label ?? "Lot inconnu"
+          : "Perdu",
+        prizeUsageConditions: lead.prizeId
+          ? lead.prizeUsageConditions ?? prizes.find((item) => item.id === lead.prizeId)?.usageConditions
+          : undefined,
+      }))
+      .sort((a, b) => (b.consentTimestamp ?? b.createdAt).localeCompare(a.consentTimestamp ?? a.createdAt)),
+    (deliveriesResult.data as RewardEmailDeliverySummaryRow[] | null) ?? [],
+  );
+  const leads = options.emailStatus === "attention"
+    ? allLeads.filter(
+        (lead) =>
+          Boolean(lead.prizeId) &&
+          lead.status === "claimed" &&
+          ["failed", "bounced", "complained", "suppressed"].includes(lead.emailDeliveryStatus ?? ""),
+      )
+    : allLeads;
+  const events = ((eventsResult.data as EventRow[] | null) ?? [])
+    .map(toEvent)
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  const latestDates = [...leads.map((lead) => lead.createdAt), ...events.map((event) => event.createdAt)];
+  const latestDate = latestDates.sort((a, b) => a.localeCompare(b)).at(-1) ?? new Date().toISOString();
+  const baseDate = new Date(latestDate);
+  const dailyStats = Array.from({ length: 7 }, (_, index) => {
+    const date = new Date(Date.UTC(baseDate.getUTCFullYear(), baseDate.getUTCMonth(), baseDate.getUTCDate()));
+    date.setUTCDate(date.getUTCDate() - (6 - index));
+    const label = date.toISOString().slice(0, 10);
+
+    return {
+      label,
+      participations: leads.filter((lead) => lead.createdAt.slice(0, 10) === label).length,
+      redeemed: events.filter(
+        (event) => event.eventType === "prize_redeemed" && event.createdAt.slice(0, 10) === label,
+      ).length,
+    };
+  });
+  const actionVolumes = performance.campaign.actions.map((_, actionIndex) => ({
+    actionIndex,
+    value: 0,
+  }));
+  const leadVisitByEmail = new Map<string, number>();
+  for (const lead of [...leads].sort((a, b) => a.createdAt.localeCompare(b.createdAt))) {
+    const key = lead.email.trim().toLowerCase();
+    const actionIndex = leadVisitByEmail.get(key) ?? 0;
+    if (actionVolumes[actionIndex]) {
+      actionVolumes[actionIndex].value += 1;
+    }
+    leadVisitByEmail.set(key, actionIndex + 1);
+  }
+
+  return {
+    performance,
+    leads,
+    events,
+    leadTotal: leads.length,
+    leadOffset: 0,
+    leadLimit: leads.length || 50,
+    dailyStats,
+    actionVolumes,
+  };
+}
+
+export async function getSupabaseCampaignDataView(
+  campaignId: string,
+  merchant?: Merchant,
+  options: CampaignDataViewOptions = {},
+): Promise<CampaignDataView | null> {
+  const supabase = getSupabaseAdmin();
+  const leadLimit = Math.min(Math.max(options.leadLimit ?? 50, 10), 100);
+  const leadOffset = Math.max(options.leadOffset ?? 0, 0);
+  const query = options.query?.trim() ?? "";
+  const { data: campaignData } = await supabase
+    .from("campaigns")
+    .select("*")
+    .eq("id", campaignId)
+    .maybeSingle();
+
+  if (!campaignData) return null;
+
+  let attentionLeadIds: string[] | null = null;
+  if (options.emailStatus === "attention") {
+    const { data: attentionDeliveries, error: attentionError } = await supabase
+      .from("reward_email_deliveries")
+      .select("lead_id")
+      .eq("campaign_id", campaignId)
+      .in("status", ["failed", "bounced", "complained", "suppressed"]);
+
+    if (attentionError) {
+      throw new Error(`Lecture des e-mails √† traiter impossible: ${attentionError.message}`);
+    }
+
+    const candidateLeadIds = [...new Set((attentionDeliveries ?? []).map((delivery) => delivery.lead_id))];
+    if (candidateLeadIds.length) {
+      const { data: candidateLeads, error: candidateLeadError } = await supabase
+        .from("leads")
+        .select("id,prize_id,status")
+        .eq("campaign_id", campaignId)
+        .in("id", candidateLeadIds);
+
+      if (candidateLeadError) {
+        throw new Error(`Lecture des e-mails √† traiter impossible: ${candidateLeadError.message}`);
+      }
+
+      attentionLeadIds = (candidateLeads ?? [])
+        .filter((lead) => Boolean(lead.prize_id) && lead.status === "claimed")
+        .map((lead) => lead.id);
+    } else {
+      attentionLeadIds = [];
+    }
+  }
+
+  const row = campaignData as CampaignRow;
+  let leadsQuery = supabase
+    .from("leads")
+    .select("*", { count: "exact" })
+    .eq("campaign_id", campaignId)
+    .order("created_at", { ascending: false })
+    .range(leadOffset, leadOffset + leadLimit - 1);
+
+  if (query) {
+    const escapedQuery = query.replaceAll("%", "\\%").replaceAll("_", "\\_");
+    leadsQuery = leadsQuery.or(
+      `first_name.ilike.%${escapedQuery}%,email.ilike.%${escapedQuery}%,redemption_code.ilike.%${escapedQuery}%`,
+    );
+  }
+
+  if (attentionLeadIds) {
+    leadsQuery = leadsQuery.in(
+      "id",
+      attentionLeadIds.length ? attentionLeadIds : ["00000000-0000-0000-0000-000000000000"],
+    );
+  }
+
+  const [
+    resolvedMerchant,
+    actionsResult,
+    prizesResult,
+    summaryResult,
+    leadsResult,
+    eventsResult,
+    localSettings,
+  ] = await Promise.all([
+    merchant && merchant.id === row.merchant_id
+      ? Promise.resolve(merchant)
+      : (async () => {
+          const merchantResult = await supabase
+            .from("merchants")
+            .select("*")
+            .eq("id", row.merchant_id)
+            .maybeSingle();
+          return merchantResult.data ? toMerchant(merchantResult.data as MerchantRow) : null;
+        })(),
+    supabase
+      .from("campaign_actions")
+      .select("id,campaign_id,position,kind,label,url,created_at")
+      .eq("campaign_id", campaignId),
+    supabase
+      .from("prizes")
+      .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at")
+      .eq("campaign_id", campaignId),
+    supabase.rpc("get_campaign_data_summary", { p_campaign_id: campaignId }),
+    leadsQuery,
+    supabase
+      .from("campaign_events")
+      .select("id,campaign_id,lead_id,event_type,metadata,created_at")
+      .eq("campaign_id", campaignId)
+      .order("created_at", { ascending: false })
+      .limit(8),
+    getCampaignLocalSettings(campaignId),
+  ]);
+
+  if (isMissingCampaignDataSummaryRpc(summaryResult.error)) {
+    return getSupabaseCampaignDataViewLegacy(campaignId, merchant, options);
+  }
+
+  if (summaryResult.error) {
+    throw new Error(`Lecture des indicateurs impossible: ${summaryResult.error.message}`);
+  }
+
+  if (!resolvedMerchant) return null;
+
+  const performance = buildPerformanceBundle(
+    resolvedMerchant,
+    [row],
+    (actionsResult.data as ActionRow[] | null) ?? [],
+    (prizesResult.data as PrizeRow[] | null) ?? [],
+    [],
+    [],
+    { [campaignId]: localSettings },
+  )[0];
+
+  if (!performance) return null;
+
+  const summary = (summaryResult.data as CampaignDataSummaryRpcRow[] | null)?.[0];
+  if (!summary) {
+    throw new Error("Les indicateurs de campagne sont indisponibles.");
+  }
+
+  performance.kpis = {
+    scans: Number(summary.scans_count) || 0,
+    contacts: Number(summary.leads_count) || 0,
+    optIns: 0,
+    leads: Number(summary.leads_count) || 0,
+    actions: Number(summary.actions_count) || 0,
+    games: Number(summary.games_count) || 0,
+    wins: Number(summary.wins_count) || 0,
+    redeemed: Number(summary.redeemed_count) || 0,
+    conversionRate: summary.scans_count
+      ? Math.round((Number(summary.leads_count) / Number(summary.scans_count)) * 100)
+      : 0,
+    actionRate: summary.leads_count
+      ? Math.round((Number(summary.actions_count) / Number(summary.leads_count)) * 100)
+      : 0,
+    redemptionRate: summary.wins_count
+      ? Math.round((Number(summary.redeemed_count) / Number(summary.wins_count)) * 100)
+      : 0,
+    estimatedSpend: Number(Number(summary.estimated_spend || 0).toFixed(2)),
+    costPerLead: summary.leads_count
+      ? Number((Number(summary.estimated_spend || 0) / Number(summary.leads_count)).toFixed(2))
+      : 0,
+    costPerRedeemed: summary.redeemed_count
+      ? Number((Number(summary.estimated_spend || 0) / Number(summary.redeemed_count)).toFixed(2))
+      : 0,
+  };
+
+  const leadRows = (leadsResult.data as LeadRow[] | null) ?? [];
+  performance.kpis.contacts = Number(summary.leads_count) || leadRows.length;
+  const { count: optInsCount } = await supabase
+    .from("leads")
+    .select("id", { count: "exact", head: true })
+    .eq("campaign_id", campaignId)
+    .eq("marketing_consent", true);
+  performance.kpis.optIns = optInsCount ?? leadRows.filter((lead) => Boolean(lead.marketing_consent)).length;
+  const leadIds = leadRows.map((lead) => lead.id);
+  const { data: deliveriesData } = leadIds.length
+    ? await supabase
+        .from("reward_email_deliveries")
+        .select("lead_id,status,sent_at,delivered_at,error_message")
+        .in("lead_id", leadIds)
+    : { data: [] };
+  const prizes = performance.prizes;
+  const leads = enrichLeadRowsWithEmailDeliveries(
+    leadRows.map(toLead).map((lead) => ({
+      ...lead,
+      campaignTitle: performance.campaign.title,
+      goalType: performance.campaign.goalType,
+      prizeLabel: lead.prizeId
+        ? lead.prizeLabelSnapshot ?? prizes.find((item) => item.id === lead.prizeId)?.label ?? "Lot inconnu"
+        : "Perdu",
+      prizeUsageConditions: lead.prizeId
+        ? lead.prizeUsageConditions ?? prizes.find((item) => item.id === lead.prizeId)?.usageConditions
+        : undefined,
+    })),
+    (deliveriesData as RewardEmailDeliverySummaryRow[] | null) ?? [],
+  );
+
+  return {
+    performance,
+    leads,
+    events: ((eventsResult.data as EventRow[] | null) ?? []).map(toEvent),
+    leadTotal: leadsResult.count ?? 0,
+    leadOffset,
+    leadLimit,
+    dailyStats: summary.daily_stats ?? [],
+    actionVolumes: summary.action_volumes ?? [],
+  };
+}
+
+async function recordCampaignPublicationAudit(
+  campaignId: string,
+  input: CampaignSetupInput,
+  configurationVersion: string,
+  reason: string,
+) {
+  try {
+    const { error } = await getSupabaseAdmin().from("campaign_publication_audits").insert({
+      id: generateId("audit"),
+      campaign_id: campaignId,
+      merchant_id: input.merchantId,
+      status: input.isActive ? "active" : "draft",
+      configuration_version: configurationVersion,
+      validation_issues: [],
+      reason,
+    });
+    if (error) console.warn("Publication audit unavailable", error.message);
+  } catch (error) {
+    console.warn("Publication audit unavailable", error);
+  }
+}
+
+export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
+  const supabase = getSupabaseAdmin();
+  const isNewCampaign = !input.id;
+  const campaignId = input.id ?? generateId("camp");
+
+  if (!isNewCampaign) {
+    const { data: existingCampaign, error: existingCampaignError } = await supabase
+      .from("campaigns")
+      .select("id,merchant_id")
+      .eq("id", campaignId)
+      .maybeSingle();
+
+    if (existingCampaignError) {
+      throw new Error(`Lecture de la campagne impossible: ${existingCampaignError.message}`);
+    }
+
+    if (!existingCampaign || existingCampaign.merchant_id !== input.merchantId) {
+      throw new Error("Campagne introuvable");
+    }
+  }
+
+  const payload = {
+    id: campaignId,
+    merchant_id: input.merchantId,
+    title: input.title,
+    subtitle: input.subtitle,
+    goal_type: input.goalType,
+    cta_label: input.ctaLabel,
+    success_metric: input.successMetric,
+    target_url: input.targetUrl ?? null,
+    is_active: input.isActive,
+    accent_ink: input.accent.ink,
+    accent_paper: input.accent.paper,
+    accent_signal: input.accent.signal,
+    game_type: input.gameType,
+    logo_url: input.logoUrl ?? null,
+    logo_size_percent: input.presentation.logo.sizePercent,
+    logo_margin_bottom_px: input.presentation.logo.marginBottomPx,
+    logo_align: input.presentation.logo.align,
+    background_mode: input.presentation.background.mode,
+    background_color: input.presentation.background.color,
+    background_image_url: input.presentation.background.imageUrl || null,
+    heading_text_color: input.presentation.heading.textColor,
+    heading_font_size_px: input.presentation.heading.fontSizePx,
+    heading_font_family:
+      input.presentation.heading.fontFamily === "anton"
+        ? "display"
+        : input.presentation.heading.fontFamily,
+    heading_align: input.presentation.heading.align,
+    button_background_color: input.presentation.button.backgroundColor,
+    button_text_color: input.presentation.button.textColor,
+    button_border_color: input.presentation.button.borderColor,
+    button_size: input.presentation.button.size,
+    wheel_rim_color: input.presentation.wheel.rimColor,
+    wheel_win_color: input.presentation.wheel.winColor,
+    wheel_alternate_win_color: input.presentation.wheel.alternateWinColor,
+    wheel_lose_color: input.presentation.wheel.loseColor,
+    wheel_alternate_lose_color: input.presentation.wheel.alternateLoseColor,
+    reward_expiry_minutes: input.rewardRules.rewardExpiryMinutes,
+    purchase_required: input.rewardRules.purchaseRequired,
+    available_after_hours: input.rewardRules.availableAfterHours,
+    availability_duration_days: input.rewardRules.availabilityDurationDays,
+    is_winning_every_time: input.rewardRules.isWinningEveryTime,
+  };
+
+  const existingPrizesQuery = await supabase.from("prizes").select("*").eq("campaign_id", campaignId);
+  if (existingPrizesQuery.error) {
+    throw new Error(`Lecture des lots existants impossible: ${existingPrizesQuery.error.message}`);
+  }
+
+  const { data: existingPrizesData } = existingPrizesQuery;
+  const existingPrizes = (existingPrizesData as PrizeRow[] | null) ?? [];
+  const remainingMap = new Map(existingPrizes.map((item) => [item.id, item.remaining_quantity]));
+
+  const atomicActions = input.actions.map((action, index) => ({
+    id:
+      !isNewCampaign && action.id && !action.id.startsWith("local-action-")
+        ? action.id
+        : generateId("action"),
+    campaign_id: campaignId,
+    position: index,
+    kind: action.kind,
+    label: action.label,
+    url: action.url,
+  }));
+  const atomicPrizes = input.prizes.map((prize) => {
+    const prizeId =
+      !isNewCampaign &&
+      prize.id &&
+      !prize.id.startsWith("local-prize-") &&
+      !prize.id.startsWith("default-prize-")
+        ? prize.id
+        : generateId("prize");
+    const remaining = remainingMap.has(prizeId)
+      ? remainingMap.get(prizeId)
+      : prize.totalQuantity ?? null;
+
+    return {
+      id: prizeId,
+      campaign_id: campaignId,
+      label: prize.label,
+      total_quantity: prize.totalQuantity ?? null,
+      remaining_quantity: prize.totalQuantity === null ? null : remaining ?? prize.totalQuantity ?? null,
+      probability: prize.probability,
+      estimated_unit_cost: prize.estimatedUnitCost,
+    };
+  });
+  const localSettings = {
+    buttonTextSizePx: input.presentation.button.textSizePx,
+    buttonIsBold: input.presentation.button.isBold,
+    blockSpacingPx: input.presentation.layout.blockSpacingPx,
+    participationIntervalDays: input.rewardRules.participationIntervalDays,
+    headingFontFamily: input.presentation.heading.fontFamily,
+    headingFontWeight: input.presentation.heading.fontWeight ?? 600,
+    gamePageTemplateId: input.presentation.layout.templateId ?? "classic",
+    logoMode: input.logoMode,
+    logoText: input.logoText,
+    prizeSettings: Object.fromEntries(
+      atomicPrizes.map((prize, index) => [
+        prize.id,
+        {
+          usageConditions: input.prizes[index]?.usageConditions?.trim() || undefined,
+        },
+      ]),
+    ),
+    poster: input.presentation.poster,
+    email: input.presentation.email,
+    compliance: {
+      rulesVersion: 1,
+      status: input.isActive ? ("active" as const) : ("draft" as const),
+      lastSavedAt: new Date().toISOString(),
+      publishedAt: input.isActive ? new Date().toISOString() : undefined,
+      configurationVersion: generateId("cfg"),
+    },
+  };
+
+  const atomicSave = await supabase.rpc("save_campaign_setup", {
+    p_campaign: payload,
+    p_actions: atomicActions,
+    p_prizes: atomicPrizes,
+    p_settings: localSettings,
+  });
+
+  if (!atomicSave.error) {
+    await recordCampaignPublicationAudit(
+      campaignId,
+      input,
+      localSettings.compliance.configurationVersion,
+      input.isActive ? "published" : "draft_saved",
+    );
+    return campaignId;
+  }
+
+  if (!isMissingAtomicCampaignSaveRpc(atomicSave.error)) {
+    throw new Error(`La campagne n'a pas pu √™tre enregistr√©e: ${atomicSave.error.message}`);
+  }
+
+  const upsert = await supabase.from("campaigns").upsert(payload).select("*").single();
+  if (upsert.error || !upsert.data) {
+    throw new Error(
+      `La campagne n'a pas pu etre enregistree: ${upsert.error?.message ?? "ligne absente"}`,
+    );
+  }
+
+  const deleteActions = await supabase.from("campaign_actions").delete().eq("campaign_id", campaignId);
+  if (deleteActions.error) {
+    throw new Error(`Suppression des actions impossible: ${deleteActions.error.message}`);
+  }
+
+  const deletePrizes = await supabase.from("prizes").delete().eq("campaign_id", campaignId);
+  if (deletePrizes.error) {
+    throw new Error(`Suppression des lots impossible: ${deletePrizes.error.message}`);
+  }
+
+  if (input.actions.length) {
+    const actionsInsert = input.actions.map((action, index) => ({
+      id:
+        !isNewCampaign && action.id && !action.id.startsWith("local-action-")
+          ? action.id
+          : generateId("action"),
+      campaign_id: campaignId,
+      position: index,
+      kind: action.kind,
+      label: action.label,
+      url: action.url,
+    }));
+    const actionsResult = await supabase.from("campaign_actions").insert(actionsInsert);
+    if (actionsResult.error) {
+      throw new Error(`Les actions n'ont pas pu etre enregistrees: ${actionsResult.error.message}`);
+    }
+  }
+
+  const prizesInsert = input.prizes.map((prize) => {
+    const prizeId =
+      !isNewCampaign &&
+      prize.id &&
+      !prize.id.startsWith("local-prize-") &&
+      !prize.id.startsWith("default-prize-")
+        ? prize.id
+        : generateId("prize");
+    const remaining = remainingMap.has(prizeId)
+      ? remainingMap.get(prizeId)
+      : prize.totalQuantity ?? null;
+    return {
+      id: prizeId,
+      campaign_id: campaignId,
+      label: prize.label,
+      total_quantity: prize.totalQuantity ?? null,
+      remaining_quantity: prize.totalQuantity === null ? null : remaining ?? prize.totalQuantity ?? null,
+      probability: prize.probability,
+      estimated_unit_cost: prize.estimatedUnitCost,
+    };
+  });
+  if (prizesInsert.length) {
+    const prizeResult = await supabase.from("prizes").insert(prizesInsert);
+    if (prizeResult.error) {
+      throw new Error(`Les lots n'ont pas pu etre enregistres: ${prizeResult.error.message}`);
+    }
+  }
+
+  await setCampaignLocalSettings(campaignId, localSettings);
+  await recordCampaignPublicationAudit(
+    campaignId,
+    input,
+    localSettings.compliance.configurationVersion,
+    input.isActive ? "published_fallback" : "draft_saved_fallback",
+  );
+
+  return campaignId;
+}
+
+export async function duplicateCampaignInSupabase(id: string, merchant: Merchant) {
+  const performance = await getSupabaseCampaignPerformance(id, merchant);
+
+  if (!performance || performance.campaign.merchantId !== merchant.id) {
+    throw new Error("Campagne introuvable");
+  }
+
+  const campaignId = generateId("camp");
+  await updateCampaignSetupInSupabase({
+    id: campaignId,
+    merchantId: merchant.id,
+    title: `${performance.campaign.title} (copie)`,
+    subtitle: performance.campaign.subtitle,
+    goalType: performance.campaign.goalType,
+    ctaLabel: performance.campaign.ctaLabel,
+    successMetric: performance.campaign.successMetric,
+    targetUrl: performance.campaign.targetUrl,
+    isActive: false,
+    accent: performance.campaign.accent,
+    gameType: performance.campaign.gameType,
+    logoMode: performance.campaign.logoMode,
+    logoText: performance.campaign.logoText,
+    logoUrl: performance.campaign.logoUrl,
+    presentation: performance.campaign.presentation,
+    actions: performance.campaign.actions.map((action) => ({
+      ...action,
+      id: generateId("action"),
+    })),
+    rewardRules: performance.campaign.rewardRules,
+    prizes: performance.prizes.map((prize) => ({
+      id: generateId("prize"),
+      label: prize.label,
+      totalQuantity: prize.totalQuantity,
+      probability: prize.probability,
+      estimatedUnitCost: prize.estimatedUnitCost,
+    })),
+  });
+
+  return campaignId;
+}
+
+export async function duplicateCampaignToMerchantInSupabase(
+  id: string,
+  sourceMerchant: Merchant,
+  targetMerchant: Merchant,
+) {
+  const performance = await getSupabaseCampaignPerformance(id, sourceMerchant);
+  if (!performance || performance.campaign.merchantId !== sourceMerchant.id) {
+    throw new Error("Campagne source introuvable.");
+  }
+
+  const campaignId = generateId("camp");
+  await updateCampaignSetupInSupabase({
+    id: campaignId,
+    merchantId: targetMerchant.id,
+    title: `${performance.campaign.title} ¬∑ ${targetMerchant.city ?? targetMerchant.companyName}`,
+    subtitle: performance.campaign.subtitle,
+    goalType: performance.campaign.goalType,
+    ctaLabel: performance.campaign.ctaLabel,
+    successMetric: performance.campaign.successMetric,
+    targetUrl: performance.campaign.targetUrl,
+    isActive: false,
+    accent: performance.campaign.accent,
+    gameType: performance.campaign.gameType,
+    logoMode: performance.campaign.logoMode,
+    logoText: performance.campaign.logoText,
+    logoUrl: performance.campaign.logoUrl,
+    presentation: performance.campaign.presentation,
+    actions: performance.campaign.actions.map((action) => ({ ...action, id: generateId("action") })),
+    rewardRules: performance.campaign.rewardRules,
+    prizes: performance.prizes.map((prize) => ({
+      id: generateId("prize"),
+      label: prize.label,
+      totalQuantity: prize.totalQuantity,
+      probability: prize.probability,
+      estimatedUnitCost: prize.estimatedUnitCost,
+      usageConditions: prize.usageConditions,
+    })),
+  });
+
+  return campaignId;
+}
+
+export async function toggleCampaignInSupabase(id: string, isActive: boolean) {
+  const supabase = getSupabaseAdmin();
+  const { data: campaign } = await supabase
+    .from("campaigns")
+    .select("merchant_id")
+    .eq("id", id)
+    .maybeSingle();
+  if (!campaign) throw new Error("Campagne introuvable");
+  const { error } = await supabase.rpc("set_campaign_active_state", {
+    p_campaign_id: id,
+    p_merchant_id: campaign.merchant_id,
+    p_is_active: isActive,
+  });
+  if (error) throw new Error(error.message || "Campagne introuvable");
+}
+
+export async function toggleCampaignForMerchantInSupabase(
+  id: string,
+  isActive: boolean,
+  merchantId: string,
+) {
+  const supabase = getSupabaseAdmin();
+  const { error } = await supabase.rpc("set_campaign_active_state", {
+    p_campaign_id: id,
+    p_merchant_id: merchantId,
+    p_is_active: isActive,
+  });
+  if (error) throw new Error(error.message || "Campagne introuvable");
+}
+
+export async function deleteCampaignInSupabase(id: string) {
+  const supabase = getSupabaseAdmin();
+
+  const { count } = await supabase
+    .from("leads")
+    .select("id", { count: "exact", head: true })
+    .eq("campaign_id", id);
+  if ((count ?? 0) > 0) {
+    throw new Error("Cette animation poss√®de des participations ou des gains. D√©sactivez-la plut√¥t que de la supprimer.");
+  }
+
+  await supabase.from("campaign_events").delete().eq("campaign_id", id);
+  await supabase.from("leads").delete().eq("campaign_id", id);
+  await supabase.from("campaign_actions").delete().eq("campaign_id", id);
+  await supabase.from("prizes").delete().eq("campaign_id", id);
+
+  const { error } = await supabase.from("campaigns").delete().eq("id", id);
+  if (error) throw new Error("Campagne introuvable");
+}
+
+export async function deleteCampaignForMerchantInSupabase(id: string, merchantId: string) {
+  const supabase = getSupabaseAdmin();
+  const { data: campaign, error: campaignError } = await supabase
+    .from("campaigns")
+    .select("id")
+    .eq("id", id)
+    .eq("merchant_id", merchantId)
+    .maybeSingle();
+
+  if (campaignError || !campaign) {
+    throw new Error("Campagne introuvable");
+  }
+
+  const { count } = await supabase
+    .from("leads")
+    .select("id", { count: "exact", head: true })
+    .eq("campaign_id", id);
+  if ((count ?? 0) > 0) {
+    throw new Error("Cette animation poss√®de des participations ou des gains. D√©sactivez-la plut√¥t que de la supprimer.");
+  }
+
+  await supabase.from("campaign_events").delete().eq("campaign_id", id);
+  await supabase.from("leads").delete().eq("campaign_id", id);
+  await supabase.from("campaign_actions").delete().eq("campaign_id", id);
+  await supabase.from("prizes").delete().eq("campaign_id", id);
+
+  const { error } = await supabase
+    .from("campaigns")
+    .delete()
+    .eq("id", id)
+    .eq("merchant_id", merchantId);
+
+  if (error) throw new Error("Campagne introuvable");
+}
+
+export async function recordEventInSupabase(
+  campaignId: string,
+  eventType: CampaignEvent["eventType"],
+  leadId?: string,
+  metadata?: CampaignEvent["metadata"],
+) {
+  const supabase = getSupabaseAdmin();
+  const event: EventRow = {
+    id: generateId("evt"),
+    campaign_id: campaignId,
+    lead_id: leadId ?? null,
+    event_type: eventType,
+    metadata: metadata ?? {},
+    created_at: new Date().toISOString(),
+  };
+  const { error } = await supabase.from("campaign_events").insert(event);
+  if (error) throw new Error("Event impossible");
+  return toEvent(event);
+}
+
+export async function markActionConfirmedInSupabase(leadId: string, campaignId?: string) {
+  const supabase = getSupabaseAdmin();
+  let query = supabase.from("leads").update({ action_confirmed: true }).eq("id", leadId);
+  if (campaignId) query = query.eq("campaign_id", campaignId);
+  const { data, error } = await query.select("*").maybeSingle();
+  if (error || !data) return null;
+  return toLead(data as LeadRow);
+}
+
+export async function createDrawSessionInSupabase(
+  input: CreateDrawSessionRequest,
+  merchant?: Merchant,
+): Promise<CreateDrawSessionResult> {
+  const performance = await getSupabaseCampaignPerformance(input.campaignId, merchant);
+  if (!performance || !performance.campaign.isActive) throw new Error("Campagne indisponible");
+  assertMerchantBillingAccess(performance.merchant, "campaign_public");
+  const { campaign, merchant: campaignMerchant, prizes } = performance;
+  const supabase = getSupabaseAdmin();
+  const sessionId = generateId("session");
+  const { data, error } = await supabase
+    .rpc("create_draw_session", {
+      p_campaign_id: campaign.id,
+      p_session_id: sessionId,
+    })
+    .single<CreateDrawSessionRpcRow>();
+
+  if (error || !data) {
+    throw new Error(
+      `Impossible de pr√©parer la partie: ${error?.message ?? "r√©ponse vide de la RPC"}`,
+    );
+  }
+
+  const session = toDrawSession({
+    id: data.session_id,
+    campaign_id: data.campaign_id,
+    prize_id: data.prize_id,
+    status: data.status,
+    created_at: data.created_at,
+    expires_at: data.expires_at,
+  });
+  const { data: snapshot } = await supabase
+    .from("draw_sessions")
+    .select("configuration_version,configuration_snapshot")
+    .eq("id", sessionId)
+    .maybeSingle<{ configuration_version: string | null; configuration_snapshot: Record<string, unknown> | null }>();
+  if (snapshot) {
+    session.configurationVersion = snapshot.configuration_version ?? undefined;
+    session.configurationSnapshot = snapshot.configuration_snapshot ?? undefined;
+  }
+  const prize = data.prize_id ? prizes.find((item) => item.id === data.prize_id) ?? null : null;
+
+  return {
+    session,
+    prize,
+    campaign: toPublicCampaign(campaign, campaignMerchant, prizes),
+  };
+}
+
+export async function finalizeDrawSessionInSupabase(
+  input: FinalizeDrawSessionRequest,
+  merchant?: Merchant,
+): Promise<DrawResult> {
+  const supabase = getSupabaseAdmin();
+  const { data: sessionRow } = await supabase
+    .from("draw_sessions")
+    .select("campaign_id")
+    .eq("id", input.sessionId)
+    .maybeSingle();
+  if (!sessionRow) {
+    throw new Error("Session de jeu introuvable ou expir√©e.");
+  }
+
+  // Check billing before persisting the lead. This prevents a valid draw from
+  // being recorded while the API returns a billing error to the player.
+  const initialPerformance = await getSupabaseCampaignPerformance(
+    sessionRow.campaign_id,
+    merchant,
+  );
+  if (!initialPerformance || !initialPerformance.campaign.isActive) {
+    throw new Error("Cette animation est momentan√©ment indisponible.");
+  }
+  assertMerchantBillingAccess(initialPerformance.merchant, "campaign_public");
+
+  const requiresContactCapture =
+    initialPerformance.campaign.goalType === "lead_capture" ||
+    initialPerformance.campaign.actions.some((action) => action.kind === "crm");
+  if (requiresContactCapture && input.marketingConsent !== true) {
+    throw new Error("Le consentement est obligatoire pour participer √† cette campagne.");
+  }
+
+  const leadId = generateId("lead");
+  const { data, error } = await supabase
+    .rpc("finalize_draw_session_and_create_lead", {
+      p_session_id: input.sessionId,
+      p_lead_id: leadId,
+      p_first_name: input.firstName,
+      p_email: input.email,
+      p_marketing_consent: Boolean(input.marketingConsent),
+    })
+    .single<FinalizeDrawSessionRpcRow>();
+
+  if (error || !data) {
+    throw new Error(
+      `Impossible de finaliser la participation: ${error?.message ?? "r√©ponse vide de la RPC"}`,
+    );
+  }
+
+  const { campaign, merchant: campaignMerchant, prizes } = initialPerformance;
+  const { data: consentEvidence } = await supabase
+    .from("leads")
+    .select("consent_policy_version,consent_source,campaign_configuration_version")
+    .eq("id", data.lead_id)
+    .maybeSingle<{ consent_policy_version: string | null; consent_source: string | null; campaign_configuration_version: string | null }>();
+  const lead: Lead = {
+    id: data.lead_id,
+    campaignId: data.campaign_id,
+    firstName: data.first_name,
+    email: data.email,
+    marketingConsent: data.marketing_consent,
+    consentTimestamp: data.consent_timestamp ?? undefined,
+    consentPolicyVersion: consentEvidence?.consent_policy_version ?? undefined,
+    consentSource: consentEvidence?.consent_source ?? undefined,
+    campaignConfigurationVersion: consentEvidence?.campaign_configuration_version ?? undefined,
+    prizeId: data.prize_id ?? undefined,
+    status: data.status,
+    createdAt: data.created_at,
+    actionConfirmed: data.action_confirmed,
+    redemptionCode: data.redemption_code ?? undefined,
+    rewardAvailableAt: data.reward_available_at ?? undefined,
+    rewardExpiresAt: data.reward_expires_at ?? undefined,
+  };
+  const prize = data.prize_id
+    ? prizes.find((item) => item.id === data.prize_id) ?? null
+    : null;
+  const actionForVisit =
+    typeof data.action_index === "number" ? campaign.actions[data.action_index] : undefined;
+
+  return {
+    lead,
+    prize,
+    campaign: toPublicCampaign(
+      campaign,
+      campaignMerchant,
+      prizes,
+      actionForVisit ? [actionForVisit] : [],
+    ),
+  };
+}
+
+export async function drawForLeadInSupabase(input: DrawRequest, merchant: Merchant): Promise<DrawResult> {
+  const performance = await getSupabaseCampaignPerformance(input.campaignId, merchant);
+  if (!performance || !performance.campaign.isActive) throw new Error("Campagne indisponible");
+  assertMerchantBillingAccess(performance.merchant, "campaign_public");
+  const { campaign, prizes } = performance;
+  const supabase = getSupabaseAdmin();
+  const leadId = generateId("lead");
+  const { data, error } = await supabase
+    .rpc("draw_campaign_prize_and_create_lead", {
+      p_campaign_id: campaign.id,
+      p_lead_id: leadId,
+      p_first_name: input.firstName,
+      p_email: input.email,
+      p_marketing_consent: input.marketingConsent,
+    })
+    .single<DrawLeadRpcRow>();
+
+  if (error || !data) {
+    throw new Error(
+      `Impossible de valider la participation: ${error?.message ?? "r√©ponse vide de la RPC"}`,
+    );
+  }
+
+  const lead: Lead = {
+    id: data.lead_id,
+    campaignId: data.campaign_id,
+    firstName: data.first_name,
+    email: data.email,
+    marketingConsent: data.marketing_consent,
+    consentTimestamp: data.consent_timestamp ?? undefined,
+    prizeId: data.prize_id ?? undefined,
+    status: data.status,
+    createdAt: data.created_at,
+    actionConfirmed: data.action_confirmed,
+    redemptionCode: data.redemption_code ?? undefined,
+    rewardAvailableAt: data.reward_available_at ?? undefined,
+    rewardExpiresAt: data.reward_expires_at ?? undefined,
+  };
+  const prize = data.prize_id
+    ? prizes.find((item) => item.id === data.prize_id) ?? null
+    : null;
+  const actionForVisit =
+    typeof data.action_index === "number" ? campaign.actions[data.action_index] : undefined;
+
+  return {
+    lead,
+    prize,
+    campaign: toPublicCampaign(campaign, merchant, prizes, actionForVisit ? [actionForVisit] : []),
+  };
+}
+
+export async function redeemLeadPrizeInSupabase(leadId: string) {
+  const supabase = getSupabaseAdmin();
+  const { data, error } = await supabase
+    .rpc("redeem_campaign_lead_prize", { p_lead_id: leadId })
+    .single<Omit<LeadRow, "phone">>();
+  if (error || !data) {
+    throw new Error(error?.message || "Le lot n'a pas pu √™tre marqu√© comme r√©cup√©r√©.");
+  }
+  return toLead({ ...data, phone: null } as LeadRow);
+}
+
+function maskCashierEmail(email: string) {
+  const [localPart, domain] = email.split("@");
+  if (!localPart || !domain) return "Adresse masqu√©e";
+  const visible = localPart.slice(0, 1);
+  return `${visible}${"‚Ä¢".repeat(Math.max(2, Math.min(localPart.length - 1, 4)))}@${domain}`;
+}
+
+type RedemptionCampaignRow = Pick<CampaignRow, "id" | "merchant_id" | "title" | "purchase_required">;
+type RedemptionPrizeRow = Pick<PrizeRow, "id" | "label">;
+
+function toCashierRedemptionContext(
+  lead: LeadRow,
+  campaign: RedemptionCampaignRow,
+  prize?: RedemptionPrizeRow | null,
+): CashierRedemptionContext {
+  const now = Date.now();
+  const availableAt = lead.reward_available_at ? new Date(lead.reward_available_at).getTime() : 0;
+  const expiresAt = lead.reward_expires_at ? new Date(lead.reward_expires_at).getTime() : 0;
+  const status: CashierRedemptionContext["status"] =
+    !lead.prize_id
+      ? "invalid"
+      : lead.status === "redeemed"
+        ? "redeemed"
+        : expiresAt > 0 && expiresAt < now
+          ? "expired"
+          : availableAt > now
+            ? "not_available"
+            : lead.status === "claimed"
+              ? "available"
+              : "invalid";
+
+  return {
+    status,
+    leadId: lead.id,
+    campaignId: lead.campaign_id,
+    campaignTitle: campaign.title,
+    firstName: lead.first_name,
+    maskedEmail: maskCashierEmail(lead.email),
+    prizeLabel: lead.prize_id
+      ? lead.prize_label_snapshot ?? prize?.label ?? "Lot"
+      : "Perdu",
+    prizeUsageConditions: lead.prize_usage_conditions_snapshot ?? undefined,
+    redemptionCode: lead.redemption_code ?? undefined,
+    rewardAvailableAt: lead.reward_available_at ?? undefined,
+    rewardExpiresAt: lead.reward_expires_at ?? undefined,
+    purchaseRequired: campaign.purchase_required,
+    redeemedAt: lead.redeemed_at ?? undefined,
+    purchaseVerified: lead.purchase_verified ?? undefined,
+  };
+}
+
+export async function findSupabaseMerchantLeadByRedemptionCode(
+  merchantId: string,
+  code: string,
+): Promise<CashierRedemptionContext | null> {
+  const normalizedCode = code.trim().toUpperCase();
+  if (!normalizedCode) return null;
+
+  const supabase = getSupabaseAdmin();
+  const { data: lead, error: leadError } = await supabase
+    .from("leads")
+    .select(redemptionLeadColumns)
+    .eq("redemption_code", normalizedCode)
+    .maybeSingle<LeadRow>();
+
+  if (leadError) throw new Error("Recherche du code impossible");
+  if (!lead) return null;
+
+  const [{ data: campaign, error: campaignError }, { data: prize }] = await Promise.all([
+    supabase
+      .from("campaigns")
+      .select("id,merchant_id,title,purchase_required")
+      .eq("id", lead.campaign_id)
+      .eq("merchant_id", merchantId)
+      .maybeSingle<{ id: string; merchant_id: string; title: string; purchase_required: boolean }>(),
+    lead.prize_id
+      ? supabase.from("prizes").select("id,label").eq("id", lead.prize_id).maybeSingle<{ id: string; label: string }>()
+      : Promise.resolve({ data: null }),
+  ]);
+
+  if (campaignError) throw new Error("Campagne du gain introuvable");
+  if (!campaign) return null;
+
+  return toCashierRedemptionContext(lead, campaign, prize);
+}
+
+export async function findSupabasePublicRedemptionContextByCode(
+  code: string,
+): Promise<PublicRedemptionContext | null> {
+  const normalizedCode = code.trim().toUpperCase();
+  if (!normalizedCode) return null;
+
+  const supabase = getSupabaseAdmin();
+  const { data: lead, error: leadError } = await supabase
+    .from("leads")
+    .select(redemptionLeadColumns)
+    .eq("redemption_code", normalizedCode)
+    .maybeSingle<LeadRow>();
+
+  if (leadError) throw new Error("Recherche du code impossible");
+  if (!lead) return null;
+
+  const { data: campaign, error: campaignError } = await supabase
+    .from("campaigns")
+    .select("id,merchant_id,title,purchase_required")
+    .eq("id", lead.campaign_id)
+    .maybeSingle<RedemptionCampaignRow>();
+  if (campaignError || !campaign) return null;
+
+  const [{ data: merchant, error: merchantError }, { data: prize }] = await Promise.all([
+    supabase
+      .from("merchants")
+      .select("id,company_name,city")
+      .eq("id", campaign.merchant_id)
+      .maybeSingle<{ id: string; company_name: string; city: string | null }>(),
+    lead.prize_id
+      ? supabase.from("prizes").select("id,label").eq("id", lead.prize_id).maybeSingle<RedemptionPrizeRow>()
+      : Promise.resolve({ data: null }),
+  ]);
+  if (merchantError || !merchant) return null;
+
+  const context = toCashierRedemptionContext(lead, campaign, prize);
+
+  return {
+    ...context,
+    merchantId: merchant.id,
+    merchantName: merchant.company_name,
+    merchantCity: merchant.city ?? undefined,
+    email: lead.email,
+  };
+}
+
+export async function redeemSupabaseCashierLeadPrize(input: {
+  leadId: string;
+  merchantId: string;
+  operatorUserId: string;
+  purchaseConfirmed: boolean;
+  idempotencyKey: string;
+}): Promise<CashierRedemptionContext> {
+  const supabase = getSupabaseAdmin();
+  const { data, error } = await supabase
+    .rpc("redeem_cashier_lead_prize", {
+      p_lead_id: input.leadId,
+      p_merchant_id: input.merchantId,
+      p_operator_user_id: input.operatorUserId,
+      p_purchase_confirmed: input.purchaseConfirmed,
+      p_idempotency_key: input.idempotencyKey,
+    })
+    .single<CashierRedeemRpcRow>();
+
+  if (error || !data) {
+    const functionUnavailable = /function|schema cache|does not exist|ambiguous/i.test(error?.message ?? "");
+    if (!functionUnavailable) {
+      throw new Error(error?.message || "Le retrait n'a pas pu √™tre valid√©.");
+    }
+
+    const { data: leadCodeRow } = await supabase
+      .from("leads")
+      .select("redemption_code")
+      .eq("id", input.leadId)
+      .maybeSingle<{ redemption_code: string | null }>();
+    const before = leadCodeRow?.redemption_code
+      ? await findSupabaseMerchantLeadByRedemptionCode(input.merchantId, leadCodeRow.redemption_code)
+      : null;
+    if (!before?.leadId) throw new Error("Gain introuvable");
+    if (before.status === "redeemed") throw new Error("Lot d√©j√† retir√©");
+    if (before.status === "expired") throw new Error("Lot expir√©");
+    if (before.status === "not_available") throw new Error("Lot pas encore disponible");
+    if (before.purchaseRequired && !input.purchaseConfirmed) {
+      throw new Error("Achat √† confirmer avant le retrait");
+    }
+    await redeemLeadPrizeInSupabase(input.leadId);
+    return { ...before, status: "redeemed", purchaseVerified: input.purchaseConfirmed, redeemedAt: new Date().toISOString() };
+  }
+
+  const context = await findSupabaseMerchantLeadByRedemptionCode(
+    input.merchantId,
+    data.redemption_code ?? "",
+  );
+
+  return {
+    ...(context ?? {}),
+    status: "redeemed",
+    leadId: data.id,
+    campaignId: data.campaign_id,
+    firstName: data.first_name,
+    maskedEmail: maskCashierEmail(data.email),
+    redemptionCode: data.redemption_code ?? undefined,
+    rewardAvailableAt: data.reward_available_at ?? undefined,
+    rewardExpiresAt: data.reward_expires_at ?? undefined,
+    redeemedAt: data.redeemed_at ?? undefined,
+    purchaseVerified: data.purchase_verified ?? input.purchaseConfirmed,
+  };
+}
+
+export async function resetLeadPrizeInSupabase(leadId: string) {
+  const supabase = getSupabaseAdmin();
+  const { data, error } = await supabase
+    .rpc("reset_campaign_lead_prize", { p_lead_id: leadId })
+    .single<Omit<LeadRow, "phone">>();
+  if (error || !data) {
+    throw new Error(error?.message || "Le lot n'a pas pu √™tre r√©initialis√©.");
+  }
+  return toLead({ ...data, phone: null } as LeadRow);
+}
+
+export async function updatePrizeStockInSupabase(
+  prizeId: string,
+  remainingQuantity: number | null,
+) {
+  const supabase = getSupabaseAdmin();
+  const { data: current, error: currentError } = await supabase
+    .from("prizes")
+    .select("id,total_quantity")
+    .eq("id", prizeId)
+    .maybeSingle();
+  if (currentError || !current) {
+    throw new Error("Dotation introuvable");
+  }
+  const { data, error } = await supabase
+    .from("prizes")
+    .update({ remaining_quantity: remainingQuantity })
+    .eq("id", prizeId)
+    .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at")
+    .maybeSingle();
+
+  if (error || !data) {
+    throw new Error("Le stock n'a pas pu √™tre mis √† jour");
+  }
+
+  return toPrize(data as PrizeRow);
+}
+
+export async function resetPrizeStockInSupabase(prizeId: string) {
+  const supabase = getSupabaseAdmin();
+  const { data: protectedReset, error: protectedResetError } = await supabase
+    .rpc("reset_campaign_prize_stock", { p_prize_id: prizeId })
+    .single<PrizeRow>();
+
+  if (protectedResetError || !protectedReset) {
+    throw new Error(protectedResetError?.message || "Le stock n'a pas pu √™tre r√©initialis√©.");
+  }
+
+  return toPrize(protectedReset);
+
+  /* Legacy implementation retained below only until the next cleanup migration.
+  const { data: prizeData, error: prizeError } = await supabase
+    .from("prizes")
+    .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at")
+    .eq("id", prizeId)
+    .maybeSingle();
+
+  if (prizeError || !prizeData) {
+    throw new Error("Dotation introuvable");
+  }
+
+  const prize = prizeData as PrizeRow;
+  const { data, error } = await supabase
+    .from("prizes")
+    .update({ remaining_quantity: prize.total_quantity })
+    .eq("id", prizeId)
+    .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at")
+    .maybeSingle();
+
+  if (error || !data) {
+    throw new Error("Le stock n'a pas pu √™tre r√©initialis√©");
+  }
+
+  return toPrize(data as PrizeRow); */
+}
+
+export async function getSupabaseLeadRewardEmailHistory(leadId: string, merchantId: string) {
+  const supabase = getSupabaseAdmin();
+  const { data: leadData, error: leadError } = await supabase
+    .from("leads")
+    .select("*")
+    .eq("id", leadId)
+    .maybeSingle();
+
+  if (leadError || !leadData) {
+    throw new Error("Lead introuvable");
+  }
+
+  const lead = toLead(leadData as LeadRow);
+  const { data: campaignData, error: campaignError } = await supabase
+    .from("campaigns")
+    .select("id,merchant_id,title")
+    .eq("id", lead.campaignId)
+    .maybeSingle();
+
+  if (campaignError || !campaignData || campaignData.merchant_id !== merchantId) {
+    throw new Error("Acc√®s refus√©");
+  }
+
+  const { data: deliveryData, error: deliveryError } = await supabase
+    .from("reward_email_deliveries")
+    .select("*")
+    .eq("lead_id", leadId)
+    .maybeSingle();
+
+  if (deliveryError) {
+    throw new Error(`Lecture du suivi e-mail impossible: ${deliveryError.message}`);
+  }
+
+  if (!deliveryData) {
+    return {
+      lead,
+      delivery: null,
+      events: [] as RewardEmailEvent[],
+    };
+  }
+
+  const { data: eventsData, error: eventsError } = await supabase
+    .from("reward_email_events")
+    .select("*")
+    .eq("reward_email_delivery_id", deliveryData.id)
+    .order("created_at", { ascending: false });
+
+  if (eventsError) {
+    throw new Error(`Lecture des √©v√©nements e-mail impossible: ${eventsError.message}`);
+  }
+
+  return {
+    lead,
+    delivery: toRewardEmailDelivery(deliveryData as RewardEmailDeliveryRow),
+    events: ((eventsData as RewardEmailEventRow[] | null) ?? []).map(toRewardEmailEvent),
+  };
+}
+
+export async function getSupabaseRewardEmailResendPayload(leadId: string, merchant: Merchant) {
+  const history = await getSupabaseLeadRewardEmailHistory(leadId, merchant.id);
+  const lead = history.lead;
+
+  if (!lead.prizeId || !lead.redemptionCode) {
+    throw new Error("Aucun lot gagnant √† renvoyer");
+  }
+
+  if (lead.status !== "claimed") {
+    throw new Error("Seuls les gains disponibles peuvent √™tre renvoy√©s.");
+  }
+  if (lead.rewardExpiresAt && new Date(lead.rewardExpiresAt).getTime() < Date.now()) {
+    throw new Error("Ce gain est expir√©. R√©initialisez-le avant de renvoyer l‚Äôe-mail.");
+  }
+
+  const performance = await getSupabaseCampaignPerformance(lead.campaignId, merchant);
+
+  if (!performance || performance.campaign.merchantId !== merchant.id) {
+    throw new Error("Campagne introuvable");
+  }
+
+  const savedPrize = performance.prizes.find((item) => item.id === lead.prizeId);
+
+  if (!savedPrize) {
+    throw new Error("Lot introuvable");
+  }
+
+  const prize: Prize = {
+    ...savedPrize,
+    label: lead.prizeLabelSnapshot ?? savedPrize.label,
+    usageConditions: lead.prizeUsageConditions ?? savedPrize.usageConditions,
+  };
+
+  const delivery = history.delivery;
+
+  if (delivery?.sentAt) {
+    const cooldownMs = 2 * 60 * 1000;
+    const sentAtMs = new Date(delivery.sentAt).getTime();
+
+    if (Date.now() - sentAtMs < cooldownMs) {
+      throw new Error("Attendez 2 minutes avant de renvoyer un e-mail.");
+    }
+  }
+
+  if (delivery?.status === "queued") {
+    throw new Error("Un e-mail est d√©j√† en cours d'envoi.");
+  }
+
+  return {
+    lead,
+    campaign: performance.campaign,
+    merchant: performance.merchant,
+    prize,
+  };
+}
+
+type RewardEmailDeliveryInput = {
+  campaignId: string;
+  leadId: string;
+  recipientEmail: string;
+  senderEmail: string;
+  replyToEmail?: string;
+  subject: string;
+  metadata?: Record<string, string | number | boolean | null>;
+};
+
+export async function upsertRewardEmailDeliveryInSupabase(input: RewardEmailDeliveryInput) {
+  const supabase = getSupabaseAdmin();
+  const payload = {
+    campaign_id: input.campaignId,
+    lead_id: input.leadId,
+    recipient_email: input.recipientEmail,
+    sender_email: input.senderEmail,
+    reply_to_email: input.replyToEmail ?? null,
+    subject: input.subject,
+    status: "queued",
+    error_message: null,
+    metadata: input.metadata ?? {},
+    last_event_at: new Date().toISOString(),
+  };
+
+  const { data, error } = await supabase
+    .from("reward_email_deliveries")
+    .upsert(payload, { onConflict: "lead_id" })
+    .select("*")
+    .single();
+
+  if (error || !data) {
+    throw new Error(`Enregistrement de l'email impossible: ${error?.message ?? "ligne absente"}`);
+  }
+
+  return data as RewardEmailDeliveryRow;
+}
+
+export async function markRewardEmailSentInSupabase(
+  deliveryId: string,
+  resendEmailId: string | null,
+) {
+  const supabase = getSupabaseAdmin();
+  const now = new Date().toISOString();
+  const { error } = await supabase
+    .from("reward_email_deliveries")
+    .update({
+      resend_email_id: resendEmailId,
+      status: "sent",
+      sent_at: now,
+      last_event_at: now,
+      next_retry_at: null,
+      error_message: null,
+    })
+    .eq("id", deliveryId);
+
+  if (error) {
+    throw new Error(`Mise √† jour de l'email envoy√© impossible: ${error.message}`);
+  }
+}
+
+export async function markRewardEmailFailedInSupabase(deliveryId: string, errorMessage: string) {
+  const { error: retryError } = await getSupabaseAdmin().rpc("schedule_reward_email_retry", {
+    p_delivery_id: deliveryId,
+    p_error_message: errorMessage,
+  });
+  if (retryError) {
+    throw new Error(`Mise √† jour de l'e-mail en √©chec impossible: ${retryError.message}`);
+  }
+  return;
+
+  /*
+  Legacy non-retry implementation.
+  const supabase = getSupabaseAdmin();
+  const now = new Date().toISOString();
+  const { error } = await supabase
+    .from("reward_email_deliveries")
+    .update({
+      status: "failed",
+      error_message: errorMessage,
+      last_event_at: now,
+    })
+    .eq("id", deliveryId);
+
+  if (error) {
+    throw new Error(`Mise √† jour de l'email en √©chec impossible: ${error.message}`);
+  } */
+}
+
+export async function getSupabaseRetryableRewardEmailCandidates(limit = 20) {
+  const { data, error } = await getSupabaseAdmin()
+    .from("reward_email_deliveries")
+    .select("lead_id,campaign_id")
+    .eq("status", "failed")
+    .not("next_retry_at", "is", null)
+    .lte("next_retry_at", new Date().toISOString())
+    .order("next_retry_at", { ascending: true })
+    .limit(Math.max(1, Math.min(limit, 50)));
+
+  if (error) {
+    throw new Error(`Lecture des relances e-mail impossible: ${error.message}`);
+  }
+  return (data ?? []) as Array<{ lead_id: string; campaign_id: string }>;
+}
+
+function mapWebhookDeliveryStatus(event: WebhookEventPayload) {
+  switch (event.type) {
+    case "email.sent":
+      return "sent";
+    case "email.delivered":
+      return "delivered";
+    case "email.bounced":
+      return "bounced";
+    case "email.complained":
+      return "complained";
+    case "email.suppressed":
+      return "suppressed";
+    case "email.failed":
+      return "failed";
+    default:
+      return null;
+  }
+}
+
+function isRewardEmailWebhookEvent(
+  event: WebhookEventPayload,
+): event is Extract<
+  WebhookEventPayload,
+  {
+    data: {
+      email_id: string;
+    };
+  }
+> {
+  return "data" in event && typeof event.data === "object" && event.data !== null && "email_id" in event.data;
+}
+
+export async function syncRewardEmailWebhookInSupabase(event: WebhookEventPayload) {
+  const resendEmailId = isRewardEmailWebhookEvent(event) ? event.data.email_id : null;
+  const deliveryStatus = mapWebhookDeliveryStatus(event);
+  const supabase = getSupabaseAdmin();
+  let deliveryId: string | null = null;
+
+  if (resendEmailId) {
+    const timestamp = event.created_at ?? new Date().toISOString();
+    const deliveryUpdate: Record<string, string | null> = {
+      resend_email_id: resendEmailId,
+      last_event_at: timestamp,
+    };
+
+    if (deliveryStatus) {
+      deliveryUpdate.status = deliveryStatus;
+    }
+
+    if (event.type === "email.delivered") {
+      deliveryUpdate.delivered_at = timestamp;
+    }
+
+    if (event.type === "email.bounced") {
+      deliveryUpdate.bounced_at = timestamp;
+      deliveryUpdate.error_message = event.data.bounce.message;
+    }
+
+    if (event.type === "email.complained") {
+      deliveryUpdate.complained_at = timestamp;
+    }
+
+    if (event.type === "email.failed") {
+      deliveryUpdate.error_message = event.data.failed.reason;
+    }
+
+    if (event.type === "email.suppressed") {
+      deliveryUpdate.error_message = event.data.suppressed.message;
+    }
+
+    const { data: deliveryData, error: deliveryError } = await supabase
+      .from("reward_email_deliveries")
+      .update(deliveryUpdate)
+      .eq("resend_email_id", resendEmailId)
+      .select("id")
+      .maybeSingle();
+
+    if (deliveryError) {
+      throw new Error(`Synchronisation email impossible: ${deliveryError.message}`);
+    }
+
+    deliveryId =
+      deliveryData && typeof deliveryData === "object" && "id" in deliveryData
+        ? String(deliveryData.id)
+        : null;
+
+    if (deliveryId && event.type === "email.failed") {
+      const retryReason = event.data.failed.reason || "√âchec Resend";
+      await markRewardEmailFailedInSupabase(deliveryId, retryReason);
+    }
+  }
+
+  const { error: eventError } = await supabase.from("reward_email_events").insert({
+    reward_email_delivery_id: deliveryId,
+    resend_email_id: resendEmailId,
+    event_type: event.type,
+    payload: event,
+  });
+
+  if (eventError) {
+    throw new Error(`Archivage du webhook email impossible: ${eventError.message}`);
+  }
+}
+
+export async function getSupabaseMerchantSupportOverview(
+  merchant: Merchant,
+  options: { includeAllMerchants?: boolean } = {},
+): Promise<MerchantSupportOverview> {
+  const supabase = getSupabaseAdmin();
+  const campaignQuery = supabase
+    .from("campaigns")
+    .select("id,title,merchant_id");
+
+  if (!options.includeAllMerchants) {
+    campaignQuery.eq("merchant_id", merchant.id);
+  }
+
+  const { data: campaignRows, error: campaignError } = await campaignQuery;
+
+  if (campaignError) {
+    throw new Error(`Lecture des campagnes support impossible: ${campaignError.message}`);
+  }
+
+  const campaigns = (campaignRows ?? []) as Array<{ id: string; title: string }>;
+  const campaignIds = campaigns.map((item) => item.id);
+  const campaignTitleById = new Map(campaigns.map((item) => [item.id, item.title]));
+
+  if (!campaignIds.length) {
+    return {
+      failedEmails: [],
+      webhooks: [],
+      pendingClaims: [],
+      businessLogs: [],
+    };
+  }
+
+  const businessLogQuery = supabase
+    .from("business_logs")
+    .select("id,level,event,merchant_id,campaign_id,lead_id,email,redemption_code,summary,created_at")
+    .order("created_at", { ascending: false })
+    .limit(50);
+
+  if (!options.includeAllMerchants) {
+    businessLogQuery.eq("merchant_id", merchant.id);
+  }
+
+  const [failedEmailResult, pendingClaimResult, deliveryResult, webhookResult, businessLogResult] = await Promise.all([
+    supabase
+      .from("reward_email_deliveries")
+      .select("id,campaign_id,lead_id,recipient_email,status,error_message,last_event_at")
+      .in("campaign_id", campaignIds)
+      .in("status", ["failed", "bounced", "complained", "suppressed"])
+      .order("last_event_at", { ascending: false })
+      .limit(20),
+    supabase
+      .from("leads")
+      .select(
+        "id,campaign_id,first_name,email,prize_id,status,redemption_code,reward_available_at,reward_expires_at",
+      )
+      .in("campaign_id", campaignIds)
+      .eq("status", "claimed")
+      .not("prize_id", "is", null)
+      .order("created_at", { ascending: false })
+      .limit(30),
+    supabase
+      .from("reward_email_deliveries")
+      .select("id,campaign_id,lead_id,recipient_email,status")
+      .in("campaign_id", campaignIds),
+    supabase
+      .from("reward_email_events")
+      .select("id,reward_email_delivery_id,resend_email_id,event_type,payload,created_at")
+      .order("created_at", { ascending: false })
+      .limit(30),
+    businessLogQuery,
+  ]);
+
+  if (failedEmailResult.error) {
+    throw new Error(`Lecture des e-mails en √©chec impossible: ${failedEmailResult.error.message}`);
+  }
+  if (pendingClaimResult.error) {
+    throw new Error(`Lecture des gains en attente impossible: ${pendingClaimResult.error.message}`);
+  }
+  if (deliveryResult.error) {
+    throw new Error(`Lecture des e-mails impossible: ${deliveryResult.error.message}`);
+  }
+  if (webhookResult.error) {
+    throw new Error(`Lecture des webhooks impossible: ${webhookResult.error.message}`);
+  }
+  const businessLogsAvailable = !businessLogResult.error;
+
+  const deliveryRows = (deliveryResult.data ?? []) as Array<{
+    id: string;
+    campaign_id: string;
+    lead_id: string;
+    recipient_email: string;
+    status: RewardEmailDelivery["status"];
+  }>;
+  const deliveryById = new Map(deliveryRows.map((row) => [row.id, row]));
+
+  const leadIds = new Set<string>();
+  for (const row of (failedEmailResult.data ?? []) as Array<{ lead_id: string }>) {
+    leadIds.add(row.lead_id);
+  }
+  for (const row of (pendingClaimResult.data ?? []) as Array<{ id: string }>) {
+    leadIds.add(row.id);
+  }
+  for (const row of deliveryRows) {
+    leadIds.add(row.lead_id);
+  }
+
+  const { data: leadRows, error: leadError } = await supabase
+    .from("leads")
+    .select("id,first_name,email,prize_id")
+    .in("id", Array.from(leadIds));
+
+  if (leadError) {
+    throw new Error(`Lecture des leads support impossible: ${leadError.message}`);
+  }
+
+  const prizeIds = new Set<string>();
+  for (const row of (leadRows ?? []) as Array<{ prize_id: string | null }>) {
+    if (row.prize_id) {
+      prizeIds.add(row.prize_id);
+    }
+  }
+  for (const row of (pendingClaimResult.data ?? []) as Array<{ prize_id: string | null }>) {
+    if (row.prize_id) {
+      prizeIds.add(row.prize_id);
+    }
+  }
+
+  const { data: prizeRows, error: prizeError } = await supabase
+    .from("prizes")
+    .select("id,label")
+    .in("id", Array.from(prizeIds));
+
+  if (prizeError) {
+    throw new Error(`Lecture des dotations support impossible: ${prizeError.message}`);
+  }
+
+  const leadById = new Map(
+    ((leadRows ?? []) as Array<{ id: string; first_name: string; email: string; prize_id: string | null }>).map(
+      (row) => [row.id, row],
+    ),
+  );
+  const prizeLabelById = new Map(
+    ((prizeRows ?? []) as Array<{ id: string; label: string }>).map((row) => [row.id, row.label]),
+  );
+
+  const failedEmails: MerchantFailedEmailItem[] = (
+    (failedEmailResult.data ?? []) as Array<{
+      id: string;
+      campaign_id: string;
+      lead_id: string;
+      recipient_email: string;
+      status: RewardEmailDelivery["status"];
+      error_message: string | null;
+      last_event_at: string | null;
+    }>
+  ).map((row) => {
+    const lead = leadById.get(row.lead_id);
+
+    return {
+      deliveryId: row.id,
+      campaignId: row.campaign_id,
+      campaignTitle: campaignTitleById.get(row.campaign_id) ?? "Campagne inconnue",
+      leadId: row.lead_id,
+      leadFirstName: lead?.first_name ?? "Client inconnu",
+      recipientEmail: row.recipient_email,
+      status: row.status,
+      errorMessage: row.error_message ?? undefined,
+      lastEventAt: row.last_event_at ?? new Date().toISOString(),
+    };
+  });
+
+  const pendingClaims: MerchantPendingClaimItem[] = (
+    (pendingClaimResult.data ?? []) as Array<{
+      id: string;
+      campaign_id: string;
+      first_name: string;
+      email: string;
+      prize_id: string | null;
+      status: Lead["status"];
+      redemption_code: string | null;
+      reward_available_at: string | null;
+      reward_expires_at: string | null;
+    }>
+  )
+    .filter((row) => row.prize_id && row.redemption_code)
+    .map((row) => ({
+      leadId: row.id,
+      campaignId: row.campaign_id,
+      campaignTitle: campaignTitleById.get(row.campaign_id) ?? "Campagne inconnue",
+      firstName: row.first_name,
+      email: row.email,
+      prizeLabel: prizeLabelById.get(row.prize_id ?? "") ?? "Lot inconnu",
+      redemptionCode: row.redemption_code ?? "",
+      status: row.status,
+      availableAt: row.reward_available_at ?? undefined,
+      expiresAt: row.reward_expires_at ?? undefined,
+    }));
+
+  const webhookItems = (
+    (webhookResult.data ?? []) as Array<{
+      id: string;
+      reward_email_delivery_id: string | null;
+      resend_email_id: string | null;
+      event_type: string;
+      payload: Record<string, unknown> | null;
+      created_at: string;
+    }>
+  )
+    .map((row) => {
+      const delivery = row.reward_email_delivery_id
+        ? deliveryById.get(row.reward_email_delivery_id)
+        : undefined;
+
+      if (!delivery || !campaignTitleById.has(delivery.campaign_id)) {
+        return null;
+      }
+
+      return {
+        id: row.id,
+        createdAt: row.created_at,
+        eventType: row.event_type,
+        resendEmailId: row.resend_email_id ?? undefined,
+        campaignTitle: campaignTitleById.get(delivery.campaign_id) ?? undefined,
+        recipientEmail: delivery.recipient_email,
+        deliveryStatus: delivery.status,
+        summary: extractWebhookSummary(row.payload),
+      };
+    })
+    .filter((item) => item !== null);
+
+  const webhooks: MerchantWebhookItem[] = webhookItems;
+  const businessLogs: MerchantBusinessLogItem[] = businessLogsAvailable
+    ? (
+        (businessLogResult.data ?? []) as Array<{
+          id: string;
+          level: MerchantBusinessLogItem["level"];
+          event: string;
+          merchant_id: string | null;
+          campaign_id: string | null;
+          lead_id: string | null;
+          email: string | null;
+          redemption_code: string | null;
+          summary: string | null;
+          created_at: string;
+        }>
+      ).map((row) => ({
+        id: row.id,
+        createdAt: row.created_at,
+        level: row.level,
+        event: row.event,
+        merchantId: row.merchant_id ?? undefined,
+        campaignId: row.campaign_id ?? undefined,
+        leadId: row.lead_id ?? undefined,
+        email: row.email ?? undefined,
+        redemptionCode: row.redemption_code ?? undefined,
+        summary: row.summary ?? undefined,
+      }))
+    : [];
+
+  return {
+    failedEmails,
+    webhooks,
+    pendingClaims,
+    businessLogs,
+  };
+}
