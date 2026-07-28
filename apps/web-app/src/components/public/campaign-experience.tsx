@@ -110,7 +110,7 @@ function buildRestaurantPopHeadingLines(text: string) {
 function actionLabel(kind?: PublicCampaign["actions"][number]["kind"]) {
   switch (kind) {
     case "google":
-      return "Écrire un avis";
+      return "Ã‰crire un avis";
     case "instagram":
       return "Suivez-nous sur Instagram";
     case "facebook":
@@ -120,7 +120,7 @@ function actionLabel(kind?: PublicCampaign["actions"][number]["kind"]) {
     case "tripadvisor":
       return "Voir Tripadvisor";
     case "crm":
-      return "Découvrir l’offre";
+      return "DÃ©couvrir lâ€™offre";
     default:
       return "Ouvrir le lien";
   }
@@ -131,17 +131,17 @@ function actionIcon(kind?: PublicCampaign["actions"][number]["kind"]) {
     case "google":
       return "G";
     case "instagram":
-      return "◎";
+      return "â—Ž";
     case "facebook":
       return "f";
     case "tiktok":
-      return "♪";
+      return "â™ª";
     case "tripadvisor":
-      return "★";
+      return "â˜…";
     case "crm":
       return "@";
     default:
-      return "→";
+      return "â†’";
   }
 }
 
@@ -171,13 +171,14 @@ function PublicModal({
   }
 
   return (
-    <div role="dialog" aria-modal="true" aria-label="Fenêtre de participation" className="fixed inset-0 z-40 flex items-end justify-center bg-[#0f1220]/52 px-4 pb-4 pt-10 backdrop-blur-[6px] sm:items-center sm:p-6">
+    <div role="dialog" aria-modal="true" aria-label="FenÃªtre de participation" className="fixed inset-0 z-40 flex items-end justify-center bg-[#0f1220]/52 px-4 pb-4 pt-10 backdrop-blur-[6px] sm:items-center sm:p-6">
       <div
         className={`w-full max-w-[390px] rounded-[34px] bg-white text-[#111827] shadow-[0_34px_90px_rgba(18,24,39,0.24)] ${
           compact ? "p-5" : "p-6"
         }`}
       >
         {children}
+
       </div>
     </div>
   );
@@ -200,7 +201,7 @@ function RulesModal({
     ...prize,
     stockLabel:
       prize.remainingQuantity === null
-        ? "Illimité"
+        ? "IllimitÃ©"
         : `${Math.max(0, prize.remainingQuantity)} disponible${
             prize.remainingQuantity > 1 ? "s" : ""
           }`,
@@ -215,7 +216,7 @@ function RulesModal({
               Conditions d&apos;utilisation
             </p>
             <h2 id="rules-modal-title" className="mt-2 text-2xl font-semibold leading-tight">
-              CGU et règlement du jeu
+              CGU et rÃ¨glement du jeu
             </h2>
           </div>
           <button
@@ -230,22 +231,22 @@ function RulesModal({
         <div className="space-y-6 overflow-y-auto px-6 py-5 text-sm leading-7 text-[#4b5567]">
           <section>
             <h3 className="text-base font-semibold text-[#111827]">
-              Préambule et définitions
+              PrÃ©ambule et dÃ©finitions
             </h3>
             <p className="mt-2">
-              Le présent document régit les conditions de participation aux jeux-concours
-              phygitaux ci-après « le Jeu », déployés en point de vente via la solution
+              Le prÃ©sent document rÃ©git les conditions de participation aux jeux-concours
+              phygitaux ci-aprÃ¨s Â« le Jeu Â», dÃ©ployÃ©s en point de vente via la solution
               logicielle Okado.
             </p>
             <p className="mt-2">
-              La Société Organisatrice, ci-après « le Marchand », est l&apos;établissement
-              professionnel au sein duquel le Jeu est déployé. Elle définit les règles
-              spécifiques, les dotations et assume l&apos;entière responsabilité légale de
+              La SociÃ©tÃ© Organisatrice, ci-aprÃ¨s Â« le Marchand Â», est l&apos;Ã©tablissement
+              professionnel au sein duquel le Jeu est dÃ©ployÃ©. Elle dÃ©finit les rÃ¨gles
+              spÃ©cifiques, les dotations et assume l&apos;entiÃ¨re responsabilitÃ© lÃ©gale de
               l&apos;organisation du Jeu.
             </p>
             <p className="mt-2">
-              Le Prestataire Technique, ci-après « l&apos;Éditeur », est la société BRUNELLE
-              PEROLS INVESTISSEMENT, éditrice de la solution SaaS Okado, agissant
+              Le Prestataire Technique, ci-aprÃ¨s Â« l&apos;Ã‰diteur Â», est la sociÃ©tÃ© BRUNELLE
+              PEROLS INVESTISSEMENT, Ã©ditrice de la solution SaaS Okado, agissant
               exclusivement en tant que fournisseur d&apos;infrastructure technique.
             </p>
             <p className="mt-2">
@@ -259,29 +260,29 @@ function RulesModal({
               Article 1 - Objet et acceptation
             </h3>
             <p className="mt-2">
-              La participation au Jeu implique l&apos;acceptation expresse, pleine et entière,
-              sans réserve, du présent règlement par le Participant. Ce règlement régit les
-              relations entre le Participant et la Société Organisatrice. L&apos;Éditeur de la
-              solution Okado est un tiers à cette relation.
+              La participation au Jeu implique l&apos;acceptation expresse, pleine et entiÃ¨re,
+              sans rÃ©serve, du prÃ©sent rÃ¨glement par le Participant. Ce rÃ¨glement rÃ©git les
+              relations entre le Participant et la SociÃ©tÃ© Organisatrice. L&apos;Ã‰diteur de la
+              solution Okado est un tiers Ã  cette relation.
             </p>
           </section>
 
           <section>
             <h3 className="text-base font-semibold text-[#111827]">
-              Article 2 - Mécanique du jeu et participation
+              Article 2 - MÃ©canique du jeu et participation
             </h3>
             <p className="mt-2">
               La participation au Jeu s&apos;effectue exclusivement en scannant le QR Code mis
-              à disposition au sein de l&apos;établissement de la Société Organisatrice. Selon
-              le paramétrage défini sous la seule responsabilité de la Société
-              Organisatrice, le Participant pourra être invité à consulter des liens
-              externes, tels que la fiche Google Business Profile de l&apos;établissement.
+              Ã  disposition au sein de l&apos;Ã©tablissement de la SociÃ©tÃ© Organisatrice. Selon
+              le paramÃ©trage dÃ©fini sous la seule responsabilitÃ© de la SociÃ©tÃ©
+              Organisatrice, le Participant pourra Ãªtre invitÃ© Ã  consulter des liens
+              externes, tels que la fiche Google Business Profile de l&apos;Ã©tablissement.
             </p>
             <p className="mt-2">
-              Il est expressément précisé que le dépôt d&apos;un avis en ligne est strictement
+              Il est expressÃ©ment prÃ©cisÃ© que le dÃ©pÃ´t d&apos;un avis en ligne est strictement
               facultatif. Il ne constitue en aucun cas une condition de participation, ni
-              une obligation pour valider l&apos;obtention d&apos;un gain. L&apos;Éditeur décline toute
-              responsabilité quant à l&apos;utilisation de cette fonctionnalité par la Société
+              une obligation pour valider l&apos;obtention d&apos;un gain. L&apos;Ã‰diteur dÃ©cline toute
+              responsabilitÃ© quant Ã  l&apos;utilisation de cette fonctionnalitÃ© par la SociÃ©tÃ©
               Organisatrice au regard des conditions d&apos;utilisation des plateformes tierces,
               notamment Google.
             </p>
@@ -289,90 +290,91 @@ function RulesModal({
 
           <section>
             <h3 className="text-base font-semibold text-[#111827]">
-              Article 3 - Désignation des gagnants et responsabilité des lots
+              Article 3 - DÃ©signation des gagnants et responsabilitÃ© des lots
             </h3>
             <p className="mt-2">
-              L&apos;attribution des gains est gérée automatiquement dès la soumission du
-              formulaire, via un algorithme de tirage au sort aléatoire tenant compte des
-              probabilités et des stocks paramétrés par la Société Organisatrice.
+              L&apos;attribution des gains est gÃ©rÃ©e automatiquement dÃ¨s la soumission du
+              formulaire, via un algorithme de tirage au sort alÃ©atoire tenant compte des
+              probabilitÃ©s et des stocks paramÃ©trÃ©s par la SociÃ©tÃ© Organisatrice.
             </p>
             <p className="mt-2">
-              La Société Organisatrice est seule responsable de la fourniture, de la
-              conformité et de la remise des lots. La responsabilité du Prestataire
-              Technique ne saurait être engagée pour toute réclamation relative à une
-              rupture de stock, un défaut du lot, un refus de remise par le personnel en
-              magasin, ou tout litige lié à l&apos;exécution du Jeu.
+              La SociÃ©tÃ© Organisatrice est seule responsable de la fourniture, de la
+              conformitÃ© et de la remise des lots. La responsabilitÃ© du Prestataire
+              Technique ne saurait Ãªtre engagÃ©e pour toute rÃ©clamation relative Ã  une
+              rupture de stock, un dÃ©faut du lot, un refus de remise par le personnel en
+              magasin, ou tout litige liÃ© Ã  l&apos;exÃ©cution du Jeu.
             </p>
           </section>
 
           <section>
             <h3 className="text-base font-semibold text-[#111827]">
-              Article 4 - Modalités de récupération des lots
+              Article 4 - ModalitÃ©s de rÃ©cupÃ©ration des lots
             </h3>
             <p className="mt-2">
-              En cas de gain, le Participant reçoit un e-mail de confirmation à l&apos;adresse
-              renseignée lors de sa participation, contenant un QR Code unique et personnel.
-              Le Participant doit présenter ce QR Code au personnel de la Société
-              Organisatrice. La remise du lot n&apos;est définitive qu&apos;après validation de ce QR
-              Code par le personnel habilité, par scan direct ou via la plateforme de gestion
+              En cas de gain, le Participant reÃ§oit un e-mail de confirmation Ã  l&apos;adresse
+              renseignÃ©e lors de sa participation, contenant un QR Code unique et personnel.
+              Le Participant doit prÃ©senter ce QR Code au personnel de la SociÃ©tÃ©
+              Organisatrice. La remise du lot n&apos;est dÃ©finitive qu&apos;aprÃ¨s validation de ce QR
+              Code par le personnel habilitÃ©, par scan direct ou via la plateforme de gestion
               Okado.
             </p>
           </section>
 
           <section>
             <h3 className="text-base font-semibold text-[#111827]">
-              Article 5 - Prévention de la fraude et litiges techniques
+              Article 5 - PrÃ©vention de la fraude et litiges techniques
             </h3>
             <p className="mt-2">
-              La participation est strictement nominative et limitée à une participation par
-              jour et par établissement. La Société Organisatrice se réserve le droit
-              d&apos;annuler la participation ou de refuser la remise d&apos;un lot à toute personne
-              ayant tenté de frauder. En cas de dysfonctionnement technique temporaire de la
-              plateforme Okado ou de l&apos;appareil du Participant empêchant la validation,
-              aucune compensation ne pourra être exigée.
+              La participation est strictement nominative et limitÃ©e Ã  une participation par
+              jour et par Ã©tablissement. La SociÃ©tÃ© Organisatrice se rÃ©serve le droit
+              d&apos;annuler la participation ou de refuser la remise d&apos;un lot Ã  toute personne
+              ayant tentÃ© de frauder. En cas de dysfonctionnement technique temporaire de la
+              plateforme Okado ou de l&apos;appareil du Participant empÃªchant la validation,
+              aucune compensation ne pourra Ãªtre exigÃ©e.
             </p>
           </section>
 
           <section>
             <h3 className="text-base font-semibold text-[#111827]">
-              Article 6 - Protection des données personnelles
+              Article 6 - Protection des donnÃ©es personnelles
             </h3>
             <p className="mt-2">
-              Dans le cadre du Jeu, des données à caractère personnel sont collectées. La
-              Société Organisatrice agit en tant que Responsable de traitement. Le
-              Prestataire Technique héberge ces données de manière sécurisée pour le compte
-              exclusif de la Société Organisatrice.
+              Dans le cadre du Jeu, des donnÃ©es Ã  caractÃ¨re personnel sont collectÃ©es. La
+              SociÃ©tÃ© Organisatrice agit en tant que Responsable de traitement. Le
+              Prestataire Technique hÃ©berge ces donnÃ©es de maniÃ¨re sÃ©curisÃ©e pour le compte
+              exclusif de la SociÃ©tÃ© Organisatrice.
             </p>
             <p className="mt-2">
-              Conformément à la réglementation applicable, le Participant dispose d&apos;un droit
-              d&apos;accès, de rectification, de portabilité et d&apos;effacement de ses données. Pour
-              exercer ces droits, le Participant doit s&apos;adresser directement à la Société
-              Organisatrice par le biais de ses coordonnées habituelles.
-            </p>
-          </section>
-
-          <section>
-            <h3 className="text-base font-semibold text-[#111827]">
-              Article 7 - Limites de responsabilité technique
-            </h3>
-            <p className="mt-2">
-              Le Prestataire Technique met en œuvre les moyens nécessaires au bon
-              fonctionnement de l&apos;infrastructure du Jeu. Sa responsabilité ne saurait être
-              engagée en cas de non-réception de l&apos;e-mail de confirmation de gain due à une
-              erreur de saisie, à un filtrage anti-spam, à une défaillance du fournisseur de
-              messagerie, à une interruption réseau, au dysfonctionnement du smartphone du
-              Participant ou à un bogue technique temporaire.
+              ConformÃ©ment Ã  la rÃ©glementation applicable, le Participant dispose d&apos;un droit
+              d&apos;accÃ¨s, de rectification, de portabilitÃ© et d&apos;effacement de ses donnÃ©es. Pour
+              exercer ces droits, le Participant doit s&apos;adresser directement Ã  la SociÃ©tÃ©
+              Organisatrice par le biais de ses coordonnÃ©es habituelles.
             </p>
           </section>
 
           <section>
             <h3 className="text-base font-semibold text-[#111827]">
-              Article 8 - Lots, stocks disponibles et probabilités de gain
+              Article 7 - Limites de responsabilitÃ© technique
             </h3>
             <p className="mt-2">
-              Les gains sont attribués dans la limite des quantités de stock disponibles au
+              Le Prestataire Technique met en Å“uvre les moyens nÃ©cessaires au bon
+              fonctionnement de l&apos;infrastructure du Jeu. Sa responsabilitÃ© ne saurait Ãªtre
+
+              engagÃ©e en cas de non-rÃ©ception de l&apos;e-mail de confirmation de gain due Ã  une
+              erreur de saisie, Ã  un filtrage anti-spam, Ã  une dÃ©faillance du fournisseur de
+              messagerie, Ã  une interruption rÃ©seau, au dysfonctionnement du smartphone du
+              Participant ou Ã  un bogue technique temporaire.
+            </p>
+          </section>
+
+          <section>
+            <h3 className="text-base font-semibold text-[#111827]">
+              Article 8 - Lots, stocks disponibles et probabilitÃ©s de gain
+            </h3>
+            <p className="mt-2">
+              Les gains sont attribuÃ©s dans la limite des quantitÃ©s de stock disponibles au
               moment de la participation. Lorsqu&apos;un lot n&apos;est plus disponible, il ne peut
-              plus être attribué, même si sa probabilité de gain est indiquée ci-dessous.
+              plus Ãªtre attribuÃ©, mÃªme si sa probabilitÃ© de gain est indiquÃ©e ci-dessous.
             </p>
             <div className="mt-4 overflow-hidden rounded-[18px] border border-[#e5e9f2]">
               {prizeRows.length ? (
@@ -391,7 +393,7 @@ function RulesModal({
                   </div>
                 ))
               ) : (
-                <p className="px-4 py-3 text-[#7b8496]">Aucun lot configuré.</p>
+                <p className="px-4 py-3 text-[#7b8496]">Aucun lot configurÃ©.</p>
               )}
             </div>
           </section>
@@ -409,7 +411,7 @@ export function CampaignExperience({
   const [campaign, setCampaign] = useState(initialCampaign);
   const [stage, setStage] = useState<ExperienceStage>("idle");
   const [blockedMessage, setBlockedMessage] = useState(
-    "Une seule participation est possible par jour. Revenez demain pour tenter votre chance à nouveau.",
+    "Une seule participation est possible par jour. Revenez demain pour tenter votre chance Ã  nouveau.",
   );
   const [drawSession, setDrawSession] = useState<DrawSession | null>(null);
   const [previewResult, setPreviewResult] = useState<CreateDrawSessionResult | null>(null);
@@ -539,6 +541,7 @@ export function CampaignExperience({
     setError(null);
     setIsLoading(true);
 
+
     try {
       const response = await fetch("/api/public/draw/session", {
         method: "POST",
@@ -553,12 +556,12 @@ export function CampaignExperience({
         } | null;
         if (payload?.code === "already_played_today") {
           setBlockedMessage(
-            payload.error ?? "Vous avez déjà participé à cette animation. Réessayez plus tard.",
+            payload.error ?? "Vous avez dÃ©jÃ  participÃ© Ã  cette animation. RÃ©essayez plus tard.",
           );
           setStage("blocked");
           return;
         }
-        throw new Error(payload?.error ?? "Impossible de préparer la partie.");
+        throw new Error(payload?.error ?? "Impossible de prÃ©parer la partie.");
       }
 
       const payload = (await response.json()) as CreateDrawSessionResult;
@@ -635,12 +638,12 @@ export function CampaignExperience({
         } | null;
         if (failure?.code === "participation_cooldown") {
           setBlockedMessage(
-            failure.error ?? "Vous avez déjà participé à cette animation. Revenez plus tard.",
+            failure.error ?? "Vous avez dÃ©jÃ  participÃ© Ã  cette animation. Revenez plus tard.",
           );
           setStage("blocked");
           return;
         }
-        throw new Error(failure?.error ?? "Impossible d’enregistrer vos coordonnées.");
+        throw new Error(failure?.error ?? "Impossible dâ€™enregistrer vos coordonnÃ©es.");
       }
 
       const result = (await response.json()) as DrawResult;
@@ -718,6 +721,7 @@ export function CampaignExperience({
         ? `radial-gradient(circle at -10% -8%, ${withHexAlpha(primaryColor, "f2")} 0 18%, transparent 19%), radial-gradient(circle at 110% 0%, ${withHexAlpha(secondaryColor, "f2")} 0 13%, transparent 14%), radial-gradient(circle at 0% 80%, ${withHexAlpha(primaryColor, "20")} 0 20%, transparent 21%), radial-gradient(circle at 100% 78%, ${withHexAlpha(secondaryColor, "40")} 0 18%, transparent 19%), linear-gradient(180deg, #fff2dd 0%, #fffaf1 46%, #fff4e5 100%)`
         : `radial-gradient(circle at 50% 50%, ${withHexAlpha(primaryColor, "33")}, transparent 50%), linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.08))`;
   const restaurantPopHeadingLines = buildRestaurantPopHeadingLines(campaign.subtitle);
+
   const headingFontSize = fluidType(campaign.presentation.heading.fontSizePx, {
     minRatio: 0.82,
     maxRatio: 1.08,
@@ -807,7 +811,7 @@ export function CampaignExperience({
                     ))}
                   </span>
                 ))
-              : campaign.subtitle.trim() || "Grattez pour révéler votre cadeau"}
+              : campaign.subtitle.trim() || "Grattez pour rÃ©vÃ©ler votre cadeau"}
           </h1>
         </div>
         ) : null}
@@ -898,6 +902,7 @@ export function CampaignExperience({
                 enabled={stage === "ready"}
                 onReveal={() => void handleGameReveal()}
               />
+
             )}
           </div>
         )}
@@ -921,7 +926,7 @@ export function CampaignExperience({
 
           {stage === "ready" && campaign.gameType !== "wheel" ? (
             <div className="rounded-[28px] border border-white/70 bg-white/72 px-5 py-4 text-center text-sm text-[#62697a] shadow-[0_18px_40px_rgba(17,24,39,0.06)] backdrop-blur">
-              Grattez le ticket pour révéler immédiatement votre résultat.
+              Grattez le ticket pour rÃ©vÃ©ler immÃ©diatement votre rÃ©sultat.
             </div>
           ) : null}
 
@@ -932,7 +937,7 @@ export function CampaignExperience({
               </div>
               <h2 className="mt-5 text-3xl font-semibold text-[#141826]">Perdu :(</h2>
               <p className="mt-3 text-base leading-7 text-[#61687a]">
-                Merci pour votre participation. Revenez bientôt pour une nouvelle chance.
+                Merci pour votre participation. Revenez bientÃ´t pour une nouvelle chance.
               </p>
             </div>
           ) : null}
@@ -944,7 +949,7 @@ export function CampaignExperience({
         onClick={() => setRulesOpen(true)}
         className="fixed bottom-4 right-4 z-20 rounded-full border border-white/70 bg-white/82 px-4 py-2 text-sm font-semibold text-[#111827] shadow-[0_14px_34px_rgba(17,24,39,0.12)] backdrop-blur"
       >
-        Règlement
+        RÃ¨glement
       </button>
 
       <RulesModal campaign={campaign} open={rulesOpen} onClose={() => setRulesOpen(false)} />
@@ -957,7 +962,7 @@ export function CampaignExperience({
           Perdu
         </h2>
         <p className="mt-4 text-center text-lg leading-8 text-[#5f6678]">
-          Merci pour votre participation. Revenez bientôt pour une nouvelle chance.
+          Merci pour votre participation. Revenez bientÃ´t pour une nouvelle chance.
         </p>
       </PublicModal>
 
@@ -966,7 +971,7 @@ export function CampaignExperience({
           !
         </div>
         <h2 className="mt-6 text-center text-[2rem] font-semibold leading-[1.05] text-[#121826]">
-          Participation déjà enregistrée
+          Participation dÃ©jÃ  enregistrÃ©e
         </h2>
         <p className="mt-4 text-center text-lg leading-8 text-[#5f6678]">
           {blockedMessage}
@@ -985,16 +990,16 @@ export function CampaignExperience({
           {actionIcon(currentAction?.kind)}
         </div>
         <h2 className="mt-6 text-center text-[2rem] font-semibold leading-[1.05] text-[#121826]">
-          {currentAction ? "Avant de jouer" : "Prêt à jouer ?"}
+          {currentAction ? "Avant de jouer" : "PrÃªt Ã  jouer ?"}
         </h2>
         <p className="mt-4 text-center text-lg leading-8 text-[#5f6678]">
           {currentAction?.kind === "google"
             ? "Laissez-nous un avis et revenez ici pour jouer."
             : currentAction?.kind === "instagram"
-              ? "Suivez-nous sur Instagram pour découvrir les nouveautés du commerce, puis revenez ici pour jouer."
+              ? "Suivez-nous sur Instagram pour dÃ©couvrir les nouveautÃ©s du commerce, puis revenez ici pour jouer."
               : currentAction
-                ? "Découvrez le lien du commerce dans un nouvel onglet, puis revenez ici pour jouer."
-                : "Touchez Jouer pour préparer votre partie et découvrir votre résultat."}
+                ? "DÃ©couvrez le lien du commerce dans un nouvel onglet, puis revenez ici pour jouer."
+                : "Touchez Jouer pour prÃ©parer votre partie et dÃ©couvrir votre rÃ©sultat."}
         </p>
         <div className="mt-6 space-y-3">
           {currentAction ? (
@@ -1030,7 +1035,7 @@ export function CampaignExperience({
             }
           >
             {isLoading
-              ? "Préparation..."
+              ? "PrÃ©paration..."
               : actionVisited || !currentAction
                 ? "Jouer"
                 : "Jouer maintenant"}
@@ -1045,7 +1050,7 @@ export function CampaignExperience({
 
       <PublicModal open={stage === "collect"}>
         <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-[#f7f7fb] text-4xl shadow-[0_20px_45px_rgba(17,24,39,0.10)]">
-          🎁
+          ðŸŽ
         </div>
         <h2 className="mt-6 text-center text-[2rem] font-semibold leading-[1.05] text-[#121826]">
           {isPreGameLeadCapture
@@ -1074,10 +1079,11 @@ export function CampaignExperience({
             value={firstName}
             onChange={(event) => setFirstName(event.target.value)}
             required
-            placeholder="Prénom"
+            placeholder="PrÃ©nom"
             className="w-full rounded-[18px] border border-[#d8dce5] px-4 py-4 text-lg text-[#111827] outline-none placeholder:text-[#99a1b2]"
           />
-          <label className="sr-only" htmlFor="winner-first-name">Prénom</label>
+          <label className="sr-only" htmlFor="winner-first-name">PrÃ©nom</label>
+
           <input
             id="winner-first-name"
             type="email"
@@ -1101,7 +1107,7 @@ export function CampaignExperience({
               className="mt-1 h-4 w-4 accent-[#111827]"
             />
             <span>
-              J&apos;accepte de recevoir des actualités et offres de la part de cet établissement.
+              J&apos;accepte de recevoir des actualitÃ©s et offres de la part de cet Ã©tablissement.
             </span>
           </label>
 
@@ -1133,29 +1139,29 @@ export function CampaignExperience({
             Merci pour votre participation !
           </h2>
           <div className="mx-auto mt-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#f7f7fb] text-4xl shadow-[0_16px_34px_rgba(17,24,39,0.10)]">
-            ✉
+            âœ‰
           </div>
           <p className="mt-4 text-lg leading-7 text-[#1a2f76]">
             {isContactOnlySuccess
-              ? "Votre contact est bien enregistré."
+              ? "Votre contact est bien enregistrÃ©."
               : "Vous recevrez votre gain par e-mail avec les informations de retrait"}
           </p>
           <p className="mt-3 text-sm leading-6 text-[#61687a]">
             {isContactOnlySuccess
               ? "Merci pour votre confiance."
-              : "Conservez ce QR code pour retirer votre gain. Si l’e-mail tarde à arriver, vérifiez vos spams."}
+              : "Conservez ce QR code pour retirer votre gain. Si lâ€™e-mail tarde Ã  arriver, vÃ©rifiez vos spams."}
           </p>
 
           {drawResult?.prize ? <div className="mt-4 rounded-[18px] bg-[#fff4cb] px-4 py-3 text-left text-sm leading-6 text-[#4d3810]">
             <p>
-              Vous avez entre le {availableDate ?? "maintenant"} et le {expiryDate ?? "bientôt"}{" "}
-              pour venir le récupérer.
+              Vous avez entre le {availableDate ?? "maintenant"} et le {expiryDate ?? "bientÃ´t"}{" "}
+              pour venir le rÃ©cupÃ©rer.
             </p>
           </div> : null}
 
           {drawResult?.prize && campaign.rewardRules.purchaseRequired ? (
             <div className="mt-3 rounded-[18px] bg-[#f7f7fb] px-4 py-3 text-left text-sm leading-6 text-[#61687a]">
-              Le retrait du lot est soumis à une condition d’achat.
+              Le retrait du lot est soumis Ã  une condition dâ€™achat.
             </div>
           ) : null}
 
@@ -1203,3 +1209,4 @@ export function CampaignExperience({
     </div>
   );
 }
+
