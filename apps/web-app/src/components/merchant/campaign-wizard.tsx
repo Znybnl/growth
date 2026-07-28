@@ -32,8 +32,10 @@ import { createCampaignEmailDefaults } from "@/lib/email-settings";
 import {
   createDefaultPosterSettings,
   createDefaultWheelSettings,
+  DEFAULT_SCRATCH_PRIMARY_COLOR,
   DEFAULT_SCRATCH_SUBTITLE,
   DEFAULT_WHEEL_SUBTITLE,
+  DEFAULT_WHEEL_PRIMARY_COLOR,
   deriveLighterHex,
   normalizeScratchAccent,
 } from "@/lib/campaign-defaults";
@@ -238,7 +240,7 @@ function createWizardDraft(merchant: Merchant): WizardDraft {
     isActive: false,
     logoMode: "text",
     logoText: merchant.companyName || merchant.logoText,
-    accent: { ink: "#111827", paper: "#eef2ff", signal: "#f4c14a" },
+    accent: { ink: "#111827", paper: "#eef2ff", signal: DEFAULT_SCRATCH_PRIMARY_COLOR },
     gameType: "wheel",
     presentation: {
       logo: { sizePercent: 100, marginBottomPx: 40, align: "center" },
@@ -1020,6 +1022,29 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                                   ? "classic"
                                   : draft.presentation.layout.templateId,
                           },
+                          wheel:
+                            option.value === "wheel"
+                              ? {
+                                  ...draft.presentation.wheel,
+                                  loseColor:
+                                    draft.gameType === "scratch" &&
+                                    draft.accent.signal.toLowerCase() !== DEFAULT_SCRATCH_PRIMARY_COLOR
+                                      ? draft.accent.signal
+                                      : DEFAULT_WHEEL_PRIMARY_COLOR,
+                                  alternateLoseColor: deriveLighterHex(
+                                    draft.gameType === "scratch" &&
+                                      draft.accent.signal.toLowerCase() !== DEFAULT_SCRATCH_PRIMARY_COLOR
+                                      ? draft.accent.signal
+                                      : DEFAULT_WHEEL_PRIMARY_COLOR,
+                                  ),
+                                  rimColor: deriveLighterHex(
+                                    draft.gameType === "scratch" &&
+                                      draft.accent.signal.toLowerCase() !== DEFAULT_SCRATCH_PRIMARY_COLOR
+                                      ? draft.accent.signal
+                                      : DEFAULT_WHEEL_PRIMARY_COLOR,
+                                  ),
+                                }
+                              : draft.presentation.wheel,
                         },
                         subtitle:
                           option.value === "wheel"
@@ -1027,7 +1052,14 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                             : DEFAULT_SCRATCH_SUBTITLE,
                         accent:
                           option.value === "scratch"
-                            ? normalizeScratchAccent(draft.accent, "scratch-coral")
+                            ? {
+                                ...normalizeScratchAccent(draft.accent, "scratch-coral"),
+                                signal:
+                                  draft.gameType === "wheel" &&
+                                  draft.presentation.wheel.loseColor.toLowerCase() !== DEFAULT_WHEEL_PRIMARY_COLOR
+                                    ? draft.presentation.wheel.loseColor
+                                    : DEFAULT_SCRATCH_PRIMARY_COLOR,
+                              }
                             : draft.accent,
                       })
                     }

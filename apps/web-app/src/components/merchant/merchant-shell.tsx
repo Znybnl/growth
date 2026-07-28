@@ -225,13 +225,14 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
           <Link
             href="/caisse"
             prefetch={false}
-            className="mt-3 flex h-10 items-center justify-center rounded-[8px] bg-[#111827] px-4 text-sm font-semibold text-white transition hover:bg-[#26324a]"
+            className="mt-auto mb-3 flex h-10 items-center justify-center rounded-[8px] bg-[#111827] px-4 text-sm font-semibold !text-white transition hover:bg-[#26324a]"
+            style={{ color: "#ffffff" }}
             onClick={() => setMenuOpen(false)}
           >
             Valider un retrait
           </Link>
 
-          <div className="mt-auto rounded-[8px] border border-border bg-white p-3 shadow-[var(--shadow-product-card)]">
+          <div className="mt-0 rounded-[8px] border border-border bg-white p-3 shadow-[var(--shadow-product-card)]">
             <p className="text-[10px] uppercase tracking-[0.13px] text-fog">Compte</p>
             <div className="mt-3 flex items-center gap-3">
               {user.authProvider === "google" && user.avatarUrl ? (
