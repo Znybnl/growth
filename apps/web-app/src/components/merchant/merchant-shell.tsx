@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Star } from "lucide-react";
+import { Sparkles, Star } from "lucide-react";
 import posthog from "posthog-js";
 import { useEffect, useMemo, useState } from "react";
 
@@ -181,18 +181,11 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
           <Link
             href="/campaigns/new/guided"
             prefetch={false}
-            className="mt-2 flex h-10 items-center justify-center rounded-[8px] border border-border bg-white px-4 text-sm font-medium text-graphite transition hover:bg-linen-canvas"
+            className="mt-2 flex h-10 items-center justify-center gap-2 rounded-[8px] border border-border bg-white px-4 text-sm font-medium text-graphite transition hover:bg-linen-canvas"
             onClick={() => setMenuOpen(false)}
           >
+            <Sparkles className="h-4 w-4 text-signal-blue" aria-hidden="true" />
             Assistant de création
-          </Link>
-          <Link
-            href="/caisse"
-            prefetch={false}
-            className="okado-secondary-action mt-2 flex items-center justify-center rounded-[8px] px-4 text-sm font-semibold"
-            onClick={() => setMenuOpen(false)}
-          >
-            Valider un retrait
           </Link>
 
           {isSaasAdmin ? (
@@ -228,6 +221,15 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
               </nav>
             </div>
           ) : null}
+
+          <Link
+            href="/caisse"
+            prefetch={false}
+            className="mt-3 flex h-10 items-center justify-center rounded-[8px] bg-[#111827] px-4 text-sm font-semibold text-white transition hover:bg-[#26324a]"
+            onClick={() => setMenuOpen(false)}
+          >
+            Valider un retrait
+          </Link>
 
           <div className="mt-auto rounded-[8px] border border-border bg-white p-3 shadow-[var(--shadow-product-card)]">
             <p className="text-[10px] uppercase tracking-[0.13px] text-fog">Compte</p>

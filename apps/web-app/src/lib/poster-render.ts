@@ -292,7 +292,8 @@ function renderLogo(campaign: Campaign, poster: CampaignPosterSettings, template
   }
 
   const text = escapeXml(logoText.toUpperCase());
-  const fontSize = clamp(logoSize * 0.32, 22, 68);
+  // Keep the merchant name visually secondary to the poster headline.
+  const fontSize = clamp(logoSize * 0.24, 18, 51);
   const centerY = logoY + logoSize / 2;
   const logoTextColor = poster.headlineTextColor || template.headline;
 

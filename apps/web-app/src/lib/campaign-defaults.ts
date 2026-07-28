@@ -103,23 +103,26 @@ export function createDefaultWheelSettings(
  * The poster has its own wheel palette, intentionally darker than the game
  * wheel so the printed visual stays readable.
  */
-export function createDefaultPosterSettings(merchant: Merchant): CampaignPosterSettings {
+export function createDefaultPosterSettings(
+  merchant: Merchant,
+  primaryColor = DEFAULT_WHEEL_PRIMARY_COLOR,
+): CampaignPosterSettings {
   return createPosterSettingsDefaults({
     logoMode: "text",
     logoText: merchant.companyName || merchant.logoText,
     backgroundMode: "color",
     backgroundColor: "#ffffff",
-    headline: "Scannez, jouez, récupérez votre cadeau",
-    headlineTextColor: "#f4c14a",
+    headline: "Scannez, jouez, récupérez votre cadeau !",
+    headlineTextColor: DEFAULT_WHEEL_PRIMARY_COLOR,
     headlineFontSizePx: 42,
     headlineFontFamily: "display",
     wheel: {
-      rimColor: DEFAULT_WHEEL_PRIMARY_COLOR,
-      winColor: DEFAULT_WHEEL_PRIMARY_COLOR,
-      alternateWinColor: DEFAULT_WHEEL_PRIMARY_COLOR,
-      loseColor: DEFAULT_WHEEL_PRIMARY_COLOR,
-      alternateLoseColor: "#8795db",
+      rimColor: primaryColor,
+      winColor: primaryColor,
+      alternateWinColor: primaryColor,
+      loseColor: primaryColor,
+      alternateLoseColor: deriveLighterHex(primaryColor),
     },
-    footerBackgroundColor: "#8d9ae8",
+    footerBackgroundColor: deriveLighterHex(primaryColor),
   });
 }

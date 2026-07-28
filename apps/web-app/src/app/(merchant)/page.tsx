@@ -309,6 +309,12 @@ export default async function DashboardPage({
                     {formatCurrency(bestCampaign.kpis.costPerLead)}
                   </p>
                 </div>
+                <div className="rounded-[8px] bg-linen-canvas p-4">
+                  <p className="text-sm text-[#7b8496]">Scans</p>
+                  <p className="mt-2 text-3xl font-semibold text-[#111827]">
+                    {bestCampaign.kpis.scans}
+                  </p>
+                </div>
               </div>
             </div>
           ) : null}

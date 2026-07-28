@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import QRCode from "qrcode";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 
 import { buildPosterSvg, createPosterPreviewQrDataUrl } from "@/lib/poster-render";
@@ -155,15 +156,25 @@ function getPosterTemplate(templateId?: PosterTemplateId) {
 }
 
 function isTemplateDefaultWinColor(color: string | undefined) {
-  return posterTemplates.some((template) => template.wheel.winColor === color);
+  return (
+    posterTemplates.some((template) => template.wheel.winColor === color) ||
+    color === "#1b2842" ||
+    color === "#f4c14a"
+  );
 }
 
 function applyTemplateDefaults(
   poster: CampaignPosterSettings,
   template = getPosterTemplate(poster.templateId),
-  options: { preserveWinColor?: boolean; preserveHeadlineTextColor?: boolean } = {},
+  options: {
+    preserveWinColor?: boolean;
+    preserveHeadlineTextColor?: boolean;
+    defaultWinColor?: string;
+  } = {},
 ): CampaignPosterSettings {
-  const winColor = options.preserveWinColor ? poster.wheel.winColor : template.wheel.winColor;
+  const winColor = options.preserveWinColor
+    ? poster.wheel.winColor
+    : options.defaultWinColor ?? template.wheel.winColor;
   const headlineTextColor = options.preserveHeadlineTextColor
     ? poster.headlineTextColor
     : template.headlineTextColor;
@@ -231,7 +242,8 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
       const hasCustomHeadlineTextColor =
         Boolean(storedHeadlineTextColor) &&
         storedHeadlineTextColor !== template.headlineTextColor &&
-        storedHeadlineTextColor !== campaignGainColor;
+        storedHeadlineTextColor !== campaignGainColor &&
+        storedHeadlineTextColor !== "#f4c14a";
 
       return applyTemplateDefaults(
         {
@@ -242,7 +254,9 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
               : normalizedPoster.headlineFontFamily,
           headlineTextColor: hasCustomHeadlineTextColor
             ? normalizedPoster.headlineTextColor
-            : campaignGainColor,
+            : campaign.gameType === "scratch"
+              ? "#1b2842"
+              : campaignGainColor,
           wheel: {
             ...normalizedPoster.wheel,
             winColor: hasCustomWinColor ? normalizedPoster.wheel.winColor : campaignPrimaryColor,
@@ -255,6 +269,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
         {
           preserveWinColor: hasCustomWinColor,
           preserveHeadlineTextColor: true,
+          defaultWinColor: campaignPrimaryColor,
         },
       );
     }
@@ -264,7 +279,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
     return applyTemplateDefaults(
       {
         ...normalizedPoster,
-        headlineTextColor: campaignGainColor,
+        headlineTextColor: campaign.gameType === "scratch" ? "#1b2842" : campaignGainColor,
         headlineFontFamily: "display",
         wheel: {
           ...normalizedPoster.wheel,
@@ -406,7 +421,22 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
       }
 
       if (!blob) {
-        blob = await renderPosterSvgAsPng(previewPosterSvg);
+        const campaignQrDataUrl = await QRCode.toDataURL(
+          `${window.location.origin}/campaign/${campaign.id}`,
+          {
+            margin: 1,
+            width: 720,
+            color: { dark: "#111827", light: "#ffffff" },
+          },
+        );
+        blob = await renderPosterSvgAsPng(
+          buildPosterSvg({
+            campaign,
+            poster,
+            prizes,
+            qrDataUrl: campaignQrDataUrl,
+          }),
+        );
       }
 
       downloadBlob(blob, `${campaign.id}-affiche-a4-a5.png`);
