@@ -168,7 +168,7 @@ function createPresentation(overrides?: CampaignPresentationOverrides): Campaign
       logoSizePercent: 100,
       logoBottomMarginPx: 28,
       backgroundImageUrl: "",
-      headline: "Scannez, jouez, récupérez votre cadeau",
+      headline: "Scannez, jouez, récupérez votre cadeau !",
       headlineTextColor: "#ffffff",
       headlineFontSizePx: 42,
       headlineFontFamily: "display",

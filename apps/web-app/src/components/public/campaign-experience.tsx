@@ -1,6 +1,17 @@
 "use client";
 
 import Image from "next/image";
+import {
+  ArrowRight,
+  AtSign,
+  Camera,
+  Gift,
+  Mail,
+  MessageCircle,
+  Music2,
+  Star,
+  Users,
+} from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import { BrandMark } from "@/components/brand-mark";
@@ -111,7 +122,7 @@ function buildRestaurantPopHeadingLines(text: string) {
 function actionLabel(kind?: PublicCampaign["actions"][number]["kind"]) {
   switch (kind) {
     case "google":
-      return "Ã‰crire un avis";
+      return "Écrire un avis";
     case "instagram":
       return "Suivez-nous sur Instagram";
     case "facebook":
@@ -121,7 +132,7 @@ function actionLabel(kind?: PublicCampaign["actions"][number]["kind"]) {
     case "tripadvisor":
       return "Voir Tripadvisor";
     case "crm":
-      return "DÃ©couvrir lâ€™offre";
+      return "Découvrir l’offre";
     default:
       return "Ouvrir le lien";
   }
@@ -130,19 +141,19 @@ function actionLabel(kind?: PublicCampaign["actions"][number]["kind"]) {
 function actionIcon(kind?: PublicCampaign["actions"][number]["kind"]) {
   switch (kind) {
     case "google":
-      return "G";
+      return <MessageCircle className="h-9 w-9" aria-hidden="true" />;
     case "instagram":
-      return "â—Ž";
+      return <Camera className="h-9 w-9" aria-hidden="true" />;
     case "facebook":
-      return "f";
+      return <Users className="h-9 w-9" aria-hidden="true" />;
     case "tiktok":
-      return "â™ª";
+      return <Music2 className="h-9 w-9" aria-hidden="true" />;
     case "tripadvisor":
-      return "â˜…";
+      return <Star className="h-9 w-9" aria-hidden="true" />;
     case "crm":
-      return "@";
+      return <AtSign className="h-9 w-9" aria-hidden="true" />;
     default:
-      return "â†’";
+      return <ArrowRight className="h-9 w-9" aria-hidden="true" />;
   }
 }
 
@@ -562,12 +573,12 @@ export function CampaignExperience({
         } | null;
         if (payload?.code === "already_played_today") {
           setBlockedMessage(
-            payload.error ?? "Vous avez dÃ©jÃ  participÃ© Ã  cette animation. RÃ©essayez plus tard.",
+            payload.error ?? "Vous avez déjà participé à cette animation. Réessayez plus tard.",
           );
           setStage("blocked");
           return;
         }
-        throw new Error(payload?.error ?? "Impossible de prÃ©parer la partie.");
+        throw new Error(payload?.error ?? "Impossible de préparer la partie.");
       }
 
       const payload = (await response.json()) as CreateDrawSessionResult;
@@ -644,12 +655,12 @@ export function CampaignExperience({
         } | null;
         if (failure?.code === "participation_cooldown") {
           setBlockedMessage(
-            failure.error ?? "Vous avez dÃ©jÃ  participÃ© Ã  cette animation. Revenez plus tard.",
+            failure.error ?? "Vous avez déjà participé à cette animation. Revenez plus tard.",
           );
           setStage("blocked");
           return;
         }
-        throw new Error(failure?.error ?? "Impossible dâ€™enregistrer vos coordonnÃ©es.");
+        throw new Error(failure?.error ?? "Impossible d’enregistrer vos coordonnées.");
       }
 
       const result = (await response.json()) as DrawResult;
@@ -932,7 +943,7 @@ export function CampaignExperience({
 
           {stage === "ready" && campaign.gameType !== "wheel" ? (
             <div className="rounded-[28px] border border-white/70 bg-white/72 px-5 py-4 text-center text-sm text-[#62697a] shadow-[0_18px_40px_rgba(17,24,39,0.06)] backdrop-blur">
-              Grattez le ticket pour rÃ©vÃ©ler immÃ©diatement votre rÃ©sultat.
+              Grattez le ticket pour révéler immédiatement votre résultat.
             </div>
           ) : null}
 
@@ -943,7 +954,7 @@ export function CampaignExperience({
               </div>
               <h2 className="mt-5 text-3xl font-semibold text-[#141826]">Perdu :(</h2>
               <p className="mt-3 text-base leading-7 text-[#61687a]">
-                Merci pour votre participation. Revenez bientÃ´t pour une nouvelle chance.
+                Merci pour votre participation. Revenez bientôt pour une nouvelle chance.
               </p>
             </div>
           ) : null}
@@ -955,7 +966,7 @@ export function CampaignExperience({
         onClick={() => setRulesOpen(true)}
         className="fixed bottom-4 right-4 z-20 rounded-full border border-white/70 bg-white/82 px-4 py-2 text-sm font-semibold text-[#111827] shadow-[0_14px_34px_rgba(17,24,39,0.12)] backdrop-blur"
       >
-        RÃ¨glement
+        Règlement
       </button>
 
       <RulesModal campaign={campaign} open={rulesOpen} onClose={() => setRulesOpen(false)} />
@@ -968,7 +979,7 @@ export function CampaignExperience({
           Perdu
         </h2>
         <p className="mt-4 text-center text-lg leading-8 text-[#5f6678]">
-          Merci pour votre participation. Revenez bientÃ´t pour une nouvelle chance.
+          Merci pour votre participation. Revenez bientôt pour une nouvelle chance.
         </p>
       </PublicModal>
 
@@ -977,7 +988,7 @@ export function CampaignExperience({
           !
         </div>
         <h2 className="mt-6 text-center text-[2rem] font-semibold leading-[1.05] text-[#121826]">
-          Participation dÃ©jÃ  enregistrÃ©e
+          Participation déjà enregistrée
         </h2>
         <p className="mt-4 text-center text-lg leading-8 text-[#5f6678]">
           {blockedMessage}
@@ -996,16 +1007,16 @@ export function CampaignExperience({
           {actionIcon(currentAction?.kind)}
         </div>
         <h2 className="mt-6 text-center text-[2rem] font-semibold leading-[1.05] text-[#121826]">
-          {currentAction ? "Avant de jouer" : "PrÃªt Ã  jouer ?"}
+          {currentAction ? "Avant de jouer" : "Prêt à jouer ?"}
         </h2>
         <p className="mt-4 text-center text-lg leading-8 text-[#5f6678]">
           {currentAction?.kind === "google"
             ? "Laissez-nous un avis et revenez ici pour jouer."
             : currentAction?.kind === "instagram"
-              ? "Suivez-nous sur Instagram pour dÃ©couvrir les nouveautÃ©s du commerce, puis revenez ici pour jouer."
+              ? "Suivez-nous sur Instagram pour découvrir les nouveautés du commerce, puis revenez ici pour jouer."
               : currentAction
-                ? "DÃ©couvrez le lien du commerce dans un nouvel onglet, puis revenez ici pour jouer."
-                : "Touchez Jouer pour prÃ©parer votre partie et dÃ©couvrir votre rÃ©sultat."}
+                ? "Découvrez le lien du commerce dans un nouvel onglet, puis revenez ici pour jouer."
+                : "Touchez Jouer pour préparer votre partie et découvrir votre résultat."}
         </p>
         <div className="mt-6 space-y-3">
           {currentAction ? (
@@ -1041,7 +1052,7 @@ export function CampaignExperience({
             }
           >
             {isLoading
-              ? "PrÃ©paration..."
+              ? "Préparation..."
               : actionVisited || !currentAction
                 ? "Jouer"
                 : "Jouer maintenant"}
@@ -1056,7 +1067,7 @@ export function CampaignExperience({
 
       <PublicModal open={stage === "collect"}>
         <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-[#f7f7fb] text-4xl shadow-[0_20px_45px_rgba(17,24,39,0.10)]">
-          ðŸŽ
+          <Gift className="h-11 w-11" aria-hidden="true" />
         </div>
         <h2 className="mt-6 text-center text-[2rem] font-semibold leading-[1.05] text-[#121826]">
           {isPreGameLeadCapture
@@ -1085,10 +1096,10 @@ export function CampaignExperience({
             value={firstName}
             onChange={(event) => setFirstName(event.target.value)}
             required
-            placeholder="PrÃ©nom"
+            placeholder="Prénom"
             className="w-full rounded-[18px] border border-[#d8dce5] px-4 py-4 text-lg text-[#111827] outline-none placeholder:text-[#99a1b2]"
           />
-          <label className="sr-only" htmlFor="winner-first-name">PrÃ©nom</label>
+          <label className="sr-only" htmlFor="winner-first-name">Prénom</label>
 
           <input
             id="winner-first-name"
@@ -1113,7 +1124,7 @@ export function CampaignExperience({
               className="mt-1 h-4 w-4 accent-[#111827]"
             />
             <span>
-              J&apos;accepte de recevoir des actualitÃ©s et offres de la part de cet Ã©tablissement.
+              J&apos;accepte de recevoir des actualités et offres de la part de cet établissement.
             </span>
           </label>
 
@@ -1145,29 +1156,29 @@ export function CampaignExperience({
             Merci pour votre participation !
           </h2>
           <div className="mx-auto mt-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#f7f7fb] text-4xl shadow-[0_16px_34px_rgba(17,24,39,0.10)]">
-            âœ‰
+            <Mail className="h-8 w-8" aria-hidden="true" />
           </div>
           <p className="mt-4 text-lg leading-7 text-[#1a2f76]">
             {isContactOnlySuccess
-              ? "Votre contact est bien enregistrÃ©."
+              ? "Votre contact est bien enregistré."
               : "Vous recevrez votre gain par e-mail avec les informations de retrait"}
           </p>
           <p className="mt-3 text-sm leading-6 text-[#61687a]">
             {isContactOnlySuccess
               ? "Merci pour votre confiance."
-              : "Conservez ce QR code pour retirer votre gain. Si lâ€™e-mail tarde Ã  arriver, vÃ©rifiez vos spams."}
+              : "Conservez ce QR code pour retirer votre gain. Si l’e-mail tarde à arriver, vérifiez vos spams."}
           </p>
 
           {drawResult?.prize ? <div className="mt-4 rounded-[18px] bg-[#fff4cb] px-4 py-3 text-left text-sm leading-6 text-[#4d3810]">
             <p>
-              Vous avez entre le {availableDate ?? "maintenant"} et le {expiryDate ?? "bientÃ´t"}{" "}
-              pour venir le rÃ©cupÃ©rer.
+              Vous avez entre le {availableDate ?? "maintenant"} et le {expiryDate ?? "bientôt"}{" "}
+              pour venir le récupérer.
             </p>
           </div> : null}
 
           {drawResult?.prize && campaign.rewardRules.purchaseRequired ? (
             <div className="mt-3 rounded-[18px] bg-[#f7f7fb] px-4 py-3 text-left text-sm leading-6 text-[#61687a]">
-              Le retrait du lot est soumis Ã  une condition dâ€™achat.
+              Le retrait du lot est soumis à une condition d’achat.
             </div>
           ) : null}
 

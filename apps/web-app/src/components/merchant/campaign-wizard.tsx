@@ -20,15 +20,8 @@ import {
   Trash2,
   UtensilsCrossed,
 } from "lucide-react";
-import {
-  type ChangeEvent,
-  type ReactNode,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { type ReactNode, useEffect, useMemo, useState } from "react";
 
-import { BrandMark } from "@/components/brand-mark";
 import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
 import {
   buildCampaignLivePreviewModel,
@@ -210,7 +203,6 @@ function createWizardActions(
   if (goalType === "lead_capture") {
     const instagramUrl = merchant.instagramUrl?.trim();
     return [
-      createWizardAction("wizard-crm-action", "crm", ""),
       ...(instagramUrl
         ? [
             createWizardAction(
@@ -286,9 +278,9 @@ function createWizardDraft(merchant: Merchant): WizardDraft {
     prizes: [
       {
         id: "wizard-prize-1",
-        label: "Cadeau surprise",
+        label: "Une réduction de 10 %",
         totalQuantity: null,
-        probability: 25,
+        probability: 50,
         estimatedUnitCost: merchant.defaultPrizeCost ?? 5,
         usageConditions: "",
       },
@@ -604,28 +596,6 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
         : next;
     });
     setError(null);
-  }
-
-  function handleLogoUpload(event: ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    if (!file.type.startsWith("image/")) {
-      setError("Choisissez un fichier image pour le logo.");
-      return;
-    }
-    if (file.size > 2 * 1024 * 1024) {
-      setError("Le logo doit peser moins de 2 Mo.");
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === "string") {
-        patchDraft({ logoMode: "image", logoUrl: reader.result });
-      }
-    };
-    reader.onerror = () => setError("Le logo n’a pas pu être chargé.");
-    reader.readAsDataURL(file);
   }
 
   function patchAction(
@@ -996,7 +966,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                     </span>
                   </label>
                   <span className="mt-2 block text-xs leading-5 text-[#8993a6]">
-                    Les actions proposées par défaut sont modifiables à l’étape 5. La collecte d’e-mail ci-dessous est indépendante des actions marketing.
+                    Les actions proposées par défaut sont modifiables à l’étape 5. La collecte d’e-mail est indépendante des actions marketing.
                   </span>
                 </label>
               </div>
@@ -1428,7 +1398,6 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                           <option value="tripadvisor">
                             Laisser un avis Tripadvisor
                           </option>
-                          <option value="crm">Collecte email</option>
                           <option value="custom">
                             Ouvrir un lien personnalisé
                           </option>
@@ -1449,11 +1418,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                           className="mt-3 w-full rounded-[14px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3 text-sm text-[#182033]"
                         />
                       </label>
-                    ) : (
-                      <p className="mt-4 rounded-[12px] bg-[#f6f8fb] px-3 py-2 text-xs leading-5 text-[#69758a]">
-                        La collecte d’e-mail se règle avec l’option dédiée. Cette ligne est conservée dans vos actions pour compatibilité, sans compter comme une visite.
-                      </p>
-                    )}
+                    ) : null}
                   </div>
                 ))}
                 <button
@@ -1616,45 +1581,6 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                   />
                 </label>
               ) : null}
-              <div className="rounded-[20px] border border-[#e2e8f0] bg-[#fbfcfe] p-5">
-                <p className="text-sm font-semibold text-[#182033]">Logo</p>
-                <p className="mt-1 text-xs text-[#8993a6]">
-                  Nous utiliserons le logo du commerce si vous en avez déjà
-                  configuré un.
-                </p>
-                <label className="mt-4 block cursor-pointer">
-                  <span className="text-sm font-semibold text-[#182033]">
-                    Charger un logo
-                  </span>
-                  <input
-                    type="file"
-                    accept="image/png,image/jpeg,image/webp,image/gif"
-                    onChange={handleLogoUpload}
-                    className="mt-3 block w-full cursor-pointer rounded-[14px] border border-dashed border-[#b8c5d8] bg-white px-3 py-3 text-sm text-[#526078] file:mr-3 file:rounded-[10px] file:border-0 file:bg-[#eef2ff] file:px-3 file:py-2 file:text-sm file:font-semibold file:text-[#182033]"
-                  />
-                  <span className="mt-2 block text-xs text-[#8993a6]">
-                    PNG, JPG, WEBP ou GIF · 2 Mo maximum.
-                  </span>
-                </label>
-                <div className="mt-4 flex min-w-0 items-center gap-3 rounded-[14px] border border-[#dbe3ed] bg-white px-3 py-2.5">
-                  {draft.logoUrl ? (
-                    <>
-                      <BrandMark
-                        logoText={draft.logoText || merchant.companyName}
-                        logoUrl={draft.logoUrl}
-                        size="sm"
-                      />
-                      <span className="min-w-0 truncate text-sm text-[#526078]">
-                        {draft.logoText || merchant.companyName}
-                      </span>
-                    </>
-                  ) : (
-                    <span className="min-w-0 truncate font-display text-base font-semibold text-[#182033]">
-                      {draft.logoText || merchant.companyName}
-                    </span>
-                  )}
-                </div>
-              </div>
             </div>
           ) : null}
 

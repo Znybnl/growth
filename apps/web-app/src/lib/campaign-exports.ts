@@ -61,7 +61,7 @@ let antonFontDataUri: string | null = null;
 function isPosterTemplateDefaultWinColor(color: string | undefined) {
   return Object.values(POSTER_TEMPLATE_DEFAULTS).some(
     (template) => template.wheel.winColor === color,
-  );
+  ) || color === "#1b2842" || color === "#f4c14a";
 }
 
 function getAntonFontDataUri() {
@@ -133,8 +133,10 @@ export async function createCampaignPosterSvg(
 ) {
   const { campaign } = performance;
   const hasExplicitPosterTemplate = Boolean(campaign.presentation.poster?.templateId);
-  const campaignPrimaryColor = campaign.presentation.wheel.loseColor;
-  const campaignGainColor = campaign.presentation.wheel.winColor;
+  const campaignPrimaryColor =
+    campaign.gameType === "scratch"
+      ? campaign.accent.signal
+      : campaign.presentation.wheel.loseColor;
   const normalizedPoster = normalizePosterSettings(
     campaign.presentation.poster,
     createPosterSettingsDefaults({
@@ -148,7 +150,7 @@ export async function createCampaignPosterSvg(
       backgroundColor: "#fff6ee",
       backgroundImageUrl: "",
       headline: campaign.subtitle,
-      headlineTextColor: campaignGainColor,
+      headlineTextColor: "#1b2842",
       headlineFontSizePx: 50,
       headlineFontFamily: "display",
       wheel: {
@@ -159,18 +161,28 @@ export async function createCampaignPosterSvg(
       footerBackgroundColor: campaign.accent.signal,
     }),
   );
+  const posterWithNormalizedHeadline =
+    normalizedPoster.headlineTextColor === "#f4c14a"
+      ? { ...normalizedPoster, headlineTextColor: "#1b2842" }
+      : normalizedPoster;
   const poster = hasExplicitPosterTemplate
-    ? applyPosterTemplateDefaults(normalizedPoster, campaign.presentation.wheel, {
+    ? applyPosterTemplateDefaults(posterWithNormalizedHeadline, {
+        ...campaign.presentation.wheel,
+        loseColor: campaignPrimaryColor,
+      }, {
         preserveHeadlineTextColor: true,
       })
     : applyPosterTemplateDefaults(
         {
-          ...normalizedPoster,
+          ...posterWithNormalizedHeadline,
           templateId: "classic-wheel" as const,
-          headlineTextColor: campaignGainColor,
+          headlineTextColor: "#1b2842",
           headlineFontFamily: "display" as const,
         },
-        campaign.presentation.wheel,
+        {
+          ...campaign.presentation.wheel,
+          loseColor: campaignPrimaryColor,
+        },
       );
 
   const qrDataUrl = await QRCode.toDataURL(publicUrl, {
