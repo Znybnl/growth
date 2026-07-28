@@ -430,8 +430,8 @@ export function CampaignExperience({
     drawResult?.prize?.id ??
     segments.find((segment) => segment.tone === "lose")?.id ??
     "lose-0";
-  // CRM is a post-game collection mechanism, not an external pre-game action.
-  // Ignore legacy CRM actions so they cannot render as a broken empty link.
+  // CRM is a contact-capture step, not an external link. The first external
+  // action remains available after the form has been completed.
   const currentAction = campaign.actions.find((action) => action.kind !== "crm");
   const isLeadCapture = campaign.goalType === "lead_capture";
   const requiresContactCapture =

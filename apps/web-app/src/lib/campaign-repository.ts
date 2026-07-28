@@ -1262,9 +1262,9 @@ export async function getSupabasePublicCampaign(
   }
   assertMerchantBillingAccess(performance.merchant, "campaign_public");
 
-  // CRM is collected in the post-game form. Never expose legacy CRM actions as
-  // pre-game links (they have no destination and would create a dead-end CTA).
-  let actions = performance.campaign.actions.filter((action) => action.kind !== "crm");
+  // Keep CRM actions in the ordered public sequence. They are rendered as the
+  // pre-game contact form, never as an external link.
+  let actions = performance.campaign.actions;
   if (participantToken) {
     const supabase = getSupabaseAdmin();
     const { data: identity } = await supabase

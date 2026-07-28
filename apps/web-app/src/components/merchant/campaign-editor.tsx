@@ -57,7 +57,6 @@ import {
   CampaignSetupInput,
   GamePageTemplateId,
   GameType,
-  GoalType,
   Merchant,
   PrizeSuggestion,
   TextAlign,
@@ -213,12 +212,6 @@ const wheelPageTemplateOptions: Array<{
   },
 ];
 
-const goalMetricMap: Record<GoalType, string> = {
-  lead_capture: "Nouveaux contacts opt-in",
-  review_prompt: "Clics vers avis",
-  social_follow: "Clics sociaux",
-};
-
 const gameModes: Array<{
   value: GameType;
   eyebrow: string;
@@ -253,7 +246,7 @@ const scratchPageTemplateOptions: Array<{
   {
     value: "scratch-vault",
     title: "Coffre néon",
-    description: "Un ticket de jeu de nuit, lumineux et immersif, avec une révélation façon coffre-fort.",
+    description: "Un univers nocturne et lumineux, avec une illustration de coffre-fort avant le grattage.",
   },
   {
     value: "scratch-coral",
@@ -263,7 +256,7 @@ const scratchPageTemplateOptions: Array<{
   {
     value: "scratch-lilac",
     title: "Cadeau lilas",
-    description: "Un univers violet doux avec un cadeau au centre, pour une expérience complice.",
+    description: "Un univers lilas doux, avec une illustration cadeau claire et contrastée.",
   },
   {
     value: "scratch-sunburst",
@@ -431,10 +424,10 @@ function createDefaultState(merchant: Merchant): EditorState {
     merchantId: merchant.id,
     title: `Animation ${isRestaurantIndustry(merchant.industry) ? "restaurant" : "commerce"}`,
     subtitle: wheelDefaultSubtitle,
-    goalType: "review_prompt",
+    goalType: null,
     gameType: "wheel",
     ctaLabel: "Je participe",
-    successMetric: goalMetricMap.review_prompt,
+    successMetric: "",
     targetUrl: merchant.googleReviewUrl,
     isActive: true,
     logoMode: "text",
@@ -2222,9 +2215,10 @@ function setGameType(gameType: GameType) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...form,
+          creationMode: "editor",
           targetUrl: normalizeUrl(form.targetUrl ?? ""),
           actions: form.actions
-            .filter((action) => action.url.trim())
+            .filter((action) => action.kind === "crm" || action.url.trim())
             .map((action) => ({
               ...action,
               label: syncActionLabel(action.kind, action.label),
@@ -2321,9 +2315,10 @@ function setGameType(gameType: GameType) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...form,
+          creationMode: "editor",
           targetUrl: normalizeUrl(form.targetUrl ?? ""),
           actions: form.actions
-            .filter((action) => action.url.trim())
+            .filter((action) => action.kind === "crm" || action.url.trim())
             .map((action) => ({
               ...action,
               label: syncActionLabel(action.kind, action.label),

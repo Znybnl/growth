@@ -542,7 +542,7 @@ declare global {
 function normalizeCampaign(rawCampaign: Campaign | (Partial<Campaign> & Record<string, unknown>)): Campaign {
   const fallback =
     campaignSeed.find((campaign) => campaign.id === rawCampaign.id) ?? campaignSeed[0];
-  const goalType = rawCampaign.goalType ?? fallback.goalType;
+  const goalType = rawCampaign.goalType !== undefined ? rawCampaign.goalType : fallback.goalType;
   const targetUrl =
     typeof rawCampaign.targetUrl === "string" && rawCampaign.targetUrl.length > 0
       ? rawCampaign.targetUrl
@@ -762,7 +762,7 @@ function toPublicCampaign(campaign: Campaign, actions = campaign.actions): Publi
       probability: prize.probability,
     })),
     presentation: campaign.presentation,
-    actions: actions.filter((action) => action.kind !== "crm"),
+    actions,
     rewardRules: campaign.rewardRules,
   };
 }

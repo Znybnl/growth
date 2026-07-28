@@ -958,7 +958,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                     Objectif
                   </span>
                     <select
-                      value={draft.goalType}
+                      value={draft.goalType ?? ""}
                       onChange={(event) => {
                         const goalType = event.target
                           .value as WizardDraft["goalType"];
@@ -1456,10 +1456,10 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                 {(
                   draft.gameType === "scratch"
                     ? [
-                        { id: "scratch-vault", label: "Coffre néon", text: "Nocturne et immersif" },
+                        { id: "scratch-vault", label: "Coffre néon", text: "Coffre illustré avant grattage" },
                         { id: "scratch-confetti", label: "Carte confettis", text: "Solaire et festif" },
                         { id: "scratch-coral", label: "Corail joyeux", text: "Clair et chaleureux" },
-                        { id: "scratch-lilac", label: "Cadeau lilas", text: "Doux et complice" },
+                        { id: "scratch-lilac", label: "Cadeau lilas", text: "Cadeau clair et contrasté" },
                         { id: "scratch-sunburst", label: "Rayons soleil", text: "Éclatant et visible" },
                       ] as const
                     : [
