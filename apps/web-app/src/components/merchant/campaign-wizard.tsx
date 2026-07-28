@@ -36,7 +36,14 @@ import {
 } from "@/components/merchant/campaign-editor";
 import { actionKindCta } from "@/lib/format";
 import { createCampaignEmailDefaults } from "@/lib/email-settings";
-import { createPosterSettingsDefaults } from "@/lib/poster-utils";
+import {
+  createDefaultPosterSettings,
+  createDefaultWheelSettings,
+  DEFAULT_SCRATCH_SUBTITLE,
+  DEFAULT_WHEEL_SUBTITLE,
+  deriveLighterHex,
+  normalizeScratchAccent,
+} from "@/lib/campaign-defaults";
 import {
   ActionKind,
   CampaignAction,
@@ -77,23 +84,23 @@ const WIZARD_STEPS: WizardStep[] = [
     description: "Choisissez l’expérience la plus naturelle.",
   },
   {
-    id: "prizes",
+    id: "appearance",
     number: "03",
+    title: "L’apparence",
+    description: "Donnez à la campagne votre signature.",
+  },
+  {
+    id: "prizes",
+    number: "04",
     title: "Les lots",
     description: "Cadrez les probabilités et les stocks.",
   },
   {
     id: "action",
-    number: "04",
+    number: "05",
     title: "L’action",
     description:
-      "Choisissez les actions proposées après le jeu. Elles peuvent varier à chaque participation.",
-  },
-  {
-    id: "appearance",
-    number: "05",
-    title: "L’apparence",
-    description: "Donnez à la campagne votre signature.",
+      "Choisissez l’action proposée avant le jeu. Elle change à chaque visite pour guider le joueur.",
   },
 ];
 
@@ -225,19 +232,14 @@ function createWizardActions(
 }
 
 function createWizardDraft(merchant: Merchant): WizardDraft {
-  const wheel = {
-    rimColor: "#d9b34a",
-    winColor: "#f4c14a",
-    alternateWinColor: "#fff7dd",
-    loseColor: "#1b2842",
-    alternateLoseColor: "#8795db",
-  };
+  const wheel = createDefaultWheelSettings();
 
   return {
     merchantId: merchant.id,
     title: "",
-    subtitle: "Faites tourner la roue pour tenter votre chance.",
+    subtitle: DEFAULT_WHEEL_SUBTITLE,
     goalType: "review_prompt",
+    emailCaptureEnabled: false,
     ctaLabel: "Je participe",
     successMetric: "Avis Google",
     targetUrl: merchant.googleReviewUrl,
@@ -269,16 +271,7 @@ function createWizardDraft(merchant: Merchant): WizardDraft {
         templateId: "classic" as GamePageTemplateId,
       },
       wheel,
-      poster: createPosterSettingsDefaults({
-        logoMode: "text",
-        logoText: merchant.companyName || merchant.logoText,
-        backgroundMode: "color",
-        backgroundColor: "#fffaf1",
-        headline: "Scannez, jouez, récupérez votre cadeau",
-        headlineTextColor: "#1b2842",
-        wheel,
-        footerBackgroundColor: "#f4c14a",
-      }),
+      poster: createDefaultPosterSettings(merchant),
       email: createCampaignEmailDefaults(merchant),
     },
     actions: createWizardActions(merchant, "review_prompt"),
@@ -339,7 +332,7 @@ function validateStep(
 
   if (step === "action" && actionEnabled) {
     if (!draft.actions.length)
-      return "Ajoutez au moins une action à proposer après le jeu.";
+      return "Ajoutez au moins une action à proposer avant le jeu.";
     for (const action of draft.actions) {
       if (action.kind === "crm") continue;
       if (!action.url.trim())
@@ -600,7 +593,14 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
     setDraft((current) => {
       const next = { ...current, ...patch };
       return patch.goalType
-        ? { ...next, actions: createWizardActions(merchant, patch.goalType) }
+        ? {
+            ...next,
+            emailCaptureEnabled:
+              patch.goalType === "lead_capture"
+                ? true
+                : next.emailCaptureEnabled,
+            actions: createWizardActions(merchant, patch.goalType),
+          }
         : next;
     });
     setError(null);
@@ -978,10 +978,25 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                     <option value="lead_capture">Collecter des contacts</option>
                     <option value="social_follow">Gagner des abonnés</option>
                   </select>
+                  <label className="mt-4 flex cursor-pointer items-start gap-3 rounded-[18px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3 text-sm text-[#182033]">
+                    <input
+                      type="checkbox"
+                      checked={draft.goalType === "lead_capture" || draft.emailCaptureEnabled}
+                      disabled={draft.goalType === "lead_capture"}
+                      onChange={(event) =>
+                        patchDraft({ emailCaptureEnabled: event.target.checked })
+                      }
+                      className="mt-1 h-4 w-4 accent-[#111827]"
+                    />
+                    <span>
+                      <span className="block font-semibold">Collecter l’e-mail avant le jeu</span>
+                      <span className="mt-1 block text-xs leading-5 text-[#8993a6]">
+                        Le joueur saisira son prénom et son e-mail avant de jouer. Le consentement est requis à cette étape ; sinon l’e-mail est demandé uniquement après un gain.
+                      </span>
+                    </span>
+                  </label>
                   <span className="mt-2 block text-xs leading-5 text-[#8993a6]">
-                    Les coordonnées sont demandées après le jeu, quel que soit le
-                    résultat. Le consentement marketing reste distinct et optionnel.
-                    Les actions proposées par défaut sont modifiables à l’étape 4.
+                    Les actions proposées par défaut sont modifiables à l’étape 5. La collecte d’e-mail ci-dessous est indépendante des actions marketing.
                   </span>
                 </label>
               </div>
@@ -1038,8 +1053,12 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                         },
                         subtitle:
                           option.value === "wheel"
-                            ? "Faites tourner la roue pour tenter votre chance."
-                            : "Grattez le ticket pour tenter votre chance.",
+                            ? DEFAULT_WHEEL_SUBTITLE
+                            : DEFAULT_SCRATCH_SUBTITLE,
+                        accent:
+                          option.value === "scratch"
+                            ? normalizeScratchAccent(draft.accent, "scratch-coral")
+                            : draft.accent,
                       })
                     }
                     className={`rounded-[22px] border p-5 text-left transition ${draft.gameType === option.value ? "border-[#b28719] bg-[#fff8e1] shadow-[0_12px_28px_rgba(244,193,74,0.16)]" : "border-[#e2e8f0] bg-[#fbfcfe] hover:border-[#b8c5d8]"}`}
@@ -1432,8 +1451,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                       </label>
                     ) : (
                       <p className="mt-4 rounded-[12px] bg-[#f6f8fb] px-3 py-2 text-xs leading-5 text-[#69758a]">
-                        Les coordonnées sont collectées dans le formulaire après le jeu ;
-                        aucun lien externe n’est requis.
+                        La collecte d’e-mail se règle avec l’option dédiée. Cette ligne est conservée dans vos actions pour compatibilité, sans compter comme une visite.
                       </p>
                     )}
                   </div>
@@ -1497,6 +1515,10 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                             templateId: template.id,
                           },
                         },
+                        accent:
+                          draft.gameType === "scratch"
+                            ? normalizeScratchAccent(draft.accent, template.id)
+                            : draft.accent,
                       })
                     }
                     className={`rounded-[20px] border p-4 text-left ${draft.presentation.layout.templateId === template.id ? "border-[#b28719] bg-[#fff8e1]" : "border-[#e2e8f0] bg-[#fbfcfe]"}`}
@@ -1511,6 +1533,8 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                 ))}
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
+                {draft.gameType === "wheel" ? (
+                  <>
                 <label className="block">
                   <span className="text-sm font-semibold text-[#182033]">
                     Couleur de fond
@@ -1559,6 +1583,8 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                               ? {
                                   ...current.presentation.wheel,
                                   loseColor: color,
+                                  alternateLoseColor: deriveLighterHex(color),
+                                  rimColor: deriveLighterHex(color),
                                 }
                               : current.presentation.wheel,
                         },
@@ -1567,6 +1593,8 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                     className="mt-3 h-12 w-full rounded-[12px] border border-[#dbe3ed] bg-white p-1"
                   />
                 </label>
+                  </>
+                ) : null}
               </div>
               {draft.gameType === "scratch" ? (
                 <label className="block">

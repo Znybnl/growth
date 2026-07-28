@@ -371,6 +371,13 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
       : !hasExplicitCreationMode && id && typeof payload.goalType === "string" && GOAL_TYPES.has(payload.goalType as GoalType)
         ? (payload.goalType as GoalType)
         : null;
+  // The dedicated capture toggle is authoritative when supplied. For older
+  // campaigns, keep the legacy CRM/lead-capture behaviour so their player
+  // flow does not silently change after this field is introduced.
+  const emailCaptureEnabled =
+    typeof payload.emailCaptureEnabled === "boolean"
+      ? payload.emailCaptureEnabled
+      : goalType === "lead_capture" || sanitizedActions.some((action) => action.kind === "crm");
 
   return {
     id,
@@ -379,6 +386,7 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
     title,
     subtitle: normalizeMultiline(payload.subtitle, 240),
     goalType,
+    emailCaptureEnabled,
     ctaLabel: normalizeString(payload.ctaLabel, 80),
     successMetric: normalizeString(payload.successMetric, 80),
     targetUrl: normalizeUrl(payload.targetUrl) || undefined,

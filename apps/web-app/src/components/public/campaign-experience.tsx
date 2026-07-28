@@ -9,6 +9,7 @@ import { ImmersiveScratchTicket } from "@/components/public/immersive-scratch-ti
 import { ScratchGame } from "@/components/public/scratch-game";
 import { WheelOfFortune } from "@/components/public/wheel-of-fortune";
 import { fluidType } from "@/lib/responsive";
+import { DEFAULT_SCRATCH_SUBTITLE, normalizeScratchAccent } from "@/lib/campaign-defaults";
 import { buildWheelVisualSegments } from "@/lib/wheel-segments";
 import {
   CreateDrawSessionResult,
@@ -432,12 +433,10 @@ export function CampaignExperience({
     drawResult?.prize?.id ??
     segments.find((segment) => segment.tone === "lose")?.id ??
     "lose-0";
-  // CRM is a contact-capture step, not an external link. The first external
-  // action remains available after the form has been completed.
-  const currentAction = campaign.actions.find((action) => action.kind !== "crm");
-  const isLeadCapture = campaign.goalType === "lead_capture";
-  const requiresContactCapture =
-    isLeadCapture || campaign.actions.some((action) => action.kind === "crm");
+  // The public API exposes only the marketing action for the current visit.
+  // E-mail capture is a separate, optional pre-game step.
+  const currentAction = campaign.actions[0];
+  const requiresContactCapture = campaign.emailCaptureEnabled;
   const isContactOnlySuccess = stage === "success" && Boolean(drawResult) && !drawResult?.prize;
   const scratchLabel = previewResult?.prize?.label ?? "Perdu :(";
   const redemptionCode = drawResult?.lead.redemptionCode;
@@ -465,13 +464,20 @@ export function CampaignExperience({
     isScratchCoralTemplate ||
     isScratchLilacTemplate ||
     isScratchSunburstTemplate;
+  const scratchAccent =
+    campaign.gameType === "scratch"
+      ? normalizeScratchAccent(campaign.accent, pageTemplate)
+      : campaign.accent;
   const primaryColor = campaign.gameType === "scratch"
-    ? campaign.accent.signal
+    ? scratchAccent.signal
     : campaign.presentation.wheel.loseColor ?? campaign.accent.signal;
   const secondaryColor = campaign.presentation.wheel.winColor ?? "#073b72";
   const headingTextColor =
-    isCosmicTemplate || (isScratchVaultTemplate && campaign.presentation.heading.textColor.toLowerCase() === "#1f2937")
+    isCosmicTemplate
       ? "#f8fbff"
+      : campaign.gameType === "scratch" &&
+          campaign.presentation.heading.textColor.toLowerCase() === "#1f2937"
+        ? scratchAccent.ink
       : campaign.presentation.heading.textColor;
   const logoWidthPx = Math.round(
     Math.max(56, Math.min(720, campaign.presentation.logo.sizePercent * 3)),
@@ -811,7 +817,7 @@ export function CampaignExperience({
                     ))}
                   </span>
                 ))
-              : campaign.subtitle.trim() || "Grattez pour rÃ©vÃ©ler votre cadeau"}
+              : campaign.subtitle.trim() || DEFAULT_SCRATCH_SUBTITLE}
           </h1>
         </div>
         ) : null}
@@ -875,7 +881,7 @@ export function CampaignExperience({
             {isImmersiveScratchTemplate ? (
               <ImmersiveScratchTicket
                 key={`${campaign.id}-${drawSession?.id ?? "idle"}`}
-                accent={campaign.accent}
+                accent={scratchAccent}
                 resultLabel={scratchLabel}
                 enabled={stage === "ready"}
                 onReveal={() => void handleGameReveal()}
@@ -897,7 +903,7 @@ export function CampaignExperience({
             ) : (
               <ScratchGame
                 key={`${campaign.id}-${drawSession?.id ?? "idle"}`}
-                accent={campaign.accent}
+                accent={scratchAccent}
                 resultLabel={scratchLabel}
                 enabled={stage === "ready"}
                 onReveal={() => void handleGameReveal()}

@@ -45,6 +45,14 @@ import {
   normalizeCampaignEmailSettings,
 } from "@/lib/email-settings";
 import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
+import {
+  createDefaultPosterSettings,
+  createDefaultWheelSettings,
+  DEFAULT_SCRATCH_SUBTITLE,
+  DEFAULT_WHEEL_SUBTITLE,
+  deriveLighterHex,
+  normalizeScratchAccent,
+} from "@/lib/campaign-defaults";
 import { fluidType } from "@/lib/responsive";
 import { buildWheelVisualSegments, WheelVisualSegment } from "@/lib/wheel-segments";
 import { isRestaurantIndustry } from "@/lib/merchant-options";
@@ -270,10 +278,8 @@ const scratchPageTemplateOptions: Array<{
   },
 ];
 
-const wheelDefaultSubtitle = "Faites tournez la roue pour jouer !";
-const scratchDefaultSubtitle = "Grattez le ticket pour jouer !";
-const defaultScratchTicketColor = "#f7f7f7";
-const defaultScratchTextColor = "#ffffff";
+const wheelDefaultSubtitle = DEFAULT_WHEEL_SUBTITLE;
+const scratchDefaultSubtitle = DEFAULT_SCRATCH_SUBTITLE;
 
 function createPrizeId() {
   return `local-prize-${crypto.randomUUID().slice(0, 8)}`;
@@ -425,6 +431,7 @@ function createDefaultState(merchant: Merchant): EditorState {
     title: `Animation ${isRestaurantIndustry(merchant.industry) ? "restaurant" : "commerce"}`,
     subtitle: wheelDefaultSubtitle,
     goalType: null,
+    emailCaptureEnabled: false,
     gameType: "wheel",
     ctaLabel: "Je participe",
     successMetric: "",
@@ -468,35 +475,8 @@ function createDefaultState(merchant: Merchant): EditorState {
         blockSpacingPx: 40,
         templateId: "classic",
       },
-      wheel: {
-        rimColor: deriveLighterHex("#1b2842"),
-        winColor: "#f4c14a",
-        alternateWinColor: "#eef2ff",
-        loseColor: "#1b2842",
-        alternateLoseColor: "#8795db",
-      },
-      poster: {
-        logoMode: "text",
-        logoText: merchant.companyName,
-        logoUrl: undefined,
-        logoSizePercent: 100,
-        logoBottomMarginPx: 28,
-        backgroundMode: "color",
-        backgroundColor: "#ffffff",
-        backgroundImageUrl: "",
-        headline: "Scannez, jouez, récupérez votre cadeau",
-        headlineTextColor: "#f4c14a",
-        headlineFontSizePx: 42,
-        headlineFontFamily: "display",
-        wheel: {
-          rimColor: "#1b2842",
-          winColor: "#1b2842",
-          alternateWinColor: "#1b2842",
-          loseColor: "#1b2842",
-          alternateLoseColor: "#8795db",
-        },
-        footerBackgroundColor: "#8d9ae8",
-      },
+      wheel: createDefaultWheelSettings(),
+      poster: createDefaultPosterSettings(merchant),
       email: createCampaignEmailDefaults(merchant),
     },
     actions: createDefaultActions(merchant),
@@ -885,11 +865,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
       ? "#f8fbff"
       : preview.headingTextColor;
   const restaurantPopHeadingLines = buildRestaurantPopHeadingLines(preview.subtitle);
-  const previewFrameClass = isImmersiveScratchTemplate
-    ? compact
-      ? "aspect-[9/16] min-h-[498px] min-w-[280px] max-w-[320px] rounded-[30px] px-3 pb-5 pt-4"
-      : "aspect-[9/16] min-h-[568px] min-w-[320px] max-w-[390px] rounded-[38px] px-4 pb-6 pt-5"
-    : compact
+  const previewFrameClass = compact
       ? "min-h-[480px] max-w-[360px] rounded-[30px] px-3 pb-5 pt-7"
       : "min-h-[600px] max-w-[450px] rounded-[38px] px-4 pb-6 pt-8";
 
@@ -991,7 +967,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
                     ))}
                   </span>
                 ))
-              : preview.subtitle.trim() || (preview.gameType === "scratch" ? "Grattez pour révéler votre cadeau" : "Découvrez votre animation")}
+              : preview.subtitle.trim() || (preview.gameType === "scratch" ? DEFAULT_SCRATCH_SUBTITLE : "Découvrez votre animation")}
           </h3>
         </div>
           </>
@@ -1071,6 +1047,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
                   Math.max(0, preview.logoBottomSpacingPx - preview.blockSpacingPx),
                 )}
                 logoWidthPx={scalePreviewValue(preview.logoWidthPx)}
+                fitContainer
                 template={preview.gamePageTemplateId as "scratch-vault" | "scratch-confetti" | "scratch-coral" | "scratch-lilac" | "scratch-sunburst"}
               />
             ) : (
@@ -1314,6 +1291,7 @@ function toEditorState(merchant: Merchant, campaign: CampaignPerformance | null)
     title: campaign.campaign.title,
     subtitle: campaign.campaign.subtitle,
     goalType: campaign.campaign.goalType,
+    emailCaptureEnabled: campaign.campaign.emailCaptureEnabled,
     gameType: campaign.campaign.gameType,
     ctaLabel: campaign.campaign.ctaLabel,
     successMetric: campaign.campaign.successMetric,
@@ -1324,19 +1302,10 @@ function toEditorState(merchant: Merchant, campaign: CampaignPerformance | null)
     logoUrl: campaign.campaign.logoUrl,
     accent:
       campaign.campaign.gameType === "scratch"
-        ? {
-            ...campaign.campaign.accent,
-            paper:
-              campaign.campaign.accent.paper === "#eef2ff" ||
-              campaign.campaign.accent.paper === "#939393" ||
-              campaign.campaign.accent.paper === ""
-                ? defaultScratchTicketColor
-                : campaign.campaign.accent.paper,
-            ink:
-              campaign.campaign.accent.ink === "#111827" || campaign.campaign.accent.ink === ""
-                ? defaultScratchTextColor
-                : campaign.campaign.accent.ink,
-          }
+        ? normalizeScratchAccent(
+            campaign.campaign.accent,
+            campaign.campaign.presentation.layout.templateId,
+          )
         : campaign.campaign.accent,
     presentation: {
       ...campaign.campaign.presentation,
@@ -1384,7 +1353,8 @@ function toEditorState(merchant: Merchant, campaign: CampaignPerformance | null)
         createCampaignEmailDefaults(merchant),
       ),
     },
-    actions: campaign.campaign.actions,
+    // E-mail capture is now a dedicated option, not a marketing action.
+    actions: campaign.campaign.actions.filter((action) => action.kind !== "crm"),
     rewardRules: campaign.campaign.rewardRules,
     prizes: campaign.prizes.map((prize) => ({
       id: prize.id,
@@ -1412,6 +1382,10 @@ export function buildCampaignLivePreviewModel(
   merchant: Merchant,
 ): CampaignEditorPreviewModel {
   const templateId = form.presentation.layout.templateId ?? "classic";
+  const previewAccent =
+    form.gameType === "scratch"
+      ? normalizeScratchAccent(form.accent, templateId)
+      : form.accent;
   const previewSegments = buildPreviewSegments(form.prizes);
   const winningSegmentId =
     previewSegments.find((segment) => segment.tone === "win")?.id ?? previewSegments[0]?.id ?? "win";
@@ -1479,14 +1453,20 @@ export function buildCampaignLivePreviewModel(
     logoText: form.logoText?.trim() || merchant.companyName,
     headingAlignmentClass,
     headingFontClass,
-    headingTextColor: templateId === "cosmic-orbit" ? "#f8fbff" : form.presentation.heading.textColor,
+    headingTextColor:
+      templateId === "cosmic-orbit"
+        ? "#f8fbff"
+        : form.gameType === "scratch" &&
+            form.presentation.heading.textColor.toLowerCase() === "#1f2937"
+          ? previewAccent.ink
+          : form.presentation.heading.textColor,
     headingFontSizePx: form.presentation.heading.fontSizePx,
     headingFontWeight: form.presentation.heading.fontWeight ?? 600,
     subtitle: form.subtitle,
     blockSpacingPx: form.presentation.layout.blockSpacingPx,
     gamePageTemplateId: templateId,
     gameType: form.gameType,
-    accent: form.accent,
+    accent: previewAccent,
     wheelStyle: form.presentation.wheel,
     buttonStyle: {
       backgroundColor: form.gameType === "wheel" ? form.presentation.wheel.loseColor : form.presentation.button.backgroundColor,
@@ -1546,34 +1526,6 @@ function uploadAsDataUrl(
   };
 
   reader.readAsDataURL(file);
-}
-
-function clampChannel(value: number) {
-  return Math.max(0, Math.min(255, Math.round(value)));
-}
-
-function deriveLighterHex(hex: string, ratio = 0.58) {
-  const normalized = hex.replace("#", "");
-
-  if (normalized.length !== 6) {
-    return "#c7d2fe";
-  }
-
-  const red = Number.parseInt(normalized.slice(0, 2), 16);
-  const green = Number.parseInt(normalized.slice(2, 4), 16);
-  const blue = Number.parseInt(normalized.slice(4, 6), 16);
-
-  if ([red, green, blue].some((channel) => Number.isNaN(channel))) {
-    return "#c7d2fe";
-  }
-
-  const nextRed = clampChannel(red + (255 - red) * ratio);
-  const nextGreen = clampChannel(green + (255 - green) * ratio);
-  const nextBlue = clampChannel(blue + (255 - blue) * ratio);
-
-  return `#${nextRed.toString(16).padStart(2, "0")}${nextGreen
-    .toString(16)
-    .padStart(2, "0")}${nextBlue.toString(16).padStart(2, "0")}`;
 }
 
 export function CampaignEditor({
@@ -1984,19 +1936,7 @@ function setGameType(gameType: GameType) {
           : current.subtitle,
         accent:
           gameType === "scratch"
-            ? {
-                ...current.accent,
-                paper:
-                  current.accent.paper === "#eef2ff" ||
-                  current.accent.paper === "#939393" ||
-                  current.accent.paper === ""
-                    ? defaultScratchTicketColor
-                    : current.accent.paper,
-                ink:
-                  current.accent.ink === "#111827" || current.accent.ink === ""
-                    ? defaultScratchTextColor
-                    : current.accent.ink,
-              }
+            ? normalizeScratchAccent(current.accent, "scratch-coral")
             : current.accent,
       };
     });
@@ -2489,8 +2429,7 @@ function setGameType(gameType: GameType) {
                   Ordre des actions pour chaque participation
                 </h3>
                 <p className="mt-3 max-w-3xl text-sm leading-7 text-[#5c6577]">
-                  Définissez une invitation marketing pour chaque participation. Le jeu reste
-                  accessible sans cliquer sur un lien externe.
+                  Définissez l’action marketing proposée avant le jeu à chaque visite. Le joueur doit revenir ici après l’action pour participer.
                 </p>
               </div>
               <button
@@ -2501,6 +2440,23 @@ function setGameType(gameType: GameType) {
                 Ajouter une action
               </button>
             </div>
+
+            <label className="mt-5 flex cursor-pointer items-start gap-3 rounded-[18px] border border-[#d7e0ed] bg-[#f9fbfd] px-4 py-3 text-sm text-[#182033]">
+              <input
+                type="checkbox"
+                checked={form.emailCaptureEnabled}
+                onChange={(event) =>
+                  setField("emailCaptureEnabled", event.target.checked)
+                }
+                className="mt-1 h-4 w-4 accent-[#111827]"
+              />
+              <span>
+                <span className="block font-semibold">Collecter l’e-mail avant le jeu</span>
+                <span className="mt-1 block text-xs leading-5 text-[#8993a6]">
+                  Le joueur saisira son prénom et son e-mail avant de jouer. Le consentement est requis à cette étape ; sinon l’e-mail est demandé uniquement après un gain.
+                </span>
+              </span>
+            </label>
 
             <div className="mt-4 space-y-4">
               {form.actions.map((action, index) => (
@@ -2616,6 +2572,10 @@ function setGameType(gameType: GameType) {
                               templateId: template.value,
                             },
                           },
+                          accent:
+                            current.gameType === "scratch"
+                              ? normalizeScratchAccent(current.accent, template.value)
+                              : current.accent,
                         }))
                       }
                       className={`rounded-[22px] border p-4 text-left transition ${
@@ -3757,6 +3717,9 @@ function setGameType(gameType: GameType) {
 
                 <label className="text-sm md:col-span-2">
                   <span className="mb-2 block text-[#616b7c]">Couleur du texte du ticket</span>
+                  <span className="mb-3 block text-xs leading-5 text-[#8993a6]">
+                    Utilisée pour le logo, le titre et les consignes. Elle est ajustée automatiquement pour rester lisible selon le template.
+                  </span>
                   <input
                     type="color"
                     value={form.accent.ink}

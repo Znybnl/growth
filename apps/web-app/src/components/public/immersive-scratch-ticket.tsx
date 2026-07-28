@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { BrandMark } from "@/components/brand-mark";
+import { DEFAULT_SCRATCH_SUBTITLE } from "@/lib/campaign-defaults";
 
 type ScratchTemplateId =
   | "scratch-vault"
@@ -34,6 +35,8 @@ type ImmersiveScratchTicketProps = {
   logoAlignmentClass?: string;
   logoBottomSpacingPx?: number;
   logoWidthPx?: number;
+  /** Let editor previews use the full phone frame width while keeping the public game constrained. */
+  fitContainer?: boolean;
 };
 
 const CANVAS_WIDTH = 520;
@@ -142,6 +145,7 @@ export function ImmersiveScratchTicket({
   logoAlignmentClass = "justify-center",
   logoBottomSpacingPx = 32,
   logoWidthPx = 170,
+  fitContainer = false,
   headingFontSize = "32px",
 }: ImmersiveScratchTicketProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -182,14 +186,12 @@ export function ImmersiveScratchTicket({
   const ink = headingTextColor || defaultInk;
   const resultInk = "#14213d";
   const resolvedHeadingFontClass = headingFontClass || (isLilac ? "font-fredoka" : "font-display");
-  const displayHeadline = headline?.trim() || (isSunburst ? "Bravo ! Vous avez gagné un ticket" : "Grattez pour révéler votre gain");
+  const displayHeadline = headline?.trim() || DEFAULT_SCRATCH_SUBTITLE;
   const instruction = "Grattez la carte pour révéler votre cadeau.";
 
   const surfaceClass = isSunburst
     ? "aspect-[1.18/1] w-full"
-    : isCoral
-      ? "aspect-square w-full"
-      : "aspect-square w-full max-w-[248px]";
+    : "aspect-square w-full";
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -281,7 +283,7 @@ export function ImmersiveScratchTicket({
           : "bg-[#111936] px-5 pt-4";
 
   return (
-    <div className="mx-auto w-full max-w-[370px]">
+    <div className={`mx-auto w-full ${fitContainer ? "max-w-full" : "max-w-[370px]"}`}>
       <div className={`relative overflow-hidden ${rootClass}`}>
         <div className={`relative z-10 ${headingAlignmentClass}`}>
           {logoMode !== "none" ? (

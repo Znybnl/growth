@@ -55,7 +55,7 @@ export function goalDescription(goalType: GoalType | null) {
     case "social_follow":
       return "Visite du canal social puis participation.";
     case "lead_capture":
-      return "Coordonnées collectées après le jeu ; consentement marketing distinct et optionnel.";
+      return "E-mail et consentement collectés avant le jeu.";
     default:
       return "Activation locale.";
   }

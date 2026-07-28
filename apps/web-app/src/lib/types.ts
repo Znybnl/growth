@@ -447,6 +447,8 @@ export interface Campaign {
   title: string;
   subtitle: string;
   goalType: GoalType | null;
+  /** Collecte l’e-mail et le consentement avant l’accès au jeu. */
+  emailCaptureEnabled: boolean;
   ctaLabel: string;
   successMetric: string;
   targetUrl?: string;
@@ -606,6 +608,7 @@ export interface PublicCampaign {
   title: string;
   subtitle: string;
   goalType: GoalType | null;
+  emailCaptureEnabled: boolean;
   gameType: GameType;
   ctaLabel: string;
   targetUrl?: string;
@@ -777,6 +780,7 @@ export interface CampaignSetupInput {
   title: string;
   subtitle: string;
   goalType: GoalType | null;
+  emailCaptureEnabled: boolean;
   ctaLabel: string;
   successMetric: string;
   targetUrl?: string;
