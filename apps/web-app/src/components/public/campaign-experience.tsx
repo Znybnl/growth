@@ -7,7 +7,6 @@ import {
   Camera,
   Gift,
   Mail,
-  MessageCircle,
   Music2,
   Star,
   Users,
@@ -141,7 +140,14 @@ function actionLabel(kind?: PublicCampaign["actions"][number]["kind"]) {
 function actionIcon(kind?: PublicCampaign["actions"][number]["kind"]) {
   switch (kind) {
     case "google":
-      return <MessageCircle className="h-9 w-9" aria-hidden="true" />;
+      return (
+        <span
+          className="font-sans text-4xl font-bold leading-none text-[#4285f4]"
+          aria-label="Google"
+        >
+          G
+        </span>
+      );
     case "instagram":
       return <Camera className="h-9 w-9" aria-hidden="true" />;
     case "facebook":
@@ -1045,10 +1051,10 @@ export function CampaignExperience({
             disabled={isLoading}
             className={
               actionVisited
-                ? "w-full rounded-[20px] bg-[#111827] px-5 py-4 text-lg font-semibold leading-7 text-white shadow-[0_12px_24px_rgba(17,24,39,0.16)] disabled:opacity-60"
+                ? "w-full rounded-[20px] border-0 bg-[#111827] px-5 py-4 text-lg font-semibold leading-7 text-white shadow-[0_12px_24px_rgba(17,24,39,0.16)] disabled:opacity-60"
                 : !currentAction
-                  ? "w-full rounded-[20px] bg-[#111827] px-5 py-4 text-xl font-semibold text-white shadow-[0_12px_24px_rgba(17,24,39,0.16)] disabled:opacity-60"
-                  : "w-full rounded-[12px] bg-transparent px-3 py-2 text-sm font-medium text-[#61687a] underline decoration-[#c4c9d4] underline-offset-4 transition hover:text-[#111827] disabled:opacity-60"
+                  ? "w-full rounded-[20px] border-0 bg-[#111827] px-5 py-4 text-xl font-semibold text-white shadow-[0_12px_24px_rgba(17,24,39,0.16)] disabled:opacity-60"
+                  : "w-full rounded-[12px] border-0 bg-transparent px-3 py-2 text-sm font-medium text-[#61687a] underline decoration-[#c4c9d4] underline-offset-4 transition hover:text-[#111827] disabled:opacity-60"
             }
           >
             {isLoading

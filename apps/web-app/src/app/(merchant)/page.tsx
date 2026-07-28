@@ -296,22 +296,22 @@ export default async function DashboardPage({
               <h2 className="okado-section-title mt-2">
                 {bestCampaign.campaign.title}
               </h2>
-              <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                <div className="rounded-[8px] bg-linen-canvas p-4">
+              <div className="mt-5 grid min-w-0 gap-3 sm:grid-cols-3">
+                <div className="min-w-0 rounded-[8px] bg-linen-canvas p-3">
                   <p className="text-sm text-[#7b8496]">Conversion scan → contact</p>
-                  <p className="mt-2 text-3xl font-semibold text-[#111827]">
+                  <p className="mt-2 text-2xl font-semibold text-[#111827]">
                     {formatPercent(bestCampaign.kpis.conversionRate)}
                   </p>
                 </div>
-                <div className="rounded-[8px] bg-linen-canvas p-4">
+                <div className="min-w-0 rounded-[8px] bg-linen-canvas p-3">
                   <p className="text-sm text-[#7b8496]">Coût par contact</p>
-                  <p className="mt-2 text-3xl font-semibold text-[#111827]">
+                  <p className="mt-2 text-2xl font-semibold text-[#111827]">
                     {formatCurrency(bestCampaign.kpis.costPerLead)}
                   </p>
                 </div>
-                <div className="rounded-[8px] bg-linen-canvas p-4">
+                <div className="min-w-0 rounded-[8px] bg-linen-canvas p-3">
                   <p className="text-sm text-[#7b8496]">Scans</p>
-                  <p className="mt-2 text-3xl font-semibold text-[#111827]">
+                  <p className="mt-2 text-2xl font-semibold text-[#111827]">
                     {bestCampaign.kpis.scans}
                   </p>
                 </div>

@@ -48,7 +48,9 @@ import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/pos
 import {
   createDefaultPosterSettings,
   createDefaultWheelSettings,
+  DEFAULT_SCRATCH_PRIMARY_COLOR,
   DEFAULT_SCRATCH_SUBTITLE,
+  DEFAULT_WHEEL_PRIMARY_COLOR,
   DEFAULT_WHEEL_SUBTITLE,
   deriveLighterHex,
   normalizeScratchAccent,
@@ -1897,6 +1899,20 @@ export function CampaignEditor({
 
 function setGameType(gameType: GameType) {
     setForm((current) => {
+      const activePrimaryColor =
+        current.gameType === "scratch"
+          ? current.accent.signal
+          : current.presentation.wheel.loseColor;
+      const shouldCarryPrimaryColor =
+        current.gameType === "scratch"
+          ? activePrimaryColor.toLowerCase() !== DEFAULT_SCRATCH_PRIMARY_COLOR
+          : activePrimaryColor.toLowerCase() !== DEFAULT_WHEEL_PRIMARY_COLOR;
+      const nextPrimaryColor = shouldCarryPrimaryColor
+        ? activePrimaryColor
+        : gameType === "scratch"
+          ? DEFAULT_SCRATCH_PRIMARY_COLOR
+          : DEFAULT_WHEEL_PRIMARY_COLOR;
+
       const currentSubtitle = current.subtitle.trim();
       const shouldSyncSubtitle =
         currentSubtitle === wheelDefaultSubtitle || currentSubtitle === scratchDefaultSubtitle;
@@ -1928,6 +1944,15 @@ function setGameType(gameType: GameType) {
                   ? current.presentation.layout.templateId
                   : "classic",
           },
+          wheel:
+            gameType === "wheel"
+              ? {
+                  ...current.presentation.wheel,
+                  loseColor: nextPrimaryColor,
+                  alternateLoseColor: deriveLighterHex(nextPrimaryColor),
+                  rimColor: deriveLighterHex(nextPrimaryColor),
+                }
+              : current.presentation.wheel,
         },
         subtitle: shouldSyncSubtitle
           ? gameType === "wheel"
@@ -1936,7 +1961,10 @@ function setGameType(gameType: GameType) {
           : current.subtitle,
         accent:
           gameType === "scratch"
-            ? normalizeScratchAccent(current.accent, "scratch-coral")
+            ? {
+                ...normalizeScratchAccent(current.accent, "scratch-coral"),
+                signal: nextPrimaryColor,
+              }
             : current.accent,
       };
     });
