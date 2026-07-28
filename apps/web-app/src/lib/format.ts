@@ -35,7 +35,7 @@ export function formatShortDate(value: string) {
   }).format(new Date(value));
 }
 
-export function goalLabel(goalType: GoalType) {
+export function goalLabel(goalType: GoalType | null) {
   switch (goalType) {
     case "lead_capture":
       return "Collecte email";
@@ -48,7 +48,7 @@ export function goalLabel(goalType: GoalType) {
   }
 }
 
-export function goalDescription(goalType: GoalType) {
+export function goalDescription(goalType: GoalType | null) {
   switch (goalType) {
     case "review_prompt":
       return "Drive-to-review conforme, sans bloquer le jeu.";

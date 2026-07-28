@@ -360,13 +360,25 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
     };
   });
 
+  const id = normalizeString(payload.id, 120) || undefined;
+  const hasExplicitCreationMode = payload.creationMode === "wizard" || payload.creationMode === "editor";
+  const creationMode = payload.creationMode === "wizard" ? "wizard" : "editor";
+  // The classic editor never defines a marketing objective. Routes that only
+  // update secondary settings omit creationMode and preserve the existing value.
+  const goalType =
+    creationMode === "wizard"
+      ? normalizeEnum(payload.goalType, GOAL_TYPES, "review_prompt")
+      : !hasExplicitCreationMode && id && typeof payload.goalType === "string" && GOAL_TYPES.has(payload.goalType as GoalType)
+        ? (payload.goalType as GoalType)
+        : null;
+
   return {
-    id: normalizeString(payload.id, 120) || undefined,
+    id,
     merchantId,
-    creationMode: payload.creationMode === "wizard" ? "wizard" : "editor",
+    creationMode,
     title,
     subtitle: normalizeMultiline(payload.subtitle, 240),
-    goalType: normalizeEnum(payload.goalType, GOAL_TYPES, "review_prompt"),
+    goalType,
     ctaLabel: normalizeString(payload.ctaLabel, 80),
     successMetric: normalizeString(payload.successMetric, 80),
     targetUrl: normalizeUrl(payload.targetUrl) || undefined,

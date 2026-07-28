@@ -446,7 +446,7 @@ export interface Campaign {
   merchantId: string;
   title: string;
   subtitle: string;
-  goalType: GoalType;
+  goalType: GoalType | null;
   ctaLabel: string;
   successMetric: string;
   targetUrl?: string;
@@ -605,7 +605,7 @@ export interface PublicCampaign {
   id: string;
   title: string;
   subtitle: string;
-  goalType: GoalType;
+  goalType: GoalType | null;
   gameType: GameType;
   ctaLabel: string;
   targetUrl?: string;
@@ -712,7 +712,7 @@ export interface MerchantDashboardData {
 
 export interface MerchantLeadRow extends Lead {
   campaignTitle: string;
-  goalType: GoalType;
+  goalType: GoalType | null;
   prizeLabel: string;
   prizeUsageConditions?: string;
   emailDeliveryStatus?: RewardEmailDeliveryStatus;
@@ -776,7 +776,7 @@ export interface CampaignSetupInput {
   creationMode?: "editor" | "wizard";
   title: string;
   subtitle: string;
-  goalType: GoalType;
+  goalType: GoalType | null;
   ctaLabel: string;
   successMetric: string;
   targetUrl?: string;

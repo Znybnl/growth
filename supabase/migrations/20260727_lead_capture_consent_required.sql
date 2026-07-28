@@ -23,7 +23,7 @@ begin
          )
        )
   ) and coalesce(new.marketing_consent, false) = false then
-    raise exception 'Le consentement est obligatoire pour participer Ã  cette campagne.';
+    raise exception 'Le consentement est obligatoire pour participer à cette campagne.';
   end if;
 
   return new;
@@ -36,4 +36,3 @@ create trigger leads_require_lead_capture_consent
   for each row execute function public.require_lead_capture_consent();
 
 commit;
-
