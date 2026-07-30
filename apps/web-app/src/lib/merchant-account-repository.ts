@@ -136,18 +136,19 @@ async function ensureMerchantWorkspaceRecord(input: {
   createdAt: string;
   timeZone?: string;
 }) {
-  try {
-    const result = await getSupabaseAdmin().from("merchant_workspaces").upsert({
-      id: input.workspaceId,
-      name: input.name,
-      slug: input.workspaceId,
-      default_time_zone: input.timeZone ?? "Europe/Paris",
-      created_at: input.createdAt,
-    });
-    return !result.error;
-  } catch {
-    return false;
+  const result = await getSupabaseAdmin().from("merchant_workspaces").upsert({
+    id: input.workspaceId,
+    name: input.name,
+    slug: input.workspaceId,
+    default_time_zone: input.timeZone ?? "Europe/Paris",
+    created_at: input.createdAt,
+  });
+
+  if (result.error) {
+    throw new Error(`Création de l’espace marchand impossible: ${result.error.message}`);
   }
+
+  return true;
 }
 
 function isDuplicateAuthUserError(message: string) {
@@ -776,6 +777,7 @@ export async function createMerchantAccountInSupabase(input: MerchantSignUpInput
   } catch (error) {
     await supabase.from("merchant_users").delete().eq("id", userId);
     await supabase.from("merchants").delete().eq("id", merchantId);
+    await supabase.from("merchant_workspaces").delete().eq("id", workspaceId);
     await deleteSupabaseAuthUserById(authUserId);
     throw error;
   }
@@ -935,9 +937,21 @@ export async function authenticateOrProvisionMerchantWithGoogle(
   const contactName = fullName || `${firstName} ${lastName}`.trim();
   const createdAt = new Date().toISOString();
   const trialEndDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+  const workspaceId = `workspace-${merchantId}`;
+  const locationCode = `SITE-${merchantId.slice(-4)}`.toUpperCase();
+
+  await ensureMerchantWorkspaceRecord({
+    workspaceId,
+    name: companyName,
+    createdAt,
+  });
 
   const merchantInsert = await supabase.from("merchants").insert({
     id: merchantId,
+    workspace_id: workspaceId,
+    location_code: locationCode,
+    location_status: "active",
+    time_zone: "Europe/Paris",
     company_name: companyName,
     logo_text: companyName.slice(0, 2).toUpperCase(),
     logo_url: null,
@@ -966,6 +980,7 @@ export async function authenticateOrProvisionMerchantWithGoogle(
   });
 
   if (merchantInsert.error) {
+    await supabase.from("merchant_workspaces").delete().eq("id", workspaceId);
     throw new Error(`Création du marchand impossible: ${merchantInsert.error.message}`);
   }
 
@@ -984,6 +999,36 @@ export async function authenticateOrProvisionMerchantWithGoogle(
     throw new Error(`Création du compte Google impossible: ${userInsert.error.message}`);
   }
 
+  const membershipId = `membership-${userId}`;
+  const membershipInsert = await supabase.from("merchant_workspace_memberships").insert({
+    id: membershipId,
+    workspace_id: workspaceId,
+    merchant_user_id: userId,
+    role: "owner",
+    status: "active",
+    created_at: createdAt,
+  });
+
+  if (membershipInsert.error) {
+    await supabase.from("merchant_users").delete().eq("id", userId);
+    await supabase.from("merchants").delete().eq("id", merchantId);
+    await supabase.from("merchant_workspaces").delete().eq("id", workspaceId);
+    throw new Error(`Création de l’accès marchand impossible: ${membershipInsert.error.message}`);
+  }
+
+  const locationMembershipInsert = await supabase.from("merchant_membership_locations").insert({
+    membership_id: membershipId,
+    merchant_id: merchantId,
+  });
+
+  if (locationMembershipInsert.error) {
+    await supabase.from("merchant_workspace_memberships").delete().eq("id", membershipId);
+    await supabase.from("merchant_users").delete().eq("id", userId);
+    await supabase.from("merchants").delete().eq("id", merchantId);
+    await supabase.from("merchant_workspaces").delete().eq("id", workspaceId);
+    throw new Error(`Création de l’accès au site impossible: ${locationMembershipInsert.error.message}`);
+  }
+
   await ensureSupabaseAuthUser({
     email,
     firstName: firstName || fullName || "Compte",
@@ -998,6 +1043,8 @@ export async function authenticateOrProvisionMerchantWithGoogle(
     user: {
       id: userId,
       merchantId,
+      workspaceId,
+      role: "owner" as const,
       firstName: firstName || fullName || "Compte",
       lastName,
       email,
@@ -1008,6 +1055,9 @@ export async function authenticateOrProvisionMerchantWithGoogle(
     },
     merchant: {
       id: merchantId,
+      workspaceId,
+      locationCode,
+      locationStatus: "active" as const,
       companyName,
       logoText: companyName.slice(0, 2).toUpperCase(),
       logoUrl: undefined,
@@ -1028,6 +1078,7 @@ export async function authenticateOrProvisionMerchantWithGoogle(
       tiktokUrl: "",
       tripadvisorUrl: "",
       defaultPrizeCost: 3,
+      timeZone: "Europe/Paris",
       trialStartDate: createdAt,
       trialEndDate,
       subscriptionCancelAtPeriodEnd: false,
