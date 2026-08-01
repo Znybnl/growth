@@ -493,6 +493,349 @@ function PrizeSuggestionsPanel({
                       const Icon = iconStyle.Icon;
                       return (
                         <span
-                          className={`flex h-9 ◊n˘÷⁄$z{-ÆÈ‹j◊ù&7Fñˆ‚"ÚÄ–¢∆Fób6∆74Ê÷S“&◊B”r76R◊í”R#‡–¢∆Fób6∆74Ê÷S“'76R◊í”B#‡–¢∂G&gBÊ7FñˆÁ2Ê÷ÇÜ7Fñˆ‚¬ñÊFWÇí”‚Ä–¢∆Fó`–¢∂Wì◊∂7Fñˆ‚ÊñBÛÚvó¶&B÷7Fñˆ‚“G∂ñÊFWá÷––¢6∆74Ê÷S“'&˜VÊFVB’≥#Ö“&˜&FW"&˜&FW"’≤6S&SÜc“&r◊vÜóFR”R –¢‡–¢∆Fób6∆74Ê÷S“&f∆WÇóFV◊2÷6VÁFW"ßW7Fñgí÷&WGvVV‚v”2#‡–¢«6∆74Ê÷S“'FWáB◊á2fˆÁB◊6V÷ñ&ˆ∆BWW&66RG&6∂ñÊr’≥„fV’“FWáB’≤3Éìì6e“#‡–¢7Fñˆ‚∂ñÊFWÇ≤––¢¬˜‡–¢∆Fób6∆74Ê÷S“&f∆WÇóFV◊2÷6VÁFW"v”#‡–¢∆'WGFˆ‡–¢GóS“&'WGFˆ‚ –¢ˆ‰6∆ñ6≥◊≤Çí”‚÷˜fT7Fñˆ‚ÜñÊFWÇ¬”ó––¢Fó6&∆VC◊∂ñÊFWÇ””“––¢&ñ÷∆&V√“$÷ˆÁFW"Œ(	ñ7Fñˆ‚ –¢6∆74Ê÷S“'&˜VÊFVB’≥óÖ“”„RFWáB’≤3cìsSÜ“Ü˜fW#¶&r’≤6c&cFcu“Fó6&∆VC¶˜6óGí”3 –¢‡–¢ƒ6ÜWg&ˆÂW6∆74Ê÷S“&Ç”Br”B"Û‡–¢¬ˆ'WGFˆ„‡–¢∆'WGFˆ‡–¢GóS“&'WGFˆ‚ –¢ˆ‰6∆ñ6≥◊≤Çí”‚÷˜fT7Fñˆ‚ÜñÊFWÇ¬ó––¢Fó6&∆VC◊∂ñÊFWÇ””“G&gBÊ7FñˆÁ2Ê∆VÊwFÇ“––¢&ñ÷∆&V√“$FW66VÊG&RŒ(	ñ7Fñˆ‚ –¢6∆74Ê÷S“'&˜VÊFVB’≥óÖ“”„RFWáB’≤3cìsSÜ“Ü˜fW#¶&r’≤6c&cFcu“Fó6&∆VC¶˜6óGí”3 –¢‡–¢ƒ6ÜWg&ˆ‰F˜v‚6∆74Ê÷S“&Ç”Br”B"Û‡–¢¬ˆ'WGFˆ„‡–¢∆'WGFˆ‡–¢GóS“&'WGFˆ‚ –¢ˆ‰6∆ñ6≥◊≤Çí”‚&V÷˜fT7Fñˆ‚ÜñÊFWÇó––¢&ñ÷∆&V√“%7W&ñ÷W"Œ(	ñ7Fñˆ‚ –¢6∆74Ê÷S“'&˜VÊFVB’≥óÖ“”„RFWáB’≤3cìsSÜ“Ü˜fW#¶&r’≤6ffcc“Ü˜fW#ßFWáB’≤6#C#3Ö“ –¢‡–¢≈G&6É"6∆74Ê÷S“&Ç”Br”B"Û‡–¢¬ˆ'WGFˆ„‡–¢¬ˆFóc‡–¢¬ˆFóc‡–¢∆Fób6∆74Ê÷S“&◊B”Bw&ñBv”B#‡–¢∆∆&V¬6∆74Ê÷S“&&∆ˆ6≤#‡–¢«7‚6∆74Ê÷S“&f∆WÇóFV◊2÷6VÁFW"v”2FWáB◊6“fˆÁB◊6V÷ñ&ˆ∆BFWáB’≤3É#35“#‡–¢≈6ˆ6ñƒ6ÜÊÊVƒñ6ˆ‚6ÜÊÊV√◊∂7Fñˆ‚Ê∂ñÊG“Û‡–¢«7„‰7Fñˆ‚&˜˜<:ñS¬˜7„‡–¢¬˜7„‡–¢«6V∆V7@–¢f«VS◊∂7Fñˆ‚Ê∂ñÊG––¢ˆ‰6ÜÊvS◊≤ÜWfVÁBí”‚∞–¢6ˆÁ7B∂ñÊB“WfVÁBÁF&vW@–¢Áf«VR2vó¶&DG&gE≤&7FñˆÁ2%’∂ÁV÷&W%’≤&∂ñÊB%”∞–¢F6Ñ7Fñˆ‚ÜñÊFWÇ¬∞–¢∂ñÊB¿–¢∆&V√¢7Fñˆ‰∂ñÊD7FÜ∂ñÊBí¿–¢W&√†–¢∂ñÊB””“&vˆˆv∆R –¢Ú÷W&6ÜÁBÊvˆˆv∆U&WfñWuW&¬«¬7Fñˆ‚ÁW&¿–¢¢7Fñˆ‚ÁW&¬¿–¢“ì∞–¢◊––¢6∆74Ê÷S“&◊B”2r÷gV∆¬&˜VÊFVB’≥GÖ“&˜&FW"&˜&FW"’≤6F&S6VE“&r’≤6f&f6fU“Ç”Bí”2FWáB◊6“FWáB’≤3É#35“ –¢‡–¢∆˜Fñˆ‚f«VS“&vˆˆv∆R#‰∆ó76W"V‚fó2vˆˆv∆S¬ˆ˜Fñˆ„‡–¢∆˜Fñˆ‚f«VS“&ñÁ7Fw&“#‡–¢7Vóg&R7W"ñÁ7Fw&––¢¬ˆ˜Fñˆ„‡–¢∆˜Fñˆ‚f«VS“&f6V&ˆˆ≤#Â7Vóg&R7W"f6V&ˆˆ≥¬ˆ˜Fñˆ„‡–¢∆˜Fñˆ‚f«VS“'Fñ∑Fˆ≤#Â7Vóg&R7W"FñµFˆ≥¬ˆ˜Fñˆ„‡–¢∆˜Fñˆ‚f«VS“'G&óGfó6˜"#‡–¢∆ó76W"V‚fó2G&óGfó6˜ –¢¬ˆ˜Fñˆ„‡–¢∆˜Fñˆ‚f«VS“&7W7Fˆ“#‡–¢˜Wg&ó"V‚∆ñV‚W'6ˆÊÊ∆ó<:ê–¢¬ˆ˜Fñˆ„‡–¢¬˜6V∆V7C‡–¢¬ˆ∆&V√‡–¢¬ˆFóc‡–¢∂7Fñˆ‚Ê∂ñÊB”“&7&“"ÚÄ–¢∆∆&V¬6∆74Ê÷S“&◊B”B&∆ˆ6≤#‡–¢«7‚6∆74Ê÷S“'FWáB◊6“fˆÁB◊6V÷ñ&ˆ∆BFWáB’≤3É#35“#‡–¢∆ñV‚FRFW7FñÊFñˆ‡–¢¬˜7„‡–¢∆ñÁW@–¢f«VS◊∂7Fñˆ‚ÁW&«––¢ˆ‰6ÜÊvS◊≤ÜWfVÁBí”‡–¢F6Ñ7Fñˆ‚ÜñÊFWÇ¬≤W&√¢WfVÁBÁF&vWBÁf«VR“ê–¢––¢∆6VÜˆ∆FW#“&áGG3¢ÚÚ‚‚‚ –¢6∆74Ê÷S“&◊B”2r÷gV∆¬&˜VÊFVB’≥GÖ“&˜&FW"&˜&FW"’≤6F&S6VE“&r’≤6f&f6fU“Ç”Bí”2FWáB◊6“FWáB’≤3É#35“ –¢Û‡–¢¬ˆ∆&V√‡–¢í¢ÁV∆«––¢¬ˆFóc‡–¢íó––¢∆'WGFˆ‡–¢GóS“&'WGFˆ‚ –¢ˆ‰6∆ñ6≥◊∂FD7FñˆÁ––¢6∆74Ê÷S“&ñÊ∆ñÊR÷f∆WÇóFV◊2÷6VÁFW"v”"&˜VÊFVB’≥GÖ“&˜&FW"&˜&FW"÷F6ÜVB&˜&FW"’≤6#Ü3VCÖ“Ç”Bí”2FWáB◊6“fˆÁB◊6V÷ñ&ˆ∆BFWáB’≤3S#csÖ“Ü˜fW#¶&˜&FW"’≤6##Ésï“Ü˜fW#ßFWáB’≤3É#35“ –¢‡–¢≈«W26∆74Ê÷S“&Ç”Br”B"Û‡–¢¶˜WFW"VÊR7Fñˆ‡–¢¬ˆ'WGFˆ„‡–¢¬ˆFóc‡–¢¬ˆFóc‡–¢í¢ÁV∆«––†–¢∑7FWÊñB””“&V&Ê6R"ÚÄ–¢∆Fób6∆74Ê÷S“&◊B”r76R◊í”R#‡–¢∆Fób6∆74Ê÷S“&w&ñBv”B6”¶w&ñB÷6ˆ«2”"Ü√¶w&ñB÷6ˆ«2”B#‡–¢≤Ä–¢G&gBÊv÷UGóR””“'67&F6Ç –¢Ú∞–¢≤ñC¢'67&F6Ç◊fV«B"¬∆&V√¢$6ˆfg&RÏ:ñˆ‚"¬FWáC¢$6ˆfg&Rñ∆«W7G,:ífÁBw&GFvR"“¿–¢≤ñC¢'67&F6Ç÷6ˆÊfWGFí"¬∆&V√¢$6'FR6ˆÊfWGFó2"¬FWáC¢%6ˆ∆ó&RWBfW7Fñb"“¿–¢≤ñC¢'67&F6Ç÷6˜&¬"¬∆&V√¢$6˜&ñ¬¶˜ñWWÇ"¬FWáC¢$6∆ó"WB6Ü∆WW&WWÇ"“¿–¢≤ñC¢'67&F6Ç÷∆ñ∆2"¬∆&V√¢$6FVR∆ñ∆2"¬FWáC¢$6FVR6∆ó"WB6ˆÁG&7L:í"“¿–¢≤ñC¢'67&F6Ç◊7VÊ'W'7B"¬∆&V√¢%&ñˆÁ26ˆ∆Vñ¬"¬FWáC¢,8ñ6∆FÁBWBfó6ñ&∆R"“¿–¢“26ˆÁ7@–¢¢∞–¢∞–¢ñC¢&6∆76ñ2"¿–¢∆&V√¢$6∆76óVR"¿–¢FWáC¢%6ˆ'&RWB∆ó6ñ&∆R"¿–¢“¿–¢∞–¢ñC¢'&W7FW&ÁB◊˜"¿–¢∆&V√¢%fó7VV¬˜"¿–¢FWáC¢,8ól:ñÊV÷VÁFñV¬WB6ˆÁG&7L:í"¿–¢“¿–¢∞–¢ñC¢&6˜6÷ñ2÷˜&&óB"¿–¢∆&V√¢$˜&&óBÏ:ñˆ‚"¿–¢FWáC¢$ñ÷÷W'6ñbWBÊˆ7GW&ÊR"¿–¢“¿–¢∞–¢ñC¢'7VÊ'W'7B÷fW7Fóf¬"¿–¢∆&V√¢%6ˆ∆Vñ¬˜"¿–¢FWáC¢$fW7FñbWB«V÷ñÊWWÇ"¿–¢“¿–¢“26ˆÁ7@–¢íÁ6∆ñ6RÇíÁ6˜'BÇÜ∆VgB¬&ñváBí”‚Ü∆VgBÊñB””“'67&F6Ç÷6˜&¬"Ú”¢&ñváBÊñB””“'67&F6Ç÷6˜&¬"Ú¢ííÊ÷ÇáFV◊∆FRí”‚Ä–¢∆'WGFˆ‡–¢GóS“&'WGFˆ‚ –¢∂Wì◊∑FV◊∆FRÊñG––¢ˆ‰6∆ñ6≥◊≤Çí”‡–¢F6ÑG&gBá∞–¢&W6VÁFFñˆ„¢∞–¢‚‚ÊG&gBÁ&W6VÁFFñˆ‚¿–¢∆ñ˜WC¢∞–¢‚‚ÊG&gBÁ&W6VÁFFñˆ‚Ê∆ñ˜WB¿–¢FV◊∆FTñC¢FV◊∆FRÊñB¿–¢“¿–¢“¿–¢66VÁC†–¢G&gBÊv÷UGóR””“'67&F6Ç –¢ÚÊ˜&÷∆ó¶U67&F6Ñ66VÁBÜG&gBÊ66VÁB¬FV◊∆FRÊñBê–¢¢G&gBÊ66VÁB¿–¢“ê–¢––¢6∆74Ê÷S◊∂&˜VÊFVB’≥#Ö“&˜&FW"”BFWáB÷∆VgBG∂G&gBÁ&W6VÁFFñˆ‚Ê∆ñ˜WBÁFV◊∆FTñB””“FV◊∆FRÊñBÚ&&˜&FW"’≤6##Ésï“&r’≤6ffcÜS“"¢&&˜&FW"’≤6S&SÜc“&r’≤6f&f6fU“'÷––¢‡–¢«7‚6∆74Ê÷S“&&∆ˆ6≤FWáB◊6“fˆÁB◊6V÷ñ&ˆ∆BFWáB’≤3É#35“#‡–¢∑FV◊∆FRÊ∆&V«––¢¬˜7„‡–¢«7‚6∆74Ê÷S“&◊B”&∆ˆ6≤FWáB◊á2FWáB’≤3Éìì6e“#‡–¢∑FV◊∆FRÁFWáG––¢¬˜7„‡–¢¬ˆ'WGFˆ„‡–¢íó––¢¬ˆFóc‡–¢∆Fób6∆74Ê÷S“&w&ñBv”B6”¶w&ñB÷6ˆ«2”"#‡–¢∂G&gBÊv÷UGóR””“'vÜVV¬"ÚÄ–¢√‡–¢∂G&gBÁ&W6VÁFFñˆ‚Ê∆ñ˜WBÁFV◊∆FTñB””“&6∆76ñ2"ÚÄ–¢∆∆&V¬6∆74Ê÷S“&&∆ˆ6≤#‡–¢«7‚6∆74Ê÷S“'FWáB◊6“fˆÁB◊6V÷ñ&ˆ∆BFWáB’≤3É#35“#‡–¢6˜V∆WW"FRfˆÊ@–¢¬˜7„‡–¢∆ñÁW@–¢GóS“&6ˆ∆˜" –¢f«VS◊∂G&gBÁ&W6VÁFFñˆ‚Ê&6∂w&˜VÊBÊ6ˆ∆˜'––¢ˆ‰6ÜÊvS◊≤ÜWfVÁBí”‡–¢F6ÑG&gBá∞–¢&W6VÁFFñˆ„¢∞–¢‚‚ÊG&gBÁ&W6VÁFFñˆ‚¿–¢&6∂w&˜VÊC¢∞–¢‚‚ÊG&gBÁ&W6VÁFFñˆ‚Ê&6∂w&˜VÊB¿–¢6ˆ∆˜#¢WfVÁBÁF&vWBÁf«VR¿–¢“¿–¢“¿–¢“ê–¢––¢6∆74Ê÷S“&◊B”2Ç”"r÷gV∆¬&˜VÊFVB’≥'Ö“&˜&FW"&˜&FW"’≤6F&S6VE“&r◊vÜóFR” –¢Û‡–¢¬ˆ∆&V√‡–¢í¢ÁV∆«––¢∆∆&V¬6∆74Ê÷S“&&∆ˆ6≤#‡–¢«7‚6∆74Ê÷S“'FWáB◊6“fˆÁB◊6V÷ñ&ˆ∆BFWáB’≤3É#35“#‡–¢6˜V∆WW"&ñÊ6ó∆RFR∆&˜VP–¢¬˜7„‡–¢∆ñÁW@–¢GóS“&6ˆ∆˜" –¢f«VS◊∞–¢G&gBÊv÷UGóR””“'vÜVV¬ –¢ÚG&gBÁ&W6VÁFFñˆ‚ÁvÜVV¬Ê∆˜6T6ˆ∆˜ –¢¢G&gBÁ&W6VÁFFñˆ‚Ê'WGFˆ‚Ê&6∂w&˜VÊD6ˆ∆˜ –¢––¢ˆ‰6ÜÊvS◊≤ÜWfVÁBí”‚∞–¢6ˆÁ7B6ˆ∆˜"“WfVÁBÁF&vWBÁf«VS∞–¢6WDG&gBÇÜ7W'&VÁBí”‚á∞–¢‚‚Ê7W'&VÁB¿–¢&W6VÁFFñˆ„¢∞–¢‚‚Ê7W'&VÁBÁ&W6VÁFFñˆ‚¿–¢'WGFˆ„¢∞–¢‚‚Ê7W'&VÁBÁ&W6VÁFFñˆ‚Ê'WGFˆ‚¿–¢&6∂w&˜VÊD6ˆ∆˜#¢6ˆ∆˜"¿–¢&˜&FW$6ˆ∆˜#¢6ˆ∆˜"¿–¢“¿–¢vÜVV√†–¢7W'&VÁBÊv÷UGóR””“'vÜVV¬ –¢Ú∞–¢‚‚Ê7W'&VÁBÁ&W6VÁFFñˆ‚ÁvÜVV¬¿–¢∆˜6T6ˆ∆˜#¢6ˆ∆˜"¿–¢«FW&ÊFT∆˜6T6ˆ∆˜#¢FW&ófT∆ñváFW$ÜWÇÜ6ˆ∆˜"í¿–¢&ñ‘6ˆ∆˜#¢FW&ófT∆ñváFW$ÜWÇÜ6ˆ∆˜"í¿–¢––¢¢7W'&VÁBÁ&W6VÁFFñˆ‚ÁvÜVV¬¿–¢“¿–¢“íì∞–¢◊––¢6∆74Ê÷S“&◊B”2Ç”"r÷gV∆¬&˜VÊFVB’≥'Ö“&˜&FW"&˜&FW"’≤6F&S6VE“&r◊vÜóFR” –¢Û‡–¢¬ˆ∆&V√‡–¢¬Û‡–¢í¢ÁV∆«––¢¬ˆFóc‡–¢∂G&gBÊv÷UGóR””“'67&F6Ç"ÚÄ–¢∆∆&V¬6∆74Ê÷S“&&∆ˆ6≤#‡–¢«7‚6∆74Ê÷S“'FWáB◊6“fˆÁB◊6V÷ñ&ˆ∆BFWáB’≤3É#35“#‡–¢6˜V∆WW"&ñÊ6ó∆RGRFñ6∂W@–¢¬˜7„‡–¢«7‚6∆74Ê÷S“&◊B”&∆ˆ6≤FWáB◊á2FWáB’≤3Éìì6e“#‡–¢V∆∆R6ˆ∆˜&R∆¶ˆÊR:w&GFW"WB∆W2:ñÃ:ñ÷VÁG2w&ÜóVW2GRFV◊∆FR‡–¢¬˜7„‡–¢∆ñÁW@–¢GóS“&6ˆ∆˜" –¢f«VS◊∂G&gBÊ66VÁBÁ6ñvÊ«––¢ˆ‰6ÜÊvS◊≤ÜWfVÁBí”‡–¢F6ÑG&gBá∞–¢66VÁC¢≤‚‚ÊG&gBÊ66VÁB¬6ñvÊ√¢WfVÁBÁF&vWBÁf«VR“¿–¢“ê–¢––¢6∆74Ê÷S“&◊B”2Ç”"r÷gV∆¬&˜VÊFVB’≥'Ö“&˜&FW"&˜&FW"’≤6F&S6VE“&r◊vÜóFR” –¢Û‡–¢¬ˆ∆&V√‡–¢í¢ÁV∆«––¢¬ˆFóc‡–¢í¢ÁV∆«––†–¢∂W'&˜"ÚÄ–¢∆Fó`–¢&ˆ∆S“&∆W'B –¢6∆74Ê÷S“&◊B”b&˜VÊFVB’≥gÖ“&˜&FW"&˜&FW"’≤6c&3Ü3Ö“&r’≤6ffcFcE“Ç”Bí”2FWáB◊6“∆VFñÊr”bFWáB’≤6“ –¢‡–¢∂W'&˜'––¢¬ˆFóc‡–¢í¢ÁV∆«––¢∆Fób6∆74Ê÷S“&◊B”Çf∆WÇf∆WÇ÷6ˆ¬◊&WfW'6Rv”2&˜&FW"◊B&˜&FW"’≤6VFccE“B”R6”¶f∆WÇ◊&˜r6”¶óFV◊2÷6VÁFW"6”¶ßW7Fñgí÷&WGvVV‚#‡–¢∆'WGFˆ‡–¢GóS“&'WGFˆ‚ –¢ˆ‰6∆ñ6≥◊∑&Wfñ˜W57FW––¢Fó6&∆VC◊∑7FWñÊFWÇ””“«¬ó56fñÊw––¢6∆74Ê÷S“&ˆ∂FÚ◊6V6ˆÊF'í÷7Fñˆ‚v”"Ç”BFWáB◊6“Fó6&∆VC¶˜6óGí”CR –¢‡–¢ƒ6ÜWg&ˆ‰∆VgB6∆74Ê÷S“&Ç”Br”B"Û‡–¢&WF˜W –¢¬ˆ'WGFˆ„‡–¢∆Fób6∆74Ê÷S“&f∆WÇf∆WÇ÷6ˆ¬v”26”¶f∆WÇ◊&˜r#‡–¢∆'WGFˆ‡–¢GóS“&'WGFˆ‚ –¢ˆ‰6∆ñ6≥◊≤Çí”‚fˆñB6fT6◊ñv‚Üf«6Ró––¢Fó6&∆VC◊∂ó56fñÊw––¢6∆74Ê÷S“&ˆ∂FÚ◊6V6ˆÊF'í÷7Fñˆ‚Ç”BFWáB◊6“Fó6&∆VC¶˜6óGí”S –¢‡–¢∂ó56fñÊrÚ$VÁ&Vvó7G&V÷VÁN(
-b"¢$VÁ&Vvó7G&W"∆R'&˜Vñ∆∆ˆ‚'––¢¬ˆ'WGFˆ„‡–¢∑7FWñÊFWÇ¬tï§$Eı5DU2Ê∆VÊwFÇ“ÚÄ–¢∆'WGFˆ‡–¢GóS“&'WGFˆ‚ –¢ˆ‰6∆ñ6≥◊∂ÊWáE7FW––¢6∆74Ê÷S“&ˆ∂FÚ÷fñ∆∆VB÷7Fñˆ‚v”"Ç”RFWáB◊6“ –¢‡–¢6ˆÁFñÁVW –¢ƒ6ÜWg&ˆÂ&ñváB6∆74Ê÷S“&Ç”Br”B"Û‡–¢¬ˆ'WGFˆ„‡–¢í¢Ä–¢∆'WGFˆ‡–¢GóS“&'WGFˆ‚ –¢ˆ‰6∆ñ6≥◊≤Çí”‚fˆñB6fT6◊ñv‚áG'VRó––¢Fó6&∆VC◊∂ó56fñÊw––¢6∆74Ê÷S“&ˆ∂FÚ◊&ñ÷'í÷7Fñˆ‚v”"Ç”RFWáB◊6“Fó6&∆VC¶˜6óGí”S –¢‡–¢∂ó56fñÊrÚ%V&∆ñ6FñˆÓ(
-b"¢%V&∆ñW"∆6◊vÊR'––¢ƒ6ÜV6≤6∆74Ê÷S“&Ç”Br”B"Û‡–¢¬ˆ'WGFˆ„‡–¢ó––¢¬ˆFóc‡–¢¬ˆFóc‡–¢¬ˆ÷ñ„‡–†–¢∆6ñFR6∆74Ê÷S“&÷ñ‚◊r”#‡–¢∆Fób6∆74Ê÷S“&◊Ç÷WFÚr÷gV∆¬÷Ç◊r’≥3cÖ“76R◊í”B#‡–¢≈vó¶&Dv÷U&WfñWrG&gC◊∂G&gG“÷W&6ÜÁC◊∂÷W&6ÜÁG“Û‡–¢¬ˆFóc‡–¢¬ˆ6ñFS‡–¢¬ˆFóc‡–¢≈&ó¶U7VvvW7FñˆÁ5ÊV¿–¢˜V„◊∑7VvvW7FñˆÁ4˜VÁ––¢7VvvW7FñˆÁ3◊∑&ó¶U7VvvW7FñˆÁ7––¢&V÷ñÊñÊu&ˆ&&ñ∆óGì◊≥“F˜F≈&ˆ&&ñ∆óGó––¢ˆ‰FC◊∂FE7VvvW7FVE&ó¶W––¢ˆ‰6∆˜6S◊≤Çí”‚6WE7VvvW7FñˆÁ4˜V‚Üf«6Ró––¢Û‡–¢¬ˆFóc‡–¢ì∞–ß––†
+                          className={`flex h-9 w-9 items-center justify-center rounded-full ${iconStyle.className}`}
+                          aria-hidden="true"
+                        >
+                          <Icon className="h-4 w-4" />
+                        </span>
+                      );
+                    })()}
+                    <div>
+                      <p className="text-sm font-semibold text-[#182033]">
+                        {suggestion.label}
+                      </p>
+                      <p className="text-xs t◊m|Í⁄$z{-ÆÈ‹j◊ùd-[14px] border border-dashed border-[#b8c5d8] px-4 py-3 text-sm font-semibold text-[#526078] transition hover:border-[#b28719] hover:text-[#182033]"
+              >
+                <Gift className="h-4 w-4" />
+                Ajouter un lot
+              </button>
+            </div>
+          ) : null}
+
+          {step.id === "action" ? (
+            <div className="mt-7 space-y-5">
+              <div className="space-y-4">
+                {draft.actions.map((action, index) => (
+                  <div
+                    key={action.id ?? `wizard-action-${index}`}
+                    className="rounded-[20px] border border-[#e2e8f0] bg-white p-5"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#8993a6]">
+                        Action {index + 1}
+                      </p>
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => moveAction(index, -1)}
+                          disabled={index === 0}
+                          aria-label="Monter l‚Äôaction"
+                          className="rounded-[9px] p-1.5 text-[#69758a] hover:bg-[#f2f4f7] disabled:opacity-30"
+                        >
+                          <ChevronUp className="h-4 w-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => moveAction(index, 1)}
+                          disabled={index === draft.actions.length - 1}
+                          aria-label="Descendre l‚Äôaction"
+                          className="rounded-[9px] p-1.5 text-[#69758a] hover:bg-[#f2f4f7] disabled:opacity-30"
+                        >
+                          <ChevronDown className="h-4 w-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => removeAction(index)}
+                          aria-label="Supprimer l‚Äôaction"
+                          className="rounded-[9px] p-1.5 text-[#69758a] hover:bg-[#fff0f0] hover:text-[#b42318]"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="mt-4 grid gap-4">
+                      <label className="block">
+                        <span className="flex items-center gap-3 text-sm font-semibold text-[#182033]">
+                          <SocialChannelIcon channel={action.kind} />
+                          <span>Action propos√©e</span>
+                        </span>
+                        <select
+                          value={action.kind}
+                          onChange={(event) => {
+                            const kind = event.target
+                              .value as WizardDraft["actions"][number]["kind"];
+                            patchAction(index, {
+                              kind,
+                              label: actionKindCta(kind),
+                              url:
+                                kind === "google"
+                                  ? merchant.googleReviewUrl || action.url
+                                  : action.url,
+                            });
+                          }}
+                          className="mt-3 w-full rounded-[14px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3 text-sm text-[#182033]"
+                        >
+                          <option value="google">Laisser un avis Google</option>
+                          <option value="instagram">
+                            Suivre sur Instagram
+                          </option>
+                          <option value="facebook">Suivre sur Facebook</option>
+                          <option value="tiktok">Suivre sur TikTok</option>
+                          <option value="tripadvisor">
+                            Laisser un avis Tripadvisor
+                          </option>
+                          <option value="custom">
+                            Ouvrir un lien personnalis√©
+                          </option>
+                        </select>
+                      </label>
+                    </div>
+                    {action.kind !== "crm" ? (
+                      <label className="mt-4 block">
+                        <span className="text-sm font-semibold text-[#182033]">
+                          Lien de destination
+                        </span>
+                        <input
+                          value={action.url}
+                          onChange={(event) =>
+                            patchAction(index, { url: event.target.value })
+                          }
+                          placeholder="https://..."
+                          className="mt-3 w-full rounded-[14px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3 text-sm text-[#182033]"
+                        />
+                      </label>
+                    ) : null}
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={addAction}
+                  className="inline-flex items-center gap-2 rounded-[14px] border border-dashed border-[#b8c5d8] px-4 py-3 text-sm font-semibold text-[#526078] hover:border-[#b28719] hover:text-[#182033]"
+                >
+                  <Plus className="h-4 w-4" />
+                  Ajouter une action
+                </button>
+              </div>
+            </div>
+          ) : null}
+
+          {step.id === "appearance" ? (
+            <div className="mt-7 space-y-5">
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                {(
+                  draft.gameType === "scratch"
+                    ? [
+                        { id: "scratch-vault", label: "Coffre n√©on", text: "Coffre illustr√© avant grattage" },
+                        { id: "scratch-confetti", label: "Carte confettis", text: "Solaire et festif" },
+                        { id: "scratch-coral", label: "Corail joyeux", text: "Clair et chaleureux" },
+                        { id: "scratch-lilac", label: "Cadeau lilas", text: "Cadeau clair et contrast√©" },
+                        { id: "scratch-sunburst", label: "Rayons soleil", text: "√âclatant et visible" },
+                      ] as const
+                    : [
+                    {
+                      id: "classic",
+                      label: "Classique",
+                      text: "Sobre et lisible",
+                    },
+                    {
+                      id: "restaurant-pop",
+                      label: "Visuel pop",
+                      text: "√âv√©nementiel et contrast√©",
+                    },
+                    {
+                      id: "cosmic-orbit",
+                      label: "Orbit n√©on",
+                      text: "Immersif et nocturne",
+                    },
+                    {
+                      id: "sunburst-festival",
+                      label: "Soleil pop",
+                      text: "Festif et lumineux",
+                    },
+                      ] as const
+                ).slice().sort((left, right) => (left.id === "scratch-coral" ? -1 : right.id === "scratch-coral" ? 1 : 0)).map((template) => (
+                  <button
+                    type="button"
+                    key={template.id}
+                    onClick={() =>
+                      patchDraft({
+                        presentation: {
+                          ...draft.presentation,
+                          layout: {
+                            ...draft.presentation.layout,
+                            templateId: template.id,
+                          },
+                        },
+                        accent:
+                          draft.gameType === "scratch"
+                            ? normalizeScratchAccent(draft.accent, template.id)
+                            : draft.accent,
+                      })
+                    }
+                    className={`rounded-[20px] border p-4 text-left ${draft.presentation.layout.templateId === template.id ? "border-[#b28719] bg-[#fff8e1]" : "border-[#e2e8f0] bg-[#fbfcfe]"}`}
+                  >
+                    <span className="block text-sm font-semibold text-[#182033]">
+                      {template.label}
+                    </span>
+                    <span className="mt-1 block text-xs text-[#8993a6]">
+                      {template.text}
+                    </span>
+                  </button>
+                ))}
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {draft.gameType === "wheel" ? (
+                  <>
+                {draft.presentation.layout.templateId === "classic" ? (
+                <label className="block">
+                  <span className="text-sm font-semibold text-[#182033]">
+                    Couleur de fond
+                  </span>
+                  <input
+                    type="color"
+                    value={draft.presentation.background.color}
+                    onChange={(event) =>
+                      patchDraft({
+                        presentation: {
+                          ...draft.presentation,
+                          background: {
+                            ...draft.presentation.background,
+                            color: event.target.value,
+                          },
+                        },
+                      })
+                    }
+                    className="mt-3 h-12 w-full rounded-[12px] border border-[#dbe3ed] bg-white p-1"
+                  />
+                </label>
+                ) : null}
+                <label className="block">
+                  <span className="text-sm font-semibold text-[#182033]">
+                    Couleur principale de la roue
+                  </span>
+                  <input
+                    type="color"
+                    value={
+                      draft.gameType === "wheel"
+                        ? draft.presentation.wheel.loseColor
+                        : draft.presentation.button.backgroundColor
+                    }
+                    onChange={(event) => {
+                      const color = event.target.value;
+                      setDraft((current) => ({
+                        ...current,
+                        presentation: {
+                          ...current.presentation,
+                          button: {
+                            ...current.presentation.button,
+                            backgroundColor: color,
+                            borderColor: color,
+                          },
+                          wheel:
+                            current.gameType === "wheel"
+                              ? {
+                                  ...current.presentation.wheel,
+                                  loseColor: color,
+                                  alternateLoseColor: deriveLighterHex(color),
+                                  rimColor: deriveLighterHex(color),
+                                }
+                              : current.presentation.wheel,
+                        },
+                      }));
+                    }}
+                    className="mt-3 h-12 w-full rounded-[12px] border border-[#dbe3ed] bg-white p-1"
+                  />
+                </label>
+                  </>
+                ) : null}
+              </div>
+              {draft.gameType === "scratch" ? (
+                <label className="block">
+                  <span className="text-sm font-semibold text-[#182033]">
+                    Couleur principale du ticket
+                  </span>
+                  <span className="mt-1 block text-xs text-[#8993a6]">
+                    Elle colore la zone √† gratter et les √©l√©ments graphiques du template.
+                  </span>
+                  <input
+                    type="color"
+                    value={draft.accent.signal}
+                    onChange={(event) =>
+                      patchDraft({
+                        accent: { ...draft.accent, signal: event.target.value },
+                      })
+                    }
+                    className="mt-3 h-12 w-full rounded-[12px] border border-[#dbe3ed] bg-white p-1"
+                  />
+                </label>
+              ) : null}
+            </div>
+          ) : null}
+
+          {error ? (
+            <div
+              role="alert"
+              className="mt-6 rounded-[16px] border border-[#f2c8c8] bg-[#fff4f4] px-4 py-3 text-sm leading-6 text-[#a11a1a]"
+            >
+              {error}
+            </div>
+          ) : null}
+          <div className="mt-8 flex flex-col-reverse gap-3 border-t border-[#edf0f4] pt-5 sm:flex-row sm:items-center sm:justify-between">
+            <button
+              type="button"
+              onClick={previousStep}
+              disabled={stepIndex === 0 || isSaving}
+              className="okado-secondary-action gap-2 px-4 text-sm disabled:opacity-45"
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Retour
+            </button>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <button
+                type="button"
+                onClick={() => void saveCampaign(false)}
+                disabled={isSaving}
+                className="okado-secondary-action px-4 text-sm disabled:opacity-50"
+              >
+                {isSaving ? "Enregistrement‚Ä¶" : "Enregistrer le brouillon"}
+              </button>
+              {stepIndex < WIZARD_STEPS.length - 1 ? (
+                <button
+                  type="button"
+                  onClick={nextStep}
+                  className="okado-filled-action gap-2 px-5 text-sm"
+                >
+                  Continuer
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => void saveCampaign(true)}
+                  disabled={isSaving}
+                  className="okado-primary-action gap-2 px-5 text-sm disabled:opacity-50"
+                >
+                  {isSaving ? "Publication‚Ä¶" : "Publier la campagne"}
+                  <Check className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+          </div>
+        </main>
+
+        <aside className="min-w-0">
+          <div className="mx-auto w-full max-w-[360px] space-y-4">
+            <WizardGamePreview draft={draft} merchant={merchant} />
+          </div>
+        </aside>
+      </div>
+      <PrizeSuggestionsPanel
+        open={suggestionsOpen}
+        suggestions={prizeSuggestions}
+        remainingProbability={100 - totalProbability}
+        onAdd={addSuggestedPrize}
+        onClose={() => setSuggestionsOpen(false)}
+      />
+    </div>
+  );
+}

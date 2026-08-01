@@ -510,4 +510,433 @@ const eventSeed: CampaignEvent[] = [
   { id: "evt-004", campaignId: "camp-sora-review", leadId: "lead-001", eventType: "review_clicked", createdAt: "2026-06-08T08:32:10.000Z" },
   { id: "evt-005", campaignId: "camp-sora-review", leadId: "lead-001", eventType: "review_confirmed", createdAt: "2026-06-08T08:32:34.000Z" },
   { id: "evt-006", campaignId: "camp-sora-review", leadId: "lead-001", eventType: "game_played", createdAt: "2026-06-08T08:32:36.000Z" },
-  { id: "evt-007", campaignId: "camp-sora-rev×®|âÚ$z{-®éÜj×&6¶VæB‚&ÆÆV7GW&RFW2W&f÷&Öæ6W26×væR"’ÓÓÒ'7W&6R"’°Ð¢&WGW&âvWE7W&6T6×–våW&f÷&Öæ6R†6×–vä–BÂfÆÆ&6´ÖW&6†çB“°Ð¢ÐÐ Ð¢&WGW&âvWD6×–våW&f÷&Öæ6Tg&öÔÖVÖ÷'’†6×–vä–B“°Ð§Ò“°Ð Ð¦W‡÷'B6öç7BvWD6×–vå6WGWW&f÷&Öæ6RÒ66†R†7–æ2gVæ7F–öâvWD6×–vå6WGWW&f÷&Öæ6R€Ð¢6×–vä–C¢7G&–ærÀÐ¢fÆÆ&6´ÖW&6†çCó¢ÖW&6†çBÀÐ¢’°Ð¢–b†vWDFF&6¶VæB‚&ÆÆV7GW&RGR&Ü:—G&vR6×væR"’ÓÓÒ'7W&6R"’°Ð¢&WGW&âvWD66†VE7W&6T6×–vå6WGWW&f÷&Öæ6R†6×–vä–BÂfÆÆ&6´ÖW&6†çB“°Ð¢ÐÐ Ð¢&WGW&âvWD6×–våW&f÷&Öæ6Tg&öÔÖVÖ÷'’†6×–vä–B“°Ð§Ò“°Ð Ð¦W‡÷'B6öç7BvWDÖW&6†çDF6†&ö&BÒ66†R†7–æ2gVæ7F–öâvWDÖW&6†çDF6†&ö&B€Ð¢ÖW&6†çD–BÒÖW&6†çE6VVBæ–BÀÐ¢fÆÆ&6´ÖW&6†çCó¢ÖW&6†çBÀÐ¢’°Ð¢–b†vWDFF&6¶VæB‚&ÆÆV7GW&RGRF6†&ö&BÖ&6†æB"’ÓÓÒ'7W&6R"’°Ð¢&WGW&âvWE7W&6TÖW&6†çDF6†&ö&B€Ð¢v—B&W6öÇfTÖW&6†çDf÷%7W&6R†ÖW&6†çD–BÂfÆÆ&6´ÖW&6†çB’ÀÐ¢“°Ð¢ÐÐ Ð¢&WGW&âvWDÖW&6†çDF6†&ö&Dg&öÔÖVÖ÷'’†ÖW&6†çD–BÂfÆÆ&6´ÖW&6†çB“°Ð§Ò“°Ð Ð¦W‡÷'B6öç7BvWDÖW&6†çEv÷&·76TF6†&ö&BÒ66†R†7–æ2gVæ7F–öâvWDÖW&6†çEv÷&·76TF6†&ö&B€Ð¢W6W$–C¢7G&–ærÀÐ¢7F—fTÖW&6†çC¢ÖW&6†çBÀÐ¢’°Ð¢6öç7B6öçFW‡BÒv—BvWDÖW&6†çEv÷&·76T6öçFW‡B‡W6W$–BÂ7F—fTÖW&6†çB“°Ð¢6öç7BF6†&ö&G2Òv—B&öÖ—6RæÆÂ€Ð¢6öçFW‡BæÆö6F–öç2æÖ‚‡²ÖW&6†çBÒ’ÓâvWDÖW&6†çDF6†&ö&B†ÖW&6†çBæ–BÂÖW&6†çB’’ÀÐ¢“°Ð¢6öç7B6×–vç2ÒF6†&ö&G2æfÆDÖ‚†F6†&ö&B’ÓâF6†&ö&Bæ6×–vç2“°Ð¢6öç7B7F—f—G”'”F’ÒæWrÖÇ7G&–ærÂ²66ç3¢çVÖ&W#²'F–6—F–öç3¢çVÖ&W"Óâ‚“°Ð¢F6†&ö&G2æf÷$V6‚‚†F6†&ö&B’Óâ°Ð¢F6†&ö&Bæ7F—f—G•ö–çG2æf÷$V6‚‚‡ö–çB’Óâ°Ð¢6öç7B7W'&VçBÒ7F—f—G”'”F’ævWB‡ö–çBæÆ&VÂ’óò²66ç3¢Â'F–6—F–öç3¢Ó°Ð¢7F—f—G”'”F’ç6WB‡ö–çBæÆ&VÂÂ°Ð¢66ç3¢7W'&VçBç66ç2²ö–çBç66ç2ÀÐ¢'F–6—F–öç3¢7W'&VçBç'F–6—F–öç2²ö–çBç'F–6—F–öç2ÀÐ¢Ò“°Ð¢Ò“°Ð¢Ò“°Ð Ð¢&WGW&â°Ð¢ÖW&6†çC¢7F—fTÖW&6†çBÀÐ¢6×–vç2ÀÐ¢F÷FÄÆVG3¢F6†&ö&G2ç&VGV6R‚‡F÷FÂÂF6†&ö&B’ÓâF÷FÂ²F6†&ö&BçF÷FÄÆVG2Â’ÀÐ¢F÷FÅ&VFVVÖVC¢F6†&ö&G2ç&VGV6R‚‡F÷FÂÂF6†&ö&B’ÓâF÷FÂ²F6†&ö&BçF÷FÅ&VFVVÖVBÂ’ÀÐ¢fW&vT6öçfW'6–öã¢6×–vç2æÆVæwF€Ð¢òÖF‚ç&÷VæB†6×–vç2ç&VGV6R‚‡F÷FÂÂ—FVÒ’ÓâF÷FÂ²—FVÒæ·—2æ6öçfW'6–öå&FRÂ’ò6×–vç2æÆVæwF‚Ð¢¢ÀÐ¢7F—f—G•ö–çG3¢²ââæ7F—f—G”'”F’æVçG&–W2‚•ÒæÖ‚…¶Æ&VÂÂfÇVW5Ò’Óâ‡²Æ&VÂÂââçfÇVW2Ò’’ÀÐ¢Ò6F—6f–W2ÖW&6†çDF6†&ö&DFF°Ð§Ò“°Ð Ð¦W‡÷'B6öç7BvWDÖW&6†çD6×–vä÷fW'f–WrÒ66†R†7–æ2gVæ7F–öâvWDÖW&6†çD6×–vä÷fW'f–Wr€Ð¢ÖW&6†çD–BÒÖW&6†çE6VVBæ–BÀÐ¢fÆÆ&6´ÖW&6†çCó¢ÖW&6†çBÀÐ¢’°Ð¢–b†vWDFF&6¶VæB‚&ÆÆV7GW&RFRÆÆ—7FRFW26×væW2"’ÓÓÒ'7W&6R"’°Ð¢&WGW&âvWD66†VE7W&6TÖW&6†çD6×–vä÷fW'f–Wr€Ð¢v—B&W6öÇfTÖW&6†çDf÷%7W&6R†ÖW&6†çD–BÂfÆÆ&6´ÖW&6†çB’ÀÐ¢“°Ð¢ÐÐ Ð¢&WGW&âvWDÖW&6†çDF6†&ö&Dg&öÔÖVÖ÷'’†ÖW&6†çD–BÂfÆÆ&6´ÖW&6†çB“°Ð§Ò“°Ð Ð¦W‡÷'B6öç7BvWDÖW&6†çD6×–väÆ–'&'’Ò66†R†7–æ2gVæ7F–öâvWDÖW&6†çD6×–väÆ–'&'’€Ð¢ÖW&6†çD–BÒÖW&6†çE6VVBæ–BÀÐ¢fÆÆ&6´ÖW&6†çCó¢ÖW&6†çBÀÐ¢’°Ð¢–b†vWDFF&6¶VæB‚&ÆÆV7GW&RFRÆ&–&Æ–÷FŒ:‡VRFR6×væW2"’ÓÓÒ'7W&6R"’°Ð¢&WGW&âvWD66†VE7W&6TÖW&6†çD6×–väÆ–'&'’†fÆÆ&6´ÖW&6†çCòæ–BóòÖW&6†çD–B“°Ð¢ÐÐ Ð¢&WGW&âvWDÖW&6†çD6×–väÆ–'&'”g&öÔÖVÖ÷'’†ÖW&6†çD–BÂfÆÆ&6´ÖW&6†çB“°Ð§Ò“°Ð Ð¦W‡÷'B6öç7BvWDÖW&6†çDÆVG2Ò66†R†7–æ2gVæ7F–öâvWDÖW&6†çDÆVG2†ÖW&6†çD–BÒÖW&6†çE6VVBæ–BÂ6×–vä–Có¢7G&–ær’°Ð¢–b†vWDFF&6¶VæB‚&ÆÆV7GW&RFW2ÆVG2"’ÓÓÒ'7W&6R"’°Ð¢&WGW&âvWE7W&6TÖW&6†çDÆVG2†ÖW&6†çD–BÂ6×–vä–B“°Ð¢ÐÐ Ð¢&WGW&âvWDÖW&6†çDÆVG4g&öÔÖVÖ÷'’†6×–vä–B“°Ð§Ò“°Ð Ð¦W‡÷'B7–æ2gVæ7F–öâ&VÖVÖ&W%V&Æ–46×–vå'F–6—çB€Ð¢6×–vä–C¢7G&–ærÀÐ¢VÖ–Ã¢7G&–ærÀÐ¢Fö¶Vã¢7G&–ærÀÐ¢’°Ð¢–b†vWDFF&6¶VæB‚&ÆÜ:–Ö÷&—6F–öâGR&6÷W'2¦÷VWW""’ÓÓÒ'7W&6R"’°Ð¢&WGW&â7&VFUV&Æ–46×–vä–FVçF—G’†6×–vä–BÂVÖ–ÂÂFö¶Vâ“°Ð¢ÐÐ¢&WGW&âFö¶Vã°Ð§ÐÐ Ð¦W‡÷'B6öç7Bf–æDÖW&6†çDÆVD6×–vâÒ66†R†7–æ2gVæ7F–öâf–æDÖW&6†çDÆVD6×–vâ€Ð¢ÖW&6†çD–BÒÖW&6†çE6VVBæ–BÀÐ¢VW'’Ò""ÀÐ¢’°Ð¢–b†vWDFF&6¶VæB‚&Æ&V6†W&6†RBwVâÆVB"’ÓÓÒ'7W&6R"’°Ð¢&WGW&âf–æE7W&6TÖW&6†çDÆVD6×–vâ†ÖW&6†çD–BÂVW'’“°Ð¢ÐÐ Ð¢6öç7Bæ÷&ÖÆ—¦VEVW'’ÒVW'’çG&–Ò‚’çFôÆ÷vW$66R‚“°Ð¢&WGW&â€Ð¢vWDÖW&6†çDÆVG4g&öÔÖVÖ÷'’‚’æf–æB‚†ÆVB’ÓàÐ¢¶ÆVBç&VFV×F–öä6öFRóò""ÂÆVBæVÖ–ÂÂÆVBæf—'7DæÖUÐÐ¢æ¦ö–â‚""Ð¢çFôÆ÷vW$66R‚Ð¢æ–æ6ÇVFW2†æ÷&ÖÆ—¦VEVW'’’ÀÐ¢“òæ6×–vä–BóòçVÆÀÐ¢“°Ð§Ò“°Ð Ð¦W‡÷'B6öç7BvWDÖW&6†çE&V6VçDÆVG2Ò66†R†7–æ2gVæ7F–öâvWDÖW&6†çE&V6VçDÆVG2€Ð¢ÖW&6†çD–BÒÖW&6†çE6VVBæ–BÀÐ¢Æ–Ö—BÒRÀÐ¢VW'’Ò""ÀÐ¢’°Ð¢–b†vWDFF&6¶VæB‚&ÆÆV7GW&RFW2ÆVG2,:–6VçG2"’ÓÓÒ'7W&6R"’°Ð¢&WGW&âvWE7W&6TÖW&6†çE&V6VçDÆVG2†ÖW&6†çD–BÂÆ–Ö—BÂVW'’“°Ð¢ÐÐ Ð¢6öç7Bæ÷&ÖÆ—¦VEVW'’ÒVW'’çG&–Ò‚’çFôÆ÷vW$66R‚“°Ð Ð¢&WGW&âvWDÖW&6†çDÆVG4g&öÔÖVÖ÷'’‚Ð¢æf–ÇFW"‚†ÆVB’ÓàÐ¢æ÷&ÖÆ—¦VEVW'Ð¢òG¶ÆVBæf—'7DæÖWÒG¶ÆVBæVÖ–ÇÒG¶ÆVBæ6×–våF—FÆWÖçFôÆ÷vW$66R‚’æ–æ6ÇVFW2†æ÷&ÖÆ—¦VEVW'’Ð¢¢G'VRÀÐ¢Ð¢ç6Æ–6RƒÂÆ–Ö—B“°Ð§Ò“°Ð Ð¦W‡÷'B6öç7BvWD6×–väFFf–WrÒ66†R†7–æ2gVæ7F–öâvWD6×–väFFf–Wr€Ð¢6×–vä–C¢7G&–ærÀÐ¢fÆÆ&6´ÖW&6†çCó¢ÖW&6†çBÀÐ¢÷F–öç3¢²ÆVDÆ–Ö—Có¢çVÖ&W#²ÆVDöfg6WCó¢çVÖ&W#²VW'“ó¢7G&–æs²VÖ–Å7FGW3ó¢&GFVçF–öâ"ÒÒ·ÒÀÐ¢’°Ð¢–b†vWDFF&6¶VæB‚&ÆÆV7GW&RFW2Föæì:–W26×væR"’ÓÓÒ'7W&6R"’°Ð¢&WGW&âvWE7W&6T6×–väFFf–Wr†6×–vä–BÂfÆÆ&6´ÖW&6†çBÂ÷F–öç2“°Ð¢ÐÐ Ð¢&WGW&âvWD6×–väFFf–Wtg&öÔÖVÖ÷'’†6×–vä–BÂ÷F–öç2“°Ð§Ò“°Ð Ð¦W‡÷'B6öç7BvWDÖW&6†çE7W÷'D÷fW'f–WrÒ66†R†7–æ2gVæ7F–öâvWDÖW&6†çE7W÷'D÷fW'f–Wr€Ð¢ÖW&6†çD–BÒÖW&6†çE6VVBæ–BÀÐ¢fÆÆ&6´ÖW&6†çCó¢ÖW&6†çBÀÐ¢÷F–öç3¢²–æ6ÇVFTÆÄÖW&6†çG3ó¢&ööÆVâÒÒ·ÒÀÐ¢’°Ð¢–b†vWDFF&6¶VæB‚&ÆÆV7GW&RFRÆ7WW'f—6–öâ"’ÓÓÒ'7W&6R"’°Ð¢&WGW&âvWE7W&6TÖW&6†çE7W÷'D÷fW'f–Wr€Ð¢v—B&W6öÇfTÖW&6†çDf÷%7W&6R†ÖW&6†çD–BÂfÆÆ&6´ÖW&6†çB’ÀÐ¢÷F–öç2ÀÐ¢“°Ð¢ÐÐ Ð¢6öç7BÆVG2ÒvWDÖW&6†çDÆVG4g&öÔÖVÖ÷'’‚“°Ð¢6öç7B6×–vç2ÒvWDÖW&6†çDF6†&ö&Dg&öÔÖVÖ÷'’†ÖW&6†çD–BÂfÆÆ&6´ÖW&6†çB’æ6×–vç3°Ð¢6öç7B6×–våF—FÆT'”–BÒæWrÖ†6×–vç2æÖ‚†—FVÒ’Óâ¶—FVÒæ6×–vâæ–BÂ—FVÒæ6×–vâçF—FÆUÒ’“°Ð Ð¢6öç7BVæF–æt6Æ–×3¢ÖW&6†çE7W÷'D÷fW'f–Wu²'VæF–æt6Æ–×2%ÒÒÆVG0Ð¢æf–ÇFW"‚†ÆVB’ÓâÆVBç7FGW2ÓÓÒ&6Æ–ÖVB"bbÆVBç&VFV×F–öä6öFRÐ¢ç6Æ–6RƒÂ3Ð¢æÖ‚†ÆVB’Óâ‡°Ð¢ÆVD–C¢ÆVBæ–BÀÐ¢6×–vä–C¢ÆVBæ6×–vä–BÀÐ¢6×–våF—FÆS¢6×–våF—FÆT'”–BævWB†ÆVBæ6×–vä–B’óò$6×væR"ÀÐ¢f—'7DæÖS¢ÆVBæf—'7DæÖRÀÐ¢VÖ–Ã¢ÆVBæVÖ–ÂÀÐ¢&—¦TÆ&VÃ¢ÆVBç&—¦TÆ&VÂÀÐ¢&VFV×F–öä6öFS¢ÆVBç&VFV×F–öä6öFRóò""ÀÐ¢7FGW3¢ÆVBç7FGW2ÀÐ¢f–Æ&ÆTC¢ÆVBç&Wv&Df–Æ&ÆTBÀÐ¢W‡—&W4C¢ÆVBç&Wv&DW‡—&W4BÀÐ¢Ò’“°Ð Ð¢&WGW&â°Ð¢f–ÆVDVÖ–Ç3¢µÒÀÐ¢vV&†öö·3¢µÒÀÐ¢VæF–æt6Æ–×2ÀÐ¢'W6–æW74Æöw3¢vWDÖVÖ÷'•7W÷'DÆöw2‚Ð¢æf–ÇFW"‚†VçG'’’Óâ÷F–öç2æ–æ6ÇVFTÆÄÖW&6†çG2ÇÂVçG'’ç–ÆöCòæÖW&6†çD–BÓÓÒÖW&6†çD–BÐ¢ç6Æ–6RƒÂSÐ¢æÖ‚†VçG'’’Óâ‡°Ð¢–C¢VçG'’æ–BÀÐ¢7&VFVDC¢VçG'’æ7&VFVDBÀÐ¢ÆWfVÃ¢VçG'’æÆWfVÂÀÐ¢WfVçC¢VçG'’æWfVçBÀÐ¢ÖW&6†çD–C Ð¢G—VöbVçG'’ç–ÆöCòæÖW&6†çD–BÓÓÒ'7G&–ær"òVçG'’ç–ÆöBæÖW&6†çD–B¢VæFVf–æVBÀÐ¢6×–vä–C Ð¢G—VöbVçG'’ç–ÆöCòæ6×–vä–BÓÓÒ'7G&–ær"òVçG'’ç–ÆöBæ6×–vä–B¢VæFVf–æVBÀÐ¢ÆVD–C¢G—VöbVçG'’ç–ÆöCòæÆVD–BÓÓÒ'7G&–ær"òVçG'’ç–ÆöBæÆVD–B¢VæFVf–æVBÀÐ¢VÖ–Ã Ð¢G—VöbVçG'’ç–ÆöCòæVÖ–ÂÓÓÒ'7G&–ær Ð¢òVçG'’ç–ÆöBæVÖ–ÀÐ¢¢G—VöbVçG'’ç–ÆöCòç&V6—–VçDVÖ–ÂÓÓÒ'7G&–ær Ð¢òVçG'’ç–ÆöBç&V6—–VçDVÖ–ÀÐ¢¢VæFVf–æVBÀÐ¢&VFV×F–öä6öFS Ð¢G—VöbVçG'’ç–ÆöCòç&VFV×F–öä6öFRÓÓÒ'7G&–ær Ð¢òVçG'’ç–ÆöBç&VFV×F–öä6öFPÐ¢¢VæFVf–æVBÀÐ¢7VÖÖ'“ Ð¢G—VöbVçG'’ç–ÆöCòæW'&÷"ÓÓÒ'7G&–ær Ð¢òVçG'’ç–ÆöBæW'&÷ Ð¢¢G—VöbVçG'’ç–ÆöCòç7FGW2ÓÓÒ'7G&–ær Ð¢òVçG'’ç–ÆöBç7FGW0Ð¢¢VæFVf–æVBÀÐ¢Ò’’ÀÐ¢Ó°Ð§Ò“°Ð Ð¦W‡÷'B7–æ2gVæ7F–öâG&tf÷$ÆVB†–çWC¢G&u&WVW7BÂfÆÆ&6´ÖW&6†çCó¢ÖW&6†çB’°Ð¢–b†vWDFF&6¶VæB‚&Æ'F–6—F–öâ:Vâ¦WR"’ÓÓÒ'7W&6R"’°Ð¢6öç7BÖW&6†çBÐÐ¢fÆÆ&6´ÖW&6†çBóò†v—B&W6öÇfT6×–väÖW&6†çDf÷%7W&6R†–çWBæ6×–vä–B’“°Ð¢&WGW&âG&tf÷$ÆVD–å7W&6R†–çWBÂÖW&6†çB“°Ð¢ÐÐ Ð¢&WGW&âG&tf÷$ÆVDg&öÔÖVÖ÷'’†–çWB“°Ð§ÐÐ Ð¦W‡÷'B7–æ2gVæ7F–öâ7&VFTG&u6W76–öâ€Ð¢–çWC¢7&VFTG&u6W76–öå&WVW7BÀÐ¢fÆÆ&6´ÖW&6†çCó¢ÖW&6†çBÀÐ¢’°Ð¢–b†vWDFF&6¶VæB‚&Æ,:—&F–öâBwVæR'F–R"’ÓÓÒ'7W&6R"’°Ð¢&WGW&â7&VFTG&u6W76–öä–å7W&6R†–çWBÂfÆÆ&6´ÖW&6†çB“°Ð¢ÐÐ Ð¢&WGW&â7&VFTG&u6W76–öäg&öÔÖVÖ÷'’†–çWB“°Ð§ÐÐ Ð¦W‡÷'B7–æ2gVæ7F–öâf–æÆ—¦TG&u6W76–öâ€Ð¢–çWC¢f–æÆ—¦TG&u6W76–öå&WVW7BÀÐ¢fÆÆ&6´ÖW&6†çCó¢ÖW&6†çBÀÐ¢’°Ð¢–b†vWDFF&6¶VæB‚&Æf–æÆ—6F–öâBwVæR'F–R"’ÓÓÒ'7W&6R"’°Ð¢&WGW&âf–æÆ—¦TG&u6W76–öä–å7W&6R†–çWBÂfÆÆ&6´ÖW&6†çB“°Ð¢ÐÐ Ð¢&WGW&âf–æÆ—¦TG&u6W76–öäg&öÔÖVÖ÷'’†–çWB“°Ð§ÐÐ Ð¦W‡÷'B7–æ2gVæ7F–öâÖ&´7F–öä6öæf—&ÖVB†ÆVD–C¢7G&–ærÂ6×–vä–Có¢7G&–ær’°Ð¢–b†vWDFF&6¶VæB‚&Æ6öæf—&ÖF–öâBwVæR7F–öâÖ&¶WF–ær"’ÓÓÒ'7W&6R"’°Ð¢&WGW&âÖ&´7F–öä6öæf—&ÖVD–å7W&6R†ÆVD–BÂ6×–vä–B“°Ð¢ÐÐ Ð¢&WGW&âÖ&´7F–öä6öæf—&ÖVD–äÖVÖ÷'’†ÆVD–BÂ6×–vä–B“°Ð§ÐÐ Ð¦W‡÷'B7–æ2gVæ7F–öâ&VFVVÔÆVE&—¦R†ÆVD–C¢7G&–ær’°Ð¢–b†vWDFF&6¶VæB‚&ÆR&WG&—BBwVâÆ÷B"’ÓÓÒ'7W&6R"’°Ð¢&WGW&â&VFVVÔÆVE&—¦T–å7W&6R†ÆVD–B“°Ð¢ÐÐ Ð¢&WGW&â&VFVVÔÆVE&—¦T–äÖVÖ÷'’†ÆVD–B“°Ð§ÐÐ Ð¦W‡÷'B7–æ2gVæ7F–öâf–æDÖW&6†çDÆVD'•&VFV×F–öä6öFR†ÖW&6†çD–C¢7G&–ærÂ6öFS¢7G&–ær’°Ð¢–b†vWDFF&6¶VæB‚&Æ&V6†W&6†R6—76RBwVâ6öFR"’ÓÓÒ'7W&6R"’°Ð¢&WGW&âf–æE7W&6TÖW&6†çDÆVD'•&VFV×F–öä6öFR†ÖW&6†çD–BÂ6öFR“°Ð¢ÐÐ Ð¢&WGW&âf–æDÖW&6†çDÆVD'•&VFV×F–öä6öFT–äÖVÖ÷'’†ÖW&6†çD–BÂ6öFR“°Ð§ÐÐ Ð¦W‡÷'B7–æ2gVæ7F–öâ&VFVVÔÖW&6†çDÆVE&—¦Tg&öÔ66†–W"†–çWC¢°Ð¢ÆVD–C¢7G&–æs°Ð¢ÖW&6†çD–C¢7G&–æs°Ð¢÷W&F÷%W6W$–C¢7G&–æs°Ð¢W&6†6T6öæf—&ÖVC¢&ööÆVã°Ð¢–FV×÷FVæ7”¶W“¢7G&–æs°Ð§Ò’°Ð¢–b†vWDFF&6¶VæB‚&ÆR&WG&—B6—76RBwVâÆ÷B"’ÓÓÒ'7W&6R"’°Ð¢&WGW&â&VFVVÕ7W&6T66†–W$ÆVE&—¦R†–çWB“°Ð¢ÐÐ Ð¢&WGW&â&VFVVÔÖW&6†çDÆVE&—¦T–äÖVÖ÷'’†–çWB“°Ð§ÐÐ Ð¦W‡÷'B7–æ2gVæ7F–öâ&W6WDÆVE&—¦R†ÆVD–C¢7G&–ær’°Ð¢–b†vWDFF&6¶VæB‚&Æ,:––æ—F–Æ—6F–öâBwVâÆ÷B"’ÓÓÒ'7W&6R"’°Ð¢&WGW&â&W6WDÆVE&—¦T–å7W&6R†ÆVD–B“°Ð¢ÐÐ Ð¢&WGW&â&W6WDÆVE&—¦T–äÖVÖ÷'’†ÆVD–B“°Ð§ÐÐ Ð¦W‡÷'B7–æ2gVæ7F–öâWFFU&—¦U7Fö6²‡&—¦T–C¢7G&–ærÂ&VÖ–æ–æuVçF—G“¢çVÖ&W"ÂçVÆÂ’°Ð¢–b†vWDFF&6¶VæB‚&ÆÖ—6R:¦÷W"GR7Fö6²BwVâÆ÷B"’ÓÓÒ'7W&6R"’°Ð¢&WGW&âWFFU&—¦U7Fö6´–å7W&6R‡&—¦T–BÂ&VÖ–æ–æuVçF—G’“°Ð¢ÐÐ Ð¢&WGW&âWFFU&—¦U7Fö6´–äÖVÖ÷'’‡&—¦T–BÂ&VÖ–æ–æuVçF—G’“°Ð§ÐÐ Ð¦W‡÷'B7–æ2gVæ7F–öâ&W6WE&—¦U7Fö6²‡&—¦T–C¢7G&–ær’°Ð¢–b†vWDFF&6¶VæB‚&Æ&VÖ—6R:¬:—&òGR7Fö6²BwVâÆ÷B"’ÓÓÒ'7W&6R"’°Ð¢&WGW&â&W6WE&—¦U7Fö6´–å7W&6R‡&—¦T–B“°Ð¢ÐÐ Ð¢&WGW&â&W6WE&—¦U7Fö6´–äÖVÖ÷'’‡&—¦T–B“°Ð§ÐÐ Ð¦W‡÷'B7–æ2gVæ7F–öâWFFT6×–vå6WGW†–çWC¢6×–vå6WGW–çWB’°Ð¢76W'D6×–vä6åV&Æ—6‚†–çWB“°Ð Ð¢–b†vWDFF&6¶VæB‚&ÆÖ—6R:¦÷W"BwVæR6×væR"’ÓÓÒ'7W&6R"’°Ð¢6öç7B6×–vä–BÒv—BWFFT6×–vå6WGW–å7W&6R†–çWB“°Ð¢–çfÆ–FFT6×–väæf–vF–öä66†R†–çWBæÖW&6†çD–BÂ6×–vä–B“°Ð¢&WGW&âvWD6×–våW&f÷&Öæ6R€Ð¢6×–vä–BÀÐ¢v—B&W6öÇfTÖW&6†çDf÷%7W&6R†–çWBæÖW&6†çD–B’ÀÐ¢“°Ð¢ÐÐ Ð¢&WGW&âWFFT6×–vå6WGW–äÖVÖ÷'’†–çWB“°Ð§ÐÐ Ð¦W‡÷'B7–æ2gVæ7F–öâFövvÆT6×–vâ†–C¢7G&–ærÂ—47F—fS¢&ööÆVâÂÖW&6†çD–Có¢7G&–ær’°Ð¢–b†vWDFF&6¶VæB‚&Âv7F—fF–öâBwVæR6×væR"’ÓÓÒ'7W&6R"’°Ð¢–b†ÖW&6†çD–B’°Ð¢v—BFövvÆT6×–väf÷$ÖW&6†çD–å7W&6R†–BÂ—47F—fRÂÖW&6†çD–B“°Ð¢–çfÆ–FFT6×–väæf–vF–öä66†R†ÖW&6†çD–BÂ–B“°Ð¢&WGW&âçVÆÃ°Ð¢ÐÐ Ð¢v—BFövvÆT6×–vä–å7W&6R†–BÂ—47F—fR“°Ð¢–çfÆ–FFT6×–väæf–vF–öä66†R‡VæFVf–æVBÂ–B“°Ð¢&WGW&âçVÆÃ°Ð¢ÐÐ Ð¢&WGW&âFövvÆT6×–vä–äÖVÖ÷'’†–BÂ—47F—fR“°Ð§ÐÐ Ð¦W‡÷'B7–æ2gVæ7F–öâFVÆWFT6×–vâ†–C¢7G&–ærÂÖW&6†çD–Có¢7G&–ær’°Ð¢–b†vWDFF&6¶VæB‚&Æ7W&W76–öâBwVæR6×væR"’ÓÓÒ'7W&6R"’°Ð¢–b†ÖW&6†çD–B’°Ð¢v—BFVÆWFT6×–väf÷$ÖW&6†çD–å7W&6R†–BÂÖW&6†çD–B“°Ð¢–çfÆ–FFT6×–väæf–vF–öä66†R†ÖW&6†çD–BÂ–B“°Ð¢&WGW&âçVÆÃ°Ð¢ÐÐ Ð¢v—BFVÆWFT6×–vä–å7W&6R†–B“°Ð¢–çfÆ–FFT6×–väæf–vF–öä66†R‡VæFVf–æVBÂ–B“°Ð¢&WGW&âçVÆÃ°Ð¢ÐÐ Ð¢&WGW&âFVÆWFT6×–vä–äÖVÖ÷'’†–B“°Ð§ÐÐ Ð¦W‡÷'B7–æ2gVæ7F–öâGWÆ–6FT6×–vâ†–C¢7G&–ærÂfÆÆ&6´ÖW&6†çC¢ÖW&6†çB’°Ð¢–b†vWDFF&6¶VæB‚&ÆGWÆ–6F–öâBwVæR6×væR"’ÓÓÒ'7W&6R"’°Ð¢6öç7B6×–vä–BÒv—BGWÆ–6FT6×–vä–å7W&6R†–BÂfÆÆ&6´ÖW&6†çB“°Ð¢–çfÆ–FFT6×–väæf–vF–öä66†R†fÆÆ&6´ÖW&6†çBæ–BÂ6×–vä–B“°Ð¢&WGW&âvWD6×–våW&f÷&Öæ6R†6×–vä–BÂfÆÆ&6´ÖW&6†çB“°Ð¢ÐÐ Ð¢&WGW&âGWÆ–6FT6×–vä–äÖVÖ÷'’†–BÂfÆÆ&6´ÖW&6†çBæ–B“°Ð§ÐÐ Ð¦W‡÷'B7–æ2gVæ7F–öâGWÆ–6FT6×–våFôÆö6F–öç2€Ð¢–C¢7G&–ærÀÐ¢W6W$–C¢7G&–ærÀÐ¢6÷W&6TÖW&6†çC¢ÖW&6†çBÀÐ¢F&vWDÆö6F–öä–G3¢7G&–æuµÒÀÐ¢’°Ð¢6öç7BVæ—VUF&vWD–G2Ò²ââææWr6WB‡F&vWDÆö6F–öä–G2•Òæf–ÇFW"‚†Æö6F–öä–B’ÓâÆö6F–öä–BÓÒ6÷W&6TÖW&6†çBæ–B“°Ð¢–b‚Væ—VUF&vWD–G2æÆVæwF‚’F‡&÷ræWrW'&÷"‚%<:–ÆV7F–öææW¢RÖö–ç2VâWG&R6—FRâ"“°Ð Ð¢6öç7B6öçFW‡BÒ6÷W&6TÖW&6†çBçv÷&·76T–@Ð¢òv—BvWDÖW&6†çEv÷&·76T6öçFW‡B‡W6W$–BÂ6÷W&6TÖW&6†çBÐ¢¢²Æö6F–öç3¢·²ÖW&6†çC¢6÷W&6TÖW&6†çBÂ&öÆS¢&÷væW""26öç7BÕÒÓ°Ð¢6öç7BF&vWDÖW&6†çG2Ò6öçFW‡BæÆö6F–öç0Ð¢æÖ‚‡²ÖW&6†çBÒ’ÓâÖW&6†çBÐ¢æf–ÇFW"‚†ÖW&6†çB’ÓâVæ—VUF&vWD–G2æ–æ6ÇVFW2†ÖW&6†çBæ–B’“°Ð¢–b‡F&vWDÖW&6†çG2æÆVæwF‚ÓÒVæ—VUF&vWD–G2æÆVæwF‚’F‡&÷ræWrW'&÷"‚%Vâ6—FR<:–ÆV7F–öæì:’âvW7B266W76–&ÆRâ"“°Ð Ð¢–b†vWDFF&6¶VæB‚&ÆGWÆ–6F–öâ×VÇF’×6—FR"’ÓÓÒ'7W&6R"’°Ð¢6öç7BGWÆ–6FVD–G2ÒµÓ°Ð¢f÷"†6öç7BF&vWDÖW&6†çBöbF&vWDÖW&6†çG2’°Ð¢GWÆ–6FVD–G2çW6‚†v—BGWÆ–6FT6×–våFôÖW&6†çD–å7W&6R†–BÂ6÷W&6TÖW&6†çBÂF&vWDÖW&6†çB’“°Ð¢ÐÐ¢&WGW&âGWÆ–6FVD–G3°Ð¢ÐÐ Ð¢6öç7B6÷W&6RÒ7F÷&Ræ6×–vç2æf–æB‚†6×–vâ’Óâ6×–vâæ–BÓÓÒ–Bbb6×–vâæÖW&6†çD–BÓÓÒ6÷W&6TÖW&6†çBæ–B“°Ð¢–b‚6÷W&6R’F‡&÷ræWrW'&÷"‚$6×væR6÷W&6R–çG&÷Wf&ÆRâ"“°Ð¢&WGW&âF&vWDÖW&6†çG2æÖ‚‡F&vWDÖW&6†çB’Óâ°Ð¢6öç7BGWÆ–6FRÒGWÆ–6FT6×–vä–äÖVÖ÷'’†–BÂ6÷W&6TÖW&6†çBæ–B“°Ð¢6öç7B7&VFVBÒ7F÷&Ræ6×–vç2æf–æB‚†6×–vâ’Óâ6×–vâæ–BÓÓÒGWÆ–6FRæ–B“°Ð¢–b†7&VFVB’°Ð¢7&VFVBæÖW&6†çD–BÒF&vWDÖW&6†çBæ–C°Ð¢7&VFVBçF—FÆRÒG·6÷W&6RçF—FÆWÒ+rG·F&vWDÖW&6†çBæ6—G’óòF&vWDÖW&6†çBæ6ö×ç”æÖWÖ°Ð¢ÐÐ¢&WGW&âGWÆ–6FRæ–C°Ð¢Ò“°Ð§ÐÐ 
+  { id: "evt-007", campaignId: "camp-sora-review", leadId: "lead-001", eventType: "prize_won", createdAt: "2026-06-08T08:32:36.000Z" },
+  { id: "evt-008", campaignId: "camp-sora-review", leadId: "lead-001", eventType: "prize_redeemed", createdAt: "2026-06-08T08:37:00.000Z" },
+  { id: "evt-009", campaignId: "camp-sora-review", eventType: "scan", createdAt: "2026-06-09T10:08:00.000Z" },
+  { id: "evt-010", campaignId: "camp-sora-review", leadId: "lead-002", eventType: "lead_created", createdAt: "2026-06-09T10:10:00.000Z" },
+  { id: "evt-011", campaignId:×žüÒÚ$z{-®éÜj×e(async function getPublicCampaign(
+  id: string,
+  participantToken?: string,
+) {
+  if (getDataBackend("la lecture d'une campagne publique") === "supabase") {
+    return getSupabasePublicCampaign(id, participantToken);
+  }
+
+  return getPublicCampaignFromMemory(id);
+});
+
+export const getCampaignPerformance = cache(async function getCampaignPerformance(campaignId: string, fallbackMerchant?: Merchant) {
+  if (getDataBackend("la lecture des performances campagne") === "supabase") {
+    return getSupabaseCampaignPerformance(campaignId, fallbackMerchant);
+  }
+
+  return getCampaignPerformanceFromMemory(campaignId);
+});
+
+export const getCampaignSetupPerformance = cache(async function getCampaignSetupPerformance(
+  campaignId: string,
+  fallbackMerchant?: Merchant,
+) {
+  if (getDataBackend("la lecture du paramÃ©trage campagne") === "supabase") {
+    return getCachedSupabaseCampaignSetupPerformance(campaignId, fallbackMerchant);
+  }
+
+  return getCampaignPerformanceFromMemory(campaignId);
+});
+
+export const getMerchantDashboard = cache(async function getMerchantDashboard(
+  merchantId = merchantSeed.id,
+  fallbackMerchant?: Merchant,
+) {
+  if (getDataBackend("la lecture du dashboard marchand") === "supabase") {
+    return getSupabaseMerchantDashboard(
+      await resolveMerchantForSupabase(merchantId, fallbackMerchant),
+    );
+  }
+
+  return getMerchantDashboardFromMemory(merchantId, fallbackMerchant);
+});
+
+export const getMerchantWorkspaceDashboard = cache(async function getMerchantWorkspaceDashboard(
+  userId: string,
+  activeMerchant: Merchant,
+) {
+  const context = await getMerchantWorkspaceContext(userId, activeMerchant);
+  const dashboards = await Promise.all(
+    context.locations.map(({ merchant }) => getMerchantDashboard(merchant.id, merchant)),
+  );
+  const campaigns = dashboards.flatMap((dashboard) => dashboard.campaigns);
+  const activityByDay = new Map<string, { scans: number; participations: number }>();
+  dashboards.forEach((dashboard) => {
+    dashboard.activityPoints.forEach((point) => {
+      const current = activityByDay.get(point.label) ?? { scans: 0, participations: 0 };
+      activityByDay.set(point.label, {
+        scans: current.scans + point.scans,
+        participations: current.participations + point.participations,
+      });
+    });
+  });
+
+  return {
+    merchant: activeMerchant,
+    campaigns,
+    totalLeads: dashboards.reduce((total, dashboard) => total + dashboard.totalLeads, 0),
+    totalRedeemed: dashboards.reduce((total, dashboard) => total + dashboard.totalRedeemed, 0),
+    averageConversion: campaigns.length
+      ? Math.round(campaigns.reduce((total, item) => total + item.kpis.conversionRate, 0) / campaigns.length)
+      : 0,
+    activityPoints: [...activityByDay.entries()].map(([label, values]) => ({ label, ...values })),
+  } satisfies MerchantDashboardData;
+});
+
+export const getMerchantCampaignOverview = cache(async function getMerchantCampaignOverview(
+  merchantId = merchantSeed.id,
+  fallbackMerchant?: Merchant,
+) {
+  if (getDataBackend("la lecture de la liste des campagnes") === "supabase") {
+    return getCachedSupabaseMerchantCampaignOverview(
+      await resolveMerchantForSupabase(merchantId, fallbackMerchant),
+    );
+  }
+
+  return getMerchantDashboardFromMemory(merchantId, fallbackMerchant);
+});
+
+export const getMerchantCampaignLibrary = cache(async function getMerchantCampaignLibrary(
+  merchantId = merchantSeed.id,
+  fallbackMerchant?: Merchant,
+) {
+  if (getDataBackend("la lecture de la bibliothÃ¨que de campagnes") === "supabase") {
+    return getCachedSupabaseMerchantCampaignLibrary(fallbackMerchant?.id ?? merchantId);
+  }
+
+  return getMerchantCampaignLibraryFromMemory(merchantId, fallbackMerchant);
+});
+
+export const getMerchantLeads = cache(async function getMerchantLeads(merchantId = merchantSeed.id, campaignId?: string) {
+  if (getDataBackend("la lecture des leads") === "supabase") {
+    return getSupabaseMerchantLeads(merchantId, campaignId);
+  }
+
+  return getMerchantLeadsFromMemory(campaignId);
+});
+
+export async function rememberPublicCampaignParticipant(
+  campaignId: string,
+  email: string,
+  token: string,
+) {
+  if (getDataBackend("la mÃ©morisation du parcours joueur") === "supabase") {
+    return createPublicCampaignIdentity(campaignId, email, token);
+  }
+  return token;
+}
+
+export const findMerchantLeadCampaign = cache(async function findMerchantLeadCampaign(
+  merchantId = merchantSeed.id,
+  query = "",
+) {
+  if (getDataBackend("la recherche d'un lead") === "supabase") {
+    return findSupabaseMerchantLeadCampaign(merchantId, query);
+  }
+
+  const normalizedQuery = query.trim().toLowerCase();
+  return (
+    getMerchantLeadsFromMemory().find((lead) =>
+      [lead.redemptionCode ?? "", lead.email, lead.firstName]
+        .join(" ")
+        .toLowerCase()
+        .includes(normalizedQuery),
+    )?.campaignId ?? null
+  );
+});
+
+export const getMerchantRecentLeads = cache(async function getMerchantRecentLeads(
+  merchantId = merchantSeed.id,
+  limit = 5,
+  query = "",
+) {
+  if (getDataBackend("la lecture des leads rÃ©cents") === "supabase") {
+    return getSupabaseMerchantRecentLeads(merchantId, limit, query);
+  }
+
+  const normalizedQuery = query.trim().toLowerCase();
+
+  return getMerchantLeadsFromMemory()
+    .filter((lead) =>
+      normalizedQuery
+        ? `${lead.firstName} ${lead.email} ${lead.campaignTitle}`.toLowerCase().includes(normalizedQuery)
+        : true,
+    )
+    .slice(0, limit);
+});
+
+export const getCampaignDataView = cache(async function getCampaignDataView(
+  campaignId: string,
+  fallbackMerchant?: Merchant,
+  options: { leadLimit?: number; leadOffset?: number; query?: string; emailStatus?: "attention" } = {},
+) {
+  if (getDataBackend("la lecture des donnÃ©es campagne") === "supabase") {
+    return getSupabaseCampaignDataView(campaignId, fallbackMerchant, options);
+  }
+
+  return getCampaignDataViewFromMemory(campaignId, options);
+});
+
+export const getMerchantSupportOverview = cache(async function getMerchantSupportOverview(
+  merchantId = merchantSeed.id,
+  fallbackMerchant?: Merchant,
+  options: { includeAllMerchants?: boolean } = {},
+) {
+  if (getDataBackend("la lecture de la supervision") === "supabase") {
+    return getSupabaseMerchantSupportOverview(
+      await resolveMerchantForSupabase(merchantId, fallbackMerchant),
+      options,
+    );
+  }
+
+  const leads = getMerchantLeadsFromMemory();
+  const campaigns = getMerchantDashboardFromMemory(merchantId, fallbackMerchant).campaigns;
+  const campaignTitleById = new Map(campaigns.map((item) => [item.campaign.id, item.campaign.title]));
+
+  const pendingClaims: MerchantSupportOverview["pendingClaims"] = leads
+    .filter((lead) => lead.status === "claimed" && lead.redemptionCode)
+    .slice(0, 30)
+    .map((lead) => ({
+      leadId: lead.id,
+      campaignId: lead.campaignId,
+      campaignTitle: campaignTitleById.get(lead.campaignId) ?? "Campagne",
+      firstName: lead.firstName,
+      email: lead.email,
+      prizeLabel: lead.prizeLabel,
+      redemptionCode: lead.redemptionCode ?? "",
+      status: lead.status,
+      availableAt: lead.rewardAvailableAt,
+      expiresAt: lead.rewardExpiresAt,
+    }));
+
+  return {
+    failedEmails: [],
+    webhooks: [],
+    pendingClaims,
+    businessLogs: getMemorySupportLogs()
+      .filter((entry) => options.includeAllMerchants || entry.payload?.merchantId === merchantId)
+      .slice(0, 50)
+      .map((entry) => ({
+        id: entry.id,
+        createdAt: entry.createdAt,
+        level: entry.level,
+        event: entry.event,
+        merchantId:
+          typeof entry.payload?.merchantId === "string" ? entry.payload.merchantId : undefined,
+        campaignId:
+          typeof entry.payload?.campaignId === "string" ? entry.payload.campaignId : undefined,
+        leadId: typeof entry.payload?.leadId === "string" ? entry.payload.leadId : undefined,
+        email:
+          typeof entry.payload?.email === "string"
+            ? entry.payload.email
+            : typeof entry.payload?.recipientEmail === "string"
+              ? entry.payload.recipientEmail
+              : undefined,
+        redemptionCode:
+          typeof entry.payload?.redemptionCode === "string"
+            ? entry.payload.redemptionCode
+            : undefined,
+        summary:
+          typeof entry.payload?.error === "string"
+            ? entry.payload.error
+            : typeof entry.payload?.status === "string"
+              ? entry.payload.status
+              : undefined,
+      })),
+  };
+});
+
+export async function drawForLead(input: DrawRequest, fallbackMerchant?: Merchant) {
+  if (getDataBackend("la participation Ã  un jeu") === "supabase") {
+    const merchant =
+      fallbackMerchant ?? (await resolveCampaignMerchantForSupabase(input.campaignId));
+    return drawForLeadInSupabase(input, merchant);
+  }
+
+  return drawForLeadFromMemory(input);
+}
+
+export async function createDrawSession(
+  input: CreateDrawSessionRequest,
+  fallbackMerchant?: Merchant,
+) {
+  if (getDataBackend("la prÃ©paration d'une partie") === "supabase") {
+    return createDrawSessionInSupabase(input, fallbackMerchant);
+  }
+
+  return createDrawSessionFromMemory(input);
+}
+
+export async function finalizeDrawSession(
+  input: FinalizeDrawSessionRequest,
+  fallbackMerchant?: Merchant,
+) {
+  if (getDataBackend("la finalisation d'une partie") === "supabase") {
+    return finalizeDrawSessionInSupabase(input, fallbackMerchant);
+  }
+
+  return finalizeDrawSessionFromMemory(input);
+}
+
+export async function markActionConfirmed(leadId: string, campaignId?: string) {
+  if (getDataBackend("la confirmation d'une action marketing") === "supabase") {
+    return markActionConfirmedInSupabase(leadId, campaignId);
+  }
+
+  return markActionConfirmedInMemory(leadId, campaignId);
+}
+
+export async function redeemLeadPrize(leadId: string) {
+  if (getDataBackend("le retrait d'un lot") === "supabase") {
+    return redeemLeadPrizeInSupabase(leadId);
+  }
+
+  return redeemLeadPrizeInMemory(leadId);
+}
+
+export async function findMerchantLeadByRedemptionCode(merchantId: string, code: string) {
+  if (getDataBackend("la recherche caisse d'un code") === "supabase") {
+    return findSupabaseMerchantLeadByRedemptionCode(merchantId, code);
+  }
+
+  return findMerchantLeadByRedemptionCodeInMemory(merchantId, code);
+}
+
+export async function redeemMerchantLeadPrizeFromCashier(input: {
+  leadId: string;
+  merchantId: string;
+  operatorUserId: string;
+  purchaseConfirmed: boolean;
+  idempotencyKey: string;
+}) {
+  if (getDataBackend("le retrait caisse d'un lot") === "supabase") {
+    return redeemSupabaseCashierLeadPrize(input);
+  }
+
+  return redeemMerchantLeadPrizeInMemory(input);
+}
+
+export async function resetLeadPrize(leadId: string) {
+  if (getDataBackend("la rÃ©initialisation d'un lot") === "supabase") {
+    return resetLeadPrizeInSupabase(leadId);
+  }
+
+  return resetLeadPrizeInMemory(leadId);
+}
+
+export async function updatePrizeStock(prizeId: string, remainingQuantity: number | null) {
+  if (getDataBackend("la mise Ã  jour du stock d'un lot") === "supabase") {
+    return updatePrizeStockInSupabase(prizeId, remainingQuantity);
+  }
+
+  return updatePrizeStockInMemory(prizeId, remainingQuantity);
+}
+
+export async function resetPrizeStock(prizeId: string) {
+  if (getDataBackend("la remise Ã  zÃ©ro du stock d'un lot") === "supabase") {
+    return resetPrizeStockInSupabase(prizeId);
+  }
+
+  return resetPrizeStockInMemory(prizeId);
+}
+
+export async function updateCampaignSetup(input: CampaignSetupInput) {
+  assertCampaignCanPublish(input);
+
+  if (getDataBackend("la mise Ã  jour d'une campagne") === "supabase") {
+    const campaignId = await updateCampaignSetupInSupabase(input);
+    invalidateCampaignNavigationCache(input.merchantId, campaignId);
+    return getCampaignPerformance(
+      campaignId,
+      await resolveMerchantForSupabase(input.merchantId),
+    );
+  }
+
+  return updateCampaignSetupInMemory(input);
+}
+
+export async function toggleCampaign(id: string, isActive: boolean, merchantId?: string) {
+  if (getDataBackend("l'activation d'une campagne") === "supabase") {
+    if (merchantId) {
+      await toggleCampaignForMerchantInSupabase(id, isActive, merchantId);
+      invalidateCampaignNavigationCache(merchantId, id);
+      return null;
+    }
+
+    await toggleCampaignInSupabase(id, isActive);
+    invalidateCampaignNavigationCache(undefined, id);
+    return null;
+  }
+
+  return toggleCampaignInMemory(id, isActive);
+}
+
+export async function deleteCampaign(id: string, merchantId?: string) {
+  if (getDataBackend("la suppression d'une campagne") === "supabase") {
+    if (merchantId) {
+      await deleteCampaignForMerchantInSupabase(id, merchantId);
+      invalidateCampaignNavigationCache(merchantId, id);
+      return null;
+    }
+
+    await deleteCampaignInSupabase(id);
+    invalidateCampaignNavigationCache(undefined, id);
+    return null;
+  }
+
+  return deleteCampaignInMemory(id);
+}
+
+export async function duplicateCampaign(id: string, fallbackMerchant: Merchant) {
+  if (getDataBackend("la duplication d'une campagne") === "supabase") {
+    const campaignId = await duplicateCampaignInSupabase(id, fallbackMerchant);
+    invalidateCampaignNavigationCache(fallbackMerchant.id, campaignId);
+    return getCampaignPerformance(campaignId, fallbackMerchant);
+  }
+
+  return duplicateCampaignInMemory(id, fallbackMerchant.id);
+}
+
+export async function duplicateCampaignToLocations(
+  id: string,
+  userId: string,
+  sourceMerchant: Merchant,
+  targetLocationIds: string[],
+) {
+  const uniqueTargetIds = [...new Set(targetLocationIds)].filter((locationId) => locationId !== sourceMerchant.id);
+  if (!uniqueTargetIds.length) throw new Error("SÃ©lectionnez au moins un autre site.");
+
+  const context = sourceMerchant.workspaceId
+    ? await getMerchantWorkspaceContext(userId, sourceMerchant)
+    : { locations: [{ merchant: sourceMerchant, role: "owner" as const }] };
+  const targetMerchants = context.locations
+    .map(({ merchant }) => merchant)
+    .filter((merchant) => uniqueTargetIds.includes(merchant.id));
+  if (targetMerchants.length !== uniqueTargetIds.length) throw new Error("Un site sÃ©lectionnÃ© n'est pas accessible.");
+
+  if (getDataBackend("la duplication multi-site") === "supabase") {
+    const duplicatedIds = [];
+    for (const targetMerchant of targetMerchants) {
+      duplicatedIds.push(await duplicateCampaignToMerchantInSupabase(id, sourceMerchant, targetMerchant));
+    }
+    return duplicatedIds;
+  }
+
+  const source = store.campaigns.find((campaign) => campaign.id === id && campaign.merchantId === sourceMerchant.id);
+  if (!source) throw new Error("Campagne source introuvable.");
+  return targetMerchants.map((targetMerchant) => {
+    const duplicate = duplicateCampaignInMemory(id, sourceMerchant.id);
+    const created = store.campaigns.find((campaign) => campaign.id === duplicate.id);
+    if (created) {
+      created.merchantId = targetMerchant.id;
+      created.title = `${source.title} Â· ${targetMerchant.city ?? targetMerchant.companyName}`;
+    }
+    return duplicate.id;
+  });
+}

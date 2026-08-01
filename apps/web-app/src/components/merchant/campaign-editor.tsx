@@ -527,4 +527,396 @@ function SaveFeedbackDialog({
           {tone === "error" ? "!" : "‚úì"}
         </div>
         <h2 className="mt-5 text-center text-2xl font-semibold text-[#0f1728]">{title}</h2>
-        <p className="mt-3 text-center text-sm leading-7 text-[#5c657„Õ:Ú⁄$z{-ÆÈ‹j◊ù÷É◊≥3'––¢f«VS◊∂f˜&“Á&W6VÁFFñˆ‚Ê'WGFˆ‚ÁFWáE6ó¶Uá––¢ˆ‰6ÜÊvS◊≤ÜWfVÁBí”‡–¢6WDf˜&“ÇÜ7W'&VÁBí”‚á∞–¢‚‚Ê7W'&VÁB¿–¢&W6VÁFFñˆ„¢∞–¢‚‚Ê7W'&VÁBÁ&W6VÁFFñˆ‚¿–¢'WGFˆ„¢∞–¢‚‚Ê7W'&VÁBÁ&W6VÁFFñˆ‚Ê'WGFˆ‚¿–¢FWáE6ó¶UÉ¢ÁV÷&W"ÜWfVÁBÁF&vWBÁf«VR«¬#Bí¿–¢“¿–¢“¿–¢“íê–¢––¢6∆74Ê÷S“'r÷gV∆¬&˜VÊFVB’≥#Ö“&˜&FW"&˜&FW"’≤6CvSVE“&r◊vÜóFRÇ”Bí”2˜WF∆ñÊR÷ÊˆÊR –¢Û‡–¢¬ˆ∆&V√‡–†–¢∆∆&V¬6∆74Ê÷S“&f∆WÇóFV◊2÷6VÁFW"v”2&˜VÊFVB’≥#Ö“&˜&FW"&˜&FW"’≤6CvSVE“&r’≤6cvcñf5“Ç”Bí”2FWáB◊6“FWáB’≤3É#35“÷C¶6ˆ¬◊7‚”"#‡–¢∆ñÁW@–¢GóS“&6ÜV6∂&˜Ç –¢6ÜV6∂VC◊∂f˜&“Á&W6VÁFFñˆ‚Ê'WGFˆ‚Êó4&ˆ∆G––¢ˆ‰6ÜÊvS◊≤ÜWfVÁBí”‡–¢6WDf˜&“ÇÜ7W'&VÁBí”‚á∞–¢‚‚Ê7W'&VÁB¿–¢&W6VÁFFñˆ„¢∞–¢‚‚Ê7W'&VÁBÁ&W6VÁFFñˆ‚¿–¢'WGFˆ„¢∞–¢‚‚Ê7W'&VÁBÁ&W6VÁFFñˆ‚Ê'WGFˆ‚¿–¢ó4&ˆ∆C¢WfVÁBÁF&vWBÊ6ÜV6∂VB¿–¢“¿–¢“¿–¢“íê–¢––¢Û‡–¢«7‚6∆74Ê÷S“&fˆÁB◊6V÷ñ&ˆ∆B#ÂFWáFRGR&˜WFˆ‚V‚w&3¬˜7„‡–¢¬ˆ∆&V√‡–¢¬ˆFóc‡–¢¬˜6V7Fñˆ„‡–¢í¢ÁV∆«––†–¢«6V7Fñˆ‚6∆74Ê÷S“&ˆ∂FÚ÷6&B”b#‡–¢∆Fób6∆74Ê÷S“&f∆WÇóFV◊2÷6VÁFW"ßW7Fñgí÷&WGvVV‚v”2#‡–¢∆Fóc‡–¢«6∆74Ê÷S“'FWáB◊á2WW&66RG&6∂ñÊr’≥„#ÜV’“FWáB’≤3v#ÉCìe“#‰F˜FFñˆ„¬˜‡–¢∆É"6∆74Ê÷S“&◊B”"FWáB”'Ü¬fˆÁB◊6V÷ñ&ˆ∆BFWáB’≤3É#u“#‡–¢∆˜G2¬f∆ñFóL:íWB6ˆÊFóFñˆÁ0–¢¬ˆÉ#‡–¢¬ˆFóc‡–¢∆Fób6∆74Ê÷S“&f∆WÇf∆WÇ◊w&óFV◊2÷6VÁFW"ßW7Fñgí÷VÊBv”2#‡–¢∑&ó¶U7VvvW7FñˆÁ2Ê∆VÊwFÇ‚ÚÄ–¢∆'WGFˆ‡–¢GóS“&'WGFˆ‚ –¢ˆ‰6∆ñ6≥◊≤Çí”‚6WE&ó¶U7VvvW7FñˆÁ4˜V‚áG'VRó––¢6∆74Ê÷S“&ñÊ∆ñÊR÷f∆WÇóFV◊2÷6VÁFW"v”"&˜VÊFVB’≥#Ö“&˜&FW"&˜&FW"’≤6CvSVE“&r◊vÜóFRÇ”Bí”2FWáB◊6“fˆÁB◊6V÷ñ&ˆ∆BFWáB’≤3É#35“G&Á6óFñˆ‚Ü˜fW#¶&r’≤6cvcñf5“ –¢‡–¢≈7&∂∆W26∆74Ê÷S“&Ç”Br”BFWáB’≤3&cfFce“"&ñ÷ÜñFFV„“'G'VR"Û‡–¢7Vv|:ó&W"FW2∆˜G0–¢¬ˆ'WGFˆ„‡–¢í¢ÁV∆«––¢∆'WGFˆ‡–¢GóS“&'WGFˆ‚ –¢ˆ‰6∆ñ6≥◊∂FE&ó¶W––¢6∆74Ê÷S“'&˜VÊFVB’≥#Ö“&r’≤3É#u“Ç”Bí”2FWáB◊6“fˆÁB◊6V÷ñ&ˆ∆BFWáB◊vÜóFR –¢‡–¢¶˜WFW"V‚∆˜@–¢¬ˆ'WGFˆ„‡–¢¬ˆFóc‡–¢¬ˆFóc‡–†–¢∆Fób6∆74Ê÷S“&◊B”bw&ñBv”B÷C¶w&ñB÷6ˆ«2”"#‡–¢∆∆&V¬6∆74Ê÷S“&f∆WÇ÷ñ‚÷Ç’≥ì'Ö“7W'6˜"◊ˆñÁFW"óFV◊2◊7F'Bv”2&˜VÊFVB’≥#Ö“&˜&FW"&˜&FW"’≤6CvSVE“&r◊vÜóFRÇ”Bí”BFWáB◊6“G&Á6óFñˆ‚Ü˜fW#¶&˜&FW"’≤6#Ü3ÜSE“#‡–¢∆ñÁW@–¢GóS“&6ÜV6∂&˜Ç –¢6ÜV6∂VC◊∂f˜&“Á&Wv&E'V∆W2Êfñ∆&∆TgFW$Ü˜W'2‚––¢ˆ‰6ÜÊvS◊≤ÜWfVÁBí”‡–¢6WDf˜&“ÇÜ7W'&VÁBí”‚á∞–¢‚‚Ê7W'&VÁB¿–¢&Wv&E'V∆W3¢∞–¢‚‚Ê7W'&VÁBÁ&Wv&E'V∆W2¿–¢fñ∆&∆TgFW$Ü˜W'3¢WfVÁBÁF&vWBÊ6ÜV6∂VBÚ#B¢¿–¢“¿–¢“íê–¢––¢6∆74Ê÷S“&◊B”Ç”Br”B6á&ñÊ≤”&˜VÊFVB&˜&FW"’≤66&CVS“FWáB’≤3&cfFce“fˆ7W3ß&ñÊr’≤3&cfFce“Û# –¢Û‡–¢«7„‡–¢«7‚6∆74Ê÷S“&&∆ˆ6≤fˆÁB◊6V÷ñ&ˆ∆BFWáB’≤3É#35“#‡–¢∆˜BFó7ˆÊñ&∆R∆˜'2Bf˜3∑VÊR&ˆ6ÜñÊRfó6óFP–¢¬˜7„‡–¢«7‚6∆74Ê÷S“&◊B”&∆ˆ6≤FWáB◊á2∆VFñÊr”RFWáB’≤3v#ÉCìe“#‡–¢∆R∆˜B6W&Fó7ˆÊñ&∆R#BÇ,:á2∆'Fñ6óFñˆ‚¬:'Fó"GR∆VÊFV÷ñ‚‡–¢¬˜7„‡–¢¬˜7„‡–¢¬ˆ∆&V√‡–†–¢∆∆&V¬6∆74Ê÷S“'FWáB◊6“#‡–¢«7‚6∆74Ê÷S“&÷"”"&∆ˆ6≤FWáB’≤3cf#v5“#‰GW,:ñRFR&WG&óBÜ¶˜W'2ì¬˜7„‡–¢∆ñÁW@–¢GóS“&ÁV÷&W" –¢÷ñ„◊≥––¢f«VS◊∂f˜&“Á&Wv&E'V∆W2Êfñ∆&ñ∆óGîGW&Fñˆ‰Fó7––¢ˆ‰6ÜÊvS◊≤ÜWfVÁBí”‡–¢6WDf˜&“ÇÜ7W'&VÁBí”‚á∞–¢‚‚Ê7W'&VÁB¿–¢&Wv&E'V∆W3¢∞–¢‚‚Ê7W'&VÁBÁ&Wv&E'V∆W2¿–¢fñ∆&ñ∆óGîGW&Fñˆ‰Fó3¢ÁV÷&W"ÜWfVÁBÁF&vWBÁf«VR«¬í¿–¢“¿–¢“íê–¢––¢6∆74Ê÷S“'r÷gV∆¬&˜VÊFVB’≥#Ö“&˜&FW"&˜&FW"’≤6CvSVE“&r◊vÜóFRÇ”Bí”2˜WF∆ñÊR÷ÊˆÊR –¢Û‡–¢¬ˆ∆&V√‡–†–¢∂ó4WáW'D÷ˆFRÚÄ–¢∆∆&V¬6∆74Ê÷S“'FWáB◊6“#‡–¢«7‚6∆74Ê÷S“&÷"”"&∆ˆ6≤FWáB’≤3cf#v5“#‡–¢L:ñ∆íVÁG&RFWWÇ'Fñ6óFñˆÁ2Ü¶˜W'2ê–¢¬˜7„‡–¢∆ñÁW@–¢GóS“&ÁV÷&W" –¢÷ñ„◊≥––¢÷É◊≥3cW––¢f«VS◊∂f˜&“Á&Wv&E'V∆W2Á'Fñ6óFñˆ‰ñÁFW'fƒFó7––¢ˆ‰6ÜÊvS◊≤ÜWfVÁBí”‡–¢6WDf˜&“ÇÜ7W'&VÁBí”‚á∞–¢‚‚Ê7W'&VÁB¿–¢&Wv&E'V∆W3¢∞–¢‚‚Ê7W'&VÁBÁ&Wv&E'V∆W2¿–¢'Fñ6óFñˆ‰ñÁFW'fƒFó3¢÷FÇÊ÷ÇÉ¬ÁV÷&W"ÜWfVÁBÁF&vWBÁf«VR«¬íí¿–¢“¿–¢“íê–¢––¢6∆74Ê÷S“'r÷gV∆¬&˜VÊFVB’≥#Ö“&˜&FW"&˜&FW"’≤6CvSVE“&r◊vÜóFRÇ”Bí”2˜WF∆ñÊR÷ÊˆÊR –¢Û‡–¢¬ˆ∆&V√‡–¢í¢ÁV∆«––†–¢∆Fób6∆74Ê÷S“'76R◊í”2&˜VÊFVB’≥#Ö“&˜&FW"&˜&FW"’≤6CvSVE“&r◊vÜóFR”BFWáB◊6“FWáB’≤3É#35“#‡–¢∆∆&V¬6∆74Ê÷S“&f∆WÇóFV◊2÷6VÁFW"v”2#‡–¢∆ñÁW@–¢GóS“&6ÜV6∂&˜Ç –¢6ÜV6∂VC◊∂f˜&“Á&Wv&E'V∆W2Êó5vñÊÊñÊtWfW'ïFñ÷W––¢ˆ‰6ÜÊvS◊≤ÜWfVÁBí”‡–¢6WDf˜&“ÇÜ7W'&VÁBí”‚á∞–¢‚‚Ê7W'&VÁB¿–¢&Wv&E'V∆W3¢∞–¢‚‚Ê7W'&VÁBÁ&Wv&E'V∆W2¿–¢ó5vñÊÊñÊtWfW'ïFñ÷S¢WfVÁBÁF&vWBÊ6ÜV6∂VB¿–¢“¿–¢“íê–¢––¢Û‡–¢¶WRRvvÊÁ@–¢¬ˆ∆&V√‡–¢¬ˆFóc‡–¢¬ˆFóc‡–†–¢∆Fób6∆74Ê÷S“&◊B”bÜñFFV‚w&ñB÷6ˆ«2’∂÷ñÊ÷ÇÉÉÇ√„Vg"ïˆ÷ñÊ÷ÇÉÇ¬„vg"ïˆ÷ñÊ÷ÇÉ3Ç¬„ñg"ïˆ÷ñÊ÷ÇÉ#Ç¬„ÉVg"ïˆ÷ñÊ÷ÇÉ#Ç√„Vg"ïÛSgÖ“v”2&˜VÊFVB’≥#'Ö“&r’≤6cvcñf5“Ç”Bí”2FWáB’≥Ö“WW&66RG&6∂ñÊr’≥„#FV’“FWáB’≤3v#ÉCìe“Ü√¶w&ñB#‡–¢«7„‰F˜FFñˆ„¬˜7„‡–¢«7„Â7Fˆ6≥¬˜7„‡–¢«7„Â&ˆ&&ñ∆óL:íFRvñ‚ÇRì¬˜7„‡–¢«7„‰6¸;∑BVÊóFó&S¬˜7„‡–¢«7‚Û‡–¢¬ˆFóc‡–†–¢∆Fób6∆74Ê÷S“&◊B”B76R◊í”B#‡–¢∂f˜&“Á&ó¶W2Ê∆VÊwFÇ””“ÚÄ–¢∆Fób6∆74Ê÷S“'&˜VÊFVB’≥#GÖ“&˜&FW"&˜&FW"÷F6ÜVB&˜&FW"’≤66fCñV“&r◊vÜóFRÇ”Rí”bFWáB◊6“∆VFñÊr”bFWáB’≤3V3cSsu“#‡–¢V7V‚∆˜B‚f˜3∂W7BVÊ6˜&R6ˆÊfñwW"fV7WFS≤‚¶˜WFW¢R÷ˆñÁ2V‚∆˜B˜W"˜Wfˆó –¢VÁ&Vvó7G&W"¬f˜3∂Êñ÷Fñˆ‚‡–¢¬ˆFóc‡–¢í¢ÁV∆«––¢∂f˜&“Á&ó¶W2Ê÷Çá&ó¶Rí”‚Ä–¢ƒ6◊ñvÂ&ó¶U&˜p–¢∂Wì◊∑&ó¶RÊñG––¢&ó¶S◊∑&ó¶W––¢ˆÂWFFS◊∑WFFU&ó¶W––¢ˆÂ&V÷˜fS◊∑&V÷˜fU&ó¶W––¢ˆ‰˜V‰6ˆÊFóFñˆÁ3◊≤á&ó¶TñBí”‚6WDVFóFñÊu&ó¶T6ˆÊFóFñˆÁ4ñBá&ó¶TñBÛÚÁV∆¬ó––¢Û‡–¢íó––¢¬ˆFóc‡–†–¢∆Fób6∆74Ê÷S“&◊B”2ÜñFFV‚w&ñB÷6ˆ«2’∂÷ñÊ÷ÇÉÉÇ√„Vg"ïˆ÷ñÊ÷ÇÉÇ¬„vg"ïˆ÷ñÊ÷ÇÉ3Ç¬„ñg"ïˆ÷ñÊ÷ÇÉ#Ç¬„ÉVg"ïˆ÷ñÊ÷ÇÉ#Ç√„Vg"ïÛSgÖ“v”2Ü√¶w&ñB#‡–¢«7‚Û‡–¢«7‚Û‡–¢∆Fó`–¢6∆74Ê÷S◊∂&˜VÊFVB’≥gÖ“&˜&FW"Ç”2í”"FWáB÷6VÁFW"FWáB◊6“fˆÁB◊6V÷ñ&ˆ∆BG∞–¢F˜F≈&ó¶U&ˆ&&ñ∆óGí‚ –¢Ú&&˜&FW"’≤6fV66“&r’≤6ffcc%“FWáB’≤6&S#65“ –¢¢F˜F≈&ó¶U&ˆ&&ñ∆óGí””“ –¢Ú&&˜&FW"’≤6&&cvC“&r’≤6cfFcE“FWáB’≤3SÉ6E“ –¢¢&&˜&FW"’≤6F&SFc“&r’≤6cvcñf5“FWáB’≤3cCsCÜ%“ –¢÷––¢‡–¢F˜F¬¢∑F˜F≈&ó¶U&ˆ&&ñ∆óGó“P–¢¬ˆFóc‡–¢«7‚Û‡–¢«7‚Û‡–¢«7‚Û‡–¢¬ˆFóc‡–†–¢∆Fó`–¢6∆74Ê÷S◊∂◊B”B&˜VÊFVB’≥gÖ“&˜&FW"Ç”Bí”2FWáB◊6“fˆÁB◊6V÷ñ&ˆ∆BÜ√¶ÜñFFV‚G∞–¢F˜F≈&ó¶U&ˆ&&ñ∆óGí‚ –¢Ú&&˜&FW"’≤6fV66“&r’≤6ffcc%“FWáB’≤6&S#65“ –¢¢F˜F≈&ó¶U&ˆ&&ñ∆óGí””“ –¢Ú&&˜&FW"’≤6&&cvC“&r’≤6cfFcE“FWáB’≤3SÉ6E“ –¢¢&&˜&FW"’≤6F&SFc“&r’≤6cvcñf5“FWáB’≤3cCsCÜ%“ –¢÷––¢‡–¢F˜F¬FW2&ˆ&&ñ∆óL:ó2FRvñ‚¢∑F˜F≈&ó¶U&ˆ&&ñ∆óGó“P–¢¬ˆFóc‡–¢¬˜6V7Fñˆ„‡–†–¢∂f˜&“ÊñBÚƒ6◊ñv‰V÷ñ≈&WfñWr÷W&6ÜÁC◊∂÷W&6ÜÁG“f˜&”◊∂f˜&◊“Û‚¢ÁV∆«––†–¢∂÷W76vRÚÄ–¢«6V7Fñˆ‡–¢6∆74Ê÷S◊∂&˜VÊFVB’≥#GÖ“&˜&FW"Ç”Rí”BFWáB◊6“6ÜF˜r’≥ÛáÖÛCGÖ˜&v&É#"√3b√cb√„ï“G∞–¢÷W76vUFˆÊR””“&W'&˜" –¢Ú&&˜&FW"’≤6fV66“&r’≤6ffcc%“FWáB’≤3ñc#3ï“ –¢¢&&˜&FW"’≤6F&SFc“&r◊vÜóFRFWáB’≤3É#35“ –¢÷––¢‡–¢∆Fób6∆74Ê÷S“&fˆÁB◊6V÷ñ&ˆ∆B#‡–¢∂÷W76vUFˆÊR””“&W'&˜""Ú$VÁ&Vvó7G&V÷VÁBñ◊˜76ñ&∆R"¢$ñÊf˜&÷Fñˆ‚'––¢¬ˆFóc‡–¢«6∆74Ê÷S“&◊B”∆VFñÊr”b#Á∂÷W76vW”¬˜‡–¢¬˜6V7Fñˆ„‡–¢í¢ÁV∆«––¢¬ˆFóc‡–†–¢∆Fób6∆74Ê÷S“'76R◊í”bÜ√ß7Fñ6∑íÜ√ßF˜”bÜ√ß6V∆b◊7F'B#‡–¢«6V7Fñˆ‚6∆74Ê÷S“'ˆñÁFW"÷WfVÁG2÷ÊˆÊRˆ∂FÚ÷6&B”R#‡–¢∆Fób6∆74Ê÷S“&f∆WÇóFV◊2÷6VÁFW"ßW7Fñgí÷&WGvVV‚v”2#‡–¢∆Fóc‡–¢«6∆74Ê÷S“'FWáB◊á2WW&66RG&6∂ñÊr’≥„#ÜV’“FWáB’≤3v#ÉCìe“#‡–¢,:ófó7V∆ó6Fñˆ‚÷ˆ&ñ∆P–¢¬˜‡–¢∆É"6∆74Ê÷S“&ˆ∂FÚ◊6V7Fñˆ‚◊FóF∆R◊B”"#Â&VÊGRV&∆ñ3¬ˆÉ#‡–¢¬ˆFóc‡–¢∂f˜&“ÊñBÚÄ–¢∆Fób6∆74Ê÷S“&ˆ∂FÚ÷7Fñˆ‚◊&˜rˆñÁFW"÷WfVÁG2÷WFÚf∆WÇf∆WÇ◊w&ßW7Fñgí÷VÊBv”"#‡–¢∆–¢á&Vc◊∂ˆíˆ6◊ñvÁ2ÚG∂f˜&“ÊñG“˜&––¢6∆74Ê÷S“&ˆ∂FÚ◊6V6ˆÊF'í÷7Fñˆ‚Ç”B –¢‡–¢ –¢¬ˆ‡–¢ƒ∆ñÊ∞–¢á&Vc◊∂ˆ6◊ñvÁ2ÚG∂f˜&“ÊñG“˜˜7FW&––¢&VfWF6É◊∂f«6W––¢6∆74Ê÷S“&ˆ∂FÚ◊6V6ˆÊF'í÷7Fñˆ‚Ç”B –¢‡–¢ffñ6ÜP–¢¬Ù∆ñÊ≥‡–¢ƒ∆ñÊ∞–¢á&Vc◊∂ˆ6◊ñv‚ÚG∂f˜&“ÊñG”˜&WfñWs”––¢&VfWF6É◊∂f«6W––¢F&vWC“%ˆ&∆Ê≤ –¢&V√“&Ê˜&VfW'&W" –¢6∆74Ê÷S“&ˆ∂FÚ◊&ñ÷'í÷7Fñˆ‚Ç”B –¢‡–¢,:ófó7V∆ó6W –¢¬Ù∆ñÊ≥‡–¢¬ˆFóc‡–¢í¢ÁV∆«––¢¬ˆFóc‡–†–¢≈6Ü&VD6◊ñv‰∆ófU&WfñWr÷W&6ÜÁC◊∂÷W&6ÜÁG“&WfñWs◊∂FVfW'&VE&WfñWw“Û‡–¢¬˜6V7Fñˆ„‡–¢¬ˆFóc‡–¢¬ˆFóc‡–¢∆Fób6∆74Ê÷S“'ˆñÁFW"÷WfVÁG2÷ÊˆÊRfóÜVBñÁ6WB◊Ç”&˜GFˆ“”¢”3Ç”B"”BÜ√¶ÜñFFV‚#‡–¢∆Fób6∆74Ê÷S“'ˆñÁFW"÷WfVÁG2÷WFÚ◊Ç÷WFÚ÷Ç◊r’≥s#Ö“&˜VÊFVB’≥áÖ“&˜&FW"&˜&FW"÷&˜&FW"&r◊vÜóFRÛìb”26ÜF˜r◊&ˆGV7B÷6&B&6∂G&˜÷&«W"#‡–¢∆Fób6∆74Ê÷S“&w&ñBv”26”¶w&ñB÷6ˆ«2”"#‡–¢∑6fVD6◊ñv‰ñBÚÄ–¢√‡–¢ƒ∆ñÊ∞–¢á&Vc◊∂ˆ6◊ñv‚ÚG∑6fVD6◊ñv‰ñG”˜&WfñWs”––¢&VfWF6É◊∂f«6W––¢F&vWC“%ˆ&∆Ê≤ –¢6∆74Ê÷S“&ˆ∂FÚ◊&ñ÷'í÷7Fñˆ‚Ç”B –¢‡–¢,:ófó7V∆ó6W –¢¬Ù∆ñÊ≥‡–¢ƒ∆ñÊ∞–¢á&Vc◊∂ˆ6◊ñvÁ2ÚG∑6fVD6◊ñv‰ñG“˜˜7FW&––¢&VfWF6É◊∂f«6W––¢6∆74Ê÷S“&ˆ∂FÚ◊6V6ˆÊF'í÷7Fñˆ‚Ç”B –¢‡–¢ffñ6ÜP–¢¬Ù∆ñÊ≥‡–¢¬Û‡–¢í¢ÁV∆«––¢∆'WGFˆ‡–¢GóS“&'WGFˆ‚ –¢ˆ‰6∆ñ6≥◊∑6fT6◊ñvÁ––¢Fó6&∆VC◊∂ó56fñÊw––¢6∆74Ê÷S◊∂ˆ∂FÚ÷fñ∆∆VB÷7Fñˆ‚Ç”BFó6&∆VC¶7W'6˜"÷Ê˜B÷∆∆˜vVBFó6&∆VC¶˜6óGí”sG∞–¢6fVD6◊ñv‰ñBÚ'6”¶6ˆ¬◊7‚”""¢'r÷gV∆¬ –¢÷––¢‡–¢∂ó56fñÊrÚ$VÁ&Vvó7G&V÷VÁB‚‚‚"¢$VÁ&Vvó7G&W"'––¢¬ˆ'WGFˆ„‡–¢¬ˆFóc‡–¢¬ˆFóc‡–¢¬ˆFóc‡–¢≈&ó¶T6ˆÊFóFñˆÁ4Fñ∆ˆp–¢˜V„◊¥&ˆˆ∆V‚ÜVFóFñÊu&ó¶Ró––¢&ó¶T∆&V√◊∂VFóFñÊu&ó¶SÚÊ∆&V¬ÛÚ"'––¢f«VS◊∂VFóFñÊu&ó¶SÚÁW6vT6ˆÊFóFñˆÁ2ÛÚ"'––¢ˆ‰6ÜÊvS◊≤ÜÊWáEf«VRí”‚∞–¢ñbÜVFóFñÊu&ó¶SÚÊñBí∞–¢WFFU&ó¶RÜVFóFñÊu&ó¶RÊñB¬≤W6vT6ˆÊFóFñˆÁ3¢ÊWáEf«VR“ì∞–¢––¢◊––¢ˆ‰6∆˜6S◊≤Çí”‚6WDVFóFñÊu&ó¶T6ˆÊFóFñˆÁ4ñBÜÁV∆¬ó––¢Û‡–¢≈&ó¶U7VvvW7Fñˆ‰Fñ∆ˆp–¢˜V„◊∑&ó¶U7VvvW7FñˆÁ4˜VÁ––¢7VvvW7FñˆÁ3◊∑&ó¶U7VvvW7FñˆÁ7––¢ñÊGW7G'ì◊∂÷W&6ÜÁBÊñÊGW7G'ó––¢&V÷ñÊñÊu&ˆ&&ñ∆óGì◊∑&V÷ñÊñÊu&ó¶U&ˆ&&ñ∆óGó––¢ˆ‰FC◊∂FE7VvvW7FVE&ó¶W––¢ˆ‰6∆˜6S◊≤Çí”‚6WE&ó¶U7VvvW7FñˆÁ4˜V‚Üf«6Ró––¢Û‡–¢ƒ&6∂w&˜VÊD∆ñ'&'îFñ∆ˆp–¢˜V„◊∂&6∂w&˜VÊD∆ñ'&'îFñ∆ˆt˜VÁ––¢ˆ‰6∆˜6S◊≤Çí”‚6WD&6∂w&˜VÊD∆ñ'&'îFñ∆ˆt˜V‚Üf«6Ró––¢óFV◊3◊∂&6∂w&˜VÊD∆ñ'&'ó––¢ó4∆ˆFñÊs◊∂ó4∆ñ'&'î∆ˆFñÊw––¢W'&˜#◊∂∆ñ'&'î÷W76vW––¢6V∆V7FVDñ÷vUW&√◊∂f˜&“Á&W6VÁFFñˆ‚Ê&6∂w&˜VÊBÊñ÷vUW&¬ÛÚ"'––¢ˆÂ6V∆V7C◊∑6V∆V7D&6∂w&˜VÊDñ÷vW––¢Û‡–¢≈6fTfVVF&6¥Fñ∆ˆp–¢˜V„◊∑6fTFñ∆ˆt˜VÁ––¢FóF∆S◊∑6fTFñ∆ˆuFóF∆W––¢FW67&óFñˆ„◊∑6fTFñ∆ˆtFW67&óFñˆÁ––¢FˆÊS◊∑6fTFñ∆ˆuFˆÊW––¢ˆ‰6∆˜6S◊≤Çí”‚∞–¢6WE6fTFñ∆ˆt˜V‚Üf«6Rì∞–†–¢ñbá6fTFñ∆ˆuFˆÊR”“&W'&˜""bbñÊóFñƒ6◊ñv‚bb6fVD6◊ñv‰ñBí∞–¢&˜WFW"Á&W∆6RÜˆ6◊ñvÁ2ÚG∑6fVD6◊ñv‰ñG“ˆVFóFì∞–¢––¢◊––¢Û‡–¢¬ˆFóc‡–¢ì∞–ß––†
+        <p className="mt-3 text-center text-sm leading-7 text-[#5c6577]">{description}</p>
+        <button
+          type="button"
+          onClick={onClose}
+          className="mt-6 w-full rounded-[20px] border border-[#111827] bg-[#111827] px-4 py-3 text-sm font-semibold text-white"
+        >
+          Continuer
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function BackgroundLibraryDialog({
+  open,
+  onClose,
+  items,
+  isLoading,
+  error,
+  selectedImageUrl,
+  onSelect,
+}: {
+  open: boolean;
+  onClose: () => void;
+  items: BackgroundLibraryAsset[];
+  isLoading: boolean;
+  error: st„Æ∏Ú⁄$z{-ÆÈ‹j◊ùize)}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <label className="text-sm md:col-span-2">
+                <span className="mb-2 block text-[#616b7c]">Taille du texte (px)</span>
+                <input
+                  type="number"
+                  min={12}
+                  max={32}
+                  value={form.presentation.button.textSizePx}
+                  onChange={(event) =>
+                    setForm((current) => ({
+                      ...current,
+                      presentation: {
+                        ...current.presentation,
+                        button: {
+                          ...current.presentation.button,
+                          textSizePx: Number(event.target.value || 24),
+                        },
+                      },
+                    }))
+                  }
+                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
+                />
+              </label>
+
+              <label className="flex items-center gap-3 rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 text-sm text-[#182033] md:col-span-2">
+                <input
+                  type="checkbox"
+                  checked={form.presentation.button.isBold}
+                  onChange={(event) =>
+                    setForm((current) => ({
+                      ...current,
+                      presentation: {
+                        ...current.presentation,
+                        button: {
+                          ...current.presentation.button,
+                          isBold: event.target.checked,
+                        },
+                      },
+                    }))
+                  }
+                />
+                <span className="font-semibold">Texte du bouton en gras</span>
+              </label>
+            </div>
+            </section>
+          ) : null}
+
+          <section className="okado-card p-6">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Dotation</p>
+                <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
+                  Lots, validit√© et conditions
+                </h2>
+              </div>
+              <div className="flex flex-wrap items-center justify-end gap-3">
+                {prizeSuggestions.length > 0 ? (
+                  <button
+                    type="button"
+                    onClick={() => setPrizeSuggestionsOpen(true)}
+                    className="inline-flex items-center gap-2 rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-3 text-sm font-semibold text-[#182033] transition hover:bg-[#f7f9fc]"
+                  >
+                    <Sparkles className="h-4 w-4 text-[#2f6df6]" aria-hidden="true" />
+                    Sugg√©rer des lots
+                  </button>
+                ) : null}
+                <button
+                  type="button"
+                  onClick={addPrize}
+                  className="rounded-[20px] bg-[#111827] px-4 py-3 text-sm font-semibold text-white"
+                >
+                  Ajouter un lot
+                </button>
+              </div>
+            </div>
+
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+              <label className="flex min-h-[92px] cursor-pointer items-start gap-3 rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-4 text-sm transition hover:border-[#b8c8e4]">
+                <input
+                  type="checkbox"
+                  checked={form.rewardRules.availableAfterHours > 0}
+                  onChange={(event) =>
+                    setForm((current) => ({
+                      ...current,
+                      rewardRules: {
+                        ...current.rewardRules,
+                        availableAfterHours: event.target.checked ? 24 : 0,
+                      },
+                    }))
+                  }
+                  className="mt-1 h-4 w-4 shrink-0 rounded border-[#cbd5e1] text-[#2f6df6] focus:ring-[#2f6df6]/20"
+                />
+                <span>
+                  <span className="block font-semibold text-[#182033]">
+                    Lot disponible lors d&apos;une prochaine visite
+                  </span>
+                  <span className="mt-1 block text-xs leading-5 text-[#7b8496]">
+                    Le lot sera disponible 24 h apr√®s la participation, √† partir du lendemain.
+                  </span>
+                </span>
+              </label>
+
+              <label className="text-sm">
+                <span className="mb-2 block text-[#616b7c]">Dur√©e de retrait (jours)</span>
+                <input
+                  type="number"
+                  min={0}
+                  value={form.rewardRules.availabilityDurationDays}
+                  onChange={(event) =>
+                    setForm((current) => ({
+                      ...current,
+                      rewardRules: {
+                        ...current.rewardRules,
+                        availabilityDurationDays: Number(event.target.value || 0),
+                      },
+                    }))
+                  }
+                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
+                />
+              </label>
+
+              {isExpertMode ? (
+                <label className="text-sm">
+                  <span className="mb-2 block text-[#616b7c]">
+                    D√©lai entre deux participations (jours)
+                  </span>
+                  <input
+                    type="number"
+                    min={1}
+                    max={365}
+                    value={form.rewardRules.participationIntervalDays}
+                    onChange={(event) =>
+                      setForm((current) => ({
+                        ...current,
+                        rewardRules: {
+                          ...current.rewardRules,
+                          participationIntervalDays: Math.max(1, Number(event.target.value || 1)),
+                        },
+                      }))
+                    }
+                    className="w-full rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
+                  />
+                </label>
+              ) : null}
+
+              <div className="space-y-3 rounded-[20px] border border-[#d7e0ed] bg-white p-4 text-sm text-[#182033]">
+                <label className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    checked={form.rewardRules.isWinningEveryTime}
+                    onChange={(event) =>
+                      setForm((current) => ({
+                        ...current,
+                        rewardRules: {
+                          ...current.rewardRules,
+                          isWinningEveryTime: event.target.checked,
+                        },
+                      }))
+                    }
+                  />
+                  Jeu 100% gagnant
+                </label>
+              </div>
+            </div>
+
+            <div className="mt-6 hidden grid-cols-[minmax(180px,1.5fr)_minmax(100px,.7fr)_minmax(130px,.9fr)_minmax(120px,.85fr)_minmax(120px,1.15fr)_56px] gap-3 rounded-[22px] bg-[#f7f9fc] px-4 py-3 text-[11px] uppercase tracking-[0.24em] text-[#7b8496] xl:grid">
+              <span>Dotation</span>
+              <span>Stock</span>
+              <span>Probabilit√© de gain (%)</span>
+              <span>Co√ªt unitaire</span>
+              <span />
+            </div>
+
+            <div className="mt-4 space-y-4">
+              {form.prizes.length === 0 ? (
+                <div className="rounded-[24px] border border-dashed border-[#cfd9ea] bg-white px-5 py-6 text-sm leading-6 text-[#5c6577]">
+                  Aucun lot n&apos;est encore configur&eacute;. Ajoutez au moins un lot pour pouvoir
+                  enregistrer l&apos;animation.
+                </div>
+              ) : null}
+              {form.prizes.map((prize) => (
+                <CampaignPrizeRow
+                  key={prize.id}
+                  prize={prize}
+                  onUpdate={updatePrize}
+                  onRemove={removePrize}
+                          onOpenConditions={(prizeId) => setEditingPrizeConditionsId(prizeId ?? null)}
+                />
+              ))}
+            </div>
+
+            <div className="mt-3 hidden grid-cols-[minmax(180px,1.5fr)_minmax(100px,.7fr)_minmax(130px,.9fr)_minmax(120px,.85fr)_minmax(120px,1.15fr)_56px] gap-3 xl:grid">
+              <span />
+              <span />
+              <div
+                className={`rounded-[16px] border px-3 py-2 text-center text-sm font-semibold ${
+                  totalPrizeProbability > 100
+                    ? "border-[#fecaca] bg-[#fff1f2] text-[#be123c]"
+                    : totalPrizeProbability === 100
+                      ? "border-[#bbf7d0] bg-[#f0fdf4] text-[#15803d]"
+                      : "border-[#dbe4f0] bg-[#f7f9fc] text-[#64748b]"
+                }`}
+              >
+                Total : {totalPrizeProbability} %
+              </div>
+              <span />
+              <span />
+              <span />
+            </div>
+
+            <div
+              className={`mt-4 rounded-[16px] border px-4 py-3 text-sm font-semibold xl:hidden ${
+                totalPrizeProbability > 100
+                  ? "border-[#fecaca] bg-[#fff1f2] text-[#be123c]"
+                  : totalPrizeProbability === 100
+                    ? "border-[#bbf7d0] bg-[#f0fdf4] text-[#15803d]"
+                    : "border-[#dbe4f0] bg-[#f7f9fc] text-[#64748b]"
+              }`}
+            >
+              Total des probabilit√©s de gain : {totalPrizeProbability} %
+            </div>
+          </section>
+
+          {form.id ? <CampaignEmailPreview merchant={merchant} form={form} /> : null}
+
+          {message ? (
+            <section
+              className={`rounded-[24px] border px-5 py-4 text-sm shadow-[0_18px_44px_rgba(122,136,166,0.1)] ${
+                messageTone === "error"
+                  ? "border-[#fecaca] bg-[#fff1f2] text-[#9f1239]"
+                  : "border-[#dbe4f0] bg-white text-[#182033]"
+              }`}
+            >
+              <div className="font-semibold">
+                {messageTone === "error" ? "Enregistrement impossible" : "Information"}
+              </div>
+              <p className="mt-1 leading-6">{message}</p>
+            </section>
+          ) : null}
+        </div>
+
+        <div className="space-y-6 xl:sticky xl:top-6 xl:self-start">
+          <section className="pointer-events-none okado-card p-5">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">
+                  Pr√©visualisation mobile
+                </p>
+                <h2 className="okado-section-title mt-2">Rendu public</h2>
+              </div>
+              {form.id ? (
+                <div className="okado-action-row pointer-events-auto flex flex-wrap justify-end gap-2">
+                  <a
+                    href={`/api/campaigns/${form.id}/qr`}
+                    className="okado-secondary-action px-4"
+                  >
+                    QR
+                  </a>
+                  <Link
+                    href={`/campaigns/${form.id}/poster`}
+                    prefetch={false}
+                    className="okado-secondary-action px-4"
+                  >
+                    Affiche
+                  </Link>
+                  <Link
+                    href={`/campaign/${form.id}?preview=1`}
+                    prefetch={false}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="okado-primary-action px-4"
+                  >
+                    Pr√©visualiser
+                  </Link>
+                </div>
+              ) : null}
+            </div>
+
+            <SharedCampaignLivePreview merchant={merchant} preview={deferredPreview} />
+          </section>
+        </div>
+      </div>
+      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30 px-4 pb-4 xl:hidden">
+        <div className="pointer-events-auto mx-auto max-w-[720px] rounded-[8px] border border-border bg-white/96 p-3 shadow-product-card backdrop-blur">
+          <div className="grid gap-3 sm:grid-cols-2">
+            {savedCampaignId ? (
+              <>
+                <Link
+                  href={`/campaign/${savedCampaignId}?preview=1`}
+                  prefetch={false}
+                  target="_blank"
+                  className="okado-primary-action px-4"
+                >
+                  Pr√©visualiser
+                </Link>
+                <Link
+                  href={`/campaigns/${savedCampaignId}/poster`}
+                  prefetch={false}
+                  className="okado-secondary-action px-4"
+                >
+                  Affiche
+                </Link>
+              </>
+            ) : null}
+            <button
+              type="button"
+              onClick={saveCampaign}
+              disabled={isSaving}
+              className={`okado-filled-action px-4 disabled:cursor-not-allowed disabled:opacity-70 ${
+                savedCampaignId ? "sm:col-span-2" : "w-full"
+              }`}
+            >
+              {isSaving ? "Enregistrement..." : "Enregistrer"}
+            </button>
+          </div>
+        </div>
+      </div>
+      <PrizeConditionsDialog
+        open={Boolean(editingPrize)}
+        prizeLabel={editingPrize?.label ?? ""}
+        value={editingPrize?.usageConditions ?? ""}
+        onChange={(nextValue) => {
+          if (editingPrize?.id) {
+            updatePrize(editingPrize.id, { usageConditions: nextValue });
+          }
+        }}
+        onClose={() => setEditingPrizeConditionsId(null)}
+      />
+      <PrizeSuggestionDialog
+        open={prizeSuggestionsOpen}
+        suggestions={prizeSuggestions}
+        industry={merchant.industry}
+        remainingProbability={remainingPrizeProbability}
+        onAdd={addSuggestedPrize}
+        onClose={() => setPrizeSuggestionsOpen(false)}
+      />
+      <BackgroundLibraryDialog
+        open={backgroundLibraryDialogOpen}
+        onClose={() => setBackgroundLibraryDialogOpen(false)}
+        items={backgroundLibrary}
+        isLoading={isLibraryLoading}
+        error={libraryMessage}
+        selectedImageUrl={form.presentation.background.imageUrl ?? ""}
+        onSelect={selectBackgroundImage}
+      />
+      <SaveFeedbackDialog
+        open={saveDialogOpen}
+        title={saveDialogTitle}
+        description={saveDialogDescription}
+        tone={saveDialogTone}
+        onClose={() => {
+          setSaveDialogOpen(false);
+
+          if (saveDialogTone !== "error" && !initialCampaign && savedCampaignId) {
+            router.replace(`/campaigns/${savedCampaignId}/edit`);
+          }
+        }}
+      />
+    </div>
+  );
+}
