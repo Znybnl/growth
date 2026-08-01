@@ -1,6 +1,6 @@
 "use client";
 
-import { Star } from "lucide-react";
+import { Check, Star } from "lucide-react";
 
 import { APP_NAME_CAPITALIZED, APP_TAGLINE } from "@/lib/branding";
 
@@ -18,11 +18,39 @@ export function AuthShell({
   eyebrow,
   title,
   description,
-  asideTitle,
-  asideBody,
-  asideItems,
   children,
 }: AuthShellProps) {
+  const visualCopy =
+    eyebrow === "Onboarding boutique"
+      ? {
+          title: "Une base prête pour votre première campagne.",
+          body: "Renseignez l’essentiel maintenant ; tout reste modifiable depuis votre compte.",
+          items: [
+            "Définissez les informations de votre commerce",
+            "Préparez vos liens marketing réutilisables",
+            "Commencez quand vous êtes prêt",
+          ],
+        }
+      : eyebrow === "Inscription marchand"
+        ? {
+            title: "De la première campagne au suivi des gains.",
+            body: "Configurez votre jeu, vos actions et vos lots, puis suivez les résultats.",
+            items: [
+              "Créez une expérience mobile en quelques minutes",
+              "Choisissez la roue ou le ticket à gratter",
+              "Pilotez campagnes, données et dotations",
+            ],
+          }
+        : {
+            title: "Pilotez vos activations sans vous disperser.",
+            body: "Créez, diffusez et mesurez vos jeux en magasin depuis un seul espace.",
+            items: [
+              "Visualisez vos campagnes actives",
+              "Suivez les participations et les lots",
+              "Mesurez les résultats jour après jour",
+            ],
+          };
+
   return (
     <div className="min-h-screen overflow-x-hidden bg-linen-canvas">
       <div className="grid min-h-screen lg:grid-cols-[minmax(0,1.05fr)_minmax(420px,0.95fr)]">
@@ -52,63 +80,71 @@ export function AuthShell({
           className="relative hidden min-h-screen overflow-hidden lg:flex lg:flex-col lg:items-center lg:justify-center"
           style={{ background: "var(--gradient-hero-blue-fade)" }}
         >
-          <div className="absolute inset-0">
-            <div className="absolute left-1/2 top-[18%] h-[460px] w-[460px] -translate-x-1/2 rounded-full bg-[#2c7be7]" />
-            <div className="absolute left-1/2 top-[26%] h-[320px] w-[320px] -translate-x-1/2 rounded-full border border-white/10" />
-          </div>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_18%,rgba(255,255,255,0.22),transparent_34%),linear-gradient(135deg,transparent_0%,rgba(9,55,132,0.18)_100%)]" />
 
           <div className="relative flex w-full max-w-[620px] flex-1 items-center justify-center px-14">
             <div className="relative h-[390px] w-full max-w-[420px]">
-              <div className="absolute left-[4%] top-[20%] flex h-20 w-20 items-center justify-center rounded-full border border-white/16 bg-white shadow-[0_16px_35px_rgba(6,31,86,0.18)]">
-                <span className="text-3xl text-signal-blue">O</span>
-              </div>
-              <div className="absolute left-[10%] top-[54%] flex h-20 w-20 items-center justify-center rounded-full border border-white/16 bg-white shadow-[0_16px_35px_rgba(6,31,86,0.18)]">
-                <span className="text-3xl text-[#34a853]">K</span>
-              </div>
-              <div className="absolute left-[12%] top-[6%] flex h-20 w-20 items-center justify-center rounded-full border border-white/16 bg-white shadow-[0_16px_35px_rgba(6,31,86,0.18)]">
-                <span className="text-3xl text-[#f6c04b]">O</span>
-              </div>
-              <div className="absolute left-[23%] top-[38%] h-4 w-[138px] rounded-full bg-white/16" />
-              <div className="absolute left-[46%] top-[10%] w-[54%] rounded-[16px] bg-white p-5 shadow-product-card">
-                <div className="flex items-center gap-2">
-                  <span className="h-2.5 w-2.5 rounded-full bg-[#ff6b6b]" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-[#ffd166]" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-[#4ade80]" />
+              <div className="absolute inset-x-[5%] top-[4%] rounded-[24px] border border-white/30 bg-white/95 p-5 shadow-[0_28px_80px_rgba(4,26,75,0.28)]">
+                <div className="flex items-center justify-between border-b border-[#e6ebf2] pb-4">
+                  <div>
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-signal-blue">
+                      Pilotage local
+                    </p>
+                    <p className="mt-1 text-lg font-semibold tracking-[-0.03em] text-graphite">
+                      Vos campagnes en un coup d’œil
+                    </p>
+                  </div>
+                  <span className="rounded-full bg-[#e9f8ef] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#18864b]">
+                    Actif
+                  </span>
                 </div>
-                <div className="mt-5 space-y-4">
-                  {[0, 1, 2].map((item) => (
-                    <div
-                      key={item}
-                      className="flex items-center gap-3 rounded-[8px] border border-border bg-linen-canvas px-3 py-3"
-                    >
-                      <div className="h-10 w-10 rounded-full bg-[#e5ecfa]" />
-                      <div className="flex-1">
-                        <div className="h-2.5 w-20 rounded-full bg-[#a7b7d9]" />
-                        <div className="mt-2 h-2.5 w-28 rounded-full bg-[#d8e2f5]" />
-                      </div>
+                <div className="mt-5 grid grid-cols-3 gap-2">
+                  {[
+                    ["Campagnes", "03"],
+                    ["Participations", "128"],
+                    ["Lots remis", "42"],
+                  ].map(([label, value]) => (
+                    <div key={label} className="rounded-[12px] bg-linen-canvas px-3 py-3">
+                      <p className="text-[10px] uppercase tracking-[0.08em] text-ash">{label}</p>
+                      <p className="mt-2 text-xl font-semibold tracking-[-0.04em] text-signal-blue">{value}</p>
                     </div>
                   ))}
+                </div>
+                <div className="mt-5 rounded-[14px] border border-[#e6ebf2] p-4">
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs font-semibold text-graphite">Activité des 7 derniers jours</p>
+                    <span className="text-[10px] font-medium text-ash">+18%</span>
+                  </div>
+                  <div className="mt-4 flex h-20 items-end gap-2">
+                    {[32, 48, 38, 62, 54, 78, 68, 88].map((height, index) => (
+                      <span
+                        key={index}
+                        className="flex-1 rounded-t-[6px] bg-signal-blue/80"
+                        style={{ height: `${height}%` }}
+                      />
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
           <div className="relative w-full max-w-[620px] px-14 pb-16 text-center text-white">
-            <p className="text-[30px] font-semibold leading-tight tracking-[-0.03em]">{asideTitle}</p>
-            <p className="mt-4 text-base text-white/72">{asideBody}</p>
-            <div className="mt-8 flex items-center justify-center gap-3">
-              {[0, 1, 2].map((dot) => (
-                <span
-                  key={dot}
-                  className={`h-2.5 w-2.5 rounded-full ${dot === 0 ? "bg-white" : "bg-white/28"}`}
-                />
+            <p className="text-[30px] font-semibold leading-tight tracking-[-0.03em]">{visualCopy.title}</p>
+            <p className="mx-auto mt-4 max-w-[480px] text-base leading-7 text-white/75">{visualCopy.body}</p>
+            <ul className="mx-auto mt-6 grid max-w-[480px] gap-2 text-left text-sm text-white/78">
+              {visualCopy.items.map((item) => (
+                <li key={item} className="flex items-start gap-2.5">
+                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-white" aria-hidden="true" />
+                  <span>{item}</span>
+                </li>
               ))}
-            </div>
+            </ul>
             <div className="sr-only">
               <span>{eyebrow}</span>
               <span>{title}</span>
               <span>{description}</span>
-              {asideItems.map((item) => (
+              {visualCopy.items.map((item) => (
                 <span key={item}>{item}</span>
               ))}
             </div>

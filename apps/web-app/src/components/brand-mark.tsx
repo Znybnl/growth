@@ -8,6 +8,7 @@ type BrandMarkProps = {
   className?: string;
   variant?: "default" | "transparent";
   imageWidthPx?: number;
+  textSizePx?: number;
   textColor?: string;
   textClassName?: string;
 };
@@ -25,6 +26,7 @@ export function BrandMark({
   className = "",
   variant = "default",
   imageWidthPx,
+  textSizePx,
   textColor = "#ffffff",
   textClassName = "text-3xl",
 }: BrandMarkProps) {
@@ -67,7 +69,7 @@ export function BrandMark({
       >
         <span
           className={`font-display ${textClassName} font-semibold leading-none drop-shadow-[0_8px_18px_rgba(0,0,0,0.28)]`}
-          style={{ color: textColor }}
+          style={{ color: textColor, fontSize: textSizePx ? `${textSizePx}px` : undefined }}
         >
           {logoText}
         </span>

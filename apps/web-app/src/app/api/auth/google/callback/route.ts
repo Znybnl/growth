@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 
 import { createAffiliateReferralForMerchant } from "@/lib/affiliate-repository";
 import { notifyAdministratorsOfMerchantSignup } from "@/lib/admin-notifications";
@@ -67,6 +67,7 @@ export async function GET(request: Request) {
     const { firstName, lastName } = splitName(fullName);
     const session = await authenticateOrProvisionMerchantWithGoogle({
       email: data.user.email,
+      authUserId: data.user.id,
       firstName: typeof metadata.given_name === "string" ? metadata.given_name : firstName,
       lastName: typeof metadata.family_name === "string" ? metadata.family_name : lastName,
       fullName,
@@ -78,26 +79,38 @@ export async function GET(request: Request) {
             : undefined,
     });
 
-    if (referralCode) {
-      await createAffiliateReferralForMerchant({
-        referredMerchantId: session.merchant.id,
-        referralCode,
-        source: "google_signup",
-      });
-    }
-    await syncMerchantContactToBrevo({
-      merchant: session.merchant,
-      user: session.user,
-      source: "google",
+    after(async () => {
+      const sideEffects: Promise<unknown>[] = [
+        syncMerchantContactToBrevo({
+          merchant: session.merchant,
+          user: session.user,
+          source: "google",
+        }),
+      ];
+
+      if (referralCode) {
+        sideEffects.push(
+          createAffiliateReferralForMerchant({
+            referredMerchantId: session.merchant.id,
+            referralCode,
+            source: "google_signup",
+          }),
+        );
+      }
+
+      if (session.isNew) {
+        sideEffects.push(
+          notifyAdministratorsOfMerchantSignup({
+            merchant: session.merchant,
+            user: session.user,
+            origin,
+            provider: "google",
+          }).catch(() => undefined),
+        );
+      }
+
+      await Promise.allSettled(sideEffects);
     });
-    if (session.isNew) {
-      await notifyAdministratorsOfMerchantSignup({
-        merchant: session.merchant,
-        user: session.user,
-        origin,
-        provider: "google",
-      }).catch(() => undefined);
-    }
 
     const redirectPath = session.merchant.onboardingCompleted ? next : "/onboarding";
     const response = NextResponse.redirect(new URL(redirectPath, origin));

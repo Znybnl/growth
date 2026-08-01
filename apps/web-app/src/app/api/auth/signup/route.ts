@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 
 import { createAffiliateReferralForMerchant } from "@/lib/affiliate-repository";
 import { notifyAdministratorsOfMerchantSignup } from "@/lib/admin-notifications";
@@ -46,47 +46,61 @@ export async function POST(request: Request) {
     const referralCode =
       body.referralCode?.trim() || request.headers.get("x-okado-referral-code") || "";
 
-    if (referralCode) {
-      await createAffiliateReferralForMerchant({
-        referredMerchantId: session.merchant.id,
-        referralCode,
-        source: "signup",
-      });
-    }
+    const origin = new URL(request.url).origin;
+    after(async () => {
+      const sideEffects: Promise<unknown>[] = [
+        captureProductEvent(
+          "signup_completed",
+          merchantDistinctId(session.merchant.id, session.user.id),
+          {
+            merchantId: session.merchant.id,
+            merchantUserId: session.user.id,
+            companyName: session.merchant.companyName,
+            authProvider: "email",
+          },
+        ),
+        syncMerchantContactToBrevo({
+          merchant: session.merchant,
+          user: session.user,
+          source: "signup",
+        }),
+      ];
 
-    await captureProductEvent(
-      "signup_completed",
-      merchantDistinctId(session.merchant.id, session.user.id),
-      {
-        merchantId: session.merchant.id,
-        merchantUserId: session.user.id,
-        companyName: session.merchant.companyName,
-        authProvider: "email",
-      },
-    );
-    await syncMerchantContactToBrevo({
-      merchant: session.merchant,
-      user: session.user,
-      source: "signup",
+      if (referralCode) {
+        sideEffects.push(
+          createAffiliateReferralForMerchant({
+            referredMerchantId: session.merchant.id,
+            referralCode,
+            source: "signup",
+          }),
+        );
+      }
+
+      sideEffects.push(
+        notifyAdministratorsOfMerchantSignup({
+          merchant: session.merchant,
+          user: session.user,
+          origin,
+          provider: "email",
+        })
+          .then(() =>
+            logSupportEvent("info", "merchant_signup_admin_notified", {
+              merchantId: session.merchant.id,
+              merchantUserId: session.user.id,
+            }),
+          )
+          .catch((notificationError) =>
+            logSupportEvent("warn", "merchant_signup_admin_notification_failed", {
+              merchantId: session.merchant.id,
+              merchantUserId: session.user.id,
+              error:
+                notificationError instanceof Error ? notificationError.message : "Unknown error",
+            }),
+          ),
+      );
+
+      await Promise.allSettled(sideEffects);
     });
-    try {
-      await notifyAdministratorsOfMerchantSignup({
-        merchant: session.merchant,
-        user: session.user,
-        origin: new URL(request.url).origin,
-        provider: "email",
-      });
-      await logSupportEvent("info", "merchant_signup_admin_notified", {
-        merchantId: session.merchant.id,
-        merchantUserId: session.user.id,
-      });
-    } catch (notificationError) {
-      await logSupportEvent("warn", "merchant_signup_admin_notification_failed", {
-        merchantId: session.merchant.id,
-        merchantUserId: session.user.id,
-        error: notificationError instanceof Error ? notificationError.message : "Unknown error",
-      });
-    }
 
     const response = NextResponse.json(
       {

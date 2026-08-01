@@ -1,0 +1,14 @@
+node_modules
+**/node_modules
+.next
+**/.next
+.git
+.codex
+.codex-logs
+*.log
+*.png
+*.jpg
+*.jpeg
+*.webp
+docs
+supabase

@@ -16,6 +16,7 @@ const robotoMono = Roboto_Mono({
   subsets: ["latin"],
   variable: "--font-roboto-mono",
   display: "swap",
+  preload: false,
 });
 
 const cormorantGaramond = Cormorant_Garamond({
@@ -23,6 +24,7 @@ const cormorantGaramond = Cormorant_Garamond({
   variable: "--font-cormorant-garamond",
   weight: ["400", "500", "600", "700"],
   display: "swap",
+  preload: false,
 });
 
 const fredoka = Fredoka({
@@ -30,6 +32,7 @@ const fredoka = Fredoka({
   variable: "--font-fredoka",
   weight: ["400", "500", "600", "700"],
   display: "swap",
+  preload: false,
 });
 
 const bebasNeue = Bebas_Neue({
@@ -37,6 +40,7 @@ const bebasNeue = Bebas_Neue({
   variable: "--font-bebas-neue",
   weight: "400",
   display: "swap",
+  preload: false,
 });
 
 export const metadata: Metadata = {

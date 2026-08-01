@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -313,12 +312,14 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
             >
               Retour
             </button>
-            <Link
-              href="/campaigns/new"
-              className="okado-primary-action px-5"
+            <button
+              type="button"
+              onClick={saveOnboarding}
+              disabled={isSaving}
+              className="okado-primary-action px-5 disabled:opacity-60"
             >
-              Passer
-            </Link>
+              {isSaving ? "Enregistrement..." : "Passer"}
+            </button>
           </div>
 
           {activeIndex < steps.length - 1 ? (
