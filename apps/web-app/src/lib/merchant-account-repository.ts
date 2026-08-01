@@ -73,6 +73,7 @@ type GoogleMerchantProfile = {
   lastName: string;
   fullName: string;
   avatarUrl?: string;
+  authUserId?: string;
 };
 
 type AuthSyncInput = {
@@ -84,6 +85,8 @@ type AuthSyncInput = {
   merchantUserId: string;
   authProvider?: "google" | "email";
   avatarUrl?: string;
+  /** When the caller already has the Supabase Auth id, avoid scanning all Auth users. */
+  existingAuthUserId?: string;
 };
 
 type AuthIdentityInput = {
@@ -196,10 +199,10 @@ async function findSupabaseAuthUserByEmailOrMerchantUserId(
 async function ensureSupabaseAuthUser(input: AuthSyncInput) {
   const supabase = getSupabaseAdmin();
   const email = input.email.trim().toLowerCase();
-  const existingUser = await findSupabaseAuthUserByEmailOrMerchantUserId(
-    email,
-    input.merchantUserId,
-  );
+  const existingUser = input.existingAuthUserId
+    ? null
+    : await findSupabaseAuthUserByEmailOrMerchantUserId(email, input.merchantUserId);
+  const existingAuthUserId = input.existingAuthUserId ?? existingUser?.id;
 
   const existingProvider =
     existingUser?.app_metadata?.auth_provider ?? existingUser?.app_metadata?.provider;
@@ -220,7 +223,7 @@ async function ensureSupabaseAuthUser(input: AuthSyncInput) {
         : {}),
   };
 
-  if (existingUser) {
+  if (existingAuthUserId) {
     const updatePayload: {
       app_metadata: typeof appMetadata;
       email?: string;
@@ -231,7 +234,7 @@ async function ensureSupabaseAuthUser(input: AuthSyncInput) {
       user_metadata: userMetadata,
     };
 
-    if (existingUser.email?.toLowerCase() !== email) {
+    if (existingUser && existingUser.email?.toLowerCase() !== email) {
       updatePayload.email = email;
     }
 
@@ -239,13 +242,13 @@ async function ensureSupabaseAuthUser(input: AuthSyncInput) {
       updatePayload.password = input.password;
     }
 
-    const { error } = await supabase.auth.admin.updateUserById(existingUser.id, updatePayload);
+    const { error } = await supabase.auth.admin.updateUserById(existingAuthUserId, updatePayload);
 
     if (error) {
       throw new Error("Mise a jour de l'utilisateur Supabase Auth impossible.");
     }
 
-    return existingUser.id;
+    return existingAuthUserId;
   }
 
   const { data, error } = await supabase.auth.admin.createUser({
@@ -439,7 +442,7 @@ export async function getSupabaseMerchantUserByEmail(email: string) {
 }
 
 export async function resolveMerchantSessionFromAuthUser(
-  authUser: Pick<SupabaseAuthUser, "email" | "app_metadata" | "user_metadata">,
+  authUser: Pick<SupabaseAuthUser, "id" | "email" | "app_metadata" | "user_metadata">,
   activeLocationId?: string,
 ) {
   const merchantUserId =
@@ -463,6 +466,7 @@ export async function resolveMerchantSessionFromAuthUser(
       lastName: merchantUser.lastName,
       merchantId: merchantUser.merchantId,
       merchantUserId: merchantUser.id,
+      existingAuthUserId: authUser.id,
     });
   }
 
@@ -773,6 +777,7 @@ export async function createMerchantAccountInSupabase(input: MerchantSignUpInput
       lastName,
       merchantId,
       merchantUserId: userId,
+      existingAuthUserId: authUserId,
     });
   } catch (error) {
     await supabase.from("merchant_users").delete().eq("id", userId);
@@ -913,6 +918,7 @@ export async function authenticateOrProvisionMerchantWithGoogle(
       merchantUserId: existingUser.data.id,
       authProvider: "google" as const,
       avatarUrl: profile.avatarUrl,
+      existingAuthUserId: profile.authUserId,
     });
 
     const merchant = await getSupabaseMerchantProfile(existingUser.data.merchant_id);
@@ -1037,6 +1043,7 @@ export async function authenticateOrProvisionMerchantWithGoogle(
     merchantUserId: userId,
     authProvider: "google" as const,
     avatarUrl: profile.avatarUrl,
+    existingAuthUserId: profile.authUserId,
   });
 
   return {
@@ -1150,7 +1157,11 @@ export async function getSupabaseMerchantWorkspaceContext(
 
     const locationIds = (locationRows ?? []).map((row) => row.merchant_id);
     const profiles = await Promise.all(
-      locationIds.map((locationId) => getSupabaseMerchantProfile(locationId)),
+      locationIds.map((locationId) =>
+        locationId === fallbackMerchant.id
+          ? Promise.resolve(fallbackMerchant)
+          : getSupabaseMerchantProfile(locationId),
+      ),
     );
     const locations = profiles
       .filter((merchant): merchant is Merchant => Boolean(merchant))

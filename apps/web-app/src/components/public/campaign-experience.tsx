@@ -19,7 +19,13 @@ import { ImmersiveScratchTicket } from "@/components/public/immersive-scratch-ti
 import { ScratchGame } from "@/components/public/scratch-game";
 import { WheelOfFortune } from "@/components/public/wheel-of-fortune";
 import { fluidType } from "@/lib/responsive";
-import { DEFAULT_SCRATCH_SUBTITLE, normalizeScratchAccent } from "@/lib/campaign-defaults";
+import {
+  campaignLogoTextSizePx,
+  clampCampaignLogoSizePercent,
+  DEFAULT_SCRATCH_SUBTITLE,
+  limitCampaignSubtitleLines,
+  normalizeScratchAccent,
+} from "@/lib/campaign-defaults";
 import { buildWheelVisualSegments } from "@/lib/wheel-segments";
 import {
   CreateDrawSessionResult,
@@ -189,7 +195,7 @@ function PublicModal({
   }
 
   return (
-    <div role="dialog" aria-modal="true" aria-label="FenÃªtre de participation" className="fixed inset-0 z-40 flex items-end justify-center bg-[#0f1220]/52 px-4 pb-4 pt-10 backdrop-blur-[6px] sm:items-center sm:p-6">
+    <div role="dialog" aria-modal="true" aria-label="Fenêtre de participation" className="fixed inset-0 z-40 flex items-end justify-center bg-[#0f1220]/52 px-4 pb-4 pt-10 backdrop-blur-[6px] sm:items-center sm:p-6">
       <div
         className={`w-full max-w-[390px] rounded-[34px] bg-white text-[#111827] shadow-[0_34px_90px_rgba(18,24,39,0.24)] ${
           compact ? "p-5" : "p-6"
@@ -219,7 +225,7 @@ function RulesModal({
     ...prize,
     stockLabel:
       prize.remainingQuantity === null
-        ? "IllimitÃ©"
+        ? "Illimité"
         : `${Math.max(0, prize.remainingQuantity)} disponible${
             prize.remainingQuantity > 1 ? "s" : ""
           }`,
@@ -234,7 +240,7 @@ function RulesModal({
               Conditions d&apos;utilisation
             </p>
             <h2 id="rules-modal-title" className="mt-2 text-2xl font-semibold leading-tight">
-              CGU et rÃ¨glement du jeu
+              CGU et règlement du jeu
             </h2>
           </div>
           <button
@@ -249,22 +255,22 @@ function RulesModal({
         <div className="space-y-6 overflow-y-auto px-6 py-5 text-sm leading-7 text-[#4b5567]">
           <section>
             <h3 className="text-base font-semibold text-[#111827]">
-              PrÃ©ambule et dÃ©finitions
+              Préambule et définitions
             </h3>
             <p className="mt-2">
-              Le prÃ©sent document rÃ©git les conditions de participation aux jeux-concours
-              phygitaux ci-aprÃ¨s Â« le Jeu Â», dÃ©ployÃ©s en point de vente via la solution
+              Le présent document régit les conditions de participation aux jeux-concours
+              phygitaux ci-après « le Jeu », déployés en point de vente via la solution
               logicielle Okado.
             </p>
             <p className="mt-2">
-              La SociÃ©tÃ© Organisatrice, ci-aprÃ¨s Â« le Marchand Â», est l&apos;Ã©tablissement
-              professionnel au sein duquel le Jeu est dÃ©ployÃ©. Elle dÃ©finit les rÃ¨gles
-              spÃ©cifiques, les dotations et assume l&apos;entiÃ¨re responsabilitÃ© lÃ©gale de
+              La Société Organisatrice, ci-après « le Marchand », est l&apos;établissement
+              professionnel au sein duquel le Jeu est déployé. Elle définit les règles
+              spécifiques, les dotations et assume l&apos;entière responsabilité légale de
               l&apos;organisation du Jeu.
             </p>
             <p className="mt-2">
-              Le Prestataire Technique, ci-aprÃ¨s Â« l&apos;Ã‰diteur Â», est la sociÃ©tÃ© BRUNELLE
-              PEROLS INVESTISSEMENT, Ã©ditrice de la solution SaaS Okado, agissant
+              Le Prestataire Technique, ci-après « l&apos;Éditeur », est la société BRUNELLE
+              PEROLS INVESTISSEMENT, éditrice de la solution SaaS Okado, agissant
               exclusivement en tant que fournisseur d&apos;infrastructure technique.
             </p>
             <p className="mt-2">
@@ -278,29 +284,29 @@ function RulesModal({
               Article 1 - Objet et acceptation
             </h3>
             <p className="mt-2">
-              La participation au Jeu implique l&apos;acceptation expresse, pleine et entiÃ¨re,
-              sans rÃ©serve, du prÃ©sent rÃ¨glement par le Participant. Ce rÃ¨glement rÃ©git les
-              relations entre le Participant et la SociÃ©tÃ© Organisatrice. L&apos;Ã‰diteur de la
-              solution Okado est un tiers Ã  cette relation.
+              La participation au Jeu implique l&apos;acceptation expresse, pleine et entière,
+              sans réserve, du présent règlement par le Participant. Ce règlement régit les
+              relations entre le Participant et la Société Organisatrice. L&apos;Éditeur de la
+              solution Okado est un tiers à cette relation.
             </p>
           </section>
 
           <section>
             <h3 className="text-base font-semibold text-[#111827]">
-              Article 2 - MÃ©canique du jeu et participation
+              Article 2 - Mécanique du jeu et participation
             </h3>
             <p className="mt-2">
               La participation au Jeu s&apos;effectue exclusivement en scannant le QR Code mis
-              Ã  disposition au sein de l&apos;Ã©tablissement de la SociÃ©tÃ© Organisatrice. Selon
-              le paramÃ©trage dÃ©fini sous la seule responsabilitÃ© de la SociÃ©tÃ©
-              Organisatrice, le Participant pourra Ãªtre invitÃ© Ã  consulter des liens
-              externes, tels que la fiche Google Business Profile de l&apos;Ã©tablissement.
+              à disposition au sein de l&apos;établissement de la Société Organisatrice. Selon
+              le paramétrage défini sous la seule responsabilité de la Société
+              Organisatrice, le Participant pourra être invité à consulter des liens
+              externes, tels que la fiche Google Business Profile de l&apos;établissement.
             </p>
             <p className="mt-2">
-              Il est expressÃ©ment prÃ©cisÃ© que le dÃ©pÃ´t d&apos;un avis en ligne est strictement
+              Il est expressément précisé que le dépôt d&apos;un avis en ligne est strictement
               facultatif. Il ne constitue en aucun cas une condition de participation, ni
-              une obligation pour valider l&apos;obtention d&apos;un gain. L&apos;Ã‰diteur dÃ©cline toute
-              responsabilitÃ© quant Ã  l&apos;utilisation de cette fonctionnalitÃ© par la SociÃ©tÃ©
+              une obligation pour valider l&apos;obtention d&apos;un gain. L&apos;Éditeur décline toute
+              responsabilité quant à l&apos;utilisation de cette fonctionnalité par la Société
               Organisatrice au regard des conditions d&apos;utilisation des plateformes tierces,
               notamment Google.
             </p>
@@ -308,91 +314,91 @@ function RulesModal({
 
           <section>
             <h3 className="text-base font-semibold text-[#111827]">
-              Article 3 - DÃ©signation des gagnants et responsabilitÃ© des lots
+              Article 3 - Désignation des gagnants et responsabilité des lots
             </h3>
             <p className="mt-2">
-              L&apos;attribution des gains est gÃ©rÃ©e automatiquement dÃ¨s la soumission du
-              formulaire, via un algorithme de tirage au sort alÃ©atoire tenant compte des
-              probabilitÃ©s et des stocks paramÃ©trÃ©s par la SociÃ©tÃ© Organisatrice.
+              L&apos;attribution des gains est gérée automatiquement dès la soumission du
+              formulaire, via un algorithme de tirage au sort aléatoire tenant compte des
+              probabilités et des stocks paramétrés par la Société Organisatrice.
             </p>
             <p className="mt-2">
-              La SociÃ©tÃ© Organisatrice est seule responsable de la fourniture, de la
-              conformitÃ© et de la remise des lots. La responsabilitÃ© du Prestataire
-              Technique ne saurait Ãªtre engagÃ©e pour toute rÃ©clamation relative Ã  une
-              rupture de stock, un dÃ©faut du lot, un refus de remise par le personnel en
-              magasin, ou tout litige liÃ© Ã  l&apos;exÃ©cution du Jeu.
+              La Société Organisatrice est seule responsable de la fourniture, de la
+              conformité et de la remise des lots. La responsabilité du Prestataire
+              Technique ne saurait être engagée pour toute réclamation relative à une
+              rupture de stock, un défaut du lot, un refus de remise par le personnel en
+              magasin, ou tout litige lié à l&apos;exécution du Jeu.
             </p>
           </section>
 
           <section>
             <h3 className="text-base font-semibold text-[#111827]">
-              Article 4 - ModalitÃ©s de rÃ©cupÃ©ration des lots
+              Article 4 - Modalités de récupération des lots
             </h3>
             <p className="mt-2">
-              En cas de gain, le Participant reÃ§oit un e-mail de confirmation Ã  l&apos;adresse
-              renseignÃ©e lors de sa participation, contenant un QR Code unique et personnel.
-              Le Participant doit prÃ©senter ce QR Code au personnel de la SociÃ©tÃ©
-              Organisatrice. La remise du lot n&apos;est dÃ©finitive qu&apos;aprÃ¨s validation de ce QR
-              Code par le personnel habilitÃ©, par scan direct ou via la plateforme de gestion
+              En cas de gain, le Participant reçoit un e-mail de confirmation à l&apos;adresse
+              renseignée lors de sa participation, contenant un QR Code unique et personnel.
+              Le Participant doit présenter ce QR Code au personnel de la Société
+              Organisatrice. La remise du lot n&apos;est définitive qu&apos;après validation de ce QR
+              Code par le personnel habilité, par scan direct ou via la plateforme de gestion
               Okado.
             </p>
           </section>
 
           <section>
             <h3 className="text-base font-semibold text-[#111827]">
-              Article 5 - PrÃ©vention de la fraude et litiges techniques
+              Article 5 - Prévention de la fraude et litiges techniques
             </h3>
             <p className="mt-2">
-              La participation est strictement nominative et limitÃ©e Ã  une participation par
-              jour et par Ã©tablissement. La SociÃ©tÃ© Organisatrice se rÃ©serve le droit
-              d&apos;annuler la participation ou de refuser la remise d&apos;un lot Ã  toute personne
-              ayant tentÃ© de frauder. En cas de dysfonctionnement technique temporaire de la
-              plateforme Okado ou de l&apos;appareil du Participant empÃªchant la validation,
-              aucune compensation ne pourra Ãªtre exigÃ©e.
+              La participation est strictement nominative et limitée à une participation par
+              jour et par établissement. La Société Organisatrice se réserve le droit
+              d&apos;annuler la participation ou de refuser la remise d&apos;un lot à toute personne
+              ayant tenté de frauder. En cas de dysfonctionnement technique temporaire de la
+              plateforme Okado ou de l&apos;appareil du Participant empêchant la validation,
+              aucune compensation ne pourra être exigée.
             </p>
           </section>
 
           <section>
             <h3 className="text-base font-semibold text-[#111827]">
-              Article 6 - Protection des donnÃ©es personnelles
+              Article 6 - Protection des données personnelles
             </h3>
             <p className="mt-2">
-              Dans le cadre du Jeu, des donnÃ©es Ã  caractÃ¨re personnel sont collectÃ©es. La
-              SociÃ©tÃ© Organisatrice agit en tant que Responsable de traitement. Le
-              Prestataire Technique hÃ©berge ces donnÃ©es de maniÃ¨re sÃ©curisÃ©e pour le compte
-              exclusif de la SociÃ©tÃ© Organisatrice.
+              Dans le cadre du Jeu, des données à caractère personnel sont collectées. La
+              Société Organisatrice agit en tant que Responsable de traitement. Le
+              Prestataire Technique héberge ces données de manière sécurisée pour le compte
+              exclusif de la Société Organisatrice.
             </p>
             <p className="mt-2">
-              ConformÃ©ment Ã  la rÃ©glementation applicable, le Participant dispose d&apos;un droit
-              d&apos;accÃ¨s, de rectification, de portabilitÃ© et d&apos;effacement de ses donnÃ©es. Pour
-              exercer ces droits, le Participant doit s&apos;adresser directement Ã  la SociÃ©tÃ©
-              Organisatrice par le biais de ses coordonnÃ©es habituelles.
-            </p>
-          </section>
-
-          <section>
-            <h3 className="text-base font-semibold text-[#111827]">
-              Article 7 - Limites de responsabilitÃ© technique
-            </h3>
-            <p className="mt-2">
-              Le Prestataire Technique met en Å“uvre les moyens nÃ©cessaires au bon
-              fonctionnement de l&apos;infrastructure du Jeu. Sa responsabilitÃ© ne saurait Ãªtre
-
-              engagÃ©e en cas de non-rÃ©ception de l&apos;e-mail de confirmation de gain due Ã  une
-              erreur de saisie, Ã  un filtrage anti-spam, Ã  une dÃ©faillance du fournisseur de
-              messagerie, Ã  une interruption rÃ©seau, au dysfonctionnement du smartphone du
-              Participant ou Ã  un bogue technique temporaire.
+              Conformément à la réglementation applicable, le Participant dispose d&apos;un droit
+              d&apos;accès, de rectification, de portabilité et d&apos;effacement de ses données. Pour
+              exercer ces droits, le Participant doit s&apos;adresser directement à la Société
+              Organisatrice par le biais de ses coordonnées habituelles.
             </p>
           </section>
 
           <section>
             <h3 className="text-base font-semibold text-[#111827]">
-              Article 8 - Lots, stocks disponibles et probabilitÃ©s de gain
+              Article 7 - Limites de responsabilité technique
             </h3>
             <p className="mt-2">
-              Les gains sont attribuÃ©s dans la limite des quantitÃ©s de stock disponibles au
+              Le Prestataire Technique met en œuvre les moyens nécessaires au bon
+              fonctionnement de l&apos;infrastructure du Jeu. Sa responsabilité ne saurait être
+
+              engagée en cas de non-réception de l&apos;e-mail de confirmation de gain due à une
+              erreur de saisie, à un filtrage anti-spam, à une défaillance du fournisseur de
+              messagerie, à une interruption réseau, au dysfonctionnement du smartphone du
+              Participant ou à un bogue technique temporaire.
+            </p>
+          </section>
+
+          <section>
+            <h3 className="text-base font-semibold text-[#111827]">
+              Article 8 - Lots, stocks disponibles et probabilités de gain
+            </h3>
+            <p className="mt-2">
+              Les gains sont attribués dans la limite des quantités de stock disponibles au
               moment de la participation. Lorsqu&apos;un lot n&apos;est plus disponible, il ne peut
-              plus Ãªtre attribuÃ©, mÃªme si sa probabilitÃ© de gain est indiquÃ©e ci-dessous.
+              plus être attribué, même si sa probabilité de gain est indiquée ci-dessous.
             </p>
             <div className="mt-4 overflow-hidden rounded-[18px] border border-[#e5e9f2]">
               {prizeRows.length ? (
@@ -411,7 +417,7 @@ function RulesModal({
                   </div>
                 ))
               ) : (
-                <p className="px-4 py-3 text-[#7b8496]">Aucun lot configurÃ©.</p>
+                <p className="px-4 py-3 text-[#7b8496]">Aucun lot configuré.</p>
               )}
             </div>
           </section>
@@ -429,7 +435,7 @@ export function CampaignExperience({
   const [campaign, setCampaign] = useState(initialCampaign);
   const [stage, setStage] = useState<ExperienceStage>("idle");
   const [blockedMessage, setBlockedMessage] = useState(
-    "Une seule participation est possible par jour. Revenez demain pour tenter votre chance Ã  nouveau.",
+    "Une seule participation est possible par jour. Revenez demain pour tenter votre chance à nouveau.",
   );
   const [drawSession, setDrawSession] = useState<DrawSession | null>(null);
   const [previewResult, setPreviewResult] = useState<CreateDrawSessionResult | null>(null);
@@ -496,9 +502,12 @@ export function CampaignExperience({
           campaign.presentation.heading.textColor.toLowerCase() === "#1f2937"
         ? scratchAccent.ink
       : campaign.presentation.heading.textColor;
+  const logoSizePercent = clampCampaignLogoSizePercent(campaign.presentation.logo.sizePercent);
   const logoWidthPx = Math.round(
-    Math.max(56, Math.min(720, campaign.presentation.logo.sizePercent * 3)),
+    Math.max(56, Math.min(720, logoSizePercent * 3)),
   );
+  const logoTextSizePx = campaignLogoTextSizePx(logoSizePercent, campaign.gameType);
+  const safeSubtitle = limitCampaignSubtitleLines(campaign.subtitle);
   const logoAlignmentClass =
     campaign.presentation.logo.align === "left"
       ? "justify-start"
@@ -743,7 +752,7 @@ export function CampaignExperience({
         : isRestaurantPopTemplate
         ? `radial-gradient(circle at -10% -8%, ${withHexAlpha(primaryColor, "f2")} 0 18%, transparent 19%), radial-gradient(circle at 110% 0%, ${withHexAlpha(secondaryColor, "f2")} 0 13%, transparent 14%), radial-gradient(circle at 0% 80%, ${withHexAlpha(primaryColor, "20")} 0 20%, transparent 21%), radial-gradient(circle at 100% 78%, ${withHexAlpha(secondaryColor, "40")} 0 18%, transparent 19%), linear-gradient(180deg, #fff2dd 0%, #fffaf1 46%, #fff4e5 100%)`
         : `radial-gradient(circle at 50% 50%, ${withHexAlpha(primaryColor, "33")}, transparent 50%), linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.08))`;
-  const restaurantPopHeadingLines = buildRestaurantPopHeadingLines(campaign.subtitle);
+  const restaurantPopHeadingLines = buildRestaurantPopHeadingLines(safeSubtitle);
 
   const headingFontSize = fluidType(campaign.presentation.heading.fontSizePx, {
     minRatio: 0.82,
@@ -795,6 +804,7 @@ export function CampaignExperience({
                 size="lg"
                 variant="transparent"
                 imageWidthPx={logoWidthPx}
+                textSizePx={logoTextSizePx}
                 textClassName={campaign.gameType === "wheel" ? "text-2xl" : undefined}
                 textColor={headingTextColor}
               />
@@ -810,7 +820,7 @@ export function CampaignExperience({
         {!isImmersiveScratchTemplate ? (
         <div className={headingAlignmentClass}>
           <h1
-            className={`${headingFontClass} whitespace-pre-line ${isRestaurantPopTemplate ? "tracking-[0.038em] drop-shadow-[0_5px_0_rgba(0,0,0,0.08)]" : ""} leading-[1] text-[#151826]`}
+            className={`${headingFontClass} line-clamp-3 whitespace-pre-line ${isRestaurantPopTemplate ? "tracking-[0.038em] drop-shadow-[0_5px_0_rgba(0,0,0,0.08)]" : ""} leading-[1] text-[#151826]`}
             style={{
               color: headingTextColor,
               fontSize: headingFontSize,
@@ -834,7 +844,7 @@ export function CampaignExperience({
                     ))}
                   </span>
                 ))
-              : campaign.subtitle.trim() || DEFAULT_SCRATCH_SUBTITLE}
+              : safeSubtitle.trim() || DEFAULT_SCRATCH_SUBTITLE}
           </h1>
         </div>
         ) : null}
@@ -906,7 +916,7 @@ export function CampaignExperience({
                 logoMode={campaign.logoMode}
                 logoText={campaign.logoText ?? campaign.merchantLogoText}
                 logoUrl={campaign.logoUrl}
-                headline={campaign.subtitle}
+                headline={safeSubtitle}
                 headingTextColor={headingTextColor}
                 headingFontClass={headingFontClass}
                 headingFontSize={headingFontSize}
@@ -915,6 +925,7 @@ export function CampaignExperience({
                 logoAlignmentClass={logoAlignmentClass}
                 logoBottomSpacingPx={campaign.presentation.logo.marginBottomPx}
                 logoWidthPx={logoWidthPx}
+                logoTextSizePx={logoTextSizePx}
                 template={pageTemplate as "scratch-vault" | "scratch-confetti" | "scratch-coral" | "scratch-lilac" | "scratch-sunburst"}
               />
             ) : (

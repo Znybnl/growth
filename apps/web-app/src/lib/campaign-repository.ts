@@ -827,7 +827,10 @@ function countByDay(values: string[]) {
   return counts;
 }
 
-function buildDashboardActivityPoints(leads: LeadRow[], events: EventRow[]) {
+function buildDashboardActivityPoints(
+  leads: Array<Pick<LeadRow, "created_at">>,
+  events: Array<Pick<EventRow, "created_at" | "event_type">>,
+) {
   const dayKeys = buildLastDays([
     ...leads.map((lead) => lead.created_at),
     ...events.map((event) => event.created_at),
@@ -1003,6 +1006,72 @@ export async function getSupabaseMerchantDashboard(
   merchant: Merchant,
 ): Promise<MerchantDashboardData> {
   const supabase = getSupabaseAdmin();
+
+  // The dashboard only needs campaign aggregates, stock state and the last 30 days
+  // of activity. Keep the heavy campaign configuration and historical lead/event
+  // payloads out of the initial RSC response.
+  const overviewResult = await supabase.rpc("get_merchant_campaign_overview", {
+    p_merchant_id: merchant.id,
+  });
+
+  if (!overviewResult.error) {
+    const rows = (overviewResult.data as CampaignOverviewRpcRow[] | null) ?? [];
+    const campaignIds = rows.map((row) => row.id);
+    const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+    const [{ data: prizesData }, { data: leadsData }, { data: eventsData }] = await Promise.all([
+      campaignIds.length
+        ? supabase
+            .from("prizes")
+            .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at")
+            .in("campaign_id", campaignIds)
+        : Promise.resolve({ data: [] }),
+      campaignIds.length
+        ? supabase
+            .from("leads")
+            .select("campaign_id,created_at")
+            .in("campaign_id", campaignIds)
+            .gte("created_at", since)
+        : Promise.resolve({ data: [] }),
+      campaignIds.length
+        ? supabase
+            .from("campaign_events")
+            .select("campaign_id,event_type,created_at")
+            .in("campaign_id", campaignIds)
+            .gte("created_at", since)
+        : Promise.resolve({ data: [] }),
+    ]);
+    const prizeRows = (prizesData as PrizeRow[] | null) ?? [];
+    const prizesByCampaignId = new Map<string, Prize[]>();
+    for (const row of prizeRows) {
+      const campaignPrizes = prizesByCampaignId.get(row.campaign_id) ?? [];
+      campaignPrizes.push(toPrize(row));
+      prizesByCampaignId.set(row.campaign_id, campaignPrizes);
+    }
+    const campaigns = rows.map((row) => ({
+      campaign: toCampaignOverview(row, merchant),
+      merchant: clone(merchant),
+      prizes: prizesByCampaignId.get(row.id) ?? [],
+      kpis: toOverviewKpis(row),
+    } satisfies CampaignPerformance));
+    const totalLeads = campaigns.reduce((total, item) => total + item.kpis.leads, 0);
+    const totalRedeemed = campaigns.reduce((total, item) => total + item.kpis.redeemed, 0);
+    const averageConversion = campaigns.length
+      ? Math.round(campaigns.reduce((total, item) => total + item.kpis.conversionRate, 0) / campaigns.length)
+      : 0;
+
+    return {
+      merchant: clone(merchant),
+      campaigns,
+      totalLeads,
+      totalRedeemed,
+      averageConversion,
+      activityPoints: buildDashboardActivityPoints(
+        (leadsData as Array<Pick<LeadRow, "created_at">> | null) ?? [],
+        (eventsData as Array<Pick<EventRow, "created_at" | "event_type">> | null) ?? [],
+      ),
+    };
+  }
+
   const { data: campaignsData } = await supabase
     .from("campaigns")
     .select("*")

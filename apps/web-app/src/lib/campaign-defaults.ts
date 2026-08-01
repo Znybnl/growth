@@ -13,6 +13,35 @@ export const DEFAULT_WHEEL_PRIMARY_COLOR = "#1b2842";
 export const DEFAULT_SCRATCH_PRIMARY_COLOR = "#f4c14a";
 export const DEFAULT_SCRATCH_TICKET_COLOR = "#f7f7f7";
 export const DEFAULT_SCRATCH_TEXT_COLOR = "#ffffff";
+export const MAX_CAMPAIGN_SUBTITLE_LINES = 3;
+export const MAX_CAMPAIGN_SUBTITLE_LENGTH = 120;
+
+/** Keep the player-facing promise readable in the phone-sized game surface. */
+export function limitCampaignSubtitleLines(value: string) {
+  return value
+    .replace(/\r\n/g, "\n")
+    .split("\n")
+    .slice(0, MAX_CAMPAIGN_SUBTITLE_LINES)
+    .join("\n")
+    .slice(0, MAX_CAMPAIGN_SUBTITLE_LENGTH);
+}
+
+/** Normalise the editor's logo scale so legacy values cannot break the preview. */
+export function clampCampaignLogoSizePercent(value: number | undefined) {
+  const normalized = Number(value);
+  return Math.max(0, Math.min(200, Number.isFinite(normalized) ? normalized : 100));
+}
+
+/** Text logos use the same percentage scale as uploaded logos. */
+export function campaignLogoTextSizePx(
+  sizePercent: number | undefined,
+  gameType: "wheel" | "scratch",
+) {
+  const baseSize = gameType === "wheel" ? 24 : 30;
+  return Math.round(
+    Math.max(12, (baseSize * clampCampaignLogoSizePercent(sizePercent)) / 100),
+  );
+}
 
 const SCRATCH_DEFAULT_INK_VALUES = new Set([
   "",

@@ -26,7 +26,7 @@ import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
 import {
   buildCampaignLivePreviewModel,
   CampaignLivePreview,
-} from "@/components/merchant/campaign-editor";
+} from "@/components/merchant/campaign-live-preview";
 import { actionKindCta } from "@/lib/format";
 import { createCampaignEmailDefaults } from "@/lib/email-settings";
 import {
@@ -37,6 +37,7 @@ import {
   DEFAULT_WHEEL_SUBTITLE,
   DEFAULT_WHEEL_PRIMARY_COLOR,
   deriveLighterHex,
+  limitCampaignSubtitleLines,
   normalizeScratchAccent,
 } from "@/lib/campaign-defaults";
 import {
@@ -918,11 +919,15 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                 <textarea
                   value={draft.subtitle}
                   onChange={(event) =>
-                    patchDraft({ subtitle: event.target.value })
+                    patchDraft({ subtitle: limitCampaignSubtitleLines(event.target.value) })
                   }
                   rows={3}
+                  maxLength={120}
                   className="mt-3 w-full resize-none rounded-[16px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm leading-6 text-[#182033] outline-none transition focus:border-[#b28719] focus:ring-4 focus:ring-[#f4c14a]/15"
                 />
+                <span className="mt-1 block text-xs text-[#8993a6]">
+                  3 lignes maximum pour conserver un rendu lisible sur mobile.
+                </span>
               </label>
               <div className="grid gap-4">
                 <label className="block">
@@ -1532,6 +1537,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
               <div className="grid gap-4 sm:grid-cols-2">
                 {draft.gameType === "wheel" ? (
                   <>
+                {draft.presentation.layout.templateId === "classic" ? (
                 <label className="block">
                   <span className="text-sm font-semibold text-[#182033]">
                     Couleur de fond
@@ -1553,9 +1559,10 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                     className="mt-3 h-12 w-full rounded-[12px] border border-[#dbe3ed] bg-white p-1"
                   />
                 </label>
+                ) : null}
                 <label className="block">
                   <span className="text-sm font-semibold text-[#182033]">
-                    Couleur principale du bouton
+                    Couleur principale de la roue
                   </span>
                   <input
                     type="color"

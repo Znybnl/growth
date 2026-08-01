@@ -3,7 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 
 import { BrandMark } from "@/components/brand-mark";
-import { DEFAULT_SCRATCH_SUBTITLE } from "@/lib/campaign-defaults";
+import {
+  DEFAULT_SCRATCH_PRIMARY_COLOR,
+  DEFAULT_SCRATCH_SUBTITLE,
+} from "@/lib/campaign-defaults";
 
 type ScratchTemplateId =
   | "scratch-vault"
@@ -35,6 +38,7 @@ type ImmersiveScratchTicketProps = {
   logoAlignmentClass?: string;
   logoBottomSpacingPx?: number;
   logoWidthPx?: number;
+  logoTextSizePx?: number;
   /** Let editor previews use the full phone frame width while keeping the public game constrained. */
   fitContainer?: boolean;
 };
@@ -145,6 +149,7 @@ export function ImmersiveScratchTicket({
   logoAlignmentClass = "justify-center",
   logoBottomSpacingPx = 32,
   logoWidthPx = 170,
+  logoTextSizePx = 30,
   fitContainer = false,
   headingFontSize = "32px",
 }: ImmersiveScratchTicketProps) {
@@ -170,11 +175,21 @@ export function ImmersiveScratchTicket({
             ? "#f59e0b"
             : configuredPrimary
       : configuredPrimary;
-  const ticketBaseColor = isLilac ? "#b85be5" : isVault ? "#171d38" : primary;
+  const hasCustomPrimary =
+    configuredPrimary.trim().toLowerCase() !== DEFAULT_SCRATCH_PRIMARY_COLOR;
+  const ticketBaseColor = hasCustomPrimary
+    ? configuredPrimary
+    : isLilac
+      ? "#b85be5"
+      : isVault
+        ? "#171d38"
+        : primary;
   const illustrationColor = isLilac
     ? blendWithWhite(ticketBaseColor, 0.72)
     : isVault
-      ? "#86e8ff"
+      ? hasCustomPrimary
+        ? blendWithWhite(ticketBaseColor, 0.58)
+        : "#86e8ff"
       : blendWithWhite(ticketBaseColor, 0.48);
   const defaultInk = isVault || isConfetti
     ? "#f8fbff"
@@ -294,13 +309,14 @@ export function ImmersiveScratchTicket({
                 size="sm"
                 variant="transparent"
                 imageWidthPx={Math.min(logoWidthPx, 280)}
+                textSizePx={logoTextSizePx}
                 textClassName="text-2xl"
                 textColor={ink}
               />
             </div>
           ) : null}
           <h2
-            className={`text-2xl leading-[1.08] ${resolvedHeadingFontClass}`}
+            className={`line-clamp-3 text-2xl leading-[1.08] ${resolvedHeadingFontClass}`}
             style={{ color: ink, fontSize: headingFontSize, fontWeight: headingFontWeight }}
           >
             {displayHeadline}

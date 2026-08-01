@@ -149,6 +149,8 @@ export function upgradeLegacyRewardEmailSettings(
   merchantName: string,
 ): CampaignEmailSettings {
   const defaults = createCampaignEmailDefaultsForMerchantName(merchantName);
+  const legacyReadySubject = `votre lot est pr${String.fromCharCode(195, 170)}t`;
+  const legacyReadyHeadline = `Votre lot est pr${String.fromCharCode(195, 170)}t`;
   const hasLegacyBody =
     settings.body.includes("dans la campagne {{campaignTitle}}") ||
     settings.body.includes("Code de retrait");
@@ -156,11 +158,11 @@ export function upgradeLegacyRewardEmailSettings(
   return {
     ...settings,
     subject: settings.subject
-      .replace("votre lot est prêt", "récupérez votre lot")
-      .replace("votre lot est prÃªt", "récupérez votre lot"),
+      .replace(legacyReadySubject, "récupérez votre lot")
+      .replace("votre lot est prêt", "récupérez votre lot"),
     headline: settings.headline
-      .replace("Votre lot est prêt", "Récupérez votre lot")
-      .replace("Votre lot est prÃªt", "Récupérez votre lot"),
+      .replace(legacyReadyHeadline, "Récupérez votre lot")
+      .replace("Votre lot est prêt", "Récupérez votre lot"),
     body: hasLegacyBody ? defaults.body : settings.body,
     buttonLabel:
       settings.buttonLabel === "Ouvrir mon QR code" ? defaults.buttonLabel : settings.buttonLabel,

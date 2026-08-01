@@ -16,7 +16,6 @@ import {
   findMerchantLeadCampaign,
   getCampaignDataView,
   getMerchantCampaignLibrary,
-  getPrimaryCampaignId,
 } from "@/lib/store";
 import { CampaignAction, CampaignEvent, MerchantLeadRow, RewardEmailDeliveryStatus } from "@/lib/types";
 
@@ -326,8 +325,7 @@ export default async function DataPage({ searchParams }: DataPageProps) {
   const selectedCampaignId =
     matchedCampaignId ??
     initialSelectedCampaignId ??
-    campaignOptions[0]?.id ??
-    getPrimaryCampaignId();
+    campaignOptions[0]?.id;
   const dataView = selectedCampaignId
     ? await getCampaignDataView(selectedCampaignId, session.merchant, {
         leadLimit,

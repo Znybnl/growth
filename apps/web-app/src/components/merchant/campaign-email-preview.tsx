@@ -16,7 +16,9 @@ import { CampaignSetupInput, Merchant } from "@/lib/types";
 
 type CampaignEmailPreviewProps = {
   merchant: Merchant;
-  form: CampaignSetupInput;
+  form: Pick<CampaignSetupInput, "id" | "title" | "prizes" | "presentation"> & {
+    rewardRules: Pick<CampaignSetupInput["rewardRules"], "purchaseRequired">;
+  };
 };
 
 const sampleData = {

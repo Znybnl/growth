@@ -30,6 +30,8 @@ const navItems = [
   { href: "/locations", label: "Multi-sites" },
 ];
 
+const prefetchedNavRoutes = new Set(["/", "/campaigns", "/data", "/account"]);
+
 const adminNavItems = [
   { href: "/admin", label: "Pilotage" },
   { href: "/admin/prize-suggestions", label: "Suggestions de lots" },
@@ -104,16 +106,21 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
       }
     }
 
-    void loadMerchantAlerts();
+    // Alerts are secondary navigation data. Let the first page paint and hydrate before
+    // competing with its server-rendered payload and critical client chunks.
+    const timeoutId = window.setTimeout(() => {
+      void loadMerchantAlerts();
+    }, 700);
     const handleAlertsRefresh = () => {
       void loadMerchantAlerts();
     };
     window.addEventListener("merchant-alerts-refresh", handleAlertsRefresh);
     return () => {
       cancelled = true;
+      window.clearTimeout(timeoutId);
       window.removeEventListener("merchant-alerts-refresh", handleAlertsRefresh);
     };
-  }, [pathname]);
+  }, []);
 
   function isActive(href: string) {
     if (href === "/") return pathname === "/";
@@ -157,7 +164,7 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
                 <Link
                   key={item.href}
                   href={item.href}
-                  prefetch={false}
+                  prefetch={prefetchedNavRoutes.has(item.href)}
                   className={`flex h-9 items-center justify-between rounded-full px-3 text-sm transition ${
                     active
                       ? "bg-sky-wash font-medium text-graphite"

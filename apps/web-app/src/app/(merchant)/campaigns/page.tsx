@@ -93,7 +93,7 @@ export default async function CampaignsPage({
                 <div className="flex items-center justify-end gap-2">
                   <Link
                     href={`/campaigns/${item.campaign.id}/edit`}
-                    prefetch={false}
+                    prefetch
                     className="okado-primary-action okado-compact-action px-3"
                   >
                     Modifier

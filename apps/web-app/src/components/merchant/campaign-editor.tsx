@@ -30,6 +30,7 @@ import {
 
 import { BrandMark } from "@/components/brand-mark";
 import { CampaignEmailPreview } from "@/components/merchant/campaign-email-preview";
+import { CampaignLivePreview as SharedCampaignLivePreview } from "@/components/merchant/campaign-live-preview";
 import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -52,7 +53,10 @@ import {
   DEFAULT_SCRATCH_SUBTITLE,
   DEFAULT_WHEEL_PRIMARY_COLOR,
   DEFAULT_WHEEL_SUBTITLE,
+  campaignLogoTextSizePx,
+  clampCampaignLogoSizePercent,
   deriveLighterHex,
+  limitCampaignSubtitleLines,
   normalizeScratchAccent,
 } from "@/lib/campaign-defaults";
 import { fluidType } from "@/lib/responsive";
@@ -131,7 +135,10 @@ type CampaignEditorProps = {
   deferInlineAssets?: boolean;
 };
 
-type EditorState = CampaignSetupInput;
+type EditorState = Omit<
+  CampaignSetupInput,
+  "goalType" | "successMetric" | "targetUrl"
+>;
 
 type PreviewSegment = WheelVisualSegment;
 
@@ -147,6 +154,7 @@ export type CampaignEditorPreviewModel = {
   logoAlignmentClass: string;
   logoBottomSpacingPx: number;
   logoWidthPx: number;
+  logoTextSizePx: number;
   logoUrl: string;
   logoText: string;
   headingAlignmentClass: string;
@@ -432,12 +440,9 @@ function createDefaultState(merchant: Merchant): EditorState {
     merchantId: merchant.id,
     title: `Animation ${isRestaurantIndustry(merchant.industry) ? "restaurant" : "commerce"}`,
     subtitle: wheelDefaultSubtitle,
-    goalType: null,
     emailCaptureEnabled: false,
     gameType: "wheel",
     ctaLabel: "Je participe",
-    successMetric: "",
-    targetUrl: merchant.googleReviewUrl,
     isActive: true,
     logoMode: "text",
     logoText: merchant.companyName || merchant.logoText,
@@ -909,6 +914,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
                 size="lg"
                 variant="transparent"
                 imageWidthPx={scalePreviewValue(preview.logoWidthPx)}
+                textSizePx={scalePreviewValue(preview.logoTextSizePx)}
                 textColor={previewHeadingTextColor}
                 textClassName={preview.gameType === "wheel" || compact ? "text-2xl" : undefined}
               />
@@ -928,6 +934,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
                 size="lg"
                 variant="transparent"
                 imageWidthPx={scalePreviewValue(preview.logoWidthPx)}
+                textSizePx={scalePreviewValue(preview.logoTextSizePx)}
                 textColor={previewHeadingTextColor}
                 textClassName={compact ? "text-2xl" : undefined}
               />
@@ -941,7 +948,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
 
         <div className={preview.headingAlignmentClass}>
           <h3
-            className={`${preview.headingFontClass} whitespace-pre-line ${isRestaurantPopTemplate ? "tracking-[0.038em] drop-shadow-[0_4px_0_rgba(0,0,0,0.08)]" : ""} leading-[1]`}
+            className={`${preview.headingFontClass} line-clamp-3 whitespace-pre-line ${isRestaurantPopTemplate ? "tracking-[0.038em] drop-shadow-[0_4px_0_rgba(0,0,0,0.08)]" : ""} leading-[1]`}
             style={{
               color: previewHeadingTextColor,
               fontSize: fluidType(scalePreviewValue(preview.headingFontSizePx), {
@@ -1049,6 +1056,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
                   Math.max(0, preview.logoBottomSpacingPx - preview.blockSpacingPx),
                 )}
                 logoWidthPx={scalePreviewValue(preview.logoWidthPx)}
+                logoTextSizePx={scalePreviewValue(preview.logoTextSizePx)}
                 fitContainer
                 template={preview.gamePageTemplateId as "scratch-vault" | "scratch-confetti" | "scratch-coral" | "scratch-lilac" | "scratch-sunburst"}
               />
@@ -1291,13 +1299,10 @@ function toEditorState(merchant: Merchant, campaign: CampaignPerformance | null)
     id: campaign.campaign.id,
     merchantId: merchant.id,
     title: campaign.campaign.title,
-    subtitle: campaign.campaign.subtitle,
-    goalType: campaign.campaign.goalType,
+    subtitle: limitCampaignSubtitleLines(campaign.campaign.subtitle),
     emailCaptureEnabled: campaign.campaign.emailCaptureEnabled,
     gameType: campaign.campaign.gameType,
     ctaLabel: campaign.campaign.ctaLabel,
-    successMetric: campaign.campaign.successMetric,
-    targetUrl: campaign.campaign.targetUrl,
     isActive: campaign.campaign.isActive,
     logoMode: campaign.campaign.logoMode ?? (campaign.campaign.logoUrl ? "image" : "text"),
     logoText: campaign.campaign.logoText ?? merchant.companyName,
@@ -1417,7 +1422,9 @@ export function buildCampaignLivePreviewModel(
             : form.presentation.heading.fontFamily === "bebas"
               ? "font-bebas"
               : "font-display";
-  const logoWidthPx = Math.round(Math.max(56, Math.min(720, form.presentation.logo.sizePercent * 3)));
+  const logoSizePercent = clampCampaignLogoSizePercent(form.presentation.logo.sizePercent);
+  const logoWidthPx = Math.round(Math.max(56, Math.min(720, logoSizePercent * 3)));
+  const logoTextSizePx = campaignLogoTextSizePx(logoSizePercent, form.gameType);
   const backgroundImage =
     form.presentation.background.mode === "image" && form.presentation.background.imageUrl
       ? `linear-gradient(rgba(15,23,40,0.32), rgba(15,23,40,0.52)), url("${form.presentation.background.imageUrl}")`
@@ -1451,6 +1458,7 @@ export function buildCampaignLivePreviewModel(
     logoAlignmentClass,
     logoBottomSpacingPx: form.presentation.logo.marginBottomPx + form.presentation.layout.blockSpacingPx,
     logoWidthPx,
+    logoTextSizePx,
     logoUrl: form.logoUrl ?? "",
     logoText: form.logoText?.trim() || merchant.companyName,
     headingAlignmentClass,
@@ -1464,7 +1472,7 @@ export function buildCampaignLivePreviewModel(
           : form.presentation.heading.textColor,
     headingFontSizePx: form.presentation.heading.fontSizePx,
     headingFontWeight: form.presentation.heading.fontWeight ?? 600,
-    subtitle: form.subtitle,
+    subtitle: limitCampaignSubtitleLines(form.subtitle),
     blockSpacingPx: form.presentation.layout.blockSpacingPx,
     gamePageTemplateId: templateId,
     gameType: form.gameType,
@@ -1491,6 +1499,20 @@ function syncActionLabel(kind: ActionKind, currentLabel: string) {
   }
 
   return actionKindCta(kind);
+}
+
+function buildClassicSetupPayload(form: EditorState) {
+  return {
+    ...form,
+    creationMode: "editor" as const,
+    actions: form.actions
+      .filter((action) => action.kind === "crm" || action.url.trim())
+      .map((action) => ({
+        ...action,
+        label: syncActionLabel(action.kind, action.label),
+        url: normalizeUrl(action.url),
+      })),
+  };
 }
 
 const MAX_UPLOAD_IMAGE_BYTES = 2 * 1024 * 1024;
@@ -1598,9 +1620,11 @@ export function CampaignEditor({
   const remainingPrizeProbability = Math.max(0, 100 - totalPrizeProbability);
   const previewPrize = form.prizes[0]?.label || "Cadeau surprise";
   const previewCtaClass = buttonSizeMap[form.presentation.button.size];
+  const logoSizePercent = clampCampaignLogoSizePercent(form.presentation.logo.sizePercent);
   const logoWidthPx = Math.round(
-    Math.max(56, Math.min(720, form.presentation.logo.sizePercent * 3)),
+    Math.max(56, Math.min(720, logoSizePercent * 3)),
   );
+  const logoTextSizePx = campaignLogoTextSizePx(logoSizePercent, form.gameType);
   const campaignOptions = campaignLibraryItems.filter(
     (item) => item.id !== initialCampaign?.campaign.id,
   );
@@ -1630,8 +1654,15 @@ export function CampaignEditor({
           : form.presentation.heading.fontFamily === "inter" || form.presentation.heading.fontFamily === "sans"
             ? "font-inter"
             : form.presentation.heading.fontFamily === "bebas"
-              ? "font-bebas"
+            ? "font-bebas"
               : "font-display";
+  const currentTemplateId = form.presentation.layout.templateId ?? "classic";
+  const showWheelSecondaryColor =
+    currentTemplateId !== "classic" &&
+    (currentTemplateId === "restaurant-pop" || isExpertMode);
+  const showWheelRimColor =
+    isExpertMode && (currentTemplateId === "classic" || currentTemplateId === "restaurant-pop");
+  const showBackgroundColor = currentTemplateId === "classic";
   const previewModel = useMemo<CampaignEditorPreviewModel>(() => {
     const winningSegmentId =
       previewSegments.find((segment) => segment.tone === "win")?.id ?? previewSegments[0]?.id ?? "win";
@@ -1668,6 +1699,7 @@ export function CampaignEditor({
       logoBottomSpacingPx:
         form.presentation.logo.marginBottomPx + form.presentation.layout.blockSpacingPx,
       logoWidthPx,
+      logoTextSizePx,
       logoUrl: form.logoUrl ?? "",
       logoText: form.logoText?.trim() || merchant.companyName,
       headingAlignmentClass,
@@ -1675,7 +1707,7 @@ export function CampaignEditor({
       headingTextColor: form.presentation.heading.textColor,
       headingFontSizePx: form.presentation.heading.fontSizePx,
       headingFontWeight: form.presentation.heading.fontWeight ?? 600,
-      subtitle: form.subtitle,
+      subtitle: limitCampaignSubtitleLines(form.subtitle),
       blockSpacingPx: form.presentation.layout.blockSpacingPx,
       gamePageTemplateId: form.presentation.layout.templateId ?? "classic",
       gameType: form.gameType,
@@ -1727,6 +1759,7 @@ export function CampaignEditor({
     headingAlignmentClass,
     headingFontClass,
     logoAlignmentClass,
+    logoTextSizePx,
     logoWidthPx,
     merchant.companyName,
     previewCtaClass,
@@ -2125,7 +2158,6 @@ function setGameType(gameType: GameType) {
         gameType: imported.gameType,
         subtitle: imported.subtitle,
         ctaLabel: imported.ctaLabel,
-        targetUrl: imported.targetUrl,
         logoMode: imported.logoMode,
         logoText: imported.logoText,
         logoUrl: imported.logoUrl,
@@ -2181,18 +2213,7 @@ function setGameType(gameType: GameType) {
       const response = await fetch("/api/campaigns/setup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...form,
-          creationMode: "editor",
-          targetUrl: normalizeUrl(form.targetUrl ?? ""),
-          actions: form.actions
-            .filter((action) => action.kind === "crm" || action.url.trim())
-            .map((action) => ({
-              ...action,
-              label: syncActionLabel(action.kind, action.label),
-              url: normalizeUrl(action.url),
-            })),
-        }),
+        body: JSON.stringify(buildClassicSetupPayload(form)),
       });
 
       const payload = (await response.json().catch(() => null)) as
@@ -2281,18 +2302,7 @@ function setGameType(gameType: GameType) {
       const response = await fetch("/api/campaigns/setup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...form,
-          creationMode: "editor",
-          targetUrl: normalizeUrl(form.targetUrl ?? ""),
-          actions: form.actions
-            .filter((action) => action.kind === "crm" || action.url.trim())
-            .map((action) => ({
-              ...action,
-              label: syncActionLabel(action.kind, action.label),
-              url: normalizeUrl(action.url),
-            })),
-        }),
+        body: JSON.stringify(buildClassicSetupPayload(form)),
       });
 
       const payload = (await response.json().catch(() => null)) as
@@ -2813,12 +2823,18 @@ function setGameType(gameType: GameType) {
 
               {form.logoMode !== "none" ? (
               <label className="text-sm">
-                <span className="mb-2 block text-[#616b7c]">Taille du logo (%)</span>
+                <div className="mb-2 flex items-center justify-between gap-3">
+                  <span className="text-[#616b7c]">Taille du logo</span>
+                  <output className="font-semibold text-[#182033]">
+                    {clampCampaignLogoSizePercent(form.presentation.logo.sizePercent)}%
+                  </output>
+                </div>
                 <input
-                  type="number"
-                  min={40}
-                  max={180}
-                  value={form.presentation.logo.sizePercent}
+                  type="range"
+                  min={0}
+                  max={200}
+                  step={1}
+                  value={clampCampaignLogoSizePercent(form.presentation.logo.sizePercent)}
                   onChange={(event) =>
                     setForm((current) => ({
                       ...current,
@@ -2826,13 +2842,15 @@ function setGameType(gameType: GameType) {
                         ...current.presentation,
                         logo: {
                           ...current.presentation.logo,
-                          sizePercent: Number(event.target.value || 100),
+                          sizePercent: Number(event.target.value),
                         },
                       },
                     }))
                   }
-                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
+                  className="w-full cursor-pointer accent-[#2f6df6]"
+                  aria-label="Taille du logo"
                 />
+                <div className="mt-1 flex justify-between text-xs text-[#8993a6]"><span>0 %</span><span>200 %</span></div>
               </label>
               ) : null}
 
@@ -2911,10 +2929,14 @@ function setGameType(gameType: GameType) {
                 <span className="mb-2 block text-[#616b7c]">Phrase affichée sur la page de jeu</span>
                 <textarea
                   value={form.subtitle}
-                  onChange={(event) => setField("subtitle", event.target.value)}
+                  onChange={(event) => setField("subtitle", limitCampaignSubtitleLines(event.target.value))}
                   rows={3}
+                  maxLength={120}
                   className="w-full rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
                 />
+                <span className="mt-1 block text-xs text-[#8993a6]">
+                  3 lignes maximum pour conserver un rendu lisible sur mobile.
+                </span>
               </label>
 
               {isExpertMode ? (
@@ -3047,7 +3069,7 @@ function setGameType(gameType: GameType) {
                     {[
                       { value: "color", label: "Couleur de fond" },
                       { value: "image", label: "Image de fond" },
-                    ].map((mode) => {
+                    ].filter((mode) => showBackgroundColor || mode.value === "image").map((mode) => {
                       const active = form.presentation.background.mode === mode.value;
 
                       return (
@@ -3079,7 +3101,7 @@ function setGameType(gameType: GameType) {
                   </div>
                 </div>
 
-                {form.presentation.background.mode === "color" ? (
+                {showBackgroundColor && form.presentation.background.mode === "color" ? (
                   <label className="text-sm">
                     <span className="mb-2 block text-[#616b7c]">Couleur de fond</span>
                     <input
@@ -3662,19 +3684,8 @@ function setGameType(gameType: GameType) {
                 </label>
 
                 {[
-                  ...(form.presentation.layout.templateId !== "classic" &&
-                  (form.presentation.layout.templateId === "restaurant-pop" || isExpertMode)
-                    ? [["winColor", "Couleur secondaire"]]
-                    : []),
-                  ...(isExpertMode
-                    ? [
-                        ["rimColor", "Couleur du contour"],
-                        ...(form.presentation.layout.templateId === "restaurant-pop" ||
-                        form.presentation.layout.templateId === "classic"
-                          ? []
-                          : [["alternateLoseColor", "Couleur principale claire"]]),
-                      ]
-                    : []),
+                  ...(showWheelSecondaryColor ? [["winColor", "Couleur secondaire"]] : []),
+                  ...(showWheelRimColor ? [["rimColor", "Couleur du contour"]] : []),
                 ].map(([key, label]) => (
                   <label key={key} className="text-sm">
                     <span className="mb-2 block text-[#616b7c]">{label}</span>
@@ -3699,7 +3710,7 @@ function setGameType(gameType: GameType) {
                 ))}
               </div>
             </section>
-          ) : isExpertMode ? (
+          ) : false ? (
             <section className="okado-card p-6">
               <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Ticket à gratter</p>
               <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
@@ -3767,7 +3778,7 @@ function setGameType(gameType: GameType) {
             </section>
           ) : null}
 
-          {form.gameType !== "wheel" && isExpertMode ? (
+          {false ? (
             <section className="okado-card p-6">
               <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Bouton public</p>
               <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
@@ -4159,7 +4170,7 @@ function setGameType(gameType: GameType) {
               ) : null}
             </div>
 
-            <CampaignLivePreview merchant={merchant} preview={deferredPreview} />
+            <SharedCampaignLivePreview merchant={merchant} preview={deferredPreview} />
           </section>
         </div>
       </div>

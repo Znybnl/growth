@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 
 import { createAffiliateReferralForMerchant } from "@/lib/affiliate-repository";
 import { notifyAdministratorsOfMerchantSignup } from "@/lib/admin-notifications";
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
     const supabaseUser = data.user;
     const email = supabaseUser?.email?.trim().toLowerCase() ?? "";
 
-    if (!email) {
+    if (!email || !supabaseUser?.id) {
       return NextResponse.json(
         { error: error?.message ?? "Session Google introuvable." },
         { status: 401 },
@@ -71,6 +71,7 @@ export async function POST(request: Request) {
 
     const session = await authenticateOrProvisionMerchantWithGoogle({
       email,
+      authUserId: supabaseUser.id,
       firstName:
         typeof metadata.given_name === "string"
           ? metadata.given_name
@@ -88,26 +89,39 @@ export async function POST(request: Request) {
             : undefined,
     });
 
-    if (body.referralCode?.trim()) {
-      await createAffiliateReferralForMerchant({
-        referredMerchantId: session.merchant.id,
-        referralCode: body.referralCode,
-        source: "google_signup",
-      });
-    }
-    await syncMerchantContactToBrevo({
-      merchant: session.merchant,
-      user: session.user,
-      source: "google",
+    const origin = new URL(request.url).origin;
+    after(async () => {
+      const sideEffects: Promise<unknown>[] = [
+        syncMerchantContactToBrevo({
+          merchant: session.merchant,
+          user: session.user,
+          source: "google",
+        }),
+      ];
+
+      if (body.referralCode?.trim()) {
+        sideEffects.push(
+          createAffiliateReferralForMerchant({
+            referredMerchantId: session.merchant.id,
+            referralCode: body.referralCode,
+            source: "google_signup",
+          }),
+        );
+      }
+
+      if (session.isNew) {
+        sideEffects.push(
+          notifyAdministratorsOfMerchantSignup({
+            merchant: session.merchant,
+            user: session.user,
+            origin,
+            provider: "google",
+          }),
+        );
+      }
+
+      await Promise.allSettled(sideEffects);
     });
-    if (session.isNew) {
-      await notifyAdministratorsOfMerchantSignup({
-        merchant: session.merchant,
-        user: session.user,
-        origin: new URL(request.url).origin,
-        provider: "google",
-      }).catch(() => undefined);
-    }
 
     const response = NextResponse.json({
       merchant: session.merchant,

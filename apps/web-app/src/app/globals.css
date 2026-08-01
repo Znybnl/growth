@@ -255,6 +255,16 @@ select {
   line-height: 1.25;
 }
 
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]) {
+  cursor: pointer;
+}
+
+button:disabled,
+[role="button"][aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
 .okado-muted {
   color: var(--color-ash);
 }
@@ -266,6 +276,7 @@ select {
 
 .okado-primary-action {
   display: inline-flex;
+  cursor: pointer;
   align-items: center;
   justify-content: center;
   height: var(--okado-action-primary-height);
@@ -289,6 +300,7 @@ select {
 
 .okado-filled-action {
   display: inline-flex;
+  cursor: pointer;
   align-items: center;
   justify-content: center;
   height: var(--okado-action-primary-height);
@@ -306,6 +318,7 @@ select {
 
 .okado-secondary-action {
   display: inline-flex;
+  cursor: pointer;
   align-items: center;
   justify-content: center;
   height: var(--okado-action-secondary-height);
@@ -324,6 +337,12 @@ select {
 .okado-secondary-action:hover {
   border-color: #cfcfcf;
   background: var(--color-sky-wash);
+}
+
+.okado-primary-action:disabled,
+.okado-filled-action:disabled,
+.okado-secondary-action:disabled {
+  cursor: not-allowed;
 }
 
 .okado-compact-action {

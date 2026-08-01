@@ -172,7 +172,7 @@ export default async function DashboardPage({
                   Vos dernières campagnes
                 </h2>
               </div>
-              <Link href="/campaigns" prefetch={false} className="okado-link text-sm">
+              <Link href="/campaigns" prefetch className="okado-link text-sm">
                 Voir toutes les campagnes
               </Link>
             </div>
