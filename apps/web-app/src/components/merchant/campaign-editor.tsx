@@ -25,6 +25,7 @@ import {
   useDeferredValue,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 
@@ -1586,6 +1587,25 @@ export function CampaignEditor({
   const [editingPrizeConditionsId, setEditingPrizeConditionsId] = useState<string | null>(null);
   const [prizeSuggestionsOpen, setPrizeSuggestionsOpen] = useState(false);
   const [prizeSuggestions, setPrizeSuggestions] = useState<PrizeSuggestion[]>([]);
+  const actionsAnchorRef = useRef<HTMLDivElement>(null);
+  const [showStickyActions, setShowStickyActions] = useState(false);
+
+  useEffect(() => {
+    const anchor = actionsAnchorRef.current;
+
+    if (!anchor || typeof IntersectionObserver === "undefined") {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setShowStickyActions(!entry.isIntersecting),
+      { threshold: 0, rootMargin: "-64px 0px 0px 0px" },
+    );
+
+    observer.observe(anchor);
+
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -2348,6 +2368,36 @@ function setGameType(gameType: GameType) {
 
   return (
     <div className="space-y-6 pb-24 xl:pb-0">
+      <div className="pointer-events-none sticky top-0 z-20 hidden h-0 overflow-visible xl:-mb-6 xl:block">
+        <div
+          className={`pointer-events-auto -mx-3 border-b border-border bg-linen-canvas/95 px-3 py-2 shadow-[0_8px_18px_rgba(18,24,39,0.08)] backdrop-blur-sm transition-all duration-200 lg:-mx-6 lg:px-6 ${
+            showStickyActions
+              ? "translate-y-0 opacity-100"
+              : "-translate-y-full opacity-0"
+          }`}
+          aria-hidden={!showStickyActions}
+        >
+          <div className="mx-auto flex max-w-[1600px] items-center justify-end gap-2">
+            <Link
+              href="/campaigns"
+              prefetch={false}
+              tabIndex={showStickyActions ? 0 : -1}
+              className="okado-secondary-action px-4"
+            >
+              Retour aux campagnes
+            </Link>
+            <button
+              type="button"
+              onClick={saveCampaign}
+              disabled={isSaving}
+              tabIndex={showStickyActions ? 0 : -1}
+              className="okado-filled-action px-5 disabled:opacity-60"
+            >
+              {isSaving ? "Enregistrement..." : "Enregistrer"}
+            </button>
+          </div>
+        </div>
+      </div>
       <section className="grid gap-6 px-1 py-2 xl:grid-cols-[1.2fr_0.8fr]">
           <div className="min-w-0">
             <p className="okado-label">
@@ -2362,7 +2412,10 @@ function setGameType(gameType: GameType) {
             </p>
           </div>
 
-          <div className="okado-action-row flex flex-wrap items-center justify-start gap-3 xl:justify-end">
+          <div
+            ref={actionsAnchorRef}
+            className="okado-action-row flex flex-wrap items-center justify-start gap-3 xl:justify-end"
+          >
             <Link
               href="/campaigns"
               prefetch={false}
@@ -2850,7 +2903,6 @@ function setGameType(gameType: GameType) {
                   className="w-full cursor-pointer accent-[#2f6df6]"
                   aria-label="Taille du logo"
                 />
-                <div className="mt-1 flex justify-between text-xs text-[#8993a6]"><span>0 %</span><span>200 %</span></div>
               </label>
               ) : null}
 
@@ -4170,7 +4222,7 @@ function setGameType(gameType: GameType) {
               ) : null}
             </div>
 
-            <SharedCampaignLivePreview merchant={merchant} preview={deferredPreview} />
+            <SharedCampaignLivePreview merchant={merchant} preview={deferredPreview} compact />
           </section>
         </div>
       </div>
