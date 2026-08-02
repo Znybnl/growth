@@ -2368,7 +2368,7 @@ function setGameType(gameType: GameType) {
 
   return (
     <div className="space-y-6 pb-24 xl:pb-0">
-      <div className="pointer-events-none sticky top-0 z-20 hidden h-0 overflow-visible xl:-mb-6 xl:block">
+      <div className="pointer-events-none sticky top-[-20px] z-20 hidden h-0 overflow-visible xl:-mb-6 xl:block">
         <div
           className={`pointer-events-auto -mx-3 border-b border-border bg-linen-canvas/95 px-3 py-2 shadow-[0_8px_18px_rgba(18,24,39,0.08)] backdrop-blur-sm transition-all duration-200 lg:-mx-6 lg:px-6 ${
             showStickyActions
@@ -2377,7 +2377,7 @@ function setGameType(gameType: GameType) {
           }`}
           aria-hidden={!showStickyActions}
         >
-          <div className="mx-auto flex max-w-[1600px] items-center justify-end gap-2">
+          <div className="okado-action-row mx-auto flex max-w-[1600px] items-center justify-end gap-2">
             <Link
               href="/campaigns"
               prefetch={false}
@@ -4185,7 +4185,10 @@ function setGameType(gameType: GameType) {
           ) : null}
         </div>
 
-        <div className="space-y-6 xl:sticky xl:top-6 xl:self-start">
+        <div
+          className="space-y-6 xl:sticky xl:self-start"
+          style={{ top: showStickyActions ? "76px" : "24px" }}
+        >
           <section className="pointer-events-none okado-card p-5">
             <div className="flex items-center justify-between gap-3">
               <div>
