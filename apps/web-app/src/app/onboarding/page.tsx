@@ -1,5 +1,6 @@
 import { AuthShell } from "@/components/auth/auth-shell";
 import { OnboardingFlow } from "@/components/auth/onboarding-flow";
+import { MerchantSessionGuard } from "@/components/merchant/merchant-session-guard";
 import { requireAuthenticatedSession } from "@/lib/auth";
 
 export default async function OnboardingPage() {
@@ -18,6 +19,7 @@ export default async function OnboardingPage() {
         "Connecter vos liens Google et reseaux sociaux",
       ]}
     >
+      <MerchantSessionGuard userId={session.user.id} />
       <OnboardingFlow merchant={session.merchant} />
     </AuthShell>
   );

@@ -16,6 +16,9 @@ export function SignInForm() {
   const [isLoading, setIsLoading] = useState(false);
   const authError = useMemo(() => {
     const reason = searchParams.get("reason");
+    if (reason === "session-expired") {
+      return "Votre session a expiré pour des raisons de sécurité. Reconnectez-vous pour continuer.";
+    }
     return searchParams.get("error") === "google_oauth"
       ? reason || "La connexion Google a échoué. Vérifiez la configuration Supabase / Google puis réessayez."
       : null;

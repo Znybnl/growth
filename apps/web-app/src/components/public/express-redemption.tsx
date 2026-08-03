@@ -35,14 +35,16 @@ function statusContent(status: CashierRedemptionContext["status"]) {
 export function ExpressRedemption({ code, context: initialContext }: ExpressRedemptionProps) {
   const pinInputRef = useRef<HTMLInputElement>(null);
   const [context, setContext] = useState<PublicRedemptionContext>(initialContext);
-  const [phase, setPhase] = useState<Phase>(initialContext.status === "available" ? "ready" : "confirm");
+  const [phase, setPhase] = useState<Phase>("ready");
   const [pin, setPin] = useState("");
+  const [forceReason, setForceReason] = useState("");
   const [purchaseConfirmed, setPurchaseConfirmed] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const status = statusContent(context.status);
   const isAvailable = context.status === "available";
+  const canForce = context.status === "expired" || context.status === "not_available";
 
   function openMerchantValidation() {
     setError(null);
@@ -88,6 +90,8 @@ export function ExpressRedemption({ code, context: initialContext }: ExpressRede
           pin,
           purchaseConfirmed,
           idempotencyKey: crypto.randomUUID(),
+          forceRedemption: canForce,
+          forceReason: canForce ? forceReason : undefined,
         }),
       });
       const payload = (await response.json().catch(() => null)) as { context?: PublicRedemptionContext; error?: string } | null;
@@ -104,6 +108,14 @@ export function ExpressRedemption({ code, context: initialContext }: ExpressRede
   return (
     <main className="min-h-screen bg-[#f4f7fb] px-4 py-6 text-[#182033] sm:px-6 sm:py-10">
       <div className="mx-auto w-full max-w-[560px]">
+        {context.isPreview ? (
+          <div
+            role="status"
+            className="mb-4 rounded-[16px] border border-[#9fb8ff] bg-[#eef2ff] px-4 py-3 text-center text-xs font-semibold leading-5 text-[#334477]"
+          >
+            Mode prévisualisation — ce retrait est simulé et n&apos;affecte pas le stock réel.
+          </div>
+        ) : null}
         <header className="mb-5 flex items-center justify-between gap-4 px-1">
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#b28719]">Retrait sécurisé</p>
@@ -174,7 +186,7 @@ export function ExpressRedemption({ code, context: initialContext }: ExpressRede
               </div>
             ) : null}
 
-            {phase === "ready" && isAvailable ? (
+            {phase === "ready" && (isAvailable || canForce) ? (
               <button type="button" onClick={openMerchantValidation} className="inline-flex w-full items-center justify-center gap-2 rounded-[16px] bg-[#111827] px-5 py-4 text-sm font-semibold text-white shadow-[0_14px_28px_rgba(17,24,39,0.16)] transition hover:bg-[#273142]">
                 <ShieldCheck className="h-4 w-4" /> Valider en tant que commerçant <ChevronRight className="h-4 w-4" />
               </button>
@@ -192,11 +204,12 @@ export function ExpressRedemption({ code, context: initialContext }: ExpressRede
               </form>
             ) : null}
 
-            {phase === "confirm" && isAvailable ? (
-              <div className="rounded-[20px] border border-[#b7e4c7] bg-[#f0fbf3] p-4 sm:p-5">
-                <div className="flex items-start gap-3"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#dff6e7] text-[#16834c]"><ShieldCheck className="h-4 w-4" /></span><div><p className="text-sm font-semibold text-[#126b40]">Commerçant identifié</p><p className="mt-1 text-xs leading-5 text-[#39785a]">Vérifiez une dernière fois le lot avant d’enregistrer sa remise.</p></div></div>
+            {phase === "confirm" && (isAvailable || canForce) ? (
+              <div className={`rounded-[20px] border p-4 sm:p-5 ${canForce ? "border-[#e5b83e] bg-[#fff8dc]" : "border-[#b7e4c7] bg-[#f0fbf3]"}`}>
+                <div className="flex items-start gap-3"><span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${canForce ? "bg-[#ffefb4] text-[#8a6812]" : "bg-[#dff6e7] text-[#16834c]"}`}><ShieldCheck className="h-4 w-4" /></span><div><p className={`text-sm font-semibold ${canForce ? "text-[#74570b]" : "text-[#126b40]"}`}>{canForce ? "Forçage du retrait" : "Commerçant identifié"}</p><p className={`mt-1 text-xs leading-5 ${canForce ? "text-[#806b30]" : "text-[#39785a]"}`}>{canForce ? "Ce retrait est hors période. Il sera journalisé et doit être confirmé exceptionnellement." : "Vérifiez une dernière fois le lot avant d’enregistrer sa remise."}</p></div></div>
                 {context.purchaseRequired ? <label className="mt-4 flex cursor-pointer items-start gap-3 rounded-[14px] border border-[#f0dfaa] bg-[#fff9e8] p-3 text-sm text-[#5f4b12]"><input type="checkbox" checked={purchaseConfirmed} onChange={(event) => setPurchaseConfirmed(event.target.checked)} className="mt-1 h-4 w-4 accent-[#b28719]" /><span><span className="block font-semibold">Achat vérifié</span><span className="mt-1 block text-xs leading-5 text-[#806b30]">Cette campagne exige un achat pour remettre le lot.</span></span></label> : null}
-                <button type="button" onClick={() => void redeem()} disabled={isSubmitting || (Boolean(context.purchaseRequired) && !purchaseConfirmed)} className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-[16px] bg-[#111827] px-5 py-4 text-sm font-semibold text-white shadow-[0_14px_28px_rgba(17,24,39,0.16)] disabled:cursor-not-allowed disabled:opacity-45">{isSubmitting ? "Validation…" : "VALIDER LE RETRAIT DU LOT"}<Check className="h-4 w-4" /></button>
+                {canForce ? <label className="mt-4 block text-sm font-semibold text-[#5f4b12]" htmlFor="force-reason">Motif du forçage<textarea id="force-reason" value={forceReason} onChange={(event) => setForceReason(event.target.value)} maxLength={500} rows={3} placeholder="Ex. Accord exceptionnel du responsable" className="mt-2 w-full resize-none rounded-[14px] border border-[#e5c86a] bg-white px-4 py-3 text-sm font-normal text-[#182033] outline-none focus:border-[#b28719] focus:ring-4 focus:ring-[#f4c14a]/20" /></label> : null}
+                <button type="button" onClick={() => void redeem()} disabled={isSubmitting || (Boolean(context.purchaseRequired) && !purchaseConfirmed) || (canForce && forceReason.trim().length < 8)} className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-[16px] bg-[#111827] px-5 py-4 text-sm font-semibold text-white shadow-[0_14px_28px_rgba(17,24,39,0.16)] disabled:cursor-not-allowed disabled:opacity-45">{isSubmitting ? "Validation…" : canForce ? "FORCER ET VALIDER LE RETRAIT" : "VALIDER LE RETRAIT DU LOT"}<Check className="h-4 w-4" /></button>
               </div>
             ) : null}
 

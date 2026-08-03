@@ -44,12 +44,20 @@ export async function POST(request: Request) {
       leadId?: string;
       purchaseConfirmed?: boolean;
       idempotencyKey?: string;
+      forceRedemption?: boolean;
+      forceReason?: string;
     };
 
     const leadId = body.leadId?.trim() ?? "";
     const idempotencyKey = body.idempotencyKey?.trim() ?? "";
+    const forceRedemption = Boolean(body.forceRedemption);
+    const forceReason = body.forceReason?.trim() ?? "";
     if (!leadId || !idempotencyKey) {
       return NextResponse.json({ error: "Le gain et la clé de validation sont requis." }, { status: 400 });
+    }
+
+    if (forceRedemption && forceReason.length < 8) {
+      return NextResponse.json({ error: "Un motif d'au moins 8 caractères est requis pour forcer un retrait hors période." }, { status: 400 });
     }
 
     const context = await redeemMerchantLeadPrizeFromCashier({
@@ -58,6 +66,8 @@ export async function POST(request: Request) {
       operatorUserId: session.user.id,
       purchaseConfirmed: Boolean(body.purchaseConfirmed),
       idempotencyKey,
+      forceRedemption,
+      forceReason: forceRedemption ? forceReason : undefined,
     });
 
     logSupportEvent("info", "cashier_redemption_completed", {
@@ -67,6 +77,8 @@ export async function POST(request: Request) {
       campaignId: context.campaignId,
       redemptionCode: context.redemptionCode,
       purchaseConfirmed: Boolean(body.purchaseConfirmed),
+      forceRedemption,
+      forceReason: forceRedemption ? forceReason : undefined,
     });
     void captureProductEvent(
       "cashier_redemption_completed",
@@ -77,6 +89,7 @@ export async function POST(request: Request) {
         leadId,
         campaignId: context.campaignId,
         purchaseConfirmed: Boolean(body.purchaseConfirmed),
+        forceRedemption,
       },
     );
 

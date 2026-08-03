@@ -7,6 +7,7 @@ import { authenticateOrProvisionMerchantWithGoogle } from "@/lib/merchant-accoun
 import { getPublicErrorStatus } from "@/lib/public-api";
 import { assertPersistentPublicRateLimit } from "@/lib/public-security-store";
 import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
+import { setSessionSecurityCookies } from "@/lib/session-security-server";
 import { createRouteSupabaseClient } from "@/lib/supabase-server-auth";
 
 type GoogleSessionBody = {
@@ -139,6 +140,7 @@ export async function POST(request: Request) {
     for (const cookie of provisionalResponse.cookies.getAll()) {
       response.cookies.set(cookie);
     }
+    setSessionSecurityCookies(response);
 
     return response;
   } catch (error) {
