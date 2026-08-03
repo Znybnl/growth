@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { requireAuthenticatedSession } from "@/lib/auth";
 import { createCampaignQrSvg } from "@/lib/campaign-exports";
+import { issuePreviewAccessToken } from "@/lib/preview-token";
 import { getCampaignPerformance } from "@/lib/store";
 
 type RouteContext = {
@@ -18,14 +19,22 @@ export async function GET(request: Request, context: RouteContext) {
   }
 
   const origin = new URL(request.url).origin;
-  const publicUrl = `${origin}/campaign/${performance.campaign.id}`;
+  const searchParams = new URL(request.url).searchParams;
+  const isPreview = searchParams.get("preview") === "1";
+  const publicUrl = isPreview
+    ? `${origin}/campaign/${performance.campaign.id}?${new URLSearchParams({
+        preview: "1",
+        previewToken: issuePreviewAccessToken(performance.campaign.id),
+      })}`
+    : `${origin}/campaign/${performance.campaign.id}`;
   const qrSvg = await createCampaignQrSvg(publicUrl);
-  const inline = new URL(request.url).searchParams.get("inline") === "1";
+  const inline = searchParams.get("inline") === "1";
+  const filename = `${performance.campaign.id}-${isPreview ? "preview-qr" : "qr"}.svg`;
 
   return new NextResponse(qrSvg, {
     headers: {
       "Content-Type": "image/svg+xml; charset=utf-8",
-      "Content-Disposition": `${inline ? "inline" : "attachment"}; filename="${performance.campaign.id}-qr.svg"`,
+      "Content-Disposition": `${inline ? "inline" : "attachment"}; filename="${filename}"`,
       "Cache-Control": "no-store",
     },
   });

@@ -18,7 +18,7 @@ import { logSupportEvent } from "@/lib/support-log";
 import { allowLocalTlsBypass } from "@/lib/supabase";
 import { CampaignEmailSettings } from "@/lib/types";
 
-type SendRewardEmailInput = {
+export type SendRewardEmailInput = {
   origin: string;
   campaignId: string;
   leadId: string;
@@ -34,6 +34,7 @@ type SendRewardEmailInput = {
   purchaseRequired?: boolean;
   usageConditions?: string;
   emailSettings: CampaignEmailSettings;
+  preview?: boolean;
 };
 
 function getResendClient() {
@@ -98,20 +99,25 @@ export async function sendRewardEmail(input: SendRewardEmailInput) {
     usageConditions: usageConditionsMessage,
   });
   const emailSettings = upgradeLegacyRewardEmailSettings(input.emailSettings, input.merchantName);
-  const subject = renderEmailTemplate(emailSettings.subject, variables);
-  const delivery = await upsertRewardEmailDeliveryInSupabase({
-    campaignId: input.campaignId,
-    leadId: input.leadId,
-    recipientEmail: input.leadEmail,
-    senderEmail: from,
-    replyToEmail: emailSettings.replyTo,
-    subject,
-    metadata: {
-      redemptionCode: input.redemptionCode,
-      prizeLabel: input.prizeLabel,
-      campaignTitle: input.campaignTitle,
-    },
-  });
+  const renderedSubject = renderEmailTemplate(emailSettings.subject, variables);
+  const subject = input.preview
+    ? `[TEST] [Pr\u00e9visualisation] ${renderedSubject}`
+    : renderedSubject;
+  const delivery = input.preview
+    ? null
+    : await upsertRewardEmailDeliveryInSupabase({
+        campaignId: input.campaignId,
+        leadId: input.leadId,
+        recipientEmail: input.leadEmail,
+        senderEmail: from,
+        replyToEmail: emailSettings.replyTo,
+        subject,
+        metadata: {
+          redemptionCode: input.redemptionCode,
+          prizeLabel: input.prizeLabel,
+          campaignTitle: input.campaignTitle,
+        },
+      });
 
   try {
     const result = await resend.emails.send({
@@ -127,17 +133,21 @@ export async function sendRewardEmail(input: SendRewardEmailInput) {
       throw new Error(result.error.message);
     }
 
-    await markRewardEmailSentInSupabase(delivery.id, result.data?.id ?? null);
-    await captureProductEvent("reward_email_sent", `lead:${input.leadId}`, {
-      campaignId: input.campaignId,
-      leadId: input.leadId,
-      deliveryId: delivery.id,
-      hasResendEmailId: Boolean(result.data?.id),
-    });
+    if (delivery) {
+      await markRewardEmailSentInSupabase(delivery.id, result.data?.id ?? null);
+    }
+    if (!input.preview) {
+      await captureProductEvent("reward_email_sent", `lead:${input.leadId}`, {
+        campaignId: input.campaignId,
+        leadId: input.leadId,
+        deliveryId: delivery?.id ?? null,
+        hasResendEmailId: Boolean(result.data?.id),
+      });
+    }
     logSupportEvent("info", "reward_email_sent", {
       campaignId: input.campaignId,
       leadId: input.leadId,
-      deliveryId: delivery.id,
+      deliveryId: delivery?.id ?? null,
       resendEmailId: result.data?.id ?? null,
       recipientEmail: input.leadEmail,
     });
@@ -148,19 +158,24 @@ export async function sendRewardEmail(input: SendRewardEmailInput) {
     } as const;
   } catch (error) {
     const message = error instanceof Error ? error.message : "Envoi Resend impossible";
-    await markRewardEmailFailedInSupabase(delivery.id, message);
-    await captureProductEvent("reward_email_failed", `lead:${input.leadId}`, {
-      campaignId: input.campaignId,
-      leadId: input.leadId,
-      deliveryId: delivery.id,
-      error: message.slice(0, 240),
-    });
+    if (delivery) {
+      await markRewardEmailFailedInSupabase(delivery.id, message);
+    }
+    if (!input.preview) {
+      await captureProductEvent("reward_email_failed", `lead:${input.leadId}`, {
+        campaignId: input.campaignId,
+        leadId: input.leadId,
+        deliveryId: delivery?.id ?? null,
+        error: message.slice(0, 240),
+      });
+    }
     logSupportEvent("error", "reward_email_failed", {
       campaignId: input.campaignId,
       leadId: input.leadId,
-      deliveryId: delivery.id,
+      deliveryId: delivery?.id ?? null,
       recipientEmail: input.leadEmail,
       error: message,
+      isPreview: Boolean(input.preview),
     });
     throw error;
   }

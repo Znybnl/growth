@@ -4,6 +4,7 @@ import { createAffiliateReferralForMerchant } from "@/lib/affiliate-repository";
 import { notifyAdministratorsOfMerchantSignup } from "@/lib/admin-notifications";
 import { syncMerchantContactToBrevo } from "@/lib/brevo";
 import { authenticateOrProvisionMerchantWithGoogle } from "@/lib/merchant-account-repository";
+import { setSessionSecurityCookies } from "@/lib/session-security-server";
 import { createRouteSupabaseClient } from "@/lib/supabase-server-auth";
 
 function sanitizeNextPath(rawNext: string | null) {
@@ -118,6 +119,7 @@ export async function GET(request: Request) {
     for (const cookie of provisionalResponse.cookies.getAll()) {
       response.cookies.set(cookie);
     }
+    setSessionSecurityCookies(response);
 
     return response;
   } catch (error) {

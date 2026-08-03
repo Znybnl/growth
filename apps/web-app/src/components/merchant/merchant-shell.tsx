@@ -7,6 +7,7 @@ import posthog from "posthog-js";
 import { useEffect, useMemo, useState } from "react";
 
 import { SignOutButton } from "@/components/auth/sign-out-button";
+import { MerchantSessionGuard } from "@/components/merchant/merchant-session-guard";
 import { LocationSwitcher } from "@/components/merchant/location-switcher";
 import { Button } from "@/components/ui/button";
 import { APP_NAME_CAPITALIZED } from "@/lib/branding";
@@ -130,6 +131,7 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
 
   return (
     <div className="h-screen overflow-hidden bg-linen-canvas text-midnight-ink">
+      <MerchantSessionGuard userId={user.id} />
       {menuOpen ? (
         <button
           type="button"

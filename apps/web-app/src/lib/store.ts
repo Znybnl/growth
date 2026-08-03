@@ -1,5 +1,6 @@
 import {
   createDrawSessionInSupabase,
+  createPreviewParticipationInSupabase,
   deleteCampaignForMerchantInSupabase,
   drawForLeadInSupabase,
   finalizeDrawSessionInSupabase,
@@ -15,7 +16,10 @@ import {
   getSupabaseMerchantSupportOverview,
   findSupabaseMerchantLeadByRedemptionCode,
   findSupabasePublicRedemptionContextByCode,
+  findSupabasePreviewRedemptionContextByCode,
+  findSupabasePreviewRedemptionContextByLeadId,
   redeemSupabaseCashierLeadPrize,
+  redeemSupabasePreviewParticipation,
   getSupabasePublicCampaign,
   createPublicCampaignIdentity,
   deleteCampaignInSupabase,
@@ -100,6 +104,7 @@ type Store = {
   campaigns: Campaign[];
   prizes: Prize[];
   leads: Lead[];
+  previewLeads: Lead[];
   events: CampaignEvent[];
   drawSessions: DrawSession[];
 };
@@ -533,6 +538,7 @@ function createSeededStore(): Store {
     campaigns: campaignSeed,
     prizes: prizeSeed,
     leads: leadSeed,
+    previewLeads: [],
     events: eventSeed,
     drawSessions: [],
   };
@@ -655,6 +661,7 @@ function normalizeStore(rawStore: Store): Store {
       remainingQuantity: prize.remainingQuantity ?? prize.totalQuantity ?? null,
     })),
     leads: rawStore.leads ?? [],
+    previewLeads: rawStore.previewLeads ?? [],
     events: rawStore.events ?? [],
     drawSessions: rawStore.drawSessions ?? [],
   };
@@ -1221,10 +1228,63 @@ export async function updateMerchantAccount(userId: string, input: MerchantAccou
 
 export async function getPublicRedemptionContext(code: string): Promise<PublicRedemptionContext | null> {
   if (getDataBackend("la lecture publique d'un retrait") === "supabase") {
-    return findSupabasePublicRedemptionContextByCode(code);
+    return (
+      (await findSupabasePreviewRedemptionContextByCode(code)) ??
+      (await findSupabasePublicRedemptionContextByCode(code))
+    );
   }
 
   const normalizedCode = code.trim().toUpperCase();
+  const previewLead = store.previewLeads.find(
+    (item) => item.redemptionCode?.toUpperCase() === normalizedCode,
+  );
+  if (previewLead) {
+    const performance = getCampaignPerformanceFromMemory(previewLead.campaignId);
+    if (!performance) return null;
+    const prize = previewLead.prizeId
+      ? performance.prizes.find((item) => item.id === previewLead.prizeId)
+      : null;
+    const now = Date.now();
+    const availableAt = previewLead.rewardAvailableAt
+      ? new Date(previewLead.rewardAvailableAt).getTime()
+      : 0;
+    const expiresAt = previewLead.rewardExpiresAt
+      ? new Date(previewLead.rewardExpiresAt).getTime()
+      : 0;
+    const status: CashierRedemptionContext["status"] =
+      previewLead.status === "redeemed"
+        ? "redeemed"
+        : expiresAt > 0 && expiresAt < now
+          ? "expired"
+          : availableAt > now
+            ? "not_available"
+            : previewLead.status === "claimed"
+              ? "available"
+              : "invalid";
+
+    return {
+      status,
+      leadId: previewLead.id,
+      campaignId: previewLead.campaignId,
+      campaignTitle: performance.campaign.title,
+      firstName: previewLead.firstName,
+      maskedEmail: previewLead.email,
+      prizeLabel: prize?.label ?? "Perdu",
+      prizeUsageConditions: prize?.usageConditions,
+      redemptionCode: previewLead.redemptionCode,
+      rewardAvailableAt: previewLead.rewardAvailableAt,
+      rewardExpiresAt: previewLead.rewardExpiresAt,
+      purchaseRequired: performance.campaign.rewardRules.purchaseRequired,
+      redeemedAt: previewLead.redeemedAt,
+      purchaseVerified: previewLead.purchaseVerified,
+      merchantId: performance.merchant.id,
+      merchantName: performance.merchant.companyName,
+      merchantCity: performance.merchant.city,
+      email: previewLead.email,
+      isPreview: true,
+    };
+  }
+
   const lead = store.leads.find((item) => item.redemptionCode?.toUpperCase() === normalizedCode);
   if (!lead) return null;
 
@@ -1534,6 +1594,164 @@ function createDrawSessionFromMemory(input: CreateDrawSessionRequest): CreateDra
   };
 }
 
+function redeemPreviewLeadInMemory(input: {
+  leadId: string;
+  merchantId: string;
+  purchaseConfirmed: boolean;
+  forceRedemption?: boolean;
+}) {
+  const lead = store.previewLeads.find((item) => item.id === input.leadId);
+  if (!lead) throw new Error("Gain de prévisualisation introuvable");
+  const performance = getCampaignPerformanceFromMemory(lead.campaignId);
+  if (!performance || performance.merchant.id !== input.merchantId) {
+    throw new Error("Gain de prévisualisation introuvable");
+  }
+  if (performance.campaign.rewardRules.purchaseRequired && !input.purchaseConfirmed) {
+    throw new Error("Achat à confirmer avant le retrait");
+  }
+  const availableAt = lead.rewardAvailableAt ? new Date(lead.rewardAvailableAt).getTime() : 0;
+  const expiresAt = lead.rewardExpiresAt ? new Date(lead.rewardExpiresAt).getTime() : 0;
+  if (input.forceRedemption && lead.status !== "expired" && availableAt <= Date.now() && (!expiresAt || expiresAt >= Date.now())) {
+    throw new Error("Le forçage est réservé aux lots hors période de validité.");
+  }
+  if (
+    (!input.forceRedemption && lead.status !== "claimed") ||
+    (!input.forceRedemption && availableAt > 0 && availableAt > Date.now()) ||
+    (!input.forceRedemption && expiresAt > 0 && expiresAt < Date.now()) ||
+    (input.forceRedemption && lead.status !== "claimed" && lead.status !== "expired")
+  ) {
+    throw new Error("Ce lot ne peut pas être retiré dans son état actuel");
+  }
+  lead.status = "redeemed";
+  lead.redeemedAt = new Date().toISOString();
+  lead.purchaseVerified = input.purchaseConfirmed;
+  return getPublicRedemptionContext(lead.redemptionCode ?? "");
+}
+
+function choosePreviewPrize(prizes: Prize[]) {
+  const available = prizes.filter(
+    (prize) => prize.remainingQuantity === null || prize.remainingQuantity > 0,
+  );
+  if (!available.length) return null;
+
+  const totalProbability = available.reduce(
+    (total, prize) => total + Math.max(0, prize.probability),
+    0,
+  );
+  if (totalProbability <= 0) return available[0];
+
+  const roll = Math.random() * totalProbability;
+  let cursor = 0;
+  for (const prize of available) {
+    cursor += Math.max(0, prize.probability);
+    if (roll <= cursor) return prize;
+  }
+
+  return available.at(-1) ?? null;
+}
+
+export async function createPreviewDrawSession(
+  input: CreateDrawSessionRequest,
+): Promise<CreateDrawSessionResult> {
+  const performance = await getCampaignPerformance(input.campaignId);
+  const campaign = await getPublicCampaign(input.campaignId);
+  if (!performance || !campaign || !performance.campaign.isActive) {
+    throw new Error("Campagne indisponible");
+  }
+
+  const prize = choosePreviewPrize(performance.prizes);
+  const session: DrawSession = {
+    id: generateId("preview-session"),
+    campaignId: input.campaignId,
+    prizeId: prize?.id,
+    status: "pending",
+    createdAt: new Date().toISOString(),
+    expiresAt: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
+    isPreview: true,
+  };
+
+  return {
+    session,
+    prize: prize ? clone(prize) : null,
+    campaign,
+  };
+}
+
+export async function finalizePreviewParticipation(input: {
+  campaignId: string;
+  sessionId: string;
+  prizeId: string | null;
+  firstName: string;
+  email: string;
+  marketingConsent?: boolean;
+}): Promise<DrawResult> {
+  const performance = await getCampaignPerformance(input.campaignId);
+  const campaign = await getPublicCampaign(input.campaignId);
+  if (!performance || !campaign || !performance.campaign.isActive) {
+    throw new Error("Campagne indisponible");
+  }
+
+  const prize = input.prizeId
+    ? performance.prizes.find((item) => item.id === input.prizeId) ?? null
+    : null;
+  const now = new Date();
+  const availableAt = prize
+    ? new Date(now.getTime() + performance.campaign.rewardRules.availableAfterHours * 60 * 60 * 1000)
+    : null;
+  const expiresAt = prize
+    ? new Date(
+        (availableAt ?? now).getTime() +
+          Math.max(1, performance.campaign.rewardRules.availabilityDurationDays) * 24 * 60 * 60 * 1000,
+      )
+    : null;
+  const leadId = generateId("preview-lead");
+  const redemptionCode = prize
+    ? `PREVIEW-${crypto.randomUUID().slice(0, 10).toUpperCase()}`
+    : null;
+  const lead: Lead = {
+    id: leadId,
+    campaignId: input.campaignId,
+    firstName: input.firstName.trim(),
+    email: input.email.trim().toLowerCase(),
+    marketingConsent: Boolean(input.marketingConsent),
+    consentTimestamp: input.marketingConsent ? now.toISOString() : undefined,
+    prizeId: prize?.id,
+    status: prize ? "claimed" : "lost",
+    createdAt: now.toISOString(),
+    actionConfirmed: false,
+    redemptionCode: redemptionCode ?? undefined,
+    rewardAvailableAt: availableAt?.toISOString(),
+    rewardExpiresAt: expiresAt?.toISOString(),
+    prizeLabelSnapshot: prize?.label,
+    prizeUsageConditions: prize?.usageConditions,
+    isPreview: true,
+  };
+
+  if (getDataBackend("la participation de prévisualisation") === "supabase") {
+    await createPreviewParticipationInSupabase({
+      id: lead.id,
+      campaignId: lead.campaignId,
+      sessionId: input.sessionId,
+      firstName: lead.firstName,
+      email: lead.email,
+      marketingConsent: lead.marketingConsent,
+      prizeId: lead.prizeId ?? null,
+      status: lead.status,
+      redemptionCode: lead.redemptionCode ?? null,
+      rewardAvailableAt: lead.rewardAvailableAt ?? null,
+      rewardExpiresAt: lead.rewardExpiresAt ?? null,
+    });
+  } else {
+    store.previewLeads.push(lead);
+  }
+
+  return {
+    lead: clone(lead),
+    prize: prize ? clone(prize) : null,
+    campaign,
+  };
+}
+
 function getMerchantCampaignLibraryFromMemory(
   merchantId = merchantSeed.id,
   fallbackMerchant?: Merchant,
@@ -1671,7 +1889,7 @@ function markActionConfirmedInMemory(leadId: string, campaignId?: string) {
   return clone(lead);
 }
 
-function redeemLeadPrizeInMemory(leadId: string) {
+function redeemLeadPrizeInMemory(leadId: string, options?: { forceRedemption?: boolean }) {
   const lead = store.leads.find((item) => item.id === leadId);
 
   if (!lead) {
@@ -1686,14 +1904,24 @@ function redeemLeadPrizeInMemory(leadId: string) {
     throw new Error("Aucun lot à retirer");
   }
 
-  if (lead.rewardAvailableAt && new Date(lead.rewardAvailableAt).getTime() > Date.now()) {
+  const forceRedemption = Boolean(options?.forceRedemption);
+  if (forceRedemption && lead.status !== "expired"
+    && (!lead.rewardAvailableAt || new Date(lead.rewardAvailableAt).getTime() <= Date.now())
+    && (!lead.rewardExpiresAt || new Date(lead.rewardExpiresAt).getTime() >= Date.now())) {
+    throw new Error("Le forçage est réservé aux lots hors période de validité.");
+  }
+  if (!forceRedemption && lead.rewardAvailableAt && new Date(lead.rewardAvailableAt).getTime() > Date.now()) {
     throw new Error("Lot pas encore disponible");
   }
 
-  if (lead.rewardExpiresAt && new Date(lead.rewardExpiresAt).getTime() < Date.now()) {
+  if (!forceRedemption && lead.rewardExpiresAt && new Date(lead.rewardExpiresAt).getTime() < Date.now()) {
     lead.status = "expired";
     recordEventInMemory(lead.campaignId, "prize_expired", lead.id);
     throw new Error("Lot expiré");
+  }
+
+  if (forceRedemption && lead.status !== "claimed" && lead.status !== "expired") {
+    throw new Error("Lot indisponible");
   }
 
   lead.status = "redeemed";
@@ -1756,6 +1984,8 @@ function redeemMerchantLeadPrizeInMemory(input: {
   leadId: string;
   merchantId: string;
   purchaseConfirmed: boolean;
+  forceRedemption?: boolean;
+  forceReason?: string;
 }): CashierRedemptionContext {
   const lead = store.leads.find((item) => item.id === input.leadId);
   if (!lead) throw new Error("Gain introuvable");
@@ -1770,7 +2000,7 @@ function redeemMerchantLeadPrizeInMemory(input: {
   lead.purchaseVerified = input.purchaseConfirmed;
   lead.redeemedAt = redeemedAt;
   lead.redeemedByUserId = undefined;
-  const updated = redeemLeadPrizeInMemory(input.leadId);
+  const updated = redeemLeadPrizeInMemory(input.leadId, { forceRedemption: input.forceRedemption });
   return findMerchantLeadByRedemptionCodeInMemory(input.merchantId, updated.redemptionCode ?? "") ?? {
     status: "redeemed",
     leadId: updated.id,
@@ -2267,9 +2497,16 @@ export async function redeemLeadPrize(leadId: string) {
 
 export async function findMerchantLeadByRedemptionCode(merchantId: string, code: string) {
   if (getDataBackend("la recherche caisse d'un code") === "supabase") {
-    return findSupabaseMerchantLeadByRedemptionCode(merchantId, code);
+    return (
+      (await findSupabasePreviewRedemptionContextByCode(code, merchantId)) ??
+      (await findSupabaseMerchantLeadByRedemptionCode(merchantId, code))
+    );
   }
 
+  const previewContext = await getPublicRedemptionContext(code);
+  if (previewContext?.isPreview && previewContext.merchantId === merchantId) {
+    return previewContext;
+  }
   return findMerchantLeadByRedemptionCodeInMemory(merchantId, code);
 }
 
@@ -2279,11 +2516,41 @@ export async function redeemMerchantLeadPrizeFromCashier(input: {
   operatorUserId: string;
   purchaseConfirmed: boolean;
   idempotencyKey: string;
+  forceRedemption?: boolean;
+  forceReason?: string;
 }) {
+  if (input.forceRedemption && (input.forceReason?.trim().length ?? 0) < 8) {
+    throw new Error("Un motif d'au moins 8 caractères est requis pour forcer un retrait hors période.");
+  }
   if (getDataBackend("le retrait caisse d'un lot") === "supabase") {
+    const previewContext = await findSupabasePreviewRedemptionContextByLeadId(
+      input.leadId,
+      input.merchantId,
+    );
+    if (previewContext?.isPreview) {
+      const redeemed = await redeemSupabasePreviewParticipation({
+          leadId: input.leadId,
+        merchantId: input.merchantId,
+        purchaseConfirmed: input.purchaseConfirmed,
+        forceRedemption: input.forceRedemption,
+        });
+      if (!redeemed) throw new Error("Gain de prévisualisation introuvable");
+      return redeemed;
+    }
     return redeemSupabaseCashierLeadPrize(input);
   }
 
+  const previewLead = store.previewLeads.find((item) => item.id === input.leadId);
+  if (previewLead) {
+    const redeemed = await redeemPreviewLeadInMemory({
+      leadId: input.leadId,
+      merchantId: input.merchantId,
+      purchaseConfirmed: input.purchaseConfirmed,
+      forceRedemption: input.forceRedemption,
+    });
+    if (!redeemed) throw new Error("Gain de prévisualisation introuvable");
+    return redeemed;
+  }
   return redeemMerchantLeadPrizeInMemory(input);
 }
 
