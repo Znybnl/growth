@@ -1,0 +1,29 @@
+{
+  "name": "okado-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w @okado/web-app",
+    "dev:web": "npm run dev -w @okado/web-app",
+    "dev:landing": "npm run dev -w @okado/landing-page",
+    "build": "npm run build -w @okado/web-app",
+    "build:web": "npm run build -w @okado/web-app",
+    "build:landing": "npm run build -w @okado/landing-page",
+    "start": "npm run start -w @okado/web-app",
+    "lint": "npm run lint -w @okado/web-app && npm run lint -w @okado/landing-page",
+    "lint:web": "npm run lint -w @okado/web-app",
+    "lint:landing": "npm run lint -w @okado/landing-page",
+    "check:gotomarket": "npm run check:gotomarket -w @okado/web-app",
+    "check:dependencies": "npm run check:dependencies -w @okado/web-app",
+    "check:supabase": "npm run check:supabase -w @okado/web-app",
+    "smoke:critical": "npm run smoke:critical -w @okado/web-app",
+    "smoke:security": "npm run smoke:security -w @okado/web-app"
+  },
+  "optionalDependencies": {
+    "@tailwindcss/oxide-linux-x64-gnu": "^4.3.0",
+    "lightningcss-linux-x64-gnu": "^1.32.0"
+  }
+}
