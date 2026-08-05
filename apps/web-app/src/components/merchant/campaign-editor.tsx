@@ -1620,6 +1620,7 @@ function buildClassicSetupPayload(form: EditorState) {
 
 const MAX_UPLOAD_IMAGE_BYTES = 2 * 1024 * 1024;
 const ACCEPTED_IMAGE_TYPES = new Set(["image/png", "image/jpeg", "image/webp", "image/gif"]);
+type ImageUploadField = "campaign-logo" | "background" | "poster-logo" | "poster-background";
 
 function uploadAsDataUrl(
   event: ChangeEvent<HTMLInputElement>,
@@ -1692,6 +1693,9 @@ export function CampaignEditor({
   const actionsAnchorRef = useRef<HTMLDivElement>(null);
   const [showStickyActions, setShowStickyActions] = useState(false);
   const [qrPreviewOpen, setQrPreviewOpen] = useState(false);
+  const [imageUploadErrors, setImageUploadErrors] = useState<
+    Partial<Record<ImageUploadField, string>>
+  >({});
 
   useEffect(() => {
     const anchor = actionsAnchorRef.current;
@@ -2919,7 +2923,8 @@ function setGameType(gameType: GameType) {
               ) : null}
 
               {form.logoMode === "image" ? (
-              <label className="group relative flex min-h-[132px] cursor-pointer flex-col justify-between rounded-[24px] border border-dashed border-[#cfd9ea] bg-[#f7f9fc] p-4 text-sm transition hover:border-[#2f6df6] hover:bg-[#eef4ff] md:col-span-2">
+              <div className="md:col-span-2">
+              <label className="group relative flex min-h-[132px] cursor-pointer flex-col justify-between rounded-[24px] border border-dashed border-[#cfd9ea] bg-[#f7f9fc] p-4 text-sm transition hover:border-[#2f6df6] hover:bg-[#eef4ff]">
                 <div>
                   <span className="mb-2 block text-[#616b7c]">Importer un logo</span>
                   <p className="max-w-md text-sm leading-6 text-[#516073]">
@@ -2972,17 +2977,24 @@ function setGameType(gameType: GameType) {
                   onChange={(event) =>
                     uploadAsDataUrl(
                       event,
-                      (value) =>
-                        setForm((current) => ({ ...current, logoUrl: value, logoMode: "image" })),
+                      (value) => {
+                        setImageUploadErrors((current) => ({ ...current, "campaign-logo": undefined }));
+                        setForm((current) => ({ ...current, logoUrl: value, logoMode: "image" }));
+                      },
                       (error) => {
-                        setMessage(error);
-                        setMessageTone("error");
+                        setImageUploadErrors((current) => ({ ...current, "campaign-logo": error }));
                       },
                     )
                   }
                   className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                 />
               </label>
+              {imageUploadErrors["campaign-logo"] ? (
+                <p role="alert" className="mt-2 text-sm font-medium text-[#b42318]">
+                  {imageUploadErrors["campaign-logo"]}
+                </p>
+              ) : null}
+              </div>
               ) : null}
 
               {form.logoMode !== "none" ? (
@@ -3299,6 +3311,7 @@ function setGameType(gameType: GameType) {
                           Formats PNG, JPEG, WebP ou GIF, 2 Mo maximum.
                         </p>
                         <div className="mt-4 flex flex-wrap items-center gap-3">
+                          <div className="flex flex-col items-start">
                           <label className="cursor-pointer rounded-[18px] border border-[#d7e0ed] bg-white px-4 py-3 text-sm font-semibold text-[#182033]">
                             Importer une image
                             <input
@@ -3307,27 +3320,34 @@ function setGameType(gameType: GameType) {
                               onChange={(event) =>
                                 uploadAsDataUrl(
                                   event,
-                                  (value) =>
-                                    setForm((current) => ({
-                                      ...current,
-                                      presentation: {
-                                        ...current.presentation,
-                                        background: {
-                                          ...current.presentation.background,
-                                          mode: "image",
-                                          imageUrl: value,
-                                        },
-                                      },
-                                    })),
-                                  (error) => {
-                                    setMessage(error);
-                                    setMessageTone("error");
-                                  },
+                                   (value) => {
+                                     setImageUploadErrors((current) => ({ ...current, background: undefined }));
+                                     setForm((current) => ({
+                                       ...current,
+                                       presentation: {
+                                         ...current.presentation,
+                                         background: {
+                                           ...current.presentation.background,
+                                           mode: "image",
+                                           imageUrl: value,
+                                         },
+                                       },
+                                     }));
+                                   },
+                                   (error) => {
+                                     setImageUploadErrors((current) => ({ ...current, background: error }));
+                                   },
                                 )
                               }
                               className="hidden"
                             />
-                          </label>
+                           </label>
+                           {imageUploadErrors.background ? (
+                             <p role="alert" className="mt-2 text-sm font-medium text-[#b42318]">
+                               {imageUploadErrors.background}
+                             </p>
+                            ) : null}
+                          </div>
                           <button
                             type="button"
                             onClick={() => setBackgroundLibraryDialogOpen(true)}
@@ -3407,6 +3427,7 @@ function setGameType(gameType: GameType) {
             </div>
 
             <div className="mt-6 grid gap-4 md:grid-cols-2">
+              <div className="md:col-span-2">
               <label className="group relative flex min-h-[132px] cursor-pointer flex-col justify-between rounded-[24px] border border-dashed border-[#cfd9ea] bg-[#f7f9fc] p-4 text-sm transition hover:border-[#2f6df6] hover:bg-[#eef4ff]">
                 <div>
                   <span className="mb-2 block text-[#616b7c]">Logo de l&apos;affiche</span>
@@ -3429,26 +3450,33 @@ function setGameType(gameType: GameType) {
                   onChange={(event) =>
                     uploadAsDataUrl(
                       event,
-                      (value) =>
-                        setForm((current) => ({
-                          ...current,
-                          presentation: {
-                            ...current.presentation,
-                            poster: {
-                              ...current.presentation.poster,
-                              logoUrl: value,
-                            },
-                          },
-                        })),
-                      (error) => {
-                        setMessage(error);
-                        setMessageTone("error");
-                      },
+                       (value) => {
+                         setImageUploadErrors((current) => ({ ...current, "poster-logo": undefined }));
+                         setForm((current) => ({
+                           ...current,
+                           presentation: {
+                             ...current.presentation,
+                             poster: {
+                               ...current.presentation.poster,
+                               logoUrl: value,
+                             },
+                           },
+                         }));
+                       },
+                       (error) => {
+                         setImageUploadErrors((current) => ({ ...current, "poster-logo": error }));
+                       },
                     )
                   }
                   className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                 />
               </label>
+              {imageUploadErrors["poster-logo"] ? (
+                <p role="alert" className="mt-2 text-sm font-medium text-[#b42318]">
+                  {imageUploadErrors["poster-logo"]}
+                </p>
+              ) : null}
+              </div>
 
               <label className="text-sm">
                 <span className="mb-2 block text-[#616b7c]">Taille du logo affiche (%)</span>
@@ -3473,7 +3501,8 @@ function setGameType(gameType: GameType) {
                 />
               </label>
 
-              <label className="group relative flex min-h-[132px] cursor-pointer flex-col justify-between rounded-[24px] border border-dashed border-[#cfd9ea] bg-[#f7f9fc] p-4 text-sm transition hover:border-[#2f6df6] hover:bg-[#eef4ff] md:col-span-2">
+              <div className="md:col-span-2">
+              <label className="group relative flex min-h-[132px] cursor-pointer flex-col justify-between rounded-[24px] border border-dashed border-[#cfd9ea] bg-[#f7f9fc] p-4 text-sm transition hover:border-[#2f6df6] hover:bg-[#eef4ff]">
                 <div>
                   <span className="mb-2 block text-[#616b7c]">Image de fond de l&apos;affiche</span>
                   <p className="max-w-md text-sm leading-6 text-[#516073]">
@@ -3495,26 +3524,33 @@ function setGameType(gameType: GameType) {
                   onChange={(event) =>
                     uploadAsDataUrl(
                       event,
-                      (value) =>
-                        setForm((current) => ({
-                          ...current,
-                          presentation: {
-                            ...current.presentation,
-                            poster: {
-                              ...current.presentation.poster,
-                              backgroundImageUrl: value,
-                            },
-                          },
-                        })),
-                      (error) => {
-                        setMessage(error);
-                        setMessageTone("error");
-                      },
+                       (value) => {
+                         setImageUploadErrors((current) => ({ ...current, "poster-background": undefined }));
+                         setForm((current) => ({
+                           ...current,
+                           presentation: {
+                             ...current.presentation,
+                             poster: {
+                               ...current.presentation.poster,
+                               backgroundImageUrl: value,
+                             },
+                           },
+                         }));
+                       },
+                       (error) => {
+                         setImageUploadErrors((current) => ({ ...current, "poster-background": error }));
+                       },
                     )
                   }
                   className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                 />
               </label>
+              {imageUploadErrors["poster-background"] ? (
+                <p role="alert" className="mt-2 text-sm font-medium text-[#b42318]">
+                  {imageUploadErrors["poster-background"]}
+                </p>
+              ) : null}
+              </div>
 
               {form.presentation.poster.backgroundImageUrl ? (
                 <div className="rounded-[24px] border border-[#e1e8f2] bg-[#f8fafc] p-4 md:col-span-2">

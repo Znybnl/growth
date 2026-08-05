@@ -294,6 +294,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [imageUploadError, setImageUploadError] = useState<string | null>(null);
   const [draftWinColor, setDraftWinColor] = useState(poster.wheel.winColor);
 
   useEffect(() => {
@@ -608,7 +609,8 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
             ) : null}
 
             {poster.logoMode === "image" ? (
-              <label className="group relative flex min-h-[132px] cursor-pointer flex-col justify-between rounded-[var(--radius-card)] border border-dashed border-[#cfd9ea] bg-[#f7f9fc] p-4 text-sm transition hover:border-[#2f6df6] hover:bg-[#eef4ff] md:col-span-2">
+              <div className="md:col-span-2">
+              <label className="group relative flex min-h-[132px] cursor-pointer flex-col justify-between rounded-[var(--radius-card)] border border-dashed border-[#cfd9ea] bg-[#f7f9fc] p-4 text-sm transition hover:border-[#2f6df6] hover:bg-[#eef4ff]">
                 <div>
                   <span className="mb-2 block text-[#616b7c]">Importer le logo affiche</span>
                   <p className="max-w-md text-sm leading-6 text-[#516073]">
@@ -641,13 +643,22 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                   onChange={(event) =>
                     uploadAsDataUrl(
                       event,
-                      (value) => updatePoster({ logoMode: "image", logoUrl: value }),
-                      setMessage,
+                      (value) => {
+                        setImageUploadError(null);
+                        updatePoster({ logoMode: "image", logoUrl: value });
+                      },
+                      setImageUploadError,
                     )
                   }
                   className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                 />
               </label>
+              {imageUploadError ? (
+                <p role="alert" className="mt-2 text-sm font-medium text-[#b42318]">
+                  {imageUploadError}
+                </p>
+              ) : null}
+              </div>
             ) : null}
 
             {poster.logoMode !== "none" ? (
