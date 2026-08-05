@@ -6,6 +6,7 @@ import Link from "next/link";
 import {
   BadgePercent,
   Coffee,
+  Download,
   Gift,
   Plus,
   CirclePlus,
@@ -13,9 +14,12 @@ import {
   Sparkles,
   ChevronDown,
   ChevronUp,
+  Eye,
+  QrCode,
   SquareArrowOutUpRight,
   Trash2,
   UtensilsCrossed,
+  X,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
@@ -34,6 +38,12 @@ import { CampaignEmailPreview } from "@/components/merchant/campaign-email-previ
 import { CampaignLivePreview as SharedCampaignLivePreview } from "@/components/merchant/campaign-live-preview";
 import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
 import { Switch } from "@/components/ui/switch";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   actionKindCta,
   actionKindLabel,
@@ -538,6 +548,97 @@ function SaveFeedbackDialog({
           Continuer
         </button>
       </div>
+    </div>
+  );
+}
+
+function CampaignPreviewQr({ campaignId }: { campaignId: string }) {
+  return (
+    <div
+      className="flex flex-col gap-4 rounded-[20px] border border-[#dbe4f0] bg-white p-4 sm:flex-row sm:items-center"
+      onContextMenu={(event) => event.preventDefault()}
+    >
+      <Image
+        src={`/api/campaigns/${campaignId}/qr?preview=1&inline=1`}
+        alt="QR code de prévisualisation — réservé aux tests, ne pas transmettre aux clients"
+        width={192}
+        height={192}
+        unoptimized
+        draggable={false}
+        className="h-48 w-48 shrink-0 select-none rounded-[12px] border border-[#edf1f7] bg-white p-2"
+      />
+      <div className="min-w-0">
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#8993a6]">
+          QR de prévisualisation — test uniquement
+        </p>
+        <p className="mt-2 text-sm leading-6 text-[#626d82]">
+          Scannez ce code pour tester le parcours sans utiliser le QR de la campagne. Les
+          participations sont isolées et ne décrémentent pas les lots. Ne transmettez pas ce QR
+          code à vos clients.
+        </p>
+        <p className="mt-2 text-xs font-semibold text-[#8993a6]">
+          Validité : 30 minutes après sa génération.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function CampaignPreviewQrDialog({
+  open,
+  campaignId,
+  onClose,
+}: {
+  open: boolean;
+  campaignId: string;
+  onClose: () => void;
+}) {
+  if (!open) {
+    return null;
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#0f1220]/52 px-4 pb-4 pt-10 backdrop-blur-[6px] sm:items-center sm:p-6">
+      <section
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="campaign-preview-qr-title"
+        className="w-full max-w-[620px] rounded-[28px] bg-white p-5 text-[#111827] shadow-[0_34px_90px_rgba(18,24,39,0.24)] sm:p-6"
+      >
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">QR code</p>
+            <h2 id="campaign-preview-qr-title" className="mt-2 text-2xl font-semibold text-[#0f1728]">
+              Prévisualisation
+            </h2>
+            <p className="mt-2 text-sm leading-6 text-[#5c6577]">
+              Ce QR code est réservé à vos tests et ne doit pas être transmis aux clients.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Fermer la prévisualisation du QR code"
+            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] border border-[#d7e0ed] text-[#182033] transition hover:bg-[#f7f9fc]"
+          >
+            <X className="h-4 w-4" aria-hidden="true" />
+          </button>
+        </div>
+
+        <div className="mt-6">
+          <CampaignPreviewQr campaignId={campaignId} />
+        </div>
+
+        <div className="mt-5 flex justify-end">
+          <button
+            type="button"
+            onClick={onClose}
+            className="okado-secondary-action px-5"
+          >
+            Fermer
+          </button>
+        </div>
+      </section>
     </div>
   );
 }
@@ -1151,7 +1252,7 @@ const CampaignActionCard = memo(function CampaignActionCard({
         }`}
       >
         <label className="flex h-full flex-col text-sm">
-          <span className="mb-2 flex min-h-6 items-center gap-3 text-[#616b7c]"><SocialChannelIcon channel={action.kind} /><span>Canal</span></span>
+          <span className="mb-2 flex h-6 items-center gap-3 leading-6 text-[#616b7c]"><SocialChannelIcon channel={action.kind} /><span>Canal</span></span>
           <select
             value={action.kind}
             onChange={(event) => onUpdate(action.id, { kind: event.target.value as ActionKind })}
@@ -1167,7 +1268,7 @@ const CampaignActionCard = memo(function CampaignActionCard({
 
         {action.kind !== "crm" ? (
           <label className="flex h-full flex-col text-sm">
-            <span className="mb-2 flex min-h-6 items-center text-[#616b7c]">Lien</span>
+            <span className="mb-2 flex h-6 items-center leading-6 text-[#616b7c]">Lien</span>
             <input
               value={action.url}
               onChange={(event) => onUpdate(action.id, { url: event.target.value })}
@@ -1519,6 +1620,7 @@ function buildClassicSetupPayload(form: EditorState) {
 
 const MAX_UPLOAD_IMAGE_BYTES = 2 * 1024 * 1024;
 const ACCEPTED_IMAGE_TYPES = new Set(["image/png", "image/jpeg", "image/webp", "image/gif"]);
+type ImageUploadField = "campaign-logo" | "background" | "poster-logo" | "poster-background";
 
 function uploadAsDataUrl(
   event: ChangeEvent<HTMLInputElement>,
@@ -1590,6 +1692,10 @@ export function CampaignEditor({
   const [prizeSuggestions, setPrizeSuggestions] = useState<PrizeSuggestion[]>([]);
   const actionsAnchorRef = useRef<HTMLDivElement>(null);
   const [showStickyActions, setShowStickyActions] = useState(false);
+  const [qrPreviewOpen, setQrPreviewOpen] = useState(false);
+  const [imageUploadErrors, setImageUploadErrors] = useState<
+    Partial<Record<ImageUploadField, string>>
+  >({});
 
   useEffect(() => {
     const anchor = actionsAnchorRef.current;
@@ -2553,7 +2659,7 @@ function setGameType(gameType: GameType) {
               <span>
                 <span className="block font-semibold">Collecter l’e-mail avant le jeu</span>
                 <span className="mt-1 block text-xs leading-5 text-[#8993a6]">
-                  Le joueur saisira son prénom et son e-mail avant de jouer. Le consentement est requis à cette étape ; sinon l’e-mail est demandé uniquement après un gain.
+                  Le joueur saisira son prénom et son e-mail avant de jouer. Sinon, l’e-mail est demandé uniquement après un gain.
                 </span>
               </span>
             </label>
@@ -2817,7 +2923,8 @@ function setGameType(gameType: GameType) {
               ) : null}
 
               {form.logoMode === "image" ? (
-              <label className="group relative flex min-h-[132px] cursor-pointer flex-col justify-between rounded-[24px] border border-dashed border-[#cfd9ea] bg-[#f7f9fc] p-4 text-sm transition hover:border-[#2f6df6] hover:bg-[#eef4ff] md:col-span-2">
+              <div className="md:col-span-2">
+              <label className="group relative flex min-h-[132px] cursor-pointer flex-col justify-between rounded-[24px] border border-dashed border-[#cfd9ea] bg-[#f7f9fc] p-4 text-sm transition hover:border-[#2f6df6] hover:bg-[#eef4ff]">
                 <div>
                   <span className="mb-2 block text-[#616b7c]">Importer un logo</span>
                   <p className="max-w-md text-sm leading-6 text-[#516073]">
@@ -2870,17 +2977,24 @@ function setGameType(gameType: GameType) {
                   onChange={(event) =>
                     uploadAsDataUrl(
                       event,
-                      (value) =>
-                        setForm((current) => ({ ...current, logoUrl: value, logoMode: "image" })),
+                      (value) => {
+                        setImageUploadErrors((current) => ({ ...current, "campaign-logo": undefined }));
+                        setForm((current) => ({ ...current, logoUrl: value, logoMode: "image" }));
+                      },
                       (error) => {
-                        setMessage(error);
-                        setMessageTone("error");
+                        setImageUploadErrors((current) => ({ ...current, "campaign-logo": error }));
                       },
                     )
                   }
                   className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                 />
               </label>
+              {imageUploadErrors["campaign-logo"] ? (
+                <p role="alert" className="mt-2 text-sm font-medium text-[#b42318]">
+                  {imageUploadErrors["campaign-logo"]}
+                </p>
+              ) : null}
+              </div>
               ) : null}
 
               {form.logoMode !== "none" ? (
@@ -3197,6 +3311,7 @@ function setGameType(gameType: GameType) {
                           Formats PNG, JPEG, WebP ou GIF, 2 Mo maximum.
                         </p>
                         <div className="mt-4 flex flex-wrap items-center gap-3">
+                          <div className="flex flex-col items-start">
                           <label className="cursor-pointer rounded-[18px] border border-[#d7e0ed] bg-white px-4 py-3 text-sm font-semibold text-[#182033]">
                             Importer une image
                             <input
@@ -3205,27 +3320,34 @@ function setGameType(gameType: GameType) {
                               onChange={(event) =>
                                 uploadAsDataUrl(
                                   event,
-                                  (value) =>
-                                    setForm((current) => ({
-                                      ...current,
-                                      presentation: {
-                                        ...current.presentation,
-                                        background: {
-                                          ...current.presentation.background,
-                                          mode: "image",
-                                          imageUrl: value,
-                                        },
-                                      },
-                                    })),
-                                  (error) => {
-                                    setMessage(error);
-                                    setMessageTone("error");
-                                  },
+                                   (value) => {
+                                     setImageUploadErrors((current) => ({ ...current, background: undefined }));
+                                     setForm((current) => ({
+                                       ...current,
+                                       presentation: {
+                                         ...current.presentation,
+                                         background: {
+                                           ...current.presentation.background,
+                                           mode: "image",
+                                           imageUrl: value,
+                                         },
+                                       },
+                                     }));
+                                   },
+                                   (error) => {
+                                     setImageUploadErrors((current) => ({ ...current, background: error }));
+                                   },
                                 )
                               }
                               className="hidden"
                             />
-                          </label>
+                           </label>
+                           {imageUploadErrors.background ? (
+                             <p role="alert" className="mt-2 text-sm font-medium text-[#b42318]">
+                               {imageUploadErrors.background}
+                             </p>
+                            ) : null}
+                          </div>
                           <button
                             type="button"
                             onClick={() => setBackgroundLibraryDialogOpen(true)}
@@ -3305,6 +3427,7 @@ function setGameType(gameType: GameType) {
             </div>
 
             <div className="mt-6 grid gap-4 md:grid-cols-2">
+              <div className="md:col-span-2">
               <label className="group relative flex min-h-[132px] cursor-pointer flex-col justify-between rounded-[24px] border border-dashed border-[#cfd9ea] bg-[#f7f9fc] p-4 text-sm transition hover:border-[#2f6df6] hover:bg-[#eef4ff]">
                 <div>
                   <span className="mb-2 block text-[#616b7c]">Logo de l&apos;affiche</span>
@@ -3327,26 +3450,33 @@ function setGameType(gameType: GameType) {
                   onChange={(event) =>
                     uploadAsDataUrl(
                       event,
-                      (value) =>
-                        setForm((current) => ({
-                          ...current,
-                          presentation: {
-                            ...current.presentation,
-                            poster: {
-                              ...current.presentation.poster,
-                              logoUrl: value,
-                            },
-                          },
-                        })),
-                      (error) => {
-                        setMessage(error);
-                        setMessageTone("error");
-                      },
+                       (value) => {
+                         setImageUploadErrors((current) => ({ ...current, "poster-logo": undefined }));
+                         setForm((current) => ({
+                           ...current,
+                           presentation: {
+                             ...current.presentation,
+                             poster: {
+                               ...current.presentation.poster,
+                               logoUrl: value,
+                             },
+                           },
+                         }));
+                       },
+                       (error) => {
+                         setImageUploadErrors((current) => ({ ...current, "poster-logo": error }));
+                       },
                     )
                   }
                   className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                 />
               </label>
+              {imageUploadErrors["poster-logo"] ? (
+                <p role="alert" className="mt-2 text-sm font-medium text-[#b42318]">
+                  {imageUploadErrors["poster-logo"]}
+                </p>
+              ) : null}
+              </div>
 
               <label className="text-sm">
                 <span className="mb-2 block text-[#616b7c]">Taille du logo affiche (%)</span>
@@ -3371,7 +3501,8 @@ function setGameType(gameType: GameType) {
                 />
               </label>
 
-              <label className="group relative flex min-h-[132px] cursor-pointer flex-col justify-between rounded-[24px] border border-dashed border-[#cfd9ea] bg-[#f7f9fc] p-4 text-sm transition hover:border-[#2f6df6] hover:bg-[#eef4ff] md:col-span-2">
+              <div className="md:col-span-2">
+              <label className="group relative flex min-h-[132px] cursor-pointer flex-col justify-between rounded-[24px] border border-dashed border-[#cfd9ea] bg-[#f7f9fc] p-4 text-sm transition hover:border-[#2f6df6] hover:bg-[#eef4ff]">
                 <div>
                   <span className="mb-2 block text-[#616b7c]">Image de fond de l&apos;affiche</span>
                   <p className="max-w-md text-sm leading-6 text-[#516073]">
@@ -3393,26 +3524,33 @@ function setGameType(gameType: GameType) {
                   onChange={(event) =>
                     uploadAsDataUrl(
                       event,
-                      (value) =>
-                        setForm((current) => ({
-                          ...current,
-                          presentation: {
-                            ...current.presentation,
-                            poster: {
-                              ...current.presentation.poster,
-                              backgroundImageUrl: value,
-                            },
-                          },
-                        })),
-                      (error) => {
-                        setMessage(error);
-                        setMessageTone("error");
-                      },
+                       (value) => {
+                         setImageUploadErrors((current) => ({ ...current, "poster-background": undefined }));
+                         setForm((current) => ({
+                           ...current,
+                           presentation: {
+                             ...current.presentation,
+                             poster: {
+                               ...current.presentation.poster,
+                               backgroundImageUrl: value,
+                             },
+                           },
+                         }));
+                       },
+                       (error) => {
+                         setImageUploadErrors((current) => ({ ...current, "poster-background": error }));
+                       },
                     )
                   }
                   className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                 />
               </label>
+              {imageUploadErrors["poster-background"] ? (
+                <p role="alert" className="mt-2 text-sm font-medium text-[#b42318]">
+                  {imageUploadErrors["poster-background"]}
+                </p>
+              ) : null}
+              </div>
 
               {form.presentation.poster.backgroundImageUrl ? (
                 <div className="rounded-[24px] border border-[#e1e8f2] bg-[#f8fafc] p-4 md:col-span-2">
@@ -4228,13 +4366,41 @@ function setGameType(gameType: GameType) {
               </div>
               {form.id ? (
                 <div className="okado-action-row pointer-events-auto flex flex-wrap justify-end gap-2">
-                  <a
-                    href={`/api/campaigns/${form.id}/qr`}
-                    className="okado-secondary-action px-4"
-                    title="Télécharger le QR code de production"
-                  >
-                    QR
-                  </a>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        type="button"
+                        className="okado-secondary-action gap-2 px-4"
+                        aria-label="Options du QR code"
+                      >
+                        <QrCode className="h-4 w-4" aria-hidden="true" />
+                        <span>QR code</span>
+                        <ChevronDown className="h-4 w-4" aria-hidden="true" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      align="end"
+                      className="w-[250px] rounded-[var(--okado-radius-control)] border-border p-1.5 shadow-[var(--shadow-product-card)]"
+                    >
+                      <DropdownMenuItem asChild className="cursor-pointer gap-2 rounded-[10px] px-3 py-2.5">
+                        <a
+                          href={`/api/campaigns/${form.id}/qr`}
+                          download
+                          title="Télécharger le QR code de production"
+                        >
+                          <Download className="h-4 w-4" aria-hidden="true" />
+                          <span>Télécharger le QR code</span>
+                        </a>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        className="cursor-pointer gap-2 rounded-[10px] px-3 py-2.5"
+                        onSelect={() => setQrPreviewOpen(true)}
+                      >
+                        <Eye className="h-4 w-4" aria-hidden="true" />
+                        <span>Prévisualisation</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                   <Link
                     href={`/campaigns/${form.id}/poster`}
                     prefetch={false}
@@ -4257,35 +4423,6 @@ function setGameType(gameType: GameType) {
 
             <SharedCampaignLivePreview merchant={merchant} preview={deferredPreview} compact />
 
-            {form.id ? (
-              <div
-                className="mt-5 flex flex-col gap-4 rounded-[20px] border border-[#dbe4f0] bg-white p-4 sm:flex-row sm:items-center"
-                onContextMenu={(event) => event.preventDefault()}
-              >
-                <Image
-                  src={`/api/campaigns/${form.id}/qr?preview=1&inline=1`}
-                  alt="QR code de prévisualisation — réservé aux tests, ne pas transmettre aux clients"
-                  width={128}
-                  height={128}
-                  unoptimized
-                  draggable={false}
-                  className="h-32 w-32 shrink-0 select-none rounded-[12px] border border-[#edf1f7] bg-white p-2"
-                />
-                <div className="min-w-0">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#8993a6]">
-                    QR de prévisualisation — test uniquement
-                  </p>
-                  <p className="mt-2 text-sm leading-6 text-[#626d82]">
-                    Scannez ce code pour tester le parcours sans utiliser le QR de production.
-                    Le lien contient un jeton temporaire, les participations sont isolées et ne
-                    décrémentent pas les lots. Ne transmettez pas ce QR aux clients.
-                  </p>
-                  <p className="mt-2 text-xs font-semibold text-[#8993a6]">
-                    Validité : 30 minutes après sa génération.
-                  </p>
-                </div>
-              </div>
-            ) : null}
           </section>
         </div>
       </div>
@@ -4324,6 +4461,13 @@ function setGameType(gameType: GameType) {
           </div>
         </div>
       </div>
+      {form.id ? (
+        <CampaignPreviewQrDialog
+          open={qrPreviewOpen}
+          campaignId={form.id}
+          onClose={() => setQrPreviewOpen(false)}
+        />
+      ) : null}
       <PrizeConditionsDialog
         open={Boolean(editingPrize)}
         prizeLabel={editingPrize?.label ?? ""}

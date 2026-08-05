@@ -977,7 +977,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                     <span>
                       <span className="block font-semibold">Collecter l’e-mail avant le jeu</span>
                       <span className="mt-1 block text-xs leading-5 text-[#8993a6]">
-                        Le joueur saisira son prénom et son e-mail avant de jouer. Le consentement est requis à cette étape ; sinon l’e-mail est demandé uniquement après un gain.
+                        Le joueur saisira son prénom et son e-mail avant de jouer. Sinon, l’e-mail est demandé uniquement après un gain.
                       </span>
                     </span>
                   </label>
