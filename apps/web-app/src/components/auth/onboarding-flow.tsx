@@ -153,10 +153,10 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
               <label className="text-sm"><span className="mb-2 block text-[#616b7c]">Instagram</span><input type="url" value={instagramUrl} onChange={(event) => setInstagramUrl(event.target.value)} placeholder="https://instagram.com/..." className={inputClass} /></label>
               <label className="text-sm"><span className="mb-2 block text-[#616b7c]">Facebook</span><input type="url" value={facebookUrl} onChange={(event) => setFacebookUrl(event.target.value)} placeholder="https://facebook.com/..." className={inputClass} /></label>
               <label className="text-sm"><span className="mb-2 block text-[#616b7c]">TikTok</span><input type="url" value={tiktokUrl} onChange={(event) => setTiktokUrl(event.target.value)} placeholder="https://tiktok.com/@..." className={inputClass} /></label>
-              <label className="text-sm md:col-span-2"><span className="mb-2 block text-[#616b7c]">Tripadvisor</span><input type="url" value={tripadvisorUrl} onChange={(event) => setTripadvisorUrl(event.target.value)} placeholder="https://tripadvisor.com/..." className={inputClass} /></label>
+              <label className="text-sm"><span className="mb-2 block text-[#616b7c]">Tripadvisor</span><input type="url" value={tripadvisorUrl} onChange={(event) => setTripadvisorUrl(event.target.value)} placeholder="https://tripadvisor.com/..." className={inputClass} /></label>
               <label className="text-sm md:col-span-2">
                 <span className="mb-2 block text-[#616b7c]">PIN de validation du retrait</span>
-                <input type="password" inputMode="numeric" autoComplete="new-password" pattern="[0-9]{4,6}" maxLength={6} value={redemptionPin} onChange={(event) => setRedemptionPin(event.target.value.replace(/\D/g, ""))} className={inputClass} />
+                <input type="text" inputMode="numeric" autoComplete="new-password" pattern="[0-9]{4,6}" maxLength={6} value={redemptionPin} onChange={(event) => setRedemptionPin(event.target.value.replace(/\D/g, ""))} className={inputClass} />
                 <span className="mt-2 block text-xs leading-5 text-ash">Ce code de 4 à 6 chiffres est demandé à un employé pour valider un retrait. Il est prérempli à 0000 et pourra être modifié depuis Compte.</span>
               </label>
             </div>

@@ -30,11 +30,11 @@ export function OnboardingWelcomeDialog({ open }: OnboardingWelcomeDialogProps) 
           Vous pouvez maintenant fidéliser votre clientèle et récolter des avis en toute simplicité.
           Prêt à booster votre visibilité ?
         </p>
-        <div className="mt-7 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-          <button type="button" onClick={close} className="okado-secondary-action px-5">
+        <div className="okado-action-row mt-7 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+          <button type="button" onClick={close} className="okado-secondary-action px-5 sm:flex-1">
             Plus tard
           </button>
-          <Link href="/campaigns/new/guided" className="okado-filled-action px-5 text-center">
+          <Link href="/campaigns/new/guided" className="okado-filled-action px-5 text-center sm:flex-1">
             Créer mon premier jeu
           </Link>
         </div>
