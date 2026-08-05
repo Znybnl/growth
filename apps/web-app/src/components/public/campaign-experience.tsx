@@ -614,7 +614,11 @@ export function CampaignExperience({
     return payload.token;
   }
 
-  async function trackEvent(eventType: string, leadId?: string) {
+  async function trackEvent(
+    eventType: string,
+    leadId?: string,
+    metadata?: Record<string, string | number | boolean | null>,
+  ) {
     if (isPreview) return;
     await fetch("/api/public/event", {
       method: "POST",
@@ -623,6 +627,7 @@ export function CampaignExperience({
         campaignId,
         leadId,
         eventType,
+        metadata,
       }),
     });
   }
@@ -789,6 +794,14 @@ export function CampaignExperience({
 
     void trackEvent("game_lost");
     setStage("lost");
+  }
+
+  function handleScratchStart() {
+    void trackEvent("game_played", undefined, {
+      mechanic: "scratch",
+      trigger: "first_touch",
+      sessionId: drawSession?.id ?? null,
+    });
   }
 
   const backgroundStyle =
@@ -981,6 +994,7 @@ export function CampaignExperience({
                 enabled={stage === "ready"}
                 onReveal={() => void handleGameReveal()}
                 onStart={() => void openActionAndTrack()}
+                onScratchStart={handleScratchStart}
                 logoMode={campaign.logoMode}
                 logoText={campaign.logoText ?? campaign.merchantLogoText}
                 logoUrl={campaign.logoUrl}
@@ -1003,6 +1017,7 @@ export function CampaignExperience({
                 resultLabel={scratchLabel}
                 enabled={stage === "ready"}
                 onReveal={() => void handleGameReveal()}
+                onScratchStart={handleScratchStart}
               />
 
             )}

@@ -1585,7 +1585,11 @@ function createDrawSessionFromMemory(input: CreateDrawSessionRequest): CreateDra
   };
 
   store.drawSessions.push(session);
-  recordEventInMemory(campaign.id, "game_played");
+  if (campaign.gameType === "wheel") {
+    recordEventInMemory(campaign.id, "game_played", undefined, {
+      trigger: "session_started",
+    });
+  }
 
   return {
     session: clone(session),

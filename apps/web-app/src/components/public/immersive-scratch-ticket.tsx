@@ -25,6 +25,7 @@ type ImmersiveScratchTicketProps = {
   enabled: boolean;
   onReveal: () => void;
   onStart?: () => void;
+  onScratchStart?: () => void;
   template: ScratchTemplateId;
   logoMode?: "none" | "image" | "text";
   logoText?: string;
@@ -68,6 +69,18 @@ function readableTextColor(color: string) {
   const channels = [0, 2, 4].map((offset) => Number.parseInt(normalized.slice(offset, offset + 2), 16));
   const luminance = (0.299 * channels[0] + 0.587 * channels[1] + 0.114 * channels[2]) / 255;
   return luminance > 0.66 ? "#14213d" : "#ffffff";
+}
+
+function highestContrastTextColor(color: string) {
+  const normalized = color.replace("#", "");
+  if (!/^[0-9a-f]{6}$/i.test(normalized)) return "#ffffff";
+  const channels = [0, 2, 4].map((offset) => Number.parseInt(normalized.slice(offset, offset + 2), 16) / 255);
+  const relativeLuminance = channels
+    .map((channel) => (channel <= 0.03928 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4))
+    .reduce((sum, channel, index) => sum + channel * [0.2126, 0.7152, 0.0722][index], 0);
+  const whiteContrast = 1.05 / (relativeLuminance + 0.05);
+  const darkContrast = (relativeLuminance + 0.05) / 0.05;
+  return whiteContrast >= darkContrast ? "#ffffff" : "#14213d";
 }
 
 function GiftIllustration({ color }: { color: string }) {
@@ -137,6 +150,7 @@ export function ImmersiveScratchTicket({
   enabled,
   onReveal,
   onStart,
+  onScratchStart,
   template,
   logoMode = "text",
   logoText,
@@ -156,6 +170,7 @@ export function ImmersiveScratchTicket({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const drawingRef = useRef(false);
   const revealedRef = useRef(false);
+  const scratchStartedRef = useRef(false);
   const checksRef = useRef(0);
   const [revealed, setRevealed] = useState(false);
   const [hasTouched, setHasTouched] = useState(false);
@@ -199,7 +214,10 @@ export function ImmersiveScratchTicket({
         ? "#3b2500"
         : "#111827";
   const ink = headingTextColor || defaultInk;
-  const resultInk = "#14213d";
+  const resultInk = highestContrastTextColor(ticketBaseColor);
+  const resultTextShadow = resultInk === "#ffffff"
+    ? "0 2px 10px rgba(0, 0, 0, 0.58)"
+    : "0 2px 8px rgba(255, 255, 255, 0.72)";
   const resolvedHeadingFontClass = headingFontClass || (isLilac ? "font-fredoka" : "font-display");
   const displayHeadline = headline?.trim() || DEFAULT_SCRATCH_SUBTITLE;
   const instruction = "Grattez la carte pour révéler votre cadeau.";
@@ -238,6 +256,7 @@ export function ImmersiveScratchTicket({
     context.restore();
     checksRef.current = 0;
     revealedRef.current = false;
+    scratchStartedRef.current = false;
     setRevealed(false);
     setHasTouched(false);
   }, [isCoral, isLilac, isSunburst, isVault, primary, resultLabel]);
@@ -341,19 +360,37 @@ export function ImmersiveScratchTicket({
               {isSunburst ? <ScratchMark color={illustrationColor} /> : null}
             </div>
           ) : null}
+          {hasTouched ? (
+            <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center px-6 text-center">
+              <p
+                className="max-w-[90%] font-semibold leading-[1.05]"
+                style={{
+                  color: resultInk,
+                  fontSize: "clamp(2rem, 8vw, 3rem)",
+                  textShadow: resultTextShadow,
+                }}
+              >
+                {resultLabel}
+              </p>
+            </div>
+          ) : null}
           {!revealed ? (
             <canvas
               ref={canvasRef}
               width={CANVAS_WIDTH}
               height={CANVAS_HEIGHT}
               aria-label={instruction}
-              className={`relative z-20 block h-full w-full touch-none cursor-crosshair ${isSunburst ? "opacity-100" : "opacity-[0.78]"}`}
+              className="relative z-20 block h-full w-full touch-none cursor-crosshair"
               onPointerDown={(event) => {
                 if (!enabled) {
                   onStart?.();
                   return;
                 }
                 setHasTouched(true);
+                if (!scratchStartedRef.current) {
+                  scratchStartedRef.current = true;
+                  onScratchStart?.();
+                }
                 event.currentTarget.setPointerCapture(event.pointerId);
                 drawingRef.current = true;
                 scratch(...Object.values(pointFromEvent(event)) as [number, number]);
