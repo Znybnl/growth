@@ -131,24 +131,6 @@ type LeadRow = {
   reward_expires_at: string | null;
   prize_label_snapshot?: string | null;
   prize_usage_conditions_snapshot?: string | null;
-  is_preview?: boolean | null;
-};
-
-type PreviewParticipationRow = {
-  id: string;
-  campaign_id: string;
-  session_id: string;
-  first_name: string;
-  email: string;
-  marketing_consent: boolean;
-  prize_id: string | null;
-  status: Lead["status"];
-  created_at: string;
-  redemption_code: string | null;
-  reward_available_at: string | null;
-  reward_expires_at: string | null;
-  redeemed_at: string | null;
-  purchase_verified: boolean;
 };
 
 const redemptionLeadColumns = [
@@ -591,7 +573,6 @@ function toLead(row: LeadRow): Lead {
     rewardExpiresAt: row.reward_expires_at ?? undefined,
     prizeUsageConditions: row.prize_usage_conditions_snapshot ?? undefined,
     prizeLabelSnapshot: row.prize_label_snapshot ?? undefined,
-    isPreview: row.is_preview === true,
   };
 }
 
@@ -2699,198 +2680,22 @@ export async function findSupabasePublicRedemptionContextByCode(
   };
 }
 
-export async function createPreviewParticipationInSupabase(input: {
-  id: string;
-  campaignId: string;
-  sessionId: string;
-  firstName: string;
-  email: string;
-  marketingConsent: boolean;
-  prizeId: string | null;
-  status: Lead["status"];
-  redemptionCode: string | null;
-  rewardAvailableAt: string | null;
-  rewardExpiresAt: string | null;
-}) {
-  const supabase = getSupabaseAdmin();
-  const { data, error } = await supabase
-    .from("preview_participations")
-    .insert({
-      id: input.id,
-      campaign_id: input.campaignId,
-      session_id: input.sessionId,
-      first_name: input.firstName,
-      email: input.email,
-      marketing_consent: input.marketingConsent,
-      prize_id: input.prizeId,
-      status: input.status,
-      redemption_code: input.redemptionCode,
-      reward_available_at: input.rewardAvailableAt,
-      reward_expires_at: input.rewardExpiresAt,
-    })
-    .select("*")
-    .single<PreviewParticipationRow>();
-
-  if (error || !data) {
-    throw new Error(`Participation de prévisualisation impossible: ${error?.message ?? "réponse vide"}`);
-  }
-
-  return data;
-}
-
-function previewRedemptionStatus(row: PreviewParticipationRow): CashierRedemptionContext["status"] {
-  const now = Date.now();
-  const availableAt = row.reward_available_at ? new Date(row.reward_available_at).getTime() : 0;
-  const expiresAt = row.reward_expires_at ? new Date(row.reward_expires_at).getTime() : 0;
-
-  return row.status === "redeemed"
-    ? "redeemed"
-    : expiresAt > 0 && expiresAt < now
-      ? "expired"
-      : availableAt > now
-        ? "not_available"
-        : row.status === "claimed"
-          ? "available"
-          : "invalid";
-}
-
-export async function findSupabasePreviewRedemptionContextByCode(
-  code: string,
-  merchantId?: string,
-): Promise<PublicRedemptionContext | null> {
-  const normalizedCode = code.trim().toUpperCase();
-  if (!normalizedCode) return null;
-
-  const supabase = getSupabaseAdmin();
-  const { data: row, error } = await supabase
-    .from("preview_participations")
-    .select("*")
-    .eq("redemption_code", normalizedCode)
-    .maybeSingle<PreviewParticipationRow>();
-
-  if (error) {
-    if (/preview_participations|does not exist|relation/i.test(error.message)) return null;
-    throw new Error("Recherche du code de prévisualisation impossible");
-  }
-  if (!row) return null;
-
-  const performance = await getSupabaseCampaignPerformance(row.campaign_id);
-  if (!performance || (merchantId && performance.merchant.id !== merchantId)) return null;
-  const prize = row.prize_id
-    ? performance.prizes.find((item) => item.id === row.prize_id)
-    : undefined;
-
-  return {
-    status: previewRedemptionStatus(row),
-    leadId: row.id,
-    campaignId: row.campaign_id,
-    campaignTitle: performance.campaign.title,
-    firstName: row.first_name,
-    maskedEmail: row.email,
-    prizeLabel: prize?.label ?? "Perdu",
-    prizeUsageConditions: prize?.usageConditions,
-    redemptionCode: row.redemption_code ?? undefined,
-    rewardAvailableAt: row.reward_available_at ?? undefined,
-    rewardExpiresAt: row.reward_expires_at ?? undefined,
-    purchaseRequired: performance.campaign.rewardRules.purchaseRequired,
-    redeemedAt: row.redeemed_at ?? undefined,
-    purchaseVerified: row.purchase_verified,
-    merchantId: performance.merchant.id,
-    merchantName: performance.merchant.companyName,
-    merchantCity: performance.merchant.city,
-    email: row.email,
-    isPreview: true,
-  };
-}
-
-export async function findSupabasePreviewRedemptionContextByLeadId(
-  leadId: string,
-  merchantId?: string,
-) {
-  const supabase = getSupabaseAdmin();
-  const { data, error } = await supabase
-    .from("preview_participations")
-    .select("redemption_code")
-    .eq("id", leadId)
-    .maybeSingle<{ redemption_code: string | null }>();
-  if (error && /preview_participations|does not exist|relation/i.test(error.message)) return null;
-  return data?.redemption_code
-    ? findSupabasePreviewRedemptionContextByCode(data.redemption_code, merchantId)
-    : null;
-}
-
-export async function redeemSupabasePreviewParticipation(input: {
-  leadId: string;
-  merchantId: string;
-  purchaseConfirmed: boolean;
-  forceRedemption?: boolean;
-}) {
-  const supabase = getSupabaseAdmin();
-  const { data: row } = await supabase
-    .from("preview_participations")
-    .select("*")
-    .eq("id", input.leadId)
-    .maybeSingle<PreviewParticipationRow>();
-  if (!row) throw new Error("Gain de prévisualisation introuvable");
-
-  const performance = await getSupabaseCampaignPerformance(row.campaign_id);
-  if (!performance || performance.merchant.id !== input.merchantId) {
-    throw new Error("Gain de prévisualisation introuvable");
-  }
-  if (performance.campaign.rewardRules.purchaseRequired && !input.purchaseConfirmed) {
-    throw new Error("Achat à confirmer avant le retrait");
-  }
-  if (input.forceRedemption && previewRedemptionStatus(row) === "available") {
-    throw new Error("Le forçage est réservé aux lots hors période de validité.");
-  }
-  if (!input.forceRedemption && previewRedemptionStatus(row) !== "available") {
-    throw new Error("Ce lot ne peut pas être retiré dans son état actuel");
-  }
-
-  const { error } = await supabase
-    .from("preview_participations")
-    .update({
-      status: "redeemed",
-      redeemed_at: new Date().toISOString(),
-      purchase_verified: input.purchaseConfirmed,
-    })
-    .eq("id", input.leadId)
-    .eq("status", "claimed");
-  if (error) throw new Error("Retrait de prévisualisation impossible");
-
-  return findSupabasePreviewRedemptionContextByCode(row.redemption_code ?? "", input.merchantId);
-}
-
 export async function redeemSupabaseCashierLeadPrize(input: {
   leadId: string;
   merchantId: string;
   operatorUserId: string;
   purchaseConfirmed: boolean;
   idempotencyKey: string;
-  forceRedemption?: boolean;
-  forceReason?: string;
 }): Promise<CashierRedemptionContext> {
   const supabase = getSupabaseAdmin();
-  const rpcName = input.forceRedemption ? "redeem_cashier_lead_prize_force" : "redeem_cashier_lead_prize";
-  const rpcParams = input.forceRedemption
-    ? {
-        p_lead_id: input.leadId,
-        p_merchant_id: input.merchantId,
-        p_operator_user_id: input.operatorUserId,
-        p_purchase_confirmed: input.purchaseConfirmed,
-        p_idempotency_key: input.idempotencyKey,
-        p_force_redemption: true,
-        p_force_reason: input.forceReason?.trim() || null,
-      }
-    : {
-        p_lead_id: input.leadId,
-        p_merchant_id: input.merchantId,
-        p_operator_user_id: input.operatorUserId,
-        p_purchase_confirmed: input.purchaseConfirmed,
-        p_idempotency_key: input.idempotencyKey,
-      };
   const { data, error } = await supabase
-    .rpc(rpcName, rpcParams)
+    .rpc("redeem_cashier_lead_prize", {
+      p_lead_id: input.leadId,
+      p_merchant_id: input.merchantId,
+      p_operator_user_id: input.operatorUserId,
+      p_purchase_confirmed: input.purchaseConfirmed,
+      p_idempotency_key: input.idempotencyKey,
+    })
     .single<CashierRedeemRpcRow>();
 
   if (error || !data) {
@@ -2909,13 +2714,10 @@ export async function redeemSupabaseCashierLeadPrize(input: {
       : null;
     if (!before?.leadId) throw new Error("Gain introuvable");
     if (before.status === "redeemed") throw new Error("Lot déjà retiré");
-    if (!input.forceRedemption && before.status === "expired") throw new Error("Lot expiré");
-    if (!input.forceRedemption && before.status === "not_available") throw new Error("Lot pas encore disponible");
+    if (before.status === "expired") throw new Error("Lot expiré");
+    if (before.status === "not_available") throw new Error("Lot pas encore disponible");
     if (before.purchaseRequired && !input.purchaseConfirmed) {
       throw new Error("Achat à confirmer avant le retrait");
-    }
-    if (input.forceRedemption) {
-      throw new Error("Le forçage du retrait nécessite la fonction de validation sécurisée.");
     }
     await redeemLeadPrizeInSupabase(input.leadId);
     return { ...before, status: "redeemed", purchaseVerified: input.purchaseConfirmed, redeemedAt: new Date().toISOString() };

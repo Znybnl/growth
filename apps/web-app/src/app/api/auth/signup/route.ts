@@ -7,7 +7,6 @@ import { captureProductEvent, merchantDistinctId } from "@/lib/product-analytics
 import { getPublicErrorStatus } from "@/lib/public-api";
 import { assertPersistentPublicRateLimit } from "@/lib/public-security-store";
 import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
-import { setSessionSecurityCookies } from "@/lib/session-security-server";
 import { createMerchantAccount } from "@/lib/store";
 import { createRouteSupabaseClient } from "@/lib/supabase-server-auth";
 import { logSupportEvent } from "@/lib/support-log";
@@ -119,7 +118,6 @@ export async function POST(request: Request) {
     );
 
     copyCookies(provisionalResponse, response);
-    setSessionSecurityCookies(response);
     return response;
   } catch (error) {
     return NextResponse.json(

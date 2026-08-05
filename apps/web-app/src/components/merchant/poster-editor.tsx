@@ -211,8 +211,8 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
         logoMode: campaign.logoMode ?? "text",
         logoText: campaign.logoText ?? "",
         logoUrl: campaign.logoUrl,
-        logoSizePercent: campaign.presentation.poster?.logoSizePercent ?? 70,
-        logoBottomMarginPx: campaign.presentation.poster?.logoBottomMarginPx ?? 6,
+        logoSizePercent: campaign.presentation.logo.sizePercent,
+        logoBottomMarginPx: campaign.presentation.logo.marginBottomPx,
         backgroundMode: "color",
         backgroundColor: "#fff6ee",
         backgroundImageUrl: "",
@@ -653,23 +653,16 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
             {poster.logoMode !== "none" ? (
               <>
                 <label className="text-sm">
-                  <div className="mb-2 flex items-center justify-between gap-3">
-                    <span className="text-[#616b7c]">Taille du logo (%)</span>
-                    <output className="font-semibold text-[#182033]">
-                      {Math.round(poster.logoSizePercent)}%
-                    </output>
-                  </div>
+                  <span className="mb-2 block text-[#616b7c]">Taille du logo (%)</span>
                   <input
-                    type="range"
-                    min={0}
-                    max={200}
-                    step={1}
+                    type="number"
+                    min={40}
+                    max={240}
                     value={poster.logoSizePercent}
                     onChange={(event) =>
-                      updatePoster({ logoSizePercent: Number(event.target.value) })
+                      updatePoster({ logoSizePercent: Number(event.target.value || 100) })
                     }
-                    className="w-full cursor-pointer accent-[#2f6df6]"
-                    aria-label="Taille du logo"
+                    className="w-full rounded-[var(--radius-card)] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none transition focus:border-[#2f6df6] focus:bg-white"
                   />
                 </label>
 

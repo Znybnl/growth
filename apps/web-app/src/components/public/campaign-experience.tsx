@@ -39,7 +39,6 @@ type CampaignExperienceProps = {
   campaignId: string;
   initialCampaign: PublicCampaign;
   isPreview?: boolean;
-  previewToken?: string;
 };
 
 type ExperienceStage =
@@ -432,7 +431,6 @@ export function CampaignExperience({
   campaignId,
   initialCampaign,
   isPreview = false,
-  previewToken: initialPreviewToken,
 }: CampaignExperienceProps) {
   const [campaign, setCampaign] = useState(initialCampaign);
   const [stage, setStage] = useState<ExperienceStage>("idle");
@@ -440,7 +438,6 @@ export function CampaignExperience({
     "Une seule participation est possible par jour. Revenez demain pour tenter votre chance à nouveau.",
   );
   const [drawSession, setDrawSession] = useState<DrawSession | null>(null);
-  const [previewToken, setPreviewToken] = useState<string | null>(initialPreviewToken ?? null);
   const [previewResult, setPreviewResult] = useState<CreateDrawSessionResult | null>(null);
   const [drawResult, setDrawResult] = useState<DrawResult | null>(null);
   const [firstName, setFirstName] = useState("");
@@ -560,62 +557,7 @@ export function CampaignExperience({
     void loadCampaign();
   }, [campaignId, isPreview]);
 
-  useEffect(() => {
-    if (!isPreview || initialPreviewToken) return;
-
-    let cancelled = false;
-    void fetch("/api/public/preview-token", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ campaignId }),
-    })
-      .then(async (response) => {
-        const payload = (await response.json().catch(() => null)) as {
-          token?: string;
-          error?: string;
-        } | null;
-        if (!response.ok || !payload?.token) {
-          throw new Error(payload?.error ?? "La prévisualisation est indisponible.");
-        }
-        if (!cancelled) setPreviewToken(payload.token);
-      })
-      .catch((previewError) => {
-        if (!cancelled) {
-          setError(
-            previewError instanceof Error
-              ? previewError.message
-              : "La prévisualisation est indisponible.",
-          );
-        }
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [campaignId, initialPreviewToken, isPreview]);
-
-  async function ensurePreviewToken() {
-    if (!isPreview) return null;
-    if (previewToken) return previewToken;
-
-    const response = await fetch("/api/public/preview-token", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ campaignId }),
-    });
-    const payload = (await response.json().catch(() => null)) as {
-      token?: string;
-      error?: string;
-    } | null;
-    if (!response.ok || !payload?.token) {
-      throw new Error(payload?.error ?? "La prévisualisation est indisponible.");
-    }
-    setPreviewToken(payload.token);
-    return payload.token;
-  }
-
   async function trackEvent(eventType: string, leadId?: string) {
-    if (isPreview) return;
     await fetch("/api/public/event", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -633,11 +575,10 @@ export function CampaignExperience({
 
 
     try {
-      const activePreviewToken = await ensurePreviewToken();
       const response = await fetch("/api/public/draw/session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ campaignId, previewToken: activePreviewToken }),
+        body: JSON.stringify({ campaignId }),
       });
 
       if (!response.ok) {
@@ -715,7 +656,6 @@ export function CampaignExperience({
         firstName,
         email,
         marketingConsent,
-        previewSessionToken: drawSession.previewSessionToken,
       };
       const response = await fetch("/api/public/draw/finalize", {
         method: "POST",
@@ -837,14 +777,6 @@ export function CampaignExperience({
         backgroundSize: "cover",
       }}
     >
-      {isPreview ? (
-        <div
-          role="status"
-          className="sticky top-0 z-50 flex min-h-11 items-center justify-center border-b border-[#d7a91f] bg-[#f4c14a] px-4 py-2 text-center text-xs font-semibold tracking-[0.01em] text-[#111827] shadow-[0_8px_24px_rgba(122,91,0,0.22)] sm:text-sm"
-        >
-          Mode prévisualisation — cette participation est simulée et n&apos;affecte ni vos statistiques ni vos stocks.
-        </div>
-      ) : null}
       {isRestaurantPopTemplate || isSunburstTemplate || isCosmicTemplate || isScratchVaultTemplate || isScratchConfettiTemplate || isScratchCoralTemplate || isScratchLilacTemplate || isScratchSunburstTemplate ? (
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
           <div
@@ -860,7 +792,7 @@ export function CampaignExperience({
           />
         </div>
       ) : null}
-      <div className={`relative mx-auto flex ${isPreview ? "h-[calc(100dvh-44px)] min-h-[560px]" : "h-screen"} w-full flex-col overflow-hidden px-4 pb-0 sm:px-6 ${pageTopPaddingClass}`}>
+      <div className={`relative mx-auto flex h-screen w-full flex-col overflow-hidden px-4 pb-0 sm:px-6 ${pageTopPaddingClass}`}>
         {!isImmersiveScratchTemplate && ((campaign.logoMode === "image" && campaign.logoUrl) ||
         campaign.logoMode === "text" ||
         campaign.gameType === "scratch") ? (
@@ -1253,12 +1185,6 @@ export function CampaignExperience({
               ? "Merci pour votre confiance."
               : "Conservez ce QR code pour retirer votre gain. Si l’e-mail tarde à arriver, vérifiez vos spams."}
           </p>
-
-          {isPreview ? (
-            <p className="mt-3 rounded-[14px] bg-[#eef2ff] px-3 py-2 text-xs font-semibold leading-5 text-[#334477]">
-              Résultat simulé : le lot et l&apos;e-mail de test n&apos;impactent pas la campagne réelle.
-            </p>
-          ) : null}
 
           {drawResult?.prize ? <div className="mt-4 rounded-[18px] bg-[#fff4cb] px-4 py-3 text-left text-sm leading-6 text-[#4d3810]">
             <p>

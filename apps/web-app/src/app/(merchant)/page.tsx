@@ -3,6 +3,7 @@ import Link from "next/link";
 import { DashboardActivityChart } from "@/components/merchant/dashboard-activity-chart";
 import { DashboardCampaignActionsMenu } from "@/components/merchant/dashboard-campaign-actions-menu";
 import { DashboardOperationalAlerts } from "@/components/merchant/dashboard-operational-alerts";
+import { OnboardingWelcomeDialog } from "@/components/merchant/onboarding-welcome-dialog";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import {
   formatCurrency,
@@ -19,7 +20,7 @@ export const dynamic = "force-dynamic";
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; scope?: string }>;
+  searchParams: Promise<{ q?: string; scope?: string; welcome?: string }>;
 }) {
   const session = await requireAuthenticatedSession();
   const params = await searchParams;
@@ -74,6 +75,7 @@ export default async function DashboardPage({
 
   return (
     <div className="min-w-0 space-y-5 overflow-x-hidden">
+      <OnboardingWelcomeDialog open={params.welcome === "1"} />
       <section className="grid gap-5 px-1 py-2 xl:grid-cols-[1.2fr_0.8fr]">
           <div className="min-w-0">
             <p className="okado-label">

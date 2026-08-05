@@ -17,48 +17,19 @@ import {
 } from "@/lib/public-security-store";
 import { captureProductEvent } from "@/lib/product-analytics";
 import { createDrawSession } from "@/lib/store";
-import { createPreviewDrawSession } from "@/lib/store";
-import { issuePreviewSessionToken, verifyPreviewAccessToken } from "@/lib/preview-token";
 import { logSupportEvent } from "@/lib/support-log";
 import { CreateDrawSessionRequest, CreateDrawSessionResult } from "@/lib/types";
 
 export async function POST(request: NextRequest) {
   const body = (await request.json()) as CreateDrawSessionRequest;
   const campaignId = body.campaignId?.trim() ?? "";
-  const previewClaims = body.previewToken
-    ? verifyPreviewAccessToken(body.previewToken, campaignId)
-    : null;
   let dailyLockClaimed = false;
 
   if (!isValidPublicIdentifier(campaignId)) {
     return NextResponse.json({ error: "campaignId is required" }, { status: 400 });
   }
-  if (body.previewToken && !previewClaims) {
-    return NextResponse.json(
-      { error: "Le jeton de prévisualisation est invalide ou expiré." },
-      { status: 403 },
-    );
-  }
 
   try {
-    if (previewClaims) {
-      await assertPersistentPublicRateLimit(request, {
-        key: `preview-draw-session:${campaignId}`,
-        limit: 60,
-        windowMs: 60 * 1000,
-      });
-
-      const result = await createPreviewDrawSession({ campaignId });
-      const previewSessionToken = issuePreviewSessionToken({
-        campaignId,
-        sessionId: result.session.id,
-        prizeId: result.session.prizeId ?? null,
-      });
-      result.session.previewSessionToken = previewSessionToken;
-      result.previewSessionToken = previewSessionToken;
-      return NextResponse.json(result, { status: 201, headers: { "Cache-Control": "no-store" } });
-    }
-
     const cookieName = getDailyParticipationCookieName(campaignId);
     assertDailyParticipationCookie(request.cookies.get(cookieName)?.value, campaignId);
 

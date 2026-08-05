@@ -61,7 +61,6 @@ import {
   normalizeScratchAccent,
 } from "@/lib/campaign-defaults";
 import { fluidType } from "@/lib/responsive";
-import { getPrizeValidationMessages } from "@/lib/prize-validation";
 import { buildWheelVisualSegments, WheelVisualSegment } from "@/lib/wheel-segments";
 import { isRestaurantIndustry } from "@/lib/merchant-options";
 import {
@@ -1638,14 +1637,6 @@ export function CampaignEditor({
     () => form.prizes.reduce((total, prize) => total + (Number(prize.probability) || 0), 0),
     [form.prizes],
   );
-  const prizeValidationMessages = useMemo(
-    () =>
-      getPrizeValidationMessages(
-        form.prizes,
-        form.rewardRules.isWinningEveryTime,
-      ),
-    [form.prizes, form.rewardRules.isWinningEveryTime],
-  );
   const remainingPrizeProbability = Math.max(0, 100 - totalPrizeProbability);
   const previewPrize = form.prizes[0]?.label || "Cadeau surprise";
   const previewCtaClass = buttonSizeMap[form.presentation.button.size];
@@ -2264,7 +2255,7 @@ function setGameType(gameType: GameType) {
         error instanceof Error ? error.message : "La campagne n'a pas pu être enregistrée.",
       );
       setMessageTone("error");
-      setMessage(null);
+      setMessage(readableError);
       setSaveDialogTone("error");
       setSaveDialogTitle("Enregistrement impossible");
       setSaveDialogDescription(readableError);
@@ -2365,7 +2356,7 @@ function setGameType(gameType: GameType) {
         error instanceof Error ? error.message : "La campagne n'a pas pu être enregistrée.",
       );
       setMessageTone("error");
-      setMessage(null);
+      setMessage(readableError);
       setSaveDialogTone("error");
       setSaveDialogTitle("Enregistrement impossible");
       setSaveDialogDescription(readableError);
@@ -4174,26 +4165,6 @@ function setGameType(gameType: GameType) {
             >
               Total des probabilités de gain : {totalPrizeProbability} %
             </div>
-
-            {prizeValidationMessages.length > 0 ? (
-              <div
-                role="alert"
-                aria-live="polite"
-                className="mt-4 rounded-[18px] border border-[#f3c8c8] bg-[#fff7f7] px-4 py-4 text-sm text-[#9f1239]"
-              >
-                <p className="font-semibold text-[#861c35]">
-                  Vérifiez la dotation avant l&apos;enregistrement
-                </p>
-                <ul className="mt-2 space-y-1.5 leading-6">
-                  {prizeValidationMessages.map((validationMessage) => (
-                    <li key={validationMessage} className="flex gap-2">
-                      <span aria-hidden="true">•</span>
-                      <span>{validationMessage}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ) : null}
           </section>
 
           {form.id ? <CampaignEmailPreview merchant={merchant} form={form} /> : null}
@@ -4231,7 +4202,6 @@ function setGameType(gameType: GameType) {
                   <a
                     href={`/api/campaigns/${form.id}/qr`}
                     className="okado-secondary-action px-4"
-                    title="Télécharger le QR code de production"
                   >
                     QR
                   </a>
@@ -4256,36 +4226,6 @@ function setGameType(gameType: GameType) {
             </div>
 
             <SharedCampaignLivePreview merchant={merchant} preview={deferredPreview} compact />
-
-            {form.id ? (
-              <div
-                className="mt-5 flex flex-col gap-4 rounded-[20px] border border-[#dbe4f0] bg-white p-4 sm:flex-row sm:items-center"
-                onContextMenu={(event) => event.preventDefault()}
-              >
-                <Image
-                  src={`/api/campaigns/${form.id}/qr?preview=1&inline=1`}
-                  alt="QR code de prévisualisation — réservé aux tests, ne pas transmettre aux clients"
-                  width={128}
-                  height={128}
-                  unoptimized
-                  draggable={false}
-                  className="h-32 w-32 shrink-0 select-none rounded-[12px] border border-[#edf1f7] bg-white p-2"
-                />
-                <div className="min-w-0">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#8993a6]">
-                    QR de prévisualisation — test uniquement
-                  </p>
-                  <p className="mt-2 text-sm leading-6 text-[#626d82]">
-                    Scannez ce code pour tester le parcours sans utiliser le QR de production.
-                    Le lien contient un jeton temporaire, les participations sont isolées et ne
-                    décrémentent pas les lots. Ne transmettez pas ce QR aux clients.
-                  </p>
-                  <p className="mt-2 text-xs font-semibold text-[#8993a6]">
-                    Validité : 30 minutes après sa génération.
-                  </p>
-                </div>
-              </div>
-            ) : null}
           </section>
         </div>
       </div>

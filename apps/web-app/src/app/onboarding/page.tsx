@@ -18,6 +18,7 @@ export default async function OnboardingPage() {
         "Renseigner votre secteur d'activite",
         "Connecter vos liens Google et reseaux sociaux",
       ]}
+      flatContent
     >
       <MerchantSessionGuard userId={session.user.id} />
       <OnboardingFlow merchant={session.merchant} />

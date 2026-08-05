@@ -9,7 +9,6 @@ import { authenticateMerchant } from "@/lib/store";
 import { MerchantSignInInput } from "@/lib/types";
 import { assertPersistentPublicRateLimit } from "@/lib/public-security-store";
 import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
-import { setSessionSecurityCookies } from "@/lib/session-security-server";
 import { createRouteSupabaseClient } from "@/lib/supabase-server-auth";
 
 function copyCookies(from: NextResponse, to: NextResponse) {
@@ -74,7 +73,6 @@ export async function POST(request: Request) {
     });
 
     copyCookies(provisionalResponse, response);
-    setSessionSecurityCookies(response);
     return response;
   } catch (error) {
     return NextResponse.json(

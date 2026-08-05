@@ -52,8 +52,6 @@ export async function POST(request: Request, { params }: RedemptionRouteContext)
       pin?: string;
       purchaseConfirmed?: boolean;
       idempotencyKey?: string;
-      forceRedemption?: boolean;
-      forceReason?: string;
     } | null;
     const mode = body?.mode === "redeem" ? "redeem" : "authorize";
     const pin = body?.pin?.trim() ?? "";
@@ -78,22 +76,14 @@ export async function POST(request: Request, { params }: RedemptionRouteContext)
     }
 
     if (mode === "authorize") {
-      if (context.status === "redeemed" || context.status === "invalid") {
+      if (context.status !== "available") {
         return NextResponse.json({ error: "Ce lot ne peut pas être validé dans son état actuel.", context }, { status: 409 });
       }
 
       return NextResponse.json({ authorized: true, context }, { status: 200 });
     }
 
-    const forceRedemption = Boolean(body?.forceRedemption);
-    const forceReason = body?.forceReason?.trim() ?? "";
-    if (forceRedemption && context.status === "available") {
-      return NextResponse.json({ error: "Le forçage est réservé aux lots hors période de validité.", context }, { status: 400 });
-    }
-    if (forceRedemption && forceReason.length < 8) {
-      return NextResponse.json({ error: "Un motif d'au moins 8 caractères est requis pour forcer un retrait hors période.", context }, { status: 400 });
-    }
-    if (context.status !== "available" && !forceRedemption) {
+    if (context.status !== "available") {
       return NextResponse.json({ error: "Ce lot ne peut pas être retiré en dehors de sa période de validité.", context }, { status: 409 });
     }
 
@@ -103,8 +93,6 @@ export async function POST(request: Request, { params }: RedemptionRouteContext)
       operatorUserId: "express-pin",
       purchaseConfirmed: Boolean(body?.purchaseConfirmed),
       idempotencyKey: body?.idempotencyKey?.trim() || crypto.randomUUID(),
-      forceRedemption,
-      forceReason: forceRedemption ? forceReason : undefined,
     });
 
     logSupportEvent("info", "express_redemption_completed", {

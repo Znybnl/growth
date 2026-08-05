@@ -498,7 +498,6 @@ export interface Lead {
   rewardExpiresAt?: string;
   prizeUsageConditions?: string;
   prizeLabelSnapshot?: string;
-  isPreview?: boolean;
 }
 
 export interface CampaignEvent {
@@ -641,20 +640,16 @@ export interface DrawSession {
   expiresAt: string;
   configurationVersion?: string;
   configurationSnapshot?: Record<string, unknown>;
-  isPreview?: boolean;
-  previewSessionToken?: string;
 }
 
 export interface CreateDrawSessionRequest {
   campaignId: string;
-  previewToken?: string;
 }
 
 export interface CreateDrawSessionResult {
   session: DrawSession;
   prize: Prize | null;
   campaign: PublicCampaign;
-  previewSessionToken?: string;
 }
 
 export interface FinalizeDrawSessionRequest {
@@ -662,7 +657,6 @@ export interface FinalizeDrawSessionRequest {
   firstName: string;
   email: string;
   marketingConsent?: boolean;
-  previewSessionToken?: string;
 }
 
 export interface DrawResult {
@@ -759,7 +753,6 @@ export interface PublicRedemptionContext extends CashierRedemptionContext {
   merchantName: string;
   merchantCity?: string;
   email?: string;
-  isPreview?: boolean;
 }
 
 export interface CampaignDataView {

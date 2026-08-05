@@ -6,9 +6,7 @@ import { useEffect, useState } from "react";
 import { GoogleAuthButton } from "@/components/auth/google-auth-button";
 
 function readReferralCodeFromBrowser() {
-  if (typeof window === "undefined") {
-    return "";
-  }
+  if (typeof window === "undefined") return "";
 
   const params = new URLSearchParams(window.location.search);
   const ref = params.get("ref")?.trim();
@@ -21,48 +19,20 @@ function readReferralCodeFromBrowser() {
   return ref || (cookieRef ? decodeURIComponent(cookieRef) : "");
 }
 
-function FieldLabel({
-  children,
-  required = true,
-}: {
-  children: string;
-  required?: boolean;
-}) {
+function FieldLabel({ children }: { children: string }) {
   return (
     <span className="mb-2 block text-[#616b7c]">
       {children}
-      {required ? <span className="ml-1 text-[#d92d20]">*</span> : null}
+      <span className="ml-1 text-[#d92d20]">*</span>
     </span>
   );
 }
 
-const signUpFields: Array<{
-  key: "companyName" | "city" | "firstName" | "lastName" | "email" | "phone";
-  label: string;
-  placeholder: string;
-  required: boolean;
-}> = [
-  { key: "companyName", label: "Nom de l’enseigne", placeholder: "Maison Sora", required: true },
-  { key: "city", label: "Ville / boutique", placeholder: "Paris Marais", required: true },
-  { key: "firstName", label: "Prénom", placeholder: "Camille", required: true },
-  { key: "lastName", label: "Nom", placeholder: "Martin", required: true },
-  {
-    key: "email",
-    label: "E-mail professionnel",
-    placeholder: "camille@maisonsora.fr",
-    required: true,
-  },
-  { key: "phone", label: "Téléphone", placeholder: "06 00 00 00 00", required: false },
-];
-
 export function SignUpForm() {
   const [form, setForm] = useState({
-    companyName: "",
-    city: "",
     firstName: "",
     lastName: "",
     email: "",
-    phone: "",
     password: "",
     confirmPassword: "",
   });
@@ -73,10 +43,7 @@ export function SignUpForm() {
 
   useEffect(() => {
     const ref = new URLSearchParams(window.location.search).get("ref")?.trim();
-
-    if (!ref) {
-      return;
-    }
+    if (!ref) return;
 
     const expires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toUTCString();
     document.cookie = `okado_referral=${encodeURIComponent(ref)}; expires=${expires}; path=/; SameSite=Lax`;
@@ -92,21 +59,22 @@ export function SignUpForm() {
     setIsLoading(true);
 
     try {
-      if (!accept) {
-        throw new Error("Vous devez accepter les conditions pour continuer.");
-      }
+      if (!accept) throw new Error("Vous devez accepter les conditions pour continuer.");
 
       const response = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, referralCode }),
+        body: JSON.stringify({
+          ...form,
+          companyName: "",
+          city: "",
+          phone: "",
+          referralCode,
+        }),
       });
       const payload = (await response.json()) as { error?: string };
 
-      if (!response.ok) {
-        throw new Error(payload.error ?? "Inscription impossible.");
-      }
-
+      if (!response.ok) throw new Error(payload.error ?? "Inscription impossible.");
       window.location.assign("/onboarding");
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : "Inscription impossible.");
@@ -116,18 +84,12 @@ export function SignUpForm() {
   }
 
   return (
-    <form
-      className="mx-auto flex max-w-[620px] flex-col justify-center py-6"
-      onSubmit={handleSubmit}
-    >
+    <form className="mx-auto flex max-w-[620px] flex-col justify-center px-1 py-6 sm:px-6" onSubmit={handleSubmit}>
       <div>
         <p className="okado-label">Créer un compte</p>
-        <h1 className="okado-page-title mt-3">
-          Ouvrez votre espace marchand
-        </h1>
+        <h1 className="okado-page-title mt-3">Ouvrez votre espace marchand</h1>
         <p className="mt-4 text-sm leading-8 text-ash">
-          Commencez par votre restaurant ou votre boutique, puis finalisez votre onboarding pour
-          créer votre première campagne.
+          Finalisez votre inscription et créez votre premier jeu.
         </p>
       </div>
 
@@ -148,19 +110,37 @@ export function SignUpForm() {
       </div>
 
       <div className="mt-8 grid gap-4 md:grid-cols-2">
-        {signUpFields.map((field) => (
-          <label key={field.key} className="text-sm">
-            <FieldLabel required={field.required}>{field.label}</FieldLabel>
-            <input
-              type={field.key === "email" ? "email" : "text"}
-              value={form[field.key]}
-              onChange={(event) => updateField(field.key, event.target.value)}
-              placeholder={field.placeholder}
-              className="w-full rounded-[12px] border border-[#cfcfcf] bg-white px-4 py-4 text-graphite outline-none transition placeholder:text-fog focus:border-signal-blue focus:shadow-[0_0_0_3px_rgba(0,153,255,1)]"
-              required={field.required}
-            />
-          </label>
-        ))}
+        <label className="text-sm">
+          <FieldLabel>Prénom</FieldLabel>
+          <input
+            value={form.firstName}
+            onChange={(event) => updateField("firstName", event.target.value)}
+            placeholder="Camille"
+            className="w-full rounded-[12px] border border-[#cfcfcf] bg-white px-4 py-4 text-graphite outline-none transition placeholder:text-fog focus:border-signal-blue focus:shadow-[0_0_0_3px_rgba(0,153,255,1)]"
+            required
+          />
+        </label>
+        <label className="text-sm">
+          <FieldLabel>Nom</FieldLabel>
+          <input
+            value={form.lastName}
+            onChange={(event) => updateField("lastName", event.target.value)}
+            placeholder="Martin"
+            className="w-full rounded-[12px] border border-[#cfcfcf] bg-white px-4 py-4 text-graphite outline-none transition placeholder:text-fog focus:border-signal-blue focus:shadow-[0_0_0_3px_rgba(0,153,255,1)]"
+            required
+          />
+        </label>
+        <label className="text-sm md:col-span-2">
+          <FieldLabel>E-mail professionnel</FieldLabel>
+          <input
+            type="email"
+            value={form.email}
+            onChange={(event) => updateField("email", event.target.value)}
+            placeholder="camille@maisonsora.fr"
+            className="w-full rounded-[12px] border border-[#cfcfcf] bg-white px-4 py-4 text-graphite outline-none transition placeholder:text-fog focus:border-signal-blue focus:shadow-[0_0_0_3px_rgba(0,153,255,1)]"
+            required
+          />
+        </label>
         <label className="text-sm">
           <FieldLabel>Mot de passe</FieldLabel>
           <input
@@ -212,7 +192,7 @@ export function SignUpForm() {
           disabled={isLoading}
           className="okado-filled-action okado-auth-action inline-flex items-center justify-center px-5 disabled:opacity-60"
         >
-          {isLoading ? "Création..." : "Créer mon compte"}
+          {isLoading ? "Création…" : "Créer mon compte"}
         </button>
         <Link
           href="/connexion"

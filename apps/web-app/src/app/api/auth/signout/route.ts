@@ -2,10 +2,6 @@ import { NextResponse } from "next/server";
 
 import { SESSION_COOKIE } from "@/lib/auth";
 import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
-import {
-  SESSION_LAST_ACTIVITY_COOKIE,
-  SESSION_STARTED_COOKIE,
-} from "@/lib/session-security";
 import { createRouteSupabaseClient } from "@/lib/supabase-server-auth";
 
 export async function POST(request: Request) {
@@ -18,8 +14,6 @@ export async function POST(request: Request) {
     });
     await supabase.auth.signOut();
     response.cookies.delete(SESSION_COOKIE);
-    response.cookies.delete(SESSION_STARTED_COOKIE);
-    response.cookies.delete(SESSION_LAST_ACTIVITY_COOKIE);
 
     return response;
   } catch (error) {

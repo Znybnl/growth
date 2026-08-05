@@ -24,11 +24,11 @@ type MerchantShellProps = {
 };
 
 const navItems = [
-  { href: "/", label: "Dashboard" },
-  { href: "/campaigns", label: "Campagnes" },
-  { href: "/data", label: "Données" },
-  { href: "/account", label: "Compte" },
-  { href: "/locations", label: "Multi-sites" },
+  { href: "/", label: "Tableau de bord" },
+  { href: "/campaigns", label: "Mes jeux" },
+  { href: "/data", label: "Mes résultats" },
+  { href: "/account", label: "Mon compte" },
+  { href: "/locations", label: "Mes établissements" },
 ];
 
 const prefetchedNavRoutes = new Set(["/", "/campaigns", "/data", "/account"]);
@@ -242,7 +242,7 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
           </Link>
 
           <div className="mt-0 rounded-[8px] border border-border bg-white p-3 shadow-[var(--shadow-product-card)]">
-            <p className="text-[10px] uppercase tracking-[0.13px] text-fog">Compte</p>
+            <p className="text-[10px] uppercase tracking-[0.13px] text-fog">Mon compte</p>
             <div className="mt-3 flex items-center gap-3">
               {user.authProvider === "google" && user.avatarUrl ? (
                 <div
