@@ -561,20 +561,20 @@ function CampaignPreviewQr({ campaignId }: { campaignId: string }) {
       <Image
         src={`/api/campaigns/${campaignId}/qr?preview=1&inline=1`}
         alt="QR code de prévisualisation — réservé aux tests, ne pas transmettre aux clients"
-        width={160}
-        height={160}
+        width={192}
+        height={192}
         unoptimized
         draggable={false}
-        className="h-40 w-40 shrink-0 select-none rounded-[12px] border border-[#edf1f7] bg-white p-2"
+        className="h-48 w-48 shrink-0 select-none rounded-[12px] border border-[#edf1f7] bg-white p-2"
       />
       <div className="min-w-0">
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#8993a6]">
           QR de prévisualisation — test uniquement
         </p>
         <p className="mt-2 text-sm leading-6 text-[#626d82]">
-          Scannez ce code pour tester le parcours sans utiliser le QR de production. Le lien
-          contient un jeton temporaire, les participations sont isolées et ne décrémentent pas
-          les lots. Ne transmettez pas ce QR aux clients.
+          Scannez ce code pour tester le parcours sans utiliser le QR de la campagne. Les
+          participations sont isolées et ne décrémentent pas les lots. Ne transmettez pas ce QR
+          code à vos clients.
         </p>
         <p className="mt-2 text-xs font-semibold text-[#8993a6]">
           Validité : 30 minutes après sa génération.
@@ -1252,7 +1252,7 @@ const CampaignActionCard = memo(function CampaignActionCard({
         }`}
       >
         <label className="flex h-full flex-col text-sm">
-          <span className="mb-2 flex min-h-6 items-center gap-3 text-[#616b7c]"><SocialChannelIcon channel={action.kind} /><span>Canal</span></span>
+          <span className="mb-2 flex h-6 items-center gap-3 leading-6 text-[#616b7c]"><SocialChannelIcon channel={action.kind} /><span>Canal</span></span>
           <select
             value={action.kind}
             onChange={(event) => onUpdate(action.id, { kind: event.target.value as ActionKind })}
@@ -1268,7 +1268,7 @@ const CampaignActionCard = memo(function CampaignActionCard({
 
         {action.kind !== "crm" ? (
           <label className="flex h-full flex-col text-sm">
-            <span className="mb-2 flex min-h-6 items-center text-[#616b7c]">Lien</span>
+            <span className="mb-2 flex h-6 items-center leading-6 text-[#616b7c]">Lien</span>
             <input
               value={action.url}
               onChange={(event) => onUpdate(action.id, { url: event.target.value })}
@@ -2659,7 +2659,7 @@ function setGameType(gameType: GameType) {
               <span>
                 <span className="block font-semibold">Collecter l’e-mail avant le jeu</span>
                 <span className="mt-1 block text-xs leading-5 text-[#8993a6]">
-                  Le joueur saisira son prénom et son e-mail avant de jouer. Le consentement est requis à cette étape ; sinon l’e-mail est demandé uniquement après un gain.
+                  Le joueur saisira son prénom et son e-mail avant de jouer. Sinon, l’e-mail est demandé uniquement après un gain.
                 </span>
               </span>
             </label>
