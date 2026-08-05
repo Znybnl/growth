@@ -11,6 +11,7 @@ type AuthShellProps = {
   asideTitle: string;
   asideBody: string;
   asideItems: string[];
+  flatContent?: boolean;
   children: React.ReactNode;
 };
 
@@ -18,6 +19,7 @@ export function AuthShell({
   eyebrow,
   title,
   description,
+  flatContent = false,
   children,
 }: AuthShellProps) {
   const visualCopy =
@@ -53,9 +55,9 @@ export function AuthShell({
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-linen-canvas">
-      <div className="grid min-h-screen lg:grid-cols-[minmax(0,1.05fr)_minmax(420px,0.95fr)]">
-        <section className="flex min-h-screen justify-center overflow-y-auto bg-linen-canvas px-4 py-8 sm:px-6 lg:px-10 xl:px-12 xl:py-10">
-          <div className="flex w-full max-w-[760px] flex-col justify-center">
+      <div className="grid min-h-screen lg:grid-cols-2">
+        <section className="flex min-h-screen justify-center overflow-y-auto bg-linen-canvas px-4 py-8 sm:px-6 lg:px-8 xl:px-10 xl:py-10">
+          <div className="flex w-full max-w-[620px] flex-col justify-center">
             <div className="mb-8 flex items-center gap-3">
               <div
                 className="flex h-11 w-11 items-center justify-center rounded-[12px] text-sm font-semibold uppercase tracking-[0.2em] text-white shadow-sm"
@@ -70,7 +72,13 @@ export function AuthShell({
                 <p className="text-sm text-ash">{APP_TAGLINE}</p>
               </div>
             </div>
-            <div className="okado-card w-full overflow-hidden rounded-none border-0 bg-transparent p-0 shadow-none sm:rounded-[var(--okado-radius-card)] sm:border sm:bg-card sm:p-1 sm:shadow-[var(--shadow-product-card)]">
+            <div
+              className={
+                flatContent
+                  ? "mx-auto w-full max-w-[560px]"
+                  : "okado-card mx-auto w-full max-w-[560px] overflow-hidden rounded-none border-0 bg-transparent p-0 shadow-none sm:rounded-[var(--okado-radius-card)] sm:border sm:bg-card sm:p-1 sm:shadow-[var(--shadow-product-card)]"
+              }
+            >
               {children}
             </div>
           </div>
@@ -82,8 +90,8 @@ export function AuthShell({
         >
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_18%,rgba(255,255,255,0.22),transparent_34%),linear-gradient(135deg,transparent_0%,rgba(9,55,132,0.18)_100%)]" />
 
-          <div className="relative flex w-full max-w-[620px] flex-1 items-center justify-center px-14">
-            <div className="relative h-[390px] w-full max-w-[420px]">
+          <div className="relative flex w-full max-w-[760px] flex-1 items-center justify-center px-10 sm:px-14">
+            <div className="relative h-[390px] w-full max-w-[560px]">
               <div className="absolute inset-x-[5%] top-[4%] rounded-[24px] border border-white/30 bg-white/95 p-5 shadow-[0_28px_80px_rgba(4,26,75,0.28)]">
                 <div className="flex items-center justify-between border-b border-[#e6ebf2] pb-4">
                   <div>

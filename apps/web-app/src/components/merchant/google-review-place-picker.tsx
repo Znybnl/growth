@@ -6,6 +6,7 @@ type GoogleReviewPlace = {
   placeId: string;
   name: string;
   address: string;
+  phone: string;
   reviewUrl: string;
 };
 
@@ -16,6 +17,8 @@ type GoogleReviewPlacePickerProps = {
   city?: string;
   compact?: boolean;
   allowManualInput?: boolean;
+  onAddressChange?: (value: string) => void;
+  onPhoneChange?: (value: string) => void;
 };
 
 function isGoogleGeneratedReviewUrl(value: string) {
@@ -29,6 +32,8 @@ export function GoogleReviewPlacePicker({
   city = "",
   compact = false,
   allowManualInput = true,
+  onAddressChange,
+  onPhoneChange,
 }: GoogleReviewPlacePickerProps) {
   const [query, setQuery] = useState(defaultQuery);
   const [places, setPlaces] = useState<GoogleReviewPlace[]>([]);
@@ -144,6 +149,8 @@ export function GoogleReviewPlacePicker({
                 type="button"
                 onClick={() => {
                   onChange(place.reviewUrl);
+                  onAddressChange?.(place.address);
+                  onPhoneChange?.(place.phone);
                   setQuery(`${place.name}${place.address ? ` · ${place.address}` : ""}`);
                   setPlaces([]);
                   setMessage("Lien d'avis Google généré automatiquement.");

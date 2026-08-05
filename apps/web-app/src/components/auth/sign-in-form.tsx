@@ -5,7 +5,6 @@ import { useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 
 import { GoogleAuthButton } from "@/components/auth/google-auth-button";
-import { APP_NAME } from "@/lib/branding";
 
 export function SignInForm() {
   const searchParams = useSearchParams();
@@ -55,12 +54,9 @@ export function SignInForm() {
   return (
     <form className="flex flex-col bg-transparent px-1 py-2 sm:bg-white sm:px-6 sm:py-6" onSubmit={handleSubmit}>
       <div>
-        <h1 className="okado-page-title">
-          Connectez-vous à {APP_NAME}
-        </h1>
+        <h1 className="okado-page-title">Bienvenue</h1>
         <p className="mt-4 text-base leading-7 text-ash">
-          Retrouvez vos campagnes, vos leads et vos performances depuis votre espace
-          marchand.
+          Retrouvez vos jeux, vos leads et vos performances depuis votre espace marchand.
         </p>
       </div>
 
@@ -88,7 +84,7 @@ export function SignInForm() {
         </label>
 
         <label className="block text-sm">
-          <span className="sr-only">Password</span>
+          <span className="sr-only">Mot de passe</span>
           <input
             type="password"
             value={password}
@@ -126,13 +122,8 @@ export function SignInForm() {
         disabled={isLoading}
         className="okado-filled-action okado-auth-action mt-8 w-full text-base disabled:opacity-60"
       >
-        {isLoading ? "Connexion..." : "Se connecter"}
+        {isLoading ? "Connexion…" : "Se connecter"}
       </button>
-
-      <div className="mt-8 text-center text-sm text-ash">
-        <span>Accès démo : </span>
-        <span className="font-medium text-graphite">camille@maisonsora.fr / demo1234</span>
-      </div>
     </form>
   );
 }

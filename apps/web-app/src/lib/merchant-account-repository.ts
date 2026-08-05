@@ -1469,6 +1469,18 @@ export async function updateMerchantOnboardingInSupabase(
     throw new Error("Onboarding impossible.");
   }
 
+  const merchantWorkspace = await supabase
+    .from("merchants")
+    .select("workspace_id")
+    .eq("id", userQuery.data.merchant_id)
+    .maybeSingle<{ workspace_id: string | null }>();
+  if (merchantWorkspace.data?.workspace_id) {
+    await supabase
+      .from("merchant_workspaces")
+      .update({ name: companyName })
+      .eq("id", merchantWorkspace.data.workspace_id);
+  }
+
   const merchant = await getSupabaseMerchantProfile(userQuery.data.merchant_id);
 
   if (!merchant) {

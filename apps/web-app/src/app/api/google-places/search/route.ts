@@ -9,6 +9,7 @@ type GooglePlaceSearchResponse = {
       text?: string;
     };
     formattedAddress?: string;
+    internationalPhoneNumber?: string;
   }>;
 };
 
@@ -50,7 +51,8 @@ export async function GET(request: Request) {
     headers: {
       "Content-Type": "application/json",
       "X-Goog-Api-Key": apiKey,
-      "X-Goog-FieldMask": "places.id,places.displayName,places.formattedAddress",
+      "X-Goog-FieldMask":
+        "places.id,places.displayName,places.formattedAddress,places.internationalPhoneNumber",
     },
     body: JSON.stringify({
       textQuery: [query, city].filter(Boolean).join(" "),
@@ -78,6 +80,7 @@ export async function GET(request: Request) {
       placeId: place.id,
       name: place.displayName?.text ?? "Établissement Google",
       address: place.formattedAddress ?? "",
+      phone: place.internationalPhoneNumber ?? "",
       reviewUrl: buildReviewUrl(place.id ?? ""),
     }));
 
