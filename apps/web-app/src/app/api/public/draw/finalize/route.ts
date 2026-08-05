@@ -12,9 +12,13 @@ import {
   normalizePublicFirstName,
 } from "@/lib/public-api";
 import { assertPersistentPublicRateLimit } from "@/lib/public-security-store";
+import {
+  getPreviewSessionCampaignId,
+  verifyPreviewSessionToken,
+} from "@/lib/preview-token";
 import { captureProductEvent } from "@/lib/product-analytics";
 import { sendRewardEmail } from "@/lib/reward-email";
-import { finalizeDrawSession } from "@/lib/store";
+import { finalizeDrawSession, finalizePreviewParticipation } from "@/lib/store";
 import { rememberPublicCampaignParticipant } from "@/lib/store";
 import { logSupportEvent } from "@/lib/support-log";
 import { DrawResult, FinalizeDrawSessionRequest } from "@/lib/types";
@@ -37,6 +41,62 @@ export async function POST(request: Request) {
   }
 
   try {
+    if (body.previewSessionToken) {
+      const previewCampaignId = getPreviewSessionCampaignId(body.previewSessionToken);
+      const verifiedPreviewClaims = previewCampaignId
+        ? verifyPreviewSessionToken(body.previewSessionToken, previewCampaignId, sessionId)
+        : null;
+      if (!verifiedPreviewClaims) {
+        return NextResponse.json({ error: "Session de pr\u00e9visualisation invalide ou expir\u00e9e." }, { status: 403 });
+      }
+
+      await assertPersistentPublicRateLimit(request, {
+        key: `preview-draw-finalize:${verifiedPreviewClaims.campaignId}:${email}`,
+        limit: 30,
+        windowMs: 10 * 60 * 1000,
+      });
+
+      const result = await finalizePreviewParticipation({
+        campaignId: verifiedPreviewClaims.campaignId,
+        sessionId,
+        prizeId: verifiedPreviewClaims.prizeId,
+        firstName,
+        email,
+        marketingConsent: body.marketingConsent,
+      });
+
+      if (result.prize && result.lead.redemptionCode) {
+        try {
+          await sendRewardEmail({
+            origin: new URL(request.url).origin,
+            campaignId: result.campaign.id,
+            leadId: result.lead.id,
+            merchantName: result.campaign.merchantName,
+            campaignTitle: result.campaign.title,
+            leadFirstName: result.lead.firstName,
+            leadEmail: result.lead.email,
+            prizeLabel: result.prize.label,
+            usageConditions: result.prize.usageConditions,
+            redemptionCode: result.lead.redemptionCode,
+            rewardWonAt: result.lead.createdAt,
+            rewardAvailableAt: result.lead.rewardAvailableAt,
+            rewardExpiresAt: result.lead.rewardExpiresAt,
+            purchaseRequired: result.campaign.rewardRules.purchaseRequired,
+            emailSettings: result.campaign.presentation.email,
+            preview: true,
+          });
+        } catch (emailError) {
+          logSupportEvent("error", "preview_reward_email_failed", {
+            campaignId: result.campaign.id,
+            leadId: result.lead.id,
+            error: emailError instanceof Error ? emailError.message : "Envoi e-mail de prévisualisation impossible",
+          });
+        }
+      }
+
+      return NextResponse.json(result, { status: 201, headers: { "Cache-Control": "no-store" } });
+    }
+
     await assertPersistentPublicRateLimit(request, {
       key: `draw-finalize:${sessionId}:${email}`,
       limit: 6,

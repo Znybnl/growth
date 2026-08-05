@@ -28,6 +28,7 @@ import {
   CampaignLivePreview,
 } from "@/components/merchant/campaign-live-preview";
 import { actionKindCta } from "@/lib/format";
+import { getPrizeValidationMessages } from "@/lib/prize-validation";
 import { createCampaignEmailDefaults } from "@/lib/email-settings";
 import {
   createDefaultPosterSettings,
@@ -582,6 +583,14 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
         0,
       ),
     [draft.prizes],
+  );
+  const prizeValidationMessages = useMemo(
+    () =>
+      getPrizeValidationMessages(
+        draft.prizes,
+        draft.rewardRules.isWinningEveryTime,
+      ),
+    [draft.prizes, draft.rewardRules.isWinningEveryTime],
   );
 
   function patchDraft(patch: Partial<WizardDraft>) {
@@ -1334,6 +1343,25 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                   </label>
                 </div>
               ))}
+              {prizeValidationMessages.length > 0 ? (
+                <div
+                  role="alert"
+                  aria-live="polite"
+                  className="rounded-[18px] border border-[#f3c8c8] bg-[#fff7f7] px-4 py-4 text-sm text-[#9f1239]"
+                >
+                  <p className="font-semibold text-[#861c35]">
+                    Vérifiez la dotation avant de continuer
+                  </p>
+                  <ul className="mt-2 space-y-1.5 leading-6">
+                    {prizeValidationMessages.map((validationMessage) => (
+                      <li key={validationMessage} className="flex gap-2">
+                        <span aria-hidden="true">•</span>
+                        <span>{validationMessage}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
               <button
                 type="button"
                 onClick={() =>
