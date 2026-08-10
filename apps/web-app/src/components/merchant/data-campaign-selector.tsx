@@ -2,11 +2,20 @@
 
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
-import { ChevronDown, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type CampaignOption = {
   id: string;
   title: string;
+  scans: number;
 };
 
 type DataCampaignSelectorProps = {
@@ -40,22 +49,32 @@ export function DataCampaignSelector({
       <label htmlFor="data-campaign" className="okado-label mb-2 block">
         Campagne
       </label>
-      <select
-        id="data-campaign"
+      <Select
         value={selectedCampaignId}
-        onChange={(event) => selectCampaign(event.target.value)}
+        onValueChange={selectCampaign}
         disabled={isPending}
-        className="h-12 w-full cursor-pointer appearance-none rounded-[14px] border border-[#d7e0ed] bg-white px-4 pr-12 text-sm font-semibold text-[#182033] outline-none transition focus:border-primary-action-accent focus:ring-2 focus:ring-primary-action-accent/15 disabled:cursor-wait disabled:opacity-70"
       >
-        {campaigns.map((campaign) => (
-          <option key={campaign.id} value={campaign.id}>
-            {campaign.title}
-          </option>
-        ))}
-      </select>
-      <span className="pointer-events-none absolute right-4 bottom-3.5 text-[#60708b]">
-        {isPending ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : <ChevronDown className="size-4" aria-hidden="true" />}
-      </span>
+        <SelectTrigger id="data-campaign" className={isPending ? "cursor-wait" : undefined}>
+          <SelectValue placeholder="Sélectionner une campagne" />
+        </SelectTrigger>
+        <SelectContent>
+          {campaigns.map((campaign) => (
+            <SelectItem key={campaign.id} value={campaign.id}>
+              <span className="flex min-w-0 flex-1 items-center justify-between gap-4">
+                <span className="min-w-0 truncate">{campaign.title}</span>
+                <span className="shrink-0 text-xs font-medium text-[#60708b]">
+                  {campaign.scans.toLocaleString("fr-FR")} scans
+                </span>
+              </span>
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      {isPending ? (
+        <span className="pointer-events-none absolute right-10 bottom-3.5 text-[#60708b]">
+          <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+        </span>
+      ) : null}
     </div>
   );
 }

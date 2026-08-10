@@ -39,7 +39,11 @@ import {
   normalizeCampaignEmailSettings,
 } from "@/lib/email-settings";
 import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
-import { getSupabaseAdmin } from "@/lib/supabase";
+import {
+  assertSupabaseResult,
+  getSupabaseAdmin,
+  unwrapSupabaseResult,
+} from "@/lib/supabase";
 import { WebhookEventPayload } from "resend";
 
 type CampaignRow = {
@@ -749,7 +753,7 @@ async function fetchCampaignDependencies(campaignIds: string[]) {
     return { actions: [] as ActionRow[], prizes: [] as PrizeRow[], leads: [] as LeadRow[], events: [] as EventRow[] };
   }
 
-  const [{ data: actions }, { data: prizes }, { data: leads }, { data: events }] = await Promise.all([
+  const [actionsResult, prizesResult, leadsResult, eventsResult] = await Promise.all([
     supabase
       .from("campaign_actions")
       .select("id,campaign_id,position,kind,label,url,created_at")
@@ -769,10 +773,10 @@ async function fetchCampaignDependencies(campaignIds: string[]) {
   ]);
 
   return {
-    actions: (actions as ActionRow[] | null) ?? [],
-    prizes: (prizes as PrizeRow[] | null) ?? [],
-    leads: (leads as LeadRow[] | null) ?? [],
-    events: (events as EventRow[] | null) ?? [],
+    actions: (unwrapSupabaseResult(actionsResult, "Lecture des actions impossible") as ActionRow[] | null) ?? [],
+    prizes: (unwrapSupabaseResult(prizesResult, "Lecture des lots impossible") as PrizeRow[] | null) ?? [],
+    leads: (unwrapSupabaseResult(leadsResult, "Lecture des contacts impossible") as LeadRow[] | null) ?? [],
+    events: (unwrapSupabaseResult(eventsResult, "Lecture des événements impossible") as EventRow[] | null) ?? [],
   };
 }
 
@@ -801,7 +805,7 @@ function toCampaignOverview(row: CampaignRow, merchant: Merchant): Campaign {
 
 async function fetchCampaignConfiguration(campaignId: string) {
   const supabase = getSupabaseAdmin();
-  const [{ data: actions }, { data: prizes }] = await Promise.all([
+  const [actionsResult, prizesResult] = await Promise.all([
     supabase
       .from("campaign_actions")
       .select("id,campaign_id,position,kind,label,url,created_at")
@@ -811,6 +815,9 @@ async function fetchCampaignConfiguration(campaignId: string) {
       .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at")
       .eq("campaign_id", campaignId),
   ]);
+
+  const actions = unwrapSupabaseResult(actionsResult, "Lecture des actions impossible");
+  const prizes = unwrapSupabaseResult(prizesResult, "Lecture des lots impossible");
 
   return {
     actions: (actions as ActionRow[] | null) ?? [],
@@ -1037,28 +1044,31 @@ export async function getSupabaseMerchantDashboard(
     const rows = (overviewResult.data as CampaignOverviewRpcRow[] | null) ?? [];
     const campaignIds = rows.map((row) => row.id);
     const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
-    const [{ data: prizesData }, { data: leadsData }, { data: eventsData }] = await Promise.all([
+    const [prizesResult, leadsResult, eventsResult] = await Promise.all([
       campaignIds.length
         ? supabase
             .from("prizes")
             .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at")
             .in("campaign_id", campaignIds)
-        : Promise.resolve({ data: [] }),
+        : Promise.resolve({ data: [], error: null }),
       campaignIds.length
         ? supabase
             .from("leads")
             .select("campaign_id,created_at")
             .in("campaign_id", campaignIds)
             .gte("created_at", since)
-        : Promise.resolve({ data: [] }),
+        : Promise.resolve({ data: [], error: null }),
       campaignIds.length
         ? supabase
             .from("campaign_events")
             .select("campaign_id,event_type,created_at")
             .in("campaign_id", campaignIds)
             .gte("created_at", since)
-        : Promise.resolve({ data: [] }),
+        : Promise.resolve({ data: [], error: null }),
     ]);
+    const prizesData = unwrapSupabaseResult(prizesResult, "Lecture des lots du tableau de bord impossible");
+    const leadsData = unwrapSupabaseResult(leadsResult, "Lecture des contacts du tableau de bord impossible");
+    const eventsData = unwrapSupabaseResult(eventsResult, "Lecture des événements du tableau de bord impossible");
     const prizeRows = (prizesData as PrizeRow[] | null) ?? [];
     const prizesByCampaignId = new Map<string, Prize[]>();
     for (const row of prizeRows) {
@@ -1091,11 +1101,12 @@ export async function getSupabaseMerchantDashboard(
     };
   }
 
-  const { data: campaignsData } = await supabase
+  const campaignsResult = await supabase
     .from("campaigns")
     .select("*")
     .eq("merchant_id", merchant.id)
     .order("created_at", { ascending: false });
+  const campaignsData = unwrapSupabaseResult(campaignsResult, "Lecture des campagnes impossible");
 
   const campaignRows = (campaignsData as CampaignRow[] | null) ?? [];
   const campaignIds = campaignRows.map((campaign) => campaign.id);
@@ -1144,13 +1155,14 @@ export async function getSupabaseMerchantCampaignOverview(
       logoUrl: undefined,
     };
     const campaignIds = rows.map((row) => row.id);
-    const { data: optInRows } = campaignIds.length
+    const optInResult = campaignIds.length
       ? await supabase
           .from("leads")
           .select("campaign_id")
           .eq("marketing_consent", true)
           .in("campaign_id", campaignIds)
-      : { data: [] as Array<{ campaign_id: string }> };
+      : { data: [] as Array<{ campaign_id: string }>, error: null };
+    const optInRows = unwrapSupabaseResult(optInResult, "Lecture des opt-ins impossible");
     const optInsByCampaignId = new Map<string, number>();
     for (const row of (optInRows as Array<{ campaign_id: string }> | null) ?? []) {
       optInsByCampaignId.set(row.campaign_id, (optInsByCampaignId.get(row.campaign_id) ?? 0) + 1);
@@ -1177,11 +1189,12 @@ export async function getSupabaseMerchantCampaignOverview(
     };
   }
 
-  const { data: campaignsData } = await supabase
+  const campaignsResult = await supabase
     .from("campaigns")
     .select("*")
     .eq("merchant_id", merchant.id)
     .order("created_at", { ascending: false });
+  const campaignsData = unwrapSupabaseResult(campaignsResult, "Lecture des campagnes impossible");
 
   const campaignRows = (campaignsData as CampaignRow[] | null) ?? [];
   const campaignIds = campaignRows.map((campaign) => campaign.id);
@@ -1198,7 +1211,7 @@ export async function getSupabaseMerchantCampaignOverview(
     };
   }
 
-  const [{ data: leadsData }, { data: eventsData }, { data: prizesData }] = await Promise.all([
+  const [leadsResult, eventsResult, prizesResult] = await Promise.all([
     supabase
       .from("leads")
       .select("campaign_id,prize_id,status,marketing_consent")
@@ -1212,6 +1225,9 @@ export async function getSupabaseMerchantCampaignOverview(
       .select("id,campaign_id,estimated_unit_cost")
       .in("campaign_id", campaignIds),
   ]);
+  const leadsData = unwrapSupabaseResult(leadsResult, "Lecture des contacts impossible");
+  const eventsData = unwrapSupabaseResult(eventsResult, "Lecture des événements impossible");
+  const prizesData = unwrapSupabaseResult(prizesResult, "Lecture des lots impossible");
 
   const campaigns = buildCampaignOverviewFallbackBundle(
     { ...merchant, logoUrl: undefined },
@@ -1240,14 +1256,40 @@ export async function getSupabaseMerchantCampaignLibrary(
   merchantId: string,
 ): Promise<CampaignLibraryItem[]> {
   const supabase = getSupabaseAdmin();
-  const { data, error } = await supabase
+  const overviewResult = await supabase.rpc("get_merchant_campaign_overview", {
+    p_merchant_id: merchantId,
+  });
+
+  if (!overviewResult.error) {
+    return ((overviewResult.data as CampaignOverviewRpcRow[] | null) ?? []).map((item) => ({
+      id: item.id,
+      title: item.title,
+      gameType: item.game_type,
+      isActive: item.is_active,
+      createdAt: item.created_at,
+      scans: Number(item.scans_count) || 0,
+    }));
+  }
+
+  const campaignsResult = await supabase
     .from("campaigns")
     .select("id,title,game_type,is_active,created_at")
     .eq("merchant_id", merchantId)
     .order("created_at", { ascending: false });
+  const data = unwrapSupabaseResult(campaignsResult, "Lecture des campagnes impossible");
 
-  if (error) {
-    throw new Error(`Lecture des campagnes impossible: ${error.message}`);
+  const campaignIds = ((data as Array<{ id: string }> | null) ?? []).map((item) => item.id);
+  const scanEventsResult = campaignIds.length
+    ? await supabase
+        .from("campaign_events")
+        .select("campaign_id")
+        .eq("event_type", "scan")
+        .in("campaign_id", campaignIds)
+    : { data: [] as Array<{ campaign_id: string }>, error: null };
+  const scanEvents = unwrapSupabaseResult(scanEventsResult, "Lecture des scans impossible");
+  const scansByCampaignId = new Map<string, number>();
+  for (const event of (scanEvents as Array<{ campaign_id: string }> | null) ?? []) {
+    scansByCampaignId.set(event.campaign_id, (scansByCampaignId.get(event.campaign_id) ?? 0) + 1);
   }
 
   return ((data as Array<{
@@ -1262,6 +1304,7 @@ export async function getSupabaseMerchantCampaignLibrary(
     gameType: item.game_type,
     isActive: item.is_active,
     createdAt: item.created_at,
+    scans: scansByCampaignId.get(item.id) ?? 0,
   }));
 }
 
@@ -1270,7 +1313,8 @@ export async function getSupabaseCampaignPerformance(
   fallbackMerchant?: Merchant,
 ): Promise<CampaignPerformance | null> {
   const supabase = getSupabaseAdmin();
-  const { data } = await supabase.from("campaigns").select("*").eq("id", campaignId).maybeSingle();
+  const campaignResult = await supabase.from("campaigns").select("*").eq("id", campaignId).maybeSingle();
+  const data = unwrapSupabaseResult(campaignResult, "Lecture de la campagne impossible");
   if (!data) return null;
   const row = data as CampaignRow;
   const [merchant, { actions, prizes }, localSettings] = await Promise.all([
@@ -1304,7 +1348,8 @@ export async function getSupabaseCampaignSetupPerformance(
   fallbackMerchant?: Merchant,
 ): Promise<CampaignPerformance | null> {
   const supabase = getSupabaseAdmin();
-  const { data } = await supabase.from("campaigns").select("*").eq("id", campaignId).maybeSingle();
+  const campaignResult = await supabase.from("campaigns").select("*").eq("id", campaignId).maybeSingle();
+  const data = unwrapSupabaseResult(campaignResult, "Lecture de la campagne impossible");
   if (!data) return null;
 
   const row = data as CampaignRow;
@@ -1332,11 +1377,14 @@ export async function getSupabaseCampaignSetupPerformance(
 
   if (!merchant) return null;
 
+  const actionsData = unwrapSupabaseResult(actionsResult, "Lecture des actions impossible");
+  const prizesData = unwrapSupabaseResult(prizesResult, "Lecture des lots impossible");
+
   return buildPerformanceBundle(
     merchant,
     [row],
-    (actionsResult.data as ActionRow[] | null) ?? [],
-    (prizesResult.data as PrizeRow[] | null) ?? [],
+    (actionsData as ActionRow[] | null) ?? [],
+    (prizesData as PrizeRow[] | null) ?? [],
     [],
     [],
     { [campaignId]: localSettings },
@@ -1424,15 +1472,16 @@ export async function getSupabaseMerchantLeads(
   campaignId?: string,
 ): Promise<MerchantLeadRow[]> {
   const supabase = getSupabaseAdmin();
-  const { data: campaignsData } = await supabase
+  const campaignsResult = await supabase
     .from("campaigns")
     .select("id,title,goal_type")
     .eq("merchant_id", merchantId);
+  const campaignsData = unwrapSupabaseResult(campaignsResult, "Lecture des campagnes impossible");
 
   const campaigns = (campaignsData as Array<{ id: string; title: string; goal_type: Campaign["goalType"] }> | null) ?? [];
   const campaignIds = campaignId ? [campaignId] : campaigns.map((item) => item.id);
   if (!campaignIds.length) return [];
-  const [{ data: leadsData }, { data: prizesData }, { data: deliveriesData }] = await Promise.all([
+  const [leadsResult, prizesResult, deliveriesResult] = await Promise.all([
     supabase.from("leads").select("*").in("campaign_id", campaignIds),
     supabase.from("prizes").select("id,label,campaign_id,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at").in("campaign_id", campaignIds),
     supabase
@@ -1440,6 +1489,9 @@ export async function getSupabaseMerchantLeads(
       .select("lead_id,status,sent_at,delivered_at,error_message")
       .in("campaign_id", campaignIds),
   ]);
+  const leadsData = unwrapSupabaseResult(leadsResult, "Lecture des contacts impossible");
+  const prizesData = unwrapSupabaseResult(prizesResult, "Lecture des lots impossible");
+  const deliveriesData = unwrapSupabaseResult(deliveriesResult, "Lecture des e-mails de gain impossible");
   const prizes = ((prizesData as PrizeRow[] | null) ?? []).map(toPrize);
   const campaignMap = new Map(campaigns.map((item) => [item.id, item]));
   const leads = ((leadsData as LeadRow[] | null) ?? [])
@@ -1470,10 +1522,11 @@ export async function getSupabaseMerchantRecentLeads(
 ): Promise<MerchantLeadRow[]> {
   const supabase = getSupabaseAdmin();
   const normalizedQuery = query.trim().toLowerCase();
-  const { data: campaignsData } = await supabase
+  const campaignsResult = await supabase
     .from("campaigns")
     .select("id,title,goal_type")
     .eq("merchant_id", merchantId);
+  const campaignsData = unwrapSupabaseResult(campaignsResult, "Lecture des campagnes impossible");
 
   const campaigns =
     (campaignsData as Array<{ id: string; title: string; goal_type: Campaign["goalType"] }> | null) ?? [];
@@ -1497,17 +1550,18 @@ export async function getSupabaseMerchantRecentLeads(
     );
   }
 
-  const { data: leadsData } = await leadsQuery;
+  const leadsResult = await leadsQuery;
+  const leadsData = unwrapSupabaseResult(leadsResult, "Lecture des contacts impossible");
   const leadRows = (leadsData as LeadRow[] | null) ?? [];
   const prizeIds = [...new Set(leadRows.map((lead) => lead.prize_id).filter(Boolean) as string[])];
 
-  const [{ data: prizesData }, { data: deliveriesData }] = await Promise.all([
+  const [prizesResult, deliveriesResult] = await Promise.all([
     prizeIds.length
       ? supabase
           .from("prizes")
           .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at")
           .in("id", prizeIds)
-      : Promise.resolve({ data: [] }),
+      : Promise.resolve({ data: [], error: null }),
     leadRows.length
       ? supabase
           .from("reward_email_deliveries")
@@ -1516,8 +1570,10 @@ export async function getSupabaseMerchantRecentLeads(
             "lead_id",
             leadRows.map((lead) => lead.id),
           )
-      : Promise.resolve({ data: [] }),
+      : Promise.resolve({ data: [], error: null }),
   ]);
+  const prizesData = unwrapSupabaseResult(prizesResult, "Lecture des lots impossible");
+  const deliveriesData = unwrapSupabaseResult(deliveriesResult, "Lecture des e-mails de gain impossible");
 
   const prizes = ((prizesData as PrizeRow[] | null) ?? []).map(toPrize);
   const campaignMap = new Map(campaigns.map((item) => [item.id, item]));
@@ -1554,15 +1610,16 @@ export async function findSupabaseMerchantLeadCampaign(
   if (!normalizedQuery) return null;
 
   const supabase = getSupabaseAdmin();
-  const { data: campaignsData } = await supabase
+  const campaignsResult = await supabase
     .from("campaigns")
     .select("id")
     .eq("merchant_id", merchantId);
+  const campaignsData = unwrapSupabaseResult(campaignsResult, "Lecture des campagnes impossible");
   const campaignIds = ((campaignsData as Array<{ id: string }> | null) ?? []).map((item) => item.id);
   if (!campaignIds.length) return null;
 
   const escapedQuery = normalizedQuery.replaceAll("%", "\\%").replaceAll("_", "\\_");
-  const { data } = await supabase
+  const leadResult = await supabase
     .from("leads")
     .select("campaign_id")
     .in("campaign_id", campaignIds)
@@ -1572,6 +1629,7 @@ export async function findSupabaseMerchantLeadCampaign(
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
+  const data = unwrapSupabaseResult(leadResult, "Recherche du contact impossible");
 
   return (data as { campaign_id: string } | null)?.campaign_id ?? null;
 }
@@ -1582,11 +1640,12 @@ async function getSupabaseCampaignDataViewLegacy(
   options: CampaignDataViewOptions = {},
 ): Promise<CampaignDataView | null> {
   const supabase = getSupabaseAdmin();
-  const { data: campaignData } = await supabase
+  const campaignResult = await supabase
     .from("campaigns")
     .select("*")
     .eq("id", campaignId)
     .maybeSingle();
+  const campaignData = unwrapSupabaseResult(campaignResult, "Lecture de la campagne impossible");
 
   if (!campaignData) return null;
 
@@ -1629,13 +1688,22 @@ async function getSupabaseCampaignDataViewLegacy(
 
   if (!resolvedMerchant) return null;
 
+  const actionsData = unwrapSupabaseResult(actionsResult, "Lecture des actions impossible");
+  const prizesData = unwrapSupabaseResult(prizesResult, "Lecture des lots impossible");
+  const leadsData = unwrapSupabaseResult(leadsResult, "Lecture des contacts impossible");
+  const eventsData = unwrapSupabaseResult(eventsResult, "Lecture des événements impossible");
+  const deliveriesData = unwrapSupabaseResult(
+    deliveriesResult,
+    "Lecture des e-mails de gain impossible",
+  );
+
   const performance = buildPerformanceBundle(
     resolvedMerchant,
     [row],
-    (actionsResult.data as ActionRow[] | null) ?? [],
-    (prizesResult.data as PrizeRow[] | null) ?? [],
-    (leadsResult.data as LeadRow[] | null) ?? [],
-    (eventsResult.data as EventRow[] | null) ?? [],
+    (actionsData as ActionRow[] | null) ?? [],
+    (prizesData as PrizeRow[] | null) ?? [],
+    (leadsData as LeadRow[] | null) ?? [],
+    (eventsData as EventRow[] | null) ?? [],
     { [campaignId]: localSettings },
   )[0];
 
@@ -1643,7 +1711,7 @@ async function getSupabaseCampaignDataViewLegacy(
 
   const prizes = performance.prizes;
   const allLeads = enrichLeadRowsWithEmailDeliveries(
-    ((leadsResult.data as LeadRow[] | null) ?? [])
+    ((leadsData as LeadRow[] | null) ?? [])
       .map(toLead)
       .map((lead) => ({
         ...lead,
@@ -1657,7 +1725,7 @@ async function getSupabaseCampaignDataViewLegacy(
           : undefined,
       }))
       .sort((a, b) => (b.consentTimestamp ?? b.createdAt).localeCompare(a.consentTimestamp ?? a.createdAt)),
-    (deliveriesResult.data as RewardEmailDeliverySummaryRow[] | null) ?? [],
+    (deliveriesData as RewardEmailDeliverySummaryRow[] | null) ?? [],
   );
   const leads = options.emailStatus === "attention"
     ? allLeads.filter(
@@ -1721,11 +1789,12 @@ export async function getSupabaseCampaignDataView(
   const leadLimit = Math.min(Math.max(options.leadLimit ?? 50, 10), 100);
   const leadOffset = Math.max(options.leadOffset ?? 0, 0);
   const query = options.query?.trim() ?? "";
-  const { data: campaignData } = await supabase
+  const campaignResult = await supabase
     .from("campaigns")
     .select("*")
     .eq("id", campaignId)
     .maybeSingle();
+  const campaignData = unwrapSupabaseResult(campaignResult, "Lecture de la campagne impossible");
 
   if (!campaignData) return null;
 
@@ -1785,7 +1854,6 @@ export async function getSupabaseCampaignDataView(
     "reward_expires_at",
     "prize_label_snapshot",
     "prize_usage_conditions_snapshot",
-    "is_preview",
   ].join(",");
 
   let leadsQuery = supabase
@@ -1855,13 +1923,21 @@ export async function getSupabaseCampaignDataView(
     throw new Error(`Lecture des indicateurs impossible: ${summaryResult.error.message}`);
   }
 
+  if (leadsResult.error) {
+    throw new Error(`Lecture des contacts impossible: ${leadsResult.error.message}`);
+  }
+
   if (!resolvedMerchant) return null;
+
+  const actionsData = unwrapSupabaseResult(actionsResult, "Lecture des actions impossible");
+  const prizesData = unwrapSupabaseResult(prizesResult, "Lecture des lots impossible");
+  const eventsData = unwrapSupabaseResult(eventsResult, "Lecture des événements impossible");
 
   const performance = buildPerformanceBundle(
     resolvedMerchant,
     [row],
-    (actionsResult.data as ActionRow[] | null) ?? [],
-    (prizesResult.data as PrizeRow[] | null) ?? [],
+    (actionsData as ActionRow[] | null) ?? [],
+    (prizesData as PrizeRow[] | null) ?? [],
     [],
     [],
     { [campaignId]: localSettings },
@@ -1901,7 +1977,7 @@ export async function getSupabaseCampaignDataView(
       : 0,
   };
 
-  const leadRows = (leadsResult.data as LeadRow[] | null) ?? [];
+  const leadRows = (leadsResult.data as unknown as LeadRow[] | null) ?? [];
   performance.kpis.contacts = Number(summary.leads_count) || leadRows.length;
   const leadIds = leadRows.map((lead) => lead.id);
   const [optInsResult, deliveriesResult] = await Promise.all([
@@ -1915,8 +1991,10 @@ export async function getSupabaseCampaignDataView(
           .from("reward_email_deliveries")
           .select("lead_id,status,sent_at,delivered_at,error_message")
           .in("lead_id", leadIds)
-      : Promise.resolve({ data: [] }),
+      : Promise.resolve({ data: [], error: null }),
   ]);
+  assertSupabaseResult(optInsResult, "Lecture des opt-ins impossible");
+  assertSupabaseResult(deliveriesResult, "Lecture des e-mails de gain impossible");
   const optInsCount = optInsResult.count;
   performance.kpis.optIns = optInsCount ?? leadRows.filter((lead) => Boolean(lead.marketing_consent)).length;
   const deliveriesData = deliveriesResult.data;
@@ -1939,7 +2017,7 @@ export async function getSupabaseCampaignDataView(
   return {
     performance,
     leads,
-    events: ((eventsResult.data as EventRow[] | null) ?? []).map(toEvent),
+    events: ((eventsData as EventRow[] | null) ?? []).map(toEvent),
     leadTotal: leadsResult.count ?? 0,
     leadOffset,
     leadLimit,

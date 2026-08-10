@@ -113,7 +113,7 @@ export function AccountSettingsForm({
   }
 
   return (
-    <form className="space-y-6 pb-24 xl:pb-0" onSubmit={handleSubmit}>
+    <form className="space-y-6" onSubmit={handleSubmit}>
       <div className="pointer-events-none sticky top-[-20px] z-20 hidden h-0 overflow-visible xl:-mb-6 xl:block">
         <div
           className={`pointer-events-auto -mx-3 border-b border-border bg-linen-canvas/95 px-3 py-2 shadow-[0_8px_18px_rgba(18,24,39,0.08)] backdrop-blur-sm transition-all duration-200 lg:-mx-6 lg:px-6 ${
@@ -132,6 +132,15 @@ export function AccountSettingsForm({
             </button>
           </div>
         </div>
+      </div>
+      <div ref={actionsAnchorRef} className="okado-action-row flex flex-wrap items-center justify-end gap-3">
+        <button
+          type="submit"
+          disabled={isSaving}
+          className="okado-filled-action px-5 disabled:opacity-60"
+        >
+          {isSaving ? "Enregistrement..." : "Enregistrer"}
+        </button>
       </div>
       <p className="text-xs text-ash">
         <span className="text-[#b42318]" aria-hidden="true">*</span> Champs obligatoires
@@ -414,16 +423,6 @@ export function AccountSettingsForm({
           {error}
         </div>
       ) : null}
-      <div ref={actionsAnchorRef} className="flex justify-end">
-        <button
-          type="submit"
-          disabled={isSaving}
-          className="okado-filled-action px-5 disabled:opacity-60"
-        >
-          {isSaving ? "Enregistrement..." : "Enregistrer les modifications"}
-        </button>
-      </div>
-
       <ValidationDialog
         open={isSuccessOpen}
         title="Vos modifications sont enregistrées"

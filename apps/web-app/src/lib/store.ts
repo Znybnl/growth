@@ -1776,7 +1776,10 @@ function getMerchantCampaignLibraryFromMemory(
         gameType: campaign.gameType,
         isActive: campaign.isActive,
         createdAt: campaign.createdAt,
-    })),
+        scans: store.events.filter(
+          (event) => event.campaignId === campaign.id && event.eventType === "scan",
+        ).length,
+      })),
   );
 }
 

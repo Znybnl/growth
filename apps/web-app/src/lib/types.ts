@@ -704,6 +704,7 @@ export interface CampaignLibraryItem {
   gameType: GameType;
   isActive: boolean;
   createdAt: string;
+  scans: number;
 }
 
 export interface MerchantDashboardData {

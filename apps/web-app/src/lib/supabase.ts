@@ -65,6 +65,30 @@ export function getSupabaseAdmin() {
   return supabaseAdmin;
 }
 
+/**
+ * Unwrap a Supabase response without allowing a failed read to masquerade as
+ * an empty list or a set of zero-valued indicators.
+ */
+export function unwrapSupabaseResult<T>(
+  result: { data: T; error: { message: string } | null },
+  operation: string,
+): T {
+  if (result.error) {
+    throw new Error(`${operation}: ${result.error.message}`);
+  }
+
+  return result.data;
+}
+
+export function assertSupabaseResult(
+  result: { error: { message: string } | null },
+  operation: string,
+) {
+  if (result.error) {
+    throw new Error(`${operation}: ${result.error.message}`);
+  }
+}
+
 export function getSupabaseOAuthClient() {
   if (!supabaseUrl || !supabaseAnonKey) {
     throw new Error("Supabase OAuth n'est pas configure.");
