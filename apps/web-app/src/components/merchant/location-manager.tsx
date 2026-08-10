@@ -18,6 +18,7 @@ export function LocationManager({
   const [items, setItems] = useState(locations);
   const [isAdding, setIsAdding] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [openingLocationId, setOpeningLocationId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({ companyName: "", city: "", address: "", timeZone: "Europe/Paris" });
 
@@ -42,7 +43,7 @@ export function LocationManager({
         body: JSON.stringify({ locationId: payload.merchant.id }),
       });
       if (!switchResponse.ok) throw new Error("Le site a été créé, mais il n'a pas pu être sélectionné.");
-      window.location.assign("/account");
+      router.push("/account");
     } catch (saveError) {
       setError(saveError instanceof Error ? saveError.message : "Le site n'a pas pu être créé.");
     } finally {
@@ -72,6 +73,7 @@ export function LocationManager({
 
   async function openAccountForLocation(locationId: string) {
     setError(null);
+    setOpeningLocationId(locationId);
     try {
       const response = await fetch("/api/merchant/location", {
         method: "POST",
@@ -80,9 +82,9 @@ export function LocationManager({
       });
       if (!response.ok) throw new Error("Le site n'a pas pu être sélectionné.");
       router.push("/account");
-      router.refresh();
     } catch (navigationError) {
       setError(navigationError instanceof Error ? navigationError.message : "Ouverture du compte impossible.");
+      setOpeningLocationId(null);
     }
   }
 
@@ -129,11 +131,13 @@ export function LocationManager({
                     <button
                       type="button"
                       onClick={() => void openAccountForLocation(merchant.id)}
+                      disabled={openingLocationId !== null}
+                      aria-busy={openingLocationId === merchant.id}
                       title={`Informations à compléter :\n${missing.map((item) => `• ${item}`).join("\n")}`}
                       aria-label={`Compléter les informations de ${merchant.companyName}: ${missing.join(", ")}`}
-                      className="inline-flex items-center gap-1.5 rounded-full bg-[#fff4df] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.1em] text-[#9a5b00] transition hover:bg-[#ffebc2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d7941d]/40"
+                      className="inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-[#fff4df] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.1em] text-[#9a5b00] transition hover:bg-[#ffebc2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d7941d]/40 disabled:cursor-wait disabled:opacity-70"
                     >
-                      <AlertTriangle className="h-3.5 w-3.5" /> À compléter
+                      <AlertTriangle className="h-3.5 w-3.5" /> {openingLocationId === merchant.id ? "Ouverture..." : "À compléter"}
                     </button>
                     <div role="tooltip" className="pointer-events-none invisible absolute right-0 top-full z-20 mt-2 w-64 rounded-[12px] border border-[#e8d8b2] bg-[#fffaf0] p-3 text-left text-xs leading-5 text-[#75521d] opacity-0 shadow-[0_12px_30px_rgba(17,24,39,0.14)] transition group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
                       <p className="font-semibold">Informations à compléter</p>

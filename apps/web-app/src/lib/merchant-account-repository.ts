@@ -1493,6 +1493,7 @@ export async function updateMerchantOnboardingInSupabase(
 export async function updateMerchantAccountInSupabase(
   userId: string,
   input: MerchantAccountSettingsInput,
+  merchantId?: string,
 ) {
   const supabase = getSupabaseAdmin();
   const userQuery = await supabase
@@ -1504,6 +1505,8 @@ export async function updateMerchantAccountInSupabase(
   if (userQuery.error || !userQuery.data) {
     throw new Error("Utilisateur introuvable.");
   }
+
+  const targetMerchantId = merchantId ?? userQuery.data.merchant_id;
 
   const email = input.email.trim().toLowerCase();
   const existingUser = await supabase
@@ -1545,7 +1548,7 @@ export async function updateMerchantAccountInSupabase(
       default_prize_cost: input.defaultPrizeCost,
       ...(input.redemptionPin ? { redemption_pin_hash: hashPassword(input.redemptionPin) } : {}),
     })
-    .eq("id", userQuery.data.merchant_id);
+    .eq("id", targetMerchantId);
 
   if (merchantUpdate.error) {
     throw new Error("Mise a jour du compte impossible.");
@@ -1573,7 +1576,7 @@ export async function updateMerchantAccountInSupabase(
   });
 
   const [merchant, user] = await Promise.all([
-    getSupabaseMerchantProfile(userQuery.data.merchant_id),
+    getSupabaseMerchantProfile(targetMerchantId),
     getSupabaseMerchantUser(userId),
   ]);
 

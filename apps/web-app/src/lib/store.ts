@@ -1122,7 +1122,11 @@ function updateMerchantOnboardingInMemory(userId: string, input: MerchantOnboard
   return clone(merchant);
 }
 
-function updateMerchantAccountInMemory(userId: string, input: MerchantAccountSettingsInput) {
+function updateMerchantAccountInMemory(
+  userId: string,
+  input: MerchantAccountSettingsInput,
+  merchantId?: string,
+) {
   const user = getUser(userId);
 
   if (!user) {
@@ -1136,7 +1140,7 @@ function updateMerchantAccountInMemory(userId: string, input: MerchantAccountSet
     throw new Error("Cette adresse e-mail est deja utilisee.");
   }
 
-  const merchant = getMerchant(user.merchantId);
+  const merchant = getMerchant(merchantId ?? user.merchantId);
 
   if (!merchant) {
     throw new Error("Marchand introuvable.");
@@ -1218,12 +1222,16 @@ export async function updateMerchantOnboarding(userId: string, input: MerchantOn
   return updateMerchantOnboardingInMemory(userId, input);
 }
 
-export async function updateMerchantAccount(userId: string, input: MerchantAccountSettingsInput) {
+export async function updateMerchantAccount(
+  userId: string,
+  input: MerchantAccountSettingsInput,
+  merchantId?: string,
+) {
   if (getDataBackend("la mise à jour du compte marchand") === "supabase") {
-    return updateMerchantAccountInSupabase(userId, input);
+    return updateMerchantAccountInSupabase(userId, input, merchantId);
   }
 
-  return updateMerchantAccountInMemory(userId, input);
+  return updateMerchantAccountInMemory(userId, input, merchantId);
 }
 
 export async function getPublicRedemptionContext(code: string): Promise<PublicRedemptionContext | null> {

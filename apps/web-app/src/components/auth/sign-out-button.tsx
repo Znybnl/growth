@@ -35,7 +35,6 @@ export function SignOutButton() {
     }
 
     router.push("/connexion");
-    router.refresh();
   }
 
   return (
