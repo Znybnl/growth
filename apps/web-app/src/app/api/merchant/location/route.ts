@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 
 import { requireAuthenticatedSession } from "@/lib/auth";
-import { getMerchantWorkspaceContext } from "@/lib/store";
 import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
 
 export async function POST(request: Request) {
@@ -19,8 +18,10 @@ export async function POST(request: Request) {
     const body = (await request.json()) as { locationId?: string };
     const locationId = body.locationId?.trim();
     if (!locationId) return NextResponse.json({ error: "Site invalide." }, { status: 400 });
-    const context = await getMerchantWorkspaceContext(session.user.id, session.merchant);
-    const allowed = context.locations.some(({ merchant }) => merchant.id === locationId);
+    // The authenticated session already contains the locations accessible to
+    // the user. Reusing it avoids querying the workspace and every location a
+    // second time before setting the cookie.
+    const allowed = session.locations.some(({ merchant }) => merchant.id === locationId);
     if (!allowed) return NextResponse.json({ error: "Accès à ce site refusé." }, { status: 403 });
     const response = NextResponse.json({ locationId });
     response.cookies.set("okado_active_location", locationId, {

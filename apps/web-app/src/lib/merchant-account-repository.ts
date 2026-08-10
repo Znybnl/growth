@@ -636,351 +636,7 @@ export async function ensureDemoMerchantInSupabase() {
       {
         id: `membership-${resolvedMerchantUserId}`,
         workspace_id: workspaceId,
-        merchant_user_id: resolvedMerchantUserId,
-        role: "owner",
-        status: "active",
-        created_at: createdAt,
-      },
-      { onConflict: "workspace_id,merchant_user_id" },
-    );
-    if (!membership.error) {
-      await supabase.from("merchant_membership_locations").upsert(
-        { membership_id: `membership-${resolvedMerchantUserId}`, merchant_id: DEMO_MERCHANT_PROFILE.merchantId },
-        { onConflict: "membership_id,merchant_id" },
-      );
-    }
-  }
-
-  return {
-    merchantId: DEMO_MERCHANT_PROFILE.merchantId,
-    merchantUserId: resolvedMerchantUserId,
-  };
-}
-
-export async function createMerchantAccountInSupabase(input: MerchantSignUpInput) {
-  const supabase = getSupabaseAdmin();
-  const email = input.email.trim().toLowerCase();
-
-  if (input.password !== input.confirmPassword) {
-    throw new Error("Les mots de passe ne correspondent pas.");
-  }
-
-  const existing = await supabase
-    .from("merchant_users")
-    .select("id")
-    .eq("email", email)
-    .maybeSingle();
-
-  if (existing.data) {
-    throw new Error("Un compte existe deja avec cette adresse e-mail.");
-  }
-
-  const merchantId = generateId("merchant");
-  const userId = generateId("user");
-  const firstName = input.firstName.trim();
-  const lastName = input.lastName.trim();
-  const companyName = input.companyName.trim();
-  const city = input.city.trim();
-  const phone = (input.phone ?? "").trim();
-  const createdAt = new Date().toISOString();
-  const trialEndDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
-  const workspaceId = `workspace-${merchantId}`;
-  const authUserId = await createSupabaseAuthIdentity({
-    email,
-    password: input.password,
-    firstName,
-    lastName,
-  });
-
-  try {
-    const workspaceAvailable = await ensureMerchantWorkspaceRecord({
-      workspaceId,
-      name: companyName,
-      createdAt,
-    });
-    const merchantInsert = await supabase.from("merchants").insert({
-      id: merchantId,
-      ...(workspaceAvailable
-        ? {
-            workspace_id: workspaceId,
-            location_code: `${city.slice(0, 3)}-${merchantId.slice(-4)}`.toUpperCase(),
-            location_status: "active",
-            time_zone: "Europe/Paris",
-          }
-        : {}),
-      company_name: companyName,
-      logo_text: companyName.slice(0, 2).toUpperCase(),
-      logo_url: null,
-      industry: "",
-      restaurant_type: "Brasserie",
-      city,
-      address: "",
-      contact_name: `${firstName} ${lastName}`.trim(),
-      phone,
-      restaurant_email: "",
-      website_url: "",
-      onboarding_completed: false,
-      preferred_goals: [],
-      diffusion_support: [],
-      google_review_url: "",
-      instagram_url: "",
-      facebook_url: "",
-      tiktok_url: "",
-      tripadvisor_url: "",
-      custom_link_url: "",
-      default_prize_cost: 3,
-      redemption_pin_hash: hashPassword("0000"),
-      trial_start_date: createdAt,
-      trial_end_date: trialEndDate,
-      created_at: createdAt,
-    });
-
-    if (merchantInsert.error) {
-      throw new Error("Creation du marchand impossible.");
-    }
-
-    const userInsert = await supabase.from("merchant_users").insert({
-      id: userId,
-      merchant_id: merchantId,
-      first_name: firstName,
-      last_name: lastName,
-      email,
-      password_hash: hashPassword(input.password),
-      created_at: createdAt,
-    });
-
-    if (userInsert.error) {
-      await supabase.from("merchants").delete().eq("id", merchantId);
-      throw new Error("Creation du compte impossible.");
-    }
-
-    if (workspaceAvailable) {
-      const membershipId = `membership-${userId}`;
-      await supabase.from("merchant_workspace_memberships").insert({
-        id: membershipId,
-        workspace_id: workspaceId,
-        merchant_user_id: userId,
-        role: "owner",
-        status: "active",
-        created_at: createdAt,
-      });
-      await supabase.from("merchant_membership_locations").insert({
-        membership_id: membershipId,
-        merchant_id: merchantId,
-      });
-    }
-
-    await ensureSupabaseAuthUser({
-      email,
-      password: input.password,
-      firstName,
-      lastName,
-      merchantId,
-      merchantUserId: userId,
-      existingAuthUserId: authUserId,
-    });
-  } catch (error) {
-    await supabase.from("merchant_users").delete().eq("id", userId);
-    await supabase.from("merchants").delete().eq("id", merchantId);
-    await supabase.from("merchant_workspaces").delete().eq("id", workspaceId);
-    await deleteSupabaseAuthUserById(authUserId);
-    throw error;
-  }
-
-  return {
-    user: {
-      id: userId,
-      merchantId,
-      firstName,
-      lastName,
-      email,
-      password: "",
-      createdAt,
-    },
-    merchant: {
-      id: merchantId,
-      companyName,
-      logoText: companyName.slice(0, 2).toUpperCase(),
-      logoUrl: undefined,
-      industry: undefined,
-      restaurantType: "Brasserie",
-      city,
-      address: undefined,
-      contactName: `${firstName} ${lastName}`.trim(),
-      phone,
-      restaurantEmail: undefined,
-      websiteUrl: undefined,
-      onboardingCompleted: false,
-      preferredGoals: [],
-      diffusionSupport: [],
-      googleReviewUrl: "",
-      instagramUrl: "",
-      facebookUrl: "",
-      tiktokUrl: "",
-      tripadvisorUrl: "",
-      defaultPrizeCost: 3,
-      trialStartDate: createdAt,
-      trialEndDate,
-      subscriptionCancelAtPeriodEnd: false,
-      createdAt,
-    },
-  };
-}
-
-export async function authenticateMerchantInSupabase(input: MerchantSignInInput) {
-  const supabase = getSupabaseAdmin();
-  const email = input.email.trim().toLowerCase();
-  const { data, error } = await supabase
-    .from("merchant_users")
-    .select("*")
-    .eq("email", email)
-    .single<MerchantUserRow>();
-
-  const isDemoLogin =
-    email === DEMO_MERCHANT_LOGIN.email && input.password === DEMO_MERCHANT_LOGIN.password;
-
-  if (error || !data) {
-    throw new Error("Identifiants invalides.");
-  }
-
-  let isValidPassword = verifyPassword(input.password, data.password_hash);
-
-  if (!isValidPassword && isDemoLogin) {
-    const nextHash = hashPassword(DEMO_MERCHANT_LOGIN.password);
-    const { error: updateError } = await supabase
-      .from("merchant_users")
-      .update({ password_hash: nextHash })
-      .eq("id", data.id);
-
-    if (!updateError) {
-      data.password_hash = nextHash;
-      isValidPassword = true;
-    }
-  }
-
-  if (!isValidPassword) {
-    throw new Error("Identifiants invalides.");
-  }
-
-  await ensureSupabaseAuthUser({
-    email,
-    password: input.password,
-    firstName: data.first_name,
-    lastName: data.last_name,
-    merchantId: data.merchant_id,
-    merchantUserId: data.id,
-  });
-
-  const merchant = await getSupabaseMerchantProfile(data.merchant_id);
-
-  if (!merchant) {
-    throw new Error("Marchand introuvable.");
-  }
-
-  return {
-    user: toMerchantUser(data),
-    merchant,
-  };
-}
-
-function deriveCompanyName(profile: GoogleMerchantProfile) {
-  const trimmedName = profile.fullName.trim();
-
-  if (trimmedName) {
-    return trimmedName;
-  }
-
-  const localPart = profile.email.split("@")[0]?.trim();
-  return localPart ? localPart.slice(0, 48) : "Mon commerce";
-}
-
-export async function authenticateOrProvisionMerchantWithGoogle(
-  profile: GoogleMerchantProfile,
-) {
-  const supabase = getSupabaseAdmin();
-  const email = profile.email.trim().toLowerCase();
-  const existingUser = await supabase
-    .from("merchant_users")
-    .select("*")
-    .eq("email", email)
-    .maybeSingle<MerchantUserRow>();
-
-  if (existingUser.error) {
-    throw new Error(`Connexion Google impossible: ${existingUser.error.message}`);
-  }
-
-  if (existingUser.data) {
-    await ensureSupabaseAuthUser({
-      email,
-      firstName: existingUser.data.first_name,
-      lastName: existingUser.data.last_name,
-      merchantId: existingUser.data.merchant_id,
-      merchantUserId: existingUser.data.id,
-      authProvider: "google" as const,
-      avatarUrl: profile.avatarUrl,
-      existingAuthUserId: profile.authUserId,
-    });
-
-    const merchant = await getSupabaseMerchantProfile(existingUser.data.merchant_id);
-
-    if (!merchant) {
-      throw new Error("Marchand introuvable.");
-    }
-
-    return {
-      user: toMerchantUser(existingUser.data),
-      merchant,
-      isNew: false,
-    };
-  }
-
-  const merchantId = generateId("merchant");
-  const userId = generateId("user");
-  const firstName = profile.firstName.trim();
-  const lastName = profile.lastName.trim();
-  const fullName = profile.fullName.trim();
-  const companyName = deriveCompanyName(profile);
-  const contactName = fullName || `${firstName} ${lastName}`.trim();
-  const createdAt = new Date().toISOString();
-  const trialEndDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
-  const workspaceId = `workspace-${merchantId}`;
-  const locationCode = `SITE-${merchantId.slice(-4)}`.toUpperCase();
-
-  await ensureMerchantWorkspaceRecord({
-    workspaceId,
-    name: companyName,
-    createdAt,
-  });
-
-  const merchantInsert = await supabase.from("merchants").insert({
-    id: merchantId,
-    workspace_id: workspaceId,
-    location_code: locationCode,
-    location_status: "active",
-    time_zone: "Europe/Paris",
-    company_name: companyName,
-    logo_text: companyName.slice(0, 2).toUpperCase(),
-    logo_url: null,
-    industry: "",
-    restaurant_type: "Brasserie",
-    city: "",
-    address: "",
-    contact_name: contactName,
-    phone: "",
-    restaurant_email: "",
-    website_url: "",
-    onboarding_completed: false,
-    preferred_goals: [],
-    diffusion_support: [],
-    google_review_url: "",
-    instagram_url: "",
-    facebook_url: "",
-    tiktok_url: "",
-    tripadvisor_url: "",
-    custom_link_url: "",
-    default_prize_cost: 3,
-    redemption_pin_hash: hashPassword("0000"),
-    trial_start_date: createdAt,
+        merchant_user_id: r…2428 tokens truncated…date: createdAt,
     trial_end_date: trialEndDate,
     created_at: createdAt,
   });
@@ -1493,6 +1149,7 @@ export async function updateMerchantOnboardingInSupabase(
 export async function updateMerchantAccountInSupabase(
   userId: string,
   input: MerchantAccountSettingsInput,
+  merchantId?: string,
 ) {
   const supabase = getSupabaseAdmin();
   const userQuery = await supabase
@@ -1504,6 +1161,8 @@ export async function updateMerchantAccountInSupabase(
   if (userQuery.error || !userQuery.data) {
     throw new Error("Utilisateur introuvable.");
   }
+
+  const targetMerchantId = merchantId ?? userQuery.data.merchant_id;
 
   const email = input.email.trim().toLowerCase();
   const existingUser = await supabase
@@ -1545,7 +1204,7 @@ export async function updateMerchantAccountInSupabase(
       default_prize_cost: input.defaultPrizeCost,
       ...(input.redemptionPin ? { redemption_pin_hash: hashPassword(input.redemptionPin) } : {}),
     })
-    .eq("id", userQuery.data.merchant_id);
+    .eq("id", targetMerchantId);
 
   if (merchantUpdate.error) {
     throw new Error("Mise a jour du compte impossible.");
@@ -1573,7 +1232,7 @@ export async function updateMerchantAccountInSupabase(
   });
 
   const [merchant, user] = await Promise.all([
-    getSupabaseMerchantProfile(userQuery.data.merchant_id),
+    getSupabaseMerchantProfile(targetMerchantId),
     getSupabaseMerchantUser(userId),
   ]);
 

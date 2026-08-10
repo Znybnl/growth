@@ -76,7 +76,6 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
 
       if (!response.ok) throw new Error(payload.error ?? "Onboarding impossible.");
       router.push("/?welcome=1");
-      router.refresh();
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : "Onboarding impossible.");
     } finally {

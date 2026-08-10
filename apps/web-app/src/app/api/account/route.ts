@@ -16,7 +16,7 @@ export async function POST(request: Request) {
     }
 
     const body = parseMerchantAccountSettingsInput(await request.json());
-    const account = await updateMerchantAccount(session.user.id, body);
+    const account = await updateMerchantAccount(session.user.id, body, session.merchant.id);
     await syncMerchantContactToBrevo({
       merchant: account.merchant,
       user: account.user,

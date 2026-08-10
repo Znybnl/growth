@@ -22,6 +22,14 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
         (!merchant.stripeSubscriptionId && !merchant.stripeSubscriptionStatus)),
   );
 
+  // The affiliate panel does not depend on the Stripe synchronization. Start
+  // both requests together so the account page is not blocked by a sequential
+  // network waterfall.
+  const affiliateSummaryPromise = getAffiliateSummaryForMerchant(merchant).catch((error) => {
+    console.error("Affiliate summary unavailable", error);
+    return null;
+  });
+
   if (shouldAttemptStripeSync && merchant.stripeCustomerId) {
     try {
       const syncedMerchant = await syncMerchantBillingFromStripeCustomerIdInSupabase(
@@ -37,10 +45,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
   }
 
   const billing = getMerchantBillingSummary(merchant);
-  const affiliateSummary = await getAffiliateSummaryForMerchant(merchant).catch((error) => {
-    console.error("Affiliate summary unavailable", error);
-    return null;
-  });
+  const affiliateSummary = await affiliateSummaryPromise;
 
   return (
     <div className="space-y-6">

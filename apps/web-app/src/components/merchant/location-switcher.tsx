@@ -1,7 +1,8 @@
 "use client";
 
 import { ChevronDown, MapPin } from "lucide-react";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
 
 import {
   DropdownMenu,
@@ -20,7 +21,9 @@ export function LocationSwitcher({
   locations: MerchantLocationAccess[];
   activeLocationId: string;
 }) {
+  const router = useRouter();
   const [isChanging, setIsChanging] = useState(false);
+  const [isRefreshing, startTransition] = useTransition();
 
   async function changeLocation(locationId: string) {
     if (!locationId || locationId === activeLocationId) return;
@@ -32,7 +35,8 @@ export function LocationSwitcher({
         body: JSON.stringify({ locationId }),
       });
       if (!response.ok) throw new Error("Sélection du site impossible.");
-      window.location.reload();
+      startTransition(() => router.refresh());
+      setIsChanging(false);
     } catch {
       setIsChanging(false);
     }
@@ -45,7 +49,7 @@ export function LocationSwitcher({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        disabled={isChanging || locations.length <= 1}
+        disabled={isChanging || isRefreshing || locations.length <= 1}
         className="inline-flex min-h-10 min-w-0 max-w-[260px] !cursor-default select-none items-center gap-2 rounded-[var(--okado-radius-control)] border border-border bg-white px-3 text-xs text-graphite shadow-[var(--shadow-product-card)] outline-none transition hover:bg-linen-canvas focus-visible:ring-2 focus-visible:ring-primary-action-accent/30 disabled:cursor-default disabled:opacity-100"
       >
         <MapPin className="okado-icon-sm shrink-0 text-primary-action-accent" />

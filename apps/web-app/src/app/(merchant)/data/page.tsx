@@ -250,10 +250,8 @@ function LeadsExportSection({
                     leadId={lead.id}
                     status={lead.status}
                     hasPrize={Boolean(lead.prizeId)}
-                    usageConditions={lead.prizeUsageConditions}
                     isExpired={isRewardExpired(lead.status, lead.rewardExpiresAt)}
                     emailDeliveryStatus={lead.emailDeliveryStatus}
-                    emailSentAt={lead.emailSentAt}
                   />
                 </td>
                 <td className="border-b border-[#eef2f7] px-3 py-4 text-slate">
@@ -632,4 +630,3 @@ export default async function DataPage({ searchParams }: DataPageProps) {
     </div>
   );
 }
-

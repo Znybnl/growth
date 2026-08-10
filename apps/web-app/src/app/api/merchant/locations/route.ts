@@ -1,13 +1,12 @@
 import { NextResponse } from "next/server";
 
 import { requireAuthenticatedSession } from "@/lib/auth";
-import { getMerchantWorkspaceContext, createMerchantLocation } from "@/lib/store";
+import { createMerchantLocation } from "@/lib/store";
 import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
 
 export async function GET() {
   const session = await requireAuthenticatedSession();
-  const context = await getMerchantWorkspaceContext(session.user.id, session.merchant);
-  return NextResponse.json({ workspace: context.workspace, locations: context.locations });
+  return NextResponse.json({ workspace: session.workspace, locations: session.locations });
 }
 
 export async function POST(request: Request) {
