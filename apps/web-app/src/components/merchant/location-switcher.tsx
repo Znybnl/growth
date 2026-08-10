@@ -46,7 +46,7 @@ export function LocationSwitcher({
     <DropdownMenu>
       <DropdownMenuTrigger
         disabled={isChanging || locations.length <= 1}
-        className="inline-flex min-h-10 min-w-0 max-w-[260px] items-center gap-2 rounded-[var(--okado-radius-control)] border border-border bg-white px-3 text-xs text-graphite shadow-[var(--shadow-product-card)] outline-none transition hover:bg-linen-canvas focus-visible:ring-2 focus-visible:ring-primary-action-accent/30 disabled:cursor-default disabled:opacity-100"
+        className="inline-flex min-h-10 min-w-0 max-w-[260px] !cursor-default select-none items-center gap-2 rounded-[var(--okado-radius-control)] border border-border bg-white px-3 text-xs text-graphite shadow-[var(--shadow-product-card)] outline-none transition hover:bg-linen-canvas focus-visible:ring-2 focus-visible:ring-primary-action-accent/30 disabled:cursor-default disabled:opacity-100"
       >
         <MapPin className="okado-icon-sm shrink-0 text-primary-action-accent" />
         <span className="sr-only">Site actif</span>
@@ -54,7 +54,9 @@ export function LocationSwitcher({
           {activeLocation?.companyName ?? "Choisir un site"}
           {activeLocation?.city ? ` · ${activeLocation.city}` : ""}
         </span>
-        <ChevronDown className="okado-icon-sm ml-auto shrink-0 text-ash" aria-hidden="true" />
+        {locations.length > 1 ? (
+          <ChevronDown className="okado-icon-sm ml-auto shrink-0 text-ash" aria-hidden="true" />
+        ) : null}
       </DropdownMenuTrigger>
       {locations.length > 1 ? <DropdownMenuContent align="end" className="min-w-[240px] rounded-[var(--okado-radius-control)] border-border p-1.5 shadow-[var(--shadow-product-card)]">
           <DropdownMenuLabel>Changer de site</DropdownMenuLabel>

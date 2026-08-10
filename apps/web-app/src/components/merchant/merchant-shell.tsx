@@ -44,6 +44,7 @@ const adminNavItems = [
 export function MerchantShell({ children, merchant, user, locations, activeLocationId, isSaasAdmin }: MerchantShellProps) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [campaignsVersion, setCampaignsVersion] = useState<string | null>(null);
   const [merchantAlerts, setMerchantAlerts] = useState({
     emailCount: 0,
     emailCampaignId: null as string | null,
@@ -123,6 +124,17 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
     };
   }, []);
 
+  useEffect(() => {
+    const handleCampaignsUpdated = () => {
+      // /campaigns is prefetched by the shell. A versioned URL prevents the
+      // next navigation from reusing the snapshot captured before a save.
+      setCampaignsVersion(String(Date.now()));
+    };
+
+    window.addEventListener("campaigns-updated", handleCampaignsUpdated);
+    return () => window.removeEventListener("campaigns-updated", handleCampaignsUpdated);
+  }, []);
+
   function isActive(href: string) {
     if (href === "/") return pathname === "/";
     // The administration overview must not remain active on its child pages.
@@ -161,11 +173,15 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
           <nav className="mt-6 space-y-1">
             {navItems.map((item) => {
               const active = isActive(item.href);
+              const href =
+                item.href === "/campaigns" && campaignsVersion
+                  ? `/campaigns?updated=${campaignsVersion}`
+                  : item.href;
 
               return (
                 <Link
                   key={item.href}
-                  href={item.href}
+                  href={href}
                   prefetch={prefetchedNavRoutes.has(item.href)}
                   className={`flex h-9 items-center justify-between rounded-full px-3 text-sm transition ${
                     active

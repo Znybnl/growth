@@ -1346,10 +1346,15 @@ export async function getSupabaseCampaignSetupPerformance(
 export async function getSupabasePublicCampaign(
   campaignId: string,
   participantToken?: string,
+  allowInactive = false,
+  fallbackMerchant?: Merchant,
 ): Promise<PublicCampaign | null> {
-  const performance = await getSupabaseCampaignPerformance(campaignId);
+  const performance = await getSupabaseCampaignPerformance(campaignId, fallbackMerchant);
   if (!performance) return null;
-  if (!performance.campaign.isActive) {
+  if (fallbackMerchant && performance.merchant.id !== fallbackMerchant.id) {
+    return null;
+  }
+  if (!allowInactive && !performance.campaign.isActive) {
     throw new Error("Cette animation est momentanément indisponible.");
   }
   assertMerchantBillingAccess(performance.merchant, "campaign_public");
@@ -1757,9 +1762,35 @@ export async function getSupabaseCampaignDataView(
   }
 
   const row = campaignData as CampaignRow;
+  const dataLeadColumns = [
+    "id",
+    "campaign_id",
+    "first_name",
+    "email",
+    "phone",
+    "marketing_consent",
+    "consent_timestamp",
+    "consent_policy_version",
+    "consent_source",
+    "campaign_configuration_version",
+    "redeemed_at",
+    "redeemed_by_user_id",
+    "purchase_verified",
+    "prize_id",
+    "status",
+    "created_at",
+    "action_confirmed",
+    "redemption_code",
+    "reward_available_at",
+    "reward_expires_at",
+    "prize_label_snapshot",
+    "prize_usage_conditions_snapshot",
+    "is_preview",
+  ].join(",");
+
   let leadsQuery = supabase
     .from("leads")
-    .select("*", { count: "exact" })
+    .select(dataLeadColumns, { count: "exact" })
     .eq("campaign_id", campaignId)
     .order("created_at", { ascending: false })
     .range(leadOffset, leadOffset + leadLimit - 1);
@@ -1872,19 +1903,23 @@ export async function getSupabaseCampaignDataView(
 
   const leadRows = (leadsResult.data as LeadRow[] | null) ?? [];
   performance.kpis.contacts = Number(summary.leads_count) || leadRows.length;
-  const { count: optInsCount } = await supabase
-    .from("leads")
-    .select("id", { count: "exact", head: true })
-    .eq("campaign_id", campaignId)
-    .eq("marketing_consent", true);
-  performance.kpis.optIns = optInsCount ?? leadRows.filter((lead) => Boolean(lead.marketing_consent)).length;
   const leadIds = leadRows.map((lead) => lead.id);
-  const { data: deliveriesData } = leadIds.length
-    ? await supabase
-        .from("reward_email_deliveries")
-        .select("lead_id,status,sent_at,delivered_at,error_message")
-        .in("lead_id", leadIds)
-    : { data: [] };
+  const [optInsResult, deliveriesResult] = await Promise.all([
+    supabase
+      .from("leads")
+      .select("id", { count: "exact", head: true })
+      .eq("campaign_id", campaignId)
+      .eq("marketing_consent", true),
+    leadIds.length
+      ? supabase
+          .from("reward_email_deliveries")
+          .select("lead_id,status,sent_at,delivered_at,error_message")
+          .in("lead_id", leadIds)
+      : Promise.resolve({ data: [] }),
+  ]);
+  const optInsCount = optInsResult.count;
+  performance.kpis.optIns = optInsCount ?? leadRows.filter((lead) => Boolean(lead.marketing_consent)).length;
+  const deliveriesData = deliveriesResult.data;
   const prizes = performance.prizes;
   const leads = enrichLeadRowsWithEmailDeliveries(
     leadRows.map(toLead).map((lead) => ({
@@ -2028,16 +2063,23 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
       !prize.id.startsWith("default-prize-")
         ? prize.id
         : generateId("prize");
-    const remaining = remainingMap.has(prizeId)
-      ? remainingMap.get(prizeId)
-      : prize.totalQuantity ?? null;
+    const remaining = prize.remainingQuantity !== undefined
+      ? prize.remainingQuantity
+      : remainingMap.has(prizeId)
+        ? remainingMap.get(prizeId)
+        : prize.totalQuantity ?? null;
 
     return {
       id: prizeId,
       campaign_id: campaignId,
       label: prize.label,
       total_quantity: prize.totalQuantity ?? null,
-      remaining_quantity: prize.totalQuantity === null ? null : remaining ?? prize.totalQuantity ?? null,
+      remaining_quantity:
+        prize.totalQuantity === null
+          ? null
+          : remaining !== undefined
+            ? remaining
+            : prize.totalQuantity ?? null,
       probability: prize.probability,
       estimated_unit_cost: prize.estimatedUnitCost,
     };
@@ -2174,9 +2216,7 @@ export async function duplicateCampaignInSupabase(id: string, merchant: Merchant
     throw new Error("Campagne introuvable");
   }
 
-  const campaignId = generateId("camp");
-  await updateCampaignSetupInSupabase({
-    id: campaignId,
+  const campaignId = await updateCampaignSetupInSupabase({
     merchantId: merchant.id,
     title: `${performance.campaign.title} (copie)`,
     subtitle: performance.campaign.subtitle,
@@ -2219,9 +2259,7 @@ export async function duplicateCampaignToMerchantInSupabase(
     throw new Error("Campagne source introuvable.");
   }
 
-  const campaignId = generateId("camp");
-  await updateCampaignSetupInSupabase({
-    id: campaignId,
+  const campaignId = await updateCampaignSetupInSupabase({
     merchantId: targetMerchant.id,
     title: `${performance.campaign.title} · ${targetMerchant.city ?? targetMerchant.companyName}`,
     subtitle: performance.campaign.subtitle,

@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { AffiliateReferralCard } from "@/components/merchant/affiliate-referral-card";
 import { GoogleReviewPlacePicker } from "@/components/merchant/google-review-place-picker";
 import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
+import { ValidationDialog } from "@/components/ui/validation-dialog";
 import {
   INDUSTRY_OPTIONS,
   isRestaurantIndustry,
@@ -55,7 +56,25 @@ export function AccountSettingsForm({
   });
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
+  const [isSuccessOpen, setIsSuccessOpen] = useState(false);
+  const actionsAnchorRef = useRef<HTMLDivElement>(null);
+  const [showStickyActions, setShowStickyActions] = useState(false);
+
+  useEffect(() => {
+    const anchor = actionsAnchorRef.current;
+
+    if (!anchor || typeof IntersectionObserver === "undefined") {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setShowStickyActions(!entry.isIntersecting),
+      { threshold: 0, rootMargin: "-64px 0px 0px 0px" },
+    );
+
+    observer.observe(anchor);
+    return () => observer.disconnect();
+  }, []);
 
   const isRestaurant = isRestaurantIndustry(form.industry);
   const placeLabel = isRestaurant ? "restaurant" : "commerce";
@@ -70,7 +89,7 @@ export function AccountSettingsForm({
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
-    setSuccess(null);
+    setIsSuccessOpen(false);
     setIsSaving(true);
 
     try {
@@ -85,7 +104,7 @@ export function AccountSettingsForm({
         throw new Error(payload.error ?? "Mise à jour impossible.");
       }
 
-      setSuccess("Compte mis à jour.");
+      setIsSuccessOpen(true);
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : "Mise à jour impossible.");
     } finally {
@@ -94,12 +113,36 @@ export function AccountSettingsForm({
   }
 
   return (
-    <form className="space-y-6" onSubmit={handleSubmit}>
+    <form className="space-y-6 pb-24 xl:pb-0" onSubmit={handleSubmit}>
+      <div className="pointer-events-none sticky top-[-20px] z-20 hidden h-0 overflow-visible xl:-mb-6 xl:block">
+        <div
+          className={`pointer-events-auto -mx-3 border-b border-border bg-linen-canvas/95 px-3 py-2 shadow-[0_8px_18px_rgba(18,24,39,0.08)] backdrop-blur-sm transition-all duration-200 lg:-mx-6 lg:px-6 ${
+            showStickyActions ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
+          }`}
+          aria-hidden={!showStickyActions}
+        >
+          <div className="okado-action-row mx-auto flex max-w-[1600px] items-center justify-end gap-2">
+            <button
+              type="submit"
+              disabled={isSaving}
+              tabIndex={showStickyActions ? 0 : -1}
+              className="okado-filled-action px-5 disabled:opacity-60"
+            >
+              {isSaving ? "Enregistrement..." : "Enregistrer"}
+            </button>
+          </div>
+        </div>
+      </div>
+      <p className="text-xs text-ash">
+        <span className="text-[#b42318]" aria-hidden="true">*</span> Champs obligatoires
+      </p>
       <section className="okado-card p-6 md:p-8">
         <p className="okado-label">Utilisateur</p>
         <div className="mt-6 grid gap-4 md:grid-cols-2">
           <label className="text-sm">
-            <span className="mb-2 block text-ash">Prénom</span>
+            <span className="mb-2 block text-ash">
+              Prénom <span className="text-[#b42318]" aria-hidden="true">*</span>
+            </span>
             <input
               value={form.firstName}
               onChange={(event) => updateField("firstName", event.target.value)}
@@ -108,7 +151,9 @@ export function AccountSettingsForm({
             />
           </label>
           <label className="text-sm">
-            <span className="mb-2 block text-ash">Nom</span>
+            <span className="mb-2 block text-ash">
+              Nom <span className="text-[#b42318]" aria-hidden="true">*</span>
+            </span>
             <input
               value={form.lastName}
               onChange={(event) => updateField("lastName", event.target.value)}
@@ -117,7 +162,9 @@ export function AccountSettingsForm({
             />
           </label>
           <label className="text-sm md:col-span-2">
-            <span className="mb-2 block text-ash">E-mail de connexion</span>
+            <span className="mb-2 block text-ash">
+              E-mail de connexion <span className="text-[#b42318]" aria-hidden="true">*</span>
+            </span>
             <input
               type="email"
               value={form.email}
@@ -135,7 +182,9 @@ export function AccountSettingsForm({
         </p>
         <div className="mt-6 grid gap-4 md:grid-cols-2">
           <label className="text-sm">
-            <span className="mb-2 block text-ash">Nom du commerce</span>
+            <span className="mb-2 block text-ash">
+              Nom du commerce <span className="text-[#b42318]" aria-hidden="true">*</span>
+            </span>
             <input
               value={form.companyName}
               onChange={(event) => updateField("companyName", event.target.value)}
@@ -159,7 +208,7 @@ export function AccountSettingsForm({
           </label>
           <label className="text-sm">
             <span className="mb-2 block text-ash">
-              Ville / {isRestaurant ? "restaurant" : "commerce"}
+              Ville / {isRestaurant ? "restaurant" : "commerce"} <span className="text-[#b42318]" aria-hidden="true">*</span>
             </span>
             <input
               value={form.city}
@@ -196,7 +245,6 @@ export function AccountSettingsForm({
               value={form.contactName}
               onChange={(event) => updateField("contactName", event.target.value)}
               className={inputClass}
-              required
             />
           </label>
           <label className="text-sm">
@@ -225,7 +273,8 @@ export function AccountSettingsForm({
               Site internet du {isRestaurant ? "restaurant" : placeLabel}
             </span>
             <input
-              type="url"
+              type="text"
+              inputMode="url"
               value={form.websiteUrl}
               onChange={(event) => updateField("websiteUrl", event.target.value)}
               placeholder="https://..."
@@ -255,7 +304,8 @@ export function AccountSettingsForm({
           <label className="text-sm">
             <span className="mb-2 flex items-center gap-3 text-ash"><SocialChannelIcon channel="instagram" /><span>Instagram</span></span>
             <input
-              type="url"
+              type="text"
+              inputMode="url"
               value={form.instagramUrl}
               onChange={(event) => updateField("instagramUrl", event.target.value)}
               placeholder="https://instagram.com/..."
@@ -265,7 +315,8 @@ export function AccountSettingsForm({
           <label className="text-sm">
             <span className="mb-2 flex items-center gap-3 text-ash"><SocialChannelIcon channel="facebook" /><span>Facebook</span></span>
             <input
-              type="url"
+              type="text"
+              inputMode="url"
               value={form.facebookUrl}
               onChange={(event) => updateField("facebookUrl", event.target.value)}
               placeholder="https://facebook.com/..."
@@ -275,7 +326,8 @@ export function AccountSettingsForm({
           <label className="text-sm">
             <span className="mb-2 flex items-center gap-3 text-ash"><SocialChannelIcon channel="tiktok" /><span>TikTok</span></span>
             <input
-              type="url"
+              type="text"
+              inputMode="url"
               value={form.tiktokUrl}
               onChange={(event) => updateField("tiktokUrl", event.target.value)}
               placeholder="https://tiktok.com/@..."
@@ -285,7 +337,8 @@ export function AccountSettingsForm({
           <label className="text-sm">
             <span className="mb-2 flex items-center gap-3 text-ash"><SocialChannelIcon channel="tripadvisor" /><span>Tripadvisor</span></span>
             <input
-              type="url"
+              type="text"
+              inputMode="url"
               value={form.tripadvisorUrl}
               onChange={(event) => updateField("tripadvisorUrl", event.target.value)}
               placeholder="https://tripadvisor.com/..."
@@ -295,7 +348,8 @@ export function AccountSettingsForm({
           <label className="text-sm md:col-span-2">
             <span className="mb-2 flex items-center gap-3 text-ash"><SocialChannelIcon channel="custom" /><span>Lien personnalisé</span></span>
             <input
-              type="url"
+              type="text"
+              inputMode="url"
               value={form.customLinkUrl}
               onChange={(event) => updateField("customLinkUrl", event.target.value)}
               placeholder="https://..."
@@ -360,21 +414,23 @@ export function AccountSettingsForm({
           {error}
         </div>
       ) : null}
-      {success ? (
-        <div className="rounded-[8px] border border-[#cce7d5] bg-[#effaf3] px-4 py-3 text-sm text-[#1f7d53]">
-          {success}
-        </div>
-      ) : null}
-
-      <div className="flex justify-end">
+      <div ref={actionsAnchorRef} className="flex justify-end">
         <button
           type="submit"
           disabled={isSaving}
-          className="okado-filled-action px-6 disabled:opacity-60"
+          className="okado-filled-action px-5 disabled:opacity-60"
         >
           {isSaving ? "Enregistrement..." : "Enregistrer les modifications"}
         </button>
       </div>
+
+      <ValidationDialog
+        open={isSuccessOpen}
+        title="Vos modifications sont enregistrées"
+        description="Les informations de votre compte et de votre établissement ont bien été mises à jour."
+        ctaLabel="Fermer"
+        onClose={() => setIsSuccessOpen(false)}
+      />
     </form>
   );
 }

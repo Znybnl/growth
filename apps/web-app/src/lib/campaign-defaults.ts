@@ -11,10 +11,22 @@ export const DEFAULT_WHEEL_SUBTITLE = "Faites tournez la roue pour jouer !";
 export const DEFAULT_SCRATCH_SUBTITLE = "Grattez le ticket pour jouer !";
 export const DEFAULT_WHEEL_PRIMARY_COLOR = "#1b2842";
 export const DEFAULT_SCRATCH_PRIMARY_COLOR = "#f4c14a";
+export const DEFAULT_SCRATCH_CONFETTI_COLOR = "#f4c14a";
+export const DEFAULT_SCRATCH_LILAC_COLOR = "#b85be5";
 export const DEFAULT_SCRATCH_TICKET_COLOR = "#f7f7f7";
 export const DEFAULT_SCRATCH_TEXT_COLOR = "#ffffff";
 export const MAX_CAMPAIGN_SUBTITLE_LINES = 3;
 export const MAX_CAMPAIGN_SUBTITLE_LENGTH = 120;
+
+/** Fixed-palette templates intentionally ignore the merchant's primary color. */
+export function scratchTemplatePrimaryColor(
+  configuredColor: string,
+  templateId?: GamePageTemplateId,
+) {
+  if (templateId === "scratch-confetti") return DEFAULT_SCRATCH_CONFETTI_COLOR;
+  if (templateId === "scratch-lilac") return DEFAULT_SCRATCH_LILAC_COLOR;
+  return configuredColor;
+}
 
 /** Keep the player-facing promise readable in the phone-sized game surface. */
 export function limitCampaignSubtitleLines(value: string) {

@@ -6,7 +6,6 @@ import { DashboardOperationalAlerts } from "@/components/merchant/dashboard-oper
 import { OnboardingWelcomeDialog } from "@/components/merchant/onboarding-welcome-dialog";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import {
-  formatCurrency,
   formatDateTime,
   formatPercent,
   gameTypeLabel,
@@ -43,9 +42,6 @@ export default async function DashboardPage({
   const recentLeads = merchantLeads.filter((lead) => merchantCampaignIds.has(lead.campaignId));
 
   const activeCampaigns = filteredCampaigns.filter((item) => item.campaign.isActive);
-  const bestCampaign = [...filteredCampaigns].sort(
-    (left, right) => right.kpis.conversionRate - left.kpis.conversionRate,
-  )[0];
   const activityPoints = dashboard.activityPoints;
   const getCampaignStatus = (item: (typeof filteredCampaigns)[number]) => {
     if (!item.campaign.isActive) {
@@ -290,37 +286,6 @@ export default async function DashboardPage({
         </div>
 
         <div className="min-w-0 space-y-6">
-          {bestCampaign ? (
-            <div className="okado-card p-5 md:p-6">
-              <p className="okado-label">
-                Meilleure campagne
-              </p>
-              <h2 className="okado-section-title mt-2">
-                {bestCampaign.campaign.title}
-              </h2>
-              <div className="mt-5 grid min-w-0 gap-3 sm:grid-cols-3">
-                <div className="min-w-0 rounded-[8px] bg-linen-canvas p-3">
-                  <p className="text-sm text-[#7b8496]">Conversion scan → contact</p>
-                  <p className="mt-2 text-2xl font-semibold text-[#111827]">
-                    {formatPercent(bestCampaign.kpis.conversionRate)}
-                  </p>
-                </div>
-                <div className="min-w-0 rounded-[8px] bg-linen-canvas p-3">
-                  <p className="text-sm text-[#7b8496]">Coût par contact</p>
-                  <p className="mt-2 text-2xl font-semibold text-[#111827]">
-                    {formatCurrency(bestCampaign.kpis.costPerLead)}
-                  </p>
-                </div>
-                <div className="min-w-0 rounded-[8px] bg-linen-canvas p-3">
-                  <p className="text-sm text-[#7b8496]">Scans</p>
-                  <p className="mt-2 text-2xl font-semibold text-[#111827]">
-                    {bestCampaign.kpis.scans}
-                  </p>
-                </div>
-              </div>
-            </div>
-          ) : null}
-
           <div className="okado-card min-h-[350px] min-w-0 p-5 md:p-6">
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">

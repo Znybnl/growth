@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { ValidationDialog } from "@/components/ui/validation-dialog";
 import { cn } from "@/lib/utils";
 
 type DuplicateCampaignButtonProps = {
@@ -20,6 +21,7 @@ export function DuplicateCampaignButton({
 }: DuplicateCampaignButtonProps) {
   const router = useRouter();
   const [isDuplicating, setIsDuplicating] = useState(false);
+  const [duplicatedCampaignId, setDuplicatedCampaignId] = useState<string | null>(null);
 
   async function duplicateCampaign() {
     setIsDuplicating(true);
@@ -30,11 +32,25 @@ export function DuplicateCampaignButton({
       });
 
       if (!response.ok) {
-        throw new Error("La campagne n'a pas pu être dupliquée.");
+        const payload = (await response.json().catch(() => null)) as { error?: string } | null;
+        throw new Error(payload?.error ?? "La campagne n'a pas pu être dupliquée.");
+      }
+
+      const payload = (await response.json().catch(() => null)) as {
+        campaign?: {
+          id?: string;
+          campaign?: { id?: string };
+        };
+      } | null;
+      const duplicatedId = payload?.campaign?.campaign?.id ?? payload?.campaign?.id;
+
+      if (!duplicatedId) {
+        throw new Error("La campagne a été créée, mais son accès n'a pas pu être récupéré.");
       }
 
       router.refresh();
       onDone?.();
+      setDuplicatedCampaignId(duplicatedId);
     } catch (error) {
       window.alert(
         error instanceof Error ? error.message : "La campagne n'a pas pu être dupliquée.",
@@ -47,31 +63,44 @@ export function DuplicateCampaignButton({
   const isMenu = variant === "menu";
 
   return (
-    <button
-      type="button"
-      onClick={duplicateCampaign}
-      disabled={isDuplicating}
-      className={cn(
-        "inline-flex w-full cursor-pointer items-center text-left text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60",
-        isMenu
-          ? "min-h-9 gap-2 rounded-[8px] border border-transparent bg-transparent px-2.5 py-2 text-graphite hover:bg-sky-wash"
-          : "gap-3 rounded-[12px] border border-border bg-white px-4 py-3 text-graphite hover:border-[#c5d2e5] hover:bg-sky-wash",
-        className,
-      )}
-    >
-      <span
-        aria-hidden="true"
+    <>
+      <button
+        type="button"
+        onClick={duplicateCampaign}
+        disabled={isDuplicating}
         className={cn(
-          "inline-flex shrink-0 items-center justify-center text-graphite",
-          isMenu ? "h-4 w-4" : "h-8 w-8 rounded-full bg-sky-wash",
+          "inline-flex w-full cursor-pointer items-center text-left text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60",
+          isMenu
+            ? "min-h-9 gap-2 rounded-[8px] border border-transparent bg-transparent px-2.5 py-2 text-graphite hover:bg-sky-wash"
+            : "gap-3 rounded-[12px] border border-border bg-white px-4 py-3 text-graphite hover:border-[#c5d2e5] hover:bg-sky-wash",
+          className,
         )}
       >
-        <svg viewBox="0 0 24 24" className="h-4 w-4 fill-none stroke-current stroke-[1.8]">
-          <path d="M8 8h11v11H8z" />
-          <path d="M5 5h11v11" />
-        </svg>
-      </span>
-      {isDuplicating ? "Duplication..." : "Dupliquer"}
-    </button>
+        <span
+          aria-hidden="true"
+          className={cn(
+            "inline-flex shrink-0 items-center justify-center text-graphite",
+            isMenu ? "h-4 w-4" : "h-8 w-8 rounded-full bg-sky-wash",
+          )}
+        >
+          <svg viewBox="0 0 24 24" className="h-4 w-4 fill-none stroke-current stroke-[1.8]">
+            <path d="M8 8h11v11H8z" />
+            <path d="M5 5h11v11" />
+          </svg>
+        </span>
+        {isDuplicating ? "Duplication..." : "Dupliquer"}
+      </button>
+
+      <ValidationDialog
+        open={Boolean(duplicatedCampaignId)}
+        title="Votre jeu est prêt à être vérifié"
+        description="Une copie a été créée en brouillon. Vérifiez ses lots, ses actions et son affichage avant de la publier."
+        ctaLabel="Modifier le jeu"
+        onClose={() => setDuplicatedCampaignId(null)}
+        onAction={() => {
+          if (duplicatedCampaignId) router.push(`/campaigns/${duplicatedCampaignId}/edit`);
+        }}
+      />
+    </>
   );
 }

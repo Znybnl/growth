@@ -38,6 +38,7 @@ import { CampaignEmailPreview } from "@/components/merchant/campaign-email-previ
 import { CampaignLivePreview as SharedCampaignLivePreview } from "@/components/merchant/campaign-live-preview";
 import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
 import { Switch } from "@/components/ui/switch";
+import { ValidationDialog } from "@/components/ui/validation-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -48,7 +49,6 @@ import {
   actionKindCta,
   actionKindLabel,
   buttonSizeLabel,
-  gameTypeLabel,
   textAlignLabel,
   textFontLabel,
 } from "@/lib/format";
@@ -78,7 +78,6 @@ import {
   ActionKind,
   BackgroundLibraryAsset,
   CampaignAction,
-  CampaignLibraryItem,
   CampaignPerformance,
   CampaignSetupInput,
   GamePageTemplateId,
@@ -143,14 +142,20 @@ const ImmersiveScratchTicket = dynamic(
 type CampaignEditorProps = {
   merchant: Merchant;
   initialCampaign?: CampaignPerformance | null;
-  campaignLibrary?: CampaignLibraryItem[];
   deferInlineAssets?: boolean;
+};
+
+type EditorPrize = CampaignSetupInput["prizes"][number] & {
+  /** Current stock, maintained separately from the campaign's initial quantity. */
+  remainingQuantity?: number | null;
 };
 
 type EditorState = Omit<
   CampaignSetupInput,
-  "goalType" | "successMetric" | "targetUrl"
->;
+  "goalType" | "successMetric" | "targetUrl" | "prizes"
+> & {
+  prizes: EditorPrize[];
+};
 
 type PreviewSegment = WheelVisualSegment;
 
@@ -286,7 +291,7 @@ const scratchPageTemplateOptions: Array<{
   {
     value: "scratch-lilac",
     title: "Cadeau lilas",
-    description: "Un univers lilas doux, avec une illustration cadeau claire et contrastée.",
+    description: "Un univers lilas doux, avec une illustration cadeau claire et contrastée. La couleur principale sélectionnée n’est pas utilisée.",
   },
   {
     value: "scratch-sunburst",
@@ -296,7 +301,7 @@ const scratchPageTemplateOptions: Array<{
   {
     value: "scratch-confetti",
     title: "Carte confettis",
-    description: "Une carte solaire et festive, pensée pour une interaction tactile très immédiate.",
+    description: "Une carte solaire et festive, pensée pour une interaction tactile très immédiate. La couleur principale sélectionnée n’est pas utilisée.",
   },
 ];
 
@@ -509,47 +514,6 @@ function createDefaultState(merchant: Merchant): EditorState {
     },
     prizes: [],
   };
-}
-
-function SaveFeedbackDialog({
-  open,
-  title,
-  description,
-  tone = "info",
-  onClose,
-}: {
-  open: boolean;
-  title: string;
-  description: string;
-  tone?: "info" | "error";
-  onClose: () => void;
-}) {
-  if (!open) {
-    return null;
-  }
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#0f1220]/52 px-4 pb-4 pt-10 backdrop-blur-[6px] sm:items-center sm:p-6">
-      <div className="w-full max-w-[420px] rounded-[34px] bg-white p-6 text-[#111827] shadow-[0_34px_90px_rgba(18,24,39,0.24)]">
-        <div
-          className={`mx-auto flex h-16 w-16 items-center justify-center rounded-full text-3xl ${
-            tone === "error" ? "bg-[#fff1f2] text-[#be123c]" : "bg-[#eef4ff] text-[#2f6df6]"
-          }`}
-        >
-          {tone === "error" ? "!" : "✓"}
-        </div>
-        <h2 className="mt-5 text-center text-2xl font-semibold text-[#0f1728]">{title}</h2>
-        <p className="mt-3 text-center text-sm leading-7 text-[#5c6577]">{description}</p>
-        <button
-          type="button"
-          onClick={onClose}
-          className="mt-6 w-full rounded-[20px] border border-[#111827] bg-[#111827] px-4 py-3 text-sm font-semibold text-white"
-        >
-          Continuer
-        </button>
-      </div>
-    </div>
-  );
 }
 
 function CampaignPreviewQr({ campaignId }: { campaignId: string }) {
@@ -1307,11 +1271,13 @@ const CampaignActionCard = memo(function CampaignActionCard({
 });
 const CampaignPrizeRow = memo(function CampaignPrizeRow({
   prize,
+  isExistingCampaign,
   onUpdate,
   onRemove,
   onOpenConditions,
 }: {
   prize: EditorState["prizes"][number];
+  isExistingCampaign: boolean;
   onUpdate: (
     prizeId: string | undefined,
     patch: Partial<EditorState["prizes"][number]>,
@@ -1319,8 +1285,12 @@ const CampaignPrizeRow = memo(function CampaignPrizeRow({
   onRemove: (prizeId: string | undefined) => void;
   onOpenConditions: (prizeId: string | undefined) => void;
 }) {
+  const gridColumns = isExistingCampaign
+    ? "xl:grid-cols-[minmax(180px,1.35fr)_minmax(100px,.7fr)_minmax(110px,.75fr)_minmax(130px,.9fr)_minmax(120px,.85fr)_minmax(120px,1.15fr)_56px]"
+    : "xl:grid-cols-[minmax(180px,1.5fr)_minmax(100px,.7fr)_minmax(130px,.9fr)_minmax(120px,.85fr)_minmax(120px,1.15fr)_56px]";
+
   return (
-    <div className="grid gap-3 rounded-[24px] border border-[#dbe4f0] bg-white p-4 xl:grid-cols-[minmax(180px,1.5fr)_minmax(100px,.7fr)_minmax(130px,.9fr)_minmax(120px,.85fr)_minmax(120px,1.15fr)_56px] xl:items-center">
+    <div className={`grid gap-3 rounded-[24px] border border-[#dbe4f0] bg-white p-4 ${gridColumns} xl:items-center`}>
       <label className="text-sm">
         <span className="mb-2 block text-[#616b7c] xl:hidden">Dotation</span>
         <input
@@ -1331,20 +1301,44 @@ const CampaignPrizeRow = memo(function CampaignPrizeRow({
       </label>
 
       <label className="text-sm">
-        <span className="mb-2 block text-[#616b7c] xl:hidden">Stock</span>
+        <span className="mb-2 block text-[#616b7c] xl:hidden">Stock initial</span>
         <input
           type="number"
           min={0}
           value={prize.totalQuantity ?? ""}
           placeholder="Illimité"
+          readOnly={isExistingCampaign}
           onChange={(event) =>
             onUpdate(prize.id, {
               totalQuantity: event.target.value === "" ? null : Number(event.target.value),
             })
           }
-          className="w-full rounded-[18px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
+          className={`w-full rounded-[18px] border border-[#d7e0ed] px-4 py-3 outline-none ${
+            isExistingCampaign ? "cursor-default bg-linen-canvas text-ash" : "bg-white"
+          }`}
         />
+        {isExistingCampaign ? (
+          <span className="mt-2 block text-xs text-[#8993a6]">Référence de départ</span>
+        ) : null}
       </label>
+
+      {isExistingCampaign ? (
+        <label className="text-sm">
+          <span className="mb-2 block text-[#616b7c] xl:hidden">Stock disponible</span>
+          <input
+            type="number"
+            min={0}
+            value={prize.remainingQuantity ?? ""}
+            placeholder="Illimité"
+            onChange={(event) =>
+              onUpdate(prize.id, {
+                remainingQuantity: event.target.value === "" ? null : Number(event.target.value),
+              })
+            }
+            className="w-full rounded-[18px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
+          />
+        </label>
+      ) : null}
 
       <label className="text-sm">
         <span className="mb-2 block text-[#616b7c] xl:hidden">Probabilité de gain (%)</span>
@@ -1470,6 +1464,7 @@ function toEditorState(merchant: Merchant, campaign: CampaignPerformance | null)
       id: prize.id,
       label: prize.label,
       totalQuantity: prize.totalQuantity,
+      remainingQuantity: prize.remainingQuantity,
       probability: prize.probability,
       estimatedUnitCost: prize.estimatedUnitCost,
           usageConditions: prize.usageConditions ?? "",
@@ -1607,6 +1602,15 @@ function syncActionLabel(kind: ActionKind, currentLabel: string) {
 function buildClassicSetupPayload(form: EditorState) {
   return {
     ...form,
+    prizes: form.prizes.map((prize) => ({
+      id: prize.id,
+      label: prize.label,
+      totalQuantity: prize.totalQuantity,
+      remainingQuantity: prize.remainingQuantity,
+      probability: prize.probability,
+      estimatedUnitCost: prize.estimatedUnitCost,
+      usageConditions: prize.usageConditions,
+    })),
     creationMode: "editor" as const,
     actions: form.actions
       .filter((action) => action.kind === "crm" || action.url.trim())
@@ -1659,16 +1663,11 @@ function uploadAsDataUrl(
 export function CampaignEditor({
   merchant,
   initialCampaign = null,
-  campaignLibrary = [],
   deferInlineAssets = false,
 }: CampaignEditorProps) {
   const router = useRouter();
   const [form, setForm] = useState<EditorState>(toEditorState(merchant, initialCampaign));
   const [backgroundLibrary, setBackgroundLibrary] = useState<BackgroundLibraryAsset[]>([]);
-  const [campaignLibraryItems, setCampaignLibraryItems] = useState<CampaignLibraryItem[]>(
-    campaignLibrary,
-  );
-  const [isCampaignLibraryLoading, setIsCampaignLibraryLoading] = useState(false);
   const [isLibraryLoading, setIsLibraryLoading] = useState(false);
   const [libraryMessage, setLibraryMessage] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -1684,8 +1683,6 @@ export function CampaignEditor({
     initialCampaign?.campaign.id ?? null,
   );
   const [backgroundLibraryDialogOpen, setBackgroundLibraryDialogOpen] = useState(false);
-  const [importSource, setImportSource] = useState("");
-  const [isImportingCampaign, setIsImportingCampaign] = useState(false);
   const [isExpertMode, setIsExpertMode] = useState(false);
   const [editingPrizeConditionsId, setEditingPrizeConditionsId] = useState<string | null>(null);
   const [prizeSuggestionsOpen, setPrizeSuggestionsOpen] = useState(false);
@@ -1760,9 +1757,6 @@ export function CampaignEditor({
     Math.max(56, Math.min(720, logoSizePercent * 3)),
   );
   const logoTextSizePx = campaignLogoTextSizePx(logoSizePercent, form.gameType);
-  const campaignOptions = campaignLibraryItems.filter(
-    (item) => item.id !== initialCampaign?.campaign.id,
-  );
   const editingPrize = form.prizes.find((prize) => prize.id === editingPrizeConditionsId) ?? null;
 
   const logoAlignmentClass =
@@ -2017,50 +2011,6 @@ export function CampaignEditor({
     isExpertMode,
   ]);
 
-  useEffect(() => {
-    let cancelled = false;
-
-    if (!isExpertMode || campaignLibraryItems.length > 0 || isCampaignLibraryLoading) {
-      return;
-    }
-
-    async function loadCampaignLibrary() {
-      try {
-        setIsCampaignLibraryLoading(true);
-        const response = await fetch("/api/campaigns", { cache: "no-store" });
-        const payload = (await response.json().catch(() => null)) as
-          | { error: string; campaigns: CampaignLibraryItem[] }
-          | null;
-
-        if (!response.ok) {
-          throw new Error(payload?.error || "Chargement des campagnes impossible.");
-        }
-
-        if (!cancelled) {
-          setCampaignLibraryItems(payload?.campaigns ?? []);
-        }
-      } catch (error) {
-        if (!cancelled) {
-          setMessage(
-            error instanceof Error
-              ? error.message
-              : "Chargement des campagnes impossible.",
-          );
-        }
-      } finally {
-        if (!cancelled) {
-          setIsCampaignLibraryLoading(false);
-        }
-      }
-    }
-
-    loadCampaignLibrary();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [campaignLibraryItems.length, isCampaignLibraryLoading, isExpertMode]);
-
   function setField<K extends keyof EditorState>(key: K, value: EditorState[K]) {
     setForm((current) => ({ ...current, [key]: value }));
   }
@@ -2268,51 +2218,6 @@ function setGameType(gameType: GameType) {
     });
   }, []);
 
-  async function importFromCampaign(campaignId: string) {
-    if (!campaignId) {
-      return;
-    }
-
-    try {
-      setIsImportingCampaign(true);
-      setMessage(null);
-
-      const response = await fetch(`/api/campaigns/${campaignId}`, { cache: "no-store" });
-      const payload = (await response.json().catch(() => null)) as
-        | { error: string; campaign: CampaignPerformance | null }
-        | null;
-
-      if (!response.ok || !payload?.campaign) {
-        throw new Error(payload?.error || "Impossible d'importer cette campagne.");
-      }
-
-      const imported = toEditorState(merchant, payload.campaign);
-
-      setForm((current) => ({
-        ...current,
-        gameType: imported.gameType,
-        subtitle: imported.subtitle,
-        ctaLabel: imported.ctaLabel,
-        logoMode: imported.logoMode,
-        logoText: imported.logoText,
-        logoUrl: imported.logoUrl,
-        accent: imported.accent,
-        presentation: imported.presentation,
-        actions: imported.actions.map((action) => ({
-          ...action,
-          id: createActionId(),
-          label: syncActionLabel(action.kind, action.label),
-        })),
-        rewardRules: imported.rewardRules,
-        prizes: imported.prizes.map((prize) => ({ ...prize, id: createPrizeId() })),
-      }));
-    } catch (error) {
-          setMessage(error instanceof Error ? error.message : "Impossible d'importer cette campagne.");
-    } finally {
-      setIsImportingCampaign(false);
-    }
-  }
-
   async function saveCampaign() {
     setIsSaving(true);
     setMessage(null);
@@ -2353,8 +2258,8 @@ function setGameType(gameType: GameType) {
 
       const payload = (await response.json().catch(() => null)) as
         | {
-            error: string;
-            campaign: CampaignPerformance | null;
+            error?: string;
+            campaign?: CampaignPerformance | { id?: string } | null;
           }
         | null;
       if (!response.ok) {
@@ -2363,8 +2268,14 @@ function setGameType(gameType: GameType) {
 
       setMessageTone("info");
       setMessage("Campagne enregistrée.");
-      router.push("/campaigns");
-      router.refresh();
+      const savedId =
+        payload?.campaign && "campaign" in payload.campaign
+          ? payload.campaign.campaign.id
+          : payload?.campaign && "id" in payload.campaign
+            ? payload.campaign.id
+            : undefined;
+      window.dispatchEvent(new Event("campaigns-updated"));
+      router.replace(`/campaigns?updated=${encodeURIComponent(savedId ?? "saved")}`);
     } catch (error) {
       const readableError = readableCampaignSaveError(
         error instanceof Error ? error.message : "La campagne n'a pas pu être enregistrée.",
@@ -2442,8 +2353,8 @@ function setGameType(gameType: GameType) {
 
       const payload = (await response.json().catch(() => null)) as
         | {
-            error: string;
-            campaign: CampaignPerformance | null;
+            error?: string;
+            campaign?: CampaignPerformance | { id?: string } | null;
           }
         | null;
 
@@ -2451,7 +2362,12 @@ function setGameType(gameType: GameType) {
         throw new Error(payload?.error || "La campagne n'a pas pu être enregistrée.");
       }
 
-      const nextCampaignId = payload?.campaign?.campaign.id ?? form.id ?? null;
+      const nextCampaignId =
+        payload?.campaign && "campaign" in payload.campaign
+          ? payload.campaign.campaign.id
+          : payload?.campaign && "id" in payload.campaign
+            ? payload.campaign.id
+            : form.id ?? null;
 
       if (nextCampaignId) {
         setSavedCampaignId(nextCampaignId);
@@ -2465,6 +2381,7 @@ function setGameType(gameType: GameType) {
       setSaveDialogTitle("Campagne enregistrée");
       setSaveDialogDescription("Vos modifications ont bien été prises en compte.");
       setSaveDialogOpen(true);
+      window.dispatchEvent(new Event("campaigns-updated"));
       router.refresh();
     } catch (error) {
       const readableError = readableCampaignSaveError(
@@ -2609,6 +2526,7 @@ function setGameType(gameType: GameType) {
                   checked={form.isActive}
                   onCheckedChange={(checked) => setField("isActive", checked)}
                   aria-label="Activer la campagne"
+                  style={form.isActive ? { backgroundColor: form.accent.signal } : undefined}
                 />
               </label>
             </div>
@@ -2692,6 +2610,7 @@ function setGameType(gameType: GameType) {
                   checked={isExpertMode}
                   onCheckedChange={setIsExpertMode}
                   aria-label="Activer le mode expert"
+                  style={isExpertMode ? { backgroundColor: form.accent.signal } : undefined}
                 />
               </label>
             </div>
@@ -2823,49 +2742,6 @@ function setGameType(gameType: GameType) {
               </label>
             ) : null}
           </section>
-
-          {isExpertMode ? (
-          <section className="okado-card p-6">
-            <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-              <div>
-                <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">
-                  Import rapide
-                </p>
-                <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
-                  Repartir d&apos;une campagne existante
-                </h2>
-              </div>
-            </div>
-
-            <div className="mt-6 grid gap-4 md:grid-cols-[1fr_auto]">
-              <select
-                value={importSource}
-                onChange={(event) => setImportSource(event.target.value)}
-                disabled={isCampaignLibraryLoading}
-                className="w-full rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
-              >
-                <option value="">Selectionner une campagne</option>
-                {campaignOptions.map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.title} - {gameTypeLabel(item.gameType)}
-                  </option>
-                ))}
-              </select>
-              <button
-                type="button"
-                onClick={() => importFromCampaign(importSource)}
-                disabled={!importSource || isImportingCampaign || isCampaignLibraryLoading}
-                className="rounded-[20px] border border-[#111827] bg-[#111827] px-5 py-3 text-sm font-semibold text-white disabled:opacity-50"
-              >
-                {isCampaignLibraryLoading
-                   ? "Chargement..."
-                  : isImportingCampaign
-                     ? "Import..."
-                    : "Importer"}
-              </button>
-            </div>
-          </section>
-          ) : null}
 
           <section className="okado-card p-6">
             <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Logo</p>
@@ -3729,39 +3605,6 @@ function setGameType(gameType: GameType) {
           </section>
           ) : null}
 
-          {isExpertMode ? (
-          <section className="okado-card p-6">
-            <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Espacement</p>
-            <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
-              Ecartement des blocs
-            </h2>
-
-            <div className="mt-6">
-              <label className="text-sm">
-                <span className="mb-2 block text-[#616b7c]">Espacement entre les blocs (px)</span>
-                <input
-                  type="number"
-                  min={0}
-                  max={72}
-                  value={form.presentation.layout.blockSpacingPx}
-                  onChange={(event) =>
-                    setForm((current) => ({
-                      ...current,
-                      presentation: {
-                        ...current.presentation,
-                        layout: {
-                          ...current.presentation.layout,
-                          blockSpacingPx: Number(event.target.value || 0),
-                        },
-                      },
-                    }))
-                  }
-                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
-                />
-              </label>
-            </div>
-          </section>
-          ) : null}
           {false ? (
 
           <section className="okado-card p-6">
@@ -3956,7 +3799,9 @@ function setGameType(gameType: GameType) {
                 <label className="text-sm md:col-span-2">
                   <span className="mb-2 block text-[#616b7c]">Couleur du texte du ticket</span>
                   <span className="mb-3 block text-xs leading-5 text-[#8993a6]">
-                    Utilisée pour le logo, le titre et les consignes. Elle est ajustée automatiquement pour rester lisible selon le template.
+                    {currentTemplateId === "scratch-confetti" || currentTemplateId === "scratch-lilac"
+                      ? "Ce template utilise sa propre palette ; la couleur sélectionnée ici n’est pas utilisée."
+                      : "Utilisée pour le logo, le titre et les consignes. Elle est ajustée automatiquement pour rester lisible selon le template."}
                   </span>
                   <input
                     type="color"
@@ -4181,7 +4026,7 @@ function setGameType(gameType: GameType) {
                       },
                     }))
                   }
-                  className="mt-1 h-4 w-4 shrink-0 rounded border-[#cbd5e1] text-[#2f6df6] focus:ring-[#2f6df6]/20"
+                  className="mt-1 h-4 w-4 shrink-0 cursor-pointer rounded border-[#cbd5e1] text-[#2f6df6] focus:ring-[#2f6df6]/20"
                 />
                 <span>
                   <span className="block font-semibold text-[#182033]">
@@ -4256,9 +4101,14 @@ function setGameType(gameType: GameType) {
               </div>
             </div>
 
-            <div className="mt-6 hidden grid-cols-[minmax(180px,1.5fr)_minmax(100px,.7fr)_minmax(130px,.9fr)_minmax(120px,.85fr)_minmax(120px,1.15fr)_56px] gap-3 rounded-[22px] bg-[#f7f9fc] px-4 py-3 text-[11px] uppercase tracking-[0.24em] text-[#7b8496] xl:grid">
+            <div className={`mt-6 hidden gap-3 rounded-[22px] bg-[#f7f9fc] px-4 py-3 text-[11px] uppercase tracking-[0.24em] text-[#7b8496] xl:grid ${
+              initialCampaign
+                ? "grid-cols-[minmax(180px,1.35fr)_minmax(100px,.7fr)_minmax(110px,.75fr)_minmax(130px,.9fr)_minmax(120px,.85fr)_minmax(120px,1.15fr)_56px]"
+                : "grid-cols-[minmax(180px,1.5fr)_minmax(100px,.7fr)_minmax(130px,.9fr)_minmax(120px,.85fr)_minmax(120px,1.15fr)_56px]"
+            }`}>
               <span>Dotation</span>
-              <span>Stock</span>
+              <span>Stock initial</span>
+              {initialCampaign ? <span>Stock disponible</span> : null}
               <span>Probabilité de gain (%)</span>
               <span>Coût unitaire</span>
               <span />
@@ -4275,6 +4125,7 @@ function setGameType(gameType: GameType) {
                 <CampaignPrizeRow
                   key={prize.id}
                   prize={prize}
+                  isExistingCampaign={Boolean(initialCampaign)}
                   onUpdate={updatePrize}
                   onRemove={removePrize}
                           onOpenConditions={(prizeId) => setEditingPrizeConditionsId(prizeId ?? null)}
@@ -4496,11 +4347,12 @@ function setGameType(gameType: GameType) {
         selectedImageUrl={form.presentation.background.imageUrl ?? ""}
         onSelect={selectBackgroundImage}
       />
-      <SaveFeedbackDialog
+      <ValidationDialog
         open={saveDialogOpen}
         title={saveDialogTitle}
         description={saveDialogDescription}
         tone={saveDialogTone}
+        ctaLabel="Continuer"
         onClose={() => {
           setSaveDialogOpen(false);
 

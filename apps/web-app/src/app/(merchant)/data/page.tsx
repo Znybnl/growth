@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { DataCampaignSelector } from "@/components/merchant/data-campaign-selector";
 import { DataSearchForm } from "@/components/merchant/data-search-form";
 import { LeadPrizeActions } from "@/components/merchant/lead-prize-actions";
 import { PrizeStockActions } from "@/components/merchant/prize-stock-actions";
@@ -320,7 +321,9 @@ export default async function DataPage({ searchParams }: DataPageProps) {
   const leadLimit = 50;
   const [campaignOptions, matchedCampaignId] = await Promise.all([
     getMerchantCampaignLibrary(session.merchant.id, session.merchant),
-    query ? findMerchantLeadCampaign(session.merchant.id, query) : Promise.resolve(null),
+    query && !initialSelectedCampaignId
+      ? findMerchantLeadCampaign(session.merchant.id, query)
+      : Promise.resolve(null),
   ]);
   const selectedCampaignId =
     matchedCampaignId ??
@@ -394,32 +397,17 @@ export default async function DataPage({ searchParams }: DataPageProps) {
           </div>
 
           <div className="mt-6">
-            <div>
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-end">
+              <DataCampaignSelector
+                campaigns={campaignOptions}
+                selectedCampaignId={dataView.performance.campaign.id}
+                query={query}
+                emailStatus={emailStatus}
+              />
               <DataSearchForm
                 campaignId={dataView.performance.campaign.id}
                 initialValue={query}
               />
-            </div>
-            <div className="mt-3 flex flex-wrap gap-3">
-              {campaignOptions.map((item) => (
-                <Link
-                  key={item.id}
-                  href={`/data?campaign=${item.id}${query ? `&q=${encodeURIComponent(query)}` : ""}${emailStatus ? `&emailStatus=${emailStatus}` : ""}`}
-                  prefetch={false}
-                  className={`cursor-pointer rounded-[12px] px-4 py-3 text-sm font-semibold ${
-                    item.id === dataView.performance.campaign.id
-                      ? "bg-primary-action-accent !text-white"
-                      : "okado-secondary-action"
-                  }`}
-                  style={
-                    item.id === dataView.performance.campaign.id
-                      ? { color: "#ffffff" }
-                      : undefined
-                  }
-                >
-                  {item.title}
-                </Link>
-              ))}
             </div>
           </div>
           {emailStatus === "attention" ? (

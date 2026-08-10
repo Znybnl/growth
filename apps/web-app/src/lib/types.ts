@@ -804,6 +804,8 @@ export interface CampaignSetupInput {
     id?: string;
     label: string;
     totalQuantity: null | number;
+    /** Current stock available for distribution. Omitted during campaign creation. */
+    remainingQuantity?: null | number;
     probability: number;
     estimatedUnitCost: number;
     usageConditions?: string;

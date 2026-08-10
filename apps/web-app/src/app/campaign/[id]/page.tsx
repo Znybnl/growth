@@ -2,8 +2,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { CampaignExperience } from "@/components/public/campaign-experience";
+import { getAuthenticatedSession } from "@/lib/auth";
 import { verifyPreviewAccessToken } from "@/lib/preview-token";
-import { getPublicCampaign } from "@/lib/store";
+import { getCampaignPreview, getPublicCampaign } from "@/lib/store";
 
 type CampaignPageProps = {
   params: Promise<{
@@ -27,14 +28,6 @@ function SuspendedCampaignNotice({ message }: { message: string }) {
         <p className="mt-4 text-sm leading-7 text-[#5c6577]">
           Merci de revenir un peu plus tard ou de vous rapprocher du commerçant.
         </p>
-        <div className="mt-8 flex justify-center">
-          <Link
-            href="/connexion"
-            className="inline-flex items-center justify-center rounded-[18px] bg-[#0f1728] px-5 py-3 text-sm font-semibold !text-white"
-          >
-            Espace marchand
-          </Link>
-        </div>
       </div>
     </main>
   );
@@ -71,11 +64,36 @@ export default async function CampaignPage({ params, searchParams }: CampaignPag
   const { id } = await params;
   const { preview, previewToken } = await searchParams;
   const isPreview = preview === "1";
+  const hasValidPreviewToken = Boolean(
+    isPreview && previewToken && verifyPreviewAccessToken(previewToken, id),
+  );
+
+  if (isPreview && previewToken && !hasValidPreviewToken) {
+    return <InvalidPreviewNotice />;
+  }
+
+  const authenticatedSession =
+    isPreview && !previewToken ? await getAuthenticatedSession() : null;
   let campaign = null;
 
   try {
     campaign = await getPublicCampaign(id);
   } catch (error) {
+    if (isPreview && (hasValidPreviewToken || authenticatedSession)) {
+      campaign = await getCampaignPreview(id, authenticatedSession?.merchant);
+      if (campaign) {
+        return (
+          <CampaignExperience
+            campaignId={id}
+            initialCampaign={campaign}
+            isPreview
+            previewToken={previewToken}
+          />
+        );
+      }
+      return <InvalidPreviewNotice />;
+    }
+
     const message = error instanceof Error ? error.message : "Cette campagne est indisponible.";
 
     if (
@@ -91,10 +109,6 @@ export default async function CampaignPage({ params, searchParams }: CampaignPag
 
   if (!campaign) {
     notFound();
-  }
-
-  if (isPreview && previewToken && !verifyPreviewAccessToken(previewToken, id)) {
-    return <InvalidPreviewNotice />;
   }
 
   return (

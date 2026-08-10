@@ -11,6 +11,7 @@ type ScratchGameProps = {
   resultLabel: string;
   enabled: boolean;
   onReveal: () => void;
+  onScratchStart?: () => void;
 };
 
 export function ScratchGame({
@@ -18,11 +19,14 @@ export function ScratchGame({
   resultLabel,
   enabled,
   onReveal,
+  onScratchStart,
 }: ScratchGameProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const isDrawingRef = useRef(false);
   const checksRef = useRef(0);
+  const scratchStartedRef = useRef(false);
   const [revealed, setRevealed] = useState(false);
+  const [hasTouched, setHasTouched] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -43,7 +47,9 @@ export function ScratchGame({
     context.fillStyle = foilGradient;
     context.fillRect(0, 0, canvas.width, canvas.height);
     checksRef.current = 0;
+    scratchStartedRef.current = false;
     setRevealed(false);
+    setHasTouched(false);
   }, [accent.signal, resultLabel]);
 
   function reveal() {
@@ -115,11 +121,19 @@ export function ScratchGame({
             background: "linear-gradient(135deg, #7a4a05 0%, #b8750b 34%, #6d4004 68%, #a96808 100%)",
           }}
         >
-          <div className="absolute inset-0 flex items-center justify-center px-6 text-center">
-            <p className="text-3xl font-semibold leading-tight text-[#172033] drop-shadow-[0_1px_0_rgba(255,255,255,0.72)]">
-              {resultLabel}
-            </p>
-          </div>
+          {hasTouched ? (
+            <div className="absolute inset-0 flex items-center justify-center px-6 text-center">
+              <p
+                className="max-w-[90%] font-semibold leading-[1.05] text-[#fff8e7]"
+                style={{
+                  fontSize: "clamp(2rem, 8vw, 3rem)",
+                  textShadow: "0 2px 10px rgba(31, 17, 0, 0.72)",
+                }}
+              >
+                {resultLabel}
+              </p>
+            </div>
+          ) : null}
 
           {!revealed ? (
             <canvas
@@ -133,6 +147,11 @@ export function ScratchGame({
                 }
 
                 isDrawingRef.current = true;
+                setHasTouched(true);
+                if (!scratchStartedRef.current) {
+                  scratchStartedRef.current = true;
+                  onScratchStart?.();
+                }
                 const point = getCoordinates(event);
                 scratch(point.x, point.y);
               }}

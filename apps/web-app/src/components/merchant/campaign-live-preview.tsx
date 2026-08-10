@@ -12,6 +12,7 @@ import {
   DEFAULT_SCRATCH_SUBTITLE,
   limitCampaignSubtitleLines,
   normalizeScratchAccent,
+  scratchTemplatePrimaryColor,
 } from "@/lib/campaign-defaults";
 import { buildWheelVisualSegments, WheelVisualSegment } from "@/lib/wheel-segments";
 import {
@@ -158,7 +159,8 @@ function previewBackgroundImage(form: CampaignSetupInput, templateId: GamePageTe
     return `radial-gradient(circle at 50% 108%, ${withHexAlpha(form.accent.signal, "58")} 0 27%, transparent 48%), radial-gradient(circle at 15% 10%, ${withHexAlpha(form.presentation.wheel.winColor, "4d")} 0 12%, transparent 22%), linear-gradient(155deg, #071126 0%, #111b3b 56%, #071126 100%)`;
   }
   if (templateId === "scratch-confetti") {
-    return `radial-gradient(circle at 12% 9%, ${withHexAlpha(form.accent.signal, "52")} 0 10%, transparent 11%), radial-gradient(circle at 94% 12%, ${withHexAlpha(form.presentation.wheel.winColor, "30")} 0 12%, transparent 13%), linear-gradient(180deg, #f59e0b 0%, #f97316 58%, #ea580c 100%)`;
+    const templatePrimary = scratchTemplatePrimaryColor(form.accent.signal, templateId);
+    return `radial-gradient(circle at 12% 9%, ${withHexAlpha(templatePrimary, "52")} 0 10%, transparent 11%), radial-gradient(circle at 94% 12%, ${withHexAlpha(form.presentation.wheel.winColor, "30")} 0 12%, transparent 13%), linear-gradient(180deg, #f59e0b 0%, #f97316 58%, #ea580c 100%)`;
   }
   if (templateId === "sunburst-festival") {
     return `radial-gradient(circle at 12% 10%, ${withHexAlpha(form.presentation.wheel.loseColor, "33")} 0 12%, transparent 13%), radial-gradient(circle at 94% 18%, ${withHexAlpha(form.presentation.wheel.winColor, "38")} 0 14%, transparent 15%), linear-gradient(180deg, #fffdf5 0%, #fff8e8 56%, #fff2ce 100%)`;
@@ -167,7 +169,8 @@ function previewBackgroundImage(form: CampaignSetupInput, templateId: GamePageTe
     return `radial-gradient(circle at 50% 0%, ${withHexAlpha(form.accent.signal, "24")} 0 18%, transparent 42%), linear-gradient(180deg, #fffaf5 0%, #ffffff 72%, #fff3e8 100%)`;
   }
   if (templateId === "scratch-lilac") {
-    return `radial-gradient(circle at 50% 0%, ${withHexAlpha(form.accent.signal, "2c")} 0 20%, transparent 44%), linear-gradient(180deg, #fffaff 0%, #f7edff 100%)`;
+    const templatePrimary = scratchTemplatePrimaryColor(form.accent.signal, templateId);
+    return `radial-gradient(circle at 50% 0%, ${withHexAlpha(templatePrimary, "2c")} 0 20%, transparent 44%), linear-gradient(180deg, #fffaff 0%, #f7edff 100%)`;
   }
   if (templateId === "scratch-sunburst") {
     return `repeating-conic-gradient(from -18deg at 50% -2%, ${withHexAlpha(form.accent.signal, "52")} 0deg 12deg, transparent 12deg 24deg), linear-gradient(180deg, #fff4bf 0%, #ffdc58 68%, #fff0c5 100%)`;

@@ -120,7 +120,10 @@ function normalizeUrl(value: unknown) {
   }
 
   try {
-    const url = new URL(input);
+    const candidate = /^[a-z][a-z\d+.-]*:\/\//i.test(input)
+      ? input
+      : `https://${input}`;
+    const url = new URL(candidate);
 
     if (!["http:", "https:"].includes(url.protocol)) {
       throw new Error("URL invalide.");
@@ -309,6 +312,7 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
   const sanitizedPrizes = prizes.slice(0, 50).map((item, index) => {
     const prize = ensureObject(item);
     const label = normalizeString(prize.label, 120);
+    const hasRemainingQuantity = Object.prototype.hasOwnProperty.call(prize, "remainingQuantity");
 
     if (!label) {
       throw new Error(`Le libellé du lot ${index + 1} est requis.`);
@@ -318,6 +322,9 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
       id: normalizeString(prize.id, 120),
       label,
       totalQuantity: normalizeNullableInteger(prize.totalQuantity, 0, 1000000),
+      remainingQuantity: hasRemainingQuantity
+        ? normalizeNullableInteger(prize.remainingQuantity, 0, 1000000000)
+        : undefined,
       probability: normalizeNumber(prize.probability, {
         min: 0,
         max: 100,

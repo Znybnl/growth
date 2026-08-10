@@ -23,6 +23,7 @@ import {
 import { type ReactNode, useEffect, useMemo, useState } from "react";
 
 import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
+import { ValidationDialog } from "@/components/ui/validation-dialog";
 import {
   buildCampaignLivePreviewModel,
   CampaignLivePreview,
@@ -554,6 +555,9 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [savedCampaignId, setSavedCampaignId] = useState<string | null>(null);
+  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+  const [saveDialogTitle, setSaveDialogTitle] = useState("Campagne enregistrée");
+  const [saveDialogDescription, setSaveDialogDescription] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -749,15 +753,25 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
         }),
       });
       const payload = (await response.json().catch(() => null)) as {
-        campaign?: { campaign?: { id?: string } };
+        campaign?: { campaign?: { id?: string }; id?: string };
         error?: string;
       } | null;
       if (!response.ok)
         throw new Error(
           payload?.error || "La campagne n’a pas pu être enregistrée.",
         );
-      const campaignId = payload?.campaign?.campaign?.id;
-      if (campaignId) setSavedCampaignId(campaignId);
+      const campaignId = payload?.campaign?.campaign?.id ?? payload?.campaign?.id;
+      if (campaignId) {
+        window.dispatchEvent(new Event("campaigns-updated"));
+        setSavedCampaignId(campaignId);
+        setSaveDialogTitle(isActive ? "Campagne publiée" : "Brouillon enregistré");
+        setSaveDialogDescription(
+          isActive
+            ? "Votre campagne est publiée et prête à être utilisée par vos clients."
+            : "Votre campagne a bien été enregistrée en brouillon. Vous pouvez encore la modifier avant sa publication.",
+        );
+        setSaveDialogOpen(true);
+      }
     } catch (saveError) {
       setError(
         saveError instanceof Error
@@ -827,6 +841,13 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
             className="h-48 w-48"
           />
         </div>
+        <ValidationDialog
+          open={saveDialogOpen}
+          title={saveDialogTitle}
+          description={saveDialogDescription}
+          ctaLabel="Continuer"
+          onClose={() => setSaveDialogOpen(false)}
+        />
       </div>
     );
   }
@@ -903,13 +924,15 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
             <div className="mt-7 space-y-5">
               <label className="block">
                 <span className="text-sm font-semibold text-[#182033]">
-                  Nom de l’animation
+                  Nom de l’animation <span className="text-[#b42318]">*</span>
                 </span>
                 <span className="mt-1 block text-xs text-[#8993a6]">
                   Visible dans votre espace marchand et dans vos statistiques.
                 </span>
                 <input
                   autoFocus
+                  required
+                  aria-required="true"
                   value={draft.title}
                   onChange={(event) =>
                     patchDraft({ title: event.target.value })
@@ -1119,7 +1142,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                           },
                         })
                       }
-                      className="mt-0.5 h-4 w-4 accent-[#b28719]"
+                      className="mt-0.5 h-4 w-4 cursor-pointer accent-[#b28719]"
                     />
                     <span>
                       <span className="block font-semibold">
@@ -1131,7 +1154,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                       </span>
                     </span>
                   </label>
-                  <label className="flex items-start gap-3 rounded-[16px] border border-[#e2e8f0] bg-white p-4 text-sm text-[#182033]">
+                  <label className="flex cursor-pointer items-start gap-3 rounded-[16px] border border-[#e2e8f0] bg-white p-4 text-sm text-[#182033]">
                     <input
                       type="checkbox"
                       checked={draft.rewardRules.purchaseRequired}
@@ -1143,7 +1166,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                           },
                         })
                       }
-                      className="mt-0.5 h-4 w-4 accent-[#b28719]"
+                      className="mt-0.5 h-4 w-4 cursor-pointer accent-[#b28719]"
                     />
                     <span>
                       <span className="block font-semibold">
@@ -1155,7 +1178,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                       </span>
                     </span>
                   </label>
-                  <label className="flex items-start gap-3 rounded-[16px] border border-[#e2e8f0] bg-white p-4 text-sm text-[#182033]">
+                  <label className="flex cursor-pointer items-start gap-3 rounded-[16px] border border-[#e2e8f0] bg-white p-4 text-sm text-[#182033]">
                     <input
                       type="checkbox"
                       checked={draft.rewardRules.availableAfterHours > 0}
@@ -1167,7 +1190,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                           },
                         })
                       }
-                      className="mt-0.5 h-4 w-4 accent-[#b28719]"
+                      className="mt-0.5 h-4 w-4 cursor-pointer accent-[#b28719]"
                     />
                     <span>
                       <span className="block font-semibold">
@@ -1505,9 +1528,9 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                   draft.gameType === "scratch"
                     ? [
                         { id: "scratch-vault", label: "Coffre néon", text: "Coffre illustré avant grattage" },
-                        { id: "scratch-confetti", label: "Carte confettis", text: "Solaire et festif" },
+                        { id: "scratch-confetti", label: "Carte confettis", text: "Solaire et festif ; la couleur principale sélectionnée n’est pas utilisée" },
                         { id: "scratch-coral", label: "Corail joyeux", text: "Clair et chaleureux" },
-                        { id: "scratch-lilac", label: "Cadeau lilas", text: "Cadeau clair et contrasté" },
+                        { id: "scratch-lilac", label: "Cadeau lilas", text: "Cadeau clair et contrasté ; la couleur principale sélectionnée n’est pas utilisée" },
                         { id: "scratch-sunburst", label: "Rayons soleil", text: "Éclatant et visible" },
                       ] as const
                     : [
@@ -1634,7 +1657,10 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                     Couleur principale du ticket
                   </span>
                   <span className="mt-1 block text-xs text-[#8993a6]">
-                    Elle colore la zone à gratter et les éléments graphiques du template.
+                    {draft.presentation.layout.templateId === "scratch-confetti" ||
+                    draft.presentation.layout.templateId === "scratch-lilac"
+                      ? "Ce template utilise sa propre palette ; la couleur sélectionnée ici n’est pas utilisée."
+                      : "Elle colore la zone à gratter et les éléments graphiques du template."}
                   </span>
                   <input
                     type="color"

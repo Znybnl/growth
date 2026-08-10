@@ -25,6 +25,7 @@ import {
   DEFAULT_SCRATCH_SUBTITLE,
   limitCampaignSubtitleLines,
   normalizeScratchAccent,
+  scratchTemplatePrimaryColor,
 } from "@/lib/campaign-defaults";
 import { buildWheelVisualSegments } from "@/lib/wheel-segments";
 import {
@@ -495,7 +496,7 @@ export function CampaignExperience({
       ? normalizeScratchAccent(campaign.accent, pageTemplate)
       : campaign.accent;
   const primaryColor = campaign.gameType === "scratch"
-    ? scratchAccent.signal
+    ? scratchTemplatePrimaryColor(scratchAccent.signal, pageTemplate)
     : campaign.presentation.wheel.loseColor ?? campaign.accent.signal;
   const secondaryColor = campaign.presentation.wheel.winColor ?? "#073b72";
   const headingTextColor =
@@ -545,8 +546,11 @@ export function CampaignExperience({
 
   useEffect(() => {
     async function loadCampaign() {
+      const previewQuery = isPreview
+        ? `?preview=1${previewToken ? `&previewToken=${encodeURIComponent(previewToken)}` : ""}`
+        : "";
       const response = await fetch(
-        `/api/public/campaign/${campaignId}${isPreview ? "?preview=1" : ""}`,
+        `/api/public/campaign/${campaignId}${previewQuery}`,
       );
 
       if (!response.ok) {
@@ -558,7 +562,7 @@ export function CampaignExperience({
     }
 
     void loadCampaign();
-  }, [campaignId, isPreview]);
+  }, [campaignId, isPreview, previewToken]);
 
   useEffect(() => {
     if (!isPreview || initialPreviewToken) return;
@@ -614,7 +618,11 @@ export function CampaignExperience({
     return payload.token;
   }
 
-  async function trackEvent(eventType: string, leadId?: string) {
+  async function trackEvent(
+    eventType: string,
+    leadId?: string,
+    metadata?: Record<string, string | number | boolean | null>,
+  ) {
     if (isPreview) return;
     await fetch("/api/public/event", {
       method: "POST",
@@ -623,6 +631,7 @@ export function CampaignExperience({
         campaignId,
         leadId,
         eventType,
+        metadata,
       }),
     });
   }
@@ -789,6 +798,14 @@ export function CampaignExperience({
 
     void trackEvent("game_lost");
     setStage("lost");
+  }
+
+  function handleScratchStart() {
+    void trackEvent("game_played", undefined, {
+      mechanic: "scratch",
+      trigger: "first_touch",
+      sessionId: drawSession?.id ?? null,
+    });
   }
 
   const backgroundStyle =
@@ -981,6 +998,7 @@ export function CampaignExperience({
                 enabled={stage === "ready"}
                 onReveal={() => void handleGameReveal()}
                 onStart={() => void openActionAndTrack()}
+                onScratchStart={handleScratchStart}
                 logoMode={campaign.logoMode}
                 logoText={campaign.logoText ?? campaign.merchantLogoText}
                 logoUrl={campaign.logoUrl}
@@ -1003,6 +1021,7 @@ export function CampaignExperience({
                 resultLabel={scratchLabel}
                 enabled={stage === "ready"}
                 onReveal={() => void handleGameReveal()}
+                onScratchStart={handleScratchStart}
               />
 
             )}

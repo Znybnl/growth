@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 
+import { getAuthenticatedSession } from "@/lib/auth";
 import { assertPersistentPublicRateLimit } from "@/lib/public-security-store";
 import { issuePreviewAccessToken } from "@/lib/preview-token";
-import { getPublicCampaign } from "@/lib/store";
+import { getCampaignPreview, getPublicCampaign } from "@/lib/store";
 import { isValidPublicIdentifier } from "@/lib/public-api";
 
 export async function POST(request: Request) {
@@ -20,7 +21,15 @@ export async function POST(request: Request) {
       windowMs: 10 * 60 * 1000,
     });
 
-    const campaign = await getPublicCampaign(campaignId);
+    let campaign = null;
+    try {
+      campaign = await getPublicCampaign(campaignId);
+    } catch {
+      const session = await getAuthenticatedSession();
+      if (session) {
+        campaign = await getCampaignPreview(campaignId, session.merchant);
+      }
+    }
     if (!campaign) {
       return NextResponse.json({ error: "Animation introuvable" }, { status: 404 });
     }

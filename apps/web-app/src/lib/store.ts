@@ -1585,7 +1585,11 @@ function createDrawSessionFromMemory(input: CreateDrawSessionRequest): CreateDra
   };
 
   store.drawSessions.push(session);
-  recordEventInMemory(campaign.id, "game_played");
+  if (campaign.gameType === "wheel") {
+    recordEventInMemory(campaign.id, "game_played", undefined, {
+      trigger: "session_started",
+    });
+  }
 
   return {
     session: clone(session),
@@ -1654,8 +1658,8 @@ export async function createPreviewDrawSession(
   input: CreateDrawSessionRequest,
 ): Promise<CreateDrawSessionResult> {
   const performance = await getCampaignPerformance(input.campaignId);
-  const campaign = await getPublicCampaign(input.campaignId);
-  if (!performance || !campaign || !performance.campaign.isActive) {
+  const campaign = await getCampaignPreview(input.campaignId);
+  if (!performance || !campaign) {
     throw new Error("Campagne indisponible");
   }
 
@@ -1686,8 +1690,8 @@ export async function finalizePreviewParticipation(input: {
   marketingConsent?: boolean;
 }): Promise<DrawResult> {
   const performance = await getCampaignPerformance(input.campaignId);
-  const campaign = await getPublicCampaign(input.campaignId);
-  if (!performance || !campaign || !performance.campaign.isActive) {
+  const campaign = await getCampaignPreview(input.campaignId);
+  if (!performance || !campaign) {
     throw new Error("Campagne indisponible");
   }
 
@@ -2076,14 +2080,24 @@ function updateCampaignSetupInMemory(input: CampaignSetupInput) {
     existing.actions = input.actions;
     existing.rewardRules = input.rewardRules;
 
+    const existingPrizes = store.prizes.filter((prize) => prize.campaignId === existing.id);
+    const remainingByPrizeId = new Map(
+      existingPrizes.map((prize) => [prize.id, prize.remainingQuantity]),
+    );
     store.prizes = store.prizes.filter((prize) => prize.campaignId !== existing.id);
     input.prizes.forEach((prize) => {
+      const hasExplicitRemaining = prize.remainingQuantity !== undefined;
       store.prizes.push({
         id: prize.id ?? generateId("prize"),
         campaignId: existing.id,
         label: prize.label,
         totalQuantity: prize.totalQuantity ?? null,
-        remainingQuantity: prize.totalQuantity ?? null,
+        remainingQuantity:
+          prize.totalQuantity === null
+            ? null
+            : hasExplicitRemaining
+              ? prize.remainingQuantity ?? null
+              : remainingByPrizeId.get(prize.id ?? "") ?? prize.totalQuantity ?? null,
         probability: prize.probability,
         estimatedUnitCost: prize.estimatedUnitCost,
         usageConditions: prize.usageConditions,
@@ -2218,6 +2232,29 @@ export const getPublicCampaign = cache(async function getPublicCampaign(
   }
 
   return getPublicCampaignFromMemory(id);
+});
+
+/**
+ * Loads a campaign for an explicitly requested preview, including drafts.
+ * Drafts never go through the regular public campaign reader.
+ */
+export const getCampaignPreview = cache(async function getCampaignPreview(
+  id: string,
+  fallbackMerchant?: Merchant,
+) {
+  if (getDataBackend("la lecture d'une prévisualisation campagne") === "supabase") {
+    return getSupabasePublicCampaign(id, undefined, true, fallbackMerchant);
+  }
+
+  const performance = getCampaignPerformanceFromMemory(id);
+  if (!performance) return null;
+  if (fallbackMerchant && performance.merchant.id !== fallbackMerchant.id) return null;
+
+  const marketingActions = performance.campaign.actions.filter((action) => action.kind !== "crm");
+  return toPublicCampaign(
+    performance.campaign,
+    marketingActions.length ? [marketingActions[0]] : [],
+  );
 });
 
 export const getCampaignPerformance = cache(async function getCampaignPerformance(campaignId: string, fallbackMerchant?: Merchant) {

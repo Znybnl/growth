@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { getPublicCampaign, recordEvent } from "@/lib/store";
+import { getCampaignPreview, getPublicCampaign, recordEvent } from "@/lib/store";
+import { verifyPreviewAccessToken } from "@/lib/preview-token";
 
 type RouteProps = {
   params: Promise<{
@@ -10,11 +11,31 @@ type RouteProps = {
 
 export async function GET(request: NextRequest, { params }: RouteProps) {
   const { id } = await params;
+  const isPreview = request.nextUrl.searchParams.get("preview") === "1";
+  const previewToken = request.nextUrl.searchParams.get("previewToken") ?? "";
   let campaign = null;
 
   try {
     const participantCookie = `okado_player_${encodeURIComponent(id).slice(0, 80)}`;
-    campaign = await getPublicCampaign(id, request.cookies.get(participantCookie)?.value);
+    const hasValidPreviewToken = Boolean(
+      isPreview && previewToken && verifyPreviewAccessToken(previewToken, id),
+    );
+    if (isPreview && previewToken && !hasValidPreviewToken) {
+      return NextResponse.json(
+        { error: "Le jeton de prÃ©visualisation est invalide ou expirÃ©." },
+        { status: 403 },
+      );
+    }
+
+    try {
+      campaign = await getPublicCampaign(id, request.cookies.get(participantCookie)?.value);
+    } catch {
+      if (hasValidPreviewToken) {
+        campaign = await getCampaignPreview(id);
+      } else {
+        throw new Error("Campagne indisponible");
+      }
+    }
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Campagne indisponible" },
@@ -26,7 +47,6 @@ export async function GET(request: NextRequest, { params }: RouteProps) {
     return NextResponse.json({ error: "Campaign not found" }, { status: 404 });
   }
 
-  const isPreview = request.nextUrl.searchParams.get("preview") === "1";
   const scanCookie = `okado_scan_${encodeURIComponent(id).slice(0, 80)}`;
   const alreadyCounted = request.cookies.get(scanCookie)?.value === "1";
   if (!isPreview && !alreadyCounted) {
