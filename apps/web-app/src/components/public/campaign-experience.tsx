@@ -504,7 +504,405 @@ export function CampaignExperience({
       ? "#f8fbff"
       : campaign.gameType === "scratch" &&
           campaign.presentation.heading.textColor.toLowerCase() === "#1f2937"
-        ? scratc…3816 tokens truncated…ate ? (
+        ? scratchAccent.ink
+      : campaign.presentation.heading.textColor;
+  const logoSizePercent = clampCampaignLogoSizePercent(campaign.presentation.logo.sizePercent);
+  const logoWidthPx = Math.round(
+    Math.max(56, Math.min(720, logoSizePercent * 3)),
+  );
+  const logoTextSizePx = campaignLogoTextSizePx(logoSizePercent, campaign.gameType);
+  const safeSubtitle = limitCampaignSubtitleLines(campaign.subtitle);
+  const logoAlignmentClass =
+    campaign.presentation.logo.align === "left"
+      ? "justify-start"
+      : campaign.presentation.logo.align === "right"
+        ? "justify-end"
+        : "justify-center";
+  const headingAlignmentClass =
+    campaign.presentation.heading.align === "left"
+      ? "text-left"
+      : campaign.presentation.heading.align === "right"
+        ? "text-right"
+        : "text-center";
+  const headingFontClass =
+    campaign.presentation.heading.fontFamily === "anton"
+      ? "font-anton"
+      : campaign.presentation.heading.fontFamily === "serif" || campaign.presentation.heading.fontFamily === "cormorant"
+        ? campaign.presentation.heading.fontFamily === "cormorant"
+          ? "font-cormorant"
+          : "font-serif"
+        : campaign.presentation.heading.fontFamily === "fredoka"
+          ? "font-fredoka"
+          : campaign.presentation.heading.fontFamily === "inter" || campaign.presentation.heading.fontFamily === "sans"
+            ? "font-inter"
+            : campaign.presentation.heading.fontFamily === "bebas"
+              ? "font-bebas"
+              : "font-display";
+  const showBottomState =
+    !isImmersiveScratchTemplate &&
+    ((stage === "idle" && campaign.gameType !== "wheel") ||
+      (stage === "ready" && campaign.gameType !== "wheel"));
+  const isPreGameLeadCapture = requiresContactCapture && !drawSession;
+
+  useEffect(() => {
+    async function loadCampaign() {
+      const previewQuery = isPreview
+        ? `?preview=1${previewToken ? `&previewToken=${encodeURIComponent(previewToken)}` : ""}`
+        : "";
+      const response = await fetch(
+        `/api/public/campaign/${campaignId}${previewQuery}`,
+      );
+
+      if (!response.ok) {
+        return;
+      }
+
+      const payload = (await response.json()) as { campaign: PublicCampaign };
+      setCampaign(payload.campaign);
+    }
+
+    void loadCampaign();
+  }, [campaignId, isPreview, previewToken]);
+
+  useEffect(() => {
+    if (!isPreview || initialPreviewToken) return;
+
+    let cancelled = false;
+    void fetch("/api/public/preview-token", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ campaignId }),
+    })
+      .then(async (response) => {
+        const payload = (await response.json().catch(() => null)) as {
+          token?: string;
+          error?: string;
+        } | null;
+        if (!response.ok || !payload?.token) {
+          throw new Error(payload?.error ?? "La prévisualisation est indisponible.");
+        }
+        if (!cancelled) setPreviewToken(payload.token);
+      })
+      .catch((previewError) => {
+        if (!cancelled) {
+          setError(
+            previewError instanceof Error
+              ? previewError.message
+              : "La prévisualisation est indisponible.",
+          );
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [campaignId, initialPreviewToken, isPreview]);
+
+  async function ensurePreviewToken() {
+    if (!isPreview) return null;
+    if (previewToken) return previewToken;
+
+    const response = await fetch("/api/public/preview-token", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ campaignId }),
+    });
+    const payload = (await response.json().catch(() => null)) as {
+      token?: string;
+      error?: string;
+    } | null;
+    if (!response.ok || !payload?.token) {
+      throw new Error(payload?.error ?? "La prévisualisation est indisponible.");
+    }
+    setPreviewToken(payload.token);
+    return payload.token;
+  }
+
+  async function trackEvent(
+    eventType: string,
+    leadId?: string,
+    metadata?: Record<string, string | number | boolean | null>,
+  ) {
+    if (isPreview) return;
+    await fetch("/api/public/event", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        campaignId,
+        leadId,
+        eventType,
+        metadata,
+      }),
+    });
+  }
+
+  async function prepareSession(nextStage: ExperienceStage = "ready") {
+    setError(null);
+    setIsLoading(true);
+
+
+    try {
+      const activePreviewToken = await ensurePreviewToken();
+      const response = await fetch("/api/public/draw/session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ campaignId, previewToken: activePreviewToken }),
+      });
+
+      if (!response.ok) {
+        const payload = (await response.json().catch(() => null)) as {
+          error?: string;
+          code?: string;
+        } | null;
+        if (payload?.code === "already_played_today") {
+          setBlockedMessage(
+            payload.error ?? "Vous avez déjà participé à cette animation. Réessayez plus tard.",
+          );
+          setStage("blocked");
+          return;
+        }
+        throw new Error(payload?.error ?? "Impossible de préparer la partie.");
+      }
+
+      const payload = (await response.json()) as CreateDrawSessionResult;
+      setPreviewResult(payload);
+      setDrawSession(payload.session);
+      setCampaign(payload.campaign);
+      setStage(nextStage);
+    } catch (sessionError) {
+      setError(
+        sessionError instanceof Error ? sessionError.message : "Une erreur est survenue.",
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function openActionAndTrack() {
+    setActionVisited(false);
+    setError(null);
+
+    if (requiresContactCapture && !contactCaptured) {
+      setStage("collect");
+      await trackEvent("form_started");
+      return;
+    }
+
+    if (drawSession) {
+      setStage("intro");
+      return;
+    }
+
+    // An optional marketing action must never reserve a prize or gate access
+    // to the game. The draw session is prepared only when the player chooses
+    // to play.
+    setStage("intro");
+  }
+
+  async function launchPreparedGame() {
+    if (!drawSession) {
+      await prepareSession("ready");
+      setAutoSpinKey(`spin-${Date.now()}`);
+      return;
+    }
+
+    setStage("ready");
+    setAutoSpinKey(`spin-${drawSession.id}`);
+  }
+
+  async function finalizeParticipant() {
+    if (!drawSession) {
+      return;
+    }
+
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      const payload: FinalizeDrawSessionRequest = {
+        sessionId: drawSession.id,
+        firstName,
+        email,
+        marketingConsent,
+        previewSessionToken: drawSession.previewSessionToken,
+      };
+      const response = await fetch("/api/public/draw/finalize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const failure = (await response.json().catch(() => null)) as {
+          error?: string;
+          code?: string;
+        } | null;
+        if (failure?.code === "participation_cooldown") {
+          setBlockedMessage(
+            failure.error ?? "Vous avez déjà participé à cette animation. Revenez plus tard.",
+          );
+          setStage("blocked");
+          return;
+        }
+        throw new Error(failure?.error ?? "Impossible d’enregistrer vos coordonnées.");
+      }
+
+      const result = (await response.json()) as DrawResult;
+      setDrawResult(result);
+      setCampaign(result.campaign);
+      setStage("success");
+    } catch (submitError) {
+      setError(
+        submitError instanceof Error ? submitError.message : "Une erreur est survenue.",
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function submitWinnerForm(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (requiresContactCapture && !marketingConsent) {
+      setError("Votre consentement est obligatoire pour participer à cette campagne.");
+      return;
+    }
+
+    if (!drawSession && requiresContactCapture) {
+      setError(null);
+      setContactCaptured(true);
+
+      if (currentAction) {
+        setStage("intro");
+      } else {
+        await prepareSession("ready");
+      }
+
+      return;
+    }
+
+    await finalizeParticipant();
+  }
+
+  async function handleGameReveal() {
+    if (requiresContactCapture) {
+      await finalizeParticipant();
+      return;
+    }
+
+    if (previewResult?.prize) {
+      setStage("collect");
+      await trackEvent("form_started");
+      return;
+    }
+
+    void trackEvent("game_lost");
+    setStage("lost");
+  }
+
+  function handleScratchStart() {
+    void trackEvent("game_played", undefined, {
+      mechanic: "scratch",
+      trigger: "first_touch",
+      sessionId: drawSession?.id ?? null,
+    });
+  }
+
+  const backgroundStyle =
+    campaign.presentation.background.mode === "image" &&
+    campaign.presentation.background.imageUrl
+      ? `linear-gradient(rgba(0,0,0,0.08), rgba(0,0,0,0.18)), url("${campaign.presentation.background.imageUrl}")`
+      : isScratchVaultTemplate
+        ? `radial-gradient(circle at 50% 108%, ${withHexAlpha(primaryColor, "58")} 0 27%, transparent 48%), radial-gradient(circle at 15% 10%, ${withHexAlpha(secondaryColor, "4d")} 0 12%, transparent 22%), linear-gradient(155deg, #071126 0%, #111b3b 56%, #071126 100%)`
+        : isScratchConfettiTemplate
+          ? `radial-gradient(circle at 12% 9%, ${withHexAlpha(primaryColor, "52")} 0 10%, transparent 11%), radial-gradient(circle at 94% 12%, ${withHexAlpha(secondaryColor, "30")} 0 12%, transparent 13%), linear-gradient(180deg, #f59e0b 0%, #f97316 58%, #ea580c 100%)`
+        : isScratchCoralTemplate
+          ? `radial-gradient(circle at 50% 0%, ${withHexAlpha(primaryColor, "24")} 0 18%, transparent 42%), linear-gradient(180deg, #fffaf5 0%, #ffffff 72%, #fff3e8 100%)`
+        : isScratchLilacTemplate
+          ? `radial-gradient(circle at 50% 0%, ${withHexAlpha(primaryColor, "2c")} 0 20%, transparent 44%), linear-gradient(180deg, #fffaff 0%, #f7edff 100%)`
+        : isScratchSunburstTemplate
+          ? `repeating-conic-gradient(from -18deg at 50% -2%, ${withHexAlpha(primaryColor, "52")} 0deg 12deg, transparent 12deg 24deg), linear-gradient(180deg, #fff4bf 0%, #ffdc58 68%, #fff0c5 100%)`
+        : isCosmicTemplate
+        ? `radial-gradient(circle at 50% 112%, ${withHexAlpha(primaryColor, "52")} 0 24%, transparent 43%), radial-gradient(circle at 9% 12%, ${withHexAlpha(secondaryColor, "2b")} 0 14%, transparent 25%), linear-gradient(155deg, #07142e 0%, #0b1d42 55%, #071126 100%)`
+        : isSunburstTemplate
+          ? `radial-gradient(circle at 12% 10%, ${withHexAlpha(primaryColor, "33")} 0 12%, transparent 13%), radial-gradient(circle at 94% 18%, ${withHexAlpha(secondaryColor, "38")} 0 14%, transparent 15%), linear-gradient(180deg, #fffdf5 0%, #fff8e8 56%, #fff2ce 100%)`
+        : isRestaurantPopTemplate
+        ? `radial-gradient(circle at -10% -8%, ${withHexAlpha(primaryColor, "f2")} 0 18%, transparent 19%), radial-gradient(circle at 110% 0%, ${withHexAlpha(secondaryColor, "f2")} 0 13%, transparent 14%), radial-gradient(circle at 0% 80%, ${withHexAlpha(primaryColor, "20")} 0 20%, transparent 21%), radial-gradient(circle at 100% 78%, ${withHexAlpha(secondaryColor, "40")} 0 18%, transparent 19%), linear-gradient(180deg, #fff2dd 0%, #fffaf1 46%, #fff4e5 100%)`
+        : `radial-gradient(circle at 50% 50%, ${withHexAlpha(primaryColor, "33")}, transparent 50%), linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.08))`;
+  const restaurantPopHeadingLines = buildRestaurantPopHeadingLines(safeSubtitle);
+
+  const headingFontSize = fluidType(campaign.presentation.heading.fontSizePx, {
+    minRatio: 0.82,
+    maxRatio: 1.08,
+    viewportStep: 0.3,
+  });
+  const buttonFontSize = fluidType(campaign.presentation.button.textSizePx, {
+    minRatio: 0.86,
+    maxRatio: 1.08,
+    viewportStep: 0.24,
+  });
+  const publicCtaLabel = campaign.ctaLabel?.trim() || "Jouer";
+  const pageTopPaddingClass = isImmersiveScratchTemplate ? "pt-5 sm:pt-6" : "pt-12 sm:pt-14";
+
+  return (
+    <div
+      className="okado-public-experience relative min-h-screen overflow-hidden"
+      style={{
+        backgroundColor: campaign.presentation.background.color,
+        backgroundImage: backgroundStyle,
+        backgroundPosition: "center",
+        backgroundSize: "cover",
+      }}
+    >
+      {isPreview ? (
+        <div
+          role="status"
+          className="sticky top-0 z-50 flex min-h-11 items-center justify-center border-b border-[#d7a91f] bg-[#f4c14a] px-4 py-2 text-center text-xs font-semibold tracking-[0.01em] text-[#111827] shadow-[0_8px_24px_rgba(122,91,0,0.22)] sm:text-sm"
+        >
+          Mode prévisualisation — cette participation est simulée et n&apos;affecte ni vos statistiques ni vos stocks.
+        </div>
+      ) : null}
+      {isRestaurantPopTemplate || isSunburstTemplate || isCosmicTemplate || isScratchVaultTemplate || isScratchConfettiTemplate || isScratchCoralTemplate || isScratchLilacTemplate || isScratchSunburstTemplate ? (
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div
+            className="absolute right-0 top-[18%] h-28 w-16 opacity-35"
+            style={{
+              backgroundImage: `radial-gradient(circle, ${withHexAlpha(primaryColor, isCosmicTemplate || isScratchVaultTemplate ? "70" : "40")} 1.8px, transparent 2px)`,
+              backgroundSize: "12px 12px",
+            }}
+          />
+          <div
+            className="absolute -bottom-10 -left-12 h-48 w-48 rounded-full opacity-80"
+            style={{ background: withHexAlpha(primaryColor, isCosmicTemplate || isScratchVaultTemplate ? "2e" : "22") }}
+          />
+        </div>
+      ) : null}
+      <div className={`relative mx-auto flex ${isPreview ? "h-[calc(100dvh-44px)] min-h-[560px]" : "h-screen"} w-full flex-col overflow-hidden px-4 pb-0 sm:px-6 ${pageTopPaddingClass}`}>
+        {!isImmersiveScratchTemplate && ((campaign.logoMode === "image" && campaign.logoUrl) ||
+        campaign.logoMode === "text" ||
+        campaign.gameType === "scratch") ? (
+          <div className={`flex ${logoAlignmentClass}`}>
+            <div style={{ marginBottom: `${campaign.presentation.logo.marginBottomPx}px` }}>
+              <BrandMark
+                logoText={campaign.logoText ?? campaign.merchantLogoText}
+                logoUrl={campaign.logoMode === "image" ? campaign.logoUrl : undefined}
+                size="lg"
+                variant="transparent"
+                imageWidthPx={logoWidthPx}
+                textSizePx={logoTextSizePx}
+                textClassName={campaign.gameType === "wheel" ? "text-2xl" : undefined}
+                textColor={headingTextColor}
+              />
+            </div>
+          </div>
+        ) : null}
+
+        {campaign.logoMode === "none" ||
+        (campaign.logoMode === "image" && !campaign.logoUrl) && !isImmersiveScratchTemplate ? (
+          <div aria-hidden="true" className="h-5" />
+        ) : null}
+
+        {!isImmersiveScratchTemplate ? (
         <div className={headingAlignmentClass}>
           <h1
             className={`${headingFontClass} line-clamp-3 whitespace-pre-line ${isRestaurantPopTemplate ? "tracking-[0.038em] drop-shadow-[0_5px_0_rgba(0,0,0,0.08)]" : ""} leading-[1] text-[#151826]`}
@@ -938,3 +1336,4 @@ export function CampaignExperience({
     </div>
   );
 }
+

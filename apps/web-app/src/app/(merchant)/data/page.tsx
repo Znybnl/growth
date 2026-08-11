@@ -630,3 +630,4 @@ export default async function DataPage({ searchParams }: DataPageProps) {
     </div>
   );
 }
+
