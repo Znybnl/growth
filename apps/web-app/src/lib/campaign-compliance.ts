@@ -53,6 +53,7 @@ function assertCampaignCanPublishInternal(input: CampaignSetupInput) {
   if (!input.isActive) return;
 
   if (!input.title.trim()) throw new Error("Le nom de l’animation est requis avant publication.");
+  if (!input.subtitle.trim()) throw new Error("La promesse affichée au client est requise avant publication.");
   if (input.prizes.length === 0) throw new Error("Ajoutez au moins un lot avant de publier l’animation.");
 
   const totalProbability = input.prizes.reduce((sum, prize) => {
@@ -70,7 +71,14 @@ function assertCampaignCanPublishInternal(input: CampaignSetupInput) {
     throw new Error("Un jeu 100 % gagnant doit totaliser exactement 100 % de probabilités.");
   }
 
-  for (const action of input.actions) assertSecureActionUrl(action.url, action.kind);
+  if (input.actions.length === 0) {
+    throw new Error("Ajoutez au moins une action marketing avant publication.");
+  }
+
+  for (const action of input.actions) {
+    if (!action.label.trim()) throw new Error("Chaque action marketing doit avoir un libellé.");
+    assertSecureActionUrl(action.url, action.kind);
+  }
 
   if (!input.presentation.email.subject.trim() || !input.presentation.email.body.trim()) {
     throw new Error("L’e-mail de gain doit avoir un objet et un message avant publication.");

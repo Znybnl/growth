@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
         rewardWonAt: payload.lead.createdAt,
         rewardAvailableAt: payload.lead.rewardAvailableAt,
         rewardExpiresAt: payload.lead.rewardExpiresAt,
-        purchaseRequired: payload.campaign.rewardRules.purchaseRequired,
+        purchaseRequired: Boolean(payload.prize.purchaseRequired),
         emailSettings: payload.campaign.presentation.email,
       });
       retried += 1;

@@ -109,6 +109,7 @@ type PrizeRow = {
   remaining_quantity: number | null;
   probability: number;
   estimated_unit_cost: number;
+  purchase_required: boolean;
   created_at: string;
 };
 
@@ -568,6 +569,7 @@ function toPrize(row: PrizeRow): Prize {
     remainingQuantity: row.remaining_quantity,
     probability: Number(row.probability),
     estimatedUnitCost: Number(row.estimated_unit_cost),
+    purchaseRequired: Boolean(row.purchase_required),
   };
 }
 
@@ -710,6 +712,7 @@ function toPublicCampaign(
       totalQuantity: prize.totalQuantity,
       remainingQuantity: prize.remainingQuantity,
       probability: prize.probability,
+      purchaseRequired: prize.purchaseRequired,
     })),
     presentation: campaign.presentation,
     actions,
@@ -760,7 +763,7 @@ async function fetchCampaignDependencies(campaignIds: string[]) {
       .in("campaign_id", campaignIds),
     supabase
       .from("prizes")
-      .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at")
+      .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,purchase_required,created_at")
       .in("campaign_id", campaignIds),
     supabase
       .from("leads")
@@ -812,7 +815,7 @@ async function fetchCampaignConfiguration(campaignId: string) {
       .eq("campaign_id", campaignId),
     supabase
       .from("prizes")
-      .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at")
+      .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,purchase_required,created_at")
       .eq("campaign_id", campaignId),
   ]);
 
@@ -1014,6 +1017,7 @@ function buildPerformanceBundle(
         remaining_quantity: item.remainingQuantity,
         probability: item.probability,
         estimated_unit_cost: item.estimatedUnitCost,
+        purchase_required: item.purchaseRequired,
         created_at: "",
       })),
       localSettings,
@@ -1048,7 +1052,7 @@ export async function getSupabaseMerchantDashboard(
       campaignIds.length
         ? supabase
             .from("prizes")
-            .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at")
+            .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,purchase_required,created_at")
             .in("campaign_id", campaignIds)
         : Promise.resolve({ data: [], error: null }),
       campaignIds.length
@@ -1370,7 +1374,7 @@ export async function getSupabaseCampaignSetupPerformance(
       .eq("campaign_id", campaignId),
     supabase
       .from("prizes")
-      .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at")
+      .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,purchase_required,created_at")
       .eq("campaign_id", campaignId),
     getCampaignLocalSettings(campaignId),
   ]);
@@ -1483,7 +1487,7 @@ export async function getSupabaseMerchantLeads(
   if (!campaignIds.length) return [];
   const [leadsResult, prizesResult, deliveriesResult] = await Promise.all([
     supabase.from("leads").select("*").in("campaign_id", campaignIds),
-    supabase.from("prizes").select("id,label,campaign_id,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at").in("campaign_id", campaignIds),
+    supabase.from("prizes").select("id,label,campaign_id,total_quantity,remaining_quantity,probability,estimated_unit_cost,purchase_required,created_at").in("campaign_id", campaignIds),
     supabase
       .from("reward_email_deliveries")
       .select("lead_id,status,sent_at,delivered_at,error_message")
@@ -1559,7 +1563,7 @@ export async function getSupabaseMerchantRecentLeads(
     prizeIds.length
       ? supabase
           .from("prizes")
-          .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at")
+          .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,purchase_required,created_at")
           .in("id", prizeIds)
       : Promise.resolve({ data: [], error: null }),
     leadRows.length
@@ -1675,7 +1679,7 @@ async function getSupabaseCampaignDataViewLegacy(
       .eq("campaign_id", campaignId),
     supabase
       .from("prizes")
-      .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at")
+      .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,purchase_required,created_at")
       .eq("campaign_id", campaignId),
     supabase.from("leads").select("*").eq("campaign_id", campaignId),
     supabase.from("campaign_events").select("*").eq("campaign_id", campaignId),
@@ -1902,7 +1906,7 @@ export async function getSupabaseCampaignDataView(
       .eq("campaign_id", campaignId),
     supabase
       .from("prizes")
-      .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at")
+      .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,purchase_required,created_at")
       .eq("campaign_id", campaignId),
     supabase.rpc("get_campaign_data_summary", { p_campaign_id: campaignId }),
     leadsQuery,
@@ -2107,7 +2111,9 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
     wheel_lose_color: input.presentation.wheel.loseColor,
     wheel_alternate_lose_color: input.presentation.wheel.alternateLoseColor,
     reward_expiry_minutes: input.rewardRules.rewardExpiryMinutes,
-    purchase_required: input.rewardRules.purchaseRequired,
+    // Purchase requirements are stored per prize. Keep the legacy campaign
+    // column disabled so it can no longer impose a campaign-wide rule.
+    purchase_required: false,
     available_after_hours: input.rewardRules.availableAfterHours,
     availability_duration_days: input.rewardRules.availabilityDurationDays,
     is_winning_every_time: input.rewardRules.isWinningEveryTime,
@@ -2160,6 +2166,7 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
             : prize.totalQuantity ?? null,
       probability: prize.probability,
       estimated_unit_cost: prize.estimatedUnitCost,
+      purchase_required: Boolean(prize.purchaseRequired),
     };
   });
   const localSettings = {
@@ -2267,6 +2274,7 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
       remaining_quantity: prize.totalQuantity === null ? null : remaining ?? prize.totalQuantity ?? null,
       probability: prize.probability,
       estimated_unit_cost: prize.estimatedUnitCost,
+      purchase_required: Boolean(prize.purchaseRequired),
     };
   });
   if (prizesInsert.length) {
@@ -2321,6 +2329,7 @@ export async function duplicateCampaignInSupabase(id: string, merchant: Merchant
       totalQuantity: prize.totalQuantity,
       probability: prize.probability,
       estimatedUnitCost: prize.estimatedUnitCost,
+      purchaseRequired: prize.purchaseRequired,
     })),
   });
 
@@ -2361,6 +2370,7 @@ export async function duplicateCampaignToMerchantInSupabase(
       totalQuantity: prize.totalQuantity,
       probability: prize.probability,
       estimatedUnitCost: prize.estimatedUnitCost,
+      purchaseRequired: prize.purchaseRequired,
       usageConditions: prize.usageConditions,
     })),
   });
@@ -2691,7 +2701,7 @@ function maskCashierEmail(email: string) {
 }
 
 type RedemptionCampaignRow = Pick<CampaignRow, "id" | "merchant_id" | "title" | "purchase_required">;
-type RedemptionPrizeRow = Pick<PrizeRow, "id" | "label">;
+type RedemptionPrizeRow = Pick<PrizeRow, "id" | "label" | "purchase_required">;
 
 function toCashierRedemptionContext(
   lead: LeadRow,
@@ -2728,7 +2738,7 @@ function toCashierRedemptionContext(
     redemptionCode: lead.redemption_code ?? undefined,
     rewardAvailableAt: lead.reward_available_at ?? undefined,
     rewardExpiresAt: lead.reward_expires_at ?? undefined,
-    purchaseRequired: campaign.purchase_required,
+    purchaseRequired: Boolean(prize?.purchase_required),
     redeemedAt: lead.redeemed_at ?? undefined,
     purchaseVerified: lead.purchase_verified ?? undefined,
   };
@@ -2759,7 +2769,7 @@ export async function findSupabaseMerchantLeadByRedemptionCode(
       .eq("merchant_id", merchantId)
       .maybeSingle<{ id: string; merchant_id: string; title: string; purchase_required: boolean }>(),
     lead.prize_id
-      ? supabase.from("prizes").select("id,label").eq("id", lead.prize_id).maybeSingle<{ id: string; label: string }>()
+      ? supabase.from("prizes").select("id,label,purchase_required").eq("id", lead.prize_id).maybeSingle<RedemptionPrizeRow>()
       : Promise.resolve({ data: null }),
   ]);
 
@@ -2799,7 +2809,7 @@ export async function findSupabasePublicRedemptionContextByCode(
       .eq("id", campaign.merchant_id)
       .maybeSingle<{ id: string; company_name: string; city: string | null }>(),
     lead.prize_id
-      ? supabase.from("prizes").select("id,label").eq("id", lead.prize_id).maybeSingle<RedemptionPrizeRow>()
+      ? supabase.from("prizes").select("id,label,purchase_required").eq("id", lead.prize_id).maybeSingle<RedemptionPrizeRow>()
       : Promise.resolve({ data: null }),
   ]);
   if (merchantError || !merchant) return null;
@@ -2908,7 +2918,7 @@ export async function findSupabasePreviewRedemptionContextByCode(
     redemptionCode: row.redemption_code ?? undefined,
     rewardAvailableAt: row.reward_available_at ?? undefined,
     rewardExpiresAt: row.reward_expires_at ?? undefined,
-    purchaseRequired: performance.campaign.rewardRules.purchaseRequired,
+    purchaseRequired: Boolean(prize?.purchaseRequired),
     redeemedAt: row.redeemed_at ?? undefined,
     purchaseVerified: row.purchase_verified,
     merchantId: performance.merchant.id,
@@ -2953,7 +2963,8 @@ export async function redeemSupabasePreviewParticipation(input: {
   if (!performance || performance.merchant.id !== input.merchantId) {
     throw new Error("Gain de prévisualisation introuvable");
   }
-  if (performance.campaign.rewardRules.purchaseRequired && !input.purchaseConfirmed) {
+  const prize = row.prize_id ? performance.prizes.find((item) => item.id === row.prize_id) : undefined;
+  if (prize?.purchaseRequired && !input.purchaseConfirmed) {
     throw new Error("Achat à confirmer avant le retrait");
   }
   if (input.forceRedemption && previewRedemptionStatus(row) === "available") {
@@ -3085,7 +3096,7 @@ export async function updatePrizeStockInSupabase(
     .from("prizes")
     .update({ remaining_quantity: remainingQuantity })
     .eq("id", prizeId)
-    .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at")
+      .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,purchase_required,created_at")
     .maybeSingle();
 
   if (error || !data) {
@@ -3110,7 +3121,7 @@ export async function resetPrizeStockInSupabase(prizeId: string) {
   /* Legacy implementation retained below only until the next cleanup migration.
   const { data: prizeData, error: prizeError } = await supabase
     .from("prizes")
-    .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at")
+    .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,purchase_required,created_at")
     .eq("id", prizeId)
     .maybeSingle();
 
@@ -3123,7 +3134,7 @@ export async function resetPrizeStockInSupabase(prizeId: string) {
     .from("prizes")
     .update({ remaining_quantity: prize.total_quantity })
     .eq("id", prizeId)
-    .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,created_at")
+    .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,purchase_required,created_at")
     .maybeSingle();
 
   if (error || !data) {

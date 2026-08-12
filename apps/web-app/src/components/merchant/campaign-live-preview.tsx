@@ -11,7 +11,7 @@ import {
   clampCampaignLogoSizePercent,
   DEFAULT_SCRATCH_SUBTITLE,
   limitCampaignSubtitleLines,
-  normalizeScratchAccent,
+  resolveScratchAccent,
   scratchTemplatePrimaryColor,
 } from "@/lib/campaign-defaults";
 import { buildWheelVisualSegments, WheelVisualSegment } from "@/lib/wheel-segments";
@@ -180,7 +180,7 @@ function previewBackgroundImage(form: CampaignSetupInput, templateId: GamePageTe
 
 export function buildCampaignLivePreviewModel(form: CampaignSetupInput, merchant: Merchant): CampaignEditorPreviewModel {
   const templateId = form.presentation.layout.templateId ?? "classic";
-  const previewAccent = form.gameType === "scratch" ? normalizeScratchAccent(form.accent, templateId) : form.accent;
+  const previewAccent = form.gameType === "scratch" ? resolveScratchAccent(form.accent, templateId) : form.accent;
   const previewSegments = buildPreviewSegments(form.prizes);
   const winningSegmentId = previewSegments.find((segment) => segment.tone === "win")?.id ?? previewSegments[0]?.id ?? "win";
   const logoSizePercent = clampCampaignLogoSizePercent(form.presentation.logo.sizePercent);

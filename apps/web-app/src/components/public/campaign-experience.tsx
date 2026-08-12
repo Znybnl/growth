@@ -24,7 +24,7 @@ import {
   clampCampaignLogoSizePercent,
   DEFAULT_SCRATCH_SUBTITLE,
   limitCampaignSubtitleLines,
-  normalizeScratchAccent,
+  resolveScratchAccent,
   scratchTemplatePrimaryColor,
 } from "@/lib/campaign-defaults";
 import { buildWheelVisualSegments } from "@/lib/wheel-segments";
@@ -493,7 +493,7 @@ export function CampaignExperience({
     isScratchSunburstTemplate;
   const scratchAccent =
     campaign.gameType === "scratch"
-      ? normalizeScratchAccent(campaign.accent, pageTemplate)
+      ? resolveScratchAccent(campaign.accent, pageTemplate)
       : campaign.accent;
   const primaryColor = campaign.gameType === "scratch"
     ? scratchTemplatePrimaryColor(scratchAccent.signal, pageTemplate)
@@ -1286,7 +1286,7 @@ export function CampaignExperience({
             </p>
           </div> : null}
 
-          {drawResult?.prize && campaign.rewardRules.purchaseRequired ? (
+          {drawResult?.prize?.purchaseRequired ? (
             <div className="mt-3 rounded-[18px] bg-[#f7f7fb] px-4 py-3 text-left text-sm leading-6 text-[#61687a]">
               Le retrait du lot est soumis à une condition d’achat.
             </div>

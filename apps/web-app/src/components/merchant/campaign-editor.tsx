@@ -718,13 +718,17 @@ function BackgroundLibraryDialog({
 function PrizeConditionsDialog({
   open,
   prizeLabel,
+  purchaseRequired,
   value,
+  onPurchaseRequiredChange,
   onChange,
   onClose,
 }: {
   open: boolean;
   prizeLabel: string;
+  purchaseRequired: boolean;
   value: string;
+  onPurchaseRequiredChange: (value: boolean) => void;
   onChange: (nextValue: string) => void;
   onClose: () => void;
 }) {
@@ -754,6 +758,21 @@ function PrizeConditionsDialog({
             Fermer
           </button>
         </div>
+
+        <label className="mt-6 flex cursor-pointer items-start gap-3 rounded-[18px] border border-[#f0dfaa] bg-[#fff9e8] px-4 py-3 text-sm text-[#5f4b12]">
+          <input
+            type="checkbox"
+            checked={purchaseRequired}
+            onChange={(event) => onPurchaseRequiredChange(event.target.checked)}
+            className="mt-1 h-4 w-4 cursor-pointer accent-[#b28719]"
+          />
+          <span>
+            <span className="block font-semibold">Achat requis pour le retrait</span>
+            <span className="mt-1 block text-xs leading-5 text-[#806b30]">
+              Cette condition s&apos;applique uniquement à ce lot.
+            </span>
+          </span>
+        </label>
 
         <label className="mt-6 block text-sm">
           <span className="mb-2 block text-[#616b7c]">Texte affiché au client</span>
@@ -1467,7 +1486,8 @@ function toEditorState(merchant: Merchant, campaign: CampaignPerformance | null)
       remainingQuantity: prize.remainingQuantity,
       probability: prize.probability,
       estimatedUnitCost: prize.estimatedUnitCost,
-          usageConditions: prize.usageConditions ?? "",
+      purchaseRequired: Boolean(prize.purchaseRequired),
+      usageConditions: prize.usageConditions ?? "",
     })),
   };
 }
@@ -1609,6 +1629,7 @@ function buildClassicSetupPayload(form: EditorState) {
       remainingQuantity: prize.remainingQuantity,
       probability: prize.probability,
       estimatedUnitCost: prize.estimatedUnitCost,
+      purchaseRequired: Boolean(prize.purchaseRequired),
       usageConditions: prize.usageConditions,
     })),
     creationMode: "editor" as const,
@@ -2140,6 +2161,7 @@ function setGameType(gameType: GameType) {
           totalQuantity: null,
           probability: 10,
           estimatedUnitCost: merchant.defaultPrizeCost ?? 5,
+          purchaseRequired: false,
           usageConditions: "",
         },
       ],
@@ -2228,20 +2250,21 @@ function setGameType(gameType: GameType) {
     }
 
     try {
-      if (!form.prizes.length) {
+      if (form.isActive && !form.prizes.length) {
         throw new Error("Ajoutez au moins un lot dans la section Dotation.");
       }
 
-      if (form.prizes.some((prize) => prize.totalQuantity !== null && prize.totalQuantity <= 0)) {
+      if (form.isActive && form.prizes.some((prize) => prize.totalQuantity !== null && prize.totalQuantity <= 0)) {
         throw new Error("La quantité d’un lot doit être supérieure à 0 (ou illimitée).");
       }
 
       const totalProbability = form.prizes.reduce((total, prize) => total + (Number(prize.probability) || 0), 0);
-      if (form.rewardRules.isWinningEveryTime && totalProbability < 99.9999) {
+      if (form.isActive && form.rewardRules.isWinningEveryTime && totalProbability < 99.9999) {
         throw new Error("Un jeu 100 % gagnant doit totaliser exactement 100 % de probabilités.");
       }
 
       if (
+        form.isActive &&
         form.rewardRules.isWinningEveryTime &&
         !form.prizes.some((prize) => prize.totalQuantity === null)
       ) {
@@ -2310,6 +2333,7 @@ function setGameType(gameType: GameType) {
           totalQuantity: null,
           probability: suggestion.probability,
           estimatedUnitCost: suggestion.estimatedUnitCost,
+          purchaseRequired: false,
           usageConditions: "",
         },
       ],
@@ -2323,20 +2347,21 @@ function setGameType(gameType: GameType) {
     setSaveDialogOpen(false);
 
     try {
-      if (!form.prizes.length) {
+      if (form.isActive && !form.prizes.length) {
         throw new Error("Ajoutez au moins un lot dans la section Dotation.");
       }
 
-      if (form.prizes.some((prize) => prize.totalQuantity !== null && prize.totalQuantity <= 0)) {
+      if (form.isActive && form.prizes.some((prize) => prize.totalQuantity !== null && prize.totalQuantity <= 0)) {
         throw new Error("La quantité d’un lot doit être supérieure à 0 (ou illimitée).");
       }
 
       const totalProbability = form.prizes.reduce((total, prize) => total + (Number(prize.probability) || 0), 0);
-      if (form.rewardRules.isWinningEveryTime && totalProbability < 99.9999) {
+      if (form.isActive && form.rewardRules.isWinningEveryTime && totalProbability < 99.9999) {
         throw new Error("Un jeu 100 % gagnant doit totaliser exactement 100 % de probabilités.");
       }
 
       if (
+        form.isActive &&
         form.rewardRules.isWinningEveryTime &&
         !form.prizes.some((prize) => prize.totalQuantity === null)
       ) {
@@ -4322,7 +4347,13 @@ function setGameType(gameType: GameType) {
       <PrizeConditionsDialog
         open={Boolean(editingPrize)}
         prizeLabel={editingPrize?.label ?? ""}
+        purchaseRequired={Boolean(editingPrize?.purchaseRequired)}
         value={editingPrize?.usageConditions ?? ""}
+        onPurchaseRequiredChange={(nextValue) => {
+          if (editingPrize?.id) {
+            updatePrize(editingPrize.id, { purchaseRequired: nextValue });
+          }
+        }}
         onChange={(nextValue) => {
           if (editingPrize?.id) {
             updatePrize(editingPrize.id, { usageConditions: nextValue });

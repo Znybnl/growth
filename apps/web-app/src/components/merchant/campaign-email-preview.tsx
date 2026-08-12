@@ -16,9 +16,7 @@ import { CampaignSetupInput, Merchant } from "@/lib/types";
 
 type CampaignEmailPreviewProps = {
   merchant: Merchant;
-  form: Pick<CampaignSetupInput, "id" | "title" | "prizes" | "presentation"> & {
-    rewardRules: Pick<CampaignSetupInput["rewardRules"], "purchaseRequired">;
-  };
+  form: Pick<CampaignSetupInput, "id" | "title" | "prizes" | "presentation">;
 };
 
 const sampleData = {
@@ -56,7 +54,9 @@ export function CampaignEmailPreview({ merchant, form }: CampaignEmailPreviewPro
     rewardAvailability: sampleData.rewardAvailability,
     rewardExpiry: sampleData.rewardExpiry,
     rewardDate: "24 juillet 2026",
-    purchaseCondition: form.rewardRules.purchaseRequired ? "Achat requis pour retirer ce lot." : "Aucun achat requis pour retirer ce lot.",
+    purchaseCondition: prize?.purchaseRequired
+      ? "Achat requis pour retirer ce lot."
+      : "Aucun achat requis pour retirer ce lot.",
     usageConditions: prize?.usageConditions || "Présentez le QR code au comptoir.",
   };
   const subject = replaceVariables(email.subject, variables);

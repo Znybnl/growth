@@ -405,6 +405,7 @@ const prizeSeed: Prize[] = [
     remainingQuantity: 37,
     probability: 32,
     estimatedUnitCost: 1.9,
+    purchaseRequired: false,
   },
   {
     id: "prize-review-2",
@@ -414,6 +415,7 @@ const prizeSeed: Prize[] = [
     remainingQuantity: 17,
     probability: 14,
     estimatedUnitCost: 2.8,
+    purchaseRequired: false,
   },
   {
     id: "prize-review-3",
@@ -423,6 +425,7 @@ const prizeSeed: Prize[] = [
     remainingQuantity: null,
     probability: 54,
     estimatedUnitCost: 7.5,
+    purchaseRequired: false,
   },
   {
     id: "prize-social-1",
@@ -432,6 +435,7 @@ const prizeSeed: Prize[] = [
     remainingQuantity: 48,
     probability: 28,
     estimatedUnitCost: 1.5,
+    purchaseRequired: false,
   },
   {
     id: "prize-social-2",
@@ -441,6 +445,7 @@ const prizeSeed: Prize[] = [
     remainingQuantity: 61,
     probability: 25,
     estimatedUnitCost: 2,
+    purchaseRequired: false,
   },
   {
     id: "prize-leads-1",
@@ -450,6 +455,7 @@ const prizeSeed: Prize[] = [
     remainingQuantity: null,
     probability: 100,
     estimatedUnitCost: 5.8,
+    purchaseRequired: false,
   },
 ];
 
@@ -775,6 +781,7 @@ function toPublicCampaign(campaign: Campaign, actions = campaign.actions): Publi
       totalQuantity: prize.totalQuantity,
       remainingQuantity: prize.remainingQuantity,
       probability: prize.probability,
+      purchaseRequired: prize.purchaseRequired,
     })),
     presentation: campaign.presentation,
     actions,
@@ -1282,7 +1289,7 @@ export async function getPublicRedemptionContext(code: string): Promise<PublicRe
       redemptionCode: previewLead.redemptionCode,
       rewardAvailableAt: previewLead.rewardAvailableAt,
       rewardExpiresAt: previewLead.rewardExpiresAt,
-      purchaseRequired: performance.campaign.rewardRules.purchaseRequired,
+      purchaseRequired: Boolean(prize?.purchaseRequired),
       redeemedAt: previewLead.redeemedAt,
       purchaseVerified: previewLead.purchaseVerified,
       merchantId: performance.merchant.id,
@@ -1618,7 +1625,10 @@ function redeemPreviewLeadInMemory(input: {
   if (!performance || performance.merchant.id !== input.merchantId) {
     throw new Error("Gain de prévisualisation introuvable");
   }
-  if (performance.campaign.rewardRules.purchaseRequired && !input.purchaseConfirmed) {
+  const prize = lead.prizeId
+    ? performance.prizes.find((item) => item.id === lead.prizeId)
+    : undefined;
+  if (prize?.purchaseRequired && !input.purchaseConfirmed) {
     throw new Error("Achat à confirmer avant le retrait");
   }
   const availableAt = lead.rewardAvailableAt ? new Date(lead.rewardAvailableAt).getTime() : 0;
@@ -1989,7 +1999,7 @@ function findMerchantLeadByRedemptionCodeInMemory(
     redemptionCode: lead.redemptionCode,
     rewardAvailableAt: lead.rewardAvailableAt,
     rewardExpiresAt: lead.rewardExpiresAt,
-    purchaseRequired: performance.campaign.rewardRules.purchaseRequired,
+    purchaseRequired: Boolean(performance.prizes.find((item) => item.id === lead.prizeId)?.purchaseRequired),
     redeemedAt: lead.redeemedAt,
     purchaseVerified: lead.purchaseVerified,
   };
@@ -2007,7 +2017,10 @@ function redeemMerchantLeadPrizeInMemory(input: {
 
   const performance = getCampaignPerformanceFromMemory(lead.campaignId);
   if (!performance || performance.merchant.id !== input.merchantId) throw new Error("Gain introuvable");
-  if (performance.campaign.rewardRules.purchaseRequired && !input.purchaseConfirmed) {
+  const prize = lead.prizeId
+    ? performance.prizes.find((item) => item.id === lead.prizeId)
+    : undefined;
+  if (prize?.purchaseRequired && !input.purchaseConfirmed) {
     throw new Error("Achat à confirmer avant le retrait");
   }
 
@@ -2111,6 +2124,7 @@ function updateCampaignSetupInMemory(input: CampaignSetupInput) {
               : remainingByPrizeId.get(prize.id ?? "") ?? prize.totalQuantity ?? null,
         probability: prize.probability,
         estimatedUnitCost: prize.estimatedUnitCost,
+        purchaseRequired: Boolean(prize.purchaseRequired),
         usageConditions: prize.usageConditions,
       });
     });
@@ -2152,6 +2166,7 @@ function updateCampaignSetupInMemory(input: CampaignSetupInput) {
       remainingQuantity: prize.totalQuantity ?? null,
       probability: prize.probability,
       estimatedUnitCost: prize.estimatedUnitCost,
+      purchaseRequired: Boolean(prize.purchaseRequired),
       usageConditions: prize.usageConditions,
     });
   });

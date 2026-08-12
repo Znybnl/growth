@@ -68,7 +68,15 @@ export function AccountSettingsForm({
     }
 
     const observer = new IntersectionObserver(
-      ([entry]) => setShowStickyActions(!entry.isIntersecting),
+      ([entry]) => {
+        // The account form is below the billing card. When the page opens, the
+        // anchor can be below the viewport without having been scrolled past;
+        // that must not activate the sticky action bar prematurely. Only show
+        // it after the anchor has crossed the top edge of the scroll area.
+        const rootTop = entry.rootBounds?.top ?? 0;
+        const hasScrolledPastAnchor = entry.boundingClientRect.top < rootTop;
+        setShowStickyActions(!entry.isIntersecting && hasScrolledPastAnchor);
+      },
       { threshold: 0, rootMargin: "-64px 0px 0px 0px" },
     );
 

@@ -434,6 +434,7 @@ export interface CampaignAction {
 
 export interface CampaignRewardRules {
   rewardExpiryMinutes: number;
+  /** @deprecated Purchase requirements are configured on each Prize. */
   purchaseRequired: boolean;
   availableAfterHours: number;
   availabilityDurationDays: number;
@@ -472,6 +473,7 @@ export interface Prize {
   remainingQuantity: null | number;
   probability: number;
   estimatedUnitCost: number;
+  purchaseRequired: boolean;
   usageConditions?: string;
 }
 
@@ -602,6 +604,7 @@ export interface PublicCampaignPrize {
   totalQuantity: null | number;
   remainingQuantity: null | number;
   probability: number;
+  purchaseRequired: boolean;
 }
 
 export interface PublicCampaign {
@@ -809,6 +812,7 @@ export interface CampaignSetupInput {
     remainingQuantity?: null | number;
     probability: number;
     estimatedUnitCost: number;
+    purchaseRequired?: boolean;
     usageConditions?: string;
   }>;
 }

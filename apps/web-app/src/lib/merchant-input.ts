@@ -300,12 +300,15 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
   const actions = Array.isArray(payload.actions) ? payload.actions : [];
   const prizes = Array.isArray(payload.prizes) ? payload.prizes : [];
   const title = normalizeString(payload.title, 120);
+  // Drafts are intentionally permissive: publication is the only operation
+  // that requires a complete campaign configuration.
+  const isActive = Boolean(payload.isActive);
 
-  if (!title) {
+  if (isActive && !title) {
     throw new Error("Le nom de l'animation est requis.");
   }
 
-  if (!prizes.length) {
+  if (isActive && !prizes.length) {
     throw new Error("Au moins une dotation est requise.");
   }
 
@@ -314,7 +317,7 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
     const label = normalizeString(prize.label, 120);
     const hasRemainingQuantity = Object.prototype.hasOwnProperty.call(prize, "remainingQuantity");
 
-    if (!label) {
+    if (isActive && !label) {
       throw new Error(`Le libellé du lot ${index + 1} est requis.`);
     }
 
@@ -335,18 +338,19 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
         max: 100000,
         fallback: 0,
       }),
+      purchaseRequired: Boolean(prize.purchaseRequired),
       usageConditions: normalizeMultiline(prize.usageConditions, 1200),
     };
   });
 
   const totalProbability = sanitizedPrizes.reduce((total, prize) => total + prize.probability, 0);
-  if (sanitizedPrizes.some((prize) => prize.totalQuantity !== null && prize.totalQuantity <= 0)) {
+  if (isActive && sanitizedPrizes.some((prize) => prize.totalQuantity !== null && prize.totalQuantity <= 0)) {
     throw new Error("La quantité d’un lot doit être supérieure à 0 (ou illimitée).");
   }
-  if (totalProbability > 100.0001) {
+  if (isActive && totalProbability > 100.0001) {
     throw new Error("Le total des probabilités ne peut pas dépasser 100 %.");
   }
-  if (rewardRules.isWinningEveryTime && totalProbability < 99.9999) {
+  if (isActive && rewardRules.isWinningEveryTime && totalProbability < 99.9999) {
     throw new Error("Un jeu 100 % gagnant doit totaliser exactement 100 % de probabilités.");
   }
 
@@ -355,7 +359,7 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
     const kind = normalizeEnum(action.kind, ACTION_KINDS, "custom");
     const url = kind === "crm" ? "" : normalizeUrl(action.url);
 
-    if (kind !== "crm" && !url) {
+    if (isActive && kind !== "crm" && !url) {
       throw new Error("Chaque action marketing doit contenir un lien valide.");
     }
 
@@ -397,7 +401,7 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
     ctaLabel: normalizeString(payload.ctaLabel, 80),
     successMetric: normalizeString(payload.successMetric, 80),
     targetUrl: normalizeUrl(payload.targetUrl) || undefined,
-    isActive: Boolean(payload.isActive),
+    isActive,
     accent: {
       ink: normalizeColor(ensureObject(payload.accent).ink, "#1f2937"),
       paper: normalizeColor(ensureObject(payload.accent).paper, "#ffffff"),

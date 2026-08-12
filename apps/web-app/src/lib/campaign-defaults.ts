@@ -99,6 +99,22 @@ export function normalizeScratchAccent(
   };
 }
 
+/**
+ * Resolve the accent used by the player-facing scratch design without
+ * mutating the campaign form. Fixed-palette templates must ignore the
+ * merchant's configured primary color in both the live preview and the game.
+ */
+export function resolveScratchAccent(
+  accent: CampaignAccent,
+  templateId?: GamePageTemplateId,
+): CampaignAccent {
+  const normalized = normalizeScratchAccent(accent, templateId);
+  return {
+    ...normalized,
+    signal: scratchTemplatePrimaryColor(normalized.signal, templateId),
+  };
+}
+
 function clampChannel(value: number) {
   return Math.max(0, Math.min(255, Math.round(value)));
 }

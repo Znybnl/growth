@@ -81,7 +81,7 @@ export async function POST(request: Request) {
             rewardWonAt: result.lead.createdAt,
             rewardAvailableAt: result.lead.rewardAvailableAt,
             rewardExpiresAt: result.lead.rewardExpiresAt,
-            purchaseRequired: result.campaign.rewardRules.purchaseRequired,
+            purchaseRequired: Boolean(result.prize?.purchaseRequired),
             emailSettings: result.campaign.presentation.email,
             preview: true,
           });
@@ -155,7 +155,7 @@ export async function POST(request: Request) {
           rewardWonAt: result.lead.createdAt,
           rewardAvailableAt: result.lead.rewardAvailableAt,
           rewardExpiresAt: result.lead.rewardExpiresAt,
-          purchaseRequired: result.campaign.rewardRules.purchaseRequired,
+          purchaseRequired: Boolean(result.prize?.purchaseRequired),
           emailSettings: result.campaign.presentation.email,
         });
       } catch (emailError) {

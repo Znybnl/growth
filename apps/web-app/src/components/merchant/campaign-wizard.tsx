@@ -14,7 +14,6 @@ import {
   Download,
   Gift,
   Plus,
-  ShieldCheck,
   Sparkles,
   Soup,
   Trash2,
@@ -28,7 +27,7 @@ import {
   buildCampaignLivePreviewModel,
   CampaignLivePreview,
 } from "@/components/merchant/campaign-live-preview";
-import { actionKindCta } from "@/lib/format";
+import { actionKindCta, textFontLabel } from "@/lib/format";
 import { getPrizeValidationMessages } from "@/lib/prize-validation";
 import { createCampaignEmailDefaults } from "@/lib/email-settings";
 import {
@@ -49,6 +48,7 @@ import {
   GamePageTemplateId,
   Merchant,
   PrizeSuggestion,
+  TextFont,
 } from "@/lib/types";
 
 type WizardStepId =
@@ -101,6 +101,20 @@ const WIZARD_STEPS: WizardStep[] = [
       "Choisissez l’action proposée avant le jeu. Elle change à chaque visite pour guider le joueur.",
   },
 ];
+
+const WIZARD_TEXT_FONTS: TextFont[] = [
+  "anton",
+  "display",
+  "serif",
+  "cormorant",
+  "fredoka",
+  "inter",
+  "bebas",
+];
+
+function wizardActionVisitLabel(index: number) {
+  return index === 0 ? "1\u00e8re visite" : `${index + 1}\u00e8me visite`;
+}
 
 const GOOGLE_REVIEW_HOSTS = new Set([
   "google.com",
@@ -287,6 +301,7 @@ function createWizardDraft(merchant: Merchant): WizardDraft {
         totalQuantity: null,
         probability: 50,
         estimatedUnitCost: merchant.defaultPrizeCost ?? 5,
+        purchaseRequired: false,
         usageConditions: "",
       },
     ],
@@ -717,12 +732,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
   }
 
   async function saveCampaign(isActive: boolean) {
-    const blockingErrors = collectErrors(draft, actionEnabled);
-    const requiredForDraft = blockingErrors.filter(
-      (candidate) =>
-        candidate.step === "identity" || candidate.step === "prizes",
-    );
-    const errorsToShow = isActive ? blockingErrors : requiredForDraft;
+    const errorsToShow = isActive ? collectErrors(draft, actionEnabled) : [];
     if (errorsToShow.length) {
       const first = errorsToShow[0];
       setError(first.message);
@@ -740,6 +750,10 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
           ...draft,
           creationMode: "wizard",
           isActive,
+          rewardRules: {
+            ...draft.rewardRules,
+            purchaseRequired: false,
+          },
           actions: actionEnabled
             ? draft.actions.map((action) => ({
                 ...action,
@@ -894,9 +908,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                     <span className="block text-sm font-semibold">
                       {item.title}
                     </span>
-                    <span
-                      className={`mt-1 block text-[11px] leading-4 ${active ? "text-[#c8d1e3]" : "text-[#8b95a8]"}`}
-                    >
+                    <span className="hidden">
                       {item.description}
                     </span>
                   </span>
@@ -913,7 +925,9 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                 Étape {step.number}
               </p>
               <h2 className="okado-section-title mt-2">{step.title}</h2>
-              <p className="mt-2 text-sm text-[#7a8498]">{step.description}</p>
+              {step.description ? (
+                <p className="mt-2 hidden text-sm text-[#7a8498]">{step.description}</p>
+              ) : null}
             </div>
             <div className="hidden rounded-full bg-[#fff7dd] p-3 text-[#b28719] sm:block">
               <Sparkles className="h-5 w-5" />
@@ -943,7 +957,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
               </label>
               <label className="block">
                 <span className="text-sm font-semibold text-[#182033]">
-                  Promesse affichée au client
+                  Promesse affichée au client <span className="text-[#b42318]">*</span>
                 </span>
                 <span className="mt-1 block text-xs text-[#8993a6]">
                   Une phrase courte, concrète et facile à comprendre sur mobile.
@@ -960,6 +974,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                 <span className="mt-1 block text-xs text-[#8993a6]">
                   3 lignes maximum pour conserver un rendu lisible sur mobile.
                 </span>
+                <span className="mt-1 block text-xs font-medium text-[#b42318]">Champ obligatoire *</span>
               </label>
               <div className="grid gap-4">
                 <label className="block">
@@ -1116,7 +1131,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                   </button>
                 ))}
               </div>
-              <div className="rounded-[22px] border border-[#e2e8f0] bg-[#fbfcfe] p-5">
+              <div className="hidden rounded-[22px] border border-[#e2e8f0] bg-[#fbfcfe] p-5">
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <p className="text-sm font-semibold text-[#182033]">
@@ -1127,7 +1142,6 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                       parcours client et au retrait en caisse.
                     </p>
                   </div>
-                  <ShieldCheck className="h-5 w-5 text-[#18864b]" />
                 </div>
                 <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   <label className="flex cursor-pointer items-start gap-3 rounded-[16px] border border-[#e2e8f0] bg-white p-4 text-sm text-[#182033]">
@@ -1154,7 +1168,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                       </span>
                     </span>
                   </label>
-                  <label className="flex cursor-pointer items-start gap-3 rounded-[16px] border border-[#e2e8f0] bg-white p-4 text-sm text-[#182033]">
+                  <label className="hidden">
                     <input
                       type="checkbox"
                       checked={draft.rewardRules.purchaseRequired}
@@ -1215,9 +1229,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                         : "Gain selon les probabilités"}
                     </p>
                   </div>
-                  <div
-                    className={`rounded-[14px] border px-4 py-3 ${draft.rewardRules.purchaseRequired ? "border-[#f0dfaa] bg-[#fff9e8]" : "border-[#e2e8f0] bg-white"}`}
-                  >
+                  <div className="hidden">
                     <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#8993a6]">
                       Retrait
                     </p>
@@ -1271,6 +1283,27 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                   continuer.
                 </div>
               ) : null}
+              <label className="flex cursor-pointer items-start gap-3 rounded-[16px] border border-[#e2e8f0] bg-white p-4 text-sm text-[#182033]">
+                <input
+                  type="checkbox"
+                  checked={draft.rewardRules.availableAfterHours > 0}
+                  onChange={(event) =>
+                    patchDraft({
+                      rewardRules: {
+                        ...draft.rewardRules,
+                        availableAfterHours: event.target.checked ? 24 : 0,
+                      },
+                    })
+                  }
+                  className="mt-0.5 h-4 w-4 cursor-pointer accent-[#b28719]"
+                />
+                <span>
+                  <span className="block font-semibold">Lot disponible lors d&apos;une prochaine visite</span>
+                  <span className="mt-1 block text-xs leading-5 text-[#7a8498]">
+                    Le lot sera disponible à partir du lendemain de la participation.
+                  </span>
+                </span>
+              </label>
               {draft.prizes.map((prize, index) => (
                 <div
                   key={prize.id}
@@ -1364,6 +1397,26 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                       className="mt-2 w-full rounded-[13px] border border-[#dbe3ed] bg-white px-3 py-3 text-sm text-[#182033]"
                     />
                   </label>
+                  <label className="mt-3 flex cursor-pointer items-start gap-3 rounded-[14px] border border-[#f0dfaa] bg-[#fff9e8] px-3 py-3 text-sm text-[#5f4b12]">
+                    <input
+                      type="checkbox"
+                      checked={Boolean(prize.purchaseRequired)}
+                      onChange={(event) =>
+                        setDraft((current) =>
+                          updatePrize(current, prize.id, {
+                            purchaseRequired: event.target.checked,
+                          }),
+                        )
+                      }
+                      className="mt-1 h-4 w-4 cursor-pointer accent-[#b28719]"
+                    />
+                    <span>
+                      <span className="block font-semibold">Achat requis pour le retrait</span>
+                      <span className="mt-1 block text-xs leading-5 text-[#806b30]">
+                        Cette condition s&apos;applique uniquement à ce lot.
+                      </span>
+                    </span>
+                  </label>
                 </div>
               ))}
               {prizeValidationMessages.length > 0 ? (
@@ -1401,6 +1454,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                           Math.round(100 - totalProbability),
                         ),
                         estimatedUnitCost: merchant.defaultPrizeCost ?? 5,
+                        purchaseRequired: false,
                         usageConditions: "",
                       },
                     ],
@@ -1424,7 +1478,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                   >
                     <div className="flex items-center justify-between gap-3">
                       <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#8993a6]">
-                        Action {index + 1}
+                        {wizardActionVisitLabel(index)}
                       </p>
                       <div className="flex items-center gap-1">
                         <button
@@ -1555,7 +1609,11 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                       text: "Festif et lumineux",
                     },
                       ] as const
-                ).slice().sort((left, right) => (left.id === "scratch-coral" ? -1 : right.id === "scratch-coral" ? 1 : 0)).map((template) => (
+                )
+                  .filter((template) => template.id !== "cosmic-orbit" && template.id !== "sunburst-festival")
+                  .slice()
+                  .sort((left, right) => (left.id === "scratch-coral" ? -1 : right.id === "scratch-coral" ? 1 : 0))
+                  .map((template) => (
                   <button
                     type="button"
                     key={template.id}
@@ -1647,8 +1705,32 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                     }}
                     className="mt-3 h-12 w-full rounded-[12px] border border-[#dbe3ed] bg-white p-1"
                   />
-                </label>
-                  </>
+                 </label>
+                 {draft.presentation.layout.templateId === "restaurant-pop" ? (
+                   <label className="block">
+                     <span className="text-sm font-semibold text-[#182033]">Couleur secondaire</span>
+                     <span className="mt-1 block text-xs text-[#8993a6]">
+                       Utilisée pour les accents graphiques du template Visuel pop.
+                     </span>
+                     <input
+                       type="color"
+                       value={draft.presentation.wheel.winColor}
+                       onChange={(event) =>
+                         patchDraft({
+                           presentation: {
+                             ...draft.presentation,
+                             wheel: {
+                               ...draft.presentation.wheel,
+                               winColor: event.target.value,
+                             },
+                           },
+                         })
+                       }
+                       className="mt-3 h-12 w-full rounded-[12px] border border-[#dbe3ed] bg-white p-1"
+                     />
+                   </label>
+                 ) : null}
+                   </>
                 ) : null}
               </div>
               {draft.gameType === "scratch" ? (
@@ -1674,6 +1756,64 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                   />
                 </label>
               ) : null}
+              <div className="rounded-[18px] border border-[#e2e8f0] bg-[#fbfcfe] p-4 sm:col-span-2">
+                <p className="text-sm font-semibold text-[#182033]">Typographie</p>
+                <p className="mt-1 text-xs leading-5 text-[#8993a6]">
+                  Choisissez la police et la taille de la promesse affichée sur le jeu.
+                </p>
+                <div className="mt-4 grid gap-4 sm:grid-cols-[1fr_1.4fr] sm:items-end">
+                  <label className="block text-sm">
+                    <span className="mb-2 block font-semibold text-[#182033]">Police</span>
+                    <select
+                      value={draft.presentation.heading.fontFamily}
+                      onChange={(event) =>
+                        patchDraft({
+                          presentation: {
+                            ...draft.presentation,
+                            heading: {
+                              ...draft.presentation.heading,
+                              fontFamily: event.target.value as TextFont,
+                            },
+                          },
+                        })
+                      }
+                      className="w-full rounded-[12px] border border-[#dbe3ed] bg-white px-3 py-3 text-sm text-[#182033]"
+                    >
+                      {WIZARD_TEXT_FONTS.map((font) => (
+                        <option key={font} value={font}>
+                          {textFontLabel(font)}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="block text-sm">
+                    <span className="mb-2 flex items-center justify-between gap-3 font-semibold text-[#182033]">
+                      <span>Taille</span>
+                      <output className="text-[#b28719]">{draft.presentation.heading.fontSizePx} px</output>
+                    </span>
+                    <input
+                      type="range"
+                      min={18}
+                      max={72}
+                      step={1}
+                      value={draft.presentation.heading.fontSizePx}
+                      onChange={(event) =>
+                        patchDraft({
+                          presentation: {
+                            ...draft.presentation,
+                            heading: {
+                              ...draft.presentation.heading,
+                              fontSizePx: Number(event.target.value),
+                            },
+                          },
+                        })
+                      }
+                      className="w-full cursor-pointer accent-[#b28719]"
+                      aria-label="Taille de la police"
+                    />
+                  </label>
+                </div>
+              </div>
             </div>
           ) : null}
 
