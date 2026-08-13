@@ -147,44 +147,4 @@ export function ExpressRedemption({ code, context: initialContext }: ExpressRede
                 <CircleAlert className="mt-0.5 h-5 w-5 shrink-0" />
                 <div>
                   <p className="font-semibold">Retrait pas encore disponible</p>
-                  <p className="mt-1">Ce lot pourra être retiré à partir du {formatDateTime(context.rewardAvailableAt)}.</p>
-                </div>
-              </div>
-            ) : context.status === "expired" ? (
-              <div role="alert" className="flex items-start gap-3 rounded-[18px] border-2 border-[#e5b83e] bg-[#fff8dc] px-4 py-4 text-sm leading-6 text-[#74570b]">
-                <CircleAlert className="mt-0.5 h-5 w-5 shrink-0" />
-                <div>
-                  <p className="font-semibold">Retrait impossible : période terminée</p>
-                  <p className="mt-1">La validité de ce lot a pris fin le {formatDateTime(context.rewardExpiresAt)}.</p>
-                </div>
-              </div>
-            ) : null}
-
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-[18px] border border-[#e5ebf2] bg-[#fbfcfe] p-4">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8993a6]">Bénéficiaire</p>
-                <p className="mt-2 text-sm font-semibold text-[#182033]">{context.firstName || "Client"}</p>
-                {context.email || context.maskedEmail ? <p className="mt-1 break-all text-xs text-[#7a8498]">{context.email ?? context.maskedEmail}</p> : null}
-              </div>
-              <div className="rounded-[18px] border border-[#e5ebf2] bg-[#fbfcfe] p-4">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8993a6]">Code</p>
-                <p className="mt-2 font-mono text-lg font-semibold tracking-[0.08em] text-[#182033]">{context.redemptionCode ?? code}</p>
-              </div>
-            </div>
-
-            {context.rewardAvailableAt || context.rewardExpiresAt ? (
-              <div className="rounded-[18px] border border-[#e5ebf2] bg-[#fbfcfe] px-4 py-3 text-sm leading-6 text-[#667286]">
-                {context.rewardAvailableAt ? <p>Disponible à partir du <strong className="font-semibold text-[#182033]">{formatDateTime(context.rewardAvailableAt)}</strong></p> : null}
-                {context.rewardExpiresAt ? <p>Valable jusqu’au <strong className="font-semibold text-[#182033]">{formatDateTime(context.rewardExpiresAt)}</strong></p> : null}
-              </div>
-            ) : null}
-
-            {context.prizeUsageConditions ? (
-              <div className="rounded-[18px] border border-[#f0dfaa] bg-[#fff9e8] px-4 py-3 text-sm leading-6 text-[#6c5313]">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8a6a18]">Conditions de retrait</p>
-                <p className="mt-1 whitespace-pre-line">{context.prizeUsageConditions}</p>
-              </div>
-            ) : null}
-
-            {phase === "ready" && (isAvailable || canForce) ? (
-              <button type="button" onClick={openMerchantValidation} className="inline-flex w-full items-center justify-center gap-2 rounded-[16px] bg-[#111827] px-5 py-4 text-sm font-semibold text-white shadow-[0_14px_28px_rgba(17,24,39,0.16)] transition hover
+                  <p className="mt-1">Ce lot pourra être retiré à partir du {forma
