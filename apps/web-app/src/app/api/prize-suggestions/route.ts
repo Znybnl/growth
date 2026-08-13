@@ -1,6 +1,3 @@
-Exit code: 0
-Wall time: 0.3 seconds
-Output:
 import { NextRequest, NextResponse } from "next/server";
 
 import { getAuthenticatedSession } from "@/lib/auth";
@@ -24,4 +21,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-
