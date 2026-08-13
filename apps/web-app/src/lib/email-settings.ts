@@ -1,6 +1,3 @@
-Exit code: 0
-Wall time: 0.3 seconds
-Output:
 import { CampaignEmailSettings, Merchant } from "@/lib/types";
 import { isRestaurantIndustry } from "@/lib/merchant-options";
 
@@ -35,19 +32,19 @@ export function validateCampaignEmailSettings(settings: CampaignEmailSettings): 
     .filter(Boolean)
     .join("\n");
 
-  if (!settings.senderName.trim()) errors.push("Renseignez un nom dâ€™expÃ©diteur.");
-  if (!settings.subject.trim()) errors.push("Lâ€™objet de lâ€™e-mail est obligatoire.");
-  if (!settings.headline.trim()) errors.push("Le titre principal de lâ€™e-mail est obligatoire.");
-  if (!settings.body.trim()) errors.push("Le contenu principal de lâ€™e-mail est obligatoire.");
-  if (!settings.buttonLabel.trim()) errors.push("Le libellÃ© du bouton de retrait est obligatoire.");
+  if (!settings.senderName.trim()) errors.push("Renseignez un nom d’expéditeur.");
+  if (!settings.subject.trim()) errors.push("L’objet de l’e-mail est obligatoire.");
+  if (!settings.headline.trim()) errors.push("Le titre principal de l’e-mail est obligatoire.");
+  if (!settings.body.trim()) errors.push("Le contenu principal de l’e-mail est obligatoire.");
+  if (!settings.buttonLabel.trim()) errors.push("Le libellé du bouton de retrait est obligatoire.");
 
   if (settings.replyTo.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(settings.replyTo.trim())) {
-    errors.push("Lâ€™adresse de rÃ©ponse nâ€™est pas valide.");
+    errors.push("L’adresse de réponse n’est pas valide.");
   }
 
   for (const variable of REQUIRED_CAMPAIGN_EMAIL_VARIABLES) {
     if (!new RegExp(`\\{\\{\\s*${variable}\\s*\\}\\}`).test(content)) {
-      errors.push(`Lâ€™information Â« ${variable} Â» doit rester prÃ©sente dans lâ€™e-mail.`);
+      errors.push(`L’information « ${variable} » doit rester présente dans l’e-mail.`);
     }
   }
 
@@ -138,12 +135,12 @@ function createCampaignEmailDefaultsForMerchantName(
   return {
     senderName: companyName,
     replyTo: "",
-    subject: "{{merchantName}} Â· rÃ©cupÃ©rez votre lot",
+    subject: "{{merchantName}} · récupérez votre lot",
     preheader: `Conservez ce QR code pour retirer votre cadeau au ${businessNoun}.`,
-    headline: "RÃ©cupÃ©rez votre lot, {{firstName}}",
+    headline: "Récupérez votre lot, {{firstName}}",
     body: [
-      "Vous avez gagnÃ© {{prizeLabel}} chez {{merchantName}} le {{rewardDate}}.",
-      "Ce coupon sera valable lors de votre prochaine visite. Rendez-vous sur place demain et montrez le QR code ci-dessous au personnel de l'Ã©tablissement pour rÃ©cupÃ©rer votre cadeau.",
+      "Vous avez gagné {{prizeLabel}} chez {{merchantName}} le {{rewardDate}}.",
+      "Ce coupon sera valable lors de votre prochaine visite. Rendez-vous sur place demain et montrez le QR code ci-dessous au personnel de l'établissement pour récupérer votre cadeau.",
       "{{rewardAvailability}}",
       "{{rewardExpiry}}",
       "{{purchaseCondition}}",
@@ -151,7 +148,7 @@ function createCampaignEmailDefaultsForMerchantName(
     ].join("\n\n"),
     buttonLabel: "Voir mon QR code",
     footerNote:
-      "PrÃ©sentez ce QR code au comptoir. Il ne pourra Ãªtre consommÃ© qu'une seule fois.",
+      "Présentez ce QR code au comptoir. Il ne pourra être consommé qu'une seule fois.",
     accentColor: "#111827",
   };
 }
@@ -170,11 +167,11 @@ export function upgradeLegacyRewardEmailSettings(
   return {
     ...settings,
     subject: settings.subject
-      .replace(legacyReadySubject, "rÃ©cupÃ©rez votre lot")
-      .replace("votre lot est prÃªt", "rÃ©cupÃ©rez votre lot"),
+      .replace(legacyReadySubject, "récupérez votre lot")
+      .replace("votre lot est prêt", "récupérez votre lot"),
     headline: settings.headline
-      .replace(legacyReadyHeadline, "RÃ©cupÃ©rez votre lot")
-      .replace("Votre lot est prÃªt", "RÃ©cupÃ©rez votre lot"),
+      .replace(legacyReadyHeadline, "Récupérez votre lot")
+      .replace("Votre lot est prêt", "Récupérez votre lot"),
     body: hasLegacyBody ? defaults.body : settings.body,
     buttonLabel:
       settings.buttonLabel === "Ouvrir mon QR code" ? defaults.buttonLabel : settings.buttonLabel,
@@ -280,4 +277,3 @@ export function renderRewardEmailHtml(
 export function resolveRewardEmailVariables(variables: RewardEmailVariables) {
   return variables;
 }
-
