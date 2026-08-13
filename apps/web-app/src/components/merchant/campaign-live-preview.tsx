@@ -1,3 +1,6 @@
+Exit code: 0
+Wall time: 0.3 seconds
+Output:
 "use client";
 
 import dynamic from "next/dynamic";
@@ -163,4 +166,105 @@ function previewBackgroundImage(form: CampaignSetupInput, templateId: GamePageTe
     return `radial-gradient(circle at 12% 9%, ${withHexAlpha(templatePrimary, "52")} 0 10%, transparent 11%), radial-gradient(circle at 94% 12%, ${withHexAlpha(form.presentation.wheel.winColor, "30")} 0 12%, transparent 13%), linear-gradient(180deg, #f59e0b 0%, #f97316 58%, #ea580c 100%)`;
   }
   if (templateId === "sunburst-festival") {
-    return `radial-gradient(circle at 12% 10%, ${withHexAlpha(form.presentation.wh
+    return `radial-gradient(circle at 12% 10%, ${withHexAlpha(form.presentation.wheel.loseColor, "33")} 0 12%, transparent 13%), radial-gradient(circle at 94% 18%, ${withHexAlpha(form.presentation.wheel.winColor, "38")} 0 14%, transparent 15%), linear-gradient(180deg, #fffdf5 0%, #fff8e8 56%, #fff2ce 100%)`;
+  }
+  if (templateId === "scratch-coral") {
+    return `radial-gradient(circle at 50% 0%, ${withHexAlpha(form.accent.signal, "24")} 0 18%, transparent 42%), linear-gradient(180deg, #fffaf5 0%, #ffffff 72%, #fff3e8 100%)`;
+  }
+  if (templateId === "scratch-lilac") {
+    const templatePrimary = scratchTemplatePrimaryColor(form.accent.signal, templateId);
+    return `radial-gradient(circle at 50% 0%, ${withHexAlpha(templatePrimary, "2c")} 0 20%, transparent 44%), linear-gradient(180deg, #fffaff 0%, #f7edff 100%)`;
+  }
+  if (templateId === "scratch-sunburst") {
+    return `repeating-conic-gradient(from -18deg at 50% -2%, ${withHexAlpha(form.accent.signal, "52")} 0deg 12deg, transparent 12deg 24deg), linear-gradient(180deg, #fff4bf 0%, #ffdc58 68%, #fff0c5 100%)`;
+  }
+  return "";
+}
+
+export function buildCampaignLivePreviewModel(form: CampaignSetupInput, merchant: Merchant): CampaignEditorPreviewModel {
+  const templateId = form.presentation.layout.templateId ?? "classic";
+  const previewAccent = form.gameType === "scratch" ? resolveScratchAccent(form.accent, templateId) : form.accent;
+  const previewSegments = buildPreviewSegments(form.prizes);
+  const winningSegmentId = previewSegments.find((segment) => segment.tone === "win")?.id ?? previewSegments[0]?.id ?? "win";
+  const logoSizePercent = clampCampaignLogoSizePercent(form.presentation.logo.sizePercent);
+  const logoAlignmentClass = form.presentation.logo.align === "left" ? "justify-start" : form.presentation.logo.align === "right" ? "justify-end" : "justify-center";
+  const headingAlignmentClass = form.presentation.heading.align === "left" ? "text-left" : form.presentation.heading.align === "right" ? "text-right" : "text-center";
+  return {
+    formId: form.id ?? "new-campaign",
+    backgroundStyle: {
+      backgroundColor: form.presentation.background.color,
+      backgroundImage: previewBackgroundImage(form, templateId),
+      backgroundPosition: "center",
+      backgroundSize: "cover",
+    },
+    logoMode: form.logoMode,
+    logoAlignmentClass,
+    logoBottomSpacingPx: form.presentation.logo.marginBottomPx + form.presentation.layout.blockSpacingPx,
+    logoWidthPx: Math.round(Math.max(56, Math.min(720, logoSizePercent * 3))),
+    logoTextSizePx: campaignLogoTextSizePx(logoSizePercent, form.gameType),
+    logoUrl: form.logoUrl ?? "",
+    logoText: form.logoText?.trim() || merchant.companyName,
+    headingAlignmentClass,
+    headingFontClass: headingFontClassFor(form),
+    headingTextColor: templateId === "cosmic-orbit" ? "#f8fbff" : form.gameType === "scratch" && form.presentation.heading.textColor.toLowerCase() === "#1f2937" ? previewAccent.ink : form.presentation.heading.textColor,
+    headingFontSizePx: form.presentation.heading.fontSizePx,
+    headingFontWeight: form.presentation.heading.fontWeight ?? 600,
+    subtitle: limitCampaignSubtitleLines(form.subtitle),
+    blockSpacingPx: form.presentation.layout.blockSpacingPx,
+    gamePageTemplateId: templateId,
+    gameType: form.gameType,
+    accent: previewAccent,
+    wheelStyle: form.presentation.wheel,
+    buttonStyle: {
+      backgroundColor: form.gameType === "wheel" ? form.presentation.wheel.loseColor : form.presentation.button.backgroundColor,
+      textColor: form.presentation.button.textColor,
+      borderColor: form.gameType === "wheel" ? form.presentation.wheel.rimColor : form.presentation.button.borderColor,
+      textSizePx: form.presentation.button.textSizePx,
+      isBold: form.presentation.button.isBold ?? true,
+    },
+    previewSegments,
+    winningSegmentId,
+    previewPrize: form.prizes[0]?.label || "Cadeau surprise",
+    ctaLabel: form.ctaLabel,
+    previewCtaClass: buttonSizeMap[form.presentation.button.size],
+  };
+}
+
+export const CampaignLivePreview = memo(function CampaignLivePreview({
+  merchant,
+  preview,
+  compact = false,
+  flushTop = false,
+}: { merchant: Merchant; preview: CampaignEditorPreviewModel; compact?: boolean; flushTop?: boolean }) {
+  const isRestaurantPopTemplate = preview.gamePageTemplateId === "restaurant-pop";
+  const isCosmicTemplate = preview.gamePageTemplateId === "cosmic-orbit";
+  const isImmersiveTemplate = isCosmicTemplate || preview.gamePageTemplateId === "sunburst-festival";
+  const isImmersiveScratchTemplate = ["scratch-vault", "scratch-confetti", "scratch-coral", "scratch-lilac", "scratch-sunburst"].includes(preview.gamePageTemplateId);
+  const showStandardHeader = !isImmersiveScratchTemplate;
+  const previewScale = compact ? 0.8 : 1;
+  const scalePreviewValue = (value: number) => Math.round(value * previewScale);
+  const previewHeadingTextColor = isCosmicTemplate || (preview.gamePageTemplateId === "scratch-vault" && preview.headingTextColor.toLowerCase() === "#1f2937") ? "#f8fbff" : preview.headingTextColor;
+  const restaurantPopHeadingLines = buildRestaurantPopHeadingLines(preview.subtitle);
+  const previewFrameClass = compact ? "min-h-[480px] max-w-[360px] rounded-[30px] px-3 pb-5 pt-7" : "min-h-[600px] max-w-[450px] rounded-[38px] px-4 pb-6 pt-8";
+
+  return (
+    <div className={flushTop ? "" : "mt-6"}>
+      <div className={`mx-auto w-full overflow-hidden border border-[#ced7e6] shadow-[0_30px_70px_rgba(18,24,39,0.18)] ${previewFrameClass}`} style={preview.backgroundStyle}>
+        {showStandardHeader ? (
+          <>
+            {preview.logoMode === "image" && preview.logoUrl ? <div className={`flex ${preview.logoAlignmentClass}`}><div style={{ marginBottom: `${scalePreviewValue(preview.logoBottomSpacingPx)}px` }}><BrandMark logoText={merchant.logoText} logoUrl={preview.logoUrl} size="lg" variant="transparent" imageWidthPx={scalePreviewValue(preview.logoWidthPx)} /></div></div> : null}
+            {preview.logoMode === "text" ? <div className={`flex ${preview.logoAlignmentClass}`}><div style={{ marginBottom: `${scalePreviewValue(preview.logoBottomSpacingPx)}px` }}><BrandMark logoText={preview.logoText} size="lg" variant="transparent" imageWidthPx={scalePreviewValue(preview.logoWidthPx)} textSizePx={scalePreviewValue(preview.logoTextSizePx)} textColor={previewHeadingTextColor} textClassName="text-2xl" /></div></div> : null}
+            {preview.gameType === "scratch" && preview.logoMode === "none" ? <div className={`flex ${preview.logoAlignmentClass}`}><div style={{ marginBottom: `${scalePreviewValue(preview.logoBottomSpacingPx)}px` }}><BrandMark logoText={preview.logoText || merchant.companyName} size="lg" variant="transparent" imageWidthPx={scalePreviewValue(preview.logoWidthPx)} textSizePx={scalePreviewValue(preview.logoTextSizePx)} textColor={previewHeadingTextColor} textClassName="text-2xl" /></div></div> : null}
+            {preview.logoMode === "none" || (preview.logoMode === "image" && !preview.logoUrl) ? <div aria-hidden="true" className="h-5" /> : null}
+            <div className={preview.headingAlignmentClass}><h3 className={`${preview.headingFontClass} line-clamp-3 whitespace-pre-line ${isRestaurantPopTemplate ? "tracking-[0.038em] drop-shadow-[0_4px_0_rgba(0,0,0,0.08)]" : ""} leading-[1]`} style={{ color: previewHeadingTextColor, fontSize: fluidType(scalePreviewValue(preview.headingFontSizePx), { minRatio: 0.82, maxRatio: 1.08, viewportStep: 0.3 }), fontWeight: preview.headingFontWeight }}>{isRestaurantPopTemplate ? restaurantPopHeadingLines.map((line, lineIndex) => <span key={`preview-heading-line-${lineIndex}`} className="block">{line.map((part, partIndex) => <span key={`preview-heading-line-${lineIndex}-${partIndex}`} style={{ color: part.secondary ? preview.wheelStyle.winColor : previewHeadingTextColor }}>{part.text}</span>)}</span>) : preview.subtitle.trim() || (preview.gameType === "scratch" ? DEFAULT_SCRATCH_SUBTITLE : "DÃ©couvrez votre animation")}</h3></div>
+          </>
+        ) : null}
+        <div className={preview.gameType === "wheel" ? compact ? "-mx-3" : "-mx-4" : undefined} style={{ marginTop: `${isImmersiveScratchTemplate ? 0 : scalePreviewValue(preview.blockSpacingPx)}px`, height: preview.gameType === "wheel" ? compact ? "376px" : "470px" : undefined, marginBottom: preview.gameType === "wheel" ? compact ? "-20px" : "-24px" : undefined }}>
+          {preview.gameType === "wheel" ? isImmersiveTemplate ? <ImmersiveWheel accent={preview.accent} wheelStyle={preview.wheelStyle} template={preview.gamePageTemplateId as "cosmic-orbit" | "sunburst-festival"} buttonStyle={{ backgroundColor: preview.buttonStyle.backgroundColor, textColor: preview.buttonStyle.textColor, borderColor: preview.buttonStyle.borderColor }} segments={preview.previewSegments} buttonEnabled winningSegmentId={preview.winningSegmentId} framing="editor" /> : <WheelOfFortune accent={preview.accent} wheelStyle={preview.wheelStyle} pageTemplate={preview.gamePageTemplateId === "restaurant-pop" ? "restaurant-pop" : "classic"} buttonStyle={{ backgroundColor: preview.buttonStyle.backgroundColor, textColor: preview.buttonStyle.textColor, borderColor: preview.buttonStyle.borderColor }} segments={preview.previewSegments} buttonEnabled winningSegmentId={preview.winningSegmentId} framing="editor" /> : isImmersiveScratchTemplate ? <ImmersiveScratchTicket accent={preview.accent} resultLabel={preview.previewPrize} enabled={false} onReveal={() => undefined} logoMode={preview.logoMode} logoText={preview.logoText} logoUrl={preview.logoUrl} headline={preview.subtitle} headingTextColor={previewHeadingTextColor} headingFontClass={preview.headingFontClass} headingFontSize={fluidType(scalePreviewValue(preview.headingFontSizePx), { minRatio: 0.82, maxRatio: 1.08, viewportStep: 0.3 })} headingFontWeight={preview.headingFontWeight} headingAlignmentClass={preview.headingAlignmentClass} logoAlignmentClass={preview.logoAlignmentClass} logoBottomSpacingPx={scalePreviewValue(Math.max(0, preview.logoBottomSpacingPx - preview.blockSpacingPx))} logoWidthPx={scalePreviewValue(preview.logoWidthPx)} logoTextSizePx={scalePreviewValue(preview.logoTextSizePx)} fitContainer template={preview.gamePageTemplateId as "scratch-vault" | "scratch-confetti" | "scratch-coral" | "scratch-lilac" | "scratch-sunburst"} /> : <ScratchGame accent={preview.accent} resultLabel={preview.previewPrize} enabled={false} onReveal={() => undefined} />}
+        </div>
+        {preview.gameType !== "wheel" && !isImmersiveScratchTemplate ? <button type="button" className={`mx-auto block w-full max-w-[360px] rounded-[24px] border font-semibold ${preview.previewCtaClass}`} style={{ marginTop: `${scalePreviewValue(preview.blockSpacingPx)}px`, backgroundColor: preview.buttonStyle.backgroundColor, color: preview.buttonStyle.textColor, borderColor: preview.buttonStyle.borderColor, fontSize: fluidType(scalePreviewValue(preview.buttonStyle.textSizePx), { minRatio: 0.86, maxRatio: 1.08, viewportStep: 0.24 }), fontWeight: preview.buttonStyle.isBold ? 700 : 400 }}>{preview.ctaLabel}</button> : null}
+      </div>
+    </div>
+  );
+});
+
