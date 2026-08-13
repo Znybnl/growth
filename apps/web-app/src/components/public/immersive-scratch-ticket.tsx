@@ -1,3 +1,6 @@
+Exit code: 0
+Wall time: 0.3 seconds
+Output:
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -185,4 +188,243 @@ export function ImmersiveScratchTicket({
   const primary = scratchTemplatePrimaryColor(configuredPrimary, template);
   const hasCustomPrimary =
     configuredPrimary.trim().toLowerCase() !== DEFAULT_SCRATCH_PRIMARY_COLOR &&
-    !isConfe
+    !isConfetti &&
+    !isLilac;
+  const ticketBaseColor = isLilac
+    ? DEFAULT_SCRATCH_LILAC_COLOR
+    : isVault
+      ? "#171d38"
+      : primary;
+  const illustrationColor = isLilac
+    ? blendWithWhite(ticketBaseColor, 0.72)
+    : isVault
+      ? hasCustomPrimary
+        ? blendWithWhite(ticketBaseColor, 0.58)
+        : "#86e8ff"
+      : blendWithWhite(ticketBaseColor, 0.48);
+  const defaultInk = isVault || isConfetti
+    ? "#f8fbff"
+    : isLilac
+      ? "#4c1d95"
+      : isSunburst
+        ? "#3b2500"
+        : "#111827";
+  const ink = headingTextColor || defaultInk;
+  const resultInk = highestContrastTextColor(ticketBaseColor);
+  const resultTextShadow = resultInk === "#ffffff"
+    ? "0 2px 10px rgba(0, 0, 0, 0.58)"
+    : "0 2px 8px rgba(255, 255, 255, 0.72)";
+  const resolvedHeadingFontClass = headingFontClass || (isLilac ? "font-fredoka" : "font-display");
+  const displayHeadline = headline?.trim() || DEFAULT_SCRATCH_SUBTITLE;
+  const instruction = "Grattez la carte pour rÃ©vÃ©ler votre cadeau.";
+
+  const surfaceClass = isSunburst
+    ? "aspect-[1.18/1] w-full"
+    : "aspect-square w-full";
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const context = canvas?.getContext("2d");
+    if (!canvas || !context) return;
+
+    const gradient = context.createLinearGradient(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    const cover = isLilac ? "#b85be5" : isVault ? "#171d38" : primary;
+    const highlight = isLilac ? "#e2a7fa" : isSunburst ? blendWithWhite(cover, 0.2) : blendWithWhite(cover, 0.34);
+    gradient.addColorStop(0, cover);
+    gradient.addColorStop(0.42, highlight);
+    gradient.addColorStop(0.72, cover);
+    gradient.addColorStop(1, isSunburst ? blendWithWhite(cover, 0.04) : blendWithWhite(cover, 0.08));
+    context.globalCompositeOperation = "source-over";
+    context.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    context.fillStyle = gradient;
+    context.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+    context.save();
+    context.globalAlpha = isSunburst ? 0.14 : 0.18;
+    context.strokeStyle = isLilac || isSunburst ? "#ffffff" : readableTextColor(primary);
+    context.lineWidth = 2;
+    for (let offset = -CANVAS_HEIGHT; offset < CANVAS_WIDTH; offset += isSunburst ? 28 : 34) {
+      context.beginPath();
+      context.moveTo(offset, 0);
+      context.lineTo(offset + CANVAS_HEIGHT, CANVAS_HEIGHT);
+      context.stroke();
+    }
+    context.restore();
+    checksRef.current = 0;
+    revealedRef.current = false;
+    scratchStartedRef.current = false;
+    setRevealed(false);
+    setHasTouched(false);
+  }, [isCoral, isLilac, isSunburst, isVault, primary, resultLabel]);
+
+  function reveal() {
+    if (revealedRef.current) return;
+    revealedRef.current = true;
+    setRevealed(true);
+    onReveal();
+  }
+
+  function scratch(x: number, y: number) {
+    const canvas = canvasRef.current;
+    const context = canvas?.getContext("2d");
+    if (!canvas || !context || !enabled || revealedRef.current) return;
+
+    context.globalCompositeOperation = "destination-out";
+    context.beginPath();
+    context.arc(x, y, isSunburst ? 28 : 32, 0, Math.PI * 2);
+    context.fill();
+    checksRef.current += 1;
+    if (checksRef.current % 9 !== 0) return;
+
+    checkReveal();
+  }
+
+  function checkReveal() {
+    const canvas = canvasRef.current;
+    const context = canvas?.getContext("2d");
+    if (!canvas || !context || revealedRef.current) return;
+
+    const { data } = context.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    let cleared = 0;
+    let samples = 0;
+    for (let index = 3; index < data.length; index += 20) {
+      samples += 1;
+      if (data[index] === 0) cleared += 1;
+    }
+    if (samples > 0 && cleared / samples > 0.3) reveal();
+  }
+
+  function pointFromEvent(event: React.PointerEvent<HTMLCanvasElement>) {
+    const rect = event.currentTarget.getBoundingClientRect();
+    return {
+      x: ((event.clientX - rect.left) / rect.width) * CANVAS_WIDTH,
+      y: ((event.clientY - rect.top) / rect.height) * CANVAS_HEIGHT,
+    };
+  }
+
+  const rootClass = isVault || isConfetti
+    ? "bg-transparent px-5"
+    : isLilac
+      ? "bg-transparent px-6"
+      : isCoral
+        ? "bg-transparent px-5"
+        : isSunburst
+          ? "bg-transparent px-0"
+          : "bg-[#111936] px-5";
+
+  return (
+    <div className={`mx-auto w-full ${fitContainer ? "max-w-full" : "max-w-[370px]"}`}>
+      <div className={`relative overflow-hidden ${rootClass}`}>
+        <div className={`relative z-10 ${headingAlignmentClass}`}>
+          {logoMode !== "none" ? (
+            <div className={`flex ${logoAlignmentClass}`} style={{ marginBottom: `${Math.max(0, logoBottomSpacingPx)}px` }}>
+              <BrandMark
+                logoText={logoText || "Votre commerce"}
+                logoUrl={logoMode === "image" ? logoUrl : undefined}
+                size="lg"
+                variant="transparent"
+                imageWidthPx={logoWidthPx}
+                textSizePx={logoTextSizePx}
+                textClassName="text-2xl"
+                textColor={ink}
+              />
+            </div>
+          ) : null}
+          <h2
+            className={`line-clamp-3 text-2xl leading-[1.08] ${resolvedHeadingFontClass}`}
+            style={{ color: ink, fontSize: headingFontSize, fontWeight: headingFontWeight }}
+          >
+            {displayHeadline}
+          </h2>
+          <p
+            className={`mx-auto mt-9 max-w-[270px] text-sm leading-5 ${headingAlignmentClass}`}
+            style={{ color: withAlpha(ink, isVault || isConfetti ? "e0" : "d9") }}
+          >
+            {instruction}
+          </p>
+        </div>
+
+        <div className={`relative z-10 mx-auto mt-8 overflow-hidden rounded-[26px] ${surfaceClass}`}>
+          {!revealed && !hasTouched ? (
+            <div
+              aria-hidden="true"
+              className={`pointer-events-none absolute inset-0 z-30 flex items-center justify-center ${isSunburst ? "p-6" : "p-5"}`}
+            >
+              {isVault ? <VaultIllustration color={illustrationColor} /> : null}
+              {!isVault && isLilac ? <GiftIllustration color={illustrationColor} /> : null}
+              {!isVault && !isLilac && !isCoral && !isSunburst ? <GiftIllustration color={illustrationColor} /> : null}
+              {isSunburst ? <ScratchMark color={illustrationColor} /> : null}
+            </div>
+          ) : null}
+          {hasTouched ? (
+            <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center px-6 text-center">
+              <p
+                className="max-w-[90%] font-semibold leading-[1.05]"
+                style={{
+                  color: resultInk,
+                  fontSize: "clamp(2rem, 8vw, 3rem)",
+                  textShadow: resultTextShadow,
+                }}
+              >
+                {resultLabel}
+              </p>
+            </div>
+          ) : null}
+          {!revealed ? (
+            <canvas
+              ref={canvasRef}
+              width={CANVAS_WIDTH}
+              height={CANVAS_HEIGHT}
+              aria-label={instruction}
+              className="relative z-20 block h-full w-full touch-none cursor-crosshair"
+              onPointerDown={(event) => {
+                if (!enabled) {
+                  onStart?.();
+                  return;
+                }
+                setHasTouched(true);
+                if (!scratchStartedRef.current) {
+                  scratchStartedRef.current = true;
+                  onScratchStart?.();
+                }
+                event.currentTarget.setPointerCapture(event.pointerId);
+                drawingRef.current = true;
+                scratch(...Object.values(pointFromEvent(event)) as [number, number]);
+              }}
+              onPointerMove={(event) => {
+                if (!drawingRef.current || !enabled) return;
+                scratch(...Object.values(pointFromEvent(event)) as [number, number]);
+              }}
+              onPointerUp={() => {
+                drawingRef.current = false;
+                checkReveal();
+              }}
+              onPointerCancel={() => {
+                drawingRef.current = false;
+              }}
+            />
+          ) : (
+            <div className="relative z-30 flex h-full w-full items-center justify-center bg-white/90 p-6 text-center backdrop-blur-sm">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.24em]" style={{ color: primary }}>
+                  Votre gain
+                </p>
+                <p className="mt-3 text-2xl font-semibold" style={{ color: resultInk }}>
+                  {resultLabel}
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <p
+          className="relative z-10 mt-4 text-center text-sm leading-5"
+          style={{ color: withAlpha(ink, isVault || isConfetti ? "d9" : "c7") }}
+        >
+          {isCoral ? "Le gain sera disponible selon les conditions de retrait." : isSunburst ? "Votre gain sera confirmÃ© aprÃ¨s la rÃ©vÃ©lation." : "Le rÃ©sultat apparaÃ®t dÃ¨s que la zone est suffisamment grattÃ©e."}
+        </p>
+      </div>
+    </div>
+  );
+}
+
