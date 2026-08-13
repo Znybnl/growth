@@ -256,24 +256,4 @@ export function renderRewardEmailHtml(
           .join("")}
         ${usageConditionsBlock}
         <div style="margin:20px 0 18px;padding:18px;border-radius:18px;background:#f8fafc;border:1px solid #e4eaf2;">
-          <p style="margin:0 0 8px;font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:#7b8496;">Code de retrait</p>
-          <p style="margin:0;font-size:28px;font-weight:700;letter-spacing:0.08em;">${escapeHtml(variables.redemptionCode)}</p>
-        </div>
-        <div style="margin:24px 0;">
-          <img src="${variables.qrUrl}" alt="QR code de retrait" width="180" height="180" style="display:block;width:180px;height:180px;border-radius:20px;border:1px solid #dbe4f0;background:#ffffff;" />
-        </div>
-        <a href="${variables.qrUrl}" target="_blank" style="display:inline-block;padding:14px 20px;border-radius:16px;background:${accentColor};color:#ffffff;text-decoration:none;font-weight:700;">${buttonLabel}</a>
-        ${footerBlocks
-          .map(
-            (block) =>
-              `<p style="margin:20px 0 0;font-size:14px;line-height:1.7;color:#6b7280;">${block}</p>`,
-          )
-          .join("")}
-      </div>
-    </div>
-  `;
-}
-
-export function resolveRewardEmailVariables(variables: RewardEmailVariables) {
-  return variables;
-}
+          <p style="margin:0 0 8px;font-size:12px;lett

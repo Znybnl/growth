@@ -187,42 +187,4 @@ export function ExpressRedemption({ code, context: initialContext }: ExpressRede
             ) : null}
 
             {phase === "ready" && (isAvailable || canForce) ? (
-              <button type="button" onClick={openMerchantValidation} className="inline-flex w-full items-center justify-center gap-2 rounded-[16px] bg-[#111827] px-5 py-4 text-sm font-semibold text-white shadow-[0_14px_28px_rgba(17,24,39,0.16)] transition hover:bg-[#273142]">
-                <ShieldCheck className="h-4 w-4" /> Valider en tant que commerçant <ChevronRight className="h-4 w-4" />
-              </button>
-            ) : null}
-
-            {phase === "pin" ? (
-              <form onSubmit={submitPin} className="rounded-[20px] border border-[#dbe4f0] bg-[#f8fafc] p-4 sm:p-5">
-                <div className="flex items-start gap-3">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#fff3c9] text-[#9a7210]"><LockKeyhole className="h-4 w-4" /></span>
-                  <div><p className="text-sm font-semibold text-[#182033]">Accès commerçant</p><p className="mt-1 text-xs leading-5 text-[#667286]">Ce contrôle est réservé au personnel du commerce. Demandez le PIN à un responsable si nécessaire.</p></div>
-                </div>
-                <label className="mt-4 block text-sm font-semibold text-[#182033]" htmlFor="redemption-pin">PIN commerçant</label>
-                <input ref={pinInputRef} id="redemption-pin" type="password" inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={pin} onChange={(event) => setPin(event.target.value.replace(/\D/g, ""))} placeholder="4 à 6 chiffres" className="mt-2 w-full rounded-[14px] border border-[#cfd9e6] bg-white px-4 py-3.5 text-center font-mono text-xl tracking-[0.28em] text-[#111827] outline-none focus:border-[#b28719] focus:ring-4 focus:ring-[#f4c14a]/20" />
-                <div className="mt-4 flex flex-col gap-2 sm:flex-row"><button type="submit" disabled={isSubmitting} className="inline-flex flex-1 items-center justify-center gap-2 rounded-[14px] bg-[#b28719] px-4 py-3.5 text-sm font-semibold text-white disabled:opacity-50">{isSubmitting ? "Vérification…" : "Continuer"}<ChevronRight className="h-4 w-4" /></button><button type="button" onClick={() => { setPhase("ready"); setError(null); }} className="rounded-[14px] border border-[#d6dfeb] bg-white px-4 py-3.5 text-sm font-semibold text-[#526078]">Retour</button></div>
-              </form>
-            ) : null}
-
-            {phase === "confirm" && (isAvailable || canForce) ? (
-              <div className={`rounded-[20px] border p-4 sm:p-5 ${canForce ? "border-[#e5b83e] bg-[#fff8dc]" : "border-[#b7e4c7] bg-[#f0fbf3]"}`}>
-                <div className="flex items-start gap-3"><span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${canForce ? "bg-[#ffefb4] text-[#8a6812]" : "bg-[#dff6e7] text-[#16834c]"}`}><ShieldCheck className="h-4 w-4" /></span><div><p className={`text-sm font-semibold ${canForce ? "text-[#74570b]" : "text-[#126b40]"}`}>{canForce ? "Forçage du retrait" : "Commerçant identifié"}</p><p className={`mt-1 text-xs leading-5 ${canForce ? "text-[#806b30]" : "text-[#39785a]"}`}>{canForce ? "Ce retrait est hors période. Il sera journalisé et doit être confirmé exceptionnellement." : "Vérifiez une dernière fois le lot avant d’enregistrer sa remise."}</p></div></div>
-                {context.purchaseRequired ? <label className="mt-4 flex cursor-pointer items-start gap-3 rounded-[14px] border border-[#f0dfaa] bg-[#fff9e8] p-3 text-sm text-[#5f4b12]"><input type="checkbox" checked={purchaseConfirmed} onChange={(event) => setPurchaseConfirmed(event.target.checked)} className="mt-1 h-4 w-4 accent-[#b28719]" /><span><span className="block font-semibold">Achat vérifié</span><span className="mt-1 block text-xs leading-5 text-[#806b30]">Ce lot exige un achat pour être remis.</span></span></label> : null}
-                {canForce ? <label className="mt-4 block text-sm font-semibold text-[#5f4b12]" htmlFor="force-reason">Motif du forçage<textarea id="force-reason" value={forceReason} onChange={(event) => setForceReason(event.target.value)} maxLength={500} rows={3} placeholder="Ex. Accord exceptionnel du responsable" className="mt-2 w-full resize-none rounded-[14px] border border-[#e5c86a] bg-white px-4 py-3 text-sm font-normal text-[#182033] outline-none focus:border-[#b28719] focus:ring-4 focus:ring-[#f4c14a]/20" /></label> : null}
-                <button type="button" onClick={() => void redeem()} disabled={isSubmitting || (Boolean(context.purchaseRequired) && !purchaseConfirmed) || (canForce && forceReason.trim().length < 8)} className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-[16px] bg-[#111827] px-5 py-4 text-sm font-semibold text-white shadow-[0_14px_28px_rgba(17,24,39,0.16)] disabled:cursor-not-allowed disabled:opacity-45">{isSubmitting ? "Validation…" : canForce ? "FORCER ET VALIDER LE RETRAIT" : "VALIDER LE RETRAIT DU LOT"}<Check className="h-4 w-4" /></button>
-              </div>
-            ) : null}
-
-            {phase === "redeemed" ? (
-              <div className="rounded-[20px] border border-[#b7e4c7] bg-[#f0fbf3] p-5 text-center"><span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#dff6e7] text-[#16834c]"><Check className="h-6 w-6" /></span><h2 className="mt-3 text-xl font-semibold text-[#126b40]">Retrait enregistré</h2><p className="mt-2 text-sm leading-6 text-[#39785a]">Le lot peut maintenant être remis au client. Cette opération est enregistrée.</p><p className="mt-3 font-mono text-sm font-semibold tracking-[0.1em] text-[#126b40]">{context.redemptionCode ?? code}</p></div>
-            ) : null}
-
-            {error ? <div role="alert" className="flex items-start gap-2 rounded-[14px] border border-[#f2c8c8] bg-[#fff4f4] px-4 py-3 text-sm leading-6 text-[#a11a1a]"><CircleAlert className="mt-1 h-4 w-4 shrink-0" />{error}</div> : null}
-          </div>
-        </section>
-
-        <p className="mt-4 px-2 text-center text-xs leading-5 text-[#8993a6]">Présentez ce QR code au personnel du commerce. Seul le personnel peut confirmer le retrait avec le PIN commerçant.</p>
-      </div>
-    </main>
-  );
-}
+              <button type="button" onClick={openMerchantValidation} className="inline-flex w-full items-center justify-center gap-2 rounded-[16px] bg-[#111827] px-5 py-4 text-sm font-semibold text-white shadow-[0_14px_28px_rgba(17,24,39,0.16)] transition hover
