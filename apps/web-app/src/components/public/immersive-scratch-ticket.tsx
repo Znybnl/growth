@@ -1,6 +1,3 @@
-Exit code: 0
-Wall time: 0.3 seconds
-Output:
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -216,7 +213,7 @@ export function ImmersiveScratchTicket({
     : "0 2px 8px rgba(255, 255, 255, 0.72)";
   const resolvedHeadingFontClass = headingFontClass || (isLilac ? "font-fredoka" : "font-display");
   const displayHeadline = headline?.trim() || DEFAULT_SCRATCH_SUBTITLE;
-  const instruction = "Grattez la carte pour rÃ©vÃ©ler votre cadeau.";
+  const instruction = "Grattez la carte pour révéler votre cadeau.";
 
   const surfaceClass = isSunburst
     ? "aspect-[1.18/1] w-full"
@@ -421,10 +418,9 @@ export function ImmersiveScratchTicket({
           className="relative z-10 mt-4 text-center text-sm leading-5"
           style={{ color: withAlpha(ink, isVault || isConfetti ? "d9" : "c7") }}
         >
-          {isCoral ? "Le gain sera disponible selon les conditions de retrait." : isSunburst ? "Votre gain sera confirmÃ© aprÃ¨s la rÃ©vÃ©lation." : "Le rÃ©sultat apparaÃ®t dÃ¨s que la zone est suffisamment grattÃ©e."}
+          {isCoral ? "Le gain sera disponible selon les conditions de retrait." : isSunburst ? "Votre gain sera confirmé après la révélation." : "Le résultat apparaît dès que la zone est suffisamment grattée."}
         </p>
       </div>
     </div>
   );
 }
-
