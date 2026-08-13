@@ -1,3 +1,6 @@
+Exit code: 0
+Wall time: 0.3 seconds
+Output:
 "use client";
 
 import { Check, ChevronRight, CircleAlert, LockKeyhole, ShieldCheck } from "lucide-react";
@@ -20,9 +23,9 @@ function formatDateTime(value?: string) {
 function statusContent(status: CashierRedemptionContext["status"]) {
   switch (status) {
     case "redeemed":
-      return { label: "Lot déjà retiré", tone: "border-[#f2c8c8] bg-[#fff5f5] text-[#8f1d1d]" };
+      return { label: "Lot dÃ©jÃ  retirÃ©", tone: "border-[#f2c8c8] bg-[#fff5f5] text-[#8f1d1d]" };
     case "expired":
-      return { label: "Lot expiré", tone: "border-[#f0dfaa] bg-[#fff9e8] text-[#74570b]" };
+      return { label: "Lot expirÃ©", tone: "border-[#f0dfaa] bg-[#fff9e8] text-[#74570b]" };
     case "not_available":
       return { label: "Lot pas encore disponible", tone: "border-[#f0dfaa] bg-[#fff9e8] text-[#74570b]" };
     case "available":
@@ -55,7 +58,7 @@ export function ExpressRedemption({ code, context: initialContext }: ExpressRede
   async function submitPin(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!/^\d{4,6}$/.test(pin)) {
-      setError("Saisissez le PIN commerçant à 4 à 6 chiffres.");
+      setError("Saisissez le PIN commerÃ§ant Ã  4 Ã  6 chiffres.");
       return;
     }
 
@@ -95,11 +98,11 @@ export function ExpressRedemption({ code, context: initialContext }: ExpressRede
         }),
       });
       const payload = (await response.json().catch(() => null)) as { context?: PublicRedemptionContext; error?: string } | null;
-      if (!response.ok || !payload?.context) throw new Error(payload?.error ?? "Le retrait n’a pas pu être validé.");
+      if (!response.ok || !payload?.context) throw new Error(payload?.error ?? "Le retrait nâ€™a pas pu Ãªtre validÃ©.");
       setContext(payload.context);
       setPhase("redeemed");
     } catch (redeemError) {
-      setError(redeemError instanceof Error ? redeemError.message : "Le retrait n’a pas pu être validé.");
+      setError(redeemError instanceof Error ? redeemError.message : "Le retrait nâ€™a pas pu Ãªtre validÃ©.");
     } finally {
       setIsSubmitting(false);
     }
@@ -113,19 +116,19 @@ export function ExpressRedemption({ code, context: initialContext }: ExpressRede
             role="status"
             className="mb-4 rounded-[16px] border border-[#9fb8ff] bg-[#eef2ff] px-4 py-3 text-center text-xs font-semibold leading-5 text-[#334477]"
           >
-            Mode prévisualisation — ce retrait est simulé et n&apos;affecte pas le stock réel.
+            Mode prÃ©visualisation â€” ce retrait est simulÃ© et n&apos;affecte pas le stock rÃ©el.
           </div>
         ) : null}
         <header className="mb-5 flex items-center justify-between gap-4 px-1">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#b28719]">Retrait sécurisé</p>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#b28719]">Retrait sÃ©curisÃ©</p>
             <p className="mt-1 text-sm font-semibold text-[#526078]">
               {context.merchantName}
-              {context.merchantCity ? ` · ${context.merchantCity}` : ""}
+              {context.merchantCity ? ` Â· ${context.merchantCity}` : ""}
             </p>
           </div>
           <span className="inline-flex items-center gap-1.5 rounded-full border border-[#dbe4f0] bg-white px-3 py-1.5 text-[11px] font-semibold text-[#667286]">
-            <LockKeyhole className="h-3.5 w-3.5" aria-label="Connexion sécurisée" />
+            <LockKeyhole className="h-3.5 w-3.5" aria-label="Connexion sÃ©curisÃ©e" />
           </span>
         </header>
 
@@ -147,4 +150,83 @@ export function ExpressRedemption({ code, context: initialContext }: ExpressRede
                 <CircleAlert className="mt-0.5 h-5 w-5 shrink-0" />
                 <div>
                   <p className="font-semibold">Retrait pas encore disponible</p>
-                  <p className="mt-1">Ce lot pourra être retiré à partir du {forma
+                  <p className="mt-1">Ce lot pourra Ãªtre retirÃ© Ã  partir du {formatDateTime(context.rewardAvailableAt)}.</p>
+                </div>
+              </div>
+            ) : context.status === "expired" ? (
+              <div role="alert" className="flex items-start gap-3 rounded-[18px] border-2 border-[#e5b83e] bg-[#fff8dc] px-4 py-4 text-sm leading-6 text-[#74570b]">
+                <CircleAlert className="mt-0.5 h-5 w-5 shrink-0" />
+                <div>
+                  <p className="font-semibold">Retrait impossible : pÃ©riode terminÃ©e</p>
+                  <p className="mt-1">La validitÃ© de ce lot a pris fin le {formatDateTime(context.rewardExpiresAt)}.</p>
+                </div>
+              </div>
+            ) : null}
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="rounded-[18px] border border-[#e5ebf2] bg-[#fbfcfe] p-4">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8993a6]">BÃ©nÃ©ficiaire</p>
+                <p className="mt-2 text-sm font-semibold text-[#182033]">{context.firstName || "Client"}</p>
+                {context.email || context.maskedEmail ? <p className="mt-1 break-all text-xs text-[#7a8498]">{context.email ?? context.maskedEmail}</p> : null}
+              </div>
+              <div className="rounded-[18px] border border-[#e5ebf2] bg-[#fbfcfe] p-4">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8993a6]">Code</p>
+                <p className="mt-2 font-mono text-lg font-semibold tracking-[0.08em] text-[#182033]">{context.redemptionCode ?? code}</p>
+              </div>
+            </div>
+
+            {context.rewardAvailableAt || context.rewardExpiresAt ? (
+              <div className="rounded-[18px] border border-[#e5ebf2] bg-[#fbfcfe] px-4 py-3 text-sm leading-6 text-[#667286]">
+                {context.rewardAvailableAt ? <p>Disponible Ã  partir du <strong className="font-semibold text-[#182033]">{formatDateTime(context.rewardAvailableAt)}</strong></p> : null}
+                {context.rewardExpiresAt ? <p>Valable jusquâ€™au <strong className="font-semibold text-[#182033]">{formatDateTime(context.rewardExpiresAt)}</strong></p> : null}
+              </div>
+            ) : null}
+
+            {context.prizeUsageConditions ? (
+              <div className="rounded-[18px] border border-[#f0dfaa] bg-[#fff9e8] px-4 py-3 text-sm leading-6 text-[#6c5313]">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8a6a18]">Conditions de retrait</p>
+                <p className="mt-1 whitespace-pre-line">{context.prizeUsageConditions}</p>
+              </div>
+            ) : null}
+
+            {phase === "ready" && (isAvailable || canForce) ? (
+              <button type="button" onClick={openMerchantValidation} className="inline-flex w-full items-center justify-center gap-2 rounded-[16px] bg-[#111827] px-5 py-4 text-sm font-semibold text-white shadow-[0_14px_28px_rgba(17,24,39,0.16)] transition hover:bg-[#273142]">
+                <ShieldCheck className="h-4 w-4" /> Valider en tant que commerÃ§ant <ChevronRight className="h-4 w-4" />
+              </button>
+            ) : null}
+
+            {phase === "pin" ? (
+              <form onSubmit={submitPin} className="rounded-[20px] border border-[#dbe4f0] bg-[#f8fafc] p-4 sm:p-5">
+                <div className="flex items-start gap-3">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#fff3c9] text-[#9a7210]"><LockKeyhole className="h-4 w-4" /></span>
+                  <div><p className="text-sm font-semibold text-[#182033]">AccÃ¨s commerÃ§ant</p><p className="mt-1 text-xs leading-5 text-[#667286]">Ce contrÃ´le est rÃ©servÃ© au personnel du commerce. Demandez le PIN Ã  un responsable si nÃ©cessaire.</p></div>
+                </div>
+                <label className="mt-4 block text-sm font-semibold text-[#182033]" htmlFor="redemption-pin">PIN commerÃ§ant</label>
+                <input ref={pinInputRef} id="redemption-pin" type="password" inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={pin} onChange={(event) => setPin(event.target.value.replace(/\D/g, ""))} placeholder="4 Ã  6 chiffres" className="mt-2 w-full rounded-[14px] border border-[#cfd9e6] bg-white px-4 py-3.5 text-center font-mono text-xl tracking-[0.28em] text-[#111827] outline-none focus:border-[#b28719] focus:ring-4 focus:ring-[#f4c14a]/20" />
+                <div className="mt-4 flex flex-col gap-2 sm:flex-row"><button type="submit" disabled={isSubmitting} className="inline-flex flex-1 items-center justify-center gap-2 rounded-[14px] bg-[#b28719] px-4 py-3.5 text-sm font-semibold text-white disabled:opacity-50">{isSubmitting ? "VÃ©rificationâ€¦" : "Continuer"}<ChevronRight className="h-4 w-4" /></button><button type="button" onClick={() => { setPhase("ready"); setError(null); }} className="rounded-[14px] border border-[#d6dfeb] bg-white px-4 py-3.5 text-sm font-semibold text-[#526078]">Retour</button></div>
+              </form>
+            ) : null}
+
+            {phase === "confirm" && (isAvailable || canForce) ? (
+              <div className={`rounded-[20px] border p-4 sm:p-5 ${canForce ? "border-[#e5b83e] bg-[#fff8dc]" : "border-[#b7e4c7] bg-[#f0fbf3]"}`}>
+                <div className="flex items-start gap-3"><span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${canForce ? "bg-[#ffefb4] text-[#8a6812]" : "bg-[#dff6e7] text-[#16834c]"}`}><ShieldCheck className="h-4 w-4" /></span><div><p className={`text-sm font-semibold ${canForce ? "text-[#74570b]" : "text-[#126b40]"}`}>{canForce ? "ForÃ§age du retrait" : "CommerÃ§ant identifiÃ©"}</p><p className={`mt-1 text-xs leading-5 ${canForce ? "text-[#806b30]" : "text-[#39785a]"}`}>{canForce ? "Ce retrait est hors pÃ©riode. Il sera journalisÃ© et doit Ãªtre confirmÃ© exceptionnellement." : "VÃ©rifiez une derniÃ¨re fois le lot avant dâ€™enregistrer sa remise."}</p></div></div>
+                {context.purchaseRequired ? <label className="mt-4 flex cursor-pointer items-start gap-3 rounded-[14px] border border-[#f0dfaa] bg-[#fff9e8] p-3 text-sm text-[#5f4b12]"><input type="checkbox" checked={purchaseConfirmed} onChange={(event) => setPurchaseConfirmed(event.target.checked)} className="mt-1 h-4 w-4 accent-[#b28719]" /><span><span className="block font-semibold">Achat vÃ©rifiÃ©</span><span className="mt-1 block text-xs leading-5 text-[#806b30]">Ce lot exige un achat pour Ãªtre remis.</span></span></label> : null}
+                {canForce ? <label className="mt-4 block text-sm font-semibold text-[#5f4b12]" htmlFor="force-reason">Motif du forÃ§age<textarea id="force-reason" value={forceReason} onChange={(event) => setForceReason(event.target.value)} maxLength={500} rows={3} placeholder="Ex. Accord exceptionnel du responsable" className="mt-2 w-full resize-none rounded-[14px] border border-[#e5c86a] bg-white px-4 py-3 text-sm font-normal text-[#182033] outline-none focus:border-[#b28719] focus:ring-4 focus:ring-[#f4c14a]/20" /></label> : null}
+                <button type="button" onClick={() => void redeem()} disabled={isSubmitting || (Boolean(context.purchaseRequired) && !purchaseConfirmed) || (canForce && forceReason.trim().length < 8)} className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-[16px] bg-[#111827] px-5 py-4 text-sm font-semibold text-white shadow-[0_14px_28px_rgba(17,24,39,0.16)] disabled:cursor-not-allowed disabled:opacity-45">{isSubmitting ? "Validationâ€¦" : canForce ? "FORCER ET VALIDER LE RETRAIT" : "VALIDER LE RETRAIT DU LOT"}<Check className="h-4 w-4" /></button>
+              </div>
+            ) : null}
+
+            {phase === "redeemed" ? (
+              <div className="rounded-[20px] border border-[#b7e4c7] bg-[#f0fbf3] p-5 text-center"><span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#dff6e7] text-[#16834c]"><Check className="h-6 w-6" /></span><h2 className="mt-3 text-xl font-semibold text-[#126b40]">Retrait enregistrÃ©</h2><p className="mt-2 text-sm leading-6 text-[#39785a]">Le lot peut maintenant Ãªtre remis au client. Cette opÃ©ration est enregistrÃ©e.</p><p className="mt-3 font-mono text-sm font-semibold tracking-[0.1em] text-[#126b40]">{context.redemptionCode ?? code}</p></div>
+            ) : null}
+
+            {error ? <div role="alert" className="flex items-start gap-2 rounded-[14px] border border-[#f2c8c8] bg-[#fff4f4] px-4 py-3 text-sm leading-6 text-[#a11a1a]"><CircleAlert className="mt-1 h-4 w-4 shrink-0" />{error}</div> : null}
+          </div>
+        </section>
+
+        <p className="mt-4 px-2 text-center text-xs leading-5 text-[#8993a6]">PrÃ©sentez ce QR code au personnel du commerce. Seul le personnel peut confirmer le retrait avec le PIN commerÃ§ant.</p>
+      </div>
+    </main>
+  );
+}
+
