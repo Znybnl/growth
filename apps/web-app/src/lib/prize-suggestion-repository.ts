@@ -1,6 +1,3 @@
-Exit code: 0
-Wall time: 0.3 seconds
-Output:
 import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/supabase";
 import { PrizeSuggestion } from "@/lib/types";
 
@@ -72,15 +69,15 @@ export function validatePrizeSuggestionInput(input: Partial<PrizeSuggestionInput
   const isActive = input.isActive !== false;
   const validIcons = new Set(["coffee", "dessert", "drink", "discount", "supplement", "menu", "gift"]);
 
-  if (!industry) throw new Error("Le secteur d'activitÃ© est requis.");
+  if (!industry) throw new Error("Le secteur d'activité est requis.");
   if (!label) throw new Error("Le nom du lot est requis.");
   if (!Number.isFinite(probability) || probability < 0 || probability > 100) {
-    throw new Error("La probabilitÃ© doit Ãªtre comprise entre 0 et 100 %.");
+    throw new Error("La probabilité doit être comprise entre 0 et 100 %.");
   }
   if (!Number.isFinite(estimatedUnitCost) || estimatedUnitCost < 0) {
-    throw new Error("Le coÃ»t estimÃ© doit Ãªtre positif ou nul.");
+    throw new Error("Le coût estimé doit être positif ou nul.");
   }
-  if (!validIcons.has(icon)) throw new Error("L'icÃ´ne sÃ©lectionnÃ©e est invalide.");
+  if (!validIcons.has(icon)) throw new Error("L'icône sélectionnée est invalide.");
 
   return {
     industry,
@@ -147,7 +144,7 @@ export async function createPrizeSuggestion(input: PrizeSuggestionInput) {
     })
     .select()
     .single();
-  if (error || !data) throw new Error("CrÃ©ation de la suggestion impossible.");
+  if (error || !data) throw new Error("Création de la suggestion impossible.");
   return toPrizeSuggestion(data as PrizeSuggestionRow);
 }
 
@@ -170,7 +167,7 @@ export async function updatePrizeSuggestion(id: string, input: PrizeSuggestionIn
     .eq("id", id)
     .select()
     .single();
-  if (error || !data) throw new Error("Mise Ã  jour de la suggestion impossible.");
+  if (error || !data) throw new Error("Mise à jour de la suggestion impossible.");
   return toPrizeSuggestion(data as PrizeSuggestionRow);
 }
 
@@ -179,4 +176,3 @@ export async function deletePrizeSuggestion(id: string) {
   const { error } = await supabase.from("prize_suggestions").delete().eq("id", id);
   if (error) throw new Error("Suppression de la suggestion impossible.");
 }
-
