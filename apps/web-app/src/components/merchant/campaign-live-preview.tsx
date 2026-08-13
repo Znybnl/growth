@@ -1,6 +1,3 @@
-Exit code: 0
-Wall time: 0.3 seconds
-Output:
 "use client";
 
 import dynamic from "next/dynamic";
@@ -256,7 +253,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
             {preview.logoMode === "text" ? <div className={`flex ${preview.logoAlignmentClass}`}><div style={{ marginBottom: `${scalePreviewValue(preview.logoBottomSpacingPx)}px` }}><BrandMark logoText={preview.logoText} size="lg" variant="transparent" imageWidthPx={scalePreviewValue(preview.logoWidthPx)} textSizePx={scalePreviewValue(preview.logoTextSizePx)} textColor={previewHeadingTextColor} textClassName="text-2xl" /></div></div> : null}
             {preview.gameType === "scratch" && preview.logoMode === "none" ? <div className={`flex ${preview.logoAlignmentClass}`}><div style={{ marginBottom: `${scalePreviewValue(preview.logoBottomSpacingPx)}px` }}><BrandMark logoText={preview.logoText || merchant.companyName} size="lg" variant="transparent" imageWidthPx={scalePreviewValue(preview.logoWidthPx)} textSizePx={scalePreviewValue(preview.logoTextSizePx)} textColor={previewHeadingTextColor} textClassName="text-2xl" /></div></div> : null}
             {preview.logoMode === "none" || (preview.logoMode === "image" && !preview.logoUrl) ? <div aria-hidden="true" className="h-5" /> : null}
-            <div className={preview.headingAlignmentClass}><h3 className={`${preview.headingFontClass} line-clamp-3 whitespace-pre-line ${isRestaurantPopTemplate ? "tracking-[0.038em] drop-shadow-[0_4px_0_rgba(0,0,0,0.08)]" : ""} leading-[1]`} style={{ color: previewHeadingTextColor, fontSize: fluidType(scalePreviewValue(preview.headingFontSizePx), { minRatio: 0.82, maxRatio: 1.08, viewportStep: 0.3 }), fontWeight: preview.headingFontWeight }}>{isRestaurantPopTemplate ? restaurantPopHeadingLines.map((line, lineIndex) => <span key={`preview-heading-line-${lineIndex}`} className="block">{line.map((part, partIndex) => <span key={`preview-heading-line-${lineIndex}-${partIndex}`} style={{ color: part.secondary ? preview.wheelStyle.winColor : previewHeadingTextColor }}>{part.text}</span>)}</span>) : preview.subtitle.trim() || (preview.gameType === "scratch" ? DEFAULT_SCRATCH_SUBTITLE : "DÃ©couvrez votre animation")}</h3></div>
+            <div className={preview.headingAlignmentClass}><h3 className={`${preview.headingFontClass} line-clamp-3 whitespace-pre-line ${isRestaurantPopTemplate ? "tracking-[0.038em] drop-shadow-[0_4px_0_rgba(0,0,0,0.08)]" : ""} leading-[1]`} style={{ color: previewHeadingTextColor, fontSize: fluidType(scalePreviewValue(preview.headingFontSizePx), { minRatio: 0.82, maxRatio: 1.08, viewportStep: 0.3 }), fontWeight: preview.headingFontWeight }}>{isRestaurantPopTemplate ? restaurantPopHeadingLines.map((line, lineIndex) => <span key={`preview-heading-line-${lineIndex}`} className="block">{line.map((part, partIndex) => <span key={`preview-heading-line-${lineIndex}-${partIndex}`} style={{ color: part.secondary ? preview.wheelStyle.winColor : previewHeadingTextColor }}>{part.text}</span>)}</span>) : preview.subtitle.trim() || (preview.gameType === "scratch" ? DEFAULT_SCRATCH_SUBTITLE : "Découvrez votre animation")}</h3></div>
           </>
         ) : null}
         <div className={preview.gameType === "wheel" ? compact ? "-mx-3" : "-mx-4" : undefined} style={{ marginTop: `${isImmersiveScratchTemplate ? 0 : scalePreviewValue(preview.blockSpacingPx)}px`, height: preview.gameType === "wheel" ? compact ? "376px" : "470px" : undefined, marginBottom: preview.gameType === "wheel" ? compact ? "-20px" : "-24px" : undefined }}>
@@ -267,4 +264,3 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
     </div>
   );
 });
-
