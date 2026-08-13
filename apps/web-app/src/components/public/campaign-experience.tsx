@@ -1,7 +1,3 @@
-Exit code: 0
-Wall time: 0.3 seconds
-Total output lines: 1343
-Output:
 "use client";
 
 import Image from "next/image";
@@ -133,7 +129,7 @@ function buildRestaurantPopHeadingLines(text: string) {
 function actionLabel(kind?: PublicCampaign["actions"][number]["kind"]) {
   switch (kind) {
     case "google":
-      return "Ã‰crire un avis";
+      return "Écrire un avis";
     case "instagram":
       return "Suivez-nous sur Instagram";
     case "facebook":
@@ -143,7 +139,7 @@ function actionLabel(kind?: PublicCampaign["actions"][number]["kind"]) {
     case "tripadvisor":
       return "Voir Tripadvisor";
     case "crm":
-      return "DÃ©couvrir lâ€™offre";
+      return "Découvrir l’offre";
     default:
       return "Ouvrir le lien";
   }
@@ -201,7 +197,7 @@ function PublicModal({
   }
 
   return (
-    <div role="dialog" aria-modal="true" aria-label="FenÃªtre de participation" className="fixed inset-0 z-40 flex items-end justify-center bg-[#0f1220]/52 px-4 pb-4 pt-10 backdrop-blur-[6px] sm:items-center sm:p-6">
+    <div role="dialog" aria-modal="true" aria-label="Fenêtre de participation" className="fixed inset-0 z-40 flex items-end justify-center bg-[#0f1220]/52 px-4 pb-4 pt-10 backdrop-blur-[6px] sm:items-center sm:p-6">
       <div
         className={`w-full max-w-[390px] rounded-[34px] bg-white text-[#111827] shadow-[0_34px_90px_rgba(18,24,39,0.24)] ${
           compact ? "p-5" : "p-6"
@@ -231,7 +227,7 @@ function RulesModal({
     ...prize,
     stockLabel:
       prize.remainingQuantity === null
-        ? "IllimitÃ©"
+        ? "Illimité"
         : `${Math.max(0, prize.remainingQuantity)} disponible${
             prize.remainingQuantity > 1 ? "s" : ""
           }`,
@@ -246,7 +242,7 @@ function RulesModal({
               Conditions d&apos;utilisation
             </p>
             <h2 id="rules-modal-title" className="mt-2 text-2xl font-semibold leading-tight">
-              CGU et rÃ¨glement du jeu
+              CGU et règlement du jeu
             </h2>
           </div>
           <button
@@ -261,22 +257,22 @@ function RulesModal({
         <div className="space-y-6 overflow-y-auto px-6 py-5 text-sm leading-7 text-[#4b5567]">
           <section>
             <h3 className="text-base font-semibold text-[#111827]">
-              PrÃ©ambule et dÃ©finitions
+              Préambule et définitions
             </h3>
             <p className="mt-2">
-              Le prÃ©sent document rÃ©git les conditions de participation aux jeux-concours
-              phygitaux ci-aprÃ¨s Â« le Jeu Â», dÃ©ployÃ©s en point de vente via la solution
+              Le présent document régit les conditions de participation aux jeux-concours
+              phygitaux ci-après « le Jeu », déployés en point de vente via la solution
               logicielle Okado.
             </p>
             <p className="mt-2">
-              La SociÃ©tÃ© Organisatrice, ci-aprÃ¨s Â« le Marchand Â», est l&apos;Ã©tablissement
-              professionnel au sein duquel le Jeu est dÃ©ployÃ©. Elle dÃ©finit les rÃ¨gles
-              spÃ©cifiques, les dotations et assume l&apos;entiÃ¨re responsabilitÃ© lÃ©gale de
+              La Société Organisatrice, ci-après « le Marchand », est l&apos;établissement
+              professionnel au sein duquel le Jeu est déployé. Elle définit les règles
+              spécifiques, les dotations et assume l&apos;entière responsabilité légale de
               l&apos;organisation du Jeu.
             </p>
             <p className="mt-2">
-              Le Prestataire Technique, ci-aprÃ¨s Â« l&apos;Ã‰diteur Â», est la sociÃ©tÃ© BRUNELLE
-              PEROLS INVESTISSEMENT, Ã©ditrice de la solution SaaS Okado, agissant
+              Le Prestataire Technique, ci-après « l&apos;Éditeur », est la société BRUNELLE
+              PEROLS INVESTISSEMENT, éditrice de la solution SaaS Okado, agissant
               exclusivement en tant que fournisseur d&apos;infrastructure technique.
             </p>
             <p className="mt-2">
@@ -290,29 +286,29 @@ function RulesModal({
               Article 1 - Objet et acceptation
             </h3>
             <p className="mt-2">
-              La participation au Jeu implique l&apos;acceptation expresse, pleine et entiÃ¨re,
-              sans rÃ©serve, du prÃ©sent rÃ¨glement par le Participant. Ce rÃ¨glement rÃ©git les
-              relations entre le Participant et la SociÃ©tÃ© Organisatrice. L&apos;Ã‰diteur de la
-              solution Okado est un tiers Ã  cette relation.
+              La participation au Jeu implique l&apos;acceptation expresse, pleine et entière,
+              sans réserve, du présent règlement par le Participant. Ce règlement régit les
+              relations entre le Participant et la Société Organisatrice. L&apos;Éditeur de la
+              solution Okado est un tiers à cette relation.
             </p>
           </section>
 
           <section>
             <h3 className="text-base font-semibold text-[#111827]">
-              Article 2 - MÃ©canique du jeu et participation
+              Article 2 - Mécanique du jeu et participation
             </h3>
             <p className="mt-2">
               La participation au Jeu s&apos;effectue exclusivement en scannant le QR Code mis
-              Ã  disposition au sein de l&apos;Ã©tablissement de la SociÃ©tÃ© Organisatrice. Selon
-              le paramÃ©trage dÃ©fini sous la seule responsabilitÃ© de la SociÃ©tÃ©
-              Organisatrice, le Participant pourra Ãªtre invitÃ© Ã  consulter des liens
-              externes, tels que la fiche Google Business Profile de l&apos;Ã©tablissement.
+              à disposition au sein de l&apos;établissement de la Société Organisatrice. Selon
+              le paramétrage défini sous la seule responsabilité de la Société
+              Organisatrice, le Participant pourra être invité à consulter des liens
+              externes, tels que la fiche Google Business Profile de l&apos;établissement.
             </p>
             <p className="mt-2">
-              Il est expressÃ©ment prÃ©cisÃ© que le dÃ©pÃ´t d&apos;un avis en ligne est strictement
+              Il est expressément précisé que le dépôt d&apos;un avis en ligne est strictement
               facultatif. Il ne constitue en aucun cas une condition de participation, ni
-              une obligation pour valider l&apos;obtention d&apos;un gain. L&apos;Ã‰diteur dÃ©cline toute
-              responsabilitÃ© quant Ã  l&apos;utilisation de cette fonctionnalitÃ© par la SociÃ©tÃ©
+              une obligation pour valider l&apos;obtention d&apos;un gain. L&apos;Éditeur décline toute
+              responsabilité quant à l&apos;utilisation de cette fonctionnalité par la Société
               Organisatrice au regard des conditions d&apos;utilisation des plateformes tierces,
               notamment Google.
             </p>
@@ -320,91 +316,91 @@ function RulesModal({
 
           <section>
             <h3 className="text-base font-semibold text-[#111827]">
-              Article 3 - DÃ©signation des gagnants et responsabilitÃ© des lots
+              Article 3 - Désignation des gagnants et responsabilité des lots
             </h3>
             <p className="mt-2">
-              L&apos;attribution des gains est gÃ©rÃ©e automatiquement dÃ¨s la soumission du
-              formulaire, via un algorithme de tirage au sort alÃ©atoire tenant compte des
-              probabilitÃ©s et des stocks paramÃ©trÃ©s par la SociÃ©tÃ© Organisatrice.
+              L&apos;attribution des gains est gérée automatiquement dès la soumission du
+              formulaire, via un algorithme de tirage au sort aléatoire tenant compte des
+              probabilités et des stocks paramétrés par la Société Organisatrice.
             </p>
             <p className="mt-2">
-              La SociÃ©tÃ© Organisatrice est seule responsable de la fourniture, de la
-              conformitÃ© et de la remise des lots. La responsabilitÃ© du Prestataire
-              Technique ne saurait Ãªtre engagÃ©e pour toute rÃ©clamation relative Ã  une
-              rupture de stock, un dÃ©faut du lot, un refus de remise par le personnel en
-              magasin, ou tout litige liÃ© Ã  l&apos;exÃ©cution du Jeu.
+              La Société Organisatrice est seule responsable de la fourniture, de la
+              conformité et de la remise des lots. La responsabilité du Prestataire
+              Technique ne saurait être engagée pour toute réclamation relative à une
+              rupture de stock, un défaut du lot, un refus de remise par le personnel en
+              magasin, ou tout litige lié à l&apos;exécution du Jeu.
             </p>
           </section>
 
           <section>
             <h3 className="text-base font-semibold text-[#111827]">
-              Article 4 - ModalitÃ©s de rÃ©cupÃ©ration des lots
+              Article 4 - Modalités de récupération des lots
             </h3>
             <p className="mt-2">
-              En cas de gain, le Participant reÃ§oit un e-mail de confirmation Ã  l&apos;adresse
-              renseignÃ©e lors de sa participation, contenant un QR Code unique et personnel.
-              Le Participant doit prÃ©senter ce QR Code au personnel de la SociÃ©tÃ©
-              Organisatrice. La remise du lot n&apos;est dÃ©finitive qu&apos;aprÃ¨s validation de ce QR
-              Code par le personnel habilitÃ©, par scan direct ou via la plateforme de gestion
+              En cas de gain, le Participant reçoit un e-mail de confirmation à l&apos;adresse
+              renseignée lors de sa participation, contenant un QR Code unique et personnel.
+              Le Participant doit présenter ce QR Code au personnel de la Société
+              Organisatrice. La remise du lot n&apos;est définitive qu&apos;après validation de ce QR
+              Code par le personnel habilité, par scan direct ou via la plateforme de gestion
               Okado.
             </p>
           </section>
 
           <section>
             <h3 className="text-base font-semibold text-[#111827]">
-              Article 5 - PrÃ©vention de la fraude et litiges techniques
+              Article 5 - Prévention de la fraude et litiges techniques
             </h3>
             <p className="mt-2">
-              La participation est strictement nominative et limitÃ©e Ã  une participation par
-              jour et par Ã©tablissement. La SociÃ©tÃ© Organisatrice se rÃ©serve le droit
-              d&apos;annuler la participation ou de refuser la remise d&apos;un lot Ã  toute personne
-              ayant tentÃ© de frauder. En cas de dysfonctionnement technique temporaire de la
-              plateforme Okado ou de l&apos;appareil du Participant empÃªchant la validation,
-              aucune compensation ne pourra Ãªtre exigÃ©e.
+              La participation est strictement nominative et limitée à une participation par
+              jour et par établissement. La Société Organisatrice se réserve le droit
+              d&apos;annuler la participation ou de refuser la remise d&apos;un lot à toute personne
+              ayant tenté de frauder. En cas de dysfonctionnement technique temporaire de la
+              plateforme Okado ou de l&apos;appareil du Participant empêchant la validation,
+              aucune compensation ne pourra être exigée.
             </p>
           </section>
 
           <section>
             <h3 className="text-base font-semibold text-[#111827]">
-              Article 6 - Protection des donnÃ©es personnelles
+              Article 6 - Protection des données personnelles
             </h3>
             <p className="mt-2">
-              Dans le cadre du Jeu, des donnÃ©es Ã  caractÃ¨re personnel sont collectÃ©es. La
-              SociÃ©tÃ© Organisatrice agit en tant que Responsable de traitement. Le
-              Prestataire Technique hÃ©berge ces donnÃ©es de maniÃ¨re sÃ©curisÃ©e pour le compte
-              exclusif de la SociÃ©tÃ© Organisatrice.
+              Dans le cadre du Jeu, des données à caractère personnel sont collectées. La
+              Société Organisatrice agit en tant que Responsable de traitement. Le
+              Prestataire Technique héberge ces données de manière sécurisée pour le compte
+              exclusif de la Société Organisatrice.
             </p>
             <p className="mt-2">
-              ConformÃ©ment Ã  la rÃ©glementation applicable, le Participant dispose d&apos;un droit
-              d&apos;accÃ¨s, de rectification, de portabilitÃ© et d&apos;effacement de ses donnÃ©es. Pour
-              exercer ces droits, le Participant doit s&apos;adresser directement Ã  la SociÃ©tÃ©
-              Organisatrice par le biais de ses coordonnÃ©es habituelles.
-            </p>
-          </section>
-
-          <section>
-            <h3 className="text-base font-semibold text-[#111827]">
-              Article 7 - Limites de responsabilitÃ© technique
-            </h3>
-            <p className="mt-2">
-              Le Prestataire Technique met en Å“uvre les moyens nÃ©cessaires au bon
-              fonctionnement de l&apos;infrastructure du Jeu. Sa responsabilitÃ© ne saurait Ãªtre
-
-              engagÃ©e en cas de non-rÃ©ception de l&apos;e-mail de confirmation de gain due Ã  une
-              erreur de saisie, Ã  un filtrage anti-spam, Ã  une dÃ©faillance du fournisseur de
-              messagerie, Ã  une interruption rÃ©seau, au dysfonctionnement du smartphone du
-              Participant ou Ã  un bogue technique temporaire.
+              Conformément à la réglementation applicable, le Participant dispose d&apos;un droit
+              d&apos;accès, de rectification, de portabilité et d&apos;effacement de ses données. Pour
+              exercer ces droits, le Participant doit s&apos;adresser directement à la Société
+              Organisatrice par le biais de ses coordonnées habituelles.
             </p>
           </section>
 
           <section>
             <h3 className="text-base font-semibold text-[#111827]">
-              Article 8 - Lots, stocks disponibles et probabilitÃ©s de gain
+              Article 7 - Limites de responsabilité technique
             </h3>
             <p className="mt-2">
-              Les gains sont attribuÃ©s dans la limite des quantitÃ©s de stock disponibles au
+              Le Prestataire Technique met en œuvre les moyens nécessaires au bon
+              fonctionnement de l&apos;infrastructure du Jeu. Sa responsabilité ne saurait être
+
+              engagée en cas de non-réception de l&apos;e-mail de confirmation de gain due à une
+              erreur de saisie, à un filtrage anti-spam, à une défaillance du fournisseur de
+              messagerie, à une interruption réseau, au dysfonctionnement du smartphone du
+              Participant ou à un bogue technique temporaire.
+            </p>
+          </section>
+
+          <section>
+            <h3 className="text-base font-semibold text-[#111827]">
+              Article 8 - Lots, stocks disponibles et probabilités de gain
+            </h3>
+            <p className="mt-2">
+              Les gains sont attribués dans la limite des quantités de stock disponibles au
               moment de la participation. Lorsqu&apos;un lot n&apos;est plus disponible, il ne peut
-              plus Ãªtre attribuÃ©, mÃªme si sa probabilitÃ© de gain est indiquÃ©e ci-dessous.
+              plus être attribué, même si sa probabilité de gain est indiquée ci-dessous.
             </p>
             <div className="mt-4 overflow-hidden rounded-[18px] border border-[#e5e9f2]">
               {prizeRows.length ? (
@@ -423,7 +419,7 @@ function RulesModal({
                   </div>
                 ))
               ) : (
-                <p className="px-4 py-3 text-[#7b8496]">Aucun lot configurÃ©.</p>
+                <p className="px-4 py-3 text-[#7b8496]">Aucun lot configuré.</p>
               )}
             </div>
           </section>
@@ -442,7 +438,7 @@ export function CampaignExperience({
   const [campaign, setCampaign] = useState(initialCampaign);
   const [stage, setStage] = useState<ExperienceStage>("idle");
   const [blockedMessage, setBlockedMessage] = useState(
-    "Une seule participation est possible par jour. Revenez demain pour tenter votre chance Ã  nouveau.",
+    "Une seule participation est possible par jour. Revenez demain pour tenter votre chance à nouveau.",
   );
   const [drawSession, setDrawSession] = useState<DrawSession | null>(null);
   const [previewToken, setPreviewToken] = useState<string | null>(initialPreviewToken ?? null);
@@ -488,7 +484,438 @@ export function CampaignExperience({
   const isScratchConfettiTemplate = pageTemplate === "scratch-confetti";
   const isScratchCoralTemplate = pageTemplate === "scratch-coral";
   const isScratchLilacTemplate = pageTemplate === "scratch-lilac";
-  const isScratchSunburstTemplate = pageTemplate === "scratc…4298 tokens truncated…rantPopTemplate
+  const isScratchSunburstTemplate = pageTemplate === "scratch-sunburst";
+  const isImmersiveScratchTemplate =
+    isScratchVaultTemplate ||
+    isScratchConfettiTemplate ||
+    isScratchCoralTemplate ||
+    isScratchLilacTemplate ||
+    isScratchSunburstTemplate;
+  const scratchAccent =
+    campaign.gameType === "scratch"
+      ? resolveScratchAccent(campaign.accent, pageTemplate)
+      : campaign.accent;
+  const primaryColor = campaign.gameType === "scratch"
+    ? scratchTemplatePrimaryColor(scratchAccent.signal, pageTemplate)
+    : campaign.presentation.wheel.loseColor ?? campaign.accent.signal;
+  const secondaryColor = campaign.presentation.wheel.winColor ?? "#073b72";
+  const headingTextColor =
+    isCosmicTemplate
+      ? "#f8fbff"
+      : campaign.gameType === "scratch" &&
+          campaign.presentation.heading.textColor.toLowerCase() === "#1f2937"
+        ? scratchAccent.ink
+      : campaign.presentation.heading.textColor;
+  const logoSizePercent = clampCampaignLogoSizePercent(campaign.presentation.logo.sizePercent);
+  const logoWidthPx = Math.round(
+    Math.max(56, Math.min(720, logoSizePercent * 3)),
+  );
+  const logoTextSizePx = campaignLogoTextSizePx(logoSizePercent, campaign.gameType);
+  const safeSubtitle = limitCampaignSubtitleLines(campaign.subtitle);
+  const logoAlignmentClass =
+    campaign.presentation.logo.align === "left"
+      ? "justify-start"
+      : campaign.presentation.logo.align === "right"
+        ? "justify-end"
+        : "justify-center";
+  const headingAlignmentClass =
+    campaign.presentation.heading.align === "left"
+      ? "text-left"
+      : campaign.presentation.heading.align === "right"
+        ? "text-right"
+        : "text-center";
+  const headingFontClass =
+    campaign.presentation.heading.fontFamily === "anton"
+      ? "font-anton"
+      : campaign.presentation.heading.fontFamily === "serif" || campaign.presentation.heading.fontFamily === "cormorant"
+        ? campaign.presentation.heading.fontFamily === "cormorant"
+          ? "font-cormorant"
+          : "font-serif"
+        : campaign.presentation.heading.fontFamily === "fredoka"
+          ? "font-fredoka"
+          : campaign.presentation.heading.fontFamily === "inter" || campaign.presentation.heading.fontFamily === "sans"
+            ? "font-inter"
+            : campaign.presentation.heading.fontFamily === "bebas"
+              ? "font-bebas"
+              : "font-display";
+  const showBottomState =
+    !isImmersiveScratchTemplate &&
+    ((stage === "idle" && campaign.gameType !== "wheel") ||
+      (stage === "ready" && campaign.gameType !== "wheel"));
+  const isPreGameLeadCapture = requiresContactCapture && !drawSession;
+
+  useEffect(() => {
+    async function loadCampaign() {
+      const previewQuery = isPreview
+        ? `?preview=1${previewToken ? `&previewToken=${encodeURIComponent(previewToken)}` : ""}`
+        : "";
+      const response = await fetch(
+        `/api/public/campaign/${campaignId}${previewQuery}`,
+      );
+
+      if (!response.ok) {
+        return;
+      }
+
+      const payload = (await response.json()) as { campaign: PublicCampaign };
+      setCampaign(payload.campaign);
+    }
+
+    void loadCampaign();
+  }, [campaignId, isPreview, previewToken]);
+
+  useEffect(() => {
+    if (!isPreview || initialPreviewToken) return;
+
+    let cancelled = false;
+    void fetch("/api/public/preview-token", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ campaignId }),
+    })
+      .then(async (response) => {
+        const payload = (await response.json().catch(() => null)) as {
+          token?: string;
+          error?: string;
+        } | null;
+        if (!response.ok || !payload?.token) {
+          throw new Error(payload?.error ?? "La prévisualisation est indisponible.");
+        }
+        if (!cancelled) setPreviewToken(payload.token);
+      })
+      .catch((previewError) => {
+        if (!cancelled) {
+          setError(
+            previewError instanceof Error
+              ? previewError.message
+              : "La prévisualisation est indisponible.",
+          );
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [campaignId, initialPreviewToken, isPreview]);
+
+  async function ensurePreviewToken() {
+    if (!isPreview) return null;
+    if (previewToken) return previewToken;
+
+    const response = await fetch("/api/public/preview-token", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ campaignId }),
+    });
+    const payload = (await response.json().catch(() => null)) as {
+      token?: string;
+      error?: string;
+    } | null;
+    if (!response.ok || !payload?.token) {
+      throw new Error(payload?.error ?? "La prévisualisation est indisponible.");
+    }
+    setPreviewToken(payload.token);
+    return payload.token;
+  }
+
+  async function trackEvent(
+    eventType: string,
+    leadId?: string,
+    metadata?: Record<string, string | number | boolean | null>,
+  ) {
+    if (isPreview) return;
+    await fetch("/api/public/event", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        campaignId,
+        leadId,
+        eventType,
+        metadata,
+      }),
+    });
+  }
+
+  async function prepareSession(nextStage: ExperienceStage = "ready") {
+    setError(null);
+    setIsLoading(true);
+
+
+    try {
+      const activePreviewToken = await ensurePreviewToken();
+      const response = await fetch("/api/public/draw/session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ campaignId, previewToken: activePreviewToken }),
+      });
+
+      if (!response.ok) {
+        const payload = (await response.json().catch(() => null)) as {
+          error?: string;
+          code?: string;
+        } | null;
+        if (payload?.code === "already_played_today") {
+          setBlockedMessage(
+            payload.error ?? "Vous avez déjà participé à cette animation. Réessayez plus tard.",
+          );
+          setStage("blocked");
+          return;
+        }
+        throw new Error(payload?.error ?? "Impossible de préparer la partie.");
+      }
+
+      const payload = (await response.json()) as CreateDrawSessionResult;
+      setPreviewResult(payload);
+      setDrawSession(payload.session);
+      setCampaign(payload.campaign);
+      setStage(nextStage);
+    } catch (sessionError) {
+      setError(
+        sessionError instanceof Error ? sessionError.message : "Une erreur est survenue.",
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function openActionAndTrack() {
+    setActionVisited(false);
+    setError(null);
+
+    if (requiresContactCapture && !contactCaptured) {
+      setStage("collect");
+      await trackEvent("form_started");
+      return;
+    }
+
+    if (drawSession) {
+      setStage("intro");
+      return;
+    }
+
+    // An optional marketing action must never reserve a prize or gate access
+    // to the game. The draw session is prepared only when the player chooses
+    // to play.
+    setStage("intro");
+  }
+
+  async function launchPreparedGame() {
+    if (!drawSession) {
+      await prepareSession("ready");
+      setAutoSpinKey(`spin-${Date.now()}`);
+      return;
+    }
+
+    setStage("ready");
+    setAutoSpinKey(`spin-${drawSession.id}`);
+  }
+
+  async function finalizeParticipant() {
+    if (!drawSession) {
+      return;
+    }
+
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      const payload: FinalizeDrawSessionRequest = {
+        sessionId: drawSession.id,
+        firstName,
+        email,
+        marketingConsent,
+        previewSessionToken: drawSession.previewSessionToken,
+      };
+      const response = await fetch("/api/public/draw/finalize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const failure = (await response.json().catch(() => null)) as {
+          error?: string;
+          code?: string;
+        } | null;
+        if (failure?.code === "participation_cooldown") {
+          setBlockedMessage(
+            failure.error ?? "Vous avez déjà participé à cette animation. Revenez plus tard.",
+          );
+          setStage("blocked");
+          return;
+        }
+        throw new Error(failure?.error ?? "Impossible d’enregistrer vos coordonnées.");
+      }
+
+      const result = (await response.json()) as DrawResult;
+      setDrawResult(result);
+      setCampaign(result.campaign);
+      setStage("success");
+    } catch (submitError) {
+      setError(
+        submitError instanceof Error ? submitError.message : "Une erreur est survenue.",
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function submitWinnerForm(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (requiresContactCapture && !marketingConsent) {
+      setError("Votre consentement est obligatoire pour participer à cette campagne.");
+      return;
+    }
+
+    if (!drawSession && requiresContactCapture) {
+      setError(null);
+      setContactCaptured(true);
+
+      if (currentAction) {
+        setStage("intro");
+      } else {
+        await prepareSession("ready");
+      }
+
+      return;
+    }
+
+    await finalizeParticipant();
+  }
+
+  async function handleGameReveal() {
+    if (requiresContactCapture) {
+      await finalizeParticipant();
+      return;
+    }
+
+    if (previewResult?.prize) {
+      setStage("collect");
+      await trackEvent("form_started");
+      return;
+    }
+
+    void trackEvent("game_lost");
+    setStage("lost");
+  }
+
+  function handleScratchStart() {
+    void trackEvent("game_played", undefined, {
+      mechanic: "scratch",
+      trigger: "first_touch",
+      sessionId: drawSession?.id ?? null,
+    });
+  }
+
+  const backgroundStyle =
+    campaign.presentation.background.mode === "image" &&
+    campaign.presentation.background.imageUrl
+      ? `linear-gradient(rgba(0,0,0,0.08), rgba(0,0,0,0.18)), url("${campaign.presentation.background.imageUrl}")`
+      : isScratchVaultTemplate
+        ? `radial-gradient(circle at 50% 108%, ${withHexAlpha(primaryColor, "58")} 0 27%, transparent 48%), radial-gradient(circle at 15% 10%, ${withHexAlpha(secondaryColor, "4d")} 0 12%, transparent 22%), linear-gradient(155deg, #071126 0%, #111b3b 56%, #071126 100%)`
+        : isScratchConfettiTemplate
+          ? `radial-gradient(circle at 12% 9%, ${withHexAlpha(primaryColor, "52")} 0 10%, transparent 11%), radial-gradient(circle at 94% 12%, ${withHexAlpha(secondaryColor, "30")} 0 12%, transparent 13%), linear-gradient(180deg, #f59e0b 0%, #f97316 58%, #ea580c 100%)`
+        : isScratchCoralTemplate
+          ? `radial-gradient(circle at 50% 0%, ${withHexAlpha(primaryColor, "24")} 0 18%, transparent 42%), linear-gradient(180deg, #fffaf5 0%, #ffffff 72%, #fff3e8 100%)`
+        : isScratchLilacTemplate
+          ? `radial-gradient(circle at 50% 0%, ${withHexAlpha(primaryColor, "2c")} 0 20%, transparent 44%), linear-gradient(180deg, #fffaff 0%, #f7edff 100%)`
+        : isScratchSunburstTemplate
+          ? `repeating-conic-gradient(from -18deg at 50% -2%, ${withHexAlpha(primaryColor, "52")} 0deg 12deg, transparent 12deg 24deg), linear-gradient(180deg, #fff4bf 0%, #ffdc58 68%, #fff0c5 100%)`
+        : isCosmicTemplate
+        ? `radial-gradient(circle at 50% 112%, ${withHexAlpha(primaryColor, "52")} 0 24%, transparent 43%), radial-gradient(circle at 9% 12%, ${withHexAlpha(secondaryColor, "2b")} 0 14%, transparent 25%), linear-gradient(155deg, #07142e 0%, #0b1d42 55%, #071126 100%)`
+        : isSunburstTemplate
+          ? `radial-gradient(circle at 12% 10%, ${withHexAlpha(primaryColor, "33")} 0 12%, transparent 13%), radial-gradient(circle at 94% 18%, ${withHexAlpha(secondaryColor, "38")} 0 14%, transparent 15%), linear-gradient(180deg, #fffdf5 0%, #fff8e8 56%, #fff2ce 100%)`
+        : isRestaurantPopTemplate
+        ? `radial-gradient(circle at -10% -8%, ${withHexAlpha(primaryColor, "f2")} 0 18%, transparent 19%), radial-gradient(circle at 110% 0%, ${withHexAlpha(secondaryColor, "f2")} 0 13%, transparent 14%), radial-gradient(circle at 0% 80%, ${withHexAlpha(primaryColor, "20")} 0 20%, transparent 21%), radial-gradient(circle at 100% 78%, ${withHexAlpha(secondaryColor, "40")} 0 18%, transparent 19%), linear-gradient(180deg, #fff2dd 0%, #fffaf1 46%, #fff4e5 100%)`
+        : `radial-gradient(circle at 50% 50%, ${withHexAlpha(primaryColor, "33")}, transparent 50%), linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.08))`;
+  const restaurantPopHeadingLines = buildRestaurantPopHeadingLines(safeSubtitle);
+
+  const headingFontSize = fluidType(campaign.presentation.heading.fontSizePx, {
+    minRatio: 0.82,
+    maxRatio: 1.08,
+    viewportStep: 0.3,
+  });
+  const buttonFontSize = fluidType(campaign.presentation.button.textSizePx, {
+    minRatio: 0.86,
+    maxRatio: 1.08,
+    viewportStep: 0.24,
+  });
+  const publicCtaLabel = campaign.ctaLabel?.trim() || "Jouer";
+  // Keep the brand mark anchored at the same distance from the top for every
+  // game mechanic. Scratch templates render the logo inside their ticket
+  // component, but that component now uses the same top spacing as the wheel.
+  const pageTopPaddingClass = "pt-12 sm:pt-14";
+
+  return (
+    <div
+      className="okado-public-experience relative min-h-screen overflow-hidden"
+      style={{
+        backgroundColor: campaign.presentation.background.color,
+        backgroundImage: backgroundStyle,
+        backgroundPosition: "center",
+        backgroundSize: "cover",
+      }}
+    >
+      {isPreview ? (
+        <div
+          role="status"
+          className="sticky top-0 z-50 flex min-h-11 items-center justify-center border-b border-[#d7a91f] bg-[#f4c14a] px-4 py-2 text-center text-xs font-semibold tracking-[0.01em] text-[#111827] shadow-[0_8px_24px_rgba(122,91,0,0.22)] sm:text-sm"
+        >
+          Mode prévisualisation — cette participation est simulée et n&apos;affecte ni vos statistiques ni vos stocks.
+        </div>
+      ) : null}
+      {isRestaurantPopTemplate || isSunburstTemplate || isCosmicTemplate || isScratchVaultTemplate || isScratchConfettiTemplate || isScratchCoralTemplate || isScratchLilacTemplate || isScratchSunburstTemplate ? (
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div
+            className="absolute right-0 top-[18%] h-28 w-16 opacity-35"
+            style={{
+              backgroundImage: `radial-gradient(circle, ${withHexAlpha(primaryColor, isCosmicTemplate || isScratchVaultTemplate ? "70" : "40")} 1.8px, transparent 2px)`,
+              backgroundSize: "12px 12px",
+            }}
+          />
+          <div
+            className="absolute -bottom-10 -left-12 h-48 w-48 rounded-full opacity-80"
+            style={{ background: withHexAlpha(primaryColor, isCosmicTemplate || isScratchVaultTemplate ? "2e" : "22") }}
+          />
+        </div>
+      ) : null}
+      <div className={`relative mx-auto flex ${isPreview ? "h-[calc(100dvh-44px)] min-h-[560px]" : "h-screen"} w-full flex-col overflow-hidden px-4 pb-0 sm:px-6 ${pageTopPaddingClass}`}>
+        {!isImmersiveScratchTemplate && ((campaign.logoMode === "image" && campaign.logoUrl) ||
+        campaign.logoMode === "text" ||
+        campaign.gameType === "scratch") ? (
+          <div className={`flex ${logoAlignmentClass}`}>
+            <div style={{ marginBottom: `${campaign.presentation.logo.marginBottomPx}px` }}>
+              <BrandMark
+                logoText={campaign.logoText ?? campaign.merchantLogoText}
+                logoUrl={campaign.logoMode === "image" ? campaign.logoUrl : undefined}
+                size="lg"
+                variant="transparent"
+                imageWidthPx={logoWidthPx}
+                textSizePx={logoTextSizePx}
+                textClassName="text-2xl"
+                textColor={headingTextColor}
+              />
+            </div>
+          </div>
+        ) : null}
+
+        {campaign.logoMode === "none" ||
+        (campaign.logoMode === "image" && !campaign.logoUrl) && !isImmersiveScratchTemplate ? (
+          <div aria-hidden="true" className="h-5" />
+        ) : null}
+
+        {!isImmersiveScratchTemplate ? (
+        <div className={headingAlignmentClass}>
+          <h1
+            className={`${headingFontClass} line-clamp-3 whitespace-pre-line ${isRestaurantPopTemplate ? "tracking-[0.038em] drop-shadow-[0_5px_0_rgba(0,0,0,0.08)]" : ""} leading-[1] text-[#151826]`}
+            style={{
+              color: headingTextColor,
+              fontSize: headingFontSize,
+              fontWeight: campaign.presentation.heading.fontWeight ?? 600,
+            }}
+          >
+            {isRestaurantPopTemplate
               ? restaurantPopHeadingLines.map((line, lineIndex) => (
                   <span key={`heading-line-${lineIndex}`} className="block">
                     {line.map((part, partIndex) => (
@@ -623,7 +1050,7 @@ export function CampaignExperience({
 
           {stage === "ready" && campaign.gameType !== "wheel" ? (
             <div className="rounded-[28px] border border-white/70 bg-white/72 px-5 py-4 text-center text-sm text-[#62697a] shadow-[0_18px_40px_rgba(17,24,39,0.06)] backdrop-blur">
-              Grattez le ticket pour rÃ©vÃ©ler immÃ©diatement votre rÃ©sultat.
+              Grattez le ticket pour révéler immédiatement votre résultat.
             </div>
           ) : null}
 
@@ -634,7 +1061,7 @@ export function CampaignExperience({
               </div>
               <h2 className="mt-5 text-3xl font-semibold text-[#141826]">Perdu :(</h2>
               <p className="mt-3 text-base leading-7 text-[#61687a]">
-                Merci pour votre participation. Revenez bientÃ´t pour une nouvelle chance.
+                Merci pour votre participation. Revenez bientôt pour une nouvelle chance.
               </p>
             </div>
           ) : null}
@@ -646,7 +1073,7 @@ export function CampaignExperience({
         onClick={() => setRulesOpen(true)}
         className="fixed bottom-4 right-4 z-20 rounded-full border border-white/70 bg-white/82 px-4 py-2 text-sm font-semibold text-[#111827] shadow-[0_14px_34px_rgba(17,24,39,0.12)] backdrop-blur"
       >
-        RÃ¨glement
+        Règlement
       </button>
 
       <RulesModal campaign={campaign} open={rulesOpen} onClose={() => setRulesOpen(false)} />
@@ -659,7 +1086,7 @@ export function CampaignExperience({
           Perdu
         </h2>
         <p className="mt-4 text-center text-lg leading-8 text-[#5f6678]">
-          Merci pour votre participation. Revenez bientÃ´t pour une nouvelle chance.
+          Merci pour votre participation. Revenez bientôt pour une nouvelle chance.
         </p>
       </PublicModal>
 
@@ -668,7 +1095,7 @@ export function CampaignExperience({
           !
         </div>
         <h2 className="mt-6 text-center text-[2rem] font-semibold leading-[1.05] text-[#121826]">
-          Participation dÃ©jÃ  enregistrÃ©e
+          Participation déjà enregistrée
         </h2>
         <p className="mt-4 text-center text-lg leading-8 text-[#5f6678]">
           {blockedMessage}
@@ -687,16 +1114,16 @@ export function CampaignExperience({
           {actionIcon(currentAction?.kind)}
         </div>
         <h2 className="mt-6 text-center text-[2rem] font-semibold leading-[1.05] text-[#121826]">
-          {currentAction ? "Avant de jouer" : "PrÃªt Ã  jouer ?"}
+          {currentAction ? "Avant de jouer" : "Prêt à jouer ?"}
         </h2>
         <p className="mt-4 text-center text-lg leading-8 text-[#5f6678]">
           {currentAction?.kind === "google"
             ? "Laissez-nous un avis et revenez ici pour jouer."
             : currentAction?.kind === "instagram"
-              ? "Suivez-nous sur Instagram pour dÃ©couvrir les nouveautÃ©s du commerce, puis revenez ici pour jouer."
+              ? "Suivez-nous sur Instagram pour découvrir les nouveautés du commerce, puis revenez ici pour jouer."
               : currentAction
-                ? "DÃ©couvrez le lien du commerce dans un nouvel onglet, puis revenez ici pour jouer."
-                : "Touchez Jouer pour prÃ©parer votre partie et dÃ©couvrir votre rÃ©sultat."}
+                ? "Découvrez le lien du commerce dans un nouvel onglet, puis revenez ici pour jouer."
+                : "Touchez Jouer pour préparer votre partie et découvrir votre résultat."}
         </p>
         <div className="mt-6 space-y-3">
           {currentAction ? (
@@ -732,7 +1159,7 @@ export function CampaignExperience({
             }
           >
             {isLoading
-              ? "PrÃ©paration..."
+              ? "Préparation..."
               : actionVisited || !currentAction
                 ? "Jouer"
                 : "Jouer maintenant"}
@@ -753,15 +1180,15 @@ export function CampaignExperience({
           {isPreGameLeadCapture
             ? "Avant de jouer"
             : previewResult?.prize
-            ? `FÃ©licitations ! Vous avez remportÃ© ${previewResult.prize.label}`
+            ? `Félicitations ! Vous avez remporté ${previewResult.prize.label}`
             : "Merci pour votre participation"}
         </h2>
         <div className="mt-5 rounded-[22px] bg-[#f6f7fb] px-5 py-4 text-base leading-7 text-[#475067]">
           {isPreGameLeadCapture
-            ? "Saisissez vos coordonnÃ©es et acceptez le consentement pour participer au jeu."
+            ? "Saisissez vos coordonnées et acceptez le consentement pour participer au jeu."
             : previewResult?.prize
-            ? "Vos informations sont nÃ©cessaires pour valider et envoyer votre gain."
-            : "Laissez vos coordonnÃ©es pour recevoir les prochaines opportunitÃ©s du commerce."}
+            ? "Vos informations sont nécessaires pour valider et envoyer votre gain."
+            : "Laissez vos coordonnées pour recevoir les prochaines opportunités du commerce."}
         </div>
         {!isPreGameLeadCapture && previewUsageConditions ? (
           <div className="mt-4 rounded-[22px] bg-[#fff8e8] px-5 py-4 text-left text-sm leading-7 text-[#6c5313]">
@@ -776,10 +1203,10 @@ export function CampaignExperience({
             value={firstName}
             onChange={(event) => setFirstName(event.target.value)}
             required
-            placeholder="PrÃ©nom"
+            placeholder="Prénom"
             className="w-full rounded-[18px] border border-[#d8dce5] px-4 py-4 text-lg text-[#111827] outline-none placeholder:text-[#99a1b2]"
           />
-          <label className="sr-only" htmlFor="winner-first-name">PrÃ©nom</label>
+          <label className="sr-only" htmlFor="winner-first-name">Prénom</label>
 
           <input
             id="winner-first-name"
@@ -804,7 +1231,7 @@ export function CampaignExperience({
               className="mt-1 h-4 w-4 accent-[#111827]"
             />
             <span>
-              J&apos;accepte de recevoir des actualitÃ©s et offres de la part de cet Ã©tablissement.
+              J&apos;accepte de recevoir des actualités et offres de la part de cet établissement.
             </span>
           </label>
 
@@ -821,7 +1248,7 @@ export function CampaignExperience({
           >
             {isLoading
               ? isPreGameLeadCapture
-                ? "PrÃ©paration..."
+                ? "Préparation..."
                 : "Enregistrement..."
               : isPreGameLeadCapture
                 ? "Continuer vers le jeu"
@@ -840,31 +1267,31 @@ export function CampaignExperience({
           </div>
           <p className="mt-4 text-lg leading-7 text-[#1a2f76]">
             {isContactOnlySuccess
-              ? "Votre contact est bien enregistrÃ©."
+              ? "Votre contact est bien enregistré."
               : "Vous recevrez votre gain par e-mail avec les informations de retrait"}
           </p>
           <p className="mt-3 text-sm leading-6 text-[#61687a]">
             {isContactOnlySuccess
               ? "Merci pour votre confiance."
-              : "Conservez ce QR code pour retirer votre gain. Si lâ€™e-mail tarde Ã  arriver, vÃ©rifiez vos spams."}
+              : "Conservez ce QR code pour retirer votre gain. Si l’e-mail tarde à arriver, vérifiez vos spams."}
           </p>
 
           {isPreview ? (
             <p className="mt-3 rounded-[14px] bg-[#eef2ff] px-3 py-2 text-xs font-semibold leading-5 text-[#334477]">
-              RÃ©sultat simulÃ© : le lot et l&apos;e-mail de test n&apos;impactent pas la campagne rÃ©elle.
+              Résultat simulé : le lot et l&apos;e-mail de test n&apos;impactent pas la campagne réelle.
             </p>
           ) : null}
 
           {drawResult?.prize ? <div className="mt-4 rounded-[18px] bg-[#fff4cb] px-4 py-3 text-left text-sm leading-6 text-[#4d3810]">
             <p>
-              Vous avez entre le {availableDate ?? "maintenant"} et le {expiryDate ?? "bientÃ´t"}{" "}
-              pour venir le rÃ©cupÃ©rer.
+              Vous avez entre le {availableDate ?? "maintenant"} et le {expiryDate ?? "bientôt"}{" "}
+              pour venir le récupérer.
             </p>
           </div> : null}
 
           {drawResult?.prize?.purchaseRequired ? (
             <div className="mt-3 rounded-[18px] bg-[#f7f7fb] px-4 py-3 text-left text-sm leading-6 text-[#61687a]">
-              Le retrait du lot est soumis Ã  une condition dâ€™achat.
+              Le retrait du lot est soumis à une condition d’achat.
             </div>
           ) : null}
 
@@ -912,5 +1339,4 @@ export function CampaignExperience({
     </div>
   );
 }
-
 
