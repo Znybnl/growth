@@ -1,3 +1,6 @@
+Exit code: 0
+Wall time: 0.3 seconds
+Output:
 "use client";
 
 import Image from "next/image";
@@ -11,7 +14,7 @@ export function CampaignPreviewQr({ campaignId }: { campaignId: string }) {
     >
       <Image
         src={`/api/campaigns/${campaignId}/qr?preview=1&inline=1`}
-        alt="QR code de prévisualisation — réservé aux tests, ne pas transmettre aux clients"
+        alt="QR code de prÃ©visualisation â€” rÃ©servÃ© aux tests, ne pas transmettre aux clients"
         width={192}
         height={192}
         unoptimized
@@ -20,15 +23,15 @@ export function CampaignPreviewQr({ campaignId }: { campaignId: string }) {
       />
       <div className="min-w-0">
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#8993a6]">
-          QR de prévisualisation — test uniquement
+          QR de prÃ©visualisation â€” test uniquement
         </p>
         <p className="mt-2 text-sm leading-6 text-[#626d82]">
           Scannez ce code pour tester le parcours sans utiliser le QR de la campagne. Les
-          participations sont isolées et ne décrémentent pas les lots. Ne transmettez pas ce QR
-          code à vos clients.
+          participations sont isolÃ©es et ne dÃ©crÃ©mentent pas les lots. Ne transmettez pas ce QR
+          code Ã  vos clients.
         </p>
         <p className="mt-2 text-xs font-semibold text-[#8993a6]">
-          Validité : 30 minutes après sa génération.
+          ValiditÃ© : 30 minutes aprÃ¨s sa gÃ©nÃ©ration.
         </p>
       </div>
     </div>
@@ -60,16 +63,16 @@ export function CampaignPreviewQrDialog({
           <div>
             <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">QR code</p>
             <h2 id="campaign-preview-qr-title" className="mt-2 text-2xl font-semibold text-[#0f1728]">
-              Prévisualisation
+              PrÃ©visualisation
             </h2>
             <p className="mt-2 text-sm leading-6 text-[#5c6577]">
-              Ce QR code est réservé à vos tests et ne doit pas être transmis aux clients.
+              Ce QR code est rÃ©servÃ© Ã  vos tests et ne doit pas Ãªtre transmis aux clients.
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            aria-label="Fermer la prévisualisation du QR code"
+            aria-label="Fermer la prÃ©visualisation du QR code"
             className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] border border-[#d7e0ed] text-[#182033] transition hover:bg-[#f7f9fc]"
           >
             <X className="h-4 w-4" aria-hidden="true" />
@@ -89,3 +92,4 @@ export function CampaignPreviewQrDialog({
     </div>
   );
 }
+
