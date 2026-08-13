@@ -88,6 +88,15 @@ function escapeHtml(value: string) {
     .replaceAll("'", "&#39;");
 }
 
+function emphasizePrizeLabelHtml(value: string, prizeLabel: string) {
+  const escapedPrizeLabel = escapeHtml(prizeLabel);
+  if (!escapedPrizeLabel) return value;
+  return value.replaceAll(
+    escapedPrizeLabel,
+    `<strong style="font-weight:700;">${escapedPrizeLabel}</strong>`,
+  );
+}
+
 function paragraphize(text: string) {
   return text
     .split(/\n{2,}/)
@@ -217,7 +226,7 @@ export function renderRewardEmailHtml(
   const headline = escapeHtml(renderEmailTemplate(settings.headline, variables));
   const preheader = escapeHtml(renderEmailTemplate(settings.preheader, variables));
   const bodyBlocks = paragraphize(renderEmailTemplate(settings.body, variables)).map((block) =>
-    escapeHtml(block).replaceAll("\n", "<br />"),
+    emphasizePrizeLabelHtml(escapeHtml(block), variables.prizeLabel).replaceAll("\n", "<br />"),
   );
   const footerBlocks = paragraphize(renderEmailTemplate(settings.footerNote, variables)).map(
     (block) => escapeHtml(block).replaceAll("\n", "<br />"),

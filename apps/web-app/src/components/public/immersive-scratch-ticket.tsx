@@ -300,14 +300,14 @@ export function ImmersiveScratchTicket({
   }
 
   const rootClass = isVault || isConfetti
-    ? "bg-transparent px-5 pt-4"
+    ? "bg-transparent px-5"
     : isLilac
-      ? "bg-transparent px-6 pt-4"
+      ? "bg-transparent px-6"
       : isCoral
-        ? "bg-transparent px-5 pt-4"
+        ? "bg-transparent px-5"
         : isSunburst
-          ? "bg-transparent px-0 pt-4"
-          : "bg-[#111936] px-5 pt-4";
+          ? "bg-transparent px-0"
+          : "bg-[#111936] px-5";
 
   return (
     <div className={`mx-auto w-full ${fitContainer ? "max-w-full" : "max-w-[370px]"}`}>
@@ -318,9 +318,9 @@ export function ImmersiveScratchTicket({
               <BrandMark
                 logoText={logoText || "Votre commerce"}
                 logoUrl={logoMode === "image" ? logoUrl : undefined}
-                size="sm"
+                size="lg"
                 variant="transparent"
-                imageWidthPx={Math.min(logoWidthPx, 280)}
+                imageWidthPx={logoWidthPx}
                 textSizePx={logoTextSizePx}
                 textClassName="text-2xl"
                 textColor={ink}

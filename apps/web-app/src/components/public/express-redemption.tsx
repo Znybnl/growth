@@ -131,13 +131,13 @@ export function ExpressRedemption({ code, context: initialContext }: ExpressRede
 
         <section className="overflow-hidden rounded-[28px] border border-[#dbe4f0] bg-white shadow-[0_24px_70px_rgba(18,24,39,0.1)]">
           <div className="border-b border-[#edf0f4] bg-[linear-gradient(135deg,#fffdf5,#fff8e8)] px-5 py-5 sm:px-7">
-            <div className="flex items-start justify-between gap-4">
-              <div>
+            <div>
+              <div className="min-w-0">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#b28719]">Validation du retrait</p>
-                <h1 className="mt-2 font-display text-3xl font-semibold tracking-[-0.04em] text-[#111827]">{context.prizeLabel ?? "Lot"}</h1>
+                <h1 className="mt-2 w-full break-words font-display text-3xl font-semibold leading-tight tracking-[-0.04em] text-[#111827]">{context.prizeLabel ?? "Lot"}</h1>
                 <p className="mt-2 text-sm text-[#667286]">{context.campaignTitle}</p>
               </div>
-              <span className={`shrink-0 rounded-full border px-3 py-1.5 text-[11px] font-semibold ${status.tone}`}>{status.label}</span>
+              <span className={`mt-3 inline-flex rounded-full border px-3 py-1.5 text-[11px] font-semibold ${status.tone}`}>{status.label}</span>
             </div>
           </div>
 

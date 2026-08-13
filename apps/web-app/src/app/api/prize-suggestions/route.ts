@@ -10,7 +10,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Authentification requise." }, { status: 401 });
     }
 
-    const industry = request.nextUrl.searchParams.get("industry") ?? session.merchant.industry ?? "";
+    const requestedIndustry = request.nextUrl.searchParams.get("industry")?.trim();
+    const industry = requestedIndustry || session.merchant.industry || "";
     const suggestions = await getPrizeSuggestions(industry);
     return NextResponse.json({ suggestions });
   } catch (error) {

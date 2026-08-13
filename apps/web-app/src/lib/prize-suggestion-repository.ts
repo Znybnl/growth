@@ -44,6 +44,20 @@ function normalizeIndustry(industry: string) {
   return industry.trim().slice(0, 80);
 }
 
+function industryAliases(industry: string) {
+  const normalized = normalizeIndustry(industry);
+  const key = normalized
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+
+  if (key === "restaurant" || key === "restauration") {
+    return ["Restauration", "restauration", "Restaurant", "restaurant"];
+  }
+
+  return [normalized];
+}
+
 export function validatePrizeSuggestionInput(input: Partial<PrizeSuggestionInput>) {
   const industry = normalizeIndustry(String(input.industry ?? ""));
   const label = String(input.label ?? "").trim().slice(0, 120);
@@ -78,13 +92,14 @@ export function validatePrizeSuggestionInput(input: Partial<PrizeSuggestionInput
 }
 
 export async function getPrizeSuggestions(industry: string, includeInactive = false) {
-  if (!isSupabaseConfigured() || !normalizeIndustry(industry)) return [];
+  const normalizedIndustry = normalizeIndustry(industry);
+  if (!isSupabaseConfigured() || !normalizedIndustry) return [];
 
   const supabase = getSupabaseAdmin();
   let query = supabase
     .from("prize_suggestions")
     .select("*")
-    .ilike("industry", normalizeIndustry(industry))
+    .in("industry", industryAliases(normalizedIndustry))
     // Surface the most likely prizes first in the merchant suggestion dialog.
     .order("probability", { ascending: false })
     .order("sort_order", { ascending: true })
