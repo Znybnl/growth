@@ -1,3 +1,7 @@
+Exit code: 0
+Wall time: 0.3 seconds
+Total output lines: 1343
+Output:
 "use client";
 
 import Image from "next/image";
@@ -129,7 +133,7 @@ function buildRestaurantPopHeadingLines(text: string) {
 function actionLabel(kind?: PublicCampaign["actions"][number]["kind"]) {
   switch (kind) {
     case "google":
-      return "Écrire un avis";
+      return "Ã‰crire un avis";
     case "instagram":
       return "Suivez-nous sur Instagram";
     case "facebook":
@@ -139,7 +143,7 @@ function actionLabel(kind?: PublicCampaign["actions"][number]["kind"]) {
     case "tripadvisor":
       return "Voir Tripadvisor";
     case "crm":
-      return "Découvrir l’offre";
+      return "DÃ©couvrir lâ€™offre";
     default:
       return "Ouvrir le lien";
   }
@@ -197,7 +201,7 @@ function PublicModal({
   }
 
   return (
-    <div role="dialog" aria-modal="true" aria-label="Fenêtre de participation" className="fixed inset-0 z-40 flex items-end justify-center bg-[#0f1220]/52 px-4 pb-4 pt-10 backdrop-blur-[6px] sm:items-center sm:p-6">
+    <div role="dialog" aria-modal="true" aria-label="FenÃªtre de participation" className="fixed inset-0 z-40 flex items-end justify-center bg-[#0f1220]/52 px-4 pb-4 pt-10 backdrop-blur-[6px] sm:items-center sm:p-6">
       <div
         className={`w-full max-w-[390px] rounded-[34px] bg-white text-[#111827] shadow-[0_34px_90px_rgba(18,24,39,0.24)] ${
           compact ? "p-5" : "p-6"
@@ -227,7 +231,7 @@ function RulesModal({
     ...prize,
     stockLabel:
       prize.remainingQuantity === null
-        ? "Illimité"
+        ? "IllimitÃ©"
         : `${Math.max(0, prize.remainingQuantity)} disponible${
             prize.remainingQuantity > 1 ? "s" : ""
           }`,
@@ -242,9 +246,671 @@ function RulesModal({
               Conditions d&apos;utilisation
             </p>
             <h2 id="rules-modal-title" className="mt-2 text-2xl font-semibold leading-tight">
-              CGU et règlement du jeu
+              CGU et rÃ¨glement du jeu
             </h2>
           </div>
           <button
             type="button"
-            onC
+            onClick={onClose}
+            className="rounded-full border border-[#dfe4ef] px-4 py-2 text-sm font-semibold text-[#111827]"
+          >
+            Fermer
+          </button>
+        </div>
+
+        <div className="space-y-6 overflow-y-auto px-6 py-5 text-sm leading-7 text-[#4b5567]">
+          <section>
+            <h3 className="text-base font-semibold text-[#111827]">
+              PrÃ©ambule et dÃ©finitions
+            </h3>
+            <p className="mt-2">
+              Le prÃ©sent document rÃ©git les conditions de participation aux jeux-concours
+              phygitaux ci-aprÃ¨s Â« le Jeu Â», dÃ©ployÃ©s en point de vente via la solution
+              logicielle Okado.
+            </p>
+            <p className="mt-2">
+              La SociÃ©tÃ© Organisatrice, ci-aprÃ¨s Â« le Marchand Â», est l&apos;Ã©tablissement
+              professionnel au sein duquel le Jeu est dÃ©ployÃ©. Elle dÃ©finit les rÃ¨gles
+              spÃ©cifiques, les dotations et assume l&apos;entiÃ¨re responsabilitÃ© lÃ©gale de
+              l&apos;organisation du Jeu.
+            </p>
+            <p className="mt-2">
+              Le Prestataire Technique, ci-aprÃ¨s Â« l&apos;Ã‰diteur Â», est la sociÃ©tÃ© BRUNELLE
+              PEROLS INVESTISSEMENT, Ã©ditrice de la solution SaaS Okado, agissant
+              exclusivement en tant que fournisseur d&apos;infrastructure technique.
+            </p>
+            <p className="mt-2">
+              Le Participant est toute personne physique, obligatoirement majeure,
+              participant au Jeu via le scan d&apos;un QR Code en point de vente.
+            </p>
+          </section>
+
+          <section>
+            <h3 className="text-base font-semibold text-[#111827]">
+              Article 1 - Objet et acceptation
+            </h3>
+            <p className="mt-2">
+              La participation au Jeu implique l&apos;acceptation expresse, pleine et entiÃ¨re,
+              sans rÃ©serve, du prÃ©sent rÃ¨glement par le Participant. Ce rÃ¨glement rÃ©git les
+              relations entre le Participant et la SociÃ©tÃ© Organisatrice. L&apos;Ã‰diteur de la
+              solution Okado est un tiers Ã  cette relation.
+            </p>
+          </section>
+
+          <section>
+            <h3 className="text-base font-semibold text-[#111827]">
+              Article 2 - MÃ©canique du jeu et participation
+            </h3>
+            <p className="mt-2">
+              La participation au Jeu s&apos;effectue exclusivement en scannant le QR Code mis
+              Ã  disposition au sein de l&apos;Ã©tablissement de la SociÃ©tÃ© Organisatrice. Selon
+              le paramÃ©trage dÃ©fini sous la seule responsabilitÃ© de la SociÃ©tÃ©
+              Organisatrice, le Participant pourra Ãªtre invitÃ© Ã  consulter des liens
+              externes, tels que la fiche Google Business Profile de l&apos;Ã©tablissement.
+            </p>
+            <p className="mt-2">
+              Il est expressÃ©ment prÃ©cisÃ© que le dÃ©pÃ´t d&apos;un avis en ligne est strictement
+              facultatif. Il ne constitue en aucun cas une condition de participation, ni
+              une obligation pour valider l&apos;obtention d&apos;un gain. L&apos;Ã‰diteur dÃ©cline toute
+              responsabilitÃ© quant Ã  l&apos;utilisation de cette fonctionnalitÃ© par la SociÃ©tÃ©
+              Organisatrice au regard des conditions d&apos;utilisation des plateformes tierces,
+              notamment Google.
+            </p>
+          </section>
+
+          <section>
+            <h3 className="text-base font-semibold text-[#111827]">
+              Article 3 - DÃ©signation des gagnants et responsabilitÃ© des lots
+            </h3>
+            <p className="mt-2">
+              L&apos;attribution des gains est gÃ©rÃ©e automatiquement dÃ¨s la soumission du
+              formulaire, via un algorithme de tirage au sort alÃ©atoire tenant compte des
+              probabilitÃ©s et des stocks paramÃ©trÃ©s par la SociÃ©tÃ© Organisatrice.
+            </p>
+            <p className="mt-2">
+              La SociÃ©tÃ© Organisatrice est seule responsable de la fourniture, de la
+              conformitÃ© et de la remise des lots. La responsabilitÃ© du Prestataire
+              Technique ne saurait Ãªtre engagÃ©e pour toute rÃ©clamation relative Ã  une
+              rupture de stock, un dÃ©faut du lot, un refus de remise par le personnel en
+              magasin, ou tout litige liÃ© Ã  l&apos;exÃ©cution du Jeu.
+            </p>
+          </section>
+
+          <section>
+            <h3 className="text-base font-semibold text-[#111827]">
+              Article 4 - ModalitÃ©s de rÃ©cupÃ©ration des lots
+            </h3>
+            <p className="mt-2">
+              En cas de gain, le Participant reÃ§oit un e-mail de confirmation Ã  l&apos;adresse
+              renseignÃ©e lors de sa participation, contenant un QR Code unique et personnel.
+              Le Participant doit prÃ©senter ce QR Code au personnel de la SociÃ©tÃ©
+              Organisatrice. La remise du lot n&apos;est dÃ©finitive qu&apos;aprÃ¨s validation de ce QR
+              Code par le personnel habilitÃ©, par scan direct ou via la plateforme de gestion
+              Okado.
+            </p>
+          </section>
+
+          <section>
+            <h3 className="text-base font-semibold text-[#111827]">
+              Article 5 - PrÃ©vention de la fraude et litiges techniques
+            </h3>
+            <p className="mt-2">
+              La participation est strictement nominative et limitÃ©e Ã  une participation par
+              jour et par Ã©tablissement. La SociÃ©tÃ© Organisatrice se rÃ©serve le droit
+              d&apos;annuler la participation ou de refuser la remise d&apos;un lot Ã  toute personne
+              ayant tentÃ© de frauder. En cas de dysfonctionnement technique temporaire de la
+              plateforme Okado ou de l&apos;appareil du Participant empÃªchant la validation,
+              aucune compensation ne pourra Ãªtre exigÃ©e.
+            </p>
+          </section>
+
+          <section>
+            <h3 className="text-base font-semibold text-[#111827]">
+              Article 6 - Protection des donnÃ©es personnelles
+            </h3>
+            <p className="mt-2">
+              Dans le cadre du Jeu, des donnÃ©es Ã  caractÃ¨re personnel sont collectÃ©es. La
+              SociÃ©tÃ© Organisatrice agit en tant que Responsable de traitement. Le
+              Prestataire Technique hÃ©berge ces donnÃ©es de maniÃ¨re sÃ©curisÃ©e pour le compte
+              exclusif de la SociÃ©tÃ© Organisatrice.
+            </p>
+            <p className="mt-2">
+              ConformÃ©ment Ã  la rÃ©glementation applicable, le Participant dispose d&apos;un droit
+              d&apos;accÃ¨s, de rectification, de portabilitÃ© et d&apos;effacement de ses donnÃ©es. Pour
+              exercer ces droits, le Participant doit s&apos;adresser directement Ã  la SociÃ©tÃ©
+              Organisatrice par le biais de ses coordonnÃ©es habituelles.
+            </p>
+          </section>
+
+          <section>
+            <h3 className="text-base font-semibold text-[#111827]">
+              Article 7 - Limites de responsabilitÃ© technique
+            </h3>
+            <p className="mt-2">
+              Le Prestataire Technique met en Å“uvre les moyens nÃ©cessaires au bon
+              fonctionnement de l&apos;infrastructure du Jeu. Sa responsabilitÃ© ne saurait Ãªtre
+
+              engagÃ©e en cas de non-rÃ©ception de l&apos;e-mail de confirmation de gain due Ã  une
+              erreur de saisie, Ã  un filtrage anti-spam, Ã  une dÃ©faillance du fournisseur de
+              messagerie, Ã  une interruption rÃ©seau, au dysfonctionnement du smartphone du
+              Participant ou Ã  un bogue technique temporaire.
+            </p>
+          </section>
+
+          <section>
+            <h3 className="text-base font-semibold text-[#111827]">
+              Article 8 - Lots, stocks disponibles et probabilitÃ©s de gain
+            </h3>
+            <p className="mt-2">
+              Les gains sont attribuÃ©s dans la limite des quantitÃ©s de stock disponibles au
+              moment de la participation. Lorsqu&apos;un lot n&apos;est plus disponible, il ne peut
+              plus Ãªtre attribuÃ©, mÃªme si sa probabilitÃ© de gain est indiquÃ©e ci-dessous.
+            </p>
+            <div className="mt-4 overflow-hidden rounded-[18px] border border-[#e5e9f2]">
+              {prizeRows.length ? (
+                prizeRows.map((prize) => (
+                  <div
+                    key={prize.id}
+                    className="grid grid-cols-[1fr_auto] gap-3 border-b border-[#eef1f7] px-4 py-3 last:border-b-0"
+                  >
+                    <div>
+                      <p className="font-semibold text-[#111827]">{prize.label}</p>
+                      <p className="text-xs text-[#7b8496]">Stock : {prize.stockLabel}</p>
+                    </div>
+                    <p className="text-right font-semibold text-[#111827]">
+                      {prize.probability} %
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <p className="px-4 py-3 text-[#7b8496]">Aucun lot configurÃ©.</p>
+              )}
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function CampaignExperience({
+  campaignId,
+  initialCampaign,
+  isPreview = false,
+  previewToken: initialPreviewToken,
+}: CampaignExperienceProps) {
+  const [campaign, setCampaign] = useState(initialCampaign);
+  const [stage, setStage] = useState<ExperienceStage>("idle");
+  const [blockedMessage, setBlockedMessage] = useState(
+    "Une seule participation est possible par jour. Revenez demain pour tenter votre chance Ã  nouveau.",
+  );
+  const [drawSession, setDrawSession] = useState<DrawSession | null>(null);
+  const [previewToken, setPreviewToken] = useState<string | null>(initialPreviewToken ?? null);
+  const [previewResult, setPreviewResult] = useState<CreateDrawSessionResult | null>(null);
+  const [drawResult, setDrawResult] = useState<DrawResult | null>(null);
+  const [firstName, setFirstName] = useState("");
+  const [email, setEmail] = useState("");
+  const [marketingConsent, setMarketingConsent] = useState(false);
+  const [contactCaptured, setContactCaptured] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [actionVisited, setActionVisited] = useState(false);
+  const [rulesOpen, setRulesOpen] = useState(false);
+  const [autoSpinKey, setAutoSpinKey] = useState<string | null>(null);
+
+  const segments = useMemo(() => buildWheelSegments(campaign), [campaign]);
+  const winningSegmentId =
+    previewResult?.prize?.id ??
+    drawResult?.prize?.id ??
+    segments.find((segment) => segment.tone === "lose")?.id ??
+    "lose-0";
+  // The public API exposes only the marketing action for the current visit.
+  // E-mail capture is a separate, optional pre-game step.
+  const currentAction = campaign.actions[0];
+  const requiresContactCapture = campaign.emailCaptureEnabled;
+  const isContactOnlySuccess = stage === "success" && Boolean(drawResult) && !drawResult?.prize;
+  const scratchLabel = previewResult?.prize?.label ?? "Perdu :(";
+  const redemptionCode = drawResult?.lead.redemptionCode;
+  const previewUsageConditions = previewResult?.prize?.usageConditions?.trim();
+  const resolvedUsageConditions =
+    drawResult?.prize?.usageConditions?.trim() || previewUsageConditions || "";
+  const qrPath = redemptionCode
+    ? `/api/public/redeem/${encodeURIComponent(redemptionCode)}/qr`
+    : "";
+  const availableDate = formatDate(drawResult?.lead.rewardAvailableAt);
+  const expiryDate = formatDate(drawResult?.lead.rewardExpiresAt);
+  const pageTemplate = campaign.presentation.layout.templateId ?? "classic";
+  const isRestaurantPopTemplate = pageTemplate === "restaurant-pop";
+  const isCosmicTemplate = pageTemplate === "cosmic-orbit";
+  const isSunburstTemplate = pageTemplate === "sunburst-festival";
+  const isImmersiveTemplate = isCosmicTemplate || isSunburstTemplate;
+  const isScratchVaultTemplate = pageTemplate === "scratch-vault";
+  const isScratchConfettiTemplate = pageTemplate === "scratch-confetti";
+  const isScratchCoralTemplate = pageTemplate === "scratch-coral";
+  const isScratchLilacTemplate = pageTemplate === "scratch-lilac";
+  const isScratchSunburstTemplate = pageTemplate === "scratc…4298 tokens truncated…rantPopTemplate
+              ? restaurantPopHeadingLines.map((line, lineIndex) => (
+                  <span key={`heading-line-${lineIndex}`} className="block">
+                    {line.map((part, partIndex) => (
+                      <span
+                        key={`heading-line-${lineIndex}-${partIndex}`}
+                        style={{
+                          color: part.secondary
+                            ? secondaryColor
+                            : headingTextColor || primaryColor,
+                        }}
+                      >
+                        {part.text}
+                      </span>
+                    ))}
+                  </span>
+                ))
+              : safeSubtitle.trim() || DEFAULT_SCRATCH_SUBTITLE}
+          </h1>
+        </div>
+        ) : null}
+
+        {campaign.gameType === "wheel" ? (
+          <div
+            className="relative left-1/2 mt-[40px] min-h-0 w-screen -translate-x-1/2 flex-1 overflow-visible sm:mt-20 lg:mt-8"
+            style={{ minHeight: "min(52vh, 520px)" }}
+          >
+            <div className="absolute inset-0 overflow-visible">
+              {isImmersiveTemplate ? (
+                <ImmersiveWheel
+                  key={`${campaign.id}-${drawSession?.id ?? "idle"}`}
+                  accent={campaign.accent}
+                  wheelStyle={campaign.presentation.wheel}
+                  template={pageTemplate}
+                  buttonStyle={{
+                    backgroundColor: primaryColor,
+                    textColor: campaign.presentation.button.textColor,
+                    borderColor: campaign.presentation.wheel.rimColor,
+                  }}
+                  segments={segments}
+                  winningSegmentId={winningSegmentId}
+                  canSpin={stage === "ready"}
+                  buttonEnabled={stage === "idle" || stage === "ready"}
+                  buttonLabel="JOUER"
+                  framing="public"
+                  onButtonClick={() => void openActionAndTrack()}
+                  autoSpinKey={autoSpinKey}
+                  onSpinEnd={() => void handleGameReveal()}
+                />
+              ) : (
+                <WheelOfFortune
+                  key={`${campaign.id}-${drawSession?.id ?? "idle"}`}
+                  accent={campaign.accent}
+                  wheelStyle={campaign.presentation.wheel}
+                  pageTemplate={pageTemplate === "restaurant-pop" ? "restaurant-pop" : "classic"}
+                  buttonStyle={{
+                    backgroundColor: primaryColor,
+                    textColor: campaign.presentation.button.textColor,
+                    borderColor:
+                      pageTemplate === "restaurant-pop"
+                        ? secondaryColor
+                        : campaign.presentation.wheel.rimColor,
+                  }}
+                  segments={segments}
+                  winningSegmentId={winningSegmentId}
+                  canSpin={stage === "ready"}
+                  buttonEnabled={stage === "idle" || stage === "ready"}
+                  buttonLabel="JOUER"
+                  framing="public"
+                  onButtonClick={() => void openActionAndTrack()}
+                  autoSpinKey={autoSpinKey}
+                  onSpinEnd={() => void handleGameReveal()}
+                />
+              )}
+            </div>
+          </div>
+        ) : (
+          <div className={isImmersiveScratchTemplate ? "mt-0" : "mt-[40px] sm:mt-20 lg:mt-8"}>
+            {isImmersiveScratchTemplate ? (
+              <ImmersiveScratchTicket
+                key={`${campaign.id}-${drawSession?.id ?? "idle"}`}
+                accent={scratchAccent}
+                resultLabel={scratchLabel}
+                enabled={stage === "ready"}
+                onReveal={() => void handleGameReveal()}
+                onStart={() => void openActionAndTrack()}
+                onScratchStart={handleScratchStart}
+                logoMode={campaign.logoMode}
+                logoText={campaign.logoText ?? campaign.merchantLogoText}
+                logoUrl={campaign.logoUrl}
+                headline={safeSubtitle}
+                headingTextColor={headingTextColor}
+                headingFontClass={headingFontClass}
+                headingFontSize={headingFontSize}
+                headingFontWeight={campaign.presentation.heading.fontWeight ?? 600}
+                headingAlignmentClass={headingAlignmentClass}
+                logoAlignmentClass={logoAlignmentClass}
+                logoBottomSpacingPx={campaign.presentation.logo.marginBottomPx}
+                logoWidthPx={logoWidthPx}
+                logoTextSizePx={logoTextSizePx}
+                template={pageTemplate as "scratch-vault" | "scratch-confetti" | "scratch-coral" | "scratch-lilac" | "scratch-sunburst"}
+              />
+            ) : (
+              <ScratchGame
+                key={`${campaign.id}-${drawSession?.id ?? "idle"}`}
+                accent={scratchAccent}
+                resultLabel={scratchLabel}
+                enabled={stage === "ready"}
+                onReveal={() => void handleGameReveal()}
+                onScratchStart={handleScratchStart}
+              />
+
+            )}
+          </div>
+        )}
+
+        {showBottomState ? <div className="mt-8 space-y-4">
+          {stage === "idle" && campaign.gameType !== "wheel" ? (
+            <button
+              type="button"
+              onClick={openActionAndTrack}
+              className="mx-auto block w-full max-w-[360px] rounded-[24px] border px-6 py-4 text-lg font-semibold shadow-[0_22px_34px_rgba(17,24,39,0.08)]"
+              style={{
+                backgroundColor: campaign.presentation.button.backgroundColor,
+                color: campaign.presentation.button.textColor,
+                borderColor: campaign.presentation.button.borderColor,
+                fontSize: buttonFontSize,
+              }}
+            >
+              {publicCtaLabel}
+            </button>
+          ) : null}
+
+          {stage === "ready" && campaign.gameType !== "wheel" ? (
+            <div className="rounded-[28px] border border-white/70 bg-white/72 px-5 py-4 text-center text-sm text-[#62697a] shadow-[0_18px_40px_rgba(17,24,39,0.06)] backdrop-blur">
+              Grattez le ticket pour rÃ©vÃ©ler immÃ©diatement votre rÃ©sultat.
+            </div>
+          ) : null}
+
+          {false ? (
+            <div className="rounded-[32px] border border-white/80 bg-white/84 p-6 text-center shadow-[0_24px_48px_rgba(17,24,39,0.08)] backdrop-blur">
+              <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#f3f4f8] text-3xl">
+                :(
+              </div>
+              <h2 className="mt-5 text-3xl font-semibold text-[#141826]">Perdu :(</h2>
+              <p className="mt-3 text-base leading-7 text-[#61687a]">
+                Merci pour votre participation. Revenez bientÃ´t pour une nouvelle chance.
+              </p>
+            </div>
+          ) : null}
+        </div> : null}
+      </div>
+
+      <button
+        type="button"
+        onClick={() => setRulesOpen(true)}
+        className="fixed bottom-4 right-4 z-20 rounded-full border border-white/70 bg-white/82 px-4 py-2 text-sm font-semibold text-[#111827] shadow-[0_14px_34px_rgba(17,24,39,0.12)] backdrop-blur"
+      >
+        RÃ¨glement
+      </button>
+
+      <RulesModal campaign={campaign} open={rulesOpen} onClose={() => setRulesOpen(false)} />
+
+      <PublicModal open={stage === "lost"}>
+        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#f3f4f8] text-3xl font-semibold text-[#141826] shadow-[0_20px_45px_rgba(17,24,39,0.10)]">
+          !
+        </div>
+        <h2 className="mt-6 text-center text-[2rem] font-semibold leading-[1.05] text-[#121826]">
+          Perdu
+        </h2>
+        <p className="mt-4 text-center text-lg leading-8 text-[#5f6678]">
+          Merci pour votre participation. Revenez bientÃ´t pour une nouvelle chance.
+        </p>
+      </PublicModal>
+
+      <PublicModal open={stage === "blocked"}>
+        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#f3f4f8] text-3xl font-semibold text-[#141826] shadow-[0_20px_45px_rgba(17,24,39,0.10)]">
+          !
+        </div>
+        <h2 className="mt-6 text-center text-[2rem] font-semibold leading-[1.05] text-[#121826]">
+          Participation dÃ©jÃ  enregistrÃ©e
+        </h2>
+        <p className="mt-4 text-center text-lg leading-8 text-[#5f6678]">
+          {blockedMessage}
+        </p>
+        <button
+          type="button"
+          onClick={() => setStage("idle")}
+          className="mt-6 w-full rounded-[20px] bg-[#111827] px-5 py-4 text-lg font-semibold text-white shadow-[0_12px_24px_rgba(17,24,39,0.16)]"
+        >
+          Compris
+        </button>
+      </PublicModal>
+
+      <PublicModal open={stage === "intro"}>
+        <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-[#f7f7fb] text-4xl font-semibold text-[#1a2f76] shadow-[0_20px_45px_rgba(17,24,39,0.10)]">
+          {actionIcon(currentAction?.kind)}
+        </div>
+        <h2 className="mt-6 text-center text-[2rem] font-semibold leading-[1.05] text-[#121826]">
+          {currentAction ? "Avant de jouer" : "PrÃªt Ã  jouer ?"}
+        </h2>
+        <p className="mt-4 text-center text-lg leading-8 text-[#5f6678]">
+          {currentAction?.kind === "google"
+            ? "Laissez-nous un avis et revenez ici pour jouer."
+            : currentAction?.kind === "instagram"
+              ? "Suivez-nous sur Instagram pour dÃ©couvrir les nouveautÃ©s du commerce, puis revenez ici pour jouer."
+              : currentAction
+                ? "DÃ©couvrez le lien du commerce dans un nouvel onglet, puis revenez ici pour jouer."
+                : "Touchez Jouer pour prÃ©parer votre partie et dÃ©couvrir votre rÃ©sultat."}
+        </p>
+        <div className="mt-6 space-y-3">
+          {currentAction ? (
+            <a
+              href={currentAction.url}
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => {
+                if (currentAction.kind === "google") {
+                  setActionVisited(true);
+                  void trackEvent("review_clicked");
+                  return;
+                }
+
+                setActionVisited(true);
+                void trackEvent("social_clicked");
+              }}
+              className="block w-full rounded-[20px] border border-[#f3b229] bg-[#f3b229] px-5 py-4 text-center text-lg font-semibold leading-7 text-[#111827] shadow-[0_12px_22px_rgba(243,178,41,0.28)]"
+            >
+              {actionLabel(currentAction.kind)}
+            </a>
+          ) : null}
+          <button
+            type="button"
+            onClick={() => void launchPreparedGame()}
+            disabled={isLoading}
+            className={
+              actionVisited
+                ? "w-full rounded-[20px] border-0 bg-[#111827] px-5 py-4 text-lg font-semibold leading-7 text-white shadow-[0_12px_24px_rgba(17,24,39,0.16)] disabled:opacity-60"
+                : !currentAction
+                  ? "w-full rounded-[20px] border-0 bg-[#111827] px-5 py-4 text-xl font-semibold text-white shadow-[0_12px_24px_rgba(17,24,39,0.16)] disabled:opacity-60"
+                  : "w-full rounded-[12px] border-0 bg-transparent px-3 py-2 text-sm font-medium text-[#61687a] underline decoration-[#c4c9d4] underline-offset-4 transition hover:text-[#111827] disabled:opacity-60"
+            }
+          >
+            {isLoading
+              ? "PrÃ©paration..."
+              : actionVisited || !currentAction
+                ? "Jouer"
+                : "Jouer maintenant"}
+          </button>
+        </div>
+        {error ? (
+          <div className="mt-4 rounded-[18px] bg-[#fff1f0] px-4 py-3 text-sm text-[#b42318]">
+            {error}
+          </div>
+        ) : null}
+      </PublicModal>
+
+      <PublicModal open={stage === "collect"}>
+        <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-[#f7f7fb] text-4xl shadow-[0_20px_45px_rgba(17,24,39,0.10)]">
+          <Gift className="h-11 w-11" aria-hidden="true" />
+        </div>
+        <h2 className="mt-6 text-center text-[2rem] font-semibold leading-[1.05] text-[#121826]">
+          {isPreGameLeadCapture
+            ? "Avant de jouer"
+            : previewResult?.prize
+            ? `FÃ©licitations ! Vous avez remportÃ© ${previewResult.prize.label}`
+            : "Merci pour votre participation"}
+        </h2>
+        <div className="mt-5 rounded-[22px] bg-[#f6f7fb] px-5 py-4 text-base leading-7 text-[#475067]">
+          {isPreGameLeadCapture
+            ? "Saisissez vos coordonnÃ©es et acceptez le consentement pour participer au jeu."
+            : previewResult?.prize
+            ? "Vos informations sont nÃ©cessaires pour valider et envoyer votre gain."
+            : "Laissez vos coordonnÃ©es pour recevoir les prochaines opportunitÃ©s du commerce."}
+        </div>
+        {!isPreGameLeadCapture && previewUsageConditions ? (
+          <div className="mt-4 rounded-[22px] bg-[#fff8e8] px-5 py-4 text-left text-sm leading-7 text-[#6c5313]">
+            <p className="text-xs uppercase tracking-[0.2em] text-[#8a6a18]">
+              Conditions d&apos;utilisation
+            </p>
+            <p className="mt-2 whitespace-pre-line">{previewUsageConditions}</p>
+          </div>
+        ) : null}
+        <form className="mt-5 space-y-4" onSubmit={submitWinnerForm}>
+          <input
+            value={firstName}
+            onChange={(event) => setFirstName(event.target.value)}
+            required
+            placeholder="PrÃ©nom"
+            className="w-full rounded-[18px] border border-[#d8dce5] px-4 py-4 text-lg text-[#111827] outline-none placeholder:text-[#99a1b2]"
+          />
+          <label className="sr-only" htmlFor="winner-first-name">PrÃ©nom</label>
+
+          <input
+            id="winner-first-name"
+            type="email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            required
+            placeholder="E-mail"
+            className="w-full rounded-[18px] border border-[#d8dce5] px-4 py-4 text-lg text-[#111827] outline-none placeholder:text-[#99a1b2]"
+          />
+          <label
+            htmlFor="marketing-consent"
+            className="flex cursor-pointer items-start gap-3 rounded-[18px] bg-[#f6f7fb] px-4 py-3 text-left text-sm leading-6 text-[#475067]"
+          >
+            <input
+              id="marketing-consent"
+              type="checkbox"
+              required={requiresContactCapture}
+              aria-required={requiresContactCapture}
+              checked={marketingConsent}
+              onChange={(event) => setMarketingConsent(event.target.checked)}
+              className="mt-1 h-4 w-4 accent-[#111827]"
+            />
+            <span>
+              J&apos;accepte de recevoir des actualitÃ©s et offres de la part de cet Ã©tablissement.
+            </span>
+          </label>
+
+          {error ? (
+            <div className="rounded-[18px] bg-[#fff1f0] px-4 py-3 text-sm text-[#b42318]">
+              {error}
+            </div>
+          ) : null}
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full rounded-[18px] bg-[#111827] px-5 py-4 text-lg font-semibold text-white disabled:opacity-60"
+          >
+            {isLoading
+              ? isPreGameLeadCapture
+                ? "PrÃ©paration..."
+                : "Enregistrement..."
+              : isPreGameLeadCapture
+                ? "Continuer vers le jeu"
+                : "Enregistrer"}
+          </button>
+        </form>
+      </PublicModal>
+
+      <PublicModal open={stage === "success" && Boolean(drawResult)} compact>
+        <div className="text-center">
+          <h2 className="text-[1.75rem] font-semibold leading-[1.05] text-[#121826]">
+            Merci pour votre participation !
+          </h2>
+          <div className="mx-auto mt-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#f7f7fb] text-4xl shadow-[0_16px_34px_rgba(17,24,39,0.10)]">
+            <Mail className="h-8 w-8" aria-hidden="true" />
+          </div>
+          <p className="mt-4 text-lg leading-7 text-[#1a2f76]">
+            {isContactOnlySuccess
+              ? "Votre contact est bien enregistrÃ©."
+              : "Vous recevrez votre gain par e-mail avec les informations de retrait"}
+          </p>
+          <p className="mt-3 text-sm leading-6 text-[#61687a]">
+            {isContactOnlySuccess
+              ? "Merci pour votre confiance."
+              : "Conservez ce QR code pour retirer votre gain. Si lâ€™e-mail tarde Ã  arriver, vÃ©rifiez vos spams."}
+          </p>
+
+          {isPreview ? (
+            <p className="mt-3 rounded-[14px] bg-[#eef2ff] px-3 py-2 text-xs font-semibold leading-5 text-[#334477]">
+              RÃ©sultat simulÃ© : le lot et l&apos;e-mail de test n&apos;impactent pas la campagne rÃ©elle.
+            </p>
+          ) : null}
+
+          {drawResult?.prize ? <div className="mt-4 rounded-[18px] bg-[#fff4cb] px-4 py-3 text-left text-sm leading-6 text-[#4d3810]">
+            <p>
+              Vous avez entre le {availableDate ?? "maintenant"} et le {expiryDate ?? "bientÃ´t"}{" "}
+              pour venir le rÃ©cupÃ©rer.
+            </p>
+          </div> : null}
+
+          {drawResult?.prize?.purchaseRequired ? (
+            <div className="mt-3 rounded-[18px] bg-[#f7f7fb] px-4 py-3 text-left text-sm leading-6 text-[#61687a]">
+              Le retrait du lot est soumis Ã  une condition dâ€™achat.
+            </div>
+          ) : null}
+
+          {drawResult?.prize && resolvedUsageConditions ? (
+            <div className="mt-3 rounded-[18px] bg-[#fff4cb] px-4 py-3 text-left text-sm leading-6 text-[#4d3810]">
+              <p className="text-xs uppercase tracking-[0.2em] text-[#8a6a18]">
+                Conditions d&apos;utilisation
+              </p>
+              <p className="mt-2 whitespace-pre-line">{resolvedUsageConditions}</p>
+            </div>
+          ) : null}
+
+          {redemptionCode ? (
+            <div className="mt-4 rounded-[20px] border border-[#e5e7ef] bg-[#fafbff] p-3">
+              <p className="text-xs uppercase tracking-[0.24em] text-[#8b93a5]">Code de retrait</p>
+              <p className="mt-1 text-xl font-semibold text-[#121826]">{redemptionCode}</p>
+              {qrPath ? (
+                <div className="mt-3 flex items-center gap-3 rounded-[16px] bg-white p-2.5 text-left">
+                  <Image
+                    src={qrPath}
+                    alt={`QR code ${redemptionCode}`}
+                    width={80}
+                    height={80}
+                    unoptimized
+                    className="h-20 w-20 rounded-[12px]"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs leading-5 text-[#61687a]">
+                      Enregistrez-le pour le retrouver facilement.
+                    </p>
+                    <a
+                      href={qrPath}
+                      download={`qr-lot-${redemptionCode}.svg`}
+                      className="mt-2 inline-flex rounded-[12px] bg-[#111827] px-3 py-2 text-xs font-semibold !text-white"
+                    >
+                      Enregistrer
+                    </a>
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
+        </div>
+      </PublicModal>
+    </div>
+  );
+}
+
+
