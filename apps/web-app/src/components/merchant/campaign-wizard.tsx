@@ -1,7 +1,3 @@
-Exit code: 0
-Wall time: 0.3 seconds
-Total output lines: 1917
-Output:
 "use client";
 
 import Image from "next/image";
@@ -92,26 +88,26 @@ const WIZARD_STEPS: WizardStep[] = [
     id: "game",
     number: "02",
     title: "Le jeu",
-    description: "Choisissez lâ€™expÃ©rience la plus naturelle.",
+    description: "Choisissez l’expérience la plus naturelle.",
   },
   {
     id: "appearance",
     number: "03",
-    title: "Lâ€™apparence",
-    description: "Donnez Ã  la campagne votre signature.",
+    title: "L’apparence",
+    description: "Donnez à la campagne votre signature.",
   },
   {
     id: "prizes",
     number: "04",
     title: "Les lots",
-    description: "Cadrez les probabilitÃ©s et les stocks.",
+    description: "Cadrez les probabilités et les stocks.",
   },
   {
     id: "action",
     number: "05",
-    title: "Lâ€™action",
+    title: "L’action",
     description:
-      "Choisissez lâ€™action proposÃ©e avant le jeu. Elle change Ã  chaque visite pour guider le joueur.",
+      "Choisissez l’action proposée avant le jeu. Elle change à chaque visite pour guider le joueur.",
   },
 ];
 
@@ -139,7 +135,7 @@ const GOOGLE_REVIEW_HOSTS = new Set([
 ]);
 
 const INCENTIVE_COPY_PATTERN =
-  /(?:avis|note|5\s*Ã©toiles|bonne note).{0,80}(?:gagn(?:e|er|Ã©)|cadeau|lot|rÃ©compens)|(?:gagn(?:e|er|Ã©)|cadeau|lot|rÃ©compens).{0,80}(?:avis|note|5\s*Ã©toiles|bonne note)/iu;
+  /(?:avis|note|5\s*étoiles|bonne note).{0,80}(?:gagn(?:e|er|é)|cadeau|lot|récompens)|(?:gagn(?:e|er|é)|cadeau|lot|récompens).{0,80}(?:avis|note|5\s*étoiles|bonne note)/iu;
 
 function normalizeUrl(value: string) {
   const trimmed = value.trim();
@@ -313,7 +309,7 @@ function createWizardDraft(merchant: Merchant): WizardDraft {
     prizes: [
       {
         id: "wizard-prize-1",
-        label: "Une rÃ©duction de 10 %",
+        label: "Une réduction de 10 %",
         totalQuantity: null,
         probability: 50,
         estimatedUnitCost: merchant.defaultPrizeCost ?? 5,
@@ -331,7 +327,7 @@ function validateStep(
 ): string | null {
   if (step === "identity") {
     if (draft.title.trim().length < 3)
-      return "Donnez un nom de trois caractÃ¨res minimum Ã  votre animation.";
+      return "Donnez un nom de trois caractères minimum à votre animation.";
     if (!draft.subtitle.trim())
       return "Ajoutez une phrase courte pour expliquer la promesse du jeu.";
   }
@@ -346,21 +342,21 @@ function validateStep(
         (prize) => prize.totalQuantity !== null && prize.totalQuantity <= 0,
       )
     ) {
-      return "La quantitÃ© dâ€™un lot doit Ãªtre supÃ©rieure Ã  0 (ou illimitÃ©e).";
+      return "La quantité d’un lot doit être supérieure à 0 (ou illimitée).";
     }
     const total = draft.prizes.reduce(
       (sum, prize) => sum + Number(prize.probability || 0),
       0,
     );
     if (total > 100.0001)
-      return "Le total des probabilitÃ©s ne peut pas dÃ©passer 100 %.";
+      return "Le total des probabilités ne peut pas dépasser 100 %.";
     if (draft.rewardRules.isWinningEveryTime && total < 99.9999)
-      return "Un jeu 100 % gagnant doit totaliser exactement 100 % de probabilitÃ©s.";
+      return "Un jeu 100 % gagnant doit totaliser exactement 100 % de probabilités.";
   }
 
   if (step === "action" && actionEnabled) {
     if (!draft.actions.length)
-      return "Ajoutez au moins une action Ã  proposer avant le jeu.";
+      return "Ajoutez au moins une action à proposer avant le jeu.";
     for (const action of draft.actions) {
       if (action.kind === "crm") continue;
       if (!action.url.trim())
@@ -368,12 +364,12 @@ function validateStep(
       try {
         const parsed = new URL(normalizeUrl(action.url));
         if (parsed.protocol !== "https:")
-          return "Le lien doit utiliser HTTPS pour protÃ©ger les joueurs.";
+          return "Le lien doit utiliser HTTPS pour protéger les joueurs.";
         if (
           action.kind === "google" &&
           !GOOGLE_REVIEW_HOSTS.has(parsed.hostname.toLowerCase())
         ) {
-          return "Utilisez une adresse Google officielle pour lâ€™invitation Ã  laisser un avis.";
+          return "Utilisez une adresse Google officielle pour l’invitation à laisser un avis.";
         }
         if (
           action.kind === "google" &&
@@ -381,7 +377,7 @@ function validateStep(
             INCENTIVE_COPY_PATTERN.test(copy),
           )
         ) {
-          return "Lâ€™invitation ne peut pas promettre un lot en Ã©change dâ€™un avis.";
+          return "L’invitation ne peut pas promettre un lot en échange d’un avis.";
         }
       } catch {
         return "Saisissez une adresse web valide.";
@@ -487,7 +483,7 @@ function PrizeSuggestionsPanel({
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#b28719]">
-              Suggestions adaptÃ©es
+              Suggestions adaptées
             </p>
             <h3
               id="wizard-prize-suggestions-title"
@@ -497,9 +493,9 @@ function PrizeSuggestionsPanel({
             </h3>
             <p className="mt-2 text-sm text-[#69758a]">
               {remainingProbability < 0
-                ? `Le total dÃ©passe 100 % de ${Math.abs(Math.round(remainingProbability))} point(s).`
+                ? `Le total dépasse 100 % de ${Math.abs(Math.round(remainingProbability))} point(s).`
                 : `Il reste ${Math.round(remainingProbability)} % disponible.`}{" "}
-              Vous pourrez ajuster les probabilitÃ©s avant de continuer.
+              Vous pourrez ajuster les probabilités avant de continuer.
             </p>
           </div>
           <button
@@ -548,7 +544,7 @@ function PrizeSuggestionsPanel({
                 </div>
                 <div className="mt-4 flex items-center justify-between gap-3">
                   <span className="text-xs text-[#69758a]">
-                    CoÃ»t estimÃ© : {suggestion.estimatedUnitCost.toFixed(2)} â‚¬
+                    Coût estimé : {suggestion.estimatedUnitCost.toFixed(2)} €
                   </span>
                   <button
                     type="button"
@@ -563,7 +559,7 @@ function PrizeSuggestionsPanel({
             ))
           ) : (
             <p className="rounded-[16px] bg-[#f6f8fb] p-4 text-sm text-[#69758a]">
-              Aucune suggestion disponible pour cette activitÃ©.
+              Aucune suggestion disponible pour cette activité.
             </p>
           )}
         </div>
@@ -588,7 +584,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
   const [savedCampaignId, setSavedCampaignId] = useState<string | null>(null);
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [qrPreviewOpen, setQrPreviewOpen] = useState(false);
-  const [saveDialogTitle, setSaveDialogTitle] = useState("Campagne enregistrÃ©e");
+  const [saveDialogTitle, setSaveDialogTitle] = useState("Campagne enregistrée");
   const [saveDialogDescription, setSaveDialogDescription] = useState("");
 
   useEffect(() => {
@@ -635,7 +631,873 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
       return patch.goalType
         ? {
             ...next,
-            emailCaptur…9870 tokens truncated…        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#8993a6]">
+            emailCaptureEnabled:
+              patch.goalType === "lead_capture"
+                ? true
+                : next.emailCaptureEnabled,
+            actions: createWizardActions(merchant, patch.goalType),
+          }
+        : next;
+    });
+    setError(null);
+  }
+
+  function patchAction(
+    index: number,
+    patch: Partial<WizardDraft["actions"][number]>,
+  ) {
+    setDraft((current) => ({
+      ...current,
+      actions: current.actions.map((action, actionIndex) => {
+        if (actionIndex !== index) return action;
+        const nextAction = { ...action, ...patch };
+        return patch.kind
+          ? { ...nextAction, url: wizardActionUrl(merchant, patch.kind) }
+          : nextAction;
+      }),
+    }));
+    setError(null);
+  }
+
+  function addAction() {
+    setDraft((current) => ({
+      ...current,
+      actions: [
+        ...current.actions,
+        {
+          id: `wizard-action-${Date.now()}`,
+          kind: "custom",
+          label: "Découvrir",
+          url: wizardActionUrl(merchant, "custom"),
+        },
+      ],
+    }));
+    setError(null);
+  }
+
+  function removeAction(index: number) {
+    setDraft((current) => ({
+      ...current,
+      actions: current.actions.filter(
+        (_, actionIndex) => actionIndex !== index,
+      ),
+    }));
+    setError(null);
+  }
+
+  function moveAction(index: number, direction: -1 | 1) {
+    setDraft((current) => {
+      const nextIndex = index + direction;
+      if (nextIndex < 0 || nextIndex >= current.actions.length) return current;
+      const actions = [...current.actions];
+      [actions[index], actions[nextIndex]] = [
+        actions[nextIndex],
+        actions[index],
+      ];
+      return { ...current, actions };
+    });
+    setError(null);
+  }
+
+  function addSuggestedPrize(suggestion: PrizeSuggestion) {
+    setDraft((current) => ({
+      ...current,
+      prizes: [
+        ...current.prizes,
+        {
+          id: `wizard-prize-${Date.now()}-${suggestion.id}`,
+          label: suggestion.label,
+          totalQuantity: null,
+          probability: suggestion.probability,
+          estimatedUnitCost: suggestion.estimatedUnitCost,
+          usageConditions: "",
+        },
+      ],
+    }));
+    setError(null);
+  }
+
+  function removePrize(prizeId: string | undefined) {
+    setDraft((current) => ({
+      ...current,
+      prizes: current.prizes.filter((prize) => prize.id !== prizeId),
+    }));
+    setError(null);
+  }
+
+  function nextStep() {
+    const validationError = validateStep(step.id, draft, actionEnabled);
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+    setError(null);
+    setStepIndex((current) => {
+      const next = Math.min(WIZARD_STEPS.length - 1, current + 1);
+      setFurthestStepIndex((furthest) => Math.max(furthest, next));
+      return next;
+    });
+  }
+
+  function previousStep() {
+    setError(null);
+    setStepIndex((current) => Math.max(0, current - 1));
+  }
+
+  async function saveCampaign(isActive: boolean) {
+    const errorsToShow = isActive ? collectErrors(draft, actionEnabled) : [];
+    if (errorsToShow.length) {
+      const first = errorsToShow[0];
+      setError(first.message);
+      setStepIndex(WIZARD_STEPS.findIndex((item) => item.id === first.step));
+      return;
+    }
+
+    setIsSaving(true);
+    setError(null);
+    try {
+      const response = await fetch("/api/campaigns/setup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...draft,
+          creationMode: "wizard",
+          isActive,
+          rewardRules: {
+            ...draft.rewardRules,
+            purchaseRequired: false,
+          },
+          actions: actionEnabled
+            ? draft.actions.map((action) => ({
+                ...action,
+                url: normalizeUrl(action.url),
+              }))
+            : [],
+          prizes: draft.prizes.map((prize) => ({
+            ...prize,
+            probability: Number(prize.probability || 0),
+          })),
+        }),
+      });
+      const payload = (await response.json().catch(() => null)) as {
+        campaign?: { campaign?: { id?: string }; id?: string };
+        error?: string;
+      } | null;
+      if (!response.ok)
+        throw new Error(
+          payload?.error || "La campagne n’a pas pu être enregistrée.",
+        );
+      const campaignId = payload?.campaign?.campaign?.id ?? payload?.campaign?.id;
+      if (campaignId) {
+        window.dispatchEvent(new Event("campaigns-updated"));
+        setSavedCampaignId(campaignId);
+        setSaveDialogTitle(isActive ? "Jeu publié" : "Brouillon enregistré");
+        setSaveDialogDescription(
+          isActive
+            ? "Votre jeu est publié et prêt à être utilisé par vos clients."
+            : "Votre jeu a bien été enregistré en brouillon. Vous pouvez encore le modifier avant sa publication.",
+        );
+        setSaveDialogOpen(true);
+      }
+    } catch (saveError) {
+      setError(
+        saveError instanceof Error
+          ? saveError.message
+          : "La campagne n’a pas pu être enregistrée.",
+      );
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  if (savedCampaignId) {
+    return (
+      <div className="okado-card mx-auto max-w-3xl p-8 text-center sm:p-12">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#e9f8ec] text-[#18864b]">
+          <Check className="h-8 w-8" />
+        </div>
+        <p className="mt-6 text-xs uppercase tracking-[0.24em] text-[#7a8498]">
+          Jeu prêt
+        </p>
+        <h1 className="okado-page-title mt-3">
+          Votre jeu est enregistré.
+        </h1>
+        <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-[#626d82]">
+          Votre jeu est prêt. Prévisualisez-le, téléchargez son QR code
+          ou préparez son affiche.
+        </p>
+        <div className="okado-action-row mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <Link
+            href={`/campaign/${savedCampaignId}?preview=1`}
+            target="_blank"
+            className="okado-filled-action px-4 text-sm"
+          >
+            Prévisualiser
+          </Link>
+          <Link
+            href={`/campaigns/${savedCampaignId}/edit`}
+            className="okado-secondary-action px-4 text-sm"
+          >
+            Ouvrir l’éditeur
+          </Link>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button type="button" className="okado-secondary-action gap-2 px-4 text-sm" aria-label="Options du QR code">
+                <QrCode className="h-4 w-4" aria-hidden="true" />
+                <span>QR code</span>
+                <ChevronDown className="h-4 w-4" aria-hidden="true" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="center" className="w-[250px] rounded-[var(--okado-radius-control)] border-border p-1.5 shadow-[var(--shadow-product-card)]">
+              <DropdownMenuItem asChild className="cursor-pointer gap-2 rounded-[10px] px-3 py-2.5">
+                <a href={`/api/campaigns/${savedCampaignId}/qr`} download title="Télécharger le QR code de production">
+                  <Download className="h-4 w-4" aria-hidden="true" />
+                  <span>Télécharger le QR code</span>
+                </a>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer gap-2 rounded-[10px] px-3 py-2.5" onSelect={() => setQrPreviewOpen(true)}>
+                <Eye className="h-4 w-4" aria-hidden="true" />
+                <span>Prévisualisation</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Link
+            href={`/campaigns/${savedCampaignId}/poster`}
+            className="okado-secondary-action px-4 text-sm"
+          >
+            Affiche
+          </Link>
+        </div>
+        <div className="mx-auto mt-8 hidden w-fit rounded-[20px] border border-[#dbe4f0] bg-white p-4 shadow-[var(--shadow-product-card)] md:block">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.16em] text-[#8993a6]">
+            QR code du jeu
+          </p>
+          <Image
+            src={`/api/campaigns/${savedCampaignId}/qr?inline=1`}
+            alt="QR code du jeu"
+            width={192}
+            height={192}
+            unoptimized
+            className="mx-auto h-48 w-48"
+          />
+        </div>
+        <ValidationDialog
+          open={saveDialogOpen}
+          title={saveDialogTitle}
+          description={saveDialogDescription}
+          ctaLabel="Continuer"
+          onClose={() => setSaveDialogOpen(false)}
+        />
+        <CampaignPreviewQrDialog
+          open={qrPreviewOpen}
+          campaignId={savedCampaignId}
+          onClose={() => setQrPreviewOpen(false)}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="okado-wizard space-y-6 pb-10">
+      <section className="flex flex-col gap-5 px-1 py-2 xl:flex-row xl:items-end xl:justify-between">
+        <div>
+          <p className="okado-label">Assistant de création</p>
+          <h1 className="okado-page-title mt-3">Créer une campagne</h1>
+        </div>
+      </section>
+
+      <div className="grid gap-6 xl:items-start xl:grid-cols-[240px_minmax(0,1fr)_360px]">
+        <aside className="okado-card p-4">
+          <p className="px-3 text-[10px] uppercase tracking-[0.22em] text-[#8993a6]">
+            Progression
+          </p>
+          <nav className="mt-4 space-y-1" aria-label="Étapes de création">
+            {WIZARD_STEPS.map((item, index) => {
+              const active = index === stepIndex;
+              const complete = index < stepIndex;
+              const visited = index <= furthestStepIndex;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() =>
+                    index <= furthestStepIndex && setStepIndex(index)
+                  }
+                  disabled={index > furthestStepIndex}
+                  className={`flex w-full items-start gap-3 rounded-[16px] px-3 py-3 text-left transition ${active ? "bg-[#111827] text-white" : visited ? "text-[#18864b] hover:bg-[#f5f8fb]" : "text-[#a0a9b9]"}`}
+                >
+                  <span
+                    className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${active ? "bg-[#f4c14a] text-[#111827]" : complete ? "bg-[#e9f8ec] text-[#18864b]" : visited ? "bg-[#fff8e1] text-[#b28719]" : "bg-[#f2f4f7]"}`}
+                  >
+                    {complete ? <Check className="h-3.5 w-3.5" /> : item.number}
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-sm font-semibold">
+                      {item.title}
+                    </span>
+                    <span className="mt-1 block text-xs leading-5 opacity-75">
+                      {item.description}
+                    </span>
+                  </span>
+                </button>
+              );
+            })}
+          </nav>
+        </aside>
+
+        <main className="okado-card min-w-0 p-5 sm:p-8">
+          <div className="flex items-start justify-between gap-4 border-b border-[#edf0f4] pb-5">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#b28719]">
+                Étape {step.number}
+              </p>
+              <h2 className="okado-section-title mt-2">{step.title}</h2>
+              {step.description ? (
+                <p className="mt-2 hidden text-sm text-[#7a8498]">{step.description}</p>
+              ) : null}
+            </div>
+            <div className="hidden rounded-full bg-[#fff7dd] p-3 text-[#b28719] sm:block">
+              <Sparkles className="h-5 w-5" />
+            </div>
+          </div>
+
+          {step.id === "identity" ? (
+            <div className="mt-7 space-y-5">
+              <label className="block">
+                <span className="text-sm font-semibold text-[#182033]">
+                  Nom de l’animation <span className="text-[#b42318]">*</span>
+                </span>
+                <span className="mt-1 block text-xs text-[#8993a6]">
+                  Visible dans votre espace marchand et dans vos statistiques.
+                </span>
+                <input
+                  autoFocus
+                  required
+                  aria-required="true"
+                  value={draft.title}
+                  onChange={(event) =>
+                    patchDraft({ title: event.target.value })
+                  }
+                  placeholder="Ex. La roue gourmande de juin"
+                  className="mt-3 w-full rounded-[16px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm text-[#182033] outline-none transition focus:border-[#b28719] focus:ring-4 focus:ring-[#f4c14a]/15"
+                />
+              </label>
+              <label className="block">
+                <span className="text-sm font-semibold text-[#182033]">
+                  Promesse affichée au client <span className="text-[#b42318]">*</span>
+                </span>
+                <span className="mt-1 block text-xs text-[#8993a6]">
+                  Une phrase courte, concrète et facile à comprendre sur mobile.
+                </span>
+                <textarea
+                  value={draft.subtitle}
+                  onChange={(event) =>
+                    patchDraft({ subtitle: limitCampaignSubtitleLines(event.target.value) })
+                  }
+                  rows={3}
+                  maxLength={120}
+                  className="mt-3 w-full resize-none rounded-[16px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm leading-6 text-[#182033] outline-none transition focus:border-[#b28719] focus:ring-4 focus:ring-[#f4c14a]/15"
+                />
+              </label>
+              <div className="grid gap-4">
+                <label className="block">
+                  <span className="text-sm font-semibold text-[#182033]">
+                    Objectif
+                  </span>
+                    <select
+                      value={draft.goalType ?? ""}
+                      onChange={(event) => {
+                        const goalType = event.target
+                          .value as WizardDraft["goalType"];
+                        patchDraft({
+                          goalType,
+                          successMetric:
+                          goalType === "social_follow"
+                            ? "Abonnements sociaux"
+                            : goalType === "lead_capture"
+                              ? "Leads collectés"
+                              : "Avis Google",
+                        });
+                      }}
+                      className="mt-3 w-full rounded-[16px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm text-[#182033]"
+                  >
+                    <option value="review_prompt">Obtenir des avis</option>
+                    <option value="lead_capture">Collecter des contacts</option>
+                    <option value="social_follow">Gagner des abonnés</option>
+                  </select>
+                  <label className="mt-4 flex cursor-pointer items-start gap-3 rounded-[18px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3 text-sm text-[#182033]">
+                    <input
+                      type="checkbox"
+                      checked={draft.goalType === "lead_capture" || draft.emailCaptureEnabled}
+                      disabled={draft.goalType === "lead_capture"}
+                      onChange={(event) =>
+                        patchDraft({ emailCaptureEnabled: event.target.checked })
+                      }
+                      className="mt-1 h-4 w-4 accent-[#111827]"
+                    />
+                    <span>
+                      <span className="block font-semibold">Collecter l’e-mail avant le jeu</span>
+                      <span className="mt-1 block text-xs leading-5 text-[#8993a6]">
+                        Le joueur saisira son prénom et son e-mail avant de jouer. Sinon, l’e-mail est demandé uniquement après un gain.
+                      </span>
+                    </span>
+                  </label>
+                </label>
+              </div>
+            </div>
+          ) : null}
+
+          {step.id === "game" ? (
+            <div className="mt-7 space-y-5">
+              <div className="grid gap-4 sm:grid-cols-2">
+                {(
+                  [
+                    {
+                      value: "wheel",
+                      label: "Roue de la chance",
+                      text: "Un moment spectaculaire, idéal sur un comptoir.",
+                    },
+                    {
+                      value: "scratch",
+                      label: "Ticket à gratter",
+                      text: "Un geste tactile simple et immédiat sur mobile.",
+                    },
+                  ] as const
+                ).map((option) => (
+                  <button
+                    type="button"
+                    key={option.value}
+                    onClick={() =>
+                      patchDraft({
+                        gameType: option.value,
+                        presentation: {
+                          ...draft.presentation,
+                          heading: {
+                            ...draft.presentation.heading,
+                            fontSizePx:
+                              option.value === "scratch" && draft.presentation.heading.fontSizePx === 40
+                                ? 32
+                                : option.value === "wheel" && draft.presentation.heading.fontSizePx === 32
+                                  ? 40
+                                  : draft.presentation.heading.fontSizePx,
+                          },
+                          layout: {
+                            ...draft.presentation.layout,
+                            templateId:
+                              option.value === "scratch"
+                                ? "scratch-coral"
+                                : draft.presentation.layout.templateId === "scratch-coral" ||
+                                    draft.presentation.layout.templateId === "scratch-lilac" ||
+                                    draft.presentation.layout.templateId === "scratch-sunburst" ||
+                                    draft.presentation.layout.templateId === "scratch-vault" ||
+                                    draft.presentation.layout.templateId === "scratch-confetti"
+                                  ? "classic"
+                                  : draft.presentation.layout.templateId,
+                          },
+                          wheel:
+                            option.value === "wheel"
+                              ? {
+                                  ...draft.presentation.wheel,
+                                  loseColor:
+                                    draft.gameType === "scratch" &&
+                                    draft.accent.signal.toLowerCase() !== DEFAULT_SCRATCH_PRIMARY_COLOR
+                                      ? draft.accent.signal
+                                      : DEFAULT_WHEEL_PRIMARY_COLOR,
+                                  alternateLoseColor: deriveLighterHex(
+                                    draft.gameType === "scratch" &&
+                                      draft.accent.signal.toLowerCase() !== DEFAULT_SCRATCH_PRIMARY_COLOR
+                                      ? draft.accent.signal
+                                      : DEFAULT_WHEEL_PRIMARY_COLOR,
+                                  ),
+                                  rimColor: deriveLighterHex(
+                                    draft.gameType === "scratch" &&
+                                      draft.accent.signal.toLowerCase() !== DEFAULT_SCRATCH_PRIMARY_COLOR
+                                      ? draft.accent.signal
+                                      : DEFAULT_WHEEL_PRIMARY_COLOR,
+                                  ),
+                                }
+                              : draft.presentation.wheel,
+                        },
+                        subtitle:
+                          option.value === "wheel"
+                            ? DEFAULT_WHEEL_SUBTITLE
+                            : DEFAULT_SCRATCH_SUBTITLE,
+                        accent:
+                          option.value === "scratch"
+                            ? {
+                                ...normalizeScratchAccent(draft.accent, "scratch-coral"),
+                                signal:
+                                  draft.gameType === "wheel" &&
+                                  draft.presentation.wheel.loseColor.toLowerCase() !== DEFAULT_WHEEL_PRIMARY_COLOR
+                                    ? draft.presentation.wheel.loseColor
+                                    : DEFAULT_SCRATCH_PRIMARY_COLOR,
+                              }
+                            : draft.accent,
+                      })
+                    }
+                    className={`rounded-[22px] border p-5 text-left transition ${draft.gameType === option.value ? "border-[#b28719] bg-[#fff8e1] shadow-[0_12px_28px_rgba(244,193,74,0.16)]" : "border-[#e2e8f0] bg-[#fbfcfe] hover:border-[#b8c5d8]"}`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-base font-semibold text-[#182033]">
+                        {option.label}
+                      </span>
+                      <span
+                        className={`h-3 w-3 rounded-full ${draft.gameType === option.value ? "bg-[#b28719] ring-4 ring-[#f4c14a]/30" : "bg-[#d7dfeb]"}`}
+                      />
+                    </div>
+                    <p className="mt-3 text-sm leading-6 text-[#7a8498]">
+                      {option.text}
+                    </p>
+                  </button>
+                ))}
+              </div>
+              <div className="hidden rounded-[22px] border border-[#e2e8f0] bg-[#fbfcfe] p-5">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-sm font-semibold text-[#182033]">
+                      Conditions de gain et de retrait
+                    </p>
+                    <p className="mt-1 text-xs leading-5 text-[#8993a6]">
+                      Les règles ci-dessous s’appliquent immédiatement au
+                      parcours client et au retrait en caisse.
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  <label className="flex cursor-pointer items-start gap-3 rounded-[16px] border border-[#e2e8f0] bg-white p-4 text-sm text-[#182033]">
+                    <input
+                      type="checkbox"
+                      checked={draft.rewardRules.isWinningEveryTime}
+                      onChange={(event) =>
+                        patchDraft({
+                          rewardRules: {
+                            ...draft.rewardRules,
+                            isWinningEveryTime: event.target.checked,
+                          },
+                        })
+                      }
+                      className="mt-0.5 h-4 w-4 cursor-pointer accent-[#b28719]"
+                    />
+                    <span>
+                      <span className="block font-semibold">
+                        Jeu 100 % gagnant
+                      </span>
+                      <span className="mt-1 block text-xs leading-5 text-[#7a8498]">
+                        Chaque participation reçoit un lot. Le total des
+                        probabilités doit être égal à 100 %.
+                      </span>
+                    </span>
+                  </label>
+                  <label className="hidden">
+                    <input
+                      type="checkbox"
+                      checked={draft.rewardRules.purchaseRequired}
+                      onChange={(event) =>
+                        patchDraft({
+                          rewardRules: {
+                            ...draft.rewardRules,
+                            purchaseRequired: event.target.checked,
+                          },
+                        })
+                      }
+                      className="mt-0.5 h-4 w-4 cursor-pointer accent-[#b28719]"
+                    />
+                    <span>
+                      <span className="block font-semibold">
+                        Achat requis pour le retrait
+                      </span>
+                      <span className="mt-1 block text-xs leading-5 text-[#7a8498]">
+                        La caisse demandera une confirmation d’achat avant de
+                        remettre le lot.
+                      </span>
+                    </span>
+                  </label>
+                  <label className="flex cursor-pointer items-start gap-3 rounded-[16px] border border-[#e2e8f0] bg-white p-4 text-sm text-[#182033]">
+                    <input
+                      type="checkbox"
+                      checked={draft.rewardRules.availableAfterHours > 0}
+                      onChange={(event) =>
+                        patchDraft({
+                          rewardRules: {
+                            ...draft.rewardRules,
+                            availableAfterHours: event.target.checked ? 24 : 0,
+                          },
+                        })
+                      }
+                      className="mt-0.5 h-4 w-4 cursor-pointer accent-[#b28719]"
+                    />
+                    <span>
+                      <span className="block font-semibold">
+                        Lot disponible lors d&apos;une prochaine visite
+                      </span>
+                      <span className="mt-1 block text-xs leading-5 text-[#7a8498]">
+                        Le lot sera disponible 24 h après la participation, à partir du lendemain.
+                      </span>
+                    </span>
+                  </label>
+                </div>
+                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                  <div
+                    className={`rounded-[14px] border px-4 py-3 ${draft.rewardRules.isWinningEveryTime ? "border-[#b7e4c7] bg-[#f0fbf3]" : "border-[#e2e8f0] bg-white"}`}
+                  >
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#8993a6]">
+                      Gain
+                    </p>
+                    <p className="mt-1 text-sm font-semibold text-[#182033]">
+                      {draft.rewardRules.isWinningEveryTime
+                        ? "Un lot à chaque participation"
+                        : "Gain selon les probabilités"}
+                    </p>
+                  </div>
+                  <div className="hidden">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#8993a6]">
+                      Retrait
+                    </p>
+                    <p className="mt-1 text-sm font-semibold text-[#182033]">
+                      {draft.rewardRules.purchaseRequired
+                        ? "Achat vérifié en caisse"
+                        : "Sans condition d’achat"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : null}
+
+          {step.id === "prizes" ? (
+            <div className="mt-7 space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold text-[#182033]">
+                    Votre dotation
+                  </p>
+                  <p className="mt-1 text-xs text-[#8993a6]">
+                    La jauge doit rester à 100 % maximum.
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`rounded-full px-3 py-1 text-xs font-semibold ${totalProbability > 100 ? "bg-[#fff0f0] text-[#b42318]" : "bg-[#e9f8ec] text-[#18864b]"}`}
+                  >
+                    {Math.round(totalProbability)} %
+                  </span>
+                  {prizeSuggestions.length ? (
+                    <button
+                      type="button"
+                      onClick={() => setSuggestionsOpen(true)}
+                      className="okado-secondary-action inline-flex items-center gap-1.5 px-3 py-2 text-xs"
+                    >
+                      <Sparkles className="h-3.5 w-3.5" />
+                      Suggestions de lots
+                    </button>
+                  ) : null}
+                </div>
+              </div>
+              {totalProbability > 100.0001 ? (
+                <div
+                  role="alert"
+                  className="rounded-[14px] border border-[#f2c8c8] bg-[#fff4f4] px-4 py-3 text-sm leading-6 text-[#a11a1a]"
+                >
+                  Le total des probabilités dépasse 100 %. Vous pouvez encore
+                  ajouter ou modifier des lots, mais réduisez ce total avant de
+                  continuer.
+                </div>
+              ) : null}
+              <label className="flex cursor-pointer items-start gap-3 rounded-[16px] border border-[#e2e8f0] bg-white p-4 text-sm text-[#182033]">
+                <input
+                  type="checkbox"
+                  checked={draft.rewardRules.availableAfterHours > 0}
+                  onChange={(event) =>
+                    patchDraft({
+                      rewardRules: {
+                        ...draft.rewardRules,
+                        availableAfterHours: event.target.checked ? 24 : 0,
+                      },
+                    })
+                  }
+                  className="mt-0.5 h-4 w-4 cursor-pointer accent-[#b28719]"
+                />
+                <span>
+                  <span className="block font-semibold">Lot disponible lors d&apos;une prochaine visite</span>
+                  <span className="mt-1 block text-xs leading-5 text-[#7a8498]">
+                    Le lot sera disponible à partir du lendemain de la participation.
+                  </span>
+                </span>
+              </label>
+              {draft.prizes.map((prize, index) => (
+                <div
+                  key={prize.id}
+                  className="rounded-[20px] border border-[#e2e8f0] bg-[#fbfcfe] p-4"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8993a6]">
+                      Lot {index + 1}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => removePrize(prize.id)}
+                      aria-label={`Supprimer ${prize.label || `le lot ${index + 1}`}`}
+                      className="rounded-[9px] p-1.5 text-[#8b95a8] transition hover:bg-[#fff0f0] hover:text-[#b42318]"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                  <div className="mt-2 grid gap-3 sm:grid-cols-[minmax(0,1fr)_120px_120px]">
+                    <label className="block">
+                      <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8993a6]">
+                        Nom du lot
+                      </span>
+                      <input
+                        value={prize.label}
+                        onChange={(event) =>
+                          setDraft((current) =>
+                            updatePrize(current, prize.id, {
+                              label: event.target.value,
+                            }),
+                          )
+                        }
+                        className="w-full rounded-[13px] border border-[#dbe3ed] bg-white px-3 py-3 text-sm text-[#182033]"
+                      />
+                    </label>
+                    <label className="block">
+                      <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8993a6]">
+                        Probabilité
+                      </span>
+                      <input
+                        type="number"
+                        min={0}
+                        max={100}
+                        value={prize.probability}
+                        onChange={(event) =>
+                          setDraft((current) =>
+                            updatePrize(current, prize.id, {
+                              probability: Number(event.target.value || 0),
+                            }),
+                          )
+                        }
+                        className="mt-2 w-full rounded-[13px] border border-[#dbe3ed] bg-white px-3 py-3 text-sm text-[#182033]"
+                      />
+                    </label>
+                    <label className="block">
+                      <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8993a6]">
+                        Stock
+                      </span>
+                      <input
+                        type="number"
+                        min={0}
+                        placeholder="Illimité"
+                        value={prize.totalQuantity ?? ""}
+                        onChange={(event) =>
+                          setDraft((current) =>
+                            updatePrize(current, prize.id, {
+                              totalQuantity:
+                                event.target.value === ""
+                                  ? null
+                                  : Number(event.target.value),
+                            }),
+                          )
+                        }
+                        className="mt-2 w-full rounded-[13px] border border-[#dbe3ed] bg-white px-3 py-3 text-sm text-[#182033]"
+                      />
+                    </label>
+                  </div>
+                  <label className="mt-3 block">
+                    <span className="text-xs text-[#8993a6]">
+                      Conditions d’utilisation (optionnel)
+                    </span>
+                    <input
+                      value={prize.usageConditions ?? ""}
+                      onChange={(event) =>
+                        setDraft((current) =>
+                          updatePrize(current, prize.id, {
+                            usageConditions: event.target.value,
+                          }),
+                        )
+                      }
+                      className="mt-2 w-full rounded-[13px] border border-[#dbe3ed] bg-white px-3 py-3 text-sm text-[#182033]"
+                    />
+                  </label>
+                  <label className="mt-3 flex cursor-pointer items-start gap-3 rounded-[14px] border border-[#f0dfaa] bg-[#fff9e8] px-3 py-3 text-sm text-[#5f4b12]">
+                    <input
+                      type="checkbox"
+                      checked={Boolean(prize.purchaseRequired)}
+                      onChange={(event) =>
+                        setDraft((current) =>
+                          updatePrize(current, prize.id, {
+                            purchaseRequired: event.target.checked,
+                          }),
+                        )
+                      }
+                      className="mt-1 h-4 w-4 cursor-pointer accent-[#b28719]"
+                    />
+                    <span>
+                      <span className="block font-semibold">Achat requis pour le retrait</span>
+                      <span className="mt-1 block text-xs leading-5 text-[#806b30]">
+                        Ce lot nécessite un achat client. Précisez les modalités.
+                      </span>
+                    </span>
+                  </label>
+                </div>
+              ))}
+              {prizeValidationMessages.length > 0 ? (
+                <div
+                  role="alert"
+                  aria-live="polite"
+                  className="rounded-[18px] border border-[#f3c8c8] bg-[#fff7f7] px-4 py-4 text-sm text-[#9f1239]"
+                >
+                  <p className="font-semibold text-[#861c35]">
+                    Vérifiez la dotation avant de continuer
+                  </p>
+                  <ul className="mt-2 space-y-1.5 leading-6">
+                    {prizeValidationMessages.map((validationMessage) => (
+                      <li key={validationMessage} className="flex gap-2">
+                        <span aria-hidden="true">•</span>
+                        <span>{validationMessage}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+              <button
+                type="button"
+                onClick={() =>
+                  setDraft((current) => ({
+                    ...current,
+                    prizes: [
+                      ...current.prizes,
+                      {
+                        id: `wizard-prize-${Date.now()}`,
+                        label: "Nouveau lot",
+                        totalQuantity: null,
+                        probability: Math.max(
+                          0,
+                          Math.round(100 - totalProbability),
+                        ),
+                        estimatedUnitCost: merchant.defaultPrizeCost ?? 5,
+                        purchaseRequired: false,
+                        usageConditions: "",
+                      },
+                    ],
+                  }))
+                }
+                className="inline-flex items-center gap-2 rounded-[14px] border border-dashed border-[#b8c5d8] px-4 py-3 text-sm font-semibold text-[#526078] transition hover:border-[#b28719] hover:text-[#182033]"
+              >
+                <Gift className="h-4 w-4" />
+                Ajouter un lot
+              </button>
+            </div>
+          ) : null}
+
+          {step.id === "action" ? (
+            <div className="mt-7 space-y-5">
+              <div className="space-y-4">
+                {draft.actions.map((action, index) => (
+                  <div
+                    key={action.id ?? `wizard-action-${index}`}
+                    className="rounded-[20px] border border-[#e2e8f0] bg-white p-5"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#8993a6]">
                         {wizardActionVisitLabel(index)}
                       </p>
                       <div className="flex items-center gap-1">
@@ -643,7 +1505,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                           type="button"
                           onClick={() => moveAction(index, -1)}
                           disabled={index === 0}
-                          aria-label="Monter lâ€™action"
+                          aria-label="Monter l’action"
                           className="rounded-[9px] p-1.5 text-[#69758a] hover:bg-[#f2f4f7] disabled:opacity-30"
                         >
                           <ChevronUp className="h-4 w-4" />
@@ -652,7 +1514,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                           type="button"
                           onClick={() => moveAction(index, 1)}
                           disabled={index === draft.actions.length - 1}
-                          aria-label="Descendre lâ€™action"
+                          aria-label="Descendre l’action"
                           className="rounded-[9px] p-1.5 text-[#69758a] hover:bg-[#f2f4f7] disabled:opacity-30"
                         >
                           <ChevronDown className="h-4 w-4" />
@@ -660,7 +1522,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                         <button
                           type="button"
                           onClick={() => removeAction(index)}
-                          aria-label="Supprimer lâ€™action"
+                          aria-label="Supprimer l’action"
                           className="rounded-[9px] p-1.5 text-[#69758a] hover:bg-[#fff0f0] hover:text-[#b42318]"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -671,7 +1533,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                       <label className="block">
                         <span className="flex items-center gap-3 text-sm font-semibold text-[#182033]">
                           <SocialChannelIcon channel={action.kind} />
-                          <span>Action proposÃ©e</span>
+                          <span>Action proposée</span>
                         </span>
                         <select
                           value={action.kind}
@@ -699,7 +1561,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                             Laisser un avis Tripadvisor
                           </option>
                           <option value="custom">
-                            Ouvrir un lien personnalisÃ©
+                            Ouvrir un lien personnalisé
                           </option>
                         </select>
                       </label>
@@ -739,11 +1601,11 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                 {(
                   draft.gameType === "scratch"
                     ? [
-                        { id: "scratch-vault", label: "Coffre nÃ©on", text: "Coffre illustrÃ© avant grattage" },
-                        { id: "scratch-confetti", label: "Carte confettis", text: "Solaire et festif ; la couleur principale sÃ©lectionnÃ©e nâ€™est pas utilisÃ©e" },
+                        { id: "scratch-vault", label: "Coffre néon", text: "Coffre illustré avant grattage" },
+                        { id: "scratch-confetti", label: "Carte confettis", text: "Solaire et festif ; la couleur principale sélectionnée n’est pas utilisée" },
                         { id: "scratch-coral", label: "Corail joyeux", text: "Clair et chaleureux" },
-                        { id: "scratch-lilac", label: "Cadeau lilas", text: "Cadeau clair et contrastÃ© ; la couleur principale sÃ©lectionnÃ©e nâ€™est pas utilisÃ©e" },
-                        { id: "scratch-sunburst", label: "Rayons soleil", text: "Ã‰clatant et visible" },
+                        { id: "scratch-lilac", label: "Cadeau lilas", text: "Cadeau clair et contrasté ; la couleur principale sélectionnée n’est pas utilisée" },
+                        { id: "scratch-sunburst", label: "Rayons soleil", text: "Éclatant et visible" },
                       ] as const
                     : [
                     {
@@ -754,11 +1616,11 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                     {
                       id: "restaurant-pop",
                       label: "Visuel pop",
-                      text: "Ã‰vÃ©nementiel et contrastÃ©",
+                      text: "Événementiel et contrasté",
                     },
                     {
                       id: "cosmic-orbit",
-                      label: "Orbit nÃ©on",
+                      label: "Orbit néon",
                       text: "Immersif et nocturne",
                     },
                     {
@@ -804,7 +1666,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
               <details className="group rounded-[18px] border border-[#e2e8f0] bg-[#fbfcfe]">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-4 text-sm font-semibold text-[#182033] [&::-webkit-details-marker]:hidden">
                   <span>
-                    ParamÃ¨tres avancÃ©s <span className="font-normal text-[#8993a6]">(mode expert)</span>
+                    Paramètres avancés <span className="font-normal text-[#8993a6]">(mode expert)</span>
                   </span>
                   <ChevronDown className="h-4 w-4 shrink-0 text-[#8993a6] transition-transform group-open:rotate-180" />
                 </summary>
@@ -876,7 +1738,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                    <label className="block">
                      <span className="text-sm font-semibold text-[#182033]">Couleur secondaire</span>
                      <span className="hidden">
-                       UtilisÃ©e pour les accents graphiques du template Visuel pop.
+                       Utilisée pour les accents graphiques du template Visuel pop.
                      </span>
                      <input
                        type="color"
@@ -907,8 +1769,8 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                   <span className="mt-1 block text-xs text-[#8993a6]">
                     {draft.presentation.layout.templateId === "scratch-confetti" ||
                     draft.presentation.layout.templateId === "scratch-lilac"
-                      ? "Ce template utilise sa propre palette ; la couleur sÃ©lectionnÃ©e ici nâ€™est pas utilisÃ©e."
-                      : "Elle colore la zone Ã  gratter et les Ã©lÃ©ments graphiques du template."}
+                      ? "Ce template utilise sa propre palette ; la couleur sélectionnée ici n’est pas utilisée."
+                      : "Elle colore la zone à gratter et les éléments graphiques du template."}
                   </span>
                   <input
                     type="color"
@@ -925,7 +1787,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
               <div className="rounded-[18px] border border-[#e2e8f0] bg-white p-4 sm:col-span-2">
                 <p className="text-sm font-semibold text-[#182033]">Typographie</p>
                 <p className="mt-1 text-xs leading-5 text-[#8993a6]">
-                  Choisissez la police et la taille de la promesse affichÃ©e sur le jeu.
+                  Choisissez la police et la taille de la promesse affichée sur le jeu.
                 </p>
                 <div className="mt-4 grid gap-4 sm:grid-cols-[1fr_1.4fr] sm:items-end">
                   <label className="block text-sm">
@@ -1010,7 +1872,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                 disabled={isSaving}
                 className="okado-secondary-action px-4 text-sm disabled:opacity-50"
               >
-                {isSaving ? "Enregistrementâ€¦" : "Enregistrer le brouillon"}
+                {isSaving ? "Enregistrement…" : "Enregistrer le brouillon"}
               </button>
               {stepIndex < WIZARD_STEPS.length - 1 ? (
                 <button
@@ -1028,7 +1890,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                   disabled={isSaving}
                   className="okado-primary-action gap-2 px-5 text-sm disabled:opacity-50"
                 >
-                  {isSaving ? "Publicationâ€¦" : "Publier la campagne"}
+                  {isSaving ? "Publication…" : "Publier la campagne"}
                   <Check className="h-4 w-4" />
                 </button>
               )}
@@ -1052,4 +1914,3 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
     </div>
   );
 }
-
