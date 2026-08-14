@@ -47,9 +47,13 @@ export function clampCampaignLogoSizePercent(value: number | undefined) {
 /** Text logos use the same percentage scale as uploaded logos. */
 export function campaignLogoTextSizePx(
   sizePercent: number | undefined,
-  gameType: "wheel" | "scratch",
+  _gameType: "wheel" | "scratch",
 ) {
-  const baseSize = gameType === "wheel" ? 24 : 30;
+  void _gameType;
+  // The public game and the wizard preview use one visual scale for text logos.
+  // Keeping this base size independent from the game type prevents the scratch
+  // ticket logo from appearing larger than the wheel at the same percentage.
+  const baseSize = 24;
   return Math.round(
     Math.max(12, (baseSize * clampCampaignLogoSizePercent(sizePercent)) / 100),
   );

@@ -8,6 +8,7 @@ import {
   Mail,
   MoreVertical,
   QrCode,
+  WandSparkles,
 } from "lucide-react";
 
 import { DeleteCampaignButton } from "@/components/merchant/delete-campaign-button";
@@ -62,6 +63,12 @@ export function CampaignActionsMenu({
           <a href={`/data?campaign=${campaignId}`}>
             <BarChart3 className="h-4 w-4" />
             Données
+          </a>
+        </DropdownMenuItem>
+        <DropdownMenuItem className={itemClass} asChild>
+          <a href={`/campaigns/${campaignId}/edit/guided`}>
+            <WandSparkles className="h-4 w-4" />
+            Modifier avec l&apos;assistant
           </a>
         </DropdownMenuItem>
         <DropdownMenuSeparator />

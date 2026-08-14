@@ -21,7 +21,7 @@ import {
   Trash2,
   UtensilsCrossed,
 } from "lucide-react";
-import { type ReactNode, useEffect, useMemo, useState } from "react";
+import { type ChangeEvent, type ReactNode, useEffect, useMemo, useState } from "react";
 
 import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
 import { CampaignPreviewQrDialog } from "@/components/merchant/campaign-preview-qr";
@@ -39,6 +39,8 @@ import {
 import { actionKindCta, textFontLabel } from "@/lib/format";
 import { getPrizeValidationMessages } from "@/lib/prize-validation";
 import { createCampaignEmailDefaults } from "@/lib/email-settings";
+import { normalizeCampaignEmailSettings } from "@/lib/email-settings";
+import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
 import {
   createDefaultPosterSettings,
   createDefaultWheelSettings,
@@ -53,7 +55,9 @@ import {
 import {
   ActionKind,
   CampaignAction,
+  CampaignPerformance,
   CampaignSetupInput,
+  BackgroundLibraryAsset,
   GamePageTemplateId,
   Merchant,
   PrizeSuggestion,
@@ -82,13 +86,13 @@ const WIZARD_STEPS: WizardStep[] = [
     id: "identity",
     number: "01",
     title: "La promesse",
-    description: "Une animation claire en quelques mots.",
+    description: "Le texte principal et votre objectif.",
   },
   {
     id: "game",
     number: "02",
     title: "Le jeu",
-    description: "Choisissez l’expérience la plus naturelle.",
+    description: "Le type de jeu.",
   },
   {
     id: "appearance",
@@ -106,8 +110,7 @@ const WIZARD_STEPS: WizardStep[] = [
     id: "action",
     number: "05",
     title: "L’action",
-    description:
-      "Choisissez l’action proposée avant le jeu. Elle change à chaque visite pour guider le joueur.",
+    description: "L’action de vos clients",
   },
 ];
 
@@ -120,6 +123,39 @@ const WIZARD_TEXT_FONTS: TextFont[] = [
   "inter",
   "bebas",
 ];
+
+const MAX_WIZARD_IMAGE_BYTES = 2 * 1024 * 1024;
+const ACCEPTED_WIZARD_IMAGE_TYPES = new Set([
+  "image/png",
+  "image/jpeg",
+  "image/webp",
+  "image/gif",
+]);
+
+function uploadWizardImage(
+  event: ChangeEvent<HTMLInputElement>,
+  onLoaded: (value: string) => void,
+  onError: (message: string) => void,
+) {
+  const file = event.target.files?.[0];
+  if (!file) return;
+  if (file.type && !ACCEPTED_WIZARD_IMAGE_TYPES.has(file.type)) {
+    event.target.value = "";
+    onError("Format non pris en charge. Utilisez un PNG, JPEG, WebP ou GIF.");
+    return;
+  }
+  if (file.size > MAX_WIZARD_IMAGE_BYTES) {
+    event.target.value = "";
+    onError("Image trop volumineuse. Importez une image de 2 Mo maximum.");
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = () => {
+    if (typeof reader.result === "string") onLoaded(reader.result);
+  };
+  reader.onerror = () => onError("Impossible de lire cette image.");
+  reader.readAsDataURL(file);
+}
 
 function wizardActionVisitLabel(index: number) {
   return index === 0 ? "1\u00e8re visite" : `${index + 1}\u00e8me visite`;
@@ -445,6 +481,71 @@ function WizardGamePreview({
   );
 }
 
+function draftFromCampaign(merchant: Merchant, performance: CampaignPerformance): WizardDraft {
+  const campaign = performance.campaign;
+  const posterDefaults = createPosterSettingsDefaults({
+    logoMode: campaign.logoMode ?? "text",
+    logoText: campaign.logoText ?? merchant.companyName,
+    logoUrl: campaign.logoUrl,
+    logoSizePercent: campaign.presentation.logo.sizePercent,
+    logoBottomMarginPx: campaign.presentation.logo.marginBottomPx,
+    backgroundMode: campaign.presentation.background.mode,
+    backgroundColor: campaign.presentation.background.color,
+    backgroundImageUrl: campaign.presentation.background.imageUrl ?? "",
+    headline: campaign.subtitle,
+    headlineTextColor: campaign.presentation.heading.textColor,
+    headlineFontSizePx: campaign.presentation.heading.fontSizePx,
+    headlineFontFamily: campaign.presentation.heading.fontFamily,
+    wheel: campaign.presentation.wheel,
+    footerBackgroundColor: campaign.accent.signal,
+  });
+
+  return {
+    id: campaign.id,
+    merchantId: merchant.id,
+    creationMode: "wizard",
+    title: campaign.title,
+    subtitle: limitCampaignSubtitleLines(campaign.subtitle),
+    goalType: campaign.goalType,
+    emailCaptureEnabled:
+      campaign.emailCaptureEnabled ||
+      campaign.actions.some((action) => action.kind === "crm"),
+    ctaLabel: campaign.ctaLabel,
+    successMetric: campaign.successMetric,
+    targetUrl: campaign.targetUrl,
+    isActive: campaign.isActive,
+    logoMode: campaign.logoMode ?? (campaign.logoUrl ? "image" : "text"),
+    logoText: campaign.logoText ?? merchant.companyName,
+    logoUrl: campaign.logoUrl,
+    accent: campaign.gameType === "scratch"
+      ? normalizeScratchAccent(campaign.accent, campaign.presentation.layout.templateId)
+      : campaign.accent,
+    gameType: campaign.gameType,
+    presentation: {
+      ...campaign.presentation,
+      logo: { ...campaign.presentation.logo, align: "center" },
+      heading: { ...campaign.presentation.heading, align: "center" },
+      poster: normalizePosterSettings(campaign.presentation.poster, posterDefaults),
+      email: normalizeCampaignEmailSettings(
+        campaign.presentation.email,
+        createCampaignEmailDefaults(merchant),
+      ),
+    },
+    actions: campaign.actions.filter((action) => action.kind !== "crm"),
+    rewardRules: campaign.rewardRules,
+    prizes: performance.prizes.map((prize) => ({
+      id: prize.id,
+      label: prize.label,
+      totalQuantity: prize.totalQuantity,
+      remainingQuantity: prize.remainingQuantity,
+      probability: prize.probability,
+      estimatedUnitCost: prize.estimatedUnitCost,
+      purchaseRequired: Boolean(prize.purchaseRequired),
+      usageConditions: prize.usageConditions ?? "",
+    })),
+  };
+}
+
 function getWizardPrizeSuggestionIcon(icon: string) {
   const icons = {
     coffee: { Icon: Coffee, className: "bg-[#fff3df] text-[#b9680b]" },
@@ -562,15 +663,76 @@ function PrizeSuggestionsPanel({
               Aucune suggestion disponible pour cette activité.
             </p>
           )}
+                 </div>
+               </div>
+             </div>
+    );
+}
+
+function WizardBackgroundLibraryDialog({
+  open,
+  items,
+  isLoading,
+  error,
+  selectedImageUrl,
+  onSelect,
+  onClose,
+}: {
+  open: boolean;
+  items: BackgroundLibraryAsset[];
+  isLoading: boolean;
+  error: string | null;
+  selectedImageUrl?: string;
+  onSelect: (imageUrl: string) => void;
+  onClose: () => void;
+}) {
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 z-[60] flex items-end justify-center bg-[#111827]/45 p-4 sm:items-center">
+      <div className="max-h-[86vh] w-full max-w-4xl overflow-y-auto rounded-[26px] bg-white p-6 shadow-[0_28px_80px_rgba(17,24,39,0.25)]">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#b28719]">Bibliothèque d&apos;images</p>
+            <h3 className="mt-2 text-xl font-semibold text-[#182033]">Choisissez une image de fond</h3>
+            <p className="mt-1 text-sm text-[#69758a]">Les visuels de la bibliothèque sont disponibles pour votre page de jeu.</p>
+          </div>
+          <button type="button" onClick={onClose} className="cursor-pointer rounded-[12px] border border-[#dbe3ed] px-3 py-2 text-sm font-semibold text-[#526078]">Fermer</button>
         </div>
+        {error ? <p className="mt-4 rounded-[12px] bg-[#fff4f4] px-3 py-2 text-sm text-[#b42318]">{error}</p> : null}
+        {isLoading ? <p className="mt-5 text-sm text-[#69758a]">Chargement de la bibliothèque…</p> : (
+          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {items.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => { onSelect(item.imageUrl); onClose(); }}
+                className={`cursor-pointer overflow-hidden rounded-[18px] border text-left ${selectedImageUrl === item.imageUrl ? "border-[#b28719] ring-2 ring-[#f4c14a]/30" : "border-[#e2e8f0]"}`}
+              >
+                <div className="relative aspect-[4/3]">
+                  <Image src={item.thumbnailUrl} alt={item.label} fill unoptimized className="object-cover" />
+                </div>
+                <div className="px-3 py-2.5 text-sm font-semibold text-[#182033]">{item.label}</div>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
-export function CampaignWizard({ merchant }: { merchant: Merchant }) {
+export function CampaignWizard({
+  merchant,
+  initialCampaign,
+  deferInlineAssets = false,
+}: {
+  merchant: Merchant;
+  initialCampaign?: CampaignPerformance | null;
+  deferInlineAssets?: boolean;
+}) {
+  const isEditing = Boolean(initialCampaign);
   const [draft, setDraft] = useState<WizardDraft>(() =>
-    createWizardDraft(merchant),
+    initialCampaign ? draftFromCampaign(merchant, initialCampaign) : createWizardDraft(merchant),
   );
   const [stepIndex, setStepIndex] = useState(0);
   const [furthestStepIndex, setFurthestStepIndex] = useState(0);
@@ -584,8 +746,21 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
   const [savedCampaignId, setSavedCampaignId] = useState<string | null>(null);
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [qrPreviewOpen, setQrPreviewOpen] = useState(false);
+  const [backgroundLibrary, setBackgroundLibrary] = useState<BackgroundLibraryAsset[]>([]);
+  const [backgroundLibraryOpen, setBackgroundLibraryOpen] = useState(false);
+  const [backgroundLibraryError, setBackgroundLibraryError] = useState<string | null>(null);
+  const [deferredAssetsLoaded, setDeferredAssetsLoaded] = useState(false);
+  const backgroundLibraryLoading = backgroundLibraryOpen && backgroundLibrary.length === 0 && !backgroundLibraryError;
+  const [imageUploadErrors, setImageUploadErrors] = useState<{
+    logo?: string;
+    background?: string;
+  }>({});
   const [saveDialogTitle, setSaveDialogTitle] = useState("Campagne enregistrée");
   const [saveDialogDescription, setSaveDialogDescription] = useState("");
+  const [lastSavedDraftSnapshot, setLastSavedDraftSnapshot] = useState(() =>
+    JSON.stringify(initialCampaign ? draftFromCampaign(merchant, initialCampaign) : createWizardDraft(merchant)),
+  );
+  const isDirty = lastSavedDraftSnapshot !== JSON.stringify(draft);
 
   useEffect(() => {
     let cancelled = false;
@@ -606,6 +781,76 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
       cancelled = true;
     };
   }, [merchant.industry]);
+
+  useEffect(() => {
+    if (!backgroundLibraryOpen || backgroundLibrary.length) return;
+    let cancelled = false;
+    fetch("/api/background-library", { cache: "no-store" })
+      .then(async (response) => {
+        const payload = (await response.json()) as { items?: BackgroundLibraryAsset[]; error?: string };
+        if (!response.ok) throw new Error(payload.error || "Chargement de la bibliothèque impossible.");
+        if (!cancelled) setBackgroundLibrary(payload.items ?? []);
+      })
+      .catch((loadError) => {
+        if (!cancelled) setBackgroundLibraryError(loadError instanceof Error ? loadError.message : "Chargement de la bibliothèque impossible.");
+      })
+    return () => {
+      cancelled = true;
+    };
+  }, [backgroundLibrary.length, backgroundLibraryOpen]);
+
+  useEffect(() => {
+    if (!deferInlineAssets || !draft.id || deferredAssetsLoaded) return;
+    let cancelled = false;
+
+    fetch(`/api/campaigns/${draft.id}/assets`, { cache: "no-store" })
+      .then(async (response) => {
+        const payload = (await response.json().catch(() => null)) as {
+          assets?: {
+            logoUrl?: string;
+            backgroundImageUrl?: string;
+            posterLogoUrl?: string;
+            posterBackgroundImageUrl?: string;
+          };
+        } | null;
+        if (!response.ok || !payload?.assets || cancelled) return;
+        const nextDraft = {
+          ...draft,
+          logoUrl: payload.assets?.logoUrl ?? draft.logoUrl,
+          presentation: {
+            ...draft.presentation,
+            background: {
+              ...draft.presentation.background,
+              imageUrl: payload.assets?.backgroundImageUrl ?? draft.presentation.background.imageUrl,
+            },
+            poster: {
+              ...draft.presentation.poster,
+              logoUrl: payload.assets?.posterLogoUrl ?? draft.presentation.poster.logoUrl,
+              backgroundImageUrl:
+                payload.assets?.posterBackgroundImageUrl ?? draft.presentation.poster.backgroundImageUrl,
+            },
+          },
+        };
+        setDraft(nextDraft);
+        setLastSavedDraftSnapshot(JSON.stringify(nextDraft));
+        setDeferredAssetsLoaded(true);
+      })
+      .catch(() => undefined);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [deferInlineAssets, draft, deferredAssetsLoaded]);
+
+  useEffect(() => {
+    if (!isDirty) return;
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isDirty]);
 
   const step = WIZARD_STEPS[stepIndex];
   const totalProbability = useMemo(
@@ -628,7 +873,10 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
   function patchDraft(patch: Partial<WizardDraft>) {
     setDraft((current) => {
       const next = { ...current, ...patch };
-      return patch.goalType
+      const actionsWereCustomized =
+        JSON.stringify(current.actions) !==
+        JSON.stringify(createWizardActions(merchant, current.goalType));
+      return patch.goalType && !isEditing && !actionsWereCustomized
         ? {
             ...next,
             emailCaptureEnabled:
@@ -744,8 +992,9 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
     setStepIndex((current) => Math.max(0, current - 1));
   }
 
-  async function saveCampaign(isActive: boolean) {
-    const errorsToShow = isActive ? collectErrors(draft, actionEnabled) : [];
+  async function saveCampaign(mode: "save" | "publish") {
+    const isPublishing = mode === "publish";
+    const errorsToShow = isPublishing ? collectErrors(draft, actionEnabled) : [];
     if (errorsToShow.length) {
       const first = errorsToShow[0];
       setError(first.message);
@@ -753,6 +1002,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
       return;
     }
 
+    const targetIsActive = isPublishing ? true : isEditing ? draft.isActive : false;
     setIsSaving(true);
     setError(null);
     try {
@@ -762,7 +1012,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
         body: JSON.stringify({
           ...draft,
           creationMode: "wizard",
-          isActive,
+          isActive: targetIsActive,
           rewardRules: {
             ...draft.rewardRules,
             purchaseRequired: false,
@@ -789,11 +1039,12 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
         );
       const campaignId = payload?.campaign?.campaign?.id ?? payload?.campaign?.id;
       if (campaignId) {
+        setLastSavedDraftSnapshot(JSON.stringify({ ...draft, isActive: targetIsActive }));
         window.dispatchEvent(new Event("campaigns-updated"));
         setSavedCampaignId(campaignId);
-        setSaveDialogTitle(isActive ? "Jeu publié" : "Brouillon enregistré");
+        setSaveDialogTitle(targetIsActive ? "Jeu publié" : "Brouillon enregistré");
         setSaveDialogDescription(
-          isActive
+          targetIsActive
             ? "Votre jeu est publié et prêt à être utilisé par vos clients."
             : "Votre jeu a bien été enregistré en brouillon. Vous pouvez encore le modifier avant sa publication.",
         );
@@ -835,10 +1086,16 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
             Prévisualiser
           </Link>
           <Link
-            href={`/campaigns/${savedCampaignId}/edit`}
+            href={`/campaigns/${savedCampaignId}/edit/guided`}
             className="okado-secondary-action px-4 text-sm"
           >
-            Ouvrir l’éditeur
+            Modifier le jeu
+          </Link>
+          <Link
+            href={`/campaigns/${savedCampaignId}/email`}
+            className="okado-secondary-action px-4 text-sm"
+          >
+            Modifier l&apos;e-mail de gain
           </Link>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -863,6 +1120,8 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
           </DropdownMenu>
           <Link
             href={`/campaigns/${savedCampaignId}/poster`}
+            target="_blank"
+            rel="noopener noreferrer"
             className="okado-secondary-action px-4 text-sm"
           >
             Affiche
@@ -899,12 +1158,93 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
 
   return (
     <div className="okado-wizard space-y-6 pb-10">
-      <section className="flex flex-col gap-5 px-1 py-2 xl:flex-row xl:items-end xl:justify-between">
+      <section data-mode={isEditing ? "edit" : "create"} className="flex flex-col gap-5 px-1 py-2 xl:flex-row xl:items-end xl:justify-between">
         <div>
           <p className="okado-label">Assistant de création</p>
           <h1 className="okado-page-title mt-3">Créer une campagne</h1>
         </div>
+        {draft.id ? (
+          <div className="flex flex-wrap items-center gap-2">
+            {isEditing ? <span className="rounded-full bg-[#eef4ff] px-3 py-1.5 text-xs font-semibold text-[#214ccf]">Mode modification</span> : null}
+            <Link
+              href={`/campaign/${draft.id}?preview=1`}
+              target="_blank"
+              rel="noreferrer"
+              prefetch={false}
+              className="okado-secondary-action gap-2 px-4 text-sm"
+            >
+              <Eye className="h-4 w-4" aria-hidden="true" />
+              Prévisualiser
+            </Link>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  className="okado-secondary-action gap-2 px-4 text-sm"
+                  aria-label="Options du QR code"
+                >
+                  <QrCode className="h-4 w-4" aria-hidden="true" />
+                  <span>QR code</span>
+                  <ChevronDown className="h-4 w-4" aria-hidden="true" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                className="w-[250px] rounded-[var(--okado-radius-control)] border-border p-1.5 shadow-[var(--shadow-product-card)]"
+              >
+                <DropdownMenuItem asChild className="cursor-pointer gap-2 rounded-[10px] px-3 py-2.5">
+                  <a href={`/api/campaigns/${draft.id}/qr`} download title="Télécharger le QR code de production">
+                    <Download className="h-4 w-4" aria-hidden="true" />
+                    <span>Télécharger le QR code</span>
+                  </a>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="cursor-pointer gap-2 rounded-[10px] px-3 py-2.5"
+                  onSelect={() => setQrPreviewOpen(true)}
+                >
+                  <Eye className="h-4 w-4" aria-hidden="true" />
+                  <span>QR code de prévisualisation</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <Link
+              href={`/campaigns/${draft.id}/poster`}
+              target="_blank"
+              rel="noreferrer"
+              prefetch={false}
+              className="okado-secondary-action px-4 text-sm"
+            >
+              Affiche
+            </Link>
+            <Link href={`/campaigns/${draft.id}/email`} prefetch={false} className="okado-secondary-action px-4 text-sm">
+              Modifier l&apos;e-mail de gain
+            </Link>
+          </div>
+        ) : null}
       </section>
+
+      <div className="sticky top-0 z-30 hidden border-y border-[#e2e8f0] bg-[#f8fafc]/95 px-1 py-2 shadow-[0_8px_18px_rgba(18,24,39,0.08)] backdrop-blur xl:block">
+        <div className="flex items-center justify-between gap-3">
+          <label className="inline-flex cursor-pointer items-center gap-3 rounded-[12px] border border-[#dbe3ed] bg-white px-3 py-2 text-sm font-semibold text-[#182033]">
+            <input
+              type="checkbox"
+              checked={draft.isActive}
+              onChange={(event) => setDraft((current) => ({ ...current, isActive: event.target.checked }))}
+              className="h-4 w-4 cursor-pointer accent-[#b28719]"
+            />
+            {draft.isActive ? "Jeu actif" : "Jeu en brouillon"}
+          </label>
+          <div className="flex items-center gap-2">
+            <Link href="/campaigns" prefetch={false} className="okado-secondary-action px-4 text-sm">Retour aux jeux</Link>
+            <button type="button" onClick={() => void saveCampaign("save")} disabled={isSaving} className="okado-secondary-action px-4 text-sm disabled:opacity-50">
+              {isEditing ? "Enregistrer" : "Enregistrer le brouillon"}
+            </button>
+            <button type="button" onClick={() => void saveCampaign("publish")} disabled={isSaving} className="okado-filled-action px-4 text-sm disabled:opacity-50">
+              {isSaving ? "Enregistrement…" : "Publier"}
+            </button>
+          </div>
+        </div>
+      </div>
 
       <div className="grid gap-6 xl:items-start xl:grid-cols-[240px_minmax(0,1fr)_360px]">
         <aside className="okado-card p-4">
@@ -1000,36 +1340,40 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                 />
               </label>
               <div className="grid gap-4">
-                <label className="block">
-                  <span className="text-sm font-semibold text-[#182033]">
-                    Objectif
-                  </span>
+                {!isEditing ? (
+                  <label className="block">
+                    <span className="text-sm font-semibold text-[#182033]">
+                      Objectif
+                    </span>
+                    <span className="mt-1 block text-xs leading-5 text-[#8993a6]">
+                      Il initialise les actions proposées. Vous pourrez les modifier à l’étape Action.
+                    </span>
                     <select
-                      value={draft.goalType ?? ""}
+                      value={draft.goalType ?? "review_prompt"}
                       onChange={(event) => {
-                        const goalType = event.target
-                          .value as WizardDraft["goalType"];
+                        const goalType = event.target.value as WizardDraft["goalType"];
                         patchDraft({
                           goalType,
                           successMetric:
-                          goalType === "social_follow"
-                            ? "Abonnements sociaux"
-                            : goalType === "lead_capture"
-                              ? "Leads collectés"
-                              : "Avis Google",
+                            goalType === "social_follow"
+                              ? "Abonnements sociaux"
+                              : goalType === "lead_capture"
+                                ? "Leads collectés"
+                                : "Avis Google",
                         });
                       }}
-                      className="mt-3 w-full rounded-[16px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm text-[#182033]"
-                  >
-                    <option value="review_prompt">Obtenir des avis</option>
-                    <option value="lead_capture">Collecter des contacts</option>
-                    <option value="social_follow">Gagner des abonnés</option>
-                  </select>
-                  <label className="mt-4 flex cursor-pointer items-start gap-3 rounded-[18px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3 text-sm text-[#182033]">
+                      className="mt-3 w-full cursor-pointer rounded-[16px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm text-[#182033] outline-none transition focus:border-[#b28719] focus:ring-4 focus:ring-[#f4c14a]/15"
+                    >
+                      <option value="review_prompt">Obtenir des avis</option>
+                      <option value="lead_capture">Collecter des contacts</option>
+                      <option value="social_follow">Gagner des abonnés</option>
+                    </select>
+                  </label>
+                ) : null}
+                <label className="flex cursor-pointer items-start gap-3 rounded-[18px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3 text-sm text-[#182033]">
                     <input
                       type="checkbox"
-                      checked={draft.goalType === "lead_capture" || draft.emailCaptureEnabled}
-                      disabled={draft.goalType === "lead_capture"}
+                      checked={draft.emailCaptureEnabled}
                       onChange={(event) =>
                         patchDraft({ emailCaptureEnabled: event.target.checked })
                       }
@@ -1041,7 +1385,6 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                         Le joueur saisira son prénom et son e-mail avant de jouer. Sinon, l’e-mail est demandé uniquement après un gain.
                       </span>
                     </span>
-                  </label>
                 </label>
               </div>
             </div>
@@ -1049,7 +1392,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
 
           {step.id === "game" ? (
             <div className="mt-7 space-y-5">
-              <div className="grid gap-4 sm:grid-cols-2">
+               <div className="grid gap-4 sm:grid-cols-2">
                 {(
                   [
                     {
@@ -1188,7 +1531,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                       </span>
                     </span>
                   </label>
-                  <label className="hidden">
+                   <label className="hidden">
                     <input
                       type="checkbox"
                       checked={draft.rewardRules.purchaseRequired}
@@ -1324,6 +1667,50 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                   </span>
                 </span>
               </label>
+              <details className="group rounded-[16px] border border-[#e2e8f0] bg-[#fbfcfe]">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-semibold text-[#182033] [&::-webkit-details-marker]:hidden">
+                  <span>Paramètres avancés des lots</span>
+                  <ChevronDown className="h-4 w-4 text-[#8993a6] transition-transform group-open:rotate-180" />
+                </summary>
+                <div className="grid gap-4 border-t border-[#e2e8f0] px-4 pb-4 pt-4 sm:grid-cols-2">
+                  <label className="block text-sm">
+                    <span className="mb-2 block font-semibold text-[#182033]">Durée de retrait (jours)</span>
+                    <input
+                      type="number"
+                      min={0}
+                      max={365}
+                      value={draft.rewardRules.availabilityDurationDays}
+                      onChange={(event) =>
+                        patchDraft({
+                          rewardRules: {
+                            ...draft.rewardRules,
+                            availabilityDurationDays: Math.max(0, Number(event.target.value || 0)),
+                          },
+                        })
+                      }
+                      className="w-full rounded-[13px] border border-[#dbe3ed] bg-white px-3 py-3 text-sm"
+                    />
+                  </label>
+                  <label className="block text-sm">
+                    <span className="mb-2 block font-semibold text-[#182033]">Délai entre deux participations (jours)</span>
+                    <input
+                      type="number"
+                      min={1}
+                      max={365}
+                      value={draft.rewardRules.participationIntervalDays}
+                      onChange={(event) =>
+                        patchDraft({
+                          rewardRules: {
+                            ...draft.rewardRules,
+                            participationIntervalDays: Math.max(1, Number(event.target.value || 1)),
+                          },
+                        })
+                      }
+                      className="w-full rounded-[13px] border border-[#dbe3ed] bg-white px-3 py-3 text-sm"
+                    />
+                  </label>
+                </div>
+              </details>
               {draft.prizes.map((prize, index) => (
                 <div
                   key={prize.id}
@@ -1342,7 +1729,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                       <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
-                  <div className="mt-2 grid gap-3 sm:grid-cols-[minmax(0,1fr)_120px_120px]">
+                  <div className={`mt-2 grid gap-3 ${isEditing ? "sm:grid-cols-[minmax(0,1fr)_110px_110px_110px]" : "sm:grid-cols-[minmax(0,1fr)_120px_120px]"}`}>
                     <label className="block">
                       <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8993a6]">
                         Nom du lot
@@ -1356,7 +1743,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                             }),
                           )
                         }
-                        className="w-full rounded-[13px] border border-[#dbe3ed] bg-white px-3 py-3 text-sm text-[#182033]"
+                        className="mt-2 w-full rounded-[13px] border border-[#dbe3ed] bg-white px-3 py-3 text-sm text-[#182033]"
                       />
                     </label>
                     <label className="block">
@@ -1387,6 +1774,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                         min={0}
                         placeholder="Illimité"
                         value={prize.totalQuantity ?? ""}
+                        readOnly={isEditing}
                         onChange={(event) =>
                           setDraft((current) =>
                             updatePrize(current, prize.id, {
@@ -1397,10 +1785,53 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                             }),
                           )
                         }
-                        className="mt-2 w-full rounded-[13px] border border-[#dbe3ed] bg-white px-3 py-3 text-sm text-[#182033]"
+                        className={`mt-2 w-full rounded-[13px] border border-[#dbe3ed] px-3 py-3 text-sm text-[#182033] ${isEditing ? "cursor-default bg-[#f7f9fc] text-[#8993a6]" : "bg-white"}`}
                       />
                     </label>
+                    {isEditing ? (
+                      <label className="block">
+                        <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8993a6]">
+                          Stock disponible
+                        </span>
+                        <input
+                          type="number"
+                          min={0}
+                          placeholder="IllimitÃ©"
+                          value={prize.remainingQuantity ?? ""}
+                          onChange={(event) =>
+                            setDraft((current) =>
+                              updatePrize(current, prize.id, {
+                                remainingQuantity:
+                                  event.target.value === ""
+                                    ? null
+                                    : Number(event.target.value),
+                              }),
+                            )
+                          }
+                          className="mt-2 w-full rounded-[13px] border border-[#dbe3ed] bg-white px-3 py-3 text-sm text-[#182033]"
+                        />
+                      </label>
+                    ) : null}
                   </div>
+                  <label className="mt-3 block sm:max-w-[240px]">
+                    <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8993a6]">
+                      Coût unitaire
+                    </span>
+                    <input
+                      type="number"
+                      min={0}
+                      step="0.1"
+                      value={prize.estimatedUnitCost}
+                      onChange={(event) =>
+                        setDraft((current) =>
+                          updatePrize(current, prize.id, {
+                            estimatedUnitCost: Number(event.target.value || 0),
+                          }),
+                        )
+                      }
+                      className="mt-2 w-full rounded-[13px] border border-[#dbe3ed] bg-white px-3 py-3 text-sm text-[#182033]"
+                    />
+                  </label>
                   <label className="mt-3 block">
                     <span className="text-xs text-[#8993a6]">
                       Conditions d’utilisation (optionnel)
@@ -1662,16 +2093,127 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                     </span>
                   </button>
                 ))}
-              </div>
-              <details className="group rounded-[18px] border border-[#e2e8f0] bg-[#fbfcfe]">
+               </div>
+
+               <div className="grid gap-4 rounded-[18px] border border-[#e2e8f0] bg-white p-4 sm:grid-cols-2">
+                 <label className="block">
+                   <span className="text-sm font-semibold text-[#182033]">
+                     {draft.gameType === "wheel" ? "Couleur principale de la roue" : "Couleur principale du ticket"}
+                   </span>
+                   <span className="mt-1 block text-xs leading-5 text-[#8993a6]">
+                     {draft.gameType === "scratch" &&
+                     (draft.presentation.layout.templateId === "scratch-confetti" ||
+                       draft.presentation.layout.templateId === "scratch-lilac")
+                       ? "Ce template utilise sa propre palette ; la couleur choisie n’est pas utilisée."
+                       : "Cette couleur est appliquée à l’expérience de jeu."}
+                   </span>
+                   <input
+                     type="color"
+                     value={draft.gameType === "wheel" ? draft.presentation.wheel.loseColor : draft.accent.signal}
+                     onChange={(event) => {
+                       const color = event.target.value;
+                       setDraft((current) => ({
+                         ...current,
+                         accent: current.gameType === "scratch" ? { ...current.accent, signal: color } : current.accent,
+                         presentation: {
+                           ...current.presentation,
+                           button: current.gameType === "wheel"
+                             ? { ...current.presentation.button, backgroundColor: color, borderColor: color }
+                             : current.presentation.button,
+                           wheel: current.gameType === "wheel"
+                             ? {
+                                 ...current.presentation.wheel,
+                                 loseColor: color,
+                                 alternateLoseColor: deriveLighterHex(color),
+                                 rimColor: deriveLighterHex(color),
+                               }
+                             : current.presentation.wheel,
+                         },
+                       }));
+                     }}
+                     className="mt-3 h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] bg-white p-1"
+                   />
+                 </label>
+
+                 {draft.gameType === "wheel" && draft.presentation.layout.templateId === "restaurant-pop" ? (
+                   <label className="block">
+                     <span className="text-sm font-semibold text-[#182033]">Couleur secondaire</span>
+                     <input
+                       type="color"
+                       value={draft.presentation.wheel.winColor}
+                       onChange={(event) =>
+                         patchDraft({
+                           presentation: {
+                             ...draft.presentation,
+                             wheel: { ...draft.presentation.wheel, winColor: event.target.value },
+                           },
+                         })
+                       }
+                       className="mt-3 h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] bg-white p-1"
+                     />
+                   </label>
+                 ) : null}
+
+                 <label className="block">
+                   <span className="text-sm font-semibold text-[#182033]">Police du texte</span>
+                   <select
+                     value={draft.presentation.heading.fontFamily}
+                     onChange={(event) =>
+                       patchDraft({
+                         presentation: {
+                           ...draft.presentation,
+                           heading: {
+                             ...draft.presentation.heading,
+                             fontFamily: event.target.value as TextFont,
+                           },
+                         },
+                       })
+                     }
+                     className="mt-3 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] bg-white px-3 py-3 text-sm text-[#182033]"
+                   >
+                     {WIZARD_TEXT_FONTS.map((font) => (
+                       <option key={font} value={font}>{textFontLabel(font)}</option>
+                     ))}
+                   </select>
+                 </label>
+
+                 <label className="block">
+                   <span className="flex items-center justify-between gap-3 text-sm font-semibold text-[#182033]">
+                     <span>Taille du texte</span>
+                     <output className="text-[#b28719]">{draft.presentation.heading.fontSizePx} px</output>
+                   </span>
+                   <input
+                     type="range"
+                     min={18}
+                     max={72}
+                     step={1}
+                     value={draft.presentation.heading.fontSizePx}
+                     onChange={(event) =>
+                       patchDraft({
+                         presentation: {
+                           ...draft.presentation,
+                           heading: {
+                             ...draft.presentation.heading,
+                             fontSizePx: Number(event.target.value),
+                           },
+                         },
+                       })
+                     }
+                     className="mt-3 w-full cursor-pointer accent-[#b28719]"
+                     aria-label="Taille de la police"
+                   />
+                 </label>
+               </div>
+
+               <details className="group rounded-[18px] border border-[#e2e8f0] bg-[#fbfcfe]">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-4 text-sm font-semibold text-[#182033] [&::-webkit-details-marker]:hidden">
                   <span>
                     Paramètres avancés <span className="font-normal text-[#8993a6]">(mode expert)</span>
                   </span>
                   <ChevronDown className="h-4 w-4 shrink-0 text-[#8993a6] transition-transform group-open:rotate-180" />
                 </summary>
-                <div className="space-y-5 border-t border-[#e2e8f0] px-4 pb-4 pt-4">
-              <div className="grid gap-4 sm:grid-cols-2">
+                 <div className="space-y-5 border-t border-[#e2e8f0] px-4 pb-4 pt-4">
+               <div className="hidden">
                 {draft.gameType === "wheel" ? (
                   <>
                 {draft.presentation.layout.templateId === "classic" ? (
@@ -1761,8 +2303,8 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                    </>
                 ) : null}
               </div>
-              {draft.gameType === "scratch" ? (
-                <label className="block">
+               {draft.gameType === "scratch" ? (
+                 <label className="hidden">
                   <span className="text-sm font-semibold text-[#182033]">
                     Couleur principale du ticket
                   </span>
@@ -1784,7 +2326,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                   />
                 </label>
               ) : null}
-              <div className="rounded-[18px] border border-[#e2e8f0] bg-white p-4 sm:col-span-2">
+               <div className="hidden rounded-[18px] border border-[#e2e8f0] bg-white p-4 sm:col-span-2">
                 <p className="text-sm font-semibold text-[#182033]">Typographie</p>
                 <p className="mt-1 text-xs leading-5 text-[#8993a6]">
                   Choisissez la police et la taille de la promesse affichée sur le jeu.
@@ -1842,7 +2384,205 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
                   </label>
                 </div>
               </div>
-                </div>
+                <div className="space-y-5">
+                  <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
+                    <p className="text-sm font-semibold text-[#182033]">Espacement des blocs</p>
+                    <p className="mt-1 text-xs leading-5 text-[#8993a6]">Ajustez l’espace vertical entre le logo, le texte et le jeu.</p>
+                    <label className="mt-3 block text-sm">
+                      <span className="mb-2 flex items-center justify-between gap-3 font-semibold text-[#182033]">
+                        <span>Espacement</span>
+                        <output className="text-[#b28719]">{draft.presentation.layout.blockSpacingPx} px</output>
+                      </span>
+                      <input
+                        type="range"
+                        min={0}
+                        max={120}
+                        step={1}
+                        value={draft.presentation.layout.blockSpacingPx}
+                        onChange={(event) =>
+                          patchDraft({
+                            presentation: {
+                              ...draft.presentation,
+                              layout: {
+                                ...draft.presentation.layout,
+                                blockSpacingPx: Number(event.target.value),
+                              },
+                            },
+                          })
+                        }
+                        className="w-full cursor-pointer accent-[#b28719]"
+                        aria-label="Espacement entre les blocs"
+                      />
+                    </label>
+                  </section>
+                  <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
+                    <p className="text-sm font-semibold text-[#182033]">
+                      {draft.gameType === "wheel" ? "Couleurs détaillées de la roue" : "Couleurs du ticket"}
+                    </p>
+                    <p className="mt-1 text-xs leading-5 text-[#8993a6]">
+                      Ces réglages complètent la couleur principale sélectionnée précédemment.
+                    </p>
+                    <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                      {draft.gameType === "wheel" ? (
+                        ([
+                          ["rimColor", "Contour"],
+                          ["winColor", "Gain 1"],
+                          ["alternateWinColor", "Gain 2"],
+                          ["loseColor", "Perdu 1"],
+                          ["alternateLoseColor", "Perdu 2"],
+                        ] as const).map(([key, label]) => (
+                          <label key={key} className="block text-sm">
+                            <span className="mb-2 block font-semibold text-[#182033]">{label}</span>
+                            <input
+                              type="color"
+                              value={draft.presentation.wheel[key]}
+                              onChange={(event) =>
+                                patchDraft({
+                                  presentation: {
+                                    ...draft.presentation,
+                                    wheel: { ...draft.presentation.wheel, [key]: event.target.value },
+                                  },
+                                })
+                              }
+                              className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] bg-white p-1"
+                            />
+                          </label>
+                        ))
+                      ) : (
+                        ([
+                          ["paper", "Fond du ticket", draft.accent.paper],
+                          ["signal", "Zone de révélation", draft.accent.signal],
+                          ["ink", "Texte du ticket", draft.accent.ink],
+                        ] as const).map(([key, label, value]) => (
+                          <label key={key} className="block text-sm">
+                            <span className="mb-2 block font-semibold text-[#182033]">{label}</span>
+                            <input
+                              type="color"
+                              value={value}
+                              onChange={(event) =>
+                                patchDraft({
+                                  accent: { ...draft.accent, [key]: event.target.value },
+                                })
+                              }
+                              className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] bg-white p-1"
+                            />
+                          </label>
+                        ))
+                      )}
+                    </div>
+                  </section>
+                  <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
+                    <p className="text-sm font-semibold text-[#182033]">Bouton de jeu</p>
+                    <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                      {(["backgroundColor", "textColor", "borderColor"] as const).map((key) => (
+                        <label key={key} className="block text-sm">
+                          <span className="mb-2 block font-semibold text-[#182033]">
+                            {key === "backgroundColor" ? "Fond" : key === "textColor" ? "Texte" : "Contour"}
+                          </span>
+                          <input
+                            type="color"
+                            value={draft.presentation.button[key]}
+                            onChange={(event) =>
+                              patchDraft({
+                                presentation: {
+                                  ...draft.presentation,
+                                  button: { ...draft.presentation.button, [key]: event.target.value },
+                                },
+                              })
+                            }
+                            className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] bg-white p-1"
+                          />
+                        </label>
+                      ))}
+                      <label className="block text-sm">
+                        <span className="mb-2 block font-semibold text-[#182033]">Taille du bouton</span>
+                        <select
+                          value={draft.presentation.button.size}
+                          onChange={(event) =>
+                            patchDraft({
+                              presentation: {
+                                ...draft.presentation,
+                                button: { ...draft.presentation.button, size: event.target.value as "sm" | "md" | "lg" },
+                              },
+                            })
+                          }
+                          className="w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] bg-white px-3 py-3 text-sm"
+                        >
+                          <option value="sm">Compact</option>
+                          <option value="md">Standard</option>
+                          <option value="lg">Grand</option>
+                        </select>
+                      </label>
+                      <label className="block text-sm">
+                        <span className="mb-2 flex items-center justify-between gap-3 font-semibold text-[#182033]"><span>Taille du texte</span><output className="text-[#b28719]">{draft.presentation.button.textSizePx} px</output></span>
+                        <input
+                          type="range"
+                          min={12}
+                          max={32}
+                          value={draft.presentation.button.textSizePx}
+                          onChange={(event) =>
+                            patchDraft({
+                              presentation: {
+                                ...draft.presentation,
+                                button: { ...draft.presentation.button, textSizePx: Number(event.target.value) },
+                              },
+                            })
+                          }
+                          className="w-full cursor-pointer accent-[#b28719]"
+                        />
+                      </label>
+                      <label className="flex cursor-pointer items-center gap-3 rounded-[12px] border border-[#dbe3ed] px-3 py-3 text-sm font-semibold text-[#182033]">
+                        <input
+                          type="checkbox"
+                          checked={draft.presentation.button.isBold}
+                          onChange={(event) =>
+                            patchDraft({
+                              presentation: {
+                                ...draft.presentation,
+                                button: { ...draft.presentation.button, isBold: event.target.checked },
+                              },
+                            })
+                          }
+                          className="h-4 w-4 cursor-pointer accent-[#b28719]"
+                        />
+                        Texte en gras
+                      </label>
+                    </div>
+                  </section>
+                  <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
+                    <p className="text-sm font-semibold text-[#182033]">Logo</p>
+                    <div className="mt-3 grid gap-3 sm:grid-cols-3">
+                      {([{ value: "text", label: "Texte" }, { value: "image", label: "Image" }, { value: "none", label: "Aucun" }] as const).map((mode) => (
+                        <button key={mode.value} type="button" onClick={() => patchDraft({ logoMode: mode.value, logoText: mode.value === "text" ? draft.logoText?.trim() || merchant.companyName : draft.logoText })} className={`cursor-pointer rounded-[12px] border px-3 py-2.5 text-sm font-semibold ${draft.logoMode === mode.value ? "border-[#b28719] bg-[#fff8e1] text-[#8c6710]" : "border-[#dbe3ed] bg-white text-[#526078]"}`}>{mode.label}</button>
+                      ))}
+                    </div>
+                    {draft.logoMode === "text" ? <label className="mt-3 block text-sm"><span className="mb-2 block font-semibold text-[#182033]">Texte du logo</span><input value={draft.logoText ?? merchant.companyName} onChange={(event) => patchDraft({ logoText: event.target.value })} className="w-full rounded-[12px] border border-[#dbe3ed] bg-white px-3 py-3" /></label> : null}
+                    {draft.logoMode === "image" ? <label className="mt-3 flex cursor-pointer items-center justify-between rounded-[12px] border border-dashed border-[#b8c5d8] px-3 py-3 text-sm font-semibold"><span>Importer un logo</span><input type="file" accept="image/png,image/jpeg,image/webp,image/gif" className="hidden" onChange={(event) => uploadWizardImage(event, (value) => { setImageUploadErrors((current) => ({ ...current, logo: undefined })); patchDraft({ logoUrl: value, logoMode: "image" }); }, (message) => setImageUploadErrors((current) => ({ ...current, logo: message })))} /></label> : null}
+                    {imageUploadErrors.logo ? <p role="alert" className="mt-2 text-xs text-[#b42318]">{imageUploadErrors.logo}</p> : null}
+                    {draft.logoMode !== "none" ? <div className="mt-3 grid gap-3 sm:grid-cols-2"><label className="block text-sm"><span className="mb-2 block font-semibold">Taille du logo <output className="float-right text-[#b28719]">{draft.presentation.logo.sizePercent}%</output></span><input type="range" min={0} max={200} value={draft.presentation.logo.sizePercent} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, logo: { ...draft.presentation.logo, sizePercent: Number(event.target.value) } } })} className="w-full cursor-pointer accent-[#b28719]" /></label><label className="block text-sm"><span className="mb-2 block font-semibold">Espacement sous le logo (px)</span><input type="number" min={0} max={120} value={draft.presentation.logo.marginBottomPx} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, logo: { ...draft.presentation.logo, marginBottomPx: Number(event.target.value || 0) } } })} className="w-full rounded-[12px] border border-[#dbe3ed] px-3 py-3" /></label></div> : null}
+                  </section>
+                  <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
+                    <p className="text-sm font-semibold text-[#182033]">Fond</p>
+                    <div className="mt-3 grid gap-3 sm:grid-cols-2">{([{ value: "color", label: "Couleur" }, { value: "image", label: "Image" }] as const).map((mode) => <button key={mode.value} type="button" onClick={() => patchDraft({ presentation: { ...draft.presentation, background: { ...draft.presentation.background, mode: mode.value } } })} className={`cursor-pointer rounded-[12px] border px-3 py-2.5 text-sm font-semibold ${draft.presentation.background.mode === mode.value ? "border-[#b28719] bg-[#fff8e1] text-[#8c6710]" : "border-[#dbe3ed] bg-white text-[#526078]"}`}>{mode.label}</button>)}</div>
+                    {draft.presentation.background.mode === "color" ? <label className="mt-3 block text-sm"><span className="mb-2 block font-semibold">Couleur de fond</span><input type="color" value={draft.presentation.background.color} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, background: { ...draft.presentation.background, color: event.target.value } } })} className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] p-1" /></label> : <label className="mt-3 flex cursor-pointer items-center justify-between rounded-[12px] border border-dashed border-[#b8c5d8] px-3 py-3 text-sm font-semibold"><span>Importer une image de fond</span><input type="file" accept="image/png,image/jpeg,image/webp,image/gif" className="hidden" onChange={(event) => uploadWizardImage(event, (value) => { setImageUploadErrors((current) => ({ ...current, background: undefined })); patchDraft({ presentation: { ...draft.presentation, background: { ...draft.presentation.background, mode: "image", imageUrl: value } } }); }, (message) => setImageUploadErrors((current) => ({ ...current, background: message })))} /></label>}
+                    {imageUploadErrors.background ? <p role="alert" className="mt-2 text-xs text-[#b42318]">{imageUploadErrors.background}</p> : null}
+                    {draft.presentation.background.mode === "image" ? (
+                      <div className="mt-3 flex flex-wrap items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setBackgroundLibraryOpen(true)}
+                          className="cursor-pointer rounded-[12px] border border-[#111827] bg-[#111827] px-3 py-2.5 text-sm font-semibold text-white"
+                        >
+                          Choisir dans la bibliothèque
+                        </button>
+                        {draft.presentation.background.imageUrl ? (
+                          <span className="rounded-full bg-[#e9f8ec] px-3 py-1.5 text-xs font-semibold text-[#18864b]">Image sélectionnée</span>
+                        ) : null}
+                      </div>
+                    ) : null}
+                  </section>
+                  <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4"><p className="text-sm font-semibold text-[#182033]">Réglages du texte</p><div className="mt-3 grid gap-3 sm:grid-cols-2"><label className="block text-sm"><span className="mb-2 block font-semibold">Couleur du texte</span><input type="color" value={draft.presentation.heading.textColor} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, heading: { ...draft.presentation.heading, textColor: event.target.value } } })} className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] p-1" /></label><label className="block text-sm"><span className="mb-2 block font-semibold">Épaisseur</span><select value={draft.presentation.heading.fontWeight ?? 600} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, heading: { ...draft.presentation.heading, fontWeight: Number(event.target.value) } } })} className="w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] px-3 py-3"><option value={400}>Normale</option><option value={500}>Moyenne</option><option value={600}>Semi-gras</option><option value={700}>Gras</option></select></label></div></section>
+                </div>                </div>
               </details>
             </div>
           ) : null}
@@ -1868,7 +2608,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
             <div className="flex flex-col gap-3 sm:flex-row">
               <button
                 type="button"
-                onClick={() => void saveCampaign(false)}
+                onClick={() => void saveCampaign("save")}
                 disabled={isSaving}
                 className="okado-secondary-action px-4 text-sm disabled:opacity-50"
               >
@@ -1886,7 +2626,7 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
               ) : (
                 <button
                   type="button"
-                  onClick={() => void saveCampaign(true)}
+                  onClick={() => void saveCampaign("publish")}
                   disabled={isSaving}
                   className="okado-primary-action gap-2 px-5 text-sm disabled:opacity-50"
                 >
@@ -1911,6 +2651,33 @@ export function CampaignWizard({ merchant }: { merchant: Merchant }) {
         onAdd={addSuggestedPrize}
         onClose={() => setSuggestionsOpen(false)}
       />
+      <WizardBackgroundLibraryDialog
+        open={backgroundLibraryOpen}
+        items={backgroundLibrary}
+        isLoading={backgroundLibraryLoading}
+        error={backgroundLibraryError}
+        selectedImageUrl={draft.presentation.background.imageUrl}
+        onSelect={(imageUrl) =>
+          patchDraft({
+            presentation: {
+              ...draft.presentation,
+              background: {
+                ...draft.presentation.background,
+                mode: "image",
+                imageUrl,
+              },
+            },
+          })
+        }
+        onClose={() => setBackgroundLibraryOpen(false)}
+      />
+      {draft.id ? (
+        <CampaignPreviewQrDialog
+          open={qrPreviewOpen}
+          campaignId={draft.id}
+          onClose={() => setQrPreviewOpen(false)}
+        />
+      ) : null}
     </div>
   );
 }

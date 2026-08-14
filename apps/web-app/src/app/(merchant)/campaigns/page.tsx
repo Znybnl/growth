@@ -92,7 +92,7 @@ export default async function CampaignsPage({
                 </span>
                 <div className="flex items-center justify-end gap-2">
                   <Link
-                    href={`/campaigns/${item.campaign.id}/edit`}
+                    href={`/campaigns/${item.campaign.id}/edit/guided`}
                     prefetch
                     className="okado-primary-action okado-compact-action px-3"
                   >
@@ -145,7 +145,7 @@ export default async function CampaignsPage({
 
               <div className="mt-5 flex flex-row items-center gap-2 rounded-[8px] border border-border bg-white p-3 lg:hidden">
                 <Link
-                  href={`/campaigns/${item.campaign.id}/edit`}
+                  href={`/campaigns/${item.campaign.id}/edit/guided`}
                   prefetch={false}
                   className="okado-primary-action min-w-0 flex-1 px-3 text-sm"
                 >

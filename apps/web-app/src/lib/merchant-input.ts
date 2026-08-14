@@ -376,9 +376,12 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
   const creationMode = payload.creationMode === "wizard" ? "wizard" : "editor";
   // The classic editor never defines a marketing objective. Routes that only
   // update secondary settings omit creationMode and preserve the existing value.
+  const hasExplicitGoalType = Object.prototype.hasOwnProperty.call(payload, "goalType");
   const goalType =
     creationMode === "wizard"
-      ? normalizeEnum(payload.goalType, GOAL_TYPES, "review_prompt")
+      ? id && hasExplicitGoalType && (payload.goalType === null || payload.goalType === "")
+        ? null
+        : normalizeEnum(payload.goalType, GOAL_TYPES, "review_prompt")
       : !hasExplicitCreationMode && id && typeof payload.goalType === "string" && GOAL_TYPES.has(payload.goalType as GoalType)
         ? (payload.goalType as GoalType)
         : null;

@@ -3723,23 +3723,13 @@ function setGameType(gameType: GameType) {
             </section>
           ) : null}
 
-          {false ? (
-            <section className="okado-card p-6">
+          <section className="okado-card p-6">
               <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Bouton public</p>
               <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
                 Personnalisation du bouton
               </h2>
 
             <div className="mt-6 grid gap-4 md:grid-cols-2">
-              <label className="text-sm md:col-span-2">
-                <span className="mb-2 block text-[#616b7c]">Libellé du bouton</span>
-                <input
-                  value={form.ctaLabel}
-                  onChange={(event) => setField("ctaLabel", event.target.value)}
-                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
-                />
-              </label>
-
               <label className="text-sm">
                 <span className="mb-2 block text-[#616b7c]">Couleur du fond</span>
                 <input
@@ -3882,7 +3872,6 @@ function setGameType(gameType: GameType) {
               </label>
             </div>
             </section>
-          ) : null}
 
           <section className="okado-card p-6">
             <div className="flex items-center justify-between gap-3">

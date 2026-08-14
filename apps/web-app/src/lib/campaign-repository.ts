@@ -2263,9 +2263,11 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
       !prize.id.startsWith("default-prize-")
         ? prize.id
         : generateId("prize");
-    const remaining = remainingMap.has(prizeId)
-      ? remainingMap.get(prizeId)
-      : prize.totalQuantity ?? null;
+    const remaining = prize.remainingQuantity !== undefined
+      ? prize.remainingQuantity
+      : remainingMap.has(prizeId)
+        ? remainingMap.get(prizeId)
+        : prize.totalQuantity ?? null;
     return {
       id: prizeId,
       campaign_id: campaignId,

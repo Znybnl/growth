@@ -40,7 +40,7 @@ export function DashboardCampaignActionsMenu({
         className="w-[min(220px,calc(100vw-24px))] rounded-[8px] border-border bg-white p-1.5 shadow-[0_18px_40px_rgba(122,136,166,0.14)]"
       >
         <DropdownMenuItem className={itemClass} asChild>
-          <Link href={`/campaigns/${campaignId}/edit`} prefetch={false}>
+          <Link href={`/campaigns/${campaignId}/edit/guided`} prefetch={false}>
             <Pencil className="h-4 w-4" />
             Modifier
           </Link>
