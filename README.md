@@ -28,6 +28,7 @@ apps/
 - [Règles métier](docs/DOMAIN_RULES.md) : invariants fonctionnels et points de conformité à valider.
 - [Architecture](docs/ARCHITECTURE.md) : applications, domaines, dépendances et frontières de données.
 - [Stratégie de test](docs/TEST_STRATEGY.md) : parcours bloquants et preuves attendues avant production.
+- [Matrice des parcours critiques](docs/TEST_MATRIX.md) : couverture effective, tests manquants et preuves par parcours.
 - [Checklist de livraison](docs/RELEASE_CHECKLIST.md) : contrôle court avant merge et production.
 - [Socle sécurité](docs/SECURITY_BASELINE.md) : règles minimales d'accès, données et sauvegardes.
 - [Runbook incident](docs/INCIDENT_RUNBOOK.md) : procédure courte de rétablissement de production.
