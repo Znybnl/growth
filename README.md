@@ -29,6 +29,7 @@ apps/
 - [Architecture](docs/ARCHITECTURE.md) : applications, domaines, dépendances et frontières de données.
 - [Stratégie de test](docs/TEST_STRATEGY.md) : parcours bloquants et preuves attendues avant production.
 - [Matrice des parcours critiques](docs/TEST_MATRIX.md) : couverture effective, tests manquants et preuves par parcours.
+- [Guide propriétaire Codex](docs/USER_GUIDE_CODEX.md) : demander, valider et livrer une évolution sans revue de code.
 - [Checklist de livraison](docs/RELEASE_CHECKLIST.md) : contrôle court avant merge et production.
 - [Socle sécurité](docs/SECURITY_BASELINE.md) : règles minimales d'accès, données et sauvegardes.
 - [Runbook incident](docs/INCIDENT_RUNBOOK.md) : procédure courte de rétablissement de production.
