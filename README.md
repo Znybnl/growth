@@ -21,6 +21,21 @@ apps/
 └── web-app/       # app.okado.app
 ```
 
+## Documentation produit et workflow
+
+- [Produit](docs/PRODUCT.md) : cible, parcours, décisions et priorités confirmées.
+- [Glossaire métier](docs/GLOSSARY.md) : vocabulaire obligatoire dans l'interface, les Issues et les tests.
+- [Règles métier](docs/DOMAIN_RULES.md) : invariants fonctionnels et points de conformité à valider.
+- [Architecture](docs/ARCHITECTURE.md) : applications, domaines, dépendances et frontières de données.
+- [Stratégie de test](docs/TEST_STRATEGY.md) : parcours bloquants et preuves attendues avant production.
+- [Checklist de livraison](docs/RELEASE_CHECKLIST.md) : contrôle court avant merge et production.
+- [Socle sécurité](docs/SECURITY_BASELINE.md) : règles minimales d'accès, données et sauvegardes.
+- [Runbook incident](docs/INCIDENT_RUNBOOK.md) : procédure courte de rétablissement de production.
+- [Décisions d'architecture](docs/adr/README.md) : décisions techniques durables uniquement.
+- [Instructions de contribution](AGENTS.md) : workflow Issue → analyse → implémentation → tests → PR → validation → merge.
+
+Avant une évolution non triviale, formaliser le besoin dans une Issue puis vérifier les documents produit et métier concernés. Une décision durable issue d'un échange doit être inscrite dans le document approprié avant de devenir une règle du projet.
+
 Configuration Vercel recommandée :
 
 - Projet landing : Root Directory `apps/landing-page`, domaines `okado.app` et `www.okado.app`.
