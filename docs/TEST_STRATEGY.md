@@ -30,7 +30,7 @@ Le socle Playwright est suivi dans l'Issue [#2](https://github.com/Znybnl/growth
 
 - **Adresse** : `e2e@okado.app`.
 - **Usage** : seul compte autorisé pour les E2E qui s'authentifient ou créent des données métier.
-- **Secret** : les variables `OKADO_E2E_EMAIL` et `OKADO_E2E_PASSWORD` restent uniquement dans `apps/web-app/.env.local` et dans les variables protégées de Vercel ; elles ne sont jamais versionnées.
+- **Secret** : les variables `OKADO_E2E_EMAIL` et `OKADO_E2E_PASSWORD` restent uniquement dans `apps/web-app/.env.local` et, lorsque les E2E seront exécutés en CI, dans les secrets GitHub Actions. Elles ne sont jamais versionnées ni nécessaires au runtime Vercel de production.
 - **Cloisonnement** : le compte possède son établissement et son workspace dédiés. Tous les jeux et données créés par les tests commencent par `E2E —` et sont nettoyés à la fin du scénario lorsque cela est possible.
 - **Interdiction** : ne jamais diffuser ses QR codes, l'utiliser pour un commerce réel ou mélanger ses données à celles d'un marchand existant.
 
