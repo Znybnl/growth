@@ -43,6 +43,10 @@ yarn-error.log*
 dev-server.log
 prod-server.log
 .codex/*.log
+.codex-logs/
+.codex-remote-attachments/
+*.err.log
+*.out.log
 
 # env files (can opt-in for committing if needed)
 .env*
