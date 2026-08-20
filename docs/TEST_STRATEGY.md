@@ -32,6 +32,8 @@ Le socle Playwright est suivi dans l'Issue [#2](https://github.com/Znybnl/growth
 - **Usage** : seul compte autorisé pour les E2E qui s'authentifient ou créent des données métier.
 - **Secret** : les variables `OKADO_E2E_EMAIL` et `OKADO_E2E_PASSWORD` restent uniquement dans `apps/web-app/.env.local` et, lorsque les E2E seront exécutés en CI, dans les secrets GitHub Actions. Elles ne sont jamais versionnées ni nécessaires au runtime Vercel de production.
 - **Cloisonnement** : le compte possède son établissement et son workspace dédiés. Tous les jeux et données créés par les tests commencent par `E2E —` et sont nettoyés à la fin du scénario lorsque cela est possible.
+- **Nettoyage** : chaque nouvelle session supprime les jeux, participations et données de test créés lors de son exécution ; aucun jeu E2E ne doit rester utilisable après un test réussi.
+- **E-mails de gain** : leur envoi vers `e2e@okado.app` est explicitement autorisé afin de vérifier le parcours de bout en bout. Les e-mails créés par le smoke portent l'objet `[TEST]` et le test vérifie leur prise en charge par le système d'envoi. Aucun autre destinataire ne doit être utilisé par défaut.
 - **Interdiction** : ne jamais diffuser ses QR codes, l'utiliser pour un commerce réel ou mélanger ses données à celles d'un marchand existant.
 
 Les tests E2E ne deviennent des checks CI obligatoires qu'après stabilisation d'un parcours. Cette progression évite qu'un test instable bloque les livraisons.

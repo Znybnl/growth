@@ -15,4 +15,12 @@ test.describe("Parcours publics sûrs", () => {
     await expect(page.getByRole("heading", { name: "QR code introuvable" })).toBeVisible();
     await expect(page.getByText("Ce code ne correspond à aucun gain disponible.")).toBeVisible();
   });
+
+  test("le QR de retrait est généré sans exposer le gain", async ({ request }) => {
+    const response = await request.get("/api/public/redeem/E2E-CODE-TEST/qr");
+
+    expect(response.ok()).toBe(true);
+    expect(response.headers()["content-type"]).toContain("image/svg+xml");
+    await expect(response.text()).resolves.toContain("<svg");
+  });
 });

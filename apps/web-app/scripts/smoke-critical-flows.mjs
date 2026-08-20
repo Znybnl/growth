@@ -1,15 +1,85 @@
 #!/usr/bin/env node
 
+import nextEnv from "@next/env";
+import { createClient } from "@supabase/supabase-js";
+import { fileURLToPath } from "node:url";
+import path from "node:path";
+
+const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
+const { loadEnvConfig } = nextEnv;
+loadEnvConfig(path.resolve(scriptDirectory, ".."));
+
 const baseUrl = process.env.OKADO_SMOKE_BASE_URL ?? "http://localhost:3000";
-const email = process.env.OKADO_SMOKE_EMAIL ?? "camille@maisonsora.fr";
-const password = process.env.OKADO_SMOKE_PASSWORD ?? "demo1234";
-const leadEmail =
-  process.env.OKADO_SMOKE_LEAD_EMAIL ??
-  `okado-smoke-${Date.now()}@example.com`;
+const email = process.env.OKADO_SMOKE_EMAIL ?? process.env.OKADO_E2E_EMAIL;
+const password = process.env.OKADO_SMOKE_PASSWORD ?? process.env.OKADO_E2E_PASSWORD;
+const leadEmail = process.env.OKADO_SMOKE_LEAD_EMAIL ?? process.env.OKADO_E2E_EMAIL;
 const keepCampaign = process.env.OKADO_SMOKE_KEEP_CAMPAIGN === "true";
 
 const cookieJar = new Map();
-let createdCampaignId = null;
+let merchantId = null;
+
+function getSupabaseAdmin() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  assert(url && serviceRoleKey, "Supabase doit être configuré pour nettoyer les données E2E.");
+  return createClient(url, serviceRoleKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+}
+
+async function purgeE2eCampaigns() {
+  assert(merchantId, "Le marchand E2E doit être identifié avant le nettoyage.");
+  const supabase = getSupabaseAdmin();
+  const { data: campaigns, error: campaignsError } = await supabase
+    .from("campaigns")
+    .select("id")
+    .eq("merchant_id", merchantId)
+    .like("title", "E2E —%");
+  if (campaignsError) throw new Error(`Lecture des jeux E2E impossible: ${campaignsError.message}`);
+
+  const campaignIds = (campaigns ?? []).map((campaign) => campaign.id);
+  if (!campaignIds.length) return;
+
+  const { data: deliveries, error: deliveriesError } = await supabase
+    .from("reward_email_deliveries")
+    .select("id")
+    .in("campaign_id", campaignIds);
+  if (deliveriesError) throw new Error(`Lecture des e-mails E2E impossible: ${deliveriesError.message}`);
+
+  const deliveryIds = (deliveries ?? []).map((delivery) => delivery.id);
+  if (deliveryIds.length) {
+    const { error } = await supabase.from("reward_email_events").delete().in("reward_email_delivery_id", deliveryIds);
+    if (error) throw new Error(`Suppression des événements e-mail E2E impossible: ${error.message}`);
+  }
+
+  const deletions = [
+    supabase.from("reward_email_deliveries").delete().in("campaign_id", campaignIds),
+    supabase.from("business_logs").delete().eq("merchant_id", merchantId).in("campaign_id", campaignIds),
+    supabase.from("campaigns").delete().eq("merchant_id", merchantId).in("id", campaignIds),
+  ];
+  const results = await Promise.all(deletions);
+  const deletionError = results.find((result) => result.error)?.error;
+  if (deletionError) throw new Error(`Suppression des données E2E impossible: ${deletionError.message}`);
+
+  console.log(`✓ Nettoyage E2E: ${campaignIds.length} jeu(x) supprimé(s)`);
+}
+
+async function assertTestRewardEmail(leadId) {
+  const supabase = getSupabaseAdmin();
+  const { data, error } = await supabase
+    .from("reward_email_deliveries")
+    .select("recipient_email,subject,status")
+    .eq("lead_id", leadId)
+    .maybeSingle();
+
+  if (error || !data) {
+    throw new Error(`E-mail de gain E2E introuvable: ${error?.message ?? "ligne absente"}`);
+  }
+  assert(data.recipient_email.toLowerCase() === leadEmail.toLowerCase(), "L'e-mail de gain E2E cible un destinataire inattendu.");
+  assert(data.subject.startsWith("[TEST]"), "L'objet de l'e-mail E2E doit commencer par [TEST].");
+  assert(!["failed", "bounced", "complained", "suppressed"].includes(data.status), "L'e-mail de gain E2E est en échec.");
+  console.log(`✓ E-mail de gain E2E: ${data.status}`);
+}
 
 function updateCookies(response) {
   const setCookie = response.headers.getSetCookie?.() ?? [];
@@ -74,7 +144,7 @@ function campaignPayload(merchant) {
 
   return {
     merchantId: merchant.id,
-    title: `Smoke test ${suffix}`,
+    title: `E2E — Smoke ${suffix}`,
     subtitle: "Test automatisé Okado.",
     goalType: "review_prompt",
     ctaLabel: "Je participe",
@@ -149,7 +219,7 @@ function campaignPayload(merchant) {
       email: {
         senderName: companyName,
         replyTo: merchant.restaurantEmail || "",
-        subject: "Votre cadeau est disponible",
+        subject: "[TEST] Votre cadeau est disponible",
         preheader: "Présentez votre QR code pour récupérer votre lot.",
         headline: "Bravo, votre cadeau vous attend.",
         body: "Merci pour votre participation. Présentez le QR code en restaurant pour récupérer votre lot.",
@@ -187,31 +257,21 @@ function campaignPayload(merchant) {
 }
 
 async function cleanupSmokeCampaign() {
-  if (!createdCampaignId || keepCampaign) return;
+  if (!merchantId || keepCampaign) return;
 
   try {
-    await request(`/api/campaigns/${createdCampaignId}`, { method: "DELETE" });
-    console.log(`✓ Nettoyage campagne smoke: ${createdCampaignId}`);
-    createdCampaignId = null;
+    await purgeE2eCampaigns();
   } catch (error) {
-    try {
-      await request(`/api/campaigns/${createdCampaignId}`, {
-        method: "PATCH",
-        body: JSON.stringify({ isActive: false }),
-      });
-      console.log(`✓ Campagne smoke archivée: ${createdCampaignId}`);
-      createdCampaignId = null;
-    } catch (archiveError) {
-      console.warn(
-        `Nettoyage campagne smoke impossible (${createdCampaignId}): ${
-          archiveError instanceof Error ? archiveError.message : error
-        }`,
-      );
-    }
+    throw new Error(
+      `Nettoyage E2E impossible: ${error instanceof Error ? error.message : String(error)}`,
+    );
   }
 }
 
 async function main() {
+  assert(email && password, "Définissez OKADO_E2E_EMAIL et OKADO_E2E_PASSWORD avant de lancer le smoke critique.");
+  assert(leadEmail, "Définissez OKADO_E2E_EMAIL ou OKADO_SMOKE_LEAD_EMAIL pour recevoir l'e-mail de gain sur la boîte dédiée.");
+  assert(leadEmail.toLowerCase() === email.toLowerCase(), "Le smoke critique ne peut envoyer un e-mail de gain qu'à l'adresse du compte E2E.");
   console.log(`Smoke Okado: ${baseUrl}`);
 
   const signIn = await request("/api/auth/signin", {
@@ -220,7 +280,10 @@ async function main() {
   });
   const merchant = signIn.body?.merchant;
   assert(merchant?.id, "Connexion OK mais marchand introuvable dans la réponse.");
+  merchantId = merchant.id;
   console.log(`✓ Connexion marchand: ${merchant.companyName}`);
+
+  await purgeE2eCampaigns();
 
   await request("/");
   await request("/campaigns");
@@ -241,7 +304,6 @@ async function main() {
   });
   const campaignId = created.body?.campaign?.campaign?.id;
   assert(campaignId, "Création campagne sans identifiant.");
-  createdCampaignId = campaignId;
   console.log(`✓ Création campagne: ${campaignId}`);
 
   await request(`/api/campaigns/${campaignId}`);
@@ -288,6 +350,7 @@ async function main() {
   assert(lead?.prizeId, "Le smoke test attend un lot gagnant.");
   assert(lead?.redemptionCode, "Code de retrait manquant.");
   console.log(`✓ Gain client: ${lead.redemptionCode}`);
+  await assertTestRewardEmail(lead.id);
 
   await request(`/api/public/redeem/${encodeURIComponent(lead.redemptionCode)}/qr`, {
     headers: { Accept: "image/svg+xml" },
