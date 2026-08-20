@@ -16,6 +16,7 @@
     "lint": "npm run lint -w @okado/web-app && npm run lint -w @okado/landing-page",
     "lint:web": "npm run lint -w @okado/web-app",
     "lint:landing": "npm run lint -w @okado/landing-page",
+    "test:e2e": "npm run test:e2e -w @okado/web-app",
     "check:gotomarket": "npm run check:gotomarket -w @okado/web-app",
     "check:dependencies": "npm run check:dependencies -w @okado/web-app",
     "check:supabase": "npm run check:supabase -w @okado/web-app",
