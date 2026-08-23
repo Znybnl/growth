@@ -49,6 +49,7 @@ import {
   actionKindCta,
   actionKindLabel,
   buttonSizeLabel,
+  textFontClass,
   textFontLabel,
 } from "@/lib/format";
 import {
@@ -209,13 +210,15 @@ const actionKindOptions: ActionKind[] = [
 ];
 
 const textFontOptions: TextFont[] = [
-  "anton",
-  "display",
-  "serif",
-  "cormorant",
-  "fredoka",
-  "inter",
-  "bebas",
+  "roboto",
+  "geogrotesque",
+  "comfortaa",
+  "days-one",
+  "delius-unicase",
+  "lato",
+  "lobster",
+  "pacifico",
+  "syncopate",
 ];
 const headingFontWeightOptions = [400, 500, 600, 700, 800, 900];
 const wheelPageTemplateOptions: Array<{
@@ -481,7 +484,7 @@ function createDefaultState(merchant: Merchant): EditorState {
       heading: {
         textColor: "#1f2937",
         fontSizePx: 40,
-        fontFamily: "display",
+        fontFamily: "roboto",
         fontWeight: 600,
         align: "center",
       },
@@ -1433,20 +1436,7 @@ export function buildCampaignLivePreviewModel(
       : form.presentation.heading.align === "right"
         ? "text-right"
         : "text-center";
-  const headingFontClass =
-    form.presentation.heading.fontFamily === "anton"
-      ? "font-anton"
-      : form.presentation.heading.fontFamily === "serif" || form.presentation.heading.fontFamily === "cormorant"
-        ? form.presentation.heading.fontFamily === "cormorant"
-          ? "font-cormorant"
-          : "font-serif"
-        : form.presentation.heading.fontFamily === "fredoka"
-          ? "font-fredoka"
-          : form.presentation.heading.fontFamily === "inter" || form.presentation.heading.fontFamily === "sans"
-            ? "font-inter"
-            : form.presentation.heading.fontFamily === "bebas"
-              ? "font-bebas"
-              : "font-display";
+  const headingFontClass = textFontClass(form.presentation.heading.fontFamily);
   const logoSizePercent = clampCampaignLogoSizePercent(form.presentation.logo.sizePercent);
   const logoWidthPx = Math.round(Math.max(56, Math.min(720, logoSizePercent * 3)));
   const logoTextSizePx = campaignLogoTextSizePx(logoSizePercent, form.gameType);
@@ -1699,20 +1689,7 @@ export function CampaignEditor({
       : form.presentation.heading.align === "right"
         ? "text-right"
         : "text-center";
-  const headingFontClass =
-    form.presentation.heading.fontFamily === "anton"
-      ? "font-anton"
-      : form.presentation.heading.fontFamily === "serif" || form.presentation.heading.fontFamily === "cormorant"
-        ? form.presentation.heading.fontFamily === "cormorant"
-          ? "font-cormorant"
-          : "font-serif"
-        : form.presentation.heading.fontFamily === "fredoka"
-          ? "font-fredoka"
-          : form.presentation.heading.fontFamily === "inter" || form.presentation.heading.fontFamily === "sans"
-            ? "font-inter"
-            : form.presentation.heading.fontFamily === "bebas"
-            ? "font-bebas"
-              : "font-display";
+  const headingFontClass = textFontClass(form.presentation.heading.fontFamily);
   const currentTemplateId = form.presentation.layout.templateId ?? "classic";
   const showWheelSecondaryColor =
     currentTemplateId !== "classic" &&

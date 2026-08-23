@@ -1,6 +1,20 @@
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
-import { Bebas_Neue, Cormorant_Garamond, Fredoka, Inter, Roboto_Mono } from "next/font/google";
+import {
+  Bebas_Neue,
+  Comfortaa,
+  Cormorant_Garamond,
+  Days_One,
+  Delius_Unicase,
+  Fredoka,
+  Inter,
+  Lato,
+  Lobster,
+  Pacifico,
+  Roboto,
+  Roboto_Mono,
+  Syncopate,
+} from "next/font/google";
 
 import { APP_DESCRIPTION, APP_NAME_CAPITALIZED } from "@/lib/branding";
 import "./globals.css";
@@ -15,6 +29,69 @@ const inter = Inter({
 const robotoMono = Roboto_Mono({
   subsets: ["latin"],
   variable: "--font-roboto-mono",
+  display: "swap",
+  preload: false,
+});
+
+const roboto = Roboto({
+  subsets: ["latin"],
+  variable: "--font-roboto",
+  weight: ["400", "500", "600", "700", "900"],
+  display: "swap",
+});
+
+const comfortaa = Comfortaa({
+  subsets: ["latin"],
+  variable: "--font-comfortaa",
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  preload: false,
+});
+
+const daysOne = Days_One({
+  subsets: ["latin"],
+  variable: "--font-days-one",
+  weight: "400",
+  display: "swap",
+  preload: false,
+});
+
+const deliusUnicase = Delius_Unicase({
+  subsets: ["latin"],
+  variable: "--font-delius-unicase",
+  weight: "400",
+  display: "swap",
+  preload: false,
+});
+
+const lato = Lato({
+  subsets: ["latin"],
+  variable: "--font-lato",
+  weight: ["400", "700", "900"],
+  display: "swap",
+  preload: false,
+});
+
+const lobster = Lobster({
+  subsets: ["latin"],
+  variable: "--font-lobster",
+  weight: "400",
+  display: "swap",
+  preload: false,
+});
+
+const pacifico = Pacifico({
+  subsets: ["latin"],
+  variable: "--font-pacifico",
+  weight: "400",
+  display: "swap",
+  preload: false,
+});
+
+const syncopate = Syncopate({
+  subsets: ["latin"],
+  variable: "--font-syncopate",
+  weight: ["400", "700"],
   display: "swap",
   preload: false,
 });
@@ -59,6 +136,14 @@ export default function RootLayout({
       className={cn(
         "h-full font-sans",
         inter.variable,
+        roboto.variable,
+        comfortaa.variable,
+        daysOne.variable,
+        deliusUnicase.variable,
+        lato.variable,
+        lobster.variable,
+        pacifico.variable,
+        syncopate.variable,
         robotoMono.variable,
         cormorantGaramond.variable,
         fredoka.variable,

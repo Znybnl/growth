@@ -215,6 +215,24 @@ export function textAlignLabel(align: TextAlign) {
 
 export function textFontLabel(font: TextFont) {
   switch (font) {
+    case "roboto":
+      return "Roboto";
+    case "geogrotesque":
+      return "Geogrotesque";
+    case "comfortaa":
+      return "Comfortaa";
+    case "days-one":
+      return "Days One";
+    case "delius-unicase":
+      return "Delius Unicase";
+    case "lato":
+      return "Lato";
+    case "lobster":
+      return "Lobster";
+    case "pacifico":
+      return "Pacifico";
+    case "syncopate":
+      return "Syncopate";
     case "anton":
       return "Anton";
     case "display":
@@ -233,6 +251,46 @@ export function textFontLabel(font: TextFont) {
       return "Display";
     default:
       return "Display";
+  }
+}
+
+/** CSS class used consistently in the live game and both editor previews. */
+export function textFontClass(font: TextFont) {
+  switch (font) {
+    case "roboto":
+      return "font-roboto";
+    case "geogrotesque":
+      return "font-geogrotesque";
+    case "comfortaa":
+      return "font-comfortaa";
+    case "days-one":
+      return "font-days-one";
+    case "delius-unicase":
+      return "font-delius-unicase";
+    case "lato":
+      return "font-lato";
+    case "lobster":
+      return "font-lobster";
+    case "pacifico":
+      return "font-pacifico";
+    case "syncopate":
+      return "font-syncopate";
+    case "anton":
+      return "font-anton";
+    case "serif":
+      return "font-serif";
+    case "cormorant":
+      return "font-cormorant";
+    case "fredoka":
+      return "font-fredoka";
+    case "inter":
+    case "sans":
+      return "font-inter";
+    case "bebas":
+      return "font-bebas";
+    case "display":
+    default:
+      return "font-display";
   }
 }
 

@@ -28,6 +28,15 @@ const ACTION_KINDS = new Set<ActionKind>([
 const LOGO_MODES = new Set<LogoMode>(["none", "image", "text"]);
 const TEXT_ALIGNS = new Set<TextAlign>(["left", "center", "right"]);
 const TEXT_FONTS = new Set<TextFont>([
+  "roboto",
+  "geogrotesque",
+  "comfortaa",
+  "days-one",
+  "delius-unicase",
+  "lato",
+  "lobster",
+  "pacifico",
+  "syncopate",
   "anton",
   "display",
   "serif",
@@ -443,7 +452,7 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
           fallback: 42,
           integer: true,
         }),
-        fontFamily: normalizeEnum(heading.fontFamily, TEXT_FONTS, "anton"),
+        fontFamily: normalizeEnum(heading.fontFamily, TEXT_FONTS, "roboto"),
         fontWeight: normalizeNumber(heading.fontWeight, {
           min: 300,
           max: 900,
@@ -509,7 +518,7 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
           fallback: 42,
           integer: true,
         }),
-        headlineFontFamily: normalizeEnum(poster.headlineFontFamily, TEXT_FONTS, "anton"),
+        headlineFontFamily: normalizeEnum(poster.headlineFontFamily, TEXT_FONTS, "roboto"),
         wheel: {
           rimColor: normalizeColor(ensureObject(poster.wheel).rimColor, "#f4c14a"),
           winColor: normalizeColor(ensureObject(poster.wheel).winColor, "#f4c14a"),
