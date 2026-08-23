@@ -735,7 +735,9 @@ export function CampaignWizard({
     initialCampaign ? draftFromCampaign(merchant, initialCampaign) : createWizardDraft(merchant),
   );
   const [stepIndex, setStepIndex] = useState(0);
-  const [furthestStepIndex, setFurthestStepIndex] = useState(0);
+  const [furthestStepIndex, setFurthestStepIndex] = useState(() =>
+    initialCampaign ? WIZARD_STEPS.length - 1 : 0,
+  );
   const actionEnabled = true;
   const [prizeSuggestions, setPrizeSuggestions] = useState<PrizeSuggestion[]>(
     [],
@@ -1254,16 +1256,15 @@ export function CampaignWizard({
           <nav className="mt-4 space-y-1" aria-label="Étapes de création">
             {WIZARD_STEPS.map((item, index) => {
               const active = index === stepIndex;
-              const complete = index < stepIndex;
-              const visited = index <= furthestStepIndex;
+              const canAccessStep = isEditing || index <= furthestStepIndex;
+              const complete = !isEditing && index < stepIndex;
+              const visited = canAccessStep;
               return (
                 <button
                   key={item.id}
                   type="button"
-                  onClick={() =>
-                    index <= furthestStepIndex && setStepIndex(index)
-                  }
-                  disabled={index > furthestStepIndex}
+                  onClick={() => canAccessStep && setStepIndex(index)}
+                  disabled={!canAccessStep}
                   className={`flex w-full items-start gap-3 rounded-[16px] px-3 py-3 text-left transition ${active ? "bg-[#111827] text-white" : visited ? "text-[#18864b] hover:bg-[#f5f8fb]" : "text-[#a0a9b9]"}`}
                 >
                   <span
