@@ -138,6 +138,14 @@ Shadows:
 - Text: 14px Graphite.
 - Placeholder: Fog.
 
+### Wizard Completion Screen
+
+- After a game is saved from the creation wizard, the completion screen is the confirmation surface. Do not stack a second generic success dialog over it.
+- Present one primary next step: preview the game before sharing it.
+- Keep distribution actions grouped as secondary actions: production QR code and poster.
+- Keep editing as a discreet tertiary link. Advanced settings such as the gain e-mail do not belong on this screen.
+- Adjacent action buttons use the same `44px` height, icon size and responsive grid. At narrow widths, they stack without clipped labels or forced line breaks.
+
 ### Status Badge
 
 - Background: semantic color at 10% opacity.

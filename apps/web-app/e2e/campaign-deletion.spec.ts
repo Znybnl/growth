@@ -26,7 +26,7 @@ test.describe("Suppression d’un jeu", () => {
       .getByRole("button", { name: "Enregistrer le brouillon", exact: true })
       .last()
       .click();
-    await expect(page.getByRole("dialog", { name: "Brouillon enregistré" })).toBeVisible({
+    await expect(page.getByRole("heading", { name: "Votre jeu est enregistré." })).toBeVisible({
       timeout: 15_000,
     });
 

@@ -14,6 +14,8 @@ import {
   Download,
   Eye,
   Gift,
+  ImageIcon,
+  Pencil,
   Plus,
   QrCode,
   Sparkles,
@@ -25,7 +27,6 @@ import { type ChangeEvent, type ReactNode, useEffect, useMemo, useState } from "
 
 import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
 import { CampaignPreviewQrDialog } from "@/components/merchant/campaign-preview-qr";
-import { ValidationDialog } from "@/components/ui/validation-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -744,7 +745,6 @@ export function CampaignWizard({
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [savedCampaignId, setSavedCampaignId] = useState<string | null>(null);
-  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [qrPreviewOpen, setQrPreviewOpen] = useState(false);
   const [backgroundLibrary, setBackgroundLibrary] = useState<BackgroundLibraryAsset[]>([]);
   const [backgroundLibraryOpen, setBackgroundLibraryOpen] = useState(false);
@@ -755,8 +755,6 @@ export function CampaignWizard({
     logo?: string;
     background?: string;
   }>({});
-  const [saveDialogTitle, setSaveDialogTitle] = useState("Campagne enregistrée");
-  const [saveDialogDescription, setSaveDialogDescription] = useState("");
   const [lastSavedDraftSnapshot, setLastSavedDraftSnapshot] = useState(() =>
     JSON.stringify(initialCampaign ? draftFromCampaign(merchant, initialCampaign) : createWizardDraft(merchant)),
   );
@@ -1042,13 +1040,6 @@ export function CampaignWizard({
         setLastSavedDraftSnapshot(JSON.stringify({ ...draft, isActive: targetIsActive }));
         window.dispatchEvent(new Event("campaigns-updated"));
         setSavedCampaignId(campaignId);
-        setSaveDialogTitle(targetIsActive ? "Jeu publié" : "Brouillon enregistré");
-        setSaveDialogDescription(
-          targetIsActive
-            ? "Votre jeu est publié et prêt à être utilisé par vos clients."
-            : "Votre jeu a bien été enregistré en brouillon. Vous pouvez encore le modifier avant sa publication.",
-        );
-        setSaveDialogOpen(true);
       }
     } catch (saveError) {
       setError(
@@ -1063,90 +1054,104 @@ export function CampaignWizard({
 
   if (savedCampaignId) {
     return (
-      <div className="okado-card mx-auto max-w-3xl p-8 text-center sm:p-12">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#e9f8ec] text-[#18864b]">
-          <Check className="h-8 w-8" />
-        </div>
-        <p className="mt-6 text-xs uppercase tracking-[0.24em] text-[#7a8498]">
-          Jeu prêt
-        </p>
-        <h1 className="okado-page-title mt-3">
-          Votre jeu est enregistré.
-        </h1>
-        <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-[#626d82]">
-          Votre jeu est prêt. Prévisualisez-le, téléchargez son QR code
-          ou préparez son affiche.
-        </p>
-        <div className="okado-action-row mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <Link
-            href={`/campaign/${savedCampaignId}?preview=1`}
-            target="_blank"
-            className="okado-filled-action px-4 text-sm"
-          >
-            Prévisualiser
-          </Link>
-          <Link
-            href={`/campaigns/${savedCampaignId}/edit/guided`}
-            className="okado-secondary-action px-4 text-sm"
-          >
-            Modifier le jeu
-          </Link>
-          <Link
-            href={`/campaigns/${savedCampaignId}/email`}
-            className="okado-secondary-action px-4 text-sm"
-          >
-            Modifier l&apos;e-mail de gain
-          </Link>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button type="button" className="okado-secondary-action gap-2 px-4 text-sm" aria-label="Options du QR code">
-                <QrCode className="h-4 w-4" aria-hidden="true" />
-                <span>QR code</span>
-                <ChevronDown className="h-4 w-4" aria-hidden="true" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="center" className="w-[250px] rounded-[var(--okado-radius-control)] border-border p-1.5 shadow-[var(--shadow-product-card)]">
-              <DropdownMenuItem asChild className="cursor-pointer gap-2 rounded-[10px] px-3 py-2.5">
-                <a href={`/api/campaigns/${savedCampaignId}/qr`} download title="Télécharger le QR code de production">
-                  <Download className="h-4 w-4" aria-hidden="true" />
-                  <span>Télécharger le QR code</span>
-                </a>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer gap-2 rounded-[10px] px-3 py-2.5" onSelect={() => setQrPreviewOpen(true)}>
-                <Eye className="h-4 w-4" aria-hidden="true" />
-                <span>Prévisualisation</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <Link
-            href={`/campaigns/${savedCampaignId}/poster`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="okado-secondary-action px-4 text-sm"
-          >
-            Affiche
-          </Link>
-        </div>
-        <div className="mx-auto mt-8 hidden w-fit rounded-[20px] border border-[#dbe4f0] bg-white p-4 shadow-[var(--shadow-product-card)] md:block">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.16em] text-[#8993a6]">
-            QR code du jeu
-          </p>
-          <Image
-            src={`/api/campaigns/${savedCampaignId}/qr?inline=1`}
-            alt="QR code du jeu"
-            width={192}
-            height={192}
-            unoptimized
-            className="mx-auto h-48 w-48"
-          />
-        </div>
-        <ValidationDialog
-          open={saveDialogOpen}
-          title={saveDialogTitle}
-          description={saveDialogDescription}
-          ctaLabel="Continuer"
-          onClose={() => setSaveDialogOpen(false)}
-        />
+      <div className="mx-auto max-w-4xl">
+        <section className="okado-card overflow-hidden p-6 sm:p-10">
+          <div className="mx-auto max-w-2xl text-center">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#e9f8ec] text-[#18864b]">
+              <Check className="h-7 w-7" aria-hidden="true" />
+            </div>
+            <p className="mt-5 text-xs font-semibold uppercase tracking-[0.18em] text-[#7a8498]">
+              Jeu prêt
+            </p>
+            <h1 className="okado-page-title mt-3">Votre jeu est enregistré.</h1>
+            <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-[#626d82]">
+              Vérifiez une dernière fois le parcours, puis choisissez le support le plus adapté pour le diffuser à vos clients.
+            </p>
+          </div>
+
+          <div className="mt-8 grid gap-6 border-t border-[#e5eaf2] pt-6 lg:grid-cols-[minmax(0,1fr)_220px] lg:items-center lg:gap-10">
+            <div className="min-w-0">
+              <p className="okado-label">Prochaine étape</p>
+              <h2 className="mt-2 text-xl font-semibold tracking-[-0.02em] text-[#0f1728]">
+                Testez le parcours de votre jeu
+              </h2>
+              <p className="mt-2 max-w-xl text-sm leading-6 text-[#626d82]">
+                La prévisualisation simule une participation complète, sans modifier vos stocks ni vos indicateurs.
+              </p>
+
+              <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                <Link
+                  href={`/campaign/${savedCampaignId}?preview=1`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="okado-filled-action !h-11 gap-2 px-4 text-sm"
+                >
+                  <Eye className="h-4 w-4" aria-hidden="true" />
+                  Prévisualiser
+                </Link>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      type="button"
+                      className="okado-secondary-action !h-11 w-full gap-2 px-4 text-sm"
+                      aria-label="Options du QR code"
+                    >
+                      <QrCode className="h-4 w-4" aria-hidden="true" />
+                      <span>QR code</span>
+                      <ChevronDown className="h-4 w-4" aria-hidden="true" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    align="center"
+                    className="w-[250px] rounded-[var(--okado-radius-control)] border-border p-1.5 shadow-[var(--shadow-product-card)]"
+                  >
+                    <DropdownMenuItem asChild className="cursor-pointer gap-2 rounded-[10px] px-3 py-2.5">
+                      <a href={`/api/campaigns/${savedCampaignId}/qr`} download title="Télécharger le QR code de production">
+                        <Download className="h-4 w-4" aria-hidden="true" />
+                        <span>Télécharger le QR code</span>
+                      </a>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="cursor-pointer gap-2 rounded-[10px] px-3 py-2.5" onSelect={() => setQrPreviewOpen(true)}>
+                      <Eye className="h-4 w-4" aria-hidden="true" />
+                      <span>QR de prévisualisation</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <Link
+                  href={`/campaigns/${savedCampaignId}/poster`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="okado-secondary-action !h-11 gap-2 px-4 text-sm"
+                >
+                  <ImageIcon className="h-4 w-4" aria-hidden="true" />
+                  Affiche
+                </Link>
+              </div>
+
+              <Link
+                href={`/campaigns/${savedCampaignId}/edit/guided`}
+                className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-[#53627a] underline-offset-4 transition hover:text-[#0f1f3d] hover:underline"
+              >
+                <Pencil className="h-4 w-4" aria-hidden="true" />
+                Modifier le jeu
+              </Link>
+            </div>
+
+            <div className="mx-auto hidden w-fit rounded-[16px] border border-[#dbe4f0] bg-[#fbfcff] p-4 shadow-[var(--shadow-product-card)] lg:block">
+              <p className="mb-3 text-center text-xs font-semibold uppercase tracking-[0.14em] text-[#8993a6]">
+                QR de diffusion
+              </p>
+              <Image
+                src={`/api/campaigns/${savedCampaignId}/qr?inline=1`}
+                alt="QR code de diffusion du jeu"
+                width={176}
+                height={176}
+                unoptimized
+                className="h-44 w-44"
+              />
+            </div>
+          </div>
+        </section>
         <CampaignPreviewQrDialog
           open={qrPreviewOpen}
           campaignId={savedCampaignId}
