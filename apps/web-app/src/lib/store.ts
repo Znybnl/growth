@@ -146,7 +146,7 @@ function createPresentation(overrides?: CampaignPresentationOverrides): Campaign
     heading: {
       textColor: "#1f2937",
       fontSizePx: 42,
-      fontFamily: "display",
+      fontFamily: "roboto",
       fontWeight: 600,
       align: "center",
       ...overrides?.heading,
@@ -176,7 +176,7 @@ function createPresentation(overrides?: CampaignPresentationOverrides): Campaign
       headline: "Scannez, jouez, récupérez votre cadeau !",
       headlineTextColor: "#ffffff",
       headlineFontSizePx: 42,
-      headlineFontFamily: "display",
+      headlineFontFamily: "roboto",
       wheel,
       footerBackgroundColor: "#8d9ae8",
       ...overrides?.poster,

@@ -27,6 +27,7 @@ Les identifiants `TM-XXX` sont à reprendre dans les Issues, les PR et les compt
 | TM-019 | Sécurité des parcours publics | Aucun accès marchand | Utiliser un QR de prévisualisation invalide ou un code de retrait inconnu | Un écran compréhensible est affiché sans fuite de donnée métier | `apps/web-app/e2e/public-safety.spec.ts` | Automatisé |
 | TM-020 | Suppression d’un jeu marchand | Compte `e2e@okado.app`, brouillon de test | Ouvrir les actions du jeu, confirmer sa suppression | La pop-in est explicite et fermable ; après confirmation, le jeu disparaît immédiatement de Mes jeux | `apps/web-app/e2e/campaign-deletion.spec.ts` | Automatisé |
 | TM-021 | Navigation du Wizard en modification | Compte `e2e@okado.app`, jeu brouillon existant | Ouvrir le Wizard en modification et sélectionner chaque étape dans Progression | Les cinq étapes restent accessibles sans perdre les données non enregistrées | `apps/web-app/e2e/wizard-edit-navigation.spec.ts` | Automatisé |
+| TM-022 | Catalogue de polices du Wizard | Compte `e2e@okado.app` | Ouvrir Apparence dans un nouveau jeu | Roboto est sélectionnée par défaut et seules les neuf polices approuvées sont proposées | `apps/web-app/e2e/authenticated-wizard.spec.ts` | Automatisé |
 
 ## Ordre de couverture à compléter
 

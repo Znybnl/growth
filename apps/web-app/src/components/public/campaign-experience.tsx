@@ -19,6 +19,7 @@ import { ImmersiveScratchTicket } from "@/components/public/immersive-scratch-ti
 import { ScratchGame } from "@/components/public/scratch-game";
 import { WheelOfFortune } from "@/components/public/wheel-of-fortune";
 import { fluidType } from "@/lib/responsive";
+import { textFontClass } from "@/lib/format";
 import {
   campaignLogoTextSizePx,
   clampCampaignLogoSizePercent,
@@ -524,20 +525,7 @@ export function CampaignExperience({
       : campaign.presentation.heading.align === "right"
         ? "text-right"
         : "text-center";
-  const headingFontClass =
-    campaign.presentation.heading.fontFamily === "anton"
-      ? "font-anton"
-      : campaign.presentation.heading.fontFamily === "serif" || campaign.presentation.heading.fontFamily === "cormorant"
-        ? campaign.presentation.heading.fontFamily === "cormorant"
-          ? "font-cormorant"
-          : "font-serif"
-        : campaign.presentation.heading.fontFamily === "fredoka"
-          ? "font-fredoka"
-          : campaign.presentation.heading.fontFamily === "inter" || campaign.presentation.heading.fontFamily === "sans"
-            ? "font-inter"
-            : campaign.presentation.heading.fontFamily === "bebas"
-              ? "font-bebas"
-              : "font-display";
+  const headingFontClass = textFontClass(campaign.presentation.heading.fontFamily);
   const showBottomState =
     !isImmersiveScratchTemplate &&
     ((stage === "idle" && campaign.gameType !== "wheel") ||

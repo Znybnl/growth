@@ -2,6 +2,16 @@ export type GoalType = "lead_capture" | "review_prompt" | "social_follow";
 export type GameType = "wheel" | "scratch";
 export type TextAlign = "left" | "center" | "right";
 export type TextFont =
+  | "roboto"
+  | "geogrotesque"
+  | "comfortaa"
+  | "days-one"
+  | "delius-unicase"
+  | "lato"
+  | "lobster"
+  | "pacifico"
+  | "syncopate"
+  // Conservé pour lire les campagnes créées avant le nouveau catalogue.
   | "anton"
   | "display"
   | "serif"

@@ -146,6 +146,24 @@ function splitLines(text: string, maxChars: number) {
 
 function fontFamily(font: TextFont) {
   switch (font) {
+    case "roboto":
+      return "Roboto, Inter, Geist, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif";
+    case "geogrotesque":
+      return "Geogrotesque, Roboto, Inter, Geist, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif";
+    case "comfortaa":
+      return "Comfortaa, Roboto, Inter, Geist, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif";
+    case "days-one":
+      return "Days One, Roboto, Inter, Geist, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif";
+    case "delius-unicase":
+      return "Delius Unicase, Roboto, Inter, Geist, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif";
+    case "lato":
+      return "Lato, Roboto, Inter, Geist, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif";
+    case "lobster":
+      return "Lobster, Roboto, Inter, Geist, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif";
+    case "pacifico":
+      return "Pacifico, Roboto, Inter, Geist, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif";
+    case "syncopate":
+      return "Syncopate, Roboto, Inter, Geist, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif";
     case "anton":
     case "display":
       return SAFE_DISPLAY_FONT;

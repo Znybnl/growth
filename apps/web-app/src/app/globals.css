@@ -30,6 +30,44 @@
   font-family: var(--font-bebas-neue), "Anton", ui-sans-serif, system-ui, sans-serif;
 }
 
+.font-roboto {
+  font-family: var(--font-roboto), "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Geogrotesque needs a licensed font file. Until it is supplied, the selector
+   retains the intended geometry with the self-hosted Roboto fallback. */
+.font-geogrotesque {
+  font-family: "Geogrotesque", var(--font-roboto), ui-sans-serif, system-ui, sans-serif;
+}
+
+.font-comfortaa {
+  font-family: var(--font-comfortaa), var(--font-roboto), ui-sans-serif, system-ui, sans-serif;
+}
+
+.font-days-one {
+  font-family: var(--font-days-one), var(--font-roboto), ui-sans-serif, system-ui, sans-serif;
+}
+
+.font-delius-unicase {
+  font-family: var(--font-delius-unicase), var(--font-roboto), ui-sans-serif, system-ui, sans-serif;
+}
+
+.font-lato {
+  font-family: var(--font-lato), var(--font-roboto), ui-sans-serif, system-ui, sans-serif;
+}
+
+.font-lobster {
+  font-family: var(--font-lobster), var(--font-roboto), ui-sans-serif, system-ui, sans-serif;
+}
+
+.font-pacifico {
+  font-family: var(--font-pacifico), var(--font-roboto), ui-sans-serif, system-ui, sans-serif;
+}
+
+.font-syncopate {
+  font-family: var(--font-syncopate), var(--font-roboto), ui-sans-serif, system-ui, sans-serif;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 :root {

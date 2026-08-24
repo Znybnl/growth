@@ -116,13 +116,15 @@ const WIZARD_STEPS: WizardStep[] = [
 ];
 
 const WIZARD_TEXT_FONTS: TextFont[] = [
-  "anton",
-  "display",
-  "serif",
-  "cormorant",
-  "fredoka",
-  "inter",
-  "bebas",
+  "roboto",
+  "geogrotesque",
+  "comfortaa",
+  "days-one",
+  "delius-unicase",
+  "lato",
+  "lobster",
+  "pacifico",
+  "syncopate",
 ];
 
 const MAX_WIZARD_IMAGE_BYTES = 2 * 1024 * 1024;
@@ -314,7 +316,7 @@ function createWizardDraft(merchant: Merchant): WizardDraft {
       heading: {
         textColor: "#1f2937",
         fontSizePx: 40,
-        fontFamily: "display",
+        fontFamily: "roboto",
         fontWeight: 600,
         align: "center",
       },

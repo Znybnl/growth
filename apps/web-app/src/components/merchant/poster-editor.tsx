@@ -280,7 +280,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
       {
         ...normalizedPoster,
         headlineTextColor: campaign.gameType === "scratch" ? "#1b2842" : campaignGainColor,
-        headlineFontFamily: "display",
+        headlineFontFamily: "roboto",
         wheel: {
           ...normalizedPoster.wheel,
           winColor: campaignPrimaryColor,

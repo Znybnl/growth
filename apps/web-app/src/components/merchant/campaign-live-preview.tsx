@@ -6,6 +6,7 @@ import { memo } from "react";
 import { BrandMark } from "@/components/brand-mark";
 import { ImmersiveScratchTicket } from "@/components/public/immersive-scratch-ticket";
 import { fluidType } from "@/lib/responsive";
+import { textFontClass } from "@/lib/format";
 import {
   campaignLogoTextSizePx,
   clampCampaignLogoSizePercent,
@@ -134,15 +135,7 @@ function buildPreviewSegments(prizes: CampaignSetupInput["prizes"]): PreviewSegm
 }
 
 function headingFontClassFor(form: CampaignSetupInput) {
-  return form.presentation.heading.fontFamily === "anton"
-    ? "font-anton"
-    : form.presentation.heading.fontFamily === "serif" || form.presentation.heading.fontFamily === "cormorant"
-      ? form.presentation.heading.fontFamily === "cormorant" ? "font-cormorant" : "font-serif"
-      : form.presentation.heading.fontFamily === "fredoka"
-        ? "font-fredoka"
-        : form.presentation.heading.fontFamily === "inter" || form.presentation.heading.fontFamily === "sans"
-          ? "font-inter"
-          : form.presentation.heading.fontFamily === "bebas" ? "font-bebas" : "font-display";
+  return textFontClass(form.presentation.heading.fontFamily);
 }
 
 function previewBackgroundImage(form: CampaignSetupInput, templateId: GamePageTemplateId) {
