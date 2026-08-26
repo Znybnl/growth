@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("Parcours marchand authentifié", () => {
-  test("un marchand peut accéder à l'assistant de création", async ({ page }) => {
+  test("un marchand accède au Wizard depuis le seul bouton de création", async ({ page }) => {
     const email = process.env.OKADO_E2E_EMAIL;
     const password = process.env.OKADO_E2E_PASSWORD;
     test.skip(
@@ -15,9 +15,13 @@ test.describe("Parcours marchand authentifié", () => {
     await page.getByRole("button", { name: "Se connecter", exact: true }).click();
 
     await expect(page).not.toHaveURL(/\/connexion/, { timeout: 15_000 });
-    await page.goto("/campaigns/new/guided");
+    const createCampaign = page.getByRole("link", { name: "Créer une campagne", exact: true }).first();
+    await expect(createCampaign).toHaveAttribute("href", "/campaigns/new/guided");
+    await expect(page.getByRole("link", { name: "Assistant de création", exact: true })).toHaveCount(0);
+    await createCampaign.click();
     await expect(page).not.toHaveURL(/\/onboarding/);
     await expect(page.getByRole("heading", { name: "Créer une campagne", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Le jeu", exact: true })).toBeVisible();
     await expect(page.getByText("Progression", { exact: true })).toBeVisible();
   });
 
@@ -38,11 +42,13 @@ test.describe("Parcours marchand authentifié", () => {
     await expect(page).not.toHaveURL(/\/connexion/, { timeout: 15_000 });
 
     await page.goto("/campaigns/new/guided");
-    await page.getByPlaceholder("Ex. La roue gourmande de juin").fill("E2E — catalogue de polices");
-    await page.getByRole("button", { name: "Continuer", exact: true }).click();
     await expect(page.getByRole("heading", { name: "Le jeu", exact: true })).toBeVisible();
     await page.getByRole("button", { name: "Continuer", exact: true }).click();
+    await page.getByPlaceholder("Ex. La roue gourmande de juin").fill("E2E — catalogue de polices");
+    await page.getByRole("button", { name: "Continuer", exact: true }).click();
     await expect(page.getByRole("heading", { name: "L’apparence", exact: true })).toBeVisible();
+    await expect(page.getByText("Bouton de jeu", { exact: true })).toHaveCount(0);
+    await expect(page.getByText("Fond du ticket", { exact: true })).toHaveCount(0);
 
     const fontSelect = page.locator('select:has(option[value="roboto"])').first();
     await expect(fontSelect).toHaveValue("roboto");

@@ -21,6 +21,8 @@ test.describe("Confirmation du Wizard", () => {
 
     const title = `E2E — confirmation ${Date.now()}`;
     await page.goto("/campaigns/new/guided");
+    await expect(page.getByRole("heading", { name: "Le jeu", exact: true })).toBeVisible();
+    await page.getByRole("button", { name: "Continuer", exact: true }).click();
     await page.getByPlaceholder("Ex. La roue gourmande de juin").fill(title);
     await page
       .getByRole("button", { name: "Enregistrer le brouillon", exact: true })
