@@ -112,9 +112,8 @@ export function EmailEditor({ campaign, merchant }: EmailEditorProps) {
   }
 
   return (
-    <div className="grid min-h-[calc(100vh-120px)] gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(420px,0.78fr)]">
-      <div className="space-y-6">
-        <section className="px-1 py-2">
+    <div className="min-h-[calc(100vh-120px)] space-y-6">
+      <section className="px-1 py-2">
           <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
             <div>
               <p className="okado-label">Atelier email</p>
@@ -164,9 +163,92 @@ export function EmailEditor({ campaign, merchant }: EmailEditorProps) {
               </ul>
             </div>
           ) : null}
-        </section>
+      </section>
 
-        <section className="okado-card p-6">
+      <section className="okado-card p-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <p className="okado-label">Prévisualisation</p>
+            <h2 className="okado-section-title mt-2">E-mail client</h2>
+            <p className="mt-2 text-sm leading-6 text-ash">
+              Les données ci-dessous sont des exemples : elles permettent de vérifier le rendu avant envoi.
+            </p>
+          </div>
+          <span className="rounded-full bg-linen-canvas px-3 py-1.5 text-xs font-semibold text-graphite">
+            Aperçu en direct
+          </span>
+        </div>
+
+        <div className="mt-6 flex justify-center rounded-[12px] border border-border bg-linen-canvas p-4 sm:p-6">
+          <div className="w-full max-w-[680px] overflow-hidden rounded-[20px] bg-white shadow-[0_20px_50px_rgba(15,23,42,0.12)]">
+            <div className="border-b border-[#edf2f7] px-6 py-4">
+              <div className="text-xs uppercase tracking-[0.22em] text-[#94a3b8]">Objet</div>
+              <div className="mt-2 text-base font-semibold text-[#111827]">{preview.subject}</div>
+              <div className="mt-2 text-sm text-[#64748b]">{preview.preheader}</div>
+            </div>
+
+            <div className="bg-[#f8fafc] px-4 py-6 sm:px-6 sm:py-8">
+              <div className="rounded-[20px] bg-white p-5 shadow-[0_8px_24px_rgba(15,23,42,0.08)] sm:p-6">
+                <div className="text-center">
+                  {campaign.logoUrl ? (
+                    <Image
+                      src={campaign.logoUrl}
+                      alt="Logo"
+                      width={180}
+                      height={70}
+                      unoptimized
+                      className="mx-auto max-h-[56px] w-auto object-contain"
+                    />
+                  ) : (
+                    <div className="text-2xl font-semibold text-[#111827]">
+                      {campaign.logoText ?? merchant.companyName}
+                    </div>
+                  )}
+                </div>
+
+                <h3 className="mt-6 text-3xl font-semibold leading-tight text-[#111827]">
+                  {preview.headline}
+                </h3>
+
+                <div className="mt-5 space-y-4 text-sm leading-7 text-[#475569]">
+                  {preview.body.map((block) => (
+                    <p key={block}>{block}</p>
+                  ))}
+                </div>
+
+                <div className="mt-6 rounded-[18px] border border-[#e2e8f0] bg-[#f8fafc] px-4 py-4">
+                  <div className="text-xs uppercase tracking-[0.2em] text-[#94a3b8]">
+                    Code de retrait
+                  </div>
+                  <div className="mt-2 text-2xl font-semibold text-[#0f172a]">
+                    {sampleData.redemptionCode}
+                  </div>
+                </div>
+
+                <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center">
+                  <div className="h-[128px] w-[128px] rounded-[18px] border border-[#dbe4f0] bg-[radial-gradient(#111827_1.5px,transparent_1.5px)] [background-size:8px_8px]" />
+                  <button
+                    type="button"
+                    className="rounded-[14px] px-5 py-3 text-sm font-semibold text-white"
+                    style={{ backgroundColor: email.accentColor }}
+                  >
+                    {email.buttonLabel}
+                  </button>
+                </div>
+
+                <div className="mt-6 space-y-3 text-xs leading-6 text-[#64748b]">
+                  {preview.footer.map((block) => (
+                    <p key={block}>{block}</p>
+                  ))}
+                  {email.replyTo ? <p>Reply-to : {email.replyTo}</p> : null}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="okado-card p-6">
           <p className="okado-label">Expédition</p>
           <h2 className="okado-section-title mt-2">Objet, expéditeur et reply-to</h2>
 
@@ -209,9 +291,9 @@ export function EmailEditor({ campaign, merchant }: EmailEditorProps) {
               />
             </label>
           </div>
-        </section>
+      </section>
 
-        <section className="okado-card p-6">
+      <section className="okado-card p-6">
           <p className="okado-label">Contenu</p>
           <h2 className="okado-section-title mt-2">Message envoyé au client</h2>
 
@@ -273,85 +355,7 @@ export function EmailEditor({ campaign, merchant }: EmailEditorProps) {
               />
             </label>
           </div>
-        </section>
-      </div>
-
-      <aside className="xl:sticky xl:top-6 xl:h-[calc(100vh-48px)]">
-        <div className="flex h-full flex-col rounded-[8px] border border-[#dbe4f0] bg-[#111827] p-5 shadow-[0_24px_70px_rgba(17,24,39,0.24)]">
-          <div className="mb-4">
-            <p className="text-xs uppercase tracking-[0.24em] text-white/48">Prévisualisation</p>
-            <h2 className="mt-1 text-xl font-semibold text-white">Email client</h2>
-          </div>
-
-          <div className="flex min-h-0 flex-1 items-start justify-center overflow-auto rounded-[8px] bg-[#0b1020] p-4">
-            <div className="w-full max-w-[430px] overflow-hidden rounded-[20px] bg-white shadow-[0_20px_50px_rgba(0,0,0,0.28)]">
-              <div className="border-b border-[#edf2f7] px-6 py-4">
-                <div className="text-xs uppercase tracking-[0.22em] text-[#94a3b8]">Objet</div>
-                <div className="mt-2 text-base font-semibold text-[#111827]">{preview.subject}</div>
-                <div className="mt-2 text-sm text-[#64748b]">{preview.preheader}</div>
-              </div>
-
-              <div className="bg-[#f8fafc] px-6 py-8">
-                <div className="rounded-[20px] bg-white p-6 shadow-[0_8px_24px_rgba(15,23,42,0.08)]">
-                  <div className="text-center">
-                    {campaign.logoUrl ? (
-                      <Image
-                        src={campaign.logoUrl}
-                        alt="Logo"
-                        width={180}
-                        height={70}
-                        unoptimized
-                        className="mx-auto max-h-[56px] w-auto object-contain"
-                      />
-                    ) : (
-                      <div className="text-2xl font-semibold text-[#111827]">
-                        {campaign.logoText ?? merchant.companyName}
-                      </div>
-                    )}
-                  </div>
-
-                  <h3 className="mt-6 text-3xl font-semibold leading-tight text-[#111827]">
-                    {preview.headline}
-                  </h3>
-
-                  <div className="mt-5 space-y-4 text-sm leading-7 text-[#475569]">
-                    {preview.body.map((block) => (
-                      <p key={block}>{block}</p>
-                    ))}
-                  </div>
-
-                  <div className="mt-6 rounded-[18px] border border-[#e2e8f0] bg-[#f8fafc] px-4 py-4">
-                    <div className="text-xs uppercase tracking-[0.2em] text-[#94a3b8]">
-                      Code de retrait
-                    </div>
-                    <div className="mt-2 text-2xl font-semibold text-[#0f172a]">
-                      {sampleData.redemptionCode}
-                    </div>
-                  </div>
-
-                  <div className="mt-6 flex items-center gap-4">
-                    <div className="h-[128px] w-[128px] rounded-[18px] border border-[#dbe4f0] bg-[radial-gradient(#111827_1.5px,transparent_1.5px)] [background-size:8px_8px]" />
-                    <button
-                      type="button"
-                      className="rounded-[14px] px-5 py-3 text-sm font-semibold text-white"
-                      style={{ backgroundColor: email.accentColor }}
-                    >
-                      {email.buttonLabel}
-                    </button>
-                  </div>
-
-                  <div className="mt-6 space-y-3 text-xs leading-6 text-[#64748b]">
-                    {preview.footer.map((block) => (
-                      <p key={block}>{block}</p>
-                    ))}
-                    {email.replyTo ? <p>Reply-to : {email.replyTo}</p> : null}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </aside>
+      </section>
     </div>
   );
 }
