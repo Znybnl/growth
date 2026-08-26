@@ -28,6 +28,7 @@ export function LocationSwitcher({
   async function changeLocation(locationId: string) {
     if (!locationId || locationId === activeLocationId) return;
     setIsChanging(true);
+    window.dispatchEvent(new CustomEvent("merchant-location-changing", { detail: { locationId } }));
     try {
       const response = await fetch("/api/merchant/location", {
         method: "POST",
@@ -36,9 +37,9 @@ export function LocationSwitcher({
       });
       if (!response.ok) throw new Error("Sélection du site impossible.");
       startTransition(() => router.refresh());
-      setIsChanging(false);
     } catch {
       setIsChanging(false);
+      window.dispatchEvent(new CustomEvent("merchant-location-change-error"));
     }
   }
 
