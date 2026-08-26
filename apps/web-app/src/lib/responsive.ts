@@ -5,7 +5,7 @@
  */
 export function fluidType(
   basePx: number,
-  options: { minRatio?: number; maxRatio?: number; viewportStep?: number } = {},
+  options: { minRatio?: number; maxRatio?: number; viewportStep?: number; viewportUnit?: "vw" | "cqw" } = {},
 ) {
   const minRatio = options.minRatio ?? 0.8;
   const maxRatio = options.maxRatio ?? 1.12;
@@ -13,6 +13,7 @@ export function fluidType(
   const baseRem = (basePx / 16).toFixed(3);
   const minRem = ((basePx * minRatio) / 16).toFixed(3);
   const maxRem = ((basePx * maxRatio) / 16).toFixed(3);
+  const viewportUnit = options.viewportUnit ?? "vw";
 
-  return `clamp(${minRem}rem, calc(${baseRem}rem + ${viewportStep}vw), ${maxRem}rem)`;
+  return `clamp(${minRem}rem, calc(${baseRem}rem + ${viewportStep}${viewportUnit}), ${maxRem}rem)`;
 }

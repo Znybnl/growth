@@ -26,7 +26,7 @@ test.describe("Parcours marchand authentifié", () => {
     await expect(page.getByText("En création", { exact: true })).toBeVisible();
     await expect(page.getByText("Jeu en brouillon", { exact: true })).toHaveCount(0);
     await expect(page.getByTestId("wizard-phone-preview")).toHaveCSS("width", "300px");
-    await expect(page.getByTestId("wizard-phone-preview")).toHaveCSS("height", "600px");
+    await expect(page.getByTestId("wizard-phone-preview")).toHaveCSS("height", "550px");
   });
 
   test("le Wizard propose le catalogue de polices et Roboto par défaut", async ({ page }) => {

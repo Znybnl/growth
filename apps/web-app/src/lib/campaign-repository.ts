@@ -357,6 +357,14 @@ function generateId(prefix: string) {
   return `${prefix}-${crypto.randomUUID().slice(0, 8)}`;
 }
 
+function persistentHeadingFontFamily(input: CampaignSetupInput) {
+  // Older Supabase projects only accept these legacy values in campaigns.
+  // The selected font is preserved in campaign_local_settings and is used on
+  // every subsequent read; the column remains a backwards-compatible fallback.
+  const fontFamily = input.presentation.heading.fontFamily;
+  return fontFamily === "sans" || fontFamily === "serif" ? fontFamily : "display";
+}
+
 function isMissingAtomicCampaignSaveRpc(error: { code?: string; message?: string } | null) {
   return Boolean(
     error &&
@@ -2096,10 +2104,7 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
     background_image_url: input.presentation.background.imageUrl || null,
     heading_text_color: input.presentation.heading.textColor,
     heading_font_size_px: input.presentation.heading.fontSizePx,
-    heading_font_family:
-      input.presentation.heading.fontFamily === "anton"
-        ? "display"
-        : input.presentation.heading.fontFamily,
+    heading_font_family: persistentHeadingFontFamily(input),
     heading_align: input.presentation.heading.align,
     button_background_color: input.presentation.button.backgroundColor,
     button_text_color: input.presentation.button.textColor,

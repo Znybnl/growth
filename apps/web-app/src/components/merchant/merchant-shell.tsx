@@ -41,9 +41,26 @@ const adminNavItems = [
   { href: "/support", label: "Supervision" },
 ];
 
+function MerchantContentSkeleton() {
+  return (
+    <div aria-label="Chargement de l’établissement" className="mx-auto w-full max-w-[1440px] animate-pulse space-y-6">
+      <div className="space-y-3">
+        <div className="h-3 w-28 rounded-full bg-border/70" />
+        <div className="h-10 w-72 max-w-full rounded-lg bg-border/60" />
+        <div className="h-4 w-[28rem] max-w-full rounded-full bg-border/50" />
+      </div>
+      <div className="grid gap-4 md:grid-cols-3">
+        {[0, 1, 2].map((index) => <div key={index} className="h-28 rounded-[var(--okado-radius-card)] border border-border bg-white/70" />)}
+      </div>
+      <div className="h-72 rounded-[var(--okado-radius-card)] border border-border bg-white/70" />
+    </div>
+  );
+}
+
 export function MerchantShell({ children, merchant, user, locations, activeLocationId, isSaasAdmin }: MerchantShellProps) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [locationChangeTarget, setLocationChangeTarget] = useState<string | null>(null);
   const [campaignsVersion, setCampaignsVersion] = useState<string | null>(null);
   const [merchantAlerts, setMerchantAlerts] = useState({
     emailCount: 0,
@@ -133,6 +150,20 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
 
     window.addEventListener("campaigns-updated", handleCampaignsUpdated);
     return () => window.removeEventListener("campaigns-updated", handleCampaignsUpdated);
+  }, []);
+
+  useEffect(() => {
+    const handleLocationChanging = (event: Event) => {
+      const target = (event as CustomEvent<{ locationId?: string }>).detail?.locationId;
+      if (target) setLocationChangeTarget(target);
+    };
+    const handleLocationChangeError = () => setLocationChangeTarget(null);
+    window.addEventListener("merchant-location-changing", handleLocationChanging);
+    window.addEventListener("merchant-location-change-error", handleLocationChangeError);
+    return () => {
+      window.removeEventListener("merchant-location-changing", handleLocationChanging);
+      window.removeEventListener("merchant-location-change-error", handleLocationChangeError);
+    };
   }, []);
 
   function isActive(href: string) {
@@ -345,12 +376,12 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
               </span>
             </button>
             <div className="flex-1" />
-            <LocationSwitcher locations={locations} activeLocationId={activeLocationId} />
+            <LocationSwitcher key={activeLocationId} locations={locations} activeLocationId={activeLocationId} />
           </div>
         </header>
 
-        <main className="min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden px-3 py-5 lg:px-6">
-          {children}
+        <main aria-busy={locationChangeTarget !== null && locationChangeTarget !== activeLocationId} className="min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden px-3 py-5 lg:px-6">
+          {locationChangeTarget !== null && locationChangeTarget !== activeLocationId ? <MerchantContentSkeleton /> : children}
         </main>
       </div>
     </div>

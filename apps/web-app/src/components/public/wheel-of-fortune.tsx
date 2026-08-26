@@ -34,7 +34,7 @@ type WheelOfFortuneProps = {
     textColor?: string;
     borderColor?: string;
   };
-  framing?: "default" | "public" | "editor";
+  framing?: "default" | "public" | "editor" | "mobile-preview";
   pageTemplate?: "classic" | "restaurant-pop";
 };
 
@@ -193,13 +193,15 @@ export function WheelOfFortune({
   };
   const classicLightColor = deriveLighterHex(colors.loseColor);
   const wheelTop =
-    framing === "public" ? undefined : framing === "editor" ? "83%" : "62%";
+    framing === "public" ? undefined : framing === "editor" ? "83%" : framing === "mobile-preview" ? "58%" : "62%";
   const wheelFrameSizeClass =
     framing === "public"
       ? "top-2 w-[max(130vw,calc(100svh-240px))] max-w-none sm:w-[min(118vw,calc(100svh-220px))] md:w-[min(98vw,calc(100svh-220px))] lg:w-[min(52vw,calc(100svh-220px))] xl:w-[min(42vw,calc(100svh-220px))] 2xl:w-[min(38vw,calc(100svh-220px))]"
       : framing === "editor"
         ? "w-[150%] max-w-none"
-        : "w-full";
+        : framing === "mobile-preview"
+          ? "w-[150%] max-w-none"
+          : "w-full";
   const wheelTransformClass =
     framing === "public" ? "-translate-x-1/2" : "-translate-x-1/2 -translate-y-1/2";
 
