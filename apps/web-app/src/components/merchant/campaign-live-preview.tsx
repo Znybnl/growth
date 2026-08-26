@@ -237,7 +237,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
   const scalePreviewValue = (value: number) => Math.round(value * previewScale);
   const previewHeadingTextColor = isCosmicTemplate || (preview.gamePageTemplateId === "scratch-vault" && preview.headingTextColor.toLowerCase() === "#1f2937") ? "#f8fbff" : preview.headingTextColor;
   const restaurantPopHeadingLines = buildRestaurantPopHeadingLines(preview.subtitle);
-  const previewFrameClass = compact ? "min-h-[480px] max-w-[360px] rounded-[30px] px-3 pb-5 pt-7" : "min-h-[600px] max-w-[450px] rounded-[38px] px-4 pb-6 pt-8";
+  const previewFrameClass = compact ? "h-full min-h-0 max-w-none rounded-[30px] px-3 pb-5 pt-7" : "min-h-[600px] max-w-[450px] rounded-[38px] px-4 pb-6 pt-8";
 
   return (
     <div className={flushTop ? "" : "mt-6"}>
