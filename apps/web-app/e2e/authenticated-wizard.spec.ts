@@ -23,6 +23,8 @@ test.describe("Parcours marchand authentifié", () => {
     await expect(page.getByRole("heading", { name: "Créer une campagne", exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Le jeu", exact: true })).toBeVisible();
     await expect(page.getByText("Progression", { exact: true })).toBeVisible();
+    await expect(page.getByText("En création", { exact: true })).toBeVisible();
+    await expect(page.getByText("Jeu en brouillon", { exact: true })).toHaveCount(0);
   });
 
   test("le Wizard propose le catalogue de polices et Roboto par défaut", async ({ page }) => {
@@ -49,6 +51,10 @@ test.describe("Parcours marchand authentifié", () => {
     await expect(page.getByRole("heading", { name: "L’apparence", exact: true })).toBeVisible();
     await expect(page.getByText("Bouton de jeu", { exact: true })).toHaveCount(0);
     await expect(page.getByText("Fond du ticket", { exact: true })).toHaveCount(0);
+    await expect(page.getByText("Logo", { exact: true })).toBeVisible();
+    await page.getByText("Paramètres avancés", { exact: false }).click();
+    await expect(page.getByText("Fond", { exact: true })).toBeVisible();
+    await expect(page.getByText("Réglages du texte", { exact: true })).toBeVisible();
 
     const fontSelect = page.locator('select:has(option[value="roboto"])').first();
     await expect(fontSelect).toHaveValue("roboto");
