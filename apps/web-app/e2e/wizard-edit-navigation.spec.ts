@@ -21,6 +21,8 @@ test.describe("Navigation du Wizard en modification", () => {
 
     const title = `E2E — modification ${Date.now()}`;
     await page.goto("/campaigns/new/guided");
+    await expect(page.getByRole("heading", { name: "Le jeu", exact: true })).toBeVisible();
+    await page.getByRole("button", { name: "Continuer", exact: true }).click();
     await page.getByPlaceholder("Ex. La roue gourmande de juin").fill(title);
     await page
       .getByRole("button", { name: "Enregistrer le brouillon", exact: true })
@@ -39,8 +41,8 @@ test.describe("Navigation du Wizard en modification", () => {
     await expect(page.getByRole("heading", { name: "Créer une campagne", exact: true })).toBeVisible();
 
     const steps = [
-      { button: /La promesse/, heading: "La promesse" },
       { button: /Le jeu/, heading: "Le jeu" },
+      { button: /La promesse/, heading: "La promesse" },
       { button: /L’apparence/, heading: "L’apparence" },
       { button: /Les lots/, heading: "Les lots" },
       { button: /L’action/, heading: "L’action" },

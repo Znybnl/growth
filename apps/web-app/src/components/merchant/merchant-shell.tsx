@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Sparkles, Star } from "lucide-react";
+import { Star } from "lucide-react";
 import posthog from "posthog-js";
 import { useEffect, useMemo, useState } from "react";
 
@@ -199,19 +199,10 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
             })}
           </nav>
           <Button asChild className="okado-primary-action mt-5 px-4">
-            <Link href="/campaigns/new" prefetch={false} onClick={() => setMenuOpen(false)}>
+            <Link href="/campaigns/new/guided" prefetch={false} onClick={() => setMenuOpen(false)}>
               Créer une campagne
             </Link>
           </Button>
-          <Link
-            href="/campaigns/new/guided"
-            prefetch={false}
-            className="mt-2 flex h-10 items-center justify-center gap-2 rounded-[8px] border border-border bg-white px-4 text-sm font-medium text-graphite transition hover:bg-linen-canvas"
-            onClick={() => setMenuOpen(false)}
-          >
-            <Sparkles className="h-4 w-4 text-signal-blue" aria-hidden="true" />
-            Assistant de création
-          </Link>
 
           {isSaasAdmin ? (
             <div className="mt-4 rounded-[8px] border border-border bg-white p-1.5 shadow-[var(--shadow-product-card)]">

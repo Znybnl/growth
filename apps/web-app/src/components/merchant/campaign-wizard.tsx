@@ -84,16 +84,16 @@ type WizardDraft = CampaignSetupInput;
 
 const WIZARD_STEPS: WizardStep[] = [
   {
-    id: "identity",
-    number: "01",
-    title: "La promesse",
-    description: "Le texte principal et votre objectif.",
-  },
-  {
     id: "game",
-    number: "02",
+    number: "01",
     title: "Le jeu",
     description: "Le type de jeu.",
+  },
+  {
+    id: "identity",
+    number: "02",
+    title: "La promesse",
+    description: "Le texte principal et votre objectif.",
   },
   {
     id: "appearance",
@@ -1056,6 +1056,21 @@ export function CampaignWizard({
     }
   }
 
+  const logoSettings = (
+    <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
+      <p className="text-sm font-semibold text-[#182033]">Logo</p>
+      <div className="mt-3 grid gap-3 sm:grid-cols-3">
+        {([{ value: "text", label: "Texte" }, { value: "image", label: "Image" }, { value: "none", label: "Aucun" }] as const).map((mode) => (
+          <button key={mode.value} type="button" onClick={() => patchDraft({ logoMode: mode.value, logoText: mode.value === "text" ? draft.logoText?.trim() || merchant.companyName : draft.logoText })} className={`cursor-pointer rounded-[12px] border px-3 py-2.5 text-sm font-semibold ${draft.logoMode === mode.value ? "border-[#b28719] bg-[#fff8e1] text-[#8c6710]" : "border-[#dbe3ed] bg-white text-[#526078]"}`}>{mode.label}</button>
+        ))}
+      </div>
+      {draft.logoMode === "text" ? <label className="mt-3 block text-sm"><span className="mb-2 block font-semibold text-[#182033]">Texte du logo</span><input value={draft.logoText ?? merchant.companyName} onChange={(event) => patchDraft({ logoText: event.target.value })} className="w-full rounded-[12px] border border-[#dbe3ed] bg-white px-3 py-3" /></label> : null}
+      {draft.logoMode === "image" ? <label className="mt-3 flex cursor-pointer items-center justify-between rounded-[12px] border border-dashed border-[#b8c5d8] px-3 py-3 text-sm font-semibold"><span>Importer un logo</span><input type="file" accept="image/png,image/jpeg,image/webp,image/gif" className="hidden" onChange={(event) => uploadWizardImage(event, (value) => { setImageUploadErrors((current) => ({ ...current, logo: undefined })); patchDraft({ logoUrl: value, logoMode: "image" }); }, (message) => setImageUploadErrors((current) => ({ ...current, logo: message })))} /></label> : null}
+      {imageUploadErrors.logo ? <p role="alert" className="mt-2 text-xs text-[#b42318]">{imageUploadErrors.logo}</p> : null}
+      {draft.logoMode !== "none" ? <div className="mt-3 grid gap-3 sm:grid-cols-2"><label className="block text-sm"><span className="mb-2 block font-semibold">Taille du logo <output className="float-right text-[#b28719]">{draft.presentation.logo.sizePercent}%</output></span><input type="range" min={0} max={200} value={draft.presentation.logo.sizePercent} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, logo: { ...draft.presentation.logo, sizePercent: Number(event.target.value) } } })} className="w-full cursor-pointer accent-[#b28719]" /></label><label className="block text-sm"><span className="mb-2 block font-semibold">Espacement sous le logo (px)</span><input type="number" min={0} max={120} value={draft.presentation.logo.marginBottomPx} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, logo: { ...draft.presentation.logo, marginBottomPx: Number(event.target.value || 0) } } })} className="w-full rounded-[12px] border border-[#dbe3ed] px-3 py-3" /></label></div> : null}
+    </section>
+  );
+
   if (savedCampaignId) {
     return (
       <div className="mx-auto max-w-4xl">
@@ -1232,17 +1247,11 @@ export function CampaignWizard({
         ) : null}
       </section>
 
-      <div className="sticky top-0 z-30 hidden border-y border-[#e2e8f0] bg-[#f8fafc]/95 px-1 py-2 shadow-[0_8px_18px_rgba(18,24,39,0.08)] backdrop-blur xl:block">
+      <div className="sticky top-0 z-30 hidden border-b border-[#e2e8f0] bg-[#f8fafc]/95 py-3 backdrop-blur xl:block">
         <div className="flex items-center justify-between gap-3">
-          <label className="inline-flex cursor-pointer items-center gap-3 rounded-[12px] border border-[#dbe3ed] bg-white px-3 py-2 text-sm font-semibold text-[#182033]">
-            <input
-              type="checkbox"
-              checked={draft.isActive}
-              onChange={(event) => setDraft((current) => ({ ...current, isActive: event.target.checked }))}
-              className="h-4 w-4 cursor-pointer accent-[#b28719]"
-            />
-            {draft.isActive ? "Jeu actif" : "Jeu en brouillon"}
-          </label>
+          <span className={`rounded-full px-3 py-1.5 text-xs font-semibold ${!draft.id ? "bg-[#fff8e1] text-[#8c6710]" : draft.isActive ? "bg-[#e9f8ec] text-[#18864b]" : "bg-[#eef4ff] text-[#214ccf]"}`}>
+            {!draft.id ? "En création" : draft.isActive ? "En ligne" : "Brouillon"}
+          </span>
           <div className="flex items-center gap-2">
             <Link href="/campaigns" prefetch={false} className="okado-secondary-action px-4 text-sm">Retour aux jeux</Link>
             <button type="button" onClick={() => void saveCampaign("save")} disabled={isSaving} className="okado-secondary-action px-4 text-sm disabled:opacity-50">
@@ -1737,7 +1746,7 @@ export function CampaignWizard({
                       <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
-                  <div className={`mt-2 grid gap-3 ${isEditing ? "sm:grid-cols-[minmax(0,1fr)_110px_110px_110px]" : "sm:grid-cols-[minmax(0,1fr)_120px_120px]"}`}>
+                  <div className="mt-2 space-y-3">
                     <label className="block">
                       <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8993a6]">
                         Nom du lot
@@ -1754,6 +1763,7 @@ export function CampaignWizard({
                         className="mt-2 w-full rounded-[13px] border border-[#dbe3ed] bg-white px-3 py-3 text-sm text-[#182033]"
                       />
                     </label>
+                    <div className="grid gap-3 sm:grid-cols-3">
                     <label className="block">
                       <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8993a6]">
                         Probabilité
@@ -1773,6 +1783,7 @@ export function CampaignWizard({
                         className="mt-2 w-full rounded-[13px] border border-[#dbe3ed] bg-white px-3 py-3 text-sm text-[#182033]"
                       />
                     </label>
+                    {!isEditing ? (
                     <label className="block">
                       <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8993a6]">
                         Stock
@@ -1782,7 +1793,6 @@ export function CampaignWizard({
                         min={0}
                         placeholder="Illimité"
                         value={prize.totalQuantity ?? ""}
-                        readOnly={isEditing}
                         onChange={(event) =>
                           setDraft((current) =>
                             updatePrize(current, prize.id, {
@@ -1793,9 +1803,10 @@ export function CampaignWizard({
                             }),
                           )
                         }
-                        className={`mt-2 w-full rounded-[13px] border border-[#dbe3ed] px-3 py-3 text-sm text-[#182033] ${isEditing ? "cursor-default bg-[#f7f9fc] text-[#8993a6]" : "bg-white"}`}
+                        className="mt-2 w-full rounded-[13px] border border-[#dbe3ed] bg-white px-3 py-3 text-sm text-[#182033]"
                       />
                     </label>
+                    ) : null}
                     {isEditing ? (
                       <label className="block">
                         <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8993a6]">
@@ -1804,7 +1815,7 @@ export function CampaignWizard({
                         <input
                           type="number"
                           min={0}
-                          placeholder="IllimitÃ©"
+                          placeholder="Illimité"
                           value={prize.remainingQuantity ?? ""}
                           onChange={(event) =>
                             setDraft((current) =>
@@ -1820,8 +1831,7 @@ export function CampaignWizard({
                         />
                       </label>
                     ) : null}
-                  </div>
-                  <label className="mt-3 block sm:max-w-[240px]">
+                  <label className="block">
                     <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8993a6]">
                       Coût unitaire
                     </span>
@@ -1840,6 +1850,8 @@ export function CampaignWizard({
                       className="mt-2 w-full rounded-[13px] border border-[#dbe3ed] bg-white px-3 py-3 text-sm text-[#182033]"
                     />
                   </label>
+                    </div>
+                  </div>
                   <label className="mt-3 block">
                     <span className="text-xs text-[#8993a6]">
                       Conditions d’utilisation (optionnel)
@@ -2041,9 +2053,9 @@ export function CampaignWizard({
                   draft.gameType === "scratch"
                     ? [
                         { id: "scratch-vault", label: "Coffre néon", text: "Coffre illustré avant grattage" },
-                        { id: "scratch-confetti", label: "Carte confettis", text: "Solaire et festif ; la couleur principale sélectionnée n’est pas utilisée" },
+                        { id: "scratch-confetti", label: "Carte confettis", text: "Solaire et festif" },
                         { id: "scratch-coral", label: "Corail joyeux", text: "Clair et chaleureux" },
-                        { id: "scratch-lilac", label: "Cadeau lilas", text: "Cadeau clair et contrasté ; la couleur principale sélectionnée n’est pas utilisée" },
+                        { id: "scratch-lilac", label: "Cadeau lilas", text: "Cadeau clair et contrasté" },
                         { id: "scratch-sunburst", label: "Rayons soleil", text: "Éclatant et visible" },
                       ] as const
                     : [
@@ -2103,17 +2115,15 @@ export function CampaignWizard({
                 ))}
                </div>
 
-               <div className="grid gap-4 rounded-[18px] border border-[#e2e8f0] bg-white p-4 sm:grid-cols-2">
+               <div className="space-y-4 rounded-[18px] border border-[#e2e8f0] bg-white p-4">
                  <label className="block">
-                   <span className="text-sm font-semibold text-[#182033]">
+                   <span className="flex flex-wrap items-center gap-2 text-sm font-semibold text-[#182033]">
                      {draft.gameType === "wheel" ? "Couleur principale de la roue" : "Couleur principale du ticket"}
-                   </span>
-                   <span className="mt-1 block text-xs leading-5 text-[#8993a6]">
                      {draft.gameType === "scratch" &&
                      (draft.presentation.layout.templateId === "scratch-confetti" ||
-                       draft.presentation.layout.templateId === "scratch-lilac")
-                       ? "Ce template utilise sa propre palette ; la couleur choisie n’est pas utilisée."
-                       : "Cette couleur est appliquée à l’expérience de jeu."}
+                       draft.presentation.layout.templateId === "scratch-lilac") ? (
+                       <span className="rounded-full bg-[#f1ebff] px-2 py-0.5 text-[11px] font-semibold text-[#6944a1]">Palette fixe</span>
+                     ) : null}
                    </span>
                    <input
                      type="color"
@@ -2139,7 +2149,10 @@ export function CampaignWizard({
                          },
                        }));
                      }}
-                     className="mt-3 h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] bg-white p-1"
+                     disabled={draft.gameType === "scratch" &&
+                       (draft.presentation.layout.templateId === "scratch-confetti" ||
+                         draft.presentation.layout.templateId === "scratch-lilac")}
+                     className="mt-3 h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] bg-white p-1 disabled:cursor-not-allowed disabled:opacity-55"
                    />
                  </label>
 
@@ -2212,6 +2225,8 @@ export function CampaignWizard({
                    />
                  </label>
                </div>
+
+               {logoSettings}
 
                <details className="group rounded-[18px] border border-[#e2e8f0] bg-[#fbfcfe]">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-4 text-sm font-semibold text-[#182033] [&::-webkit-details-marker]:hidden">
@@ -2394,6 +2409,15 @@ export function CampaignWizard({
               </div>
                 <div className="space-y-5">
                   <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
+                    <p className="text-sm font-semibold text-[#182033]">Fond</p>
+                    <div className="mt-3 grid gap-3 sm:grid-cols-2">{([{ value: "color", label: "Couleur" }, { value: "image", label: "Image" }] as const).map((mode) => <button key={mode.value} type="button" onClick={() => patchDraft({ presentation: { ...draft.presentation, background: { ...draft.presentation.background, mode: mode.value } } })} className={`cursor-pointer rounded-[12px] border px-3 py-2.5 text-sm font-semibold ${draft.presentation.background.mode === mode.value ? "border-[#b28719] bg-[#fff8e1] text-[#8c6710]" : "border-[#dbe3ed] bg-white text-[#526078]"}`}>{mode.label}</button>)}</div>
+                    {draft.presentation.background.mode === "color" ? <label className="mt-3 block text-sm"><span className="mb-2 block font-semibold">Couleur de fond</span><input type="color" value={draft.presentation.background.color} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, background: { ...draft.presentation.background, color: event.target.value } } })} className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] p-1" /></label> : <label className="mt-3 flex cursor-pointer items-center justify-between rounded-[12px] border border-dashed border-[#b8c5d8] px-3 py-3 text-sm font-semibold"><span>Importer une image de fond</span><input type="file" accept="image/png,image/jpeg,image/webp,image/gif" className="hidden" onChange={(event) => uploadWizardImage(event, (value) => { setImageUploadErrors((current) => ({ ...current, background: undefined })); patchDraft({ presentation: { ...draft.presentation, background: { ...draft.presentation.background, mode: "image", imageUrl: value } } }); }, (message) => setImageUploadErrors((current) => ({ ...current, background: message })))} /></label>}
+                    {imageUploadErrors.background ? <p role="alert" className="mt-2 text-xs text-[#b42318]">{imageUploadErrors.background}</p> : null}
+                    {draft.presentation.background.mode === "image" ? <div className="mt-3 flex flex-wrap items-center gap-2"><button type="button" onClick={() => setBackgroundLibraryOpen(true)} className="cursor-pointer rounded-[12px] border border-[#111827] bg-[#111827] px-3 py-2.5 text-sm font-semibold text-white">Choisir dans la bibliothèque</button>{draft.presentation.background.imageUrl ? <span className="rounded-full bg-[#e9f8ec] px-3 py-1.5 text-xs font-semibold text-[#18864b]">Image sélectionnée</span> : null}</div> : null}
+                  </section>
+                  <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4"><p className="text-sm font-semibold text-[#182033]">Réglages du texte</p><div className="mt-3 grid gap-3 sm:grid-cols-2"><label className="block text-sm"><span className="mb-2 block font-semibold">Couleur du texte</span><input type="color" value={draft.presentation.heading.textColor} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, heading: { ...draft.presentation.heading, textColor: event.target.value } } })} className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] p-1" /></label><label className="block text-sm"><span className="mb-2 block font-semibold">Épaisseur</span><select value={draft.presentation.heading.fontWeight ?? 600} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, heading: { ...draft.presentation.heading, fontWeight: Number(event.target.value) } } })} className="w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] px-3 py-3"><option value={400}>Normale</option><option value={500}>Moyenne</option><option value={600}>Semi-gras</option><option value={700}>Gras</option></select></label></div></section>
+                  {draft.gameType === "wheel" ? (
+                  <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
                     <p className="text-sm font-semibold text-[#182033]">Espacement des blocs</p>
                     <p className="mt-1 text-xs leading-5 text-[#8993a6]">Ajustez l’espace vertical entre le logo, le texte et le jeu.</p>
                     <label className="mt-3 block text-sm">
@@ -2423,6 +2447,7 @@ export function CampaignWizard({
                       />
                     </label>
                   </section>
+                  ) : null}
                   <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
                     <p className="text-sm font-semibold text-[#182033]">
                       {draft.gameType === "wheel" ? "Couleurs détaillées de la roue" : "Couleurs du ticket"}
@@ -2458,8 +2483,6 @@ export function CampaignWizard({
                         ))
                       ) : (
                         ([
-                          ["paper", "Fond du ticket", draft.accent.paper],
-                          ["signal", "Zone de révélation", draft.accent.signal],
                           ["ink", "Texte du ticket", draft.accent.ink],
                         ] as const).map(([key, label, value]) => (
                           <label key={key} className="block text-sm">
@@ -2479,117 +2502,6 @@ export function CampaignWizard({
                       )}
                     </div>
                   </section>
-                  <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
-                    <p className="text-sm font-semibold text-[#182033]">Bouton de jeu</p>
-                    <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                      {(["backgroundColor", "textColor", "borderColor"] as const).map((key) => (
-                        <label key={key} className="block text-sm">
-                          <span className="mb-2 block font-semibold text-[#182033]">
-                            {key === "backgroundColor" ? "Fond" : key === "textColor" ? "Texte" : "Contour"}
-                          </span>
-                          <input
-                            type="color"
-                            value={draft.presentation.button[key]}
-                            onChange={(event) =>
-                              patchDraft({
-                                presentation: {
-                                  ...draft.presentation,
-                                  button: { ...draft.presentation.button, [key]: event.target.value },
-                                },
-                              })
-                            }
-                            className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] bg-white p-1"
-                          />
-                        </label>
-                      ))}
-                      <label className="block text-sm">
-                        <span className="mb-2 block font-semibold text-[#182033]">Taille du bouton</span>
-                        <select
-                          value={draft.presentation.button.size}
-                          onChange={(event) =>
-                            patchDraft({
-                              presentation: {
-                                ...draft.presentation,
-                                button: { ...draft.presentation.button, size: event.target.value as "sm" | "md" | "lg" },
-                              },
-                            })
-                          }
-                          className="w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] bg-white px-3 py-3 text-sm"
-                        >
-                          <option value="sm">Compact</option>
-                          <option value="md">Standard</option>
-                          <option value="lg">Grand</option>
-                        </select>
-                      </label>
-                      <label className="block text-sm">
-                        <span className="mb-2 flex items-center justify-between gap-3 font-semibold text-[#182033]"><span>Taille du texte</span><output className="text-[#b28719]">{draft.presentation.button.textSizePx} px</output></span>
-                        <input
-                          type="range"
-                          min={12}
-                          max={32}
-                          value={draft.presentation.button.textSizePx}
-                          onChange={(event) =>
-                            patchDraft({
-                              presentation: {
-                                ...draft.presentation,
-                                button: { ...draft.presentation.button, textSizePx: Number(event.target.value) },
-                              },
-                            })
-                          }
-                          className="w-full cursor-pointer accent-[#b28719]"
-                        />
-                      </label>
-                      <label className="flex cursor-pointer items-center gap-3 rounded-[12px] border border-[#dbe3ed] px-3 py-3 text-sm font-semibold text-[#182033]">
-                        <input
-                          type="checkbox"
-                          checked={draft.presentation.button.isBold}
-                          onChange={(event) =>
-                            patchDraft({
-                              presentation: {
-                                ...draft.presentation,
-                                button: { ...draft.presentation.button, isBold: event.target.checked },
-                              },
-                            })
-                          }
-                          className="h-4 w-4 cursor-pointer accent-[#b28719]"
-                        />
-                        Texte en gras
-                      </label>
-                    </div>
-                  </section>
-                  <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
-                    <p className="text-sm font-semibold text-[#182033]">Logo</p>
-                    <div className="mt-3 grid gap-3 sm:grid-cols-3">
-                      {([{ value: "text", label: "Texte" }, { value: "image", label: "Image" }, { value: "none", label: "Aucun" }] as const).map((mode) => (
-                        <button key={mode.value} type="button" onClick={() => patchDraft({ logoMode: mode.value, logoText: mode.value === "text" ? draft.logoText?.trim() || merchant.companyName : draft.logoText })} className={`cursor-pointer rounded-[12px] border px-3 py-2.5 text-sm font-semibold ${draft.logoMode === mode.value ? "border-[#b28719] bg-[#fff8e1] text-[#8c6710]" : "border-[#dbe3ed] bg-white text-[#526078]"}`}>{mode.label}</button>
-                      ))}
-                    </div>
-                    {draft.logoMode === "text" ? <label className="mt-3 block text-sm"><span className="mb-2 block font-semibold text-[#182033]">Texte du logo</span><input value={draft.logoText ?? merchant.companyName} onChange={(event) => patchDraft({ logoText: event.target.value })} className="w-full rounded-[12px] border border-[#dbe3ed] bg-white px-3 py-3" /></label> : null}
-                    {draft.logoMode === "image" ? <label className="mt-3 flex cursor-pointer items-center justify-between rounded-[12px] border border-dashed border-[#b8c5d8] px-3 py-3 text-sm font-semibold"><span>Importer un logo</span><input type="file" accept="image/png,image/jpeg,image/webp,image/gif" className="hidden" onChange={(event) => uploadWizardImage(event, (value) => { setImageUploadErrors((current) => ({ ...current, logo: undefined })); patchDraft({ logoUrl: value, logoMode: "image" }); }, (message) => setImageUploadErrors((current) => ({ ...current, logo: message })))} /></label> : null}
-                    {imageUploadErrors.logo ? <p role="alert" className="mt-2 text-xs text-[#b42318]">{imageUploadErrors.logo}</p> : null}
-                    {draft.logoMode !== "none" ? <div className="mt-3 grid gap-3 sm:grid-cols-2"><label className="block text-sm"><span className="mb-2 block font-semibold">Taille du logo <output className="float-right text-[#b28719]">{draft.presentation.logo.sizePercent}%</output></span><input type="range" min={0} max={200} value={draft.presentation.logo.sizePercent} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, logo: { ...draft.presentation.logo, sizePercent: Number(event.target.value) } } })} className="w-full cursor-pointer accent-[#b28719]" /></label><label className="block text-sm"><span className="mb-2 block font-semibold">Espacement sous le logo (px)</span><input type="number" min={0} max={120} value={draft.presentation.logo.marginBottomPx} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, logo: { ...draft.presentation.logo, marginBottomPx: Number(event.target.value || 0) } } })} className="w-full rounded-[12px] border border-[#dbe3ed] px-3 py-3" /></label></div> : null}
-                  </section>
-                  <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
-                    <p className="text-sm font-semibold text-[#182033]">Fond</p>
-                    <div className="mt-3 grid gap-3 sm:grid-cols-2">{([{ value: "color", label: "Couleur" }, { value: "image", label: "Image" }] as const).map((mode) => <button key={mode.value} type="button" onClick={() => patchDraft({ presentation: { ...draft.presentation, background: { ...draft.presentation.background, mode: mode.value } } })} className={`cursor-pointer rounded-[12px] border px-3 py-2.5 text-sm font-semibold ${draft.presentation.background.mode === mode.value ? "border-[#b28719] bg-[#fff8e1] text-[#8c6710]" : "border-[#dbe3ed] bg-white text-[#526078]"}`}>{mode.label}</button>)}</div>
-                    {draft.presentation.background.mode === "color" ? <label className="mt-3 block text-sm"><span className="mb-2 block font-semibold">Couleur de fond</span><input type="color" value={draft.presentation.background.color} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, background: { ...draft.presentation.background, color: event.target.value } } })} className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] p-1" /></label> : <label className="mt-3 flex cursor-pointer items-center justify-between rounded-[12px] border border-dashed border-[#b8c5d8] px-3 py-3 text-sm font-semibold"><span>Importer une image de fond</span><input type="file" accept="image/png,image/jpeg,image/webp,image/gif" className="hidden" onChange={(event) => uploadWizardImage(event, (value) => { setImageUploadErrors((current) => ({ ...current, background: undefined })); patchDraft({ presentation: { ...draft.presentation, background: { ...draft.presentation.background, mode: "image", imageUrl: value } } }); }, (message) => setImageUploadErrors((current) => ({ ...current, background: message })))} /></label>}
-                    {imageUploadErrors.background ? <p role="alert" className="mt-2 text-xs text-[#b42318]">{imageUploadErrors.background}</p> : null}
-                    {draft.presentation.background.mode === "image" ? (
-                      <div className="mt-3 flex flex-wrap items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => setBackgroundLibraryOpen(true)}
-                          className="cursor-pointer rounded-[12px] border border-[#111827] bg-[#111827] px-3 py-2.5 text-sm font-semibold text-white"
-                        >
-                          Choisir dans la bibliothèque
-                        </button>
-                        {draft.presentation.background.imageUrl ? (
-                          <span className="rounded-full bg-[#e9f8ec] px-3 py-1.5 text-xs font-semibold text-[#18864b]">Image sélectionnée</span>
-                        ) : null}
-                      </div>
-                    ) : null}
-                  </section>
-                  <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4"><p className="text-sm font-semibold text-[#182033]">Réglages du texte</p><div className="mt-3 grid gap-3 sm:grid-cols-2"><label className="block text-sm"><span className="mb-2 block font-semibold">Couleur du texte</span><input type="color" value={draft.presentation.heading.textColor} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, heading: { ...draft.presentation.heading, textColor: event.target.value } } })} className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] p-1" /></label><label className="block text-sm"><span className="mb-2 block font-semibold">Épaisseur</span><select value={draft.presentation.heading.fontWeight ?? 600} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, heading: { ...draft.presentation.heading, fontWeight: Number(event.target.value) } } })} className="w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] px-3 py-3"><option value={400}>Normale</option><option value={500}>Moyenne</option><option value={600}>Semi-gras</option><option value={700}>Gras</option></select></label></div></section>
                 </div>                </div>
               </details>
             </div>
@@ -2646,7 +2558,7 @@ export function CampaignWizard({
           </div>
         </main>
 
-        <aside className="min-w-0">
+        <aside className="min-w-0 self-start xl:sticky xl:top-24">
           <div className="mx-auto w-full max-w-[360px] space-y-4">
             <WizardGamePreview draft={draft} merchant={merchant} />
           </div>

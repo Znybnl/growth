@@ -37,10 +37,7 @@ export default async function CampaignsPage({
           <div className="flex min-h-[var(--okado-action-primary-height)] items-center px-2 text-sm font-semibold text-ash">
             {activeCount} actives · {campaigns.length} au total
           </div>
-          <Link href="/campaigns/new/guided" prefetch={false} className="okado-secondary-action px-5">
-            Assistant de création
-          </Link>
-          <Link href="/campaigns/new" prefetch={false} className="okado-filled-action px-5">
+          <Link href="/campaigns/new/guided" prefetch={false} className="okado-filled-action px-5">
             Créer une campagne
           </Link>
         </div>
