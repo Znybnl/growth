@@ -2942,7 +2942,7 @@ function setGameType(gameType: GameType) {
                                 : "border-[#d7e0ed] bg-[#f7f9fc] text-[#182033]"
                             }`}
                           >
-                            {textFontLabel(font)}
+                            <span className={textFontClass(font)}>{textFontLabel(font)}</span>
                           </button>
                         );
                       })}
@@ -3411,7 +3411,7 @@ function setGameType(gameType: GameType) {
                             : "border-[#d7e0ed] bg-[#f7f9fc] text-[#182033]"
                         }`}
                       >
-                        {textFontLabel(font)}
+                        <span className={textFontClass(font)}>{textFontLabel(font)}</span>
                       </button>
                     );
                   })}
@@ -3574,7 +3574,7 @@ function setGameType(gameType: GameType) {
                             : "border-[#d7e0ed] bg-[#f7f9fc] text-[#182033]"
                         }`}
                       >
-                        {textFontLabel(font)}
+                        <span className={textFontClass(font)}>{textFontLabel(font)}</span>
                       </button>
                     );
                   })}

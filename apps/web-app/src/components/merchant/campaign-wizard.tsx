@@ -37,7 +37,7 @@ import {
   buildCampaignLivePreviewModel,
   CampaignLivePreview,
 } from "@/components/merchant/campaign-live-preview";
-import { actionKindCta, textFontLabel } from "@/lib/format";
+import { actionKindCta, textFontClass, textFontLabel } from "@/lib/format";
 import { getPrizeValidationMessages } from "@/lib/prize-validation";
 import { createCampaignEmailDefaults } from "@/lib/email-settings";
 import { normalizeCampaignEmailSettings } from "@/lib/email-settings";
@@ -2193,7 +2193,7 @@ export function CampaignWizard({
                      className="mt-3 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] bg-white px-3 py-3 text-sm text-[#182033]"
                    >
                      {WIZARD_TEXT_FONTS.map((font) => (
-                       <option key={font} value={font}>{textFontLabel(font)}</option>
+                       <option key={font} value={font} className={textFontClass(font)}>{textFontLabel(font)}</option>
                      ))}
                    </select>
                  </label>
@@ -2373,7 +2373,7 @@ export function CampaignWizard({
                       className="w-full rounded-[12px] border border-[#dbe3ed] bg-white px-3 py-3 text-sm text-[#182033]"
                     >
                       {WIZARD_TEXT_FONTS.map((font) => (
-                        <option key={font} value={font}>
+                        <option key={font} value={font} className={textFontClass(font)}>
                           {textFontLabel(font)}
                         </option>
                       ))}
