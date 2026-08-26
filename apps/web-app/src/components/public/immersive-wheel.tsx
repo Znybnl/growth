@@ -31,7 +31,7 @@ type ImmersiveWheelProps = {
     textColor?: string;
     borderColor?: string;
   };
-  framing?: "default" | "public" | "editor";
+  framing?: "default" | "public" | "editor" | "mobile-preview";
 };
 
 const SVG_SIZE = 640;
@@ -129,7 +129,9 @@ export function ImmersiveWheel({
       ? "top-2 w-[max(126vw,calc(100svh-240px))] sm:w-[min(104vw,calc(100svh-220px))] md:w-[min(96vw,calc(100svh-220px))] lg:w-[min(48vw,calc(100svh-220px))] xl:w-[min(40vw,calc(100svh-220px))]"
       : framing === "editor"
         ? "top-[65%] w-[112%]"
-        : "top-1/2 w-full";
+        : framing === "mobile-preview"
+          ? "top-1/2 w-[112%]"
+          : "top-1/2 w-full";
   const wheelTransformClass =
     framing === "public" ? "-translate-x-1/2" : "-translate-x-1/2 -translate-y-1/2";
 
