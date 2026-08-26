@@ -1,7 +1,6 @@
 "use client";
 
 import { Building2, MapPin, Plus, Archive, X, AlertTriangle } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { MerchantLocationAccess, MerchantWorkspace } from "@/lib/types";
@@ -14,7 +13,6 @@ export function LocationManager({
   workspace?: MerchantWorkspace;
   locations: MerchantLocationAccess[];
 }) {
-  const router = useRouter();
   const [items, setItems] = useState(locations);
   const [isAdding, setIsAdding] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -43,7 +41,10 @@ export function LocationManager({
         body: JSON.stringify({ locationId: payload.merchant.id }),
       });
       if (!switchResponse.ok) throw new Error("Le site a été créé, mais il n'a pas pu être sélectionné.");
-      router.push("/account");
+      // The selected site is stored in an httpOnly cookie by the API. A hard
+      // navigation makes the following server render consume that new cookie,
+      // instead of reusing a prefetched /account RSC for the previous site.
+      window.location.assign("/account");
     } catch (saveError) {
       setError(saveError instanceof Error ? saveError.message : "Le site n'a pas pu être créé.");
     } finally {
@@ -81,7 +82,9 @@ export function LocationManager({
         body: JSON.stringify({ locationId }),
       });
       if (!response.ok) throw new Error("Le site n'a pas pu être sélectionné.");
-      router.push("/account");
+      // See the creation flow above: /account must be rendered with the site
+      // just selected, never with the location cached by the client router.
+      window.location.assign("/account");
     } catch (navigationError) {
       setError(navigationError instanceof Error ? navigationError.message : "Ouverture du compte impossible.");
       setOpeningLocationId(null);
