@@ -328,7 +328,7 @@ export function ImmersiveScratchTicket({
             </div>
           ) : null}
           <h2
-            className={`line-clamp-3 text-2xl leading-[1.08] ${resolvedHeadingFontClass}`}
+            className={`line-clamp-3 pb-2.5 text-2xl leading-[1.08] ${resolvedHeadingFontClass}`}
             style={{ color: ink, fontSize: headingFontSize, fontWeight: headingFontWeight }}
           >
             {displayHeadline}
