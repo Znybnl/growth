@@ -896,7 +896,7 @@ export function CampaignExperience({
         {!isImmersiveScratchTemplate ? (
         <div className={headingAlignmentClass}>
           <h1
-            className={`${headingFontClass} line-clamp-3 whitespace-pre-line ${isRestaurantPopTemplate ? "tracking-[0.038em] drop-shadow-[0_5px_0_rgba(0,0,0,0.08)]" : ""} leading-[1] text-[#151826]`}
+            className={`${headingFontClass} line-clamp-3 whitespace-pre-line ${isRestaurantPopTemplate ? "tracking-[0.038em] drop-shadow-[0_5px_0_rgba(0,0,0,0.08)]" : ""} pb-2.5 leading-[1] text-[#151826]`}
             style={{
               color: headingTextColor,
               fontSize: headingFontSize,
