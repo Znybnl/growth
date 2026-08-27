@@ -8,6 +8,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { MerchantSessionGuard } from "@/components/merchant/merchant-session-guard";
+import { MerchantPageSkeleton } from "@/components/merchant/merchant-page-skeleton";
 import { LocationSwitcher } from "@/components/merchant/location-switcher";
 import { Button } from "@/components/ui/button";
 import { APP_NAME_CAPITALIZED } from "@/lib/branding";
@@ -40,22 +41,6 @@ const adminNavItems = [
   { href: "/affiliates", label: "Affiliation" },
   { href: "/support", label: "Supervision" },
 ];
-
-function MerchantContentSkeleton() {
-  return (
-    <div aria-label="Chargement de l’établissement" className="mx-auto w-full max-w-[1440px] animate-pulse space-y-6">
-      <div className="space-y-3">
-        <div className="h-3 w-28 rounded-full bg-border/70" />
-        <div className="h-10 w-72 max-w-full rounded-lg bg-border/60" />
-        <div className="h-4 w-[28rem] max-w-full rounded-full bg-border/50" />
-      </div>
-      <div className="grid gap-4 md:grid-cols-3">
-        {[0, 1, 2].map((index) => <div key={index} className="h-28 rounded-[var(--okado-radius-card)] border border-border bg-white/70" />)}
-      </div>
-      <div className="h-72 rounded-[var(--okado-radius-card)] border border-border bg-white/70" />
-    </div>
-  );
-}
 
 export function MerchantShell({ children, merchant, user, locations, activeLocationId, isSaasAdmin }: MerchantShellProps) {
   const pathname = usePathname();
@@ -381,7 +366,7 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
         </header>
 
         <main aria-busy={locationChangeTarget !== null && locationChangeTarget !== activeLocationId} className="min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden px-3 py-5 lg:px-6">
-          {locationChangeTarget !== null && locationChangeTarget !== activeLocationId ? <MerchantContentSkeleton /> : children}
+          {locationChangeTarget !== null && locationChangeTarget !== activeLocationId ? <MerchantPageSkeleton /> : children}
         </main>
       </div>
     </div>
