@@ -98,7 +98,7 @@ export function DuplicateCampaignButton({
         ctaLabel="Modifier le jeu"
         onClose={() => setDuplicatedCampaignId(null)}
         onAction={() => {
-          if (duplicatedCampaignId) router.push(`/campaigns/${duplicatedCampaignId}/edit`);
+          if (duplicatedCampaignId) router.push(`/campaigns/${duplicatedCampaignId}/edit/guided`);
         }}
       />
     </>

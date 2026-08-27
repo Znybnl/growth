@@ -127,7 +127,7 @@ export function EmailEditor({ campaign, merchant }: EmailEditorProps) {
             </div>
             <div className="flex flex-wrap gap-3">
               <Link
-                href={`/campaigns/${campaign.id}/edit`}
+                href={`/campaigns/${campaign.id}/edit/guided`}
                 prefetch={false}
                 className="okado-primary-action px-4"
               >

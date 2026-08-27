@@ -4230,7 +4230,7 @@ function setGameType(gameType: GameType) {
           setSaveDialogOpen(false);
 
           if (saveDialogTone !== "error" && !initialCampaign && savedCampaignId) {
-            router.replace(`/campaigns/${savedCampaignId}/edit`);
+            router.replace(`/campaigns/${savedCampaignId}/edit/guided`);
           }
         }}
       />
