@@ -385,7 +385,7 @@ export default async function DataPage({ searchParams }: DataPageProps) {
 
             <div className="flex flex-wrap gap-3">
               <Link
-                href={`/campaigns/${dataView.performance.campaign.id}/edit`}
+                href={`/campaigns/${dataView.performance.campaign.id}/edit/guided`}
                 prefetch={false}
                 className="okado-filled-action px-5"
               >
