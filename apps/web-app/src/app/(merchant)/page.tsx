@@ -78,11 +78,11 @@ export default async function DashboardPage({
               Vue d&apos;ensemble
             </p>
             <h1 className="okado-page-title mt-3">
-              Pilotez vos activations
+              Pilotez vos campagnes
             </h1>
             <p className="mt-4 max-w-3xl text-sm leading-6 text-ash">
               Suivez vos campagnes en direct, comparez les mécaniques qui performent et lancez
-              rapidement une nouvelle activation.
+              rapidement une nouvelle campagne.
             </p>
           </div>
 

@@ -7,9 +7,9 @@ Périmètre : dépôt Okado (`apps/landing-page`, `apps/web-app`), écrans PNG p
 
 Okado est suffisamment abouti pour un lancement pilote payant et une mise sur le marché contrôlée auprès de restaurants/commerces mono-site. Le produit couvre déjà la chaîne de valeur essentielle : création d’une animation, diffusion par QR, jeu mobile, collecte d’un lead, attribution d’un lot, e-mail de gain, QR/code de retrait, validation vendeur, export et facturation Stripe.
 
-En revanche, il n’est pas encore au niveau d’un produit “scale” ou d’une vente autonome à des franchises/agences. Les écarts les plus importants sont la profondeur CRM/lifecycle, le multi-établissements et les rôles d’équipe, la programmation des campagnes, la gestion de codes promotionnels importés, la segmentation/activation des leads, les intégrations et la robustesse perçue des analytics.
+En revanche, il n’est pas encore au niveau d’un produit “scale” ou d’une vente autonome à des franchises/agences. Les écarts les plus importants sont la profondeur CRM/lifecycle, le multi-établissements et les rôles d’équipe, la programmation des campagnes, la gestion de codes promotionnels importés, la segmentation des leads et des campagnes, les intégrations et la robustesse perçue des analytics.
 
-Recommandation : lancer maintenant un pilote instrumenté, avec une promesse plus étroite (“activation QR simple pour générer des visites, leads et retours”), puis investir en priorité dans la fiabilité, la conformité et le time-to-value avant d’ajouter de nouveaux jeux.
+Recommandation : lancer maintenant un pilote instrumenté, avec une promesse plus étroite (“campagne QR simple pour générer des visites, leads et retours”), puis investir en priorité dans la fiabilité, la conformité et le time-to-value avant d’ajouter de nouveaux jeux.
 
 ## 2. Ce que le produit fait déjà
 
@@ -68,7 +68,7 @@ La checklist go-live couvre les flux critiques (auth, campagnes, QR, affiche, je
 |---|---|---|---|
 | **Roue Gagnante** | Niche restaurant, promesse “prêt en 5 minutes” : créer → QR → fidéliser/collecter. Dashboard et anti-fraude mis en avant. | 5 jeux (roue, scratch, slot, boîte mystère, dés), multi-restaurants et QR personnalisés. Starter 29 €/mois (1 restaurant, 1 000 parties, 2 campagnes), Pro 59 € (3 restaurants, 5 000 parties), Enterprise 129 € (illimité, API/webhooks, marque blanche). [Source officielle](https://rouefidelite.com/) | Concurrent direct le plus comparable. Okado est moins cher et plus riche sur l’e-mail, les affiches et le retrait ; il est en retard sur le nombre de jeux, multi-sites et preuve sociale. |
 | **SpinWinGo** | Restaurant + avis Google, roue personnalisable, QR, dashboard, coupons. | Starter 29 CHF (1 établissement), Pro 49 CHF (3 établissements, jeux illimités, centralisation des avis, assistant IA), Business 99 CHF (illimité, API/webhooks, account manager). [CGV officielles](https://spinwingo.app/en/terms) | Valide le pricing par paliers et la valeur multi-établissements. Okado doit clarifier son différenciateur au-delà du prix. |
-| **Connectable** | Programme de fidélité gamifié avec activation très courte et garde-fous légaux explicites. | Gratuit jusqu’à 100 membres ; Pro 49 €/mois avec e-mail/SMS illimités, points, niveaux, missions, segmentation, analytics ROI et invitation avis conforme. [Source officielle](https://connectable.fr/) | Menace sur le lifecycle et la rétention, pas seulement sur le jeu. Okado doit ajouter une boucle de retour (segments, rappels, campagnes récurrentes). |
+| **Connectable** | Programme de fidélité gamifié avec campagne très courte et garde-fous légaux explicites. | Gratuit jusqu’à 100 membres ; Pro 49 €/mois avec e-mail/SMS illimités, points, niveaux, missions, segmentation, analytics ROI et invitation avis conforme. [Source officielle](https://connectable.fr/) | Menace sur le lifecycle et la rétention, pas seulement sur le jeu. Okado doit ajouter une boucle de retour (segments, rappels, campagnes récurrentes). |
 | **QronoPlay** | Plateforme française self-service, 14 jours d’essai, mise en avant du RGPD et de 5 langues. | 14 jeux annoncés ; 9,90 € Starter, 29,90 € Pro (8 jeux), 99 € Business (14 jeux). [FAQ et tarifs publics](https://qronoplay.com/en/faq) | Pression prix/largeur fonctionnelle. Okado doit vendre la qualité d’exécution locale et le retrait sécurisé, pas le catalogue de jeux. |
 | **Socialshaker** | Suite de campagnes gamifiées plus généraliste : création, e-mail editor, partage social, export, CRM et workspaces. | Gratuit ; Basic 79 €/mois annuel (3 campagnes, 500 participants) ; Pro 149 € (5, 10 000) ; Advanced 239 € (10, 15 000). Mensuel 99/199/299 €. [Pricing officiel](https://www.socialshaker.com/en/pricing/) | Référence pour la collaboration, les quotas, l’emailing et le support SLA ; beaucoup plus complexe pour un restaurant. |
 | **Drimify** | Plateforme de création d’expériences ; nombreuses intégrations, analytics/data export, API, workspaces et collaborateurs. | Free 100 participations/mois ; Starter 1 000 ; Growth 25 000 ; Enterprise sur devis. Toutes les fonctionnalités sont incluses, marque blanche en option. [Pricing officiel](https://help.drimify.com/en/article/drimify-pricing-plans-28sh6x/) | Référence de packaging par volume et d’ouverture API. Okado peut garder un prix simple mais devra ajouter des limites/tiers cohérents à mesure que le volume augmente. |
@@ -107,7 +107,7 @@ La checklist go-live couvre les flux critiques (auth, campagnes, QR, affiche, je
 3. **Publication guidée** : brouillon/test/publication, statut et URL/QR clairement affichés, checklist “prêt à imprimer”, confirmation de scan depuis un mobile.
 4. **Mode caisse** : écran de scan dédié, recherche par code/e-mail en secours, succès/échec lisibles, journal et permissions minimales.
 5. **Observabilité client** : statut e-mail en langage simple, action de renvoi, notification de campagne inactive/stock épuisé et support contextualisé.
-6. **Activation pilote** : 3 templates de campagnes préconfigurées (avis neutre, collecte e-mail, retour en boutique), données d’exemple réalistes et mesure du temps jusqu’au premier QR imprimé.
+6. **Campagne pilote** : 3 templates de campagnes préconfigurées (avis neutre, collecte e-mail, retour en boutique), données d’exemple réalistes et mesure du temps jusqu’au premier QR imprimé.
 
 ### P1 — 30–90 jours
 
@@ -130,7 +130,7 @@ La checklist go-live couvre les flux critiques (auth, campagnes, QR, affiche, je
 
 ## 7. Positionnement recommandé
 
-Ne pas se présenter comme une “plateforme de gamification” généraliste : les acteurs spécialisés ont déjà 5 à 14 jeux et les suites enterprise en proposent beaucoup plus. Positionner Okado comme **le système d’activation QR opérationnel des commerces locaux** : “un QR imprimé aujourd’hui, une animation jouable sans app, un lot traçable, un lead exploitable et un retrait sécurisé”.
+Ne pas se présenter comme une “plateforme de gamification” généraliste : les acteurs spécialisés ont déjà 5 à 14 jeux et les suites enterprise en proposent beaucoup plus. Positionner Okado comme **le système de campagnes QR opérationnel des commerces locaux** : “un QR imprimé aujourd’hui, une animation jouable sans app, un lot traçable, un lead exploitable et un retrait sécurisé”.
 
 ICP de départ : restaurant indépendant ou petit réseau (1–3 établissements), 20–200 couverts/jour, objectif mesurable (retour en boutique, collecte opt-in, avis neutre), équipe sans compétence marketing dédiée.
 

@@ -52,7 +52,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
           Pilotage de la plateforme
         </h1>
         <p className="mt-4 max-w-3xl text-sm leading-7 text-ash">
-          Suivez les comptes marchands, l&apos;activation produit et les alertes qui demandent une action.
+          Suivez les comptes marchands, les campagnes produit et les alertes qui demandent une action.
         </p>
         <div className="mt-5 flex flex-wrap gap-3">
           <Link href="/admin/prize-suggestions" className="okado-secondary-action okado-compact-action px-4 text-sm">

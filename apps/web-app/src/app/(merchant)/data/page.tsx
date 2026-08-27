@@ -379,7 +379,7 @@ export default async function DataPage({ searchParams }: DataPageProps) {
               </h1>
               <p className="mt-4 max-w-3xl text-sm leading-7 text-ash">
                 Visualisez les indicateurs clés, le stock de dotation et les données de saisie
-                exportables pour chaque activation.
+                exportables pour chaque campagne.
               </p>
             </div>
 

@@ -44,7 +44,7 @@ export function AuthShell({
             ],
           }
         : {
-            title: "Pilotez vos activations sans vous disperser.",
+            title: "Pilotez vos campagnes sans vous disperser.",
             body: "Créez, diffusez et mesurez vos jeux en magasin depuis un seul espace.",
             items: [
               "Visualisez vos campagnes actives",

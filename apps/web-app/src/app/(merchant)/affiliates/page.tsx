@@ -139,7 +139,7 @@ export default async function AffiliatesPage({ searchParams }: AffiliatesPagePro
         <div className="border-b border-border px-6 py-5">
           <p className="okado-label">Paramétrage</p>
           <h2 className="okado-section-title mt-2">
-            Activation des affiliés
+            Gestion des affiliés
           </h2>
           <p className="mt-3 max-w-3xl text-sm leading-7 text-ash">
             Le programme est désactivé par défaut. Activez manuellement les affiliés autorisés,
