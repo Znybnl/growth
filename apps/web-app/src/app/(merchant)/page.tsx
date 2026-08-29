@@ -110,7 +110,7 @@ export default async function DashboardPage({
         {[
           ["Campagnes actives", String(activeCampaigns.length)],
           [
-            "Contacts totaux",
+            "Participations totales",
             String(filteredCampaigns.reduce((total, item) => total + item.kpis.contacts, 0)),
           ],
           [
@@ -173,7 +173,7 @@ export default async function DashboardPage({
                 <span>Campagne</span>
                 <span>Mécanique</span>
                 <span>Scans</span>
-                <span>Contacts</span>
+                <span>Participations</span>
                 <span>Conversion</span>
                 <span className="sr-only">Actions</span>
               </div>
@@ -261,7 +261,7 @@ export default async function DashboardPage({
                     </div>
                     <div className="rounded-[8px] bg-white px-3 py-3">
                       <p className="text-[11px] uppercase tracking-[0.18em] text-[#7c8597]">
-                        Contacts
+                        Participations
                       </p>
                       <p className="mt-2 font-semibold text-[#111827]">{item.kpis.contacts}</p>
                     </div>
@@ -286,7 +286,7 @@ export default async function DashboardPage({
                   Dernières saisies
                 </p>
                 <h2 className="okado-section-title mt-2">
-                  Contacts récents
+                  Participations récentes
                 </h2>
               </div>
               <Link href="/data" prefetch={false} className="okado-link text-sm">
