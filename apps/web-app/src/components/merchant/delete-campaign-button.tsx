@@ -1,8 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
+import { ValidationDialog } from "@/components/ui/validation-dialog";
 import { cn } from "@/lib/utils";
 
 type DeleteCampaignButtonProps = {
@@ -25,17 +26,6 @@ export function DeleteCampaignButton({
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const isMenu = variant === "menu";
-
-  useEffect(() => {
-    if (!isConfirmOpen) return;
-
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape" && !isDeleting) setIsConfirmOpen(false);
-    }
-
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isConfirmOpen, isDeleting]);
 
   function openConfirmation() {
     setError(null);
@@ -88,50 +78,19 @@ export function DeleteCampaignButton({
         Supprimer
       </button>
 
-      {isConfirmOpen ? (
-        <div
-          className="fixed inset-0 z-[80] flex items-end justify-center bg-[#0f1220]/52 px-4 pb-4 pt-10 backdrop-blur-[6px] sm:items-center sm:p-6"
-          role="presentation"
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget && !isDeleting) {
-              setIsConfirmOpen(false);
-            }
-          }}
-        >
-          <section
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="delete-campaign-title"
-            aria-describedby="delete-campaign-description"
-            className="w-full max-w-[440px] rounded-[34px] bg-white p-6 text-[#111827] shadow-[0_34px_90px_rgba(18,24,39,0.24)]"
-          >
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#fff1f1]">
-              <DeleteIcon />
-            </div>
-            <h2 id="delete-campaign-title" className="mt-5 text-center text-2xl font-semibold text-[#0f1728]">
-              Supprimer ce jeu ?
-            </h2>
-            <p id="delete-campaign-description" className="mt-3 text-center text-sm leading-7 text-[#5c6577]">
-              <span className="font-semibold text-[#182033]">{campaignTitle}</span> et les lots, participations et contacts associés seront supprimés définitivement.
-            </p>
-            {error ? (
-              <p role="alert" className="mt-4 rounded-[14px] border border-[#f2c8c8] bg-[#fff4f4] px-4 py-3 text-sm leading-6 text-[#a11a1a]">
-                {error}
-              </p>
-            ) : null}
-            <div className="mt-6">
-              <button
-                type="button"
-                onClick={() => void deleteCampaign()}
-                disabled={isDeleting}
-                className="okado-filled-action w-full justify-center bg-[#b42318] px-4 text-white hover:bg-[#8f1b13] disabled:opacity-60"
-              >
-                {isDeleting ? "Suppression…" : "Supprimer définitivement"}
-              </button>
-            </div>
-          </section>
-        </div>
-      ) : null}
+      <ValidationDialog
+        open={isConfirmOpen}
+        title="Supprimer ce jeu ?"
+        description={`${campaignTitle} et les lots, participations et contacts associés seront supprimés définitivement.`}
+        ctaLabel={isDeleting ? "Suppression…" : "Supprimer définitivement"}
+        tone="error"
+        error={error}
+        actionDisabled={isDeleting}
+        onClose={() => {
+          if (!isDeleting) setIsConfirmOpen(false);
+        }}
+        onAction={() => void deleteCampaign()}
+      />
     </>
   );
 }
