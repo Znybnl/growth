@@ -64,7 +64,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard label="Comptes" value={overview.totals.merchants} detail={`${overview.totals.onboardedMerchants} onboarding termines`} />
         <MetricCard label="Abonnements" value={overview.totals.activeSubscriptions} detail="Essais et abonnements actifs" />
-        <MetricCard label="Animations" value={overview.totals.activeCampaigns} detail={`${overview.totals.leads} leads collectes`} />
+        <MetricCard label="Animations" value={overview.totals.activeCampaigns} detail={`${overview.totals.leads} participations collectées`} />
         <MetricCard label="Gains a suivre" value={overview.totals.pendingRewards} detail="Gains en attente de retrait" />
       </section>
 
@@ -123,7 +123,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                     </span>
                   </td>
                   <td className="px-3 py-4"><StatusBadge status={user.subscriptionStatus} /></td>
-                  <td className="px-3 py-4 text-ash">{user.campaignCount} animation(s) · {user.leadCount} lead(s)</td>
+                  <td className="px-3 py-4 text-ash">{user.campaignCount} animation(s) · {user.leadCount} participation(s)</td>
                   <td className="px-3 py-4">
                     {user.lowStockCount || user.failedEmailCount ? (
                       <span className="text-xs font-medium text-[#a15c00]">

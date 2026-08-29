@@ -17,7 +17,7 @@ export default async function SignInPage() {
       asideItems={[
         "Visualisation instantanée des campagnes actives",
         "Pilotage des mécaniques roue et ticket à gratter",
-        "Suivi des leads, lots et performances journalières",
+        "Suivi des participations, lots et performances journalières",
       ]}
     >
       <Suspense fallback={null}>
