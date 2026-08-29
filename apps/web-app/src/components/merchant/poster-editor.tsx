@@ -9,67 +9,13 @@ import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { buildPosterSvg, createPosterPreviewQrDataUrl } from "@/lib/poster-render";
 import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
 import { Campaign, CampaignPosterSettings, PosterTemplateId, Prize } from "@/lib/types";
+import { getPosterTemplate, POSTER_TEMPLATES } from "@/lib/poster-templates";
+import { PosterTemplateSelector } from "@/components/merchant/poster-template-selector";
 
 type PosterEditorProps = {
   campaign: Campaign;
   prizes: Prize[];
 };
-
-const posterTemplates: Array<{
-  id: PosterTemplateId;
-  label: string;
-  description: string;
-  backgroundColor: string;
-  headlineTextColor: string;
-  headlineFontSizePx: number;
-  wheel: Pick<CampaignPosterSettings["wheel"], "winColor" | "alternateWinColor" | "loseColor" | "alternateLoseColor" | "rimColor">;
-}> = [
-  {
-    id: "classic-wheel",
-    label: "Classique blanc",
-    description: "Fond clair uni, avec titre impactant.",
-    backgroundColor: "#fff6ee",
-    headlineTextColor: "#050644",
-    headlineFontSizePx: 50,
-    wheel: {
-      winColor: "#5438c8",
-      alternateWinColor: "#fff7ef",
-      loseColor: "#fff7ef",
-      alternateLoseColor: "#fff7ef",
-      rimColor: "#3c3c3c",
-    },
-  },
-  {
-    id: "soft-gradient-wheel",
-    label: "Gradient clair",
-    description: "Design élégant et titre avec contour blanc.",
-    backgroundColor: "#f4f3ff",
-    headlineTextColor: "#050644",
-    headlineFontSizePx: 40,
-    wheel: {
-      winColor: "#4b35c9",
-      alternateWinColor: "#fff7ef",
-      loseColor: "#fff7ef",
-      alternateLoseColor: "#fff7ef",
-      rimColor: "#403c70",
-    },
-  },
-  {
-    id: "terracotta-wheel",
-    label: "Terracotta",
-    description: "Palette chaude pour un rendu plus chaleureux.",
-    backgroundColor: "#ddc9b8",
-    headlineTextColor: "#a82c1d",
-    headlineFontSizePx: 50,
-    wheel: {
-      winColor: "#a83222",
-      alternateWinColor: "#f8e4d8",
-      loseColor: "#f8e4d8",
-      alternateLoseColor: "#f8e4d8",
-      rimColor: "#2b1d18",
-    },
-  },
-];
 
 const MAX_UPLOAD_IMAGE_BYTES = 2 * 1024 * 1024;
 const ACCEPTED_IMAGE_TYPES = new Set(["image/png", "image/jpeg", "image/webp", "image/gif"]);
@@ -151,13 +97,9 @@ async function renderPosterSvgAsPng(svg: string) {
   }
 }
 
-function getPosterTemplate(templateId?: PosterTemplateId) {
-  return posterTemplates.find((template) => template.id === templateId) ?? posterTemplates[0];
-}
-
 function isTemplateDefaultWinColor(color: string | undefined) {
   return (
-    posterTemplates.some((template) => template.wheel.winColor === color) ||
+    POSTER_TEMPLATES.some((template) => template.wheel.winColor === color) ||
     color === "#1b2842" ||
     color === "#f4c14a"
   );
@@ -183,7 +125,7 @@ function applyTemplateDefaults(
     ...poster,
     templateId: template.id,
     backgroundMode: "color",
-    backgroundColor: template.backgroundColor,
+    backgroundColor: template.background,
     backgroundImageUrl: "",
     headlineTextColor,
     headlineFontSizePx: template.headlineFontSizePx,
@@ -221,7 +163,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
         headlineFontSizePx: 50,
         headlineFontFamily: campaign.presentation.heading.fontFamily,
         wheel: {
-          ...posterTemplates[0].wheel,
+          ...POSTER_TEMPLATES[0].wheel,
           winColor: campaignPrimaryColor,
           alternateWinColor: campaignPrimaryColor,
         },
@@ -274,7 +216,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
       );
     }
 
-    const template = posterTemplates[0];
+    const template = POSTER_TEMPLATES[0];
 
     return applyTemplateDefaults(
       {
@@ -348,7 +290,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
   }
 
   function selectTemplate(templateId: PosterTemplateId) {
-    const template = posterTemplates.find((item) => item.id === templateId);
+    const template = POSTER_TEMPLATES.find((item) => item.id === templateId);
 
     if (!template) return;
 
@@ -356,7 +298,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
       ...current,
       templateId,
       backgroundMode: "color",
-      backgroundColor: template.backgroundColor,
+      backgroundColor: template.background,
       backgroundImageUrl: "",
       headlineFontSizePx: template.headlineFontSizePx,
       wheel: {
@@ -489,70 +431,11 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
       <div className="grid min-h-[calc(100vh-220px)] gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(420px,0.72fr)]">
         <div className="space-y-6">
 
-        {campaign.gameType === "wheel" ? (
-          <section className="okado-card p-6 md:p-8">
-            <p className="okado-label">Template</p>
-            <h2 className="okado-section-title mt-2">Choisir le design de l&apos;affiche</h2>
-            <div className="mt-6 grid gap-4 md:grid-cols-3">
-              {posterTemplates.map((template) => {
-                const active = (poster.templateId ?? "classic-wheel") === template.id;
-
-                return (
-                  <button
-                    key={template.id}
-                    type="button"
-                    onClick={() => selectTemplate(template.id)}
-                    className={`group overflow-hidden rounded-[var(--radius-card)] border text-left transition hover:-translate-y-0.5 ${
-                      active
-                        ? "border-[#2f6df6] bg-[#eff4ff] shadow-[0_14px_34px_rgba(47,109,246,0.18)]"
-                        : "border-[#d7e0ed] bg-white hover:border-[#2f6df6]"
-                    }`}
-                  >
-                    <span
-                      className="relative block h-[220px] overflow-hidden"
-                      style={{ background: template.backgroundColor }}
-                    >
-                      <span
-                        className="absolute -left-6 top-5 h-[200px] w-[200px] rounded-full border-[10px] shadow-[0_18px_34px_rgba(17,24,39,0.16)]"
-                        style={{
-                          borderColor: template.wheel.rimColor,
-                          background: `conic-gradient(${template.wheel.winColor} 0 60deg, #fff7ef 60deg 120deg, ${template.wheel.winColor} 120deg 180deg, #fff7ef 180deg 240deg, ${template.wheel.winColor} 240deg 300deg, #fff7ef 300deg 360deg)`,
-                        }}
-                      />
-                      <span
-                        className="absolute bottom-5 right-5 grid h-20 w-20 grid-cols-5 gap-0.5 rounded-[14px] border-4 bg-white p-2"
-                        style={{ borderColor: template.wheel.winColor }}
-                      >
-                        {Array.from({ length: 25 }).map((_, index) => (
-                          <span
-                            key={index}
-                            className="rounded-[1px]"
-                            style={{
-                              backgroundColor:
-                                [0, 1, 3, 4, 5, 9, 11, 12, 14, 15, 18, 20, 21, 23, 24].includes(
-                                  index,
-                                )
-                                  ? "#111827"
-                                  : "transparent",
-                            }}
-                          />
-                        ))}
-                      </span>
-                    </span>
-                    <span className="block p-4">
-                      <span className="block text-sm font-semibold text-[#111827]">
-                        {template.label}
-                      </span>
-                      <span className="mt-1 block text-xs leading-5 text-[#5c6577]">
-                        {template.description}
-                      </span>
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </section>
-        ) : null}
+        <PosterTemplateSelector
+          gameType={campaign.gameType}
+          selectedTemplateId={poster.templateId}
+          onSelect={selectTemplate}
+        />
 
         <section className="okado-card p-6 md:p-8">
           <p className="okado-label">Logo</p>

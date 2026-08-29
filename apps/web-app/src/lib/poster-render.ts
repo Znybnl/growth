@@ -1,106 +1,11 @@
 import { buildPosterWheelSegments } from "@/lib/poster-utils";
-import { Campaign, CampaignPosterSettings, PosterTemplateId, Prize, TextFont } from "@/lib/types";
+import { getPosterTemplate, PosterTemplateConfig } from "@/lib/poster-templates";
+import { Campaign, CampaignPosterSettings, Prize, TextFont } from "@/lib/types";
 
 const A4_WIDTH = 794;
 const A4_HEIGHT = 1123;
 const SAFE_FONT = "Inter, Geist, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif";
 const SAFE_DISPLAY_FONT = "Anton, Inter, Geist, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif";
-
-type TemplateConfig = {
-  id: PosterTemplateId;
-  background: string;
-  accent: string;
-  accentDark: string;
-  headline: string;
-  headlineStroke: string;
-  qrFrame: string;
-  logoVariant: "lined" | "badge";
-  wheelX: number;
-  wheelY: number;
-  wheelRadius: number;
-  qrX: number;
-  qrY: number;
-  qrSize: number;
-  ctaX: number;
-  ctaY: number;
-  ctaWidth: number;
-  ctaHeight: number;
-  ctaRotation: number;
-  headlineY: number;
-  headlineSizeMultiplier: number;
-};
-
-const TEMPLATE_CONFIGS: Record<PosterTemplateId, TemplateConfig> = {
-  "classic-wheel": {
-    id: "classic-wheel",
-    background: "#fff6ee",
-    accent: "#1b04b8",
-    accentDark: "#050644",
-    headline: "#050644",
-    headlineStroke: "#ffffff",
-    qrFrame: "#1b04b8",
-    logoVariant: "lined",
-    wheelX: 238,
-    wheelY: 800,
-    wheelRadius: 312,
-    qrX: 408,
-    qrY: 512,
-    qrSize: 292,
-    ctaX: 369,
-    ctaY: 812,
-    ctaWidth: 370,
-    ctaHeight: 86,
-    ctaRotation: 0,
-    headlineY: 245,
-    headlineSizeMultiplier: 1.38,
-  },
-  "soft-gradient-wheel": {
-    id: "soft-gradient-wheel",
-    background: "#f4f3ff",
-    accent: "#2100b8",
-    accentDark: "#060642",
-    headline: "#050644",
-    headlineStroke: "#ffffff",
-    qrFrame: "#2100b8",
-    logoVariant: "badge",
-    wheelX: 272,
-    wheelY: 716,
-    wheelRadius: 260,
-    qrX: 408,
-    qrY: 512,
-    qrSize: 292,
-    ctaX: 369,
-    ctaY: 812,
-    ctaWidth: 370,
-    ctaHeight: 86,
-    ctaRotation: 0,
-    headlineY: 250,
-    headlineSizeMultiplier: 1.52,
-  },
-  "terracotta-wheel": {
-    id: "terracotta-wheel",
-    background: "#ddc9b8",
-    accent: "#a82c1d",
-    accentDark: "#2b1d18",
-    headline: "#a82c1d",
-    headlineStroke: "rgba(255,255,255,0.42)",
-    qrFrame: "#a82c1d",
-    logoVariant: "badge",
-    wheelX: 228,
-    wheelY: 790,
-    wheelRadius: 310,
-    qrX: 408,
-    qrY: 512,
-    qrSize: 292,
-    ctaX: 369,
-    ctaY: 812,
-    ctaWidth: 370,
-    ctaHeight: 86,
-    ctaRotation: 0,
-    headlineY: 258,
-    headlineSizeMultiplier: 1.34,
-  },
-};
 
 function escapeXml(value: string) {
   return value
@@ -258,7 +163,7 @@ export function createPosterPreviewQrDataUrl() {
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
 }
 
-function renderBackground(poster: CampaignPosterSettings, template: TemplateConfig) {
+function renderBackground(poster: CampaignPosterSettings, template: PosterTemplateConfig) {
   const baseColor = template.background;
 
   if (template.id === "soft-gradient-wheel") {
@@ -283,7 +188,7 @@ function renderBackground(poster: CampaignPosterSettings, template: TemplateConf
   `;
 }
 
-function getLogoLayout(poster: CampaignPosterSettings, template: TemplateConfig) {
+function getLogoLayout(poster: CampaignPosterSettings, template: PosterTemplateConfig) {
   const logoSize = clamp((poster.logoSizePercent / 100) * 170, 72, 300);
   const logoY = template.id === "classic-wheel" ? 28 : 22;
 
@@ -294,7 +199,7 @@ function getLogoLayout(poster: CampaignPosterSettings, template: TemplateConfig)
   };
 }
 
-function renderLogo(campaign: Campaign, poster: CampaignPosterSettings, template: TemplateConfig) {
+function renderLogo(campaign: Campaign, poster: CampaignPosterSettings, template: PosterTemplateConfig) {
   const logoMode = poster.logoMode ?? "none";
   const logoUrl = logoMode === "image" ? poster.logoUrl || campaign.logoUrl : undefined;
   const logoText =
@@ -320,7 +225,7 @@ function renderLogo(campaign: Campaign, poster: CampaignPosterSettings, template
   `;
 }
 
-function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, template: TemplateConfig) {
+function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, template: PosterTemplateConfig) {
   const headline = poster.headline || campaign.subtitle || "Faites tourner la roue";
   const family = fontFamily(poster.headlineFontFamily);
   const color = poster.headlineTextColor || template.headline;
@@ -358,7 +263,7 @@ function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, temp
     .join("");
 }
 
-function renderWheel(template: TemplateConfig, poster: CampaignPosterSettings, prizes: Prize[] | Array<Pick<Prize, "label">>) {
+function renderWheel(template: PosterTemplateConfig, poster: CampaignPosterSettings, prizes: Prize[] | Array<Pick<Prize, "label">>) {
   const segments = buildPosterWheelSegments(prizes, poster.wheel);
   const cx = template.wheelX;
   const cy = template.wheelY;
@@ -402,7 +307,7 @@ function renderWheel(template: TemplateConfig, poster: CampaignPosterSettings, p
   `;
 }
 
-function renderScratch(template: TemplateConfig, poster: CampaignPosterSettings) {
+function renderScratch(template: PosterTemplateConfig, poster: CampaignPosterSettings) {
   const family = fontFamily(poster.headlineFontFamily);
 
   return `
@@ -415,7 +320,7 @@ function renderScratch(template: TemplateConfig, poster: CampaignPosterSettings)
   `;
 }
 
-function renderQrAndCta(qrDataUrl: string, template: TemplateConfig) {
+function renderQrAndCta(qrDataUrl: string, template: PosterTemplateConfig) {
   const accent = template.accent;
   return `
     <g filter="url(#posterShadow)" transform="translate(${template.qrX} ${template.qrY})">
@@ -430,7 +335,7 @@ function renderQrAndCta(qrDataUrl: string, template: TemplateConfig) {
   `;
 }
 
-function renderSteps(template: TemplateConfig, gameType: Campaign["gameType"]) {
+function renderSteps(template: PosterTemplateConfig, gameType: Campaign["gameType"]) {
   const action = gameType === "wheel" ? "Jouez" : "Grattez";
   const gift = "Gagnez";
   const iconCenterY = 68;
@@ -479,7 +384,7 @@ export function buildPosterSvg(args: {
   displayFontSource?: string;
 }) {
   const { campaign, poster, prizes, qrDataUrl, displayFontSource = "/fonts/anton-regular.ttf" } = args;
-  const baseTemplate = TEMPLATE_CONFIGS[poster.templateId ?? "classic-wheel"] ?? TEMPLATE_CONFIGS["classic-wheel"];
+  const baseTemplate = getPosterTemplate(poster.templateId);
   const template = {
     ...baseTemplate,
     accent: poster.wheel.winColor || baseTemplate.accent,
