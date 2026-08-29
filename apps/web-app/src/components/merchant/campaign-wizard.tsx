@@ -271,22 +271,26 @@ function createWizardActions(
   }
 
   if (goalType === "lead_capture") {
-    const instagramUrl = merchant.instagramUrl?.trim();
+    const optionalActions: Array<{
+      kind: Exclude<ActionKind, "google" | "crm">;
+      url?: string;
+    }> = [
+      { kind: "instagram", url: merchant.instagramUrl },
+      { kind: "facebook", url: merchant.facebookUrl },
+      { kind: "tripadvisor", url: merchant.tripadvisorUrl },
+      { kind: "custom", url: merchant.customLinkUrl },
+    ];
+
     return [
-      ...(instagramUrl
-        ? [
-            createWizardAction(
-              "wizard-instagram-action",
-              "instagram",
-              instagramUrl,
-            ),
-          ]
-        : []),
       createWizardAction(
         "wizard-google-action",
         "google",
         wizardActionUrl(merchant, "google"),
       ),
+      ...optionalActions
+        .map(({ kind, url }) => ({ kind, url: normalizeUrl(url ?? "") }))
+        .filter(({ url }) => Boolean(url))
+        .map(({ kind, url }) => createWizardAction(`wizard-${kind}-action`, kind, url)),
     ];
   }
 
