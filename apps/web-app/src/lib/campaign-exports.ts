@@ -7,59 +7,13 @@ import {
   createPosterSettingsDefaults,
   normalizePosterSettings,
 } from "@/lib/poster-utils";
-import { CampaignPerformance, CampaignPosterSettings, PosterTemplateId } from "@/lib/types";
-
-const POSTER_TEMPLATE_DEFAULTS: Record<
-  PosterTemplateId,
-  {
-    backgroundColor: string;
-    headlineTextColor: string;
-    headlineFontSizePx: number;
-    wheel: CampaignPosterSettings["wheel"];
-  }
-> = {
-  "classic-wheel": {
-    backgroundColor: "#fff6ee",
-    headlineTextColor: "#050644",
-    headlineFontSizePx: 50,
-    wheel: {
-      winColor: "#5438c8",
-      alternateWinColor: "#fff7ef",
-      loseColor: "#fff7ef",
-      alternateLoseColor: "#fff7ef",
-      rimColor: "#3c3c3c",
-    },
-  },
-  "soft-gradient-wheel": {
-    backgroundColor: "#f4f3ff",
-    headlineTextColor: "#050644",
-    headlineFontSizePx: 40,
-    wheel: {
-      winColor: "#4b35c9",
-      alternateWinColor: "#fff7ef",
-      loseColor: "#fff7ef",
-      alternateLoseColor: "#fff7ef",
-      rimColor: "#403c70",
-    },
-  },
-  "terracotta-wheel": {
-    backgroundColor: "#ddc9b8",
-    headlineTextColor: "#a82c1d",
-    headlineFontSizePx: 50,
-    wheel: {
-      winColor: "#a83222",
-      alternateWinColor: "#f8e4d8",
-      loseColor: "#f8e4d8",
-      alternateLoseColor: "#f8e4d8",
-      rimColor: "#2b1d18",
-    },
-  },
-};
+import { getPosterTemplate, POSTER_TEMPLATES } from "@/lib/poster-templates";
+import { CampaignPerformance, CampaignPosterSettings } from "@/lib/types";
 
 let antonFontDataUri: string | null = null;
 
 function isPosterTemplateDefaultWinColor(color: string | undefined) {
-  return Object.values(POSTER_TEMPLATE_DEFAULTS).some(
+  return POSTER_TEMPLATES.some(
     (template) => template.wheel.winColor === color,
   ) || color === "#1b2842" || color === "#f4c14a";
 }
@@ -82,7 +36,7 @@ function applyPosterTemplateDefaults(
   options: { preserveWinColor?: boolean; preserveHeadlineTextColor?: boolean } = {},
 ) {
   const templateId = poster.templateId ?? "classic-wheel";
-  const template = POSTER_TEMPLATE_DEFAULTS[templateId] ?? POSTER_TEMPLATE_DEFAULTS["classic-wheel"];
+  const template = getPosterTemplate(templateId);
   const campaignPrimaryColor = campaignWheel.loseColor;
   const campaignGainColor = campaignWheel.winColor;
   const hasCustomWinColor =
@@ -102,7 +56,7 @@ function applyPosterTemplateDefaults(
     ...poster,
     templateId,
     backgroundMode: "color" as const,
-    backgroundColor: template.backgroundColor,
+    backgroundColor: template.background,
     backgroundImageUrl: "",
     headlineTextColor,
     headlineFontSizePx: template.headlineFontSizePx,
@@ -154,7 +108,7 @@ export async function createCampaignPosterSvg(
       headlineFontSizePx: 50,
       headlineFontFamily: "display",
       wheel: {
-        ...POSTER_TEMPLATE_DEFAULTS["classic-wheel"].wheel,
+        ...getPosterTemplate("classic-wheel").wheel,
         winColor: campaignPrimaryColor,
         alternateWinColor: campaignPrimaryColor,
       },
