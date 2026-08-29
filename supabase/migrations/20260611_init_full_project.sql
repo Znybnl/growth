@@ -174,7 +174,7 @@ create index if not exists campaign_events_created_at_idx on public.campaign_eve
 
 comment on table public.merchants is 'Comptes marchands et configuration de base de la boutique.';
 comment on table public.merchant_users is 'Utilisateurs rattachés à un marchand pour la connexion à l espace marchand.';
-comment on table public.campaigns is 'Campagnes d activation avec personnalisation complète du rendu public.';
+comment on table public.campaigns is 'Campagnes avec personnalisation complète du rendu public.';
 comment on table public.campaign_actions is 'Actions marketing ordonnées affichées avant le jeu public.';
 comment on table public.prizes is 'Dotations configurées pour chaque campagne.';
 comment on table public.leads is 'Participations et états de retrait des lots.';

@@ -8,7 +8,7 @@ export default async function SignUpPage() {
   return (
     <AuthShell
       eyebrow="Inscription marchand"
-      title="Lancez votre dispositif d’activation en quelques minutes."
+      title="Lancez votre campagne en quelques minutes."
       description="Créez votre compte boutique, configurez votre identité de marque et préparez votre premier jeu avant diffusion."
       asideTitle="Ce que vous débloquez"
       asideBody="Une base de pilotage conçue pour les commerces qui veulent activer et mesurer vite."

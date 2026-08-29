@@ -194,7 +194,7 @@ function BrandMark() {
       <span className="flex flex-col leading-none">
         <span className="text-[17px] font-bold tracking-[-0.03em] text-[#0f172b]">Okado</span>
         <span className="mt-1 text-[11px] font-medium text-[#90a1b9]">
-          activation phygitale
+          campagne phygitale
         </span>
       </span>
     </Link>
@@ -475,7 +475,7 @@ export default function IndexPage() {
             “Le bon outil n’ajoute pas une couche marketing. Il transforme le trafic déjà présent
             en données, avis et retours en boutique mesurables.”
           </p>
-          <p className="mt-8 text-sm font-semibold text-white/70">Okado · activation locale</p>
+          <p className="mt-8 text-sm font-semibold text-white/70">Okado · campagne locale</p>
         </div>
       </section>
 

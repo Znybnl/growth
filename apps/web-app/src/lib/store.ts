@@ -2657,7 +2657,7 @@ export async function updateCampaignSetup(input: CampaignSetupInput) {
 }
 
 export async function toggleCampaign(id: string, isActive: boolean, merchantId?: string) {
-  if (getDataBackend("l'activation d'une campagne") === "supabase") {
+  if (getDataBackend("la campagne") === "supabase") {
     if (merchantId) {
       await toggleCampaignForMerchantInSupabase(id, isActive, merchantId);
       invalidateCampaignNavigationCache(merchantId, id);

@@ -26,7 +26,7 @@ export default async function CampaignsPage({
       <section className="flex flex-col gap-5 px-1 py-2 xl:flex-row xl:items-end xl:justify-between">
         <div>
           <p className="okado-label">Gestion des animations</p>
-          <h1 className="okado-page-title mt-3">Toutes vos activations</h1>
+          <h1 className="okado-page-title mt-3">Toutes vos campagnes</h1>
           <p className="mt-4 max-w-3xl text-sm leading-7 text-ash">
             Retrouvez vos jeux en cours et terminés, comparez leurs performances et accédez à leur
             paramétrage.

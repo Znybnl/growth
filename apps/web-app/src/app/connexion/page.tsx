@@ -10,7 +10,7 @@ export default async function SignInPage() {
   return (
     <AuthShell
       eyebrow="Connexion marchand"
-      title="Reprenez la main sur vos activations locales."
+      title="Reprenez la main sur vos campagnes locales."
       description="Connectez-vous pour suivre vos campagnes, vos participations et vos dotations depuis un seul espace marchand."
       asideTitle="Accès rapide"
       asideBody="Un espace pensé pour les responsables boutique et les équipes terrain."

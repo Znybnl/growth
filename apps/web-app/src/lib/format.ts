@@ -57,7 +57,7 @@ export function goalDescription(goalType: GoalType | null) {
     case "lead_capture":
       return "E-mail et consentement collectés avant le jeu.";
     default:
-      return "Activation locale.";
+      return "Campagne locale.";
   }
 }
 

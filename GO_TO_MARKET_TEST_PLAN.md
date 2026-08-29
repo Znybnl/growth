@@ -100,7 +100,7 @@ Les identifiants ne doivent jamais être commités ni copiés dans le cahier de 
 |---|---|---|---|
 | GTM-020 | Modifier les informations du marchand puis recharger | Données persistées et affichées partout où attendues | À vérifier sur cible |
 | GTM-021 | Créer, sélectionner, archiver un deuxième établissement | Le périmètre actif change réellement ; les campagnes et données restent isolées par lieu | À vérifier sur cible |
-| GTM-022 | Créer une campagne roue avec lot illimité | Enregistrement, édition, activation et page publique fonctionnels | Smoke critique + preuve de campagne |
+| GTM-022 | Créer une campagne roue avec lot illimité | Enregistrement, édition, publication et page publique fonctionnels | Smoke critique + preuve de campagne |
 | GTM-023 | Créer une campagne ticket à gratter | Rendu, interaction, résultat et sauvegarde cohérents | À vérifier manuellement sur mobile |
 | GTM-024 | Vérifier les validations : aucun lot, quantité invalide, probabilités non égales à 100 %, URLs invalides | Enregistrement refusé avec message explicite ; aucune campagne partiellement créée | À vérifier sur cible |
 | GTM-025 | Modifier une campagne existante puis annuler/recharger | Annulation sans écraser les données ; sauvegarde persistante après rechargement | À vérifier sur cible |
