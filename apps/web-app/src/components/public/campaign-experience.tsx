@@ -801,15 +801,15 @@ export function CampaignExperience({
     campaign.presentation.background.imageUrl
       ? `linear-gradient(rgba(0,0,0,0.08), rgba(0,0,0,0.18)), url("${campaign.presentation.background.imageUrl}")`
       : isScratchVaultTemplate
-        ? `radial-gradient(circle at 50% 108%, ${withHexAlpha(primaryColor, "58")} 0 27%, transparent 48%), radial-gradient(circle at 15% 10%, ${withHexAlpha(secondaryColor, "4d")} 0 12%, transparent 22%), linear-gradient(155deg, #071126 0%, #111b3b 56%, #071126 100%)`
+        ? `radial-gradient(circle at 50% 108%, ${withHexAlpha(primaryColor, "58")} 0 27%, transparent 48%), radial-gradient(circle at 15% 10%, ${withHexAlpha(secondaryColor, "4d")} 0 12%, transparent 22%), linear-gradient(155deg, #071126b8 0%, #111b3b99 56%, #071126b8 100%)`
         : isScratchConfettiTemplate
-          ? `radial-gradient(circle at 12% 9%, ${withHexAlpha(primaryColor, "52")} 0 10%, transparent 11%), radial-gradient(circle at 94% 12%, ${withHexAlpha(secondaryColor, "30")} 0 12%, transparent 13%), linear-gradient(180deg, #f59e0b 0%, #f97316 58%, #ea580c 100%)`
+          ? `radial-gradient(circle at 12% 9%, ${withHexAlpha(primaryColor, "52")} 0 10%, transparent 11%), radial-gradient(circle at 94% 12%, ${withHexAlpha(secondaryColor, "30")} 0 12%, transparent 13%), linear-gradient(180deg, #f59e0b99 0%, #f9731680 58%, #ea580c99 100%)`
         : isScratchCoralTemplate
-          ? `radial-gradient(circle at 50% 0%, ${withHexAlpha(primaryColor, "24")} 0 18%, transparent 42%), linear-gradient(180deg, #fffaf5 0%, #ffffff 72%, #fff3e8 100%)`
+          ? `radial-gradient(circle at 50% 0%, ${withHexAlpha(primaryColor, "24")} 0 18%, transparent 42%), linear-gradient(180deg, #fffaf580 0%, #ffffff66 72%, #fff3e880 100%)`
         : isScratchLilacTemplate
-          ? `radial-gradient(circle at 50% 0%, ${withHexAlpha(primaryColor, "2c")} 0 20%, transparent 44%), linear-gradient(180deg, #fffaff 0%, #f7edff 100%)`
+          ? `radial-gradient(circle at 50% 0%, ${withHexAlpha(primaryColor, "2c")} 0 20%, transparent 44%), linear-gradient(180deg, #fffaff80 0%, #f7edff80 100%)`
         : isScratchSunburstTemplate
-          ? `repeating-conic-gradient(from -18deg at 50% -2%, ${withHexAlpha(primaryColor, "52")} 0deg 12deg, transparent 12deg 24deg), linear-gradient(180deg, #fff4bf 0%, #ffdc58 68%, #fff0c5 100%)`
+          ? `repeating-conic-gradient(from -18deg at 50% -2%, ${withHexAlpha(primaryColor, "52")} 0deg 12deg, transparent 12deg 24deg), linear-gradient(180deg, #fff4bf99 0%, #ffdc5880 68%, #fff0c599 100%)`
         : isCosmicTemplate
         ? `radial-gradient(circle at 50% 112%, ${withHexAlpha(primaryColor, "52")} 0 24%, transparent 43%), radial-gradient(circle at 9% 12%, ${withHexAlpha(secondaryColor, "2b")} 0 14%, transparent 25%), linear-gradient(155deg, #07142e 0%, #0b1d42 55%, #071126 100%)`
         : isSunburstTemplate
