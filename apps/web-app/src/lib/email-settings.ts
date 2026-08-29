@@ -114,13 +114,6 @@ function hasUsageConditionsPlaceholder(settings: CampaignEmailSettings) {
   ].some((value) => value.includes("{{usageConditions}}"));
 }
 
-function migrateRewardWording(value: string) {
-  return value.replaceAll(
-    "Vous avez gagné {{prizeLabel}} chez {{merchantName}}",
-    "Vous avez gagné le lot {{prizeLabel}} chez {{merchantName}}",
-  );
-}
-
 export function renderEmailTemplate(template: string, variables: RewardEmailVariables) {
   return replaceVariables(template, variables);
 }
@@ -146,7 +139,7 @@ function createCampaignEmailDefaultsForMerchantName(
     preheader: `Conservez ce QR code pour retirer votre cadeau au ${businessNoun}.`,
     headline: "Récupérez votre lot, {{firstName}}",
     body: [
-      "Vous avez gagné le lot {{prizeLabel}} chez {{merchantName}} le {{rewardDate}}.",
+      "Vous avez gagné {{prizeLabel}} chez {{merchantName}} le {{rewardDate}}.",
       "Ce coupon sera valable lors de votre prochaine visite. Rendez-vous sur place demain et montrez le QR code ci-dessous au personnel de l'établissement pour récupérer votre cadeau.",
       "{{rewardAvailability}}",
       "{{rewardExpiry}}",
@@ -195,7 +188,7 @@ export function normalizeCampaignEmailSettings(
     subject: input?.subject?.trim() || defaults.subject,
     preheader: input?.preheader?.trim() || defaults.preheader,
     headline: input?.headline?.trim() || defaults.headline,
-    body: migrateRewardWording(input?.body?.trim() || defaults.body),
+    body: input?.body?.trim() || defaults.body,
     buttonLabel: input?.buttonLabel?.trim() || defaults.buttonLabel,
     footerNote: input?.footerNote?.trim() || defaults.footerNote,
     accentColor: input?.accentColor || defaults.accentColor,
