@@ -56,7 +56,7 @@ export function SignInForm() {
       <div>
         <h1 className="okado-page-title">Bienvenue</h1>
         <p className="mt-4 text-base leading-7 text-ash">
-          Retrouvez vos jeux, vos leads et vos performances depuis votre espace marchand.
+          Retrouvez vos jeux, vos participations et vos performances depuis votre espace marchand.
         </p>
       </div>
 

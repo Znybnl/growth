@@ -85,7 +85,7 @@ function eventLabel(eventType: CampaignEvent["eventType"]) {
     case "form_started":
       return "Formulaire démarré";
     case "lead_created":
-      return "Lead créé";
+      return "Participation enregistrée";
     case "review_clicked":
       return "Avis Google ouvert";
     case "review_confirmed":
@@ -188,7 +188,7 @@ function LeadsExportSection({
         <table className="min-w-full text-left text-sm">
           <thead className="okado-table-header">
             <tr>
-              <th className="px-3 py-3">Lead</th>
+              <th className="px-3 py-3">Participant</th>
               <th className="px-3 py-3">Statut</th>
               <th className="px-3 py-3">Lot</th>
               <th className="w-[150px] max-w-[150px] px-3 py-3">Email gain</th>
@@ -432,7 +432,7 @@ export default async function DataPage({ searchParams }: DataPageProps) {
           ["Opt-ins", String(dataView.performance.kpis.optIns)],
           ["Conversion", formatPercent(dataView.performance.kpis.conversionRate)],
           ["Lots retirés", String(dataView.performance.kpis.redeemed)],
-          ["Coût / lead", formatCurrency(dataView.performance.kpis.costPerLead)],
+          ["Coût / participation", formatCurrency(dataView.performance.kpis.costPerLead)],
         ].map(([label, value]) => (
           <div
             key={label}

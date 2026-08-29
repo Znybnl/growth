@@ -241,7 +241,7 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
             <input
               name="q"
               defaultValue={params.q ?? ""}
-              placeholder="E-mail, code retrait, campagne, lead..."
+              placeholder="E-mail, code retrait, campagne, participant..."
               className="w-full rounded-[12px] border border-[#cfcfcf] bg-white px-4 py-3 outline-none"
             />
           </label>
@@ -483,7 +483,7 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
                         <StatusBadge label={item.level} tone={supportLogTone(item.level)} />
                       </td>
                       <td className="max-w-[280px] px-3 py-3 text-xs text-ash">
-                        {[item.campaignId && `Campagne ${item.campaignId}`, item.leadId && `Lead ${item.leadId}`, item.email, item.redemptionCode && `Code ${item.redemptionCode}`]
+                        {[item.campaignId && `Campagne ${item.campaignId}`, item.leadId && `Participant ${item.leadId}`, item.email, item.redemptionCode && `Code ${item.redemptionCode}`]
                           .filter(Boolean)
                           .join(" · ") || "-"}
                       </td>

@@ -48,9 +48,9 @@ export default async function CampaignsPage({
           <span>Campagne</span>
           <span>Jeu</span>
           <span>Scans</span>
-          <span>Leads</span>
+          <span>Participations</span>
           <span>Conv.</span>
-          <span>Coût / lead</span>
+          <span>Coût / participation</span>
           <span className="sr-only">Actions</span>
         </div>
 
@@ -128,7 +128,7 @@ export default async function CampaignsPage({
                     <p className="mt-1 font-semibold text-graphite">{item.kpis.scans}</p>
                   </div>
                   <div className="rounded-[8px] bg-white px-4 py-3">
-                    <p className="text-ash">Leads</p>
+                    <p className="text-ash">Participations</p>
                     <p className="mt-1 font-semibold text-graphite">{item.kpis.leads}</p>
                   </div>
                   <div className="rounded-[8px] bg-white px-4 py-3">

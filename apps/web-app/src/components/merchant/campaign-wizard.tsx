@@ -1375,7 +1375,7 @@ export function CampaignWizard({
                             goalType === "social_follow"
                               ? "Abonnements sociaux"
                               : goalType === "lead_capture"
-                                ? "Leads collectés"
+                                ? "Participations collectées"
                                 : "Avis Google",
                         });
                       }}
