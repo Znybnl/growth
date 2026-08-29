@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { createPortal } from "react-dom";
 
 type ValidationDialogProps = {
   open: boolean;
@@ -10,6 +11,8 @@ type ValidationDialogProps = {
   onClose: () => void;
   onAction?: () => void;
   tone?: "info" | "error";
+  error?: string | null;
+  actionDisabled?: boolean;
 };
 
 /**
@@ -24,6 +27,8 @@ export function ValidationDialog({
   onClose,
   onAction,
   tone = "info",
+  error = null,
+  actionDisabled = false,
 }: ValidationDialogProps) {
   useEffect(() => {
     if (!open) return;
@@ -36,9 +41,9 @@ export function ValidationDialog({
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [onClose, open]);
 
-  if (!open) return null;
+  if (!open || typeof document === "undefined") return null;
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 z-[70] flex items-end justify-center bg-[#0f1220]/52 px-4 pb-4 pt-10 backdrop-blur-[6px] sm:items-center sm:p-6"
       role="presentation"
@@ -50,7 +55,7 @@ export function ValidationDialog({
         role="dialog"
         aria-modal="true"
         aria-labelledby="validation-dialog-title"
-        aria-describedby="validation-dialog-description"
+        aria-describedby={error ? "validation-dialog-description validation-dialog-error" : "validation-dialog-description"}
         className="w-full max-w-[420px] rounded-[34px] bg-white p-6 text-[#111827] shadow-[0_34px_90px_rgba(18,24,39,0.24)]"
       >
         <div
@@ -67,16 +72,27 @@ export function ValidationDialog({
         <p id="validation-dialog-description" className="mt-3 text-center text-sm leading-7 text-[#5c6577]">
           {description}
         </p>
+        {error ? (
+          <p
+            id="validation-dialog-error"
+            role="alert"
+            className="mt-4 rounded-[14px] border border-[#f2c8c8] bg-[#fff4f4] px-4 py-3 text-left text-sm leading-6 text-[#a11a1a]"
+          >
+            {error}
+          </p>
+        ) : null}
         <div className="mt-6">
           <button
             type="button"
             onClick={onAction ?? onClose}
-            className="w-full rounded-[20px] border border-[#111827] bg-[#111827] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#263247]"
+            disabled={actionDisabled}
+            className="w-full rounded-[20px] border border-[#111827] bg-[#111827] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#263247] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {ctaLabel}
           </button>
         </div>
       </section>
-    </div>
+    </div>,
+    document.body,
   );
 }
