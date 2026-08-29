@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Handshake, Link2, ShieldCheck, Store, UserRound } from "lucide-react";
 
+import { AccountSectionCard } from "@/components/merchant/account-section-card";
 import { AffiliateReferralCard } from "@/components/merchant/affiliate-referral-card";
 import { GoogleReviewPlacePicker } from "@/components/merchant/google-review-place-picker";
 import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
@@ -21,15 +23,17 @@ type AccountSettingsFormProps = {
   merchant: Merchant;
   user: MerchantUser;
   affiliateSummary?: AffiliateSummary | null;
+  onDirtyChange?: (isDirty: boolean) => void;
 };
 
 const inputClass =
-  "w-full rounded-[12px] border border-[#cfcfcf] bg-white px-4 py-4 text-graphite outline-none transition focus:border-signal-blue focus:shadow-[0_0_0_3px_rgba(0,153,255,0.16)]";
+  "w-full min-h-[var(--okado-control-height)] rounded-[var(--okado-radius-control)] border border-[var(--okado-border-control)] bg-white px-4 py-2.5 text-sm text-graphite outline-none transition placeholder:text-ash focus:border-signal-blue focus:shadow-[0_0_0_3px_rgba(0,153,255,0.16)]";
 
 export function AccountSettingsForm({
   merchant,
   user,
   affiliateSummary,
+  onDirtyChange,
 }: AccountSettingsFormProps) {
   const [form, setForm] = useState<MerchantAccountSettingsInput>({
     companyName: merchant.companyName,
@@ -57,8 +61,20 @@ export function AccountSettingsForm({
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
   const actionsAnchorRef = useRef<HTMLDivElement>(null);
   const [showStickyActions, setShowStickyActions] = useState(false);
+
+  useEffect(() => {
+    function handleBeforeUnload(event: BeforeUnloadEvent) {
+      if (!isDirty) return;
+      event.preventDefault();
+      event.returnValue = "";
+    }
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isDirty]);
 
   useEffect(() => {
     const anchor = actionsAnchorRef.current;
@@ -91,6 +107,10 @@ export function AccountSettingsForm({
     key: Key,
     value: MerchantAccountSettingsInput[Key],
   ) {
+    if (!isDirty) {
+      setIsDirty(true);
+      onDirtyChange?.(true);
+    }
     setForm((current) => ({ ...current, [key]: value }));
   }
 
@@ -112,6 +132,8 @@ export function AccountSettingsForm({
         throw new Error(payload.error ?? "Mise à jour impossible.");
       }
 
+      setIsDirty(false);
+      onDirtyChange?.(false);
       setIsSuccessOpen(true);
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : "Mise à jour impossible.");
@@ -142,9 +164,14 @@ export function AccountSettingsForm({
         </div>
       </div>
       <div ref={actionsAnchorRef} className="h-px" aria-hidden="true" />
-      <section className="okado-card p-6 md:p-8">
-        <p className="okado-label">Utilisateur</p>
-        <p className="mt-3 text-xs text-ash">
+      <AccountSectionCard
+        id="account-user"
+        eyebrow="Mon compte"
+        title="Informations de connexion"
+        description="Ces informations identifient la personne qui administre le compte Okado."
+        icon={UserRound}
+      >
+        <p className="mb-4 text-xs text-ash">
           <span className="text-[#b42318]" aria-hidden="true">*</span> Champs obligatoires
         </p>
         <div className="mt-6 grid gap-4 md:grid-cols-2">
@@ -183,12 +210,15 @@ export function AccountSettingsForm({
             />
           </label>
         </div>
-      </section>
+      </AccountSectionCard>
 
-      <section className="okado-card p-6 md:p-8">
-        <p className="okado-label">
-          {isRestaurant ? "Restaurant" : "Commerce"}
-        </p>
+      <AccountSectionCard
+        id="account-location"
+        eyebrow="Établissement actif"
+        title={isRestaurant ? "Informations du restaurant" : "Informations du commerce"}
+        description="Ces informations peuvent être utilisées dans vos jeux, communications et expériences client."
+        icon={Store}
+      >
         <div className="mt-6 grid gap-4 md:grid-cols-2">
           <label className="text-sm">
             <span className="mb-2 block text-ash">
@@ -291,10 +321,15 @@ export function AccountSettingsForm({
             />
           </label>
         </div>
-      </section>
+      </AccountSectionCard>
 
-      <section className="okado-card p-6 md:p-8">
-        <p className="okado-label">Canaux marketing</p>
+      <AccountSectionCard
+        id="account-channels"
+        eyebrow="Visibilité"
+        title="Canaux marketing"
+        description="Ajoutez les liens que vos participants pourront retrouver après leur participation."
+        icon={Link2}
+      >
         <div className="mt-6 grid gap-4 md:grid-cols-2">
           <div className="md:col-span-2">
             <div className="mb-3 flex items-center gap-3 text-sm font-semibold text-graphite">
@@ -366,16 +401,17 @@ export function AccountSettingsForm({
             />
           </label>
         </div>
-      </section>
+      </AccountSectionCard>
 
-      <section className="okado-card p-6 md:p-8">
-        <p className="okado-label">Validation express</p>
-        <h2 className="mt-3 font-display text-3xl font-semibold text-graphite">
-          PIN de validation du retrait
-        </h2>
-        <p className="mt-3 max-w-2xl text-sm leading-7 text-ash">
-          Ce PIN permet à un employé de valider un lot depuis le QR code, sans se connecter à Okado.
-          Il doit contenir 4 à 6 chiffres et ne sera jamais affiché après son enregistrement.
+      <AccountSectionCard
+        id="account-pin"
+        eyebrow="Validation express"
+        title="PIN de validation du retrait"
+        description="Un employé peut valider un lot depuis le QR code sans se connecter à Okado. Le PIN doit contenir 4 à 6 chiffres."
+        icon={ShieldCheck}
+      >
+        <p className="mb-5 max-w-2xl text-xs leading-5 text-ash">
+          Le PIN ne sera jamais affiché après son enregistrement.
         </p>
         <div className="mt-5 grid gap-4 md:grid-cols-2 md:items-end">
           <label className="text-sm">
@@ -398,24 +434,25 @@ export function AccountSettingsForm({
               : "Aucun PIN n’est configuré. Ajoutez-en un pour activer la validation express."}
           </p>
         </div>
-      </section>
+      </AccountSectionCard>
 
       {affiliateSummary?.account.status === "active" ? (
         <AffiliateReferralCard summary={affiliateSummary} />
       ) : (
-        <section className="okado-card p-6 md:p-8">
-          <p className="okado-label">Parrainage</p>
-          <h2 className="mt-3 font-display text-3xl font-semibold text-graphite">
-            Programme d&apos;affiliation
-          </h2>
-          <p className="mt-4 max-w-2xl text-sm leading-7 text-ash">
+        <AccountSectionCard
+          eyebrow="Développement"
+          title="Programme d’affiliation"
+          description="Développez votre activité en recommandant Okado à d’autres établissements."
+          icon={Handshake}
+        >
+          <p className="max-w-2xl text-sm leading-7 text-ash">
             Le programme d&apos;affiliation n&apos;est pas encore activé sur votre compte. Contactez{" "}
             <a className="okado-link" href="mailto:contact@okado.app">
               contact@okado.app
             </a>{" "}
             pour rejoindre le programme d&apos;affiliation.
           </p>
-        </section>
+        </AccountSectionCard>
       )}
 
       {error ? (
