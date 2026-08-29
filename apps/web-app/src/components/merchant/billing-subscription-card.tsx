@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { Check } from "lucide-react";
 
 import { MerchantBillingSummary } from "@/lib/types";
 
@@ -62,7 +63,7 @@ export function BillingSubscriptionCard({ billing }: BillingSubscriptionCardProp
             Abonnement & facturation
           </p>
           <h2 className="mt-3 font-display text-3xl font-semibold text-[#0f1728]">
-            Votre plan Okado Pro
+            Votre abonnement
           </h2>
           <p className="mt-3 max-w-2xl text-sm leading-7 text-[#5c6577]">
             Gérez votre essai gratuit, activez votre abonnement mensuel et gardez vos jeux
@@ -83,8 +84,8 @@ export function BillingSubscriptionCard({ billing }: BillingSubscriptionCardProp
         <div className="space-y-4">
           {billing.isSubscribed ? (
             <div className="rounded-[8px] border border-[#cfe9d8] bg-[#effaf3] p-5 text-sm text-[#19633f]">
-              <p className="font-semibold">Abonnement actif (Plan Pro)</p>
-              <p className="mt-2 leading-7">
+              <p className="font-semibold">Abonnement actif</p>
+              <p className="mt-1 leading-6">
                 Votre prochaine facture est prévue le{" "}
                 <span className="font-semibold">
                   {formatDate(billing.nextBillingDate) || "bientôt"}
@@ -92,7 +93,7 @@ export function BillingSubscriptionCard({ billing }: BillingSubscriptionCardProp
                 pour un montant de <span className="font-semibold">{priceLabel}</span>.
               </p>
               {billing.subscriptionCancelAtPeriodEnd ? (
-                <p className="mt-2 text-[#7b4f00]">
+                <p className="mt-1 text-[#7b4f00]">
                   La résiliation est programmée à la fin de la période en cours.
                 </p>
               ) : null}
@@ -100,12 +101,12 @@ export function BillingSubscriptionCard({ billing }: BillingSubscriptionCardProp
           ) : billing.isTrialActive ? (
             <div className="rounded-[8px] border border-[#cfe9d8] bg-[#effaf3] p-5 text-sm text-[#19633f]">
               <p className="font-semibold">Vous êtes actuellement en période d’essai gratuit.</p>
-              <p className="mt-2 leading-7">
+              <p className="mt-1 leading-6">
                 Il vous reste{" "}
                 <span className="font-semibold">{billing.daysLeftInTrial} jour(s)</span> pour
                 profiter pleinement de l’application.
               </p>
-              <p className="mt-2 leading-7">
+              <p className="mt-1 leading-6">
                 Prochain prélèvement : <span className="font-semibold">{priceLabel}</span> le{" "}
                 <span className="font-semibold">
                   {formatDate(billing.trialEndDate) || "à la fin de l’essai"}
@@ -124,12 +125,14 @@ export function BillingSubscriptionCard({ billing }: BillingSubscriptionCardProp
           )}
 
           <div className="rounded-[8px] border border-border bg-linen-canvas p-5">
-            <p className="text-sm font-semibold text-[#0f1728]">Plan mensuel</p>
-            <p className="mt-2 text-3xl font-semibold text-[#0f1728]">{priceLabel}</p>
-            <ul className="mt-4 space-y-2 text-sm leading-7 text-[#5c6577]">
-              <li>Jeux publics actifs et sans interruption</li>
-              <li>Exports CSV et données de campagne disponibles</li>
-              <li>Suivi complet de vos animations depuis un seul compte</li>
+            <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+              <p className="text-sm font-semibold text-[#0f1728]">Plan mensuel</p>
+              <p className="text-2xl font-semibold text-[#0f1728]">{priceLabel}</p>
+            </div>
+            <ul className="mt-3 grid gap-2 text-sm leading-5 text-[#5c6577]">
+              <li className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 shrink-0 text-[#1f9d62]" aria-hidden="true" /><span>Jeux publics actifs et sans interruption</span></li>
+              <li className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 shrink-0 text-[#1f9d62]" aria-hidden="true" /><span>Exports CSV et données de campagne disponibles</span></li>
+              <li className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 shrink-0 text-[#1f9d62]" aria-hidden="true" /><span>Suivi complet de vos animations depuis un seul compte</span></li>
             </ul>
           </div>
         </div>
