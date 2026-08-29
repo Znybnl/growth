@@ -51,6 +51,7 @@ import {
   DEFAULT_WHEEL_PRIMARY_COLOR,
   deriveLighterHex,
   limitCampaignSubtitleLines,
+  MAX_CAMPAIGN_SUBTITLE_LENGTH,
   normalizeScratchAccent,
 } from "@/lib/campaign-defaults";
 import {
@@ -1356,9 +1357,12 @@ export function CampaignWizard({
                     patchDraft({ subtitle: limitCampaignSubtitleLines(event.target.value) })
                   }
                   rows={3}
-                  maxLength={120}
+                  maxLength={MAX_CAMPAIGN_SUBTITLE_LENGTH}
                   className="mt-3 w-full resize-none rounded-[16px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm leading-6 text-[#182033] outline-none transition focus:border-[#b28719] focus:ring-4 focus:ring-[#f4c14a]/15"
                 />
+                <span className="mt-1 block text-xs text-[#8993a6]">
+                  {draft.subtitle.length}/{MAX_CAMPAIGN_SUBTITLE_LENGTH} caractères · 3 lignes maximum pour conserver un rendu lisible sur mobile.
+                </span>
               </label>
               <div className="grid gap-4">
                 {!isEditing ? (

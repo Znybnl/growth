@@ -16,7 +16,7 @@ export const DEFAULT_SCRATCH_LILAC_COLOR = "#b85be5";
 export const DEFAULT_SCRATCH_TICKET_COLOR = "#f7f7f7";
 export const DEFAULT_SCRATCH_TEXT_COLOR = "#ffffff";
 export const MAX_CAMPAIGN_SUBTITLE_LINES = 3;
-export const MAX_CAMPAIGN_SUBTITLE_LENGTH = 120;
+export const MAX_CAMPAIGN_SUBTITLE_LENGTH = 240;
 
 /** Fixed-palette templates intentionally ignore the merchant's primary color. */
 export function scratchTemplatePrimaryColor(
