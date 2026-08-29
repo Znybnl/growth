@@ -64,6 +64,7 @@ import {
   DEFAULT_SCRATCH_SUBTITLE,
   DEFAULT_WHEEL_PRIMARY_COLOR,
   DEFAULT_WHEEL_SUBTITLE,
+  MAX_CAMPAIGN_SUBTITLE_LENGTH,
   campaignLogoTextSizePx,
   clampCampaignLogoSizePercent,
   deriveLighterHex,
@@ -2860,11 +2861,11 @@ function setGameType(gameType: GameType) {
                   value={form.subtitle}
                   onChange={(event) => setField("subtitle", limitCampaignSubtitleLines(event.target.value))}
                   rows={3}
-                  maxLength={120}
+                  maxLength={MAX_CAMPAIGN_SUBTITLE_LENGTH}
                   className="w-full rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
                 />
                 <span className="mt-1 block text-xs text-[#8993a6]">
-                  3 lignes maximum pour conserver un rendu lisible sur mobile.
+                  {form.subtitle.length}/{MAX_CAMPAIGN_SUBTITLE_LENGTH} caractères · 3 lignes maximum pour conserver un rendu lisible sur mobile.
                 </span>
               </label>
 
