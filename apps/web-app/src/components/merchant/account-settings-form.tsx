@@ -142,11 +142,11 @@ export function AccountSettingsForm({
         </div>
       </div>
       <div ref={actionsAnchorRef} className="h-px" aria-hidden="true" />
-      <p className="text-xs text-ash">
-        <span className="text-[#b42318]" aria-hidden="true">*</span> Champs obligatoires
-      </p>
       <section className="okado-card p-6 md:p-8">
         <p className="okado-label">Utilisateur</p>
+        <p className="mt-3 text-xs text-ash">
+          <span className="text-[#b42318]" aria-hidden="true">*</span> Champs obligatoires
+        </p>
         <div className="mt-6 grid gap-4 md:grid-cols-2">
           <label className="text-sm">
             <span className="mb-2 block text-ash">

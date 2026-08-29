@@ -1,4 +1,4 @@
-import { AccountSettingsForm } from "@/components/merchant/account-settings-form";
+import { AccountLocationPanel } from "@/components/merchant/account-location-panel";
 import { BillingSubscriptionCard } from "@/components/merchant/billing-subscription-card";
 import { getAffiliateSummaryForMerchant } from "@/lib/affiliate-repository";
 import { requireAuthenticatedSession } from "@/lib/auth";
@@ -74,9 +74,10 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
       </section>
 
       <BillingSubscriptionCard billing={billing} />
-      <AccountSettingsForm
+      <AccountLocationPanel
         merchant={merchant}
         user={session.user}
+        locations={session.locations}
         affiliateSummary={affiliateSummary}
       />
     </div>
