@@ -1168,7 +1168,10 @@ export function CampaignExperience({
           {isPreGameLeadCapture
             ? "Avant de jouer"
             : previewResult?.prize
-            ? `Félicitations ! Vous avez remporté ${previewResult.prize.label}`
+            ? <>
+                Félicitations ! Vous avez remporté
+                <span className="block">« {previewResult.prize.label} »</span>
+              </>
             : "Merci pour votre participation"}
         </h2>
         <div className="mt-5 rounded-[22px] bg-[#f6f7fb] px-5 py-4 text-base leading-7 text-[#475067]">
