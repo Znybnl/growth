@@ -163,7 +163,7 @@ export function createPosterPreviewQrDataUrl() {
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
 }
 
-function renderBackground(poster: CampaignPosterSettings, template: TemplateConfig) {
+function renderBackground(poster: CampaignPosterSettings, template: PosterTemplateConfig) {
   const baseColor = template.background;
 
   if (template.id === "soft-gradient-wheel") {
@@ -188,7 +188,7 @@ function renderBackground(poster: CampaignPosterSettings, template: TemplateConf
   `;
 }
 
-function getLogoLayout(poster: CampaignPosterSettings, template: TemplateConfig) {
+function getLogoLayout(poster: CampaignPosterSettings, template: PosterTemplateConfig) {
   const logoSize = clamp((poster.logoSizePercent / 100) * 170, 72, 300);
   const logoY = template.id === "classic-wheel" ? 28 : 22;
 
@@ -199,7 +199,7 @@ function getLogoLayout(poster: CampaignPosterSettings, template: TemplateConfig)
   };
 }
 
-function renderLogo(campaign: Campaign, poster: CampaignPosterSettings, template: TemplateConfig) {
+function renderLogo(campaign: Campaign, poster: CampaignPosterSettings, template: PosterTemplateConfig) {
   const logoMode = poster.logoMode ?? "none";
   const logoUrl = logoMode === "image" ? poster.logoUrl || campaign.logoUrl : undefined;
   const logoText =
@@ -225,7 +225,7 @@ function renderLogo(campaign: Campaign, poster: CampaignPosterSettings, template
   `;
 }
 
-function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, template: TemplateConfig) {
+function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, template: PosterTemplateConfig) {
   const headline = poster.headline || campaign.subtitle || "Faites tourner la roue";
   const family = fontFamily(poster.headlineFontFamily);
   const color = poster.headlineTextColor || template.headline;
@@ -263,7 +263,7 @@ function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, temp
     .join("");
 }
 
-function renderWheel(template: TemplateConfig, poster: CampaignPosterSettings, prizes: Prize[] | Array<Pick<Prize, "label">>) {
+function renderWheel(template: PosterTemplateConfig, poster: CampaignPosterSettings, prizes: Prize[] | Array<Pick<Prize, "label">>) {
   const segments = buildPosterWheelSegments(prizes, poster.wheel);
   const cx = template.wheelX;
   const cy = template.wheelY;
@@ -307,7 +307,7 @@ function renderWheel(template: TemplateConfig, poster: CampaignPosterSettings, p
   `;
 }
 
-function renderScratch(template: TemplateConfig, poster: CampaignPosterSettings) {
+function renderScratch(template: PosterTemplateConfig, poster: CampaignPosterSettings) {
   const family = fontFamily(poster.headlineFontFamily);
 
   return `
@@ -320,7 +320,7 @@ function renderScratch(template: TemplateConfig, poster: CampaignPosterSettings)
   `;
 }
 
-function renderQrAndCta(qrDataUrl: string, template: TemplateConfig) {
+function renderQrAndCta(qrDataUrl: string, template: PosterTemplateConfig) {
   const accent = template.accent;
   return `
     <g filter="url(#posterShadow)" transform="translate(${template.qrX} ${template.qrY})">
@@ -335,7 +335,7 @@ function renderQrAndCta(qrDataUrl: string, template: TemplateConfig) {
   `;
 }
 
-function renderSteps(template: TemplateConfig, gameType: Campaign["gameType"]) {
+function renderSteps(template: PosterTemplateConfig, gameType: Campaign["gameType"]) {
   const action = gameType === "wheel" ? "Jouez" : "Grattez";
   const gift = "Gagnez";
   const iconCenterY = 68;
