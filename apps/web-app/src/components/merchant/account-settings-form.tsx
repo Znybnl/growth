@@ -69,10 +69,10 @@ export function AccountSettingsForm({
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        // The account form is below the billing card. When the page opens, the
-        // anchor can be below the viewport without having been scrolled past;
-        // that must not activate the sticky action bar prematurely. Only show
-        // it after the anchor has crossed the top edge of the scroll area.
+        // The top action anchor is below the billing card. When the page opens,
+        // it can be below the viewport without having been scrolled past; that
+        // must not activate the sticky action bar prematurely. Only show it
+        // after the anchor has crossed the top edge of the scroll area.
         const rootTop = entry.rootBounds?.top ?? 0;
         const hasScrolledPastAnchor = entry.boundingClientRect.top < rootTop;
         setShowStickyActions(!entry.isIntersecting && hasScrolledPastAnchor);
@@ -121,7 +121,7 @@ export function AccountSettingsForm({
   }
 
   return (
-    <form className="space-y-6" onSubmit={handleSubmit}>
+    <form id="account-settings-form" className="space-y-6" onSubmit={handleSubmit}>
       <div className="pointer-events-none sticky top-[-20px] z-20 hidden h-0 overflow-visible xl:-mb-6 xl:block">
         <div
           className={`pointer-events-auto -mx-3 border-b border-border bg-linen-canvas/95 px-3 py-2 shadow-[0_8px_18px_rgba(18,24,39,0.08)] backdrop-blur-sm transition-all duration-200 lg:-mx-6 lg:px-6 ${
@@ -141,15 +141,7 @@ export function AccountSettingsForm({
           </div>
         </div>
       </div>
-      <div ref={actionsAnchorRef} className="okado-action-row flex flex-wrap items-center justify-end gap-3">
-        <button
-          type="submit"
-          disabled={isSaving}
-          className="okado-filled-action px-5 disabled:opacity-60"
-        >
-          {isSaving ? "Enregistrement..." : "Enregistrer"}
-        </button>
-      </div>
+      <div ref={actionsAnchorRef} className="h-px" aria-hidden="true" />
       <p className="text-xs text-ash">
         <span className="text-[#b42318]" aria-hidden="true">*</span> Champs obligatoires
       </p>

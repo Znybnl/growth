@@ -50,7 +50,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
   return (
     <div className="space-y-6">
       <section className="px-1 py-2">
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
           <div>
             <p className="okado-label">
               Compte & facturation
@@ -63,6 +63,13 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
               réseaux marketing, puis pilotez votre abonnement depuis un seul écran.
             </p>
           </div>
+          <button
+            type="submit"
+            form="account-settings-form"
+            className="okado-filled-action w-full px-5 xl:w-auto"
+          >
+            Enregistrer
+          </button>
         </div>
       </section>
 
