@@ -148,7 +148,7 @@ export function AccountSettingsForm({
   }
 
   return (
-    <form id="account-settings-form" className="space-y-6" onSubmit={handleSubmit}>
+    <form id="account-settings-form" onSubmit={handleSubmit}>
       <div className="pointer-events-none sticky top-0 z-20 h-0 overflow-visible">
         <div
           className={`pointer-events-auto -mx-3 border-b border-border bg-linen-canvas/95 px-3 py-2 shadow-[0_8px_18px_rgba(18,24,39,0.08)] backdrop-blur-sm transition-all duration-200 lg:-mx-6 lg:px-6 ${
@@ -169,7 +169,8 @@ export function AccountSettingsForm({
         </div>
       </div>
       <div ref={actionsAnchorRef} className="h-px" aria-hidden="true" />
-      <AccountSectionCard
+      <div className="space-y-6">
+        <AccountSectionCard
         id="account-user"
         eyebrow="Mon compte"
         title="Informations de connexion"
@@ -215,11 +216,11 @@ export function AccountSettingsForm({
             />
           </label>
         </div>
-      </AccountSectionCard>
+        </AccountSectionCard>
 
-      <AccountLocationPanel merchant={merchant} locations={locations} isDirty={isDirty} />
+        <AccountLocationPanel merchant={merchant} locations={locations} isDirty={isDirty} />
 
-      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_280px]">
+        <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_280px]">
         <div className="space-y-6">
       <AccountSectionCard
         id="account-location"
@@ -495,13 +496,14 @@ export function AccountSettingsForm({
             ))}
           </nav>
         </aside>
-      </div>
-
-      {error ? (
-        <div className="rounded-[8px] border border-[#f6c4bb] bg-[#fff1ee] px-4 py-3 text-sm text-[#8b2c18]">
-          {error}
         </div>
-      ) : null}
+
+        {error ? (
+          <div className="rounded-[8px] border border-[#f6c4bb] bg-[#fff1ee] px-4 py-3 text-sm text-[#8b2c18]">
+            {error}
+          </div>
+        ) : null}
+      </div>
       <ValidationDialog
         open={isSuccessOpen}
         title="Vos modifications sont enregistrées"
