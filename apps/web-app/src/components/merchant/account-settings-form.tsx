@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Handshake, Link2, ShieldCheck, Store, UserRound } from "lucide-react";
+import { ArrowUpRight, CheckCircle2, Handshake, Link2, ShieldCheck, Store, UserRound } from "lucide-react";
 
 import { AccountSectionCard } from "@/components/merchant/account-section-card";
+import { AccountLocationPanel } from "@/components/merchant/account-location-panel";
 import { AffiliateReferralCard } from "@/components/merchant/affiliate-referral-card";
 import { GoogleReviewPlacePicker } from "@/components/merchant/google-review-place-picker";
 import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
@@ -16,12 +17,14 @@ import {
   AffiliateSummary,
   Merchant,
   MerchantAccountSettingsInput,
+  MerchantLocationAccess,
   MerchantUser,
 } from "@/lib/types";
 
 type AccountSettingsFormProps = {
   merchant: Merchant;
   user: MerchantUser;
+  locations: MerchantLocationAccess[];
   affiliateSummary?: AffiliateSummary | null;
   onDirtyChange?: (isDirty: boolean) => void;
 };
@@ -32,6 +35,7 @@ const inputClass =
 export function AccountSettingsForm({
   merchant,
   user,
+  locations,
   affiliateSummary,
   onDirtyChange,
 }: AccountSettingsFormProps) {
@@ -144,7 +148,7 @@ export function AccountSettingsForm({
 
   return (
     <form id="account-settings-form" className="space-y-6" onSubmit={handleSubmit}>
-      <div className="pointer-events-none sticky top-[-20px] z-20 hidden h-0 overflow-visible xl:-mb-6 xl:block">
+      <div className="pointer-events-none sticky top-[56px] z-20 h-0 overflow-visible">
         <div
           className={`pointer-events-auto -mx-3 border-b border-border bg-linen-canvas/95 px-3 py-2 shadow-[0_8px_18px_rgba(18,24,39,0.08)] backdrop-blur-sm transition-all duration-200 lg:-mx-6 lg:px-6 ${
             showStickyActions ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
@@ -212,6 +216,10 @@ export function AccountSettingsForm({
         </div>
       </AccountSectionCard>
 
+      <AccountLocationPanel merchant={merchant} locations={locations} isDirty={isDirty} />
+
+      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_280px]">
+        <div className="space-y-6">
       <AccountSectionCard
         id="account-location"
         eyebrow="Établissement actif"
@@ -454,6 +462,39 @@ export function AccountSettingsForm({
           </p>
         </AccountSectionCard>
       )}
+        </div>
+
+        <aside className="space-y-4 xl:sticky xl:top-24">
+          <section className="okado-compact-card bg-white p-5">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="okado-label">Vue d’ensemble</p>
+                <h2 className="mt-1.5 text-lg font-semibold tracking-[-0.02em] text-graphite">Configuration</h2>
+              </div>
+              <span className="grid h-9 w-9 place-items-center rounded-full bg-[#edf9f1] text-[#16834e]"><CheckCircle2 className="h-5 w-5" aria-hidden="true" /></span>
+            </div>
+            <div className="mt-5 space-y-3">
+              {[
+                { label: "Informations principales", done: Boolean(merchant.companyName && merchant.city) },
+                { label: "Canal Google", done: Boolean(merchant.googleReviewUrl) },
+                { label: "Canaux marketing", done: Boolean(merchant.googleReviewUrl || merchant.instagramUrl || merchant.facebookUrl || merchant.tiktokUrl || merchant.tripadvisorUrl || merchant.customLinkUrl) },
+                { label: "PIN de retrait", done: Boolean(merchant.redemptionPinConfigured) },
+              ].map((item) => (
+                <div key={item.label} className="flex items-center gap-2.5 text-sm">
+                  <span className={`grid h-5 w-5 place-items-center rounded-full ${item.done ? "bg-[#e5f8ed] text-[#16834e]" : "bg-[#f1f3f7] text-[#98a1b2]"}`}><CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" /></span>
+                  <span className={item.done ? "text-graphite" : "text-ash"}>{item.label}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+          <nav aria-label="Sections de l’établissement" className="okado-compact-card bg-white p-3">
+            <p className="px-2 py-2 text-xs font-medium uppercase tracking-[0.14em] text-fog">Accès rapide</p>
+            {[['account-location', 'Informations'], ['account-channels', 'Canaux marketing'], ['account-pin', 'Validation express']].map(([id, label]) => (
+              <a key={id} href={`#${id}`} className="flex items-center justify-between rounded-[10px] px-2 py-2.5 text-sm text-ash transition hover:bg-sky-wash hover:text-graphite">{label}<ArrowUpRight className="h-4 w-4" aria-hidden="true" /></a>
+            ))}
+          </nav>
+        </aside>
+      </div>
 
       {error ? (
         <div className="rounded-[8px] border border-[#f6c4bb] bg-[#fff1ee] px-4 py-3 text-sm text-[#8b2c18]">

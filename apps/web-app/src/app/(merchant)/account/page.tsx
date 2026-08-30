@@ -1,4 +1,4 @@
-import { AccountLocationPanel } from "@/components/merchant/account-location-panel";
+import { AccountSettingsForm } from "@/components/merchant/account-settings-form";
 import { BillingSubscriptionCard } from "@/components/merchant/billing-subscription-card";
 import { Settings2 } from "lucide-react";
 import { getAffiliateSummaryForMerchant } from "@/lib/affiliate-repository";
@@ -70,7 +70,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
       </section>
 
       <BillingSubscriptionCard billing={billing} />
-      <AccountLocationPanel
+      <AccountSettingsForm
         merchant={merchant}
         user={session.user}
         locations={session.locations}
