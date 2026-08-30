@@ -265,19 +265,29 @@ export function AccountSettingsForm({
 
         <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_280px]">
         <div className="space-y-6">
-      <AccountSectionCard
-        id="account-location"
-        eyebrow="Établissement édité"
-        title={isRestaurant ? "Informations du restaurant sélectionné" : "Informations du commerce sélectionné"}
-        description={`Les modifications concernent uniquement ${selectedMerchant.companyName}. Elles peuvent être utilisées dans vos jeux, communications et expériences client.`}
-        icon={Store}
-      >
-        <div className="mb-5 flex flex-wrap items-center gap-x-3 gap-y-1.5 rounded-[14px] border border-[#dbe7ff] bg-[#f4f7ff] px-3.5 py-3">
+      <section className="okado-card scroll-mt-28 p-5 md:p-6">
+        <div className="flex items-start gap-3 border-b border-border/70 pb-5">
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[12px] bg-sky-wash text-primary-action-accent">
+            <Store className="h-5 w-5" aria-hidden="true" />
+          </span>
+          <div>
+            <p className="okado-label">Établissement édité</p>
+            <h2 className="mt-1.5 text-xl font-semibold tracking-[-0.02em] text-graphite">Configuration de {selectedMerchant.companyName}</h2>
+            <p className="mt-1.5 max-w-2xl text-sm leading-6 text-ash">Les informations, liens marketing et le code PIN regroupés ici concernent uniquement l’établissement sélectionné.</p>
+          </div>
+        </div>
+        <div className="pt-5">
+          <div className="mb-5 flex flex-wrap items-center gap-x-3 gap-y-1.5 rounded-[14px] border border-[#dbe7ff] bg-[#f4f7ff] px-3.5 py-3">
           <span className="rounded-full bg-[#145aff] px-2.5 py-1 text-[11px] font-semibold text-white">Vous modifiez</span>
           <strong className="text-sm text-[#101c38]">{selectedMerchant.companyName}</strong>
           <span className="text-xs text-[#60708a]">Les champs ci-dessous ne changent pas l’établissement actif global.</span>
-        </div>
-        <div className="grid gap-4 md:grid-cols-2">
+          </div>
+          <div id="account-location" className="scroll-mt-28">
+            <div className="mb-4">
+              <h3 className="text-base font-semibold text-graphite">Informations générales</h3>
+              <p className="mt-1 text-sm text-ash">Identité, coordonnées et paramètres de fonctionnement de l’établissement.</p>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2">
           <label className="text-sm">
             <span className="mb-2 block text-ash">
               Nom du commerce <span className="text-[#b42318]" aria-hidden="true">*</span>
@@ -378,17 +388,18 @@ export function AccountSettingsForm({
               className={inputClass}
             />
           </label>
-        </div>
-      </AccountSectionCard>
+            </div>
+          </div>
 
-      <AccountSectionCard
-        id="account-channels"
-        eyebrow="Visibilité"
-        title="Canaux marketing"
-        description={`Liens marketing de ${selectedMerchant.companyName}, affichés après la participation.`}
-        icon={Link2}
-      >
-        <div className="mt-5 grid gap-2.5 md:grid-cols-2">
+          <div id="account-channels" className="mt-8 scroll-mt-28 border-t border-border/70 pt-6">
+            <div className="mb-4">
+              <div className="flex items-center gap-2.5">
+                <Link2 className="h-4 w-4 text-primary-action-accent" aria-hidden="true" />
+                <h3 className="text-base font-semibold text-graphite">Liens marketing</h3>
+              </div>
+              <p className="mt-1 text-sm text-ash">Ajoutez les liens que vos participants pourront retrouver après leur participation.</p>
+            </div>
+            <div className="grid gap-2.5 md:grid-cols-2">
           <div className="rounded-[14px] border border-[#dbe4f0] bg-[#f8fafc] p-3 md:col-span-2">
             <div className="mb-2.5 flex flex-wrap items-center justify-between gap-2 text-sm font-semibold text-graphite">
               <div className="flex items-center gap-3">
@@ -461,20 +472,21 @@ export function AccountSettingsForm({
               className={`${inputClass} min-h-[40px] px-3 py-2 text-xs`}
             />
           </label>
-        </div>
-      </AccountSectionCard>
+            </div>
+          </div>
 
-      <AccountSectionCard
-        id="account-pin"
-        eyebrow="Validation express"
-        title="PIN de validation du retrait"
-        description={`Réglage de retrait pour ${selectedMerchant.companyName}. Le PIN contient 4 à 6 chiffres et permet à un employé de valider un lot depuis le QR code.`}
-        icon={ShieldCheck}
-      >
-        <p className="mb-5 max-w-2xl text-xs leading-5 text-ash">
-          Le PIN ne sera jamais affiché après son enregistrement.
-        </p>
-        <div className="mt-5 grid gap-4 md:grid-cols-2 md:items-end">
+          <div id="account-pin" className="mt-8 scroll-mt-28 border-t border-border/70 pt-6">
+            <div className="mb-4">
+              <div className="flex items-center gap-2.5">
+                <ShieldCheck className="h-4 w-4 text-primary-action-accent" aria-hidden="true" />
+                <h3 className="text-base font-semibold text-graphite">Code PIN de retrait</h3>
+              </div>
+              <p className="mt-1 text-sm text-ash">Le PIN de {selectedMerchant.companyName} permet à un employé de valider un lot depuis le QR code.</p>
+            </div>
+            <p className="mb-5 max-w-2xl text-xs leading-5 text-ash">
+              Le PIN doit contenir 4 à 6 chiffres et ne sera jamais affiché après son enregistrement.
+            </p>
+            <div className="grid gap-4 md:grid-cols-2 md:items-end">
           <label className="text-sm">
             <span className="mb-2 block text-ash">Nouveau PIN commerçant</span>
             <input
@@ -489,13 +501,15 @@ export function AccountSettingsForm({
               className={inputClass}
             />
           </label>
-          <p className="rounded-[12px] border border-[#dbe4f0] bg-[#f8fafc] px-4 py-3 text-sm text-ash">
-            {merchant.redemptionPinConfigured
+              <p className="rounded-[12px] border border-[#dbe4f0] bg-[#f8fafc] px-4 py-3 text-sm text-ash">
+            {selectedMerchant.redemptionPinConfigured
               ? "Un PIN est déjà configuré. Laissez ce champ vide pour le conserver."
               : "Aucun PIN n’est configuré. Ajoutez-en un pour activer la validation express."}
-          </p>
+              </p>
+            </div>
+          </div>
         </div>
-      </AccountSectionCard>
+      </section>
 
       {affiliateSummary?.account.status === "active" ? (
         <AffiliateReferralCard summary={affiliateSummary} />
