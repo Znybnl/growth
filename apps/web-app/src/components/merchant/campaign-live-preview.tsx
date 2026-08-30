@@ -241,9 +241,10 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
   const previewHeadingTextColor = isCosmicTemplate || (preview.gamePageTemplateId === "scratch-vault" && preview.headingTextColor.toLowerCase() === "#1f2937") ? "#f8fbff" : preview.headingTextColor;
   const restaurantPopHeadingLines = buildRestaurantPopHeadingLines(preview.subtitle);
   const previewFrameClass = compact ? "h-full min-h-0 max-w-none rounded-[30px] px-3 pb-5 pt-7" : "min-h-[600px] max-w-[450px] rounded-[38px] px-4 pb-6 pt-8";
+  const previewWrapperClass = compact ? "h-full" : flushTop ? "" : "mt-6";
 
   return (
-    <div className={flushTop ? "" : "mt-6"}>
+    <div className={previewWrapperClass}>
       <div className={`mx-auto w-full overflow-hidden border border-[#ced7e6] shadow-[0_30px_70px_rgba(18,24,39,0.18)] ${previewFrameClass}`} style={{ ...preview.backgroundStyle, ...(compact ? { containerType: "inline-size" } : {}) }}>
         {showStandardHeader ? (
           <>
