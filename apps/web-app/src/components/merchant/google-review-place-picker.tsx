@@ -39,6 +39,7 @@ export function GoogleReviewPlacePicker({
   const [places, setPlaces] = useState<GoogleReviewPlace[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [hasUserEditedQuery, setHasUserEditedQuery] = useState(false);
   const [manualMode, setManualMode] = useState(
     allowManualInput && Boolean(value) && !isGoogleGeneratedReviewUrl(value),
   );
@@ -50,8 +51,9 @@ export function GoogleReviewPlacePicker({
       return "";
     }
   }, [value]);
+
   useEffect(() => {
-    if (manualMode) return;
+    if (manualMode || (selectedPlaceId && !hasUserEditedQuery)) return;
 
     const trimmedQuery = query.trim();
     if (trimmedQuery.length < 3) {
@@ -108,7 +110,7 @@ export function GoogleReviewPlacePicker({
       controller.abort();
       window.clearTimeout(timeoutId);
     };
-  }, [allowManualInput, city, manualMode, query]);
+  }, [allowManualInput, city, hasUserEditedQuery, manualMode, query, selectedPlaceId]);
 
   return (
     <div className={compact ? "space-y-3" : "space-y-4"}>
@@ -123,6 +125,7 @@ export function GoogleReviewPlacePicker({
               type="search"
               value={query}
               onChange={(event) => {
+                setHasUserEditedQuery(true);
                 setManualMode(false);
                 setQuery(event.target.value);
                 if (event.target.value.trim().length < 3) {
@@ -136,6 +139,12 @@ export function GoogleReviewPlacePicker({
           </div>
         </div>
 
+        {selectedPlaceId && !hasUserEditedQuery && !isLoading ? (
+          <p className="mt-3 rounded-[18px] border border-[#cfe1ff] bg-[#eef5ff] px-4 py-3 text-sm text-[#31558f]">
+            Établissement Google sélectionné. Une nouvelle recherche sera lancée uniquement si vous modifiez la saisie.
+          </p>
+        ) : null}
+
         {!manualMode && (isLoading || places.length > 0 || message) ? (
           <div className="mt-3 space-y-2">
             {isLoading ? (
@@ -148,12 +157,13 @@ export function GoogleReviewPlacePicker({
                 key={place.placeId}
                 type="button"
                 onClick={() => {
+                  setHasUserEditedQuery(false);
                   onChange(place.reviewUrl);
                   onAddressChange?.(place.address);
                   onPhoneChange?.(place.phone);
                   setQuery(`${place.name}${place.address ? ` · ${place.address}` : ""}`);
                   setPlaces([]);
-                  setMessage("Lien d'avis Google généré automatiquement.");
+                  setMessage(null);
                 }}
                 className={`w-full rounded-[18px] border px-4 py-3 text-left transition hover:border-[#2f6df6] hover:bg-white ${
                   selectedPlaceId === place.placeId

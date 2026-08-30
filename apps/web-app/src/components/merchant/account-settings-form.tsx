@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { ArrowUpRight, CheckCircle2, Handshake, Link2, ShieldCheck, Store, UserRound } from "lucide-react";
 
+import { AccountSectionCard } from "@/components/merchant/account-section-card";
+import { AccountLocationPanel } from "@/components/merchant/account-location-panel";
 import { AffiliateReferralCard } from "@/components/merchant/affiliate-referral-card";
 import { GoogleReviewPlacePicker } from "@/components/merchant/google-review-place-picker";
 import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
@@ -14,24 +17,23 @@ import {
   AffiliateSummary,
   Merchant,
   MerchantAccountSettingsInput,
+  MerchantLocationAccess,
   MerchantUser,
 } from "@/lib/types";
 
 type AccountSettingsFormProps = {
   merchant: Merchant;
   user: MerchantUser;
+  locations: MerchantLocationAccess[];
   affiliateSummary?: AffiliateSummary | null;
+  onDirtyChange?: (isDirty: boolean) => void;
 };
 
 const inputClass =
-  "w-full rounded-[12px] border border-[#cfcfcf] bg-white px-4 py-4 text-graphite outline-none transition focus:border-signal-blue focus:shadow-[0_0_0_3px_rgba(0,153,255,0.16)]";
+  "w-full min-h-[var(--okado-control-height)] rounded-[var(--okado-radius-control)] border border-[var(--okado-border-control)] bg-white px-4 py-2.5 text-sm text-graphite outline-none transition placeholder:text-ash focus:border-signal-blue focus:shadow-[0_0_0_3px_rgba(0,153,255,0.16)]";
 
-export function AccountSettingsForm({
-  merchant,
-  user,
-  affiliateSummary,
-}: AccountSettingsFormProps) {
-  const [form, setForm] = useState<MerchantAccountSettingsInput>({
+function createAccountSettingsForm(merchant: Merchant, user: MerchantUser): MerchantAccountSettingsInput {
+  return {
     companyName: merchant.companyName,
     industry: merchant.industry ?? "Restauration",
     restaurantType: merchant.restaurantType ?? "Brasserie",
@@ -53,12 +55,41 @@ export function AccountSettingsForm({
     firstName: user.firstName,
     lastName: user.lastName,
     email: user.email,
-  });
+  };
+}
+
+export function AccountSettingsForm({
+  merchant,
+  user,
+  locations,
+  affiliateSummary,
+  onDirtyChange,
+}: AccountSettingsFormProps) {
+  const [selectedLocationId, setSelectedLocationId] = useState(merchant.id);
+  const [pendingLocationId, setPendingLocationId] = useState<string | null>(null);
+  const [form, setForm] = useState<MerchantAccountSettingsInput>(() => createAccountSettingsForm(merchant, user));
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
   const actionsAnchorRef = useRef<HTMLDivElement>(null);
   const [showStickyActions, setShowStickyActions] = useState(false);
+
+  const selectedMerchant =
+    selectedLocationId === merchant.id
+      ? merchant
+      : locations.find(({ merchant: location }) => location.id === selectedLocationId)?.merchant ?? merchant;
+
+  useEffect(() => {
+    function handleBeforeUnload(event: BeforeUnloadEvent) {
+      if (!isDirty) return;
+      event.preventDefault();
+      event.returnValue = "";
+    }
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isDirty]);
 
   useEffect(() => {
     const anchor = actionsAnchorRef.current;
@@ -67,9 +98,10 @@ export function AccountSettingsForm({
       return;
     }
 
+    const scrollContainer = anchor.closest("main");
     const observer = new IntersectionObserver(
       ([entry]) => {
-        // The top action anchor is below the billing card. When the page opens,
+        // The top action anchor is below the account header and billing card. When the page opens,
         // it can be below the viewport without having been scrolled past; that
         // must not activate the sticky action bar prematurely. Only show it
         // after the anchor has crossed the top edge of the scroll area.
@@ -77,7 +109,7 @@ export function AccountSettingsForm({
         const hasScrolledPastAnchor = entry.boundingClientRect.top < rootTop;
         setShowStickyActions(!entry.isIntersecting && hasScrolledPastAnchor);
       },
-      { threshold: 0, rootMargin: "-64px 0px 0px 0px" },
+      { threshold: 0, root: scrollContainer },
     );
 
     observer.observe(anchor);
@@ -87,10 +119,42 @@ export function AccountSettingsForm({
   const isRestaurant = isRestaurantIndustry(form.industry);
   const placeLabel = isRestaurant ? "restaurant" : "commerce";
 
+  function applyLocationSelection(locationId: string) {
+    const nextMerchant =
+      locationId === merchant.id
+        ? merchant
+        : locations.find(({ merchant: location }) => location.id === locationId)?.merchant;
+
+    if (!nextMerchant) return;
+
+    setSelectedLocationId(locationId);
+    setForm(createAccountSettingsForm(nextMerchant, user));
+    setIsDirty(false);
+    onDirtyChange?.(false);
+    setError(null);
+    setIsSuccessOpen(false);
+    setPendingLocationId(null);
+  }
+
+  function requestLocationSelection(locationId: string) {
+    if (locationId === selectedLocationId) return;
+
+    if (isDirty) {
+      setPendingLocationId(locationId);
+      return;
+    }
+
+    applyLocationSelection(locationId);
+  }
+
   function updateField<Key extends keyof MerchantAccountSettingsInput>(
     key: Key,
     value: MerchantAccountSettingsInput[Key],
   ) {
+    if (!isDirty) {
+      setIsDirty(true);
+      onDirtyChange?.(true);
+    }
     setForm((current) => ({ ...current, [key]: value }));
   }
 
@@ -104,7 +168,7 @@ export function AccountSettingsForm({
       const response = await fetch("/api/account", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, locationId: selectedLocationId }),
       });
       const payload = (await response.json()) as { error?: string };
 
@@ -112,6 +176,8 @@ export function AccountSettingsForm({
         throw new Error(payload.error ?? "Mise à jour impossible.");
       }
 
+      setIsDirty(false);
+      onDirtyChange?.(false);
       setIsSuccessOpen(true);
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : "Mise à jour impossible.");
@@ -121,8 +187,8 @@ export function AccountSettingsForm({
   }
 
   return (
-    <form id="account-settings-form" className="space-y-6" onSubmit={handleSubmit}>
-      <div className="pointer-events-none sticky top-[-20px] z-20 hidden h-0 overflow-visible xl:-mb-6 xl:block">
+    <form id="account-settings-form" onSubmit={handleSubmit}>
+      <div className="pointer-events-none sticky -top-5 z-20 h-0 overflow-visible">
         <div
           className={`pointer-events-auto -mx-3 border-b border-border bg-linen-canvas/95 px-3 py-2 shadow-[0_8px_18px_rgba(18,24,39,0.08)] backdrop-blur-sm transition-all duration-200 lg:-mx-6 lg:px-6 ${
             showStickyActions ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
@@ -142,9 +208,15 @@ export function AccountSettingsForm({
         </div>
       </div>
       <div ref={actionsAnchorRef} className="h-px" aria-hidden="true" />
-      <section className="okado-card p-6 md:p-8">
-        <p className="okado-label">Utilisateur</p>
-        <p className="mt-3 text-xs text-ash">
+      <div className="space-y-6">
+        <AccountSectionCard
+        id="account-user"
+        eyebrow="Mon compte"
+        title="Informations de connexion"
+        description="Ces informations identifient la personne qui administre le compte Okado."
+        icon={UserRound}
+      >
+        <p className="mb-4 text-xs text-ash">
           <span className="text-[#b42318]" aria-hidden="true">*</span> Champs obligatoires
         </p>
         <div className="mt-6 grid gap-4 md:grid-cols-2">
@@ -183,13 +255,39 @@ export function AccountSettingsForm({
             />
           </label>
         </div>
-      </section>
+        </AccountSectionCard>
 
-      <section className="okado-card p-6 md:p-8">
-        <p className="okado-label">
-          {isRestaurant ? "Restaurant" : "Commerce"}
-        </p>
-        <div className="mt-6 grid gap-4 md:grid-cols-2">
+        <AccountLocationPanel
+          merchant={selectedMerchant}
+          locations={locations}
+          onSelectLocation={requestLocationSelection}
+        />
+
+        <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_280px]">
+        <div className="space-y-6">
+      <section className="okado-card scroll-mt-28 p-5 md:p-6">
+        <div className="flex items-start gap-3 border-b border-border/70 pb-5">
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[12px] bg-sky-wash text-primary-action-accent">
+            <Store className="h-5 w-5" aria-hidden="true" />
+          </span>
+          <div>
+            <p className="okado-label">Établissement édité</p>
+            <h2 className="mt-1.5 text-xl font-semibold tracking-[-0.02em] text-graphite">Configuration de {selectedMerchant.companyName}</h2>
+            <p className="mt-1.5 max-w-2xl text-sm leading-6 text-ash">Les informations, liens marketing et le code PIN regroupés ici concernent uniquement l’établissement sélectionné.</p>
+          </div>
+        </div>
+        <div className="pt-5">
+          <div className="mb-5 flex flex-wrap items-center gap-x-3 gap-y-1.5 rounded-[14px] border border-[#dbe7ff] bg-[#f4f7ff] px-3.5 py-3">
+          <span className="rounded-full bg-[#145aff] px-2.5 py-1 text-[11px] font-semibold text-white">Vous modifiez</span>
+          <strong className="text-sm text-[#101c38]">{selectedMerchant.companyName}</strong>
+          <span className="text-xs text-[#60708a]">Les champs ci-dessous ne changent pas l’établissement actif global.</span>
+          </div>
+          <div id="account-location" className="scroll-mt-28">
+            <div className="mb-4">
+              <h3 className="text-base font-semibold text-graphite">Informations générales</h3>
+              <p className="mt-1 text-sm text-ash">Identité, coordonnées et paramètres de fonctionnement de l’établissement.</p>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2">
           <label className="text-sm">
             <span className="mb-2 block text-ash">
               Nom du commerce <span className="text-[#b42318]" aria-hidden="true">*</span>
@@ -290,16 +388,25 @@ export function AccountSettingsForm({
               className={inputClass}
             />
           </label>
-        </div>
-      </section>
+            </div>
+          </div>
 
-      <section className="okado-card p-6 md:p-8">
-        <p className="okado-label">Canaux marketing</p>
-        <div className="mt-6 grid gap-4 md:grid-cols-2">
-          <div className="md:col-span-2">
-            <div className="mb-3 flex items-center gap-3 text-sm font-semibold text-graphite">
+          <div id="account-channels" className="mt-8 scroll-mt-28 border-t border-border/70 pt-6">
+            <div className="mb-4">
+              <div className="flex items-center gap-2.5">
+                <Link2 className="h-4 w-4 text-primary-action-accent" aria-hidden="true" />
+                <h3 className="text-base font-semibold text-graphite">Liens marketing</h3>
+              </div>
+              <p className="mt-1 text-sm text-ash">Ajoutez les liens que vos participants pourront retrouver après leur participation.</p>
+            </div>
+            <div className="grid gap-2.5 md:grid-cols-2">
+          <div className="rounded-[14px] border border-[#dbe4f0] bg-[#f8fafc] p-3 md:col-span-2">
+            <div className="mb-2.5 flex flex-wrap items-center justify-between gap-2 text-sm font-semibold text-graphite">
+              <div className="flex items-center gap-3">
               <SocialChannelIcon channel="googleReview" />
               <span>Avis Google</span>
+              </div>
+              <span className="text-[11px] font-medium text-[#7b879a]">{form.googleReviewUrl ? "Renseigné" : "Recommandé"}</span>
             </div>
             <GoogleReviewPlacePicker
               value={form.googleReviewUrl}
@@ -310,74 +417,76 @@ export function AccountSettingsForm({
               allowManualInput={false}
             />
           </div>
-          <label className="text-sm">
-            <span className="mb-2 flex items-center gap-3 text-ash"><SocialChannelIcon channel="instagram" /><span>Instagram</span></span>
+          <label className="rounded-[14px] border border-[#dbe4f0] bg-white p-3 text-sm">
+            <span className="mb-2 flex items-center justify-between gap-3 text-ash"><span className="flex items-center gap-3"><SocialChannelIcon channel="instagram" /><span>Instagram</span></span><span className="text-[11px]">{form.instagramUrl ? "Renseigné" : "Optionnel"}</span></span>
             <input
               type="text"
               inputMode="url"
               value={form.instagramUrl}
               onChange={(event) => updateField("instagramUrl", event.target.value)}
               placeholder="https://instagram.com/..."
-              className={inputClass}
+              className={`${inputClass} min-h-[40px] px-3 py-2 text-xs`}
             />
           </label>
-          <label className="text-sm">
-            <span className="mb-2 flex items-center gap-3 text-ash"><SocialChannelIcon channel="facebook" /><span>Facebook</span></span>
+          <label className="rounded-[14px] border border-[#dbe4f0] bg-white p-3 text-sm">
+            <span className="mb-2 flex items-center justify-between gap-3 text-ash"><span className="flex items-center gap-3"><SocialChannelIcon channel="facebook" /><span>Facebook</span></span><span className="text-[11px]">{form.facebookUrl ? "Renseigné" : "Optionnel"}</span></span>
             <input
               type="text"
               inputMode="url"
               value={form.facebookUrl}
               onChange={(event) => updateField("facebookUrl", event.target.value)}
               placeholder="https://facebook.com/..."
-              className={inputClass}
+              className={`${inputClass} min-h-[40px] px-3 py-2 text-xs`}
             />
           </label>
-          <label className="text-sm">
-            <span className="mb-2 flex items-center gap-3 text-ash"><SocialChannelIcon channel="tiktok" /><span>TikTok</span></span>
+          <label className="rounded-[14px] border border-[#dbe4f0] bg-white p-3 text-sm">
+            <span className="mb-2 flex items-center justify-between gap-3 text-ash"><span className="flex items-center gap-3"><SocialChannelIcon channel="tiktok" /><span>TikTok</span></span><span className="text-[11px]">{form.tiktokUrl ? "Renseigné" : "Optionnel"}</span></span>
             <input
               type="text"
               inputMode="url"
               value={form.tiktokUrl}
               onChange={(event) => updateField("tiktokUrl", event.target.value)}
               placeholder="https://tiktok.com/@..."
-              className={inputClass}
+              className={`${inputClass} min-h-[40px] px-3 py-2 text-xs`}
             />
           </label>
-          <label className="text-sm">
-            <span className="mb-2 flex items-center gap-3 text-ash"><SocialChannelIcon channel="tripadvisor" /><span>Tripadvisor</span></span>
+          <label className="rounded-[14px] border border-[#dbe4f0] bg-white p-3 text-sm">
+            <span className="mb-2 flex items-center justify-between gap-3 text-ash"><span className="flex items-center gap-3"><SocialChannelIcon channel="tripadvisor" /><span>Tripadvisor</span></span><span className="text-[11px]">{form.tripadvisorUrl ? "Renseigné" : "Optionnel"}</span></span>
             <input
               type="text"
               inputMode="url"
               value={form.tripadvisorUrl}
               onChange={(event) => updateField("tripadvisorUrl", event.target.value)}
               placeholder="https://tripadvisor.com/..."
-              className={inputClass}
+              className={`${inputClass} min-h-[40px] px-3 py-2 text-xs`}
             />
           </label>
-          <label className="text-sm md:col-span-2">
-            <span className="mb-2 flex items-center gap-3 text-ash"><SocialChannelIcon channel="custom" /><span>Lien personnalisé</span></span>
+          <label className="rounded-[14px] border border-[#dbe4f0] bg-white p-3 text-sm md:col-span-2">
+            <span className="mb-2 flex items-center justify-between gap-3 text-ash"><span className="flex items-center gap-3"><SocialChannelIcon channel="custom" /><span>Lien personnalisé</span></span><span className="text-[11px]">{form.customLinkUrl ? "Renseigné" : "Optionnel"}</span></span>
             <input
               type="text"
               inputMode="url"
               value={form.customLinkUrl}
               onChange={(event) => updateField("customLinkUrl", event.target.value)}
               placeholder="https://..."
-              className={inputClass}
+              className={`${inputClass} min-h-[40px] px-3 py-2 text-xs`}
             />
           </label>
-        </div>
-      </section>
+            </div>
+          </div>
 
-      <section className="okado-card p-6 md:p-8">
-        <p className="okado-label">Validation express</p>
-        <h2 className="mt-3 font-display text-3xl font-semibold text-graphite">
-          PIN de validation du retrait
-        </h2>
-        <p className="mt-3 max-w-2xl text-sm leading-7 text-ash">
-          Ce PIN permet à un employé de valider un lot depuis le QR code, sans se connecter à Okado.
-          Il doit contenir 4 à 6 chiffres et ne sera jamais affiché après son enregistrement.
-        </p>
-        <div className="mt-5 grid gap-4 md:grid-cols-2 md:items-end">
+          <div id="account-pin" className="mt-8 scroll-mt-28 border-t border-border/70 pt-6">
+            <div className="mb-4">
+              <div className="flex items-center gap-2.5">
+                <ShieldCheck className="h-4 w-4 text-primary-action-accent" aria-hidden="true" />
+                <h3 className="text-base font-semibold text-graphite">Code PIN de retrait</h3>
+              </div>
+              <p className="mt-1 text-sm text-ash">Le PIN de {selectedMerchant.companyName} permet à un employé de valider un lot depuis le QR code.</p>
+            </div>
+            <p className="mb-5 max-w-2xl text-xs leading-5 text-ash">
+              Le PIN doit contenir 4 à 6 chiffres et ne sera jamais affiché après son enregistrement.
+            </p>
+            <div className="grid gap-4 md:grid-cols-2 md:items-end">
           <label className="text-sm">
             <span className="mb-2 block text-ash">Nouveau PIN commerçant</span>
             <input
@@ -392,37 +501,84 @@ export function AccountSettingsForm({
               className={inputClass}
             />
           </label>
-          <p className="rounded-[12px] border border-[#dbe4f0] bg-[#f8fafc] px-4 py-3 text-sm text-ash">
-            {merchant.redemptionPinConfigured
+              <p className="rounded-[12px] border border-[#dbe4f0] bg-[#f8fafc] px-4 py-3 text-sm text-ash">
+            {selectedMerchant.redemptionPinConfigured
               ? "Un PIN est déjà configuré. Laissez ce champ vide pour le conserver."
               : "Aucun PIN n’est configuré. Ajoutez-en un pour activer la validation express."}
-          </p>
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
       {affiliateSummary?.account.status === "active" ? (
         <AffiliateReferralCard summary={affiliateSummary} />
       ) : (
-        <section className="okado-card p-6 md:p-8">
-          <p className="okado-label">Parrainage</p>
-          <h2 className="mt-3 font-display text-3xl font-semibold text-graphite">
-            Programme d&apos;affiliation
-          </h2>
-          <p className="mt-4 max-w-2xl text-sm leading-7 text-ash">
+        <AccountSectionCard
+          eyebrow="Développement"
+          title="Programme d’affiliation"
+          description="Développez votre activité en recommandant Okado à d’autres établissements."
+          icon={Handshake}
+        >
+          <p className="max-w-2xl text-sm leading-7 text-ash">
             Le programme d&apos;affiliation n&apos;est pas encore activé sur votre compte. Contactez{" "}
             <a className="okado-link" href="mailto:contact@okado.app">
               contact@okado.app
             </a>{" "}
             pour rejoindre le programme d&apos;affiliation.
           </p>
-        </section>
+        </AccountSectionCard>
       )}
+        </div>
+
+        <aside className="space-y-4 xl:sticky xl:top-24">
+          <section className="okado-compact-card bg-white p-5">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="okado-label">Vue d’ensemble</p>
+                <h2 className="mt-1.5 text-lg font-semibold tracking-[-0.02em] text-graphite">Configuration</h2>
+              </div>
+              <span className="grid h-9 w-9 place-items-center rounded-full bg-[#edf9f1] text-[#16834e]"><CheckCircle2 className="h-5 w-5" aria-hidden="true" /></span>
+            </div>
+            <div className="mt-5 space-y-3">
+              {[
+                { label: "Informations principales", done: Boolean(selectedMerchant.companyName && selectedMerchant.city) },
+                { label: "Canal Google", done: Boolean(selectedMerchant.googleReviewUrl) },
+                { label: "Canaux marketing", done: Boolean(selectedMerchant.googleReviewUrl || selectedMerchant.instagramUrl || selectedMerchant.facebookUrl || selectedMerchant.tiktokUrl || selectedMerchant.tripadvisorUrl || selectedMerchant.customLinkUrl) },
+                { label: "PIN de retrait", done: Boolean(selectedMerchant.redemptionPinConfigured) },
+              ].map((item) => (
+                <div key={item.label} className="flex items-center gap-2.5 text-sm">
+                  <span className={`grid h-5 w-5 place-items-center rounded-full ${item.done ? "bg-[#e5f8ed] text-[#16834e]" : "bg-[#f1f3f7] text-[#98a1b2]"}`}><CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" /></span>
+                  <span className={item.done ? "text-graphite" : "text-ash"}>{item.label}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+          <nav aria-label="Sections de l’établissement" className="okado-compact-card bg-white p-3">
+            <p className="px-2 py-2 text-xs font-medium uppercase tracking-[0.14em] text-fog">Accès rapide</p>
+            {[['account-location', 'Informations'], ['account-channels', 'Canaux marketing'], ['account-pin', 'Validation express']].map(([id, label]) => (
+              <a key={id} href={`#${id}`} className="flex items-center justify-between rounded-[10px] px-2 py-2.5 text-sm text-ash transition hover:bg-sky-wash hover:text-graphite">{label}<ArrowUpRight className="h-4 w-4" aria-hidden="true" /></a>
+            ))}
+          </nav>
+        </aside>
+        </div>
 
       {error ? (
-        <div className="rounded-[8px] border border-[#f6c4bb] bg-[#fff1ee] px-4 py-3 text-sm text-[#8b2c18]">
-          {error}
-        </div>
-      ) : null}
+          <div className="rounded-[8px] border border-[#f6c4bb] bg-[#fff1ee] px-4 py-3 text-sm text-[#8b2c18]">
+            {error}
+          </div>
+        ) : null}
+      </div>
+      <ValidationDialog
+        open={pendingLocationId !== null}
+        title="Afficher cet établissement ?"
+        description="Le formulaire inférieur sera rechargé avec les informations de l’établissement choisi. Votre établissement actif dans le reste de l’application ne changera pas."
+        ctaLabel="Afficher l’établissement"
+        onClose={() => setPendingLocationId(null)}
+        onAction={() => {
+          if (pendingLocationId) applyLocationSelection(pendingLocationId);
+        }}
+      />
       <ValidationDialog
         open={isSuccessOpen}
         title="Vos modifications sont enregistrées"

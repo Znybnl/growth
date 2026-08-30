@@ -1,42 +1,28 @@
 "use client";
 
-import { Plus, X } from "lucide-react";
+import { Building2, Check, MapPin, Plus, X } from "lucide-react";
 import { useState } from "react";
 
-import { AccountSettingsForm } from "@/components/merchant/account-settings-form";
 import { FieldSelect, Input } from "@/components/ui/field";
-import { AffiliateSummary, Merchant, MerchantLocationAccess, MerchantUser } from "@/lib/types";
+import { Merchant, MerchantLocationAccess } from "@/lib/types";
 
 type AccountLocationPanelProps = {
   merchant: Merchant;
-  user: MerchantUser;
   locations: MerchantLocationAccess[];
-  affiliateSummary?: AffiliateSummary | null;
+  onSelectLocation: (locationId: string) => void;
 };
 
-export function AccountLocationPanel({ merchant, user, locations, affiliateSummary }: AccountLocationPanelProps) {
+export function AccountLocationPanel({ merchant, locations, onSelectLocation }: AccountLocationPanelProps) {
   const [isAdding, setIsAdding] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({ companyName: "", city: "", address: "", timeZone: "Europe/Paris" });
 
-  async function selectLocation(locationId: string) {
-    if (locationId === merchant.id) return;
-    setError(null);
-    const response = await fetch("/api/merchant/location", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ locationId }),
-    });
-    if (!response.ok) {
-      setError("L’établissement n’a pas pu être sélectionné.");
+  async function addLocation() {
+    if (!form.companyName.trim() || !form.city.trim()) {
+      setError("Renseignez le nom et la ville de l’établissement.");
       return;
     }
-    window.location.assign("/account");
-  }
-
-  async function addLocation(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
     setIsSaving(true);
     setError(null);
     try {
@@ -47,12 +33,6 @@ export function AccountLocationPanel({ merchant, user, locations, affiliateSumma
       });
       const payload = (await response.json()) as { merchant?: Merchant; error?: string };
       if (!response.ok || !payload.merchant) throw new Error(payload.error ?? "L’établissement n’a pas pu être créé.");
-      const switchResponse = await fetch("/api/merchant/location", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ locationId: payload.merchant.id }),
-      });
-      if (!switchResponse.ok) throw new Error("L’établissement a été créé, mais il n’a pas pu être sélectionné.");
       window.location.assign("/account");
     } catch (saveError) {
       setError(saveError instanceof Error ? saveError.message : "L’établissement n’a pas pu être créé.");
@@ -62,35 +42,87 @@ export function AccountLocationPanel({ merchant, user, locations, affiliateSumma
   }
 
   return (
-    <div className="space-y-4">
-      <section className="okado-card flex flex-col gap-4 p-5 md:flex-row md:items-end md:justify-between">
-        <div>
-          <p className="okado-label">Établissement géré</p>
-          <p className="mt-2 text-sm text-ash">Les informations, canaux marketing et le PIN ci-dessous concernent l’établissement sélectionné.</p>
+    <>
+      <section className="rounded-[24px] border border-[#dbe4f0] bg-white p-5 shadow-[0_16px_42px_rgba(122,136,166,0.08)] md:p-6">
+        <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
+          <div className="flex items-start gap-3.5">
+            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[14px] bg-[#edf3ff] text-[#145aff]">
+              <Building2 className="h-5 w-5" aria-hidden="true" />
+            </span>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#60708a]">Contexte du formulaire</p>
+              <h2 className="mt-1.5 text-xl font-semibold tracking-[-0.03em] text-[#101c38]">Quel établissement souhaitez-vous modifier ?</h2>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-[#68758b]">Choisissez une carte : les informations affichées dans le formulaire inférieur seront remplacées par celles de cet établissement.</p>
+            </div>
+          </div>
+          <button type="button" onClick={() => setIsAdding(true)} className="inline-flex h-[42px] items-center justify-center gap-2 rounded-[12px] border border-[#cfd9e8] bg-white px-4 text-sm font-semibold text-[#101c38] transition hover:border-[#9fb8e8] hover:bg-[#f5f8ff]">
+            <Plus className="h-4 w-4" aria-hidden="true" />
+            Ajouter
+          </button>
         </div>
-        <div className="flex w-full flex-col gap-3 sm:flex-row md:w-auto">
-          <FieldSelect value={merchant.id} onChange={(event) => void selectLocation(event.target.value)} aria-label="Sélectionner un établissement" className="min-w-[240px]">
-            {locations.map(({ merchant: location }) => <option key={location.id} value={location.id}>{location.companyName} · {location.city || "Ville à renseigner"}</option>)}
-          </FieldSelect>
-          <button type="button" onClick={() => setIsAdding(true)} className="inline-flex items-center justify-center gap-2 rounded-[12px] bg-[#111c35] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#1d2b4d]"><Plus className="h-4 w-4" />Ajouter</button>
+
+        <div className="mt-5 rounded-[16px] border border-[#b8cdfd] bg-[#f4f7ff] px-4 py-3.5">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+            <span className="rounded-full bg-[#145aff] px-2.5 py-1 text-[11px] font-semibold text-white">Formulaire affiché ci-dessous</span>
+            <strong className="text-sm text-[#101c38]">{merchant.companyName}</strong>
+            <span className="flex items-center gap-1.5 text-xs text-[#60708a]"><MapPin className="h-3.5 w-3.5" aria-hidden="true" />{merchant.city || "Ville à renseigner"}{merchant.address ? ` · ${merchant.address}` : ""}</span>
+          </div>
+          <p className="mt-2 text-xs leading-5 text-[#526078]">La sélection ci-dessus ne change pas l’établissement actif dans le reste de l’application.</p>
+        </div>
+
+        <div className="mt-5">
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#60708a]">Vos établissements</p>
+            <span className="text-xs text-[#8a96a8]">{locations.length} sélectionnable{locations.length > 1 ? "s" : ""}</span>
+          </div>
+          <div className="grid gap-2.5 sm:grid-cols-2 xl:grid-cols-3">
+            {locations.map(({ merchant: location }) => {
+              const isSelected = location.id === merchant.id;
+              return (
+                <button
+                  key={location.id}
+                  type="button"
+                  onClick={() => onSelectLocation(location.id)}
+                  aria-pressed={isSelected}
+                  className={`group flex min-h-[76px] items-center gap-3 rounded-[14px] border px-3.5 py-3 text-left transition ${isSelected ? "border-[#145aff] bg-[#f4f7ff] ring-2 ring-[#145aff]/10" : "border-[#e0e6ef] bg-white hover:border-[#9fb8e8] hover:bg-[#fbfcff]"}`}
+                >
+                  <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-[11px] ${isSelected ? "bg-[#145aff] text-white" : "bg-[#f1f4f8] text-[#65748b]"}`}><Building2 className="h-4 w-4" aria-hidden="true" /></span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-semibold text-[#101c38]">{location.companyName}</span>
+                    <span className="mt-1 block truncate text-xs text-[#758198]">{location.city || "Ville à renseigner"}</span>
+                  </span>
+                  {isSelected ? <span className="flex shrink-0 items-center gap-1 text-[11px] font-semibold text-[#145aff]"><Check className="h-3.5 w-3.5" aria-hidden="true" />Affiché</span> : null}
+                </button>
+              );
+            })}
+            <button type="button" onClick={() => setIsAdding(true)} className="flex min-h-[76px] items-center justify-center gap-2 rounded-[14px] border border-dashed border-[#cbd6e5] px-3 text-sm font-semibold text-[#60708a] transition hover:border-[#9fb8e8] hover:bg-[#fbfcff]">
+              <Plus className="h-4 w-4" aria-hidden="true" /> Ajouter un établissement
+            </button>
+          </div>
         </div>
       </section>
+
       {error ? <div role="alert" className="rounded-[12px] border border-[#f2c8c8] bg-[#fff4f4] px-4 py-3 text-sm text-[#a11a1a]">{error}</div> : null}
-      <AccountSettingsForm key={merchant.id} merchant={merchant} user={user} affiliateSummary={affiliateSummary} />
+
       {isAdding ? (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-midnight-ink/30 p-3 backdrop-blur-sm md:items-center">
-          <section role="dialog" aria-modal="true" className="w-full max-w-lg rounded-[var(--okado-radius-modal)] border border-border bg-sky-wash p-6 shadow-[var(--shadow-product-card)] md:p-8">
-            <div className="flex items-start justify-between gap-4"><div><p className="okado-label">Nouvel établissement</p><h2 className="okado-section-title mt-2">Ajouter un établissement</h2></div><button type="button" onClick={() => setIsAdding(false)} aria-label="Fermer" className="rounded-full p-2 text-ash hover:bg-white"><X className="h-5 w-5" /></button></div>
-            <form onSubmit={addLocation} className="mt-6 space-y-4">
-              <label className="block text-sm"><span className="mb-2 block text-ash">Nom de l’établissement</span><Input value={form.companyName} onChange={(event) => setForm((current) => ({ ...current, companyName: event.target.value }))} required placeholder="Maison Sora République" /></label>
-              <label className="block text-sm"><span className="mb-2 block text-ash">Ville</span><Input value={form.city} onChange={(event) => setForm((current) => ({ ...current, city: event.target.value }))} required placeholder="Paris République" /></label>
-              <label className="block text-sm"><span className="mb-2 block text-ash">Adresse</span><Input value={form.address} onChange={(event) => setForm((current) => ({ ...current, address: event.target.value }))} placeholder="12 rue..." /></label>
-              <label className="block text-sm"><span className="mb-2 block text-ash">Fuseau horaire</span><FieldSelect value={form.timeZone} onChange={(event) => setForm((current) => ({ ...current, timeZone: event.target.value }))}><option value="Europe/Paris">France métropolitaine</option><option value="America/Toronto">Canada - Est</option></FieldSelect></label>
-              <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:justify-end"><button type="button" onClick={() => setIsAdding(false)} className="rounded-[12px] border border-border bg-white px-4 py-3 text-sm font-semibold text-graphite">Annuler</button><button type="submit" disabled={isSaving} className="rounded-[12px] bg-[#111c35] px-4 py-3 text-sm font-semibold text-white disabled:opacity-60">{isSaving ? "Création..." : "Créer et ouvrir"}</button></div>
-            </form>
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-midnight-ink/45 p-3 backdrop-blur-sm md:items-center md:p-6">
+          <section role="dialog" aria-modal="true" aria-labelledby="create-location-title" className="w-full max-w-xl rounded-[24px] border border-border bg-white p-6 shadow-[0_28px_80px_rgba(18,24,39,0.24)] md:p-8">
+            <div className="flex items-start justify-between gap-4">
+              <div><p className="okado-label">Nouveau périmètre</p><h2 id="create-location-title" className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-graphite">Ajouter un établissement</h2><p className="mt-2 text-sm leading-6 text-ash">Il sera ajouté à vos cartes sans modifier l’établissement actif dans le reste de l’application.</p></div>
+              <button type="button" onClick={() => setIsAdding(false)} aria-label="Fermer" className="grid h-9 w-9 shrink-0 place-items-center rounded-full text-ash transition hover:bg-sky-wash hover:text-graphite"><X className="h-5 w-5" /></button>
+            </div>
+            <div role="form" className="mt-7 space-y-4">
+              <label className="block text-sm"><span className="mb-2 block font-medium text-graphite">Nom de l’établissement</span><Input value={form.companyName} onChange={(event) => setForm((current) => ({ ...current, companyName: event.target.value }))} required placeholder="Maison Sora République" /></label>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <label className="block text-sm"><span className="mb-2 block font-medium text-graphite">Ville</span><Input value={form.city} onChange={(event) => setForm((current) => ({ ...current, city: event.target.value }))} required placeholder="Paris République" /></label>
+                <label className="block text-sm"><span className="mb-2 block font-medium text-graphite">Fuseau horaire</span><FieldSelect value={form.timeZone} onChange={(event) => setForm((current) => ({ ...current, timeZone: event.target.value }))}><option value="Europe/Paris">France métropolitaine</option><option value="America/Toronto">Canada - Est</option></FieldSelect></label>
+              </div>
+              <label className="block text-sm"><span className="mb-2 block font-medium text-graphite">Adresse</span><Input value={form.address} onChange={(event) => setForm((current) => ({ ...current, address: event.target.value }))} placeholder="12 rue..." /></label>
+              <div className="flex flex-col-reverse gap-3 border-t border-border/70 pt-5 sm:flex-row sm:justify-end"><button type="button" onClick={() => setIsAdding(false)} className="okado-secondary-action px-4 text-sm">Annuler</button><button type="button" onClick={() => void addLocation()} disabled={isSaving} className="okado-filled-action px-4 text-sm disabled:opacity-60">{isSaving ? "Création..." : "Créer l’établissement"}</button></div>
+            </div>
           </section>
         </div>
       ) : null}
-    </div>
+    </>
   );
 }
