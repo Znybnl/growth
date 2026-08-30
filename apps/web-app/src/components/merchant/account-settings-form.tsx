@@ -32,14 +32,8 @@ type AccountSettingsFormProps = {
 const inputClass =
   "w-full min-h-[var(--okado-control-height)] rounded-[var(--okado-radius-control)] border border-[var(--okado-border-control)] bg-white px-4 py-2.5 text-sm text-graphite outline-none transition placeholder:text-ash focus:border-signal-blue focus:shadow-[0_0_0_3px_rgba(0,153,255,0.16)]";
 
-export function AccountSettingsForm({
-  merchant,
-  user,
-  locations,
-  affiliateSummary,
-  onDirtyChange,
-}: AccountSettingsFormProps) {
-  const [form, setForm] = useState<MerchantAccountSettingsInput>({
+function createAccountSettingsForm(merchant: Merchant, user: MerchantUser): MerchantAccountSettingsInput {
+  return {
     companyName: merchant.companyName,
     industry: merchant.industry ?? "Restauration",
     restaurantType: merchant.restaurantType ?? "Brasserie",
@@ -61,13 +55,30 @@ export function AccountSettingsForm({
     firstName: user.firstName,
     lastName: user.lastName,
     email: user.email,
-  });
+  };
+}
+
+export function AccountSettingsForm({
+  merchant,
+  user,
+  locations,
+  affiliateSummary,
+  onDirtyChange,
+}: AccountSettingsFormProps) {
+  const [selectedLocationId, setSelectedLocationId] = useState(merchant.id);
+  const [pendingLocationId, setPendingLocationId] = useState<string | null>(null);
+  const [form, setForm] = useState<MerchantAccountSettingsInput>(() => createAccountSettingsForm(merchant, user));
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
   const actionsAnchorRef = useRef<HTMLDivElement>(null);
   const [showStickyActions, setShowStickyActions] = useState(false);
+
+  const selectedMerchant =
+    selectedLocationId === merchant.id
+      ? merchant
+      : locations.find(({ merchant: location }) => location.id === selectedLocationId)?.merchant ?? merchant;
 
   useEffect(() => {
     function handleBeforeUnload(event: BeforeUnloadEvent) {
@@ -108,6 +119,34 @@ export function AccountSettingsForm({
   const isRestaurant = isRestaurantIndustry(form.industry);
   const placeLabel = isRestaurant ? "restaurant" : "commerce";
 
+  function applyLocationSelection(locationId: string) {
+    const nextMerchant =
+      locationId === merchant.id
+        ? merchant
+        : locations.find(({ merchant: location }) => location.id === locationId)?.merchant;
+
+    if (!nextMerchant) return;
+
+    setSelectedLocationId(locationId);
+    setForm(createAccountSettingsForm(nextMerchant, user));
+    setIsDirty(false);
+    onDirtyChange?.(false);
+    setError(null);
+    setIsSuccessOpen(false);
+    setPendingLocationId(null);
+  }
+
+  function requestLocationSelection(locationId: string) {
+    if (locationId === selectedLocationId) return;
+
+    if (isDirty) {
+      setPendingLocationId(locationId);
+      return;
+    }
+
+    applyLocationSelection(locationId);
+  }
+
   function updateField<Key extends keyof MerchantAccountSettingsInput>(
     key: Key,
     value: MerchantAccountSettingsInput[Key],
@@ -129,7 +168,7 @@ export function AccountSettingsForm({
       const response = await fetch("/api/account", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, locationId: selectedLocationId }),
       });
       const payload = (await response.json()) as { error?: string };
 
@@ -218,18 +257,27 @@ export function AccountSettingsForm({
         </div>
         </AccountSectionCard>
 
-        <AccountLocationPanel merchant={merchant} locations={locations} isDirty={isDirty} />
+        <AccountLocationPanel
+          merchant={selectedMerchant}
+          locations={locations}
+          onSelectLocation={requestLocationSelection}
+        />
 
         <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_280px]">
         <div className="space-y-6">
       <AccountSectionCard
         id="account-location"
-        eyebrow="Établissement actif"
-        title={isRestaurant ? "Informations du restaurant" : "Informations du commerce"}
-        description="Ces informations peuvent être utilisées dans vos jeux, communications et expériences client."
+        eyebrow="Établissement édité"
+        title={isRestaurant ? "Informations du restaurant sélectionné" : "Informations du commerce sélectionné"}
+        description={`Les modifications concernent uniquement ${selectedMerchant.companyName}. Elles peuvent être utilisées dans vos jeux, communications et expériences client.`}
         icon={Store}
       >
-        <div className="mt-6 grid gap-4 md:grid-cols-2">
+        <div className="mb-5 flex flex-wrap items-center gap-x-3 gap-y-1.5 rounded-[14px] border border-[#dbe7ff] bg-[#f4f7ff] px-3.5 py-3">
+          <span className="rounded-full bg-[#145aff] px-2.5 py-1 text-[11px] font-semibold text-white">Vous modifiez</span>
+          <strong className="text-sm text-[#101c38]">{selectedMerchant.companyName}</strong>
+          <span className="text-xs text-[#60708a]">Les champs ci-dessous ne changent pas l’établissement actif global.</span>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2">
           <label className="text-sm">
             <span className="mb-2 block text-ash">
               Nom du commerce <span className="text-[#b42318]" aria-hidden="true">*</span>
@@ -337,14 +385,17 @@ export function AccountSettingsForm({
         id="account-channels"
         eyebrow="Visibilité"
         title="Canaux marketing"
-        description="Ajoutez les liens que vos participants pourront retrouver après leur participation."
+        description={`Liens marketing de ${selectedMerchant.companyName}, affichés après la participation.`}
         icon={Link2}
       >
-        <div className="mt-6 grid gap-4 md:grid-cols-2">
-          <div className="md:col-span-2">
-            <div className="mb-3 flex items-center gap-3 text-sm font-semibold text-graphite">
+        <div className="mt-5 grid gap-2.5 md:grid-cols-2">
+          <div className="rounded-[14px] border border-[#dbe4f0] bg-[#f8fafc] p-3 md:col-span-2">
+            <div className="mb-2.5 flex flex-wrap items-center justify-between gap-2 text-sm font-semibold text-graphite">
+              <div className="flex items-center gap-3">
               <SocialChannelIcon channel="googleReview" />
               <span>Avis Google</span>
+              </div>
+              <span className="text-[11px] font-medium text-[#7b879a]">{form.googleReviewUrl ? "Renseigné" : "Recommandé"}</span>
             </div>
             <GoogleReviewPlacePicker
               value={form.googleReviewUrl}
@@ -355,59 +406,59 @@ export function AccountSettingsForm({
               allowManualInput={false}
             />
           </div>
-          <label className="text-sm">
-            <span className="mb-2 flex items-center gap-3 text-ash"><SocialChannelIcon channel="instagram" /><span>Instagram</span></span>
+          <label className="rounded-[14px] border border-[#dbe4f0] bg-white p-3 text-sm">
+            <span className="mb-2 flex items-center justify-between gap-3 text-ash"><span className="flex items-center gap-3"><SocialChannelIcon channel="instagram" /><span>Instagram</span></span><span className="text-[11px]">{form.instagramUrl ? "Renseigné" : "Optionnel"}</span></span>
             <input
               type="text"
               inputMode="url"
               value={form.instagramUrl}
               onChange={(event) => updateField("instagramUrl", event.target.value)}
               placeholder="https://instagram.com/..."
-              className={inputClass}
+              className={`${inputClass} min-h-[40px] px-3 py-2 text-xs`}
             />
           </label>
-          <label className="text-sm">
-            <span className="mb-2 flex items-center gap-3 text-ash"><SocialChannelIcon channel="facebook" /><span>Facebook</span></span>
+          <label className="rounded-[14px] border border-[#dbe4f0] bg-white p-3 text-sm">
+            <span className="mb-2 flex items-center justify-between gap-3 text-ash"><span className="flex items-center gap-3"><SocialChannelIcon channel="facebook" /><span>Facebook</span></span><span className="text-[11px]">{form.facebookUrl ? "Renseigné" : "Optionnel"}</span></span>
             <input
               type="text"
               inputMode="url"
               value={form.facebookUrl}
               onChange={(event) => updateField("facebookUrl", event.target.value)}
               placeholder="https://facebook.com/..."
-              className={inputClass}
+              className={`${inputClass} min-h-[40px] px-3 py-2 text-xs`}
             />
           </label>
-          <label className="text-sm">
-            <span className="mb-2 flex items-center gap-3 text-ash"><SocialChannelIcon channel="tiktok" /><span>TikTok</span></span>
+          <label className="rounded-[14px] border border-[#dbe4f0] bg-white p-3 text-sm">
+            <span className="mb-2 flex items-center justify-between gap-3 text-ash"><span className="flex items-center gap-3"><SocialChannelIcon channel="tiktok" /><span>TikTok</span></span><span className="text-[11px]">{form.tiktokUrl ? "Renseigné" : "Optionnel"}</span></span>
             <input
               type="text"
               inputMode="url"
               value={form.tiktokUrl}
               onChange={(event) => updateField("tiktokUrl", event.target.value)}
               placeholder="https://tiktok.com/@..."
-              className={inputClass}
+              className={`${inputClass} min-h-[40px] px-3 py-2 text-xs`}
             />
           </label>
-          <label className="text-sm">
-            <span className="mb-2 flex items-center gap-3 text-ash"><SocialChannelIcon channel="tripadvisor" /><span>Tripadvisor</span></span>
+          <label className="rounded-[14px] border border-[#dbe4f0] bg-white p-3 text-sm">
+            <span className="mb-2 flex items-center justify-between gap-3 text-ash"><span className="flex items-center gap-3"><SocialChannelIcon channel="tripadvisor" /><span>Tripadvisor</span></span><span className="text-[11px]">{form.tripadvisorUrl ? "Renseigné" : "Optionnel"}</span></span>
             <input
               type="text"
               inputMode="url"
               value={form.tripadvisorUrl}
               onChange={(event) => updateField("tripadvisorUrl", event.target.value)}
               placeholder="https://tripadvisor.com/..."
-              className={inputClass}
+              className={`${inputClass} min-h-[40px] px-3 py-2 text-xs`}
             />
           </label>
-          <label className="text-sm md:col-span-2">
-            <span className="mb-2 flex items-center gap-3 text-ash"><SocialChannelIcon channel="custom" /><span>Lien personnalisé</span></span>
+          <label className="rounded-[14px] border border-[#dbe4f0] bg-white p-3 text-sm md:col-span-2">
+            <span className="mb-2 flex items-center justify-between gap-3 text-ash"><span className="flex items-center gap-3"><SocialChannelIcon channel="custom" /><span>Lien personnalisé</span></span><span className="text-[11px]">{form.customLinkUrl ? "Renseigné" : "Optionnel"}</span></span>
             <input
               type="text"
               inputMode="url"
               value={form.customLinkUrl}
               onChange={(event) => updateField("customLinkUrl", event.target.value)}
               placeholder="https://..."
-              className={inputClass}
+              className={`${inputClass} min-h-[40px] px-3 py-2 text-xs`}
             />
           </label>
         </div>
@@ -417,7 +468,7 @@ export function AccountSettingsForm({
         id="account-pin"
         eyebrow="Validation express"
         title="PIN de validation du retrait"
-        description="Un employé peut valider un lot depuis le QR code sans se connecter à Okado. Le PIN doit contenir 4 à 6 chiffres."
+        description={`Réglage de retrait pour ${selectedMerchant.companyName}. Le PIN contient 4 à 6 chiffres et permet à un employé de valider un lot depuis le QR code.`}
         icon={ShieldCheck}
       >
         <p className="mb-5 max-w-2xl text-xs leading-5 text-ash">
@@ -477,10 +528,10 @@ export function AccountSettingsForm({
             </div>
             <div className="mt-5 space-y-3">
               {[
-                { label: "Informations principales", done: Boolean(merchant.companyName && merchant.city) },
-                { label: "Canal Google", done: Boolean(merchant.googleReviewUrl) },
-                { label: "Canaux marketing", done: Boolean(merchant.googleReviewUrl || merchant.instagramUrl || merchant.facebookUrl || merchant.tiktokUrl || merchant.tripadvisorUrl || merchant.customLinkUrl) },
-                { label: "PIN de retrait", done: Boolean(merchant.redemptionPinConfigured) },
+                { label: "Informations principales", done: Boolean(selectedMerchant.companyName && selectedMerchant.city) },
+                { label: "Canal Google", done: Boolean(selectedMerchant.googleReviewUrl) },
+                { label: "Canaux marketing", done: Boolean(selectedMerchant.googleReviewUrl || selectedMerchant.instagramUrl || selectedMerchant.facebookUrl || selectedMerchant.tiktokUrl || selectedMerchant.tripadvisorUrl || selectedMerchant.customLinkUrl) },
+                { label: "PIN de retrait", done: Boolean(selectedMerchant.redemptionPinConfigured) },
               ].map((item) => (
                 <div key={item.label} className="flex items-center gap-2.5 text-sm">
                   <span className={`grid h-5 w-5 place-items-center rounded-full ${item.done ? "bg-[#e5f8ed] text-[#16834e]" : "bg-[#f1f3f7] text-[#98a1b2]"}`}><CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" /></span>
@@ -498,12 +549,22 @@ export function AccountSettingsForm({
         </aside>
         </div>
 
-        {error ? (
+      {error ? (
           <div className="rounded-[8px] border border-[#f6c4bb] bg-[#fff1ee] px-4 py-3 text-sm text-[#8b2c18]">
             {error}
           </div>
         ) : null}
       </div>
+      <ValidationDialog
+        open={pendingLocationId !== null}
+        title="Afficher cet établissement ?"
+        description="Le formulaire inférieur sera rechargé avec les informations de l’établissement choisi. Votre établissement actif dans le reste de l’application ne changera pas."
+        ctaLabel="Afficher l’établissement"
+        onClose={() => setPendingLocationId(null)}
+        onAction={() => {
+          if (pendingLocationId) applyLocationSelection(pendingLocationId);
+        }}
+      />
       <ValidationDialog
         open={isSuccessOpen}
         title="Vos modifications sont enregistrées"

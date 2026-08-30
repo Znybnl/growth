@@ -4,71 +4,19 @@ import { Building2, Check, MapPin, Plus, X } from "lucide-react";
 import { useState } from "react";
 
 import { FieldSelect, Input } from "@/components/ui/field";
-import { ValidationDialog } from "@/components/ui/validation-dialog";
 import { Merchant, MerchantLocationAccess } from "@/lib/types";
 
 type AccountLocationPanelProps = {
   merchant: Merchant;
   locations: MerchantLocationAccess[];
-  isDirty?: boolean;
+  onSelectLocation: (locationId: string) => void;
 };
 
-export function AccountLocationPanel({ merchant, locations, isDirty = false }: AccountLocationPanelProps) {
+export function AccountLocationPanel({ merchant, locations, onSelectLocation }: AccountLocationPanelProps) {
   const [isAdding, setIsAdding] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [pendingLocationId, setPendingLocationId] = useState<string | null>(null);
-  const [isSwitching, setIsSwitching] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [switchError, setSwitchError] = useState<string | null>(null);
   const [form, setForm] = useState({ companyName: "", city: "", address: "", timeZone: "Europe/Paris" });
-
-  async function switchLocation(locationId: string) {
-    setError(null);
-    setSwitchError(null);
-    setIsSwitching(true);
-
-    try {
-      const response = await fetch("/api/merchant/location", {
-        method: "POST",
-        credentials: "same-origin",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ locationId }),
-      });
-      const payload = (await response.json().catch(() => null)) as { error?: string } | null;
-
-      if (!response.ok) {
-        throw new Error(payload?.error ?? "L’établissement n’a pas pu être sélectionné.");
-      }
-
-      window.location.assign("/account");
-    } catch (switchLocationError) {
-      setSwitchError(
-        switchLocationError instanceof Error
-          ? switchLocationError.message
-          : "L’établissement n’a pas pu être sélectionné.",
-      );
-    } finally {
-      setIsSwitching(false);
-    }
-  }
-
-  function selectLocation(locationId: string) {
-    if (locationId === merchant.id || isSwitching) return;
-
-    if (isDirty) {
-      setSwitchError(null);
-      setPendingLocationId(locationId);
-      return;
-    }
-
-    void switchLocation(locationId);
-  }
-
-  function closeSwitchConfirmation() {
-    if (isSwitching) return;
-    setPendingLocationId(null);
-    setSwitchError(null);
-  }
 
   async function addLocation() {
     if (!form.companyName.trim() || !form.city.trim()) {
@@ -85,12 +33,6 @@ export function AccountLocationPanel({ merchant, locations, isDirty = false }: A
       });
       const payload = (await response.json()) as { merchant?: Merchant; error?: string };
       if (!response.ok || !payload.merchant) throw new Error(payload.error ?? "L’établissement n’a pas pu être créé.");
-      const switchResponse = await fetch("/api/merchant/location", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ locationId: payload.merchant.id }),
-      });
-      if (!switchResponse.ok) throw new Error("L’établissement a été créé, mais il n’a pas pu être sélectionné.");
       window.location.assign("/account");
     } catch (saveError) {
       setError(saveError instanceof Error ? saveError.message : "L’établissement n’a pas pu être créé.");
@@ -101,54 +43,60 @@ export function AccountLocationPanel({ merchant, locations, isDirty = false }: A
 
   return (
     <>
-      <section className="relative isolate overflow-hidden rounded-[24px] bg-[#101c38] p-5 text-white shadow-[0_20px_48px_rgba(16,28,56,0.16)] md:p-6">
-        <div className="pointer-events-none absolute -right-16 -top-24 -z-10 h-64 w-64 rounded-full bg-[#2f6df6]/30 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-32 left-1/3 -z-10 h-56 w-56 rounded-full bg-[#8baeff]/15 blur-3xl" />
-        <div className="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between">
-          <div className="flex items-start gap-4">
-            <span className="grid h-12 w-12 shrink-0 place-items-center rounded-[16px] bg-white/10 ring-1 ring-white/15">
-              <Building2 className="h-6 w-6 text-[#b8ccff]" aria-hidden="true" />
+      <section className="rounded-[24px] border border-[#dbe4f0] bg-white p-5 shadow-[0_16px_42px_rgba(122,136,166,0.08)] md:p-6">
+        <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
+          <div className="flex items-start gap-3.5">
+            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[14px] bg-[#edf3ff] text-[#145aff]">
+              <Building2 className="h-5 w-5" aria-hidden="true" />
             </span>
             <div>
-              <div className="flex flex-wrap items-center gap-2">
-                <p className="text-xs font-medium uppercase tracking-[0.16em] text-[#b8ccff]">Établissement actif</p>
-                <span className="rounded-full bg-[#b9f3d0]/15 px-2.5 py-1 text-[11px] font-semibold text-[#b9f3d0]">En cours de gestion</span>
-              </div>
-              <h2 className="mt-2 text-2xl font-semibold tracking-[-0.03em]">{merchant.companyName}</h2>
-              <p className="mt-1 flex items-center gap-1.5 text-sm text-[#c9d3e8]"><MapPin className="h-4 w-4" aria-hidden="true" />{merchant.city || "Ville à renseigner"}{merchant.address ? ` · ${merchant.address}` : ""}</p>
-              <p className="mt-3 max-w-xl text-sm leading-6 text-[#aebbd4]">Sélectionnez un établissement pour modifier ses informations, ses canaux marketing et son PIN.</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#60708a]">Contexte du formulaire</p>
+              <h2 className="mt-1.5 text-xl font-semibold tracking-[-0.03em] text-[#101c38]">Quel établissement souhaitez-vous modifier ?</h2>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-[#68758b]">Choisissez une carte : les informations affichées dans le formulaire inférieur seront remplacées par celles de cet établissement.</p>
             </div>
           </div>
-          <button type="button" onClick={() => setIsAdding(true)} className="inline-flex h-[44px] items-center justify-center gap-2 rounded-[12px] border border-white/20 bg-white px-4 text-sm font-semibold text-[#101c38] transition hover:bg-[#edf3ff] xl:mt-1">
+          <button type="button" onClick={() => setIsAdding(true)} className="inline-flex h-[42px] items-center justify-center gap-2 rounded-[12px] border border-[#cfd9e8] bg-white px-4 text-sm font-semibold text-[#101c38] transition hover:border-[#9fb8e8] hover:bg-[#f5f8ff]">
             <Plus className="h-4 w-4" aria-hidden="true" />
-            Ajouter un établissement
+            Ajouter
           </button>
         </div>
 
-        <div className="mt-6 border-t border-white/10 pt-5">
-          <p className="mb-3 text-xs font-medium text-[#c9d3e8]">Vos établissements</p>
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="mt-5 rounded-[16px] border border-[#b8cdfd] bg-[#f4f7ff] px-4 py-3.5">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+            <span className="rounded-full bg-[#145aff] px-2.5 py-1 text-[11px] font-semibold text-white">Formulaire affiché ci-dessous</span>
+            <strong className="text-sm text-[#101c38]">{merchant.companyName}</strong>
+            <span className="flex items-center gap-1.5 text-xs text-[#60708a]"><MapPin className="h-3.5 w-3.5" aria-hidden="true" />{merchant.city || "Ville à renseigner"}{merchant.address ? ` · ${merchant.address}` : ""}</span>
+          </div>
+          <p className="mt-2 text-xs leading-5 text-[#526078]">La sélection ci-dessus ne change pas l’établissement actif dans le reste de l’application.</p>
+        </div>
+
+        <div className="mt-5">
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#60708a]">Vos établissements</p>
+            <span className="text-xs text-[#8a96a8]">{locations.length} sélectionnable{locations.length > 1 ? "s" : ""}</span>
+          </div>
+          <div className="grid gap-2.5 sm:grid-cols-2 xl:grid-cols-3">
             {locations.map(({ merchant: location }) => {
-              const isActive = location.id === merchant.id;
+              const isSelected = location.id === merchant.id;
               return (
                 <button
                   key={location.id}
                   type="button"
-                  onClick={() => selectLocation(location.id)}
-                  aria-current={isActive ? "true" : undefined}
-                  className={`group flex min-h-[92px] items-start gap-3 rounded-[16px] border p-3.5 text-left transition ${isActive ? "border-[#8eb0ff] bg-white text-[#101c38] shadow-[0_10px_26px_rgba(0,0,0,0.12)]" : "border-white/15 bg-white/8 text-white hover:border-white/35 hover:bg-white/12"}`}
+                  onClick={() => onSelectLocation(location.id)}
+                  aria-pressed={isSelected}
+                  className={`group flex min-h-[76px] items-center gap-3 rounded-[14px] border px-3.5 py-3 text-left transition ${isSelected ? "border-[#145aff] bg-[#f4f7ff] ring-2 ring-[#145aff]/10" : "border-[#e0e6ef] bg-white hover:border-[#9fb8e8] hover:bg-[#fbfcff]"}`}
                 >
-                  <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-[11px] ${isActive ? "bg-[#edf3ff] text-[#145aff]" : "bg-white/10 text-[#b8ccff]"}`}><Building2 className="h-4 w-4" aria-hidden="true" /></span>
+                  <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-[11px] ${isSelected ? "bg-[#145aff] text-white" : "bg-[#f1f4f8] text-[#65748b]"}`}><Building2 className="h-4 w-4" aria-hidden="true" /></span>
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-semibold">{location.companyName}</span>
-                    <span className={`mt-1 block truncate text-xs ${isActive ? "text-[#69758a]" : "text-[#b4c0d6]"}`}>{location.city || "Ville à renseigner"}</span>
+                    <span className="block truncate text-sm font-semibold text-[#101c38]">{location.companyName}</span>
+                    <span className="mt-1 block truncate text-xs text-[#758198]">{location.city || "Ville à renseigner"}</span>
                   </span>
-                  {isActive ? <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[#145aff] text-white"><Check className="h-3.5 w-3.5" aria-hidden="true" /></span> : null}
+                  {isSelected ? <span className="flex shrink-0 items-center gap-1 text-[11px] font-semibold text-[#145aff]"><Check className="h-3.5 w-3.5" aria-hidden="true" />Affiché</span> : null}
                 </button>
               );
             })}
-            <button type="button" onClick={() => setIsAdding(true)} className="flex min-h-[92px] items-center justify-center gap-2 rounded-[16px] border border-dashed border-white/25 px-3 text-sm font-semibold text-[#c9d3e8] transition hover:border-white/50 hover:bg-white/8">
-              <Plus className="h-4 w-4" aria-hidden="true" /> Ajouter
+            <button type="button" onClick={() => setIsAdding(true)} className="flex min-h-[76px] items-center justify-center gap-2 rounded-[14px] border border-dashed border-[#cbd6e5] px-3 text-sm font-semibold text-[#60708a] transition hover:border-[#9fb8e8] hover:bg-[#fbfcff]">
+              <Plus className="h-4 w-4" aria-hidden="true" /> Ajouter un établissement
             </button>
           </div>
         </div>
@@ -156,24 +104,11 @@ export function AccountLocationPanel({ merchant, locations, isDirty = false }: A
 
       {error ? <div role="alert" className="rounded-[12px] border border-[#f2c8c8] bg-[#fff4f4] px-4 py-3 text-sm text-[#a11a1a]">{error}</div> : null}
 
-      <ValidationDialog
-        open={pendingLocationId !== null}
-        title="Changer d’établissement ?"
-        description="Vous avez des modifications non enregistrées. Elles seront abandonnées si vous changez d’établissement."
-        ctaLabel={isSwitching ? "Changement..." : "Changer d’établissement"}
-        error={switchError}
-        actionDisabled={isSwitching}
-        onClose={closeSwitchConfirmation}
-        onAction={() => {
-          if (pendingLocationId) void switchLocation(pendingLocationId);
-        }}
-      />
-
       {isAdding ? (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-midnight-ink/45 p-3 backdrop-blur-sm md:items-center md:p-6">
           <section role="dialog" aria-modal="true" aria-labelledby="create-location-title" className="w-full max-w-xl rounded-[24px] border border-border bg-white p-6 shadow-[0_28px_80px_rgba(18,24,39,0.24)] md:p-8">
             <div className="flex items-start justify-between gap-4">
-              <div><p className="okado-label">Nouveau périmètre</p><h2 id="create-location-title" className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-graphite">Ajouter un établissement</h2><p className="mt-2 text-sm leading-6 text-ash">Créez-le puis ouvrez directement sa fiche pour compléter ses réglages.</p></div>
+              <div><p className="okado-label">Nouveau périmètre</p><h2 id="create-location-title" className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-graphite">Ajouter un établissement</h2><p className="mt-2 text-sm leading-6 text-ash">Il sera ajouté à vos cartes sans modifier l’établissement actif dans le reste de l’application.</p></div>
               <button type="button" onClick={() => setIsAdding(false)} aria-label="Fermer" className="grid h-9 w-9 shrink-0 place-items-center rounded-full text-ash transition hover:bg-sky-wash hover:text-graphite"><X className="h-5 w-5" /></button>
             </div>
             <div role="form" className="mt-7 space-y-4">
@@ -183,7 +118,7 @@ export function AccountLocationPanel({ merchant, locations, isDirty = false }: A
                 <label className="block text-sm"><span className="mb-2 block font-medium text-graphite">Fuseau horaire</span><FieldSelect value={form.timeZone} onChange={(event) => setForm((current) => ({ ...current, timeZone: event.target.value }))}><option value="Europe/Paris">France métropolitaine</option><option value="America/Toronto">Canada - Est</option></FieldSelect></label>
               </div>
               <label className="block text-sm"><span className="mb-2 block font-medium text-graphite">Adresse</span><Input value={form.address} onChange={(event) => setForm((current) => ({ ...current, address: event.target.value }))} placeholder="12 rue..." /></label>
-              <div className="flex flex-col-reverse gap-3 border-t border-border/70 pt-5 sm:flex-row sm:justify-end"><button type="button" onClick={() => setIsAdding(false)} className="okado-secondary-action px-4 text-sm">Annuler</button><button type="button" onClick={() => void addLocation()} disabled={isSaving} className="okado-filled-action px-4 text-sm disabled:opacity-60">{isSaving ? "Création..." : "Créer et ouvrir"}</button></div>
+              <div className="flex flex-col-reverse gap-3 border-t border-border/70 pt-5 sm:flex-row sm:justify-end"><button type="button" onClick={() => setIsAdding(false)} className="okado-secondary-action px-4 text-sm">Annuler</button><button type="button" onClick={() => void addLocation()} disabled={isSaving} className="okado-filled-action px-4 text-sm disabled:opacity-60">{isSaving ? "Création..." : "Créer l’établissement"}</button></div>
             </div>
           </section>
         </div>

@@ -15,8 +15,18 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Authentification requise" }, { status: 401 });
     }
 
-    const body = parseMerchantAccountSettingsInput(await request.json());
-    const account = await updateMerchantAccount(session.user.id, body, session.merchant.id);
+    const payload = (await request.json()) as { locationId?: unknown } & Record<string, unknown>;
+    const locationId = typeof payload.locationId === "string" && payload.locationId.trim()
+      ? payload.locationId.trim()
+      : session.merchant.id;
+    const canUpdateLocation = session.locations.some(({ merchant }) => merchant.id === locationId);
+
+    if (!canUpdateLocation) {
+      return NextResponse.json({ error: "Accès à cet établissement refusé." }, { status: 403 });
+    }
+
+    const body = parseMerchantAccountSettingsInput(payload);
+    const account = await updateMerchantAccount(session.user.id, body, locationId);
     await syncMerchantContactToBrevo({
       merchant: account.merchant,
       user: account.user,
