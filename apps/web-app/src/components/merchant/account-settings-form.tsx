@@ -87,9 +87,10 @@ export function AccountSettingsForm({
       return;
     }
 
+    const scrollContainer = anchor.closest("main");
     const observer = new IntersectionObserver(
       ([entry]) => {
-        // The top action anchor is below the billing card. When the page opens,
+        // The top action anchor is below the account header and billing card. When the page opens,
         // it can be below the viewport without having been scrolled past; that
         // must not activate the sticky action bar prematurely. Only show it
         // after the anchor has crossed the top edge of the scroll area.
@@ -97,7 +98,7 @@ export function AccountSettingsForm({
         const hasScrolledPastAnchor = entry.boundingClientRect.top < rootTop;
         setShowStickyActions(!entry.isIntersecting && hasScrolledPastAnchor);
       },
-      { threshold: 0, rootMargin: "-64px 0px 0px 0px" },
+      { threshold: 0, root: scrollContainer },
     );
 
     observer.observe(anchor);
@@ -148,7 +149,7 @@ export function AccountSettingsForm({
 
   return (
     <form id="account-settings-form" className="space-y-6" onSubmit={handleSubmit}>
-      <div className="pointer-events-none sticky top-[56px] z-20 h-0 overflow-visible">
+      <div className="pointer-events-none sticky top-0 z-20 h-0 overflow-visible">
         <div
           className={`pointer-events-auto -mx-3 border-b border-border bg-linen-canvas/95 px-3 py-2 shadow-[0_8px_18px_rgba(18,24,39,0.08)] backdrop-blur-sm transition-all duration-200 lg:-mx-6 lg:px-6 ${
             showStickyActions ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"

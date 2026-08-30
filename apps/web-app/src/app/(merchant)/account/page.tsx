@@ -38,7 +38,23 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
       );
 
       if (syncedMerchant) {
-        merchant = syncedMerchant;
+        // Stripe billing belongs to the workspace owner, while the account
+        // page edits the currently selected establishment. Merge only the
+        // billing fields so a sync can never replace establishment-specific
+        // settings such as the Google review URL.
+        merchant = {
+          ...merchant,
+          stripeCustomerId: syncedMerchant.stripeCustomerId ?? merchant.stripeCustomerId,
+          stripeSubscriptionId: syncedMerchant.stripeSubscriptionId ?? merchant.stripeSubscriptionId,
+          stripeSubscriptionStatus:
+            syncedMerchant.stripeSubscriptionStatus ?? merchant.stripeSubscriptionStatus,
+          trialStartDate: syncedMerchant.trialStartDate ?? merchant.trialStartDate,
+          trialEndDate: syncedMerchant.trialEndDate ?? merchant.trialEndDate,
+          subscriptionCurrentPeriodEnd:
+            syncedMerchant.subscriptionCurrentPeriodEnd ?? merchant.subscriptionCurrentPeriodEnd,
+          subscriptionCancelAtPeriodEnd:
+            syncedMerchant.subscriptionCancelAtPeriodEnd ?? merchant.subscriptionCancelAtPeriodEnd,
+        };
       }
     } catch (error) {
       console.error("Stripe billing sync failed on account page", error);
@@ -49,7 +65,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
   const affiliateSummary = await affiliateSummaryPromise;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <section className="relative overflow-hidden rounded-[24px] border border-border bg-white p-5 shadow-[0_16px_42px_rgba(122,136,166,0.08)] md:p-7">
         <div className="pointer-events-none absolute -right-20 -top-24 h-56 w-56 rounded-full bg-[#dbe6ff] blur-3xl" />
         <div className="relative flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
