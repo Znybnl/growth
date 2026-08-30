@@ -38,6 +38,10 @@ type MerchantRow = {
   preferred_goals: string[] | null;
   diffusion_support: string[] | null;
   google_review_url: string | null;
+  google_place_name: string | null;
+  google_place_address: string | null;
+  google_place_rating: number | null;
+  google_place_review_count: number | null;
   instagram_url: string | null;
   facebook_url: string | null;
   tiktok_url: string | null;
@@ -336,6 +340,10 @@ function toMerchant(row: MerchantRow): Merchant {
     preferredGoals: row.preferred_goals ?? [],
     diffusionSupport: row.diffusion_support ?? [],
     googleReviewUrl: row.google_review_url ?? undefined,
+    googlePlaceName: row.google_place_name ?? undefined,
+    googlePlaceAddress: row.google_place_address ?? undefined,
+    googlePlaceRating: row.google_place_rating ?? undefined,
+    googlePlaceReviewCount: row.google_place_review_count ?? undefined,
     instagramUrl: row.instagram_url ?? undefined,
     facebookUrl: row.facebook_url ?? undefined,
     tiktokUrl: row.tiktok_url ?? undefined,
@@ -1455,6 +1463,10 @@ export async function updateMerchantOnboardingInSupabase(
       preferred_goals: input.preferredGoals,
       diffusion_support: input.diffusionSupport,
       google_review_url: input.googleReviewUrl.trim(),
+      google_place_name: input.googlePlaceName?.trim() ?? null,
+      google_place_address: input.googlePlaceAddress?.trim() ?? null,
+      google_place_rating: input.googlePlaceRating ?? null,
+      google_place_review_count: input.googlePlaceReviewCount ?? null,
       instagram_url: input.instagramUrl.trim(),
       facebook_url: input.facebookUrl.trim(),
       tiktok_url: input.tiktokUrl.trim(),
@@ -1539,6 +1551,10 @@ export async function updateMerchantAccountInSupabase(
       restaurant_email: input.restaurantEmail.trim().toLowerCase(),
       website_url: input.websiteUrl.trim(),
       google_review_url: input.googleReviewUrl.trim(),
+      google_place_name: input.googlePlaceName?.trim() ?? null,
+      google_place_address: input.googlePlaceAddress?.trim() ?? null,
+      google_place_rating: input.googlePlaceRating ?? null,
+      google_place_review_count: input.googlePlaceReviewCount ?? null,
       instagram_url: input.instagramUrl.trim(),
       facebook_url: input.facebookUrl.trim(),
       tiktok_url: input.tiktokUrl.trim(),

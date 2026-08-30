@@ -10,6 +10,8 @@ type GooglePlaceSearchResponse = {
     };
     formattedAddress?: string;
     internationalPhoneNumber?: string;
+    rating?: number;
+    userRatingCount?: number;
   }>;
 };
 
@@ -46,21 +48,37 @@ export async function GET(request: Request) {
     return NextResponse.json({ configured: true, places: [] });
   }
 
-  const response = await fetch("https://places.googleapis.com/v1/places:searchText", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Goog-Api-Key": apiKey,
-      "X-Goog-FieldMask":
-        "places.id,places.displayName,places.formattedAddress,places.internationalPhoneNumber",
-    },
-    body: JSON.stringify({
-      textQuery: [query, city].filter(Boolean).join(" "),
-      languageCode: "fr",
-      regionCode: "FR",
-      pageSize: 5,
-    }),
-  });
+  let response: Response;
+  try {
+    response = await fetch("https://places.googleapis.com/v1/places:searchText", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Goog-Api-Key": apiKey,
+        "X-Goog-FieldMask":
+          "places.id,places.displayName,places.formattedAddress,places.internationalPhoneNumber,places.rating,places.userRatingCount",
+      },
+      body: JSON.stringify({
+        textQuery: [query, city].filter(Boolean).join(" "),
+        languageCode: "fr",
+        regionCode: "FR",
+        pageSize: 5,
+      }),
+      signal: AbortSignal.timeout(8000),
+    });
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "TimeoutError") {
+      return NextResponse.json(
+        { configured: true, places: [], error: "La recherche Google a pris trop de temps. Réessayez." },
+        { status: 504 },
+      );
+    }
+
+    return NextResponse.json(
+      { configured: true, places: [], error: "Recherche Google momentanément indisponible." },
+      { status: 502 },
+    );
+  }
 
   if (!response.ok) {
     return NextResponse.json(
@@ -81,6 +99,8 @@ export async function GET(request: Request) {
       name: place.displayName?.text ?? "Établissement Google",
       address: place.formattedAddress ?? "",
       phone: place.internationalPhoneNumber ?? "",
+      rating: place.rating ?? null,
+      reviewCount: place.userRatingCount ?? null,
       reviewUrl: buildReviewUrl(place.id ?? ""),
     }));
 

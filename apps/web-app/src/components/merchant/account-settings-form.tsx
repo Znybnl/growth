@@ -44,6 +44,10 @@ function createAccountSettingsForm(merchant: Merchant, user: MerchantUser): Merc
     restaurantEmail: merchant.restaurantEmail ?? "",
     websiteUrl: merchant.websiteUrl ?? "",
     googleReviewUrl: merchant.googleReviewUrl ?? "",
+    googlePlaceName: merchant.googlePlaceName ?? "",
+    googlePlaceAddress: merchant.googlePlaceAddress ?? "",
+    googlePlaceRating: merchant.googlePlaceRating,
+    googlePlaceReviewCount: merchant.googlePlaceReviewCount,
     instagramUrl: merchant.instagramUrl ?? "",
     facebookUrl: merchant.facebookUrl ?? "",
     tiktokUrl: merchant.tiktokUrl ?? "",
@@ -400,23 +404,35 @@ export function AccountSettingsForm({
               <p className="mt-1 text-sm text-ash">Ajoutez les liens que vos participants pourront retrouver après leur participation.</p>
             </div>
             <div className="grid gap-2.5 md:grid-cols-2">
-          <div className="rounded-[14px] border border-[#dbe4f0] bg-[#f8fafc] p-3 md:col-span-2">
-            <div className="mb-2.5 flex flex-wrap items-center justify-between gap-2 text-sm font-semibold text-graphite">
-              <div className="flex items-center gap-3">
-              <SocialChannelIcon channel="googleReview" />
-              <span>Avis Google</span>
-              </div>
-              <span className="text-[11px] font-medium text-[#7b879a]">{form.googleReviewUrl ? "Renseigné" : "Recommandé"}</span>
-            </div>
             <GoogleReviewPlacePicker
+              key={`${selectedLocationId}-${form.googleReviewUrl}`}
+              className="md:col-span-2"
               value={form.googleReviewUrl}
               onChange={(nextUrl) => updateField("googleReviewUrl", nextUrl)}
               defaultQuery={form.companyName}
               city={form.city}
               compact
               allowManualInput={false}
+              selectedPlace={form.googlePlaceName ? {
+                name: form.googlePlaceName,
+                address: form.googlePlaceAddress ?? "",
+                rating: form.googlePlaceRating,
+                reviewCount: form.googlePlaceReviewCount,
+              } : null}
+              onPlaceChange={(place) => {
+                if (!isDirty) {
+                  setIsDirty(true);
+                  onDirtyChange?.(true);
+                }
+                setForm((current) => ({
+                  ...current,
+                  googlePlaceName: place.name,
+                  googlePlaceAddress: place.address,
+                  googlePlaceRating: place.rating ?? undefined,
+                  googlePlaceReviewCount: place.reviewCount ?? undefined,
+                }));
+              }}
             />
-          </div>
           <label className="rounded-[14px] border border-[#dbe4f0] bg-white p-3 text-sm">
             <span className="mb-2 flex items-center justify-between gap-3 text-ash"><span className="flex items-center gap-3"><SocialChannelIcon channel="instagram" /><span>Instagram</span></span><span className="text-[11px]">{form.instagramUrl ? "Renseigné" : "Optionnel"}</span></span>
             <input

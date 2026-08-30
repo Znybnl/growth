@@ -1118,6 +1118,10 @@ function updateMerchantOnboardingInMemory(userId: string, input: MerchantOnboard
   merchant.preferredGoals = input.preferredGoals;
   merchant.diffusionSupport = input.diffusionSupport;
   merchant.googleReviewUrl = input.googleReviewUrl.trim();
+  merchant.googlePlaceName = input.googlePlaceName?.trim() || undefined;
+  merchant.googlePlaceAddress = input.googlePlaceAddress?.trim() || undefined;
+  merchant.googlePlaceRating = input.googlePlaceRating;
+  merchant.googlePlaceReviewCount = input.googlePlaceReviewCount;
   merchant.instagramUrl = input.instagramUrl.trim();
   merchant.facebookUrl = input.facebookUrl.trim();
   merchant.tiktokUrl = input.tiktokUrl.trim();
@@ -1168,6 +1172,10 @@ function updateMerchantAccountInMemory(
   merchant.restaurantEmail = input.restaurantEmail.trim().toLowerCase();
   merchant.websiteUrl = input.websiteUrl.trim();
   merchant.googleReviewUrl = input.googleReviewUrl.trim();
+  merchant.googlePlaceName = input.googlePlaceName?.trim() || undefined;
+  merchant.googlePlaceAddress = input.googlePlaceAddress?.trim() || undefined;
+  merchant.googlePlaceRating = input.googlePlaceRating;
+  merchant.googlePlaceReviewCount = input.googlePlaceReviewCount;
   merchant.instagramUrl = input.instagramUrl.trim();
   merchant.facebookUrl = input.facebookUrl.trim();
   merchant.tiktokUrl = input.tiktokUrl.trim();

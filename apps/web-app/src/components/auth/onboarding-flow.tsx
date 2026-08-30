@@ -32,6 +32,10 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
   const [address, setAddress] = useState(merchant.address ?? "");
   const defaultPrizeCost = merchant.defaultPrizeCost ?? 3;
   const [googleReviewUrl, setGoogleReviewUrl] = useState(merchant.googleReviewUrl ?? "");
+  const [googlePlaceName, setGooglePlaceName] = useState(merchant.googlePlaceName ?? "");
+  const [googlePlaceAddress, setGooglePlaceAddress] = useState(merchant.googlePlaceAddress ?? "");
+  const [googlePlaceRating, setGooglePlaceRating] = useState<number | undefined>(merchant.googlePlaceRating);
+  const [googlePlaceReviewCount, setGooglePlaceReviewCount] = useState<number | undefined>(merchant.googlePlaceReviewCount);
   const [instagramUrl, setInstagramUrl] = useState(merchant.instagramUrl ?? "");
   const [facebookUrl, setFacebookUrl] = useState(merchant.facebookUrl ?? "");
   const [tiktokUrl, setTiktokUrl] = useState(merchant.tiktokUrl ?? "");
@@ -65,6 +69,10 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
           preferredGoals: [],
           diffusionSupport: [],
           googleReviewUrl,
+          googlePlaceName,
+          googlePlaceAddress,
+          googlePlaceRating,
+          googlePlaceReviewCount,
           instagramUrl,
           facebookUrl,
           tiktokUrl,
@@ -147,6 +155,18 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
                   allowManualInput={false}
                   onAddressChange={setAddress}
                   onPhoneChange={setPhone}
+                  selectedPlace={googlePlaceName ? {
+                    name: googlePlaceName,
+                    address: googlePlaceAddress,
+                    rating: googlePlaceRating,
+                    reviewCount: googlePlaceReviewCount,
+                  } : null}
+                  onPlaceChange={(place) => {
+                    setGooglePlaceName(place.name);
+                    setGooglePlaceAddress(place.address);
+                    setGooglePlaceRating(place.rating ?? undefined);
+                    setGooglePlaceReviewCount(place.reviewCount ?? undefined);
+                  }}
                 />
               </div>
               <label className="text-sm"><span className="mb-2 block text-[#616b7c]">Instagram</span><input type="url" value={instagramUrl} onChange={(event) => setInstagramUrl(event.target.value)} placeholder="https://instagram.com/..." className={inputClass} /></label>

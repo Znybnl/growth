@@ -123,6 +123,10 @@ export interface Merchant {
   preferredGoals?: string[];
   diffusionSupport?: string[];
   googleReviewUrl?: string;
+  googlePlaceName?: string;
+  googlePlaceAddress?: string;
+  googlePlaceRating?: number;
+  googlePlaceReviewCount?: number;
   instagramUrl?: string;
   facebookUrl?: string;
   tiktokUrl?: string;
@@ -291,6 +295,10 @@ export interface MerchantOnboardingInput {
   preferredGoals: string[];
   diffusionSupport: string[];
   googleReviewUrl: string;
+  googlePlaceName?: string;
+  googlePlaceAddress?: string;
+  googlePlaceRating?: number;
+  googlePlaceReviewCount?: number;
   instagramUrl: string;
   facebookUrl: string;
   tiktokUrl: string;
@@ -321,6 +329,10 @@ export interface MerchantAccountSettingsInput {
   restaurantEmail: string;
   websiteUrl: string;
   googleReviewUrl: string;
+  googlePlaceName?: string;
+  googlePlaceAddress?: string;
+  googlePlaceRating?: number;
+  googlePlaceReviewCount?: number;
   instagramUrl: string;
   facebookUrl: string;
   tiktokUrl: string;
