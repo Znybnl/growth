@@ -4,6 +4,7 @@ import { Building2, Check, MapPin, Plus, X } from "lucide-react";
 import { useState } from "react";
 
 import { FieldSelect, Input } from "@/components/ui/field";
+import { ValidationDialog } from "@/components/ui/validation-dialog";
 import { Merchant, MerchantLocationAccess } from "@/lib/types";
 
 type AccountLocationPanelProps = {
@@ -15,25 +16,58 @@ type AccountLocationPanelProps = {
 export function AccountLocationPanel({ merchant, locations, isDirty = false }: AccountLocationPanelProps) {
   const [isAdding, setIsAdding] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [pendingLocationId, setPendingLocationId] = useState<string | null>(null);
+  const [isSwitching, setIsSwitching] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [switchError, setSwitchError] = useState<string | null>(null);
   const [form, setForm] = useState({ companyName: "", city: "", address: "", timeZone: "Europe/Paris" });
 
-  async function selectLocation(locationId: string) {
-    if (locationId === merchant.id) return;
-    if (isDirty && !window.confirm("Vous avez des modifications non enregistrées. Changer d’établissement les abandonnera.")) {
-      return;
-    }
+  async function switchLocation(locationId: string) {
     setError(null);
-    const response = await fetch("/api/merchant/location", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ locationId }),
-    });
-    if (!response.ok) {
-      setError("L’établissement n’a pas pu être sélectionné.");
+    setSwitchError(null);
+    setIsSwitching(true);
+
+    try {
+      const response = await fetch("/api/merchant/location", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ locationId }),
+      });
+      const payload = (await response.json().catch(() => null)) as { error?: string } | null;
+
+      if (!response.ok) {
+        throw new Error(payload?.error ?? "L’établissement n’a pas pu être sélectionné.");
+      }
+
+      window.location.assign("/account");
+    } catch (switchLocationError) {
+      setSwitchError(
+        switchLocationError instanceof Error
+          ? switchLocationError.message
+          : "L’établissement n’a pas pu être sélectionné.",
+      );
+    } finally {
+      setIsSwitching(false);
+    }
+  }
+
+  function selectLocation(locationId: string) {
+    if (locationId === merchant.id || isSwitching) return;
+
+    if (isDirty) {
+      setSwitchError(null);
+      setPendingLocationId(locationId);
       return;
     }
-    window.location.assign("/account");
+
+    void switchLocation(locationId);
+  }
+
+  function closeSwitchConfirmation() {
+    if (isSwitching) return;
+    setPendingLocationId(null);
+    setSwitchError(null);
   }
 
   async function addLocation() {
@@ -100,7 +134,7 @@ export function AccountLocationPanel({ merchant, locations, isDirty = false }: A
                 <button
                   key={location.id}
                   type="button"
-                  onClick={() => void selectLocation(location.id)}
+                  onClick={() => selectLocation(location.id)}
                   aria-current={isActive ? "true" : undefined}
                   className={`group flex min-h-[92px] items-start gap-3 rounded-[16px] border p-3.5 text-left transition ${isActive ? "border-[#8eb0ff] bg-white text-[#101c38] shadow-[0_10px_26px_rgba(0,0,0,0.12)]" : "border-white/15 bg-white/8 text-white hover:border-white/35 hover:bg-white/12"}`}
                 >
@@ -121,6 +155,19 @@ export function AccountLocationPanel({ merchant, locations, isDirty = false }: A
       </section>
 
       {error ? <div role="alert" className="rounded-[12px] border border-[#f2c8c8] bg-[#fff4f4] px-4 py-3 text-sm text-[#a11a1a]">{error}</div> : null}
+
+      <ValidationDialog
+        open={pendingLocationId !== null}
+        title="Changer d’établissement ?"
+        description="Vous avez des modifications non enregistrées. Elles seront abandonnées si vous changez d’établissement."
+        ctaLabel={isSwitching ? "Changement..." : "Changer d’établissement"}
+        error={switchError}
+        actionDisabled={isSwitching}
+        onClose={closeSwitchConfirmation}
+        onAction={() => {
+          if (pendingLocationId) void switchLocation(pendingLocationId);
+        }}
+      />
 
       {isAdding ? (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-midnight-ink/45 p-3 backdrop-blur-sm md:items-center md:p-6">
