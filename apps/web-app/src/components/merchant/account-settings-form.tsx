@@ -149,7 +149,7 @@ export function AccountSettingsForm({
 
   return (
     <form id="account-settings-form" onSubmit={handleSubmit}>
-      <div className="pointer-events-none sticky top-0 z-20 h-0 overflow-visible">
+      <div className="pointer-events-none sticky -top-5 z-20 h-0 overflow-visible">
         <div
           className={`pointer-events-auto -mx-3 border-b border-border bg-linen-canvas/95 px-3 py-2 shadow-[0_8px_18px_rgba(18,24,39,0.08)] backdrop-blur-sm transition-all duration-200 lg:-mx-6 lg:px-6 ${
             showStickyActions ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
