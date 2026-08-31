@@ -45,3 +45,16 @@ Ces objectifs internes ne constituent pas un engagement contractuel. Ils servent
 ## Après rétablissement
 
 Un incident P0 doit produire une Issue de suivi avant le prochain déploiement important. Si un même type d'incident revient, ajouter un test automatisé ou un garde-fou au processus.
+
+## Seuils d'alerte du pilote
+
+Ces seuils sont des seuils opérationnels de départ, à réévaluer après les premiers usages :
+
+| Signal | Seuil initial | Première action |
+|---|---:|---|
+| Erreurs HTTP 5xx sur les parcours publics | > 1 % sur 5 minutes ou 5 erreurs consécutives | Vérifier le dernier déploiement et préparer un rollback Vercel |
+| Échec de la maintenance quotidienne | 1 exécution manquante ou en erreur | Vérifier le cron, les logs et l'expiration des sessions |
+| Webhooks Stripe ou Resend en échec | 3 échecs consécutifs | Vérifier la signature, le fournisseur et les livraisons en attente |
+| Erreur Supabase sur une route métier critique | 3 erreurs en 5 minutes | Vérifier la disponibilité, les migrations et les règles RLS |
+
+Le responsable du pilote est Pierre-Henri BRUNELLE. Les alertes doivent rester dépourvues de données personnelles : identifiants techniques, horodatage, route et statut uniquement.

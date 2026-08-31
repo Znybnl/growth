@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import { createCampaignQrSvg } from "@/lib/campaign-exports";
 import { issuePreviewAccessToken } from "@/lib/preview-token";
+import { captureProductEvent, merchantDistinctId } from "@/lib/product-analytics";
 import { getCampaignPerformance } from "@/lib/store";
 
 type RouteContext = {
@@ -30,6 +31,23 @@ export async function GET(request: Request, context: RouteContext) {
   const qrSvg = await createCampaignQrSvg(publicUrl);
   const inline = searchParams.get("inline") === "1";
   const filename = `${performance.campaign.id}-${isPreview ? "preview-qr" : "qr"}.svg`;
+
+  if (!isPreview) {
+    const createdAt = Date.parse(performance.campaign.createdAt);
+    await captureProductEvent(
+      "campaign_qr_downloaded",
+      merchantDistinctId(session.merchant.id, session.user.id),
+      {
+        merchantId: session.merchant.id,
+        merchantUserId: session.user.id,
+        campaignId: performance.campaign.id,
+        elapsedMinutes: Number.isFinite(createdAt)
+          ? Math.max(0, Math.round((Date.now() - createdAt) / 60000))
+          : null,
+        inline,
+      },
+    );
+  }
 
   return new NextResponse(qrSvg, {
     headers: {
