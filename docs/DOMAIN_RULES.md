@@ -53,15 +53,14 @@ Ce document regroupe les invariants fonctionnels approuvés d'Okado. Il ne rempl
 - Les données strictement nécessaires à l'exécution du jeu ou à l'envoi d'un gain peuvent être demandées lorsque cette exécution le justifie. L'information présentée au joueur doit expliquer cette finalité.
 - Le consentement à la prospection marketing est une case distincte, décochée par défaut, spécifique et révocable. Il ne conditionne ni la participation au jeu ni la réception ou le retrait d'un gain.
 - Une case obligatoire peut recueillir l'acceptation des règles du jeu et l'information relative au traitement nécessaire à la participation ; elle ne doit pas être libellée comme un consentement marketing.
-- Une durée de conservation illimitée des données personnelles n'est pas autorisée. Chaque finalité doit disposer d'une durée ou d'un critère de calcul documenté, puis conduire à l'effacement, l'archivage justifié ou l'anonymisation.
+- Une durée de conservation illimitée des données personnelles n'est pas autorisée. La politique opérationnelle validée prévoit au maximum trois ans en base active, puis un archivage à accès restreint jusqu'à cinq ans, avant suppression ou anonymisation. Cette politique reste soumise à validation juridique par finalité.
 - À défaut de politique validée, aucune durée n'est encore figée dans le produit. Une durée paramétrable par marchand ne pourra être proposée que dans les limites de la politique centrale d'Okado, avec une valeur par défaut et un plafond conformes.
 
 ### Proposition de politique à valider avant implémentation
 
 | Catégorie | Finalité | Proposition de conservation | Sort à l'échéance |
 |---|---|---|---|
-| Contact ayant accepté la prospection | Communications marketing du marchand | 3 ans à compter du dernier contact actif du prospect | Suppression ou anonymisation ; conservation minimale des informations d'opposition dans une liste dédiée. |
-| Participation, gain et retrait | Exécution du jeu, preuve du gain et gestion des réclamations | 5 ans après la clôture du jeu ou le retrait, à confirmer juridiquement | Archivage à accès restreint ou anonymisation. |
+| Données personnelles de contact et de participation | Exécution du jeu, communications autorisées, preuve du gain et gestion des réclamations | 3 ans en base active, puis archivage restreint jusqu'à 5 ans maximum, à compter du dernier événement métier pertinent | Suppression ou anonymisation à 5 ans ; les oppositions nécessaires restent limitées à ce qui est strictement utile. |
 | QR codes et jetons de prévisualisation | Test temporaire du parcours | Durée courte liée à l'expiration du jeton | Suppression automatique. |
 | Données agrégées | Statistiques produit sans ré-identification | Sans limite si l'anonymisation est effective | Conservation des seules données anonymes. |
 

@@ -2523,7 +2523,7 @@ export function CampaignWizard({
               {error}
             </div>
           ) : null}
-          <div className="mt-8 flex flex-col-reverse gap-3 border-t border-[#edf0f4] pt-5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mt-8 flex flex-col-reverse gap-3 border-t border-[#edf0f4] pt-5 sm:flex-row sm:items-center sm:justify-between xl:flex-col xl:items-stretch">
             <button
               type="button"
               onClick={previousStep}
@@ -2533,7 +2533,7 @@ export function CampaignWizard({
               <ChevronLeft className="h-4 w-4" />
               Retour
             </button>
-            <div className="flex flex-col gap-3 sm:flex-row">
+            <div className="flex min-w-0 flex-col gap-3 sm:flex-row xl:flex-col">
               <button
                 type="button"
                 onClick={() => void saveCampaign("save")}

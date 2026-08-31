@@ -1106,7 +1106,7 @@ export function CampaignExperience({
         </h2>
         <p className="mt-4 text-center text-lg leading-8 text-[#5f6678]">
           {currentAction?.kind === "google"
-            ? "Laissez-nous un avis et revenez ici pour jouer."
+            ? "Découvrez notre établissement sur Google, puis revenez ici pour jouer."
             : currentAction?.kind === "instagram"
               ? "Suivez-nous sur Instagram pour découvrir les nouveautés du commerce, puis revenez ici pour jouer."
               : currentAction

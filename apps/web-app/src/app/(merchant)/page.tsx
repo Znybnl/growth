@@ -111,7 +111,7 @@ export default async function DashboardPage({
           ["Campagnes actives", String(activeCampaigns.length)],
           [
             "Participations totales",
-            String(filteredCampaigns.reduce((total, item) => total + item.kpis.contacts, 0)),
+            String(filteredCampaigns.reduce((total, item) => total + item.kpis.leads, 0)),
           ],
           [
             "Lots retirés",
@@ -208,7 +208,7 @@ export default async function DashboardPage({
                   </div>
                   <span className="text-[#556173]">{gameTypeLabel(item.campaign.gameType)}</span>
                   <span className="font-semibold text-graphite">{item.kpis.scans}</span>
-                  <span className="font-semibold text-graphite">{item.kpis.contacts}</span>
+                  <span className="font-semibold text-graphite">{item.kpis.leads}</span>
                   <span className="font-semibold text-graphite">
                     {formatPercent(item.kpis.conversionRate)}
                   </span>
@@ -263,7 +263,7 @@ export default async function DashboardPage({
                       <p className="text-[11px] uppercase tracking-[0.18em] text-[#7c8597]">
                         Participations
                       </p>
-                      <p className="mt-2 font-semibold text-[#111827]">{item.kpis.contacts}</p>
+                      <p className="mt-2 font-semibold text-[#111827]">{item.kpis.leads}</p>
                     </div>
                     <div className="rounded-[8px] bg-white px-3 py-3">
                       <p className="text-[11px] uppercase tracking-[0.18em] text-[#7c8597]">

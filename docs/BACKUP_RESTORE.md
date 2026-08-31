@@ -60,6 +60,8 @@ Vérifier également manuellement les policies RLS avec [supabase/verify/phase0_
 - test de restauration mensuel ;
 - test de restauration complet avant un changement majeur de facturation, retrait ou authentification.
 
+Chaque répétition doit conserver une preuve non sensible : date UTC, source de sauvegarde, projet de rehearsal, durée, résultat des contrôles et éventuelles actions correctives. Ne jamais conserver d'e-mail, de nom de joueur ou de secret dans cette preuve.
+
 ## Vercel
 
 ### Prévention

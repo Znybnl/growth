@@ -225,6 +225,13 @@ function normalizeColor(value: unknown, fallback: string) {
   return normalized || fallback;
 }
 
+function normalizeOptionalNumber(value: unknown, options: { min: number; max: number; integer?: boolean }) {
+  if (typeof value !== "number" || !Number.isFinite(value)) return undefined;
+
+  const normalized = Math.min(options.max, Math.max(options.min, value));
+  return options.integer ? Math.round(normalized) : normalized;
+}
+
 export function parseMerchantOnboardingInput(input: unknown): MerchantOnboardingInput {
   const payload = ensureObject(input);
 
@@ -246,6 +253,10 @@ export function parseMerchantOnboardingInput(input: unknown): MerchantOnboarding
     preferredGoals: normalizeStringArray(payload.preferredGoals, 12, 80),
     diffusionSupport: normalizeStringArray(payload.diffusionSupport, 12, 80),
     googleReviewUrl: normalizeUrl(payload.googleReviewUrl),
+    googlePlaceName: normalizeString(payload.googlePlaceName, 120),
+    googlePlaceAddress: normalizeString(payload.googlePlaceAddress, 200),
+    googlePlaceRating: normalizeOptionalNumber(payload.googlePlaceRating, { min: 0, max: 5 }),
+    googlePlaceReviewCount: normalizeOptionalNumber(payload.googlePlaceReviewCount, { min: 0, max: 100000000, integer: true }),
     instagramUrl: normalizeUrl(payload.instagramUrl),
     facebookUrl: normalizeUrl(payload.facebookUrl),
     tiktokUrl: normalizeUrl(payload.tiktokUrl),
@@ -272,6 +283,10 @@ export function parseMerchantAccountSettingsInput(input: unknown): MerchantAccou
     restaurantEmail: normalizeEmail(payload.restaurantEmail, false),
     websiteUrl: normalizeUrl(payload.websiteUrl),
     googleReviewUrl: normalizeUrl(payload.googleReviewUrl),
+    googlePlaceName: normalizeString(payload.googlePlaceName, 120),
+    googlePlaceAddress: normalizeString(payload.googlePlaceAddress, 200),
+    googlePlaceRating: normalizeOptionalNumber(payload.googlePlaceRating, { min: 0, max: 5 }),
+    googlePlaceReviewCount: normalizeOptionalNumber(payload.googlePlaceReviewCount, { min: 0, max: 100000000, integer: true }),
     instagramUrl: normalizeUrl(payload.instagramUrl),
     facebookUrl: normalizeUrl(payload.facebookUrl),
     tiktokUrl: normalizeUrl(payload.tiktokUrl),
