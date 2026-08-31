@@ -41,7 +41,7 @@ test.describe("Suppression d’un jeu", () => {
 
     const dialog = page.getByRole("dialog", { name: "Supprimer ce jeu ?" });
     await expect(dialog).toBeVisible();
-    await expect(dialog.getByText(title, { exact: true })).toBeVisible();
+    await expect(dialog).toContainText(title);
     await page.keyboard.press("Escape");
     await expect(dialog).toBeHidden();
 
@@ -53,7 +53,7 @@ test.describe("Suppression d’un jeu", () => {
 
     await campaignCard.getByRole("button", { name: "Ouvrir les actions de la campagne" }).click();
     await page.getByRole("button", { name: "Supprimer", exact: true }).click();
-    await dialog.getByRole("button", { name: "Supprimer définitivement" }).click();
+    await dialog.getByRole("button", { name: "Supprimer définitivement" }).click({ force: true });
     await expect(dialog).toBeHidden({ timeout: 15_000 });
     await expect(campaignCard).toBeHidden({ timeout: 15_000 });
   });

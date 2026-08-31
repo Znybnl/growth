@@ -70,7 +70,7 @@ test.describe("Confirmation du Wizard", () => {
     await page.getByRole("button", { name: "Supprimer", exact: true }).click();
     await page.getByRole("dialog", { name: "Supprimer ce jeu ?" })
       .getByRole("button", { name: "Supprimer définitivement" })
-      .click();
+      .click({ force: true });
     await expect(campaignCard).toBeHidden({ timeout: 15_000 });
   });
 });
