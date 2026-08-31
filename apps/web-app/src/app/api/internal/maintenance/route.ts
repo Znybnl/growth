@@ -24,6 +24,12 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Maintenance impossible" }, { status: 500 });
   }
 
+  const { data: lifecycleData, error: lifecycleError } = await supabase.rpc("purge_personal_data");
+  if (lifecycleError && !/function .*purge_personal_data.*does not exist|could not find the function/i.test(lifecycleError.message)) {
+    logSupportEvent("error", "personal_data_lifecycle_failed", { error: lifecycleError.message });
+    return NextResponse.json({ error: "Cycle de vie des données impossible" }, { status: 500 });
+  }
+
   const retries = await getSupabaseRetryableRewardEmailCandidates(20);
   let retried = 0;
   let retryFailures = 0;
@@ -62,7 +68,7 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  const result = { ...(data ?? {}), retried, retryFailures };
+  const result = { ...(data ?? {}), personalDataLifecycle: lifecycleData ?? null, retried, retryFailures };
   logSupportEvent("info", "maintenance_purge_completed", { result });
   return NextResponse.json({ ok: true, result });
 }

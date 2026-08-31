@@ -74,6 +74,9 @@ for (const [table, columns] of [
   ["public_rate_limits", "key,count,reset_at"],
   ["daily_participation_locks", "campaign_id,date_key,fingerprint_hash"],
   ["cashier_redemption_audits", "id,merchant_id,lead_id"],
+  ["archived_leads", "id,campaign_id,merchant_id,original_created_at,purge_after"],
+  ["archived_campaign_events", "id,campaign_id,event_type,original_created_at,purge_after"],
+  ["archived_cashier_redemption_audits", "id,merchant_id,lead_id,original_created_at,purge_after"],
 ]) {
   await checkTable(table, columns);
 }
@@ -114,6 +117,7 @@ const migrationChecks = [
   ["20260720_fix_cashier_rpc_status_scope.sql", ["redeem_cashier_lead_prize", "p_merchant_id"]],
   ["20260723_redemption_pin.sql", ["redemption_pin_hash"]],
   ["20260830_google_place_metadata.sql", ["google_place_name", "google_place_address", "google_place_rating", "google_place_review_count"]],
+  ["20260831_personal_data_lifecycle.sql", ["archived_leads", "archived_campaign_events", "archived_cashier_redemption_audits", "purge_personal_data"]],
 ];
 for (const [file, needles] of migrationChecks) {
   const filePath = path.join(repoRoot, "supabase", "migrations", file);
