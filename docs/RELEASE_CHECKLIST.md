@@ -9,6 +9,7 @@ Cette checklist tient en une minute. Elle s'applique à chaque changement applic
 - [ ] Le lint et le build de l'application touchée sont verts.
 - [ ] Le parcours touché a été testé ; un E2E ou smoke est ajouté si le risque le justifie.
 - [ ] Les migrations, données sensibles, e-mails, authentification, retrait, prévisualisation, paiement ou autorisations ont été explicitement analysés lorsqu'ils sont concernés.
+- [ ] Pour une migration Supabase, le [runbook de release](MIGRATION_RELEASE_RUNBOOK.md) a été suivi et la cible est contrôlée depuis le commit candidat.
 - [ ] La PR ou le compte rendu indique les tests réalisés, les limites et les étapes de validation fonctionnelle.
 
 ## Avant production
@@ -17,6 +18,7 @@ Cette checklist tient en une minute. Elle s'applique à chaque changement applic
 - [ ] Les checks GitHub requis sont verts.
 - [ ] Aucun changement hors périmètre n'est inclus.
 - [ ] En cas de migration ou de donnée sensible, un plan de retour arrière est connu.
+- [ ] Le SHA testé, le SHA déployé, l'état du schéma et la preuve de sauvegarde sont consignés sans secret.
 
 ## Après production
 
