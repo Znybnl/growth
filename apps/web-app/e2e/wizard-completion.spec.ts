@@ -3,10 +3,10 @@ import { expect, test } from "@playwright/test";
 async function signIn(page: import("@playwright/test").Page) {
   const email = process.env.OKADO_E2E_EMAIL;
   const password = process.env.OKADO_E2E_PASSWORD;
-  test.skip(
-    !email || !password,
-    "Définissez OKADO_E2E_EMAIL et OKADO_E2E_PASSWORD pour exécuter ce parcours avec le compte de test dédié.",
-  );
+  if (!email || !password) {
+    test.skip(true, "Définissez OKADO_E2E_EMAIL et OKADO_E2E_PASSWORD pour exécuter ce parcours avec le compte de test dédié.");
+    return;
+  }
 
   await page.goto("/connexion");
   await page.getByPlaceholder("Email").fill(email);

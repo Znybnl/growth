@@ -4,10 +4,10 @@ test.describe("Parcours marchand authentifié", () => {
   test("un marchand accède au Wizard depuis le seul bouton de création", async ({ page }) => {
     const email = process.env.OKADO_E2E_EMAIL;
     const password = process.env.OKADO_E2E_PASSWORD;
-    test.skip(
-      !email || !password,
-      "Définissez OKADO_E2E_EMAIL et OKADO_E2E_PASSWORD pour exécuter ce parcours avec un compte de test dédié.",
-    );
+    if (!email || !password) {
+      test.skip(true, "Définissez OKADO_E2E_EMAIL et OKADO_E2E_PASSWORD pour exécuter ce parcours avec un compte de test dédié.");
+      return;
+    }
 
     await page.goto("/connexion");
     await page.getByPlaceholder("Email").fill(email);
@@ -32,10 +32,10 @@ test.describe("Parcours marchand authentifié", () => {
   test("le Wizard propose le catalogue de polices et Roboto par défaut", async ({ page }) => {
     const email = process.env.OKADO_E2E_EMAIL;
     const password = process.env.OKADO_E2E_PASSWORD;
-    test.skip(
-      !email || !password,
-      "Définissez OKADO_E2E_EMAIL et OKADO_E2E_PASSWORD pour exécuter ce parcours avec un compte de test dédié.",
-    );
+    if (!email || !password) {
+      test.skip(true, "Définissez OKADO_E2E_EMAIL et OKADO_E2E_PASSWORD pour exécuter ce parcours avec un compte de test dédié.");
+      return;
+    }
 
     await page.setViewportSize({ width: 1600, height: 1200 });
 
