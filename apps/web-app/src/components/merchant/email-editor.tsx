@@ -113,7 +113,7 @@ export function EmailEditor({ campaign, merchant }: EmailEditorProps) {
 
   return (
     <div className="okado-editor-page min-h-[calc(100vh-120px)] space-y-6">
-      <section className="px-1 py-2">
+      <section className="okado-page-header px-1 py-2">
           <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
             <div>
               <p className="okado-label">Atelier email</p>

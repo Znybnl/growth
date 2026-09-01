@@ -393,7 +393,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
 
   return (
     <div className="okado-poster-editor space-y-6">
-      <header className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+      <header className="okado-page-header flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <p className="okado-label">Atelier affiche</p>
           <h1 className="okado-page-title mt-3">
