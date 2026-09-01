@@ -796,8 +796,8 @@ button:disabled,
 
 .okado-card :where(input:not([type="color"]), textarea, select):focus,
 .okado-compact-card :where(input:not([type="color"]), textarea, select):focus {
-  border-color: var(--color-signal-blue);
-  box-shadow: 0 0 0 3px rgba(0, 153, 255, 0.16);
+  border-color: var(--color-aubergine);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-aubergine) 16%, transparent);
 }
 
 .okado-card :where(label.group, .okado-upload-zone) {
@@ -812,6 +812,20 @@ button:disabled,
   min-height: var(--okado-action-secondary-height);
   border-radius: var(--okado-radius-control);
   padding-block: 0;
+}
+
+.okado-workspace-shell .okado-cashier :where(section, aside > section) {
+  border-radius: var(--okado-radius-card);
+}
+
+.okado-workspace-shell .okado-cashier :where(button) {
+  border-radius: var(--okado-radius-button) !important;
+}
+
+.okado-workspace-shell .okado-cashier :where(input, textarea, select):focus {
+  border-color: var(--color-aubergine);
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-aubergine) 16%, transparent);
 }
 
 .grain {

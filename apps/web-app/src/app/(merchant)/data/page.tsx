@@ -4,6 +4,7 @@ import { DataCampaignSelector } from "@/components/merchant/data-campaign-select
 import { DataSearchForm } from "@/components/merchant/data-search-form";
 import { LeadPrizeActions } from "@/components/merchant/lead-prize-actions";
 import { PrizeStockActions } from "@/components/merchant/prize-stock-actions";
+import { EmptyState } from "@/components/ui/workspace";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import {
   rewardEmailStatusLabel,
@@ -338,9 +339,13 @@ export default async function DataPage({ searchParams }: DataPageProps) {
 
   if (!dataView || dataView.performance.campaign.merchantId !== session.merchant.id) {
     return (
-      <div className="okado-card p-8">
-        <h1 className="okado-section-title">Aucune campagne sélectionnée</h1>
-      </div>
+      <section className="okado-card okado-section-card">
+        <EmptyState
+          title="Aucune campagne sélectionnée"
+          description="Sélectionnez une campagne pour consulter ses participations et ses indicateurs."
+          action={<Link href="/campaigns" className="okado-filled-action inline-flex">Voir mes campagnes</Link>}
+        />
+      </section>
     );
   }
 
