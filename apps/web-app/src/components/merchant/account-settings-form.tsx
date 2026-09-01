@@ -27,7 +27,7 @@ type AccountSettingsFormProps = {
 };
 
 const inputClass =
-  "w-full min-h-[var(--okado-control-height)] rounded-[var(--okado-radius-control)] border border-[var(--okado-border-control)] bg-white px-4 py-2.5 text-sm text-graphite outline-none transition placeholder:text-ash focus:border-signal-blue focus:shadow-[0_0_0_3px_rgba(0,153,255,0.16)]";
+  "w-full min-h-[var(--okado-control-height)] rounded-[var(--okado-radius-control)] border border-fog bg-white px-4 py-2.5 text-sm text-carbon outline-none transition placeholder:text-ash focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.14)]";
 
 function createAccountSettingsForm(merchant: Merchant, user: MerchantUser): MerchantAccountSettingsInput {
   return {
@@ -267,7 +267,7 @@ export function AccountSettingsForm({
         <div className="space-y-4">
       <section className="okado-card scroll-mt-28 p-5 md:p-6">
         <div className="flex items-start gap-3 border-b border-border/70 pb-5">
-          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[12px] bg-sky-wash text-primary-action-accent">
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[4px] bg-purple-haze text-aubergine">
             <Store className="h-5 w-5" aria-hidden="true" />
           </span>
           <div>
@@ -277,10 +277,10 @@ export function AccountSettingsForm({
           </div>
         </div>
         <div className="pt-5">
-          <div className="mb-5 flex flex-wrap items-center gap-x-3 gap-y-1.5 rounded-[14px] border border-[#dbe7ff] bg-[#f4f7ff] px-3.5 py-3">
-          <span className="rounded-full bg-[#145aff] px-2.5 py-1 text-[11px] font-semibold text-white">Vous modifiez</span>
-          <strong className="text-sm text-[#101c38]">{selectedMerchant.companyName}</strong>
-          <span className="text-xs text-[#60708a]">Les champs ci-dessous ne changent pas l’établissement actif global.</span>
+          <div className="mb-5 flex flex-wrap items-center gap-x-3 gap-y-1.5 rounded-[8px] border border-lavender-mist bg-purple-haze px-3.5 py-3">
+          <span className="rounded-[4px] bg-aubergine px-2.5 py-1 text-[11px] font-semibold text-white">Vous modifiez</span>
+          <strong className="text-sm text-carbon">{selectedMerchant.companyName}</strong>
+          <span className="text-xs text-charcoal">Les champs ci-dessous ne changent pas l’établissement actif global.</span>
           </div>
           <div id="account-location" className="scroll-mt-28">
             <div className="mb-4">
@@ -429,7 +429,7 @@ export function AccountSettingsForm({
                 }));
               }}
             />
-          <label className="rounded-[14px] border border-[#dbe4f0] bg-white p-3 text-sm">
+          <label className="rounded-[8px] border border-fog bg-white p-3 text-sm">
             <span className="mb-2 flex items-center justify-between gap-3 text-ash"><span className="flex items-center gap-3"><SocialChannelIcon channel="instagram" /><span>Instagram</span></span><span className="text-[11px]">{form.instagramUrl ? "Renseigné" : "Optionnel"}</span></span>
             <input
               type="text"
@@ -440,7 +440,7 @@ export function AccountSettingsForm({
               className={`${inputClass} min-h-[40px] px-3 py-2 text-xs`}
             />
           </label>
-          <label className="rounded-[14px] border border-[#dbe4f0] bg-white p-3 text-sm">
+          <label className="rounded-[8px] border border-fog bg-white p-3 text-sm">
             <span className="mb-2 flex items-center justify-between gap-3 text-ash"><span className="flex items-center gap-3"><SocialChannelIcon channel="facebook" /><span>Facebook</span></span><span className="text-[11px]">{form.facebookUrl ? "Renseigné" : "Optionnel"}</span></span>
             <input
               type="text"
@@ -451,7 +451,7 @@ export function AccountSettingsForm({
               className={`${inputClass} min-h-[40px] px-3 py-2 text-xs`}
             />
           </label>
-          <label className="rounded-[14px] border border-[#dbe4f0] bg-white p-3 text-sm">
+          <label className="rounded-[8px] border border-fog bg-white p-3 text-sm">
             <span className="mb-2 flex items-center justify-between gap-3 text-ash"><span className="flex items-center gap-3"><SocialChannelIcon channel="tiktok" /><span>TikTok</span></span><span className="text-[11px]">{form.tiktokUrl ? "Renseigné" : "Optionnel"}</span></span>
             <input
               type="text"
@@ -462,7 +462,7 @@ export function AccountSettingsForm({
               className={`${inputClass} min-h-[40px] px-3 py-2 text-xs`}
             />
           </label>
-          <label className="rounded-[14px] border border-[#dbe4f0] bg-white p-3 text-sm">
+          <label className="rounded-[8px] border border-fog bg-white p-3 text-sm">
             <span className="mb-2 flex items-center justify-between gap-3 text-ash"><span className="flex items-center gap-3"><SocialChannelIcon channel="tripadvisor" /><span>Tripadvisor</span></span><span className="text-[11px]">{form.tripadvisorUrl ? "Renseigné" : "Optionnel"}</span></span>
             <input
               type="text"
@@ -473,7 +473,7 @@ export function AccountSettingsForm({
               className={`${inputClass} min-h-[40px] px-3 py-2 text-xs`}
             />
           </label>
-          <label className="rounded-[14px] border border-[#dbe4f0] bg-white p-3 text-sm md:col-span-2">
+          <label className="rounded-[8px] border border-fog bg-white p-3 text-sm md:col-span-2">
             <span className="mb-2 flex items-center justify-between gap-3 text-ash"><span className="flex items-center gap-3"><SocialChannelIcon channel="custom" /><span>Lien personnalisé</span></span><span className="text-[11px]">{form.customLinkUrl ? "Renseigné" : "Optionnel"}</span></span>
             <input
               type="text"
@@ -513,7 +513,7 @@ export function AccountSettingsForm({
               className={inputClass}
             />
           </label>
-              <p className="rounded-[12px] border border-[#dbe4f0] bg-[#f8fafc] px-4 py-3 text-sm text-ash">
+              <p className="rounded-[8px] border border-fog bg-soft-white px-4 py-3 text-sm text-ash">
             {selectedMerchant.redemptionPinConfigured
               ? "Un PIN est déjà configuré. Laissez ce champ vide pour le conserver."
               : "Aucun PIN n’est configuré. Ajoutez-en un pour activer la validation express."}
@@ -532,7 +532,7 @@ export function AccountSettingsForm({
                 <p className="okado-label">Vue d’ensemble</p>
                 <h2 className="mt-1.5 text-lg font-semibold tracking-[-0.02em] text-graphite">Configuration</h2>
               </div>
-              <span className="grid h-9 w-9 place-items-center rounded-full bg-[#edf9f1] text-[#16834e]"><CheckCircle2 className="h-5 w-5" aria-hidden="true" /></span>
+              <span className="grid h-9 w-9 place-items-center rounded-full bg-[#e5f8ed] text-[#16834e]"><CheckCircle2 className="h-5 w-5" aria-hidden="true" /></span>
             </div>
             <div className="mt-5 space-y-3">
               {[
@@ -551,7 +551,7 @@ export function AccountSettingsForm({
           <nav aria-label="Sections de l’établissement" className="okado-compact-card bg-white p-3">
             <p className="px-2 py-2 text-xs font-medium uppercase tracking-[0.14em] text-fog">Accès rapide</p>
             {[['account-location', 'Informations'], ['account-channels', 'Canaux marketing'], ['account-pin', 'Validation express']].map(([id, label]) => (
-              <a key={id} href={`#${id}`} className="flex items-center justify-between rounded-[10px] px-2 py-2.5 text-sm text-ash transition hover:bg-sky-wash hover:text-graphite">{label}<ArrowUpRight className="h-4 w-4" aria-hidden="true" /></a>
+              <a key={id} href={`#${id}`} className="flex items-center justify-between rounded-[4px] px-2 py-2.5 text-sm text-ash transition hover:bg-purple-haze hover:text-aubergine">{label}<ArrowUpRight className="h-4 w-4" aria-hidden="true" /></a>
             ))}
           </nav>
         </aside>
