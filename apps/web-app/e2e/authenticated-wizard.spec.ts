@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { signIn as cachedSignIn } from "./auth-session";
 
 test.describe("Parcours marchand authentifié", () => {
   test("un marchand accède au Wizard depuis le seul bouton de création", async ({ page }) => {
@@ -9,10 +10,7 @@ test.describe("Parcours marchand authentifié", () => {
       return;
     }
 
-    await page.goto("/connexion");
-    await page.getByPlaceholder("Email").fill(email);
-    await page.getByPlaceholder("Mot de passe").fill(password);
-    await page.getByRole("button", { name: "Se connecter", exact: true }).click();
+    await cachedSignIn(page);
 
     await expect(page).not.toHaveURL(/\/connexion/, { timeout: 15_000 });
     const createCampaign = page.getByRole("link", { name: "Créer une campagne", exact: true }).first();
@@ -39,10 +37,7 @@ test.describe("Parcours marchand authentifié", () => {
 
     await page.setViewportSize({ width: 1600, height: 1200 });
 
-    await page.goto("/connexion");
-    await page.getByPlaceholder("Email").fill(email);
-    await page.getByPlaceholder("Mot de passe").fill(password);
-    await page.getByRole("button", { name: "Se connecter", exact: true }).click();
+    await cachedSignIn(page);
     await expect(page).not.toHaveURL(/\/connexion/, { timeout: 15_000 });
 
     await page.goto("/campaigns/new/guided");

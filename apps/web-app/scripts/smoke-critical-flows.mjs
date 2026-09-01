@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import nextEnv from "@next/env";
+import { Resend } from "resend";
 import { createClient } from "@supabase/supabase-js";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
@@ -12,7 +13,7 @@ loadEnvConfig(path.resolve(scriptDirectory, ".."));
 const baseUrl = process.env.OKADO_SMOKE_BASE_URL ?? "http://localhost:3000";
 const email = process.env.OKADO_SMOKE_EMAIL ?? process.env.OKADO_E2E_EMAIL;
 const password = process.env.OKADO_SMOKE_PASSWORD ?? process.env.OKADO_E2E_PASSWORD;
-const leadEmail = process.env.OKADO_SMOKE_LEAD_EMAIL ?? process.env.OKADO_E2E_EMAIL;
+const leadEmail = process.env.OKADO_SMOKE_LEAD_EMAIL ?? "delivered+okado-e2e@resend.dev";
 const keepCampaign = process.env.OKADO_SMOKE_KEEP_CAMPAIGN === "true";
 
 const cookieJar = new Map();
@@ -68,7 +69,7 @@ async function assertTestRewardEmail(leadId) {
   const supabase = getSupabaseAdmin();
   const { data, error } = await supabase
     .from("reward_email_deliveries")
-    .select("recipient_email,subject,status")
+    .select("recipient_email,subject,status,resend_email_id")
     .eq("lead_id", leadId)
     .maybeSingle();
 
@@ -78,7 +79,32 @@ async function assertTestRewardEmail(leadId) {
   assert(data.recipient_email.toLowerCase() === leadEmail.toLowerCase(), "L'e-mail de gain E2E cible un destinataire inattendu.");
   assert(data.subject.startsWith("[TEST]"), "L'objet de l'e-mail E2E doit commencer par [TEST].");
   assert(!["failed", "bounced", "complained", "suppressed"].includes(data.status), "L'e-mail de gain E2E est en échec.");
-  console.log(`✓ E-mail de gain E2E: ${data.status}`);
+
+  const resendApiKey = process.env.RESEND_API_KEY;
+  assert(resendApiKey, "RESEND_API_KEY est nécessaire pour valider l'e-mail E2E via Resend.");
+  assert(data.resend_email_id, "L'identifiant Resend de l'e-mail E2E est manquant.");
+
+  const resend = new Resend(resendApiKey);
+  let remoteEmail;
+  let lastError;
+  const deadline = Date.now() + 30_000;
+  while (Date.now() < deadline) {
+    const result = await resend.emails.get(data.resend_email_id);
+    if (result.error) {
+      lastError = result.error.message;
+    } else if (result.data) {
+      remoteEmail = result.data;
+      if (["delivered", "bounced", "complained", "suppressed", "failed"].includes(remoteEmail.last_event)) break;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 2_000));
+  }
+
+  assert(remoteEmail, `E-mail E2E introuvable dans Resend${lastError ? `: ${lastError}` : "."}`);
+  assert(remoteEmail.last_event === "delivered", `E-mail E2E non délivré: ${remoteEmail.last_event}.`);
+  assert(remoteEmail.to.some((recipient) => recipient.toLowerCase() === leadEmail.toLowerCase()), "Resend cible un destinataire inattendu.");
+  assert(remoteEmail.subject === data.subject, "Le sujet retourné par Resend ne correspond pas au sujet enregistré.");
+  assert(remoteEmail.text?.includes("Café offert") || remoteEmail.html?.includes("Café offert"), "Le contenu de l'e-mail ne contient pas le lot attendu.");
+  console.log(`✓ E-mail de gain E2E: ${remoteEmail.last_event} et contenu vérifié via Resend`);
 }
 
 function updateCookies(response) {
@@ -135,7 +161,7 @@ function assert(condition, message) {
   }
 }
 
-function campaignPayload(merchant) {
+function campaignPayload(merchant, gameType = "wheel") {
   const suffix = new Date().toISOString().replace(/[:.]/g, "-");
   const companyName = merchant.companyName || "Okado Smoke";
   const googleReviewUrl =
@@ -144,14 +170,14 @@ function campaignPayload(merchant) {
 
   return {
     merchantId: merchant.id,
-    title: `E2E — Smoke ${suffix}`,
+    title: `E2E — Smoke ${gameType} ${suffix}`,
     subtitle: "Test automatisé Okado.",
     goalType: "review_prompt",
     ctaLabel: "Je participe",
     successMetric: "Clics vers avis",
     targetUrl: googleReviewUrl,
     isActive: true,
-    gameType: "wheel",
+    gameType,
     logoMode: "text",
     logoText: companyName,
     accent: {
@@ -270,8 +296,7 @@ async function cleanupSmokeCampaign() {
 
 async function main() {
   assert(email && password, "Définissez OKADO_E2E_EMAIL et OKADO_E2E_PASSWORD avant de lancer le smoke critique.");
-  assert(leadEmail, "Définissez OKADO_E2E_EMAIL ou OKADO_SMOKE_LEAD_EMAIL pour recevoir l'e-mail de gain sur la boîte dédiée.");
-  assert(leadEmail.toLowerCase() === email.toLowerCase(), "Le smoke critique ne peut envoyer un e-mail de gain qu'à l'adresse du compte E2E.");
+  assert(leadEmail, "Définissez OKADO_SMOKE_LEAD_EMAIL pour remplacer l'adresse Resend de test.");
   console.log(`Smoke Okado: ${baseUrl}`);
 
   const signIn = await request("/api/auth/signin", {
@@ -352,6 +377,23 @@ async function main() {
   console.log(`✓ Gain client: ${lead.redemptionCode}`);
   await assertTestRewardEmail(lead.id);
 
+  let duplicateFinalizeBlocked = false;
+  try {
+    await request("/api/public/draw/finalize", {
+      method: "POST",
+      body: JSON.stringify({
+        sessionId,
+        firstName: "Smoke",
+        email: leadEmail,
+        marketingConsent: true,
+      }),
+    });
+  } catch {
+    duplicateFinalizeBlocked = true;
+  }
+  assert(duplicateFinalizeBlocked, "La finalisation multiple d'une même session n'est pas bloquée.");
+  console.log("✓ Finalisation multiple bloquée");
+
   await request(`/api/public/redeem/${encodeURIComponent(lead.redemptionCode)}/qr`, {
     headers: { Accept: "image/svg+xml" },
   });
@@ -392,6 +434,30 @@ async function main() {
   }
   assert(doubleRedeemBlocked, "Le retrait multiple n'est pas bloqué.");
   console.log("✓ Retrait multiple bloqué");
+
+  const scratchCreated = await request("/api/campaigns/setup", {
+    method: "POST",
+    body: JSON.stringify(campaignPayload(merchant, "scratch")),
+  });
+  const scratchCampaignId = scratchCreated.body?.campaign?.campaign?.id;
+  assert(scratchCampaignId, "Création du ticket à gratter sans identifiant.");
+  const scratchSession = await request("/api/public/draw/session", {
+    method: "POST",
+    body: JSON.stringify({ campaignId: scratchCampaignId }),
+  });
+  const scratchSessionId = scratchSession.body?.session?.id;
+  assert(scratchSessionId, "Session du ticket à gratter non créée.");
+  const scratchFinalized = await request("/api/public/draw/finalize", {
+    method: "POST",
+    body: JSON.stringify({
+      sessionId: scratchSessionId,
+      firstName: "Smoke Scratch",
+      email: leadEmail,
+      marketingConsent: false,
+    }),
+  });
+  assert(scratchFinalized.body?.lead?.id, "Participation du ticket à gratter non enregistrée.");
+  console.log("✓ Parcours ticket à gratter");
 
   await cleanupSmokeCampaign();
   console.log("Smoke critique terminé avec succès.");
