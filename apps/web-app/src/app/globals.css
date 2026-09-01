@@ -273,6 +273,47 @@ select {
   box-shadow: var(--shadow-product-card);
 }
 
+/* Shared SaaS workspace surface. Public game experiences intentionally do not
+   use this scope and keep their template-specific visual language. */
+.okado-workspace-shell main {
+  background:
+    radial-gradient(circle at 60% -20%, color-mix(in srgb, var(--color-lavender-mist) 24%, transparent), transparent 32rem),
+    var(--color-soft-white);
+}
+
+.okado-workspace-shell :where(.okado-card, .okado-compact-card) {
+  border-color: var(--color-lavender-mist);
+  box-shadow: var(--shadow-product-card);
+}
+
+.okado-workspace-shell :where(input:not([type="color"]), textarea, select) {
+  border-color: #cfcfcf;
+  background: var(--color-pure-white);
+}
+
+.okado-workspace-shell :where(input:not([type="color"]), textarea, select):focus {
+  border-color: var(--color-aubergine);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-aubergine) 18%, transparent);
+  outline: none;
+}
+
+.okado-workspace-shell .okado-wizard > .grid > aside {
+  border-color: var(--color-lavender-mist);
+}
+
+@media (min-width: 1280px) {
+  .okado-workspace-shell .okado-wizard > .grid > aside {
+    position: sticky;
+    top: 1rem;
+  }
+}
+
+.okado-workspace-shell .okado-cashier :where(aside > section) {
+  border-color: var(--color-lavender-mist);
+  border-radius: var(--okado-radius-card);
+  box-shadow: var(--shadow-product-card);
+}
+
 .okado-compact-card {
   border: 1px solid var(--border);
   border-radius: var(--okado-radius-control);

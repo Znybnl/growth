@@ -1252,7 +1252,7 @@ export function CampaignWizard({
         ) : null}
       </section>
 
-      <div className="sticky top-0 z-30 hidden border-b border-[#e2e8f0] bg-[#f8fafc]/95 py-3 backdrop-blur xl:block">
+      <div className="sticky top-0 z-30 hidden border-b border-fog bg-soft-white/95 py-3 backdrop-blur xl:block">
         <div className="flex items-center justify-between gap-3">
           <span className={`rounded-full px-3 py-1.5 text-xs font-semibold ${!draft.id ? "bg-[#fff8e1] text-[#8c6710]" : draft.isActive ? "bg-[#e9f8ec] text-[#18864b]" : "bg-[#eef4ff] text-[#214ccf]"}`}>
             {!draft.id ? "En création" : draft.isActive ? "En ligne" : "Brouillon"}
@@ -1286,10 +1286,10 @@ export function CampaignWizard({
                   type="button"
                   onClick={() => canAccessStep && setStepIndex(index)}
                   disabled={!canAccessStep}
-                  className={`flex w-full items-start gap-3 rounded-[16px] px-3 py-3 text-left transition ${active ? "bg-[#111827] text-white" : visited ? "text-[#18864b] hover:bg-[#f5f8fb]" : "text-[#a0a9b9]"}`}
+                  className={`flex w-full items-start gap-3 rounded-[4px] px-3 py-3 text-left transition ${active ? "bg-deep-plum text-white" : visited ? "text-[#18864b] hover:bg-purple-haze" : "text-[#a0a9b9]"}`}
                 >
                   <span
-                    className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${active ? "bg-[#f4c14a] text-[#111827]" : complete ? "bg-[#e9f8ec] text-[#18864b]" : visited ? "bg-[#fff8e1] text-[#b28719]" : "bg-[#f2f4f7]"}`}
+                    className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-[4px] text-[10px] font-bold ${active ? "bg-white text-aubergine" : complete ? "bg-[#e9f8ec] text-[#18864b]" : visited ? "bg-[#fff8e1] text-[#b28719]" : "bg-[#f2f4f7]"}`}
                   >
                     {complete ? <Check className="h-3.5 w-3.5" /> : item.number}
                   </span>
