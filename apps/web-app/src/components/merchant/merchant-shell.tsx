@@ -176,7 +176,7 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
         <div className="flex h-full flex-col px-4 py-5">
           <div className="px-2 py-2">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-[8px] bg-primary-action-accent text-xs font-semibold uppercase tracking-[0.18em] text-white">
+              <div className="flex h-10 w-10 items-center justify-center rounded-[4px] bg-primary-action-accent text-xs font-semibold uppercase tracking-[0.18em] text-white">
                 <Star className="h-5 w-5 fill-white text-white" aria-hidden="true" />
               </div>
               <h1 className="truncate text-[22px] font-semibold leading-none tracking-[-0.05em] text-midnight-ink">
@@ -256,7 +256,7 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
           <Link
             href="/caisse"
             prefetch={false}
-            className="mt-auto mb-3 flex h-10 items-center justify-center rounded-[8px] bg-[#111827] px-4 text-sm font-semibold !text-white transition hover:bg-[#26324a]"
+            className="mt-auto mb-3 flex h-10 items-center justify-center rounded-[4px] bg-deep-plum px-4 text-sm font-semibold !text-white transition hover:bg-aubergine"
             style={{ color: "#ffffff" }}
             onClick={() => setMenuOpen(false)}
           >

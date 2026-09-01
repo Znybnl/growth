@@ -82,8 +82,8 @@
   --color-soft-white: #fefbff;
   --color-fog: #edeaed;
   --color-linen-canvas: #fcfcfc;
-  --color-sky-wash: #f0f4fe;
-  --color-midnight-ink: #020520;
+  --color-sky-wash: var(--color-purple-haze);
+  --color-midnight-ink: var(--color-carbon);
   --color-graphite: #14141e;
   --color-slate: #374151;
   --color-ash: #696a72;

@@ -66,7 +66,7 @@ export function AuthShell({
                 <Star className="h-5 w-5 fill-white text-white" aria-hidden="true" />
               </div>
               <div>
-                <p className="text-2xl font-semibold tracking-[-0.04em] text-signal-blue">
+                <p className="text-2xl font-semibold tracking-[-0.04em] text-aubergine">
                   {APP_NAME_CAPITALIZED}
                 </p>
                 <p className="text-sm text-ash">{APP_TAGLINE}</p>
