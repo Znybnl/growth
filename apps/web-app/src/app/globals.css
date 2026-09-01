@@ -71,6 +71,16 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  --color-aubergine: #611f69;
+  --color-deep-plum: #481a54;
+  --color-purple-haze: #f9f0ff;
+  --color-lavender-mist: #eac8fe;
+  --color-carbon: #1d1c1d;
+  --color-charcoal: #454245;
+  --color-mid-gray: #696969;
+  --color-pure-white: #ffffff;
+  --color-soft-white: #fefbff;
+  --color-fog: #edeaed;
   --color-linen-canvas: #fcfcfc;
   --color-sky-wash: #f0f4fe;
   --color-midnight-ink: #020520;
@@ -86,17 +96,18 @@
   --color-coral-alert: #f26052;
   --color-azure-info: #0099ff;
   --color-amber-tag: #ffa64d;
-  --color-primary-action-accent: #0f1f3d;
-  /* Okado product scale: controls 12px, cards 16px, modals/hero surfaces 24px. */
+  --color-primary-action-accent: var(--color-aubergine);
+  /* Slack-inspired product scale: controls 12px, cards 16px, modals 32px. */
   --okado-radius-control: 12px;
   --okado-radius-card: 16px;
-  --okado-radius-modal: 24px;
+  --okado-radius-modal: 32px;
+  --okado-radius-button: 4px;
   --okado-radius-pill: 9999px;
   --radius-card: var(--okado-radius-card);
-  --okado-border-control: #d9deea;
-  --okado-surface-muted: #f7f9fc;
-  --okado-text-primary: #14141e;
-  --okado-text-muted: #696a72;
+  --okado-border-control: var(--color-fog);
+  --okado-surface-muted: var(--color-purple-haze);
+  --okado-text-primary: var(--color-carbon);
+  --okado-text-muted: var(--color-charcoal);
   --okado-status-success-bg: #ecfdf3;
   --okado-status-success-text: #047857;
   --okado-status-warning-bg: #fff7ed;
@@ -111,7 +122,7 @@
   --okado-action-compact-height: 36px;
   --okado-action-auth-height: 48px;
   --okado-control-height: 44px;
-  --gradient-hero-blue-fade: linear-gradient(rgb(59, 130, 246) 0%, rgb(20, 90, 255) 100%);
+  --gradient-hero-blue-fade: linear-gradient(180deg, var(--color-aubergine) 0%, var(--color-aubergine) 100%);
   --gradient-page-wash:
     radial-gradient(circle at 48% -10%, rgba(182, 203, 253, 0.68), transparent 34rem),
     linear-gradient(180deg, #f0f4fe 0%, #fcfcfc 34rem);
@@ -121,22 +132,22 @@
     rgba(0, 0, 0, 0.07) 0px 1.37px 6.87px -2.83px,
     rgba(0, 0, 0, 0.016) 0px 6px 30px -4.25px;
 
-  --background: #fcfcfc;
-  --foreground: #020520;
-  --card: #ffffff;
-  --card-foreground: #020520;
+  --background: var(--color-soft-white);
+  --foreground: var(--color-carbon);
+  --card: var(--color-pure-white);
+  --card-foreground: var(--color-carbon);
   --popover: #ffffff;
   --popover-foreground: #020520;
-  --primary: #0f1f3d;
+  --primary: var(--color-aubergine);
   --primary-foreground: #ffffff;
-  --secondary: #f0f4fe;
-  --secondary-foreground: #14141e;
-  --muted: #f0f4fe;
-  --muted-foreground: #696a72;
-  --accent: #f0f4fe;
-  --accent-foreground: #14141e;
+  --secondary: var(--color-purple-haze);
+  --secondary-foreground: var(--color-carbon);
+  --muted: var(--color-purple-haze);
+  --muted-foreground: var(--color-charcoal);
+  --accent: var(--color-purple-haze);
+  --accent-foreground: var(--color-carbon);
   --destructive: #f26052;
-  --border: #d9deea;
+  --border: var(--color-fog);
   --input: #cfcfcf;
   --ring: #145aff;
   --chart-1: #145aff;
@@ -145,19 +156,27 @@
   --chart-4: #16ca2e;
   --chart-5: #ffa64d;
   --radius: 0.75rem;
-  --sidebar: #fcfcfc;
-  --sidebar-foreground: #374151;
-  --sidebar-primary: #14141e;
+  --sidebar: var(--color-soft-white);
+  --sidebar-foreground: var(--color-charcoal);
+  --sidebar-primary: var(--color-aubergine);
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f0f4fe;
-  --sidebar-accent-foreground: #14141e;
-  --sidebar-border: #e6ebf4;
+  --sidebar-accent: var(--color-purple-haze);
+  --sidebar-accent-foreground: var(--color-carbon);
+  --sidebar-border: var(--color-fog);
   --sidebar-ring: #145aff;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-aubergine: var(--color-aubergine);
+  --color-deep-plum: var(--color-deep-plum);
+  --color-purple-haze: var(--color-purple-haze);
+  --color-lavender-mist: var(--color-lavender-mist);
+  --color-carbon: var(--color-carbon);
+  --color-charcoal: var(--color-charcoal);
+  --color-mid-gray: var(--color-mid-gray);
+  --color-soft-white: var(--color-soft-white);
   --font-sans: "Inter", "Inter Fallback", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Inter", "Inter Fallback", ui-sans-serif, system-ui, sans-serif;
   --font-anton: "Anton", "Inter", "Inter Fallback", ui-sans-serif, system-ui, sans-serif;
@@ -269,9 +288,9 @@ select {
 }
 
 .okado-label {
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.13px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.68px;
   text-transform: uppercase;
   color: var(--color-fog);
 }
@@ -308,7 +327,7 @@ button:disabled,
 }
 
 .okado-link {
-  color: var(--color-signal-blue);
+  color: var(--color-aubergine);
   font-weight: 600;
 }
 
@@ -320,7 +339,7 @@ button:disabled,
   height: var(--okado-action-primary-height);
   padding-block: 0;
   border: 1px solid var(--color-primary-action-accent);
-  border-radius: 12px;
+  border-radius: var(--okado-radius-button);
   background: rgba(255, 255, 255, 0.8);
   color: var(--color-primary-action-accent) !important;
   font-size: 14px;
@@ -344,7 +363,7 @@ button:disabled,
   height: var(--okado-action-primary-height);
   padding-block: 0;
   border: 1px solid transparent;
-  border-radius: 12px;
+  border-radius: var(--okado-radius-button);
   background: var(--gradient-hero-blue-fade);
   color: #ffffff !important;
   font-size: 14px;
@@ -362,7 +381,7 @@ button:disabled,
   height: var(--okado-action-secondary-height);
   padding-block: 0;
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--okado-radius-button);
   background: #ffffff;
   color: var(--color-primary-action-accent);
   font-size: 14px;
@@ -407,7 +426,7 @@ button:disabled,
   display: inline-flex;
   align-items: center;
   min-height: 24px;
-  border-radius: var(--okado-radius-pill);
+  border-radius: 4px;
   padding: 3px 10px;
   font-size: 11px;
   font-weight: 500;
