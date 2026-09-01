@@ -29,7 +29,6 @@ const navItems = [
   { href: "/campaigns", label: "Mes jeux" },
   { href: "/data", label: "Mes résultats" },
   { href: "/account", label: "Mon compte" },
-  { href: "/locations", label: "Mes établissements" },
 ];
 
 const prefetchedNavRoutes = new Set(["/", "/campaigns", "/data", "/account"]);
