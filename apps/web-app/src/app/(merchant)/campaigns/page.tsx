@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { CampaignActionsMenu } from "@/components/merchant/campaign-actions-menu";
+import { PageHeader } from "@/components/ui/workspace";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import { formatCurrency, formatPercent, gameTypeLabel } from "@/lib/format";
 import { getMerchantCampaignOverview } from "@/lib/store";
@@ -23,25 +24,21 @@ export default async function CampaignsPage({
 
   return (
     <div className="space-y-6">
-      <section className="flex flex-col gap-5 px-1 py-2 xl:flex-row xl:items-end xl:justify-between">
-        <div>
-          <p className="okado-label">Gestion des animations</p>
-          <h1 className="okado-page-title mt-3">Toutes vos campagnes</h1>
-          <p className="mt-4 max-w-3xl text-sm leading-7 text-ash">
-            Retrouvez vos jeux en cours et terminés, comparez leurs performances et accédez à leur
-            paramétrage.
-          </p>
-        </div>
-
-        <div className="okado-action-row flex flex-wrap items-center gap-3">
+      <PageHeader
+        eyebrow="Gestion des animations"
+        title="Toutes vos campagnes"
+        description="Retrouvez vos jeux en cours et terminés, comparez leurs performances et accédez à leur paramétrage."
+        actions={
+          <>
           <div className="flex min-h-[var(--okado-action-primary-height)] items-center px-2 text-sm font-semibold text-ash">
             {activeCount} actives · {campaigns.length} au total
           </div>
           <Link href="/campaigns/new/guided" prefetch={false} className="okado-filled-action px-5">
             Créer une campagne
           </Link>
-        </div>
-      </section>
+          </>
+        }
+      />
 
       <section className="okado-card p-4 md:p-6">
         <div className="okado-table-header hidden grid-cols-[1.45fr_0.7fr_0.5fr_0.5fr_0.55fr_0.75fr_0.85fr] gap-3 px-5 py-4 lg:grid">

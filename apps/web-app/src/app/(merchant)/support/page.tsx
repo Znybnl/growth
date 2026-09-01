@@ -3,6 +3,7 @@ import { requireAuthenticatedSession } from "@/lib/auth";
 import { isSaasAdminEmail } from "@/lib/admin";
 import { formatDateTime, leadStatusLabel, rewardEmailStatusLabel } from "@/lib/format";
 import { getMerchantSupportOverview } from "@/lib/store";
+import { PageHeader } from "@/components/ui/workspace";
 import { redirect } from "next/navigation";
 
 type SupportPageProps = {
@@ -173,18 +174,11 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
 
   return (
     <div className="space-y-6">
-      <section className="px-1 py-2">
-        <div>
-          <p className="okado-label">Supervision</p>
-          <h1 className="okado-page-title mt-3">
-            Centre de supervision
-          </h1>
-          <p className="mt-4 max-w-3xl text-sm leading-7 text-ash">
-            Retrouvez les e-mails en échec, les webhooks Resend reçus et les gains encore en
-            attente de retrait depuis un seul écran support.
-          </p>
-        </div>
-      </section>
+      <PageHeader
+        eyebrow="Supervision"
+        title="Centre de supervision"
+        description="Retrouvez les e-mails en échec, les webhooks Resend reçus et les gains encore en attente de retrait depuis un seul écran support."
+      />
 
       <section className="grid gap-4 md:grid-cols-4">
         {[
@@ -460,7 +454,7 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
 
           <div className="mt-6 overflow-x-auto">
             {filteredOverview.businessLogs.length ? (
-              <table className="min-w-[900px] w-full text-left text-sm">
+              <table className="okado-data-table okado-support-table min-w-[900px] w-full text-left text-sm">
                 <thead className="okado-table-header">
                   <tr>
                     <th className="px-3 py-3">Date</th>

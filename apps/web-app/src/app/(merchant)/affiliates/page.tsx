@@ -6,6 +6,7 @@ import { getAffiliateAdminOverview } from "@/lib/affiliate-repository";
 import { isSaasAdminEmail } from "@/lib/admin";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import { AffiliateCommissionStatus } from "@/lib/types";
+import { PageHeader } from "@/components/ui/workspace";
 
 type AffiliatesPageProps = {
   searchParams: Promise<{
@@ -67,18 +68,11 @@ export default async function AffiliatesPage({ searchParams }: AffiliatesPagePro
 
   return (
     <div className="space-y-6">
-      <section className="px-1 py-2">
-        <div>
-          <p className="okado-label">Affiliation</p>
-          <h1 className="okado-page-title mt-3">
-            Programme affiliés
-          </h1>
-          <p className="mt-4 max-w-3xl text-sm leading-7 text-ash">
-            Suivez les filleuls, les commissions Stripe générées et les paiements manuels à
-            effectuer.
-          </p>
-        </div>
-      </section>
+      <PageHeader
+        eyebrow="Affiliation"
+        title="Programme affiliés"
+        description="Suivez les filleuls, les commissions Stripe générées et les paiements manuels à effectuer."
+      />
 
       <section className="grid gap-4 md:grid-cols-5">
         {[
@@ -147,7 +141,7 @@ export default async function AffiliatesPage({ searchParams }: AffiliatesPagePro
           </p>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[1040px] text-left text-sm">
+          <table className="okado-data-table okado-affiliate-table w-full min-w-[1040px] text-left text-sm">
             <thead className="okado-table-header">
               <tr>
                 <th className="px-5 py-4">Marchand</th>
@@ -194,7 +188,7 @@ export default async function AffiliatesPage({ searchParams }: AffiliatesPagePro
 
       <section className="okado-card overflow-hidden p-0">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[1040px] text-left text-sm">
+          <table className="okado-data-table okado-affiliate-table w-full min-w-[1040px] text-left text-sm">
             <thead className="okado-table-header">
               <tr>
                 <th className="px-5 py-4">Affilié</th>

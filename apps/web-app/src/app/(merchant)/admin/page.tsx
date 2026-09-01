@@ -5,6 +5,7 @@ import { isSaasAdminEmail } from "@/lib/admin";
 import { getSaasAdminOverview } from "@/lib/admin-repository";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import { formatDateTime } from "@/lib/format";
+import { PageHeader } from "@/components/ui/workspace";
 
 type AdminPageProps = {
   searchParams: Promise<{ q?: string }>;
@@ -46,20 +47,18 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
 
   return (
     <div className="w-full space-y-6 px-1 pb-8">
-      <header className="py-2">
-        <p className="okado-label">Administration</p>
-        <h1 className="okado-page-title mt-3">
-          Pilotage de la plateforme
-        </h1>
-        <p className="mt-4 max-w-3xl text-sm leading-7 text-ash">
-          Suivez les comptes marchands, les campagnes produit et les alertes qui demandent une action.
-        </p>
-        <div className="mt-5 flex flex-wrap gap-3">
+      <PageHeader
+        eyebrow="Administration"
+        title="Pilotage de la plateforme"
+        description="Suivez les comptes marchands, les campagnes produit et les alertes qui demandent une action."
+        actions={
+          <>
           <Link href="/admin/prize-suggestions" className="okado-secondary-action okado-compact-action px-4 text-sm">
             Gérer les suggestions de lots
           </Link>
-        </div>
-      </header>
+          </>
+        }
+      />
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard label="Comptes" value={overview.totals.merchants} detail={`${overview.totals.onboardedMerchants} onboarding termines`} />
@@ -96,7 +95,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
         </div>
 
         <div className="mt-5 overflow-x-auto">
-          <table className="min-w-[930px] w-full text-left text-sm">
+          <table className="okado-data-table okado-admin-table min-w-[930px] w-full text-left text-sm">
             <thead className="okado-table-header">
               <tr>
                 <th className="px-3 py-3 font-medium">Utilisateur</th>

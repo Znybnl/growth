@@ -4,6 +4,7 @@ import { DashboardActivityChart } from "@/components/merchant/dashboard-activity
 import { DashboardCampaignActionsMenu } from "@/components/merchant/dashboard-campaign-actions-menu";
 import { DashboardOperationalAlerts } from "@/components/merchant/dashboard-operational-alerts";
 import { OnboardingWelcomeDialog } from "@/components/merchant/onboarding-welcome-dialog";
+import { PageHeader } from "@/components/ui/workspace";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import {
   formatDateTime,
@@ -72,21 +73,12 @@ export default async function DashboardPage({
   return (
     <div className="min-w-0 space-y-5 overflow-x-hidden">
       <OnboardingWelcomeDialog open={params.welcome === "1"} />
-      <section className="grid gap-5 px-1 py-2 xl:grid-cols-[1.2fr_0.8fr]">
-          <div className="min-w-0">
-            <p className="okado-label">
-              Vue d&apos;ensemble
-            </p>
-            <h1 className="okado-page-title mt-3">
-              Pilotez vos campagnes
-            </h1>
-            <p className="mt-4 max-w-3xl text-sm leading-6 text-ash">
-              Suivez vos campagnes en direct, comparez les mécaniques qui performent et lancez
-              rapidement une nouvelle campagne.
-            </p>
-          </div>
-
-          <div className="okado-action-row flex flex-wrap items-center gap-3 xl:items-end xl:justify-end">
+      <PageHeader
+        eyebrow="Vue d'ensemble"
+        title="Pilotez vos campagnes"
+        description="Suivez vos campagnes en direct, comparez les mécaniques qui performent et lancez rapidement une nouvelle campagne."
+        actions={
+          <>
             {session.locations.length > 1 ? (
               <Link
                 href={isWorkspaceView ? "/" : "/?scope=all"}
@@ -103,8 +95,9 @@ export default async function DashboardPage({
             >
               Créer une campagne
             </Link>
-          </div>
-      </section>
+          </>
+        }
+      />
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {[

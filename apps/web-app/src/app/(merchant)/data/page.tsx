@@ -185,7 +185,7 @@ function LeadsExportSection({
       </div>
 
       <div className="mt-5 overflow-x-auto">
-        <table className="min-w-full text-left text-sm">
+        <table className="okado-data-table min-w-full text-left text-sm">
           <thead className="okado-table-header">
             <tr>
               <th className="px-3 py-3">Participant</th>
@@ -199,16 +199,16 @@ function LeadsExportSection({
           <tbody>
             {leads.map((lead) => (
               <tr key={lead.id}>
-                <td className="border-b border-[#eef2f7] px-3 py-4">
+                <td data-label="Participant" className="border-b border-[#eef2f7] px-3 py-4">
                   <div className="font-semibold text-graphite">{lead.firstName}</div>
                   <div className="text-ash">{lead.email}</div>
                 </td>
-                <td className="border-b border-[#eef2f7] px-3 py-4 text-slate">
+                <td data-label="Statut" className="border-b border-[#eef2f7] px-3 py-4 text-slate">
                   <span className={`inline-flex rounded-full px-3 py-1.5 text-xs font-semibold ${leadStatusTone(lead.status)}`}>
                     {leadStatusLabel(lead.status)}
                   </span>
                 </td>
-                <td className="border-b border-[#eef2f7] px-3 py-4 text-slate">
+                <td data-label="Lot" className="border-b border-[#eef2f7] px-3 py-4 text-slate">
                   {lead.prizeLabel}
                   {lead.redemptionCode ? (
                     <div className="mt-1 font-mono text-xs text-ash">
@@ -221,7 +221,7 @@ function LeadsExportSection({
                     </div>
                   ) : null}
                 </td>
-                <td className="w-[150px] max-w-[150px] border-b border-[#eef2f7] px-3 py-4 align-top text-slate">
+                <td data-label="E-mail gain" className="w-[150px] max-w-[150px] border-b border-[#eef2f7] px-3 py-4 align-top text-slate">
                   <div className="w-[140px] max-w-[140px] overflow-hidden">
                     <span
                       className={`inline-flex max-w-full truncate rounded-full px-3 py-1.5 text-xs font-semibold ${rewardEmailTone(lead.emailDeliveryStatus)}`}
@@ -245,7 +245,7 @@ function LeadsExportSection({
                     </div>
                   ) : null}
                 </td>
-                <td className="border-b border-[#eef2f7] px-3 py-4 text-slate">
+                <td data-label="Retrait" className="border-b border-[#eef2f7] px-3 py-4 text-slate">
                   <LeadPrizeActions
                     leadId={lead.id}
                     status={lead.status}
@@ -254,7 +254,7 @@ function LeadsExportSection({
                     emailDeliveryStatus={lead.emailDeliveryStatus}
                   />
                 </td>
-                <td className="border-b border-[#eef2f7] px-3 py-4 text-slate">
+                <td data-label="Consentement" className="border-b border-[#eef2f7] px-3 py-4 text-slate">
                   {lead.marketingConsent && lead.consentTimestamp
                     ? formatDateTime(lead.consentTimestamp)
                     : "Non"}
