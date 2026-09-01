@@ -256,7 +256,7 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
           <Link
             href="/caisse"
             prefetch={false}
-            className="mt-auto mb-3 flex h-10 items-center justify-center rounded-[4px] bg-deep-plum px-4 text-sm font-semibold !text-white transition hover:bg-aubergine"
+            className="mt-auto mb-3 flex h-10 items-center justify-center rounded-[4px] bg-aubergine px-4 text-sm font-semibold !text-white transition hover:bg-white hover:!text-aubergine"
             style={{ color: "#ffffff" }}
             onClick={() => setMenuOpen(false)}
           >
@@ -274,7 +274,7 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
                   style={{ backgroundImage: `url(${user.avatarUrl})`, backgroundPosition: "center", backgroundSize: "cover" }}
                 />
               ) : (
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-action-accent text-xs font-semibold tracking-[0.08em] text-white">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-aubergine text-xs font-semibold tracking-[0.08em] text-white">
                   {accountInitials}
                 </div>
               )}

@@ -91,7 +91,7 @@ export function AccountLocationPanel({ merchant, locations, onSelectLocation }: 
                     <span className="block truncate text-sm font-semibold text-[#101c38]">{location.companyName}</span>
                     <span className="mt-1 block truncate text-xs text-[#758198]">{location.city || "Ville à renseigner"}</span>
                   </span>
-                  {isSelected ? <span className="flex shrink-0 items-center gap-1 text-[11px] font-semibold text-[#145aff]"><Check className="h-3.5 w-3.5" aria-hidden="true" />Affiché</span> : null}
+                  {isSelected ? <span className="flex shrink-0 items-center gap-1 text-[11px] font-semibold text-aubergine"><Check className="h-3.5 w-3.5" aria-hidden="true" />Affiché</span> : null}
                 </button>
               );
             })}

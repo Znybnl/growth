@@ -42,7 +42,7 @@ export function SignOutButton() {
       type="button"
       onClick={handleSignOut}
       disabled={isLoading}
-      className="rounded-[16px] border border-[#d7e0ed] px-3 py-2 text-xs font-semibold text-[#182033] disabled:opacity-60"
+      className="rounded-[4px] border border-fog bg-white px-3 py-2 text-xs font-semibold text-charcoal transition hover:border-lavender-mist hover:bg-purple-haze hover:text-aubergine disabled:cursor-not-allowed disabled:opacity-60"
     >
       {isLoading ? "Sortie..." : "Déconnexion"}
     </button>
