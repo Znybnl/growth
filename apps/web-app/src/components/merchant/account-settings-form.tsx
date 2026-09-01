@@ -1,11 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowUpRight, CheckCircle2, Handshake, Link2, ShieldCheck, Store, UserRound } from "lucide-react";
+import { ArrowUpRight, CheckCircle2, Link2, ShieldCheck, Store, UserRound } from "lucide-react";
 
 import { AccountSectionCard } from "@/components/merchant/account-section-card";
 import { AccountLocationPanel } from "@/components/merchant/account-location-panel";
-import { AffiliateReferralCard } from "@/components/merchant/affiliate-referral-card";
 import { GoogleReviewPlacePicker } from "@/components/merchant/google-review-place-picker";
 import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
 import { ValidationDialog } from "@/components/ui/validation-dialog";
@@ -14,7 +13,6 @@ import {
   isRestaurantIndustry,
 } from "@/lib/merchant-options";
 import {
-  AffiliateSummary,
   Merchant,
   MerchantAccountSettingsInput,
   MerchantLocationAccess,
@@ -25,7 +23,6 @@ type AccountSettingsFormProps = {
   merchant: Merchant;
   user: MerchantUser;
   locations: MerchantLocationAccess[];
-  affiliateSummary?: AffiliateSummary | null;
   onDirtyChange?: (isDirty: boolean) => void;
 };
 
@@ -66,7 +63,6 @@ export function AccountSettingsForm({
   merchant,
   user,
   locations,
-  affiliateSummary,
   onDirtyChange,
 }: AccountSettingsFormProps) {
   const [selectedLocationId, setSelectedLocationId] = useState(merchant.id);
@@ -527,24 +523,6 @@ export function AccountSettingsForm({
         </div>
       </section>
 
-      {affiliateSummary?.account.status === "active" ? (
-        <AffiliateReferralCard summary={affiliateSummary} />
-      ) : (
-        <AccountSectionCard
-          eyebrow="Développement"
-          title="Programme d’affiliation"
-          description="Développez votre activité en recommandant Okado à d’autres établissements."
-          icon={Handshake}
-        >
-          <p className="max-w-2xl text-sm leading-7 text-ash">
-            Le programme d&apos;affiliation n&apos;est pas encore activé sur votre compte. Contactez{" "}
-            <a className="okado-link" href="mailto:contact@okado.app">
-              contact@okado.app
-            </a>{" "}
-            pour rejoindre le programme d&apos;affiliation.
-          </p>
-        </AccountSectionCard>
-      )}
         </div>
 
         <aside className="space-y-4 xl:sticky xl:top-24">
