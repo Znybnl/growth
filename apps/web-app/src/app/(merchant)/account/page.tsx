@@ -1,7 +1,6 @@
 import { AccountSettingsForm } from "@/components/merchant/account-settings-form";
 import { BillingSubscriptionCard } from "@/components/merchant/billing-subscription-card";
 import { Settings2 } from "lucide-react";
-import { getAffiliateSummaryForMerchant } from "@/lib/affiliate-repository";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import { getMerchantBillingSummary } from "@/lib/billing";
 import { syncMerchantBillingFromStripeCustomerIdInSupabase } from "@/lib/merchant-account-repository";
@@ -22,14 +21,6 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
       (resolvedSearchParams?.billing === "success" ||
         (!merchant.stripeSubscriptionId && !merchant.stripeSubscriptionStatus)),
   );
-
-  // The affiliate panel does not depend on the Stripe synchronization. Start
-  // both requests together so the account page is not blocked by a sequential
-  // network waterfall.
-  const affiliateSummaryPromise = getAffiliateSummaryForMerchant(merchant).catch((error) => {
-    console.error("Affiliate summary unavailable", error);
-    return null;
-  });
 
   if (shouldAttemptStripeSync && merchant.stripeCustomerId) {
     try {
@@ -62,8 +53,6 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
   }
 
   const billing = getMerchantBillingSummary(merchant);
-  const affiliateSummary = await affiliateSummaryPromise;
-
   return (
     <div className="space-y-4">
       <section className="relative overflow-hidden rounded-[24px] border border-border bg-white p-5 shadow-[0_16px_42px_rgba(122,136,166,0.08)] md:p-7">
@@ -90,7 +79,6 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
         merchant={merchant}
         user={session.user}
         locations={session.locations}
-        affiliateSummary={affiliateSummary}
       />
     </div>
   );
