@@ -1,23 +1,9 @@
 import { expect, test } from "@playwright/test";
-
-async function signIn(page: import("@playwright/test").Page) {
-  const email = process.env.OKADO_E2E_EMAIL;
-  const password = process.env.OKADO_E2E_PASSWORD;
-  if (!email || !password) {
-    test.skip(true, "Définissez OKADO_E2E_EMAIL et OKADO_E2E_PASSWORD pour exécuter ce parcours avec le compte de test dédié.");
-    return;
-  }
-
-  await page.goto("/connexion");
-  await page.getByPlaceholder("Email").fill(email);
-  await page.getByPlaceholder("Mot de passe").fill(password);
-  await page.getByRole("button", { name: "Se connecter", exact: true }).click();
-  await expect(page).not.toHaveURL(/\/connexion/, { timeout: 15_000 });
-}
+import { signIn as cachedSignIn } from "./auth-session";
 
 test.describe("Navigation du Wizard en modification", () => {
   test("un marchand peut ouvrir chaque étape d’un jeu existant", async ({ page }) => {
-    await signIn(page);
+    await cachedSignIn(page);
 
     const title = `E2E — modification ${Date.now()}`;
     await page.goto("/campaigns/new/guided");
