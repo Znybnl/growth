@@ -135,7 +135,7 @@ function assert(condition, message) {
   }
 }
 
-function campaignPayload(merchant) {
+function campaignPayload(merchant, gameType = "wheel") {
   const suffix = new Date().toISOString().replace(/[:.]/g, "-");
   const companyName = merchant.companyName || "Okado Smoke";
   const googleReviewUrl =
@@ -144,14 +144,14 @@ function campaignPayload(merchant) {
 
   return {
     merchantId: merchant.id,
-    title: `E2E — Smoke ${suffix}`,
+    title: `E2E — Smoke ${gameType} ${suffix}`,
     subtitle: "Test automatisé Okado.",
     goalType: "review_prompt",
     ctaLabel: "Je participe",
     successMetric: "Clics vers avis",
     targetUrl: googleReviewUrl,
     isActive: true,
-    gameType: "wheel",
+    gameType,
     logoMode: "text",
     logoText: companyName,
     accent: {
@@ -352,6 +352,23 @@ async function main() {
   console.log(`✓ Gain client: ${lead.redemptionCode}`);
   await assertTestRewardEmail(lead.id);
 
+  let duplicateFinalizeBlocked = false;
+  try {
+    await request("/api/public/draw/finalize", {
+      method: "POST",
+      body: JSON.stringify({
+        sessionId,
+        firstName: "Smoke",
+        email: leadEmail,
+        marketingConsent: true,
+      }),
+    });
+  } catch {
+    duplicateFinalizeBlocked = true;
+  }
+  assert(duplicateFinalizeBlocked, "La finalisation multiple d'une même session n'est pas bloquée.");
+  console.log("✓ Finalisation multiple bloquée");
+
   await request(`/api/public/redeem/${encodeURIComponent(lead.redemptionCode)}/qr`, {
     headers: { Accept: "image/svg+xml" },
   });
@@ -392,6 +409,30 @@ async function main() {
   }
   assert(doubleRedeemBlocked, "Le retrait multiple n'est pas bloqué.");
   console.log("✓ Retrait multiple bloqué");
+
+  const scratchCreated = await request("/api/campaigns/setup", {
+    method: "POST",
+    body: JSON.stringify(campaignPayload(merchant, "scratch")),
+  });
+  const scratchCampaignId = scratchCreated.body?.campaign?.campaign?.id;
+  assert(scratchCampaignId, "Création du ticket à gratter sans identifiant.");
+  const scratchSession = await request("/api/public/draw/session", {
+    method: "POST",
+    body: JSON.stringify({ campaignId: scratchCampaignId }),
+  });
+  const scratchSessionId = scratchSession.body?.session?.id;
+  assert(scratchSessionId, "Session du ticket à gratter non créée.");
+  const scratchFinalized = await request("/api/public/draw/finalize", {
+    method: "POST",
+    body: JSON.stringify({
+      sessionId: scratchSessionId,
+      firstName: "Smoke Scratch",
+      email: leadEmail,
+      marketingConsent: false,
+    }),
+  });
+  assert(scratchFinalized.body?.lead?.id, "Participation du ticket à gratter non enregistrée.");
+  console.log("✓ Parcours ticket à gratter");
 
   await cleanupSmokeCampaign();
   console.log("Smoke critique terminé avec succès.");
