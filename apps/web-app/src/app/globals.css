@@ -512,6 +512,21 @@ select {
   outline: none;
 }
 
+.okado-public-redemption {
+  background: var(--color-soft-white) !important;
+  color: var(--color-carbon) !important;
+}
+
+.okado-public-redemption :where(section) {
+  border-color: var(--color-lavender-mist) !important;
+  border-radius: var(--okado-radius-card) !important;
+  box-shadow: var(--shadow-product-card) !important;
+}
+
+.okado-public-redemption :where(button) {
+  border-radius: var(--okado-radius-button) !important;
+}
+
 .okado-compact-card {
   border: 1px solid var(--border);
   border-radius: var(--okado-radius-control);
