@@ -157,7 +157,7 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
   }
 
   return (
-    <div className="h-screen overflow-hidden bg-linen-canvas text-midnight-ink">
+    <div className="okado-workspace-shell h-screen overflow-hidden bg-soft-white text-carbon">
       <MerchantSessionGuard userId={user.id} />
       {menuOpen ? (
         <button
@@ -169,7 +169,7 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
       ) : null}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-40 w-[288px] border-r border-border bg-linen-canvas/92 backdrop-blur-sm transition-transform duration-200 lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-40 w-[288px] border-r border-white/10 bg-deep-plum text-white shadow-[8px_0_32px_rgba(72,26,84,0.12)] transition-transform duration-200 lg:translate-x-0 ${
           menuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -179,7 +179,7 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
               <div className="flex h-10 w-10 items-center justify-center rounded-[4px] bg-primary-action-accent text-xs font-semibold uppercase tracking-[0.18em] text-white">
                 <Star className="h-5 w-5 fill-white text-white" aria-hidden="true" />
               </div>
-              <h1 className="truncate text-[22px] font-semibold leading-none tracking-[-0.05em] text-midnight-ink">
+              <h1 className="truncate text-[22px] font-semibold leading-none tracking-[-0.05em] text-white">
                 {APP_NAME_CAPITALIZED}
               </h1>
             </div>
@@ -200,14 +200,14 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
                   prefetch={prefetchedNavRoutes.has(item.href)}
                   className={`flex h-9 items-center justify-between rounded-full px-3 text-sm transition ${
                     active
-                      ? "bg-sky-wash font-medium text-graphite"
-                      : "text-slate hover:bg-sky-wash/70 hover:text-graphite"
+                      ? "bg-white/12 font-medium text-white"
+                      : "text-white/72 hover:bg-white/8 hover:text-white"
                   }`}
                   onClick={() => setMenuOpen(false)}
                 >
                   <span>{item.label}</span>
                   <span
-                    className={`h-2 w-2 rounded-full ${active ? "bg-signal-blue" : "bg-border"}`}
+                    className={`h-2 w-2 rounded-full ${active ? "bg-white" : "bg-white/25"}`}
                   />
                 </Link>
               );
@@ -220,8 +220,8 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
           </Button>
 
           {isSaasAdmin ? (
-            <div className="mt-4 rounded-[8px] border border-border bg-white p-1.5 shadow-[var(--shadow-product-card)]">
-              <p className="px-2 pb-1 text-[10px] font-semibold uppercase tracking-[0.13px] text-ash">
+            <div className="mt-4 rounded-[8px] border border-white/10 bg-black/10 p-1.5">
+              <p className="px-2 pb-1 text-[10px] font-semibold uppercase tracking-[0.13px] text-white/55">
                 Administration
               </p>
               <nav className="space-y-0.5">
@@ -235,15 +235,15 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
                       prefetch={false}
                       className={`flex h-7 items-center justify-between rounded-full px-3 text-sm transition ${
                         active
-                          ? "bg-primary-action-accent text-white"
-                          : "text-midnight-ink hover:bg-sky-wash hover:text-graphite"
+                          ? "bg-white/12 text-white"
+                          : "text-white/72 hover:bg-white/8 hover:text-white"
                       }`}
                       style={active ? { color: "#ffffff" } : undefined}
                       onClick={() => setMenuOpen(false)}
                     >
                       <span style={active ? { color: "#ffffff" } : undefined}>{item.label}</span>
                       <span
-                        className={`h-2 w-2 rounded-full ${active ? "bg-white" : "bg-border"}`}
+                        className={`h-2 w-2 rounded-full ${active ? "bg-white" : "bg-white/25"}`}
                         style={active ? { backgroundColor: "#ffffff" } : undefined}
                       />
                     </Link>
@@ -263,14 +263,14 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
             Valider un retrait
           </Link>
 
-          <div className="mt-0 rounded-[8px] border border-border bg-white p-3 shadow-[var(--shadow-product-card)]">
-            <p className="text-[10px] uppercase tracking-[0.13px] text-fog">Mon compte</p>
+          <div className="mt-0 rounded-[8px] border border-white/10 bg-black/10 p-3">
+            <p className="text-[10px] uppercase tracking-[0.13px] text-white/55">Mon compte</p>
             <div className="mt-3 flex items-center gap-3">
               {user.authProvider === "google" && user.avatarUrl ? (
                 <div
                   role="img"
                   aria-label="Photo de profil Google"
-                  className="h-10 w-10 rounded-full border border-border object-cover"
+                  className="h-10 w-10 rounded-full border border-white/20 object-cover"
                   style={{ backgroundImage: `url(${user.avatarUrl})`, backgroundPosition: "center", backgroundSize: "cover" }}
                 />
               ) : (
@@ -279,7 +279,7 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
                 </div>
               )}
               <div className="min-w-0">
-                <p className="text-sm font-medium text-graphite">
+                <p className="text-sm font-medium text-white">
                   {`${user.firstName} ${user.lastName}`.trim()}
                 </p>
               </div>
@@ -346,7 +346,7 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
       </aside>
 
       <div className="flex h-screen min-w-0 flex-col lg:ml-[288px]">
-        <header className="sticky top-0 z-30 border-b border-border bg-linen-canvas/84 backdrop-blur-sm">
+        <header className="sticky top-0 z-30 border-b border-fog bg-soft-white/92 backdrop-blur-sm">
           <div className="flex min-h-[56px] items-center gap-4 px-4 py-3 lg:px-7">
             <button
               type="button"

@@ -86,7 +86,7 @@ export function AuthShell({
 
         <section
           className="relative hidden min-h-screen overflow-hidden lg:flex lg:flex-col lg:items-center lg:justify-center"
-          style={{ background: "var(--gradient-hero-blue-fade)" }}
+          style={{ background: "var(--color-deep-plum)" }}
         >
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_18%,rgba(255,255,255,0.22),transparent_34%),linear-gradient(135deg,transparent_0%,rgba(9,55,132,0.18)_100%)]" />
 
