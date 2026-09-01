@@ -2314,7 +2314,7 @@ function setGameType(gameType: GameType) {
   }
 
   return (
-    <div className="space-y-6 pb-24 xl:pb-0">
+    <div className="okado-campaign-editor space-y-6 pb-24 xl:pb-0">
       <div className="pointer-events-none sticky top-[-20px] z-20 hidden h-0 overflow-visible xl:-mb-6 xl:block">
         <div
           className={`pointer-events-auto -mx-3 border-b border-border bg-linen-canvas/95 px-3 py-2 shadow-[0_8px_18px_rgba(18,24,39,0.08)] backdrop-blur-sm transition-all duration-200 lg:-mx-6 lg:px-6 ${

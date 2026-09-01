@@ -92,7 +92,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
   }
 
   return (
-    <div className="okado-card p-6 sm:p-8">
+    <div className="okado-auth-onboarding okado-card p-6 sm:p-8">
       <div>
         <p className="okado-label">Bienvenue</p>
         <h1 className="okado-page-title mt-3">Préparez votre espace en 3 étapes</h1>

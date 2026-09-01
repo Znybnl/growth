@@ -475,6 +475,43 @@ select {
   box-shadow: var(--shadow-product-card);
 }
 
+.okado-workspace-shell :where(.okado-campaign-editor, .okado-wizard, .okado-poster-editor, .okado-editor-page) {
+  min-width: 0;
+}
+
+.okado-workspace-shell :where(.okado-campaign-editor, .okado-wizard, .okado-poster-editor, .okado-editor-page) :where(input:not([type="color"]), textarea, select) {
+  border-color: var(--color-fog) !important;
+  border-radius: var(--okado-radius-control) !important;
+  background: var(--color-pure-white) !important;
+  color: var(--color-carbon) !important;
+}
+
+.okado-workspace-shell :where(.okado-campaign-editor, .okado-wizard, .okado-poster-editor, .okado-editor-page) :where(input:not([type="color"]), textarea, select):focus {
+  border-color: var(--color-aubergine) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-aubergine) 16%, transparent) !important;
+  outline: none;
+}
+
+.okado-workspace-shell :where(.okado-campaign-editor, .okado-wizard, .okado-poster-editor, .okado-editor-page) :where(section, article, details) {
+  border-color: color-mix(in srgb, var(--color-lavender-mist) 74%, var(--color-fog)) !important;
+}
+
+.okado-workspace-shell :where(.okado-campaign-editor, .okado-wizard, .okado-poster-editor, .okado-editor-page) :where(.sticky) {
+  border-color: var(--color-lavender-mist) !important;
+  background: color-mix(in srgb, var(--color-soft-white) 94%, transparent) !important;
+}
+
+.okado-auth-shell :where(input:not([type="color"]), textarea, select) {
+  border-color: var(--color-fog) !important;
+  border-radius: var(--okado-radius-control) !important;
+}
+
+.okado-auth-shell :where(input:not([type="color"]), textarea, select):focus {
+  border-color: var(--color-aubergine) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-aubergine) 16%, transparent) !important;
+  outline: none;
+}
+
 .okado-compact-card {
   border: 1px solid var(--border);
   border-radius: var(--okado-radius-control);

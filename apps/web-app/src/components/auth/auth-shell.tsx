@@ -54,7 +54,7 @@ export function AuthShell({
           };
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-linen-canvas">
+    <div className="okado-auth-shell min-h-screen overflow-x-hidden bg-linen-canvas">
       <div className="grid min-h-screen lg:grid-cols-2">
         <section className="flex min-h-screen justify-center overflow-y-auto bg-linen-canvas px-4 py-8 sm:px-6 lg:px-8 xl:px-10 xl:py-10">
           <div className="flex w-full max-w-[620px] flex-col justify-center">
@@ -95,7 +95,7 @@ export function AuthShell({
               <div className="absolute inset-x-[5%] top-[4%] rounded-[24px] border border-white/30 bg-white/95 p-5 shadow-[0_28px_80px_rgba(4,26,75,0.28)]">
                 <div className="flex items-center justify-between border-b border-[#e6ebf2] pb-4">
                   <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-signal-blue">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-aubergine">
                       Pilotage local
                     </p>
                     <p className="mt-1 text-lg font-semibold tracking-[-0.03em] text-graphite">
@@ -114,7 +114,7 @@ export function AuthShell({
                   ].map(([label, value]) => (
                     <div key={label} className="rounded-[12px] bg-linen-canvas px-3 py-3">
                       <p className="text-[10px] uppercase tracking-[0.08em] text-ash">{label}</p>
-                      <p className="mt-2 text-xl font-semibold tracking-[-0.04em] text-signal-blue">{value}</p>
+                      <p className="mt-2 text-xl font-semibold tracking-[-0.04em] text-aubergine">{value}</p>
                     </div>
                   ))}
                 </div>
@@ -127,7 +127,7 @@ export function AuthShell({
                     {[32, 48, 38, 62, 54, 78, 68, 88].map((height, index) => (
                       <span
                         key={index}
-                        className="flex-1 rounded-t-[6px] bg-signal-blue/80"
+                        className="flex-1 rounded-t-[6px] bg-aubergine/80"
                         style={{ height: `${height}%` }}
                       />
                     ))}
