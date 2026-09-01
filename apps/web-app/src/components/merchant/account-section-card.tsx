@@ -21,10 +21,10 @@ export function AccountSectionCard({
   id,
 }: AccountSectionCardProps) {
   return (
-    <section id={id} className={cn("okado-card scroll-mt-28 p-5 md:p-6", className)}>
+    <section id={id} className={cn("okado-card scroll-mt-28 p-5 md:p-7", className)}>
       <div className="flex items-start gap-3 border-b border-border/70 pb-5">
         {Icon ? (
-          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[12px] bg-sky-wash text-primary-action-accent">
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[4px] bg-purple-haze text-aubergine">
             <Icon className="h-5 w-5" aria-hidden="true" />
           </span>
         ) : null}

@@ -56,22 +56,22 @@ export function BillingSubscriptionCard({ billing }: BillingSubscriptionCardProp
   }
 
   return (
-    <section className="okado-card p-6 md:p-8">
+    <section className="okado-card p-5 md:p-7">
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div>
-          <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">
+          <p className="okado-label">
             Abonnement & facturation
           </p>
-          <h2 className="mt-3 font-display text-3xl font-semibold text-[#0f1728]">
+          <h2 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-graphite">
             Votre abonnement
           </h2>
-          <p className="mt-3 max-w-2xl text-sm leading-7 text-[#5c6577]">
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-ash">
             Gérez votre essai gratuit, activez votre abonnement mensuel et gardez vos jeux
             concours actifs sans interruption.
           </p>
         </div>
 
-        <div className="rounded-full border border-[#dbe4f0] bg-[#f7f9fc] px-4 py-2 text-sm font-medium text-[#1f2937]">
+        <div className="okado-status-badge okado-status-muted">
           {billing.isSubscribed
             ? "Abonnement actif"
             : billing.isTrialActive
@@ -124,10 +124,10 @@ export function BillingSubscriptionCard({ billing }: BillingSubscriptionCardProp
             </div>
           )}
 
-          <div className="rounded-[8px] border border-border bg-linen-canvas p-5">
+          <div className="rounded-[16px] border border-lavender-mist bg-purple-haze p-5">
             <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-              <p className="text-sm font-semibold text-[#0f1728]">Plan mensuel</p>
-              <p className="text-2xl font-semibold text-[#0f1728]">{priceLabel}</p>
+              <p className="text-sm font-semibold text-graphite">Plan mensuel</p>
+              <p className="text-2xl font-semibold text-aubergine">{priceLabel}</p>
             </div>
             <ul className="mt-3 grid gap-2 text-sm leading-5 text-[#5c6577]">
               <li className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 shrink-0 text-[#1f9d62]" aria-hidden="true" /><span>Jeux publics actifs et sans interruption</span></li>
@@ -145,7 +145,7 @@ export function BillingSubscriptionCard({ billing }: BillingSubscriptionCardProp
                 type="button"
                 onClick={() => redirectTo("/api/stripe/portal-session")}
                 disabled={isLoading !== null}
-                className="inline-flex w-full items-center justify-center rounded-[12px] bg-[#0f1728] px-5 py-4 text-sm font-semibold !text-white transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
+                className="okado-filled-action w-full px-5 text-sm disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isLoading === "portal"
                   ? "Ouverture du portail..."
@@ -156,7 +156,7 @@ export function BillingSubscriptionCard({ billing }: BillingSubscriptionCardProp
                 type="button"
                 onClick={() => redirectTo("/api/stripe/checkout-session")}
                 disabled={isLoading !== null}
-                className="inline-flex w-full items-center justify-center rounded-[12px] bg-[#2f6df6] px-5 py-4 text-sm font-semibold !text-white transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
+                className="okado-filled-action w-full px-5 text-sm disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isLoading === "checkout"
                   ? "Redirection vers le paiement..."

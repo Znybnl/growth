@@ -190,7 +190,7 @@ export function AccountSettingsForm({
     <form id="account-settings-form" onSubmit={handleSubmit}>
       <div className="pointer-events-none sticky -top-5 z-20 h-0 overflow-visible">
         <div
-          className={`pointer-events-auto -mx-3 border-b border-border bg-linen-canvas/95 px-3 py-2 shadow-[0_8px_18px_rgba(18,24,39,0.08)] backdrop-blur-sm transition-all duration-200 lg:-mx-6 lg:px-6 ${
+          className={`pointer-events-auto -mx-3 border-b border-lavender-mist bg-soft-white/95 px-3 py-2 shadow-[0_8px_18px_rgba(72,26,84,0.12)] backdrop-blur-sm transition-all duration-200 lg:-mx-6 lg:px-6 ${
             showStickyActions ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
           }`}
           aria-hidden={!showStickyActions}
@@ -208,7 +208,7 @@ export function AccountSettingsForm({
         </div>
       </div>
       <div ref={actionsAnchorRef} className="h-px" aria-hidden="true" />
-      <div className="space-y-6">
+      <div className="space-y-4">
         <AccountSectionCard
         id="account-user"
         eyebrow="Mon compte"
@@ -263,8 +263,8 @@ export function AccountSettingsForm({
           onSelectLocation={requestLocationSelection}
         />
 
-        <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_280px]">
-        <div className="space-y-6">
+        <div className="grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_280px]">
+        <div className="space-y-4">
       <section className="okado-card scroll-mt-28 p-5 md:p-6">
         <div className="flex items-start gap-3 border-b border-border/70 pb-5">
           <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[12px] bg-sky-wash text-primary-action-accent">

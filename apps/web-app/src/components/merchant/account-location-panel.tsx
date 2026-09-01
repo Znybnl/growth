@@ -43,10 +43,10 @@ export function AccountLocationPanel({ merchant, locations, onSelectLocation }: 
 
   return (
     <>
-      <section className="rounded-[24px] border border-[#dbe4f0] bg-white p-5 shadow-[0_16px_42px_rgba(122,136,166,0.08)] md:p-6">
+      <section className="okado-card p-5 md:p-7">
         <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
           <div className="flex items-start gap-3.5">
-            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[14px] bg-[#edf3ff] text-[#145aff]">
+            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[4px] bg-purple-haze text-aubergine">
               <Building2 className="h-5 w-5" aria-hidden="true" />
             </span>
             <div>
@@ -61,9 +61,9 @@ export function AccountLocationPanel({ merchant, locations, onSelectLocation }: 
           </button>
         </div>
 
-        <div className="mt-5 rounded-[16px] border border-[#b8cdfd] bg-[#f4f7ff] px-4 py-3.5">
+          <div className="mt-5 rounded-[8px] border border-lavender-mist bg-purple-haze px-4 py-3.5">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
-            <span className="rounded-full bg-[#145aff] px-2.5 py-1 text-[11px] font-semibold text-white">Formulaire affiché ci-dessous</span>
+            <span className="rounded-[4px] bg-aubergine px-2.5 py-1 text-[11px] font-semibold text-white">Formulaire affiché ci-dessous</span>
             <strong className="text-sm text-[#101c38]">{merchant.companyName}</strong>
             <span className="flex items-center gap-1.5 text-xs text-[#60708a]"><MapPin className="h-3.5 w-3.5" aria-hidden="true" />{merchant.city || "Ville à renseigner"}{merchant.address ? ` · ${merchant.address}` : ""}</span>
           </div>
@@ -84,9 +84,9 @@ export function AccountLocationPanel({ merchant, locations, onSelectLocation }: 
                   type="button"
                   onClick={() => onSelectLocation(location.id)}
                   aria-pressed={isSelected}
-                  className={`group flex min-h-[76px] items-center gap-3 rounded-[14px] border px-3.5 py-3 text-left transition ${isSelected ? "border-[#145aff] bg-[#f4f7ff] ring-2 ring-[#145aff]/10" : "border-[#e0e6ef] bg-white hover:border-[#9fb8e8] hover:bg-[#fbfcff]"}`}
+                  className={`group flex min-h-[76px] items-center gap-3 rounded-[8px] border px-3.5 py-3 text-left transition ${isSelected ? "border-aubergine bg-purple-haze ring-2 ring-aubergine/10" : "border-fog bg-white hover:border-lavender-mist hover:bg-purple-haze/40"}`}
                 >
-                  <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-[11px] ${isSelected ? "bg-[#145aff] text-white" : "bg-[#f1f4f8] text-[#65748b]"}`}><Building2 className="h-4 w-4" aria-hidden="true" /></span>
+                  <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-[4px] ${isSelected ? "bg-aubergine text-white" : "bg-[#f1f4f8] text-[#65748b]"}`}><Building2 className="h-4 w-4" aria-hidden="true" /></span>
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-semibold text-[#101c38]">{location.companyName}</span>
                     <span className="mt-1 block truncate text-xs text-[#758198]">{location.city || "Ville à renseigner"}</span>
@@ -95,7 +95,7 @@ export function AccountLocationPanel({ merchant, locations, onSelectLocation }: 
                 </button>
               );
             })}
-            <button type="button" onClick={() => setIsAdding(true)} className="flex min-h-[76px] items-center justify-center gap-2 rounded-[14px] border border-dashed border-[#cbd6e5] px-3 text-sm font-semibold text-[#60708a] transition hover:border-[#9fb8e8] hover:bg-[#fbfcff]">
+            <button type="button" onClick={() => setIsAdding(true)} className="flex min-h-[76px] items-center justify-center gap-2 rounded-[8px] border border-dashed border-lavender-mist px-3 text-sm font-semibold text-[#60708a] transition hover:border-aubergine hover:bg-purple-haze/50">
               <Plus className="h-4 w-4" aria-hidden="true" /> Ajouter un établissement
             </button>
           </div>
