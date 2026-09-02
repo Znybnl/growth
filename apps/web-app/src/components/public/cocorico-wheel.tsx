@@ -114,11 +114,11 @@ export function CocoricoWheel({
   );
   const wheelSizeClass =
     framing === "public"
-      ? "top-[4%] w-[min(88vw,380px)] sm:w-[min(78vw,440px)] md:w-[min(70vw,540px)] lg:w-[min(48vw,620px)] xl:w-[min(40vw,680px)]"
+      ? "top-[4%] w-[min(calc(100vw-20px),380px)] sm:w-[min(calc(100vw-20px),440px)] md:w-[min(calc(100vw-24px),540px)] lg:w-[min(48vw,620px)] xl:w-[min(40vw,680px)]"
       : framing === "editor"
         ? "top-[65%] w-[104%]"
         : framing === "mobile-preview"
-          ? "top-1/2 w-[96%]"
+          ? "top-1/2 w-[104%]"
           : "top-1/2 w-full";
   const wheelTransformClass =
     framing === "public" ? "-translate-x-1/2" : "-translate-x-1/2 -translate-y-1/2";
