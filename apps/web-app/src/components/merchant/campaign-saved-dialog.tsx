@@ -1,7 +1,7 @@
 "use client";
 
 import { createPortal } from "react-dom";
-import { Check, Download, Eye, ImageIcon, Pencil, X } from "lucide-react";
+import { Check, Download, Eye, ImageIcon, Pencil, QrCode, X } from "lucide-react";
 import { useEffect, useRef } from "react";
 
 type CampaignSavedDialogProps = {
@@ -80,11 +80,20 @@ export function CampaignSavedDialog({
           Testez le parcours ou reprenez sa configuration. Vous restez sur la campagne en cours.
         </p>
 
-        <div className="mt-6 grid gap-2 sm:grid-cols-2">
+        <a
+          href={`/api/campaigns/${campaignId}/qr`}
+          download
+          className="okado-filled-action mt-6 !h-11 w-full gap-2 px-4 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aubergine/30"
+        >
+          <Download className="h-4 w-4" aria-hidden="true" />
+          Télécharger le QR code de diffusion
+        </a>
+
+        <div className="mt-2 grid gap-2 sm:grid-cols-2">
           <button
             type="button"
             onClick={onClose}
-            className="okado-filled-action !h-11 gap-2 px-4 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aubergine/30"
+            className="okado-secondary-action !h-11 gap-2 px-4 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aubergine/30"
           >
             <Pencil className="h-4 w-4" aria-hidden="true" />
             Modifier le jeu
@@ -103,7 +112,7 @@ export function CampaignSavedDialog({
             onClick={onPreviewQr}
             className="okado-secondary-action !h-11 gap-2 px-4 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aubergine/30"
           >
-            <Download className="h-4 w-4" aria-hidden="true" />
+            <QrCode className="h-4 w-4" aria-hidden="true" />
             QR de test
           </button>
           <a
@@ -116,15 +125,6 @@ export function CampaignSavedDialog({
             Affiche
           </a>
         </div>
-
-        <a
-          href={`/api/campaigns/${campaignId}/qr`}
-          download
-          className="mt-5 inline-flex items-center gap-2 border-t border-fog pt-4 text-sm font-medium text-aubergine underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aubergine/30"
-        >
-          <Download className="h-4 w-4" aria-hidden="true" />
-          Télécharger le QR code de diffusion
-        </a>
       </section>
     </div>,
     document.body,

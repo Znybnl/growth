@@ -21,15 +21,13 @@ test.describe("Confirmation du Wizard", () => {
 
     const savedDialog = page.getByRole("dialog", { name: "Votre jeu est enregistré.", exact: true });
     const completionActions = [
+      savedDialog.getByRole("link", { name: "Télécharger le QR code de diffusion", exact: true }),
       savedDialog.getByRole("link", { name: "Prévisualiser", exact: true }),
       savedDialog.getByRole("button", { name: "QR de test", exact: true }),
       savedDialog.getByRole("link", { name: "Affiche", exact: true }),
     ];
     await Promise.all(completionActions.map((action) => expect(action).toBeVisible()));
-    await expect(
-      page.getByRole("dialog", { name: "Votre jeu est enregistré.", exact: true })
-        .getByRole("button", { name: "Modifier le jeu", exact: true }),
-    ).toBeVisible();
+    await expect(savedDialog.getByRole("button", { name: "Modifier le jeu", exact: true })).toBeVisible();
     await expect(
       savedDialog.getByRole("link", { name: "Modifier l'e-mail de gain", exact: true }),
     ).toHaveCount(0);
