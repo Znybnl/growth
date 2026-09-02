@@ -27,7 +27,7 @@ test.describe("Confirmation du Wizard", () => {
       savedDialog.getByRole("link", { name: "Affiche", exact: true }),
     ];
     await Promise.all(completionActions.map((action) => expect(action).toBeVisible()));
-    await expect(savedDialog.getByRole("button", { name: "Modifier le jeu", exact: true })).toBeVisible();
+    await expect(savedDialog.getByRole("button", { name: "Modifier le jeu", exact: true })).toHaveCount(0);
     await expect(
       savedDialog.getByRole("link", { name: "Modifier l'e-mail de gain", exact: true }),
     ).toHaveCount(0);

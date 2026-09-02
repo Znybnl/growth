@@ -21,7 +21,9 @@ test.describe("Navigation du Wizard en modification", () => {
     const savedDialog = page.getByRole("dialog", { name: "Votre jeu est enregistré.", exact: true });
     await expect(savedDialog).toBeVisible();
     const completionUrl = page.url();
-    await savedDialog.getByRole("button", { name: "Modifier le jeu", exact: true }).click();
+    await savedDialog
+      .getByRole("button", { name: "Fermer la confirmation d’enregistrement", exact: true })
+      .click();
     await expect(savedDialog).toBeHidden();
     expect(page.url()).toBe(completionUrl);
     await expect(page.getByRole("heading", { name: "Créer une campagne", exact: true })).toBeVisible();
