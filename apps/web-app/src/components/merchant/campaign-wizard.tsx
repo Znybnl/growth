@@ -851,14 +851,17 @@ export function CampaignWizard({
   }, [deferInlineAssets, draft, deferredAssetsLoaded]);
 
   useEffect(() => {
-    if (!isDirty) return;
+    // The completion screen is already backed by a saved campaign. Do not let
+    // the draft guard interfere with its follow-up navigation, even during the
+    // short render/effect transition after the save response.
+    if (!isDirty || savedCampaignId) return;
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
       event.preventDefault();
       event.returnValue = "";
     };
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [isDirty]);
+  }, [isDirty, savedCampaignId]);
 
   const step = WIZARD_STEPS[stepIndex];
   const totalProbability = useMemo(
