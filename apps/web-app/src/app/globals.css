@@ -288,6 +288,12 @@ select {
   margin-top: 2rem;
 }
 
+.okado-workspace-shell main > :where(.space-y-4, .space-y-5, .space-y-6):not(.okado-campaign-editor):not(.okado-wizard):not(.okado-poster-editor):not(.okado-editor-page) {
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+}
+
 @media (max-width: 767px) {
   .okado-workspace-shell main > :where(.space-y-4, .space-y-5, .space-y-6) > :not([hidden]) ~ :not([hidden]) {
     margin-top: 1.5rem;
@@ -1084,6 +1090,39 @@ button:disabled,
 }
 
 .okado-status-info {
+  background: var(--okado-status-info-bg);
+  color: var(--okado-status-info-text);
+}
+
+.okado-status-notice {
+  border: 1px solid transparent;
+  border-left-width: 3px;
+  border-radius: var(--okado-radius-control);
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.okado-notice-success {
+  border-color: color-mix(in srgb, var(--okado-status-success-text) 28%, transparent);
+  background: var(--okado-status-success-bg);
+  color: var(--okado-status-success-text);
+}
+
+.okado-notice-warning {
+  border-color: color-mix(in srgb, var(--okado-status-warning-text) 28%, transparent);
+  background: var(--okado-status-warning-bg);
+  color: var(--okado-status-warning-text);
+}
+
+.okado-notice-danger {
+  border-color: color-mix(in srgb, var(--okado-status-danger-text) 28%, transparent);
+  background: var(--okado-status-danger-bg);
+  color: var(--okado-status-danger-text);
+}
+
+.okado-notice-info {
+  border-color: color-mix(in srgb, var(--okado-status-info-text) 28%, transparent);
   background: var(--okado-status-info-bg);
   color: var(--okado-status-info-text);
 }

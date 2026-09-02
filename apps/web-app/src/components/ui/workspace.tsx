@@ -87,6 +87,23 @@ export function LoadingSkeleton({ className, ...props }: React.ComponentProps<"d
   return <div aria-hidden="true" className={cn("animate-pulse rounded-[8px] bg-purple-haze", className)} {...props} />;
 }
 
+export function StatusNotice({
+  tone = "info",
+  role,
+  className,
+  ...props
+}: React.ComponentProps<"div"> & {
+  tone?: "success" | "warning" | "danger" | "info";
+}) {
+  return (
+    <div
+      role={role ?? (tone === "danger" ? "alert" : "status")}
+      className={cn("okado-status-notice", `okado-notice-${tone}`, className)}
+      {...props}
+    />
+  );
+}
+
 export function ActionBar({ className, ...props }: React.ComponentProps<"div">) {
   return <div className={cn("okado-action-bar", className)} {...props} />;
 }

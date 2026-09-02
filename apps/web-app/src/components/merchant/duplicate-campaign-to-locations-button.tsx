@@ -1,7 +1,9 @@
 "use client";
 
 import { CopyPlus, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+import { StatusNotice } from "@/components/ui/workspace";
 
 type LocationItem = { merchant: { id: string; companyName: string; city?: string } };
 
@@ -12,10 +14,23 @@ export function DuplicateCampaignToLocationsButton({ campaignId }: { campaignId:
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [messageTone, setMessageTone] = useState<"success" | "danger" | "info">("info");
+
+  useEffect(() => {
+    if (!open) return;
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setOpen(false);
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [open]);
 
   async function openDialog() {
     setLoading(true);
     setMessage(null);
+    setMessageTone("info");
     try {
       const response = await fetch("/api/merchant/locations");
       const payload = (await response.json()) as { locations?: LocationItem[]; error?: string };
@@ -40,9 +55,11 @@ export function DuplicateCampaignToLocationsButton({ campaignId }: { campaignId:
       });
       const payload = (await response.json()) as { campaignIds?: string[]; error?: string };
       if (!response.ok) throw new Error(payload.error ?? "Duplication impossible.");
+      setMessageTone("success");
       setMessage(`${payload.campaignIds?.length ?? 0} campagne(s) créée(s) en brouillon.`);
       setSelected([]);
     } catch (error) {
+      setMessageTone("danger");
       setMessage(error instanceof Error ? error.message : "Duplication impossible.");
     } finally {
       setSaving(false);
@@ -51,8 +68,99 @@ export function DuplicateCampaignToLocationsButton({ campaignId }: { campaignId:
 
   return (
     <>
-      <button type="button" onClick={() => void openDialog()} disabled={loading} className="inline-flex min-h-9 w-full items-center gap-2 rounded-[8px] px-2.5 py-2 text-left text-sm font-semibold text-graphite transition hover:bg-sky-wash disabled:opacity-60"><CopyPlus className="h-4 w-4" />{loading ? "Chargement..." : "Dupliquer vers des sites"}</button>
-      {open ? <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#111827]/30 p-4 backdrop-blur-sm"><section role="dialog" aria-modal="true" className="w-full max-w-2xl rounded-[16px] border border-border bg-[#fbfcfe] p-6 shadow-[0_30px_90px_rgba(17,24,39,0.2)]"><div className="flex items-start justify-between gap-4"><div><p className="okado-label">Déploiement local</p><h2 className="mt-2 text-xl font-semibold text-graphite">Dupliquer cette campagne</h2><p className="mt-2 text-sm leading-6 text-ash">Chaque site reçoit son propre QR, stock et historique.</p></div><button type="button" onClick={() => setOpen(false)} aria-label="Fermer" className="rounded-full p-2 text-ash hover:bg-white"><X className="h-5 w-5" /></button></div><div className="mt-5 space-y-2">{locations.length <= 1 ? <p className="rounded-[12px] bg-purple-haze px-4 py-3 text-sm text-charcoal">Ajoutez un autre site pour activer la duplication multi-site.</p> : locations.map(({ merchant }) => <label key={merchant.id} className="flex cursor-pointer items-center gap-3 rounded-[12px] border border-border bg-white px-3 py-3 text-sm"><input type="checkbox" checked={selected.includes(merchant.id)} onChange={(event) => setSelected((current) => event.target.checked ? [...current, merchant.id] : current.filter((id) => id !== merchant.id))} className="h-4 w-4 accent-aubergine" /><span><span className="block font-semibold text-graphite">{merchant.companyName}</span><span className="text-xs text-ash">{merchant.city}</span></span></label>)}</div>{message ? <p role="status" className="mt-4 rounded-[12px] bg-[#effaf3] px-3 py-2 text-sm text-[#1f7d53]">{message}</p> : null}<div className="mt-6 flex justify-end gap-3"><button type="button" onClick={() => setOpen(false)} className="rounded-[12px] border border-border bg-white px-4 py-3 text-sm font-semibold text-graphite">Fermer</button><button type="button" onClick={() => void duplicate()} disabled={!selected.length || saving || locations.length <= 1} className="rounded-[4px] bg-aubergine px-4 py-3 text-sm font-semibold text-white disabled:opacity-50">{saving ? "Duplication..." : "Créer les brouillons"}</button></div></section></div> : null}
+      <button
+        type="button"
+        onClick={() => void openDialog()}
+        disabled={loading}
+        className="inline-flex min-h-9 w-full items-center gap-2 rounded-[4px] px-2.5 py-2 text-left text-sm font-semibold text-graphite transition hover:bg-purple-haze disabled:opacity-60"
+      >
+        <CopyPlus className="h-4 w-4" aria-hidden="true" />
+        {loading ? "Chargement..." : "Dupliquer vers des sites"}
+      </button>
+      {open ? (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-deep-plum/55 p-4 backdrop-blur-[6px]"
+          role="presentation"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setOpen(false);
+          }}
+        >
+          <section
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="duplicate-campaign-title"
+            className="w-full max-w-2xl rounded-[var(--okado-radius-modal)] border border-lavender-mist bg-white p-6 text-carbon shadow-[0_0_32px_rgba(0,0,0,0.1)]"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="okado-label">Déploiement local</p>
+                <h2 id="duplicate-campaign-title" className="mt-2 text-xl font-semibold text-carbon">
+                  Dupliquer cette campagne
+                </h2>
+                <p className="mt-2 text-sm leading-6 text-ash">
+                  Chaque site reçoit son propre QR, stock et historique.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                aria-label="Fermer"
+                className="rounded-[4px] p-2 text-ash transition hover:bg-purple-haze hover:text-aubergine"
+              >
+                <X className="h-5 w-5" aria-hidden="true" />
+              </button>
+            </div>
+
+            <div className="mt-6 space-y-2">
+              {locations.length <= 1 ? (
+                <StatusNotice tone="info">
+                  Ajoutez un autre site pour activer la duplication multi-site.
+                </StatusNotice>
+              ) : (
+                locations.map(({ merchant }) => (
+                  <label
+                    key={merchant.id}
+                    className="flex cursor-pointer items-center gap-3 rounded-[var(--okado-radius-control)] border border-fog bg-white px-3 py-3 text-sm transition hover:border-lavender-mist hover:bg-purple-haze/40"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={selected.includes(merchant.id)}
+                      onChange={(event) =>
+                        setSelected((current) =>
+                          event.target.checked
+                            ? [...current, merchant.id]
+                            : current.filter((id) => id !== merchant.id),
+                        )
+                      }
+                      className="h-4 w-4 accent-aubergine"
+                    />
+                    <span>
+                      <span className="block font-semibold text-carbon">{merchant.companyName}</span>
+                      <span className="text-xs text-ash">{merchant.city}</span>
+                    </span>
+                  </label>
+                ))
+              )}
+            </div>
+
+            {message ? <StatusNotice tone={messageTone} className="mt-4">{message}</StatusNotice> : null}
+
+            <div className="mt-6 flex flex-col-reverse gap-3 border-t border-fog pt-5 sm:flex-row sm:justify-end">
+              <button type="button" onClick={() => setOpen(false)} className="okado-secondary-action px-4 text-sm">
+                Fermer
+              </button>
+              <button
+                type="button"
+                onClick={() => void duplicate()}
+                disabled={!selected.length || saving || locations.length <= 1}
+                className="okado-filled-action px-4 text-sm disabled:opacity-50"
+              >
+                {saving ? "Duplication..." : "Créer les brouillons"}
+              </button>
+            </div>
+          </section>
+        </div>
+      ) : null}
     </>
   );
 }

@@ -540,12 +540,12 @@ function BackgroundLibraryDialog({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#0f1220]/52 px-4 pb-4 pt-10 backdrop-blur-[6px] sm:items-center sm:p-6">
-      <div className="w-full max-w-5xl rounded-[34px] bg-white p-6 text-[#111827] shadow-[0_34px_90px_rgba(18,24,39,0.24)]">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-deep-plum/55 px-4 pb-4 pt-10 backdrop-blur-[6px] sm:items-center sm:p-6">
+      <div role="dialog" aria-modal="true" aria-labelledby="background-library-title" className="w-full max-w-5xl rounded-[var(--okado-radius-modal)] border border-lavender-mist bg-white p-6 text-carbon shadow-[0_0_32px_rgba(0,0,0,0.1)]">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
       <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Biblioth&egrave;que d&apos;images</p>
-            <h2 className="mt-2 text-2xl font-semibold text-[#0f1728]">
+            <h2 id="background-library-title" className="mt-2 text-2xl font-semibold text-carbon">
               Sélectionnez une image de fond
             </h2>
             <p className="mt-2 text-sm leading-7 text-[#5c6577]">
@@ -648,12 +648,12 @@ function PrizeConditionsDialog({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#0f1220]/52 px-4 pb-4 pt-10 backdrop-blur-[6px] sm:items-center sm:p-6">
-      <div className="w-full max-w-[560px] rounded-[34px] bg-white p-6 text-[#111827] shadow-[0_34px_90px_rgba(18,24,39,0.24)]">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-deep-plum/55 px-4 pb-4 pt-10 backdrop-blur-[6px] sm:items-center sm:p-6">
+      <div role="dialog" aria-modal="true" aria-labelledby="prize-conditions-title" className="w-full max-w-[560px] rounded-[var(--okado-radius-modal)] border border-lavender-mist bg-white p-6 text-carbon shadow-[0_0_32px_rgba(0,0,0,0.1)]">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Conditions</p>
-            <h2 className="mt-2 text-2xl font-semibold text-[#0f1728]">
+            <h2 id="prize-conditions-title" className="mt-2 text-2xl font-semibold text-carbon">
               Conditions d&apos;utilisation
             </h2>
             <p className="mt-2 text-sm leading-7 text-[#5c6577]">
@@ -754,12 +754,12 @@ function PrizeSuggestionDialog({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#0f1220]/52 px-4 pb-4 pt-10 backdrop-blur-[6px] sm:items-center sm:p-6">
-      <div className="w-full max-w-5xl rounded-[34px] bg-white p-6 text-[#111827] shadow-[0_34px_90px_rgba(18,24,39,0.24)]">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-deep-plum/55 px-4 pb-4 pt-10 backdrop-blur-[6px] sm:items-center sm:p-6">
+      <div role="dialog" aria-modal="true" aria-labelledby="prize-suggestions-title" className="w-full max-w-5xl rounded-[var(--okado-radius-modal)] border border-lavender-mist bg-white p-6 text-carbon shadow-[0_0_32px_rgba(0,0,0,0.1)]">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Suggestions de lots</p>
-            <h2 className="mt-2 text-2xl font-semibold text-[#0f1728]">
+            <h2 id="prize-suggestions-title" className="mt-2 text-2xl font-semibold text-carbon">
               Dotations suggérées pour {industry || "votre secteur"}
             </h2>
             <p className="mt-2 max-w-2xl text-sm leading-7 text-[#5c6577]">

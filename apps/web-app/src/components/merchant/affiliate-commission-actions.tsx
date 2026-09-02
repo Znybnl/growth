@@ -51,7 +51,7 @@ export function AffiliateCommissionActions({
           type="button"
           disabled={isLoading !== null || currentStatus === action.status}
           onClick={() => void updateStatus(action.status)}
-          className="rounded-[12px] border border-border bg-white px-3 py-2 text-xs font-semibold text-graphite transition hover:border-signal-blue hover:text-signal-blue disabled:cursor-not-allowed disabled:opacity-45"
+          className="okado-secondary-action okado-compact-action px-3 text-xs disabled:cursor-not-allowed disabled:opacity-45"
         >
           {isLoading === action.status ? "..." : action.label}
         </button>
