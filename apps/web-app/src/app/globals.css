@@ -583,6 +583,47 @@ select {
   background: color-mix(in srgb, var(--color-soft-white) 94%, transparent) !important;
 }
 
+/* Legacy editor chrome is kept functional but follows the shared Slack ramp. */
+.okado-workspace-shell .okado-campaign-editor :where([class~="bg-[#111827]"], [class~="bg-[#2f6df6]"]) {
+  background-color: var(--color-aubergine) !important;
+}
+
+.okado-workspace-shell .okado-campaign-editor :where([class~="hover:bg-[#273142]"]):hover {
+  background-color: var(--color-deep-plum) !important;
+}
+
+.okado-workspace-shell .okado-campaign-editor :where([class~="border-[#111827]"], [class~="border-[#2f6df6]"]) {
+  border-color: var(--color-aubergine) !important;
+}
+
+.okado-workspace-shell .okado-campaign-editor :where([class~="hover:border-[#2f6df6]"]):hover {
+  border-color: var(--color-aubergine) !important;
+}
+
+.okado-workspace-shell .okado-campaign-editor :where([class~="bg-[#eef4ff]"], [class~="bg-[#eff4ff]"]) {
+  background-color: var(--color-purple-haze) !important;
+}
+
+.okado-workspace-shell .okado-campaign-editor :where([class~="text-[#214ccf]"]) {
+  color: var(--color-deep-plum) !important;
+}
+
+.okado-workspace-shell .okado-campaign-editor :where([class~="accent-[#2f6df6]"]) {
+  accent-color: var(--color-aubergine) !important;
+}
+
+.okado-workspace-shell .okado-campaign-editor :where([class~="bg-[#f7f9fc]"]) {
+  background-color: var(--color-soft-white) !important;
+}
+
+.okado-workspace-shell .okado-campaign-editor :where([class~="text-[#111827]"], [class~="text-[#182033]"]) {
+  color: var(--color-carbon) !important;
+}
+
+.okado-workspace-shell .okado-campaign-editor :where([class~="border"][class~="rounded-[18px]"], [class~="border"][class~="rounded-[20px]"], [class~="border"][class~="rounded-[22px]"]):not(input):not(textarea):not(select):not(button) {
+  border-radius: var(--okado-radius-card) !important;
+}
+
 .okado-auth-shell :where(input:not([type="color"]), textarea, select) {
   border-color: var(--color-fog) !important;
   border-radius: var(--okado-radius-control) !important;

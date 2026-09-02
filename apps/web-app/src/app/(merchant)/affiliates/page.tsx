@@ -6,7 +6,7 @@ import { getAffiliateAdminOverview } from "@/lib/affiliate-repository";
 import { isSaasAdminEmail } from "@/lib/admin";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import { AffiliateCommissionStatus } from "@/lib/types";
-import { MetricCard, PageHeader } from "@/components/ui/workspace";
+import { MetricCard, PageHeader, ResponsiveTable } from "@/components/ui/workspace";
 import { StatusBadge } from "@/components/ui/status-badge";
 
 type AffiliatesPageProps = {
@@ -133,8 +133,8 @@ export default async function AffiliatesPage({ searchParams }: AffiliatesPagePro
             puis définissez leur taux et leur durée de commission.
           </p>
         </div>
-        <div className="overflow-x-auto">
-          <table className="okado-data-table okado-affiliate-table w-full min-w-[1040px] text-left text-sm">
+        <ResponsiveTable>
+          <table className="okado-data-table okado-affiliate-table w-full text-left text-sm">
             <thead className="okado-table-header">
               <tr>
                 <th className="px-5 py-4">Marchand</th>
@@ -176,12 +176,12 @@ export default async function AffiliatesPage({ searchParams }: AffiliatesPagePro
               ))}
             </tbody>
           </table>
-        </div>
+        </ResponsiveTable>
       </section>
 
       <section className="okado-card overflow-hidden p-0">
-        <div className="overflow-x-auto">
-          <table className="okado-data-table okado-affiliate-table w-full min-w-[1040px] text-left text-sm">
+        <ResponsiveTable>
+          <table className="okado-data-table okado-affiliate-table w-full text-left text-sm">
             <thead className="okado-table-header">
               <tr>
                 <th className="px-5 py-4">Affilié</th>
@@ -229,7 +229,7 @@ export default async function AffiliatesPage({ searchParams }: AffiliatesPagePro
               )}
             </tbody>
           </table>
-        </div>
+        </ResponsiveTable>
       </section>
     </div>
   );

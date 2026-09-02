@@ -130,9 +130,9 @@ export function GoogleReviewPlacePicker({
 
   return (
     <div className={[compact ? "space-y-3" : "space-y-4", className].filter(Boolean).join(" ")}>
-      <div className={`rounded-[24px] border border-[#d7e0ed] p-3 ${compact ? "bg-white" : "bg-[#f7f9fc]"}`}>
+      <div className={`rounded-[16px] border border-[#d7e0ed] p-3 ${compact ? "bg-white" : "bg-[#f7f9fc]"}`}>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[18px] bg-white text-lg font-bold text-[#2f6df6] shadow-[0_10px_26px_rgba(122,136,166,0.16)]">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[4px] bg-purple-haze text-lg font-bold text-aubergine">
             G
           </div>
           <div className="min-w-0 flex-1">
@@ -158,7 +158,7 @@ export function GoogleReviewPlacePicker({
                 }
               }}
               placeholder="Rechercher votre établissement sur Google"
-              className="w-full rounded-[18px] border border-[#d7e0ed] bg-white px-4 py-3 text-sm outline-none transition focus:border-[#2f6df6] focus:ring-4 focus:ring-[#2f6df6]/10"
+              className="w-full rounded-[12px] border border-[#d7e0ed] bg-white px-4 py-3 text-sm outline-none transition focus:border-aubergine focus:ring-4 focus:ring-aubergine/15"
             />
           </div>
         </div>
@@ -182,7 +182,7 @@ export function GoogleReviewPlacePicker({
         {!manualMode && (isLoading || places.length > 0 || message) ? (
           <div className="mt-3 space-y-2">
             {isLoading ? (
-              <p className="rounded-[18px] bg-white px-4 py-3 text-sm text-[#5c6577]">
+              <p className="rounded-[12px] bg-white px-4 py-3 text-sm text-[#5c6577]">
                 Recherche de votre établissement...
               </p>
             ) : null}
@@ -200,9 +200,9 @@ export function GoogleReviewPlacePicker({
                     setPlaces([]);
                     setMessage(null);
                 }}
-                className={`w-full rounded-[18px] border px-4 py-3 text-left transition hover:border-[#2f6df6] hover:bg-white ${
+              className={`w-full rounded-[12px] border px-4 py-3 text-left transition hover:border-aubergine hover:bg-white ${
                   selectedPlaceId === place.placeId
-                    ? "border-[#2f6df6] bg-white shadow-[0_12px_30px_rgba(47,109,246,0.12)]"
+                    ? "border-aubergine bg-white shadow-[0_8px_20px_rgba(97,31,105,0.12)]"
                     : "border-[#e1e7f0] bg-white/70"
                 }`}
               >

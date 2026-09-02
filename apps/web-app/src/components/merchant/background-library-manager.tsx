@@ -140,7 +140,7 @@ export function BackgroundLibraryManager({
           </div>
 
           <div className="grid gap-4">
-            <label className="group relative flex min-h-[232px] cursor-pointer flex-col justify-between overflow-hidden rounded-[8px] border border-dashed border-[#cfd9ea] bg-white p-4 transition hover:border-signal-blue hover:bg-sky-wash">
+            <label className="group relative flex min-h-[232px] cursor-pointer flex-col justify-between overflow-hidden rounded-[8px] border border-dashed border-[#cfd9ea] bg-white p-4 transition hover:border-aubergine hover:bg-purple-haze">
               <div>
                 <span className="mb-2 block text-sm text-ash">Image</span>
                 <p className="max-w-md text-sm leading-6 text-slate">

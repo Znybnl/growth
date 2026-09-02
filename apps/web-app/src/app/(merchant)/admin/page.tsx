@@ -5,7 +5,7 @@ import { isSaasAdminEmail } from "@/lib/admin";
 import { getSaasAdminOverview } from "@/lib/admin-repository";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import { formatDateTime } from "@/lib/format";
-import { MetricCard, PageHeader } from "@/components/ui/workspace";
+import { MetricCard, PageHeader, ResponsiveTable } from "@/components/ui/workspace";
 import { StatusBadge as SharedStatusBadge } from "@/components/ui/status-badge";
 
 type AdminPageProps = {
@@ -85,8 +85,8 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
           </form>
         </div>
 
-        <div className="mt-5 overflow-x-auto">
-          <table className="okado-data-table okado-admin-table min-w-[930px] w-full text-left text-sm">
+        <ResponsiveTable className="mt-5">
+          <table className="okado-data-table okado-admin-table w-full text-left text-sm">
             <thead className="okado-table-header">
               <tr>
                 <th className="px-3 py-3 font-medium">Utilisateur</th>
@@ -128,7 +128,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
             </tbody>
           </table>
           {!overview.users.length ? <p className="px-3 py-8 text-sm text-ash">Aucun utilisateur ne correspond a votre recherche.</p> : null}
-        </div>
+        </ResponsiveTable>
       </section>
     </div>
   );

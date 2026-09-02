@@ -658,7 +658,7 @@ function PrizeSuggestionsPanel({
                   <button
                     type="button"
                     onClick={() => onAdd(suggestion)}
-                    className="inline-flex items-center gap-1 rounded-[11px] bg-[#111827] px-3 py-2 text-xs font-semibold !text-white"
+                    className="inline-flex items-center gap-1 rounded-[4px] bg-aubergine px-3 py-2 text-xs font-semibold !text-white"
                   >
                     <Plus className="h-3.5 w-3.5" />
                     Ajouter
@@ -1402,7 +1402,7 @@ export function CampaignWizard({
                       onChange={(event) =>
                         patchDraft({ emailCaptureEnabled: event.target.checked })
                       }
-                      className="mt-1 h-4 w-4 accent-[#111827]"
+                      className="mt-1 h-4 w-4 accent-aubergine"
                     />
                     <span>
                       <span className="block font-semibold">Collecter l’e-mail avant le jeu</span>
@@ -1876,7 +1876,7 @@ export function CampaignWizard({
                       className="mt-2 w-full rounded-[13px] border border-[#dbe3ed] bg-white px-3 py-3 text-sm text-[#182033]"
                     />
                   </label>
-                  <label className="mt-3 flex cursor-pointer items-start gap-3 rounded-[14px] border border-[#f0dfaa] bg-[#fff9e8] px-3 py-3 text-sm text-[#5f4b12]">
+                  <label className="mt-3 flex cursor-pointer items-start gap-3 rounded-[12px] border border-[#fed7aa] bg-[#fff7ed] px-3 py-3 text-sm text-[#9a3412]">
                     <input
                       type="checkbox"
                       checked={Boolean(prize.purchaseRequired)}
@@ -1891,7 +1891,7 @@ export function CampaignWizard({
                     />
                     <span>
                       <span className="block font-semibold">Achat requis pour le retrait</span>
-                      <span className="mt-1 block text-xs leading-5 text-[#806b30]">
+                      <span className="mt-1 block text-xs leading-5 text-[#c2410c]">
                         Ce lot nécessite un achat client. Précisez les modalités.
                       </span>
                     </span>
@@ -2421,7 +2421,7 @@ export function CampaignWizard({
                <div className="mt-3 grid gap-3 sm:grid-cols-2">{([{ value: "color", label: "Couleur" }, { value: "image", label: "Image" }] as const).map((mode) => <button key={mode.value} type="button" onClick={() => patchDraft({ presentation: { ...draft.presentation, background: { ...draft.presentation.background, mode: mode.value } } })} className={`cursor-pointer rounded-[12px] border px-3 py-2.5 text-sm font-semibold ${draft.presentation.background.mode === mode.value ? "border-aubergine bg-purple-haze text-deep-plum" : "border-[#dbe3ed] bg-white text-[#526078]"}`}>{mode.label}</button>)}</div>
                     {draft.presentation.background.mode === "color" ? <label className="mt-3 block text-sm"><span className="mb-2 block font-semibold">Couleur de fond</span><input type="color" value={draft.presentation.background.color} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, background: { ...draft.presentation.background, color: event.target.value } } })} className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] p-1" /></label> : <label className="mt-3 flex cursor-pointer items-center justify-between rounded-[12px] border border-dashed border-[#b8c5d8] px-3 py-3 text-sm font-semibold"><span>Importer une image de fond</span><input type="file" accept="image/png,image/jpeg,image/webp,image/gif" className="hidden" onChange={(event) => uploadWizardImage(event, (value) => { setImageUploadErrors((current) => ({ ...current, background: undefined })); patchDraft({ presentation: { ...draft.presentation, background: { ...draft.presentation.background, mode: "image", imageUrl: value } } }); }, (message) => setImageUploadErrors((current) => ({ ...current, background: message })))} /></label>}
                     {imageUploadErrors.background ? <p role="alert" className="mt-2 text-xs text-[#b42318]">{imageUploadErrors.background}</p> : null}
-                    {draft.presentation.background.mode === "image" ? <div className="mt-3 flex flex-wrap items-center gap-2"><button type="button" onClick={() => setBackgroundLibraryOpen(true)} className="cursor-pointer rounded-[12px] border border-[#111827] bg-[#111827] px-3 py-2.5 text-sm font-semibold text-white">Choisir dans la bibliothèque</button>{draft.presentation.background.imageUrl ? <span className="rounded-full bg-[#e9f8ec] px-3 py-1.5 text-xs font-semibold text-[#18864b]">Image sélectionnée</span> : null}</div> : null}
+                    {draft.presentation.background.mode === "image" ? <div className="mt-3 flex flex-wrap items-center gap-2"><button type="button" onClick={() => setBackgroundLibraryOpen(true)} className="cursor-pointer rounded-[4px] border border-aubergine bg-aubergine px-3 py-2.5 text-sm font-semibold text-white">Choisir dans la bibliothèque</button>{draft.presentation.background.imageUrl ? <span className="rounded-full bg-[#e9f8ec] px-3 py-1.5 text-xs font-semibold text-[#18864b]">Image sélectionnée</span> : null}</div> : null}
                   </section>
                   <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4"><p className="text-sm font-semibold text-[#182033]">Réglages du texte</p><div className="mt-3 grid gap-3 sm:grid-cols-2"><label className="block text-sm"><span className="mb-2 block font-semibold">Couleur du texte</span><input type="color" value={draft.presentation.heading.textColor} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, heading: { ...draft.presentation.heading, textColor: event.target.value } } })} className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] p-1" /></label><label className="block text-sm"><span className="mb-2 block font-semibold">Épaisseur</span><select value={draft.presentation.heading.fontWeight ?? 600} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, heading: { ...draft.presentation.heading, fontWeight: Number(event.target.value) } } })} className="w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] px-3 py-3"><option value={400}>Normale</option><option value={500}>Moyenne</option><option value={600}>Semi-gras</option><option value={700}>Gras</option></select></label></div></section>
                   {draft.gameType === "wheel" ? (

@@ -77,8 +77,8 @@ export function PosterTemplateSelector({
               onClick={() => onSelect(template.id)}
               className={`group overflow-hidden rounded-[var(--radius-card)] border text-left transition hover:-translate-y-0.5 ${
                 active
-                  ? "border-[#2f6df6] bg-[#eff4ff] shadow-[0_14px_34px_rgba(47,109,246,0.18)]"
-                  : "border-[#d7e0ed] bg-white hover:border-[#2f6df6]"
+                  ? "border-aubergine bg-purple-haze shadow-[0_8px_20px_rgba(97,31,105,0.12)]"
+                  : "border-[#d7e0ed] bg-white hover:border-aubergine"
               }`}
             >
               <span className="relative block h-[220px] overflow-hidden" style={{ background: template.background }}>

@@ -168,10 +168,10 @@ export function PrizeSuggestionsManager({ initialSuggestions }: { initialSuggest
               const icon = ICON_OPTIONS.find((item) => item.value === suggestion.icon) ?? ICON_OPTIONS.at(-1)!;
               const Icon = icon.Icon;
               return (
-                <article key={suggestion.id} className="rounded-[18px] border border-[#e3eaf3] bg-white p-4 shadow-[0_8px_20px_rgba(18,24,39,0.04)]">
+                <article key={suggestion.id} className="rounded-[16px] border border-[#e3eaf3] bg-white p-4 shadow-[0_8px_20px_rgba(18,24,39,0.04)]">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex min-w-0 items-center gap-3">
-                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] bg-[#eef4ff] text-[#2563eb]"><Icon className="h-5 w-5" /></span>
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[4px] bg-purple-haze text-aubergine"><Icon className="h-5 w-5" /></span>
                       <div className="min-w-0"><p className="truncate font-semibold text-graphite">{suggestion.label}</p><p className="text-xs text-ash">{suggestion.industry}</p></div>
                     </div>
                     <StatusBadge tone={suggestion.isActive ? "active" : "muted"}>{suggestion.isActive ? "Active" : "Masquée"}</StatusBadge>
@@ -195,7 +195,7 @@ export function PrizeSuggestionsManager({ initialSuggestions }: { initialSuggest
             <label className="block text-sm font-medium text-[#44516a]">Description<textarea value={form.description} onChange={(event) => updateForm("description", event.target.value)} className="mt-2 min-h-24 w-full" placeholder="Décrivez l'intérêt du lot." /></label>
             <div className="grid grid-cols-2 gap-3"><label className="text-sm font-medium text-[#44516a]">Probabilité (%)<input type="number" min="0" max="100" value={form.probability} onChange={(event) => updateForm("probability", Number(event.target.value))} className="mt-2 w-full" /></label><label className="text-sm font-medium text-[#44516a]">Coût estimé (€)<input type="number" min="0" step="0.01" value={form.estimatedUnitCost} onChange={(event) => updateForm("estimatedUnitCost", Number(event.target.value))} className="mt-2 w-full" /></label></div>
             <div className="grid grid-cols-2 gap-3"><label className="text-sm font-medium text-[#44516a]">Icône<select value={form.icon} onChange={(event) => updateForm("icon", event.target.value)} className="mt-2 w-full">{ICON_OPTIONS.map((icon) => <option key={icon.value} value={icon.value}>{icon.label}</option>)}</select></label><label className="text-sm font-medium text-[#44516a]">Ordre<input type="number" value={form.sortOrder} onChange={(event) => updateForm("sortOrder", Number(event.target.value))} className="mt-2 w-full" /></label></div>
-            <label className="flex items-center gap-3 rounded-[14px] border border-[#e3eaf3] bg-[#f8fafc] px-3 py-3 text-sm font-medium text-[#44516a]"><input type="checkbox" checked={form.isActive} onChange={(event) => updateForm("isActive", event.target.checked)} /> Afficher aux commerçants</label>
+            <label className="flex items-center gap-3 rounded-[12px] border border-[#e3eaf3] bg-purple-haze px-3 py-3 text-sm font-medium text-charcoal"><input type="checkbox" checked={form.isActive} onChange={(event) => updateForm("isActive", event.target.checked)} className="accent-aubergine" /> Afficher aux commerçants</label>
             {message ? <p className={`rounded-[14px] px-3 py-2 text-sm ${message === "Suggestion enregistrée." ? "bg-[#ecfdf3] text-[#047857]" : "bg-[#fff1f2] text-[#b42318]"}`}>{message}</p> : null}
             <Button type="button" onClick={save} disabled={isSaving} className="w-full gap-2"><Save className="h-4 w-4" />{isSaving ? "Enregistrement..." : "Enregistrer"}</Button>
           </div>

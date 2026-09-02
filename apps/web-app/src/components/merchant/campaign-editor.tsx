@@ -670,7 +670,7 @@ function PrizeConditionsDialog({
           </button>
         </div>
 
-        <label className="mt-6 flex cursor-pointer items-start gap-3 rounded-[18px] border border-[#f0dfaa] bg-[#fff9e8] px-4 py-3 text-sm text-[#5f4b12]">
+        <label className="mt-6 flex cursor-pointer items-start gap-3 rounded-[16px] border border-[#fed7aa] bg-[#fff7ed] px-4 py-3 text-sm text-[#9a3412]">
           <input
             type="checkbox"
             checked={purchaseRequired}
@@ -679,7 +679,7 @@ function PrizeConditionsDialog({
           />
           <span>
             <span className="block font-semibold">Achat requis pour le retrait</span>
-            <span className="mt-1 block text-xs leading-5 text-[#806b30]">
+              <span className="mt-1 block text-xs leading-5 text-[#c2410c]">
               Cette condition s&apos;applique uniquement à ce lot.
             </span>
           </span>

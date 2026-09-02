@@ -107,7 +107,7 @@ export function LocationManager({
   return (
     <div className="space-y-6">
       <section className="relative overflow-hidden rounded-[var(--okado-radius-modal)] bg-[#111c35] px-6 py-7 text-white shadow-[var(--shadow-product-card)] md:px-8">
-        <div className="absolute -right-20 -top-24 h-56 w-56 rounded-full bg-[#f4c14a]/20 blur-3xl" />
+        <div className="absolute -right-20 -top-24 h-56 w-56 rounded-full bg-purple-haze/60 blur-3xl" />
         <div className="relative flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#c8d1e3]">Réseau</p>
@@ -116,7 +116,7 @@ export function LocationManager({
               {workspace?.name ?? "Votre workspace"} · chaque campagne, QR et retrait reste rattaché au bon établissement.
             </p>
           </div>
-          <button type="button" onClick={() => setIsAdding(true)} className="inline-flex items-center justify-center gap-2 rounded-[14px] bg-[#f4c14a] px-4 py-3 text-sm font-semibold text-[#111827] transition hover:bg-[#ffd66f]"><Plus className="h-4 w-4" />Ajouter un site</button>
+          <button type="button" onClick={() => setIsAdding(true)} className="inline-flex items-center justify-center gap-2 rounded-[4px] bg-aubergine px-4 py-3 text-sm font-semibold text-white transition hover:bg-deep-plum"><Plus className="h-4 w-4" />Ajouter un site</button>
         </div>
       </section>
 

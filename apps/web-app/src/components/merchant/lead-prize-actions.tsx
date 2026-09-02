@@ -83,7 +83,7 @@ export function LeadPrizeActions({
   const resendDisabled =
     status === "redeemed" || isResending || emailDeliveryStatus === "queued" || cooldownActive;
   const actionButtonClassName =
-    "inline-flex h-10 w-[150px] items-center justify-center rounded-[14px] px-3 text-xs font-semibold leading-tight transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-45";
+    "inline-flex h-10 w-[150px] items-center justify-center rounded-[4px] px-3 text-xs font-semibold leading-tight transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-45";
 
   return (
     <div className="min-w-[250px] space-y-2">
@@ -93,7 +93,7 @@ export function LeadPrizeActions({
           onClick={() => submit("redeem")}
           disabled={isPending || status === "redeemed" || isExpired}
           title={isExpired ? "Lot expiré" : undefined}
-          className={`${actionButtonClassName} bg-[#111827] text-white`}
+          className={`${actionButtonClassName} bg-aubergine text-white`}
         >
           Marquer récupéré
         </button>
@@ -110,7 +110,7 @@ export function LeadPrizeActions({
           onClick={resendEmail}
           disabled={resendDisabled}
           title={status === "redeemed" ? "Lot déjà récupéré" : undefined}
-          className={`${actionButtonClassName} bg-[#2f6df6] text-white`}
+          className={`${actionButtonClassName} bg-aubergine text-white`}
         >
           {isResending ? "Renvoi..." : cooldownActive ? "Patientez 2 min" : "Renvoyer e-mail"}
         </button>

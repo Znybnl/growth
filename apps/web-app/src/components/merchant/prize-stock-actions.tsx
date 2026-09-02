@@ -91,7 +91,7 @@ export function PrizeStockActions({
             type="button"
             onClick={() => void save()}
             disabled={pending}
-            className="cursor-pointer rounded-[14px] bg-[#111827] px-3 py-2 text-xs font-semibold text-white disabled:opacity-50"
+            className="cursor-pointer rounded-[4px] bg-aubergine px-3 py-2 text-xs font-semibold text-white disabled:opacity-50"
           >
             Enregistrer
           </button>
@@ -122,7 +122,7 @@ export function PrizeStockActions({
             type="button"
             onClick={() => void reset()}
             disabled={pending}
-            className="cursor-pointer rounded-[14px] bg-[#111827] px-3 py-2 text-xs font-semibold text-white disabled:opacity-50"
+            className="cursor-pointer rounded-[4px] bg-aubergine px-3 py-2 text-xs font-semibold text-white disabled:opacity-50"
           >
             Réinitialiser
           </button>

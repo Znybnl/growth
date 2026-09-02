@@ -4,7 +4,7 @@ import { DataCampaignSelector } from "@/components/merchant/data-campaign-select
 import { DataSearchForm } from "@/components/merchant/data-search-form";
 import { LeadPrizeActions } from "@/components/merchant/lead-prize-actions";
 import { PrizeStockActions } from "@/components/merchant/prize-stock-actions";
-import { EmptyState, MetricCard, PageHeader } from "@/components/ui/workspace";
+import { EmptyState, MetricCard, PageHeader, ResponsiveTable } from "@/components/ui/workspace";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import {
@@ -186,8 +186,8 @@ function LeadsExportSection({
         </Link>
       </div>
 
-      <div className="mt-5 overflow-x-auto">
-        <table className="okado-data-table min-w-full text-left text-sm">
+      <ResponsiveTable className="mt-5">
+        <table className="okado-data-table w-full text-left text-sm">
           <thead className="okado-table-header">
             <tr>
               <th className="px-3 py-3">Participant</th>
@@ -263,7 +263,7 @@ function LeadsExportSection({
             ))}
           </tbody>
         </table>
-      </div>
+      </ResponsiveTable>
       {total > limit ? (
         <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-5 text-sm">
           <p className="text-ash">

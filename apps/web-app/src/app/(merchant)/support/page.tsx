@@ -3,7 +3,7 @@ import { requireAuthenticatedSession } from "@/lib/auth";
 import { isSaasAdminEmail } from "@/lib/admin";
 import { formatDateTime, leadStatusLabel, rewardEmailStatusLabel } from "@/lib/format";
 import { getMerchantSupportOverview } from "@/lib/store";
-import { MetricCard, PageHeader } from "@/components/ui/workspace";
+import { MetricCard, PageHeader, ResponsiveTable } from "@/components/ui/workspace";
 import { StatusBadge as SharedStatusBadge } from "@/components/ui/status-badge";
 import { redirect } from "next/navigation";
 
@@ -432,9 +432,9 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
             <StatusBadge label={`${filteredOverview.businessLogs.length} lignes`} />
           </div>
 
-          <div className="mt-6 overflow-x-auto">
+          <ResponsiveTable className="mt-6">
             {filteredOverview.businessLogs.length ? (
-              <table className="okado-data-table okado-support-table min-w-[900px] w-full text-left text-sm">
+              <table className="okado-data-table okado-support-table w-full text-left text-sm">
                 <thead className="okado-table-header">
                   <tr>
                     <th className="px-3 py-3">Date</th>
@@ -475,7 +475,7 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
                   : "Aucun log métier récent."}
               </p>
             )}
-          </div>
+          </ResponsiveTable>
         </article>
       </section>
     </div>
