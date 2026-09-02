@@ -14,7 +14,7 @@ const steps = [
 ] as const;
 
 const inputClass =
-  "w-full rounded-[12px] border border-[#cfcfcf] bg-white px-4 py-3 text-graphite outline-none transition focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.16)]";
+  "w-full rounded-[12px] border border-fog bg-white px-4 py-3 text-carbon outline-none transition focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.16)]";
 
 type OnboardingFlowProps = { merchant: Merchant };
 
@@ -105,21 +105,21 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
         {activeStep.id === "profil" ? (
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             <label className="text-sm">
-              <span className="mb-2 block text-[#616b7c]">Nom de l’enseigne</span>
+              <span className="mb-2 block text-charcoal">Nom de l’enseigne</span>
               <input value={companyName} onChange={(event) => setCompanyName(event.target.value)} className={inputClass} />
             </label>
             <label className="text-sm">
-              <span className="mb-2 block text-[#616b7c]">Secteur d’activité</span>
+              <span className="mb-2 block text-charcoal">Secteur d’activité</span>
               <select value={industry} onChange={(event) => setIndustry(event.target.value)} className={inputClass}>
                 {INDUSTRY_OPTIONS.map((option) => <option key={option} value={option}>{option}</option>)}
               </select>
             </label>
             <label className="text-sm">
-              <span className="mb-2 block text-[#616b7c]">Ville / {isRestaurant ? "restaurant" : "commerce"}</span>
+              <span className="mb-2 block text-charcoal">Ville / {isRestaurant ? "restaurant" : "commerce"}</span>
               <input value={city} onChange={(event) => setCity(event.target.value)} className={inputClass} />
             </label>
             <label className="text-sm">
-              <span className="mb-2 block text-[#616b7c]">Référent campagne</span>
+              <span className="mb-2 block text-charcoal">Référent campagne</span>
               <input value={contactName} onChange={(event) => setContactName(event.target.value)} className={inputClass} />
             </label>
           </div>
@@ -128,14 +128,14 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
         {activeStep.id === "restaurant" ? (
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             <label className="text-sm">
-              <span className="mb-2 block text-[#616b7c]">E-mail du {isRestaurant ? "restaurant" : "commerce"}</span>
+              <span className="mb-2 block text-charcoal">E-mail du {isRestaurant ? "restaurant" : "commerce"}</span>
               <input type="email" value={restaurantEmail} onChange={(event) => setRestaurantEmail(event.target.value)} className={inputClass} />
             </label>
             <label className="text-sm">
-              <span className="mb-2 block text-[#616b7c]">Site internet du {isRestaurant ? "restaurant" : "commerce"}</span>
+              <span className="mb-2 block text-charcoal">Site internet du {isRestaurant ? "restaurant" : "commerce"}</span>
               <input type="url" value={websiteUrl} onChange={(event) => setWebsiteUrl(event.target.value)} placeholder="https://..." className={inputClass} />
             </label>
-            <div className="rounded-[12px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 text-sm leading-6 text-ash md:col-span-2">
+            <div className="rounded-[8px] bg-purple-haze px-4 py-3 text-sm leading-6 text-charcoal md:col-span-2">
               L’adresse et le téléphone seront récupérés automatiquement depuis l’établissement Google sélectionné à l’étape suivante.
               {address ? <span className="mt-1 block font-medium text-graphite">Adresse actuelle : {address}</span> : null}
             </div>
@@ -169,12 +169,12 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
                   }}
                 />
               </div>
-              <label className="text-sm"><span className="mb-2 block text-[#616b7c]">Instagram</span><input type="url" value={instagramUrl} onChange={(event) => setInstagramUrl(event.target.value)} placeholder="https://instagram.com/..." className={inputClass} /></label>
-              <label className="text-sm"><span className="mb-2 block text-[#616b7c]">Facebook</span><input type="url" value={facebookUrl} onChange={(event) => setFacebookUrl(event.target.value)} placeholder="https://facebook.com/..." className={inputClass} /></label>
-              <label className="text-sm"><span className="mb-2 block text-[#616b7c]">TikTok</span><input type="url" value={tiktokUrl} onChange={(event) => setTiktokUrl(event.target.value)} placeholder="https://tiktok.com/@..." className={inputClass} /></label>
-              <label className="text-sm"><span className="mb-2 block text-[#616b7c]">Tripadvisor</span><input type="url" value={tripadvisorUrl} onChange={(event) => setTripadvisorUrl(event.target.value)} placeholder="https://tripadvisor.com/..." className={inputClass} /></label>
+              <label className="text-sm"><span className="mb-2 block text-charcoal">Instagram</span><input type="url" value={instagramUrl} onChange={(event) => setInstagramUrl(event.target.value)} placeholder="https://instagram.com/..." className={inputClass} /></label>
+              <label className="text-sm"><span className="mb-2 block text-charcoal">Facebook</span><input type="url" value={facebookUrl} onChange={(event) => setFacebookUrl(event.target.value)} placeholder="https://facebook.com/..." className={inputClass} /></label>
+              <label className="text-sm"><span className="mb-2 block text-charcoal">TikTok</span><input type="url" value={tiktokUrl} onChange={(event) => setTiktokUrl(event.target.value)} placeholder="https://tiktok.com/@..." className={inputClass} /></label>
+              <label className="text-sm"><span className="mb-2 block text-charcoal">Tripadvisor</span><input type="url" value={tripadvisorUrl} onChange={(event) => setTripadvisorUrl(event.target.value)} placeholder="https://tripadvisor.com/..." className={inputClass} /></label>
               <label className="text-sm md:col-span-2">
-                <span className="mb-2 block text-[#616b7c]">PIN de validation du retrait</span>
+                <span className="mb-2 block text-charcoal">PIN de validation du retrait</span>
                 <input type="text" inputMode="numeric" autoComplete="new-password" pattern="[0-9]{4,6}" maxLength={6} value={redemptionPin} onChange={(event) => setRedemptionPin(event.target.value.replace(/\D/g, ""))} className={inputClass} />
                 <span className="mt-2 block text-xs leading-5 text-ash">Ce code de 4 à 6 chiffres est demandé à un employé pour valider un retrait. Il est prérempli à 0000 et pourra être modifié depuis Compte.</span>
               </label>
@@ -184,7 +184,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
 
         {error ? <div className="mt-6 rounded-[8px] border border-coral-alert/30 bg-coral-alert/10 px-4 py-3 text-sm text-coral-alert">{error}</div> : null}
 
-        <div className="mt-8 flex flex-col gap-3 border-t border-[#e6ebf2] pt-6 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-8 flex flex-col gap-3 border-t border-fog pt-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex gap-3">
             <button type="button" onClick={() => setActiveIndex((current) => Math.max(current - 1, 0))} disabled={activeIndex === 0} className="okado-primary-action px-5 disabled:opacity-40">Retour</button>
             <button type="button" onClick={saveOnboarding} disabled={isSaving} className="okado-primary-action px-5 disabled:opacity-60">{isSaving ? "Enregistrement…" : "Passer"}</button>

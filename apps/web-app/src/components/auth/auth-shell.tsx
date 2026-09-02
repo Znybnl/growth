@@ -92,8 +92,8 @@ export function AuthShell({
 
           <div className="relative flex w-full max-w-[760px] flex-1 items-center justify-center px-10 sm:px-14">
             <div className="relative h-[390px] w-full max-w-[560px]">
-              <div className="absolute inset-x-[5%] top-[4%] rounded-[24px] border border-white/30 bg-white/95 p-5 shadow-[0_28px_80px_rgba(4,26,75,0.28)]">
-                <div className="flex items-center justify-between border-b border-[#e6ebf2] pb-4">
+              <div className="absolute inset-x-[5%] top-[4%] rounded-[16px] border border-white/30 bg-white/95 p-5 shadow-[0_28px_80px_rgba(72,26,84,0.22)]">
+                <div className="flex items-center justify-between border-b border-fog pb-4">
                   <div>
                     <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-aubergine">
                       Pilotage local
@@ -118,7 +118,7 @@ export function AuthShell({
                     </div>
                   ))}
                 </div>
-                <div className="mt-5 rounded-[14px] border border-[#e6ebf2] p-4">
+                <div className="mt-5 rounded-[12px] border border-fog p-4">
                   <div className="flex items-center justify-between">
                     <p className="text-xs font-semibold text-graphite">Activité des 7 derniers jours</p>
                     <span className="text-[10px] font-medium text-ash">+18%</span>

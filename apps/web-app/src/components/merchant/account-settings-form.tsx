@@ -217,12 +217,12 @@ export function AccountSettingsForm({
         icon={UserRound}
       >
         <p className="mb-4 text-xs text-ash">
-          <span className="text-[#b42318]" aria-hidden="true">*</span> Champs obligatoires
+          <span className="text-coral-alert" aria-hidden="true">*</span> Champs obligatoires
         </p>
         <div className="mt-6 grid gap-4 md:grid-cols-2">
           <label className="text-sm">
             <span className="mb-2 block text-ash">
-              Prénom <span className="text-[#b42318]" aria-hidden="true">*</span>
+              Prénom <span className="text-coral-alert" aria-hidden="true">*</span>
             </span>
             <input
               value={form.firstName}
@@ -233,7 +233,7 @@ export function AccountSettingsForm({
           </label>
           <label className="text-sm">
             <span className="mb-2 block text-ash">
-              Nom <span className="text-[#b42318]" aria-hidden="true">*</span>
+              Nom <span className="text-coral-alert" aria-hidden="true">*</span>
             </span>
             <input
               value={form.lastName}
@@ -244,7 +244,7 @@ export function AccountSettingsForm({
           </label>
           <label className="text-sm md:col-span-2">
             <span className="mb-2 block text-ash">
-              E-mail de connexion <span className="text-[#b42318]" aria-hidden="true">*</span>
+              E-mail de connexion <span className="text-coral-alert" aria-hidden="true">*</span>
             </span>
             <input
               type="email"
@@ -290,7 +290,7 @@ export function AccountSettingsForm({
             <div className="grid gap-4 md:grid-cols-2">
           <label className="text-sm">
             <span className="mb-2 block text-ash">
-              Nom du commerce <span className="text-[#b42318]" aria-hidden="true">*</span>
+               Nom du commerce <span className="text-coral-alert" aria-hidden="true">*</span>
             </span>
             <input
               value={form.companyName}
@@ -315,7 +315,7 @@ export function AccountSettingsForm({
           </label>
           <label className="text-sm">
             <span className="mb-2 block text-ash">
-              Ville / {isRestaurant ? "restaurant" : "commerce"} <span className="text-[#b42318]" aria-hidden="true">*</span>
+              Ville / {isRestaurant ? "restaurant" : "commerce"} <span className="text-coral-alert" aria-hidden="true">*</span>
             </span>
             <input
               value={form.city}
@@ -429,7 +429,7 @@ export function AccountSettingsForm({
                 }));
               }}
             />
-          <label className="rounded-[8px] border border-fog bg-white p-3 text-sm">
+          <label className="rounded-[8px] bg-soft-white p-3 text-sm">
             <span className="mb-2 flex items-center justify-between gap-3 text-ash"><span className="flex items-center gap-3"><SocialChannelIcon channel="instagram" /><span>Instagram</span></span><span className="text-[11px]">{form.instagramUrl ? "Renseigné" : "Optionnel"}</span></span>
             <input
               type="text"
@@ -440,7 +440,7 @@ export function AccountSettingsForm({
               className={`${inputClass} min-h-[40px] px-3 py-2 text-xs`}
             />
           </label>
-          <label className="rounded-[8px] border border-fog bg-white p-3 text-sm">
+          <label className="rounded-[8px] bg-soft-white p-3 text-sm">
             <span className="mb-2 flex items-center justify-between gap-3 text-ash"><span className="flex items-center gap-3"><SocialChannelIcon channel="facebook" /><span>Facebook</span></span><span className="text-[11px]">{form.facebookUrl ? "Renseigné" : "Optionnel"}</span></span>
             <input
               type="text"
@@ -451,7 +451,7 @@ export function AccountSettingsForm({
               className={`${inputClass} min-h-[40px] px-3 py-2 text-xs`}
             />
           </label>
-          <label className="rounded-[8px] border border-fog bg-white p-3 text-sm">
+          <label className="rounded-[8px] bg-soft-white p-3 text-sm">
             <span className="mb-2 flex items-center justify-between gap-3 text-ash"><span className="flex items-center gap-3"><SocialChannelIcon channel="tiktok" /><span>TikTok</span></span><span className="text-[11px]">{form.tiktokUrl ? "Renseigné" : "Optionnel"}</span></span>
             <input
               type="text"
@@ -462,7 +462,7 @@ export function AccountSettingsForm({
               className={`${inputClass} min-h-[40px] px-3 py-2 text-xs`}
             />
           </label>
-          <label className="rounded-[8px] border border-fog bg-white p-3 text-sm">
+          <label className="rounded-[8px] bg-soft-white p-3 text-sm">
             <span className="mb-2 flex items-center justify-between gap-3 text-ash"><span className="flex items-center gap-3"><SocialChannelIcon channel="tripadvisor" /><span>Tripadvisor</span></span><span className="text-[11px]">{form.tripadvisorUrl ? "Renseigné" : "Optionnel"}</span></span>
             <input
               type="text"
@@ -473,7 +473,7 @@ export function AccountSettingsForm({
               className={`${inputClass} min-h-[40px] px-3 py-2 text-xs`}
             />
           </label>
-          <label className="rounded-[8px] border border-fog bg-white p-3 text-sm md:col-span-2">
+          <label className="rounded-[8px] bg-soft-white p-3 text-sm md:col-span-2">
             <span className="mb-2 flex items-center justify-between gap-3 text-ash"><span className="flex items-center gap-3"><SocialChannelIcon channel="custom" /><span>Lien personnalisé</span></span><span className="text-[11px]">{form.customLinkUrl ? "Renseigné" : "Optionnel"}</span></span>
             <input
               type="text"
@@ -513,7 +513,7 @@ export function AccountSettingsForm({
               className={inputClass}
             />
           </label>
-              <p className="rounded-[8px] border border-fog bg-soft-white px-4 py-3 text-sm text-ash">
+              <p className="rounded-[8px] bg-purple-haze px-4 py-3 text-sm text-charcoal">
             {selectedMerchant.redemptionPinConfigured
               ? "Un PIN est déjà configuré. Laissez ce champ vide pour le conserver."
               : "Aucun PIN n’est configuré. Ajoutez-en un pour activer la validation express."}
@@ -558,7 +558,7 @@ export function AccountSettingsForm({
         </div>
 
       {error ? (
-          <div className="rounded-[8px] border border-[#f6c4bb] bg-[#fff1ee] px-4 py-3 text-sm text-[#8b2c18]">
+          <div className="rounded-[8px] border border-coral-alert/30 bg-coral-alert/10 px-4 py-3 text-sm text-coral-alert">
             {error}
           </div>
         ) : null}

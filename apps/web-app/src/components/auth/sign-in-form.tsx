@@ -65,9 +65,9 @@ export function SignInForm() {
       </div>
 
       <div className="mt-8 flex items-center gap-4">
-        <div className="h-px flex-1 bg-[#e7ecf4]" />
+        <div className="h-px flex-1 bg-fog" />
         <span className="text-sm text-fog">ou continuez par email</span>
-        <div className="h-px flex-1 bg-[#e7ecf4]" />
+        <div className="h-px flex-1 bg-fog" />
       </div>
 
       <div className="mt-8 space-y-4">
@@ -78,7 +78,7 @@ export function SignInForm() {
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             placeholder="Email"
-            className="h-14 w-full rounded-[12px] border border-[#cfcfcf] bg-white px-4 text-base text-graphite outline-none transition placeholder:text-fog focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.16)]"
+            className="h-14 w-full rounded-[12px] border border-fog bg-white px-4 text-base text-carbon outline-none transition placeholder:text-fog focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.16)]"
             required
           />
         </label>
@@ -90,7 +90,7 @@ export function SignInForm() {
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             placeholder="Mot de passe"
-            className="h-14 w-full rounded-[12px] border border-[#cfcfcf] bg-white px-4 text-base text-graphite outline-none transition placeholder:text-fog focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.16)]"
+            className="h-14 w-full rounded-[12px] border border-fog bg-white px-4 text-base text-carbon outline-none transition placeholder:text-fog focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.16)]"
             required
           />
         </label>
@@ -102,7 +102,7 @@ export function SignInForm() {
             type="checkbox"
             checked={remember}
             onChange={(event) => setRemember(event.target.checked)}
-            className="h-4 w-4 rounded border-[#cfcfcf] text-aubergine"
+            className="h-4 w-4 rounded border-fog text-aubergine"
           />
           <span>Se souvenir de moi</span>
         </label>

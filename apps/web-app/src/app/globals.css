@@ -104,6 +104,10 @@
   --okado-radius-pill: 9999px;
   --radius-card: var(--okado-radius-card);
   --okado-border-control: var(--color-fog);
+  --okado-border-subtle: var(--color-fog);
+  --okado-surface-page: var(--color-soft-white);
+  --okado-surface-raised: var(--color-pure-white);
+  --okado-surface-subtle: var(--color-purple-haze);
   --okado-surface-muted: var(--color-purple-haze);
   --okado-text-primary: var(--color-carbon);
   --okado-text-muted: var(--color-charcoal);
@@ -587,12 +591,12 @@ select {
 
 .okado-workspace-shell :where(.okado-card, .okado-compact-card) {
   border-color: var(--color-lavender-mist);
-  box-shadow: var(--shadow-product-card);
+  box-shadow: none;
 }
 
 .okado-workspace-shell :where(input:not([type="color"]), textarea, select) {
-  border-color: #cfcfcf;
-  background: var(--color-pure-white);
+  border-color: var(--okado-border-control);
+  background: var(--okado-surface-raised);
 }
 
 .okado-workspace-shell :where(input:not([type="color"]), textarea, select):focus {
@@ -645,6 +649,16 @@ select {
 
 .okado-workspace-shell .okado-wizard :where([class~="rounded-[18px]"], [class~="rounded-[20px]"], [class~="rounded-[22px]"]) {
   border-radius: var(--okado-radius-card) !important;
+}
+
+.okado-workspace-shell .okado-list-row {
+  border-bottom: 1px solid var(--okado-border-subtle);
+  background: transparent;
+  transition: background-color 160ms ease;
+}
+
+.okado-workspace-shell .okado-list-row:hover {
+  background: var(--okado-surface-subtle);
 }
 
 .okado-workspace-shell :where(.okado-campaign-editor, .okado-wizard, .okado-poster-editor, .okado-editor-page) :where(.sticky) {

@@ -21,9 +21,9 @@ function readReferralCodeFromBrowser() {
 
 function FieldLabel({ children }: { children: string }) {
   return (
-    <span className="mb-2 block text-[#616b7c]">
+    <span className="mb-2 block text-charcoal">
       {children}
-      <span className="ml-1 text-[#d92d20]">*</span>
+      <span className="ml-1 text-coral-alert">*</span>
     </span>
   );
 }
@@ -104,9 +104,9 @@ export function SignUpForm() {
       ) : null}
 
       <div className="mt-8 flex items-center gap-4">
-        <div className="h-px flex-1 bg-[#e7ecf4]" />
+        <div className="h-px flex-1 bg-fog" />
         <span className="text-sm text-fog">ou continuez avec le formulaire</span>
-        <div className="h-px flex-1 bg-[#e7ecf4]" />
+        <div className="h-px flex-1 bg-fog" />
       </div>
 
       <div className="mt-8 grid gap-4 md:grid-cols-2">
@@ -116,7 +116,7 @@ export function SignUpForm() {
             value={form.firstName}
             onChange={(event) => updateField("firstName", event.target.value)}
             placeholder="Camille"
-            className="w-full rounded-[12px] border border-[#cfcfcf] bg-white px-4 py-4 text-graphite outline-none transition placeholder:text-fog focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.16)]"
+            className="w-full rounded-[12px] border border-fog bg-white px-4 py-4 text-carbon outline-none transition placeholder:text-fog focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.16)]"
             required
           />
         </label>
@@ -126,7 +126,7 @@ export function SignUpForm() {
             value={form.lastName}
             onChange={(event) => updateField("lastName", event.target.value)}
             placeholder="Martin"
-            className="w-full rounded-[12px] border border-[#cfcfcf] bg-white px-4 py-4 text-graphite outline-none transition placeholder:text-fog focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.16)]"
+            className="w-full rounded-[12px] border border-fog bg-white px-4 py-4 text-carbon outline-none transition placeholder:text-fog focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.16)]"
             required
           />
         </label>
@@ -137,7 +137,7 @@ export function SignUpForm() {
             value={form.email}
             onChange={(event) => updateField("email", event.target.value)}
             placeholder="camille@maisonsora.fr"
-            className="w-full rounded-[12px] border border-[#cfcfcf] bg-white px-4 py-4 text-graphite outline-none transition placeholder:text-fog focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.16)]"
+            className="w-full rounded-[12px] border border-fog bg-white px-4 py-4 text-carbon outline-none transition placeholder:text-fog focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.16)]"
             required
           />
         </label>
@@ -148,7 +148,7 @@ export function SignUpForm() {
             value={form.password}
             onChange={(event) => updateField("password", event.target.value)}
             placeholder="••••••••••"
-            className="w-full rounded-[12px] border border-[#cfcfcf] bg-white px-4 py-4 text-graphite outline-none transition placeholder:text-fog focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.16)]"
+            className="w-full rounded-[12px] border border-fog bg-white px-4 py-4 text-carbon outline-none transition placeholder:text-fog focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.16)]"
             required
           />
         </label>
@@ -159,7 +159,7 @@ export function SignUpForm() {
             value={form.confirmPassword}
             onChange={(event) => updateField("confirmPassword", event.target.value)}
             placeholder="••••••••••"
-            className="w-full rounded-[12px] border border-[#cfcfcf] bg-white px-4 py-4 text-graphite outline-none transition placeholder:text-fog focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.16)]"
+            className="w-full rounded-[12px] border border-fog bg-white px-4 py-4 text-carbon outline-none transition placeholder:text-fog focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.16)]"
             required
           />
         </label>
