@@ -14,8 +14,6 @@ import {
   Download,
   Eye,
   Gift,
-  ImageIcon,
-  Pencil,
   Plus,
   QrCode,
   Sparkles,
@@ -27,6 +25,7 @@ import { type ChangeEvent, type ReactNode, useEffect, useMemo, useState } from "
 
 import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
 import { CampaignPreviewQrDialog } from "@/components/merchant/campaign-preview-qr";
+import { CampaignSavedDialog } from "@/components/merchant/campaign-saved-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -864,6 +863,7 @@ export function CampaignWizard({
   }, [isDirty, savedCampaignId]);
 
   const step = WIZARD_STEPS[stepIndex];
+  const previewCampaignId = savedCampaignId ?? draft.id;
   const totalProbability = useMemo(
     () =>
       draft.prizes.reduce(
@@ -1050,7 +1050,7 @@ export function CampaignWizard({
         );
       const campaignId = payload?.campaign?.campaign?.id ?? payload?.campaign?.id;
       if (campaignId) {
-        const savedDraft = { ...draft, isActive: targetIsActive };
+        const savedDraft = { ...draft, id: campaignId, isActive: targetIsActive };
         setDraft(savedDraft);
         setLastSavedDraftSnapshot(JSON.stringify(savedDraft));
         window.dispatchEvent(new Event("campaigns-updated"));
@@ -1081,116 +1081,6 @@ export function CampaignWizard({
       {draft.logoMode !== "none" ? <div className="mt-3 grid gap-3 sm:grid-cols-2"><label className="block text-sm"><span className="mb-2 block font-semibold">Taille du logo <output className="float-right text-aubergine">{draft.presentation.logo.sizePercent}%</output></span><input type="range" min={0} max={200} value={draft.presentation.logo.sizePercent} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, logo: { ...draft.presentation.logo, sizePercent: Number(event.target.value) } } })} className="w-full cursor-pointer accent-aubergine" /></label><label className="block text-sm"><span className="mb-2 block font-semibold">Espacement sous le logo (px)</span><input type="number" min={0} max={120} value={draft.presentation.logo.marginBottomPx} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, logo: { ...draft.presentation.logo, marginBottomPx: Number(event.target.value || 0) } } })} className="w-full rounded-[12px] border border-[#dbe3ed] px-3 py-3" /></label></div> : null}
     </section>
   );
-
-  if (savedCampaignId) {
-    return (
-      <div className="mx-auto max-w-4xl">
-        <section className="okado-card overflow-hidden p-6 sm:p-10">
-          <div className="mx-auto max-w-2xl text-center">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#e9f8ec] text-[#18864b]">
-              <Check className="h-7 w-7" aria-hidden="true" />
-            </div>
-            <p className="mt-5 text-xs font-semibold uppercase tracking-[0.18em] text-[#7a8498]">
-              Jeu prêt
-            </p>
-            <h1 className="okado-page-title mt-3">Votre jeu est enregistré.</h1>
-            <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-[#626d82]">
-              Vérifiez une dernière fois le parcours, puis choisissez le support le plus adapté pour le diffuser à vos clients.
-            </p>
-          </div>
-
-          <div className="mt-8 grid gap-6 border-t border-[#e5eaf2] pt-6 lg:grid-cols-[minmax(0,1fr)_220px] lg:items-center lg:gap-10">
-            <div className="min-w-0">
-              <p className="okado-label">Prochaine étape</p>
-              <h2 className="mt-2 text-xl font-semibold tracking-[-0.02em] text-[#0f1728]">
-                Testez le parcours de votre jeu
-              </h2>
-              <p className="mt-2 max-w-xl text-sm leading-6 text-[#626d82]">
-                La prévisualisation simule une participation complète, sans modifier vos stocks ni vos indicateurs.
-              </p>
-
-              <div className="mt-5 grid gap-3 sm:grid-cols-3">
-                <Link
-                  href={`/campaign/${savedCampaignId}?preview=1`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="okado-filled-action !h-11 gap-2 px-4 text-sm"
-                >
-                  <Eye className="h-4 w-4" aria-hidden="true" />
-                  Prévisualiser
-                </Link>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button
-                      type="button"
-                      className="okado-secondary-action !h-11 w-full gap-2 px-4 text-sm"
-                      aria-label="Options du QR code"
-                    >
-                      <QrCode className="h-4 w-4" aria-hidden="true" />
-                      <span>QR code</span>
-                      <ChevronDown className="h-4 w-4" aria-hidden="true" />
-                    </button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent
-                    align="center"
-                    className="w-[250px] rounded-[var(--okado-radius-control)] border-border p-1.5 shadow-[var(--shadow-product-card)]"
-                  >
-                    <DropdownMenuItem asChild className="cursor-pointer gap-2 rounded-[10px] px-3 py-2.5">
-                      <a href={`/api/campaigns/${savedCampaignId}/qr`} download title="Télécharger le QR code de production">
-                        <Download className="h-4 w-4" aria-hidden="true" />
-                        <span>Télécharger le QR code</span>
-                      </a>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="cursor-pointer gap-2 rounded-[10px] px-3 py-2.5" onSelect={() => setQrPreviewOpen(true)}>
-                      <Eye className="h-4 w-4" aria-hidden="true" />
-                      <span>QR de prévisualisation</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-                <Link
-                  href={`/campaigns/${savedCampaignId}/poster`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="okado-secondary-action !h-11 gap-2 px-4 text-sm"
-                >
-                  <ImageIcon className="h-4 w-4" aria-hidden="true" />
-                  Affiche
-                </Link>
-              </div>
-
-              <Link
-                href={`/campaigns/${savedCampaignId}/edit/guided`}
-                prefetch={false}
-                className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-[#53627a] underline-offset-4 transition hover:text-[#0f1f3d] hover:underline"
-              >
-                <Pencil className="h-4 w-4" aria-hidden="true" />
-                Modifier le jeu
-              </Link>
-            </div>
-
-            <div className="mx-auto hidden w-fit rounded-[16px] border border-[#dbe4f0] bg-[#fbfcff] p-4 shadow-[var(--shadow-product-card)] lg:block">
-              <p className="mb-3 text-center text-xs font-semibold uppercase tracking-[0.14em] text-[#8993a6]">
-                QR de diffusion
-              </p>
-              <Image
-                src={`/api/campaigns/${savedCampaignId}/qr?inline=1`}
-                alt="QR code de diffusion du jeu"
-                width={176}
-                height={176}
-                unoptimized
-                className="h-44 w-44"
-              />
-            </div>
-          </div>
-        </section>
-        <CampaignPreviewQrDialog
-          open={qrPreviewOpen}
-          campaignId={savedCampaignId}
-          onClose={() => setQrPreviewOpen(false)}
-        />
-      </div>
-    );
-  }
 
   return (
     <div className="okado-wizard space-y-6 pb-10">
@@ -1284,8 +1174,8 @@ export function CampaignWizard({
           <nav className="mt-4 space-y-1" aria-label="Étapes de création">
             {WIZARD_STEPS.map((item, index) => {
               const active = index === stepIndex;
-              const canAccessStep = isEditing || index <= furthestStepIndex;
-              const complete = !isEditing && index < stepIndex;
+              const canAccessStep = isEditing || Boolean(draft.id) || index <= furthestStepIndex;
+              const complete = !isEditing && !draft.id && index < stepIndex;
               const visited = canAccessStep;
               return (
                 <button
@@ -2607,8 +2497,19 @@ export function CampaignWizard({
       {draft.id ? (
         <CampaignPreviewQrDialog
           open={qrPreviewOpen}
-          campaignId={draft.id}
+          campaignId={previewCampaignId ?? draft.id}
           onClose={() => setQrPreviewOpen(false)}
+        />
+      ) : null}
+      {savedCampaignId ? (
+        <CampaignSavedDialog
+          open
+          campaignId={savedCampaignId}
+          onClose={() => setSavedCampaignId(null)}
+          onPreviewQr={() => {
+            setSavedCampaignId(null);
+            setQrPreviewOpen(true);
+          }}
         />
       ) : null}
     </div>

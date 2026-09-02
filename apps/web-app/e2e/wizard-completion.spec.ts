@@ -19,15 +19,19 @@ test.describe("Confirmation du Wizard", () => {
       timeout: 15_000,
     });
 
+    const savedDialog = page.getByRole("dialog", { name: "Votre jeu est enregistré.", exact: true });
     const completionActions = [
-      page.getByRole("link", { name: "Prévisualiser", exact: true }),
-      page.getByRole("button", { name: "Options du QR code", exact: true }),
-      page.getByRole("link", { name: "Affiche", exact: true }),
+      savedDialog.getByRole("link", { name: "Prévisualiser", exact: true }),
+      savedDialog.getByRole("button", { name: "QR de test", exact: true }),
+      savedDialog.getByRole("link", { name: "Affiche", exact: true }),
     ];
     await Promise.all(completionActions.map((action) => expect(action).toBeVisible()));
-    await expect(page.getByRole("link", { name: "Modifier le jeu", exact: true })).toBeVisible();
     await expect(
-      page.getByRole("link", { name: "Modifier l'e-mail de gain", exact: true }),
+      page.getByRole("dialog", { name: "Votre jeu est enregistré.", exact: true })
+        .getByRole("button", { name: "Modifier le jeu", exact: true }),
+    ).toBeVisible();
+    await expect(
+      savedDialog.getByRole("link", { name: "Modifier l'e-mail de gain", exact: true }),
     ).toHaveCount(0);
 
     const actionBoxes = await Promise.all(
