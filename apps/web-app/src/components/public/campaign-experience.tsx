@@ -14,6 +14,8 @@ import {
 import { useEffect, useMemo, useState } from "react";
 
 import { BrandMark } from "@/components/brand-mark";
+import { CocoricoPromoText } from "@/components/public/cocorico-promo-text";
+import { CocoricoWheel } from "@/components/public/cocorico-wheel";
 import { ImmersiveWheel } from "@/components/public/immersive-wheel";
 import { ImmersiveScratchTicket } from "@/components/public/immersive-scratch-ticket";
 import { ScratchGame } from "@/components/public/scratch-game";
@@ -478,6 +480,7 @@ export function CampaignExperience({
   const expiryDate = formatDate(drawResult?.lead.rewardExpiresAt);
   const pageTemplate = campaign.presentation.layout.templateId ?? "classic";
   const isRestaurantPopTemplate = pageTemplate === "restaurant-pop";
+  const isCocoricoTemplate = pageTemplate === "cocorico-wheel";
   const isCosmicTemplate = pageTemplate === "cosmic-orbit";
   const isSunburstTemplate = pageTemplate === "sunburst-festival";
   const isImmersiveTemplate = isCosmicTemplate || isSunburstTemplate;
@@ -501,7 +504,7 @@ export function CampaignExperience({
     : campaign.presentation.wheel.loseColor ?? campaign.accent.signal;
   const secondaryColor = campaign.presentation.wheel.winColor ?? "#073b72";
   const headingTextColor =
-    isCosmicTemplate
+    isCosmicTemplate || isCocoricoTemplate
       ? "#f8fbff"
       : campaign.gameType === "scratch" &&
           campaign.presentation.heading.textColor.toLowerCase() === "#1f2937"
@@ -525,7 +528,7 @@ export function CampaignExperience({
       : campaign.presentation.heading.align === "right"
         ? "text-right"
         : "text-center";
-  const headingFontClass = textFontClass(campaign.presentation.heading.fontFamily);
+  const headingFontClass = isCocoricoTemplate ? "font-fredoka" : textFontClass(campaign.presentation.heading.fontFamily);
   const showBottomState =
     !isImmersiveScratchTemplate &&
     ((stage === "idle" && campaign.gameType !== "wheel") ||
@@ -816,6 +819,8 @@ export function CampaignExperience({
           ? `radial-gradient(circle at 12% 10%, ${withHexAlpha(primaryColor, "33")} 0 12%, transparent 13%), radial-gradient(circle at 94% 18%, ${withHexAlpha(secondaryColor, "38")} 0 14%, transparent 15%), linear-gradient(180deg, #fffdf5 0%, #fff8e8 56%, #fff2ce 100%)`
         : isRestaurantPopTemplate
         ? `radial-gradient(circle at -10% -8%, ${withHexAlpha(primaryColor, "f2")} 0 18%, transparent 19%), radial-gradient(circle at 110% 0%, ${withHexAlpha(secondaryColor, "f2")} 0 13%, transparent 14%), radial-gradient(circle at 0% 80%, ${withHexAlpha(primaryColor, "20")} 0 20%, transparent 21%), radial-gradient(circle at 100% 78%, ${withHexAlpha(secondaryColor, "40")} 0 18%, transparent 19%), linear-gradient(180deg, #fff2dd 0%, #fffaf1 46%, #fff4e5 100%)`
+        : isCocoricoTemplate
+        ? "radial-gradient(circle at 12% 12%, rgba(66,150,220,0.9) 0 10%, transparent 11%), radial-gradient(circle at 90% 18%, rgba(5,55,111,0.5) 0 16%, transparent 17%), linear-gradient(160deg, #07549b 0%, #0b67b7 48%, #063d78 100%)"
         : `radial-gradient(circle at 50% 50%, ${withHexAlpha(primaryColor, "33")}, transparent 50%), linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.08))`;
   const restaurantPopHeadingLines = buildRestaurantPopHeadingLines(safeSubtitle);
 
@@ -838,9 +843,12 @@ export function CampaignExperience({
   return (
     <div
       className="okado-public-experience relative min-h-screen overflow-hidden"
+      data-template-id={pageTemplate}
       style={{
         backgroundColor: campaign.presentation.background.color,
-        backgroundImage: backgroundStyle,
+        backgroundImage: isCocoricoTemplate
+          ? "linear-gradient(135deg, #2563eb, #3b82f6)"
+          : backgroundStyle,
         backgroundPosition: "center",
         backgroundSize: "cover",
       }}
@@ -895,13 +903,9 @@ export function CampaignExperience({
 
         {!isImmersiveScratchTemplate ? (
         <div className={headingAlignmentClass}>
-          <h1
+          {isCocoricoTemplate ? <CocoricoPromoText text={safeSubtitle.trim() || DEFAULT_SCRATCH_SUBTITLE} /> : <h1
             className={`${headingFontClass} line-clamp-3 whitespace-pre-line ${isRestaurantPopTemplate ? "tracking-[0.038em] drop-shadow-[0_5px_0_rgba(0,0,0,0.08)]" : ""} pb-[25px] leading-[1] text-[#151826]`}
-            style={{
-              color: headingTextColor,
-              fontSize: headingFontSize,
-              fontWeight: campaign.presentation.heading.fontWeight ?? 600,
-            }}
+            style={{ color: headingTextColor, fontSize: headingFontSize, fontWeight: campaign.presentation.heading.fontWeight ?? 600 }}
           >
             {isRestaurantPopTemplate
               ? restaurantPopHeadingLines.map((line, lineIndex) => (
@@ -921,17 +925,31 @@ export function CampaignExperience({
                   </span>
                 ))
               : safeSubtitle.trim() || DEFAULT_SCRATCH_SUBTITLE}
-          </h1>
+          </h1>}
         </div>
         ) : null}
 
         {campaign.gameType === "wheel" ? (
           <div
-            className="relative left-1/2 mt-[40px] min-h-0 w-screen -translate-x-1/2 flex-1 overflow-visible sm:mt-20 lg:mt-8"
-            style={{ minHeight: "min(52vh, 520px)" }}
+            className={`relative left-1/2 min-h-0 w-screen -translate-x-1/2 flex-1 overflow-visible ${isCocoricoTemplate ? "mt-2" : "mt-[40px] sm:mt-20 lg:mt-8"}`}
+            style={{ minHeight: "min(52vh, 520px)", marginTop: isCocoricoTemplate ? "8px" : undefined }}
           >
             <div className="absolute inset-0 overflow-visible">
-              {isImmersiveTemplate ? (
+              {isCocoricoTemplate ? (
+                <CocoricoWheel
+                  key={`${campaign.id}-${drawSession?.id ?? "idle"}`}
+                  segments={segments}
+                  winningSegmentId={winningSegmentId}
+                  canSpin={stage === "ready"}
+                  buttonEnabled={stage === "idle" || stage === "ready"}
+                  buttonLabel="JOUER"
+                  framing="public"
+                  onButtonClick={() => void openActionAndTrack()}
+                  autoSpinKey={autoSpinKey}
+                  onSpinEnd={() => void handleGameReveal()}
+                  buttonStyle={{ textColor: campaign.presentation.button.textColor }}
+                />
+              ) : isImmersiveTemplate ? (
                 <ImmersiveWheel
                   key={`${campaign.id}-${drawSession?.id ?? "idle"}`}
                   accent={campaign.accent}

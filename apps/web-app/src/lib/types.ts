@@ -28,6 +28,7 @@ export type PosterTemplateId = "classic-wheel" | "soft-gradient-wheel" | "terrac
 export type GamePageTemplateId =
   | "classic"
   | "restaurant-pop"
+  | "cocorico-wheel"
   | "cosmic-orbit"
   | "sunburst-festival"
   | "scratch-vault"

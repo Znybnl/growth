@@ -1965,6 +1965,11 @@ export function CampaignWizard({
                       text: "Événementiel et contrasté",
                     },
                     {
+                      id: "cocorico-wheel",
+                      label: "Cocorico",
+                      text: "Bleu, blanc et pictogrammes cadeaux",
+                    },
+                    {
                       id: "cosmic-orbit",
                       label: "Orbit néon",
                       text: "Immersif et nocturne",
