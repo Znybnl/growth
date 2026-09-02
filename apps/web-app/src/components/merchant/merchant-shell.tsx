@@ -372,7 +372,7 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
           </div>
         </header>
 
-        <main aria-busy={locationChangeTarget !== null && locationChangeTarget !== activeLocationId} className="min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden px-3 py-5 lg:px-6">
+        <main aria-busy={locationChangeTarget !== null && locationChangeTarget !== activeLocationId} className="min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden px-3 py-6 lg:px-6">
           {locationChangeTarget !== null && locationChangeTarget !== activeLocationId ? <MerchantPageSkeleton /> : children}
         </main>
       </div>

@@ -282,6 +282,18 @@ select {
   background: var(--color-soft-white);
 }
 
+/* Page-level sections need a clear rhythm. Keep table rows and form fields
+   dense, while separating the main product blocks with deliberate whitespace. */
+.okado-workspace-shell main > :where(.space-y-4, .space-y-5, .space-y-6) > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 2rem;
+}
+
+@media (max-width: 767px) {
+  .okado-workspace-shell main > :where(.space-y-4, .space-y-5, .space-y-6) > :not([hidden]) ~ :not([hidden]) {
+    margin-top: 1.5rem;
+  }
+}
+
 .okado-page-header {
   display: flex;
   align-items: flex-end;
