@@ -639,6 +639,62 @@ select {
   outline: none;
 }
 
+/* Editor controls use the SaaS scale; the live game preview opts out with
+   .okado-preview-cta so template-specific shapes remain untouched. */
+.okado-workspace-shell :where(.okado-campaign-editor, .okado-wizard, .okado-poster-editor, .okado-editor-page) :where(
+    button:not(.okado-preview-cta)[class~="rounded-[18px]"],
+    button:not(.okado-preview-cta)[class~="rounded-[20px]"],
+    button:not(.okado-preview-cta)[class~="rounded-[22px]"],
+    button:not(.okado-preview-cta)[class~="rounded-[24px]"]
+  ) {
+  border-radius: var(--okado-radius-button) !important;
+}
+
+.okado-workspace-shell :where(.okado-campaign-editor, .okado-wizard, .okado-poster-editor, .okado-editor-page) :where(
+    label[class~="rounded-[18px]"],
+    label[class~="rounded-[20px]"],
+    label[class~="rounded-[22px]"],
+    label[class~="rounded-[24px]"]
+  ) {
+  border-radius: var(--okado-radius-control) !important;
+}
+
+.okado-workspace-shell :where(.okado-campaign-editor, .okado-wizard, .okado-poster-editor, .okado-editor-page) :where(
+    [class~="border-[#d7e0ed]"],
+    [class~="border-[#dbe4f0]"],
+    [class~="border-[#dbe3ed]"],
+    [class~="border-[#e1e8f2]"],
+    [class~="border-[#cfd9ea]"]
+  ) {
+  border-color: var(--okado-border-control) !important;
+}
+
+.okado-workspace-shell :where(.okado-campaign-editor, .okado-wizard, .okado-poster-editor, .okado-editor-page) :where(
+    [class~="bg-[#f7f9fc]"],
+    [class~="bg-[#f9fbfd]"],
+    [class~="bg-[#f8fafc]"]
+  ) {
+  background-color: var(--okado-surface-page) !important;
+}
+
+.okado-workspace-shell :where(.okado-campaign-editor, .okado-wizard, .okado-poster-editor, .okado-editor-page) :where(
+    [class~="text-[#182033]"],
+    [class~="text-[#111827]"],
+    [class~="text-[#526078]"],
+    [class~="text-[#64748b]"],
+    [class~="text-[#7b8496]"]
+  ) {
+  color: var(--okado-text-primary) !important;
+}
+
+.okado-workspace-shell :where(.okado-campaign-editor, .okado-wizard, .okado-poster-editor, .okado-editor-page) :where([class~="hover:bg-[#f7f9fc]"]):hover {
+  background-color: var(--okado-surface-subtle) !important;
+}
+
+.okado-workspace-shell :where(.okado-campaign-editor, .okado-wizard, .okado-poster-editor, .okado-editor-page) :where([class~="hover:border-[#b8c5da]"], [class~="hover:border-[#b8c8e4]"]):hover {
+  border-color: var(--color-aubergine) !important;
+}
+
 .okado-workspace-shell :where(.okado-campaign-editor, .okado-wizard, .okado-poster-editor, .okado-editor-page) :where(section, article, details) {
   border-color: color-mix(in srgb, var(--color-lavender-mist) 74%, var(--color-fog)) !important;
 }

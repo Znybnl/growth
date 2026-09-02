@@ -1071,7 +1071,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
         {preview.gameType !== "wheel" && !isImmersiveScratchTemplate ? (
           <button
             type="button"
-            className={`mx-auto block w-full max-w-[360px] rounded-[24px] border font-semibold ${preview.previewCtaClass}`}
+            className={`okado-preview-cta mx-auto block w-full max-w-[360px] rounded-[24px] border font-semibold ${preview.previewCtaClass}`}
             style={{
               marginTop: `${scalePreviewValue(preview.blockSpacingPx)}px`,
               backgroundColor: preview.buttonStyle.backgroundColor,
