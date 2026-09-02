@@ -45,7 +45,7 @@ export function ValidationDialog({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[70] flex items-end justify-center bg-deep-plum/55 px-4 pb-4 pt-10 backdrop-blur-[6px] sm:items-center sm:p-6"
+      className="okado-dialog-overlay"
       role="presentation"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onClose();
@@ -56,20 +56,20 @@ export function ValidationDialog({
         aria-modal="true"
         aria-labelledby="validation-dialog-title"
         aria-describedby={error ? "validation-dialog-description validation-dialog-error" : "validation-dialog-description"}
-        className="w-full max-w-[420px] rounded-[32px] border border-lavender-mist bg-white p-6 text-carbon shadow-[0_0_32px_rgba(0,0,0,0.1)]"
+        className="okado-dialog-surface"
       >
         <div
           aria-hidden="true"
-          className={`mx-auto flex h-16 w-16 items-center justify-center rounded-full text-3xl ${
+          className={`okado-dialog-icon mx-auto text-2xl ${
             tone === "error" ? "bg-[#fff1f2] text-[#be123c]" : "bg-purple-haze text-aubergine"
           }`}
         >
           {tone === "error" ? "!" : "✓"}
         </div>
-        <h2 id="validation-dialog-title" className="mt-5 text-center text-2xl font-semibold text-carbon">
+        <h2 id="validation-dialog-title" className="okado-dialog-title text-center">
           {title}
         </h2>
-        <p id="validation-dialog-description" className="mt-3 text-center text-sm leading-7 text-ash">
+        <p id="validation-dialog-description" className="okado-dialog-description text-center">
           {description}
         </p>
         {error ? (

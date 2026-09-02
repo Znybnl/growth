@@ -1037,6 +1037,85 @@ button:disabled,
   background: var(--color-sky-wash);
 }
 
+/* Shared confirmation dialog language: one quiet surface, one primary action,
+   and a consistent control baseline for every secondary action. */
+.okado-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: color-mix(in srgb, var(--color-deep-plum) 55%, transparent);
+  padding: 2.5rem 1rem 1rem;
+  backdrop-filter: blur(6px);
+}
+
+.okado-dialog-surface {
+  width: 100%;
+  max-width: 30rem;
+  border: 1px solid var(--color-lavender-mist);
+  border-radius: var(--okado-radius-modal);
+  background: var(--color-pure-white);
+  padding: 1.5rem;
+  color: var(--color-carbon);
+  box-shadow: var(--shadow-product-card);
+}
+
+.okado-dialog-dismiss {
+  display: inline-flex;
+  height: 2.5rem;
+  width: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid var(--color-fog);
+  border-radius: var(--okado-radius-button);
+  color: var(--color-carbon);
+  transition: border-color 160ms ease, background-color 160ms ease;
+}
+
+.okado-dialog-dismiss:hover {
+  border-color: var(--color-lavender-mist);
+  background: var(--color-purple-haze);
+}
+
+.okado-dialog-icon {
+  display: flex;
+  height: 3rem;
+  width: 3rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--okado-radius-pill);
+}
+
+.okado-dialog-title {
+  margin-top: 1.25rem;
+  color: var(--color-carbon);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.okado-dialog-description {
+  margin-top: 0.75rem;
+  color: var(--color-charcoal);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+@media (min-width: 640px) {
+  .okado-dialog-overlay {
+    align-items: center;
+    padding: 1.5rem;
+  }
+
+  .okado-dialog-surface {
+    padding: 2rem;
+  }
+}
+
 .okado-primary-action:disabled,
 .okado-filled-action:disabled,
 .okado-secondary-action:disabled {
