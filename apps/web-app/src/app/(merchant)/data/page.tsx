@@ -224,7 +224,7 @@ function LeadsExportSection({
                 <td data-label="E-mail gain" className="w-[150px] max-w-[150px] border-b border-[#eef2f7] px-3 py-4 align-top text-slate">
                   <div className="w-[140px] max-w-[140px] overflow-hidden">
                     <span
-                      className={`inline-flex max-w-full truncate rounded-full px-3 py-1.5 text-xs font-semibold ${rewardEmailTone(lead.emailDeliveryStatus)}`}
+                      className={`inline-flex max-w-full truncate rounded-[4px] px-3 py-1.5 text-xs font-semibold ${rewardEmailTone(lead.emailDeliveryStatus)}`}
                       title={rewardEmailStatusLabel(lead.emailDeliveryStatus)}
                     >
                       {rewardEmailStatusLabel(lead.emailDeliveryStatus)}

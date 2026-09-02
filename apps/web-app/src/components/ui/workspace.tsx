@@ -122,7 +122,7 @@ export function ResponsiveTable({
   className?: string;
 }) {
   return (
-    <div className={cn("okado-responsive-table", className)}>
+    <div className={cn("okado-responsive-table okado-table-frame", className)}>
       <div className="okado-responsive-table__desktop">{children}</div>
       {mobile ? <div className="okado-responsive-table__mobile">{mobile}</div> : null}
     </div>

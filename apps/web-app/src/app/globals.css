@@ -398,6 +398,13 @@ select {
   min-width: 0;
 }
 
+.okado-table-frame {
+  overflow: hidden;
+  border: 1px solid var(--color-lavender-mist);
+  border-radius: 8px;
+  background: var(--color-pure-white);
+}
+
 .okado-responsive-table__desktop {
   overflow-x: auto;
 }
@@ -417,33 +424,58 @@ select {
 }
 
 .okado-responsive-table :where(tbody tr:hover) {
-  background: color-mix(in srgb, var(--color-purple-haze) 48%, transparent);
+  background: var(--color-purple-haze);
+}
+
+.okado-data-table {
+  color: var(--color-charcoal);
+  font-size: 0.875rem;
+}
+
+.okado-data-table :where(th) {
+  height: 2.75rem;
+  border-bottom: 1px solid var(--color-lavender-mist);
+  color: var(--color-charcoal);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .okado-data-table :where(tbody tr) {
-  border-top: 1px solid var(--color-fog);
+  border-top: 0;
+  transition: background-color 160ms ease;
 }
 
-@media (max-width: 767px) {
-  .okado-data-table.okado-admin-table :where(td:nth-child(1))::before { content: "Utilisateur"; }
-  .okado-data-table.okado-admin-table :where(td:nth-child(2))::before { content: "Commerce"; }
-  .okado-data-table.okado-admin-table :where(td:nth-child(3))::before { content: "Inscription"; }
-  .okado-data-table.okado-admin-table :where(td:nth-child(4))::before { content: "Parcours"; }
-  .okado-data-table.okado-admin-table :where(td:nth-child(5))::before { content: "Abonnement"; }
-  .okado-data-table.okado-admin-table :where(td:nth-child(6))::before { content: "Activité"; }
-  .okado-data-table.okado-admin-table :where(td:nth-child(7))::before { content: "Alertes"; }
-  .okado-data-table.okado-affiliate-table :where(td:nth-child(1))::before { content: "Marchand / affilié"; }
-  .okado-data-table.okado-affiliate-table :where(td:nth-child(2))::before { content: "Code / filleul"; }
-  .okado-data-table.okado-affiliate-table :where(td:nth-child(3))::before { content: "Filleuls / facture"; }
-  .okado-data-table.okado-affiliate-table :where(td:nth-child(4))::before { content: "Commissions / montant"; }
-  .okado-data-table.okado-affiliate-table :where(td:nth-child(5))::before { content: "Réglages"; }
-  .okado-data-table.okado-affiliate-table :where(td:nth-child(6))::before { content: "Commission"; }
-  .okado-data-table.okado-affiliate-table :where(td:nth-child(7))::before { content: "Statut"; }
-  .okado-data-table.okado-support-table :where(td:nth-child(1))::before { content: "Date"; }
-  .okado-data-table.okado-support-table :where(td:nth-child(2))::before { content: "Événement"; }
-  .okado-data-table.okado-support-table :where(td:nth-child(3))::before { content: "Niveau"; }
-  .okado-data-table.okado-support-table :where(td:nth-child(4))::before { content: "Contexte"; }
-  .okado-data-table.okado-support-table :where(td:nth-child(5))::before { content: "Détail"; }
+.okado-data-table :where(tbody td) {
+  border-bottom: 1px solid var(--color-fog);
+  line-height: 1.45;
+}
+
+.okado-data-table :where(tbody tr:last-child td) {
+  border-bottom: 0;
+}
+
+.okado-data-table :where(th[data-align="right"], td[data-align="right"]) {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.okado-table-frame .okado-table-row {
+  min-height: 3.5rem;
+  border-top: 1px solid var(--color-fog);
+  transition: background-color 160ms ease;
+}
+
+.okado-table-frame .okado-table-row:hover {
+  background: var(--color-purple-haze);
+}
+
+.okado-table-frame .okado-table-row :where([data-align="right"]) {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 
 @media (max-width: 767px) {
@@ -457,19 +489,24 @@ select {
   }
 
   .okado-data-table :where(tr) {
-    border: 1px solid var(--color-fog);
-    border-radius: 8px;
-    background: var(--color-linen-canvas);
-    margin-bottom: 0.75rem;
-    padding: 0.5rem;
+    border: 0;
+    border-bottom: 1px solid var(--color-fog);
+    border-radius: 0;
+    background: var(--color-pure-white);
+    margin-bottom: 0;
+    padding: 0.25rem 0;
+  }
+
+  .okado-data-table :where(tr:last-child) {
+    border-bottom: 0;
   }
 
   .okado-data-table :where(td) {
     display: grid;
-    grid-template-columns: minmax(6.5rem, 0.6fr) minmax(0, 1fr);
-    gap: 0.75rem;
+    grid-template-columns: minmax(7rem, 0.55fr) minmax(0, 1fr);
+    gap: 1rem;
     border: 0;
-    padding: 0.625rem 0.5rem;
+    padding: 0.7rem 1rem;
     text-align: left;
   }
 
@@ -480,6 +517,14 @@ select {
     font-weight: 600;
     letter-spacing: 0.06em;
     text-transform: uppercase;
+  }
+
+  .okado-data-table :where(td[data-align="right"]) {
+    text-align: left;
+  }
+
+  .okado-table-frame .okado-table-row {
+    min-height: 0;
   }
 }
 
@@ -514,6 +559,30 @@ select {
   .okado-responsive-table__mobile {
     display: block;
   }
+}
+
+/* Keep the mobile labels visible for legacy tables that do not carry an
+   explicit data-label on every cell. */
+@media (max-width: 767px) {
+  .okado-data-table.okado-admin-table :where(td:nth-child(1))::before { content: "Utilisateur"; }
+  .okado-data-table.okado-admin-table :where(td:nth-child(2))::before { content: "Commerce"; }
+  .okado-data-table.okado-admin-table :where(td:nth-child(3))::before { content: "Inscription"; }
+  .okado-data-table.okado-admin-table :where(td:nth-child(4))::before { content: "Parcours"; }
+  .okado-data-table.okado-admin-table :where(td:nth-child(5))::before { content: "Abonnement"; }
+  .okado-data-table.okado-admin-table :where(td:nth-child(6))::before { content: "Activité"; }
+  .okado-data-table.okado-admin-table :where(td:nth-child(7))::before { content: "Alertes"; }
+  .okado-data-table.okado-affiliate-table :where(td:nth-child(1))::before { content: "Marchand / affilié"; }
+  .okado-data-table.okado-affiliate-table :where(td:nth-child(2))::before { content: "Code / filleul"; }
+  .okado-data-table.okado-affiliate-table :where(td:nth-child(3))::before { content: "Filleuls / facture"; }
+  .okado-data-table.okado-affiliate-table :where(td:nth-child(4))::before { content: "Commissions / montant"; }
+  .okado-data-table.okado-affiliate-table :where(td:nth-child(5))::before { content: "Réglages"; }
+  .okado-data-table.okado-affiliate-table :where(td:nth-child(6))::before { content: "Commission"; }
+  .okado-data-table.okado-affiliate-table :where(td:nth-child(7))::before { content: "Statut"; }
+  .okado-data-table.okado-support-table :where(td:nth-child(1))::before { content: "Date"; }
+  .okado-data-table.okado-support-table :where(td:nth-child(2))::before { content: "Événement"; }
+  .okado-data-table.okado-support-table :where(td:nth-child(3))::before { content: "Niveau"; }
+  .okado-data-table.okado-support-table :where(td:nth-child(4))::before { content: "Contexte"; }
+  .okado-data-table.okado-support-table :where(td:nth-child(5))::before { content: "Détail"; }
 }
 
 .okado-workspace-shell :where(.okado-card, .okado-compact-card) {
@@ -853,13 +922,74 @@ button:disabled,
 }
 
 .okado-table-header {
-  border-radius: var(--okado-radius-control);
-  background: var(--color-sky-wash);
-  color: var(--color-ash);
+  border-radius: 0;
+  background: var(--color-purple-haze);
+  color: var(--color-charcoal);
   font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
+}
+
+.okado-table-frame .okado-table-header {
+  border-radius: 0;
+}
+
+.okado-mobile-table-list {
+  background: var(--color-pure-white);
+}
+
+.okado-mobile-table-row {
+  border-bottom: 1px solid var(--color-fog);
+  padding: 1rem;
+}
+
+.okado-mobile-table-row:last-child {
+  border-bottom: 0;
+}
+
+.okado-mobile-table-row:hover {
+  background: var(--color-purple-haze);
+}
+
+.okado-mobile-table-stat {
+  border-top: 1px solid var(--color-fog);
+  padding-top: 0.75rem;
+}
+
+.okado-mobile-table-stat-label {
+  color: var(--color-mid-gray);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.okado-mobile-table-stat-value {
+  color: var(--color-carbon);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.okado-row-action-trigger {
+  opacity: 0.72;
+  transition: opacity 160ms ease, background-color 160ms ease;
+}
+
+.okado-row-action-trigger:hover,
+.okado-row-action-trigger:focus-visible {
+  opacity: 1;
+}
+
+@media (hover: hover) and (min-width: 768px) {
+  .okado-responsive-table tbody tr .okado-row-action-trigger {
+    opacity: 0;
+  }
+
+  .okado-responsive-table tbody tr:hover .okado-row-action-trigger,
+  .okado-responsive-table tbody tr:focus-within .okado-row-action-trigger {
+    opacity: 1;
+  }
 }
 
 .okado-card :where(input:not([type="color"]), textarea, select),

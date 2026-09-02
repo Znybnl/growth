@@ -27,7 +27,7 @@ export function RowActionsMenu({ actions }: { actions: RowAction[] }) {
           type="button"
           variant="outline"
           size="icon"
-          className="h-9 w-9 rounded-[4px] border-border bg-white text-carbon hover:bg-purple-haze"
+          className="okado-row-action-trigger h-9 w-9 rounded-[4px] border-border bg-white text-carbon hover:bg-purple-haze"
           aria-label="Ouvrir les actions de la ligne"
         >
           <MoreVertical className="h-4 w-4" aria-hidden="true" />

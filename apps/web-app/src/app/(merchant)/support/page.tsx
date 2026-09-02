@@ -311,7 +311,7 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
                 </div>
               ))
             ) : (
-              <p className="rounded-[8px] border border-dashed border-[#dbe4f0] bg-[#fbfcfe] px-4 py-8 text-sm text-[#64748b]">
+              <p className="px-4 py-8 text-sm text-ash">
                 {hasFilter
                   ? "Aucun e-mail ne correspond aux filtres."
                   : "Aucun e-mail en échec sur les dernières campagnes."}

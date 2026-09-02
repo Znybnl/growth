@@ -139,8 +139,8 @@ export default async function AffiliatesPage({ searchParams }: AffiliatesPagePro
               <tr>
                 <th className="px-5 py-4">Marchand</th>
                 <th className="px-5 py-4">Code</th>
-                <th className="px-5 py-4">Filleuls</th>
-                <th className="px-5 py-4">Commissions</th>
+                <th data-align="right" className="px-5 py-4">Filleuls</th>
+                <th data-align="right" className="px-5 py-4">Commissions</th>
                 <th className="px-5 py-4">Réglages</th>
               </tr>
             </thead>
@@ -157,8 +157,8 @@ export default async function AffiliatesPage({ searchParams }: AffiliatesPagePro
                     </p>
                   </td>
                   <td className="px-5 py-4 font-mono text-xs">{account.code}</td>
-                  <td className="px-5 py-4">{account.referralCount}</td>
-                  <td className="px-5 py-4">
+                  <td data-align="right" className="px-5 py-4">{account.referralCount}</td>
+                  <td data-align="right" className="px-5 py-4">
                     <p>En attente : {formatMoney(account.pendingCommissionCents)}</p>
                     <p className="mt-1 text-xs text-ash">
                       Payées : {formatMoney(account.paidCommissionCents)}
@@ -187,8 +187,8 @@ export default async function AffiliatesPage({ searchParams }: AffiliatesPagePro
                 <th className="px-5 py-4">Affilié</th>
                 <th className="px-5 py-4">Filleul</th>
                 <th className="px-5 py-4">Facture</th>
-                <th className="px-5 py-4">Montant HT</th>
-                <th className="px-5 py-4">Commission</th>
+                <th data-align="right" className="px-5 py-4">Montant HT</th>
+                <th data-align="right" className="px-5 py-4">Commission</th>
                 <th className="px-5 py-4">Statut</th>
                 <th className="px-5 py-4">Actions</th>
               </tr>
@@ -205,8 +205,8 @@ export default async function AffiliatesPage({ searchParams }: AffiliatesPagePro
                         {formatDate(commission.invoicePaidAt)}
                       </p>
                     </td>
-                    <td className="px-5 py-4">{formatMoney(commission.invoiceAmountCents)}</td>
-                    <td className="px-5 py-4 font-semibold">
+                    <td data-align="right" className="px-5 py-4">{formatMoney(commission.invoiceAmountCents)}</td>
+                    <td data-align="right" className="px-5 py-4 font-semibold">
                       {formatMoney(commission.commissionAmountCents)}
                     </td>
                     <td className="px-5 py-4">

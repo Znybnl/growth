@@ -47,9 +47,9 @@ export default async function CampaignsPage({
         <ResponsiveTable
           mobile={
             campaigns.length ? (
-              <div className="space-y-3">
+              <div className="okado-mobile-table-list">
                 {campaigns.map((item) => (
-                  <article key={item.campaign.id} className="rounded-[8px] border border-border bg-linen-canvas p-4">
+                  <article key={item.campaign.id} className="okado-mobile-table-row">
                     <div className="flex items-start justify-between gap-4">
                       <div className="min-w-0">
                         <p className="truncate font-semibold text-graphite">{item.campaign.title}</p>
@@ -57,16 +57,16 @@ export default async function CampaignsPage({
                       </div>
                       <StatusBadge tone={item.campaign.isActive ? "active" : "muted"}>{item.campaign.isActive ? "Active" : "Pause"}</StatusBadge>
                     </div>
-                    <div className="mt-4 grid grid-cols-2 gap-2 text-sm">
+                    <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
                       {[
                         ["Jeu", gameTypeLabel(item.campaign.gameType)],
                         ["Scans", item.kpis.scans],
                         ["Participations", item.kpis.leads],
                         ["Conversion", formatPercent(item.kpis.conversionRate)],
                       ].map(([label, value]) => (
-                        <div key={label} className="rounded-[8px] bg-white px-3 py-2.5">
-                          <p className="text-xs text-ash">{label}</p>
-                          <p className="mt-1 font-semibold text-graphite">{value}</p>
+                        <div key={label} className="okado-mobile-table-stat">
+                          <p className="okado-mobile-table-stat-label">{label}</p>
+                          <p className="mt-1 okado-mobile-table-stat-value">{value}</p>
                         </div>
                       ))}
                     </div>
@@ -80,18 +80,18 @@ export default async function CampaignsPage({
             ) : <EmptyState title="Aucune campagne trouvée" description="Modifiez votre recherche ou créez une nouvelle campagne." />
           }
         >
-          <div className="okado-table-header grid grid-cols-[1.45fr_0.7fr_0.5fr_0.5fr_0.55fr_0.75fr_0.85fr] gap-3 px-5 py-4">
+          <div className="okado-table-header grid grid-cols-[1.45fr_0.7fr_0.5fr_0.5fr_0.55fr_0.75fr_0.85fr] gap-3 px-5 py-3">
             <span>Campagne</span><span>Jeu</span><span>Scans</span><span>Participations</span><span>Conv.</span><span>Coût / participation</span><span className="sr-only">Actions</span>
           </div>
           <div className="space-y-0">
             {campaigns.length ? campaigns.map((item) => (
-              <div key={item.campaign.id} className="grid grid-cols-[1.45fr_0.7fr_0.5fr_0.5fr_0.55fr_0.75fr_auto] items-center gap-3 border-t border-fog px-5 py-5">
+              <div key={item.campaign.id} className="okado-table-row grid grid-cols-[1.45fr_0.7fr_0.5fr_0.5fr_0.55fr_0.75fr_auto] items-center gap-3 px-5 py-4">
                 <div className="flex min-w-0 items-center gap-3"><StatusBadge tone={item.campaign.isActive ? "active" : "muted"}>{item.campaign.isActive ? "Active" : "Pause"}</StatusBadge><div className="min-w-0"><p className="truncate font-semibold text-graphite">{item.campaign.title}</p><p className="truncate text-sm text-ash">{item.campaign.subtitle}</p></div></div>
                 <span className="text-slate">{gameTypeLabel(item.campaign.gameType)}</span>
-                <span className="font-semibold text-graphite">{item.kpis.scans}</span>
-                <span className="font-semibold text-graphite">{item.kpis.leads}</span>
-                <span className="font-semibold text-graphite">{formatPercent(item.kpis.conversionRate)}</span>
-                <span className="font-semibold text-graphite">{formatCurrency(item.kpis.costPerLead)}</span>
+                <span data-align="right" className="font-semibold text-graphite">{item.kpis.scans}</span>
+                <span data-align="right" className="font-semibold text-graphite">{item.kpis.leads}</span>
+                <span data-align="right" className="font-semibold text-graphite">{formatPercent(item.kpis.conversionRate)}</span>
+                <span data-align="right" className="font-semibold text-graphite">{formatCurrency(item.kpis.costPerLead)}</span>
                 <div className="flex items-center justify-end gap-2"><Link href={`/campaigns/${item.campaign.id}/edit/guided`} prefetch className="okado-primary-action okado-compact-action px-3">Modifier</Link><CampaignActionsMenu campaignId={item.campaign.id} campaignTitle={item.campaign.title} /></div>
               </div>
             )) : <EmptyState title="Aucune campagne trouvée" description="Modifiez votre recherche ou créez une nouvelle campagne." />}

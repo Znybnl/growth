@@ -152,20 +152,20 @@ export default async function DashboardPage({
               </Link>
             </div>
 
-            <div className="mt-6 hidden overflow-hidden rounded-[8px] border border-border md:block">
-              <div className="okado-table-header grid grid-cols-[minmax(0,1.5fr)_0.85fr_0.7fr_0.7fr_0.9fr_auto] items-center gap-3 px-5 py-4">
+            <div className="okado-table-frame mt-6 hidden md:block">
+              <div className="okado-table-header grid grid-cols-[minmax(0,1.5fr)_0.85fr_0.7fr_0.7fr_0.9fr_auto] items-center gap-3 px-5 py-3">
                 <span>Campagne</span>
                 <span>Mécanique</span>
-                <span>Scans</span>
-                <span>Participations</span>
-                <span>Conversion</span>
+                <span className="text-right">Scans</span>
+                <span className="text-right">Participations</span>
+                <span className="text-right">Conversion</span>
                 <span className="sr-only">Actions</span>
               </div>
 
               {filteredCampaigns.map((item) => (
                 <div
                   key={item.campaign.id}
-                  className="grid grid-cols-[minmax(0,1.5fr)_0.85fr_0.7fr_0.7fr_0.9fr_auto] items-center gap-3 border-t border-[#edf1f6] px-5 py-5 text-sm"
+                  className="okado-table-row grid grid-cols-[minmax(0,1.5fr)_0.85fr_0.7fr_0.7fr_0.9fr_auto] items-center gap-3 px-5 py-4 text-sm"
                 >
                   <div className="min-w-0">
                     <div className="flex items-center gap-3">
@@ -181,9 +181,9 @@ export default async function DashboardPage({
                     </div>
                   </div>
                   <span className="text-[#556173]">{gameTypeLabel(item.campaign.gameType)}</span>
-                  <span className="font-semibold text-graphite">{item.kpis.scans}</span>
-                  <span className="font-semibold text-graphite">{item.kpis.leads}</span>
-                  <span className="font-semibold text-graphite">
+                  <span data-align="right" className="font-semibold text-graphite">{item.kpis.scans}</span>
+                  <span data-align="right" className="font-semibold text-graphite">{item.kpis.leads}</span>
+                  <span data-align="right" className="font-semibold text-graphite">
                     {formatPercent(item.kpis.conversionRate)}
                   </span>
                   <DashboardCampaignActionsMenu campaignId={item.campaign.id} />
@@ -191,11 +191,11 @@ export default async function DashboardPage({
               ))}
             </div>
 
-            <div className="mt-6 space-y-3 md:hidden">
+            <div className="okado-table-frame mt-6 md:hidden">
               {filteredCampaigns.map((item) => (
                 <div
                   key={item.campaign.id}
-                  className="rounded-[8px] border border-border bg-linen-canvas p-4"
+                  className="okado-mobile-table-row"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex min-w-0 items-start gap-3">
@@ -214,34 +214,34 @@ export default async function DashboardPage({
                     <DashboardCampaignActionsMenu campaignId={item.campaign.id} />
                   </div>
 
-                  <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
-                    <div className="rounded-[8px] bg-white px-3 py-3">
-                      <p className="text-[11px] uppercase tracking-[0.18em] text-[#7c8597]">
+                  <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
+                    <div className="okado-mobile-table-stat">
+                      <p className="okado-mobile-table-stat-label">
                         Mécanique
                       </p>
-                      <p className="mt-2 font-medium text-[#111827]">
+                      <p className="mt-1 okado-mobile-table-stat-value">
                         {gameTypeLabel(item.campaign.gameType)}
                       </p>
                     </div>
-                    <div className="rounded-[8px] bg-white px-3 py-3">
-                      <p className="text-[11px] uppercase tracking-[0.18em] text-[#7c8597]">
+                    <div className="okado-mobile-table-stat">
+                      <p className="okado-mobile-table-stat-label">
                         Conversion
                       </p>
-                      <p className="mt-2 font-semibold text-[#111827]">
+                      <p className="mt-1 okado-mobile-table-stat-value">
                         {formatPercent(item.kpis.conversionRate)}
                       </p>
                     </div>
-                    <div className="rounded-[8px] bg-white px-3 py-3">
-                      <p className="text-[11px] uppercase tracking-[0.18em] text-[#7c8597]">
+                    <div className="okado-mobile-table-stat">
+                      <p className="okado-mobile-table-stat-label">
                         Participations
                       </p>
-                      <p className="mt-2 font-semibold text-[#111827]">{item.kpis.leads}</p>
+                      <p className="mt-1 okado-mobile-table-stat-value">{item.kpis.leads}</p>
                     </div>
-                    <div className="rounded-[8px] bg-white px-3 py-3">
-                      <p className="text-[11px] uppercase tracking-[0.18em] text-[#7c8597]">
+                    <div className="okado-mobile-table-stat">
+                      <p className="okado-mobile-table-stat-label">
                         Scans
                       </p>
-                      <p className="mt-2 font-semibold text-[#111827]">{item.kpis.scans}</p>
+                      <p className="mt-1 okado-mobile-table-stat-value">{item.kpis.scans}</p>
                     </div>
                   </div>
                 </div>
@@ -266,11 +266,11 @@ export default async function DashboardPage({
               </Link>
             </div>
 
-            <div className="mt-5 space-y-3">
+            <div className="okado-mobile-table-list mt-5">
               {recentLeads.map((lead) => (
                 <div
                   key={lead.id}
-                  className="rounded-[8px] border border-border bg-linen-canvas p-4"
+                  className="okado-mobile-table-row"
                 >
                   <div className="flex items-center justify-between gap-3">
                     <div className="min-w-0">
