@@ -204,12 +204,12 @@ export function buildCampaignLivePreviewModel(form: CampaignSetupInput, merchant
     logoUrl: form.logoUrl ?? "",
     logoText: form.logoText?.trim() || merchant.companyName,
     headingAlignmentClass,
-    headingFontClass: headingFontClassFor(form),
+    headingFontClass: templateId === "cocorico-wheel" ? "font-anton" : headingFontClassFor(form),
     headingTextColor: templateId === "cosmic-orbit" ? "#f8fbff" : templateId === "cocorico-wheel" ? "#ffffff" : form.gameType === "scratch" && form.presentation.heading.textColor.toLowerCase() === "#1f2937" ? previewAccent.ink : form.presentation.heading.textColor,
-    headingFontSizePx: form.presentation.heading.fontSizePx,
-    headingFontWeight: form.presentation.heading.fontWeight ?? 600,
+    headingFontSizePx: templateId === "cocorico-wheel" ? Math.min(form.presentation.heading.fontSizePx, 32) : form.presentation.heading.fontSizePx,
+    headingFontWeight: templateId === "cocorico-wheel" ? 900 : form.presentation.heading.fontWeight ?? 600,
     subtitle: limitCampaignSubtitleLines(form.subtitle),
-    blockSpacingPx: form.presentation.layout.blockSpacingPx,
+    blockSpacingPx: templateId === "cocorico-wheel" ? 8 : form.presentation.layout.blockSpacingPx,
     gamePageTemplateId: templateId,
     gameType: form.gameType,
     accent: previewAccent,
@@ -252,7 +252,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
   const previewWrapperClass = compact ? "h-full" : flushTop ? "" : "mt-6";
 
   return (
-    <div className={`okado-preview-surface ${previewWrapperClass}`}>
+    <div className={`okado-preview-surface ${previewWrapperClass}`} data-template-id={preview.gamePageTemplateId}>
       <div className={`mx-auto w-full overflow-hidden border border-[#ced7e6] shadow-[0_30px_70px_rgba(18,24,39,0.18)] ${previewFrameClass}`} style={{ ...preview.backgroundStyle, ...(compact ? { containerType: "inline-size" } : {}) }}>
         {showStandardHeader ? (
           <>

@@ -1499,3 +1499,14 @@ button:disabled,
     @apply font-sans;
   }
 }
+
+/* Cocorico keeps the compact 8px rhythm between its promotional headline and
+   the wheel in both the editor preview and the public game surface. */
+.okado-preview-surface[data-template-id="cocorico-wheel"] :is(h1, h3),
+.okado-public-experience[data-template-id="cocorico-wheel"] h1 {
+  padding-bottom: 8px !important;
+}
+
+.okado-preview-surface[data-template-id="cocorico-wheel"] > div > div:has(> .okado-cocorico-wheel) {
+  margin-inline: 0 !important;
+}

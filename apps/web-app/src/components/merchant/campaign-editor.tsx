@@ -888,7 +888,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
       : "min-h-[600px] max-w-[450px] rounded-[38px] px-4 pb-6 pt-8";
 
   return (
-    <div className={`okado-preview-surface ${flushTop ? "" : "mt-6"}`}>
+    <div className={`okado-preview-surface ${flushTop ? "" : "mt-6"}`} data-template-id={preview.gamePageTemplateId}>
       <div
         className={`mx-auto w-full overflow-hidden border border-[#ced7e6] shadow-[0_30px_70px_rgba(18,24,39,0.18)] ${previewFrameClass}`}
         style={preview.backgroundStyle}
@@ -1459,7 +1459,7 @@ export function buildCampaignLivePreviewModel(
       : form.presentation.heading.align === "right"
         ? "text-right"
         : "text-center";
-  const headingFontClass = textFontClass(form.presentation.heading.fontFamily);
+  const headingFontClass = templateId === "cocorico-wheel" ? "font-anton" : textFontClass(form.presentation.heading.fontFamily);
   const logoSizePercent = clampCampaignLogoSizePercent(form.presentation.logo.sizePercent);
   const logoWidthPx = Math.round(Math.max(56, Math.min(720, logoSizePercent * 3)));
   const logoTextSizePx = campaignLogoTextSizePx(logoSizePercent, form.gameType);
@@ -1496,7 +1496,7 @@ export function buildCampaignLivePreviewModel(
     },
     logoMode: form.logoMode,
     logoAlignmentClass,
-    logoBottomSpacingPx: form.presentation.logo.marginBottomPx + form.presentation.layout.blockSpacingPx,
+    logoBottomSpacingPx: form.presentation.logo.marginBottomPx + (templateId === "cocorico-wheel" ? 8 : form.presentation.layout.blockSpacingPx),
     logoWidthPx,
     logoTextSizePx,
     logoUrl: form.logoUrl ?? "",
@@ -1513,7 +1513,7 @@ export function buildCampaignLivePreviewModel(
     headingFontSizePx: form.presentation.heading.fontSizePx,
     headingFontWeight: form.presentation.heading.fontWeight ?? 600,
     subtitle: limitCampaignSubtitleLines(form.subtitle),
-    blockSpacingPx: form.presentation.layout.blockSpacingPx,
+    blockSpacingPx: templateId === "cocorico-wheel" ? 8 : form.presentation.layout.blockSpacingPx,
     gamePageTemplateId: templateId,
     gameType: form.gameType,
     accent: previewAccent,
@@ -1762,18 +1762,18 @@ export function CampaignEditor({
       logoMode: form.logoMode,
       logoAlignmentClass,
       logoBottomSpacingPx:
-        form.presentation.logo.marginBottomPx + form.presentation.layout.blockSpacingPx,
+        form.presentation.logo.marginBottomPx + (currentTemplateId === "cocorico-wheel" ? 8 : form.presentation.layout.blockSpacingPx),
       logoWidthPx,
       logoTextSizePx,
       logoUrl: form.logoUrl ?? "",
       logoText: form.logoText?.trim() || merchant.companyName,
       headingAlignmentClass,
-      headingFontClass,
+      headingFontClass: currentTemplateId === "cocorico-wheel" ? "font-anton" : headingFontClass,
       headingTextColor: form.presentation.heading.textColor,
-      headingFontSizePx: form.presentation.heading.fontSizePx,
-      headingFontWeight: form.presentation.heading.fontWeight ?? 600,
+      headingFontSizePx: currentTemplateId === "cocorico-wheel" ? Math.min(form.presentation.heading.fontSizePx, 32) : form.presentation.heading.fontSizePx,
+      headingFontWeight: currentTemplateId === "cocorico-wheel" ? 900 : form.presentation.heading.fontWeight ?? 600,
       subtitle: limitCampaignSubtitleLines(form.subtitle),
-      blockSpacingPx: form.presentation.layout.blockSpacingPx,
+      blockSpacingPx: currentTemplateId === "cocorico-wheel" ? 8 : form.presentation.layout.blockSpacingPx,
       gamePageTemplateId: form.presentation.layout.templateId ?? "classic",
       gameType: form.gameType,
       accent: previewAccent,

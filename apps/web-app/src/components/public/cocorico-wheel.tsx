@@ -72,10 +72,10 @@ function GiftIcon({ color }: { color: string }) {
 
 function WheelPointer() {
   return (
-    <div className="pointer-events-none absolute left-1/2 top-[1.5%] z-30 -translate-x-1/2">
+    <div className="pointer-events-none absolute left-1/2 top-[-1%] z-30 -translate-x-1/2">
       <svg
         viewBox="0 0 72 96"
-        className="h-16 w-14 drop-shadow-[0_7px_7px_rgba(7,63,120,0.3)]"
+        className="h-20 w-[4.75rem] drop-shadow-[0_7px_7px_rgba(7,63,120,0.3)]"
         aria-hidden="true"
       >
         <path
@@ -116,9 +116,9 @@ export function CocoricoWheel({
     framing === "public"
       ? "top-2 w-[max(126vw,calc(100svh-240px))] sm:w-[min(104vw,calc(100svh-220px))] md:w-[min(96vw,calc(100svh-220px))] lg:w-[min(48vw,calc(100svh-220px))] xl:w-[min(40vw,calc(100svh-220px))]"
       : framing === "editor"
-        ? "top-[65%] w-[112%]"
+        ? "top-[65%] w-[104%]"
         : framing === "mobile-preview"
-          ? "top-1/2 w-[112%]"
+          ? "top-1/2 w-[96%]"
           : "top-1/2 w-full";
   const wheelTransformClass =
     framing === "public" ? "-translate-x-1/2" : "-translate-x-1/2 -translate-y-1/2";
@@ -158,7 +158,7 @@ export function CocoricoWheel({
   }
 
   return (
-    <div className="relative h-full w-full overflow-visible" style={{ containerType: "inline-size" }}>
+    <div className="okado-cocorico-wheel relative h-full w-full overflow-visible" style={{ containerType: "inline-size" }}>
       <div
         className={`absolute left-1/2 aspect-square ${wheelTransformClass} ${wheelSizeClass}`}
         style={{ filter: "drop-shadow(0 25px 32px rgba(3,44,87,0.3))" }}
@@ -236,7 +236,7 @@ export function CocoricoWheel({
           {isSpinning ? (
             <span className="text-[clamp(0.8rem,4cqw,1.2rem)]">...</span>
           ) : (
-            <Hand aria-hidden="true" className="h-[42%] w-[42%]" strokeWidth={2.6} />
+            <Hand aria-hidden="true" className="h-[48%] w-[48%]" strokeWidth={2.8} />
           )}
         </button>
       </div>

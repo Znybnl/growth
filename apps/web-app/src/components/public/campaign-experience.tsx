@@ -527,7 +527,7 @@ export function CampaignExperience({
       : campaign.presentation.heading.align === "right"
         ? "text-right"
         : "text-center";
-  const headingFontClass = textFontClass(campaign.presentation.heading.fontFamily);
+  const headingFontClass = isCocoricoTemplate ? "font-anton" : textFontClass(campaign.presentation.heading.fontFamily);
   const showBottomState =
     !isImmersiveScratchTemplate &&
     ((stage === "idle" && campaign.gameType !== "wheel") ||
@@ -842,6 +842,7 @@ export function CampaignExperience({
   return (
     <div
       className="okado-public-experience relative min-h-screen overflow-hidden"
+      data-template-id={pageTemplate}
       style={{
         backgroundColor: campaign.presentation.background.color,
         backgroundImage: backgroundStyle,
@@ -898,13 +899,13 @@ export function CampaignExperience({
         ) : null}
 
         {!isImmersiveScratchTemplate ? (
-        <div className={headingAlignmentClass}>
+        <div className={`${headingAlignmentClass} ${isCocoricoTemplate ? "[&>h1]:!pb-[8px]" : ""}`}>
           <h1
             className={`${headingFontClass} line-clamp-3 whitespace-pre-line ${isRestaurantPopTemplate ? "tracking-[0.038em] drop-shadow-[0_5px_0_rgba(0,0,0,0.08)]" : ""} ${isCocoricoTemplate ? "font-black uppercase tracking-[-0.045em] [text-shadow:0_5px_0_#073f78] [-webkit-text-stroke:3px_#073f78]" : ""} pb-[25px] leading-[1] text-[#151826]`}
             style={{
               color: isCocoricoTemplate ? "#ffdc32" : headingTextColor,
               fontSize: headingFontSize,
-              fontWeight: campaign.presentation.heading.fontWeight ?? 600,
+              fontWeight: isCocoricoTemplate ? 900 : campaign.presentation.heading.fontWeight ?? 600,
             }}
           >
             {isRestaurantPopTemplate
@@ -931,8 +932,8 @@ export function CampaignExperience({
 
         {campaign.gameType === "wheel" ? (
           <div
-            className="relative left-1/2 mt-[40px] min-h-0 w-screen -translate-x-1/2 flex-1 overflow-visible sm:mt-20 lg:mt-8"
-            style={{ minHeight: "min(52vh, 520px)" }}
+            className={`relative left-1/2 min-h-0 w-screen -translate-x-1/2 flex-1 overflow-visible ${isCocoricoTemplate ? "mt-2" : "mt-[40px] sm:mt-20 lg:mt-8"}`}
+            style={{ minHeight: "min(52vh, 520px)", marginTop: isCocoricoTemplate ? "8px" : undefined }}
           >
             <div className="absolute inset-0 overflow-visible">
               {isCocoricoTemplate ? (
