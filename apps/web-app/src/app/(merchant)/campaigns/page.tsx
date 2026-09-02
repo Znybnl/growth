@@ -2,9 +2,12 @@ import Link from "next/link";
 
 import { CampaignActionsMenu } from "@/components/merchant/campaign-actions-menu";
 import { PageHeader } from "@/components/ui/workspace";
+import { StatusBadge } from "@/components/ui/status-badge";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import { formatCurrency, formatPercent, gameTypeLabel } from "@/lib/format";
 import { getMerchantCampaignOverview } from "@/lib/store";
+
+export const dynamic = "force-dynamic";
 
 export default async function CampaignsPage({
   searchParams,
@@ -60,13 +63,7 @@ export default async function CampaignsPage({
               <div className="hidden grid-cols-[1.45fr_0.7fr_0.5fr_0.5fr_0.55fr_0.75fr_0.85fr] items-center gap-3 lg:grid">
                 <div className="min-w-0">
                   <div className="flex items-center gap-3">
-                    <span
-                      className={`okado-status-badge ${
-                        item.campaign.isActive ? "okado-status-active" : "okado-status-muted"
-                      }`}
-                    >
-                      {item.campaign.isActive ? "Active" : "Pause"}
-                    </span>
+                    <StatusBadge tone={item.campaign.isActive ? "active" : "muted"}>{item.campaign.isActive ? "Active" : "Pause"}</StatusBadge>
                     <div className="min-w-0">
                       <p className="truncate font-semibold text-graphite">
                         {item.campaign.title}
@@ -105,13 +102,7 @@ export default async function CampaignsPage({
                     <p className="font-semibold text-graphite">{item.campaign.title}</p>
                     <p className="mt-1 text-sm text-ash">{item.campaign.subtitle}</p>
                   </div>
-                  <span
-                    className={`okado-status-badge ${
-                      item.campaign.isActive ? "okado-status-active" : "okado-status-muted"
-                    }`}
-                  >
-                    {item.campaign.isActive ? "Active" : "Pause"}
-                  </span>
+                  <StatusBadge tone={item.campaign.isActive ? "active" : "muted"}>{item.campaign.isActive ? "Active" : "Pause"}</StatusBadge>
                 </div>
                 <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
                   <div className="rounded-[8px] bg-white px-4 py-3">

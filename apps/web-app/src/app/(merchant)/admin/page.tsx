@@ -5,7 +5,8 @@ import { isSaasAdminEmail } from "@/lib/admin";
 import { getSaasAdminOverview } from "@/lib/admin-repository";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import { formatDateTime } from "@/lib/format";
-import { PageHeader } from "@/components/ui/workspace";
+import { MetricCard, PageHeader } from "@/components/ui/workspace";
+import { StatusBadge as SharedStatusBadge } from "@/components/ui/status-badge";
 
 type AdminPageProps = {
   searchParams: Promise<{ q?: string }>;
@@ -13,28 +14,18 @@ type AdminPageProps = {
 
 function StatusBadge({ status }: { status: string | null }) {
   if (status === "active") {
-    return <span className="okado-status-badge okado-status-active">Actif</span>;
+    return <SharedStatusBadge tone="active">Actif</SharedStatusBadge>;
   }
   if (status === "trialing") {
-    return <span className="okado-status-badge okado-status-info">Essai</span>;
+    return <SharedStatusBadge tone="info">Essai</SharedStatusBadge>;
   }
   if (status === "past_due" || status === "unpaid") {
-    return <span className="okado-status-badge okado-status-warning">Paiement a suivre</span>;
+    return <SharedStatusBadge tone="warning">Paiement à suivre</SharedStatusBadge>;
   }
   if (status === "canceled") {
-    return <span className="okado-status-badge okado-status-muted">Resilie</span>;
+    return <SharedStatusBadge tone="muted">Résilié</SharedStatusBadge>;
   }
-  return <span className="okado-status-badge okado-status-muted">Non active</span>;
-}
-
-function MetricCard({ label, value, detail }: { label: string; value: number; detail: string }) {
-  return (
-    <div className="okado-card p-5">
-      <p className="okado-label">{label}</p>
-      <p className="mt-3 text-4xl font-semibold tracking-[-0.05em] text-graphite">{value}</p>
-      <p className="mt-2 text-sm text-ash">{detail}</p>
-    </div>
-  );
+  return <SharedStatusBadge tone="muted">Inactive</SharedStatusBadge>;
 }
 
 export default async function AdminPage({ searchParams }: AdminPageProps) {
@@ -61,10 +52,10 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
       />
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <MetricCard label="Comptes" value={overview.totals.merchants} detail={`${overview.totals.onboardedMerchants} onboarding termines`} />
+        <MetricCard label="Comptes" value={overview.totals.merchants} detail={`${overview.totals.onboardedMerchants} onboarding terminés`} />
         <MetricCard label="Abonnements" value={overview.totals.activeSubscriptions} detail="Essais et abonnements actifs" />
         <MetricCard label="Animations" value={overview.totals.activeCampaigns} detail={`${overview.totals.leads} participations collectées`} />
-        <MetricCard label="Gains a suivre" value={overview.totals.pendingRewards} detail="Gains en attente de retrait" />
+        <MetricCard label="Gains à suivre" value={overview.totals.pendingRewards} detail="Gains en attente de retrait" />
       </section>
 
       <section className="okado-card border-[#fecdd3] bg-[#fff7f7] p-5">

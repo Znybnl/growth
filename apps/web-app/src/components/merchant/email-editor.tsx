@@ -12,6 +12,7 @@ import {
   validateCampaignEmailSettings,
 } from "@/lib/email-settings";
 import { Campaign, CampaignEmailSettings, Merchant } from "@/lib/types";
+import { PageHeader } from "@/components/ui/workspace";
 
 type EmailEditorProps = {
   campaign: Campaign;
@@ -113,19 +114,12 @@ export function EmailEditor({ campaign, merchant }: EmailEditorProps) {
 
   return (
     <div className="okado-editor-page min-h-[calc(100vh-120px)] space-y-6">
-      <section className="okado-page-header px-1 py-2">
-          <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
-            <div>
-              <p className="okado-label">Atelier email</p>
-              <h1 className="okado-page-title mt-3">
-                Personnaliser l&apos;email de gain
-              </h1>
-              <p className="mt-3 max-w-3xl text-sm leading-7 text-ash">
-                Cet écran pilote le message envoyé automatiquement au gagnant avec son QR code,
-                son code de retrait et le lien de validation.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-3">
+      <section className="px-1 py-2">
+          <PageHeader
+            eyebrow="Atelier email"
+            title="Personnaliser l&apos;email de gain"
+            description="Cet écran pilote le message envoyé automatiquement au gagnant avec son QR code, son code de retrait et le lien de validation."
+            actions={<>
               <Link
                 href={`/campaigns/${campaign.id}/edit/guided`}
                 prefetch={false}
@@ -148,8 +142,8 @@ export function EmailEditor({ campaign, merchant }: EmailEditorProps) {
               >
                 {isSaving ? "Enregistrement..." : "Enregistrer"}
               </button>
-            </div>
-          </div>
+            </>}
+          />
           {message ? (
             <div className="mt-5 rounded-[8px] border border-border bg-linen-canvas px-4 py-3 text-sm font-semibold text-graphite">
               {message}

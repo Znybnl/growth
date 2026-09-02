@@ -21,8 +21,8 @@ export function AccountSectionCard({
   id,
 }: AccountSectionCardProps) {
   return (
-    <section id={id} className={cn("okado-card scroll-mt-28 p-5 md:p-7", className)}>
-      <div className="flex items-start gap-3 border-b border-border/70 pb-5">
+    <section id={id} className={cn("okado-card okado-form-section scroll-mt-28", className)}>
+      <div className="okado-form-section__header flex items-start gap-3 border-b border-border/70 pb-5">
         {Icon ? (
           <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[4px] bg-purple-haze text-aubergine">
             <Icon className="h-5 w-5" aria-hidden="true" />
@@ -34,7 +34,7 @@ export function AccountSectionCard({
           {description ? <p className="mt-1.5 max-w-2xl text-sm leading-6 text-ash">{description}</p> : null}
         </div>
       </div>
-      <div className="pt-5">{children}</div>
+      <div className="mt-5">{children}</div>
     </section>
   );
 }

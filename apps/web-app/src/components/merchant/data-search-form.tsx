@@ -50,7 +50,7 @@ export function DataSearchForm({ campaignId, initialValue }: DataSearchFormProps
             }
           }}
           placeholder="Rechercher par code de retrait ou e-mail client"
-          className="w-full rounded-[18px] border border-[#d7e0ed] bg-white px-4 py-3 text-sm text-[#182033] outline-none"
+          className="w-full rounded-[12px] border border-[#cfcfcf] bg-white px-4 py-3 text-sm text-carbon outline-none focus:border-aubergine focus:ring-2 focus:ring-aubergine/15"
         />
         {value ? (
           <button
@@ -59,7 +59,7 @@ export function DataSearchForm({ campaignId, initialValue }: DataSearchFormProps
               setValue("");
               apply("");
             }}
-            className="cursor-pointer rounded-[18px] border border-[#d7e0ed] bg-white px-4 py-3 text-sm font-semibold text-[#182033]"
+            className="cursor-pointer rounded-[4px] border border-border bg-white px-4 py-3 text-sm font-semibold text-carbon hover:bg-purple-haze"
           >
             Effacer
           </button>

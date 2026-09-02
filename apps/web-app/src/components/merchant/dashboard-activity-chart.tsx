@@ -81,7 +81,7 @@ export function DashboardActivityChart({
 
         <div className="relative w-full shrink-0 self-start md:w-auto">
           <CalendarDays
-            className="pointer-events-none absolute left-3 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-signal-blue"
+            className="pointer-events-none absolute left-3 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-aubergine"
             aria-hidden="true"
           />
           <FieldSelect
@@ -105,11 +105,11 @@ export function DashboardActivityChart({
 
       <div className="flex items-center gap-5 px-5 pt-4 text-sm text-graphite">
         <span className="inline-flex items-center gap-2">
-          <span className="h-2.5 w-2.5 rounded-full bg-[#145aff]" />
+          <span className="h-2.5 w-2.5 rounded-full bg-aubergine" />
           Scans
         </span>
         <span className="inline-flex items-center gap-2">
-          <span className="h-2.5 w-2.5 rounded-full bg-[#0f1f3d]" />
+          <span className="h-2.5 w-2.5 rounded-full bg-deep-plum" />
           Participations
         </span>
       </div>
@@ -123,7 +123,7 @@ export function DashboardActivityChart({
         >
           <defs>
             <filter id="okado-chart-shadow" x="-20%" y="-20%" width="140%" height="140%">
-              <feDropShadow dx="0" dy="10" stdDeviation="8" floodColor="#145aff" floodOpacity="0.14" />
+              <feDropShadow dx="0" dy="10" stdDeviation="8" floodColor="#611f69" floodOpacity="0.14" />
             </filter>
           </defs>
           {yTicks.map((tick, index) => (

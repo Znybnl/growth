@@ -3,7 +3,8 @@ import { requireAuthenticatedSession } from "@/lib/auth";
 import { isSaasAdminEmail } from "@/lib/admin";
 import { formatDateTime, leadStatusLabel, rewardEmailStatusLabel } from "@/lib/format";
 import { getMerchantSupportOverview } from "@/lib/store";
-import { PageHeader } from "@/components/ui/workspace";
+import { MetricCard, PageHeader } from "@/components/ui/workspace";
+import { StatusBadge as SharedStatusBadge } from "@/components/ui/status-badge";
 import { redirect } from "next/navigation";
 
 type SupportPageProps = {
@@ -21,20 +22,7 @@ function StatusBadge({
   label: string;
   tone?: "neutral" | "danger" | "warning" | "success";
 }) {
-  const toneClass =
-    tone === "danger"
-      ? "bg-[#fff1f2] text-[#be123c]"
-      : tone === "warning"
-        ? "bg-[#fff7ed] text-[#c2410c]"
-        : tone === "success"
-          ? "bg-[#ecfdf3] text-[#047857]"
-          : "bg-[#f3f6fb] text-[#475569]";
-
-  return (
-    <span className={`okado-status-badge ${toneClass}`}>
-      {label}
-    </span>
-  );
+  return <SharedStatusBadge tone={tone === "neutral" ? "muted" : tone === "success" ? "active" : tone}>{label}</SharedStatusBadge>;
 }
 
 function includesQuery(values: Array<string | undefined>, query: string) {
@@ -186,15 +174,7 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
           ["Webhooks reçus", String(filteredOverview.webhooks.length)],
           ["Gains sans retrait", String(filteredOverview.pendingClaims.length)],
           ["Logs métier", String(filteredOverview.businessLogs.length)],
-        ].map(([label, value]) => (
-          <div
-            key={label}
-            className="okado-card p-5"
-          >
-            <p className="okado-label tracking-[0.18em]">{label}</p>
-            <p className="mt-4 text-3xl font-semibold text-graphite">{value}</p>
-          </div>
-        ))}
+        ].map(([label, value]) => <MetricCard key={label} label={label} value={value} />)}
       </section>
 
       <section className="rounded-[8px] border border-border bg-primary-action-accent p-6 text-white shadow-product-card">

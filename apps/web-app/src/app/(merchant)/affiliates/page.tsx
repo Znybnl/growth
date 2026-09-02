@@ -6,7 +6,8 @@ import { getAffiliateAdminOverview } from "@/lib/affiliate-repository";
 import { isSaasAdminEmail } from "@/lib/admin";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import { AffiliateCommissionStatus } from "@/lib/types";
-import { PageHeader } from "@/components/ui/workspace";
+import { MetricCard, PageHeader } from "@/components/ui/workspace";
+import { StatusBadge } from "@/components/ui/status-badge";
 
 type AffiliatesPageProps = {
   searchParams: Promise<{
@@ -44,10 +45,10 @@ function statusLabel(status: AffiliateCommissionStatus) {
 }
 
 function statusTone(status: AffiliateCommissionStatus) {
-  if (status === "paid") return "okado-status-active";
-  if (status === "void") return "okado-status-muted";
-  if (status === "payable") return "okado-status-warning";
-  return "okado-status-muted";
+  if (status === "paid") return "active" as const;
+  if (status === "void") return "muted" as const;
+  if (status === "payable") return "warning" as const;
+  return "muted" as const;
 }
 
 export default async function AffiliatesPage({ searchParams }: AffiliatesPageProps) {
@@ -81,15 +82,7 @@ export default async function AffiliatesPage({ searchParams }: AffiliatesPagePro
           ["En attente", formatMoney(overview.totals.pendingCommissionCents)],
           ["À payer", formatMoney(overview.totals.payableCommissionCents)],
           ["Payées", formatMoney(overview.totals.paidCommissionCents)],
-        ].map(([label, value]) => (
-          <div
-            key={label}
-            className="okado-card p-5"
-          >
-            <p className="okado-label tracking-[0.18em]">{label}</p>
-            <p className="mt-4 text-2xl font-semibold text-graphite">{value}</p>
-          </div>
-        ))}
+        ].map(([label, value]) => <MetricCard key={label} label={label} value={value} />)}
       </section>
 
       <section className="okado-card p-5">
@@ -217,9 +210,7 @@ export default async function AffiliatesPage({ searchParams }: AffiliatesPagePro
                       {formatMoney(commission.commissionAmountCents)}
                     </td>
                     <td className="px-5 py-4">
-                      <span className={`okado-status-badge ${statusTone(commission.status)}`}>
-                        {statusLabel(commission.status)}
-                      </span>
+                      <StatusBadge tone={statusTone(commission.status)}>{statusLabel(commission.status)}</StatusBadge>
                     </td>
                     <td className="px-5 py-4">
                       <AffiliateCommissionActions

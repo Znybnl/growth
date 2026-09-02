@@ -4,7 +4,8 @@ import { DataCampaignSelector } from "@/components/merchant/data-campaign-select
 import { DataSearchForm } from "@/components/merchant/data-search-form";
 import { LeadPrizeActions } from "@/components/merchant/lead-prize-actions";
 import { PrizeStockActions } from "@/components/merchant/prize-stock-actions";
-import { EmptyState } from "@/components/ui/workspace";
+import { EmptyState, MetricCard, PageHeader } from "@/components/ui/workspace";
+import { StatusBadge } from "@/components/ui/status-badge";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import {
   rewardEmailStatusLabel,
@@ -129,15 +130,15 @@ function buildActionVolumes(
 function leadStatusTone(status: MerchantLeadRow["status"]) {
   switch (status) {
     case "redeemed":
-      return "bg-[#ecfdf3] text-[#047857]";
+      return "active" as const;
     case "claimed":
-      return "bg-[#eff6ff] text-[#1d4ed8]";
+      return "info" as const;
     case "lost":
-      return "bg-[#f3f4f6] text-[#4b5563]";
+      return "muted" as const;
     case "expired":
-      return "bg-[#fff7ed] text-[#c2410c]";
+      return "warning" as const;
     default:
-      return "bg-[#f8fafc] text-[#505b6e]";
+      return "muted" as const;
   }
 }
 
@@ -205,9 +206,7 @@ function LeadsExportSection({
                   <div className="text-ash">{lead.email}</div>
                 </td>
                 <td data-label="Statut" className="border-b border-[#eef2f7] px-3 py-4 text-slate">
-                  <span className={`inline-flex rounded-full px-3 py-1.5 text-xs font-semibold ${leadStatusTone(lead.status)}`}>
-                    {leadStatusLabel(lead.status)}
-                  </span>
+                  <StatusBadge tone={leadStatusTone(lead.status)}>{leadStatusLabel(lead.status)}</StatusBadge>
                 </td>
                 <td data-label="Lot" className="border-b border-[#eef2f7] px-3 py-4 text-slate">
                   {lead.prizeLabel}
@@ -375,29 +374,20 @@ export default async function DataPage({ searchParams }: DataPageProps) {
   return (
     <div className="space-y-6">
       <section className="px-1 py-2">
-        <div>
-          <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
-            <div>
-              <p className="okado-label">Données de campagne</p>
-              <h1 className="okado-page-title mt-3">
-                {dataView.performance.campaign.title}
-              </h1>
-              <p className="mt-4 max-w-3xl text-sm leading-7 text-ash">
-                Visualisez les indicateurs clés, le stock de dotation et les données de saisie
-                exportables pour chaque campagne.
-              </p>
-            </div>
-
-            <div className="flex flex-wrap gap-3">
-              <Link
-                href={`/campaigns/${dataView.performance.campaign.id}/edit/guided`}
-                prefetch={false}
-                className="okado-filled-action px-5"
-              >
-                Modifier la campagne
-              </Link>
-            </div>
-          </div>
+        <PageHeader
+          eyebrow="Données de campagne"
+          title={dataView.performance.campaign.title}
+          description="Visualisez les indicateurs clés, le stock de dotation et les données de saisie exportables pour chaque campagne."
+          actions={
+            <Link
+              href={`/campaigns/${dataView.performance.campaign.id}/edit/guided`}
+              prefetch={false}
+              className="okado-filled-action px-5"
+            >
+              Modifier la campagne
+            </Link>
+          }
+        />
 
           <div className="mt-6">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end">
@@ -414,7 +404,7 @@ export default async function DataPage({ searchParams }: DataPageProps) {
             </div>
           </div>
           {emailStatus === "attention" ? (
-            <div className="mt-4 rounded-[14px] border border-[#f0dfaa] bg-[#fff9e8] px-4 py-3 text-sm text-[#74570b]">
+            <div className="mt-4 rounded-[8px] border border-[#f0dfaa] bg-[#fff9e8] px-4 py-3 text-sm text-[#74570b]">
               Cette vue affiche uniquement les e-mails en échec pour un gain attribué et encore à retirer. Renvoyez l’e-mail ou consultez son historique pour résoudre l’alerte.
             </div>
           ) : null}
@@ -427,7 +417,6 @@ export default async function DataPage({ searchParams }: DataPageProps) {
               Aucun résultat pour « {query} ».
             </p>
           ) : null}
-        </div>
       </section>
 
       <section className="grid gap-4 md:grid-cols-3 xl:grid-cols-6">
@@ -438,15 +427,7 @@ export default async function DataPage({ searchParams }: DataPageProps) {
           ["Conversion", formatPercent(dataView.performance.kpis.conversionRate)],
           ["Lots retirés", String(dataView.performance.kpis.redeemed)],
           ["Coût / participation", formatCurrency(dataView.performance.kpis.costPerLead)],
-        ].map(([label, value]) => (
-          <div
-            key={label}
-            className="okado-card p-5"
-          >
-            <p className="okado-label tracking-[0.18em]">{label}</p>
-            <p className="mt-4 text-3xl font-semibold text-graphite">{value}</p>
-          </div>
-        ))}
+        ].map(([label, value]) => <MetricCard key={label} label={label} value={value} />)}
       </section>
 
       <section className="grid gap-6 xl:grid-cols-2">

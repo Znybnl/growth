@@ -4,7 +4,8 @@ import { DashboardActivityChart } from "@/components/merchant/dashboard-activity
 import { DashboardCampaignActionsMenu } from "@/components/merchant/dashboard-campaign-actions-menu";
 import { DashboardOperationalAlerts } from "@/components/merchant/dashboard-operational-alerts";
 import { OnboardingWelcomeDialog } from "@/components/merchant/onboarding-welcome-dialog";
-import { PageHeader } from "@/components/ui/workspace";
+import { MetricCard, PageHeader } from "@/components/ui/workspace";
+import { StatusBadge } from "@/components/ui/status-badge";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import {
   formatDateTime,
@@ -46,27 +47,27 @@ export default async function DashboardPage({
   const activityPoints = dashboard.activityPoints;
   const getCampaignStatus = (item: (typeof filteredCampaigns)[number]) => {
     if (!item.campaign.isActive) {
-      return { label: "Désactivée", color: "#98a2b3" };
+      return { label: "Désactivée", tone: "muted" as const };
     }
 
     if (item.prizes.some((prize) => prize.remainingQuantity === 0)) {
-      return { label: "Stock épuisé", color: "#f59e0b" };
+      return { label: "Stock épuisé", tone: "warning" as const };
     }
 
-    return { label: "Active", color: "#12b76a" };
+    return { label: "Active", tone: "active" as const };
   };
   const leadStatusTone = (status: (typeof recentLeads)[number]["status"]) => {
     switch (status) {
       case "redeemed":
-        return "bg-[#ecfdf3] text-[#047857]";
+        return "active" as const;
       case "claimed":
-        return "bg-[#eff6ff] text-[#1d4ed8]";
+        return "info" as const;
       case "lost":
-        return "bg-[#f3f4f6] text-[#4b5563]";
+        return "muted" as const;
       case "expired":
-        return "bg-[#fff7ed] text-[#c2410c]";
+        return "warning" as const;
       default:
-        return "bg-white text-[#505b6e]";
+        return "muted" as const;
     }
   };
 
@@ -123,17 +124,7 @@ export default async function DashboardPage({
                 : 0,
             ),
           ],
-        ].map(([label, value]) => (
-          <div
-            key={label}
-            className="okado-card p-4"
-          >
-            <p className="okado-label">{label}</p>
-            <p className="mt-4 text-3xl font-semibold tracking-[-0.04em] text-graphite md:text-4xl">
-              {value}
-            </p>
-          </div>
-        ))}
+        ].map(([label, value]) => <MetricCard key={label} label={label} value={value} />)}
       </section>
 
       <DashboardOperationalAlerts />
@@ -178,17 +169,7 @@ export default async function DashboardPage({
                 >
                   <div className="min-w-0">
                     <div className="flex items-center gap-3">
-                      <span
-                        className={`okado-status-badge ${
-                          !item.campaign.isActive
-                            ? "okado-status-muted"
-                            : item.prizes.some((prize) => prize.remainingQuantity === 0)
-                              ? "okado-status-warning"
-                              : "okado-status-active"
-                        }`}
-                      >
-                        {getCampaignStatus(item).label}
-                      </span>
+                      <StatusBadge tone={getCampaignStatus(item).tone}>{getCampaignStatus(item).label}</StatusBadge>
                       <div className="min-w-0">
                         <p className="truncate font-semibold text-[#111827]">
                           {item.campaign.title}
@@ -218,11 +199,9 @@ export default async function DashboardPage({
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex min-w-0 items-start gap-3">
-                        <span
-                          className="mt-1 h-3 w-3 shrink-0 rounded-full"
-                          title={getCampaignStatus(item).label}
-                          style={{ backgroundColor: getCampaignStatus(item).color }}
-                        />
+                        <StatusBadge tone={getCampaignStatus(item).tone}>
+                          {getCampaignStatus(item).label}
+                        </StatusBadge>
                       <div className="min-w-0">
                         <p className="truncate font-semibold text-graphite">
                           {item.campaign.title}
@@ -298,9 +277,7 @@ export default async function DashboardPage({
                       <p className="truncate font-semibold text-[#111827]">{lead.firstName}</p>
                       <p className="truncate text-sm text-[#7b8496]">{lead.email}</p>
                     </div>
-                    <span className={`rounded-full px-3 py-2 text-xs font-semibold ${leadStatusTone(lead.status)}`}>
-                      {leadStatusLabel(lead.status)}
-                    </span>
+                    <StatusBadge tone={leadStatusTone(lead.status)}>{leadStatusLabel(lead.status)}</StatusBadge>
                   </div>
                   <div className="mt-3 flex flex-col gap-1 text-sm text-[#7b8496] sm:flex-row sm:items-center sm:justify-between sm:gap-3">
                     <span className="truncate">{lead.campaignTitle}</span>

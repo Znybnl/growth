@@ -80,14 +80,13 @@
   --color-mid-gray: #696969;
   --color-pure-white: #ffffff;
   --color-soft-white: #fefbff;
-  --color-fog: #edeaed;
   --color-linen-canvas: #fcfcfc;
   --color-sky-wash: var(--color-purple-haze);
   --color-midnight-ink: var(--color-carbon);
   --color-graphite: #14141e;
   --color-slate: #374151;
   --color-ash: #696a72;
-  --color-fog: #95959b;
+  --color-fog: #edeaed;
   --color-steel: #6b7280;
   --color-signal-blue: #145aff;
   --color-periwinkle-glow: #b6cbfd;
@@ -124,8 +123,8 @@
   --okado-control-height: 44px;
   --gradient-hero-blue-fade: linear-gradient(180deg, var(--color-aubergine) 0%, var(--color-aubergine) 100%);
   --gradient-page-wash:
-    radial-gradient(circle at 48% -10%, rgba(182, 203, 253, 0.68), transparent 34rem),
-    linear-gradient(180deg, #f0f4fe 0%, #fcfcfc 34rem);
+    radial-gradient(circle at 48% -10%, rgba(234, 200, 254, 0.38), transparent 34rem),
+    linear-gradient(180deg, #f9f0ff 0%, #fefbff 34rem);
   --shadow-product-card: rgba(0, 0, 0, 0.1) 0px 0px 4px -2px;
   --shadow-feature-card:
     rgba(0, 0, 0, 0.082) 0px 0.36px 1.81px -1.42px,
@@ -149,10 +148,10 @@
   --destructive: #f26052;
   --border: var(--color-fog);
   --input: #cfcfcf;
-  --ring: #145aff;
-  --chart-1: #145aff;
-  --chart-2: #0f1f3d;
-  --chart-3: #0099ff;
+  --ring: var(--color-aubergine);
+  --chart-1: #611f69;
+  --chart-2: #481a54;
+  --chart-3: #730394;
   --chart-4: #16ca2e;
   --chart-5: #ffa64d;
   --radius: 0.75rem;
@@ -163,7 +162,7 @@
   --sidebar-accent: var(--color-purple-haze);
   --sidebar-accent-foreground: var(--color-carbon);
   --sidebar-border: var(--color-fog);
-  --sidebar-ring: #145aff;
+  --sidebar-ring: var(--color-aubergine);
 }
 
 @theme inline {
@@ -290,6 +289,17 @@ select {
   padding: 0.5rem 0.25rem;
 }
 
+.okado-page-header__icon {
+  display: grid;
+  height: 2.75rem;
+  width: 2.75rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 4px;
+  background: var(--color-purple-haze);
+  color: var(--color-aubergine);
+}
+
 .okado-account-header {
   display: flex;
   align-items: center;
@@ -312,6 +322,45 @@ select {
 
 .okado-section-card {
   padding: 1.25rem;
+}
+
+.okado-metric-card {
+  min-width: 0;
+  padding: 1.25rem;
+}
+
+.okado-metric-card__icon {
+  display: grid;
+  height: 2rem;
+  width: 2rem;
+  place-items: center;
+  border-radius: 4px;
+  background: var(--color-purple-haze);
+  color: var(--color-aubergine);
+}
+
+.okado-metric-card__value {
+  margin-top: 1rem;
+  color: var(--color-carbon);
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.okado-metric-card__detail {
+  margin-top: 0.625rem;
+  color: var(--color-ash);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+.okado-form-section {
+  padding: 1.5rem;
+}
+
+.okado-form-section__header {
+  min-width: 0;
 }
 
 .okado-action-bar {
@@ -643,13 +692,11 @@ button:disabled,
   padding-block: 0;
   border: 1px solid transparent;
   border-radius: var(--okado-radius-button);
-  background: var(--gradient-hero-blue-fade);
+  background: var(--color-aubergine);
   color: #ffffff !important;
   font-size: 14px;
   font-weight: 600;
-  box-shadow:
-    rgba(20, 90, 255, 0.1) 0px 0px 50px -28px,
-    rgba(0, 0, 0, 0.18) 0px 0px 3px -1px;
+  box-shadow: var(--shadow-product-card);
 }
 
 .okado-secondary-action {
@@ -724,8 +771,8 @@ button:disabled,
 }
 
 .okado-status-muted {
-  background: #f3f6fb;
-  color: #475569;
+  background: var(--color-purple-haze);
+  color: var(--color-charcoal);
 }
 
 .okado-status-danger {

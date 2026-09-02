@@ -88,7 +88,7 @@ export function AuthShell({
           className="relative hidden min-h-screen overflow-hidden lg:flex lg:flex-col lg:items-center lg:justify-center"
           style={{ background: "var(--color-deep-plum)" }}
         >
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_18%,rgba(255,255,255,0.22),transparent_34%),linear-gradient(135deg,transparent_0%,rgba(9,55,132,0.18)_100%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_18%,rgba(255,255,255,0.22),transparent_34%),linear-gradient(135deg,transparent_0%,rgba(97,31,105,0.28)_100%)]" />
 
           <div className="relative flex w-full max-w-[760px] flex-1 items-center justify-center px-10 sm:px-14">
             <div className="relative h-[390px] w-full max-w-[560px]">

@@ -4,6 +4,9 @@ import { CirclePlus, Coffee, Gift, Percent, Plus, Save, Soup, Sparkles, Trash2, 
 import { useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/ui/validation-dialog";
+import { PageHeader, SectionCard } from "@/components/ui/workspace";
+import { StatusBadge } from "@/components/ui/status-badge";
 import { INDUSTRY_OPTIONS } from "@/lib/merchant-options";
 import { PrizeSuggestion } from "@/lib/types";
 
@@ -39,6 +42,8 @@ export function PrizeSuggestionsManager({ initialSuggestions }: { initialSuggest
   const [industryFilter, setIndustryFilter] = useState("all");
   const [message, setMessage] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState<PrizeSuggestion | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const selected = useMemo(
     () => suggestions.find((suggestion) => suggestion.id === selectedId) ?? null,
@@ -110,35 +115,38 @@ export function PrizeSuggestionsManager({ initialSuggestions }: { initialSuggest
   }
 
   async function remove(suggestion: PrizeSuggestion) {
-    if (!window.confirm(`Supprimer « ${suggestion.label} » ?`)) return;
+    setPendingDelete(suggestion);
+  }
+
+  async function confirmRemove() {
+    if (!pendingDelete) return;
+    setIsDeleting(true);
     setMessage(null);
-    const response = await fetch(`/api/admin/prize-suggestions/${suggestion.id}`, { method: "DELETE" });
-    const payload = (await response.json()) as { error?: string };
-    if (!response.ok) {
-      setMessage(payload.error ?? "Suppression impossible.");
-      return;
+    try {
+      const response = await fetch(`/api/admin/prize-suggestions/${pendingDelete.id}`, { method: "DELETE" });
+      const payload = (await response.json()) as { error?: string };
+      if (!response.ok) throw new Error(payload.error ?? "Suppression impossible.");
+      setSuggestions((current) => current.filter((item) => item.id !== pendingDelete.id));
+      if (selectedId === pendingDelete.id) startCreate();
+      setPendingDelete(null);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Suppression impossible.");
+    } finally {
+      setIsDeleting(false);
     }
-    setSuggestions((current) => current.filter((item) => item.id !== suggestion.id));
-    if (selectedId === suggestion.id) startCreate();
   }
 
   return (
     <div className="w-full space-y-6 px-1 pb-8">
-      <header className="flex flex-col gap-4 py-2 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="okado-label">Administration</p>
-          <h1 className="okado-page-title mt-3">Suggestions de lots</h1>
-          <p className="mt-3 max-w-3xl text-sm leading-7 text-ash">
-            Configurez les dotations proposées aux commerçants selon leur secteur d&apos;activité.
-          </p>
-        </div>
-        <Button type="button" onClick={startCreate} className="gap-2">
-          <Plus className="h-4 w-4" /> Ajouter une suggestion
-        </Button>
-      </header>
+      <PageHeader
+        eyebrow="Administration plateforme · Catalogue"
+        title="Suggestions de lots"
+        description="Configurez les dotations proposées aux commerçants selon leur secteur d’activité."
+        actions={<Button type="button" onClick={startCreate} className="gap-2"><Plus className="h-4 w-4" /> Ajouter une suggestion</Button>}
+      />
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_430px]">
-        <section className="okado-card overflow-hidden">
+        <SectionCard className="overflow-hidden p-0">
           <div className="flex flex-col gap-3 border-b border-[#e8edf5] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm font-semibold text-graphite">Catalogue actif et brouillons</p>
             <label className="flex items-center gap-2 text-sm font-medium text-[#44516a]">
@@ -166,7 +174,7 @@ export function PrizeSuggestionsManager({ initialSuggestions }: { initialSuggest
                       <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] bg-[#eef4ff] text-[#2563eb]"><Icon className="h-5 w-5" /></span>
                       <div className="min-w-0"><p className="truncate font-semibold text-graphite">{suggestion.label}</p><p className="text-xs text-ash">{suggestion.industry}</p></div>
                     </div>
-                    <span className={`okado-status-badge ${suggestion.isActive ? "okado-status-active" : "okado-status-muted"}`}>{suggestion.isActive ? "Active" : "Masquée"}</span>
+                    <StatusBadge tone={suggestion.isActive ? "active" : "muted"}>{suggestion.isActive ? "Active" : "Masquée"}</StatusBadge>
                   </div>
                   <p className="mt-3 line-clamp-2 min-h-10 text-sm leading-5 text-ash">{suggestion.description || "Sans description"}</p>
                   <div className="mt-4 flex items-center justify-between text-xs font-medium text-[#52627b]"><span>{suggestion.probability} % suggéré</span><span>{suggestion.estimatedUnitCost.toLocaleString("fr-FR")} €</span></div>
@@ -176,7 +184,7 @@ export function PrizeSuggestionsManager({ initialSuggestions }: { initialSuggest
             })}
             {!visibleSuggestions.length ? <p className="col-span-full px-2 py-12 text-center text-sm text-ash">Aucune suggestion pour ce secteur. Ajoutez le premier lot.</p> : null}
           </div>
-        </section>
+        </SectionCard>
 
         <aside className="okado-card h-fit p-5">
           <p className="okado-label">{selected ? "Modifier" : "Nouvelle suggestion"}</p>
@@ -193,6 +201,16 @@ export function PrizeSuggestionsManager({ initialSuggestions }: { initialSuggest
           </div>
         </aside>
       </div>
+      <ConfirmDialog
+        open={pendingDelete !== null}
+        title="Supprimer cette suggestion ?"
+        description={pendingDelete ? `La suggestion « ${pendingDelete.label} » sera retirée du catalogue administrateur.` : ""}
+        ctaLabel={isDeleting ? "Suppression…" : "Supprimer définitivement"}
+        tone="error"
+        actionDisabled={isDeleting}
+        onClose={() => { if (!isDeleting) setPendingDelete(null); }}
+        onAction={() => void confirmRemove()}
+      />
     </div>
   );
 }

@@ -60,7 +60,7 @@ export function GoogleAuthButton({
         type="button"
         onClick={handleClick}
         disabled={isLoading}
-        className="okado-auth-action flex w-full items-center justify-center gap-3 rounded-[12px] border border-[#cfcfcf] bg-white text-base font-medium text-graphite transition hover:border-primary-action-accent hover:bg-sky-wash disabled:cursor-not-allowed disabled:opacity-60"
+        className="okado-auth-action flex w-full items-center justify-center gap-3 rounded-[12px] border border-[#cfcfcf] bg-white text-base font-medium text-graphite transition hover:border-aubergine hover:bg-purple-haze disabled:cursor-not-allowed disabled:opacity-60"
       >
         <span className="text-lg text-[#34a853]">G</span>
         <span>

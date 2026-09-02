@@ -1,6 +1,7 @@
 import { AccountSettingsForm } from "@/components/merchant/account-settings-form";
 import { BillingSubscriptionCard } from "@/components/merchant/billing-subscription-card";
 import { Settings2 } from "lucide-react";
+import { PageHeader } from "@/components/ui/workspace";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import { getMerchantBillingSummary } from "@/lib/billing";
 import { syncMerchantBillingFromStripeCustomerIdInSupabase } from "@/lib/merchant-account-repository";
@@ -55,19 +56,13 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
   const billing = getMerchantBillingSummary(merchant);
   return (
     <div className="space-y-4">
-      <header className="okado-account-header">
-        <div className="flex min-w-0 items-center gap-3.5">
-          <span className="okado-account-header__icon"><Settings2 className="h-5 w-5" aria-hidden="true" /></span>
-          <div className="min-w-0">
-            <p className="okado-label">Compte marchand</p>
-            <h1 className="mt-1.5 text-2xl font-semibold tracking-[-0.04em] text-carbon md:text-3xl">Mon compte</h1>
-            <p className="mt-1.5 max-w-3xl text-sm leading-6 text-ash">Profil, abonnement et réglages de l’établissement sélectionné.</p>
-          </div>
-        </div>
-        <button type="submit" form="account-settings-form" className="okado-filled-action w-full px-5 xl:w-auto">
-          Enregistrer les modifications
-        </button>
-      </header>
+      <PageHeader
+        eyebrow="Compte marchand"
+        title="Mon compte"
+        description="Profil, abonnement et réglages de l’établissement sélectionné."
+        icon={<Settings2 className="h-5 w-5" />}
+        actions={<button type="submit" form="account-settings-form" className="okado-filled-action w-full px-5 xl:w-auto">Enregistrer les modifications</button>}
+      />
       <BillingSubscriptionCard billing={billing} />
       <AccountSettingsForm
         merchant={merchant}

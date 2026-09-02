@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
+import { PageHeader, SectionCard } from "@/components/ui/workspace";
 import { BackgroundLibraryAsset } from "@/lib/types";
 
 type BackgroundLibraryManagerProps = {
@@ -96,17 +97,13 @@ export function BackgroundLibraryManager({
 
   return (
     <div className="space-y-6">
-      <section className="px-1 py-2">
-        <p className="okado-label">Bibliothèque</p>
-        <h1 className="okado-page-title mt-3">
-          Gérer les images de fond
-        </h1>
-        <p className="mt-4 max-w-3xl text-sm leading-7 text-ash">
-          Chaque image ajoutée est automatiquement réduite et convertie en WebP pour la page de
-          jeu.
-        </p>
+      <PageHeader
+        eyebrow="Administration plateforme · Bibliothèque"
+        title="Gérer les images de fond"
+        description="Chaque image ajoutée est automatiquement réduite et convertie en WebP pour la page de jeu."
+      />
 
-        <form
+      <form
           onSubmit={submitAsset}
           className="okado-card mt-6 grid gap-4 p-4 xl:grid-cols-[0.95fr_1.05fr]"
         >
@@ -185,16 +182,15 @@ export function BackgroundLibraryManager({
               />
             </label>
           </div>
-        </form>
+      </form>
 
-        {message ? (
-          <div className="mt-4 rounded-[8px] border border-border bg-sky-wash px-4 py-3 text-sm font-medium text-graphite">
-            {message}
-          </div>
-        ) : null}
-      </section>
+      {message ? (
+        <div className="rounded-[8px] border border-border bg-sky-wash px-4 py-3 text-sm font-medium text-graphite">
+          {message}
+        </div>
+      ) : null}
 
-      <section className="okado-card p-6">
+      <SectionCard className="p-6">
         <div className="flex items-center justify-between gap-3">
           <div>
             <p className="okado-label">Catalogue</p>
@@ -253,7 +249,7 @@ export function BackgroundLibraryManager({
             </article>
           ))}
         </div>
-      </section>
+      </SectionCard>
     </div>
   );
 }

@@ -14,7 +14,7 @@ const steps = [
 ] as const;
 
 const inputClass =
-  "w-full rounded-[12px] border border-[#cfcfcf] bg-white px-4 py-3 text-graphite outline-none transition focus:border-signal-blue focus:shadow-[0_0_0_3px_rgba(0,153,255,1)]";
+  "w-full rounded-[12px] border border-[#cfcfcf] bg-white px-4 py-3 text-graphite outline-none transition focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.16)]";
 
 type OnboardingFlowProps = { merchant: Merchant };
 

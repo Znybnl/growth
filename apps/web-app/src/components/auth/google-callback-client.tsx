@@ -75,13 +75,13 @@ export function GoogleCallbackClient() {
   }, [router, searchParams]);
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#eef3fb] px-6">
-      <div className="w-full max-w-[520px] rounded-[36px] border border-white/70 bg-white/92 p-10 text-center shadow-[0_30px_80px_rgba(69,97,157,0.18)] backdrop-blur">
-        <p className="text-xs uppercase tracking-[0.32em] text-[#7b8496]">Google Auth</p>
-        <h1 className="mt-4 text-4xl font-semibold tracking-[-0.04em] text-[#0f1728]">
+    <main className="flex min-h-screen items-center justify-center bg-soft-white px-6">
+      <div className="w-full max-w-[520px] rounded-[32px] border border-lavender-mist bg-white p-10 text-center shadow-product-card backdrop-blur">
+        <p className="text-xs uppercase tracking-[0.32em] text-ash">Google Auth</p>
+        <h1 className="mt-4 text-4xl font-semibold tracking-[-0.04em] text-carbon">
           Connexion en cours
         </h1>
-        <p className="mt-4 text-base leading-7 text-[#5d6577]">{message}</p>
+        <p className="mt-4 text-base leading-7 text-charcoal">{message}</p>
       </div>
     </main>
   );
