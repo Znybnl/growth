@@ -14,7 +14,7 @@ export function CocoricoPromoText({ text, as = "h1" }: CocoricoPromoTextProps) {
       {lines.map((line, index) => (
         <span
           className="okado-cocorico-promo-line"
-          data-text={line.toUpperCase()}
+          data-text={line}
           key={`${line}-${index}`}
         >
           {line}

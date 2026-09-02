@@ -1526,7 +1526,7 @@ button:disabled,
   z-index: 1;
   display: block;
   max-width: 100%;
-  text-transform: uppercase;
+  text-transform: none;
   white-space: nowrap;
 }
 
