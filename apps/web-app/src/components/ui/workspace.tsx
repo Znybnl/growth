@@ -27,8 +27,8 @@ export function PageHeader({ eyebrow, title, description, actions, icon, classNa
   );
 }
 
-export function SectionCard({ className, ...props }: React.ComponentProps<"section">) {
-  return <section className={cn("okado-card okado-section-card", className)} {...props} />;
+export function SectionCard({ variant = "card", className, ...props }: React.ComponentProps<"section"> & { variant?: "card" | "flat" }) {
+  return <section className={cn(variant === "card" ? "okado-card okado-section-card" : "okado-section-surface", className)} {...props} />;
 }
 
 export function MetricCard({
@@ -84,7 +84,7 @@ export function FormSection({
 }
 
 export function LoadingSkeleton({ className, ...props }: React.ComponentProps<"div">) {
-  return <div aria-hidden="true" className={cn("animate-pulse rounded-[8px] bg-purple-haze", className)} {...props} />;
+  return <div aria-hidden="true" className={cn("animate-pulse rounded-[4px] bg-purple-haze", className)} {...props} />;
 }
 
 export function StatusNotice({
@@ -149,3 +149,4 @@ export function ResponsiveTable({
 }
 
 export { RowActionsMenu } from "@/components/ui/row-actions-menu";
+export { DialogShell } from "@/components/ui/dialog";

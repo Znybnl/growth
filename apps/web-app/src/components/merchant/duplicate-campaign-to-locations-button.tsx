@@ -4,6 +4,7 @@ import { CopyPlus, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { StatusNotice } from "@/components/ui/workspace";
+import { DialogShell } from "@/components/ui/dialog";
 
 type LocationItem = { merchant: { id: string; companyName: string; city?: string } };
 
@@ -78,19 +79,7 @@ export function DuplicateCampaignToLocationsButton({ campaignId }: { campaignId:
         {loading ? "Chargement..." : "Dupliquer vers des sites"}
       </button>
       {open ? (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-deep-plum/55 p-4 backdrop-blur-[6px]"
-          role="presentation"
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) setOpen(false);
-          }}
-        >
-          <section
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="duplicate-campaign-title"
-            className="w-full max-w-2xl rounded-[var(--okado-radius-modal)] border border-lavender-mist bg-white p-6 text-carbon shadow-[0_0_32px_rgba(0,0,0,0.1)]"
-          >
+        <DialogShell open={open} onClose={() => setOpen(false)} labelledBy="duplicate-campaign-title" className="max-w-2xl p-6">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="okado-label">Déploiement local</p>
@@ -158,8 +147,7 @@ export function DuplicateCampaignToLocationsButton({ campaignId }: { campaignId:
                 {saving ? "Duplication..." : "Créer les brouillons"}
               </button>
             </div>
-          </section>
-        </div>
+        </DialogShell>
       ) : null}
     </>
   );

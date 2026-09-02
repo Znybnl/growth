@@ -4,6 +4,7 @@ import { Building2, Check, MapPin, Plus, X } from "lucide-react";
 import { useState } from "react";
 
 import { FieldSelect, Input } from "@/components/ui/field";
+import { DialogShell } from "@/components/ui/dialog";
 import { Merchant, MerchantLocationAccess } from "@/lib/types";
 
 type AccountLocationPanelProps = {
@@ -105,8 +106,7 @@ export function AccountLocationPanel({ merchant, locations, onSelectLocation }: 
       {error ? <div role="alert" className="rounded-[8px] border border-coral-alert/30 bg-coral-alert/10 px-4 py-3 text-sm text-coral-alert">{error}</div> : null}
 
       {isAdding ? (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-midnight-ink/45 p-3 backdrop-blur-sm md:items-center md:p-6">
-          <section role="dialog" aria-modal="true" aria-labelledby="create-location-title" className="w-full max-w-xl rounded-[32px] border border-border bg-white p-6 shadow-[0_28px_80px_rgba(18,24,39,0.24)] md:p-8">
+        <DialogShell open={isAdding} onClose={() => setIsAdding(false)} labelledBy="create-location-title" className="max-w-xl p-6 md:p-8">
             <div className="flex items-start justify-between gap-4">
               <div><p className="okado-label">Nouveau périmètre</p><h2 id="create-location-title" className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-graphite">Ajouter un établissement</h2><p className="mt-2 text-sm leading-6 text-ash">Il sera ajouté à vos cartes sans modifier l’établissement actif dans le reste de l’application.</p></div>
               <button type="button" onClick={() => setIsAdding(false)} aria-label="Fermer" className="grid h-9 w-9 shrink-0 place-items-center rounded-full text-ash transition hover:bg-sky-wash hover:text-graphite"><X className="h-5 w-5" /></button>
@@ -120,8 +120,7 @@ export function AccountLocationPanel({ merchant, locations, onSelectLocation }: 
               <label className="block text-sm"><span className="mb-2 block font-medium text-graphite">Adresse</span><Input value={form.address} onChange={(event) => setForm((current) => ({ ...current, address: event.target.value }))} placeholder="12 rue..." /></label>
               <div className="flex flex-col-reverse gap-3 border-t border-border/70 pt-5 sm:flex-row sm:justify-end"><button type="button" onClick={() => setIsAdding(false)} className="okado-secondary-action px-4 text-sm">Annuler</button><button type="button" onClick={() => void addLocation()} disabled={isSaving} className="okado-filled-action px-4 text-sm disabled:opacity-60">{isSaving ? "Création..." : "Créer l’établissement"}</button></div>
             </div>
-          </section>
-        </div>
+        </DialogShell>
       ) : null}
     </>
   );

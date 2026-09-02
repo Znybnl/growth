@@ -84,13 +84,15 @@
   --color-sky-wash: var(--color-purple-haze);
   --color-midnight-ink: var(--color-carbon);
   --color-graphite: #14141e;
-  --color-slate: #374151;
-  --color-ash: #696a72;
+  /* Compatibility aliases: keep old component class names on the Slack ramp
+     while the remaining local markup is migrated to semantic tokens. */
+  --color-slate: var(--color-charcoal);
+  --color-ash: var(--color-mid-gray);
   --color-fog: #edeaed;
-  --color-steel: #6b7280;
-  --color-signal-blue: #145aff;
-  --color-periwinkle-glow: #b6cbfd;
-  --color-hero-blue-fade: #3b82f6;
+  --color-steel: var(--color-mid-gray);
+  --color-signal-blue: var(--color-aubergine);
+  --color-periwinkle-glow: var(--color-lavender-mist);
+  --color-hero-blue-fade: var(--color-aubergine);
   --color-emerald-status: #16ca2e;
   --color-coral-alert: #f26052;
   --color-azure-info: #0099ff;
@@ -134,6 +136,7 @@
     rgba(0, 0, 0, 0.082) 0px 0.36px 1.81px -1.42px,
     rgba(0, 0, 0, 0.07) 0px 1.37px 6.87px -2.83px,
     rgba(0, 0, 0, 0.016) 0px 6px 30px -4.25px;
+  --shadow-floating: rgba(0, 0, 0, 0.1) 0px 0px 32px 0px;
 
   --background: var(--color-soft-white);
   --foreground: var(--color-carbon);
@@ -273,7 +276,13 @@ select {
   border: 1px solid var(--border);
   border-radius: var(--okado-radius-card);
   background: var(--card);
-  box-shadow: var(--shadow-product-card);
+  box-shadow: none;
+}
+
+.okado-section-surface {
+  min-width: 0;
+  border-top: 1px solid var(--okado-border-subtle);
+  padding-block: 1.5rem;
 }
 
 /* Shared SaaS workspace surface. Public game experiences intentionally do not
@@ -438,8 +447,12 @@ select {
 .okado-table-frame {
   overflow: hidden;
   border: 1px solid var(--color-lavender-mist);
-  border-radius: 8px;
+  border-radius: var(--okado-radius-card);
   background: var(--color-pure-white);
+}
+
+.okado-table-container {
+  min-width: 0;
 }
 
 .okado-responsive-table__desktop {
@@ -677,6 +690,53 @@ select {
   min-width: 0;
 }
 
+/* Editors are workspaces, not dashboards: keep the navigation rail and the
+   live preview framed, but let the form read as one calm, continuous surface. */
+.okado-workspace-shell .okado-wizard > .grid > main.okado-card,
+.okado-workspace-shell .okado-campaign-editor > .grid > .space-y-6 > section.okado-card,
+.okado-workspace-shell .okado-editor-page > .okado-card {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.okado-workspace-shell .okado-wizard > .grid > main.okado-card {
+  border-left: 1px solid var(--okado-border-subtle);
+  padding-left: 2rem;
+}
+
+.okado-workspace-shell .okado-campaign-editor > .grid > .space-y-6 > section.okado-card {
+  border-top: 1px solid var(--okado-border-subtle);
+  padding-inline: 0;
+}
+
+.okado-workspace-shell .okado-campaign-editor > .grid > .space-y-6 > section.okado-card:first-child {
+  border-top: 0;
+}
+
+.okado-workspace-shell .okado-poster-editor > .grid > .space-y-6 > section.okado-card,
+.okado-workspace-shell .okado-editor-page > section.okado-card:not(.okado-preview-surface) {
+  border: 0;
+  border-top: 1px solid var(--okado-border-subtle);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  padding-inline: 0;
+}
+
+.okado-workspace-shell .okado-poster-editor > .grid > .space-y-6 > section.okado-card:first-child,
+.okado-workspace-shell .okado-editor-page > section.okado-card:not(.okado-preview-surface):first-of-type {
+  border-top: 0;
+}
+
+@media (max-width: 1279px) {
+  .okado-workspace-shell .okado-wizard > .grid > main.okado-card {
+    border-left: 0;
+    padding-left: 0;
+  }
+}
+
 .okado-workspace-shell :where(.okado-campaign-editor, .okado-wizard, .okado-poster-editor, .okado-editor-page) :where(input:not([type="color"]), textarea, select):not(.okado-preview-surface input):not(.okado-preview-surface textarea):not(.okado-preview-surface select) {
   border-color: var(--color-fog) !important;
   border-radius: var(--okado-radius-control) !important;
@@ -849,44 +909,48 @@ select {
   background: color-mix(in srgb, var(--color-soft-white) 94%, transparent) !important;
 }
 
+.okado-workspace-shell .okado-campaign-editor > .pointer-events-none.sticky {
+  top: 0;
+}
+
 /* Legacy editor chrome is kept functional but follows the shared Slack ramp. */
-.okado-workspace-shell .okado-campaign-editor :where([class~="bg-[#111827]"], [class~="bg-[#2f6df6]"]) {
+.okado-workspace-shell .okado-campaign-editor :where([class~="bg-[#111827]"], [class~="bg-[#2f6df6]"]):not(.okado-preview-surface *) {
   background-color: var(--color-aubergine) !important;
 }
 
-.okado-workspace-shell .okado-campaign-editor :where([class~="hover:bg-[#273142]"]):hover {
+.okado-workspace-shell .okado-campaign-editor :where([class~="hover:bg-[#273142]"]):not(.okado-preview-surface *):hover {
   background-color: var(--color-deep-plum) !important;
 }
 
-.okado-workspace-shell .okado-campaign-editor :where([class~="border-[#111827]"], [class~="border-[#2f6df6]"]) {
+.okado-workspace-shell .okado-campaign-editor :where([class~="border-[#111827]"], [class~="border-[#2f6df6]"]):not(.okado-preview-surface *) {
   border-color: var(--color-aubergine) !important;
 }
 
-.okado-workspace-shell .okado-campaign-editor :where([class~="hover:border-[#2f6df6]"]):hover {
+.okado-workspace-shell .okado-campaign-editor :where([class~="hover:border-[#2f6df6]"]):not(.okado-preview-surface *):hover {
   border-color: var(--color-aubergine) !important;
 }
 
-.okado-workspace-shell .okado-campaign-editor :where([class~="bg-[#eef4ff]"], [class~="bg-[#eff4ff]"]) {
+.okado-workspace-shell .okado-campaign-editor :where([class~="bg-[#eef4ff]"], [class~="bg-[#eff4ff]"]):not(.okado-preview-surface *) {
   background-color: var(--color-purple-haze) !important;
 }
 
-.okado-workspace-shell .okado-campaign-editor :where([class~="text-[#214ccf]"]) {
+.okado-workspace-shell .okado-campaign-editor :where([class~="text-[#214ccf]"]):not(.okado-preview-surface *) {
   color: var(--color-deep-plum) !important;
 }
 
-.okado-workspace-shell .okado-campaign-editor :where([class~="accent-[#2f6df6]"]) {
+.okado-workspace-shell .okado-campaign-editor :where([class~="accent-[#2f6df6]"]):not(.okado-preview-surface *) {
   accent-color: var(--color-aubergine) !important;
 }
 
-.okado-workspace-shell .okado-campaign-editor :where([class~="bg-[#f7f9fc]"]) {
+.okado-workspace-shell .okado-campaign-editor :where([class~="bg-[#f7f9fc]"]):not(.okado-preview-surface *) {
   background-color: var(--color-soft-white) !important;
 }
 
-.okado-workspace-shell .okado-campaign-editor :where([class~="text-[#111827]"], [class~="text-[#182033]"]) {
+.okado-workspace-shell .okado-campaign-editor :where([class~="text-[#111827]"], [class~="text-[#182033]"]):not(.okado-preview-surface *) {
   color: var(--color-carbon) !important;
 }
 
-.okado-workspace-shell .okado-campaign-editor :where([class~="border"][class~="rounded-[18px]"], [class~="border"][class~="rounded-[20px]"], [class~="border"][class~="rounded-[22px]"]):not(input):not(textarea):not(select):not(button) {
+.okado-workspace-shell .okado-campaign-editor :where([class~="border"][class~="rounded-[18px]"], [class~="border"][class~="rounded-[20px]"], [class~="border"][class~="rounded-[22px]"], [class~="border"][class~="rounded-[24px]"], [class~="border"][class~="rounded-[28px]"]):not(input):not(textarea):not(select):not(button):not(.okado-preview-surface *) {
   border-radius: var(--okado-radius-card) !important;
 }
 
@@ -925,9 +989,9 @@ select {
 
 .okado-feature-card {
   border: 1px solid rgba(207, 207, 207, 0.45);
-  border-radius: var(--okado-radius-modal);
+  border-radius: var(--okado-radius-card);
   background: var(--color-linen-canvas);
-  box-shadow: var(--shadow-feature-card);
+  box-shadow: none;
 }
 
 .okado-label {
@@ -939,7 +1003,7 @@ select {
 }
 
 .okado-page-title {
-  color: var(--color-midnight-ink);
+  color: var(--color-carbon);
   font-family: var(--font-display);
   font-size: clamp(1.75rem, 3vw, 2.25rem);
   font-weight: 600;
@@ -948,7 +1012,7 @@ select {
 }
 
 .okado-section-title {
-  color: var(--color-graphite);
+  color: var(--color-carbon);
   font-size: 20px;
   font-weight: 600;
   letter-spacing: -0.16px;
@@ -1014,6 +1078,15 @@ button:disabled,
   box-shadow: none;
 }
 
+.okado-primary-action:focus-visible,
+.okado-filled-action:focus-visible,
+.okado-secondary-action:focus-visible,
+.okado-action-bar button:focus-visible,
+.okado-workspace-shell a:focus-visible {
+  outline: 2px solid var(--color-aubergine);
+  outline-offset: 2px;
+}
+
 .okado-secondary-action {
   display: inline-flex;
   cursor: pointer;
@@ -1059,7 +1132,7 @@ button:disabled,
   background: var(--color-pure-white);
   padding: 1.5rem;
   color: var(--color-carbon);
-  box-shadow: var(--shadow-product-card);
+  box-shadow: var(--shadow-floating);
 }
 
 .okado-dialog-dismiss {

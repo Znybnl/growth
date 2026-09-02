@@ -26,6 +26,7 @@ import { type ChangeEvent, type ReactNode, useEffect, useMemo, useState } from "
 import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
 import { CampaignPreviewQrDialog } from "@/components/merchant/campaign-preview-qr";
 import { CampaignSavedDialog } from "@/components/merchant/campaign-saved-dialog";
+import { DialogShell } from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -582,13 +583,7 @@ function PrizeSuggestionsPanel({
 }) {
   if (!open) return null;
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-[#111827]/40 p-4 sm:items-center"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="wizard-prize-suggestions-title"
-    >
-      <div className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-[32px] border border-lavender-mist bg-white p-6 shadow-[0_28px_80px_rgba(72,26,84,0.18)]">
+    <DialogShell open={open} onClose={onClose} labelledBy="wizard-prize-suggestions-title" className="max-h-[85vh] max-w-2xl overflow-y-auto p-6">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-aubergine">
@@ -600,7 +595,7 @@ function PrizeSuggestionsPanel({
             >
               Ajoutez un lot en quelques secondes
             </h3>
-            <p className="mt-2 text-sm text-[#69758a]">
+            <p className="mt-2 text-sm text-ash">
               {remainingProbability < 0
                 ? `Le total dépasse 100 % de ${Math.abs(Math.round(remainingProbability))} point(s).`
                 : `Il reste ${Math.round(remainingProbability)} % disponible.`}{" "}
@@ -610,7 +605,7 @@ function PrizeSuggestionsPanel({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full px-3 py-1 text-sm font-semibold text-[#69758a] hover:bg-[#f2f4f7]"
+            className="okado-secondary-action okado-compact-action px-3 text-sm"
           >
             Fermer
           </button>
@@ -658,7 +653,7 @@ function PrizeSuggestionsPanel({
                   <button
                     type="button"
                     onClick={() => onAdd(suggestion)}
-                    className="inline-flex items-center gap-1 rounded-[4px] bg-aubergine px-3 py-2 text-xs font-semibold !text-white"
+                    className="okado-filled-action okado-compact-action inline-flex items-center gap-1 px-3 text-xs"
                   >
                     <Plus className="h-3.5 w-3.5" />
                     Ajouter
@@ -671,9 +666,8 @@ function PrizeSuggestionsPanel({
               Aucune suggestion disponible pour cette activité.
             </p>
           )}
-                 </div>
-               </div>
-             </div>
+        </div>
+    </DialogShell>
     );
 }
 
@@ -696,12 +690,11 @@ function WizardBackgroundLibraryDialog({
 }) {
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-[60] flex items-end justify-center bg-[#111827]/45 p-4 sm:items-center">
-      <div className="max-h-[86vh] w-full max-w-4xl overflow-y-auto rounded-[32px] border border-lavender-mist bg-white p-6 shadow-[0_28px_80px_rgba(72,26,84,0.18)]">
+    <DialogShell open={open} onClose={onClose} labelledBy="wizard-background-library-title" className="max-h-[86vh] max-w-4xl overflow-y-auto p-6">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-aubergine">Bibliothèque d&apos;images</p>
-            <h3 className="mt-2 text-xl font-semibold text-carbon">Choisissez une image de fond</h3>
+            <h3 id="wizard-background-library-title" className="mt-2 text-xl font-semibold text-carbon">Choisissez une image de fond</h3>
             <p className="mt-1 text-sm text-ash">Les visuels de la bibliothèque sont disponibles pour votre page de jeu.</p>
           </div>
           <button type="button" onClick={onClose} className="okado-secondary-action px-3 text-sm">Fermer</button>
@@ -724,8 +717,7 @@ function WizardBackgroundLibraryDialog({
             ))}
           </div>
         )}
-      </div>
-    </div>
+    </DialogShell>
   );
 }
 

@@ -57,7 +57,7 @@ export function BillingSubscriptionCard({ billing }: BillingSubscriptionCardProp
   }
 
   return (
-    <section className="okado-card p-5 md:p-7">
+    <section className="okado-section-surface p-0 pb-2">
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div>
           <p className="okado-label">
@@ -81,7 +81,7 @@ export function BillingSubscriptionCard({ billing }: BillingSubscriptionCardProp
         </div>
       </div>
 
-      <div className="mt-6 grid gap-4 lg:grid-cols-[minmax(0,1.3fr)_minmax(300px,0.7fr)]">
+      <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1.3fr)_minmax(300px,0.7fr)]">
         <div className="space-y-4">
           {billing.isSubscribed ? (
             <StatusNotice tone="success" className="p-5">
@@ -125,7 +125,7 @@ export function BillingSubscriptionCard({ billing }: BillingSubscriptionCardProp
             </StatusNotice>
           )}
 
-          <div className="rounded-[16px] border border-lavender-mist bg-purple-haze p-5">
+          <div className="border-t border-lavender-mist pt-5">
             <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
               <p className="text-sm font-semibold text-graphite">Plan mensuel</p>
               <p className="text-2xl font-semibold text-aubergine">{priceLabel}</p>
@@ -138,7 +138,7 @@ export function BillingSubscriptionCard({ billing }: BillingSubscriptionCardProp
           </div>
         </div>
 
-        <div className="rounded-[16px] border border-lavender-mist bg-white p-5">
+        <div className="border-t border-lavender-mist pt-5 lg:border-l lg:border-t-0 lg:pl-8">
           <p className="text-sm font-semibold text-carbon">Actions</p>
           <div className="mt-4 space-y-3">
             {billing.isSubscribed ? (

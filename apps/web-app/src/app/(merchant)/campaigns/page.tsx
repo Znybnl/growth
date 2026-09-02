@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { CampaignActionsMenu } from "@/components/merchant/campaign-actions-menu";
 import { EmptyState, PageHeader, ResponsiveTable } from "@/components/ui/workspace";
+import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import { formatCurrency, formatPercent, gameTypeLabel } from "@/lib/format";
@@ -36,9 +37,9 @@ export default async function CampaignsPage({
           <div className="flex min-h-[var(--okado-action-primary-height)] items-center px-2 text-sm font-semibold text-ash">
             {activeCount} actives · {campaigns.length} au total
           </div>
-          <Link href="/campaigns/new/guided" prefetch={false} className="okado-filled-action px-5">
-            Créer une campagne
-          </Link>
+          <Button asChild variant="primary" size="lg">
+            <Link href="/campaigns/new/guided" prefetch={false}>Créer une campagne</Link>
+          </Button>
           </>
         }
       />

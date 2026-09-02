@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { BarChart3, BookOpen, BriefcaseBusiness, CircleDollarSign, Gamepad2, Gauge, HandCoins, LayoutDashboard, Settings2, Star, UserRound } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import posthog from "posthog-js";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { MerchantSessionGuard } from "@/components/merchant/merchant-session-guard";
@@ -45,6 +45,8 @@ const adminNavItems: Array<{ href: string; label: string; icon: LucideIcon }> = 
 export function MerchantShell({ children, merchant, user, locations, activeLocationId, isSaasAdmin }: MerchantShellProps) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
   const [locationChangeTarget, setLocationChangeTarget] = useState<string | null>(null);
   const [campaignsVersion, setCampaignsVersion] = useState<string | null>(null);
   const [merchantAlerts, setMerchantAlerts] = useState({
@@ -56,6 +58,44 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
   const failedRewardEmails = merchantAlerts.emailCount;
   const billing = useMemo(() => getMerchantBillingSummary(merchant), [merchant]);
   const accountInitials = `${user.firstName?.[0] ?? ""}${user.lastName?.[0] ?? ""}`.toUpperCase() || "OK";
+
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    const previousActiveElement = document.activeElement as HTMLElement | null;
+    const focusableSelector = "a[href], button:not([disabled]), [tabindex]:not([tabindex=\"-1\"])";
+
+    function handleMenuKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+        return;
+      }
+      if (event.key !== "Tab" || !menuRef.current) return;
+
+      const focusable = Array.from(menuRef.current.querySelectorAll<HTMLElement>(focusableSelector));
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+
+    document.addEventListener("keydown", handleMenuKeyDown);
+    const animationFrame = window.requestAnimationFrame(() => {
+      menuRef.current?.querySelector<HTMLElement>(focusableSelector)?.focus();
+    });
+
+    return () => {
+      window.cancelAnimationFrame(animationFrame);
+      document.removeEventListener("keydown", handleMenuKeyDown);
+      previousActiveElement?.focus();
+    };
+  }, [menuOpen]);
 
   useEffect(() => {
     if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) {
@@ -170,6 +210,9 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
       ) : null}
 
       <aside
+        ref={menuRef}
+        id="merchant-navigation"
+        aria-label="Navigation de l’espace de travail"
         className={`fixed inset-y-0 left-0 z-40 w-[248px] border-r border-white/10 bg-deep-plum text-white shadow-[8px_0_32px_rgba(72,26,84,0.12)] transition-transform duration-200 lg:translate-x-0 ${
           menuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
@@ -224,7 +267,7 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
             <CircleDollarSign className="size-4 shrink-0" aria-hidden="true" />
             <span>Caisse</span>
           </Link>
-          <Button asChild className="okado-sidebar-cta mt-5 h-10 px-4">
+          <Button asChild variant="primary" className="okado-sidebar-cta mt-5 h-10 px-4">
             <Link href="/campaigns/new/guided" prefetch={false} onClick={() => setMenuOpen(false)}>
               Créer une campagne
             </Link>
@@ -357,9 +400,13 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
         <header className="sticky top-0 z-30 border-b border-fog bg-soft-white/92 backdrop-blur-sm">
           <div className="flex min-h-[56px] items-center gap-4 px-4 py-3 lg:px-7">
             <button
+              ref={menuButtonRef}
               type="button"
               className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] border border-border bg-white lg:hidden"
               onClick={() => setMenuOpen((current) => !current)}
+              aria-expanded={menuOpen}
+              aria-controls="merchant-navigation"
+              aria-label={menuOpen ? "Fermer le menu" : "Ouvrir le menu"}
             >
               <span className="space-y-1">
                 <span className="block h-0.5 w-4 bg-graphite" />

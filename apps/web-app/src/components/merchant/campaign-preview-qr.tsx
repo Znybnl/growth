@@ -3,6 +3,8 @@
 import Image from "next/image";
 import { X } from "lucide-react";
 
+import { DialogShell } from "@/components/ui/dialog";
+
 export function CampaignPreviewQr({ campaignId }: { campaignId: string }) {
   return (
     <div
@@ -49,13 +51,7 @@ export function CampaignPreviewQrDialog({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-deep-plum/55 px-4 pb-4 pt-10 backdrop-blur-[6px] sm:items-center sm:p-6">
-      <section
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="campaign-preview-qr-title"
-        className="w-full max-w-[620px] rounded-[var(--okado-radius-modal)] border border-lavender-mist bg-white p-5 text-carbon shadow-[0_0_32px_rgba(0,0,0,0.1)] sm:p-6"
-      >
+    <DialogShell open={open} onClose={onClose} labelledBy="campaign-preview-qr-title" className="max-w-[620px] p-5 sm:p-6">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">QR code</p>
@@ -85,7 +81,6 @@ export function CampaignPreviewQrDialog({
             Fermer
           </button>
         </div>
-      </section>
-    </div>
+    </DialogShell>
   );
 }

@@ -38,6 +38,7 @@ import { CampaignPreviewQrDialog } from "@/components/merchant/campaign-preview-
 import { CampaignLivePreview as SharedCampaignLivePreview } from "@/components/merchant/campaign-live-preview";
 import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
 import { Switch } from "@/components/ui/switch";
+import { DialogShell } from "@/components/ui/dialog";
 import { ValidationDialog } from "@/components/ui/validation-dialog";
 import {
   DropdownMenu,
@@ -540,40 +541,39 @@ function BackgroundLibraryDialog({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-deep-plum/55 px-4 pb-4 pt-10 backdrop-blur-[6px] sm:items-center sm:p-6">
-      <div role="dialog" aria-modal="true" aria-labelledby="background-library-title" className="w-full max-w-5xl rounded-[var(--okado-radius-modal)] border border-lavender-mist bg-white p-6 text-carbon shadow-[0_0_32px_rgba(0,0,0,0.1)]">
+    <DialogShell open={open} onClose={onClose} labelledBy="background-library-title" className="max-w-5xl p-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
-      <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Biblioth&egrave;que d&apos;images</p>
+      <p className="okado-label">Biblioth&egrave;que d&apos;images</p>
             <h2 id="background-library-title" className="mt-2 text-2xl font-semibold text-carbon">
               Sélectionnez une image de fond
             </h2>
-            <p className="mt-2 text-sm leading-7 text-[#5c6577]">
+            <p className="mt-2 text-sm leading-6 text-ash">
               Choisissez un visuel existant de la plateforme pour l&apos;utiliser sur la page de jeu.
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-[18px] border border-[#d7e0ed] px-4 py-2 text-sm font-semibold text-[#182033]"
+            className="okado-secondary-action okado-compact-action px-4 text-sm"
           >
             Fermer
           </button>
         </div>
 
         {error ? (
-          <div className="mt-4 rounded-[18px] border border-[#f3d4d4] bg-[#fff4f4] px-4 py-3 text-sm text-[#9d3131]">
+          <div className="mt-4 rounded-[var(--okado-radius-control)] border border-coral-alert/30 bg-coral-alert/10 px-4 py-3 text-sm text-coral-alert">
             {error}
           </div>
         ) : null}
 
         <div className="mt-6 grid max-h-[68vh] gap-4 overflow-y-auto pr-1 sm:grid-cols-2 lg:grid-cols-3">
           {isLoading ? (
-            <div className="rounded-[20px] border border-[#dbe4f0] bg-[#f7f9fc] px-4 py-6 text-sm text-[#64748b] sm:col-span-2 lg:col-span-3">
+            <div className="rounded-[var(--okado-radius-control)] border border-border bg-soft-white px-4 py-6 text-sm text-ash sm:col-span-2 lg:col-span-3">
               Chargement de la bibliothèque…
             </div>
           ) : items.length === 0 ? (
-            <div className="rounded-[20px] border border-[#dbe4f0] bg-[#f7f9fc] px-4 py-6 text-sm text-[#64748b] sm:col-span-2 lg:col-span-3">
+            <div className="rounded-[var(--okado-radius-control)] border border-border bg-soft-white px-4 py-6 text-sm text-ash sm:col-span-2 lg:col-span-3">
               Aucune image disponible pour le moment.
             </div>
           ) : (
@@ -588,10 +588,10 @@ function BackgroundLibraryDialog({
                     onSelect(asset.imageUrl);
                     onClose();
                   }}
-                  className={`overflow-hidden rounded-[22px] border text-left transition ${
+                  className={`overflow-hidden rounded-[var(--okado-radius-control)] border text-left transition ${
                     active
-                       ? "border-[#2f6df6] bg-[#eef4ff] shadow-[0_14px_28px_rgba(47,109,246,0.16)]"
-                      : "border-[#dbe4f0] bg-[#f8fafc] hover:border-[#9bb8ff] hover:bg-white"
+                       ? "border-aubergine bg-purple-haze ring-2 ring-lavender-mist/70"
+                      : "border-border bg-soft-white hover:border-aubergine hover:bg-white"
                   }`}
                 >
                   <div className="relative aspect-[4/5] overflow-hidden">
@@ -621,8 +621,7 @@ function BackgroundLibraryDialog({
             })
           )}
         </div>
-      </div>
-    </div>
+    </DialogShell>
   );
 }
 
@@ -648,23 +647,22 @@ function PrizeConditionsDialog({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-deep-plum/55 px-4 pb-4 pt-10 backdrop-blur-[6px] sm:items-center sm:p-6">
-      <div role="dialog" aria-modal="true" aria-labelledby="prize-conditions-title" className="w-full max-w-[560px] rounded-[var(--okado-radius-modal)] border border-lavender-mist bg-white p-6 text-carbon shadow-[0_0_32px_rgba(0,0,0,0.1)]">
+    <DialogShell open={open} onClose={onClose} labelledBy="prize-conditions-title" className="max-w-[560px] p-6">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Conditions</p>
+            <p className="okado-label">Conditions</p>
             <h2 id="prize-conditions-title" className="mt-2 text-2xl font-semibold text-carbon">
               Conditions d&apos;utilisation
             </h2>
-            <p className="mt-2 text-sm leading-7 text-[#5c6577]">
+            <p className="mt-2 text-sm leading-6 text-ash">
               Renseignez les précisions d&apos;usage de ce lot. Elles seront visibles lors du gain et reprises dans l&apos;e-mail envoyé au client.
-              <span className="font-semibold text-[#111827]">{prizeLabel || "sans nom"}</span>.
+              <span className="font-semibold text-carbon">{prizeLabel || "sans nom"}</span>.
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-[18px] border border-[#d7e0ed] px-4 py-2 text-sm font-semibold text-[#182033]"
+            className="okado-secondary-action okado-compact-action px-4 text-sm"
           >
             Fermer
           </button>
@@ -686,13 +684,13 @@ function PrizeConditionsDialog({
         </label>
 
         <label className="mt-6 block text-sm">
-          <span className="mb-2 block text-[#616b7c]">Texte affiché au client</span>
+          <span className="mb-2 block text-charcoal">Texte affiché au client</span>
           <textarea
             value={value}
             onChange={(event) => onChange(event.target.value)}
             rows={7}
             placeholder="Ex. valable hors menu midi, une seule utilisation par table, hors jours fériés..."
-            className="w-full rounded-[22px] border border-[#d7e0ed] bg-white px-4 py-4 outline-none"
+            className="w-full rounded-[var(--okado-radius-control)] border border-border bg-white px-4 py-4 outline-none focus:border-aubergine focus:ring-4 focus:ring-aubergine/15"
           />
         </label>
 
@@ -700,13 +698,12 @@ function PrizeConditionsDialog({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-[20px] border border-[#111827] bg-[#111827] px-5 py-3 text-sm font-semibold text-white"
+            className="okado-filled-action px-5 text-sm"
           >
             Enregistrer
           </button>
         </div>
-      </div>
-    </div>
+    </DialogShell>
   );
 }
 
@@ -754,15 +751,14 @@ function PrizeSuggestionDialog({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-deep-plum/55 px-4 pb-4 pt-10 backdrop-blur-[6px] sm:items-center sm:p-6">
-      <div role="dialog" aria-modal="true" aria-labelledby="prize-suggestions-title" className="w-full max-w-5xl rounded-[var(--okado-radius-modal)] border border-lavender-mist bg-white p-6 text-carbon shadow-[0_0_32px_rgba(0,0,0,0.1)]">
+    <DialogShell open={open} onClose={onClose} labelledBy="prize-suggestions-title" className="max-w-5xl p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Suggestions de lots</p>
+            <p className="okado-label">Suggestions de lots</p>
             <h2 id="prize-suggestions-title" className="mt-2 text-2xl font-semibold text-carbon">
               Dotations suggérées pour {industry || "votre secteur"}
             </h2>
-            <p className="mt-2 max-w-2xl text-sm leading-7 text-[#5c6577]">
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-ash">
               Ajoutez un lot prêt à paramétrer, puis ajustez son stock, ses conditions et sa probabilité.
               Il reste {remainingProbability} % de probabilité disponible.
             </p>
@@ -770,7 +766,7 @@ function PrizeSuggestionDialog({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-[18px] border border-[#d7e0ed] px-4 py-2 text-sm font-semibold text-[#182033]"
+            className="okado-secondary-action okado-compact-action px-4 text-sm"
           >
             Fermer
           </button>
@@ -785,20 +781,20 @@ function PrizeSuggestionDialog({
             return (
               <article
                 key={suggestion.id}
-                className="flex min-h-[238px] flex-col rounded-[24px] border border-[#dbe4f0] bg-white p-5 shadow-[0_10px_28px_rgba(24,39,75,0.06)]"
+                className="flex min-h-[238px] flex-col rounded-[var(--okado-radius-control)] border border-border bg-white p-5"
               >
                 <div className={`flex h-16 w-16 items-center justify-center rounded-[4px] ${iconStyle.className}`}>
                   <Icon className="h-8 w-8" aria-hidden="true" />
                 </div>
                 <div className="mt-5 flex items-start justify-between gap-3">
-                  <h3 className="text-base font-semibold text-[#182033]">{suggestion.label}</h3>
-                  <span className="shrink-0 rounded-full bg-[#eef4ff] px-2.5 py-1 text-xs font-semibold text-[#214ccf]">
+                  <h3 className="text-base font-semibold text-carbon">{suggestion.label}</h3>
+                  <span className="okado-status-badge okado-status-muted">
                     {suggestion.probability} %
                   </span>
                 </div>
-                <p className="mt-2 text-sm leading-6 text-[#64748b]">{suggestion.description}</p>
+                <p className="mt-2 text-sm leading-6 text-ash">{suggestion.description}</p>
                 <div className="mt-auto flex items-center justify-between gap-3 pt-5">
-                  <span className="text-xs font-medium text-[#7b8496]">
+                  <span className="text-xs font-medium text-mid-gray">
                     Coût estimé : {suggestion.estimatedUnitCost.toLocaleString("fr-FR")} €
                   </span>
                   <button
@@ -810,7 +806,7 @@ function PrizeSuggestionDialog({
                         ? "Ajouter ce lot"
                         : "Ajustez les probabilités avant d'ajouter ce lot"
                     }
-                    className="inline-flex items-center gap-2 rounded-[16px] bg-[#111827] px-3 py-2 text-sm font-semibold text-white transition hover:bg-[#273142] disabled:cursor-not-allowed disabled:bg-[#cbd5e1]"
+                    className="okado-filled-action okado-compact-action gap-2 px-3 text-sm disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <Plus className="h-4 w-4" aria-hidden="true" />
                     Ajouter
@@ -820,8 +816,7 @@ function PrizeSuggestionDialog({
             );
           })}
         </div>
-      </div>
-    </div>
+    </DialogShell>
   );
 }
 
@@ -2315,7 +2310,7 @@ function setGameType(gameType: GameType) {
 
   return (
     <div className="okado-campaign-editor space-y-6 pb-24 xl:pb-0">
-      <div className="pointer-events-none sticky top-[-20px] z-20 hidden h-0 overflow-visible xl:-mb-6 xl:block">
+      <div className="pointer-events-none sticky top-0 z-20 hidden h-0 overflow-visible xl:-mb-6 xl:block">
         <div
           className={`pointer-events-auto -mx-3 border-b border-border bg-linen-canvas/95 px-3 py-2 shadow-[0_8px_18px_rgba(18,24,39,0.08)] backdrop-blur-sm transition-all duration-200 lg:-mx-6 lg:px-6 ${
             showStickyActions
@@ -2441,7 +2436,6 @@ function setGameType(gameType: GameType) {
                   checked={form.isActive}
                   onCheckedChange={(checked) => setField("isActive", checked)}
                   aria-label="Activer la campagne"
-                  style={form.isActive ? { backgroundColor: form.accent.signal } : undefined}
                 />
               </label>
             </div>
@@ -2525,7 +2519,6 @@ function setGameType(gameType: GameType) {
                   checked={isExpertMode}
                   onCheckedChange={setIsExpertMode}
                   aria-label="Activer le mode expert"
-                  style={isExpertMode ? { backgroundColor: form.accent.signal } : undefined}
                 />
               </label>
             </div>

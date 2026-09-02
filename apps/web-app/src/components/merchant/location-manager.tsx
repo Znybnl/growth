@@ -4,6 +4,8 @@ import { Building2, MapPin, Plus, Archive, X, AlertTriangle } from "lucide-react
 import { useState } from "react";
 
 import { MerchantLocationAccess, MerchantWorkspace } from "@/lib/types";
+import { Button } from "@/components/ui/button";
+import { DialogShell } from "@/components/ui/dialog";
 import { FieldSelect, Input } from "@/components/ui/field";
 
 export function LocationManager({
@@ -161,7 +163,84 @@ export function LocationManager({
         ))}
       </section>
 
-      {isAdding ? <div className="fixed inset-0 z-50 flex items-end justify-center bg-midnight-ink/30 p-3 backdrop-blur-sm md:items-center"><section role="dialog" aria-modal="true" className="w-full max-w-lg rounded-[var(--okado-radius-modal)] border border-border bg-sky-wash p-6 shadow-[var(--shadow-product-card)] md:p-8"><div className="flex items-start justify-between gap-4"><div><p className="okado-label">Nouveau site</p><h2 className="okado-section-title mt-2">Ajouter un établissement</h2></div><button type="button" onClick={() => setIsAdding(false)} aria-label="Fermer" className="rounded-full p-2 text-ash hover:bg-white"><X className="h-5 w-5" /></button></div><form onSubmit={addLocation} className="mt-6 space-y-4"><label className="block text-sm"><span className="mb-2 block text-ash">Nom du site</span><Input value={form.companyName} onChange={(event) => setForm((current) => ({ ...current, companyName: event.target.value }))} required placeholder="Maison Sora République" /></label><label className="block text-sm"><span className="mb-2 block text-ash">Ville</span><Input value={form.city} onChange={(event) => setForm((current) => ({ ...current, city: event.target.value }))} required placeholder="Paris République" /></label><label className="block text-sm"><span className="mb-2 block text-ash">Adresse</span><Input value={form.address} onChange={(event) => setForm((current) => ({ ...current, address: event.target.value }))} placeholder="12 rue..." /></label><label className="block text-sm"><span className="mb-2 block text-ash">Fuseau horaire</span><FieldSelect value={form.timeZone} onChange={(event) => setForm((current) => ({ ...current, timeZone: event.target.value }))}><option value="Europe/Paris">France métropolitaine</option><option value="America/Toronto">Canada - Est</option></FieldSelect></label><div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:justify-end"><button type="button" onClick={() => setIsAdding(false)} className="okado-secondary-action okado-compact-action px-4 text-sm">Annuler</button><button type="submit" disabled={isSaving} className="okado-filled-action okado-compact-action px-4 text-sm disabled:opacity-60">{isSaving ? "Création..." : "Créer le site"}</button></div></form></section></div> : null}
+      <DialogShell
+        open={isAdding}
+        onClose={() => setIsAdding(false)}
+        labelledBy="location-manager-dialog-title"
+      >
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="okado-label">Nouveau site</p>
+            <h2 id="location-manager-dialog-title" className="okado-section-title mt-2">
+              Ajouter un établissement
+            </h2>
+          </div>
+          <button
+            type="button"
+            onClick={() => setIsAdding(false)}
+            aria-label="Fermer"
+            className="okado-dialog-dismiss"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+        <form onSubmit={addLocation} className="mt-6 space-y-4">
+          <label className="block text-sm">
+            <span className="mb-2 block text-ash">Nom du site</span>
+            <Input
+              value={form.companyName}
+              onChange={(event) => setForm((current) => ({ ...current, companyName: event.target.value }))}
+              required
+              placeholder="Maison Sora République"
+            />
+          </label>
+          <label className="block text-sm">
+            <span className="mb-2 block text-ash">Ville</span>
+            <Input
+              value={form.city}
+              onChange={(event) => setForm((current) => ({ ...current, city: event.target.value }))}
+              required
+              placeholder="Paris République"
+            />
+          </label>
+          <label className="block text-sm">
+            <span className="mb-2 block text-ash">Adresse</span>
+            <Input
+              value={form.address}
+              onChange={(event) => setForm((current) => ({ ...current, address: event.target.value }))}
+              placeholder="12 rue..."
+            />
+          </label>
+          <label className="block text-sm">
+            <span className="mb-2 block text-ash">Fuseau horaire</span>
+            <FieldSelect
+              value={form.timeZone}
+              onChange={(event) => setForm((current) => ({ ...current, timeZone: event.target.value }))}
+            >
+              <option value="Europe/Paris">France métropolitaine</option>
+              <option value="America/Toronto">Canada - Est</option>
+            </FieldSelect>
+          </label>
+          <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:justify-end">
+            <Button
+              type="button"
+              onClick={() => setIsAdding(false)}
+              variant="default"
+              size="sm"
+            >
+              Annuler
+            </Button>
+            <Button
+              type="submit"
+              disabled={isSaving}
+              variant="primary"
+              size="sm"
+            >
+              {isSaving ? "Création..." : "Créer le site"}
+            </Button>
+          </div>
+        </form>
+      </DialogShell>
     </div>
   );
 }

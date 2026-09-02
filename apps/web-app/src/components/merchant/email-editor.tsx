@@ -159,7 +159,7 @@ export function EmailEditor({ campaign, merchant }: EmailEditorProps) {
           ) : null}
       </section>
 
-      <section className="okado-card p-6">
+      <section className="okado-card okado-preview-surface p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p className="okado-label">Prévisualisation</p>

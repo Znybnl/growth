@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+import { DialogShell } from "@/components/ui/dialog";
+
 type OnboardingWelcomeDialogProps = { open: boolean };
 
 export function OnboardingWelcomeDialog({ open }: OnboardingWelcomeDialogProps) {
@@ -15,13 +17,7 @@ export function OnboardingWelcomeDialog({ open }: OnboardingWelcomeDialogProps) 
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-midnight-ink/40 p-4 backdrop-blur-sm">
-      <section
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="onboarding-welcome-title"
-        className="w-full max-w-lg rounded-[var(--okado-radius-modal)] border border-border bg-white p-6 shadow-[var(--shadow-product-card)] sm:p-8"
-      >
+    <DialogShell open={open} onClose={close} labelledBy="onboarding-welcome-title" className="max-w-lg p-6 sm:p-8">
         <p className="okado-label">Votre espace est prêt</p>
         <h2 id="onboarding-welcome-title" className="okado-section-title mt-2">
           Bienvenue !
@@ -38,7 +34,6 @@ export function OnboardingWelcomeDialog({ open }: OnboardingWelcomeDialogProps) 
             Créer mon premier jeu
           </Link>
         </div>
-      </section>
-    </div>
+    </DialogShell>
   );
 }
