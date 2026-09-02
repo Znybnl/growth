@@ -114,7 +114,7 @@ export function EmailEditor({ campaign, merchant }: EmailEditorProps) {
 
   return (
     <div className="okado-editor-page min-h-[calc(100vh-120px)] space-y-6">
-      <section className="px-1 py-2">
+      <section className="px-1">
           <PageHeader
             eyebrow="Atelier email"
             title="Personnaliser l&apos;email de gain"

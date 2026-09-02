@@ -2340,7 +2340,7 @@ function setGameType(gameType: GameType) {
           </div>
         </div>
       </div>
-      <section className="grid gap-6 px-1 py-2 xl:grid-cols-[1.2fr_0.8fr]">
+      <section className="grid gap-6 px-1 xl:grid-cols-[1.2fr_0.8fr]">
           <div className="min-w-0">
             <p className="okado-label">
               Param&eacute;trage de l&apos;animation
