@@ -717,6 +717,35 @@ select {
   background: var(--okado-surface-subtle);
 }
 
+.okado-workspace-shell .okado-cashier-page aside :where(section) {
+  border-color: var(--okado-border-subtle) !important;
+  border-radius: var(--okado-radius-card) !important;
+  box-shadow: none !important;
+}
+
+.okado-workspace-shell .okado-cashier-page :where(
+    [class~="border-[#e2e8f0]"],
+    [class~="border-[#e5ebf2]"],
+    [class~="border-[#edf0f4]"],
+    [class~="border-[#d6dfeb]"]
+  ) {
+  border-color: var(--okado-border-subtle) !important;
+}
+
+.okado-workspace-shell .okado-cashier-page :where([class~="bg-[#fbfcfe]"]) {
+  background-color: var(--okado-surface-page) !important;
+}
+
+.okado-workspace-shell .okado-cashier-page :where(
+    [class~="text-[#182033]"],
+    [class~="text-[#526078]"],
+    [class~="text-[#667286]"],
+    [class~="text-[#7a8498]"],
+    [class~="text-[#8993a6]"]
+  ) {
+  color: var(--okado-text-muted) !important;
+}
+
 .okado-workspace-shell :where(.okado-campaign-editor, .okado-wizard, .okado-poster-editor, .okado-editor-page) :where(.sticky) {
   border-color: var(--color-lavender-mist) !important;
   background: color-mix(in srgb, var(--color-soft-white) 94%, transparent) !important;
