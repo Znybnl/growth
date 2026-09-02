@@ -441,7 +441,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
 
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             <div className="text-sm md:col-span-2">
-              <span className="mb-3 block text-[#616b7c]">Type de logo</span>
+              <span className="mb-3 block text-charcoal">Type de logo</span>
               <div className="grid gap-3 md:grid-cols-3">
                 {[
                   { value: "text", label: "Texte" },
@@ -466,7 +466,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                       className={`rounded-[var(--radius-card)] border px-4 py-3 text-sm font-semibold transition hover:-translate-y-0.5 ${
                         active
                           ? "border-aubergine bg-purple-haze text-aubergine"
-                          : "border-[#d7e0ed] bg-[#f7f9fc] text-[#182033]"
+                          : "border-fog bg-soft-white text-carbon"
                       }`}
                     >
                       {mode.label}
@@ -478,7 +478,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
 
             {poster.logoMode === "text" ? (
               <label className="text-sm md:col-span-2">
-                <span className="mb-2 block text-[#616b7c]">
+                <span className="mb-2 block text-charcoal">
                   Texte affiché à la place du logo
                 </span>
                 <input
@@ -493,8 +493,8 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
               <div className="md:col-span-2">
               <label className="group relative flex min-h-[132px] cursor-pointer flex-col justify-between rounded-[var(--okado-radius-card)] border border-dashed border-border bg-soft-white p-4 text-sm transition hover:border-aubergine hover:bg-purple-haze">
                 <div>
-                  <span className="mb-2 block text-[#616b7c]">Importer le logo affiche</span>
-                  <p className="max-w-md text-sm leading-6 text-[#516073]">
+                  <span className="mb-2 block text-charcoal">Importer le logo affiche</span>
+                  <p className="max-w-md text-sm leading-6 text-ash">
                     PNG, JPEG, WebP ou GIF, 2 Mo maximum. Le logo restera centré en haut de l&apos;affiche.
                   </p>
                 </div>
@@ -535,7 +535,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                 />
               </label>
               {imageUploadError ? (
-                <p role="alert" className="mt-2 text-sm font-medium text-[#b42318]">
+                <p role="alert" className="mt-2 text-sm font-medium text-coral-alert">
                   {imageUploadError}
                 </p>
               ) : null}
@@ -546,8 +546,8 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
               <>
                 <label className="text-sm">
                   <div className="mb-2 flex items-center justify-between gap-3">
-                    <span className="text-[#616b7c]">Taille du logo (%)</span>
-                    <output className="font-semibold text-[#182033]">
+                    <span className="text-charcoal">Taille du logo (%)</span>
+                    <output className="font-semibold text-carbon">
                       {Math.round(poster.logoSizePercent)}%
                     </output>
                   </div>
@@ -566,7 +566,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                 </label>
 
                 <label className="text-sm">
-                  <span className="mb-2 block text-[#616b7c]">Marge sous le logo (px)</span>
+                  <span className="mb-2 block text-charcoal">Marge sous le logo (px)</span>
                   <input
                     type="number"
                     min={0}
@@ -591,7 +591,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
 
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             <label className="text-sm md:col-span-2">
-              <span className="mb-2 block text-[#616b7c]">Texte sous le logo</span>
+              <span className="mb-2 block text-charcoal">Texte sous le logo</span>
               <textarea
                 rows={4}
                 value={poster.headline}
@@ -601,17 +601,17 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
             </label>
 
             <label className="text-sm">
-              <span className="mb-2 block text-[#616b7c]">Couleur du texte</span>
+                <span className="mb-2 block text-charcoal">Couleur du texte</span>
               <input
                 type="color"
                 value={poster.headlineTextColor}
                 onChange={(event) => updatePoster({ headlineTextColor: event.target.value })}
-                className="h-14 w-full rounded-[var(--radius-card)] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none"
+                className="h-14 w-full rounded-[12px] border border-fog bg-white px-2 py-2 outline-none focus:border-aubergine focus:ring-4 focus:ring-aubergine/15"
               />
             </label>
 
             <label className="text-sm">
-              <span className="mb-2 block text-[#616b7c]">Taille du texte (px)</span>
+              <span className="mb-2 block text-charcoal">Taille du texte (px)</span>
               <input
                 type="number"
                 min={24}
@@ -636,13 +636,13 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
 
             <div className="mt-6 grid gap-4 md:grid-cols-2">
               <label className="text-sm">
-                <span className="mb-2 block text-[#616b7c]">Couleur principale</span>
+                <span className="mb-2 block text-charcoal">Couleur principale</span>
                 <input
                   type="color"
                   value={draftWinColor}
                   onChange={(event) => setDraftWinColor(event.target.value)}
                   onBlur={() => updateWheel("winColor", draftWinColor)}
-                  className="h-14 w-full rounded-[var(--radius-card)] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none"
+                  className="h-14 w-full rounded-[12px] border border-fog bg-white px-2 py-2 outline-none focus:border-aubergine focus:ring-4 focus:ring-aubergine/15"
                 />
               </label>
             </div>

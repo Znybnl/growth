@@ -588,7 +588,7 @@ function PrizeSuggestionsPanel({
       aria-modal="true"
       aria-labelledby="wizard-prize-suggestions-title"
     >
-      <div className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-[26px] bg-white p-6 shadow-[0_28px_80px_rgba(17,24,39,0.25)]">
+      <div className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-[32px] border border-lavender-mist bg-white p-6 shadow-[0_28px_80px_rgba(72,26,84,0.18)]">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-aubergine">
@@ -596,7 +596,7 @@ function PrizeSuggestionsPanel({
             </p>
             <h3
               id="wizard-prize-suggestions-title"
-              className="mt-2 text-xl font-semibold text-[#111827]"
+              className="mt-2 text-xl font-semibold text-carbon"
             >
               Ajoutez un lot en quelques secondes
             </h3>
@@ -620,7 +620,7 @@ function PrizeSuggestionsPanel({
             suggestions.map((suggestion) => (
               <div
                 key={suggestion.id}
-                className="rounded-[16px] border border-[#e2e8f0] bg-[#fbfcfe] p-4"
+                className="rounded-[12px] border border-fog bg-soft-white p-4"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-2">
@@ -639,10 +639,10 @@ function PrizeSuggestionsPanel({
                       );
                     })()}
                     <div>
-                      <p className="text-sm font-semibold text-[#182033]">
+                      <p className="text-sm font-semibold text-carbon">
                         {suggestion.label}
                       </p>
-                      <p className="text-xs text-[#8993a6]">
+                      <p className="text-xs text-ash">
                         {suggestion.description}
                       </p>
                     </div>
@@ -652,7 +652,7 @@ function PrizeSuggestionsPanel({
                   </span>
                 </div>
                 <div className="mt-4 flex items-center justify-between gap-3">
-                  <span className="text-xs text-[#69758a]">
+                  <span className="text-xs text-ash">
                     Coût estimé : {suggestion.estimatedUnitCost.toFixed(2)} €
                   </span>
                   <button
@@ -667,7 +667,7 @@ function PrizeSuggestionsPanel({
               </div>
             ))
           ) : (
-            <p className="rounded-[16px] bg-[#f6f8fb] p-4 text-sm text-[#69758a]">
+            <p className="rounded-[8px] bg-purple-haze p-4 text-sm text-ash">
               Aucune suggestion disponible pour cette activité.
             </p>
           )}
@@ -697,29 +697,29 @@ function WizardBackgroundLibraryDialog({
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-[60] flex items-end justify-center bg-[#111827]/45 p-4 sm:items-center">
-      <div className="max-h-[86vh] w-full max-w-4xl overflow-y-auto rounded-[26px] bg-white p-6 shadow-[0_28px_80px_rgba(17,24,39,0.25)]">
+      <div className="max-h-[86vh] w-full max-w-4xl overflow-y-auto rounded-[32px] border border-lavender-mist bg-white p-6 shadow-[0_28px_80px_rgba(72,26,84,0.18)]">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-aubergine">Bibliothèque d&apos;images</p>
-            <h3 className="mt-2 text-xl font-semibold text-[#182033]">Choisissez une image de fond</h3>
-            <p className="mt-1 text-sm text-[#69758a]">Les visuels de la bibliothèque sont disponibles pour votre page de jeu.</p>
+            <h3 className="mt-2 text-xl font-semibold text-carbon">Choisissez une image de fond</h3>
+            <p className="mt-1 text-sm text-ash">Les visuels de la bibliothèque sont disponibles pour votre page de jeu.</p>
           </div>
-          <button type="button" onClick={onClose} className="cursor-pointer rounded-[12px] border border-[#dbe3ed] px-3 py-2 text-sm font-semibold text-[#526078]">Fermer</button>
+          <button type="button" onClick={onClose} className="okado-secondary-action px-3 text-sm">Fermer</button>
         </div>
-        {error ? <p className="mt-4 rounded-[12px] bg-[#fff4f4] px-3 py-2 text-sm text-[#b42318]">{error}</p> : null}
-        {isLoading ? <p className="mt-5 text-sm text-[#69758a]">Chargement de la bibliothèque…</p> : (
+        {error ? <p className="mt-4 rounded-[8px] border border-coral-alert/30 bg-coral-alert/10 px-3 py-2 text-sm text-coral-alert">{error}</p> : null}
+        {isLoading ? <p className="mt-5 text-sm text-ash">Chargement de la bibliothèque…</p> : (
           <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {items.map((item) => (
               <button
                 key={item.id}
                 type="button"
                 onClick={() => { onSelect(item.imageUrl); onClose(); }}
-                className={`cursor-pointer overflow-hidden rounded-[16px] border text-left ${selectedImageUrl === item.imageUrl ? "border-aubergine ring-2 ring-lavender-mist/70" : "border-[#e2e8f0]"}`}
+                className={`cursor-pointer overflow-hidden rounded-[12px] border text-left ${selectedImageUrl === item.imageUrl ? "border-aubergine ring-2 ring-lavender-mist/70" : "border-fog"}`}
               >
                 <div className="relative aspect-[4/3]">
                   <Image src={item.thumbnailUrl} alt={item.label} fill unoptimized className="object-cover" />
                 </div>
-                <div className="px-3 py-2.5 text-sm font-semibold text-[#182033]">{item.label}</div>
+                <div className="px-3 py-2.5 text-sm font-semibold text-carbon">{item.label}</div>
               </button>
             ))}
           </div>
@@ -1062,16 +1062,16 @@ export function CampaignWizard({
   }
 
   const logoSettings = (
-    <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
-      <p className="text-sm font-semibold text-[#182033]">Logo</p>
+    <section className="rounded-[16px] border border-lavender-mist bg-white p-4">
+      <p className="text-sm font-semibold text-carbon">Logo</p>
       <div className="mt-3 grid gap-3 sm:grid-cols-3">
         {([{ value: "text", label: "Texte" }, { value: "image", label: "Image" }, { value: "none", label: "Aucun" }] as const).map((mode) => (
-          <button key={mode.value} type="button" onClick={() => patchDraft({ logoMode: mode.value, logoText: mode.value === "text" ? draft.logoText?.trim() || merchant.companyName : draft.logoText })} className={`cursor-pointer rounded-[12px] border px-3 py-2.5 text-sm font-semibold ${draft.logoMode === mode.value ? "border-aubergine bg-purple-haze text-deep-plum" : "border-[#dbe3ed] bg-white text-[#526078]"}`}>{mode.label}</button>
+          <button key={mode.value} type="button" onClick={() => patchDraft({ logoMode: mode.value, logoText: mode.value === "text" ? draft.logoText?.trim() || merchant.companyName : draft.logoText })} className={`cursor-pointer rounded-[4px] border px-3 py-2.5 text-sm font-semibold ${draft.logoMode === mode.value ? "border-aubergine bg-purple-haze text-deep-plum" : "border-fog bg-white text-charcoal"}`}>{mode.label}</button>
         ))}
       </div>
-      {draft.logoMode === "text" ? <label className="mt-3 block text-sm"><span className="mb-2 block font-semibold text-[#182033]">Texte du logo</span><input value={draft.logoText ?? merchant.companyName} onChange={(event) => patchDraft({ logoText: event.target.value })} className="w-full rounded-[12px] border border-[#dbe3ed] bg-white px-3 py-3" /></label> : null}
+      {draft.logoMode === "text" ? <label className="mt-3 block text-sm"><span className="mb-2 block font-semibold text-carbon">Texte du logo</span><input value={draft.logoText ?? merchant.companyName} onChange={(event) => patchDraft({ logoText: event.target.value })} className="w-full rounded-[12px] border border-fog bg-white px-3 py-3 text-carbon outline-none focus:border-aubergine focus:ring-4 focus:ring-aubergine/15" /></label> : null}
       {draft.logoMode === "image" ? <label className="mt-3 flex cursor-pointer items-center justify-between rounded-[12px] border border-dashed border-[#b8c5d8] px-3 py-3 text-sm font-semibold"><span>Importer un logo</span><input type="file" accept="image/png,image/jpeg,image/webp,image/gif" className="hidden" onChange={(event) => uploadWizardImage(event, (value) => { setImageUploadErrors((current) => ({ ...current, logo: undefined })); patchDraft({ logoUrl: value, logoMode: "image" }); }, (message) => setImageUploadErrors((current) => ({ ...current, logo: message })))} /></label> : null}
-      {imageUploadErrors.logo ? <p role="alert" className="mt-2 text-xs text-[#b42318]">{imageUploadErrors.logo}</p> : null}
+      {imageUploadErrors.logo ? <p role="alert" className="mt-2 text-xs text-coral-alert">{imageUploadErrors.logo}</p> : null}
       {draft.logoMode !== "none" ? <div className="mt-3 grid gap-3 sm:grid-cols-2"><label className="block text-sm"><span className="mb-2 block font-semibold">Taille du logo <output className="float-right text-aubergine">{draft.presentation.logo.sizePercent}%</output></span><input type="range" min={0} max={200} value={draft.presentation.logo.sizePercent} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, logo: { ...draft.presentation.logo, sizePercent: Number(event.target.value) } } })} className="w-full cursor-pointer accent-aubergine" /></label><label className="block text-sm"><span className="mb-2 block font-semibold">Espacement sous le logo (px)</span><input type="number" min={0} max={120} value={draft.presentation.logo.marginBottomPx} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, logo: { ...draft.presentation.logo, marginBottomPx: Number(event.target.value || 0) } } })} className="w-full rounded-[12px] border border-[#dbe3ed] px-3 py-3" /></label></div> : null}
     </section>
   );
