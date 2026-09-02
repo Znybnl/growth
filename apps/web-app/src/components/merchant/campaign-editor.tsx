@@ -874,7 +874,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
       : "min-h-[600px] max-w-[450px] rounded-[38px] px-4 pb-6 pt-8";
 
   return (
-    <div className={flushTop ? "" : "mt-6"}>
+    <div className={`okado-preview-surface ${flushTop ? "" : "mt-6"}`}>
       <div
         className={`mx-auto w-full overflow-hidden border border-[#ced7e6] shadow-[0_30px_70px_rgba(18,24,39,0.18)] ${previewFrameClass}`}
         style={preview.backgroundStyle}

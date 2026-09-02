@@ -458,7 +458,7 @@ function updatePrize(
 
 function WizardPhoneFrame({ children }: { children: ReactNode }) {
   return (
-    <div data-testid="wizard-phone-preview" className="relative mx-auto box-border h-[550px] w-[300px] rounded-[36px] border-[5px] border-[#172033] bg-[#172033] p-1.5 shadow-[0_24px_54px_rgba(18,24,39,0.2)]">
+    <div data-testid="wizard-phone-preview" className="okado-preview-surface relative mx-auto box-border h-[550px] w-[300px] rounded-[36px] border-[5px] border-[#172033] bg-[#172033] p-1.5 shadow-[0_24px_54px_rgba(18,24,39,0.2)]">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute left-1/2 top-2 z-20 h-1.5 w-14 -translate-x-1/2 rounded-full bg-[#6d7890]/70"
@@ -1047,7 +1047,9 @@ export function CampaignWizard({
         );
       const campaignId = payload?.campaign?.campaign?.id ?? payload?.campaign?.id;
       if (campaignId) {
-        setLastSavedDraftSnapshot(JSON.stringify({ ...draft, isActive: targetIsActive }));
+        const savedDraft = { ...draft, isActive: targetIsActive };
+        setDraft(savedDraft);
+        setLastSavedDraftSnapshot(JSON.stringify(savedDraft));
         window.dispatchEvent(new Event("campaigns-updated"));
         setSavedCampaignId(campaignId);
       }
@@ -1155,6 +1157,7 @@ export function CampaignWizard({
 
               <Link
                 href={`/campaigns/${savedCampaignId}/edit/guided`}
+                prefetch={false}
                 className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-[#53627a] underline-offset-4 transition hover:text-[#0f1f3d] hover:underline"
               >
                 <Pencil className="h-4 w-4" aria-hidden="true" />

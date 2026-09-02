@@ -244,7 +244,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
   const previewWrapperClass = compact ? "h-full" : flushTop ? "" : "mt-6";
 
   return (
-    <div className={previewWrapperClass}>
+    <div className={`okado-preview-surface ${previewWrapperClass}`}>
       <div className={`mx-auto w-full overflow-hidden border border-[#ced7e6] shadow-[0_30px_70px_rgba(18,24,39,0.18)] ${previewFrameClass}`} style={{ ...preview.backgroundStyle, ...(compact ? { containerType: "inline-size" } : {}) }}>
         {showStandardHeader ? (
           <>
