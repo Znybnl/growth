@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
+import { PageHeader, SectionCard } from "@/components/ui/workspace";
 import { BackgroundLibraryAsset } from "@/lib/types";
 
 type BackgroundLibraryManagerProps = {
@@ -96,17 +97,13 @@ export function BackgroundLibraryManager({
 
   return (
     <div className="space-y-6">
-      <section className="px-1 py-2">
-        <p className="okado-label">Bibliothèque</p>
-        <h1 className="okado-page-title mt-3">
-          Gérer les images de fond
-        </h1>
-        <p className="mt-4 max-w-3xl text-sm leading-7 text-ash">
-          Chaque image ajoutée est automatiquement réduite et convertie en WebP pour la page de
-          jeu.
-        </p>
+      <PageHeader
+        eyebrow="Administration plateforme · Bibliothèque"
+        title="Gérer les images de fond"
+        description="Chaque image ajoutée est automatiquement réduite et convertie en WebP pour la page de jeu."
+      />
 
-        <form
+      <form
           onSubmit={submitAsset}
           className="okado-card mt-6 grid gap-4 p-4 xl:grid-cols-[0.95fr_1.05fr]"
         >
@@ -116,7 +113,7 @@ export function BackgroundLibraryManager({
               <input
                 value={label}
                 onChange={(event) => setLabel(event.target.value)}
-                className="w-full rounded-[12px] border border-[#cfcfcf] bg-white px-4 py-3 outline-none"
+                className="w-full rounded-[12px] border border-fog bg-white px-4 py-3 text-carbon outline-none focus:border-aubergine focus:ring-4 focus:ring-aubergine/15"
                 placeholder="Sunset Cocktail"
                 required
               />
@@ -126,7 +123,7 @@ export function BackgroundLibraryManager({
               <input
                 value={category}
                 onChange={(event) => setCategory(event.target.value)}
-                className="w-full rounded-[12px] border border-[#cfcfcf] bg-white px-4 py-3 outline-none"
+                className="w-full rounded-[12px] border border-fog bg-white px-4 py-3 text-carbon outline-none focus:border-aubergine focus:ring-4 focus:ring-aubergine/15"
                 placeholder="Food"
                 required
               />
@@ -143,10 +140,10 @@ export function BackgroundLibraryManager({
           </div>
 
           <div className="grid gap-4">
-            <label className="group relative flex min-h-[232px] cursor-pointer flex-col justify-between overflow-hidden rounded-[8px] border border-dashed border-[#cfd9ea] bg-white p-4 transition hover:border-signal-blue hover:bg-sky-wash">
+            <label className="group relative flex min-h-[232px] cursor-pointer flex-col justify-between overflow-hidden rounded-[8px] border border-dashed border-lavender-mist bg-white p-4 transition hover:border-aubergine hover:bg-purple-haze">
               <div>
                 <span className="mb-2 block text-sm text-ash">Image</span>
-                <p className="max-w-md text-sm leading-6 text-slate">
+                <p className="max-w-md text-sm leading-6 text-charcoal">
                   Ajoutez un fond vertical. Il sera optimisé automatiquement pour l’éditeur et la
                   page de jeu.
                 </p>
@@ -185,16 +182,15 @@ export function BackgroundLibraryManager({
               />
             </label>
           </div>
-        </form>
+      </form>
 
-        {message ? (
-          <div className="mt-4 rounded-[8px] border border-border bg-sky-wash px-4 py-3 text-sm font-medium text-graphite">
-            {message}
-          </div>
-        ) : null}
-      </section>
+      {message ? (
+        <div className="rounded-[8px] border border-lavender-mist bg-purple-haze px-4 py-3 text-sm font-medium text-carbon">
+          {message}
+        </div>
+      ) : null}
 
-      <section className="okado-card p-6">
+      <SectionCard className="p-6">
         <div className="flex items-center justify-between gap-3">
           <div>
             <p className="okado-label">Catalogue</p>
@@ -210,7 +206,7 @@ export function BackgroundLibraryManager({
               key={item.id}
               className="okado-compact-card overflow-hidden"
             >
-              <div className="relative aspect-[4/5] overflow-hidden bg-[#e8eef8]">
+              <div className="relative aspect-[4/5] overflow-hidden bg-purple-haze">
                 <Image
                   src={item.thumbnailUrl}
                   alt={item.label}
@@ -243,7 +239,7 @@ export function BackgroundLibraryManager({
                     <button
                       type="button"
                       onClick={() => removeAsset(item)}
-                      className="rounded-[12px] border border-[#b42318] bg-white px-4 py-2 text-sm font-semibold text-[#b42318] transition hover:bg-[#fff7f7]"
+                      className="rounded-[4px] border border-coral-alert/40 bg-white px-4 py-2 text-sm font-semibold text-coral-alert transition hover:bg-coral-alert/10"
                     >
                       Supprimer
                     </button>
@@ -253,7 +249,7 @@ export function BackgroundLibraryManager({
             </article>
           ))}
         </div>
-      </section>
+      </SectionCard>
     </div>
   );
 }

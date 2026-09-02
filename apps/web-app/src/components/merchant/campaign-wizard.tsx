@@ -14,8 +14,6 @@ import {
   Download,
   Eye,
   Gift,
-  ImageIcon,
-  Pencil,
   Plus,
   QrCode,
   Sparkles,
@@ -27,12 +25,15 @@ import { type ChangeEvent, type ReactNode, useEffect, useMemo, useState } from "
 
 import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
 import { CampaignPreviewQrDialog } from "@/components/merchant/campaign-preview-qr";
+import { CampaignSavedDialog } from "@/components/merchant/campaign-saved-dialog";
+import { DialogShell } from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { StatusBadge } from "@/components/ui/status-badge";
 import {
   buildCampaignLivePreviewModel,
   CampaignLivePreview,
@@ -457,7 +458,7 @@ function updatePrize(
 
 function WizardPhoneFrame({ children }: { children: ReactNode }) {
   return (
-    <div data-testid="wizard-phone-preview" className="relative mx-auto box-border h-[550px] w-[300px] rounded-[36px] border-[5px] border-[#172033] bg-[#172033] p-1.5 shadow-[0_24px_54px_rgba(18,24,39,0.2)]">
+    <div data-testid="wizard-phone-preview" className="okado-preview-surface relative mx-auto box-border h-[550px] w-[300px] rounded-[36px] border-[5px] border-[#172033] bg-[#172033] p-1.5 shadow-[0_24px_54px_rgba(18,24,39,0.2)]">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute left-1/2 top-2 z-20 h-1.5 w-14 -translate-x-1/2 rounded-full bg-[#6d7890]/70"
@@ -556,13 +557,13 @@ function draftFromCampaign(merchant: Merchant, performance: CampaignPerformance)
 
 function getWizardPrizeSuggestionIcon(icon: string) {
   const icons = {
-    coffee: { Icon: Coffee, className: "bg-[#fff3df] text-[#b9680b]" },
-    dessert: { Icon: Sparkles, className: "bg-[#f4eaff] text-[#7a3fd1]" },
-    drink: { Icon: Soup, className: "bg-[#e6f6ff] text-[#1576b6]" },
-    discount: { Icon: BadgePercent, className: "bg-[#e9f7ec] text-[#258348]" },
-    supplement: { Icon: CirclePlus, className: "bg-[#e9f7ec] text-[#258348]" },
-    menu: { Icon: UtensilsCrossed, className: "bg-[#eef1ff] text-[#4058c8]" },
-    gift: { Icon: Gift, className: "bg-[#eef1ff] text-[#4058c8]" },
+    coffee: { Icon: Coffee, className: "bg-purple-haze text-charcoal" },
+    dessert: { Icon: Sparkles, className: "bg-purple-haze text-charcoal" },
+    drink: { Icon: Soup, className: "bg-purple-haze text-charcoal" },
+    discount: { Icon: BadgePercent, className: "bg-purple-haze text-charcoal" },
+    supplement: { Icon: CirclePlus, className: "bg-purple-haze text-charcoal" },
+    menu: { Icon: UtensilsCrossed, className: "bg-purple-haze text-charcoal" },
+    gift: { Icon: Gift, className: "bg-purple-haze text-charcoal" },
   } as const;
   return icons[icon as keyof typeof icons] ?? icons.gift;
 }
@@ -582,25 +583,19 @@ function PrizeSuggestionsPanel({
 }) {
   if (!open) return null;
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-[#111827]/40 p-4 sm:items-center"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="wizard-prize-suggestions-title"
-    >
-      <div className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-[26px] bg-white p-6 shadow-[0_28px_80px_rgba(17,24,39,0.25)]">
+    <DialogShell open={open} onClose={onClose} labelledBy="wizard-prize-suggestions-title" className="max-h-[85vh] max-w-2xl overflow-y-auto p-6">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#b28719]">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-aubergine">
               Suggestions adaptées
             </p>
             <h3
               id="wizard-prize-suggestions-title"
-              className="mt-2 text-xl font-semibold text-[#111827]"
+              className="mt-2 text-xl font-semibold text-carbon"
             >
               Ajoutez un lot en quelques secondes
             </h3>
-            <p className="mt-2 text-sm text-[#69758a]">
+            <p className="mt-2 text-sm text-ash">
               {remainingProbability < 0
                 ? `Le total dépasse 100 % de ${Math.abs(Math.round(remainingProbability))} point(s).`
                 : `Il reste ${Math.round(remainingProbability)} % disponible.`}{" "}
@@ -610,7 +605,7 @@ function PrizeSuggestionsPanel({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full px-3 py-1 text-sm font-semibold text-[#69758a] hover:bg-[#f2f4f7]"
+            className="okado-secondary-action okado-compact-action px-3 text-sm"
           >
             Fermer
           </button>
@@ -620,7 +615,7 @@ function PrizeSuggestionsPanel({
             suggestions.map((suggestion) => (
               <div
                 key={suggestion.id}
-                className="rounded-[18px] border border-[#e2e8f0] bg-[#fbfcfe] p-4"
+                className="rounded-[12px] border border-fog bg-soft-white p-4"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-2">
@@ -631,7 +626,7 @@ function PrizeSuggestionsPanel({
                       const Icon = iconStyle.Icon;
                       return (
                         <span
-                          className={`flex h-9 w-9 items-center justify-center rounded-full ${iconStyle.className}`}
+                          className={`flex h-9 w-9 items-center justify-center rounded-[4px] ${iconStyle.className}`}
                           aria-hidden="true"
                         >
                           <Icon className="h-4 w-4" />
@@ -639,26 +634,26 @@ function PrizeSuggestionsPanel({
                       );
                     })()}
                     <div>
-                      <p className="text-sm font-semibold text-[#182033]">
+                      <p className="text-sm font-semibold text-carbon">
                         {suggestion.label}
                       </p>
-                      <p className="text-xs text-[#8993a6]">
+                      <p className="text-xs text-ash">
                         {suggestion.description}
                       </p>
                     </div>
                   </div>
-                  <span className="text-xs font-semibold text-[#b28719]">
+                  <span className="text-xs font-semibold text-aubergine">
                     {suggestion.probability} %
                   </span>
                 </div>
                 <div className="mt-4 flex items-center justify-between gap-3">
-                  <span className="text-xs text-[#69758a]">
+                  <span className="text-xs text-ash">
                     Coût estimé : {suggestion.estimatedUnitCost.toFixed(2)} €
                   </span>
                   <button
                     type="button"
                     onClick={() => onAdd(suggestion)}
-                    className="inline-flex items-center gap-1 rounded-[11px] bg-[#111827] px-3 py-2 text-xs font-semibold !text-white"
+                    className="okado-filled-action okado-compact-action inline-flex items-center gap-1 px-3 text-xs"
                   >
                     <Plus className="h-3.5 w-3.5" />
                     Ajouter
@@ -667,13 +662,12 @@ function PrizeSuggestionsPanel({
               </div>
             ))
           ) : (
-            <p className="rounded-[16px] bg-[#f6f8fb] p-4 text-sm text-[#69758a]">
+            <p className="rounded-[8px] bg-purple-haze p-4 text-sm text-ash">
               Aucune suggestion disponible pour cette activité.
             </p>
           )}
-                 </div>
-               </div>
-             </div>
+        </div>
+    </DialogShell>
     );
 }
 
@@ -696,36 +690,34 @@ function WizardBackgroundLibraryDialog({
 }) {
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-[60] flex items-end justify-center bg-[#111827]/45 p-4 sm:items-center">
-      <div className="max-h-[86vh] w-full max-w-4xl overflow-y-auto rounded-[26px] bg-white p-6 shadow-[0_28px_80px_rgba(17,24,39,0.25)]">
+    <DialogShell open={open} onClose={onClose} labelledBy="wizard-background-library-title" className="max-h-[86vh] max-w-4xl overflow-y-auto p-6">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#b28719]">Bibliothèque d&apos;images</p>
-            <h3 className="mt-2 text-xl font-semibold text-[#182033]">Choisissez une image de fond</h3>
-            <p className="mt-1 text-sm text-[#69758a]">Les visuels de la bibliothèque sont disponibles pour votre page de jeu.</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-aubergine">Bibliothèque d&apos;images</p>
+            <h3 id="wizard-background-library-title" className="mt-2 text-xl font-semibold text-carbon">Choisissez une image de fond</h3>
+            <p className="mt-1 text-sm text-ash">Les visuels de la bibliothèque sont disponibles pour votre page de jeu.</p>
           </div>
-          <button type="button" onClick={onClose} className="cursor-pointer rounded-[12px] border border-[#dbe3ed] px-3 py-2 text-sm font-semibold text-[#526078]">Fermer</button>
+          <button type="button" onClick={onClose} className="okado-secondary-action px-3 text-sm">Fermer</button>
         </div>
-        {error ? <p className="mt-4 rounded-[12px] bg-[#fff4f4] px-3 py-2 text-sm text-[#b42318]">{error}</p> : null}
-        {isLoading ? <p className="mt-5 text-sm text-[#69758a]">Chargement de la bibliothèque…</p> : (
+        {error ? <p className="mt-4 rounded-[8px] border border-coral-alert/30 bg-coral-alert/10 px-3 py-2 text-sm text-coral-alert">{error}</p> : null}
+        {isLoading ? <p className="mt-5 text-sm text-ash">Chargement de la bibliothèque…</p> : (
           <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {items.map((item) => (
               <button
                 key={item.id}
                 type="button"
                 onClick={() => { onSelect(item.imageUrl); onClose(); }}
-                className={`cursor-pointer overflow-hidden rounded-[18px] border text-left ${selectedImageUrl === item.imageUrl ? "border-[#b28719] ring-2 ring-[#f4c14a]/30" : "border-[#e2e8f0]"}`}
+                className={`cursor-pointer overflow-hidden rounded-[12px] border text-left ${selectedImageUrl === item.imageUrl ? "border-aubergine ring-2 ring-lavender-mist/70" : "border-fog"}`}
               >
                 <div className="relative aspect-[4/3]">
                   <Image src={item.thumbnailUrl} alt={item.label} fill unoptimized className="object-cover" />
                 </div>
-                <div className="px-3 py-2.5 text-sm font-semibold text-[#182033]">{item.label}</div>
+                <div className="px-3 py-2.5 text-sm font-semibold text-carbon">{item.label}</div>
               </button>
             ))}
           </div>
         )}
-      </div>
-    </div>
+    </DialogShell>
   );
 }
 
@@ -850,16 +842,20 @@ export function CampaignWizard({
   }, [deferInlineAssets, draft, deferredAssetsLoaded]);
 
   useEffect(() => {
-    if (!isDirty) return;
+    // The completion screen is already backed by a saved campaign. Do not let
+    // the draft guard interfere with its follow-up navigation, even during the
+    // short render/effect transition after the save response.
+    if (!isDirty || savedCampaignId) return;
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
       event.preventDefault();
       event.returnValue = "";
     };
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [isDirty]);
+  }, [isDirty, savedCampaignId]);
 
   const step = WIZARD_STEPS[stepIndex];
+  const previewCampaignId = savedCampaignId ?? draft.id;
   const totalProbability = useMemo(
     () =>
       draft.prizes.reduce(
@@ -1046,7 +1042,9 @@ export function CampaignWizard({
         );
       const campaignId = payload?.campaign?.campaign?.id ?? payload?.campaign?.id;
       if (campaignId) {
-        setLastSavedDraftSnapshot(JSON.stringify({ ...draft, isActive: targetIsActive }));
+        const savedDraft = { ...draft, id: campaignId, isActive: targetIsActive };
+        setDraft(savedDraft);
+        setLastSavedDraftSnapshot(JSON.stringify(savedDraft));
         window.dispatchEvent(new Event("campaigns-updated"));
         setSavedCampaignId(campaignId);
       }
@@ -1062,128 +1060,19 @@ export function CampaignWizard({
   }
 
   const logoSettings = (
-    <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
-      <p className="text-sm font-semibold text-[#182033]">Logo</p>
+    <section className="rounded-[16px] border border-lavender-mist bg-white p-4">
+      <p className="text-sm font-semibold text-carbon">Logo</p>
       <div className="mt-3 grid gap-3 sm:grid-cols-3">
         {([{ value: "text", label: "Texte" }, { value: "image", label: "Image" }, { value: "none", label: "Aucun" }] as const).map((mode) => (
-          <button key={mode.value} type="button" onClick={() => patchDraft({ logoMode: mode.value, logoText: mode.value === "text" ? draft.logoText?.trim() || merchant.companyName : draft.logoText })} className={`cursor-pointer rounded-[12px] border px-3 py-2.5 text-sm font-semibold ${draft.logoMode === mode.value ? "border-[#b28719] bg-[#fff8e1] text-[#8c6710]" : "border-[#dbe3ed] bg-white text-[#526078]"}`}>{mode.label}</button>
+          <button key={mode.value} type="button" onClick={() => patchDraft({ logoMode: mode.value, logoText: mode.value === "text" ? draft.logoText?.trim() || merchant.companyName : draft.logoText })} className={`cursor-pointer rounded-[4px] border px-3 py-2.5 text-sm font-semibold ${draft.logoMode === mode.value ? "border-aubergine bg-purple-haze text-deep-plum" : "border-fog bg-white text-charcoal"}`}>{mode.label}</button>
         ))}
       </div>
-      {draft.logoMode === "text" ? <label className="mt-3 block text-sm"><span className="mb-2 block font-semibold text-[#182033]">Texte du logo</span><input value={draft.logoText ?? merchant.companyName} onChange={(event) => patchDraft({ logoText: event.target.value })} className="w-full rounded-[12px] border border-[#dbe3ed] bg-white px-3 py-3" /></label> : null}
+      {draft.logoMode === "text" ? <label className="mt-3 block text-sm"><span className="mb-2 block font-semibold text-carbon">Texte du logo</span><input value={draft.logoText ?? merchant.companyName} onChange={(event) => patchDraft({ logoText: event.target.value })} className="w-full rounded-[12px] border border-fog bg-white px-3 py-3 text-carbon outline-none focus:border-aubergine focus:ring-4 focus:ring-aubergine/15" /></label> : null}
       {draft.logoMode === "image" ? <label className="mt-3 flex cursor-pointer items-center justify-between rounded-[12px] border border-dashed border-[#b8c5d8] px-3 py-3 text-sm font-semibold"><span>Importer un logo</span><input type="file" accept="image/png,image/jpeg,image/webp,image/gif" className="hidden" onChange={(event) => uploadWizardImage(event, (value) => { setImageUploadErrors((current) => ({ ...current, logo: undefined })); patchDraft({ logoUrl: value, logoMode: "image" }); }, (message) => setImageUploadErrors((current) => ({ ...current, logo: message })))} /></label> : null}
-      {imageUploadErrors.logo ? <p role="alert" className="mt-2 text-xs text-[#b42318]">{imageUploadErrors.logo}</p> : null}
-      {draft.logoMode !== "none" ? <div className="mt-3 grid gap-3 sm:grid-cols-2"><label className="block text-sm"><span className="mb-2 block font-semibold">Taille du logo <output className="float-right text-[#b28719]">{draft.presentation.logo.sizePercent}%</output></span><input type="range" min={0} max={200} value={draft.presentation.logo.sizePercent} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, logo: { ...draft.presentation.logo, sizePercent: Number(event.target.value) } } })} className="w-full cursor-pointer accent-[#b28719]" /></label><label className="block text-sm"><span className="mb-2 block font-semibold">Espacement sous le logo (px)</span><input type="number" min={0} max={120} value={draft.presentation.logo.marginBottomPx} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, logo: { ...draft.presentation.logo, marginBottomPx: Number(event.target.value || 0) } } })} className="w-full rounded-[12px] border border-[#dbe3ed] px-3 py-3" /></label></div> : null}
+      {imageUploadErrors.logo ? <p role="alert" className="mt-2 text-xs text-coral-alert">{imageUploadErrors.logo}</p> : null}
+      {draft.logoMode !== "none" ? <div className="mt-3 grid gap-3 sm:grid-cols-2"><label className="block text-sm"><span className="mb-2 block font-semibold">Taille du logo <output className="float-right text-aubergine">{draft.presentation.logo.sizePercent}%</output></span><input type="range" min={0} max={200} value={draft.presentation.logo.sizePercent} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, logo: { ...draft.presentation.logo, sizePercent: Number(event.target.value) } } })} className="w-full cursor-pointer accent-aubergine" /></label><label className="block text-sm"><span className="mb-2 block font-semibold">Espacement sous le logo (px)</span><input type="number" min={0} max={120} value={draft.presentation.logo.marginBottomPx} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, logo: { ...draft.presentation.logo, marginBottomPx: Number(event.target.value || 0) } } })} className="w-full rounded-[12px] border border-[#dbe3ed] px-3 py-3" /></label></div> : null}
     </section>
   );
-
-  if (savedCampaignId) {
-    return (
-      <div className="mx-auto max-w-4xl">
-        <section className="okado-card overflow-hidden p-6 sm:p-10">
-          <div className="mx-auto max-w-2xl text-center">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#e9f8ec] text-[#18864b]">
-              <Check className="h-7 w-7" aria-hidden="true" />
-            </div>
-            <p className="mt-5 text-xs font-semibold uppercase tracking-[0.18em] text-[#7a8498]">
-              Jeu prêt
-            </p>
-            <h1 className="okado-page-title mt-3">Votre jeu est enregistré.</h1>
-            <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-[#626d82]">
-              Vérifiez une dernière fois le parcours, puis choisissez le support le plus adapté pour le diffuser à vos clients.
-            </p>
-          </div>
-
-          <div className="mt-8 grid gap-6 border-t border-[#e5eaf2] pt-6 lg:grid-cols-[minmax(0,1fr)_220px] lg:items-center lg:gap-10">
-            <div className="min-w-0">
-              <p className="okado-label">Prochaine étape</p>
-              <h2 className="mt-2 text-xl font-semibold tracking-[-0.02em] text-[#0f1728]">
-                Testez le parcours de votre jeu
-              </h2>
-              <p className="mt-2 max-w-xl text-sm leading-6 text-[#626d82]">
-                La prévisualisation simule une participation complète, sans modifier vos stocks ni vos indicateurs.
-              </p>
-
-              <div className="mt-5 grid gap-3 sm:grid-cols-3">
-                <Link
-                  href={`/campaign/${savedCampaignId}?preview=1`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="okado-filled-action !h-11 gap-2 px-4 text-sm"
-                >
-                  <Eye className="h-4 w-4" aria-hidden="true" />
-                  Prévisualiser
-                </Link>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button
-                      type="button"
-                      className="okado-secondary-action !h-11 w-full gap-2 px-4 text-sm"
-                      aria-label="Options du QR code"
-                    >
-                      <QrCode className="h-4 w-4" aria-hidden="true" />
-                      <span>QR code</span>
-                      <ChevronDown className="h-4 w-4" aria-hidden="true" />
-                    </button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent
-                    align="center"
-                    className="w-[250px] rounded-[var(--okado-radius-control)] border-border p-1.5 shadow-[var(--shadow-product-card)]"
-                  >
-                    <DropdownMenuItem asChild className="cursor-pointer gap-2 rounded-[10px] px-3 py-2.5">
-                      <a href={`/api/campaigns/${savedCampaignId}/qr`} download title="Télécharger le QR code de production">
-                        <Download className="h-4 w-4" aria-hidden="true" />
-                        <span>Télécharger le QR code</span>
-                      </a>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="cursor-pointer gap-2 rounded-[10px] px-3 py-2.5" onSelect={() => setQrPreviewOpen(true)}>
-                      <Eye className="h-4 w-4" aria-hidden="true" />
-                      <span>QR de prévisualisation</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-                <Link
-                  href={`/campaigns/${savedCampaignId}/poster`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="okado-secondary-action !h-11 gap-2 px-4 text-sm"
-                >
-                  <ImageIcon className="h-4 w-4" aria-hidden="true" />
-                  Affiche
-                </Link>
-              </div>
-
-              <Link
-                href={`/campaigns/${savedCampaignId}/edit/guided`}
-                className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-[#53627a] underline-offset-4 transition hover:text-[#0f1f3d] hover:underline"
-              >
-                <Pencil className="h-4 w-4" aria-hidden="true" />
-                Modifier le jeu
-              </Link>
-            </div>
-
-            <div className="mx-auto hidden w-fit rounded-[16px] border border-[#dbe4f0] bg-[#fbfcff] p-4 shadow-[var(--shadow-product-card)] lg:block">
-              <p className="mb-3 text-center text-xs font-semibold uppercase tracking-[0.14em] text-[#8993a6]">
-                QR de diffusion
-              </p>
-              <Image
-                src={`/api/campaigns/${savedCampaignId}/qr?inline=1`}
-                alt="QR code de diffusion du jeu"
-                width={176}
-                height={176}
-                unoptimized
-                className="h-44 w-44"
-              />
-            </div>
-          </div>
-        </section>
-        <CampaignPreviewQrDialog
-          open={qrPreviewOpen}
-          campaignId={savedCampaignId}
-          onClose={() => setQrPreviewOpen(false)}
-        />
-      </div>
-    );
-  }
 
   return (
     <div className="okado-wizard space-y-6 pb-10">
@@ -1194,7 +1083,7 @@ export function CampaignWizard({
         </div>
         {draft.id ? (
           <div className="flex flex-wrap items-center gap-2">
-            {isEditing ? <span className="rounded-full bg-[#eef4ff] px-3 py-1.5 text-xs font-semibold text-[#214ccf]">Mode modification</span> : null}
+            {isEditing ? <StatusBadge tone="muted">Mode modification</StatusBadge> : null}
             <Link
               href={`/campaign/${draft.id}?preview=1`}
               target="_blank"
@@ -1252,11 +1141,11 @@ export function CampaignWizard({
         ) : null}
       </section>
 
-      <div className="sticky top-0 z-30 hidden border-b border-[#e2e8f0] bg-[#f8fafc]/95 py-3 backdrop-blur xl:block">
+      <div className="sticky top-0 z-30 hidden border-b border-fog bg-soft-white/95 py-3 backdrop-blur xl:block">
         <div className="flex items-center justify-between gap-3">
-          <span className={`rounded-full px-3 py-1.5 text-xs font-semibold ${!draft.id ? "bg-[#fff8e1] text-[#8c6710]" : draft.isActive ? "bg-[#e9f8ec] text-[#18864b]" : "bg-[#eef4ff] text-[#214ccf]"}`}>
+          <StatusBadge tone={!draft.id || !draft.isActive ? "muted" : "active"}>
             {!draft.id ? "En création" : draft.isActive ? "En ligne" : "Brouillon"}
-          </span>
+          </StatusBadge>
           <div className="flex items-center gap-2">
             <Link href="/campaigns" prefetch={false} className="okado-secondary-action px-4 text-sm">Retour aux jeux</Link>
             <button type="button" onClick={() => void saveCampaign("save")} disabled={isSaving} className="okado-secondary-action px-4 text-sm disabled:opacity-50">
@@ -1277,8 +1166,8 @@ export function CampaignWizard({
           <nav className="mt-4 space-y-1" aria-label="Étapes de création">
             {WIZARD_STEPS.map((item, index) => {
               const active = index === stepIndex;
-              const canAccessStep = isEditing || index <= furthestStepIndex;
-              const complete = !isEditing && index < stepIndex;
+              const canAccessStep = isEditing || Boolean(draft.id) || index <= furthestStepIndex;
+              const complete = !isEditing && !draft.id && index < stepIndex;
               const visited = canAccessStep;
               return (
                 <button
@@ -1286,10 +1175,10 @@ export function CampaignWizard({
                   type="button"
                   onClick={() => canAccessStep && setStepIndex(index)}
                   disabled={!canAccessStep}
-                  className={`flex w-full items-start gap-3 rounded-[16px] px-3 py-3 text-left transition ${active ? "bg-[#111827] text-white" : visited ? "text-[#18864b] hover:bg-[#f5f8fb]" : "text-[#a0a9b9]"}`}
+                  className={`flex w-full items-start gap-3 rounded-[4px] px-3 py-3 text-left transition ${active ? "bg-deep-plum text-white" : visited ? "text-[#18864b] hover:bg-purple-haze" : "text-[#a0a9b9]"}`}
                 >
                   <span
-                    className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${active ? "bg-[#f4c14a] text-[#111827]" : complete ? "bg-[#e9f8ec] text-[#18864b]" : visited ? "bg-[#fff8e1] text-[#b28719]" : "bg-[#f2f4f7]"}`}
+                    className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-[4px] text-[10px] font-bold ${active ? "bg-white text-aubergine" : complete ? "bg-[#e9f8ec] text-[#18864b]" : visited ? "bg-purple-haze text-aubergine" : "bg-[#f2f4f7]"}`}
                   >
                     {complete ? <Check className="h-3.5 w-3.5" /> : item.number}
                   </span>
@@ -1310,7 +1199,7 @@ export function CampaignWizard({
         <main className="okado-card min-w-0 p-5 sm:p-8">
           <div className="flex items-start justify-between gap-4 border-b border-[#edf0f4] pb-5">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#b28719]">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-aubergine">
                 Étape {step.number}
               </p>
               <h2 className="okado-section-title mt-2">{step.title}</h2>
@@ -1318,7 +1207,7 @@ export function CampaignWizard({
                 <p className="mt-2 hidden text-sm text-[#7a8498]">{step.description}</p>
               ) : null}
             </div>
-            <div className="hidden rounded-full bg-[#fff7dd] p-3 text-[#b28719] sm:block">
+            <div className="hidden rounded-[4px] bg-purple-haze p-3 text-aubergine sm:block">
               <Sparkles className="h-5 w-5" />
             </div>
           </div>
@@ -1341,7 +1230,7 @@ export function CampaignWizard({
                     patchDraft({ title: event.target.value })
                   }
                   placeholder="Ex. La roue gourmande de juin"
-                  className="mt-3 w-full rounded-[16px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm text-[#182033] outline-none transition focus:border-[#b28719] focus:ring-4 focus:ring-[#f4c14a]/15"
+                  className="mt-3 w-full rounded-[12px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm text-[#182033] outline-none transition focus:border-aubergine focus:ring-4 focus:ring-aubergine/15"
                 />
               </label>
               <label className="block">
@@ -1358,7 +1247,7 @@ export function CampaignWizard({
                   }
                   rows={3}
                   maxLength={MAX_CAMPAIGN_SUBTITLE_LENGTH}
-                  className="mt-3 w-full resize-none rounded-[16px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm leading-6 text-[#182033] outline-none transition focus:border-[#b28719] focus:ring-4 focus:ring-[#f4c14a]/15"
+                  className="mt-3 w-full resize-none rounded-[12px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm leading-6 text-[#182033] outline-none transition focus:border-aubergine focus:ring-4 focus:ring-aubergine/15"
                 />
                 <span className="mt-1 block text-xs text-[#8993a6]">
                   {draft.subtitle.length}/{MAX_CAMPAIGN_SUBTITLE_LENGTH} caractères · 3 lignes maximum pour conserver un rendu lisible sur mobile.
@@ -1387,7 +1276,7 @@ export function CampaignWizard({
                                 : "Avis Google",
                         });
                       }}
-                      className="mt-3 w-full cursor-pointer rounded-[16px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm text-[#182033] outline-none transition focus:border-[#b28719] focus:ring-4 focus:ring-[#f4c14a]/15"
+                      className="mt-3 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm text-[#182033] outline-none transition focus:border-aubergine focus:ring-4 focus:ring-aubergine/15"
                     >
                       <option value="review_prompt">Obtenir des avis</option>
                       <option value="lead_capture">Collecter des contacts</option>
@@ -1395,14 +1284,14 @@ export function CampaignWizard({
                     </select>
                   </label>
                 ) : null}
-                <label className="flex cursor-pointer items-start gap-3 rounded-[18px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3 text-sm text-[#182033]">
+                <label className="flex cursor-pointer items-start gap-3 rounded-[12px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3 text-sm text-[#182033]">
                     <input
                       type="checkbox"
                       checked={draft.emailCaptureEnabled}
                       onChange={(event) =>
                         patchDraft({ emailCaptureEnabled: event.target.checked })
                       }
-                      className="mt-1 h-4 w-4 accent-[#111827]"
+                      className="mt-1 h-4 w-4 accent-aubergine"
                     />
                     <span>
                       <span className="block font-semibold">Collecter l’e-mail avant le jeu</span>
@@ -1503,14 +1392,14 @@ export function CampaignWizard({
                             : draft.accent,
                       })
                     }
-                    className={`rounded-[22px] border p-5 text-left transition ${draft.gameType === option.value ? "border-[#b28719] bg-[#fff8e1] shadow-[0_12px_28px_rgba(244,193,74,0.16)]" : "border-[#e2e8f0] bg-[#fbfcfe] hover:border-[#b8c5d8]"}`}
+                    className={`rounded-[16px] border p-5 text-left transition ${draft.gameType === option.value ? "border-aubergine bg-purple-haze" : "border-[#e2e8f0] bg-[#fbfcfe] hover:border-[#b8c5d8]"}`}
                   >
                     <div className="flex items-center justify-between">
                       <span className="text-base font-semibold text-[#182033]">
                         {option.label}
                       </span>
                       <span
-                        className={`h-3 w-3 rounded-full ${draft.gameType === option.value ? "bg-[#b28719] ring-4 ring-[#f4c14a]/30" : "bg-[#d7dfeb]"}`}
+                        className={`h-3 w-3 rounded-full ${draft.gameType === option.value ? "bg-aubergine ring-4 ring-lavender-mist/70" : "bg-[#d7dfeb]"}`}
                       />
                     </div>
                     <p className="mt-3 text-sm leading-6 text-[#7a8498]">
@@ -1519,7 +1408,7 @@ export function CampaignWizard({
                   </button>
                 ))}
               </div>
-              <div className="hidden rounded-[22px] border border-[#e2e8f0] bg-[#fbfcfe] p-5">
+              <div className="hidden rounded-[16px] border border-[#e2e8f0] bg-[#fbfcfe] p-5">
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <p className="text-sm font-semibold text-[#182033]">
@@ -1544,7 +1433,7 @@ export function CampaignWizard({
                           },
                         })
                       }
-                      className="mt-0.5 h-4 w-4 cursor-pointer accent-[#b28719]"
+                      className="mt-0.5 h-4 w-4 cursor-pointer accent-aubergine"
                     />
                     <span>
                       <span className="block font-semibold">
@@ -1568,7 +1457,7 @@ export function CampaignWizard({
                           },
                         })
                       }
-                      className="mt-0.5 h-4 w-4 cursor-pointer accent-[#b28719]"
+                      className="mt-0.5 h-4 w-4 cursor-pointer accent-aubergine"
                     />
                     <span>
                       <span className="block font-semibold">
@@ -1592,7 +1481,7 @@ export function CampaignWizard({
                           },
                         })
                       }
-                      className="mt-0.5 h-4 w-4 cursor-pointer accent-[#b28719]"
+                      className="mt-0.5 h-4 w-4 cursor-pointer accent-aubergine"
                     />
                     <span>
                       <span className="block font-semibold">
@@ -1644,11 +1533,9 @@ export function CampaignWizard({
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span
-                    className={`rounded-full px-3 py-1 text-xs font-semibold ${totalProbability > 100 ? "bg-[#fff0f0] text-[#b42318]" : "bg-[#e9f8ec] text-[#18864b]"}`}
-                  >
+                  <StatusBadge tone={totalProbability > 100 ? "danger" : "active"}>
                     {Math.round(totalProbability)} %
-                  </span>
+                  </StatusBadge>
                   {prizeSuggestions.length ? (
                     <button
                       type="button"
@@ -1683,7 +1570,7 @@ export function CampaignWizard({
                       },
                     })
                   }
-                  className="mt-0.5 h-4 w-4 cursor-pointer accent-[#b28719]"
+                  className="mt-0.5 h-4 w-4 cursor-pointer accent-aubergine"
                 />
                 <span>
                   <span className="block font-semibold">Lot disponible lors d&apos;une prochaine visite</span>
@@ -1739,7 +1626,7 @@ export function CampaignWizard({
               {draft.prizes.map((prize, index) => (
                 <div
                   key={prize.id}
-                  className="rounded-[20px] border border-[#e2e8f0] bg-[#fbfcfe] p-4"
+                  className="rounded-[16px] border border-[#e2e8f0] bg-[#fbfcfe] p-4"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8993a6]">
@@ -1876,7 +1763,7 @@ export function CampaignWizard({
                       className="mt-2 w-full rounded-[13px] border border-[#dbe3ed] bg-white px-3 py-3 text-sm text-[#182033]"
                     />
                   </label>
-                  <label className="mt-3 flex cursor-pointer items-start gap-3 rounded-[14px] border border-[#f0dfaa] bg-[#fff9e8] px-3 py-3 text-sm text-[#5f4b12]">
+                  <label className="mt-3 flex cursor-pointer items-start gap-3 rounded-[12px] border border-[#fed7aa] bg-[#fff7ed] px-3 py-3 text-sm text-[#9a3412]">
                     <input
                       type="checkbox"
                       checked={Boolean(prize.purchaseRequired)}
@@ -1887,11 +1774,11 @@ export function CampaignWizard({
                           }),
                         )
                       }
-                      className="mt-1 h-4 w-4 cursor-pointer accent-[#b28719]"
+                      className="mt-1 h-4 w-4 cursor-pointer accent-aubergine"
                     />
                     <span>
                       <span className="block font-semibold">Achat requis pour le retrait</span>
-                      <span className="mt-1 block text-xs leading-5 text-[#806b30]">
+                      <span className="mt-1 block text-xs leading-5 text-[#c2410c]">
                         Ce lot nécessite un achat client. Précisez les modalités.
                       </span>
                     </span>
@@ -1902,7 +1789,7 @@ export function CampaignWizard({
                 <div
                   role="alert"
                   aria-live="polite"
-                  className="rounded-[18px] border border-[#f3c8c8] bg-[#fff7f7] px-4 py-4 text-sm text-[#9f1239]"
+                  className="rounded-[12px] border border-[#f3c8c8] bg-[#fff7f7] px-4 py-4 text-sm text-[#9f1239]"
                 >
                   <p className="font-semibold text-[#861c35]">
                     Vérifiez la dotation avant de continuer
@@ -1939,7 +1826,7 @@ export function CampaignWizard({
                     ],
                   }))
                 }
-                className="inline-flex items-center gap-2 rounded-[14px] border border-dashed border-[#b8c5d8] px-4 py-3 text-sm font-semibold text-[#526078] transition hover:border-[#b28719] hover:text-[#182033]"
+                className="inline-flex items-center gap-2 rounded-[12px] border border-dashed border-[#b8c5d8] px-4 py-3 text-sm font-semibold text-[#526078] transition hover:border-aubergine hover:text-[#182033]"
               >
                 <Gift className="h-4 w-4" />
                 Ajouter un lot
@@ -1953,7 +1840,7 @@ export function CampaignWizard({
                 {draft.actions.map((action, index) => (
                   <div
                     key={action.id ?? `wizard-action-${index}`}
-                    className="rounded-[20px] border border-[#e2e8f0] bg-white p-5"
+                    className="rounded-[16px] border border-[#e2e8f0] bg-white p-5"
                   >
                     <div className="flex items-center justify-between gap-3">
                       <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#8993a6]">
@@ -2045,7 +1932,7 @@ export function CampaignWizard({
                 <button
                   type="button"
                   onClick={addAction}
-                  className="inline-flex items-center gap-2 rounded-[14px] border border-dashed border-[#b8c5d8] px-4 py-3 text-sm font-semibold text-[#526078] hover:border-[#b28719] hover:text-[#182033]"
+                className="inline-flex items-center gap-2 rounded-[12px] border border-dashed border-[#b8c5d8] px-4 py-3 text-sm font-semibold text-[#526078] hover:border-aubergine hover:text-[#182033]"
                 >
                   <Plus className="h-4 w-4" />
                   Ajouter une action
@@ -2111,7 +1998,7 @@ export function CampaignWizard({
                             : draft.accent,
                       })
                     }
-                    className={`rounded-[20px] border p-4 text-left ${draft.presentation.layout.templateId === template.id ? "border-[#b28719] bg-[#fff8e1]" : "border-[#e2e8f0] bg-[#fbfcfe]"}`}
+                    className={`rounded-[16px] border p-4 text-left ${draft.presentation.layout.templateId === template.id ? "border-aubergine bg-purple-haze" : "border-[#e2e8f0] bg-[#fbfcfe]"}`}
                   >
                     <span className="block text-sm font-semibold text-[#182033]">
                       {template.label}
@@ -2123,7 +2010,7 @@ export function CampaignWizard({
                 ))}
                </div>
 
-               <div className="space-y-4 rounded-[18px] border border-[#e2e8f0] bg-white p-4">
+               <div className="space-y-4 rounded-[16px] border border-[#e2e8f0] bg-white p-4">
                  <label className="block">
                    <span className="flex flex-wrap items-center gap-2 text-sm font-semibold text-[#182033]">
                      {draft.gameType === "wheel" ? "Couleur principale de la roue" : "Couleur principale du ticket"}
@@ -2209,7 +2096,7 @@ export function CampaignWizard({
                  <label className="block">
                    <span className="flex items-center justify-between gap-3 text-sm font-semibold text-[#182033]">
                      <span>Taille du texte</span>
-                     <output className="text-[#b28719]">{draft.presentation.heading.fontSizePx} px</output>
+                     <output className="text-aubergine">{draft.presentation.heading.fontSizePx} px</output>
                    </span>
                    <input
                      type="range"
@@ -2228,7 +2115,7 @@ export function CampaignWizard({
                          },
                        })
                      }
-                     className="mt-3 w-full cursor-pointer accent-[#b28719]"
+                     className="mt-3 w-full cursor-pointer accent-aubergine"
                      aria-label="Taille de la police"
                    />
                  </label>
@@ -2236,7 +2123,7 @@ export function CampaignWizard({
 
                {logoSettings}
 
-               <details className="group rounded-[18px] border border-[#e2e8f0] bg-[#fbfcfe]">
+               <details className="group rounded-[16px] border border-[#e2e8f0] bg-[#fbfcfe]">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-4 text-sm font-semibold text-[#182033] [&::-webkit-details-marker]:hidden">
                   <span>
                     Paramètres avancés <span className="font-normal text-[#8993a6]">(mode expert)</span>
@@ -2357,7 +2244,7 @@ export function CampaignWizard({
                   />
                 </label>
               ) : null}
-               <div className="hidden rounded-[18px] border border-[#e2e8f0] bg-white p-4 sm:col-span-2">
+               <div className="hidden rounded-[16px] border border-[#e2e8f0] bg-white p-4 sm:col-span-2">
                 <p className="text-sm font-semibold text-[#182033]">Typographie</p>
                 <p className="mt-1 text-xs leading-5 text-[#8993a6]">
                   Choisissez la police et la taille de la promesse affichée sur le jeu.
@@ -2390,7 +2277,7 @@ export function CampaignWizard({
                   <label className="block text-sm">
                     <span className="mb-2 flex items-center justify-between gap-3 font-semibold text-[#182033]">
                       <span>Taille</span>
-                      <output className="text-[#b28719]">{draft.presentation.heading.fontSizePx} px</output>
+                     <output className="text-aubergine">{draft.presentation.heading.fontSizePx} px</output>
                     </span>
                     <input
                       type="range"
@@ -2409,7 +2296,7 @@ export function CampaignWizard({
                           },
                         })
                       }
-                      className="w-full cursor-pointer accent-[#b28719]"
+                     className="w-full cursor-pointer accent-aubergine"
                       aria-label="Taille de la police"
                     />
                   </label>
@@ -2418,10 +2305,10 @@ export function CampaignWizard({
                 <div className="space-y-5">
                   <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
                     <p className="text-sm font-semibold text-[#182033]">Fond</p>
-                    <div className="mt-3 grid gap-3 sm:grid-cols-2">{([{ value: "color", label: "Couleur" }, { value: "image", label: "Image" }] as const).map((mode) => <button key={mode.value} type="button" onClick={() => patchDraft({ presentation: { ...draft.presentation, background: { ...draft.presentation.background, mode: mode.value } } })} className={`cursor-pointer rounded-[12px] border px-3 py-2.5 text-sm font-semibold ${draft.presentation.background.mode === mode.value ? "border-[#b28719] bg-[#fff8e1] text-[#8c6710]" : "border-[#dbe3ed] bg-white text-[#526078]"}`}>{mode.label}</button>)}</div>
+               <div className="mt-3 grid gap-3 sm:grid-cols-2">{([{ value: "color", label: "Couleur" }, { value: "image", label: "Image" }] as const).map((mode) => <button key={mode.value} type="button" onClick={() => patchDraft({ presentation: { ...draft.presentation, background: { ...draft.presentation.background, mode: mode.value } } })} className={`cursor-pointer rounded-[12px] border px-3 py-2.5 text-sm font-semibold ${draft.presentation.background.mode === mode.value ? "border-aubergine bg-purple-haze text-deep-plum" : "border-[#dbe3ed] bg-white text-[#526078]"}`}>{mode.label}</button>)}</div>
                     {draft.presentation.background.mode === "color" ? <label className="mt-3 block text-sm"><span className="mb-2 block font-semibold">Couleur de fond</span><input type="color" value={draft.presentation.background.color} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, background: { ...draft.presentation.background, color: event.target.value } } })} className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] p-1" /></label> : <label className="mt-3 flex cursor-pointer items-center justify-between rounded-[12px] border border-dashed border-[#b8c5d8] px-3 py-3 text-sm font-semibold"><span>Importer une image de fond</span><input type="file" accept="image/png,image/jpeg,image/webp,image/gif" className="hidden" onChange={(event) => uploadWizardImage(event, (value) => { setImageUploadErrors((current) => ({ ...current, background: undefined })); patchDraft({ presentation: { ...draft.presentation, background: { ...draft.presentation.background, mode: "image", imageUrl: value } } }); }, (message) => setImageUploadErrors((current) => ({ ...current, background: message })))} /></label>}
                     {imageUploadErrors.background ? <p role="alert" className="mt-2 text-xs text-[#b42318]">{imageUploadErrors.background}</p> : null}
-                    {draft.presentation.background.mode === "image" ? <div className="mt-3 flex flex-wrap items-center gap-2"><button type="button" onClick={() => setBackgroundLibraryOpen(true)} className="cursor-pointer rounded-[12px] border border-[#111827] bg-[#111827] px-3 py-2.5 text-sm font-semibold text-white">Choisir dans la bibliothèque</button>{draft.presentation.background.imageUrl ? <span className="rounded-full bg-[#e9f8ec] px-3 py-1.5 text-xs font-semibold text-[#18864b]">Image sélectionnée</span> : null}</div> : null}
+                    {draft.presentation.background.mode === "image" ? <div className="mt-3 flex flex-wrap items-center gap-2"><button type="button" onClick={() => setBackgroundLibraryOpen(true)} className="cursor-pointer rounded-[4px] border border-aubergine bg-aubergine px-3 py-2.5 text-sm font-semibold text-white">Choisir dans la bibliothèque</button>{draft.presentation.background.imageUrl ? <span className="rounded-full bg-[#e9f8ec] px-3 py-1.5 text-xs font-semibold text-[#18864b]">Image sélectionnée</span> : null}</div> : null}
                   </section>
                   <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4"><p className="text-sm font-semibold text-[#182033]">Réglages du texte</p><div className="mt-3 grid gap-3 sm:grid-cols-2"><label className="block text-sm"><span className="mb-2 block font-semibold">Couleur du texte</span><input type="color" value={draft.presentation.heading.textColor} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, heading: { ...draft.presentation.heading, textColor: event.target.value } } })} className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] p-1" /></label><label className="block text-sm"><span className="mb-2 block font-semibold">Épaisseur</span><select value={draft.presentation.heading.fontWeight ?? 600} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, heading: { ...draft.presentation.heading, fontWeight: Number(event.target.value) } } })} className="w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] px-3 py-3"><option value={400}>Normale</option><option value={500}>Moyenne</option><option value={600}>Semi-gras</option><option value={700}>Gras</option></select></label></div></section>
                   {draft.gameType === "wheel" ? (
@@ -2431,7 +2318,7 @@ export function CampaignWizard({
                     <label className="mt-3 block text-sm">
                       <span className="mb-2 flex items-center justify-between gap-3 font-semibold text-[#182033]">
                         <span>Espacement</span>
-                        <output className="text-[#b28719]">{draft.presentation.layout.blockSpacingPx} px</output>
+                        <output className="text-aubergine">{draft.presentation.layout.blockSpacingPx} px</output>
                       </span>
                       <input
                         type="range"
@@ -2450,7 +2337,7 @@ export function CampaignWizard({
                             },
                           })
                         }
-                        className="w-full cursor-pointer accent-[#b28719]"
+                        className="w-full cursor-pointer accent-aubergine"
                         aria-label="Espacement entre les blocs"
                       />
                     </label>
@@ -2602,8 +2489,19 @@ export function CampaignWizard({
       {draft.id ? (
         <CampaignPreviewQrDialog
           open={qrPreviewOpen}
-          campaignId={draft.id}
+          campaignId={previewCampaignId ?? draft.id}
           onClose={() => setQrPreviewOpen(false)}
+        />
+      ) : null}
+      {savedCampaignId ? (
+        <CampaignSavedDialog
+          open
+          campaignId={savedCampaignId}
+          onClose={() => setSavedCampaignId(null)}
+          onPreviewQr={() => {
+            setSavedCampaignId(null);
+            setQrPreviewOpen(true);
+          }}
         />
       ) : null}
     </div>

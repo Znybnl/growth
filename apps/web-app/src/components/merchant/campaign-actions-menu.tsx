@@ -29,7 +29,7 @@ type CampaignActionsMenuProps = {
 };
 
 const itemClass =
-  "min-h-9 cursor-pointer gap-2 rounded-[8px] px-2.5 py-2 text-sm font-medium text-graphite focus:bg-sky-wash";
+  "min-h-9 cursor-pointer gap-2 rounded-[4px] px-2.5 py-2 text-sm font-medium text-graphite focus:bg-purple-haze";
 
 export function CampaignActionsMenu({
   campaignId,
@@ -42,7 +42,7 @@ export function CampaignActionsMenu({
           type="button"
           variant="outline"
           size="icon"
-          className="h-9 w-9 rounded-[8px] border-border bg-white text-graphite hover:bg-sky-wash"
+          className="h-9 w-9 rounded-[4px] border-border bg-white text-graphite hover:bg-purple-haze"
           aria-label="Ouvrir les actions de la campagne"
         >
           <MoreVertical className="h-4 w-4" />
@@ -51,7 +51,7 @@ export function CampaignActionsMenu({
       <DropdownMenuContent
         align="end"
         sideOffset={8}
-        className="w-[min(264px,calc(100vw-24px))] rounded-[8px] border-border bg-white p-1.5 shadow-product-card"
+        className="w-[min(264px,calc(100vw-24px))] rounded-[8px] border-lavender-mist bg-white p-1.5 shadow-product-card"
       >
         <DropdownMenuItem className={itemClass} asChild>
           <a href={`/campaign/${campaignId}?preview=1`} target="_blank" rel="noreferrer">

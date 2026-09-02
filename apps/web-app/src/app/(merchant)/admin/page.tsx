@@ -5,6 +5,8 @@ import { isSaasAdminEmail } from "@/lib/admin";
 import { getSaasAdminOverview } from "@/lib/admin-repository";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import { formatDateTime } from "@/lib/format";
+import { MetricCard, PageHeader, ResponsiveTable } from "@/components/ui/workspace";
+import { StatusBadge as SharedStatusBadge } from "@/components/ui/status-badge";
 
 type AdminPageProps = {
   searchParams: Promise<{ q?: string }>;
@@ -12,28 +14,18 @@ type AdminPageProps = {
 
 function StatusBadge({ status }: { status: string | null }) {
   if (status === "active") {
-    return <span className="okado-status-badge okado-status-active">Actif</span>;
+    return <SharedStatusBadge tone="active">Actif</SharedStatusBadge>;
   }
   if (status === "trialing") {
-    return <span className="okado-status-badge okado-status-info">Essai</span>;
+    return <SharedStatusBadge tone="info">Essai</SharedStatusBadge>;
   }
   if (status === "past_due" || status === "unpaid") {
-    return <span className="okado-status-badge okado-status-warning">Paiement a suivre</span>;
+    return <SharedStatusBadge tone="warning">Paiement à suivre</SharedStatusBadge>;
   }
   if (status === "canceled") {
-    return <span className="okado-status-badge okado-status-muted">Resilie</span>;
+    return <SharedStatusBadge tone="muted">Résilié</SharedStatusBadge>;
   }
-  return <span className="okado-status-badge okado-status-muted">Non active</span>;
-}
-
-function MetricCard({ label, value, detail }: { label: string; value: number; detail: string }) {
-  return (
-    <div className="okado-card p-5">
-      <p className="okado-label">{label}</p>
-      <p className="mt-3 text-4xl font-semibold tracking-[-0.05em] text-graphite">{value}</p>
-      <p className="mt-2 text-sm text-ash">{detail}</p>
-    </div>
-  );
+  return <SharedStatusBadge tone="muted">Inactive</SharedStatusBadge>;
 }
 
 export default async function AdminPage({ searchParams }: AdminPageProps) {
@@ -46,26 +38,24 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
 
   return (
     <div className="w-full space-y-6 px-1 pb-8">
-      <header className="py-2">
-        <p className="okado-label">Administration</p>
-        <h1 className="okado-page-title mt-3">
-          Pilotage de la plateforme
-        </h1>
-        <p className="mt-4 max-w-3xl text-sm leading-7 text-ash">
-          Suivez les comptes marchands, les campagnes produit et les alertes qui demandent une action.
-        </p>
-        <div className="mt-5 flex flex-wrap gap-3">
+      <PageHeader
+        eyebrow="Administration"
+        title="Pilotage de la plateforme"
+        description="Suivez les comptes marchands, les campagnes produit et les alertes qui demandent une action."
+        actions={
+          <>
           <Link href="/admin/prize-suggestions" className="okado-secondary-action okado-compact-action px-4 text-sm">
             Gérer les suggestions de lots
           </Link>
-        </div>
-      </header>
+          </>
+        }
+      />
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <MetricCard label="Comptes" value={overview.totals.merchants} detail={`${overview.totals.onboardedMerchants} onboarding termines`} />
+        <MetricCard label="Comptes" value={overview.totals.merchants} detail={`${overview.totals.onboardedMerchants} onboarding terminés`} />
         <MetricCard label="Abonnements" value={overview.totals.activeSubscriptions} detail="Essais et abonnements actifs" />
         <MetricCard label="Animations" value={overview.totals.activeCampaigns} detail={`${overview.totals.leads} participations collectées`} />
-        <MetricCard label="Gains a suivre" value={overview.totals.pendingRewards} detail="Gains en attente de retrait" />
+        <MetricCard label="Gains à suivre" value={overview.totals.pendingRewards} detail="Gains en attente de retrait" />
       </section>
 
       <section className="okado-card border-[#fecdd3] bg-[#fff7f7] p-5">
@@ -78,7 +68,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
         </p>
       </section>
 
-      <section className="okado-card p-4 sm:p-6">
+      <section>
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
           <div>
             <p className="okado-label">Utilisateurs</p>
@@ -95,8 +85,8 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
           </form>
         </div>
 
-        <div className="mt-5 overflow-x-auto">
-          <table className="min-w-[930px] w-full text-left text-sm">
+        <ResponsiveTable className="mt-5">
+          <table className="okado-data-table okado-admin-table w-full text-left text-sm">
             <thead className="okado-table-header">
               <tr>
                 <th className="px-3 py-3 font-medium">Utilisateur</th>
@@ -138,7 +128,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
             </tbody>
           </table>
           {!overview.users.length ? <p className="px-3 py-8 text-sm text-ash">Aucun utilisateur ne correspond a votre recherche.</p> : null}
-        </div>
+        </ResponsiveTable>
       </section>
     </div>
   );

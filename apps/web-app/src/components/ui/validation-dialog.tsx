@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
-import { createPortal } from "react-dom";
+import { useId } from "react";
 
+import { DialogShell } from "@/components/ui/dialog";
 type ValidationDialogProps = {
   open: boolean;
   title: string;
@@ -30,53 +30,36 @@ export function ValidationDialog({
   error = null,
   actionDisabled = false,
 }: ValidationDialogProps) {
-  useEffect(() => {
-    if (!open) return;
+  const titleId = useId();
+  const descriptionId = useId();
+  const errorId = useId();
 
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") onClose();
-    }
-
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [onClose, open]);
-
-  if (!open || typeof document === "undefined") return null;
-
-  return createPortal(
-    <div
-      className="fixed inset-0 z-[70] flex items-end justify-center bg-[#0f1220]/52 px-4 pb-4 pt-10 backdrop-blur-[6px] sm:items-center sm:p-6"
-      role="presentation"
-      onMouseDown={(event) => {
-        if (event.target === event.currentTarget) onClose();
-      }}
+  return (
+    <DialogShell
+      open={open}
+      onClose={onClose}
+      labelledBy={titleId}
+      describedBy={error ? `${descriptionId} ${errorId}` : descriptionId}
     >
-      <section
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="validation-dialog-title"
-        aria-describedby={error ? "validation-dialog-description validation-dialog-error" : "validation-dialog-description"}
-        className="w-full max-w-[420px] rounded-[34px] bg-white p-6 text-[#111827] shadow-[0_34px_90px_rgba(18,24,39,0.24)]"
-      >
         <div
           aria-hidden="true"
-          className={`mx-auto flex h-16 w-16 items-center justify-center rounded-full text-3xl ${
-            tone === "error" ? "bg-[#fff1f2] text-[#be123c]" : "bg-[#eef4ff] text-[#2f6df6]"
+          className={`okado-dialog-icon mx-auto text-2xl ${
+            tone === "error" ? "bg-[#fff1f2] text-[#be123c]" : "bg-purple-haze text-aubergine"
           }`}
         >
           {tone === "error" ? "!" : "✓"}
         </div>
-        <h2 id="validation-dialog-title" className="mt-5 text-center text-2xl font-semibold text-[#0f1728]">
+        <h2 id={titleId} className="okado-dialog-title text-center">
           {title}
         </h2>
-        <p id="validation-dialog-description" className="mt-3 text-center text-sm leading-7 text-[#5c6577]">
+        <p id={descriptionId} className="okado-dialog-description text-center">
           {description}
         </p>
         {error ? (
           <p
-            id="validation-dialog-error"
+            id={errorId}
             role="alert"
-            className="mt-4 rounded-[14px] border border-[#f2c8c8] bg-[#fff4f4] px-4 py-3 text-left text-sm leading-6 text-[#a11a1a]"
+            className="mt-4 rounded-[8px] border border-coral-alert/30 bg-coral-alert/10 px-4 py-3 text-left text-sm leading-6 text-coral-alert"
           >
             {error}
           </p>
@@ -86,13 +69,13 @@ export function ValidationDialog({
             type="button"
             onClick={onAction ?? onClose}
             disabled={actionDisabled}
-            className="w-full rounded-[20px] border border-[#111827] bg-[#111827] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#263247] disabled:cursor-not-allowed disabled:opacity-60"
+            className="okado-filled-action w-full px-4 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {ctaLabel}
           </button>
         </div>
-      </section>
-    </div>,
-    document.body,
+    </DialogShell>
   );
 }
+
+export { ValidationDialog as ConfirmDialog };

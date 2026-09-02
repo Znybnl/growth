@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 
+import { StatusBadge } from "@/components/ui/status-badge";
 import { AffiliateSummary } from "@/lib/types";
 
 type AffiliateReferralCardProps = {
@@ -57,28 +58,28 @@ export function AffiliateReferralCard({ summary }: AffiliateReferralCardProps) {
             automatiquement puis payées manuellement par Okado.
           </p>
 
-          <div className="mt-6 grid gap-3 md:grid-cols-3">
+          <div className="mt-6 grid gap-4 border-y border-fog py-4 md:grid-cols-3 md:divide-x md:divide-fog">
             {[
               ["Commissions en attente", formatMoney(summary.totals.pendingCommissionCents)],
               ["Commissions payées", formatMoney(summary.totals.paidCommissionCents)],
               ["Filleuls actifs", String(summary.totals.activeReferrals)],
             ].map(([label, value]) => (
-              <div key={label} className="okado-compact-card p-4">
+              <div key={label} className="md:px-4 md:first:pl-0">
                 <p className="okado-label tracking-[0.18em]">{label}</p>
-                <p className="mt-3 text-2xl font-semibold text-graphite">{value}</p>
+                <p className="mt-2 text-2xl font-semibold text-carbon">{value}</p>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="okado-compact-card p-5 text-graphite">
+        <div className="border-t border-fog pt-6 text-graphite xl:border-l xl:border-t-0 xl:pl-6 xl:pt-0">
           <p className="okado-label">Votre code</p>
-          <p className="mt-3 rounded-[8px] border border-border bg-sky-wash px-4 py-4 text-center text-2xl font-semibold tracking-[0.16em]">
+          <p className="mt-3 rounded-[8px] bg-purple-haze px-4 py-4 text-center text-2xl font-semibold tracking-[0.16em]">
             {summary.account.code}
           </p>
 
           <p className="okado-label mt-5">Lien affilié</p>
-          <div className="mt-3 rounded-[8px] border border-border bg-sky-wash px-4 py-3 text-sm leading-6 text-slate">
+          <div className="mt-3 rounded-[8px] bg-purple-haze px-4 py-3 text-sm leading-6 text-charcoal">
             {referralUrl}
           </div>
 
@@ -92,7 +93,7 @@ export function AffiliateReferralCard({ summary }: AffiliateReferralCardProps) {
         </div>
       </div>
 
-      <div className="border-t border-border bg-sky-wash px-6 py-5 xl:px-8">
+      <div className="border-t border-fog bg-purple-haze px-6 py-5 xl:px-8">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="okado-label">Filleuls</p>
@@ -101,12 +102,12 @@ export function AffiliateReferralCard({ summary }: AffiliateReferralCardProps) {
           <p className="text-sm text-ash">{summary.totals.referrals} filleul(s)</p>
         </div>
 
-        <div className="mt-5 overflow-hidden rounded-[8px] border border-border bg-white text-graphite">
+        <div className="mt-5 overflow-hidden bg-white text-graphite">
           {summary.referrals.length ? (
             summary.referrals.slice(0, 6).map((referral) => (
               <div
                 key={referral.id}
-                className="grid gap-3 border-b border-border px-5 py-4 last:border-b-0 md:grid-cols-[minmax(0,1fr)_120px_130px]"
+                className="okado-list-row grid gap-3 px-5 py-4 last:border-b-0 md:grid-cols-[minmax(0,1fr)_120px_130px]"
               >
                 <div className="min-w-0">
                   <p className="truncate font-semibold">{referral.referredMerchantName}</p>
@@ -114,9 +115,9 @@ export function AffiliateReferralCard({ summary }: AffiliateReferralCardProps) {
                     Depuis le {new Date(referral.createdAt).toLocaleDateString("fr-FR")}
                   </p>
                 </div>
-                <p className="text-sm font-semibold text-signal-blue">
+                <StatusBadge tone={referral.status === "canceled" ? "muted" : referral.status === "trialing" ? "warning" : "active"}>
                   {referralStatusLabel(referral.status)}
-                </p>
+                </StatusBadge>
                 <p className="text-sm font-semibold">
                   {formatMoney(referral.pendingCommissionCents)}
                 </p>

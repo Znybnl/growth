@@ -4,6 +4,8 @@ import { DataCampaignSelector } from "@/components/merchant/data-campaign-select
 import { DataSearchForm } from "@/components/merchant/data-search-form";
 import { LeadPrizeActions } from "@/components/merchant/lead-prize-actions";
 import { PrizeStockActions } from "@/components/merchant/prize-stock-actions";
+import { EmptyState, MetricCard, PageHeader, ResponsiveTable, StatusNotice } from "@/components/ui/workspace";
+import { StatusBadge } from "@/components/ui/status-badge";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import {
   rewardEmailStatusLabel,
@@ -58,9 +60,9 @@ function Histogram({
         {bars.map((bar) => (
           <div key={bar.label} className="flex min-w-0 flex-col items-center justify-end gap-3">
             <span className="text-sm font-semibold text-graphite">{bar.value}</span>
-            <div className="flex h-full w-full items-end rounded-[8px] bg-sky-wash p-1">
+            <div className="flex h-full w-full items-end rounded-[4px] bg-purple-haze p-1">
               <div
-                className="w-full rounded-[14px]"
+                className="w-full rounded-[4px]"
                 style={{
                   height: `${Math.max((bar.value / max) * 100, bar.value > 0 ? 10 : 0)}%`,
                   backgroundColor: color,
@@ -128,15 +130,15 @@ function buildActionVolumes(
 function leadStatusTone(status: MerchantLeadRow["status"]) {
   switch (status) {
     case "redeemed":
-      return "bg-[#ecfdf3] text-[#047857]";
+      return "active" as const;
     case "claimed":
-      return "bg-[#eff6ff] text-[#1d4ed8]";
+      return "info" as const;
     case "lost":
-      return "bg-[#f3f4f6] text-[#4b5563]";
+      return "muted" as const;
     case "expired":
-      return "bg-[#fff7ed] text-[#c2410c]";
+      return "warning" as const;
     default:
-      return "bg-[#f8fafc] text-[#505b6e]";
+      return "muted" as const;
   }
 }
 
@@ -167,12 +169,12 @@ function LeadsExportSection({
   };
 
   return (
-    <section className="okado-card p-6">
+    <section>
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <p className="okado-label">Saisies et export</p>
           <h2 className="okado-section-title mt-2">
-            Contacts, statuts et consentements
+            Participations, statuts et consentements
           </h2>
         </div>
         <Link
@@ -184,8 +186,8 @@ function LeadsExportSection({
         </Link>
       </div>
 
-      <div className="mt-5 overflow-x-auto">
-        <table className="min-w-full text-left text-sm">
+      <ResponsiveTable className="mt-5">
+        <table className="okado-data-table w-full text-left text-sm">
           <thead className="okado-table-header">
             <tr>
               <th className="px-3 py-3">Participant</th>
@@ -199,16 +201,14 @@ function LeadsExportSection({
           <tbody>
             {leads.map((lead) => (
               <tr key={lead.id}>
-                <td className="border-b border-[#eef2f7] px-3 py-4">
+                <td data-label="Participant" className="border-b border-[#eef2f7] px-3 py-4">
                   <div className="font-semibold text-graphite">{lead.firstName}</div>
                   <div className="text-ash">{lead.email}</div>
                 </td>
-                <td className="border-b border-[#eef2f7] px-3 py-4 text-slate">
-                  <span className={`inline-flex rounded-full px-3 py-1.5 text-xs font-semibold ${leadStatusTone(lead.status)}`}>
-                    {leadStatusLabel(lead.status)}
-                  </span>
+                <td data-label="Statut" className="border-b border-[#eef2f7] px-3 py-4 text-slate">
+                  <StatusBadge tone={leadStatusTone(lead.status)}>{leadStatusLabel(lead.status)}</StatusBadge>
                 </td>
-                <td className="border-b border-[#eef2f7] px-3 py-4 text-slate">
+                <td data-label="Lot" className="border-b border-[#eef2f7] px-3 py-4 text-slate">
                   {lead.prizeLabel}
                   {lead.redemptionCode ? (
                     <div className="mt-1 font-mono text-xs text-ash">
@@ -216,19 +216,20 @@ function LeadsExportSection({
                     </div>
                   ) : null}
                   {lead.prizeUsageConditions ? (
-                    <div className="mt-2 max-w-[280px] whitespace-pre-line rounded-[12px] bg-[#fff8e8] px-3 py-2 text-xs leading-5 text-[#6c5313]">
+                    <div className="mt-2 max-w-[280px] whitespace-pre-line rounded-[4px] bg-purple-haze px-3 py-2 text-xs leading-5 text-charcoal">
                       {lead.prizeUsageConditions}
                     </div>
                   ) : null}
                 </td>
-                <td className="w-[150px] max-w-[150px] border-b border-[#eef2f7] px-3 py-4 align-top text-slate">
+                <td data-label="E-mail gain" className="w-[150px] max-w-[150px] border-b border-[#eef2f7] px-3 py-4 align-top text-slate">
                   <div className="w-[140px] max-w-[140px] overflow-hidden">
-                    <span
-                      className={`inline-flex max-w-full truncate rounded-full px-3 py-1.5 text-xs font-semibold ${rewardEmailTone(lead.emailDeliveryStatus)}`}
+                    <StatusBadge
+                      tone={rewardEmailTone(lead.emailDeliveryStatus)}
+                      className="max-w-full truncate"
                       title={rewardEmailStatusLabel(lead.emailDeliveryStatus)}
                     >
                       {rewardEmailStatusLabel(lead.emailDeliveryStatus)}
-                    </span>
+                    </StatusBadge>
                   </div>
                   {lead.emailDeliveredAt ? (
                     <div className="mt-1 truncate text-xs text-ash">
@@ -245,7 +246,7 @@ function LeadsExportSection({
                     </div>
                   ) : null}
                 </td>
-                <td className="border-b border-[#eef2f7] px-3 py-4 text-slate">
+                <td data-label="Retrait" className="border-b border-[#eef2f7] px-3 py-4 text-slate">
                   <LeadPrizeActions
                     leadId={lead.id}
                     status={lead.status}
@@ -254,7 +255,7 @@ function LeadsExportSection({
                     emailDeliveryStatus={lead.emailDeliveryStatus}
                   />
                 </td>
-                <td className="border-b border-[#eef2f7] px-3 py-4 text-slate">
+                <td data-label="Consentement" className="border-b border-[#eef2f7] px-3 py-4 text-slate">
                   {lead.marketingConsent && lead.consentTimestamp
                     ? formatDateTime(lead.consentTimestamp)
                     : "Non"}
@@ -263,7 +264,7 @@ function LeadsExportSection({
             ))}
           </tbody>
         </table>
-      </div>
+      </ResponsiveTable>
       {total > limit ? (
         <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-5 text-sm">
           <p className="text-ash">
@@ -293,18 +294,18 @@ function LeadsExportSection({
 function rewardEmailTone(status?: RewardEmailDeliveryStatus) {
   switch (status) {
     case "delivered":
-      return "bg-[#ecfdf3] text-[#047857]";
+      return "active" as const;
     case "sent":
-      return "bg-[#eff6ff] text-[#1d4ed8]";
+      return "info" as const;
     case "queued":
-      return "bg-[#fff7ed] text-[#c2410c]";
+      return "warning" as const;
     case "failed":
     case "bounced":
     case "complained":
     case "suppressed":
-      return "bg-[#fff1f2] text-[#be123c]";
+      return "danger" as const;
     default:
-      return "bg-[#f3f4f6] text-[#4b5563]";
+      return "muted" as const;
   }
 }
 
@@ -338,9 +339,13 @@ export default async function DataPage({ searchParams }: DataPageProps) {
 
   if (!dataView || dataView.performance.campaign.merchantId !== session.merchant.id) {
     return (
-      <div className="okado-card p-8">
-        <h1 className="okado-section-title">Aucune campagne sélectionnée</h1>
-      </div>
+      <section className="okado-card okado-section-card">
+        <EmptyState
+          title="Aucune campagne sélectionnée"
+          description="Sélectionnez une campagne pour consulter ses participations et ses indicateurs."
+          action={<Link href="/campaigns" className="okado-filled-action inline-flex">Voir mes campagnes</Link>}
+        />
+      </section>
     );
   }
 
@@ -370,29 +375,20 @@ export default async function DataPage({ searchParams }: DataPageProps) {
   return (
     <div className="space-y-6">
       <section className="px-1 py-2">
-        <div>
-          <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
-            <div>
-              <p className="okado-label">Données de campagne</p>
-              <h1 className="okado-page-title mt-3">
-                {dataView.performance.campaign.title}
-              </h1>
-              <p className="mt-4 max-w-3xl text-sm leading-7 text-ash">
-                Visualisez les indicateurs clés, le stock de dotation et les données de saisie
-                exportables pour chaque campagne.
-              </p>
-            </div>
-
-            <div className="flex flex-wrap gap-3">
-              <Link
-                href={`/campaigns/${dataView.performance.campaign.id}/edit/guided`}
-                prefetch={false}
-                className="okado-filled-action px-5"
-              >
-                Modifier la campagne
-              </Link>
-            </div>
-          </div>
+        <PageHeader
+          eyebrow="Données de campagne"
+          title={dataView.performance.campaign.title}
+          description="Visualisez les indicateurs clés, le stock de dotation et les données de saisie exportables pour chaque campagne."
+          actions={
+            <Link
+              href={`/campaigns/${dataView.performance.campaign.id}/edit/guided`}
+              prefetch={false}
+              className="okado-filled-action px-5"
+            >
+              Modifier la campagne
+            </Link>
+          }
+        />
 
           <div className="mt-6">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end">
@@ -409,39 +405,30 @@ export default async function DataPage({ searchParams }: DataPageProps) {
             </div>
           </div>
           {emailStatus === "attention" ? (
-            <div className="mt-4 rounded-[14px] border border-[#f0dfaa] bg-[#fff9e8] px-4 py-3 text-sm text-[#74570b]">
+            <StatusNotice tone="warning" className="mt-4">
               Cette vue affiche uniquement les e-mails en échec pour un gain attribué et encore à retirer. Renvoyez l’e-mail ou consultez son historique pour résoudre l’alerte.
-            </div>
+            </StatusNotice>
           ) : null}
           {emailStatus === "attention" && dataView.leadTotal === 0 ? (
-            <p className="mt-4 text-sm font-semibold text-[#18864b]">
+            <StatusNotice tone="success" className="mt-4">
               Aucun e-mail à traiter pour cette campagne.
-            </p>
+            </StatusNotice>
           ) : query && dataView.leadTotal === 0 ? (
-            <p className="mt-4 text-sm font-semibold text-[#c2410c]">
+            <StatusNotice tone="warning" className="mt-4">
               Aucun résultat pour « {query} ».
-            </p>
+            </StatusNotice>
           ) : null}
-        </div>
       </section>
 
       <section className="grid gap-4 md:grid-cols-3 xl:grid-cols-6">
         {[
           ["Scans", String(dataView.performance.kpis.scans)],
-          ["Contacts", String(dataView.performance.kpis.contacts)],
+          ["Participations", String(dataView.performance.kpis.contacts)],
           ["Opt-ins", String(dataView.performance.kpis.optIns)],
           ["Conversion", formatPercent(dataView.performance.kpis.conversionRate)],
           ["Lots retirés", String(dataView.performance.kpis.redeemed)],
           ["Coût / participation", formatCurrency(dataView.performance.kpis.costPerLead)],
-        ].map(([label, value]) => (
-          <div
-            key={label}
-            className="okado-card p-5"
-          >
-            <p className="okado-label tracking-[0.18em]">{label}</p>
-            <p className="mt-4 text-3xl font-semibold text-graphite">{value}</p>
-          </div>
-        ))}
+        ].map(([label, value]) => <MetricCard key={label} label={label} value={value} />)}
       </section>
 
       <section className="grid gap-6 xl:grid-cols-2">
@@ -455,7 +442,7 @@ export default async function DataPage({ searchParams }: DataPageProps) {
           eyebrow="Lots récupérés"
           title="Évolution des lots récupérés par jour"
           bars={redeemedPerDay}
-          color="#111827"
+          color="var(--color-deep-plum)"
         />
       </section>
 

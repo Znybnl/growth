@@ -18,9 +18,14 @@ test.describe("Navigation du Wizard en modification", () => {
       timeout: 15_000,
     });
 
-    const editLink = page.getByRole("link", { name: "Modifier le jeu", exact: true });
-    await expect(editLink).toBeVisible();
-    await editLink.click();
+    const savedDialog = page.getByRole("dialog", { name: "Votre jeu est enregistré.", exact: true });
+    await expect(savedDialog).toBeVisible();
+    const completionUrl = page.url();
+    await savedDialog
+      .getByRole("button", { name: "Fermer la confirmation d’enregistrement", exact: true })
+      .click();
+    await expect(savedDialog).toBeHidden();
+    expect(page.url()).toBe(completionUrl);
     await expect(page.getByRole("heading", { name: "Créer une campagne", exact: true })).toBeVisible();
 
     const steps = [

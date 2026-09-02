@@ -3,6 +3,8 @@ import { requireAuthenticatedSession } from "@/lib/auth";
 import { isSaasAdminEmail } from "@/lib/admin";
 import { formatDateTime, leadStatusLabel, rewardEmailStatusLabel } from "@/lib/format";
 import { getMerchantSupportOverview } from "@/lib/store";
+import { MetricCard, PageHeader, ResponsiveTable } from "@/components/ui/workspace";
+import { StatusBadge as SharedStatusBadge } from "@/components/ui/status-badge";
 import { redirect } from "next/navigation";
 
 type SupportPageProps = {
@@ -20,20 +22,7 @@ function StatusBadge({
   label: string;
   tone?: "neutral" | "danger" | "warning" | "success";
 }) {
-  const toneClass =
-    tone === "danger"
-      ? "bg-[#fff1f2] text-[#be123c]"
-      : tone === "warning"
-        ? "bg-[#fff7ed] text-[#c2410c]"
-        : tone === "success"
-          ? "bg-[#ecfdf3] text-[#047857]"
-          : "bg-[#f3f6fb] text-[#475569]";
-
-  return (
-    <span className={`okado-status-badge ${toneClass}`}>
-      {label}
-    </span>
-  );
+  return <SharedStatusBadge tone={tone === "neutral" ? "muted" : tone === "success" ? "active" : tone}>{label}</SharedStatusBadge>;
 }
 
 function includesQuery(values: Array<string | undefined>, query: string) {
@@ -173,18 +162,11 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
 
   return (
     <div className="space-y-6">
-      <section className="px-1 py-2">
-        <div>
-          <p className="okado-label">Supervision</p>
-          <h1 className="okado-page-title mt-3">
-            Centre de supervision
-          </h1>
-          <p className="mt-4 max-w-3xl text-sm leading-7 text-ash">
-            Retrouvez les e-mails en échec, les webhooks Resend reçus et les gains encore en
-            attente de retrait depuis un seul écran support.
-          </p>
-        </div>
-      </section>
+      <PageHeader
+        eyebrow="Supervision"
+        title="Centre de supervision"
+        description="Retrouvez les e-mails en échec, les webhooks Resend reçus et les gains encore en attente de retrait depuis un seul écran support."
+      />
 
       <section className="grid gap-4 md:grid-cols-4">
         {[
@@ -192,15 +174,7 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
           ["Webhooks reçus", String(filteredOverview.webhooks.length)],
           ["Gains sans retrait", String(filteredOverview.pendingClaims.length)],
           ["Logs métier", String(filteredOverview.businessLogs.length)],
-        ].map(([label, value]) => (
-          <div
-            key={label}
-            className="okado-card p-5"
-          >
-            <p className="okado-label tracking-[0.18em]">{label}</p>
-            <p className="mt-4 text-3xl font-semibold text-graphite">{value}</p>
-          </div>
-        ))}
+        ].map(([label, value]) => <MetricCard key={label} label={label} value={value} />)}
       </section>
 
       <section className="rounded-[8px] border border-border bg-primary-action-accent p-6 text-white shadow-product-card">
@@ -337,7 +311,7 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
                 </div>
               ))
             ) : (
-              <p className="rounded-[8px] border border-dashed border-[#dbe4f0] bg-[#fbfcfe] px-4 py-8 text-sm text-[#64748b]">
+              <p className="px-4 py-8 text-sm text-ash">
                 {hasFilter
                   ? "Aucun e-mail ne correspond aux filtres."
                   : "Aucun e-mail en échec sur les dernières campagnes."}
@@ -449,7 +423,7 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
           </div>
         </article>
 
-        <article className="okado-card p-6 xl:col-span-3">
+        <article className="xl:col-span-3">
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="okado-label">Journal</p>
@@ -458,9 +432,9 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
             <StatusBadge label={`${filteredOverview.businessLogs.length} lignes`} />
           </div>
 
-          <div className="mt-6 overflow-x-auto">
+          <ResponsiveTable className="mt-6">
             {filteredOverview.businessLogs.length ? (
-              <table className="min-w-[900px] w-full text-left text-sm">
+              <table className="okado-data-table okado-support-table w-full text-left text-sm">
                 <thead className="okado-table-header">
                   <tr>
                     <th className="px-3 py-3">Date</th>
@@ -501,7 +475,7 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
                   : "Aucun log métier récent."}
               </p>
             )}
-          </div>
+          </ResponsiveTable>
         </article>
       </section>
     </div>

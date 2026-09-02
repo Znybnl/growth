@@ -4,6 +4,7 @@ import { Building2, Check, MapPin, Plus, X } from "lucide-react";
 import { useState } from "react";
 
 import { FieldSelect, Input } from "@/components/ui/field";
+import { DialogShell } from "@/components/ui/dialog";
 import { Merchant, MerchantLocationAccess } from "@/lib/types";
 
 type AccountLocationPanelProps = {
@@ -43,37 +44,37 @@ export function AccountLocationPanel({ merchant, locations, onSelectLocation }: 
 
   return (
     <>
-      <section className="rounded-[24px] border border-[#dbe4f0] bg-white p-5 shadow-[0_16px_42px_rgba(122,136,166,0.08)] md:p-6">
+      <section className="okado-card p-5 md:p-7">
         <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
           <div className="flex items-start gap-3.5">
-            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[14px] bg-[#edf3ff] text-[#145aff]">
+            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[4px] bg-purple-haze text-aubergine">
               <Building2 className="h-5 w-5" aria-hidden="true" />
             </span>
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#60708a]">Contexte du formulaire</p>
-              <h2 className="mt-1.5 text-xl font-semibold tracking-[-0.03em] text-[#101c38]">Quel établissement souhaitez-vous modifier ?</h2>
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-[#68758b]">Choisissez une carte : les informations affichées dans le formulaire inférieur seront remplacées par celles de cet établissement.</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-charcoal">Contexte du formulaire</p>
+              <h2 className="mt-1.5 text-xl font-semibold tracking-[-0.03em] text-carbon">Quel établissement souhaitez-vous modifier ?</h2>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-ash">Choisissez une carte : les informations affichées dans le formulaire inférieur seront remplacées par celles de cet établissement.</p>
             </div>
           </div>
-          <button type="button" onClick={() => setIsAdding(true)} className="inline-flex h-[42px] items-center justify-center gap-2 rounded-[12px] border border-[#cfd9e8] bg-white px-4 text-sm font-semibold text-[#101c38] transition hover:border-[#9fb8e8] hover:bg-[#f5f8ff]">
+          <button type="button" onClick={() => setIsAdding(true)} className="okado-secondary-action px-4 text-sm">
             <Plus className="h-4 w-4" aria-hidden="true" />
             Ajouter
           </button>
         </div>
 
-        <div className="mt-5 rounded-[16px] border border-[#b8cdfd] bg-[#f4f7ff] px-4 py-3.5">
+          <div className="mt-5 rounded-[8px] border border-lavender-mist bg-purple-haze px-4 py-3.5">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
-            <span className="rounded-full bg-[#145aff] px-2.5 py-1 text-[11px] font-semibold text-white">Formulaire affiché ci-dessous</span>
-            <strong className="text-sm text-[#101c38]">{merchant.companyName}</strong>
-            <span className="flex items-center gap-1.5 text-xs text-[#60708a]"><MapPin className="h-3.5 w-3.5" aria-hidden="true" />{merchant.city || "Ville à renseigner"}{merchant.address ? ` · ${merchant.address}` : ""}</span>
+            <span className="rounded-[4px] bg-aubergine px-2.5 py-1 text-[11px] font-semibold text-white">Formulaire affiché ci-dessous</span>
+            <strong className="text-sm text-carbon">{merchant.companyName}</strong>
+            <span className="flex items-center gap-1.5 text-xs text-charcoal"><MapPin className="h-3.5 w-3.5" aria-hidden="true" />{merchant.city || "Ville à renseigner"}{merchant.address ? ` · ${merchant.address}` : ""}</span>
           </div>
-          <p className="mt-2 text-xs leading-5 text-[#526078]">La sélection ci-dessus ne change pas l’établissement actif dans le reste de l’application.</p>
+          <p className="mt-2 text-xs leading-5 text-ash">La sélection ci-dessus ne change pas l’établissement actif dans le reste de l’application.</p>
         </div>
 
         <div className="mt-5">
           <div className="mb-3 flex items-center justify-between gap-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#60708a]">Vos établissements</p>
-            <span className="text-xs text-[#8a96a8]">{locations.length} sélectionnable{locations.length > 1 ? "s" : ""}</span>
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-charcoal">Vos établissements</p>
+            <span className="text-xs text-ash">{locations.length} sélectionnable{locations.length > 1 ? "s" : ""}</span>
           </div>
           <div className="grid gap-2.5 sm:grid-cols-2 xl:grid-cols-3">
             {locations.map(({ merchant: location }) => {
@@ -84,29 +85,28 @@ export function AccountLocationPanel({ merchant, locations, onSelectLocation }: 
                   type="button"
                   onClick={() => onSelectLocation(location.id)}
                   aria-pressed={isSelected}
-                  className={`group flex min-h-[76px] items-center gap-3 rounded-[14px] border px-3.5 py-3 text-left transition ${isSelected ? "border-[#145aff] bg-[#f4f7ff] ring-2 ring-[#145aff]/10" : "border-[#e0e6ef] bg-white hover:border-[#9fb8e8] hover:bg-[#fbfcff]"}`}
+                  className={`group flex min-h-[76px] items-center gap-3 rounded-[8px] border px-3.5 py-3 text-left transition ${isSelected ? "border-aubergine bg-purple-haze ring-2 ring-aubergine/10" : "border-fog bg-white hover:border-lavender-mist hover:bg-purple-haze/40"}`}
                 >
-                  <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-[11px] ${isSelected ? "bg-[#145aff] text-white" : "bg-[#f1f4f8] text-[#65748b]"}`}><Building2 className="h-4 w-4" aria-hidden="true" /></span>
+                  <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-[4px] ${isSelected ? "bg-aubergine text-white" : "bg-soft-white text-ash"}`}><Building2 className="h-4 w-4" aria-hidden="true" /></span>
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-semibold text-[#101c38]">{location.companyName}</span>
-                    <span className="mt-1 block truncate text-xs text-[#758198]">{location.city || "Ville à renseigner"}</span>
+                    <span className="block truncate text-sm font-semibold text-carbon">{location.companyName}</span>
+                    <span className="mt-1 block truncate text-xs text-ash">{location.city || "Ville à renseigner"}</span>
                   </span>
-                  {isSelected ? <span className="flex shrink-0 items-center gap-1 text-[11px] font-semibold text-[#145aff]"><Check className="h-3.5 w-3.5" aria-hidden="true" />Affiché</span> : null}
+                  {isSelected ? <span className="flex shrink-0 items-center gap-1 text-[11px] font-semibold text-aubergine"><Check className="h-3.5 w-3.5" aria-hidden="true" />Affiché</span> : null}
                 </button>
               );
             })}
-            <button type="button" onClick={() => setIsAdding(true)} className="flex min-h-[76px] items-center justify-center gap-2 rounded-[14px] border border-dashed border-[#cbd6e5] px-3 text-sm font-semibold text-[#60708a] transition hover:border-[#9fb8e8] hover:bg-[#fbfcff]">
+            <button type="button" onClick={() => setIsAdding(true)} className="flex min-h-[76px] items-center justify-center gap-2 rounded-[8px] border border-dashed border-lavender-mist px-3 text-sm font-semibold text-charcoal transition hover:border-aubergine hover:bg-purple-haze/50">
               <Plus className="h-4 w-4" aria-hidden="true" /> Ajouter un établissement
             </button>
           </div>
         </div>
       </section>
 
-      {error ? <div role="alert" className="rounded-[12px] border border-[#f2c8c8] bg-[#fff4f4] px-4 py-3 text-sm text-[#a11a1a]">{error}</div> : null}
+      {error ? <div role="alert" className="rounded-[8px] border border-coral-alert/30 bg-coral-alert/10 px-4 py-3 text-sm text-coral-alert">{error}</div> : null}
 
       {isAdding ? (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-midnight-ink/45 p-3 backdrop-blur-sm md:items-center md:p-6">
-          <section role="dialog" aria-modal="true" aria-labelledby="create-location-title" className="w-full max-w-xl rounded-[24px] border border-border bg-white p-6 shadow-[0_28px_80px_rgba(18,24,39,0.24)] md:p-8">
+        <DialogShell open={isAdding} onClose={() => setIsAdding(false)} labelledBy="create-location-title" className="max-w-xl p-6 md:p-8">
             <div className="flex items-start justify-between gap-4">
               <div><p className="okado-label">Nouveau périmètre</p><h2 id="create-location-title" className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-graphite">Ajouter un établissement</h2><p className="mt-2 text-sm leading-6 text-ash">Il sera ajouté à vos cartes sans modifier l’établissement actif dans le reste de l’application.</p></div>
               <button type="button" onClick={() => setIsAdding(false)} aria-label="Fermer" className="grid h-9 w-9 shrink-0 place-items-center rounded-full text-ash transition hover:bg-sky-wash hover:text-graphite"><X className="h-5 w-5" /></button>
@@ -120,8 +120,7 @@ export function AccountLocationPanel({ merchant, locations, onSelectLocation }: 
               <label className="block text-sm"><span className="mb-2 block font-medium text-graphite">Adresse</span><Input value={form.address} onChange={(event) => setForm((current) => ({ ...current, address: event.target.value }))} placeholder="12 rue..." /></label>
               <div className="flex flex-col-reverse gap-3 border-t border-border/70 pt-5 sm:flex-row sm:justify-end"><button type="button" onClick={() => setIsAdding(false)} className="okado-secondary-action px-4 text-sm">Annuler</button><button type="button" onClick={() => void addLocation()} disabled={isSaving} className="okado-filled-action px-4 text-sm disabled:opacity-60">{isSaving ? "Création..." : "Créer l’établissement"}</button></div>
             </div>
-          </section>
-        </div>
+        </DialogShell>
       ) : null}
     </>
   );

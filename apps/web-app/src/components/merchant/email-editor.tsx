@@ -12,6 +12,7 @@ import {
   validateCampaignEmailSettings,
 } from "@/lib/email-settings";
 import { Campaign, CampaignEmailSettings, Merchant } from "@/lib/types";
+import { PageHeader } from "@/components/ui/workspace";
 
 type EmailEditorProps = {
   campaign: Campaign;
@@ -112,20 +113,13 @@ export function EmailEditor({ campaign, merchant }: EmailEditorProps) {
   }
 
   return (
-    <div className="min-h-[calc(100vh-120px)] space-y-6">
-      <section className="px-1 py-2">
-          <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
-            <div>
-              <p className="okado-label">Atelier email</p>
-              <h1 className="okado-page-title mt-3">
-                Personnaliser l&apos;email de gain
-              </h1>
-              <p className="mt-3 max-w-3xl text-sm leading-7 text-ash">
-                Cet écran pilote le message envoyé automatiquement au gagnant avec son QR code,
-                son code de retrait et le lien de validation.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-3">
+    <div className="okado-editor-page min-h-[calc(100vh-120px)] space-y-6">
+      <section className="px-1">
+          <PageHeader
+            eyebrow="Atelier email"
+            title="Personnaliser l&apos;email de gain"
+            description="Cet écran pilote le message envoyé automatiquement au gagnant avec son QR code, son code de retrait et le lien de validation."
+            actions={<>
               <Link
                 href={`/campaigns/${campaign.id}/edit/guided`}
                 prefetch={false}
@@ -148,8 +142,8 @@ export function EmailEditor({ campaign, merchant }: EmailEditorProps) {
               >
                 {isSaving ? "Enregistrement..." : "Enregistrer"}
               </button>
-            </div>
-          </div>
+            </>}
+          />
           {message ? (
             <div className="mt-5 rounded-[8px] border border-border bg-linen-canvas px-4 py-3 text-sm font-semibold text-graphite">
               {message}
@@ -165,7 +159,7 @@ export function EmailEditor({ campaign, merchant }: EmailEditorProps) {
           ) : null}
       </section>
 
-      <section className="okado-card p-6">
+      <section className="okado-card okado-preview-surface p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p className="okado-label">Prévisualisation</p>
@@ -254,40 +248,40 @@ export function EmailEditor({ campaign, merchant }: EmailEditorProps) {
 
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             <label className="text-sm">
-              <span className="mb-2 block text-[#616b7c]">Nom expéditeur visible</span>
+              <span className="mb-2 block text-charcoal">Nom expéditeur visible</span>
               <input
                 value={email.senderName}
                 onChange={(event) => updateField("senderName", event.target.value)}
-                className="w-full rounded-[8px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                className="w-full rounded-[12px] border border-fog bg-white px-4 py-3 text-carbon outline-none focus:border-aubergine focus:ring-4 focus:ring-aubergine/15"
               />
             </label>
 
             <label className="text-sm">
-              <span className="mb-2 block text-[#616b7c]">Reply-to</span>
+              <span className="mb-2 block text-charcoal">Reply-to</span>
               <input
                 type="email"
                 value={email.replyTo}
                 onChange={(event) => updateField("replyTo", event.target.value)}
                 placeholder="service@maison-sora.fr"
-                className="w-full rounded-[8px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                className="w-full rounded-[12px] border border-fog bg-white px-4 py-3 text-carbon outline-none focus:border-aubergine focus:ring-4 focus:ring-aubergine/15"
               />
             </label>
 
             <label className="text-sm md:col-span-2">
-              <span className="mb-2 block text-[#616b7c]">Objet</span>
+              <span className="mb-2 block text-charcoal">Objet</span>
               <input
                 value={email.subject}
                 onChange={(event) => updateField("subject", event.target.value)}
-                className="w-full rounded-[8px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                className="w-full rounded-[12px] border border-fog bg-white px-4 py-3 text-carbon outline-none focus:border-aubergine focus:ring-4 focus:ring-aubergine/15"
               />
             </label>
 
             <label className="text-sm md:col-span-2">
-              <span className="mb-2 block text-[#616b7c]">Pré-header</span>
+              <span className="mb-2 block text-charcoal">Pré-header</span>
               <input
                 value={email.preheader}
                 onChange={(event) => updateField("preheader", event.target.value)}
-                className="w-full rounded-[8px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                className="w-full rounded-[12px] border border-fog bg-white px-4 py-3 text-carbon outline-none focus:border-aubergine focus:ring-4 focus:ring-aubergine/15"
               />
             </label>
           </div>
@@ -297,7 +291,7 @@ export function EmailEditor({ campaign, merchant }: EmailEditorProps) {
           <p className="okado-label">Contenu</p>
           <h2 className="okado-section-title mt-2">Message envoyé au client</h2>
 
-          <div className="mt-4 rounded-[8px] border border-[#e1e8f1] bg-[#f7f9fc] px-4 py-4 text-sm leading-7 text-[#516073]">
+          <div className="mt-4 rounded-[8px] bg-purple-haze px-4 py-4 text-sm leading-7 text-charcoal">
             Les blocs de retrait (code, QR code et lien) sont ajoutés automatiquement et ne peuvent pas être supprimés. Variables disponibles :
             <span className="ml-2 font-mono text-[13px]">
               {CAMPAIGN_EMAIL_VARIABLES.map((variable) => `{{${variable}}}`).join(", ")}
@@ -306,52 +300,52 @@ export function EmailEditor({ campaign, merchant }: EmailEditorProps) {
 
           <div className="mt-6 grid gap-4">
             <label className="text-sm">
-              <span className="mb-2 block text-[#616b7c]">Titre principal</span>
+              <span className="mb-2 block text-charcoal">Titre principal</span>
               <input
                 value={email.headline}
                 onChange={(event) => updateField("headline", event.target.value)}
-                className="w-full rounded-[8px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                className="w-full rounded-[12px] border border-fog bg-white px-4 py-3 text-carbon outline-none focus:border-aubergine focus:ring-4 focus:ring-aubergine/15"
               />
             </label>
 
             <label className="text-sm">
-              <span className="mb-2 block text-[#616b7c]">Corps du message</span>
+              <span className="mb-2 block text-charcoal">Corps du message</span>
               <textarea
                 rows={10}
                 value={email.body}
                 onChange={(event) => updateField("body", event.target.value)}
-                className="w-full rounded-[8px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                className="w-full rounded-[12px] border border-fog bg-white px-4 py-3 text-carbon outline-none focus:border-aubergine focus:ring-4 focus:ring-aubergine/15"
               />
             </label>
 
             <div className="grid gap-4 md:grid-cols-2">
               <label className="text-sm">
-                <span className="mb-2 block text-[#616b7c]">Libellé du bouton</span>
+                <span className="mb-2 block text-charcoal">Libellé du bouton</span>
                 <input
                   value={email.buttonLabel}
                   onChange={(event) => updateField("buttonLabel", event.target.value)}
-                  className="w-full rounded-[8px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                  className="w-full rounded-[12px] border border-fog bg-white px-4 py-3 text-carbon outline-none focus:border-aubergine focus:ring-4 focus:ring-aubergine/15"
                 />
               </label>
 
               <label className="text-sm">
-                <span className="mb-2 block text-[#616b7c]">Couleur d’accent</span>
+                <span className="mb-2 block text-charcoal">Couleur d’accent</span>
                 <input
                   type="color"
                   value={email.accentColor}
                   onChange={(event) => updateField("accentColor", event.target.value)}
-                  className="h-14 w-full rounded-[8px] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none"
+                  className="h-14 w-full rounded-[12px] border border-fog bg-white px-2 py-2 outline-none focus:border-aubergine focus:ring-4 focus:ring-aubergine/15"
                 />
               </label>
             </div>
 
             <label className="text-sm">
-              <span className="mb-2 block text-[#616b7c]">Note de bas d’email</span>
+              <span className="mb-2 block text-charcoal">Note de bas d’email</span>
               <textarea
                 rows={4}
                 value={email.footerNote}
                 onChange={(event) => updateField("footerNote", event.target.value)}
-                className="w-full rounded-[8px] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none"
+                className="w-full rounded-[12px] border border-fog bg-white px-4 py-3 text-carbon outline-none focus:border-aubergine focus:ring-4 focus:ring-aubergine/15"
               />
             </label>
           </div>

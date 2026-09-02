@@ -85,13 +85,13 @@ export function PrizeStockActions({
             value={value}
             onChange={(event) => setValue(event.target.value)}
             placeholder="Illimité"
-            className="w-28 rounded-[14px] border border-[#d7e0ed] bg-white px-3 py-2 text-right text-sm text-[#111827] outline-none"
+            className="w-28 rounded-[var(--okado-radius-control)] border border-fog bg-white px-3 py-2 text-right text-sm text-carbon outline-none focus:border-aubergine focus:ring-2 focus:ring-aubergine/15"
           />
           <button
             type="button"
             onClick={() => void save()}
             disabled={pending}
-            className="cursor-pointer rounded-[14px] bg-[#111827] px-3 py-2 text-xs font-semibold text-white disabled:opacity-50"
+            className="okado-filled-action okado-compact-action cursor-pointer px-3 text-xs disabled:opacity-50"
           >
             Enregistrer
           </button>
@@ -103,7 +103,7 @@ export function PrizeStockActions({
               setError(null);
             }}
             disabled={pending}
-            className="cursor-pointer rounded-[14px] border border-[#d7e0ed] bg-white px-3 py-2 text-xs font-semibold text-[#182033] disabled:opacity-50"
+            className="okado-secondary-action okado-compact-action cursor-pointer px-3 text-xs disabled:opacity-50"
           >
             Annuler
           </button>
@@ -114,7 +114,7 @@ export function PrizeStockActions({
             type="button"
             onClick={() => setEditing(true)}
             disabled={pending}
-            className="cursor-pointer rounded-[14px] border border-[#d7e0ed] bg-white px-3 py-2 text-xs font-semibold text-[#182033] disabled:opacity-50"
+            className="okado-secondary-action okado-compact-action cursor-pointer px-3 text-xs disabled:opacity-50"
           >
             Modifier le stock
           </button>
@@ -122,7 +122,7 @@ export function PrizeStockActions({
             type="button"
             onClick={() => void reset()}
             disabled={pending}
-            className="cursor-pointer rounded-[14px] bg-[#111827] px-3 py-2 text-xs font-semibold text-white disabled:opacity-50"
+            className="okado-filled-action okado-compact-action cursor-pointer px-3 text-xs disabled:opacity-50"
           >
             Réinitialiser
           </button>

@@ -23,14 +23,14 @@ function SelectTrigger({ className, children, ...props }: React.ComponentProps<t
     <SelectPrimitive.Trigger
       data-slot="select-trigger"
       className={cn(
-        "flex h-12 w-full cursor-pointer items-center justify-between gap-2 rounded-[14px] border border-[#d7e0ed] bg-white px-4 text-sm font-semibold text-[#182033] outline-none transition focus:border-primary-action-accent focus:ring-2 focus:ring-primary-action-accent/15 disabled:pointer-events-none disabled:opacity-50 [&>span]:min-w-0 [&>span]:flex-1 [&>span]:truncate",
+        "flex h-12 w-full cursor-pointer items-center justify-between gap-2 rounded-[12px] border border-[var(--okado-border-control)] bg-white px-4 text-sm font-semibold text-carbon outline-none transition focus:border-aubergine focus:ring-2 focus:ring-aubergine/15 disabled:pointer-events-none disabled:opacity-50 [&>span]:min-w-0 [&>span]:flex-1 [&>span]:truncate",
         className,
       )}
       {...props}
     >
       {children}
       <SelectPrimitive.Icon asChild>
-        <ChevronDownIcon className="size-4 shrink-0 text-[#60708b]" aria-hidden="true" />
+        <ChevronDownIcon className="size-4 shrink-0 text-ash" aria-hidden="true" />
       </SelectPrimitive.Icon>
     </SelectPrimitive.Trigger>
   )
@@ -43,18 +43,18 @@ function SelectContent({ className, children, position = "popper", ...props }: R
         data-slot="select-content"
         position={position}
         className={cn(
-          "relative z-50 max-h-[min(24rem,var(--radix-select-content-available-height))] min-w-[var(--radix-select-trigger-width)] overflow-hidden rounded-[14px] border border-[#d7e0ed] bg-white text-[#182033] shadow-[0_12px_32px_rgba(18,24,39,0.14)]",
+          "relative z-50 max-h-[min(24rem,var(--radix-select-content-available-height))] min-w-[var(--radix-select-trigger-width)] overflow-hidden rounded-[8px] border border-lavender-mist bg-white text-carbon shadow-[0_12px_32px_rgba(29,28,29,0.12)]",
           className,
         )}
         {...props}
       >
-        <SelectPrimitive.ScrollUpButton className="flex h-7 cursor-default items-center justify-center bg-white text-[#60708b]">
+        <SelectPrimitive.ScrollUpButton className="flex h-7 cursor-default items-center justify-center bg-white text-ash">
           <ChevronUpIcon className="size-4" aria-hidden="true" />
         </SelectPrimitive.ScrollUpButton>
         <SelectPrimitive.Viewport className="p-1">
           {children}
         </SelectPrimitive.Viewport>
-        <SelectPrimitive.ScrollDownButton className="flex h-7 cursor-default items-center justify-center bg-white text-[#60708b]">
+        <SelectPrimitive.ScrollDownButton className="flex h-7 cursor-default items-center justify-center bg-white text-ash">
           <ChevronDownIcon className="size-4" aria-hidden="true" />
         </SelectPrimitive.ScrollDownButton>
       </SelectPrimitive.Content>
@@ -67,14 +67,14 @@ function SelectItem({ className, children, ...props }: React.ComponentProps<type
     <SelectPrimitive.Item
       data-slot="select-item"
       className={cn(
-        "relative flex w-full cursor-pointer select-none items-center gap-3 rounded-[10px] py-2.5 pr-8 pl-3 text-sm outline-none focus:bg-[#eef6ff] data-disabled:pointer-events-none data-disabled:opacity-50",
+        "relative flex w-full cursor-pointer select-none items-center gap-3 rounded-[4px] py-2.5 pr-8 pl-3 text-sm text-carbon outline-none focus:bg-purple-haze data-disabled:pointer-events-none data-disabled:opacity-50",
         className,
       )}
       {...props}
     >
       <span className="absolute right-2 flex size-4 items-center justify-center">
         <SelectPrimitive.ItemIndicator>
-          <CheckIcon className="size-4 text-primary-action-accent" aria-hidden="true" />
+          <CheckIcon className="size-4 text-aubergine" aria-hidden="true" />
         </SelectPrimitive.ItemIndicator>
       </span>
       <SelectPrimitive.ItemText asChild>{children}</SelectPrimitive.ItemText>

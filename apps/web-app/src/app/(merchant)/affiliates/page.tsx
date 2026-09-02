@@ -6,6 +6,8 @@ import { getAffiliateAdminOverview } from "@/lib/affiliate-repository";
 import { isSaasAdminEmail } from "@/lib/admin";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import { AffiliateCommissionStatus } from "@/lib/types";
+import { MetricCard, PageHeader, ResponsiveTable } from "@/components/ui/workspace";
+import { StatusBadge } from "@/components/ui/status-badge";
 
 type AffiliatesPageProps = {
   searchParams: Promise<{
@@ -43,10 +45,10 @@ function statusLabel(status: AffiliateCommissionStatus) {
 }
 
 function statusTone(status: AffiliateCommissionStatus) {
-  if (status === "paid") return "okado-status-active";
-  if (status === "void") return "okado-status-muted";
-  if (status === "payable") return "okado-status-warning";
-  return "okado-status-muted";
+  if (status === "paid") return "active" as const;
+  if (status === "void") return "muted" as const;
+  if (status === "payable") return "warning" as const;
+  return "muted" as const;
 }
 
 export default async function AffiliatesPage({ searchParams }: AffiliatesPageProps) {
@@ -67,18 +69,11 @@ export default async function AffiliatesPage({ searchParams }: AffiliatesPagePro
 
   return (
     <div className="space-y-6">
-      <section className="px-1 py-2">
-        <div>
-          <p className="okado-label">Affiliation</p>
-          <h1 className="okado-page-title mt-3">
-            Programme affiliés
-          </h1>
-          <p className="mt-4 max-w-3xl text-sm leading-7 text-ash">
-            Suivez les filleuls, les commissions Stripe générées et les paiements manuels à
-            effectuer.
-          </p>
-        </div>
-      </section>
+      <PageHeader
+        eyebrow="Affiliation"
+        title="Programme affiliés"
+        description="Suivez les filleuls, les commissions Stripe générées et les paiements manuels à effectuer."
+      />
 
       <section className="grid gap-4 md:grid-cols-5">
         {[
@@ -87,15 +82,7 @@ export default async function AffiliatesPage({ searchParams }: AffiliatesPagePro
           ["En attente", formatMoney(overview.totals.pendingCommissionCents)],
           ["À payer", formatMoney(overview.totals.payableCommissionCents)],
           ["Payées", formatMoney(overview.totals.paidCommissionCents)],
-        ].map(([label, value]) => (
-          <div
-            key={label}
-            className="okado-card p-5"
-          >
-            <p className="okado-label tracking-[0.18em]">{label}</p>
-            <p className="mt-4 text-2xl font-semibold text-graphite">{value}</p>
-          </div>
-        ))}
+        ].map(([label, value]) => <MetricCard key={label} label={label} value={value} />)}
       </section>
 
       <section className="okado-card p-5">
@@ -135,7 +122,7 @@ export default async function AffiliatesPage({ searchParams }: AffiliatesPagePro
         </form>
       </section>
 
-      <section className="okado-card overflow-hidden p-0">
+      <section className="overflow-hidden">
         <div className="border-b border-border px-6 py-5">
           <p className="okado-label">Paramétrage</p>
           <h2 className="okado-section-title mt-2">
@@ -146,14 +133,14 @@ export default async function AffiliatesPage({ searchParams }: AffiliatesPagePro
             puis définissez leur taux et leur durée de commission.
           </p>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[1040px] text-left text-sm">
+        <ResponsiveTable>
+          <table className="okado-data-table okado-affiliate-table w-full text-left text-sm">
             <thead className="okado-table-header">
               <tr>
                 <th className="px-5 py-4">Marchand</th>
                 <th className="px-5 py-4">Code</th>
-                <th className="px-5 py-4">Filleuls</th>
-                <th className="px-5 py-4">Commissions</th>
+                <th data-align="right" className="px-5 py-4">Filleuls</th>
+                <th data-align="right" className="px-5 py-4">Commissions</th>
                 <th className="px-5 py-4">Réglages</th>
               </tr>
             </thead>
@@ -170,8 +157,8 @@ export default async function AffiliatesPage({ searchParams }: AffiliatesPagePro
                     </p>
                   </td>
                   <td className="px-5 py-4 font-mono text-xs">{account.code}</td>
-                  <td className="px-5 py-4">{account.referralCount}</td>
-                  <td className="px-5 py-4">
+                  <td data-align="right" className="px-5 py-4">{account.referralCount}</td>
+                  <td data-align="right" className="px-5 py-4">
                     <p>En attente : {formatMoney(account.pendingCommissionCents)}</p>
                     <p className="mt-1 text-xs text-ash">
                       Payées : {formatMoney(account.paidCommissionCents)}
@@ -189,19 +176,19 @@ export default async function AffiliatesPage({ searchParams }: AffiliatesPagePro
               ))}
             </tbody>
           </table>
-        </div>
+        </ResponsiveTable>
       </section>
 
-      <section className="okado-card overflow-hidden p-0">
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[1040px] text-left text-sm">
+      <section className="overflow-hidden">
+        <ResponsiveTable>
+          <table className="okado-data-table okado-affiliate-table w-full text-left text-sm">
             <thead className="okado-table-header">
               <tr>
                 <th className="px-5 py-4">Affilié</th>
                 <th className="px-5 py-4">Filleul</th>
                 <th className="px-5 py-4">Facture</th>
-                <th className="px-5 py-4">Montant HT</th>
-                <th className="px-5 py-4">Commission</th>
+                <th data-align="right" className="px-5 py-4">Montant HT</th>
+                <th data-align="right" className="px-5 py-4">Commission</th>
                 <th className="px-5 py-4">Statut</th>
                 <th className="px-5 py-4">Actions</th>
               </tr>
@@ -218,14 +205,12 @@ export default async function AffiliatesPage({ searchParams }: AffiliatesPagePro
                         {formatDate(commission.invoicePaidAt)}
                       </p>
                     </td>
-                    <td className="px-5 py-4">{formatMoney(commission.invoiceAmountCents)}</td>
-                    <td className="px-5 py-4 font-semibold">
+                    <td data-align="right" className="px-5 py-4">{formatMoney(commission.invoiceAmountCents)}</td>
+                    <td data-align="right" className="px-5 py-4 font-semibold">
                       {formatMoney(commission.commissionAmountCents)}
                     </td>
                     <td className="px-5 py-4">
-                      <span className={`okado-status-badge ${statusTone(commission.status)}`}>
-                        {statusLabel(commission.status)}
-                      </span>
+                      <StatusBadge tone={statusTone(commission.status)}>{statusLabel(commission.status)}</StatusBadge>
                     </td>
                     <td className="px-5 py-4">
                       <AffiliateCommissionActions
@@ -244,7 +229,7 @@ export default async function AffiliatesPage({ searchParams }: AffiliatesPagePro
               )}
             </tbody>
           </table>
-        </div>
+        </ResponsiveTable>
       </section>
     </div>
   );

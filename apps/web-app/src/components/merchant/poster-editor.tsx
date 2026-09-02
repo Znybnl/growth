@@ -11,6 +11,7 @@ import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/pos
 import { Campaign, CampaignPosterSettings, PosterTemplateId, Prize } from "@/lib/types";
 import { getPosterTemplate, POSTER_TEMPLATES } from "@/lib/poster-templates";
 import { PosterTemplateSelector } from "@/components/merchant/poster-template-selector";
+import { PageHeader } from "@/components/ui/workspace";
 
 type PosterEditorProps = {
   campaign: Campaign;
@@ -393,40 +394,37 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
 
   return (
     <div className="okado-poster-editor space-y-6">
-      <header className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div>
-          <p className="okado-label">Atelier affiche</p>
-          <h1 className="okado-page-title mt-3">
-            Personnaliser l&apos;affiche A4 / A5
-          </h1>
-          <p className="mt-3 max-w-3xl text-sm leading-7 text-ash">
-            Cet écran ne modifie que l&apos;affiche imprimable. La page de jeu reste
-            paramétrée dans l&apos;éditeur de campagne.
-          </p>
+      <div>
+        <PageHeader
+          eyebrow="Atelier affiche"
+          title="Personnaliser l&apos;affiche A4 / A5"
+          description="Cet écran ne modifie que l&apos;affiche imprimable. La page de jeu reste paramétrée dans l&apos;éditeur de campagne."
+          actions={<>
+            <Link
+              href={`/campaigns/${campaign.id}/edit/guided`}
+              prefetch={false}
+              className="okado-primary-action px-4"
+            >
+              Revenir à la campagne
+            </Link>
+            <button
+              type="button"
+              onClick={savePoster}
+              disabled={isSaving}
+              className="okado-filled-action px-5 disabled:opacity-60"
+            >
+              {isSaving ? "Enregistrement..." : "Enregistrer"}
+            </button>
+          </>}
+        />
+        <div className="px-1">
           {message ? (
             <div className="mt-5 rounded-[8px] border border-border bg-white px-4 py-3 text-sm font-semibold text-graphite shadow-product-card">
               {message}
             </div>
           ) : null}
         </div>
-        <div className="flex flex-wrap gap-3">
-          <Link
-            href={`/campaigns/${campaign.id}/edit/guided`}
-            prefetch={false}
-            className="okado-primary-action px-4"
-          >
-            Revenir à la campagne
-          </Link>
-          <button
-            type="button"
-            onClick={savePoster}
-            disabled={isSaving}
-            className="okado-filled-action px-5 disabled:opacity-60"
-          >
-            {isSaving ? "Enregistrement..." : "Enregistrer"}
-          </button>
-        </div>
-      </header>
+      </div>
 
       <div className="grid min-h-[calc(100vh-220px)] gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(420px,0.72fr)]">
         <div className="space-y-6">
@@ -443,7 +441,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
 
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             <div className="text-sm md:col-span-2">
-              <span className="mb-3 block text-[#616b7c]">Type de logo</span>
+              <span className="mb-3 block text-charcoal">Type de logo</span>
               <div className="grid gap-3 md:grid-cols-3">
                 {[
                   { value: "text", label: "Texte" },
@@ -467,8 +465,8 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                       }
                       className={`rounded-[var(--radius-card)] border px-4 py-3 text-sm font-semibold transition hover:-translate-y-0.5 ${
                         active
-                          ? "border-[#2f6df6] bg-[#eff4ff] text-[#214ccf]"
-                          : "border-[#d7e0ed] bg-[#f7f9fc] text-[#182033]"
+                          ? "border-aubergine bg-purple-haze text-aubergine"
+                          : "border-fog bg-soft-white text-carbon"
                       }`}
                     >
                       {mode.label}
@@ -480,31 +478,31 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
 
             {poster.logoMode === "text" ? (
               <label className="text-sm md:col-span-2">
-                <span className="mb-2 block text-[#616b7c]">
+                <span className="mb-2 block text-charcoal">
                   Texte affiché à la place du logo
                 </span>
                 <input
                   value={poster.logoText ?? ""}
                   onChange={(event) => updatePoster({ logoText: event.target.value })}
-                  className="w-full rounded-[var(--radius-card)] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none transition focus:border-[#2f6df6] focus:bg-white"
+                  className="w-full rounded-[var(--okado-radius-control)] border border-border bg-soft-white px-4 py-3 outline-none transition focus:border-aubergine focus:bg-white"
                 />
               </label>
             ) : null}
 
             {poster.logoMode === "image" ? (
               <div className="md:col-span-2">
-              <label className="group relative flex min-h-[132px] cursor-pointer flex-col justify-between rounded-[var(--radius-card)] border border-dashed border-[#cfd9ea] bg-[#f7f9fc] p-4 text-sm transition hover:border-[#2f6df6] hover:bg-[#eef4ff]">
+              <label className="group relative flex min-h-[132px] cursor-pointer flex-col justify-between rounded-[var(--okado-radius-card)] border border-dashed border-border bg-soft-white p-4 text-sm transition hover:border-aubergine hover:bg-purple-haze">
                 <div>
-                  <span className="mb-2 block text-[#616b7c]">Importer le logo affiche</span>
-                  <p className="max-w-md text-sm leading-6 text-[#516073]">
+                  <span className="mb-2 block text-charcoal">Importer le logo affiche</span>
+                  <p className="max-w-md text-sm leading-6 text-ash">
                     PNG, JPEG, WebP ou GIF, 2 Mo maximum. Le logo restera centré en haut de l&apos;affiche.
                   </p>
                 </div>
                 <div className="mt-4 flex items-center justify-between gap-3">
-                  <span className="inline-flex rounded-full bg-white px-3 py-2 text-xs font-semibold text-[#214ccf] shadow-sm">
+                  <span className="inline-flex rounded-[4px] bg-white px-3 py-2 text-xs font-semibold text-aubergine shadow-sm">
                     {poster.logoUrl || campaign.logoUrl ? "Logo chargé" : "Aucun logo"}
                   </span>
-                  <span className="rounded-[var(--radius-card)] bg-[#2f6df6] px-4 py-2 text-xs font-semibold text-white">
+                  <span className="rounded-[4px] bg-aubergine px-4 py-2 text-xs font-semibold text-white">
                     Choisir
                   </span>
                 </div>
@@ -537,7 +535,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                 />
               </label>
               {imageUploadError ? (
-                <p role="alert" className="mt-2 text-sm font-medium text-[#b42318]">
+                <p role="alert" className="mt-2 text-sm font-medium text-coral-alert">
                   {imageUploadError}
                 </p>
               ) : null}
@@ -548,8 +546,8 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
               <>
                 <label className="text-sm">
                   <div className="mb-2 flex items-center justify-between gap-3">
-                    <span className="text-[#616b7c]">Taille du logo (%)</span>
-                    <output className="font-semibold text-[#182033]">
+                    <span className="text-charcoal">Taille du logo (%)</span>
+                    <output className="font-semibold text-carbon">
                       {Math.round(poster.logoSizePercent)}%
                     </output>
                   </div>
@@ -562,13 +560,13 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                     onChange={(event) =>
                       updatePoster({ logoSizePercent: Number(event.target.value) })
                     }
-                    className="w-full cursor-pointer accent-[#2f6df6]"
+                    className="w-full cursor-pointer accent-aubergine"
                     aria-label="Taille du logo"
                   />
                 </label>
 
                 <label className="text-sm">
-                  <span className="mb-2 block text-[#616b7c]">Marge sous le logo (px)</span>
+                  <span className="mb-2 block text-charcoal">Marge sous le logo (px)</span>
                   <input
                     type="number"
                     min={0}
@@ -577,7 +575,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                     onChange={(event) =>
                       updatePoster({ logoBottomMarginPx: Number(event.target.value || 0) })
                     }
-                    className="w-full rounded-[var(--radius-card)] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none transition focus:border-[#2f6df6] focus:bg-white"
+                  className="w-full rounded-[var(--okado-radius-control)] border border-border bg-soft-white px-4 py-3 outline-none transition focus:border-aubergine focus:bg-white"
                   />
                 </label>
               </>
@@ -593,27 +591,27 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
 
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             <label className="text-sm md:col-span-2">
-              <span className="mb-2 block text-[#616b7c]">Texte sous le logo</span>
+              <span className="mb-2 block text-charcoal">Texte sous le logo</span>
               <textarea
                 rows={4}
                 value={poster.headline}
                 onChange={(event) => updatePoster({ headline: event.target.value })}
-                className="w-full rounded-[var(--radius-card)] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none transition focus:border-[#2f6df6] focus:bg-white"
+                className="w-full rounded-[var(--okado-radius-control)] border border-border bg-soft-white px-4 py-3 outline-none transition focus:border-aubergine focus:bg-white"
               />
             </label>
 
             <label className="text-sm">
-              <span className="mb-2 block text-[#616b7c]">Couleur du texte</span>
+                <span className="mb-2 block text-charcoal">Couleur du texte</span>
               <input
                 type="color"
                 value={poster.headlineTextColor}
                 onChange={(event) => updatePoster({ headlineTextColor: event.target.value })}
-                className="h-14 w-full rounded-[var(--radius-card)] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none"
+                className="h-14 w-full rounded-[12px] border border-fog bg-white px-2 py-2 outline-none focus:border-aubergine focus:ring-4 focus:ring-aubergine/15"
               />
             </label>
 
             <label className="text-sm">
-              <span className="mb-2 block text-[#616b7c]">Taille du texte (px)</span>
+              <span className="mb-2 block text-charcoal">Taille du texte (px)</span>
               <input
                 type="number"
                 min={24}
@@ -622,7 +620,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                 onChange={(event) =>
                   updatePoster({ headlineFontSizePx: Number(event.target.value || 42) })
                 }
-                className="w-full rounded-[var(--radius-card)] border border-[#d7e0ed] bg-[#f7f9fc] px-4 py-3 outline-none transition focus:border-[#2f6df6] focus:bg-white"
+                className="w-full rounded-[var(--okado-radius-control)] border border-border bg-soft-white px-4 py-3 outline-none transition focus:border-aubergine focus:bg-white"
               />
             </label>
 
@@ -638,13 +636,13 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
 
             <div className="mt-6 grid gap-4 md:grid-cols-2">
               <label className="text-sm">
-                <span className="mb-2 block text-[#616b7c]">Couleur principale</span>
+                <span className="mb-2 block text-charcoal">Couleur principale</span>
                 <input
                   type="color"
                   value={draftWinColor}
                   onChange={(event) => setDraftWinColor(event.target.value)}
                   onBlur={() => updateWheel("winColor", draftWinColor)}
-                  className="h-14 w-full rounded-[var(--radius-card)] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none"
+                  className="h-14 w-full rounded-[12px] border border-fog bg-white px-2 py-2 outline-none focus:border-aubergine focus:ring-4 focus:ring-aubergine/15"
                 />
               </label>
             </div>

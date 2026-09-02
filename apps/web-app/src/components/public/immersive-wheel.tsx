@@ -259,7 +259,7 @@ export function ImmersiveWheel({
           type="button"
           onClick={handleButton}
           disabled={!buttonEnabled || isSpinning || hasSpun}
-          className={`absolute left-1/2 top-1/2 z-40 flex aspect-square w-[23%] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-[5px] text-center font-black tracking-[0.04em] transition active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-75 ${isCosmic ? "font-display" : "font-fredoka"}`}
+          className={`okado-wheel-center-button absolute left-1/2 top-1/2 z-40 flex aspect-square w-[23%] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-[5px] text-center font-black tracking-[0.04em] transition active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-75 ${isCosmic ? "font-display" : "font-fredoka"}`}
           style={{
             background: buttonEnabled && !hasSpun ? `linear-gradient(145deg, ${primary}, ${withAlpha(primary, "cc")})` : "#94a3b8",
             color: buttonStyle?.textColor ?? "#ffffff",

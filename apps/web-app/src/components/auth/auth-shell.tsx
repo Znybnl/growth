@@ -54,7 +54,7 @@ export function AuthShell({
           };
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-linen-canvas">
+    <div className="okado-auth-shell min-h-screen overflow-x-hidden bg-linen-canvas">
       <div className="grid min-h-screen lg:grid-cols-2">
         <section className="flex min-h-screen justify-center overflow-y-auto bg-linen-canvas px-4 py-8 sm:px-6 lg:px-8 xl:px-10 xl:py-10">
           <div className="flex w-full max-w-[620px] flex-col justify-center">
@@ -66,7 +66,7 @@ export function AuthShell({
                 <Star className="h-5 w-5 fill-white text-white" aria-hidden="true" />
               </div>
               <div>
-                <p className="text-2xl font-semibold tracking-[-0.04em] text-signal-blue">
+                <p className="text-2xl font-semibold tracking-[-0.04em] text-aubergine">
                   {APP_NAME_CAPITALIZED}
                 </p>
                 <p className="text-sm text-ash">{APP_TAGLINE}</p>
@@ -86,16 +86,16 @@ export function AuthShell({
 
         <section
           className="relative hidden min-h-screen overflow-hidden lg:flex lg:flex-col lg:items-center lg:justify-center"
-          style={{ background: "var(--gradient-hero-blue-fade)" }}
+          style={{ background: "var(--color-deep-plum)" }}
         >
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_18%,rgba(255,255,255,0.22),transparent_34%),linear-gradient(135deg,transparent_0%,rgba(9,55,132,0.18)_100%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_18%,rgba(255,255,255,0.22),transparent_34%),linear-gradient(135deg,transparent_0%,rgba(97,31,105,0.28)_100%)]" />
 
           <div className="relative flex w-full max-w-[760px] flex-1 items-center justify-center px-10 sm:px-14">
             <div className="relative h-[390px] w-full max-w-[560px]">
-              <div className="absolute inset-x-[5%] top-[4%] rounded-[24px] border border-white/30 bg-white/95 p-5 shadow-[0_28px_80px_rgba(4,26,75,0.28)]">
-                <div className="flex items-center justify-between border-b border-[#e6ebf2] pb-4">
+              <div className="absolute inset-x-[5%] top-[4%] rounded-[16px] border border-white/30 bg-white/95 p-5 shadow-[0_28px_80px_rgba(72,26,84,0.22)]">
+                <div className="flex items-center justify-between border-b border-fog pb-4">
                   <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-signal-blue">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-aubergine">
                       Pilotage local
                     </p>
                     <p className="mt-1 text-lg font-semibold tracking-[-0.03em] text-graphite">
@@ -114,11 +114,11 @@ export function AuthShell({
                   ].map(([label, value]) => (
                     <div key={label} className="rounded-[12px] bg-linen-canvas px-3 py-3">
                       <p className="text-[10px] uppercase tracking-[0.08em] text-ash">{label}</p>
-                      <p className="mt-2 text-xl font-semibold tracking-[-0.04em] text-signal-blue">{value}</p>
+                      <p className="mt-2 text-xl font-semibold tracking-[-0.04em] text-aubergine">{value}</p>
                     </div>
                   ))}
                 </div>
-                <div className="mt-5 rounded-[14px] border border-[#e6ebf2] p-4">
+                <div className="mt-5 rounded-[12px] border border-fog p-4">
                   <div className="flex items-center justify-between">
                     <p className="text-xs font-semibold text-graphite">Activité des 7 derniers jours</p>
                     <span className="text-[10px] font-medium text-ash">+18%</span>
@@ -127,7 +127,7 @@ export function AuthShell({
                     {[32, 48, 38, 62, 54, 78, 68, 88].map((height, index) => (
                       <span
                         key={index}
-                        className="flex-1 rounded-t-[6px] bg-signal-blue/80"
+                        className="flex-1 rounded-t-[6px] bg-aubergine/80"
                         style={{ height: `${height}%` }}
                       />
                     ))}

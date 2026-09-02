@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { StatusNotice } from "@/components/ui/workspace";
+
 type BrevoSyncSummary = {
   attempted: number;
   synced: number;
@@ -42,7 +44,7 @@ export function BrevoSyncButton() {
   }
 
   return (
-    <div className="rounded-[8px] border border-border bg-white p-5 shadow-[var(--shadow-product-card)]">
+    <div className="okado-card p-5">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <p className="okado-label">Brevo</p>
@@ -57,22 +59,22 @@ export function BrevoSyncButton() {
           type="button"
           onClick={() => void runSync()}
           disabled={isSyncing}
-          className="inline-flex min-h-11 items-center justify-center rounded-[12px] bg-primary-action-accent px-5 text-sm font-semibold !text-white shadow-[0_14px_30px_rgba(47,109,246,0.18)] disabled:opacity-60"
+          className="okado-filled-action px-5 text-sm disabled:opacity-60"
         >
           {isSyncing ? "Synchronisation..." : "Synchroniser Brevo"}
         </button>
       </div>
 
       {summary ? (
-        <p className="mt-4 rounded-[8px] bg-[#ecfdf3] px-4 py-3 text-sm text-[#047857]">
+        <StatusNotice tone="success" className="mt-4">
           {summary.synced} utilisateur(s) synchronisé(s), {summary.skipped} ignoré(s),{" "}
           {summary.failed} en échec.
-        </p>
+        </StatusNotice>
       ) : null}
       {error ? (
-        <p className="mt-4 rounded-[8px] bg-[#fff1f2] px-4 py-3 text-sm text-[#be123c]">
+        <StatusNotice tone="danger" className="mt-4">
           {error}
-        </p>
+        </StatusNotice>
       ) : null}
     </div>
   );

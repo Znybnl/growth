@@ -6,9 +6,9 @@ Date: 2026-07-10
 
 ## Executive Summary
 
-The Okado product is functionally rich, but the back-office UI still mixes several visual systems: legacy custom cards, shadcn components, hardcoded utility classes and page-specific styling. Against the new Relate reference, the main issue is not one isolated component. It is the absence of a strict compact product UI contract for cards, buttons, inputs, badges, row actions and page headers.
+The Okado product is functionally rich, but the back-office UI still mixes several visual systems: legacy custom cards, shadcn components, hardcoded utility classes and page-specific styling. Against the new Slack reference, the main issue is not one isolated component. It is the absence of a strict compact product UI contract for cards, buttons, inputs, badges, row actions and page headers.
 
-The fastest path to a more professional product is not a full redesign. It is a controlled harmonization layer based on the new Relate rules:
+The fastest path to a more professional product is a controlled harmonization layer based on the new Slack rules:
 
 - One compact `AppCard` geometry at 8px radius.
 - One large marketing/preview card geometry at 40px radius.
@@ -23,7 +23,7 @@ The fastest path to a more professional product is not a full redesign. It is a 
 - Canvas: `#fcfcfc`, not pure white.
 - Compact app cards: white, 8px radius, feather-light shadow.
 - Large landing/preview cards: `#fcfcfc`, 40px radius.
-- Buttons: 12px radius, dark outlined by default, blue gradient only for one high-priority CTA.
+- Buttons: 4px radius, aubergine hierarchy, filled aubergine only for the highest-priority CTA.
 - Inputs: 12px radius, white background, `#cfcfcf` border.
 - Tags/status badges: 4px radius, semantic color at 10% opacity.
 - Text: `#020520` / `#14141e` for primary text, `#696a72` / `#95959b` for secondary text.
@@ -33,7 +33,7 @@ The fastest path to a more professional product is not a full redesign. It is a 
 
 ### 1. Border Radius Is Inconsistent
 
-Observed patterns include rounded full pills, 8px, 12px, 16px, 20px, 24px, 30px and 36px cards or containers. This creates the strongest "assembled over time" feeling. The new Relate reference is stricter than the previous one: compact SaaS cards should be 8px, not 20px.
+Observed patterns include rounded full pills, 8px, 12px, 16px, 20px, 24px, 30px and 36px cards or containers. This creates the strongest "assembled over time" feeling. The new Slack reference is stricter: SaaS cards use 16px at section level and 8px for compact list surfaces.
 
 Priority: P0
 
@@ -59,7 +59,7 @@ Recommended adjustment:
 - Border: `#cfcfcf`.
 - Radius: 12px.
 - Padding around 15px on desktop, slightly tighter on dense tables.
-- Focus: Signal Blue ring, subtle but visible.
+- Focus: aubergine ring, subtle but visible.
 
 ### 3. Button Hierarchy Is Still Ambiguous
 
@@ -71,7 +71,7 @@ Recommended adjustment:
 
 - One visible primary action per view.
 - Use outlined dark buttons as the default SaaS primary action.
-- Use filled blue gradient only when there is a single top-priority action.
+- Use filled aubergine only when there is a single top-priority action.
 - Row primary action: one visible "Modifier" or neutral action, if needed.
 - Secondary row actions move into a shadcn dropdown menu.
 - Destructive actions always red text in dropdown, never large black blocks.
@@ -87,7 +87,7 @@ Recommended adjustment:
 
 - Create a shared `PageHeader`.
 - Remove duplicated card headings when they repeat the page title.
-- Use small labels sparingly; Relate prefers compact text hierarchy over many uppercase eyebrow labels.
+- Use small labels sparingly; Slack prefers compact text hierarchy over many uppercase eyebrow labels.
 
 ### 5. Tables Need A Shared Action And Status Pattern
 
@@ -123,7 +123,7 @@ Recommended adjustment:
 
 ### 7. Admin Menus Need A Clear Section Treatment
 
-The sidebar now has admin-only features, but the visual grouping should be explicit and quiet. This supports the Relate rule of keeping chrome functional, compact and low-noise.
+The sidebar now has admin-only features, but the visual grouping should be explicit and quiet. This supports the Slack rule of keeping chrome functional, compact and low-noise.
 
 Priority: P1
 
@@ -149,13 +149,13 @@ Recommended adjustment:
 
 ### 9. Public Game And Poster UI Should Stay Separate
 
-The public game/poster experience intentionally uses expressive typography and brand-specific visuals. That should not be forced into the Relate SaaS style.
+The public game/poster experience intentionally uses expressive typography and brand-specific visuals. That should not be forced into the Slack SaaS style.
 
 Priority: Guardrail
 
 Recommended adjustment:
 
-- Apply Relate-style homogenization only to the SaaS back-office, auth and landing admin surfaces.
+- Apply Slack-style homogenization only to the SaaS back-office, auth and landing admin surfaces.
 - Keep Anton/display typography for public game and poster templates.
 - Do not change wheel/poster rendering during back-office UI cleanup unless explicitly scoped.
 
@@ -167,7 +167,7 @@ Recommended adjustment:
 - Chart tooltip and chart card should follow one shadcn chart treatment.
 - "Campagnes prioritaires" should use explicit status badges rather than unexplained dots.
 - Row actions should use the same dropdown menu as the campaigns list.
-- Canvas and cards should move toward the Relate `#fcfcfc` / 8px compact card system.
+- Canvas and cards should move toward the Slack `#fefbff` / 16px section card system.
 
 ### Campaigns
 
@@ -183,7 +183,7 @@ Recommended adjustment:
 - Use compact 8px cards for form sections and reserve 40px large cards for the preview/feature container only if it visually helps.
 - Expert toggle belongs in the customer experience section, not as a standalone visual block.
 - Inputs should all use the same control background.
-- Avoid uppercase tracking overload; Relate is compact but not letter-spaced everywhere.
+- Avoid uppercase tracking overload; Slack is compact but not letter-spaced everywhere.
 
 ### Data
 
@@ -197,7 +197,7 @@ Recommended adjustment:
 - Separate account profile, restaurant/business details, marketing links and affiliation into clear cards.
 - Keep "Parrainage" as the last section before save if it remains editable in this page.
 - Use dropdown/select styling matching campaign editor.
-- Remove mixed grey input surfaces and align with Relate input style.
+- Remove mixed grey input surfaces and align with Slack input style.
 
 ### Supervision / Bibliotheque / Affiliation Admin
 
@@ -222,7 +222,7 @@ Create or standardize:
 
 ### Applied
 
-- Added a documented Relate reference in `docs/DESIGN_REFERENCE.md`.
+- Added the Slack reference and implementation rules in `docs/DESIGN_REFERENCE.md`.
 - Added shared utility classes for product cards, page titles, section titles, status badges, primary/secondary actions, table headers and form controls.
 - Normalized the merchant shell CTA, dashboard, campaigns list, data page, account, affiliation admin, supervision and background library surfaces.
 - Normalized auth and onboarding surfaces: canvas, auth shell, input geometry, Google button, signup/signin buttons, onboarding cards and onboarding form fields.
@@ -244,20 +244,20 @@ Then migrate Dashboard, Campaigns and Campaign Editor first.
 - Normalize table row actions.
 - Normalize status badges.
 - Remove duplicate page titles inside cards.
-- Replace legacy blue/black button mixtures with outlined Relate button hierarchy.
+- Replace legacy blue/black button mixtures with the aubergine Slack button hierarchy.
 
 ### P2 - Secondary Pages
 
 - Apply the same wrappers to Account, Data, Supervision, Bibliotheque and Affiliation.
 - Add clean empty states and loading states.
-- Apply the same Relate card/spacing model to auth and landing pages where relevant.
+- Apply the same Slack card/spacing model to auth and onboarding pages where relevant.
 
 ## Acceptance Criteria
 
 - No more than five intentional radius values in SaaS chrome: 4px, 8px, 12px, 32px, 40px.
 - Compact app cards use 8px radius.
 - Large landing/feature cards use 40px radius.
-- All primary CTAs are visually obvious and use either the outlined dark Relate style or the single blue gradient style.
+- All primary CTAs are visually obvious and use the aubergine Slack hierarchy, with filled aubergine reserved for the highest-emphasis action.
 - All secondary/destructive actions use shadcn menu/action patterns.
 - Inputs look identical across Account, Campaign Editor and Data filters.
 - Tables use the same row action menu and status badge system.

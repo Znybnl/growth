@@ -106,7 +106,7 @@ export function ExpressRedemption({ code, context: initialContext }: ExpressRede
   }
 
   return (
-    <main className="min-h-screen bg-[#f4f7fb] px-4 py-6 text-[#182033] sm:px-6 sm:py-10">
+    <main className="okado-public-redemption min-h-screen bg-[#f4f7fb] px-4 py-6 text-[#182033] sm:px-6 sm:py-10">
       <div className="mx-auto w-full max-w-[560px]">
         {context.isPreview ? (
           <div

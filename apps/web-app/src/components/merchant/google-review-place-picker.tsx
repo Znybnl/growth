@@ -130,16 +130,16 @@ export function GoogleReviewPlacePicker({
 
   return (
     <div className={[compact ? "space-y-3" : "space-y-4", className].filter(Boolean).join(" ")}>
-      <div className={`rounded-[24px] border border-[#d7e0ed] p-3 ${compact ? "bg-white" : "bg-[#f7f9fc]"}`}>
+      <div className={`rounded-[16px] border border-lavender-mist p-3 ${compact ? "bg-white" : "bg-soft-white"}`}>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[18px] bg-white text-lg font-bold text-[#2f6df6] shadow-[0_10px_26px_rgba(122,136,166,0.16)]">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[4px] bg-purple-haze text-lg font-bold text-aubergine">
             G
           </div>
           <div className="min-w-0 flex-1">
             <div className="mb-2 flex flex-wrap items-center gap-2">
-              <span className="text-sm text-[#616b7c]">Fiche Google</span>
+              <span className="text-sm text-charcoal">Fiche Google</span>
               {hasSelectedPlace && !hasUserEditedQuery ? (
-                <span className="inline-flex items-center gap-1 rounded-full bg-[#e8f7ef] px-2 py-1 text-[11px] font-semibold text-[#18794e]">
+                <span className="okado-status-badge okado-status-active">
                   <span aria-hidden="true">✓</span>
                   Sélectionnée
                 </span>
@@ -158,20 +158,20 @@ export function GoogleReviewPlacePicker({
                 }
               }}
               placeholder="Rechercher votre établissement sur Google"
-              className="w-full rounded-[18px] border border-[#d7e0ed] bg-white px-4 py-3 text-sm outline-none transition focus:border-[#2f6df6] focus:ring-4 focus:ring-[#2f6df6]/10"
+              className="w-full rounded-[12px] border border-fog bg-white px-4 py-3 text-sm outline-none transition focus:border-aubergine focus:ring-4 focus:ring-aubergine/15"
             />
           </div>
         </div>
 
         {hasSelectedPlace && !hasUserEditedQuery && !isLoading ? (
-          <div className="mt-3 flex items-start gap-3 border-t border-[#e8edf4] px-1 pt-3">
-            <span className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[#edf9f1] text-sm font-bold text-[#18794e]" aria-hidden="true">✓</span>
+          <div className="mt-3 flex items-start gap-3 border-t border-fog px-1 pt-3">
+            <span className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[var(--okado-status-success-bg)] text-sm font-bold text-[var(--okado-status-success-text)]" aria-hidden="true">✓</span>
             <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-[#172033]">{selectedPlace?.name ?? query}</p>
-              {selectedPlace?.address ? <p className="mt-0.5 text-xs leading-5 text-[#667085]">{selectedPlace.address}</p> : null}
+              <p className="truncate text-sm font-semibold text-carbon">{selectedPlace?.name ?? query}</p>
+              {selectedPlace?.address ? <p className="mt-0.5 text-xs leading-5 text-ash">{selectedPlace.address}</p> : null}
               {selectedPlace && (selectedPlace.rating != null || selectedPlace.reviewCount != null) ? (
-                <p className="mt-1 flex flex-wrap items-center gap-x-2 text-xs font-medium text-[#667085]">
-                  {selectedPlace.rating != null ? <span className="text-[#b7791f]">★ {selectedPlace.rating.toFixed(1)}</span> : null}
+                <p className="mt-1 flex flex-wrap items-center gap-x-2 text-xs font-medium text-ash">
+                  {selectedPlace.rating != null ? <span className="text-amber-tag">★ {selectedPlace.rating.toFixed(1)}</span> : null}
                   {selectedPlace.reviewCount != null ? <span>{formatReviewCount(selectedPlace.reviewCount)} avis Google</span> : null}
                 </p>
               ) : null}
@@ -182,7 +182,7 @@ export function GoogleReviewPlacePicker({
         {!manualMode && (isLoading || places.length > 0 || message) ? (
           <div className="mt-3 space-y-2">
             {isLoading ? (
-              <p className="rounded-[18px] bg-white px-4 py-3 text-sm text-[#5c6577]">
+              <p className="rounded-[8px] bg-white px-4 py-3 text-sm text-charcoal">
                 Recherche de votre établissement...
               </p>
             ) : null}
@@ -200,27 +200,27 @@ export function GoogleReviewPlacePicker({
                     setPlaces([]);
                     setMessage(null);
                 }}
-                className={`w-full rounded-[18px] border px-4 py-3 text-left transition hover:border-[#2f6df6] hover:bg-white ${
+              className={`w-full rounded-[12px] border px-4 py-3 text-left transition hover:border-aubergine hover:bg-white ${
                   selectedPlaceId === place.placeId
-                    ? "border-[#2f6df6] bg-white shadow-[0_12px_30px_rgba(47,109,246,0.12)]"
-                    : "border-[#e1e7f0] bg-white/70"
+                    ? "border-aubergine bg-white shadow-[0_8px_20px_rgba(97,31,105,0.12)]"
+                    : "border-fog bg-white/70"
                 }`}
               >
                 <div className="flex items-start justify-between gap-3">
-                  <span className="block text-sm font-semibold text-[#111827]">{place.name}</span>
+                  <span className="block text-sm font-semibold text-carbon">{place.name}</span>
                   {place.rating != null || place.reviewCount != null ? (
-                    <span className="shrink-0 text-xs font-medium text-[#667085]">
+                    <span className="shrink-0 text-xs font-medium text-ash">
                       {place.rating != null ? `★ ${place.rating.toFixed(1)}` : ""}
                       {place.reviewCount != null ? ` · ${formatReviewCount(place.reviewCount)} avis` : ""}
                     </span>
                   ) : null}
                 </div>
                 {place.address ? (
-                  <span className="mt-1 block text-xs leading-5 text-[#667085]">{place.address}</span>
+                  <span className="mt-1 block text-xs leading-5 text-ash">{place.address}</span>
                 ) : null}
               </button>
             ))}
-            {message && !isLoading ? <p className="px-1 text-xs text-[#667085]">{message}</p> : null}
+            {message && !isLoading ? <p className="px-1 text-xs text-ash">{message}</p> : null}
           </div>
         ) : null}
       </div>

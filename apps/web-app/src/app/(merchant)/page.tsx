@@ -4,6 +4,8 @@ import { DashboardActivityChart } from "@/components/merchant/dashboard-activity
 import { DashboardCampaignActionsMenu } from "@/components/merchant/dashboard-campaign-actions-menu";
 import { DashboardOperationalAlerts } from "@/components/merchant/dashboard-operational-alerts";
 import { OnboardingWelcomeDialog } from "@/components/merchant/onboarding-welcome-dialog";
+import { MetricCard, PageHeader } from "@/components/ui/workspace";
+import { StatusBadge } from "@/components/ui/status-badge";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import {
   formatDateTime,
@@ -45,48 +47,39 @@ export default async function DashboardPage({
   const activityPoints = dashboard.activityPoints;
   const getCampaignStatus = (item: (typeof filteredCampaigns)[number]) => {
     if (!item.campaign.isActive) {
-      return { label: "Désactivée", color: "#98a2b3" };
+      return { label: "Désactivée", tone: "muted" as const };
     }
 
     if (item.prizes.some((prize) => prize.remainingQuantity === 0)) {
-      return { label: "Stock épuisé", color: "#f59e0b" };
+      return { label: "Stock épuisé", tone: "warning" as const };
     }
 
-    return { label: "Active", color: "#12b76a" };
+    return { label: "Active", tone: "active" as const };
   };
   const leadStatusTone = (status: (typeof recentLeads)[number]["status"]) => {
     switch (status) {
       case "redeemed":
-        return "bg-[#ecfdf3] text-[#047857]";
+        return "active" as const;
       case "claimed":
-        return "bg-[#eff6ff] text-[#1d4ed8]";
+        return "info" as const;
       case "lost":
-        return "bg-[#f3f4f6] text-[#4b5563]";
+        return "muted" as const;
       case "expired":
-        return "bg-[#fff7ed] text-[#c2410c]";
+        return "warning" as const;
       default:
-        return "bg-white text-[#505b6e]";
+        return "muted" as const;
     }
   };
 
   return (
     <div className="min-w-0 space-y-5 overflow-x-hidden">
       <OnboardingWelcomeDialog open={params.welcome === "1"} />
-      <section className="grid gap-5 px-1 py-2 xl:grid-cols-[1.2fr_0.8fr]">
-          <div className="min-w-0">
-            <p className="okado-label">
-              Vue d&apos;ensemble
-            </p>
-            <h1 className="okado-page-title mt-3">
-              Pilotez vos campagnes
-            </h1>
-            <p className="mt-4 max-w-3xl text-sm leading-6 text-ash">
-              Suivez vos campagnes en direct, comparez les mécaniques qui performent et lancez
-              rapidement une nouvelle campagne.
-            </p>
-          </div>
-
-          <div className="okado-action-row flex flex-wrap items-center gap-3 xl:items-end xl:justify-end">
+      <PageHeader
+        eyebrow="Vue d'ensemble"
+        title="Pilotez vos campagnes"
+        description="Suivez vos campagnes en direct, comparez les mécaniques qui performent et lancez rapidement une nouvelle campagne."
+        actions={
+          <>
             {session.locations.length > 1 ? (
               <Link
                 href={isWorkspaceView ? "/" : "/?scope=all"}
@@ -103,8 +96,9 @@ export default async function DashboardPage({
             >
               Créer une campagne
             </Link>
-          </div>
-      </section>
+          </>
+        }
+      />
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {[
@@ -130,17 +124,7 @@ export default async function DashboardPage({
                 : 0,
             ),
           ],
-        ].map(([label, value]) => (
-          <div
-            key={label}
-            className="okado-card p-4"
-          >
-            <p className="okado-label">{label}</p>
-            <p className="mt-4 text-3xl font-semibold tracking-[-0.04em] text-graphite md:text-4xl">
-              {value}
-            </p>
-          </div>
-        ))}
+        ].map(([label, value]) => <MetricCard key={label} label={label} value={value} />)}
       </section>
 
       <DashboardOperationalAlerts />
@@ -168,48 +152,38 @@ export default async function DashboardPage({
               </Link>
             </div>
 
-            <div className="mt-6 hidden overflow-hidden rounded-[8px] border border-border md:block">
-              <div className="okado-table-header grid grid-cols-[minmax(0,1.5fr)_0.85fr_0.7fr_0.7fr_0.9fr_auto] items-center gap-3 px-5 py-4">
+            <div className="mt-6 hidden md:block">
+              <div className="okado-table-header grid grid-cols-[minmax(0,1.5fr)_0.85fr_0.7fr_0.7fr_0.9fr_auto] items-center gap-3 px-5 py-3">
                 <span>Campagne</span>
                 <span>Mécanique</span>
-                <span>Scans</span>
-                <span>Participations</span>
-                <span>Conversion</span>
+                <span className="text-right">Scans</span>
+                <span className="text-right">Participations</span>
+                <span className="text-right">Conversion</span>
                 <span className="sr-only">Actions</span>
               </div>
 
               {filteredCampaigns.map((item) => (
                 <div
                   key={item.campaign.id}
-                  className="grid grid-cols-[minmax(0,1.5fr)_0.85fr_0.7fr_0.7fr_0.9fr_auto] items-center gap-3 border-t border-[#edf1f6] px-5 py-5 text-sm"
+                  className="okado-table-row grid grid-cols-[minmax(0,1.5fr)_0.85fr_0.7fr_0.7fr_0.9fr_auto] items-center gap-3 px-5 py-4 text-sm"
                 >
                   <div className="min-w-0">
                     <div className="flex items-center gap-3">
-                      <span
-                        className={`okado-status-badge ${
-                          !item.campaign.isActive
-                            ? "okado-status-muted"
-                            : item.prizes.some((prize) => prize.remainingQuantity === 0)
-                              ? "okado-status-warning"
-                              : "okado-status-active"
-                        }`}
-                      >
-                        {getCampaignStatus(item).label}
-                      </span>
+                      <StatusBadge tone={getCampaignStatus(item).tone}>{getCampaignStatus(item).label}</StatusBadge>
                       <div className="min-w-0">
-                        <p className="truncate font-semibold text-[#111827]">
+                        <p className="truncate font-semibold text-carbon">
                           {item.campaign.title}
                         </p>
-                        <p className="truncate text-[#7a8496]">
+                        <p className="truncate text-ash">
                           {goalLabel(item.campaign.goalType)}
                         </p>
                       </div>
                     </div>
                   </div>
                   <span className="text-[#556173]">{gameTypeLabel(item.campaign.gameType)}</span>
-                  <span className="font-semibold text-graphite">{item.kpis.scans}</span>
-                  <span className="font-semibold text-graphite">{item.kpis.leads}</span>
-                  <span className="font-semibold text-graphite">
+                  <span data-align="right" className="font-semibold text-graphite">{item.kpis.scans}</span>
+                  <span data-align="right" className="font-semibold text-graphite">{item.kpis.leads}</span>
+                  <span data-align="right" className="font-semibold text-graphite">
                     {formatPercent(item.kpis.conversionRate)}
                   </span>
                   <DashboardCampaignActionsMenu campaignId={item.campaign.id} />
@@ -217,24 +191,22 @@ export default async function DashboardPage({
               ))}
             </div>
 
-            <div className="mt-6 space-y-3 md:hidden">
+            <div className="mt-6 md:hidden">
               {filteredCampaigns.map((item) => (
                 <div
                   key={item.campaign.id}
-                  className="rounded-[8px] border border-border bg-linen-canvas p-4"
+                  className="okado-mobile-table-row"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex min-w-0 items-start gap-3">
-                        <span
-                          className="mt-1 h-3 w-3 shrink-0 rounded-full"
-                          title={getCampaignStatus(item).label}
-                          style={{ backgroundColor: getCampaignStatus(item).color }}
-                        />
+                        <StatusBadge tone={getCampaignStatus(item).tone}>
+                          {getCampaignStatus(item).label}
+                        </StatusBadge>
                       <div className="min-w-0">
                         <p className="truncate font-semibold text-graphite">
                           {item.campaign.title}
                         </p>
-                        <p className="truncate text-sm text-[#7a8496]">
+                        <p className="truncate text-sm text-ash">
                           {goalLabel(item.campaign.goalType)}
                         </p>
                       </div>
@@ -242,34 +214,34 @@ export default async function DashboardPage({
                     <DashboardCampaignActionsMenu campaignId={item.campaign.id} />
                   </div>
 
-                  <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
-                    <div className="rounded-[8px] bg-white px-3 py-3">
-                      <p className="text-[11px] uppercase tracking-[0.18em] text-[#7c8597]">
+                  <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
+                    <div className="okado-mobile-table-stat">
+                      <p className="okado-mobile-table-stat-label">
                         Mécanique
                       </p>
-                      <p className="mt-2 font-medium text-[#111827]">
+                      <p className="mt-1 okado-mobile-table-stat-value">
                         {gameTypeLabel(item.campaign.gameType)}
                       </p>
                     </div>
-                    <div className="rounded-[8px] bg-white px-3 py-3">
-                      <p className="text-[11px] uppercase tracking-[0.18em] text-[#7c8597]">
+                    <div className="okado-mobile-table-stat">
+                      <p className="okado-mobile-table-stat-label">
                         Conversion
                       </p>
-                      <p className="mt-2 font-semibold text-[#111827]">
+                      <p className="mt-1 okado-mobile-table-stat-value">
                         {formatPercent(item.kpis.conversionRate)}
                       </p>
                     </div>
-                    <div className="rounded-[8px] bg-white px-3 py-3">
-                      <p className="text-[11px] uppercase tracking-[0.18em] text-[#7c8597]">
+                    <div className="okado-mobile-table-stat">
+                      <p className="okado-mobile-table-stat-label">
                         Participations
                       </p>
-                      <p className="mt-2 font-semibold text-[#111827]">{item.kpis.leads}</p>
+                      <p className="mt-1 okado-mobile-table-stat-value">{item.kpis.leads}</p>
                     </div>
-                    <div className="rounded-[8px] bg-white px-3 py-3">
-                      <p className="text-[11px] uppercase tracking-[0.18em] text-[#7c8597]">
+                    <div className="okado-mobile-table-stat">
+                      <p className="okado-mobile-table-stat-label">
                         Scans
                       </p>
-                      <p className="mt-2 font-semibold text-[#111827]">{item.kpis.scans}</p>
+                      <p className="mt-1 okado-mobile-table-stat-value">{item.kpis.scans}</p>
                     </div>
                   </div>
                 </div>
@@ -294,22 +266,20 @@ export default async function DashboardPage({
               </Link>
             </div>
 
-            <div className="mt-5 space-y-3">
+            <div className="okado-mobile-table-list mt-5">
               {recentLeads.map((lead) => (
                 <div
                   key={lead.id}
-                  className="rounded-[8px] border border-border bg-linen-canvas p-4"
+                  className="okado-mobile-table-row"
                 >
                   <div className="flex items-center justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="truncate font-semibold text-[#111827]">{lead.firstName}</p>
-                      <p className="truncate text-sm text-[#7b8496]">{lead.email}</p>
+                      <p className="truncate font-semibold text-carbon">{lead.firstName}</p>
+                      <p className="truncate text-sm text-ash">{lead.email}</p>
                     </div>
-                    <span className={`rounded-full px-3 py-2 text-xs font-semibold ${leadStatusTone(lead.status)}`}>
-                      {leadStatusLabel(lead.status)}
-                    </span>
+                    <StatusBadge tone={leadStatusTone(lead.status)}>{leadStatusLabel(lead.status)}</StatusBadge>
                   </div>
-                  <div className="mt-3 flex flex-col gap-1 text-sm text-[#7b8496] sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+                  <div className="mt-3 flex flex-col gap-1 text-sm text-ash sm:flex-row sm:items-center sm:justify-between sm:gap-3">
                     <span className="truncate">{lead.campaignTitle}</span>
                     <span>{formatDateTime(lead.createdAt)}</span>
                   </div>
