@@ -68,7 +68,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
         </p>
       </section>
 
-      <section className="okado-card p-4 sm:p-6">
+      <section>
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
           <div>
             <p className="okado-label">Utilisateurs</p>

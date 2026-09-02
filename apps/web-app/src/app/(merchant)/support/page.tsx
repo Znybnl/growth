@@ -423,7 +423,7 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
           </div>
         </article>
 
-        <article className="okado-card p-6 xl:col-span-3">
+        <article className="xl:col-span-3">
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="okado-label">Journal</p>

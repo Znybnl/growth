@@ -43,7 +43,7 @@ export default async function CampaignsPage({
         }
       />
 
-      <section className="okado-card p-4 md:p-6">
+      <section>
         <ResponsiveTable
           mobile={
             campaigns.length ? (

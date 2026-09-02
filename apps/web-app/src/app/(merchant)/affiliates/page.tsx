@@ -122,7 +122,7 @@ export default async function AffiliatesPage({ searchParams }: AffiliatesPagePro
         </form>
       </section>
 
-      <section className="okado-card overflow-hidden p-0">
+      <section className="overflow-hidden">
         <div className="border-b border-border px-6 py-5">
           <p className="okado-label">Paramétrage</p>
           <h2 className="okado-section-title mt-2">
@@ -179,7 +179,7 @@ export default async function AffiliatesPage({ searchParams }: AffiliatesPagePro
         </ResponsiveTable>
       </section>
 
-      <section className="okado-card overflow-hidden p-0">
+      <section className="overflow-hidden">
         <ResponsiveTable>
           <table className="okado-data-table okado-affiliate-table w-full text-left text-sm">
             <thead className="okado-table-header">

@@ -115,14 +115,16 @@ export function EmptyState({
 export function ResponsiveTable({
   children,
   mobile,
+  framed = false,
   className,
 }: {
   children: React.ReactNode;
   mobile?: React.ReactNode;
+  framed?: boolean;
   className?: string;
 }) {
   return (
-    <div className={cn("okado-responsive-table okado-table-frame", className)}>
+    <div className={cn("okado-responsive-table", framed && "okado-table-frame", className)}>
       <div className="okado-responsive-table__desktop">{children}</div>
       {mobile ? <div className="okado-responsive-table__mobile">{mobile}</div> : null}
     </div>

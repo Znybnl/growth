@@ -152,7 +152,7 @@ export default async function DashboardPage({
               </Link>
             </div>
 
-            <div className="okado-table-frame mt-6 hidden md:block">
+            <div className="mt-6 hidden md:block">
               <div className="okado-table-header grid grid-cols-[minmax(0,1.5fr)_0.85fr_0.7fr_0.7fr_0.9fr_auto] items-center gap-3 px-5 py-3">
                 <span>Campagne</span>
                 <span>Mécanique</span>
@@ -191,7 +191,7 @@ export default async function DashboardPage({
               ))}
             </div>
 
-            <div className="okado-table-frame mt-6 md:hidden">
+            <div className="mt-6 md:hidden">
               {filteredCampaigns.map((item) => (
                 <div
                   key={item.campaign.id}
