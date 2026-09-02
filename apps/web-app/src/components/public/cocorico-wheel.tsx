@@ -58,19 +58,6 @@ function describeSlice(startAngle: number, endAngle: number) {
   ].join(" ");
 }
 
-function shortenLabel(label: string) {
-  const words = label.trim().split(/\s+/).filter(Boolean);
-
-  if (words.length <= 1) {
-    return label.trim().slice(0, 12).toUpperCase();
-  }
-
-  const firstLine = words[0].slice(0, 10);
-  const secondLine = words.slice(1).join(" ").slice(0, 11);
-
-  return `${firstLine}\n${secondLine}`.toUpperCase();
-}
-
 function GiftIcon({ color }: { color: string }) {
   return (
     <g fill="none" stroke={color} strokeLinecap="round" strokeLinejoin="round" strokeWidth="3.8">
@@ -86,11 +73,20 @@ function GiftIcon({ color }: { color: string }) {
 function WheelPointer() {
   return (
     <div className="pointer-events-none absolute left-1/2 top-[1.5%] z-30 -translate-x-1/2">
-      <div className="h-16 w-14 drop-shadow-[0_7px_7px_rgba(7,63,120,0.3)]">
-        <div className="h-full w-full [clip-path:polygon(50%_100%,3%_5%,97%_5%)] bg-white p-[5px]">
-          <div className="h-full w-full [clip-path:polygon(50%_100%,7%_7%,93%_7%)] bg-[#0b4d91]" />
-        </div>
-      </div>
+      <svg
+        viewBox="0 0 72 96"
+        className="h-16 w-14 drop-shadow-[0_7px_7px_rgba(7,63,120,0.3)]"
+        aria-hidden="true"
+      >
+        <path
+          d="M36 92c-3.2 0-5.9-2-7.1-5L5.2 14.6C2.6 7.6 7.8 2 15.2 2h41.6c7.4 0 12.6 5.6 10 12.6L43.1 87c-1.2 3-3.9 5-7.1 5Z"
+          fill="#ffffff"
+        />
+        <path
+          d="M36 81.5 15.9 16.2c-.7-2.2.8-4 3.3-4h33.6c2.5 0 4 1.8 3.3 4L36 81.5Z"
+          fill="#0b4d91"
+        />
+      </svg>
     </div>
   );
 }
@@ -178,27 +174,25 @@ export function CocoricoWheel({
             aria-label="Roue de la fortune"
           >
             <title>Roue de la fortune</title>
-            <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 20} fill="#ffffff" />
+            <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 30} fill="#ffffff" />
             <circle
               cx={CENTER}
               cy={CENTER}
-              r={OUTER_RADIUS + 12}
+              r={OUTER_RADIUS + 22}
               fill="none"
               stroke={DEEP_BLUE}
-              strokeWidth="9"
+              strokeWidth="8"
             />
             {visualSegments.map((segment, index) => {
               const startAngle = index * segmentAngle + 1.4;
               const endAngle = startAngle + segmentAngle - 2.8;
               const midAngle = startAngle + (endAngle - startAngle) / 2;
               const iconPoint = polarToCartesian(207, midAngle);
-              const labelPoint = polarToCartesian(239, midAngle);
               const fillColor = index % 2 === 0 ? PRIMARY_BLUE : "#ffffff";
               const contentColor = fillColor === "#ffffff" ? DEEP_BLUE : "#ffffff";
 
               return (
                 <g key={segment.id}>
-                  <title>{segment.label}</title>
                   <path
                     d={describeSlice(startAngle, endAngle)}
                     fill={fillColor}
@@ -216,29 +210,6 @@ export function CocoricoWheel({
                   >
                     <GiftIcon color={contentColor} />
                   </g>
-                  <text
-                    x={labelPoint.x}
-                    y={labelPoint.y}
-                    fill={contentColor}
-                    fontSize="11"
-                    fontWeight="800"
-                    letterSpacing="0.4"
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    transform={`rotate(${midAngle + 90} ${labelPoint.x} ${labelPoint.y})`}
-                  >
-                    {shortenLabel(segment.label)
-                      .split("\n")
-                      .map((line, lineIndex) => (
-                        <tspan
-                          key={`${segment.id}-${line}`}
-                          x={labelPoint.x}
-                          dy={lineIndex === 0 ? (shortenLabel(segment.label).includes("\n") ? "-5" : "0") : "10"}
-                        >
-                          {line}
-                        </tspan>
-                      ))}
-                  </text>
                 </g>
               );
             })}
@@ -265,7 +236,7 @@ export function CocoricoWheel({
           {isSpinning ? (
             <span className="text-[clamp(0.8rem,4cqw,1.2rem)]">...</span>
           ) : (
-            <Hand aria-hidden="true" className="h-[42%] w-[42%]" strokeWidth={2.3} />
+            <Hand aria-hidden="true" className="h-[42%] w-[42%]" strokeWidth={2.6} />
           )}
         </button>
       </div>
