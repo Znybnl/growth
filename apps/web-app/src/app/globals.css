@@ -1502,7 +1502,7 @@ button:disabled,
 
 /* Cocorico is an expressive game surface, intentionally isolated from the
    Slack-inspired SaaS chrome. The headline mirrors the reference treatment:
-   Fredoka, a rotated yellow display block, and a duplicated navy contour. */
+   Fredoka One, a rotated display block, and a duplicated navy contour. */
 .okado-cocorico-promo-text {
   display: flex;
   width: 100%;
@@ -1511,8 +1511,8 @@ button:disabled,
   align-items: center;
   margin: 0 auto;
   transform: rotate(-8deg);
-  font-family: var(--font-fredoka), "Fredoka One", sans-serif;
-  font-size: clamp(2rem, 8.5vw, 5rem);
+  font-family: "Fredoka One", var(--font-fredoka), sans-serif;
+  font-size: 5rem;
   font-weight: 700;
   line-height: 0.9;
   letter-spacing: -0.045em;
@@ -1527,7 +1527,7 @@ button:disabled,
   display: block;
   max-width: 100%;
   text-transform: none;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .okado-cocorico-promo-line::before {
@@ -1541,8 +1541,23 @@ button:disabled,
   -webkit-text-stroke: 16px #102c6a;
 }
 
+.okado-cocorico-promo-line:nth-child(n + 2),
+.okado-cocorico-promo-line:nth-child(n + 2)::before {
+  color: #ffffff;
+}
+
 .okado-preview-surface[data-template-id="cocorico-wheel"] .okado-cocorico-promo-text {
-  font-size: clamp(2rem, 8cqw, 5rem);
+  font-size: clamp(2rem, 13cqw, 5rem);
+}
+
+@media (max-width: 480px) {
+  .okado-cocorico-promo-text {
+    font-size: clamp(2.5rem, 10vw, 5rem);
+  }
+
+  .okado-preview-surface[data-template-id="cocorico-wheel"] .okado-cocorico-promo-text {
+    font-size: clamp(2.5rem, 10cqw, 5rem);
+  }
 }
 
 .okado-preview-surface[data-template-id="cocorico-wheel"] > div > div:has(> .okado-cocorico-wheel) {
