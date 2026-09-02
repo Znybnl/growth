@@ -171,10 +171,10 @@ export default async function DashboardPage({
                     <div className="flex items-center gap-3">
                       <StatusBadge tone={getCampaignStatus(item).tone}>{getCampaignStatus(item).label}</StatusBadge>
                       <div className="min-w-0">
-                        <p className="truncate font-semibold text-[#111827]">
+                        <p className="truncate font-semibold text-carbon">
                           {item.campaign.title}
                         </p>
-                        <p className="truncate text-[#7a8496]">
+                        <p className="truncate text-ash">
                           {goalLabel(item.campaign.goalType)}
                         </p>
                       </div>
@@ -206,7 +206,7 @@ export default async function DashboardPage({
                         <p className="truncate font-semibold text-graphite">
                           {item.campaign.title}
                         </p>
-                        <p className="truncate text-sm text-[#7a8496]">
+                        <p className="truncate text-sm text-ash">
                           {goalLabel(item.campaign.goalType)}
                         </p>
                       </div>
@@ -274,12 +274,12 @@ export default async function DashboardPage({
                 >
                   <div className="flex items-center justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="truncate font-semibold text-[#111827]">{lead.firstName}</p>
-                      <p className="truncate text-sm text-[#7b8496]">{lead.email}</p>
+                      <p className="truncate font-semibold text-carbon">{lead.firstName}</p>
+                      <p className="truncate text-sm text-ash">{lead.email}</p>
                     </div>
                     <StatusBadge tone={leadStatusTone(lead.status)}>{leadStatusLabel(lead.status)}</StatusBadge>
                   </div>
-                  <div className="mt-3 flex flex-col gap-1 text-sm text-[#7b8496] sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+                  <div className="mt-3 flex flex-col gap-1 text-sm text-ash sm:flex-row sm:items-center sm:justify-between sm:gap-3">
                     <span className="truncate">{lead.campaignTitle}</span>
                     <span>{formatDateTime(lead.createdAt)}</span>
                   </div>

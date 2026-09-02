@@ -279,9 +279,7 @@ select {
 /* Shared SaaS workspace surface. Public game experiences intentionally do not
    use this scope and keep their template-specific visual language. */
 .okado-workspace-shell main {
-  background:
-    radial-gradient(circle at 60% -20%, color-mix(in srgb, var(--color-lavender-mist) 24%, transparent), transparent 32rem),
-    var(--color-soft-white);
+  background: var(--color-soft-white);
 }
 
 .okado-page-header {
@@ -295,13 +293,13 @@ select {
 
 .okado-page-header__icon {
   display: grid;
-  height: 2.75rem;
-  width: 2.75rem;
+  height: 2rem;
+  width: 2rem;
   flex: 0 0 auto;
   place-items: center;
   border-radius: 4px;
-  background: var(--color-purple-haze);
-  color: var(--color-aubergine);
+  background: transparent;
+  color: var(--color-charcoal);
 }
 
 .okado-account-header {
@@ -333,14 +331,24 @@ select {
   padding: 1.25rem;
 }
 
+.okado-workspace-shell .okado-metric-card {
+  border: 0;
+  border-left: 3px solid var(--color-lavender-mist);
+  border-radius: 0;
+  background: transparent;
+  padding-block: 0.5rem;
+  padding-left: 1rem;
+  box-shadow: none;
+}
+
 .okado-metric-card__icon {
   display: grid;
   height: 2rem;
   width: 2rem;
   place-items: center;
-  border-radius: 4px;
-  background: var(--color-purple-haze);
-  color: var(--color-aubergine);
+  border-radius: 0;
+  background: transparent;
+  color: var(--color-charcoal);
 }
 
 .okado-metric-card__value {
@@ -365,6 +373,13 @@ select {
 
 .okado-form-section__header {
   min-width: 0;
+}
+
+.okado-workspace-shell .okado-form-section__header > span {
+  height: 2rem;
+  width: 2rem;
+  background: transparent;
+  color: var(--color-charcoal);
 }
 
 .okado-action-bar {
@@ -594,6 +609,24 @@ select {
   box-shadow: none;
 }
 
+.okado-workspace-shell .okado-sidebar-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-pure-white);
+  border-radius: var(--okado-radius-button);
+  background: var(--color-pure-white);
+  color: var(--color-aubergine);
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
+.okado-workspace-shell .okado-sidebar-cta:hover {
+  background: var(--color-purple-haze);
+  color: var(--color-deep-plum);
+}
+
 .okado-workspace-shell :where(input:not([type="color"]), textarea, select) {
   border-color: var(--okado-border-control);
   background: var(--okado-surface-raised);
@@ -642,6 +675,13 @@ select {
 /* Editor controls use the SaaS scale; the live game preview opts out with
    .okado-preview-cta so template-specific shapes remain untouched. */
 .okado-workspace-shell :where(.okado-campaign-editor, .okado-wizard, .okado-poster-editor, .okado-editor-page) :where(
+    button:not(.okado-preview-cta),
+    [role="button"]
+  ) {
+  border-radius: var(--okado-radius-button) !important;
+}
+
+.okado-workspace-shell :where(.okado-campaign-editor, .okado-wizard, .okado-poster-editor, .okado-editor-page) :where(
     button:not(.okado-preview-cta)[class~="rounded-[18px]"],
     button:not(.okado-preview-cta)[class~="rounded-[20px]"],
     button:not(.okado-preview-cta)[class~="rounded-[22px]"],
@@ -688,7 +728,10 @@ select {
     [class~="text-[#69758a]"],
     [class~="text-[#8993a6]"],
     [class~="text-[#626d82]"],
-    [class~="text-[#667286]"]
+    [class~="text-[#667286]"],
+    [class~="text-[#7a8496]"],
+    [class~="text-[#7b8496]"],
+    [class~="text-[#556173]"]
   ) {
   color: var(--okado-text-primary) !important;
 }
@@ -874,17 +917,17 @@ select {
 .okado-page-title {
   color: var(--color-midnight-ink);
   font-family: var(--font-display);
-  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
   font-weight: 600;
-  letter-spacing: -0.045em;
+  letter-spacing: -0.02em;
   line-height: 1.05;
 }
 
 .okado-section-title {
   color: var(--color-graphite);
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 600;
-  letter-spacing: -0.22px;
+  letter-spacing: -0.16px;
   line-height: 1.25;
 }
 
@@ -944,7 +987,7 @@ button:disabled,
   color: #ffffff !important;
   font-size: 14px;
   font-weight: 600;
-  box-shadow: var(--shadow-product-card);
+  box-shadow: none;
 }
 
 .okado-secondary-action {

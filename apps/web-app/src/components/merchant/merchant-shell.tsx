@@ -224,15 +224,15 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
             <CircleDollarSign className="size-4 shrink-0" aria-hidden="true" />
             <span>Caisse</span>
           </Link>
-          <Button asChild className="okado-primary-action mt-5 h-10 px-4">
+          <Button asChild className="okado-sidebar-cta mt-5 h-10 px-4">
             <Link href="/campaigns/new/guided" prefetch={false} onClick={() => setMenuOpen(false)}>
               Créer une campagne
             </Link>
           </Button>
 
           {isSaasAdmin ? (
-            <div className="mt-7 rounded-[8px] border border-white/10 bg-black/10 p-1.5">
-              <p className="px-2 pb-1 text-[10px] font-semibold uppercase tracking-[0.13px] text-white/55">
+            <div className="mt-7 border-t border-white/12 pt-5">
+              <p className="px-2 pb-1 text-[10px] font-semibold uppercase tracking-[0.13em] text-white/55">
                 Administration plateforme
               </p>
               <nav className="space-y-0.5">
@@ -271,8 +271,8 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
             Valider un retrait
           </Link>
 
-          <div className="mt-0 rounded-[8px] border border-white/10 bg-black/10 p-3">
-            <p className="text-[10px] uppercase tracking-[0.13px] text-white/55">Mon compte</p>
+          <div className="mt-0 border-t border-white/12 pt-4">
+            <p className="text-[10px] uppercase tracking-[0.13em] text-white/55">Mon compte</p>
             <div className="mt-3 flex items-center gap-3">
               {user.authProvider === "google" && user.avatarUrl ? (
                 <div
@@ -298,7 +298,7 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
                 Abonnement actif
               </div>
             ) : billing.isTrialActive ? (
-              <div className="mt-4 rounded-[4px] bg-[#145aff]/10 px-2 py-2 text-xs font-medium text-signal-blue">
+              <div className="mt-4 rounded-[4px] bg-white/10 px-2 py-2 text-xs font-medium text-white/80">
                 Essai gratuit :
                 <span className="font-semibold"> {billing.daysLeftInTrial} jour(s) restants</span>
               </div>

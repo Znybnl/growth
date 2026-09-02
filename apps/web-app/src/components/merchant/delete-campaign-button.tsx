@@ -69,12 +69,12 @@ export function DeleteCampaignButton({
         className={cn(
           "inline-flex w-full cursor-pointer items-center text-left text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60",
           isMenu
-            ? "min-h-9 gap-2 rounded-[8px] border border-transparent bg-transparent px-2.5 py-2 text-[#b42318] hover:bg-[#fff7f7]"
-            : "gap-3 rounded-[12px] border border-[#f0d8d8] bg-white px-4 py-3 text-[#b42318] hover:border-[#e7b4b4] hover:bg-[#fff7f7]",
+            ? "min-h-9 gap-2 rounded-[4px] border border-transparent bg-transparent px-2.5 py-2 text-[var(--okado-status-danger-text)] hover:bg-[var(--okado-status-danger-bg)]"
+            : "gap-2 rounded-[4px] border border-transparent bg-transparent px-2.5 py-2 text-[var(--okado-status-danger-text)] hover:bg-[var(--okado-status-danger-bg)]",
           className,
         )}
       >
-        <DeleteIcon compact={isMenu} />
+        <DeleteIcon />
         Supprimer
       </button>
 
@@ -95,13 +95,12 @@ export function DeleteCampaignButton({
   );
 }
 
-function DeleteIcon({ compact = false }: { compact?: boolean }) {
+function DeleteIcon() {
   return (
     <span
       aria-hidden="true"
       className={cn(
-        "inline-flex shrink-0 items-center justify-center text-[#b42318]",
-        compact ? "h-4 w-4" : "h-8 w-8 rounded-full bg-[#fff1f1]",
+        "inline-flex h-4 w-4 shrink-0 items-center justify-center text-[var(--okado-status-danger-text)]",
       )}
     >
       <svg viewBox="0 0 24 24" className="h-4 w-4 fill-none stroke-current stroke-[1.8]">

@@ -133,10 +133,10 @@ export function DashboardActivityChart({
                 x2={chartWidth - plot.right}
                 y1={tick.y}
                 y2={tick.y}
-                stroke="#dfe6f2"
+                stroke="var(--color-fog)"
                 strokeDasharray="4 8"
               />
-              <text x={plot.left - 12} y={tick.y + 4} textAnchor="end" fill="#7b8496" fontSize="12">
+              <text x={plot.left - 12} y={tick.y + 4} textAnchor="end" fill="var(--color-ash)" fontSize="12">
                 {tick.value}
               </text>
             </g>
@@ -148,28 +148,28 @@ export function DashboardActivityChart({
                 x2={xFor(index)}
                 y1={plot.top}
                 y2={chartHeight - plot.bottom}
-                stroke="#dfe6f2"
+                stroke="var(--color-fog)"
                 strokeDasharray="4 8"
               />
               <text
                 x={xFor(index)}
                 y={chartHeight - 14}
                 textAnchor="middle"
-                fill="#7b8496"
+                fill="var(--color-ash)"
                 fontSize="12"
               >
                 {point.date}
               </text>
             </g>
           ))}
-          <polyline points={scanPoints} fill="none" stroke="#145aff" strokeWidth="3" strokeLinejoin="round" strokeLinecap="round" filter="url(#okado-chart-shadow)" />
-          <polyline points={participationPoints} fill="none" stroke="#0f1f3d" strokeWidth="3" strokeLinejoin="round" strokeLinecap="round" />
+          <polyline points={scanPoints} fill="none" stroke="var(--color-aubergine)" strokeWidth="3" strokeLinejoin="round" strokeLinecap="round" filter="url(#okado-chart-shadow)" />
+          <polyline points={participationPoints} fill="none" stroke="var(--color-deep-plum)" strokeWidth="3" strokeLinejoin="round" strokeLinecap="round" />
           {data.map((point, index) => (
             <g key={`points-${point.label}`}>
-              <circle cx={xFor(index)} cy={yFor(point.scans)} r="4.5" fill="#145aff" stroke="#ffffff" strokeWidth="3">
+              <circle cx={xFor(index)} cy={yFor(point.scans)} r="4.5" fill="var(--color-aubergine)" stroke="var(--color-pure-white)" strokeWidth="3">
                 <title>{`${formatShortDate(point.label)} · Scans : ${point.scans}`}</title>
               </circle>
-              <circle cx={xFor(index)} cy={yFor(point.participations)} r="4.5" fill="#0f1f3d" stroke="#ffffff" strokeWidth="3">
+              <circle cx={xFor(index)} cy={yFor(point.participations)} r="4.5" fill="var(--color-deep-plum)" stroke="var(--color-pure-white)" strokeWidth="3">
                 <title>{`${formatShortDate(point.label)} · Participations : ${point.participations}`}</title>
               </circle>
             </g>

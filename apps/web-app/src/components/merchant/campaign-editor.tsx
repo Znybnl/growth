@@ -787,7 +787,7 @@ function PrizeSuggestionDialog({
                 key={suggestion.id}
                 className="flex min-h-[238px] flex-col rounded-[24px] border border-[#dbe4f0] bg-white p-5 shadow-[0_10px_28px_rgba(24,39,75,0.06)]"
               >
-                <div className={`flex h-16 w-16 items-center justify-center rounded-[20px] ${iconStyle.className}`}>
+                <div className={`flex h-16 w-16 items-center justify-center rounded-[4px] ${iconStyle.className}`}>
                   <Icon className="h-8 w-8" aria-hidden="true" />
                 </div>
                 <div className="mt-5 flex items-start justify-between gap-3">
@@ -827,13 +827,13 @@ function PrizeSuggestionDialog({
 
 function getPrizeSuggestionIcon(icon: string) {
   const icons = {
-    coffee: { Icon: Coffee, className: "bg-[#fff3df] text-[#b9680b]" },
-    dessert: { Icon: Sparkles, className: "bg-[#f4eaff] text-[#7a3fd1]" },
-    drink: { Icon: Soup, className: "bg-[#e6f6ff] text-[#1576b6]" },
-    discount: { Icon: BadgePercent, className: "bg-[#e9f7ec] text-[#258348]" },
-    supplement: { Icon: CirclePlus, className: "bg-[#e9f7ec] text-[#258348]" },
-    menu: { Icon: UtensilsCrossed, className: "bg-[#eef1ff] text-[#4058c8]" },
-    gift: { Icon: Gift, className: "bg-[#eef1ff] text-[#4058c8]" },
+    coffee: { Icon: Coffee, className: "bg-purple-haze text-charcoal" },
+    dessert: { Icon: Sparkles, className: "bg-purple-haze text-charcoal" },
+    drink: { Icon: Soup, className: "bg-purple-haze text-charcoal" },
+    discount: { Icon: BadgePercent, className: "bg-purple-haze text-charcoal" },
+    supplement: { Icon: CirclePlus, className: "bg-purple-haze text-charcoal" },
+    menu: { Icon: UtensilsCrossed, className: "bg-purple-haze text-charcoal" },
+    gift: { Icon: Gift, className: "bg-purple-haze text-charcoal" },
   } as const;
 
   return icons[icon as keyof typeof icons] ?? icons.gift;

@@ -33,7 +33,7 @@ export function SocialChannelIcon({
 
   return (
     <span
-      className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-sky-wash text-signal-blue"
+      className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-[4px] text-charcoal"
       aria-hidden="true"
     >
       <Icon className={className} />

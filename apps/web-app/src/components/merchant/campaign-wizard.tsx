@@ -33,6 +33,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { StatusBadge } from "@/components/ui/status-badge";
 import {
   buildCampaignLivePreviewModel,
   CampaignLivePreview,
@@ -556,13 +557,13 @@ function draftFromCampaign(merchant: Merchant, performance: CampaignPerformance)
 
 function getWizardPrizeSuggestionIcon(icon: string) {
   const icons = {
-    coffee: { Icon: Coffee, className: "bg-[#fff3df] text-[#b9680b]" },
-    dessert: { Icon: Sparkles, className: "bg-[#f4eaff] text-[#7a3fd1]" },
-    drink: { Icon: Soup, className: "bg-[#e6f6ff] text-[#1576b6]" },
-    discount: { Icon: BadgePercent, className: "bg-[#e9f7ec] text-[#258348]" },
-    supplement: { Icon: CirclePlus, className: "bg-[#e9f7ec] text-[#258348]" },
-    menu: { Icon: UtensilsCrossed, className: "bg-[#eef1ff] text-[#4058c8]" },
-    gift: { Icon: Gift, className: "bg-[#eef1ff] text-[#4058c8]" },
+    coffee: { Icon: Coffee, className: "bg-purple-haze text-charcoal" },
+    dessert: { Icon: Sparkles, className: "bg-purple-haze text-charcoal" },
+    drink: { Icon: Soup, className: "bg-purple-haze text-charcoal" },
+    discount: { Icon: BadgePercent, className: "bg-purple-haze text-charcoal" },
+    supplement: { Icon: CirclePlus, className: "bg-purple-haze text-charcoal" },
+    menu: { Icon: UtensilsCrossed, className: "bg-purple-haze text-charcoal" },
+    gift: { Icon: Gift, className: "bg-purple-haze text-charcoal" },
   } as const;
   return icons[icon as keyof typeof icons] ?? icons.gift;
 }
@@ -631,7 +632,7 @@ function PrizeSuggestionsPanel({
                       const Icon = iconStyle.Icon;
                       return (
                         <span
-                          className={`flex h-9 w-9 items-center justify-center rounded-full ${iconStyle.className}`}
+                          className={`flex h-9 w-9 items-center justify-center rounded-[4px] ${iconStyle.className}`}
                           aria-hidden="true"
                         >
                           <Icon className="h-4 w-4" />
@@ -1194,7 +1195,7 @@ export function CampaignWizard({
         </div>
         {draft.id ? (
           <div className="flex flex-wrap items-center gap-2">
-            {isEditing ? <span className="rounded-full bg-[#eef4ff] px-3 py-1.5 text-xs font-semibold text-[#214ccf]">Mode modification</span> : null}
+            {isEditing ? <StatusBadge tone="muted">Mode modification</StatusBadge> : null}
             <Link
               href={`/campaign/${draft.id}?preview=1`}
               target="_blank"
@@ -1254,9 +1255,9 @@ export function CampaignWizard({
 
       <div className="sticky top-0 z-30 hidden border-b border-fog bg-soft-white/95 py-3 backdrop-blur xl:block">
         <div className="flex items-center justify-between gap-3">
-          <span className={`rounded-full px-3 py-1.5 text-xs font-semibold ${!draft.id ? "bg-purple-haze text-deep-plum" : draft.isActive ? "bg-[#e9f8ec] text-[#18864b]" : "bg-[#eef4ff] text-[#214ccf]"}`}>
+          <StatusBadge tone={!draft.id || !draft.isActive ? "muted" : "active"}>
             {!draft.id ? "En création" : draft.isActive ? "En ligne" : "Brouillon"}
-          </span>
+          </StatusBadge>
           <div className="flex items-center gap-2">
             <Link href="/campaigns" prefetch={false} className="okado-secondary-action px-4 text-sm">Retour aux jeux</Link>
             <button type="button" onClick={() => void saveCampaign("save")} disabled={isSaving} className="okado-secondary-action px-4 text-sm disabled:opacity-50">
@@ -1644,11 +1645,9 @@ export function CampaignWizard({
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span
-                    className={`rounded-full px-3 py-1 text-xs font-semibold ${totalProbability > 100 ? "bg-[#fff0f0] text-[#b42318]" : "bg-[#e9f8ec] text-[#18864b]"}`}
-                  >
+                  <StatusBadge tone={totalProbability > 100 ? "danger" : "active"}>
                     {Math.round(totalProbability)} %
-                  </span>
+                  </StatusBadge>
                   {prizeSuggestions.length ? (
                     <button
                       type="button"

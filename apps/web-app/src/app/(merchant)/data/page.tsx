@@ -60,9 +60,9 @@ function Histogram({
         {bars.map((bar) => (
           <div key={bar.label} className="flex min-w-0 flex-col items-center justify-end gap-3">
             <span className="text-sm font-semibold text-graphite">{bar.value}</span>
-            <div className="flex h-full w-full items-end rounded-[8px] bg-sky-wash p-1">
+            <div className="flex h-full w-full items-end rounded-[4px] bg-purple-haze p-1">
               <div
-                className="w-full rounded-[14px]"
+                className="w-full rounded-[4px]"
                 style={{
                   height: `${Math.max((bar.value / max) * 100, bar.value > 0 ? 10 : 0)}%`,
                   backgroundColor: color,
@@ -174,7 +174,7 @@ function LeadsExportSection({
         <div>
           <p className="okado-label">Saisies et export</p>
           <h2 className="okado-section-title mt-2">
-            Contacts, statuts et consentements
+            Participations, statuts et consentements
           </h2>
         </div>
         <Link
@@ -216,19 +216,20 @@ function LeadsExportSection({
                     </div>
                   ) : null}
                   {lead.prizeUsageConditions ? (
-                    <div className="mt-2 max-w-[280px] whitespace-pre-line rounded-[12px] bg-[#fff8e8] px-3 py-2 text-xs leading-5 text-[#6c5313]">
+                    <div className="mt-2 max-w-[280px] whitespace-pre-line rounded-[4px] bg-purple-haze px-3 py-2 text-xs leading-5 text-charcoal">
                       {lead.prizeUsageConditions}
                     </div>
                   ) : null}
                 </td>
                 <td data-label="E-mail gain" className="w-[150px] max-w-[150px] border-b border-[#eef2f7] px-3 py-4 align-top text-slate">
                   <div className="w-[140px] max-w-[140px] overflow-hidden">
-                    <span
-                      className={`inline-flex max-w-full truncate rounded-[4px] px-3 py-1.5 text-xs font-semibold ${rewardEmailTone(lead.emailDeliveryStatus)}`}
+                    <StatusBadge
+                      tone={rewardEmailTone(lead.emailDeliveryStatus)}
+                      className="max-w-full truncate"
                       title={rewardEmailStatusLabel(lead.emailDeliveryStatus)}
                     >
                       {rewardEmailStatusLabel(lead.emailDeliveryStatus)}
-                    </span>
+                    </StatusBadge>
                   </div>
                   {lead.emailDeliveredAt ? (
                     <div className="mt-1 truncate text-xs text-ash">
@@ -293,18 +294,18 @@ function LeadsExportSection({
 function rewardEmailTone(status?: RewardEmailDeliveryStatus) {
   switch (status) {
     case "delivered":
-      return "bg-[#ecfdf3] text-[#047857]";
+      return "active" as const;
     case "sent":
-      return "bg-[#eff6ff] text-[#1d4ed8]";
+      return "info" as const;
     case "queued":
-      return "bg-[#fff7ed] text-[#c2410c]";
+      return "warning" as const;
     case "failed":
     case "bounced":
     case "complained":
     case "suppressed":
-      return "bg-[#fff1f2] text-[#be123c]";
+      return "danger" as const;
     default:
-      return "bg-[#f3f4f6] text-[#4b5563]";
+      return "muted" as const;
   }
 }
 
