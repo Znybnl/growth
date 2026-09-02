@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CircleStop, Pause, Play } from "lucide-react";
 
 import { DashboardActivityChart } from "@/components/merchant/dashboard-activity-chart";
 import { DashboardCampaignActionsMenu } from "@/components/merchant/dashboard-campaign-actions-menu";
@@ -11,7 +12,6 @@ import {
   formatDateTime,
   formatPercent,
   gameTypeLabel,
-  goalLabel,
   leadStatusLabel,
 } from "@/lib/format";
 import { getMerchantDashboard, getMerchantRecentLeads, getMerchantWorkspaceDashboard } from "@/lib/store";
@@ -47,14 +47,41 @@ export default async function DashboardPage({
   const activityPoints = dashboard.activityPoints;
   const getCampaignStatus = (item: (typeof filteredCampaigns)[number]) => {
     if (!item.campaign.isActive) {
-      return { label: "Désactivée", tone: "muted" as const };
+      return {
+        label: "Campagne en pause",
+        icon: Pause,
+        iconClass: "text-[var(--okado-text-muted)]",
+      };
     }
 
-    if (item.prizes.some((prize) => prize.remainingQuantity === 0)) {
-      return { label: "Stock épuisé", tone: "warning" as const };
+    if (item.prizes.length > 0 && item.prizes.every((prize) => prize.remainingQuantity === 0)) {
+      return {
+        label: "Campagne arrêtée : stock épuisé",
+        icon: CircleStop,
+        iconClass: "text-[var(--okado-status-warning-text)]",
+      };
     }
 
-    return { label: "Active", tone: "active" as const };
+    return {
+      label: "Campagne active",
+      icon: Play,
+      iconClass: "text-[var(--okado-status-success-text)]",
+    };
+  };
+  const CampaignStatusIcon = ({ item }: { item: (typeof filteredCampaigns)[number] }) => {
+    const status = getCampaignStatus(item);
+    const Icon = status.icon;
+
+    return (
+      <span
+        className={`inline-flex shrink-0 items-center justify-center ${status.iconClass}`}
+        role="img"
+        aria-label={status.label}
+        title={status.label}
+      >
+        <Icon className="h-[18px] w-[18px]" strokeWidth={2.25} aria-hidden="true" />
+      </span>
+    );
   };
   const leadStatusTone = (status: (typeof recentLeads)[number]["status"]) => {
     switch (status) {
@@ -153,9 +180,8 @@ export default async function DashboardPage({
             </div>
 
             <div className="mt-6 hidden md:block">
-              <div className="okado-table-header grid grid-cols-[minmax(0,1.5fr)_0.85fr_0.7fr_0.7fr_0.9fr_auto] items-center gap-3 px-5 py-3">
+              <div className="okado-table-header grid grid-cols-[minmax(0,1.65fr)_0.7fr_0.8fr_0.9fr_auto] items-center gap-3 px-5 py-3">
                 <span>Campagne</span>
-                <span>Mécanique</span>
                 <span className="text-right">Scans</span>
                 <span className="text-right">Participations</span>
                 <span className="text-right">Conversion</span>
@@ -165,22 +191,21 @@ export default async function DashboardPage({
               {filteredCampaigns.map((item) => (
                 <div
                   key={item.campaign.id}
-                  className="okado-table-row grid grid-cols-[minmax(0,1.5fr)_0.85fr_0.7fr_0.7fr_0.9fr_auto] items-center gap-3 px-5 py-4 text-sm"
+                  className="okado-table-row grid grid-cols-[minmax(0,1.65fr)_0.7fr_0.8fr_0.9fr_auto] items-center gap-3 px-5 py-4 text-sm"
                 >
                   <div className="min-w-0">
                     <div className="flex items-center gap-3">
-                      <StatusBadge tone={getCampaignStatus(item).tone}>{getCampaignStatus(item).label}</StatusBadge>
+                      <CampaignStatusIcon item={item} />
                       <div className="min-w-0">
                         <p className="truncate font-semibold text-carbon">
                           {item.campaign.title}
                         </p>
                         <p className="truncate text-ash">
-                          {goalLabel(item.campaign.goalType)}
+                          {gameTypeLabel(item.campaign.gameType)}
                         </p>
                       </div>
                     </div>
                   </div>
-                  <span className="text-[#556173]">{gameTypeLabel(item.campaign.gameType)}</span>
                   <span data-align="right" className="font-semibold text-graphite">{item.kpis.scans}</span>
                   <span data-align="right" className="font-semibold text-graphite">{item.kpis.leads}</span>
                   <span data-align="right" className="font-semibold text-graphite">
@@ -199,15 +224,13 @@ export default async function DashboardPage({
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex min-w-0 items-start gap-3">
-                        <StatusBadge tone={getCampaignStatus(item).tone}>
-                          {getCampaignStatus(item).label}
-                        </StatusBadge>
+                        <CampaignStatusIcon item={item} />
                       <div className="min-w-0">
                         <p className="truncate font-semibold text-graphite">
                           {item.campaign.title}
                         </p>
                         <p className="truncate text-sm text-ash">
-                          {goalLabel(item.campaign.goalType)}
+                          {gameTypeLabel(item.campaign.gameType)}
                         </p>
                       </div>
                     </div>
@@ -215,14 +238,6 @@ export default async function DashboardPage({
                   </div>
 
                   <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
-                    <div className="okado-mobile-table-stat">
-                      <p className="okado-mobile-table-stat-label">
-                        Mécanique
-                      </p>
-                      <p className="mt-1 okado-mobile-table-stat-value">
-                        {gameTypeLabel(item.campaign.gameType)}
-                      </p>
-                    </div>
                     <div className="okado-mobile-table-stat">
                       <p className="okado-mobile-table-stat-label">
                         Conversion
