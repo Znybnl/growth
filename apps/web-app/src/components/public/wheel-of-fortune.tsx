@@ -469,7 +469,7 @@ export function WheelOfFortune({
           type="button"
           onClick={handleCentralButton}
           disabled={!buttonEnabled || isSpinning || hasSpun}
-          className={`absolute left-1/2 top-1/2 z-40 flex aspect-square ${isRestaurantPopTemplate ? "w-[19.5%]" : "w-[17.8%]"} -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-[4px] text-[19px] font-black uppercase transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-75 ${isRestaurantPopTemplate ? "font-anton shadow-[0_20px_34px_rgba(15,23,42,0.24)] [text-shadow:0_3px_0_rgba(0,0,0,0.18)]" : "shadow-[0_16px_30px_rgba(15,23,42,0.16)]"}`}
+          className={`okado-wheel-center-button absolute left-1/2 top-1/2 z-40 flex aspect-square ${isRestaurantPopTemplate ? "w-[19.5%]" : "w-[17.8%]"} -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-[4px] text-[19px] font-black uppercase transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-75 ${isRestaurantPopTemplate ? "font-anton shadow-[0_20px_34px_rgba(15,23,42,0.24)] [text-shadow:0_3px_0_rgba(0,0,0,0.18)]" : "shadow-[0_16px_30px_rgba(15,23,42,0.16)]"}`}
           style={{
             background:
               buttonEnabled && !hasSpun

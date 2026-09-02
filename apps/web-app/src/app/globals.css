@@ -799,6 +799,12 @@ select {
   border-radius: var(--okado-radius-card) !important;
 }
 
+/* The wheel centre is product UI, not editor chrome. Keep the public game
+   geometry identical inside every merchant preview. */
+.okado-workspace-shell .okado-wheel-center-button {
+  border-radius: 9999px !important;
+}
+
 .okado-workspace-shell .okado-list-row {
   border-bottom: 1px solid var(--okado-border-subtle);
   background: transparent;
