@@ -4,7 +4,7 @@ import { DataCampaignSelector } from "@/components/merchant/data-campaign-select
 import { DataSearchForm } from "@/components/merchant/data-search-form";
 import { LeadPrizeActions } from "@/components/merchant/lead-prize-actions";
 import { PrizeStockActions } from "@/components/merchant/prize-stock-actions";
-import { EmptyState, MetricCard, PageHeader, ResponsiveTable } from "@/components/ui/workspace";
+import { EmptyState, MetricCard, PageHeader, ResponsiveTable, StatusNotice } from "@/components/ui/workspace";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import {
@@ -405,25 +405,25 @@ export default async function DataPage({ searchParams }: DataPageProps) {
             </div>
           </div>
           {emailStatus === "attention" ? (
-            <div className="mt-4 rounded-[8px] border border-[#f0dfaa] bg-[#fff9e8] px-4 py-3 text-sm text-[#74570b]">
+            <StatusNotice tone="warning" className="mt-4">
               Cette vue affiche uniquement les e-mails en échec pour un gain attribué et encore à retirer. Renvoyez l’e-mail ou consultez son historique pour résoudre l’alerte.
-            </div>
+            </StatusNotice>
           ) : null}
           {emailStatus === "attention" && dataView.leadTotal === 0 ? (
-            <p className="mt-4 text-sm font-semibold text-[#18864b]">
+            <StatusNotice tone="success" className="mt-4">
               Aucun e-mail à traiter pour cette campagne.
-            </p>
+            </StatusNotice>
           ) : query && dataView.leadTotal === 0 ? (
-            <p className="mt-4 text-sm font-semibold text-[#c2410c]">
+            <StatusNotice tone="warning" className="mt-4">
               Aucun résultat pour « {query} ».
-            </p>
+            </StatusNotice>
           ) : null}
       </section>
 
       <section className="grid gap-4 md:grid-cols-3 xl:grid-cols-6">
         {[
           ["Scans", String(dataView.performance.kpis.scans)],
-          ["Contacts", String(dataView.performance.kpis.contacts)],
+          ["Participations", String(dataView.performance.kpis.contacts)],
           ["Opt-ins", String(dataView.performance.kpis.optIns)],
           ["Conversion", formatPercent(dataView.performance.kpis.conversionRate)],
           ["Lots retirés", String(dataView.performance.kpis.redeemed)],
@@ -442,7 +442,7 @@ export default async function DataPage({ searchParams }: DataPageProps) {
           eyebrow="Lots récupérés"
           title="Évolution des lots récupérés par jour"
           bars={redeemedPerDay}
-          color="#111827"
+          color="var(--color-deep-plum)"
         />
       </section>
 

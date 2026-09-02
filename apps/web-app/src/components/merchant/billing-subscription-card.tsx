@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { Check } from "lucide-react";
 
+import { StatusNotice } from "@/components/ui/workspace";
 import { MerchantBillingSummary } from "@/lib/types";
 
 type BillingSubscriptionCardProps = {
@@ -83,7 +84,7 @@ export function BillingSubscriptionCard({ billing }: BillingSubscriptionCardProp
       <div className="mt-6 grid gap-4 lg:grid-cols-[minmax(0,1.3fr)_minmax(300px,0.7fr)]">
         <div className="space-y-4">
           {billing.isSubscribed ? (
-            <div className="rounded-[8px] border border-[#cfe9d8] bg-[#effaf3] p-5 text-sm text-[#19633f]">
+            <StatusNotice tone="success" className="p-5">
               <p className="font-semibold">Abonnement actif</p>
               <p className="mt-1 leading-6">
                 Votre prochaine facture est prévue le{" "}
@@ -93,13 +94,13 @@ export function BillingSubscriptionCard({ billing }: BillingSubscriptionCardProp
                 pour un montant de <span className="font-semibold">{priceLabel}</span>.
               </p>
               {billing.subscriptionCancelAtPeriodEnd ? (
-                <p className="mt-1 text-[#7b4f00]">
+                <p className="mt-1 text-[var(--okado-status-warning-text)]">
                   La résiliation est programmée à la fin de la période en cours.
                 </p>
               ) : null}
-            </div>
+            </StatusNotice>
           ) : billing.isTrialActive ? (
-            <div className="rounded-[8px] border border-[#cfe9d8] bg-[#effaf3] p-5 text-sm text-[#19633f]">
+            <StatusNotice tone="success" className="p-5">
               <p className="font-semibold">Vous êtes actuellement en période d’essai gratuit.</p>
               <p className="mt-1 leading-6">
                 Il vous reste{" "}
@@ -113,15 +114,15 @@ export function BillingSubscriptionCard({ billing }: BillingSubscriptionCardProp
                 </span>
                 .
               </p>
-            </div>
+            </StatusNotice>
           ) : (
-            <div className="rounded-[8px] border border-[#f3c9c1] bg-[#fff1ee] p-5 text-sm text-[#8b2c18]">
+            <StatusNotice tone="danger" className="p-5">
               <p className="font-semibold">Votre période d’essai est terminée.</p>
               <p className="mt-2 leading-7">
                 Vos jeux concours sont actuellement suspendus en boutique et l’export de vos
                 prospects est verrouillé.
               </p>
-            </div>
+            </StatusNotice>
           )}
 
           <div className="rounded-[16px] border border-lavender-mist bg-purple-haze p-5">
@@ -129,16 +130,16 @@ export function BillingSubscriptionCard({ billing }: BillingSubscriptionCardProp
               <p className="text-sm font-semibold text-graphite">Plan mensuel</p>
               <p className="text-2xl font-semibold text-aubergine">{priceLabel}</p>
             </div>
-            <ul className="mt-3 grid gap-2 text-sm leading-5 text-[#5c6577]">
-              <li className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 shrink-0 text-[#1f9d62]" aria-hidden="true" /><span>Jeux publics actifs et sans interruption</span></li>
-              <li className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 shrink-0 text-[#1f9d62]" aria-hidden="true" /><span>Exports CSV et données de campagne disponibles</span></li>
-              <li className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 shrink-0 text-[#1f9d62]" aria-hidden="true" /><span>Suivi complet de vos animations depuis un seul compte</span></li>
+            <ul className="mt-3 grid gap-2 text-sm leading-5 text-charcoal">
+              <li className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 shrink-0 text-[var(--okado-status-success-text)]" aria-hidden="true" /><span>Jeux publics actifs et sans interruption</span></li>
+              <li className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 shrink-0 text-[var(--okado-status-success-text)]" aria-hidden="true" /><span>Exports CSV et données de campagne disponibles</span></li>
+              <li className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 shrink-0 text-[var(--okado-status-success-text)]" aria-hidden="true" /><span>Suivi complet de vos animations depuis un seul compte</span></li>
             </ul>
           </div>
         </div>
 
-        <div className="rounded-[8px] border border-border bg-white p-5 shadow-[0_18px_36px_rgba(122,136,166,0.08)]">
-          <p className="text-sm font-semibold text-[#0f1728]">Actions</p>
+        <div className="rounded-[16px] border border-lavender-mist bg-white p-5">
+          <p className="text-sm font-semibold text-carbon">Actions</p>
           <div className="mt-4 space-y-3">
             {billing.isSubscribed ? (
               <button
@@ -167,10 +168,10 @@ export function BillingSubscriptionCard({ billing }: BillingSubscriptionCardProp
             )}
           </div>
 
-          <dl className="mt-5 space-y-3 text-sm text-[#5c6577]">
+          <dl className="mt-5 space-y-3 text-sm text-charcoal">
             <div className="flex items-center justify-between gap-4">
               <dt>Statut</dt>
-              <dd className="font-medium capitalize text-[#0f1728]">
+              <dd className="font-medium capitalize text-carbon">
                 {billing.subscriptionStatus
                   ? billing.subscriptionStatus.replaceAll("_", " ")
                   : billing.isTrialActive
@@ -180,22 +181,22 @@ export function BillingSubscriptionCard({ billing }: BillingSubscriptionCardProp
             </div>
             <div className="flex items-center justify-between gap-4">
               <dt>Carte enregistrée</dt>
-              <dd className="font-medium text-[#0f1728]">
+              <dd className="font-medium text-carbon">
                 {billing.hasPaymentMethodOnFile ? "Oui" : "Non"}
               </dd>
             </div>
             <div className="flex items-center justify-between gap-4">
               <dt>Prochaine échéance</dt>
-              <dd className="font-medium text-[#0f1728]">
+              <dd className="font-medium text-carbon">
                 {formatDate(billing.nextBillingDate) || "—"}
               </dd>
             </div>
           </dl>
 
           {error ? (
-            <div className="mt-4 rounded-[8px] border border-[#f3c9c1] bg-[#fff1ee] px-4 py-3 text-sm text-[#8b2c18]">
+            <StatusNotice tone="danger" className="mt-4">
               {error}
-            </div>
+            </StatusNotice>
           ) : null}
         </div>
       </div>

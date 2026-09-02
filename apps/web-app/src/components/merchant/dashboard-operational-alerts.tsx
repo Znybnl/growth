@@ -63,17 +63,17 @@ export function DashboardOperationalAlerts() {
             : "/data"
         }
         prefetch={false}
-        className="okado-card group block border-[#fed7aa] bg-[#fffaf2] p-5 transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-product-card)]"
+        className="okado-status-notice okado-notice-warning group block p-5 transition hover:bg-[#fff1df]"
       >
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="okado-label text-[#a15c00]">Stock à surveiller</p>
-            <p className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-[#9a3412]">
+            <p className="okado-label">Stock à surveiller</p>
+            <p className="mt-3 text-2xl font-semibold tracking-[-0.04em]">
               {stockLabel}
             </p>
-            <p className="mt-2 text-sm text-[#9a3412]">Consultez les dotations pour ajuster le stock.</p>
+            <p className="mt-2 text-sm">Consultez les dotations pour ajuster le stock.</p>
           </div>
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#f59e0b]/15 text-[#a15c00]">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[4px] bg-transparent">
             <AlertTriangle className="h-5 w-5" aria-hidden="true" />
           </span>
         </div>
