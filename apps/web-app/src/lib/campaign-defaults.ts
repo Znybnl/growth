@@ -38,6 +38,36 @@ export function limitCampaignSubtitleLines(value: string) {
     .slice(0, MAX_CAMPAIGN_SUBTITLE_LENGTH);
 }
 
+/** Split the Cocorico headline into balanced display lines. */
+export function buildCocoricoPromoLines(value: string) {
+  const normalized = limitCampaignSubtitleLines(value).trim();
+  if (!normalized) return [];
+
+  return normalized.split("\n").flatMap((line) => {
+    const trimmedLine = line.trim();
+    const words = trimmedLine.split(/\s+/).filter(Boolean);
+    if (words.length < 2 || trimmedLine.length < 14) return [trimmedLine];
+
+    const midpoint = trimmedLine.length / 2;
+    let bestSplit = 1;
+    let bestDistance = Number.POSITIVE_INFINITY;
+
+    for (let index = 1; index < words.length; index += 1) {
+      const firstLineLength = words.slice(0, index).join(" ").length;
+      const distance = Math.abs(firstLineLength - midpoint);
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        bestSplit = index;
+      }
+    }
+
+    return [
+      words.slice(0, bestSplit).join(" "),
+      words.slice(bestSplit).join(" "),
+    ];
+  }).slice(0, MAX_CAMPAIGN_SUBTITLE_LINES);
+}
+
 /** Normalise the editor's logo scale so legacy values cannot break the preview. */
 export function clampCampaignLogoSizePercent(value: number | undefined) {
   const normalized = Number(value);

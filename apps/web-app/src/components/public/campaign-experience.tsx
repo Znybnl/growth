@@ -14,6 +14,7 @@ import {
 import { useEffect, useMemo, useState } from "react";
 
 import { BrandMark } from "@/components/brand-mark";
+import { CocoricoPromoText } from "@/components/public/cocorico-promo-text";
 import { CocoricoWheel } from "@/components/public/cocorico-wheel";
 import { ImmersiveWheel } from "@/components/public/immersive-wheel";
 import { ImmersiveScratchTicket } from "@/components/public/immersive-scratch-ticket";
@@ -527,7 +528,7 @@ export function CampaignExperience({
       : campaign.presentation.heading.align === "right"
         ? "text-right"
         : "text-center";
-  const headingFontClass = isCocoricoTemplate ? "font-anton" : textFontClass(campaign.presentation.heading.fontFamily);
+  const headingFontClass = isCocoricoTemplate ? "font-fredoka" : textFontClass(campaign.presentation.heading.fontFamily);
   const showBottomState =
     !isImmersiveScratchTemplate &&
     ((stage === "idle" && campaign.gameType !== "wheel") ||
@@ -845,7 +846,9 @@ export function CampaignExperience({
       data-template-id={pageTemplate}
       style={{
         backgroundColor: campaign.presentation.background.color,
-        backgroundImage: backgroundStyle,
+        backgroundImage: isCocoricoTemplate
+          ? "linear-gradient(135deg, #2563eb, #3b82f6)"
+          : backgroundStyle,
         backgroundPosition: "center",
         backgroundSize: "cover",
       }}
@@ -858,7 +861,7 @@ export function CampaignExperience({
           Mode prévisualisation — cette participation est simulée et n&apos;affecte ni vos statistiques ni vos stocks.
         </div>
       ) : null}
-      {isRestaurantPopTemplate || isCocoricoTemplate || isSunburstTemplate || isCosmicTemplate || isScratchVaultTemplate || isScratchConfettiTemplate || isScratchCoralTemplate || isScratchLilacTemplate || isScratchSunburstTemplate ? (
+      {isRestaurantPopTemplate || isSunburstTemplate || isCosmicTemplate || isScratchVaultTemplate || isScratchConfettiTemplate || isScratchCoralTemplate || isScratchLilacTemplate || isScratchSunburstTemplate ? (
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
           <div
             className="absolute right-0 top-[18%] h-28 w-16 opacity-35"
@@ -899,14 +902,10 @@ export function CampaignExperience({
         ) : null}
 
         {!isImmersiveScratchTemplate ? (
-        <div className={`${headingAlignmentClass} ${isCocoricoTemplate ? "[&>h1]:!pb-[8px]" : ""}`}>
-          <h1
-            className={`${headingFontClass} line-clamp-3 whitespace-pre-line ${isRestaurantPopTemplate ? "tracking-[0.038em] drop-shadow-[0_5px_0_rgba(0,0,0,0.08)]" : ""} ${isCocoricoTemplate ? "font-black uppercase tracking-[-0.045em] [text-shadow:0_5px_0_#073f78] [-webkit-text-stroke:3px_#073f78]" : ""} pb-[25px] leading-[1] text-[#151826]`}
-            style={{
-              color: isCocoricoTemplate ? "#ffdc32" : headingTextColor,
-              fontSize: headingFontSize,
-              fontWeight: isCocoricoTemplate ? 900 : campaign.presentation.heading.fontWeight ?? 600,
-            }}
+        <div className={headingAlignmentClass}>
+          {isCocoricoTemplate ? <CocoricoPromoText text={safeSubtitle.trim() || DEFAULT_SCRATCH_SUBTITLE} /> : <h1
+            className={`${headingFontClass} line-clamp-3 whitespace-pre-line ${isRestaurantPopTemplate ? "tracking-[0.038em] drop-shadow-[0_5px_0_rgba(0,0,0,0.08)]" : ""} pb-[25px] leading-[1] text-[#151826]`}
+            style={{ color: headingTextColor, fontSize: headingFontSize, fontWeight: campaign.presentation.heading.fontWeight ?? 600 }}
           >
             {isRestaurantPopTemplate
               ? restaurantPopHeadingLines.map((line, lineIndex) => (
@@ -926,7 +925,7 @@ export function CampaignExperience({
                   </span>
                 ))
               : safeSubtitle.trim() || DEFAULT_SCRATCH_SUBTITLE}
-          </h1>
+          </h1>}
         </div>
         ) : null}
 
