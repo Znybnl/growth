@@ -114,6 +114,18 @@ const ImmersiveWheel = dynamic(
   },
 );
 
+const CocoricoWheel = dynamic(
+  () => import("@/components/public/cocorico-wheel").then((mod) => mod.CocoricoWheel),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-full min-h-[420px] w-full items-center justify-center rounded-[32px] bg-white/70 text-sm text-[#7b8496]">
+        Chargement de la prévisualisation...
+      </div>
+    ),
+  },
+);
+
 const ScratchGame = dynamic(
   () => import("@/components/public/scratch-game").then((mod) => mod.ScratchGame),
   {
@@ -237,6 +249,11 @@ const wheelPageTemplateOptions: Array<{
     value: "restaurant-pop",
     title: "Visuel pop",
     description: "Un univers plus événementiel avec formes, contraste et roue façon jeu concours.",
+  },
+  {
+    value: "cocorico-wheel",
+    title: "Cocorico",
+    description: "Une roue promotionnelle bleue et blanche avec pictogrammes cadeaux et message très visible.",
   },
   {
     value: "cosmic-orbit",
@@ -846,9 +863,10 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
   flushTop?: boolean;
 }) {
   const isRestaurantPopTemplate = preview.gamePageTemplateId === "restaurant-pop";
+  const isCocoricoTemplate = preview.gamePageTemplateId === "cocorico-wheel";
   const isCosmicTemplate = preview.gamePageTemplateId === "cosmic-orbit";
   const isImmersiveTemplate =
-    isCosmicTemplate || preview.gamePageTemplateId === "sunburst-festival";
+    !isCocoricoTemplate && (isCosmicTemplate || preview.gamePageTemplateId === "sunburst-festival");
   const isImmersiveScratchTemplate =
     preview.gamePageTemplateId === "scratch-vault" ||
     preview.gamePageTemplateId === "scratch-confetti" ||
@@ -860,6 +878,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
   const scalePreviewValue = (value: number) => Math.round(value * previewScale);
   const previewHeadingTextColor =
     isCosmicTemplate ||
+    isCocoricoTemplate ||
     (preview.gamePageTemplateId === "scratch-vault" && preview.headingTextColor.toLowerCase() === "#1f2937")
       ? "#f8fbff"
       : preview.headingTextColor;
@@ -940,9 +959,9 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
 
         <div className={preview.headingAlignmentClass}>
           <h3
-            className={`${preview.headingFontClass} line-clamp-3 whitespace-pre-line ${isRestaurantPopTemplate ? "tracking-[0.038em] drop-shadow-[0_4px_0_rgba(0,0,0,0.08)]" : ""} leading-[1]`}
+            className={`${preview.headingFontClass} line-clamp-3 whitespace-pre-line ${isRestaurantPopTemplate ? "tracking-[0.038em] drop-shadow-[0_4px_0_rgba(0,0,0,0.08)]" : ""} ${isCocoricoTemplate ? "font-black uppercase tracking-[-0.04em] [text-shadow:0_4px_0_#073f78] [-webkit-text-stroke:2px_#073f78]" : ""} leading-[1]`}
             style={{
-              color: previewHeadingTextColor,
+              color: isCocoricoTemplate ? "#ffdc32" : previewHeadingTextColor,
               fontSize: fluidType(scalePreviewValue(preview.headingFontSizePx), {
                 minRatio: 0.82,
                 maxRatio: 1.08,
@@ -990,7 +1009,15 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
           }}
         >
           {preview.gameType === "wheel" ? (
-            isImmersiveTemplate ? (
+            isCocoricoTemplate ? (
+              <CocoricoWheel
+                segments={preview.previewSegments}
+                winningSegmentId={preview.winningSegmentId}
+                buttonStyle={{ textColor: preview.buttonStyle.textColor }}
+                buttonEnabled
+                framing="editor"
+              />
+            ) : isImmersiveTemplate ? (
               <ImmersiveWheel
                 accent={preview.accent}
                 wheelStyle={preview.wheelStyle}
@@ -1441,7 +1468,9 @@ export function buildCampaignLivePreviewModel(
       ? `linear-gradient(rgba(15,23,40,0.32), rgba(15,23,40,0.52)), url("${form.presentation.background.imageUrl}")`
       : templateId === "restaurant-pop"
         ? `radial-gradient(circle at -10% -8%, ${withHexAlpha(form.presentation.wheel.loseColor, "f2")} 0 18%, transparent 19%), radial-gradient(circle at 110% 0%, ${withHexAlpha(form.presentation.wheel.winColor, "f2")} 0 13%, transparent 14%), linear-gradient(180deg, #fff2dd 0%, #fffaf1 48%, #fff4e5 100%)`
-            : templateId === "cosmic-orbit"
+            : templateId === "cocorico-wheel"
+              ? "radial-gradient(circle at 14% 12%, rgba(68,151,222,0.9) 0 10%, transparent 11%), radial-gradient(circle at 88% 26%, rgba(4,55,111,0.5) 0 15%, transparent 16%), linear-gradient(160deg, #07549b 0%, #0b67b7 48%, #063d78 100%)"
+              : templateId === "cosmic-orbit"
               ? `radial-gradient(circle at 50% 112%, ${withHexAlpha(form.presentation.wheel.loseColor, "52")} 0 24%, transparent 43%), radial-gradient(circle at 9% 12%, ${withHexAlpha(form.presentation.wheel.winColor, "2b")} 0 14%, transparent 25%), linear-gradient(155deg, #07142e 0%, #0b1d42 55%, #071126 100%)`
                 : templateId === "scratch-vault"
                 ? `radial-gradient(circle at 50% 108%, ${withHexAlpha(previewAccent.signal, "58")} 0 27%, transparent 48%), radial-gradient(circle at 15% 10%, ${withHexAlpha(form.presentation.wheel.winColor, "4d")} 0 12%, transparent 22%), linear-gradient(155deg, #071126b8 0%, #111b3b99 56%, #071126b8 100%)`
@@ -1475,7 +1504,7 @@ export function buildCampaignLivePreviewModel(
     headingAlignmentClass,
     headingFontClass,
     headingTextColor:
-      templateId === "cosmic-orbit"
+      templateId === "cosmic-orbit" || templateId === "cocorico-wheel"
         ? "#f8fbff"
         : form.gameType === "scratch" &&
             form.presentation.heading.textColor.toLowerCase() === "#1f2937"
@@ -1710,7 +1739,9 @@ export function CampaignEditor({
             ? `linear-gradient(rgba(15,23,40,0.32), rgba(15,23,40,0.52)), url("${form.presentation.background.imageUrl}")`
             : (form.presentation.layout.templateId ?? "classic") === "restaurant-pop"
               ? `radial-gradient(circle at -10% -8%, ${withHexAlpha(form.presentation.wheel.loseColor, "f2")} 0 18%, transparent 19%), radial-gradient(circle at 110% 0%, ${withHexAlpha(form.presentation.wheel.winColor, "f2")} 0 13%, transparent 14%), linear-gradient(180deg, #fff2dd 0%, #fffaf1 48%, #fff4e5 100%)`
-                : (form.presentation.layout.templateId ?? "classic") === "cosmic-orbit"
+            : (form.presentation.layout.templateId ?? "classic") === "cocorico-wheel"
+              ? "radial-gradient(circle at 14% 12%, rgba(68,151,222,0.9) 0 10%, transparent 11%), radial-gradient(circle at 88% 26%, rgba(4,55,111,0.5) 0 15%, transparent 16%), linear-gradient(160deg, #07549b 0%, #0b67b7 48%, #063d78 100%)"
+            : (form.presentation.layout.templateId ?? "classic") === "cosmic-orbit"
                   ? `radial-gradient(circle at 50% 112%, ${withHexAlpha(form.presentation.wheel.loseColor, "52")} 0 24%, transparent 43%), radial-gradient(circle at 9% 12%, ${withHexAlpha(form.presentation.wheel.winColor, "2b")} 0 14%, transparent 25%), linear-gradient(155deg, #07142e 0%, #0b1d42 55%, #071126 100%)`
                 : (form.presentation.layout.templateId ?? "classic") === "scratch-vault"
                   ? `radial-gradient(circle at 50% 108%, ${withHexAlpha(previewAccent.signal, "58")} 0 27%, transparent 48%), radial-gradient(circle at 15% 10%, ${withHexAlpha(form.presentation.wheel.winColor, "4d")} 0 12%, transparent 22%), linear-gradient(155deg, #071126b8 0%, #111b3b99 56%, #071126b8 100%)`
@@ -1964,7 +1995,8 @@ function setGameType(gameType: GameType) {
                   : "scratch-coral"
                 : current.presentation.layout.templateId === "restaurant-pop" ||
                     current.presentation.layout.templateId === "cosmic-orbit" ||
-                    current.presentation.layout.templateId === "sunburst-festival"
+                    current.presentation.layout.templateId === "sunburst-festival" ||
+                    current.presentation.layout.templateId === "cocorico-wheel"
                   ? current.presentation.layout.templateId
                   : "classic",
           },

@@ -52,6 +52,7 @@ const BACKGROUND_MODES = new Set<BackgroundMode>(["color", "image"]);
 const GAME_PAGE_TEMPLATE_IDS = new Set<GamePageTemplateId>([
   "classic",
   "restaurant-pop",
+  "cocorico-wheel",
   "cosmic-orbit",
   "sunburst-festival",
   "scratch-vault",
