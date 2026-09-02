@@ -675,7 +675,7 @@ function PrizeConditionsDialog({
             type="checkbox"
             checked={purchaseRequired}
             onChange={(event) => onPurchaseRequiredChange(event.target.checked)}
-            className="mt-1 h-4 w-4 cursor-pointer accent-[#b28719]"
+            className="mt-1 h-4 w-4 cursor-pointer accent-aubergine"
           />
           <span>
             <span className="block font-semibold">Achat requis pour le retrait</span>

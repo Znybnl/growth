@@ -591,7 +591,7 @@ function PrizeSuggestionsPanel({
       <div className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-[26px] bg-white p-6 shadow-[0_28px_80px_rgba(17,24,39,0.25)]">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#b28719]">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-aubergine">
               Suggestions adaptées
             </p>
             <h3
@@ -620,7 +620,7 @@ function PrizeSuggestionsPanel({
             suggestions.map((suggestion) => (
               <div
                 key={suggestion.id}
-                className="rounded-[18px] border border-[#e2e8f0] bg-[#fbfcfe] p-4"
+                className="rounded-[16px] border border-[#e2e8f0] bg-[#fbfcfe] p-4"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-2">
@@ -647,7 +647,7 @@ function PrizeSuggestionsPanel({
                       </p>
                     </div>
                   </div>
-                  <span className="text-xs font-semibold text-[#b28719]">
+                  <span className="text-xs font-semibold text-aubergine">
                     {suggestion.probability} %
                   </span>
                 </div>
@@ -700,7 +700,7 @@ function WizardBackgroundLibraryDialog({
       <div className="max-h-[86vh] w-full max-w-4xl overflow-y-auto rounded-[26px] bg-white p-6 shadow-[0_28px_80px_rgba(17,24,39,0.25)]">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#b28719]">Bibliothèque d&apos;images</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-aubergine">Bibliothèque d&apos;images</p>
             <h3 className="mt-2 text-xl font-semibold text-[#182033]">Choisissez une image de fond</h3>
             <p className="mt-1 text-sm text-[#69758a]">Les visuels de la bibliothèque sont disponibles pour votre page de jeu.</p>
           </div>
@@ -714,7 +714,7 @@ function WizardBackgroundLibraryDialog({
                 key={item.id}
                 type="button"
                 onClick={() => { onSelect(item.imageUrl); onClose(); }}
-                className={`cursor-pointer overflow-hidden rounded-[18px] border text-left ${selectedImageUrl === item.imageUrl ? "border-[#b28719] ring-2 ring-[#f4c14a]/30" : "border-[#e2e8f0]"}`}
+                className={`cursor-pointer overflow-hidden rounded-[16px] border text-left ${selectedImageUrl === item.imageUrl ? "border-aubergine ring-2 ring-lavender-mist/70" : "border-[#e2e8f0]"}`}
               >
                 <div className="relative aspect-[4/3]">
                   <Image src={item.thumbnailUrl} alt={item.label} fill unoptimized className="object-cover" />
@@ -1066,13 +1066,13 @@ export function CampaignWizard({
       <p className="text-sm font-semibold text-[#182033]">Logo</p>
       <div className="mt-3 grid gap-3 sm:grid-cols-3">
         {([{ value: "text", label: "Texte" }, { value: "image", label: "Image" }, { value: "none", label: "Aucun" }] as const).map((mode) => (
-          <button key={mode.value} type="button" onClick={() => patchDraft({ logoMode: mode.value, logoText: mode.value === "text" ? draft.logoText?.trim() || merchant.companyName : draft.logoText })} className={`cursor-pointer rounded-[12px] border px-3 py-2.5 text-sm font-semibold ${draft.logoMode === mode.value ? "border-[#b28719] bg-[#fff8e1] text-[#8c6710]" : "border-[#dbe3ed] bg-white text-[#526078]"}`}>{mode.label}</button>
+          <button key={mode.value} type="button" onClick={() => patchDraft({ logoMode: mode.value, logoText: mode.value === "text" ? draft.logoText?.trim() || merchant.companyName : draft.logoText })} className={`cursor-pointer rounded-[12px] border px-3 py-2.5 text-sm font-semibold ${draft.logoMode === mode.value ? "border-aubergine bg-purple-haze text-deep-plum" : "border-[#dbe3ed] bg-white text-[#526078]"}`}>{mode.label}</button>
         ))}
       </div>
       {draft.logoMode === "text" ? <label className="mt-3 block text-sm"><span className="mb-2 block font-semibold text-[#182033]">Texte du logo</span><input value={draft.logoText ?? merchant.companyName} onChange={(event) => patchDraft({ logoText: event.target.value })} className="w-full rounded-[12px] border border-[#dbe3ed] bg-white px-3 py-3" /></label> : null}
       {draft.logoMode === "image" ? <label className="mt-3 flex cursor-pointer items-center justify-between rounded-[12px] border border-dashed border-[#b8c5d8] px-3 py-3 text-sm font-semibold"><span>Importer un logo</span><input type="file" accept="image/png,image/jpeg,image/webp,image/gif" className="hidden" onChange={(event) => uploadWizardImage(event, (value) => { setImageUploadErrors((current) => ({ ...current, logo: undefined })); patchDraft({ logoUrl: value, logoMode: "image" }); }, (message) => setImageUploadErrors((current) => ({ ...current, logo: message })))} /></label> : null}
       {imageUploadErrors.logo ? <p role="alert" className="mt-2 text-xs text-[#b42318]">{imageUploadErrors.logo}</p> : null}
-      {draft.logoMode !== "none" ? <div className="mt-3 grid gap-3 sm:grid-cols-2"><label className="block text-sm"><span className="mb-2 block font-semibold">Taille du logo <output className="float-right text-[#b28719]">{draft.presentation.logo.sizePercent}%</output></span><input type="range" min={0} max={200} value={draft.presentation.logo.sizePercent} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, logo: { ...draft.presentation.logo, sizePercent: Number(event.target.value) } } })} className="w-full cursor-pointer accent-[#b28719]" /></label><label className="block text-sm"><span className="mb-2 block font-semibold">Espacement sous le logo (px)</span><input type="number" min={0} max={120} value={draft.presentation.logo.marginBottomPx} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, logo: { ...draft.presentation.logo, marginBottomPx: Number(event.target.value || 0) } } })} className="w-full rounded-[12px] border border-[#dbe3ed] px-3 py-3" /></label></div> : null}
+      {draft.logoMode !== "none" ? <div className="mt-3 grid gap-3 sm:grid-cols-2"><label className="block text-sm"><span className="mb-2 block font-semibold">Taille du logo <output className="float-right text-aubergine">{draft.presentation.logo.sizePercent}%</output></span><input type="range" min={0} max={200} value={draft.presentation.logo.sizePercent} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, logo: { ...draft.presentation.logo, sizePercent: Number(event.target.value) } } })} className="w-full cursor-pointer accent-aubergine" /></label><label className="block text-sm"><span className="mb-2 block font-semibold">Espacement sous le logo (px)</span><input type="number" min={0} max={120} value={draft.presentation.logo.marginBottomPx} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, logo: { ...draft.presentation.logo, marginBottomPx: Number(event.target.value || 0) } } })} className="w-full rounded-[12px] border border-[#dbe3ed] px-3 py-3" /></label></div> : null}
     </section>
   );
 
@@ -1254,7 +1254,7 @@ export function CampaignWizard({
 
       <div className="sticky top-0 z-30 hidden border-b border-fog bg-soft-white/95 py-3 backdrop-blur xl:block">
         <div className="flex items-center justify-between gap-3">
-          <span className={`rounded-full px-3 py-1.5 text-xs font-semibold ${!draft.id ? "bg-[#fff8e1] text-[#8c6710]" : draft.isActive ? "bg-[#e9f8ec] text-[#18864b]" : "bg-[#eef4ff] text-[#214ccf]"}`}>
+          <span className={`rounded-full px-3 py-1.5 text-xs font-semibold ${!draft.id ? "bg-purple-haze text-deep-plum" : draft.isActive ? "bg-[#e9f8ec] text-[#18864b]" : "bg-[#eef4ff] text-[#214ccf]"}`}>
             {!draft.id ? "En création" : draft.isActive ? "En ligne" : "Brouillon"}
           </span>
           <div className="flex items-center gap-2">
@@ -1289,7 +1289,7 @@ export function CampaignWizard({
                   className={`flex w-full items-start gap-3 rounded-[4px] px-3 py-3 text-left transition ${active ? "bg-deep-plum text-white" : visited ? "text-[#18864b] hover:bg-purple-haze" : "text-[#a0a9b9]"}`}
                 >
                   <span
-                    className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-[4px] text-[10px] font-bold ${active ? "bg-white text-aubergine" : complete ? "bg-[#e9f8ec] text-[#18864b]" : visited ? "bg-[#fff8e1] text-[#b28719]" : "bg-[#f2f4f7]"}`}
+                    className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-[4px] text-[10px] font-bold ${active ? "bg-white text-aubergine" : complete ? "bg-[#e9f8ec] text-[#18864b]" : visited ? "bg-purple-haze text-aubergine" : "bg-[#f2f4f7]"}`}
                   >
                     {complete ? <Check className="h-3.5 w-3.5" /> : item.number}
                   </span>
@@ -1310,7 +1310,7 @@ export function CampaignWizard({
         <main className="okado-card min-w-0 p-5 sm:p-8">
           <div className="flex items-start justify-between gap-4 border-b border-[#edf0f4] pb-5">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#b28719]">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-aubergine">
                 Étape {step.number}
               </p>
               <h2 className="okado-section-title mt-2">{step.title}</h2>
@@ -1318,7 +1318,7 @@ export function CampaignWizard({
                 <p className="mt-2 hidden text-sm text-[#7a8498]">{step.description}</p>
               ) : null}
             </div>
-            <div className="hidden rounded-full bg-[#fff7dd] p-3 text-[#b28719] sm:block">
+            <div className="hidden rounded-[4px] bg-purple-haze p-3 text-aubergine sm:block">
               <Sparkles className="h-5 w-5" />
             </div>
           </div>
@@ -1341,7 +1341,7 @@ export function CampaignWizard({
                     patchDraft({ title: event.target.value })
                   }
                   placeholder="Ex. La roue gourmande de juin"
-                  className="mt-3 w-full rounded-[16px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm text-[#182033] outline-none transition focus:border-[#b28719] focus:ring-4 focus:ring-[#f4c14a]/15"
+                  className="mt-3 w-full rounded-[12px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm text-[#182033] outline-none transition focus:border-aubergine focus:ring-4 focus:ring-aubergine/15"
                 />
               </label>
               <label className="block">
@@ -1358,7 +1358,7 @@ export function CampaignWizard({
                   }
                   rows={3}
                   maxLength={MAX_CAMPAIGN_SUBTITLE_LENGTH}
-                  className="mt-3 w-full resize-none rounded-[16px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm leading-6 text-[#182033] outline-none transition focus:border-[#b28719] focus:ring-4 focus:ring-[#f4c14a]/15"
+                  className="mt-3 w-full resize-none rounded-[12px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm leading-6 text-[#182033] outline-none transition focus:border-aubergine focus:ring-4 focus:ring-aubergine/15"
                 />
                 <span className="mt-1 block text-xs text-[#8993a6]">
                   {draft.subtitle.length}/{MAX_CAMPAIGN_SUBTITLE_LENGTH} caractères · 3 lignes maximum pour conserver un rendu lisible sur mobile.
@@ -1387,7 +1387,7 @@ export function CampaignWizard({
                                 : "Avis Google",
                         });
                       }}
-                      className="mt-3 w-full cursor-pointer rounded-[16px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm text-[#182033] outline-none transition focus:border-[#b28719] focus:ring-4 focus:ring-[#f4c14a]/15"
+                      className="mt-3 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm text-[#182033] outline-none transition focus:border-aubergine focus:ring-4 focus:ring-aubergine/15"
                     >
                       <option value="review_prompt">Obtenir des avis</option>
                       <option value="lead_capture">Collecter des contacts</option>
@@ -1395,7 +1395,7 @@ export function CampaignWizard({
                     </select>
                   </label>
                 ) : null}
-                <label className="flex cursor-pointer items-start gap-3 rounded-[18px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3 text-sm text-[#182033]">
+                <label className="flex cursor-pointer items-start gap-3 rounded-[12px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3 text-sm text-[#182033]">
                     <input
                       type="checkbox"
                       checked={draft.emailCaptureEnabled}
@@ -1503,14 +1503,14 @@ export function CampaignWizard({
                             : draft.accent,
                       })
                     }
-                    className={`rounded-[22px] border p-5 text-left transition ${draft.gameType === option.value ? "border-[#b28719] bg-[#fff8e1] shadow-[0_12px_28px_rgba(244,193,74,0.16)]" : "border-[#e2e8f0] bg-[#fbfcfe] hover:border-[#b8c5d8]"}`}
+                    className={`rounded-[16px] border p-5 text-left transition ${draft.gameType === option.value ? "border-aubergine bg-purple-haze" : "border-[#e2e8f0] bg-[#fbfcfe] hover:border-[#b8c5d8]"}`}
                   >
                     <div className="flex items-center justify-between">
                       <span className="text-base font-semibold text-[#182033]">
                         {option.label}
                       </span>
                       <span
-                        className={`h-3 w-3 rounded-full ${draft.gameType === option.value ? "bg-[#b28719] ring-4 ring-[#f4c14a]/30" : "bg-[#d7dfeb]"}`}
+                        className={`h-3 w-3 rounded-full ${draft.gameType === option.value ? "bg-aubergine ring-4 ring-lavender-mist/70" : "bg-[#d7dfeb]"}`}
                       />
                     </div>
                     <p className="mt-3 text-sm leading-6 text-[#7a8498]">
@@ -1519,7 +1519,7 @@ export function CampaignWizard({
                   </button>
                 ))}
               </div>
-              <div className="hidden rounded-[22px] border border-[#e2e8f0] bg-[#fbfcfe] p-5">
+              <div className="hidden rounded-[16px] border border-[#e2e8f0] bg-[#fbfcfe] p-5">
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <p className="text-sm font-semibold text-[#182033]">
@@ -1544,7 +1544,7 @@ export function CampaignWizard({
                           },
                         })
                       }
-                      className="mt-0.5 h-4 w-4 cursor-pointer accent-[#b28719]"
+                      className="mt-0.5 h-4 w-4 cursor-pointer accent-aubergine"
                     />
                     <span>
                       <span className="block font-semibold">
@@ -1568,7 +1568,7 @@ export function CampaignWizard({
                           },
                         })
                       }
-                      className="mt-0.5 h-4 w-4 cursor-pointer accent-[#b28719]"
+                      className="mt-0.5 h-4 w-4 cursor-pointer accent-aubergine"
                     />
                     <span>
                       <span className="block font-semibold">
@@ -1592,7 +1592,7 @@ export function CampaignWizard({
                           },
                         })
                       }
-                      className="mt-0.5 h-4 w-4 cursor-pointer accent-[#b28719]"
+                      className="mt-0.5 h-4 w-4 cursor-pointer accent-aubergine"
                     />
                     <span>
                       <span className="block font-semibold">
@@ -1683,7 +1683,7 @@ export function CampaignWizard({
                       },
                     })
                   }
-                  className="mt-0.5 h-4 w-4 cursor-pointer accent-[#b28719]"
+                  className="mt-0.5 h-4 w-4 cursor-pointer accent-aubergine"
                 />
                 <span>
                   <span className="block font-semibold">Lot disponible lors d&apos;une prochaine visite</span>
@@ -1739,7 +1739,7 @@ export function CampaignWizard({
               {draft.prizes.map((prize, index) => (
                 <div
                   key={prize.id}
-                  className="rounded-[20px] border border-[#e2e8f0] bg-[#fbfcfe] p-4"
+                  className="rounded-[16px] border border-[#e2e8f0] bg-[#fbfcfe] p-4"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8993a6]">
@@ -1887,7 +1887,7 @@ export function CampaignWizard({
                           }),
                         )
                       }
-                      className="mt-1 h-4 w-4 cursor-pointer accent-[#b28719]"
+                      className="mt-1 h-4 w-4 cursor-pointer accent-aubergine"
                     />
                     <span>
                       <span className="block font-semibold">Achat requis pour le retrait</span>
@@ -1902,7 +1902,7 @@ export function CampaignWizard({
                 <div
                   role="alert"
                   aria-live="polite"
-                  className="rounded-[18px] border border-[#f3c8c8] bg-[#fff7f7] px-4 py-4 text-sm text-[#9f1239]"
+                  className="rounded-[12px] border border-[#f3c8c8] bg-[#fff7f7] px-4 py-4 text-sm text-[#9f1239]"
                 >
                   <p className="font-semibold text-[#861c35]">
                     Vérifiez la dotation avant de continuer
@@ -1939,7 +1939,7 @@ export function CampaignWizard({
                     ],
                   }))
                 }
-                className="inline-flex items-center gap-2 rounded-[14px] border border-dashed border-[#b8c5d8] px-4 py-3 text-sm font-semibold text-[#526078] transition hover:border-[#b28719] hover:text-[#182033]"
+                className="inline-flex items-center gap-2 rounded-[12px] border border-dashed border-[#b8c5d8] px-4 py-3 text-sm font-semibold text-[#526078] transition hover:border-aubergine hover:text-[#182033]"
               >
                 <Gift className="h-4 w-4" />
                 Ajouter un lot
@@ -1953,7 +1953,7 @@ export function CampaignWizard({
                 {draft.actions.map((action, index) => (
                   <div
                     key={action.id ?? `wizard-action-${index}`}
-                    className="rounded-[20px] border border-[#e2e8f0] bg-white p-5"
+                    className="rounded-[16px] border border-[#e2e8f0] bg-white p-5"
                   >
                     <div className="flex items-center justify-between gap-3">
                       <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#8993a6]">
@@ -2045,7 +2045,7 @@ export function CampaignWizard({
                 <button
                   type="button"
                   onClick={addAction}
-                  className="inline-flex items-center gap-2 rounded-[14px] border border-dashed border-[#b8c5d8] px-4 py-3 text-sm font-semibold text-[#526078] hover:border-[#b28719] hover:text-[#182033]"
+                className="inline-flex items-center gap-2 rounded-[12px] border border-dashed border-[#b8c5d8] px-4 py-3 text-sm font-semibold text-[#526078] hover:border-aubergine hover:text-[#182033]"
                 >
                   <Plus className="h-4 w-4" />
                   Ajouter une action
@@ -2111,7 +2111,7 @@ export function CampaignWizard({
                             : draft.accent,
                       })
                     }
-                    className={`rounded-[20px] border p-4 text-left ${draft.presentation.layout.templateId === template.id ? "border-[#b28719] bg-[#fff8e1]" : "border-[#e2e8f0] bg-[#fbfcfe]"}`}
+                    className={`rounded-[16px] border p-4 text-left ${draft.presentation.layout.templateId === template.id ? "border-aubergine bg-purple-haze" : "border-[#e2e8f0] bg-[#fbfcfe]"}`}
                   >
                     <span className="block text-sm font-semibold text-[#182033]">
                       {template.label}
@@ -2123,7 +2123,7 @@ export function CampaignWizard({
                 ))}
                </div>
 
-               <div className="space-y-4 rounded-[18px] border border-[#e2e8f0] bg-white p-4">
+               <div className="space-y-4 rounded-[16px] border border-[#e2e8f0] bg-white p-4">
                  <label className="block">
                    <span className="flex flex-wrap items-center gap-2 text-sm font-semibold text-[#182033]">
                      {draft.gameType === "wheel" ? "Couleur principale de la roue" : "Couleur principale du ticket"}
@@ -2209,7 +2209,7 @@ export function CampaignWizard({
                  <label className="block">
                    <span className="flex items-center justify-between gap-3 text-sm font-semibold text-[#182033]">
                      <span>Taille du texte</span>
-                     <output className="text-[#b28719]">{draft.presentation.heading.fontSizePx} px</output>
+                     <output className="text-aubergine">{draft.presentation.heading.fontSizePx} px</output>
                    </span>
                    <input
                      type="range"
@@ -2228,7 +2228,7 @@ export function CampaignWizard({
                          },
                        })
                      }
-                     className="mt-3 w-full cursor-pointer accent-[#b28719]"
+                     className="mt-3 w-full cursor-pointer accent-aubergine"
                      aria-label="Taille de la police"
                    />
                  </label>
@@ -2236,7 +2236,7 @@ export function CampaignWizard({
 
                {logoSettings}
 
-               <details className="group rounded-[18px] border border-[#e2e8f0] bg-[#fbfcfe]">
+               <details className="group rounded-[16px] border border-[#e2e8f0] bg-[#fbfcfe]">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-4 text-sm font-semibold text-[#182033] [&::-webkit-details-marker]:hidden">
                   <span>
                     Paramètres avancés <span className="font-normal text-[#8993a6]">(mode expert)</span>
@@ -2357,7 +2357,7 @@ export function CampaignWizard({
                   />
                 </label>
               ) : null}
-               <div className="hidden rounded-[18px] border border-[#e2e8f0] bg-white p-4 sm:col-span-2">
+               <div className="hidden rounded-[16px] border border-[#e2e8f0] bg-white p-4 sm:col-span-2">
                 <p className="text-sm font-semibold text-[#182033]">Typographie</p>
                 <p className="mt-1 text-xs leading-5 text-[#8993a6]">
                   Choisissez la police et la taille de la promesse affichée sur le jeu.
@@ -2390,7 +2390,7 @@ export function CampaignWizard({
                   <label className="block text-sm">
                     <span className="mb-2 flex items-center justify-between gap-3 font-semibold text-[#182033]">
                       <span>Taille</span>
-                      <output className="text-[#b28719]">{draft.presentation.heading.fontSizePx} px</output>
+                     <output className="text-aubergine">{draft.presentation.heading.fontSizePx} px</output>
                     </span>
                     <input
                       type="range"
@@ -2409,7 +2409,7 @@ export function CampaignWizard({
                           },
                         })
                       }
-                      className="w-full cursor-pointer accent-[#b28719]"
+                     className="w-full cursor-pointer accent-aubergine"
                       aria-label="Taille de la police"
                     />
                   </label>
@@ -2418,7 +2418,7 @@ export function CampaignWizard({
                 <div className="space-y-5">
                   <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
                     <p className="text-sm font-semibold text-[#182033]">Fond</p>
-                    <div className="mt-3 grid gap-3 sm:grid-cols-2">{([{ value: "color", label: "Couleur" }, { value: "image", label: "Image" }] as const).map((mode) => <button key={mode.value} type="button" onClick={() => patchDraft({ presentation: { ...draft.presentation, background: { ...draft.presentation.background, mode: mode.value } } })} className={`cursor-pointer rounded-[12px] border px-3 py-2.5 text-sm font-semibold ${draft.presentation.background.mode === mode.value ? "border-[#b28719] bg-[#fff8e1] text-[#8c6710]" : "border-[#dbe3ed] bg-white text-[#526078]"}`}>{mode.label}</button>)}</div>
+               <div className="mt-3 grid gap-3 sm:grid-cols-2">{([{ value: "color", label: "Couleur" }, { value: "image", label: "Image" }] as const).map((mode) => <button key={mode.value} type="button" onClick={() => patchDraft({ presentation: { ...draft.presentation, background: { ...draft.presentation.background, mode: mode.value } } })} className={`cursor-pointer rounded-[12px] border px-3 py-2.5 text-sm font-semibold ${draft.presentation.background.mode === mode.value ? "border-aubergine bg-purple-haze text-deep-plum" : "border-[#dbe3ed] bg-white text-[#526078]"}`}>{mode.label}</button>)}</div>
                     {draft.presentation.background.mode === "color" ? <label className="mt-3 block text-sm"><span className="mb-2 block font-semibold">Couleur de fond</span><input type="color" value={draft.presentation.background.color} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, background: { ...draft.presentation.background, color: event.target.value } } })} className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] p-1" /></label> : <label className="mt-3 flex cursor-pointer items-center justify-between rounded-[12px] border border-dashed border-[#b8c5d8] px-3 py-3 text-sm font-semibold"><span>Importer une image de fond</span><input type="file" accept="image/png,image/jpeg,image/webp,image/gif" className="hidden" onChange={(event) => uploadWizardImage(event, (value) => { setImageUploadErrors((current) => ({ ...current, background: undefined })); patchDraft({ presentation: { ...draft.presentation, background: { ...draft.presentation.background, mode: "image", imageUrl: value } } }); }, (message) => setImageUploadErrors((current) => ({ ...current, background: message })))} /></label>}
                     {imageUploadErrors.background ? <p role="alert" className="mt-2 text-xs text-[#b42318]">{imageUploadErrors.background}</p> : null}
                     {draft.presentation.background.mode === "image" ? <div className="mt-3 flex flex-wrap items-center gap-2"><button type="button" onClick={() => setBackgroundLibraryOpen(true)} className="cursor-pointer rounded-[12px] border border-[#111827] bg-[#111827] px-3 py-2.5 text-sm font-semibold text-white">Choisir dans la bibliothèque</button>{draft.presentation.background.imageUrl ? <span className="rounded-full bg-[#e9f8ec] px-3 py-1.5 text-xs font-semibold text-[#18864b]">Image sélectionnée</span> : null}</div> : null}
@@ -2431,7 +2431,7 @@ export function CampaignWizard({
                     <label className="mt-3 block text-sm">
                       <span className="mb-2 flex items-center justify-between gap-3 font-semibold text-[#182033]">
                         <span>Espacement</span>
-                        <output className="text-[#b28719]">{draft.presentation.layout.blockSpacingPx} px</output>
+                        <output className="text-aubergine">{draft.presentation.layout.blockSpacingPx} px</output>
                       </span>
                       <input
                         type="range"
@@ -2450,7 +2450,7 @@ export function CampaignWizard({
                             },
                           })
                         }
-                        className="w-full cursor-pointer accent-[#b28719]"
+                        className="w-full cursor-pointer accent-aubergine"
                         aria-label="Espacement entre les blocs"
                       />
                     </label>

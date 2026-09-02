@@ -570,6 +570,14 @@ select {
   border-color: color-mix(in srgb, var(--color-lavender-mist) 74%, var(--color-fog)) !important;
 }
 
+.okado-workspace-shell :where(.okado-campaign-editor, .okado-wizard) :where(section, article, details) {
+  border-radius: var(--okado-radius-card) !important;
+}
+
+.okado-workspace-shell .okado-wizard :where([class~="rounded-[18px]"], [class~="rounded-[20px]"], [class~="rounded-[22px]"]) {
+  border-radius: var(--okado-radius-card) !important;
+}
+
 .okado-workspace-shell :where(.okado-campaign-editor, .okado-wizard, .okado-poster-editor, .okado-editor-page) :where(.sticky) {
   border-color: var(--color-lavender-mist) !important;
   background: color-mix(in srgb, var(--color-soft-white) 94%, transparent) !important;
@@ -620,7 +628,7 @@ select {
   font-weight: 700;
   letter-spacing: 0.68px;
   text-transform: uppercase;
-  color: var(--color-fog);
+  color: var(--color-charcoal);
 }
 
 .okado-page-title {
