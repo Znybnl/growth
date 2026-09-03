@@ -3629,7 +3629,11 @@ function setGameType(gameType: GameType) {
                   <span className="mb-2 block text-[#616b7c]">Couleur principale</span>
                   <input
                     type="color"
-                    value={form.presentation.wheel.loseColor}
+                    value={
+                      currentTemplateId === "cocorico-wheel"
+                        ? resolveCocoricoPrimaryColor(form.presentation.wheel.loseColor)
+                        : form.presentation.wheel.loseColor
+                    }
                     onChange={(event) => updatePrimaryWheelColor(event.target.value)}
                     className="h-14 w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none"
                   />
