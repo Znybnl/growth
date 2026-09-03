@@ -53,6 +53,7 @@ type ExperienceStage =
   | "intro"
   | "ready"
   | "collect"
+  | "won"
   | "success"
   | "lost"
   | "blocked";
@@ -743,7 +744,7 @@ export function CampaignExperience({
       const result = (await response.json()) as DrawResult;
       setDrawResult(result);
       setCampaign(result.campaign);
-      setStage("success");
+      setStage(result.prize ? "won" : "success");
     } catch (submitError) {
       setError(
         submitError instanceof Error ? submitError.message : "Une erreur est survenue.",
@@ -1265,6 +1266,27 @@ export function CampaignExperience({
                 : "Enregistrer"}
           </button>
         </form>
+      </PublicModal>
+
+      <PublicModal open={stage === "won" && Boolean(drawResult?.prize)}>
+        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#fff4cb] text-[#102c6a] shadow-[0_20px_45px_rgba(17,24,39,0.10)]">
+          <Gift className="h-10 w-10" aria-hidden="true" />
+        </div>
+        <h2 className="mt-6 text-center text-[2rem] font-semibold leading-[1.05] text-[#121826]">
+          Félicitations !
+          <span className="mt-2 block">Vous avez remporté</span>
+          <span className="mt-2 block">« {drawResult?.prize?.label} »</span>
+        </h2>
+        <p className="mt-5 rounded-[22px] bg-[#f6f7fb] px-5 py-4 text-center text-base leading-7 text-[#475067]">
+          Votre gain est confirmé. Cliquez sur suivant pour afficher les informations de retrait.
+        </p>
+        <button
+          type="button"
+          onClick={() => setStage("success")}
+          className="mt-5 w-full rounded-[18px] bg-[#111827] px-5 py-4 text-lg font-semibold text-white shadow-[0_12px_24px_rgba(17,24,39,0.16)]"
+        >
+          Suivant
+        </button>
       </PublicModal>
 
       <PublicModal open={stage === "success" && Boolean(drawResult)} compact>
