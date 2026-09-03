@@ -30,6 +30,7 @@ import {
   resolveScratchAccent,
   resolveCocoricoPrimaryColor,
   resolveCocoricoBackgroundColor,
+  RESTAURANT_POP_BACKGROUND,
   deriveLighterHex,
   scratchTemplatePrimaryColor,
 } from "@/lib/campaign-defaults";
@@ -823,7 +824,7 @@ export function CampaignExperience({
         : isSunburstTemplate
           ? `radial-gradient(circle at 12% 10%, ${withHexAlpha(primaryColor, "33")} 0 12%, transparent 13%), radial-gradient(circle at 94% 18%, ${withHexAlpha(secondaryColor, "38")} 0 14%, transparent 15%), linear-gradient(180deg, #fffdf5 0%, #fff8e8 56%, #fff2ce 100%)`
         : isRestaurantPopTemplate
-        ? `radial-gradient(circle at 12% 12%, rgba(255,255,255,0.42) 0 8%, transparent 30%), radial-gradient(circle at 88% 22%, rgba(255,255,255,0.3) 0 10%, transparent 34%), radial-gradient(circle at 18% 86%, rgba(255,255,255,0.2) 0 7%, transparent 27%), linear-gradient(180deg, #fff2dd 0%, #fffaf1 46%, #fff4e5 100%)`
+        ? RESTAURANT_POP_BACKGROUND
         : isCocoricoTemplate
         ? `radial-gradient(circle at 12% 12%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(campaign.presentation.background.color), 0.32), "e6")} 0 10%, transparent 11%), radial-gradient(circle at 90% 18%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(campaign.presentation.background.color), 0.12), "b3")} 0 16%, transparent 17%), linear-gradient(160deg, ${resolveCocoricoBackgroundColor(campaign.presentation.background.color)} 0%, ${resolveCocoricoBackgroundColor(campaign.presentation.background.color)} 48%, #063d78 100%)`
         : `radial-gradient(circle at 50% 50%, ${withHexAlpha(primaryColor, "33")}, transparent 50%), linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.08))`;
@@ -865,7 +866,7 @@ export function CampaignExperience({
           Mode prévisualisation — cette participation est simulée et n&apos;affecte ni vos statistiques ni vos stocks.
         </div>
       ) : null}
-      {isRestaurantPopTemplate || isSunburstTemplate || isCosmicTemplate || isScratchVaultTemplate || isScratchConfettiTemplate || isScratchCoralTemplate || isScratchLilacTemplate || isScratchSunburstTemplate ? (
+      {isSunburstTemplate || isCosmicTemplate || isScratchVaultTemplate || isScratchConfettiTemplate || isScratchCoralTemplate || isScratchLilacTemplate || isScratchSunburstTemplate ? (
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
           <div
             className="absolute right-0 top-[18%] h-28 w-16 opacity-35"
