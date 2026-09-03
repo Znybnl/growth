@@ -12,6 +12,7 @@ type CocoricoPromoTextProps = {
   strokeColor?: string;
   strokeWidth?: number;
   variant?: "cocorico" | "inspired";
+  splitLines?: boolean;
   rotate?: boolean;
 };
 
@@ -26,10 +27,11 @@ export function CocoricoPromoText({
   strokeColor = "#102c6a",
   strokeWidth = 16,
   variant = "cocorico",
+  splitLines = variant === "cocorico",
   rotate = true,
 }: CocoricoPromoTextProps) {
   const Tag = as;
-  const lines = buildCocoricoPromoLines(text);
+  const lines = splitLines ? buildCocoricoPromoLines(text) : [text];
 
   return (
     <Tag
