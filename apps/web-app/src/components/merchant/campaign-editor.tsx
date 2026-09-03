@@ -52,6 +52,7 @@ import {
   actionKindLabel,
   buttonSizeLabel,
   textFontClass,
+  textFontFamily,
   textFontLabel,
 } from "@/lib/format";
 import {
@@ -184,6 +185,7 @@ export type CampaignEditorPreviewModel = {
     backgroundImage: string;
     backgroundPosition: string;
     backgroundSize: string;
+    fontFamily: string;
   };
   logoMode: EditorState["logoMode"];
   logoAlignmentClass: string;
@@ -194,6 +196,7 @@ export type CampaignEditorPreviewModel = {
   logoText: string;
   headingAlignmentClass: string;
   headingFontClass: string;
+  headingFontFamily: TextFont;
   headingTextColor: string;
   headingFontSizePx: number;
   headingFontWeight: number;
@@ -963,11 +966,17 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
           <div aria-hidden="true" className="h-5" />
         ) : null}
 
-        <div className={preview.headingAlignmentClass}>
+        <div className={`${preview.headingAlignmentClass} ${preview.headingFontClass}`}>
           {isCocoricoTemplate ? (
             <CocoricoPromoText
               text={preview.subtitle.trim() || (preview.gameType === "scratch" ? DEFAULT_SCRATCH_SUBTITLE : "Découvrez votre animation")}
               as="h3"
+              fontFamily={textFontFamily(preview.headingFontFamily)}
+              fontSize={fluidType(scalePreviewValue(preview.headingFontSizePx), {
+                minRatio: 0.82,
+                maxRatio: 1.08,
+                viewportStep: 0.3,
+              })}
             />
           ) : (
             <h3
@@ -1473,7 +1482,7 @@ export function buildCampaignLivePreviewModel(
       : form.presentation.heading.align === "right"
         ? "text-right"
         : "text-center";
-  const headingFontClass = templateId === "cocorico-wheel" ? "font-fredoka" : textFontClass(form.presentation.heading.fontFamily);
+  const headingFontClass = textFontClass(form.presentation.heading.fontFamily);
   const logoSizePercent = clampCampaignLogoSizePercent(form.presentation.logo.sizePercent);
   const logoWidthPx = Math.round(Math.max(56, Math.min(720, logoSizePercent * 3)));
   const logoTextSizePx = campaignLogoTextSizePx(logoSizePercent, form.gameType);
@@ -1483,7 +1492,7 @@ export function buildCampaignLivePreviewModel(
       : templateId === "restaurant-pop"
         ? `radial-gradient(circle at -10% -8%, ${withHexAlpha(form.presentation.wheel.loseColor, "f2")} 0 18%, transparent 19%), radial-gradient(circle at 110% 0%, ${withHexAlpha(form.presentation.wheel.winColor, "f2")} 0 13%, transparent 14%), linear-gradient(180deg, #fff2dd 0%, #fffaf1 48%, #fff4e5 100%)`
             : templateId === "cocorico-wheel"
-              ? `radial-gradient(circle at 14% 12%, rgba(68,151,222,0.9) 0 10%, transparent 11%), radial-gradient(circle at 88% 26%, rgba(4,55,111,0.5) 0 15%, transparent 16%), linear-gradient(160deg, ${resolveCocoricoBackgroundColor(form.presentation.background.color)} 0%, ${resolveCocoricoBackgroundColor(form.presentation.background.color)} 48%, #063d78 100%)`
+              ? `radial-gradient(circle at 14% 12%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(form.presentation.background.color), 0.32), "e6")} 0 10%, transparent 11%), radial-gradient(circle at 88% 26%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(form.presentation.background.color), 0.12), "b3")} 0 15%, transparent 16%), linear-gradient(160deg, ${resolveCocoricoBackgroundColor(form.presentation.background.color)} 0%, ${resolveCocoricoBackgroundColor(form.presentation.background.color)} 48%, #063d78 100%)`
               : templateId === "cosmic-orbit"
               ? `radial-gradient(circle at 50% 112%, ${withHexAlpha(form.presentation.wheel.loseColor, "52")} 0 24%, transparent 43%), radial-gradient(circle at 9% 12%, ${withHexAlpha(form.presentation.wheel.winColor, "2b")} 0 14%, transparent 25%), linear-gradient(155deg, #07142e 0%, #0b1d42 55%, #071126 100%)`
                 : templateId === "scratch-vault"
@@ -1507,6 +1516,7 @@ export function buildCampaignLivePreviewModel(
       backgroundImage,
       backgroundPosition: "center",
       backgroundSize: "cover",
+      fontFamily: textFontFamily(form.presentation.heading.fontFamily),
     },
     logoMode: form.logoMode,
     logoAlignmentClass,
@@ -1515,9 +1525,10 @@ export function buildCampaignLivePreviewModel(
     logoTextSizePx,
     logoUrl: form.logoUrl ?? "",
     logoText: form.logoText?.trim() || merchant.companyName,
-    headingAlignmentClass,
-    headingFontClass,
-    headingTextColor:
+      headingAlignmentClass,
+      headingFontClass,
+      headingFontFamily: form.presentation.heading.fontFamily,
+      headingTextColor:
       templateId === "cosmic-orbit" || templateId === "cocorico-wheel"
         ? "#f8fbff"
         : form.gameType === "scratch" &&
@@ -1755,7 +1766,7 @@ export function CampaignEditor({
             : (form.presentation.layout.templateId ?? "classic") === "restaurant-pop"
               ? `radial-gradient(circle at -10% -8%, ${withHexAlpha(form.presentation.wheel.loseColor, "f2")} 0 18%, transparent 19%), radial-gradient(circle at 110% 0%, ${withHexAlpha(form.presentation.wheel.winColor, "f2")} 0 13%, transparent 14%), linear-gradient(180deg, #fff2dd 0%, #fffaf1 48%, #fff4e5 100%)`
             : (form.presentation.layout.templateId ?? "classic") === "cocorico-wheel"
-              ? `radial-gradient(circle at 14% 12%, rgba(68,151,222,0.9) 0 10%, transparent 11%), radial-gradient(circle at 88% 26%, rgba(4,55,111,0.5) 0 15%, transparent 16%), linear-gradient(160deg, ${resolveCocoricoBackgroundColor(form.presentation.background.color)} 0%, ${resolveCocoricoBackgroundColor(form.presentation.background.color)} 48%, #063d78 100%)`
+              ? `radial-gradient(circle at 14% 12%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(form.presentation.background.color), 0.32), "e6")} 0 10%, transparent 11%), radial-gradient(circle at 88% 26%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(form.presentation.background.color), 0.12), "b3")} 0 15%, transparent 16%), linear-gradient(160deg, ${resolveCocoricoBackgroundColor(form.presentation.background.color)} 0%, ${resolveCocoricoBackgroundColor(form.presentation.background.color)} 48%, #063d78 100%)`
             : (form.presentation.layout.templateId ?? "classic") === "cosmic-orbit"
                   ? `radial-gradient(circle at 50% 112%, ${withHexAlpha(form.presentation.wheel.loseColor, "52")} 0 24%, transparent 43%), radial-gradient(circle at 9% 12%, ${withHexAlpha(form.presentation.wheel.winColor, "2b")} 0 14%, transparent 25%), linear-gradient(155deg, #07142e 0%, #0b1d42 55%, #071126 100%)`
                 : (form.presentation.layout.templateId ?? "classic") === "scratch-vault"
@@ -1773,6 +1784,7 @@ export function CampaignEditor({
                   : "",
         backgroundPosition: "center",
         backgroundSize: "cover",
+        fontFamily: textFontFamily(form.presentation.heading.fontFamily),
       },
       logoMode: form.logoMode,
       logoAlignmentClass,
@@ -1782,9 +1794,10 @@ export function CampaignEditor({
       logoUrl: form.logoUrl ?? "",
       logoText: form.logoText?.trim() || merchant.companyName,
       headingAlignmentClass,
-      headingFontClass: currentTemplateId === "cocorico-wheel" ? "font-fredoka" : headingFontClass,
+      headingFontClass,
+      headingFontFamily: form.presentation.heading.fontFamily,
       headingTextColor: form.presentation.heading.textColor,
-      headingFontSizePx: currentTemplateId === "cocorico-wheel" ? Math.min(form.presentation.heading.fontSizePx, 32) : form.presentation.heading.fontSizePx,
+      headingFontSizePx: form.presentation.heading.fontSizePx,
       headingFontWeight: currentTemplateId === "cocorico-wheel" ? 900 : form.presentation.heading.fontWeight ?? 600,
       subtitle: limitCampaignSubtitleLines(form.subtitle),
       blockSpacingPx: form.presentation.layout.blockSpacingPx,
@@ -1829,6 +1842,7 @@ export function CampaignEditor({
     form.presentation.button.textColor,
     form.presentation.button.textSizePx,
     form.presentation.heading.fontSizePx,
+    form.presentation.heading.fontFamily,
     form.presentation.heading.fontWeight,
     form.presentation.heading.textColor,
     form.presentation.layout.blockSpacingPx,
@@ -3032,6 +3046,34 @@ function setGameType(gameType: GameType) {
                   </label>
 
                 </>
+              ) : null}
+              {!isExpertMode && currentTemplateId === "cocorico-wheel" ? (
+                <label className="text-sm">
+                  <span className="mb-2 flex items-center justify-between gap-3 text-[#616b7c]">
+                    <span>Taille du texte (px)</span>
+                    <output className="font-semibold text-aubergine">{form.presentation.heading.fontSizePx} px</output>
+                  </span>
+                  <input
+                    type="number"
+                    min={18}
+                    max={72}
+                    value={form.presentation.heading.fontSizePx}
+                    onChange={(event) =>
+                      setForm((current) => ({
+                        ...current,
+                        presentation: {
+                          ...current.presentation,
+                          heading: {
+                            ...current.presentation.heading,
+                            fontSizePx: Number(event.target.value || 40),
+                          },
+                        },
+                      }))
+                    }
+                    className="w-full rounded-[12px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
+                    aria-label="Taille du texte Cocorico (px)"
+                  />
+                </label>
               ) : null}
             </div>
           </section>

@@ -128,6 +128,7 @@ const WIZARD_TEXT_FONTS: TextFont[] = [
   "lobster",
   "pacifico",
   "syncopate",
+  "fredoka",
 ];
 
 const MAX_WIZARD_IMAGE_BYTES = 2 * 1024 * 1024;
