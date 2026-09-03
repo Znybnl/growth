@@ -908,9 +908,19 @@ export function CampaignExperience({
 
         {!isImmersiveScratchTemplate ? (
         <div className={headingAlignmentClass}>
-          {isCocoricoTemplate || isRestaurantPopTemplate || isClassicTemplate ? <CocoricoPromoText text={safeSubtitle.trim() || DEFAULT_SCRATCH_SUBTITLE} fontSize={headingFontSize} fontFamily={textFontFamily(campaign.presentation.heading.fontFamily)} rotate={isCocoricoTemplate} /> : <h1
-            className={`${headingFontClass} line-clamp-3 whitespace-pre-line ${isRestaurantPopTemplate ? "tracking-[0.038em] drop-shadow-[0_5px_0_rgba(0,0,0,0.08)]" : ""} ${isClassicTemplate || isRestaurantPopTemplate ? "okado-wheel-promo-heading" : ""} pb-[25px] leading-[1] text-[#151826]`}
-            style={{ color: isClassicTemplate || isRestaurantPopTemplate ? "#ffdc32" : headingTextColor, fontSize: headingFontSize, fontWeight: campaign.presentation.heading.fontWeight ?? 600 }}
+          {isCocoricoTemplate || isRestaurantPopTemplate || isClassicTemplate ? <CocoricoPromoText
+            text={safeSubtitle.trim() || DEFAULT_SCRATCH_SUBTITLE}
+            fontSize={headingFontSize}
+            fontFamily={textFontFamily(campaign.presentation.heading.fontFamily)}
+            fontWeight={isCocoricoTemplate ? undefined : 850}
+            textColor={isCocoricoTemplate ? undefined : headingTextColor}
+            secondaryTextColor={isCocoricoTemplate ? undefined : headingTextColor}
+            strokeWidth={isCocoricoTemplate ? undefined : 6}
+            variant={isCocoricoTemplate ? "cocorico" : "inspired"}
+            rotate={isCocoricoTemplate}
+          /> : <h1
+            className={`${headingFontClass} line-clamp-3 whitespace-pre-line pb-[25px] leading-[1] text-[#151826]`}
+            style={{ color: headingTextColor, fontSize: headingFontSize, fontWeight: campaign.presentation.heading.fontWeight ?? 600 }}
           >
             {isRestaurantPopTemplate
               ? restaurantPopHeadingLines.map((line, lineIndex) => (
