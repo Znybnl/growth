@@ -10,6 +10,8 @@ import { createPosterSettingsDefaults } from "@/lib/poster-utils";
 export const DEFAULT_WHEEL_SUBTITLE = "Faites tournez la roue pour jouer !";
 export const DEFAULT_SCRATCH_SUBTITLE = "Grattez le ticket pour jouer !";
 export const DEFAULT_WHEEL_PRIMARY_COLOR = "#1b2842";
+export const DEFAULT_COCORICO_PRIMARY_COLOR = "#2563eb";
+export const DEFAULT_COCORICO_BACKGROUND_COLOR = "#2563eb";
 export const DEFAULT_SCRATCH_PRIMARY_COLOR = "#f4c14a";
 export const DEFAULT_SCRATCH_CONFETTI_COLOR = "#f4c14a";
 export const DEFAULT_SCRATCH_LILAC_COLOR = "#b85be5";
@@ -17,6 +19,22 @@ export const DEFAULT_SCRATCH_TICKET_COLOR = "#f7f7f7";
 export const DEFAULT_SCRATCH_TEXT_COLOR = "#ffffff";
 export const MAX_CAMPAIGN_SUBTITLE_LINES = 3;
 export const MAX_CAMPAIGN_SUBTITLE_LENGTH = 240;
+
+/** Resolve the blue used by the Cocorico template without changing legacy data. */
+export function resolveCocoricoPrimaryColor(configuredColor: string | undefined) {
+  const normalized = configuredColor?.trim().toLowerCase();
+  return !normalized || normalized === DEFAULT_WHEEL_PRIMARY_COLOR
+    ? DEFAULT_COCORICO_PRIMARY_COLOR
+    : configuredColor!;
+}
+
+/** Keep the Cocorico blue as the default while allowing an explicit background color. */
+export function resolveCocoricoBackgroundColor(configuredColor: string | undefined) {
+  const normalized = configuredColor?.trim().toLowerCase();
+  return !normalized || normalized === "#fff" || normalized === "#ffffff"
+    ? DEFAULT_COCORICO_BACKGROUND_COLOR
+    : configuredColor!;
+}
 
 /** Fixed-palette templates intentionally ignore the merchant's primary color. */
 export function scratchTemplatePrimaryColor(
