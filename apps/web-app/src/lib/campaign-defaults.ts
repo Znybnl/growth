@@ -10,6 +10,7 @@ import { createPosterSettingsDefaults } from "@/lib/poster-utils";
 export const DEFAULT_WHEEL_SUBTITLE = "Faites tournez la roue pour jouer !";
 export const DEFAULT_SCRATCH_SUBTITLE = "Grattez le ticket pour jouer !";
 export const DEFAULT_WHEEL_PRIMARY_COLOR = "#1b2842";
+export const DEFAULT_CLASSIC_POP_PRIMARY_COLOR = "#3c05a0";
 export const DEFAULT_COCORICO_PRIMARY_COLOR = "#2563eb";
 export const DEFAULT_COCORICO_BACKGROUND_COLOR = "#2563eb";
 export const DEFAULT_SCRATCH_PRIMARY_COLOR = "#f4c14a";
@@ -19,6 +20,10 @@ export const DEFAULT_SCRATCH_TICKET_COLOR = "#f7f7f7";
 export const DEFAULT_SCRATCH_TEXT_COLOR = "#ffffff";
 export const MAX_CAMPAIGN_SUBTITLE_LINES = 3;
 export const MAX_CAMPAIGN_SUBTITLE_LENGTH = 240;
+
+export function isClassicPopWheelTemplate(templateId?: GamePageTemplateId) {
+  return templateId === "classic" || templateId === "restaurant-pop";
+}
 
 /** Soft editorial reflections used by the public Visuel pop game surface. */
 export const RESTAURANT_POP_BACKGROUND =
@@ -88,6 +93,20 @@ export function buildCocoricoPromoLines(value: string) {
       words.slice(bestSplit).join(" "),
     ];
   }).slice(0, MAX_CAMPAIGN_SUBTITLE_LINES);
+}
+
+/** Keep the Classic and Pop headline contour visible against both text tones. */
+export function resolvePromoStrokeColor(textColor: string | undefined) {
+  const normalized = (textColor ?? "").replace("#", "").trim();
+  if (!/^[0-9a-f]{6}$/i.test(normalized)) return "#ffffff";
+
+  const channels = [0, 2, 4].map((offset) => Number.parseInt(normalized.slice(offset, offset + 2), 16) / 255);
+  const linear = channels.map((channel) =>
+    channel <= 0.03928 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4,
+  );
+  const luminance = 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
+
+  return luminance > 0.52 ? "#1b2842" : "#ffffff";
 }
 
 /** Normalise the editor's logo scale so legacy values cannot break the preview. */

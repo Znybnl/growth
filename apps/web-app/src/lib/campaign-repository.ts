@@ -1417,7 +1417,11 @@ export async function getSupabasePublicCampaign(
   if (!allowInactive && !performance.campaign.isActive) {
     throw new Error("Cette animation est momentanément indisponible.");
   }
-  assertMerchantBillingAccess(performance.merchant, "campaign_public");
+  // Authenticated previews remain available after the trial or subscription
+  // expires; live public campaigns continue to enforce the billing gate.
+  if (!allowInactive) {
+    assertMerchantBillingAccess(performance.merchant, "campaign_public");
+  }
 
   // CRM is now a dedicated capture option, not a visit in the marketing
   // sequence. Keep CRM rows in the merchant editor for backwards

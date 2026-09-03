@@ -1550,7 +1550,15 @@ button:disabled,
 }
 
 .okado-cocorico-promo-text[data-promo-variant="inspired"] .okado-cocorico-promo-line::before {
-  text-shadow: none;
+  display: none;
+}
+
+/* Classic and Visuel pop use the same inspired treatment, but their white
+   contour must belong to the visible glyph itself. This keeps the outline
+   reliable in the live game and in the editor preview. */
+.okado-cocorico-promo-text[data-promo-variant="inspired"] .okado-cocorico-promo-line {
+  -webkit-text-stroke: var(--okado-promo-stroke-width, 5px) var(--okado-promo-stroke-color, #ffffff);
+  paint-order: stroke fill;
 }
 
 .okado-preview-surface[data-template-id="cocorico-wheel"] .okado-cocorico-promo-text {

@@ -33,6 +33,7 @@ import {
   RESTAURANT_POP_BACKGROUND,
   deriveLighterHex,
   scratchTemplatePrimaryColor,
+  resolvePromoStrokeColor,
 } from "@/lib/campaign-defaults";
 import { buildWheelVisualSegments } from "@/lib/wheel-segments";
 import {
@@ -915,7 +916,7 @@ export function CampaignExperience({
             fontWeight={isCocoricoTemplate ? undefined : 850}
             textColor={isCocoricoTemplate ? undefined : headingTextColor}
             secondaryTextColor={isCocoricoTemplate ? undefined : headingTextColor}
-            strokeColor={isCocoricoTemplate ? undefined : "#ffffff"}
+            strokeColor={isCocoricoTemplate ? undefined : resolvePromoStrokeColor(headingTextColor)}
             strokeWidth={isCocoricoTemplate ? undefined : 5}
             variant={isCocoricoTemplate ? "cocorico" : "inspired"}
             rotate={isCocoricoTemplate}
@@ -947,8 +948,8 @@ export function CampaignExperience({
 
         {campaign.gameType === "wheel" ? (
           <div
-            className={`relative left-1/2 min-h-0 w-screen -translate-x-1/2 flex-1 overflow-visible ${isCocoricoTemplate ? "" : "mt-[40px] sm:mt-20 lg:mt-8"}`}
-            style={{ minHeight: "min(52vh, 520px)", marginTop: isCocoricoTemplate ? `${campaign.presentation.layout.blockSpacingPx}px` : undefined }}
+            className="relative left-1/2 min-h-0 w-screen -translate-x-1/2 flex-1 overflow-visible"
+            style={{ minHeight: "min(52vh, 520px)", marginTop: `${campaign.presentation.layout.blockSpacingPx}px` }}
           >
             <div className="absolute inset-0 overflow-visible">
               {isCocoricoTemplate ? (
