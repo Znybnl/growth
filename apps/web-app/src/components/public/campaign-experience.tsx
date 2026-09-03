@@ -481,6 +481,7 @@ export function CampaignExperience({
   const availableDate = formatDate(drawResult?.lead.rewardAvailableAt);
   const expiryDate = formatDate(drawResult?.lead.rewardExpiresAt);
   const pageTemplate = campaign.presentation.layout.templateId ?? "classic";
+  const isClassicTemplate = campaign.presentation.layout.templateId === "classic" || !campaign.presentation.layout.templateId;
   const isRestaurantPopTemplate = pageTemplate === "restaurant-pop";
   const isCocoricoTemplate = pageTemplate === "cocorico-wheel";
   const isCosmicTemplate = pageTemplate === "cosmic-orbit";
@@ -820,7 +821,7 @@ export function CampaignExperience({
         : isSunburstTemplate
           ? `radial-gradient(circle at 12% 10%, ${withHexAlpha(primaryColor, "33")} 0 12%, transparent 13%), radial-gradient(circle at 94% 18%, ${withHexAlpha(secondaryColor, "38")} 0 14%, transparent 15%), linear-gradient(180deg, #fffdf5 0%, #fff8e8 56%, #fff2ce 100%)`
         : isRestaurantPopTemplate
-        ? `radial-gradient(circle at -10% -8%, ${withHexAlpha(primaryColor, "f2")} 0 18%, transparent 19%), radial-gradient(circle at 110% 0%, ${withHexAlpha(secondaryColor, "f2")} 0 13%, transparent 14%), radial-gradient(circle at 0% 80%, ${withHexAlpha(primaryColor, "20")} 0 20%, transparent 21%), radial-gradient(circle at 100% 78%, ${withHexAlpha(secondaryColor, "40")} 0 18%, transparent 19%), linear-gradient(180deg, #fff2dd 0%, #fffaf1 46%, #fff4e5 100%)`
+        ? `radial-gradient(circle at 12% 12%, rgba(255,255,255,0.42) 0 8%, transparent 30%), radial-gradient(circle at 88% 22%, rgba(255,255,255,0.3) 0 10%, transparent 34%), radial-gradient(circle at 18% 86%, rgba(255,255,255,0.2) 0 7%, transparent 27%), linear-gradient(180deg, #fff2dd 0%, #fffaf1 46%, #fff4e5 100%)`
         : isCocoricoTemplate
         ? `radial-gradient(circle at 12% 12%, rgba(66,150,220,0.9) 0 10%, transparent 11%), radial-gradient(circle at 90% 18%, rgba(5,55,111,0.5) 0 16%, transparent 17%), linear-gradient(160deg, ${resolveCocoricoBackgroundColor(campaign.presentation.background.color)} 0%, ${resolveCocoricoBackgroundColor(campaign.presentation.background.color)} 48%, #063d78 100%)`
         : `radial-gradient(circle at 50% 50%, ${withHexAlpha(primaryColor, "33")}, transparent 50%), linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.08))`;
@@ -903,9 +904,9 @@ export function CampaignExperience({
 
         {!isImmersiveScratchTemplate ? (
         <div className={headingAlignmentClass}>
-          {isCocoricoTemplate ? <CocoricoPromoText text={safeSubtitle.trim() || DEFAULT_SCRATCH_SUBTITLE} /> : <h1
-            className={`${headingFontClass} line-clamp-3 whitespace-pre-line ${isRestaurantPopTemplate ? "tracking-[0.038em] drop-shadow-[0_5px_0_rgba(0,0,0,0.08)]" : ""} pb-[25px] leading-[1] text-[#151826]`}
-            style={{ color: headingTextColor, fontSize: headingFontSize, fontWeight: campaign.presentation.heading.fontWeight ?? 600 }}
+          {isCocoricoTemplate || isRestaurantPopTemplate || isClassicTemplate ? <CocoricoPromoText text={safeSubtitle.trim() || DEFAULT_SCRATCH_SUBTITLE} fontSize={headingFontSize} rotate={isCocoricoTemplate} /> : <h1
+            className={`${headingFontClass} line-clamp-3 whitespace-pre-line ${isRestaurantPopTemplate ? "tracking-[0.038em] drop-shadow-[0_5px_0_rgba(0,0,0,0.08)]" : ""} ${isClassicTemplate || isRestaurantPopTemplate ? "okado-wheel-promo-heading" : ""} pb-[25px] leading-[1] text-[#151826]`}
+            style={{ color: isClassicTemplate || isRestaurantPopTemplate ? "#ffdc32" : headingTextColor, fontSize: headingFontSize, fontWeight: campaign.presentation.heading.fontWeight ?? 600 }}
           >
             {isRestaurantPopTemplate
               ? restaurantPopHeadingLines.map((line, lineIndex) => (

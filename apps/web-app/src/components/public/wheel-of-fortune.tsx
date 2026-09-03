@@ -294,11 +294,6 @@ export function WheelOfFortune({
             aria-hidden="true"
           >
             <defs>
-              <radialGradient id="okado-wheel-gloss" cx="50%" cy="28%" r="68%">
-                <stop offset="0%" stopColor="#ffffff" stopOpacity="0.82" />
-                <stop offset="52%" stopColor="#ffffff" stopOpacity="0.12" />
-                <stop offset="100%" stopColor="#000000" stopOpacity="0.06" />
-              </radialGradient>
               <radialGradient id="okado-wheel-depth" cx="50%" cy="38%" r="70%">
                 <stop offset="0%" stopColor="#ffffff" stopOpacity="0" />
                 <stop offset="70%" stopColor="#0f172a" stopOpacity="0.02" />
@@ -369,11 +364,6 @@ export function WheelOfFortune({
                     stroke="rgba(255,255,255,0.85)"
                     strokeWidth="5"
                     strokeLinejoin="round"
-                  />
-                  <path
-                    d={describeSlice(startAngle, endAngle)}
-                    fill="url(#okado-wheel-gloss)"
-                    opacity="0.42"
                   />
                   <text
                     x={textPoint.x}
@@ -469,7 +459,7 @@ export function WheelOfFortune({
           type="button"
           onClick={handleCentralButton}
           disabled={!buttonEnabled || isSpinning || hasSpun}
-          className={`okado-wheel-center-button absolute left-1/2 top-1/2 z-40 flex aspect-square ${isRestaurantPopTemplate ? "w-[19.5%]" : "w-[17.8%]"} -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-[4px] text-[19px] font-black uppercase transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-75 ${isRestaurantPopTemplate ? "font-anton shadow-[0_20px_34px_rgba(15,23,42,0.24)] [text-shadow:0_3px_0_rgba(0,0,0,0.18)]" : "shadow-[0_16px_30px_rgba(15,23,42,0.16)]"}`}
+          className={`okado-wheel-center-button absolute left-1/2 top-1/2 z-40 flex aspect-square ${isRestaurantPopTemplate ? "w-[21%]" : "w-[19.2%]"} -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-[4px] text-[19px] font-black uppercase transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-75 ${isRestaurantPopTemplate ? "font-anton shadow-[0_20px_34px_rgba(15,23,42,0.24)] [text-shadow:0_3px_0_rgba(0,0,0,0.18)]" : "shadow-[0_16px_30px_rgba(15,23,42,0.16)]"}`}
           style={{
             background:
               buttonEnabled && !hasSpun
@@ -480,8 +470,8 @@ export function WheelOfFortune({
               ? colors.winColor
               : buttonStyle?.borderColor ?? "#ffffff",
             fontSize: isRestaurantPopTemplate
-              ? "clamp(0.82rem, 4.8cqw, 1.65rem)"
-              : "clamp(0.78rem, 4.2cqw, 1.45rem)",
+              ? "clamp(0.88rem, 5.1cqw, 1.75rem)"
+              : "clamp(0.84rem, 4.7cqw, 1.55rem)",
             boxShadow: isRestaurantPopTemplate
               ? "inset 0 0 0 4px rgba(255,255,255,0.74), inset 0 -11px 18px rgba(0,0,0,0.2), 0 18px 34px rgba(15,23,42,0.24)"
               : undefined,
