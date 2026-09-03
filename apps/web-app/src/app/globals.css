@@ -1511,7 +1511,7 @@ button:disabled,
   align-items: center;
   margin: 0 auto;
   transform: rotate(-8deg);
-  font-family: "Fredoka One", var(--font-fredoka), sans-serif;
+  font-family: inherit;
   font-size: 5rem;
   font-weight: 700;
   line-height: 0.9;

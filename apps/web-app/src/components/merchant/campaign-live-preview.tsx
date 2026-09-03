@@ -7,7 +7,7 @@ import { BrandMark } from "@/components/brand-mark";
 import { CocoricoPromoText } from "@/components/public/cocorico-promo-text";
 import { ImmersiveScratchTicket } from "@/components/public/immersive-scratch-ticket";
 import { fluidType } from "@/lib/responsive";
-import { textFontClass } from "@/lib/format";
+import { textFontClass, textFontFamily } from "@/lib/format";
 import {
   campaignLogoTextSizePx,
   clampCampaignLogoSizePercent,
@@ -16,6 +16,7 @@ import {
   resolveScratchAccent,
   resolveCocoricoPrimaryColor,
   resolveCocoricoBackgroundColor,
+  deriveLighterHex,
   scratchTemplatePrimaryColor,
 } from "@/lib/campaign-defaults";
 import { buildWheelVisualSegments, WheelVisualSegment } from "@/lib/wheel-segments";
@@ -52,6 +53,7 @@ export type CampaignEditorPreviewModel = {
     backgroundImage: string;
     backgroundPosition: string;
     backgroundSize: string;
+    fontFamily: string;
   };
   logoMode: CampaignSetupInput["logoMode"];
   logoAlignmentClass: string;
@@ -62,6 +64,7 @@ export type CampaignEditorPreviewModel = {
   logoText: string;
   headingAlignmentClass: string;
   headingFontClass: string;
+  headingFontFamily: CampaignSetupInput["presentation"]["heading"]["fontFamily"];
   headingTextColor: string;
   headingFontSizePx: number;
   headingFontWeight: number;
@@ -155,7 +158,7 @@ function previewBackgroundImage(form: CampaignSetupInput, templateId: GamePageTe
   }
   if (templateId === "cocorico-wheel") {
     const backgroundColor = resolveCocoricoBackgroundColor(form.presentation.background.color);
-    return `radial-gradient(circle at 14% 12%, rgba(68,151,222,0.9) 0 10%, transparent 11%), radial-gradient(circle at 88% 26%, rgba(4,55,111,0.5) 0 15%, transparent 16%), linear-gradient(160deg, ${backgroundColor} 0%, ${backgroundColor} 48%, #063d78 100%)`;
+    return `radial-gradient(circle at 14% 12%, ${withHexAlpha(deriveLighterHex(backgroundColor, 0.32), "e6")} 0 10%, transparent 11%), radial-gradient(circle at 88% 26%, ${withHexAlpha(deriveLighterHex(backgroundColor, 0.12), "b3")} 0 15%, transparent 16%), linear-gradient(160deg, ${backgroundColor} 0%, ${backgroundColor} 48%, #063d78 100%)`;
   }
   if (templateId === "cosmic-orbit") {
     return `radial-gradient(circle at 50% 112%, ${withHexAlpha(form.presentation.wheel.loseColor, "52")} 0 24%, transparent 43%), radial-gradient(circle at 9% 12%, ${withHexAlpha(form.presentation.wheel.winColor, "2b")} 0 14%, transparent 25%), linear-gradient(155deg, #07142e 0%, #0b1d42 55%, #071126 100%)`;
@@ -198,6 +201,7 @@ export function buildCampaignLivePreviewModel(form: CampaignSetupInput, merchant
       backgroundImage: previewBackgroundImage(form, templateId),
       backgroundPosition: "center",
       backgroundSize: "cover",
+      fontFamily: textFontFamily(form.presentation.heading.fontFamily),
     },
     logoMode: form.logoMode,
     logoAlignmentClass,
@@ -209,9 +213,10 @@ export function buildCampaignLivePreviewModel(form: CampaignSetupInput, merchant
     logoUrl: form.logoUrl ?? "",
     logoText: form.logoText?.trim() || merchant.companyName,
     headingAlignmentClass,
-    headingFontClass: templateId === "cocorico-wheel" ? "font-fredoka" : headingFontClassFor(form),
+    headingFontClass: headingFontClassFor(form),
+    headingFontFamily: form.presentation.heading.fontFamily,
     headingTextColor: templateId === "cosmic-orbit" ? "#f8fbff" : templateId === "cocorico-wheel" ? "#ffffff" : form.gameType === "scratch" && form.presentation.heading.textColor.toLowerCase() === "#1f2937" ? previewAccent.ink : form.presentation.heading.textColor,
-    headingFontSizePx: templateId === "cocorico-wheel" ? Math.min(form.presentation.heading.fontSizePx, 32) : form.presentation.heading.fontSizePx,
+    headingFontSizePx: form.presentation.heading.fontSizePx,
     headingFontWeight: templateId === "cocorico-wheel" ? 900 : form.presentation.heading.fontWeight ?? 600,
     subtitle: limitCampaignSubtitleLines(form.subtitle),
     blockSpacingPx: form.presentation.layout.blockSpacingPx,
@@ -266,7 +271,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
             {preview.logoMode === "text" ? <div className={`flex ${preview.logoAlignmentClass}`}><div style={{ marginBottom: `${scalePreviewValue(preview.logoBottomSpacingPx)}px` }}><BrandMark logoText={preview.logoText} size="lg" variant="transparent" imageWidthPx={scalePreviewValue(preview.logoWidthPx)} textSizePx={scalePreviewValue(preview.logoTextSizePx)} textColor={previewHeadingTextColor} textClassName="text-2xl" /></div></div> : null}
             {preview.gameType === "scratch" && preview.logoMode === "none" ? <div className={`flex ${preview.logoAlignmentClass}`}><div style={{ marginBottom: `${scalePreviewValue(preview.logoBottomSpacingPx)}px` }}><BrandMark logoText={preview.logoText || merchant.companyName} size="lg" variant="transparent" imageWidthPx={scalePreviewValue(preview.logoWidthPx)} textSizePx={scalePreviewValue(preview.logoTextSizePx)} textColor={previewHeadingTextColor} textClassName="text-2xl" /></div></div> : null}
             {preview.logoMode === "none" || (preview.logoMode === "image" && !preview.logoUrl) ? <div aria-hidden="true" className="h-5" /> : null}
-            <div className={preview.headingAlignmentClass}>{isCocoricoTemplate ? <CocoricoPromoText text={preview.subtitle.trim() || (preview.gameType === "scratch" ? DEFAULT_SCRATCH_SUBTITLE : "Découvrez votre animation")} as="h3" /> : <h3 className={`${preview.headingFontClass} line-clamp-3 whitespace-pre-line ${isRestaurantPopTemplate ? "tracking-[0.038em] drop-shadow-[0_4px_0_rgba(0,0,0,0.08)]" : ""} pb-[25px] leading-[1]`} style={{ color: previewHeadingTextColor, fontSize: fluidType(scalePreviewValue(preview.headingFontSizePx), { minRatio: 0.82, maxRatio: 1.08, viewportStep: 0.3, viewportUnit: compact ? "cqw" : "vw" }), fontWeight: preview.headingFontWeight }}>{isRestaurantPopTemplate ? restaurantPopHeadingLines.map((line, lineIndex) => <span key={`preview-heading-line-${lineIndex}`} className="block">{line.map((part, partIndex) => <span key={`preview-heading-line-${lineIndex}-${partIndex}`} style={{ color: part.secondary ? preview.wheelStyle.winColor : previewHeadingTextColor }}>{part.text}</span>)}</span>) : preview.subtitle.trim() || (preview.gameType === "scratch" ? DEFAULT_SCRATCH_SUBTITLE : "Découvrez votre animation")}</h3>}</div>
+            <div className={preview.headingAlignmentClass}>{isCocoricoTemplate ? <CocoricoPromoText text={preview.subtitle.trim() || (preview.gameType === "scratch" ? DEFAULT_SCRATCH_SUBTITLE : "Découvrez votre animation")} as="h3" fontSize={fluidType(scalePreviewValue(preview.headingFontSizePx), { minRatio: 0.82, maxRatio: 1.08, viewportStep: 0.3, viewportUnit: compact ? "cqw" : "vw" })} /> : <h3 className={`${preview.headingFontClass} line-clamp-3 whitespace-pre-line ${isRestaurantPopTemplate ? "tracking-[0.038em] drop-shadow-[0_4px_0_rgba(0,0,0,0.08)]" : ""} pb-[25px] leading-[1]`} style={{ color: previewHeadingTextColor, fontSize: fluidType(scalePreviewValue(preview.headingFontSizePx), { minRatio: 0.82, maxRatio: 1.08, viewportStep: 0.3, viewportUnit: compact ? "cqw" : "vw" }), fontWeight: preview.headingFontWeight }}>{isRestaurantPopTemplate ? restaurantPopHeadingLines.map((line, lineIndex) => <span key={`preview-heading-line-${lineIndex}`} className="block">{line.map((part, partIndex) => <span key={`preview-heading-line-${lineIndex}-${partIndex}`} style={{ color: part.secondary ? preview.wheelStyle.winColor : previewHeadingTextColor }}>{part.text}</span>)}</span>) : preview.subtitle.trim() || (preview.gameType === "scratch" ? DEFAULT_SCRATCH_SUBTITLE : "Découvrez votre animation")}</h3>}</div>
           </>
         ) : null}
         <div className={preview.gameType === "wheel" ? compact ? "-mx-3" : "-mx-4" : undefined} style={{ marginTop: `${isImmersiveScratchTemplate ? 0 : compact ? Math.min(scalePreviewValue(preview.blockSpacingPx), 24) : scalePreviewValue(preview.blockSpacingPx)}px`, height: preview.gameType === "wheel" ? compact ? "330px" : "470px" : undefined, marginBottom: preview.gameType === "wheel" ? compact ? "-12px" : "-24px" : undefined }}>

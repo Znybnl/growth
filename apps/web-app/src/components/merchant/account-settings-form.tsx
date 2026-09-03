@@ -350,17 +350,12 @@ export function AccountSettingsForm({
             <Store className="h-5 w-5" aria-hidden="true" />
           </span>
           <div>
-            <p className="okado-label">Établissement édité</p>
+            <p className="okado-label">Établissement sélectionné</p>
             <h2 className="mt-1.5 text-xl font-semibold tracking-[-0.02em] text-graphite">Configuration de {selectedMerchant.companyName}</h2>
-            <p className="mt-1.5 max-w-2xl text-sm leading-6 text-ash">Les informations, liens marketing et le code PIN regroupés ici concernent uniquement l’établissement sélectionné.</p>
+            <p className="mt-1.5 flex items-center gap-1.5 text-sm leading-6 text-ash"><Store className="h-4 w-4 shrink-0" aria-hidden="true" />{selectedMerchant.city || "Ville à renseigner"}{selectedMerchant.address ? ` · ${selectedMerchant.address}` : ""}</p>
           </div>
         </div>
         <div className="pt-5">
-          <div className="mb-5 flex flex-wrap items-center gap-x-3 gap-y-1.5 rounded-[8px] border border-lavender-mist bg-purple-haze px-3.5 py-3">
-          <span className="rounded-[4px] bg-aubergine px-2.5 py-1 text-[11px] font-semibold text-white">En cours de modification</span>
-          <strong className="text-sm text-carbon">{selectedMerchant.companyName}</strong>
-          <span className="text-xs text-charcoal">Les champs ci-dessous ne changent pas l’établissement actif global.</span>
-          </div>
           <div id="account-location" className="scroll-mt-28">
             <div className="mb-4">
               <h3 className="text-base font-semibold text-graphite">Informations générales</h3>

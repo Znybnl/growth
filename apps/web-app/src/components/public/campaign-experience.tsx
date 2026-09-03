@@ -21,7 +21,7 @@ import { ImmersiveScratchTicket } from "@/components/public/immersive-scratch-ti
 import { ScratchGame } from "@/components/public/scratch-game";
 import { WheelOfFortune } from "@/components/public/wheel-of-fortune";
 import { fluidType } from "@/lib/responsive";
-import { textFontClass } from "@/lib/format";
+import { textFontClass, textFontFamily } from "@/lib/format";
 import {
   campaignLogoTextSizePx,
   clampCampaignLogoSizePercent,
@@ -30,6 +30,7 @@ import {
   resolveScratchAccent,
   resolveCocoricoPrimaryColor,
   resolveCocoricoBackgroundColor,
+  deriveLighterHex,
   scratchTemplatePrimaryColor,
 } from "@/lib/campaign-defaults";
 import { buildWheelVisualSegments } from "@/lib/wheel-segments";
@@ -53,6 +54,7 @@ type ExperienceStage =
   | "intro"
   | "ready"
   | "collect"
+  | "won"
   | "success"
   | "lost"
   | "blocked";
@@ -531,7 +533,7 @@ export function CampaignExperience({
       : campaign.presentation.heading.align === "right"
         ? "text-right"
         : "text-center";
-  const headingFontClass = isCocoricoTemplate ? "font-fredoka" : textFontClass(campaign.presentation.heading.fontFamily);
+  const headingFontClass = textFontClass(campaign.presentation.heading.fontFamily);
   const showBottomState =
     !isImmersiveScratchTemplate &&
     ((stage === "idle" && campaign.gameType !== "wheel") ||
@@ -744,7 +746,7 @@ export function CampaignExperience({
       const result = (await response.json()) as DrawResult;
       setDrawResult(result);
       setCampaign(result.campaign);
-      setStage("success");
+      setStage(result.prize ? "won" : "success");
     } catch (submitError) {
       setError(
         submitError instanceof Error ? submitError.message : "Une erreur est survenue.",
@@ -823,7 +825,7 @@ export function CampaignExperience({
         : isRestaurantPopTemplate
         ? `radial-gradient(circle at 12% 12%, rgba(255,255,255,0.42) 0 8%, transparent 30%), radial-gradient(circle at 88% 22%, rgba(255,255,255,0.3) 0 10%, transparent 34%), radial-gradient(circle at 18% 86%, rgba(255,255,255,0.2) 0 7%, transparent 27%), linear-gradient(180deg, #fff2dd 0%, #fffaf1 46%, #fff4e5 100%)`
         : isCocoricoTemplate
-        ? `radial-gradient(circle at 12% 12%, rgba(66,150,220,0.9) 0 10%, transparent 11%), radial-gradient(circle at 90% 18%, rgba(5,55,111,0.5) 0 16%, transparent 17%), linear-gradient(160deg, ${resolveCocoricoBackgroundColor(campaign.presentation.background.color)} 0%, ${resolveCocoricoBackgroundColor(campaign.presentation.background.color)} 48%, #063d78 100%)`
+        ? `radial-gradient(circle at 12% 12%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(campaign.presentation.background.color), 0.32), "e6")} 0 10%, transparent 11%), radial-gradient(circle at 90% 18%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(campaign.presentation.background.color), 0.12), "b3")} 0 16%, transparent 17%), linear-gradient(160deg, ${resolveCocoricoBackgroundColor(campaign.presentation.background.color)} 0%, ${resolveCocoricoBackgroundColor(campaign.presentation.background.color)} 48%, #063d78 100%)`
         : `radial-gradient(circle at 50% 50%, ${withHexAlpha(primaryColor, "33")}, transparent 50%), linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.08))`;
   const restaurantPopHeadingLines = buildRestaurantPopHeadingLines(safeSubtitle);
 
@@ -852,6 +854,7 @@ export function CampaignExperience({
         backgroundImage: backgroundStyle,
         backgroundPosition: "center",
         backgroundSize: "cover",
+        fontFamily: textFontFamily(campaign.presentation.heading.fontFamily),
       }}
     >
       {isPreview ? (
@@ -904,7 +907,7 @@ export function CampaignExperience({
 
         {!isImmersiveScratchTemplate ? (
         <div className={headingAlignmentClass}>
-          {isCocoricoTemplate || isRestaurantPopTemplate || isClassicTemplate ? <CocoricoPromoText text={safeSubtitle.trim() || DEFAULT_SCRATCH_SUBTITLE} fontSize={headingFontSize} rotate={isCocoricoTemplate} /> : <h1
+          {isCocoricoTemplate || isRestaurantPopTemplate || isClassicTemplate ? <CocoricoPromoText text={safeSubtitle.trim() || DEFAULT_SCRATCH_SUBTITLE} fontSize={headingFontSize} fontFamily={textFontFamily(campaign.presentation.heading.fontFamily)} rotate={isCocoricoTemplate} /> : <h1
             className={`${headingFontClass} line-clamp-3 whitespace-pre-line ${isRestaurantPopTemplate ? "tracking-[0.038em] drop-shadow-[0_5px_0_rgba(0,0,0,0.08)]" : ""} ${isClassicTemplate || isRestaurantPopTemplate ? "okado-wheel-promo-heading" : ""} pb-[25px] leading-[1] text-[#151826]`}
             style={{ color: isClassicTemplate || isRestaurantPopTemplate ? "#ffdc32" : headingTextColor, fontSize: headingFontSize, fontWeight: campaign.presentation.heading.fontWeight ?? 600 }}
           >
@@ -1266,6 +1269,27 @@ export function CampaignExperience({
                 : "Enregistrer"}
           </button>
         </form>
+      </PublicModal>
+
+      <PublicModal open={stage === "won" && Boolean(drawResult?.prize)}>
+        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#fff4cb] text-[#102c6a] shadow-[0_20px_45px_rgba(17,24,39,0.10)]">
+          <Gift className="h-10 w-10" aria-hidden="true" />
+        </div>
+        <h2 className="mt-6 text-center text-[2rem] font-semibold leading-[1.05] text-[#121826]">
+          Félicitations !
+          <span className="mt-2 block">Vous avez remporté</span>
+          <span className="mt-2 block">« {drawResult?.prize?.label} »</span>
+        </h2>
+        <p className="mt-5 rounded-[22px] bg-[#f6f7fb] px-5 py-4 text-center text-base leading-7 text-[#475067]">
+          Votre gain est confirmé. Cliquez sur suivant pour afficher les informations de retrait.
+        </p>
+        <button
+          type="button"
+          onClick={() => setStage("success")}
+          className="mt-5 w-full rounded-[18px] bg-[#111827] px-5 py-4 text-lg font-semibold text-white shadow-[0_12px_24px_rgba(17,24,39,0.16)]"
+        >
+          Suivant
+        </button>
       </PublicModal>
 
       <PublicModal open={stage === "success" && Boolean(drawResult)} compact>

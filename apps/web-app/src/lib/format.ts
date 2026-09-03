@@ -294,6 +294,30 @@ export function textFontClass(font: TextFont) {
   }
 }
 
+/** CSS font stack used by the Cocorico headline when the merchant changes the font. */
+export function textFontFamily(font: TextFont) {
+  switch (font) {
+    case "roboto": return 'var(--font-roboto), "Inter Fallback", ui-sans-serif, system-ui, sans-serif';
+    case "geogrotesque": return '"Geogrotesque", var(--font-roboto), ui-sans-serif, system-ui, sans-serif';
+    case "comfortaa": return 'var(--font-comfortaa), var(--font-roboto), ui-sans-serif, system-ui, sans-serif';
+    case "days-one": return 'var(--font-days-one), var(--font-roboto), ui-sans-serif, system-ui, sans-serif';
+    case "delius-unicase": return 'var(--font-delius-unicase), var(--font-roboto), ui-sans-serif, system-ui, sans-serif';
+    case "lato": return 'var(--font-lato), var(--font-roboto), ui-sans-serif, system-ui, sans-serif';
+    case "lobster": return 'var(--font-lobster), var(--font-roboto), cursive';
+    case "pacifico": return 'var(--font-pacifico), var(--font-roboto), cursive';
+    case "syncopate": return 'var(--font-syncopate), var(--font-roboto), ui-sans-serif, system-ui, sans-serif';
+    case "anton": return '"Anton", "Inter", ui-sans-serif, system-ui, sans-serif';
+    case "serif": return 'ui-serif, Georgia, serif';
+    case "cormorant": return 'var(--font-cormorant-garamond), Georgia, serif';
+    case "fredoka": return 'var(--font-fredoka), "Inter", ui-sans-serif, system-ui, sans-serif';
+    case "bebas": return 'var(--font-bebas-neue), "Anton", ui-sans-serif, system-ui, sans-serif';
+    case "inter":
+    case "sans":
+    case "display":
+    default: return 'var(--font-inter), "Inter Fallback", ui-sans-serif, system-ui, sans-serif';
+  }
+}
+
 export function buttonSizeLabel(size: ButtonSize) {
   switch (size) {
     case "sm":
