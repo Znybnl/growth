@@ -1142,23 +1142,6 @@ export function CampaignWizard({
         ) : null}
       </section>
 
-      <div className="sticky top-0 z-30 hidden border-b border-fog bg-soft-white/95 py-3 backdrop-blur xl:block">
-        <div className="flex items-center justify-between gap-3">
-          <StatusBadge tone={!draft.id || !draft.isActive ? "muted" : "active"}>
-            {!draft.id ? "En création" : draft.isActive ? "En ligne" : "Brouillon"}
-          </StatusBadge>
-          <div className="flex items-center gap-2">
-            <Link href="/campaigns" prefetch={false} className="okado-secondary-action px-4 text-sm">Retour aux jeux</Link>
-            <button type="button" onClick={() => void saveCampaign("save")} disabled={isSaving} className="okado-secondary-action px-4 text-sm disabled:opacity-50">
-              {isEditing ? "Enregistrer" : "Enregistrer le brouillon"}
-            </button>
-            <button type="button" onClick={() => void saveCampaign("publish")} disabled={isSaving} className="okado-filled-action px-4 text-sm disabled:opacity-50">
-              {isSaving ? "Enregistrement…" : "Publier"}
-            </button>
-          </div>
-        </div>
-      </div>
-
       <div className="grid gap-6 xl:items-start xl:grid-cols-[240px_minmax(0,1fr)_360px]">
         <aside className="okado-card p-4">
           <p className="px-3 text-[10px] uppercase tracking-[0.22em] text-[#8993a6]">
@@ -2445,7 +2428,7 @@ export function CampaignWizard({
           </div>
         </main>
 
-        <aside className="min-w-0 self-start xl:sticky xl:top-24">
+        <aside className="min-w-0 self-start">
           <div className="mx-auto w-full max-w-[360px] space-y-4">
             <WizardGamePreview draft={draft} merchant={merchant} />
           </div>
