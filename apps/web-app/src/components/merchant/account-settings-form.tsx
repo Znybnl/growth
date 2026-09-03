@@ -82,6 +82,7 @@ export function AccountSettingsForm({
 }: AccountSettingsFormProps) {
   const [selectedLocationId, setSelectedLocationId] = useState(merchant.id);
   const [pendingLocationId, setPendingLocationId] = useState<string | null>(null);
+  const [pendingTab, setPendingTab] = useState<AccountTab | null>(null);
   const [form, setForm] = useState<MerchantAccountSettingsInput>(() => createAccountSettingsForm(merchant, user));
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -103,10 +104,19 @@ export function AccountSettingsForm({
       ? merchant
       : locations.find(({ merchant: location }) => location.id === selectedLocationId)?.merchant ?? merchant;
 
-  function selectTab(tab: "establishment" | "user" | "subscription") {
+  function applyTabSelection(tab: AccountTab) {
     const nextHash = `#account-${tab === "establishment" ? "establishment" : tab === "user" ? "user" : "subscription"}`;
     window.history.replaceState(null, "", nextHash);
     window.dispatchEvent(new HashChangeEvent("hashchange"));
+  }
+
+  function selectTab(tab: AccountTab) {
+    if (tab === activeTab) return;
+    if (isDirty) {
+      setPendingTab(tab);
+      return;
+    }
+    applyTabSelection(tab);
   }
 
   useEffect(() => {
@@ -629,6 +639,20 @@ export function AccountSettingsForm({
         onClose={() => setPendingLocationId(null)}
         onAction={() => {
           if (pendingLocationId) applyLocationSelection(pendingLocationId);
+        }}
+      />
+      <ValidationDialog
+        open={pendingTab !== null}
+        title="Changer de section ?"
+        description="Vos modifications non enregistrées seront conservées dans le formulaire, mais le changement de section peut modifier le périmètre visible."
+        ctaLabel="Changer de section"
+        onClose={() => setPendingTab(null)}
+        onAction={() => {
+          if (pendingTab) {
+            const nextTab = pendingTab;
+            setPendingTab(null);
+            applyTabSelection(nextTab);
+          }
         }}
       />
       <ValidationDialog
