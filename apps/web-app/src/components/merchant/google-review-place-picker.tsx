@@ -133,16 +133,19 @@ export function GoogleReviewPlacePicker({
     <div className={[compact ? "space-y-3" : "space-y-4", className].filter(Boolean).join(" ")}>
       <div className={`${compact ? "border-b border-fog pb-4" : "rounded-[16px] border border-lavender-mist bg-soft-white p-3"} `}>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[4px] bg-purple-haze text-lg font-bold text-aubergine">
-            G
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[4px] bg-[#fce8e6] text-lg font-bold text-[#d93025]" aria-hidden="true">
+            <span className="-translate-y-px">G</span>
           </div>
           <div className="min-w-0 flex-1">
             <div className="mb-2 flex flex-wrap items-center gap-2">
-              <span className="text-sm text-charcoal">Fiche Google</span>
+              <div>
+                <p className="text-sm font-semibold text-carbon">Avis Google</p>
+                <p className="mt-0.5 text-xs text-ash">La fiche affichée après la participation</p>
+              </div>
               {hasSelectedPlace && !hasUserEditedQuery ? (
                 <span className="okado-status-badge okado-status-active">
                   <span aria-hidden="true">✓</span>
-                  Sélectionnée
+                  Fiche sélectionnée
                 </span>
               ) : null}
             </div>
@@ -159,7 +162,8 @@ export function GoogleReviewPlacePicker({
                     setMessage(null);
                   }
                 }}
-                placeholder="Rechercher votre établissement sur Google"
+                aria-label="Rechercher une fiche Google"
+                placeholder="Rechercher par nom et ville"
                 className="w-full rounded-[12px] border border-fog bg-white px-4 py-3 text-sm outline-none transition focus:border-aubergine focus:ring-4 focus:ring-aubergine/15"
               />
             ) : (
@@ -173,22 +177,23 @@ export function GoogleReviewPlacePicker({
                   setPlaces([]);
                 }}
               >
-                Modifier la fiche Google
+                Changer de fiche Google
               </button>
             )}
           </div>
         </div>
 
         {hasSelectedPlace && !hasUserEditedQuery && !isLoading ? (
-          <div className="mt-3 flex items-start gap-3 border-t border-fog px-1 pt-3">
-            <span className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[var(--okado-status-success-bg)] text-sm font-bold text-[var(--okado-status-success-text)]" aria-hidden="true">✓</span>
+          <div className="mt-3 flex items-start gap-3 rounded-[8px] bg-purple-haze px-3.5 py-3">
+            <span className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-[4px] bg-white text-sm font-bold text-aubergine" aria-hidden="true">✓</span>
             <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-carbon">{selectedPlace?.name ?? query}</p>
-              {selectedPlace?.address ? <p className="mt-0.5 text-xs leading-5 text-ash">{selectedPlace.address}</p> : null}
+              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-aubergine">Fiche sélectionnée</p>
+              <p className="mt-1 text-sm font-semibold text-carbon">{selectedPlace?.name ?? query}</p>
+              {selectedPlace?.address ? <p className="mt-0.5 text-xs leading-5 text-charcoal">{selectedPlace.address}</p> : null}
               {selectedPlace && (selectedPlace.rating != null || selectedPlace.reviewCount != null) ? (
-                <p className="mt-1 flex flex-wrap items-center gap-x-2 text-xs font-medium text-ash">
-                  {selectedPlace.rating != null ? <span className="text-charcoal">★ {selectedPlace.rating.toFixed(1)}</span> : null}
-                  {selectedPlace.reviewCount != null ? <span>{formatReviewCount(selectedPlace.reviewCount)} avis Google</span> : null}
+                <p className="mt-2 flex flex-wrap items-center gap-2 text-xs font-medium text-charcoal">
+                  {selectedPlace.rating != null ? <span className="rounded-[4px] bg-white px-2 py-1">★ {selectedPlace.rating.toFixed(1)} / 5</span> : null}
+                  {selectedPlace.reviewCount != null ? <span className="rounded-[4px] bg-white px-2 py-1">{formatReviewCount(selectedPlace.reviewCount)} avis</span> : null}
                 </p>
               ) : null}
             </div>

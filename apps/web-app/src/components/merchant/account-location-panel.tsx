@@ -1,6 +1,6 @@
 "use client";
 
-import { Building2, Check, MapPin, Plus, X } from "lucide-react";
+import { Building2, Check, Plus, X } from "lucide-react";
 import { useState } from "react";
 
 import { FieldSelect, Input } from "@/components/ui/field";
@@ -51,24 +51,15 @@ export function AccountLocationPanel({ merchant, locations, onSelectLocation }: 
               <Building2 className="h-5 w-5" aria-hidden="true" />
             </span>
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-charcoal">Contexte du formulaire</p>
-              <h2 className="mt-1.5 text-xl font-semibold tracking-[-0.03em] text-carbon">Quel établissement souhaitez-vous modifier ?</h2>
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-ash">Choisissez une carte : les informations affichées dans le formulaire inférieur seront remplacées par celles de cet établissement.</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-charcoal">Vos établissements</p>
+              <h2 className="mt-1.5 text-xl font-semibold tracking-[-0.03em] text-carbon">Sélectionnez un établissement</h2>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-ash">Sélectionnez la fiche à configurer.</p>
             </div>
           </div>
           <button type="button" onClick={() => setIsAdding(true)} className="okado-secondary-action px-4 text-sm">
             <Plus className="h-4 w-4" aria-hidden="true" />
             Ajouter
           </button>
-        </div>
-
-          <div className="mt-5 rounded-[8px] border border-lavender-mist bg-purple-haze px-4 py-3.5">
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
-            <span className="rounded-[4px] bg-aubergine px-2.5 py-1 text-[11px] font-semibold text-white">Formulaire affiché ci-dessous</span>
-            <strong className="text-sm text-carbon">{merchant.companyName}</strong>
-            <span className="flex items-center gap-1.5 text-xs text-charcoal"><MapPin className="h-3.5 w-3.5" aria-hidden="true" />{merchant.city || "Ville à renseigner"}{merchant.address ? ` · ${merchant.address}` : ""}</span>
-          </div>
-          <p className="mt-2 text-xs leading-5 text-ash">La sélection ci-dessus ne change pas l’établissement actif dans le reste de l’application.</p>
         </div>
 
         <div className="mt-5">
@@ -92,7 +83,7 @@ export function AccountLocationPanel({ merchant, locations, onSelectLocation }: 
                     <span className="block truncate text-sm font-semibold text-carbon">{location.companyName}</span>
                     <span className="mt-1 block truncate text-xs text-ash">{location.city || "Ville à renseigner"}</span>
                   </span>
-                  {isSelected ? <span className="flex shrink-0 items-center gap-1 text-[11px] font-semibold text-aubergine"><Check className="h-3.5 w-3.5" aria-hidden="true" />Affiché</span> : null}
+                  {isSelected ? <span className="flex shrink-0 items-center gap-1 text-[11px] font-semibold text-aubergine"><Check className="h-3.5 w-3.5" aria-hidden="true" />Sélectionné</span> : null}
                 </button>
               );
             })}
