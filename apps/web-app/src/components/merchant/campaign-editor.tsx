@@ -33,6 +33,7 @@ import {
 } from "react";
 
 import { BrandMark } from "@/components/brand-mark";
+import { CocoricoPromoText } from "@/components/public/cocorico-promo-text";
 import { CampaignEmailPreview } from "@/components/merchant/campaign-email-preview";
 import { CampaignPreviewQrDialog } from "@/components/merchant/campaign-preview-qr";
 import { CampaignLivePreview as SharedCampaignLivePreview } from "@/components/merchant/campaign-live-preview";
@@ -963,37 +964,44 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
         ) : null}
 
         <div className={preview.headingAlignmentClass}>
-          <h3
-            className={`${preview.headingFontClass} line-clamp-3 whitespace-pre-line ${isRestaurantPopTemplate ? "tracking-[0.038em] drop-shadow-[0_4px_0_rgba(0,0,0,0.08)]" : ""} ${isCocoricoTemplate ? "font-black uppercase tracking-[-0.04em] [text-shadow:0_4px_0_#073f78] [-webkit-text-stroke:2px_#073f78]" : ""} leading-[1]`}
-            style={{
-              color: isCocoricoTemplate ? "#ffdc32" : previewHeadingTextColor,
-              fontSize: fluidType(scalePreviewValue(preview.headingFontSizePx), {
-                minRatio: 0.82,
-                maxRatio: 1.08,
-                viewportStep: 0.3,
-              }),
-              fontWeight: preview.headingFontWeight,
-            }}
-          >
-            {isRestaurantPopTemplate
-              ? restaurantPopHeadingLines.map((line, lineIndex) => (
-                  <span key={`preview-heading-line-${lineIndex}`} className="block">
-                    {line.map((part, partIndex) => (
-                      <span
-                        key={`preview-heading-line-${lineIndex}-${partIndex}`}
-                        style={{
-                          color: part.secondary
-                            ? preview.wheelStyle.winColor
-                            : previewHeadingTextColor,
-                        }}
-                      >
-                        {part.text}
-                      </span>
-                    ))}
-                  </span>
-                ))
-              : preview.subtitle.trim() || (preview.gameType === "scratch" ? DEFAULT_SCRATCH_SUBTITLE : "Découvrez votre animation")}
-          </h3>
+          {isCocoricoTemplate ? (
+            <CocoricoPromoText
+              text={preview.subtitle.trim() || (preview.gameType === "scratch" ? DEFAULT_SCRATCH_SUBTITLE : "Découvrez votre animation")}
+              as="h3"
+            />
+          ) : (
+            <h3
+              className={`${preview.headingFontClass} line-clamp-3 whitespace-pre-line ${isRestaurantPopTemplate ? "tracking-[0.038em] drop-shadow-[0_4px_0_rgba(0,0,0,0.08)]" : ""} leading-[1]`}
+              style={{
+                color: previewHeadingTextColor,
+                fontSize: fluidType(scalePreviewValue(preview.headingFontSizePx), {
+                  minRatio: 0.82,
+                  maxRatio: 1.08,
+                  viewportStep: 0.3,
+                }),
+                fontWeight: preview.headingFontWeight,
+              }}
+            >
+              {isRestaurantPopTemplate
+                ? restaurantPopHeadingLines.map((line, lineIndex) => (
+                    <span key={`preview-heading-line-${lineIndex}`} className="block">
+                      {line.map((part, partIndex) => (
+                        <span
+                          key={`preview-heading-line-${lineIndex}-${partIndex}`}
+                          style={{
+                            color: part.secondary
+                              ? preview.wheelStyle.winColor
+                              : previewHeadingTextColor,
+                          }}
+                        >
+                          {part.text}
+                        </span>
+                      ))}
+                    </span>
+                  ))
+                : preview.subtitle.trim() || (preview.gameType === "scratch" ? DEFAULT_SCRATCH_SUBTITLE : "Découvrez votre animation")}
+            </h3>
+          )}
         </div>
           </>
         ) : null}
@@ -1502,7 +1510,7 @@ export function buildCampaignLivePreviewModel(
     },
     logoMode: form.logoMode,
     logoAlignmentClass,
-    logoBottomSpacingPx: form.presentation.logo.marginBottomPx + (templateId === "cocorico-wheel" ? 8 : form.presentation.layout.blockSpacingPx),
+    logoBottomSpacingPx: form.presentation.logo.marginBottomPx,
     logoWidthPx,
     logoTextSizePx,
     logoUrl: form.logoUrl ?? "",
@@ -1519,7 +1527,7 @@ export function buildCampaignLivePreviewModel(
     headingFontSizePx: form.presentation.heading.fontSizePx,
     headingFontWeight: form.presentation.heading.fontWeight ?? 600,
     subtitle: limitCampaignSubtitleLines(form.subtitle),
-    blockSpacingPx: templateId === "cocorico-wheel" ? 8 : form.presentation.layout.blockSpacingPx,
+    blockSpacingPx: form.presentation.layout.blockSpacingPx,
     gamePageTemplateId: templateId,
     gameType: form.gameType,
     accent: previewAccent,
@@ -1747,7 +1755,7 @@ export function CampaignEditor({
             : (form.presentation.layout.templateId ?? "classic") === "restaurant-pop"
               ? `radial-gradient(circle at -10% -8%, ${withHexAlpha(form.presentation.wheel.loseColor, "f2")} 0 18%, transparent 19%), radial-gradient(circle at 110% 0%, ${withHexAlpha(form.presentation.wheel.winColor, "f2")} 0 13%, transparent 14%), linear-gradient(180deg, #fff2dd 0%, #fffaf1 48%, #fff4e5 100%)`
             : (form.presentation.layout.templateId ?? "classic") === "cocorico-wheel"
-              ? "radial-gradient(circle at 14% 12%, rgba(68,151,222,0.9) 0 10%, transparent 11%), radial-gradient(circle at 88% 26%, rgba(4,55,111,0.5) 0 15%, transparent 16%), linear-gradient(160deg, #07549b 0%, #0b67b7 48%, #063d78 100%)"
+              ? `radial-gradient(circle at 14% 12%, rgba(68,151,222,0.9) 0 10%, transparent 11%), radial-gradient(circle at 88% 26%, rgba(4,55,111,0.5) 0 15%, transparent 16%), linear-gradient(160deg, ${resolveCocoricoBackgroundColor(form.presentation.background.color)} 0%, ${resolveCocoricoBackgroundColor(form.presentation.background.color)} 48%, #063d78 100%)`
             : (form.presentation.layout.templateId ?? "classic") === "cosmic-orbit"
                   ? `radial-gradient(circle at 50% 112%, ${withHexAlpha(form.presentation.wheel.loseColor, "52")} 0 24%, transparent 43%), radial-gradient(circle at 9% 12%, ${withHexAlpha(form.presentation.wheel.winColor, "2b")} 0 14%, transparent 25%), linear-gradient(155deg, #07142e 0%, #0b1d42 55%, #071126 100%)`
                 : (form.presentation.layout.templateId ?? "classic") === "scratch-vault"
@@ -1768,8 +1776,7 @@ export function CampaignEditor({
       },
       logoMode: form.logoMode,
       logoAlignmentClass,
-      logoBottomSpacingPx:
-        form.presentation.logo.marginBottomPx + (currentTemplateId === "cocorico-wheel" ? 8 : form.presentation.layout.blockSpacingPx),
+      logoBottomSpacingPx: form.presentation.logo.marginBottomPx,
       logoWidthPx,
       logoTextSizePx,
       logoUrl: form.logoUrl ?? "",
@@ -1780,7 +1787,7 @@ export function CampaignEditor({
       headingFontSizePx: currentTemplateId === "cocorico-wheel" ? Math.min(form.presentation.heading.fontSizePx, 32) : form.presentation.heading.fontSizePx,
       headingFontWeight: currentTemplateId === "cocorico-wheel" ? 900 : form.presentation.heading.fontWeight ?? 600,
       subtitle: limitCampaignSubtitleLines(form.subtitle),
-      blockSpacingPx: currentTemplateId === "cocorico-wheel" ? 8 : form.presentation.layout.blockSpacingPx,
+      blockSpacingPx: form.presentation.layout.blockSpacingPx,
       gamePageTemplateId: form.presentation.layout.templateId ?? "classic",
       gameType: form.gameType,
       accent: previewAccent,
@@ -2643,10 +2650,7 @@ function setGameType(gameType: GameType) {
                             layout: {
                               ...current.presentation.layout,
                               templateId: template.value,
-                              blockSpacingPx:
-                                template.value === "cocorico-wheel"
-                                  ? 8
-                                  : current.presentation.layout.blockSpacingPx,
+                              blockSpacingPx: current.presentation.layout.blockSpacingPx,
                             },
                             heading:
                               template.value === "cocorico-wheel"

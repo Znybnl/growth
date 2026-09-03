@@ -1,6 +1,6 @@
 "use client";
 
-import { Hand } from "lucide-react";
+import { Pointer } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 type WheelSegment = {
@@ -238,7 +238,7 @@ export function CocoricoWheel({
           {isSpinning ? (
             <span className="text-[clamp(0.8rem,4cqw,1.2rem)]">...</span>
           ) : (
-            <Hand aria-hidden="true" className="h-[48%] w-[48%]" strokeWidth={2.8} />
+            <Pointer aria-hidden="true" className="h-[48%] w-[48%]" strokeWidth={2.8} />
           )}
         </button>
       </div>

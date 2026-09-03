@@ -214,7 +214,7 @@ export function buildCampaignLivePreviewModel(form: CampaignSetupInput, merchant
     headingFontSizePx: templateId === "cocorico-wheel" ? Math.min(form.presentation.heading.fontSizePx, 32) : form.presentation.heading.fontSizePx,
     headingFontWeight: templateId === "cocorico-wheel" ? 900 : form.presentation.heading.fontWeight ?? 600,
     subtitle: limitCampaignSubtitleLines(form.subtitle),
-    blockSpacingPx: templateId === "cocorico-wheel" ? 8 : form.presentation.layout.blockSpacingPx,
+    blockSpacingPx: form.presentation.layout.blockSpacingPx,
     gamePageTemplateId: templateId,
     gameType: form.gameType,
     accent: previewAccent,
