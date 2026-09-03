@@ -16,6 +16,7 @@ import {
   resolveScratchAccent,
   resolveCocoricoPrimaryColor,
   resolveCocoricoBackgroundColor,
+  RESTAURANT_POP_BACKGROUND,
   deriveLighterHex,
   scratchTemplatePrimaryColor,
 } from "@/lib/campaign-defaults";
@@ -106,35 +107,6 @@ function withHexAlpha(color: string | undefined, alpha: string) {
   return normalized;
 }
 
-function getRestaurantPopTextLines(text: string) {
-  const rawLines = text.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
-  const lines = rawLines.reduce<string[]>((normalizedLines, line) => {
-    if (/^[!?.,;:]+$/.test(line) && normalizedLines.length > 0) {
-      const previousLineIndex = normalizedLines.length - 1;
-      normalizedLines[previousLineIndex] = `${normalizedLines[previousLineIndex]}\u00a0${line}`;
-      return normalizedLines;
-    }
-    normalizedLines.push(line);
-    return normalizedLines;
-  }, []);
-  if (lines.length !== 1) return lines;
-  const words = lines[0].split(/\s+/).filter(Boolean);
-  if (words.length < 3) return lines;
-  const joinIndex = words.findIndex((word) => /^(pour|et|puis|avec)$/i.test(word));
-  if (joinIndex > 0 && joinIndex < words.length - 1) {
-    const secondLine = words.slice(joinIndex).join(" ").replace(/\s+([!?.,;:])/g, "\u00a0$1");
-    return [words.slice(0, joinIndex).join(" "), secondLine];
-  }
-  const lastWord = words.at(-1)?.replace(/\s+([!?.,;:])/g, "\u00a0$1") ?? "";
-  return [words.slice(0, -1).join(" "), lastWord];
-}
-
-function buildRestaurantPopHeadingLines(text: string) {
-  return getRestaurantPopTextLines(text).map((line, lineIndex) =>
-    line.split(/(\s+)/).map((part) => ({ text: part, secondary: lineIndex === 1 })),
-  );
-}
-
 function buildPreviewSegments(prizes: CampaignSetupInput["prizes"]): PreviewSegment[] {
   return buildWheelVisualSegments(
     prizes.map((prize, index) => ({
@@ -154,7 +126,7 @@ function previewBackgroundImage(form: CampaignSetupInput, templateId: GamePageTe
     return `linear-gradient(rgba(15,23,40,0.32), rgba(15,23,40,0.52)), url("${form.presentation.background.imageUrl}")`;
   }
   if (templateId === "restaurant-pop") {
-    return `radial-gradient(circle at 12% 12%, rgba(255,255,255,0.42) 0 8%, transparent 30%), radial-gradient(circle at 88% 22%, rgba(255,255,255,0.3) 0 10%, transparent 34%), radial-gradient(circle at 18% 86%, rgba(255,255,255,0.2) 0 7%, transparent 27%), linear-gradient(180deg, #fff2dd 0%, #fffaf1 48%, #fff4e5 100%)`;
+    return RESTAURANT_POP_BACKGROUND;
   }
   if (templateId === "cocorico-wheel") {
     const backgroundColor = resolveCocoricoBackgroundColor(form.presentation.background.color);
@@ -258,7 +230,6 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
   const previewScale = compact ? 0.74 : 1;
   const scalePreviewValue = (value: number) => Math.round(value * previewScale);
   const previewHeadingTextColor = isCosmicTemplate || isCocoricoTemplate ? "#ffffff" : (preview.gamePageTemplateId === "scratch-vault" && preview.headingTextColor.toLowerCase() === "#1f2937") ? "#f8fbff" : preview.headingTextColor;
-  const restaurantPopHeadingLines = buildRestaurantPopHeadingLines(preview.subtitle);
   const previewFrameClass = compact ? "h-full min-h-0 max-w-none rounded-[30px] px-3 pb-5 pt-7" : "min-h-[600px] max-w-[450px] rounded-[38px] px-4 pb-6 pt-8";
   const previewWrapperClass = compact ? "h-full" : flushTop ? "" : "mt-6";
 
@@ -271,7 +242,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
             {preview.logoMode === "text" ? <div className={`flex ${preview.logoAlignmentClass}`}><div style={{ marginBottom: `${scalePreviewValue(preview.logoBottomSpacingPx)}px` }}><BrandMark logoText={preview.logoText} size="lg" variant="transparent" imageWidthPx={scalePreviewValue(preview.logoWidthPx)} textSizePx={scalePreviewValue(preview.logoTextSizePx)} textColor={previewHeadingTextColor} textClassName="text-2xl" /></div></div> : null}
             {preview.gameType === "scratch" && preview.logoMode === "none" ? <div className={`flex ${preview.logoAlignmentClass}`}><div style={{ marginBottom: `${scalePreviewValue(preview.logoBottomSpacingPx)}px` }}><BrandMark logoText={preview.logoText || merchant.companyName} size="lg" variant="transparent" imageWidthPx={scalePreviewValue(preview.logoWidthPx)} textSizePx={scalePreviewValue(preview.logoTextSizePx)} textColor={previewHeadingTextColor} textClassName="text-2xl" /></div></div> : null}
             {preview.logoMode === "none" || (preview.logoMode === "image" && !preview.logoUrl) ? <div aria-hidden="true" className="h-5" /> : null}
-            <div className={preview.headingAlignmentClass}>{isCocoricoTemplate ? <CocoricoPromoText text={preview.subtitle.trim() || (preview.gameType === "scratch" ? DEFAULT_SCRATCH_SUBTITLE : "Découvrez votre animation")} as="h3" fontSize={fluidType(scalePreviewValue(preview.headingFontSizePx), { minRatio: 0.82, maxRatio: 1.08, viewportStep: 0.3, viewportUnit: compact ? "cqw" : "vw" })} /> : <h3 className={`${preview.headingFontClass} line-clamp-3 whitespace-pre-line ${isRestaurantPopTemplate ? "tracking-[0.038em] drop-shadow-[0_4px_0_rgba(0,0,0,0.08)]" : ""} pb-[25px] leading-[1]`} style={{ color: previewHeadingTextColor, fontSize: fluidType(scalePreviewValue(preview.headingFontSizePx), { minRatio: 0.82, maxRatio: 1.08, viewportStep: 0.3, viewportUnit: compact ? "cqw" : "vw" }), fontWeight: preview.headingFontWeight }}>{isRestaurantPopTemplate ? restaurantPopHeadingLines.map((line, lineIndex) => <span key={`preview-heading-line-${lineIndex}`} className="block">{line.map((part, partIndex) => <span key={`preview-heading-line-${lineIndex}-${partIndex}`} style={{ color: part.secondary ? preview.wheelStyle.winColor : previewHeadingTextColor }}>{part.text}</span>)}</span>) : preview.subtitle.trim() || (preview.gameType === "scratch" ? DEFAULT_SCRATCH_SUBTITLE : "Découvrez votre animation")}</h3>}</div>
+            <div className={preview.headingAlignmentClass}>{isCocoricoTemplate || isRestaurantPopTemplate || preview.gamePageTemplateId === "classic" ? <CocoricoPromoText text={preview.subtitle.trim() || (preview.gameType === "scratch" ? DEFAULT_SCRATCH_SUBTITLE : "Découvrez votre animation")} as="h3" fontFamily={textFontFamily(preview.headingFontFamily)} fontSize={fluidType(scalePreviewValue(preview.headingFontSizePx), { minRatio: 0.82, maxRatio: 1.08, viewportStep: 0.3, viewportUnit: compact ? "cqw" : "vw" })} rotate={isCocoricoTemplate} /> : <h3 className={`${preview.headingFontClass} line-clamp-3 whitespace-pre-line pb-[25px] leading-[1]`} style={{ color: previewHeadingTextColor, fontSize: fluidType(scalePreviewValue(preview.headingFontSizePx), { minRatio: 0.82, maxRatio: 1.08, viewportStep: 0.3, viewportUnit: compact ? "cqw" : "vw" }), fontWeight: preview.headingFontWeight }}>{preview.subtitle.trim() || (preview.gameType === "scratch" ? DEFAULT_SCRATCH_SUBTITLE : "Découvrez votre animation")}</h3>}</div>
           </>
         ) : null}
         <div className={preview.gameType === "wheel" ? compact ? "-mx-3" : "-mx-4" : undefined} style={{ marginTop: `${isImmersiveScratchTemplate ? 0 : compact ? Math.min(scalePreviewValue(preview.blockSpacingPx), 24) : scalePreviewValue(preview.blockSpacingPx)}px`, height: preview.gameType === "wheel" ? compact ? "330px" : "470px" : undefined, marginBottom: preview.gameType === "wheel" ? compact ? "-12px" : "-24px" : undefined }}>

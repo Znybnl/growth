@@ -378,57 +378,6 @@ function withHexAlpha(color: string | undefined, alpha: string) {
   return normalized;
 }
 
-function getRestaurantPopTextLines(text: string) {
-  const rawLines = text
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter(Boolean);
-
-  // Keep French punctuation with the preceding word so it cannot become a lone line.
-  const lines = rawLines.reduce<string[]>((normalizedLines, line) => {
-    if (/^[!?.,;:]+$/.test(line) && normalizedLines.length > 0) {
-      const previousLineIndex = normalizedLines.length - 1;
-      normalizedLines[previousLineIndex] = `${normalizedLines[previousLineIndex]}\u00a0${line}`;
-      return normalizedLines;
-    }
-
-    normalizedLines.push(line);
-    return normalizedLines;
-  }, []);
-
-  if (lines.length !== 1) {
-    return lines;
-  }
-
-  const words = lines[0].split(/\s+/).filter(Boolean);
-
-  if (words.length < 3) {
-    return lines;
-  }
-
-  const joinIndex = words.findIndex((word) => /^(pour|et|puis|avec)$/i.test(word));
-
-  if (joinIndex > 0 && joinIndex < words.length - 1) {
-    const secondLine = words.slice(joinIndex).join(" ").replace(/\s+([!?.,;:])/g, "\u00a0$1");
-    return [words.slice(0, joinIndex).join(" "), secondLine];
-  }
-
-  const lastWord = words.at(-1)?.replace(/\s+([!?.,;:])/g, "\u00a0$1") ?? "";
-  return [words.slice(0, -1).join(" "), lastWord];
-}
-
-function buildRestaurantPopHeadingLines(text: string) {
-  return getRestaurantPopTextLines(text)
-    .map((line, lineIndex) => {
-      const parts = line.split(/(\s+)/).map((part) => ({
-        text: part,
-        secondary: lineIndex === 1,
-      }));
-
-      return parts;
-    });
-}
-
 function readableCampaignSaveError(message: string | undefined) {
   if (!message) {
     return "Impossible d'enregistrer l'animation. Vérifiez les champs obligatoires puis réessayez.";
@@ -891,7 +840,6 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
     (preview.gamePageTemplateId === "scratch-vault" && preview.headingTextColor.toLowerCase() === "#1f2937")
       ? "#f8fbff"
       : preview.headingTextColor;
-  const restaurantPopHeadingLines = buildRestaurantPopHeadingLines(preview.subtitle);
   const previewFrameClass = compact
       ? "min-h-[480px] max-w-[360px] rounded-[30px] px-3 pb-5 pt-7"
       : "min-h-[600px] max-w-[450px] rounded-[38px] px-4 pb-6 pt-8";
@@ -967,7 +915,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
         ) : null}
 
         <div className={`${preview.headingAlignmentClass} ${preview.headingFontClass}`}>
-          {isCocoricoTemplate ? (
+          {isCocoricoTemplate || isRestaurantPopTemplate || preview.gamePageTemplateId === "classic" ? (
             <CocoricoPromoText
               text={preview.subtitle.trim() || (preview.gameType === "scratch" ? DEFAULT_SCRATCH_SUBTITLE : "Découvrez votre animation")}
               as="h3"
@@ -977,12 +925,13 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
                 maxRatio: 1.08,
                 viewportStep: 0.3,
               })}
+              rotate={isCocoricoTemplate}
             />
           ) : (
             <h3
-              className={`${preview.headingFontClass} line-clamp-3 whitespace-pre-line ${isRestaurantPopTemplate ? "tracking-[0.038em] drop-shadow-[0_4px_0_rgba(0,0,0,0.08)]" : ""} ${preview.gamePageTemplateId === "classic" || isRestaurantPopTemplate ? "okado-wheel-promo-heading" : ""} leading-[1]`}
+              className={`${preview.headingFontClass} line-clamp-3 whitespace-pre-line leading-[1]`}
               style={{
-                color: preview.gamePageTemplateId === "classic" || isRestaurantPopTemplate ? "#ffdc32" : previewHeadingTextColor,
+                color: previewHeadingTextColor,
                 fontSize: fluidType(scalePreviewValue(preview.headingFontSizePx), {
                   minRatio: 0.82,
                   maxRatio: 1.08,
@@ -991,24 +940,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
                 fontWeight: preview.headingFontWeight,
               }}
             >
-              {isRestaurantPopTemplate
-                ? restaurantPopHeadingLines.map((line, lineIndex) => (
-                    <span key={`preview-heading-line-${lineIndex}`} className="block">
-                      {line.map((part, partIndex) => (
-                        <span
-                          key={`preview-heading-line-${lineIndex}-${partIndex}`}
-                          style={{
-                            color: part.secondary
-                              ? preview.wheelStyle.winColor
-                              : previewHeadingTextColor,
-                          }}
-                        >
-                          {part.text}
-                        </span>
-                      ))}
-                    </span>
-                  ))
-                : preview.subtitle.trim() || (preview.gameType === "scratch" ? DEFAULT_SCRATCH_SUBTITLE : "Découvrez votre animation")}
+              {preview.subtitle.trim() || (preview.gameType === "scratch" ? DEFAULT_SCRATCH_SUBTITLE : "Découvrez votre animation")}
             </h3>
           )}
         </div>
@@ -1723,11 +1655,6 @@ export function CampaignEditor({
         : "text-center";
   const headingFontClass = textFontClass(form.presentation.heading.fontFamily);
   const currentTemplateId = form.presentation.layout.templateId ?? "classic";
-  const showWheelSecondaryColor =
-    currentTemplateId !== "classic" &&
-    (currentTemplateId === "restaurant-pop" || isExpertMode);
-  const showWheelRimColor =
-    isExpertMode && (currentTemplateId === "classic" || currentTemplateId === "restaurant-pop");
   const showBackgroundColor = currentTemplateId === "classic" || currentTemplateId === "cocorico-wheel";
   const previewModel = useMemo<CampaignEditorPreviewModel>(() => {
     const previewAccent =
@@ -3655,31 +3582,6 @@ function setGameType(gameType: GameType) {
                   />
                 </label>
 
-                {[
-                  ...(showWheelSecondaryColor ? [["winColor", "Couleur secondaire"]] : []),
-                  ...(showWheelRimColor ? [["rimColor", "Couleur du contour"]] : []),
-                ].map(([key, label]) => (
-                  <label key={key} className="text-sm">
-                    <span className="mb-2 block text-[#616b7c]">{label}</span>
-                    <input
-                      type="color"
-                      value={form.presentation.wheel[key as keyof typeof form.presentation.wheel]}
-                      onChange={(event) =>
-                        setForm((current) => ({
-                          ...current,
-                          presentation: {
-                            ...current.presentation,
-                            wheel: {
-                              ...current.presentation.wheel,
-                              [key]: event.target.value,
-                            },
-                          },
-                        }))
-                      }
-                      className="h-14 w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none"
-                    />
-                  </label>
-                ))}
               </div>
             </section>
           ) : false ? (

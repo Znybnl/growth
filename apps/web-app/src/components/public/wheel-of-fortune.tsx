@@ -369,6 +369,7 @@ export function WheelOfFortune({
                     x={textPoint.x}
                     y={textPoint.y}
                     fill={textColor}
+                    fontFamily="Roboto, sans-serif"
                     fontSize={String(textStyles.fontSize)}
                     fontWeight="850"
                     textAnchor="middle"
