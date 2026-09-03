@@ -51,9 +51,9 @@ export function AccountLocationPanel({ merchant, locations, onSelectLocation }: 
               <Building2 className="h-5 w-5" aria-hidden="true" />
             </span>
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-charcoal">Vos établissements</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-charcoal">Établissements</p>
               <h2 className="mt-1.5 text-xl font-semibold tracking-[-0.03em] text-carbon">Sélectionnez un établissement</h2>
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-ash">Sélectionnez la fiche à configurer.</p>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-ash">Choisissez l’établissement dont vous souhaitez modifier les informations.</p>
             </div>
           </div>
           <button type="button" onClick={() => setIsAdding(true)} className="okado-secondary-action px-4 text-sm">
@@ -64,7 +64,7 @@ export function AccountLocationPanel({ merchant, locations, onSelectLocation }: 
 
         <div className="mt-5">
           <div className="mb-3 flex items-center justify-between gap-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-charcoal">Vos établissements</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-charcoal">Établissements disponibles</p>
             <span className="text-xs text-ash">{locations.length} sélectionnable{locations.length > 1 ? "s" : ""}</span>
           </div>
           <div className="grid gap-2.5 sm:grid-cols-2 xl:grid-cols-3">
@@ -81,7 +81,7 @@ export function AccountLocationPanel({ merchant, locations, onSelectLocation }: 
                   <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-[4px] ${isSelected ? "bg-aubergine text-white" : "bg-soft-white text-ash"}`}><Building2 className="h-4 w-4" aria-hidden="true" /></span>
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-semibold text-carbon">{location.companyName}</span>
-                    <span className="mt-1 block truncate text-xs text-ash">{location.city || "Ville à renseigner"}</span>
+                    <span className="mt-1 block truncate text-xs text-ash">{location.city || "Ville à renseigner"}{location.address ? ` · ${location.address}` : ""}</span>
                   </span>
                   {isSelected ? <span className="flex shrink-0 items-center gap-1 text-[11px] font-semibold text-aubergine"><Check className="h-3.5 w-3.5" aria-hidden="true" />Sélectionné</span> : null}
                 </button>
