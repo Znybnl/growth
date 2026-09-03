@@ -1546,6 +1546,23 @@ button:disabled,
   color: #ffffff;
 }
 
+/* Shared promotional treatment for the standard wheel templates. It keeps
+   their yellow brand message while avoiding Cocorico's rotation. */
+.okado-wheel-promo-heading {
+  color: #ffdc32 !important;
+  paint-order: stroke fill;
+  text-shadow: 4px 8px 0 rgba(0, 0, 0, 0.25);
+  -webkit-text-stroke: 6px #102c6a;
+}
+
+.okado-preview-surface[data-template-id="classic"] h3,
+.okado-preview-surface[data-template-id="restaurant-pop"] h3 {
+  color: #ffdc32 !important;
+  paint-order: stroke fill;
+  text-shadow: 4px 8px 0 rgba(0, 0, 0, 0.25);
+  -webkit-text-stroke: 5px #102c6a;
+}
+
 .okado-preview-surface[data-template-id="cocorico-wheel"] .okado-cocorico-promo-text {
   font-size: clamp(2rem, 13cqw, 5rem);
 }

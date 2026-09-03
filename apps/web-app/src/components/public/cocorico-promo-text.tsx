@@ -5,9 +5,10 @@ type CocoricoPromoTextProps = {
   as?: "h1" | "h3";
   fontSize?: string | number;
   fontFamily?: string;
+  rotate?: boolean;
 };
 
-export function CocoricoPromoText({ text, as = "h1", fontSize, fontFamily }: CocoricoPromoTextProps) {
+export function CocoricoPromoText({ text, as = "h1", fontSize, fontFamily, rotate = true }: CocoricoPromoTextProps) {
   const Tag = as;
   const lines = buildCocoricoPromoLines(text);
 
@@ -15,9 +16,10 @@ export function CocoricoPromoText({ text, as = "h1", fontSize, fontFamily }: Coc
     <Tag
       className="okado-cocorico-promo-text"
       aria-label={text}
-      style={fontSize === undefined && fontFamily === undefined ? undefined : {
+      style={{
         ...(fontSize === undefined ? {} : { fontSize: typeof fontSize === "number" ? `${fontSize}px` : fontSize }),
         ...(fontFamily === undefined ? {} : { fontFamily }),
+        ...(rotate ? {} : { transform: "none" }),
       }}
     >
       {lines.map((line, index) => (
