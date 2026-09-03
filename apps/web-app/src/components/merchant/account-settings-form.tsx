@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { ArrowUpRight, CheckCircle2, Link2, ShieldCheck, Store, UserRound } from "lucide-react";
+import { Link2, ShieldCheck, Store, UserRound } from "lucide-react";
 
 import { AccountSectionCard } from "@/components/merchant/account-section-card";
 import { AccountLocationPanel } from "@/components/merchant/account-location-panel";
@@ -90,6 +90,7 @@ export function AccountSettingsForm({
   const [isDirty, setIsDirty] = useState(false);
   const actionsAnchorRef = useRef<HTMLDivElement>(null);
   const [showStickyActions, setShowStickyActions] = useState(false);
+  const [showOptionalChannels, setShowOptionalChannels] = useState(false);
   const activeTab = useSyncExternalStore(
     (onStoreChange) => {
       window.addEventListener("hashchange", onStoreChange);
@@ -157,6 +158,10 @@ export function AccountSettingsForm({
 
   const isRestaurant = isRestaurantIndustry(form.industry);
   const placeLabel = isRestaurant ? "restaurant" : "commerce";
+  const hasOptionalMarketingLink = Boolean(
+    form.instagramUrl || form.facebookUrl || form.tiktokUrl || form.tripadvisorUrl || form.customLinkUrl,
+  );
+  const displayOptionalChannels = showOptionalChannels || hasOptionalMarketingLink;
 
   function applyLocationSelection(locationId: string) {
     const nextMerchant =
@@ -261,6 +266,17 @@ export function AccountSettingsForm({
               role="tab"
               aria-selected={activeTab === tab}
               aria-controls={`account-tabpanel-${tab}`}
+              tabIndex={activeTab === tab ? 0 : -1}
+              onKeyDown={(event) => {
+                if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") return;
+                event.preventDefault();
+                const tabOrder: AccountTab[] = ["establishment", "user", "subscription"];
+                const currentIndex = tabOrder.indexOf(tab);
+                const offset = event.key === "ArrowRight" ? 1 : -1;
+                const nextTab = tabOrder[(currentIndex + offset + tabOrder.length) % tabOrder.length];
+                selectTab(nextTab);
+                window.requestAnimationFrame(() => document.getElementById(`account-${nextTab}-tab`)?.focus());
+              }}
               onClick={() => selectTab(tab)}
               className={`shrink-0 rounded-[4px] px-4 py-2.5 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aubergine ${activeTab === tab ? "bg-purple-haze text-aubergine" : "text-ash hover:bg-[#f7f0fa] hover:text-aubergine"}`}
             >
@@ -326,7 +342,7 @@ export function AccountSettingsForm({
           onSelectLocation={requestLocationSelection}
           />
 
-        <div className="grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_280px]">
+        <div>
         <div className="space-y-4">
       <section className="okado-card scroll-mt-28 p-5 md:p-6">
         <div className="flex items-start gap-3 border-b border-border/70 pb-5">
@@ -341,7 +357,7 @@ export function AccountSettingsForm({
         </div>
         <div className="pt-5">
           <div className="mb-5 flex flex-wrap items-center gap-x-3 gap-y-1.5 rounded-[8px] border border-lavender-mist bg-purple-haze px-3.5 py-3">
-          <span className="rounded-[4px] bg-aubergine px-2.5 py-1 text-[11px] font-semibold text-white">Vous modifiez</span>
+          <span className="rounded-[4px] bg-aubergine px-2.5 py-1 text-[11px] font-semibold text-white">En cours de modification</span>
           <strong className="text-sm text-carbon">{selectedMerchant.companyName}</strong>
           <span className="text-xs text-charcoal">Les champs ci-dessous ne changent pas l’établissement actif global.</span>
           </div>
@@ -492,6 +508,16 @@ export function AccountSettingsForm({
                 }));
               }}
             />
+            {!displayOptionalChannels ? (
+              <button
+                type="button"
+                onClick={() => setShowOptionalChannels(true)}
+                className="mt-2 inline-flex items-center gap-2 py-2 text-sm font-semibold text-aubergine underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aubergine"
+              >
+                + Ajouter un canal marketing
+              </button>
+            ) : null}
+            {displayOptionalChannels ? <>
           <label className="grid gap-2 py-3 text-sm first:pt-0 md:grid-cols-[minmax(150px,0.35fr)_minmax(0,1fr)] md:items-center md:gap-4">
             <span className="flex items-center justify-between gap-3 text-charcoal"><span className="flex items-center gap-3"><SocialChannelIcon channel="instagram" /><span>Instagram</span></span>{form.instagramUrl ? <span className="text-xs font-semibold text-aubergine">✓</span> : <span className="text-xs text-ash">Optionnel</span>}</span>
             <input
@@ -547,6 +573,7 @@ export function AccountSettingsForm({
               className={`${inputClass} min-h-[40px] px-3 py-2 text-xs`}
             />
           </label>
+            </> : null}
             </div>
           </div>
 
@@ -588,36 +615,6 @@ export function AccountSettingsForm({
 
         </div>
 
-        <aside className="space-y-4 xl:sticky xl:top-24">
-          <section className="okado-compact-card bg-white p-5">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="okado-label">Vue d’ensemble</p>
-                <h2 className="mt-1.5 text-lg font-semibold tracking-[-0.02em] text-graphite">Configuration</h2>
-              </div>
-              <span className="grid h-9 w-9 place-items-center rounded-full bg-[#e5f8ed] text-[#16834e]"><CheckCircle2 className="h-5 w-5" aria-hidden="true" /></span>
-            </div>
-            <div className="mt-5 space-y-3">
-              {[
-                { label: "Informations principales", done: Boolean(selectedMerchant.companyName && selectedMerchant.city) },
-                { label: "Canal Google", done: Boolean(selectedMerchant.googleReviewUrl) },
-                { label: "Canaux marketing", done: Boolean(selectedMerchant.googleReviewUrl || selectedMerchant.instagramUrl || selectedMerchant.facebookUrl || selectedMerchant.tiktokUrl || selectedMerchant.tripadvisorUrl || selectedMerchant.customLinkUrl) },
-                { label: "PIN de retrait", done: Boolean(selectedMerchant.redemptionPinConfigured) },
-              ].map((item) => (
-                <div key={item.label} className="flex items-center gap-2.5 text-sm">
-                  <span className={`grid h-5 w-5 place-items-center rounded-full ${item.done ? "bg-[#e5f8ed] text-[#16834e]" : "bg-[#f1f3f7] text-[#98a1b2]"}`}><CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" /></span>
-                  <span className={item.done ? "text-graphite" : "text-ash"}>{item.label}</span>
-                </div>
-              ))}
-            </div>
-          </section>
-          <nav aria-label="Sections de l’établissement" className="okado-compact-card bg-white p-3">
-            <p className="px-2 py-2 text-xs font-medium uppercase tracking-[0.14em] text-fog">Accès rapide</p>
-            {[['account-location', 'Informations'], ['account-channels', 'Canaux marketing'], ['account-pin', 'Validation express']].map(([id, label]) => (
-              <a key={id} href={`#${id}`} className="flex items-center justify-between rounded-[4px] px-2 py-2.5 text-sm text-ash transition hover:bg-purple-haze hover:text-aubergine">{label}<ArrowUpRight className="h-4 w-4" aria-hidden="true" /></a>
-            ))}
-          </nav>
-        </aside>
         </div>
         </div> : null}
 
