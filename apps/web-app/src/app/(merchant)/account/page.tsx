@@ -1,5 +1,4 @@
 import { AccountSettingsForm } from "@/components/merchant/account-settings-form";
-import { BillingSubscriptionCard } from "@/components/merchant/billing-subscription-card";
 import { Settings2 } from "lucide-react";
 import { PageHeader } from "@/components/ui/workspace";
 import { Button } from "@/components/ui/button";
@@ -64,11 +63,11 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
         icon={<Settings2 className="h-5 w-5" />}
         actions={<Button type="submit" form="account-settings-form" variant="primary" size="lg" className="w-full xl:w-auto">Enregistrer les modifications</Button>}
       />
-      <BillingSubscriptionCard billing={billing} />
       <AccountSettingsForm
         merchant={merchant}
         user={session.user}
         locations={session.locations}
+        billing={billing}
       />
     </div>
   );

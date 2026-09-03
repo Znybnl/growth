@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { ArrowUpRight, CheckCircle2, Link2, ShieldCheck, Store, UserRound } from "lucide-react";
 
 import { AccountSectionCard } from "@/components/merchant/account-section-card";
 import { AccountLocationPanel } from "@/components/merchant/account-location-panel";
+import { BillingSubscriptionCard } from "@/components/merchant/billing-subscription-card";
 import { GoogleReviewPlacePicker } from "@/components/merchant/google-review-place-picker";
 import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
 import { ValidationDialog } from "@/components/ui/validation-dialog";
@@ -17,14 +18,27 @@ import {
   MerchantAccountSettingsInput,
   MerchantLocationAccess,
   MerchantUser,
+  MerchantBillingSummary,
 } from "@/lib/types";
 
 type AccountSettingsFormProps = {
   merchant: Merchant;
   user: MerchantUser;
   locations: MerchantLocationAccess[];
+  billing: MerchantBillingSummary;
   onDirtyChange?: (isDirty: boolean) => void;
 };
+
+type AccountTab = "establishment" | "user" | "subscription";
+
+function accountTabFromHash(hash: string): AccountTab {
+  const normalizedHash = hash.replace(/^#/, "");
+  return normalizedHash === "account-user"
+    ? "user"
+    : normalizedHash === "account-subscription"
+      ? "subscription"
+      : "establishment";
+}
 
 const inputClass =
   "w-full min-h-[var(--okado-control-height)] rounded-[var(--okado-radius-control)] border border-fog bg-white px-4 py-2.5 text-sm text-carbon outline-none transition placeholder:text-ash focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.14)]";
@@ -63,6 +77,7 @@ export function AccountSettingsForm({
   merchant,
   user,
   locations,
+  billing,
   onDirtyChange,
 }: AccountSettingsFormProps) {
   const [selectedLocationId, setSelectedLocationId] = useState(merchant.id);
@@ -74,11 +89,25 @@ export function AccountSettingsForm({
   const [isDirty, setIsDirty] = useState(false);
   const actionsAnchorRef = useRef<HTMLDivElement>(null);
   const [showStickyActions, setShowStickyActions] = useState(false);
+  const activeTab = useSyncExternalStore(
+    (onStoreChange) => {
+      window.addEventListener("hashchange", onStoreChange);
+      return () => window.removeEventListener("hashchange", onStoreChange);
+    },
+    () => accountTabFromHash(window.location.hash),
+    () => "establishment" as AccountTab,
+  );
 
   const selectedMerchant =
     selectedLocationId === merchant.id
       ? merchant
       : locations.find(({ merchant: location }) => location.id === selectedLocationId)?.merchant ?? merchant;
+
+  function selectTab(tab: "establishment" | "user" | "subscription") {
+    const nextHash = `#account-${tab === "establishment" ? "establishment" : tab === "user" ? "user" : "subscription"}`;
+    window.history.replaceState(null, "", nextHash);
+    window.dispatchEvent(new HashChangeEvent("hashchange"));
+  }
 
   useEffect(() => {
     function handleBeforeUnload(event: BeforeUnloadEvent) {
@@ -209,6 +238,28 @@ export function AccountSettingsForm({
       </div>
       <div ref={actionsAnchorRef} className="h-px" aria-hidden="true" />
       <div className="space-y-4">
+        <div role="tablist" aria-label="Sections du compte" className="flex gap-1 overflow-x-auto border-b border-lavender-mist bg-soft-white px-1 py-1">
+          {([
+            ["establishment", "Établissement"],
+            ["user", "Utilisateur"],
+            ["subscription", "Abonnement"],
+          ] as const).map(([tab, label]) => (
+            <button
+              key={tab}
+              id={`account-${tab}-tab`}
+              type="button"
+              role="tab"
+              aria-selected={activeTab === tab}
+              aria-controls={`account-tabpanel-${tab}`}
+              onClick={() => selectTab(tab)}
+              className={`shrink-0 rounded-[4px] px-4 py-2.5 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aubergine ${activeTab === tab ? "bg-purple-haze text-aubergine" : "text-ash hover:bg-[#f7f0fa] hover:text-aubergine"}`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {activeTab === "user" ? <div id="account-tabpanel-user" role="tabpanel" aria-labelledby="account-user-tab">
         <AccountSectionCard
         id="account-user"
         eyebrow="Mon compte"
@@ -256,12 +307,14 @@ export function AccountSettingsForm({
           </label>
         </div>
         </AccountSectionCard>
+        </div> : null}
 
-        <AccountLocationPanel
+        {activeTab === "establishment" ? <div id="account-tabpanel-establishment" role="tabpanel" aria-labelledby="account-establishment-tab">
+          <AccountLocationPanel
           merchant={selectedMerchant}
           locations={locations}
           onSelectLocation={requestLocationSelection}
-        />
+          />
 
         <div className="grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_280px]">
         <div className="space-y-4">
@@ -556,6 +609,11 @@ export function AccountSettingsForm({
           </nav>
         </aside>
         </div>
+        </div> : null}
+
+        {activeTab === "subscription" ? <div id="account-tabpanel-subscription" role="tabpanel" aria-labelledby="account-subscription-tab">
+          <BillingSubscriptionCard billing={billing} />
+        </div> : null}
 
       {error ? (
           <div className="rounded-[8px] border border-coral-alert/30 bg-coral-alert/10 px-4 py-3 text-sm text-coral-alert">
