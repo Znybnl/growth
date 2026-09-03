@@ -67,6 +67,7 @@ export function GoogleReviewPlacePicker({
   }, [value]);
 
   const hasSelectedPlace = Boolean(selectedPlaceId || selectedPlace);
+  const showSearchInput = !hasSelectedPlace || hasUserEditedQuery;
 
   useEffect(() => {
     if (manualMode || (hasSelectedPlace && !hasUserEditedQuery)) return;
@@ -130,7 +131,7 @@ export function GoogleReviewPlacePicker({
 
   return (
     <div className={[compact ? "space-y-3" : "space-y-4", className].filter(Boolean).join(" ")}>
-      <div className={`rounded-[16px] border border-lavender-mist p-3 ${compact ? "bg-white" : "bg-soft-white"}`}>
+      <div className={`${compact ? "border-b border-fog pb-4" : "rounded-[16px] border border-lavender-mist bg-soft-white p-3"} `}>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[4px] bg-purple-haze text-lg font-bold text-aubergine">
             G
@@ -145,21 +146,36 @@ export function GoogleReviewPlacePicker({
                 </span>
               ) : null}
             </div>
-            <input
-              type="search"
-              value={query}
-              onChange={(event) => {
-                setHasUserEditedQuery(true);
-                setManualMode(false);
-                setQuery(event.target.value);
-                if (event.target.value.trim().length < 3) {
-                  setPlaces([]);
+            {showSearchInput ? (
+              <input
+                type="search"
+                value={query}
+                onChange={(event) => {
+                  setHasUserEditedQuery(true);
+                  setManualMode(false);
+                  setQuery(event.target.value);
+                  if (event.target.value.trim().length < 3) {
+                    setPlaces([]);
+                    setMessage(null);
+                  }
+                }}
+                placeholder="Rechercher votre établissement sur Google"
+                className="w-full rounded-[12px] border border-fog bg-white px-4 py-3 text-sm outline-none transition focus:border-aubergine focus:ring-4 focus:ring-aubergine/15"
+              />
+            ) : (
+              <button
+                type="button"
+                className="text-left text-xs font-semibold text-aubergine underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aubergine"
+                onClick={() => {
+                  setHasUserEditedQuery(true);
+                  setManualMode(false);
                   setMessage(null);
-                }
-              }}
-              placeholder="Rechercher votre établissement sur Google"
-              className="w-full rounded-[12px] border border-fog bg-white px-4 py-3 text-sm outline-none transition focus:border-aubergine focus:ring-4 focus:ring-aubergine/15"
-            />
+                  setPlaces([]);
+                }}
+              >
+                Modifier la fiche Google
+              </button>
+            )}
           </div>
         </div>
 
@@ -171,7 +187,7 @@ export function GoogleReviewPlacePicker({
               {selectedPlace?.address ? <p className="mt-0.5 text-xs leading-5 text-ash">{selectedPlace.address}</p> : null}
               {selectedPlace && (selectedPlace.rating != null || selectedPlace.reviewCount != null) ? (
                 <p className="mt-1 flex flex-wrap items-center gap-x-2 text-xs font-medium text-ash">
-                  {selectedPlace.rating != null ? <span className="text-amber-tag">★ {selectedPlace.rating.toFixed(1)}</span> : null}
+                  {selectedPlace.rating != null ? <span className="text-charcoal">★ {selectedPlace.rating.toFixed(1)}</span> : null}
                   {selectedPlace.reviewCount != null ? <span>{formatReviewCount(selectedPlace.reviewCount)} avis Google</span> : null}
                 </p>
               ) : null}

@@ -462,7 +462,7 @@ export function AccountSettingsForm({
               </div>
               <p className="mt-1 text-sm text-ash">Ajoutez les liens que vos participants pourront retrouver après leur participation.</p>
             </div>
-            <div className="grid gap-2.5 md:grid-cols-2">
+            <div className="divide-y divide-fog">
             <GoogleReviewPlacePicker
               key={`${selectedLocationId}-${form.googleReviewUrl}`}
               className="md:col-span-2"
@@ -492,8 +492,8 @@ export function AccountSettingsForm({
                 }));
               }}
             />
-          <label className="rounded-[8px] bg-soft-white p-3 text-sm">
-            <span className="mb-2 flex items-center justify-between gap-3 text-ash"><span className="flex items-center gap-3"><SocialChannelIcon channel="instagram" /><span>Instagram</span></span><span className="text-[11px]">{form.instagramUrl ? "Renseigné" : "Optionnel"}</span></span>
+          <label className="grid gap-2 py-3 text-sm first:pt-0 md:grid-cols-[minmax(150px,0.35fr)_minmax(0,1fr)] md:items-center md:gap-4">
+            <span className="flex items-center justify-between gap-3 text-charcoal"><span className="flex items-center gap-3"><SocialChannelIcon channel="instagram" /><span>Instagram</span></span>{form.instagramUrl ? <span className="text-xs font-semibold text-aubergine">✓</span> : <span className="text-xs text-ash">Optionnel</span>}</span>
             <input
               type="text"
               inputMode="url"
@@ -503,8 +503,8 @@ export function AccountSettingsForm({
               className={`${inputClass} min-h-[40px] px-3 py-2 text-xs`}
             />
           </label>
-          <label className="rounded-[8px] bg-soft-white p-3 text-sm">
-            <span className="mb-2 flex items-center justify-between gap-3 text-ash"><span className="flex items-center gap-3"><SocialChannelIcon channel="facebook" /><span>Facebook</span></span><span className="text-[11px]">{form.facebookUrl ? "Renseigné" : "Optionnel"}</span></span>
+          <label className="grid gap-2 py-3 text-sm md:grid-cols-[minmax(150px,0.35fr)_minmax(0,1fr)] md:items-center md:gap-4">
+            <span className="flex items-center justify-between gap-3 text-charcoal"><span className="flex items-center gap-3"><SocialChannelIcon channel="facebook" /><span>Facebook</span></span>{form.facebookUrl ? <span className="text-xs font-semibold text-aubergine">✓</span> : <span className="text-xs text-ash">Optionnel</span>}</span>
             <input
               type="text"
               inputMode="url"
@@ -514,8 +514,8 @@ export function AccountSettingsForm({
               className={`${inputClass} min-h-[40px] px-3 py-2 text-xs`}
             />
           </label>
-          <label className="rounded-[8px] bg-soft-white p-3 text-sm">
-            <span className="mb-2 flex items-center justify-between gap-3 text-ash"><span className="flex items-center gap-3"><SocialChannelIcon channel="tiktok" /><span>TikTok</span></span><span className="text-[11px]">{form.tiktokUrl ? "Renseigné" : "Optionnel"}</span></span>
+          <label className="grid gap-2 py-3 text-sm md:grid-cols-[minmax(150px,0.35fr)_minmax(0,1fr)] md:items-center md:gap-4">
+            <span className="flex items-center justify-between gap-3 text-charcoal"><span className="flex items-center gap-3"><SocialChannelIcon channel="tiktok" /><span>TikTok</span></span>{form.tiktokUrl ? <span className="text-xs font-semibold text-aubergine">✓</span> : <span className="text-xs text-ash">Optionnel</span>}</span>
             <input
               type="text"
               inputMode="url"
@@ -525,8 +525,8 @@ export function AccountSettingsForm({
               className={`${inputClass} min-h-[40px] px-3 py-2 text-xs`}
             />
           </label>
-          <label className="rounded-[8px] bg-soft-white p-3 text-sm">
-            <span className="mb-2 flex items-center justify-between gap-3 text-ash"><span className="flex items-center gap-3"><SocialChannelIcon channel="tripadvisor" /><span>Tripadvisor</span></span><span className="text-[11px]">{form.tripadvisorUrl ? "Renseigné" : "Optionnel"}</span></span>
+          <label className="grid gap-2 py-3 text-sm md:grid-cols-[minmax(150px,0.35fr)_minmax(0,1fr)] md:items-center md:gap-4">
+            <span className="flex items-center justify-between gap-3 text-charcoal"><span className="flex items-center gap-3"><SocialChannelIcon channel="tripadvisor" /><span>Tripadvisor</span></span>{form.tripadvisorUrl ? <span className="text-xs font-semibold text-aubergine">✓</span> : <span className="text-xs text-ash">Optionnel</span>}</span>
             <input
               type="text"
               inputMode="url"
@@ -536,8 +536,8 @@ export function AccountSettingsForm({
               className={`${inputClass} min-h-[40px] px-3 py-2 text-xs`}
             />
           </label>
-          <label className="rounded-[8px] bg-soft-white p-3 text-sm md:col-span-2">
-            <span className="mb-2 flex items-center justify-between gap-3 text-ash"><span className="flex items-center gap-3"><SocialChannelIcon channel="custom" /><span>Lien personnalisé</span></span><span className="text-[11px]">{form.customLinkUrl ? "Renseigné" : "Optionnel"}</span></span>
+          <label className="grid gap-2 py-3 text-sm md:grid-cols-[minmax(150px,0.35fr)_minmax(0,1fr)] md:items-center md:gap-4">
+            <span className="flex items-center justify-between gap-3 text-charcoal"><span className="flex items-center gap-3"><SocialChannelIcon channel="custom" /><span>Lien personnalisé</span></span>{form.customLinkUrl ? <span className="text-xs font-semibold text-aubergine">✓</span> : <span className="text-xs text-ash">Optionnel</span>}</span>
             <input
               type="text"
               inputMode="url"
