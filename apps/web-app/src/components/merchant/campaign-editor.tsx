@@ -928,7 +928,8 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
               fontWeight={isCocoricoTemplate ? undefined : 850}
               textColor={isCocoricoTemplate ? undefined : previewHeadingTextColor}
               secondaryTextColor={isCocoricoTemplate ? undefined : previewHeadingTextColor}
-              strokeWidth={isCocoricoTemplate ? undefined : 6}
+              strokeColor={isCocoricoTemplate ? undefined : "#ffffff"}
+              strokeWidth={isCocoricoTemplate ? undefined : 5}
               variant={isCocoricoTemplate ? "cocorico" : "inspired"}
               rotate={isCocoricoTemplate}
             />
