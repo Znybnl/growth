@@ -28,6 +28,9 @@ import {
   DEFAULT_SCRATCH_SUBTITLE,
   limitCampaignSubtitleLines,
   resolveScratchAccent,
+  resolveCocoricoPrimaryColor,
+  resolveCocoricoBackgroundColor,
+  deriveLighterHex,
   scratchTemplatePrimaryColor,
 } from "@/lib/campaign-defaults";
 import { buildWheelVisualSegments } from "@/lib/wheel-segments";
@@ -846,8 +849,8 @@ export function CampaignExperience({
       data-template-id={pageTemplate}
       style={{
         backgroundColor: campaign.presentation.background.color,
-        backgroundImage: isCocoricoTemplate
-          ? "linear-gradient(135deg, #2563eb, #3b82f6)"
+        backgroundImage: isCocoricoTemplate && campaign.presentation.background.mode === "color"
+          ? `linear-gradient(135deg, ${resolveCocoricoBackgroundColor(campaign.presentation.background.color)}, ${deriveLighterHex(resolveCocoricoBackgroundColor(campaign.presentation.background.color), 0.32)})`
           : backgroundStyle,
         backgroundPosition: "center",
         backgroundSize: "cover",
@@ -937,6 +940,7 @@ export function CampaignExperience({
             <div className="absolute inset-0 overflow-visible">
               {isCocoricoTemplate ? (
                 <CocoricoWheel
+                  primaryColor={resolveCocoricoPrimaryColor(campaign.presentation.wheel.loseColor)}
                   key={`${campaign.id}-${drawSession?.id ?? "idle"}`}
                   segments={segments}
                   winningSegmentId={winningSegmentId}

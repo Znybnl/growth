@@ -14,6 +14,8 @@ import {
   DEFAULT_SCRATCH_SUBTITLE,
   limitCampaignSubtitleLines,
   resolveScratchAccent,
+  resolveCocoricoPrimaryColor,
+  resolveCocoricoBackgroundColor,
   scratchTemplatePrimaryColor,
 } from "@/lib/campaign-defaults";
 import { buildWheelVisualSegments, WheelVisualSegment } from "@/lib/wheel-segments";
@@ -69,6 +71,7 @@ export type CampaignEditorPreviewModel = {
   gameType: GameType;
   accent: CampaignSetupInput["accent"];
   wheelStyle: CampaignSetupInput["presentation"]["wheel"];
+  cocoricoPrimaryColor: string;
   buttonStyle: {
     backgroundColor: string;
     textColor: string;
@@ -151,7 +154,8 @@ function previewBackgroundImage(form: CampaignSetupInput, templateId: GamePageTe
     return `radial-gradient(circle at -10% -8%, ${withHexAlpha(form.presentation.wheel.loseColor, "f2")} 0 18%, transparent 19%), radial-gradient(circle at 110% 0%, ${withHexAlpha(form.presentation.wheel.winColor, "f2")} 0 13%, transparent 14%), linear-gradient(180deg, #fff2dd 0%, #fffaf1 48%, #fff4e5 100%)`;
   }
   if (templateId === "cocorico-wheel") {
-    return "radial-gradient(circle at 14% 12%, rgba(68,151,222,0.9) 0 10%, transparent 11%), radial-gradient(circle at 88% 26%, rgba(4,55,111,0.5) 0 15%, transparent 16%), linear-gradient(160deg, #07549b 0%, #0b67b7 48%, #063d78 100%)";
+    const backgroundColor = resolveCocoricoBackgroundColor(form.presentation.background.color);
+    return `radial-gradient(circle at 14% 12%, rgba(68,151,222,0.9) 0 10%, transparent 11%), radial-gradient(circle at 88% 26%, rgba(4,55,111,0.5) 0 15%, transparent 16%), linear-gradient(160deg, ${backgroundColor} 0%, ${backgroundColor} 48%, #063d78 100%)`;
   }
   if (templateId === "cosmic-orbit") {
     return `radial-gradient(circle at 50% 112%, ${withHexAlpha(form.presentation.wheel.loseColor, "52")} 0 24%, transparent 43%), radial-gradient(circle at 9% 12%, ${withHexAlpha(form.presentation.wheel.winColor, "2b")} 0 14%, transparent 25%), linear-gradient(155deg, #07142e 0%, #0b1d42 55%, #071126 100%)`;
@@ -215,6 +219,7 @@ export function buildCampaignLivePreviewModel(form: CampaignSetupInput, merchant
     gameType: form.gameType,
     accent: previewAccent,
     wheelStyle: form.presentation.wheel,
+    cocoricoPrimaryColor: resolveCocoricoPrimaryColor(form.presentation.wheel.loseColor),
     buttonStyle: {
       backgroundColor: form.gameType === "wheel" ? form.presentation.wheel.loseColor : form.presentation.button.backgroundColor,
       textColor: form.presentation.button.textColor,
@@ -265,7 +270,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
           </>
         ) : null}
         <div className={preview.gameType === "wheel" ? compact ? "-mx-3" : "-mx-4" : undefined} style={{ marginTop: `${isImmersiveScratchTemplate ? 0 : compact ? Math.min(scalePreviewValue(preview.blockSpacingPx), 24) : scalePreviewValue(preview.blockSpacingPx)}px`, height: preview.gameType === "wheel" ? compact ? "330px" : "470px" : undefined, marginBottom: preview.gameType === "wheel" ? compact ? "-12px" : "-24px" : undefined }}>
-         {preview.gameType === "wheel" ? isCocoricoTemplate ? <CocoricoWheel segments={preview.previewSegments} winningSegmentId={preview.winningSegmentId} buttonStyle={{ textColor: preview.buttonStyle.textColor }} buttonEnabled framing={compact ? "mobile-preview" : "editor"} /> : isImmersiveTemplate ? <ImmersiveWheel accent={preview.accent} wheelStyle={preview.wheelStyle} template={preview.gamePageTemplateId as "cosmic-orbit" | "sunburst-festival"} buttonStyle={{ backgroundColor: preview.buttonStyle.backgroundColor, textColor: preview.buttonStyle.textColor, borderColor: preview.buttonStyle.borderColor }} segments={preview.previewSegments} buttonEnabled winningSegmentId={preview.winningSegmentId} framing={compact ? "mobile-preview" : "editor"} /> : <WheelOfFortune accent={preview.accent} wheelStyle={preview.wheelStyle} pageTemplate={preview.gamePageTemplateId === "restaurant-pop" ? "restaurant-pop" : "classic"} buttonStyle={{ backgroundColor: preview.buttonStyle.backgroundColor, textColor: preview.buttonStyle.textColor, borderColor: preview.buttonStyle.borderColor }} segments={preview.previewSegments} buttonEnabled winningSegmentId={preview.winningSegmentId} framing={compact ? "mobile-preview" : "editor"} /> : isImmersiveScratchTemplate ? <ImmersiveScratchTicket accent={preview.accent} resultLabel={preview.previewPrize} enabled={false} onReveal={() => undefined} logoMode={preview.logoMode} logoText={preview.logoText} logoUrl={preview.logoUrl} headline={preview.subtitle} headingTextColor={previewHeadingTextColor} headingFontClass={preview.headingFontClass} headingFontSize={fluidType(scalePreviewValue(preview.headingFontSizePx), { minRatio: 0.82, maxRatio: 1.08, viewportStep: 0.3, viewportUnit: compact ? "cqw" : "vw" })} headingFontWeight={preview.headingFontWeight} headingAlignmentClass={preview.headingAlignmentClass} logoAlignmentClass={preview.logoAlignmentClass} logoBottomSpacingPx={scalePreviewValue(preview.logoBottomSpacingPx)} logoWidthPx={scalePreviewValue(preview.logoWidthPx)} logoTextSizePx={scalePreviewValue(preview.logoTextSizePx)} fitContainer template={preview.gamePageTemplateId as "scratch-vault" | "scratch-confetti" | "scratch-coral" | "scratch-lilac" | "scratch-sunburst"} /> : <ScratchGame accent={preview.accent} resultLabel={preview.previewPrize} enabled={false} onReveal={() => undefined} />}
+         {preview.gameType === "wheel" ? isCocoricoTemplate ? <CocoricoWheel primaryColor={preview.cocoricoPrimaryColor} segments={preview.previewSegments} winningSegmentId={preview.winningSegmentId} buttonStyle={{ textColor: preview.buttonStyle.textColor }} buttonEnabled framing={compact ? "mobile-preview" : "editor"} /> : isImmersiveTemplate ? <ImmersiveWheel accent={preview.accent} wheelStyle={preview.wheelStyle} template={preview.gamePageTemplateId as "cosmic-orbit" | "sunburst-festival"} buttonStyle={{ backgroundColor: preview.buttonStyle.backgroundColor, textColor: preview.buttonStyle.textColor, borderColor: preview.buttonStyle.borderColor }} segments={preview.previewSegments} buttonEnabled winningSegmentId={preview.winningSegmentId} framing={compact ? "mobile-preview" : "editor"} /> : <WheelOfFortune accent={preview.accent} wheelStyle={preview.wheelStyle} pageTemplate={preview.gamePageTemplateId === "restaurant-pop" ? "restaurant-pop" : "classic"} buttonStyle={{ backgroundColor: preview.buttonStyle.backgroundColor, textColor: preview.buttonStyle.textColor, borderColor: preview.buttonStyle.borderColor }} segments={preview.previewSegments} buttonEnabled winningSegmentId={preview.winningSegmentId} framing={compact ? "mobile-preview" : "editor"} /> : isImmersiveScratchTemplate ? <ImmersiveScratchTicket accent={preview.accent} resultLabel={preview.previewPrize} enabled={false} onReveal={() => undefined} logoMode={preview.logoMode} logoText={preview.logoText} logoUrl={preview.logoUrl} headline={preview.subtitle} headingTextColor={previewHeadingTextColor} headingFontClass={preview.headingFontClass} headingFontSize={fluidType(scalePreviewValue(preview.headingFontSizePx), { minRatio: 0.82, maxRatio: 1.08, viewportStep: 0.3, viewportUnit: compact ? "cqw" : "vw" })} headingFontWeight={preview.headingFontWeight} headingAlignmentClass={preview.headingAlignmentClass} logoAlignmentClass={preview.logoAlignmentClass} logoBottomSpacingPx={scalePreviewValue(preview.logoBottomSpacingPx)} logoWidthPx={scalePreviewValue(preview.logoWidthPx)} logoTextSizePx={scalePreviewValue(preview.logoTextSizePx)} fitContainer template={preview.gamePageTemplateId as "scratch-vault" | "scratch-confetti" | "scratch-coral" | "scratch-lilac" | "scratch-sunburst"} /> : <ScratchGame accent={preview.accent} resultLabel={preview.previewPrize} enabled={false} onReveal={() => undefined} />}
         </div>
         {preview.gameType !== "wheel" && !isImmersiveScratchTemplate ? <button type="button" className={`okado-preview-cta mx-auto block w-full max-w-[360px] rounded-[24px] border font-semibold ${preview.previewCtaClass}`} style={{ marginTop: `${scalePreviewValue(preview.blockSpacingPx)}px`, backgroundColor: preview.buttonStyle.backgroundColor, color: preview.buttonStyle.textColor, borderColor: preview.buttonStyle.borderColor, fontSize: fluidType(scalePreviewValue(preview.buttonStyle.textSizePx), { minRatio: 0.86, maxRatio: 1.08, viewportStep: 0.24, viewportUnit: compact ? "cqw" : "vw" }), fontWeight: preview.buttonStyle.isBold ? 700 : 400 }}>{preview.ctaLabel}</button> : null}
       </div>

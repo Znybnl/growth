@@ -64,6 +64,8 @@ import {
   DEFAULT_SCRATCH_PRIMARY_COLOR,
   DEFAULT_SCRATCH_SUBTITLE,
   DEFAULT_WHEEL_PRIMARY_COLOR,
+  resolveCocoricoPrimaryColor,
+  resolveCocoricoBackgroundColor,
   DEFAULT_WHEEL_SUBTITLE,
   MAX_CAMPAIGN_SUBTITLE_LENGTH,
   campaignLogoTextSizePx,
@@ -199,6 +201,7 @@ export type CampaignEditorPreviewModel = {
   gameType: GameType;
   accent: EditorState["accent"];
   wheelStyle: EditorState["presentation"]["wheel"];
+  cocoricoPrimaryColor: string;
   buttonStyle: {
     backgroundColor: string;
     textColor: string;
@@ -1011,6 +1014,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
           {preview.gameType === "wheel" ? (
             isCocoricoTemplate ? (
               <CocoricoWheel
+                primaryColor={preview.cocoricoPrimaryColor}
                 segments={preview.previewSegments}
                 winningSegmentId={preview.winningSegmentId}
                 buttonStyle={{ textColor: preview.buttonStyle.textColor }}
@@ -1469,7 +1473,7 @@ export function buildCampaignLivePreviewModel(
       : templateId === "restaurant-pop"
         ? `radial-gradient(circle at -10% -8%, ${withHexAlpha(form.presentation.wheel.loseColor, "f2")} 0 18%, transparent 19%), radial-gradient(circle at 110% 0%, ${withHexAlpha(form.presentation.wheel.winColor, "f2")} 0 13%, transparent 14%), linear-gradient(180deg, #fff2dd 0%, #fffaf1 48%, #fff4e5 100%)`
             : templateId === "cocorico-wheel"
-              ? "radial-gradient(circle at 14% 12%, rgba(68,151,222,0.9) 0 10%, transparent 11%), radial-gradient(circle at 88% 26%, rgba(4,55,111,0.5) 0 15%, transparent 16%), linear-gradient(160deg, #07549b 0%, #0b67b7 48%, #063d78 100%)"
+              ? `radial-gradient(circle at 14% 12%, rgba(68,151,222,0.9) 0 10%, transparent 11%), radial-gradient(circle at 88% 26%, rgba(4,55,111,0.5) 0 15%, transparent 16%), linear-gradient(160deg, ${resolveCocoricoBackgroundColor(form.presentation.background.color)} 0%, ${resolveCocoricoBackgroundColor(form.presentation.background.color)} 48%, #063d78 100%)`
               : templateId === "cosmic-orbit"
               ? `radial-gradient(circle at 50% 112%, ${withHexAlpha(form.presentation.wheel.loseColor, "52")} 0 24%, transparent 43%), radial-gradient(circle at 9% 12%, ${withHexAlpha(form.presentation.wheel.winColor, "2b")} 0 14%, transparent 25%), linear-gradient(155deg, #07142e 0%, #0b1d42 55%, #071126 100%)`
                 : templateId === "scratch-vault"
@@ -1518,6 +1522,7 @@ export function buildCampaignLivePreviewModel(
     gameType: form.gameType,
     accent: previewAccent,
     wheelStyle: form.presentation.wheel,
+    cocoricoPrimaryColor: resolveCocoricoPrimaryColor(form.presentation.wheel.loseColor),
     buttonStyle: {
       backgroundColor: form.gameType === "wheel" ? form.presentation.wheel.loseColor : form.presentation.button.backgroundColor,
       textColor: form.presentation.button.textColor,
@@ -1721,7 +1726,7 @@ export function CampaignEditor({
     (currentTemplateId === "restaurant-pop" || isExpertMode);
   const showWheelRimColor =
     isExpertMode && (currentTemplateId === "classic" || currentTemplateId === "restaurant-pop");
-  const showBackgroundColor = currentTemplateId === "classic";
+  const showBackgroundColor = currentTemplateId === "classic" || currentTemplateId === "cocorico-wheel";
   const previewModel = useMemo<CampaignEditorPreviewModel>(() => {
     const previewAccent =
       form.gameType === "scratch"
@@ -1778,6 +1783,7 @@ export function CampaignEditor({
       gameType: form.gameType,
       accent: previewAccent,
       wheelStyle: form.presentation.wheel,
+      cocoricoPrimaryColor: resolveCocoricoPrimaryColor(form.presentation.wheel.loseColor),
       buttonStyle: {
         backgroundColor:
           form.gameType === "wheel"
