@@ -71,7 +71,7 @@ export function CampaignSavedDialog({
             QR de test
           </Button>
           <Button asChild variant="default" size="default">
-            <a href={`/campaigns/${campaignId}/poster`} target="_blank" rel="noreferrer">
+            <a href={`/campaigns/${campaignId}/poster`}>
               <ImageIcon className="h-4 w-4" aria-hidden="true" />
               Affiche
             </a>

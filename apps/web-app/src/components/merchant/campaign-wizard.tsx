@@ -130,6 +130,7 @@ const WIZARD_TEXT_FONTS: TextFont[] = [
   "syncopate",
   "fredoka",
 ];
+const COCORICO_TEXT_FONTS: TextFont[] = ["roboto", "days-one", "lato", "fredoka"];
 
 const MAX_WIZARD_IMAGE_BYTES = 2 * 1024 * 1024;
 const ACCEPTED_WIZARD_IMAGE_TYPES = new Set([
@@ -1129,8 +1130,6 @@ export function CampaignWizard({
             </DropdownMenu>
             <Link
               href={`/campaigns/${draft.id}/poster`}
-              target="_blank"
-              rel="noreferrer"
               prefetch={false}
               className="okado-secondary-action px-4 text-sm"
             >
@@ -2109,7 +2108,7 @@ export function CampaignWizard({
                      }
                      className="mt-3 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] bg-white px-3 py-3 text-sm text-[#182033]"
                    >
-                     {WIZARD_TEXT_FONTS.map((font) => (
+                     {(draft.presentation.layout.templateId === "cocorico-wheel" ? COCORICO_TEXT_FONTS : WIZARD_TEXT_FONTS).map((font) => (
                        <option key={font} value={font} className={textFontClass(font)}>{textFontLabel(font)}</option>
                      ))}
                    </select>
@@ -2289,7 +2288,7 @@ export function CampaignWizard({
                       }
                       className="w-full rounded-[12px] border border-[#dbe3ed] bg-white px-3 py-3 text-sm text-[#182033]"
                     >
-                      {WIZARD_TEXT_FONTS.map((font) => (
+                      {(draft.presentation.layout.templateId === "cocorico-wheel" ? COCORICO_TEXT_FONTS : WIZARD_TEXT_FONTS).map((font) => (
                         <option key={font} value={font} className={textFontClass(font)}>
                           {textFontLabel(font)}
                         </option>

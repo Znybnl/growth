@@ -28,7 +28,6 @@ import {
   useDeferredValue,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from "react";
 
@@ -243,6 +242,7 @@ const textFontOptions: TextFont[] = [
   "syncopate",
   "fredoka",
 ];
+const cocoricoTextFontOptions: TextFont[] = ["roboto", "days-one", "lato", "fredoka"];
 const headingFontWeightOptions = [400, 500, 600, 700, 800, 900];
 const wheelPageTemplateOptions: Array<{
   value: GamePageTemplateId;
@@ -1656,29 +1656,10 @@ export function CampaignEditor({
   const [editingPrizeConditionsId, setEditingPrizeConditionsId] = useState<string | null>(null);
   const [prizeSuggestionsOpen, setPrizeSuggestionsOpen] = useState(false);
   const [prizeSuggestions, setPrizeSuggestions] = useState<PrizeSuggestion[]>([]);
-  const actionsAnchorRef = useRef<HTMLDivElement>(null);
-  const [showStickyActions, setShowStickyActions] = useState(false);
   const [qrPreviewOpen, setQrPreviewOpen] = useState(false);
   const [imageUploadErrors, setImageUploadErrors] = useState<
     Partial<Record<ImageUploadField, string>>
   >({});
-
-  useEffect(() => {
-    const anchor = actionsAnchorRef.current;
-
-    if (!anchor || typeof IntersectionObserver === "undefined") {
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => setShowStickyActions(!entry.isIntersecting),
-      { threshold: 0, rootMargin: "-64px 0px 0px 0px" },
-    );
-
-    observer.observe(anchor);
-
-    return () => observer.disconnect();
-  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -2370,37 +2351,7 @@ function setGameType(gameType: GameType) {
   }
 
   return (
-    <div className="okado-campaign-editor space-y-6 pb-24 xl:pb-0">
-      <div className="pointer-events-none sticky top-0 z-20 hidden h-0 overflow-visible xl:-mb-6 xl:block">
-        <div
-          className={`pointer-events-auto -mx-3 border-b border-border bg-linen-canvas/95 px-3 py-2 shadow-[0_8px_18px_rgba(18,24,39,0.08)] backdrop-blur-sm transition-all duration-200 lg:-mx-6 lg:px-6 ${
-            showStickyActions
-              ? "translate-y-0 opacity-100"
-              : "-translate-y-full opacity-0"
-          }`}
-          aria-hidden={!showStickyActions}
-        >
-          <div className="okado-action-row mx-auto flex max-w-[1600px] items-center justify-end gap-2">
-            <Link
-              href="/campaigns"
-              prefetch={false}
-              tabIndex={showStickyActions ? 0 : -1}
-              className="okado-secondary-action px-4"
-            >
-              Retour aux campagnes
-            </Link>
-            <button
-              type="button"
-              onClick={saveCampaign}
-              disabled={isSaving}
-              tabIndex={showStickyActions ? 0 : -1}
-              className="okado-filled-action px-5 disabled:opacity-60"
-            >
-              {isSaving ? "Enregistrement..." : "Enregistrer"}
-            </button>
-          </div>
-        </div>
-      </div>
+    <div className="okado-campaign-editor space-y-6">
       <section className="grid gap-6 px-1 xl:grid-cols-[1.2fr_0.8fr]">
           <div className="min-w-0">
             <p className="okado-label">
@@ -2416,7 +2367,6 @@ function setGameType(gameType: GameType) {
           </div>
 
           <div
-            ref={actionsAnchorRef}
             className="okado-action-row flex flex-wrap items-center justify-start gap-3 xl:justify-end"
           >
             <Link
@@ -2987,7 +2937,7 @@ function setGameType(gameType: GameType) {
                   <div className="text-sm">
                     <span className="mb-3 block text-[#616b7c]">Police du texte</span>
                     <div className="grid gap-3">
-                      {textFontOptions.map((font) => {
+                      {(form.presentation.layout.templateId === "cocorico-wheel" ? cocoricoTextFontOptions : textFontOptions).map((font) => {
                         const active = form.presentation.heading.fontFamily === font;
 
                         return (
@@ -3484,7 +3434,7 @@ function setGameType(gameType: GameType) {
               <div className="text-sm">
                 <span className="mb-3 block text-[#616b7c]">Police du texte</span>
                 <div className="grid gap-3">
-                  {textFontOptions.map((font) => {
+                  {(form.presentation.layout.templateId === "cocorico-wheel" ? cocoricoTextFontOptions : textFontOptions).map((font) => {
                     const active = form.presentation.poster.headlineFontFamily === font;
 
                     return (
@@ -3647,7 +3597,7 @@ function setGameType(gameType: GameType) {
               <div className="text-sm">
                 <span className="mb-3 block text-[#616b7c]">Police du texte</span>
                 <div className="grid gap-3">
-                  {textFontOptions.map((font) => {
+                  {(form.presentation.layout.templateId === "cocorico-wheel" ? cocoricoTextFontOptions : textFontOptions).map((font) => {
                     const active = form.presentation.heading.fontFamily === font;
 
                     return (
@@ -4172,10 +4122,7 @@ function setGameType(gameType: GameType) {
           ) : null}
         </div>
 
-        <div
-          className="space-y-6 xl:sticky xl:self-start"
-          style={{ top: showStickyActions ? "76px" : "24px" }}
-        >
+        <div className="space-y-6">
           <section className="pointer-events-none okado-card p-5">
             <div className="flex items-center justify-between gap-3">
               <div>
@@ -4244,41 +4191,6 @@ function setGameType(gameType: GameType) {
             <SharedCampaignLivePreview merchant={merchant} preview={deferredPreview} compact />
 
           </section>
-        </div>
-      </div>
-      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30 px-4 pb-4 xl:hidden">
-        <div className="pointer-events-auto mx-auto max-w-[720px] rounded-[8px] border border-border bg-white/96 p-3 shadow-product-card backdrop-blur">
-          <div className="grid gap-3 sm:grid-cols-2">
-            {savedCampaignId ? (
-              <>
-                <Link
-                  href={`/campaign/${savedCampaignId}?preview=1`}
-                  prefetch={false}
-                  target="_blank"
-                  className="okado-primary-action px-4"
-                >
-                  Prévisualiser
-                </Link>
-                <Link
-                  href={`/campaigns/${savedCampaignId}/poster`}
-                  prefetch={false}
-                  className="okado-secondary-action px-4"
-                >
-                  Affiche
-                </Link>
-              </>
-            ) : null}
-            <button
-              type="button"
-              onClick={saveCampaign}
-              disabled={isSaving}
-              className={`okado-filled-action px-4 disabled:cursor-not-allowed disabled:opacity-70 ${
-                savedCampaignId ? "sm:col-span-2" : "w-full"
-              }`}
-            >
-              {isSaving ? "Enregistrement..." : "Enregistrer"}
-            </button>
-          </div>
         </div>
       </div>
       {form.id ? (
