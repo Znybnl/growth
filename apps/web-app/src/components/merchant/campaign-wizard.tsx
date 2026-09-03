@@ -2365,43 +2365,15 @@ export function CampaignWizard({
                     </label>
                   </section>
                   ) : null}
-                  {draft.presentation.layout.templateId !== "cocorico-wheel" ? <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
+                  {draft.gameType !== "wheel" ? <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
                     <p className="text-sm font-semibold text-[#182033]">
-                      {draft.gameType === "wheel" ? "Couleurs détaillées de la roue" : "Couleurs du ticket"}
+                      Couleurs du ticket
                     </p>
                     <p className="mt-1 text-xs leading-5 text-[#8993a6]">
                       Ces réglages complètent la couleur principale sélectionnée précédemment.
                     </p>
                     <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                      {draft.gameType === "wheel" ? (
-                        ([
-                          ["rimColor", "Contour"],
-                          ["winColor", "Gain 1"],
-                          ["alternateWinColor", "Gain 2"],
-                          ["loseColor", "Perdu 1"],
-                          ["alternateLoseColor", "Perdu 2"],
-                        ] as const).map(([key, label]) => (
-                          <label key={key} className="block text-sm">
-                            <span className="mb-2 block font-semibold text-[#182033]">{label}</span>
-                            <input
-                              type="color"
-                              value={draft.presentation.wheel[key]}
-                              onChange={(event) =>
-                                patchDraft({
-                                  presentation: {
-                                    ...draft.presentation,
-                                    wheel: { ...draft.presentation.wheel, [key]: event.target.value },
-                                  },
-                                })
-                              }
-                              className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] bg-white p-1"
-                            />
-                          </label>
-                        ))
-                      ) : (
-                        ([
-                          ["ink", "Texte du ticket", draft.accent.ink],
-                        ] as const).map(([key, label, value]) => (
+                      {([ ["ink", "Texte du ticket", draft.accent.ink] ] as const).map(([key, label, value]) => (
                           <label key={key} className="block text-sm">
                             <span className="mb-2 block font-semibold text-[#182033]">{label}</span>
                             <input
@@ -2415,8 +2387,7 @@ export function CampaignWizard({
                               className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] bg-white p-1"
                             />
                           </label>
-                        ))
-                      )}
+                        ))}
                     </div>
                   </section> : null}
                 </div>                </div>

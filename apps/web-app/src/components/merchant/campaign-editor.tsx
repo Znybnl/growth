@@ -1674,11 +1674,6 @@ export function CampaignEditor({
         : "text-center";
   const headingFontClass = textFontClass(form.presentation.heading.fontFamily);
   const currentTemplateId = form.presentation.layout.templateId ?? "classic";
-  const showWheelSecondaryColor =
-    currentTemplateId !== "classic" &&
-    (currentTemplateId === "restaurant-pop" || isExpertMode);
-  const showWheelRimColor =
-    isExpertMode && (currentTemplateId === "classic" || currentTemplateId === "restaurant-pop");
   const showBackgroundColor = currentTemplateId === "classic" || currentTemplateId === "cocorico-wheel";
   const previewModel = useMemo<CampaignEditorPreviewModel>(() => {
     const previewAccent =
@@ -3637,31 +3632,6 @@ function setGameType(gameType: GameType) {
                   />
                 </label>
 
-                {[
-                  ...(showWheelSecondaryColor ? [["winColor", "Couleur secondaire"]] : []),
-                  ...(showWheelRimColor ? [["rimColor", "Couleur du contour"]] : []),
-                ].map(([key, label]) => (
-                  <label key={key} className="text-sm">
-                    <span className="mb-2 block text-[#616b7c]">{label}</span>
-                    <input
-                      type="color"
-                      value={form.presentation.wheel[key as keyof typeof form.presentation.wheel]}
-                      onChange={(event) =>
-                        setForm((current) => ({
-                          ...current,
-                          presentation: {
-                            ...current.presentation,
-                            wheel: {
-                              ...current.presentation.wheel,
-                              [key]: event.target.value,
-                            },
-                          },
-                        }))
-                      }
-                      className="h-14 w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none"
-                    />
-                  </label>
-                ))}
               </div>
             </section>
           ) : false ? (
