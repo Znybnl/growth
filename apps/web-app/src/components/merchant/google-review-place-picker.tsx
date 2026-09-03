@@ -142,12 +142,6 @@ export function GoogleReviewPlacePicker({
                 <p className="text-sm font-semibold text-carbon">Avis Google</p>
                 <p className="mt-0.5 text-xs text-ash">La fiche affichée après la participation</p>
               </div>
-              {hasSelectedPlace && !hasUserEditedQuery ? (
-                <span className="okado-status-badge okado-status-active">
-                  <span aria-hidden="true">✓</span>
-                  Fiche sélectionnée
-                </span>
-              ) : null}
             </div>
             {showSearchInput ? (
               <input

@@ -342,8 +342,6 @@ export function AccountSettingsForm({
           onSelectLocation={requestLocationSelection}
           />
 
-        <div>
-        <div className="space-y-4">
       <section className="okado-card scroll-mt-28 p-5 md:p-6">
         <div className="flex items-start gap-3 border-b border-border/70 pb-5">
           <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[4px] bg-purple-haze text-aubergine">
@@ -512,8 +510,8 @@ export function AccountSettingsForm({
                 + Ajouter un canal marketing
               </button>
             ) : null}
-            {displayOptionalChannels ? <>
-          <label className="grid gap-2 py-3 text-sm first:pt-0 md:grid-cols-[minmax(150px,0.35fr)_minmax(0,1fr)] md:items-center md:gap-4">
+            {displayOptionalChannels ? <div className="grid gap-x-6 md:grid-cols-2">
+          <label className="grid gap-2 border-b border-fog py-3 text-sm first:pt-0 md:grid-cols-[minmax(120px,0.42fr)_minmax(0,1fr)] md:items-center md:gap-3">
             <span className="flex items-center justify-between gap-3 text-charcoal"><span className="flex items-center gap-3"><SocialChannelIcon channel="instagram" /><span>Instagram</span></span>{form.instagramUrl ? <span className="text-xs font-semibold text-aubergine">✓</span> : <span className="text-xs text-ash">Optionnel</span>}</span>
             <input
               type="text"
@@ -524,7 +522,7 @@ export function AccountSettingsForm({
               className={`${inputClass} min-h-[40px] px-3 py-2 text-xs`}
             />
           </label>
-          <label className="grid gap-2 py-3 text-sm md:grid-cols-[minmax(150px,0.35fr)_minmax(0,1fr)] md:items-center md:gap-4">
+          <label className="grid gap-2 border-b border-fog py-3 text-sm md:grid-cols-[minmax(120px,0.42fr)_minmax(0,1fr)] md:items-center md:gap-3">
             <span className="flex items-center justify-between gap-3 text-charcoal"><span className="flex items-center gap-3"><SocialChannelIcon channel="facebook" /><span>Facebook</span></span>{form.facebookUrl ? <span className="text-xs font-semibold text-aubergine">✓</span> : <span className="text-xs text-ash">Optionnel</span>}</span>
             <input
               type="text"
@@ -535,7 +533,7 @@ export function AccountSettingsForm({
               className={`${inputClass} min-h-[40px] px-3 py-2 text-xs`}
             />
           </label>
-          <label className="grid gap-2 py-3 text-sm md:grid-cols-[minmax(150px,0.35fr)_minmax(0,1fr)] md:items-center md:gap-4">
+          <label className="grid gap-2 border-b border-fog py-3 text-sm md:grid-cols-[minmax(120px,0.42fr)_minmax(0,1fr)] md:items-center md:gap-3">
             <span className="flex items-center justify-between gap-3 text-charcoal"><span className="flex items-center gap-3"><SocialChannelIcon channel="tiktok" /><span>TikTok</span></span>{form.tiktokUrl ? <span className="text-xs font-semibold text-aubergine">✓</span> : <span className="text-xs text-ash">Optionnel</span>}</span>
             <input
               type="text"
@@ -546,7 +544,7 @@ export function AccountSettingsForm({
               className={`${inputClass} min-h-[40px] px-3 py-2 text-xs`}
             />
           </label>
-          <label className="grid gap-2 py-3 text-sm md:grid-cols-[minmax(150px,0.35fr)_minmax(0,1fr)] md:items-center md:gap-4">
+          <label className="grid gap-2 border-b border-fog py-3 text-sm md:grid-cols-[minmax(120px,0.42fr)_minmax(0,1fr)] md:items-center md:gap-3">
             <span className="flex items-center justify-between gap-3 text-charcoal"><span className="flex items-center gap-3"><SocialChannelIcon channel="tripadvisor" /><span>Tripadvisor</span></span>{form.tripadvisorUrl ? <span className="text-xs font-semibold text-aubergine">✓</span> : <span className="text-xs text-ash">Optionnel</span>}</span>
             <input
               type="text"
@@ -557,7 +555,7 @@ export function AccountSettingsForm({
               className={`${inputClass} min-h-[40px] px-3 py-2 text-xs`}
             />
           </label>
-          <label className="grid gap-2 py-3 text-sm md:grid-cols-[minmax(150px,0.35fr)_minmax(0,1fr)] md:items-center md:gap-4">
+          <label className="grid gap-2 border-b border-fog py-3 text-sm md:grid-cols-[minmax(120px,0.42fr)_minmax(0,1fr)] md:items-center md:gap-3">
             <span className="flex items-center justify-between gap-3 text-charcoal"><span className="flex items-center gap-3"><SocialChannelIcon channel="custom" /><span>Lien personnalisé</span></span>{form.customLinkUrl ? <span className="text-xs font-semibold text-aubergine">✓</span> : <span className="text-xs text-ash">Optionnel</span>}</span>
             <input
               type="text"
@@ -568,7 +566,7 @@ export function AccountSettingsForm({
               className={`${inputClass} min-h-[40px] px-3 py-2 text-xs`}
             />
           </label>
-            </> : null}
+            </div> : null}
             </div>
           </div>
 
@@ -576,7 +574,10 @@ export function AccountSettingsForm({
             <div className="mb-4">
               <div className="flex items-center gap-2.5">
                 <ShieldCheck className="h-4 w-4 text-primary-action-accent" aria-hidden="true" />
-                <h3 className="text-base font-semibold text-graphite">Code PIN de retrait</h3>
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-ash">Sécurité du retrait</p>
+                  <h3 className="mt-0.5 text-base font-semibold text-graphite">Code PIN de retrait</h3>
+                </div>
               </div>
               <p className="mt-1 text-sm text-ash">Le PIN de {selectedMerchant.companyName} permet à un employé de valider un lot depuis le QR code.</p>
             </div>
@@ -607,10 +608,6 @@ export function AccountSettingsForm({
           </div>
         </div>
       </section>
-
-        </div>
-
-        </div>
         </div> : null}
 
         {activeTab === "subscription" ? <div id="account-tabpanel-subscription" role="tabpanel" aria-labelledby="account-subscription-tab">
