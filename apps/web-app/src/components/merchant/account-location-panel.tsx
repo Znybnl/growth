@@ -44,7 +44,7 @@ export function AccountLocationPanel({ merchant, locations, onSelectLocation }: 
 
   return (
     <>
-      <section className="okado-card p-5 md:p-7">
+      <section className="border-b border-border/70 pb-6 md:pb-7">
         <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
           <div className="flex items-start gap-3.5">
             <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[4px] bg-purple-haze text-aubergine">

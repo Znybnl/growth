@@ -493,7 +493,7 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
       layout: {
         blockSpacingPx: normalizeNumber(layout.blockSpacingPx, {
           min: 0,
-          max: 160,
+          max: 60,
           fallback: 40,
           integer: true,
         }),

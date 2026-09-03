@@ -66,6 +66,7 @@ import {
   DEFAULT_SCRATCH_SUBTITLE,
   DEFAULT_WHEEL_PRIMARY_COLOR,
   DEFAULT_COCORICO_PRIMARY_COLOR,
+  DEFAULT_CLASSIC_POP_PRIMARY_COLOR,
   resolveCocoricoPrimaryColor,
   resolveCocoricoBackgroundColor,
   DEFAULT_WHEEL_SUBTITLE,
@@ -76,6 +77,8 @@ import {
   limitCampaignSubtitleLines,
   normalizeScratchAccent,
   resolveScratchAccent,
+  resolvePromoStrokeColor,
+  isClassicPopWheelTemplate,
 } from "@/lib/campaign-defaults";
 import { fluidType } from "@/lib/responsive";
 import { getPrizeValidationMessages } from "@/lib/prize-validation";
@@ -243,7 +246,6 @@ const textFontOptions: TextFont[] = [
   "fredoka",
 ];
 const cocoricoTextFontOptions: TextFont[] = ["roboto", "days-one", "lato", "fredoka"];
-const headingFontWeightOptions = [400, 500, 600, 700, 800, 900];
 const wheelPageTemplateOptions: Array<{
   value: GamePageTemplateId;
   title: string;
@@ -461,7 +463,7 @@ function createDefaultState(merchant: Merchant): EditorState {
       heading: {
         textColor: "#1f2937",
         fontSizePx: 40,
-        fontFamily: "roboto",
+        fontFamily: "fredoka",
         fontWeight: 600,
         align: "center",
       },
@@ -477,7 +479,7 @@ function createDefaultState(merchant: Merchant): EditorState {
         blockSpacingPx: 40,
         templateId: "classic",
       },
-      wheel: createDefaultWheelSettings(),
+      wheel: createDefaultWheelSettings(DEFAULT_CLASSIC_POP_PRIMARY_COLOR),
       poster: createDefaultPosterSettings(merchant),
       email: createCampaignEmailDefaults(merchant),
     },
@@ -928,7 +930,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
               fontWeight={isCocoricoTemplate ? undefined : 850}
               textColor={isCocoricoTemplate ? undefined : previewHeadingTextColor}
               secondaryTextColor={isCocoricoTemplate ? undefined : previewHeadingTextColor}
-              strokeColor={isCocoricoTemplate ? undefined : "#ffffff"}
+              strokeColor={isCocoricoTemplate ? undefined : resolvePromoStrokeColor(previewHeadingTextColor)}
               strokeWidth={isCocoricoTemplate ? undefined : 5}
               variant={isCocoricoTemplate ? "cocorico" : "inspired"}
               rotate={isCocoricoTemplate}
@@ -2550,7 +2552,7 @@ function setGameType(gameType: GameType) {
                               blockSpacingPx: current.presentation.layout.blockSpacingPx,
                             },
                             heading:
-                              template.value === "cocorico-wheel"
+                              template.value === "cocorico-wheel" || isClassicPopWheelTemplate(template.value)
                                 ? { ...current.presentation.heading, fontFamily: "fredoka" }
                                 : current.presentation.heading,
                             wheel:
@@ -2562,7 +2564,15 @@ function setGameType(gameType: GameType) {
                                     rimColor: DEFAULT_COCORICO_PRIMARY_COLOR,
                                     alternateLoseColor: DEFAULT_COCORICO_PRIMARY_COLOR,
                                   }
-                                : current.presentation.wheel,
+                                : isClassicPopWheelTemplate(template.value) &&
+                                    [DEFAULT_WHEEL_PRIMARY_COLOR, DEFAULT_COCORICO_PRIMARY_COLOR].includes(current.presentation.wheel.loseColor.toLowerCase())
+                                  ? {
+                                      ...current.presentation.wheel,
+                                      loseColor: DEFAULT_CLASSIC_POP_PRIMARY_COLOR,
+                                      rimColor: deriveLighterHex(DEFAULT_CLASSIC_POP_PRIMARY_COLOR),
+                                      alternateLoseColor: deriveLighterHex(DEFAULT_CLASSIC_POP_PRIMARY_COLOR),
+                                    }
+                                  : current.presentation.wheel,
                           },
                           accent:
                             current.gameType === "scratch"
@@ -2901,32 +2911,6 @@ function setGameType(gameType: GameType) {
                       })}
                     </div>
                   </div>
-
-                  <label className="text-sm">
-                    <span className="mb-2 block text-[#616b7c]">Épaisseur du texte</span>
-                    <select
-                      value={form.presentation.heading.fontWeight ?? 500}
-                      onChange={(event) =>
-                        setForm((current) => ({
-                          ...current,
-                          presentation: {
-                            ...current.presentation,
-                            heading: {
-                              ...current.presentation.heading,
-                              fontWeight: Number(event.target.value),
-                            },
-                          },
-                        }))
-                      }
-                      className="w-full rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
-                    >
-                      {headingFontWeightOptions.map((weight) => (
-                        <option key={weight} value={weight}>
-                          {weight}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
 
                 </>
               ) : null}

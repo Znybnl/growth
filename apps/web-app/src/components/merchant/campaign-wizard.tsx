@@ -51,10 +51,12 @@ import {
   DEFAULT_WHEEL_SUBTITLE,
   DEFAULT_WHEEL_PRIMARY_COLOR,
   DEFAULT_COCORICO_PRIMARY_COLOR,
+  DEFAULT_CLASSIC_POP_PRIMARY_COLOR,
   deriveLighterHex,
   limitCampaignSubtitleLines,
   MAX_CAMPAIGN_SUBTITLE_LENGTH,
   normalizeScratchAccent,
+  isClassicPopWheelTemplate,
 } from "@/lib/campaign-defaults";
 import {
   ActionKind,
@@ -303,7 +305,7 @@ function createWizardActions(
 }
 
 function createWizardDraft(merchant: Merchant): WizardDraft {
-  const wheel = createDefaultWheelSettings();
+  const wheel = createDefaultWheelSettings(DEFAULT_CLASSIC_POP_PRIMARY_COLOR);
 
   return {
     merchantId: merchant.id,
@@ -325,7 +327,7 @@ function createWizardDraft(merchant: Merchant): WizardDraft {
       heading: {
         textColor: "#1f2937",
         fontSizePx: 40,
-        fontFamily: "roboto",
+        fontFamily: "fredoka",
         fontWeight: 600,
         align: "center",
       },
@@ -1141,6 +1143,35 @@ export function CampaignWizard({
           </div>
         ) : null}
       </section>
+
+      <div className="hidden border-b border-fog bg-soft-white/95 py-3 xl:block">
+        <div className="flex items-center justify-between gap-3">
+          <StatusBadge tone={!draft.id || !draft.isActive ? "muted" : "active"}>
+            {!draft.id ? "En création" : draft.isActive ? "En ligne" : "Brouillon"}
+          </StatusBadge>
+          <div className="flex items-center gap-2">
+            <Link href="/campaigns" prefetch={false} className="okado-secondary-action px-4 text-sm">
+              Retour aux jeux
+            </Link>
+            <button
+              type="button"
+              onClick={() => void saveCampaign("save")}
+              disabled={isSaving}
+              className="okado-secondary-action px-4 text-sm disabled:opacity-50"
+            >
+              {isEditing ? "Enregistrer" : "Enregistrer le brouillon"}
+            </button>
+            <button
+              type="button"
+              onClick={() => void saveCampaign("publish")}
+              disabled={isSaving}
+              className="okado-filled-action px-4 text-sm disabled:opacity-50"
+            >
+              {isSaving ? "Enregistrement…" : "Publier"}
+            </button>
+          </div>
+        </div>
+      </div>
 
       <div className="grid gap-6 xl:items-start xl:grid-cols-[240px_minmax(0,1fr)_360px]">
         <aside className="okado-card p-4">
@@ -1982,7 +2013,7 @@ export function CampaignWizard({
                             blockSpacingPx: draft.presentation.layout.blockSpacingPx,
                           },
                           heading:
-                            template.id === "cocorico-wheel"
+                            template.id === "cocorico-wheel" || isClassicPopWheelTemplate(template.id)
                               ? { ...draft.presentation.heading, fontFamily: "fredoka" }
                               : draft.presentation.heading,
                           wheel:
@@ -1994,7 +2025,15 @@ export function CampaignWizard({
                                   rimColor: DEFAULT_COCORICO_PRIMARY_COLOR,
                                   alternateLoseColor: DEFAULT_COCORICO_PRIMARY_COLOR,
                                 }
-                              : draft.presentation.wheel,
+                              : isClassicPopWheelTemplate(template.id) &&
+                                  [DEFAULT_WHEEL_PRIMARY_COLOR, DEFAULT_COCORICO_PRIMARY_COLOR].includes(draft.presentation.wheel.loseColor.toLowerCase())
+                                ? {
+                                    ...draft.presentation.wheel,
+                                    loseColor: DEFAULT_CLASSIC_POP_PRIMARY_COLOR,
+                                    rimColor: deriveLighterHex(DEFAULT_CLASSIC_POP_PRIMARY_COLOR),
+                                    alternateLoseColor: deriveLighterHex(DEFAULT_CLASSIC_POP_PRIMARY_COLOR),
+                                  }
+                                : draft.presentation.wheel,
                         },
                         accent:
                           draft.gameType === "scratch"
@@ -2314,7 +2353,7 @@ export function CampaignWizard({
                     {imageUploadErrors.background ? <p role="alert" className="mt-2 text-xs text-[#b42318]">{imageUploadErrors.background}</p> : null}
                     {draft.presentation.background.mode === "image" ? <div className="mt-3 flex flex-wrap items-center gap-2"><button type="button" onClick={() => setBackgroundLibraryOpen(true)} className="cursor-pointer rounded-[4px] border border-aubergine bg-aubergine px-3 py-2.5 text-sm font-semibold text-white">Choisir dans la bibliothèque</button>{draft.presentation.background.imageUrl ? <span className="rounded-full bg-[#e9f8ec] px-3 py-1.5 text-xs font-semibold text-[#18864b]">Image sélectionnée</span> : null}</div> : null}
                   </section>
-                  {draft.presentation.layout.templateId !== "cocorico-wheel" ? <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4"><p className="text-sm font-semibold text-[#182033]">Réglages du texte</p><div className="mt-3 grid gap-3 sm:grid-cols-2"><label className="block text-sm"><span className="mb-2 block font-semibold">Couleur du texte</span><input type="color" value={draft.presentation.heading.textColor} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, heading: { ...draft.presentation.heading, textColor: event.target.value } } })} className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] p-1" /></label><label className="block text-sm"><span className="mb-2 block font-semibold">Épaisseur</span><select value={draft.presentation.heading.fontWeight ?? 600} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, heading: { ...draft.presentation.heading, fontWeight: Number(event.target.value) } } })} className="w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] px-3 py-3"><option value={400}>Normale</option><option value={500}>Moyenne</option><option value={600}>Semi-gras</option><option value={700}>Gras</option></select></label></div></section> : null}
+                  {draft.presentation.layout.templateId !== "cocorico-wheel" ? <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4"><p className="text-sm font-semibold text-[#182033]">Réglages du texte</p><div className="mt-3"><label className="block text-sm"><span className="mb-2 block font-semibold">Couleur du texte</span><input type="color" value={draft.presentation.heading.textColor} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, heading: { ...draft.presentation.heading, textColor: event.target.value } } })} className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] p-1" /></label></div></section> : null}
                   {draft.gameType === "wheel" ? (
                   <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
                     <p className="text-sm font-semibold text-[#182033]">Espacement des blocs</p>
@@ -2327,7 +2366,7 @@ export function CampaignWizard({
                       <input
                         type="range"
                         min={0}
-                        max={120}
+                        max={60}
                         step={1}
                         value={draft.presentation.layout.blockSpacingPx}
                         onChange={(event) =>
