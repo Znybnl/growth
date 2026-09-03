@@ -627,6 +627,11 @@ export function AccountSettingsForm({
             {error}
           </div>
         ) : null}
+      {isSuccessOpen ? (
+        <div role="status" aria-live="polite" className="rounded-[8px] border border-[#b7e5c8] bg-[#f0fbf4] px-4 py-3 text-sm font-medium text-[#176b3a]">
+          Modifications enregistrées.
+        </div>
+      ) : null}
       </div>
       <ValidationDialog
         open={pendingLocationId !== null}
@@ -651,13 +656,6 @@ export function AccountSettingsForm({
             applyTabSelection(nextTab);
           }
         }}
-      />
-      <ValidationDialog
-        open={isSuccessOpen}
-        title="Vos modifications sont enregistrées"
-        description="Les informations de votre compte et de votre établissement ont bien été mises à jour."
-        ctaLabel="Fermer"
-        onClose={() => setIsSuccessOpen(false)}
       />
     </form>
   );
