@@ -76,7 +76,7 @@ function WheelPointer() {
     <div className="pointer-events-none absolute left-1/2 top-[-1%] z-30 -translate-x-1/2">
       <svg
         viewBox="0 0 72 96"
-        className="h-20 w-[4.75rem] drop-shadow-[0_7px_7px_rgba(7,63,120,0.3)]"
+        className="h-[4.5rem] w-[4.25rem] drop-shadow-[0_7px_7px_rgba(7,63,120,0.3)]"
         aria-hidden="true"
       >
         <path

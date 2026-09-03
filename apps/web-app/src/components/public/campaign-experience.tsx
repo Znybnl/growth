@@ -21,7 +21,7 @@ import { ImmersiveScratchTicket } from "@/components/public/immersive-scratch-ti
 import { ScratchGame } from "@/components/public/scratch-game";
 import { WheelOfFortune } from "@/components/public/wheel-of-fortune";
 import { fluidType } from "@/lib/responsive";
-import { textFontClass } from "@/lib/format";
+import { textFontClass, textFontFamily } from "@/lib/format";
 import {
   campaignLogoTextSizePx,
   clampCampaignLogoSizePercent,
@@ -30,6 +30,7 @@ import {
   resolveScratchAccent,
   resolveCocoricoPrimaryColor,
   resolveCocoricoBackgroundColor,
+  deriveLighterHex,
   scratchTemplatePrimaryColor,
 } from "@/lib/campaign-defaults";
 import { buildWheelVisualSegments } from "@/lib/wheel-segments";
@@ -530,7 +531,7 @@ export function CampaignExperience({
       : campaign.presentation.heading.align === "right"
         ? "text-right"
         : "text-center";
-  const headingFontClass = isCocoricoTemplate ? "font-fredoka" : textFontClass(campaign.presentation.heading.fontFamily);
+  const headingFontClass = textFontClass(campaign.presentation.heading.fontFamily);
   const showBottomState =
     !isImmersiveScratchTemplate &&
     ((stage === "idle" && campaign.gameType !== "wheel") ||
@@ -822,7 +823,7 @@ export function CampaignExperience({
         : isRestaurantPopTemplate
         ? `radial-gradient(circle at -10% -8%, ${withHexAlpha(primaryColor, "f2")} 0 18%, transparent 19%), radial-gradient(circle at 110% 0%, ${withHexAlpha(secondaryColor, "f2")} 0 13%, transparent 14%), radial-gradient(circle at 0% 80%, ${withHexAlpha(primaryColor, "20")} 0 20%, transparent 21%), radial-gradient(circle at 100% 78%, ${withHexAlpha(secondaryColor, "40")} 0 18%, transparent 19%), linear-gradient(180deg, #fff2dd 0%, #fffaf1 46%, #fff4e5 100%)`
         : isCocoricoTemplate
-        ? `radial-gradient(circle at 12% 12%, rgba(66,150,220,0.9) 0 10%, transparent 11%), radial-gradient(circle at 90% 18%, rgba(5,55,111,0.5) 0 16%, transparent 17%), linear-gradient(160deg, ${resolveCocoricoBackgroundColor(campaign.presentation.background.color)} 0%, ${resolveCocoricoBackgroundColor(campaign.presentation.background.color)} 48%, #063d78 100%)`
+        ? `radial-gradient(circle at 12% 12%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(campaign.presentation.background.color), 0.32), "e6")} 0 10%, transparent 11%), radial-gradient(circle at 90% 18%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(campaign.presentation.background.color), 0.12), "b3")} 0 16%, transparent 17%), linear-gradient(160deg, ${resolveCocoricoBackgroundColor(campaign.presentation.background.color)} 0%, ${resolveCocoricoBackgroundColor(campaign.presentation.background.color)} 48%, #063d78 100%)`
         : `radial-gradient(circle at 50% 50%, ${withHexAlpha(primaryColor, "33")}, transparent 50%), linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.08))`;
   const restaurantPopHeadingLines = buildRestaurantPopHeadingLines(safeSubtitle);
 
@@ -851,6 +852,7 @@ export function CampaignExperience({
         backgroundImage: backgroundStyle,
         backgroundPosition: "center",
         backgroundSize: "cover",
+        fontFamily: textFontFamily(campaign.presentation.heading.fontFamily),
       }}
     >
       {isPreview ? (
@@ -902,8 +904,8 @@ export function CampaignExperience({
         ) : null}
 
         {!isImmersiveScratchTemplate ? (
-        <div className={headingAlignmentClass}>
-          {isCocoricoTemplate ? <CocoricoPromoText text={safeSubtitle.trim() || DEFAULT_SCRATCH_SUBTITLE} /> : <h1
+        <div className={`${headingAlignmentClass} ${headingFontClass}`}>
+          {isCocoricoTemplate ? <CocoricoPromoText text={safeSubtitle.trim() || DEFAULT_SCRATCH_SUBTITLE} fontSize={headingFontSize} fontFamily={textFontFamily(campaign.presentation.heading.fontFamily)} /> : <h1
             className={`${headingFontClass} line-clamp-3 whitespace-pre-line ${isRestaurantPopTemplate ? "tracking-[0.038em] drop-shadow-[0_5px_0_rgba(0,0,0,0.08)]" : ""} pb-[25px] leading-[1] text-[#151826]`}
             style={{ color: headingTextColor, fontSize: headingFontSize, fontWeight: campaign.presentation.heading.fontWeight ?? 600 }}
           >
