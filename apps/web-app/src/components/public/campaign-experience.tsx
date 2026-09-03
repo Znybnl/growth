@@ -30,7 +30,6 @@ import {
   resolveScratchAccent,
   resolveCocoricoPrimaryColor,
   resolveCocoricoBackgroundColor,
-  deriveLighterHex,
   scratchTemplatePrimaryColor,
 } from "@/lib/campaign-defaults";
 import { buildWheelVisualSegments } from "@/lib/wheel-segments";
@@ -823,7 +822,7 @@ export function CampaignExperience({
         : isRestaurantPopTemplate
         ? `radial-gradient(circle at -10% -8%, ${withHexAlpha(primaryColor, "f2")} 0 18%, transparent 19%), radial-gradient(circle at 110% 0%, ${withHexAlpha(secondaryColor, "f2")} 0 13%, transparent 14%), radial-gradient(circle at 0% 80%, ${withHexAlpha(primaryColor, "20")} 0 20%, transparent 21%), radial-gradient(circle at 100% 78%, ${withHexAlpha(secondaryColor, "40")} 0 18%, transparent 19%), linear-gradient(180deg, #fff2dd 0%, #fffaf1 46%, #fff4e5 100%)`
         : isCocoricoTemplate
-        ? "radial-gradient(circle at 12% 12%, rgba(66,150,220,0.9) 0 10%, transparent 11%), radial-gradient(circle at 90% 18%, rgba(5,55,111,0.5) 0 16%, transparent 17%), linear-gradient(160deg, #07549b 0%, #0b67b7 48%, #063d78 100%)"
+        ? `radial-gradient(circle at 12% 12%, rgba(66,150,220,0.9) 0 10%, transparent 11%), radial-gradient(circle at 90% 18%, rgba(5,55,111,0.5) 0 16%, transparent 17%), linear-gradient(160deg, ${resolveCocoricoBackgroundColor(campaign.presentation.background.color)} 0%, ${resolveCocoricoBackgroundColor(campaign.presentation.background.color)} 48%, #063d78 100%)`
         : `radial-gradient(circle at 50% 50%, ${withHexAlpha(primaryColor, "33")}, transparent 50%), linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.08))`;
   const restaurantPopHeadingLines = buildRestaurantPopHeadingLines(safeSubtitle);
 
@@ -849,9 +848,7 @@ export function CampaignExperience({
       data-template-id={pageTemplate}
       style={{
         backgroundColor: campaign.presentation.background.color,
-        backgroundImage: isCocoricoTemplate && campaign.presentation.background.mode === "color"
-          ? `linear-gradient(135deg, ${resolveCocoricoBackgroundColor(campaign.presentation.background.color)}, ${deriveLighterHex(resolveCocoricoBackgroundColor(campaign.presentation.background.color), 0.32)})`
-          : backgroundStyle,
+        backgroundImage: backgroundStyle,
         backgroundPosition: "center",
         backgroundSize: "cover",
       }}

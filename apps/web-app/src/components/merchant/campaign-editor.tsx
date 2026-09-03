@@ -64,6 +64,7 @@ import {
   DEFAULT_SCRATCH_PRIMARY_COLOR,
   DEFAULT_SCRATCH_SUBTITLE,
   DEFAULT_WHEEL_PRIMARY_COLOR,
+  DEFAULT_COCORICO_PRIMARY_COLOR,
   resolveCocoricoPrimaryColor,
   resolveCocoricoBackgroundColor,
   DEFAULT_WHEEL_SUBTITLE,
@@ -236,6 +237,7 @@ const textFontOptions: TextFont[] = [
   "lobster",
   "pacifico",
   "syncopate",
+  "fredoka",
 ];
 const headingFontWeightOptions = [400, 500, 600, 700, 800, 900];
 const wheelPageTemplateOptions: Array<{
@@ -1463,7 +1465,7 @@ export function buildCampaignLivePreviewModel(
       : form.presentation.heading.align === "right"
         ? "text-right"
         : "text-center";
-  const headingFontClass = templateId === "cocorico-wheel" ? "font-anton" : textFontClass(form.presentation.heading.fontFamily);
+  const headingFontClass = templateId === "cocorico-wheel" ? "font-fredoka" : textFontClass(form.presentation.heading.fontFamily);
   const logoSizePercent = clampCampaignLogoSizePercent(form.presentation.logo.sizePercent);
   const logoWidthPx = Math.round(Math.max(56, Math.min(720, logoSizePercent * 3)));
   const logoTextSizePx = campaignLogoTextSizePx(logoSizePercent, form.gameType);
@@ -1773,7 +1775,7 @@ export function CampaignEditor({
       logoUrl: form.logoUrl ?? "",
       logoText: form.logoText?.trim() || merchant.companyName,
       headingAlignmentClass,
-      headingFontClass: currentTemplateId === "cocorico-wheel" ? "font-anton" : headingFontClass,
+      headingFontClass: currentTemplateId === "cocorico-wheel" ? "font-fredoka" : headingFontClass,
       headingTextColor: form.presentation.heading.textColor,
       headingFontSizePx: currentTemplateId === "cocorico-wheel" ? Math.min(form.presentation.heading.fontSizePx, 32) : form.presentation.heading.fontSizePx,
       headingFontWeight: currentTemplateId === "cocorico-wheel" ? 900 : form.presentation.heading.fontWeight ?? 600,
@@ -2641,7 +2643,25 @@ function setGameType(gameType: GameType) {
                             layout: {
                               ...current.presentation.layout,
                               templateId: template.value,
+                              blockSpacingPx:
+                                template.value === "cocorico-wheel"
+                                  ? 8
+                                  : current.presentation.layout.blockSpacingPx,
                             },
+                            heading:
+                              template.value === "cocorico-wheel"
+                                ? { ...current.presentation.heading, fontFamily: "fredoka" }
+                                : current.presentation.heading,
+                            wheel:
+                              template.value === "cocorico-wheel" &&
+                              current.presentation.wheel.loseColor.toLowerCase() === DEFAULT_WHEEL_PRIMARY_COLOR
+                                ? {
+                                    ...current.presentation.wheel,
+                                    loseColor: DEFAULT_COCORICO_PRIMARY_COLOR,
+                                    rimColor: DEFAULT_COCORICO_PRIMARY_COLOR,
+                                    alternateLoseColor: DEFAULT_COCORICO_PRIMARY_COLOR,
+                                  }
+                                : current.presentation.wheel,
                           },
                           accent:
                             current.gameType === "scratch"
