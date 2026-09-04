@@ -52,6 +52,7 @@ import { assertDataBackendAvailable } from "@/lib/supabase";
 import { assertCampaignCanPublish } from "@/lib/campaign-compliance";
 import { getMemorySupportLogs } from "@/lib/support-log";
 import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
+import { DEFAULT_GAME_PAGE_TEMPLATE_ID } from "@/lib/campaign-defaults";
 import { cache } from "react";
 import {
   Campaign,
@@ -163,7 +164,7 @@ function createPresentation(overrides?: CampaignPresentationOverrides): Campaign
     },
     layout: {
       blockSpacingPx: 40,
-      templateId: "classic",
+      templateId: DEFAULT_GAME_PAGE_TEMPLATE_ID,
       ...overrides?.layout,
     },
     wheel: {
