@@ -157,14 +157,14 @@ export default async function DashboardPage({
       <DashboardOperationalAlerts />
 
       <section className="grid min-w-0 gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-        <div className="min-w-0 space-y-6">
+        <div className="contents">
           <DashboardActivityChart
             eyebrow="Activité récente"
             title="Scans et participations par jour"
             points={activityPoints}
           />
 
-          <div className="okado-card min-h-[350px] min-w-0 p-5 md:p-6">
+          <div className="okado-card min-h-[350px] min-w-0 p-5 md:p-6 xl:col-span-2 xl:row-start-2">
             <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
               <div className="min-w-0">
                 <p className="okado-label">
@@ -265,7 +265,7 @@ export default async function DashboardPage({
           </div>
         </div>
 
-        <div className="min-w-0 space-y-6">
+        <div className="min-w-0 space-y-6 xl:col-start-2 xl:row-start-1">
           <div className="okado-card min-h-[350px] min-w-0 p-5 md:p-6">
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">
