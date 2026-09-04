@@ -1980,12 +1980,12 @@ export function CampaignWizard({
                     },
                     {
                       id: "restaurant-pop",
-                      label: "Visuel pop",
+                      label: "Dynamique",
                       text: "Événementiel et contrasté",
                     },
                     {
                       id: "cocorico-wheel",
-                      label: "Cocorico",
+                      label: "Moderne",
                       text: "Bleu, blanc et pictogrammes cadeaux",
                     },
                     {
@@ -2259,7 +2259,7 @@ export function CampaignWizard({
                    <label className="block">
                      <span className="text-sm font-semibold text-[#182033]">Couleur secondaire</span>
                      <span className="hidden">
-                       Utilisée pour les accents graphiques du template Visuel pop.
+                       Utilisée pour les accents graphiques du template Dynamique.
                      </span>
                      <input
                        type="color"
