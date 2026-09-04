@@ -175,14 +175,14 @@ export default async function DashboardPage({
 
       <DashboardOperationalAlerts />
 
-      <div className="grid min-w-0 items-start gap-5 lg:grid-cols-[minmax(0,1.35fr)_minmax(300px,0.85fr)]">
-      <DashboardActivityChart
-        eyebrow="Activité récente"
-        title="Scans et participations par jour"
-        points={activityPoints}
-      />
+      <section className="min-w-0 space-y-6">
+        <DashboardActivityChart
+          eyebrow="Activité récente"
+          title="Scans et participations par jour"
+          points={activityPoints}
+        />
 
-      <section className="okado-card min-w-0 p-5 md:p-6">
+        <section className="okado-card min-w-0 p-5 md:p-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div className="min-w-0"><p className="okado-label">Campagnes prioritaires</p><h2 className="okado-section-title mt-2">Vos dernières campagnes</h2></div>
           <Link href="/campaigns" prefetch className="okado-link text-sm">Voir toutes les campagnes</Link>
@@ -196,8 +196,8 @@ export default async function DashboardPage({
             <div className="space-y-0 2xl:hidden">{recentCampaigns.map((item) => <article key={item.campaign.id} className="okado-mobile-table-row"><div className="flex items-start justify-between gap-3"><div className="flex min-w-0 items-start gap-3"><CampaignStatusIcon item={item} /><div className="min-w-0"><p className="truncate font-semibold text-graphite">{item.campaign.title}</p><p className="truncate text-sm text-ash">{gameTypeLabel(item.campaign.gameType)}</p></div></div><DashboardCampaignActionsMenu campaignId={item.campaign.id} /></div><div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 text-sm"><div className="okado-mobile-table-stat"><p className="okado-mobile-table-stat-label">Conversion</p><p className="mt-1 okado-mobile-table-stat-value">{formatPercent(item.kpis.conversionRate)}</p></div><div className="okado-mobile-table-stat"><p className="okado-mobile-table-stat-label">Participations</p><p className="mt-1 okado-mobile-table-stat-value">{item.kpis.leads}</p></div><div className="okado-mobile-table-stat"><p className="okado-mobile-table-stat-label">Scans</p><p className="mt-1 okado-mobile-table-stat-value">{item.kpis.scans}</p></div></div></article>)}</div>
           </div>
         ) : <EmptyState title="Aucune campagne trouvée" description="Créez une campagne pour suivre ses performances ici." />}
+        </section>
       </section>
-      </div>
 
       <section className="okado-card min-w-0 p-5 md:p-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between"><div className="min-w-0"><p className="okado-label">Dernières saisies</p><h2 className="okado-section-title mt-2">Participations récentes</h2></div><Link href="/data" prefetch={false} className="okado-link text-sm">Ouvrir les données</Link></div>
