@@ -67,6 +67,8 @@ import {
   DEFAULT_SCRATCH_SUBTITLE,
   DEFAULT_WHEEL_PRIMARY_COLOR,
   DEFAULT_COCORICO_PRIMARY_COLOR,
+  DEFAULT_COCORICO_DUO_BLUE,
+  DEFAULT_COCORICO_DUO_YELLOW,
   DEFAULT_CLASSIC_POP_PRIMARY_COLOR,
   resolveCocoricoPrimaryColor,
   resolveCocoricoBackgroundColor,
@@ -81,6 +83,7 @@ import {
   resolveScratchAccent,
   resolvePromoStrokeColor,
   isClassicPopWheelTemplate,
+  isCocoricoWheelTemplate,
 } from "@/lib/campaign-defaults";
 import { fluidType } from "@/lib/responsive";
 import { getPrizeValidationMessages } from "@/lib/prize-validation";
@@ -212,6 +215,7 @@ export type CampaignEditorPreviewModel = {
   accent: EditorState["accent"];
   wheelStyle: EditorState["presentation"]["wheel"];
   cocoricoPrimaryColor: string;
+  cocoricoSecondaryColor: string;
   buttonStyle: {
     backgroundColor: string;
     textColor: string;
@@ -268,6 +272,11 @@ const wheelPageTemplateOptions: Array<{
     value: "cocorico-wheel",
     title: "Moderne",
     description: "Une roue promotionnelle bleue et blanche avec pictogrammes cadeaux et message très visible.",
+  },
+  {
+    value: "cocorico-duo-wheel",
+    title: "Bicolore",
+    description: "Une roue inspirée de Moderne, avec deux couleurs alternées et des pictogrammes cadeaux.",
   },
   {
     value: "cosmic-orbit",
@@ -826,7 +835,8 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
   flushTop?: boolean;
 }) {
   const isRestaurantPopTemplate = preview.gamePageTemplateId === "restaurant-pop";
-  const isCocoricoTemplate = preview.gamePageTemplateId === "cocorico-wheel";
+  const isCocoricoTemplate = isCocoricoWheelTemplate(preview.gamePageTemplateId);
+  const isCocoricoDuoTemplate = preview.gamePageTemplateId === "cocorico-duo-wheel";
   const isCosmicTemplate = preview.gamePageTemplateId === "cosmic-orbit";
   const isImmersiveTemplate =
     !isCocoricoTemplate && (isCosmicTemplate || preview.gamePageTemplateId === "sunburst-festival");
@@ -977,6 +987,8 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
             isCocoricoTemplate ? (
               <CocoricoWheel
                 primaryColor={preview.cocoricoPrimaryColor}
+                secondaryColor={isCocoricoDuoTemplate ? preview.cocoricoSecondaryColor : undefined}
+                palette={isCocoricoDuoTemplate ? "duo" : "classic"}
                 segments={preview.previewSegments}
                 winningSegmentId={preview.winningSegmentId}
                 buttonStyle={{ textColor: preview.buttonStyle.textColor }}
@@ -1438,7 +1450,7 @@ export function buildCampaignLivePreviewModel(
       ? `linear-gradient(rgba(15,23,40,0.32), rgba(15,23,40,0.52)), url("${form.presentation.background.imageUrl}")`
       : templateId === "restaurant-pop"
         ? `radial-gradient(circle at 12% 12%, rgba(255,255,255,0.42) 0 8%, transparent 30%), radial-gradient(circle at 88% 22%, rgba(255,255,255,0.3) 0 10%, transparent 34%), radial-gradient(circle at 18% 86%, rgba(255,255,255,0.2) 0 7%, transparent 27%), linear-gradient(180deg, #fff2dd 0%, #fffaf1 48%, #fff4e5 100%)`
-            : templateId === "cocorico-wheel"
+            : isCocoricoWheelTemplate(templateId)
               ? `radial-gradient(circle at 14% 12%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(form.presentation.background.color), 0.32), "e6")} 0 10%, transparent 11%), radial-gradient(circle at 88% 26%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(form.presentation.background.color), 0.12), "b3")} 0 15%, transparent 16%), linear-gradient(160deg, ${resolveCocoricoBackgroundColor(form.presentation.background.color)} 0%, ${resolveCocoricoBackgroundColor(form.presentation.background.color)} 48%, #063d78 100%)`
               : templateId === "cosmic-orbit"
               ? `radial-gradient(circle at 50% 112%, ${withHexAlpha(form.presentation.wheel.loseColor, "52")} 0 24%, transparent 43%), radial-gradient(circle at 9% 12%, ${withHexAlpha(form.presentation.wheel.winColor, "2b")} 0 14%, transparent 25%), linear-gradient(155deg, #07142e 0%, #0b1d42 55%, #071126 100%)`
@@ -1477,7 +1489,7 @@ export function buildCampaignLivePreviewModel(
       headingFontClass,
       headingFontFamily: form.presentation.heading.fontFamily,
       headingTextColor:
-      templateId === "cosmic-orbit" || templateId === "cocorico-wheel"
+      templateId === "cosmic-orbit" || isCocoricoWheelTemplate(templateId)
         ? "#f8fbff"
         : form.gameType === "scratch" &&
             form.presentation.heading.textColor.toLowerCase() === "#1f2937"
@@ -1491,7 +1503,10 @@ export function buildCampaignLivePreviewModel(
     gameType: form.gameType,
     accent: previewAccent,
     wheelStyle: form.presentation.wheel,
-    cocoricoPrimaryColor: resolveCocoricoPrimaryColor(form.presentation.wheel.loseColor),
+    cocoricoPrimaryColor: templateId === "cocorico-duo-wheel"
+      ? form.presentation.wheel.loseColor
+      : resolveCocoricoPrimaryColor(form.presentation.wheel.loseColor),
+    cocoricoSecondaryColor: form.presentation.wheel.alternateLoseColor,
     buttonStyle: {
       backgroundColor: form.gameType === "wheel" ? form.presentation.wheel.loseColor : form.presentation.button.backgroundColor,
       textColor: form.presentation.button.textColor,
@@ -1671,7 +1686,7 @@ export function CampaignEditor({
         : "text-center";
   const headingFontClass = textFontClass(form.presentation.heading.fontFamily);
   const currentTemplateId = form.presentation.layout.templateId ?? "classic";
-  const showBackgroundColor = currentTemplateId === "classic" || currentTemplateId === "cocorico-wheel";
+  const showBackgroundColor = currentTemplateId === "classic" || isCocoricoWheelTemplate(currentTemplateId);
   const previewModel = useMemo<CampaignEditorPreviewModel>(() => {
     const previewAccent =
       form.gameType === "scratch"
@@ -1689,7 +1704,7 @@ export function CampaignEditor({
             ? `linear-gradient(rgba(15,23,40,0.32), rgba(15,23,40,0.52)), url("${form.presentation.background.imageUrl}")`
             : (form.presentation.layout.templateId ?? "classic") === "restaurant-pop"
               ? `radial-gradient(circle at 12% 12%, rgba(255,255,255,0.42) 0 8%, transparent 30%), radial-gradient(circle at 88% 22%, rgba(255,255,255,0.3) 0 10%, transparent 34%), radial-gradient(circle at 18% 86%, rgba(255,255,255,0.2) 0 7%, transparent 27%), linear-gradient(180deg, #fff2dd 0%, #fffaf1 48%, #fff4e5 100%)`
-            : (form.presentation.layout.templateId ?? "classic") === "cocorico-wheel"
+            : isCocoricoWheelTemplate(form.presentation.layout.templateId)
               ? `radial-gradient(circle at 14% 12%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(form.presentation.background.color), 0.32), "e6")} 0 10%, transparent 11%), radial-gradient(circle at 88% 26%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(form.presentation.background.color), 0.12), "b3")} 0 15%, transparent 16%), linear-gradient(160deg, ${resolveCocoricoBackgroundColor(form.presentation.background.color)} 0%, ${resolveCocoricoBackgroundColor(form.presentation.background.color)} 48%, #063d78 100%)`
             : (form.presentation.layout.templateId ?? "classic") === "cosmic-orbit"
                   ? `radial-gradient(circle at 50% 112%, ${withHexAlpha(form.presentation.wheel.loseColor, "52")} 0 24%, transparent 43%), radial-gradient(circle at 9% 12%, ${withHexAlpha(form.presentation.wheel.winColor, "2b")} 0 14%, transparent 25%), linear-gradient(155deg, #07142e 0%, #0b1d42 55%, #071126 100%)`
@@ -1723,14 +1738,17 @@ export function CampaignEditor({
       headingFontFamily: form.presentation.heading.fontFamily,
       headingTextColor: form.presentation.heading.textColor,
       headingFontSizePx: form.presentation.heading.fontSizePx,
-      headingFontWeight: currentTemplateId === "cocorico-wheel" ? 900 : form.presentation.heading.fontWeight ?? 600,
+      headingFontWeight: isCocoricoWheelTemplate(currentTemplateId) ? 900 : form.presentation.heading.fontWeight ?? 600,
       subtitle: limitCampaignSubtitleLines(form.subtitle),
       blockSpacingPx: clampCampaignSpacingPx(form.presentation.layout.blockSpacingPx),
       gamePageTemplateId: form.presentation.layout.templateId ?? "classic",
       gameType: form.gameType,
       accent: previewAccent,
       wheelStyle: form.presentation.wheel,
-      cocoricoPrimaryColor: resolveCocoricoPrimaryColor(form.presentation.wheel.loseColor),
+      cocoricoPrimaryColor: currentTemplateId === "cocorico-duo-wheel"
+        ? form.presentation.wheel.loseColor
+        : resolveCocoricoPrimaryColor(form.presentation.wheel.loseColor),
+      cocoricoSecondaryColor: form.presentation.wheel.alternateLoseColor,
       buttonStyle: {
         backgroundColor:
           form.gameType === "wheel"
@@ -1951,7 +1969,7 @@ function setGameType(gameType: GameType) {
                 : current.presentation.layout.templateId === "restaurant-pop" ||
                     current.presentation.layout.templateId === "cosmic-orbit" ||
                     current.presentation.layout.templateId === "sunburst-festival" ||
-                    current.presentation.layout.templateId === "cocorico-wheel"
+                    isCocoricoWheelTemplate(current.presentation.layout.templateId)
                   ? current.presentation.layout.templateId
                   : "classic",
           },
@@ -1989,7 +2007,10 @@ function setGameType(gameType: GameType) {
         wheel: {
           ...current.presentation.wheel,
           loseColor: nextColor,
-          alternateLoseColor: deriveLighterHex(nextColor),
+          alternateLoseColor:
+            current.presentation.layout.templateId === "cocorico-duo-wheel"
+              ? current.presentation.wheel.alternateLoseColor
+              : deriveLighterHex(nextColor),
           rimColor: deriveLighterHex(nextColor),
         },
       },
@@ -2562,11 +2583,19 @@ function setGameType(gameType: GameType) {
                               blockSpacingPx: current.presentation.layout.blockSpacingPx,
                             },
                             heading:
-                              template.value === "cocorico-wheel" || isClassicPopWheelTemplate(template.value)
+                              isCocoricoWheelTemplate(template.value) || isClassicPopWheelTemplate(template.value)
                                 ? { ...current.presentation.heading, fontFamily: "fredoka" }
                                 : current.presentation.heading,
                             wheel:
-                              template.value === "cocorico-wheel" &&
+                              template.value === "cocorico-duo-wheel" &&
+                              current.presentation.layout.templateId !== template.value
+                                ? {
+                                    ...current.presentation.wheel,
+                                    loseColor: DEFAULT_COCORICO_DUO_BLUE,
+                                    rimColor: DEFAULT_COCORICO_DUO_BLUE,
+                                    alternateLoseColor: DEFAULT_COCORICO_DUO_YELLOW,
+                                  }
+                                : template.value === "cocorico-wheel" &&
                               current.presentation.wheel.loseColor.toLowerCase() === DEFAULT_WHEEL_PRIMARY_COLOR
                                 ? {
                                     ...current.presentation.wheel,
@@ -2907,7 +2936,7 @@ function setGameType(gameType: GameType) {
                   <div className="text-sm">
                     <span className="mb-3 block text-[#616b7c]">Police du texte</span>
                     <div className="grid gap-3">
-                      {(form.presentation.layout.templateId === "cocorico-wheel" ? cocoricoTextFontOptions : textFontOptions).map((font) => {
+                      {(isCocoricoWheelTemplate(form.presentation.layout.templateId) ? cocoricoTextFontOptions : textFontOptions).map((font) => {
                         const active = form.presentation.heading.fontFamily === font;
 
                         return (
@@ -2941,7 +2970,7 @@ function setGameType(gameType: GameType) {
 
                 </>
               ) : null}
-              {!isExpertMode && currentTemplateId === "cocorico-wheel" ? (
+              {!isExpertMode && isCocoricoWheelTemplate(currentTemplateId) ? (
                 <label className="text-sm">
                   <span className="mb-2 flex items-center justify-between gap-3 text-[#616b7c]">
                     <span>Taille du texte (px)</span>
@@ -3378,7 +3407,7 @@ function setGameType(gameType: GameType) {
               <div className="text-sm">
                 <span className="mb-3 block text-[#616b7c]">Police du texte</span>
                 <div className="grid gap-3">
-                  {(form.presentation.layout.templateId === "cocorico-wheel" ? cocoricoTextFontOptions : textFontOptions).map((font) => {
+                  {(isCocoricoWheelTemplate(form.presentation.layout.templateId) ? cocoricoTextFontOptions : textFontOptions).map((font) => {
                     const active = form.presentation.poster.headlineFontFamily === font;
 
                     return (
@@ -3541,7 +3570,7 @@ function setGameType(gameType: GameType) {
               <div className="text-sm">
                 <span className="mb-3 block text-[#616b7c]">Police du texte</span>
                 <div className="grid gap-3">
-                  {(form.presentation.layout.templateId === "cocorico-wheel" ? cocoricoTextFontOptions : textFontOptions).map((font) => {
+                  {(isCocoricoWheelTemplate(form.presentation.layout.templateId) ? cocoricoTextFontOptions : textFontOptions).map((font) => {
                     const active = form.presentation.heading.fontFamily === font;
 
                     return (
@@ -3598,6 +3627,29 @@ function setGameType(gameType: GameType) {
                     className="h-14 w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none"
                   />
                 </label>
+
+                {currentTemplateId === "cocorico-duo-wheel" ? (
+                  <label className="text-sm">
+                    <span className="mb-2 block text-[#616b7c]">Couleur secondaire</span>
+                    <input
+                      type="color"
+                      value={form.presentation.wheel.alternateLoseColor}
+                      onChange={(event) =>
+                        setForm((current) => ({
+                          ...current,
+                          presentation: {
+                            ...current.presentation,
+                            wheel: {
+                              ...current.presentation.wheel,
+                              alternateLoseColor: event.target.value,
+                            },
+                          },
+                        }))
+                      }
+                      className="h-14 w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none"
+                    />
+                  </label>
+                ) : null}
 
               </div>
             </section>

@@ -19,6 +19,8 @@ type CocoricoWheelProps = {
   onSpinEnd?: () => void;
   autoSpinKey?: string | null;
   primaryColor?: string;
+  secondaryColor?: string;
+  palette?: "classic" | "duo";
   buttonStyle?: {
     textColor?: string;
   };
@@ -102,6 +104,8 @@ export function CocoricoWheel({
   onSpinEnd,
   autoSpinKey,
   primaryColor = PRIMARY_BLUE,
+  secondaryColor = "#ffffff",
+  palette = "classic",
   buttonStyle,
   framing = "default",
 }: CocoricoWheelProps) {
@@ -190,7 +194,7 @@ export function CocoricoWheel({
               const endAngle = startAngle + segmentAngle - 2.8;
               const midAngle = startAngle + (endAngle - startAngle) / 2;
               const iconPoint = polarToCartesian(207, midAngle);
-              const fillColor = index % 2 === 0 ? primaryColor : "#ffffff";
+              const fillColor = index % 2 === 0 ? primaryColor : secondaryColor;
               const contentColor = fillColor === "#ffffff" ? DEEP_BLUE : "#ffffff";
 
               return (
@@ -204,8 +208,8 @@ export function CocoricoWheel({
                   />
                   <path
                     d={describeSlice(startAngle, endAngle)}
-                    fill={index % 2 === 0 ? primaryColor : PALE_BLUE}
-                    opacity="0.2"
+                    fill={palette === "duo" ? fillColor : index % 2 === 0 ? primaryColor : PALE_BLUE}
+                    opacity={palette === "duo" ? 0 : 0.2}
                   />
                   <g
                     transform={`translate(${iconPoint.x} ${iconPoint.y}) rotate(${midAngle + 90})`}
@@ -217,7 +221,7 @@ export function CocoricoWheel({
             })}
             <circle cx={CENTER} cy={CENTER} r={INNER_RADIUS + 17} fill="#ffffff" />
             <circle cx={CENTER} cy={CENTER} r={INNER_RADIUS + 11} fill={DEEP_BLUE} />
-            <circle cx={CENTER} cy={CENTER} r={INNER_RADIUS + 3} fill={primaryColor} />
+            <circle cx={CENTER} cy={CENTER} r={INNER_RADIUS + 3} fill={palette === "duo" ? secondaryColor : primaryColor} />
           </svg>
         </div>
 
@@ -230,7 +234,12 @@ export function CocoricoWheel({
           aria-label={buttonLabel}
           className="okado-wheel-center-button absolute left-1/2 top-1/2 z-40 flex aspect-square w-[24%] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-[4px] border-white text-center font-black uppercase transition active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-75"
           style={{
-            background: buttonEnabled && !hasSpun ? `linear-gradient(145deg, ${primaryColor}, ${DEEP_BLUE})` : "#94a3b8",
+            background:
+              buttonEnabled && !hasSpun
+                ? palette === "duo"
+                  ? `linear-gradient(145deg, ${secondaryColor}, ${primaryColor})`
+                  : `linear-gradient(145deg, ${primaryColor}, ${DEEP_BLUE})`
+                : "#94a3b8",
             color: buttonStyle?.textColor ?? "#ffffff",
             boxShadow: "inset 0 -8px 13px rgba(0,0,0,0.2), 0 12px 23px rgba(4,48,93,0.3)",
           }}

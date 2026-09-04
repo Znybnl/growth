@@ -13,6 +13,8 @@ export const DEFAULT_WHEEL_PRIMARY_COLOR = "#1b2842";
 export const DEFAULT_CLASSIC_POP_PRIMARY_COLOR = "#3c05a0";
 export const DEFAULT_COCORICO_PRIMARY_COLOR = "#2563eb";
 export const DEFAULT_COCORICO_BACKGROUND_COLOR = "#2563eb";
+export const DEFAULT_COCORICO_DUO_BLUE = "#78b4df";
+export const DEFAULT_COCORICO_DUO_YELLOW = "#f2c94c";
 export const DEFAULT_SCRATCH_PRIMARY_COLOR = "#f4c14a";
 export const DEFAULT_SCRATCH_CONFETTI_COLOR = "#f4c14a";
 export const DEFAULT_SCRATCH_LILAC_COLOR = "#b85be5";
@@ -25,6 +27,10 @@ export const CAMPAIGN_SPACING_MAX_PX = 60;
 
 export function isClassicPopWheelTemplate(templateId?: GamePageTemplateId) {
   return templateId === "classic" || templateId === "restaurant-pop";
+}
+
+export function isCocoricoWheelTemplate(templateId?: GamePageTemplateId) {
+  return templateId === "cocorico-wheel" || templateId === "cocorico-duo-wheel";
 }
 
 /** Soft editorial reflections used by the public Visuel pop game surface. */
