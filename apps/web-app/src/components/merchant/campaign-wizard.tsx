@@ -55,6 +55,8 @@ import {
   DEFAULT_WHEEL_SUBTITLE,
   DEFAULT_WHEEL_PRIMARY_COLOR,
   DEFAULT_COCORICO_PRIMARY_COLOR,
+  DEFAULT_COCORICO_DUO_BLUE,
+  DEFAULT_COCORICO_DUO_YELLOW,
   DEFAULT_CLASSIC_POP_PRIMARY_COLOR,
   deriveLighterHex,
   limitCampaignSubtitleLines,
@@ -62,6 +64,7 @@ import {
   clampCampaignSpacingPx,
   normalizeScratchAccent,
   isClassicPopWheelTemplate,
+  isCocoricoWheelTemplate,
   scratchTemplateUsesTicketTextColor,
 } from "@/lib/campaign-defaults";
 import {
@@ -2067,6 +2070,11 @@ export function CampaignWizard({
                       text: "Bleu, blanc et pictogrammes cadeaux",
                     },
                     {
+                      id: "cocorico-duo-wheel",
+                      label: "Bicolore",
+                      text: "Bleu clair, jaune et pictogrammes cadeaux",
+                    },
+                    {
                       id: "cosmic-orbit",
                       label: "Orbit néon",
                       text: "Immersif et nocturne",
@@ -2095,11 +2103,19 @@ export function CampaignWizard({
                             blockSpacingPx: draft.presentation.layout.blockSpacingPx,
                           },
                           heading:
-                            template.id === "cocorico-wheel" || isClassicPopWheelTemplate(template.id)
+                            isCocoricoWheelTemplate(template.id) || isClassicPopWheelTemplate(template.id)
                               ? { ...draft.presentation.heading, fontFamily: "fredoka" }
                               : draft.presentation.heading,
                           wheel:
-                            template.id === "cocorico-wheel" &&
+                            template.id === "cocorico-duo-wheel" &&
+                            draft.presentation.layout.templateId !== template.id
+                              ? {
+                                  ...draft.presentation.wheel,
+                                  loseColor: DEFAULT_COCORICO_DUO_BLUE,
+                                  rimColor: DEFAULT_COCORICO_DUO_BLUE,
+                                  alternateLoseColor: DEFAULT_COCORICO_DUO_YELLOW,
+                                }
+                              : template.id === "cocorico-wheel" &&
                             draft.presentation.wheel.loseColor.toLowerCase() === DEFAULT_WHEEL_PRIMARY_COLOR
                               ? {
                                   ...draft.presentation.wheel,
@@ -2162,7 +2178,10 @@ export function CampaignWizard({
                              ? {
                                  ...current.presentation.wheel,
                                  loseColor: color,
-                                 alternateLoseColor: deriveLighterHex(color),
+                                 alternateLoseColor:
+                                   current.presentation.layout.templateId === "cocorico-duo-wheel"
+                                     ? current.presentation.wheel.alternateLoseColor
+                                     : deriveLighterHex(color),
                                  rimColor: deriveLighterHex(color),
                                }
                              : current.presentation.wheel,
@@ -2176,17 +2195,19 @@ export function CampaignWizard({
                    />
                  </label>
 
-                 {draft.gameType === "wheel" && draft.presentation.layout.templateId === "restaurant-pop" ? (
+                 {draft.gameType === "wheel" && (draft.presentation.layout.templateId === "restaurant-pop" || draft.presentation.layout.templateId === "cocorico-duo-wheel") ? (
                    <label className="block">
                      <span className="text-sm font-semibold text-[#182033]">Couleur secondaire</span>
                      <input
                        type="color"
-                       value={draft.presentation.wheel.winColor}
+                       value={draft.presentation.layout.templateId === "cocorico-duo-wheel" ? draft.presentation.wheel.alternateLoseColor : draft.presentation.wheel.winColor}
                        onChange={(event) =>
                          patchDraft({
                            presentation: {
                              ...draft.presentation,
-                             wheel: { ...draft.presentation.wheel, winColor: event.target.value },
+                             wheel: draft.presentation.layout.templateId === "cocorico-duo-wheel"
+                               ? { ...draft.presentation.wheel, alternateLoseColor: event.target.value }
+                               : { ...draft.presentation.wheel, winColor: event.target.value },
                            },
                          })
                        }
@@ -2212,7 +2233,7 @@ export function CampaignWizard({
                      }
                      className="mt-3 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] bg-white px-3 py-3 text-sm text-[#182033]"
                    >
-                     {(draft.presentation.layout.templateId === "cocorico-wheel" ? COCORICO_TEXT_FONTS : WIZARD_TEXT_FONTS).map((font) => (
+                     {(isCocoricoWheelTemplate(draft.presentation.layout.templateId) ? COCORICO_TEXT_FONTS : WIZARD_TEXT_FONTS).map((font) => (
                        <option key={font} value={font} className={textFontClass(font)}>{textFontLabel(font)}</option>
                      ))}
                    </select>
@@ -2442,7 +2463,7 @@ export function CampaignWizard({
                       }
                       className="w-full rounded-[12px] border border-[#dbe3ed] bg-white px-3 py-3 text-sm text-[#182033]"
                     >
-                      {(draft.presentation.layout.templateId === "cocorico-wheel" ? COCORICO_TEXT_FONTS : WIZARD_TEXT_FONTS).map((font) => (
+                      {(isCocoricoWheelTemplate(draft.presentation.layout.templateId) ? COCORICO_TEXT_FONTS : WIZARD_TEXT_FONTS).map((font) => (
                         <option key={font} value={font} className={textFontClass(font)}>
                           {textFontLabel(font)}
                         </option>
@@ -2485,7 +2506,7 @@ export function CampaignWizard({
                     {imageUploadErrors.background ? <p role="alert" className="mt-2 text-xs text-[#b42318]">{imageUploadErrors.background}</p> : null}
                     {draft.presentation.background.mode === "image" ? <div className="mt-3 flex flex-wrap items-center gap-2"><button type="button" onClick={() => setBackgroundLibraryOpen(true)} className="cursor-pointer rounded-[4px] border border-aubergine bg-aubergine px-3 py-2.5 text-sm font-semibold text-white">Choisir dans la bibliothèque</button>{draft.presentation.background.imageUrl ? <span className="rounded-full bg-[#e9f8ec] px-3 py-1.5 text-xs font-semibold text-[#18864b]">Image sélectionnée</span> : null}</div> : null}
                   </section>
-                  {draft.presentation.layout.templateId !== "cocorico-wheel" ? <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4"><p className="text-sm font-semibold text-[#182033]">Réglages du texte</p><div className="mt-3"><label className="block text-sm"><span className="mb-2 block font-semibold">Couleur du texte</span><input type="color" value={draft.presentation.heading.textColor} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, heading: { ...draft.presentation.heading, textColor: event.target.value } } })} className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] p-1" /></label></div></section> : null}
+                  {!isCocoricoWheelTemplate(draft.presentation.layout.templateId) ? <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4"><p className="text-sm font-semibold text-[#182033]">Réglages du texte</p><div className="mt-3"><label className="block text-sm"><span className="mb-2 block font-semibold">Couleur du texte</span><input type="color" value={draft.presentation.heading.textColor} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, heading: { ...draft.presentation.heading, textColor: event.target.value } } })} className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] p-1" /></label></div></section> : null}
                   {draft.gameType !== "wheel" && scratchTemplateUsesTicketTextColor(draft.presentation.layout.templateId) ? <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
                     <p className="text-sm font-semibold text-[#182033]">
                       Couleurs du ticket

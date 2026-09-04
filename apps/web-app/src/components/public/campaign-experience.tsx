@@ -30,6 +30,7 @@ import {
   limitCampaignSubtitleLines,
   resolveScratchAccent,
   resolveCocoricoPrimaryColor,
+  isCocoricoWheelTemplate,
   resolveCocoricoBackgroundColor,
   RESTAURANT_POP_BACKGROUND,
   deriveLighterHex,
@@ -488,7 +489,8 @@ export function CampaignExperience({
   const pageTemplate = campaign.presentation.layout.templateId ?? "classic";
   const isClassicTemplate = campaign.presentation.layout.templateId === "classic" || !campaign.presentation.layout.templateId;
   const isRestaurantPopTemplate = pageTemplate === "restaurant-pop";
-  const isCocoricoTemplate = pageTemplate === "cocorico-wheel";
+  const isCocoricoTemplate = isCocoricoWheelTemplate(pageTemplate);
+  const isCocoricoDuoTemplate = pageTemplate === "cocorico-duo-wheel";
   const isCosmicTemplate = pageTemplate === "cosmic-orbit";
   const isSunburstTemplate = pageTemplate === "sunburst-festival";
   const isImmersiveTemplate = isCosmicTemplate || isSunburstTemplate;
@@ -955,7 +957,9 @@ export function CampaignExperience({
             <div className="absolute inset-0 overflow-visible">
               {isCocoricoTemplate ? (
                 <CocoricoWheel
-                  primaryColor={resolveCocoricoPrimaryColor(campaign.presentation.wheel.loseColor)}
+                  primaryColor={isCocoricoDuoTemplate ? campaign.presentation.wheel.loseColor : resolveCocoricoPrimaryColor(campaign.presentation.wheel.loseColor)}
+                  secondaryColor={isCocoricoDuoTemplate ? campaign.presentation.wheel.alternateLoseColor : undefined}
+                  palette={isCocoricoDuoTemplate ? "duo" : "classic"}
                   key={`${campaign.id}-${drawSession?.id ?? "idle"}`}
                   segments={segments}
                   winningSegmentId={winningSegmentId}

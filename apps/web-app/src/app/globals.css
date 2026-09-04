@@ -1561,7 +1561,8 @@ button:disabled,
   paint-order: stroke fill;
 }
 
-.okado-preview-surface[data-template-id="cocorico-wheel"] .okado-cocorico-promo-text {
+.okado-preview-surface[data-template-id="cocorico-wheel"] .okado-cocorico-promo-text,
+.okado-preview-surface[data-template-id="cocorico-duo-wheel"] .okado-cocorico-promo-text {
   font-size: clamp(2rem, 13cqw, 5rem);
 }
 
@@ -1570,11 +1571,13 @@ button:disabled,
     font-size: clamp(2.5rem, 10vw, 5rem);
   }
 
-  .okado-preview-surface[data-template-id="cocorico-wheel"] .okado-cocorico-promo-text {
+  .okado-preview-surface[data-template-id="cocorico-wheel"] .okado-cocorico-promo-text,
+  .okado-preview-surface[data-template-id="cocorico-duo-wheel"] .okado-cocorico-promo-text {
     font-size: clamp(2.5rem, 10cqw, 5rem);
   }
 }
 
-.okado-preview-surface[data-template-id="cocorico-wheel"] > div > div:has(> .okado-cocorico-wheel) {
+.okado-preview-surface[data-template-id="cocorico-wheel"] > div > div:has(> .okado-cocorico-wheel),
+.okado-preview-surface[data-template-id="cocorico-duo-wheel"] > div > div:has(> .okado-cocorico-wheel) {
   margin-inline: 0 !important;
 }
