@@ -25,10 +25,12 @@ import { textFontClass, textFontFamily } from "@/lib/format";
 import {
   campaignLogoTextSizePx,
   clampCampaignLogoSizePercent,
+  clampCampaignSpacingPx,
   DEFAULT_SCRATCH_SUBTITLE,
   limitCampaignSubtitleLines,
   resolveScratchAccent,
   resolveCocoricoPrimaryColor,
+  isCocoricoWheelTemplate,
   resolveCocoricoBackgroundColor,
   RESTAURANT_POP_BACKGROUND,
   deriveLighterHex,
@@ -487,7 +489,8 @@ export function CampaignExperience({
   const pageTemplate = campaign.presentation.layout.templateId ?? "classic";
   const isClassicTemplate = campaign.presentation.layout.templateId === "classic" || !campaign.presentation.layout.templateId;
   const isRestaurantPopTemplate = pageTemplate === "restaurant-pop";
-  const isCocoricoTemplate = pageTemplate === "cocorico-wheel";
+  const isCocoricoTemplate = isCocoricoWheelTemplate(pageTemplate);
+  const isCocoricoDuoTemplate = pageTemplate === "cocorico-duo-wheel";
   const isCosmicTemplate = pageTemplate === "cosmic-orbit";
   const isSunburstTemplate = pageTemplate === "sunburst-festival";
   const isImmersiveTemplate = isCosmicTemplate || isSunburstTemplate;
@@ -887,7 +890,7 @@ export function CampaignExperience({
         campaign.logoMode === "text" ||
         campaign.gameType === "scratch") ? (
           <div className={`flex ${logoAlignmentClass}`}>
-            <div style={{ marginBottom: `${campaign.presentation.logo.marginBottomPx}px` }}>
+            <div style={{ marginBottom: `${clampCampaignSpacingPx(campaign.presentation.logo.marginBottomPx)}px` }}>
               <BrandMark
                 logoText={campaign.logoText ?? campaign.merchantLogoText}
                 logoUrl={campaign.logoMode === "image" ? campaign.logoUrl : undefined}
@@ -896,7 +899,7 @@ export function CampaignExperience({
                 imageWidthPx={logoWidthPx}
                 textSizePx={logoTextSizePx}
                 textClassName="text-2xl"
-                textColor={headingTextColor}
+                textColor={campaign.presentation.logo.textColor ?? headingTextColor}
               />
             </div>
           </div>
@@ -949,12 +952,14 @@ export function CampaignExperience({
         {campaign.gameType === "wheel" ? (
           <div
             className="relative left-1/2 min-h-0 w-screen -translate-x-1/2 flex-1 overflow-visible"
-            style={{ minHeight: "min(52vh, 520px)", marginTop: `${campaign.presentation.layout.blockSpacingPx}px` }}
+            style={{ minHeight: "min(52vh, 520px)", marginTop: `${clampCampaignSpacingPx(campaign.presentation.layout.blockSpacingPx)}px` }}
           >
             <div className="absolute inset-0 overflow-visible">
               {isCocoricoTemplate ? (
                 <CocoricoWheel
-                  primaryColor={resolveCocoricoPrimaryColor(campaign.presentation.wheel.loseColor)}
+                  primaryColor={isCocoricoDuoTemplate ? campaign.presentation.wheel.loseColor : resolveCocoricoPrimaryColor(campaign.presentation.wheel.loseColor)}
+                  secondaryColor={isCocoricoDuoTemplate ? campaign.presentation.wheel.alternateLoseColor : undefined}
+                  palette={isCocoricoDuoTemplate ? "duo" : "classic"}
                   key={`${campaign.id}-${drawSession?.id ?? "idle"}`}
                   segments={segments}
                   winningSegmentId={winningSegmentId}
@@ -1036,7 +1041,7 @@ export function CampaignExperience({
                 headingFontWeight={campaign.presentation.heading.fontWeight ?? 600}
                 headingAlignmentClass={headingAlignmentClass}
                 logoAlignmentClass={logoAlignmentClass}
-                logoBottomSpacingPx={campaign.presentation.logo.marginBottomPx}
+                logoBottomSpacingPx={clampCampaignSpacingPx(campaign.presentation.logo.marginBottomPx)}
                 logoWidthPx={logoWidthPx}
                 logoTextSizePx={logoTextSizePx}
                 template={pageTemplate as "scratch-vault" | "scratch-confetti" | "scratch-coral" | "scratch-lilac" | "scratch-sunburst"}

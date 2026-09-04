@@ -98,6 +98,12 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
   }, [menuOpen]);
 
   useEffect(() => {
+    const closeMenuAfterGuardedNavigation = () => setMenuOpen(false);
+    window.addEventListener("merchant-navigation-guard-complete", closeMenuAfterGuardedNavigation);
+    return () => window.removeEventListener("merchant-navigation-guard-complete", closeMenuAfterGuardedNavigation);
+  }, []);
+
+  useEffect(() => {
     if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) {
       return;
     }
@@ -265,7 +271,7 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
             onClick={() => setMenuOpen(false)}
           >
             <CircleDollarSign className="size-4 shrink-0" aria-hidden="true" />
-            <span>Caisse</span>
+            <span>Valider un retrait</span>
           </Link>
           <Button asChild variant="primary" className="okado-sidebar-cta mt-5 h-10 px-4">
             <Link href="/campaigns/new/guided" prefetch={false} onClick={() => setMenuOpen(false)}>
@@ -305,16 +311,7 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
             </div>
           ) : null}
 
-          <Link
-            href="/caisse"
-            prefetch={false}
-            className="mt-auto mb-3 flex h-10 items-center justify-center rounded-[4px] border border-white/20 bg-white/10 px-4 text-sm font-semibold !text-white transition hover:bg-white hover:!text-aubergine"
-            onClick={() => setMenuOpen(false)}
-          >
-            Valider un retrait
-          </Link>
-
-          <div className="mt-0 border-t border-white/12 pt-4">
+          <div className="mt-auto border-t border-white/12 pt-4">
             <p className="text-[10px] uppercase tracking-[0.13em] text-white/55">Mon compte</p>
             <div className="mt-3 flex items-center gap-3">
               {user.authProvider === "google" && user.avatarUrl ? (

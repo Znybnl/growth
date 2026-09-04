@@ -13,6 +13,8 @@ export const DEFAULT_WHEEL_PRIMARY_COLOR = "#1b2842";
 export const DEFAULT_CLASSIC_POP_PRIMARY_COLOR = "#3c05a0";
 export const DEFAULT_COCORICO_PRIMARY_COLOR = "#2563eb";
 export const DEFAULT_COCORICO_BACKGROUND_COLOR = "#2563eb";
+export const DEFAULT_COCORICO_DUO_BLUE = "#78b4df";
+export const DEFAULT_COCORICO_DUO_YELLOW = "#f2c94c";
 export const DEFAULT_SCRATCH_PRIMARY_COLOR = "#f4c14a";
 export const DEFAULT_SCRATCH_CONFETTI_COLOR = "#f4c14a";
 export const DEFAULT_SCRATCH_LILAC_COLOR = "#b85be5";
@@ -20,9 +22,15 @@ export const DEFAULT_SCRATCH_TICKET_COLOR = "#f7f7f7";
 export const DEFAULT_SCRATCH_TEXT_COLOR = "#ffffff";
 export const MAX_CAMPAIGN_SUBTITLE_LINES = 3;
 export const MAX_CAMPAIGN_SUBTITLE_LENGTH = 240;
+export const CAMPAIGN_SPACING_MIN_PX = 0;
+export const CAMPAIGN_SPACING_MAX_PX = 60;
 
 export function isClassicPopWheelTemplate(templateId?: GamePageTemplateId) {
   return templateId === "classic" || templateId === "restaurant-pop";
+}
+
+export function isCocoricoWheelTemplate(templateId?: GamePageTemplateId) {
+  return templateId === "cocorico-wheel" || templateId === "cocorico-duo-wheel";
 }
 
 /** Soft editorial reflections used by the public Visuel pop game surface. */
@@ -115,6 +123,15 @@ export function clampCampaignLogoSizePercent(value: number | undefined) {
   return Math.max(0, Math.min(200, Number.isFinite(normalized) ? normalized : 100));
 }
 
+/** Keep logo and wheel spacing within the range exposed by the campaign editors. */
+export function clampCampaignSpacingPx(value: number | undefined, fallback = 20) {
+  const normalized = Number(value);
+  const safeValue = Number.isFinite(normalized) ? normalized : fallback;
+  return Math.round(
+    Math.max(CAMPAIGN_SPACING_MIN_PX, Math.min(CAMPAIGN_SPACING_MAX_PX, safeValue)),
+  );
+}
+
 /** Text logos use the same percentage scale as uploaded logos. */
 export function campaignLogoTextSizePx(
   sizePercent: number | undefined,
@@ -153,6 +170,24 @@ export function defaultScratchTextColor(templateId?: GamePageTemplateId) {
       return "#172033";
     default:
       return DEFAULT_SCRATCH_TEXT_COLOR;
+  }
+}
+
+/**
+ * Indicates whether a scratch-ticket template consumes the configurable
+ * ticket-text color from the campaign form. Keep this decision in one place
+ * so the editor never exposes a control that has no visual effect.
+ */
+export function scratchTemplateUsesTicketTextColor(templateId?: GamePageTemplateId) {
+  switch (templateId) {
+    case "scratch-vault":
+    case "scratch-confetti":
+    case "scratch-coral":
+    case "scratch-lilac":
+    case "scratch-sunburst":
+      return false;
+    default:
+      return true;
   }
 }
 

@@ -10,14 +10,19 @@ type ValidationDialogProps = {
   ctaLabel: string;
   onClose: () => void;
   onAction?: () => void;
+  secondaryCtaLabel?: string;
+  onSecondaryAction?: () => void;
+  secondaryActionDisabled?: boolean;
+  cancelLabel?: string;
+  onCancel?: () => void;
   tone?: "info" | "error";
   error?: string | null;
   actionDisabled?: boolean;
 };
 
 /**
- * Shared confirmation surface for completed merchant actions.
- * It intentionally exposes one action only; clicking the backdrop also closes it.
+ * Shared confirmation surface for completed merchant actions and decisions.
+ * The optional secondary and cancel actions keep multi-step confirmations consistent.
  */
 export function ValidationDialog({
   open,
@@ -26,6 +31,11 @@ export function ValidationDialog({
   ctaLabel,
   onClose,
   onAction,
+  secondaryCtaLabel,
+  onSecondaryAction,
+  secondaryActionDisabled = false,
+  cancelLabel,
+  onCancel,
   tone = "info",
   error = null,
   actionDisabled = false,
@@ -64,7 +74,7 @@ export function ValidationDialog({
             {error}
           </p>
         ) : null}
-        <div className="mt-6">
+        <div className="mt-6 space-y-2">
           <button
             type="button"
             onClick={onAction ?? onClose}
@@ -73,6 +83,26 @@ export function ValidationDialog({
           >
             {ctaLabel}
           </button>
+          {secondaryCtaLabel ? (
+            <button
+              type="button"
+              onClick={onSecondaryAction}
+              disabled={secondaryActionDisabled}
+              className="okado-secondary-action w-full px-4 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {secondaryCtaLabel}
+            </button>
+          ) : null}
+          {cancelLabel ? (
+            <button
+              type="button"
+              onClick={onCancel ?? onClose}
+              disabled={secondaryActionDisabled}
+              className="w-full rounded-[4px] border border-transparent px-4 py-2.5 text-sm font-semibold text-charcoal transition hover:bg-soft-white disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {cancelLabel}
+            </button>
+          ) : null}
         </div>
     </DialogShell>
   );

@@ -11,10 +11,12 @@ import { textFontClass, textFontFamily } from "@/lib/format";
 import {
   campaignLogoTextSizePx,
   clampCampaignLogoSizePercent,
+  clampCampaignSpacingPx,
   DEFAULT_SCRATCH_SUBTITLE,
   limitCampaignSubtitleLines,
   resolveScratchAccent,
   resolveCocoricoPrimaryColor,
+  isCocoricoWheelTemplate,
   resolveCocoricoBackgroundColor,
   RESTAURANT_POP_BACKGROUND,
   deriveLighterHex,
@@ -64,6 +66,7 @@ export type CampaignEditorPreviewModel = {
   logoTextSizePx: number;
   logoUrl: string;
   logoText: string;
+  logoTextColor: string;
   headingAlignmentClass: string;
   headingFontClass: string;
   headingFontFamily: CampaignSetupInput["presentation"]["heading"]["fontFamily"];
@@ -77,6 +80,7 @@ export type CampaignEditorPreviewModel = {
   accent: CampaignSetupInput["accent"];
   wheelStyle: CampaignSetupInput["presentation"]["wheel"];
   cocoricoPrimaryColor: string;
+  cocoricoSecondaryColor: string;
   buttonStyle: {
     backgroundColor: string;
     textColor: string;
@@ -129,7 +133,7 @@ function previewBackgroundImage(form: CampaignSetupInput, templateId: GamePageTe
   if (templateId === "restaurant-pop") {
     return RESTAURANT_POP_BACKGROUND;
   }
-  if (templateId === "cocorico-wheel") {
+  if (isCocoricoWheelTemplate(templateId)) {
     const backgroundColor = resolveCocoricoBackgroundColor(form.presentation.background.color);
     return `radial-gradient(circle at 14% 12%, ${withHexAlpha(deriveLighterHex(backgroundColor, 0.32), "e6")} 0 10%, transparent 11%), radial-gradient(circle at 88% 26%, ${withHexAlpha(deriveLighterHex(backgroundColor, 0.12), "b3")} 0 15%, transparent 16%), linear-gradient(160deg, ${backgroundColor} 0%, ${backgroundColor} 48%, #063d78 100%)`;
   }
@@ -180,24 +184,29 @@ export function buildCampaignLivePreviewModel(form: CampaignSetupInput, merchant
     logoAlignmentClass,
     // The public game uses the logo margin directly. Keep the wizard preview
     // on that same spacing scale for wheel and scratch experiences.
-    logoBottomSpacingPx: form.presentation.logo.marginBottomPx,
+    logoBottomSpacingPx: clampCampaignSpacingPx(form.presentation.logo.marginBottomPx),
     logoWidthPx: Math.round(Math.max(56, Math.min(720, logoSizePercent * 3))),
     logoTextSizePx: campaignLogoTextSizePx(logoSizePercent, form.gameType),
     logoUrl: form.logoUrl ?? "",
     logoText: form.logoText?.trim() || merchant.companyName,
+    logoTextColor: form.presentation.logo.textColor ?? form.presentation.heading.textColor,
     headingAlignmentClass,
     headingFontClass: headingFontClassFor(form),
     headingFontFamily: form.presentation.heading.fontFamily,
-    headingTextColor: templateId === "cosmic-orbit" ? "#f8fbff" : templateId === "cocorico-wheel" ? "#ffffff" : form.gameType === "scratch" && form.presentation.heading.textColor.toLowerCase() === "#1f2937" ? previewAccent.ink : form.presentation.heading.textColor,
+    headingTextColor: templateId === "cosmic-orbit" ? "#f8fbff" : isCocoricoWheelTemplate(templateId) ? "#ffffff" : form.gameType === "scratch" && form.presentation.heading.textColor.toLowerCase() === "#1f2937" ? previewAccent.ink : form.presentation.heading.textColor,
     headingFontSizePx: form.presentation.heading.fontSizePx,
-    headingFontWeight: templateId === "cocorico-wheel" ? 900 : form.presentation.heading.fontWeight ?? 600,
+    headingFontWeight: isCocoricoWheelTemplate(templateId) ? 900 : form.presentation.heading.fontWeight ?? 600,
     subtitle: limitCampaignSubtitleLines(form.subtitle),
-    blockSpacingPx: form.presentation.layout.blockSpacingPx,
+    blockSpacingPx: clampCampaignSpacingPx(form.presentation.layout.blockSpacingPx),
     gamePageTemplateId: templateId,
     gameType: form.gameType,
     accent: previewAccent,
     wheelStyle: form.presentation.wheel,
-    cocoricoPrimaryColor: resolveCocoricoPrimaryColor(form.presentation.wheel.loseColor),
+    cocoricoPrimaryColor:
+      templateId === "cocorico-duo-wheel"
+        ? form.presentation.wheel.loseColor
+        : resolveCocoricoPrimaryColor(form.presentation.wheel.loseColor),
+    cocoricoSecondaryColor: form.presentation.wheel.alternateLoseColor,
     buttonStyle: {
       backgroundColor: form.gameType === "wheel" ? form.presentation.wheel.loseColor : form.presentation.button.backgroundColor,
       textColor: form.presentation.button.textColor,
@@ -220,7 +229,8 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
   flushTop = false,
 }: { merchant: Merchant; preview: CampaignEditorPreviewModel; compact?: boolean; flushTop?: boolean }) {
   const isRestaurantPopTemplate = preview.gamePageTemplateId === "restaurant-pop";
-  const isCocoricoTemplate = preview.gamePageTemplateId === "cocorico-wheel";
+  const isCocoricoTemplate = isCocoricoWheelTemplate(preview.gamePageTemplateId);
+  const isCocoricoDuoTemplate = preview.gamePageTemplateId === "cocorico-duo-wheel";
   const isCosmicTemplate = preview.gamePageTemplateId === "cosmic-orbit";
   const isImmersiveTemplate = isCosmicTemplate || preview.gamePageTemplateId === "sunburst-festival";
   const isImmersiveScratchTemplate = ["scratch-vault", "scratch-confetti", "scratch-coral", "scratch-lilac", "scratch-sunburst"].includes(preview.gamePageTemplateId);
@@ -240,14 +250,14 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
         {showStandardHeader ? (
           <>
             {preview.logoMode === "image" && preview.logoUrl ? <div className={`flex ${preview.logoAlignmentClass}`}><div style={{ marginBottom: `${scalePreviewValue(preview.logoBottomSpacingPx)}px` }}><BrandMark logoText={merchant.logoText} logoUrl={preview.logoUrl} size="lg" variant="transparent" imageWidthPx={scalePreviewValue(preview.logoWidthPx)} /></div></div> : null}
-            {preview.logoMode === "text" ? <div className={`flex ${preview.logoAlignmentClass}`}><div style={{ marginBottom: `${scalePreviewValue(preview.logoBottomSpacingPx)}px` }}><BrandMark logoText={preview.logoText} size="lg" variant="transparent" imageWidthPx={scalePreviewValue(preview.logoWidthPx)} textSizePx={scalePreviewValue(preview.logoTextSizePx)} textColor={previewHeadingTextColor} textClassName="text-2xl" /></div></div> : null}
-            {preview.gameType === "scratch" && preview.logoMode === "none" ? <div className={`flex ${preview.logoAlignmentClass}`}><div style={{ marginBottom: `${scalePreviewValue(preview.logoBottomSpacingPx)}px` }}><BrandMark logoText={preview.logoText || merchant.companyName} size="lg" variant="transparent" imageWidthPx={scalePreviewValue(preview.logoWidthPx)} textSizePx={scalePreviewValue(preview.logoTextSizePx)} textColor={previewHeadingTextColor} textClassName="text-2xl" /></div></div> : null}
+            {preview.logoMode === "text" ? <div className={`flex ${preview.logoAlignmentClass}`}><div style={{ marginBottom: `${scalePreviewValue(preview.logoBottomSpacingPx)}px` }}><BrandMark logoText={preview.logoText} size="lg" variant="transparent" imageWidthPx={scalePreviewValue(preview.logoWidthPx)} textSizePx={scalePreviewValue(preview.logoTextSizePx)} textColor={preview.logoTextColor} textClassName="text-2xl" /></div></div> : null}
+            {preview.gameType === "scratch" && preview.logoMode === "none" ? <div className={`flex ${preview.logoAlignmentClass}`}><div style={{ marginBottom: `${scalePreviewValue(preview.logoBottomSpacingPx)}px` }}><BrandMark logoText={preview.logoText || merchant.companyName} size="lg" variant="transparent" imageWidthPx={scalePreviewValue(preview.logoWidthPx)} textSizePx={scalePreviewValue(preview.logoTextSizePx)} textColor={preview.logoTextColor} textClassName="text-2xl" /></div></div> : null}
             {preview.logoMode === "none" || (preview.logoMode === "image" && !preview.logoUrl) ? <div aria-hidden="true" className="h-5" /> : null}
             <div className={preview.headingAlignmentClass}>{isCocoricoTemplate || isRestaurantPopTemplate || preview.gamePageTemplateId === "classic" ? <CocoricoPromoText text={preview.subtitle.trim() || (preview.gameType === "scratch" ? DEFAULT_SCRATCH_SUBTITLE : "Découvrez votre animation")} as="h3" fontFamily={textFontFamily(preview.headingFontFamily)} fontSize={fluidType(scalePreviewValue(preview.headingFontSizePx), { minRatio: 0.82, maxRatio: 1.08, viewportStep: 0.3, viewportUnit: compact ? "cqw" : "vw" })} fontWeight={isCocoricoTemplate ? undefined : 850} textColor={isCocoricoTemplate ? undefined : previewHeadingTextColor} secondaryTextColor={isCocoricoTemplate ? undefined : previewHeadingTextColor} strokeColor={isCocoricoTemplate ? undefined : resolvePromoStrokeColor(previewHeadingTextColor)} strokeWidth={isCocoricoTemplate ? undefined : 5} variant={isCocoricoTemplate ? "cocorico" : "inspired"} rotate={isCocoricoTemplate} /> : <h3 className={`${preview.headingFontClass} line-clamp-3 whitespace-pre-line pb-[25px] leading-[1]`} style={{ color: previewHeadingTextColor, fontSize: fluidType(scalePreviewValue(preview.headingFontSizePx), { minRatio: 0.82, maxRatio: 1.08, viewportStep: 0.3, viewportUnit: compact ? "cqw" : "vw" }), fontWeight: preview.headingFontWeight }}>{preview.subtitle.trim() || (preview.gameType === "scratch" ? DEFAULT_SCRATCH_SUBTITLE : "Découvrez votre animation")}</h3>}</div>
           </>
         ) : null}
         <div className={preview.gameType === "wheel" ? compact ? "-mx-3" : "-mx-4" : undefined} style={{ marginTop: `${isImmersiveScratchTemplate ? 0 : scalePreviewValue(preview.blockSpacingPx)}px`, height: preview.gameType === "wheel" ? compact ? "330px" : "470px" : undefined, marginBottom: preview.gameType === "wheel" ? compact ? "-12px" : "-24px" : undefined }}>
-         {preview.gameType === "wheel" ? isCocoricoTemplate ? <CocoricoWheel primaryColor={preview.cocoricoPrimaryColor} segments={preview.previewSegments} winningSegmentId={preview.winningSegmentId} buttonStyle={{ textColor: preview.buttonStyle.textColor }} buttonEnabled framing={compact ? "mobile-preview" : "editor"} /> : isImmersiveTemplate ? <ImmersiveWheel accent={preview.accent} wheelStyle={preview.wheelStyle} template={preview.gamePageTemplateId as "cosmic-orbit" | "sunburst-festival"} buttonStyle={{ backgroundColor: preview.buttonStyle.backgroundColor, textColor: preview.buttonStyle.textColor, borderColor: preview.buttonStyle.borderColor }} segments={preview.previewSegments} buttonEnabled winningSegmentId={preview.winningSegmentId} framing={compact ? "mobile-preview" : "editor"} /> : <WheelOfFortune accent={preview.accent} wheelStyle={preview.wheelStyle} pageTemplate={preview.gamePageTemplateId === "restaurant-pop" ? "restaurant-pop" : "classic"} buttonStyle={{ backgroundColor: preview.buttonStyle.backgroundColor, textColor: preview.buttonStyle.textColor, borderColor: preview.buttonStyle.borderColor }} segments={preview.previewSegments} buttonEnabled winningSegmentId={preview.winningSegmentId} framing={compact ? "mobile-preview" : "editor"} /> : isImmersiveScratchTemplate ? <ImmersiveScratchTicket accent={preview.accent} resultLabel={preview.previewPrize} enabled={false} onReveal={() => undefined} logoMode={preview.logoMode} logoText={preview.logoText} logoUrl={preview.logoUrl} headline={preview.subtitle} headingTextColor={previewHeadingTextColor} headingFontClass={preview.headingFontClass} headingFontSize={fluidType(scalePreviewValue(preview.headingFontSizePx), { minRatio: 0.82, maxRatio: 1.08, viewportStep: 0.3, viewportUnit: compact ? "cqw" : "vw" })} headingFontWeight={preview.headingFontWeight} headingAlignmentClass={preview.headingAlignmentClass} logoAlignmentClass={preview.logoAlignmentClass} logoBottomSpacingPx={scalePreviewValue(preview.logoBottomSpacingPx)} logoWidthPx={scalePreviewValue(preview.logoWidthPx)} logoTextSizePx={scalePreviewValue(preview.logoTextSizePx)} fitContainer template={preview.gamePageTemplateId as "scratch-vault" | "scratch-confetti" | "scratch-coral" | "scratch-lilac" | "scratch-sunburst"} /> : <ScratchGame accent={preview.accent} resultLabel={preview.previewPrize} enabled={false} onReveal={() => undefined} />}
+         {preview.gameType === "wheel" ? isCocoricoTemplate ? <CocoricoWheel primaryColor={preview.cocoricoPrimaryColor} secondaryColor={isCocoricoDuoTemplate ? preview.cocoricoSecondaryColor : undefined} palette={isCocoricoDuoTemplate ? "duo" : "classic"} segments={preview.previewSegments} winningSegmentId={preview.winningSegmentId} buttonStyle={{ textColor: preview.buttonStyle.textColor }} buttonEnabled framing={compact ? "mobile-preview" : "editor"} /> : isImmersiveTemplate ? <ImmersiveWheel accent={preview.accent} wheelStyle={preview.wheelStyle} template={preview.gamePageTemplateId as "cosmic-orbit" | "sunburst-festival"} buttonStyle={{ backgroundColor: preview.buttonStyle.backgroundColor, textColor: preview.buttonStyle.textColor, borderColor: preview.buttonStyle.borderColor }} segments={preview.previewSegments} buttonEnabled winningSegmentId={preview.winningSegmentId} framing={compact ? "mobile-preview" : "editor"} /> : <WheelOfFortune accent={preview.accent} wheelStyle={preview.wheelStyle} pageTemplate={preview.gamePageTemplateId === "restaurant-pop" ? "restaurant-pop" : "classic"} buttonStyle={{ backgroundColor: preview.buttonStyle.backgroundColor, textColor: preview.buttonStyle.textColor, borderColor: preview.buttonStyle.borderColor }} segments={preview.previewSegments} buttonEnabled winningSegmentId={preview.winningSegmentId} framing={compact ? "mobile-preview" : "editor"} /> : isImmersiveScratchTemplate ? <ImmersiveScratchTicket accent={preview.accent} resultLabel={preview.previewPrize} enabled={false} onReveal={() => undefined} logoMode={preview.logoMode} logoText={preview.logoText} logoUrl={preview.logoUrl} headline={preview.subtitle} headingTextColor={previewHeadingTextColor} headingFontClass={preview.headingFontClass} headingFontSize={fluidType(scalePreviewValue(preview.headingFontSizePx), { minRatio: 0.82, maxRatio: 1.08, viewportStep: 0.3, viewportUnit: compact ? "cqw" : "vw" })} headingFontWeight={preview.headingFontWeight} headingAlignmentClass={preview.headingAlignmentClass} logoAlignmentClass={preview.logoAlignmentClass} logoBottomSpacingPx={scalePreviewValue(preview.logoBottomSpacingPx)} logoWidthPx={scalePreviewValue(preview.logoWidthPx)} logoTextSizePx={scalePreviewValue(preview.logoTextSizePx)} fitContainer template={preview.gamePageTemplateId as "scratch-vault" | "scratch-confetti" | "scratch-coral" | "scratch-lilac" | "scratch-sunburst"} /> : <ScratchGame accent={preview.accent} resultLabel={preview.previewPrize} enabled={false} onReveal={() => undefined} />}
         </div>
         {preview.gameType !== "wheel" && !isImmersiveScratchTemplate ? <button type="button" className={`okado-preview-cta mx-auto block w-full max-w-[360px] rounded-[24px] border font-semibold ${preview.previewCtaClass}`} style={{ marginTop: `${scalePreviewValue(preview.blockSpacingPx)}px`, backgroundColor: preview.buttonStyle.backgroundColor, color: preview.buttonStyle.textColor, borderColor: preview.buttonStyle.borderColor, fontSize: fluidType(scalePreviewValue(preview.buttonStyle.textSizePx), { minRatio: 0.86, maxRatio: 1.08, viewportStep: 0.24, viewportUnit: compact ? "cqw" : "vw" }), fontWeight: preview.buttonStyle.isBold ? 700 : 400 }}>{preview.ctaLabel}</button> : null}
       </div>

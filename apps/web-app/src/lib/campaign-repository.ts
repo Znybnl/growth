@@ -497,6 +497,7 @@ function toCampaign(
         sizePercent: row.logo_size_percent,
         marginBottomPx: row.logo_margin_bottom_px,
         align: row.logo_align,
+        textColor: localSettings.logoTextColor ?? row.heading_text_color ?? "#1f2937",
       },
       background: {
         mode: row.background_mode,
@@ -755,6 +756,30 @@ function computeKpis(campaign: Campaign, prizes: Prize[], leads: Lead[], events:
     costPerLead: leads.length ? Number((estimatedSpend / leads.length).toFixed(2)) : 0,
     costPerRedeemed: redeemed ? Number((estimatedSpend / redeemed).toFixed(2)) : 0,
   };
+}
+
+function buildDashboardPrizeInventory(
+  campaigns: CampaignPerformance[],
+  pendingRedemptionsByPrizeId: Map<string, number>,
+) {
+  return campaigns
+    .flatMap((item) =>
+      item.prizes.map((prize) => ({
+        prizeId: prize.id,
+        campaignId: item.campaign.id,
+        campaignTitle: item.campaign.title,
+        prizeLabel: prize.label,
+        pendingRedemptions: pendingRedemptionsByPrizeId.get(prize.id) ?? 0,
+        remainingQuantity: prize.remainingQuantity,
+        totalQuantity: prize.totalQuantity,
+      })),
+    )
+    .sort(
+      (a, b) =>
+        b.pendingRedemptions - a.pendingRedemptions ||
+        a.campaignTitle.localeCompare(b.campaignTitle) ||
+        a.prizeLabel.localeCompare(b.prizeLabel),
+    );
 }
 
 async function fetchCampaignDependencies(campaignIds: string[]) {
@@ -1056,7 +1081,7 @@ export async function getSupabaseMerchantDashboard(
     const rows = (overviewResult.data as CampaignOverviewRpcRow[] | null) ?? [];
     const campaignIds = rows.map((row) => row.id);
     const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
-    const [prizesResult, leadsResult, eventsResult] = await Promise.all([
+    const [prizesResult, leadsResult, eventsResult, prizeClaimsResult] = await Promise.all([
       campaignIds.length
         ? supabase
             .from("prizes")
@@ -1077,10 +1102,21 @@ export async function getSupabaseMerchantDashboard(
             .in("campaign_id", campaignIds)
             .gte("created_at", since)
         : Promise.resolve({ data: [], error: null }),
+      campaignIds.length
+        ? supabase
+            .from("leads")
+            .select("prize_id,status")
+            .in("campaign_id", campaignIds)
+            .not("prize_id", "is", null)
+        : Promise.resolve({ data: [], error: null }),
     ]);
     const prizesData = unwrapSupabaseResult(prizesResult, "Lecture des lots du tableau de bord impossible");
     const leadsData = unwrapSupabaseResult(leadsResult, "Lecture des contacts du tableau de bord impossible");
     const eventsData = unwrapSupabaseResult(eventsResult, "Lecture des événements du tableau de bord impossible");
+    const prizeClaimsData = unwrapSupabaseResult(
+      prizeClaimsResult,
+      "Lecture des retraits du tableau de bord impossible",
+    );
     const prizeRows = (prizesData as PrizeRow[] | null) ?? [];
     const prizesByCampaignId = new Map<string, Prize[]>();
     for (const row of prizeRows) {
@@ -1094,6 +1130,15 @@ export async function getSupabaseMerchantDashboard(
       prizes: prizesByCampaignId.get(row.id) ?? [],
       kpis: toOverviewKpis(row),
     } satisfies CampaignPerformance));
+    const pendingRedemptionsByPrizeId = new Map<string, number>();
+    for (const row of (prizeClaimsData as Array<{ prize_id: string | null; status: Lead["status"] }> | null) ?? []) {
+      if (row.prize_id && row.status === "claimed") {
+        pendingRedemptionsByPrizeId.set(
+          row.prize_id,
+          (pendingRedemptionsByPrizeId.get(row.prize_id) ?? 0) + 1,
+        );
+      }
+    }
     const totalLeads = campaigns.reduce((total, item) => total + item.kpis.leads, 0);
     const totalRedeemed = campaigns.reduce((total, item) => total + item.kpis.redeemed, 0);
     const averageConversion = campaigns.length
@@ -1103,6 +1148,7 @@ export async function getSupabaseMerchantDashboard(
     return {
       merchant: clone(merchant),
       campaigns,
+      prizeInventory: buildDashboardPrizeInventory(campaigns, pendingRedemptionsByPrizeId),
       totalLeads,
       totalRedeemed,
       averageConversion,
@@ -1136,6 +1182,15 @@ export async function getSupabaseMerchantDashboard(
     events,
     localSettingsByCampaignId,
   );
+  const pendingRedemptionsByPrizeId = new Map<string, number>();
+  for (const lead of leads) {
+    if (lead.prize_id && lead.status === "claimed") {
+      pendingRedemptionsByPrizeId.set(
+        lead.prize_id,
+        (pendingRedemptionsByPrizeId.get(lead.prize_id) ?? 0) + 1,
+      );
+    }
+  }
   const totalLeads = campaigns.reduce((total, item) => total + item.kpis.leads, 0);
   const totalRedeemed = campaigns.reduce((total, item) => total + item.kpis.redeemed, 0);
   const averageConversion = campaigns.length
@@ -1145,6 +1200,7 @@ export async function getSupabaseMerchantDashboard(
   return {
     merchant: clone(merchant),
     campaigns,
+    prizeInventory: buildDashboardPrizeInventory(campaigns, pendingRedemptionsByPrizeId),
     totalLeads,
     totalRedeemed,
     averageConversion,
@@ -1194,6 +1250,7 @@ export async function getSupabaseMerchantCampaignOverview(
     return {
       merchant: clone(overviewMerchant),
       campaigns,
+      prizeInventory: [],
       totalLeads,
       totalRedeemed,
       averageConversion,
@@ -1216,6 +1273,7 @@ export async function getSupabaseMerchantCampaignOverview(
     return {
       merchant: clone(overviewMerchant),
       campaigns: [],
+      prizeInventory: [],
       totalLeads: 0,
       totalRedeemed: 0,
       averageConversion: 0,
@@ -1257,6 +1315,7 @@ export async function getSupabaseMerchantCampaignOverview(
   return {
     merchant: clone({ ...merchant, logoUrl: undefined }),
     campaigns,
+    prizeInventory: [],
     totalLeads,
     totalRedeemed,
     averageConversion,
@@ -2215,6 +2274,7 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
     gamePageTemplateId: input.presentation.layout.templateId ?? "classic",
     logoMode: input.logoMode,
     logoText: input.logoText,
+    logoTextColor: input.presentation.logo.textColor ?? input.presentation.heading.textColor,
     prizeSettings: Object.fromEntries(
       atomicPrizes.map((prize, index) => [
         prize.id,

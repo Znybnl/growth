@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 
 import { buildPosterSvg } from "@/lib/poster-render";
+import { getPosterFontAsset } from "@/lib/poster-fonts";
 import {
   createPosterSettingsDefaults,
   normalizePosterSettings,
@@ -10,7 +11,7 @@ import {
 import { getPosterTemplate, POSTER_TEMPLATES } from "@/lib/poster-templates";
 import { CampaignPerformance, CampaignPosterSettings } from "@/lib/types";
 
-let antonFontDataUri: string | null = null;
+const posterFontDataUris = new Map<string, string>();
 
 function isPosterTemplateDefaultWinColor(color: string | undefined) {
   return POSTER_TEMPLATES.some(
@@ -18,16 +19,24 @@ function isPosterTemplateDefaultWinColor(color: string | undefined) {
   ) || color === "#1b2842" || color === "#f4c14a";
 }
 
-function getAntonFontDataUri() {
-  if (antonFontDataUri) {
-    return antonFontDataUri;
+function getPosterFontDataUri(font: CampaignPosterSettings["headlineFontFamily"]) {
+  const asset = getPosterFontAsset(font);
+
+  if (!asset) {
+    return undefined;
   }
 
-  const fontPath = path.join(process.cwd(), "public", "fonts", "anton-regular.ttf");
-  const fontBuffer = readFileSync(fontPath);
-  antonFontDataUri = `data:font/truetype;base64,${fontBuffer.toString("base64")}`;
+  const cached = posterFontDataUris.get(asset.fileName);
+  if (cached) {
+    return cached;
+  }
 
-  return antonFontDataUri;
+  const fontPath = path.join(process.cwd(), "public", "fonts", "poster", asset.fileName);
+  const fontBuffer = readFileSync(fontPath);
+  const dataUri = `data:font/truetype;base64,${fontBuffer.toString("base64")}`;
+  posterFontDataUris.set(asset.fileName, dataUri);
+
+  return dataUri;
 }
 
 function applyPosterTemplateDefaults(
@@ -152,6 +161,6 @@ export async function createCampaignPosterSvg(
     poster,
     prizes: performance.prizes,
     qrDataUrl,
-    displayFontSource: getAntonFontDataUri(),
+    posterFontSource: getPosterFontDataUri(poster.headlineFontFamily),
   });
 }

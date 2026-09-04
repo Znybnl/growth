@@ -29,6 +29,7 @@ export type GamePageTemplateId =
   | "classic"
   | "restaurant-pop"
   | "cocorico-wheel"
+  | "cocorico-duo-wheel"
   | "cosmic-orbit"
   | "sunburst-festival"
   | "scratch-vault"
@@ -357,6 +358,7 @@ export interface CampaignLogoSettings {
   sizePercent: number;
   marginBottomPx: number;
   align: TextAlign;
+  textColor?: string;
 }
 
 export interface CampaignBackgroundSettings {
@@ -724,6 +726,16 @@ export interface CampaignPerformance {
   kpis: CampaignKpi;
 }
 
+export interface DashboardPrizeInventoryItem {
+  prizeId: string;
+  campaignId: string;
+  campaignTitle: string;
+  prizeLabel: string;
+  pendingRedemptions: number;
+  remainingQuantity: number | null;
+  totalQuantity: number | null;
+}
+
 export interface CampaignLibraryItem {
   id: string;
   title: string;
@@ -736,6 +748,7 @@ export interface CampaignLibraryItem {
 export interface MerchantDashboardData {
   merchant: Merchant;
   campaigns: CampaignPerformance[];
+  prizeInventory: DashboardPrizeInventoryItem[];
   totalLeads: number;
   totalRedeemed: number;
   averageConversion: number;

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   BadgePercent,
   Check,
@@ -26,7 +27,9 @@ import { type ChangeEvent, type ReactNode, useEffect, useMemo, useState } from "
 import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
 import { CampaignPreviewQrDialog } from "@/components/merchant/campaign-preview-qr";
 import { CampaignSavedDialog } from "@/components/merchant/campaign-saved-dialog";
+import { CampaignSpacingControls } from "@/components/merchant/campaign-spacing-controls";
 import { DialogShell } from "@/components/ui/dialog";
+import { ValidationDialog } from "@/components/ui/validation-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -42,6 +45,7 @@ import { actionKindCta, textFontClass, textFontLabel } from "@/lib/format";
 import { getPrizeValidationMessages } from "@/lib/prize-validation";
 import { createCampaignEmailDefaults } from "@/lib/email-settings";
 import { normalizeCampaignEmailSettings } from "@/lib/email-settings";
+import { captureClientError } from "@/lib/client-observability";
 import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
 import {
   createDefaultPosterSettings,
@@ -51,12 +55,17 @@ import {
   DEFAULT_WHEEL_SUBTITLE,
   DEFAULT_WHEEL_PRIMARY_COLOR,
   DEFAULT_COCORICO_PRIMARY_COLOR,
+  DEFAULT_COCORICO_DUO_BLUE,
+  DEFAULT_COCORICO_DUO_YELLOW,
   DEFAULT_CLASSIC_POP_PRIMARY_COLOR,
   deriveLighterHex,
   limitCampaignSubtitleLines,
   MAX_CAMPAIGN_SUBTITLE_LENGTH,
+  clampCampaignSpacingPx,
   normalizeScratchAccent,
   isClassicPopWheelTemplate,
+  isCocoricoWheelTemplate,
+  scratchTemplateUsesTicketTextColor,
 } from "@/lib/campaign-defaults";
 import {
   ActionKind,
@@ -86,6 +95,10 @@ type WizardError = {
 };
 
 type WizardDraft = CampaignSetupInput;
+
+type PendingWizardNavigation = {
+  href: string;
+};
 
 const WIZARD_STEPS: WizardStep[] = [
   {
@@ -537,8 +550,16 @@ function draftFromCampaign(merchant: Merchant, performance: CampaignPerformance)
     gameType: campaign.gameType,
     presentation: {
       ...campaign.presentation,
-      logo: { ...campaign.presentation.logo, align: "center" },
+      logo: {
+        ...campaign.presentation.logo,
+        marginBottomPx: clampCampaignSpacingPx(campaign.presentation.logo.marginBottomPx),
+        align: "center",
+      },
       heading: { ...campaign.presentation.heading, align: "center" },
+      layout: {
+        ...campaign.presentation.layout,
+        blockSpacingPx: clampCampaignSpacingPx(campaign.presentation.layout.blockSpacingPx),
+      },
       poster: normalizePosterSettings(campaign.presentation.poster, posterDefaults),
       email: normalizeCampaignEmailSettings(
         campaign.presentation.email,
@@ -735,6 +756,7 @@ export function CampaignWizard({
   initialCampaign?: CampaignPerformance | null;
   deferInlineAssets?: boolean;
 }) {
+  const router = useRouter();
   const isEditing = Boolean(initialCampaign);
   const [draft, setDraft] = useState<WizardDraft>(() =>
     initialCampaign ? draftFromCampaign(merchant, initialCampaign) : createWizardDraft(merchant),
@@ -749,6 +771,7 @@ export function CampaignWizard({
   );
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [savedCampaignId, setSavedCampaignId] = useState<string | null>(null);
   const [qrPreviewOpen, setQrPreviewOpen] = useState(false);
@@ -765,6 +788,8 @@ export function CampaignWizard({
     JSON.stringify(initialCampaign ? draftFromCampaign(merchant, initialCampaign) : createWizardDraft(merchant)),
   );
   const isDirty = lastSavedDraftSnapshot !== JSON.stringify(draft);
+  const [pendingNavigation, setPendingNavigation] = useState<PendingWizardNavigation | null>(null);
+  const [isSavingBeforeNavigation, setIsSavingBeforeNavigation] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -853,10 +878,38 @@ export function CampaignWizard({
     if (!isDirty || savedCampaignId) return;
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
       event.preventDefault();
-      event.returnValue = "";
+      event.returnValue = "Quitter l’éditeur ?";
     };
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isDirty, savedCampaignId]);
+
+  useEffect(() => {
+    if (!isDirty || savedCampaignId) return;
+
+    function handleInternalNavigation(event: MouseEvent) {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+        return;
+      }
+
+      const target = event.target instanceof Element ? event.target.closest<HTMLAnchorElement>("a[href]") : null;
+      if (!target || target.target === "_blank" || target.hasAttribute("download")) return;
+
+      const destination = new URL(target.href, window.location.href);
+      if (destination.origin !== window.location.origin) return;
+
+      const current = new URL(window.location.href);
+      if (destination.href === current.href) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+      setPendingNavigation({
+        href: `${destination.pathname}${destination.search}${destination.hash}`,
+      });
+    }
+
+    window.addEventListener("click", handleInternalNavigation, true);
+    return () => window.removeEventListener("click", handleInternalNavigation, true);
   }, [isDirty, savedCampaignId]);
 
   const step = WIZARD_STEPS[stepIndex];
@@ -1000,19 +1053,20 @@ export function CampaignWizard({
     setStepIndex((current) => Math.max(0, current - 1));
   }
 
-  async function saveCampaign(mode: "save" | "publish") {
+  async function saveCampaign(mode: "save" | "publish", options?: { suppressSuccessDialog?: boolean }) {
     const isPublishing = mode === "publish";
     const errorsToShow = isPublishing ? collectErrors(draft, actionEnabled) : [];
     if (errorsToShow.length) {
       const first = errorsToShow[0];
       setError(first.message);
       setStepIndex(WIZARD_STEPS.findIndex((item) => item.id === first.step));
-      return;
+      return false;
     }
 
     const targetIsActive = isPublishing ? true : isEditing ? draft.isActive : false;
     setIsSaving(true);
     setError(null);
+    setSaveError(null);
     try {
       const response = await fetch("/api/campaigns/setup", {
         method: "POST",
@@ -1051,17 +1105,48 @@ export function CampaignWizard({
         setDraft(savedDraft);
         setLastSavedDraftSnapshot(JSON.stringify(savedDraft));
         window.dispatchEvent(new Event("campaigns-updated"));
-        setSavedCampaignId(campaignId);
+        if (!options?.suppressSuccessDialog) setSavedCampaignId(campaignId);
       }
-    } catch (saveError) {
-      setError(
-        saveError instanceof Error
-          ? saveError.message
-          : "La campagne n’a pas pu être enregistrée.",
+      return Boolean(campaignId);
+    } catch (saveFailure) {
+      captureClientError("campaign_setup_failed", saveFailure, {
+        campaign_id: draft.id,
+        creation_mode: "wizard",
+        editor_mode: isEditing ? "edit" : "create",
+      });
+      const message = saveFailure instanceof Error ? saveFailure.message : "";
+      setSaveError(
+        message.toLowerCase().includes("duplicate key")
+          ? "Impossible d’enregistrer cette campagne pour le moment. Vérifiez les actions marketing puis réessayez."
+          : "La campagne n’a pas pu être enregistrée. Vérifiez les informations puis réessayez.",
       );
+      return false;
     } finally {
       setIsSaving(false);
     }
+  }
+
+  async function saveAndLeave() {
+    if (!pendingNavigation || isSavingBeforeNavigation) return;
+    const destination = pendingNavigation.href;
+    setIsSavingBeforeNavigation(true);
+    const saved = await saveCampaign("save", { suppressSuccessDialog: true });
+    setIsSavingBeforeNavigation(false);
+    if (!saved) {
+      setPendingNavigation(null);
+      return;
+    }
+    setPendingNavigation(null);
+    window.dispatchEvent(new Event("merchant-navigation-guard-complete"));
+    router.push(destination);
+  }
+
+  function leaveWithoutSaving() {
+    if (!pendingNavigation || isSavingBeforeNavigation) return;
+    const destination = pendingNavigation.href;
+    setPendingNavigation(null);
+    window.dispatchEvent(new Event("merchant-navigation-guard-complete"));
+    router.push(destination);
   }
 
   const logoSettings = (
@@ -1075,7 +1160,7 @@ export function CampaignWizard({
       {draft.logoMode === "text" ? <label className="mt-3 block text-sm"><span className="mb-2 block font-semibold text-carbon">Texte du logo</span><input value={draft.logoText ?? merchant.companyName} onChange={(event) => patchDraft({ logoText: event.target.value })} className="w-full rounded-[12px] border border-fog bg-white px-3 py-3 text-carbon outline-none focus:border-aubergine focus:ring-4 focus:ring-aubergine/15" /></label> : null}
       {draft.logoMode === "image" ? <label className="mt-3 flex cursor-pointer items-center justify-between rounded-[12px] border border-dashed border-[#b8c5d8] px-3 py-3 text-sm font-semibold"><span>Importer un logo</span><input type="file" accept="image/png,image/jpeg,image/webp,image/gif" className="hidden" onChange={(event) => uploadWizardImage(event, (value) => { setImageUploadErrors((current) => ({ ...current, logo: undefined })); patchDraft({ logoUrl: value, logoMode: "image" }); }, (message) => setImageUploadErrors((current) => ({ ...current, logo: message })))} /></label> : null}
       {imageUploadErrors.logo ? <p role="alert" className="mt-2 text-xs text-coral-alert">{imageUploadErrors.logo}</p> : null}
-      {draft.logoMode !== "none" ? <div className="mt-3 grid gap-3 sm:grid-cols-2"><label className="block text-sm"><span className="mb-2 block font-semibold">Taille du logo <output className="float-right text-aubergine">{draft.presentation.logo.sizePercent}%</output></span><input type="range" min={0} max={200} value={draft.presentation.logo.sizePercent} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, logo: { ...draft.presentation.logo, sizePercent: Number(event.target.value) } } })} className="w-full cursor-pointer accent-aubergine" /></label><label className="block text-sm"><span className="mb-2 block font-semibold">Espacement sous le logo (px)</span><input type="number" min={0} max={120} value={draft.presentation.logo.marginBottomPx} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, logo: { ...draft.presentation.logo, marginBottomPx: Number(event.target.value || 0) } } })} className="w-full rounded-[12px] border border-[#dbe3ed] px-3 py-3" /></label></div> : null}
+      {draft.logoMode !== "none" ? <div className="mt-3"><label className="block text-sm"><span className="mb-2 flex items-center justify-between gap-3 font-semibold"><span>Taille du logo</span><output className="text-aubergine">{draft.presentation.logo.sizePercent}%</output></span><input type="range" min={0} max={200} value={draft.presentation.logo.sizePercent} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, logo: { ...draft.presentation.logo, sizePercent: Number(event.target.value) } } })} className="w-full cursor-pointer accent-aubergine" aria-label="Taille du logo" /></label></div> : null}
     </section>
   );
 
@@ -1976,13 +2061,18 @@ export function CampaignWizard({
                     },
                     {
                       id: "restaurant-pop",
-                      label: "Visuel pop",
+                      label: "Dynamique",
                       text: "Événementiel et contrasté",
                     },
                     {
                       id: "cocorico-wheel",
-                      label: "Cocorico",
+                      label: "Moderne",
                       text: "Bleu, blanc et pictogrammes cadeaux",
+                    },
+                    {
+                      id: "cocorico-duo-wheel",
+                      label: "Bicolore",
+                      text: "Bleu clair, jaune et pictogrammes cadeaux",
                     },
                     {
                       id: "cosmic-orbit",
@@ -2013,11 +2103,19 @@ export function CampaignWizard({
                             blockSpacingPx: draft.presentation.layout.blockSpacingPx,
                           },
                           heading:
-                            template.id === "cocorico-wheel" || isClassicPopWheelTemplate(template.id)
+                            isCocoricoWheelTemplate(template.id) || isClassicPopWheelTemplate(template.id)
                               ? { ...draft.presentation.heading, fontFamily: "fredoka" }
                               : draft.presentation.heading,
                           wheel:
-                            template.id === "cocorico-wheel" &&
+                            template.id === "cocorico-duo-wheel" &&
+                            draft.presentation.layout.templateId !== template.id
+                              ? {
+                                  ...draft.presentation.wheel,
+                                  loseColor: DEFAULT_COCORICO_DUO_BLUE,
+                                  rimColor: DEFAULT_COCORICO_DUO_BLUE,
+                                  alternateLoseColor: DEFAULT_COCORICO_DUO_YELLOW,
+                                }
+                              : template.id === "cocorico-wheel" &&
                             draft.presentation.wheel.loseColor.toLowerCase() === DEFAULT_WHEEL_PRIMARY_COLOR
                               ? {
                                   ...draft.presentation.wheel,
@@ -2080,7 +2178,10 @@ export function CampaignWizard({
                              ? {
                                  ...current.presentation.wheel,
                                  loseColor: color,
-                                 alternateLoseColor: deriveLighterHex(color),
+                                 alternateLoseColor:
+                                   current.presentation.layout.templateId === "cocorico-duo-wheel"
+                                     ? current.presentation.wheel.alternateLoseColor
+                                     : deriveLighterHex(color),
                                  rimColor: deriveLighterHex(color),
                                }
                              : current.presentation.wheel,
@@ -2094,17 +2195,19 @@ export function CampaignWizard({
                    />
                  </label>
 
-                 {draft.gameType === "wheel" && draft.presentation.layout.templateId === "restaurant-pop" ? (
+                 {draft.gameType === "wheel" && (draft.presentation.layout.templateId === "restaurant-pop" || draft.presentation.layout.templateId === "cocorico-duo-wheel") ? (
                    <label className="block">
                      <span className="text-sm font-semibold text-[#182033]">Couleur secondaire</span>
                      <input
                        type="color"
-                       value={draft.presentation.wheel.winColor}
+                       value={draft.presentation.layout.templateId === "cocorico-duo-wheel" ? draft.presentation.wheel.alternateLoseColor : draft.presentation.wheel.winColor}
                        onChange={(event) =>
                          patchDraft({
                            presentation: {
                              ...draft.presentation,
-                             wheel: { ...draft.presentation.wheel, winColor: event.target.value },
+                             wheel: draft.presentation.layout.templateId === "cocorico-duo-wheel"
+                               ? { ...draft.presentation.wheel, alternateLoseColor: event.target.value }
+                               : { ...draft.presentation.wheel, winColor: event.target.value },
                            },
                          })
                        }
@@ -2130,7 +2233,7 @@ export function CampaignWizard({
                      }
                      className="mt-3 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] bg-white px-3 py-3 text-sm text-[#182033]"
                    >
-                     {(draft.presentation.layout.templateId === "cocorico-wheel" ? COCORICO_TEXT_FONTS : WIZARD_TEXT_FONTS).map((font) => (
+                     {(isCocoricoWheelTemplate(draft.presentation.layout.templateId) ? COCORICO_TEXT_FONTS : WIZARD_TEXT_FONTS).map((font) => (
                        <option key={font} value={font} className={textFontClass(font)}>{textFontLabel(font)}</option>
                      ))}
                    </select>
@@ -2174,8 +2277,58 @@ export function CampaignWizard({
                   <ChevronDown className="h-4 w-4 shrink-0 text-[#8993a6] transition-transform group-open:rotate-180" />
                 </summary>
                  <div className="space-y-5 border-t border-[#e2e8f0] px-4 pb-4 pt-4">
+                   <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
+                     <p className="text-sm font-semibold text-[#182033]">Espacements</p>
+                     <p className="mt-1 text-xs leading-5 text-[#8993a6]">
+                       Réglez séparément les espaces entre les éléments.
+                     </p>
+                     <div className="mt-4">
+                       <CampaignSpacingControls
+                         gameType={draft.gameType}
+                         logoMode={draft.logoMode}
+                         logoSpacingPx={draft.presentation.logo.marginBottomPx}
+                         blockSpacingPx={draft.presentation.layout.blockSpacingPx}
+                         onLogoSpacingChange={(value) =>
+                           patchDraft({
+                             presentation: {
+                               ...draft.presentation,
+                               logo: {
+                                 ...draft.presentation.logo,
+                                 marginBottomPx: clampCampaignSpacingPx(value),
+                               },
+                             },
+                           })
+                         }
+                         onBlockSpacingChange={(value) =>
+                           patchDraft({
+                             presentation: {
+                               ...draft.presentation,
+                               layout: {
+                                 ...draft.presentation.layout,
+                                 blockSpacingPx: clampCampaignSpacingPx(value),
+                               },
+                             },
+                           })
+                         }
+                       />
+                     </div>
+                   </section>
                <div className="hidden">
-                {draft.gameType === "wheel" ? (
+                   {draft.logoMode === "text" ? <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
+                     <p className="text-sm font-semibold text-[#182033]">Couleur du logo</p>
+                     <p className="mt-1 text-xs leading-5 text-[#8993a6]">Ce réglage concerne uniquement le logo texte.</p>
+                     <label className="mt-3 block text-sm">
+                       <span className="mb-2 block font-semibold text-[#182033]">Couleur</span>
+                       <input
+                         type="color"
+                         value={draft.presentation.logo.textColor ?? draft.presentation.heading.textColor}
+                         onChange={(event) => patchDraft({ presentation: { ...draft.presentation, logo: { ...draft.presentation.logo, textColor: event.target.value } } })}
+                         className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] bg-white p-1"
+                         aria-label="Couleur du logo texte"
+                       />
+                     </label>
+                   </section> : null}
+                   {draft.gameType === "wheel" ? (
                   <>
                 {draft.presentation.layout.templateId === "classic" ? (
                 <label className="block">
@@ -2241,7 +2394,7 @@ export function CampaignWizard({
                    <label className="block">
                      <span className="text-sm font-semibold text-[#182033]">Couleur secondaire</span>
                      <span className="hidden">
-                       Utilisée pour les accents graphiques du template Visuel pop.
+                       Utilisée pour les accents graphiques du template Dynamique.
                      </span>
                      <input
                        type="color"
@@ -2310,7 +2463,7 @@ export function CampaignWizard({
                       }
                       className="w-full rounded-[12px] border border-[#dbe3ed] bg-white px-3 py-3 text-sm text-[#182033]"
                     >
-                      {(draft.presentation.layout.templateId === "cocorico-wheel" ? COCORICO_TEXT_FONTS : WIZARD_TEXT_FONTS).map((font) => (
+                      {(isCocoricoWheelTemplate(draft.presentation.layout.templateId) ? COCORICO_TEXT_FONTS : WIZARD_TEXT_FONTS).map((font) => (
                         <option key={font} value={font} className={textFontClass(font)}>
                           {textFontLabel(font)}
                         </option>
@@ -2353,40 +2506,8 @@ export function CampaignWizard({
                     {imageUploadErrors.background ? <p role="alert" className="mt-2 text-xs text-[#b42318]">{imageUploadErrors.background}</p> : null}
                     {draft.presentation.background.mode === "image" ? <div className="mt-3 flex flex-wrap items-center gap-2"><button type="button" onClick={() => setBackgroundLibraryOpen(true)} className="cursor-pointer rounded-[4px] border border-aubergine bg-aubergine px-3 py-2.5 text-sm font-semibold text-white">Choisir dans la bibliothèque</button>{draft.presentation.background.imageUrl ? <span className="rounded-full bg-[#e9f8ec] px-3 py-1.5 text-xs font-semibold text-[#18864b]">Image sélectionnée</span> : null}</div> : null}
                   </section>
-                  {draft.presentation.layout.templateId !== "cocorico-wheel" ? <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4"><p className="text-sm font-semibold text-[#182033]">Réglages du texte</p><div className="mt-3"><label className="block text-sm"><span className="mb-2 block font-semibold">Couleur du texte</span><input type="color" value={draft.presentation.heading.textColor} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, heading: { ...draft.presentation.heading, textColor: event.target.value } } })} className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] p-1" /></label></div></section> : null}
-                  {draft.gameType === "wheel" ? (
-                  <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
-                    <p className="text-sm font-semibold text-[#182033]">Espacement des blocs</p>
-                    <p className="mt-1 text-xs leading-5 text-[#8993a6]">Ajustez l’espace vertical entre le logo, le texte et le jeu.</p>
-                    <label className="mt-3 block text-sm">
-                      <span className="mb-2 flex items-center justify-between gap-3 font-semibold text-[#182033]">
-                        <span>Espacement</span>
-                        <output className="text-aubergine">{draft.presentation.layout.blockSpacingPx} px</output>
-                      </span>
-                      <input
-                        type="range"
-                        min={0}
-                        max={60}
-                        step={1}
-                        value={draft.presentation.layout.blockSpacingPx}
-                        onChange={(event) =>
-                          patchDraft({
-                            presentation: {
-                              ...draft.presentation,
-                              layout: {
-                                ...draft.presentation.layout,
-                                blockSpacingPx: Number(event.target.value),
-                              },
-                            },
-                          })
-                        }
-                        className="w-full cursor-pointer accent-aubergine"
-                        aria-label="Espacement entre les blocs"
-                      />
-                    </label>
-                  </section>
-                  ) : null}
-                  {draft.gameType !== "wheel" ? <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
+                  {!isCocoricoWheelTemplate(draft.presentation.layout.templateId) ? <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4"><p className="text-sm font-semibold text-[#182033]">Réglages du texte</p><div className="mt-3"><label className="block text-sm"><span className="mb-2 block font-semibold">Couleur du texte</span><input type="color" value={draft.presentation.heading.textColor} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, heading: { ...draft.presentation.heading, textColor: event.target.value } } })} className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] p-1" /></label></div></section> : null}
+                  {draft.gameType !== "wheel" && scratchTemplateUsesTicketTextColor(draft.presentation.layout.templateId) ? <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
                     <p className="text-sm font-semibold text-[#182033]">
                       Couleurs du ticket
                     </p>
@@ -2499,6 +2620,32 @@ export function CampaignWizard({
           })
         }
         onClose={() => setBackgroundLibraryOpen(false)}
+      />
+      <ValidationDialog
+        open={Boolean(saveError)}
+        title="Enregistrement impossible"
+        description={saveError ?? "La campagne n’a pas pu être enregistrée."}
+        tone="error"
+        ctaLabel="Fermer"
+        onClose={() => setSaveError(null)}
+      />
+      <ValidationDialog
+        open={pendingNavigation !== null}
+        title="Quitter le wizard ?"
+        description="Vous avez des modifications non enregistrées. Voulez-vous les sauvegarder avant de quitter ?"
+        ctaLabel={isSavingBeforeNavigation ? "Enregistrement…" : "Enregistrer et quitter"}
+        secondaryCtaLabel="Quitter sans enregistrer"
+        cancelLabel="Annuler"
+        actionDisabled={isSavingBeforeNavigation}
+        secondaryActionDisabled={isSavingBeforeNavigation}
+        onAction={() => void saveAndLeave()}
+        onSecondaryAction={leaveWithoutSaving}
+        onClose={() => {
+          if (!isSavingBeforeNavigation) setPendingNavigation(null);
+        }}
+        onCancel={() => {
+          if (!isSavingBeforeNavigation) setPendingNavigation(null);
+        }}
       />
       {draft.id ? (
         <CampaignPreviewQrDialog

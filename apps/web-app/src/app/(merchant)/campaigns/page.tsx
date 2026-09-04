@@ -83,7 +83,7 @@ export default async function CampaignsPage({
           }
         >
           <div className={`okado-table-header grid ${campaignTableGrid} gap-3 px-5 py-3`}>
-            <span>Campagne</span><span>Jeu</span><span>Scans</span><span>Participations</span><span>Conv.</span><span>Coût / participation</span><span className="sr-only">Actions</span>
+            <span>Campagne</span><span>Jeu</span><span className="text-left">Scans</span><span className="text-left">Participations</span><span className="text-left">Conv.</span><span className="text-left">Coût / participation</span><span className="sr-only">Actions</span>
           </div>
           <div className="space-y-0">
             {campaigns.length ? campaigns.map((item) => (

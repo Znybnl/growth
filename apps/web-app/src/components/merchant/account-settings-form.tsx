@@ -252,7 +252,7 @@ export function AccountSettingsForm({
         </div>
       </div>
       <div ref={actionsAnchorRef} className="h-px" aria-hidden="true" />
-      <div className="space-y-4">
+      <div className="space-y-6">
         <div role="tablist" aria-label="Sections du compte" className="flex gap-1 overflow-x-auto border-b border-lavender-mist bg-soft-white px-1 py-1">
           {([
             ["establishment", "Établissement"],

@@ -1,5 +1,6 @@
 import { buildPosterWheelSegments } from "@/lib/poster-utils";
 import { getPosterTemplate, PosterTemplateConfig } from "@/lib/poster-templates";
+import { getPosterFontAsset } from "@/lib/poster-fonts";
 import { Campaign, CampaignPosterSettings, Prize, TextFont } from "@/lib/types";
 
 const A4_WIDTH = 794;
@@ -381,9 +382,19 @@ export function buildPosterSvg(args: {
   poster: CampaignPosterSettings;
   prizes: Prize[] | Array<Pick<Prize, "label">>;
   qrDataUrl: string;
-  displayFontSource?: string;
+  posterFontSource?: string;
 }) {
-  const { campaign, poster, prizes, qrDataUrl, displayFontSource = "/fonts/anton-regular.ttf" } = args;
+  const { campaign, poster, prizes, qrDataUrl, posterFontSource } = args;
+  const posterFontAsset = getPosterFontAsset(poster.headlineFontFamily);
+  const posterFontFace = posterFontAsset
+    ? `
+            @font-face {
+              font-family: "${posterFontAsset.familyName}";
+              src: url("${posterFontSource ?? `/fonts/poster/${posterFontAsset.fileName}`}") format("truetype");
+              font-weight: ${posterFontAsset.fontWeight};
+              font-style: normal;
+            }`
+    : "";
   const baseTemplate = getPosterTemplate(poster.templateId);
   const template = {
     ...baseTemplate,
@@ -397,12 +408,7 @@ export function buildPosterSvg(args: {
       <defs>
         <style>
           <![CDATA[
-            @font-face {
-              font-family: Anton;
-              src: url("${displayFontSource}") format("truetype");
-              font-weight: 400;
-              font-style: normal;
-            }
+            ${posterFontFace}
             text {
               font-family: ${SAFE_FONT};
             }
