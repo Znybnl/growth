@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 
 import { getAuthenticatedSession } from "@/lib/auth";
 import { CampaignComplianceError } from "@/lib/campaign-compliance";
@@ -6,9 +6,25 @@ import { parseCampaignSetupInput } from "@/lib/merchant-input";
 import { captureProductEvent, merchantDistinctId } from "@/lib/product-analytics";
 import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
 import { updateCampaignSetup } from "@/lib/store";
+import {
+  emitServerError,
+  flushServerTelemetry,
+  hashTelemetryIdentifier,
+  isServerTelemetryEnabled,
+} from "@/lib/observability";
 import { logSupportEvent } from "@/lib/support-log";
 
 export async function POST(request: Request) {
+  const requestId = request.headers.get("x-vercel-id") || request.headers.get("x-request-id") || undefined;
+  let telemetryContext: Record<
+    string,
+    string | number | boolean | undefined
+  > = {
+    route: "/api/campaigns/setup",
+    http_method: request.method,
+    request_id: requestId,
+  };
+
   try {
     assertTrustedMutationRequest(request);
     const session = await getAuthenticatedSession();
@@ -18,6 +34,14 @@ export async function POST(request: Request) {
     }
 
     const body = parseCampaignSetupInput(await request.json(), session.merchant.id);
+    telemetryContext = {
+      ...telemetryContext,
+      campaign_id: body.id,
+      merchant_hash: hashTelemetryIdentifier(session.merchant.id),
+      user_hash: hashTelemetryIdentifier(session.user.id),
+      creation_mode: body.creationMode ?? "editor",
+      game_type: body.gameType,
+    };
 
     const campaign = await updateCampaignSetup(body);
     if (!campaign) {
@@ -63,7 +87,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ campaign }, { status: 201 });
   } catch (error) {
-    console.error("Campaign setup failed", error);
     const status = getRequestSecurityErrorStatus(error) === 403
       ? 403
       : error instanceof CampaignComplianceError
@@ -75,6 +98,15 @@ export async function POST(request: Request) {
         : error instanceof Error
           ? error.message
           : "Sauvegarde impossible.";
+
+    emitServerError("campaign_setup_failed", error, {
+      ...telemetryContext,
+      http_status: status,
+    });
+    if (isServerTelemetryEnabled()) {
+      after(() => flushServerTelemetry());
+    }
+    console.error("Campaign setup failed", error);
 
     return NextResponse.json(
       { error: message },

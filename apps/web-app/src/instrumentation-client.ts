@@ -9,5 +9,9 @@ if (posthogKey) {
     capture_pageview: "history_change",
     capture_pageleave: true,
     autocapture: true,
+    logs: {
+      serviceName: "okado-web",
+      environment: process.env.NEXT_PUBLIC_APP_ENV || process.env.NODE_ENV || "production",
+    },
   });
 }

@@ -44,6 +44,7 @@ import { actionKindCta, textFontClass, textFontLabel } from "@/lib/format";
 import { getPrizeValidationMessages } from "@/lib/prize-validation";
 import { createCampaignEmailDefaults } from "@/lib/email-settings";
 import { normalizeCampaignEmailSettings } from "@/lib/email-settings";
+import { captureClientError } from "@/lib/client-observability";
 import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
 import {
   createDefaultPosterSettings,
@@ -1094,6 +1095,11 @@ export function CampaignWizard({
       }
       return Boolean(campaignId);
     } catch (saveFailure) {
+      captureClientError("campaign_setup_failed", saveFailure, {
+        campaign_id: draft.id,
+        creation_mode: "wizard",
+        editor_mode: isEditing ? "edit" : "create",
+      });
       const message = saveFailure instanceof Error ? saveFailure.message : "";
       setSaveError(
         message.toLowerCase().includes("duplicate key")
