@@ -409,9 +409,6 @@ export function buildPosterSvg(args: {
         <style>
           <![CDATA[
             ${posterFontFace}
-            text {
-              font-family: ${SAFE_FONT};
-            }
           ]]>
         </style>
         <filter id="posterShadow" x="-25%" y="-25%" width="150%" height="150%">
