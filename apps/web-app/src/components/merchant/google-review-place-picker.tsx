@@ -131,7 +131,7 @@ export function GoogleReviewPlacePicker({
 
   return (
     <div className={[compact ? "space-y-3" : "space-y-4", className].filter(Boolean).join(" ")}>
-      <div className={`${compact ? "border-b border-fog pb-4" : "rounded-[16px] border border-lavender-mist bg-soft-white p-3"} `}>
+      <div className={`${compact ? "h-full min-h-[152px] rounded-[12px] border border-fog bg-white p-4" : "rounded-[16px] border border-lavender-mist bg-soft-white p-3"} `}>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[4px] bg-[#fce8e6] text-lg font-bold text-[#d93025]" aria-hidden="true">
             <span className="-translate-y-px">G</span>
@@ -140,7 +140,7 @@ export function GoogleReviewPlacePicker({
             <div className="mb-2 flex flex-wrap items-center gap-2">
               <div>
                 <p className="text-sm font-semibold text-carbon">Avis Google</p>
-                <p className="mt-0.5 text-xs text-ash">La fiche affichée après la participation</p>
+                <p className="mt-0.5 text-xs text-ash">Fiche utilisée pour les avis Google</p>
               </div>
             </div>
             {showSearchInput ? (

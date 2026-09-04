@@ -474,10 +474,10 @@ export function AccountSettingsForm({
               </div>
               <p className="mt-1 text-sm text-ash">Ajoutez les liens que vos participants pourront retrouver après leur participation.</p>
             </div>
-            <div className="divide-y divide-fog">
+            <div className="grid gap-4 md:grid-cols-2">
             <GoogleReviewPlacePicker
               key={`${selectedLocationId}-${form.googleReviewUrl}`}
-              className="md:col-span-2"
+              className="h-full"
               value={form.googleReviewUrl}
               onChange={(nextUrl) => updateField("googleReviewUrl", nextUrl)}
               defaultQuery={form.companyName}
@@ -504,17 +504,8 @@ export function AccountSettingsForm({
                 }));
               }}
             />
-            {!displayOptionalChannels ? (
-              <button
-                type="button"
-                onClick={() => setShowOptionalChannels(true)}
-                className="mt-2 inline-flex items-center gap-2 py-2 text-sm font-semibold text-aubergine underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aubergine"
-              >
-                + Ajouter un canal marketing
-              </button>
-            ) : null}
-            {displayOptionalChannels ? <div className="grid gap-x-6 md:grid-cols-2">
-          <label className="grid gap-2 border-b border-fog py-3 text-sm first:pt-0 md:grid-cols-[minmax(120px,0.42fr)_minmax(0,1fr)] md:items-center md:gap-3">
+            {displayOptionalChannels ? <>
+          <label className="flex min-h-[152px] flex-col justify-between gap-3 rounded-[12px] border border-fog bg-white p-4 text-sm">
             <span className="flex items-center justify-between gap-3 text-charcoal"><span className="flex items-center gap-3"><SocialChannelIcon channel="instagram" /><span>Instagram</span></span>{form.instagramUrl ? <span className="text-xs font-semibold text-aubergine">✓</span> : <span className="text-xs text-ash">Optionnel</span>}</span>
             <input
               type="text"
@@ -525,7 +516,7 @@ export function AccountSettingsForm({
               className={`${inputClass} min-h-[40px] px-3 py-2 text-xs`}
             />
           </label>
-          <label className="grid gap-2 border-b border-fog py-3 text-sm md:grid-cols-[minmax(120px,0.42fr)_minmax(0,1fr)] md:items-center md:gap-3">
+          <label className="flex min-h-[152px] flex-col justify-between gap-3 rounded-[12px] border border-fog bg-white p-4 text-sm">
             <span className="flex items-center justify-between gap-3 text-charcoal"><span className="flex items-center gap-3"><SocialChannelIcon channel="facebook" /><span>Facebook</span></span>{form.facebookUrl ? <span className="text-xs font-semibold text-aubergine">✓</span> : <span className="text-xs text-ash">Optionnel</span>}</span>
             <input
               type="text"
@@ -536,7 +527,7 @@ export function AccountSettingsForm({
               className={`${inputClass} min-h-[40px] px-3 py-2 text-xs`}
             />
           </label>
-          <label className="grid gap-2 border-b border-fog py-3 text-sm md:grid-cols-[minmax(120px,0.42fr)_minmax(0,1fr)] md:items-center md:gap-3">
+          <label className="flex min-h-[152px] flex-col justify-between gap-3 rounded-[12px] border border-fog bg-white p-4 text-sm">
             <span className="flex items-center justify-between gap-3 text-charcoal"><span className="flex items-center gap-3"><SocialChannelIcon channel="tiktok" /><span>TikTok</span></span>{form.tiktokUrl ? <span className="text-xs font-semibold text-aubergine">✓</span> : <span className="text-xs text-ash">Optionnel</span>}</span>
             <input
               type="text"
@@ -547,7 +538,7 @@ export function AccountSettingsForm({
               className={`${inputClass} min-h-[40px] px-3 py-2 text-xs`}
             />
           </label>
-          <label className="grid gap-2 border-b border-fog py-3 text-sm md:grid-cols-[minmax(120px,0.42fr)_minmax(0,1fr)] md:items-center md:gap-3">
+          <label className="flex min-h-[152px] flex-col justify-between gap-3 rounded-[12px] border border-fog bg-white p-4 text-sm">
             <span className="flex items-center justify-between gap-3 text-charcoal"><span className="flex items-center gap-3"><SocialChannelIcon channel="tripadvisor" /><span>Tripadvisor</span></span>{form.tripadvisorUrl ? <span className="text-xs font-semibold text-aubergine">✓</span> : <span className="text-xs text-ash">Optionnel</span>}</span>
             <input
               type="text"
@@ -558,7 +549,7 @@ export function AccountSettingsForm({
               className={`${inputClass} min-h-[40px] px-3 py-2 text-xs`}
             />
           </label>
-          <label className="grid gap-2 border-b border-fog py-3 text-sm md:grid-cols-[minmax(120px,0.42fr)_minmax(0,1fr)] md:items-center md:gap-3">
+          <label className="flex min-h-[152px] flex-col justify-between gap-3 rounded-[12px] border border-fog bg-white p-4 text-sm">
             <span className="flex items-center justify-between gap-3 text-charcoal"><span className="flex items-center gap-3"><SocialChannelIcon channel="custom" /><span>Lien personnalisé</span></span>{form.customLinkUrl ? <span className="text-xs font-semibold text-aubergine">✓</span> : <span className="text-xs text-ash">Optionnel</span>}</span>
             <input
               type="text"
@@ -569,8 +560,17 @@ export function AccountSettingsForm({
               className={`${inputClass} min-h-[40px] px-3 py-2 text-xs`}
             />
           </label>
-            </div> : null}
+            </> : null}
             </div>
+            {!displayOptionalChannels ? (
+              <button
+                type="button"
+                onClick={() => setShowOptionalChannels(true)}
+                className="mt-1 inline-flex items-center gap-2 py-2 text-sm font-semibold text-aubergine underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aubergine"
+              >
+                + Ajouter un canal marketing
+              </button>
+            ) : null}
           </div>
 
           <div id="account-pin" className="mt-8 scroll-mt-28 border-t border-border/70 pt-6">
