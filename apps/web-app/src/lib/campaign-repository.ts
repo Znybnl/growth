@@ -2137,11 +2137,37 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
   const existingPrizes = (existingPrizesData as PrizeRow[] | null) ?? [];
   const remainingMap = new Map(existingPrizes.map((item) => [item.id, item.remaining_quantity]));
 
+  const existingActionIds = new Set<string>();
+  if (!isNewCampaign) {
+    const existingActionsQuery = await supabase
+      .from("campaign_actions")
+      .select("id")
+      .eq("campaign_id", campaignId);
+    if (existingActionsQuery.error) {
+      throw new Error(`Lecture des actions existantes impossible: ${existingActionsQuery.error.message}`);
+    }
+    for (const action of (existingActionsQuery.data as Array<{ id: string }> | null) ?? []) {
+      existingActionIds.add(action.id);
+    }
+  }
+
+  const usedActionIds = new Set<string>();
+  const resolveActionId = (actionId: string | undefined) => {
+    if (!isNewCampaign && actionId && existingActionIds.has(actionId) && !usedActionIds.has(actionId)) {
+      usedActionIds.add(actionId);
+      return actionId;
+    }
+
+    let generatedId = generateId("action");
+    while (usedActionIds.has(generatedId)) {
+      generatedId = generateId("action");
+    }
+    usedActionIds.add(generatedId);
+    return generatedId;
+  };
+
   const atomicActions = input.actions.map((action, index) => ({
-    id:
-      !isNewCampaign && action.id && !action.id.startsWith("local-action-")
-        ? action.id
-        : generateId("action"),
+    id: resolveActionId(action.id && !action.id.startsWith("local-action-") ? action.id : undefined),
     campaign_id: campaignId,
     position: index,
     kind: action.kind,
@@ -2247,18 +2273,7 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
   }
 
   if (input.actions.length) {
-    const actionsInsert = input.actions.map((action, index) => ({
-      id:
-        !isNewCampaign && action.id && !action.id.startsWith("local-action-")
-          ? action.id
-          : generateId("action"),
-      campaign_id: campaignId,
-      position: index,
-      kind: action.kind,
-      label: action.label,
-      url: action.url,
-    }));
-    const actionsResult = await supabase.from("campaign_actions").insert(actionsInsert);
+    const actionsResult = await supabase.from("campaign_actions").insert(atomicActions);
     if (actionsResult.error) {
       throw new Error(`Les actions n'ont pas pu etre enregistrees: ${actionsResult.error.message}`);
     }
