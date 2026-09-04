@@ -29,6 +29,7 @@ function ensurePosterFontConfig() {
   if (fontConfigReady) return;
 
   const fontDir = path.join(process.cwd(), "public", "fonts");
+  const posterFontDir = path.join(fontDir, "poster");
   const configDir = path.join(tmpdir(), "okado-fontconfig");
   const cacheDir = path.join(tmpdir(), "okado-font-cache");
   const configFile = path.join(configDir, "fonts.conf");
@@ -41,6 +42,7 @@ function ensurePosterFontConfig() {
 <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
 <fontconfig>
   <dir>${escapeXmlAttribute(fontDir)}</dir>
+  <dir>${escapeXmlAttribute(posterFontDir)}</dir>
   <cachedir>${escapeXmlAttribute(cacheDir)}</cachedir>
   <alias>
     <family>Anton</family>
