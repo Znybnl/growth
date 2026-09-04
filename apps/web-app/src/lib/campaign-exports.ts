@@ -1,6 +1,6 @@
 import QRCode from "qrcode";
-import { readFileSync } from "node:fs";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 
 import { buildPosterSvg } from "@/lib/poster-render";
 import { getPosterFontAsset } from "@/lib/poster-fonts";
@@ -11,7 +11,7 @@ import {
 import { getPosterTemplate, POSTER_TEMPLATES } from "@/lib/poster-templates";
 import { CampaignPerformance, CampaignPosterSettings } from "@/lib/types";
 
-const posterFontDataUris = new Map<string, string>();
+const posterFontSources = new Map<string, string>();
 
 function isPosterTemplateDefaultWinColor(color: string | undefined) {
   return POSTER_TEMPLATES.some(
@@ -19,24 +19,23 @@ function isPosterTemplateDefaultWinColor(color: string | undefined) {
   ) || color === "#1b2842" || color === "#f4c14a";
 }
 
-function getPosterFontDataUri(font: CampaignPosterSettings["headlineFontFamily"]) {
+function getPosterFontSource(font: CampaignPosterSettings["headlineFontFamily"]) {
   const asset = getPosterFontAsset(font);
 
   if (!asset) {
     return undefined;
   }
 
-  const cached = posterFontDataUris.get(asset.fileName);
+  const cached = posterFontSources.get(asset.fileName);
   if (cached) {
     return cached;
   }
 
   const fontPath = path.join(process.cwd(), "public", "fonts", "poster", asset.fileName);
-  const fontBuffer = readFileSync(fontPath);
-  const dataUri = `data:font/truetype;base64,${fontBuffer.toString("base64")}`;
-  posterFontDataUris.set(asset.fileName, dataUri);
+  const source = pathToFileURL(fontPath).toString();
+  posterFontSources.set(asset.fileName, source);
 
-  return dataUri;
+  return source;
 }
 
 function applyPosterTemplateDefaults(
@@ -161,6 +160,6 @@ export async function createCampaignPosterSvg(
     poster,
     prizes: performance.prizes,
     qrDataUrl,
-    posterFontSource: getPosterFontDataUri(poster.headlineFontFamily),
+    posterFontSource: getPosterFontSource(poster.headlineFontFamily),
   });
 }
