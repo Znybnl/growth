@@ -51,6 +51,9 @@ import {
   createDefaultPosterSettings,
   createDefaultWheelSettings,
   DEFAULT_SCRATCH_PRIMARY_COLOR,
+  DEFAULT_SCRATCH_CORAL_COLOR,
+  scratchTemplateDefaultPrimaryColor,
+  shouldApplyScratchTemplateDefaultPrimaryColor,
   DEFAULT_SCRATCH_SUBTITLE,
   DEFAULT_WHEEL_SUBTITLE,
   DEFAULT_WHEEL_PRIMARY_COLOR,
@@ -1483,11 +1486,7 @@ export function CampaignWizard({
                           option.value === "scratch"
                             ? {
                                 ...normalizeScratchAccent(draft.accent, "scratch-coral"),
-                                signal:
-                                  draft.gameType === "wheel" &&
-                                  draft.presentation.wheel.loseColor.toLowerCase() !== DEFAULT_WHEEL_PRIMARY_COLOR
-                                    ? draft.presentation.wheel.loseColor
-                                    : DEFAULT_SCRATCH_PRIMARY_COLOR,
+                                signal: DEFAULT_SCRATCH_CORAL_COLOR,
                               }
                             : draft.accent,
                       })
@@ -2133,10 +2132,17 @@ export function CampaignWizard({
                                   }
                                 : draft.presentation.wheel,
                         },
-                        accent:
-                          draft.gameType === "scratch"
-                            ? normalizeScratchAccent(draft.accent, template.id)
-                            : draft.accent,
+                          accent:
+                            draft.gameType === "scratch"
+                              ? {
+                                  ...normalizeScratchAccent(draft.accent, template.id),
+                                  signal:
+                                    scratchTemplateDefaultPrimaryColor(template.id) &&
+                                    shouldApplyScratchTemplateDefaultPrimaryColor(draft.accent.signal)
+                                      ? scratchTemplateDefaultPrimaryColor(template.id)!
+                                      : draft.accent.signal,
+                                }
+                              : draft.accent,
                       })
                     }
                     className={`rounded-[16px] border p-4 text-left ${draft.presentation.layout.templateId === template.id ? "border-aubergine bg-purple-haze" : "border-[#e2e8f0] bg-[#fbfcfe]"}`}

@@ -64,6 +64,9 @@ import {
   createDefaultPosterSettings,
   createDefaultWheelSettings,
   DEFAULT_SCRATCH_PRIMARY_COLOR,
+  DEFAULT_SCRATCH_CORAL_COLOR,
+  scratchTemplateDefaultPrimaryColor,
+  shouldApplyScratchTemplateDefaultPrimaryColor,
   DEFAULT_SCRATCH_SUBTITLE,
   DEFAULT_WHEEL_PRIMARY_COLOR,
   DEFAULT_COCORICO_PRIMARY_COLOR,
@@ -1935,11 +1938,14 @@ function setGameType(gameType: GameType) {
         current.gameType === "scratch"
           ? activePrimaryColor.toLowerCase() !== DEFAULT_SCRATCH_PRIMARY_COLOR
           : activePrimaryColor.toLowerCase() !== DEFAULT_WHEEL_PRIMARY_COLOR;
-      const nextPrimaryColor = shouldCarryPrimaryColor
-        ? activePrimaryColor
-        : gameType === "scratch"
-          ? DEFAULT_SCRATCH_PRIMARY_COLOR
-          : DEFAULT_WHEEL_PRIMARY_COLOR;
+      const nextPrimaryColor =
+        gameType === "scratch"
+          ? current.gameType === "scratch" && shouldCarryPrimaryColor
+            ? activePrimaryColor
+            : DEFAULT_SCRATCH_CORAL_COLOR
+          : shouldCarryPrimaryColor
+            ? activePrimaryColor
+            : DEFAULT_WHEEL_PRIMARY_COLOR;
 
       const currentSubtitle = current.subtitle.trim();
       const shouldSyncSubtitle =
@@ -2615,7 +2621,14 @@ function setGameType(gameType: GameType) {
                           },
                           accent:
                             current.gameType === "scratch"
-                              ? normalizeScratchAccent(current.accent, template.value)
+                              ? {
+                                  ...normalizeScratchAccent(current.accent, template.value),
+                                  signal:
+                                    scratchTemplateDefaultPrimaryColor(template.value) &&
+                                    shouldApplyScratchTemplateDefaultPrimaryColor(current.accent.signal)
+                                      ? scratchTemplateDefaultPrimaryColor(template.value)!
+                                      : current.accent.signal,
+                                }
                               : current.accent,
                         }))
                       }
