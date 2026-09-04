@@ -1463,6 +1463,28 @@ function getMerchantDashboardFromMemory(
     .filter((campaign) => campaign.merchantId === merchantId)
     .map((campaign) => buildPerformance(campaign));
 
+  const campaignIds = new Set(campaigns.map((item) => item.campaign.id));
+  const pendingRedemptionsByPrizeId = new Map<string, number>();
+  for (const lead of store.leads) {
+    if (campaignIds.has(lead.campaignId) && lead.prizeId && lead.status === "claimed") {
+      pendingRedemptionsByPrizeId.set(
+        lead.prizeId,
+        (pendingRedemptionsByPrizeId.get(lead.prizeId) ?? 0) + 1,
+      );
+    }
+  }
+  const prizeInventory = campaigns.flatMap((item) =>
+    item.prizes.map((prize) => ({
+      prizeId: prize.id,
+      campaignId: item.campaign.id,
+      campaignTitle: item.campaign.title,
+      prizeLabel: prize.label,
+      pendingRedemptions: pendingRedemptionsByPrizeId.get(prize.id) ?? 0,
+      remainingQuantity: prize.remainingQuantity,
+      totalQuantity: prize.totalQuantity,
+    })),
+  );
+
   const totalLeads = campaigns.reduce((total, item) => total + item.kpis.leads, 0);
   const totalRedeemed = campaigns.reduce((total, item) => total + item.kpis.redeemed, 0);
   const averageConversion = campaigns.length
@@ -1471,7 +1493,6 @@ function getMerchantDashboardFromMemory(
           campaigns.length,
       )
     : 0;
-  const campaignIds = new Set(campaigns.map((item) => item.campaign.id));
   const relevantLeads = store.leads.filter((lead) => campaignIds.has(lead.campaignId));
   const relevantEvents = store.events.filter((event) => campaignIds.has(event.campaignId));
   const referenceDates = [
@@ -1506,6 +1527,7 @@ function getMerchantDashboardFromMemory(
   return {
     merchant: clone(merchant),
     campaigns,
+    prizeInventory,
     totalLeads,
     totalRedeemed,
     averageConversion,
@@ -2333,6 +2355,7 @@ export const getMerchantWorkspaceDashboard = cache(async function getMerchantWor
     context.locations.map(({ merchant }) => getMerchantDashboard(merchant.id, merchant)),
   );
   const campaigns = dashboards.flatMap((dashboard) => dashboard.campaigns);
+  const prizeInventory = dashboards.flatMap((dashboard) => dashboard.prizeInventory);
   const activityByDay = new Map<string, { scans: number; participations: number }>();
   dashboards.forEach((dashboard) => {
     dashboard.activityPoints.forEach((point) => {
@@ -2347,6 +2370,7 @@ export const getMerchantWorkspaceDashboard = cache(async function getMerchantWor
   return {
     merchant: activeMerchant,
     campaigns,
+    prizeInventory,
     totalLeads: dashboards.reduce((total, dashboard) => total + dashboard.totalLeads, 0),
     totalRedeemed: dashboards.reduce((total, dashboard) => total + dashboard.totalRedeemed, 0),
     averageConversion: campaigns.length
