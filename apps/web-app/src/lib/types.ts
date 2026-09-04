@@ -357,6 +357,7 @@ export interface CampaignLogoSettings {
   sizePercent: number;
   marginBottomPx: number;
   align: TextAlign;
+  textColor?: string;
 }
 
 export interface CampaignBackgroundSettings {

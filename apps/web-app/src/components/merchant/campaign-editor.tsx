@@ -196,6 +196,7 @@ export type CampaignEditorPreviewModel = {
   logoTextSizePx: number;
   logoUrl: string;
   logoText: string;
+  logoTextColor: string;
   headingAlignmentClass: string;
   headingFontClass: string;
   headingFontFamily: TextFont;
@@ -885,7 +886,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
                 variant="transparent"
                 imageWidthPx={scalePreviewValue(preview.logoWidthPx)}
                 textSizePx={scalePreviewValue(preview.logoTextSizePx)}
-                textColor={previewHeadingTextColor}
+                textColor={preview.logoTextColor}
                 textClassName="text-2xl"
               />
             </div>
@@ -905,7 +906,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
                 variant="transparent"
                 imageWidthPx={scalePreviewValue(preview.logoWidthPx)}
                 textSizePx={scalePreviewValue(preview.logoTextSizePx)}
-                textColor={previewHeadingTextColor}
+                textColor={preview.logoTextColor}
                 textClassName="text-2xl"
               />
             </div>
@@ -1463,8 +1464,9 @@ export function buildCampaignLivePreviewModel(
     logoBottomSpacingPx: form.presentation.logo.marginBottomPx,
     logoWidthPx,
     logoTextSizePx,
-    logoUrl: form.logoUrl ?? "",
-    logoText: form.logoText?.trim() || merchant.companyName,
+      logoUrl: form.logoUrl ?? "",
+      logoText: form.logoText?.trim() || merchant.companyName,
+      logoTextColor: form.presentation.logo.textColor ?? form.presentation.heading.textColor,
       headingAlignmentClass,
       headingFontClass,
       headingFontFamily: form.presentation.heading.fontFamily,
@@ -1709,6 +1711,7 @@ export function CampaignEditor({
       logoTextSizePx,
       logoUrl: form.logoUrl ?? "",
       logoText: form.logoText?.trim() || merchant.companyName,
+      logoTextColor: form.presentation.logo.textColor ?? form.presentation.heading.textColor,
       headingAlignmentClass,
       headingFontClass,
       headingFontFamily: form.presentation.heading.fontFamily,
@@ -1764,6 +1767,7 @@ export function CampaignEditor({
     form.presentation.layout.blockSpacingPx,
     form.presentation.layout.templateId,
     form.presentation.logo.marginBottomPx,
+    form.presentation.logo.textColor,
     form.presentation.wheel,
     form.subtitle,
     currentTemplateId,
