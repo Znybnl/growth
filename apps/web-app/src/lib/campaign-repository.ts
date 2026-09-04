@@ -497,6 +497,7 @@ function toCampaign(
         sizePercent: row.logo_size_percent,
         marginBottomPx: row.logo_margin_bottom_px,
         align: row.logo_align,
+        textColor: localSettings.logoTextColor ?? row.heading_text_color ?? "#1f2937",
       },
       background: {
         mode: row.background_mode,
@@ -2215,6 +2216,7 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
     gamePageTemplateId: input.presentation.layout.templateId ?? "classic",
     logoMode: input.logoMode,
     logoText: input.logoText,
+    logoTextColor: input.presentation.logo.textColor ?? input.presentation.heading.textColor,
     prizeSettings: Object.fromEntries(
       atomicPrizes.map((prize, index) => [
         prize.id,

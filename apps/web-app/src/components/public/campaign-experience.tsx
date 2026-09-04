@@ -896,7 +896,7 @@ export function CampaignExperience({
                 imageWidthPx={logoWidthPx}
                 textSizePx={logoTextSizePx}
                 textClassName="text-2xl"
-                textColor={headingTextColor}
+                textColor={campaign.presentation.logo.textColor ?? headingTextColor}
               />
             </div>
           </div>

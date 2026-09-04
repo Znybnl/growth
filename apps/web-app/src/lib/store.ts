@@ -135,6 +135,7 @@ function createPresentation(overrides?: CampaignPresentationOverrides): Campaign
       sizePercent: 100,
       marginBottomPx: 20,
       align: "center",
+      textColor: "#1f2937",
       ...overrides?.logo,
     },
     background: {

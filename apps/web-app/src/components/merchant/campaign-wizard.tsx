@@ -27,6 +27,7 @@ import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
 import { CampaignPreviewQrDialog } from "@/components/merchant/campaign-preview-qr";
 import { CampaignSavedDialog } from "@/components/merchant/campaign-saved-dialog";
 import { DialogShell } from "@/components/ui/dialog";
+import { ValidationDialog } from "@/components/ui/validation-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -749,6 +750,7 @@ export function CampaignWizard({
   );
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [savedCampaignId, setSavedCampaignId] = useState<string | null>(null);
   const [qrPreviewOpen, setQrPreviewOpen] = useState(false);
@@ -1013,6 +1015,7 @@ export function CampaignWizard({
     const targetIsActive = isPublishing ? true : isEditing ? draft.isActive : false;
     setIsSaving(true);
     setError(null);
+    setSaveError(null);
     try {
       const response = await fetch("/api/campaigns/setup", {
         method: "POST",
@@ -1053,11 +1056,12 @@ export function CampaignWizard({
         window.dispatchEvent(new Event("campaigns-updated"));
         setSavedCampaignId(campaignId);
       }
-    } catch (saveError) {
-      setError(
-        saveError instanceof Error
-          ? saveError.message
-          : "La campagne n’a pas pu être enregistrée.",
+    } catch (saveFailure) {
+      const message = saveFailure instanceof Error ? saveFailure.message : "";
+      setSaveError(
+        message.toLowerCase().includes("duplicate key")
+          ? "Impossible d’enregistrer cette campagne pour le moment. Vérifiez les actions marketing puis réessayez."
+          : "La campagne n’a pas pu être enregistrée. Vérifiez les informations puis réessayez.",
       );
     } finally {
       setIsSaving(false);
@@ -2175,7 +2179,21 @@ export function CampaignWizard({
                 </summary>
                  <div className="space-y-5 border-t border-[#e2e8f0] px-4 pb-4 pt-4">
                <div className="hidden">
-                {draft.gameType === "wheel" ? (
+                   {draft.logoMode === "text" ? <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
+                     <p className="text-sm font-semibold text-[#182033]">Couleur du logo</p>
+                     <p className="mt-1 text-xs leading-5 text-[#8993a6]">Ce réglage concerne uniquement le logo texte.</p>
+                     <label className="mt-3 block text-sm">
+                       <span className="mb-2 block font-semibold text-[#182033]">Couleur</span>
+                       <input
+                         type="color"
+                         value={draft.presentation.logo.textColor ?? draft.presentation.heading.textColor}
+                         onChange={(event) => patchDraft({ presentation: { ...draft.presentation, logo: { ...draft.presentation.logo, textColor: event.target.value } } })}
+                         className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] bg-white p-1"
+                         aria-label="Couleur du logo texte"
+                       />
+                     </label>
+                   </section> : null}
+                   {draft.gameType === "wheel" ? (
                   <>
                 {draft.presentation.layout.templateId === "classic" ? (
                 <label className="block">
@@ -2499,6 +2517,14 @@ export function CampaignWizard({
           })
         }
         onClose={() => setBackgroundLibraryOpen(false)}
+      />
+      <ValidationDialog
+        open={Boolean(saveError)}
+        title="Enregistrement impossible"
+        description={saveError ?? "La campagne n’a pas pu être enregistrée."}
+        tone="error"
+        ctaLabel="Fermer"
+        onClose={() => setSaveError(null)}
       />
       {draft.id ? (
         <CampaignPreviewQrDialog

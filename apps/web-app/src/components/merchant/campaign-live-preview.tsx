@@ -64,6 +64,7 @@ export type CampaignEditorPreviewModel = {
   logoTextSizePx: number;
   logoUrl: string;
   logoText: string;
+  logoTextColor: string;
   headingAlignmentClass: string;
   headingFontClass: string;
   headingFontFamily: CampaignSetupInput["presentation"]["heading"]["fontFamily"];
@@ -185,6 +186,7 @@ export function buildCampaignLivePreviewModel(form: CampaignSetupInput, merchant
     logoTextSizePx: campaignLogoTextSizePx(logoSizePercent, form.gameType),
     logoUrl: form.logoUrl ?? "",
     logoText: form.logoText?.trim() || merchant.companyName,
+    logoTextColor: form.presentation.logo.textColor ?? form.presentation.heading.textColor,
     headingAlignmentClass,
     headingFontClass: headingFontClassFor(form),
     headingFontFamily: form.presentation.heading.fontFamily,
@@ -240,8 +242,8 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
         {showStandardHeader ? (
           <>
             {preview.logoMode === "image" && preview.logoUrl ? <div className={`flex ${preview.logoAlignmentClass}`}><div style={{ marginBottom: `${scalePreviewValue(preview.logoBottomSpacingPx)}px` }}><BrandMark logoText={merchant.logoText} logoUrl={preview.logoUrl} size="lg" variant="transparent" imageWidthPx={scalePreviewValue(preview.logoWidthPx)} /></div></div> : null}
-            {preview.logoMode === "text" ? <div className={`flex ${preview.logoAlignmentClass}`}><div style={{ marginBottom: `${scalePreviewValue(preview.logoBottomSpacingPx)}px` }}><BrandMark logoText={preview.logoText} size="lg" variant="transparent" imageWidthPx={scalePreviewValue(preview.logoWidthPx)} textSizePx={scalePreviewValue(preview.logoTextSizePx)} textColor={previewHeadingTextColor} textClassName="text-2xl" /></div></div> : null}
-            {preview.gameType === "scratch" && preview.logoMode === "none" ? <div className={`flex ${preview.logoAlignmentClass}`}><div style={{ marginBottom: `${scalePreviewValue(preview.logoBottomSpacingPx)}px` }}><BrandMark logoText={preview.logoText || merchant.companyName} size="lg" variant="transparent" imageWidthPx={scalePreviewValue(preview.logoWidthPx)} textSizePx={scalePreviewValue(preview.logoTextSizePx)} textColor={previewHeadingTextColor} textClassName="text-2xl" /></div></div> : null}
+            {preview.logoMode === "text" ? <div className={`flex ${preview.logoAlignmentClass}`}><div style={{ marginBottom: `${scalePreviewValue(preview.logoBottomSpacingPx)}px` }}><BrandMark logoText={preview.logoText} size="lg" variant="transparent" imageWidthPx={scalePreviewValue(preview.logoWidthPx)} textSizePx={scalePreviewValue(preview.logoTextSizePx)} textColor={preview.logoTextColor} textClassName="text-2xl" /></div></div> : null}
+            {preview.gameType === "scratch" && preview.logoMode === "none" ? <div className={`flex ${preview.logoAlignmentClass}`}><div style={{ marginBottom: `${scalePreviewValue(preview.logoBottomSpacingPx)}px` }}><BrandMark logoText={preview.logoText || merchant.companyName} size="lg" variant="transparent" imageWidthPx={scalePreviewValue(preview.logoWidthPx)} textSizePx={scalePreviewValue(preview.logoTextSizePx)} textColor={preview.logoTextColor} textClassName="text-2xl" /></div></div> : null}
             {preview.logoMode === "none" || (preview.logoMode === "image" && !preview.logoUrl) ? <div aria-hidden="true" className="h-5" /> : null}
             <div className={preview.headingAlignmentClass}>{isCocoricoTemplate || isRestaurantPopTemplate || preview.gamePageTemplateId === "classic" ? <CocoricoPromoText text={preview.subtitle.trim() || (preview.gameType === "scratch" ? DEFAULT_SCRATCH_SUBTITLE : "Découvrez votre animation")} as="h3" fontFamily={textFontFamily(preview.headingFontFamily)} fontSize={fluidType(scalePreviewValue(preview.headingFontSizePx), { minRatio: 0.82, maxRatio: 1.08, viewportStep: 0.3, viewportUnit: compact ? "cqw" : "vw" })} fontWeight={isCocoricoTemplate ? undefined : 850} textColor={isCocoricoTemplate ? undefined : previewHeadingTextColor} secondaryTextColor={isCocoricoTemplate ? undefined : previewHeadingTextColor} strokeColor={isCocoricoTemplate ? undefined : resolvePromoStrokeColor(previewHeadingTextColor)} strokeWidth={isCocoricoTemplate ? undefined : 5} variant={isCocoricoTemplate ? "cocorico" : "inspired"} rotate={isCocoricoTemplate} /> : <h3 className={`${preview.headingFontClass} line-clamp-3 whitespace-pre-line pb-[25px] leading-[1]`} style={{ color: previewHeadingTextColor, fontSize: fluidType(scalePreviewValue(preview.headingFontSizePx), { minRatio: 0.82, maxRatio: 1.08, viewportStep: 0.3, viewportUnit: compact ? "cqw" : "vw" }), fontWeight: preview.headingFontWeight }}>{preview.subtitle.trim() || (preview.gameType === "scratch" ? DEFAULT_SCRATCH_SUBTITLE : "Découvrez votre animation")}</h3>}</div>
           </>

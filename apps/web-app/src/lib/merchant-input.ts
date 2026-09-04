@@ -454,6 +454,7 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
           integer: true,
         }),
         align: normalizeEnum(logo.align, TEXT_ALIGNS, "center"),
+        textColor: normalizeColor(logo.textColor, normalizeColor(heading.textColor, "#1f2937")),
       },
       background: {
         mode: normalizeEnum(background.mode, BACKGROUND_MODES, "color"),
