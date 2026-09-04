@@ -98,6 +98,12 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
   }, [menuOpen]);
 
   useEffect(() => {
+    const closeMenuAfterGuardedNavigation = () => setMenuOpen(false);
+    window.addEventListener("merchant-navigation-guard-complete", closeMenuAfterGuardedNavigation);
+    return () => window.removeEventListener("merchant-navigation-guard-complete", closeMenuAfterGuardedNavigation);
+  }, []);
+
+  useEffect(() => {
     if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) {
       return;
     }
