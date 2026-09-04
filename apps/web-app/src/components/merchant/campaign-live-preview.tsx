@@ -127,7 +127,11 @@ function headingFontClassFor(form: CampaignSetupInput) {
   return textFontClass(form.presentation.heading.fontFamily);
 }
 
-function previewBackgroundImage(form: CampaignSetupInput, templateId: GamePageTemplateId) {
+function previewBackgroundImage(
+  form: CampaignSetupInput,
+  templateId: GamePageTemplateId,
+  accent: CampaignSetupInput["accent"],
+) {
   if (form.presentation.background.mode === "image" && form.presentation.background.imageUrl) {
     return `linear-gradient(rgba(15,23,40,0.32), rgba(15,23,40,0.52)), url("${form.presentation.background.imageUrl}")`;
   }
@@ -142,7 +146,7 @@ function previewBackgroundImage(form: CampaignSetupInput, templateId: GamePageTe
     return `radial-gradient(circle at 50% 112%, ${withHexAlpha(form.presentation.wheel.loseColor, "52")} 0 24%, transparent 43%), radial-gradient(circle at 9% 12%, ${withHexAlpha(form.presentation.wheel.winColor, "2b")} 0 14%, transparent 25%), linear-gradient(155deg, #07142e 0%, #0b1d42 55%, #071126 100%)`;
   }
   if (templateId === "scratch-vault") {
-    return `radial-gradient(circle at 50% 108%, ${withHexAlpha(form.accent.signal, "58")} 0 27%, transparent 48%), radial-gradient(circle at 15% 10%, ${withHexAlpha(form.presentation.wheel.winColor, "4d")} 0 12%, transparent 22%), linear-gradient(155deg, #071126b8 0%, #111b3b99 56%, #071126b8 100%)`;
+    return `radial-gradient(circle at 50% 108%, ${withHexAlpha(accent.signal, "58")} 0 27%, transparent 48%), radial-gradient(circle at 15% 10%, ${withHexAlpha(form.presentation.wheel.winColor, "4d")} 0 12%, transparent 22%), linear-gradient(155deg, #071126b8 0%, #111b3b99 56%, #071126b8 100%)`;
   }
   if (templateId === "scratch-confetti") {
     const templatePrimary = scratchTemplatePrimaryColor(form.accent.signal, templateId);
@@ -152,14 +156,14 @@ function previewBackgroundImage(form: CampaignSetupInput, templateId: GamePageTe
     return `radial-gradient(circle at 12% 10%, ${withHexAlpha(form.presentation.wheel.loseColor, "33")} 0 12%, transparent 13%), radial-gradient(circle at 94% 18%, ${withHexAlpha(form.presentation.wheel.winColor, "38")} 0 14%, transparent 15%), linear-gradient(180deg, #fffdf5 0%, #fff8e8 56%, #fff2ce 100%)`;
   }
   if (templateId === "scratch-coral") {
-    return `radial-gradient(circle at 50% 0%, ${withHexAlpha(form.accent.signal, "24")} 0 18%, transparent 42%), linear-gradient(180deg, #fffaf580 0%, #ffffff66 72%, #fff3e880 100%)`;
+    return `radial-gradient(circle at 50% 0%, ${withHexAlpha(accent.signal, "24")} 0 18%, transparent 42%), linear-gradient(180deg, #fffaf580 0%, #ffffff66 72%, #fff3e880 100%)`;
   }
   if (templateId === "scratch-lilac") {
     const templatePrimary = scratchTemplatePrimaryColor(form.accent.signal, templateId);
     return `radial-gradient(circle at 50% 0%, ${withHexAlpha(templatePrimary, "2c")} 0 20%, transparent 44%), linear-gradient(180deg, #fffaff80 0%, #f7edff80 100%)`;
   }
   if (templateId === "scratch-sunburst") {
-    return `repeating-conic-gradient(from -18deg at 50% -2%, ${withHexAlpha(form.accent.signal, "52")} 0deg 12deg, transparent 12deg 24deg), linear-gradient(180deg, #fff4bf99 0%, #ffdc5880 68%, #fff0c599 100%)`;
+    return `repeating-conic-gradient(from -18deg at 50% -2%, ${withHexAlpha(accent.signal, "52")} 0deg 12deg, transparent 12deg 24deg), linear-gradient(180deg, #fff4bf99 0%, #ffdc5880 68%, #fff0c599 100%)`;
   }
   return "";
 }
@@ -176,7 +180,7 @@ export function buildCampaignLivePreviewModel(form: CampaignSetupInput, merchant
     formId: form.id ?? "new-campaign",
     backgroundStyle: {
       backgroundColor: form.presentation.background.color,
-      backgroundImage: previewBackgroundImage(form, templateId),
+      backgroundImage: previewBackgroundImage(form, templateId, previewAccent),
       backgroundPosition: "center",
       backgroundSize: "cover",
       fontFamily: textFontFamily(form.presentation.heading.fontFamily),

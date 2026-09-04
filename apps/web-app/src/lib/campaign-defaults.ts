@@ -17,7 +17,9 @@ export const DEFAULT_COCORICO_BACKGROUND_COLOR = "#2563eb";
 export const DEFAULT_COCORICO_DUO_BLUE = "#78b4df";
 export const DEFAULT_COCORICO_DUO_YELLOW = "#f2c94c";
 export const DEFAULT_SCRATCH_PRIMARY_COLOR = "#f4c14a";
-export const DEFAULT_SCRATCH_CONFETTI_COLOR = "#f4c14a";
+export const DEFAULT_SCRATCH_CONFETTI_COLOR = "#d99a18";
+export const DEFAULT_SCRATCH_CORAL_COLOR = "#f47c6b";
+export const DEFAULT_SCRATCH_SUNBURST_COLOR = "#e69600";
 export const DEFAULT_SCRATCH_LILAC_COLOR = "#b85be5";
 export const DEFAULT_SCRATCH_TICKET_COLOR = "#f7f7f7";
 export const DEFAULT_SCRATCH_TEXT_COLOR = "#ffffff";
@@ -25,6 +27,31 @@ export const MAX_CAMPAIGN_SUBTITLE_LINES = 3;
 export const MAX_CAMPAIGN_SUBTITLE_LENGTH = 240;
 export const CAMPAIGN_SPACING_MIN_PX = 0;
 export const CAMPAIGN_SPACING_MAX_PX = 60;
+
+export function scratchTemplateDefaultPrimaryColor(templateId?: GamePageTemplateId) {
+  switch (templateId) {
+    case "scratch-confetti":
+      return DEFAULT_SCRATCH_CONFETTI_COLOR;
+    case "scratch-coral":
+      return DEFAULT_SCRATCH_CORAL_COLOR;
+    case "scratch-sunburst":
+      return DEFAULT_SCRATCH_SUNBURST_COLOR;
+    case "scratch-lilac":
+      return DEFAULT_SCRATCH_LILAC_COLOR;
+    default:
+      return undefined;
+  }
+}
+
+export function shouldApplyScratchTemplateDefaultPrimaryColor(configuredColor: string) {
+  return [
+    DEFAULT_SCRATCH_PRIMARY_COLOR,
+    DEFAULT_SCRATCH_CONFETTI_COLOR,
+    DEFAULT_SCRATCH_CORAL_COLOR,
+    DEFAULT_SCRATCH_SUNBURST_COLOR,
+    DEFAULT_SCRATCH_LILAC_COLOR,
+  ].includes(configuredColor.trim().toLowerCase());
+}
 
 export function isClassicPopWheelTemplate(templateId?: GamePageTemplateId) {
   return templateId === "classic" || templateId === "restaurant-pop";
@@ -220,9 +247,13 @@ export function resolveScratchAccent(
   templateId?: GamePageTemplateId,
 ): CampaignAccent {
   const normalized = normalizeScratchAccent(accent, templateId);
+  const templateDefault = scratchTemplateDefaultPrimaryColor(templateId);
   return {
     ...normalized,
-    signal: scratchTemplatePrimaryColor(normalized.signal, templateId),
+    signal:
+      templateDefault && shouldApplyScratchTemplateDefaultPrimaryColor(normalized.signal)
+        ? templateDefault
+        : scratchTemplatePrimaryColor(normalized.signal, templateId),
   };
 }
 
