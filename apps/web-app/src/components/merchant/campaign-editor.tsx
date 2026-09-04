@@ -36,6 +36,7 @@ import { CocoricoPromoText } from "@/components/public/cocorico-promo-text";
 import { CampaignEmailPreview } from "@/components/merchant/campaign-email-preview";
 import { CampaignPreviewQrDialog } from "@/components/merchant/campaign-preview-qr";
 import { CampaignLivePreview as SharedCampaignLivePreview } from "@/components/merchant/campaign-live-preview";
+import { CampaignSpacingControls } from "@/components/merchant/campaign-spacing-controls";
 import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
 import { Switch } from "@/components/ui/switch";
 import { DialogShell } from "@/components/ui/dialog";
@@ -73,6 +74,7 @@ import {
   MAX_CAMPAIGN_SUBTITLE_LENGTH,
   campaignLogoTextSizePx,
   clampCampaignLogoSizePercent,
+  clampCampaignSpacingPx,
   deriveLighterHex,
   limitCampaignSubtitleLines,
   normalizeScratchAccent,
@@ -1341,8 +1343,12 @@ function toEditorState(merchant: Merchant, campaign: CampaignPerformance | null)
       },
       layout: {
         ...campaign.campaign.presentation.layout,
-        blockSpacingPx: campaign.campaign.presentation.layout.blockSpacingPx ?? 40,
+        blockSpacingPx: clampCampaignSpacingPx(campaign.campaign.presentation.layout.blockSpacingPx ?? 40),
         templateId: campaign.campaign.presentation.layout.templateId ?? "classic",
+      },
+      logo: {
+        ...campaign.campaign.presentation.logo,
+        marginBottomPx: clampCampaignSpacingPx(campaign.campaign.presentation.logo.marginBottomPx),
       },
       poster: normalizePosterSettings(
         campaign.campaign.presentation.poster,
@@ -1461,7 +1467,7 @@ export function buildCampaignLivePreviewModel(
     },
     logoMode: form.logoMode,
     logoAlignmentClass,
-    logoBottomSpacingPx: form.presentation.logo.marginBottomPx,
+    logoBottomSpacingPx: clampCampaignSpacingPx(form.presentation.logo.marginBottomPx),
     logoWidthPx,
     logoTextSizePx,
       logoUrl: form.logoUrl ?? "",
@@ -1480,7 +1486,7 @@ export function buildCampaignLivePreviewModel(
     headingFontSizePx: form.presentation.heading.fontSizePx,
     headingFontWeight: form.presentation.heading.fontWeight ?? 600,
     subtitle: limitCampaignSubtitleLines(form.subtitle),
-    blockSpacingPx: form.presentation.layout.blockSpacingPx,
+    blockSpacingPx: clampCampaignSpacingPx(form.presentation.layout.blockSpacingPx),
     gamePageTemplateId: templateId,
     gameType: form.gameType,
     accent: previewAccent,
@@ -1706,7 +1712,7 @@ export function CampaignEditor({
       },
       logoMode: form.logoMode,
       logoAlignmentClass,
-      logoBottomSpacingPx: form.presentation.logo.marginBottomPx,
+      logoBottomSpacingPx: clampCampaignSpacingPx(form.presentation.logo.marginBottomPx),
       logoWidthPx,
       logoTextSizePx,
       logoUrl: form.logoUrl ?? "",
@@ -1719,7 +1725,7 @@ export function CampaignEditor({
       headingFontSizePx: form.presentation.heading.fontSizePx,
       headingFontWeight: currentTemplateId === "cocorico-wheel" ? 900 : form.presentation.heading.fontWeight ?? 600,
       subtitle: limitCampaignSubtitleLines(form.subtitle),
-      blockSpacingPx: form.presentation.layout.blockSpacingPx,
+      blockSpacingPx: clampCampaignSpacingPx(form.presentation.layout.blockSpacingPx),
       gamePageTemplateId: form.presentation.layout.templateId ?? "classic",
       gameType: form.gameType,
       accent: previewAccent,
@@ -2786,33 +2792,50 @@ function setGameType(gameType: GameType) {
               </label>
               ) : null}
 
-              {form.logoMode !== "none" && isExpertMode ? (
-              <label className="text-sm">
-                <span className="mb-2 block text-[#616b7c]">Marge basse du logo (px)</span>
-                <input
-                  type="number"
-                  min={0}
-                  max={120}
-                  value={form.presentation.logo.marginBottomPx}
-                  onChange={(event) =>
+            </div>
+          </section>
+
+          {isExpertMode && (form.logoMode !== "none" || form.gameType === "wheel") ? (
+            <section className="okado-card p-6">
+              <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Mise en page</p>
+              <h2 className="mt-2 text-2xl font-semibold text-[#111827]">Espacements</h2>
+              <p className="mt-3 max-w-3xl text-sm leading-7 text-[#5c6577]">
+                Réglez séparément les espaces entre le logo, le texte principal et la roue.
+              </p>
+              <div className="mt-6">
+                <CampaignSpacingControls
+                  gameType={form.gameType}
+                  logoMode={form.logoMode}
+                  logoSpacingPx={form.presentation.logo.marginBottomPx}
+                  blockSpacingPx={form.presentation.layout.blockSpacingPx}
+                  onLogoSpacingChange={(value) =>
                     setForm((current) => ({
                       ...current,
                       presentation: {
                         ...current.presentation,
                         logo: {
                           ...current.presentation.logo,
-                          marginBottomPx: Number(event.target.value || 0),
+                          marginBottomPx: clampCampaignSpacingPx(value),
                         },
                       },
                     }))
                   }
-                  className="w-full rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
+                  onBlockSpacingChange={(value) =>
+                    setForm((current) => ({
+                      ...current,
+                      presentation: {
+                        ...current.presentation,
+                        layout: {
+                          ...current.presentation.layout,
+                          blockSpacingPx: clampCampaignSpacingPx(value),
+                        },
+                      },
+                    }))
+                  }
                 />
-              </label>
-              ) : null}
-
-            </div>
-          </section>
+              </div>
+            </section>
+          ) : null}
 
           <section className="okado-card p-6">
             <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Phrase d&apos;entête</p>

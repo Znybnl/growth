@@ -11,6 +11,7 @@ import { textFontClass, textFontFamily } from "@/lib/format";
 import {
   campaignLogoTextSizePx,
   clampCampaignLogoSizePercent,
+  clampCampaignSpacingPx,
   DEFAULT_SCRATCH_SUBTITLE,
   limitCampaignSubtitleLines,
   resolveScratchAccent,
@@ -181,7 +182,7 @@ export function buildCampaignLivePreviewModel(form: CampaignSetupInput, merchant
     logoAlignmentClass,
     // The public game uses the logo margin directly. Keep the wizard preview
     // on that same spacing scale for wheel and scratch experiences.
-    logoBottomSpacingPx: form.presentation.logo.marginBottomPx,
+    logoBottomSpacingPx: clampCampaignSpacingPx(form.presentation.logo.marginBottomPx),
     logoWidthPx: Math.round(Math.max(56, Math.min(720, logoSizePercent * 3))),
     logoTextSizePx: campaignLogoTextSizePx(logoSizePercent, form.gameType),
     logoUrl: form.logoUrl ?? "",
@@ -194,7 +195,7 @@ export function buildCampaignLivePreviewModel(form: CampaignSetupInput, merchant
     headingFontSizePx: form.presentation.heading.fontSizePx,
     headingFontWeight: templateId === "cocorico-wheel" ? 900 : form.presentation.heading.fontWeight ?? 600,
     subtitle: limitCampaignSubtitleLines(form.subtitle),
-    blockSpacingPx: form.presentation.layout.blockSpacingPx,
+    blockSpacingPx: clampCampaignSpacingPx(form.presentation.layout.blockSpacingPx),
     gamePageTemplateId: templateId,
     gameType: form.gameType,
     accent: previewAccent,

@@ -20,6 +20,8 @@ export const DEFAULT_SCRATCH_TICKET_COLOR = "#f7f7f7";
 export const DEFAULT_SCRATCH_TEXT_COLOR = "#ffffff";
 export const MAX_CAMPAIGN_SUBTITLE_LINES = 3;
 export const MAX_CAMPAIGN_SUBTITLE_LENGTH = 240;
+export const CAMPAIGN_SPACING_MIN_PX = 0;
+export const CAMPAIGN_SPACING_MAX_PX = 60;
 
 export function isClassicPopWheelTemplate(templateId?: GamePageTemplateId) {
   return templateId === "classic" || templateId === "restaurant-pop";
@@ -113,6 +115,15 @@ export function resolvePromoStrokeColor(textColor: string | undefined) {
 export function clampCampaignLogoSizePercent(value: number | undefined) {
   const normalized = Number(value);
   return Math.max(0, Math.min(200, Number.isFinite(normalized) ? normalized : 100));
+}
+
+/** Keep logo and wheel spacing within the range exposed by the campaign editors. */
+export function clampCampaignSpacingPx(value: number | undefined, fallback = 20) {
+  const normalized = Number(value);
+  const safeValue = Number.isFinite(normalized) ? normalized : fallback;
+  return Math.round(
+    Math.max(CAMPAIGN_SPACING_MIN_PX, Math.min(CAMPAIGN_SPACING_MAX_PX, safeValue)),
+  );
 }
 
 /** Text logos use the same percentage scale as uploaded logos. */
