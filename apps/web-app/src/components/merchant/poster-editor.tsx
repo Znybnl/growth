@@ -7,6 +7,7 @@ import QRCode from "qrcode";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 
 import { buildPosterSvg, createPosterPreviewQrDataUrl } from "@/lib/poster-render";
+import { getPosterFontSourceUrl } from "@/lib/poster-fonts";
 import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
 import { Campaign, CampaignPosterSettings, PosterTemplateId, Prize } from "@/lib/types";
 import { getPosterTemplate, POSTER_TEMPLATES } from "@/lib/poster-templates";
@@ -266,6 +267,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
         poster,
         prizes,
         qrDataUrl: createPosterPreviewQrDataUrl(),
+        posterFontSource: getPosterFontSourceUrl(poster.headlineFontFamily),
       }),
     [campaign, poster, prizes],
   );
@@ -379,6 +381,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
             poster,
             prizes,
             qrDataUrl: campaignQrDataUrl,
+            posterFontSource: getPosterFontSourceUrl(poster.headlineFontFamily),
           }),
         );
       }
