@@ -42,12 +42,30 @@ export function DeleteCampaignButton({
       });
 
       if (!response.ok) {
-        throw new Error("La campagne n'a pas pu être supprimée.");
+        const payload = (await response.json().catch(() => null)) as {
+          error?: string;
+        } | null;
+
+        throw new Error(
+          payload?.error ?? "La campagne n'a pas pu être supprimée.",
+        );
       }
 
       setIsConfirmOpen(false);
       window.dispatchEvent(new Event("campaigns-updated"));
-      router.refresh();
+
+      if (window.location.pathname === "/campaigns") {
+        // Recreate the campaigns route so the server reads the list again
+        // instead of reusing the prefetched RSC payload for the current URL.
+        const url = new URL(window.location.href);
+        url.searchParams.set("updated", Date.now().toString());
+        router.replace(`${url.pathname}?${url.searchParams.toString()}`, {
+          scroll: false,
+        });
+      } else {
+        router.refresh();
+      }
+
       onDone?.();
     } catch (deleteError) {
       setError(
