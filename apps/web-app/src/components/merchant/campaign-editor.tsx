@@ -63,7 +63,6 @@ import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/pos
 import {
   createDefaultPosterSettings,
   createDefaultWheelSettings,
-  DEFAULT_SCRATCH_PRIMARY_COLOR,
   DEFAULT_SCRATCH_CORAL_COLOR,
   scratchTemplateDefaultPrimaryColor,
   shouldApplyScratchTemplateDefaultPrimaryColor,
@@ -84,6 +83,7 @@ import {
   deriveLighterHex,
   limitCampaignSubtitleLines,
   normalizeScratchAccent,
+  resolveWheelPrimaryColorAfterGameTypeSwitch,
   resolveScratchAccent,
   resolvePromoStrokeColor,
   isClassicPopWheelTemplate,
@@ -495,7 +495,7 @@ function createDefaultState(merchant: Merchant): EditorState {
         blockSpacingPx: 40,
         templateId: DEFAULT_GAME_PAGE_TEMPLATE_ID,
       },
-      wheel: createDefaultWheelSettings(DEFAULT_CLASSIC_POP_PRIMARY_COLOR),
+      wheel: createDefaultWheelSettings(DEFAULT_COCORICO_PRIMARY_COLOR),
       poster: createDefaultPosterSettings(merchant),
       email: createCampaignEmailDefaults(merchant),
     },
@@ -1931,22 +1931,13 @@ export function CampaignEditor({
 
 function setGameType(gameType: GameType) {
     setForm((current) => {
-      const activePrimaryColor =
-        current.gameType === "scratch"
-          ? current.accent.signal
-          : current.presentation.wheel.loseColor;
-      const shouldCarryPrimaryColor =
-        current.gameType === "scratch"
-          ? activePrimaryColor.toLowerCase() !== DEFAULT_SCRATCH_PRIMARY_COLOR
-          : activePrimaryColor.toLowerCase() !== DEFAULT_WHEEL_PRIMARY_COLOR;
       const nextPrimaryColor =
         gameType === "scratch"
-          ? current.gameType === "scratch" && shouldCarryPrimaryColor
-            ? activePrimaryColor
+          ? current.gameType === "scratch" &&
+            !shouldApplyScratchTemplateDefaultPrimaryColor(current.accent.signal)
+            ? current.accent.signal
             : DEFAULT_SCRATCH_CORAL_COLOR
-          : shouldCarryPrimaryColor
-            ? activePrimaryColor
-            : DEFAULT_WHEEL_PRIMARY_COLOR;
+          : resolveWheelPrimaryColorAfterGameTypeSwitch(current.presentation.wheel.loseColor);
 
       const currentSubtitle = current.subtitle.trim();
       const shouldSyncSubtitle =
@@ -1973,12 +1964,7 @@ function setGameType(gameType: GameType) {
                 ? current.presentation.layout.templateId?.startsWith("scratch-")
                   ? current.presentation.layout.templateId
                   : "scratch-coral"
-                : current.presentation.layout.templateId === "restaurant-pop" ||
-                    current.presentation.layout.templateId === "cosmic-orbit" ||
-                    current.presentation.layout.templateId === "sunburst-festival" ||
-                    isCocoricoWheelTemplate(current.presentation.layout.templateId)
-                  ? current.presentation.layout.templateId
-                  : "classic",
+                : "cocorico-wheel",
           },
           wheel:
             gameType === "wheel"

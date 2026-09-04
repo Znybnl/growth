@@ -53,6 +53,32 @@ export function shouldApplyScratchTemplateDefaultPrimaryColor(configuredColor: s
   ].includes(configuredColor.trim().toLowerCase());
 }
 
+/**
+ * Restore the Cocorico wheel palette after leaving a scratch ticket.
+ *
+ * The wheel settings are kept while the user edits the ticket. Known
+ * template defaults are safe to replace, whereas an explicit wheel color
+ * must survive the round trip.
+ */
+export function resolveWheelPrimaryColorAfterGameTypeSwitch(configuredColor: string | undefined) {
+  const normalized = configuredColor?.trim().toLowerCase();
+  const knownTemplateDefaults = [
+    DEFAULT_WHEEL_PRIMARY_COLOR,
+    DEFAULT_CLASSIC_POP_PRIMARY_COLOR,
+    DEFAULT_COCORICO_PRIMARY_COLOR,
+    DEFAULT_COCORICO_DUO_BLUE,
+    DEFAULT_SCRATCH_PRIMARY_COLOR,
+    DEFAULT_SCRATCH_CONFETTI_COLOR,
+    DEFAULT_SCRATCH_CORAL_COLOR,
+    DEFAULT_SCRATCH_SUNBURST_COLOR,
+    DEFAULT_SCRATCH_LILAC_COLOR,
+  ];
+
+  return !normalized || knownTemplateDefaults.includes(normalized)
+    ? DEFAULT_COCORICO_PRIMARY_COLOR
+    : configuredColor!;
+}
+
 export function isClassicPopWheelTemplate(templateId?: GamePageTemplateId) {
   return templateId === "classic" || templateId === "restaurant-pop";
 }
