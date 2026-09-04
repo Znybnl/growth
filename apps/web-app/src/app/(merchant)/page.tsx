@@ -44,9 +44,9 @@ export default async function DashboardPage({
   const recentLeads = merchantLeads.filter((lead) => merchantCampaignIds.has(lead.campaignId));
 
   const activeCampaigns = filteredCampaigns.filter((item) => item.campaign.isActive);
-  const recentCampaigns = [...filteredCampaigns]
-    .sort((a, b) => b.campaign.createdAt.localeCompare(a.campaign.createdAt))
-    .slice(0, 5);
+  const campaignsForTable = [...filteredCampaigns].sort((a, b) =>
+    b.campaign.createdAt.localeCompare(a.campaign.createdAt),
+  );
   const stockState = (item: (typeof dashboard.prizeInventory)[number]) => {
     if (item.remainingQuantity === 0) {
       return { label: "Épuisé", tone: "danger", icon: PackageX } as const;
@@ -184,16 +184,16 @@ export default async function DashboardPage({
 
         <section className="okado-card min-w-0 p-5 md:p-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div className="min-w-0"><p className="okado-label">Campagnes prioritaires</p><h2 className="okado-section-title mt-2">Vos dernières campagnes</h2></div>
-          <Link href="/campaigns" prefetch className="okado-link text-sm">Voir toutes les campagnes</Link>
+          <div className="min-w-0"><p className="okado-label">Toutes les campagnes</p><h2 className="okado-section-title mt-2">Vos dernières campagnes</h2></div>
+          <div className="flex items-center gap-4"><span className="text-sm text-ash">{campaignsForTable.length} {campaignsForTable.length === 1 ? "campagne" : "campagnes"}</span><Link href="/campaigns" prefetch className="okado-link text-sm">Voir toutes les campagnes</Link></div>
         </div>
-        {recentCampaigns.length ? (
+        {campaignsForTable.length ? (
           <div className="mt-6 max-h-[380px] overflow-y-auto pr-1">
             <div className="hidden min-w-[680px] 2xl:block">
               <div className="okado-table-header sticky top-0 z-10 grid grid-cols-[minmax(0,1.65fr)_0.7fr_0.8fr_0.9fr_auto] items-center gap-3 px-4 py-3"><span>Campagne</span><span className="text-right">Scans</span><span className="text-right">Participations</span><span className="text-right">Conversion</span><span className="sr-only">Actions</span></div>
-              {recentCampaigns.map((item) => <div key={item.campaign.id} className="okado-table-row grid grid-cols-[minmax(0,1.65fr)_0.7fr_0.8fr_0.9fr_auto] items-center gap-3 px-4 py-4 text-sm"><div className="flex min-w-0 items-center gap-3"><CampaignStatusIcon item={item} /><div className="min-w-0"><p className="truncate font-semibold text-carbon">{item.campaign.title}</p><p className="truncate text-ash">{gameTypeLabel(item.campaign.gameType)}</p></div></div><span data-align="right" className="font-semibold text-graphite">{item.kpis.scans}</span><span data-align="right" className="font-semibold text-graphite">{item.kpis.leads}</span><span data-align="right" className="font-semibold text-graphite">{formatPercent(item.kpis.conversionRate)}</span><DashboardCampaignActionsMenu campaignId={item.campaign.id} /></div>)}
+              {campaignsForTable.map((item) => <div key={item.campaign.id} className="okado-table-row grid grid-cols-[minmax(0,1.65fr)_0.7fr_0.8fr_0.9fr_auto] items-center gap-3 px-4 py-4 text-sm"><div className="flex min-w-0 items-center gap-3"><CampaignStatusIcon item={item} /><div className="min-w-0"><p className="truncate font-semibold text-carbon">{item.campaign.title}</p><p className="truncate text-ash">{gameTypeLabel(item.campaign.gameType)}</p></div></div><span data-align="right" className="font-semibold text-graphite">{item.kpis.scans}</span><span data-align="right" className="font-semibold text-graphite">{item.kpis.leads}</span><span data-align="right" className="font-semibold text-graphite">{formatPercent(item.kpis.conversionRate)}</span><DashboardCampaignActionsMenu campaignId={item.campaign.id} /></div>)}
             </div>
-            <div className="space-y-0 2xl:hidden">{recentCampaigns.map((item) => <article key={item.campaign.id} className="okado-mobile-table-row"><div className="flex items-start justify-between gap-3"><div className="flex min-w-0 items-start gap-3"><CampaignStatusIcon item={item} /><div className="min-w-0"><p className="truncate font-semibold text-graphite">{item.campaign.title}</p><p className="truncate text-sm text-ash">{gameTypeLabel(item.campaign.gameType)}</p></div></div><DashboardCampaignActionsMenu campaignId={item.campaign.id} /></div><div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 text-sm"><div className="okado-mobile-table-stat"><p className="okado-mobile-table-stat-label">Conversion</p><p className="mt-1 okado-mobile-table-stat-value">{formatPercent(item.kpis.conversionRate)}</p></div><div className="okado-mobile-table-stat"><p className="okado-mobile-table-stat-label">Participations</p><p className="mt-1 okado-mobile-table-stat-value">{item.kpis.leads}</p></div><div className="okado-mobile-table-stat"><p className="okado-mobile-table-stat-label">Scans</p><p className="mt-1 okado-mobile-table-stat-value">{item.kpis.scans}</p></div></div></article>)}</div>
+            <div className="space-y-0 2xl:hidden">{campaignsForTable.map((item) => <article key={item.campaign.id} className="okado-mobile-table-row"><div className="flex items-start justify-between gap-3"><div className="flex min-w-0 items-start gap-3"><CampaignStatusIcon item={item} /><div className="min-w-0"><p className="truncate font-semibold text-graphite">{item.campaign.title}</p><p className="truncate text-sm text-ash">{gameTypeLabel(item.campaign.gameType)}</p></div></div><DashboardCampaignActionsMenu campaignId={item.campaign.id} /></div><div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 text-sm"><div className="okado-mobile-table-stat"><p className="okado-mobile-table-stat-label">Conversion</p><p className="mt-1 okado-mobile-table-stat-value">{formatPercent(item.kpis.conversionRate)}</p></div><div className="okado-mobile-table-stat"><p className="okado-mobile-table-stat-label">Participations</p><p className="mt-1 okado-mobile-table-stat-value">{item.kpis.leads}</p></div><div className="okado-mobile-table-stat"><p className="okado-mobile-table-stat-label">Scans</p><p className="mt-1 okado-mobile-table-stat-value">{item.kpis.scans}</p></div></div></article>)}</div>
           </div>
         ) : <EmptyState title="Aucune campagne trouvée" description="Créez une campagne pour suivre ses performances ici." />}
         </section>
