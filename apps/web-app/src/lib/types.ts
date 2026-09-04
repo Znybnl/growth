@@ -725,6 +725,16 @@ export interface CampaignPerformance {
   kpis: CampaignKpi;
 }
 
+export interface DashboardPrizeInventoryItem {
+  prizeId: string;
+  campaignId: string;
+  campaignTitle: string;
+  prizeLabel: string;
+  pendingRedemptions: number;
+  remainingQuantity: number | null;
+  totalQuantity: number | null;
+}
+
 export interface CampaignLibraryItem {
   id: string;
   title: string;
@@ -737,6 +747,7 @@ export interface CampaignLibraryItem {
 export interface MerchantDashboardData {
   merchant: Merchant;
   campaigns: CampaignPerformance[];
+  prizeInventory: DashboardPrizeInventoryItem[];
   totalLeads: number;
   totalRedeemed: number;
   averageConversion: number;
