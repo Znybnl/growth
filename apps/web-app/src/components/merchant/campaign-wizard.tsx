@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   BadgePercent,
   Check,
@@ -87,6 +88,10 @@ type WizardError = {
 };
 
 type WizardDraft = CampaignSetupInput;
+
+type PendingWizardNavigation = {
+  href: string;
+};
 
 const WIZARD_STEPS: WizardStep[] = [
   {
@@ -736,6 +741,7 @@ export function CampaignWizard({
   initialCampaign?: CampaignPerformance | null;
   deferInlineAssets?: boolean;
 }) {
+  const router = useRouter();
   const isEditing = Boolean(initialCampaign);
   const [draft, setDraft] = useState<WizardDraft>(() =>
     initialCampaign ? draftFromCampaign(merchant, initialCampaign) : createWizardDraft(merchant),
@@ -767,6 +773,8 @@ export function CampaignWizard({
     JSON.stringify(initialCampaign ? draftFromCampaign(merchant, initialCampaign) : createWizardDraft(merchant)),
   );
   const isDirty = lastSavedDraftSnapshot !== JSON.stringify(draft);
+  const [pendingNavigation, setPendingNavigation] = useState<PendingWizardNavigation | null>(null);
+  const [isSavingBeforeNavigation, setIsSavingBeforeNavigation] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -859,6 +867,34 @@ export function CampaignWizard({
     };
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isDirty, savedCampaignId]);
+
+  useEffect(() => {
+    if (!isDirty || savedCampaignId) return;
+
+    function handleInternalNavigation(event: MouseEvent) {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+        return;
+      }
+
+      const target = event.target instanceof Element ? event.target.closest<HTMLAnchorElement>("a[href]") : null;
+      if (!target || target.target === "_blank" || target.hasAttribute("download")) return;
+
+      const destination = new URL(target.href, window.location.href);
+      if (destination.origin !== window.location.origin) return;
+
+      const current = new URL(window.location.href);
+      if (destination.href === current.href) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+      setPendingNavigation({
+        href: `${destination.pathname}${destination.search}${destination.hash}`,
+      });
+    }
+
+    window.addEventListener("click", handleInternalNavigation, true);
+    return () => window.removeEventListener("click", handleInternalNavigation, true);
   }, [isDirty, savedCampaignId]);
 
   const step = WIZARD_STEPS[stepIndex];
@@ -1002,14 +1038,14 @@ export function CampaignWizard({
     setStepIndex((current) => Math.max(0, current - 1));
   }
 
-  async function saveCampaign(mode: "save" | "publish") {
+  async function saveCampaign(mode: "save" | "publish", options?: { suppressSuccessDialog?: boolean }) {
     const isPublishing = mode === "publish";
     const errorsToShow = isPublishing ? collectErrors(draft, actionEnabled) : [];
     if (errorsToShow.length) {
       const first = errorsToShow[0];
       setError(first.message);
       setStepIndex(WIZARD_STEPS.findIndex((item) => item.id === first.step));
-      return;
+      return false;
     }
 
     const targetIsActive = isPublishing ? true : isEditing ? draft.isActive : false;
@@ -1054,8 +1090,9 @@ export function CampaignWizard({
         setDraft(savedDraft);
         setLastSavedDraftSnapshot(JSON.stringify(savedDraft));
         window.dispatchEvent(new Event("campaigns-updated"));
-        setSavedCampaignId(campaignId);
+        if (!options?.suppressSuccessDialog) setSavedCampaignId(campaignId);
       }
+      return Boolean(campaignId);
     } catch (saveFailure) {
       const message = saveFailure instanceof Error ? saveFailure.message : "";
       setSaveError(
@@ -1063,9 +1100,33 @@ export function CampaignWizard({
           ? "Impossible d’enregistrer cette campagne pour le moment. Vérifiez les actions marketing puis réessayez."
           : "La campagne n’a pas pu être enregistrée. Vérifiez les informations puis réessayez.",
       );
+      return false;
     } finally {
       setIsSaving(false);
     }
+  }
+
+  async function saveAndLeave() {
+    if (!pendingNavigation || isSavingBeforeNavigation) return;
+    const destination = pendingNavigation.href;
+    setIsSavingBeforeNavigation(true);
+    const saved = await saveCampaign("save", { suppressSuccessDialog: true });
+    setIsSavingBeforeNavigation(false);
+    if (!saved) {
+      setPendingNavigation(null);
+      return;
+    }
+    setPendingNavigation(null);
+    window.dispatchEvent(new Event("merchant-navigation-guard-complete"));
+    router.push(destination);
+  }
+
+  function leaveWithoutSaving() {
+    if (!pendingNavigation || isSavingBeforeNavigation) return;
+    const destination = pendingNavigation.href;
+    setPendingNavigation(null);
+    window.dispatchEvent(new Event("merchant-navigation-guard-complete"));
+    router.push(destination);
   }
 
   const logoSettings = (
@@ -2525,6 +2586,24 @@ export function CampaignWizard({
         tone="error"
         ctaLabel="Fermer"
         onClose={() => setSaveError(null)}
+      />
+      <ValidationDialog
+        open={pendingNavigation !== null}
+        title="Quitter le wizard ?"
+        description="Vous avez des modifications non enregistrées. Voulez-vous les sauvegarder avant de quitter ?"
+        ctaLabel={isSavingBeforeNavigation ? "Enregistrement…" : "Enregistrer et quitter"}
+        secondaryCtaLabel="Quitter sans enregistrer"
+        cancelLabel="Annuler"
+        actionDisabled={isSavingBeforeNavigation}
+        secondaryActionDisabled={isSavingBeforeNavigation}
+        onAction={() => void saveAndLeave()}
+        onSecondaryAction={leaveWithoutSaving}
+        onClose={() => {
+          if (!isSavingBeforeNavigation) setPendingNavigation(null);
+        }}
+        onCancel={() => {
+          if (!isSavingBeforeNavigation) setPendingNavigation(null);
+        }}
       />
       {draft.id ? (
         <CampaignPreviewQrDialog
