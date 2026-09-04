@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 import QRCode from "qrcode";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 
@@ -659,18 +660,17 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
               <p className="okado-label">Prévisualisation</p>
               <h2 className="okado-section-title mt-1">Affiche A4 / A5</h2>
             </div>
-            <a
-              href={`/api/campaigns/${campaign.id}/poster`}
+            <button
+              type="button"
               aria-busy={isDownloading}
-              onClick={(event) => {
-                event.preventDefault();
-                void downloadPoster();
-              }}
-              className="okado-filled-action px-4 text-sm"
-              style={{ color: "#ffffff" }}
+              aria-label={isDownloading ? "Téléchargement du PNG en cours" : undefined}
+              disabled={isDownloading}
+              onClick={() => void downloadPoster()}
+              className="okado-filled-action gap-2 px-4 text-sm disabled:cursor-wait disabled:opacity-70"
             >
-              Télécharger le PNG
-            </a>
+              {isDownloading ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : null}
+              <span>{isDownloading ? "Téléchargement…" : "Télécharger le PNG"}</span>
+            </button>
           </div>
 
           <div className="flex min-h-0 flex-1 items-center justify-center overflow-auto rounded-[var(--okado-radius-card)] bg-[var(--okado-surface-muted)] p-4">
