@@ -311,7 +311,7 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
             </div>
           ) : null}
 
-          <div className="mt-0 border-t border-white/12 pt-4">
+          <div className="mt-auto border-t border-white/12 pt-4">
             <p className="text-[10px] uppercase tracking-[0.13em] text-white/55">Mon compte</p>
             <div className="mt-3 flex items-center gap-3">
               {user.authProvider === "google" && user.avatarUrl ? (
