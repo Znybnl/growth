@@ -313,15 +313,6 @@ export function WheelOfFortune({
                 <circle
                   cx={CENTER}
                   cy={CENTER}
-                  r={OUTER_RADIUS + 2}
-                  fill="none"
-                  stroke={colors.rimColor}
-                  strokeWidth="4"
-                  opacity="0.95"
-                />
-                <circle
-                  cx={CENTER}
-                  cy={CENTER}
                   r={OUTER_RADIUS - 5}
                   fill="none"
                   stroke="rgba(111,78,37,0.18)"
@@ -460,22 +451,18 @@ export function WheelOfFortune({
           type="button"
           onClick={handleCentralButton}
           disabled={!buttonEnabled || isSpinning || hasSpun}
-          className={`okado-wheel-center-button absolute left-1/2 top-1/2 z-40 flex aspect-square ${isRestaurantPopTemplate ? "w-[21%]" : "w-[19.2%]"} -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-[4px] text-[19px] font-black uppercase transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-75 ${isRestaurantPopTemplate ? "font-anton shadow-[0_20px_34px_rgba(15,23,42,0.24)] [text-shadow:0_3px_0_rgba(0,0,0,0.18)]" : "shadow-[0_16px_30px_rgba(15,23,42,0.16)]"}`}
+          className={`okado-wheel-center-button absolute left-1/2 top-1/2 z-40 flex aspect-square ${isRestaurantPopTemplate ? "w-[21%]" : "w-[19.2%]"} -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full ${isRestaurantPopTemplate || pageTemplate === "classic" ? "border-0" : "border-[4px]"} text-[19px] font-black uppercase transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-75 ${isRestaurantPopTemplate ? "font-anton" : "shadow-[0_16px_30px_rgba(15,23,42,0.16)]"}`}
           style={{
             background:
               buttonEnabled && !hasSpun
                 ? `linear-gradient(180deg, ${buttonStyle?.backgroundColor ?? accent.signal}, ${buttonStyle?.backgroundColor ?? colors.rimColor})`
                 : "linear-gradient(180deg, #aeb8c7, #7f8a9d)",
             color: buttonStyle?.textColor ?? "#ffffff",
-            borderColor: isRestaurantPopTemplate
-              ? colors.winColor
-              : buttonStyle?.borderColor ?? "#ffffff",
+            borderColor: isRestaurantPopTemplate ? "transparent" : buttonStyle?.borderColor ?? "#ffffff",
             fontSize: isRestaurantPopTemplate
               ? "clamp(0.88rem, 5.1cqw, 1.75rem)"
               : "clamp(0.84rem, 4.7cqw, 1.55rem)",
-            boxShadow: isRestaurantPopTemplate
-              ? "inset 0 0 0 4px rgba(255,255,255,0.74), inset 0 -11px 18px rgba(0,0,0,0.2), 0 18px 34px rgba(15,23,42,0.24)"
-              : undefined,
+            boxShadow: isRestaurantPopTemplate ? "none" : undefined,
           }}
         >
           {isSpinning ? "..." : buttonLabel}
