@@ -259,12 +259,12 @@ const wheelPageTemplateOptions: Array<{
   },
   {
     value: "restaurant-pop",
-    title: "Visuel pop",
+    title: "Dynamique",
     description: "Un univers plus événementiel avec formes, contraste et roue façon jeu concours.",
   },
   {
     value: "cocorico-wheel",
-    title: "Cocorico",
+    title: "Moderne",
     description: "Une roue promotionnelle bleue et blanche avec pictogrammes cadeaux et message très visible.",
   },
   {
@@ -2942,7 +2942,7 @@ function setGameType(gameType: GameType) {
                       }))
                     }
                     className="w-full rounded-[12px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
-                    aria-label="Taille du texte Cocorico (px)"
+                    aria-label="Taille du texte Moderne (px)"
                   />
                 </label>
               ) : null}
