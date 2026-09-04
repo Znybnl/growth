@@ -8,6 +8,7 @@ import { AccountLocationPanel } from "@/components/merchant/account-location-pan
 import { BillingSubscriptionCard } from "@/components/merchant/billing-subscription-card";
 import { GoogleReviewPlacePicker } from "@/components/merchant/google-review-place-picker";
 import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
+import { Button } from "@/components/ui/button";
 import { ValidationDialog } from "@/components/ui/validation-dialog";
 import {
   INDUSTRY_OPTIONS,
@@ -232,22 +233,24 @@ export function AccountSettingsForm({
 
   return (
     <form id="account-settings-form" onSubmit={handleSubmit}>
-      <div className="pointer-events-none sticky -top-5 z-20 h-0 overflow-visible">
+      <div className="pointer-events-none sticky top-0 z-20 h-0 overflow-visible">
         <div
           className={`pointer-events-auto -mx-3 border-b border-lavender-mist bg-soft-white/95 px-3 py-2 shadow-[0_8px_18px_rgba(72,26,84,0.12)] backdrop-blur-sm transition-all duration-200 lg:-mx-6 lg:px-6 ${
             showStickyActions ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
           }`}
           aria-hidden={!showStickyActions}
         >
-          <div className="okado-action-row mx-auto flex max-w-[1600px] items-center justify-end gap-2">
-            <button
+          <div className="okado-action-row flex w-full items-center justify-end gap-2">
+            <Button
               type="submit"
               disabled={isSaving}
               tabIndex={showStickyActions ? 0 : -1}
-              className="okado-filled-action px-5 disabled:opacity-60"
+              variant="primary"
+              size="default"
+              className="px-5"
             >
               {isSaving ? "Enregistrement..." : "Enregistrer"}
-            </button>
+            </Button>
           </div>
         </div>
       </div>
