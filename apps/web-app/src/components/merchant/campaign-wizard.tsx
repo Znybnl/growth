@@ -67,6 +67,7 @@ import {
   MAX_CAMPAIGN_SUBTITLE_LENGTH,
   clampCampaignSpacingPx,
   normalizeScratchAccent,
+  resolveWheelPrimaryColorAfterGameTypeSwitch,
   isClassicPopWheelTemplate,
   isCocoricoWheelTemplate,
   scratchTemplateUsesTicketTextColor,
@@ -321,7 +322,7 @@ function createWizardActions(
 }
 
 function createWizardDraft(merchant: Merchant): WizardDraft {
-  const wheel = createDefaultWheelSettings(DEFAULT_CLASSIC_POP_PRIMARY_COLOR);
+  const wheel = createDefaultWheelSettings(DEFAULT_COCORICO_PRIMARY_COLOR);
 
   return {
     merchantId: merchant.id,
@@ -1446,34 +1447,24 @@ export function CampaignWizard({
                             templateId:
                               option.value === "scratch"
                                 ? "scratch-coral"
-                                : draft.presentation.layout.templateId === "scratch-coral" ||
-                                    draft.presentation.layout.templateId === "scratch-lilac" ||
-                                    draft.presentation.layout.templateId === "scratch-sunburst" ||
-                                    draft.presentation.layout.templateId === "scratch-vault" ||
-                                    draft.presentation.layout.templateId === "scratch-confetti"
-                                  ? "classic"
-                                  : draft.presentation.layout.templateId,
+                                : "cocorico-wheel",
                           },
                           wheel:
                             option.value === "wheel"
                               ? {
                                   ...draft.presentation.wheel,
-                                  loseColor:
-                                    draft.gameType === "scratch" &&
-                                    draft.accent.signal.toLowerCase() !== DEFAULT_SCRATCH_PRIMARY_COLOR
-                                      ? draft.accent.signal
-                                      : DEFAULT_WHEEL_PRIMARY_COLOR,
+                                  loseColor: resolveWheelPrimaryColorAfterGameTypeSwitch(
+                                    draft.presentation.wheel.loseColor,
+                                  ),
                                   alternateLoseColor: deriveLighterHex(
-                                    draft.gameType === "scratch" &&
-                                      draft.accent.signal.toLowerCase() !== DEFAULT_SCRATCH_PRIMARY_COLOR
-                                      ? draft.accent.signal
-                                      : DEFAULT_WHEEL_PRIMARY_COLOR,
+                                    resolveWheelPrimaryColorAfterGameTypeSwitch(
+                                      draft.presentation.wheel.loseColor,
+                                    ),
                                   ),
                                   rimColor: deriveLighterHex(
-                                    draft.gameType === "scratch" &&
-                                      draft.accent.signal.toLowerCase() !== DEFAULT_SCRATCH_PRIMARY_COLOR
-                                      ? draft.accent.signal
-                                      : DEFAULT_WHEEL_PRIMARY_COLOR,
+                                    resolveWheelPrimaryColorAfterGameTypeSwitch(
+                                      draft.presentation.wheel.loseColor,
+                                    ),
                                   ),
                                 }
                               : draft.presentation.wheel,
@@ -1486,7 +1477,11 @@ export function CampaignWizard({
                           option.value === "scratch"
                             ? {
                                 ...normalizeScratchAccent(draft.accent, "scratch-coral"),
-                                signal: DEFAULT_SCRATCH_CORAL_COLOR,
+                                signal:
+                                  draft.gameType === "scratch" &&
+                                  !shouldApplyScratchTemplateDefaultPrimaryColor(draft.accent.signal)
+                                    ? draft.accent.signal
+                                    : DEFAULT_SCRATCH_CORAL_COLOR,
                               }
                             : draft.accent,
                       })
