@@ -13,6 +13,10 @@ import {
   TextAlign,
   TextFont,
 } from "@/lib/types";
+import {
+  CAMPAIGN_SPACING_MAX_PX,
+  CAMPAIGN_SPACING_MIN_PX,
+} from "@/lib/campaign-defaults";
 
 const GOAL_TYPES = new Set<GoalType>(["lead_capture", "review_prompt", "social_follow"]);
 const GAME_TYPES = new Set<GameType>(["wheel", "scratch"]);
@@ -448,8 +452,8 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
           integer: true,
         }),
         marginBottomPx: normalizeNumber(logo.marginBottomPx, {
-          min: 0,
-          max: 240,
+          min: CAMPAIGN_SPACING_MIN_PX,
+          max: CAMPAIGN_SPACING_MAX_PX,
           fallback: 20,
           integer: true,
         }),
@@ -493,8 +497,8 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
       },
       layout: {
         blockSpacingPx: normalizeNumber(layout.blockSpacingPx, {
-          min: 0,
-          max: 60,
+          min: CAMPAIGN_SPACING_MIN_PX,
+          max: CAMPAIGN_SPACING_MAX_PX,
           fallback: 40,
           integer: true,
         }),

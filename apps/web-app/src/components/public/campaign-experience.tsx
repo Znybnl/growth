@@ -25,6 +25,7 @@ import { textFontClass, textFontFamily } from "@/lib/format";
 import {
   campaignLogoTextSizePx,
   clampCampaignLogoSizePercent,
+  clampCampaignSpacingPx,
   DEFAULT_SCRATCH_SUBTITLE,
   limitCampaignSubtitleLines,
   resolveScratchAccent,
@@ -887,7 +888,7 @@ export function CampaignExperience({
         campaign.logoMode === "text" ||
         campaign.gameType === "scratch") ? (
           <div className={`flex ${logoAlignmentClass}`}>
-            <div style={{ marginBottom: `${campaign.presentation.logo.marginBottomPx}px` }}>
+            <div style={{ marginBottom: `${clampCampaignSpacingPx(campaign.presentation.logo.marginBottomPx)}px` }}>
               <BrandMark
                 logoText={campaign.logoText ?? campaign.merchantLogoText}
                 logoUrl={campaign.logoMode === "image" ? campaign.logoUrl : undefined}
@@ -949,7 +950,7 @@ export function CampaignExperience({
         {campaign.gameType === "wheel" ? (
           <div
             className="relative left-1/2 min-h-0 w-screen -translate-x-1/2 flex-1 overflow-visible"
-            style={{ minHeight: "min(52vh, 520px)", marginTop: `${campaign.presentation.layout.blockSpacingPx}px` }}
+            style={{ minHeight: "min(52vh, 520px)", marginTop: `${clampCampaignSpacingPx(campaign.presentation.layout.blockSpacingPx)}px` }}
           >
             <div className="absolute inset-0 overflow-visible">
               {isCocoricoTemplate ? (
@@ -1036,7 +1037,7 @@ export function CampaignExperience({
                 headingFontWeight={campaign.presentation.heading.fontWeight ?? 600}
                 headingAlignmentClass={headingAlignmentClass}
                 logoAlignmentClass={logoAlignmentClass}
-                logoBottomSpacingPx={campaign.presentation.logo.marginBottomPx}
+                logoBottomSpacingPx={clampCampaignSpacingPx(campaign.presentation.logo.marginBottomPx)}
                 logoWidthPx={logoWidthPx}
                 logoTextSizePx={logoTextSizePx}
                 template={pageTemplate as "scratch-vault" | "scratch-confetti" | "scratch-coral" | "scratch-lilac" | "scratch-sunburst"}

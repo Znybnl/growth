@@ -27,6 +27,7 @@ import { type ChangeEvent, type ReactNode, useEffect, useMemo, useState } from "
 import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
 import { CampaignPreviewQrDialog } from "@/components/merchant/campaign-preview-qr";
 import { CampaignSavedDialog } from "@/components/merchant/campaign-saved-dialog";
+import { CampaignSpacingControls } from "@/components/merchant/campaign-spacing-controls";
 import { DialogShell } from "@/components/ui/dialog";
 import { ValidationDialog } from "@/components/ui/validation-dialog";
 import {
@@ -58,6 +59,7 @@ import {
   deriveLighterHex,
   limitCampaignSubtitleLines,
   MAX_CAMPAIGN_SUBTITLE_LENGTH,
+  clampCampaignSpacingPx,
   normalizeScratchAccent,
   isClassicPopWheelTemplate,
 } from "@/lib/campaign-defaults";
@@ -544,8 +546,16 @@ function draftFromCampaign(merchant: Merchant, performance: CampaignPerformance)
     gameType: campaign.gameType,
     presentation: {
       ...campaign.presentation,
-      logo: { ...campaign.presentation.logo, align: "center" },
+      logo: {
+        ...campaign.presentation.logo,
+        marginBottomPx: clampCampaignSpacingPx(campaign.presentation.logo.marginBottomPx),
+        align: "center",
+      },
       heading: { ...campaign.presentation.heading, align: "center" },
+      layout: {
+        ...campaign.presentation.layout,
+        blockSpacingPx: clampCampaignSpacingPx(campaign.presentation.layout.blockSpacingPx),
+      },
       poster: normalizePosterSettings(campaign.presentation.poster, posterDefaults),
       email: normalizeCampaignEmailSettings(
         campaign.presentation.email,
@@ -1146,7 +1156,7 @@ export function CampaignWizard({
       {draft.logoMode === "text" ? <label className="mt-3 block text-sm"><span className="mb-2 block font-semibold text-carbon">Texte du logo</span><input value={draft.logoText ?? merchant.companyName} onChange={(event) => patchDraft({ logoText: event.target.value })} className="w-full rounded-[12px] border border-fog bg-white px-3 py-3 text-carbon outline-none focus:border-aubergine focus:ring-4 focus:ring-aubergine/15" /></label> : null}
       {draft.logoMode === "image" ? <label className="mt-3 flex cursor-pointer items-center justify-between rounded-[12px] border border-dashed border-[#b8c5d8] px-3 py-3 text-sm font-semibold"><span>Importer un logo</span><input type="file" accept="image/png,image/jpeg,image/webp,image/gif" className="hidden" onChange={(event) => uploadWizardImage(event, (value) => { setImageUploadErrors((current) => ({ ...current, logo: undefined })); patchDraft({ logoUrl: value, logoMode: "image" }); }, (message) => setImageUploadErrors((current) => ({ ...current, logo: message })))} /></label> : null}
       {imageUploadErrors.logo ? <p role="alert" className="mt-2 text-xs text-coral-alert">{imageUploadErrors.logo}</p> : null}
-      {draft.logoMode !== "none" ? <div className="mt-3 grid gap-3 sm:grid-cols-2"><label className="block text-sm"><span className="mb-2 block font-semibold">Taille du logo <output className="float-right text-aubergine">{draft.presentation.logo.sizePercent}%</output></span><input type="range" min={0} max={200} value={draft.presentation.logo.sizePercent} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, logo: { ...draft.presentation.logo, sizePercent: Number(event.target.value) } } })} className="w-full cursor-pointer accent-aubergine" /></label><label className="block text-sm"><span className="mb-2 block font-semibold">Espacement sous le logo (px)</span><input type="number" min={0} max={120} value={draft.presentation.logo.marginBottomPx} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, logo: { ...draft.presentation.logo, marginBottomPx: Number(event.target.value || 0) } } })} className="w-full rounded-[12px] border border-[#dbe3ed] px-3 py-3" /></label></div> : null}
+      {draft.logoMode !== "none" ? <div className="mt-3"><label className="block text-sm"><span className="mb-2 flex items-center justify-between gap-3 font-semibold"><span>Taille du logo</span><output className="text-aubergine">{draft.presentation.logo.sizePercent}%</output></span><input type="range" min={0} max={200} value={draft.presentation.logo.sizePercent} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, logo: { ...draft.presentation.logo, sizePercent: Number(event.target.value) } } })} className="w-full cursor-pointer accent-aubergine" aria-label="Taille du logo" /></label></div> : null}
     </section>
   );
 
@@ -2245,6 +2255,42 @@ export function CampaignWizard({
                   <ChevronDown className="h-4 w-4 shrink-0 text-[#8993a6] transition-transform group-open:rotate-180" />
                 </summary>
                  <div className="space-y-5 border-t border-[#e2e8f0] px-4 pb-4 pt-4">
+                   <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
+                     <p className="text-sm font-semibold text-[#182033]">Espacements</p>
+                     <p className="mt-1 text-xs leading-5 text-[#8993a6]">
+                       Réglez séparément les espaces entre le logo, le texte et la roue.
+                     </p>
+                     <div className="mt-4">
+                       <CampaignSpacingControls
+                         gameType={draft.gameType}
+                         logoMode={draft.logoMode}
+                         logoSpacingPx={draft.presentation.logo.marginBottomPx}
+                         blockSpacingPx={draft.presentation.layout.blockSpacingPx}
+                         onLogoSpacingChange={(value) =>
+                           patchDraft({
+                             presentation: {
+                               ...draft.presentation,
+                               logo: {
+                                 ...draft.presentation.logo,
+                                 marginBottomPx: clampCampaignSpacingPx(value),
+                               },
+                             },
+                           })
+                         }
+                         onBlockSpacingChange={(value) =>
+                           patchDraft({
+                             presentation: {
+                               ...draft.presentation,
+                               layout: {
+                                 ...draft.presentation.layout,
+                                 blockSpacingPx: clampCampaignSpacingPx(value),
+                               },
+                             },
+                           })
+                         }
+                       />
+                     </div>
+                   </section>
                <div className="hidden">
                    {draft.logoMode === "text" ? <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
                      <p className="text-sm font-semibold text-[#182033]">Couleur du logo</p>
@@ -2439,38 +2485,6 @@ export function CampaignWizard({
                     {draft.presentation.background.mode === "image" ? <div className="mt-3 flex flex-wrap items-center gap-2"><button type="button" onClick={() => setBackgroundLibraryOpen(true)} className="cursor-pointer rounded-[4px] border border-aubergine bg-aubergine px-3 py-2.5 text-sm font-semibold text-white">Choisir dans la bibliothèque</button>{draft.presentation.background.imageUrl ? <span className="rounded-full bg-[#e9f8ec] px-3 py-1.5 text-xs font-semibold text-[#18864b]">Image sélectionnée</span> : null}</div> : null}
                   </section>
                   {draft.presentation.layout.templateId !== "cocorico-wheel" ? <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4"><p className="text-sm font-semibold text-[#182033]">Réglages du texte</p><div className="mt-3"><label className="block text-sm"><span className="mb-2 block font-semibold">Couleur du texte</span><input type="color" value={draft.presentation.heading.textColor} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, heading: { ...draft.presentation.heading, textColor: event.target.value } } })} className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] p-1" /></label></div></section> : null}
-                  {draft.gameType === "wheel" ? (
-                  <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
-                    <p className="text-sm font-semibold text-[#182033]">Espacement des blocs</p>
-                    <p className="mt-1 text-xs leading-5 text-[#8993a6]">Ajustez l’espace vertical entre le logo, le texte et le jeu.</p>
-                    <label className="mt-3 block text-sm">
-                      <span className="mb-2 flex items-center justify-between gap-3 font-semibold text-[#182033]">
-                        <span>Espacement</span>
-                        <output className="text-aubergine">{draft.presentation.layout.blockSpacingPx} px</output>
-                      </span>
-                      <input
-                        type="range"
-                        min={0}
-                        max={60}
-                        step={1}
-                        value={draft.presentation.layout.blockSpacingPx}
-                        onChange={(event) =>
-                          patchDraft({
-                            presentation: {
-                              ...draft.presentation,
-                              layout: {
-                                ...draft.presentation.layout,
-                                blockSpacingPx: Number(event.target.value),
-                              },
-                            },
-                          })
-                        }
-                        className="w-full cursor-pointer accent-aubergine"
-                        aria-label="Espacement entre les blocs"
-                      />
-                    </label>
-                  </section>
-                  ) : null}
                   {draft.gameType !== "wheel" ? <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
                     <p className="text-sm font-semibold text-[#182033]">
                       Couleurs du ticket
