@@ -167,6 +167,24 @@ export function defaultScratchTextColor(templateId?: GamePageTemplateId) {
   }
 }
 
+/**
+ * Indicates whether a scratch-ticket template consumes the configurable
+ * ticket-text color from the campaign form. Keep this decision in one place
+ * so the editor never exposes a control that has no visual effect.
+ */
+export function scratchTemplateUsesTicketTextColor(templateId?: GamePageTemplateId) {
+  switch (templateId) {
+    case "scratch-vault":
+    case "scratch-confetti":
+    case "scratch-coral":
+    case "scratch-lilac":
+    case "scratch-sunburst":
+      return false;
+    default:
+      return true;
+  }
+}
+
 export function normalizeScratchAccent(
   accent: CampaignAccent,
   templateId?: GamePageTemplateId,

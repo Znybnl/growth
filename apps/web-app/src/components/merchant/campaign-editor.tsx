@@ -2800,7 +2800,7 @@ function setGameType(gameType: GameType) {
               <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Mise en page</p>
               <h2 className="mt-2 text-2xl font-semibold text-[#111827]">Espacements</h2>
               <p className="mt-3 max-w-3xl text-sm leading-7 text-[#5c6577]">
-                Réglez séparément les espaces entre le logo, le texte principal et la roue.
+                Réglez séparément les espaces entre les éléments.
               </p>
               <div className="mt-6">
                 <CampaignSpacingControls
