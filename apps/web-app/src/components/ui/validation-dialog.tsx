@@ -51,59 +51,61 @@ export function ValidationDialog({
       labelledBy={titleId}
       describedBy={error ? `${descriptionId} ${errorId}` : descriptionId}
     >
-        <div
-          aria-hidden="true"
-          className={`okado-dialog-icon mx-auto text-2xl ${
-            tone === "error" ? "bg-[#fff1f2] text-[#be123c]" : "bg-purple-haze text-aubergine"
-          }`}
+      <div
+        aria-hidden="true"
+        className={`okado-dialog-icon mx-auto text-2xl ${
+          tone === "error"
+            ? "bg-[#fff1f2] text-[#be123c]"
+            : "bg-purple-haze text-aubergine"
+        }`}
+      >
+        {tone === "error" ? "!" : "✓"}
+      </div>
+      <h2 id={titleId} className="okado-dialog-title text-center">
+        {title}
+      </h2>
+      <p id={descriptionId} className="okado-dialog-description text-center">
+        {description}
+      </p>
+      {error ? (
+        <p
+          id={errorId}
+          role="alert"
+          className="mt-4 rounded-[8px] border border-coral-alert/30 bg-coral-alert/10 px-4 py-3 text-left text-sm leading-6 text-coral-alert"
         >
-          {tone === "error" ? "!" : "✓"}
-        </div>
-        <h2 id={titleId} className="okado-dialog-title text-center">
-          {title}
-        </h2>
-        <p id={descriptionId} className="okado-dialog-description text-center">
-          {description}
+          {error}
         </p>
-        {error ? (
-          <p
-            id={errorId}
-            role="alert"
-            className="mt-4 rounded-[8px] border border-coral-alert/30 bg-coral-alert/10 px-4 py-3 text-left text-sm leading-6 text-coral-alert"
-          >
-            {error}
-          </p>
-        ) : null}
-        <div className="mt-6 space-y-2">
+      ) : null}
+      <div className="mt-6 space-y-2">
+        <button
+          type="button"
+          onClick={onAction ?? onClose}
+          disabled={actionDisabled}
+          className="okado-filled-action w-full cursor-pointer px-4 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {ctaLabel}
+        </button>
+        {secondaryCtaLabel ? (
           <button
             type="button"
-            onClick={onAction ?? onClose}
-            disabled={actionDisabled}
-            className="okado-filled-action w-full px-4 disabled:cursor-not-allowed disabled:opacity-60"
+            onClick={onSecondaryAction}
+            disabled={secondaryActionDisabled}
+            className="okado-secondary-action w-full px-4 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {ctaLabel}
+            {secondaryCtaLabel}
           </button>
-          {secondaryCtaLabel ? (
-            <button
-              type="button"
-              onClick={onSecondaryAction}
-              disabled={secondaryActionDisabled}
-              className="okado-secondary-action w-full px-4 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {secondaryCtaLabel}
-            </button>
-          ) : null}
-          {cancelLabel ? (
-            <button
-              type="button"
-              onClick={onCancel ?? onClose}
-              disabled={secondaryActionDisabled}
-              className="w-full rounded-[4px] border border-transparent px-4 py-2.5 text-sm font-semibold text-charcoal transition hover:bg-soft-white disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {cancelLabel}
-            </button>
-          ) : null}
-        </div>
+        ) : null}
+        {cancelLabel ? (
+          <button
+            type="button"
+            onClick={onCancel ?? onClose}
+            disabled={secondaryActionDisabled}
+            className="w-full rounded-[4px] border border-transparent px-4 py-2.5 text-sm font-semibold text-charcoal transition hover:bg-soft-white disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {cancelLabel}
+          </button>
+        ) : null}
+      </div>
     </DialogShell>
   );
 }

@@ -1,6 +1,8 @@
 import { expect, test } from "@playwright/test";
 import { signIn as cachedSignIn } from "./auth-session";
 
+test.use({ viewport: { width: 390, height: 844 } });
+
 test.describe("Suppression d’un jeu", () => {
   test("un marchand confirme puis supprime un brouillon de test", async ({ page }) => {
     await cachedSignIn(page);
@@ -23,7 +25,7 @@ test.describe("Suppression d’un jeu", () => {
     await expect(campaignCard).toBeVisible({ timeout: 15_000 });
 
     await campaignCard.getByRole("button", { name: "Ouvrir les actions de la campagne" }).click();
-    await page.getByRole("button", { name: "Supprimer", exact: true }).click();
+    await page.getByRole("menuitem", { name: "Supprimer", exact: true }).click();
 
     const dialog = page.getByRole("dialog", { name: "Supprimer ce jeu ?" });
     await expect(dialog).toBeVisible();
@@ -32,14 +34,16 @@ test.describe("Suppression d’un jeu", () => {
     await expect(dialog).toBeHidden();
 
     await campaignCard.getByRole("button", { name: "Ouvrir les actions de la campagne" }).click();
-    await page.getByRole("button", { name: "Supprimer", exact: true }).click();
+    await page.getByRole("menuitem", { name: "Supprimer", exact: true }).click();
     await expect(dialog).toBeVisible();
     await page.mouse.click(8, 8);
     await expect(dialog).toBeHidden();
 
     await campaignCard.getByRole("button", { name: "Ouvrir les actions de la campagne" }).click();
-    await page.getByRole("button", { name: "Supprimer", exact: true }).click();
-    await dialog.getByRole("button", { name: "Supprimer définitivement" }).click({ force: true });
+    await page.getByRole("menuitem", { name: "Supprimer", exact: true }).click();
+    const confirmationButton = dialog.getByRole("button", { name: "Supprimer définitivement" });
+    await expect(confirmationButton).toHaveCSS("cursor", "pointer");
+    await confirmationButton.click();
     await expect(dialog).toBeHidden({ timeout: 15_000 });
     await expect(campaignCard).toBeHidden({ timeout: 15_000 });
   });
