@@ -9,6 +9,7 @@ import { createPosterSettingsDefaults } from "@/lib/poster-utils";
 
 export const DEFAULT_WHEEL_SUBTITLE = "Faites tournez la roue pour jouer !";
 export const DEFAULT_SCRATCH_SUBTITLE = "Grattez le ticket pour jouer !";
+export const DEFAULT_GAME_PAGE_TEMPLATE_ID: GamePageTemplateId = "cocorico-wheel";
 export const DEFAULT_WHEEL_PRIMARY_COLOR = "#1b2842";
 export const DEFAULT_CLASSIC_POP_PRIMARY_COLOR = "#3c05a0";
 export const DEFAULT_COCORICO_PRIMARY_COLOR = "#2563eb";

@@ -341,7 +341,7 @@ export function ImmersiveScratchTicket({
           </p>
         </div>
 
-        <div className={`relative z-10 mx-auto mt-8 overflow-hidden rounded-[26px] ${surfaceClass}`}>
+        <div className={`relative z-10 mx-auto mt-4 overflow-hidden rounded-[26px] ${surfaceClass}`}>
           {!revealed && !hasTouched ? (
             <div
               aria-hidden="true"

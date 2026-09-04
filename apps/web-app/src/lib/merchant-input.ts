@@ -16,6 +16,7 @@ import {
 import {
   CAMPAIGN_SPACING_MAX_PX,
   CAMPAIGN_SPACING_MIN_PX,
+  DEFAULT_GAME_PAGE_TEMPLATE_ID,
 } from "@/lib/campaign-defaults";
 
 const GOAL_TYPES = new Set<GoalType>(["lead_capture", "review_prompt", "social_follow"]);
@@ -503,7 +504,7 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
           fallback: 40,
           integer: true,
         }),
-        templateId: normalizeEnum(layout.templateId, GAME_PAGE_TEMPLATE_IDS, "classic"),
+        templateId: normalizeEnum(layout.templateId, GAME_PAGE_TEMPLATE_IDS, DEFAULT_GAME_PAGE_TEMPLATE_ID),
       },
       wheel: {
         rimColor: normalizeColor(wheel.rimColor, "#bac0ca"),

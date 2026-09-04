@@ -12,6 +12,7 @@ import {
   campaignLogoTextSizePx,
   clampCampaignLogoSizePercent,
   clampCampaignSpacingPx,
+  DEFAULT_GAME_PAGE_TEMPLATE_ID,
   DEFAULT_SCRATCH_SUBTITLE,
   limitCampaignSubtitleLines,
   resolveScratchAccent,
@@ -168,7 +169,7 @@ function previewBackgroundImage(
 }
 
 export function buildCampaignLivePreviewModel(form: CampaignSetupInput, merchant: Merchant): CampaignEditorPreviewModel {
-  const templateId = form.presentation.layout.templateId ?? "classic";
+  const templateId = form.presentation.layout.templateId ?? DEFAULT_GAME_PAGE_TEMPLATE_ID;
   const previewAccent = form.gameType === "scratch" ? resolveScratchAccent(form.accent, templateId) : form.accent;
   const previewSegments = buildPreviewSegments(form.prizes);
   const winningSegmentId = previewSegments.find((segment) => segment.tone === "win")?.id ?? previewSegments[0]?.id ?? "win";

@@ -30,7 +30,7 @@ function formatCurrency(value: number) {
 export function BillingSubscriptionCard({ billing }: BillingSubscriptionCardProps) {
   const [isLoading, setIsLoading] = useState<"checkout" | "portal" | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const priceLabel = useMemo(() => `${formatCurrency(20)} / mois`, []);
+  const priceLabel = useMemo(() => `${formatCurrency(20)} HT / mois`, []);
 
   async function redirectTo(endpoint: "/api/stripe/checkout-session" | "/api/stripe/portal-session") {
     setError(null);
@@ -163,7 +163,7 @@ export function BillingSubscriptionCard({ billing }: BillingSubscriptionCardProp
                   ? "Redirection vers le paiement..."
                   : billing.isTrialActive
                     ? "Activer l’abonnement dès maintenant"
-                    : "Passer à la version Pro (20€/mois)"}
+                     : "Passer à la version Pro (20 € HT/mois)"}
               </button>
             )}
           </div>
