@@ -65,6 +65,7 @@ import {
   createDefaultWheelSettings,
   DEFAULT_SCRATCH_PRIMARY_COLOR,
   DEFAULT_SCRATCH_SUBTITLE,
+  DEFAULT_GAME_PAGE_TEMPLATE_ID,
   DEFAULT_WHEEL_PRIMARY_COLOR,
   DEFAULT_COCORICO_PRIMARY_COLOR,
   DEFAULT_COCORICO_DUO_BLUE,
@@ -489,7 +490,7 @@ function createDefaultState(merchant: Merchant): EditorState {
       },
       layout: {
         blockSpacingPx: 40,
-        templateId: "classic",
+        templateId: DEFAULT_GAME_PAGE_TEMPLATE_ID,
       },
       wheel: createDefaultWheelSettings(DEFAULT_CLASSIC_POP_PRIMARY_COLOR),
       poster: createDefaultPosterSettings(merchant),
