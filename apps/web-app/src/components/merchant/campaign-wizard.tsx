@@ -875,7 +875,7 @@ export function CampaignWizard({
     if (!isDirty || savedCampaignId) return;
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
       event.preventDefault();
-      event.returnValue = "";
+      event.returnValue = "Quitter l’éditeur ?";
     };
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
