@@ -97,6 +97,24 @@ export function wheelPaletteForTemplate(
   templateId: GamePageTemplateId,
   current: CampaignWheelSettings,
 ) {
+  if (templateId === "classic") {
+    return {
+      ...current,
+      loseColor: DEFAULT_WHEEL_PRIMARY_COLOR,
+      rimColor: deriveLighterHex(DEFAULT_WHEEL_PRIMARY_COLOR),
+      alternateLoseColor: deriveLighterHex(DEFAULT_WHEEL_PRIMARY_COLOR),
+    };
+  }
+
+  if (templateId === "restaurant-pop") {
+    return {
+      ...current,
+      loseColor: DEFAULT_CLASSIC_POP_PRIMARY_COLOR,
+      rimColor: deriveLighterHex(DEFAULT_CLASSIC_POP_PRIMARY_COLOR),
+      alternateLoseColor: deriveLighterHex(DEFAULT_CLASSIC_POP_PRIMARY_COLOR),
+    };
+  }
+
   if (templateId === "cocorico-duo-wheel") {
     return {
       ...current,
@@ -106,29 +124,12 @@ export function wheelPaletteForTemplate(
     };
   }
 
-  if (
-    templateId === "cocorico-wheel" &&
-    current.loseColor.toLowerCase() === DEFAULT_WHEEL_PRIMARY_COLOR
-  ) {
+  if (templateId === "cocorico-wheel") {
     return {
       ...current,
       loseColor: DEFAULT_COCORICO_PRIMARY_COLOR,
       rimColor: DEFAULT_COCORICO_PRIMARY_COLOR,
       alternateLoseColor: DEFAULT_COCORICO_PRIMARY_COLOR,
-    };
-  }
-
-  if (
-    isClassicPopWheelTemplate(templateId) &&
-    [DEFAULT_WHEEL_PRIMARY_COLOR, DEFAULT_COCORICO_PRIMARY_COLOR].includes(
-      current.loseColor.toLowerCase(),
-    )
-  ) {
-    return {
-      ...current,
-      loseColor: DEFAULT_CLASSIC_POP_PRIMARY_COLOR,
-      rimColor: deriveLighterHex(DEFAULT_CLASSIC_POP_PRIMARY_COLOR),
-      alternateLoseColor: deriveLighterHex(DEFAULT_CLASSIC_POP_PRIMARY_COLOR),
     };
   }
 
