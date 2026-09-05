@@ -2083,26 +2083,26 @@ export function CampaignWizard({
                         { id: "scratch-sunburst", label: "Rayons soleil", text: "Éclatant et visible" },
                       ] as const
                     : [
-                    {
-                      id: "classic",
-                      label: "Classique",
-                      text: "Sobre et lisible",
-                    },
-                    {
-                      id: "restaurant-pop",
-                      label: "Dynamique",
-                      text: "Événementiel et contrasté",
-                    },
-                    {
-                      id: "cocorico-wheel",
-                      label: "Moderne",
-                      text: "Bleu, blanc et pictogrammes cadeaux",
+                     {
+                       id: "cocorico-wheel",
+                       label: "Moderne",
+                       text: "Bleu, blanc et pictogrammes cadeaux",
                     },
                     {
                       id: "cocorico-duo-wheel",
-                      label: "Bicolore",
-                      text: "Bleu clair, jaune et pictogrammes cadeaux",
-                    },
+                       label: "Bicolore",
+                       text: "Bleu clair, jaune et pictogrammes cadeaux",
+                     },
+                     {
+                       id: "classic",
+                       label: "Classique",
+                       text: "Sobre et lisible",
+                     },
+                     {
+                       id: "restaurant-pop",
+                       label: "Dynamique",
+                       text: "Événementiel et contrasté",
+                     },
                     {
                       id: "cosmic-orbit",
                       label: "Orbit néon",
