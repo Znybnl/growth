@@ -1618,7 +1618,14 @@ export function CampaignEditor({
   const router = useRouter();
   const [form, setForm] = useState<EditorState>(toEditorState(merchant, initialCampaign));
   const wheelTemplateState = useRef<
-    Record<string, { wheel: CampaignWheelSettings; backgroundColor: string }>
+    Record<
+      string,
+      {
+        wheel: CampaignWheelSettings;
+        backgroundColor: string;
+        scratchSignal: string;
+      }
+    >
   >({});
   const [backgroundLibrary, setBackgroundLibrary] = useState<BackgroundLibraryAsset[]>([]);
   const [isLibraryLoading, setIsLibraryLoading] = useState(false);
@@ -2592,10 +2599,17 @@ function setGameType(gameType: GameType) {
                           wheelTemplateState.current[currentTemplateId] = {
                             wheel: current.presentation.wheel,
                             backgroundColor: current.presentation.background.color,
+                            scratchSignal: current.accent.signal,
                           };
                           const remembered = wheelTemplateState.current[template.value];
                           const wheel = remembered?.wheel ?? wheelPaletteForTemplate(template.value, current.presentation.wheel);
                           const backgroundColor = remembered?.backgroundColor ?? wheelBackgroundForTemplate(template.value, current.presentation.background.color);
+                          const scratchSignal =
+                            remembered?.scratchSignal ??
+                            (scratchTemplateDefaultPrimaryColor(template.value) &&
+                            shouldApplyScratchTemplateDefaultPrimaryColor(current.accent.signal)
+                              ? scratchTemplateDefaultPrimaryColor(template.value)!
+                              : current.accent.signal);
 
                           return {
                             ...current,
@@ -2619,11 +2633,7 @@ function setGameType(gameType: GameType) {
                               current.gameType === "scratch"
                                 ? {
                                     ...normalizeScratchAccent(current.accent, template.value),
-                                    signal:
-                                      scratchTemplateDefaultPrimaryColor(template.value) &&
-                                      shouldApplyScratchTemplateDefaultPrimaryColor(current.accent.signal)
-                                        ? scratchTemplateDefaultPrimaryColor(template.value)!
-                                        : current.accent.signal,
+                                    signal: scratchSignal,
                                   }
                                 : current.accent,
                           };
