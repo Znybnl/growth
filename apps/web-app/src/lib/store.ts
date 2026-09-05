@@ -163,7 +163,7 @@ function createPresentation(overrides?: CampaignPresentationOverrides): Campaign
       ...overrides?.button,
     },
     layout: {
-      blockSpacingPx: 40,
+      blockSpacingPx: 50,
       templateId: DEFAULT_GAME_PAGE_TEMPLATE_ID,
       ...overrides?.layout,
     },

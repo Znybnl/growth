@@ -26,7 +26,8 @@ export const DEFAULT_SCRATCH_TEXT_COLOR = "#ffffff";
 export const MAX_CAMPAIGN_SUBTITLE_LINES = 3;
 export const MAX_CAMPAIGN_SUBTITLE_LENGTH = 240;
 export const CAMPAIGN_SPACING_MIN_PX = 0;
-export const CAMPAIGN_SPACING_MAX_PX = 60;
+export const CAMPAIGN_SPACING_MAX_PX = 80;
+export const DEFAULT_WHEEL_SPACING_PX = 50;
 
 export function scratchTemplateDefaultPrimaryColor(templateId?: GamePageTemplateId) {
   switch (templateId) {
@@ -85,6 +86,78 @@ export function isClassicPopWheelTemplate(templateId?: GamePageTemplateId) {
 
 export function isCocoricoWheelTemplate(templateId?: GamePageTemplateId) {
   return templateId === "cocorico-wheel" || templateId === "cocorico-duo-wheel";
+}
+
+/**
+ * Resolve the first palette used when a wheel template is selected. Once a
+ * template has been visited, the editors keep its palette separately so this
+ * helper is only used for a template without a remembered palette.
+ */
+export function wheelPaletteForTemplate(
+  templateId: GamePageTemplateId,
+  current: CampaignWheelSettings,
+) {
+  if (templateId === "classic") {
+    return {
+      ...current,
+      loseColor: DEFAULT_WHEEL_PRIMARY_COLOR,
+      rimColor: deriveLighterHex(DEFAULT_WHEEL_PRIMARY_COLOR),
+      alternateLoseColor: deriveLighterHex(DEFAULT_WHEEL_PRIMARY_COLOR),
+    };
+  }
+
+  if (templateId === "restaurant-pop") {
+    return {
+      ...current,
+      loseColor: DEFAULT_CLASSIC_POP_PRIMARY_COLOR,
+      rimColor: deriveLighterHex(DEFAULT_CLASSIC_POP_PRIMARY_COLOR),
+      alternateLoseColor: deriveLighterHex(DEFAULT_CLASSIC_POP_PRIMARY_COLOR),
+    };
+  }
+
+  if (templateId === "cocorico-duo-wheel") {
+    return {
+      ...current,
+      loseColor: DEFAULT_COCORICO_DUO_BLUE,
+      rimColor: DEFAULT_COCORICO_DUO_BLUE,
+      alternateLoseColor: DEFAULT_COCORICO_DUO_YELLOW,
+    };
+  }
+
+  if (templateId === "cocorico-wheel") {
+    return {
+      ...current,
+      loseColor: DEFAULT_COCORICO_PRIMARY_COLOR,
+      rimColor: DEFAULT_COCORICO_PRIMARY_COLOR,
+      alternateLoseColor: DEFAULT_COCORICO_PRIMARY_COLOR,
+    };
+  }
+
+  return current;
+}
+
+/** Initialize the Bicolore page background from its secondary palette color. */
+export function wheelBackgroundForTemplate(
+  templateId: GamePageTemplateId,
+  currentColor: string,
+) {
+  const normalized = currentColor.trim().toLowerCase();
+  const knownTemplateBackgrounds = [
+    "#ffffff",
+    "#fff",
+    DEFAULT_COCORICO_PRIMARY_COLOR,
+    DEFAULT_COCORICO_DUO_YELLOW,
+  ];
+
+  if (templateId === "cocorico-duo-wheel" && knownTemplateBackgrounds.includes(normalized)) {
+    return DEFAULT_COCORICO_DUO_YELLOW;
+  }
+
+  if (isCocoricoWheelTemplate(templateId) && knownTemplateBackgrounds.includes(normalized)) {
+    return "#ffffff";
+  }
+
+  return currentColor;
 }
 
 /** Soft editorial reflections used by the public Visuel pop game surface. */

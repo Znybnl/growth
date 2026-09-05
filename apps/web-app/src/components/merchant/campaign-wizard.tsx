@@ -22,7 +22,7 @@ import {
   Trash2,
   UtensilsCrossed,
 } from "lucide-react";
-import { type ChangeEvent, type ReactNode, useEffect, useMemo, useState } from "react";
+import { type ChangeEvent, type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 
 import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
 import { CampaignPreviewQrDialog } from "@/components/merchant/campaign-preview-qr";
@@ -57,11 +57,8 @@ import {
   DEFAULT_SCRATCH_SUBTITLE,
   DEFAULT_WHEEL_SUBTITLE,
   DEFAULT_GAME_PAGE_TEMPLATE_ID,
-  DEFAULT_WHEEL_PRIMARY_COLOR,
   DEFAULT_COCORICO_PRIMARY_COLOR,
-  DEFAULT_COCORICO_DUO_BLUE,
-  DEFAULT_COCORICO_DUO_YELLOW,
-  DEFAULT_CLASSIC_POP_PRIMARY_COLOR,
+  DEFAULT_WHEEL_SPACING_PX,
   deriveLighterHex,
   limitCampaignSubtitleLines,
   MAX_CAMPAIGN_SUBTITLE_LENGTH,
@@ -71,12 +68,15 @@ import {
   isClassicPopWheelTemplate,
   isCocoricoWheelTemplate,
   scratchTemplateUsesTicketTextColor,
+  wheelBackgroundForTemplate,
+  wheelPaletteForTemplate,
 } from "@/lib/campaign-defaults";
 import {
   ActionKind,
   CampaignAction,
   CampaignPerformance,
   CampaignSetupInput,
+  CampaignWheelSettings,
   BackgroundLibraryAsset,
   Merchant,
   PrizeSuggestion,
@@ -149,7 +149,7 @@ const WIZARD_TEXT_FONTS: TextFont[] = [
   "syncopate",
   "fredoka",
 ];
-const COCORICO_TEXT_FONTS: TextFont[] = ["roboto", "days-one", "lato", "fredoka"];
+const COCORICO_TEXT_FONTS: TextFont[] = ["roboto", "days-one", "fredoka"];
 
 const MAX_WIZARD_IMAGE_BYTES = 2 * 1024 * 1024;
 const ACCEPTED_WIZARD_IMAGE_TYPES = new Set([
@@ -339,7 +339,7 @@ function createWizardDraft(merchant: Merchant): WizardDraft {
     accent: { ink: "#111827", paper: "#eef2ff", signal: DEFAULT_SCRATCH_PRIMARY_COLOR },
     gameType: "wheel",
     presentation: {
-      logo: { sizePercent: 100, marginBottomPx: 40, align: "center" },
+      logo: { sizePercent: 100, marginBottomPx: DEFAULT_WHEEL_SPACING_PX, align: "center" },
       background: { mode: "color", color: "#ffffff", imageUrl: "" },
       heading: {
         textColor: "#1f2937",
@@ -357,7 +357,7 @@ function createWizardDraft(merchant: Merchant): WizardDraft {
         isBold: true,
       },
       layout: {
-        blockSpacingPx: 40,
+        blockSpacingPx: DEFAULT_WHEEL_SPACING_PX,
         templateId: DEFAULT_GAME_PAGE_TEMPLATE_ID,
       },
       wheel,
@@ -554,15 +554,28 @@ function draftFromCampaign(merchant: Merchant, performance: CampaignPerformance)
     gameType: campaign.gameType,
     presentation: {
       ...campaign.presentation,
+      background: {
+        ...campaign.presentation.background,
+        color: wheelBackgroundForTemplate(
+          campaign.presentation.layout.templateId ?? "classic",
+          campaign.presentation.background.color,
+        ),
+      },
       logo: {
         ...campaign.presentation.logo,
-        marginBottomPx: clampCampaignSpacingPx(campaign.presentation.logo.marginBottomPx),
+        marginBottomPx: clampCampaignSpacingPx(
+          campaign.presentation.logo.marginBottomPx ??
+            (campaign.gameType === "wheel" ? DEFAULT_WHEEL_SPACING_PX : 20),
+        ),
         align: "center",
       },
       heading: { ...campaign.presentation.heading, align: "center" },
       layout: {
         ...campaign.presentation.layout,
-        blockSpacingPx: clampCampaignSpacingPx(campaign.presentation.layout.blockSpacingPx),
+        blockSpacingPx: clampCampaignSpacingPx(
+          campaign.presentation.layout.blockSpacingPx ??
+            (campaign.gameType === "wheel" ? DEFAULT_WHEEL_SPACING_PX : 20),
+        ),
       },
       poster: normalizePosterSettings(campaign.presentation.poster, posterDefaults),
       email: normalizeCampaignEmailSettings(
@@ -794,6 +807,16 @@ export function CampaignWizard({
   const isDirty = lastSavedDraftSnapshot !== JSON.stringify(draft);
   const [pendingNavigation, setPendingNavigation] = useState<PendingWizardNavigation | null>(null);
   const [isSavingBeforeNavigation, setIsSavingBeforeNavigation] = useState(false);
+  const wheelTemplateState = useRef<
+    Record<
+      string,
+      {
+        wheel: CampaignWheelSettings;
+        backgroundColor: string;
+        scratchSignal: string;
+      }
+    >
+  >({});
 
   useEffect(() => {
     let cancelled = false;
@@ -2088,56 +2111,53 @@ export function CampaignWizard({
                     type="button"
                     key={template.id}
                     onClick={() =>
-                      patchDraft({
-                        presentation: {
-                          ...draft.presentation,
-                          layout: {
-                            ...draft.presentation.layout,
-                            templateId: template.id,
-                            blockSpacingPx: draft.presentation.layout.blockSpacingPx,
+                      setDraft((current) => {
+                        if (current.presentation.layout.templateId === template.id) {
+                          return current;
+                        }
+
+                        const currentTemplateId = current.presentation.layout.templateId ?? "classic";
+                        wheelTemplateState.current[currentTemplateId] = {
+                          wheel: current.presentation.wheel,
+                          backgroundColor: current.presentation.background.color,
+                          scratchSignal: current.accent.signal,
+                        };
+                        const remembered = wheelTemplateState.current[template.id];
+                        const wheel = remembered?.wheel ?? wheelPaletteForTemplate(template.id, current.presentation.wheel);
+                        const backgroundColor = remembered?.backgroundColor ?? wheelBackgroundForTemplate(template.id, current.presentation.background.color);
+                        const scratchSignal =
+                          remembered?.scratchSignal ??
+                          (scratchTemplateDefaultPrimaryColor(template.id) &&
+                          shouldApplyScratchTemplateDefaultPrimaryColor(current.accent.signal)
+                            ? scratchTemplateDefaultPrimaryColor(template.id)!
+                            : current.accent.signal);
+
+                        return {
+                          ...current,
+                          presentation: {
+                            ...current.presentation,
+                            background: {
+                              ...current.presentation.background,
+                              color: backgroundColor,
+                            },
+                            layout: {
+                              ...current.presentation.layout,
+                              templateId: template.id,
+                            },
+                            heading:
+                              isCocoricoWheelTemplate(template.id) || isClassicPopWheelTemplate(template.id)
+                                ? { ...current.presentation.heading, fontFamily: "fredoka" }
+                                : current.presentation.heading,
+                            wheel,
                           },
-                          heading:
-                            isCocoricoWheelTemplate(template.id) || isClassicPopWheelTemplate(template.id)
-                              ? { ...draft.presentation.heading, fontFamily: "fredoka" }
-                              : draft.presentation.heading,
-                          wheel:
-                            template.id === "cocorico-duo-wheel" &&
-                            draft.presentation.layout.templateId !== template.id
-                              ? {
-                                  ...draft.presentation.wheel,
-                                  loseColor: DEFAULT_COCORICO_DUO_BLUE,
-                                  rimColor: DEFAULT_COCORICO_DUO_BLUE,
-                                  alternateLoseColor: DEFAULT_COCORICO_DUO_YELLOW,
-                                }
-                              : template.id === "cocorico-wheel" &&
-                            draft.presentation.wheel.loseColor.toLowerCase() === DEFAULT_WHEEL_PRIMARY_COLOR
-                              ? {
-                                  ...draft.presentation.wheel,
-                                  loseColor: DEFAULT_COCORICO_PRIMARY_COLOR,
-                                  rimColor: DEFAULT_COCORICO_PRIMARY_COLOR,
-                                  alternateLoseColor: DEFAULT_COCORICO_PRIMARY_COLOR,
-                                }
-                              : isClassicPopWheelTemplate(template.id) &&
-                                  [DEFAULT_WHEEL_PRIMARY_COLOR, DEFAULT_COCORICO_PRIMARY_COLOR].includes(draft.presentation.wheel.loseColor.toLowerCase())
-                                ? {
-                                    ...draft.presentation.wheel,
-                                    loseColor: DEFAULT_CLASSIC_POP_PRIMARY_COLOR,
-                                    rimColor: deriveLighterHex(DEFAULT_CLASSIC_POP_PRIMARY_COLOR),
-                                    alternateLoseColor: deriveLighterHex(DEFAULT_CLASSIC_POP_PRIMARY_COLOR),
-                                  }
-                                : draft.presentation.wheel,
-                        },
                           accent:
-                            draft.gameType === "scratch"
+                            current.gameType === "scratch"
                               ? {
-                                  ...normalizeScratchAccent(draft.accent, template.id),
-                                  signal:
-                                    scratchTemplateDefaultPrimaryColor(template.id) &&
-                                    shouldApplyScratchTemplateDefaultPrimaryColor(draft.accent.signal)
-                                      ? scratchTemplateDefaultPrimaryColor(template.id)!
-                                      : draft.accent.signal,
+                                  ...normalizeScratchAccent(current.accent, template.id),
+                                  signal: scratchSignal,
                                 }
-                              : draft.accent,
+                              : current.accent,
+                        };
                       })
                     }
                     className={`rounded-[16px] border p-4 text-left ${draft.presentation.layout.templateId === template.id ? "border-aubergine bg-purple-haze" : "border-[#e2e8f0] bg-[#fbfcfe]"}`}

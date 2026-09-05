@@ -1126,7 +1126,7 @@ button:disabled,
 
 .okado-dialog-surface {
   width: 100%;
-  max-width: 30rem;
+  max-width: 42rem;
   border: 1px solid var(--color-lavender-mist);
   border-radius: var(--okado-radius-modal);
   background: var(--color-pure-white);

@@ -28,6 +28,7 @@ import {
   useDeferredValue,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 
@@ -68,11 +69,8 @@ import {
   shouldApplyScratchTemplateDefaultPrimaryColor,
   DEFAULT_SCRATCH_SUBTITLE,
   DEFAULT_GAME_PAGE_TEMPLATE_ID,
-  DEFAULT_WHEEL_PRIMARY_COLOR,
   DEFAULT_COCORICO_PRIMARY_COLOR,
-  DEFAULT_COCORICO_DUO_BLUE,
-  DEFAULT_COCORICO_DUO_YELLOW,
-  DEFAULT_CLASSIC_POP_PRIMARY_COLOR,
+  DEFAULT_WHEEL_SPACING_PX,
   resolveCocoricoPrimaryColor,
   resolveCocoricoBackgroundColor,
   DEFAULT_WHEEL_SUBTITLE,
@@ -88,6 +86,8 @@ import {
   resolvePromoStrokeColor,
   isClassicPopWheelTemplate,
   isCocoricoWheelTemplate,
+  wheelBackgroundForTemplate,
+  wheelPaletteForTemplate,
 } from "@/lib/campaign-defaults";
 import { fluidType } from "@/lib/responsive";
 import { getPrizeValidationMessages } from "@/lib/prize-validation";
@@ -99,6 +99,7 @@ import {
   CampaignAction,
   CampaignPerformance,
   CampaignSetupInput,
+  CampaignWheelSettings,
   GamePageTemplateId,
   GameType,
   Merchant,
@@ -256,7 +257,7 @@ const textFontOptions: TextFont[] = [
   "syncopate",
   "fredoka",
 ];
-const cocoricoTextFontOptions: TextFont[] = ["roboto", "days-one", "lato", "fredoka"];
+const cocoricoTextFontOptions: TextFont[] = ["roboto", "days-one", "fredoka"];
 const wheelPageTemplateOptions: Array<{
   value: GamePageTemplateId;
   title: string;
@@ -468,7 +469,7 @@ function createDefaultState(merchant: Merchant): EditorState {
     presentation: {
       logo: {
         sizePercent: 100,
-        marginBottomPx: 40,
+        marginBottomPx: DEFAULT_WHEEL_SPACING_PX,
         align: "center",
       },
       background: {
@@ -492,7 +493,7 @@ function createDefaultState(merchant: Merchant): EditorState {
         isBold: true,
       },
       layout: {
-        blockSpacingPx: 40,
+        blockSpacingPx: DEFAULT_WHEEL_SPACING_PX,
         templateId: DEFAULT_GAME_PAGE_TEMPLATE_ID,
       },
       wheel: createDefaultWheelSettings(DEFAULT_COCORICO_PRIMARY_COLOR),
@@ -640,7 +641,7 @@ function PrizeConditionsDialog({
   }
 
   return (
-    <DialogShell open={open} onClose={onClose} labelledBy="prize-conditions-title" className="max-w-[560px] p-6">
+    <DialogShell open={open} onClose={onClose} labelledBy="prize-conditions-title" className="max-w-[640px] p-6">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="okado-label">Conditions</p>
@@ -1347,6 +1348,13 @@ function toEditorState(merchant: Merchant, campaign: CampaignPerformance | null)
         : campaign.campaign.accent,
     presentation: {
       ...campaign.campaign.presentation,
+      background: {
+        ...campaign.campaign.presentation.background,
+        color: wheelBackgroundForTemplate(
+          campaign.campaign.presentation.layout.templateId ?? "classic",
+          campaign.campaign.presentation.background.color,
+        ),
+      },
       heading: {
         ...campaign.campaign.presentation.heading,
         fontFamily: campaign.campaign.presentation.heading.fontFamily ?? "display",
@@ -1359,12 +1367,18 @@ function toEditorState(merchant: Merchant, campaign: CampaignPerformance | null)
       },
       layout: {
         ...campaign.campaign.presentation.layout,
-        blockSpacingPx: clampCampaignSpacingPx(campaign.campaign.presentation.layout.blockSpacingPx ?? 40),
+        blockSpacingPx: clampCampaignSpacingPx(
+          campaign.campaign.presentation.layout.blockSpacingPx ??
+            (campaign.campaign.gameType === "wheel" ? DEFAULT_WHEEL_SPACING_PX : 20),
+        ),
         templateId: campaign.campaign.presentation.layout.templateId ?? "classic",
       },
       logo: {
         ...campaign.campaign.presentation.logo,
-        marginBottomPx: clampCampaignSpacingPx(campaign.campaign.presentation.logo.marginBottomPx),
+        marginBottomPx: clampCampaignSpacingPx(
+          campaign.campaign.presentation.logo.marginBottomPx ??
+            (campaign.campaign.gameType === "wheel" ? DEFAULT_WHEEL_SPACING_PX : 20),
+        ),
       },
       poster: normalizePosterSettings(
         campaign.campaign.presentation.poster,
@@ -1603,6 +1617,16 @@ export function CampaignEditor({
 }: CampaignEditorProps) {
   const router = useRouter();
   const [form, setForm] = useState<EditorState>(toEditorState(merchant, initialCampaign));
+  const wheelTemplateState = useRef<
+    Record<
+      string,
+      {
+        wheel: CampaignWheelSettings;
+        backgroundColor: string;
+        scratchSignal: string;
+      }
+    >
+  >({});
   const [backgroundLibrary, setBackgroundLibrary] = useState<BackgroundLibraryAsset[]>([]);
   const [isLibraryLoading, setIsLibraryLoading] = useState(false);
   const [libraryMessage, setLibraryMessage] = useState<string | null>(null);
@@ -2566,58 +2590,54 @@ function setGameType(gameType: GameType) {
                       key={template.value}
                       type="button"
                       onClick={() =>
-                        setForm((current) => ({
-                          ...current,
-                          presentation: {
-                            ...current.presentation,
-                            layout: {
-                              ...current.presentation.layout,
-                              templateId: template.value,
-                              blockSpacingPx: current.presentation.layout.blockSpacingPx,
+                        setForm((current) => {
+                          if (current.presentation.layout.templateId === template.value) {
+                            return current;
+                          }
+
+                          const currentTemplateId = current.presentation.layout.templateId ?? "classic";
+                          wheelTemplateState.current[currentTemplateId] = {
+                            wheel: current.presentation.wheel,
+                            backgroundColor: current.presentation.background.color,
+                            scratchSignal: current.accent.signal,
+                          };
+                          const remembered = wheelTemplateState.current[template.value];
+                          const wheel = remembered?.wheel ?? wheelPaletteForTemplate(template.value, current.presentation.wheel);
+                          const backgroundColor = remembered?.backgroundColor ?? wheelBackgroundForTemplate(template.value, current.presentation.background.color);
+                          const scratchSignal =
+                            remembered?.scratchSignal ??
+                            (scratchTemplateDefaultPrimaryColor(template.value) &&
+                            shouldApplyScratchTemplateDefaultPrimaryColor(current.accent.signal)
+                              ? scratchTemplateDefaultPrimaryColor(template.value)!
+                              : current.accent.signal);
+
+                          return {
+                            ...current,
+                            presentation: {
+                              ...current.presentation,
+                              background: {
+                                ...current.presentation.background,
+                                color: backgroundColor,
+                              },
+                              layout: {
+                                ...current.presentation.layout,
+                                templateId: template.value,
+                              },
+                              heading:
+                                isCocoricoWheelTemplate(template.value) || isClassicPopWheelTemplate(template.value)
+                                  ? { ...current.presentation.heading, fontFamily: "fredoka" }
+                                  : current.presentation.heading,
+                              wheel,
                             },
-                            heading:
-                              isCocoricoWheelTemplate(template.value) || isClassicPopWheelTemplate(template.value)
-                                ? { ...current.presentation.heading, fontFamily: "fredoka" }
-                                : current.presentation.heading,
-                            wheel:
-                              template.value === "cocorico-duo-wheel" &&
-                              current.presentation.layout.templateId !== template.value
+                            accent:
+                              current.gameType === "scratch"
                                 ? {
-                                    ...current.presentation.wheel,
-                                    loseColor: DEFAULT_COCORICO_DUO_BLUE,
-                                    rimColor: DEFAULT_COCORICO_DUO_BLUE,
-                                    alternateLoseColor: DEFAULT_COCORICO_DUO_YELLOW,
+                                    ...normalizeScratchAccent(current.accent, template.value),
+                                    signal: scratchSignal,
                                   }
-                                : template.value === "cocorico-wheel" &&
-                              current.presentation.wheel.loseColor.toLowerCase() === DEFAULT_WHEEL_PRIMARY_COLOR
-                                ? {
-                                    ...current.presentation.wheel,
-                                    loseColor: DEFAULT_COCORICO_PRIMARY_COLOR,
-                                    rimColor: DEFAULT_COCORICO_PRIMARY_COLOR,
-                                    alternateLoseColor: DEFAULT_COCORICO_PRIMARY_COLOR,
-                                  }
-                                : isClassicPopWheelTemplate(template.value) &&
-                                    [DEFAULT_WHEEL_PRIMARY_COLOR, DEFAULT_COCORICO_PRIMARY_COLOR].includes(current.presentation.wheel.loseColor.toLowerCase())
-                                  ? {
-                                      ...current.presentation.wheel,
-                                      loseColor: DEFAULT_CLASSIC_POP_PRIMARY_COLOR,
-                                      rimColor: deriveLighterHex(DEFAULT_CLASSIC_POP_PRIMARY_COLOR),
-                                      alternateLoseColor: deriveLighterHex(DEFAULT_CLASSIC_POP_PRIMARY_COLOR),
-                                    }
-                                  : current.presentation.wheel,
-                          },
-                          accent:
-                            current.gameType === "scratch"
-                              ? {
-                                  ...normalizeScratchAccent(current.accent, template.value),
-                                  signal:
-                                    scratchTemplateDefaultPrimaryColor(template.value) &&
-                                    shouldApplyScratchTemplateDefaultPrimaryColor(current.accent.signal)
-                                      ? scratchTemplateDefaultPrimaryColor(template.value)!
-                                      : current.accent.signal,
-                                }
-                              : current.accent,
-                        }))
+                                : current.accent,
+                          };
+                        })
                       }
                       className={`rounded-[22px] border p-4 text-left transition ${
                         active
