@@ -495,7 +495,8 @@ function toCampaign(
     presentation: {
       logo: {
         sizePercent: row.logo_size_percent,
-        marginBottomPx: row.logo_margin_bottom_px,
+        marginBottomPx:
+          row.logo_margin_bottom_px ?? (row.game_type === "wheel" ? 50 : 20),
         align: row.logo_align,
         textColor: localSettings.logoTextColor ?? row.heading_text_color ?? "#1f2937",
       },
@@ -520,7 +521,7 @@ function toCampaign(
         isBold: localSettings.buttonIsBold ?? true,
       },
       layout: {
-        blockSpacingPx: localSettings.blockSpacingPx ?? 40,
+        blockSpacingPx: localSettings.blockSpacingPx ?? 50,
         templateId: localSettings.gamePageTemplateId ?? "classic",
       },
       wheel: {
