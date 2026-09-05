@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { getAuthenticatedSession } from "@/lib/auth";
+import { captureProductEvent, merchantDistinctId } from "@/lib/product-analytics";
 
 type GooglePlaceSearchResponse = {
   places?: Array<{
@@ -103,6 +104,15 @@ export async function GET(request: Request) {
       reviewCount: place.userRatingCount ?? null,
       reviewUrl: buildReviewUrl(place.id ?? ""),
     }));
+
+  void captureProductEvent(
+    "google_place_search_completed",
+    merchantDistinctId(session.merchant.id, session.user.id),
+    {
+      resultCount: places.length,
+      hasResults: places.length > 0,
+    },
+  );
 
   return NextResponse.json({ configured: true, places });
 }

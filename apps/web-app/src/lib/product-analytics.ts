@@ -1,4 +1,10 @@
-type ProductAnalyticsProperties = Record<string, string | number | boolean | null | undefined>;
+import {
+  analyticsEnvironment,
+  PRODUCT_ANALYTICS_VERSION,
+  sanitizeAnalyticsProperties,
+  type ProductAnalyticsEvent,
+  type ProductAnalyticsProperties,
+} from "@/lib/product-analytics-events";
 
 const POSTHOG_CAPTURE_ENDPOINT = "/capture/";
 
@@ -6,25 +12,15 @@ function getPostHogConfig() {
   const apiKey = process.env.NEXT_PUBLIC_POSTHOG_KEY;
   const host = process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://eu.i.posthog.com";
 
-  if (!apiKey) {
+  if (!apiKey || process.env.NEXT_PUBLIC_POSTHOG_ENABLED === "false") {
     return null;
   }
 
   return { apiKey, host };
 }
 
-function sanitizeProperties(properties?: ProductAnalyticsProperties) {
-  if (!properties) {
-    return {};
-  }
-
-  return Object.fromEntries(
-    Object.entries(properties).filter(([, value]) => value !== undefined),
-  );
-}
-
 export async function captureProductEvent(
-  event: string,
+  event: ProductAnalyticsEvent,
   distinctId: string,
   properties?: ProductAnalyticsProperties,
 ) {
@@ -47,8 +43,10 @@ export async function captureProductEvent(
           event,
           distinct_id: distinctId,
           properties: {
-            ...sanitizeProperties(properties),
-            analyticsSource: "server",
+            ...sanitizeAnalyticsProperties(properties),
+            source: "server",
+            trackingVersion: PRODUCT_ANALYTICS_VERSION,
+            environment: analyticsEnvironment(),
           },
         }),
         signal: controller.signal,

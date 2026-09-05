@@ -2,8 +2,9 @@ import posthog from "posthog-js";
 
 const posthogKey = process.env.NEXT_PUBLIC_POSTHOG_KEY;
 const posthogHost = process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://eu.i.posthog.com";
+const posthogEnabled = process.env.NEXT_PUBLIC_POSTHOG_ENABLED !== "false";
 
-if (posthogKey) {
+if (posthogKey && posthogEnabled) {
   posthog.init(posthogKey, {
     api_host: posthogHost,
     capture_pageview: "history_change",
