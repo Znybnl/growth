@@ -32,7 +32,7 @@ import {
   resolveCocoricoPrimaryColor,
   isCocoricoWheelTemplate,
   resolveCocoricoBackgroundColor,
-  RESTAURANT_POP_BACKGROUND,
+  restaurantPopBackground,
   deriveLighterHex,
   scratchTemplatePrimaryColor,
   resolvePromoStrokeColor,
@@ -828,7 +828,7 @@ export function CampaignExperience({
         : isSunburstTemplate
           ? `radial-gradient(circle at 12% 10%, ${withHexAlpha(primaryColor, "33")} 0 12%, transparent 13%), radial-gradient(circle at 94% 18%, ${withHexAlpha(secondaryColor, "38")} 0 14%, transparent 15%), linear-gradient(180deg, #fffdf5 0%, #fff8e8 56%, #fff2ce 100%)`
         : isRestaurantPopTemplate
-        ? RESTAURANT_POP_BACKGROUND
+        ? restaurantPopBackground(campaign.presentation.background.color)
         : isCocoricoTemplate
         ? `radial-gradient(circle at 12% 12%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(campaign.presentation.background.color), 0.32), "e6")} 0 10%, transparent 11%), radial-gradient(circle at 90% 18%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(campaign.presentation.background.color), 0.12), "b3")} 0 16%, transparent 17%), linear-gradient(160deg, ${resolveCocoricoBackgroundColor(campaign.presentation.background.color)} 0%, ${resolveCocoricoBackgroundColor(campaign.presentation.background.color)} 48%, #063d78 100%)`
         : `radial-gradient(circle at 50% 50%, ${withHexAlpha(primaryColor, "33")}, transparent 50%), linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.08))`;

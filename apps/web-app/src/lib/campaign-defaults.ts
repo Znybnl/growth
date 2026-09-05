@@ -160,9 +160,14 @@ export function wheelBackgroundForTemplate(
   return currentColor;
 }
 
-/** Soft editorial reflections used by the public Visuel pop game surface. */
-export const RESTAURANT_POP_BACKGROUND =
-  "radial-gradient(ellipse 72% 32% at 16% 14%, rgba(255,255,255,0.52) 0%, rgba(255,255,255,0.22) 34%, transparent 74%), radial-gradient(ellipse 68% 28% at 86% 28%, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.14) 38%, transparent 76%), radial-gradient(ellipse 54% 22% at 48% 92%, rgba(255,255,255,0.22) 0%, transparent 76%), linear-gradient(180deg, #fff2dd 0%, #fffaf1 48%, #fff4e5 100%)";
+/** Keep the Dynamique reflections while using the merchant's configured page color. */
+export function restaurantPopBackground(configuredColor: string | undefined) {
+  const color = configuredColor && /^#[0-9a-f]{3,8}$/i.test(configuredColor.trim())
+    ? configuredColor.trim()
+    : "#fff2dd";
+
+  return `radial-gradient(ellipse 72% 32% at 16% 14%, rgba(255,255,255,0.52) 0%, rgba(255,255,255,0.22) 34%, transparent 74%), radial-gradient(ellipse 68% 28% at 86% 28%, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.14) 38%, transparent 76%), radial-gradient(ellipse 54% 22% at 48% 92%, rgba(255,255,255,0.22) 0%, transparent 76%), linear-gradient(180deg, ${color} 0%, ${color} 48%, ${color} 100%)`;
+}
 
 /** Resolve the blue used by the Cocorico template without changing legacy data. */
 export function resolveCocoricoPrimaryColor(configuredColor: string | undefined) {
