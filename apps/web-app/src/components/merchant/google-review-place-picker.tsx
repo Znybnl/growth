@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
+import { captureClientProductEvent } from "@/lib/client-product-analytics";
 
 export type GoogleReviewPlace = {
   placeId: string;
@@ -207,6 +208,10 @@ export function GoogleReviewPlacePicker({
                 type="button"
                   onClick={() => {
                     setHasUserEditedQuery(false);
+                    captureClientProductEvent("google_place_selected", {
+                      hasRating: place.rating != null,
+                      hasReviewCount: place.reviewCount != null,
+                    });
                     onChange(place.reviewUrl);
                     onPlaceChange?.(place);
                     onAddressChange?.(place.address);

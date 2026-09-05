@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 
 import { GoogleAuthButton } from "@/components/auth/google-auth-button";
+import { captureClientProductEvent } from "@/lib/client-product-analytics";
 
 export function SignInForm() {
   const searchParams = useSearchParams();
@@ -43,8 +44,13 @@ export function SignInForm() {
         throw new Error(payload.error ?? "Connexion impossible.");
       }
 
+      captureClientProductEvent("login_completed", { method: "password" });
       window.location.assign(payload.merchant?.onboardingCompleted ? "/" : "/onboarding");
     } catch (submitError) {
+      captureClientProductEvent("login_failed", {
+        method: "password",
+        errorType: submitError instanceof Error ? submitError.name : "unknown",
+      });
       setError(submitError instanceof Error ? submitError.message : "Connexion impossible.");
     } finally {
       setIsLoading(false);

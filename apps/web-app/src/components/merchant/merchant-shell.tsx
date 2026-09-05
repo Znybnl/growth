@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BarChart3, BookOpen, BriefcaseBusiness, CircleDollarSign, Gamepad2, Gauge, HandCoins, LayoutDashboard, Settings2, Star, UserRound } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import posthog from "posthog-js";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { SignOutButton } from "@/components/auth/sign-out-button";
@@ -14,6 +13,7 @@ import { LocationSwitcher } from "@/components/merchant/location-switcher";
 import { Button } from "@/components/ui/button";
 import { APP_NAME_CAPITALIZED } from "@/lib/branding";
 import { getMerchantBillingSummary } from "@/lib/billing";
+import { identifyMerchantForAnalytics } from "@/lib/client-product-analytics";
 import { Merchant, MerchantLocationAccess, MerchantUser } from "@/lib/types";
 
 type MerchantShellProps = {
@@ -104,29 +104,9 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
   }, []);
 
   useEffect(() => {
-    if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) {
-      return;
-    }
-
-    posthog.identify(`${merchant.id}:${user.id}`, {
-      merchantId: merchant.id,
-      merchantUserId: user.id,
-      email: user.email,
-      companyName: merchant.companyName,
-      isSaasAdmin,
-      billingStatus: billing.isSubscribed
-        ? "subscribed"
-        : billing.isTrialActive
-          ? "trial"
-          : "locked",
-    });
+    identifyMerchantForAnalytics(merchant.id, user.id);
   }, [
-    billing.isSubscribed,
-    billing.isTrialActive,
-    isSaasAdmin,
-    merchant.companyName,
     merchant.id,
-    user.email,
     user.id,
   ]);
 

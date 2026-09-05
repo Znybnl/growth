@@ -46,6 +46,7 @@ import { getPrizeValidationMessages } from "@/lib/prize-validation";
 import { createCampaignEmailDefaults } from "@/lib/email-settings";
 import { normalizeCampaignEmailSettings } from "@/lib/email-settings";
 import { captureClientError } from "@/lib/client-observability";
+import { captureClientProductEvent } from "@/lib/client-product-analytics";
 import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
 import {
   createDefaultPosterSettings,
@@ -775,6 +776,11 @@ export function CampaignWizard({
 }) {
   const router = useRouter();
   const isEditing = Boolean(initialCampaign);
+  useEffect(() => {
+    if (!isEditing) {
+      captureClientProductEvent("campaign_creation_started", { wizardMode: "guided" });
+    }
+  }, [isEditing]);
   const [draft, setDraft] = useState<WizardDraft>(() =>
     initialCampaign ? draftFromCampaign(merchant, initialCampaign) : createWizardDraft(merchant),
   );
@@ -1206,6 +1212,12 @@ export function CampaignWizard({
               target="_blank"
               rel="noreferrer"
               prefetch={false}
+              onClick={() =>
+                captureClientProductEvent("campaign_preview_opened", {
+                  campaignType: draft.gameType,
+                  templateKey: draft.presentation.layout.templateId ?? "classic",
+                })
+              }
               className="okado-secondary-action gap-2 px-4 text-sm"
             >
               <Eye className="h-4 w-4" aria-hidden="true" />
@@ -2110,7 +2122,12 @@ export function CampaignWizard({
                   <button
                     type="button"
                     key={template.id}
-                    onClick={() =>
+                    onClick={() => {
+                      captureClientProductEvent("campaign_template_selected", {
+                        campaignType: draft.gameType,
+                        templateKey: template.id,
+                        wizardMode: "guided",
+                      });
                       setDraft((current) => {
                         if (current.presentation.layout.templateId === template.id) {
                           return current;
@@ -2158,8 +2175,8 @@ export function CampaignWizard({
                                 }
                               : current.accent,
                         };
-                      })
-                    }
+                      });
+                    }}
                     className={`rounded-[16px] border p-4 text-left ${draft.presentation.layout.templateId === template.id ? "border-aubergine bg-purple-haze" : "border-[#e2e8f0] bg-[#fbfcfe]"}`}
                   >
                     <span className="block text-sm font-semibold text-[#182033]">

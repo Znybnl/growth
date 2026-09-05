@@ -56,6 +56,7 @@ import {
   textFontFamily,
   textFontLabel,
 } from "@/lib/format";
+import { captureClientProductEvent } from "@/lib/client-product-analytics";
 import {
   createCampaignEmailDefaults,
   normalizeCampaignEmailSettings,
@@ -2589,7 +2590,12 @@ function setGameType(gameType: GameType) {
                     <button
                       key={template.value}
                       type="button"
-                      onClick={() =>
+                      onClick={() => {
+                        captureClientProductEvent("campaign_template_selected", {
+                          campaignType: form.gameType,
+                          templateKey: template.value,
+                          wizardMode: "classic",
+                        });
                         setForm((current) => {
                           if (current.presentation.layout.templateId === template.value) {
                             return current;
@@ -2637,8 +2643,8 @@ function setGameType(gameType: GameType) {
                                   }
                                 : current.accent,
                           };
-                        })
-                      }
+                        });
+                      }}
                       className={`rounded-[22px] border p-4 text-left transition ${
                         active
                           ? "border-[#2f6df6] bg-[#eff4ff] shadow-[0_14px_26px_rgba(47,109,246,0.12)]"
@@ -4197,6 +4203,12 @@ function setGameType(gameType: GameType) {
                     prefetch={false}
                     target="_blank"
                     rel="noreferrer"
+                    onClick={() =>
+                      captureClientProductEvent("campaign_preview_opened", {
+                        campaignType: form.gameType,
+                        templateKey: form.presentation.layout.templateId ?? "classic",
+                      })
+                    }
                     className="okado-primary-action px-4"
                   >
                     Prévisualiser

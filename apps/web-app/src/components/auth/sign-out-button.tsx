@@ -7,6 +7,7 @@ import {
   SESSION_LAST_ACTIVITY_STORAGE_PREFIX,
   SESSION_STARTED_STORAGE_PREFIX,
 } from "@/lib/session-security";
+import { captureClientProductEvent, resetProductAnalytics } from "@/lib/client-product-analytics";
 
 export function SignOutButton() {
   const router = useRouter();
@@ -18,6 +19,8 @@ export function SignOutButton() {
     await fetch("/api/auth/signout", {
       method: "POST",
     });
+    captureClientProductEvent("logout_completed");
+    resetProductAnalytics();
 
     try {
       for (let index = 0; index < window.localStorage.length; index += 1) {

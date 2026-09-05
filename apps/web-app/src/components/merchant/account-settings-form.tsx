@@ -10,6 +10,7 @@ import { GoogleReviewPlacePicker } from "@/components/merchant/google-review-pla
 import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
 import { Button } from "@/components/ui/button";
 import { ValidationDialog } from "@/components/ui/validation-dialog";
+import { captureClientProductEvent } from "@/lib/client-product-analytics";
 import {
   INDUSTRY_OPTIONS,
   isRestaurantIndustry,
@@ -224,7 +225,14 @@ export function AccountSettingsForm({
       setIsDirty(false);
       onDirtyChange?.(false);
       setIsSuccessOpen(true);
+      captureClientProductEvent("account_settings_saved", {
+        hasGoogleReviewUrl: Boolean(form.googleReviewUrl),
+        hasSocialLinks: Boolean(form.instagramUrl || form.facebookUrl || form.tiktokUrl || form.tripadvisorUrl),
+      });
     } catch (submitError) {
+      captureClientProductEvent("account_settings_save_failed", {
+        errorType: submitError instanceof Error ? submitError.name : "unknown",
+      });
       setError(submitError instanceof Error ? submitError.message : "Mise à jour impossible.");
     } finally {
       setIsSaving(false);
