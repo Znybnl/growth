@@ -2367,8 +2367,8 @@ function setGameType(gameType: GameType) {
             >
               {isSaving ? "Enregistrement..." : "Enregistrer"}
             </button>
-          </div>
-      </section>
+               </div>
+             </section>
 
       {false ? (
       <section className="okado-card p-5">
@@ -2869,21 +2869,47 @@ function setGameType(gameType: GameType) {
                       },
                     }))
                   }
-                  onBlockSpacingChange={(value) =>
-                    setForm((current) => ({
-                      ...current,
-                      presentation: {
-                        ...current.presentation,
-                        layout: {
-                          ...current.presentation.layout,
-                          blockSpacingPx: clampCampaignSpacingPx(value),
-                        },
-                      },
-                    }))
-                  }
-                />
-              </div>
-            </section>
+                   onBlockSpacingChange={(value) =>
+                     setForm((current) => ({
+                       ...current,
+                       presentation: {
+                         ...current.presentation,
+                         layout: {
+                           ...current.presentation.layout,
+                           blockSpacingPx: clampCampaignSpacingPx(value),
+                         },
+                       },
+                     }))
+                   }
+                 />
+               </div>
+               {form.logoMode === "text" ? (
+                 <label className="mt-6 block text-sm">
+                   <span className="mb-2 block text-[#616b7c]">Couleur du logo</span>
+                   <span className="mb-2 block text-xs leading-5 text-[#8993a6]">
+                     Ce réglage concerne uniquement le logo texte.
+                   </span>
+                   <input
+                     type="color"
+                     value={form.presentation.logo.textColor ?? form.presentation.heading.textColor}
+                     onChange={(event) =>
+                       setForm((current) => ({
+                         ...current,
+                         presentation: {
+                           ...current.presentation,
+                           logo: {
+                             ...current.presentation.logo,
+                             textColor: event.target.value,
+                           },
+                         },
+                       }))
+                     }
+                     className="h-12 w-full cursor-pointer rounded-[12px] border border-[#d7e0ed] bg-white p-1"
+                     aria-label="Couleur du logo texte"
+                   />
+                 </label>
+               ) : null}
+             </section>
           ) : null}
 
           <section className="okado-card p-6">
