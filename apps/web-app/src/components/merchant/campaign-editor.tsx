@@ -264,16 +264,6 @@ const wheelPageTemplateOptions: Array<{
   description: string;
 }> = [
   {
-    value: "classic",
-    title: "Classique",
-    description: "Un rendu sobre, centré sur votre logo, votre message et la roue.",
-  },
-  {
-    value: "restaurant-pop",
-    title: "Dynamique",
-    description: "Un univers plus événementiel avec formes, contraste et roue façon jeu concours.",
-  },
-  {
     value: "cocorico-wheel",
     title: "Moderne",
     description: "Une roue promotionnelle bleue et blanche avec pictogrammes cadeaux et message très visible.",
@@ -282,6 +272,16 @@ const wheelPageTemplateOptions: Array<{
     value: "cocorico-duo-wheel",
     title: "Bicolore",
     description: "Une roue inspirée de Moderne, avec deux couleurs alternées et des pictogrammes cadeaux.",
+  },
+  {
+    value: "classic",
+    title: "Classique",
+    description: "Un rendu sobre, centré sur votre logo, votre message et la roue.",
+  },
+  {
+    value: "restaurant-pop",
+    title: "Dynamique",
+    description: "Un univers plus événementiel avec formes, contraste et roue façon jeu concours.",
   },
   {
     value: "cosmic-orbit",
