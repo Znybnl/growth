@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1536" viewBox="0 0 1024 1536" fill="none">
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#FFD96B"/><stop offset="1" stop-color="#F2B632"/></linearGradient></defs>
+  <rect width="1024" height="1536" fill="url(#bg)"/>
+  <circle cx="496" cy="730" r="540" fill="#FFF6D9" opacity=".66"/>
+  <path d="M0 0h370c-65 174-46 315 55 442 80 101 66 221-55 360C267 924 144 1009 0 1050V0Z" fill="#4A78B8" opacity=".86"/>
+  <path d="M1024 0H824c-56 137-35 267 63 391 68 86 114 192 137 316V0Z" fill="#F6F0D0" opacity=".78"/>
+  <path d="M0 1536v-282c181-19 319 26 416 136 79 90 213 125 608 22v124H0Z" fill="#E68D3B" opacity=".75"/>
+  <g fill="#FFF6D9" opacity=".86"><circle cx="160" cy="170" r="46"/><circle cx="245" cy="236" r="24"/><circle cx="838" cy="125" r="34"/><circle cx="906" cy="190" r="20"/></g>
+  <g fill="none" stroke="#1C4C87" stroke-width="13" stroke-linecap="round" opacity=".75"><path d="M852 1162c-40-72-27-144 42-211"/><path d="M877 1112l-71-31M899 1068l2-78M929 1033l56-42"/></g>
+</svg>

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1536" viewBox="0 0 1024 1536" fill="none">
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#CBB8E9"/><stop offset="1" stop-color="#9482CC"/></linearGradient></defs>
+  <rect width="1024" height="1536" fill="url(#bg)"/>
+  <path d="M0 0h394c-159 157-171 330-36 519 106 148 47 313-358 408V0Z" fill="#7762A8" opacity=".74"/>
+  <path d="M1024 0H735c151 153 166 312 42 477-105 140-27 301 247 396V0Z" fill="#EDE5F3" opacity=".8"/>
+  <path d="M0 1536v-259c187-57 331-13 432 130 77 109 277 131 592 28v101H0Z" fill="#5A416D" opacity=".82"/>
+  <g fill="#F4EDF2" opacity=".76"><circle cx="152" cy="103" r="46"/><circle cx="216" cy="148" r="22"/><circle cx="884" cy="1237" r="35"/><circle cx="930" cy="1291" r="17"/></g>
+  <g fill="none" stroke="#F4EDF2" stroke-width="12" stroke-linecap="round" opacity=".72"><path d="M100 1172c37-100 103-149 198-147"/><path d="M138 1115l-54-52M172 1079l-2-73M215 1060l57-44"/><path d="M897 352c30-76 77-114 141-113"/><path d="M929 302l-53-39M953 272l5-63M982 260l43-32"/></g>
+</svg>

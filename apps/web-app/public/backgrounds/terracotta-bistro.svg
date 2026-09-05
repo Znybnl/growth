@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1536" viewBox="0 0 1024 1536" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#F1B18C"/><stop offset="1" stop-color="#D96C57"/></linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientTransform="translate(510 670) rotate(90) scale(570 470)"><stop stop-color="#FFF1D9"/><stop offset="1" stop-color="#F9D4AE" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect width="1024" height="1536" fill="url(#bg)"/>
+  <circle cx="520" cy="720" r="540" fill="url(#glow)"/>
+  <path d="M0 0h310C180 154 132 315 192 492c48 142 20 266-192 350V0Z" fill="#B45E55" opacity=".42"/>
+  <path d="M1024 0H790c95 190 78 361-26 532-87 143-28 303 260 388V0Z" fill="#8E6B4A" opacity=".34"/>
+  <path d="M0 1536v-324c190-72 340-48 470 76 109 103 282 154 554 95v153H0Z" fill="#687A4B" opacity=".82"/>
+  <g fill="none" stroke="#FFF1D9" stroke-width="14" stroke-linecap="round" opacity=".56">
+    <path d="M92 365c55-91 112-112 169-61"/><path d="M128 318l-25-68M164 292l14-79M199 304l62-51"/>
+    <path d="M878 1160c-42-102-13-174 85-216"/><path d="M894 1100l-65-53M918 1050l-11-90M945 1021l59-48"/>
+  </g>
+</svg>
