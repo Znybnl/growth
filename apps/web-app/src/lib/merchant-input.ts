@@ -175,6 +175,12 @@ function normalizeImageSource(value: unknown) {
     throw new Error("Image invalide. Utilisez une image PNG, JPEG, WebP ou GIF.");
   }
 
+  // Built-in library assets are same-origin paths such as /backgrounds/foo.svg.
+  // They are valid image sources and must survive the API round-trip unchanged.
+  if (input.startsWith("/") && !input.startsWith("//")) {
+    return input.slice(0, 500);
+  }
+
   return normalizeUrl(input);
 }
 

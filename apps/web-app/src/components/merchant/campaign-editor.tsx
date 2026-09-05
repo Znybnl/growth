@@ -88,6 +88,7 @@ import {
   isClassicPopWheelTemplate,
   isCocoricoWheelTemplate,
   wheelBackgroundForTemplate,
+  restaurantPopBackground,
   wheelPaletteForTemplate,
 } from "@/lib/campaign-defaults";
 import { fluidType } from "@/lib/responsive";
@@ -1468,7 +1469,7 @@ export function buildCampaignLivePreviewModel(
     form.presentation.background.mode === "image" && form.presentation.background.imageUrl
       ? `linear-gradient(rgba(15,23,40,0.32), rgba(15,23,40,0.52)), url("${form.presentation.background.imageUrl}")`
       : templateId === "restaurant-pop"
-        ? `radial-gradient(circle at 12% 12%, rgba(255,255,255,0.42) 0 8%, transparent 30%), radial-gradient(circle at 88% 22%, rgba(255,255,255,0.3) 0 10%, transparent 34%), radial-gradient(circle at 18% 86%, rgba(255,255,255,0.2) 0 7%, transparent 27%), linear-gradient(180deg, #fff2dd 0%, #fffaf1 48%, #fff4e5 100%)`
+        ? restaurantPopBackground(form.presentation.background.color)
             : isCocoricoWheelTemplate(templateId)
               ? `radial-gradient(circle at 14% 12%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(form.presentation.background.color), 0.32), "e6")} 0 10%, transparent 11%), radial-gradient(circle at 88% 26%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(form.presentation.background.color), 0.12), "b3")} 0 15%, transparent 16%), linear-gradient(160deg, ${resolveCocoricoBackgroundColor(form.presentation.background.color)} 0%, ${resolveCocoricoBackgroundColor(form.presentation.background.color)} 48%, #063d78 100%)`
               : templateId === "cosmic-orbit"
@@ -1715,7 +1716,10 @@ export function CampaignEditor({
         : "text-center";
   const headingFontClass = textFontClass(form.presentation.heading.fontFamily);
   const currentTemplateId = form.presentation.layout.templateId ?? "classic";
-  const showBackgroundColor = currentTemplateId === "classic" || isCocoricoWheelTemplate(currentTemplateId);
+  const showBackgroundColor =
+    currentTemplateId === "classic" ||
+    currentTemplateId === "restaurant-pop" ||
+    isCocoricoWheelTemplate(currentTemplateId);
   const previewModel = useMemo<CampaignEditorPreviewModel>(() => {
     const previewAccent =
       form.gameType === "scratch"
@@ -1732,7 +1736,7 @@ export function CampaignEditor({
           form.presentation.background.mode === "image" && form.presentation.background.imageUrl
             ? `linear-gradient(rgba(15,23,40,0.32), rgba(15,23,40,0.52)), url("${form.presentation.background.imageUrl}")`
             : (form.presentation.layout.templateId ?? "classic") === "restaurant-pop"
-              ? `radial-gradient(circle at 12% 12%, rgba(255,255,255,0.42) 0 8%, transparent 30%), radial-gradient(circle at 88% 22%, rgba(255,255,255,0.3) 0 10%, transparent 34%), radial-gradient(circle at 18% 86%, rgba(255,255,255,0.2) 0 7%, transparent 27%), linear-gradient(180deg, #fff2dd 0%, #fffaf1 48%, #fff4e5 100%)`
+              ? restaurantPopBackground(form.presentation.background.color)
             : isCocoricoWheelTemplate(form.presentation.layout.templateId)
               ? `radial-gradient(circle at 14% 12%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(form.presentation.background.color), 0.32), "e6")} 0 10%, transparent 11%), radial-gradient(circle at 88% 26%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(form.presentation.background.color), 0.12), "b3")} 0 15%, transparent 16%), linear-gradient(160deg, ${resolveCocoricoBackgroundColor(form.presentation.background.color)} 0%, ${resolveCocoricoBackgroundColor(form.presentation.background.color)} 48%, #063d78 100%)`
             : (form.presentation.layout.templateId ?? "classic") === "cosmic-orbit"

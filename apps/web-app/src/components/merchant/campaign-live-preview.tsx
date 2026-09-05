@@ -19,7 +19,7 @@ import {
   resolveCocoricoPrimaryColor,
   isCocoricoWheelTemplate,
   resolveCocoricoBackgroundColor,
-  RESTAURANT_POP_BACKGROUND,
+  restaurantPopBackground,
   deriveLighterHex,
   scratchTemplatePrimaryColor,
   resolvePromoStrokeColor,
@@ -136,7 +136,7 @@ function previewBackgroundImage(
     return `linear-gradient(rgba(15,23,40,0.32), rgba(15,23,40,0.52)), url("${form.presentation.background.imageUrl}")`;
   }
   if (templateId === "restaurant-pop") {
-    return RESTAURANT_POP_BACKGROUND;
+    return restaurantPopBackground(form.presentation.background.color);
   }
   if (isCocoricoWheelTemplate(templateId)) {
     const backgroundColor = resolveCocoricoBackgroundColor(form.presentation.background.color);
