@@ -982,7 +982,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
         {preview.gameType === "wheel" && preview.wheelSubtitle.trim() ? (
           <p
             className={`okado-wheel-subtitle ${preview.headingAlignmentClass}`}
-            style={{ color: previewHeadingTextColor, fontFamily: wheelSubtitleFontFamily(preview.headingFontFamily) }}
+            style={{ color: preview.logoTextColor, fontFamily: wheelSubtitleFontFamily(preview.headingFontFamily) }}
           >
             {preview.wheelSubtitle}
           </p>
@@ -2908,32 +2908,6 @@ function setGameType(gameType: GameType) {
                    }
                  />
                </div>
-               {form.logoMode === "text" ? (
-                 <label className="mt-6 block text-sm">
-                   <span className="mb-2 block text-[#616b7c]">Couleur du logo</span>
-                   <span className="mb-2 block text-xs leading-5 text-[#8993a6]">
-                     Ce réglage concerne uniquement le logo texte.
-                   </span>
-                   <input
-                     type="color"
-                     value={form.presentation.logo.textColor ?? form.presentation.heading.textColor}
-                     onChange={(event) =>
-                       setForm((current) => ({
-                         ...current,
-                         presentation: {
-                           ...current.presentation,
-                           logo: {
-                             ...current.presentation.logo,
-                             textColor: event.target.value,
-                           },
-                         },
-                       }))
-                     }
-                     className="h-12 w-full cursor-pointer rounded-[12px] border border-[#d7e0ed] bg-white p-1"
-                     aria-label="Couleur du logo texte"
-                   />
-                 </label>
-               ) : null}
              </section>
           ) : null}
 
@@ -2990,26 +2964,51 @@ function setGameType(gameType: GameType) {
 
               {isExpertMode ? (
                 <>
-                  <label className="text-sm">
-                    <span className="mb-2 block text-[#616b7c]">Couleur du texte</span>
-                    <input
-                      type="color"
-                      value={form.presentation.heading.textColor}
-                      onChange={(event) =>
-                        setForm((current) => ({
-                          ...current,
-                          presentation: {
-                            ...current.presentation,
-                            heading: {
-                              ...current.presentation.heading,
-                              textColor: event.target.value,
+                  <div className="grid gap-4 md:col-span-2 md:grid-cols-2">
+                    <label className="text-sm">
+                      <span className="mb-2 block text-[#616b7c]">Couleur du texte principal</span>
+                      <input
+                        type="color"
+                        value={form.presentation.heading.textColor}
+                        onChange={(event) =>
+                          setForm((current) => ({
+                            ...current,
+                            presentation: {
+                              ...current.presentation,
+                              heading: {
+                                ...current.presentation.heading,
+                                textColor: event.target.value,
+                              },
                             },
-                          },
-                        }))
-                      }
-                      className="h-14 w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none"
-                    />
-                  </label>
+                          }))
+                        }
+                        className="h-14 w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none"
+                      />
+                    </label>
+                    {form.logoMode === "text" ? (
+                      <label className="text-sm">
+                        <span className="mb-2 block text-[#616b7c]">Couleur du logo et sous-titre</span>
+                        <input
+                          type="color"
+                          value={form.presentation.logo.textColor ?? form.presentation.heading.textColor}
+                          onChange={(event) =>
+                            setForm((current) => ({
+                              ...current,
+                              presentation: {
+                                ...current.presentation,
+                                logo: {
+                                  ...current.presentation.logo,
+                                  textColor: event.target.value,
+                                },
+                              },
+                            }))
+                          }
+                          className="h-14 w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none"
+                          aria-label="Couleur du logo et sous-titre"
+                        />
+                      </label>
+                    ) : null}
+                  </div>
 
                   <label className="text-sm">
                     <span className="mb-2 block text-[#616b7c]">Taille du texte (px)</span>
