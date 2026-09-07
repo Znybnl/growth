@@ -129,22 +129,22 @@ function segmentTextStyles(labelLines: string[], isRoseInstitutTemplate = false)
   if (isRoseInstitutTemplate) {
     if (labelLines.length >= 3) {
       return {
-        fontSize: 19,
-        lineHeight: 17,
-        initialOffset: -17,
+        fontSize: 22,
+        lineHeight: 19,
+        initialOffset: -19,
       };
     }
 
     if (labelLines.length === 2) {
       return {
-        fontSize: 22,
-        lineHeight: 20,
-        initialOffset: -10,
+        fontSize: 26,
+        lineHeight: 23,
+        initialOffset: -11.5,
       };
     }
 
     return {
-      fontSize: 25,
+      fontSize: 29,
       lineHeight: 0,
       initialOffset: 0,
     };
