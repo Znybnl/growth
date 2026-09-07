@@ -21,7 +21,7 @@ import { ImmersiveScratchTicket } from "@/components/public/immersive-scratch-ti
 import { ScratchGame } from "@/components/public/scratch-game";
 import { WheelOfFortune } from "@/components/public/wheel-of-fortune";
 import { fluidType } from "@/lib/responsive";
-import { textFontClass, textFontFamily } from "@/lib/format";
+import { textFontClass, textFontFamily, wheelSubtitleFontFamily } from "@/lib/format";
 import {
   campaignLogoTextSizePx,
   clampCampaignLogoSizePercent,
@@ -914,7 +914,7 @@ export function CampaignExperience({
         ) : null}
 
         {!isImmersiveScratchTemplate ? (
-        <div className={headingAlignmentClass}>
+        <div className={`${headingAlignmentClass} pb-4`}>
           {isCocoricoTemplate || isRestaurantPopTemplate || isClassicTemplate ? <CocoricoPromoText
             text={safeSubtitle.trim() || DEFAULT_SCRATCH_SUBTITLE}
             fontSize={headingFontSize}
@@ -954,8 +954,8 @@ export function CampaignExperience({
 
         {wheelSubtitle ? (
           <p
-            className={`${headingAlignmentClass} mt-3 px-4 text-sm font-medium leading-6 sm:text-base`}
-            style={{ color: headingTextColor }}
+            className={`okado-wheel-subtitle okado-wheel-subtitle--public ${headingAlignmentClass}`}
+            style={{ color: campaign.presentation.logo.textColor ?? headingTextColor, fontFamily: wheelSubtitleFontFamily(campaign.presentation.heading.fontFamily) }}
           >
             {wheelSubtitle}
           </p>

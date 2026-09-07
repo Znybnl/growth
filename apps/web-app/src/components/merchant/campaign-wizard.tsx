@@ -1398,9 +1398,6 @@ export function CampaignWizard({
                   <span className="text-sm font-semibold text-[#182033]">
                     Sous-titre de la roue <span className="font-normal text-[#8993a6]">(optionnel)</span>
                   </span>
-                  <span className="mt-1 block text-xs leading-5 text-[#8993a6]">
-                    Affiché entre le texte principal et la roue. Laissez vide pour masquer ce bloc.
-                  </span>
                   <textarea
                     value={draft.presentation.layout.wheelSubtitle ?? ""}
                     onChange={(event) =>
@@ -2349,9 +2346,6 @@ export function CampaignWizard({
                  <div className="space-y-5 border-t border-[#e2e8f0] px-4 pb-4 pt-4">
                    <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
                      <p className="text-sm font-semibold text-[#182033]">Espacements</p>
-                     <p className="mt-1 text-xs leading-5 text-[#8993a6]">
-                       Réglez séparément les espaces entre les éléments.
-                     </p>
                      <div className="mt-4">
                        <CampaignSpacingControls
                          gameType={draft.gameType}
@@ -2562,20 +2556,24 @@ export function CampaignWizard({
                     {imageUploadErrors.background ? <p role="alert" className="mt-2 text-xs text-[#b42318]">{imageUploadErrors.background}</p> : null}
                     {draft.presentation.background.mode === "image" ? <div className="mt-3 flex flex-wrap items-center gap-2"><button type="button" onClick={() => setBackgroundLibraryOpen(true)} className="cursor-pointer rounded-[4px] border border-aubergine bg-aubergine px-3 py-2.5 text-sm font-semibold text-white">Choisir dans la bibliothèque</button>{draft.presentation.background.imageUrl ? <span className="rounded-full bg-[#e9f8ec] px-3 py-1.5 text-xs font-semibold text-[#18864b]">Image sélectionnée</span> : null}</div> : null}
                   </section>
-                  {!isCocoricoWheelTemplate(draft.presentation.layout.templateId) ? <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4"><p className="text-sm font-semibold text-[#182033]">Réglages du texte</p><div className="mt-3"><label className="block text-sm"><span className="mb-2 block font-semibold">Couleur du texte</span><input type="color" value={draft.presentation.heading.textColor} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, heading: { ...draft.presentation.heading, textColor: event.target.value } } })} className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] p-1" /></label></div></section> : null}
-                   {draft.logoMode === "text" ? <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
-                     <p className="text-sm font-semibold text-[#182033]">Couleur du logo</p>
-                     <p className="mt-1 text-xs leading-5 text-[#8993a6]">Ce réglage concerne uniquement le logo texte.</p>
-                     <label className="mt-3 block text-sm">
-                       <span className="mb-2 block font-semibold text-[#182033]">Couleur</span>
-                       <input
-                         type="color"
-                         value={draft.presentation.logo.textColor ?? draft.presentation.heading.textColor}
-                         onChange={(event) => patchDraft({ presentation: { ...draft.presentation, logo: { ...draft.presentation.logo, textColor: event.target.value } } })}
-                         className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] bg-white p-1"
-                         aria-label="Couleur du logo texte"
-                       />
-                     </label>
+                   {!isCocoricoWheelTemplate(draft.presentation.layout.templateId) || draft.logoMode === "text" ? <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
+                     <p className="text-sm font-semibold text-[#182033]">Couleur du texte</p>
+                     <div className="mt-3 grid gap-4 sm:grid-cols-2">
+                       {!isCocoricoWheelTemplate(draft.presentation.layout.templateId) ? <label className="block text-sm">
+                         <span className="mb-2 block font-semibold">Couleur du texte principal</span>
+                         <input type="color" value={draft.presentation.heading.textColor} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, heading: { ...draft.presentation.heading, textColor: event.target.value } } })} className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] p-1" aria-label="Couleur du texte principal" />
+                       </label> : null}
+                       {draft.logoMode === "text" ? <label className="block text-sm">
+                         <span className="mb-2 block font-semibold">Couleur du logo et sous-titre</span>
+                         <input
+                           type="color"
+                           value={draft.presentation.logo.textColor ?? draft.presentation.heading.textColor}
+                           onChange={(event) => patchDraft({ presentation: { ...draft.presentation, logo: { ...draft.presentation.logo, textColor: event.target.value } } })}
+                           className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] bg-white p-1"
+                           aria-label="Couleur du logo et sous-titre"
+                         />
+                       </label> : null}
+                     </div>
                    </section> : null}
                    {draft.gameType !== "wheel" && scratchTemplateUsesTicketTextColor(draft.presentation.layout.templateId) ? <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
                     <p className="text-sm font-semibold text-[#182033]">
