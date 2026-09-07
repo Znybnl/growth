@@ -1,5 +1,23 @@
 import type { TextFont } from "@/lib/types";
 
+export const POSTER_FONT_OPTIONS: TextFont[] = [
+  "roboto",
+  "geogrotesque",
+  "comfortaa",
+  "days-one",
+  "delius-unicase",
+  "lato",
+  "lobster",
+  "pacifico",
+  "syncopate",
+  "anton",
+  "display",
+  "cormorant",
+  "fredoka",
+  "inter",
+  "bebas",
+];
+
 export type PosterFontAsset = {
   familyName: string;
   fileName: string;
