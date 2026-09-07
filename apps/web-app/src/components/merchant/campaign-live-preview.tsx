@@ -207,7 +207,11 @@ export function buildCampaignLivePreviewModel(form: CampaignSetupInput, merchant
     headingFontFamily: form.presentation.heading.fontFamily,
     headingTextColor: templateId === "cosmic-orbit" ? "#f8fbff" : isCocoricoWheelTemplate(templateId) ? "#ffffff" : form.gameType === "scratch" && form.presentation.heading.textColor.toLowerCase() === "#1f2937" ? previewAccent.ink : form.presentation.heading.textColor,
     headingFontSizePx: form.presentation.heading.fontSizePx,
-    headingFontWeight: isCocoricoWheelTemplate(templateId) ? 900 : form.presentation.heading.fontWeight ?? 600,
+    headingFontWeight: isCocoricoWheelTemplate(templateId)
+      ? 900
+      : templateId === "rose-institut"
+        ? 800
+        : form.presentation.heading.fontWeight ?? 600,
     subtitle: limitCampaignSubtitleLines(form.subtitle),
     wheelSubtitle: limitCampaignSubtitleLines(form.presentation.layout.wheelSubtitle ?? ""),
     blockSpacingPx: clampCampaignSpacingPx(form.presentation.layout.blockSpacingPx),

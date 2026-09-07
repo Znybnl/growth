@@ -934,7 +934,7 @@ export function CampaignExperience({
             rotate={isCocoricoTemplate}
           /> : <h1
             className={`${headingFontClass} line-clamp-3 whitespace-pre-line leading-[1] text-[#151826] ${isRoseInstitutTemplate ? "max-h-[3.3em] overflow-hidden" : ""}`}
-            style={{ color: headingTextColor, fontSize: headingFontSize, fontWeight: campaign.presentation.heading.fontWeight ?? 600 }}
+            style={{ color: headingTextColor, fontSize: headingFontSize, fontWeight: isRoseInstitutTemplate ? 800 : campaign.presentation.heading.fontWeight ?? 600 }}
           >
             {isRestaurantPopTemplate
               ? restaurantPopHeadingLines.map((line, lineIndex) => (

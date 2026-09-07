@@ -125,7 +125,31 @@ function wrapSegmentLabel(label: string) {
   return lines.length ? lines : [label];
 }
 
-function segmentTextStyles(labelLines: string[]) {
+function segmentTextStyles(labelLines: string[], isRoseInstitutTemplate = false) {
+  if (isRoseInstitutTemplate) {
+    if (labelLines.length >= 3) {
+      return {
+        fontSize: 19,
+        lineHeight: 17,
+        initialOffset: -17,
+      };
+    }
+
+    if (labelLines.length === 2) {
+      return {
+        fontSize: 22,
+        lineHeight: 20,
+        initialOffset: -10,
+      };
+    }
+
+    return {
+      fontSize: 25,
+      lineHeight: 0,
+      initialOffset: 0,
+    };
+  }
+
   if (labelLines.length >= 3) {
     return {
       fontSize: 17,
@@ -202,7 +226,7 @@ export function WheelOfFortune({
   const wheelFrameSizeClass =
     framing === "public"
       ? isRoseInstitutTemplate
-        ? "top-2 w-[min(calc(100vw-20px),380px)] sm:w-[min(calc(100vw-24px),520px)] md:w-[min(52vw,640px)] lg:w-[min(48vw,680px)]"
+        ? "top-1 w-[min(calc(100vw-32px),calc(100dvh-320px),430px)] sm:w-[min(calc(100vw-36px),calc(100dvh-320px),520px)] md:w-[min(52vw,640px)] lg:w-[min(48vw,680px)]"
         : "top-2 w-[max(130vw,calc(100svh-240px))] max-w-none sm:w-[min(118vw,calc(100svh-220px))] md:w-[min(98vw,calc(100svh-220px))] lg:w-[min(52vw,calc(100svh-220px))] xl:w-[min(42vw,calc(100svh-220px))] 2xl:w-[min(38vw,calc(100svh-220px))]"
       : framing === "editor"
         ? isRoseInstitutTemplate ? "w-[122%] max-w-none" : "w-[150%] max-w-none"
@@ -288,7 +312,7 @@ export function WheelOfFortune({
           isRestaurantPopTemplate
             ? "drop-shadow-[0_28px_42px_rgba(15,23,42,0.24)]"
             : isRoseInstitutTemplate
-              ? "drop-shadow-[0_20px_30px_rgba(11,78,162,0.16)]"
+              ? "drop-shadow-[0_0_18px_rgba(243,164,196,0.34)] drop-shadow-[0_18px_26px_rgba(11,78,162,0.14)]"
             : "drop-shadow-[0_20px_34px_rgba(15,23,42,0.16)]"
         }`}
         style={{ top: wheelTop }}
@@ -364,7 +388,7 @@ export function WheelOfFortune({
               const midAngle = startAngle + (endAngle - startAngle) / 2;
               const textPoint = polarToCartesian(208, midAngle);
               const labelLines = wrapSegmentLabel(segment.label);
-              const textStyles = segmentTextStyles(labelLines);
+              const textStyles = segmentTextStyles(labelLines, isRoseInstitutTemplate);
               // Colors are an aesthetic rhythm, independent from the winning outcome.
               const fillColor = isRestaurantPopTemplate
                 ? index % 2 === 0
@@ -386,8 +410,8 @@ export function WheelOfFortune({
                   <path
                     d={describeSlice(startAngle, endAngle)}
                     fill={fillColor}
-                    stroke="rgba(255,255,255,0.85)"
-                    strokeWidth="5"
+                    stroke="rgba(255,255,255,0.9)"
+                    strokeWidth={isRoseInstitutTemplate ? "7" : "5"}
                     strokeLinejoin="round"
                   />
                   <text
@@ -418,7 +442,7 @@ export function WheelOfFortune({
                 </g>
               );
             })}
-            <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 4} fill="url(#okado-wheel-depth)" />
+            {!isRoseInstitutTemplate ? <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 4} fill="url(#okado-wheel-depth)" /> : null}
             {isRestaurantPopTemplate
               ? Array.from({ length: visualSegments.length }, (_, beadIndex) => {
                   const bead = polarToCartesian(
@@ -445,18 +469,20 @@ export function WheelOfFortune({
           <div
             className="absolute"
             style={{
-              top: "31.2%",
+              top: isRoseInstitutTemplate ? "-1.2%" : "31.2%",
               left: "50%",
-              width: isRestaurantPopTemplate ? "12.4%" : "10.3%",
-              height: isRestaurantPopTemplate ? "20.4%" : "18.9%",
+              width: isRestaurantPopTemplate ? "12.4%" : isRoseInstitutTemplate ? "13.2%" : "10.3%",
+              height: isRestaurantPopTemplate ? "20.4%" : isRoseInstitutTemplate ? "18.5%" : "18.9%",
               transform: "translateX(-50%)",
-              clipPath: "polygon(50% 0, 88% 16%, 72% 76%, 50% 100%, 28% 76%, 12% 16%)",
+              clipPath: "polygon(50% 0, 84% 14%, 72% 76%, 50% 100%, 28% 76%, 16% 14%)",
               background: isRestaurantPopTemplate
                 ? "#fffdf7"
                 : isRoseInstitutTemplate
                   ? "#ffffff"
                 : "linear-gradient(180deg, #ffffff 0%, #f8fafc 62%, #ffffff 100%)",
-              filter: "drop-shadow(0 12px 18px rgba(15,23,42,0.2))",
+              filter: isRoseInstitutTemplate
+                ? "drop-shadow(0 6px 10px rgba(11,78,162,0.18))"
+                : "drop-shadow(0 12px 18px rgba(15,23,42,0.2))",
             }}
           >
             {isRestaurantPopTemplate || isRoseInstitutTemplate ? (
@@ -489,7 +515,7 @@ export function WheelOfFortune({
           type="button"
           onClick={handleCentralButton}
           disabled={!buttonEnabled || isSpinning || hasSpun}
-          className={`okado-wheel-center-button absolute left-1/2 top-1/2 z-40 flex aspect-square ${isRestaurantPopTemplate ? "w-[21%]" : isRoseInstitutTemplate ? "w-[22%]" : "w-[19.2%]"} -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full ${isRestaurantPopTemplate || pageTemplate === "classic" ? "border-0" : "border-[4px]"} text-[19px] font-black uppercase transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-75 ${isRestaurantPopTemplate ? "font-anton" : "shadow-[0_16px_30px_rgba(15,23,42,0.16)]"}`}
+          className={`okado-wheel-center-button absolute left-1/2 top-1/2 z-40 flex aspect-square ${isRestaurantPopTemplate ? "w-[21%]" : isRoseInstitutTemplate ? "w-[28%]" : "w-[19.2%]"} -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full ${isRestaurantPopTemplate || pageTemplate === "classic" ? "border-0" : isRoseInstitutTemplate ? "border-[3px]" : "border-[4px]"} text-[19px] font-black uppercase transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-75 ${isRestaurantPopTemplate ? "font-anton" : "shadow-[0_16px_30px_rgba(15,23,42,0.16)]"}`}
           style={{
             background:
               buttonEnabled && !hasSpun
@@ -501,6 +527,8 @@ export function WheelOfFortune({
             borderColor: isRestaurantPopTemplate ? "transparent" : isRoseInstitutTemplate ? "#ffffff" : buttonStyle?.borderColor ?? "#ffffff",
             fontSize: isRestaurantPopTemplate
               ? "clamp(0.88rem, 5.1cqw, 1.75rem)"
+              : isRoseInstitutTemplate
+                ? "clamp(0.92rem, 5.6cqw, 1.8rem)"
               : "clamp(0.84rem, 4.7cqw, 1.55rem)",
             boxShadow: isRestaurantPopTemplate ? "none" : isRoseInstitutTemplate ? "0 8px 18px rgba(11,78,162,0.22)" : undefined,
           }}
