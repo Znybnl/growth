@@ -132,7 +132,10 @@ function applyTemplateDefaults(
     ...poster,
     templateId: template.id,
     backgroundMode: "color",
-    backgroundColor: template.background,
+    backgroundColor:
+      template.id === "classic-wheel" && poster.backgroundMode === "color"
+        ? poster.backgroundColor || template.background
+        : template.background,
     backgroundImageUrl: "",
     headlineTextColor,
     headlineFontSizePx: template.headlineFontSizePx,
@@ -442,6 +445,33 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
           selectedTemplateId={poster.templateId}
           onSelect={selectTemplate}
         />
+
+        {poster.templateId === "classic-wheel" ? (
+          <section className="okado-card p-6 md:p-8">
+            <p className="okado-label">Fond de l&apos;affiche</p>
+            <h2 className="okado-section-title mt-2">Personnaliser la couleur de fond</h2>
+            <p className="mt-2 text-sm leading-6 text-ash">
+              Cette couleur s&apos;applique à l&apos;affiche Classique, pour la roue comme pour le ticket à gratter.
+            </p>
+
+            <label className="mt-6 block max-w-sm text-sm">
+              <span className="mb-2 block text-charcoal">Couleur de fond</span>
+              <input
+                type="color"
+                value={poster.backgroundColor}
+                onChange={(event) =>
+                  updatePoster({
+                    backgroundMode: "color",
+                    backgroundColor: event.target.value,
+                    backgroundImageUrl: "",
+                  })
+                }
+                className="h-14 w-full rounded-[12px] border border-fog bg-white px-2 py-2 outline-none focus:border-aubergine focus:ring-4 focus:ring-aubergine/15"
+                aria-label="Couleur de fond de l’affiche Classique"
+              />
+            </label>
+          </section>
+        ) : null}
 
         <section className="okado-card p-6 md:p-8">
           <p className="okado-label">Logo</p>

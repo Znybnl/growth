@@ -166,7 +166,10 @@ export function createPosterPreviewQrDataUrl() {
 }
 
 function renderBackground(poster: CampaignPosterSettings, template: PosterTemplateConfig) {
-  const baseColor = template.background;
+  const baseColor =
+    template.id === "classic-wheel" && poster.backgroundMode === "color"
+      ? poster.backgroundColor || template.background
+      : template.background;
 
   if (template.id === "soft-gradient-wheel") {
     return `
