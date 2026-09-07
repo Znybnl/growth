@@ -318,6 +318,11 @@ export function textFontFamily(font: TextFont) {
   }
 }
 
+/** Keep the optional wheel subtitle visually distinct from the selected headline font. */
+export function wheelSubtitleFontFamily(font: TextFont) {
+  return textFontFamily(font === "roboto" ? "inter" : "roboto");
+}
+
 export function buttonSizeLabel(size: ButtonSize) {
   switch (size) {
     case "sm":

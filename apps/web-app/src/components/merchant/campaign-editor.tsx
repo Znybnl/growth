@@ -54,6 +54,7 @@ import {
   buttonSizeLabel,
   textFontClass,
   textFontFamily,
+  wheelSubtitleFontFamily,
   textFontLabel,
 } from "@/lib/format";
 import { captureClientProductEvent } from "@/lib/client-product-analytics";
@@ -942,7 +943,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
           <div aria-hidden="true" className="h-5" />
         ) : null}
 
-        <div className={`${preview.headingAlignmentClass} ${preview.headingFontClass}`}>
+        <div className={`${preview.headingAlignmentClass} ${preview.headingFontClass} pb-4`}>
           {isCocoricoTemplate || isRestaurantPopTemplate || preview.gamePageTemplateId === "classic" ? (
             <CocoricoPromoText
               text={preview.subtitle.trim() || (preview.gameType === "scratch" ? DEFAULT_SCRATCH_SUBTITLE : "Découvrez votre animation")}
@@ -980,8 +981,8 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
         </div>
         {preview.gameType === "wheel" && preview.wheelSubtitle.trim() ? (
           <p
-            className={`${preview.headingAlignmentClass} mt-3 px-4 text-sm font-medium leading-6 sm:text-base`}
-            style={{ color: previewHeadingTextColor }}
+            className={`okado-wheel-subtitle ${preview.headingAlignmentClass}`}
+            style={{ color: previewHeadingTextColor, fontFamily: wheelSubtitleFontFamily(preview.headingFontFamily) }}
           >
             {preview.wheelSubtitle}
           </p>
