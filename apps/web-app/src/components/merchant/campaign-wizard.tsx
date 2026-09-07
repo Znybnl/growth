@@ -59,6 +59,8 @@ import {
   DEFAULT_WHEEL_SUBTITLE,
   DEFAULT_GAME_PAGE_TEMPLATE_ID,
   DEFAULT_COCORICO_PRIMARY_COLOR,
+  DEFAULT_ROSE_INSTITUT_TEXT_COLOR,
+  DEFAULT_ROSE_INSTITUT_HEADING_SIZE_PX,
   DEFAULT_WHEEL_SPACING_PX,
   DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
   deriveLighterHex,
@@ -827,6 +829,7 @@ export function CampaignWizard({
         wheel: CampaignWheelSettings;
         backgroundColor: string;
         scratchSignal: string;
+        headingTextColor: string;
         buttonBackgroundColor: string;
       }
     >
@@ -2137,6 +2140,11 @@ export function CampaignWizard({
                        text: "Bleu clair, jaune et pictogrammes cadeaux",
                      },
                      {
+                       id: "rose-institut",
+                       label: "Institut rose",
+                       text: "Rose poudré, bleu profond et roue lumineuse",
+                     },
+                     {
                        id: "classic",
                        label: "Classique",
                        text: "Sobre et lisible",
@@ -2181,12 +2189,14 @@ export function CampaignWizard({
                           wheel: current.presentation.wheel,
                           backgroundColor: current.presentation.background.color,
                           scratchSignal: current.accent.signal,
+                          headingTextColor: current.presentation.heading.textColor,
                           buttonBackgroundColor: current.presentation.button.backgroundColor,
                         };
                         const remembered = wheelTemplateState.current[template.id];
                         const wheel = remembered?.wheel ?? wheelPaletteForTemplate(template.id, current.presentation.wheel);
                         const backgroundColor = remembered?.backgroundColor ?? wheelBackgroundForTemplate(template.id, current.presentation.background.color);
-                        const buttonBackgroundColor = remembered?.buttonBackgroundColor ?? current.presentation.heading.textColor;
+                        const headingTextColor = remembered?.headingTextColor ?? (template.id === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : current.presentation.heading.textColor);
+                        const buttonBackgroundColor = remembered?.buttonBackgroundColor ?? (template.id === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : current.presentation.heading.textColor);
                         const scratchSignal =
                           remembered?.scratchSignal ??
                           (scratchTemplateDefaultPrimaryColor(template.id) &&
@@ -2207,9 +2217,19 @@ export function CampaignWizard({
                               templateId: template.id,
                             },
                             heading:
-                              isCocoricoWheelTemplate(template.id) || isClassicPopWheelTemplate(template.id)
-                                ? { ...current.presentation.heading, fontFamily: "fredoka" }
-                                : current.presentation.heading,
+                              {
+                                ...current.presentation.heading,
+                                textColor: headingTextColor,
+                                fontSizePx:
+                                  template.id === "rose-institut" &&
+                                  [40, 42].includes(current.presentation.heading.fontSizePx)
+                                    ? DEFAULT_ROSE_INSTITUT_HEADING_SIZE_PX
+                                    : current.presentation.heading.fontSizePx,
+                                fontFamily:
+                                  isCocoricoWheelTemplate(template.id) || isClassicPopWheelTemplate(template.id)
+                                    ? "fredoka"
+                                    : current.presentation.heading.fontFamily,
+                              },
                             button:
                               current.gameType === "wheel"
                                 ? {

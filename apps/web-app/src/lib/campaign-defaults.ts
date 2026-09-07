@@ -16,6 +16,11 @@ export const DEFAULT_COCORICO_PRIMARY_COLOR = "#2563eb";
 export const DEFAULT_COCORICO_BACKGROUND_COLOR = "#2563eb";
 export const DEFAULT_COCORICO_DUO_BLUE = "#78b4df";
 export const DEFAULT_COCORICO_DUO_YELLOW = "#f2c94c";
+export const DEFAULT_ROSE_INSTITUT_PRIMARY_COLOR = "#ef5b91";
+export const DEFAULT_ROSE_INSTITUT_SECONDARY_COLOR = "#fff9fb";
+export const DEFAULT_ROSE_INSTITUT_TEXT_COLOR = "#0b4ea2";
+export const DEFAULT_ROSE_INSTITUT_BACKGROUND_COLOR = "#fff1f5";
+export const DEFAULT_ROSE_INSTITUT_HEADING_SIZE_PX = 34;
 export const DEFAULT_SCRATCH_PRIMARY_COLOR = "#f4c14a";
 export const DEFAULT_SCRATCH_CONFETTI_COLOR = "#d99a18";
 export const DEFAULT_SCRATCH_CORAL_COLOR = "#f47c6b";
@@ -89,6 +94,10 @@ export function isCocoricoWheelTemplate(templateId?: GamePageTemplateId) {
   return templateId === "cocorico-wheel" || templateId === "cocorico-duo-wheel";
 }
 
+export function isRoseInstitutWheelTemplate(templateId?: GamePageTemplateId) {
+  return templateId === "rose-institut";
+}
+
 /**
  * Resolve the first palette used when a wheel template is selected. Once a
  * template has been visited, the editors keep its palette separately so this
@@ -134,6 +143,17 @@ export function wheelPaletteForTemplate(
     };
   }
 
+  if (templateId === "rose-institut") {
+    return {
+      ...current,
+      loseColor: DEFAULT_ROSE_INSTITUT_PRIMARY_COLOR,
+      winColor: DEFAULT_ROSE_INSTITUT_SECONDARY_COLOR,
+      rimColor: DEFAULT_ROSE_INSTITUT_SECONDARY_COLOR,
+      alternateLoseColor: DEFAULT_ROSE_INSTITUT_SECONDARY_COLOR,
+      alternateWinColor: DEFAULT_ROSE_INSTITUT_SECONDARY_COLOR,
+    };
+  }
+
   return current;
 }
 
@@ -158,7 +178,16 @@ export function wheelBackgroundForTemplate(
     return "#ffffff";
   }
 
+  if (templateId === "rose-institut" && knownTemplateBackgrounds.includes(normalized)) {
+    return DEFAULT_ROSE_INSTITUT_BACKGROUND_COLOR;
+  }
+
   return currentColor;
+}
+
+export function roseInstitutWheelBackground(configuredColor: string | undefined) {
+  const color = configuredColor?.trim() || DEFAULT_ROSE_INSTITUT_BACKGROUND_COLOR;
+  return `radial-gradient(circle at 50% 28%, rgba(255,255,255,0.72) 0 24%, transparent 54%), linear-gradient(180deg, ${color} 0%, ${color} 100%)`;
 }
 
 /** Keep the Dynamique reflections while using the merchant's configured page color. */

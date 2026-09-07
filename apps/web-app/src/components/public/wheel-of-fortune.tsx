@@ -35,7 +35,7 @@ type WheelOfFortuneProps = {
     borderColor?: string;
   };
   framing?: "default" | "public" | "editor" | "mobile-preview";
-  pageTemplate?: "classic" | "restaurant-pop";
+  pageTemplate?: "classic" | "restaurant-pop" | "rose-institut";
 };
 
 const SVG_SIZE = 640;
@@ -169,7 +169,12 @@ export function WheelOfFortune({
   const [hasSpun, setHasSpun] = useState(false);
 
   const isRestaurantPopTemplate = pageTemplate === "restaurant-pop";
-  const baseVisualSegments = isRestaurantPopTemplate ? segments.slice(0, 10) : segments;
+  const isRoseInstitutTemplate = pageTemplate === "rose-institut";
+  const baseVisualSegments = isRoseInstitutTemplate
+    ? segments.slice(0, 8)
+    : isRestaurantPopTemplate
+      ? segments.slice(0, 10)
+      : segments;
   const winningVisualIndex = baseVisualSegments.findIndex(
     (segment) => segment.id === winningSegmentId,
   );
@@ -196,11 +201,13 @@ export function WheelOfFortune({
     framing === "public" ? undefined : framing === "editor" ? "83%" : framing === "mobile-preview" ? "58%" : "62%";
   const wheelFrameSizeClass =
     framing === "public"
-      ? "top-2 w-[max(130vw,calc(100svh-240px))] max-w-none sm:w-[min(118vw,calc(100svh-220px))] md:w-[min(98vw,calc(100svh-220px))] lg:w-[min(52vw,calc(100svh-220px))] xl:w-[min(42vw,calc(100svh-220px))] 2xl:w-[min(38vw,calc(100svh-220px))]"
+      ? isRoseInstitutTemplate
+        ? "top-2 w-[min(calc(100vw-20px),380px)] sm:w-[min(calc(100vw-24px),520px)] md:w-[min(52vw,640px)] lg:w-[min(48vw,680px)]"
+        : "top-2 w-[max(130vw,calc(100svh-240px))] max-w-none sm:w-[min(118vw,calc(100svh-220px))] md:w-[min(98vw,calc(100svh-220px))] lg:w-[min(52vw,calc(100svh-220px))] xl:w-[min(42vw,calc(100svh-220px))] 2xl:w-[min(38vw,calc(100svh-220px))]"
       : framing === "editor"
-        ? "w-[150%] max-w-none"
+        ? isRoseInstitutTemplate ? "w-[122%] max-w-none" : "w-[150%] max-w-none"
         : framing === "mobile-preview"
-          ? "w-[150%] max-w-none"
+          ? isRoseInstitutTemplate ? "w-[122%] max-w-none" : "w-[150%] max-w-none"
           : "w-full";
   const wheelTransformClass =
     framing === "public" ? "-translate-x-1/2" : "-translate-x-1/2 -translate-y-1/2";
@@ -280,6 +287,8 @@ export function WheelOfFortune({
         className={`absolute left-1/2 aspect-square ${wheelTransformClass} ${wheelFrameSizeClass} ${
           isRestaurantPopTemplate
             ? "drop-shadow-[0_28px_42px_rgba(15,23,42,0.24)]"
+            : isRoseInstitutTemplate
+              ? "drop-shadow-[0_20px_30px_rgba(11,78,162,0.16)]"
             : "drop-shadow-[0_20px_34px_rgba(15,23,42,0.16)]"
         }`}
         style={{ top: wheelTop }}
@@ -319,6 +328,25 @@ export function WheelOfFortune({
                   strokeWidth="1.5"
                 />
               </>
+            ) : isRoseInstitutTemplate ? (
+              <>
+                <circle
+                  cx={CENTER}
+                  cy={CENTER}
+                  r={OUTER_RADIUS + 18}
+                  fill="#ffffff"
+                  stroke="#ffffff"
+                  strokeWidth="18"
+                />
+                <circle
+                  cx={CENTER}
+                  cy={CENTER}
+                  r={OUTER_RADIUS + 8}
+                  fill="none"
+                  stroke="rgba(11,78,162,0.12)"
+                  strokeWidth="2"
+                />
+              </>
             ) : (
               <circle
                 cx={CENTER}
@@ -342,10 +370,16 @@ export function WheelOfFortune({
                 ? index % 2 === 0
                   ? colors.loseColor
                   : colors.winColor
+                : isRoseInstitutTemplate
+                  ? index % 2 === 0
+                    ? colors.loseColor
+                    : colors.alternateLoseColor
                 : index % 2 === 0
                   ? colors.loseColor
                   : classicLightColor;
-              const textColor = readableTextColor(fillColor, segment.tone === "win" ? accent.ink : "#111827");
+              const textColor = isRoseInstitutTemplate
+                ? "#0b4ea2"
+                : readableTextColor(fillColor, segment.tone === "win" ? accent.ink : "#111827");
 
               return (
                 <g key={segment.id}>
@@ -419,21 +453,25 @@ export function WheelOfFortune({
               clipPath: "polygon(50% 0, 88% 16%, 72% 76%, 50% 100%, 28% 76%, 12% 16%)",
               background: isRestaurantPopTemplate
                 ? "#fffdf7"
+                : isRoseInstitutTemplate
+                  ? "#ffffff"
                 : "linear-gradient(180deg, #ffffff 0%, #f8fafc 62%, #ffffff 100%)",
               filter: "drop-shadow(0 12px 18px rgba(15,23,42,0.2))",
             }}
           >
-            {isRestaurantPopTemplate ? (
+            {isRestaurantPopTemplate || isRoseInstitutTemplate ? (
               <div
                 className="absolute inset-[9%]"
                 style={{
                   clipPath: "polygon(50% 0, 82% 18%, 67% 73%, 50% 94%, 33% 73%, 18% 18%)",
-                  background: `linear-gradient(180deg, ${colors.rimColor}, ${colors.winColor})`,
+                  background: isRoseInstitutTemplate
+                    ? colors.loseColor
+                    : `linear-gradient(180deg, ${colors.rimColor}, ${colors.winColor})`,
                 }}
               />
             ) : null}
           </div>
-          {!isRestaurantPopTemplate ? (
+          {!isRestaurantPopTemplate && !isRoseInstitutTemplate ? (
             <div
               className="absolute rounded-b-[22px] bg-white"
               style={{
@@ -451,18 +489,20 @@ export function WheelOfFortune({
           type="button"
           onClick={handleCentralButton}
           disabled={!buttonEnabled || isSpinning || hasSpun}
-          className={`okado-wheel-center-button absolute left-1/2 top-1/2 z-40 flex aspect-square ${isRestaurantPopTemplate ? "w-[21%]" : "w-[19.2%]"} -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full ${isRestaurantPopTemplate || pageTemplate === "classic" ? "border-0" : "border-[4px]"} text-[19px] font-black uppercase transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-75 ${isRestaurantPopTemplate ? "font-anton" : "shadow-[0_16px_30px_rgba(15,23,42,0.16)]"}`}
+          className={`okado-wheel-center-button absolute left-1/2 top-1/2 z-40 flex aspect-square ${isRestaurantPopTemplate ? "w-[21%]" : isRoseInstitutTemplate ? "w-[22%]" : "w-[19.2%]"} -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full ${isRestaurantPopTemplate || pageTemplate === "classic" ? "border-0" : "border-[4px]"} text-[19px] font-black uppercase transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-75 ${isRestaurantPopTemplate ? "font-anton" : "shadow-[0_16px_30px_rgba(15,23,42,0.16)]"}`}
           style={{
             background:
               buttonEnabled && !hasSpun
-                ? `linear-gradient(180deg, ${buttonStyle?.backgroundColor ?? accent.signal}, ${buttonStyle?.backgroundColor ?? colors.rimColor})`
+                ? isRoseInstitutTemplate
+                  ? buttonStyle?.backgroundColor ?? accent.signal
+                  : `linear-gradient(180deg, ${buttonStyle?.backgroundColor ?? accent.signal}, ${buttonStyle?.backgroundColor ?? colors.rimColor})`
                 : "linear-gradient(180deg, #aeb8c7, #7f8a9d)",
             color: buttonStyle?.textColor ?? "#ffffff",
-            borderColor: isRestaurantPopTemplate ? "transparent" : buttonStyle?.borderColor ?? "#ffffff",
+            borderColor: isRestaurantPopTemplate ? "transparent" : isRoseInstitutTemplate ? "#ffffff" : buttonStyle?.borderColor ?? "#ffffff",
             fontSize: isRestaurantPopTemplate
               ? "clamp(0.88rem, 5.1cqw, 1.75rem)"
               : "clamp(0.84rem, 4.7cqw, 1.55rem)",
-            boxShadow: isRestaurantPopTemplate ? "none" : undefined,
+            boxShadow: isRestaurantPopTemplate ? "none" : isRoseInstitutTemplate ? "0 8px 18px rgba(11,78,162,0.22)" : undefined,
           }}
         >
           {isSpinning ? "..." : buttonLabel}
