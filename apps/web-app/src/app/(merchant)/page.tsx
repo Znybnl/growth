@@ -125,24 +125,13 @@ export default async function DashboardPage({
         title="Pilotez vos campagnes"
         description="Suivez vos campagnes en direct, comparez les mécaniques qui performent et lancez rapidement une nouvelle campagne."
         actions={
-          <>
-            {session.locations.length > 1 ? (
-              <Link
-                href={isWorkspaceView ? "/" : "/?scope=all"}
-                prefetch={false}
-                className="okado-secondary-action px-5"
-              >
-                {isWorkspaceView ? "Voir le site actif" : "Tous les sites"}
-              </Link>
-            ) : null}
-            <Link
-              href="/campaigns/new/guided"
-              prefetch={false}
-              className="okado-filled-action px-5"
-            >
-              Créer une campagne
-            </Link>
-          </>
+          <Link
+            href="/campaigns/new/guided"
+            prefetch={false}
+            className="okado-filled-action px-5"
+          >
+            Créer une campagne
+          </Link>
         }
       />
 
