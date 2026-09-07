@@ -602,9 +602,6 @@ export function AccountSettingsForm({
               </div>
               <p className="mt-1 text-sm text-ash">Le PIN de {selectedMerchant.companyName} permet à un employé de valider un lot depuis le QR code.</p>
             </div>
-            <p className="mb-5 max-w-2xl text-xs leading-5 text-ash">
-              Le PIN contient exactement 4 chiffres. Il est visible uniquement par les utilisateurs autorisés de ce compte.
-            </p>
             <div className="grid gap-4 md:grid-cols-2 md:items-end">
           <label className="text-sm">
             <span className="mb-2 block text-ash">PIN commerçant</span>
