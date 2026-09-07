@@ -103,6 +103,17 @@ function deriveLighterHex(hex: string, ratio = 0.76) {
   return `#${lightened}`;
 }
 
+function withAlpha(hex: string, alpha: number) {
+  const normalized = hex.replace("#", "");
+
+  if (!/^[0-9a-f]{6}$/i.test(normalized)) {
+    return `rgba(243, 164, 196, ${alpha})`;
+  }
+
+  const channels = [0, 2, 4].map((offset) => Number.parseInt(normalized.slice(offset, offset + 2), 16));
+  return `rgba(${channels.join(", ")}, ${alpha})`;
+}
+
 function wrapSegmentLabel(label: string) {
   const words = label.trim().split(/\s+/).filter(Boolean);
   const lines: string[] = [];
@@ -220,6 +231,10 @@ export function WheelOfFortune({
     loseColor: wheelStyle?.loseColor ?? "#edf2f7",
     alternateLoseColor: wheelStyle?.alternateLoseColor ?? "#e7edf3",
   };
+  const roseGlow = {
+    near: withAlpha(colors.winColor, 0.2),
+    far: withAlpha(colors.winColor, 0.1),
+  };
   const classicLightColor = deriveLighterHex(colors.loseColor);
   const wheelTop =
     framing === "public" ? undefined : framing === "editor" ? "83%" : framing === "mobile-preview" ? "58%" : "62%";
@@ -312,13 +327,26 @@ export function WheelOfFortune({
           isRestaurantPopTemplate
             ? "drop-shadow-[0_28px_42px_rgba(15,23,42,0.24)]"
             : isRoseInstitutTemplate
-              ? "drop-shadow-[0_0_18px_rgba(243,164,196,0.34)] drop-shadow-[0_18px_26px_rgba(11,78,162,0.14)]"
+              ? ""
             : "drop-shadow-[0_20px_34px_rgba(15,23,42,0.16)]"
         }`}
         style={{ top: wheelTop }}
       >
+        {isRoseInstitutTemplate ? (
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -inset-[10%] z-0 rounded-full"
+            style={{
+              background: `radial-gradient(circle, ${roseGlow.near} 0%, ${roseGlow.near} 54%, ${roseGlow.far} 68%, transparent 84%)`,
+              filter: "blur(14px)",
+              transform: "scale(1.04)",
+            }}
+          />
+        ) : null}
         <div
-          className="absolute inset-0 rounded-full transition-transform duration-[4200ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
+          className={`absolute inset-0 rounded-full transition-transform duration-[4200ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
+            isRoseInstitutTemplate ? "drop-shadow-[0_14px_24px_rgba(11,78,162,0.11)]" : ""
+          }`}
           style={{ transform: `rotate(${rotation}deg)` }}
         >
           <svg
