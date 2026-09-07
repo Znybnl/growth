@@ -26,6 +26,7 @@ import {
   campaignLogoTextSizePx,
   clampCampaignLogoSizePercent,
   clampCampaignSpacingPx,
+  DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
   DEFAULT_SCRATCH_SUBTITLE,
   limitCampaignSubtitleLines,
   resolveScratchAccent,
@@ -914,7 +915,7 @@ export function CampaignExperience({
         ) : null}
 
         {!isImmersiveScratchTemplate ? (
-        <div className={`${headingAlignmentClass} pb-4`}>
+        <div className={headingAlignmentClass}>
           {isCocoricoTemplate || isRestaurantPopTemplate || isClassicTemplate ? <CocoricoPromoText
             text={safeSubtitle.trim() || DEFAULT_SCRATCH_SUBTITLE}
             fontSize={headingFontSize}
@@ -927,7 +928,7 @@ export function CampaignExperience({
             variant={isCocoricoTemplate ? "cocorico" : "inspired"}
             rotate={isCocoricoTemplate}
           /> : <h1
-            className={`${headingFontClass} line-clamp-3 whitespace-pre-line pb-[25px] leading-[1] text-[#151826]`}
+            className={`${headingFontClass} line-clamp-3 whitespace-pre-line leading-[1] text-[#151826]`}
             style={{ color: headingTextColor, fontSize: headingFontSize, fontWeight: campaign.presentation.heading.fontWeight ?? 600 }}
           >
             {isRestaurantPopTemplate
@@ -955,7 +956,11 @@ export function CampaignExperience({
         {wheelSubtitle ? (
           <p
             className={`okado-wheel-subtitle okado-wheel-subtitle--public ${headingAlignmentClass}`}
-            style={{ color: campaign.presentation.logo.textColor ?? headingTextColor, fontFamily: wheelSubtitleFontFamily(campaign.presentation.heading.fontFamily) }}
+            style={{
+              color: campaign.presentation.logo.textColor ?? headingTextColor,
+              fontFamily: wheelSubtitleFontFamily(campaign.presentation.heading.fontFamily),
+              marginTop: `${clampCampaignSpacingPx(campaign.presentation.layout.subtitleSpacingPx, DEFAULT_WHEEL_SUBTITLE_SPACING_PX)}px`,
+            }}
           >
             {wheelSubtitle}
           </p>
@@ -982,7 +987,10 @@ export function CampaignExperience({
                   onButtonClick={() => void openActionAndTrack()}
                   autoSpinKey={autoSpinKey}
                   onSpinEnd={() => void handleGameReveal()}
-                  buttonStyle={{ textColor: campaign.presentation.button.textColor }}
+                  buttonStyle={{
+                    backgroundColor: campaign.presentation.button.backgroundColor,
+                    textColor: campaign.presentation.button.textColor,
+                  }}
                 />
               ) : isImmersiveTemplate ? (
                 <ImmersiveWheel
@@ -991,7 +999,7 @@ export function CampaignExperience({
                   wheelStyle={campaign.presentation.wheel}
                   template={pageTemplate}
                   buttonStyle={{
-                    backgroundColor: primaryColor,
+                    backgroundColor: campaign.presentation.button.backgroundColor,
                     textColor: campaign.presentation.button.textColor,
                     borderColor: campaign.presentation.wheel.rimColor,
                   }}
@@ -1012,7 +1020,7 @@ export function CampaignExperience({
                   wheelStyle={campaign.presentation.wheel}
                   pageTemplate={pageTemplate === "restaurant-pop" ? "restaurant-pop" : "classic"}
                   buttonStyle={{
-                    backgroundColor: primaryColor,
+                    backgroundColor: campaign.presentation.button.backgroundColor,
                     textColor: campaign.presentation.button.textColor,
                     borderColor:
                       pageTemplate === "restaurant-pop"

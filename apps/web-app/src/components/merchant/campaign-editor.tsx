@@ -77,6 +77,7 @@ import {
   DEFAULT_GAME_PAGE_TEMPLATE_ID,
   DEFAULT_COCORICO_PRIMARY_COLOR,
   DEFAULT_WHEEL_SPACING_PX,
+  DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
   resolveCocoricoPrimaryColor,
   resolveCocoricoBackgroundColor,
   DEFAULT_WHEEL_SUBTITLE,
@@ -223,6 +224,7 @@ export type CampaignEditorPreviewModel = {
   subtitle: string;
   wheelSubtitle: string;
   blockSpacingPx: number;
+  subtitleSpacingPx: number;
   gamePageTemplateId: GamePageTemplateId;
   gameType: GameType;
   accent: EditorState["accent"];
@@ -493,7 +495,7 @@ function createDefaultState(merchant: Merchant): EditorState {
         align: "center",
       },
       button: {
-        backgroundColor: "#c59920",
+        backgroundColor: "#1f2937",
         textColor: "#ffffff",
         borderColor: "#f4c14a",
         size: "sm",
@@ -504,6 +506,7 @@ function createDefaultState(merchant: Merchant): EditorState {
         blockSpacingPx: DEFAULT_WHEEL_SPACING_PX,
         templateId: DEFAULT_GAME_PAGE_TEMPLATE_ID,
         wheelSubtitle: "",
+        subtitleSpacingPx: DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
       },
       wheel: createDefaultWheelSettings(DEFAULT_COCORICO_PRIMARY_COLOR),
       poster: createDefaultPosterSettings(merchant),
@@ -943,7 +946,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
           <div aria-hidden="true" className="h-5" />
         ) : null}
 
-        <div className={`${preview.headingAlignmentClass} ${preview.headingFontClass} pb-4`}>
+        <div className={`${preview.headingAlignmentClass} ${preview.headingFontClass}`}>
           {isCocoricoTemplate || isRestaurantPopTemplate || preview.gamePageTemplateId === "classic" ? (
             <CocoricoPromoText
               text={preview.subtitle.trim() || (preview.gameType === "scratch" ? DEFAULT_SCRATCH_SUBTITLE : "Découvrez votre animation")}
@@ -982,7 +985,11 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
         {preview.gameType === "wheel" && preview.wheelSubtitle.trim() ? (
           <p
             className={`okado-wheel-subtitle ${preview.headingAlignmentClass}`}
-            style={{ color: preview.logoTextColor, fontFamily: wheelSubtitleFontFamily(preview.headingFontFamily) }}
+            style={{
+              color: preview.logoTextColor,
+              fontFamily: wheelSubtitleFontFamily(preview.headingFontFamily),
+              marginTop: `${preview.subtitleSpacingPx}px`,
+            }}
           >
             {preview.wheelSubtitle}
           </p>
@@ -1013,7 +1020,10 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
                 palette={isCocoricoDuoTemplate ? "duo" : "classic"}
                 segments={preview.previewSegments}
                 winningSegmentId={preview.winningSegmentId}
-                buttonStyle={{ textColor: preview.buttonStyle.textColor }}
+                buttonStyle={{
+                  backgroundColor: preview.buttonStyle.backgroundColor,
+                  textColor: preview.buttonStyle.textColor,
+                }}
                 buttonEnabled
                 framing="editor"
               />
@@ -1389,6 +1399,11 @@ function toEditorState(merchant: Merchant, campaign: CampaignPerformance | null)
             (campaign.campaign.gameType === "wheel" ? DEFAULT_WHEEL_SPACING_PX : 20),
         ),
         templateId: campaign.campaign.presentation.layout.templateId ?? "classic",
+        subtitleSpacingPx: clampCampaignSpacingPx(
+          campaign.campaign.presentation.layout.subtitleSpacingPx ??
+            DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
+          DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
+        ),
       },
       logo: {
         ...campaign.campaign.presentation.logo,
@@ -1535,6 +1550,10 @@ export function buildCampaignLivePreviewModel(
     subtitle: limitCampaignSubtitleLines(form.subtitle),
     wheelSubtitle: limitCampaignSubtitleLines(form.presentation.layout.wheelSubtitle ?? ""),
     blockSpacingPx: clampCampaignSpacingPx(form.presentation.layout.blockSpacingPx),
+    subtitleSpacingPx: clampCampaignSpacingPx(
+      form.presentation.layout.subtitleSpacingPx,
+      DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
+    ),
     gamePageTemplateId: templateId,
     gameType: form.gameType,
     accent: previewAccent,
@@ -1544,7 +1563,7 @@ export function buildCampaignLivePreviewModel(
       : resolveCocoricoPrimaryColor(form.presentation.wheel.loseColor),
     cocoricoSecondaryColor: form.presentation.wheel.alternateLoseColor,
     buttonStyle: {
-      backgroundColor: form.gameType === "wheel" ? form.presentation.wheel.loseColor : form.presentation.button.backgroundColor,
+      backgroundColor: form.presentation.button.backgroundColor,
       textColor: form.presentation.button.textColor,
       borderColor: form.gameType === "wheel" ? form.presentation.wheel.rimColor : form.presentation.button.borderColor,
       textSizePx: form.presentation.button.textSizePx,
@@ -1642,6 +1661,7 @@ export function CampaignEditor({
         wheel: CampaignWheelSettings;
         backgroundColor: string;
         scratchSignal: string;
+        buttonBackgroundColor: string;
       }
     >
   >({});
@@ -1791,6 +1811,10 @@ export function CampaignEditor({
       subtitle: limitCampaignSubtitleLines(form.subtitle),
       wheelSubtitle: limitCampaignSubtitleLines(form.presentation.layout.wheelSubtitle ?? ""),
       blockSpacingPx: clampCampaignSpacingPx(form.presentation.layout.blockSpacingPx),
+      subtitleSpacingPx: clampCampaignSpacingPx(
+        form.presentation.layout.subtitleSpacingPx,
+        DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
+      ),
       gamePageTemplateId: form.presentation.layout.templateId ?? "classic",
       gameType: form.gameType,
       accent: previewAccent,
@@ -1801,9 +1825,7 @@ export function CampaignEditor({
       cocoricoSecondaryColor: form.presentation.wheel.alternateLoseColor,
       buttonStyle: {
         backgroundColor:
-          form.gameType === "wheel"
-            ? form.presentation.wheel.loseColor
-            : form.presentation.button.backgroundColor,
+          form.presentation.button.backgroundColor,
         textColor: form.presentation.button.textColor,
         borderColor:
           form.gameType === "wheel"
@@ -1839,6 +1861,7 @@ export function CampaignEditor({
     form.presentation.heading.fontWeight,
     form.presentation.heading.textColor,
     form.presentation.layout.blockSpacingPx,
+    form.presentation.layout.subtitleSpacingPx,
     form.presentation.layout.templateId,
     form.presentation.layout.wheelSubtitle,
     form.presentation.logo.marginBottomPx,
@@ -2022,6 +2045,13 @@ function setGameType(gameType: GameType) {
                   rimColor: deriveLighterHex(nextPrimaryColor),
                 }
               : current.presentation.wheel,
+          button:
+            gameType === "wheel"
+              ? {
+                  ...current.presentation.button,
+                  backgroundColor: current.presentation.heading.textColor,
+                }
+              : current.presentation.button,
         },
         subtitle: shouldSyncSubtitle
           ? gameType === "wheel"
@@ -2628,10 +2658,12 @@ function setGameType(gameType: GameType) {
                             wheel: current.presentation.wheel,
                             backgroundColor: current.presentation.background.color,
                             scratchSignal: current.accent.signal,
+                            buttonBackgroundColor: current.presentation.button.backgroundColor,
                           };
                           const remembered = wheelTemplateState.current[template.value];
                           const wheel = remembered?.wheel ?? wheelPaletteForTemplate(template.value, current.presentation.wheel);
                           const backgroundColor = remembered?.backgroundColor ?? wheelBackgroundForTemplate(template.value, current.presentation.background.color);
+                          const buttonBackgroundColor = remembered?.buttonBackgroundColor ?? current.presentation.heading.textColor;
                           const scratchSignal =
                             remembered?.scratchSignal ??
                             (scratchTemplateDefaultPrimaryColor(template.value) &&
@@ -2655,6 +2687,13 @@ function setGameType(gameType: GameType) {
                                 isCocoricoWheelTemplate(template.value) || isClassicPopWheelTemplate(template.value)
                                   ? { ...current.presentation.heading, fontFamily: "fredoka" }
                                   : current.presentation.heading,
+                              button:
+                                current.gameType === "wheel"
+                                  ? {
+                                      ...current.presentation.button,
+                                      backgroundColor: buttonBackgroundColor,
+                                    }
+                                  : current.presentation.button,
                               wheel,
                             },
                             accent:
@@ -2882,6 +2921,7 @@ function setGameType(gameType: GameType) {
                   logoMode={form.logoMode}
                   logoSpacingPx={form.presentation.logo.marginBottomPx}
                   blockSpacingPx={form.presentation.layout.blockSpacingPx}
+                  subtitleSpacingPx={form.presentation.layout.subtitleSpacingPx ?? DEFAULT_WHEEL_SUBTITLE_SPACING_PX}
                   onLogoSpacingChange={(value) =>
                     setForm((current) => ({
                       ...current,
@@ -2902,6 +2942,21 @@ function setGameType(gameType: GameType) {
                          layout: {
                            ...current.presentation.layout,
                            blockSpacingPx: clampCampaignSpacingPx(value),
+                         },
+                       },
+                     }))
+                   }
+                   onSubtitleSpacingChange={(value) =>
+                     setForm((current) => ({
+                       ...current,
+                       presentation: {
+                         ...current.presentation,
+                         layout: {
+                           ...current.presentation.layout,
+                           subtitleSpacingPx: clampCampaignSpacingPx(
+                             value,
+                             DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
+                           ),
                          },
                        },
                      }))
@@ -3835,10 +3890,16 @@ function setGameType(gameType: GameType) {
 
             <div className="mt-6 grid gap-4 md:grid-cols-2">
               <label className="text-sm">
-                <span className="mb-2 block text-[#616b7c]">Couleur du fond</span>
+                <span className="mb-2 block text-[#616b7c]">
+                  {form.gameType === "wheel" ? "Couleur du bouton JOUER" : "Couleur du fond"}
+                </span>
                 <input
                   type="color"
-                  value={form.presentation.button.backgroundColor}
+                  value={
+                    form.gameType === "wheel"
+                      ? form.presentation.button.backgroundColor
+                      : form.presentation.button.backgroundColor
+                  }
                   onChange={(event) =>
                     setForm((current) => ({
                       ...current,

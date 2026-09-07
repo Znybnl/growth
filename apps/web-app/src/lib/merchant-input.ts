@@ -17,6 +17,7 @@ import {
   CAMPAIGN_SPACING_MAX_PX,
   CAMPAIGN_SPACING_MIN_PX,
   DEFAULT_GAME_PAGE_TEMPLATE_ID,
+  DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
 } from "@/lib/campaign-defaults";
 import { MAX_POSTER_HEADLINE_LENGTH } from "@/lib/poster-utils";
 
@@ -516,6 +517,12 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
         }),
         templateId: normalizeEnum(layout.templateId, GAME_PAGE_TEMPLATE_IDS, DEFAULT_GAME_PAGE_TEMPLATE_ID),
         wheelSubtitle: normalizeMultiline(layout.wheelSubtitle, 240),
+        subtitleSpacingPx: normalizeNumber(layout.subtitleSpacingPx, {
+          min: CAMPAIGN_SPACING_MIN_PX,
+          max: CAMPAIGN_SPACING_MAX_PX,
+          fallback: DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
+          integer: true,
+        }),
       },
       wheel: {
         rimColor: normalizeColor(wheel.rimColor, "#bac0ca"),

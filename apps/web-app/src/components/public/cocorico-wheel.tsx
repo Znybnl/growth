@@ -22,6 +22,7 @@ type CocoricoWheelProps = {
   secondaryColor?: string;
   palette?: "classic" | "duo";
   buttonStyle?: {
+    backgroundColor?: string;
     textColor?: string;
   };
   framing?: "default" | "public" | "editor" | "mobile-preview";
@@ -236,9 +237,9 @@ export function CocoricoWheel({
           style={{
             background:
               buttonEnabled && !hasSpun
-                ? palette === "duo"
+                ? buttonStyle?.backgroundColor ?? (palette === "duo"
                   ? `linear-gradient(145deg, ${secondaryColor}, ${primaryColor})`
-                  : `linear-gradient(145deg, ${primaryColor}, ${DEEP_BLUE})`
+                  : `linear-gradient(145deg, ${primaryColor}, ${DEEP_BLUE})`)
                 : "#94a3b8",
             color: buttonStyle?.textColor ?? "#ffffff",
             boxShadow: "inset 0 -8px 13px rgba(0,0,0,0.2), 0 12px 23px rgba(4,48,93,0.3)",

@@ -406,6 +406,7 @@ export interface CampaignLayoutSettings {
   blockSpacingPx: number;
   templateId?: GamePageTemplateId;
   wheelSubtitle?: string;
+  subtitleSpacingPx?: number;
 }
 
 export interface CampaignWheelSettings {
