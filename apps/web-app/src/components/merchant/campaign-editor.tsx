@@ -289,8 +289,8 @@ const wheelPageTemplateOptions: Array<{
   },
   {
     value: "rose-institut",
-    title: "Institut rose",
-    description: "Une roue rose et bleu profond, lumineuse et élégante, avec un bouton central très lisible.",
+    title: "Éclat",
+    description: "Une roue lumineuse et élégante, entièrement personnalisable avec vos couleurs.",
   },
   {
     value: "classic",

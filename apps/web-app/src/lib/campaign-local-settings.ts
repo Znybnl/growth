@@ -15,6 +15,7 @@ type CampaignLocalSettings = {
   buttonIsBold?: boolean;
   blockSpacingPx?: number;
   wheelSubtitle?: string;
+  subtitleSpacingPx?: number;
   participationIntervalDays?: number;
   headingFontFamily?: TextFont;
   headingFontWeight?: number;

@@ -396,8 +396,8 @@ export function WheelOfFortune({
                   : colors.winColor
                 : isRoseInstitutTemplate
                   ? index % 2 === 0
-                    ? colors.loseColor
-                    : colors.alternateLoseColor
+                    ? colors.winColor
+                    : colors.alternateWinColor
                 : index % 2 === 0
                   ? colors.loseColor
                   : classicLightColor;
@@ -490,8 +490,8 @@ export function WheelOfFortune({
                 className="absolute inset-[9%]"
                 style={{
                   clipPath: "polygon(50% 0, 82% 18%, 67% 73%, 50% 94%, 33% 73%, 18% 18%)",
-                  background: isRoseInstitutTemplate
-                    ? colors.loseColor
+                background: isRoseInstitutTemplate
+                    ? colors.winColor
                     : `linear-gradient(180deg, ${colors.rimColor}, ${colors.winColor})`,
                 }}
               />
