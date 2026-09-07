@@ -15,6 +15,7 @@ import {
   MAX_POSTER_HEADLINE_LENGTH,
   normalizePosterSettings,
 } from "@/lib/poster-utils";
+import { captureClientProductEvent } from "@/lib/client-product-analytics";
 import { Campaign, CampaignPosterSettings, PosterTemplateId, Prize } from "@/lib/types";
 import { getPosterTemplate, POSTER_TEMPLATES } from "@/lib/poster-templates";
 import { PosterTemplateSelector } from "@/components/merchant/poster-template-selector";
@@ -27,6 +28,12 @@ type PosterEditorProps = {
 
 const MAX_UPLOAD_IMAGE_BYTES = 2 * 1024 * 1024;
 const ACCEPTED_IMAGE_TYPES = new Set(["image/png", "image/jpeg", "image/webp", "image/gif"]);
+
+type PosterPngPreview = {
+  svg: string;
+  blob: Blob;
+  url: string;
+};
 
 function uploadAsDataUrl(
   event: ChangeEvent<HTMLInputElement>,
@@ -249,6 +256,34 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
   const [message, setMessage] = useState<string | null>(null);
   const [imageUploadError, setImageUploadError] = useState<string | null>(null);
   const [draftWinColor, setDraftWinColor] = useState(poster.wheel.winColor);
+  const [posterQrDataUrl, setPosterQrDataUrl] = useState<string | null>(null);
+  const [previewPng, setPreviewPng] = useState<PosterPngPreview | null>(null);
+  const [previewError, setPreviewError] = useState<{ svg: string; message: string } | null>(null);
+  const [posterQrError, setPosterQrError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let active = true;
+
+    void QRCode.toDataURL(`${window.location.origin}/campaign/${campaign.id}`, {
+      margin: 1,
+      width: 720,
+      color: { dark: "#111827", light: "#ffffff" },
+    })
+      .then((dataUrl) => {
+        if (active) {
+          setPosterQrDataUrl(dataUrl);
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setPosterQrError("Prévisualisation indisponible : création du QR code impossible.");
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [campaign.id]);
 
   useEffect(() => {
     if (draftWinColor === poster.wheel.winColor) {
@@ -271,19 +306,56 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
 
   const previewPosterSvg = useMemo(
     () =>
-      buildPosterSvg({
-        campaign,
-        poster,
-        prizes,
-        qrDataUrl: createPosterPreviewQrDataUrl(),
-        posterFontSource: getPosterFontSourceUrl(poster.headlineFontFamily),
-      }),
-    [campaign, poster, prizes],
+      posterQrDataUrl
+        ? buildPosterSvg({
+            campaign,
+            poster,
+            prizes,
+            qrDataUrl: posterQrDataUrl,
+            posterFontSource: getPosterFontSourceUrl(poster.headlineFontFamily),
+          })
+        : null,
+    [campaign, poster, posterQrDataUrl, prizes],
   );
-  const previewPosterUrl = useMemo(
-    () => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(previewPosterSvg)}`,
-    [previewPosterSvg],
-  );
+
+  useEffect(() => {
+    if (!previewPosterSvg) {
+      return;
+    }
+
+    let active = true;
+    let objectUrl: string | null = null;
+
+    void renderPosterSvgAsPng(previewPosterSvg)
+      .then((blob) => {
+        if (!active) return;
+
+        objectUrl = URL.createObjectURL(blob);
+        setPreviewPng({ svg: previewPosterSvg, blob, url: objectUrl });
+      })
+      .catch((error) => {
+        if (active) {
+          setPreviewError({
+            svg: previewPosterSvg,
+            message: error instanceof Error ? error.message : "Prévisualisation impossible.",
+          });
+        }
+      });
+
+    return () => {
+      active = false;
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
+      }
+    };
+  }, [previewPosterSvg]);
+
+  const previewIsReady = Boolean(previewPosterSvg && previewPng?.svg === previewPosterSvg);
+  const currentPreviewError =
+    (previewPosterSvg && previewError?.svg === previewPosterSvg
+      ? previewError.message
+      : null) ?? posterQrError;
+  const isRenderingPreview = Boolean(previewPosterSvg && !previewIsReady && !currentPreviewError);
 
   function updatePoster(patch: Partial<CampaignPosterSettings>) {
     setPoster((current) => ({ ...current, ...patch }));
@@ -365,37 +437,17 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
 
       router.refresh();
 
-      let blob: Blob | null = null;
-      try {
-        const response = await fetch(`/api/campaigns/${campaign.id}/poster?ts=${Date.now()}`);
-        if (response.ok) {
-          blob = await response.blob();
-        }
-      } catch {
-        // The local conversion below keeps the download available if the server export fails.
+      if (!previewPosterSvg || !previewIsReady || !previewPng) {
+        throw new Error("Le rendu de l’affiche n’est pas encore prêt.");
       }
 
-      if (!blob) {
-        const campaignQrDataUrl = await QRCode.toDataURL(
-          `${window.location.origin}/campaign/${campaign.id}`,
-          {
-            margin: 1,
-            width: 720,
-            color: { dark: "#111827", light: "#ffffff" },
-          },
-        );
-        blob = await renderPosterSvgAsPng(
-          buildPosterSvg({
-            campaign,
-            poster,
-            prizes,
-            qrDataUrl: campaignQrDataUrl,
-            posterFontSource: getPosterFontSourceUrl(poster.headlineFontFamily),
-          }),
-        );
-      }
-
-      downloadBlob(blob, `${campaign.id}-affiche-a4-a5.png`);
+      downloadBlob(previewPng.blob, `${campaign.id}-affiche-a4-a5.png`);
+      captureClientProductEvent("poster_downloaded", {
+        campaignId: campaign.id,
+        template: poster.templateId ?? "default",
+        format: "png",
+        gameType: campaign.gameType,
+      });
       setMessage("Affiche enregistrée et téléchargement lancé.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Téléchargement impossible.");
@@ -722,26 +774,44 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
             </div>
             <button
               type="button"
-              aria-busy={isDownloading}
-              aria-label={isDownloading ? "Téléchargement du PNG en cours" : undefined}
-              disabled={isDownloading}
+              aria-busy={isDownloading || isRenderingPreview}
+              aria-label={
+                isDownloading
+                  ? "Téléchargement du PNG en cours"
+                  : isRenderingPreview
+                    ? "Prévisualisation en cours"
+                    : undefined
+              }
+              disabled={isDownloading || isRenderingPreview || !previewIsReady}
               onClick={() => void downloadPoster()}
               className="okado-filled-action gap-2 px-4 text-sm disabled:cursor-wait disabled:opacity-70"
             >
               {isDownloading ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : null}
-              <span>{isDownloading ? "Téléchargement…" : "Télécharger le PNG"}</span>
+              <span>
+                {isDownloading
+                  ? "Téléchargement…"
+                  : isRenderingPreview
+                    ? "Préparation…"
+                    : "Télécharger le PNG"}
+              </span>
             </button>
           </div>
 
           <div className="flex min-h-0 flex-1 items-center justify-center overflow-auto rounded-[var(--okado-radius-card)] bg-[var(--okado-surface-muted)] p-4">
             <div className="relative aspect-[794/1123] w-full max-w-[470px] overflow-hidden rounded-[var(--okado-radius-control)] border border-[var(--okado-border-control)] bg-white shadow-[var(--shadow-product-card)]">
-              <Image
-                src={previewPosterUrl}
-                alt="Prévisualisation affiche"
-                fill
-                unoptimized
-                className="object-contain"
-              />
+              {previewIsReady && previewPng ? (
+                <Image
+                  src={previewPng.url}
+                  alt="Prévisualisation affiche"
+                  fill
+                  unoptimized
+                  className="object-contain"
+                />
+              ) : (
+                <div className="flex h-full items-center justify-center px-6 text-center text-sm text-ash" aria-live="polite">
+                  {currentPreviewError ?? "Préparation de la prévisualisation…"}
+                </div>
+              )}
             </div>
           </div>
         </div>
