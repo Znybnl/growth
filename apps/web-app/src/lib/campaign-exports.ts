@@ -59,12 +59,16 @@ function applyPosterTemplateDefaults(
   const headlineTextColor = options.preserveHeadlineTextColor
     ? poster.headlineTextColor
     : template.headlineTextColor;
+  const backgroundColor =
+    template.id === "classic-wheel" && poster.backgroundMode === "color"
+      ? poster.backgroundColor || template.background
+      : template.background;
 
   return {
     ...poster,
     templateId,
     backgroundMode: "color" as const,
-    backgroundColor: template.background,
+    backgroundColor,
     backgroundImageUrl: "",
     headlineTextColor,
     headlineFontSizePx: template.headlineFontSizePx,
