@@ -30,6 +30,7 @@ export type GamePageTemplateId =
   | "restaurant-pop"
   | "cocorico-wheel"
   | "cocorico-duo-wheel"
+  | "rose-institut"
   | "cosmic-orbit"
   | "sunburst-festival"
   | "scratch-vault"

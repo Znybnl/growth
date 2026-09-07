@@ -76,6 +76,9 @@ import {
   DEFAULT_SCRATCH_SUBTITLE,
   DEFAULT_GAME_PAGE_TEMPLATE_ID,
   DEFAULT_COCORICO_PRIMARY_COLOR,
+  DEFAULT_ROSE_INSTITUT_TEXT_COLOR,
+  DEFAULT_ROSE_INSTITUT_HEADING_SIZE_PX,
+  roseInstitutWheelBackground,
   DEFAULT_WHEEL_SPACING_PX,
   DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
   resolveCocoricoPrimaryColor,
@@ -93,6 +96,7 @@ import {
   resolvePromoStrokeColor,
   isClassicPopWheelTemplate,
   isCocoricoWheelTemplate,
+  isRoseInstitutWheelTemplate,
   wheelBackgroundForTemplate,
   restaurantPopBackground,
   wheelPaletteForTemplate,
@@ -282,6 +286,11 @@ const wheelPageTemplateOptions: Array<{
     value: "cocorico-duo-wheel",
     title: "Bicolore",
     description: "Une roue inspirée de Moderne, avec deux couleurs alternées et des pictogrammes cadeaux.",
+  },
+  {
+    value: "rose-institut",
+    title: "Institut rose",
+    description: "Une roue rose et bleu profond, lumineuse et élégante, avec un bouton central très lisible.",
   },
   {
     value: "classic",
@@ -852,6 +861,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
   flushTop?: boolean;
 }) {
   const isRestaurantPopTemplate = preview.gamePageTemplateId === "restaurant-pop";
+  const isRoseInstitutTemplate = isRoseInstitutWheelTemplate(preview.gamePageTemplateId);
   const isCocoricoTemplate = isCocoricoWheelTemplate(preview.gamePageTemplateId);
   const isCocoricoDuoTemplate = preview.gamePageTemplateId === "cocorico-duo-wheel";
   const isCosmicTemplate = preview.gamePageTemplateId === "cosmic-orbit";
@@ -967,7 +977,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
             />
           ) : (
             <h3
-              className={`${preview.headingFontClass} line-clamp-3 whitespace-pre-line leading-[1]`}
+              className={`${preview.headingFontClass} line-clamp-3 whitespace-pre-line leading-[1] ${isRoseInstitutTemplate ? "max-h-[3.3em] overflow-hidden" : ""}`}
               style={{
                 color: previewHeadingTextColor,
                 fontSize: fluidType(scalePreviewValue(preview.headingFontSizePx), {
@@ -1047,7 +1057,11 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
                 accent={preview.accent}
                 wheelStyle={preview.wheelStyle}
                 pageTemplate={
-                  preview.gamePageTemplateId === "restaurant-pop" ? "restaurant-pop" : "classic"
+                  preview.gamePageTemplateId === "restaurant-pop"
+                    ? "restaurant-pop"
+                    : isRoseInstitutTemplate
+                      ? "rose-institut"
+                      : "classic"
                 }
                 buttonStyle={{
                   backgroundColor: preview.buttonStyle.backgroundColor,
@@ -1500,6 +1514,8 @@ export function buildCampaignLivePreviewModel(
       ? `linear-gradient(rgba(15,23,40,0.32), rgba(15,23,40,0.52)), url("${form.presentation.background.imageUrl}")`
       : templateId === "restaurant-pop"
         ? restaurantPopBackground(form.presentation.background.color)
+        : templateId === "rose-institut"
+          ? roseInstitutWheelBackground(form.presentation.background.color)
             : isCocoricoWheelTemplate(templateId)
               ? `radial-gradient(circle at 14% 12%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(form.presentation.background.color), 0.32), "e6")} 0 10%, transparent 11%), radial-gradient(circle at 88% 26%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(form.presentation.background.color), 0.12), "b3")} 0 15%, transparent 16%), linear-gradient(160deg, ${resolveCocoricoBackgroundColor(form.presentation.background.color)} 0%, ${resolveCocoricoBackgroundColor(form.presentation.background.color)} 48%, #063d78 100%)`
               : templateId === "cosmic-orbit"
@@ -1661,6 +1677,7 @@ export function CampaignEditor({
         wheel: CampaignWheelSettings;
         backgroundColor: string;
         scratchSignal: string;
+        headingTextColor: string;
         buttonBackgroundColor: string;
       }
     >
@@ -1773,6 +1790,8 @@ export function CampaignEditor({
             ? `linear-gradient(rgba(15,23,40,0.32), rgba(15,23,40,0.52)), url("${form.presentation.background.imageUrl}")`
             : (form.presentation.layout.templateId ?? "classic") === "restaurant-pop"
               ? restaurantPopBackground(form.presentation.background.color)
+            : (form.presentation.layout.templateId ?? "classic") === "rose-institut"
+              ? roseInstitutWheelBackground(form.presentation.background.color)
             : isCocoricoWheelTemplate(form.presentation.layout.templateId)
               ? `radial-gradient(circle at 14% 12%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(form.presentation.background.color), 0.32), "e6")} 0 10%, transparent 11%), radial-gradient(circle at 88% 26%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(form.presentation.background.color), 0.12), "b3")} 0 15%, transparent 16%), linear-gradient(160deg, ${resolveCocoricoBackgroundColor(form.presentation.background.color)} 0%, ${resolveCocoricoBackgroundColor(form.presentation.background.color)} 48%, #063d78 100%)`
             : (form.presentation.layout.templateId ?? "classic") === "cosmic-orbit"
@@ -2658,12 +2677,14 @@ function setGameType(gameType: GameType) {
                             wheel: current.presentation.wheel,
                             backgroundColor: current.presentation.background.color,
                             scratchSignal: current.accent.signal,
+                            headingTextColor: current.presentation.heading.textColor,
                             buttonBackgroundColor: current.presentation.button.backgroundColor,
                           };
                           const remembered = wheelTemplateState.current[template.value];
                           const wheel = remembered?.wheel ?? wheelPaletteForTemplate(template.value, current.presentation.wheel);
                           const backgroundColor = remembered?.backgroundColor ?? wheelBackgroundForTemplate(template.value, current.presentation.background.color);
-                          const buttonBackgroundColor = remembered?.buttonBackgroundColor ?? current.presentation.heading.textColor;
+                          const headingTextColor = remembered?.headingTextColor ?? (template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : current.presentation.heading.textColor);
+                          const buttonBackgroundColor = remembered?.buttonBackgroundColor ?? (template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : current.presentation.heading.textColor);
                           const scratchSignal =
                             remembered?.scratchSignal ??
                             (scratchTemplateDefaultPrimaryColor(template.value) &&
@@ -2684,9 +2705,19 @@ function setGameType(gameType: GameType) {
                                 templateId: template.value,
                               },
                               heading:
-                                isCocoricoWheelTemplate(template.value) || isClassicPopWheelTemplate(template.value)
-                                  ? { ...current.presentation.heading, fontFamily: "fredoka" }
-                                  : current.presentation.heading,
+                                {
+                                  ...current.presentation.heading,
+                                  textColor: headingTextColor,
+                                  fontSizePx:
+                                    template.value === "rose-institut" &&
+                                    [40, 42].includes(current.presentation.heading.fontSizePx)
+                                      ? DEFAULT_ROSE_INSTITUT_HEADING_SIZE_PX
+                                      : current.presentation.heading.fontSizePx,
+                                  fontFamily:
+                                    isCocoricoWheelTemplate(template.value) || isClassicPopWheelTemplate(template.value)
+                                      ? "fredoka"
+                                      : current.presentation.heading.fontFamily,
+                                },
                               button:
                                 current.gameType === "wheel"
                                   ? {
