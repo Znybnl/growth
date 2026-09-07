@@ -53,7 +53,10 @@ import { assertDataBackendAvailable } from "@/lib/supabase";
 import { assertCampaignCanPublish } from "@/lib/campaign-compliance";
 import { getMemorySupportLogs } from "@/lib/support-log";
 import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
-import { DEFAULT_GAME_PAGE_TEMPLATE_ID } from "@/lib/campaign-defaults";
+import {
+  DEFAULT_GAME_PAGE_TEMPLATE_ID,
+  DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
+} from "@/lib/campaign-defaults";
 import { cache } from "react";
 import {
   Campaign,
@@ -157,7 +160,7 @@ function createPresentation(overrides?: CampaignPresentationOverrides): Campaign
       ...overrides?.heading,
     },
     button: {
-      backgroundColor: "#2f6df6",
+      backgroundColor: "#1f2937",
       textColor: "#ffffff",
       borderColor: "#2f6df6",
       size: "md",
@@ -168,6 +171,7 @@ function createPresentation(overrides?: CampaignPresentationOverrides): Campaign
     layout: {
       blockSpacingPx: 50,
       templateId: DEFAULT_GAME_PAGE_TEMPLATE_ID,
+      subtitleSpacingPx: DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
       ...overrides?.layout,
     },
     wheel: {

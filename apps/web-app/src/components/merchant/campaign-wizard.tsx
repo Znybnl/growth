@@ -60,6 +60,7 @@ import {
   DEFAULT_GAME_PAGE_TEMPLATE_ID,
   DEFAULT_COCORICO_PRIMARY_COLOR,
   DEFAULT_WHEEL_SPACING_PX,
+  DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
   deriveLighterHex,
   limitCampaignSubtitleLines,
   MAX_CAMPAIGN_SUBTITLE_LENGTH,
@@ -350,7 +351,7 @@ function createWizardDraft(merchant: Merchant): WizardDraft {
         align: "center",
       },
       button: {
-        backgroundColor: "#c59920",
+        backgroundColor: "#1f2937",
         textColor: "#ffffff",
         borderColor: "#f4c14a",
         size: "sm",
@@ -361,6 +362,7 @@ function createWizardDraft(merchant: Merchant): WizardDraft {
         blockSpacingPx: DEFAULT_WHEEL_SPACING_PX,
         templateId: DEFAULT_GAME_PAGE_TEMPLATE_ID,
         wheelSubtitle: "",
+        subtitleSpacingPx: DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
       },
       wheel,
       poster: createDefaultPosterSettings(merchant),
@@ -577,6 +579,10 @@ function draftFromCampaign(merchant: Merchant, performance: CampaignPerformance)
         blockSpacingPx: clampCampaignSpacingPx(
           campaign.presentation.layout.blockSpacingPx ??
             (campaign.gameType === "wheel" ? DEFAULT_WHEEL_SPACING_PX : 20),
+        ),
+        subtitleSpacingPx: clampCampaignSpacingPx(
+          campaign.presentation.layout.subtitleSpacingPx,
+          DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
         ),
       },
       poster: normalizePosterSettings(campaign.presentation.poster, posterDefaults),
@@ -821,6 +827,7 @@ export function CampaignWizard({
         wheel: CampaignWheelSettings;
         backgroundColor: string;
         scratchSignal: string;
+        buttonBackgroundColor: string;
       }
     >
   >({});
@@ -1532,6 +1539,13 @@ export function CampaignWizard({
                                   ),
                                 }
                               : draft.presentation.wheel,
+                          button:
+                            option.value === "wheel"
+                              ? {
+                                  ...draft.presentation.button,
+                                  backgroundColor: draft.presentation.heading.textColor,
+                                }
+                              : draft.presentation.button,
                         },
                         subtitle:
                           option.value === "wheel"
@@ -2167,10 +2181,12 @@ export function CampaignWizard({
                           wheel: current.presentation.wheel,
                           backgroundColor: current.presentation.background.color,
                           scratchSignal: current.accent.signal,
+                          buttonBackgroundColor: current.presentation.button.backgroundColor,
                         };
                         const remembered = wheelTemplateState.current[template.id];
                         const wheel = remembered?.wheel ?? wheelPaletteForTemplate(template.id, current.presentation.wheel);
                         const backgroundColor = remembered?.backgroundColor ?? wheelBackgroundForTemplate(template.id, current.presentation.background.color);
+                        const buttonBackgroundColor = remembered?.buttonBackgroundColor ?? current.presentation.heading.textColor;
                         const scratchSignal =
                           remembered?.scratchSignal ??
                           (scratchTemplateDefaultPrimaryColor(template.id) &&
@@ -2194,6 +2210,13 @@ export function CampaignWizard({
                               isCocoricoWheelTemplate(template.id) || isClassicPopWheelTemplate(template.id)
                                 ? { ...current.presentation.heading, fontFamily: "fredoka" }
                                 : current.presentation.heading,
+                            button:
+                              current.gameType === "wheel"
+                                ? {
+                                    ...current.presentation.button,
+                                    backgroundColor: buttonBackgroundColor,
+                                  }
+                                : current.presentation.button,
                             wheel,
                           },
                           accent:
@@ -2352,6 +2375,7 @@ export function CampaignWizard({
                          logoMode={draft.logoMode}
                          logoSpacingPx={draft.presentation.logo.marginBottomPx}
                          blockSpacingPx={draft.presentation.layout.blockSpacingPx}
+                         subtitleSpacingPx={draft.presentation.layout.subtitleSpacingPx ?? DEFAULT_WHEEL_SUBTITLE_SPACING_PX}
                          onLogoSpacingChange={(value) =>
                            patchDraft({
                              presentation: {
@@ -2370,6 +2394,20 @@ export function CampaignWizard({
                                layout: {
                                  ...draft.presentation.layout,
                                  blockSpacingPx: clampCampaignSpacingPx(value),
+                               },
+                             },
+                           })
+                         }
+                         onSubtitleSpacingChange={(value) =>
+                           patchDraft({
+                             presentation: {
+                               ...draft.presentation,
+                               layout: {
+                                 ...draft.presentation.layout,
+                                 subtitleSpacingPx: clampCampaignSpacingPx(
+                                   value,
+                                   DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
+                                 ),
                                },
                              },
                            })
@@ -2573,7 +2611,33 @@ export function CampaignWizard({
                            aria-label="Couleur du logo et sous-titre"
                          />
                        </label> : null}
-                     </div>
+                   </div>
+                   </section> : null}
+                   {draft.gameType === "wheel" ? <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
+                     <p className="text-sm font-semibold text-[#182033]">Bouton JOUER</p>
+                     <p className="mt-1 text-xs leading-5 text-[#8993a6]">
+                       Personnalisez la couleur du bouton central de la roue. Par défaut, elle reprend celle du texte principal.
+                     </p>
+                     <label className="mt-3 block text-sm">
+                       <span className="mb-2 block font-semibold">Couleur du bouton JOUER</span>
+                       <input
+                         type="color"
+                         value={draft.presentation.button.backgroundColor}
+                         onChange={(event) =>
+                           patchDraft({
+                             presentation: {
+                               ...draft.presentation,
+                               button: {
+                                 ...draft.presentation.button,
+                                 backgroundColor: event.target.value,
+                               },
+                             },
+                           })
+                         }
+                         className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] p-1"
+                         aria-label="Couleur du bouton JOUER"
+                       />
+                     </label>
                    </section> : null}
                    {draft.gameType !== "wheel" && scratchTemplateUsesTicketTextColor(draft.presentation.layout.templateId) ? <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
                     <p className="text-sm font-semibold text-[#182033]">

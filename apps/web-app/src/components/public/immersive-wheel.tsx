@@ -261,7 +261,7 @@ export function ImmersiveWheel({
           disabled={!buttonEnabled || isSpinning || hasSpun}
           className={`okado-wheel-center-button absolute left-1/2 top-1/2 z-40 flex aspect-square w-[23%] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-[5px] text-center font-black tracking-[0.04em] transition active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-75 ${isCosmic ? "font-display" : "font-fredoka"}`}
           style={{
-            background: buttonEnabled && !hasSpun ? `linear-gradient(145deg, ${primary}, ${withAlpha(primary, "cc")})` : "#94a3b8",
+            background: buttonEnabled && !hasSpun ? buttonStyle?.backgroundColor ?? `linear-gradient(145deg, ${primary}, ${withAlpha(primary, "cc")})` : "#94a3b8",
             color: buttonStyle?.textColor ?? "#ffffff",
             borderColor: isCosmic ? secondary : "#fffdf7",
             fontSize: isCosmic ? "clamp(0.72rem, 4.2cqw, 1.22rem)" : "clamp(0.78rem, 4.5cqw, 1.32rem)",

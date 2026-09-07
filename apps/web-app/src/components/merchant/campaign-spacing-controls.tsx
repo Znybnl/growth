@@ -12,8 +12,10 @@ type CampaignSpacingControlsProps = {
   logoMode?: LogoMode;
   logoSpacingPx: number;
   blockSpacingPx: number;
+  subtitleSpacingPx: number;
   onLogoSpacingChange: (value: number) => void;
   onBlockSpacingChange: (value: number) => void;
+  onSubtitleSpacingChange: (value: number) => void;
 };
 
 export function CampaignSpacingControls({
@@ -21,8 +23,10 @@ export function CampaignSpacingControls({
   logoMode,
   logoSpacingPx,
   blockSpacingPx,
+  subtitleSpacingPx,
   onLogoSpacingChange,
   onBlockSpacingChange,
+  onSubtitleSpacingChange,
 }: CampaignSpacingControlsProps) {
   const showLogoSpacing = logoMode !== "none";
   const showBlockSpacing = gameType === "wheel";
@@ -75,6 +79,30 @@ export function CampaignSpacingControls({
             onChange={(event) => onBlockSpacingChange(Number(event.target.value))}
             className="mt-3 w-full cursor-pointer accent-aubergine"
             aria-label="Espacement entre le texte et la roue (px)"
+          />
+        </label>
+      ) : null}
+
+      {showBlockSpacing ? (
+        <label className="block text-sm">
+          <span className="mb-1 flex items-center justify-between gap-3 font-semibold text-[#182033]">
+            <span>Espacement entre le texte principal et le sous-titre (px)</span>
+            <output className="text-aubergine">
+              {clampCampaignSpacingPx(subtitleSpacingPx)} px
+            </output>
+          </span>
+          <span className="block text-xs leading-5 text-[#8993a6]">
+            Espace entre le titre principal et le sous-titre de la roue.
+          </span>
+          <input
+            type="range"
+            min={CAMPAIGN_SPACING_MIN_PX}
+            max={CAMPAIGN_SPACING_MAX_PX}
+            step={1}
+            value={clampCampaignSpacingPx(subtitleSpacingPx)}
+            onChange={(event) => onSubtitleSpacingChange(Number(event.target.value))}
+            className="mt-3 w-full cursor-pointer accent-aubergine"
+            aria-label="Espacement entre le texte principal et le sous-titre (px)"
           />
         </label>
       ) : null}

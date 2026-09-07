@@ -28,6 +28,7 @@ export const MAX_CAMPAIGN_SUBTITLE_LENGTH = 240;
 export const CAMPAIGN_SPACING_MIN_PX = 0;
 export const CAMPAIGN_SPACING_MAX_PX = 80;
 export const DEFAULT_WHEEL_SPACING_PX = 50;
+export const DEFAULT_WHEEL_SUBTITLE_SPACING_PX = 40;
 
 export function scratchTemplateDefaultPrimaryColor(templateId?: GamePageTemplateId) {
   switch (templateId) {
