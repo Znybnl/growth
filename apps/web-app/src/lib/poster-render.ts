@@ -1,5 +1,6 @@
 import { buildPosterWheelSegments } from "@/lib/poster-utils";
 import { getPosterTemplate, PosterTemplateConfig } from "@/lib/poster-templates";
+import { MAX_POSTER_HEADLINE_LINES } from "@/lib/poster-utils";
 import { getPosterFontAsset } from "@/lib/poster-fonts";
 import { Campaign, CampaignPosterSettings, Prize, TextFont } from "@/lib/types";
 
@@ -231,15 +232,18 @@ function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, temp
   const family = fontFamily(poster.headlineFontFamily);
   const color = poster.headlineTextColor || template.headline;
   const size = clamp(poster.headlineFontSizePx * template.headlineSizeMultiplier, 46, 94);
-  const maxChars = template.id === "soft-gradient-wheel" ? 18 : 16;
-  const lines = splitLines(headline.toUpperCase(), maxChars).slice(0, 3);
+  // Recalculate the approximate line capacity from the effective font size.
+  // Smaller text can therefore reveal more of the same headline without
+  // changing the stored content or splitting words arbitrarily.
+  const maxChars = clamp(Math.floor(720 / (size * 0.5)), 12, 30);
+  const lines = splitLines(headline.toUpperCase(), maxChars).slice(0, MAX_POSTER_HEADLINE_LINES);
   const logoAwareHeadlineY = template.headlineY + (poster.logoBottomMarginPx - 28);
   const firstLineY = Math.max(logoAwareHeadlineY, getLogoLayout(poster, template).bottomY + size * 0.15);
   const accent = poster.wheel.winColor || template.accent;
 
   return lines
     .map((line, index) => {
-      const y = firstLineY + index * (size * 0.92);
+      const y = firstLineY + index * (size * 0.86);
       const rotation = template.id === "terracotta-wheel" ? -3 : template.id === "classic-wheel" ? -2 : 0;
       const fill = index % 2 === 1 ? accent : color;
 

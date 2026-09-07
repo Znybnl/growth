@@ -18,6 +18,7 @@ import {
   CAMPAIGN_SPACING_MIN_PX,
   DEFAULT_GAME_PAGE_TEMPLATE_ID,
 } from "@/lib/campaign-defaults";
+import { MAX_POSTER_HEADLINE_LENGTH } from "@/lib/poster-utils";
 
 const GOAL_TYPES = new Set<GoalType>(["lead_capture", "review_prompt", "social_follow"]);
 const GAME_TYPES = new Set<GameType>(["wheel", "scratch"]);
@@ -539,7 +540,7 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
         backgroundMode: normalizeEnum(poster.backgroundMode, BACKGROUND_MODES, "color"),
         backgroundColor: normalizeColor(poster.backgroundColor, "#ffffff"),
         backgroundImageUrl: normalizeImageSource(poster.backgroundImageUrl) || undefined,
-        headline: normalizeMultiline(poster.headline, 240),
+        headline: normalizeMultiline(poster.headline, MAX_POSTER_HEADLINE_LENGTH),
         headlineTextColor: normalizeColor(poster.headlineTextColor, "#ffffff"),
         headlineFontSizePx: normalizeNumber(poster.headlineFontSizePx, {
           min: 14,

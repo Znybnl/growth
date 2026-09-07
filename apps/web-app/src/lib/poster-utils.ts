@@ -6,6 +6,9 @@ import {
   TextFont,
 } from "@/lib/types";
 
+export const MAX_POSTER_HEADLINE_LENGTH = 120;
+export const MAX_POSTER_HEADLINE_LINES = 4;
+
 export type PosterWheelSegment = {
   color: string;
   label: string;
@@ -139,6 +142,7 @@ export function normalizePosterSettings(
     logoText: poster?.logoText ?? defaults.logoText,
     backgroundMode: poster?.backgroundMode ?? defaults.backgroundMode,
     backgroundColor: poster?.backgroundColor ?? defaults.backgroundColor,
+    headline: poster?.headline?.slice(0, MAX_POSTER_HEADLINE_LENGTH) ?? defaults.headline,
     wheel: {
       ...defaults.wheel,
       ...poster?.wheel,
