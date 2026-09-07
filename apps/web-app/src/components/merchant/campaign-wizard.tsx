@@ -1398,9 +1398,6 @@ export function CampaignWizard({
                   <span className="text-sm font-semibold text-[#182033]">
                     Sous-titre de la roue <span className="font-normal text-[#8993a6]">(optionnel)</span>
                   </span>
-                  <span className="mt-1 block text-xs leading-5 text-[#8993a6]">
-                    Affiché entre le texte principal et la roue. Laissez vide pour masquer ce bloc.
-                  </span>
                   <textarea
                     value={draft.presentation.layout.wheelSubtitle ?? ""}
                     onChange={(event) =>
@@ -2349,9 +2346,6 @@ export function CampaignWizard({
                  <div className="space-y-5 border-t border-[#e2e8f0] px-4 pb-4 pt-4">
                    <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
                      <p className="text-sm font-semibold text-[#182033]">Espacements</p>
-                     <p className="mt-1 text-xs leading-5 text-[#8993a6]">
-                       Réglez séparément les espaces entre les éléments.
-                     </p>
                      <div className="mt-4">
                        <CampaignSpacingControls
                          gameType={draft.gameType}

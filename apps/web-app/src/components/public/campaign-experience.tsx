@@ -954,7 +954,7 @@ export function CampaignExperience({
 
         {wheelSubtitle ? (
           <p
-            className={`okado-wheel-subtitle ${headingAlignmentClass}`}
+            className={`okado-wheel-subtitle okado-wheel-subtitle--public ${headingAlignmentClass}`}
             style={{ color: headingTextColor, fontFamily: wheelSubtitleFontFamily(campaign.presentation.heading.fontFamily) }}
           >
             {wheelSubtitle}

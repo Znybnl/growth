@@ -1579,6 +1579,10 @@ button:disabled,
   overflow-wrap: anywhere;
 }
 
+.okado-wheel-subtitle--public {
+  margin-top: 40px;
+}
+
 .okado-preview-surface[data-template-id="cocorico-wheel"] .okado-cocorico-promo-text,
 .okado-preview-surface[data-template-id="cocorico-duo-wheel"] .okado-cocorico-promo-text {
   font-size: clamp(2rem, 13cqw, 5rem);

@@ -2876,9 +2876,6 @@ function setGameType(gameType: GameType) {
             <section className="okado-card p-6">
               <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Mise en page</p>
               <h2 className="mt-2 text-2xl font-semibold text-[#111827]">Espacements</h2>
-              <p className="mt-3 max-w-3xl text-sm leading-7 text-[#5c6577]">
-                Réglez séparément les espaces entre les éléments.
-              </p>
               <div className="mt-6">
                 <CampaignSpacingControls
                   gameType={form.gameType}
@@ -2965,9 +2962,6 @@ function setGameType(gameType: GameType) {
                 <label className="text-sm md:col-span-2">
                   <span className="mb-2 block font-semibold text-[#182033]">
                     Sous-titre de la roue <span className="font-normal text-[#8993a6]">(optionnel)</span>
-                  </span>
-                  <span className="mb-2 block text-xs leading-5 text-[#8993a6]">
-                    Affiché entre le texte principal et la roue. Laissez vide pour masquer ce bloc.
                   </span>
                   <textarea
                     value={form.presentation.layout.wheelSubtitle ?? ""}
