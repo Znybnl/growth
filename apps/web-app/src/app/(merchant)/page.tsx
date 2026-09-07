@@ -44,6 +44,10 @@ export default async function DashboardPage({
   const recentLeads = merchantLeads.filter((lead) => merchantCampaignIds.has(lead.campaignId));
 
   const activeCampaigns = filteredCampaigns.filter((item) => item.campaign.isActive);
+  const activeCampaignIds = new Set(activeCampaigns.map((item) => item.campaign.id));
+  const activePrizeInventory = dashboard.prizeInventory.filter((item) =>
+    activeCampaignIds.has(item.campaignId),
+  );
   const campaignsForTable = [...filteredCampaigns].sort((a, b) =>
     b.campaign.createdAt.localeCompare(a.campaign.createdAt),
   );
@@ -221,14 +225,14 @@ export default async function DashboardPage({
           </Link>
         </div>
 
-        {dashboard.prizeInventory.length ? (
+        {activePrizeInventory.length ? (
           <>
             <div className="mt-6 hidden overflow-x-auto md:block">
               <div className="min-w-[680px]">
                 <div className="okado-table-header grid grid-cols-[minmax(180px,1.1fr)_minmax(180px,1fr)_110px_130px_120px] items-center gap-4 px-4 py-3">
                   <span>Lot</span><span>Campagne</span><span className="text-right">À retirer</span><span className="text-right">Stock restant</span><span>État</span>
                 </div>
-                {dashboard.prizeInventory.map((item) => {
+                {activePrizeInventory.map((item) => {
                   const state = stockState(item);
                   const StateIcon = state.icon;
                   return (
@@ -244,7 +248,7 @@ export default async function DashboardPage({
               </div>
             </div>
             <div className="mt-5 space-y-0 md:hidden">
-              {dashboard.prizeInventory.map((item) => {
+              {activePrizeInventory.map((item) => {
                 const state = stockState(item);
                 const StateIcon = state.icon;
                 return (
@@ -257,7 +261,7 @@ export default async function DashboardPage({
             </div>
           </>
         ) : (
-          <div className="mt-6"><EmptyState title="Aucun lot configuré" description="Les lots de vos jeux apparaîtront ici dès qu’une campagne en contient." /></div>
+          <div className="mt-6"><EmptyState title="Aucun lot de campagne active" description="Les lots des campagnes actives apparaîtront ici dès qu’une campagne en contient." /></div>
         )}
       </section>
     </div>
