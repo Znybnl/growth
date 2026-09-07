@@ -102,6 +102,15 @@ function normalizeString(value: unknown, maxLength: number, fallback = "") {
   return value.replace(/\s+/g, " ").trim().slice(0, maxLength);
 }
 
+function normalizeRedemptionPin(value: unknown, fallback?: string) {
+  const pin = typeof value === "string" ? value.trim() : "";
+  if (!pin && fallback !== undefined) return fallback;
+  if (!/^\d{4}$/.test(pin)) {
+    throw new Error("Le code PIN commerçant doit contenir exactement 4 chiffres.");
+  }
+  return pin;
+}
+
 function normalizeMultiline(value: unknown, maxLength: number, fallback = "") {
   if (typeof value !== "string") {
     return fallback;
@@ -275,10 +284,7 @@ export function parseMerchantOnboardingInput(input: unknown): MerchantOnboarding
     tiktokUrl: normalizeUrl(payload.tiktokUrl),
     tripadvisorUrl: normalizeUrl(payload.tripadvisorUrl),
     customLinkUrl: normalizeUrl(payload.customLinkUrl),
-    redemptionPin:
-      /^\d{4,6}$/.test(normalizeString(payload.redemptionPin, 6))
-        ? normalizeString(payload.redemptionPin, 6)
-        : undefined,
+    redemptionPin: normalizeRedemptionPin(payload.redemptionPin, "0000"),
   };
 }
 
@@ -311,10 +317,7 @@ export function parseMerchantAccountSettingsInput(input: unknown): MerchantAccou
       max: 100000,
       fallback: 0,
     }),
-    redemptionPin:
-      /^\d{4,6}$/.test(normalizeString(payload.redemptionPin, 6))
-        ? normalizeString(payload.redemptionPin, 6)
-        : undefined,
+    redemptionPin: normalizeRedemptionPin(payload.redemptionPin),
     firstName: normalizeString(payload.firstName, 80),
     lastName: normalizeString(payload.lastName, 80),
     email: normalizeEmail(payload.email, true),

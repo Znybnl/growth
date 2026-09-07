@@ -54,8 +54,8 @@ export function ExpressRedemption({ code, context: initialContext }: ExpressRede
 
   async function submitPin(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!/^\d{4,6}$/.test(pin)) {
-      setError("Saisissez le PIN commerçant à 4 à 6 chiffres.");
+    if (!/^\d{4}$/.test(pin)) {
+      setError("Saisissez le PIN commerçant à 4 chiffres.");
       return;
     }
 
@@ -199,7 +199,7 @@ export function ExpressRedemption({ code, context: initialContext }: ExpressRede
                   <div><p className="text-sm font-semibold text-[#182033]">Accès commerçant</p><p className="mt-1 text-xs leading-5 text-[#667286]">Ce contrôle est réservé au personnel du commerce. Demandez le PIN à un responsable si nécessaire.</p></div>
                 </div>
                 <label className="mt-4 block text-sm font-semibold text-[#182033]" htmlFor="redemption-pin">PIN commerçant</label>
-                <input ref={pinInputRef} id="redemption-pin" type="password" inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={pin} onChange={(event) => setPin(event.target.value.replace(/\D/g, ""))} placeholder="4 à 6 chiffres" className="mt-2 w-full rounded-[14px] border border-[#cfd9e6] bg-white px-4 py-3.5 text-center font-mono text-xl tracking-[0.28em] text-[#111827] outline-none focus:border-[#b28719] focus:ring-4 focus:ring-[#f4c14a]/20" />
+                <input ref={pinInputRef} id="redemption-pin" type="password" inputMode="numeric" autoComplete="one-time-code" maxLength={4} value={pin} onChange={(event) => setPin(event.target.value.replace(/\D/g, ""))} placeholder="4 chiffres" className="mt-2 w-full rounded-[14px] border border-[#cfd9e6] bg-white px-4 py-3.5 text-center font-mono text-xl tracking-[0.28em] text-[#111827] outline-none focus:border-[#b28719] focus:ring-4 focus:ring-[#f4c14a]/20" />
                 <div className="mt-4 flex flex-col gap-2 sm:flex-row"><button type="submit" disabled={isSubmitting} className="inline-flex flex-1 items-center justify-center gap-2 rounded-[14px] bg-[#b28719] px-4 py-3.5 text-sm font-semibold text-white disabled:opacity-50">{isSubmitting ? "Vérification…" : "Continuer"}<ChevronRight className="h-4 w-4" /></button><button type="button" onClick={() => { setPhase("ready"); setError(null); }} className="rounded-[14px] border border-[#d6dfeb] bg-white px-4 py-3.5 text-sm font-semibold text-[#526078]">Retour</button></div>
               </form>
             ) : null}

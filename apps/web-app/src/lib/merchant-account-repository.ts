@@ -1,4 +1,5 @@
 import { hashPassword, verifyPassword } from "@/lib/passwords";
+import { decryptRedemptionPin, encryptRedemptionPin } from "@/lib/redemption-pin-crypto";
 import { getStripeClient } from "@/lib/stripe";
 import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/supabase";
 import {
@@ -49,6 +50,7 @@ type MerchantRow = {
   custom_link_url: string | null;
   default_prize_cost: number | null;
   redemption_pin_hash?: string | null;
+  redemption_pin_encrypted?: string | null;
   stripe_customer_id: string | null;
   stripe_subscription_id: string | null;
   stripe_subscription_status: MerchantSubscriptionStatus | null;
@@ -351,7 +353,7 @@ function toMerchant(row: MerchantRow): Merchant {
     customLinkUrl: row.custom_link_url ?? undefined,
     timeZone: row.time_zone ?? undefined,
     defaultPrizeCost: row.default_prize_cost ?? undefined,
-    redemptionPinConfigured: Boolean(row.redemption_pin_hash),
+    redemptionPinConfigured: Boolean(row.redemption_pin_hash || row.redemption_pin_encrypted),
     stripeCustomerId: row.stripe_customer_id ?? undefined,
     stripeSubscriptionId: row.stripe_subscription_id ?? undefined,
     stripeSubscriptionStatus: row.stripe_subscription_status ?? undefined,
@@ -361,6 +363,23 @@ function toMerchant(row: MerchantRow): Merchant {
     subscriptionCancelAtPeriodEnd: row.subscription_cancel_at_period_end ?? false,
     createdAt: row.created_at,
   };
+}
+
+function toRedemptionPinState(row: Pick<MerchantRow, "redemption_pin_hash" | "redemption_pin_encrypted">) {
+  const hash = row.redemption_pin_hash?.trim() ?? "";
+  const encryptedPin = decryptRedemptionPin(row.redemption_pin_encrypted);
+
+  if (encryptedPin) {
+    return { value: encryptedPin, configured: true, recoverable: true } as const;
+  }
+
+  // Existing rows only had a hash. A hash that verifies against the default
+  // PIN can be displayed safely and will be encrypted on the next save.
+  if (hash && verifyPassword("0000", hash)) {
+    return { value: "0000", configured: true, recoverable: true } as const;
+  }
+
+  return { value: null, configured: Boolean(hash), recoverable: false } as const;
 }
 
 function toMerchantUser(row: MerchantUserRow): MerchantUser {
@@ -396,8 +415,26 @@ export async function getSupabaseMerchantProfile(merchantId: string) {
   return toMerchant(data);
 }
 
+export async function getSupabaseMerchantRedemptionPinStates(merchantIds: string[]) {
+  if (!merchantIds.length) return {};
+
+  const supabase = getSupabaseAdmin();
+  const { data, error } = await supabase
+    .from("merchants")
+    .select("id, redemption_pin_hash, redemption_pin_encrypted")
+    .in("id", merchantIds);
+
+  if (error) {
+    throw new Error("Lecture des PIN de retrait impossible.");
+  }
+
+  return Object.fromEntries(
+    (data ?? []).map((row) => [row.id, toRedemptionPinState(row)]),
+  );
+}
+
 export async function verifySupabaseMerchantRedemptionPin(merchantId: string, pin: string) {
-  if (!/^\d{4,6}$/.test(pin)) return false;
+  if (!/^\d{4}$/.test(pin)) return false;
 
   const supabase = getSupabaseAdmin();
   const { data, error } = await supabase
@@ -583,6 +620,7 @@ export async function ensureDemoMerchantInSupabase() {
     custom_link_url: DEMO_MERCHANT_PROFILE.customLinkUrl,
     default_prize_cost: DEMO_MERCHANT_PROFILE.defaultPrizeCost,
     redemption_pin_hash: hashPassword("0000"),
+    redemption_pin_encrypted: encryptRedemptionPin("0000"),
     trial_start_date: createdAt,
     trial_end_date: trialEndDate,
     created_at: createdAt,
@@ -738,6 +776,7 @@ export async function createMerchantAccountInSupabase(input: MerchantSignUpInput
       custom_link_url: "",
       default_prize_cost: 3,
       redemption_pin_hash: hashPassword("0000"),
+      redemption_pin_encrypted: encryptRedemptionPin("0000"),
       trial_start_date: createdAt,
       trial_end_date: trialEndDate,
       created_at: createdAt,
@@ -988,6 +1027,7 @@ export async function authenticateOrProvisionMerchantWithGoogle(
     custom_link_url: "",
     default_prize_cost: 3,
     redemption_pin_hash: hashPassword("0000"),
+    redemption_pin_encrypted: encryptRedemptionPin("0000"),
     trial_start_date: createdAt,
     trial_end_date: trialEndDate,
     created_at: createdAt,
@@ -1253,6 +1293,7 @@ export async function createSupabaseMerchantLocation(input: {
       custom_link_url: "",
       default_prize_cost: 3,
       redemption_pin_hash: hashPassword("0000"),
+      redemption_pin_encrypted: encryptRedemptionPin("0000"),
       time_zone: input.timeZone ?? "Europe/Paris",
       created_at: createdAt,
     })
@@ -1473,6 +1514,7 @@ export async function updateMerchantOnboardingInSupabase(
       tripadvisor_url: input.tripadvisorUrl.trim(),
       custom_link_url: input.customLinkUrl.trim(),
       redemption_pin_hash: hashPassword(input.redemptionPin?.trim() || "0000"),
+      redemption_pin_encrypted: encryptRedemptionPin(input.redemptionPin?.trim() || "0000"),
       onboarding_completed: true,
     })
     .eq("id", userQuery.data.merchant_id);
@@ -1562,7 +1604,12 @@ export async function updateMerchantAccountInSupabase(
       custom_link_url: input.customLinkUrl.trim(),
       time_zone: input.timeZone.trim() || "Europe/Paris",
       default_prize_cost: input.defaultPrizeCost,
-      ...(input.redemptionPin ? { redemption_pin_hash: hashPassword(input.redemptionPin) } : {}),
+      ...(input.redemptionPin
+        ? {
+            redemption_pin_hash: hashPassword(input.redemptionPin),
+            redemption_pin_encrypted: encryptRedemptionPin(input.redemptionPin),
+          }
+        : {}),
     })
     .eq("id", targetMerchantId);
 
