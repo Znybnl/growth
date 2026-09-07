@@ -8,7 +8,8 @@ import QRCode from "qrcode";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 
 import { buildPosterSvg, createPosterPreviewQrDataUrl } from "@/lib/poster-render";
-import { getPosterFontSourceUrl } from "@/lib/poster-fonts";
+import { getPosterFontSourceUrl, POSTER_FONT_OPTIONS } from "@/lib/poster-fonts";
+import { textFontLabel } from "@/lib/format";
 import {
   createPosterSettingsDefaults,
   MAX_POSTER_HEADLINE_LENGTH,
@@ -665,6 +666,26 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                 }
                 className="w-full rounded-[var(--okado-radius-control)] border border-border bg-soft-white px-4 py-3 outline-none transition focus:border-aubergine focus:bg-white"
               />
+            </label>
+
+            <label className="text-sm md:col-span-2">
+              <span className="mb-2 block text-charcoal">Police du texte principal</span>
+              <select
+                value={poster.headlineFontFamily}
+                onChange={(event) =>
+                  updatePoster({ headlineFontFamily: event.target.value as CampaignPosterSettings["headlineFontFamily"] })
+                }
+                className="w-full rounded-[var(--okado-radius-control)] border border-border bg-soft-white px-4 py-3 outline-none transition focus:border-aubergine focus:bg-white"
+              >
+                {POSTER_FONT_OPTIONS.map((font) => (
+                  <option key={font} value={font}>
+                    {textFontLabel(font)}
+                  </option>
+                ))}
+              </select>
+              <span className="mt-2 block text-xs leading-5 text-ash">
+                La police s&apos;applique au texte principal de tous les templates, dans l&apos;aperçu et le PNG téléchargé.
+              </span>
             </label>
 
           </div>
