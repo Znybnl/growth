@@ -39,6 +39,7 @@ import {
   authenticateMerchantInSupabase,
   createMerchantAccountInSupabase,
   getSupabaseMerchantProfile,
+  getSupabaseMerchantRedemptionPinStates,
   getSupabaseMerchantUser,
   getSupabaseMerchantUserByEmail,
   createSupabaseMerchantLocation,
@@ -88,6 +89,7 @@ import {
   MerchantLeadRow,
   MerchantSupportOverview,
   MerchantOnboardingInput,
+  MerchantRedemptionPinState,
   MerchantSignInInput,
   MerchantSignUpInput,
   MerchantUser,
@@ -98,6 +100,7 @@ import {
 import { createCampaignEmailDefaults, normalizeCampaignEmailSettings } from "@/lib/email-settings";
 import { revalidateTag, unstable_cache } from "next/cache";
 import { hashPassword, verifyPassword } from "@/lib/passwords";
+import { decryptRedemptionPin, encryptRedemptionPin } from "@/lib/redemption-pin-crypto";
 
 type Store = {
   merchants: Merchant[];
@@ -237,6 +240,7 @@ const merchantSeed: Merchant = {
 const memoryRedemptionPinHashes = new Map<string, string>([
   [merchantSeed.id, hashPassword("2468")],
 ]);
+const memoryRedemptionPinEncrypted = new Map<string, string>();
 
 const userSeed: MerchantUser[] = [
   {
@@ -1067,6 +1071,7 @@ function createMerchantAccountInMemory(input: MerchantSignUpInput) {
   store.merchants.unshift(merchant);
   store.users.unshift(user);
   memoryRedemptionPinHashes.set(merchantId, hashPassword("0000"));
+  memoryRedemptionPinEncrypted.set(merchantId, encryptRedemptionPin("0000"));
 
   return {
     user: clone(user),
@@ -1129,7 +1134,9 @@ function updateMerchantOnboardingInMemory(userId: string, input: MerchantOnboard
   merchant.tiktokUrl = input.tiktokUrl.trim();
   merchant.tripadvisorUrl = input.tripadvisorUrl.trim();
   merchant.customLinkUrl = input.customLinkUrl.trim();
-  memoryRedemptionPinHashes.set(merchant.id, hashPassword(input.redemptionPin?.trim() || "0000"));
+  const redemptionPin = input.redemptionPin?.trim() || "0000";
+  memoryRedemptionPinHashes.set(merchant.id, hashPassword(redemptionPin));
+  memoryRedemptionPinEncrypted.set(merchant.id, encryptRedemptionPin(redemptionPin));
   merchant.onboardingCompleted = true;
 
   return clone(merchant);
@@ -1184,6 +1191,9 @@ function updateMerchantAccountInMemory(
   merchant.tripadvisorUrl = input.tripadvisorUrl.trim();
   merchant.customLinkUrl = input.customLinkUrl.trim();
   merchant.defaultPrizeCost = input.defaultPrizeCost;
+  const redemptionPin = input.redemptionPin?.trim() || "0000";
+  memoryRedemptionPinHashes.set(merchant.id, hashPassword(redemptionPin));
+  memoryRedemptionPinEncrypted.set(merchant.id, encryptRedemptionPin(redemptionPin));
 
   return {
     merchant: clone(merchant),
@@ -1198,6 +1208,31 @@ export const getMerchantProfile = cache(async function getMerchantProfile(mercha
 
   return getMerchantProfileFromMemory(merchantId);
 });
+
+export async function getMerchantRedemptionPinStates(merchantIds: string[]) {
+  if (getDataBackend("la lecture des PIN de retrait") === "supabase") {
+    return getSupabaseMerchantRedemptionPinStates(merchantIds);
+  }
+
+  return Object.fromEntries(
+    merchantIds.map((merchantId) => {
+      const hash = memoryRedemptionPinHashes.get(merchantId) ?? "";
+      if (merchantId === merchantSeed.id && !memoryRedemptionPinEncrypted.has(merchantId)) {
+        memoryRedemptionPinEncrypted.set(merchantId, encryptRedemptionPin("2468"));
+      }
+      const value = decryptRedemptionPin(memoryRedemptionPinEncrypted.get(merchantId));
+      const fallbackValue = !value && hash && verifyPassword("0000", hash) ? "0000" : null;
+      return [
+        merchantId,
+        {
+          value: value ?? fallbackValue,
+          configured: Boolean(hash),
+          recoverable: Boolean(value || fallbackValue),
+        } satisfies MerchantRedemptionPinState,
+      ];
+    }),
+  );
+}
 
 export const getMerchantUser = cache(async function getMerchantUser(userId: string) {
   if (getDataBackend("la lecture de l'utilisateur marchand") === "supabase") {
@@ -1335,7 +1370,7 @@ export async function verifyPublicRedemptionPin(merchantId: string, pin: string)
   }
 
   const storedHash = memoryRedemptionPinHashes.get(merchantId);
-  return Boolean(storedHash && /^\d{4,6}$/.test(pin) && verifyPassword(pin, storedHash));
+  return Boolean(storedHash && /^\d{4}$/.test(pin) && verifyPassword(pin, storedHash));
 }
 
 function getMerchantWorkspaceLocationsInMemory(merchant: Merchant): MerchantLocationAccess[] {
@@ -1397,6 +1432,8 @@ export async function createMerchantLocation(input: {
     createdAt: new Date().toISOString(),
   };
   store.merchants.unshift(location);
+  memoryRedemptionPinHashes.set(location.id, hashPassword("0000"));
+  memoryRedemptionPinEncrypted.set(location.id, encryptRedemptionPin("0000"));
   return clone(location);
 }
 

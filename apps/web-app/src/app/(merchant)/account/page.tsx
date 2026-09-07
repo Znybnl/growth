@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import { getMerchantBillingSummary } from "@/lib/billing";
 import { syncMerchantBillingFromStripeCustomerIdInSupabase } from "@/lib/merchant-account-repository";
+import { getMerchantRedemptionPinStates } from "@/lib/store";
 
 type AccountPageProps = {
   searchParams?: Promise<{
@@ -54,6 +55,9 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
   }
 
   const billing = getMerchantBillingSummary(merchant);
+  const redemptionPinStates = await getMerchantRedemptionPinStates(
+    session.locations.map(({ merchant: location }) => location.id),
+  );
   return (
     <div className="space-y-4">
       <PageHeader
@@ -67,6 +71,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
         merchant={merchant}
         user={session.user}
         locations={session.locations}
+        redemptionPinStates={redemptionPinStates}
         billing={billing}
       />
     </div>

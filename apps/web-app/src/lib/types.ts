@@ -147,6 +147,12 @@ export interface Merchant {
   createdAt: string;
 }
 
+export interface MerchantRedemptionPinState {
+  value: string | null;
+  configured: boolean;
+  recoverable: boolean;
+}
+
 export interface MerchantBillingSummary {
   trialStartDate?: string;
   trialEndDate?: string;

@@ -19,6 +19,7 @@ import {
   Merchant,
   MerchantAccountSettingsInput,
   MerchantLocationAccess,
+  MerchantRedemptionPinState,
   MerchantUser,
   MerchantBillingSummary,
 } from "@/lib/types";
@@ -27,6 +28,7 @@ type AccountSettingsFormProps = {
   merchant: Merchant;
   user: MerchantUser;
   locations: MerchantLocationAccess[];
+  redemptionPinStates: Record<string, MerchantRedemptionPinState>;
   billing: MerchantBillingSummary;
   onDirtyChange?: (isDirty: boolean) => void;
 };
@@ -45,7 +47,11 @@ function accountTabFromHash(hash: string): AccountTab {
 const inputClass =
   "w-full min-h-[var(--okado-control-height)] rounded-[var(--okado-radius-control)] border border-fog bg-white px-4 py-2.5 text-sm text-carbon outline-none transition placeholder:text-ash focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.14)]";
 
-function createAccountSettingsForm(merchant: Merchant, user: MerchantUser): MerchantAccountSettingsInput {
+function createAccountSettingsForm(
+  merchant: Merchant,
+  user: MerchantUser,
+  redemptionPinState?: MerchantRedemptionPinState,
+): MerchantAccountSettingsInput {
   return {
     companyName: merchant.companyName,
     industry: merchant.industry ?? "Restauration",
@@ -68,7 +74,7 @@ function createAccountSettingsForm(merchant: Merchant, user: MerchantUser): Merc
     customLinkUrl: merchant.customLinkUrl ?? "",
     timeZone: merchant.timeZone ?? "Europe/Paris",
     defaultPrizeCost: merchant.defaultPrizeCost ?? 3,
-    redemptionPin: "",
+    redemptionPin: redemptionPinState?.value ?? "",
     firstName: user.firstName,
     lastName: user.lastName,
     email: user.email,
@@ -79,13 +85,16 @@ export function AccountSettingsForm({
   merchant,
   user,
   locations,
+  redemptionPinStates,
   billing,
   onDirtyChange,
 }: AccountSettingsFormProps) {
   const [selectedLocationId, setSelectedLocationId] = useState(merchant.id);
   const [pendingLocationId, setPendingLocationId] = useState<string | null>(null);
   const [pendingTab, setPendingTab] = useState<AccountTab | null>(null);
-  const [form, setForm] = useState<MerchantAccountSettingsInput>(() => createAccountSettingsForm(merchant, user));
+  const [form, setForm] = useState<MerchantAccountSettingsInput>(() =>
+    createAccountSettingsForm(merchant, user, redemptionPinStates[merchant.id]),
+  );
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
@@ -106,6 +115,7 @@ export function AccountSettingsForm({
     selectedLocationId === merchant.id
       ? merchant
       : locations.find(({ merchant: location }) => location.id === selectedLocationId)?.merchant ?? merchant;
+  const selectedPinState = redemptionPinStates[selectedMerchant.id];
 
   function applyTabSelection(tab: AccountTab) {
     const nextHash = `#account-${tab === "establishment" ? "establishment" : tab === "user" ? "user" : "subscription"}`;
@@ -174,7 +184,7 @@ export function AccountSettingsForm({
     if (!nextMerchant) return;
 
     setSelectedLocationId(locationId);
-    setForm(createAccountSettingsForm(nextMerchant, user));
+    setForm(createAccountSettingsForm(nextMerchant, user, redemptionPinStates[nextMerchant.id]));
     setIsDirty(false);
     onDirtyChange?.(false);
     setError(null);
@@ -593,27 +603,32 @@ export function AccountSettingsForm({
               <p className="mt-1 text-sm text-ash">Le PIN de {selectedMerchant.companyName} permet à un employé de valider un lot depuis le QR code.</p>
             </div>
             <p className="mb-5 max-w-2xl text-xs leading-5 text-ash">
-              Le PIN doit contenir 4 à 6 chiffres et ne sera jamais affiché après son enregistrement.
+              Le PIN contient exactement 4 chiffres. Il est visible uniquement par les utilisateurs autorisés de ce compte.
             </p>
             <div className="grid gap-4 md:grid-cols-2 md:items-end">
           <label className="text-sm">
-            <span className="mb-2 block text-ash">Nouveau PIN commerçant</span>
+            <span className="mb-2 block text-ash">PIN commerçant</span>
             <input
-              type="password"
+              type="text"
               inputMode="numeric"
-              autoComplete="new-password"
-              pattern="[0-9]{4,6}"
-              maxLength={6}
+              autoComplete="off"
+              pattern="[0-9]{4}"
+              maxLength={4}
+              minLength={4}
+              required
               value={form.redemptionPin ?? ""}
               onChange={(event) => updateField("redemptionPin", event.target.value.replace(/\D/g, ""))}
-              placeholder="4 à 6 chiffres"
+              placeholder="0000"
+              aria-describedby="account-pin-help"
               className={inputClass}
             />
           </label>
-              <p className="rounded-[8px] bg-purple-haze px-4 py-3 text-sm text-charcoal">
-            {selectedMerchant.redemptionPinConfigured
-              ? "Un PIN est déjà configuré. Laissez ce champ vide pour le conserver."
-              : "Aucun PIN n’est configuré. Ajoutez-en un pour activer la validation express."}
+              <p id="account-pin-help" className={`rounded-[8px] px-4 py-3 text-sm ${selectedPinState?.recoverable ? "bg-purple-haze text-charcoal" : "border border-amber-200 bg-amber-50 text-amber-900"}`}>
+            {selectedPinState?.recoverable
+              ? "Le PIN affiché correspond à l’établissement sélectionné. Modifiez-le puis enregistrez pour le remplacer."
+              : selectedPinState?.configured
+                ? "Ce PIN existait déjà mais n’est pas récupérable depuis son ancien stockage sécurisé. Saisissez un nouveau PIN de 4 chiffres pour le remplacer."
+                : "Aucun PIN n’est configuré. Le PIN 0000 sera utilisé par défaut après l’enregistrement."}
               </p>
             </div>
           </div>
