@@ -9,7 +9,11 @@ import { ChangeEvent, useEffect, useMemo, useState } from "react";
 
 import { buildPosterSvg, createPosterPreviewQrDataUrl } from "@/lib/poster-render";
 import { getPosterFontSourceUrl } from "@/lib/poster-fonts";
-import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
+import {
+  createPosterSettingsDefaults,
+  MAX_POSTER_HEADLINE_LENGTH,
+  normalizePosterSettings,
+} from "@/lib/poster-utils";
 import { Campaign, CampaignPosterSettings, PosterTemplateId, Prize } from "@/lib/types";
 import { getPosterTemplate, POSTER_TEMPLATES } from "@/lib/poster-templates";
 import { PosterTemplateSelector } from "@/components/merchant/poster-template-selector";
@@ -598,10 +602,15 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
               <span className="mb-2 block text-charcoal">Texte sous le logo</span>
               <textarea
                 rows={4}
+                maxLength={MAX_POSTER_HEADLINE_LENGTH}
                 value={poster.headline}
                 onChange={(event) => updatePoster({ headline: event.target.value })}
+                aria-describedby="poster-headline-help"
                 className="w-full rounded-[var(--okado-radius-control)] border border-border bg-soft-white px-4 py-3 outline-none transition focus:border-aubergine focus:bg-white"
               />
+              <p id="poster-headline-help" className="mt-2 text-xs leading-5 text-ash">
+                {poster.headline.length}/{MAX_POSTER_HEADLINE_LENGTH} caractères · jusqu&apos;à 4 lignes ; la mise en ligne s&apos;adapte à la taille du texte.
+              </p>
             </label>
 
             <label className="text-sm">

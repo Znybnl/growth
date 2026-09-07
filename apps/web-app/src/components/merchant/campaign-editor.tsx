@@ -61,7 +61,11 @@ import {
   createCampaignEmailDefaults,
   normalizeCampaignEmailSettings,
 } from "@/lib/email-settings";
-import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
+import {
+  createPosterSettingsDefaults,
+  MAX_POSTER_HEADLINE_LENGTH,
+  normalizePosterSettings,
+} from "@/lib/poster-utils";
 import {
   createDefaultPosterSettings,
   createDefaultWheelSettings,
@@ -3399,6 +3403,7 @@ function setGameType(gameType: GameType) {
                 <span className="mb-2 block text-[#616b7c]">Texte sous le logo</span>
                 <textarea
                   rows={3}
+                  maxLength={MAX_POSTER_HEADLINE_LENGTH}
                   value={form.presentation.poster.headline}
                   onChange={(event) =>
                     setForm((current) => ({
@@ -3414,6 +3419,9 @@ function setGameType(gameType: GameType) {
                   }
                   className="w-full rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
                 />
+                <span className="mt-2 block text-xs leading-5 text-[#7b8496]">
+                  {form.presentation.poster.headline.length}/{MAX_POSTER_HEADLINE_LENGTH} caractères · jusqu&apos;à 4 lignes ; la mise en page s&apos;adapte à la taille du texte.
+                </span>
               </label>
 
               <label className="text-sm">
