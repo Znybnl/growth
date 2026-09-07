@@ -1025,9 +1025,7 @@ export function CampaignExperience({
                   wheelStyle={campaign.presentation.wheel}
                   pageTemplate={pageTemplate === "restaurant-pop" ? "restaurant-pop" : isRoseInstitutTemplate ? "rose-institut" : "classic"}
                   buttonStyle={{
-                    backgroundColor: isRoseInstitutTemplate
-                      ? campaign.presentation.button.backgroundColor
-                      : primaryColor,
+                    backgroundColor: campaign.presentation.button.backgroundColor,
                     textColor: campaign.presentation.button.textColor,
                     borderColor:
                       pageTemplate === "restaurant-pop"
