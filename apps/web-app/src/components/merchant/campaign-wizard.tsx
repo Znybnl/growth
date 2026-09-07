@@ -360,6 +360,7 @@ function createWizardDraft(merchant: Merchant): WizardDraft {
       layout: {
         blockSpacingPx: DEFAULT_WHEEL_SPACING_PX,
         templateId: DEFAULT_GAME_PAGE_TEMPLATE_ID,
+        wheelSubtitle: "",
       },
       wheel,
       poster: createDefaultPosterSettings(merchant),
@@ -1392,6 +1393,37 @@ export function CampaignWizard({
                   {draft.subtitle.length}/{MAX_CAMPAIGN_SUBTITLE_LENGTH} caractères · 3 lignes maximum pour conserver un rendu lisible sur mobile.
                 </span>
               </label>
+              {draft.gameType === "wheel" ? (
+                <label className="block">
+                  <span className="text-sm font-semibold text-[#182033]">
+                    Sous-titre de la roue <span className="font-normal text-[#8993a6]">(optionnel)</span>
+                  </span>
+                  <span className="mt-1 block text-xs leading-5 text-[#8993a6]">
+                    Affiché entre le texte principal et la roue. Laissez vide pour masquer ce bloc.
+                  </span>
+                  <textarea
+                    value={draft.presentation.layout.wheelSubtitle ?? ""}
+                    onChange={(event) =>
+                      patchDraft({
+                        presentation: {
+                          ...draft.presentation,
+                          layout: {
+                            ...draft.presentation.layout,
+                            wheelSubtitle: limitCampaignSubtitleLines(event.target.value),
+                          },
+                        },
+                      })
+                    }
+                    rows={2}
+                    maxLength={MAX_CAMPAIGN_SUBTITLE_LENGTH}
+                    placeholder="Ex. Tentez votre chance !"
+                    className="mt-3 w-full resize-none rounded-[12px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm leading-6 text-[#182033] outline-none transition focus:border-aubergine focus:ring-4 focus:ring-aubergine/15"
+                  />
+                  <span className="mt-1 block text-xs text-[#8993a6]">
+                    {(draft.presentation.layout.wheelSubtitle ?? "").length}/{MAX_CAMPAIGN_SUBTITLE_LENGTH} caractères · 3 lignes maximum.
+                  </span>
+                </label>
+              ) : null}
               <div className="grid gap-4">
                 {!isEditing ? (
                   <label className="block">

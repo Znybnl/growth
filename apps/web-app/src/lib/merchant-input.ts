@@ -515,6 +515,7 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
           integer: true,
         }),
         templateId: normalizeEnum(layout.templateId, GAME_PAGE_TEMPLATE_IDS, DEFAULT_GAME_PAGE_TEMPLATE_ID),
+        wheelSubtitle: normalizeMultiline(layout.wheelSubtitle, 240),
       },
       wheel: {
         rimColor: normalizeColor(wheel.rimColor, "#bac0ca"),

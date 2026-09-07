@@ -523,6 +523,7 @@ function toCampaign(
       layout: {
         blockSpacingPx: localSettings.blockSpacingPx ?? 50,
         templateId: localSettings.gamePageTemplateId ?? "classic",
+        wheelSubtitle: localSettings.wheelSubtitle ?? "",
       },
       wheel: {
         ...wheel,
@@ -2269,6 +2270,7 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
     buttonTextSizePx: input.presentation.button.textSizePx,
     buttonIsBold: input.presentation.button.isBold,
     blockSpacingPx: input.presentation.layout.blockSpacingPx,
+    wheelSubtitle: input.presentation.layout.wheelSubtitle?.trim() ?? "",
     participationIntervalDays: input.rewardRules.participationIntervalDays,
     headingFontFamily: input.presentation.heading.fontFamily,
     headingFontWeight: input.presentation.heading.fontWeight ?? 600,

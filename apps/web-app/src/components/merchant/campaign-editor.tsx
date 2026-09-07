@@ -220,6 +220,7 @@ export type CampaignEditorPreviewModel = {
   headingFontSizePx: number;
   headingFontWeight: number;
   subtitle: string;
+  wheelSubtitle: string;
   blockSpacingPx: number;
   gamePageTemplateId: GamePageTemplateId;
   gameType: GameType;
@@ -501,6 +502,7 @@ function createDefaultState(merchant: Merchant): EditorState {
       layout: {
         blockSpacingPx: DEFAULT_WHEEL_SPACING_PX,
         templateId: DEFAULT_GAME_PAGE_TEMPLATE_ID,
+        wheelSubtitle: "",
       },
       wheel: createDefaultWheelSettings(DEFAULT_COCORICO_PRIMARY_COLOR),
       poster: createDefaultPosterSettings(merchant),
@@ -976,6 +978,14 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
             </h3>
           )}
         </div>
+        {preview.gameType === "wheel" && preview.wheelSubtitle.trim() ? (
+          <p
+            className={`${preview.headingAlignmentClass} mt-3 px-4 text-sm font-medium leading-6 sm:text-base`}
+            style={{ color: previewHeadingTextColor }}
+          >
+            {preview.wheelSubtitle}
+          </p>
+        ) : null}
           </>
         ) : null}
 
@@ -1522,6 +1532,7 @@ export function buildCampaignLivePreviewModel(
     headingFontSizePx: form.presentation.heading.fontSizePx,
     headingFontWeight: form.presentation.heading.fontWeight ?? 600,
     subtitle: limitCampaignSubtitleLines(form.subtitle),
+    wheelSubtitle: limitCampaignSubtitleLines(form.presentation.layout.wheelSubtitle ?? ""),
     blockSpacingPx: clampCampaignSpacingPx(form.presentation.layout.blockSpacingPx),
     gamePageTemplateId: templateId,
     gameType: form.gameType,
@@ -1777,6 +1788,7 @@ export function CampaignEditor({
       headingFontSizePx: form.presentation.heading.fontSizePx,
       headingFontWeight: isCocoricoWheelTemplate(currentTemplateId) ? 900 : form.presentation.heading.fontWeight ?? 600,
       subtitle: limitCampaignSubtitleLines(form.subtitle),
+      wheelSubtitle: limitCampaignSubtitleLines(form.presentation.layout.wheelSubtitle ?? ""),
       blockSpacingPx: clampCampaignSpacingPx(form.presentation.layout.blockSpacingPx),
       gamePageTemplateId: form.presentation.layout.templateId ?? "classic",
       gameType: form.gameType,
@@ -1827,6 +1839,7 @@ export function CampaignEditor({
     form.presentation.heading.textColor,
     form.presentation.layout.blockSpacingPx,
     form.presentation.layout.templateId,
+    form.presentation.layout.wheelSubtitle,
     form.presentation.logo.marginBottomPx,
     form.presentation.logo.textColor,
     form.presentation.wheel,
@@ -2946,6 +2959,39 @@ function setGameType(gameType: GameType) {
                   {form.subtitle.length}/{MAX_CAMPAIGN_SUBTITLE_LENGTH} caractères · 3 lignes maximum pour conserver un rendu lisible sur mobile.
                 </span>
               </label>
+
+              {form.gameType === "wheel" ? (
+                <label className="text-sm md:col-span-2">
+                  <span className="mb-2 block font-semibold text-[#182033]">
+                    Sous-titre de la roue <span className="font-normal text-[#8993a6]">(optionnel)</span>
+                  </span>
+                  <span className="mb-2 block text-xs leading-5 text-[#8993a6]">
+                    Affiché entre le texte principal et la roue. Laissez vide pour masquer ce bloc.
+                  </span>
+                  <textarea
+                    value={form.presentation.layout.wheelSubtitle ?? ""}
+                    onChange={(event) =>
+                      setForm((current) => ({
+                        ...current,
+                        presentation: {
+                          ...current.presentation,
+                          layout: {
+                            ...current.presentation.layout,
+                            wheelSubtitle: limitCampaignSubtitleLines(event.target.value),
+                          },
+                        },
+                      }))
+                    }
+                    rows={2}
+                    maxLength={MAX_CAMPAIGN_SUBTITLE_LENGTH}
+                    placeholder="Ex. Tentez votre chance !"
+                    className="w-full resize-none rounded-[12px] border border-[#d7e0ed] bg-white px-4 py-3 leading-6 outline-none"
+                  />
+                  <span className="mt-1 block text-xs text-[#8993a6]">
+                    {(form.presentation.layout.wheelSubtitle ?? "").length}/{MAX_CAMPAIGN_SUBTITLE_LENGTH} caractères · 3 lignes maximum.
+                  </span>
+                </label>
+              ) : null}
 
               {isExpertMode ? (
                 <>
