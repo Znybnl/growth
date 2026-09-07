@@ -38,6 +38,7 @@ import {
   createCampaignEmailDefaults,
   normalizeCampaignEmailSettings,
 } from "@/lib/email-settings";
+import { DEFAULT_WHEEL_SUBTITLE_SPACING_PX } from "@/lib/campaign-defaults";
 import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
 import {
   assertSupabaseResult,
@@ -524,6 +525,8 @@ function toCampaign(
         blockSpacingPx: localSettings.blockSpacingPx ?? 50,
         templateId: localSettings.gamePageTemplateId ?? "classic",
         wheelSubtitle: localSettings.wheelSubtitle ?? "",
+        subtitleSpacingPx:
+          localSettings.subtitleSpacingPx ?? DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
       },
       wheel: {
         ...wheel,
@@ -2271,6 +2274,8 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
     buttonIsBold: input.presentation.button.isBold,
     blockSpacingPx: input.presentation.layout.blockSpacingPx,
     wheelSubtitle: input.presentation.layout.wheelSubtitle?.trim() ?? "",
+    subtitleSpacingPx:
+      input.presentation.layout.subtitleSpacingPx ?? DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
     participationIntervalDays: input.rewardRules.participationIntervalDays,
     headingFontFamily: input.presentation.heading.fontFamily,
     headingFontWeight: input.presentation.heading.fontWeight ?? 600,

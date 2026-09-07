@@ -16,10 +16,10 @@ export const DEFAULT_COCORICO_PRIMARY_COLOR = "#2563eb";
 export const DEFAULT_COCORICO_BACKGROUND_COLOR = "#2563eb";
 export const DEFAULT_COCORICO_DUO_BLUE = "#78b4df";
 export const DEFAULT_COCORICO_DUO_YELLOW = "#f2c94c";
-export const DEFAULT_ROSE_INSTITUT_PRIMARY_COLOR = "#ef5b91";
+export const DEFAULT_ROSE_INSTITUT_PRIMARY_COLOR = "#f3a4c4";
 export const DEFAULT_ROSE_INSTITUT_SECONDARY_COLOR = "#fff9fb";
 export const DEFAULT_ROSE_INSTITUT_TEXT_COLOR = "#0b4ea2";
-export const DEFAULT_ROSE_INSTITUT_BACKGROUND_COLOR = "#fff1f5";
+export const DEFAULT_ROSE_INSTITUT_BACKGROUND_COLOR = "#fff4f7";
 export const DEFAULT_ROSE_INSTITUT_HEADING_SIZE_PX = 34;
 export const DEFAULT_SCRATCH_PRIMARY_COLOR = "#f4c14a";
 export const DEFAULT_SCRATCH_CONFETTI_COLOR = "#d99a18";
@@ -33,7 +33,7 @@ export const MAX_CAMPAIGN_SUBTITLE_LENGTH = 240;
 export const CAMPAIGN_SPACING_MIN_PX = 0;
 export const CAMPAIGN_SPACING_MAX_PX = 80;
 export const DEFAULT_WHEEL_SPACING_PX = 50;
-export const DEFAULT_WHEEL_SUBTITLE_SPACING_PX = 40;
+export const DEFAULT_WHEEL_SUBTITLE_SPACING_PX = 0;
 
 export function scratchTemplateDefaultPrimaryColor(templateId?: GamePageTemplateId) {
   switch (templateId) {

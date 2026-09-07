@@ -289,8 +289,8 @@ const wheelPageTemplateOptions: Array<{
   },
   {
     value: "rose-institut",
-    title: "Institut rose",
-    description: "Une roue rose et bleu profond, lumineuse et élégante, avec un bouton central très lisible.",
+    title: "Éclat",
+    description: "Une roue lumineuse et élégante, entièrement personnalisable avec vos couleurs.",
   },
   {
     value: "classic",
@@ -875,6 +875,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
     preview.gamePageTemplateId === "scratch-sunburst";
   const showStandardHeader = !isImmersiveScratchTemplate;
   const previewScale = compact ? 0.8 : 1;
+  const previewHeadingScale = compact ? 0.65 : 1;
   const scalePreviewValue = (value: number) => Math.round(value * previewScale);
   const previewHeadingTextColor =
     isCosmicTemplate ||
@@ -962,7 +963,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
               text={preview.subtitle.trim() || (preview.gameType === "scratch" ? DEFAULT_SCRATCH_SUBTITLE : "Découvrez votre animation")}
               as="h3"
               fontFamily={textFontFamily(preview.headingFontFamily)}
-              fontSize={fluidType(scalePreviewValue(preview.headingFontSizePx), {
+            fontSize={fluidType(Math.round(preview.headingFontSizePx * previewHeadingScale), {
                 minRatio: 0.82,
                 maxRatio: 1.08,
                 viewportStep: 0.3,
@@ -980,7 +981,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
               className={`${preview.headingFontClass} line-clamp-3 whitespace-pre-line leading-[1] ${isRoseInstitutTemplate ? "max-h-[3.3em] overflow-hidden" : ""}`}
               style={{
                 color: previewHeadingTextColor,
-                fontSize: fluidType(scalePreviewValue(preview.headingFontSizePx), {
+                fontSize: fluidType(Math.round(preview.headingFontSizePx * previewHeadingScale), {
                   minRatio: 0.82,
                   maxRatio: 1.08,
                   viewportStep: 0.3,

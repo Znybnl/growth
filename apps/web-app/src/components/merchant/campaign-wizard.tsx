@@ -2141,8 +2141,8 @@ export function CampaignWizard({
                      },
                      {
                        id: "rose-institut",
-                       label: "Institut rose",
-                       text: "Rose poudré, bleu profond et roue lumineuse",
+                       label: "Éclat",
+                       text: "Roue lumineuse et personnalisable",
                      },
                      {
                        id: "classic",

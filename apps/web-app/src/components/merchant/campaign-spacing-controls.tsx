@@ -43,9 +43,6 @@ export function CampaignSpacingControls({
               {clampCampaignSpacingPx(logoSpacingPx)} px
             </output>
           </span>
-          <span className="block text-xs leading-5 text-[#8993a6]">
-            Espace entre le logo affiché et le texte principal.
-          </span>
           <input
             type="range"
             min={CAMPAIGN_SPACING_MIN_PX}
@@ -67,9 +64,6 @@ export function CampaignSpacingControls({
               {clampCampaignSpacingPx(blockSpacingPx)} px
             </output>
           </span>
-          <span className="block text-xs leading-5 text-[#8993a6]">
-            Espace entre le texte principal et la roue.
-          </span>
           <input
             type="range"
             min={CAMPAIGN_SPACING_MIN_PX}
@@ -90,9 +84,6 @@ export function CampaignSpacingControls({
             <output className="text-aubergine">
               {clampCampaignSpacingPx(subtitleSpacingPx)} px
             </output>
-          </span>
-          <span className="block text-xs leading-5 text-[#8993a6]">
-            Espace entre le titre principal et le sous-titre de la roue.
           </span>
           <input
             type="range"
