@@ -526,6 +526,9 @@ export function CampaignExperience({
   );
   const logoTextSizePx = campaignLogoTextSizePx(logoSizePercent, campaign.gameType);
   const safeSubtitle = limitCampaignSubtitleLines(campaign.subtitle);
+  const wheelSubtitle = campaign.gameType === "wheel"
+    ? limitCampaignSubtitleLines(campaign.presentation.layout.wheelSubtitle ?? "")
+    : "";
   const logoAlignmentClass =
     campaign.presentation.logo.align === "left"
       ? "justify-start"
@@ -947,6 +950,15 @@ export function CampaignExperience({
               : safeSubtitle.trim() || DEFAULT_SCRATCH_SUBTITLE}
           </h1>}
         </div>
+        ) : null}
+
+        {wheelSubtitle ? (
+          <p
+            className={`${headingAlignmentClass} mt-3 px-4 text-sm font-medium leading-6 sm:text-base`}
+            style={{ color: headingTextColor }}
+          >
+            {wheelSubtitle}
+          </p>
         ) : null}
 
         {campaign.gameType === "wheel" ? (
