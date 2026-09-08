@@ -232,8 +232,8 @@ export function WheelOfFortune({
     alternateLoseColor: wheelStyle?.alternateLoseColor ?? "#e7edf3",
   };
   const roseGlow = {
-    near: withAlpha(colors.winColor, 0.2),
-    far: withAlpha(colors.winColor, 0.1),
+    near: withAlpha(colors.loseColor, 0.2),
+    far: withAlpha(colors.loseColor, 0.1),
   };
   const classicLightColor = deriveLighterHex(colors.loseColor);
   const wheelTop =
@@ -424,8 +424,8 @@ export function WheelOfFortune({
                   : colors.winColor
                 : isRoseInstitutTemplate
                   ? index % 2 === 0
-                    ? colors.winColor
-                    : colors.alternateWinColor
+                    ? colors.loseColor
+                    : colors.alternateLoseColor
                 : index % 2 === 0
                   ? colors.loseColor
                   : classicLightColor;
@@ -518,8 +518,8 @@ export function WheelOfFortune({
                 className="absolute inset-[9%]"
                 style={{
                   clipPath: "polygon(50% 0, 82% 18%, 67% 73%, 50% 94%, 33% 73%, 18% 18%)",
-                background: isRoseInstitutTemplate
-                    ? colors.winColor
+                  background: isRoseInstitutTemplate
+                    ? colors.loseColor
                     : `linear-gradient(180deg, ${colors.rimColor}, ${colors.winColor})`,
                 }}
               />

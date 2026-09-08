@@ -1546,7 +1546,6 @@ button:disabled,
 .okado-cocorico-promo-text[data-promo-variant="inspired"] {
   letter-spacing: -0.04em;
   line-height: 0.92;
-  padding-bottom: 25px;
 }
 
 .okado-cocorico-promo-text[data-promo-variant="inspired"] .okado-cocorico-promo-line::before {

@@ -26,7 +26,7 @@ import {
   campaignLogoTextSizePx,
   clampCampaignLogoSizePercent,
   clampCampaignSpacingPx,
-  DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
+  defaultWheelSubtitleSpacingForTemplate,
   DEFAULT_SCRATCH_SUBTITLE,
   limitCampaignSubtitleLines,
   resolveScratchAccent,
@@ -964,7 +964,7 @@ export function CampaignExperience({
             style={{
               color: campaign.presentation.logo.textColor ?? headingTextColor,
               fontFamily: wheelSubtitleFontFamily(campaign.presentation.heading.fontFamily),
-              marginTop: `${clampCampaignSpacingPx(campaign.presentation.layout.subtitleSpacingPx, DEFAULT_WHEEL_SUBTITLE_SPACING_PX)}px`,
+              marginTop: `${clampCampaignSpacingPx(campaign.presentation.layout.subtitleSpacingPx, defaultWheelSubtitleSpacingForTemplate(campaign.presentation.layout.templateId))}px`,
             }}
           >
             {wheelSubtitle}

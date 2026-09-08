@@ -81,6 +81,7 @@ import {
   roseInstitutWheelBackground,
   DEFAULT_WHEEL_SPACING_PX,
   DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
+  defaultWheelSubtitleSpacingForTemplate,
   resolveCocoricoPrimaryColor,
   resolveCocoricoBackgroundColor,
   DEFAULT_WHEEL_SUBTITLE,
@@ -515,7 +516,7 @@ function createDefaultState(merchant: Merchant): EditorState {
         blockSpacingPx: DEFAULT_WHEEL_SPACING_PX,
         templateId: DEFAULT_GAME_PAGE_TEMPLATE_ID,
         wheelSubtitle: "",
-        subtitleSpacingPx: DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
+        subtitleSpacingPx: defaultWheelSubtitleSpacingForTemplate(DEFAULT_GAME_PAGE_TEMPLATE_ID),
       },
       wheel: createDefaultWheelSettings(DEFAULT_COCORICO_PRIMARY_COLOR),
       poster: createDefaultPosterSettings(merchant),
@@ -1369,6 +1370,9 @@ function toEditorState(merchant: Merchant, campaign: CampaignPerformance | null)
     return createDefaultState(merchant);
   }
 
+  const templateId = campaign.campaign.presentation.layout.templateId ?? "classic";
+  const defaultSubtitleSpacing = defaultWheelSubtitleSpacingForTemplate(templateId);
+
   return {
     id: campaign.campaign.id,
     merchantId: merchant.id,
@@ -1413,11 +1417,11 @@ function toEditorState(merchant: Merchant, campaign: CampaignPerformance | null)
           campaign.campaign.presentation.layout.blockSpacingPx ??
             (campaign.campaign.gameType === "wheel" ? DEFAULT_WHEEL_SPACING_PX : 20),
         ),
-        templateId: campaign.campaign.presentation.layout.templateId ?? "classic",
+        templateId,
         subtitleSpacingPx: clampCampaignSpacingPx(
           campaign.campaign.presentation.layout.subtitleSpacingPx ??
-            DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
-          DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
+            defaultSubtitleSpacing,
+          defaultSubtitleSpacing,
         ),
       },
       logo: {
@@ -2704,6 +2708,7 @@ function setGameType(gameType: GameType) {
                               layout: {
                                 ...current.presentation.layout,
                                 templateId: template.value,
+                                subtitleSpacingPx: defaultWheelSubtitleSpacingForTemplate(template.value),
                               },
                               heading:
                                 {
