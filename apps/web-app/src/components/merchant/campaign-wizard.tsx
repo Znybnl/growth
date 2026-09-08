@@ -63,6 +63,7 @@ import {
   DEFAULT_ROSE_INSTITUT_HEADING_SIZE_PX,
   DEFAULT_WHEEL_SPACING_PX,
   DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
+  defaultWheelSubtitleSpacingForTemplate,
   deriveLighterHex,
   limitCampaignSubtitleLines,
   MAX_CAMPAIGN_SUBTITLE_LENGTH,
@@ -364,7 +365,7 @@ function createWizardDraft(merchant: Merchant): WizardDraft {
         blockSpacingPx: DEFAULT_WHEEL_SPACING_PX,
         templateId: DEFAULT_GAME_PAGE_TEMPLATE_ID,
         wheelSubtitle: "",
-        subtitleSpacingPx: DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
+        subtitleSpacingPx: defaultWheelSubtitleSpacingForTemplate(DEFAULT_GAME_PAGE_TEMPLATE_ID),
       },
       wheel,
       poster: createDefaultPosterSettings(merchant),
@@ -520,6 +521,8 @@ function WizardGamePreview({
 
 function draftFromCampaign(merchant: Merchant, performance: CampaignPerformance): WizardDraft {
   const campaign = performance.campaign;
+  const templateId = campaign.presentation.layout.templateId ?? "classic";
+  const defaultSubtitleSpacing = defaultWheelSubtitleSpacingForTemplate(templateId);
   const posterDefaults = createPosterSettingsDefaults({
     logoMode: campaign.logoMode ?? "text",
     logoText: campaign.logoText ?? merchant.companyName,
@@ -563,7 +566,7 @@ function draftFromCampaign(merchant: Merchant, performance: CampaignPerformance)
       background: {
         ...campaign.presentation.background,
         color: wheelBackgroundForTemplate(
-          campaign.presentation.layout.templateId ?? "classic",
+          templateId,
           campaign.presentation.background.color,
         ),
       },
@@ -584,7 +587,7 @@ function draftFromCampaign(merchant: Merchant, performance: CampaignPerformance)
         ),
         subtitleSpacingPx: clampCampaignSpacingPx(
           campaign.presentation.layout.subtitleSpacingPx,
-          DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
+          defaultSubtitleSpacing,
         ),
       },
       poster: normalizePosterSettings(campaign.presentation.poster, posterDefaults),
@@ -2215,6 +2218,7 @@ export function CampaignWizard({
                             layout: {
                               ...current.presentation.layout,
                               templateId: template.id,
+                              subtitleSpacingPx: defaultWheelSubtitleSpacingForTemplate(template.id),
                             },
                             heading:
                               {

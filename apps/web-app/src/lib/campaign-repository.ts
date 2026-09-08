@@ -38,7 +38,7 @@ import {
   createCampaignEmailDefaults,
   normalizeCampaignEmailSettings,
 } from "@/lib/email-settings";
-import { DEFAULT_WHEEL_SUBTITLE_SPACING_PX } from "@/lib/campaign-defaults";
+import { defaultWheelSubtitleSpacingForTemplate } from "@/lib/campaign-defaults";
 import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
 import {
   assertSupabaseResult,
@@ -469,6 +469,7 @@ function toCampaign(
     loseColor: row.wheel_lose_color,
     alternateLoseColor: row.wheel_alternate_lose_color,
   };
+  const templateId = localSettings.gamePageTemplateId ?? "classic";
 
   return {
     id: row.id,
@@ -523,10 +524,10 @@ function toCampaign(
       },
       layout: {
         blockSpacingPx: localSettings.blockSpacingPx ?? 50,
-        templateId: localSettings.gamePageTemplateId ?? "classic",
+        templateId,
         wheelSubtitle: localSettings.wheelSubtitle ?? "",
         subtitleSpacingPx:
-          localSettings.subtitleSpacingPx ?? DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
+          localSettings.subtitleSpacingPx ?? defaultWheelSubtitleSpacingForTemplate(templateId),
       },
       wheel: {
         ...wheel,
@@ -2268,6 +2269,7 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
       purchase_required: Boolean(prize.purchaseRequired),
     };
   });
+  const templateId = input.presentation.layout.templateId ?? "classic";
   const localSettings = {
     emailCaptureEnabled: input.emailCaptureEnabled,
     buttonTextSizePx: input.presentation.button.textSizePx,
@@ -2275,11 +2277,11 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
     blockSpacingPx: input.presentation.layout.blockSpacingPx,
     wheelSubtitle: input.presentation.layout.wheelSubtitle?.trim() ?? "",
     subtitleSpacingPx:
-      input.presentation.layout.subtitleSpacingPx ?? DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
+      input.presentation.layout.subtitleSpacingPx ?? defaultWheelSubtitleSpacingForTemplate(templateId),
     participationIntervalDays: input.rewardRules.participationIntervalDays,
     headingFontFamily: input.presentation.heading.fontFamily,
     headingFontWeight: input.presentation.heading.fontWeight ?? 600,
-    gamePageTemplateId: input.presentation.layout.templateId ?? "classic",
+    gamePageTemplateId: templateId,
     logoMode: input.logoMode,
     logoText: input.logoText,
     logoTextColor: input.presentation.logo.textColor ?? input.presentation.heading.textColor,

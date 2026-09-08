@@ -17,7 +17,7 @@ import {
   CAMPAIGN_SPACING_MAX_PX,
   CAMPAIGN_SPACING_MIN_PX,
   DEFAULT_GAME_PAGE_TEMPLATE_ID,
-  DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
+  defaultWheelSubtitleSpacingForTemplate,
 } from "@/lib/campaign-defaults";
 import { MAX_POSTER_HEADLINE_LENGTH } from "@/lib/poster-utils";
 
@@ -435,6 +435,7 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
     typeof payload.emailCaptureEnabled === "boolean"
       ? payload.emailCaptureEnabled
       : goalType === "lead_capture" || sanitizedActions.some((action) => action.kind === "crm");
+  const templateId = normalizeEnum(layout.templateId, GAME_PAGE_TEMPLATE_IDS, DEFAULT_GAME_PAGE_TEMPLATE_ID);
 
   return {
     id,
@@ -516,12 +517,12 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
           fallback: 40,
           integer: true,
         }),
-        templateId: normalizeEnum(layout.templateId, GAME_PAGE_TEMPLATE_IDS, DEFAULT_GAME_PAGE_TEMPLATE_ID),
+        templateId,
         wheelSubtitle: normalizeMultiline(layout.wheelSubtitle, 240),
         subtitleSpacingPx: normalizeNumber(layout.subtitleSpacingPx, {
           min: CAMPAIGN_SPACING_MIN_PX,
           max: CAMPAIGN_SPACING_MAX_PX,
-          fallback: DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
+          fallback: defaultWheelSubtitleSpacingForTemplate(templateId),
           integer: true,
         }),
       },

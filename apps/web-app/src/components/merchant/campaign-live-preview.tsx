@@ -12,7 +12,7 @@ import {
   campaignLogoTextSizePx,
   clampCampaignLogoSizePercent,
   clampCampaignSpacingPx,
-  DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
+  defaultWheelSubtitleSpacingForTemplate,
   DEFAULT_GAME_PAGE_TEMPLATE_ID,
   DEFAULT_SCRATCH_SUBTITLE,
   limitCampaignSubtitleLines,
@@ -217,7 +217,7 @@ export function buildCampaignLivePreviewModel(form: CampaignSetupInput, merchant
     blockSpacingPx: clampCampaignSpacingPx(form.presentation.layout.blockSpacingPx),
     subtitleSpacingPx: clampCampaignSpacingPx(
       form.presentation.layout.subtitleSpacingPx,
-      DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
+      defaultWheelSubtitleSpacingForTemplate(templateId),
     ),
     gamePageTemplateId: templateId,
     gameType: form.gameType,
