@@ -335,6 +335,7 @@ type CampaignOverviewPrizeRow = {
 
 type MerchantRow = {
   id: string;
+  workspace_id: string | null;
   company_name: string;
   logo_text: string;
   logo_url: string | null;
@@ -438,6 +439,7 @@ function isMissingCampaignDataSummaryRpc(error: { code?: string; message?: strin
 function toMerchant(row: MerchantRow): Merchant {
   return {
     id: row.id,
+    workspaceId: row.workspace_id ?? undefined,
     companyName: row.company_name,
     logoText: row.logo_text,
     logoUrl: row.logo_url ?? undefined,
