@@ -846,6 +846,7 @@ export function CampaignWizard({
     JSON.stringify(initialCampaign ? draftFromCampaign(merchant, initialCampaign) : createWizardDraft(merchant)),
   );
   const isDirty = lastSavedDraftSnapshot !== JSON.stringify(draft);
+  const saveActionLabel = draft.isActive ? "Enregistrer" : "Enregistrer le brouillon";
   const [pendingNavigation, setPendingNavigation] = useState<PendingWizardNavigation | null>(null);
   const [isSavingBeforeNavigation, setIsSavingBeforeNavigation] = useState(false);
   const wheelTemplateState = useRef<
@@ -1321,7 +1322,7 @@ export function CampaignWizard({
               disabled={isSaving}
               className="okado-secondary-action px-4 text-sm disabled:opacity-50"
             >
-              {isEditing ? "Enregistrer" : "Enregistrer le brouillon"}
+              {saveActionLabel}
             </button>
             <button
               type="button"
@@ -2762,7 +2763,7 @@ export function CampaignWizard({
                 disabled={isSaving}
                 className="okado-secondary-action px-4 text-sm disabled:opacity-50"
               >
-                {isSaving ? "Enregistrement…" : "Enregistrer le brouillon"}
+                {isSaving ? "Enregistrement…" : saveActionLabel}
               </button>
               {stepIndex < WIZARD_STEPS.length - 1 ? (
                 <button
