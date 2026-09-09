@@ -152,7 +152,7 @@ export function createPosterSettingsDefaults(input: {
     headline: input.headline ?? "",
     headlineTextColor: input.headlineTextColor ?? "#ffffff",
     headlineFontSizePx: input.headlineFontSizePx ?? 42,
-    headlineFontFamily: input.headlineFontFamily ?? "display",
+    headlineFontFamily: input.headlineFontFamily ?? "geogrotesque",
     wheel: {
       ...input.wheel,
     },

@@ -565,7 +565,7 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
           fallback: 42,
           integer: true,
         }),
-        headlineFontFamily: normalizeEnum(poster.headlineFontFamily, TEXT_FONTS, "roboto"),
+        headlineFontFamily: normalizeEnum(poster.headlineFontFamily, TEXT_FONTS, "geogrotesque"),
         wheel: {
           rimColor: normalizeColor(ensureObject(poster.wheel).rimColor, "#f4c14a"),
           winColor: normalizeColor(ensureObject(poster.wheel).winColor, "#f4c14a"),

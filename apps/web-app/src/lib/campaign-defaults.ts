@@ -459,7 +459,7 @@ export function createDefaultPosterSettings(
       headline: "Scannez, jouez, récupérez votre cadeau !",
       headlineTextColor: DEFAULT_WHEEL_PRIMARY_COLOR,
       headlineFontSizePx: 42,
-      headlineFontFamily: "roboto",
+    headlineFontFamily: "geogrotesque",
       wheel: {
         rimColor: primaryColor,
         winColor: primaryColor,

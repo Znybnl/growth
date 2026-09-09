@@ -1468,7 +1468,8 @@ function toEditorState(merchant: Merchant, campaign: CampaignPerformance | null)
           headline: campaign.campaign.subtitle,
           headlineTextColor: campaign.campaign.presentation.wheel.winColor,
           headlineFontSizePx: campaign.campaign.presentation.heading.fontSizePx,
-          headlineFontFamily: campaign.campaign.presentation.heading.fontFamily,
+          headlineFontFamily:
+            campaign.campaign.presentation.poster?.headlineFontFamily ?? "geogrotesque",
           wheel: {
             ...campaign.campaign.presentation.wheel,
             winColor: campaign.campaign.presentation.wheel.loseColor,
