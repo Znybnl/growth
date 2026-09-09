@@ -1560,6 +1560,17 @@ button:disabled,
   paint-order: stroke fill;
 }
 
+/* These three templates keep the headline close to the wheel while retaining
+   the explicit spacing controlled by the campaign settings below it. */
+.okado-public-experience[data-template-id="classic"] .okado-cocorico-promo-text,
+.okado-public-experience[data-template-id="restaurant-pop"] .okado-cocorico-promo-text,
+.okado-public-experience[data-template-id="rose-institut"] h1,
+.okado-preview-surface[data-template-id="classic"] .okado-cocorico-promo-text,
+.okado-preview-surface[data-template-id="restaurant-pop"] .okado-cocorico-promo-text,
+.okado-preview-surface[data-template-id="rose-institut"] h3 {
+  padding-bottom: 5px;
+}
+
 /* The optional wheel subtitle is intentionally independent from the game
    headline: Roboto keeps it readable while the headline can use the selected
    display font. The dedicated spacing also clears rotated/outlined headlines. */

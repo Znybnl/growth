@@ -11,6 +11,7 @@ export const DEFAULT_WHEEL_SUBTITLE = "Faites tournez la roue pour jouer !";
 export const DEFAULT_SCRATCH_SUBTITLE = "Grattez le ticket pour jouer !";
 export const DEFAULT_GAME_PAGE_TEMPLATE_ID: GamePageTemplateId = "cocorico-wheel";
 export const DEFAULT_WHEEL_PRIMARY_COLOR = "#1b2842";
+export const DEFAULT_CLASSIC_WHEEL_PRIMARY_COLOR = "#003cb9";
 export const DEFAULT_CLASSIC_POP_PRIMARY_COLOR = "#3c05a0";
 export const DEFAULT_COCORICO_PRIMARY_COLOR = "#2563eb";
 export const DEFAULT_COCORICO_BACKGROUND_COLOR = "#2563eb";
@@ -77,6 +78,7 @@ export function resolveWheelPrimaryColorAfterGameTypeSwitch(configuredColor: str
   const normalized = configuredColor?.trim().toLowerCase();
   const knownTemplateDefaults = [
     DEFAULT_WHEEL_PRIMARY_COLOR,
+    DEFAULT_CLASSIC_WHEEL_PRIMARY_COLOR,
     DEFAULT_CLASSIC_POP_PRIMARY_COLOR,
     DEFAULT_COCORICO_PRIMARY_COLOR,
     DEFAULT_COCORICO_DUO_BLUE,
@@ -116,9 +118,9 @@ export function wheelPaletteForTemplate(
   if (templateId === "classic") {
     return {
       ...current,
-      loseColor: DEFAULT_WHEEL_PRIMARY_COLOR,
-      rimColor: deriveLighterHex(DEFAULT_WHEEL_PRIMARY_COLOR),
-      alternateLoseColor: deriveLighterHex(DEFAULT_WHEEL_PRIMARY_COLOR),
+      loseColor: DEFAULT_CLASSIC_WHEEL_PRIMARY_COLOR,
+      rimColor: deriveLighterHex(DEFAULT_CLASSIC_WHEEL_PRIMARY_COLOR),
+      alternateLoseColor: deriveLighterHex(DEFAULT_CLASSIC_WHEEL_PRIMARY_COLOR),
     };
   }
 
@@ -126,6 +128,7 @@ export function wheelPaletteForTemplate(
     return {
       ...current,
       loseColor: DEFAULT_CLASSIC_POP_PRIMARY_COLOR,
+      winColor: "#ffffff",
       rimColor: deriveLighterHex(DEFAULT_CLASSIC_POP_PRIMARY_COLOR),
       alternateLoseColor: deriveLighterHex(DEFAULT_CLASSIC_POP_PRIMARY_COLOR),
     };
