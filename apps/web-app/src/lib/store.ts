@@ -52,7 +52,11 @@ import {
 import { assertDataBackendAvailable } from "@/lib/supabase";
 import { assertCampaignCanPublish } from "@/lib/campaign-compliance";
 import { getMemorySupportLogs } from "@/lib/support-log";
-import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
+import {
+  createPosterSettingsDefaults,
+  normalizePosterSettings,
+  resolvePosterLogoSettings,
+} from "@/lib/poster-utils";
 import {
   DEFAULT_GAME_PAGE_TEMPLATE_ID,
   DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
@@ -613,9 +617,10 @@ function normalizeCampaign(rawCampaign: Campaign | (Partial<Campaign> & Record<s
         ...presentation.button,
         isBold: presentation.button.isBold ?? true,
       },
-      poster: normalizePosterSettings(
-        presentation.poster,
-        createPosterSettingsDefaults({
+      poster: resolvePosterLogoSettings(
+        normalizePosterSettings(
+          presentation.poster,
+          createPosterSettingsDefaults({
           logoMode: rawCampaign.logoMode ?? fallback.logoMode ?? "text",
           logoText:
             typeof rawCampaign.logoText === "string" && rawCampaign.logoText.trim()
@@ -633,7 +638,18 @@ function normalizeCampaign(rawCampaign: Campaign | (Partial<Campaign> & Record<s
           headlineFontFamily: presentation.heading?.fontFamily ?? "display",
           wheel,
           footerBackgroundColor: rawCampaign.accent?.signal ?? fallback.accent.signal,
-        }),
+          }),
+        ),
+        {
+          logoMode: rawCampaign.logoMode ?? fallback.logoMode ?? "text",
+          logoText:
+            typeof rawCampaign.logoText === "string" && rawCampaign.logoText.trim()
+              ? rawCampaign.logoText
+              : fallback.logoText ?? merchantSeed.companyName,
+          logoUrl: rawCampaign.logoUrl,
+          logoSizePercent: presentation.logo?.sizePercent ?? 100,
+          logoBottomMarginPx: presentation.logo?.marginBottomPx ?? 28,
+        },
       ),
       email: normalizeCampaignEmailSettings(
         presentation.email,

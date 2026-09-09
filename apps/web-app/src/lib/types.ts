@@ -420,6 +420,7 @@ export interface CampaignWheelSettings {
 
 export interface CampaignPosterSettings {
   templateId?: PosterTemplateId;
+  logoSource?: "wizard" | "poster";
   logoMode?: LogoMode;
   logoText?: string;
   logoUrl?: string;

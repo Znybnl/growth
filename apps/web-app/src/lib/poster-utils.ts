@@ -15,6 +15,11 @@ export type PosterWheelSegment = {
   textColor: string;
 };
 
+type CampaignWizardLogoSettings = Pick<
+  CampaignPosterSettings,
+  "logoMode" | "logoText" | "logoUrl" | "logoSizePercent" | "logoBottomMarginPx"
+>;
+
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
 }
@@ -147,6 +152,40 @@ export function normalizePosterSettings(
       ...defaults.wheel,
       ...poster?.wheel,
     },
+  };
+}
+
+/**
+ * The poster editor has historically stored a complete default object even when
+ * the merchant never customized the poster logo. Keep those legacy defaults
+ * compatible while making the wizard the source of truth for new campaigns.
+ */
+export function resolvePosterLogoSettings(
+  poster: CampaignPosterSettings,
+  wizardLogo: CampaignWizardLogoSettings,
+): CampaignPosterSettings {
+  const hasExplicitPosterLogo = poster.logoSource === "poster";
+  const hasExplicitWizardLogo = poster.logoSource === "wizard";
+  const matchesWizardLogo =
+    poster.logoMode === wizardLogo.logoMode &&
+    poster.logoText === wizardLogo.logoText &&
+    poster.logoUrl === wizardLogo.logoUrl &&
+    poster.logoSizePercent === wizardLogo.logoSizePercent &&
+    poster.logoBottomMarginPx === wizardLogo.logoBottomMarginPx;
+  const matchesLegacyDefaultLogo =
+    poster.logoMode === "text" &&
+    !poster.logoUrl &&
+    poster.logoSizePercent === 70 &&
+    poster.logoBottomMarginPx === 6;
+
+  if (hasExplicitPosterLogo || (!hasExplicitWizardLogo && !matchesWizardLogo && !matchesLegacyDefaultLogo)) {
+    return poster;
+  }
+
+  return {
+    ...poster,
+    ...wizardLogo,
+    logoSource: "wizard",
   };
 }
 

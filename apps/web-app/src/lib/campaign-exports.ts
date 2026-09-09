@@ -7,6 +7,7 @@ import { getPosterFontAsset } from "@/lib/poster-fonts";
 import {
   createPosterSettingsDefaults,
   normalizePosterSettings,
+  resolvePosterLogoSettings,
 } from "@/lib/poster-utils";
 import { getPosterTemplate, POSTER_TEMPLATES } from "@/lib/poster-templates";
 import { CampaignPerformance, CampaignPosterSettings } from "@/lib/types";
@@ -103,29 +104,38 @@ export async function createCampaignPosterSvg(
     campaign.gameType === "scratch"
       ? campaign.accent.signal
       : campaign.presentation.wheel.loseColor;
-  const normalizedPoster = normalizePosterSettings(
-    campaign.presentation.poster,
-    createPosterSettingsDefaults({
-      templateId: "classic-wheel",
-      logoMode: campaign.logoMode ?? "text",
+  const normalizedPoster = resolvePosterLogoSettings(
+    normalizePosterSettings(
+      campaign.presentation.poster,
+      createPosterSettingsDefaults({
+        templateId: "classic-wheel",
+        logoMode: campaign.logoMode ?? "text",
+        logoText: campaign.logoText ?? "",
+        logoUrl: campaign.logoUrl,
+        logoSizePercent: campaign.presentation.logo.sizePercent,
+        logoBottomMarginPx: campaign.presentation.logo.marginBottomPx,
+        backgroundMode: "color",
+        backgroundColor: "#fff6ee",
+        backgroundImageUrl: "",
+        headline: campaign.subtitle,
+        headlineTextColor: "#1b2842",
+        headlineFontSizePx: 50,
+        headlineFontFamily: "display",
+        wheel: {
+          ...getPosterTemplate("classic-wheel").wheel,
+          winColor: campaignPrimaryColor,
+          alternateWinColor: campaignPrimaryColor,
+        },
+        footerBackgroundColor: campaign.accent.signal,
+      }),
+    ),
+    {
+      logoMode: campaign.logoMode ?? (campaign.logoUrl ? "image" : "text"),
       logoText: campaign.logoText ?? "",
       logoUrl: campaign.logoUrl,
       logoSizePercent: campaign.presentation.logo.sizePercent,
       logoBottomMarginPx: campaign.presentation.logo.marginBottomPx,
-      backgroundMode: "color",
-      backgroundColor: "#fff6ee",
-      backgroundImageUrl: "",
-      headline: campaign.subtitle,
-      headlineTextColor: "#1b2842",
-      headlineFontSizePx: 50,
-      headlineFontFamily: "display",
-      wheel: {
-        ...getPosterTemplate("classic-wheel").wheel,
-        winColor: campaignPrimaryColor,
-        alternateWinColor: campaignPrimaryColor,
-      },
-      footerBackgroundColor: campaign.accent.signal,
-    }),
+    },
   );
   const posterWithNormalizedHeadline =
     normalizedPoster.headlineTextColor === "#f4c14a"
