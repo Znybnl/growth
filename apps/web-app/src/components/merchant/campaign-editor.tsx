@@ -1706,6 +1706,7 @@ export function CampaignEditor({
         backgroundColor: string;
         scratchSignal: string;
         headingTextColor: string;
+        headingFontFamily: TextFont;
         buttonBackgroundColor: string;
       }
     >
@@ -2727,6 +2728,7 @@ export function CampaignEditor({
                             backgroundColor: current.presentation.background.color,
                             scratchSignal: current.accent.signal,
                             headingTextColor: current.presentation.heading.textColor,
+                            headingFontFamily: current.presentation.heading.fontFamily,
                             buttonBackgroundColor: current.presentation.button.backgroundColor,
                           };
                           const remembered = wheelTemplateState.current[template.value];
@@ -2764,9 +2766,10 @@ export function CampaignEditor({
                                       ? DEFAULT_ROSE_INSTITUT_HEADING_SIZE_PX
                                       : current.presentation.heading.fontSizePx,
                                   fontFamily:
-                                    isCocoricoWheelTemplate(template.value) || isClassicPopWheelTemplate(template.value)
+                                    remembered?.headingFontFamily ??
+                                    (isCocoricoWheelTemplate(template.value) || isClassicPopWheelTemplate(template.value)
                                       ? "fredoka"
-                                      : current.presentation.heading.fontFamily,
+                                      : current.presentation.heading.fontFamily),
                                 },
                               button:
                                 current.gameType === "wheel"
