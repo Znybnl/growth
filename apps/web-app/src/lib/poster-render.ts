@@ -1,6 +1,5 @@
-import { buildPosterWheelSegments } from "@/lib/poster-utils";
+import { buildPosterWheelSegments, MAX_POSTER_HEADLINE_LINES } from "@/lib/poster-utils";
 import { getPosterTemplate, PosterTemplateConfig } from "@/lib/poster-templates";
-import { MAX_POSTER_HEADLINE_LINES } from "@/lib/poster-utils";
 import { getPosterFontAsset } from "@/lib/poster-fonts";
 import { Campaign, CampaignPosterSettings, Prize, TextFont } from "@/lib/types";
 
@@ -49,6 +48,67 @@ function splitLines(text: string, maxChars: number) {
   }
 
   return lines;
+}
+
+// Keep a small visual safety margin for italic glyphs and the headline stroke.
+// The clip and textLength use the same width in the preview and exported PNG.
+const POSTER_HEADLINE_SIDE_PADDING = 58;
+const POSTER_HEADLINE_MAX_WIDTH = A4_WIDTH - POSTER_HEADLINE_SIDE_PADDING * 2;
+
+function rebalanceHeadlineLines(text: string, maxLines: number) {
+  const words = text.split(/\s+/).filter(Boolean);
+
+  if (words.length <= maxLines) {
+    return words;
+  }
+
+  const targetLength = Math.ceil(words.join(" ").length / maxLines);
+  const lines: string[] = [];
+  let current = "";
+
+  words.forEach((word, index) => {
+    const remainingWords = words.length - index;
+    const remainingLines = maxLines - lines.length;
+    const next = current ? `${current} ${word}` : word;
+
+    if (
+      current &&
+      remainingLines > 1 &&
+      next.length > targetLength &&
+      remainingWords >= remainingLines
+    ) {
+      lines.push(current);
+      current = word;
+      return;
+    }
+
+    current = next;
+  });
+
+  if (current) {
+    lines.push(current);
+  }
+
+  return lines.slice(0, maxLines);
+}
+
+function splitHeadlineLines(text: string, size: number) {
+  const maxChars = clamp(Math.floor(POSTER_HEADLINE_MAX_WIDTH / (size * 0.5)), 12, 30);
+  const lines = splitLines(text, maxChars);
+
+  return lines.length <= MAX_POSTER_HEADLINE_LINES
+    ? lines
+    : rebalanceHeadlineLines(text, MAX_POSTER_HEADLINE_LINES);
+}
+
+function estimateHeadlineWidth(text: string, size: number) {
+  const width = [...text].reduce((total, character) => {
+    if ("MWQ@%&".includes(character)) return total + size * 0.9;
+    if ("I!.,'".includes(character)) return total + size * 0.34;
+    return total + size * 0.7;
+  }, 0);
+
+  return Math.max(1, width - Math.max(0, text.length - 1) * 1.5);
 }
 
 function fontFamily(font: TextFont) {
@@ -235,20 +295,51 @@ function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, temp
   const family = fontFamily(poster.headlineFontFamily);
   const color = poster.headlineTextColor || template.headline;
   const size = clamp(poster.headlineFontSizePx * template.headlineSizeMultiplier, 46, 94);
-  // Recalculate the approximate line capacity from the effective font size.
-  // Smaller text can therefore reveal more of the same headline without
-  // changing the stored content or splitting words arbitrarily.
-  const maxChars = clamp(Math.floor(720 / (size * 0.5)), 12, 30);
-  const lines = splitLines(headline.toUpperCase(), maxChars).slice(0, MAX_POSTER_HEADLINE_LINES);
+  // Recalculate the line capacity from the effective font size, then balance
+  // the result into at most four lines. Each line is fitted to the same SVG
+  // container so long headlines cannot escape the poster on screen or in PNG.
+  const lines = splitHeadlineLines(headline.toUpperCase(), size);
   const logoAwareHeadlineY = template.headlineY + (poster.logoBottomMarginPx - 28);
   const firstLineY = Math.max(logoAwareHeadlineY, getLogoLayout(poster, template).bottomY + size * 0.15);
+  const lineHeight = size * 0.86;
+  const headlineTop = Math.max(0, firstLineY - size * 1.05);
+  const headlineBottom = Math.min(
+    A4_HEIGHT,
+    template.wheelY - template.wheelRadius - size * 0.1,
+  );
+  const maxVisibleLines = clamp(
+    Math.floor((headlineBottom - headlineTop) / lineHeight),
+    1,
+    MAX_POSTER_HEADLINE_LINES,
+  );
+  const visibleLines =
+    lines.length <= maxVisibleLines
+      ? lines
+      : rebalanceHeadlineLines(headline.toUpperCase(), maxVisibleLines);
   const accent = poster.wheel.winColor || template.accent;
 
-  return lines
+  return `
+    <defs>
+      <clipPath id="posterHeadlineBounds">
+        <rect
+          x="${POSTER_HEADLINE_SIDE_PADDING}"
+          y="${headlineTop.toFixed(1)}"
+          width="${POSTER_HEADLINE_MAX_WIDTH}"
+          height="${Math.max(1, headlineBottom - headlineTop).toFixed(1)}"
+        />
+      </clipPath>
+    </defs>
+    <g clip-path="url(#posterHeadlineBounds)">
+  ${visibleLines
     .map((line, index) => {
-      const y = firstLineY + index * (size * 0.86);
+      const y = firstLineY + index * lineHeight;
       const rotation = template.id === "terracotta-wheel" ? -3 : template.id === "classic-wheel" ? -2 : 0;
       const fill = index % 2 === 1 ? accent : color;
+      const fittedWidth = Math.min(POSTER_HEADLINE_MAX_WIDTH, estimateHeadlineWidth(line, size));
+      const fitAttributes =
+        fittedWidth >= POSTER_HEADLINE_MAX_WIDTH * 0.84
+          ? ` textLength="${POSTER_HEADLINE_MAX_WIDTH}" lengthAdjust="spacingAndGlyphs"`
+          : "";
 
       return `
         <text
@@ -265,10 +356,13 @@ function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, temp
           paint-order="stroke"
           stroke="${template.headlineStroke}"
           stroke-width="8"
+          ${fitAttributes}
         >${escapeXml(line)}</text>
       `;
     })
-    .join("");
+    .join("")}
+    </g>
+  `;
 }
 
 function renderWheel(template: PosterTemplateConfig, poster: CampaignPosterSettings, prizes: Prize[] | Array<Pick<Prize, "label">>) {
