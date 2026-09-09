@@ -112,6 +112,35 @@ async function renderPosterSvgAsPng(svg: string) {
   }
 }
 
+async function loadPosterFontAsDataUrl(font: CampaignPosterSettings["headlineFontFamily"]) {
+  const source = getPosterFontSourceUrl(font);
+
+  if (!source) {
+    return "";
+  }
+
+  try {
+    const response = await fetch(source, { cache: "force-cache" });
+
+    if (!response.ok) {
+      return source;
+    }
+
+    const buffer = await response.arrayBuffer();
+    const bytes = new Uint8Array(buffer);
+    let binary = "";
+    const chunkSize = 0x8000;
+
+    for (let index = 0; index < bytes.length; index += chunkSize) {
+      binary += String.fromCharCode(...bytes.subarray(index, index + chunkSize));
+    }
+
+    return `data:font/ttf;base64,${window.btoa(binary)}`;
+  } catch {
+    return source;
+  }
+}
+
 function isTemplateDefaultWinColor(color: string | undefined) {
   return (
     POSTER_TEMPLATES.some((template) => template.wheel.winColor === color) ||
@@ -257,6 +286,10 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
   const [imageUploadError, setImageUploadError] = useState<string | null>(null);
   const [draftWinColor, setDraftWinColor] = useState(poster.wheel.winColor);
   const [posterQrDataUrl, setPosterQrDataUrl] = useState<string | null>(null);
+  const [loadedPosterFont, setLoadedPosterFont] = useState<{
+    font: CampaignPosterSettings["headlineFontFamily"];
+    source: string;
+  } | null>(null);
   const [previewPng, setPreviewPng] = useState<PosterPngPreview | null>(null);
   const [previewError, setPreviewError] = useState<{ svg: string; message: string } | null>(null);
   const [posterQrError, setPosterQrError] = useState<string | null>(null);
@@ -304,21 +337,35 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
     return () => window.clearTimeout(timeout);
   }, [draftWinColor, poster.wheel.winColor]);
 
+  useEffect(() => {
+    let active = true;
+
+    void loadPosterFontAsDataUrl(poster.headlineFontFamily).then((source) => {
+      if (active) {
+        setLoadedPosterFont({ font: poster.headlineFontFamily, source });
+      }
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [poster.headlineFontFamily]);
+
+  const posterFontSource =
+    loadedPosterFont?.font === poster.headlineFontFamily ? loadedPosterFont.source : null;
+
   const previewPosterSvg = useMemo(
     () =>
-      posterQrDataUrl
+      posterQrDataUrl && posterFontSource !== null
         ? buildPosterSvg({
             campaign,
             poster,
             prizes,
             qrDataUrl: posterQrDataUrl,
-            posterFontSource: (() => {
-              const source = getPosterFontSourceUrl(poster.headlineFontFamily);
-              return source ? new URL(source, window.location.origin).toString() : undefined;
-            })(),
+            posterFontSource: posterFontSource || undefined,
           })
         : null,
-    [campaign, poster, posterQrDataUrl, prizes],
+    [campaign, poster, posterFontSource, posterQrDataUrl, prizes],
   );
 
   useEffect(() => {
@@ -754,9 +801,6 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
               </select>
               <span className={`mt-3 block text-lg font-semibold ${textFontClass(poster.headlineFontFamily)}`}>
                 Aa — {textFontLabel(poster.headlineFontFamily)}
-              </span>
-              <span className="mt-2 block text-xs leading-5 text-ash">
-                La police s&apos;applique au texte principal de tous les templates, dans l&apos;aperçu et le PNG téléchargé.
               </span>
             </label>
 
