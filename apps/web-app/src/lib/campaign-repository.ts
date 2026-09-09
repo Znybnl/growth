@@ -92,6 +92,53 @@ type CampaignRow = {
 
 type CampaignLocalSettings = Awaited<ReturnType<typeof getCampaignLocalSettings>>;
 
+type MerchantWorkspaceBillingRow = {
+  stripe_customer_id: string | null;
+  stripe_subscription_id: string | null;
+  stripe_subscription_status: Merchant["stripeSubscriptionStatus"] | null;
+  subscription_current_period_end: string | null;
+  subscription_cancel_at_period_end: boolean | null;
+};
+
+async function getEffectiveBillingMerchant(merchant: Merchant): Promise<Merchant> {
+  if (!merchant.workspaceId) {
+    return merchant;
+  }
+
+  const { data, error } = await getSupabaseAdmin()
+    .from("merchant_workspaces")
+    .select(
+      "stripe_customer_id,stripe_subscription_id,stripe_subscription_status,subscription_current_period_end,subscription_cancel_at_period_end",
+    )
+    .eq("id", merchant.workspaceId)
+    .maybeSingle<MerchantWorkspaceBillingRow>();
+
+  // Keep the legacy merchant-level billing fields as a fallback while older
+  // environments finish adopting workspace-level billing.
+  if (error || !data) {
+    return merchant;
+  }
+
+  return {
+    ...merchant,
+    stripeCustomerId: data.stripe_customer_id ?? merchant.stripeCustomerId,
+    stripeSubscriptionId: data.stripe_subscription_id ?? merchant.stripeSubscriptionId,
+    stripeSubscriptionStatus:
+      data.stripe_subscription_status ?? merchant.stripeSubscriptionStatus,
+    subscriptionCurrentPeriodEnd:
+      data.subscription_current_period_end ?? merchant.subscriptionCurrentPeriodEnd,
+    subscriptionCancelAtPeriodEnd:
+      data.subscription_cancel_at_period_end ?? merchant.subscriptionCancelAtPeriodEnd,
+  };
+}
+
+async function assertEffectiveMerchantBillingAccess(
+  merchant: Merchant,
+  feature: "campaign_public" | "csv_export",
+) {
+  return assertMerchantBillingAccess(await getEffectiveBillingMerchant(merchant), feature);
+}
+
 type ActionRow = {
   id: string;
   campaign_id: string;
@@ -1485,7 +1532,7 @@ export async function getSupabasePublicCampaign(
   // Authenticated previews remain available after the trial or subscription
   // expires; live public campaigns continue to enforce the billing gate.
   if (!allowInactive) {
-    assertMerchantBillingAccess(performance.merchant, "campaign_public");
+    await assertEffectiveMerchantBillingAccess(performance.merchant, "campaign_public");
   }
 
   // CRM is now a dedicated capture option, not a visit in the marketing
@@ -2594,7 +2641,7 @@ export async function createDrawSessionInSupabase(
 ): Promise<CreateDrawSessionResult> {
   const performance = await getSupabaseCampaignPerformance(input.campaignId, merchant);
   if (!performance || !performance.campaign.isActive) throw new Error("Campagne indisponible");
-  assertMerchantBillingAccess(performance.merchant, "campaign_public");
+  await assertEffectiveMerchantBillingAccess(performance.merchant, "campaign_public");
   const { campaign, merchant: campaignMerchant, prizes } = performance;
   const supabase = getSupabaseAdmin();
   const sessionId = generateId("session");
@@ -2660,7 +2707,7 @@ export async function finalizeDrawSessionInSupabase(
   if (!initialPerformance || !initialPerformance.campaign.isActive) {
     throw new Error("Cette animation est momentanément indisponible.");
   }
-  assertMerchantBillingAccess(initialPerformance.merchant, "campaign_public");
+  await assertEffectiveMerchantBillingAccess(initialPerformance.merchant, "campaign_public");
 
   const requiresContactCapture = initialPerformance.campaign.emailCaptureEnabled;
   if (requiresContactCapture && input.marketingConsent !== true) {
@@ -2730,7 +2777,7 @@ export async function finalizeDrawSessionInSupabase(
 export async function drawForLeadInSupabase(input: DrawRequest, merchant: Merchant): Promise<DrawResult> {
   const performance = await getSupabaseCampaignPerformance(input.campaignId, merchant);
   if (!performance || !performance.campaign.isActive) throw new Error("Campagne indisponible");
-  assertMerchantBillingAccess(performance.merchant, "campaign_public");
+  await assertEffectiveMerchantBillingAccess(performance.merchant, "campaign_public");
   const { campaign, prizes } = performance;
   const supabase = getSupabaseAdmin();
   const leadId = generateId("lead");
