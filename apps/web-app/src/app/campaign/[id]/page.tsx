@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 
 import { CampaignExperience } from "@/components/public/campaign-experience";
 import { getAuthenticatedSession } from "@/lib/auth";
-import { verifyPreviewAccessToken } from "@/lib/preview-token";
+import { issuePreviewAccessToken, verifyPreviewAccessToken } from "@/lib/preview-token";
 import { getCampaignPreview, getPublicCampaign } from "@/lib/store";
 
 type CampaignPageProps = {
@@ -74,26 +74,32 @@ export default async function CampaignPage({ params, searchParams }: CampaignPag
 
   const authenticatedSession =
     isPreview && !previewToken ? await getAuthenticatedSession() : null;
+
+  // A preview URL can be opened from a QR code on a device that is not
+  // authenticated. The preview must still be able to load drafts and inactive
+  // campaigns, while the token keeps all subsequent preview API calls isolated
+  // from production data.
+  if (isPreview) {
+    const previewCampaign = await getCampaignPreview(id, authenticatedSession?.merchant);
+    if (!previewCampaign) {
+      return <InvalidPreviewNotice />;
+    }
+
+    return (
+      <CampaignExperience
+        campaignId={id}
+        initialCampaign={previewCampaign}
+        isPreview
+        previewToken={previewToken ?? issuePreviewAccessToken(id)}
+      />
+    );
+  }
+
   let campaign = null;
 
   try {
     campaign = await getPublicCampaign(id);
   } catch (error) {
-    if (isPreview && (hasValidPreviewToken || authenticatedSession)) {
-      campaign = await getCampaignPreview(id, authenticatedSession?.merchant);
-      if (campaign) {
-        return (
-          <CampaignExperience
-            campaignId={id}
-            initialCampaign={campaign}
-            isPreview
-            previewToken={previewToken}
-          />
-        );
-      }
-      return <InvalidPreviewNotice />;
-    }
-
     const message = error instanceof Error ? error.message : "Cette campagne est indisponible.";
 
     if (
