@@ -361,7 +361,20 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
   const isRenderingPreview = Boolean(previewPosterSvg && !previewIsReady && !currentPreviewError);
 
   function updatePoster(patch: Partial<CampaignPosterSettings>) {
-    setPoster((current) => ({ ...current, ...patch }));
+    const logoKeys = new Set([
+      "logoMode",
+      "logoText",
+      "logoUrl",
+      "logoSizePercent",
+      "logoBottomMarginPx",
+    ]);
+    const changesLogo = Object.keys(patch).some((key) => logoKeys.has(key));
+
+    setPoster((current) => ({
+      ...current,
+      ...patch,
+      ...(changesLogo ? { logoSource: "poster" as const } : {}),
+    }));
   }
 
   function updateWheel(key: keyof CampaignPosterSettings["wheel"], value: string) {

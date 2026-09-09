@@ -535,6 +535,10 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
       },
       poster: {
         templateId: normalizeEnum(poster.templateId, POSTER_TEMPLATE_IDS, "classic-wheel"),
+        logoSource:
+          poster.logoSource === "wizard" || poster.logoSource === "poster"
+            ? poster.logoSource
+            : undefined,
         logoMode: normalizeEnum(poster.logoMode, LOGO_MODES, "text"),
         logoText: normalizeString(poster.logoText, 120) || undefined,
         logoUrl: normalizeImageSource(poster.logoUrl) || undefined,

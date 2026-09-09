@@ -450,22 +450,25 @@ export function createDefaultPosterSettings(
   merchant: Merchant,
   primaryColor = DEFAULT_WHEEL_PRIMARY_COLOR,
 ): CampaignPosterSettings {
-  return createPosterSettingsDefaults({
-    logoMode: "text",
-    logoText: merchant.companyName || merchant.logoText,
-    backgroundMode: "color",
-    backgroundColor: "#ffffff",
-    headline: "Scannez, jouez, récupérez votre cadeau !",
-    headlineTextColor: DEFAULT_WHEEL_PRIMARY_COLOR,
-    headlineFontSizePx: 42,
-    headlineFontFamily: "roboto",
-    wheel: {
-      rimColor: primaryColor,
-      winColor: primaryColor,
-      alternateWinColor: primaryColor,
-      loseColor: primaryColor,
-      alternateLoseColor: deriveLighterHex(primaryColor),
-    },
-    footerBackgroundColor: deriveLighterHex(primaryColor),
-  });
+  return {
+    ...createPosterSettingsDefaults({
+      logoMode: "text",
+      logoText: merchant.companyName || merchant.logoText,
+      backgroundMode: "color",
+      backgroundColor: "#ffffff",
+      headline: "Scannez, jouez, récupérez votre cadeau !",
+      headlineTextColor: DEFAULT_WHEEL_PRIMARY_COLOR,
+      headlineFontSizePx: 42,
+      headlineFontFamily: "roboto",
+      wheel: {
+        rimColor: primaryColor,
+        winColor: primaryColor,
+        alternateWinColor: primaryColor,
+        loseColor: primaryColor,
+        alternateLoseColor: deriveLighterHex(primaryColor),
+      },
+      footerBackgroundColor: deriveLighterHex(primaryColor),
+    }),
+    logoSource: "wizard",
+  };
 }

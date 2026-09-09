@@ -39,7 +39,11 @@ import {
   normalizeCampaignEmailSettings,
 } from "@/lib/email-settings";
 import { defaultWheelSubtitleSpacingForTemplate } from "@/lib/campaign-defaults";
-import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
+import {
+  createPosterSettingsDefaults,
+  normalizePosterSettings,
+  resolvePosterLogoSettings,
+} from "@/lib/poster-utils";
 import {
   assertSupabaseResult,
   getSupabaseAdmin,
@@ -579,24 +583,33 @@ function toCampaign(
       wheel: {
         ...wheel,
       },
-      poster: normalizePosterSettings(
-        localSettings.poster,
-        createPosterSettingsDefaults({
-          logoMode: row.logo_url ? "image" : "text",
-          logoText: row.title,
+      poster: resolvePosterLogoSettings(
+        normalizePosterSettings(
+          localSettings.poster,
+          createPosterSettingsDefaults({
+            logoMode: localSettings.logoMode ?? (row.logo_url ? "image" : "text"),
+            logoText: localSettings.logoText ?? row.title,
+            logoUrl: row.logo_url ?? undefined,
+            logoSizePercent: row.logo_size_percent,
+            logoBottomMarginPx: row.logo_margin_bottom_px,
+            backgroundMode: row.background_mode,
+            backgroundColor: row.background_color,
+            backgroundImageUrl: row.background_image_url ?? "",
+            headline: row.subtitle,
+            headlineTextColor: row.heading_text_color,
+            headlineFontSizePx: row.heading_font_size_px,
+            headlineFontFamily: row.heading_font_family,
+            wheel,
+            footerBackgroundColor: row.accent_signal,
+          }),
+        ),
+        {
+          logoMode: localSettings.logoMode ?? (row.logo_url ? "image" : "text"),
+          logoText: localSettings.logoText ?? row.title,
           logoUrl: row.logo_url ?? undefined,
           logoSizePercent: row.logo_size_percent,
-          logoBottomMarginPx: row.logo_margin_bottom_px,
-          backgroundMode: row.background_mode,
-          backgroundColor: row.background_color,
-          backgroundImageUrl: row.background_image_url ?? "",
-          headline: row.subtitle,
-          headlineTextColor: row.heading_text_color,
-          headlineFontSizePx: row.heading_font_size_px,
-          headlineFontFamily: row.heading_font_family,
-          wheel,
-          footerBackgroundColor: row.accent_signal,
-        }),
+          logoBottomMarginPx: row.logo_margin_bottom_px ?? (row.game_type === "wheel" ? 50 : 20),
+        },
       ),
       email: normalizeCampaignEmailSettings(
         localSettings.email,
