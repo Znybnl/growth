@@ -3077,7 +3077,7 @@ function setGameType(gameType: GameType) {
                         className="h-14 w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none"
                       />
                     </label>
-                    {form.logoMode === "text" ? (
+                    {form.logoMode !== "none" ? (
                       <label className="text-sm">
                         <span className="mb-2 block text-[#616b7c]">Couleur du logo et sous-titre</span>
                         <input
