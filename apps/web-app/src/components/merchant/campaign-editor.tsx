@@ -528,7 +528,7 @@ function createDefaultState(merchant: Merchant): EditorState {
         align: "center",
       },
       button: {
-        backgroundColor: "#1f2937",
+        backgroundColor: DEFAULT_COCORICO_PRIMARY_COLOR,
         textColor: "#ffffff",
         borderColor: "#f4c14a",
         size: "sm",
@@ -2117,7 +2117,7 @@ export function CampaignEditor({
             gameType === "wheel"
               ? {
                   ...current.presentation.button,
-                  backgroundColor: current.presentation.heading.textColor,
+                  backgroundColor: nextPrimaryColor,
                 }
               : current.presentation.button,
         },
@@ -2138,21 +2138,30 @@ export function CampaignEditor({
   }
 
   function updatePrimaryWheelColor(nextColor: string) {
-    setForm((current) => ({
-      ...current,
-      presentation: {
-        ...current.presentation,
-        wheel: {
-          ...current.presentation.wheel,
-          loseColor: nextColor,
-          alternateLoseColor:
-            current.presentation.layout.templateId === "cocorico-duo-wheel"
-              ? current.presentation.wheel.alternateLoseColor
-              : deriveLighterHex(nextColor),
-          rimColor: deriveLighterHex(nextColor),
+    setForm((current) => {
+      const buttonFollowsPrimary =
+        current.presentation.button.backgroundColor.toLowerCase() ===
+        current.presentation.wheel.loseColor.toLowerCase();
+
+      return {
+        ...current,
+        presentation: {
+          ...current.presentation,
+          button: buttonFollowsPrimary
+            ? { ...current.presentation.button, backgroundColor: nextColor }
+            : current.presentation.button,
+          wheel: {
+            ...current.presentation.wheel,
+            loseColor: nextColor,
+            alternateLoseColor:
+              current.presentation.layout.templateId === "cocorico-duo-wheel"
+                ? current.presentation.wheel.alternateLoseColor
+                : deriveLighterHex(nextColor),
+            rimColor: deriveLighterHex(nextColor),
+          },
         },
-      },
-    }));
+      };
+    });
   }
 
   function selectBackgroundImage(imageUrl: string) {
@@ -2733,7 +2742,7 @@ export function CampaignEditor({
                           const wheel = remembered?.wheel ?? wheelPaletteForTemplate(template.value, current.presentation.wheel);
                           const backgroundColor = remembered?.backgroundColor ?? wheelBackgroundForTemplate(template.value, current.presentation.background.color);
                           const headingTextColor = remembered?.headingTextColor ?? (template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : current.presentation.heading.textColor);
-                          const buttonBackgroundColor = remembered?.buttonBackgroundColor ?? (template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : current.presentation.heading.textColor);
+                          const buttonBackgroundColor = remembered?.buttonBackgroundColor ?? wheel.loseColor;
                           const scratchSignal =
                             remembered?.scratchSignal ??
                             (scratchTemplateDefaultPrimaryColor(template.value) &&
