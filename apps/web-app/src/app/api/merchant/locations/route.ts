@@ -6,7 +6,11 @@ import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/l
 
 export async function GET() {
   const session = await requireAuthenticatedSession();
-  return NextResponse.json({ workspace: session.workspace, locations: session.locations });
+  return NextResponse.json({
+    workspace: session.workspace,
+    locations: session.locations,
+    activeLocationId: session.activeLocationId,
+  });
 }
 
 export async function POST(request: Request) {
