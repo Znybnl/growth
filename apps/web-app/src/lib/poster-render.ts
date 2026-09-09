@@ -1,4 +1,4 @@
-import { buildPosterWheelSegments, MAX_POSTER_HEADLINE_LINES } from "@/lib/poster-utils";
+import { buildPosterWheelSegments, MAX_POSTER_HEADLINE_LINES, splitPosterSegmentLines } from "@/lib/poster-utils";
 import { getPosterTemplate, PosterTemplateConfig } from "@/lib/poster-templates";
 import { getPosterFontAsset } from "@/lib/poster-fonts";
 import { Campaign, CampaignPosterSettings, Prize, TextFont } from "@/lib/types";
@@ -379,27 +379,48 @@ function renderWheel(template: PosterTemplateConfig, poster: CampaignPosterSetti
       const fill = segment.color;
       const labelAngle = start + 30;
       const labelPoint = polarToCartesian(cx, cy, radius * 0.58, labelAngle);
-      const label = segment.label.replace(" !", "").slice(0, 12);
+      const lines = splitPosterSegmentLines(segment.label.replace(" !", ""));
+      const fontSize = lines.length >= 4 ? 14 : lines.length === 3 ? 16 : 18;
+      const lineHeight = fontSize * 1.05;
+      const firstLineDy = -((lines.length - 1) * lineHeight) / 2 + fontSize * 0.34;
+      const labelLines = lines
+        .map(
+          (line, lineIndex) =>
+            `<tspan x="${labelPoint.x.toFixed(1)}" dy="${lineIndex === 0 ? firstLineDy : lineHeight}">${escapeXml(line)}</tspan>`,
+        )
+        .join("");
+      const clipId = `posterWheelSegmentClip${index}`;
+      const slicePath = segmentPath(cx, cy, radius, start, end);
 
       return `
-        <path d="${segmentPath(cx, cy, radius, start, end)}" fill="${fill}" stroke="${rimColor}" stroke-width="2"/>
-        <text
-          x="${labelPoint.x.toFixed(1)}"
-          y="${labelPoint.y.toFixed(1)}"
-          transform="rotate(${labelAngle} ${labelPoint.x.toFixed(1)} ${labelPoint.y.toFixed(1)})"
-          text-anchor="middle"
-          dominant-baseline="middle"
-          fill="${segment.textColor}"
-          font-family="${SAFE_FONT}"
-          font-size="18"
-          font-weight="900"
-        >${escapeXml(label)}</text>
+        <path d="${slicePath}" fill="${fill}" stroke="${rimColor}" stroke-width="2"/>
+        <g clip-path="url(#${clipId})">
+          <text
+            x="${labelPoint.x.toFixed(1)}"
+            y="${labelPoint.y.toFixed(1)}"
+            transform="rotate(${labelAngle} ${labelPoint.x.toFixed(1)} ${labelPoint.y.toFixed(1)})"
+            text-anchor="middle"
+            fill="${segment.textColor}"
+            font-family="${SAFE_FONT}"
+            font-size="${fontSize}"
+            font-weight="900"
+          >${labelLines}</text>
+        </g>
       `;
+    })
+    .join("");
+
+  const segmentClips = segments
+    .map((_, index) => {
+      const start = index * 60;
+      const end = start + 60;
+      return `<clipPath id="posterWheelSegmentClip${index}"><path d="${segmentPath(cx, cy, radius, start, end)}"/></clipPath>`;
     })
     .join("");
 
   return `
     <g filter="url(#posterShadow)">
+      <defs>${segmentClips}</defs>
       <circle cx="${cx}" cy="${cy}" r="${radius + 36}" fill="#fff7ef" opacity="0.88"/>
       <circle cx="${cx}" cy="${cy}" r="${radius}" fill="#ffffff" stroke="${rimColor}" stroke-width="9"/>
       ${slices}

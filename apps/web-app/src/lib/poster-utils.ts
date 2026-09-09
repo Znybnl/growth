@@ -56,28 +56,55 @@ function formatSegmentLabel(label: string) {
     return "CADEAU";
   }
 
-  const upper = compact.toUpperCase();
-  return upper.length > 18 ? `${upper.slice(0, 17)}...` : upper;
+  return compact.toUpperCase();
 }
 
 export function splitPosterSegmentLines(label: string) {
+  const maxCharsPerLine = 13;
+  const maxLines = 4;
   const words = formatSegmentLabel(label).split(/\s+/).filter(Boolean);
-  const verticalWords = words.slice(0, 3).map((word) => {
-    if (word.length <= 9) {
-      return word;
+  const lines: string[] = [];
+  let current = "";
+
+  for (const word of words) {
+    if (word.length > maxCharsPerLine) {
+      if (current) {
+        lines.push(current);
+        current = "";
+      }
+
+      for (let offset = 0; offset < word.length; offset += maxCharsPerLine) {
+        lines.push(word.slice(offset, offset + maxCharsPerLine));
+      }
+      continue;
     }
 
-    return `${word.slice(0, 8)}…`;
-  });
-
-  if (words.length > 3 && verticalWords.length) {
-    const lastIndex = verticalWords.length - 1;
-    verticalWords[lastIndex] = verticalWords[lastIndex].endsWith("…")
-      ? verticalWords[lastIndex]
-      : `${verticalWords[lastIndex].slice(0, Math.max(0, verticalWords[lastIndex].length - 1))}…`;
+    const next = current ? `${current} ${word}` : word;
+    if (current && next.length > maxCharsPerLine) {
+      lines.push(current);
+      current = word;
+    } else {
+      current = next;
+    }
   }
 
-  return verticalWords.length ? verticalWords : ["CADEAU"];
+  if (current) {
+    lines.push(current);
+  }
+
+  if (lines.length <= maxLines) {
+    return lines.length ? lines : ["CADEAU"];
+  }
+
+  const visibleLines = lines.slice(0, maxLines);
+  const lastLine = visibleLines[maxLines - 1];
+  const hasHiddenContent = lines.slice(maxLines).length > 0;
+
+  visibleLines[maxLines - 1] = hasHiddenContent
+    ? `${lastLine.slice(0, Math.max(1, maxCharsPerLine - 1))}…`
+    : lastLine;
+
+  return visibleLines;
 }
 
 export function getPosterReadableTextColor(backgroundColor: string) {
