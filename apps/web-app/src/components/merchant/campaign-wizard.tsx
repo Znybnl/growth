@@ -377,7 +377,7 @@ function createWizardDraft(merchant: Merchant): WizardDraft {
         align: "center",
       },
       button: {
-        backgroundColor: "#1f2937",
+        backgroundColor: DEFAULT_COCORICO_PRIMARY_COLOR,
         textColor: "#ffffff",
         borderColor: "#f4c14a",
         size: "sm",
@@ -1593,7 +1593,7 @@ export function CampaignWizard({
                               option.value === "wheel"
                                 ? {
                                     ...current.presentation.button,
-                                    backgroundColor: current.presentation.heading.textColor,
+                                    backgroundColor: nextPrimaryColor,
                                   }
                                 : current.presentation.button,
                           },
@@ -2244,7 +2244,7 @@ export function CampaignWizard({
                         const wheel = remembered?.wheel ?? wheelPaletteForTemplate(template.id, current.presentation.wheel);
                         const backgroundColor = remembered?.backgroundColor ?? wheelBackgroundForTemplate(template.id, current.presentation.background.color);
                         const headingTextColor = remembered?.headingTextColor ?? (template.id === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : current.presentation.heading.textColor);
-                        const buttonBackgroundColor = remembered?.buttonBackgroundColor ?? (template.id === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : current.presentation.heading.textColor);
+                        const buttonBackgroundColor = remembered?.buttonBackgroundColor ?? wheel.loseColor;
                         const scratchSignal =
                           remembered?.scratchSignal ??
                           (scratchTemplateDefaultPrimaryColor(template.id) &&
@@ -2325,27 +2325,37 @@ export function CampaignWizard({
                      value={draft.gameType === "wheel" ? draft.presentation.wheel.loseColor : draft.accent.signal}
                      onChange={(event) => {
                        const color = event.target.value;
-                       setDraft((current) => ({
-                         ...current,
-                         accent: current.gameType === "scratch" ? { ...current.accent, signal: color } : current.accent,
-                         presentation: {
-                           ...current.presentation,
-                           button: current.gameType === "wheel"
-                             ? { ...current.presentation.button, backgroundColor: color, borderColor: color }
-                             : current.presentation.button,
-                           wheel: current.gameType === "wheel"
-                             ? {
-                                 ...current.presentation.wheel,
-                                 loseColor: color,
-                                 alternateLoseColor:
-                                   current.presentation.layout.templateId === "cocorico-duo-wheel"
-                                     ? current.presentation.wheel.alternateLoseColor
-                                     : deriveLighterHex(color),
-                                 rimColor: deriveLighterHex(color),
-                               }
-                             : current.presentation.wheel,
-                         },
-                       }));
+                       setDraft((current) => {
+                         const buttonFollowsPrimary =
+                           current.presentation.button.backgroundColor.toLowerCase() ===
+                           current.presentation.wheel.loseColor.toLowerCase();
+
+                         return {
+                           ...current,
+                           accent: current.gameType === "scratch" ? { ...current.accent, signal: color } : current.accent,
+                           presentation: {
+                             ...current.presentation,
+                             button: current.gameType === "wheel"
+                               ? {
+                                   ...current.presentation.button,
+                                   ...(buttonFollowsPrimary ? { backgroundColor: color } : {}),
+                                   borderColor: color,
+                                 }
+                               : current.presentation.button,
+                             wheel: current.gameType === "wheel"
+                               ? {
+                                   ...current.presentation.wheel,
+                                   loseColor: color,
+                                   alternateLoseColor:
+                                     current.presentation.layout.templateId === "cocorico-duo-wheel"
+                                       ? current.presentation.wheel.alternateLoseColor
+                                       : deriveLighterHex(color),
+                                   rimColor: deriveLighterHex(color),
+                                 }
+                               : current.presentation.wheel,
+                           },
+                         };
+                       });
                      }}
                      disabled={draft.gameType === "scratch" &&
                        (draft.presentation.layout.templateId === "scratch-confetti" ||
