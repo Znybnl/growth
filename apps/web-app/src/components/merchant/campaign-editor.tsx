@@ -1940,7 +1940,7 @@ export function CampaignEditor({
 
     async function loadDeferredAssets() {
       try {
-        const response = await fetch(`/api/campaigns/${campaignId}/assets`, {
+        const response = await fetch(`/api/campaigns/${campaignId}/assets?includeLogo=false`, {
           cache: "no-store",
         });
         const payload = (await response.json().catch(() => null)) as

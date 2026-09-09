@@ -15,7 +15,6 @@ function isInlineAsset(value?: string) {
 
 function deferInlineAssets(campaign: CampaignPerformance) {
   const hasDeferredAssets = [
-    campaign.campaign.logoUrl,
     campaign.campaign.presentation.background.imageUrl,
     campaign.campaign.presentation.poster.logoUrl,
     campaign.campaign.presentation.poster.backgroundImageUrl,
@@ -29,7 +28,6 @@ function deferInlineAssets(campaign: CampaignPerformance) {
       ...campaign,
       campaign: {
         ...campaign.campaign,
-        logoUrl: isInlineAsset(campaign.campaign.logoUrl) ? undefined : campaign.campaign.logoUrl,
         presentation: {
           ...campaign.campaign.presentation,
           background: {

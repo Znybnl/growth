@@ -903,7 +903,7 @@ export function CampaignWizard({
     if (!deferInlineAssets || !draft.id || deferredAssetsLoaded) return;
     let cancelled = false;
 
-    fetch(`/api/campaigns/${draft.id}/assets`, { cache: "no-store" })
+    fetch(`/api/campaigns/${draft.id}/assets?includeLogo=false`, { cache: "no-store" })
       .then(async (response) => {
         const payload = (await response.json().catch(() => null)) as {
           assets?: {
