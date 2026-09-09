@@ -19,6 +19,7 @@ import { captureClientProductEvent } from "@/lib/client-product-analytics";
 import { Campaign, CampaignPosterSettings, PosterTemplateId, Prize } from "@/lib/types";
 import { getPosterTemplate, POSTER_TEMPLATES } from "@/lib/poster-templates";
 import { PosterTemplateSelector } from "@/components/merchant/poster-template-selector";
+import { ValidationDialog } from "@/components/ui/validation-dialog";
 import { PageHeader } from "@/components/ui/workspace";
 
 type PosterEditorProps = {
@@ -33,6 +34,10 @@ type PosterPngPreview = {
   svg: string;
   blob: Blob;
   url: string;
+};
+
+type PendingPosterNavigation = {
+  href: string;
 };
 
 function uploadAsDataUrl(
@@ -254,6 +259,12 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [lastSavedPosterSnapshot, setLastSavedPosterSnapshot] = useState(() =>
+    JSON.stringify(poster),
+  );
+  const [pendingNavigation, setPendingNavigation] = useState<PendingPosterNavigation | null>(null);
+  const [isSavingBeforeNavigation, setIsSavingBeforeNavigation] = useState(false);
+  const [downloadConfirmationOpen, setDownloadConfirmationOpen] = useState(false);
   const [imageUploadError, setImageUploadError] = useState<string | null>(null);
   const [draftWinColor, setDraftWinColor] = useState(poster.wheel.winColor);
   const [posterQrDataUrl, setPosterQrDataUrl] = useState<string | null>(null);
@@ -359,6 +370,57 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
       ? previewError.message
       : null) ?? posterQrError;
   const isRenderingPreview = Boolean(previewPosterSvg && !previewIsReady && !currentPreviewError);
+  const isDirty = lastSavedPosterSnapshot !== JSON.stringify(poster);
+
+  useEffect(() => {
+    if (!isDirty) return;
+
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = "Quitter l’éditeur ?";
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isDirty]);
+
+  useEffect(() => {
+    if (!isDirty || pendingNavigation) return;
+
+    function handleInternalNavigation(event: MouseEvent) {
+      if (
+        event.defaultPrevented ||
+        event.button !== 0 ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey
+      ) {
+        return;
+      }
+
+      const target =
+        event.target instanceof Element
+          ? event.target.closest<HTMLAnchorElement>("a[href]")
+          : null;
+      if (!target || target.target === "_blank" || target.hasAttribute("download")) return;
+
+      const destination = new URL(target.href, window.location.href);
+      if (destination.origin !== window.location.origin) return;
+
+      const current = new URL(window.location.href);
+      if (destination.href === current.href) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+      setPendingNavigation({
+        href: `${destination.pathname}${destination.search}${destination.hash}`,
+      });
+    }
+
+    window.addEventListener("click", handleInternalNavigation, true);
+    return () => window.removeEventListener("click", handleInternalNavigation, true);
+  }, [isDirty, pendingNavigation]);
 
   function updatePoster(patch: Partial<CampaignPosterSettings>) {
     setPoster((current) => ({ ...current, ...patch }));
@@ -413,13 +475,47 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
         throw new Error(payload.error ?? "Enregistrement impossible.");
       }
 
+      setLastSavedPosterSnapshot(JSON.stringify(poster));
       setMessage("Affiche enregistrée.");
       router.refresh();
+      return true;
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Enregistrement impossible.");
+      return false;
     } finally {
       setIsSaving(false);
     }
+  }
+
+  async function saveAndLeave() {
+    if (!pendingNavigation || isSavingBeforeNavigation) return;
+
+    const destination = pendingNavigation.href;
+    setIsSavingBeforeNavigation(true);
+    const saved = await savePoster();
+    setIsSavingBeforeNavigation(false);
+
+    if (!saved) return;
+
+    setPendingNavigation(null);
+    router.push(destination);
+  }
+
+  function leaveWithoutSaving() {
+    if (!pendingNavigation || isSavingBeforeNavigation) return;
+
+    const destination = pendingNavigation.href;
+    setPendingNavigation(null);
+    router.push(destination);
+  }
+
+  function handleDownloadClick() {
+    if (isDirty) {
+      setDownloadConfirmationOpen(true);
+      return;
+    }
+
+    void downloadPoster();
   }
 
   async function downloadPoster() {
@@ -427,18 +523,10 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
     setMessage(null);
 
     try {
-      const saveResponse = await fetch(`/api/campaigns/${campaign.id}/poster-settings`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(poster),
-      });
-      const savePayload = (await saveResponse.json()) as { error?: string };
-
-      if (!saveResponse.ok) {
-        throw new Error(savePayload.error ?? "Enregistrement impossible.");
+      if (isDirty) {
+        const saved = await savePoster();
+        if (!saved) return;
       }
-
-      router.refresh();
 
       if (!previewPosterSvg || !previewIsReady || !previewPng) {
         throw new Error("Le rendu de l’affiche n’est pas encore prêt.");
@@ -451,7 +539,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
         format: "png",
         gameType: campaign.gameType,
       });
-      setMessage("Affiche enregistrée et téléchargement lancé.");
+      setMessage(isDirty ? "Affiche enregistrée et téléchargement lancé." : "Téléchargement lancé.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Téléchargement impossible.");
     } finally {
@@ -803,7 +891,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                     : undefined
               }
               disabled={isDownloading || isRenderingPreview || !previewIsReady}
-              onClick={() => void downloadPoster()}
+              onClick={handleDownloadClick}
               className="okado-filled-action gap-2 px-4 text-sm disabled:cursor-wait disabled:opacity-70"
             >
               {isDownloading ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : null}
@@ -837,6 +925,38 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
         </div>
       </aside>
     </div>
+    <ValidationDialog
+      open={pendingNavigation !== null}
+      title="Quitter l’éditeur ?"
+      description="Vous avez des modifications non enregistrées. Voulez-vous les sauvegarder avant de quitter ?"
+      ctaLabel={isSavingBeforeNavigation ? "Enregistrement…" : "Enregistrer et quitter"}
+      secondaryCtaLabel="Quitter sans enregistrer"
+      cancelLabel="Annuler"
+      actionDisabled={isSavingBeforeNavigation}
+      secondaryActionDisabled={isSavingBeforeNavigation}
+      onAction={() => void saveAndLeave()}
+      onSecondaryAction={leaveWithoutSaving}
+      onClose={() => {
+        if (!isSavingBeforeNavigation) setPendingNavigation(null);
+      }}
+      onCancel={() => {
+        if (!isSavingBeforeNavigation) setPendingNavigation(null);
+      }}
+    />
+    <ValidationDialog
+      open={downloadConfirmationOpen}
+      title="Enregistrer avant le téléchargement ?"
+      description="Cette affiche contient des modifications non enregistrées. Elles doivent être sauvegardées avant de télécharger le PNG."
+      ctaLabel="Enregistrer et télécharger"
+      cancelLabel="Annuler"
+      actionDisabled={isSaving || isDownloading}
+      onAction={() => {
+        setDownloadConfirmationOpen(false);
+        void downloadPoster();
+      }}
+      onClose={() => setDownloadConfirmationOpen(false)}
+      onCancel={() => setDownloadConfirmationOpen(false)}
+    />
     </div>
   );
 }
