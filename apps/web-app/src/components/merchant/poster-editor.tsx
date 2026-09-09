@@ -7,9 +7,9 @@ import { Loader2 } from "lucide-react";
 import QRCode from "qrcode";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 
-import { buildPosterSvg, createPosterPreviewQrDataUrl } from "@/lib/poster-render";
+import { buildPosterSvg } from "@/lib/poster-render";
 import { getPosterFontSourceUrl, POSTER_FONT_OPTIONS } from "@/lib/poster-fonts";
-import { textFontLabel } from "@/lib/format";
+import { textFontClass, textFontLabel } from "@/lib/format";
 import {
   createPosterSettingsDefaults,
   MAX_POSTER_HEADLINE_LENGTH,
@@ -312,7 +312,10 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
             poster,
             prizes,
             qrDataUrl: posterQrDataUrl,
-            posterFontSource: getPosterFontSourceUrl(poster.headlineFontFamily),
+            posterFontSource: (() => {
+              const source = getPosterFontSourceUrl(poster.headlineFontFamily);
+              return source ? new URL(source, window.location.origin).toString() : undefined;
+            })(),
           })
         : null,
     [campaign, poster, posterQrDataUrl, prizes],
@@ -657,16 +660,23 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                 </label>
 
                 <label className="text-sm">
-                  <span className="mb-2 block text-charcoal">Marge sous le logo (px)</span>
+                  <span className="mb-2 flex items-center justify-between gap-3 text-charcoal">
+                    <span>Marge sous le logo</span>
+                    <output className="font-semibold text-aubergine">
+                      {Math.round(poster.logoBottomMarginPx)} px
+                    </output>
+                  </span>
                   <input
-                    type="number"
+                    type="range"
                     min={0}
                     max={120}
+                    step={1}
                     value={poster.logoBottomMarginPx}
                     onChange={(event) =>
-                      updatePoster({ logoBottomMarginPx: Number(event.target.value || 0) })
+                      updatePoster({ logoBottomMarginPx: Number(event.target.value) })
                     }
-                  className="w-full rounded-[var(--okado-radius-control)] border border-border bg-soft-white px-4 py-3 outline-none transition focus:border-aubergine focus:bg-white"
+                    className="w-full cursor-pointer accent-aubergine"
+                    aria-label="Marge sous le logo"
                   />
                 </label>
               </>
@@ -707,16 +717,23 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
             </label>
 
             <label className="text-sm">
-              <span className="mb-2 block text-charcoal">Taille du texte (px)</span>
+              <span className="mb-2 flex items-center justify-between gap-3 text-charcoal">
+                <span>Taille du texte</span>
+                <output className="font-semibold text-aubergine">
+                  {Math.round(poster.headlineFontSizePx)} px
+                </output>
+              </span>
               <input
-                type="number"
+                type="range"
                 min={24}
                 max={84}
+                step={1}
                 value={poster.headlineFontSizePx}
                 onChange={(event) =>
-                  updatePoster({ headlineFontSizePx: Number(event.target.value || 42) })
+                  updatePoster({ headlineFontSizePx: Number(event.target.value) })
                 }
-                className="w-full rounded-[var(--okado-radius-control)] border border-border bg-soft-white px-4 py-3 outline-none transition focus:border-aubergine focus:bg-white"
+                className="w-full cursor-pointer accent-aubergine"
+                aria-label="Taille du texte principal"
               />
             </label>
 
@@ -730,11 +747,14 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                 className="w-full rounded-[var(--okado-radius-control)] border border-border bg-soft-white px-4 py-3 outline-none transition focus:border-aubergine focus:bg-white"
               >
                 {POSTER_FONT_OPTIONS.map((font) => (
-                  <option key={font} value={font}>
+                  <option key={font} value={font} className={textFontClass(font)}>
                     {textFontLabel(font)}
                   </option>
                 ))}
               </select>
+              <span className={`mt-3 block text-lg font-semibold ${textFontClass(poster.headlineFontFamily)}`}>
+                Aa — {textFontLabel(poster.headlineFontFamily)}
+              </span>
               <span className="mt-2 block text-xs leading-5 text-ash">
                 La police s&apos;applique au texte principal de tous les templates, dans l&apos;aperçu et le PNG téléchargé.
               </span>
