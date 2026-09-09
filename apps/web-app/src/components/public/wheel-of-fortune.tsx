@@ -237,7 +237,7 @@ export function WheelOfFortune({
   };
   const classicLightColor = deriveLighterHex(colors.loseColor);
   const wheelTop =
-    framing === "public" ? undefined : framing === "editor" ? "83%" : framing === "mobile-preview" ? "58%" : "62%";
+    framing === "public" ? undefined : framing === "editor" ? "83%" : framing === "mobile-preview" ? "70%" : "62%";
   const wheelFrameSizeClass =
     framing === "public"
       ? isRoseInstitutTemplate
