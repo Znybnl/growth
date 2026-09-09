@@ -424,13 +424,15 @@ function renderScratch(template: PosterTemplateConfig, poster: CampaignPosterSet
 
 function renderQrAndCta(qrDataUrl: string, template: PosterTemplateConfig) {
   const accent = template.accent;
+  const qrFrameBottom = template.qrY + template.qrSize + 18;
+  const ctaY = Math.max(template.ctaY, qrFrameBottom + 16);
   return `
     <g filter="url(#posterShadow)" transform="translate(${template.qrX} ${template.qrY})">
       <rect x="-18" y="-18" width="${template.qrSize + 36}" height="${template.qrSize + 36}" rx="28" fill="${template.qrFrame}"/>
       <rect x="0" y="0" width="${template.qrSize}" height="${template.qrSize}" rx="10" fill="#ffffff"/>
       <image href="${escapeXml(qrDataUrl)}" x="18" y="18" width="${template.qrSize - 36}" height="${template.qrSize - 36}"/>
     </g>
-    <g filter="url(#posterShadow)" transform="translate(${template.ctaX} ${template.ctaY}) rotate(${template.ctaRotation} ${template.ctaWidth / 2} ${template.ctaHeight / 2})">
+    <g filter="url(#posterShadow)" transform="translate(${template.ctaX} ${ctaY}) rotate(${template.ctaRotation} ${template.ctaWidth / 2} ${template.ctaHeight / 2})">
       <rect width="${template.ctaWidth}" height="${template.ctaHeight}" rx="24" fill="${accent}" stroke="#ffffff" stroke-width="7"/>
       <text x="${template.ctaWidth / 2}" y="${template.ctaHeight / 2 + 11}" text-anchor="middle" fill="#ffffff" font-family="${SAFE_FONT}" font-size="26" font-weight="900" letter-spacing="0.5">SCANNEZ POUR JOUER</text>
     </g>
@@ -443,6 +445,8 @@ function renderSteps(template: PosterTemplateConfig, gameType: Campaign["gameTyp
   const iconCenterY = 68;
   const iconScale = 0.52;
   const iconTop = iconCenterY - 24;
+  const wheelIconScale = 0.68;
+  const wheelIconTop = iconCenterY - 50 * wheelIconScale;
 
   return `
     <g transform="translate(28 954)">
@@ -461,7 +465,7 @@ function renderSteps(template: PosterTemplateConfig, gameType: Campaign["gameTyp
         <circle cx="146" cy="38" r="17" fill="${template.accent}"/>
         <text x="146" y="44" text-anchor="middle" fill="#ffffff" font-family="${SAFE_FONT}" font-size="16" font-weight="900">2</text>
         <text x="168" y="90" text-anchor="middle" fill="${template.accentDark}" font-family="${SAFE_FONT}" font-size="22" font-weight="900">${action}</text>
-        <g transform="translate(57 ${iconTop}) scale(${iconScale})">
+        <g transform="translate(55 ${wheelIconTop}) scale(${wheelIconScale})">
           <circle cx="28" cy="50" r="30" fill="none" stroke="#05070c" stroke-width="4"/>
           <path d="M28 20 v60 M-2 50 h60 M8 30 l40 40 M48 30 l-40 40" stroke="#05070c" stroke-width="3"/>
         </g>
