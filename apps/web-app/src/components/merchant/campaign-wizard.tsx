@@ -105,6 +105,29 @@ type WizardError = {
 
 type WizardDraft = CampaignSetupInput;
 
+type GameTypeState = {
+  subtitle: WizardDraft["subtitle"];
+  accent: WizardDraft["accent"];
+  presentation: Pick<
+    WizardDraft["presentation"],
+    "background" | "heading" | "button" | "layout" | "wheel"
+  >;
+};
+
+function snapshotGameTypeState(draft: WizardDraft): GameTypeState {
+  return {
+    subtitle: draft.subtitle,
+    accent: { ...draft.accent },
+    presentation: {
+      background: { ...draft.presentation.background },
+      heading: { ...draft.presentation.heading },
+      button: { ...draft.presentation.button },
+      layout: { ...draft.presentation.layout },
+      wheel: { ...draft.presentation.wheel },
+    },
+  };
+}
+
 type PendingWizardNavigation = {
   href: string;
 };
@@ -837,6 +860,7 @@ export function CampaignWizard({
       }
     >
   >({});
+  const gameTypeState = useRef<Partial<Record<WizardDraft["gameType"], GameTypeState>>>({});
 
   useEffect(() => {
     let cancelled = false;
@@ -1506,68 +1530,88 @@ export function CampaignWizard({
                     type="button"
                     key={option.value}
                     onClick={() =>
-                      patchDraft({
-                        gameType: option.value,
-                        presentation: {
-                          ...draft.presentation,
-                          heading: {
-                            ...draft.presentation.heading,
-                            fontSizePx:
-                              option.value === "scratch" && draft.presentation.heading.fontSizePx === 40
-                                ? 32
-                                : option.value === "wheel" && draft.presentation.heading.fontSizePx === 32
-                                  ? 40
-                                  : draft.presentation.heading.fontSizePx,
-                          },
-                          layout: {
-                            ...draft.presentation.layout,
-                            templateId:
-                              option.value === "scratch"
-                                ? "scratch-coral"
-                                : "cocorico-wheel",
-                          },
-                          wheel:
-                            option.value === "wheel"
-                              ? {
-                                  ...draft.presentation.wheel,
-                                  loseColor: resolveWheelPrimaryColorAfterGameTypeSwitch(
-                                    draft.presentation.wheel.loseColor,
-                                  ),
-                                  alternateLoseColor: deriveLighterHex(
-                                    resolveWheelPrimaryColorAfterGameTypeSwitch(
-                                      draft.presentation.wheel.loseColor,
-                                    ),
-                                  ),
-                                  rimColor: deriveLighterHex(
-                                    resolveWheelPrimaryColorAfterGameTypeSwitch(
-                                      draft.presentation.wheel.loseColor,
-                                    ),
-                                  ),
-                                }
-                              : draft.presentation.wheel,
-                          button:
-                            option.value === "wheel"
-                              ? {
-                                  ...draft.presentation.button,
-                                  backgroundColor: draft.presentation.heading.textColor,
-                                }
-                              : draft.presentation.button,
-                        },
-                        subtitle:
+                      setDraft((current) => {
+                        if (current.gameType === option.value) {
+                          return current;
+                        }
+
+                        gameTypeState.current[current.gameType] = snapshotGameTypeState(current);
+                        const remembered = gameTypeState.current[option.value];
+
+                        if (remembered) {
+                          return {
+                            ...current,
+                            gameType: option.value,
+                            subtitle: remembered.subtitle,
+                            accent: { ...remembered.accent },
+                            presentation: {
+                              ...current.presentation,
+                              ...remembered.presentation,
+                            },
+                          };
+                        }
+
+                        const nextPrimaryColor =
                           option.value === "wheel"
-                            ? DEFAULT_WHEEL_SUBTITLE
-                            : DEFAULT_SCRATCH_SUBTITLE,
-                        accent:
-                          option.value === "scratch"
-                            ? {
-                                ...normalizeScratchAccent(draft.accent, "scratch-coral"),
-                                signal:
-                                  draft.gameType === "scratch" &&
-                                  !shouldApplyScratchTemplateDefaultPrimaryColor(draft.accent.signal)
-                                    ? draft.accent.signal
-                                    : DEFAULT_SCRATCH_CORAL_COLOR,
-                              }
-                            : draft.accent,
+                            ? resolveWheelPrimaryColorAfterGameTypeSwitch(
+                                current.presentation.wheel.loseColor,
+                              )
+                            : DEFAULT_SCRATCH_CORAL_COLOR;
+
+                        return {
+                          ...current,
+                          gameType: option.value,
+                          presentation: {
+                            ...current.presentation,
+                            heading: {
+                              ...current.presentation.heading,
+                              fontSizePx:
+                                option.value === "scratch" && current.presentation.heading.fontSizePx === 40
+                                  ? 32
+                                  : option.value === "wheel" && current.presentation.heading.fontSizePx === 32
+                                    ? 40
+                                    : current.presentation.heading.fontSizePx,
+                            },
+                            layout: {
+                              ...current.presentation.layout,
+                              templateId:
+                                option.value === "scratch"
+                                  ? "scratch-coral"
+                                  : "cocorico-wheel",
+                            },
+                            wheel:
+                              option.value === "wheel"
+                                ? {
+                                    ...current.presentation.wheel,
+                                    loseColor: nextPrimaryColor,
+                                    alternateLoseColor: deriveLighterHex(nextPrimaryColor),
+                                    rimColor: deriveLighterHex(nextPrimaryColor),
+                                  }
+                                : current.presentation.wheel,
+                            button:
+                              option.value === "wheel"
+                                ? {
+                                    ...current.presentation.button,
+                                    backgroundColor: current.presentation.heading.textColor,
+                                  }
+                                : current.presentation.button,
+                          },
+                          subtitle:
+                            option.value === "wheel"
+                              ? DEFAULT_WHEEL_SUBTITLE
+                              : DEFAULT_SCRATCH_SUBTITLE,
+                          accent:
+                            option.value === "scratch"
+                              ? {
+                                  ...normalizeScratchAccent(current.accent, "scratch-coral"),
+                                  signal:
+                                    current.gameType === "scratch" &&
+                                    !shouldApplyScratchTemplateDefaultPrimaryColor(current.accent.signal)
+                                      ? current.accent.signal
+                                      : DEFAULT_SCRATCH_CORAL_COLOR,
+                                }
+                              : current.accent,
+                        };
                       })
                     }
                     className={`rounded-[16px] border p-5 text-left transition ${draft.gameType === option.value ? "border-aubergine bg-purple-haze" : "border-[#e2e8f0] bg-[#fbfcfe] hover:border-[#b8c5d8]"}`}

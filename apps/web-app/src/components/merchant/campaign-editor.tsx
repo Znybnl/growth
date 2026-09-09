@@ -201,6 +201,29 @@ type EditorState = Omit<
   prizes: EditorPrize[];
 };
 
+type GameTypeState = {
+  subtitle: EditorState["subtitle"];
+  accent: EditorState["accent"];
+  presentation: Pick<
+    EditorState["presentation"],
+    "background" | "heading" | "button" | "layout" | "wheel"
+  >;
+};
+
+function snapshotGameTypeState(form: EditorState): GameTypeState {
+  return {
+    subtitle: form.subtitle,
+    accent: { ...form.accent },
+    presentation: {
+      background: { ...form.presentation.background },
+      heading: { ...form.presentation.heading },
+      button: { ...form.presentation.button },
+      layout: { ...form.presentation.layout },
+      wheel: { ...form.presentation.wheel },
+    },
+  };
+}
+
 type PreviewSegment = WheelVisualSegment;
 
 export type CampaignEditorPreviewModel = {
@@ -1687,6 +1710,7 @@ export function CampaignEditor({
       }
     >
   >({});
+  const gameTypeState = useRef<Partial<Record<EditorState["gameType"], GameTypeState>>>({});
   const [backgroundLibrary, setBackgroundLibrary] = useState<BackgroundLibraryAsset[]>([]);
   const [isLibraryLoading, setIsLibraryLoading] = useState(false);
   const [libraryMessage, setLibraryMessage] = useState<string | null>(null);
@@ -2023,8 +2047,28 @@ export function CampaignEditor({
     setForm((current) => ({ ...current, [key]: value }));
   }
 
-function setGameType(gameType: GameType) {
+  function setGameType(gameType: GameType) {
     setForm((current) => {
+      if (current.gameType === gameType) {
+        return current;
+      }
+
+      gameTypeState.current[current.gameType] = snapshotGameTypeState(current);
+      const remembered = gameTypeState.current[gameType];
+
+      if (remembered) {
+        return {
+          ...current,
+          gameType,
+          subtitle: remembered.subtitle,
+          accent: { ...remembered.accent },
+          presentation: {
+            ...current.presentation,
+            ...remembered.presentation,
+          },
+        };
+      }
+
       const nextPrimaryColor =
         gameType === "scratch"
           ? current.gameType === "scratch" &&
