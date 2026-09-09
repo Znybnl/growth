@@ -635,7 +635,7 @@ function normalizeCampaign(rawCampaign: Campaign | (Partial<Campaign> & Record<s
           headline: rawCampaign.subtitle ?? fallback.subtitle,
           headlineTextColor: presentation.heading?.textColor ?? "#ffffff",
           headlineFontSizePx: presentation.heading?.fontSizePx ?? 42,
-          headlineFontFamily: presentation.heading?.fontFamily ?? "display",
+          headlineFontFamily: presentation.poster?.headlineFontFamily ?? "geogrotesque",
           wheel,
           footerBackgroundColor: rawCampaign.accent?.signal ?? fallback.accent.signal,
           }),

@@ -600,7 +600,7 @@ function toCampaign(
             headline: row.subtitle,
             headlineTextColor: row.heading_text_color,
             headlineFontSizePx: row.heading_font_size_px,
-            headlineFontFamily: row.heading_font_family,
+            headlineFontFamily: localSettings.poster?.headlineFontFamily ?? "geogrotesque",
             wheel,
             footerBackgroundColor: row.accent_signal,
           }),

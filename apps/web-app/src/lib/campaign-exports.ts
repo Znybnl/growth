@@ -120,7 +120,7 @@ export async function createCampaignPosterSvg(
         headline: campaign.subtitle,
         headlineTextColor: "#1b2842",
         headlineFontSizePx: 50,
-        headlineFontFamily: "display",
+        headlineFontFamily: "geogrotesque",
         wheel: {
           ...getPosterTemplate("classic-wheel").wheel,
           winColor: campaignPrimaryColor,
@@ -153,7 +153,7 @@ export async function createCampaignPosterSvg(
           ...posterWithNormalizedHeadline,
           templateId: "classic-wheel" as const,
           headlineTextColor: "#1b2842",
-          headlineFontFamily: "display" as const,
+          headlineFontFamily: "geogrotesque" as const,
         },
         {
           ...campaign.presentation.wheel,

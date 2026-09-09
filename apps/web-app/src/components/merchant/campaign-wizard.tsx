@@ -558,7 +558,7 @@ function draftFromCampaign(merchant: Merchant, performance: CampaignPerformance)
     headline: campaign.subtitle,
     headlineTextColor: campaign.presentation.heading.textColor,
     headlineFontSizePx: campaign.presentation.heading.fontSizePx,
-    headlineFontFamily: campaign.presentation.heading.fontFamily,
+    headlineFontFamily: campaign.presentation.poster?.headlineFontFamily ?? "geogrotesque",
     wheel: campaign.presentation.wheel,
     footerBackgroundColor: campaign.accent.signal,
   });

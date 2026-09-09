@@ -213,7 +213,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
         headline: campaign.subtitle,
         headlineTextColor: campaignGainColor,
         headlineFontSizePx: 50,
-        headlineFontFamily: campaign.presentation.heading.fontFamily,
+        headlineFontFamily: campaign.presentation.poster?.headlineFontFamily ?? "geogrotesque",
         wheel: {
           ...POSTER_TEMPLATES[0].wheel,
           winColor: campaignPrimaryColor,
@@ -242,10 +242,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
       return applyTemplateDefaults(
         {
           ...normalizedPoster,
-          headlineFontFamily:
-            campaign.gameType === "scratch"
-              ? campaign.presentation.heading.fontFamily
-              : normalizedPoster.headlineFontFamily,
+          headlineFontFamily: normalizedPoster.headlineFontFamily,
           headlineTextColor: hasCustomHeadlineTextColor
             ? normalizedPoster.headlineTextColor
             : campaign.gameType === "scratch"
@@ -274,7 +271,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
       {
         ...normalizedPoster,
         headlineTextColor: campaign.gameType === "scratch" ? "#1b2842" : campaignGainColor,
-        headlineFontFamily: "roboto",
+        headlineFontFamily: "geogrotesque",
         wheel: {
           ...normalizedPoster.wheel,
           winColor: campaignPrimaryColor,

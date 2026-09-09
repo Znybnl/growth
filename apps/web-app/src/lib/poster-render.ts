@@ -50,9 +50,9 @@ function splitLines(text: string, maxChars: number) {
   return lines;
 }
 
-// Keep a small visual safety margin for italic glyphs and the headline stroke.
-// The clip and textLength use the same width in the preview and exported PNG.
-const POSTER_HEADLINE_SIDE_PADDING = 58;
+// Keep a visual safety margin for italic glyphs and the headline stroke.
+// The safe width and textLength are shared by the preview and exported PNG.
+const POSTER_HEADLINE_SIDE_PADDING = 76;
 const POSTER_HEADLINE_MAX_WIDTH = A4_WIDTH - POSTER_HEADLINE_SIDE_PADDING * 2;
 
 function rebalanceHeadlineLines(text: string, maxLines: number) {
@@ -301,14 +301,14 @@ function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, temp
   const lines = splitHeadlineLines(headline.toUpperCase(), size);
   const logoAwareHeadlineY = template.headlineY + (poster.logoBottomMarginPx - 28);
   const firstLineY = Math.max(logoAwareHeadlineY, getLogoLayout(poster, template).bottomY + size * 0.15);
-  const lineHeight = size * 0.86;
+  const lineHeight = size * 1.08;
   const headlineTop = Math.max(0, firstLineY - size * 1.05);
   const headlineBottom = Math.min(
     A4_HEIGHT,
     template.wheelY - template.wheelRadius - size * 0.1,
   );
   const maxVisibleLines = clamp(
-    Math.floor((headlineBottom - headlineTop) / lineHeight),
+    Math.floor((headlineBottom - headlineTop) / lineHeight) + 1,
     1,
     MAX_POSTER_HEADLINE_LINES,
   );
@@ -319,17 +319,7 @@ function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, temp
   const accent = poster.wheel.winColor || template.accent;
 
   return `
-    <defs>
-      <clipPath id="posterHeadlineBounds">
-        <rect
-          x="${POSTER_HEADLINE_SIDE_PADDING}"
-          y="${headlineTop.toFixed(1)}"
-          width="${POSTER_HEADLINE_MAX_WIDTH}"
-          height="${Math.max(1, headlineBottom - headlineTop).toFixed(1)}"
-        />
-      </clipPath>
-    </defs>
-    <g clip-path="url(#posterHeadlineBounds)">
+    <g>
   ${visibleLines
     .map((line, index) => {
       const y = firstLineY + index * lineHeight;
@@ -337,7 +327,7 @@ function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, temp
       const fill = index % 2 === 1 ? accent : color;
       const fittedWidth = Math.min(POSTER_HEADLINE_MAX_WIDTH, estimateHeadlineWidth(line, size));
       const fitAttributes =
-        fittedWidth >= POSTER_HEADLINE_MAX_WIDTH * 0.84
+        fittedWidth >= POSTER_HEADLINE_MAX_WIDTH * 0.68
           ? ` textLength="${POSTER_HEADLINE_MAX_WIDTH}" lengthAdjust="spacingAndGlyphs"`
           : "";
 
