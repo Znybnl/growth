@@ -7,7 +7,7 @@ type RouteProps = {
   params: Promise<{ id: string }>;
 };
 
-export async function GET(_request: Request, { params }: RouteProps) {
+export async function GET(request: Request, { params }: RouteProps) {
   const session = await getAuthenticatedSession();
 
   if (!session) {
@@ -21,9 +21,11 @@ export async function GET(_request: Request, { params }: RouteProps) {
     return NextResponse.json({ error: "Campagne introuvable" }, { status: 404 });
   }
 
+  const includeLogo = new URL(request.url).searchParams.get("includeLogo") !== "false";
+
   return NextResponse.json({
     assets: {
-      logoUrl: campaign.campaign.logoUrl,
+      ...(includeLogo ? { logoUrl: campaign.campaign.logoUrl } : {}),
       backgroundImageUrl: campaign.campaign.presentation.background.imageUrl,
       posterLogoUrl: campaign.campaign.presentation.poster.logoUrl,
       posterBackgroundImageUrl: campaign.campaign.presentation.poster.backgroundImageUrl,
