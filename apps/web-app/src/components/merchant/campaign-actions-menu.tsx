@@ -15,7 +15,10 @@ import { useState } from "react";
 
 import { DeleteCampaignDialog } from "@/components/merchant/delete-campaign-button";
 import { DuplicateCampaignButton } from "@/components/merchant/duplicate-campaign-button";
-import { DuplicateCampaignToLocationsButton } from "@/components/merchant/duplicate-campaign-to-locations-button";
+import {
+  DuplicateCampaignToLocationsButton,
+  DuplicateCampaignToLocationsDialog,
+} from "@/components/merchant/duplicate-campaign-to-locations-button";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -38,6 +41,7 @@ export function CampaignActionsMenu({
   campaignTitle,
 }: CampaignActionsMenuProps) {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isDuplicateLocationsOpen, setIsDuplicateLocationsOpen] = useState(false);
 
   return (
     <>
@@ -110,7 +114,7 @@ export function CampaignActionsMenu({
 
           <div className="space-y-1">
             <DuplicateCampaignButton campaignId={campaignId} variant="menu" />
-            <DuplicateCampaignToLocationsButton campaignId={campaignId} />
+            <DuplicateCampaignToLocationsButton onOpen={() => setIsDuplicateLocationsOpen(true)} />
             <DropdownMenuItem
               className={`${itemClass} text-[var(--okado-status-danger-text)] focus:bg-[var(--okado-status-danger-bg)] focus:text-[var(--okado-status-danger-text)]`}
               onSelect={() => setIsDeleteOpen(true)}
@@ -126,6 +130,11 @@ export function CampaignActionsMenu({
         campaignTitle={campaignTitle}
         open={isDeleteOpen}
         onClose={() => setIsDeleteOpen(false)}
+      />
+      <DuplicateCampaignToLocationsDialog
+        campaignId={campaignId}
+        open={isDuplicateLocationsOpen}
+        onClose={() => setIsDuplicateLocationsOpen(false)}
       />
     </>
   );

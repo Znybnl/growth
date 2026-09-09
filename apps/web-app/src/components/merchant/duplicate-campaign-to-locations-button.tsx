@@ -1,15 +1,39 @@
 "use client";
 
 import { CopyPlus, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { StatusNotice } from "@/components/ui/workspace";
 import { DialogShell } from "@/components/ui/dialog";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 
 type LocationItem = { merchant: { id: string; companyName: string; city?: string } };
 
-export function DuplicateCampaignToLocationsButton({ campaignId }: { campaignId: string }) {
-  const [open, setOpen] = useState(false);
+export function DuplicateCampaignToLocationsButton({ onOpen }: { onOpen: () => void }) {
+  return (
+    <DropdownMenuItem
+      className="min-h-9 cursor-pointer gap-2 rounded-[4px] px-2.5 py-2 text-sm font-medium text-graphite focus:bg-purple-haze"
+      onSelect={() => onOpen()}
+    >
+      <CopyPlus className="h-4 w-4" aria-hidden="true" />
+      Dupliquer vers des sites
+    </DropdownMenuItem>
+  );
+}
+
+type DuplicateCampaignToLocationsDialogProps = {
+  campaignId: string;
+  open: boolean;
+  onClose: () => void;
+};
+
+export function DuplicateCampaignToLocationsDialog({
+  campaignId,
+  open,
+  onClose,
+}: DuplicateCampaignToLocationsDialogProps) {
+  const router = useRouter();
   const [locations, setLocations] = useState<LocationItem[]>([]);
   const [selected, setSelected] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
@@ -20,32 +44,45 @@ export function DuplicateCampaignToLocationsButton({ campaignId }: { campaignId:
   useEffect(() => {
     if (!open) return;
 
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") setOpen(false);
+    let active = true;
+    async function loadLocations() {
+      setLoading(true);
+      setMessage(null);
+      setMessageTone("info");
+      setSelected([]);
+
+      try {
+        const response = await fetch("/api/merchant/locations");
+        const payload = (await response.json()) as {
+          locations?: LocationItem[];
+          activeLocationId?: string;
+          error?: string;
+        };
+        if (!response.ok) throw new Error(payload.error ?? "Sites indisponibles.");
+        if (!active) return;
+        setLocations(
+          (payload.locations ?? []).filter(
+            ({ merchant }) => merchant.id !== payload.activeLocationId,
+          ),
+        );
+      } catch (error) {
+        if (active) {
+          setMessage(error instanceof Error ? error.message : "Sites indisponibles.");
+        }
+      } finally {
+        if (active) setLoading(false);
+      }
     }
 
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
+    void loadLocations();
+    return () => {
+      active = false;
+    };
   }, [open]);
 
-  async function openDialog() {
-    setLoading(true);
-    setMessage(null);
-    setMessageTone("info");
-    try {
-      const response = await fetch("/api/merchant/locations");
-      const payload = (await response.json()) as { locations?: LocationItem[]; error?: string };
-      if (!response.ok) throw new Error(payload.error ?? "Sites indisponibles.");
-      setLocations(payload.locations ?? []);
-      setOpen(true);
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Sites indisponibles.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
   async function duplicate() {
+    if (!selected.length) return;
+
     setSaving(true);
     setMessage(null);
     try {
@@ -56,9 +93,13 @@ export function DuplicateCampaignToLocationsButton({ campaignId }: { campaignId:
       });
       const payload = (await response.json()) as { campaignIds?: string[]; error?: string };
       if (!response.ok) throw new Error(payload.error ?? "Duplication impossible.");
+      if (!payload.campaignIds?.length) {
+        throw new Error("Aucune campagne n'a été créée.");
+      }
       setMessageTone("success");
-      setMessage(`${payload.campaignIds?.length ?? 0} campagne(s) créée(s) en brouillon.`);
+      setMessage(`${payload.campaignIds.length} campagne(s) créée(s) en brouillon.`);
       setSelected([]);
+      router.refresh();
     } catch (error) {
       setMessageTone("danger");
       setMessage(error instanceof Error ? error.message : "Duplication impossible.");
@@ -68,18 +109,7 @@ export function DuplicateCampaignToLocationsButton({ campaignId }: { campaignId:
   }
 
   return (
-    <>
-      <button
-        type="button"
-        onClick={() => void openDialog()}
-        disabled={loading}
-        className="inline-flex min-h-9 w-full items-center gap-2 rounded-[4px] px-2.5 py-2 text-left text-sm font-semibold text-graphite transition hover:bg-purple-haze disabled:opacity-60"
-      >
-        <CopyPlus className="h-4 w-4" aria-hidden="true" />
-        {loading ? "Chargement..." : "Dupliquer vers des sites"}
-      </button>
-      {open ? (
-        <DialogShell open={open} onClose={() => setOpen(false)} labelledBy="duplicate-campaign-title" className="max-w-2xl p-6">
+    <DialogShell open={open} onClose={onClose} labelledBy="duplicate-campaign-title" className="max-w-2xl p-6">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="okado-label">Déploiement local</p>
@@ -92,7 +122,7 @@ export function DuplicateCampaignToLocationsButton({ campaignId }: { campaignId:
               </div>
               <button
                 type="button"
-                onClick={() => setOpen(false)}
+                onClick={onClose}
                 aria-label="Fermer"
                 className="rounded-[4px] p-2 text-ash transition hover:bg-purple-haze hover:text-aubergine"
               >
@@ -101,7 +131,9 @@ export function DuplicateCampaignToLocationsButton({ campaignId }: { campaignId:
             </div>
 
             <div className="mt-6 space-y-2">
-              {locations.length <= 1 ? (
+              {loading ? (
+                <StatusNotice tone="info">Chargement des sites disponibles...</StatusNotice>
+              ) : locations.length === 0 ? (
                 <StatusNotice tone="info">
                   Ajoutez un autre site pour activer la duplication multi-site.
                 </StatusNotice>
@@ -135,20 +167,18 @@ export function DuplicateCampaignToLocationsButton({ campaignId }: { campaignId:
             {message ? <StatusNotice tone={messageTone} className="mt-4">{message}</StatusNotice> : null}
 
             <div className="mt-6 flex flex-col-reverse gap-3 border-t border-fog pt-5 sm:flex-row sm:justify-end">
-              <button type="button" onClick={() => setOpen(false)} className="okado-secondary-action px-4 text-sm">
+              <button type="button" onClick={onClose} className="okado-secondary-action px-4 text-sm">
                 Fermer
               </button>
               <button
                 type="button"
                 onClick={() => void duplicate()}
-                disabled={!selected.length || saving || locations.length <= 1}
+                disabled={!selected.length || saving || loading || locations.length === 0}
                 className="okado-filled-action px-4 text-sm disabled:opacity-50"
               >
                 {saving ? "Duplication..." : "Créer les brouillons"}
               </button>
             </div>
-        </DialogShell>
-      ) : null}
-    </>
+    </DialogShell>
   );
 }
