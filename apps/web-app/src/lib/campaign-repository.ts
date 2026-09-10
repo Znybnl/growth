@@ -7,6 +7,7 @@ import {
   CampaignKpi,
   CashierRedemptionContext,
   CampaignPerformance,
+  CampaignPosterSettings,
   CampaignSetupInput,
   CreateDrawSessionRequest,
   CreateDrawSessionResult,
@@ -2451,6 +2452,29 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
   );
 
   return campaignId;
+}
+
+export async function updateCampaignPosterSettingsInSupabase(
+  campaignId: string,
+  merchantId: string,
+  poster: CampaignPosterSettings,
+) {
+  const supabase = getSupabaseAdmin();
+  const { data: campaign, error: campaignError } = await supabase
+    .from("campaigns")
+    .select("id,merchant_id")
+    .eq("id", campaignId)
+    .maybeSingle<{ id: string; merchant_id: string }>();
+
+  if (campaignError) {
+    throw new Error(`Lecture de la campagne impossible: ${campaignError.message}`);
+  }
+
+  if (!campaign || campaign.merchant_id !== merchantId) {
+    throw new Error("Campagne introuvable");
+  }
+
+  await setCampaignLocalSettings(campaignId, { poster });
 }
 
 export async function duplicateCampaignInSupabase(id: string, merchant: Merchant) {

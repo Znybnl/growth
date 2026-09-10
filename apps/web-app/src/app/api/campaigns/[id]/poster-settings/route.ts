@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 
 import { requireAuthenticatedSession } from "@/lib/auth";
-import { parseCampaignSetupInput } from "@/lib/merchant-input";
 import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
-import { getCampaignPerformance, updateCampaignSetup } from "@/lib/store";
+import { getCampaignPerformance, updateCampaignPosterSettings } from "@/lib/store";
 import { CampaignPosterSettings } from "@/lib/types";
 
 type PosterSettingsRouteProps = {
@@ -24,39 +23,9 @@ export async function POST(request: Request, { params }: PosterSettingsRouteProp
       return NextResponse.json({ error: "Campagne introuvable" }, { status: 404 });
     }
 
-    const campaign = performance.campaign;
-    const input = parseCampaignSetupInput({
-      id: campaign.id,
-      merchantId: campaign.merchantId,
-      title: campaign.title,
-      subtitle: campaign.subtitle,
-      goalType: campaign.goalType,
-      ctaLabel: campaign.ctaLabel,
-      successMetric: campaign.successMetric,
-      targetUrl: campaign.targetUrl,
-      isActive: campaign.isActive,
-      accent: campaign.accent,
-      gameType: campaign.gameType,
-      logoMode: campaign.logoMode,
-      logoText: campaign.logoText,
-      logoUrl: campaign.logoUrl,
-      presentation: {
-        ...campaign.presentation,
-        poster,
-      },
-      actions: campaign.actions,
-      rewardRules: campaign.rewardRules,
-      prizes: performance.prizes.map((prize) => ({
-        id: prize.id,
-        label: prize.label,
-        totalQuantity: prize.totalQuantity,
-        probability: prize.probability,
-        estimatedUnitCost: prize.estimatedUnitCost,
-      })),
-    }, session.merchant.id);
-    const updatedCampaign = await updateCampaignSetup(input);
+    await updateCampaignPosterSettings(id, poster, session.merchant.id);
 
-    return NextResponse.json({ campaign: updatedCampaign });
+    return NextResponse.json({ campaign: performance.campaign });
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Mise à jour impossible" },

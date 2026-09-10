@@ -33,6 +33,7 @@ import {
   toggleCampaignInSupabase,
   toggleCampaignForMerchantInSupabase,
   updatePrizeStockInSupabase,
+  updateCampaignPosterSettingsInSupabase,
   updateCampaignSetupInSupabase,
 } from "@/lib/campaign-repository";
 import {
@@ -2745,6 +2746,34 @@ export async function updateCampaignSetup(input: CampaignSetupInput) {
   }
 
   return updateCampaignSetupInMemory(input);
+}
+
+export async function updateCampaignPosterSettings(
+  campaignId: string,
+  poster: CampaignPosterSettings,
+  merchantId?: string,
+) {
+  if (getDataBackend("la mise à jour des réglages d'affiche") === "supabase") {
+    if (!merchantId) {
+      throw new Error("Marchand introuvable");
+    }
+
+    await updateCampaignPosterSettingsInSupabase(campaignId, merchantId, poster);
+    invalidateCampaignNavigationCache(merchantId, campaignId);
+    return null;
+  }
+
+  const campaign = getCampaign(campaignId);
+  if (!campaign || (merchantId && campaign.merchantId !== merchantId)) {
+    throw new Error("Campagne introuvable");
+  }
+
+  campaign.presentation = {
+    ...campaign.presentation,
+    poster,
+  };
+
+  return clone(campaign);
 }
 
 export async function toggleCampaign(id: string, isActive: boolean, merchantId?: string) {
