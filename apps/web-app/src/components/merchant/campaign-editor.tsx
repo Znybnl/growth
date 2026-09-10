@@ -71,9 +71,10 @@ import {
   createDefaultPosterSettings,
   createDefaultWheelSettings,
   DEFAULT_SCRATCH_CORAL_COLOR,
+  DEFAULT_SCRATCH_SUBTITLE,
   scratchTemplateDefaultPrimaryColor,
   shouldApplyScratchTemplateDefaultPrimaryColor,
-  DEFAULT_SCRATCH_SUBTITLE,
+  campaignSubtitleForGameTypeChange,
   DEFAULT_GAME_PAGE_TEMPLATE_ID,
   DEFAULT_COCORICO_PRIMARY_COLOR,
   DEFAULT_ROSE_INSTITUT_TEXT_COLOR,
@@ -93,6 +94,7 @@ import {
   deriveLighterHex,
   limitCampaignSubtitleLines,
   normalizeScratchAccent,
+  normalizeWheelSubtitle,
   resolveWheelPrimaryColorAfterGameTypeSwitch,
   resolveScratchAccent,
   resolvePromoStrokeColor,
@@ -398,7 +400,6 @@ const scratchPageTemplateOptions: Array<{
 ];
 
 const wheelDefaultSubtitle = DEFAULT_WHEEL_SUBTITLE;
-const scratchDefaultSubtitle = DEFAULT_SCRATCH_SUBTITLE;
 
 function createPrizeId() {
   return `local-prize-${crypto.randomUUID().slice(0, 8)}`;
@@ -1401,7 +1402,11 @@ function toEditorState(merchant: Merchant, campaign: CampaignPerformance | null)
     id: campaign.campaign.id,
     merchantId: merchant.id,
     title: campaign.campaign.title,
-    subtitle: limitCampaignSubtitleLines(campaign.campaign.subtitle),
+    subtitle: limitCampaignSubtitleLines(
+      campaign.campaign.gameType === "wheel"
+        ? normalizeWheelSubtitle(campaign.campaign.subtitle)
+        : campaign.campaign.subtitle,
+    ),
     emailCaptureEnabled: campaign.campaign.emailCaptureEnabled,
     gameType: campaign.campaign.gameType,
     ctaLabel: campaign.campaign.ctaLabel,
@@ -2081,10 +2086,6 @@ export function CampaignEditor({
             : DEFAULT_SCRATCH_CORAL_COLOR
           : resolveWheelPrimaryColorAfterGameTypeSwitch(current.presentation.wheel.loseColor);
 
-      const currentSubtitle = current.subtitle.trim();
-      const shouldSyncSubtitle =
-        currentSubtitle === wheelDefaultSubtitle || currentSubtitle === scratchDefaultSubtitle;
-
       return {
         ...current,
         gameType,
@@ -2125,11 +2126,7 @@ export function CampaignEditor({
                 }
               : current.presentation.button,
         },
-        subtitle: shouldSyncSubtitle
-          ? gameType === "wheel"
-            ? wheelDefaultSubtitle
-            : scratchDefaultSubtitle
-          : current.subtitle,
+        subtitle: campaignSubtitleForGameTypeChange(current.subtitle, gameType),
         accent:
           gameType === "scratch"
             ? {

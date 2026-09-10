@@ -55,8 +55,8 @@ import {
   DEFAULT_SCRATCH_CORAL_COLOR,
   scratchTemplateDefaultPrimaryColor,
   shouldApplyScratchTemplateDefaultPrimaryColor,
-  DEFAULT_SCRATCH_SUBTITLE,
   DEFAULT_WHEEL_SUBTITLE,
+  campaignSubtitleForGameTypeChange,
   DEFAULT_GAME_PAGE_TEMPLATE_ID,
   DEFAULT_COCORICO_PRIMARY_COLOR,
   DEFAULT_ROSE_INSTITUT_TEXT_COLOR,
@@ -70,6 +70,7 @@ import {
   MAX_CAMPAIGN_SUBTITLE_LENGTH,
   clampCampaignSpacingPx,
   normalizeScratchAccent,
+  normalizeWheelSubtitle,
   resolveWheelPrimaryColorAfterGameTypeSwitch,
   isClassicPopWheelTemplate,
   isCocoricoWheelTemplate,
@@ -569,7 +570,11 @@ function draftFromCampaign(merchant: Merchant, performance: CampaignPerformance)
     merchantId: merchant.id,
     creationMode: "wizard",
     title: campaign.title,
-    subtitle: limitCampaignSubtitleLines(campaign.subtitle),
+    subtitle: limitCampaignSubtitleLines(
+      campaign.gameType === "wheel"
+        ? normalizeWheelSubtitle(campaign.subtitle)
+        : campaign.subtitle,
+    ),
     goalType: campaign.goalType,
     emailCaptureEnabled:
       campaign.emailCaptureEnabled ||
@@ -1600,10 +1605,10 @@ export function CampaignWizard({
                                   }
                                 : current.presentation.button,
                           },
-                          subtitle:
-                            option.value === "wheel"
-                              ? DEFAULT_WHEEL_SUBTITLE
-                              : DEFAULT_SCRATCH_SUBTITLE,
+                        subtitle: campaignSubtitleForGameTypeChange(
+                          draft.subtitle,
+                          option.value,
+                        ),
                           accent:
                             option.value === "scratch"
                               ? {
