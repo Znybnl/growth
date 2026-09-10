@@ -7,7 +7,11 @@ import {
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/supabase";
+import {
+  getSupabaseAdmin,
+  isMemoryStoreFallbackAllowed,
+  isSupabaseConfigured,
+} from "@/lib/supabase";
 
 type CampaignLocalSettings = {
   emailCaptureEnabled?: boolean;
@@ -130,6 +134,12 @@ export async function getCampaignLocalSettings(campaignId: string) {
     return {};
   }
 
+  if (!isMemoryStoreFallbackAllowed()) {
+    throw new Error(
+      "Supabase n'est pas configuré pour lire les réglages de campagne. Le stockage local est désactivé dans cet environnement.",
+    );
+  }
+
   const store = await readFileStore();
   return store[campaignId] ?? {};
 }
@@ -148,6 +158,12 @@ export async function setCampaignLocalSettings(
     if (process.env.NODE_ENV === "production") {
       throw new Error("Les réglages de campagne ne peuvent pas être enregistrés hors de la base de données.");
     }
+  }
+
+  if (!isMemoryStoreFallbackAllowed()) {
+    throw new Error(
+      "Supabase n'est pas configuré pour enregistrer les réglages de campagne. Le stockage local est désactivé dans cet environnement.",
+    );
   }
 
   const store = await readFileStore();

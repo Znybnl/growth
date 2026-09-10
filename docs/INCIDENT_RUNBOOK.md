@@ -33,6 +33,17 @@ Ces objectifs internes ne constituent pas un engagement contractuel. Ils servent
 - Si une fuite de données est suspectée, limiter immédiatement l'accès concerné, préserver les éléments utiles à l'analyse et ne pas publier de détail sensible dans une Issue publique.
 - Les sauvegardes et secrets sont accessibles uniquement par Pierre-Henri BRUNELLE.
 
+## Saturation du stockage des fonctions Vercel
+
+En cas d'alerte sur le **Function Storage** :
+
+1. Relever la métrique exacte, sa période et les fonctions ou déploiements concernés dans Vercel avant toute suppression.
+2. Vérifier les écritures dans le système de fichiers des fonctions. Le stockage local d'une fonction est éphémère et ne doit contenir que des fichiers temporaires nécessaires à la requête.
+3. Vérifier en priorité les routes qui génèrent des fichiers ou utilisent `node:fs`, `tmpdir()` ou une librairie de traitement d'images.
+4. Ne jamais utiliser le système de fichiers d'une fonction pour conserver une donnée métier, une image utilisateur ou un export durable. Utiliser Supabase Storage ou la base prévue.
+5. Après correction, lancer une série de requêtes représentative, vérifier l'absence de croissance continue et contrôler les logs runtime Vercel.
+6. Si la métrique reste saturée après correction, ouvrir une demande Vercel avec l'identifiant du projet, la période et les identifiants de déploiement concernés.
+
 ## Décision simple
 
 | Situation | Première action recommandée |

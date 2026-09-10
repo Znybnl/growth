@@ -1,6 +1,4 @@
 import { NextResponse } from "next/server";
-import { mkdirSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
 import path from "node:path";
 
 import { getAuthenticatedSession } from "@/lib/auth";
@@ -17,71 +15,16 @@ type RouteContext = {
 
 let fontConfigReady = false;
 
-function escapeXmlAttribute(value: string) {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;");
-}
-
 function ensurePosterFontConfig() {
   if (fontConfigReady) return;
 
   const fontDir = path.join(process.cwd(), "public", "fonts");
-  const posterFontDir = path.join(fontDir, "poster");
-  const configDir = path.join(tmpdir(), "okado-fontconfig");
-  const cacheDir = path.join(tmpdir(), "okado-font-cache");
-  const configFile = path.join(configDir, "fonts.conf");
+  const configFile = path.join(fontDir, "fonts.conf");
 
-  mkdirSync(configDir, { recursive: true });
-  mkdirSync(cacheDir, { recursive: true });
-  writeFileSync(
-    configFile,
-    `<?xml version="1.0"?>
-<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
-<fontconfig>
-  <dir>${escapeXmlAttribute(fontDir)}</dir>
-  <dir>${escapeXmlAttribute(posterFontDir)}</dir>
-  <cachedir>${escapeXmlAttribute(cacheDir)}</cachedir>
-  <alias>
-    <family>Anton</family>
-    <prefer>
-      <family>Anton</family>
-      <family>Inter</family>
-      <family>Geist</family>
-      <family>DejaVu Sans</family>
-    </prefer>
-  </alias>
-  <alias>
-    <family>sans-serif</family>
-    <prefer>
-      <family>Anton</family>
-      <family>Inter</family>
-      <family>Geist</family>
-      <family>DejaVu Sans</family>
-      <family>Liberation Sans</family>
-      <family>Arial</family>
-    </prefer>
-  </alias>
-  <alias>
-    <family>Inter</family>
-    <default>
-      <family>sans-serif</family>
-    </default>
-  </alias>
-  <alias>
-    <family>Geist</family>
-    <default>
-      <family>sans-serif</family>
-    </default>
-  </alias>
-</fontconfig>
-`,
-    "utf8",
-  );
-
-  process.env.FONTCONFIG_PATH = configDir;
+  // Keep Fontconfig read-only at runtime. The configuration and font files are
+  // part of the deployment; omitting <cachedir> prevents fontconfig from
+  // growing a cache in the function's ephemeral filesystem.
+  process.env.FONTCONFIG_PATH = fontDir;
   process.env.FONTCONFIG_FILE = configFile;
   fontConfigReady = true;
 }
