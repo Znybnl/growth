@@ -7,7 +7,8 @@ import {
 } from "@/lib/types";
 import { createPosterSettingsDefaults } from "@/lib/poster-utils";
 
-export const DEFAULT_WHEEL_SUBTITLE = "Faites tournez la roue pour jouer !";
+export const LEGACY_DEFAULT_WHEEL_SUBTITLE = "Faites tournez la roue pour jouer !";
+export const DEFAULT_WHEEL_SUBTITLE = "Tounez la roue et tentez de gagner !";
 export const DEFAULT_SCRATCH_SUBTITLE = "Grattez le ticket pour jouer !";
 export const DEFAULT_GAME_PAGE_TEMPLATE_ID: GamePageTemplateId = "cocorico-wheel";
 export const DEFAULT_WHEEL_PRIMARY_COLOR = "#1b2842";
@@ -37,6 +38,28 @@ export const CAMPAIGN_SPACING_MIN_PX = 0;
 export const CAMPAIGN_SPACING_MAX_PX = 80;
 export const DEFAULT_WHEEL_SPACING_PX = 50;
 export const DEFAULT_WHEEL_SUBTITLE_SPACING_PX = 5;
+
+export function campaignSubtitleForGameTypeChange(
+  currentSubtitle: string,
+  gameType: "wheel" | "scratch",
+) {
+  const normalized = currentSubtitle.trim();
+  const isKnownDefault = [
+    DEFAULT_WHEEL_SUBTITLE,
+    LEGACY_DEFAULT_WHEEL_SUBTITLE,
+    DEFAULT_SCRATCH_SUBTITLE,
+  ].includes(normalized);
+
+  return isKnownDefault
+    ? gameType === "wheel"
+      ? DEFAULT_WHEEL_SUBTITLE
+      : DEFAULT_SCRATCH_SUBTITLE
+    : currentSubtitle;
+}
+
+export function normalizeWheelSubtitle(value: string) {
+  return value.trim() === LEGACY_DEFAULT_WHEEL_SUBTITLE ? DEFAULT_WHEEL_SUBTITLE : value;
+}
 
 export function defaultWheelSubtitleSpacingForTemplate(templateId?: GamePageTemplateId) {
   return templateId === "cocorico-wheel" || templateId === "cocorico-duo-wheel"
