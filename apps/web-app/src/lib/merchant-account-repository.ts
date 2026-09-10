@@ -2,6 +2,7 @@ import { hashPassword, verifyPassword } from "@/lib/passwords";
 import { decryptRedemptionPin, encryptRedemptionPin } from "@/lib/redemption-pin-crypto";
 import { getStripeClient } from "@/lib/stripe";
 import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/supabase";
+import { syncCampaignDefaultEmailSenderNames } from "@/lib/campaign-local-settings";
 import {
   Merchant,
   MerchantAccountSettingsInput,
@@ -1562,6 +1563,16 @@ export async function updateMerchantAccountInSupabase(
 
   const targetMerchantId = merchantId ?? userQuery.data.merchant_id;
 
+  const previousMerchantQuery = await supabase
+    .from("merchants")
+    .select("company_name")
+    .eq("id", targetMerchantId)
+    .maybeSingle<{ company_name: string }>();
+
+  if (previousMerchantQuery.error || !previousMerchantQuery.data) {
+    throw new Error("Etablissement introuvable.");
+  }
+
   const email = input.email.trim().toLowerCase();
   const existingUser = await supabase
     .from("merchant_users")
@@ -1616,6 +1627,12 @@ export async function updateMerchantAccountInSupabase(
   if (merchantUpdate.error) {
     throw new Error("Mise a jour du compte impossible.");
   }
+
+  await syncCampaignDefaultEmailSenderNames(
+    targetMerchantId,
+    previousMerchantQuery.data.company_name,
+    companyName,
+  );
 
   const userUpdate = await supabase
     .from("merchant_users")

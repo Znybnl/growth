@@ -56,6 +56,7 @@ export async function GET(request: NextRequest) {
         rewardExpiresAt: payload.lead.rewardExpiresAt,
         purchaseRequired: Boolean(payload.prize.purchaseRequired),
         emailSettings: payload.campaign.presentation.email,
+        logoUrl: payload.campaign.logoUrl,
       });
       retried += 1;
     } catch (retryError) {

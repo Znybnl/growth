@@ -159,3 +159,63 @@ export async function setCampaignLocalSettings(
   await writeFileStore(store);
   return store[campaignId];
 }
+
+/**
+ * Keep the sender name in sync when it still represents the previous default
+ * establishment name. Explicit sender customisations are left untouched.
+ */
+export async function syncCampaignDefaultEmailSenderNames(
+  merchantId: string,
+  previousCompanyName: string,
+  nextCompanyName: string,
+) {
+  const previousName = previousCompanyName.trim();
+  const nextName = nextCompanyName.trim();
+
+  if (!previousName || !nextName || previousName === nextName || !isSupabaseConfigured()) {
+    return;
+  }
+
+  const supabase = getSupabaseAdmin();
+  const { data, error } = await supabase
+    .from("campaigns")
+    .select("id,campaign_local_settings")
+    .eq("merchant_id", merchantId);
+
+  if (error) {
+    if (error.message.includes("campaign_local_settings")) {
+      return;
+    }
+
+    throw new Error(`Synchronisation du nom d’expéditeur impossible: ${error.message}`);
+  }
+
+  for (const row of (data ?? []) as Array<{
+    id: string;
+    campaign_local_settings: CampaignLocalSettings | null;
+  }>) {
+    const current = row.campaign_local_settings;
+    const senderName = current?.email?.senderName?.trim();
+
+    if (!senderName || senderName !== previousName) {
+      continue;
+    }
+
+    const { error: updateError } = await supabase
+      .from("campaigns")
+      .update({
+        campaign_local_settings: {
+          ...(current ?? {}),
+          email: {
+            ...(current?.email ?? {}),
+            senderName: nextName,
+          },
+        },
+      })
+      .eq("id", row.id);
+
+    if (updateError) {
+      throw new Error(`Synchronisation du nom d’expéditeur impossible: ${updateError.message}`);
+    }
+  }
+}

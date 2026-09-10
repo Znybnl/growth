@@ -33,6 +33,7 @@ export async function POST(request: Request, { params }: LeadResendEmailRoutePro
       rewardExpiresAt: payload.lead.rewardExpiresAt,
       purchaseRequired: Boolean(payload.prize.purchaseRequired),
       emailSettings: payload.campaign.presentation.email,
+      logoUrl: payload.campaign.logoUrl,
     });
 
     return NextResponse.json(result);

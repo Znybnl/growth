@@ -83,6 +83,7 @@ export async function POST(request: Request) {
             rewardExpiresAt: result.lead.rewardExpiresAt,
             purchaseRequired: Boolean(result.prize?.purchaseRequired),
             emailSettings: result.campaign.presentation.email,
+            logoUrl: result.campaign.logoUrl,
             preview: true,
           });
         } catch (emailError) {
@@ -157,6 +158,7 @@ export async function POST(request: Request) {
           rewardExpiresAt: result.lead.rewardExpiresAt,
           purchaseRequired: Boolean(result.prize?.purchaseRequired),
           emailSettings: result.campaign.presentation.email,
+          logoUrl: result.campaign.logoUrl,
         });
       } catch (emailError) {
         logSupportEvent("error", "reward_email_failed", {

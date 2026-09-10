@@ -229,6 +229,7 @@ export function renderRewardEmailText(
 export function renderRewardEmailHtml(
   settings: CampaignEmailSettings,
   variables: RewardEmailVariables,
+  options: { logoSrc?: string } = {},
 ) {
   const headline = escapeHtml(renderEmailTemplate(settings.headline, variables));
   const preheader = escapeHtml(renderEmailTemplate(settings.preheader, variables));
@@ -248,12 +249,15 @@ export function renderRewardEmailHtml(
           <p style="margin:0;font-size:15px;line-height:1.7;color:#4b5563;">${escapeHtml(variables.usageConditions).replaceAll("\n", "<br />")}</p>
         </div>`
     : "";
+  const logoBlock = options.logoSrc
+    ? `<div style="margin:0 0 20px;text-align:center;"><img src="${escapeHtml(options.logoSrc)}" alt="Logo de ${escapeHtml(variables.merchantName)}" style="display:inline-block;max-width:220px;max-height:72px;width:auto;height:auto;object-fit:contain;" /></div>`
+    : `<p style="margin:0 0 12px;font-size:12px;letter-spacing:0.22em;text-transform:uppercase;color:#7b8496;">${escapeHtml(variables.merchantName)}</p>`;
 
   return `
     <div style="display:none;max-height:0;overflow:hidden;opacity:0;">${preheader}</div>
     <div style="margin:0;padding:32px;background:#f4f7fb;font-family:Arial,sans-serif;color:#111827;">
       <div style="max-width:620px;margin:0 auto;background:#ffffff;border-radius:24px;padding:32px;border:1px solid #dbe4f0;">
-        <p style="margin:0 0 12px;font-size:12px;letter-spacing:0.22em;text-transform:uppercase;color:#7b8496;">${escapeHtml(variables.merchantName)}</p>
+        ${logoBlock}
         <h1 style="margin:0 0 16px;font-size:30px;line-height:1.05;">${headline}</h1>
         ${bodyBlocks
           .map(
