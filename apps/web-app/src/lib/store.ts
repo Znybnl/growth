@@ -60,6 +60,7 @@ import {
 } from "@/lib/poster-utils";
 import {
   DEFAULT_GAME_PAGE_TEMPLATE_ID,
+  DEFAULT_WHEEL_HEADING_FONT_SIZE_PX,
   DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
 } from "@/lib/campaign-defaults";
 import { cache } from "react";
@@ -158,7 +159,7 @@ function createPresentation(overrides?: CampaignPresentationOverrides): Campaign
     },
     heading: {
       textColor: "#1f2937",
-      fontSizePx: 42,
+      fontSizePx: DEFAULT_WHEEL_HEADING_FONT_SIZE_PX,
       fontFamily: "roboto",
       fontWeight: 600,
       align: "center",
@@ -635,7 +636,7 @@ function normalizeCampaign(rawCampaign: Campaign | (Partial<Campaign> & Record<s
           backgroundImageUrl: presentation.background?.imageUrl ?? "",
           headline: rawCampaign.subtitle ?? fallback.subtitle,
           headlineTextColor: presentation.heading?.textColor ?? "#ffffff",
-          headlineFontSizePx: presentation.heading?.fontSizePx ?? 42,
+          headlineFontSizePx: presentation.heading?.fontSizePx ?? DEFAULT_WHEEL_HEADING_FONT_SIZE_PX,
           headlineFontFamily: presentation.poster?.headlineFontFamily ?? "geogrotesque",
           wheel,
           footerBackgroundColor: rawCampaign.accent?.signal ?? fallback.accent.signal,

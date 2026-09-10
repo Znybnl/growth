@@ -77,7 +77,8 @@ import {
   DEFAULT_GAME_PAGE_TEMPLATE_ID,
   DEFAULT_COCORICO_PRIMARY_COLOR,
   DEFAULT_ROSE_INSTITUT_TEXT_COLOR,
-  DEFAULT_ROSE_INSTITUT_HEADING_SIZE_PX,
+  DEFAULT_ROSE_INSTITUT_HEADING_FONT_FAMILY,
+  DEFAULT_WHEEL_HEADING_FONT_SIZE_PX,
   roseInstitutWheelBackground,
   DEFAULT_WHEEL_SPACING_PX,
   DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
@@ -1707,6 +1708,7 @@ export function CampaignEditor({
         backgroundColor: string;
         scratchSignal: string;
         headingTextColor: string;
+        logoTextColor: string;
         headingFontFamily: TextFont;
         buttonBackgroundColor: string;
       }
@@ -2738,6 +2740,7 @@ export function CampaignEditor({
                             backgroundColor: current.presentation.background.color,
                             scratchSignal: current.accent.signal,
                             headingTextColor: current.presentation.heading.textColor,
+                            logoTextColor: current.presentation.logo.textColor ?? current.presentation.heading.textColor,
                             headingFontFamily: current.presentation.heading.fontFamily,
                             buttonBackgroundColor: current.presentation.button.backgroundColor,
                           };
@@ -2745,7 +2748,8 @@ export function CampaignEditor({
                           const wheel = remembered?.wheel ?? wheelPaletteForTemplate(template.value, current.presentation.wheel);
                           const backgroundColor = remembered?.backgroundColor ?? wheelBackgroundForTemplate(template.value, current.presentation.background.color);
                           const headingTextColor = remembered?.headingTextColor ?? (template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : current.presentation.heading.textColor);
-                          const buttonBackgroundColor = remembered?.buttonBackgroundColor ?? wheel.loseColor;
+                          const logoTextColor = remembered?.logoTextColor ?? (template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : current.presentation.logo.textColor ?? current.presentation.heading.textColor);
+                          const buttonBackgroundColor = remembered?.buttonBackgroundColor ?? (template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheel.loseColor);
                           const scratchSignal =
                             remembered?.scratchSignal ??
                             (scratchTemplateDefaultPrimaryColor(template.value) &&
@@ -2772,15 +2776,21 @@ export function CampaignEditor({
                                   textColor: headingTextColor,
                                   fontSizePx:
                                     template.value === "rose-institut" &&
-                                    [40, 42].includes(current.presentation.heading.fontSizePx)
-                                      ? DEFAULT_ROSE_INSTITUT_HEADING_SIZE_PX
+                                    [34, 40, 42].includes(current.presentation.heading.fontSizePx)
+                                      ? DEFAULT_WHEEL_HEADING_FONT_SIZE_PX
                                       : current.presentation.heading.fontSizePx,
                                   fontFamily:
                                     remembered?.headingFontFamily ??
-                                    (isCocoricoWheelTemplate(template.value) || isClassicPopWheelTemplate(template.value)
+                                    (template.value === "rose-institut"
+                                      ? DEFAULT_ROSE_INSTITUT_HEADING_FONT_FAMILY
+                                      : isCocoricoWheelTemplate(template.value) || isClassicPopWheelTemplate(template.value)
                                       ? "fredoka"
                                       : current.presentation.heading.fontFamily),
                                 },
+                              logo: {
+                                ...current.presentation.logo,
+                                textColor: logoTextColor,
+                              },
                               button:
                                 current.gameType === "wheel"
                                   ? {
