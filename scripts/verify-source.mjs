@@ -12,6 +12,7 @@ const requiredFiles = [
   "apps/web-app/src/components/merchant/campaign-live-preview.tsx",
   "apps/web-app/src/lib/preview-token.ts",
   "apps/web-app/src/lib/session-security-server.ts",
+  "apps/web-app/public/fonts/fonts.conf",
   "supabase/migrations/20260802_preview_participations.sql",
   "supabase/migrations/20260803_cashier_force_redemption.sql",
 ];
@@ -20,6 +21,12 @@ const missing = requiredFiles.filter((file) => !existsSync(join(root, file)));
 if (missing.length > 0) {
   console.error("Missing required source files:");
   for (const file of missing) console.error(`- ${file}`);
+  process.exit(1);
+}
+
+const fontConfig = readFileSync(join(root, "apps/web-app/public/fonts/fonts.conf"), "utf8");
+if (/<cachedir\b/i.test(fontConfig)) {
+  console.error("The bundled Fontconfig must not declare a writable cache directory.");
   process.exit(1);
 }
 
