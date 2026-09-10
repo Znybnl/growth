@@ -1188,6 +1188,8 @@ function updateMerchantAccountInMemory(
     throw new Error("Marchand introuvable.");
   }
 
+  const previousCompanyName = merchant.companyName.trim();
+
   user.firstName = input.firstName.trim();
   user.lastName = input.lastName.trim();
   user.email = email;
@@ -1213,6 +1215,18 @@ function updateMerchantAccountInMemory(
   merchant.tripadvisorUrl = input.tripadvisorUrl.trim();
   merchant.customLinkUrl = input.customLinkUrl.trim();
   merchant.defaultPrizeCost = input.defaultPrizeCost;
+
+  if (previousCompanyName && previousCompanyName !== merchant.companyName.trim()) {
+    for (const campaign of store.campaigns) {
+      if (
+        campaign.merchantId === merchant.id &&
+        campaign.presentation.email.senderName.trim() === previousCompanyName
+      ) {
+        campaign.presentation.email.senderName = merchant.companyName.trim();
+      }
+    }
+  }
+
   const redemptionPin = input.redemptionPin?.trim() || "0000";
   memoryRedemptionPinHashes.set(merchant.id, hashPassword(redemptionPin));
   memoryRedemptionPinEncrypted.set(merchant.id, encryptRedemptionPin(redemptionPin));

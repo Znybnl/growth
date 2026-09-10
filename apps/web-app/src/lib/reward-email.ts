@@ -34,6 +34,7 @@ export type SendRewardEmailInput = {
   purchaseRequired?: boolean;
   usageConditions?: string;
   emailSettings: CampaignEmailSettings;
+  logoUrl?: string;
   preview?: boolean;
 };
 
@@ -58,6 +59,32 @@ function buildAvailabilityMessage(input: SendRewardEmailInput) {
 function formatSenderName(name: string, email: string) {
   const safeName = name.replace(/[<>"]/g, "").trim() || "Okado";
   return `${safeName} <${email}>`;
+}
+
+function prepareEmailLogo(logoUrl: string | undefined, origin: string) {
+  if (!logoUrl) return { src: undefined, attachment: undefined };
+
+  const dataUrlMatch = logoUrl.match(/^data:([^;,]+);base64,(.+)$/);
+  if (dataUrlMatch) {
+    return {
+      src: "cid:campaign-logo",
+      attachment: {
+        filename: "campaign-logo",
+        content: Buffer.from(dataUrlMatch[2], "base64"),
+        contentType: dataUrlMatch[1],
+        contentId: "campaign-logo",
+      },
+    };
+  }
+
+  try {
+    return {
+      src: new URL(logoUrl, origin).toString(),
+      attachment: undefined,
+    };
+  } catch {
+    return { src: undefined, attachment: undefined };
+  }
 }
 
 export async function sendRewardEmail(input: SendRewardEmailInput) {
@@ -99,6 +126,7 @@ export async function sendRewardEmail(input: SendRewardEmailInput) {
     usageConditions: usageConditionsMessage,
   });
   const emailSettings = upgradeLegacyRewardEmailSettings(input.emailSettings, input.merchantName);
+  const emailLogo = prepareEmailLogo(input.logoUrl, input.origin);
   const renderedSubject = renderEmailTemplate(emailSettings.subject, variables);
   const subject = input.preview
     ? `[TEST] [Pr\u00e9visualisation] ${renderedSubject}`
@@ -126,7 +154,8 @@ export async function sendRewardEmail(input: SendRewardEmailInput) {
       subject,
       replyTo: emailSettings.replyTo || undefined,
       text: renderRewardEmailText(emailSettings, variables),
-      html: renderRewardEmailHtml(emailSettings, variables),
+      html: renderRewardEmailHtml(emailSettings, variables, { logoSrc: emailLogo.src }),
+      ...(emailLogo.attachment ? { attachments: [emailLogo.attachment] } : {}),
     });
 
     if (result.error) {
