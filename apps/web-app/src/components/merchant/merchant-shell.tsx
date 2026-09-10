@@ -32,7 +32,10 @@ const navItems: Array<{ href: string; label: string; icon: LucideIcon }> = [
   { href: "/account", label: "Mon compte", icon: UserRound },
 ];
 
-const prefetchedNavRoutes = new Set(["/", "/campaigns", "/data", "/account"]);
+// Campaign data changes from the editor must be visible as soon as the merchant
+// returns to the list. Keep the campaign route out of the shell prefetch cache;
+// the page is already dynamic and should be fetched from the current server state.
+const prefetchedNavRoutes = new Set(["/", "/data", "/account"]);
 
 const adminNavItems: Array<{ href: string; label: string; icon: LucideIcon }> = [
   { href: "/admin", label: "Pilotage", icon: Gauge },
