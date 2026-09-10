@@ -23,6 +23,7 @@ import { logSupportEvent } from "@/lib/support-log";
 import { CreateDrawSessionRequest, CreateDrawSessionResult } from "@/lib/types";
 
 export async function POST(request: NextRequest) {
+  const preparationStartedAt = performance.now();
   const body = (await request.json()) as CreateDrawSessionRequest;
   const campaignId = body.campaignId?.trim() ?? "";
   const previewClaims = body.previewToken
@@ -42,13 +43,17 @@ export async function POST(request: NextRequest) {
 
   try {
     if (previewClaims) {
+      const rateLimitStartedAt = performance.now();
       await assertPersistentPublicRateLimit(request, {
         key: `preview-draw-session:${campaignId}`,
         limit: 60,
         windowMs: 60 * 1000,
       });
+      const rateLimitMs = Math.round(performance.now() - rateLimitStartedAt);
 
+      const sessionStartedAt = performance.now();
       const result = await createPreviewDrawSession({ campaignId });
+      const sessionCreationMs = Math.round(performance.now() - sessionStartedAt);
       const previewSessionToken = issuePreviewSessionToken({
         campaignId,
         sessionId: result.session.id,
@@ -56,31 +61,64 @@ export async function POST(request: NextRequest) {
       });
       result.session.previewSessionToken = previewSessionToken;
       result.previewSessionToken = previewSessionToken;
+      logSupportEvent("info", "preview_draw_preparation_timing", {
+        campaignId,
+        totalMs: Math.round(performance.now() - preparationStartedAt),
+        rateLimitMs,
+        sessionCreationMs,
+        mode: "preview",
+      });
       return NextResponse.json(result, { status: 201, headers: { "Cache-Control": "no-store" } });
     }
 
     const cookieName = getDailyParticipationCookieName(campaignId);
     assertDailyParticipationCookie(request.cookies.get(cookieName)?.value, campaignId);
 
+    const rateLimitStartedAt = performance.now();
     await assertPersistentPublicRateLimit(request, {
       key: `draw-session:${campaignId}`,
       limit: 12,
       windowMs: 60 * 1000,
     });
+    const rateLimitMs = Math.round(performance.now() - rateLimitStartedAt);
 
+    const dailyLockStartedAt = performance.now();
     await assertPersistentDailyParticipationLock(request, campaignId);
+    const dailyLockMs = Math.round(performance.now() - dailyLockStartedAt);
     dailyLockClaimed = true;
+    const sessionStartedAt = performance.now();
     const result = (await createDrawSession({ campaignId })) as CreateDrawSessionResult;
+    const sessionCreationMs = Math.round(performance.now() - sessionStartedAt);
+    const preparationMs = Math.round(performance.now() - preparationStartedAt);
     logSupportEvent("info", "draw_started", {
       campaignId: result.campaign.id,
       sessionId: result.session.id,
       prizeId: result.prize?.id,
       expiresAt: result.session.expiresAt,
+      preparationMs,
+      rateLimitMs,
+      dailyLockMs,
+      sessionCreationMs,
     });
+    const analyticsStartedAt = performance.now();
     await captureProductEvent("draw_started", `public:${result.campaign.id}`, {
       campaignId: result.campaign.id,
       gameType: result.campaign.gameType,
       hasPrize: Boolean(result.prize),
+      preparationMs,
+      rateLimitMs,
+      dailyLockMs,
+      sessionCreationMs,
+    });
+    logSupportEvent("info", "draw_preparation_timing", {
+      campaignId: result.campaign.id,
+      sessionId: result.session.id,
+      totalMs: Math.round(performance.now() - preparationStartedAt),
+      rateLimitMs,
+      dailyLockMs,
+      sessionCreationMs,
+      analyticsMs: Math.round(performance.now() - analyticsStartedAt),
+      mode: "production",
     });
 
     const response = NextResponse.json(result, { status: 201 });
