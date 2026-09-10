@@ -1,8 +1,10 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { CampaignExperience } from "@/components/public/campaign-experience";
 import { getAuthenticatedSession } from "@/lib/auth";
+import { APP_DESCRIPTION, APP_NAME_CAPITALIZED } from "@/lib/branding";
 import { issuePreviewAccessToken, verifyPreviewAccessToken } from "@/lib/preview-token";
 import { getCampaignPreview, getPublicCampaign } from "@/lib/store";
 
@@ -15,6 +17,56 @@ type CampaignPageProps = {
     previewToken?: string;
   }>;
 };
+
+export async function generateMetadata({
+  params,
+  searchParams,
+}: CampaignPageProps): Promise<Metadata> {
+  const { preview } = await searchParams;
+
+  // Preview data can be private or still in draft. Keep it out of social crawlers.
+  if (preview === "1") {
+    return {
+      title: APP_NAME_CAPITALIZED,
+      description: APP_DESCRIPTION,
+    };
+  }
+
+  const { id } = await params;
+
+  try {
+    const campaign = await getPublicCampaign(id);
+    if (!campaign) {
+      return {
+        title: APP_NAME_CAPITALIZED,
+        description: APP_DESCRIPTION,
+      };
+    }
+
+    const title = campaign.merchantName.trim() || APP_NAME_CAPITALIZED;
+    const description = campaign.subtitle.trim() || APP_DESCRIPTION;
+
+    return {
+      title,
+      description,
+      openGraph: {
+        title,
+        description,
+        type: "website",
+      },
+      twitter: {
+        card: "summary",
+        title,
+        description,
+      },
+    };
+  } catch {
+    return {
+      title: APP_NAME_CAPITALIZED,
+      description: APP_DESCRIPTION,
+    };
+  }
+}
 
 function SuspendedCampaignNotice({ message }: { message: string }) {
   return (
