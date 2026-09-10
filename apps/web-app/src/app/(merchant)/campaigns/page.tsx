@@ -94,7 +94,7 @@ export default async function CampaignsPage({
                 <span data-align="right" className="tabular-nums text-right font-semibold text-graphite">{item.kpis.leads}</span>
                 <span data-align="right" className="tabular-nums text-right font-semibold text-graphite">{formatPercent(item.kpis.conversionRate)}</span>
                 <span data-align="right" className="tabular-nums text-right font-semibold text-graphite">{formatCurrency(item.kpis.costPerLead)}</span>
-                <div className="flex items-center justify-end gap-2"><Link href={`/campaigns/${item.campaign.id}/edit/guided`} prefetch className="okado-primary-action okado-compact-action px-3">Modifier</Link><CampaignActionsMenu campaignId={item.campaign.id} campaignTitle={item.campaign.title} /></div>
+                <div className="flex items-center justify-end gap-2"><Link href={`/campaigns/${item.campaign.id}/edit/guided`} prefetch={false} className="okado-primary-action okado-compact-action px-3">Modifier</Link><CampaignActionsMenu campaignId={item.campaign.id} campaignTitle={item.campaign.title} /></div>
               </div>
             )) : <EmptyState title="Aucune campagne trouvée" description="Modifiez votre recherche ou créez une nouvelle campagne." />}
           </div>

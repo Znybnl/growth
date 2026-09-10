@@ -32,7 +32,10 @@ const navItems: Array<{ href: string; label: string; icon: LucideIcon }> = [
   { href: "/account", label: "Mon compte", icon: UserRound },
 ];
 
-const prefetchedNavRoutes = new Set(["/", "/campaigns", "/data", "/account"]);
+// Authenticated workspace pages render mutable operational data. Keeping them
+// out of the shell prefetch cache avoids showing a snapshot captured before a
+// successful mutation when the merchant navigates back to the page.
+const prefetchedNavRoutes = new Set<string>();
 
 const adminNavItems: Array<{ href: string; label: string; icon: LucideIcon }> = [
   { href: "/admin", label: "Pilotage", icon: Gauge },

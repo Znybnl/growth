@@ -178,7 +178,7 @@ export default async function DashboardPage({
         <section className="okado-card min-w-0 p-5 md:p-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div className="min-w-0"><p className="okado-label">Toutes les campagnes</p><h2 className="okado-section-title mt-2">Vos dernières campagnes</h2></div>
-          <div className="flex items-center gap-4"><span className="text-sm text-ash">{campaignsForTable.length} {campaignsForTable.length === 1 ? "campagne" : "campagnes"}</span><Link href="/campaigns" prefetch className="okado-link text-sm">Voir toutes les campagnes</Link></div>
+          <div className="flex items-center gap-4"><span className="text-sm text-ash">{campaignsForTable.length} {campaignsForTable.length === 1 ? "campagne" : "campagnes"}</span><Link href="/campaigns" prefetch={false} className="okado-link text-sm">Voir toutes les campagnes</Link></div>
         </div>
         {campaignsForTable.length ? (
           <div className="mt-6 max-h-[380px] overflow-y-auto pr-1">
