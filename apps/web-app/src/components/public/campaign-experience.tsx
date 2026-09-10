@@ -11,7 +11,7 @@ import {
   Star,
   Users,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { BrandMark } from "@/components/brand-mark";
 import { CocoricoPromoText } from "@/components/public/cocorico-promo-text";
@@ -467,6 +467,7 @@ export function CampaignExperience({
   const [actionVisited, setActionVisited] = useState(false);
   const [rulesOpen, setRulesOpen] = useState(false);
   const [autoSpinKey, setAutoSpinKey] = useState<string | null>(null);
+  const previewTokenRequestRef = useRef<Promise<string> | null>(null);
 
   const segments = useMemo(() => buildWheelSegments(campaign), [campaign]);
   const winningSegmentId =
@@ -572,11 +573,15 @@ export function CampaignExperience({
     void loadCampaign();
   }, [campaignId, isPreview, previewToken]);
 
-  useEffect(() => {
-    if (!isPreview || initialPreviewToken) return;
+  async function ensurePreviewToken() {
+    if (!isPreview) return null;
+    if (previewToken) return previewToken;
 
-    let cancelled = false;
-    void fetch("/api/public/preview-token", {
+    if (previewTokenRequestRef.current) {
+      return previewTokenRequestRef.current;
+    }
+
+    const request = fetch("/api/public/preview-token", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ campaignId }),
@@ -589,41 +594,15 @@ export function CampaignExperience({
         if (!response.ok || !payload?.token) {
           throw new Error(payload?.error ?? "La prévisualisation est indisponible.");
         }
-        if (!cancelled) setPreviewToken(payload.token);
+        setPreviewToken(payload.token);
+        return payload.token;
       })
-      .catch((previewError) => {
-        if (!cancelled) {
-          setError(
-            previewError instanceof Error
-              ? previewError.message
-              : "La prévisualisation est indisponible.",
-          );
-        }
+      .finally(() => {
+        previewTokenRequestRef.current = null;
       });
 
-    return () => {
-      cancelled = true;
-    };
-  }, [campaignId, initialPreviewToken, isPreview]);
-
-  async function ensurePreviewToken() {
-    if (!isPreview) return null;
-    if (previewToken) return previewToken;
-
-    const response = await fetch("/api/public/preview-token", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ campaignId }),
-    });
-    const payload = (await response.json().catch(() => null)) as {
-      token?: string;
-      error?: string;
-    } | null;
-    if (!response.ok || !payload?.token) {
-      throw new Error(payload?.error ?? "La prévisualisation est indisponible.");
-    }
-    setPreviewToken(payload.token);
-    return payload.token;
+    previewTokenRequestRef.current = request;
+    return request;
   }
 
   async function trackEvent(
