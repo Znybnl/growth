@@ -9,6 +9,7 @@ type CampaignSavedDialogProps = {
   open: boolean;
   campaignId: string;
   onClose: () => void;
+  onPreview: () => void;
   onPreviewQr: () => void;
 };
 
@@ -16,6 +17,7 @@ export function CampaignSavedDialog({
   open,
   campaignId,
   onClose,
+  onPreview,
   onPreviewQr,
 }: CampaignSavedDialogProps) {
   return (
@@ -60,11 +62,9 @@ export function CampaignSavedDialog({
         </Button>
 
         <div className="mt-2 grid gap-2 sm:grid-cols-2">
-          <Button asChild variant="default" size="default">
-            <a href={`/campaign/${campaignId}?preview=1`} target="_blank" rel="noreferrer">
-              <Eye className="h-4 w-4" aria-hidden="true" />
-              Prévisualiser
-            </a>
+          <Button type="button" variant="default" size="default" onClick={onPreview}>
+            <Eye className="h-4 w-4" aria-hidden="true" />
+            Prévisualiser
           </Button>
           <Button type="button" variant="default" size="default" onClick={onPreviewQr}>
             <QrCode className="h-4 w-4" aria-hidden="true" />

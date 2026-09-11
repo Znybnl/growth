@@ -22,7 +22,7 @@ test.describe("Confirmation du Wizard", () => {
     const savedDialog = page.getByRole("dialog", { name: "Votre jeu est enregistré.", exact: true });
     const completionActions = [
       savedDialog.getByRole("link", { name: "Télécharger le QR code de diffusion", exact: true }),
-      savedDialog.getByRole("link", { name: "Prévisualiser", exact: true }),
+      savedDialog.getByRole("button", { name: "Prévisualiser", exact: true }),
       savedDialog.getByRole("button", { name: "QR de test", exact: true }),
       savedDialog.getByRole("link", { name: "Affiche", exact: true }),
     ];
@@ -50,6 +50,15 @@ test.describe("Confirmation du Wizard", () => {
 
     await page.setViewportSize({ width: 390, height: 844 });
     await Promise.all(completionActions.map((action) => expect(action).toBeVisible()));
+
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await savedDialog.getByRole("button", { name: "Prévisualiser", exact: true }).click();
+    const previewDialog = page.getByRole("dialog", { name: "Version mobile", exact: true });
+    await expect(previewDialog).toBeVisible();
+    await expect(previewDialog.getByTitle("Prévisualisation mobile du jeu")).toBeVisible();
+    await expect(previewDialog.getByText("Viewport de référence : 390 × 844 px")).toBeVisible();
+    await previewDialog.getByRole("button", { name: "Fermer", exact: true }).click();
+    await expect(previewDialog).toBeHidden();
 
     await page.goto(`/campaigns?q=${encodeURIComponent(title)}`);
     const campaignCard = page.locator("article").filter({ hasText: title });

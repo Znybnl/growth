@@ -26,6 +26,7 @@ import { type ChangeEvent, type ReactNode, useEffect, useMemo, useRef, useState 
 
 import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
 import { CampaignPreviewQrDialog } from "@/components/merchant/campaign-preview-qr";
+import { CampaignPreviewDialog, openCampaignPreview } from "@/components/merchant/campaign-preview-dialog";
 import { CampaignSavedDialog } from "@/components/merchant/campaign-saved-dialog";
 import { CampaignSpacingControls } from "@/components/merchant/campaign-spacing-controls";
 import { DialogShell } from "@/components/ui/dialog";
@@ -838,6 +839,8 @@ export function CampaignWizard({
   const [saveError, setSaveError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [savedCampaignId, setSavedCampaignId] = useState<string | null>(null);
+  const [savedPreviewCampaignId, setSavedPreviewCampaignId] = useState<string | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
   const [qrPreviewOpen, setQrPreviewOpen] = useState(false);
   const [backgroundLibrary, setBackgroundLibrary] = useState<BackgroundLibraryAsset[]>([]);
   const [backgroundLibraryOpen, setBackgroundLibraryOpen] = useState(false);
@@ -1254,22 +1257,22 @@ export function CampaignWizard({
         {draft.id ? (
           <div className="flex flex-wrap items-center gap-2">
             {isEditing ? <StatusBadge tone="muted">Mode modification</StatusBadge> : null}
-            <Link
-              href={`/campaign/${draft.id}?preview=1`}
-              target="_blank"
-              rel="noreferrer"
-              prefetch={false}
+            <button
+              type="button"
               onClick={() =>
-                captureClientProductEvent("campaign_preview_opened", {
-                  campaignType: draft.gameType,
-                  templateKey: draft.presentation.layout.templateId ?? "classic",
-                })
+                openCampaignPreview(draft.id!, () => {
+                  captureClientProductEvent("campaign_preview_opened", {
+                    campaignType: draft.gameType,
+                    templateKey: draft.presentation.layout.templateId ?? "classic",
+                  });
+                  setPreviewOpen(true);
+                }, (path) => router.push(path))
               }
               className="okado-secondary-action gap-2 px-4 text-sm"
             >
               <Eye className="h-4 w-4" aria-hidden="true" />
               Prévisualiser
-            </Link>
+            </button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button
@@ -2883,11 +2886,29 @@ export function CampaignWizard({
           onClose={() => setQrPreviewOpen(false)}
         />
       ) : null}
+      {draft.id ? (
+        <CampaignPreviewDialog
+          open={previewOpen}
+          campaignId={draft.id}
+          onClose={() => setPreviewOpen(false)}
+        />
+      ) : null}
+      {savedPreviewCampaignId ? (
+        <CampaignPreviewDialog
+          open
+          campaignId={savedPreviewCampaignId}
+          onClose={() => setSavedPreviewCampaignId(null)}
+        />
+      ) : null}
       {savedCampaignId ? (
         <CampaignSavedDialog
           open
           campaignId={savedCampaignId}
           onClose={() => setSavedCampaignId(null)}
+          onPreview={() => {
+            setSavedPreviewCampaignId(savedCampaignId);
+            setSavedCampaignId(null);
+          }}
           onPreviewQr={() => {
             setSavedCampaignId(null);
             setQrPreviewOpen(true);
