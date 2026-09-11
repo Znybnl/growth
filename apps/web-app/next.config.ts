@@ -35,6 +35,19 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+      {
+        source: "/campaign/:id/preview-embed",
+        headers: [
+          {
+            key: "X-Frame-Options",
+            value: "SAMEORIGIN",
+          },
+          {
+            key: "Content-Security-Policy",
+            value: "frame-ancestors 'self'",
+          },
+        ],
+      },
     ];
   },
   outputFileTracingIncludes: {

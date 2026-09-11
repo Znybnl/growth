@@ -36,6 +36,7 @@ import { BrandMark } from "@/components/brand-mark";
 import { CocoricoPromoText } from "@/components/public/cocorico-promo-text";
 import { CampaignEmailPreview } from "@/components/merchant/campaign-email-preview";
 import { CampaignPreviewQrDialog } from "@/components/merchant/campaign-preview-qr";
+import { CampaignPreviewDialog, openCampaignPreview } from "@/components/merchant/campaign-preview-dialog";
 import { CampaignLivePreview as SharedCampaignLivePreview } from "@/components/merchant/campaign-live-preview";
 import { CampaignSpacingControls } from "@/components/merchant/campaign-spacing-controls";
 import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
@@ -1741,6 +1742,7 @@ export function CampaignEditor({
   const [prizeSuggestionsOpen, setPrizeSuggestionsOpen] = useState(false);
   const [prizeSuggestions, setPrizeSuggestions] = useState<PrizeSuggestion[]>([]);
   const [qrPreviewOpen, setQrPreviewOpen] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
   const [imageUploadErrors, setImageUploadErrors] = useState<
     Partial<Record<ImageUploadField, string>>
   >({});
@@ -4410,21 +4412,21 @@ export function CampaignEditor({
                   >
                     Affiche
                   </Link>
-                  <Link
-                    href={`/campaign/${form.id}?preview=1`}
-                    prefetch={false}
-                    target="_blank"
-                    rel="noreferrer"
+                  <button
+                    type="button"
                     onClick={() =>
-                      captureClientProductEvent("campaign_preview_opened", {
-                        campaignType: form.gameType,
-                        templateKey: form.presentation.layout.templateId ?? "classic",
-                      })
+                      openCampaignPreview(form.id!, () => {
+                        captureClientProductEvent("campaign_preview_opened", {
+                          campaignType: form.gameType,
+                          templateKey: form.presentation.layout.templateId ?? "classic",
+                        });
+                        setPreviewOpen(true);
+                      }, (path) => router.push(path))
                     }
                     className="okado-primary-action px-4"
                   >
                     Prévisualiser
-                  </Link>
+                  </button>
                 </div>
               ) : null}
             </div>
@@ -4439,6 +4441,13 @@ export function CampaignEditor({
           open={qrPreviewOpen}
           campaignId={form.id}
           onClose={() => setQrPreviewOpen(false)}
+        />
+      ) : null}
+      {form.id ? (
+        <CampaignPreviewDialog
+          open={previewOpen}
+          campaignId={form.id}
+          onClose={() => setPreviewOpen(false)}
         />
       ) : null}
       <PrizeConditionsDialog

@@ -12,8 +12,10 @@ import {
   WandSparkles,
 } from "lucide-react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 import { DeleteCampaignDialog } from "@/components/merchant/delete-campaign-button";
+import { CampaignPreviewDialog, openCampaignPreview } from "@/components/merchant/campaign-preview-dialog";
 import { DuplicateCampaignButton } from "@/components/merchant/duplicate-campaign-button";
 import {
   DuplicateCampaignToLocationsButton,
@@ -40,8 +42,10 @@ export function CampaignActionsMenu({
   campaignId,
   campaignTitle,
 }: CampaignActionsMenuProps) {
+  const router = useRouter();
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isDuplicateLocationsOpen, setIsDuplicateLocationsOpen] = useState(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   return (
     <>
@@ -62,15 +66,14 @@ export function CampaignActionsMenu({
           sideOffset={8}
           className="w-[min(264px,calc(100vw-24px))] rounded-[8px] border-lavender-mist bg-white p-1.5 shadow-product-card"
         >
-          <DropdownMenuItem className={itemClass} asChild>
-            <a
-              href={`/campaign/${campaignId}?preview=1`}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <Eye className="h-4 w-4" />
-              Prévisualiser
-            </a>
+          <DropdownMenuItem
+            className={itemClass}
+            onSelect={() =>
+              openCampaignPreview(campaignId, () => setIsPreviewOpen(true), (path) => router.push(path))
+            }
+          >
+            <Eye className="h-4 w-4" />
+            Prévisualiser
           </DropdownMenuItem>
           <DropdownMenuItem className={itemClass} asChild>
             <a href={`/data?campaign=${campaignId}`}>
@@ -130,6 +133,11 @@ export function CampaignActionsMenu({
         campaignTitle={campaignTitle}
         open={isDeleteOpen}
         onClose={() => setIsDeleteOpen(false)}
+      />
+      <CampaignPreviewDialog
+        open={isPreviewOpen}
+        campaignId={campaignId}
+        onClose={() => setIsPreviewOpen(false)}
       />
       <DuplicateCampaignToLocationsDialog
         campaignId={campaignId}

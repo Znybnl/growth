@@ -2,7 +2,10 @@
 
 import { BarChart3, Eye, MoreVertical, Pencil } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
+import { CampaignPreviewDialog, openCampaignPreview } from "@/components/merchant/campaign-preview-dialog";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -21,48 +24,56 @@ const itemClass =
 export function DashboardCampaignActionsMenu({
   campaignId,
 }: DashboardCampaignActionsMenuProps) {
+  const router = useRouter();
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          type="button"
-          variant="outline"
-          size="icon"
-          className="h-9 w-9 rounded-[4px] border-border bg-white text-carbon hover:bg-purple-haze"
-          aria-label="Ouvrir les actions de la campagne"
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            className="h-9 w-9 rounded-[4px] border-border bg-white text-carbon hover:bg-purple-haze"
+            aria-label="Ouvrir les actions de la campagne"
+          >
+            <MoreVertical className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          align="end"
+          sideOffset={8}
+          className="w-[min(220px,calc(100vw-24px))] rounded-[8px] border-lavender-mist bg-white p-1.5 shadow-product-card"
         >
-          <MoreVertical className="h-4 w-4" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent
-        align="end"
-        sideOffset={8}
-        className="w-[min(220px,calc(100vw-24px))] rounded-[8px] border-lavender-mist bg-white p-1.5 shadow-product-card"
-      >
-        <DropdownMenuItem className={itemClass} asChild>
-          <Link href={`/campaigns/${campaignId}/edit/guided`} prefetch={false}>
-            <Pencil className="h-4 w-4" />
-            Modifier
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem className={itemClass} asChild>
-          <Link href={`/data?campaign=${campaignId}`} prefetch={false}>
-            <BarChart3 className="h-4 w-4" />
-            Données
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem className={itemClass} asChild>
-          <Link
-            href={`/campaign/${campaignId}?preview=1`}
-            prefetch={false}
-            target="_blank"
-            rel="noreferrer"
+          <DropdownMenuItem className={itemClass} asChild>
+            <Link href={`/campaigns/${campaignId}/edit/guided`} prefetch={false}>
+              <Pencil className="h-4 w-4" />
+              Modifier
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem className={itemClass} asChild>
+            <Link href={`/data?campaign=${campaignId}`} prefetch={false}>
+              <BarChart3 className="h-4 w-4" />
+              Données
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className={itemClass}
+            onSelect={() =>
+              openCampaignPreview(campaignId, () => setIsPreviewOpen(true), (path) => router.push(path))
+            }
           >
             <Eye className="h-4 w-4" />
             Prévisualiser
-          </Link>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <CampaignPreviewDialog
+        open={isPreviewOpen}
+        campaignId={campaignId}
+        onClose={() => setIsPreviewOpen(false)}
+      />
+    </>
   );
 }
