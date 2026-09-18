@@ -279,7 +279,7 @@ function renderLogo(campaign: Campaign, poster: CampaignPosterSettings, template
     return "";
   }
 
-  const text = escapeXml(logoText.toUpperCase());
+  const text = escapeXml(logoText);
   // Keep the merchant name visually secondary to the poster headline.
   const fontSize = clamp(logoSize * 0.24, 18, 51);
   const centerY = logoY + logoSize / 2;

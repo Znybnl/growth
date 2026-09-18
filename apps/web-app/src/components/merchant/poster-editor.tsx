@@ -206,7 +206,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
         logoText: campaign.logoText ?? "",
         logoUrl: campaign.logoUrl,
         logoSizePercent: campaign.presentation.poster?.logoSizePercent ?? 70,
-        logoBottomMarginPx: campaign.presentation.poster?.logoBottomMarginPx ?? 6,
+        logoBottomMarginPx: campaign.presentation.poster?.logoBottomMarginPx ?? 10,
         backgroundMode: "color",
         backgroundColor: "#fff6ee",
         backgroundImageUrl: "",
