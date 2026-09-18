@@ -146,6 +146,31 @@ async function loadPosterFontAsDataUrl(font: CampaignPosterSettings["headlineFon
   }
 }
 
+async function loadPremiumBackdropAsDataUrl() {
+  const source = "/backgrounds/premium-poster-backdrop.png";
+
+  try {
+    const response = await fetch(source, { cache: "force-cache" });
+
+    if (!response.ok) {
+      return source;
+    }
+
+    const buffer = await response.arrayBuffer();
+    const bytes = new Uint8Array(buffer);
+    let binary = "";
+    const chunkSize = 0x8000;
+
+    for (let index = 0; index < bytes.length; index += chunkSize) {
+      binary += String.fromCharCode(...bytes.subarray(index, index + chunkSize));
+    }
+
+    return `data:image/png;base64,${window.btoa(binary)}`;
+  } catch {
+    return source;
+  }
+}
+
 function isTemplateDefaultWinColor(color: string | undefined) {
   return (
     POSTER_TEMPLATES.some((template) => template.wheel.winColor === color) ||
@@ -169,9 +194,11 @@ function applyTemplateDefaults(
     : options.preserveWinColor
     ? poster.wheel.winColor
     : options.defaultWinColor ?? template.wheel.winColor;
-  const headlineTextColor = options.preserveHeadlineTextColor
-    ? poster.headlineTextColor
-    : template.headlineTextColor;
+  const headlineTextColor = isFixedColorTemplate
+    ? template.headlineTextColor
+    : options.preserveHeadlineTextColor
+      ? poster.headlineTextColor
+      : template.headlineTextColor;
 
   return {
     ...poster,
@@ -184,6 +211,7 @@ function applyTemplateDefaults(
     backgroundImageUrl: "",
     headlineTextColor,
     headlineFontSizePx: template.headlineFontSizePx,
+    headlineFontFamily: template.headlineFontFamily ?? poster.headlineFontFamily,
     wheel: {
       ...poster.wheel,
       ...template.wheel,
@@ -301,6 +329,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
     font: CampaignPosterSettings["headlineFontFamily"];
     source: string;
   } | null>(null);
+  const [premiumBackdropSource, setPremiumBackdropSource] = useState<string | null>(null);
   const [previewPng, setPreviewPng] = useState<PosterPngPreview | null>(null);
   const [previewError, setPreviewError] = useState<{ svg: string; message: string } | null>(null);
   const [posterQrError, setPosterQrError] = useState<string | null>(null);
@@ -362,21 +391,42 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
     };
   }, [poster.headlineFontFamily]);
 
+  useEffect(() => {
+    if (poster.templateId !== "premium-wheel") {
+      return;
+    }
+
+    let active = true;
+
+    void loadPremiumBackdropAsDataUrl().then((source) => {
+      if (active) {
+        setPremiumBackdropSource(source);
+      }
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [poster.templateId]);
+
   const posterFontSource =
     loadedPosterFont?.font === poster.headlineFontFamily ? loadedPosterFont.source : null;
 
   const previewPosterSvg = useMemo(
     () =>
-      posterQrDataUrl && posterFontSource !== null
+      posterQrDataUrl &&
+      posterFontSource !== null &&
+      (poster.templateId !== "premium-wheel" || premiumBackdropSource !== null)
         ? buildPosterSvg({
             campaign,
             poster,
             prizes,
             qrDataUrl: posterQrDataUrl,
             posterFontSource: posterFontSource || undefined,
+            premiumBackdropSource: premiumBackdropSource || undefined,
           })
         : null,
-    [campaign, poster, posterFontSource, posterQrDataUrl, prizes],
+    [campaign, poster, posterFontSource, posterQrDataUrl, premiumBackdropSource, prizes],
   );
 
   useEffect(() => {
@@ -516,6 +566,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
       backgroundColor: template.background,
       backgroundImageUrl: "",
       headlineFontSizePx: template.headlineFontSizePx,
+      headlineFontFamily: template.headlineFontFamily ?? current.headlineFontFamily,
       wheel: {
         ...current.wheel,
         ...template.wheel,

@@ -1,4 +1,4 @@
-import { CampaignPosterSettings, PosterTemplateId } from "@/lib/types";
+import { CampaignPosterSettings, PosterTemplateId, TextFont } from "@/lib/types";
 
 export type PosterTemplateConfig = {
   id: PosterTemplateId;
@@ -31,9 +31,13 @@ export type PosterTemplateConfig = {
   headlineMaxWidth?: number;
   headlineFontWeight?: number;
   headlineItalic?: boolean;
+  headlineFontFamily?: TextFont;
   logoX?: number;
   logoY?: number;
+  logoFontWeight?: number;
+  logoLetterSpacing?: number;
   inlineQrCta?: boolean;
+  wheelOnly?: boolean;
   wheel: CampaignPosterSettings["wheel"];
 };
 
@@ -156,9 +160,9 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     wheelX: 712,
     wheelY: 860,
     wheelRadius: 350,
-    qrX: 66,
-    qrY: 548,
-    qrSize: 252,
+    qrX: 80,
+    qrY: 490,
+    qrSize: 270,
     ctaX: 0,
     ctaY: 0,
     ctaWidth: 0,
@@ -169,11 +173,15 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     colorsCustomizable: false,
     headlineX: 528,
     headlineMaxWidth: 500,
-    headlineFontWeight: 600,
+    headlineFontWeight: 500,
     headlineItalic: false,
+    headlineFontFamily: "cormorant",
     logoX: 536,
     logoY: 34,
+    logoFontWeight: 500,
+    logoLetterSpacing: 5,
     inlineQrCta: true,
+    wheelOnly: true,
     wheel: {
       winColor: "#d8c8b8",
       alternateWinColor: "#fbf8f4",

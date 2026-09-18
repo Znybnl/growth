@@ -1,4 +1,5 @@
 import QRCode from "qrcode";
+import { readFileSync } from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
@@ -13,6 +14,21 @@ import { getPosterTemplate, POSTER_TEMPLATES } from "@/lib/poster-templates";
 import { CampaignPerformance, CampaignPosterSettings } from "@/lib/types";
 
 const posterFontSources = new Map<string, string>();
+let premiumBackdropSource: string | undefined;
+
+function getPremiumBackdropSource() {
+  if (!premiumBackdropSource) {
+    const filePath = path.join(
+      process.cwd(),
+      "public",
+      "backgrounds",
+      "premium-poster-backdrop.png",
+    );
+    premiumBackdropSource = `data:image/png;base64,${readFileSync(filePath).toString("base64")}`;
+  }
+
+  return premiumBackdropSource;
+}
 
 function isPosterTemplateDefaultWinColor(color: string | undefined) {
   return POSTER_TEMPLATES.some(
@@ -59,9 +75,11 @@ function applyPosterTemplateDefaults(
     : options.preserveWinColor || hasCustomWinColor
       ? poster.wheel.winColor
       : campaignPrimaryColor;
-  const headlineTextColor = options.preserveHeadlineTextColor
-    ? poster.headlineTextColor
-    : template.headlineTextColor;
+  const headlineTextColor = isFixedColorTemplate
+    ? template.headlineTextColor
+    : options.preserveHeadlineTextColor
+      ? poster.headlineTextColor
+      : template.headlineTextColor;
   const backgroundColor =
     template.id === "classic-wheel" && poster.backgroundMode === "color"
       ? poster.backgroundColor || template.background
@@ -75,6 +93,7 @@ function applyPosterTemplateDefaults(
     backgroundImageUrl: "",
     headlineTextColor,
     headlineFontSizePx: template.headlineFontSizePx,
+    headlineFontFamily: template.headlineFontFamily ?? poster.headlineFontFamily,
     wheel: {
       ...poster.wheel,
       ...template.wheel,
@@ -177,5 +196,7 @@ export async function createCampaignPosterSvg(
     prizes: performance.prizes,
     qrDataUrl,
     posterFontSource: getPosterFontSource(poster.headlineFontFamily),
+    premiumBackdropSource:
+      poster.templateId === "premium-wheel" ? getPremiumBackdropSource() : undefined,
   });
 }

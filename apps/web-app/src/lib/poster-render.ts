@@ -229,7 +229,11 @@ export function createPosterPreviewQrDataUrl() {
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
 }
 
-function renderBackground(poster: CampaignPosterSettings, template: PosterTemplateConfig) {
+function renderBackground(
+  poster: CampaignPosterSettings,
+  template: PosterTemplateConfig,
+  premiumBackdropSource?: string,
+) {
   const baseColor =
     template.id === "classic-wheel" && poster.backgroundMode === "color"
       ? poster.backgroundColor || template.background
@@ -252,15 +256,14 @@ function renderBackground(poster: CampaignPosterSettings, template: PosterTempla
   }
 
   if (template.id === "premium-wheel") {
+    if (premiumBackdropSource) {
+      return `
+        <image href="${escapeXml(premiumBackdropSource)}" x="0" y="0" width="${A4_WIDTH}" height="${A4_HEIGHT}" preserveAspectRatio="xMidYMid slice"/>
+      `;
+    }
+
     return `
-      <rect width="${A4_WIDTH}" height="${A4_HEIGHT}" fill="${baseColor}"/>
-      <circle cx="-28" cy="72" r="288" fill="url(#premiumGlass)" opacity="0.96"/>
-      <circle cx="-28" cy="72" r="214" fill="none" stroke="#ffffff" stroke-width="3" opacity="0.82"/>
-      <circle cx="-28" cy="72" r="188" fill="none" stroke="#c9beb3" stroke-width="5" opacity="0.72"/>
-      <circle cx="112" cy="252" r="10" fill="#ffffff" opacity="0.7"/>
-      <circle cx="152" cy="284" r="18" fill="#ffffff" opacity="0.58"/>
-      <circle cx="690" cy="936" r="388" fill="#ffffff" opacity="0.18"/>
-      <path d="M0 918 C210 886 432 914 794 874 V1123 H0 Z" fill="#ffffff" opacity="0.24"/>
+      <rect width="${A4_WIDTH}" height="${A4_HEIGHT}" fill="#f7f2ec"/>
     `;
   }
 
@@ -299,12 +302,12 @@ function renderLogo(campaign: Campaign, poster: CampaignPosterSettings, template
 
   const text = escapeXml(logoText.toUpperCase());
   // Keep the merchant name visually secondary to the poster headline.
-  const fontSize = clamp(logoSize * 0.24, 18, 51);
+  const fontSize = clamp(logoSize * (template.id === "premium-wheel" ? 0.2 : 0.24), 18, 51);
   const centerY = logoY + logoSize / 2;
   const logoTextColor = poster.headlineTextColor || template.headline;
 
   return `
-    <text x="${logoX}" y="${centerY + fontSize * 0.34}" text-anchor="middle" fill="${logoTextColor}" font-family="${SAFE_FONT}" font-size="${fontSize}" font-weight="800">${text}</text>
+    <text x="${logoX}" y="${centerY + fontSize * 0.34}" text-anchor="middle" fill="${logoTextColor}" font-family="${SAFE_FONT}" font-size="${fontSize}" font-weight="${template.logoFontWeight ?? 800}" letter-spacing="${template.logoLetterSpacing ?? 0}">${text}</text>
   `;
 }
 
@@ -461,13 +464,13 @@ function renderQrAndCta(qrDataUrl: string, template: PosterTemplateConfig) {
 
   if (template.inlineQrCta) {
     const cardWidth = template.qrSize + 36;
-    const cardHeight = template.qrSize + 112;
+    const cardHeight = template.qrSize + 90;
 
     return `
       <g filter="url(#posterShadow)" transform="translate(${template.qrX} ${template.qrY})">
         <rect x="-18" y="-18" width="${cardWidth}" height="${cardHeight}" rx="28" fill="#ffffff" stroke="${accent}" stroke-width="2"/>
         <image href="${escapeXml(qrDataUrl)}" x="0" y="0" width="${template.qrSize}" height="${template.qrSize}"/>
-        <text x="${template.qrSize / 2}" y="${template.qrSize + 68}" text-anchor="middle" fill="#111111" font-family="${SAFE_FONT}" font-size="20" font-weight="800" letter-spacing="0.8">SCANNEZ POUR JOUER</text>
+        <text x="${template.qrSize / 2}" y="${template.qrSize + 58}" text-anchor="middle" fill="#111111" font-family="${SAFE_FONT}" font-size="20" font-weight="800" letter-spacing="0.8">SCANNEZ POUR JOUER</text>
       </g>
     `;
   }
@@ -561,8 +564,16 @@ export function buildPosterSvg(args: {
   prizes: Prize[] | Array<Pick<Prize, "label">>;
   qrDataUrl: string;
   posterFontSource?: string;
+  premiumBackdropSource?: string;
 }) {
-  const { campaign, poster, prizes, qrDataUrl, posterFontSource } = args;
+  const {
+    campaign,
+    poster,
+    prizes,
+    qrDataUrl,
+    posterFontSource,
+    premiumBackdropSource,
+  } = args;
   const posterFontAsset = getPosterFontAsset(poster.headlineFontFamily);
   const posterFontFace = posterFontAsset
     ? `
@@ -578,6 +589,10 @@ export function buildPosterSvg(args: {
     baseTemplate.colorsCustomizable === false ? baseTemplate.wheel : poster.wheel;
   const effectivePoster = {
     ...poster,
+    headlineTextColor:
+      baseTemplate.colorsCustomizable === false
+        ? baseTemplate.headlineTextColor
+        : poster.headlineTextColor,
     wheel: effectiveWheel,
   };
   const template = {
@@ -592,9 +607,11 @@ export function buildPosterSvg(args: {
         : poster.wheel.winColor || baseTemplate.qrFrame,
   };
   const gameMarkup =
-    campaign.gameType === "wheel"
+    campaign.gameType === "wheel" && template.id !== "premium-wheel"
       ? renderWheel(template, effectivePoster, prizes)
-      : renderScratch(template, effectivePoster);
+      : campaign.gameType === "scratch"
+        ? renderScratch(template, effectivePoster)
+        : "";
   return `<?xml version="1.0" encoding="UTF-8"?>
     <svg xmlns="http://www.w3.org/2000/svg" width="${A4_WIDTH}" height="${A4_HEIGHT}" viewBox="0 0 ${A4_WIDTH} ${A4_HEIGHT}">
       <defs>
@@ -611,14 +628,9 @@ export function buildPosterSvg(args: {
           <stop offset="48%" stop-color="#ffffff"/>
           <stop offset="100%" stop-color="#aeb9ce"/>
         </linearGradient>
-        <radialGradient id="premiumGlass" cx="38%" cy="32%" r="70%">
-          <stop offset="0%" stop-color="#ffffff" stop-opacity="0.98"/>
-          <stop offset="72%" stop-color="#ffffff" stop-opacity="0.2"/>
-          <stop offset="100%" stop-color="#c9beb3" stop-opacity="0.72"/>
-        </radialGradient>
       </defs>
 
-      ${renderBackground(effectivePoster, template)}
+      ${renderBackground(effectivePoster, template, premiumBackdropSource)}
       ${renderLogo(campaign, effectivePoster, template)}
       ${renderHeadline(campaign, effectivePoster, template)}
       ${gameMarkup}
