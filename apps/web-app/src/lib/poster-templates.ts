@@ -26,6 +26,14 @@ export type PosterTemplateConfig = {
   ctaRotation: number;
   headlineY: number;
   headlineSizeMultiplier: number;
+  colorsCustomizable?: boolean;
+  headlineX?: number;
+  headlineMaxWidth?: number;
+  headlineFontWeight?: number;
+  headlineItalic?: boolean;
+  logoX?: number;
+  logoY?: number;
+  inlineQrCta?: boolean;
   wheel: CampaignPosterSettings["wheel"];
 };
 
@@ -130,6 +138,48 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
       loseColor: "#f8e4d8",
       alternateLoseColor: "#f8e4d8",
       rimColor: "#2b1d18",
+    },
+  },
+  {
+    id: "premium-wheel",
+    label: "Élégance",
+    description: "Composition ivoire et dorée, inspirée des instituts premium.",
+    background: "#f7f2ec",
+    accent: "#a17d57",
+    accentDark: "#171412",
+    headline: "#111111",
+    headlineStroke: "none",
+    headlineTextColor: "#111111",
+    headlineFontSizePx: 52,
+    qrFrame: "#ffffff",
+    logoVariant: "badge",
+    wheelX: 712,
+    wheelY: 860,
+    wheelRadius: 350,
+    qrX: 66,
+    qrY: 548,
+    qrSize: 252,
+    ctaX: 0,
+    ctaY: 0,
+    ctaWidth: 0,
+    ctaHeight: 0,
+    ctaRotation: 0,
+    headlineY: 222,
+    headlineSizeMultiplier: 1.16,
+    colorsCustomizable: false,
+    headlineX: 528,
+    headlineMaxWidth: 500,
+    headlineFontWeight: 600,
+    headlineItalic: false,
+    logoX: 536,
+    logoY: 34,
+    inlineQrCta: true,
+    wheel: {
+      winColor: "#d8c8b8",
+      alternateWinColor: "#fbf8f4",
+      loseColor: "#d8c8b8",
+      alternateLoseColor: "#fbf8f4",
+      rimColor: "#a17d57",
     },
   },
 ];

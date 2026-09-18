@@ -48,13 +48,15 @@ function applyPosterTemplateDefaults(
   const template = getPosterTemplate(templateId);
   const campaignPrimaryColor = campaignWheel.loseColor;
   const campaignGainColor = campaignWheel.winColor;
+  const isFixedColorTemplate = template.colorsCustomizable === false;
   const hasCustomWinColor =
     poster.wheel.winColor &&
     !isPosterTemplateDefaultWinColor(poster.wheel.winColor) &&
     poster.wheel.winColor !== campaignPrimaryColor &&
     poster.wheel.winColor !== campaignGainColor;
-  const winColor =
-    options.preserveWinColor || hasCustomWinColor
+  const winColor = isFixedColorTemplate
+    ? template.wheel.winColor
+    : options.preserveWinColor || hasCustomWinColor
       ? poster.wheel.winColor
       : campaignPrimaryColor;
   const headlineTextColor = options.preserveHeadlineTextColor

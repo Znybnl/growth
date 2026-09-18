@@ -163,7 +163,10 @@ function applyTemplateDefaults(
     defaultWinColor?: string;
   } = {},
 ): CampaignPosterSettings {
-  const winColor = options.preserveWinColor
+  const isFixedColorTemplate = template.colorsCustomizable === false;
+  const winColor = isFixedColorTemplate
+    ? template.wheel.winColor
+    : options.preserveWinColor
     ? poster.wheel.winColor
     : options.defaultWinColor ?? template.wheel.winColor;
   const headlineTextColor = options.preserveHeadlineTextColor
@@ -500,6 +503,12 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
 
     if (!template) return;
 
+    const winColor = template.colorsCustomizable === false
+      ? template.wheel.winColor
+      : poster.wheel.winColor;
+
+    setDraftWinColor(winColor);
+
     setPoster((current) => ({
       ...current,
       templateId,
@@ -510,8 +519,8 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
       wheel: {
         ...current.wheel,
         ...template.wheel,
-        winColor: current.wheel.winColor,
-        alternateWinColor: current.wheel.winColor,
+        winColor,
+        alternateWinColor: winColor,
       },
     }));
   }
@@ -906,6 +915,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
         </section>
 
 
+        {poster.templateId !== "premium-wheel" ? (
         <section className="okado-card p-6 md:p-8">
             <p className="okado-label">Couleur de l&apos;affiche</p>
             <h2 className="okado-section-title mt-2">
@@ -925,6 +935,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
               </label>
             </div>
         </section>
+        ) : null}
       </div>
 
       <aside className="xl:sticky xl:top-6 xl:h-[calc(100vh-48px)]">
