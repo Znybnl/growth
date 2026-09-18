@@ -20,8 +20,8 @@ export function AccountLocationPanel({ merchant, locations, onSelectLocation }: 
   const [form, setForm] = useState({ companyName: "", city: "", address: "", timeZone: "Europe/Paris" });
 
   async function addLocation() {
-    if (!form.companyName.trim() || !form.city.trim()) {
-      setError("Renseignez le nom et la ville de l’établissement.");
+    if (!form.companyName.trim()) {
+      setError("Renseignez le nom de l’établissement.");
       return;
     }
     setIsSaving(true);
@@ -105,7 +105,7 @@ export function AccountLocationPanel({ merchant, locations, onSelectLocation }: 
             <div role="form" className="mt-7 space-y-4">
               <label className="block text-sm"><span className="mb-2 block font-medium text-graphite">Nom de l’établissement</span><Input value={form.companyName} onChange={(event) => setForm((current) => ({ ...current, companyName: event.target.value }))} required placeholder="Maison Sora République" /></label>
               <div className="grid gap-4 sm:grid-cols-2">
-                <label className="block text-sm"><span className="mb-2 block font-medium text-graphite">Ville</span><Input value={form.city} onChange={(event) => setForm((current) => ({ ...current, city: event.target.value }))} required placeholder="Paris République" /></label>
+                <label className="block text-sm"><span className="mb-2 block font-medium text-graphite">Ville <span className="font-normal text-ash">(optionnelle)</span></span><Input value={form.city} onChange={(event) => setForm((current) => ({ ...current, city: event.target.value }))} placeholder="Paris République" /></label>
                 <label className="block text-sm"><span className="mb-2 block font-medium text-graphite">Fuseau horaire</span><FieldSelect value={form.timeZone} onChange={(event) => setForm((current) => ({ ...current, timeZone: event.target.value }))}><option value="Europe/Paris">France métropolitaine</option><option value="America/Toronto">Canada - Est</option></FieldSelect></label>
               </div>
               <label className="block text-sm"><span className="mb-2 block font-medium text-graphite">Adresse</span><Input value={form.address} onChange={(event) => setForm((current) => ({ ...current, address: event.target.value }))} placeholder="12 rue..." /></label>
