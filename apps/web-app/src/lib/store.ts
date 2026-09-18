@@ -1461,7 +1461,9 @@ export async function createMerchantLocation(input: {
     logoText: input.companyName.trim().slice(0, 2).toUpperCase(),
     city: input.city.trim(),
     address: input.address?.trim() ?? "",
-    locationCode: `${input.city.slice(0, 3)}-${Date.now().toString().slice(-3)}`.toUpperCase(),
+    locationCode: input.city.trim()
+      ? `${input.city.trim().slice(0, 3)}-${Date.now().toString().slice(-3)}`.toUpperCase()
+      : `${input.companyName.trim().slice(0, 3)}-${Date.now().toString().slice(-3)}`.toUpperCase(),
     locationStatus: "active",
     workspaceId: input.workspaceId,
     timeZone: input.timeZone ?? source.timeZone ?? "Europe/Paris",

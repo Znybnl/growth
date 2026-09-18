@@ -1255,10 +1255,13 @@ export async function createSupabaseMerchantLocation(input: {
 
   const companyName = input.companyName.trim();
   const city = input.city.trim();
-  if (!companyName || !city) throw new Error("Le nom du site et la ville sont requis.");
+  if (!companyName) throw new Error("Le nom du site est requis.");
 
   const merchantId = generateId("merchant");
-  const locationCode = `${companyName.slice(0, 3)}-${city.slice(0, 3)}`
+  const locationCodeSource = city
+    ? `${companyName.slice(0, 3)}-${city.slice(0, 3)}`
+    : `${companyName.slice(0, 3)}-${merchantId.slice(-4)}`;
+  const locationCode = locationCodeSource
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9]/gi, "")
