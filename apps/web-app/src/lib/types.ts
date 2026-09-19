@@ -423,6 +423,7 @@ export interface CampaignWheelSettings {
 }
 
 export interface CampaignPosterSettings {
+  templateStyles?: Partial<Record<PosterTemplateId, PosterTemplateStyle>>;
   templateId?: PosterTemplateId;
   logoSource?: "wizard" | "poster";
   logoMode?: LogoMode;
@@ -440,6 +441,11 @@ export interface CampaignPosterSettings {
   wheel: CampaignWheelSettings;
   footerBackgroundColor: string;
 }
+
+export type PosterTemplateStyle = Pick<CampaignPosterSettings,
+  "backgroundMode" | "backgroundColor" | "backgroundImageUrl" |
+  "headlineTextColor" | "headlineFontSizePx" | "headlineFontFamily" | "wheel"
+>;
 
 export interface CampaignEmailSettings {
   senderName: string;

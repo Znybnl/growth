@@ -300,7 +300,7 @@ function renderLogo(campaign: Campaign, poster: CampaignPosterSettings, template
     return "";
   }
 
-  const text = escapeXml(logoText.toUpperCase());
+  const text = escapeXml(logoText);
   // Keep the merchant name visually secondary to the poster headline.
   const fontSize = clamp(logoSize * (template.id === "premium-wheel" ? 0.2 : 0.24), 18, 51);
   const centerY = logoY + logoSize / 2;
@@ -311,17 +311,62 @@ function renderLogo(campaign: Campaign, poster: CampaignPosterSettings, template
   `;
 }
 
-function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, template: PosterTemplateConfig) {
+function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, template: PosterTemplateConfig,
+  measure?: (text: string, size: number) => number) {
   const headline = poster.headline || campaign.subtitle || "Faites tourner la roue";
   const family = fontFamily(poster.headlineFontFamily);
   const color = poster.headlineTextColor || template.headline;
+  if (template.id === "premium-wheel") {
+    const x = template.headlineX ?? 284;
+    const width = Math.min(template.headlineMaxWidth ?? 466, A4_WIDTH - x - 40);
+    const logo = getLogoLayout(poster, template);
+    const logoFontSize = clamp(logo.logoSize * 0.2, 18, 51);
+    const logoBottom = poster.logoMode === "image"
+      ? logo.logoY + logo.logoSize
+      : poster.logoMode === "text" ? logo.logoY + logo.logoSize / 2 + logoFontSize * 0.6 : 0;
+    const top = Math.max(150, logoBottom + poster.logoBottomMarginPx);
+    const availableHeight = Math.max(70, 350 - top);
+    const measureText = measure ?? ((text: string, size: number) => text.length * size * 0.46);
+    const wrap = (size: number) => {
+      const lines: string[] = [];
+      for (const paragraph of headline.split(/\r?\n/).filter(Boolean)) {
+        let line = "";
+        for (const word of paragraph.trim().split(/\s+/)) {
+          const next = line ? `${line} ${word}` : word;
+          if (line && measureText(next, size) > width) {
+            lines.push(line);
+            line = "";
+          }
+          // A single long word must stay within the same safe bounds.
+          for (const character of (line ? ` ${word}` : word)) {
+            if (line && measureText(line + character, size) > width) {
+              lines.push(line);
+              line = "";
+            }
+            line += character;
+          }
+        }
+        if (line) lines.push(line);
+      }
+      return lines;
+    };
+    let size = clamp(poster.headlineFontSizePx * template.headlineSizeMultiplier, 24, 94);
+    let lines = wrap(size);
+    while (size > 12 && (lines.length > 4 || lines.length * size * 1.08 > availableHeight)) {
+      size -= 1;
+      lines = wrap(size);
+    }
+    return `<g>${lines.map((line, index) => `<text x="${x}" y="${top + size * 0.82 + index * size * 1.08}"
+      text-anchor="start" fill="${color}" font-family="${family}" font-size="${size}"
+      font-weight="${template.headlineFontWeight ?? 500}">${escapeXml(line)}</text>`).join("")}</g>`;
+  }
   const size = clamp(poster.headlineFontSizePx * template.headlineSizeMultiplier, 46, 94);
   const headlineX = template.headlineX ?? A4_WIDTH / 2;
   const headlineMaxWidth = template.headlineMaxWidth ?? POSTER_HEADLINE_MAX_WIDTH;
   // Recalculate the line capacity from the effective font size, then balance
   // the result into at most four lines. Each line is fitted to the same SVG
   // container so long headlines cannot escape the poster on screen or in PNG.
-  const headlineText = template.id === "premium-wheel" ? headline : headline.toUpperCase();
+  const headlineText = headline.toUpperCase();
   const lines = splitHeadlineLines(headlineText, size, headlineMaxWidth);
   const logoAwareHeadlineY = template.headlineY + (poster.logoBottomMarginPx - 28);
   const firstLineY = Math.max(logoAwareHeadlineY, getLogoLayout(poster, template).bottomY + size * 0.15);
@@ -341,7 +386,7 @@ function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, temp
       ? lines
       : rebalanceHeadlineLines(headlineText, maxVisibleLines);
   const accent = poster.wheel.winColor || template.accent;
-  const letterSpacing = template.id === "premium-wheel" ? 0 : -2;
+  const letterSpacing = -2;
 
   return `
     <g>
@@ -349,7 +394,7 @@ function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, temp
     .map((line, index) => {
       const y = firstLineY + index * lineHeight;
       const rotation = template.id === "terracotta-wheel" ? -3 : template.id === "classic-wheel" ? -2 : 0;
-      const fill = template.id === "premium-wheel" ? color : index % 2 === 1 ? accent : color;
+      const fill = index % 2 === 1 ? accent : color;
       const fittedWidth = Math.min(headlineMaxWidth, estimateHeadlineWidth(line, size));
       const fitAttributes =
         fittedWidth >= headlineMaxWidth * 0.68
@@ -361,7 +406,7 @@ function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, temp
           x="${headlineX}"
           y="${y}"
           transform="rotate(${rotation} ${headlineX} ${y})"
-          text-anchor="${template.id === "premium-wheel" ? "start" : "middle"}"
+          text-anchor="middle"
           fill="${fill}"
           font-family="${family}"
           font-size="${size}"
@@ -472,7 +517,7 @@ function renderQrAndCta(qrDataUrl: string, template: PosterTemplateConfig) {
     const qrContentY = premiumQr ? 12 : 0;
     const qrLabelX = cardWidth / 2 - 18;
     const qrLabelY = qrContentY + qrContentSize + (premiumQr ? 34 : 30);
-    const qrLabelFontSize = premiumQr ? 22 : 20;
+    const qrLabelFontSize = 20;
 
     return `
       <g filter="url(#posterShadow)" transform="translate(${template.qrX} ${template.qrY})">
@@ -587,6 +632,7 @@ export function buildPosterSvg(args: {
   qrDataUrl: string;
   posterFontSource?: string;
   premiumBackdropSource?: string;
+  measureHeadline?: (text: string, size: number) => number;
 }) {
   const {
     campaign,
@@ -595,6 +641,7 @@ export function buildPosterSvg(args: {
     qrDataUrl,
     posterFontSource,
     premiumBackdropSource,
+    measureHeadline,
   } = args;
   const posterFontAsset = getPosterFontAsset(poster.headlineFontFamily);
   const posterFontFace = posterFontAsset
@@ -654,7 +701,7 @@ export function buildPosterSvg(args: {
 
       ${renderBackground(effectivePoster, template, premiumBackdropSource)}
       ${renderLogo(campaign, effectivePoster, template)}
-      ${renderHeadline(campaign, effectivePoster, template)}
+      ${renderHeadline(campaign, effectivePoster, template, measureHeadline)}
       ${gameMarkup}
       ${renderQrAndCta(qrDataUrl, template)}
       ${renderSteps(template, campaign.gameType)}

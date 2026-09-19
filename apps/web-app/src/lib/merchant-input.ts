@@ -20,6 +20,7 @@ import {
   defaultWheelSubtitleSpacingForTemplate,
 } from "@/lib/campaign-defaults";
 import { MAX_POSTER_HEADLINE_LENGTH } from "@/lib/poster-utils";
+import { normalizePosterTemplateStyles } from "@/lib/poster-template-settings";
 
 const GOAL_TYPES = new Set<GoalType>(["lead_capture", "review_prompt", "social_follow"]);
 const GAME_TYPES = new Set<GameType>(["wheel", "scratch"]);
@@ -535,6 +536,7 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
         alternateLoseColor: normalizeColor(wheel.alternateLoseColor, "#8795db"),
       },
       poster: {
+        templateStyles: normalizePosterTemplateStyles(poster.templateStyles),
         templateId: normalizeEnum(poster.templateId, POSTER_TEMPLATE_IDS, "classic-wheel"),
         logoSource:
           poster.logoSource === "wizard" || poster.logoSource === "poster"

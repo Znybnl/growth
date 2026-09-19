@@ -172,7 +172,7 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     headlineSizeMultiplier: 1.18,
     colorsCustomizable: false,
     headlineX: 284,
-    headlineMaxWidth: 580,
+    headlineMaxWidth: 466,
     headlineFontWeight: 500,
     headlineItalic: false,
     headlineFontFamily: "cormorant",
