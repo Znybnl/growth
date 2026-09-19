@@ -176,7 +176,7 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     headlineFontWeight: 500,
     headlineItalic: false,
     headlineFontFamily: "cormorant",
-    logoX: 536,
+    logoX: 516,
     logoY: 12,
     logoFontWeight: 500,
     logoLetterSpacing: 5,
