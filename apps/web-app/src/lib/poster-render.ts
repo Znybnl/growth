@@ -496,9 +496,9 @@ function renderSteps(template: PosterTemplateConfig, gameType: Campaign["gameTyp
   if (template.id === "premium-wheel") {
     return `
       <g transform="translate(0 925)">
-        <rect width="${A4_WIDTH}" height="${A4_HEIGHT - 925}" fill="#ffffff" opacity="0.84"/>
-        <line x1="281" y1="30" x2="281" y2="143" stroke="#171412" stroke-width="2"/>
-        <line x1="513" y1="30" x2="513" y2="143" stroke="#171412" stroke-width="2"/>
+        <rect width="${A4_WIDTH}" height="${A4_HEIGHT - 925}" fill="#ffffff" opacity="0.76"/>
+        <line x1="281" y1="30" x2="281" y2="138" stroke="#171412" stroke-width="2"/>
+        <line x1="513" y1="30" x2="513" y2="138" stroke="#171412" stroke-width="2"/>
         <g transform="translate(33 14)">
           <g transform="translate(0 9)">
             <circle cx="132" cy="48" r="42" fill="${template.accent}"/>
@@ -506,7 +506,7 @@ function renderSteps(template: PosterTemplateConfig, gameType: Campaign["gameTyp
               <path transform="translate(0 -7)" d="M116 29 h31 a6 6 0 0 1 6 6 v42 a6 6 0 0 1 -6 6 h-31 a6 6 0 0 1 -6 -6 v-42 a6 6 0 0 1 6 -6 Z M118 42 h27 M118 53 h20 M118 64 h23" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
             </g>
           </g>
-          <text x="132" y="143" text-anchor="middle" fill="#111111" font-family="${SAFE_FONT}" font-size="28" font-weight="700">Scannez</text>
+          <text x="132" y="138" text-anchor="middle" fill="#111111" font-family="${SAFE_FONT}" font-size="28" font-weight="700">Scannez</text>
         </g>
         <g transform="translate(264 14)">
           <g transform="translate(0 9)">
@@ -514,7 +514,7 @@ function renderSteps(template: PosterTemplateConfig, gameType: Campaign["gameTyp
             <circle cx="132" cy="48" r="25" fill="none" stroke="#ffffff" stroke-width="4"/>
             <path d="M132 23 v50 M107 48 h50 M114 30 l36 36 M150 30 l-36 36" stroke="#ffffff" stroke-width="3"/>
           </g>
-          <text x="132" y="143" text-anchor="middle" fill="#111111" font-family="${SAFE_FONT}" font-size="28" font-weight="700">${action}</text>
+          <text x="132" y="138" text-anchor="middle" fill="#111111" font-family="${SAFE_FONT}" font-size="28" font-weight="700">${action}</text>
         </g>
         <g transform="translate(497 14)">
           <g transform="translate(0 9)">
@@ -527,7 +527,7 @@ function renderSteps(template: PosterTemplateConfig, gameType: Campaign["gameTyp
               <path d="M0-5c7 0 11-2 10-6-1-4-7-3-10 6Z" fill="none" stroke="#ffffff" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
             </g>
           </g>
-          <text x="132" y="143" text-anchor="middle" fill="#111111" font-family="${SAFE_FONT}" font-size="28" font-weight="700">${gift}</text>
+          <text x="132" y="138" text-anchor="middle" fill="#111111" font-family="${SAFE_FONT}" font-size="28" font-weight="700">${gift}</text>
         </g>
       </g>
     `;
