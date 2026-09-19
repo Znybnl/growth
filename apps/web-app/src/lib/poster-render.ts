@@ -519,8 +519,12 @@ function renderSteps(template: PosterTemplateConfig, gameType: Campaign["gameTyp
         <g transform="translate(497 14)">
           <g transform="translate(0 9)">
             <circle cx="132" cy="48" r="42" fill="${template.accent}"/>
-            <g transform="translate(132 48) scale(0.82) translate(-132 -48)">
-              <path transform="translate(0 -7)" d="M108 41 h48 v40 h-48 Z M102 30 h60 v17 h-60 Z M132 30 v51 M116 30 c-23 -19 9 -28 16 0 M148 30 c7 -28 39 -19 16 0" fill="none" stroke="#ffffff" stroke-width="4" stroke-linejoin="round"/>
+            <g transform="translate(132 48) scale(1.6)">
+              <rect x="-13" y="-5" width="26" height="19" rx="2" fill="none" stroke="#ffffff" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M-15-5h30v7h-30z" fill="none" stroke="#ffffff" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M0-5v19" fill="none" stroke="#ffffff" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M0-5c-7 0-11-2-10-6 1-4 7-3 10 6Z" fill="none" stroke="#ffffff" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M0-5c7 0 11-2 10-6-1-4-7-3-10 6Z" fill="none" stroke="#ffffff" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"/>
             </g>
           </g>
           <text x="132" y="143" text-anchor="middle" fill="#111111" font-family="${SAFE_FONT}" font-size="28" font-weight="700">${gift}</text>
