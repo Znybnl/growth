@@ -24,7 +24,11 @@ export type TextFont =
 export type LogoMode = "none" | "image" | "text";
 export type ButtonSize = "sm" | "md" | "lg";
 export type BackgroundMode = "color" | "image";
-export type PosterTemplateId = "classic-wheel" | "soft-gradient-wheel" | "terracotta-wheel";
+export type PosterTemplateId =
+  | "classic-wheel"
+  | "soft-gradient-wheel"
+  | "terracotta-wheel"
+  | "premium-wheel";
 export type GamePageTemplateId =
   | "classic"
   | "restaurant-pop"

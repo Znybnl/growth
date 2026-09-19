@@ -1,4 +1,4 @@
-import { CampaignPosterSettings, PosterTemplateId } from "@/lib/types";
+import { CampaignPosterSettings, PosterTemplateId, TextFont } from "@/lib/types";
 
 export type PosterTemplateConfig = {
   id: PosterTemplateId;
@@ -26,6 +26,18 @@ export type PosterTemplateConfig = {
   ctaRotation: number;
   headlineY: number;
   headlineSizeMultiplier: number;
+  colorsCustomizable?: boolean;
+  headlineX?: number;
+  headlineMaxWidth?: number;
+  headlineFontWeight?: number;
+  headlineItalic?: boolean;
+  headlineFontFamily?: TextFont;
+  logoX?: number;
+  logoY?: number;
+  logoFontWeight?: number;
+  logoLetterSpacing?: number;
+  inlineQrCta?: boolean;
+  wheelOnly?: boolean;
   wheel: CampaignPosterSettings["wheel"];
 };
 
@@ -130,6 +142,52 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
       loseColor: "#f8e4d8",
       alternateLoseColor: "#f8e4d8",
       rimColor: "#2b1d18",
+    },
+  },
+  {
+    id: "premium-wheel",
+    label: "Élégance",
+    description: "Composition ivoire et dorée, inspirée des instituts premium.",
+    background: "#f7f2ec",
+    accent: "#a17d57",
+    accentDark: "#171412",
+    headline: "#111111",
+    headlineStroke: "none",
+    headlineTextColor: "#111111",
+    headlineFontSizePx: 58,
+    qrFrame: "#ffffff",
+    logoVariant: "badge",
+    wheelX: 712,
+    wheelY: 860,
+    wheelRadius: 350,
+    qrX: 80,
+    qrY: 504,
+    qrSize: 270,
+    ctaX: 0,
+    ctaY: 0,
+    ctaWidth: 0,
+    ctaHeight: 0,
+    ctaRotation: 0,
+    headlineY: 232,
+    headlineSizeMultiplier: 1.18,
+    colorsCustomizable: false,
+    headlineX: 284,
+    headlineMaxWidth: 580,
+    headlineFontWeight: 500,
+    headlineItalic: false,
+    headlineFontFamily: "cormorant",
+    logoX: 516,
+    logoY: 12,
+    logoFontWeight: 500,
+    logoLetterSpacing: 5,
+    inlineQrCta: true,
+    wheelOnly: true,
+    wheel: {
+      winColor: "#d8c8b8",
+      alternateWinColor: "#fbf8f4",
+      loseColor: "#d8c8b8",
+      alternateLoseColor: "#fbf8f4",
+      rimColor: "#a17d57",
     },
   },
 ];
