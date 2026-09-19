@@ -911,15 +911,17 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
               </p>
             </label>
 
-            <label className="text-sm">
+            {poster.templateId !== "premium-wheel" ? (
+              <label className="text-sm">
                 <span className="mb-2 block text-charcoal">Couleur du texte</span>
-              <input
-                type="color"
-                value={poster.headlineTextColor}
-                onChange={(event) => updatePoster({ headlineTextColor: event.target.value })}
-                className="h-14 w-full rounded-[12px] border border-fog bg-white px-2 py-2 outline-none focus:border-aubergine focus:ring-4 focus:ring-aubergine/15"
-              />
-            </label>
+                <input
+                  type="color"
+                  value={poster.headlineTextColor}
+                  onChange={(event) => updatePoster({ headlineTextColor: event.target.value })}
+                  className="h-14 w-full rounded-[12px] border border-fog bg-white px-2 py-2 outline-none focus:border-aubergine focus:ring-4 focus:ring-aubergine/15"
+                />
+              </label>
+            ) : null}
 
             <label className="text-sm">
               <span className="mb-2 flex items-center justify-between gap-3 text-charcoal">
