@@ -466,12 +466,18 @@ function renderQrAndCta(qrDataUrl: string, template: PosterTemplateConfig) {
   if (template.inlineQrCta) {
     const cardWidth = template.qrSize + 36;
     const cardHeight = template.qrSize + 60;
+    const premiumQr = template.id === "premium-wheel";
+    const qrContentSize = premiumQr ? template.qrSize - 26 : template.qrSize;
+    const qrContentX = premiumQr ? (cardWidth - qrContentSize) / 2 - 18 : 0;
+    const qrContentY = premiumQr ? 12 : 0;
+    const qrLabelY = qrContentY + qrContentSize + (premiumQr ? 34 : 30);
+    const qrLabelFontSize = premiumQr ? 22 : 20;
 
     return `
       <g filter="url(#posterShadow)" transform="translate(${template.qrX} ${template.qrY})">
         <rect x="-18" y="-18" width="${cardWidth}" height="${cardHeight}" rx="28" fill="#ffffff" stroke="${accent}" stroke-width="2"/>
-        <image href="${escapeXml(qrDataUrl)}" x="0" y="0" width="${template.qrSize}" height="${template.qrSize}"/>
-        <text x="${template.qrSize / 2}" y="${template.qrSize + 30}" text-anchor="middle" fill="#111111" font-family="${SAFE_FONT}" font-size="20" font-weight="800" letter-spacing="0.8">SCANNEZ POUR JOUER</text>
+        <image href="${escapeXml(qrDataUrl)}" x="${qrContentX}" y="${qrContentY}" width="${qrContentSize}" height="${qrContentSize}"/>
+        <text x="${cardWidth / 2 - 18}" y="${qrLabelY}" text-anchor="middle" fill="#111111" font-family="${SAFE_FONT}" font-size="${qrLabelFontSize}" font-weight="800" letter-spacing="0.8">SCANNEZ POUR JOUER</text>
       </g>
     `;
   }
