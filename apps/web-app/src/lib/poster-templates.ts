@@ -171,7 +171,7 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     headlineY: 232,
     headlineSizeMultiplier: 1.18,
     colorsCustomizable: false,
-    headlineX: 516,
+    headlineX: 284,
     headlineMaxWidth: 580,
     headlineFontWeight: 500,
     headlineItalic: false,
