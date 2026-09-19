@@ -163,12 +163,7 @@ export async function createCampaignPosterSvg(
       ? { ...normalizedPoster, headlineTextColor: "#1b2842" }
       : normalizedPoster;
   const poster = hasExplicitPosterTemplate
-    ? applyPosterTemplateDefaults(posterWithNormalizedHeadline, {
-        ...campaign.presentation.wheel,
-        loseColor: campaignPrimaryColor,
-      }, {
-        preserveHeadlineTextColor: true,
-      })
+    ? normalizedPoster
     : applyPosterTemplateDefaults(
         {
           ...posterWithNormalizedHeadline,

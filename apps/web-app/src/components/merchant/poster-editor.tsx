@@ -8,7 +8,8 @@ import QRCode from "qrcode";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 
 import { buildPosterSvg } from "@/lib/poster-render";
-import { getPosterFontSourceUrl, POSTER_FONT_OPTIONS } from "@/lib/poster-fonts";
+import { selectPosterTemplate } from "@/lib/poster-template-settings";
+import { getPosterFontAsset, getPosterFontSourceUrl, POSTER_FONT_OPTIONS } from "@/lib/poster-fonts";
 import { textFontClass, textFontLabel } from "@/lib/format";
 import {
   createPosterSettingsDefaults,
@@ -128,10 +129,15 @@ async function loadPosterFontAsDataUrl(font: CampaignPosterSettings["headlineFon
     const response = await fetch(source, { cache: "force-cache" });
 
     if (!response.ok) {
-      return source;
+      throw new Error("Police indisponible.");
     }
 
     const buffer = await response.arrayBuffer();
+    const asset = getPosterFontAsset(font);
+    if (asset) {
+      const face = new FontFace(asset.familyName, buffer, { weight: asset.fontWeight });
+      document.fonts.add(await face.load());
+    }
     const bytes = new Uint8Array(buffer);
     let binary = "";
     const chunkSize = 0x8000;
@@ -142,7 +148,7 @@ async function loadPosterFontAsDataUrl(font: CampaignPosterSettings["headlineFon
 
     return `data:font/ttf;base64,${window.btoa(binary)}`;
   } catch {
-    return source;
+    throw new Error("Impossible de charger la police de l’affiche. Réessayez en rechargeant la page.");
   }
 }
 
@@ -153,7 +159,7 @@ async function loadPremiumBackdropAsDataUrl() {
     const response = await fetch(source, { cache: "force-cache" });
 
     if (!response.ok) {
-      return source;
+      throw new Error("Décor indisponible.");
     }
 
     const buffer = await response.arrayBuffer();
@@ -167,16 +173,18 @@ async function loadPremiumBackdropAsDataUrl() {
 
     return `data:image/png;base64,${window.btoa(binary)}`;
   } catch {
-    return source;
+    throw new Error("Impossible de charger le décor Élégance. Réessayez en rechargeant la page.");
   }
 }
 
-function isTemplateDefaultWinColor(color: string | undefined) {
-  return (
-    POSTER_TEMPLATES.some((template) => template.wheel.winColor === color) ||
-    color === "#1b2842" ||
-    color === "#f4c14a"
-  );
+function createHeadlineMeasure(font: CampaignPosterSettings["headlineFontFamily"]) {
+  const context = document.createElement("canvas").getContext("2d");
+  const asset = getPosterFontAsset(font);
+  return (text: string, size: number) => {
+    if (!context) return text.length * size * 0.46;
+    context.font = `500 ${size}px "${asset?.familyName ?? "serif"}"`;
+    return context.measureText(text).width;
+  };
 }
 
 function applyTemplateDefaults(
@@ -255,45 +263,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
     );
 
     if (campaign.presentation.poster?.templateId) {
-      const template = getPosterTemplate(campaign.presentation.poster.templateId);
-      const storedWinColor = campaign.presentation.poster.wheel?.winColor;
-      const storedHeadlineTextColor = campaign.presentation.poster.headlineTextColor;
-      const hasCustomWinColor =
-        Boolean(storedWinColor) &&
-        !isTemplateDefaultWinColor(storedWinColor) &&
-        storedWinColor !== campaignPrimaryColor &&
-        storedWinColor !== campaignGainColor &&
-        storedWinColor !== campaign.presentation.wheel.loseColor;
-      const hasCustomHeadlineTextColor =
-        Boolean(storedHeadlineTextColor) &&
-        storedHeadlineTextColor !== template.headlineTextColor &&
-        storedHeadlineTextColor !== campaignGainColor &&
-        storedHeadlineTextColor !== "#f4c14a";
-
-      return applyTemplateDefaults(
-        {
-          ...normalizedPoster,
-          headlineFontFamily: normalizedPoster.headlineFontFamily,
-          headlineTextColor: hasCustomHeadlineTextColor
-            ? normalizedPoster.headlineTextColor
-            : campaign.gameType === "scratch"
-              ? "#1b2842"
-              : campaignGainColor,
-          wheel: {
-            ...normalizedPoster.wheel,
-            winColor: hasCustomWinColor ? normalizedPoster.wheel.winColor : campaignPrimaryColor,
-            alternateWinColor: hasCustomWinColor
-              ? normalizedPoster.wheel.winColor
-              : campaignPrimaryColor,
-          },
-        },
-        template,
-        {
-          preserveWinColor: hasCustomWinColor,
-          preserveHeadlineTextColor: true,
-          defaultWinColor: campaignPrimaryColor,
-        },
-      );
+      return normalizedPoster;
     }
 
     const template = POSTER_TEMPLATES[0];
@@ -333,6 +303,8 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
   const [previewPng, setPreviewPng] = useState<PosterPngPreview | null>(null);
   const [previewError, setPreviewError] = useState<{ svg: string; message: string } | null>(null);
   const [posterQrError, setPosterQrError] = useState<string | null>(null);
+  const [fontLoadError, setFontLoadError] = useState<{ font: string; message: string } | null>(null);
+  const [backdropLoadError, setBackdropLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -383,7 +355,10 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
     void loadPosterFontAsDataUrl(poster.headlineFontFamily).then((source) => {
       if (active) {
         setLoadedPosterFont({ font: poster.headlineFontFamily, source });
+        setFontLoadError(null);
       }
+    }).catch((error: Error) => {
+      if (active) setFontLoadError({ font: poster.headlineFontFamily, message: error.message });
     });
 
     return () => {
@@ -401,7 +376,10 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
     void loadPremiumBackdropAsDataUrl().then((source) => {
       if (active) {
         setPremiumBackdropSource(source);
+        setBackdropLoadError(null);
       }
+    }).catch((error: Error) => {
+      if (active) setBackdropLoadError(error.message);
     });
 
     return () => {
@@ -424,6 +402,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
             qrDataUrl: posterQrDataUrl,
             posterFontSource: posterFontSource || undefined,
             premiumBackdropSource: premiumBackdropSource || undefined,
+            measureHeadline: createHeadlineMeasure(poster.headlineFontFamily),
           })
         : null,
     [campaign, poster, posterFontSource, posterQrDataUrl, premiumBackdropSource, prizes],
@@ -465,7 +444,9 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
   const currentPreviewError =
     (previewPosterSvg && previewError?.svg === previewPosterSvg
       ? previewError.message
-      : null) ?? posterQrError;
+      : null) ?? posterQrError ??
+      (fontLoadError?.font === poster.headlineFontFamily ? fontLoadError.message : null) ??
+      (poster.templateId === "premium-wheel" ? backdropLoadError : null);
   const isRenderingPreview = Boolean(previewPosterSvg && !previewIsReady && !currentPreviewError);
   const isDirty = lastSavedPosterSnapshot !== JSON.stringify(poster);
 
@@ -549,31 +530,12 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
   }
 
   function selectTemplate(templateId: PosterTemplateId) {
-    const template = POSTER_TEMPLATES.find((item) => item.id === templateId);
-
-    if (!template) return;
-
-    const winColor = template.colorsCustomizable === false
-      ? template.wheel.winColor
-      : poster.wheel.winColor;
-
-    setDraftWinColor(winColor);
-
-    setPoster((current) => ({
-      ...current,
-      templateId,
-      backgroundMode: "color",
-      backgroundColor: template.background,
-      backgroundImageUrl: "",
-      headlineFontSizePx: template.headlineFontSizePx,
-      headlineFontFamily: template.headlineFontFamily ?? current.headlineFontFamily,
-      wheel: {
-        ...current.wheel,
-        ...template.wheel,
-        winColor,
-        alternateWinColor: winColor,
-      },
-    }));
+    const next = selectPosterTemplate({
+      ...poster,
+      wheel: { ...poster.wheel, winColor: draftWinColor, alternateWinColor: draftWinColor },
+    }, templateId);
+    setDraftWinColor(next.wheel.winColor);
+    setPoster(next);
   }
 
   async function savePoster() {

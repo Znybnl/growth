@@ -74,6 +74,7 @@ export function PosterTemplateSelector({
             <button
               key={template.id}
               type="button"
+              aria-pressed={active}
               onClick={() => onSelect(template.id)}
               className={`group overflow-hidden rounded-[var(--radius-card)] border text-left transition hover:-translate-y-0.5 ${
                 active
@@ -81,9 +82,22 @@ export function PosterTemplateSelector({
                   : "border-[#d7e0ed] bg-white hover:border-aubergine"
               }`}
             >
-              <span className="relative block h-[220px] overflow-hidden" style={{ background: template.background }}>
-                {gameType === "wheel" ? <WheelThumbnail template={template} /> : <ScratchThumbnail template={template} />}
-                <QrThumbnail template={template} />
+              <span aria-hidden="true" className="relative block h-[220px] overflow-hidden" style={{
+                background: template.background,
+                ...(template.id === "premium-wheel" ? {
+                  backgroundImage: "url('/backgrounds/premium-poster-backdrop.png')",
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                } : {}),
+              }}>
+                {template.id === "premium-wheel" ? (
+                  <span className="absolute left-[35%] right-3 top-7 text-left font-serif text-lg leading-tight text-black">
+                    Scannez, jouez,<br />récupérez votre cadeau !
+                  </span>
+                ) : <>
+                  {gameType === "wheel" ? <WheelThumbnail template={template} /> : <ScratchThumbnail template={template} />}
+                  <QrThumbnail template={template} />
+                </>}
               </span>
               <span className="block p-4">
                 <span className="block text-sm font-semibold text-[#111827]">{template.label}</span>
