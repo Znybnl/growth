@@ -430,7 +430,7 @@ export function WheelOfFortune({
                   ? colors.loseColor
                   : classicLightColor;
               const textColor = isRoseInstitutTemplate
-                ? "#0b4ea2"
+                ? buttonStyle?.backgroundColor ?? "#0b4ea2"
                 : readableTextColor(fillColor, segment.tone === "win" ? accent.ink : "#111827");
 
               return (
