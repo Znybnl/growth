@@ -554,7 +554,7 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
         logoBottomMarginPx: normalizeNumber(poster.logoBottomMarginPx, {
           min: 0,
           max: 240,
-          fallback: 28,
+          fallback: 10,
           integer: true,
         }),
         backgroundMode: normalizeEnum(poster.backgroundMode, BACKGROUND_MODES, "color"),

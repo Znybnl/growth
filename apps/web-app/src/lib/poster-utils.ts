@@ -145,7 +145,7 @@ export function createPosterSettingsDefaults(input: {
     logoText: input.logoText ?? "",
     logoUrl: input.logoUrl,
     logoSizePercent: input.logoSizePercent ?? 70,
-    logoBottomMarginPx: input.logoBottomMarginPx ?? 6,
+    logoBottomMarginPx: input.logoBottomMarginPx ?? 10,
     backgroundMode: input.backgroundMode ?? (input.backgroundImageUrl ? "image" : "color"),
     backgroundColor: input.backgroundColor ?? "#ffffff",
     backgroundImageUrl: input.backgroundImageUrl ?? "",

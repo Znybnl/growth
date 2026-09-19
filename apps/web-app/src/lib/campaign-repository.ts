@@ -611,7 +611,7 @@ function toCampaign(
           logoText: localSettings.logoText ?? row.title,
           logoUrl: row.logo_url ?? undefined,
           logoSizePercent: row.logo_size_percent,
-          logoBottomMarginPx: row.logo_margin_bottom_px ?? (row.game_type === "wheel" ? 50 : 20),
+          logoBottomMarginPx: row.logo_margin_bottom_px ?? 10,
         },
       ),
       email: normalizeCampaignEmailSettings(
