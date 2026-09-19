@@ -1,5 +1,6 @@
 "use client";
 
+import { Copy } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -83,10 +84,7 @@ export function DuplicateCampaignButton({
             isMenu ? "h-4 w-4" : "h-8 w-8 rounded-full bg-sky-wash",
           )}
         >
-          <svg viewBox="0 0 24 24" className="h-4 w-4 fill-none stroke-current stroke-[1.8]">
-            <path d="M8 8h11v11H8z" />
-            <path d="M5 5h11v11" />
-          </svg>
+          <Copy className="h-4 w-4" aria-hidden="true" />
         </span>
         {isDuplicating ? "Duplication..." : "Dupliquer"}
       </button>
