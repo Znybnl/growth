@@ -9,7 +9,6 @@ import {
   MoreVertical,
   QrCode,
   Trash2,
-  WandSparkles,
 } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -79,12 +78,6 @@ export function CampaignActionsMenu({
             <a href={`/data?campaign=${campaignId}`}>
               <BarChart3 className="h-4 w-4" />
               Données
-            </a>
-          </DropdownMenuItem>
-          <DropdownMenuItem className={itemClass} asChild>
-            <a href={`/campaigns/${campaignId}/edit/guided`}>
-              <WandSparkles className="h-4 w-4" />
-              Modifier avec l&apos;assistant
             </a>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
