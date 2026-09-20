@@ -311,12 +311,8 @@ function renderLogo(campaign: Campaign, poster: CampaignPosterSettings, template
   `;
 }
 
-function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, template: PosterTemplateConfig,
+export function getPremiumHeadlineLayout(headline: string, poster: CampaignPosterSettings, template: PosterTemplateConfig,
   measure?: (text: string, size: number) => number) {
-  const headline = poster.headline || campaign.subtitle || "Faites tourner la roue";
-  const family = fontFamily(poster.headlineFontFamily);
-  const color = poster.headlineTextColor || template.headline;
-  if (template.id === "premium-wheel") {
     const x = template.headlineX ?? 284;
     const width = Math.min(template.headlineMaxWidth ?? 466, A4_WIDTH - x - 40);
     const logo = getLogoLayout(poster, template);
@@ -337,6 +333,10 @@ function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, temp
             lines.push(line);
             line = "";
           }
+          if (measureText(word, size) <= width) {
+            line = line ? `${line} ${word}` : word;
+            continue;
+          }
           // A single long word must stay within the same safe bounds.
           for (const character of (line ? ` ${word}` : word)) {
             if (line && measureText(line + character, size) > width) {
@@ -350,13 +350,24 @@ function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, temp
       }
       return lines;
     };
-    let size = clamp(poster.headlineFontSizePx * template.headlineSizeMultiplier, 24, 94);
+    const requestedSize = poster.headlineFontSizePx * template.headlineSizeMultiplier;
+    let size = requestedSize;
     let lines = wrap(size);
     while (size > 12 && (lines.length > 4 || lines.length * size * 1.08 > availableHeight)) {
       size -= 1;
       lines = wrap(size);
     }
-    return `<g>${lines.map((line, index) => `<text x="${x}" y="${top + size * 0.82 + index * size * 1.08}"
+    return { x, top, size, lines, requestedSize, adjusted: size < requestedSize };
+}
+
+function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, template: PosterTemplateConfig,
+  measure?: (text: string, size: number) => number) {
+  const headline = poster.headline || campaign.subtitle || "Faites tourner la roue";
+  const family = fontFamily(poster.headlineFontFamily);
+  const color = poster.headlineTextColor || template.headline;
+  if (template.id === "premium-wheel") {
+    const { x, top, size, lines } = getPremiumHeadlineLayout(headline, poster, template, measure);
+    return `<g data-headline-size="${size}">${lines.map((line, index) => `<text x="${x}" y="${top + size * 0.82 + index * size * 1.08}"
       text-anchor="start" fill="${color}" font-family="${family}" font-size="${size}"
       font-weight="${template.headlineFontWeight ?? 500}">${escapeXml(line)}</text>`).join("")}</g>`;
   }

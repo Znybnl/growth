@@ -16,6 +16,14 @@ test("Élégance conserve les autres styles et télécharge exactement l’aper�
     await dialog.accept();
   });
   await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.addInitScript(() => {
+    const original = HTMLCanvasElement.prototype.toBlob;
+    HTMLCanvasElement.prototype.toBlob = function (...args) {
+      const target = window as unknown as { posterEncodes?: number };
+      target.posterEncodes = (target.posterEncodes ?? 0) + 1;
+      return original.apply(this, args);
+    };
+  });
   await signIn(page);
   let campaignId: string | undefined;
   try {
@@ -53,10 +61,35 @@ test("Élégance conserve les autres styles et télécharge exactement l’aper�
     await choose("Élégance");
     await expect(page.locator('input[type="color"]')).toHaveCount(0);
     await expect(font).toHaveValue("cormorant");
+    await expect(page.getByTestId("elegance-thumbnail-qr")).toBeAttached();
+    await page.getByRole("button", { name: /^Élégance/ }).screenshot({ path: testInfo.outputPath("elegance-thumbnail.png") });
     await save();
     await page.reload();
     await expect(page.getByRole("button", { name: "Télécharger le PNG", exact: true })).toBeEnabled({ timeout: 30_000 });
     await expect(font).toHaveValue("cormorant");
+    const sizeSlider = page.getByLabel("Taille du texte principal", { exact: true });
+    const previewImage = page.getByAltText("Prévisualisation affiche");
+    const readyDownload = page.getByRole("button", { name: "Télécharger le PNG", exact: true });
+    await sizeSlider.fill("24");
+    await expect(readyDownload).toBeEnabled();
+    const smallPreview = await previewImage.getAttribute("src");
+    await previewImage.screenshot({ path: testInfo.outputPath("elegance-size24.png") });
+    await sizeSlider.fill("40");
+    await expect(previewImage).toBeVisible();
+    await expect(readyDownload).toBeEnabled();
+    await expect(previewImage).not.toHaveAttribute("src", smallPreview!);
+    await previewImage.screenshot({ path: testInfo.outputPath("elegance-size40.png") });
+    const encodes = () => page.evaluate(() => (window as unknown as { posterEncodes: number }).posterEncodes);
+    const before = await encodes();
+    const started = Date.now();
+    for (const value of [45, 50, 55, 60, 65, 70, 75, 80, 84]) await sizeSlider.fill(String(value));
+    await expect(previewImage).toBeVisible();
+    await expect(readyDownload).toBeEnabled({ timeout: 10_000 });
+    await expect(page.locator("#poster-headline-fit")).toBeVisible();
+    expect((await encodes()) - before).toBeLessThanOrEqual(3);
+    console.log(`Slider settled in ${Date.now() - started}ms; PNG encodes: ${(await encodes()) - before}`);
+    await sizeSlider.fill("58");
+    await expect(readyDownload).toBeEnabled();
     await choose("Classique blanc");
     await expect(font).toHaveValue("lato");
     await expect(primary).toHaveValue("#146c70");
