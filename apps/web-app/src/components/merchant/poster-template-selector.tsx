@@ -1,9 +1,11 @@
 import { GameType, PosterTemplateId } from "@/lib/types";
 import { POSTER_TEMPLATES, PosterTemplateConfig } from "@/lib/poster-templates";
+import { QrCode } from "lucide-react";
 
 type PosterTemplateSelectorProps = {
   gameType: GameType;
   selectedTemplateId?: PosterTemplateId;
+  qrDataUrl?: string | null;
   onSelect: (templateId: PosterTemplateId) => void;
 };
 
@@ -57,6 +59,7 @@ function QrThumbnail({ template }: { template: PosterTemplateConfig }) {
 export function PosterTemplateSelector({
   gameType,
   selectedTemplateId,
+  qrDataUrl,
   onSelect,
 }: PosterTemplateSelectorProps) {
   return (
@@ -84,16 +87,22 @@ export function PosterTemplateSelector({
             >
               <span aria-hidden="true" className="relative block h-[220px] overflow-hidden" style={{
                 background: template.background,
-                ...(template.id === "premium-wheel" ? {
-                  backgroundImage: "url('/backgrounds/premium-poster-backdrop.png')",
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                } : {}),
               }}>
                 {template.id === "premium-wheel" ? (
-                  <span className="absolute left-[35%] right-3 top-7 text-left font-serif text-lg leading-tight text-black">
-                    Scannez, jouez,<br />récupérez votre cadeau !
-                  </span>
+                  <svg viewBox="0 0 794 1123" className="h-full w-full" aria-hidden="true">
+                    <image href="/backgrounds/premium-poster-backdrop.png" width="794" height="1123" />
+                    <text x="520" y="102" textAnchor="middle" fontSize="28" fill="#171412">Votre établissement</text>
+                    <text x="284" y="210" fontSize="58" className="font-cormorant" fill="#111">
+                      <tspan x="284">Scannez, jouez,</tspan><tspan x="284" dy="60">récupérez votre</tspan><tspan x="284" dy="60">cadeau !</tspan>
+                    </text>
+                    <g data-testid="elegance-thumbnail-qr">
+                      <rect x="62" y="486" width="306" height="330" rx="24" fill="white" stroke="#a17d57" strokeWidth="2" />
+                      {qrDataUrl ? <image href={qrDataUrl} x="95" y="514" width="240" height="240" /> : <QrCode x="95" y="514" width="240" height="240" color="#111" strokeWidth="1.5" />}
+                      <text x="215" y="790" textAnchor="middle" fontSize="19" fontWeight="700" fill="#111">SCANNEZ POUR JOUER</text>
+                    </g>
+                    <rect y="925" width="794" height="198" fill="white" fillOpacity="0.8" />
+                    <text y="1040" fontSize="30" fontWeight="600" fill="#171412"><tspan x="98">Scannez</tspan><tspan x="350">Jouez</tspan><tspan x="595">Gagnez</tspan></text>
+                  </svg>
                 ) : <>
                   {gameType === "wheel" ? <WheelThumbnail template={template} /> : <ScratchThumbnail template={template} />}
                   <QrThumbnail template={template} />

@@ -7,7 +7,7 @@ import { Loader2 } from "lucide-react";
 import QRCode from "qrcode";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 
-import { buildPosterSvg } from "@/lib/poster-render";
+import { buildPosterSvg, getPremiumHeadlineLayout } from "@/lib/poster-render";
 import { selectPosterTemplate } from "@/lib/poster-template-settings";
 import { getPosterFontAsset, getPosterFontSourceUrl, POSTER_FONT_OPTIONS } from "@/lib/poster-fonts";
 import { textFontClass, textFontLabel } from "@/lib/format";
@@ -390,6 +390,13 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
   const posterFontSource =
     loadedPosterFont?.font === poster.headlineFontFamily ? loadedPosterFont.source : null;
 
+  const headlineMeasure = useMemo(() => posterFontSource !== null
+    ? createHeadlineMeasure(poster.headlineFontFamily) : undefined,
+    [posterFontSource, poster.headlineFontFamily]);
+  const premiumHeadlineLayout = useMemo(() => poster.templateId === "premium-wheel" && headlineMeasure
+    ? getPremiumHeadlineLayout(poster.headline || campaign.subtitle || "Faites tourner la roue", poster, getPosterTemplate(poster.templateId), headlineMeasure)
+    : null, [poster, campaign.subtitle, headlineMeasure]);
+
   const previewPosterSvg = useMemo(
     () =>
       posterQrDataUrl &&
@@ -402,10 +409,10 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
             qrDataUrl: posterQrDataUrl,
             posterFontSource: posterFontSource || undefined,
             premiumBackdropSource: premiumBackdropSource || undefined,
-            measureHeadline: createHeadlineMeasure(poster.headlineFontFamily),
+            measureHeadline: headlineMeasure,
           })
         : null,
-    [campaign, poster, posterFontSource, posterQrDataUrl, premiumBackdropSource, prizes],
+    [campaign, poster, posterFontSource, posterQrDataUrl, premiumBackdropSource, prizes, headlineMeasure],
   );
 
   useEffect(() => {
@@ -416,7 +423,8 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
     let active = true;
     let objectUrl: string | null = null;
 
-    void renderPosterSvgAsPng(previewPosterSvg)
+    // Coalesce slider events before decoding the backdrop and encoding another PNG.
+    const timer = window.setTimeout(() => { void renderPosterSvgAsPng(previewPosterSvg)
       .then((blob) => {
         if (!active) return;
 
@@ -430,15 +438,19 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
             message: error instanceof Error ? error.message : "Prévisualisation impossible.",
           });
         }
-      });
+      }); }, 150);
 
     return () => {
       active = false;
-      if (objectUrl) {
-        URL.revokeObjectURL(objectUrl);
-      }
+      window.clearTimeout(timer);
     };
   }, [previewPosterSvg]);
+
+  // Keep the previous image alive while its replacement is rendering.
+  useEffect(() => {
+    const url = previewPng?.url;
+    return () => { if (url) URL.revokeObjectURL(url); };
+  }, [previewPng?.url]);
 
   const previewIsReady = Boolean(previewPosterSvg && previewPng?.svg === previewPosterSvg);
   const currentPreviewError =
@@ -664,6 +676,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
         <div className="space-y-6">
 
         <PosterTemplateSelector
+          qrDataUrl={posterQrDataUrl}
           gameType={campaign.gameType}
           selectedTemplateId={poster.templateId}
           onSelect={selectTemplate}
@@ -903,7 +916,11 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                 }
                 className="w-full cursor-pointer accent-aubergine"
                 aria-label="Taille du texte principal"
+                aria-describedby={premiumHeadlineLayout?.adjusted ? "poster-headline-fit" : undefined}
               />
+              {premiumHeadlineLayout?.adjusted ? <span id="poster-headline-fit" role="status" className="mt-2 block text-xs text-charcoal">
+                Taille ajustée à {Math.round(premiumHeadlineLayout.size / getPosterTemplate(poster.templateId).headlineSizeMultiplier)} px pour conserver le titre dans l’affiche. Raccourcissez le texte pour l’agrandir davantage.
+              </span> : null}
             </label>
 
             <label className="text-sm md:col-span-2">
@@ -987,7 +1004,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
 
           <div className="flex min-h-0 flex-1 items-center justify-center overflow-auto rounded-[var(--okado-radius-card)] bg-[var(--okado-surface-muted)] p-4">
             <div className="relative aspect-[794/1123] w-full max-w-[470px] overflow-hidden rounded-[var(--okado-radius-control)] border border-[var(--okado-border-control)] bg-white shadow-[var(--shadow-product-card)]">
-              {previewIsReady && previewPng ? (
+              {previewPng && !currentPreviewError ? (
                 <Image
                   src={previewPng.url}
                   alt="Prévisualisation affiche"
@@ -1000,6 +1017,9 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                   {currentPreviewError ?? "Préparation de la prévisualisation…"}
                 </div>
               )}
+              {previewPng && isRenderingPreview ? <div role="status" className="absolute bottom-3 left-3 right-3 flex items-center justify-center gap-2 rounded bg-white/95 px-3 py-2 text-xs text-charcoal shadow-sm">
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> Mise à jour de l’aperçu…
+              </div> : null}
             </div>
           </div>
         </div>
