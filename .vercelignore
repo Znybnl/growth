@@ -10,5 +10,7 @@ node_modules
 *.jpg
 *.jpeg
 *.webp
+# Keep the production asset required by the Elegance poster preview and PNG.
+!apps/web-app/public/backgrounds/premium-poster-backdrop.png
 docs
 supabase
