@@ -1,9 +1,10 @@
 "use client";
 
 import { LoaderCircle, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { DialogShell } from "@/components/ui/dialog";
+import styles from "./campaign-preview-dialog.module.css";
 
 const PREVIEW_PATH = (campaignId: string) => `/campaign/${campaignId}/preview-embed?preview=1`;
 
@@ -26,7 +27,15 @@ export function openCampaignPreview(
   onMobileNavigate(`/campaign/${campaignId}?preview=1`);
 }
 
-export function CampaignPreviewDialog({
+export function CampaignPreviewDialog(props: {
+  open: boolean;
+  campaignId: string;
+  onClose: () => void;
+}) {
+  return props.open ? <PreviewSession key={props.campaignId} {...props} /> : null;
+}
+
+function PreviewSession({
   open,
   campaignId,
   onClose,
@@ -37,9 +46,28 @@ export function CampaignPreviewDialog({
 }) {
   const [loadedFrameKey, setLoadedFrameKey] = useState<string | null>(null);
   const [errorFrameKey, setErrorFrameKey] = useState<string | null>(null);
-  const frameKey = `${campaignId}:${open ? "open" : "closed"}`;
+  const [attempt, setAttempt] = useState(0);
+  const [scale, setScale] = useState(0.5);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const frameKey = `${campaignId}:${attempt}`;
   const isLoaded = loadedFrameKey === frameKey;
   const hasError = errorFrameKey === frameKey;
+
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage) return;
+    const observer = new ResizeObserver(([entry]) => {
+      setScale(Math.max(0.1, Math.min(1, entry.contentRect.width / 390, entry.contentRect.height / 844)));
+    });
+    observer.observe(stage);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (isLoaded) return;
+    const timer = window.setTimeout(() => setErrorFrameKey(frameKey), 20_000);
+    return () => window.clearTimeout(timer);
+  }, [frameKey, isLoaded]);
 
   if (!open) return null;
 
@@ -49,7 +77,7 @@ export function CampaignPreviewDialog({
       onClose={onClose}
       labelledBy="campaign-preview-dialog-title"
       describedBy="campaign-preview-dialog-description"
-      className="okado-preview-dialog-surface max-w-[min(30rem,calc(100vw-2rem))] overflow-hidden p-0 sm:p-0"
+      className={styles.surface}
     >
       <div className="flex items-start justify-between gap-4 border-b border-fog px-5 py-4 sm:px-6">
         <div>
@@ -71,30 +99,36 @@ export function CampaignPreviewDialog({
         </button>
       </div>
 
-      <div className="flex justify-center bg-[#f6f1f8] px-4 py-5 sm:px-6 sm:py-6">
-        <div className="relative w-[min(390px,calc(100vw-4rem),calc((100dvh-12rem)*0.462))] overflow-hidden rounded-[26px] bg-white shadow-[0_18px_44px_rgba(72,26,84,0.18)] aspect-[390/844]">
+      <div className={styles.stage}>
+        <div ref={stageRef} className={styles.space}>
+        <div className="relative overflow-hidden rounded-[22px] bg-white shadow-lg" style={{ width: 390 * scale, height: 844 * scale }} aria-busy={!isLoaded && !hasError}>
           {!isLoaded && !hasError ? (
-            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-white text-sm text-charcoal" aria-live="polite">
-              <LoaderCircle className="h-5 w-5 animate-spin text-aubergine" aria-hidden="true" />
-              Chargement de la prévisualisation…
+            <div className={styles.loading} role="status">
+              <div className={styles.placeholder} aria-hidden="true"><span /><span /><div /></div>
+              <LoaderCircle className="h-6 w-6 motion-safe:animate-spin text-aubergine" aria-hidden="true" />
+              <p>Préparation de votre jeu…</p>
             </div>
           ) : null}
           {hasError ? (
             <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 bg-white px-6 text-center" role="alert">
               <p className="font-semibold text-carbon">Prévisualisation indisponible</p>
               <p className="text-sm leading-6 text-charcoal">
-                Fermez cette fenêtre puis relancez la prévisualisation.
+                Le chargement prend plus de temps que prévu.
               </p>
+              <button type="button" className="okado-secondary-action px-4" onClick={() => setAttempt(value => value + 1)}>Réessayer</button>
             </div>
           ) : null}
           <iframe
+            key={frameKey}
             title="Prévisualisation mobile du jeu"
             src={PREVIEW_PATH(campaignId)}
-            onLoad={() => setLoadedFrameKey(frameKey)}
+            onLoad={() => { setLoadedFrameKey(frameKey); setErrorFrameKey(null); }}
             onError={() => setErrorFrameKey(frameKey)}
-            className="h-full w-full border-0 bg-white"
+            className="absolute left-0 top-0 origin-top-left border-0 bg-white"
+            style={{ width: 390, height: 844, transform: `scale(${scale})`, visibility: isLoaded && !hasError ? "visible" : "hidden" }}
             sandbox="allow-forms allow-same-origin allow-scripts"
           />
+        </div>
         </div>
       </div>
 
