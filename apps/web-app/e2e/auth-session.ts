@@ -17,6 +17,13 @@ async function createSession(page: Page): Promise<StorageState> {
   const context = await browser.newContext();
   try {
     const loginPage = await context.newPage();
+    const accessUrl = process.env.PLAYWRIGHT_VERCEL_ACCESS_URL;
+    if (accessUrl) {
+      if (new URL(accessUrl).origin !== new URL(process.env.PLAYWRIGHT_BASE_URL!).origin) {
+        throw new Error("Le lien Vercel doit correspondre au serveur de recette.");
+      }
+      await loginPage.goto(accessUrl);
+    }
     await loginPage.goto("/connexion");
     await loginPage.getByPlaceholder("Email").fill(email);
     await loginPage.getByPlaceholder("Mot de passe").fill(password);

@@ -4,6 +4,7 @@ import { LoaderCircle, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { DialogShell } from "@/components/ui/dialog";
+import styles from "./campaign-preview-dialog.module.css";
 
 const PREVIEW_PATH = (campaignId: string) => `/campaign/${campaignId}/preview-embed?preview=1`;
 
@@ -76,7 +77,7 @@ function PreviewSession({
       onClose={onClose}
       labelledBy="campaign-preview-dialog-title"
       describedBy="campaign-preview-dialog-description"
-      className="okado-preview-dialog-surface"
+      className={styles.surface}
     >
       <div className="flex items-start justify-between gap-4 border-b border-fog px-5 py-4 sm:px-6">
         <div>
@@ -98,12 +99,12 @@ function PreviewSession({
         </button>
       </div>
 
-      <div className="okado-preview-stage">
-        <div ref={stageRef} className="okado-preview-stage-space">
+      <div className={styles.stage}>
+        <div ref={stageRef} className={styles.space}>
         <div className="relative overflow-hidden rounded-[22px] bg-white shadow-lg" style={{ width: 390 * scale, height: 844 * scale }} aria-busy={!isLoaded && !hasError}>
           {!isLoaded && !hasError ? (
-            <div className="okado-preview-loading" role="status">
-              <div className="okado-preview-placeholder" aria-hidden="true"><span /><span /><div /></div>
+            <div className={styles.loading} role="status">
+              <div className={styles.placeholder} aria-hidden="true"><span /><span /><div /></div>
               <LoaderCircle className="h-6 w-6 motion-safe:animate-spin text-aubergine" aria-hidden="true" />
               <p>Préparation de votre jeu…</p>
             </div>
