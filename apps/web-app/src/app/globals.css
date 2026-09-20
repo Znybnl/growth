@@ -1148,6 +1148,26 @@ button:disabled,
   transition: border-color 160ms ease, background-color 160ms ease;
 }
 
+/* Override the shared modal dimensions explicitly, not via lower-priority utilities. */
+.okado-dialog-surface.okado-preview-dialog-surface {
+  display: flex;
+  flex-direction: column;
+  width: min(460px, calc(100vw - 48px));
+  height: min(880px, calc(100dvh - 80px));
+  max-height: calc(100dvh - 80px);
+  padding: 0;
+  overflow: hidden;
+}
+.okado-preview-dialog-surface > :first-child,
+.okado-preview-dialog-surface > :last-child { flex-shrink: 0; }
+.okado-preview-stage { flex: 1; min-height: 0; padding: 16px; background: var(--color-purple-haze); }
+.okado-preview-stage-space { height: 100%; display: flex; align-items: center; justify-content: center; }
+.okado-preview-loading { position: absolute; inset: 0; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 20px; background: var(--color-purple-haze); color: var(--color-charcoal); text-align: center; font-size: 14px; }
+.okado-preview-placeholder { width: 75%; display: grid; justify-items: center; gap: 12px; margin-bottom: 16px; }
+.okado-preview-placeholder span { height: 12px; width: 80%; border-radius: 6px; background: var(--color-lavender-mist); }
+.okado-preview-placeholder span:first-child { width: 50%; }
+.okado-preview-placeholder div { width: 100%; aspect-ratio: 1; border-radius: 50%; border: 16px solid var(--color-lavender-mist); margin-top: 20px; }
+
 .okado-dialog-dismiss:hover {
   border-color: var(--color-lavender-mist);
   background: var(--color-purple-haze);
