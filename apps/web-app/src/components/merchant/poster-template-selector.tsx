@@ -5,6 +5,7 @@ import { QrCode } from "lucide-react";
 type PosterTemplateSelectorProps = {
   gameType: GameType;
   selectedTemplateId?: PosterTemplateId;
+  qrDataUrl?: string | null;
   onSelect: (templateId: PosterTemplateId) => void;
 };
 
@@ -58,6 +59,7 @@ function QrThumbnail({ template }: { template: PosterTemplateConfig }) {
 export function PosterTemplateSelector({
   gameType,
   selectedTemplateId,
+  qrDataUrl,
   onSelect,
 }: PosterTemplateSelectorProps) {
   return (
@@ -95,7 +97,7 @@ export function PosterTemplateSelector({
                     </text>
                     <g data-testid="elegance-thumbnail-qr">
                       <rect x="62" y="486" width="306" height="330" rx="24" fill="white" stroke="#a17d57" strokeWidth="2" />
-                      <QrCode x="95" y="514" width="240" height="240" color="#111" strokeWidth="1.5" />
+                      {qrDataUrl ? <image href={qrDataUrl} x="95" y="514" width="240" height="240" /> : <QrCode x="95" y="514" width="240" height="240" color="#111" strokeWidth="1.5" />}
                       <text x="215" y="790" textAnchor="middle" fontSize="19" fontWeight="700" fill="#111">SCANNEZ POUR JOUER</text>
                     </g>
                     <rect y="925" width="794" height="198" fill="white" fillOpacity="0.8" />

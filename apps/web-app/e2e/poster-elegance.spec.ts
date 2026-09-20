@@ -6,10 +6,6 @@ test("Élégance conserve les autres styles et télécharge exactement l’aper�
   test.setTimeout(180_000);
   page.setDefaultTimeout(20_000);
   page.setDefaultNavigationTimeout(20_000);
-  // Run against the deployed artifact too: local public files can be excluded by .vercelignore.
-  const backdrop = await page.request.get("/backgrounds/premium-poster-backdrop.png");
-  expect(backdrop.ok(), "Le décor Élégance doit être livré par le déploiement").toBe(true);
-  expect(backdrop.headers()["content-type"]).toContain("image/png");
   const unexpectedDialogs: string[] = [];
   page.on("dialog", async dialog => {
     unexpectedDialogs.push(dialog.type());
@@ -25,6 +21,10 @@ test("Élégance conserve les autres styles et télécharge exactement l’aper�
     };
   });
   await signIn(page);
+  // Check the deployed asset with the authenticated preview context as well.
+  const backdrop = await page.request.get("/backgrounds/premium-poster-backdrop.png");
+  expect(backdrop.ok(), "Le décor Élégance doit être livré par le déploiement").toBe(true);
+  expect(backdrop.headers()["content-type"]).toContain("image/png");
   let campaignId: string | undefined;
   try {
     await page.goto("/campaigns/new/guided");

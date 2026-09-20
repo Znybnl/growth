@@ -676,6 +676,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
         <div className="space-y-6">
 
         <PosterTemplateSelector
+          qrDataUrl={posterQrDataUrl}
           gameType={campaign.gameType}
           selectedTemplateId={poster.templateId}
           onSelect={selectTemplate}
