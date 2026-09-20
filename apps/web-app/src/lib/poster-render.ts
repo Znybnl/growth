@@ -565,13 +565,15 @@ function renderQrAndCta(qrDataUrl: string, template: PosterTemplateConfig) {
       const labelGap = template.inlineQrLabelGap ?? 18;
       const cardHeight = template.qrSize + 36;
       const qrContent = template.qrSize - 26;
+      const labelX = template.ctaX ?? template.qrX - (labelWidth - cardWidth) / 2;
+      const labelY = template.ctaY ?? template.qrY + cardHeight + labelGap;
 
       return `
         <g filter="url(#posterShadow)" transform="translate(${template.qrX} ${template.qrY})">
           <rect x="-18" y="-18" width="${cardWidth}" height="${cardHeight}" rx="28" fill="#ffffff" stroke="${template.qrFrame}" stroke-width="2"/>
           <image href="${escapeXml(qrDataUrl)}" x="5" y="5" width="${qrContent}" height="${qrContent}"/>
         </g>
-        <g filter="url(#posterShadow)" transform="translate(${template.qrX - (labelWidth - cardWidth) / 2} ${template.qrY + cardHeight + labelGap})">
+        <g filter="url(#posterShadow)" transform="translate(${labelX} ${labelY})">
           <rect width="${labelWidth}" height="${labelHeight}" rx="24" fill="${template.inlineQrLabelBackground ?? template.accent}" stroke="#ffffff" stroke-width="5"/>
           <text x="${labelWidth / 2}" y="${labelHeight / 2 + 9}" text-anchor="middle" fill="${template.inlineQrLabelTextColor ?? "#ffffff"}" font-family="${SAFE_FONT}" font-size="26" font-weight="800" letter-spacing="0.6">SCANNEZ POUR JOUER</text>
         </g>
@@ -649,21 +651,21 @@ function renderSteps(template: PosterTemplateConfig, gameType: Campaign["gameTyp
     return `
       <g transform="translate(0 944)">
         <rect width="${A4_WIDTH}" height="${A4_HEIGHT - 944}" fill="#fbf8f2" opacity="0.96"/>
-        <line x1="281" y1="44" x2="281" y2="142" stroke="${template.accent}" stroke-width="2"/>
-        <line x1="513" y1="44" x2="513" y2="142" stroke="${template.accent}" stroke-width="2"/>
-        <g transform="translate(33 10)">
-          <circle cx="132" cy="48" r="42" fill="${template.accent}"/>
-          <text x="132" y="62" text-anchor="middle" fill="#ffffff" font-family="${SAFE_FONT}" font-size="38" font-weight="800">1</text>
-          <text x="132" y="142" text-anchor="middle" fill="${template.accentDark}" font-family="${SAFE_FONT}" font-size="28" font-weight="700">Scannez</text>
+        <line x1="281" y1="35" x2="281" y2="125" stroke="${template.accent}" stroke-width="2"/>
+        <line x1="513" y1="35" x2="513" y2="125" stroke="${template.accent}" stroke-width="2"/>
+        <g transform="translate(33 -8)">
+          <circle cx="132" cy="48" r="35" fill="${template.accent}"/>
+          <text x="132" y="59" text-anchor="middle" fill="#ffffff" font-family="${SAFE_FONT}" font-size="34" font-weight="800">1</text>
+          <text x="132" y="124" text-anchor="middle" fill="${template.accentDark}" font-family="${SAFE_FONT}" font-size="28" font-weight="700">Scannez</text>
         </g>
-        <g transform="translate(264 10)">
-          <circle cx="132" cy="48" r="42" fill="${template.accent}"/>
-          <circle cx="132" cy="48" r="24" fill="none" stroke="#ffffff" stroke-width="4"/>
-          <path d="M132 24 v48 M108 48 h48 M115 31 l34 34 M149 31 l-34 34" stroke="#ffffff" stroke-width="3"/>
-          <text x="132" y="142" text-anchor="middle" fill="${template.accentDark}" font-family="${SAFE_FONT}" font-size="28" font-weight="700">${botanicalAction}</text>
+        <g transform="translate(264 -8)">
+          <circle cx="132" cy="48" r="35" fill="${template.accent}"/>
+          <circle cx="132" cy="48" r="21" fill="none" stroke="#ffffff" stroke-width="3.5"/>
+          <path d="M132 27 v42 M111 48 h42 M116 32 l32 32 M148 32 l-32 32" stroke="#ffffff" stroke-width="2.6"/>
+          <text x="132" y="124" text-anchor="middle" fill="${template.accentDark}" font-family="${SAFE_FONT}" font-size="28" font-weight="700">${botanicalAction}</text>
         </g>
-        <g transform="translate(497 10)">
-          <circle cx="132" cy="48" r="42" fill="${template.accent}"/>
+        <g transform="translate(497 -8)">
+          <circle cx="132" cy="48" r="35" fill="${template.accent}"/>
           <g transform="translate(132 48) scale(1.6)">
             <rect x="-13" y="-5" width="26" height="19" rx="2" fill="none" stroke="#ffffff" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M-15-5h30v7h-30z" fill="none" stroke="#ffffff" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
@@ -671,7 +673,7 @@ function renderSteps(template: PosterTemplateConfig, gameType: Campaign["gameTyp
             <path d="M0-5c-7 0-11-2-10-6 1-4 7-3 10 6Z" fill="none" stroke="#ffffff" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M0-5c7 0 11-2 10-6-1-4-7-3-10 6Z" fill="none" stroke="#ffffff" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
           </g>
-          <text x="132" y="142" text-anchor="middle" fill="${template.accentDark}" font-family="${SAFE_FONT}" font-size="28" font-weight="700">${gift}</text>
+          <text x="132" y="124" text-anchor="middle" fill="${template.accentDark}" font-family="${SAFE_FONT}" font-size="28" font-weight="700">${gift}</text>
         </g>
       </g>
     `;
