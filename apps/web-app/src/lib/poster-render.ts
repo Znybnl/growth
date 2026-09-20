@@ -570,12 +570,12 @@ function renderQrAndCta(qrDataUrl: string, template: PosterTemplateConfig) {
 
       return `
         <g filter="url(#posterShadow)" transform="translate(${template.qrX} ${template.qrY})">
-          <rect x="-18" y="-18" width="${cardWidth}" height="${cardHeight}" rx="28" fill="#ffffff" stroke="${template.qrFrame}" stroke-width="2"/>
+          <rect x="-18" y="-18" width="${cardWidth}" height="${cardHeight}" rx="28" fill="#ffffff" stroke="${template.qrFrame}" stroke-width="3"/>
           <image href="${escapeXml(qrDataUrl)}" x="5" y="5" width="${qrContent}" height="${qrContent}"/>
         </g>
         <g filter="url(#posterShadow)" transform="translate(${labelX} ${labelY})">
           <rect width="${labelWidth}" height="${labelHeight}" rx="24" fill="${template.inlineQrLabelBackground ?? template.accent}" stroke="#ffffff" stroke-width="5"/>
-          <text x="${labelWidth / 2}" y="${labelHeight / 2 + 9}" text-anchor="middle" fill="${template.inlineQrLabelTextColor ?? "#ffffff"}" font-family="${SAFE_FONT}" font-size="26" font-weight="800" letter-spacing="0.6">SCANNEZ POUR JOUER</text>
+          <text x="${labelWidth / 2}" y="${labelHeight / 2 + 8}" text-anchor="middle" fill="${template.inlineQrLabelTextColor ?? "#ffffff"}" font-family="${SAFE_FONT}" font-size="22" font-weight="800" letter-spacing="0.4" textLength="${labelWidth - 34}" lengthAdjust="spacingAndGlyphs">SCANNEZ POUR JOUER</text>
         </g>
       `;
     }
@@ -650,21 +650,21 @@ function renderSteps(template: PosterTemplateConfig, gameType: Campaign["gameTyp
     const botanicalAction = gameType === "wheel" ? "Jouez" : "Grattez";
     return `
       <g transform="translate(0 944)">
-        <rect width="${A4_WIDTH}" height="${A4_HEIGHT - 944}" fill="#fbf8f2" opacity="0.96"/>
+        <rect width="${A4_WIDTH}" height="${A4_HEIGHT - 944}" fill="#fbf8f2" opacity="0.74"/>
         <line x1="281" y1="35" x2="281" y2="125" stroke="${template.accent}" stroke-width="2"/>
         <line x1="513" y1="35" x2="513" y2="125" stroke="${template.accent}" stroke-width="2"/>
-        <g transform="translate(33 -8)">
+        <g transform="translate(33 -2)">
           <circle cx="132" cy="48" r="35" fill="${template.accent}"/>
-          <text x="132" y="59" text-anchor="middle" fill="#ffffff" font-family="${SAFE_FONT}" font-size="34" font-weight="800">1</text>
+          <text x="132" y="48" text-anchor="middle" dominant-baseline="central" fill="#ffffff" font-family="${SAFE_FONT}" font-size="34" font-weight="800">1</text>
           <text x="132" y="124" text-anchor="middle" fill="${template.accentDark}" font-family="${SAFE_FONT}" font-size="28" font-weight="700">Scannez</text>
         </g>
-        <g transform="translate(264 -8)">
+        <g transform="translate(264 -2)">
           <circle cx="132" cy="48" r="35" fill="${template.accent}"/>
           <circle cx="132" cy="48" r="21" fill="none" stroke="#ffffff" stroke-width="3.5"/>
           <path d="M132 27 v42 M111 48 h42 M116 32 l32 32 M148 32 l-32 32" stroke="#ffffff" stroke-width="2.6"/>
           <text x="132" y="124" text-anchor="middle" fill="${template.accentDark}" font-family="${SAFE_FONT}" font-size="28" font-weight="700">${botanicalAction}</text>
         </g>
-        <g transform="translate(497 -8)">
+        <g transform="translate(497 -2)">
           <circle cx="132" cy="48" r="35" fill="${template.accent}"/>
           <g transform="translate(132 48) scale(1.6)">
             <rect x="-13" y="-5" width="26" height="19" rx="2" fill="none" stroke="#ffffff" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>

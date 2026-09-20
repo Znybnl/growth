@@ -257,7 +257,9 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     inlineQrLabelWidth: 326,
     inlineQrLabelHeight: 64,
     inlineQrLabelGap: 18,
-    supportingText: "PRENEZ\nSOIN DE VOUS,\nLA CHANCE\nS’EN CHARGE.",
+    // The reference composition intentionally leaves this area open between
+    // the headline and the QR block. Keep the layout anchor below so the
+    // headline remains stable while the supporting copy stays hidden.
     supportingTextX: 72,
     supportingTextY: 463,
     supportingTextFontFamily: "syncopate",
