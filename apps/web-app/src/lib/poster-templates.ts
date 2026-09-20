@@ -36,7 +36,26 @@ export type PosterTemplateConfig = {
   logoY?: number;
   logoFontWeight?: number;
   logoLetterSpacing?: number;
+  logoFontFamily?: TextFont;
+  logoTextAnchor?: "start" | "middle";
+  logoUnderlineWidth?: number;
+  logoUnderlineColor?: string;
   inlineQrCta?: boolean;
+  inlineQrLabelBackground?: string;
+  inlineQrLabelTextColor?: string;
+  inlineQrLabelWidth?: number;
+  inlineQrLabelHeight?: number;
+  inlineQrLabelGap?: number;
+  supportingText?: string;
+  supportingTextX?: number;
+  supportingTextY?: number;
+  supportingTextFontFamily?: TextFont;
+  supportingTextFontSize?: number;
+  supportingTextLineHeight?: number;
+  supportingTextColor?: string;
+  supportingTextLetterSpacing?: number;
+  footerVariant?: "premium" | "botanical";
+  backdropAsset?: string;
   wheelOnly?: boolean;
   wheel: CampaignPosterSettings["wheel"];
 };
@@ -181,6 +200,8 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     logoFontWeight: 500,
     logoLetterSpacing: 5,
     inlineQrCta: true,
+    backdropAsset: "premium-poster-backdrop.png",
+    footerVariant: "premium",
     wheelOnly: true,
     wheel: {
       winColor: "#d8c8b8",
@@ -188,6 +209,71 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
       loseColor: "#d8c8b8",
       alternateLoseColor: "#fbf8f4",
       rimColor: "#a17d57",
+    },
+  },
+  {
+    id: "botanical-wheel",
+    label: "Botanique",
+    description: "Fond botanique lumineux, typographie éditoriale et accents sauge.",
+    background: "#f6f3ed",
+    accent: "#718578",
+    accentDark: "#153a35",
+    headline: "#153a35",
+    headlineStroke: "none",
+    headlineTextColor: "#153a35",
+    headlineFontSizePx: 66,
+    qrFrame: "#9eafa0",
+    logoVariant: "lined",
+    wheelX: 0,
+    wheelY: 0,
+    wheelRadius: 0,
+    qrX: 436,
+    qrY: 480,
+    qrSize: 260,
+    ctaX: 412,
+    ctaY: 792,
+    ctaWidth: 350,
+    ctaHeight: 70,
+    ctaRotation: 0,
+    headlineY: 170,
+    headlineSizeMultiplier: 1.18,
+    colorsCustomizable: false,
+    headlineX: 72,
+    headlineMaxWidth: 548,
+    headlineFontWeight: 500,
+    headlineItalic: false,
+    headlineFontFamily: "cormorant",
+    logoX: 72,
+    logoY: 65,
+    logoFontWeight: 500,
+    logoLetterSpacing: 5,
+    logoFontFamily: "syncopate",
+    logoTextAnchor: "start",
+    logoUnderlineWidth: 68,
+    logoUnderlineColor: "#8d9c8e",
+    inlineQrCta: true,
+    inlineQrLabelBackground: "#718578",
+    inlineQrLabelTextColor: "#ffffff",
+    inlineQrLabelWidth: 350,
+    inlineQrLabelHeight: 70,
+    inlineQrLabelGap: 18,
+    supportingText: "PRENEZ\nSOIN DE VOUS,\nLA CHANCE\nS’EN CHARGE.",
+    supportingTextX: 72,
+    supportingTextY: 445,
+    supportingTextFontFamily: "syncopate",
+    supportingTextFontSize: 22,
+    supportingTextLineHeight: 34,
+    supportingTextColor: "#153a35",
+    supportingTextLetterSpacing: 3,
+    footerVariant: "botanical",
+    backdropAsset: "botanical-poster-backdrop.png",
+    wheelOnly: true,
+    wheel: {
+      winColor: "#718578",
+      alternateWinColor: "#718578",
+      loseColor: "#f6f3ed",
+      alternateLoseColor: "#f6f3ed",
+      rimColor: "#718578",
     },
   },
 ];

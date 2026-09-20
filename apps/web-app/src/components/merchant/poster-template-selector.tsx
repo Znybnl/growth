@@ -103,6 +103,32 @@ export function PosterTemplateSelector({
                     <rect y="925" width="794" height="198" fill="white" fillOpacity="0.8" />
                     <text y="1040" fontSize="30" fontWeight="600" fill="#171412"><tspan x="98">Scannez</tspan><tspan x="350">Jouez</tspan><tspan x="595">Gagnez</tspan></text>
                   </svg>
+                ) : template.id === "botanical-wheel" ? (
+                  <svg viewBox="0 0 794 1123" className="h-full w-full" aria-hidden="true">
+                    <image href="/backgrounds/botanical-poster-backdrop.png" width="794" height="1123" />
+                    <text x="72" y="104" fontSize="22" letterSpacing="4" fill="#153a35">Votre établissement</text>
+                    <line x1="72" y1="132" x2="140" y2="132" stroke="#8d9c8e" strokeWidth="3" />
+                    <text x="72" y="220" fontSize="48" fontFamily="Georgia, serif" fill="#153a35">
+                      <tspan x="72">Scannez, jouez,</tspan><tspan x="72" dy="52">récupérez votre</tspan><tspan x="72" dy="52">cadeau !</tspan>
+                    </text>
+                    <text x="72" y="440" fontSize="17" letterSpacing="2" fill="#153a35">
+                      <tspan x="72">PRENEZ</tspan><tspan x="72" dy="27">SOIN DE VOUS,</tspan><tspan x="72" dy="27">LA CHANCE</tspan><tspan x="72" dy="27">S&apos;EN CHARGE.</tspan>
+                    </text>
+                    <g data-testid="botanical-thumbnail-qr">
+                      <rect x="445" y="480" width="306" height="316" rx="24" fill="white" stroke="#9eafa0" strokeWidth="2" />
+                      {qrDataUrl ? <image href={qrDataUrl} x="470" y="505" width="256" height="256" /> : <QrCode x="470" y="505" width="256" height="256" color="#111" strokeWidth="1.5" />}
+                      <rect x="420" y="790" width="356" height="62" rx="20" fill="#718578" stroke="white" strokeWidth="4" />
+                      <text x="598" y="828" textAnchor="middle" fontSize="18" fontWeight="700" fill="white">SCANNEZ POUR JOUER</text>
+                    </g>
+                    <rect y="944" width="794" height="179" fill="#fbf8f2" fillOpacity="0.96" />
+                    <circle cx="132" cy="992" r="32" fill="#718578" /><text x="132" y="1004" textAnchor="middle" fontSize="30" fontWeight="700" fill="white">1</text>
+                    <circle cx="397" cy="992" r="32" fill="#718578" /><circle cx="397" cy="992" r="18" fill="none" stroke="white" strokeWidth="3" /><path d="M397 974v36M379 992h36M384 979l26 26M410 979l-26 26" stroke="white" strokeWidth="2" />
+                    <circle cx="662" cy="992" r="32" fill="#718578" /><path d="M647 989h30v24h-30zM643 982h38v9h-38zM662 982v31M652 982c-11-9 4-14 10 0M672 982c6-14 21-9 10 0" fill="none" stroke="white" strokeWidth="2" strokeLinejoin="round" />
+                    <line x1="270" y1="960" x2="270" y2="1036" stroke="#718578" strokeWidth="2" /><line x1="524" y1="960" x2="524" y2="1036" stroke="#718578" strokeWidth="2" />
+                    <text x="132" y="1072" textAnchor="middle" fontSize="24" fontWeight="700" fill="#153a35">Scannez</text>
+                    <text x="397" y="1072" textAnchor="middle" fontSize="24" fontWeight="700" fill="#153a35">Jouez</text>
+                    <text x="662" y="1072" textAnchor="middle" fontSize="24" fontWeight="700" fill="#153a35">Gagnez</text>
+                  </svg>
                 ) : <>
                   {gameType === "wheel" ? <WheelThumbnail template={template} /> : <ScratchThumbnail template={template} />}
                   <QrThumbnail template={template} />

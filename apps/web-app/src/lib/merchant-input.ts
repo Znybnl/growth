@@ -76,6 +76,7 @@ const POSTER_TEMPLATE_IDS = new Set<PosterTemplateId>([
   "soft-gradient-wheel",
   "terracotta-wheel",
   "premium-wheel",
+  "botanical-wheel",
 ]);
 const MERCHANT_TIME_ZONES = new Set([
   "Europe/Paris",

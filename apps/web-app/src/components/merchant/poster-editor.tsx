@@ -152,8 +152,13 @@ async function loadPosterFontAsDataUrl(font: CampaignPosterSettings["headlineFon
   }
 }
 
-async function loadPremiumBackdropAsDataUrl() {
-  const source = "/backgrounds/premium-poster-backdrop.png";
+async function loadPremiumBackdropAsDataUrl(templateId: PosterTemplateId) {
+  const asset = getPosterTemplate(templateId).backdropAsset;
+  if (!asset) {
+    return null;
+  }
+
+  const source = `/backgrounds/${asset}`;
 
   try {
     const response = await fetch(source, { cache: "force-cache" });
@@ -173,7 +178,7 @@ async function loadPremiumBackdropAsDataUrl() {
 
     return `data:image/png;base64,${window.btoa(binary)}`;
   } catch {
-    throw new Error("Impossible de charger le décor Élégance. Réessayez en rechargeant la page.");
+    throw new Error(`Impossible de charger le décor ${getPosterTemplate(templateId).label}. Réessayez en rechargeant la page.`);
   }
 }
 
@@ -299,7 +304,10 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
     font: CampaignPosterSettings["headlineFontFamily"];
     source: string;
   } | null>(null);
-  const [premiumBackdropSource, setPremiumBackdropSource] = useState<string | null>(null);
+  const [loadedBackdrop, setLoadedBackdrop] = useState<{
+    templateId: PosterTemplateId;
+    source: string;
+  } | null>(null);
   const [previewPng, setPreviewPng] = useState<PosterPngPreview | null>(null);
   const [previewError, setPreviewError] = useState<{ svg: string; message: string } | null>(null);
   const [posterQrError, setPosterQrError] = useState<string | null>(null);
@@ -367,15 +375,18 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
   }, [poster.headlineFontFamily]);
 
   useEffect(() => {
-    if (poster.templateId !== "premium-wheel") {
+    const templateId = poster.templateId ?? "classic-wheel";
+    if (!getPosterTemplate(templateId).backdropAsset) {
       return;
     }
 
     let active = true;
 
-    void loadPremiumBackdropAsDataUrl().then((source) => {
+    void loadPremiumBackdropAsDataUrl(templateId).then((source) => {
       if (active) {
-        setPremiumBackdropSource(source);
+        if (source) {
+          setLoadedBackdrop({ templateId, source });
+        }
         setBackdropLoadError(null);
       }
     }).catch((error: Error) => {
@@ -387,13 +398,17 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
     };
   }, [poster.templateId]);
 
+  const premiumBackdropSource = loadedBackdrop?.templateId === (poster.templateId ?? "classic-wheel")
+    ? loadedBackdrop.source
+    : null;
+
   const posterFontSource =
     loadedPosterFont?.font === poster.headlineFontFamily ? loadedPosterFont.source : null;
 
   const headlineMeasure = useMemo(() => posterFontSource !== null
     ? createHeadlineMeasure(poster.headlineFontFamily) : undefined,
     [posterFontSource, poster.headlineFontFamily]);
-  const premiumHeadlineLayout = useMemo(() => poster.templateId === "premium-wheel" && headlineMeasure
+  const premiumHeadlineLayout = useMemo(() => getPosterTemplate(poster.templateId).backdropAsset && headlineMeasure
     ? getPremiumHeadlineLayout(poster.headline || campaign.subtitle || "Faites tourner la roue", poster, getPosterTemplate(poster.templateId), headlineMeasure)
     : null, [poster, campaign.subtitle, headlineMeasure]);
 
@@ -401,7 +416,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
     () =>
       posterQrDataUrl &&
       posterFontSource !== null &&
-      (poster.templateId !== "premium-wheel" || premiumBackdropSource !== null)
+      (!getPosterTemplate(poster.templateId).backdropAsset || premiumBackdropSource !== null)
         ? buildPosterSvg({
             campaign,
             poster,
@@ -458,7 +473,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
       ? previewError.message
       : null) ?? posterQrError ??
       (fontLoadError?.font === poster.headlineFontFamily ? fontLoadError.message : null) ??
-      (poster.templateId === "premium-wheel" ? backdropLoadError : null);
+      (getPosterTemplate(poster.templateId).backdropAsset ? backdropLoadError : null);
   const isRenderingPreview = Boolean(previewPosterSvg && !previewIsReady && !currentPreviewError);
   const isDirty = lastSavedPosterSnapshot !== JSON.stringify(poster);
 
@@ -886,7 +901,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
               </p>
             </label>
 
-            {poster.templateId !== "premium-wheel" ? (
+            {getPosterTemplate(poster.templateId).colorsCustomizable !== false ? (
               <label className="text-sm">
                 <span className="mb-2 block text-charcoal">Couleur du texte</span>
                 <input
@@ -947,7 +962,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
         </section>
 
 
-        {poster.templateId !== "premium-wheel" ? (
+        {getPosterTemplate(poster.templateId).colorsCustomizable !== false ? (
         <section className="okado-card p-6 md:p-8">
             <p className="okado-label">Couleur de l&apos;affiche</p>
             <h2 className="okado-section-title mt-2">
