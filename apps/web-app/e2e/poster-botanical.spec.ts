@@ -33,6 +33,13 @@ test("Botanique conserve son décor, masque les couleurs et télécharge l’ape
     await expect(page.getByLabel("Police du texte principal")).toHaveValue("cormorant");
 
     const preview = page.getByAltText("Prévisualisation affiche");
+    const beforeLogoMargin = await preview.getAttribute("src");
+    await page.getByLabel("Marge sous le logo", { exact: true }).fill("60");
+    await expect(preview).not.toHaveAttribute("src", beforeLogoMargin!);
+    const saveResponse = page.waitForResponse(response => response.url().includes("/poster-settings") && response.request().method() === "POST");
+    await page.getByRole("button", { name: "Enregistrer", exact: true }).click();
+    expect((await saveResponse).ok()).toBeTruthy();
+    await expect(page.getByText("Affiche enregistrée.", { exact: true })).toBeVisible();
     const downloadButton = page.getByRole("button", { name: "Télécharger le PNG", exact: true });
     await expect(downloadButton).toBeEnabled({ timeout: 30_000 });
     await preview.screenshot({ path: testInfo.outputPath("botanical-preview.png") });

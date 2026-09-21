@@ -1,4 +1,9 @@
-import { CampaignPosterSettings, PosterTemplateId, TextFont } from "@/lib/types";
+import {
+  CampaignPosterSettings,
+  PosterBackgroundMotif,
+  PosterTemplateId,
+  TextFont,
+} from "@/lib/types";
 
 export type PosterTemplateConfig = {
   id: PosterTemplateId;
@@ -26,9 +31,12 @@ export type PosterTemplateConfig = {
   ctaRotation: number;
   headlineY: number;
   headlineSizeMultiplier: number;
+  motif?: PosterBackgroundMotif;
   colorsCustomizable?: boolean;
   headlineX?: number;
   headlineMaxWidth?: number;
+  headlineBlockBottom?: number;
+  headlineLogoGapPx?: number;
   headlineFontWeight?: number;
   headlineItalic?: boolean;
   headlineFontFamily?: TextFont;
@@ -60,11 +68,47 @@ export type PosterTemplateConfig = {
   wheel: CampaignPosterSettings["wheel"];
 };
 
+export const POSTER_BACKGROUND_MOTIFS: Array<{
+  id: PosterBackgroundMotif;
+  label: string;
+  description: string;
+  preview: string;
+}> = [
+  {
+    id: "plain",
+    label: "Clair uni",
+    description: "Une surface lumineuse et intemporelle.",
+    preview: "#fff6ee",
+  },
+  {
+    id: "soft-gradient",
+    label: "Gradient clair",
+    description: "Des halos lavande très doux.",
+    preview: "linear-gradient(135deg,#f4f3ff,#ffffff)",
+  },
+  {
+    id: "terracotta",
+    label: "Terracotta",
+    description: "Une ambiance chaude et chaleureuse.",
+    preview: "linear-gradient(135deg,#ddc9b8 0%,#f7eee7 100%)",
+  },
+];
+
+const LEGACY_POSTER_MOTIFS: Partial<Record<PosterTemplateId, PosterBackgroundMotif>> = {
+  "classic-wheel": "plain",
+  "soft-gradient-wheel": "soft-gradient",
+  "terracotta-wheel": "terracotta",
+};
+
+export function legacyPosterTemplateMotif(templateId?: PosterTemplateId) {
+  return templateId ? LEGACY_POSTER_MOTIFS[templateId] : undefined;
+}
+
 export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
   {
     id: "classic-wheel",
-    label: "Classique blanc",
-    description: "Fond clair uni, avec titre impactant.",
+    label: "Classique",
+    description: "Une structure claire avec plusieurs motifs de fond.",
     background: "#fff6ee",
     accent: "#1b04b8",
     accentDark: "#050644",
@@ -87,6 +131,7 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     ctaRotation: 0,
     headlineY: 245,
     headlineSizeMultiplier: 1.38,
+    motif: "plain",
     wheel: {
       winColor: "#5438c8",
       alternateWinColor: "#fff7ef",
@@ -121,6 +166,7 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     ctaRotation: 0,
     headlineY: 250,
     headlineSizeMultiplier: 1.52,
+    motif: "soft-gradient",
     wheel: {
       winColor: "#4b35c9",
       alternateWinColor: "#fff7ef",
@@ -155,6 +201,7 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     ctaRotation: 0,
     headlineY: 258,
     headlineSizeMultiplier: 1.34,
+    motif: "terracotta",
     wheel: {
       winColor: "#a83222",
       alternateWinColor: "#f8e4d8",
@@ -187,11 +234,13 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     ctaWidth: 0,
     ctaHeight: 0,
     ctaRotation: 0,
-    headlineY: 232,
+    headlineY: 170,
     headlineSizeMultiplier: 1.18,
     colorsCustomizable: false,
     headlineX: 284,
-    headlineMaxWidth: 466,
+    headlineMaxWidth: 500,
+    headlineBlockBottom: 430,
+    headlineLogoGapPx: 10,
     headlineFontWeight: 500,
     headlineItalic: false,
     headlineFontFamily: "cormorant",
@@ -286,6 +335,25 @@ export const POSTER_TEMPLATE_CONFIGS: Record<PosterTemplateId, PosterTemplateCon
     PosterTemplateConfig
   >;
 
-export function getPosterTemplate(templateId?: PosterTemplateId) {
-  return POSTER_TEMPLATE_CONFIGS[templateId ?? "classic-wheel"] ?? POSTER_TEMPLATE_CONFIGS["classic-wheel"];
+export const POSTER_TEMPLATE_CHOICES = POSTER_TEMPLATES.filter(
+  (template) => !["soft-gradient-wheel", "terracotta-wheel"].includes(template.id),
+);
+
+const MOTIF_TEMPLATE_IDS: Record<PosterBackgroundMotif, PosterTemplateId> = {
+  plain: "classic-wheel",
+  "soft-gradient": "soft-gradient-wheel",
+  terracotta: "terracotta-wheel",
+};
+
+export function getPosterTemplate(
+  templateId?: PosterTemplateId,
+  backgroundMotif?: PosterBackgroundMotif,
+) {
+  const normalizedId = templateId ?? "classic-wheel";
+  const motifTemplateId =
+    normalizedId === "classic-wheel" && backgroundMotif
+      ? MOTIF_TEMPLATE_IDS[backgroundMotif]
+      : normalizedId;
+
+  return POSTER_TEMPLATE_CONFIGS[motifTemplateId] ?? POSTER_TEMPLATE_CONFIGS["classic-wheel"];
 }
