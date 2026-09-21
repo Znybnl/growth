@@ -326,8 +326,10 @@ export function getPremiumHeadlineLayout(headline: string, poster: CampaignPoste
     const logoBottom = poster.logoMode === "image"
       ? logo.logoY + logo.logoSize
       : poster.logoMode === "text" ? logo.logoY + logo.logoSize / 2 + logoFontSize * 0.6 : 0;
-    const top = Math.max(template.headlineY ?? 150, logoBottom + poster.logoBottomMarginPx);
-    const layoutBottom = template.supportingTextY ? template.supportingTextY - 18 : 350;
+    const topAnchor = Math.max(template.headlineY ?? 150, logoBottom);
+    const top = topAnchor + (template.headlineUsesLogoMargin ? poster.logoBottomMarginPx : 0);
+    const layoutBottom = template.headlineBlockBottom
+      ?? (template.supportingTextY ? template.supportingTextY - 18 : 350);
     const availableHeight = Math.max(70, layoutBottom - top);
     const measureText = measure ?? ((text: string, size: number) => text.length * size * 0.46);
     const wrap = (size: number) => {

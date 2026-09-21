@@ -55,6 +55,8 @@ export type PosterTemplateConfig = {
   supportingTextColor?: string;
   supportingTextLetterSpacing?: number;
   footerVariant?: "premium" | "botanical";
+  headlineBlockBottom?: number;
+  headlineUsesLogoMargin?: boolean;
   backdropAsset?: string;
   wheelOnly?: boolean;
   wheel: CampaignPosterSettings["wheel"];
@@ -187,11 +189,15 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     ctaWidth: 0,
     ctaHeight: 0,
     ctaRotation: 0,
-    headlineY: 232,
+    // Keep the headline close to the logo, as in the reference composition.
+    // The block has enough room for three editorial lines at the default size.
+    headlineY: 170,
     headlineSizeMultiplier: 1.18,
     colorsCustomizable: false,
     headlineX: 284,
-    headlineMaxWidth: 466,
+    headlineMaxWidth: 500,
+    headlineBlockBottom: 430,
+    headlineUsesLogoMargin: true,
     headlineFontWeight: 500,
     headlineItalic: false,
     headlineFontFamily: "cormorant",
