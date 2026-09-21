@@ -28,7 +28,8 @@ export type PosterTemplateId =
   | "classic-wheel"
   | "soft-gradient-wheel"
   | "terracotta-wheel"
-  | "premium-wheel";
+  | "premium-wheel"
+  | "botanical-wheel";
 export type GamePageTemplateId =
   | "classic"
   | "restaurant-pop"

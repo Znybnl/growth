@@ -255,7 +255,7 @@ function renderBackground(
     `;
   }
 
-  if (template.id === "premium-wheel") {
+  if (template.backdropAsset) {
     if (premiumBackdropSource) {
       return `
         <image href="${escapeXml(premiumBackdropSource)}" x="0" y="0" width="${A4_WIDTH}" height="${A4_HEIGHT}" preserveAspectRatio="xMidYMid slice"/>
@@ -305,9 +305,15 @@ function renderLogo(campaign: Campaign, poster: CampaignPosterSettings, template
   const fontSize = clamp(logoSize * (template.id === "premium-wheel" ? 0.2 : 0.24), 18, 51);
   const centerY = logoY + logoSize / 2;
   const logoTextColor = poster.headlineTextColor || template.headline;
+  const logoFamily = fontFamily(template.logoFontFamily ?? "inter");
+  const textAnchor = template.logoTextAnchor ?? "middle";
+  const underline = template.logoUnderlineWidth
+    ? `<line x1="${logoX}" y1="${centerY + fontSize * 0.34 + 30}" x2="${logoX + template.logoUnderlineWidth}" y2="${centerY + fontSize * 0.34 + 30}" stroke="${template.logoUnderlineColor ?? logoTextColor}" stroke-width="3"/>`
+    : "";
 
   return `
-    <text x="${logoX}" y="${centerY + fontSize * 0.34}" text-anchor="middle" fill="${logoTextColor}" font-family="${SAFE_FONT}" font-size="${fontSize}" font-weight="${template.logoFontWeight ?? 800}" letter-spacing="${template.logoLetterSpacing ?? 0}">${text}</text>
+    <text x="${logoX}" y="${centerY + fontSize * 0.34}" text-anchor="${textAnchor}" fill="${logoTextColor}" font-family="${logoFamily}" font-size="${fontSize}" font-weight="${template.logoFontWeight ?? 800}" letter-spacing="${template.logoLetterSpacing ?? 0}">${text}</text>
+    ${underline}
   `;
 }
 
@@ -320,8 +326,9 @@ export function getPremiumHeadlineLayout(headline: string, poster: CampaignPoste
     const logoBottom = poster.logoMode === "image"
       ? logo.logoY + logo.logoSize
       : poster.logoMode === "text" ? logo.logoY + logo.logoSize / 2 + logoFontSize * 0.6 : 0;
-    const top = Math.max(150, logoBottom + poster.logoBottomMarginPx);
-    const availableHeight = Math.max(70, 350 - top);
+    const top = Math.max(template.headlineY ?? 150, logoBottom + poster.logoBottomMarginPx);
+    const layoutBottom = template.supportingTextY ? template.supportingTextY - 18 : 350;
+    const availableHeight = Math.max(70, layoutBottom - top);
     const measureText = measure ?? ((text: string, size: number) => text.length * size * 0.46);
     const wrap = (size: number) => {
       const lines: string[] = [];
@@ -365,7 +372,7 @@ function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, temp
   const headline = poster.headline || campaign.subtitle || "Faites tourner la roue";
   const family = fontFamily(poster.headlineFontFamily);
   const color = poster.headlineTextColor || template.headline;
-  if (template.id === "premium-wheel") {
+  if (template.backdropAsset) {
     const { x, top, size, lines } = getPremiumHeadlineLayout(headline, poster, template, measure);
     return `<g data-headline-size="${size}">${lines.map((line, index) => `<text x="${x}" y="${top + size * 0.82 + index * size * 1.08}"
       text-anchor="start" fill="${color}" font-family="${family}" font-size="${size}"
@@ -432,6 +439,27 @@ function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, temp
       `;
     })
     .join("")}
+    </g>
+  `;
+}
+
+function renderSupportingText(template: PosterTemplateConfig) {
+  if (!template.supportingText) {
+    return "";
+  }
+
+  const lines = template.supportingText.split(/\r?\n/).filter(Boolean);
+  const x = template.supportingTextX ?? 72;
+  const y = template.supportingTextY ?? 510;
+  const size = template.supportingTextFontSize ?? 22;
+  const lineHeight = template.supportingTextLineHeight ?? size * 1.45;
+  const family = fontFamily(template.supportingTextFontFamily ?? "inter");
+  const color = template.supportingTextColor ?? template.headline;
+  const letterSpacing = template.supportingTextLetterSpacing ?? 0;
+
+  return `
+    <g>
+      ${lines.map((line, index) => `<text x="${x}" y="${y + index * lineHeight}" text-anchor="start" fill="${color}" font-family="${family}" font-size="${size}" font-weight="500" letter-spacing="${letterSpacing}">${escapeXml(line)}</text>`).join("")}
     </g>
   `;
 }
@@ -523,12 +551,34 @@ function renderQrAndCta(qrDataUrl: string, template: PosterTemplateConfig) {
     const cardWidth = template.qrSize + 36;
     const cardHeight = template.qrSize + 60;
     const premiumQr = template.id === "premium-wheel";
+    const botanicalQr = template.id === "botanical-wheel";
     const qrContentSize = premiumQr ? template.qrSize - 26 : template.qrSize;
     const qrContentX = premiumQr ? (cardWidth - qrContentSize) / 2 - 18 : 0;
     const qrContentY = premiumQr ? 12 : 0;
-    const qrLabelX = cardWidth / 2 - 18;
+    const qrLabelX = botanicalQr ? (template.inlineQrLabelWidth ?? cardWidth) / 2 - 18 : cardWidth / 2 - 18;
     const qrLabelY = qrContentY + qrContentSize + (premiumQr ? 34 : 30);
     const qrLabelFontSize = 20;
+
+    if (botanicalQr) {
+      const labelWidth = template.inlineQrLabelWidth ?? cardWidth;
+      const labelHeight = template.inlineQrLabelHeight ?? 70;
+      const labelGap = template.inlineQrLabelGap ?? 18;
+      const cardHeight = template.qrSize + 36;
+      const qrContent = template.qrSize - 26;
+      const labelX = template.ctaX ?? template.qrX - (labelWidth - cardWidth) / 2;
+      const labelY = template.ctaY ?? template.qrY + cardHeight + labelGap;
+
+      return `
+        <g filter="url(#posterShadow)" transform="translate(${template.qrX} ${template.qrY})">
+          <rect x="-18" y="-18" width="${cardWidth}" height="${cardHeight}" rx="28" fill="#ffffff" stroke="${template.qrFrame}" stroke-width="3"/>
+          <image href="${escapeXml(qrDataUrl)}" x="5" y="5" width="${qrContent}" height="${qrContent}"/>
+        </g>
+        <g filter="url(#posterShadow)" transform="translate(${labelX} ${labelY})">
+          <rect width="${labelWidth}" height="${labelHeight}" rx="24" fill="${template.inlineQrLabelBackground ?? template.accent}" stroke="#ffffff" stroke-width="5"/>
+          <text x="${labelWidth / 2}" y="${labelHeight / 2 + 8}" text-anchor="middle" fill="${template.inlineQrLabelTextColor ?? "#ffffff"}" font-family="${SAFE_FONT}" font-size="22" font-weight="800" letter-spacing="0.4" textLength="${labelWidth - 34}" lengthAdjust="spacingAndGlyphs">SCANNEZ POUR JOUER</text>
+        </g>
+      `;
+    }
 
     return `
       <g filter="url(#posterShadow)" transform="translate(${template.qrX} ${template.qrY})">
@@ -591,6 +641,39 @@ function renderSteps(template: PosterTemplateConfig, gameType: Campaign["gameTyp
             </g>
           </g>
           <text x="132" y="138" text-anchor="middle" fill="#111111" font-family="${SAFE_FONT}" font-size="28" font-weight="700">${gift}</text>
+        </g>
+      </g>
+    `;
+  }
+
+  if (template.footerVariant === "botanical") {
+    const botanicalAction = gameType === "wheel" ? "Jouez" : "Grattez";
+    return `
+      <g transform="translate(0 944)">
+        <rect width="${A4_WIDTH}" height="${A4_HEIGHT - 944}" fill="#fbf8f2" opacity="0.74"/>
+        <line x1="281" y1="35" x2="281" y2="125" stroke="${template.accent}" stroke-width="2"/>
+        <line x1="513" y1="35" x2="513" y2="125" stroke="${template.accent}" stroke-width="2"/>
+        <g transform="translate(33 -2)">
+          <circle cx="132" cy="48" r="35" fill="${template.accent}"/>
+          <text x="132" y="48" text-anchor="middle" dominant-baseline="central" fill="#ffffff" font-family="${SAFE_FONT}" font-size="34" font-weight="800">1</text>
+          <text x="132" y="124" text-anchor="middle" fill="${template.accentDark}" font-family="${SAFE_FONT}" font-size="28" font-weight="700">Scannez</text>
+        </g>
+        <g transform="translate(264 -2)">
+          <circle cx="132" cy="48" r="35" fill="${template.accent}"/>
+          <circle cx="132" cy="48" r="21" fill="none" stroke="#ffffff" stroke-width="3.5"/>
+          <path d="M132 27 v42 M111 48 h42 M116 32 l32 32 M148 32 l-32 32" stroke="#ffffff" stroke-width="2.6"/>
+          <text x="132" y="124" text-anchor="middle" fill="${template.accentDark}" font-family="${SAFE_FONT}" font-size="28" font-weight="700">${botanicalAction}</text>
+        </g>
+        <g transform="translate(497 -2)">
+          <circle cx="132" cy="48" r="35" fill="${template.accent}"/>
+          <g transform="translate(132 48) scale(1.6)">
+            <rect x="-13" y="-5" width="26" height="19" rx="2" fill="none" stroke="#ffffff" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M-15-5h30v7h-30z" fill="none" stroke="#ffffff" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M0-5v19" fill="none" stroke="#ffffff" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M0-5c-7 0-11-2-10-6 1-4 7-3 10 6Z" fill="none" stroke="#ffffff" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M0-5c7 0 11-2 10-6-1-4-7-3-10 6Z" fill="none" stroke="#ffffff" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+          <text x="132" y="124" text-anchor="middle" fill="${template.accentDark}" font-family="${SAFE_FONT}" font-size="28" font-weight="700">${gift}</text>
         </g>
       </g>
     `;
@@ -687,9 +770,9 @@ export function buildPosterSvg(args: {
         : poster.wheel.winColor || baseTemplate.qrFrame,
   };
   const gameMarkup =
-    campaign.gameType === "wheel" && template.id !== "premium-wheel"
+    campaign.gameType === "wheel" && !template.wheelOnly
       ? renderWheel(template, effectivePoster, prizes)
-      : campaign.gameType === "scratch"
+      : campaign.gameType === "scratch" && !template.wheelOnly
         ? renderScratch(template, effectivePoster)
         : "";
   return `<?xml version="1.0" encoding="UTF-8"?>
@@ -713,6 +796,7 @@ export function buildPosterSvg(args: {
       ${renderBackground(effectivePoster, template, premiumBackdropSource)}
       ${renderLogo(campaign, effectivePoster, template)}
       ${renderHeadline(campaign, effectivePoster, template, measureHeadline)}
+      ${renderSupportingText(template)}
       ${gameMarkup}
       ${renderQrAndCta(qrDataUrl, template)}
       ${renderSteps(template, campaign.gameType)}

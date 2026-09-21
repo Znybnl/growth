@@ -14,20 +14,23 @@ import { getPosterTemplate, POSTER_TEMPLATES } from "@/lib/poster-templates";
 import { CampaignPerformance, CampaignPosterSettings } from "@/lib/types";
 
 const posterFontSources = new Map<string, string>();
-let premiumBackdropSource: string | undefined;
+const posterBackdropSources = new Map<string, string>();
 
-function getPremiumBackdropSource() {
-  if (!premiumBackdropSource) {
-    const filePath = path.join(
-      process.cwd(),
-      "public",
-      "backgrounds",
-      "premium-poster-backdrop.png",
-    );
-    premiumBackdropSource = `data:image/png;base64,${readFileSync(filePath).toString("base64")}`;
+function getPosterBackdropSource(templateId: CampaignPosterSettings["templateId"]) {
+  const asset = getPosterTemplate(templateId).backdropAsset;
+  if (!asset) {
+    return undefined;
   }
 
-  return premiumBackdropSource;
+  const cached = posterBackdropSources.get(asset);
+  if (cached) {
+    return cached;
+  }
+
+  const filePath = path.join(process.cwd(), "public", "backgrounds", asset);
+  const source = `data:image/png;base64,${readFileSync(filePath).toString("base64")}`;
+  posterBackdropSources.set(asset, source);
+  return source;
 }
 
 function isPosterTemplateDefaultWinColor(color: string | undefined) {
@@ -191,7 +194,6 @@ export async function createCampaignPosterSvg(
     prizes: performance.prizes,
     qrDataUrl,
     posterFontSource: getPosterFontSource(poster.headlineFontFamily),
-    premiumBackdropSource:
-      poster.templateId === "premium-wheel" ? getPremiumBackdropSource() : undefined,
+    premiumBackdropSource: getPosterBackdropSource(poster.templateId),
   });
 }
