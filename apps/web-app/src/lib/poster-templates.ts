@@ -232,7 +232,7 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     ctaWidth: 0,
     ctaHeight: 0,
     ctaRotation: 0,
-    headlineY: 232,
+    headlineY: 180,
     headlineSizeMultiplier: 1.18,
     colorsCustomizable: false,
     headlineX: 284,
