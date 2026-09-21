@@ -41,6 +41,9 @@ test("Botanique conserve son décor, masque les couleurs et télécharge l’ape
     await page.reload();
     await expect(page.getByRole("button", { name: /^Botanique/ })).toHaveAttribute("aria-pressed", "true");
     await expect(page.getByTestId("botanical-thumbnail-qr")).toBeAttached();
+    await expect(page.getByTestId("botanical-thumbnail-footer")).toBeAttached();
+    await expect(page.getByText("PRENEZ", { exact: true })).toHaveCount(0);
+    await page.getByRole("button", { name: /^Botanique/ }).screenshot({ path: testInfo.outputPath("botanical-thumbnail.png") });
     await expect(page.locator('input[type="color"]')).toHaveCount(0);
     await expect(page.getByLabel("Police du texte principal")).toHaveValue("cormorant");
 

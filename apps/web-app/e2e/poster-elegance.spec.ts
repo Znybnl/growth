@@ -62,6 +62,7 @@ test("Élégance et motifs d’affiche conservent les styles et téléchargent e
     await expect(page.getByLabel("Taille du texte principal", { exact: true })).toHaveValue("58");
     await expect(page.locator('input[type="color"]')).toHaveCount(0);
     await expect(font).toHaveValue("cormorant");
+    await expect(page.getByTestId("elegance-thumbnail-footer").locator(":scope > circle")).toHaveCount(3);
     const elegancePreview = page.getByAltText("Prévisualisation affiche");
     const beforeLogoMargin = await elegancePreview.getAttribute("src");
     const logoMargin = page.getByLabel("Marge sous le logo", { exact: true });
