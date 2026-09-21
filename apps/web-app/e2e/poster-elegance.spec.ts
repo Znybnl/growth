@@ -64,8 +64,13 @@ test("Élégance et motifs d’affiche conservent les styles et téléchargent e
     await expect(font).toHaveValue("cormorant");
     const elegancePreview = page.getByAltText("Prévisualisation affiche");
     const beforeLogoMargin = await elegancePreview.getAttribute("src");
-    await page.getByLabel("Marge sous le logo", { exact: true }).fill("60");
+    const logoMargin = page.getByLabel("Marge sous le logo", { exact: true });
+    await logoMargin.fill("0");
     await expect(elegancePreview).not.toHaveAttribute("src", beforeLogoMargin!);
+    await elegancePreview.screenshot({ path: testInfo.outputPath("elegance-logo-margin0.png") });
+    const atZeroLogoMargin = await elegancePreview.getAttribute("src");
+    await logoMargin.fill("60");
+    await expect(elegancePreview).not.toHaveAttribute("src", atZeroLogoMargin!);
     await expect(page.getByTestId("elegance-thumbnail-qr")).toBeAttached();
     await page.getByRole("button", { name: /^Élégance/ }).screenshot({ path: testInfo.outputPath("elegance-thumbnail.png") });
     await save();
