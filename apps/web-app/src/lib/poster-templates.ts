@@ -35,6 +35,7 @@ export type PosterTemplateConfig = {
   colorsCustomizable?: boolean;
   headlineX?: number;
   headlineMaxWidth?: number;
+  headlineBlockBottom?: number;
   headlineFontWeight?: number;
   headlineItalic?: boolean;
   headlineFontFamily?: TextFont;
@@ -232,11 +233,12 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     ctaWidth: 0,
     ctaHeight: 0,
     ctaRotation: 0,
-    headlineY: 180,
+    headlineY: 170,
     headlineSizeMultiplier: 1.18,
     colorsCustomizable: false,
     headlineX: 284,
-    headlineMaxWidth: 466,
+    headlineMaxWidth: 500,
+    headlineBlockBottom: 430,
     headlineFontWeight: 500,
     headlineItalic: false,
     headlineFontFamily: "cormorant",

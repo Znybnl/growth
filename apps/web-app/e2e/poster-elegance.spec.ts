@@ -59,6 +59,7 @@ test("Élégance et motifs d’affiche conservent les styles et téléchargent e
     // Commit the color input before switching; also cover the debounced update.
     await primary.blur();
     await choose("Élégance");
+    await expect(page.getByLabel("Taille du texte principal", { exact: true })).toHaveValue("58");
     await expect(page.locator('input[type="color"]')).toHaveCount(0);
     await expect(font).toHaveValue("cormorant");
     await expect(page.getByTestId("elegance-thumbnail-qr")).toBeAttached();
