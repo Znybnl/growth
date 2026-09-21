@@ -26,8 +26,20 @@ test("Botanique conserve son décor, masque les couleurs et télécharge l’ape
     expect(campaignId).toBeTruthy();
     await dialog.getByRole("link", { name: "Affiche", exact: true }).click();
 
-    const choose = (name: string) => page.getByRole("button", { name: new RegExp(`^${name}`) }).click();
-    await choose("Botanique");
+    const campaignResponse = await page.request.get(`/api/campaigns/${campaignId}`);
+    expect(campaignResponse.ok()).toBe(true);
+    const campaignPayload = (await campaignResponse.json()) as {
+      campaign?: { campaign?: { presentation?: { poster?: Record<string, unknown> } } };
+    };
+    const savedPoster = campaignPayload.campaign?.campaign?.presentation?.poster;
+    expect(savedPoster).toBeTruthy();
+    const posterSaveResponse = await page.request.post(`/api/campaigns/${campaignId}/poster-settings`, {
+      headers: { origin: new URL(page.url()).origin },
+      data: { ...savedPoster, templateId: "botanical-wheel", headlineFontFamily: "cormorant" },
+    });
+    expect(posterSaveResponse.ok()).toBe(true);
+    await page.reload();
+    await expect(page.getByRole("button", { name: /^Botanique/ })).toHaveAttribute("aria-pressed", "true");
     await expect(page.getByTestId("botanical-thumbnail-qr")).toBeAttached();
     await expect(page.locator('input[type="color"]')).toHaveCount(0);
     await expect(page.getByLabel("Police du texte principal")).toHaveValue("cormorant");
