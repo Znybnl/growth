@@ -12,5 +12,7 @@ node_modules
 *.webp
 # Keep the production asset required by the Elegance poster preview and PNG.
 !apps/web-app/public/backgrounds/premium-poster-backdrop.png
+# Keep the production asset required by the Botanique poster preview and PNG.
+!apps/web-app/public/backgrounds/botanical-poster-backdrop.png
 docs
 supabase
