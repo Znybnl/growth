@@ -9,6 +9,7 @@ import {
   LogoMode,
   MerchantAccountSettingsInput,
   MerchantOnboardingInput,
+  PosterBackgroundMotif,
   PosterTemplateId,
   TextAlign,
   TextFont,
@@ -20,7 +21,10 @@ import {
   defaultWheelSubtitleSpacingForTemplate,
 } from "@/lib/campaign-defaults";
 import { MAX_POSTER_HEADLINE_LENGTH } from "@/lib/poster-utils";
-import { normalizePosterTemplateStyles } from "@/lib/poster-template-settings";
+import {
+  normalizePosterBackgroundMotifStyles,
+  normalizePosterTemplateStyles,
+} from "@/lib/poster-template-settings";
 
 const GOAL_TYPES = new Set<GoalType>(["lead_capture", "review_prompt", "social_follow"]);
 const GAME_TYPES = new Set<GameType>(["wheel", "scratch"]);
@@ -77,6 +81,11 @@ const POSTER_TEMPLATE_IDS = new Set<PosterTemplateId>([
   "terracotta-wheel",
   "premium-wheel",
   "botanical-wheel",
+]);
+const POSTER_BACKGROUND_MOTIFS = new Set<PosterBackgroundMotif>([
+  "plain",
+  "soft-gradient",
+  "terracotta",
 ]);
 const MERCHANT_TIME_ZONES = new Set([
   "Europe/Paris",
@@ -538,6 +547,7 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
       },
       poster: {
         templateStyles: normalizePosterTemplateStyles(poster.templateStyles),
+        backgroundMotifStyles: normalizePosterBackgroundMotifStyles(poster.backgroundMotifStyles),
         templateId: normalizeEnum(poster.templateId, POSTER_TEMPLATE_IDS, "classic-wheel"),
         logoSource:
           poster.logoSource === "wizard" || poster.logoSource === "poster"
@@ -559,6 +569,7 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
           integer: true,
         }),
         backgroundMode: normalizeEnum(poster.backgroundMode, BACKGROUND_MODES, "color"),
+        backgroundMotif: normalizeEnum(poster.backgroundMotif, POSTER_BACKGROUND_MOTIFS, "plain"),
         backgroundColor: normalizeColor(poster.backgroundColor, "#ffffff"),
         backgroundImageUrl: normalizeImageSource(poster.backgroundImageUrl) || undefined,
         headline: normalizeMultiline(poster.headline, MAX_POSTER_HEADLINE_LENGTH),

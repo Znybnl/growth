@@ -16,8 +16,11 @@ import { CampaignPerformance, CampaignPosterSettings } from "@/lib/types";
 const posterFontSources = new Map<string, string>();
 const posterBackdropSources = new Map<string, string>();
 
-function getPosterBackdropSource(templateId: CampaignPosterSettings["templateId"]) {
-  const asset = getPosterTemplate(templateId).backdropAsset;
+function getPosterBackdropSource(
+  templateId: CampaignPosterSettings["templateId"],
+  backgroundMotif: CampaignPosterSettings["backgroundMotif"],
+) {
+  const asset = getPosterTemplate(templateId, backgroundMotif).backdropAsset;
   if (!asset) {
     return undefined;
   }
@@ -64,7 +67,7 @@ function applyPosterTemplateDefaults(
   options: { preserveWinColor?: boolean; preserveHeadlineTextColor?: boolean } = {},
 ) {
   const templateId = poster.templateId ?? "classic-wheel";
-  const template = getPosterTemplate(templateId);
+  const template = getPosterTemplate(templateId, poster.backgroundMotif);
   const campaignPrimaryColor = campaignWheel.loseColor;
   const campaignGainColor = campaignWheel.winColor;
   const isFixedColorTemplate = template.colorsCustomizable === false;
@@ -194,6 +197,6 @@ export async function createCampaignPosterSvg(
     prizes: performance.prizes,
     qrDataUrl,
     posterFontSource: getPosterFontSource(poster.headlineFontFamily),
-    premiumBackdropSource: getPosterBackdropSource(poster.templateId),
+    premiumBackdropSource: getPosterBackdropSource(poster.templateId, poster.backgroundMotif),
   });
 }

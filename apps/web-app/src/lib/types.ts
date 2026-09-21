@@ -24,6 +24,7 @@ export type TextFont =
 export type LogoMode = "none" | "image" | "text";
 export type ButtonSize = "sm" | "md" | "lg";
 export type BackgroundMode = "color" | "image";
+export type PosterBackgroundMotif = "plain" | "soft-gradient" | "terracotta";
 export type PosterTemplateId =
   | "classic-wheel"
   | "soft-gradient-wheel"
@@ -425,6 +426,7 @@ export interface CampaignWheelSettings {
 
 export interface CampaignPosterSettings {
   templateStyles?: Partial<Record<PosterTemplateId, PosterTemplateStyle>>;
+  backgroundMotifStyles?: Partial<Record<PosterBackgroundMotif, PosterTemplateStyle>>;
   templateId?: PosterTemplateId;
   logoSource?: "wizard" | "poster";
   logoMode?: LogoMode;
@@ -433,6 +435,7 @@ export interface CampaignPosterSettings {
   logoSizePercent: number;
   logoBottomMarginPx: number;
   backgroundMode?: BackgroundMode;
+  backgroundMotif?: PosterBackgroundMotif;
   backgroundColor?: string;
   backgroundImageUrl?: string;
   headline: string;

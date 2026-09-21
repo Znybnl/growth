@@ -1,12 +1,19 @@
-import { GameType, PosterTemplateId } from "@/lib/types";
-import { POSTER_TEMPLATES, PosterTemplateConfig } from "@/lib/poster-templates";
+import { GameType, PosterBackgroundMotif, PosterTemplateId } from "@/lib/types";
+import {
+  getPosterTemplate,
+  POSTER_BACKGROUND_MOTIFS,
+  POSTER_TEMPLATE_CHOICES,
+  PosterTemplateConfig,
+} from "@/lib/poster-templates";
 import { QrCode } from "lucide-react";
 
 type PosterTemplateSelectorProps = {
   gameType: GameType;
   selectedTemplateId?: PosterTemplateId;
   qrDataUrl?: string | null;
+  selectedBackgroundMotif?: PosterBackgroundMotif;
   onSelect: (templateId: PosterTemplateId) => void;
+  onSelectMotif: (backgroundMotif: PosterBackgroundMotif) => void;
 };
 
 function WheelThumbnail({ template }: { template: PosterTemplateConfig }) {
@@ -60,7 +67,9 @@ export function PosterTemplateSelector({
   gameType,
   selectedTemplateId,
   qrDataUrl,
+  selectedBackgroundMotif = "plain",
   onSelect,
+  onSelectMotif,
 }: PosterTemplateSelectorProps) {
   return (
     <section className="okado-card p-6 md:p-8">
@@ -70,25 +79,31 @@ export function PosterTemplateSelector({
         Le même design est utilisé pour la roue et le ticket ; seul le visuel central change.
       </p>
       <div className="mt-6 grid gap-4 md:grid-cols-3">
-        {POSTER_TEMPLATES.filter((template) => !template.wheelOnly || gameType === "wheel").map((template) => {
+        {POSTER_TEMPLATE_CHOICES.filter((template) => !template.wheelOnly || gameType === "wheel").map((template) => {
           const active = (selectedTemplateId ?? "classic-wheel") === template.id;
+          const visualTemplate = template.id === "classic-wheel"
+            ? getPosterTemplate("classic-wheel", selectedBackgroundMotif)
+            : template;
 
           return (
-            <button
+            <div
               key={template.id}
-              type="button"
-              aria-pressed={active}
-              onClick={() => onSelect(template.id)}
-              className={`group overflow-hidden rounded-[var(--radius-card)] border text-left transition hover:-translate-y-0.5 ${
+              className={`group overflow-hidden rounded-[var(--radius-card)] border text-left transition ${
                 active
                   ? "border-aubergine bg-purple-haze shadow-[0_8px_20px_rgba(97,31,105,0.12)]"
                   : "border-[#d7e0ed] bg-white hover:border-aubergine"
               }`}
             >
+              <button
+                type="button"
+                aria-pressed={active}
+                onClick={() => onSelect(template.id)}
+                className="block w-full text-left"
+              >
               <span aria-hidden="true" className="relative block h-[220px] overflow-hidden" style={{
-                background: template.background,
+                background: visualTemplate.background,
               }}>
-                {template.id === "premium-wheel" ? (
+                {visualTemplate.id === "premium-wheel" ? (
                   <svg viewBox="0 0 794 1123" className="h-full w-full" aria-hidden="true">
                     <image href="/backgrounds/premium-poster-backdrop.png" width="794" height="1123" />
                     <text x="520" y="102" textAnchor="middle" fontSize="28" fill="#171412">Votre établissement</text>
@@ -103,7 +118,7 @@ export function PosterTemplateSelector({
                     <rect y="925" width="794" height="198" fill="white" fillOpacity="0.8" />
                     <text y="1040" fontSize="30" fontWeight="600" fill="#171412"><tspan x="98">Scannez</tspan><tspan x="350">Jouez</tspan><tspan x="595">Gagnez</tspan></text>
                   </svg>
-                ) : template.id === "botanical-wheel" ? (
+                ) : visualTemplate.id === "botanical-wheel" ? (
                   <svg viewBox="0 0 794 1123" className="h-full w-full" aria-hidden="true">
                     <image href="/backgrounds/botanical-poster-backdrop.png" width="794" height="1123" />
                     <text x="72" y="104" fontSize="22" letterSpacing="4" fill="#153a35">Votre établissement</text>
@@ -130,15 +145,44 @@ export function PosterTemplateSelector({
                     <text x="662" y="1072" textAnchor="middle" fontSize="24" fontWeight="700" fill="#153a35">Gagnez</text>
                   </svg>
                 ) : <>
-                  {gameType === "wheel" ? <WheelThumbnail template={template} /> : <ScratchThumbnail template={template} />}
-                  <QrThumbnail template={template} />
+                  {gameType === "wheel" ? <WheelThumbnail template={visualTemplate} /> : <ScratchThumbnail template={visualTemplate} />}
+                  <QrThumbnail template={visualTemplate} />
                 </>}
               </span>
               <span className="block p-4">
                 <span className="block text-sm font-semibold text-[#111827]">{template.label}</span>
                 <span className="mt-1 block text-xs leading-5 text-[#5c6577]">{template.description}</span>
               </span>
-            </button>
+              </button>
+              {active && template.id === "classic-wheel" ? (
+                <div className="border-t border-[#e6d8eb] px-4 pb-4 pt-3">
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-charcoal">Motif du fond</p>
+                  <div className="mt-2 grid gap-2" role="group" aria-label="Motif du fond">
+                    {POSTER_BACKGROUND_MOTIFS.map((motif) => {
+                      const motifActive = selectedBackgroundMotif === motif.id;
+                      return (
+                        <button
+                          key={motif.id}
+                          type="button"
+                          aria-pressed={motifActive}
+                          aria-label={motif.label}
+                          title={motif.description}
+                          onClick={() => onSelectMotif(motif.id)}
+                          className={`flex min-w-0 items-center gap-2 rounded-[8px] border px-2 py-2 text-left text-[11px] font-semibold transition ${
+                            motifActive
+                              ? "border-aubergine bg-white text-aubergine shadow-sm"
+                              : "border-[#e2e8f0] bg-white/60 text-graphite hover:border-aubergine"
+                          }`}
+                        >
+                          <span className="block h-6 w-12 shrink-0 rounded-[4px] border border-black/5" style={{ background: motif.preview }} />
+                          <span className="block break-words leading-4">{motif.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ) : null}
+            </div>
           );
         })}
       </div>

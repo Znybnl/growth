@@ -747,7 +747,7 @@ export function buildPosterSvg(args: {
               font-style: normal;
             }`
     : "";
-  const baseTemplate = getPosterTemplate(poster.templateId);
+  const baseTemplate = getPosterTemplate(poster.templateId, poster.backgroundMotif);
   const effectiveWheel =
     baseTemplate.colorsCustomizable === false ? baseTemplate.wheel : poster.wheel;
   const effectivePoster = {

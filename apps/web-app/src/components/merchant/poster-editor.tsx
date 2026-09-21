@@ -8,7 +8,7 @@ import QRCode from "qrcode";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 
 import { buildPosterSvg, getPremiumHeadlineLayout } from "@/lib/poster-render";
-import { selectPosterTemplate } from "@/lib/poster-template-settings";
+import { selectPosterBackgroundMotif, selectPosterTemplate } from "@/lib/poster-template-settings";
 import { getPosterFontAsset, getPosterFontSourceUrl, POSTER_FONT_OPTIONS } from "@/lib/poster-fonts";
 import { textFontClass, textFontLabel } from "@/lib/format";
 import {
@@ -17,7 +17,13 @@ import {
   normalizePosterSettings,
 } from "@/lib/poster-utils";
 import { captureClientProductEvent } from "@/lib/client-product-analytics";
-import { Campaign, CampaignPosterSettings, PosterTemplateId, Prize } from "@/lib/types";
+import {
+  Campaign,
+  CampaignPosterSettings,
+  PosterBackgroundMotif,
+  PosterTemplateId,
+  Prize,
+} from "@/lib/types";
 import { getPosterTemplate, POSTER_TEMPLATES } from "@/lib/poster-templates";
 import { PosterTemplateSelector } from "@/components/merchant/poster-template-selector";
 import { ValidationDialog } from "@/components/ui/validation-dialog";
@@ -194,7 +200,7 @@ function createHeadlineMeasure(font: CampaignPosterSettings["headlineFontFamily"
 
 function applyTemplateDefaults(
   poster: CampaignPosterSettings,
-  template = getPosterTemplate(poster.templateId),
+  template = getPosterTemplate(poster.templateId, poster.backgroundMotif),
   options: {
     preserveWinColor?: boolean;
     preserveHeadlineTextColor?: boolean;
@@ -408,15 +414,15 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
   const headlineMeasure = useMemo(() => posterFontSource !== null
     ? createHeadlineMeasure(poster.headlineFontFamily) : undefined,
     [posterFontSource, poster.headlineFontFamily]);
-  const premiumHeadlineLayout = useMemo(() => getPosterTemplate(poster.templateId).backdropAsset && headlineMeasure
-    ? getPremiumHeadlineLayout(poster.headline || campaign.subtitle || "Faites tourner la roue", poster, getPosterTemplate(poster.templateId), headlineMeasure)
+  const premiumHeadlineLayout = useMemo(() => getPosterTemplate(poster.templateId, poster.backgroundMotif).backdropAsset && headlineMeasure
+    ? getPremiumHeadlineLayout(poster.headline || campaign.subtitle || "Faites tourner la roue", poster, getPosterTemplate(poster.templateId, poster.backgroundMotif), headlineMeasure)
     : null, [poster, campaign.subtitle, headlineMeasure]);
 
   const previewPosterSvg = useMemo(
     () =>
       posterQrDataUrl &&
       posterFontSource !== null &&
-      (!getPosterTemplate(poster.templateId).backdropAsset || premiumBackdropSource !== null)
+      (!getPosterTemplate(poster.templateId, poster.backgroundMotif).backdropAsset || premiumBackdropSource !== null)
         ? buildPosterSvg({
             campaign,
             poster,
@@ -473,7 +479,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
       ? previewError.message
       : null) ?? posterQrError ??
       (fontLoadError?.font === poster.headlineFontFamily ? fontLoadError.message : null) ??
-      (getPosterTemplate(poster.templateId).backdropAsset ? backdropLoadError : null);
+      (getPosterTemplate(poster.templateId, poster.backgroundMotif).backdropAsset ? backdropLoadError : null);
   const isRenderingPreview = Boolean(previewPosterSvg && !previewIsReady && !currentPreviewError);
   const isDirty = lastSavedPosterSnapshot !== JSON.stringify(poster);
 
@@ -561,6 +567,12 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
       ...poster,
       wheel: { ...poster.wheel, winColor: draftWinColor, alternateWinColor: draftWinColor },
     }, templateId);
+    setDraftWinColor(next.wheel.winColor);
+    setPoster(next);
+  }
+
+  function selectBackgroundMotif(backgroundMotif: PosterBackgroundMotif) {
+    const next = selectPosterBackgroundMotif(poster, backgroundMotif);
     setDraftWinColor(next.wheel.winColor);
     setPoster(next);
   }
@@ -694,19 +706,21 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
           qrDataUrl={posterQrDataUrl}
           gameType={campaign.gameType}
           selectedTemplateId={poster.templateId}
+          selectedBackgroundMotif={poster.backgroundMotif}
           onSelect={selectTemplate}
+          onSelectMotif={selectBackgroundMotif}
         />
 
-        {poster.templateId === "classic-wheel" ? (
+        {poster.templateId === "classic-wheel" && (poster.backgroundMotif ?? "plain") === "plain" ? (
           <section className="okado-card p-6 md:p-8">
             <p className="okado-label">Fond de l&apos;affiche</p>
-            <h2 className="okado-section-title mt-2">Personnaliser la couleur de fond</h2>
+            <h2 className="okado-section-title mt-2">Personnaliser le fond uni</h2>
             <p className="mt-2 text-sm leading-6 text-ash">
-              Cette couleur s&apos;applique à l&apos;affiche Classique, pour la roue comme pour le ticket à gratter.
+              Cette couleur s&apos;applique au motif Clair uni, pour la roue comme pour le ticket à gratter.
             </p>
 
             <label className="mt-6 block max-w-sm text-sm">
-              <span className="mb-2 block text-charcoal">Couleur de fond</span>
+                <span className="mb-2 block text-charcoal">Couleur du fond uni</span>
               <input
                 type="color"
                 value={poster.backgroundColor}
@@ -718,7 +732,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                   })
                 }
                 className="h-14 w-full rounded-[12px] border border-fog bg-white px-2 py-2 outline-none focus:border-aubergine focus:ring-4 focus:ring-aubergine/15"
-                aria-label="Couleur de fond de l’affiche Classique"
+                aria-label="Couleur du fond uni de l’affiche"
               />
             </label>
           </section>
@@ -901,7 +915,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
               </p>
             </label>
 
-            {getPosterTemplate(poster.templateId).colorsCustomizable !== false ? (
+            {getPosterTemplate(poster.templateId, poster.backgroundMotif).colorsCustomizable !== false ? (
               <label className="text-sm">
                 <span className="mb-2 block text-charcoal">Couleur du texte</span>
                 <input
@@ -934,7 +948,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                 aria-describedby={premiumHeadlineLayout?.adjusted ? "poster-headline-fit" : undefined}
               />
               {premiumHeadlineLayout?.adjusted ? <span id="poster-headline-fit" role="status" className="mt-2 block text-xs text-charcoal">
-                Taille ajustée à {Math.round(premiumHeadlineLayout.size / getPosterTemplate(poster.templateId).headlineSizeMultiplier)} px pour conserver le titre dans l’affiche. Raccourcissez le texte pour l’agrandir davantage.
+                Taille ajustée à {Math.round(premiumHeadlineLayout.size / getPosterTemplate(poster.templateId, poster.backgroundMotif).headlineSizeMultiplier)} px pour conserver le titre dans l’affiche. Raccourcissez le texte pour l’agrandir davantage.
               </span> : null}
             </label>
 
@@ -962,7 +976,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
         </section>
 
 
-        {getPosterTemplate(poster.templateId).colorsCustomizable !== false ? (
+        {getPosterTemplate(poster.templateId, poster.backgroundMotif).colorsCustomizable !== false ? (
         <section className="okado-card p-6 md:p-8">
             <p className="okado-label">Couleur de l&apos;affiche</p>
             <h2 className="okado-section-title mt-2">

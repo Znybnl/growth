@@ -5,6 +5,7 @@ import {
   Prize,
   TextFont,
 } from "@/lib/types";
+import { legacyPosterTemplateMotif } from "@/lib/poster-templates";
 
 export const MAX_POSTER_HEADLINE_LENGTH = 120;
 export const MAX_POSTER_HEADLINE_LINES = 4;
@@ -124,6 +125,7 @@ export function getPosterReadableTextColor(backgroundColor: string) {
 
 export function createPosterSettingsDefaults(input: {
   templateId?: PosterTemplateId;
+  backgroundMotif?: CampaignPosterSettings["backgroundMotif"];
   logoMode?: "none" | "image" | "text";
   logoText?: string;
   logoUrl?: string;
@@ -141,6 +143,7 @@ export function createPosterSettingsDefaults(input: {
 }): CampaignPosterSettings {
   return {
     templateId: input.templateId ?? "classic-wheel",
+    backgroundMotif: input.backgroundMotif ?? "plain",
     logoMode: input.logoMode ?? (input.logoUrl ? "image" : input.logoText ? "text" : "none"),
     logoText: input.logoText ?? "",
     logoUrl: input.logoUrl,
@@ -164,10 +167,16 @@ export function normalizePosterSettings(
   poster: Partial<CampaignPosterSettings> | undefined,
   defaults: CampaignPosterSettings,
 ): CampaignPosterSettings {
+  const legacyMotif = legacyPosterTemplateMotif(poster?.templateId);
+  const backgroundMotif = poster?.backgroundMotif ?? legacyMotif ?? defaults.backgroundMotif ?? "plain";
+  const templateId = legacyMotif ? "classic-wheel" : poster?.templateId ?? defaults.templateId ?? "classic-wheel";
+
   return {
     ...defaults,
     ...poster,
-    templateId: poster?.templateId ?? defaults.templateId ?? "classic-wheel",
+    templateId,
+    backgroundMotif,
+    backgroundMotifStyles: poster?.backgroundMotifStyles ?? defaults.backgroundMotifStyles,
     logoSizePercent: clamp(poster?.logoSizePercent ?? defaults.logoSizePercent ?? 70, 0, 200),
     logoBottomMarginPx: clamp(poster?.logoBottomMarginPx ?? defaults.logoBottomMarginPx, 0, 120),
     logoMode: poster?.logoMode ?? defaults.logoMode,

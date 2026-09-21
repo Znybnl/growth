@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { signIn } from "./auth-session";
 
-test("Élégance conserve les autres styles et télécharge exactement l’aperçu", async ({ page }, testInfo) => {
+test("Élégance et motifs d’affiche conservent les styles et téléchargent exactement l’aperçu", async ({ page }, testInfo) => {
   test.setTimeout(180_000);
   page.setDefaultTimeout(20_000);
   page.setDefaultNavigationTimeout(20_000);
@@ -41,7 +41,7 @@ test("Élégance conserve les autres styles et télécharge exactement l’aper�
 
     const font = page.getByLabel("Police du texte principal");
     const primary = page.getByLabel("Couleur principale", { exact: true });
-    const background = page.getByLabel("Couleur de fond de l’affiche Classique");
+    const background = page.getByLabel("Couleur du fond uni de l’affiche");
     const choose = (name: string) => page.getByRole("button", { name: new RegExp(`^${name}`) }).click();
     const save = async () => {
       const response = page.waitForResponse(r => r.url().includes("/poster-settings") && r.request().method() === "POST");
@@ -90,15 +90,18 @@ test("Élégance conserve les autres styles et télécharge exactement l’aper�
     console.log(`Slider settled in ${Date.now() - started}ms; PNG encodes: ${(await encodes()) - before}`);
     await sizeSlider.fill("58");
     await expect(readyDownload).toBeEnabled();
-    await choose("Classique blanc");
+    await choose("Classique");
     await expect(font).toHaveValue("lato");
     await expect(primary).toHaveValue("#146c70");
     await expect(background).toHaveValue("#e7f2ed");
     await expect(page.getByLabel("Taille du texte principal", { exact: true })).toHaveValue("44");
-    await choose("Gradient clair");
+    await page.getByRole("button", { name: "Gradient clair", exact: true }).click();
+    await page.getByRole("button", { name: /^Classique/ }).screenshot({ path: testInfo.outputPath("classic-motif-selector.png") });
+    await page.getByRole("group", { name: "Motif du fond" }).screenshot({ path: testInfo.outputPath("background-motif-options.png") });
     await font.selectOption("fredoka");
     await choose("Élégance");
-    await choose("Gradient clair");
+    await choose("Classique");
+    await page.getByRole("button", { name: "Gradient clair", exact: true }).click();
     await expect(font).toHaveValue("fredoka");
     await choose("Élégance");
     await save();
@@ -133,7 +136,8 @@ test("Élégance conserve les autres styles et télécharge exactement l’aper�
     await page.reload();
     await expect(downloadButton).toBeEnabled({ timeout: 30_000 });
     await expect(font).toHaveValue("roboto");
-    await choose("Classique blanc");
+    await choose("Classique");
+    await page.getByRole("button", { name: "Clair uni", exact: true }).click();
     await expect(font).toHaveValue("lato");
     await expect(primary).toHaveValue("#146c70");
     await expect(background).toHaveValue("#e7f2ed");
