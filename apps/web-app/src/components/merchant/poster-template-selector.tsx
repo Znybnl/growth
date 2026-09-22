@@ -79,7 +79,9 @@ export function PosterTemplateSelector({
         Le même design est utilisé pour la roue et le ticket ; seul le visuel central change.
       </p>
       <div className="mt-6 grid gap-4 md:grid-cols-3">
-        {POSTER_TEMPLATE_CHOICES.filter((template) => !template.wheelOnly || gameType === "wheel").map((template) => {
+        {POSTER_TEMPLATE_CHOICES.filter((template) =>
+          gameType === "wheel" || !template.wheelOnly || template.scratchSupported,
+        ).map((template) => {
           const active = (selectedTemplateId ?? "classic-wheel") === template.id;
           const visualTemplate = template.id === "classic-wheel"
             ? getPosterTemplate("classic-wheel", selectedBackgroundMotif)

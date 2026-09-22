@@ -65,6 +65,7 @@ export type PosterTemplateConfig = {
   footerVariant?: "premium" | "botanical";
   backdropAsset?: string;
   wheelOnly?: boolean;
+  scratchSupported?: boolean;
   wheel: CampaignPosterSettings["wheel"];
 };
 
@@ -252,6 +253,7 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     backdropAsset: "premium-poster-backdrop.png",
     footerVariant: "premium",
     wheelOnly: true,
+    scratchSupported: true,
     wheel: {
       winColor: "#d8c8b8",
       alternateWinColor: "#fbf8f4",
@@ -319,6 +321,7 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     footerVariant: "botanical",
     backdropAsset: "botanical-poster-backdrop.png",
     wheelOnly: true,
+    scratchSupported: true,
     wheel: {
       winColor: "#718578",
       alternateWinColor: "#718578",

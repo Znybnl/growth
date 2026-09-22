@@ -775,7 +775,7 @@ export function buildPosterSvg(args: {
   const gameMarkup =
     campaign.gameType === "wheel" && !template.wheelOnly
       ? renderWheel(template, effectivePoster, prizes)
-      : campaign.gameType === "scratch" && !template.wheelOnly
+      : campaign.gameType === "scratch" && (!template.wheelOnly || template.scratchSupported)
         ? renderScratch(template, effectivePoster)
         : "";
   return `<?xml version="1.0" encoding="UTF-8"?>
