@@ -1,6 +1,11 @@
 import { buildPosterWheelSegments, MAX_POSTER_HEADLINE_LINES, splitPosterSegmentLines } from "@/lib/poster-utils";
+import {
+  clampCampaignSpacingPx,
+  defaultWheelSubtitleSpacingForTemplate,
+  limitCampaignSubtitleLines,
+} from "@/lib/campaign-defaults";
 import { getPosterTemplate, PosterTemplateConfig } from "@/lib/poster-templates";
-import { getPosterFontAsset } from "@/lib/poster-fonts";
+import { getPosterFontAsset, getPosterSubtitleFont } from "@/lib/poster-fonts";
 import { Campaign, CampaignPosterSettings, Prize, TextFont } from "@/lib/types";
 
 const A4_WIDTH = 794;
@@ -317,8 +322,67 @@ function renderLogo(campaign: Campaign, poster: CampaignPosterSettings, template
   `;
 }
 
+export type PosterSubtitleLayout = {
+  color: string;
+  family: string;
+  fontSize: number;
+  lineHeight: number;
+  lines: string[];
+  textAnchor: "start" | "middle";
+  x: number;
+  top: number;
+  headlineGap: number;
+};
+
+function posterSubtitleLines(text: string, width: number, size: number) {
+  const maxChars = clamp(Math.floor(width / (size * 0.54)), 16, 42);
+  return splitLines(text, maxChars).slice(0, 3);
+}
+
+export function getPosterSubtitleLayout(
+  campaign: Campaign,
+  poster: CampaignPosterSettings,
+  template: PosterTemplateConfig,
+): PosterSubtitleLayout | null {
+  const text = limitCampaignSubtitleLines(campaign.presentation.layout.wheelSubtitle ?? "").trim();
+  if (!text) {
+    return null;
+  }
+
+  const fontSize = template.backdropAsset ? 24 : 25;
+  const lineHeight = fontSize * 1.42;
+  const width = Math.min(template.headlineMaxWidth ?? 620, A4_WIDTH - 96);
+  const lines = posterSubtitleLines(text, width, fontSize);
+  const headlineGap = clampCampaignSpacingPx(
+    campaign.presentation.layout.subtitleSpacingPx,
+    defaultWheelSubtitleSpacingForTemplate(campaign.presentation.layout.templateId),
+  );
+  const visualTop = template.backdropAsset
+    ? template.supportingTextY
+      ? template.supportingTextY - 18
+      : template.qrY - 18
+    : campaign.gameType === "scratch"
+      ? 480
+      : template.wheelY - template.wheelRadius - 36;
+  const textHeight = fontSize + Math.max(0, lines.length - 1) * lineHeight;
+  const top = Math.max(0, visualTop - 18 - textHeight);
+  const textAnchor = template.backdropAsset ? "start" : "middle";
+
+  return {
+    color: campaign.presentation.logo.textColor ?? campaign.presentation.heading.textColor ?? poster.headlineTextColor ?? template.headline,
+    family: fontFamily(getPosterSubtitleFont(campaign.presentation.heading.fontFamily)),
+    fontSize,
+    lineHeight,
+    lines,
+    textAnchor,
+    x: template.backdropAsset ? template.headlineX ?? 72 : template.headlineX ?? A4_WIDTH / 2,
+    top,
+    headlineGap,
+  };
+}
+
 export function getPremiumHeadlineLayout(headline: string, poster: CampaignPosterSettings, template: PosterTemplateConfig,
-  measure?: (text: string, size: number) => number) {
+  measure?: (text: string, size: number) => number, reservedBottom?: number) {
     const x = template.headlineX ?? 284;
     const width = Math.min(template.headlineMaxWidth ?? 466, A4_WIDTH - x - 40);
     const logo = getLogoLayout(poster, template);
@@ -330,7 +394,10 @@ export function getPremiumHeadlineLayout(headline: string, poster: CampaignPoste
     const top = template.headlineLogoGapPx !== undefined && poster.logoMode !== "none"
       ? logoBottom + template.headlineLogoGapPx + logoMargin
       : Math.max(template.headlineY ?? 150, logoBottom) + logoMargin;
-    const layoutBottom = template.headlineBlockBottom ?? (template.supportingTextY ? template.supportingTextY - 18 : 350);
+    const layoutBottom = Math.min(
+      reservedBottom ?? Number.POSITIVE_INFINITY,
+      template.headlineBlockBottom ?? (template.supportingTextY ? template.supportingTextY - 18 : 350),
+    );
     const availableHeight = Math.max(70, layoutBottom - top);
     const measureText = measure ?? ((text: string, size: number) => text.length * size * 0.46);
     const wrap = (size: number) => {
@@ -371,12 +438,18 @@ export function getPremiumHeadlineLayout(headline: string, poster: CampaignPoste
 }
 
 function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, template: PosterTemplateConfig,
-  measure?: (text: string, size: number) => number) {
+  measure?: (text: string, size: number) => number, subtitleLayout?: PosterSubtitleLayout | null) {
   const headline = poster.headline || campaign.subtitle || "Faites tourner la roue";
   const family = fontFamily(poster.headlineFontFamily);
   const color = poster.headlineTextColor || template.headline;
   if (template.backdropAsset) {
-    const { x, top, size, lines } = getPremiumHeadlineLayout(headline, poster, template, measure);
+    const { x, top, size, lines } = getPremiumHeadlineLayout(
+      headline,
+      poster,
+      template,
+      measure,
+      subtitleLayout ? subtitleLayout.top - subtitleLayout.headlineGap : undefined,
+    );
     return `<g data-headline-size="${size}">${lines.map((line, index) => `<text x="${x}" y="${top + size * 0.82 + index * size * 1.08}"
       text-anchor="start" fill="${color}" font-family="${family}" font-size="${size}"
       font-weight="${template.headlineFontWeight ?? 500}">${escapeXml(line)}</text>`).join("")}</g>`;
@@ -393,10 +466,12 @@ function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, temp
   const firstLineY = Math.max(logoAwareHeadlineY, getLogoLayout(poster, template).bottomY + size * 0.15);
   const lineHeight = size * 1.08;
   const headlineTop = Math.max(0, firstLineY - size * 1.05);
-  const headlineBottom = Math.min(
-    A4_HEIGHT,
-    template.wheelY - template.wheelRadius - size * 0.1,
-  );
+  const headlineBottom = subtitleLayout
+    ? subtitleLayout.top - subtitleLayout.headlineGap
+    : Math.min(
+      A4_HEIGHT,
+      template.wheelY - template.wheelRadius - size * 0.1,
+    );
   const maxVisibleLines = clamp(
     Math.floor((headlineBottom - headlineTop) / lineHeight) + 1,
     1,
@@ -442,6 +517,20 @@ function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, temp
       `;
     })
     .join("")}
+    </g>
+  `;
+}
+
+function renderPosterSubtitle(layout: PosterSubtitleLayout | null) {
+  if (!layout) {
+    return "";
+  }
+
+  return `
+    <g data-poster-subtitle="true">
+      ${layout.lines.map((line, index) => `<text x="${layout.x}" y="${layout.top + layout.fontSize * 0.82 + index * layout.lineHeight}"
+        text-anchor="${layout.textAnchor}" fill="${layout.color}" font-family="${layout.family}" font-size="${layout.fontSize}"
+        font-weight="600" letter-spacing="0.28">${escapeXml(line)}</text>`).join("")}
     </g>
   `;
 }
@@ -728,6 +817,7 @@ export function buildPosterSvg(args: {
   prizes: Prize[] | Array<Pick<Prize, "label">>;
   qrDataUrl: string;
   posterFontSource?: string;
+  posterSubtitleFontSource?: string;
   premiumBackdropSource?: string;
   measureHeadline?: (text: string, size: number) => number;
 }) {
@@ -737,6 +827,7 @@ export function buildPosterSvg(args: {
     prizes,
     qrDataUrl,
     posterFontSource,
+    posterSubtitleFontSource,
     premiumBackdropSource,
     measureHeadline,
   } = args;
@@ -747,6 +838,17 @@ export function buildPosterSvg(args: {
               font-family: "${posterFontAsset.familyName}";
               src: url("${posterFontSource ?? `/fonts/poster/${posterFontAsset.fileName}`}") format("truetype");
               font-weight: ${posterFontAsset.fontWeight};
+              font-style: normal;
+            }`
+    : "";
+  const posterSubtitleFont = getPosterSubtitleFont(campaign.presentation.heading.fontFamily);
+  const posterSubtitleFontAsset = getPosterFontAsset(posterSubtitleFont);
+  const posterSubtitleFontFace = posterSubtitleFontAsset
+    ? `
+            @font-face {
+              font-family: "${posterSubtitleFontAsset.familyName}";
+              src: url("${posterSubtitleFontSource ?? `/fonts/poster/${posterSubtitleFontAsset.fileName}`}") format("truetype");
+              font-weight: ${posterSubtitleFontAsset.fontWeight};
               font-style: normal;
             }`
     : "";
@@ -778,12 +880,14 @@ export function buildPosterSvg(args: {
       : campaign.gameType === "scratch" && !template.wheelOnly
         ? renderScratch(template, effectivePoster)
         : "";
+  const subtitleLayout = getPosterSubtitleLayout(campaign, effectivePoster, template);
   return `<?xml version="1.0" encoding="UTF-8"?>
     <svg xmlns="http://www.w3.org/2000/svg" width="${A4_WIDTH}" height="${A4_HEIGHT}" viewBox="0 0 ${A4_WIDTH} ${A4_HEIGHT}">
       <defs>
         <style>
           <![CDATA[
             ${posterFontFace}
+            ${posterSubtitleFontFace}
           ]]>
         </style>
         <filter id="posterShadow" x="-25%" y="-25%" width="150%" height="150%">
@@ -798,7 +902,8 @@ export function buildPosterSvg(args: {
 
       ${renderBackground(effectivePoster, template, premiumBackdropSource)}
       ${renderLogo(campaign, effectivePoster, template)}
-      ${renderHeadline(campaign, effectivePoster, template, measureHeadline)}
+      ${renderHeadline(campaign, effectivePoster, template, measureHeadline, subtitleLayout)}
+      ${renderPosterSubtitle(subtitleLayout)}
       ${renderSupportingText(template)}
       ${gameMarkup}
       ${renderQrAndCta(qrDataUrl, template)}

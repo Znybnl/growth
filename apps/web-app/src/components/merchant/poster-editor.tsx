@@ -7,9 +7,9 @@ import { Loader2 } from "lucide-react";
 import QRCode from "qrcode";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 
-import { buildPosterSvg, getPremiumHeadlineLayout } from "@/lib/poster-render";
+import { buildPosterSvg, getPosterSubtitleLayout, getPremiumHeadlineLayout } from "@/lib/poster-render";
 import { selectPosterBackgroundMotif, selectPosterTemplate } from "@/lib/poster-template-settings";
-import { getPosterFontAsset, getPosterFontSourceUrl, POSTER_FONT_OPTIONS } from "@/lib/poster-fonts";
+import { getPosterFontAsset, getPosterFontSourceUrl, getPosterSubtitleFont, POSTER_FONT_OPTIONS } from "@/lib/poster-fonts";
 import { textFontClass, textFontLabel } from "@/lib/format";
 import {
   createPosterSettingsDefaults,
@@ -310,6 +310,10 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
     font: CampaignPosterSettings["headlineFontFamily"];
     source: string;
   } | null>(null);
+  const [loadedPosterSubtitleFont, setLoadedPosterSubtitleFont] = useState<{
+    font: CampaignPosterSettings["headlineFontFamily"];
+    source: string;
+  } | null>(null);
   const [loadedBackdrop, setLoadedBackdrop] = useState<{
     templateId: PosterTemplateId;
     source: string;
@@ -318,6 +322,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
   const [previewError, setPreviewError] = useState<{ svg: string; message: string } | null>(null);
   const [posterQrError, setPosterQrError] = useState<string | null>(null);
   const [fontLoadError, setFontLoadError] = useState<{ font: string; message: string } | null>(null);
+  const [subtitleFontLoadError, setSubtitleFontLoadError] = useState<{ font: string; message: string } | null>(null);
   const [backdropLoadError, setBackdropLoadError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -380,6 +385,25 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
     };
   }, [poster.headlineFontFamily]);
 
+  const posterSubtitleFont = getPosterSubtitleFont(campaign.presentation.heading.fontFamily);
+
+  useEffect(() => {
+    let active = true;
+
+    void loadPosterFontAsDataUrl(posterSubtitleFont).then((source) => {
+      if (active) {
+        setLoadedPosterSubtitleFont({ font: posterSubtitleFont, source });
+        setSubtitleFontLoadError(null);
+      }
+    }).catch((error: Error) => {
+      if (active) setSubtitleFontLoadError({ font: posterSubtitleFont, message: error.message });
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [posterSubtitleFont]);
+
   useEffect(() => {
     const templateId = poster.templateId ?? "classic-wheel";
     if (!getPosterTemplate(templateId).backdropAsset) {
@@ -410,30 +434,42 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
 
   const posterFontSource =
     loadedPosterFont?.font === poster.headlineFontFamily ? loadedPosterFont.source : null;
+  const posterSubtitleFontSource =
+    loadedPosterSubtitleFont?.font === posterSubtitleFont ? loadedPosterSubtitleFont.source : null;
+  const posterTemplate = getPosterTemplate(poster.templateId, poster.backgroundMotif);
+  const posterSubtitleLayout = getPosterSubtitleLayout(campaign, poster, posterTemplate);
 
   const headlineMeasure = useMemo(() => posterFontSource !== null
     ? createHeadlineMeasure(poster.headlineFontFamily) : undefined,
     [posterFontSource, poster.headlineFontFamily]);
-  const premiumHeadlineLayout = useMemo(() => getPosterTemplate(poster.templateId, poster.backgroundMotif).backdropAsset && headlineMeasure
-    ? getPremiumHeadlineLayout(poster.headline || campaign.subtitle || "Faites tourner la roue", poster, getPosterTemplate(poster.templateId, poster.backgroundMotif), headlineMeasure)
-    : null, [poster, campaign.subtitle, headlineMeasure]);
+  const premiumHeadlineLayout = useMemo(() => posterTemplate.backdropAsset && headlineMeasure
+    ? getPremiumHeadlineLayout(
+      poster.headline || campaign.subtitle || "Faites tourner la roue",
+      poster,
+      posterTemplate,
+      headlineMeasure,
+      posterSubtitleLayout ? posterSubtitleLayout.top - posterSubtitleLayout.headlineGap : undefined,
+    )
+    : null, [poster, campaign.subtitle, headlineMeasure, posterSubtitleLayout, posterTemplate]);
 
   const previewPosterSvg = useMemo(
     () =>
       posterQrDataUrl &&
       posterFontSource !== null &&
-      (!getPosterTemplate(poster.templateId, poster.backgroundMotif).backdropAsset || premiumBackdropSource !== null)
+      (!posterSubtitleLayout || posterSubtitleFontSource !== null) &&
+      (!posterTemplate.backdropAsset || premiumBackdropSource !== null)
         ? buildPosterSvg({
             campaign,
             poster,
             prizes,
             qrDataUrl: posterQrDataUrl,
             posterFontSource: posterFontSource || undefined,
+            posterSubtitleFontSource: posterSubtitleFontSource || undefined,
             premiumBackdropSource: premiumBackdropSource || undefined,
             measureHeadline: headlineMeasure,
           })
         : null,
-    [campaign, poster, posterFontSource, posterQrDataUrl, premiumBackdropSource, prizes, headlineMeasure],
+    [campaign, poster, posterFontSource, posterSubtitleFontSource, posterQrDataUrl, premiumBackdropSource, prizes, headlineMeasure, posterSubtitleLayout, posterTemplate],
   );
 
   useEffect(() => {
@@ -479,6 +515,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
       ? previewError.message
       : null) ?? posterQrError ??
       (fontLoadError?.font === poster.headlineFontFamily ? fontLoadError.message : null) ??
+      (subtitleFontLoadError?.font === posterSubtitleFont ? subtitleFontLoadError.message : null) ??
       (getPosterTemplate(poster.templateId, poster.backgroundMotif).backdropAsset ? backdropLoadError : null);
   const isRenderingPreview = Boolean(previewPosterSvg && !previewIsReady && !currentPreviewError);
   const isDirty = lastSavedPosterSnapshot !== JSON.stringify(poster);

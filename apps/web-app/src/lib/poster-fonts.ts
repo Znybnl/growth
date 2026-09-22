@@ -56,6 +56,11 @@ export function getPosterFontAsset(font: TextFont) {
   return POSTER_FONT_ASSETS[font];
 }
 
+/** Keep the optional campaign subtitle visually distinct from the headline. */
+export function getPosterSubtitleFont(font: TextFont): TextFont {
+  return font === "roboto" ? "inter" : "roboto";
+}
+
 export function getPosterFontSourceUrl(font: TextFont) {
   const asset = getPosterFontAsset(font);
   return asset ? `/fonts/poster/${asset.fileName}` : undefined;
