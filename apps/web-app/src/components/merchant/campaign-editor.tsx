@@ -110,6 +110,7 @@ import { fluidType } from "@/lib/responsive";
 import { getPrizeValidationMessages } from "@/lib/prize-validation";
 import { buildWheelVisualSegments, WheelVisualSegment } from "@/lib/wheel-segments";
 import { isRestaurantIndustry } from "@/lib/merchant-options";
+import { userBackgroundImageStyle } from "@/lib/campaign-background";
 import {
   ActionKind,
   BackgroundLibraryAsset,
@@ -1547,7 +1548,7 @@ export function buildCampaignLivePreviewModel(
   const logoTextSizePx = campaignLogoTextSizePx(logoSizePercent, form.gameType);
   const backgroundImage =
     form.presentation.background.mode === "image" && form.presentation.background.imageUrl
-      ? `linear-gradient(rgba(15,23,40,0.32), rgba(15,23,40,0.52)), url("${form.presentation.background.imageUrl}")`
+      ? userBackgroundImageStyle(form.presentation.background.imageUrl)
       : templateId === "restaurant-pop"
         ? restaurantPopBackground(form.presentation.background.color)
         : templateId === "rose-institut"
@@ -1827,7 +1828,7 @@ export function CampaignEditor({
         backgroundColor: form.presentation.background.color,
         backgroundImage:
           form.presentation.background.mode === "image" && form.presentation.background.imageUrl
-            ? `linear-gradient(rgba(15,23,40,0.32), rgba(15,23,40,0.52)), url("${form.presentation.background.imageUrl}")`
+            ? userBackgroundImageStyle(form.presentation.background.imageUrl)
             : (form.presentation.layout.templateId ?? "classic") === "restaurant-pop"
               ? restaurantPopBackground(form.presentation.background.color)
             : (form.presentation.layout.templateId ?? "classic") === "rose-institut"

@@ -41,6 +41,7 @@ import {
   resolvePromoStrokeColor,
 } from "@/lib/campaign-defaults";
 import { buildWheelVisualSegments } from "@/lib/wheel-segments";
+import { userBackgroundImageStyle } from "@/lib/campaign-background";
 import {
   CreateDrawSessionResult,
   DrawResult,
@@ -798,7 +799,7 @@ export function CampaignExperience({
   const backgroundStyle =
     campaign.presentation.background.mode === "image" &&
     campaign.presentation.background.imageUrl
-      ? `linear-gradient(rgba(0,0,0,0.08), rgba(0,0,0,0.18)), url("${campaign.presentation.background.imageUrl}")`
+      ? userBackgroundImageStyle(campaign.presentation.background.imageUrl)
       : isScratchVaultTemplate
         ? `radial-gradient(circle at 50% 108%, ${withHexAlpha(primaryColor, "58")} 0 27%, transparent 48%), radial-gradient(circle at 15% 10%, ${withHexAlpha(secondaryColor, "4d")} 0 12%, transparent 22%), linear-gradient(155deg, #071126b8 0%, #111b3b99 56%, #071126b8 100%)`
         : isScratchConfettiTemplate

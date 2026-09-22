@@ -27,6 +27,7 @@ import {
   resolvePromoStrokeColor,
 } from "@/lib/campaign-defaults";
 import { buildWheelVisualSegments, WheelVisualSegment } from "@/lib/wheel-segments";
+import { userBackgroundImageStyle } from "@/lib/campaign-background";
 import {
   CampaignSetupInput,
   GamePageTemplateId,
@@ -137,7 +138,7 @@ function previewBackgroundImage(
   accent: CampaignSetupInput["accent"],
 ) {
   if (form.presentation.background.mode === "image" && form.presentation.background.imageUrl) {
-    return `linear-gradient(rgba(15,23,40,0.32), rgba(15,23,40,0.52)), url("${form.presentation.background.imageUrl}")`;
+    return userBackgroundImageStyle(form.presentation.background.imageUrl);
   }
   if (templateId === "restaurant-pop") {
     return restaurantPopBackground(form.presentation.background.color);
