@@ -35,6 +35,7 @@ export type PosterTemplateConfig = {
   colorsCustomizable?: boolean;
   headlineX?: number;
   headlineMaxWidth?: number;
+  subtitleMaxWidth?: number;
   headlineBlockBottom?: number;
   headlineLogoGapPx?: number;
   headlineFontWeight?: number;
@@ -131,6 +132,7 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     ctaRotation: 0,
     headlineY: 245,
     headlineSizeMultiplier: 1.38,
+    subtitleMaxWidth: 700,
     motif: "plain",
     wheel: {
       winColor: "#5438c8",

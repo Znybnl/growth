@@ -970,6 +970,21 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
 
             <label className="text-sm md:col-span-2">
               <span className="mb-2 block text-charcoal">Texte secondaire</span>
+              <span className="mb-3 flex items-start gap-3 rounded-[12px] border border-border bg-soft-white px-3 py-3">
+                <input
+                  type="checkbox"
+                  checked={Boolean(poster.posterSubtitleEnabled)}
+                  onChange={(event) => updatePoster({ posterSubtitleEnabled: event.target.checked })}
+                  aria-describedby="poster-secondary-display-help"
+                  className="mt-0.5 h-4 w-4 accent-aubergine"
+                />
+                <span>
+                  <span className="block font-medium text-charcoal">Afficher le texte secondaire sur l&apos;affiche</span>
+                  <span id="poster-secondary-display-help" className="mt-1 block text-xs leading-5 text-ash">
+                    Désactivé par défaut. Le texte saisi reste enregistré et peut être réactivé à tout moment.
+                  </span>
+                </span>
+              </span>
               <textarea
                 rows={3}
                 maxLength={MAX_CAMPAIGN_SUBTITLE_LENGTH}
@@ -979,7 +994,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                 className="w-full rounded-[var(--okado-radius-control)] border border-border bg-soft-white px-4 py-3 outline-none transition focus:border-aubergine focus:bg-white"
               />
               <p id="poster-secondary-text-help" className="mt-2 text-xs leading-5 text-ash">
-                Affiché sur l&apos;affiche entre le texte principal et le visuel. Laissez vide pour masquer ce texte.
+                Affiché entre le texte principal et le visuel lorsque l&apos;option est activée. Un texte vide masque également ce bloc.
               </p>
               <p className="mt-1 text-xs text-ash">
                 {posterSubtitle.length}/{MAX_CAMPAIGN_SUBTITLE_LENGTH} caractères · 3 lignes maximum.

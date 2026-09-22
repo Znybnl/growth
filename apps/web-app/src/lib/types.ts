@@ -434,6 +434,7 @@ export interface CampaignPosterSettings {
   logoUrl?: string;
   logoSizePercent: number;
   logoBottomMarginPx: number;
+  posterSubtitleEnabled?: boolean;
   backgroundMode?: BackgroundMode;
   backgroundMotif?: PosterBackgroundMotif;
   backgroundColor?: string;

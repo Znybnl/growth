@@ -332,10 +332,11 @@ export type PosterSubtitleLayout = {
   x: number;
   top: number;
   headlineGap: number;
+  fontWeight: number;
 };
 
 function posterSubtitleLines(text: string, width: number, size: number) {
-  const maxChars = clamp(Math.floor(width / (size * 0.54)), 16, 42);
+  const maxChars = clamp(Math.floor(width / (size * 0.54)), 16, 52);
   return splitLines(text, maxChars).slice(0, 3);
 }
 
@@ -344,6 +345,10 @@ export function getPosterSubtitleLayout(
   poster: CampaignPosterSettings,
   template: PosterTemplateConfig,
 ): PosterSubtitleLayout | null {
+  if (!poster.posterSubtitleEnabled) {
+    return null;
+  }
+
   const text = limitCampaignSubtitleLines(campaign.presentation.layout.wheelSubtitle ?? "").trim();
   if (!text) {
     return null;
@@ -354,7 +359,7 @@ export function getPosterSubtitleLayout(
   const isPremiumTemplate = template.id === "premium-wheel";
   const width = isPremiumTemplate
     ? Math.min(template.qrSize, A4_WIDTH - template.qrX - 24)
-    : Math.min(template.headlineMaxWidth ?? 620, A4_WIDTH - 96);
+    : Math.min(template.subtitleMaxWidth ?? template.headlineMaxWidth ?? 620, A4_WIDTH - 48);
   const lines = posterSubtitleLines(text, width, fontSize);
   const headlineGap = clampCampaignSpacingPx(
     campaign.presentation.layout.subtitleSpacingPx,
@@ -387,6 +392,7 @@ export function getPosterSubtitleLayout(
         : template.headlineX ?? A4_WIDTH / 2,
     top,
     headlineGap,
+    fontWeight: isPremiumTemplate ? 400 : 600,
   };
 }
 
@@ -538,7 +544,7 @@ function renderPosterSubtitle(layout: PosterSubtitleLayout | null) {
     <g data-poster-subtitle="true">
       ${layout.lines.map((line, index) => `<text x="${layout.x}" y="${layout.top + layout.fontSize * 0.82 + index * layout.lineHeight}"
         text-anchor="${layout.textAnchor}" fill="${layout.color}" font-family="${layout.family}" font-size="${layout.fontSize}"
-        font-weight="600" letter-spacing="0.28">${escapeXml(line)}</text>`).join("")}
+        font-weight="${layout.fontWeight}" letter-spacing="0.28">${escapeXml(line)}</text>`).join("")}
     </g>
   `;
 }
