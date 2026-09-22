@@ -452,11 +452,10 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
     }),
     [campaign, posterSubtitle],
   );
-  const posterSubtitleLayout = getPosterSubtitleLayout(posterCampaign, poster, posterTemplate);
-
   const headlineMeasure = useMemo(() => posterFontSource !== null
     ? createHeadlineMeasure(poster.headlineFontFamily) : undefined,
     [posterFontSource, poster.headlineFontFamily]);
+  const posterSubtitleLayout = getPosterSubtitleLayout(posterCampaign, poster, posterTemplate, headlineMeasure);
   const premiumHeadlineLayout = useMemo(() => posterTemplate.backdropAsset && headlineMeasure
     ? getPremiumHeadlineLayout(
       poster.headline || campaign.subtitle || "Faites tourner la roue",

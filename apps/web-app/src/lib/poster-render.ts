@@ -386,6 +386,7 @@ export function getPosterSubtitleLayout(
   campaign: Campaign,
   poster: CampaignPosterSettings,
   template: PosterTemplateConfig,
+  measure?: (text: string, size: number) => number,
 ): PosterSubtitleLayout | null {
   if (!poster.posterSubtitleEnabled) {
     return null;
@@ -410,6 +411,14 @@ export function getPosterSubtitleLayout(
   const standardHeadlineLayout = !isPremiumTemplate && !template.backdropAsset
     ? getStandardHeadlineLayout(campaign, poster, template)
     : null;
+  const botanicalHeadlineLayout = template.id === "botanical-wheel"
+    ? getPremiumHeadlineLayout(
+      poster.headline || campaign.subtitle || "Faites tourner la roue",
+      poster,
+      template,
+      measure,
+    )
+    : null;
   const visualTop = isPremiumTemplate
     ? template.qrY
     : template.backdropAsset
@@ -426,6 +435,12 @@ export function getPosterSubtitleLayout(
       Math.max(0, standardHeadlineLayout.lines.length - 1) * standardHeadlineLayout.lineHeight +
       standardHeadlineLayout.size * 0.2 +
       headlineGap
+    : botanicalHeadlineLayout
+      ? botanicalHeadlineLayout.top +
+        botanicalHeadlineLayout.size * 0.82 +
+        Math.max(0, botanicalHeadlineLayout.lines.length - 1) * botanicalHeadlineLayout.size * 1.08 +
+        botanicalHeadlineLayout.size * 0.18 +
+        headlineGap
     : Math.max(0, visualTop - premiumVisualGap - textHeight);
   const textAnchor = template.backdropAsset ? "start" : "middle";
 
@@ -794,20 +809,22 @@ function renderSteps(template: PosterTemplateConfig, gameType: Campaign["gameTyp
     return `
       <g transform="translate(0 944)">
         <rect width="${A4_WIDTH}" height="${A4_HEIGHT - 944}" fill="#fbf8f2" opacity="0.74"/>
-        <line x1="281" y1="35" x2="281" y2="125" stroke="${template.accent}" stroke-width="2"/>
-        <line x1="513" y1="35" x2="513" y2="125" stroke="${template.accent}" stroke-width="2"/>
-        <g transform="translate(33 -2)">
+        <line x1="281" y1="43" x2="281" y2="133" stroke="${template.accent}" stroke-width="2"/>
+        <line x1="513" y1="43" x2="513" y2="133" stroke="${template.accent}" stroke-width="2"/>
+        <g transform="translate(33 6)">
           <circle cx="132" cy="48" r="35" fill="${template.accent}"/>
-          <text x="132" y="48" text-anchor="middle" dominant-baseline="central" fill="#ffffff" font-family="${SAFE_FONT}" font-size="34" font-weight="800">1</text>
+          <g transform="translate(132 48) scale(0.72) translate(-132 -48)">
+            <path transform="translate(0 -7)" d="M116 29 h31 a6 6 0 0 1 6 6 v42 a6 6 0 0 1 -6 6 h-31 a6 6 0 0 1 -6 -6 v-42 a6 6 0 0 1 6 -6 Z M118 42 h27 M118 53 h20 M118 64 h23" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
+          </g>
           <text x="132" y="124" text-anchor="middle" fill="${template.accentDark}" font-family="${SAFE_FONT}" font-size="28" font-weight="700">Scannez</text>
         </g>
-        <g transform="translate(264 -2)">
+        <g transform="translate(264 6)">
           <circle cx="132" cy="48" r="35" fill="${template.accent}"/>
           <circle cx="132" cy="48" r="21" fill="none" stroke="#ffffff" stroke-width="3.5"/>
           <path d="M132 27 v42 M111 48 h42 M116 32 l32 32 M148 32 l-32 32" stroke="#ffffff" stroke-width="2.6"/>
           <text x="132" y="124" text-anchor="middle" fill="${template.accentDark}" font-family="${SAFE_FONT}" font-size="28" font-weight="700">${botanicalAction}</text>
         </g>
-        <g transform="translate(497 -2)">
+        <g transform="translate(497 6)">
           <circle cx="132" cy="48" r="35" fill="${template.accent}"/>
           <g transform="translate(132 48) scale(1.6)">
             <rect x="-13" y="-5" width="26" height="19" rx="2" fill="none" stroke="#ffffff" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
@@ -931,7 +948,7 @@ export function buildPosterSvg(args: {
       : campaign.gameType === "scratch" && !template.wheelOnly
         ? renderScratch(template, effectivePoster)
         : "";
-  const subtitleLayout = getPosterSubtitleLayout(campaign, effectivePoster, template);
+  const subtitleLayout = getPosterSubtitleLayout(campaign, effectivePoster, template, measureHeadline);
   return `<?xml version="1.0" encoding="UTF-8"?>
     <svg xmlns="http://www.w3.org/2000/svg" width="${A4_WIDTH}" height="${A4_HEIGHT}" viewBox="0 0 ${A4_WIDTH} ${A4_HEIGHT}">
       <defs>
