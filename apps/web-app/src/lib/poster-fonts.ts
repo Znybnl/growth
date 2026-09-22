@@ -40,7 +40,7 @@ const POSTER_FONT_ASSETS: Partial<Record<TextFont, PosterFontAsset>> = {
   pacifico: { familyName: "Pacifico", fileName: "pacifico.ttf", fontWeight: "400" },
   syncopate: { familyName: "Syncopate", fileName: "syncopate-700.ttf", fontWeight: "700" },
   anton: { familyName: "Anton", fileName: "../anton-regular.ttf", fontWeight: "400" },
-  display: { familyName: "Anton", fileName: "../anton-regular.ttf", fontWeight: "400" },
+  display: { familyName: "Display", fileName: "../anton-regular.ttf", fontWeight: "400" },
   cormorant: {
     familyName: "Cormorant Garamond",
     fileName: "cormorant-garamond.ttf",
