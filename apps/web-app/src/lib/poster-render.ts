@@ -404,10 +404,13 @@ export function getPosterSubtitleLayout(
     ? Math.min(template.qrSize, A4_WIDTH - template.qrX - 24)
     : Math.min(template.subtitleMaxWidth ?? template.headlineMaxWidth ?? 620, A4_WIDTH - 48);
   const lines = posterSubtitleLines(text, width, fontSize);
-  const headlineGap = clampCampaignSpacingPx(
+  const configuredHeadlineGap = clampCampaignSpacingPx(
     campaign.presentation.layout.subtitleSpacingPx,
     defaultWheelSubtitleSpacingForTemplate(campaign.presentation.layout.templateId),
   );
+  const headlineGap = template.id === "botanical-wheel"
+    ? Math.max(30, configuredHeadlineGap)
+    : configuredHeadlineGap;
   const standardHeadlineLayout = !isPremiumTemplate && !template.backdropAsset
     ? getStandardHeadlineLayout(campaign, poster, template)
     : null;
