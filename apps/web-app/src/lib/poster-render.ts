@@ -301,8 +301,10 @@ function renderLogo(campaign: Campaign, poster: CampaignPosterSettings, template
   }
 
   const text = escapeXml(logoText);
-  // Keep the merchant name visually secondary to the poster headline.
-  const fontSize = clamp(logoSize * (template.id === "premium-wheel" ? 0.2 : 0.24), 18, 51);
+  // Keep the merchant name visually secondary to the poster headline. The
+  // 100% slider value represents the reference logo box, not a full-size
+  // headline; use the same restrained text scale across poster templates.
+  const fontSize = clamp(logoSize * 0.2, 18, 51);
   const centerY = logoY + logoSize / 2;
   const logoTextColor = poster.headlineTextColor || template.headline;
   const logoFamily = fontFamily(template.logoFontFamily ?? "inter");
