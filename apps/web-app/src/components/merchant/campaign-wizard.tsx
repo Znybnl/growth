@@ -838,6 +838,9 @@ export function CampaignWizard({
   const [error, setError] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [previewSaveDialogOpen, setPreviewSaveDialogOpen] = useState(false);
+  const [previewSaveError, setPreviewSaveError] = useState<string | null>(null);
+  const [isSavingBeforePreview, setIsSavingBeforePreview] = useState(false);
   const [savedCampaignId, setSavedCampaignId] = useState<string | null>(null);
   const [savedPreviewCampaignId, setSavedPreviewCampaignId] = useState<string | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -1136,14 +1139,21 @@ export function CampaignWizard({
     setStepIndex((current) => Math.max(0, current - 1));
   }
 
-  async function saveCampaign(mode: "save" | "publish", options?: { suppressSuccessDialog?: boolean }) {
+  async function saveCampaign(
+    mode: "save" | "publish",
+    options?: {
+      suppressSuccessDialog?: boolean;
+      suppressErrorDialog?: boolean;
+      onError?: (message: string) => void;
+    },
+  ): Promise<string | null> {
     const isPublishing = mode === "publish";
     const errorsToShow = isPublishing ? collectErrors(draft, actionEnabled) : [];
     if (errorsToShow.length) {
       const first = errorsToShow[0];
       setError(first.message);
       setStepIndex(WIZARD_STEPS.findIndex((item) => item.id === first.step));
-      return false;
+      return null;
     }
 
     const targetIsActive = isPublishing ? true : isEditing ? draft.isActive : false;
@@ -1190,7 +1200,7 @@ export function CampaignWizard({
         window.dispatchEvent(new Event("campaigns-updated"));
         if (!options?.suppressSuccessDialog) setSavedCampaignId(campaignId);
       }
-      return Boolean(campaignId);
+      return campaignId ?? null;
     } catch (saveFailure) {
       captureClientError("campaign_setup_failed", saveFailure, {
         campaign_id: draft.id,
@@ -1198,15 +1208,62 @@ export function CampaignWizard({
         editor_mode: isEditing ? "edit" : "create",
       });
       const message = saveFailure instanceof Error ? saveFailure.message : "";
-      setSaveError(
+      const readableMessage =
         message.toLowerCase().includes("duplicate key")
           ? "Impossible d’enregistrer cette campagne pour le moment. Vérifiez les actions marketing puis réessayez."
-          : "La campagne n’a pas pu être enregistrée. Vérifiez les informations puis réessayez.",
-      );
-      return false;
+          : "La campagne n’a pas pu être enregistrée. Vérifiez les informations puis réessayez.";
+      options?.onError?.(readableMessage);
+      if (!options?.suppressErrorDialog) setSaveError(readableMessage);
+      return null;
     } finally {
       setIsSaving(false);
     }
+  }
+
+  function openPreviewForCampaign(campaignId: string) {
+    openCampaignPreview(
+      campaignId,
+      () => {
+        captureClientProductEvent("campaign_preview_opened", {
+          campaignType: draft.gameType,
+          templateKey: draft.presentation.layout.templateId ?? "classic",
+        });
+        setPreviewOpen(true);
+      },
+      (path) => router.push(path),
+    );
+  }
+
+  function requestPreview() {
+    if (!draft.id || isSaving || isSavingBeforePreview) return;
+    if (isDirty) {
+      setPreviewSaveError(null);
+      setPreviewSaveDialogOpen(true);
+      return;
+    }
+    openPreviewForCampaign(draft.id);
+  }
+
+  async function saveAndPreview() {
+    if (!draft.id || isSavingBeforePreview) return;
+    setPreviewSaveError(null);
+    setIsSavingBeforePreview(true);
+    const campaignId = await saveCampaign("save", {
+      suppressSuccessDialog: true,
+      suppressErrorDialog: true,
+      onError: setPreviewSaveError,
+    });
+    setIsSavingBeforePreview(false);
+    if (!campaignId) return;
+    setPreviewSaveDialogOpen(false);
+    openPreviewForCampaign(campaignId);
+  }
+
+  function previewWithoutSaving() {
+    if (!draft.id || isSavingBeforePreview) return;
+    setPreviewSaveDialogOpen(false);
+    setPreviewSaveError(null);
+    openPreviewForCampaign(draft.id);
   }
 
   async function saveAndLeave() {
@@ -1259,15 +1316,8 @@ export function CampaignWizard({
             {isEditing ? <StatusBadge tone="muted">Mode modification</StatusBadge> : null}
             <button
               type="button"
-              onClick={() =>
-                openCampaignPreview(draft.id!, () => {
-                  captureClientProductEvent("campaign_preview_opened", {
-                    campaignType: draft.gameType,
-                    templateKey: draft.presentation.layout.templateId ?? "classic",
-                  });
-                  setPreviewOpen(true);
-                }, (path) => router.push(path))
-              }
+              onClick={requestPreview}
+              disabled={isSaving || isSavingBeforePreview}
               className="okado-secondary-action gap-2 px-4 text-sm"
             >
               <Eye className="h-4 w-4" aria-hidden="true" />
@@ -2852,6 +2902,31 @@ export function CampaignWizard({
           })
         }
         onClose={() => setBackgroundLibraryOpen(false)}
+      />
+      <ValidationDialog
+        open={previewSaveDialogOpen}
+        title="Enregistrer avant de prévisualiser ?"
+        description="Vos modifications ne sont pas encore enregistrées. Enregistrez-les pour afficher la version la plus récente. Sans enregistrement, la prévisualisation affichera uniquement la dernière version sauvegardée."
+        ctaLabel={isSavingBeforePreview ? "Enregistrement…" : "Enregistrer et prévisualiser"}
+        secondaryCtaLabel="Prévisualiser sans enregistrer"
+        cancelLabel="Annuler"
+        error={previewSaveError}
+        actionDisabled={isSavingBeforePreview}
+        secondaryActionDisabled={isSavingBeforePreview}
+        onAction={() => void saveAndPreview()}
+        onSecondaryAction={previewWithoutSaving}
+        onClose={() => {
+          if (!isSavingBeforePreview) {
+            setPreviewSaveDialogOpen(false);
+            setPreviewSaveError(null);
+          }
+        }}
+        onCancel={() => {
+          if (!isSavingBeforePreview) {
+            setPreviewSaveDialogOpen(false);
+            setPreviewSaveError(null);
+          }
+        }}
       />
       <ValidationDialog
         open={Boolean(saveError)}
