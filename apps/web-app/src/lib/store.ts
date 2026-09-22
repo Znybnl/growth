@@ -2769,13 +2769,14 @@ export async function updateCampaignPosterSettings(
   campaignId: string,
   poster: CampaignPosterSettings,
   merchantId?: string,
+  wheelSubtitle?: string,
 ) {
   if (getDataBackend("la mise à jour des réglages d'affiche") === "supabase") {
     if (!merchantId) {
       throw new Error("Marchand introuvable");
     }
 
-    await updateCampaignPosterSettingsInSupabase(campaignId, merchantId, poster);
+    await updateCampaignPosterSettingsInSupabase(campaignId, merchantId, poster, wheelSubtitle);
     invalidateCampaignNavigationCache(merchantId, campaignId);
     return null;
   }
@@ -2787,6 +2788,9 @@ export async function updateCampaignPosterSettings(
 
   campaign.presentation = {
     ...campaign.presentation,
+    layout: wheelSubtitle === undefined
+      ? campaign.presentation.layout
+      : { ...campaign.presentation.layout, wheelSubtitle: wheelSubtitle.trim() },
     poster,
   };
 

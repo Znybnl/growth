@@ -10,6 +10,7 @@ import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { buildPosterSvg, getPosterSubtitleLayout, getPremiumHeadlineLayout } from "@/lib/poster-render";
 import { selectPosterBackgroundMotif, selectPosterTemplate } from "@/lib/poster-template-settings";
 import { getPosterFontAsset, getPosterFontSourceUrl, getPosterSubtitleFont, POSTER_FONT_OPTIONS } from "@/lib/poster-fonts";
+import { limitCampaignSubtitleLines, MAX_CAMPAIGN_SUBTITLE_LENGTH } from "@/lib/campaign-defaults";
 import { textFontClass, textFontLabel } from "@/lib/format";
 import {
   createPosterSettingsDefaults,
@@ -294,11 +295,12 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
       { preserveWinColor: true, preserveHeadlineTextColor: true },
     );
   });
+  const [posterSubtitle, setPosterSubtitle] = useState(() => campaign.presentation.layout.wheelSubtitle ?? "");
   const [isSaving, setIsSaving] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [lastSavedPosterSnapshot, setLastSavedPosterSnapshot] = useState(() =>
-    JSON.stringify(poster),
+    JSON.stringify({ poster, posterSubtitle: campaign.presentation.layout.wheelSubtitle ?? "" }),
   );
   const [pendingNavigation, setPendingNavigation] = useState<PendingPosterNavigation | null>(null);
   const [isSavingBeforeNavigation, setIsSavingBeforeNavigation] = useState(false);
@@ -437,7 +439,20 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
   const posterSubtitleFontSource =
     loadedPosterSubtitleFont?.font === posterSubtitleFont ? loadedPosterSubtitleFont.source : null;
   const posterTemplate = getPosterTemplate(poster.templateId, poster.backgroundMotif);
-  const posterSubtitleLayout = getPosterSubtitleLayout(campaign, poster, posterTemplate);
+  const posterCampaign = useMemo(
+    () => ({
+      ...campaign,
+      presentation: {
+        ...campaign.presentation,
+        layout: {
+          ...campaign.presentation.layout,
+          wheelSubtitle: posterSubtitle,
+        },
+      },
+    }),
+    [campaign, posterSubtitle],
+  );
+  const posterSubtitleLayout = getPosterSubtitleLayout(posterCampaign, poster, posterTemplate);
 
   const headlineMeasure = useMemo(() => posterFontSource !== null
     ? createHeadlineMeasure(poster.headlineFontFamily) : undefined,
@@ -459,7 +474,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
       (!posterSubtitleLayout || posterSubtitleFontSource !== null) &&
       (!posterTemplate.backdropAsset || premiumBackdropSource !== null)
         ? buildPosterSvg({
-            campaign,
+            campaign: posterCampaign,
             poster,
             prizes,
             qrDataUrl: posterQrDataUrl,
@@ -469,7 +484,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
             measureHeadline: headlineMeasure,
           })
         : null,
-    [campaign, poster, posterFontSource, posterSubtitleFontSource, posterQrDataUrl, premiumBackdropSource, prizes, headlineMeasure, posterSubtitleLayout, posterTemplate],
+    [posterCampaign, poster, posterFontSource, posterSubtitleFontSource, posterQrDataUrl, premiumBackdropSource, prizes, headlineMeasure, posterSubtitleLayout, posterTemplate],
   );
 
   useEffect(() => {
@@ -518,7 +533,8 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
       (subtitleFontLoadError?.font === posterSubtitleFont ? subtitleFontLoadError.message : null) ??
       (getPosterTemplate(poster.templateId, poster.backgroundMotif).backdropAsset ? backdropLoadError : null);
   const isRenderingPreview = Boolean(previewPosterSvg && !previewIsReady && !currentPreviewError);
-  const isDirty = lastSavedPosterSnapshot !== JSON.stringify(poster);
+  const currentPosterDraftSnapshot = JSON.stringify({ poster, posterSubtitle });
+  const isDirty = lastSavedPosterSnapshot !== currentPosterDraftSnapshot;
 
   useEffect(() => {
     if (!isDirty) return;
@@ -622,7 +638,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
       const response = await fetch(`/api/campaigns/${campaign.id}/poster-settings`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(poster),
+        body: JSON.stringify({ poster, wheelSubtitle: posterSubtitle }),
       });
       const payload = (await response.json()) as { error?: string };
 
@@ -630,7 +646,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
         throw new Error(payload.error ?? "Enregistrement impossible.");
       }
 
-      setLastSavedPosterSnapshot(JSON.stringify(poster));
+      setLastSavedPosterSnapshot(currentPosterDraftSnapshot);
       setMessage("Affiche enregistrée.");
       router.refresh();
       return true;
@@ -949,6 +965,24 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
               />
               <p id="poster-headline-help" className="mt-2 text-xs leading-5 text-ash">
                 {poster.headline.length}/{MAX_POSTER_HEADLINE_LENGTH} caractères · jusqu&apos;à 4 lignes ; la mise en ligne s&apos;adapte à la taille du texte.
+              </p>
+            </label>
+
+            <label className="text-sm md:col-span-2">
+              <span className="mb-2 block text-charcoal">Texte secondaire</span>
+              <textarea
+                rows={3}
+                maxLength={MAX_CAMPAIGN_SUBTITLE_LENGTH}
+                value={posterSubtitle}
+                onChange={(event) => setPosterSubtitle(limitCampaignSubtitleLines(event.target.value))}
+                aria-describedby="poster-secondary-text-help"
+                className="w-full rounded-[var(--okado-radius-control)] border border-border bg-soft-white px-4 py-3 outline-none transition focus:border-aubergine focus:bg-white"
+              />
+              <p id="poster-secondary-text-help" className="mt-2 text-xs leading-5 text-ash">
+                Affiché sur l&apos;affiche entre le texte principal et le visuel. Laissez vide pour masquer ce texte.
+              </p>
+              <p className="mt-1 text-xs text-ash">
+                {posterSubtitle.length}/{MAX_CAMPAIGN_SUBTITLE_LENGTH} caractères · 3 lignes maximum.
               </p>
             </label>
 

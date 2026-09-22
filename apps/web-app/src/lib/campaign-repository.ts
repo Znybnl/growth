@@ -594,7 +594,7 @@ function toCampaign(
             logoText: localSettings.logoText ?? row.title,
             logoUrl: row.logo_url ?? undefined,
             logoSizePercent: row.logo_size_percent,
-            logoBottomMarginPx: row.logo_margin_bottom_px,
+            logoBottomMarginPx: localSettings.poster?.logoBottomMarginPx ?? 10,
             backgroundMode: row.background_mode,
             backgroundColor: row.background_color,
             backgroundImageUrl: row.background_image_url ?? "",
@@ -611,7 +611,7 @@ function toCampaign(
           logoText: localSettings.logoText ?? row.title,
           logoUrl: row.logo_url ?? undefined,
           logoSizePercent: row.logo_size_percent,
-          logoBottomMarginPx: row.logo_margin_bottom_px ?? 10,
+          logoBottomMarginPx: localSettings.poster?.logoBottomMarginPx ?? 10,
         },
       ),
       email: normalizeCampaignEmailSettings(
@@ -2458,6 +2458,7 @@ export async function updateCampaignPosterSettingsInSupabase(
   campaignId: string,
   merchantId: string,
   poster: CampaignPosterSettings,
+  wheelSubtitle?: string,
 ) {
   const supabase = getSupabaseAdmin();
   const { data: campaign, error: campaignError } = await supabase
@@ -2474,7 +2475,10 @@ export async function updateCampaignPosterSettingsInSupabase(
     throw new Error("Campagne introuvable");
   }
 
-  await setCampaignLocalSettings(campaignId, { poster });
+  await setCampaignLocalSettings(campaignId, {
+    poster,
+    ...(wheelSubtitle === undefined ? {} : { wheelSubtitle: wheelSubtitle.trim() }),
+  });
 }
 
 export async function duplicateCampaignInSupabase(id: string, merchant: Merchant) {

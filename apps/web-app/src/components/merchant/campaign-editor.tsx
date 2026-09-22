@@ -1468,7 +1468,7 @@ function toEditorState(merchant: Merchant, campaign: CampaignPerformance | null)
           logoText: campaign.campaign.logoText ?? merchant.companyName,
           logoUrl: undefined,
           logoSizePercent: campaign.campaign.presentation.logo.sizePercent,
-          logoBottomMarginPx: campaign.campaign.presentation.logo.marginBottomPx,
+          logoBottomMarginPx: campaign.campaign.presentation.poster?.logoBottomMarginPx ?? 10,
           backgroundMode: campaign.campaign.presentation.background.mode,
           backgroundColor: campaign.campaign.presentation.background.color,
           backgroundImageUrl: "",

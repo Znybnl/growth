@@ -351,13 +351,18 @@ export function getPosterSubtitleLayout(
 
   const fontSize = template.backdropAsset ? 24 : 25;
   const lineHeight = fontSize * 1.42;
-  const width = Math.min(template.headlineMaxWidth ?? 620, A4_WIDTH - 96);
+  const isPremiumTemplate = template.id === "premium-wheel";
+  const width = isPremiumTemplate
+    ? Math.min(template.qrSize, A4_WIDTH - template.qrX - 24)
+    : Math.min(template.headlineMaxWidth ?? 620, A4_WIDTH - 96);
   const lines = posterSubtitleLines(text, width, fontSize);
   const headlineGap = clampCampaignSpacingPx(
     campaign.presentation.layout.subtitleSpacingPx,
     defaultWheelSubtitleSpacingForTemplate(campaign.presentation.layout.templateId),
   );
-  const visualTop = template.backdropAsset
+  const visualTop = isPremiumTemplate
+    ? template.qrY - 18
+    : template.backdropAsset
     ? template.supportingTextY
       ? template.supportingTextY - 18
       : template.qrY - 18
@@ -369,13 +374,17 @@ export function getPosterSubtitleLayout(
   const textAnchor = template.backdropAsset ? "start" : "middle";
 
   return {
-    color: campaign.presentation.logo.textColor ?? campaign.presentation.heading.textColor ?? poster.headlineTextColor ?? template.headline,
+    color: poster.headlineTextColor || template.headlineTextColor || template.headline,
     family: fontFamily(getPosterSubtitleFont(campaign.presentation.heading.fontFamily)),
     fontSize,
     lineHeight,
     lines,
     textAnchor,
-    x: template.backdropAsset ? template.headlineX ?? 72 : template.headlineX ?? A4_WIDTH / 2,
+    x: isPremiumTemplate
+      ? template.qrX
+      : template.backdropAsset
+        ? template.headlineX ?? 72
+        : template.headlineX ?? A4_WIDTH / 2,
     top,
     headlineGap,
   };
@@ -465,7 +474,6 @@ function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, temp
   const logoAwareHeadlineY = template.headlineY + (poster.logoBottomMarginPx - 28);
   const firstLineY = Math.max(logoAwareHeadlineY, getLogoLayout(poster, template).bottomY + size * 0.15);
   const lineHeight = size * 1.08;
-  const headlineTop = Math.max(0, firstLineY - size * 1.05);
   const headlineBottom = subtitleLayout
     ? subtitleLayout.top - subtitleLayout.headlineGap
     : Math.min(
@@ -473,7 +481,7 @@ function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, temp
       template.wheelY - template.wheelRadius - size * 0.1,
     );
   const maxVisibleLines = clamp(
-    Math.floor((headlineBottom - headlineTop) / lineHeight) + 1,
+    Math.floor((headlineBottom - firstLineY) / lineHeight) + 1,
     1,
     MAX_POSTER_HEADLINE_LINES,
   );

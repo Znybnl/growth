@@ -554,7 +554,7 @@ function draftFromCampaign(merchant: Merchant, performance: CampaignPerformance)
     logoText: campaign.logoText ?? merchant.companyName,
     logoUrl: campaign.logoUrl,
     logoSizePercent: campaign.presentation.logo.sizePercent,
-    logoBottomMarginPx: campaign.presentation.logo.marginBottomPx,
+    logoBottomMarginPx: campaign.presentation.poster?.logoBottomMarginPx ?? 10,
     backgroundMode: campaign.presentation.background.mode,
     backgroundColor: campaign.presentation.background.color,
     backgroundImageUrl: campaign.presentation.background.imageUrl ?? "",

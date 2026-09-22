@@ -140,7 +140,7 @@ export async function createCampaignPosterSvg(
         logoText: campaign.logoText ?? "",
         logoUrl: campaign.logoUrl,
         logoSizePercent: campaign.presentation.logo.sizePercent,
-        logoBottomMarginPx: campaign.presentation.logo.marginBottomPx,
+        logoBottomMarginPx: campaign.presentation.poster?.logoBottomMarginPx ?? 10,
         backgroundMode: "color",
         backgroundColor: "#fff6ee",
         backgroundImageUrl: "",
@@ -161,7 +161,7 @@ export async function createCampaignPosterSvg(
       logoText: campaign.logoText ?? "",
       logoUrl: campaign.logoUrl,
       logoSizePercent: campaign.presentation.logo.sizePercent,
-      logoBottomMarginPx: campaign.presentation.logo.marginBottomPx,
+      logoBottomMarginPx: campaign.presentation.poster?.logoBottomMarginPx ?? 10,
     },
   );
   const posterWithNormalizedHeadline =
