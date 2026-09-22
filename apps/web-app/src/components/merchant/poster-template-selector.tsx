@@ -122,11 +122,12 @@ export function PosterTemplateSelector({
         Le même design est utilisé pour la roue et le ticket ; seul le visuel central change.
       </p>
       <div className="mt-6 grid gap-4 md:grid-cols-3">
-        {POSTER_TEMPLATE_CHOICES.filter((template) => !template.wheelOnly || gameType === "wheel").map((template) => {
+        {POSTER_TEMPLATE_CHOICES.map((template) => {
           const active = (selectedTemplateId ?? "classic-wheel") === template.id;
           const visualTemplate = template.id === "classic-wheel"
             ? getPosterTemplate("classic-wheel", selectedBackgroundMotif)
             : template;
+          const footerAction = gameType === "wheel" ? "Jouez" : "Grattez";
 
           return (
             <div
@@ -167,7 +168,7 @@ export function PosterTemplateSelector({
                       <text x="165" y="1063" textAnchor="middle" fontSize="28" fontWeight="600" fill="#171412">Scannez</text>
                       <circle cx="396" cy="987" r="42" fill="#a17d57" />
                       <ThumbnailStepIcon kind="wheel" x={396} y={987} />
-                      <text x="396" y="1063" textAnchor="middle" fontSize="28" fontWeight="600" fill="#171412">Jouez</text>
+                      <text x="396" y="1063" textAnchor="middle" fontSize="28" fontWeight="600" fill="#171412">{footerAction}</text>
                       <circle cx="629" cy="987" r="42" fill="#a17d57" />
                       <ThumbnailStepIcon kind="gift" x={629} y={987} scale={1.6} />
                       <text x="629" y="1063" textAnchor="middle" fontSize="28" fontWeight="600" fill="#171412">Gagnez</text>
@@ -194,7 +195,7 @@ export function PosterTemplateSelector({
                       <circle cx="662" cy="992" r="32" fill="#718578" /><path d="M647 989h30v24h-30zM643 982h38v9h-38zM662 982v31M652 982c-11-9 4-14 10 0M672 982c6-14 21-9 10 0" fill="none" stroke="white" strokeWidth="2" strokeLinejoin="round" />
                       <line x1="270" y1="960" x2="270" y2="1036" stroke="#718578" strokeWidth="2" /><line x1="524" y1="960" x2="524" y2="1036" stroke="#718578" strokeWidth="2" />
                       <text x="132" y="1072" textAnchor="middle" fontSize="24" fontWeight="700" fill="#153a35">Scannez</text>
-                      <text x="397" y="1072" textAnchor="middle" fontSize="24" fontWeight="700" fill="#153a35">Jouez</text>
+                      <text x="397" y="1072" textAnchor="middle" fontSize="24" fontWeight="700" fill="#153a35">{footerAction}</text>
                       <text x="662" y="1072" textAnchor="middle" fontSize="24" fontWeight="700" fill="#153a35">Gagnez</text>
                     </g>
                   </svg>

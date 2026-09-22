@@ -64,7 +64,11 @@ export type PosterTemplateConfig = {
   supportingTextLetterSpacing?: number;
   footerVariant?: "premium" | "botanical";
   backdropAsset?: string;
-  wheelOnly?: boolean;
+  /**
+   * The template supplies its own decorative composition and must not render
+   * a game-specific wheel or scratch ticket over the backdrop.
+   */
+  backgroundOnly?: boolean;
   wheel: CampaignPosterSettings["wheel"];
 };
 
@@ -251,7 +255,7 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     inlineQrCta: true,
     backdropAsset: "premium-poster-backdrop.png",
     footerVariant: "premium",
-    wheelOnly: true,
+    backgroundOnly: true,
     wheel: {
       winColor: "#d8c8b8",
       alternateWinColor: "#fbf8f4",
@@ -318,7 +322,7 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     supportingTextLetterSpacing: 3,
     footerVariant: "botanical",
     backdropAsset: "botanical-poster-backdrop.png",
-    wheelOnly: true,
+    backgroundOnly: true,
     wheel: {
       winColor: "#718578",
       alternateWinColor: "#718578",
