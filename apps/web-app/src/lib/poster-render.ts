@@ -514,7 +514,9 @@ function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, temp
       poster,
       template,
       measure,
-      subtitleLayout ? subtitleLayout.top - subtitleLayout.headlineGap : undefined,
+      template.id === "premium-wheel" && subtitleLayout
+        ? subtitleLayout.top - subtitleLayout.headlineGap
+        : undefined,
     );
     return `<g data-headline-size="${size}">${lines.map((line, index) => `<text x="${x}" y="${top + size * 0.82 + index * size * 1.08}"
       text-anchor="start" fill="${color}" font-family="${family}" font-size="${size}"

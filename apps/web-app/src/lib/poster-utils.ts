@@ -180,7 +180,7 @@ export function normalizePosterSettings(
     backgroundMotif,
     backgroundMotifStyles: poster?.backgroundMotifStyles ?? defaults.backgroundMotifStyles,
     logoSizePercent: clamp(poster?.logoSizePercent ?? defaults.logoSizePercent ?? 70, 0, 200),
-    logoBottomMarginPx: clamp(poster?.logoBottomMarginPx ?? defaults.logoBottomMarginPx, 0, 120),
+    logoBottomMarginPx: clamp(poster?.logoBottomMarginPx ?? defaults.logoBottomMarginPx, 0, 80),
     posterSubtitleEnabled: poster?.posterSubtitleEnabled ?? defaults.posterSubtitleEnabled ?? false,
     logoMode: poster?.logoMode ?? defaults.logoMode,
     logoText: poster?.logoText ?? defaults.logoText,

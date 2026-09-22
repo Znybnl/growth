@@ -564,7 +564,7 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
         }),
         logoBottomMarginPx: normalizeNumber(poster.logoBottomMarginPx, {
           min: 0,
-          max: 240,
+          max: 80,
           fallback: 10,
           integer: true,
         }),

@@ -186,7 +186,7 @@ function createPresentation(overrides?: CampaignPresentationOverrides): Campaign
     poster: {
       logoUrl: undefined,
       logoSizePercent: 100,
-      logoBottomMarginPx: 28,
+      logoBottomMarginPx: 10,
       backgroundImageUrl: "",
       headline: "Scannez, jouez, récupérez votre cadeau !",
       headlineTextColor: "#ffffff",
@@ -630,7 +630,7 @@ function normalizeCampaign(rawCampaign: Campaign | (Partial<Campaign> & Record<s
               : fallback.logoText ?? merchantSeed.companyName,
           logoUrl: rawCampaign.logoUrl,
           logoSizePercent: presentation.logo?.sizePercent ?? 100,
-          logoBottomMarginPx: presentation.logo?.marginBottomPx ?? 28,
+          logoBottomMarginPx: presentation.logo?.marginBottomPx ?? 10,
           backgroundMode: presentation.background?.mode ?? "color",
           backgroundColor: presentation.background?.color ?? "#ffffff",
           backgroundImageUrl: presentation.background?.imageUrl ?? "",
@@ -650,7 +650,7 @@ function normalizeCampaign(rawCampaign: Campaign | (Partial<Campaign> & Record<s
               : fallback.logoText ?? merchantSeed.companyName,
           logoUrl: rawCampaign.logoUrl,
           logoSizePercent: presentation.logo?.sizePercent ?? 100,
-          logoBottomMarginPx: presentation.logo?.marginBottomPx ?? 28,
+          logoBottomMarginPx: presentation.logo?.marginBottomPx ?? 10,
         },
       ),
       email: normalizeCampaignEmailSettings(

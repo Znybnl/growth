@@ -132,6 +132,7 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     ctaRotation: 0,
     headlineY: 245,
     headlineSizeMultiplier: 1.38,
+    logoFontWeight: 600,
     subtitleMaxWidth: 700,
     motif: "plain",
     wheel: {
@@ -291,6 +292,7 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     colorsCustomizable: false,
     headlineX: 72,
     headlineMaxWidth: 548,
+    headlineLogoGapPx: 10,
     headlineFontWeight: 500,
     headlineItalic: false,
     headlineFontFamily: "cormorant",

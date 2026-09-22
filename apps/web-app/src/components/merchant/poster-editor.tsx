@@ -463,7 +463,9 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
       poster,
       posterTemplate,
       headlineMeasure,
-      posterSubtitleLayout ? posterSubtitleLayout.top - posterSubtitleLayout.headlineGap : undefined,
+      posterTemplate.id === "premium-wheel" && posterSubtitleLayout
+        ? posterSubtitleLayout.top - posterSubtitleLayout.headlineGap
+        : undefined,
     )
     : null, [poster, campaign.subtitle, headlineMeasure, posterSubtitleLayout, posterTemplate]);
 
@@ -931,7 +933,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                   <input
                     type="range"
                     min={0}
-                    max={120}
+                    max={80}
                     step={1}
                     value={poster.logoBottomMarginPx}
                     onChange={(event) =>
