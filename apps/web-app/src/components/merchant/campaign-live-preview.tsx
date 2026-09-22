@@ -7,6 +7,7 @@ import { BrandMark } from "@/components/brand-mark";
 import { CocoricoPromoText } from "@/components/public/cocorico-promo-text";
 import { ImmersiveScratchTicket } from "@/components/public/immersive-scratch-ticket";
 import { fluidType } from "@/lib/responsive";
+import { userBackgroundImageStyle } from "@/lib/campaign-background";
 import { textFontClass, textFontFamily, wheelSubtitleFontFamily } from "@/lib/format";
 import {
   campaignLogoTextSizePx,
@@ -137,7 +138,7 @@ function previewBackgroundImage(
   accent: CampaignSetupInput["accent"],
 ) {
   if (form.presentation.background.mode === "image" && form.presentation.background.imageUrl) {
-    return `linear-gradient(rgba(15,23,40,0.32), rgba(15,23,40,0.52)), url("${form.presentation.background.imageUrl}")`;
+    return userBackgroundImageStyle(form.presentation.background.imageUrl);
   }
   if (templateId === "restaurant-pop") {
     return restaurantPopBackground(form.presentation.background.color);
