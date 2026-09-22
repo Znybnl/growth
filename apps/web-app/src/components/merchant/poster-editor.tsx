@@ -7,9 +7,10 @@ import { Loader2 } from "lucide-react";
 import QRCode from "qrcode";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 
-import { buildPosterSvg, getPremiumHeadlineLayout } from "@/lib/poster-render";
+import { buildPosterSvg, getPosterSubtitleLayout, getPremiumHeadlineLayout } from "@/lib/poster-render";
 import { selectPosterBackgroundMotif, selectPosterTemplate } from "@/lib/poster-template-settings";
-import { getPosterFontAsset, getPosterFontSourceUrl, POSTER_FONT_OPTIONS } from "@/lib/poster-fonts";
+import { getPosterFontAsset, getPosterFontSourceUrl, getPosterSubtitleFont, POSTER_FONT_OPTIONS } from "@/lib/poster-fonts";
+import { limitCampaignSubtitleLines, MAX_CAMPAIGN_SUBTITLE_LENGTH } from "@/lib/campaign-defaults";
 import { textFontClass, textFontLabel } from "@/lib/format";
 import {
   createPosterSettingsDefaults,
@@ -294,11 +295,12 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
       { preserveWinColor: true, preserveHeadlineTextColor: true },
     );
   });
+  const [posterSubtitle, setPosterSubtitle] = useState(() => campaign.presentation.layout.wheelSubtitle ?? "");
   const [isSaving, setIsSaving] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [lastSavedPosterSnapshot, setLastSavedPosterSnapshot] = useState(() =>
-    JSON.stringify(poster),
+    JSON.stringify({ poster, posterSubtitle: campaign.presentation.layout.wheelSubtitle ?? "" }),
   );
   const [pendingNavigation, setPendingNavigation] = useState<PendingPosterNavigation | null>(null);
   const [isSavingBeforeNavigation, setIsSavingBeforeNavigation] = useState(false);
@@ -310,6 +312,10 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
     font: CampaignPosterSettings["headlineFontFamily"];
     source: string;
   } | null>(null);
+  const [loadedPosterSubtitleFont, setLoadedPosterSubtitleFont] = useState<{
+    font: CampaignPosterSettings["headlineFontFamily"];
+    source: string;
+  } | null>(null);
   const [loadedBackdrop, setLoadedBackdrop] = useState<{
     templateId: PosterTemplateId;
     source: string;
@@ -318,6 +324,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
   const [previewError, setPreviewError] = useState<{ svg: string; message: string } | null>(null);
   const [posterQrError, setPosterQrError] = useState<string | null>(null);
   const [fontLoadError, setFontLoadError] = useState<{ font: string; message: string } | null>(null);
+  const [subtitleFontLoadError, setSubtitleFontLoadError] = useState<{ font: string; message: string } | null>(null);
   const [backdropLoadError, setBackdropLoadError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -380,6 +387,25 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
     };
   }, [poster.headlineFontFamily]);
 
+  const posterSubtitleFont = getPosterSubtitleFont(campaign.presentation.heading.fontFamily);
+
+  useEffect(() => {
+    let active = true;
+
+    void loadPosterFontAsDataUrl(posterSubtitleFont).then((source) => {
+      if (active) {
+        setLoadedPosterSubtitleFont({ font: posterSubtitleFont, source });
+        setSubtitleFontLoadError(null);
+      }
+    }).catch((error: Error) => {
+      if (active) setSubtitleFontLoadError({ font: posterSubtitleFont, message: error.message });
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [posterSubtitleFont]);
+
   useEffect(() => {
     const templateId = poster.templateId ?? "classic-wheel";
     if (!getPosterTemplate(templateId).backdropAsset) {
@@ -410,30 +436,56 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
 
   const posterFontSource =
     loadedPosterFont?.font === poster.headlineFontFamily ? loadedPosterFont.source : null;
-
+  const posterSubtitleFontSource =
+    loadedPosterSubtitleFont?.font === posterSubtitleFont ? loadedPosterSubtitleFont.source : null;
+  const posterTemplate = getPosterTemplate(poster.templateId, poster.backgroundMotif);
+  const posterCampaign = useMemo(
+    () => ({
+      ...campaign,
+      presentation: {
+        ...campaign.presentation,
+        layout: {
+          ...campaign.presentation.layout,
+          wheelSubtitle: posterSubtitle,
+        },
+      },
+    }),
+    [campaign, posterSubtitle],
+  );
   const headlineMeasure = useMemo(() => posterFontSource !== null
     ? createHeadlineMeasure(poster.headlineFontFamily) : undefined,
     [posterFontSource, poster.headlineFontFamily]);
-  const premiumHeadlineLayout = useMemo(() => getPosterTemplate(poster.templateId, poster.backgroundMotif).backdropAsset && headlineMeasure
-    ? getPremiumHeadlineLayout(poster.headline || campaign.subtitle || "Faites tourner la roue", poster, getPosterTemplate(poster.templateId, poster.backgroundMotif), headlineMeasure)
-    : null, [poster, campaign.subtitle, headlineMeasure]);
+  const posterSubtitleLayout = getPosterSubtitleLayout(posterCampaign, poster, posterTemplate, headlineMeasure);
+  const premiumHeadlineLayout = useMemo(() => posterTemplate.backdropAsset && headlineMeasure
+    ? getPremiumHeadlineLayout(
+      poster.headline || campaign.subtitle || "Faites tourner la roue",
+      poster,
+      posterTemplate,
+      headlineMeasure,
+      posterTemplate.id === "premium-wheel" && posterSubtitleLayout
+        ? posterSubtitleLayout.top - posterSubtitleLayout.headlineGap
+        : undefined,
+    )
+    : null, [poster, campaign.subtitle, headlineMeasure, posterSubtitleLayout, posterTemplate]);
 
   const previewPosterSvg = useMemo(
     () =>
       posterQrDataUrl &&
       posterFontSource !== null &&
-      (!getPosterTemplate(poster.templateId, poster.backgroundMotif).backdropAsset || premiumBackdropSource !== null)
+      (!posterSubtitleLayout || posterSubtitleFontSource !== null) &&
+      (!posterTemplate.backdropAsset || premiumBackdropSource !== null)
         ? buildPosterSvg({
-            campaign,
+            campaign: posterCampaign,
             poster,
             prizes,
             qrDataUrl: posterQrDataUrl,
             posterFontSource: posterFontSource || undefined,
+            posterSubtitleFontSource: posterSubtitleFontSource || undefined,
             premiumBackdropSource: premiumBackdropSource || undefined,
             measureHeadline: headlineMeasure,
           })
         : null,
-    [campaign, poster, posterFontSource, posterQrDataUrl, premiumBackdropSource, prizes, headlineMeasure],
+    [posterCampaign, poster, posterFontSource, posterSubtitleFontSource, posterQrDataUrl, premiumBackdropSource, prizes, headlineMeasure, posterSubtitleLayout, posterTemplate],
   );
 
   useEffect(() => {
@@ -479,9 +531,11 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
       ? previewError.message
       : null) ?? posterQrError ??
       (fontLoadError?.font === poster.headlineFontFamily ? fontLoadError.message : null) ??
+      (subtitleFontLoadError?.font === posterSubtitleFont ? subtitleFontLoadError.message : null) ??
       (getPosterTemplate(poster.templateId, poster.backgroundMotif).backdropAsset ? backdropLoadError : null);
   const isRenderingPreview = Boolean(previewPosterSvg && !previewIsReady && !currentPreviewError);
-  const isDirty = lastSavedPosterSnapshot !== JSON.stringify(poster);
+  const currentPosterDraftSnapshot = JSON.stringify({ poster, posterSubtitle });
+  const isDirty = lastSavedPosterSnapshot !== currentPosterDraftSnapshot;
 
   useEffect(() => {
     if (!isDirty) return;
@@ -585,7 +639,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
       const response = await fetch(`/api/campaigns/${campaign.id}/poster-settings`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(poster),
+        body: JSON.stringify({ poster, wheelSubtitle: posterSubtitle }),
       });
       const payload = (await response.json()) as { error?: string };
 
@@ -593,7 +647,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
         throw new Error(payload.error ?? "Enregistrement impossible.");
       }
 
-      setLastSavedPosterSnapshot(JSON.stringify(poster));
+      setLastSavedPosterSnapshot(currentPosterDraftSnapshot);
       setMessage("Affiche enregistrée.");
       router.refresh();
       return true;
@@ -878,7 +932,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
                   <input
                     type="range"
                     min={0}
-                    max={120}
+                    max={80}
                     step={1}
                     value={poster.logoBottomMarginPx}
                     onChange={(event) =>
@@ -912,6 +966,39 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
               />
               <p id="poster-headline-help" className="mt-2 text-xs leading-5 text-ash">
                 {poster.headline.length}/{MAX_POSTER_HEADLINE_LENGTH} caractères · jusqu&apos;à 4 lignes ; la mise en ligne s&apos;adapte à la taille du texte.
+              </p>
+            </label>
+
+            <label className="text-sm md:col-span-2">
+              <span className="mb-2 block text-charcoal">Texte secondaire</span>
+              <span className="mb-3 flex items-start gap-3 rounded-[12px] border border-border bg-soft-white px-3 py-3">
+                <input
+                  type="checkbox"
+                  checked={Boolean(poster.posterSubtitleEnabled)}
+                  onChange={(event) => updatePoster({ posterSubtitleEnabled: event.target.checked })}
+                  aria-describedby="poster-secondary-display-help"
+                  className="mt-0.5 h-4 w-4 accent-aubergine"
+                />
+                <span>
+                  <span className="block font-medium text-charcoal">Afficher le texte secondaire sur l&apos;affiche</span>
+                  <span id="poster-secondary-display-help" className="mt-1 block text-xs leading-5 text-ash">
+                    Désactivé par défaut. Le texte saisi reste enregistré et peut être réactivé à tout moment.
+                  </span>
+                </span>
+              </span>
+              <textarea
+                rows={3}
+                maxLength={MAX_CAMPAIGN_SUBTITLE_LENGTH}
+                value={posterSubtitle}
+                onChange={(event) => setPosterSubtitle(limitCampaignSubtitleLines(event.target.value))}
+                aria-describedby="poster-secondary-text-help"
+                className="w-full rounded-[var(--okado-radius-control)] border border-border bg-soft-white px-4 py-3 outline-none transition focus:border-aubergine focus:bg-white"
+              />
+              <p id="poster-secondary-text-help" className="mt-2 text-xs leading-5 text-ash">
+                Affiché entre le texte principal et le visuel lorsque l&apos;option est activée. Un texte vide masque également ce bloc.
+              </p>
+              <p className="mt-1 text-xs text-ash">
+                {posterSubtitle.length}/{MAX_CAMPAIGN_SUBTITLE_LENGTH} caractères · 3 lignes maximum.
               </p>
             </label>
 

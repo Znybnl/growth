@@ -131,6 +131,7 @@ export function createPosterSettingsDefaults(input: {
   logoUrl?: string;
   logoSizePercent?: number;
   logoBottomMarginPx?: number;
+  posterSubtitleEnabled?: boolean;
   backgroundMode?: "color" | "image";
   backgroundColor?: string;
   backgroundImageUrl?: string;
@@ -149,6 +150,7 @@ export function createPosterSettingsDefaults(input: {
     logoUrl: input.logoUrl,
     logoSizePercent: input.logoSizePercent ?? 70,
     logoBottomMarginPx: input.logoBottomMarginPx ?? 10,
+    posterSubtitleEnabled: input.posterSubtitleEnabled ?? false,
     backgroundMode: input.backgroundMode ?? (input.backgroundImageUrl ? "image" : "color"),
     backgroundColor: input.backgroundColor ?? "#ffffff",
     backgroundImageUrl: input.backgroundImageUrl ?? "",
@@ -178,7 +180,8 @@ export function normalizePosterSettings(
     backgroundMotif,
     backgroundMotifStyles: poster?.backgroundMotifStyles ?? defaults.backgroundMotifStyles,
     logoSizePercent: clamp(poster?.logoSizePercent ?? defaults.logoSizePercent ?? 70, 0, 200),
-    logoBottomMarginPx: clamp(poster?.logoBottomMarginPx ?? defaults.logoBottomMarginPx, 0, 120),
+    logoBottomMarginPx: clamp(poster?.logoBottomMarginPx ?? defaults.logoBottomMarginPx, 0, 80),
+    posterSubtitleEnabled: poster?.posterSubtitleEnabled ?? defaults.posterSubtitleEnabled ?? false,
     logoMode: poster?.logoMode ?? defaults.logoMode,
     logoText: poster?.logoText ?? defaults.logoText,
     backgroundMode: poster?.backgroundMode ?? defaults.backgroundMode,

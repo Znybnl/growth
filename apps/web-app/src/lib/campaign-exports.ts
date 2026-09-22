@@ -4,7 +4,7 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 
 import { buildPosterSvg } from "@/lib/poster-render";
-import { getPosterFontAsset } from "@/lib/poster-fonts";
+import { getPosterFontAsset, getPosterSubtitleFont } from "@/lib/poster-fonts";
 import {
   createPosterSettingsDefaults,
   normalizePosterSettings,
@@ -140,7 +140,7 @@ export async function createCampaignPosterSvg(
         logoText: campaign.logoText ?? "",
         logoUrl: campaign.logoUrl,
         logoSizePercent: campaign.presentation.logo.sizePercent,
-        logoBottomMarginPx: campaign.presentation.logo.marginBottomPx,
+        logoBottomMarginPx: campaign.presentation.poster?.logoBottomMarginPx ?? 10,
         backgroundMode: "color",
         backgroundColor: "#fff6ee",
         backgroundImageUrl: "",
@@ -161,7 +161,7 @@ export async function createCampaignPosterSvg(
       logoText: campaign.logoText ?? "",
       logoUrl: campaign.logoUrl,
       logoSizePercent: campaign.presentation.logo.sizePercent,
-      logoBottomMarginPx: campaign.presentation.logo.marginBottomPx,
+      logoBottomMarginPx: campaign.presentation.poster?.logoBottomMarginPx ?? 10,
     },
   );
   const posterWithNormalizedHeadline =
@@ -197,6 +197,9 @@ export async function createCampaignPosterSvg(
     prizes: performance.prizes,
     qrDataUrl,
     posterFontSource: getPosterFontSource(poster.headlineFontFamily),
+    posterSubtitleFontSource: getPosterFontSource(
+      getPosterSubtitleFont(campaign.presentation.heading.fontFamily),
+    ),
     premiumBackdropSource: getPosterBackdropSource(poster.templateId, poster.backgroundMotif),
   });
 }

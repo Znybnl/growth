@@ -186,7 +186,7 @@ function createPresentation(overrides?: CampaignPresentationOverrides): Campaign
     poster: {
       logoUrl: undefined,
       logoSizePercent: 100,
-      logoBottomMarginPx: 28,
+      logoBottomMarginPx: 10,
       backgroundImageUrl: "",
       headline: "Scannez, jouez, récupérez votre cadeau !",
       headlineTextColor: "#ffffff",
@@ -630,7 +630,7 @@ function normalizeCampaign(rawCampaign: Campaign | (Partial<Campaign> & Record<s
               : fallback.logoText ?? merchantSeed.companyName,
           logoUrl: rawCampaign.logoUrl,
           logoSizePercent: presentation.logo?.sizePercent ?? 100,
-          logoBottomMarginPx: presentation.logo?.marginBottomPx ?? 28,
+          logoBottomMarginPx: presentation.logo?.marginBottomPx ?? 10,
           backgroundMode: presentation.background?.mode ?? "color",
           backgroundColor: presentation.background?.color ?? "#ffffff",
           backgroundImageUrl: presentation.background?.imageUrl ?? "",
@@ -650,7 +650,7 @@ function normalizeCampaign(rawCampaign: Campaign | (Partial<Campaign> & Record<s
               : fallback.logoText ?? merchantSeed.companyName,
           logoUrl: rawCampaign.logoUrl,
           logoSizePercent: presentation.logo?.sizePercent ?? 100,
-          logoBottomMarginPx: presentation.logo?.marginBottomPx ?? 28,
+          logoBottomMarginPx: presentation.logo?.marginBottomPx ?? 10,
         },
       ),
       email: normalizeCampaignEmailSettings(
@@ -2769,13 +2769,14 @@ export async function updateCampaignPosterSettings(
   campaignId: string,
   poster: CampaignPosterSettings,
   merchantId?: string,
+  wheelSubtitle?: string,
 ) {
   if (getDataBackend("la mise à jour des réglages d'affiche") === "supabase") {
     if (!merchantId) {
       throw new Error("Marchand introuvable");
     }
 
-    await updateCampaignPosterSettingsInSupabase(campaignId, merchantId, poster);
+    await updateCampaignPosterSettingsInSupabase(campaignId, merchantId, poster, wheelSubtitle);
     invalidateCampaignNavigationCache(merchantId, campaignId);
     return null;
   }
@@ -2787,6 +2788,9 @@ export async function updateCampaignPosterSettings(
 
   campaign.presentation = {
     ...campaign.presentation,
+    layout: wheelSubtitle === undefined
+      ? campaign.presentation.layout
+      : { ...campaign.presentation.layout, wheelSubtitle: wheelSubtitle.trim() },
     poster,
   };
 

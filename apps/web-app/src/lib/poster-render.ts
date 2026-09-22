@@ -1,6 +1,11 @@
 import { buildPosterWheelSegments, MAX_POSTER_HEADLINE_LINES, splitPosterSegmentLines } from "@/lib/poster-utils";
+import {
+  clampCampaignSpacingPx,
+  defaultWheelSubtitleSpacingForTemplate,
+  limitCampaignSubtitleLines,
+} from "@/lib/campaign-defaults";
 import { getPosterTemplate, PosterTemplateConfig } from "@/lib/poster-templates";
-import { getPosterFontAsset } from "@/lib/poster-fonts";
+import { getPosterFontAsset, getPosterSubtitleFont } from "@/lib/poster-fonts";
 import { Campaign, CampaignPosterSettings, Prize, TextFont } from "@/lib/types";
 
 const A4_WIDTH = 794;
@@ -136,8 +141,9 @@ function fontFamily(font: TextFont) {
     case "syncopate":
       return "Syncopate, Roboto, Inter, Geist, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif";
     case "anton":
-    case "display":
       return SAFE_DISPLAY_FONT;
+    case "display":
+      return "Display, Inter, Geist, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans-serif";
     case "serif":
       return "serif";
     case "cormorant":
@@ -317,8 +323,150 @@ function renderLogo(campaign: Campaign, poster: CampaignPosterSettings, template
   `;
 }
 
+export type PosterSubtitleLayout = {
+  color: string;
+  family: string;
+  fontSize: number;
+  lineHeight: number;
+  lines: string[];
+  textAnchor: "start" | "middle";
+  x: number;
+  top: number;
+  headlineGap: number;
+  fontWeight: number;
+};
+
+type StandardHeadlineLayout = {
+  x: number;
+  firstLineY: number;
+  size: number;
+  lineHeight: number;
+  lines: string[];
+};
+
+function posterSubtitleLines(text: string, width: number, size: number) {
+  const maxChars = clamp(Math.floor(width / (size * 0.54)), 16, 52);
+  return splitLines(text, maxChars).slice(0, 3);
+}
+
+function getStandardHeadlineLayout(
+  campaign: Campaign,
+  poster: CampaignPosterSettings,
+  template: PosterTemplateConfig,
+  reservedBottom?: number,
+): StandardHeadlineLayout {
+  const headline = poster.headline || campaign.subtitle || "Faites tourner la roue";
+  const size = clamp(poster.headlineFontSizePx * template.headlineSizeMultiplier, 46, 94);
+  const headlineX = template.headlineX ?? A4_WIDTH / 2;
+  const headlineMaxWidth = template.headlineMaxWidth ?? POSTER_HEADLINE_MAX_WIDTH;
+  const lines = splitHeadlineLines(headline.toUpperCase(), size, headlineMaxWidth);
+  const logoAwareHeadlineY = template.headlineY + (poster.logoBottomMarginPx - 28);
+  const firstLineY = Math.max(logoAwareHeadlineY, getLogoLayout(poster, template).bottomY + size * 0.15);
+  const lineHeight = size * (template.id === "classic-wheel" ? 1.02 : 1.08);
+  const visualBottom = Math.min(
+    A4_HEIGHT,
+    template.wheelY - template.wheelRadius - size * 0.1,
+  );
+  const headlineBottom = reservedBottom ?? visualBottom;
+  const maxVisibleLines = clamp(
+    Math.floor((headlineBottom - firstLineY) / lineHeight) + 1,
+    1,
+    MAX_POSTER_HEADLINE_LINES,
+  );
+  const headlineText = headline.toUpperCase();
+  const visibleLines =
+    lines.length <= maxVisibleLines
+      ? lines
+      : rebalanceHeadlineLines(headlineText, maxVisibleLines);
+
+  return { x: headlineX, firstLineY, size, lineHeight, lines: visibleLines };
+}
+
+export function getPosterSubtitleLayout(
+  campaign: Campaign,
+  poster: CampaignPosterSettings,
+  template: PosterTemplateConfig,
+  measure?: (text: string, size: number) => number,
+): PosterSubtitleLayout | null {
+  if (!poster.posterSubtitleEnabled) {
+    return null;
+  }
+
+  const text = limitCampaignSubtitleLines(campaign.presentation.layout.wheelSubtitle ?? "").trim();
+  if (!text) {
+    return null;
+  }
+
+  const fontSize = template.backdropAsset ? 24 : 25;
+  const lineHeight = fontSize * 1.42;
+  const isPremiumTemplate = template.id === "premium-wheel";
+  const width = isPremiumTemplate
+    ? Math.min(template.qrSize, A4_WIDTH - template.qrX - 24)
+    : Math.min(template.subtitleMaxWidth ?? template.headlineMaxWidth ?? 620, A4_WIDTH - 48);
+  const lines = posterSubtitleLines(text, width, fontSize);
+  const configuredHeadlineGap = clampCampaignSpacingPx(
+    campaign.presentation.layout.subtitleSpacingPx,
+    defaultWheelSubtitleSpacingForTemplate(campaign.presentation.layout.templateId),
+  );
+  const headlineGap = template.id === "botanical-wheel"
+    ? Math.max(30, configuredHeadlineGap)
+    : configuredHeadlineGap;
+  const standardHeadlineLayout = !isPremiumTemplate && !template.backdropAsset
+    ? getStandardHeadlineLayout(campaign, poster, template)
+    : null;
+  const botanicalHeadlineLayout = template.id === "botanical-wheel"
+    ? getPremiumHeadlineLayout(
+      poster.headline || campaign.subtitle || "Faites tourner la roue",
+      poster,
+      template,
+      measure,
+    )
+    : null;
+  const visualTop = isPremiumTemplate
+    ? template.qrY
+    : template.backdropAsset
+    ? template.supportingTextY
+      ? template.supportingTextY - 18
+      : template.qrY - 18
+    : campaign.gameType === "scratch"
+      ? 480
+      : template.wheelY - template.wheelRadius - 36;
+  const textHeight = fontSize + Math.max(0, lines.length - 1) * lineHeight;
+  const premiumVisualGap = isPremiumTemplate ? 52 : 36;
+  const top = standardHeadlineLayout
+    ? standardHeadlineLayout.firstLineY +
+      Math.max(0, standardHeadlineLayout.lines.length - 1) * standardHeadlineLayout.lineHeight +
+      standardHeadlineLayout.size * 0.2 +
+      headlineGap
+    : botanicalHeadlineLayout
+      ? botanicalHeadlineLayout.top +
+        botanicalHeadlineLayout.size * 0.82 +
+        Math.max(0, botanicalHeadlineLayout.lines.length - 1) * botanicalHeadlineLayout.size * 1.08 +
+        botanicalHeadlineLayout.size * 0.18 +
+        headlineGap
+    : Math.max(0, visualTop - premiumVisualGap - textHeight);
+  const textAnchor = template.backdropAsset ? "start" : "middle";
+
+  return {
+    color: poster.headlineTextColor || template.headlineTextColor || template.headline,
+    family: fontFamily(getPosterSubtitleFont(campaign.presentation.heading.fontFamily)),
+    fontSize,
+    lineHeight,
+    lines,
+    textAnchor,
+    x: isPremiumTemplate
+      ? template.qrX
+      : template.backdropAsset
+        ? template.headlineX ?? 72
+        : template.headlineX ?? A4_WIDTH / 2,
+    top,
+    headlineGap,
+    fontWeight: isPremiumTemplate ? 400 : 600,
+  };
+}
+
 export function getPremiumHeadlineLayout(headline: string, poster: CampaignPosterSettings, template: PosterTemplateConfig,
-  measure?: (text: string, size: number) => number) {
+  measure?: (text: string, size: number) => number, reservedBottom?: number) {
     const x = template.headlineX ?? 284;
     const width = Math.min(template.headlineMaxWidth ?? 466, A4_WIDTH - x - 40);
     const logo = getLogoLayout(poster, template);
@@ -330,7 +478,10 @@ export function getPremiumHeadlineLayout(headline: string, poster: CampaignPoste
     const top = template.headlineLogoGapPx !== undefined && poster.logoMode !== "none"
       ? logoBottom + template.headlineLogoGapPx + logoMargin
       : Math.max(template.headlineY ?? 150, logoBottom) + logoMargin;
-    const layoutBottom = template.headlineBlockBottom ?? (template.supportingTextY ? template.supportingTextY - 18 : 350);
+    const layoutBottom = Math.min(
+      reservedBottom ?? Number.POSITIVE_INFINITY,
+      template.headlineBlockBottom ?? (template.supportingTextY ? template.supportingTextY - 18 : 350),
+    );
     const availableHeight = Math.max(70, layoutBottom - top);
     const measureText = measure ?? ((text: string, size: number) => text.length * size * 0.46);
     const wrap = (size: number) => {
@@ -371,41 +522,34 @@ export function getPremiumHeadlineLayout(headline: string, poster: CampaignPoste
 }
 
 function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, template: PosterTemplateConfig,
-  measure?: (text: string, size: number) => number) {
+  measure?: (text: string, size: number) => number, subtitleLayout?: PosterSubtitleLayout | null) {
   const headline = poster.headline || campaign.subtitle || "Faites tourner la roue";
   const family = fontFamily(poster.headlineFontFamily);
   const color = poster.headlineTextColor || template.headline;
   if (template.backdropAsset) {
-    const { x, top, size, lines } = getPremiumHeadlineLayout(headline, poster, template, measure);
+    const { x, top, size, lines } = getPremiumHeadlineLayout(
+      headline,
+      poster,
+      template,
+      measure,
+      template.id === "premium-wheel" && subtitleLayout
+        ? subtitleLayout.top - subtitleLayout.headlineGap
+        : undefined,
+    );
     return `<g data-headline-size="${size}">${lines.map((line, index) => `<text x="${x}" y="${top + size * 0.82 + index * size * 1.08}"
       text-anchor="start" fill="${color}" font-family="${family}" font-size="${size}"
       font-weight="${template.headlineFontWeight ?? 500}">${escapeXml(line)}</text>`).join("")}</g>`;
   }
-  const size = clamp(poster.headlineFontSizePx * template.headlineSizeMultiplier, 46, 94);
-  const headlineX = template.headlineX ?? A4_WIDTH / 2;
+  // Reuse the same title geometry for the preview and PNG so the subtitle
+  // follows the actual number of rendered title lines.
+  const headlineLayout = getStandardHeadlineLayout(
+    campaign,
+    poster,
+    template,
+    subtitleLayout ? subtitleLayout.top - subtitleLayout.headlineGap : undefined,
+  );
+  const { x: headlineX, firstLineY, size, lineHeight, lines: visibleLines } = headlineLayout;
   const headlineMaxWidth = template.headlineMaxWidth ?? POSTER_HEADLINE_MAX_WIDTH;
-  // Recalculate the line capacity from the effective font size, then balance
-  // the result into at most four lines. Each line is fitted to the same SVG
-  // container so long headlines cannot escape the poster on screen or in PNG.
-  const headlineText = headline.toUpperCase();
-  const lines = splitHeadlineLines(headlineText, size, headlineMaxWidth);
-  const logoAwareHeadlineY = template.headlineY + (poster.logoBottomMarginPx - 28);
-  const firstLineY = Math.max(logoAwareHeadlineY, getLogoLayout(poster, template).bottomY + size * 0.15);
-  const lineHeight = size * 1.08;
-  const headlineTop = Math.max(0, firstLineY - size * 1.05);
-  const headlineBottom = Math.min(
-    A4_HEIGHT,
-    template.wheelY - template.wheelRadius - size * 0.1,
-  );
-  const maxVisibleLines = clamp(
-    Math.floor((headlineBottom - headlineTop) / lineHeight) + 1,
-    1,
-    MAX_POSTER_HEADLINE_LINES,
-  );
-  const visibleLines =
-    lines.length <= maxVisibleLines
-      ? lines
-      : rebalanceHeadlineLines(headlineText, maxVisibleLines);
   const accent = poster.wheel.winColor || template.accent;
   const letterSpacing = -2;
 
@@ -442,6 +586,20 @@ function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, temp
       `;
     })
     .join("")}
+    </g>
+  `;
+}
+
+function renderPosterSubtitle(layout: PosterSubtitleLayout | null) {
+  if (!layout) {
+    return "";
+  }
+
+  return `
+    <g data-poster-subtitle="true">
+      ${layout.lines.map((line, index) => `<text x="${layout.x}" y="${layout.top + layout.fontSize * 0.82 + index * layout.lineHeight}"
+        text-anchor="${layout.textAnchor}" fill="${layout.color}" font-family="${layout.family}" font-size="${layout.fontSize}"
+        font-weight="${layout.fontWeight}" letter-spacing="0.28">${escapeXml(line)}</text>`).join("")}
     </g>
   `;
 }
@@ -654,20 +812,22 @@ function renderSteps(template: PosterTemplateConfig, gameType: Campaign["gameTyp
     return `
       <g transform="translate(0 944)">
         <rect width="${A4_WIDTH}" height="${A4_HEIGHT - 944}" fill="#fbf8f2" opacity="0.74"/>
-        <line x1="281" y1="35" x2="281" y2="125" stroke="${template.accent}" stroke-width="2"/>
-        <line x1="513" y1="35" x2="513" y2="125" stroke="${template.accent}" stroke-width="2"/>
-        <g transform="translate(33 -2)">
+        <line x1="281" y1="43" x2="281" y2="133" stroke="${template.accent}" stroke-width="2"/>
+        <line x1="513" y1="43" x2="513" y2="133" stroke="${template.accent}" stroke-width="2"/>
+        <g transform="translate(33 6)">
           <circle cx="132" cy="48" r="35" fill="${template.accent}"/>
-          <text x="132" y="48" text-anchor="middle" dominant-baseline="central" fill="#ffffff" font-family="${SAFE_FONT}" font-size="34" font-weight="800">1</text>
+          <g transform="translate(132 48) scale(0.72) translate(-132 -48)">
+            <path transform="translate(0 -7)" d="M116 29 h31 a6 6 0 0 1 6 6 v42 a6 6 0 0 1 -6 6 h-31 a6 6 0 0 1 -6 -6 v-42 a6 6 0 0 1 6 -6 Z M118 42 h27 M118 53 h20 M118 64 h23" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
+          </g>
           <text x="132" y="124" text-anchor="middle" fill="${template.accentDark}" font-family="${SAFE_FONT}" font-size="28" font-weight="700">Scannez</text>
         </g>
-        <g transform="translate(264 -2)">
+        <g transform="translate(264 6)">
           <circle cx="132" cy="48" r="35" fill="${template.accent}"/>
           <circle cx="132" cy="48" r="21" fill="none" stroke="#ffffff" stroke-width="3.5"/>
           <path d="M132 27 v42 M111 48 h42 M116 32 l32 32 M148 32 l-32 32" stroke="#ffffff" stroke-width="2.6"/>
           <text x="132" y="124" text-anchor="middle" fill="${template.accentDark}" font-family="${SAFE_FONT}" font-size="28" font-weight="700">${botanicalAction}</text>
         </g>
-        <g transform="translate(497 -2)">
+        <g transform="translate(497 6)">
           <circle cx="132" cy="48" r="35" fill="${template.accent}"/>
           <g transform="translate(132 48) scale(1.6)">
             <rect x="-13" y="-5" width="26" height="19" rx="2" fill="none" stroke="#ffffff" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
@@ -728,6 +888,7 @@ export function buildPosterSvg(args: {
   prizes: Prize[] | Array<Pick<Prize, "label">>;
   qrDataUrl: string;
   posterFontSource?: string;
+  posterSubtitleFontSource?: string;
   premiumBackdropSource?: string;
   measureHeadline?: (text: string, size: number) => number;
 }) {
@@ -737,6 +898,7 @@ export function buildPosterSvg(args: {
     prizes,
     qrDataUrl,
     posterFontSource,
+    posterSubtitleFontSource,
     premiumBackdropSource,
     measureHeadline,
   } = args;
@@ -747,6 +909,17 @@ export function buildPosterSvg(args: {
               font-family: "${posterFontAsset.familyName}";
               src: url("${posterFontSource ?? `/fonts/poster/${posterFontAsset.fileName}`}") format("truetype");
               font-weight: ${posterFontAsset.fontWeight};
+              font-style: normal;
+            }`
+    : "";
+  const posterSubtitleFont = getPosterSubtitleFont(campaign.presentation.heading.fontFamily);
+  const posterSubtitleFontAsset = getPosterFontAsset(posterSubtitleFont);
+  const posterSubtitleFontFace = posterSubtitleFontAsset
+    ? `
+            @font-face {
+              font-family: "${posterSubtitleFontAsset.familyName}";
+              src: url("${posterSubtitleFontSource ?? `/fonts/poster/${posterSubtitleFontAsset.fileName}`}") format("truetype");
+              font-weight: ${posterSubtitleFontAsset.fontWeight};
               font-style: normal;
             }`
     : "";
@@ -778,12 +951,14 @@ export function buildPosterSvg(args: {
       : campaign.gameType === "scratch" && !template.backgroundOnly
         ? renderScratch(template, effectivePoster)
         : "";
+  const subtitleLayout = getPosterSubtitleLayout(campaign, effectivePoster, template, measureHeadline);
   return `<?xml version="1.0" encoding="UTF-8"?>
     <svg xmlns="http://www.w3.org/2000/svg" width="${A4_WIDTH}" height="${A4_HEIGHT}" viewBox="0 0 ${A4_WIDTH} ${A4_HEIGHT}">
       <defs>
         <style>
           <![CDATA[
             ${posterFontFace}
+            ${posterSubtitleFontFace}
           ]]>
         </style>
         <filter id="posterShadow" x="-25%" y="-25%" width="150%" height="150%">
@@ -798,7 +973,8 @@ export function buildPosterSvg(args: {
 
       ${renderBackground(effectivePoster, template, premiumBackdropSource)}
       ${renderLogo(campaign, effectivePoster, template)}
-      ${renderHeadline(campaign, effectivePoster, template, measureHeadline)}
+      ${renderHeadline(campaign, effectivePoster, template, measureHeadline, subtitleLayout)}
+      ${renderPosterSubtitle(subtitleLayout)}
       ${renderSupportingText(template)}
       ${gameMarkup}
       ${renderQrAndCta(qrDataUrl, template)}
