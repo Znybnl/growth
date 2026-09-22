@@ -946,9 +946,9 @@ export function buildPosterSvg(args: {
         : poster.wheel.winColor || baseTemplate.qrFrame,
   };
   const gameMarkup =
-    campaign.gameType === "wheel" && !template.wheelOnly
+    campaign.gameType === "wheel" && !template.backgroundOnly
       ? renderWheel(template, effectivePoster, prizes)
-      : campaign.gameType === "scratch" && !template.wheelOnly
+      : campaign.gameType === "scratch" && !template.backgroundOnly
         ? renderScratch(template, effectivePoster)
         : "";
   const subtitleLayout = getPosterSubtitleLayout(campaign, effectivePoster, template, measureHeadline);
