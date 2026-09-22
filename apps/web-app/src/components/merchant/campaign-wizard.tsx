@@ -394,7 +394,7 @@ function createWizardDraft(merchant: Merchant): WizardDraft {
         subtitleSpacingPx: defaultWheelSubtitleSpacingForTemplate(DEFAULT_GAME_PAGE_TEMPLATE_ID),
       },
       wheel,
-      poster: createDefaultPosterSettings(merchant),
+      poster: createDefaultPosterSettings(merchant, wheel.loseColor),
       email: createCampaignEmailDefaults(merchant),
     },
     actions: createWizardActions(merchant, "review_prompt"),

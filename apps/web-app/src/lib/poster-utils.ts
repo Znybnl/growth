@@ -5,7 +5,7 @@ import {
   Prize,
   TextFont,
 } from "@/lib/types";
-import { legacyPosterTemplateMotif } from "@/lib/poster-templates";
+import { getPosterTemplate, legacyPosterTemplateMotif } from "@/lib/poster-templates";
 
 export const MAX_POSTER_HEADLINE_LENGTH = 120;
 export const MAX_POSTER_HEADLINE_LINES = 4;
@@ -187,6 +187,45 @@ export function normalizePosterSettings(
     wheel: {
       ...defaults.wheel,
       ...poster?.wheel,
+    },
+  };
+}
+
+/**
+ * Older poster records were initialized with the game primary color in every
+ * wheel slot. That value is a legacy default, not a merchant customization.
+ * Restore only those unambiguously monochrome records and keep the template's
+ * readable opposing color and rim intact.
+ */
+export function restoreHistoricalPosterPalette(
+  poster: CampaignPosterSettings,
+  campaignPrimaryColor: string,
+) {
+  const historicalColor = "#1b2842";
+  const isHistoricalMonochrome = [
+    poster.wheel.winColor,
+    poster.wheel.alternateWinColor,
+    poster.wheel.loseColor,
+    poster.wheel.rimColor,
+  ].every((color) => color?.trim().toLowerCase() === historicalColor);
+
+  if (!isHistoricalMonochrome) {
+    return poster;
+  }
+
+  const template = getPosterTemplate(poster.templateId, poster.backgroundMotif);
+
+  if (template.colorsCustomizable === false) {
+    return poster;
+  }
+
+  return {
+    ...poster,
+    wheel: {
+      ...poster.wheel,
+      ...template.wheel,
+      winColor: campaignPrimaryColor,
+      alternateWinColor: campaignPrimaryColor,
     },
   };
 }
