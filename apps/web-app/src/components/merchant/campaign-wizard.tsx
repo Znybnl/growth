@@ -178,6 +178,7 @@ const WIZARD_TEXT_FONTS: TextFont[] = [
   "lobster",
   "pacifico",
   "syncopate",
+  "cormorant",
   "fredoka",
 ];
 const COCORICO_TEXT_FONTS: TextFont[] = ["roboto", "days-one", "fredoka"];
