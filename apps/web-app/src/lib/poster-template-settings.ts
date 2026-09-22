@@ -11,16 +11,21 @@ import type {
   PosterTemplateId,
   PosterTemplateStyle,
 } from "@/lib/types";
+import { resolvePosterWheelPalette } from "@/lib/poster-utils";
 
 function styleOf(poster: CampaignPosterSettings): PosterTemplateStyle {
   const { backgroundMode, backgroundColor, backgroundImageUrl, headlineTextColor,
-    headlineFontSizePx, headlineFontFamily, wheel } = poster;
+    headlineFontSizePx, headlineFontFamily, wheel, wheelPrimaryColorSource } = poster;
   return { backgroundMode, backgroundColor, backgroundImageUrl, headlineTextColor,
-    headlineFontSizePx, headlineFontFamily, wheel: { ...wheel } };
+    headlineFontSizePx, headlineFontFamily, wheel: { ...wheel }, wheelPrimaryColorSource };
 }
 
 // Only the visual settings travel with a template; content and logo stay shared.
-export function selectPosterTemplate(poster: CampaignPosterSettings, templateId: PosterTemplateId) {
+export function selectPosterTemplate(
+  poster: CampaignPosterSettings,
+  templateId: PosterTemplateId,
+  campaignPrimaryColor = poster.wheel.winColor,
+) {
   if (poster.templateId === templateId) return poster;
   const currentMotif =
     poster.backgroundMotif ?? legacyPosterTemplateMotif(poster.templateId) ?? "plain";
@@ -53,12 +58,16 @@ export function selectPosterTemplate(poster: CampaignPosterSettings, templateId:
     headlineFontSizePx: template.headlineFontSizePx,
     wheel: { ...template.wheel, winColor, alternateWinColor: fixed ? template.wheel.alternateWinColor : winColor },
   };
-  return { ...poster, ...style, templateId, templateStyles, backgroundMotifStyles };
+  return resolvePosterWheelPalette(
+    { ...poster, ...style, templateId, templateStyles, backgroundMotifStyles },
+    campaignPrimaryColor,
+  );
 }
 
 export function selectPosterBackgroundMotif(
   poster: CampaignPosterSettings,
   backgroundMotif: PosterBackgroundMotif,
+  campaignPrimaryColor = poster.wheel.winColor,
 ) {
   const currentMotif =
     poster.backgroundMotif ?? legacyPosterTemplateMotif(poster.templateId) ?? "plain";
@@ -78,13 +87,16 @@ export function selectPosterBackgroundMotif(
     wheel: { ...motifTemplate.wheel },
   };
 
-  return {
-    ...poster,
-    ...style,
-    templateId: "classic-wheel" as const,
-    backgroundMotif,
-    backgroundMotifStyles: motifStyles,
-  };
+  return resolvePosterWheelPalette(
+    {
+      ...poster,
+      ...style,
+      templateId: "classic-wheel" as const,
+      backgroundMotif,
+      backgroundMotifStyles: motifStyles,
+    },
+    campaignPrimaryColor,
+  );
 }
 
 function normalizeStyle(value: unknown): PosterTemplateStyle | null {
@@ -98,12 +110,16 @@ function normalizeStyle(value: unknown): PosterTemplateStyle | null {
   if (!validFont(font) || typeof size !== "number" || !Number.isFinite(size) || !color(style.headlineTextColor) ||
     !color(style.backgroundColor) || !style.wheel ||
     ![style.wheel.winColor, style.wheel.loseColor, style.wheel.rimColor].every(color) ||
+    (style.wheelPrimaryColorSource !== undefined &&
+      style.wheelPrimaryColorSource !== "campaign" &&
+      style.wheelPrimaryColorSource !== "poster") ||
     (style.wheel.alternateWinColor !== undefined && !color(style.wheel.alternateWinColor)) ||
     (style.wheel.alternateLoseColor !== undefined && !color(style.wheel.alternateLoseColor))) return null;
   return {
     backgroundMode: "color", backgroundColor: style.backgroundColor, backgroundImageUrl: "",
     headlineTextColor: style.headlineTextColor, headlineFontFamily: font,
     headlineFontSizePx: Math.max(24, Math.min(84, size)),
+    wheelPrimaryColorSource: style.wheelPrimaryColorSource,
     wheel: {
       winColor: style.wheel.winColor, alternateWinColor: style.wheel.alternateWinColor,
       loseColor: style.wheel.loseColor, alternateLoseColor: style.wheel.alternateLoseColor,

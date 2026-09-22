@@ -8,7 +8,7 @@ import { getPosterFontAsset, getPosterSubtitleFont } from "@/lib/poster-fonts";
 import {
   createPosterSettingsDefaults,
   normalizePosterSettings,
-  restoreHistoricalPosterPalette,
+  resolvePosterWheelPalette,
   resolvePosterLogoSettings,
 } from "@/lib/poster-utils";
 import { getPosterTemplate, POSTER_TEMPLATES } from "@/lib/poster-templates";
@@ -171,7 +171,7 @@ export async function createCampaignPosterSvg(
       : normalizedPoster;
   const posterWithCurrentPalette =
     campaign.gameType === "wheel"
-      ? restoreHistoricalPosterPalette(posterWithNormalizedHeadline, campaignPrimaryColor)
+      ? resolvePosterWheelPalette(posterWithNormalizedHeadline, campaignPrimaryColor)
       : posterWithNormalizedHeadline;
   const poster = hasExplicitPosterTemplate
     ? posterWithCurrentPalette

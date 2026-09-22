@@ -16,7 +16,7 @@ import {
   createPosterSettingsDefaults,
   MAX_POSTER_HEADLINE_LENGTH,
   normalizePosterSettings,
-  restoreHistoricalPosterPalette,
+  resolvePosterWheelPalette,
 } from "@/lib/poster-utils";
 import { captureClientProductEvent } from "@/lib/client-product-analytics";
 import {
@@ -276,7 +276,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
     );
     const posterWithCurrentPalette =
       campaign.gameType === "wheel"
-        ? restoreHistoricalPosterPalette(normalizedPoster, campaignPrimaryColor)
+        ? resolvePosterWheelPalette(normalizedPoster, campaignPrimaryColor)
         : normalizedPoster;
 
     if (campaign.presentation.poster?.templateId) {
@@ -612,6 +612,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
   function updateWheel(key: keyof CampaignPosterSettings["wheel"], value: string) {
     setPoster((current) => ({
       ...current,
+      ...(key === "winColor" ? { wheelPrimaryColorSource: "poster" as const } : {}),
       wheel: {
         ...current.wheel,
         [key]: value,
@@ -625,13 +626,13 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
     const next = selectPosterTemplate({
       ...poster,
       wheel: { ...poster.wheel, winColor: draftWinColor, alternateWinColor: draftWinColor },
-    }, templateId);
+    }, templateId, campaignPrimaryColor);
     setDraftWinColor(next.wheel.winColor);
     setPoster(next);
   }
 
   function selectBackgroundMotif(backgroundMotif: PosterBackgroundMotif) {
-    const next = selectPosterBackgroundMotif(poster, backgroundMotif);
+    const next = selectPosterBackgroundMotif(poster, backgroundMotif, campaignPrimaryColor);
     setDraftWinColor(next.wheel.winColor);
     setPoster(next);
   }
