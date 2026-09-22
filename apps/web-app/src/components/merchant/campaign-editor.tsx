@@ -1707,6 +1707,10 @@ export function CampaignEditor({
 }: CampaignEditorProps) {
   const router = useRouter();
   const [form, setForm] = useState<EditorState>(toEditorState(merchant, initialCampaign));
+  const [lastSavedFormSnapshot, setLastSavedFormSnapshot] = useState(() =>
+    JSON.stringify(toEditorState(merchant, initialCampaign)),
+  );
+  const formRef = useRef(form);
   const wheelTemplateState = useRef<
     Record<
       string,
@@ -1744,6 +1748,9 @@ export function CampaignEditor({
   const [prizeSuggestions, setPrizeSuggestions] = useState<PrizeSuggestion[]>([]);
   const [qrPreviewOpen, setQrPreviewOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewSaveDialogOpen, setPreviewSaveDialogOpen] = useState(false);
+  const [previewSaveError, setPreviewSaveError] = useState<string | null>(null);
+  const [isSavingBeforePreview, setIsSavingBeforePreview] = useState(false);
   const [imageUploadErrors, setImageUploadErrors] = useState<
     Partial<Record<ImageUploadField, string>>
   >({});
@@ -1774,6 +1781,8 @@ export function CampaignEditor({
   }, [merchant.industry]);
 
   const previewSegments = useMemo(() => buildPreviewSegments(form.prizes), [form.prizes]);
+  const formSnapshot = useMemo(() => JSON.stringify(form), [form]);
+  const isDirty = lastSavedFormSnapshot !== formSnapshot;
   const totalPrizeProbability = useMemo(
     () => form.prizes.reduce((total, prize) => total + (Number(prize.probability) || 0), 0),
     [form.prizes],
@@ -1942,6 +1951,10 @@ export function CampaignEditor({
   const deferredPreview = useDeferredValue(previewModel);
 
   useEffect(() => {
+    formRef.current = form;
+  }, [form]);
+
+  useEffect(() => {
     const campaignId = initialCampaign?.campaign.id;
 
     if (!deferInlineAssets || !campaignId) {
@@ -1970,24 +1983,27 @@ export function CampaignEditor({
           return;
         }
 
-        setForm((current) => ({
-          ...current,
-          logoUrl: payload.assets.logoUrl ?? current.logoUrl,
+        const nextForm: EditorState = {
+          ...formRef.current,
+          logoUrl: payload.assets.logoUrl ?? formRef.current.logoUrl,
           presentation: {
-            ...current.presentation,
+            ...formRef.current.presentation,
             background: {
-              ...current.presentation.background,
-              imageUrl: payload.assets.backgroundImageUrl ?? current.presentation.background.imageUrl,
+              ...formRef.current.presentation.background,
+              imageUrl:
+                payload.assets.backgroundImageUrl ?? formRef.current.presentation.background.imageUrl,
             },
             poster: {
-              ...current.presentation.poster,
-              logoUrl: payload.assets.posterLogoUrl ?? current.presentation.poster.logoUrl,
+              ...formRef.current.presentation.poster,
+              logoUrl: payload.assets.posterLogoUrl ?? formRef.current.presentation.poster.logoUrl,
               backgroundImageUrl:
                 payload.assets.posterBackgroundImageUrl ??
-                current.presentation.poster.backgroundImageUrl,
+                formRef.current.presentation.poster.backgroundImageUrl,
             },
           },
-        }));
+        };
+        setForm(nextForm);
+        setLastSavedFormSnapshot(JSON.stringify(nextForm));
       } catch {
         // The editor remains usable when an uploaded asset cannot be reloaded.
       }
@@ -2284,13 +2300,17 @@ export function CampaignEditor({
     });
   }, []);
 
-  async function saveCampaign() {
+  async function saveCampaign(options?: {
+    suppressSuccessDialog?: boolean;
+    suppressErrorDialog?: boolean;
+    onError?: (message: string) => void;
+  }): Promise<string | null> {
     setIsSaving(true);
     setMessage(null);
     setMessageTone("info");
     setSaveDialogOpen(false);
     if (form.id !== "__legacy_save__") {
-      return handleSaveCampaign();
+      return handleSaveCampaign(options);
     }
 
     try {
@@ -2343,16 +2363,21 @@ export function CampaignEditor({
             : undefined;
       window.dispatchEvent(new Event("campaigns-updated"));
       router.replace(`/campaigns?updated=${encodeURIComponent(savedId ?? "saved")}`);
+      return savedId ?? null;
     } catch (error) {
       const readableError = readableCampaignSaveError(
         error instanceof Error ? error.message : "La campagne n'a pas pu être enregistrée.",
       );
+      options?.onError?.(readableError);
       setMessageTone("error");
       setMessage(null);
-      setSaveDialogTone("error");
-      setSaveDialogTitle("Enregistrement impossible");
-      setSaveDialogDescription(readableError);
-      setSaveDialogOpen(true);
+      if (!options?.suppressErrorDialog) {
+        setSaveDialogTone("error");
+        setSaveDialogTitle("Enregistrement impossible");
+        setSaveDialogDescription(readableError);
+        setSaveDialogOpen(true);
+      }
+      return null;
     } finally {
       setIsSaving(false);
     }
@@ -2384,7 +2409,11 @@ export function CampaignEditor({
     }));
   }
 
-  async function handleSaveCampaign() {
+  async function handleSaveCampaign(options?: {
+    suppressSuccessDialog?: boolean;
+    suppressErrorDialog?: boolean;
+    onError?: (message: string) => void;
+  }): Promise<string | null> {
     setIsSaving(true);
     setMessage(null);
     setMessageTone("info");
@@ -2440,31 +2469,83 @@ export function CampaignEditor({
 
       if (nextCampaignId) {
         setSavedCampaignId(nextCampaignId);
-        setForm((current) => ({
-          ...current,
-          id: nextCampaignId,
-        }));
+        const savedForm = { ...form, id: nextCampaignId };
+        setForm(() => savedForm);
+        setLastSavedFormSnapshot(JSON.stringify(savedForm));
       }
 
-      setSaveDialogTone("info");
-      setSaveDialogTitle("Campagne enregistrée");
-      setSaveDialogDescription("Vos modifications ont bien été prises en compte.");
-      setSaveDialogOpen(true);
+      if (!options?.suppressSuccessDialog) {
+        setSaveDialogTone("info");
+        setSaveDialogTitle("Campagne enregistrée");
+        setSaveDialogDescription("Vos modifications ont bien été prises en compte.");
+        setSaveDialogOpen(true);
+      }
       window.dispatchEvent(new Event("campaigns-updated"));
       router.refresh();
+      return nextCampaignId ?? null;
     } catch (error) {
       const readableError = readableCampaignSaveError(
         error instanceof Error ? error.message : "La campagne n'a pas pu être enregistrée.",
       );
+      options?.onError?.(readableError);
       setMessageTone("error");
       setMessage(null);
-      setSaveDialogTone("error");
-      setSaveDialogTitle("Enregistrement impossible");
-      setSaveDialogDescription(readableError);
-      setSaveDialogOpen(true);
+      if (!options?.suppressErrorDialog) {
+        setSaveDialogTone("error");
+        setSaveDialogTitle("Enregistrement impossible");
+        setSaveDialogDescription(readableError);
+        setSaveDialogOpen(true);
+      }
+      return null;
     } finally {
       setIsSaving(false);
     }
+  }
+
+  function openPreviewForCampaign(campaignId: string) {
+    openCampaignPreview(
+      campaignId,
+      () => {
+        captureClientProductEvent("campaign_preview_opened", {
+          campaignType: form.gameType,
+          templateKey: form.presentation.layout.templateId ?? "classic",
+        });
+        setPreviewOpen(true);
+      },
+      (path) => router.push(path),
+    );
+  }
+
+  function requestPreview() {
+    if (!form.id || isSaving || isSavingBeforePreview) return;
+    if (isDirty) {
+      setPreviewSaveError(null);
+      setPreviewSaveDialogOpen(true);
+      return;
+    }
+    openPreviewForCampaign(form.id);
+  }
+
+  async function saveAndPreview() {
+    if (!form.id || isSavingBeforePreview) return;
+    setPreviewSaveError(null);
+    setIsSavingBeforePreview(true);
+    const campaignId = await saveCampaign({
+      suppressSuccessDialog: true,
+      suppressErrorDialog: true,
+      onError: setPreviewSaveError,
+    });
+    setIsSavingBeforePreview(false);
+    if (!campaignId) return;
+    setPreviewSaveDialogOpen(false);
+    openPreviewForCampaign(campaignId);
+  }
+
+  function previewWithoutSaving() {
+    if (!form.id || isSavingBeforePreview) return;
+    setPreviewSaveDialogOpen(false);
+    setPreviewSaveError(null);
+    openPreviewForCampaign(form.id);
   }
 
   return (
@@ -2495,7 +2576,7 @@ export function CampaignEditor({
             </Link>
             <button
               type="button"
-              onClick={saveCampaign}
+              onClick={() => void saveCampaign()}
               disabled={isSaving}
               className="okado-filled-action px-5 disabled:opacity-60"
             >
@@ -4415,16 +4496,9 @@ export function CampaignEditor({
                   </Link>
                   <button
                     type="button"
-                    onClick={() =>
-                      openCampaignPreview(form.id!, () => {
-                        captureClientProductEvent("campaign_preview_opened", {
-                          campaignType: form.gameType,
-                          templateKey: form.presentation.layout.templateId ?? "classic",
-                        });
-                        setPreviewOpen(true);
-                      }, (path) => router.push(path))
-                    }
-                    className="okado-primary-action px-4"
+                    onClick={requestPreview}
+                    disabled={isSaving || isSavingBeforePreview}
+                    className="okado-primary-action px-4 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     Prévisualiser
                   </button>
@@ -4451,6 +4525,31 @@ export function CampaignEditor({
           onClose={() => setPreviewOpen(false)}
         />
       ) : null}
+      <ValidationDialog
+        open={previewSaveDialogOpen}
+        title="Enregistrer avant de prévisualiser ?"
+        description="Vos modifications ne sont pas encore enregistrées. Enregistrez-les pour afficher la version la plus récente. Sans enregistrement, la prévisualisation affichera uniquement la dernière version sauvegardée."
+        ctaLabel={isSavingBeforePreview ? "Enregistrement…" : "Enregistrer et prévisualiser"}
+        secondaryCtaLabel="Prévisualiser sans enregistrer"
+        cancelLabel="Annuler"
+        error={previewSaveError}
+        actionDisabled={isSavingBeforePreview}
+        secondaryActionDisabled={isSavingBeforePreview}
+        onAction={() => void saveAndPreview()}
+        onSecondaryAction={previewWithoutSaving}
+        onClose={() => {
+          if (!isSavingBeforePreview) {
+            setPreviewSaveDialogOpen(false);
+            setPreviewSaveError(null);
+          }
+        }}
+        onCancel={() => {
+          if (!isSavingBeforePreview) {
+            setPreviewSaveDialogOpen(false);
+            setPreviewSaveError(null);
+          }
+        }}
+      />
       <PrizeConditionsDialog
         open={Boolean(editingPrize)}
         prizeLabel={editingPrize?.label ?? ""}
