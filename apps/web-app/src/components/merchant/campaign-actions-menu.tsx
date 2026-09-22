@@ -84,25 +84,25 @@ export function CampaignActionsMenu({
           <DropdownMenuItem className={itemClass} asChild>
             <a href={`/api/campaigns/${campaignId}/qr`}>
               <QrCode className="h-4 w-4" />
-              Exporter le QR code
+              QR Code
             </a>
           </DropdownMenuItem>
           <DropdownMenuItem className={itemClass} asChild>
             <a href={`/campaigns/${campaignId}/poster`}>
               <ImageIcon className="h-4 w-4" />
-              Personnaliser l&apos;affiche
-            </a>
-          </DropdownMenuItem>
-          <DropdownMenuItem className={itemClass} asChild>
-            <a href={`/campaigns/${campaignId}/email`}>
-              <Mail className="h-4 w-4" />
-              Personnaliser l&apos;e-mail de gain
+              Affiche
             </a>
           </DropdownMenuItem>
           <DropdownMenuItem className={itemClass} asChild>
             <a href={`/api/campaigns/${campaignId}/poster`}>
               <Download className="h-4 w-4" />
-              Télécharger l&apos;affiche A4 / A5
+              Télécharger l&apos;affiche
+            </a>
+          </DropdownMenuItem>
+          <DropdownMenuItem className={itemClass} asChild>
+            <a href={`/campaigns/${campaignId}/email`}>
+              <Mail className="h-4 w-4" />
+              Email de gain
             </a>
           </DropdownMenuItem>
 
