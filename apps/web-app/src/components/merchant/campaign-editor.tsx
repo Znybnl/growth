@@ -297,6 +297,7 @@ const textFontOptions: TextFont[] = [
   "lobster",
   "pacifico",
   "syncopate",
+  "cormorant",
   "fredoka",
 ];
 const cocoricoTextFontOptions: TextFont[] = ["roboto", "days-one", "fredoka"];
