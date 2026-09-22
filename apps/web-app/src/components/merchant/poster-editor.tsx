@@ -16,6 +16,7 @@ import {
   createPosterSettingsDefaults,
   MAX_POSTER_HEADLINE_LENGTH,
   normalizePosterSettings,
+  restoreHistoricalPosterPalette,
 } from "@/lib/poster-utils";
 import { captureClientProductEvent } from "@/lib/client-product-analytics";
 import {
@@ -273,20 +274,24 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
         footerBackgroundColor: "transparent",
       }),
     );
+    const posterWithCurrentPalette =
+      campaign.gameType === "wheel"
+        ? restoreHistoricalPosterPalette(normalizedPoster, campaignPrimaryColor)
+        : normalizedPoster;
 
     if (campaign.presentation.poster?.templateId) {
-      return normalizedPoster;
+      return posterWithCurrentPalette;
     }
 
     const template = POSTER_TEMPLATES[0];
 
     return applyTemplateDefaults(
       {
-        ...normalizedPoster,
+        ...posterWithCurrentPalette,
         headlineTextColor: campaign.gameType === "scratch" ? "#1b2842" : campaignGainColor,
         headlineFontFamily: "geogrotesque",
         wheel: {
-          ...normalizedPoster.wheel,
+          ...posterWithCurrentPalette.wheel,
           winColor: campaignPrimaryColor,
           alternateWinColor: campaignPrimaryColor,
         },

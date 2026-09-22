@@ -497,6 +497,8 @@ function createDefaultAction(merchant: Merchant): CampaignAction {
 }
 
 function createDefaultState(merchant: Merchant): EditorState {
+  const wheel = createDefaultWheelSettings(DEFAULT_COCORICO_PRIMARY_COLOR);
+
   return {
     merchantId: merchant.id,
     title: `Animation ${isRestaurantIndustry(merchant.industry) ? "restaurant" : "commerce"}`,
@@ -545,8 +547,8 @@ function createDefaultState(merchant: Merchant): EditorState {
         wheelSubtitle: "",
         subtitleSpacingPx: defaultWheelSubtitleSpacingForTemplate(DEFAULT_GAME_PAGE_TEMPLATE_ID),
       },
-      wheel: createDefaultWheelSettings(DEFAULT_COCORICO_PRIMARY_COLOR),
-      poster: createDefaultPosterSettings(merchant),
+      wheel,
+      poster: createDefaultPosterSettings(merchant, wheel.loseColor),
       email: createCampaignEmailDefaults(merchant),
     },
     actions: createDefaultActions(merchant),

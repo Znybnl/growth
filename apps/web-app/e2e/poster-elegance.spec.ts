@@ -1,6 +1,26 @@
 import { expect, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
+import sharp from "sharp";
 import { signIn } from "./auth-session";
+
+async function posterContainsColor(png: Buffer, hex: string) {
+  const normalized = hex.replace("#", "");
+  const target = [
+    Number.parseInt(normalized.slice(0, 2), 16),
+    Number.parseInt(normalized.slice(2, 4), 16),
+    Number.parseInt(normalized.slice(4, 6), 16),
+  ];
+  const { data, info } = await sharp(png).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  let matches = 0;
+
+  for (let index = 0; index < data.length; index += info.channels) {
+    if (data[index] === target[0] && data[index + 1] === target[1] && data[index + 2] === target[2]) {
+      matches += 1;
+    }
+  }
+
+  return matches > 100;
+}
 
 test("Élégance et motifs d’affiche conservent les styles et téléchargent exactement l’aperçu", async ({ page }, testInfo) => {
   test.setTimeout(180_000);
@@ -42,6 +62,7 @@ test("Élégance et motifs d’affiche conservent les styles et téléchargent e
     const font = page.getByLabel("Police du texte principal");
     const primary = page.getByLabel("Couleur principale", { exact: true });
     const background = page.getByLabel("Couleur du fond uni de l’affiche");
+    const preview = page.getByAltText("Prévisualisation affiche");
     const choose = (name: string) => page.getByRole("button", { name: new RegExp(`^${name}`) }).click();
     const save = async () => {
       const response = page.waitForResponse(r => r.url().includes("/poster-settings") && r.request().method() === "POST");
@@ -49,6 +70,53 @@ test("Élégance et motifs d’affiche conservent les styles et téléchargent e
       expect((await response).ok()).toBeTruthy();
       await expect(page.getByText("Affiche enregistrée.", { exact: true })).toBeVisible();
     };
+    await expect(primary).toHaveValue("#2563eb");
+    await expect(preview).toBeVisible();
+
+    const campaignResponse = await page.request.get(`/api/campaigns/${campaignId}`);
+    expect(campaignResponse.ok()).toBe(true);
+    const campaignPayload = (await campaignResponse.json()) as {
+      campaign?: { campaign?: { presentation?: { poster?: Record<string, unknown> } } };
+    };
+    const savedPoster = campaignPayload.campaign?.campaign?.presentation?.poster as {
+      wheel?: Record<string, string>;
+    } | undefined;
+    expect(savedPoster?.wheel).toBeTruthy();
+    expect(savedPoster?.wheel).toMatchObject({
+      winColor: "#2563eb",
+      alternateWinColor: "#2563eb",
+      loseColor: "#fff7ef",
+      rimColor: "#3c3c3c",
+    });
+    const initialPosterPng = await page.request.get(`/api/campaigns/${campaignId}/poster`);
+    expect(initialPosterPng.ok()).toBe(true);
+    const initialPosterPngBytes = await initialPosterPng.body();
+    expect(await posterContainsColor(initialPosterPngBytes, "#2563eb")).toBe(true);
+    expect(await posterContainsColor(initialPosterPngBytes, "#fff7ef")).toBe(true);
+    const legacyResponse = await page.request.post(`/api/campaigns/${campaignId}/poster-settings`, {
+      headers: { origin: new URL(page.url()).origin },
+      data: {
+        ...savedPoster,
+        templateId: "classic-wheel",
+        backgroundMotif: "plain",
+        wheel: {
+          ...savedPoster?.wheel,
+          rimColor: "#1b2842",
+          winColor: "#1b2842",
+          alternateWinColor: "#1b2842",
+          loseColor: "#1b2842",
+        },
+      },
+    });
+    expect(legacyResponse.ok()).toBe(true);
+    await page.reload();
+    await expect(primary).toHaveValue("#2563eb");
+    await expect(preview).toBeVisible();
+    const repairedPosterPng = await page.request.get(`/api/campaigns/${campaignId}/poster`);
+    expect(repairedPosterPng.ok()).toBe(true);
+    const repairedPosterPngBytes = await repairedPosterPng.body();
+    expect(await posterContainsColor(repairedPosterPngBytes, "#2563eb")).toBe(true);
+    expect(await posterContainsColor(repairedPosterPngBytes, "#fff7ef")).toBe(true);
     await font.selectOption("lato");
     await expect(font).toHaveValue("lato");
     await primary.fill("#146c70");
@@ -117,7 +185,6 @@ test("Élégance et motifs d’affiche conservent les styles et téléchargent e
     await choose("Élégance");
     await save();
 
-    const preview = page.getByAltText("Prévisualisation affiche");
     const downloadButton = page.getByRole("button", { name: "Télécharger le PNG", exact: true });
     await expect(downloadButton).toBeEnabled({ timeout: 30_000 });
     await preview.screenshot({ path: testInfo.outputPath("elegance-preview.png") });

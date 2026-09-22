@@ -6,6 +6,7 @@ import {
   Merchant,
 } from "@/lib/types";
 import { createPosterSettingsDefaults } from "@/lib/poster-utils";
+import { getPosterTemplate } from "@/lib/poster-templates";
 
 export const LEGACY_DEFAULT_WHEEL_SUBTITLE = "Faites tournez la roue pour jouer !";
 export const DEFAULT_WHEEL_SUBTITLE = "Tounez la roue et tentez de gagner !";
@@ -475,6 +476,8 @@ export function createDefaultPosterSettings(
   merchant: Merchant,
   primaryColor = DEFAULT_WHEEL_PRIMARY_COLOR,
 ): CampaignPosterSettings {
+  const classicPosterWheel = getPosterTemplate("classic-wheel").wheel;
+
   return {
     ...createPosterSettingsDefaults({
       logoMode: "text",
@@ -484,13 +487,11 @@ export function createDefaultPosterSettings(
       headline: "Scannez, jouez, récupérez votre cadeau !",
       headlineTextColor: DEFAULT_WHEEL_PRIMARY_COLOR,
       headlineFontSizePx: 42,
-    headlineFontFamily: "geogrotesque",
+      headlineFontFamily: "geogrotesque",
       wheel: {
-        rimColor: primaryColor,
+        ...classicPosterWheel,
         winColor: primaryColor,
         alternateWinColor: primaryColor,
-        loseColor: primaryColor,
-        alternateLoseColor: deriveLighterHex(primaryColor),
       },
       footerBackgroundColor: deriveLighterHex(primaryColor),
     }),
