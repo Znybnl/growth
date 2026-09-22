@@ -2178,7 +2178,7 @@ export function CampaignWizard({
 
           {step.id === "appearance" ? (
             <div className="mt-7 space-y-5">
-              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              <div className="grid min-w-0 grid-cols-[repeat(auto-fit,minmax(min(100%,14rem),1fr))] gap-4">
                 {(
                   draft.gameType === "scratch"
                     ? [
@@ -2320,12 +2320,12 @@ export function CampaignWizard({
                         };
                       });
                     }}
-                    className={`rounded-[16px] border p-4 text-left ${draft.presentation.layout.templateId === template.id ? "border-aubergine bg-purple-haze" : "border-[#e2e8f0] bg-[#fbfcfe]"}`}
+                    className={`min-w-0 rounded-[16px] border p-4 text-left ${draft.presentation.layout.templateId === template.id ? "border-aubergine bg-purple-haze" : "border-[#e2e8f0] bg-[#fbfcfe]"}`}
                   >
                     <span className="block text-sm font-semibold text-[#182033]">
                       {template.label}
                     </span>
-                    <span className="mt-1 block text-xs text-[#8993a6]">
+                    <span className="mt-1 block break-words text-xs leading-5 text-[#8993a6]">
                       {template.text}
                     </span>
                   </button>
