@@ -63,6 +63,106 @@ function QrThumbnail({ template }: { template: PosterTemplateConfig }) {
   );
 }
 
+function PosterStepsThumbnail({
+  template,
+  gameType,
+}: {
+  template: PosterTemplateConfig;
+  gameType: GameType;
+}) {
+  const action = gameType === "wheel" ? "Jouez" : "Grattez";
+
+  if (template.footerVariant === "premium") {
+    return (
+      <>
+        <g transform="translate(0 925)">
+        <rect width="794" height="198" fill="white" fillOpacity="0.76" />
+        <line x1="281" y1="30" x2="281" y2="138" stroke="#171412" strokeWidth="2" />
+        <line x1="513" y1="30" x2="513" y2="138" stroke="#171412" strokeWidth="2" />
+        <g transform="translate(33 14)">
+          <g transform="translate(0 9)">
+            <circle cx="132" cy="48" r="42" fill={template.accent} />
+            <g transform="translate(132 48) scale(0.9) translate(-132 -48)">
+              <path
+                transform="translate(0 -7)"
+                d="M116 29 h31 a6 6 0 0 1 6 6 v42 a6 6 0 0 1 -6 6 h-31 a6 6 0 0 1 -6 -6 v-42 a6 6 0 0 1 6 -6 Z M118 42 h27 M118 53 h20 M118 64 h23"
+                fill="none"
+                stroke="#ffffff"
+                strokeWidth="4"
+                strokeLinecap="round"
+              />
+            </g>
+          </g>
+          <text x="132" y="138" textAnchor="middle" fill="#111111" fontSize="28" fontWeight="700">Scannez</text>
+        </g>
+        <g transform="translate(264 14)">
+          <g transform="translate(0 9)">
+            <circle cx="132" cy="48" r="42" fill={template.accent} />
+            <circle cx="132" cy="48" r="25" fill="none" stroke="#ffffff" strokeWidth="4" />
+            <path d="M132 23 v50 M107 48 h50 M114 30 l36 36 M150 30 l-36 36" stroke="#ffffff" strokeWidth="3" />
+          </g>
+          <text x="132" y="138" textAnchor="middle" fill="#111111" fontSize="28" fontWeight="700">{action}</text>
+        </g>
+        <g transform="translate(497 14)">
+          <g transform="translate(0 9)">
+            <circle cx="132" cy="48" r="42" fill={template.accent} />
+            <g transform="translate(132 48) scale(1.6)">
+              <rect x="-13" y="-5" width="26" height="19" rx="2" fill="none" stroke="#ffffff" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M-15-5h30v7h-30z" fill="none" stroke="#ffffff" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M0-5v19" fill="none" stroke="#ffffff" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M0-5c-7 0-11-2-10-6 1-4 7-3 10 6Z" fill="none" stroke="#ffffff" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M0-5c7 0 11-2 10-6-1-4-7-3-10 6Z" fill="none" stroke="#ffffff" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" />
+            </g>
+          </g>
+          <text x="132" y="138" textAnchor="middle" fill="#111111" fontSize="28" fontWeight="700">Gagnez</text>
+        </g>
+        </g>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <g transform="translate(0 944)">
+      <rect width="794" height="179" fill="#fbf8f2" fillOpacity="0.96" />
+      <line x1="281" y1="43" x2="281" y2="133" stroke={template.accent} strokeWidth="2" />
+      <line x1="513" y1="43" x2="513" y2="133" stroke={template.accent} strokeWidth="2" />
+      <g transform="translate(33 6)">
+        <circle cx="132" cy="48" r="35" fill={template.accent} />
+        <g transform="translate(132 48) scale(0.72) translate(-132 -48)">
+          <path
+            transform="translate(0 -7)"
+            d="M116 29 h31 a6 6 0 0 1 6 6 v42 a6 6 0 0 1 -6 6 h-31 a6 6 0 0 1 -6 -6 v-42 a6 6 0 0 1 6 -6 Z M118 42 h27 M118 53 h20 M118 64 h23"
+            fill="none"
+            stroke="#ffffff"
+            strokeWidth="4"
+            strokeLinecap="round"
+          />
+        </g>
+        <text x="132" y="124" textAnchor="middle" fill={template.accentDark} fontSize="28" fontWeight="700">Scannez</text>
+      </g>
+      <g transform="translate(264 6)">
+        <circle cx="132" cy="48" r="35" fill={template.accent} />
+        <circle cx="132" cy="48" r="21" fill="none" stroke="#ffffff" strokeWidth="3.5" />
+        <path d="M132 27 v42 M111 48 h42 M116 32 l32 32 M148 32 l-32 32" stroke="#ffffff" strokeWidth="2.6" />
+        <text x="132" y="124" textAnchor="middle" fill={template.accentDark} fontSize="28" fontWeight="700">{action}</text>
+      </g>
+      <g transform="translate(497 6)">
+        <circle cx="132" cy="48" r="35" fill={template.accent} />
+        <g transform="translate(132 48) scale(1.6)">
+          <rect x="-13" y="-5" width="26" height="19" rx="2" fill="none" stroke="#ffffff" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M-15-5h30v7h-30z" fill="none" stroke="#ffffff" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M0-5v19" fill="none" stroke="#ffffff" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M0-5c-7 0-11-2-10-6 1-4 7-3 10 6Z" fill="none" stroke="#ffffff" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M0-5c7 0 11-2 10-6-1-4-7-3-10 6Z" fill="none" stroke="#ffffff" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" />
+        </g>
+        <text x="132" y="124" textAnchor="middle" fill={template.accentDark} fontSize="28" fontWeight="700">Gagnez</text>
+      </g>
+      </g>
+    </>
+  );
+}
+
 export function PosterTemplateSelector({
   gameType,
   selectedTemplateId,
@@ -117,8 +217,7 @@ export function PosterTemplateSelector({
                       {qrDataUrl ? <image href={qrDataUrl} x="95" y="514" width="240" height="240" /> : <QrCode x="95" y="514" width="240" height="240" color="#111" strokeWidth="1.5" />}
                       <text x="215" y="790" textAnchor="middle" fontSize="19" fontWeight="700" fill="#111">SCANNEZ POUR JOUER</text>
                     </g>
-                    <rect y="925" width="794" height="198" fill="white" fillOpacity="0.8" />
-                    <text y="1040" fontSize="30" fontWeight="600" fill="#171412"><tspan x="98">Scannez</tspan><tspan x="350">Jouez</tspan><tspan x="595">Gagnez</tspan></text>
+                    <PosterStepsThumbnail template={visualTemplate} gameType={gameType} />
                   </svg>
                 ) : visualTemplate.id === "botanical-wheel" ? (
                   <svg viewBox="0 0 794 1123" className="h-full w-full" aria-hidden="true">
@@ -137,14 +236,7 @@ export function PosterTemplateSelector({
                       <rect x="420" y="790" width="356" height="62" rx="20" fill="#718578" stroke="white" strokeWidth="4" />
                       <text x="598" y="828" textAnchor="middle" fontSize="18" fontWeight="700" fill="white">SCANNEZ POUR JOUER</text>
                     </g>
-                    <rect y="944" width="794" height="179" fill="#fbf8f2" fillOpacity="0.96" />
-                    <circle cx="132" cy="992" r="32" fill="#718578" /><text x="132" y="1004" textAnchor="middle" fontSize="30" fontWeight="700" fill="white">1</text>
-                    <circle cx="397" cy="992" r="32" fill="#718578" /><circle cx="397" cy="992" r="18" fill="none" stroke="white" strokeWidth="3" /><path d="M397 974v36M379 992h36M384 979l26 26M410 979l-26 26" stroke="white" strokeWidth="2" />
-                    <circle cx="662" cy="992" r="32" fill="#718578" /><path d="M647 989h30v24h-30zM643 982h38v9h-38zM662 982v31M652 982c-11-9 4-14 10 0M672 982c6-14 21-9 10 0" fill="none" stroke="white" strokeWidth="2" strokeLinejoin="round" />
-                    <line x1="270" y1="960" x2="270" y2="1036" stroke="#718578" strokeWidth="2" /><line x1="524" y1="960" x2="524" y2="1036" stroke="#718578" strokeWidth="2" />
-                    <text x="132" y="1072" textAnchor="middle" fontSize="24" fontWeight="700" fill="#153a35">Scannez</text>
-                    <text x="397" y="1072" textAnchor="middle" fontSize="24" fontWeight="700" fill="#153a35">Jouez</text>
-                    <text x="662" y="1072" textAnchor="middle" fontSize="24" fontWeight="700" fill="#153a35">Gagnez</text>
+                    <PosterStepsThumbnail template={visualTemplate} gameType={gameType} />
                   </svg>
                 ) : <>
                   {gameType === "wheel" ? <WheelThumbnail template={visualTemplate} /> : <ScratchThumbnail template={visualTemplate} />}
