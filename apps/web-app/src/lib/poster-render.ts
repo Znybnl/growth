@@ -299,7 +299,10 @@ function renderLogo(campaign: Campaign, poster: CampaignPosterSettings, template
   const logoX = template.logoX ?? A4_WIDTH / 2;
 
   if (logoMode === "image" && logoUrl) {
-    return `<image href="${escapeXml(logoUrl)}" x="${logoX - (logoSize * 1.9) / 2}" y="${logoY}" width="${logoSize * 1.9}" height="${logoSize}" preserveAspectRatio="xMidYMid meet"/>`;
+    const logoImageAnchor = template.logoImageAnchor ?? "middle";
+    const imageX = logoImageAnchor === "start" ? logoX : logoX - (logoSize * 1.9) / 2;
+    const preserveAspectRatio = logoImageAnchor === "start" ? "xMinYMid meet" : "xMidYMid meet";
+    return `<image href="${escapeXml(logoUrl)}" x="${imageX}" y="${logoY}" width="${logoSize * 1.9}" height="${logoSize}" preserveAspectRatio="${preserveAspectRatio}"/>`;
   }
 
   if (logoMode !== "text" || !logoText) {
