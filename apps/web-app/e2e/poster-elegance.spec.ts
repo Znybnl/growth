@@ -117,6 +117,37 @@ test("Élégance et motifs d’affiche conservent les styles et téléchargent e
     const repairedPosterPngBytes = await repairedPosterPng.body();
     expect(await posterContainsColor(repairedPosterPngBytes, "#2563eb")).toBe(true);
     expect(await posterContainsColor(repairedPosterPngBytes, "#fff7ef")).toBe(true);
+    const reportedPaletteResponse = await page.request.post(`/api/campaigns/${campaignId}/poster-settings`, {
+      headers: { origin: new URL(page.url()).origin },
+      data: {
+        ...savedPoster,
+        wheelPrimaryColorSource: undefined,
+        templateId: "classic-wheel",
+        backgroundMotif: "plain",
+        wheel: {
+          ...savedPoster?.wheel,
+          winColor: "#8f9997",
+          alternateWinColor: "#8f9997",
+          loseColor: "#1b2842",
+          alternateLoseColor: "#1b2842",
+          rimColor: "#1b2842",
+        },
+      },
+    });
+    expect(reportedPaletteResponse.ok()).toBe(true);
+    await page.reload();
+    await expect(primary).toHaveValue("#2563eb");
+    await expect(preview).toBeVisible();
+    const reportedPalettePng = await page.request.get(`/api/campaigns/${campaignId}/poster`);
+    expect(reportedPalettePng.ok()).toBe(true);
+    const reportedPalettePngBytes = await reportedPalettePng.body();
+    expect(await posterContainsColor(reportedPalettePngBytes, "#2563eb")).toBe(true);
+    expect(await posterContainsColor(reportedPalettePngBytes, "#fff7ef")).toBe(true);
+    await primary.fill("#8f9997");
+    await primary.blur();
+    await save();
+    await page.reload();
+    await expect(primary).toHaveValue("#8f9997");
     await font.selectOption("lato");
     await expect(font).toHaveValue("lato");
     await primary.fill("#146c70");

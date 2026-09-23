@@ -5,7 +5,7 @@ import {
   Prize,
   TextFont,
 } from "@/lib/types";
-import { getPosterTemplate, legacyPosterTemplateMotif } from "@/lib/poster-templates";
+import { getPosterTemplate, legacyPosterTemplateMotif, POSTER_TEMPLATES } from "@/lib/poster-templates";
 
 export const MAX_POSTER_HEADLINE_LENGTH = 120;
 export const MAX_POSTER_HEADLINE_LINES = 4;
@@ -144,6 +144,7 @@ export function createPosterSettingsDefaults(input: {
 }): CampaignPosterSettings {
   return {
     templateId: input.templateId ?? "classic-wheel",
+    wheelPrimaryColorSource: "campaign",
     backgroundMotif: input.backgroundMotif ?? "plain",
     logoMode: input.logoMode ?? (input.logoUrl ? "image" : input.logoText ? "text" : "none"),
     logoText: input.logoText ?? "",
@@ -177,6 +178,9 @@ export function normalizePosterSettings(
     ...defaults,
     ...poster,
     templateId,
+    wheelPrimaryColorSource:
+      poster?.wheelPrimaryColorSource ??
+      (poster ? undefined : defaults.wheelPrimaryColorSource ?? "campaign"),
     backgroundMotif,
     backgroundMotifStyles: poster?.backgroundMotifStyles ?? defaults.backgroundMotifStyles,
     logoSizePercent: clamp(poster?.logoSizePercent ?? defaults.logoSizePercent ?? 70, 0, 200),
@@ -194,41 +198,59 @@ export function normalizePosterSettings(
   };
 }
 
+const LEGACY_INHERITED_POSTER_COLORS = new Set([
+  "#1b2842",
+  "#8f9997",
+  "#003cb9",
+  "#3c05a0",
+  "#2563eb",
+  "#78b4df",
+  "#f3a4c4",
+  "#f4c14a",
+]);
+
 /**
- * Older poster records were initialized with the game primary color in every
- * wheel slot. That value is a legacy default, not a merchant customization.
- * Restore only those unambiguously monochrome records and keep the template's
- * readable opposing color and rim intact.
+ * Resolve the poster's primary color source and restore segment colors owned
+ * by its template. Older records have no source marker, so known template/game
+ * defaults (including the erroneous #8f9997) remain inherited from the game;
+ * other colors are treated as intentional poster customizations.
  */
-export function restoreHistoricalPosterPalette(
+export function resolvePosterWheelPalette(
   poster: CampaignPosterSettings,
   campaignPrimaryColor: string,
 ) {
-  const historicalColor = "#1b2842";
-  const isHistoricalMonochrome = [
-    poster.wheel.winColor,
-    poster.wheel.alternateWinColor,
-    poster.wheel.loseColor,
-    poster.wheel.rimColor,
-  ].every((color) => color?.trim().toLowerCase() === historicalColor);
-
-  if (!isHistoricalMonochrome) {
-    return poster;
-  }
-
   const template = getPosterTemplate(poster.templateId, poster.backgroundMotif);
 
   if (template.colorsCustomizable === false) {
     return poster;
   }
 
+  const normalizedWinColor = poster.wheel.winColor?.trim().toLowerCase();
+  const isLegacyMonochrome = [
+    poster.wheel.winColor,
+    poster.wheel.alternateWinColor,
+    poster.wheel.loseColor,
+    poster.wheel.rimColor,
+  ].every((color) => color?.trim().toLowerCase() === normalizedWinColor);
+  const source = poster.wheelPrimaryColorSource ?? (
+    isLegacyMonochrome ||
+    normalizedWinColor === campaignPrimaryColor.trim().toLowerCase() ||
+    LEGACY_INHERITED_POSTER_COLORS.has(normalizedWinColor ?? "") ||
+    POSTER_TEMPLATES.some(
+      (candidate) => candidate.wheel.winColor.toLowerCase() === normalizedWinColor,
+    )
+      ? "campaign"
+      : "poster"
+  );
+  const winColor = source === "campaign" ? campaignPrimaryColor : poster.wheel.winColor;
   return {
     ...poster,
+    wheelPrimaryColorSource: source,
     wheel: {
       ...poster.wheel,
       ...template.wheel,
-      winColor: campaignPrimaryColor,
-      alternateWinColor: campaignPrimaryColor,
+      winColor,
+      alternateWinColor: winColor,
     },
   };
 }
