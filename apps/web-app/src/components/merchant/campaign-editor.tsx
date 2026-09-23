@@ -59,6 +59,7 @@ import {
   textFontLabel,
 } from "@/lib/format";
 import { captureClientProductEvent } from "@/lib/client-product-analytics";
+import { postCampaignSetup } from "@/lib/campaign-setup-request";
 import {
   createCampaignEmailDefaults,
   normalizeCampaignEmailSettings,
@@ -1733,6 +1734,7 @@ export function CampaignEditor({
   const [isLibraryLoading, setIsLibraryLoading] = useState(false);
   const [libraryMessage, setLibraryMessage] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const saveRequestInFlightRef = useRef(false);
   const [message, setMessage] = useState<string | null>(null);
   const [messageTone, setMessageTone] = useState<"info" | "error">("info");
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
@@ -2308,12 +2310,18 @@ export function CampaignEditor({
     suppressErrorDialog?: boolean;
     onError?: (message: string) => void;
   }): Promise<string | null> {
+    if (saveRequestInFlightRef.current) return null;
+    saveRequestInFlightRef.current = true;
     setIsSaving(true);
     setMessage(null);
     setMessageTone("info");
     setSaveDialogOpen(false);
     if (form.id !== "__legacy_save__") {
-      return handleSaveCampaign(options);
+      try {
+        return await handleSaveCampaign(options);
+      } finally {
+        saveRequestInFlightRef.current = false;
+      }
     }
 
     try {
@@ -2340,18 +2348,10 @@ export function CampaignEditor({
         );
       }
 
-      const response = await fetch("/api/campaigns/setup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(buildClassicSetupPayload(form)),
-      });
-
-      const payload = (await response.json().catch(() => null)) as
-        | {
-            error?: string;
-            campaign?: CampaignPerformance | { id?: string } | null;
-          }
-        | null;
+      const { response, payload } = await postCampaignSetup<{
+        error?: string;
+        campaign?: CampaignPerformance | { id?: string } | null;
+      }>(buildClassicSetupPayload(form));
       if (!response.ok) {
         throw new Error(payload?.error || "La campagne n'a pas pu être enregistrée.");
       }
@@ -2446,18 +2446,10 @@ export function CampaignEditor({
         );
       }
 
-      const response = await fetch("/api/campaigns/setup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(buildClassicSetupPayload(form)),
-      });
-
-      const payload = (await response.json().catch(() => null)) as
-        | {
-            error?: string;
-            campaign?: CampaignPerformance | { id?: string } | null;
-          }
-        | null;
+      const { response, payload } = await postCampaignSetup<{
+        error?: string;
+        campaign?: CampaignPerformance | { id?: string } | null;
+      }>(buildClassicSetupPayload(form));
 
       if (!response.ok) {
         throw new Error(payload?.error || "La campagne n'a pas pu être enregistrée.");
@@ -2501,6 +2493,7 @@ export function CampaignEditor({
       }
       return null;
     } finally {
+      saveRequestInFlightRef.current = false;
       setIsSaving(false);
     }
   }

@@ -2765,6 +2765,18 @@ export async function updateCampaignSetup(input: CampaignSetupInput) {
   return updateCampaignSetupInMemory(input);
 }
 
+export async function saveCampaignSetup(input: CampaignSetupInput) {
+  assertCampaignCanPublish(input);
+
+  if (getDataBackend("la mise à jour d'une campagne") === "supabase") {
+    const campaignId = await updateCampaignSetupInSupabase(input);
+    invalidateCampaignNavigationCache(input.merchantId, campaignId);
+    return campaignId;
+  }
+
+  return updateCampaignSetupInMemory(input).id;
+}
+
 export async function updateCampaignPosterSettings(
   campaignId: string,
   poster: CampaignPosterSettings,

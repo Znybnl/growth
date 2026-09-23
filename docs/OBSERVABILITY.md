@@ -26,6 +26,12 @@ L'événement serveur `campaign_setup_failed` contient uniquement : route, méth
 
 L'événement navigateur utilise le même nom et ne transmet pas le message brut de l'erreur. Aucun e-mail, PIN, contenu de formulaire, secret ou payload de campagne n'est envoyé par cette instrumentation. L'activation est limitée aux erreurs ; aucun échantillonnage automatique supplémentaire n'est nécessaire à ce stade. Si le volume augmente, le périmètre ou le taux d'échantillonnage devra être ajusté avec les limites du workspace PostHog.
 
+## Mesure de latence des sauvegardes (#280)
+
+La route `POST /api/campaigns/setup` émet un événement structuré `campaign_setup_timing` dans les logs runtime Vercel après chaque requête authentifiée. Il contient le mode création/modification, le type de jeu, les nombres d'actions et de lots, les durées d'authentification, d'analyse du formulaire, de sauvegarde et du total. Quand elles sont présentes, la taille de requête et la durée de sérialisation navigateur sont également consignées. La réponse fournit les mêmes durées principales dans `Server-Timing`, visibles dans les outils réseau du navigateur.
+
+La couche de persistance émet `campaign_setup_storage_timing` pour distinguer les lectures de contrôle, l'écriture atomique et l'audit. Ces mesures permettent de calculer p50/p95 et de séparer les cas création/modification, roue/ticket et tailles de configuration. Aucun identifiant de marchand, identifiant de jeu, libellé, URL configurée, adresse, PIN, jeton ou texte libre n'est ajouté à ces événements. Les compteurs et tailles sont bornés ou numériques ; ne jamais compléter ces journaux avec le corps de la requête ou les valeurs de formulaire.
+
 ## Vérification locale
 
 1. Copier les variables nécessaires dans un fichier `.env.local` non commité, avec un project token PostHog de test si l'export doit être vérifié.
