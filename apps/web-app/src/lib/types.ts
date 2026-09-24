@@ -128,6 +128,7 @@ export interface Merchant {
   phone?: string;
   restaurantEmail?: string;
   websiteUrl?: string;
+  appointmentUrl?: string;
   onboardingCompleted?: boolean;
   preferredGoals?: string[];
   diffusionSupport?: string[];
@@ -305,6 +306,7 @@ export interface MerchantOnboardingInput {
   phone: string;
   restaurantEmail: string;
   websiteUrl: string;
+  appointmentUrl: string;
   address: string;
   defaultPrizeCost: number;
   preferredGoals: string[];
@@ -343,6 +345,7 @@ export interface MerchantAccountSettingsInput {
   phone: string;
   restaurantEmail: string;
   websiteUrl: string;
+  appointmentUrl: string;
   googleReviewUrl: string;
   googlePlaceName?: string;
   googlePlaceAddress?: string;

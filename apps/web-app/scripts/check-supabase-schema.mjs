@@ -63,7 +63,7 @@ async function checkPublicAccessIsBlocked(table) {
 }
 
 for (const [table, columns] of [
-  ["merchants", "id,redemption_pin_hash,google_place_name,google_place_address,google_place_rating,google_place_review_count"],
+  ["merchants", "id,redemption_pin_hash,appointment_url,google_place_name,google_place_address,google_place_rating,google_place_review_count"],
   ["campaigns", "id,merchant_id"],
   ["leads", "id,campaign_id,redemption_code"],
   ["prizes", "id,campaign_id,remaining_quantity"],
@@ -118,6 +118,7 @@ const migrationChecks = [
   ["20260723_redemption_pin.sql", ["redemption_pin_hash"]],
   ["20260830_google_place_metadata.sql", ["google_place_name", "google_place_address", "google_place_rating", "google_place_review_count"]],
   ["20260831_personal_data_lifecycle.sql", ["archived_leads", "archived_campaign_events", "archived_cashier_redemption_audits", "purge_personal_data"]],
+  ["20260924_add_merchant_appointment_url.sql", ["appointment_url"]],
 ];
 for (const [file, needles] of migrationChecks) {
   const filePath = path.join(repoRoot, "supabase", "migrations", file);

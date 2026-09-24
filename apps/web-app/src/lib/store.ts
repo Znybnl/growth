@@ -234,6 +234,7 @@ const merchantSeed: Merchant = {
   phone: "01 40 00 00 00",
   restaurantEmail: "contact@maisonsora.fr",
   websiteUrl: "https://maisonsora.fr",
+  appointmentUrl: "",
   onboardingCompleted: true,
   preferredGoals: ["Avis Google", "Collecte CRM"],
   diffusionSupport: ["QR code vitrine et comptoir", "Script équipe magasin"],
@@ -1067,6 +1068,7 @@ function createMerchantAccountInMemory(input: MerchantSignUpInput) {
     phone,
     restaurantEmail: "",
     websiteUrl: "",
+    appointmentUrl: "",
     onboardingCompleted: false,
     preferredGoals: [],
     diffusionSupport: [],
@@ -1143,6 +1145,7 @@ function updateMerchantOnboardingInMemory(userId: string, input: MerchantOnboard
   merchant.phone = input.phone.trim();
   merchant.restaurantEmail = input.restaurantEmail.trim().toLowerCase();
   merchant.websiteUrl = input.websiteUrl.trim();
+  merchant.appointmentUrl = input.appointmentUrl.trim();
   merchant.defaultPrizeCost = input.defaultPrizeCost;
   merchant.preferredGoals = input.preferredGoals;
   merchant.diffusionSupport = input.diffusionSupport;
@@ -1204,6 +1207,7 @@ function updateMerchantAccountInMemory(
   merchant.phone = input.phone.trim();
   merchant.restaurantEmail = input.restaurantEmail.trim().toLowerCase();
   merchant.websiteUrl = input.websiteUrl.trim();
+  merchant.appointmentUrl = input.appointmentUrl.trim();
   merchant.googleReviewUrl = input.googleReviewUrl.trim();
   merchant.googlePlaceName = input.googlePlaceName?.trim() || undefined;
   merchant.googlePlaceAddress = input.googlePlaceAddress?.trim() || undefined;
