@@ -69,6 +69,7 @@
 - Seul l'administrateur de la plateforme accède aux fonctionnalités qui lui sont dédiées. Les utilisateurs marchands pilotent leurs propres établissements et jeux.
 - Le personnel du commerce n'a pas de compte dédié à la plateforme : il valide un retrait depuis le QR code du client avec le PIN marchand.
 - Le formulaire classique ne peut être supprimé qu'après reprise fonctionnelle suffisante dans le wizard et validation des parcours de bout en bout, à la fois par le propriétaire et par les tests automatisés.
+- Les établissements du secteur Beauté disposent de six styles de roue supplémentaires, quel que soit leur sous-secteur. Cette collection apparaît avant les modèles génériques dans les éditeurs ; les joueurs voient le modèle enregistré sans restriction de secteur. Le logo, le titre, le sous-titre, les couleurs et la police restent personnalisables. Le centre de ces roues utilise une main pointeur.
 
 ## Questions ouvertes
 

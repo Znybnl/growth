@@ -16,6 +16,11 @@ export type TextFont =
   | "display"
   | "serif"
   | "cormorant"
+  | "playfair"
+  | "dm-sans"
+  | "poppins"
+  | "bodoni"
+  | "space-grotesk"
   | "fredoka"
   | "inter"
   | "bebas"
@@ -37,6 +42,12 @@ export type GamePageTemplateId =
   | "cocorico-wheel"
   | "cocorico-duo-wheel"
   | "rose-institut"
+  | "beauty-rose"
+  | "beauty-nude"
+  | "beauty-botanical"
+  | "beauty-pop"
+  | "beauty-editorial"
+  | "beauty-tech"
   | "cosmic-orbit"
   | "sunburst-festival"
   | "scratch-vault"
@@ -414,6 +425,19 @@ export interface CampaignLayoutSettings {
   templateId?: GamePageTemplateId;
   wheelSubtitle?: string;
   subtitleSpacingPx?: number;
+  wheelTemplateStyles?: Partial<Record<GamePageTemplateId, WheelTemplateStyle>>;
+}
+
+export interface WheelTemplateStyle {
+  wheel: CampaignWheelSettings;
+  backgroundColor: string;
+  scratchSignal: string;
+  headingTextColor: string;
+  logoTextColor: string;
+  headingFontFamily: TextFont;
+  headingAlign: TextAlign;
+  logoAlign: TextAlign;
+  buttonBackgroundColor: string;
 }
 
 export interface CampaignWheelSettings {

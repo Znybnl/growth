@@ -7,6 +7,7 @@ import {
 } from "@/lib/types";
 import { createPosterSettingsDefaults } from "@/lib/poster-utils";
 import { getPosterTemplate } from "@/lib/poster-templates";
+import { beautyWheelTheme } from "@/lib/beauty-wheel-themes";
 
 export const LEGACY_DEFAULT_WHEEL_SUBTITLE = "Faites tournez la roue pour jouer !";
 export const DEFAULT_WHEEL_SUBTITLE = "Tounez la roue et tentez de gagner !";
@@ -141,6 +142,18 @@ export function wheelPaletteForTemplate(
   templateId: GamePageTemplateId,
   current: CampaignWheelSettings,
 ) {
+  const beautyTheme = beautyWheelTheme(templateId);
+  if (beautyTheme) {
+    return {
+      ...current,
+      loseColor: beautyTheme.primary,
+      alternateLoseColor: beautyTheme.secondary,
+      winColor: beautyTheme.secondary,
+      alternateWinColor: beautyTheme.secondary,
+      rimColor: beautyTheme.primary,
+    };
+  }
+
   if (templateId === "classic") {
     return {
       ...current,
@@ -197,6 +210,10 @@ export function wheelBackgroundForTemplate(
   templateId: GamePageTemplateId,
   currentColor: string,
 ) {
+  // A Beauty theme's default is applied when selected in the editor. On load,
+  // this resolver must preserve the merchant's saved background color.
+  if (beautyWheelTheme(templateId)) return currentColor;
+
   const normalized = currentColor.trim().toLowerCase();
   const knownTemplateBackgrounds = [
     "#ffffff",
