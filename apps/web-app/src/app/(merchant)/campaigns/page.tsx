@@ -5,7 +5,8 @@ import { EmptyState, PageHeader, ResponsiveTable } from "@/components/ui/workspa
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { requireAuthenticatedSession } from "@/lib/auth";
-import { formatCurrency, formatPercent, gameTypeLabel } from "@/lib/format";
+import { formatPercent, gameTypeLabel } from "@/lib/format";
+import { getCampaignStockMetrics } from "@/lib/campaign-table-metrics";
 import { getMerchantCampaignOverview } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
@@ -24,8 +25,12 @@ export default async function CampaignsPage({
         `${item.campaign.title} ${item.campaign.subtitle}`.toLowerCase().includes(query),
       )
     : dashboard.campaigns;
+  const campaignsWithStockMetrics = campaigns.map((item) => ({
+    ...item,
+    stockMetrics: getCampaignStockMetrics(item.prizes),
+  }));
   const activeCount = campaigns.filter((item) => item.campaign.isActive).length;
-  const campaignTableGrid = "grid-cols-[minmax(0,1.45fr)_minmax(95px,0.7fr)_minmax(54px,0.5fr)_minmax(108px,0.75fr)_minmax(64px,0.55fr)_minmax(132px,0.95fr)_minmax(132px,auto)]";
+  const campaignTableGrid = "grid-cols-[minmax(170px,1.45fr)_minmax(88px,0.75fr)_minmax(78px,0.7fr)_minmax(64px,0.55fr)_minmax(82px,0.7fr)_minmax(100px,0.85fr)_minmax(116px,auto)]";
 
   return (
     <div className="space-y-6">
@@ -46,11 +51,15 @@ export default async function CampaignsPage({
       />
 
       <section>
+        <p className="mb-3 text-xs leading-5 text-ash">
+          Les lots utilisés et leur taux sont calculés sur le stock quantifié (stock initial moins stock restant). Les lots dont
+          le stock initial ou restant n’est pas quantifié sont exclus ; le taux affiche « — » si aucun stock n’est quantifiable.
+        </p>
         <ResponsiveTable
           mobile={
-            campaigns.length ? (
+            campaignsWithStockMetrics.length ? (
               <div className="okado-mobile-table-list">
-                {campaigns.map((item) => (
+                {campaignsWithStockMetrics.map((item) => (
                   <article key={item.campaign.id} className="okado-mobile-table-row">
                     <div className="flex items-start justify-between gap-4">
                       <div className="min-w-0">
@@ -62,9 +71,10 @@ export default async function CampaignsPage({
                     <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
                       {[
                         ["Jeu", gameTypeLabel(item.campaign.gameType)],
-                        ["Scans", item.kpis.scans],
                         ["Participations", item.kpis.leads],
-                        ["Conversion", formatPercent(item.kpis.conversionRate)],
+                        ["Gagnants", item.kpis.wins],
+                        ["Lots utilisés", formatCampaignCount(item.stockMetrics.lotsUsed)],
+                        ["Taux de consommation", formatCampaignRate(item.stockMetrics.consumptionRate)],
                       ].map(([label, value]) => (
                         <div key={label} className="okado-mobile-table-stat">
                           <p className="okado-mobile-table-stat-label">{label}</p>
@@ -83,23 +93,66 @@ export default async function CampaignsPage({
           }
         >
           <div className={`okado-table-header grid ${campaignTableGrid} gap-3 px-5 py-3`}>
-            <span>Campagne</span><span>Jeu</span><span className="text-left">Scans</span><span className="text-left">Participations</span><span className="text-left">Conv.</span><span className="text-left">Coût / participation</span><span className="sr-only">Actions</span>
+            <span>Campagne</span>
+            <span>Jeu</span>
+            <span className="text-left">Participations</span>
+            <span className="text-left">Gagnants</span>
+            <span className="text-left">Lots utilisés</span>
+            <span className="text-left">Taux de consommation</span>
+            <span className="sr-only">Actions</span>
           </div>
           <div className="space-y-0">
-            {campaigns.length ? campaigns.map((item) => (
-              <div key={item.campaign.id} className={`okado-table-row grid ${campaignTableGrid} items-center gap-3 px-5 py-4`}>
-                <div className="flex min-w-0 items-center gap-3"><StatusBadge tone={item.campaign.isActive ? "active" : "muted"}>{item.campaign.isActive ? "Active" : "Pause"}</StatusBadge><div className="min-w-0"><p className="truncate font-semibold text-graphite">{item.campaign.title}</p><p className="truncate text-sm text-ash">{item.campaign.subtitle}</p></div></div>
-                <span className="text-slate">{gameTypeLabel(item.campaign.gameType)}</span>
-                <span data-align="right" className="tabular-nums text-right font-semibold text-graphite">{item.kpis.scans}</span>
-                <span data-align="right" className="tabular-nums text-right font-semibold text-graphite">{item.kpis.leads}</span>
-                <span data-align="right" className="tabular-nums text-right font-semibold text-graphite">{formatPercent(item.kpis.conversionRate)}</span>
-                <span data-align="right" className="tabular-nums text-right font-semibold text-graphite">{formatCurrency(item.kpis.costPerLead)}</span>
-                <div className="flex items-center justify-end gap-2"><Link href={`/campaigns/${item.campaign.id}/edit/guided`} prefetch={false} className="okado-primary-action okado-compact-action px-3">Modifier</Link><CampaignActionsMenu campaignId={item.campaign.id} campaignTitle={item.campaign.title} /></div>
-              </div>
-            )) : <EmptyState title="Aucune campagne trouvée" description="Modifiez votre recherche ou créez une nouvelle campagne." />}
+            {campaignsWithStockMetrics.length ? (
+              campaignsWithStockMetrics.map((item) => (
+                <div key={item.campaign.id} className={`okado-table-row grid ${campaignTableGrid} items-center gap-3 px-5 py-4`}>
+                  <div className="flex min-w-0 items-center gap-3">
+                    <StatusBadge tone={item.campaign.isActive ? "active" : "muted"}>
+                      {item.campaign.isActive ? "Active" : "Pause"}
+                    </StatusBadge>
+                    <div className="min-w-0">
+                      <p className="truncate font-semibold text-graphite">{item.campaign.title}</p>
+                      <p className="truncate text-sm text-ash">{item.campaign.subtitle}</p>
+                    </div>
+                  </div>
+                  <span className="text-slate">{gameTypeLabel(item.campaign.gameType)}</span>
+                  <span data-align="right" className="tabular-nums text-right font-semibold text-graphite">
+                    {item.kpis.leads}
+                  </span>
+                  <span data-align="right" className="tabular-nums text-right font-semibold text-graphite">
+                    {item.kpis.wins}
+                  </span>
+                  <span data-align="right" className="tabular-nums text-right font-semibold text-graphite">
+                    {formatCampaignCount(item.stockMetrics.lotsUsed)}
+                  </span>
+                  <span data-align="right" className="tabular-nums text-right font-semibold text-graphite">
+                    {formatCampaignRate(item.stockMetrics.consumptionRate)}
+                  </span>
+                  <div className="flex items-center justify-end gap-2">
+                    <Link
+                      href={`/campaigns/${item.campaign.id}/edit/guided`}
+                      prefetch={false}
+                      className="okado-primary-action okado-compact-action px-3"
+                    >
+                      Modifier
+                    </Link>
+                    <CampaignActionsMenu campaignId={item.campaign.id} campaignTitle={item.campaign.title} />
+                  </div>
+                </div>
+              ))
+            ) : (
+              <EmptyState title="Aucune campagne trouvée" description="Modifiez votre recherche ou créez une nouvelle campagne." />
+            )}
           </div>
         </ResponsiveTable>
       </section>
     </div>
   );
+}
+
+function formatCampaignCount(value: number | null) {
+  return value === null ? "—" : new Intl.NumberFormat("fr-FR").format(value);
+}
+
+function formatCampaignRate(value: number | null) {
+  return value === null ? "—" : formatPercent(value);
 }

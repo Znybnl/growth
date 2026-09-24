@@ -331,7 +331,13 @@ type CampaignOverviewEventRow = {
 type CampaignOverviewPrizeRow = {
   id: string;
   campaign_id: string;
+  label: string;
+  total_quantity: number | null;
+  remaining_quantity: number | null;
+  probability: number;
   estimated_unit_cost: number;
+  purchase_required: boolean;
+  created_at: string;
 };
 
 type MerchantRow = {
@@ -1051,6 +1057,7 @@ function buildCampaignOverviewFallbackBundle(
   const leadsByCampaignId = new Map<string, CampaignOverviewLeadRow[]>();
   const eventsByCampaignId = new Map<string, CampaignOverviewEventRow[]>();
   const estimatedCostByPrizeId = new Map<string, number>();
+  const prizesByCampaignId = new Map<string, CampaignOverviewPrizeRow[]>();
 
   for (const lead of leadRows) {
     const campaignLeads = leadsByCampaignId.get(lead.campaign_id) ?? [];
@@ -1066,6 +1073,9 @@ function buildCampaignOverviewFallbackBundle(
 
   for (const prize of prizeRows) {
     estimatedCostByPrizeId.set(prize.id, Number(prize.estimated_unit_cost) || 0);
+    const campaignPrizes = prizesByCampaignId.get(prize.campaign_id) ?? [];
+    campaignPrizes.push(prize);
+    prizesByCampaignId.set(prize.campaign_id, campaignPrizes);
   }
 
   return campaignRows.map((row) => {
@@ -1074,7 +1084,7 @@ function buildCampaignOverviewFallbackBundle(
     return {
       campaign,
       merchant: clone(merchant),
-      prizes: [],
+      prizes: (prizesByCampaignId.get(row.id) ?? []).map(toPrize),
       kpis: computeOverviewKpisFromRows(
         campaign,
         leadsByCampaignId.get(row.id) ?? [],
@@ -1292,22 +1302,38 @@ export async function getSupabaseMerchantCampaignOverview(
       logoUrl: undefined,
     };
     const campaignIds = rows.map((row) => row.id);
-    const optInResult = campaignIds.length
-      ? await supabase
-          .from("leads")
-          .select("campaign_id")
-          .eq("marketing_consent", true)
-          .in("campaign_id", campaignIds)
-      : { data: [] as Array<{ campaign_id: string }>, error: null };
+    const [optInResult, prizesResult] = campaignIds.length
+      ? await Promise.all([
+          supabase
+            .from("leads")
+            .select("campaign_id")
+            .eq("marketing_consent", true)
+            .in("campaign_id", campaignIds),
+          supabase
+            .from("prizes")
+            .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,purchase_required,created_at")
+            .in("campaign_id", campaignIds),
+        ])
+      : [
+          { data: [] as Array<{ campaign_id: string }>, error: null },
+          { data: [] as PrizeRow[], error: null },
+        ];
     const optInRows = unwrapSupabaseResult(optInResult, "Lecture des opt-ins impossible");
+    const prizesData = unwrapSupabaseResult(prizesResult, "Lecture des stocks de lots impossible");
     const optInsByCampaignId = new Map<string, number>();
+    const prizesByCampaignId = new Map<string, Prize[]>();
     for (const row of (optInRows as Array<{ campaign_id: string }> | null) ?? []) {
       optInsByCampaignId.set(row.campaign_id, (optInsByCampaignId.get(row.campaign_id) ?? 0) + 1);
+    }
+    for (const row of (prizesData as PrizeRow[] | null) ?? []) {
+      const campaignPrizes = prizesByCampaignId.get(row.campaign_id) ?? [];
+      campaignPrizes.push(toPrize(row));
+      prizesByCampaignId.set(row.campaign_id, campaignPrizes);
     }
     const campaigns = rows.map((row) => ({
       campaign: toCampaignOverview(row, overviewMerchant),
       merchant: clone(overviewMerchant),
-      prizes: [],
+      prizes: prizesByCampaignId.get(row.id) ?? [],
       kpis: toOverviewKpis(row, optInsByCampaignId.get(row.id) ?? 0),
     }));
     const totalLeads = campaigns.reduce((total, item) => total + item.kpis.leads, 0);
@@ -1361,7 +1387,7 @@ export async function getSupabaseMerchantCampaignOverview(
       .in("campaign_id", campaignIds),
     supabase
       .from("prizes")
-      .select("id,campaign_id,estimated_unit_cost")
+      .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,purchase_required,created_at")
       .in("campaign_id", campaignIds),
   ]);
   const leadsData = unwrapSupabaseResult(leadsResult, "Lecture des contacts impossible");
