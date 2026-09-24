@@ -27,7 +27,7 @@ type MerchantShellProps = {
 
 const navItems: Array<{ href: string; label: string; icon: LucideIcon }> = [
   { href: "/", label: "Accueil", icon: LayoutDashboard },
-  { href: "/campaigns", label: "Mes jeux", icon: Gamepad2 },
+  { href: "/campaigns", label: "Campagnes", icon: Gamepad2 },
   { href: "/data", label: "Résultats", icon: BarChart3 },
   { href: "/account", label: "Mon compte", icon: UserRound },
 ];

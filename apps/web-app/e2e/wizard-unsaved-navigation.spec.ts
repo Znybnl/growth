@@ -14,7 +14,7 @@ test.describe("Protection des modifications non enregistrées du wizard", () => 
     await openModifiedWizard(page, `E2E — garde abandon ${Date.now()}`);
 
     const dialog = page.getByRole("dialog", { name: "Quitter le wizard ?", exact: true });
-    const campaignsLink = page.getByRole("link", { name: "Mes jeux", exact: true }).first();
+    const campaignsLink = page.getByRole("link", { name: "Campagnes", exact: true }).first();
 
     await campaignsLink.click();
     await expect(dialog).toBeVisible();
@@ -34,7 +34,7 @@ test.describe("Protection des modifications non enregistrées du wizard", () => 
     await openModifiedWizard(page, title);
 
     const dialog = page.getByRole("dialog", { name: "Quitter le wizard ?", exact: true });
-    await page.getByRole("link", { name: "Mes jeux", exact: true }).first().click();
+    await page.getByRole("link", { name: "Campagnes", exact: true }).first().click();
     await expect(dialog).toBeVisible();
     await dialog.getByRole("button", { name: "Enregistrer et quitter", exact: true }).click();
     await expect(dialog).toBeHidden();
