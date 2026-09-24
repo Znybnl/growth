@@ -4,7 +4,12 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { GoogleReviewPlacePicker } from "@/components/merchant/google-review-place-picker";
-import { INDUSTRY_OPTIONS, isRestaurantIndustry } from "@/lib/merchant-options";
+import {
+  BEAUTY_SUBSECTOR_OPTIONS,
+  INDUSTRY_OPTIONS,
+  isBeautyIndustry,
+  isRestaurantIndustry,
+} from "@/lib/merchant-options";
 import { Merchant } from "@/lib/types";
 
 const steps = [
@@ -22,7 +27,8 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
   const router = useRouter();
   const [activeIndex, setActiveIndex] = useState(0);
   const [companyName, setCompanyName] = useState(merchant.onboardingCompleted ? merchant.companyName ?? "" : "");
-  const [industry, setIndustry] = useState(merchant.industry ?? "Restauration");
+  const [industry, setIndustry] = useState(merchant.industry ?? "");
+  const [industrySubsector, setIndustrySubsector] = useState(merchant.industrySubsector ?? "");
   const [city, setCity] = useState(merchant.city ?? "");
   const [contactName, setContactName] = useState(merchant.contactName ?? "");
   const [restaurantType] = useState(merchant.onboardingCompleted ? merchant.restaurantType ?? "" : "");
@@ -58,6 +64,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
         body: JSON.stringify({
           companyName,
           industry,
+          industrySubsector,
           restaurantType,
           city,
           address,
@@ -110,10 +117,34 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
             </label>
             <label className="text-sm">
               <span className="mb-2 block text-charcoal">Secteur d’activité</span>
-              <select value={industry} onChange={(event) => setIndustry(event.target.value)} className={inputClass}>
+              <select
+                value={industry}
+                onChange={(event) => {
+                  const nextIndustry = event.target.value;
+                  setIndustry(nextIndustry);
+                  if (!isBeautyIndustry(nextIndustry)) setIndustrySubsector("");
+                }}
+                className={inputClass}
+              >
+                <option value="">Choisir un secteur</option>
                 {INDUSTRY_OPTIONS.map((option) => <option key={option} value={option}>{option}</option>)}
               </select>
             </label>
+            {isBeautyIndustry(industry) ? (
+              <label className="text-sm">
+                <span className="mb-2 block text-charcoal">Sous-secteur</span>
+                <select
+                  value={industrySubsector}
+                  onChange={(event) => setIndustrySubsector(event.target.value)}
+                  className={inputClass}
+                >
+                  <option value="">Choisir un sous-secteur</option>
+                  {BEAUTY_SUBSECTOR_OPTIONS.map((option) => (
+                    <option key={option} value={option}>{option}</option>
+                  ))}
+                </select>
+              </label>
+            ) : null}
             <label className="text-sm">
               <span className="mb-2 block text-charcoal">Ville / {isRestaurant ? "restaurant" : "commerce"}</span>
               <input value={city} onChange={(event) => setCity(event.target.value)} className={inputClass} />
