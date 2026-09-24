@@ -21,7 +21,7 @@ import {
 import { captureProductEvent } from "@/lib/product-analytics";
 import { sendRewardEmail } from "@/lib/reward-email";
 import { logSupportEvent } from "@/lib/support-log";
-import { drawForLead } from "@/lib/store";
+import { drawForLead, toPublicDrawResult } from "@/lib/store";
 
 type DrawBody = {
   campaignId: string;
@@ -97,6 +97,7 @@ export async function POST(request: NextRequest) {
           rewardAvailableAt: result.lead.rewardAvailableAt,
           rewardExpiresAt: result.lead.rewardExpiresAt,
           purchaseRequired: Boolean(result.prize?.purchaseRequired),
+          appointmentUrl: result.rewardEmailAppointmentUrl,
           emailSettings: result.campaign.presentation.email,
           logoUrl: result.campaign.logoUrl,
         });
@@ -109,7 +110,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const response = NextResponse.json(result, { status: 201 });
+    const response = NextResponse.json(toPublicDrawResult(result), { status: 201 });
     response.cookies.set(
       cookieName,
       getDailyParticipationCookieValue(campaignId),

@@ -728,6 +728,11 @@ export interface DrawResult {
   campaign: PublicCampaign;
 }
 
+/** Server-only draw metadata used for transactional email delivery. */
+export interface DrawResultWithEmailContext extends DrawResult {
+  rewardEmailAppointmentUrl?: string;
+}
+
 export interface CampaignKpi {
   scans: number;
   /** Total contacts captured after a participation (wins and losses). */

@@ -88,6 +88,7 @@ import {
   DrawSession,
   DrawRequest,
   DrawResult,
+  DrawResultWithEmailContext,
   FinalizeDrawSessionRequest,
   Lead,
   Merchant,
@@ -1817,7 +1818,7 @@ export async function finalizePreviewParticipation(input: {
   firstName: string;
   email: string;
   marketingConsent?: boolean;
-}): Promise<DrawResult> {
+}): Promise<DrawResultWithEmailContext> {
   const performance = await getCampaignPerformance(input.campaignId);
   const campaign = await getCampaignPreview(input.campaignId);
   if (!performance || !campaign) {
@@ -1881,6 +1882,7 @@ export async function finalizePreviewParticipation(input: {
   return {
     lead: clone(lead),
     prize: prize ? clone(prize) : null,
+    rewardEmailAppointmentUrl: performance.merchant.appointmentUrl,
     campaign,
   };
 }
@@ -1956,7 +1958,7 @@ export function invalidateMerchantCampaignOverview(merchantId: string) {
   invalidateCampaignNavigationCache(merchantId);
 }
 
-function finalizeDrawSessionFromMemory(input: FinalizeDrawSessionRequest): DrawResult {
+function finalizeDrawSessionFromMemory(input: FinalizeDrawSessionRequest): DrawResultWithEmailContext {
   expireDrawSessionsFromMemory();
   const session = store.drawSessions.find((item) => item.id === input.sessionId);
 
@@ -1996,11 +1998,12 @@ function finalizeDrawSessionFromMemory(input: FinalizeDrawSessionRequest): DrawR
   return {
     lead: clone(lead),
     prize: prize ? clone(prize) : null,
+    rewardEmailAppointmentUrl: getMerchant(campaign.merchantId)?.appointmentUrl,
     campaign: toPublicCampaign(campaign, actionForVisit ? [actionForVisit] : []),
   };
 }
 
-function drawForLeadFromMemory(input: DrawRequest): DrawResult {
+function drawForLeadFromMemory(input: DrawRequest): DrawResultWithEmailContext {
   const preview = createDrawSessionFromMemory({ campaignId: input.campaignId });
 
   return finalizeDrawSessionFromMemory({
@@ -2631,6 +2634,12 @@ export async function drawForLead(input: DrawRequest, fallbackMerchant?: Merchan
   }
 
   return drawForLeadFromMemory(input);
+}
+
+export function toPublicDrawResult(result: DrawResultWithEmailContext): DrawResult {
+  const { rewardEmailAppointmentUrl, ...publicResult } = result;
+  void rewardEmailAppointmentUrl;
+  return publicResult;
 }
 
 export async function createDrawSession(

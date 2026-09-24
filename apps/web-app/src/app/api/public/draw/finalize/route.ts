@@ -18,10 +18,14 @@ import {
 } from "@/lib/preview-token";
 import { captureProductEvent } from "@/lib/product-analytics";
 import { sendRewardEmail } from "@/lib/reward-email";
-import { finalizeDrawSession, finalizePreviewParticipation } from "@/lib/store";
-import { rememberPublicCampaignParticipant } from "@/lib/store";
+import {
+  finalizeDrawSession,
+  finalizePreviewParticipation,
+  rememberPublicCampaignParticipant,
+  toPublicDrawResult,
+} from "@/lib/store";
 import { logSupportEvent } from "@/lib/support-log";
-import { DrawResult, FinalizeDrawSessionRequest } from "@/lib/types";
+import { DrawResultWithEmailContext, FinalizeDrawSessionRequest } from "@/lib/types";
 
 export async function POST(request: Request) {
   const body = (await request.json()) as FinalizeDrawSessionRequest;
@@ -82,6 +86,7 @@ export async function POST(request: Request) {
             rewardAvailableAt: result.lead.rewardAvailableAt,
             rewardExpiresAt: result.lead.rewardExpiresAt,
             purchaseRequired: Boolean(result.prize?.purchaseRequired),
+            appointmentUrl: result.rewardEmailAppointmentUrl,
             emailSettings: result.campaign.presentation.email,
             logoUrl: result.campaign.logoUrl,
             preview: true,
@@ -95,7 +100,10 @@ export async function POST(request: Request) {
         }
       }
 
-      return NextResponse.json(result, { status: 201, headers: { "Cache-Control": "no-store" } });
+      return NextResponse.json(toPublicDrawResult(result), {
+        status: 201,
+        headers: { "Cache-Control": "no-store" },
+      });
     }
 
     await assertPersistentPublicRateLimit(request, {
@@ -109,7 +117,7 @@ export async function POST(request: Request) {
       sessionId,
       firstName,
       email,
-    })) as DrawResult;
+    })) as DrawResultWithEmailContext;
     logSupportEvent("info", "draw_finalized", {
       campaignId: result.campaign.id,
       leadId: result.lead.id,
@@ -157,6 +165,7 @@ export async function POST(request: Request) {
           rewardAvailableAt: result.lead.rewardAvailableAt,
           rewardExpiresAt: result.lead.rewardExpiresAt,
           purchaseRequired: Boolean(result.prize?.purchaseRequired),
+          appointmentUrl: result.rewardEmailAppointmentUrl,
           emailSettings: result.campaign.presentation.email,
           logoUrl: result.campaign.logoUrl,
         });
@@ -169,7 +178,7 @@ export async function POST(request: Request) {
       }
     }
 
-    const response = NextResponse.json(result, { status: 201 });
+    const response = NextResponse.json(toPublicDrawResult(result), { status: 201 });
     if (participantToken) {
       response.cookies.set(
         `okado_player_${encodeURIComponent(result.campaign.id).slice(0, 80)}`,
