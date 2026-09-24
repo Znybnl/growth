@@ -20,6 +20,7 @@ test.describe("Parcours marchand authentifié", () => {
     await expect(page).not.toHaveURL(/\/onboarding/);
     await expect(page.getByRole("heading", { name: "Créer une campagne", exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Le jeu", exact: true })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Roue de la fortune/ })).toBeVisible();
     await expect(page.getByText("Progression", { exact: true })).toBeVisible();
     await expect(page.getByText("En création", { exact: true })).toBeVisible();
     await expect(page.getByText("Jeu en brouillon", { exact: true })).toHaveCount(0);
