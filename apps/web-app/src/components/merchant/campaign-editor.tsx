@@ -39,6 +39,7 @@ import { CampaignPreviewQrDialog } from "@/components/merchant/campaign-preview-
 import { CampaignPreviewDialog, openCampaignPreview } from "@/components/merchant/campaign-preview-dialog";
 import { CampaignLivePreview as SharedCampaignLivePreview } from "@/components/merchant/campaign-live-preview";
 import { CampaignSpacingControls } from "@/components/merchant/campaign-spacing-controls";
+import { GameTypeChoice } from "@/components/merchant/game-type-choice";
 import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
 import { Switch } from "@/components/ui/switch";
 import { DialogShell } from "@/components/ui/dialog";
@@ -2740,50 +2741,15 @@ export function CampaignEditor({
                 const active = form.gameType === mode.value;
 
                 return (
-                  <button
+                  <GameTypeChoice
                     key={mode.value}
-                    type="button"
-                    onClick={() => setGameType(mode.value)}
-                    className={`rounded-[28px] border p-5 text-left transition ${
-                      active
-                         ? "border-[#2f6df6] bg-[#eff4ff] shadow-[0_16px_30px_rgba(47,109,246,0.16)]"
-                        : "border-[#d7e0ed] bg-[#f9fbfd]"
-                    }`}
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <p className="text-xs uppercase tracking-[0.24em] text-[#7b8496]">
-                          {mode.eyebrow}
-                        </p>
-                        <h3 className="mt-3 text-xl font-semibold text-[#111827]">{mode.title}</h3>
-                        <p className="mt-2 text-sm leading-6 text-[#576173]">
-                          {mode.description}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div
-                      className={`mt-5 overflow-hidden rounded-[26px] border ${
-                        active ? "border-[#b7cbff]" : "border-[#dde5f1]"
-                      }`}
-                    >
-                      {mode.value === "wheel" ? (
-                        <div className="flex h-[180px] items-center justify-center bg-[radial-gradient(circle_at_top,#2047b833,transparent_58%),linear-gradient(180deg,#0f1728,#1d2941)]">
-                          <div className="relative h-32 w-32 rounded-full border-[10px] border-[#f4c14a] bg-[conic-gradient(#f4c14a_0_20%,#1b2842_20_40%,#eef2ff_40_60%,#8795db_60_80%,#f4c14a_80_100%)] shadow-[0_24px_36px_rgba(15,23,40,0.35)]">
-                            <div className="absolute left-1/2 top-1/2 h-8 w-8 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/90" />
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="flex h-[180px] items-center justify-center bg-[linear-gradient(180deg,#111827,#1b2842)] p-6">
-                          <div className="w-full max-w-[220px] rounded-[28px] border border-white/10 bg-[#eef2ff] p-4 shadow-[0_24px_36px_rgba(15,23,40,0.35)]">
-                            <div className="h-20 rounded-[18px] bg-[linear-gradient(135deg,#c9ced8,#eef2ff,#b8bfcb)]" />
-                            <div className="mt-4 h-4 w-24 rounded-full bg-[#1b2842]/15" />
-                            <div className="mt-2 h-4 w-32 rounded-full bg-[#1b2842]/10" />
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </button>
+                    type={mode.value}
+                    eyebrow={mode.eyebrow}
+                    title={mode.title}
+                    description={mode.description}
+                    selected={active}
+                    onSelect={() => setGameType(mode.value)}
+                  />
                 );
               })}
             </div>

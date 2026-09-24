@@ -29,6 +29,7 @@ import { CampaignPreviewQrDialog } from "@/components/merchant/campaign-preview-
 import { CampaignPreviewDialog, openCampaignPreview } from "@/components/merchant/campaign-preview-dialog";
 import { CampaignSavedDialog } from "@/components/merchant/campaign-saved-dialog";
 import { CampaignSpacingControls } from "@/components/merchant/campaign-spacing-controls";
+import { GameTypeChoice } from "@/components/merchant/game-type-choice";
 import { DialogShell } from "@/components/ui/dialog";
 import { ValidationDialog } from "@/components/ui/validation-dialog";
 import {
@@ -1589,10 +1590,13 @@ export function CampaignWizard({
                     },
                   ] as const
                 ).map((option) => (
-                  <button
-                    type="button"
+                  <GameTypeChoice
                     key={option.value}
-                    onClick={() =>
+                    type={option.value}
+                    title={option.label}
+                    description={option.text}
+                    selected={draft.gameType === option.value}
+                    onSelect={() =>
                       setDraft((current) => {
                         if (current.gameType === option.value) {
                           return current;
@@ -1677,20 +1681,7 @@ export function CampaignWizard({
                         };
                       })
                     }
-                    className={`rounded-[16px] border p-5 text-left transition ${draft.gameType === option.value ? "border-aubergine bg-purple-haze" : "border-[#e2e8f0] bg-[#fbfcfe] hover:border-[#b8c5d8]"}`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-base font-semibold text-[#182033]">
-                        {option.label}
-                      </span>
-                      <span
-                        className={`h-3 w-3 rounded-full ${draft.gameType === option.value ? "bg-aubergine ring-4 ring-lavender-mist/70" : "bg-[#d7dfeb]"}`}
-                      />
-                    </div>
-                    <p className="mt-3 text-sm leading-6 text-[#7a8498]">
-                      {option.text}
-                    </p>
-                  </button>
+                  />
                 ))}
               </div>
               <div className="hidden rounded-[16px] border border-[#e2e8f0] bg-[#fbfcfe] p-5">
