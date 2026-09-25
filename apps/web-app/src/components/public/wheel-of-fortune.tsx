@@ -260,11 +260,11 @@ export function WheelOfFortune({
   const roseLight = isDefaultRoseColor ? "#f3cdd5" : deriveLighterHex(colors.loseColor, 0.67);
   const roseMedium = isDefaultRoseColor ? "#e7aebb" : deriveLighterHex(colors.loseColor, 0.4);
   const wheelTop =
-    framing === "public" ? undefined : isRosePowderTemplate ? (framing === "mobile-preview" ? "calc(35% - 10px)" : "calc(40% - 10px)") : isBeautyTemplate ? (framing === "mobile-preview" ? "35%" : "40%") : framing === "editor" ? "83%" : framing === "mobile-preview" ? "70%" : "62%";
+    framing === "public" ? undefined : isRosePowderTemplate ? (framing === "mobile-preview" ? "calc(35% + 14px)" : "calc(40% + 14px)") : isBeautyTemplate ? (framing === "mobile-preview" ? "35%" : "40%") : framing === "editor" ? "83%" : framing === "mobile-preview" ? "70%" : "62%";
   const wheelFrameSizeClass =
     framing === "public"
       ? isBeautyTemplate
-        ? `${isRosePowderTemplate ? "top-[-6px]" : "top-1"} w-[min(calc(100vw-28px),calc(100dvh-315px),480px)] sm:w-[min(calc(100vw-36px),calc(100dvh-315px),560px)] md:w-[min(52vw,calc(100dvh-260px),640px)]`
+        ? `${isRosePowderTemplate ? "top-[18px]" : "top-1"} w-[min(calc(100vw-28px),calc(100dvh-315px),480px)] sm:w-[min(calc(100vw-36px),calc(100dvh-315px),560px)] md:w-[min(52vw,calc(100dvh-260px),640px)]`
       : isRoseInstitutTemplate
         ? "top-1 w-[min(calc(100vw-32px),calc(100dvh-320px),430px)] sm:w-[min(calc(100vw-36px),calc(100dvh-320px),520px)] md:w-[min(52vw,640px)] lg:w-[min(48vw,680px)]"
         : "top-2 w-[max(130vw,calc(100svh-240px))] max-w-none sm:w-[min(118vw,calc(100svh-220px))] md:w-[min(98vw,calc(100svh-220px))] lg:w-[min(52vw,calc(100svh-220px))] xl:w-[min(42vw,calc(100svh-220px))] 2xl:w-[min(38vw,calc(100svh-220px))]"
