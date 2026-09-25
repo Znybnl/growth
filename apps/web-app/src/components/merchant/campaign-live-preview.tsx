@@ -276,7 +276,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
 
   return (
     <div className={`okado-preview-surface ${previewWrapperClass}`} data-template-id={preview.gamePageTemplateId}>
-      <div className={`mx-auto w-full overflow-hidden border border-[#ced7e6] shadow-[0_30px_70px_rgba(18,24,39,0.18)] ${previewFrameClass} ${preview.gamePageTemplateId === "beauty-rose" ? "okado-rose-powder-surface relative" : ""}`} style={{ ...preview.backgroundStyle, ...(compact ? { containerType: "inline-size" } : {}) }}>
+      <div className={`mx-auto w-full ${preview.gamePageTemplateId === "beauty-rose" && compact ? "overflow-x-hidden overflow-y-auto" : "overflow-hidden"} border border-[#ced7e6] shadow-[0_30px_70px_rgba(18,24,39,0.18)] ${previewFrameClass} ${preview.gamePageTemplateId === "beauty-rose" ? "okado-rose-powder-surface relative" : ""}`} style={{ ...preview.backgroundStyle, ...(compact ? { containerType: "inline-size" } : {}) }}>
         {preview.gamePageTemplateId === "beauty-rose" && !preview.backgroundStyle.backgroundImage?.includes("url(") ? <RosePowderDecor primaryColor={preview.wheelStyle.loseColor} /> : null}
         {showStandardHeader ? (
           <>
