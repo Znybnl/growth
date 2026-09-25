@@ -534,6 +534,7 @@ export function CampaignExperience({
     Math.max(56, Math.min(720, logoSizePercent * 3)),
   );
   const logoTextSizePx = campaignLogoTextSizePx(logoSizePercent, campaign.gameType);
+  const isRosePowderTemplate = pageTemplate === "beauty-rose";
   const safeSubtitle = limitCampaignSubtitleLines(campaign.subtitle);
   const wheelSubtitle = campaign.gameType === "wheel"
     ? limitCampaignSubtitleLines(campaign.presentation.layout.wheelSubtitle ?? "")
@@ -892,9 +893,10 @@ export function CampaignExperience({
                 size="lg"
                 variant="transparent"
                 imageWidthPx={logoWidthPx}
-                textSizePx={logoTextSizePx}
+                textSizePx={isRosePowderTemplate ? Math.round(logoTextSizePx * 0.9) : logoTextSizePx}
                 textClassName="text-2xl"
                 textColor={campaign.presentation.logo.textColor ?? headingTextColor}
+                textFontWeight={isRosePowderTemplate ? 600 : undefined}
               />
             </div>
           </div>
