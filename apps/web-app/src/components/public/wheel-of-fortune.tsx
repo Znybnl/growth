@@ -252,12 +252,16 @@ export function WheelOfFortune({
   };
   const classicLightColor = deriveLighterHex(colors.loseColor);
   const roseAccent = colors.loseColor.toLowerCase() === "#d58a9a" ? "#b95f75" : deriveDarkerHex(colors.loseColor);
+  const isDefaultRoseColor = colors.loseColor.toLowerCase() === "#d58a9a";
+  const roseIvory = colors.alternateLoseColor.toLowerCase() === "#fff7f8" ? "#fffdfc" : colors.alternateLoseColor;
+  const roseLight = isDefaultRoseColor ? "#f3cdd5" : deriveLighterHex(colors.loseColor, 0.67);
+  const roseMedium = isDefaultRoseColor ? "#e7aebb" : deriveLighterHex(colors.loseColor, 0.4);
   const wheelTop =
-    framing === "public" ? undefined : isBeautyTemplate ? (framing === "mobile-preview" ? "35%" : "40%") : framing === "editor" ? "83%" : framing === "mobile-preview" ? "70%" : "62%";
+    framing === "public" ? undefined : isRosePowderTemplate ? (framing === "mobile-preview" ? "calc(35% - 10px)" : "calc(40% - 10px)") : isBeautyTemplate ? (framing === "mobile-preview" ? "35%" : "40%") : framing === "editor" ? "83%" : framing === "mobile-preview" ? "70%" : "62%";
   const wheelFrameSizeClass =
     framing === "public"
       ? isBeautyTemplate
-        ? "top-1 w-[min(calc(100vw-28px),calc(100dvh-315px),480px)] sm:w-[min(calc(100vw-36px),calc(100dvh-315px),560px)] md:w-[min(52vw,calc(100dvh-260px),640px)]"
+        ? `${isRosePowderTemplate ? "top-[-6px]" : "top-1"} w-[min(calc(100vw-28px),calc(100dvh-315px),480px)] sm:w-[min(calc(100vw-36px),calc(100dvh-315px),560px)] md:w-[min(52vw,calc(100dvh-260px),640px)]`
       : isRoseInstitutTemplate
         ? "top-1 w-[min(calc(100vw-32px),calc(100dvh-320px),430px)] sm:w-[min(calc(100vw-36px),calc(100dvh-320px),520px)] md:w-[min(52vw,640px)] lg:w-[min(48vw,680px)]"
         : "top-2 w-[max(130vw,calc(100svh-240px))] max-w-none sm:w-[min(118vw,calc(100svh-220px))] md:w-[min(98vw,calc(100svh-220px))] lg:w-[min(52vw,calc(100svh-220px))] xl:w-[min(42vw,calc(100svh-220px))] 2xl:w-[min(38vw,calc(100svh-220px))]"
@@ -344,7 +348,7 @@ export function WheelOfFortune({
       <div
         className={`absolute left-1/2 aspect-square ${wheelTransformClass} ${wheelFrameSizeClass} ${
           isRosePowderTemplate
-            ? "drop-shadow-[0_10px_30px_rgba(90,45,60,0.10)]"
+            ? "drop-shadow-[0_12px_30px_rgba(90,45,60,0.12)]"
           : isBeautyTemplate
             ? ""
           : isRestaurantPopTemplate
@@ -405,8 +409,9 @@ export function WheelOfFortune({
               </>
             ) : isRosePowderTemplate ? (
               <>
-                <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 12} fill="#fffdfc" stroke={deriveLighterHex(colors.rimColor, 0.32)} strokeWidth="2" />
-                <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 6} fill="none" stroke={deriveLighterHex(colors.rimColor, 0.68)} strokeWidth="1.5" />
+                <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 12} fill="#fffdfc" stroke={isDefaultRoseColor ? "#e7aebb" : deriveLighterHex(colors.rimColor, 0.32)} strokeWidth="2" />
+                <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 6} fill="none" stroke={isDefaultRoseColor ? "#f3cdd5" : deriveLighterHex(colors.rimColor, 0.68)} strokeWidth="1.5" />
+                <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 2} fill="none" stroke="#fffdfc" strokeWidth="2" />
               </>
             ) : isBeautyTemplate ? (
               <>
@@ -447,7 +452,7 @@ export function WheelOfFortune({
               const startAngle = index * segmentAngle + (isRosePowderTemplate ? 0 : 1.2);
               const endAngle = startAngle + segmentAngle - (isRosePowderTemplate ? 0 : 2.4);
               const midAngle = startAngle + (endAngle - startAngle) / 2;
-              const textPoint = polarToCartesian(isRosePowderTemplate ? 207 : 208, midAngle);
+              const textPoint = polarToCartesian(isRosePowderTemplate ? 211 : 208, midAngle);
               const radialTextAngle = midAngle + 90;
               const uprightTextAngle = radialTextAngle % 360 > 90 && radialTextAngle % 360 < 270
                 ? radialTextAngle + 180
@@ -467,7 +472,7 @@ export function WheelOfFortune({
               }
               // Colors are an aesthetic rhythm, independent from the winning outcome.
               const fillColor = isRosePowderTemplate
-                ? index % 3 === 0 ? colors.alternateLoseColor : index % 3 === 1 ? deriveLighterHex(colors.loseColor, 0.7) : deriveLighterHex(colors.loseColor, 0.47)
+                ? index % 8 === 7 ? colors.loseColor : index % 3 === 0 ? roseIvory : index % 3 === 1 ? roseLight : roseMedium
                 : isBeautyTemplate
                 ? pageTemplate === "beauty-pop" && index % 4 === 2
                   ? deriveLighterHex(colors.loseColor, 0.26)
@@ -555,12 +560,12 @@ export function WheelOfFortune({
           {isRosePowderTemplate ? (
             <svg
               aria-hidden="true"
-              className="absolute left-1/2 top-[-1%] h-[14%] w-[10%] -translate-x-1/2 overflow-visible"
-              viewBox="0 0 44 52"
+              className="absolute left-1/2 top-[-1%] h-[11%] w-[12%] -translate-x-1/2 overflow-visible"
+              viewBox="0 0 48 44"
               style={{ filter: "drop-shadow(0 3px 5px rgba(74,47,54,.13))" }}
             >
-              <path d="M22 2C33 2 40 10 38 20C36 30 27 40 22 49C17 40 8 30 6 20C4 10 11 2 22 2Z" fill={roseAccent} stroke="#fffdfc" strokeWidth="2.5" strokeLinejoin="round" />
-              <path d="M14 12C17 8 21 7 26 9" fill="none" stroke="#fffdfc" strokeOpacity="0.58" strokeWidth="1.6" strokeLinecap="round" />
+              <path d="M24 2C37 2 45 11 41 22C38 29 29 38 24 42C19 38 10 29 7 22C3 11 11 2 24 2Z" fill={roseAccent} stroke="#fffdfc" strokeWidth="2" strokeLinejoin="round" />
+              <path d="M15 12C18 9 22 8 27 9" fill="none" stroke="#fffdfc" strokeOpacity="0.58" strokeWidth="1.4" strokeLinecap="round" />
             </svg>
           ) : <div
             className="absolute"
@@ -612,7 +617,7 @@ export function WheelOfFortune({
           aria-label={isBeautyTemplate ? (isSpinning ? "La roue tourne" : "Jouer à la roue") : undefined}
           onClick={handleCentralButton}
           disabled={!buttonEnabled || isSpinning || hasSpun}
-          className={`okado-wheel-center-button absolute left-1/2 top-1/2 z-40 flex aspect-square ${isRestaurantPopTemplate ? "w-[21%]" : isRoseInstitutTemplate ? "w-[28%]" : isRosePowderTemplate ? "w-[26%]" : isBeautyTemplate ? "w-[23%]" : "w-[19.2%]"} -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full ${isRestaurantPopTemplate || pageTemplate === "classic" ? "border-0" : isRosePowderTemplate ? "border-[2px]" : isRoseInstitutTemplate || isBeautyTemplate ? "border-[3px]" : "border-[4px]"} text-[19px] font-black uppercase transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-75 ${isRestaurantPopTemplate || isRosePowderTemplate ? "" : "shadow-[0_16px_30px_rgba(15,23,42,0.16)]"}`}
+          className={`okado-wheel-center-button absolute left-1/2 top-1/2 z-40 flex aspect-square ${isRestaurantPopTemplate ? "w-[21%]" : isRoseInstitutTemplate ? "w-[28%]" : isRosePowderTemplate ? "w-[27%]" : isBeautyTemplate ? "w-[23%]" : "w-[19.2%]"} -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full ${isRestaurantPopTemplate || pageTemplate === "classic" ? "border-0" : isRosePowderTemplate ? "border-[2px]" : isRoseInstitutTemplate || isBeautyTemplate ? "border-[3px]" : "border-[4px]"} text-[19px] font-black uppercase transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-75 ${isRestaurantPopTemplate || isRosePowderTemplate ? "" : "shadow-[0_16px_30px_rgba(15,23,42,0.16)]"}`}
           style={{
             background: isRosePowderTemplate ? "#fffdfc" :
               buttonEnabled && !hasSpun
@@ -630,7 +635,7 @@ export function WheelOfFortune({
             boxShadow: isRosePowderTemplate ? "0 4px 12px rgba(90,45,60,.12), 0 0 0 3px rgba(255,253,252,.88)" : isRestaurantPopTemplate ? "none" : isBeautyTemplate ? `0 8px 20px ${withAlpha(colors.loseColor, 0.24)}` : isRoseInstitutTemplate ? "0 8px 18px rgba(11,78,162,0.22)" : undefined,
           }}
         >
-          {isRosePowderTemplate ? <span className="flex flex-col items-center gap-0.5"><RoseFlowerMark className="h-[clamp(25px,8.5cqw,38px)] w-[clamp(25px,8.5cqw,38px)]" /><span className="text-[clamp(10px,3.2cqw,14px)] font-bold tracking-[0.08em]">{isSpinning ? "..." : buttonLabel}</span></span> : isBeautyTemplate ? <span className="flex flex-col items-center gap-0.5"><Pointer aria-hidden="true" className="h-[clamp(20px,7cqw,34px)] w-[clamp(20px,7cqw,34px)]" strokeWidth={2.2} /><span className="text-[clamp(8px,2.6cqw,12px)] tracking-[0.12em]">{isSpinning ? "..." : buttonLabel}</span></span> : isSpinning ? "..." : buttonLabel}
+          {isRosePowderTemplate ? <span className="flex flex-col items-center gap-0.5"><RoseFlowerMark className="h-[clamp(19px,6cqw,27px)] w-[clamp(19px,6cqw,27px)]" /><span className="text-[clamp(12px,3.5cqw,16px)] font-bold tracking-[0.06em]">{isSpinning ? "..." : buttonLabel}</span></span> : isBeautyTemplate ? <span className="flex flex-col items-center gap-0.5"><Pointer aria-hidden="true" className="h-[clamp(20px,7cqw,34px)] w-[clamp(20px,7cqw,34px)]" strokeWidth={2.2} /><span className="text-[clamp(8px,2.6cqw,12px)] tracking-[0.12em]">{isSpinning ? "..." : buttonLabel}</span></span> : isSpinning ? "..." : buttonLabel}
         </button>
       </div>
     </div>
