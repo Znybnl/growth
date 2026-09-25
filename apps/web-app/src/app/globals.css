@@ -1629,21 +1629,22 @@ button:disabled,
 }
 
 .okado-rose-powder-decor__glow--top {
-  top: -70px;
-  left: -80px;
-  width: 220px;
-  height: 220px;
-  background: color-mix(in srgb, var(--rose-accent) 12%, transparent);
-  filter: blur(24px);
+  top: -82px;
+  left: -96px;
+  width: 310px;
+  height: 310px;
+  background: radial-gradient(ellipse at 52% 48%, color-mix(in srgb, var(--rose-accent) 27%, transparent), color-mix(in srgb, var(--rose-accent) 13%, transparent) 56%, transparent 77%);
+  filter: blur(22px);
 }
 
 .okado-rose-powder-decor__glow--bottom {
-  right: -90px;
-  bottom: -100px;
-  width: 260px;
-  height: 260px;
-  background: color-mix(in srgb, var(--rose-accent) 8%, transparent);
-  filter: blur(24px);
+  right: -106px;
+  bottom: -124px;
+  width: 340px;
+  height: 340px;
+  border-radius: 61% 39% 48% 52% / 52% 57% 43% 48%;
+  background: radial-gradient(ellipse at 45% 45%, color-mix(in srgb, var(--rose-accent) 24%, transparent), color-mix(in srgb, var(--rose-accent) 10%, transparent) 60%, transparent 80%);
+  filter: blur(26px);
 }
 
 .okado-rose-powder-decor__petal {
@@ -1653,15 +1654,15 @@ button:disabled,
   height: 26px;
   border-radius: 95% 5% 86% 14% / 83% 17% 83% 17%;
   background: var(--rose-accent);
-  opacity: .15;
+  opacity: .1;
 }
 
 .okado-rose-powder-decor__petal--1 { top: 14%; left: 3%; width: 12px; height: 18px; transform: rotate(-25deg); }
 .okado-rose-powder-decor__petal--2 { top: 27%; right: 4%; width: 17px; height: 24px; transform: rotate(41deg); }
-.okado-rose-powder-decor__petal--3 { top: 44%; left: -4px; width: 25px; height: 28px; transform: rotate(68deg); opacity: .12; }
+.okado-rose-powder-decor__petal--3 { top: 44%; left: -4px; width: 25px; height: 28px; transform: rotate(68deg); opacity: .08; }
 .okado-rose-powder-decor__petal--4 { top: 55%; right: 1%; width: 12px; height: 18px; transform: rotate(-47deg); }
-.okado-rose-powder-decor__petal--5 { bottom: 25%; left: 5%; width: 19px; height: 23px; transform: rotate(32deg); opacity: .2; }
-.okado-rose-powder-decor__petal--6 { right: 6%; bottom: 17%; width: 26px; height: 28px; transform: rotate(-70deg); opacity: .11; }
+.okado-rose-powder-decor__petal--5 { bottom: 25%; left: 5%; width: 19px; height: 23px; transform: rotate(32deg); opacity: .13; }
+.okado-rose-powder-decor__petal--6 { right: 6%; bottom: 17%; width: 26px; height: 28px; transform: rotate(-70deg); opacity: .08; }
 .okado-rose-powder-decor__petal--7 { bottom: 5%; left: 23%; width: 11px; height: 16px; transform: rotate(18deg); }
 
 .okado-public-experience[data-template-id="beauty-rose"] .okado-beauty-heading,
