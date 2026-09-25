@@ -404,6 +404,17 @@ export function AccountSettingsForm({
             />
           </label>
           <label className="text-sm">
+            <span className="mb-2 block text-ash">
+              Ville / {isRestaurant ? "restaurant" : "commerce"} <span className="text-coral-alert" aria-hidden="true">*</span>
+            </span>
+            <input
+              value={form.city}
+              onChange={(event) => updateField("city", event.target.value)}
+              className={inputClass}
+              required
+            />
+          </label>
+          <label className="text-sm">
             <span className="mb-2 block text-ash">Secteur d&apos;activité</span>
             <select
               value={form.industry}
@@ -434,17 +445,6 @@ export function AccountSettingsForm({
             </label>
           ) : null}
           <label className="text-sm">
-            <span className="mb-2 block text-ash">
-              Ville / {isRestaurant ? "restaurant" : "commerce"} <span className="text-coral-alert" aria-hidden="true">*</span>
-            </span>
-            <input
-              value={form.city}
-              onChange={(event) => updateField("city", event.target.value)}
-              className={inputClass}
-              required
-            />
-          </label>
-          <label className="text-sm">
             <span className="mb-2 block text-ash">Fuseau horaire du commerce</span>
             <select
               value={form.timeZone}
@@ -458,7 +458,7 @@ export function AccountSettingsForm({
               <option value="America/Vancouver">Canada - Pacifique</option>
             </select>
           </label>
-          <label className="text-sm md:col-span-2">
+          <label className="text-sm">
             <span className="mb-2 block text-ash">Adresse</span>
             <input
               value={form.address}
@@ -467,7 +467,7 @@ export function AccountSettingsForm({
             />
           </label>
           <label className="text-sm">
-            <span className="mb-2 block text-ash">Contact principal</span>
+            <span className="mb-2 block text-ash">Prénom/nom du contact principal</span>
             <input
               value={form.contactName}
               onChange={(event) => updateField("contactName", event.target.value)}
@@ -495,7 +495,7 @@ export function AccountSettingsForm({
               className={inputClass}
             />
           </label>
-          <label className="text-sm">
+          <label className={`text-sm ${isBeautyIndustry(form.industry) ? "" : "md:col-span-2"}`}>
             <span className="mb-2 block text-ash">
               Site internet du {isRestaurant ? "restaurant" : placeLabel}
             </span>
@@ -520,9 +520,27 @@ export function AccountSettingsForm({
               <p className="mt-1 text-sm text-ash">Ajoutez les liens que vos participants pourront retrouver après leur participation.</p>
             </div>
             <div className="grid gap-4 md:grid-cols-2">
+            <label className="flex flex-col gap-3 rounded-[12px] border border-fog bg-white p-4 text-sm md:col-span-2">
+              <span className="flex items-center justify-between gap-3 text-charcoal">
+                <span className="flex items-center gap-3"><SocialChannelIcon channel="appointment" /><span className="font-semibold">Lien de prise de rendez-vous</span></span>
+                <span className="text-xs text-ash">Optionnel</span>
+              </span>
+              <input
+                type="url"
+                inputMode="url"
+                maxLength={500}
+                value={form.appointmentUrl}
+                onChange={(event) => updateField("appointmentUrl", event.target.value)}
+                placeholder="https://www.planity.com/..."
+                className={inputClass}
+              />
+              <span className="text-xs leading-5 text-ash">
+                Ajoutez votre lien Planity ou celui de votre outil de réservation. Il est enregistré pour cet établissement.
+              </span>
+            </label>
               <GoogleReviewPlacePicker
               key={`${selectedLocationId}-${form.googleReviewUrl}`}
-              className="h-full"
+              className="md:col-span-2"
               value={form.googleReviewUrl}
               onChange={(nextUrl) => updateField("googleReviewUrl", nextUrl)}
               defaultQuery={form.companyName}
@@ -549,21 +567,6 @@ export function AccountSettingsForm({
                 }));
               }}
             />
-            <label className="text-sm md:col-span-2">
-              <span className="mb-2 block text-charcoal">Lien de prise de rendez-vous</span>
-              <input
-                type="url"
-                inputMode="url"
-                maxLength={500}
-                value={form.appointmentUrl}
-                onChange={(event) => updateField("appointmentUrl", event.target.value)}
-                placeholder="https://www.planity.com/..."
-                className={inputClass}
-              />
-              <span className="mt-2 block text-xs leading-5 text-ash">
-                Ajoutez votre lien Planity ou celui de votre outil de réservation. Il est enregistré pour cet établissement.
-              </span>
-            </label>
           <label className="flex min-h-[152px] flex-col justify-between gap-3 rounded-[12px] border border-fog bg-white p-4 text-sm">
             <span className="flex items-center justify-between gap-3 text-charcoal"><span className="flex items-center gap-3"><SocialChannelIcon channel="instagram" /><span>Instagram</span></span>{form.instagramUrl ? <span className="text-xs font-semibold text-aubergine">✓</span> : <span className="text-xs text-ash">Optionnel</span>}</span>
             <input
