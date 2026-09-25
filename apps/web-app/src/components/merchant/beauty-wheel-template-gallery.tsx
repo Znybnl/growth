@@ -4,6 +4,8 @@ import { RoseFlowerMark, RosePowderDecor } from "@/components/public/rose-powder
 import { textFontFamily } from "@/lib/format";
 import type { GamePageTemplateId } from "@/lib/types";
 
+const roseWheelPreviewBackground = "conic-gradient(from -25.7deg, #fffdfc 0deg 51.4deg, #f3cdd5 51.4deg 102.9deg, #e7aebb 102.9deg 154.3deg, #fffdfc 154.3deg 205.7deg, #f3cdd5 205.7deg 257.1deg, #e7aebb 257.1deg 308.6deg, #fffdfc 308.6deg 360deg)";
+
 export function BeautyWheelTemplateGallery({
   selectedTemplateId,
   merchantName,
@@ -42,9 +44,9 @@ export function BeautyWheelTemplateGallery({
                 <div
                   aria-hidden="true"
                   className={`absolute -bottom-[6.4rem] right-[-1.5rem] h-44 w-44 rounded-full ${theme.id === "beauty-rose" ? "border-[2px]" : "border-[7px] border-white shadow-[0_8px_24px_rgba(0,0,0,.12)]"}`}
-                  style={{ borderColor: theme.id === "beauty-rose" ? "#e7aebb" : undefined, background: theme.id === "beauty-rose" ? "repeating-conic-gradient(from -22deg, #fffdfc 0deg 44.7deg, rgba(185,95,117,.29) 44.7deg 45deg, #f3cdd5 45deg 89.7deg, rgba(185,95,117,.29) 89.7deg 90deg, #e7aebb 90deg 134.7deg, rgba(185,95,117,.29) 134.7deg 135deg)" : `repeating-conic-gradient(from -22deg, ${theme.primary} 0deg 45deg, ${theme.secondary} 45deg 90deg)`, boxShadow: theme.id === "beauty-rose" ? "0 12px 30px rgba(90,45,60,.12), 0 0 0 4px #fffdfc, 0 0 0 5px #e7aebb" : undefined }}
+                  style={{ borderColor: theme.id === "beauty-rose" ? "#e7aebb" : undefined, background: theme.id === "beauty-rose" ? roseWheelPreviewBackground : `repeating-conic-gradient(from -22deg, ${theme.primary} 0deg 45deg, ${theme.secondary} 45deg 90deg)`, boxShadow: theme.id === "beauty-rose" ? "0 12px 30px rgba(90,45,60,.12), 0 0 0 4px #fffdfc, 0 0 0 5px #e7aebb" : undefined }}
                 >
-                  {theme.id === "beauty-rose" ? <svg className="absolute left-1/2 top-[-3px] h-6 w-6 -translate-x-1/2 overflow-visible" viewBox="0 0 48 44" aria-hidden="true"><path d="M24 2C35 2 43 8 43 17C43 27 31 37 24 42C17 37 5 27 5 17C5 8 13 2 24 2Z" fill="#b95f75" stroke="#fffdfc" strokeWidth="2" /></svg> : null}
+                  {theme.id === "beauty-rose" ? <svg className="absolute left-1/2 top-[-3px] h-8 w-6 -translate-x-1/2 overflow-visible" viewBox="0 0 48 64" aria-hidden="true"><path d="M24 2C35 2 43 10 43 22C43 36 31 50 24 62C17 50 5 36 5 22C5 10 13 2 24 2Z" fill="#b95f75" stroke="#fffdfc" strokeWidth="2" /></svg> : null}
                   <span className={`absolute left-1/2 top-1/2 flex ${theme.id === "beauty-rose" ? "h-[62px] w-[62px]" : "h-12 w-12"} -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full ${theme.id === "beauty-rose" ? "text-[10px]" : "text-[8px]"} font-bold ${theme.id === "beauty-rose" ? "border-2 border-[#e7aebb] text-[#b95f75] shadow-[0_2px_7px_rgba(90,45,60,.12)]" : "border-[3px] border-white text-white"}`} style={{ background: theme.id === "beauty-rose" ? "#fffdfc" : theme.primary }}>{theme.id === "beauty-rose" ? <RoseFlowerMark className="h-5 w-5" /> : <Pointer aria-hidden="true" className="h-4 w-4" />}JOUER</span>
                 </div>
               </div>

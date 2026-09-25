@@ -4,6 +4,18 @@ export type WheelVisualSegment = {
   tone: "win" | "lose";
 };
 
+/** Rose poudré shows seven evenly sampled slices; keep the actual result visible. */
+export function rosePowderVisualSegments(segments: WheelVisualSegment[], winningSegmentId: string): WheelVisualSegment[] {
+  if (segments.length <= 7) return segments;
+
+  const visible = Array.from({ length: 7 }, (_, index) => segments[Math.floor(index * segments.length / 7)]);
+  if (visible.some((segment) => segment.id === winningSegmentId)) return visible;
+
+  const winner = segments.find((segment) => segment.id === winningSegmentId);
+  if (winner) visible[3] = winner;
+  return visible;
+}
+
 type WheelPrizeInput = {
   id: string;
   label: string;

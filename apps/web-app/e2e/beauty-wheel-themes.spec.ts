@@ -10,6 +10,17 @@ import {
   isBeautyWheelTemplate,
 } from "../src/lib/beauty-wheel-themes";
 import { parseCampaignSetupInput } from "../src/lib/merchant-input";
+import { rosePowderVisualSegments } from "../src/lib/wheel-segments";
+
+test("Rose poudré affiche sept segments sans masquer le résultat tiré", () => {
+  const segments = Array.from({ length: 10 }, (_, index) => ({ id: `lot-${index}`, label: `LOT ${index}`, tone: "win" as const }));
+  for (const winner of segments) {
+    const visible = rosePowderVisualSegments(segments, winner.id);
+    expect(visible).toHaveLength(7);
+    expect(visible.some((segment) => segment.id === winner.id)).toBe(true);
+  }
+  expect(segments).toHaveLength(10);
+});
 
 test("la collection Beauté contient six thèmes distincts et reste réservée au secteur Beauté", () => {
   expect(BEAUTY_WHEEL_THEMES).toHaveLength(6);
