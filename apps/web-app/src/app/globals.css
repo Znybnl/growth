@@ -1633,8 +1633,8 @@ button:disabled,
   left: -96px;
   width: 310px;
   height: 310px;
-  background: radial-gradient(ellipse at 52% 48%, color-mix(in srgb, var(--rose-accent) 27%, transparent), color-mix(in srgb, var(--rose-accent) 13%, transparent) 56%, transparent 77%);
-  filter: blur(22px);
+  background: radial-gradient(ellipse at 52% 48%, color-mix(in srgb, var(--rose-accent) 35%, transparent), color-mix(in srgb, var(--rose-accent) 17%, transparent) 56%, transparent 77%);
+  filter: blur(18px);
 }
 
 .okado-rose-powder-decor__glow--bottom {
@@ -1643,8 +1643,8 @@ button:disabled,
   width: 340px;
   height: 340px;
   border-radius: 61% 39% 48% 52% / 52% 57% 43% 48%;
-  background: radial-gradient(ellipse at 45% 45%, color-mix(in srgb, var(--rose-accent) 24%, transparent), color-mix(in srgb, var(--rose-accent) 10%, transparent) 60%, transparent 80%);
-  filter: blur(26px);
+  background: radial-gradient(ellipse at 45% 45%, color-mix(in srgb, var(--rose-accent) 30%, transparent), color-mix(in srgb, var(--rose-accent) 13%, transparent) 60%, transparent 80%);
+  filter: blur(22px);
 }
 
 .okado-rose-powder-decor__petal {
