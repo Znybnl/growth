@@ -21,6 +21,7 @@ import { ImmersiveScratchTicket } from "@/components/public/immersive-scratch-ti
 import { ScratchGame } from "@/components/public/scratch-game";
 import { WheelOfFortune } from "@/components/public/wheel-of-fortune";
 import { beautyWheelBackground, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
+import { RosePowderDecor } from "@/components/public/rose-powder-decor";
 import { fluidType } from "@/lib/responsive";
 import { textFontClass, textFontFamily, wheelSubtitleFontFamily } from "@/lib/format";
 import { userBackgroundImageStyle } from "@/lib/campaign-background";
@@ -845,7 +846,7 @@ export function CampaignExperience({
 
   return (
     <div
-      className="okado-public-experience relative min-h-screen overflow-hidden"
+      className={`okado-public-experience relative min-h-screen overflow-hidden ${pageTemplate === "beauty-rose" ? "okado-rose-powder-surface" : ""}`}
       data-template-id={pageTemplate}
       style={{
         backgroundColor: campaign.presentation.background.color,
@@ -863,6 +864,7 @@ export function CampaignExperience({
           Mode prévisualisation — cette participation est simulée et n&apos;affecte ni vos statistiques ni vos stocks.
         </div>
       ) : null}
+      {pageTemplate === "beauty-rose" && campaign.presentation.background.mode !== "image" ? <RosePowderDecor primaryColor={primaryColor} /> : null}
       {isSunburstTemplate || isCosmicTemplate || isScratchVaultTemplate || isScratchConfettiTemplate || isScratchCoralTemplate || isScratchLilacTemplate || isScratchSunburstTemplate ? (
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
           <div

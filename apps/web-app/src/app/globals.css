@@ -1611,6 +1611,74 @@ button:disabled,
   text-wrap: balance;
 }
 
+/* Rose poudré: restrained floral depth, shared by public and merchant views. */
+.okado-rose-powder-surface { isolation: isolate; }
+
+.okado-rose-powder-decor {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.okado-rose-powder-decor__glow {
+  position: absolute;
+  display: block;
+  border-radius: 49% 51% 58% 42% / 54% 44% 56% 46%;
+}
+
+.okado-rose-powder-decor__glow--top {
+  top: -70px;
+  left: -80px;
+  width: 220px;
+  height: 220px;
+  background: color-mix(in srgb, var(--rose-accent) 12%, transparent);
+  filter: blur(24px);
+}
+
+.okado-rose-powder-decor__glow--bottom {
+  right: -90px;
+  bottom: -100px;
+  width: 260px;
+  height: 260px;
+  background: color-mix(in srgb, var(--rose-accent) 8%, transparent);
+  filter: blur(24px);
+}
+
+.okado-rose-powder-decor__petal {
+  position: absolute;
+  display: block;
+  width: 20px;
+  height: 26px;
+  border-radius: 95% 5% 86% 14% / 83% 17% 83% 17%;
+  background: var(--rose-accent);
+  opacity: .15;
+}
+
+.okado-rose-powder-decor__petal--1 { top: 14%; left: 3%; width: 12px; height: 18px; transform: rotate(-25deg); }
+.okado-rose-powder-decor__petal--2 { top: 27%; right: 4%; width: 17px; height: 24px; transform: rotate(41deg); }
+.okado-rose-powder-decor__petal--3 { top: 44%; left: -4px; width: 25px; height: 28px; transform: rotate(68deg); opacity: .12; }
+.okado-rose-powder-decor__petal--4 { top: 55%; right: 1%; width: 12px; height: 18px; transform: rotate(-47deg); }
+.okado-rose-powder-decor__petal--5 { bottom: 25%; left: 5%; width: 19px; height: 23px; transform: rotate(32deg); opacity: .2; }
+.okado-rose-powder-decor__petal--6 { right: 6%; bottom: 17%; width: 26px; height: 28px; transform: rotate(-70deg); opacity: .11; }
+.okado-rose-powder-decor__petal--7 { bottom: 5%; left: 23%; width: 11px; height: 16px; transform: rotate(18deg); }
+
+.okado-public-experience[data-template-id="beauty-rose"] .okado-beauty-heading,
+.okado-preview-surface[data-template-id="beauty-rose"] .okado-beauty-heading {
+  max-width: 19ch;
+  line-height: 1.09;
+  letter-spacing: -.02em;
+  font-weight: 600 !important;
+}
+
+.okado-public-experience[data-template-id="beauty-rose"] .okado-wheel-subtitle,
+.okado-preview-surface[data-template-id="beauty-rose"] .okado-wheel-subtitle {
+  font-family: var(--font-dm-sans), sans-serif !important;
+  font-size: clamp(.94rem, 3.8vw, 1.06rem);
+  font-weight: 400;
+}
+
 .okado-public-experience[data-template-id="beauty-editorial"] .okado-beauty-heading,
 .okado-preview-surface[data-template-id="beauty-editorial"] .okado-beauty-heading {
   max-width: 18ch;

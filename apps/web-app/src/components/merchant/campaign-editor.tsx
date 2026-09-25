@@ -61,6 +61,7 @@ import {
 } from "@/lib/format";
 import { captureClientProductEvent } from "@/lib/client-product-analytics";
 import { beautyWheelBackground, beautyWheelFontOptions, beautyWheelTheme, isBeautyIndustry, isBeautyWheelTemplate, type BeautyWheelTemplateId } from "@/lib/beauty-wheel-themes";
+import { RosePowderDecor } from "@/components/public/rose-powder-decor";
 import {
   createCampaignEmailDefaults,
   normalizeCampaignEmailSettings,
@@ -928,9 +929,10 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
   return (
     <div className={`okado-preview-surface ${flushTop ? "" : "mt-6"}`} data-template-id={preview.gamePageTemplateId}>
       <div
-        className={`mx-auto w-full overflow-hidden border border-[#ced7e6] shadow-[0_30px_70px_rgba(18,24,39,0.18)] ${previewFrameClass}`}
+        className={`mx-auto w-full overflow-hidden border border-[#ced7e6] shadow-[0_30px_70px_rgba(18,24,39,0.18)] ${previewFrameClass} ${preview.gamePageTemplateId === "beauty-rose" ? "okado-rose-powder-surface relative" : ""}`}
         style={preview.backgroundStyle}
       >
+        {preview.gamePageTemplateId === "beauty-rose" && !preview.backgroundStyle.backgroundImage?.includes("url(") ? <RosePowderDecor primaryColor={preview.wheelStyle.loseColor} /> : null}
         {showStandardHeader ? (
           <>
         {preview.logoMode === "image" && preview.logoUrl ? (

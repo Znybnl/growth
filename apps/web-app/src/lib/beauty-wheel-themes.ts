@@ -76,7 +76,12 @@ export function beautyWheelBackground(templateId: BeautyWheelTemplateId, backgro
   const primary = /^#[\da-f]{6}$/i.test(primaryColor) ? primaryColor : beautyWheelTheme(templateId)!.primary;
   switch (templateId) {
     case "beauty-rose":
-      return `radial-gradient(ellipse 75% 33% at -12% 12%, ${translucent(primary, 0.19)}, transparent 76%), radial-gradient(ellipse 76% 38% at 112% 88%, ${translucent(primary, 0.14)}, transparent 78%), linear-gradient(180deg, ${base}, ${base})`;
+      // The two blurred organic forms and petals are rendered by RosePowderDecor.
+      // Keep the exact SFD gradient for the default palette while allowing the
+      // merchant's custom background color to remain effective.
+      return base.toLowerCase() === "#fff7f8"
+        ? "linear-gradient(180deg, #fff9fa 0%, #fff4f6 55%, #fbecef 100%)"
+        : `linear-gradient(180deg, color-mix(in srgb, ${base} 82%, white) 0%, ${base} 55%, color-mix(in srgb, ${base} 88%, ${primary}) 100%)`;
     case "beauty-nude":
       return `radial-gradient(ellipse 70% 30% at 100% 0%, ${translucent(primary, 0.09)}, transparent 78%), linear-gradient(180deg, ${base}, ${base})`;
     case "beauty-botanical":
