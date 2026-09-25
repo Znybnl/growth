@@ -341,6 +341,7 @@ type MerchantRow = {
   logo_text: string;
   logo_url: string | null;
   industry: string | null;
+  industry_subsector?: string | null;
   city: string | null;
   contact_name: string | null;
   phone: string | null;
@@ -445,6 +446,7 @@ function toMerchant(row: MerchantRow): Merchant {
     logoText: row.logo_text,
     logoUrl: row.logo_url ?? undefined,
     industry: row.industry ?? undefined,
+    industrySubsector: row.industry_subsector ?? undefined,
     city: row.city ?? undefined,
     contactName: row.contact_name ?? undefined,
     phone: row.phone ?? undefined,

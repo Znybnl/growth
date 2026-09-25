@@ -1138,6 +1138,7 @@ function updateMerchantOnboardingInMemory(userId: string, input: MerchantOnboard
   merchant.companyName = input.companyName.trim();
   merchant.logoText = input.companyName.trim().slice(0, 2).toUpperCase();
   merchant.industry = input.industry.trim();
+  merchant.industrySubsector = input.industrySubsector?.trim() || undefined;
   merchant.restaurantType = input.restaurantType.trim();
   merchant.city = input.city.trim();
   merchant.address = input.address.trim();
@@ -1200,6 +1201,7 @@ function updateMerchantAccountInMemory(
   merchant.companyName = input.companyName.trim();
   merchant.logoText = input.companyName.trim().slice(0, 2).toUpperCase();
   merchant.industry = input.industry.trim();
+  merchant.industrySubsector = input.industrySubsector?.trim() || undefined;
   merchant.restaurantType = input.restaurantType.trim();
   merchant.city = input.city.trim();
   merchant.address = input.address.trim();

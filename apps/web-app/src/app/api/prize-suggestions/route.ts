@@ -12,7 +12,11 @@ export async function GET(request: NextRequest) {
 
     const requestedIndustry = request.nextUrl.searchParams.get("industry")?.trim();
     const industry = requestedIndustry || session.merchant.industry || "";
-    const suggestions = await getPrizeSuggestions(industry);
+    const requestedSubsector = request.nextUrl.searchParams.get("subsector")?.trim();
+    const industrySubsector = requestedSubsector
+      ?? (industry === session.merchant.industry ? session.merchant.industrySubsector : "")
+      ?? "";
+    const suggestions = await getPrizeSuggestions(industry, false, industrySubsector);
     return NextResponse.json({ suggestions });
   } catch (error) {
     return NextResponse.json(

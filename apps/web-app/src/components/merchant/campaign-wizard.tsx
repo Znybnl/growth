@@ -880,9 +880,9 @@ export function CampaignWizard({
 
   useEffect(() => {
     let cancelled = false;
-    fetch(
-      `/api/prize-suggestions?industry=${encodeURIComponent(merchant.industry ?? "")}`,
-    )
+    const query = new URLSearchParams({ industry: merchant.industry ?? "" });
+    if (merchant.industrySubsector) query.set("subsector", merchant.industrySubsector);
+    fetch(`/api/prize-suggestions?${query.toString()}`)
       .then(async (response) => {
         if (!response.ok) throw new Error("Suggestions indisponibles");
         return (await response.json()) as { suggestions?: PrizeSuggestion[] };
@@ -896,7 +896,7 @@ export function CampaignWizard({
     return () => {
       cancelled = true;
     };
-  }, [merchant.industry]);
+  }, [merchant.industry, merchant.industrySubsector]);
 
   useEffect(() => {
     if (!backgroundLibraryOpen || backgroundLibrary.length) return;

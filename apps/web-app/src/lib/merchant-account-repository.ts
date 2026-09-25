@@ -29,6 +29,7 @@ type MerchantRow = {
   logo_text: string;
   logo_url: string | null;
   industry: string | null;
+  industry_subsector?: string | null;
   restaurant_type: string | null;
   city: string | null;
   address: string | null;
@@ -334,6 +335,7 @@ function toMerchant(row: MerchantRow): Merchant {
     logoText: row.logo_text,
     logoUrl: row.logo_url ?? undefined,
     industry: row.industry ?? undefined,
+    industrySubsector: row.industry_subsector ?? undefined,
     restaurantType: row.restaurant_type ?? undefined,
     city: row.city ?? undefined,
     address: row.address ?? undefined,
@@ -1504,6 +1506,7 @@ export async function updateMerchantOnboardingInSupabase(
       company_name: companyName,
       logo_text: companyName.slice(0, 2).toUpperCase(),
       industry: input.industry.trim(),
+      industry_subsector: input.industrySubsector?.trim() || null,
       restaurant_type: input.restaurantType.trim(),
       city: input.city.trim(),
       address: input.address.trim(),
@@ -1607,6 +1610,7 @@ export async function updateMerchantAccountInSupabase(
       company_name: companyName,
       logo_text: companyName.slice(0, 2).toUpperCase(),
       industry: input.industry.trim(),
+      industry_subsector: input.industrySubsector?.trim() || null,
       restaurant_type: input.restaurantType.trim(),
       city: input.city.trim(),
       address: input.address.trim(),
