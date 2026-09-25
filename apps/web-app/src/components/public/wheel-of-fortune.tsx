@@ -620,7 +620,7 @@ export function WheelOfFortune({
           aria-label={isBeautyTemplate ? (isSpinning ? "La roue tourne" : "Jouer à la roue") : undefined}
           onClick={handleCentralButton}
           disabled={!buttonEnabled || isSpinning || hasSpun}
-          className={`okado-wheel-center-button absolute left-1/2 top-1/2 z-40 flex aspect-square ${isRestaurantPopTemplate ? "w-[21%]" : isRoseInstitutTemplate ? "w-[28%]" : isRosePowderTemplate ? "w-[29%]" : isBeautyTemplate ? "w-[23%]" : "w-[19.2%]"} -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full ${isRestaurantPopTemplate || pageTemplate === "classic" ? "border-0" : isRosePowderTemplate ? "border-[2px]" : isRoseInstitutTemplate || isBeautyTemplate ? "border-[3px]" : "border-[4px]"} text-[19px] font-black uppercase transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-75 ${isRestaurantPopTemplate || isRosePowderTemplate ? "" : "shadow-[0_16px_30px_rgba(15,23,42,0.16)]"}`}
+          className={`okado-wheel-center-button absolute left-1/2 top-1/2 z-40 flex aspect-square ${isRestaurantPopTemplate ? "w-[21%]" : isRoseInstitutTemplate ? "w-[28%]" : isRosePowderTemplate ? "w-[34%]" : isBeautyTemplate ? "w-[23%]" : "w-[19.2%]"} -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full ${isRestaurantPopTemplate || pageTemplate === "classic" ? "border-0" : isRosePowderTemplate ? "border-[2px]" : isRoseInstitutTemplate || isBeautyTemplate ? "border-[3px]" : "border-[4px]"} text-[19px] font-black uppercase transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-75 ${isRestaurantPopTemplate || isRosePowderTemplate ? "" : "shadow-[0_16px_30px_rgba(15,23,42,0.16)]"}`}
           style={{
             background: isRosePowderTemplate ? "#fffdfc" :
               buttonEnabled && !hasSpun
@@ -638,7 +638,7 @@ export function WheelOfFortune({
             boxShadow: isRosePowderTemplate ? "0 4px 12px rgba(90,45,60,.12), 0 0 0 3px rgba(255,253,252,.88)" : isRestaurantPopTemplate ? "none" : isBeautyTemplate ? `0 8px 20px ${withAlpha(colors.loseColor, 0.24)}` : isRoseInstitutTemplate ? "0 8px 18px rgba(11,78,162,0.22)" : undefined,
           }}
         >
-          {isRosePowderTemplate ? <span className="flex flex-col items-center gap-0.5"><RoseFlowerMark className="h-[clamp(19px,6cqw,27px)] w-[clamp(19px,6cqw,27px)]" /><span className="text-[clamp(13px,4cqw,18px)] font-bold tracking-[0.045em]">{isSpinning ? "..." : buttonLabel}</span></span> : isBeautyTemplate ? <span className="flex flex-col items-center gap-0.5"><Pointer aria-hidden="true" className="h-[clamp(20px,7cqw,34px)] w-[clamp(20px,7cqw,34px)]" strokeWidth={2.2} /><span className="text-[clamp(8px,2.6cqw,12px)] tracking-[0.12em]">{isSpinning ? "..." : buttonLabel}</span></span> : isSpinning ? "..." : buttonLabel}
+          {isRosePowderTemplate ? <span className="flex flex-col items-center gap-0.5"><RoseFlowerMark className="h-[clamp(20px,6.4cqw,29px)] w-[clamp(20px,6.4cqw,29px)]" /><span className="text-[clamp(14px,4.2cqw,19px)] font-bold tracking-[0.045em]">{isSpinning ? "..." : buttonLabel}</span></span> : isBeautyTemplate ? <span className="flex flex-col items-center gap-0.5"><Pointer aria-hidden="true" className="h-[clamp(20px,7cqw,34px)] w-[clamp(20px,7cqw,34px)]" strokeWidth={2.2} /><span className="text-[clamp(8px,2.6cqw,12px)] tracking-[0.12em]">{isSpinning ? "..." : buttonLabel}</span></span> : isSpinning ? "..." : buttonLabel}
         </button>
       </div>
     </div>

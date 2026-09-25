@@ -859,7 +859,7 @@ export function CampaignExperience({
       {isPreview ? (
         <div
           role="status"
-          className="sticky top-0 z-50 flex min-h-11 items-center justify-center border-b border-[#d7a91f] bg-[#f4c14a] px-4 py-2 text-center text-xs font-semibold tracking-[0.01em] text-[#111827] shadow-[0_8px_24px_rgba(122,91,0,0.22)] sm:text-sm"
+          className="sticky top-0 z-50 flex min-h-11 items-center justify-center border-b border-[#d7a91f] bg-[#f4c14a] px-4 text-center text-xs font-semibold tracking-[0.01em] text-[#111827] shadow-[0_8px_24px_rgba(122,91,0,0.22)] sm:text-sm"
         >
           Mode prévisualisation — cette participation est simulée et n&apos;affecte ni vos statistiques ni vos stocks.
         </div>

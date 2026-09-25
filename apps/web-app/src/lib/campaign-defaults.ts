@@ -39,6 +39,7 @@ export const MAX_CAMPAIGN_SUBTITLE_LENGTH = 240;
 export const CAMPAIGN_SPACING_MIN_PX = 0;
 export const CAMPAIGN_SPACING_MAX_PX = 80;
 export const DEFAULT_WHEEL_SPACING_PX = 50;
+export const DEFAULT_ROSE_POWDER_WHEEL_SPACING_PX = 25;
 export const DEFAULT_WHEEL_SUBTITLE_SPACING_PX = 5;
 
 export function campaignSubtitleForGameTypeChange(
@@ -67,6 +68,12 @@ export function defaultWheelSubtitleSpacingForTemplate(templateId?: GamePageTemp
   return templateId === "cocorico-wheel" || templateId === "cocorico-duo-wheel"
     ? 30
     : DEFAULT_WHEEL_SUBTITLE_SPACING_PX;
+}
+
+export function defaultWheelBlockSpacingForTemplate(templateId?: GamePageTemplateId) {
+  return templateId === "beauty-rose"
+    ? DEFAULT_ROSE_POWDER_WHEEL_SPACING_PX
+    : DEFAULT_WHEEL_SPACING_PX;
 }
 
 export function scratchTemplateDefaultPrimaryColor(templateId?: GamePageTemplateId) {
