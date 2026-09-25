@@ -1111,7 +1111,7 @@ export function CampaignExperience({
       <button
         type="button"
         onClick={() => setRulesOpen(true)}
-        className="fixed bottom-4 right-4 z-20 rounded-full border border-white/70 bg-white/82 px-4 py-2 text-sm font-semibold text-[#111827] shadow-[0_14px_34px_rgba(17,24,39,0.12)] backdrop-blur"
+        className="okado-rules-button fixed bottom-4 right-4 z-20 rounded-full border border-white/70 bg-white/82 px-4 py-2 text-sm font-semibold text-[#111827] shadow-[0_14px_34px_rgba(17,24,39,0.12)] backdrop-blur"
       >
         Règlement
       </button>
