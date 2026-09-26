@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Pointer } from "lucide-react";
 import { textFontFamily } from "@/lib/format";
 import { beautyWheelLegibleText, beautyWheelTheme, isBeautyWheelTemplate, type BeautyWheelTemplateId } from "@/lib/beauty-wheel-themes";
+import { buildBeautyWheelSegmentColors, limitBeautyWheelSegments } from "@/lib/beauty-wheel-segments";
 
 type WheelSegment = {
   id: string;
@@ -104,32 +105,6 @@ function deriveLighterHex(hex: string, ratio = 0.76) {
     .join("");
 
   return `#${lightened}`;
-}
-
-function beautySegmentColor(
-  templateId: BeautyWheelTemplateId,
-  index: number,
-  primary: string,
-  secondary: string,
-) {
-  const softPrimary = deriveLighterHex(primary, 0.78);
-  const palePrimary = deriveLighterHex(primary, 0.9);
-  const softSecondary = deriveLighterHex(secondary, 0.08);
-
-  switch (templateId) {
-    case "beauty-nude":
-      return [secondary, softPrimary, secondary, palePrimary][index % 4];
-    case "beauty-botanical":
-      return [secondary, softPrimary, secondary, palePrimary][index % 4];
-    case "beauty-pop":
-      return [secondary, softPrimary, palePrimary, secondary, deriveLighterHex(primary, 0.58)][index % 5];
-    case "beauty-editorial":
-      return [secondary, softSecondary, primary, secondary][index % 4];
-    case "beauty-tech":
-      return [secondary, palePrimary, secondary, softPrimary, primary, secondary][index % 6];
-    case "beauty-rose":
-      return index % 2 === 0 ? secondary : primary;
-  }
 }
 
 function withAlpha(hex: string, alpha: number) {
@@ -237,11 +212,13 @@ export function WheelOfFortune({
   const isBeautyTemplate = isBeautyWheelTemplate(pageTemplate);
   const beautyTemplateId = isBeautyWheelTemplate(pageTemplate) ? pageTemplate : undefined;
   const beautyTheme = beautyWheelTheme(pageTemplate);
-  const baseVisualSegments = isRoseInstitutTemplate
-    ? segments.slice(0, 8)
-    : isRestaurantPopTemplate
-      ? segments.slice(0, 10)
-      : segments;
+  const baseVisualSegments = isBeautyTemplate
+    ? limitBeautyWheelSegments(segments, winningSegmentId, pageTemplate === "beauty-rose" ? 8 : 9)
+    : isRoseInstitutTemplate
+      ? segments.slice(0, 8)
+      : isRestaurantPopTemplate
+        ? segments.slice(0, 10)
+        : segments;
   const winningVisualIndex = baseVisualSegments.findIndex(
     (segment) => segment.id === winningSegmentId,
   );
@@ -263,6 +240,14 @@ export function WheelOfFortune({
     loseColor: wheelStyle?.loseColor ?? "#edf2f7",
     alternateLoseColor: wheelStyle?.alternateLoseColor ?? "#e7edf3",
   };
+  const beautySegmentColors = isBeautyTemplate
+    ? buildBeautyWheelSegmentColors(
+        beautyTemplateId!,
+        visualSegments.length,
+        colors.loseColor,
+        colors.alternateLoseColor,
+      )
+    : [];
   const roseGlow = {
     near: withAlpha(colors.loseColor, 0.2),
     far: withAlpha(colors.loseColor, 0.1),
@@ -488,7 +473,7 @@ export function WheelOfFortune({
               }
               // Colors are an aesthetic rhythm, independent from the winning outcome.
               const fillColor = isBeautyTemplate
-                ? beautySegmentColor(beautyTemplateId ?? "beauty-nude", index, colors.loseColor, colors.alternateLoseColor)
+                ? beautySegmentColors[index]
                 : isRestaurantPopTemplate
                 ? index % 2 === 0
                   ? colors.loseColor
@@ -617,7 +602,7 @@ export function WheelOfFortune({
           aria-label={isBeautyTemplate ? (isSpinning ? "La roue tourne" : "Jouer à la roue") : undefined}
           onClick={handleCentralButton}
           disabled={!buttonEnabled || isSpinning || hasSpun}
-          className={`okado-wheel-center-button absolute left-1/2 top-1/2 z-40 flex aspect-square ${isRestaurantPopTemplate ? "w-[21%]" : isRoseInstitutTemplate ? "w-[28%]" : isBeautyTemplate ? pageTemplate === "beauty-rose" ? "w-[23%]" : "w-[26.5%]" : "w-[19.2%]"} -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full ${isRestaurantPopTemplate || pageTemplate === "classic" ? "border-0" : isRoseInstitutTemplate || isBeautyTemplate ? "border-2" : "border-[4px]"} ${isBeautyTemplate && pageTemplate !== "beauty-rose" ? `okado-beauty-wheel-center okado-beauty-wheel-center--${pageTemplate} relative isolate overflow-hidden` : ""} text-[19px] font-black uppercase transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-75 ${isRestaurantPopTemplate ? "font-anton" : "shadow-[0_16px_30px_rgba(15,23,42,0.16)]"}`}
+          className={`okado-wheel-center-button absolute left-1/2 top-1/2 z-40 flex aspect-square ${isRestaurantPopTemplate ? "w-[21%]" : isRoseInstitutTemplate ? "w-[28%]" : isBeautyTemplate ? pageTemplate === "beauty-rose" ? "w-[25%]" : "w-[28.5%]" : "w-[19.2%]"} -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full ${isRestaurantPopTemplate || pageTemplate === "classic" ? "border-0" : isRoseInstitutTemplate || isBeautyTemplate ? "border-2" : "border-[4px]"} ${isBeautyTemplate && pageTemplate !== "beauty-rose" ? `okado-beauty-wheel-center okado-beauty-wheel-center--${pageTemplate} relative isolate overflow-hidden` : ""} text-[19px] font-black uppercase transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-75 ${isRestaurantPopTemplate ? "font-anton" : "shadow-[0_16px_30px_rgba(15,23,42,0.16)]"}`}
           style={{
             background:
               buttonEnabled && !hasSpun
