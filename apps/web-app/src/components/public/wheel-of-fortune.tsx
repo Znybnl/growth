@@ -659,8 +659,8 @@ export function WheelOfFortune({
             style={{
               top: isRoseInstitutTemplate || isBeautyTemplate ? "-1.2%" : "31.2%",
               left: "50%",
-              width: isRestaurantPopTemplate ? "12.4%" : isRoseInstitutTemplate ? "13.2%" : isBeautyTemplate ? pageTemplate === "beauty-editorial" || pageTemplate === "beauty-nude" ? "9.2%" : "11.4%" : "10.3%",
-              height: isRestaurantPopTemplate ? "20.4%" : isRoseInstitutTemplate ? "18.5%" : isBeautyTemplate ? pageTemplate === "beauty-editorial" || pageTemplate === "beauty-nude" ? "14%" : "16%" : "18.9%",
+              width: isRestaurantPopTemplate ? "12.4%" : isRoseInstitutTemplate ? "13.2%" : isBeautyTemplate ? pageTemplate === "beauty-editorial" ? "9.2%" : "11.4%" : "10.3%",
+              height: isRestaurantPopTemplate ? "20.4%" : isRoseInstitutTemplate ? "18.5%" : isBeautyTemplate ? pageTemplate === "beauty-editorial" ? "14%" : "16%" : "18.9%",
               transform: "translateX(-50%)",
               clipPath: isBeautyTemplate ? BEAUTY_POINTER_SHAPES[beautyTemplateId!] : "polygon(50% 0, 84% 14%, 72% 76%, 50% 100%, 28% 76%, 16% 14%)",
               background: isBeautyTemplate ? colors.rimColor : isRestaurantPopTemplate
