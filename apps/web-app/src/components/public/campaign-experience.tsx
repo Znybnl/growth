@@ -825,7 +825,7 @@ export function CampaignExperience({
         : isSunburstTemplate
           ? `radial-gradient(circle at 12% 10%, ${withHexAlpha(primaryColor, "33")} 0 12%, transparent 13%), radial-gradient(circle at 94% 18%, ${withHexAlpha(secondaryColor, "38")} 0 14%, transparent 15%), linear-gradient(180deg, #fffdf5 0%, #fff8e8 56%, #fff2ce 100%)`
         : isRestaurantPopTemplate
-        ? restaurantPopBackground(campaign.presentation.background.color)
+        ? restaurantPopBackground(campaign.presentation.background.color, primaryColor)
         : isClassicTemplate
         ? classicWheelBackground(primaryColor)
         : isRoseInstitutTemplate
@@ -926,11 +926,11 @@ export function CampaignExperience({
             text={safeSubtitle.trim() || DEFAULT_SCRATCH_SUBTITLE}
             fontSize={headingFontSize}
             fontFamily={textFontFamily(campaign.presentation.heading.fontFamily)}
-            fontWeight={isCocoricoTemplate ? undefined : isClassicTemplate ? 750 : 850}
+            fontWeight={isCocoricoTemplate ? undefined : isClassicTemplate ? 850 : 700}
             textColor={isCocoricoTemplate ? undefined : headingTextColor}
             secondaryTextColor={isCocoricoTemplate ? undefined : headingTextColor}
             strokeColor={isCocoricoTemplate ? undefined : resolvePromoStrokeColor(headingTextColor)}
-            strokeWidth={isCocoricoTemplate ? undefined : 5}
+            strokeWidth={isCocoricoTemplate ? undefined : isClassicTemplate ? 1.5 : 0}
             variant={isCocoricoTemplate ? "cocorico" : "inspired"}
             rotate={isCocoricoTemplate}
           /> : <h1

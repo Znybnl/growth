@@ -113,6 +113,7 @@ import {
   isRoseInstitutWheelTemplate,
   wheelBackgroundForTemplate,
   wheelBackgroundForTemplateSelection,
+  wheelHeadingColorForTemplateSelection,
   restaurantPopBackground,
   classicWheelBackground,
   wheelPaletteForTemplate,
@@ -341,13 +342,13 @@ const wheelPageTemplateOptions: Array<{
   },
   {
     value: "classic",
-    title: "Classique",
-    description: "Un rendu sobre, centré sur votre logo, votre message et la roue.",
+    title: "Dynamique",
+    description: "Un fond rayonnant et une grande roue qui déborde pour un jeu spectaculaire.",
   },
   {
     value: "restaurant-pop",
-    title: "Dynamique",
-    description: "Un univers plus événementiel avec formes, contraste et roue façon jeu concours.",
+    title: "Signature",
+    description: "Une composition épurée avec une roue entièrement visible et un halo discret.",
   },
   {
     value: "cosmic-orbit",
@@ -1593,7 +1594,7 @@ export function buildCampaignLivePreviewModel(
     form.presentation.background.mode === "image" && form.presentation.background.imageUrl
       ? userBackgroundImageStyle(form.presentation.background.imageUrl)
       : templateId === "restaurant-pop"
-        ? restaurantPopBackground(form.presentation.background.color)
+        ? restaurantPopBackground(form.presentation.background.color, form.presentation.wheel.loseColor)
         : templateId === "classic"
           ? classicWheelBackground(form.presentation.wheel.loseColor)
         : templateId === "rose-institut"
@@ -1989,7 +1990,7 @@ export function CampaignEditor({
           form.presentation.background.mode === "image" && form.presentation.background.imageUrl
             ? userBackgroundImageStyle(form.presentation.background.imageUrl)
             : (form.presentation.layout.templateId ?? "classic") === "restaurant-pop"
-              ? restaurantPopBackground(form.presentation.background.color)
+              ? restaurantPopBackground(form.presentation.background.color, form.presentation.wheel.loseColor)
             : (form.presentation.layout.templateId ?? "classic") === "classic"
               ? classicWheelBackground(form.presentation.wheel.loseColor)
             : (form.presentation.layout.templateId ?? "classic") === "rose-institut"
@@ -2956,8 +2957,8 @@ export function CampaignEditor({
                           const remembered = wheelTemplateState.current[template.value];
                           const wheel = remembered?.wheel ?? wheelPaletteForTemplate(template.value, current.presentation.wheel);
                           const backgroundColor = remembered?.backgroundColor ?? wheelBackgroundForTemplateSelection(template.value, current.presentation.background.color);
-                          const headingTextColor = remembered?.headingTextColor ?? (template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.heading.textColor);
-                          const logoTextColor = remembered?.logoTextColor ?? (template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.logo.textColor ?? current.presentation.heading.textColor);
+                          const headingTextColor = remembered?.headingTextColor ?? (template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheelHeadingColorForTemplateSelection(template.value, isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.heading.textColor));
+                          const logoTextColor = remembered?.logoTextColor ?? (template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheelHeadingColorForTemplateSelection(template.value, isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.logo.textColor ?? current.presentation.heading.textColor));
                           const buttonBackgroundColor = remembered?.buttonBackgroundColor ?? (template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheel.loseColor);
                           const scratchSignal =
                             remembered?.scratchSignal ??
@@ -2996,7 +2997,7 @@ export function CampaignEditor({
                                     (template.value === "rose-institut"
                                       ? DEFAULT_ROSE_INSTITUT_HEADING_FONT_FAMILY
                                       : isCocoricoWheelTemplate(template.value) || isClassicPopWheelTemplate(template.value)
-                                      ? "fredoka"
+                                      ? template.value === "restaurant-pop" ? "lato" : "fredoka"
                                       : current.presentation.heading.fontFamily),
                                 },
                               logo: {

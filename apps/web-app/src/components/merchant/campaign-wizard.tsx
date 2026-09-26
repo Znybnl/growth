@@ -85,6 +85,7 @@ import {
   scratchTemplateUsesTicketTextColor,
   wheelBackgroundForTemplate,
   wheelBackgroundForTemplateSelection,
+  wheelHeadingColorForTemplateSelection,
   wheelPaletteForTemplate,
 } from "@/lib/campaign-defaults";
 import {
@@ -2376,13 +2377,13 @@ export function CampaignWizard({
                      },
                      {
                        id: "classic",
-                       label: "Classique",
-                       text: "Sobre et lisible",
+                       label: "Dynamique",
+                       text: "Rayonnant et spectaculaire",
                      },
                      {
                        id: "restaurant-pop",
-                       label: "Dynamique",
-                       text: "Événementiel et contrasté",
+                       label: "Signature",
+                       text: "Épuré et raffiné",
                      },
                     {
                       id: "cosmic-orbit",
@@ -2432,8 +2433,8 @@ export function CampaignWizard({
                         const remembered = wheelTemplateState.current[template.id];
                         const wheel = remembered?.wheel ?? wheelPaletteForTemplate(template.id, current.presentation.wheel);
                         const backgroundColor = remembered?.backgroundColor ?? wheelBackgroundForTemplateSelection(template.id, current.presentation.background.color);
-                        const headingTextColor = remembered?.headingTextColor ?? (template.id === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.heading.textColor);
-                        const logoTextColor = remembered?.logoTextColor ?? (template.id === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.logo.textColor ?? current.presentation.heading.textColor);
+                        const headingTextColor = remembered?.headingTextColor ?? (template.id === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheelHeadingColorForTemplateSelection(template.id, isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.heading.textColor));
+                        const logoTextColor = remembered?.logoTextColor ?? (template.id === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheelHeadingColorForTemplateSelection(template.id, isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.logo.textColor ?? current.presentation.heading.textColor));
                         const buttonBackgroundColor = remembered?.buttonBackgroundColor ?? (template.id === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheel.loseColor);
                         const scratchSignal =
                           remembered?.scratchSignal ??
@@ -2472,7 +2473,7 @@ export function CampaignWizard({
                                   (template.id === "rose-institut"
                                     ? DEFAULT_ROSE_INSTITUT_HEADING_FONT_FAMILY
                                     : isCocoricoWheelTemplate(template.id) || isClassicPopWheelTemplate(template.id)
-                                    ? "fredoka"
+                                    ? template.id === "restaurant-pop" ? "lato" : "fredoka"
                                     : current.presentation.heading.fontFamily),
                               },
                             logo: {
@@ -2763,7 +2764,7 @@ export function CampaignWizard({
                    <label className="block">
                      <span className="text-sm font-semibold text-[#182033]">Couleur secondaire</span>
                      <span className="hidden">
-                       Utilisée pour les accents graphiques du template Dynamique.
+                       Utilisée pour les accents graphiques du template Signature.
                      </span>
                      <input
                        type="color"
