@@ -33,6 +33,7 @@ import {
 } from "react";
 
 import { BrandMark } from "@/components/brand-mark";
+import { BeautyWheelDecorations } from "@/components/public/beauty-wheel-decorations";
 import { CocoricoPromoText } from "@/components/public/cocorico-promo-text";
 import { CampaignEmailPreview } from "@/components/merchant/campaign-email-preview";
 import { CampaignPreviewQrDialog } from "@/components/merchant/campaign-preview-qr";
@@ -245,6 +246,7 @@ export type CampaignEditorPreviewModel = {
     backgroundSize: string;
     fontFamily: string;
   };
+  hasCustomBackgroundImage: boolean;
   logoMode: EditorState["logoMode"];
   logoAlignmentClass: string;
   logoBottomSpacingPx: number;
@@ -267,6 +269,7 @@ export type CampaignEditorPreviewModel = {
   gameType: GameType;
   accent: EditorState["accent"];
   wheelStyle: EditorState["presentation"]["wheel"];
+  wheelPrimaryColor: string;
   cocoricoPrimaryColor: string;
   cocoricoSecondaryColor: string;
   buttonStyle: {
@@ -904,6 +907,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
   const isRestaurantPopTemplate = preview.gamePageTemplateId === "restaurant-pop";
   const isRoseInstitutTemplate = isRoseInstitutWheelTemplate(preview.gamePageTemplateId);
   const isBeautyTemplate = isBeautyWheelTemplate(preview.gamePageTemplateId);
+  const isRosePowderTemplate = preview.gamePageTemplateId === "beauty-rose";
   const isCocoricoTemplate = isCocoricoWheelTemplate(preview.gamePageTemplateId);
   const isCocoricoDuoTemplate = preview.gamePageTemplateId === "cocorico-duo-wheel";
   const isCosmicTemplate = preview.gamePageTemplateId === "cosmic-orbit";
@@ -926,16 +930,23 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
       ? "#f8fbff"
       : preview.headingTextColor;
   const previewFrameClass = compact
-      ? "min-h-[480px] max-w-[360px] rounded-[30px] px-3 pb-5 pt-7"
-      : "min-h-[600px] max-w-[450px] rounded-[38px] px-4 pb-6 pt-8";
+      ? "relative isolate min-h-[480px] max-w-[360px] rounded-[30px] px-3 pb-5 pt-7"
+      : "relative isolate min-h-[600px] max-w-[450px] rounded-[38px] px-4 pb-6 pt-8";
 
   return (
     <div className={`okado-preview-surface ${flushTop ? "" : "mt-6"}`} data-template-id={preview.gamePageTemplateId}>
       <div
-        className={`mx-auto w-full overflow-hidden border border-[#ced7e6] shadow-[0_30px_70px_rgba(18,24,39,0.18)] ${previewFrameClass} ${preview.gamePageTemplateId === "beauty-rose" ? "okado-rose-powder-surface relative" : ""}`}
+        className={`mx-auto w-full overflow-hidden border border-[#ced7e6] shadow-[0_30px_70px_rgba(18,24,39,0.18)] ${previewFrameClass} ${isRosePowderTemplate ? "okado-rose-powder-surface relative" : ""}`}
         style={preview.backgroundStyle}
       >
-        {preview.gamePageTemplateId === "beauty-rose" && !preview.backgroundStyle.backgroundImage?.includes("url(") ? <RosePowderDecor primaryColor={preview.wheelStyle.loseColor} /> : null}
+        {isBeautyTemplate && preview.gameType === "wheel" && !preview.hasCustomBackgroundImage ? (
+          isRosePowderTemplate ? (
+            <RosePowderDecor primaryColor={preview.wheelStyle.loseColor} />
+          ) : (
+            <BeautyWheelDecorations templateId={preview.gamePageTemplateId} primaryColor={preview.wheelPrimaryColor} />
+          )
+        ) : null}
+        <div className="relative z-10">
         {showStandardHeader ? (
           <>
         {preview.logoMode === "image" && preview.logoUrl ? (
@@ -968,9 +979,10 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
                 size="lg"
                 variant="transparent"
                 imageWidthPx={scalePreviewValue(preview.logoWidthPx)}
-                textSizePx={scalePreviewValue(preview.logoTextSizePx)}
+                textSizePx={scalePreviewValue(preview.logoTextSizePx) * (isBeautyTemplate ? 0.9 : 1)}
                 textColor={preview.logoTextColor}
                 textClassName="text-2xl"
+                textFontWeight={isBeautyTemplate ? 600 : undefined}
               />
             </div>
           </div>
@@ -988,9 +1000,10 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
                 size="lg"
                 variant="transparent"
                 imageWidthPx={scalePreviewValue(preview.logoWidthPx)}
-                textSizePx={scalePreviewValue(preview.logoTextSizePx)}
+                textSizePx={scalePreviewValue(preview.logoTextSizePx) * (isBeautyTemplate ? 0.9 : 1)}
                 textColor={preview.logoTextColor}
                 textClassName="text-2xl"
+                textFontWeight={isBeautyTemplate ? 600 : undefined}
               />
             </div>
           </div>
@@ -1180,6 +1193,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
             {preview.ctaLabel}
           </button>
         ) : null}
+        </div>
       </div>
     </div>
   );
@@ -1562,7 +1576,9 @@ export function buildCampaignLivePreviewModel(
   const headingFontClass = textFontClass(form.presentation.heading.fontFamily);
   const logoSizePercent = clampCampaignLogoSizePercent(form.presentation.logo.sizePercent);
   const logoWidthPx = Math.round(Math.max(56, Math.min(720, logoSizePercent * 3)));
-  const logoTextSizePx = campaignLogoTextSizePx(logoSizePercent, form.gameType);
+  const logoTextSizePx = Math.round(
+    campaignLogoTextSizePx(logoSizePercent, form.gameType) * (isBeautyWheelTemplate(templateId) ? 0.9 : 1),
+  );
   const backgroundImage =
     form.presentation.background.mode === "image" && form.presentation.background.imageUrl
       ? userBackgroundImageStyle(form.presentation.background.imageUrl)
@@ -1599,6 +1615,7 @@ export function buildCampaignLivePreviewModel(
       backgroundSize: "cover",
       fontFamily: textFontFamily(form.presentation.heading.fontFamily),
     },
+    hasCustomBackgroundImage: form.presentation.background.mode === "image" && Boolean(form.presentation.background.imageUrl),
     logoMode: form.logoMode,
     logoAlignmentClass,
     logoBottomSpacingPx: clampCampaignSpacingPx(form.presentation.logo.marginBottomPx),
@@ -1630,6 +1647,7 @@ export function buildCampaignLivePreviewModel(
     gameType: form.gameType,
     accent: previewAccent,
     wheelStyle: form.presentation.wheel,
+    wheelPrimaryColor: form.presentation.wheel.loseColor,
     cocoricoPrimaryColor: templateId === "cocorico-duo-wheel"
       ? form.presentation.wheel.loseColor
       : resolveCocoricoPrimaryColor(form.presentation.wheel.loseColor),
@@ -1853,7 +1871,9 @@ export function CampaignEditor({
   const logoWidthPx = Math.round(
     Math.max(56, Math.min(720, logoSizePercent * 3)),
   );
-  const logoTextSizePx = campaignLogoTextSizePx(logoSizePercent, form.gameType);
+  const logoTextSizePx = Math.round(
+    campaignLogoTextSizePx(logoSizePercent, form.gameType) * (isBeautyWheelTemplate(form.presentation.layout.templateId) ? 0.9 : 1),
+  );
   const editingPrize = form.prizes.find((prize) => prize.id === editingPrizeConditionsId) ?? null;
 
   const logoAlignmentClass =
@@ -1893,6 +1913,8 @@ export function CampaignEditor({
               ? restaurantPopBackground(form.presentation.background.color)
             : (form.presentation.layout.templateId ?? "classic") === "rose-institut"
               ? roseInstitutWheelBackground(form.presentation.background.color)
+            : isBeautyWheelTemplate(currentTemplateId)
+              ? beautyWheelBackground(currentTemplateId, form.presentation.background.color, form.presentation.wheel.loseColor)
             : isCocoricoWheelTemplate(form.presentation.layout.templateId)
               ? `radial-gradient(circle at 14% 12%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(form.presentation.background.color), 0.32), "e6")} 0 10%, transparent 11%), radial-gradient(circle at 88% 26%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(form.presentation.background.color), 0.12), "b3")} 0 15%, transparent 16%), linear-gradient(160deg, ${resolveCocoricoBackgroundColor(form.presentation.background.color)} 0%, ${resolveCocoricoBackgroundColor(form.presentation.background.color)} 48%, #063d78 100%)`
             : (form.presentation.layout.templateId ?? "classic") === "cosmic-orbit"
@@ -1914,6 +1936,7 @@ export function CampaignEditor({
         backgroundSize: "cover",
         fontFamily: textFontFamily(form.presentation.heading.fontFamily),
       },
+      hasCustomBackgroundImage: form.presentation.background.mode === "image" && Boolean(form.presentation.background.imageUrl),
       logoMode: form.logoMode,
       logoAlignmentClass,
       logoBottomSpacingPx: clampCampaignSpacingPx(form.presentation.logo.marginBottomPx),
@@ -1939,6 +1962,7 @@ export function CampaignEditor({
       gameType: form.gameType,
       accent: previewAccent,
       wheelStyle: form.presentation.wheel,
+      wheelPrimaryColor: form.presentation.wheel.loseColor,
       cocoricoPrimaryColor: currentTemplateId === "cocorico-duo-wheel"
         ? form.presentation.wheel.loseColor
         : resolveCocoricoPrimaryColor(form.presentation.wheel.loseColor),
@@ -2796,7 +2820,6 @@ export function CampaignEditor({
               {form.gameType === "wheel" && isBeautyIndustry(merchant.industry) ? (
                 <BeautyWheelTemplateGallery
                   selectedTemplateId={form.presentation.layout.templateId}
-                  merchantName={merchant.companyName}
                   onSelect={selectBeautyWheelTemplate}
                 />
               ) : null}

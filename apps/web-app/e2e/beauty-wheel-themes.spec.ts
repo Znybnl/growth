@@ -9,8 +9,10 @@ import {
   isBeautyIndustry,
   isBeautyWheelTemplate,
 } from "../src/lib/beauty-wheel-themes";
+import { buildBeautyWheelSegmentColors, limitBeautyWheelSegments } from "../src/lib/beauty-wheel-segments";
 import { parseCampaignSetupInput } from "../src/lib/merchant-input";
 import { rosePowderVisualSegments } from "../src/lib/wheel-segments";
+import { buildWheelVisualSegments } from "../src/lib/wheel-segments";
 
 test("Rose poudré affiche huit segments sans masquer le résultat tiré", () => {
   const segments = Array.from({ length: 10 }, (_, index) => ({ id: `lot-${index}`, label: `LOT ${index}`, tone: "win" as const }));
@@ -71,4 +73,34 @@ test("la validation conserve les couleurs et la police propres à un thème visi
   }, "merchant-test");
   expect(parsed.presentation.layout.wheelTemplateStyles?.["beauty-rose"]).toEqual(remembered);
   expect(Object.keys(parsed.presentation.layout.wheelTemplateStyles ?? {})).toEqual(["beauty-rose"]);
+});
+
+test("les roues Beauté sont plafonnées sans perdre le segment du gain effectivement tiré", () => {
+  const prizes = Array.from({ length: 10 }, (_, index) => ({
+    id: `prize-${index}`,
+    label: `Lot ${index + 1}`,
+    probability: 5,
+  }));
+  const segments = buildWheelVisualSegments(prizes);
+  const capped = limitBeautyWheelSegments(segments, "prize-9", 9);
+  const roseCapped = limitBeautyWheelSegments(segments, "prize-9", 8);
+
+  expect(segments).toHaveLength(11);
+  expect(capped).toHaveLength(9);
+  expect(capped.at(-1)?.id).toBe("prize-9");
+  expect(roseCapped).toHaveLength(8);
+  expect(roseCapped.at(-1)?.id).toBe("prize-9");
+});
+
+test("aucune couleur de segment Beauté ne se répète entre deux voisins, fermeture comprise", () => {
+  for (const theme of BEAUTY_WHEEL_THEMES) {
+    for (const segmentCount of [8, 9]) {
+      const colors = buildBeautyWheelSegmentColors(theme.id, segmentCount, "#ffffff", "#ffffff");
+      expect(colors).toHaveLength(segmentCount);
+      expect(new Set(colors).size).toBeGreaterThanOrEqual(segmentCount === 9 ? 3 : 2);
+      for (let index = 0; index < colors.length; index += 1) {
+        expect(colors[index]).not.toBe(colors[(index + 1) % colors.length]);
+      }
+    }
+  }
 });

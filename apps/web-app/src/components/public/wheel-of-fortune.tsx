@@ -3,8 +3,10 @@
 import { useEffect, useState } from "react";
 import { Pointer } from "lucide-react";
 import { RoseFlowerMark } from "@/components/public/rose-powder-decor";
+import { textFontFamily } from "@/lib/format";
 import { beautyWheelLegibleText, beautyWheelTheme, isBeautyWheelTemplate, type BeautyWheelTemplateId } from "@/lib/beauty-wheel-themes";
 import { rosePowderVisualSegments } from "@/lib/wheel-segments";
+import { buildBeautyWheelSegmentColors, limitBeautyWheelSegments } from "@/lib/beauty-wheel-segments";
 
 type WheelSegment = {
   id: string;
@@ -220,14 +222,17 @@ export function WheelOfFortune({
   const isRoseInstitutTemplate = pageTemplate === "rose-institut";
   const isBeautyTemplate = isBeautyWheelTemplate(pageTemplate);
   const isRosePowderTemplate = pageTemplate === "beauty-rose";
+  const beautyTemplateId = isBeautyWheelTemplate(pageTemplate) ? pageTemplate : undefined;
   const beautyTheme = beautyWheelTheme(pageTemplate);
   const baseVisualSegments = isRosePowderTemplate
     ? rosePowderVisualSegments(segments, winningSegmentId)
-    : isRoseInstitutTemplate
-    ? segments.slice(0, 8)
-    : isRestaurantPopTemplate
-      ? segments.slice(0, 10)
-      : segments;
+    : isBeautyTemplate
+      ? limitBeautyWheelSegments(segments, winningSegmentId, 9)
+      : isRoseInstitutTemplate
+        ? segments.slice(0, 8)
+        : isRestaurantPopTemplate
+          ? segments.slice(0, 10)
+          : segments;
   const winningVisualIndex = baseVisualSegments.findIndex(
     (segment) => segment.id === winningSegmentId,
   );
@@ -249,10 +254,29 @@ export function WheelOfFortune({
     loseColor: wheelStyle?.loseColor ?? "#edf2f7",
     alternateLoseColor: wheelStyle?.alternateLoseColor ?? "#e7edf3",
   };
+  const beautySegmentColors = isBeautyTemplate
+    ? buildBeautyWheelSegmentColors(
+        beautyTemplateId!,
+        visualSegments.length,
+        colors.loseColor,
+        colors.alternateLoseColor,
+      )
+    : [];
   const roseGlow = {
     near: withAlpha(colors.loseColor, 0.2),
     far: withAlpha(colors.loseColor, 0.1),
   };
+  const beautyRimWidth = pageTemplate === "beauty-pop" ? 3 : pageTemplate === "beauty-tech" ? 2.5 : pageTemplate === "beauty-nude" ? 1.5 : 2;
+  const beautyOuterRingColor = pageTemplate === "beauty-editorial" ? "#b99a68" : colors.rimColor;
+  const beautyRingHighlight = pageTemplate === "beauty-tech" ? "rgba(233,224,255,.78)" : "rgba(255,255,255,.9)";
+  const beautyInnerRingColor = pageTemplate === "beauty-editorial" ? "#c5a875" : withAlpha(colors.rimColor, 0.34);
+  const beautyWheelShadow = pageTemplate === "beauty-tech"
+    ? "drop-shadow(0 12px 22px rgba(124,77,255,.15))"
+    : pageTemplate === "beauty-botanical"
+      ? "drop-shadow(0 12px 22px rgba(54,84,61,.13))"
+      : pageTemplate === "beauty-nude" || pageTemplate === "beauty-editorial"
+        ? "drop-shadow(0 12px 22px rgba(88,68,43,.13))"
+        : "drop-shadow(0 12px 22px rgba(102,44,65,.13))";
   const classicLightColor = deriveLighterHex(colors.loseColor);
   const roseAccent = colors.loseColor.toLowerCase() === "#d58a9a" ? "#b95f75" : deriveDarkerHex(colors.loseColor);
   const isDefaultRoseColor = colors.loseColor.toLowerCase() === "#d58a9a";
@@ -360,7 +384,10 @@ export function WheelOfFortune({
               ? ""
             : "drop-shadow-[0_20px_34px_rgba(15,23,42,0.16)]"
         }`}
-        style={{ top: wheelTop }}
+        style={{
+          top: wheelTop,
+          left: pageTemplate === "beauty-editorial" ? "53%" : undefined,
+        }}
       >
         {(isRoseInstitutTemplate || isBeautyTemplate) && !isRosePowderTemplate ? (
           <div
@@ -377,7 +404,10 @@ export function WheelOfFortune({
           className={`absolute inset-0 rounded-full transition-transform duration-[4200ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
             isRoseInstitutTemplate ? "drop-shadow-[0_14px_24px_rgba(11,78,162,0.11)]" : ""
           }`}
-          style={{ transform: `rotate(${rotation}deg)` }}
+          style={{
+            transform: `rotate(${rotation}deg)`,
+            filter: isBeautyTemplate && pageTemplate !== "beauty-rose" ? beautyWheelShadow : undefined,
+          }}
         >
           <svg
             viewBox={`0 0 ${SVG_SIZE} ${SVG_SIZE}`}
@@ -419,8 +449,9 @@ export function WheelOfFortune({
               </>
             ) : isBeautyTemplate ? (
               <>
-                <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 13} fill={beautyTheme?.secondary ?? "#fff"} stroke={colors.rimColor} strokeWidth={pageTemplate === "beauty-pop" ? 8 : pageTemplate === "beauty-tech" ? 6 : 3} />
-                <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 3} fill="none" stroke="rgba(255,255,255,.78)" strokeWidth="3" />
+                <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 13} fill={beautyTheme?.secondary ?? "#fff"} stroke={beautyOuterRingColor} strokeWidth={beautyRimWidth} />
+                <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 9} fill="none" stroke={beautyRingHighlight} strokeWidth={pageTemplate === "beauty-pop" ? "3" : "1.5"} />
+                <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 5} fill="none" stroke={beautyInnerRingColor} strokeWidth="1" />
               </>
             ) : isRoseInstitutTemplate ? (
               <>
@@ -467,7 +498,7 @@ export function WheelOfFortune({
                 const manySegments = visualSegments.length >= 8;
                 textStyles.fontSize = isRosePowderTemplate
                   ? manySegments ? 24 : visualSegments.length >= 6 ? 27 : 30
-                  : manySegments ? 20 : visualSegments.length >= 6 ? 24 : 28;
+                  : manySegments ? 22 : visualSegments.length >= 6 ? 26 : 30;
                 if (labelLines.length >= 3) textStyles.fontSize -= isRosePowderTemplate ? 1 : 2;
                 if (isRosePowderTemplate) {
                   textStyles.lineHeight = textStyles.fontSize * 0.94;
@@ -478,11 +509,7 @@ export function WheelOfFortune({
               const fillColor = isRosePowderTemplate
                 ? index % 3 === 0 ? roseIvory : index % 3 === 1 ? roseLight : roseMedium
                 : isBeautyTemplate
-                ? pageTemplate === "beauty-pop" && index % 4 === 2
-                  ? deriveLighterHex(colors.loseColor, 0.26)
-                  : pageTemplate === "beauty-pop" && index % 4 === 3
-                    ? colors.alternateLoseColor
-                    : index % 2 === 0 ? colors.loseColor : colors.alternateLoseColor
+                  ? beautySegmentColors[index]
                 : isRestaurantPopTemplate
                 ? index % 2 === 0
                   ? colors.loseColor
@@ -506,16 +533,16 @@ export function WheelOfFortune({
                     d={describeSlice(startAngle, endAngle, isRosePowderTemplate ? 62 : INNER_RADIUS)}
                     fill={fillColor}
                     stroke={isRosePowderTemplate ? "rgba(185,95,117,.29)" : "rgba(255,255,255,0.9)"}
-                    strokeWidth={isRosePowderTemplate ? "1.1" : isBeautyTemplate ? pageTemplate === "beauty-pop" ? "4" : "3" : isRoseInstitutTemplate ? "7" : "5"}
+                    strokeWidth={isRosePowderTemplate ? "1.1" : isBeautyTemplate ? pageTemplate === "beauty-pop" ? "2.2" : "1.4" : isRoseInstitutTemplate ? "7" : "5"}
                     strokeLinejoin="round"
                   />
                   <text
                     x={textPoint.x}
                     y={textPoint.y}
                     fill={textColor}
-                    fontFamily={isBeautyTemplate ? "var(--font-dm-sans), sans-serif" : "Roboto, sans-serif"}
+                    fontFamily={isBeautyTemplate && beautyTheme ? textFontFamily(beautyTheme.font) : "Roboto, sans-serif"}
                     fontSize={String(textStyles.fontSize)}
-                    fontWeight={isRosePowderTemplate ? "600" : "850"}
+                    fontWeight={isBeautyTemplate ? "600" : "850"}
                     textAnchor="middle"
                     dominantBaseline="middle"
                     transform={isRosePowderTemplate ? undefined : `rotate(${isBeautyTemplate ? uprightTextAngle : radialTextAngle} ${textPoint.x} ${textPoint.y})`}
@@ -621,7 +648,7 @@ export function WheelOfFortune({
           aria-label={isBeautyTemplate ? (isSpinning ? "La roue tourne" : "Jouer à la roue") : undefined}
           onClick={handleCentralButton}
           disabled={!buttonEnabled || isSpinning || hasSpun}
-          className={`okado-wheel-center-button absolute left-1/2 top-1/2 z-40 flex aspect-square ${isRestaurantPopTemplate ? "w-[21%]" : isRoseInstitutTemplate ? "w-[28%]" : isRosePowderTemplate ? "w-[74px]" : isBeautyTemplate ? "w-[23%]" : "w-[19.2%]"} -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full ${isRestaurantPopTemplate || pageTemplate === "classic" ? "border-0" : isRosePowderTemplate ? "border-2" : isRoseInstitutTemplate || isBeautyTemplate ? "border-[3px]" : "border-[4px]"} text-[19px] font-black uppercase transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-75 ${isRestaurantPopTemplate || isRosePowderTemplate ? "" : "shadow-[0_16px_30px_rgba(15,23,42,0.16)]"}`}
+          className={`okado-wheel-center-button absolute left-1/2 top-1/2 z-40 flex aspect-square ${isRestaurantPopTemplate ? "w-[21%]" : isRoseInstitutTemplate ? "w-[28%]" : isRosePowderTemplate ? "w-[25%]" : isBeautyTemplate ? "w-[28.5%]" : "w-[19.2%]"} -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full ${isRestaurantPopTemplate || pageTemplate === "classic" ? "border-0" : isRosePowderTemplate || isBeautyTemplate ? "border-2" : isRoseInstitutTemplate ? "border-[3px]" : "border-[4px]"} ${isBeautyTemplate && !isRosePowderTemplate ? `okado-beauty-wheel-center okado-beauty-wheel-center--${pageTemplate} relative isolate overflow-hidden` : ""} text-[19px] font-black uppercase transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-75 ${isRestaurantPopTemplate ? "font-anton" : "shadow-[0_16px_30px_rgba(15,23,42,0.16)]"}`}
           style={{
             background: isRosePowderTemplate ? "#fffdfc" :
               buttonEnabled && !hasSpun
@@ -636,7 +663,7 @@ export function WheelOfFortune({
               : isRoseInstitutTemplate
                 ? "clamp(0.92rem, 5.6cqw, 1.8rem)"
               : "clamp(0.84rem, 4.7cqw, 1.55rem)",
-            boxShadow: isRosePowderTemplate ? "0 4px 12px rgba(90,45,60,.10), 0 0 0 3px rgba(255,253,252,.88)" : isRestaurantPopTemplate ? "none" : isBeautyTemplate ? `0 8px 20px ${withAlpha(colors.loseColor, 0.24)}` : isRoseInstitutTemplate ? "0 8px 18px rgba(11,78,162,0.22)" : undefined,
+            boxShadow: isRosePowderTemplate ? "0 4px 12px rgba(90,45,60,.10), 0 0 0 3px rgba(255,253,252,.88)" : isRestaurantPopTemplate ? "none" : isBeautyTemplate ? pageTemplate === "beauty-rose" ? `0 4px 12px ${withAlpha(colors.rimColor, 0.14)}, 0 0 0 2px ${withAlpha(beautyTheme?.secondary ?? "#ffffff", 0.82)}` : `0 6px 16px ${withAlpha(colors.rimColor, 0.2)}, 0 0 0 2px ${withAlpha(beautyTheme?.secondary ?? "#ffffff", 0.88)}` : isRoseInstitutTemplate ? "0 8px 18px rgba(11,78,162,0.22)" : undefined,
           }}
         >
           {isRosePowderTemplate ? (
@@ -647,9 +674,9 @@ export function WheelOfFortune({
               </span>
             </span>
           ) : isBeautyTemplate ? (
-            <span className="flex flex-col items-center gap-0.5">
-              <Pointer aria-hidden="true" className="h-[clamp(20px,7cqw,34px)] w-[clamp(20px,7cqw,34px)]" strokeWidth={2.2} />
-              <span className="text-[clamp(8px,2.6cqw,12px)] tracking-[0.12em]">{isSpinning ? "..." : buttonLabel}</span>
+            <span className={`flex flex-col items-center gap-1 ${pageTemplate !== "beauty-rose" ? "relative z-10" : ""}`}>
+              <Pointer aria-hidden="true" className="h-[clamp(21px,7.2cqw,36px)] w-[clamp(21px,7.2cqw,36px)]" strokeWidth={2.15} />
+              <span className="okado-beauty-wheel-center-label text-[clamp(10px,2.9cqw,14px)] font-semibold tracking-[0.075em]">{isSpinning ? "..." : buttonLabel}</span>
             </span>
           ) : isSpinning ? "..." : buttonLabel}
         </button>

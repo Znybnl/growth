@@ -20,6 +20,7 @@ import { ImmersiveWheel } from "@/components/public/immersive-wheel";
 import { ImmersiveScratchTicket } from "@/components/public/immersive-scratch-ticket";
 import { ScratchGame } from "@/components/public/scratch-game";
 import { WheelOfFortune } from "@/components/public/wheel-of-fortune";
+import { BeautyWheelDecorations } from "@/components/public/beauty-wheel-decorations";
 import { beautyWheelBackground, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
 import { RosePowderDecor } from "@/components/public/rose-powder-decor";
 import { fluidType } from "@/lib/responsive";
@@ -533,7 +534,7 @@ export function CampaignExperience({
   const logoWidthPx = Math.round(
     Math.max(56, Math.min(720, logoSizePercent * 3)),
   );
-  const logoTextSizePx = campaignLogoTextSizePx(logoSizePercent, campaign.gameType);
+  const logoTextSizePx = Math.round(campaignLogoTextSizePx(logoSizePercent, campaign.gameType) * (isBeautyTemplate ? 0.9 : 1));
   const isRosePowderTemplate = pageTemplate === "beauty-rose";
   const safeSubtitle = limitCampaignSubtitleLines(campaign.subtitle);
   const wheelSubtitle = campaign.gameType === "wheel"
@@ -857,6 +858,9 @@ export function CampaignExperience({
         fontFamily: textFontFamily(campaign.presentation.heading.fontFamily),
       }}
     >
+      {isBeautyTemplate && !isRosePowderTemplate && !(campaign.presentation.background.mode === "image" && campaign.presentation.background.imageUrl) ? (
+        <BeautyWheelDecorations templateId={pageTemplate} primaryColor={primaryColor} />
+      ) : null}
       {isPreview ? (
         <div
           role="status"
@@ -881,7 +885,7 @@ export function CampaignExperience({
           />
         </div>
       ) : null}
-      <div className={`relative mx-auto flex ${isBeautyTemplate ? "min-h-[calc(100dvh-44px)]" : isPreview ? "h-[calc(100dvh-44px)] min-h-[560px]" : "h-screen"} w-full flex-col ${isBeautyTemplate ? "overflow-visible pb-8" : "overflow-hidden pb-0"} px-4 sm:px-6 ${pageTopPaddingClass}`}>
+      <div className={`relative z-10 mx-auto flex ${isBeautyTemplate ? "min-h-[calc(100dvh-44px)]" : isPreview ? "h-[calc(100dvh-44px)] min-h-[560px]" : "h-screen"} w-full flex-col ${isBeautyTemplate ? "overflow-visible pb-8" : "overflow-hidden pb-0"} px-4 sm:px-6 ${pageTopPaddingClass}`}>
         {!isImmersiveScratchTemplate && ((campaign.logoMode === "image" && campaign.logoUrl) ||
         campaign.logoMode === "text" ||
         campaign.gameType === "scratch") ? (
