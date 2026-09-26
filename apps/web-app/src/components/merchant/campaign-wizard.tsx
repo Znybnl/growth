@@ -84,6 +84,7 @@ import {
   isCocoricoWheelTemplate,
   scratchTemplateUsesTicketTextColor,
   wheelBackgroundForTemplate,
+  wheelBackgroundForTemplateSelection,
   wheelPaletteForTemplate,
 } from "@/lib/campaign-defaults";
 import {
@@ -2427,7 +2428,7 @@ export function CampaignWizard({
                         };
                         const remembered = wheelTemplateState.current[template.id];
                         const wheel = remembered?.wheel ?? wheelPaletteForTemplate(template.id, current.presentation.wheel);
-                        const backgroundColor = remembered?.backgroundColor ?? wheelBackgroundForTemplate(template.id, current.presentation.background.color);
+                        const backgroundColor = remembered?.backgroundColor ?? wheelBackgroundForTemplateSelection(template.id, current.presentation.background.color);
                         const headingTextColor = remembered?.headingTextColor ?? (template.id === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.heading.textColor);
                         const logoTextColor = remembered?.logoTextColor ?? (template.id === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.logo.textColor ?? current.presentation.heading.textColor);
                         const buttonBackgroundColor = remembered?.buttonBackgroundColor ?? (template.id === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheel.loseColor);

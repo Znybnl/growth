@@ -245,6 +245,15 @@ export function wheelBackgroundForTemplate(
   return currentColor;
 }
 
+/** A first template selection must not inherit the previous template's background. */
+export function wheelBackgroundForTemplateSelection(
+  templateId: GamePageTemplateId,
+  currentColor: string,
+) {
+  if (templateId === "classic") return "#ffffff";
+  return wheelBackgroundForTemplate(templateId, currentColor);
+}
+
 export function roseInstitutWheelBackground(configuredColor: string | undefined) {
   const color = configuredColor?.trim() || DEFAULT_ROSE_INSTITUT_BACKGROUND_COLOR;
   return `radial-gradient(circle at 50% 28%, rgba(255,255,255,0.72) 0 24%, transparent 54%), linear-gradient(180deg, ${color} 0%, ${color} 100%)`;
