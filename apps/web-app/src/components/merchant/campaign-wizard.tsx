@@ -422,7 +422,7 @@ function createWizardDraft(merchant: Merchant): WizardDraft {
     prizes: [
       {
         id: "wizard-prize-1",
-        label: "Une réduction de 10 %",
+        label: "-10% PROCHAINE VISITE",
         totalQuantity: null,
         probability: 50,
         estimatedUnitCost: merchant.defaultPrizeCost ?? 5,
