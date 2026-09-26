@@ -60,7 +60,7 @@
 
 ## Décisions produit confirmées
 
-- Le terme affiché à l'utilisateur est **jeu** ; *campagne* reste un terme technique ou historique lorsqu'il désigne le modèle de données.
+- Une animation créée et pilotée par un marchand est un **jeu**. La rubrique de navigation qui regroupe ces jeux s’intitule **Campagnes** ; *campagne* reste aussi le terme technique/historique du modèle de données.
 - Les actions marketing sont proposées **avant** le jeu et sont séquencées par visite.
 - La collecte d'e-mail est une option indépendante des actions marketing.
 - L'objectif de création sert à initialiser les actions dans le wizard ; il ne doit pas écraser les actions d'un jeu existant.
