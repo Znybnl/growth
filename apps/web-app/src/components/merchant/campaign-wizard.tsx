@@ -52,7 +52,7 @@ import { normalizeCampaignEmailSettings } from "@/lib/email-settings";
 import { captureClientError } from "@/lib/client-observability";
 import { captureClientProductEvent } from "@/lib/client-product-analytics";
 import { postCampaignSetup } from "@/lib/campaign-setup-request";
-import { beautyWheelFontOptions, beautyWheelTheme, isBeautyIndustry, isBeautyWheelTemplate, type BeautyWheelTemplateId } from "@/lib/beauty-wheel-themes";
+import { beautyWheelFontOptions, beautyWheelTheme, isBeautyIndustry, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
 import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
 import {
   createDefaultPosterSettings,
@@ -68,6 +68,7 @@ import {
   DEFAULT_ROSE_INSTITUT_TEXT_COLOR,
   DEFAULT_ROSE_INSTITUT_HEADING_FONT_FAMILY,
   DEFAULT_WHEEL_HEADING_FONT_SIZE_PX,
+  MAX_BEAUTY_WHEEL_TITLE_LINES,
   DEFAULT_WHEEL_SPACING_PX,
   defaultWheelBlockSpacingForTemplate,
   DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
@@ -90,7 +91,6 @@ import {
   CampaignAction,
   CampaignPerformance,
   CampaignSetupInput,
-  CampaignWheelSettings,
   GamePageTemplateId,
   BackgroundLibraryAsset,
   Merchant,
@@ -588,6 +588,9 @@ function draftFromCampaign(merchant: Merchant, performance: CampaignPerformance)
       campaign.gameType === "wheel"
         ? normalizeWheelSubtitle(campaign.subtitle)
         : campaign.subtitle,
+      campaign.gameType === "wheel" && (isBeautyIndustry(merchant.industry) || isBeautyWheelTemplate(templateId))
+        ? MAX_BEAUTY_WHEEL_TITLE_LINES
+        : undefined,
     ),
     goalType: campaign.goalType,
     emailCaptureEnabled:
@@ -1590,14 +1593,21 @@ export function CampaignWizard({
                 <textarea
                   value={draft.subtitle}
                   onChange={(event) =>
-                    patchDraft({ subtitle: limitCampaignSubtitleLines(event.target.value) })
+                    patchDraft({
+                      subtitle: limitCampaignSubtitleLines(
+                        event.target.value,
+                        draft.gameType === "wheel" && (isBeautyIndustry(merchant.industry) || isBeautyWheelTemplate(draft.presentation.layout.templateId))
+                          ? MAX_BEAUTY_WHEEL_TITLE_LINES
+                          : undefined,
+                      ),
+                    })
                   }
-                  rows={3}
+                  rows={draft.gameType === "wheel" && (isBeautyIndustry(merchant.industry) || isBeautyWheelTemplate(draft.presentation.layout.templateId)) ? MAX_BEAUTY_WHEEL_TITLE_LINES : 3}
                   maxLength={MAX_CAMPAIGN_SUBTITLE_LENGTH}
                   className="mt-3 w-full resize-none rounded-[12px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm leading-6 text-[#182033] outline-none transition focus:border-aubergine focus:ring-4 focus:ring-aubergine/15"
                 />
                 <span className="mt-1 block text-xs text-[#8993a6]">
-                  {draft.subtitle.length}/{MAX_CAMPAIGN_SUBTITLE_LENGTH} caractères · 3 lignes maximum pour conserver un rendu lisible sur mobile.
+                  {draft.subtitle.length}/{MAX_CAMPAIGN_SUBTITLE_LENGTH} caractères · {draft.gameType === "wheel" && (isBeautyIndustry(merchant.industry) || isBeautyWheelTemplate(draft.presentation.layout.templateId)) ? `${MAX_BEAUTY_WHEEL_TITLE_LINES} lignes de saisie maximum · la taille reste celle que vous choisissez.` : "3 lignes maximum pour conserver un rendu lisible sur mobile."}
                 </span>
               </label>
               {draft.gameType === "wheel" ? (

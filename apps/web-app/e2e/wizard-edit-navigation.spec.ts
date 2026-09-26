@@ -1,6 +1,22 @@
 import { expect, test } from "@playwright/test";
 import { signIn as cachedSignIn } from "./auth-session";
 
+async function removeE2ECampaigns(page: Parameters<typeof cachedSignIn>[0], titlePrefix: string) {
+  await page.goto(`/campaigns?q=${encodeURIComponent(titlePrefix)}`);
+  const campaignCards = page.locator(".okado-table-row:visible, .okado-mobile-table-row:visible").filter({ hasText: titlePrefix });
+
+  while (await campaignCards.count()) {
+    const previousCount = await campaignCards.count();
+    const campaignCard = campaignCards.first();
+    await campaignCard.getByRole("button", { name: "Ouvrir les actions de la campagne" }).click();
+    await page.getByRole("menuitem", { name: "Supprimer", exact: true }).click();
+    await page.getByRole("dialog", { name: "Supprimer ce jeu ?" })
+      .getByRole("button", { name: "Supprimer définitivement" })
+      .click({ force: true });
+    await expect.poll(() => campaignCards.count(), { timeout: 15_000 }).toBeLessThan(previousCount);
+  }
+}
+
 test.describe("Navigation du Wizard en modification", () => {
   test("un marchand peut ouvrir chaque étape d’un jeu existant", async ({ page }) => {
     await cachedSignIn(page);
@@ -53,14 +69,6 @@ test.describe("Navigation du Wizard en modification", () => {
       await expect(page.getByRole("button", { name: step.button })).toBeEnabled();
     }
 
-    await page.goto(`/campaigns?q=${encodeURIComponent(title)}`);
-    const campaignCard = page.locator(".okado-table-row:visible, .okado-mobile-table-row:visible").filter({ hasText: title });
-    await expect(campaignCard).toBeVisible({ timeout: 15_000 });
-    await campaignCard.getByRole("button", { name: "Ouvrir les actions de la campagne" }).click();
-    await page.getByRole("menuitem", { name: "Supprimer", exact: true }).click();
-    await page.getByRole("dialog", { name: "Supprimer ce jeu ?" })
-      .getByRole("button", { name: "Supprimer définitivement" })
-      .click({ force: true });
-    await expect(campaignCard).toBeHidden({ timeout: 15_000 });
+    await removeE2ECampaigns(page, title);
   });
 });

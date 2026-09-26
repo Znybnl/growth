@@ -32,6 +32,7 @@ import {
   clampCampaignSpacingPx,
   defaultWheelSubtitleSpacingForTemplate,
   DEFAULT_SCRATCH_SUBTITLE,
+  MAX_BEAUTY_WHEEL_TITLE_LINES,
   limitCampaignSubtitleLines,
   resolveScratchAccent,
   resolveCocoricoPrimaryColor,
@@ -536,7 +537,10 @@ export function CampaignExperience({
   );
   const logoTextSizePx = Math.round(campaignLogoTextSizePx(logoSizePercent, campaign.gameType) * (isBeautyTemplate || isRoseInstitutTemplate ? 0.9 : 1));
   const isRosePowderTemplate = pageTemplate === "beauty-rose";
-  const safeSubtitle = limitCampaignSubtitleLines(campaign.subtitle);
+  const safeSubtitle = limitCampaignSubtitleLines(
+    campaign.subtitle,
+    campaign.gameType === "wheel" && isBeautyTemplate ? MAX_BEAUTY_WHEEL_TITLE_LINES : undefined,
+  );
   const wheelSubtitle = campaign.gameType === "wheel"
     ? limitCampaignSubtitleLines(campaign.presentation.layout.wheelSubtitle ?? "")
     : "";
@@ -830,11 +834,13 @@ export function CampaignExperience({
         : `radial-gradient(circle at 50% 50%, ${withHexAlpha(primaryColor, "33")}, transparent 50%), linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.08))`;
   const restaurantPopHeadingLines = buildRestaurantPopHeadingLines(safeSubtitle);
 
-  const headingFontSize = fluidType(campaign.presentation.heading.fontSizePx, {
-    minRatio: 0.82,
-    maxRatio: 1.08,
-    viewportStep: 0.3,
-  });
+  const headingFontSize = isBeautyTemplate
+    ? `${campaign.presentation.heading.fontSizePx}px`
+    : fluidType(campaign.presentation.heading.fontSizePx, {
+        minRatio: 0.82,
+        maxRatio: 1.08,
+        viewportStep: 0.3,
+      });
   const buttonFontSize = fluidType(campaign.presentation.button.textSizePx, {
     minRatio: 0.86,
     maxRatio: 1.08,
@@ -925,7 +931,7 @@ export function CampaignExperience({
             variant={isCocoricoTemplate ? "cocorico" : "inspired"}
             rotate={isCocoricoTemplate}
           /> : <h1
-            className={`${headingFontClass} line-clamp-3 whitespace-pre-line text-[#151826] ${isBeautyTemplate ? "okado-beauty-heading" : "leading-[1]"} ${isRoseInstitutTemplate ? "max-h-[3.3em] overflow-hidden" : ""}`}
+            className={`${headingFontClass} ${isBeautyTemplate ? "okado-beauty-heading" : "line-clamp-3 leading-[1]"} whitespace-pre-line text-[#151826] ${isRoseInstitutTemplate ? "max-h-[3.3em] overflow-hidden" : ""}`}
             style={{ color: headingTextColor, fontSize: headingFontSize, fontWeight: isRoseInstitutTemplate || pageTemplate === "beauty-pop" ? 800 : campaign.presentation.heading.fontWeight ?? 600 }}
           >
             {isRestaurantPopTemplate

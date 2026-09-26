@@ -35,6 +35,7 @@ export const DEFAULT_SCRATCH_LILAC_COLOR = "#b85be5";
 export const DEFAULT_SCRATCH_TICKET_COLOR = "#f7f7f7";
 export const DEFAULT_SCRATCH_TEXT_COLOR = "#ffffff";
 export const MAX_CAMPAIGN_SUBTITLE_LINES = 3;
+export const MAX_BEAUTY_WHEEL_TITLE_LINES = 5;
 export const MAX_CAMPAIGN_SUBTITLE_LENGTH = 240;
 export const CAMPAIGN_SPACING_MIN_PX = 0;
 export const CAMPAIGN_SPACING_MAX_PX = 80;
@@ -285,11 +286,11 @@ export function scratchTemplatePrimaryColor(
 }
 
 /** Keep the player-facing promise readable in the phone-sized game surface. */
-export function limitCampaignSubtitleLines(value: string) {
+export function limitCampaignSubtitleLines(value: string, maxLines = MAX_CAMPAIGN_SUBTITLE_LINES) {
   return value
     .replace(/\r\n/g, "\n")
     .split("\n")
-    .slice(0, MAX_CAMPAIGN_SUBTITLE_LINES)
+    .slice(0, Math.max(1, Math.floor(maxLines)))
     .join("\n")
     .slice(0, MAX_CAMPAIGN_SUBTITLE_LENGTH);
 }

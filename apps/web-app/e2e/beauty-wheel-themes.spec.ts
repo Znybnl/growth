@@ -14,6 +14,7 @@ import { DEFAULT_ROSE_INSTITUT_HEADING_FONT_FAMILY } from "../src/lib/campaign-d
 import { parseCampaignSetupInput } from "../src/lib/merchant-input";
 import { rosePowderVisualSegments } from "../src/lib/wheel-segments";
 import { buildWheelVisualSegments } from "../src/lib/wheel-segments";
+import { limitCampaignSubtitleLines, MAX_BEAUTY_WHEEL_TITLE_LINES } from "../src/lib/campaign-defaults";
 
 test("Rose poudré affiche huit segments sans masquer le résultat tiré", () => {
   const segments = Array.from({ length: 10 }, (_, index) => ({ id: `lot-${index}`, label: `LOT ${index}`, tone: "win" as const }));
@@ -108,4 +109,48 @@ test("aucune couleur de segment Beauté ne se répète entre deux voisins, ferme
       }
     }
   }
+});
+
+test("les palettes par défaut des roues Beauté restent limitées à trois tons, quatre pour Beauty Pop", () => {
+  for (const theme of BEAUTY_WHEEL_THEMES) {
+    const colors = buildBeautyWheelSegmentColors(theme.id, 9, theme.primary, theme.secondary);
+    const maximumTones = theme.id === "beauty-pop" ? 4 : 3;
+
+    expect(new Set(colors).size, `${theme.id}: ${colors.join(", ")}`).toBeLessThanOrEqual(maximumTones);
+    for (let index = 0; index < colors.length; index += 1) {
+      expect(colors[index]).not.toBe(colors[(index + 1) % colors.length]);
+    }
+  }
+});
+
+test("les tons ivoire et blanc ne se retrouvent pas côte à côte, même à la fermeture de la roue", () => {
+  const isLightNeutral = (hex: string) => {
+    const channels = [0, 2, 4].map((offset) => Number.parseInt(hex.slice(offset + 1, offset + 3), 16) / 255);
+    const brightness = channels[0] * 0.2126 + channels[1] * 0.7152 + channels[2] * 0.0722;
+    return brightness >= 0.86 && Math.max(...channels) - Math.min(...channels) <= 0.07;
+  };
+
+  for (const theme of BEAUTY_WHEEL_THEMES) {
+    for (const [primary, secondary] of [
+      [theme.primary, theme.secondary],
+      ["#ffffff", "#ffffff"],
+      ["#f4f0e8", "#f5f1ea"],
+    ]) {
+      const colors = buildBeautyWheelSegmentColors(theme.id, 9, primary, secondary);
+      for (let index = 0; index < colors.length; index += 1) {
+        const next = colors[(index + 1) % colors.length];
+        expect(colors[index]).not.toBe(next);
+        expect(isLightNeutral(colors[index]) && isLightNeutral(next)).toBe(false);
+      }
+    }
+  }
+});
+
+test("le titre Beauté peut être saisi sur cinq lignes sans toucher à la limite standard", () => {
+  const fiveLines = "Ligne 1\nLigne 2\nLigne 3\nLigne 4\nLigne 5\nLigne 6";
+
+  expect(limitCampaignSubtitleLines(fiveLines, MAX_BEAUTY_WHEEL_TITLE_LINES)).toBe(
+    "Ligne 1\nLigne 2\nLigne 3\nLigne 4\nLigne 5",
+  );
+  expect(limitCampaignSubtitleLines(fiveLines)).toBe("Ligne 1\nLigne 2\nLigne 3");
 });

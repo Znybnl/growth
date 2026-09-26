@@ -64,7 +64,7 @@ import {
 } from "@/lib/format";
 import { captureClientProductEvent } from "@/lib/client-product-analytics";
 import { postCampaignSetup } from "@/lib/campaign-setup-request";
-import { beautyWheelBackground, beautyWheelFontOptions, beautyWheelTheme, isBeautyIndustry, isBeautyWheelTemplate, type BeautyWheelTemplateId } from "@/lib/beauty-wheel-themes";
+import { beautyWheelBackground, beautyWheelFontOptions, beautyWheelTheme, isBeautyIndustry, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
 import { RosePowderDecor } from "@/components/public/rose-powder-decor";
 import {
   createCampaignEmailDefaults,
@@ -96,6 +96,7 @@ import {
   resolveCocoricoPrimaryColor,
   resolveCocoricoBackgroundColor,
   DEFAULT_WHEEL_SUBTITLE,
+  MAX_BEAUTY_WHEEL_TITLE_LINES,
   MAX_CAMPAIGN_SUBTITLE_LENGTH,
   campaignLogoTextSizePx,
   clampCampaignLogoSizePercent,
@@ -924,6 +925,13 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
   const previewScale = compact ? 0.8 : 1;
   const previewHeadingScale = compact ? 0.65 : 1;
   const scalePreviewValue = (value: number) => Math.round(value * previewScale);
+  const previewHeadingFontSize = isBeautyTemplate
+    ? `${Math.round(preview.headingFontSizePx * previewHeadingScale)}px`
+    : fluidType(Math.round(preview.headingFontSizePx * previewHeadingScale), {
+        minRatio: 0.82,
+        maxRatio: 1.08,
+        viewportStep: 0.3,
+      });
   const previewHeadingTextColor =
     isCosmicTemplate ||
     isCocoricoTemplate ||
@@ -1035,14 +1043,10 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
             />
           ) : (
             <h3
-              className={`${preview.headingFontClass} line-clamp-3 whitespace-pre-line ${isBeautyTemplate ? "okado-beauty-heading" : "leading-[1]"} ${isRoseInstitutTemplate ? "max-h-[3.3em] overflow-hidden" : ""}`}
+              className={`${preview.headingFontClass} ${isBeautyTemplate ? "okado-beauty-heading" : "line-clamp-3 leading-[1]"} whitespace-pre-line ${isRoseInstitutTemplate ? "max-h-[3.3em] overflow-hidden" : ""}`}
               style={{
                 color: previewHeadingTextColor,
-                fontSize: fluidType(Math.round(preview.headingFontSizePx * previewHeadingScale), {
-                  minRatio: 0.82,
-                  maxRatio: 1.08,
-                  viewportStep: 0.3,
-                }),
+                fontSize: previewHeadingFontSize,
                 fontWeight: preview.gamePageTemplateId === "beauty-pop" ? 800 : preview.headingFontWeight,
               }}
             >
@@ -1440,6 +1444,9 @@ function toEditorState(merchant: Merchant, campaign: CampaignPerformance | null)
       campaign.campaign.gameType === "wheel"
         ? normalizeWheelSubtitle(campaign.campaign.subtitle)
         : campaign.campaign.subtitle,
+      campaign.campaign.gameType === "wheel" && isBeautyWheelTemplate(templateId)
+        ? MAX_BEAUTY_WHEEL_TITLE_LINES
+        : undefined,
     ),
     emailCaptureEnabled: campaign.campaign.emailCaptureEnabled,
     gameType: campaign.campaign.gameType,
@@ -1637,7 +1644,12 @@ export function buildCampaignLivePreviewModel(
           : form.presentation.heading.textColor,
     headingFontSizePx: form.presentation.heading.fontSizePx,
     headingFontWeight: form.presentation.heading.fontWeight ?? 600,
-    subtitle: limitCampaignSubtitleLines(form.subtitle),
+    subtitle: limitCampaignSubtitleLines(
+      form.subtitle,
+      form.gameType === "wheel" && isBeautyWheelTemplate(templateId)
+        ? MAX_BEAUTY_WHEEL_TITLE_LINES
+        : undefined,
+    ),
     wheelSubtitle: limitCampaignSubtitleLines(form.presentation.layout.wheelSubtitle ?? ""),
     blockSpacingPx: clampCampaignSpacingPx(form.presentation.layout.blockSpacingPx),
     subtitleSpacingPx: clampCampaignSpacingPx(
@@ -2012,7 +2024,12 @@ export function CampaignEditor({
       headingTextColor: form.presentation.heading.textColor,
       headingFontSizePx: form.presentation.heading.fontSizePx,
       headingFontWeight: isCocoricoWheelTemplate(currentTemplateId) ? 900 : form.presentation.heading.fontWeight ?? 600,
-      subtitle: limitCampaignSubtitleLines(form.subtitle),
+      subtitle: limitCampaignSubtitleLines(
+        form.subtitle,
+        form.gameType === "wheel" && isBeautyWheelTemplate(currentTemplateId)
+          ? MAX_BEAUTY_WHEEL_TITLE_LINES
+          : undefined,
+      ),
       wheelSubtitle: limitCampaignSubtitleLines(form.presentation.layout.wheelSubtitle ?? ""),
       blockSpacingPx: clampCampaignSpacingPx(form.presentation.layout.blockSpacingPx),
       subtitleSpacingPx: clampCampaignSpacingPx(
@@ -3268,13 +3285,21 @@ export function CampaignEditor({
                 <span className="mb-2 block text-[#616b7c]">Phrase affichée sur la page de jeu</span>
                 <textarea
                   value={form.subtitle}
-                  onChange={(event) => setField("subtitle", limitCampaignSubtitleLines(event.target.value))}
-                  rows={3}
+                  onChange={(event) => setField(
+                    "subtitle",
+                    limitCampaignSubtitleLines(
+                      event.target.value,
+                      form.gameType === "wheel" && isBeautyWheelTemplate(form.presentation.layout.templateId)
+                        ? MAX_BEAUTY_WHEEL_TITLE_LINES
+                        : undefined,
+                    ),
+                  )}
+                  rows={form.gameType === "wheel" && isBeautyWheelTemplate(form.presentation.layout.templateId) ? MAX_BEAUTY_WHEEL_TITLE_LINES : 3}
                   maxLength={MAX_CAMPAIGN_SUBTITLE_LENGTH}
                   className="w-full rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
                 />
                 <span className="mt-1 block text-xs text-[#8993a6]">
-                  {form.subtitle.length}/{MAX_CAMPAIGN_SUBTITLE_LENGTH} caractères · 3 lignes maximum pour conserver un rendu lisible sur mobile.
+                  {form.subtitle.length}/{MAX_CAMPAIGN_SUBTITLE_LENGTH} caractères · {form.gameType === "wheel" && isBeautyWheelTemplate(form.presentation.layout.templateId) ? `${MAX_BEAUTY_WHEEL_TITLE_LINES} lignes de saisie maximum · la taille reste celle que vous choisissez.` : "3 lignes maximum pour conserver un rendu lisible sur mobile."}
                 </span>
               </label>
 

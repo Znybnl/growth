@@ -1,31 +1,13 @@
 import { BEAUTY_WHEEL_THEMES, beautyWheelBackground } from "@/lib/beauty-wheel-themes";
+import { buildBeautyWheelSegmentColors } from "@/lib/beauty-wheel-segments";
 import { Pointer } from "lucide-react";
 import { textFontFamily } from "@/lib/format";
 import type { GamePageTemplateId } from "@/lib/types";
 
 type BeautyTheme = (typeof BEAUTY_WHEEL_THEMES)[number];
 
-function thumbnailSegmentColors(theme: BeautyTheme) {
-  const softPrimary = `color-mix(in srgb, ${theme.primary} 28%, white)`;
-  const palePrimary = `color-mix(in srgb, ${theme.primary} 14%, white)`;
-
-  switch (theme.id) {
-    case "beauty-rose":
-      return [theme.secondary, "#f3cdd5", "#e7aebb", theme.secondary, "#f3cdd5", "#d58a9a", theme.secondary, "#e7aebb"];
-    case "beauty-pop":
-      return [theme.secondary, softPrimary, theme.secondary, theme.primary, palePrimary, theme.secondary, softPrimary, theme.primary];
-    case "beauty-editorial":
-      return [theme.secondary, "#fbf8f2", theme.primary, theme.secondary, "#fbf8f2", theme.primary, theme.secondary, "#fbf8f2"];
-    case "beauty-tech":
-      return [theme.secondary, softPrimary, "#34244e", theme.secondary, theme.primary, "#e7ddff", theme.secondary, "#34244e"];
-    case "beauty-nude":
-    case "beauty-botanical":
-      return [theme.secondary, softPrimary, theme.secondary, palePrimary, softPrimary, theme.secondary, palePrimary, theme.secondary];
-  }
-}
-
 function BeautyWheelThumbnail({ theme }: { theme: BeautyTheme }) {
-  const colors = thumbnailSegmentColors(theme);
+  const colors = buildBeautyWheelSegmentColors(theme.id, 8, theme.primary, theme.secondary);
   const wedgeStops = colors
     .map((color, index) => `${color} ${index * 45}deg ${(index + 1) * 45}deg`)
     .join(", ");
@@ -43,7 +25,7 @@ function BeautyWheelThumbnail({ theme }: { theme: BeautyTheme }) {
         style={{ backgroundImage: `repeating-conic-gradient(from -22.5deg, transparent 0deg 44deg, rgba(255,255,255,.88) 44deg 45deg), conic-gradient(from -22.5deg, ${wedgeStops})` }}
       >
         <div
-          className="absolute left-1/2 top-1/2 flex size-[2.55rem] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full border-2 text-[6px] font-semibold tracking-[0.04em]"
+          className="absolute left-1/2 top-1/2 flex size-[2.7rem] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full border-2 text-[6px] font-semibold tracking-[0.04em]"
           style={{ backgroundColor: theme.primary, borderColor: ringColor, color: centerTextColor, boxShadow: `0 2px 6px color-mix(in srgb, ${theme.primary} 25%, transparent)` }}
         >
           {theme.id === "beauty-rose" ? (

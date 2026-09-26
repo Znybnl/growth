@@ -1667,10 +1667,7 @@ button:disabled,
 
 .okado-public-experience[data-template-id="beauty-rose"] .okado-beauty-heading,
 .okado-preview-surface[data-template-id="beauty-rose"] .okado-beauty-heading {
-  display: block;
   max-width: 19ch;
-  overflow: visible;
-  -webkit-line-clamp: unset;
   line-height: 1.06;
   letter-spacing: -.02em;
   font-weight: 600 !important;

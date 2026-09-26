@@ -19,28 +19,41 @@ function uniqueColors(colors: string[]) {
   return [...new Set(colors.map((color) => color.toLowerCase()))];
 }
 
+function isLightNeutral(color: string) {
+  const channels = [0, 2, 4].map((offset) => Number.parseInt(color.slice(offset + 1, offset + 3), 16) / 255);
+  const brightness = channels[0] * 0.2126 + channels[1] * 0.7152 + channels[2] * 0.0722;
+  const saturation = Math.max(...channels) - Math.min(...channels);
+  return brightness >= 0.86 && saturation <= 0.07;
+}
+
+function colorsConflict(first: string, second: string) {
+  return first === second || (isLightNeutral(first) && isLightNeutral(second));
+}
+
 function preferredBeautySegmentColor(
   templateId: BeautyWheelTemplateId,
   index: number,
   primary: string,
   secondary: string,
 ) {
-  const softPrimary = mixHex(primary, "#ffffff", 0.78);
-  const palePrimary = mixHex(primary, "#ffffff", 0.9);
-  const softSecondary = mixHex(secondary, "#ffffff", 0.08);
-
   switch (templateId) {
     case "beauty-nude":
+      return [secondary, mixHex(primary, "#ffffff", 0.72), mixHex(primary, "#ffffff", 0.48)][index % 3];
     case "beauty-botanical":
-      return [secondary, softPrimary, secondary, palePrimary][index % 4];
+      return [secondary, mixHex(primary, "#ffffff", 0.5), mixHex(primary, "#ffffff", 0.12)][index % 3];
     case "beauty-pop":
-      return [secondary, softPrimary, palePrimary, secondary, mixHex(primary, "#ffffff", 0.58)][index % 5];
+      return [
+        secondary,
+        mixHex(primary, "#ffffff", 0.4),
+        mixHex("#ff735b", "#ffffff", 0.32),
+        mixHex("#ffd76a", "#ffffff", 0.28),
+      ][index % 4];
     case "beauty-editorial":
-      return [secondary, softSecondary, primary, secondary][index % 4];
+      return [secondary, mixHex("#c4a879", "#ffffff", 0.45), primary][index % 3];
     case "beauty-tech":
-      return [secondary, palePrimary, secondary, softPrimary, primary, secondary][index % 6];
+      return [secondary, mixHex(primary, secondary, 0.55), mixHex(primary, "#ffffff", 0.58)][index % 3];
     case "beauty-rose":
-      return index % 2 === 0 ? secondary : primary;
+      return [secondary, mixHex(primary, "#ffffff", 0.67), mixHex(primary, "#ffffff", 0.4)][index % 3];
   }
 }
 
@@ -61,7 +74,7 @@ export function limitBeautyWheelSegments(
   return [...visibleSegments.slice(0, cap - 1), winningSegment];
 }
 
-/** Produces a deterministic palette with no equal colors on adjacent sectors, including the wheel seam. */
+/** Produces a deterministic palette with no repeated or visually adjacent light-neutral sectors, including the wheel seam. */
 export function buildBeautyWheelSegmentColors(
   templateId: BeautyWheelTemplateId,
   segmentCount: number,
@@ -95,13 +108,13 @@ export function buildBeautyWheelSegmentColors(
 
   for (let index = 0; index < segmentCount; index += 1) {
     const preferred = themePalette[index];
-    const forbidden = new Set<string>();
-    if (result.length) forbidden.add(result[result.length - 1]);
-    if (index === segmentCount - 1 && segmentCount > 1) forbidden.add(result[0]);
+    const conflictsWithNeighbors = (color: string) =>
+      (result.length > 0 && colorsConflict(color, result[result.length - 1])) ||
+      (index === segmentCount - 1 && segmentCount > 1 && colorsConflict(color, result[0]));
 
-    const selected = !forbidden.has(preferred)
+    const selected = !conflictsWithNeighbors(preferred)
       ? preferred
-      : palette.find((color) => !forbidden.has(color));
+      : palette.find((color) => !conflictsWithNeighbors(color));
 
     result.push(selected ?? preferred);
   }
