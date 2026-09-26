@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart3, BookOpen, BriefcaseBusiness, CircleDollarSign, Gamepad2, Gauge, HandCoins, LayoutDashboard, Settings2, Star, UserRound } from "lucide-react";
+import { BarChart3, CircleDollarSign, Gamepad2, LayoutDashboard, Star, UserRound } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { APP_NAME_CAPITALIZED } from "@/lib/branding";
 import { getMerchantBillingSummary } from "@/lib/billing";
 import { identifyMerchantForAnalytics } from "@/lib/client-product-analytics";
+import { getPlatformAdminNavigationItems } from "@/lib/platform-admin-navigation";
 import { Merchant, MerchantLocationAccess, MerchantUser } from "@/lib/types";
 
 type MerchantShellProps = {
@@ -37,16 +38,9 @@ const navItems: Array<{ href: string; label: string; icon: LucideIcon }> = [
 // successful mutation when the merchant navigates back to the page.
 const prefetchedNavRoutes = new Set<string>();
 
-const adminNavItems: Array<{ href: string; label: string; icon: LucideIcon }> = [
-  { href: "/admin", label: "Pilotage", icon: Gauge },
-  { href: "/admin/prize-suggestions", label: "Suggestions de lots", icon: HandCoins },
-  { href: "/backgrounds", label: "Bibliothèque", icon: BookOpen },
-  { href: "/affiliates", label: "Affiliation", icon: BriefcaseBusiness },
-  { href: "/support", label: "Supervision", icon: Settings2 },
-];
-
 export function MerchantShell({ children, merchant, user, locations, activeLocationId, isSaasAdmin }: MerchantShellProps) {
   const pathname = usePathname();
+  const adminNavItems = getPlatformAdminNavigationItems(isSaasAdmin);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
@@ -262,7 +256,7 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
             </Link>
           </Button>
 
-          {isSaasAdmin ? (
+          {adminNavItems.length > 0 ? (
             <div className="mt-7 border-t border-white/12 pt-5">
               <p className="px-2 pb-1 text-[10px] font-semibold uppercase tracking-[0.13em] text-white/55">
                 Administration plateforme
