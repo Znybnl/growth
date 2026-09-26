@@ -268,6 +268,7 @@ export function WheelOfFortune({
     far: withAlpha(colors.loseColor, 0.1),
   };
   const beautyRimWidth = pageTemplate === "beauty-pop" ? 3 : pageTemplate === "beauty-tech" ? 2.5 : pageTemplate === "beauty-nude" ? 1.5 : 2;
+  const beautyOuterRingColor = pageTemplate === "beauty-editorial" ? "#b99a68" : colors.rimColor;
   const beautyRingHighlight = pageTemplate === "beauty-tech" ? "rgba(233,224,255,.78)" : "rgba(255,255,255,.9)";
   const beautyInnerRingColor = pageTemplate === "beauty-editorial" ? "#c5a875" : withAlpha(colors.rimColor, 0.34);
   const beautyWheelShadow = pageTemplate === "beauty-tech"
@@ -377,7 +378,10 @@ export function WheelOfFortune({
               ? ""
             : "drop-shadow-[0_20px_34px_rgba(15,23,42,0.16)]"
         }`}
-        style={{ top: wheelTop }}
+        style={{
+          top: wheelTop,
+          left: pageTemplate === "beauty-editorial" ? "53%" : undefined,
+        }}
       >
         {isRoseInstitutTemplate || isBeautyTemplate ? (
           <div
@@ -432,7 +436,7 @@ export function WheelOfFortune({
               </>
             ) : isBeautyTemplate ? (
               <>
-                <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 13} fill={beautyTheme?.secondary ?? "#fff"} stroke={colors.rimColor} strokeWidth={beautyRimWidth} />
+                <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 13} fill={beautyTheme?.secondary ?? "#fff"} stroke={beautyOuterRingColor} strokeWidth={beautyRimWidth} />
                 <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 9} fill="none" stroke={beautyRingHighlight} strokeWidth={pageTemplate === "beauty-pop" ? "3" : "1.5"} />
                 <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 5} fill="none" stroke={beautyInnerRingColor} strokeWidth="1" />
               </>

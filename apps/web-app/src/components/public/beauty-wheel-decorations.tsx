@@ -65,7 +65,7 @@ export function BeautyWheelDecorations({
 
       {templateId === "beauty-editorial" ? (
         <g fill="none" strokeLinecap="square">
-          <path d="M358 155 H430 V576 H374" fill={primary} fillOpacity=".035" stroke="none" />
+          <path d="M352 155 H430 V576 H367" fill={primary} fillOpacity=".055" stroke="none" />
           <path d="M356 174 H405 M356 184 H390" stroke="#b99a68" strokeOpacity=".43" strokeWidth="1" />
           <path d="M12 534 H78" stroke="#b99a68" strokeOpacity=".35" strokeWidth="1.2" />
           <path d="M364 612 V730" stroke={primary} strokeOpacity=".12" strokeWidth="1" />
