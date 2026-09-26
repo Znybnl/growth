@@ -16,6 +16,8 @@ test("Dynamique déborde et Signature reste contenue sans perdre les couleurs pe
   await page.getByRole("button", { name: "Continuer", exact: true }).click();
 
   await page.getByRole("button", { name: /^Dynamique\b/ }).click();
+  await page.getByTestId("wizard-phone-preview").screenshot({ path: testInfo.outputPath("dynamique-default.png") });
+  await expect(page.getByLabel("Couleur du texte principal").first()).toHaveValue("#ffffff");
   const secondary = page.getByLabel("Couleur secondaire").first();
   await expect(secondary).toBeVisible();
   await secondary.fill("#f0dcbb");

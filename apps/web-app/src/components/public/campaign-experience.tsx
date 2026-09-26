@@ -854,6 +854,7 @@ export function CampaignExperience({
   // game mechanic. Scratch templates render the logo inside their ticket
   // component, but that component now uses the same top spacing as the wheel.
   const pageTopPaddingClass = isBeautyTemplate ? "pt-8 sm:pt-10" : "pt-12 sm:pt-14";
+  const hasFlexibleWheelLayout = campaign.gameType === "wheel" && (isBeautyTemplate || isClassicTemplate || isRestaurantPopTemplate);
 
   return (
     <div
@@ -894,7 +895,7 @@ export function CampaignExperience({
           />
         </div>
       ) : null}
-      <div className={`relative z-10 mx-auto flex ${isBeautyTemplate ? "min-h-[calc(100dvh-44px)]" : isPreview ? "h-[calc(100dvh-44px)] min-h-[560px]" : "h-screen"} w-full flex-col ${isBeautyTemplate ? "overflow-visible pb-8" : "overflow-hidden pb-0"} px-4 sm:px-6 ${pageTopPaddingClass}`}>
+      <div className={`relative z-10 mx-auto flex ${hasFlexibleWheelLayout ? isPreview ? "min-h-[calc(100dvh-44px)]" : "min-h-dvh" : isPreview ? "h-[calc(100dvh-44px)] min-h-[560px]" : "h-screen"} w-full flex-col ${isBeautyTemplate ? "overflow-visible pb-8" : hasFlexibleWheelLayout ? "overflow-visible pb-16" : "overflow-hidden pb-0"} px-4 sm:px-6 ${pageTopPaddingClass}`}>
         {!isImmersiveScratchTemplate && ((campaign.logoMode === "image" && campaign.logoUrl) ||
         campaign.logoMode === "text" ||
         campaign.gameType === "scratch") ? (
@@ -1126,7 +1127,7 @@ export function CampaignExperience({
       <button
         type="button"
         onClick={() => setRulesOpen(true)}
-        className={`okado-rules-button fixed z-20 rounded-full border border-white/70 bg-white/82 font-semibold text-[#111827] backdrop-blur ${isClassicTemplate || isRestaurantPopTemplate ? "bottom-3 right-3 px-3 py-1.5 text-xs shadow-[0_10px_24px_rgba(17,24,39,0.10)]" : "bottom-4 right-4 px-4 py-2 text-sm shadow-[0_14px_34px_rgba(17,24,39,0.12)]"}`}
+        className={`okado-rules-button z-20 rounded-full border border-white/70 bg-white/82 font-semibold text-[#111827] backdrop-blur ${isClassicTemplate || isRestaurantPopTemplate ? "absolute bottom-1 right-3 px-3 py-1.5 text-xs shadow-[0_10px_24px_rgba(17,24,39,0.10)]" : "fixed bottom-4 right-4 px-4 py-2 text-sm shadow-[0_14px_34px_rgba(17,24,39,0.12)]"}`}
       >
         Règlement
       </button>

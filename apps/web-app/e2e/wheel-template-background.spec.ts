@@ -4,11 +4,19 @@ import {
   DEFAULT_COCORICO_DUO_YELLOW,
   wheelBackgroundForTemplate,
   wheelBackgroundForTemplateSelection,
+  wheelHeadingColorForTemplateSelection,
 } from "../src/lib/campaign-defaults";
 
-test("Classique ne reprend pas le fond jaune de Bicolore à sa première sélection", () => {
+test("Dynamique ne reprend pas le fond jaune de Bicolore à sa première sélection", () => {
   expect(wheelBackgroundForTemplateSelection("classic", DEFAULT_COCORICO_DUO_YELLOW)).toBe("#ffffff");
   expect(wheelBackgroundForTemplateSelection("classic", "#2563eb")).toBe("#ffffff");
+});
+
+test("Signature démarre sur un fond neutre et chaque modèle a sa couleur de titre", () => {
+  expect(wheelBackgroundForTemplateSelection("restaurant-pop", "#003cb9")).toBe("#fffdfa");
+  expect(wheelHeadingColorForTemplateSelection("classic", "#1b2842")).toBe("#ffffff");
+  expect(wheelHeadingColorForTemplateSelection("restaurant-pop", "#ffffff")).toBe("#1b2842");
+  expect(wheelBackgroundForTemplate("restaurant-pop", "#ced9e8")).toBe("#ced9e8");
 });
 
 test("les fonds personnalisés enregistrés restent inchangés au chargement", () => {

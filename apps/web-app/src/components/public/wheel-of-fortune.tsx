@@ -355,11 +355,11 @@ export function WheelOfFortune({
         ? "top-1 w-[min(calc(100vw-32px),calc(100dvh-320px),430px)] sm:w-[min(calc(100vw-36px),calc(100dvh-320px),520px)] md:w-[min(52vw,640px)] lg:w-[min(48vw,680px)]"
         : isClassicTemplate
           ? "top-2 w-[116vw] max-w-none sm:w-[min(94vw,540px)] lg:w-[min(54vw,640px)]"
-          : "top-2 w-[82vw] max-w-[390px] sm:w-[min(78vw,440px)] lg:w-[min(43vw,540px)]"
+          : "top-2 w-[92vw] max-w-[440px] sm:w-[min(82vw,460px)] lg:w-[min(45vw,560px)]"
       : framing === "editor"
-        ? isBeautyTemplate ? BEAUTY_PREVIEW_WHEEL_FRAME_CLASSES[beautyTemplateId!] : isRoseInstitutTemplate ? "w-[122%] max-w-none" : isClassicTemplate ? "w-[116%] max-w-none" : "w-[82%] max-w-none"
+        ? isBeautyTemplate ? BEAUTY_PREVIEW_WHEEL_FRAME_CLASSES[beautyTemplateId!] : isRoseInstitutTemplate ? "w-[122%] max-w-none" : isClassicTemplate ? "w-[116%] max-w-none" : "w-[92%] max-w-none"
         : framing === "mobile-preview"
-          ? isBeautyTemplate ? BEAUTY_PREVIEW_WHEEL_FRAME_CLASSES[beautyTemplateId!] : isRoseInstitutTemplate ? "w-[122%] max-w-none" : isClassicTemplate ? "w-[116%] max-w-none" : "w-[82%] max-w-none"
+          ? isBeautyTemplate ? BEAUTY_PREVIEW_WHEEL_FRAME_CLASSES[beautyTemplateId!] : isRoseInstitutTemplate ? "w-[122%] max-w-none" : isClassicTemplate ? "w-[116%] max-w-none" : "w-[92%] max-w-none"
           : "w-full";
   const wheelTransformClass =
     framing === "public" || isRoseInstitutTemplate ? "-translate-x-1/2" : "-translate-x-1/2 -translate-y-1/2";
