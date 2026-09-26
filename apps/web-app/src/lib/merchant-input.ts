@@ -175,6 +175,24 @@ function normalizeUrl(value: unknown) {
   }
 }
 
+function normalizeOptionalHttpUrl(value: unknown) {
+  const input = typeof value === "string" ? value.trim() : "";
+
+  if (!input) return "";
+  if (input.length > 500) throw new Error("Le lien de prise de rendez-vous ne peut pas dépasser 500 caractères.");
+
+  try {
+    const url = new URL(input);
+    if (!["http:", "https:"].includes(url.protocol) || !url.hostname) {
+      throw new Error("URL invalide.");
+    }
+
+    return input;
+  } catch {
+    throw new Error("Saisissez une URL complète commençant par http:// ou https://.");
+  }
+}
+
 function normalizeImageSource(value: unknown) {
   const input = typeof value === "string" ? value.trim() : "";
 
@@ -281,6 +299,7 @@ export function parseMerchantOnboardingInput(input: unknown): MerchantOnboarding
     phone: normalizeString(payload.phone, 40),
     restaurantEmail: normalizeEmail(payload.restaurantEmail, false),
     websiteUrl: normalizeUrl(payload.websiteUrl),
+    appointmentUrl: normalizeOptionalHttpUrl(payload.appointmentUrl),
     address: normalizeString(payload.address, 200),
     defaultPrizeCost: normalizeNumber(payload.defaultPrizeCost, {
       min: 0,
@@ -316,6 +335,7 @@ export function parseMerchantAccountSettingsInput(input: unknown): MerchantAccou
     phone: normalizeString(payload.phone, 40),
     restaurantEmail: normalizeEmail(payload.restaurantEmail, false),
     websiteUrl: normalizeUrl(payload.websiteUrl),
+    appointmentUrl: normalizeOptionalHttpUrl(payload.appointmentUrl),
     googleReviewUrl: normalizeUrl(payload.googleReviewUrl),
     googlePlaceName: normalizeString(payload.googlePlaceName, 120),
     googlePlaceAddress: normalizeString(payload.googlePlaceAddress, 200),

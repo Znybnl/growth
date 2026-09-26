@@ -29,6 +29,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
   const [phone, setPhone] = useState(merchant.phone ?? "");
   const [restaurantEmail, setRestaurantEmail] = useState(merchant.restaurantEmail ?? "");
   const [websiteUrl, setWebsiteUrl] = useState(merchant.websiteUrl ?? "");
+  const [appointmentUrl, setAppointmentUrl] = useState(merchant.appointmentUrl ?? "");
   const [address, setAddress] = useState(merchant.address ?? "");
   const defaultPrizeCost = merchant.defaultPrizeCost ?? 3;
   const [googleReviewUrl, setGoogleReviewUrl] = useState(merchant.googleReviewUrl ?? "");
@@ -65,6 +66,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
           phone,
           restaurantEmail,
           websiteUrl,
+          appointmentUrl,
           defaultPrizeCost,
           preferredGoals: [],
           diffusionSupport: [],
@@ -169,6 +171,11 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
                   }}
                 />
               </div>
+              <label className="text-sm md:col-span-2">
+                <span className="mb-2 block text-charcoal">Lien de prise de rendez-vous</span>
+                <input type="url" inputMode="url" maxLength={500} value={appointmentUrl} onChange={(event) => setAppointmentUrl(event.target.value)} placeholder="https://www.planity.com/..." className={inputClass} />
+                <span className="mt-2 block text-xs leading-5 text-ash">Facultatif — Planity ou votre outil de réservation. Vous pourrez aussi le renseigner plus tard dans Mon compte.</span>
+              </label>
               <label className="text-sm"><span className="mb-2 block text-charcoal">Instagram</span><input type="url" value={instagramUrl} onChange={(event) => setInstagramUrl(event.target.value)} placeholder="https://instagram.com/..." className={inputClass} /></label>
               <label className="text-sm"><span className="mb-2 block text-charcoal">Facebook</span><input type="url" value={facebookUrl} onChange={(event) => setFacebookUrl(event.target.value)} placeholder="https://facebook.com/..." className={inputClass} /></label>
               <label className="text-sm"><span className="mb-2 block text-charcoal">TikTok</span><input type="url" value={tiktokUrl} onChange={(event) => setTiktokUrl(event.target.value)} placeholder="https://tiktok.com/@..." className={inputClass} /></label>

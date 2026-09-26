@@ -62,6 +62,7 @@ function createAccountSettingsForm(
     phone: merchant.phone ?? "",
     restaurantEmail: merchant.restaurantEmail ?? "",
     websiteUrl: merchant.websiteUrl ?? "",
+    appointmentUrl: merchant.appointmentUrl ?? "",
     googleReviewUrl: merchant.googleReviewUrl ?? "",
     googlePlaceName: merchant.googlePlaceName ?? "",
     googlePlaceAddress: merchant.googlePlaceAddress ?? "",
@@ -101,7 +102,6 @@ export function AccountSettingsForm({
   const [isDirty, setIsDirty] = useState(false);
   const actionsAnchorRef = useRef<HTMLDivElement>(null);
   const [showStickyActions, setShowStickyActions] = useState(false);
-  const [showOptionalChannels, setShowOptionalChannels] = useState(false);
   const activeTab = useSyncExternalStore(
     (onStoreChange) => {
       window.addEventListener("hashchange", onStoreChange);
@@ -170,10 +170,6 @@ export function AccountSettingsForm({
 
   const isRestaurant = isRestaurantIndustry(form.industry);
   const placeLabel = isRestaurant ? "restaurant" : "commerce";
-  const hasOptionalMarketingLink = Boolean(
-    form.instagramUrl || form.facebookUrl || form.tiktokUrl || form.tripadvisorUrl || form.customLinkUrl,
-  );
-  const displayOptionalChannels = showOptionalChannels || hasOptionalMarketingLink;
 
   function applyLocationSelection(locationId: string) {
     const nextMerchant =
@@ -493,7 +489,7 @@ export function AccountSettingsForm({
               <p className="mt-1 text-sm text-ash">Ajoutez les liens que vos participants pourront retrouver après leur participation.</p>
             </div>
             <div className="grid gap-4 md:grid-cols-2">
-            <GoogleReviewPlacePicker
+              <GoogleReviewPlacePicker
               key={`${selectedLocationId}-${form.googleReviewUrl}`}
               className="h-full"
               value={form.googleReviewUrl}
@@ -522,7 +518,21 @@ export function AccountSettingsForm({
                 }));
               }}
             />
-            {displayOptionalChannels ? <>
+            <label className="text-sm md:col-span-2">
+              <span className="mb-2 block text-charcoal">Lien de prise de rendez-vous</span>
+              <input
+                type="url"
+                inputMode="url"
+                maxLength={500}
+                value={form.appointmentUrl}
+                onChange={(event) => updateField("appointmentUrl", event.target.value)}
+                placeholder="https://www.planity.com/..."
+                className={inputClass}
+              />
+              <span className="mt-2 block text-xs leading-5 text-ash">
+                Ajoutez votre lien Planity ou celui de votre outil de réservation. Il est enregistré pour cet établissement.
+              </span>
+            </label>
           <label className="flex min-h-[152px] flex-col justify-between gap-3 rounded-[12px] border border-fog bg-white p-4 text-sm">
             <span className="flex items-center justify-between gap-3 text-charcoal"><span className="flex items-center gap-3"><SocialChannelIcon channel="instagram" /><span>Instagram</span></span>{form.instagramUrl ? <span className="text-xs font-semibold text-aubergine">✓</span> : <span className="text-xs text-ash">Optionnel</span>}</span>
             <input
@@ -578,17 +588,7 @@ export function AccountSettingsForm({
               className={`${inputClass} min-h-[40px] px-3 py-2 text-xs`}
             />
           </label>
-            </> : null}
             </div>
-            {!displayOptionalChannels ? (
-              <button
-                type="button"
-                onClick={() => setShowOptionalChannels(true)}
-                className="mt-1 inline-flex items-center gap-2 py-2 text-sm font-semibold text-aubergine underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aubergine"
-              >
-                + Ajouter un canal marketing
-              </button>
-            ) : null}
           </div>
 
           <div id="account-pin" className="mt-8 scroll-mt-28 border-t border-border/70 pt-6">
