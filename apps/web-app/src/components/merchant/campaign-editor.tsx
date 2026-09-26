@@ -114,6 +114,7 @@ import {
   wheelBackgroundForTemplate,
   wheelBackgroundForTemplateSelection,
   restaurantPopBackground,
+  classicWheelBackground,
   wheelPaletteForTemplate,
 } from "@/lib/campaign-defaults";
 import { fluidType } from "@/lib/responsive";
@@ -1034,7 +1035,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
                 maxRatio: 1.08,
                 viewportStep: 0.3,
               })}
-              fontWeight={isCocoricoTemplate ? undefined : 850}
+              fontWeight={isCocoricoTemplate ? undefined : preview.gamePageTemplateId === "classic" ? 750 : 850}
               textColor={isCocoricoTemplate ? undefined : previewHeadingTextColor}
               secondaryTextColor={isCocoricoTemplate ? undefined : previewHeadingTextColor}
               strokeColor={isCocoricoTemplate ? undefined : resolvePromoStrokeColor(previewHeadingTextColor)}
@@ -1593,6 +1594,8 @@ export function buildCampaignLivePreviewModel(
       ? userBackgroundImageStyle(form.presentation.background.imageUrl)
       : templateId === "restaurant-pop"
         ? restaurantPopBackground(form.presentation.background.color)
+        : templateId === "classic"
+          ? classicWheelBackground(form.presentation.wheel.loseColor)
         : templateId === "rose-institut"
           ? roseInstitutWheelBackground(form.presentation.background.color)
           : isBeautyWheelTemplate(templateId)
@@ -1987,6 +1990,8 @@ export function CampaignEditor({
             ? userBackgroundImageStyle(form.presentation.background.imageUrl)
             : (form.presentation.layout.templateId ?? "classic") === "restaurant-pop"
               ? restaurantPopBackground(form.presentation.background.color)
+            : (form.presentation.layout.templateId ?? "classic") === "classic"
+              ? classicWheelBackground(form.presentation.wheel.loseColor)
             : (form.presentation.layout.templateId ?? "classic") === "rose-institut"
               ? roseInstitutWheelBackground(form.presentation.background.color)
             : isBeautyWheelTemplate(currentTemplateId)
@@ -2331,7 +2336,7 @@ export function CampaignEditor({
             ...current.presentation.wheel,
             loseColor: nextColor,
             alternateLoseColor:
-              current.presentation.layout.templateId === "cocorico-duo-wheel" || isBeautyWheelTemplate(current.presentation.layout.templateId)
+              current.presentation.layout.templateId === "classic" || current.presentation.layout.templateId === "cocorico-duo-wheel" || isBeautyWheelTemplate(current.presentation.layout.templateId)
                 ? current.presentation.wheel.alternateLoseColor
                 : deriveLighterHex(nextColor),
             rimColor: isBeautyWheelTemplate(current.presentation.layout.templateId) ? nextColor : deriveLighterHex(nextColor),
@@ -4106,7 +4111,7 @@ export function CampaignEditor({
                   />
                 </label>
 
-                {currentTemplateId === "cocorico-duo-wheel" || isBeautyWheelTemplate(currentTemplateId) ? (
+                {currentTemplateId === "classic" || currentTemplateId === "cocorico-duo-wheel" || isBeautyWheelTemplate(currentTemplateId) ? (
                   <label className="text-sm">
                     <span className="mb-2 block text-[#616b7c]">Couleur secondaire</span>
                     <input

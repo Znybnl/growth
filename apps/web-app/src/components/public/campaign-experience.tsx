@@ -40,6 +40,7 @@ import {
   isRoseInstitutWheelTemplate,
   resolveCocoricoBackgroundColor,
   restaurantPopBackground,
+  classicWheelBackground,
   roseInstitutWheelBackground,
   deriveLighterHex,
   scratchTemplatePrimaryColor,
@@ -825,6 +826,8 @@ export function CampaignExperience({
           ? `radial-gradient(circle at 12% 10%, ${withHexAlpha(primaryColor, "33")} 0 12%, transparent 13%), radial-gradient(circle at 94% 18%, ${withHexAlpha(secondaryColor, "38")} 0 14%, transparent 15%), linear-gradient(180deg, #fffdf5 0%, #fff8e8 56%, #fff2ce 100%)`
         : isRestaurantPopTemplate
         ? restaurantPopBackground(campaign.presentation.background.color)
+        : isClassicTemplate
+        ? classicWheelBackground(primaryColor)
         : isRoseInstitutTemplate
         ? roseInstitutWheelBackground(campaign.presentation.background.color)
         : isBeautyTemplate
@@ -923,7 +926,7 @@ export function CampaignExperience({
             text={safeSubtitle.trim() || DEFAULT_SCRATCH_SUBTITLE}
             fontSize={headingFontSize}
             fontFamily={textFontFamily(campaign.presentation.heading.fontFamily)}
-            fontWeight={isCocoricoTemplate ? undefined : 850}
+            fontWeight={isCocoricoTemplate ? undefined : isClassicTemplate ? 750 : 850}
             textColor={isCocoricoTemplate ? undefined : headingTextColor}
             secondaryTextColor={isCocoricoTemplate ? undefined : headingTextColor}
             strokeColor={isCocoricoTemplate ? undefined : resolvePromoStrokeColor(headingTextColor)}
@@ -1123,7 +1126,7 @@ export function CampaignExperience({
       <button
         type="button"
         onClick={() => setRulesOpen(true)}
-        className="okado-rules-button fixed bottom-4 right-4 z-20 rounded-full border border-white/70 bg-white/82 px-4 py-2 text-sm font-semibold text-[#111827] shadow-[0_14px_34px_rgba(17,24,39,0.12)] backdrop-blur"
+        className={`okado-rules-button fixed z-20 rounded-full border border-white/70 bg-white/82 font-semibold text-[#111827] backdrop-blur ${isClassicTemplate || isRestaurantPopTemplate ? "bottom-3 right-3 px-3 py-1.5 text-xs shadow-[0_10px_24px_rgba(17,24,39,0.10)]" : "bottom-4 right-4 px-4 py-2 text-sm shadow-[0_14px_34px_rgba(17,24,39,0.12)]"}`}
       >
         Règlement
       </button>

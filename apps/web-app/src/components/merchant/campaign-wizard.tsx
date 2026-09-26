@@ -2549,7 +2549,7 @@ export function CampaignWizard({
                                    ...current.presentation.wheel,
                                    loseColor: color,
                                    alternateLoseColor:
-                                     (current.presentation.layout.templateId === "cocorico-duo-wheel" || isBeautyWheelTemplate(current.presentation.layout.templateId))
+                                     (current.presentation.layout.templateId === "classic" || current.presentation.layout.templateId === "cocorico-duo-wheel" || isBeautyWheelTemplate(current.presentation.layout.templateId))
                                        ? current.presentation.wheel.alternateLoseColor
                                        : deriveLighterHex(color),
                                    rimColor: isBeautyWheelTemplate(current.presentation.layout.templateId) ? color : deriveLighterHex(color),
@@ -2566,17 +2566,17 @@ export function CampaignWizard({
                    />
                  </label>
 
-                 {draft.gameType === "wheel" && (draft.presentation.layout.templateId === "restaurant-pop" || draft.presentation.layout.templateId === "cocorico-duo-wheel" || isBeautyWheelTemplate(draft.presentation.layout.templateId)) ? (
+                 {draft.gameType === "wheel" && (draft.presentation.layout.templateId === "classic" || draft.presentation.layout.templateId === "restaurant-pop" || draft.presentation.layout.templateId === "cocorico-duo-wheel" || isBeautyWheelTemplate(draft.presentation.layout.templateId)) ? (
                    <label className="block">
                      <span className="text-sm font-semibold text-[#182033]">Couleur secondaire</span>
                      <input
                        type="color"
-                       value={draft.presentation.layout.templateId === "cocorico-duo-wheel" || isBeautyWheelTemplate(draft.presentation.layout.templateId) ? draft.presentation.wheel.alternateLoseColor : draft.presentation.wheel.winColor}
+                       value={draft.presentation.layout.templateId === "classic" || draft.presentation.layout.templateId === "cocorico-duo-wheel" || isBeautyWheelTemplate(draft.presentation.layout.templateId) ? draft.presentation.wheel.alternateLoseColor : draft.presentation.wheel.winColor}
                        onChange={(event) =>
                          patchDraft({
                            presentation: {
                              ...draft.presentation,
-                             wheel: draft.presentation.layout.templateId === "cocorico-duo-wheel" || isBeautyWheelTemplate(draft.presentation.layout.templateId)
+                             wheel: draft.presentation.layout.templateId === "classic" || draft.presentation.layout.templateId === "cocorico-duo-wheel" || isBeautyWheelTemplate(draft.presentation.layout.templateId)
                                ? { ...draft.presentation.wheel, alternateLoseColor: event.target.value }
                                : { ...draft.presentation.wheel, winColor: event.target.value },
                            },
@@ -2749,7 +2749,7 @@ export function CampaignWizard({
                               ? {
                                   ...current.presentation.wheel,
                                   loseColor: color,
-                                  alternateLoseColor: deriveLighterHex(color),
+                                  alternateLoseColor: current.presentation.layout.templateId === "classic" ? current.presentation.wheel.alternateLoseColor : deriveLighterHex(color),
                                   rimColor: deriveLighterHex(color),
                                 }
                               : current.presentation.wheel,

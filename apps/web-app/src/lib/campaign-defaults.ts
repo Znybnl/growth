@@ -268,6 +268,12 @@ export function restaurantPopBackground(configuredColor: string | undefined) {
   return `radial-gradient(ellipse 72% 32% at 16% 14%, rgba(255,255,255,0.52) 0%, rgba(255,255,255,0.22) 34%, transparent 74%), radial-gradient(ellipse 68% 28% at 86% 28%, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.14) 38%, transparent 76%), radial-gradient(ellipse 54% 22% at 48% 92%, rgba(255,255,255,0.22) 0%, transparent 76%), linear-gradient(180deg, ${color} 0%, ${color} 48%, ${color} 100%)`;
 }
 
+/** The brand colors belong on the Classic wheel, not across the whole page. */
+export function classicWheelBackground(primaryColor: string) {
+  const halo = /^#[0-9a-f]{6}$/i.test(primaryColor) ? `${primaryColor}12` : "#3c05a012";
+  return `radial-gradient(circle at 50% 62%, ${halo} 0%, transparent 48%)`;
+}
+
 /** Resolve the blue used by the Cocorico template without changing legacy data. */
 export function resolveCocoricoPrimaryColor(configuredColor: string | undefined) {
   const normalized = configuredColor?.trim().toLowerCase();
