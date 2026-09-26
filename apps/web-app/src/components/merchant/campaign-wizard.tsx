@@ -31,6 +31,7 @@ import { CampaignSavedDialog } from "@/components/merchant/campaign-saved-dialog
 import { CampaignSpacingControls } from "@/components/merchant/campaign-spacing-controls";
 import { GameTypeChoice } from "@/components/merchant/game-type-choice";
 import { BeautyWheelTemplateGallery } from "@/components/merchant/beauty-wheel-template-gallery";
+import { WheelTemplateThumbnail } from "@/components/merchant/wheel-template-thumbnail";
 import { DialogShell } from "@/components/ui/dialog";
 import { ValidationDialog } from "@/components/ui/validation-dialog";
 import {
@@ -89,6 +90,8 @@ import {
   CampaignAction,
   CampaignPerformance,
   CampaignSetupInput,
+  CampaignWheelSettings,
+  GamePageTemplateId,
   BackgroundLibraryAsset,
   Merchant,
   PrizeSuggestion,
@@ -2413,6 +2416,7 @@ export function CampaignWizard({
                     }}
                     className={`min-w-0 rounded-[16px] border p-4 text-left ${draft.presentation.layout.templateId === template.id ? "border-aubergine bg-purple-haze" : "border-[#e2e8f0] bg-[#fbfcfe]"}`}
                   >
+                    {draft.gameType === "wheel" ? <WheelTemplateThumbnail templateId={template.id as GamePageTemplateId} /> : null}
                     <span className="block text-sm font-semibold text-[#182033]">
                       {template.label}
                     </span>
