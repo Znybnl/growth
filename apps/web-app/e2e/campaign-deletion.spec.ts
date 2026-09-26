@@ -23,6 +23,7 @@ test.describe("Suppression d’un jeu", () => {
     await page.goto(`/campaigns?q=${encodeURIComponent(title)}`);
     const campaignCard = page.locator("article").filter({ hasText: title });
     await expect(campaignCard).toBeVisible({ timeout: 15_000 });
+    await expect(campaignCard.getByText("En pause", { exact: true })).toBeVisible();
 
     await campaignCard.getByRole("button", { name: "Ouvrir les actions de la campagne" }).click();
     await page.getByRole("menuitem", { name: "Supprimer", exact: true }).click();

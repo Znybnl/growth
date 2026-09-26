@@ -57,7 +57,7 @@ export default async function CampaignsPage({
                         <p className="truncate font-semibold text-graphite">{item.campaign.title}</p>
                         <p className="mt-1 truncate text-sm text-ash">{item.campaign.subtitle}</p>
                       </div>
-                      <StatusBadge tone={item.campaign.isActive ? "active" : "muted"}>{item.campaign.isActive ? "Active" : "Pause"}</StatusBadge>
+                      <StatusBadge tone={item.campaign.isActive ? "active" : "muted"}>{item.campaign.isActive ? "Active" : "En pause"}</StatusBadge>
                     </div>
                     <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
                       {[
@@ -88,7 +88,7 @@ export default async function CampaignsPage({
           <div className="space-y-0">
             {campaigns.length ? campaigns.map((item) => (
               <div key={item.campaign.id} className={`okado-table-row grid ${campaignTableGrid} items-center gap-3 px-5 py-4`}>
-                <div className="flex min-w-0 items-center gap-3"><StatusBadge tone={item.campaign.isActive ? "active" : "muted"}>{item.campaign.isActive ? "Active" : "Pause"}</StatusBadge><div className="min-w-0"><p className="truncate font-semibold text-graphite">{item.campaign.title}</p><p className="truncate text-sm text-ash">{item.campaign.subtitle}</p></div></div>
+                <div className="flex min-w-0 items-center gap-3"><StatusBadge tone={item.campaign.isActive ? "active" : "muted"}>{item.campaign.isActive ? "Active" : "En pause"}</StatusBadge><div className="min-w-0"><p className="truncate font-semibold text-graphite">{item.campaign.title}</p><p className="truncate text-sm text-ash">{item.campaign.subtitle}</p></div></div>
                 <span className="text-slate">{gameTypeLabel(item.campaign.gameType)}</span>
                 <span data-align="right" className="tabular-nums text-right font-semibold text-graphite">{item.kpis.scans}</span>
                 <span data-align="right" className="tabular-nums text-right font-semibold text-graphite">{item.kpis.leads}</span>
