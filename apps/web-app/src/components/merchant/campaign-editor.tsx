@@ -63,6 +63,7 @@ import {
 import { captureClientProductEvent } from "@/lib/client-product-analytics";
 import { postCampaignSetup } from "@/lib/campaign-setup-request";
 import { beautyWheelBackground, beautyWheelFontOptions, beautyWheelTheme, isBeautyIndustry, isBeautyWheelTemplate, type BeautyWheelTemplateId } from "@/lib/beauty-wheel-themes";
+import { RosePowderDecor } from "@/components/public/rose-powder-decor";
 import {
   createCampaignEmailDefaults,
   normalizeCampaignEmailSettings,
@@ -87,6 +88,7 @@ import {
   DEFAULT_WHEEL_HEADING_FONT_SIZE_PX,
   roseInstitutWheelBackground,
   DEFAULT_WHEEL_SPACING_PX,
+  defaultWheelBlockSpacingForTemplate,
   DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
   defaultWheelSubtitleSpacingForTemplate,
   resolveCocoricoPrimaryColor,
@@ -551,7 +553,7 @@ function createDefaultState(merchant: Merchant): EditorState {
         isBold: true,
       },
       layout: {
-        blockSpacingPx: DEFAULT_WHEEL_SPACING_PX,
+        blockSpacingPx: defaultWheelBlockSpacingForTemplate(DEFAULT_GAME_PAGE_TEMPLATE_ID),
         templateId: DEFAULT_GAME_PAGE_TEMPLATE_ID,
         wheelSubtitle: "",
         subtitleSpacingPx: defaultWheelSubtitleSpacingForTemplate(DEFAULT_GAME_PAGE_TEMPLATE_ID),
@@ -930,9 +932,10 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
   return (
     <div className={`okado-preview-surface ${flushTop ? "" : "mt-6"}`} data-template-id={preview.gamePageTemplateId}>
       <div
-        className={`mx-auto w-full overflow-hidden border border-[#ced7e6] shadow-[0_30px_70px_rgba(18,24,39,0.18)] ${previewFrameClass}`}
+        className={`mx-auto w-full overflow-hidden border border-[#ced7e6] shadow-[0_30px_70px_rgba(18,24,39,0.18)] ${previewFrameClass} ${preview.gamePageTemplateId === "beauty-rose" ? "okado-rose-powder-surface relative" : ""}`}
         style={preview.backgroundStyle}
       >
+        {preview.gamePageTemplateId === "beauty-rose" && !preview.backgroundStyle.backgroundImage?.includes("url(") ? <RosePowderDecor primaryColor={preview.wheelStyle.loseColor} /> : null}
         {showStandardHeader ? (
           <>
         {preview.logoMode === "image" && preview.logoUrl ? (
@@ -1460,7 +1463,7 @@ function toEditorState(merchant: Merchant, campaign: CampaignPerformance | null)
         ...campaign.campaign.presentation.layout,
         blockSpacingPx: clampCampaignSpacingPx(
           campaign.campaign.presentation.layout.blockSpacingPx ??
-            (campaign.campaign.gameType === "wheel" ? DEFAULT_WHEEL_SPACING_PX : 20),
+            (campaign.campaign.gameType === "wheel" ? defaultWheelBlockSpacingForTemplate(templateId) : 20),
         ),
         templateId,
         subtitleSpacingPx: clampCampaignSpacingPx(
@@ -1751,13 +1754,14 @@ export function CampaignEditor({
         headingAlign: current.presentation.heading.align,
         logoAlign: current.presentation.logo.align,
         buttonBackgroundColor: current.presentation.button.backgroundColor,
+        blockSpacingPx: current.presentation.layout.blockSpacingPx,
       };
       const remembered = wheelTemplateState.current[templateId];
       return {
         ...current,
         presentation: {
           ...current.presentation,
-          layout: { ...current.presentation.layout, templateId, wheelTemplateStyles: { ...current.presentation.layout.wheelTemplateStyles, [previousId]: wheelTemplateState.current[previousId] } },
+          layout: { ...current.presentation.layout, templateId, blockSpacingPx: remembered?.blockSpacingPx ?? defaultWheelBlockSpacingForTemplate(templateId), wheelTemplateStyles: { ...current.presentation.layout.wheelTemplateStyles, [previousId]: wheelTemplateState.current[previousId] } },
           background: { ...current.presentation.background, color: remembered?.backgroundColor ?? theme.background },
           wheel: remembered?.wheel ?? wheelPaletteForTemplate(templateId, current.presentation.wheel),
           heading: { ...current.presentation.heading, fontFamily: remembered?.headingFontFamily ?? theme.font, textColor: remembered?.headingTextColor ?? theme.text, align: remembered?.headingAlign ?? (templateId === "beauty-editorial" ? "left" : "center") },
@@ -2836,6 +2840,7 @@ export function CampaignEditor({
                             headingAlign: current.presentation.heading.align,
                             logoAlign: current.presentation.logo.align,
                             buttonBackgroundColor: current.presentation.button.backgroundColor,
+                            blockSpacingPx: current.presentation.layout.blockSpacingPx,
                           };
                           const remembered = wheelTemplateState.current[template.value];
                           const wheel = remembered?.wheel ?? wheelPaletteForTemplate(template.value, current.presentation.wheel);
@@ -2862,6 +2867,7 @@ export function CampaignEditor({
                                 ...current.presentation.layout,
                                 templateId: template.value,
                                 wheelTemplateStyles: { ...current.presentation.layout.wheelTemplateStyles, [currentTemplateId]: wheelTemplateState.current[currentTemplateId] },
+                                blockSpacingPx: wheelTemplateState.current[template.value]?.blockSpacingPx ?? defaultWheelBlockSpacingForTemplate(template.value),
                                 subtitleSpacingPx: defaultWheelSubtitleSpacingForTemplate(template.value),
                               },
                               heading:

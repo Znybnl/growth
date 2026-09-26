@@ -68,6 +68,7 @@ import {
   DEFAULT_ROSE_INSTITUT_HEADING_FONT_FAMILY,
   DEFAULT_WHEEL_HEADING_FONT_SIZE_PX,
   DEFAULT_WHEEL_SPACING_PX,
+  defaultWheelBlockSpacingForTemplate,
   DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
   defaultWheelSubtitleSpacingForTemplate,
   deriveLighterHex,
@@ -622,7 +623,7 @@ function draftFromCampaign(merchant: Merchant, performance: CampaignPerformance)
         ...campaign.presentation.layout,
         blockSpacingPx: clampCampaignSpacingPx(
           campaign.presentation.layout.blockSpacingPx ??
-            (campaign.gameType === "wheel" ? DEFAULT_WHEEL_SPACING_PX : 20),
+            (campaign.gameType === "wheel" ? defaultWheelBlockSpacingForTemplate(templateId) : 20),
         ),
         subtitleSpacingPx: clampCampaignSpacingPx(
           campaign.presentation.layout.subtitleSpacingPx,
@@ -896,13 +897,14 @@ export function CampaignWizard({
         headingAlign: current.presentation.heading.align,
         logoAlign: current.presentation.logo.align,
         buttonBackgroundColor: current.presentation.button.backgroundColor,
+        blockSpacingPx: current.presentation.layout.blockSpacingPx,
       };
       const remembered = wheelTemplateState.current[templateId];
       return {
         ...current,
         presentation: {
           ...current.presentation,
-          layout: { ...current.presentation.layout, templateId, wheelTemplateStyles: { ...current.presentation.layout.wheelTemplateStyles, [previousId]: wheelTemplateState.current[previousId] } },
+          layout: { ...current.presentation.layout, templateId, blockSpacingPx: remembered?.blockSpacingPx ?? defaultWheelBlockSpacingForTemplate(templateId), wheelTemplateStyles: { ...current.presentation.layout.wheelTemplateStyles, [previousId]: wheelTemplateState.current[previousId] } },
           background: { ...current.presentation.background, color: remembered?.backgroundColor ?? theme.background },
           wheel: remembered?.wheel ?? wheelPaletteForTemplate(templateId, current.presentation.wheel),
           heading: { ...current.presentation.heading, fontFamily: remembered?.headingFontFamily ?? theme.font, textColor: remembered?.headingTextColor ?? theme.text, align: remembered?.headingAlign ?? (templateId === "beauty-editorial" ? "left" : "center") },
@@ -2338,6 +2340,7 @@ export function CampaignWizard({
                           headingAlign: current.presentation.heading.align,
                           logoAlign: current.presentation.logo.align,
                           buttonBackgroundColor: current.presentation.button.backgroundColor,
+                          blockSpacingPx: current.presentation.layout.blockSpacingPx,
                         };
                         const remembered = wheelTemplateState.current[template.id];
                         const wheel = remembered?.wheel ?? wheelPaletteForTemplate(template.id, current.presentation.wheel);
@@ -2364,6 +2367,7 @@ export function CampaignWizard({
                               ...current.presentation.layout,
                               templateId: template.id,
                               wheelTemplateStyles: { ...current.presentation.layout.wheelTemplateStyles, [currentTemplateId]: wheelTemplateState.current[currentTemplateId] },
+                              blockSpacingPx: wheelTemplateState.current[template.id]?.blockSpacingPx ?? defaultWheelBlockSpacingForTemplate(template.id),
                               subtitleSpacingPx: defaultWheelSubtitleSpacingForTemplate(template.id),
                             },
                             heading:

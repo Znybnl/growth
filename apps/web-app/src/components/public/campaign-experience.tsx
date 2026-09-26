@@ -21,6 +21,7 @@ import { ImmersiveScratchTicket } from "@/components/public/immersive-scratch-ti
 import { ScratchGame } from "@/components/public/scratch-game";
 import { WheelOfFortune } from "@/components/public/wheel-of-fortune";
 import { beautyWheelBackground, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
+import { RosePowderDecor } from "@/components/public/rose-powder-decor";
 import { fluidType } from "@/lib/responsive";
 import { textFontClass, textFontFamily, wheelSubtitleFontFamily } from "@/lib/format";
 import { userBackgroundImageStyle } from "@/lib/campaign-background";
@@ -533,6 +534,7 @@ export function CampaignExperience({
     Math.max(56, Math.min(720, logoSizePercent * 3)),
   );
   const logoTextSizePx = campaignLogoTextSizePx(logoSizePercent, campaign.gameType);
+  const isRosePowderTemplate = pageTemplate === "beauty-rose";
   const safeSubtitle = limitCampaignSubtitleLines(campaign.subtitle);
   const wheelSubtitle = campaign.gameType === "wheel"
     ? limitCampaignSubtitleLines(campaign.presentation.layout.wheelSubtitle ?? "")
@@ -845,7 +847,7 @@ export function CampaignExperience({
 
   return (
     <div
-      className="okado-public-experience relative min-h-screen overflow-hidden"
+      className={`okado-public-experience relative min-h-screen overflow-hidden ${pageTemplate === "beauty-rose" ? "okado-rose-powder-surface" : ""}`}
       data-template-id={pageTemplate}
       style={{
         backgroundColor: campaign.presentation.background.color,
@@ -858,11 +860,12 @@ export function CampaignExperience({
       {isPreview ? (
         <div
           role="status"
-          className="sticky top-0 z-50 flex min-h-11 items-center justify-center border-b border-[#d7a91f] bg-[#f4c14a] px-4 py-2 text-center text-xs font-semibold tracking-[0.01em] text-[#111827] shadow-[0_8px_24px_rgba(122,91,0,0.22)] sm:text-sm"
+          className="sticky top-0 z-50 flex min-h-11 items-center justify-center border-b border-[#d7a91f] bg-[#f4c14a] px-4 text-center text-xs font-semibold tracking-[0.01em] text-[#111827] shadow-[0_8px_24px_rgba(122,91,0,0.22)] sm:text-sm"
         >
           Mode prévisualisation — cette participation est simulée et n&apos;affecte ni vos statistiques ni vos stocks.
         </div>
       ) : null}
+      {pageTemplate === "beauty-rose" && campaign.presentation.background.mode !== "image" ? <RosePowderDecor primaryColor={primaryColor} /> : null}
       {isSunburstTemplate || isCosmicTemplate || isScratchVaultTemplate || isScratchConfettiTemplate || isScratchCoralTemplate || isScratchLilacTemplate || isScratchSunburstTemplate ? (
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
           <div
@@ -890,9 +893,10 @@ export function CampaignExperience({
                 size="lg"
                 variant="transparent"
                 imageWidthPx={logoWidthPx}
-                textSizePx={logoTextSizePx}
+                textSizePx={isRosePowderTemplate ? Math.round(logoTextSizePx * 0.9) : logoTextSizePx}
                 textClassName="text-2xl"
                 textColor={campaign.presentation.logo.textColor ?? headingTextColor}
+                textFontWeight={isRosePowderTemplate ? 600 : undefined}
               />
             </div>
           </div>
@@ -1109,7 +1113,7 @@ export function CampaignExperience({
       <button
         type="button"
         onClick={() => setRulesOpen(true)}
-        className="fixed bottom-4 right-4 z-20 rounded-full border border-white/70 bg-white/82 px-4 py-2 text-sm font-semibold text-[#111827] shadow-[0_14px_34px_rgba(17,24,39,0.12)] backdrop-blur"
+        className="okado-rules-button fixed bottom-4 right-4 z-20 rounded-full border border-white/70 bg-white/82 px-4 py-2 text-sm font-semibold text-[#111827] shadow-[0_14px_34px_rgba(17,24,39,0.12)] backdrop-blur"
       >
         Règlement
       </button>
