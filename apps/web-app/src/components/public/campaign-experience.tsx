@@ -923,7 +923,7 @@ export function CampaignExperience({
             variant={isCocoricoTemplate ? "cocorico" : "inspired"}
             rotate={isCocoricoTemplate}
           /> : <h1
-            className={`${headingFontClass} line-clamp-3 whitespace-pre-line text-[#151826] ${isBeautyTemplate ? "okado-beauty-heading" : "leading-[1]"} ${isRoseInstitutTemplate ? "max-h-[3.3em] overflow-hidden" : ""}`}
+            className={`${headingFontClass} ${isBeautyTemplate ? "line-clamp-3 okado-beauty-heading" : isRoseInstitutTemplate ? "line-clamp-5 leading-[1]" : "line-clamp-3 leading-[1]"} whitespace-pre-line text-[#151826]`}
             style={{ color: headingTextColor, fontSize: headingFontSize, fontWeight: isRoseInstitutTemplate || pageTemplate === "beauty-pop" ? 800 : campaign.presentation.heading.fontWeight ?? 600 }}
           >
             {isRestaurantPopTemplate
