@@ -1785,6 +1785,7 @@ export function CampaignEditor({
           headingAlign: current.presentation.heading.align,
           logoAlign: current.presentation.logo.align,
           buttonBackgroundColor: current.presentation.button.backgroundColor,
+          subtitleSpacingPx: current.presentation.layout.subtitleSpacingPx,
         };
         const remembered = wheelTemplateState.current[templateId];
         const wheel = remembered?.wheel ?? wheelPaletteForTemplate(templateId, current.presentation.wheel);
@@ -1796,7 +1797,7 @@ export function CampaignEditor({
               ...current.presentation.layout,
               templateId,
               wheelTemplateStyles: { ...current.presentation.layout.wheelTemplateStyles, [previousId]: wheelTemplateState.current[previousId] },
-              subtitleSpacingPx: defaultWheelSubtitleSpacingForTemplate(templateId),
+              subtitleSpacingPx: remembered?.subtitleSpacingPx ?? defaultWheelSubtitleSpacingForTemplate(templateId),
             },
             background: {
               ...current.presentation.background,
@@ -1846,13 +1847,14 @@ export function CampaignEditor({
         logoAlign: current.presentation.logo.align,
         buttonBackgroundColor: current.presentation.button.backgroundColor,
         blockSpacingPx: current.presentation.layout.blockSpacingPx,
+        subtitleSpacingPx: current.presentation.layout.subtitleSpacingPx,
       };
       const remembered = wheelTemplateState.current[templateId];
       return {
         ...current,
         presentation: {
           ...current.presentation,
-          layout: { ...current.presentation.layout, templateId, blockSpacingPx: remembered?.blockSpacingPx ?? defaultWheelBlockSpacingForTemplate(templateId), wheelTemplateStyles: { ...current.presentation.layout.wheelTemplateStyles, [previousId]: wheelTemplateState.current[previousId] } },
+          layout: { ...current.presentation.layout, templateId, blockSpacingPx: remembered?.blockSpacingPx ?? defaultWheelBlockSpacingForTemplate(templateId), subtitleSpacingPx: remembered?.subtitleSpacingPx ?? defaultWheelSubtitleSpacingForTemplate(templateId), wheelTemplateStyles: { ...current.presentation.layout.wheelTemplateStyles, [previousId]: wheelTemplateState.current[previousId] } },
           background: { ...current.presentation.background, color: remembered?.backgroundColor ?? theme.background },
           wheel: remembered?.wheel ?? wheelPaletteForTemplate(templateId, current.presentation.wheel),
           heading: { ...current.presentation.heading, fontFamily: remembered?.headingFontFamily ?? theme.font, textColor: remembered?.headingTextColor ?? theme.text, align: remembered?.headingAlign ?? (templateId === "beauty-editorial" ? "left" : "center") },
@@ -2943,6 +2945,7 @@ export function CampaignEditor({
                             logoAlign: current.presentation.logo.align,
                             buttonBackgroundColor: current.presentation.button.backgroundColor,
                             blockSpacingPx: current.presentation.layout.blockSpacingPx,
+                            subtitleSpacingPx: current.presentation.layout.subtitleSpacingPx,
                           };
                           const remembered = wheelTemplateState.current[template.value];
                           const wheel = remembered?.wheel ?? wheelPaletteForTemplate(template.value, current.presentation.wheel);
@@ -2970,7 +2973,7 @@ export function CampaignEditor({
                                 templateId: template.value,
                                 wheelTemplateStyles: { ...current.presentation.layout.wheelTemplateStyles, [currentTemplateId]: wheelTemplateState.current[currentTemplateId] },
                                 blockSpacingPx: wheelTemplateState.current[template.value]?.blockSpacingPx ?? defaultWheelBlockSpacingForTemplate(template.value),
-                                subtitleSpacingPx: defaultWheelSubtitleSpacingForTemplate(template.value),
+                                subtitleSpacingPx: remembered?.subtitleSpacingPx ?? defaultWheelSubtitleSpacingForTemplate(template.value),
                               },
                               heading:
                                 {

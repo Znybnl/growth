@@ -319,6 +319,7 @@ function normalizeWheelTemplateStyles(value: unknown): Partial<Record<GamePageTe
       logoAlign: normalizeEnum(style.logoAlign, TEXT_ALIGNS, "center"),
       buttonBackgroundColor: normalizeColor(style.buttonBackgroundColor, "#2563eb"),
       blockSpacingPx: normalizeOptionalNumber(style.blockSpacingPx, { min: 0, max: 80, integer: true }),
+      subtitleSpacingPx: normalizeOptionalNumber(style.subtitleSpacingPx, { min: 0, max: 80, integer: true }),
     };
   }
   return styles;

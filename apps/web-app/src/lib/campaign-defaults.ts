@@ -41,7 +41,7 @@ export const CAMPAIGN_SPACING_MIN_PX = 0;
 export const CAMPAIGN_SPACING_MAX_PX = 80;
 export const DEFAULT_WHEEL_SPACING_PX = 50;
 export const DEFAULT_ROSE_POWDER_WHEEL_SPACING_PX = 25;
-export const DEFAULT_WHEEL_SUBTITLE_SPACING_PX = 5;
+export const DEFAULT_WHEEL_SUBTITLE_SPACING_PX = 15;
 
 export function campaignSubtitleForGameTypeChange(
   currentSubtitle: string,
@@ -66,9 +66,9 @@ export function normalizeWheelSubtitle(value: string) {
 }
 
 export function defaultWheelSubtitleSpacingForTemplate(templateId?: GamePageTemplateId) {
-  return templateId === "cocorico-wheel" || templateId === "cocorico-duo-wheel"
-    ? 30
-    : DEFAULT_WHEEL_SUBTITLE_SPACING_PX;
+  // Keep the template argument for existing callers; the default is now shared by every wheel.
+  void templateId;
+  return DEFAULT_WHEEL_SUBTITLE_SPACING_PX;
 }
 
 export function defaultWheelBlockSpacingForTemplate(templateId?: GamePageTemplateId) {
