@@ -33,6 +33,7 @@ import {
 } from "react";
 
 import { BrandMark } from "@/components/brand-mark";
+import { BeautyWheelDecorations } from "@/components/public/beauty-wheel-decorations";
 import { CocoricoPromoText } from "@/components/public/cocorico-promo-text";
 import { CampaignEmailPreview } from "@/components/merchant/campaign-email-preview";
 import { CampaignPreviewQrDialog } from "@/components/merchant/campaign-preview-qr";
@@ -241,6 +242,7 @@ export type CampaignEditorPreviewModel = {
     backgroundSize: string;
     fontFamily: string;
   };
+  hasCustomBackgroundImage: boolean;
   logoMode: EditorState["logoMode"];
   logoAlignmentClass: string;
   logoBottomSpacingPx: number;
@@ -263,6 +265,7 @@ export type CampaignEditorPreviewModel = {
   gameType: GameType;
   accent: EditorState["accent"];
   wheelStyle: EditorState["presentation"]["wheel"];
+  wheelPrimaryColor: string;
   cocoricoPrimaryColor: string;
   cocoricoSecondaryColor: string;
   buttonStyle: {
@@ -922,8 +925,8 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
       ? "#f8fbff"
       : preview.headingTextColor;
   const previewFrameClass = compact
-      ? "min-h-[480px] max-w-[360px] rounded-[30px] px-3 pb-5 pt-7"
-      : "min-h-[600px] max-w-[450px] rounded-[38px] px-4 pb-6 pt-8";
+      ? "relative isolate min-h-[480px] max-w-[360px] rounded-[30px] px-3 pb-5 pt-7"
+      : "relative isolate min-h-[600px] max-w-[450px] rounded-[38px] px-4 pb-6 pt-8";
 
   return (
     <div className={`okado-preview-surface ${flushTop ? "" : "mt-6"}`} data-template-id={preview.gamePageTemplateId}>
@@ -931,6 +934,10 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
         className={`mx-auto w-full overflow-hidden border border-[#ced7e6] shadow-[0_30px_70px_rgba(18,24,39,0.18)] ${previewFrameClass}`}
         style={preview.backgroundStyle}
       >
+        {isBeautyTemplate && preview.gameType === "wheel" && !preview.hasCustomBackgroundImage ? (
+          <BeautyWheelDecorations templateId={preview.gamePageTemplateId} primaryColor={preview.wheelPrimaryColor} />
+        ) : null}
+        <div className="relative z-10">
         {showStandardHeader ? (
           <>
         {preview.logoMode === "image" && preview.logoUrl ? (
@@ -1175,6 +1182,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
             {preview.ctaLabel}
           </button>
         ) : null}
+        </div>
       </div>
     </div>
   );
@@ -1596,6 +1604,7 @@ export function buildCampaignLivePreviewModel(
       backgroundSize: "cover",
       fontFamily: textFontFamily(form.presentation.heading.fontFamily),
     },
+    hasCustomBackgroundImage: form.presentation.background.mode === "image" && Boolean(form.presentation.background.imageUrl),
     logoMode: form.logoMode,
     logoAlignmentClass,
     logoBottomSpacingPx: clampCampaignSpacingPx(form.presentation.logo.marginBottomPx),
@@ -1627,6 +1636,7 @@ export function buildCampaignLivePreviewModel(
     gameType: form.gameType,
     accent: previewAccent,
     wheelStyle: form.presentation.wheel,
+    wheelPrimaryColor: form.presentation.wheel.loseColor,
     cocoricoPrimaryColor: templateId === "cocorico-duo-wheel"
       ? form.presentation.wheel.loseColor
       : resolveCocoricoPrimaryColor(form.presentation.wheel.loseColor),
@@ -1909,6 +1919,7 @@ export function CampaignEditor({
         backgroundSize: "cover",
         fontFamily: textFontFamily(form.presentation.heading.fontFamily),
       },
+      hasCustomBackgroundImage: form.presentation.background.mode === "image" && Boolean(form.presentation.background.imageUrl),
       logoMode: form.logoMode,
       logoAlignmentClass,
       logoBottomSpacingPx: clampCampaignSpacingPx(form.presentation.logo.marginBottomPx),
@@ -1934,6 +1945,7 @@ export function CampaignEditor({
       gameType: form.gameType,
       accent: previewAccent,
       wheelStyle: form.presentation.wheel,
+      wheelPrimaryColor: form.presentation.wheel.loseColor,
       cocoricoPrimaryColor: currentTemplateId === "cocorico-duo-wheel"
         ? form.presentation.wheel.loseColor
         : resolveCocoricoPrimaryColor(form.presentation.wheel.loseColor),

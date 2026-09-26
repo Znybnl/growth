@@ -106,6 +106,32 @@ function deriveLighterHex(hex: string, ratio = 0.76) {
   return `#${lightened}`;
 }
 
+function beautySegmentColor(
+  templateId: BeautyWheelTemplateId,
+  index: number,
+  primary: string,
+  secondary: string,
+) {
+  const softPrimary = deriveLighterHex(primary, 0.78);
+  const palePrimary = deriveLighterHex(primary, 0.9);
+  const softSecondary = deriveLighterHex(secondary, 0.08);
+
+  switch (templateId) {
+    case "beauty-nude":
+      return [secondary, softPrimary, secondary, palePrimary][index % 4];
+    case "beauty-botanical":
+      return [secondary, softPrimary, secondary, palePrimary][index % 4];
+    case "beauty-pop":
+      return [secondary, softPrimary, palePrimary, secondary, deriveLighterHex(primary, 0.58)][index % 5];
+    case "beauty-editorial":
+      return [secondary, softSecondary, primary, secondary][index % 4];
+    case "beauty-tech":
+      return [secondary, palePrimary, secondary, softPrimary, primary, secondary][index % 6];
+    case "beauty-rose":
+      return index % 2 === 0 ? secondary : primary;
+  }
+}
+
 function withAlpha(hex: string, alpha: number) {
   const normalized = hex.replace("#", "");
 
@@ -209,6 +235,7 @@ export function WheelOfFortune({
   const isRestaurantPopTemplate = pageTemplate === "restaurant-pop";
   const isRoseInstitutTemplate = pageTemplate === "rose-institut";
   const isBeautyTemplate = isBeautyWheelTemplate(pageTemplate);
+  const beautyTemplateId = isBeautyWheelTemplate(pageTemplate) ? pageTemplate : undefined;
   const beautyTheme = beautyWheelTheme(pageTemplate);
   const baseVisualSegments = isRoseInstitutTemplate
     ? segments.slice(0, 8)
@@ -240,8 +267,9 @@ export function WheelOfFortune({
     near: withAlpha(colors.loseColor, 0.2),
     far: withAlpha(colors.loseColor, 0.1),
   };
-  const beautyRimWidth = pageTemplate === "beauty-pop" ? 3 : pageTemplate === "beauty-tech" ? 2.5 : 2;
-  const beautyRingHighlight = pageTemplate === "beauty-editorial" ? "rgba(255,255,255,.9)" : "rgba(255,255,255,.86)";
+  const beautyRimWidth = pageTemplate === "beauty-pop" ? 3 : pageTemplate === "beauty-tech" ? 2.5 : pageTemplate === "beauty-nude" ? 1.5 : 2;
+  const beautyRingHighlight = pageTemplate === "beauty-tech" ? "rgba(233,224,255,.78)" : "rgba(255,255,255,.9)";
+  const beautyInnerRingColor = pageTemplate === "beauty-editorial" ? "#c5a875" : withAlpha(colors.rimColor, 0.34);
   const beautyWheelShadow = pageTemplate === "beauty-tech"
     ? "drop-shadow(0 12px 22px rgba(124,77,255,.15))"
     : pageTemplate === "beauty-botanical"
@@ -405,8 +433,8 @@ export function WheelOfFortune({
             ) : isBeautyTemplate ? (
               <>
                 <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 13} fill={beautyTheme?.secondary ?? "#fff"} stroke={colors.rimColor} strokeWidth={beautyRimWidth} />
-                <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 9} fill="none" stroke={beautyRingHighlight} strokeWidth="2" />
-                <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 5} fill="none" stroke={withAlpha(colors.rimColor, 0.28)} strokeWidth="1" />
+                <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 9} fill="none" stroke={beautyRingHighlight} strokeWidth={pageTemplate === "beauty-pop" ? "3" : "1.5"} />
+                <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 5} fill="none" stroke={beautyInnerRingColor} strokeWidth="1" />
               </>
             ) : isRoseInstitutTemplate ? (
               <>
@@ -456,11 +484,7 @@ export function WheelOfFortune({
               }
               // Colors are an aesthetic rhythm, independent from the winning outcome.
               const fillColor = isBeautyTemplate
-                ? pageTemplate === "beauty-pop" && index % 4 === 2
-                  ? deriveLighterHex(colors.loseColor, 0.26)
-                  : pageTemplate === "beauty-pop" && index % 4 === 3
-                    ? colors.alternateLoseColor
-                    : index % 2 === 0 ? colors.loseColor : colors.alternateLoseColor
+                ? beautySegmentColor(beautyTemplateId ?? "beauty-nude", index, colors.loseColor, colors.alternateLoseColor)
                 : isRestaurantPopTemplate
                 ? index % 2 === 0
                   ? colors.loseColor
@@ -484,7 +508,7 @@ export function WheelOfFortune({
                     d={describeSlice(startAngle, endAngle)}
                     fill={fillColor}
                     stroke="rgba(255,255,255,0.9)"
-                    strokeWidth={isBeautyTemplate ? pageTemplate === "beauty-pop" ? "2.5" : "2" : isRoseInstitutTemplate ? "7" : "5"}
+                    strokeWidth={isBeautyTemplate ? pageTemplate === "beauty-pop" ? "2.2" : pageTemplate === "beauty-rose" ? "2" : "1.4" : isRoseInstitutTemplate ? "7" : "5"}
                     strokeLinejoin="round"
                   />
                   <text
@@ -589,7 +613,7 @@ export function WheelOfFortune({
           aria-label={isBeautyTemplate ? (isSpinning ? "La roue tourne" : "Jouer à la roue") : undefined}
           onClick={handleCentralButton}
           disabled={!buttonEnabled || isSpinning || hasSpun}
-          className={`okado-wheel-center-button absolute left-1/2 top-1/2 z-40 flex aspect-square ${isRestaurantPopTemplate ? "w-[21%]" : isRoseInstitutTemplate ? "w-[28%]" : isBeautyTemplate ? pageTemplate === "beauty-rose" ? "w-[23%]" : "w-[25%]" : "w-[19.2%]"} -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full ${isRestaurantPopTemplate || pageTemplate === "classic" ? "border-0" : isRoseInstitutTemplate || isBeautyTemplate ? "border-2" : "border-[4px]"} text-[19px] font-black uppercase transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-75 ${isRestaurantPopTemplate ? "font-anton" : "shadow-[0_16px_30px_rgba(15,23,42,0.16)]"}`}
+          className={`okado-wheel-center-button absolute left-1/2 top-1/2 z-40 flex aspect-square ${isRestaurantPopTemplate ? "w-[21%]" : isRoseInstitutTemplate ? "w-[28%]" : isBeautyTemplate ? pageTemplate === "beauty-rose" ? "w-[23%]" : "w-[26.5%]" : "w-[19.2%]"} -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full ${isRestaurantPopTemplate || pageTemplate === "classic" ? "border-0" : isRoseInstitutTemplate || isBeautyTemplate ? "border-2" : "border-[4px]"} ${isBeautyTemplate && pageTemplate !== "beauty-rose" ? `okado-beauty-wheel-center okado-beauty-wheel-center--${pageTemplate} relative isolate overflow-hidden` : ""} text-[19px] font-black uppercase transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-75 ${isRestaurantPopTemplate ? "font-anton" : "shadow-[0_16px_30px_rgba(15,23,42,0.16)]"}`}
           style={{
             background:
               buttonEnabled && !hasSpun
@@ -604,10 +628,10 @@ export function WheelOfFortune({
               : isRoseInstitutTemplate
                 ? "clamp(0.92rem, 5.6cqw, 1.8rem)"
               : "clamp(0.84rem, 4.7cqw, 1.55rem)",
-            boxShadow: isRestaurantPopTemplate ? "none" : isBeautyTemplate ? `0 4px 12px ${withAlpha(colors.rimColor, 0.14)}, 0 0 0 2px ${withAlpha(beautyTheme?.secondary ?? "#ffffff", 0.82)}` : isRoseInstitutTemplate ? "0 8px 18px rgba(11,78,162,0.22)" : undefined,
+            boxShadow: isRestaurantPopTemplate ? "none" : isBeautyTemplate ? pageTemplate === "beauty-rose" ? `0 4px 12px ${withAlpha(colors.rimColor, 0.14)}, 0 0 0 2px ${withAlpha(beautyTheme?.secondary ?? "#ffffff", 0.82)}` : `0 6px 16px ${withAlpha(colors.rimColor, 0.2)}, 0 0 0 2px ${withAlpha(beautyTheme?.secondary ?? "#ffffff", 0.88)}` : isRoseInstitutTemplate ? "0 8px 18px rgba(11,78,162,0.22)" : undefined,
           }}
         >
-          {isBeautyTemplate ? <span className="flex flex-col items-center gap-1"><Pointer aria-hidden="true" className="h-[clamp(21px,7.2cqw,36px)] w-[clamp(21px,7.2cqw,36px)]" strokeWidth={2} /><span className="text-[clamp(10px,2.8cqw,13px)] font-semibold tracking-[0.08em]">{isSpinning ? "..." : buttonLabel}</span></span> : isSpinning ? "..." : buttonLabel}
+          {isBeautyTemplate ? <span className={`flex flex-col items-center gap-1 ${pageTemplate !== "beauty-rose" ? "relative z-10" : ""}`}><Pointer aria-hidden="true" className="h-[clamp(21px,7.2cqw,36px)] w-[clamp(21px,7.2cqw,36px)]" strokeWidth={2.15} /><span className="okado-beauty-wheel-center-label text-[clamp(10px,2.9cqw,14px)] font-semibold tracking-[0.075em]">{isSpinning ? "..." : buttonLabel}</span></span> : isSpinning ? "..." : buttonLabel}
         </button>
       </div>
     </div>

@@ -78,14 +78,14 @@ export function beautyWheelBackground(templateId: BeautyWheelTemplateId, backgro
     case "beauty-rose":
       return `radial-gradient(ellipse 75% 33% at -12% 12%, ${translucent(primary, 0.19)}, transparent 76%), radial-gradient(ellipse 76% 38% at 112% 88%, ${translucent(primary, 0.14)}, transparent 78%), linear-gradient(180deg, ${base}, ${base})`;
     case "beauty-nude":
-      return `radial-gradient(ellipse 68% 34% at 104% -4%, ${translucent(primary, 0.12)}, transparent 78%), radial-gradient(ellipse 42% 24% at -12% 100%, ${translucent(primary, 0.07)}, transparent 82%), linear-gradient(132deg, transparent 0 68%, rgba(185,144,82,.06) 68.2%, transparent 68.6%), linear-gradient(180deg, ${base}, ${base})`;
+      return `radial-gradient(ellipse 74% 36% at 104% -2%, ${translucent(primary, 0.14)}, transparent 78%), radial-gradient(ellipse 48% 28% at -10% 98%, ${translucent(primary, 0.09)}, transparent 82%), linear-gradient(145deg, rgba(255,255,255,.34) 0%, transparent 46%, rgba(185,144,82,.035) 100%), linear-gradient(180deg, ${base}, ${base})`;
     case "beauty-botanical":
-      return `radial-gradient(ellipse 54% 30% at -10% 76%, ${translucent(primary, 0.18)}, transparent 78%), radial-gradient(ellipse 46% 27% at 108% 7%, ${translucent(primary, 0.13)}, transparent 80%), radial-gradient(ellipse 36% 18% at 95% 54%, ${translucent(primary, 0.07)}, transparent 82%), linear-gradient(180deg, ${base}, ${base})`;
+      return `radial-gradient(ellipse 56% 34% at -12% 74%, ${translucent(primary, 0.2)}, transparent 78%), radial-gradient(ellipse 46% 28% at 110% 8%, ${translucent(primary, 0.14)}, transparent 80%), radial-gradient(ellipse 38% 22% at 104% 56%, ${translucent(primary, 0.085)}, transparent 82%), linear-gradient(165deg, rgba(255,255,255,.28), transparent 42%, rgba(141,164,128,.035)), linear-gradient(180deg, ${base}, ${base})`;
     case "beauty-pop":
-      return `radial-gradient(ellipse 42% 27% at 104% 6%, ${translucent(primary, 0.18)} 0 28%, transparent 78%), radial-gradient(ellipse 42% 25% at -4% 96%, rgba(255,155,82,.13) 0 28%, transparent 78%), radial-gradient(ellipse 26% 16% at 92% 48%, ${translucent(primary, 0.08)}, transparent 82%), linear-gradient(145deg, ${base} 0%, ${base} 58%, #fff8f3 100%)`;
+      return `radial-gradient(ellipse 47% 30% at 106% 6%, ${translucent(primary, 0.2)} 0 26%, transparent 78%), radial-gradient(ellipse 48% 29% at -8% 96%, rgba(255,155,82,.16) 0 24%, transparent 78%), radial-gradient(ellipse 30% 18% at 100% 52%, ${translucent(primary, 0.09)}, transparent 82%), linear-gradient(145deg, ${base} 0%, ${base} 56%, #fff8f3 100%)`;
     case "beauty-editorial":
-      return `radial-gradient(ellipse 76% 38% at 108% 100%, rgba(185,144,82,.08), transparent 80%), linear-gradient(107deg, ${translucent(primary, 0.045)} 0 18%, transparent 18.2% 100%), linear-gradient(180deg, ${base}, ${base})`;
+      return `radial-gradient(ellipse 72% 40% at 108% 96%, rgba(185,144,82,.1), transparent 80%), radial-gradient(ellipse 60% 35% at 4% 0%, rgba(255,255,255,.6), transparent 78%), linear-gradient(107deg, ${translucent(primary, 0.05)} 0 18%, transparent 18.2% 100%), linear-gradient(180deg, ${base}, ${base})`;
     case "beauty-tech":
-      return `radial-gradient(ellipse 82% 42% at 50% 88%, ${translucent(primary, 0.27)}, transparent 75%), radial-gradient(circle at 110% 11%, ${translucent(primary, 0.16)}, transparent 34%), linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px), linear-gradient(160deg, ${base} 0%, #24183a 100%)`;
+      return `radial-gradient(ellipse 78% 42% at 50% 89%, ${translucent(primary, 0.24)}, transparent 76%), radial-gradient(ellipse 48% 32% at 108% 11%, ${translucent(primary, 0.16)}, transparent 78%), radial-gradient(ellipse 34% 24% at -8% 42%, ${translucent(primary, 0.085)}, transparent 80%), linear-gradient(160deg, ${base} 0%, #24183a 100%)`;
   }
 }
