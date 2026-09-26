@@ -20,6 +20,7 @@ import { ImmersiveWheel } from "@/components/public/immersive-wheel";
 import { ImmersiveScratchTicket } from "@/components/public/immersive-scratch-ticket";
 import { ScratchGame } from "@/components/public/scratch-game";
 import { WheelOfFortune } from "@/components/public/wheel-of-fortune";
+import { beautyWheelBackground, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
 import { fluidType } from "@/lib/responsive";
 import { textFontClass, textFontFamily, wheelSubtitleFontFamily } from "@/lib/format";
 import { userBackgroundImageStyle } from "@/lib/campaign-background";
@@ -495,6 +496,7 @@ export function CampaignExperience({
   const isClassicTemplate = campaign.presentation.layout.templateId === "classic" || !campaign.presentation.layout.templateId;
   const isRestaurantPopTemplate = pageTemplate === "restaurant-pop";
   const isRoseInstitutTemplate = isRoseInstitutWheelTemplate(pageTemplate);
+  const isBeautyTemplate = isBeautyWheelTemplate(pageTemplate);
   const isCocoricoTemplate = isCocoricoWheelTemplate(pageTemplate);
   const isCocoricoDuoTemplate = pageTemplate === "cocorico-duo-wheel";
   const isCosmicTemplate = pageTemplate === "cosmic-orbit";
@@ -818,6 +820,8 @@ export function CampaignExperience({
         ? restaurantPopBackground(campaign.presentation.background.color)
         : isRoseInstitutTemplate
         ? roseInstitutWheelBackground(campaign.presentation.background.color)
+        : isBeautyTemplate
+        ? beautyWheelBackground(pageTemplate, campaign.presentation.background.color, primaryColor)
         : isCocoricoTemplate
         ? `radial-gradient(circle at 12% 12%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(campaign.presentation.background.color), 0.32), "e6")} 0 10%, transparent 11%), radial-gradient(circle at 90% 18%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(campaign.presentation.background.color), 0.12), "b3")} 0 16%, transparent 17%), linear-gradient(160deg, ${resolveCocoricoBackgroundColor(campaign.presentation.background.color)} 0%, ${resolveCocoricoBackgroundColor(campaign.presentation.background.color)} 48%, #063d78 100%)`
         : `radial-gradient(circle at 50% 50%, ${withHexAlpha(primaryColor, "33")}, transparent 50%), linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.08))`;
@@ -837,7 +841,7 @@ export function CampaignExperience({
   // Keep the brand mark anchored at the same distance from the top for every
   // game mechanic. Scratch templates render the logo inside their ticket
   // component, but that component now uses the same top spacing as the wheel.
-  const pageTopPaddingClass = "pt-12 sm:pt-14";
+  const pageTopPaddingClass = isBeautyTemplate ? "pt-8 sm:pt-10" : "pt-12 sm:pt-14";
 
   return (
     <div
@@ -874,7 +878,7 @@ export function CampaignExperience({
           />
         </div>
       ) : null}
-      <div className={`relative mx-auto flex ${isPreview ? "h-[calc(100dvh-44px)] min-h-[560px]" : "h-screen"} w-full flex-col overflow-hidden px-4 pb-0 sm:px-6 ${pageTopPaddingClass}`}>
+      <div className={`relative mx-auto flex ${isBeautyTemplate ? "min-h-[calc(100dvh-44px)]" : isPreview ? "h-[calc(100dvh-44px)] min-h-[560px]" : "h-screen"} w-full flex-col ${isBeautyTemplate ? "overflow-visible pb-8" : "overflow-hidden pb-0"} px-4 sm:px-6 ${pageTopPaddingClass}`}>
         {!isImmersiveScratchTemplate && ((campaign.logoMode === "image" && campaign.logoUrl) ||
         campaign.logoMode === "text" ||
         campaign.gameType === "scratch") ? (
@@ -913,8 +917,8 @@ export function CampaignExperience({
             variant={isCocoricoTemplate ? "cocorico" : "inspired"}
             rotate={isCocoricoTemplate}
           /> : <h1
-            className={`${headingFontClass} line-clamp-3 whitespace-pre-line leading-[1] text-[#151826] ${isRoseInstitutTemplate ? "max-h-[3.3em] overflow-hidden" : ""}`}
-            style={{ color: headingTextColor, fontSize: headingFontSize, fontWeight: isRoseInstitutTemplate ? 800 : campaign.presentation.heading.fontWeight ?? 600 }}
+            className={`${headingFontClass} line-clamp-3 whitespace-pre-line text-[#151826] ${isBeautyTemplate ? "okado-beauty-heading" : "leading-[1]"} ${isRoseInstitutTemplate ? "max-h-[3.3em] overflow-hidden" : ""}`}
+            style={{ color: headingTextColor, fontSize: headingFontSize, fontWeight: isRoseInstitutTemplate || pageTemplate === "beauty-pop" ? 800 : campaign.presentation.heading.fontWeight ?? 600 }}
           >
             {isRestaurantPopTemplate
               ? restaurantPopHeadingLines.map((line, lineIndex) => (
@@ -1003,7 +1007,7 @@ export function CampaignExperience({
                   key={`${campaign.id}-${drawSession?.id ?? "idle"}`}
                   accent={campaign.accent}
                   wheelStyle={campaign.presentation.wheel}
-                  pageTemplate={pageTemplate === "restaurant-pop" ? "restaurant-pop" : isRoseInstitutTemplate ? "rose-institut" : "classic"}
+                  pageTemplate={pageTemplate === "restaurant-pop" ? "restaurant-pop" : isRoseInstitutTemplate ? "rose-institut" : isBeautyTemplate ? pageTemplate : "classic"}
                   buttonStyle={{
                     backgroundColor: campaign.presentation.button.backgroundColor,
                     textColor: campaign.presentation.button.textColor,

@@ -3,6 +3,7 @@ import {
   CampaignPosterSettings,
   GamePageTemplateId,
   TextFont,
+  WheelTemplateStyle,
 } from "@/lib/types";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -24,6 +25,7 @@ type CampaignLocalSettings = {
   headingFontFamily?: TextFont;
   headingFontWeight?: number;
   gamePageTemplateId?: GamePageTemplateId;
+  wheelTemplateStyles?: Partial<Record<GamePageTemplateId, WheelTemplateStyle>>;
   logoMode?: "none" | "image" | "text";
   logoText?: string;
   logoTextColor?: string;

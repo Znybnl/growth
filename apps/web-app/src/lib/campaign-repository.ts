@@ -587,6 +587,7 @@ function toCampaign(
       layout: {
         blockSpacingPx: localSettings.blockSpacingPx ?? 50,
         templateId,
+        wheelTemplateStyles: localSettings.wheelTemplateStyles,
         wheelSubtitle: localSettings.wheelSubtitle ?? "",
         subtitleSpacingPx:
           localSettings.subtitleSpacingPx ?? defaultWheelSubtitleSpacingForTemplate(templateId),
@@ -2385,6 +2386,7 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
     headingFontFamily: input.presentation.heading.fontFamily,
     headingFontWeight: input.presentation.heading.fontWeight ?? 600,
     gamePageTemplateId: templateId,
+    wheelTemplateStyles: input.presentation.layout.wheelTemplateStyles,
     logoMode: input.logoMode,
     logoText: input.logoText,
     logoTextColor: input.presentation.logo.textColor ?? input.presentation.heading.textColor,

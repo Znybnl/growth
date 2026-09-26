@@ -13,6 +13,7 @@ import {
   PosterTemplateId,
   TextAlign,
   TextFont,
+  WheelTemplateStyle,
 } from "@/lib/types";
 import { BEAUTY_INDUSTRY, isBeautySubsector } from "@/lib/merchant-options";
 import {
@@ -54,6 +55,11 @@ const TEXT_FONTS = new Set<TextFont>([
   "display",
   "serif",
   "cormorant",
+  "playfair",
+  "dm-sans",
+  "poppins",
+  "bodoni",
+  "space-grotesk",
   "fredoka",
   "inter",
   "bebas",
@@ -68,6 +74,12 @@ const GAME_PAGE_TEMPLATE_IDS = new Set<GamePageTemplateId>([
   "cocorico-wheel",
   "cocorico-duo-wheel",
   "rose-institut",
+  "beauty-rose",
+  "beauty-nude",
+  "beauty-botanical",
+  "beauty-pop",
+  "beauty-editorial",
+  "beauty-tech",
   "cosmic-orbit",
   "sunburst-festival",
   "scratch-vault",
@@ -279,6 +291,36 @@ function normalizeEnum<T extends string>(value: unknown, allowed: Set<T>, fallba
 function normalizeColor(value: unknown, fallback: string) {
   const normalized = normalizeString(value, 64, fallback);
   return normalized || fallback;
+}
+
+function normalizeWheelTemplateStyles(value: unknown): Partial<Record<GamePageTemplateId, WheelTemplateStyle>> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  const styles: Partial<Record<GamePageTemplateId, WheelTemplateStyle>> = {};
+  for (const [id, rawStyle] of Object.entries(value)) {
+    if (!GAME_PAGE_TEMPLATE_IDS.has(id as GamePageTemplateId) || !rawStyle || typeof rawStyle !== "object" || Array.isArray(rawStyle)) continue;
+    const style = rawStyle as Record<string, unknown>;
+    const wheel = style.wheel && typeof style.wheel === "object" && !Array.isArray(style.wheel)
+      ? style.wheel as Record<string, unknown>
+      : {};
+    styles[id as GamePageTemplateId] = {
+      wheel: {
+        rimColor: normalizeColor(wheel.rimColor, "#ffffff"),
+        winColor: normalizeColor(wheel.winColor, "#ffffff"),
+        alternateWinColor: normalizeColor(wheel.alternateWinColor, "#ffffff"),
+        loseColor: normalizeColor(wheel.loseColor, "#2563eb"),
+        alternateLoseColor: normalizeColor(wheel.alternateLoseColor, "#ffffff"),
+      },
+      backgroundColor: normalizeColor(style.backgroundColor, "#ffffff"),
+      scratchSignal: normalizeColor(style.scratchSignal, "#2563eb"),
+      headingTextColor: normalizeColor(style.headingTextColor, "#1f2937"),
+      logoTextColor: normalizeColor(style.logoTextColor, "#1f2937"),
+      headingFontFamily: normalizeEnum(style.headingFontFamily, TEXT_FONTS, "roboto"),
+      headingAlign: normalizeEnum(style.headingAlign, TEXT_ALIGNS, "center"),
+      logoAlign: normalizeEnum(style.logoAlign, TEXT_ALIGNS, "center"),
+      buttonBackgroundColor: normalizeColor(style.buttonBackgroundColor, "#2563eb"),
+    };
+  }
+  return styles;
 }
 
 function normalizeOptionalNumber(value: unknown, options: { min: number; max: number; integer?: boolean }) {
@@ -564,6 +606,7 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
           integer: true,
         }),
         templateId,
+        wheelTemplateStyles: normalizeWheelTemplateStyles(layout.wheelTemplateStyles),
         wheelSubtitle: normalizeMultiline(layout.wheelSubtitle, 240),
         subtitleSpacingPx: normalizeNumber(layout.subtitleSpacingPx, {
           min: CAMPAIGN_SPACING_MIN_PX,

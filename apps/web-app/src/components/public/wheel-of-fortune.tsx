@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Pointer } from "lucide-react";
+import { beautyWheelLegibleText, beautyWheelTheme, isBeautyWheelTemplate, type BeautyWheelTemplateId } from "@/lib/beauty-wheel-themes";
 
 type WheelSegment = {
   id: string;
@@ -35,7 +37,7 @@ type WheelOfFortuneProps = {
     borderColor?: string;
   };
   framing?: "default" | "public" | "editor" | "mobile-preview";
-  pageTemplate?: "classic" | "restaurant-pop" | "rose-institut";
+  pageTemplate?: "classic" | "restaurant-pop" | "rose-institut" | BeautyWheelTemplateId;
 };
 
 const SVG_SIZE = 640;
@@ -205,6 +207,8 @@ export function WheelOfFortune({
 
   const isRestaurantPopTemplate = pageTemplate === "restaurant-pop";
   const isRoseInstitutTemplate = pageTemplate === "rose-institut";
+  const isBeautyTemplate = isBeautyWheelTemplate(pageTemplate);
+  const beautyTheme = beautyWheelTheme(pageTemplate);
   const baseVisualSegments = isRoseInstitutTemplate
     ? segments.slice(0, 8)
     : isRestaurantPopTemplate
@@ -237,16 +241,18 @@ export function WheelOfFortune({
   };
   const classicLightColor = deriveLighterHex(colors.loseColor);
   const wheelTop =
-    framing === "public" ? undefined : framing === "editor" ? "83%" : framing === "mobile-preview" ? "70%" : "62%";
+    framing === "public" ? undefined : isBeautyTemplate ? (framing === "mobile-preview" ? "35%" : "40%") : framing === "editor" ? "83%" : framing === "mobile-preview" ? "70%" : "62%";
   const wheelFrameSizeClass =
     framing === "public"
-      ? isRoseInstitutTemplate
+      ? isBeautyTemplate
+        ? "top-1 w-[min(calc(100vw-28px),calc(100dvh-315px),480px)] sm:w-[min(calc(100vw-36px),calc(100dvh-315px),560px)] md:w-[min(52vw,calc(100dvh-260px),640px)]"
+      : isRoseInstitutTemplate
         ? "top-1 w-[min(calc(100vw-32px),calc(100dvh-320px),430px)] sm:w-[min(calc(100vw-36px),calc(100dvh-320px),520px)] md:w-[min(52vw,640px)] lg:w-[min(48vw,680px)]"
         : "top-2 w-[max(130vw,calc(100svh-240px))] max-w-none sm:w-[min(118vw,calc(100svh-220px))] md:w-[min(98vw,calc(100svh-220px))] lg:w-[min(52vw,calc(100svh-220px))] xl:w-[min(42vw,calc(100svh-220px))] 2xl:w-[min(38vw,calc(100svh-220px))]"
       : framing === "editor"
-        ? isRoseInstitutTemplate ? "w-[122%] max-w-none" : "w-[150%] max-w-none"
+        ? isBeautyTemplate ? "w-[86%] max-w-none" : isRoseInstitutTemplate ? "w-[122%] max-w-none" : "w-[150%] max-w-none"
         : framing === "mobile-preview"
-          ? isRoseInstitutTemplate ? "w-[122%] max-w-none" : "w-[150%] max-w-none"
+          ? isBeautyTemplate ? "w-[86%] max-w-none" : isRoseInstitutTemplate ? "w-[122%] max-w-none" : "w-[150%] max-w-none"
           : "w-full";
   const wheelTransformClass =
     framing === "public" ? "-translate-x-1/2" : "-translate-x-1/2 -translate-y-1/2";
@@ -256,11 +262,12 @@ export function WheelOfFortune({
       return;
     }
 
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const timeout = window.setTimeout(() => {
       setIsSpinning(false);
       setHasSpun(true);
       onSpinEnd();
-    }, 4400);
+    }, reducedMotion ? 150 : 4400);
 
     return () => window.clearTimeout(timeout);
   }, [isSpinning, onSpinEnd]);
@@ -324,7 +331,9 @@ export function WheelOfFortune({
     <div className="relative h-full w-full overflow-visible" style={{ containerType: "inline-size" }}>
       <div
         className={`absolute left-1/2 aspect-square ${wheelTransformClass} ${wheelFrameSizeClass} ${
-          isRestaurantPopTemplate
+          isBeautyTemplate
+            ? ""
+          : isRestaurantPopTemplate
             ? "drop-shadow-[0_28px_42px_rgba(15,23,42,0.24)]"
             : isRoseInstitutTemplate
               ? ""
@@ -332,13 +341,13 @@ export function WheelOfFortune({
         }`}
         style={{ top: wheelTop }}
       >
-        {isRoseInstitutTemplate ? (
+        {isRoseInstitutTemplate || isBeautyTemplate ? (
           <div
             aria-hidden="true"
             className="pointer-events-none absolute -inset-[10%] z-0 rounded-full"
             style={{
               background: `radial-gradient(circle, ${roseGlow.near} 0%, ${roseGlow.near} 54%, ${roseGlow.far} 68%, transparent 84%)`,
-              filter: "blur(14px)",
+              filter: isBeautyTemplate ? "blur(18px)" : "blur(14px)",
               transform: "scale(1.04)",
             }}
           />
@@ -380,6 +389,11 @@ export function WheelOfFortune({
                   strokeWidth="1.5"
                 />
               </>
+            ) : isBeautyTemplate ? (
+              <>
+                <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 13} fill={beautyTheme?.secondary ?? "#fff"} stroke={colors.rimColor} strokeWidth={pageTemplate === "beauty-pop" ? 8 : pageTemplate === "beauty-tech" ? 6 : 3} />
+                <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 3} fill="none" stroke="rgba(255,255,255,.78)" strokeWidth="3" />
+              </>
             ) : isRoseInstitutTemplate ? (
               <>
                 <circle
@@ -415,10 +429,25 @@ export function WheelOfFortune({
               const endAngle = startAngle + segmentAngle - 2.4;
               const midAngle = startAngle + (endAngle - startAngle) / 2;
               const textPoint = polarToCartesian(208, midAngle);
+              const radialTextAngle = midAngle + 90;
+              const uprightTextAngle = radialTextAngle % 360 > 90 && radialTextAngle % 360 < 270
+                ? radialTextAngle + 180
+                : radialTextAngle;
               const labelLines = wrapSegmentLabel(segment.label);
               const textStyles = segmentTextStyles(labelLines, isRoseInstitutTemplate);
+              if (isBeautyTemplate) {
+                const manySegments = visualSegments.length >= 8;
+                textStyles.fontSize = manySegments ? 20 : visualSegments.length >= 6 ? 24 : 28;
+                if (labelLines.length >= 3) textStyles.fontSize -= 2;
+              }
               // Colors are an aesthetic rhythm, independent from the winning outcome.
-              const fillColor = isRestaurantPopTemplate
+              const fillColor = isBeautyTemplate
+                ? pageTemplate === "beauty-pop" && index % 4 === 2
+                  ? deriveLighterHex(colors.loseColor, 0.26)
+                  : pageTemplate === "beauty-pop" && index % 4 === 3
+                    ? colors.alternateLoseColor
+                    : index % 2 === 0 ? colors.loseColor : colors.alternateLoseColor
+                : isRestaurantPopTemplate
                 ? index % 2 === 0
                   ? colors.loseColor
                   : colors.winColor
@@ -429,7 +458,9 @@ export function WheelOfFortune({
                 : index % 2 === 0
                   ? colors.loseColor
                   : classicLightColor;
-              const textColor = isRoseInstitutTemplate
+              const textColor = isBeautyTemplate
+                ? beautyWheelLegibleText(fillColor, beautyTheme?.text)
+                : isRoseInstitutTemplate
                 ? buttonStyle?.backgroundColor ?? "#0b4ea2"
                 : readableTextColor(fillColor, segment.tone === "win" ? accent.ink : "#111827");
 
@@ -439,19 +470,19 @@ export function WheelOfFortune({
                     d={describeSlice(startAngle, endAngle)}
                     fill={fillColor}
                     stroke="rgba(255,255,255,0.9)"
-                    strokeWidth={isRoseInstitutTemplate ? "7" : "5"}
+                    strokeWidth={isBeautyTemplate ? pageTemplate === "beauty-pop" ? "4" : "3" : isRoseInstitutTemplate ? "7" : "5"}
                     strokeLinejoin="round"
                   />
                   <text
                     x={textPoint.x}
                     y={textPoint.y}
                     fill={textColor}
-                    fontFamily="Roboto, sans-serif"
+                    fontFamily={isBeautyTemplate ? "var(--font-dm-sans), sans-serif" : "Roboto, sans-serif"}
                     fontSize={String(textStyles.fontSize)}
                     fontWeight="850"
                     textAnchor="middle"
                     dominantBaseline="middle"
-                    transform={`rotate(${midAngle + 90} ${textPoint.x} ${textPoint.y})`}
+                    transform={`rotate(${isBeautyTemplate ? uprightTextAngle : radialTextAngle} ${textPoint.x} ${textPoint.y})`}
                   >
                     {labelLines.map((line, lineIndex) => (
                       <tspan
@@ -470,7 +501,7 @@ export function WheelOfFortune({
                 </g>
               );
             })}
-            {!isRoseInstitutTemplate ? <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 4} fill="url(#okado-wheel-depth)" /> : null}
+            {!isRoseInstitutTemplate && !isBeautyTemplate ? <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 4} fill="url(#okado-wheel-depth)" /> : null}
             {isRestaurantPopTemplate
               ? Array.from({ length: visualSegments.length }, (_, beadIndex) => {
                   const bead = polarToCartesian(
@@ -497,35 +528,35 @@ export function WheelOfFortune({
           <div
             className="absolute"
             style={{
-              top: isRoseInstitutTemplate ? "-1.2%" : "31.2%",
+              top: isRoseInstitutTemplate || isBeautyTemplate ? "-1.2%" : "31.2%",
               left: "50%",
-              width: isRestaurantPopTemplate ? "12.4%" : isRoseInstitutTemplate ? "13.2%" : "10.3%",
-              height: isRestaurantPopTemplate ? "20.4%" : isRoseInstitutTemplate ? "18.5%" : "18.9%",
+              width: isRestaurantPopTemplate ? "12.4%" : isRoseInstitutTemplate ? "13.2%" : isBeautyTemplate ? "11.4%" : "10.3%",
+              height: isRestaurantPopTemplate ? "20.4%" : isRoseInstitutTemplate ? "18.5%" : isBeautyTemplate ? "16%" : "18.9%",
               transform: "translateX(-50%)",
               clipPath: "polygon(50% 0, 84% 14%, 72% 76%, 50% 100%, 28% 76%, 16% 14%)",
-              background: isRestaurantPopTemplate
+              background: isBeautyTemplate ? colors.rimColor : isRestaurantPopTemplate
                 ? "#fffdf7"
                 : isRoseInstitutTemplate
                   ? "#ffffff"
                 : "linear-gradient(180deg, #ffffff 0%, #f8fafc 62%, #ffffff 100%)",
-              filter: isRoseInstitutTemplate
+              filter: isBeautyTemplate ? "drop-shadow(0 5px 6px rgba(0,0,0,.16))" : isRoseInstitutTemplate
                 ? "drop-shadow(0 6px 10px rgba(11,78,162,0.18))"
                 : "drop-shadow(0 12px 18px rgba(15,23,42,0.2))",
             }}
           >
-            {isRestaurantPopTemplate || isRoseInstitutTemplate ? (
+            {isRestaurantPopTemplate || isRoseInstitutTemplate || isBeautyTemplate ? (
               <div
                 className="absolute inset-[9%]"
                 style={{
                   clipPath: "polygon(50% 0, 82% 18%, 67% 73%, 50% 94%, 33% 73%, 18% 18%)",
-                  background: isRoseInstitutTemplate
+                  background: isBeautyTemplate ? colors.rimColor : isRoseInstitutTemplate
                     ? colors.loseColor
                     : `linear-gradient(180deg, ${colors.rimColor}, ${colors.winColor})`,
                 }}
               />
             ) : null}
           </div>
-          {!isRestaurantPopTemplate && !isRoseInstitutTemplate ? (
+          {!isRestaurantPopTemplate && !isRoseInstitutTemplate && !isBeautyTemplate ? (
             <div
               className="absolute rounded-b-[22px] bg-white"
               style={{
@@ -541,27 +572,28 @@ export function WheelOfFortune({
 
         <button
           type="button"
+          aria-label={isBeautyTemplate ? (isSpinning ? "La roue tourne" : "Jouer à la roue") : undefined}
           onClick={handleCentralButton}
           disabled={!buttonEnabled || isSpinning || hasSpun}
-          className={`okado-wheel-center-button absolute left-1/2 top-1/2 z-40 flex aspect-square ${isRestaurantPopTemplate ? "w-[21%]" : isRoseInstitutTemplate ? "w-[28%]" : "w-[19.2%]"} -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full ${isRestaurantPopTemplate || pageTemplate === "classic" ? "border-0" : isRoseInstitutTemplate ? "border-[3px]" : "border-[4px]"} text-[19px] font-black uppercase transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-75 ${isRestaurantPopTemplate ? "font-anton" : "shadow-[0_16px_30px_rgba(15,23,42,0.16)]"}`}
+          className={`okado-wheel-center-button absolute left-1/2 top-1/2 z-40 flex aspect-square ${isRestaurantPopTemplate ? "w-[21%]" : isRoseInstitutTemplate ? "w-[28%]" : isBeautyTemplate ? "w-[23%]" : "w-[19.2%]"} -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full ${isRestaurantPopTemplate || pageTemplate === "classic" ? "border-0" : isRoseInstitutTemplate || isBeautyTemplate ? "border-[3px]" : "border-[4px]"} text-[19px] font-black uppercase transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-75 ${isRestaurantPopTemplate ? "font-anton" : "shadow-[0_16px_30px_rgba(15,23,42,0.16)]"}`}
           style={{
             background:
               buttonEnabled && !hasSpun
-                ? isRoseInstitutTemplate
+                ? isRoseInstitutTemplate || isBeautyTemplate
                   ? buttonStyle?.backgroundColor ?? accent.signal
                   : `linear-gradient(180deg, ${buttonStyle?.backgroundColor ?? accent.signal}, ${buttonStyle?.backgroundColor ?? colors.rimColor})`
                 : "linear-gradient(180deg, #aeb8c7, #7f8a9d)",
-            color: buttonStyle?.textColor ?? "#ffffff",
-            borderColor: isRestaurantPopTemplate ? "transparent" : isRoseInstitutTemplate ? "#ffffff" : buttonStyle?.borderColor ?? "#ffffff",
+            color: isBeautyTemplate ? beautyWheelLegibleText(buttonStyle?.backgroundColor ?? colors.loseColor, buttonStyle?.textColor) : buttonStyle?.textColor ?? "#ffffff",
+            borderColor: isRestaurantPopTemplate ? "transparent" : isRoseInstitutTemplate || isBeautyTemplate ? "#ffffff" : buttonStyle?.borderColor ?? "#ffffff",
             fontSize: isRestaurantPopTemplate
               ? "clamp(0.88rem, 5.1cqw, 1.75rem)"
               : isRoseInstitutTemplate
                 ? "clamp(0.92rem, 5.6cqw, 1.8rem)"
               : "clamp(0.84rem, 4.7cqw, 1.55rem)",
-            boxShadow: isRestaurantPopTemplate ? "none" : isRoseInstitutTemplate ? "0 8px 18px rgba(11,78,162,0.22)" : undefined,
+            boxShadow: isRestaurantPopTemplate ? "none" : isBeautyTemplate ? `0 8px 20px ${withAlpha(colors.loseColor, 0.24)}` : isRoseInstitutTemplate ? "0 8px 18px rgba(11,78,162,0.22)" : undefined,
           }}
         >
-          {isSpinning ? "..." : buttonLabel}
+          {isBeautyTemplate ? <span className="flex flex-col items-center gap-0.5"><Pointer aria-hidden="true" className="h-[clamp(20px,7cqw,34px)] w-[clamp(20px,7cqw,34px)]" strokeWidth={2.2} /><span className="text-[clamp(8px,2.6cqw,12px)] tracking-[0.12em]">{isSpinning ? "..." : buttonLabel}</span></span> : isSpinning ? "..." : buttonLabel}
         </button>
       </div>
     </div>
