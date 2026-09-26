@@ -2263,7 +2263,6 @@ export function CampaignWizard({
               {draft.gameType === "wheel" && isBeautyIndustry(merchant.industry) ? (
                 <BeautyWheelTemplateGallery
                   selectedTemplateId={draft.presentation.layout.templateId}
-                  merchantName={merchant.companyName}
                   onSelect={selectBeautyWheelTemplate}
                 />
               ) : null}

@@ -1557,7 +1557,9 @@ export function buildCampaignLivePreviewModel(
   const headingFontClass = textFontClass(form.presentation.heading.fontFamily);
   const logoSizePercent = clampCampaignLogoSizePercent(form.presentation.logo.sizePercent);
   const logoWidthPx = Math.round(Math.max(56, Math.min(720, logoSizePercent * 3)));
-  const logoTextSizePx = campaignLogoTextSizePx(logoSizePercent, form.gameType);
+  const logoTextSizePx = Math.round(
+    campaignLogoTextSizePx(logoSizePercent, form.gameType) * (isBeautyWheelTemplate(templateId) ? 0.9 : 1),
+  );
   const backgroundImage =
     form.presentation.background.mode === "image" && form.presentation.background.imageUrl
       ? userBackgroundImageStyle(form.presentation.background.imageUrl)
@@ -1842,7 +1844,9 @@ export function CampaignEditor({
   const logoWidthPx = Math.round(
     Math.max(56, Math.min(720, logoSizePercent * 3)),
   );
-  const logoTextSizePx = campaignLogoTextSizePx(logoSizePercent, form.gameType);
+  const logoTextSizePx = Math.round(
+    campaignLogoTextSizePx(logoSizePercent, form.gameType) * (isBeautyWheelTemplate(form.presentation.layout.templateId) ? 0.9 : 1),
+  );
   const editingPrize = form.prizes.find((prize) => prize.id === editingPrizeConditionsId) ?? null;
 
   const logoAlignmentClass =
@@ -1882,6 +1886,8 @@ export function CampaignEditor({
               ? restaurantPopBackground(form.presentation.background.color)
             : (form.presentation.layout.templateId ?? "classic") === "rose-institut"
               ? roseInstitutWheelBackground(form.presentation.background.color)
+            : isBeautyWheelTemplate(currentTemplateId)
+              ? beautyWheelBackground(currentTemplateId, form.presentation.background.color, form.presentation.wheel.loseColor)
             : isCocoricoWheelTemplate(form.presentation.layout.templateId)
               ? `radial-gradient(circle at 14% 12%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(form.presentation.background.color), 0.32), "e6")} 0 10%, transparent 11%), radial-gradient(circle at 88% 26%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(form.presentation.background.color), 0.12), "b3")} 0 15%, transparent 16%), linear-gradient(160deg, ${resolveCocoricoBackgroundColor(form.presentation.background.color)} 0%, ${resolveCocoricoBackgroundColor(form.presentation.background.color)} 48%, #063d78 100%)`
             : (form.presentation.layout.templateId ?? "classic") === "cosmic-orbit"
@@ -2829,7 +2835,6 @@ export function CampaignEditor({
               {form.gameType === "wheel" && isBeautyIndustry(merchant.industry) ? (
                 <BeautyWheelTemplateGallery
                   selectedTemplateId={form.presentation.layout.templateId}
-                  merchantName={merchant.companyName}
                   onSelect={selectBeautyWheelTemplate}
                 />
               ) : null}

@@ -5,11 +5,9 @@ import type { GamePageTemplateId } from "@/lib/types";
 
 export function BeautyWheelTemplateGallery({
   selectedTemplateId,
-  merchantName,
   onSelect,
 }: {
   selectedTemplateId?: GamePageTemplateId;
-  merchantName: string;
   onSelect: (templateId: BeautyWheelTemplateId) => void;
 }) {
   return (
@@ -34,8 +32,8 @@ export function BeautyWheelTemplateGallery({
                 className="relative h-40 overflow-hidden px-4 pt-3"
                 style={{ backgroundColor: theme.background, backgroundImage: beautyWheelBackground(theme.id, theme.background, theme.primary), color: theme.text }}
               >
-                <div className="relative z-10 max-w-[70%] truncate text-[10px] font-semibold tracking-[0.08em]">{merchantName}</div>
-                <div className="relative z-10 mt-3 max-w-[80%] text-sm font-bold leading-tight" style={{ fontFamily: textFontFamily(theme.font) }}>Tournez la roue<br />et tentez de gagner</div>
+                <div className="relative z-10 max-w-[70%] truncate text-[10px] font-semibold tracking-[0.08em]">Votre établissement</div>
+                <div className="relative z-10 mt-3 max-w-[80%] text-sm font-bold leading-tight" style={{ fontFamily: textFontFamily(theme.font) }}>Votre animation<br />vous réserve une surprise</div>
                 <div className="relative z-10 mt-1 text-[9px]">Des surprises vous attendent</div>
                 <div
                   aria-hidden="true"
