@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Pointer } from "lucide-react";
 import { RoseFlowerMark } from "@/components/public/rose-powder-decor";
 import { textFontFamily } from "@/lib/format";
-import { beautyWheelLegibleText, beautyWheelTheme, isBeautyWheelTemplate, type BeautyWheelTemplateId } from "@/lib/beauty-wheel-themes";
+import { beautyWheelButtonTextColor, beautyWheelLegibleText, beautyWheelTheme, isBeautyWheelTemplate, type BeautyWheelTemplateId } from "@/lib/beauty-wheel-themes";
 import { rosePowderVisualSegments } from "@/lib/wheel-segments";
 import { buildBeautyWheelSegmentColors, limitBeautyWheelSegments } from "@/lib/beauty-wheel-segments";
 
@@ -263,7 +263,7 @@ export function WheelOfFortune({
   const baseVisualSegments = isRosePowderTemplate
     ? rosePowderVisualSegments(segments, winningSegmentId)
     : isBeautyTemplate
-      ? limitBeautyWheelSegments(segments, winningSegmentId, 9)
+      ? limitBeautyWheelSegments(segments, winningSegmentId)
       : isRoseInstitutTemplate
         ? segments.slice(0, 8)
         : isRestaurantPopTemplate
@@ -325,6 +325,7 @@ export function WheelOfFortune({
             ? "rgba(196,168,121,.55)"
             : "rgba(232,221,255,.62)";
   const beautySeparatorWidth = pageTemplate === "beauty-pop" ? 1.8 : pageTemplate === "beauty-botanical" ? 1.6 : 1.25;
+  const centerButtonBackground = buttonStyle?.backgroundColor ?? accent.signal;
   const classicLightColor = deriveLighterHex(colors.loseColor);
   const roseAccent = colors.loseColor.toLowerCase() === "#d58a9a" ? "#b95f75" : deriveDarkerHex(colors.loseColor);
   const isDefaultRoseColor = colors.loseColor.toLowerCase() === "#d58a9a";
@@ -643,6 +644,16 @@ export function WheelOfFortune({
               <path d="M24 2C35 2 43 10 43 22C43 36 31 50 24 62C17 50 5 36 5 22C5 10 13 2 24 2Z" fill={roseAccent} stroke="#fffdfc" strokeWidth="2" strokeLinejoin="round" />
               <path d="M15 15C18 11 22 10 27 11" fill="none" stroke="#fffdfc" strokeOpacity="0.58" strokeWidth="1.4" strokeLinecap="round" />
             </svg>
+          ) : pageTemplate === "beauty-nude" ? (
+            <svg
+              aria-hidden="true"
+              className="absolute pointer-events-none"
+              style={{ top: "-1.2%", left: "50%", width: "11.4%", height: "16%", transform: "translateX(-50%)", overflow: "visible", filter: "drop-shadow(0 4px 5px rgba(91,66,37,.16))" }}
+              viewBox="0 0 48 64"
+            >
+              <path d="M24 2 C36 2 44 10 44 22 C44 36 31 52 24 61 C17 52 4 36 4 22 C4 10 12 2 24 2 Z" fill={colors.rimColor} stroke="#fffaf0" strokeWidth="3" strokeLinejoin="round" />
+              <path d="M24 8 C33 8 38 14 38 23 C38 33 29 45 24 51 C19 45 10 33 10 23 C10 14 15 8 24 8 Z" fill="rgba(255,255,255,.16)" />
+            </svg>
           ) : <div
             className="absolute"
             style={{
@@ -699,10 +710,14 @@ export function WheelOfFortune({
             background: isRosePowderTemplate ? "#fffdfc" :
               buttonEnabled && !hasSpun
                 ? isRoseInstitutTemplate || isBeautyTemplate
-                  ? buttonStyle?.backgroundColor ?? accent.signal
-                  : `linear-gradient(180deg, ${buttonStyle?.backgroundColor ?? accent.signal}, ${buttonStyle?.backgroundColor ?? colors.rimColor})`
+                  ? centerButtonBackground
+                  : `linear-gradient(180deg, ${centerButtonBackground}, ${buttonStyle?.backgroundColor ?? colors.rimColor})`
                 : "linear-gradient(180deg, #aeb8c7, #7f8a9d)",
-            color: isRosePowderTemplate ? (buttonStyle?.backgroundColor?.toLowerCase() === colors.loseColor.toLowerCase() ? roseAccent : buttonStyle?.backgroundColor ?? roseAccent) : isBeautyTemplate ? beautyWheelLegibleText(buttonStyle?.backgroundColor ?? colors.loseColor, buttonStyle?.textColor) : buttonStyle?.textColor ?? "#ffffff",
+            color: isRosePowderTemplate
+              ? (buttonStyle?.backgroundColor?.toLowerCase() === colors.loseColor.toLowerCase() ? roseAccent : buttonStyle?.backgroundColor ?? roseAccent)
+              : isBeautyTemplate
+                ? beautyWheelButtonTextColor(beautyTemplateId!, centerButtonBackground, buttonStyle?.textColor)
+                : buttonStyle?.textColor ?? "#ffffff",
             borderColor: isRosePowderTemplate ? "#d58a9a" : isRestaurantPopTemplate ? "transparent" : isRoseInstitutTemplate || isBeautyTemplate ? "#ffffff" : buttonStyle?.borderColor ?? "#ffffff",
             fontSize: isRestaurantPopTemplate
               ? "clamp(0.88rem, 5.1cqw, 1.75rem)"

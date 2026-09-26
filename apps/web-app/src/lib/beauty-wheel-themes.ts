@@ -63,6 +63,15 @@ export function beautyWheelLegibleText(background: string, preferred?: string) {
   return contrastRatio(background, "#171614") >= contrastRatio(background, "#ffffff") ? "#171614" : "#ffffff";
 }
 
+export function beautyWheelButtonTextColor(templateId: BeautyWheelTemplateId, background: string, preferred?: string) {
+  const theme = beautyWheelTheme(templateId)!;
+  const normalizedBackground = background.toLowerCase();
+  const usesWhiteOnDefaultAccent = ["beauty-nude", "beauty-pop", "beauty-botanical"].includes(templateId);
+
+  if (usesWhiteOnDefaultAccent && normalizedBackground === theme.primary) return "#ffffff";
+  return beautyWheelLegibleText(background, preferred);
+}
+
 function translucent(hex: string, opacity: number) {
   const clean = hex.replace("#", "");
   if (!/^[\da-f]{6}$/i.test(clean)) return `rgba(141,164,128,${opacity})`;
