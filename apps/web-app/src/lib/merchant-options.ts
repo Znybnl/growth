@@ -1,12 +1,29 @@
 export const INDUSTRY_OPTIONS = [
+  "Beauté",
   "Restauration",
   "Automobile",
   "Retail",
-  "Beauté",
   "Sport",
   "Services",
   "Hôtellerie",
 ] as const;
+
+export const BEAUTY_INDUSTRY = "Beauté" as const;
+
+export const BEAUTY_SUBSECTOR_OPTIONS = [
+  "Coiffure",
+  "Institut & soins",
+  "Ongles & cils",
+  "Massage & spa",
+] as const;
+
+export function isBeautyIndustry(industry?: string | null) {
+  return (industry ?? "").trim() === BEAUTY_INDUSTRY;
+}
+
+export function isBeautySubsector(value?: string | null): value is (typeof BEAUTY_SUBSECTOR_OPTIONS)[number] {
+  return BEAUTY_SUBSECTOR_OPTIONS.some((option) => option === value);
+}
 
 export const RESTAURANT_TYPE_OPTIONS = [
   "Brasserie",

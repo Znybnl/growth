@@ -1768,7 +1768,11 @@ export function CampaignEditor({
       return;
     }
 
-    fetch(`/api/prize-suggestions?industry=${encodeURIComponent(industry)}`)
+    const industrySubsector = merchant.industrySubsector?.trim();
+    const query = new URLSearchParams({ industry });
+    if (industrySubsector) query.set("subsector", industrySubsector);
+
+    fetch(`/api/prize-suggestions?${query.toString()}`)
       .then(async (response) => {
         if (!response.ok) throw new Error("Lecture impossible.");
         return (await response.json()) as { suggestions?: PrizeSuggestion[] };
@@ -1783,7 +1787,7 @@ export function CampaignEditor({
     return () => {
       cancelled = true;
     };
-  }, [merchant.industry]);
+  }, [merchant.industry, merchant.industrySubsector]);
 
   const previewSegments = useMemo(() => buildPreviewSegments(form.prizes), [form.prizes]);
   const formSnapshot = useMemo(() => JSON.stringify(form), [form]);

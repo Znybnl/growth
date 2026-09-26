@@ -7,7 +7,11 @@ import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/validation-dialog";
 import { PageHeader, SectionCard } from "@/components/ui/workspace";
 import { StatusBadge } from "@/components/ui/status-badge";
-import { INDUSTRY_OPTIONS } from "@/lib/merchant-options";
+import {
+  BEAUTY_SUBSECTOR_OPTIONS,
+  INDUSTRY_OPTIONS,
+  isBeautyIndustry,
+} from "@/lib/merchant-options";
 import { PrizeSuggestion } from "@/lib/types";
 
 type SuggestionForm = Omit<PrizeSuggestion, "id" | "createdAt" | "updatedAt">;
@@ -25,6 +29,7 @@ const ICON_OPTIONS = [
 function createEmptyForm(industry = "Restauration"): SuggestionForm {
   return {
     industry,
+    industrySubsector: "",
     label: "",
     description: "",
     probability: 10,
@@ -40,6 +45,7 @@ export function PrizeSuggestionsManager({ initialSuggestions }: { initialSuggest
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [form, setForm] = useState<SuggestionForm>(createEmptyForm());
   const [industryFilter, setIndustryFilter] = useState("all");
+  const [subsectorFilter, setSubsectorFilter] = useState("all");
   const [message, setMessage] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [pendingDelete, setPendingDelete] = useState<PrizeSuggestion | null>(null);
@@ -54,8 +60,12 @@ export function PrizeSuggestionsManager({ initialSuggestions }: { initialSuggest
     () =>
       suggestions
         .filter((suggestion) => industryFilter === "all" || suggestion.industry === industryFilter)
+        .filter((suggestion) =>
+          subsectorFilter === "all"
+            || (subsectorFilter === "" ? !suggestion.industrySubsector : suggestion.industrySubsector === subsectorFilter),
+        )
         .sort((a, b) => b.probability - a.probability || a.sortOrder - b.sortOrder || a.label.localeCompare(b.label, "fr")),
-    [industryFilter, suggestions],
+    [industryFilter, subsectorFilter, suggestions],
   );
 
   function startCreate() {
@@ -68,6 +78,7 @@ export function PrizeSuggestionsManager({ initialSuggestions }: { initialSuggest
     setSelectedId(suggestion.id);
     setForm({
       industry: suggestion.industry,
+      industrySubsector: suggestion.industrySubsector ?? "",
       label: suggestion.label,
       description: suggestion.description,
       probability: suggestion.probability,
@@ -102,7 +113,10 @@ export function PrizeSuggestionsManager({ initialSuggestions }: { initialSuggest
         selected
           ? current.map((item) => (item.id === payload.suggestion!.id ? payload.suggestion! : item))
           : [...current, payload.suggestion!].sort((a, b) =>
-              `${a.industry}-${a.sortOrder}`.localeCompare(`${b.industry}-${b.sortOrder}`, "fr"),
+              `${a.industry}-${a.industrySubsector ?? ""}-${a.sortOrder}`.localeCompare(
+                `${b.industry}-${b.industrySubsector ?? ""}-${b.sortOrder}`,
+                "fr",
+              ),
             ),
       );
       setSelectedId(payload.suggestion.id);
@@ -149,19 +163,41 @@ export function PrizeSuggestionsManager({ initialSuggestions }: { initialSuggest
         <SectionCard className="overflow-hidden p-0">
           <div className="flex flex-col gap-3 border-b border-[#e8edf5] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm font-semibold text-graphite">Catalogue actif et brouillons</p>
-            <label className="flex items-center gap-2 text-sm font-medium text-[#44516a]">
-              Secteur
-              <select
-                value={industryFilter}
-                onChange={(event) => setIndustryFilter(event.target.value)}
-                className="h-9 min-w-40 bg-white py-1"
-              >
-                <option value="all">Tous les secteurs</option>
-                {INDUSTRY_OPTIONS.map((industry) => (
-                  <option key={industry} value={industry}>{industry}</option>
-                ))}
-              </select>
-            </label>
+            <div className="flex flex-col gap-2 text-sm font-medium text-[#44516a] sm:flex-row sm:items-center">
+              <label className="flex items-center gap-2">
+                Secteur
+                <select
+                  value={industryFilter}
+                  onChange={(event) => {
+                    setIndustryFilter(event.target.value);
+                    setSubsectorFilter("all");
+                  }}
+                  className="h-9 min-w-40 bg-white py-1"
+                >
+                  <option value="all">Tous les secteurs</option>
+                  {INDUSTRY_OPTIONS.map((industry) => (
+                    <option key={industry} value={industry}>{industry}</option>
+                  ))}
+                </select>
+              </label>
+              {isBeautyIndustry(industryFilter) ? (
+                <label className="flex items-center gap-2">
+                  Sous-secteur
+                  <select
+                    aria-label="Filtrer par sous-secteur beauté"
+                    value={subsectorFilter}
+                    onChange={(event) => setSubsectorFilter(event.target.value)}
+                    className="h-9 min-w-44 bg-white py-1"
+                  >
+                    <option value="all">Tous les sous-secteurs</option>
+                    <option value="">Beauté générale</option>
+                    {BEAUTY_SUBSECTOR_OPTIONS.map((subsector) => (
+                      <option key={subsector} value={subsector}>{subsector}</option>
+                    ))}
+                  </select>
+                </label>
+              ) : null}
+            </div>
           </div>
           <div className="grid gap-3 p-4 sm:grid-cols-2">
             {visibleSuggestions.map((suggestion) => {
@@ -172,7 +208,7 @@ export function PrizeSuggestionsManager({ initialSuggestions }: { initialSuggest
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex min-w-0 items-center gap-3">
                       <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[4px] bg-purple-haze text-aubergine"><Icon className="h-5 w-5" /></span>
-                      <div className="min-w-0"><p className="truncate font-semibold text-graphite">{suggestion.label}</p><p className="text-xs text-ash">{suggestion.industry}</p></div>
+                      <div className="min-w-0"><p className="truncate font-semibold text-graphite">{suggestion.label}</p><p className="text-xs text-ash">{suggestion.industry}{suggestion.industrySubsector ? ` · ${suggestion.industrySubsector}` : isBeautyIndustry(suggestion.industry) ? " · Général" : ""}</p></div>
                     </div>
                     <StatusBadge tone={suggestion.isActive ? "active" : "muted"}>{suggestion.isActive ? "Active" : "Masquée"}</StatusBadge>
                   </div>
@@ -190,7 +226,22 @@ export function PrizeSuggestionsManager({ initialSuggestions }: { initialSuggest
           <p className="okado-label">{selected ? "Modifier" : "Nouvelle suggestion"}</p>
           <h2 className="okado-section-title mt-2">{selected ? selected.label : "Ajouter un lot"}</h2>
           <div className="mt-5 space-y-4">
-            <label className="block text-sm font-medium text-[#44516a]">Secteur<select value={form.industry} onChange={(event) => updateForm("industry", event.target.value)} className="mt-2 w-full"><option value="">Choisir un secteur</option>{INDUSTRY_OPTIONS.map((industry) => <option key={industry} value={industry}>{industry}</option>)}</select></label>
+            <label className="block text-sm font-medium text-[#44516a]">Secteur<select value={form.industry} onChange={(event) => { const industry = event.target.value; updateForm("industry", industry); if (!isBeautyIndustry(industry)) updateForm("industrySubsector", ""); }} className="mt-2 w-full"><option value="">Choisir un secteur</option>{INDUSTRY_OPTIONS.map((industry) => <option key={industry} value={industry}>{industry}</option>)}</select></label>
+            {isBeautyIndustry(form.industry) ? (
+              <label className="block text-sm font-medium text-[#44516a]">
+                Sous-secteur beauté
+                <select
+                  value={form.industrySubsector ?? ""}
+                  onChange={(event) => updateForm("industrySubsector", event.target.value)}
+                  className="mt-2 w-full"
+                >
+                  <option value="">Bibliothèque Beauté générale</option>
+                  {BEAUTY_SUBSECTOR_OPTIONS.map((subsector) => (
+                    <option key={subsector} value={subsector}>{subsector}</option>
+                  ))}
+                </select>
+              </label>
+            ) : null}
             <label className="block text-sm font-medium text-[#44516a]">Nom du lot<input value={form.label} onChange={(event) => updateForm("label", event.target.value)} className="mt-2 w-full" placeholder="Ex. Un dessert offert" /></label>
             <label className="block text-sm font-medium text-[#44516a]">Description<textarea value={form.description} onChange={(event) => updateForm("description", event.target.value)} className="mt-2 min-h-24 w-full" placeholder="Décrivez l'intérêt du lot." /></label>
             <div className="grid grid-cols-2 gap-3"><label className="text-sm font-medium text-[#44516a]">Probabilité (%)<input type="number" min="0" max="100" value={form.probability} onChange={(event) => updateForm("probability", Number(event.target.value))} className="mt-2 w-full" /></label><label className="text-sm font-medium text-[#44516a]">Coût estimé (€)<input type="number" min="0" step="0.01" value={form.estimatedUnitCost} onChange={(event) => updateForm("estimatedUnitCost", Number(event.target.value))} className="mt-2 w-full" /></label></div>

@@ -101,6 +101,7 @@ export type EventType =
 export interface PrizeSuggestion {
   id: string;
   industry: string;
+  industrySubsector?: string;
   label: string;
   description: string;
   probability: number;
@@ -121,6 +122,7 @@ export interface Merchant {
   logoText: string;
   logoUrl?: string;
   industry?: string;
+  industrySubsector?: string;
   restaurantType?: string;
   city?: string;
   address?: string;
@@ -300,6 +302,7 @@ export interface MerchantSignInInput {
 export interface MerchantOnboardingInput {
   companyName: string;
   industry: string;
+  industrySubsector?: string;
   restaurantType: string;
   city: string;
   contactName: string;
@@ -338,6 +341,7 @@ export interface MerchantSessionContext {
 export interface MerchantAccountSettingsInput {
   companyName: string;
   industry: string;
+  industrySubsector?: string;
   restaurantType: string;
   city: string;
   address: string;

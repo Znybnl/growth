@@ -12,7 +12,9 @@ import { Button } from "@/components/ui/button";
 import { ValidationDialog } from "@/components/ui/validation-dialog";
 import { captureClientProductEvent } from "@/lib/client-product-analytics";
 import {
+  BEAUTY_SUBSECTOR_OPTIONS,
   INDUSTRY_OPTIONS,
+  isBeautyIndustry,
   isRestaurantIndustry,
 } from "@/lib/merchant-options";
 import {
@@ -54,7 +56,8 @@ function createAccountSettingsForm(
 ): MerchantAccountSettingsInput {
   return {
     companyName: merchant.companyName,
-    industry: merchant.industry ?? "Restauration",
+    industry: merchant.industry ?? "",
+    industrySubsector: merchant.industrySubsector ?? "",
     restaurantType: merchant.restaurantType ?? "Brasserie",
     city: merchant.city ?? "",
     address: merchant.address ?? "",
@@ -208,6 +211,18 @@ export function AccountSettingsForm({
       onDirtyChange?.(true);
     }
     setForm((current) => ({ ...current, [key]: value }));
+  }
+
+  function updateIndustry(industry: string) {
+    if (!isDirty) {
+      setIsDirty(true);
+      onDirtyChange?.(true);
+    }
+    setForm((current) => ({
+      ...current,
+      industry,
+      industrySubsector: isBeautyIndustry(industry) ? current.industrySubsector ?? "" : "",
+    }));
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -392,9 +407,10 @@ export function AccountSettingsForm({
             <span className="mb-2 block text-ash">Secteur d&apos;activité</span>
             <select
               value={form.industry}
-              onChange={(event) => updateField("industry", event.target.value)}
+              onChange={(event) => updateIndustry(event.target.value)}
               className={inputClass}
             >
+              <option value="">Choisir un secteur</option>
               {INDUSTRY_OPTIONS.map((option) => (
                 <option key={option} value={option}>
                   {option}
@@ -402,6 +418,21 @@ export function AccountSettingsForm({
               ))}
             </select>
           </label>
+          {isBeautyIndustry(form.industry) ? (
+            <label className="text-sm">
+              <span className="mb-2 block text-ash">Sous-secteur</span>
+              <select
+                value={form.industrySubsector ?? ""}
+                onChange={(event) => updateField("industrySubsector", event.target.value)}
+                className={inputClass}
+              >
+                <option value="">Choisir un sous-secteur</option>
+                {BEAUTY_SUBSECTOR_OPTIONS.map((option) => (
+                  <option key={option} value={option}>{option}</option>
+                ))}
+              </select>
+            </label>
+          ) : null}
           <label className="text-sm">
             <span className="mb-2 block text-ash">
               Ville / {isRestaurant ? "restaurant" : "commerce"} <span className="text-coral-alert" aria-hidden="true">*</span>
