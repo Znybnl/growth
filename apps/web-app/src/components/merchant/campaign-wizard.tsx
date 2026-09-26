@@ -1579,7 +1579,7 @@ export function CampaignWizard({
                   [
                     {
                       value: "wheel",
-                      label: "Roue de la chance",
+                      label: "Roue de la fortune",
                       text: "Un moment spectaculaire, idéal sur un comptoir.",
                     },
                     {
