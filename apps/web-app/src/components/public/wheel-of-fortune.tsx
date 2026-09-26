@@ -333,7 +333,7 @@ export function WheelOfFortune({
   const roseLight = isDefaultRoseColor ? "#f3cdd5" : deriveLighterHex(colors.loseColor, 0.67);
   const roseMedium = isDefaultRoseColor ? "#e7aebb" : deriveLighterHex(colors.loseColor, 0.4);
   const wheelTop =
-    framing === "public" ? undefined : isRosePowderTemplate ? (framing === "mobile-preview" ? "calc(35% + 14px)" : "calc(40% + 14px)") : isBeautyTemplate ? (framing === "mobile-preview" ? "35%" : "40%") : isRoseInstitutTemplate ? "50%" : framing === "editor" ? "83%" : framing === "mobile-preview" ? "70%" : "62%";
+    framing === "public" ? undefined : isRosePowderTemplate ? (framing === "mobile-preview" ? "calc(35% + 14px)" : "calc(40% + 14px)") : isBeautyTemplate ? (framing === "mobile-preview" ? "35%" : "40%") : isRoseInstitutTemplate ? "8px" : framing === "editor" ? "83%" : framing === "mobile-preview" ? "70%" : "62%";
   const wheelFrameSizeClass =
     framing === "public"
       ? isBeautyTemplate
@@ -347,7 +347,7 @@ export function WheelOfFortune({
           ? isBeautyTemplate ? BEAUTY_PREVIEW_WHEEL_FRAME_CLASSES[beautyTemplateId!] : isRoseInstitutTemplate ? "w-[122%] max-w-none" : "w-[150%] max-w-none"
           : "w-full";
   const wheelTransformClass =
-    framing === "public" ? "-translate-x-1/2" : "-translate-x-1/2 -translate-y-1/2";
+    framing === "public" || isRoseInstitutTemplate ? "-translate-x-1/2" : "-translate-x-1/2 -translate-y-1/2";
 
   useEffect(() => {
     if (!isSpinning || !onSpinEnd) {

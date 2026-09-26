@@ -91,23 +91,6 @@ export function BeautyWheelTemplateGallery({
         <p className="mt-1 text-sm text-[#69616c]">Sept styles de roue, personnalisables aux couleurs de votre établissement.</p>
       </div>
       <div className="grid min-w-0 grid-cols-[repeat(auto-fit,minmax(min(100%,13rem),1fr))] gap-3">
-        <button
-          type="button"
-          aria-pressed={selectedTemplateId === "rose-institut"}
-          onClick={() => onSelect("rose-institut")}
-          className={`group min-w-0 overflow-hidden rounded-2xl border bg-white text-left transition hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6b3774] ${selectedTemplateId === "rose-institut" ? "border-[#6b3774] ring-2 ring-[#6b3774]/15" : "border-[#ded8e1]"}`}
-        >
-          <div className="relative h-40 overflow-hidden bg-[radial-gradient(ellipse_at_18%_8%,rgba(47,109,246,0.16),transparent_48%),linear-gradient(145deg,#f7f9ff,#eaf0ff)] px-4 pt-3 text-[#003cb4]">
-            <div className="relative z-10 max-w-[56%] truncate text-[9px] font-semibold uppercase tracking-[0.12em]">Votre établissement</div>
-            <div className="relative z-10 mt-3 max-w-[56%] font-playfair text-[13px] font-bold leading-[1.12]">Tournez la roue<br />et tentez de gagner</div>
-            <div className="relative z-10 mt-1 max-w-[55%] text-[8px] leading-tight opacity-75">Une roue lumineuse à vos couleurs</div>
-            <EclatWheelThumbnail />
-          </div>
-          <div className="flex items-start justify-between gap-2 px-4 py-3">
-            <span className="min-w-0"><span className="block text-sm font-semibold text-[#241b2a]">Éclat</span><span className="mt-0.5 block text-xs text-[#746c78]">Lumineux & personnalisable</span></span>
-            {selectedTemplateId === "rose-institut" ? <span className="shrink-0 rounded-full bg-[#f2e7f5] px-2 py-0.5 text-[10px] font-semibold text-[#6b3774]">Sélectionné</span> : null}
-          </div>
-        </button>
         {BEAUTY_WHEEL_THEMES.map((theme) => {
           const selected = selectedTemplateId === theme.id;
           return (
@@ -135,6 +118,23 @@ export function BeautyWheelTemplateGallery({
             </button>
           );
         })}
+        <button
+          type="button"
+          aria-pressed={selectedTemplateId === "rose-institut"}
+          onClick={() => onSelect("rose-institut")}
+          className={`group min-w-0 overflow-hidden rounded-2xl border bg-white text-left transition hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6b3774] ${selectedTemplateId === "rose-institut" ? "border-[#6b3774] ring-2 ring-[#6b3774]/15" : "border-[#ded8e1]"}`}
+        >
+          <div className="relative h-40 overflow-hidden bg-[radial-gradient(ellipse_at_18%_8%,rgba(47,109,246,0.16),transparent_48%),linear-gradient(145deg,#f7f9ff,#eaf0ff)] px-4 pt-3 text-[#003cb4]">
+            <div className="relative z-10 max-w-[56%] truncate text-[9px] font-semibold uppercase tracking-[0.12em]">Votre établissement</div>
+            <div className="relative z-10 mt-3 max-w-[56%] font-playfair text-[13px] font-bold leading-[1.12]">Tournez la roue<br />et tentez de gagner</div>
+            <div className="relative z-10 mt-1 max-w-[55%] text-[8px] leading-tight opacity-75">Une roue lumineuse à vos couleurs</div>
+            <EclatWheelThumbnail />
+          </div>
+          <div className="flex items-start justify-between gap-2 px-4 py-3">
+            <span className="min-w-0"><span className="block text-sm font-semibold text-[#241b2a]">Éclat</span><span className="mt-0.5 block text-xs text-[#746c78]">Lumineux & personnalisable</span></span>
+            {selectedTemplateId === "rose-institut" ? <span className="shrink-0 rounded-full bg-[#f2e7f5] px-2 py-0.5 text-[10px] font-semibold text-[#6b3774]">Sélectionné</span> : null}
+          </div>
+        </button>
       </div>
     </section>
   );
