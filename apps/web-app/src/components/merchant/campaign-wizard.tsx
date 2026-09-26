@@ -49,7 +49,7 @@ import { createCampaignEmailDefaults } from "@/lib/email-settings";
 import { normalizeCampaignEmailSettings } from "@/lib/email-settings";
 import { captureClientError } from "@/lib/client-observability";
 import { captureClientProductEvent } from "@/lib/client-product-analytics";
-import { beautyWheelFontOptions, beautyWheelTheme, isBeautyIndustry, isBeautyWheelTemplate, type BeautyWheelTemplateId } from "@/lib/beauty-wheel-themes";
+import { beautyWheelFontOptions, beautyWheelTheme, isBeautyIndustry, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
 import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
 import {
   createDefaultPosterSettings,
@@ -86,6 +86,7 @@ import {
   CampaignAction,
   CampaignPerformance,
   CampaignSetupInput,
+  GamePageTemplateId,
   BackgroundLibraryAsset,
   Merchant,
   PrizeSuggestion,
@@ -873,7 +874,67 @@ export function CampaignWizard({
   );
   const gameTypeState = useRef<Partial<Record<WizardDraft["gameType"], GameTypeState>>>({});
 
-  function selectBeautyWheelTemplate(templateId: BeautyWheelTemplateId) {
+  function selectBeautyWheelTemplate(templateId: GamePageTemplateId) {
+    if (templateId === "rose-institut") {
+      captureClientProductEvent("campaign_template_selected", {
+        campaignType: "wheel",
+        templateKey: templateId,
+        wizardMode: "guided",
+      });
+      setDraft((current) => {
+        const previousId = current.presentation.layout.templateId ?? DEFAULT_GAME_PAGE_TEMPLATE_ID;
+        if (previousId === templateId) return current;
+        wheelTemplateState.current[previousId] = {
+          wheel: current.presentation.wheel,
+          backgroundColor: current.presentation.background.color,
+          scratchSignal: current.accent.signal,
+          headingTextColor: current.presentation.heading.textColor,
+          logoTextColor: current.presentation.logo.textColor ?? current.presentation.heading.textColor,
+          headingFontFamily: current.presentation.heading.fontFamily,
+          headingAlign: current.presentation.heading.align,
+          logoAlign: current.presentation.logo.align,
+          buttonBackgroundColor: current.presentation.button.backgroundColor,
+        };
+        const remembered = wheelTemplateState.current[templateId];
+        const wheel = remembered?.wheel ?? wheelPaletteForTemplate(templateId, current.presentation.wheel);
+        return {
+          ...current,
+          presentation: {
+            ...current.presentation,
+            layout: {
+              ...current.presentation.layout,
+              templateId,
+              wheelTemplateStyles: { ...current.presentation.layout.wheelTemplateStyles, [previousId]: wheelTemplateState.current[previousId] },
+              subtitleSpacingPx: defaultWheelSubtitleSpacingForTemplate(templateId),
+            },
+            background: {
+              ...current.presentation.background,
+              color: remembered?.backgroundColor ?? wheelBackgroundForTemplate(templateId, current.presentation.background.color),
+            },
+            wheel,
+            heading: {
+              ...current.presentation.heading,
+              fontFamily: remembered?.headingFontFamily ?? DEFAULT_ROSE_INSTITUT_HEADING_FONT_FAMILY,
+              textColor: remembered?.headingTextColor ?? DEFAULT_ROSE_INSTITUT_TEXT_COLOR,
+              fontSizePx: [34, 40, 42].includes(current.presentation.heading.fontSizePx)
+                ? DEFAULT_WHEEL_HEADING_FONT_SIZE_PX
+                : current.presentation.heading.fontSizePx,
+              align: remembered?.headingAlign ?? "center",
+            },
+            logo: {
+              ...current.presentation.logo,
+              textColor: remembered?.logoTextColor ?? DEFAULT_ROSE_INSTITUT_TEXT_COLOR,
+              align: remembered?.logoAlign ?? "center",
+            },
+            button: {
+              ...current.presentation.button,
+              backgroundColor: remembered?.buttonBackgroundColor ?? DEFAULT_ROSE_INSTITUT_TEXT_COLOR,
+            },
+          },
+        };
+      });
+      return;
+    }
     const theme = beautyWheelTheme(templateId)!;
     captureClientProductEvent("campaign_template_selected", {
       campaignType: "wheel",
@@ -2316,6 +2377,7 @@ export function CampaignWizard({
                       ] as const
                 )
                   .filter((template) => template.id !== "cosmic-orbit" && template.id !== "sunburst-festival")
+                  .filter((template) => !isBeautyIndustry(merchant.industry) || template.id !== "rose-institut")
                   .slice()
                   .sort((left, right) => (left.id === "scratch-coral" ? -1 : right.id === "scratch-coral" ? 1 : 0))
                   .map((template) => (

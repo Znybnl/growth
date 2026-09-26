@@ -534,7 +534,7 @@ export function CampaignExperience({
     Math.max(56, Math.min(720, logoSizePercent * 3)),
   );
   const logoTextSizePx = Math.round(
-    campaignLogoTextSizePx(logoSizePercent, campaign.gameType) * (isBeautyTemplate ? 0.9 : 1),
+    campaignLogoTextSizePx(logoSizePercent, campaign.gameType) * (isBeautyTemplate || isRoseInstitutTemplate ? 0.9 : 1),
   );
   const safeSubtitle = limitCampaignSubtitleLines(campaign.subtitle);
   const wheelSubtitle = campaign.gameType === "wheel"

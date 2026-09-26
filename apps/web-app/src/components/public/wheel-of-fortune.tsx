@@ -266,7 +266,7 @@ export function WheelOfFortune({
   const centerButtonBackground = buttonStyle?.backgroundColor ?? accent.signal;
   const classicLightColor = deriveLighterHex(colors.loseColor);
   const wheelTop =
-    framing === "public" ? undefined : isBeautyTemplate ? (framing === "mobile-preview" ? "35%" : "40%") : framing === "editor" ? "83%" : framing === "mobile-preview" ? "70%" : "62%";
+    framing === "public" ? undefined : isBeautyTemplate ? (framing === "mobile-preview" ? "35%" : "40%") : isRoseInstitutTemplate ? "50%" : framing === "editor" ? "83%" : framing === "mobile-preview" ? "70%" : "62%";
   const wheelFrameSizeClass =
     framing === "public"
       ? isBeautyTemplate
@@ -275,9 +275,9 @@ export function WheelOfFortune({
         ? "top-1 w-[min(calc(100vw-32px),calc(100dvh-320px),430px)] sm:w-[min(calc(100vw-36px),calc(100dvh-320px),520px)] md:w-[min(52vw,640px)] lg:w-[min(48vw,680px)]"
         : "top-2 w-[max(130vw,calc(100svh-240px))] max-w-none sm:w-[min(118vw,calc(100svh-220px))] md:w-[min(98vw,calc(100svh-220px))] lg:w-[min(52vw,calc(100svh-220px))] xl:w-[min(42vw,calc(100svh-220px))] 2xl:w-[min(38vw,calc(100svh-220px))]"
       : framing === "editor"
-          ? isBeautyTemplate ? "w-[90%] max-w-none" : isRoseInstitutTemplate ? "w-[122%] max-w-none" : "w-[150%] max-w-none"
+          ? isBeautyTemplate ? "w-[90%] max-w-none" : isRoseInstitutTemplate ? "w-full max-w-none" : "w-[150%] max-w-none"
         : framing === "mobile-preview"
-          ? isBeautyTemplate ? "w-[90%] max-w-none" : isRoseInstitutTemplate ? "w-[122%] max-w-none" : "w-[150%] max-w-none"
+          ? isBeautyTemplate ? "w-[90%] max-w-none" : isRoseInstitutTemplate ? "w-full max-w-none" : "w-[150%] max-w-none"
           : "w-full";
   const wheelTransformClass =
     framing === "public" ? "-translate-x-1/2" : "-translate-x-1/2 -translate-y-1/2";

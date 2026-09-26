@@ -11,10 +11,11 @@ import {
   isBeautyWheelTemplate,
 } from "../src/lib/beauty-wheel-themes";
 import { buildBeautyWheelSegmentColors, limitBeautyWheelSegments } from "../src/lib/beauty-wheel-segments";
+import { DEFAULT_ROSE_INSTITUT_HEADING_FONT_FAMILY } from "../src/lib/campaign-defaults";
 import { parseCampaignSetupInput } from "../src/lib/merchant-input";
 import { buildWheelVisualSegments } from "../src/lib/wheel-segments";
 
-test("la collection Beauté contient six thèmes distincts et reste réservée au secteur Beauté", () => {
+test("les six thèmes Beauté dédiés restent distincts et réservés au secteur Beauté", () => {
   expect(BEAUTY_WHEEL_THEMES).toHaveLength(6);
   expect(new Set(BEAUTY_WHEEL_THEMES.map((theme) => theme.id)).size).toBe(6);
   expect(isBeautyIndustry("Beauté")).toBe(true);
@@ -27,6 +28,10 @@ test("la collection Beauté contient six thèmes distincts et reste réservée a
     expect(beautyWheelFontOptions(theme.id)).toContain(theme.font);
   }
   expect(beautyWheelFontOptions("classic")).toBeNull();
+});
+
+test("le template Éclat utilise Playfair Display par défaut", () => {
+  expect(DEFAULT_ROSE_INSTITUT_HEADING_FONT_FAMILY).toBe("playfair");
 });
 
 test("le fond partagé reprend les couleurs du marchand et conserve un texte lisible", () => {
