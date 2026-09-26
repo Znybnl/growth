@@ -11,6 +11,7 @@ import {
   isBeautyWheelTemplate,
 } from "../src/lib/beauty-wheel-themes";
 import { buildBeautyWheelSegmentColors, limitBeautyWheelSegments } from "../src/lib/beauty-wheel-segments";
+import { DEFAULT_WHEEL_SUBTITLE_SPACING_PX, defaultWheelSubtitleSpacingForTemplate } from "../src/lib/campaign-defaults";
 import { parseCampaignSetupInput } from "../src/lib/merchant-input";
 import { buildWheelVisualSegments } from "../src/lib/wheel-segments";
 
@@ -27,6 +28,16 @@ test("la collection Beauté contient six thèmes distincts et reste réservée a
     expect(beautyWheelFontOptions(theme.id)).toContain(theme.font);
   }
   expect(beautyWheelFontOptions("classic")).toBeNull();
+});
+
+test("l'espacement initial titre / sous-titre est de 15 px sur toutes les roues", () => {
+  expect(DEFAULT_WHEEL_SUBTITLE_SPACING_PX).toBe(15);
+  for (const templateId of ["cocorico-wheel", "cocorico-duo-wheel", "classic", "restaurant-pop", "rose-institut"] as const) {
+    expect(defaultWheelSubtitleSpacingForTemplate(templateId)).toBe(15);
+  }
+  for (const theme of BEAUTY_WHEEL_THEMES) {
+    expect(defaultWheelSubtitleSpacingForTemplate(theme.id)).toBe(15);
+  }
 });
 
 test("le fond partagé reprend les couleurs du marchand et conserve un texte lisible", () => {
@@ -50,6 +61,7 @@ test("la validation conserve les couleurs et la police propres à un thème visi
     headingAlign: "left",
     logoAlign: "left",
     buttonBackgroundColor: "#834969",
+    subtitleSpacingPx: 0,
   };
   const parsed = parseCampaignSetupInput({
     gameType: "wheel",

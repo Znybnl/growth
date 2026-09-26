@@ -438,6 +438,7 @@ export interface WheelTemplateStyle {
   headingAlign: TextAlign;
   logoAlign: TextAlign;
   buttonBackgroundColor: string;
+  subtitleSpacingPx?: number;
 }
 
 export interface CampaignWheelSettings {

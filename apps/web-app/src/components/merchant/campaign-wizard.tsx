@@ -893,13 +893,14 @@ export function CampaignWizard({
         headingAlign: current.presentation.heading.align,
         logoAlign: current.presentation.logo.align,
         buttonBackgroundColor: current.presentation.button.backgroundColor,
+        subtitleSpacingPx: current.presentation.layout.subtitleSpacingPx,
       };
       const remembered = wheelTemplateState.current[templateId];
       return {
         ...current,
         presentation: {
           ...current.presentation,
-          layout: { ...current.presentation.layout, templateId, wheelTemplateStyles: { ...current.presentation.layout.wheelTemplateStyles, [previousId]: wheelTemplateState.current[previousId] } },
+          layout: { ...current.presentation.layout, templateId, subtitleSpacingPx: remembered?.subtitleSpacingPx ?? defaultWheelSubtitleSpacingForTemplate(templateId), wheelTemplateStyles: { ...current.presentation.layout.wheelTemplateStyles, [previousId]: wheelTemplateState.current[previousId] } },
           background: { ...current.presentation.background, color: remembered?.backgroundColor ?? theme.background },
           wheel: remembered?.wheel ?? wheelPaletteForTemplate(templateId, current.presentation.wheel),
           heading: { ...current.presentation.heading, fontFamily: remembered?.headingFontFamily ?? theme.font, textColor: remembered?.headingTextColor ?? theme.text, align: remembered?.headingAlign ?? (templateId === "beauty-editorial" ? "left" : "center") },
@@ -2344,6 +2345,7 @@ export function CampaignWizard({
                           headingAlign: current.presentation.heading.align,
                           logoAlign: current.presentation.logo.align,
                           buttonBackgroundColor: current.presentation.button.backgroundColor,
+                          subtitleSpacingPx: current.presentation.layout.subtitleSpacingPx,
                         };
                         const remembered = wheelTemplateState.current[template.id];
                         const wheel = remembered?.wheel ?? wheelPaletteForTemplate(template.id, current.presentation.wheel);
@@ -2370,7 +2372,7 @@ export function CampaignWizard({
                               ...current.presentation.layout,
                               templateId: template.id,
                               wheelTemplateStyles: { ...current.presentation.layout.wheelTemplateStyles, [currentTemplateId]: wheelTemplateState.current[currentTemplateId] },
-                              subtitleSpacingPx: defaultWheelSubtitleSpacingForTemplate(template.id),
+                              subtitleSpacingPx: remembered?.subtitleSpacingPx ?? defaultWheelSubtitleSpacingForTemplate(template.id),
                             },
                             heading:
                               {
