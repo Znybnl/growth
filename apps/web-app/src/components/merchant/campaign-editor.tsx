@@ -39,6 +39,7 @@ import { CampaignPreviewQrDialog } from "@/components/merchant/campaign-preview-
 import { CampaignPreviewDialog, openCampaignPreview } from "@/components/merchant/campaign-preview-dialog";
 import { CampaignLivePreview as SharedCampaignLivePreview } from "@/components/merchant/campaign-live-preview";
 import { CampaignSpacingControls } from "@/components/merchant/campaign-spacing-controls";
+import { WheelTemplateThumbnail } from "@/components/merchant/wheel-template-thumbnail";
 import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
 import { Switch } from "@/components/ui/switch";
 import { DialogShell } from "@/components/ui/dialog";
@@ -2894,13 +2895,14 @@ export function CampaignEditor({
                           };
                         });
                       }}
-                      className={`rounded-[22px] border p-4 text-left transition ${
+                    className={`rounded-[22px] border p-4 text-left transition ${
                         active
                           ? "border-[#2f6df6] bg-[#eff4ff] shadow-[0_14px_26px_rgba(47,109,246,0.12)]"
                           : "border-[#d7e0ed] bg-white hover:border-[#b8c5da]"
-                      }`}
-                    >
-                      <span className="text-sm font-semibold text-[#111827]">
+                    }`}
+                  >
+                    {form.gameType === "wheel" ? <WheelTemplateThumbnail templateId={template.value} /> : null}
+                    <span className="text-sm font-semibold text-[#111827]">
                         {template.title}
                       </span>
                       <span className="mt-1 block text-sm leading-6 text-[#5c6577]">
