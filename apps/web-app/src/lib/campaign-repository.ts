@@ -13,7 +13,7 @@ import {
   CreateDrawSessionResult,
   DrawSession,
   DrawRequest,
-  DrawResult,
+  DrawResultWithEmailContext,
   FinalizeDrawSessionRequest,
   Lead,
   Merchant,
@@ -2801,7 +2801,7 @@ export async function createDrawSessionInSupabase(
 export async function finalizeDrawSessionInSupabase(
   input: FinalizeDrawSessionRequest,
   merchant?: Merchant,
-): Promise<DrawResult> {
+): Promise<DrawResultWithEmailContext> {
   const supabase = getSupabaseAdmin();
   const { data: sessionRow } = await supabase
     .from("draw_sessions")
@@ -2879,6 +2879,7 @@ export async function finalizeDrawSessionInSupabase(
   return {
     lead,
     prize,
+    rewardEmailAppointmentUrl: campaignMerchant.appointmentUrl,
     campaign: toPublicCampaign(
       campaign,
       campaignMerchant,
@@ -2888,7 +2889,10 @@ export async function finalizeDrawSessionInSupabase(
   };
 }
 
-export async function drawForLeadInSupabase(input: DrawRequest, merchant: Merchant): Promise<DrawResult> {
+export async function drawForLeadInSupabase(
+  input: DrawRequest,
+  merchant: Merchant,
+): Promise<DrawResultWithEmailContext> {
   const performance = await getSupabaseCampaignPerformance(input.campaignId, merchant);
   if (!performance || !performance.campaign.isActive) throw new Error("Campagne indisponible");
   await assertEffectiveMerchantBillingAccess(performance.merchant, "campaign_public");
@@ -2935,6 +2939,7 @@ export async function drawForLeadInSupabase(input: DrawRequest, merchant: Mercha
   return {
     lead,
     prize,
+    rewardEmailAppointmentUrl: performance.merchant.appointmentUrl,
     campaign: toPublicCampaign(campaign, merchant, prizes, actionForVisit ? [actionForVisit] : []),
   };
 }

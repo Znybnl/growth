@@ -32,6 +32,7 @@ export async function POST(request: Request, { params }: LeadResendEmailRoutePro
       rewardAvailableAt: payload.lead.rewardAvailableAt,
       rewardExpiresAt: payload.lead.rewardExpiresAt,
       purchaseRequired: Boolean(payload.prize.purchaseRequired),
+      appointmentUrl: payload.merchant.appointmentUrl,
       emailSettings: payload.campaign.presentation.email,
       logoUrl: payload.campaign.logoUrl,
     });
