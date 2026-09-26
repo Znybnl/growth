@@ -2193,24 +2193,49 @@ async function recordCampaignPublicationAudit(
 }
 
 export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
+  const totalStartedAt = performance.now();
   const supabase = getSupabaseAdmin();
   const isNewCampaign = !input.id;
   const campaignId = input.id ?? generateId("camp");
 
-  if (!isNewCampaign) {
-    const { data: existingCampaign, error: existingCampaignError } = await supabase
-      .from("campaigns")
-      .select("id,merchant_id")
-      .eq("id", campaignId)
-      .maybeSingle();
+  const needsExistingPrizeQuantities = !isNewCampaign && input.prizes.some((prize) =>
+    prize.remainingQuantity === undefined &&
+    Boolean(prize.id) &&
+    !prize.id!.startsWith("local-prize-") &&
+    !prize.id!.startsWith("default-prize-"),
+  );
+  const needsExistingActionIds = !isNewCampaign && input.actions.some((action) =>
+    Boolean(action.id) && !action.id!.startsWith("local-action-"),
+  );
 
-    if (existingCampaignError) {
-      throw new Error(`Lecture de la campagne impossible: ${existingCampaignError.message}`);
-    }
+  const readsStartedAt = performance.now();
+  const [existingCampaignQuery, existingPrizesQuery, existingActionsQuery] = await Promise.all([
+    isNewCampaign
+      ? Promise.resolve(null)
+      : supabase.from("campaigns").select("id,merchant_id").eq("id", campaignId).maybeSingle(),
+    needsExistingPrizeQuantities
+      ? supabase.from("prizes").select("id,remaining_quantity").eq("campaign_id", campaignId)
+      : Promise.resolve(null),
+    needsExistingActionIds
+      ? supabase.from("campaign_actions").select("id").eq("campaign_id", campaignId)
+      : Promise.resolve(null),
+  ]);
+  const existingReadMs = Math.round((performance.now() - readsStartedAt) * 10) / 10;
 
-    if (!existingCampaign || existingCampaign.merchant_id !== input.merchantId) {
-      throw new Error("Campagne introuvable");
-    }
+  if (existingCampaignQuery?.error) {
+    throw new Error(`Lecture de la campagne impossible: ${existingCampaignQuery.error.message}`);
+  }
+  if (
+    !isNewCampaign &&
+    (!existingCampaignQuery?.data || existingCampaignQuery.data.merchant_id !== input.merchantId)
+  ) {
+    throw new Error("Campagne introuvable");
+  }
+  if (existingPrizesQuery?.error) {
+    throw new Error(`Lecture des lots existants impossible: ${existingPrizesQuery.error.message}`);
+  }
+  if (existingActionsQuery?.error) {
+    throw new Error(`Lecture des actions existantes impossible: ${existingActionsQuery.error.message}`);
   }
 
   const payload = {
@@ -2256,27 +2281,14 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
     is_winning_every_time: input.rewardRules.isWinningEveryTime,
   };
 
-  const existingPrizesQuery = await supabase.from("prizes").select("*").eq("campaign_id", campaignId);
-  if (existingPrizesQuery.error) {
-    throw new Error(`Lecture des lots existants impossible: ${existingPrizesQuery.error.message}`);
-  }
-
-  const { data: existingPrizesData } = existingPrizesQuery;
-  const existingPrizes = (existingPrizesData as PrizeRow[] | null) ?? [];
+  const existingPrizes = (existingPrizesQuery?.data ?? []) as Array<
+    Pick<PrizeRow, "id" | "remaining_quantity">
+  >;
   const remainingMap = new Map(existingPrizes.map((item) => [item.id, item.remaining_quantity]));
 
   const existingActionIds = new Set<string>();
-  if (!isNewCampaign) {
-    const existingActionsQuery = await supabase
-      .from("campaign_actions")
-      .select("id")
-      .eq("campaign_id", campaignId);
-    if (existingActionsQuery.error) {
-      throw new Error(`Lecture des actions existantes impossible: ${existingActionsQuery.error.message}`);
-    }
-    for (const action of (existingActionsQuery.data as Array<{ id: string }> | null) ?? []) {
-      existingActionIds.add(action.id);
-    }
+  for (const action of existingActionsQuery?.data ?? []) {
+    existingActionIds.add(action.id);
   }
 
   const usedActionIds = new Set<string>();
@@ -2367,20 +2379,36 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
     },
   };
 
+  const rpcStartedAt = performance.now();
   const atomicSave = await supabase.rpc("save_campaign_setup", {
     p_campaign: payload,
     p_actions: atomicActions,
     p_prizes: atomicPrizes,
     p_settings: localSettings,
   });
+  const rpcMs = Math.round((performance.now() - rpcStartedAt) * 10) / 10;
 
   if (!atomicSave.error) {
+    const auditStartedAt = performance.now();
     await recordCampaignPublicationAudit(
       campaignId,
       input,
       localSettings.compliance.configurationVersion,
       input.isActive ? "published" : "draft_saved",
     );
+    const auditMs = Math.round((performance.now() - auditStartedAt) * 10) / 10;
+    console.info(JSON.stringify({
+      event: "campaign_setup_storage_timing",
+      mode: isNewCampaign ? "create" : "update",
+      game_type: input.gameType,
+      actions_count: input.actions.length,
+      prizes_count: input.prizes.length,
+      write_path: "atomic_rpc",
+      existing_reads_ms: existingReadMs,
+      write_ms: rpcMs,
+      audit_ms: auditMs,
+      total_ms: Math.round((performance.now() - totalStartedAt) * 10) / 10,
+    }));
     return campaignId;
   }
 
@@ -2388,6 +2416,7 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
     throw new Error(`La campagne n'a pas pu être enregistrée: ${atomicSave.error.message}`);
   }
 
+  const fallbackStartedAt = performance.now();
   const upsert = await supabase.from("campaigns").upsert(payload).select("*").single();
   if (upsert.error || !upsert.data) {
     throw new Error(
@@ -2444,12 +2473,26 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
   }
 
   await setCampaignLocalSettings(campaignId, localSettings);
+  const auditStartedAt = performance.now();
   await recordCampaignPublicationAudit(
     campaignId,
     input,
     localSettings.compliance.configurationVersion,
     input.isActive ? "published_fallback" : "draft_saved_fallback",
   );
+  const auditMs = Math.round((performance.now() - auditStartedAt) * 10) / 10;
+  console.info(JSON.stringify({
+    event: "campaign_setup_storage_timing",
+    mode: isNewCampaign ? "create" : "update",
+    game_type: input.gameType,
+    actions_count: input.actions.length,
+    prizes_count: input.prizes.length,
+    write_path: "fallback",
+    existing_reads_ms: existingReadMs,
+    write_ms: Math.round((performance.now() - fallbackStartedAt - auditMs) * 10) / 10,
+    audit_ms: auditMs,
+    total_ms: Math.round((performance.now() - totalStartedAt) * 10) / 10,
+  }));
 
   return campaignId;
 }

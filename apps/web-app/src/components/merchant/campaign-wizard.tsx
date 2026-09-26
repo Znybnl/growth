@@ -48,6 +48,7 @@ import { createCampaignEmailDefaults } from "@/lib/email-settings";
 import { normalizeCampaignEmailSettings } from "@/lib/email-settings";
 import { captureClientError } from "@/lib/client-observability";
 import { captureClientProductEvent } from "@/lib/client-product-analytics";
+import { postCampaignSetup } from "@/lib/campaign-setup-request";
 import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
 import {
   createDefaultPosterSettings,
@@ -839,6 +840,7 @@ export function CampaignWizard({
   const [error, setError] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const saveRequestInFlightRef = useRef(false);
   const [previewSaveDialogOpen, setPreviewSaveDialogOpen] = useState(false);
   const [previewSaveError, setPreviewSaveError] = useState<string | null>(null);
   const [isSavingBeforePreview, setIsSavingBeforePreview] = useState(false);
@@ -1158,37 +1160,34 @@ export function CampaignWizard({
     }
 
     const targetIsActive = isPublishing ? true : isEditing ? draft.isActive : false;
+    if (saveRequestInFlightRef.current) return null;
+    saveRequestInFlightRef.current = true;
     setIsSaving(true);
     setError(null);
     setSaveError(null);
     try {
-      const response = await fetch("/api/campaigns/setup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...draft,
-          creationMode: "wizard",
-          isActive: targetIsActive,
-          rewardRules: {
-            ...draft.rewardRules,
-            purchaseRequired: false,
-          },
-          actions: actionEnabled
-            ? draft.actions.map((action) => ({
-                ...action,
-                url: normalizeUrl(action.url),
-              }))
-            : [],
-          prizes: draft.prizes.map((prize) => ({
-            ...prize,
-            probability: Number(prize.probability || 0),
-          })),
-        }),
-      });
-      const payload = (await response.json().catch(() => null)) as {
+      const { response, payload } = await postCampaignSetup<{
         campaign?: { campaign?: { id?: string }; id?: string };
         error?: string;
-      } | null;
+      }>({
+        ...draft,
+        creationMode: "wizard",
+        isActive: targetIsActive,
+        rewardRules: {
+          ...draft.rewardRules,
+          purchaseRequired: false,
+        },
+        actions: actionEnabled
+          ? draft.actions.map((action) => ({
+              ...action,
+              url: normalizeUrl(action.url),
+            }))
+          : [],
+        prizes: draft.prizes.map((prize) => ({
+          ...prize,
+          probability: Number(prize.probability || 0),
+        })),
+      });
       if (!response.ok)
         throw new Error(
           payload?.error || "La campagne n’a pas pu être enregistrée.",
@@ -1217,6 +1216,7 @@ export function CampaignWizard({
       if (!options?.suppressErrorDialog) setSaveError(readableMessage);
       return null;
     } finally {
+      saveRequestInFlightRef.current = false;
       setIsSaving(false);
     }
   }
