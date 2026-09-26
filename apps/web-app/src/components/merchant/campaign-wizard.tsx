@@ -1386,14 +1386,16 @@ export function CampaignWizard({
             >
               {saveActionLabel}
             </button>
-            <button
-              type="button"
-              onClick={() => void saveCampaign("publish")}
-              disabled={isSaving}
-              className="okado-filled-action px-4 text-sm disabled:opacity-50"
-            >
-              {isSaving ? "Enregistrement…" : "Publier"}
-            </button>
+            {isEditing || stepIndex === WIZARD_STEPS.length - 1 ? (
+              <button
+                type="button"
+                onClick={() => void saveCampaign("publish")}
+                disabled={isSaving}
+                className="okado-filled-action px-4 text-sm disabled:opacity-50"
+              >
+                {isSaving ? "Enregistrement…" : "Publier"}
+              </button>
+            ) : null}
           </div>
         </div>
       </div>
