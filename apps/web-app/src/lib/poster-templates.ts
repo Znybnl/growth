@@ -47,6 +47,7 @@ export type PosterTemplateConfig = {
   logoLetterSpacing?: number;
   logoFontFamily?: TextFont;
   logoTextAnchor?: "start" | "middle";
+  logoImageAnchor?: "start" | "middle";
   logoUnderlineWidth?: number;
   logoUnderlineColor?: string;
   inlineQrCta?: boolean;
@@ -306,6 +307,7 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     logoLetterSpacing: 5,
     logoFontFamily: "syncopate",
     logoTextAnchor: "start",
+    logoImageAnchor: "start",
     logoUnderlineWidth: 68,
     logoUnderlineColor: "#8d9c8e",
     inlineQrCta: true,
