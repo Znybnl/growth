@@ -60,7 +60,7 @@
 
 ## Décisions produit confirmées
 
-- Le terme affiché à l'utilisateur est **jeu** ; *campagne* reste un terme technique ou historique lorsqu'il désigne le modèle de données.
+- Une animation créée et pilotée par un marchand est un **jeu**. La rubrique de navigation qui regroupe ces jeux s’intitule **Campagnes** ; *campagne* reste aussi le terme technique/historique du modèle de données.
 - Les actions marketing sont proposées **avant** le jeu et sont séquencées par visite.
 - La collecte d'e-mail est une option indépendante des actions marketing.
 - L'objectif de création sert à initialiser les actions dans le wizard ; il ne doit pas écraser les actions d'un jeu existant.
@@ -69,6 +69,9 @@
 - Seul l'administrateur de la plateforme accède aux fonctionnalités qui lui sont dédiées. Les utilisateurs marchands pilotent leurs propres établissements et jeux.
 - Le personnel du commerce n'a pas de compte dédié à la plateforme : il valide un retrait depuis le QR code du client avec le PIN marchand.
 - Le formulaire classique ne peut être supprimé qu'après reprise fonctionnelle suffisante dans le wizard et validation des parcours de bout en bout, à la fois par le propriétaire et par les tests automatisés.
+- Le secteur d'activité d'un établissement n'est pas prérempli pour un nouveau profil et peut rester vide ; les choix déjà enregistrés pour les établissements existants sont préservés.
+- Le secteur Beauté propose les sous-secteurs Coiffure, Institut & soins, Ongles & cils, et Massage & spa. Les suggestions de lots peuvent être ciblées par sous-secteur ; tant qu'un catalogue dédié n'est pas configuré, le catalogue Beauté général reste disponible en repli.
+- Les établissements du secteur Beauté disposent de six styles de roue supplémentaires, quel que soit leur sous-secteur. Cette collection apparaît avant les modèles génériques dans les éditeurs ; les joueurs voient le modèle enregistré sans restriction de secteur. Le logo, le titre, le sous-titre, les couleurs et la police restent personnalisables. Le centre utilise une main pointeur, sauf sur « Rose poudré » où une fleur abstraite à quatre pétales remplace uniquement son apparence. L'interaction du bouton reste identique.
 
 ## Questions ouvertes
 

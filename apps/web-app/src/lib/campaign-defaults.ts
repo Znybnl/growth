@@ -7,6 +7,7 @@ import {
 } from "@/lib/types";
 import { createPosterSettingsDefaults } from "@/lib/poster-utils";
 import { getPosterTemplate } from "@/lib/poster-templates";
+import { beautyWheelTheme } from "@/lib/beauty-wheel-themes";
 
 export const LEGACY_DEFAULT_WHEEL_SUBTITLE = "Faites tournez la roue pour jouer !";
 export const DEFAULT_WHEEL_SUBTITLE = "Tounez la roue et tentez de gagner !";
@@ -25,7 +26,7 @@ export const DEFAULT_ROSE_INSTITUT_TEXT_COLOR = "#003cb4";
 export const DEFAULT_ROSE_INSTITUT_BACKGROUND_COLOR = "#fff4f7";
 export const DEFAULT_ROSE_INSTITUT_HEADING_SIZE_PX = 40;
 export const DEFAULT_WHEEL_HEADING_FONT_SIZE_PX = 40;
-export const DEFAULT_ROSE_INSTITUT_HEADING_FONT_FAMILY = "lato" as const;
+export const DEFAULT_ROSE_INSTITUT_HEADING_FONT_FAMILY = "playfair" as const;
 export const DEFAULT_SCRATCH_PRIMARY_COLOR = "#f4c14a";
 export const DEFAULT_SCRATCH_CONFETTI_COLOR = "#d99a18";
 export const DEFAULT_SCRATCH_CORAL_COLOR = "#f47c6b";
@@ -34,11 +35,13 @@ export const DEFAULT_SCRATCH_LILAC_COLOR = "#b85be5";
 export const DEFAULT_SCRATCH_TICKET_COLOR = "#f7f7f7";
 export const DEFAULT_SCRATCH_TEXT_COLOR = "#ffffff";
 export const MAX_CAMPAIGN_SUBTITLE_LINES = 3;
+export const MAX_BEAUTY_WHEEL_TITLE_LINES = 5;
 export const MAX_CAMPAIGN_SUBTITLE_LENGTH = 240;
 export const CAMPAIGN_SPACING_MIN_PX = 0;
 export const CAMPAIGN_SPACING_MAX_PX = 80;
 export const DEFAULT_WHEEL_SPACING_PX = 50;
-export const DEFAULT_WHEEL_SUBTITLE_SPACING_PX = 5;
+export const DEFAULT_ROSE_POWDER_WHEEL_SPACING_PX = 25;
+export const DEFAULT_WHEEL_SUBTITLE_SPACING_PX = 15;
 
 export function campaignSubtitleForGameTypeChange(
   currentSubtitle: string,
@@ -63,9 +66,15 @@ export function normalizeWheelSubtitle(value: string) {
 }
 
 export function defaultWheelSubtitleSpacingForTemplate(templateId?: GamePageTemplateId) {
-  return templateId === "cocorico-wheel" || templateId === "cocorico-duo-wheel"
-    ? 30
-    : DEFAULT_WHEEL_SUBTITLE_SPACING_PX;
+  // Keep the template argument for existing callers; the default is now shared by every wheel.
+  void templateId;
+  return DEFAULT_WHEEL_SUBTITLE_SPACING_PX;
+}
+
+export function defaultWheelBlockSpacingForTemplate(templateId?: GamePageTemplateId) {
+  return templateId === "beauty-rose"
+    ? DEFAULT_ROSE_POWDER_WHEEL_SPACING_PX
+    : DEFAULT_WHEEL_SPACING_PX;
 }
 
 export function scratchTemplateDefaultPrimaryColor(templateId?: GamePageTemplateId) {
@@ -141,6 +150,18 @@ export function wheelPaletteForTemplate(
   templateId: GamePageTemplateId,
   current: CampaignWheelSettings,
 ) {
+  const beautyTheme = beautyWheelTheme(templateId);
+  if (beautyTheme) {
+    return {
+      ...current,
+      loseColor: beautyTheme.primary,
+      alternateLoseColor: beautyTheme.secondary,
+      winColor: beautyTheme.secondary,
+      alternateWinColor: beautyTheme.secondary,
+      rimColor: beautyTheme.primary,
+    };
+  }
+
   if (templateId === "classic") {
     return {
       ...current,
@@ -197,6 +218,10 @@ export function wheelBackgroundForTemplate(
   templateId: GamePageTemplateId,
   currentColor: string,
 ) {
+  // A Beauty theme's default is applied when selected in the editor. On load,
+  // this resolver must preserve the merchant's saved background color.
+  if (beautyWheelTheme(templateId)) return currentColor;
+
   const normalized = currentColor.trim().toLowerCase();
   const knownTemplateBackgrounds = [
     "#ffffff",
@@ -261,11 +286,11 @@ export function scratchTemplatePrimaryColor(
 }
 
 /** Keep the player-facing promise readable in the phone-sized game surface. */
-export function limitCampaignSubtitleLines(value: string) {
+export function limitCampaignSubtitleLines(value: string, maxLines = MAX_CAMPAIGN_SUBTITLE_LINES) {
   return value
     .replace(/\r\n/g, "\n")
     .split("\n")
-    .slice(0, MAX_CAMPAIGN_SUBTITLE_LINES)
+    .slice(0, Math.max(1, Math.floor(maxLines)))
     .join("\n")
     .slice(0, MAX_CAMPAIGN_SUBTITLE_LENGTH);
 }

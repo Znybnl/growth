@@ -33,6 +33,7 @@ export type SendRewardEmailInput = {
   rewardExpiresAt?: string;
   purchaseRequired?: boolean;
   usageConditions?: string;
+  appointmentUrl?: string;
   emailSettings: CampaignEmailSettings;
   logoUrl?: string;
   preview?: boolean;
@@ -153,8 +154,13 @@ export async function sendRewardEmail(input: SendRewardEmailInput) {
       to: input.leadEmail,
       subject,
       replyTo: emailSettings.replyTo || undefined,
-      text: renderRewardEmailText(emailSettings, variables),
-      html: renderRewardEmailHtml(emailSettings, variables, { logoSrc: emailLogo.src }),
+      text: renderRewardEmailText(emailSettings, variables, {
+        appointmentUrl: input.appointmentUrl,
+      }),
+      html: renderRewardEmailHtml(emailSettings, variables, {
+        logoSrc: emailLogo.src,
+        appointmentUrl: input.appointmentUrl,
+      }),
       ...(emailLogo.attachment ? { attachments: [emailLogo.attachment] } : {}),
     });
 

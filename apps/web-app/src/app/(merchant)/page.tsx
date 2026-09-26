@@ -15,6 +15,7 @@ import {
   leadStatusLabel,
 } from "@/lib/format";
 import { getMerchantDashboard, getMerchantRecentLeads, getMerchantWorkspaceDashboard } from "@/lib/store";
+import { calculatePrizeConsumption } from "@/lib/dashboard-metrics";
 
 export const dynamic = "force-dynamic";
 
@@ -45,6 +46,13 @@ export default async function DashboardPage({
 
   const activeCampaigns = filteredCampaigns.filter((item) => item.campaign.isActive);
   const activeCampaignIds = new Set(activeCampaigns.map((item) => item.campaign.id));
+  const stockConsumption = calculatePrizeConsumption(
+    dashboard.prizeInventory.filter((item) => merchantCampaignIds.has(item.campaignId)),
+  );
+  const participationCount = filteredCampaigns.reduce(
+    (total, item) => total + item.kpis.leads,
+    0,
+  );
   const activePrizeInventory = dashboard.prizeInventory.filter((item) =>
     activeCampaignIds.has(item.campaignId),
   );
@@ -140,30 +148,22 @@ export default async function DashboardPage({
       />
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {[
-          ["Campagnes actives", String(activeCampaigns.length)],
-          [
-            "Participations totales",
-            String(filteredCampaigns.reduce((total, item) => total + item.kpis.leads, 0)),
-          ],
-          [
-            "Lots retirés",
-            String(filteredCampaigns.reduce((total, item) => total + item.kpis.redeemed, 0)),
-          ],
-          [
-            "Conversion moyenne",
-            formatPercent(
-              filteredCampaigns.length
-                ? Math.round(
-                    filteredCampaigns.reduce(
-                      (total, item) => total + item.kpis.conversionRate,
-                      0,
-                    ) / filteredCampaigns.length,
-                  )
-                : 0,
-            ),
-          ],
-        ].map(([label, value]) => <MetricCard key={label} label={label} value={value} />)}
+        <MetricCard label="Campagnes actives" value={String(activeCampaigns.length)} />
+        <MetricCard label="Participations" value={String(participationCount)} />
+        <MetricCard
+          label="Lots consommés"
+          value={String(stockConsumption.consumed)}
+          detail="Stock initial − stock disponible"
+        />
+        <MetricCard
+          label="Taux de consommation"
+          value={stockConsumption.rate === null ? "—" : formatPercent(stockConsumption.rate)}
+          detail={
+            stockConsumption.initial
+              ? "Part du stock initial quantifié consommée"
+              : "Aucun stock quantifié"
+          }
+        />
       </section>
 
       <DashboardOperationalAlerts />

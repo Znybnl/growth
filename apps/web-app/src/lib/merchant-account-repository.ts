@@ -29,6 +29,7 @@ type MerchantRow = {
   logo_text: string;
   logo_url: string | null;
   industry: string | null;
+  industry_subsector?: string | null;
   restaurant_type: string | null;
   city: string | null;
   address: string | null;
@@ -36,6 +37,7 @@ type MerchantRow = {
   phone: string | null;
   restaurant_email: string | null;
   website_url: string | null;
+  appointment_url: string | null;
   onboarding_completed: boolean | null;
   preferred_goals: string[] | null;
   diffusion_support: string[] | null;
@@ -121,6 +123,7 @@ const DEMO_MERCHANT_PROFILE = {
   phone: "01 40 00 00 00",
   restaurantEmail: "contact@maisonsora.fr",
   websiteUrl: "https://maisonsora.fr",
+  appointmentUrl: "",
   onboardingCompleted: true,
   preferredGoals: ["Avis Google", "Collecte CRM"],
   diffusionSupport: ["QR code vitrine et comptoir", "Script équipe magasin"],
@@ -332,6 +335,7 @@ function toMerchant(row: MerchantRow): Merchant {
     logoText: row.logo_text,
     logoUrl: row.logo_url ?? undefined,
     industry: row.industry ?? undefined,
+    industrySubsector: row.industry_subsector ?? undefined,
     restaurantType: row.restaurant_type ?? undefined,
     city: row.city ?? undefined,
     address: row.address ?? undefined,
@@ -339,6 +343,7 @@ function toMerchant(row: MerchantRow): Merchant {
     phone: row.phone ?? undefined,
     restaurantEmail: row.restaurant_email ?? undefined,
     websiteUrl: row.website_url ?? undefined,
+    appointmentUrl: row.appointment_url ?? undefined,
     onboardingCompleted: row.onboarding_completed ?? false,
     preferredGoals: row.preferred_goals ?? [],
     diffusionSupport: row.diffusion_support ?? [],
@@ -610,6 +615,7 @@ export async function ensureDemoMerchantInSupabase() {
     phone: DEMO_MERCHANT_PROFILE.phone,
     restaurant_email: DEMO_MERCHANT_PROFILE.restaurantEmail,
     website_url: DEMO_MERCHANT_PROFILE.websiteUrl,
+    appointment_url: DEMO_MERCHANT_PROFILE.appointmentUrl,
     onboarding_completed: DEMO_MERCHANT_PROFILE.onboardingCompleted,
     preferred_goals: [...DEMO_MERCHANT_PROFILE.preferredGoals],
     diffusion_support: [...DEMO_MERCHANT_PROFILE.diffusionSupport],
@@ -766,6 +772,7 @@ export async function createMerchantAccountInSupabase(input: MerchantSignUpInput
       phone,
       restaurant_email: "",
       website_url: "",
+      appointment_url: "",
       onboarding_completed: false,
       preferred_goals: [],
       diffusion_support: [],
@@ -1017,6 +1024,7 @@ export async function authenticateOrProvisionMerchantWithGoogle(
     phone: "",
     restaurant_email: "",
     website_url: "",
+    appointment_url: "",
     onboarding_completed: false,
     preferred_goals: [],
     diffusion_support: [],
@@ -1286,6 +1294,7 @@ export async function createSupabaseMerchantLocation(input: {
       phone: "",
       restaurant_email: "",
       website_url: "",
+      appointment_url: "",
       onboarding_completed: true,
       preferred_goals: [],
       diffusion_support: [],
@@ -1497,6 +1506,7 @@ export async function updateMerchantOnboardingInSupabase(
       company_name: companyName,
       logo_text: companyName.slice(0, 2).toUpperCase(),
       industry: input.industry.trim(),
+      industry_subsector: input.industrySubsector?.trim() || null,
       restaurant_type: input.restaurantType.trim(),
       city: input.city.trim(),
       address: input.address.trim(),
@@ -1504,6 +1514,7 @@ export async function updateMerchantOnboardingInSupabase(
       phone: input.phone.trim(),
       restaurant_email: input.restaurantEmail.trim().toLowerCase(),
       website_url: input.websiteUrl.trim(),
+      appointment_url: input.appointmentUrl.trim(),
       default_prize_cost: input.defaultPrizeCost,
       preferred_goals: input.preferredGoals,
       diffusion_support: input.diffusionSupport,
@@ -1599,6 +1610,7 @@ export async function updateMerchantAccountInSupabase(
       company_name: companyName,
       logo_text: companyName.slice(0, 2).toUpperCase(),
       industry: input.industry.trim(),
+      industry_subsector: input.industrySubsector?.trim() || null,
       restaurant_type: input.restaurantType.trim(),
       city: input.city.trim(),
       address: input.address.trim(),
@@ -1606,6 +1618,7 @@ export async function updateMerchantAccountInSupabase(
       phone: input.phone.trim(),
       restaurant_email: input.restaurantEmail.trim().toLowerCase(),
       website_url: input.websiteUrl.trim(),
+      appointment_url: input.appointmentUrl.trim(),
       google_review_url: input.googleReviewUrl.trim(),
       google_place_name: input.googlePlaceName?.trim() ?? null,
       google_place_address: input.googlePlaceAddress?.trim() ?? null,

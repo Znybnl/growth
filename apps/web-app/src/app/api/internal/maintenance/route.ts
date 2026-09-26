@@ -55,6 +55,7 @@ export async function GET(request: NextRequest) {
         rewardAvailableAt: payload.lead.rewardAvailableAt,
         rewardExpiresAt: payload.lead.rewardExpiresAt,
         purchaseRequired: Boolean(payload.prize.purchaseRequired),
+        appointmentUrl: payload.merchant.appointmentUrl,
         emailSettings: payload.campaign.presentation.email,
         logoUrl: payload.campaign.logoUrl,
       });

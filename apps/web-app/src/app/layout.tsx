@@ -4,6 +4,11 @@ import {
   Bebas_Neue,
   Comfortaa,
   Cormorant_Garamond,
+  Playfair_Display,
+  DM_Sans,
+  Poppins,
+  Bodoni_Moda,
+  Space_Grotesk,
   Days_One,
   Delius_Unicase,
   Fredoka,
@@ -104,6 +109,12 @@ const cormorantGaramond = Cormorant_Garamond({
   preload: false,
 });
 
+const playfairDisplay = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair", display: "swap", preload: false });
+const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm-sans", display: "swap", preload: false });
+const poppins = Poppins({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800"], variable: "--font-poppins", display: "swap", preload: false });
+const bodoniModa = Bodoni_Moda({ subsets: ["latin"], variable: "--font-bodoni", display: "swap", preload: false });
+const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space-grotesk", display: "swap", preload: false });
+
 const fredoka = Fredoka({
   subsets: ["latin"],
   variable: "--font-fredoka",
@@ -146,6 +157,11 @@ export default function RootLayout({
         syncopate.variable,
         robotoMono.variable,
         cormorantGaramond.variable,
+        playfairDisplay.variable,
+        dmSans.variable,
+        poppins.variable,
+        bodoniModa.variable,
+        spaceGrotesk.variable,
         fredoka.variable,
         bebasNeue.variable,
       )}

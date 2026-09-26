@@ -13,7 +13,9 @@ import {
   PosterTemplateId,
   TextAlign,
   TextFont,
+  WheelTemplateStyle,
 } from "@/lib/types";
+import { BEAUTY_INDUSTRY, isBeautySubsector } from "@/lib/merchant-options";
 import {
   CAMPAIGN_SPACING_MAX_PX,
   CAMPAIGN_SPACING_MIN_PX,
@@ -53,6 +55,11 @@ const TEXT_FONTS = new Set<TextFont>([
   "display",
   "serif",
   "cormorant",
+  "playfair",
+  "dm-sans",
+  "poppins",
+  "bodoni",
+  "space-grotesk",
   "fredoka",
   "inter",
   "bebas",
@@ -67,6 +74,12 @@ const GAME_PAGE_TEMPLATE_IDS = new Set<GamePageTemplateId>([
   "cocorico-wheel",
   "cocorico-duo-wheel",
   "rose-institut",
+  "beauty-rose",
+  "beauty-nude",
+  "beauty-botanical",
+  "beauty-pop",
+  "beauty-editorial",
+  "beauty-tech",
   "cosmic-orbit",
   "sunburst-festival",
   "scratch-vault",
@@ -175,6 +188,24 @@ function normalizeUrl(value: unknown) {
   }
 }
 
+function normalizeOptionalHttpUrl(value: unknown) {
+  const input = typeof value === "string" ? value.trim() : "";
+
+  if (!input) return "";
+  if (input.length > 500) throw new Error("Le lien de prise de rendez-vous ne peut pas dépasser 500 caractères.");
+
+  try {
+    const url = new URL(input);
+    if (!["http:", "https:"].includes(url.protocol) || !url.hostname) {
+      throw new Error("URL invalide.");
+    }
+
+    return input;
+  } catch {
+    throw new Error("Saisissez une URL complète commençant par http:// ou https://.");
+  }
+}
+
 function normalizeImageSource(value: unknown) {
   const input = typeof value === "string" ? value.trim() : "";
 
@@ -262,6 +293,38 @@ function normalizeColor(value: unknown, fallback: string) {
   return normalized || fallback;
 }
 
+function normalizeWheelTemplateStyles(value: unknown): Partial<Record<GamePageTemplateId, WheelTemplateStyle>> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  const styles: Partial<Record<GamePageTemplateId, WheelTemplateStyle>> = {};
+  for (const [id, rawStyle] of Object.entries(value)) {
+    if (!GAME_PAGE_TEMPLATE_IDS.has(id as GamePageTemplateId) || !rawStyle || typeof rawStyle !== "object" || Array.isArray(rawStyle)) continue;
+    const style = rawStyle as Record<string, unknown>;
+    const wheel = style.wheel && typeof style.wheel === "object" && !Array.isArray(style.wheel)
+      ? style.wheel as Record<string, unknown>
+      : {};
+    styles[id as GamePageTemplateId] = {
+      wheel: {
+        rimColor: normalizeColor(wheel.rimColor, "#ffffff"),
+        winColor: normalizeColor(wheel.winColor, "#ffffff"),
+        alternateWinColor: normalizeColor(wheel.alternateWinColor, "#ffffff"),
+        loseColor: normalizeColor(wheel.loseColor, "#2563eb"),
+        alternateLoseColor: normalizeColor(wheel.alternateLoseColor, "#ffffff"),
+      },
+      backgroundColor: normalizeColor(style.backgroundColor, "#ffffff"),
+      scratchSignal: normalizeColor(style.scratchSignal, "#2563eb"),
+      headingTextColor: normalizeColor(style.headingTextColor, "#1f2937"),
+      logoTextColor: normalizeColor(style.logoTextColor, "#1f2937"),
+      headingFontFamily: normalizeEnum(style.headingFontFamily, TEXT_FONTS, "roboto"),
+      headingAlign: normalizeEnum(style.headingAlign, TEXT_ALIGNS, "center"),
+      logoAlign: normalizeEnum(style.logoAlign, TEXT_ALIGNS, "center"),
+      buttonBackgroundColor: normalizeColor(style.buttonBackgroundColor, "#2563eb"),
+      blockSpacingPx: normalizeOptionalNumber(style.blockSpacingPx, { min: 0, max: 80, integer: true }),
+      subtitleSpacingPx: normalizeOptionalNumber(style.subtitleSpacingPx, { min: 0, max: 80, integer: true }),
+    };
+  }
+  return styles;
+}
+
 function normalizeOptionalNumber(value: unknown, options: { min: number; max: number; integer?: boolean }) {
   if (typeof value !== "number" || !Number.isFinite(value)) return undefined;
 
@@ -269,18 +332,30 @@ function normalizeOptionalNumber(value: unknown, options: { min: number; max: nu
   return options.integer ? Math.round(normalized) : normalized;
 }
 
+function normalizeIndustrySubsector(value: unknown, industry: string) {
+  const subsector = normalizeString(value, 80);
+  if (!subsector) return "";
+  if (industry !== BEAUTY_INDUSTRY || !isBeautySubsector(subsector)) {
+    throw new Error("Le sous-secteur sélectionné n'est pas valide pour ce secteur.");
+  }
+  return subsector;
+}
+
 export function parseMerchantOnboardingInput(input: unknown): MerchantOnboardingInput {
   const payload = ensureObject(input);
+  const industry = normalizeString(payload.industry, 80);
 
   return {
     companyName: normalizeString(payload.companyName, 120),
-    industry: normalizeString(payload.industry, 80),
+    industry,
+    industrySubsector: normalizeIndustrySubsector(payload.industrySubsector, industry),
     restaurantType: normalizeString(payload.restaurantType, 80),
     city: normalizeString(payload.city, 80),
     contactName: normalizeString(payload.contactName, 120),
     phone: normalizeString(payload.phone, 40),
     restaurantEmail: normalizeEmail(payload.restaurantEmail, false),
     websiteUrl: normalizeUrl(payload.websiteUrl),
+    appointmentUrl: normalizeOptionalHttpUrl(payload.appointmentUrl),
     address: normalizeString(payload.address, 200),
     defaultPrizeCost: normalizeNumber(payload.defaultPrizeCost, {
       min: 0,
@@ -305,10 +380,12 @@ export function parseMerchantOnboardingInput(input: unknown): MerchantOnboarding
 
 export function parseMerchantAccountSettingsInput(input: unknown): MerchantAccountSettingsInput {
   const payload = ensureObject(input);
+  const industry = normalizeString(payload.industry, 80);
 
   return {
     companyName: normalizeString(payload.companyName, 120),
-    industry: normalizeString(payload.industry, 80),
+    industry,
+    industrySubsector: normalizeIndustrySubsector(payload.industrySubsector, industry),
     restaurantType: normalizeString(payload.restaurantType, 80),
     city: normalizeString(payload.city, 80),
     address: normalizeString(payload.address, 200),
@@ -316,6 +393,7 @@ export function parseMerchantAccountSettingsInput(input: unknown): MerchantAccou
     phone: normalizeString(payload.phone, 40),
     restaurantEmail: normalizeEmail(payload.restaurantEmail, false),
     websiteUrl: normalizeUrl(payload.websiteUrl),
+    appointmentUrl: normalizeOptionalHttpUrl(payload.appointmentUrl),
     googleReviewUrl: normalizeUrl(payload.googleReviewUrl),
     googlePlaceName: normalizeString(payload.googlePlaceName, 120),
     googlePlaceAddress: normalizeString(payload.googlePlaceAddress, 200),
@@ -530,6 +608,7 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
           integer: true,
         }),
         templateId,
+        wheelTemplateStyles: normalizeWheelTemplateStyles(layout.wheelTemplateStyles),
         wheelSubtitle: normalizeMultiline(layout.wheelSubtitle, 240),
         subtitleSpacingPx: normalizeNumber(layout.subtitleSpacingPx, {
           min: CAMPAIGN_SPACING_MIN_PX,

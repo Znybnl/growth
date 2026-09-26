@@ -33,12 +33,16 @@ import {
 } from "react";
 
 import { BrandMark } from "@/components/brand-mark";
+import { BeautyWheelDecorations } from "@/components/public/beauty-wheel-decorations";
 import { CocoricoPromoText } from "@/components/public/cocorico-promo-text";
 import { CampaignEmailPreview } from "@/components/merchant/campaign-email-preview";
 import { CampaignPreviewQrDialog } from "@/components/merchant/campaign-preview-qr";
 import { CampaignPreviewDialog, openCampaignPreview } from "@/components/merchant/campaign-preview-dialog";
 import { CampaignLivePreview as SharedCampaignLivePreview } from "@/components/merchant/campaign-live-preview";
 import { CampaignSpacingControls } from "@/components/merchant/campaign-spacing-controls";
+import { GameTypeChoice } from "@/components/merchant/game-type-choice";
+import { BeautyWheelTemplateGallery } from "@/components/merchant/beauty-wheel-template-gallery";
+import { WheelTemplateThumbnail } from "@/components/merchant/wheel-template-thumbnail";
 import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
 import { Switch } from "@/components/ui/switch";
 import { DialogShell } from "@/components/ui/dialog";
@@ -59,6 +63,9 @@ import {
   textFontLabel,
 } from "@/lib/format";
 import { captureClientProductEvent } from "@/lib/client-product-analytics";
+import { postCampaignSetup } from "@/lib/campaign-setup-request";
+import { beautyWheelBackground, beautyWheelFontOptions, beautyWheelTheme, isBeautyIndustry, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
+import { RosePowderDecor } from "@/components/public/rose-powder-decor";
 import {
   createCampaignEmailDefaults,
   normalizeCampaignEmailSettings,
@@ -83,11 +90,13 @@ import {
   DEFAULT_WHEEL_HEADING_FONT_SIZE_PX,
   roseInstitutWheelBackground,
   DEFAULT_WHEEL_SPACING_PX,
+  defaultWheelBlockSpacingForTemplate,
   DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
   defaultWheelSubtitleSpacingForTemplate,
   resolveCocoricoPrimaryColor,
   resolveCocoricoBackgroundColor,
   DEFAULT_WHEEL_SUBTITLE,
+  MAX_BEAUTY_WHEEL_TITLE_LINES,
   MAX_CAMPAIGN_SUBTITLE_LENGTH,
   campaignLogoTextSizePx,
   clampCampaignLogoSizePercent,
@@ -117,7 +126,6 @@ import {
   CampaignAction,
   CampaignPerformance,
   CampaignSetupInput,
-  CampaignWheelSettings,
   GamePageTemplateId,
   GameType,
   Merchant,
@@ -240,6 +248,7 @@ export type CampaignEditorPreviewModel = {
     backgroundSize: string;
     fontFamily: string;
   };
+  hasCustomBackgroundImage: boolean;
   logoMode: EditorState["logoMode"];
   logoAlignmentClass: string;
   logoBottomSpacingPx: number;
@@ -262,6 +271,7 @@ export type CampaignEditorPreviewModel = {
   gameType: GameType;
   accent: EditorState["accent"];
   wheelStyle: EditorState["presentation"]["wheel"];
+  wheelPrimaryColor: string;
   cocoricoPrimaryColor: string;
   cocoricoSecondaryColor: string;
   buttonStyle: {
@@ -299,6 +309,11 @@ const textFontOptions: TextFont[] = [
   "pacifico",
   "syncopate",
   "cormorant",
+  "playfair",
+  "dm-sans",
+  "poppins",
+  "bodoni",
+  "space-grotesk",
   "fredoka",
 ];
 const cocoricoTextFontOptions: TextFont[] = ["roboto", "days-one", "fredoka"];
@@ -543,7 +558,7 @@ function createDefaultState(merchant: Merchant): EditorState {
         isBold: true,
       },
       layout: {
-        blockSpacingPx: DEFAULT_WHEEL_SPACING_PX,
+        blockSpacingPx: defaultWheelBlockSpacingForTemplate(DEFAULT_GAME_PAGE_TEMPLATE_ID),
         templateId: DEFAULT_GAME_PAGE_TEMPLATE_ID,
         wheelSubtitle: "",
         subtitleSpacingPx: defaultWheelSubtitleSpacingForTemplate(DEFAULT_GAME_PAGE_TEMPLATE_ID),
@@ -893,6 +908,8 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
 }) {
   const isRestaurantPopTemplate = preview.gamePageTemplateId === "restaurant-pop";
   const isRoseInstitutTemplate = isRoseInstitutWheelTemplate(preview.gamePageTemplateId);
+  const isBeautyTemplate = isBeautyWheelTemplate(preview.gamePageTemplateId);
+  const isRosePowderTemplate = preview.gamePageTemplateId === "beauty-rose";
   const isCocoricoTemplate = isCocoricoWheelTemplate(preview.gamePageTemplateId);
   const isCocoricoDuoTemplate = preview.gamePageTemplateId === "cocorico-duo-wheel";
   const isCosmicTemplate = preview.gamePageTemplateId === "cosmic-orbit";
@@ -908,6 +925,13 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
   const previewScale = compact ? 0.8 : 1;
   const previewHeadingScale = compact ? 0.65 : 1;
   const scalePreviewValue = (value: number) => Math.round(value * previewScale);
+  const previewHeadingFontSize = isBeautyTemplate
+    ? `${Math.round(preview.headingFontSizePx * previewHeadingScale)}px`
+    : fluidType(Math.round(preview.headingFontSizePx * previewHeadingScale), {
+        minRatio: 0.82,
+        maxRatio: 1.08,
+        viewportStep: 0.3,
+      });
   const previewHeadingTextColor =
     isCosmicTemplate ||
     isCocoricoTemplate ||
@@ -915,15 +939,23 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
       ? "#f8fbff"
       : preview.headingTextColor;
   const previewFrameClass = compact
-      ? "min-h-[480px] max-w-[360px] rounded-[30px] px-3 pb-5 pt-7"
-      : "min-h-[600px] max-w-[450px] rounded-[38px] px-4 pb-6 pt-8";
+      ? "relative isolate min-h-[480px] max-w-[360px] rounded-[30px] px-3 pb-5 pt-7"
+      : "relative isolate min-h-[600px] max-w-[450px] rounded-[38px] px-4 pb-6 pt-8";
 
   return (
     <div className={`okado-preview-surface ${flushTop ? "" : "mt-6"}`} data-template-id={preview.gamePageTemplateId}>
       <div
-        className={`mx-auto w-full overflow-hidden border border-[#ced7e6] shadow-[0_30px_70px_rgba(18,24,39,0.18)] ${previewFrameClass}`}
+        className={`mx-auto w-full overflow-hidden border border-[#ced7e6] shadow-[0_30px_70px_rgba(18,24,39,0.18)] ${previewFrameClass} ${isRosePowderTemplate ? "okado-rose-powder-surface relative" : ""}`}
         style={preview.backgroundStyle}
       >
+        {isBeautyTemplate && preview.gameType === "wheel" && !preview.hasCustomBackgroundImage ? (
+          isRosePowderTemplate ? (
+            <RosePowderDecor primaryColor={preview.wheelStyle.loseColor} />
+          ) : (
+            <BeautyWheelDecorations templateId={preview.gamePageTemplateId} primaryColor={preview.wheelPrimaryColor} />
+          )
+        ) : null}
+        <div className="relative z-10">
         {showStandardHeader ? (
           <>
         {preview.logoMode === "image" && preview.logoUrl ? (
@@ -956,9 +988,10 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
                 size="lg"
                 variant="transparent"
                 imageWidthPx={scalePreviewValue(preview.logoWidthPx)}
-                textSizePx={scalePreviewValue(preview.logoTextSizePx)}
+                textSizePx={scalePreviewValue(preview.logoTextSizePx) * (isBeautyTemplate ? 0.9 : 1)}
                 textColor={preview.logoTextColor}
                 textClassName="text-2xl"
+                textFontWeight={isBeautyTemplate ? 600 : undefined}
               />
             </div>
           </div>
@@ -976,9 +1009,10 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
                 size="lg"
                 variant="transparent"
                 imageWidthPx={scalePreviewValue(preview.logoWidthPx)}
-                textSizePx={scalePreviewValue(preview.logoTextSizePx)}
+                textSizePx={scalePreviewValue(preview.logoTextSizePx) * (isBeautyTemplate ? 0.9 : 1)}
                 textColor={preview.logoTextColor}
                 textClassName="text-2xl"
+                textFontWeight={isBeautyTemplate ? 600 : undefined}
               />
             </div>
           </div>
@@ -1009,15 +1043,11 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
             />
           ) : (
             <h3
-              className={`${preview.headingFontClass} line-clamp-3 whitespace-pre-line leading-[1] ${isRoseInstitutTemplate ? "max-h-[3.3em] overflow-hidden" : ""}`}
+              className={`${preview.headingFontClass} ${isBeautyTemplate ? "okado-beauty-heading" : "line-clamp-3 leading-[1]"} whitespace-pre-line ${isRoseInstitutTemplate ? "max-h-[3.3em] overflow-hidden" : ""}`}
               style={{
                 color: previewHeadingTextColor,
-                fontSize: fluidType(Math.round(preview.headingFontSizePx * previewHeadingScale), {
-                  minRatio: 0.82,
-                  maxRatio: 1.08,
-                  viewportStep: 0.3,
-                }),
-                fontWeight: preview.headingFontWeight,
+                fontSize: previewHeadingFontSize,
+                fontWeight: preview.gamePageTemplateId === "beauty-pop" ? 800 : preview.headingFontWeight,
               }}
             >
               {preview.subtitle.trim() || (preview.gameType === "scratch" ? DEFAULT_SCRATCH_SUBTITLE : "Découvrez votre animation")}
@@ -1093,7 +1123,9 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
                     ? "restaurant-pop"
                     : isRoseInstitutTemplate
                       ? "rose-institut"
-                      : "classic"
+                      : isBeautyWheelTemplate(preview.gamePageTemplateId)
+                        ? preview.gamePageTemplateId
+                        : "classic"
                 }
                 buttonStyle={{
                   backgroundColor: preview.buttonStyle.backgroundColor,
@@ -1166,6 +1198,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
             {preview.ctaLabel}
           </button>
         ) : null}
+        </div>
       </div>
     </div>
   );
@@ -1411,6 +1444,9 @@ function toEditorState(merchant: Merchant, campaign: CampaignPerformance | null)
       campaign.campaign.gameType === "wheel"
         ? normalizeWheelSubtitle(campaign.campaign.subtitle)
         : campaign.campaign.subtitle,
+      campaign.campaign.gameType === "wheel" && isBeautyWheelTemplate(templateId)
+        ? MAX_BEAUTY_WHEEL_TITLE_LINES
+        : undefined,
     ),
     emailCaptureEnabled: campaign.campaign.emailCaptureEnabled,
     gameType: campaign.campaign.gameType,
@@ -1439,7 +1475,7 @@ function toEditorState(merchant: Merchant, campaign: CampaignPerformance | null)
         ...campaign.campaign.presentation.heading,
         fontFamily: campaign.campaign.presentation.heading.fontFamily ?? "display",
         fontWeight: campaign.campaign.presentation.heading.fontWeight ?? 600,
-        align: "center",
+        align: isBeautyWheelTemplate(templateId) ? campaign.campaign.presentation.heading.align : "center",
       },
       button: {
         ...campaign.campaign.presentation.button,
@@ -1449,7 +1485,7 @@ function toEditorState(merchant: Merchant, campaign: CampaignPerformance | null)
         ...campaign.campaign.presentation.layout,
         blockSpacingPx: clampCampaignSpacingPx(
           campaign.campaign.presentation.layout.blockSpacingPx ??
-            (campaign.campaign.gameType === "wheel" ? DEFAULT_WHEEL_SPACING_PX : 20),
+            (campaign.campaign.gameType === "wheel" ? defaultWheelBlockSpacingForTemplate(templateId) : 20),
         ),
         templateId,
         subtitleSpacingPx: clampCampaignSpacingPx(
@@ -1531,8 +1567,8 @@ export function buildCampaignLivePreviewModel(
       ? resolveScratchAccent(form.accent, templateId)
       : form.accent;
   const previewSegments = buildPreviewSegments(form.prizes);
-  const winningSegmentId =
-    previewSegments.find((segment) => segment.tone === "win")?.id ?? previewSegments[0]?.id ?? "win";
+  const previewWinningSegment = previewSegments.find((segment) => segment.tone === "win") ?? previewSegments[0];
+  const winningSegmentId = previewWinningSegment?.id ?? "win";
   const logoAlignmentClass =
     form.presentation.logo.align === "left"
       ? "justify-start"
@@ -1548,7 +1584,9 @@ export function buildCampaignLivePreviewModel(
   const headingFontClass = textFontClass(form.presentation.heading.fontFamily);
   const logoSizePercent = clampCampaignLogoSizePercent(form.presentation.logo.sizePercent);
   const logoWidthPx = Math.round(Math.max(56, Math.min(720, logoSizePercent * 3)));
-  const logoTextSizePx = campaignLogoTextSizePx(logoSizePercent, form.gameType);
+  const logoTextSizePx = Math.round(
+    campaignLogoTextSizePx(logoSizePercent, form.gameType) * (isBeautyWheelTemplate(templateId) || templateId === "rose-institut" ? 0.9 : 1),
+  );
   const backgroundImage =
     form.presentation.background.mode === "image" && form.presentation.background.imageUrl
       ? userBackgroundImageStyle(form.presentation.background.imageUrl)
@@ -1556,6 +1594,8 @@ export function buildCampaignLivePreviewModel(
         ? restaurantPopBackground(form.presentation.background.color)
         : templateId === "rose-institut"
           ? roseInstitutWheelBackground(form.presentation.background.color)
+          : isBeautyWheelTemplate(templateId)
+            ? beautyWheelBackground(templateId, form.presentation.background.color, form.presentation.wheel.loseColor)
             : isCocoricoWheelTemplate(templateId)
               ? `radial-gradient(circle at 14% 12%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(form.presentation.background.color), 0.32), "e6")} 0 10%, transparent 11%), radial-gradient(circle at 88% 26%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(form.presentation.background.color), 0.12), "b3")} 0 15%, transparent 16%), linear-gradient(160deg, ${resolveCocoricoBackgroundColor(form.presentation.background.color)} 0%, ${resolveCocoricoBackgroundColor(form.presentation.background.color)} 48%, #063d78 100%)`
               : templateId === "cosmic-orbit"
@@ -1583,6 +1623,7 @@ export function buildCampaignLivePreviewModel(
       backgroundSize: "cover",
       fontFamily: textFontFamily(form.presentation.heading.fontFamily),
     },
+    hasCustomBackgroundImage: form.presentation.background.mode === "image" && Boolean(form.presentation.background.imageUrl),
     logoMode: form.logoMode,
     logoAlignmentClass,
     logoBottomSpacingPx: clampCampaignSpacingPx(form.presentation.logo.marginBottomPx),
@@ -1603,7 +1644,12 @@ export function buildCampaignLivePreviewModel(
           : form.presentation.heading.textColor,
     headingFontSizePx: form.presentation.heading.fontSizePx,
     headingFontWeight: form.presentation.heading.fontWeight ?? 600,
-    subtitle: limitCampaignSubtitleLines(form.subtitle),
+    subtitle: limitCampaignSubtitleLines(
+      form.subtitle,
+      form.gameType === "wheel" && isBeautyWheelTemplate(templateId)
+        ? MAX_BEAUTY_WHEEL_TITLE_LINES
+        : undefined,
+    ),
     wheelSubtitle: limitCampaignSubtitleLines(form.presentation.layout.wheelSubtitle ?? ""),
     blockSpacingPx: clampCampaignSpacingPx(form.presentation.layout.blockSpacingPx),
     subtitleSpacingPx: clampCampaignSpacingPx(
@@ -1614,6 +1660,7 @@ export function buildCampaignLivePreviewModel(
     gameType: form.gameType,
     accent: previewAccent,
     wheelStyle: form.presentation.wheel,
+    wheelPrimaryColor: form.presentation.wheel.loseColor,
     cocoricoPrimaryColor: templateId === "cocorico-duo-wheel"
       ? form.presentation.wheel.loseColor
       : resolveCocoricoPrimaryColor(form.presentation.wheel.loseColor),
@@ -1627,7 +1674,7 @@ export function buildCampaignLivePreviewModel(
     },
     previewSegments,
     winningSegmentId,
-    previewPrize: form.prizes[0]?.label || "Cadeau surprise",
+    previewPrize: form.prizes.find((prize) => prize.id === previewWinningSegment?.id)?.label || previewWinningSegment?.label || "Cadeau surprise",
     ctaLabel: form.ctaLabel,
     previewCtaClass: buttonSizeMap[form.presentation.button.size],
   };
@@ -1714,25 +1761,115 @@ export function CampaignEditor({
     JSON.stringify(toEditorState(merchant, initialCampaign)),
   );
   const formRef = useRef(form);
-  const wheelTemplateState = useRef<
-    Record<
-      string,
-      {
-        wheel: CampaignWheelSettings;
-        backgroundColor: string;
-        scratchSignal: string;
-        headingTextColor: string;
-        logoTextColor: string;
-        headingFontFamily: TextFont;
-        buttonBackgroundColor: string;
-      }
-    >
-  >({});
+  const wheelTemplateState = useRef<NonNullable<CampaignSetupInput["presentation"]["layout"]["wheelTemplateStyles"]>>(
+    initialCampaign?.campaign.presentation.layout.wheelTemplateStyles ?? {},
+  );
+
+  function selectBeautyWheelTemplate(templateId: GamePageTemplateId) {
+    if (templateId === "rose-institut") {
+      captureClientProductEvent("campaign_template_selected", {
+        campaignType: "wheel",
+        templateKey: templateId,
+        wizardMode: "classic",
+      });
+      setForm((current) => {
+        const previousId = current.presentation.layout.templateId ?? DEFAULT_GAME_PAGE_TEMPLATE_ID;
+        if (previousId === templateId) return current;
+        wheelTemplateState.current[previousId] = {
+          wheel: current.presentation.wheel,
+          backgroundColor: current.presentation.background.color,
+          scratchSignal: current.accent.signal,
+          headingTextColor: current.presentation.heading.textColor,
+          logoTextColor: current.presentation.logo.textColor ?? current.presentation.heading.textColor,
+          headingFontFamily: current.presentation.heading.fontFamily,
+          headingAlign: current.presentation.heading.align,
+          logoAlign: current.presentation.logo.align,
+          buttonBackgroundColor: current.presentation.button.backgroundColor,
+          subtitleSpacingPx: current.presentation.layout.subtitleSpacingPx,
+        };
+        const remembered = wheelTemplateState.current[templateId];
+        const wheel = remembered?.wheel ?? wheelPaletteForTemplate(templateId, current.presentation.wheel);
+        return {
+          ...current,
+          presentation: {
+            ...current.presentation,
+            layout: {
+              ...current.presentation.layout,
+              templateId,
+              wheelTemplateStyles: { ...current.presentation.layout.wheelTemplateStyles, [previousId]: wheelTemplateState.current[previousId] },
+              subtitleSpacingPx: remembered?.subtitleSpacingPx ?? defaultWheelSubtitleSpacingForTemplate(templateId),
+            },
+            background: {
+              ...current.presentation.background,
+              color: remembered?.backgroundColor ?? wheelBackgroundForTemplate(templateId, current.presentation.background.color),
+            },
+            wheel,
+            heading: {
+              ...current.presentation.heading,
+              fontFamily: remembered?.headingFontFamily ?? DEFAULT_ROSE_INSTITUT_HEADING_FONT_FAMILY,
+              textColor: remembered?.headingTextColor ?? DEFAULT_ROSE_INSTITUT_TEXT_COLOR,
+              fontSizePx: [34, 40, 42].includes(current.presentation.heading.fontSizePx)
+                ? DEFAULT_WHEEL_HEADING_FONT_SIZE_PX
+                : current.presentation.heading.fontSizePx,
+              align: remembered?.headingAlign ?? "center",
+            },
+            logo: {
+              ...current.presentation.logo,
+              textColor: remembered?.logoTextColor ?? DEFAULT_ROSE_INSTITUT_TEXT_COLOR,
+              align: remembered?.logoAlign ?? "center",
+            },
+            button: {
+              ...current.presentation.button,
+              backgroundColor: remembered?.buttonBackgroundColor ?? DEFAULT_ROSE_INSTITUT_TEXT_COLOR,
+            },
+          },
+        };
+      });
+      return;
+    }
+    const theme = beautyWheelTheme(templateId)!;
+    captureClientProductEvent("campaign_template_selected", {
+      campaignType: "wheel",
+      templateKey: templateId,
+      wizardMode: "classic",
+    });
+    setForm((current) => {
+      const previousId = current.presentation.layout.templateId ?? DEFAULT_GAME_PAGE_TEMPLATE_ID;
+      if (previousId === templateId) return current;
+      wheelTemplateState.current[previousId] = {
+        wheel: current.presentation.wheel,
+        backgroundColor: current.presentation.background.color,
+        scratchSignal: current.accent.signal,
+        headingTextColor: current.presentation.heading.textColor,
+        logoTextColor: current.presentation.logo.textColor ?? current.presentation.heading.textColor,
+        headingFontFamily: current.presentation.heading.fontFamily,
+        headingAlign: current.presentation.heading.align,
+        logoAlign: current.presentation.logo.align,
+        buttonBackgroundColor: current.presentation.button.backgroundColor,
+        blockSpacingPx: current.presentation.layout.blockSpacingPx,
+        subtitleSpacingPx: current.presentation.layout.subtitleSpacingPx,
+      };
+      const remembered = wheelTemplateState.current[templateId];
+      return {
+        ...current,
+        presentation: {
+          ...current.presentation,
+          layout: { ...current.presentation.layout, templateId, blockSpacingPx: remembered?.blockSpacingPx ?? defaultWheelBlockSpacingForTemplate(templateId), subtitleSpacingPx: remembered?.subtitleSpacingPx ?? defaultWheelSubtitleSpacingForTemplate(templateId), wheelTemplateStyles: { ...current.presentation.layout.wheelTemplateStyles, [previousId]: wheelTemplateState.current[previousId] } },
+          background: { ...current.presentation.background, color: remembered?.backgroundColor ?? theme.background },
+          wheel: remembered?.wheel ?? wheelPaletteForTemplate(templateId, current.presentation.wheel),
+          heading: { ...current.presentation.heading, fontFamily: remembered?.headingFontFamily ?? theme.font, textColor: remembered?.headingTextColor ?? theme.text, align: remembered?.headingAlign ?? (templateId === "beauty-editorial" ? "left" : "center") },
+          logo: { ...current.presentation.logo, textColor: remembered?.logoTextColor ?? theme.text, align: remembered?.logoAlign ?? (templateId === "beauty-editorial" ? "left" : "center") },
+          button: { ...current.presentation.button, backgroundColor: remembered?.buttonBackgroundColor ?? theme.primary },
+        },
+      };
+    });
+  }
   const gameTypeState = useRef<Partial<Record<EditorState["gameType"], GameTypeState>>>({});
   const [backgroundLibrary, setBackgroundLibrary] = useState<BackgroundLibraryAsset[]>([]);
   const [isLibraryLoading, setIsLibraryLoading] = useState(false);
   const [libraryMessage, setLibraryMessage] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const saveRequestInFlightRef = useRef(false);
   const [message, setMessage] = useState<string | null>(null);
   const [messageTone, setMessageTone] = useState<"info" | "error">("info");
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
@@ -1766,7 +1903,11 @@ export function CampaignEditor({
       return;
     }
 
-    fetch(`/api/prize-suggestions?industry=${encodeURIComponent(industry)}`)
+    const industrySubsector = merchant.industrySubsector?.trim();
+    const query = new URLSearchParams({ industry });
+    if (industrySubsector) query.set("subsector", industrySubsector);
+
+    fetch(`/api/prize-suggestions?${query.toString()}`)
       .then(async (response) => {
         if (!response.ok) throw new Error("Lecture impossible.");
         return (await response.json()) as { suggestions?: PrizeSuggestion[] };
@@ -1781,7 +1922,7 @@ export function CampaignEditor({
     return () => {
       cancelled = true;
     };
-  }, [merchant.industry]);
+  }, [merchant.industry, merchant.industrySubsector]);
 
   const previewSegments = useMemo(() => buildPreviewSegments(form.prizes), [form.prizes]);
   const formSnapshot = useMemo(() => JSON.stringify(form), [form]);
@@ -1799,13 +1940,16 @@ export function CampaignEditor({
     [form.prizes, form.rewardRules.isWinningEveryTime],
   );
   const remainingPrizeProbability = Math.max(0, 100 - totalPrizeProbability);
-  const previewPrize = form.prizes[0]?.label || "Cadeau surprise";
+  const previewWinningSegment = previewSegments.find((segment) => segment.tone === "win") ?? previewSegments[0];
+  const previewPrize = form.prizes.find((prize) => prize.id === previewWinningSegment?.id)?.label || previewWinningSegment?.label || "Cadeau surprise";
   const previewCtaClass = buttonSizeMap[form.presentation.button.size];
   const logoSizePercent = clampCampaignLogoSizePercent(form.presentation.logo.sizePercent);
   const logoWidthPx = Math.round(
     Math.max(56, Math.min(720, logoSizePercent * 3)),
   );
-  const logoTextSizePx = campaignLogoTextSizePx(logoSizePercent, form.gameType);
+  const logoTextSizePx = Math.round(
+    campaignLogoTextSizePx(logoSizePercent, form.gameType) * (isBeautyWheelTemplate(form.presentation.layout.templateId) || form.presentation.layout.templateId === "rose-institut" ? 0.9 : 1),
+  );
   const editingPrize = form.prizes.find((prize) => prize.id === editingPrizeConditionsId) ?? null;
 
   const logoAlignmentClass =
@@ -1831,8 +1975,7 @@ export function CampaignEditor({
       form.gameType === "scratch"
         ? resolveScratchAccent(form.accent, currentTemplateId)
         : form.accent;
-    const winningSegmentId =
-      previewSegments.find((segment) => segment.tone === "win")?.id ?? previewSegments[0]?.id ?? "win";
+    const winningSegmentId = previewWinningSegment?.id ?? "win";
 
     return {
       formId: form.id ?? "new-campaign",
@@ -1845,6 +1988,8 @@ export function CampaignEditor({
               ? restaurantPopBackground(form.presentation.background.color)
             : (form.presentation.layout.templateId ?? "classic") === "rose-institut"
               ? roseInstitutWheelBackground(form.presentation.background.color)
+            : isBeautyWheelTemplate(currentTemplateId)
+              ? beautyWheelBackground(currentTemplateId, form.presentation.background.color, form.presentation.wheel.loseColor)
             : isCocoricoWheelTemplate(form.presentation.layout.templateId)
               ? `radial-gradient(circle at 14% 12%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(form.presentation.background.color), 0.32), "e6")} 0 10%, transparent 11%), radial-gradient(circle at 88% 26%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(form.presentation.background.color), 0.12), "b3")} 0 15%, transparent 16%), linear-gradient(160deg, ${resolveCocoricoBackgroundColor(form.presentation.background.color)} 0%, ${resolveCocoricoBackgroundColor(form.presentation.background.color)} 48%, #063d78 100%)`
             : (form.presentation.layout.templateId ?? "classic") === "cosmic-orbit"
@@ -1866,6 +2011,7 @@ export function CampaignEditor({
         backgroundSize: "cover",
         fontFamily: textFontFamily(form.presentation.heading.fontFamily),
       },
+      hasCustomBackgroundImage: form.presentation.background.mode === "image" && Boolean(form.presentation.background.imageUrl),
       logoMode: form.logoMode,
       logoAlignmentClass,
       logoBottomSpacingPx: clampCampaignSpacingPx(form.presentation.logo.marginBottomPx),
@@ -1880,7 +2026,12 @@ export function CampaignEditor({
       headingTextColor: form.presentation.heading.textColor,
       headingFontSizePx: form.presentation.heading.fontSizePx,
       headingFontWeight: isCocoricoWheelTemplate(currentTemplateId) ? 900 : form.presentation.heading.fontWeight ?? 600,
-      subtitle: limitCampaignSubtitleLines(form.subtitle),
+      subtitle: limitCampaignSubtitleLines(
+        form.subtitle,
+        form.gameType === "wheel" && isBeautyWheelTemplate(currentTemplateId)
+          ? MAX_BEAUTY_WHEEL_TITLE_LINES
+          : undefined,
+      ),
       wheelSubtitle: limitCampaignSubtitleLines(form.presentation.layout.wheelSubtitle ?? ""),
       blockSpacingPx: clampCampaignSpacingPx(form.presentation.layout.blockSpacingPx),
       subtitleSpacingPx: clampCampaignSpacingPx(
@@ -1891,6 +2042,7 @@ export function CampaignEditor({
       gameType: form.gameType,
       accent: previewAccent,
       wheelStyle: form.presentation.wheel,
+      wheelPrimaryColor: form.presentation.wheel.loseColor,
       cocoricoPrimaryColor: currentTemplateId === "cocorico-duo-wheel"
         ? form.presentation.wheel.loseColor
         : resolveCocoricoPrimaryColor(form.presentation.wheel.loseColor),
@@ -1949,6 +2101,7 @@ export function CampaignEditor({
     merchant.companyName,
     previewCtaClass,
     previewPrize,
+    previewWinningSegment,
     previewSegments,
   ]);
   const deferredPreview = useDeferredValue(previewModel);
@@ -2177,10 +2330,10 @@ export function CampaignEditor({
             ...current.presentation.wheel,
             loseColor: nextColor,
             alternateLoseColor:
-              current.presentation.layout.templateId === "cocorico-duo-wheel"
+              current.presentation.layout.templateId === "cocorico-duo-wheel" || isBeautyWheelTemplate(current.presentation.layout.templateId)
                 ? current.presentation.wheel.alternateLoseColor
                 : deriveLighterHex(nextColor),
-            rimColor: deriveLighterHex(nextColor),
+            rimColor: isBeautyWheelTemplate(current.presentation.layout.templateId) ? nextColor : deriveLighterHex(nextColor),
           },
         },
       };
@@ -2308,12 +2461,18 @@ export function CampaignEditor({
     suppressErrorDialog?: boolean;
     onError?: (message: string) => void;
   }): Promise<string | null> {
+    if (saveRequestInFlightRef.current) return null;
+    saveRequestInFlightRef.current = true;
     setIsSaving(true);
     setMessage(null);
     setMessageTone("info");
     setSaveDialogOpen(false);
     if (form.id !== "__legacy_save__") {
-      return handleSaveCampaign(options);
+      try {
+        return await handleSaveCampaign(options);
+      } finally {
+        saveRequestInFlightRef.current = false;
+      }
     }
 
     try {
@@ -2340,18 +2499,10 @@ export function CampaignEditor({
         );
       }
 
-      const response = await fetch("/api/campaigns/setup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(buildClassicSetupPayload(form)),
-      });
-
-      const payload = (await response.json().catch(() => null)) as
-        | {
-            error?: string;
-            campaign?: CampaignPerformance | { id?: string } | null;
-          }
-        | null;
+      const { response, payload } = await postCampaignSetup<{
+        error?: string;
+        campaign?: CampaignPerformance | { id?: string } | null;
+      }>(buildClassicSetupPayload(form));
       if (!response.ok) {
         throw new Error(payload?.error || "La campagne n'a pas pu être enregistrée.");
       }
@@ -2446,18 +2597,10 @@ export function CampaignEditor({
         );
       }
 
-      const response = await fetch("/api/campaigns/setup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(buildClassicSetupPayload(form)),
-      });
-
-      const payload = (await response.json().catch(() => null)) as
-        | {
-            error?: string;
-            campaign?: CampaignPerformance | { id?: string } | null;
-          }
-        | null;
+      const { response, payload } = await postCampaignSetup<{
+        error?: string;
+        campaign?: CampaignPerformance | { id?: string } | null;
+      }>(buildClassicSetupPayload(form));
 
       if (!response.ok) {
         throw new Error(payload?.error || "La campagne n'a pas pu être enregistrée.");
@@ -2501,6 +2644,7 @@ export function CampaignEditor({
       }
       return null;
     } finally {
+      saveRequestInFlightRef.current = false;
       setIsSaving(false);
     }
   }
@@ -2740,61 +2884,32 @@ export function CampaignEditor({
                 const active = form.gameType === mode.value;
 
                 return (
-                  <button
+                  <GameTypeChoice
                     key={mode.value}
-                    type="button"
-                    onClick={() => setGameType(mode.value)}
-                    className={`rounded-[28px] border p-5 text-left transition ${
-                      active
-                         ? "border-[#2f6df6] bg-[#eff4ff] shadow-[0_16px_30px_rgba(47,109,246,0.16)]"
-                        : "border-[#d7e0ed] bg-[#f9fbfd]"
-                    }`}
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <p className="text-xs uppercase tracking-[0.24em] text-[#7b8496]">
-                          {mode.eyebrow}
-                        </p>
-                        <h3 className="mt-3 text-xl font-semibold text-[#111827]">{mode.title}</h3>
-                        <p className="mt-2 text-sm leading-6 text-[#576173]">
-                          {mode.description}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div
-                      className={`mt-5 overflow-hidden rounded-[26px] border ${
-                        active ? "border-[#b7cbff]" : "border-[#dde5f1]"
-                      }`}
-                    >
-                      {mode.value === "wheel" ? (
-                        <div className="flex h-[180px] items-center justify-center bg-[radial-gradient(circle_at_top,#2047b833,transparent_58%),linear-gradient(180deg,#0f1728,#1d2941)]">
-                          <div className="relative h-32 w-32 rounded-full border-[10px] border-[#f4c14a] bg-[conic-gradient(#f4c14a_0_20%,#1b2842_20_40%,#eef2ff_40_60%,#8795db_60_80%,#f4c14a_80_100%)] shadow-[0_24px_36px_rgba(15,23,40,0.35)]">
-                            <div className="absolute left-1/2 top-1/2 h-8 w-8 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/90" />
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="flex h-[180px] items-center justify-center bg-[linear-gradient(180deg,#111827,#1b2842)] p-6">
-                          <div className="w-full max-w-[220px] rounded-[28px] border border-white/10 bg-[#eef2ff] p-4 shadow-[0_24px_36px_rgba(15,23,40,0.35)]">
-                            <div className="h-20 rounded-[18px] bg-[linear-gradient(135deg,#c9ced8,#eef2ff,#b8bfcb)]" />
-                            <div className="mt-4 h-4 w-24 rounded-full bg-[#1b2842]/15" />
-                            <div className="mt-2 h-4 w-32 rounded-full bg-[#1b2842]/10" />
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </button>
+                    type={mode.value}
+                    eyebrow={mode.eyebrow}
+                    title={mode.title}
+                    description={mode.description}
+                    selected={active}
+                    onSelect={() => setGameType(mode.value)}
+                  />
                 );
               })}
             </div>
 
             <div className="mt-6">
+              {form.gameType === "wheel" && isBeautyIndustry(merchant.industry) ? (
+                <BeautyWheelTemplateGallery
+                  selectedTemplateId={form.presentation.layout.templateId}
+                  onSelect={selectBeautyWheelTemplate}
+                />
+              ) : null}
               <p className="text-xs uppercase tracking-[0.24em] text-[#7b8496]">
-                Template de page de jeu
+                {form.gameType === "wheel" ? "Autres templates de roue" : "Template de page de jeu"}
               </p>
               <div className="mt-3 grid gap-3 md:grid-cols-2">
                 {(form.gameType === "wheel"
-                  ? wheelPageTemplateOptions
+                  ? wheelPageTemplateOptions.filter((template) => !isBeautyIndustry(merchant.industry) || template.value !== "rose-institut")
                   : [
                       ...scratchPageTemplateOptions.filter((template) => template.value === "scratch-coral"),
                       ...scratchPageTemplateOptions.filter((template) => template.value !== "scratch-coral"),
@@ -2826,13 +2941,17 @@ export function CampaignEditor({
                             headingTextColor: current.presentation.heading.textColor,
                             logoTextColor: current.presentation.logo.textColor ?? current.presentation.heading.textColor,
                             headingFontFamily: current.presentation.heading.fontFamily,
+                            headingAlign: current.presentation.heading.align,
+                            logoAlign: current.presentation.logo.align,
                             buttonBackgroundColor: current.presentation.button.backgroundColor,
+                            blockSpacingPx: current.presentation.layout.blockSpacingPx,
+                            subtitleSpacingPx: current.presentation.layout.subtitleSpacingPx,
                           };
                           const remembered = wheelTemplateState.current[template.value];
                           const wheel = remembered?.wheel ?? wheelPaletteForTemplate(template.value, current.presentation.wheel);
                           const backgroundColor = remembered?.backgroundColor ?? wheelBackgroundForTemplate(template.value, current.presentation.background.color);
-                          const headingTextColor = remembered?.headingTextColor ?? (template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : current.presentation.heading.textColor);
-                          const logoTextColor = remembered?.logoTextColor ?? (template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : current.presentation.logo.textColor ?? current.presentation.heading.textColor);
+                          const headingTextColor = remembered?.headingTextColor ?? (template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.heading.textColor);
+                          const logoTextColor = remembered?.logoTextColor ?? (template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.logo.textColor ?? current.presentation.heading.textColor);
                           const buttonBackgroundColor = remembered?.buttonBackgroundColor ?? (template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheel.loseColor);
                           const scratchSignal =
                             remembered?.scratchSignal ??
@@ -2852,12 +2971,15 @@ export function CampaignEditor({
                               layout: {
                                 ...current.presentation.layout,
                                 templateId: template.value,
-                                subtitleSpacingPx: defaultWheelSubtitleSpacingForTemplate(template.value),
+                                wheelTemplateStyles: { ...current.presentation.layout.wheelTemplateStyles, [currentTemplateId]: wheelTemplateState.current[currentTemplateId] },
+                                blockSpacingPx: wheelTemplateState.current[template.value]?.blockSpacingPx ?? defaultWheelBlockSpacingForTemplate(template.value),
+                                subtitleSpacingPx: remembered?.subtitleSpacingPx ?? defaultWheelSubtitleSpacingForTemplate(template.value),
                               },
                               heading:
                                 {
                                   ...current.presentation.heading,
                                   textColor: headingTextColor,
+                                  align: remembered?.headingAlign ?? (isBeautyWheelTemplate(currentTemplateId) ? "center" : current.presentation.heading.align),
                                   fontSizePx:
                                     template.value === "rose-institut" &&
                                     [34, 40, 42].includes(current.presentation.heading.fontSizePx)
@@ -2874,6 +2996,7 @@ export function CampaignEditor({
                               logo: {
                                 ...current.presentation.logo,
                                 textColor: logoTextColor,
+                                align: remembered?.logoAlign ?? (isBeautyWheelTemplate(currentTemplateId) ? "center" : current.presentation.logo.align),
                               },
                               button:
                                 current.gameType === "wheel"
@@ -2894,13 +3017,14 @@ export function CampaignEditor({
                           };
                         });
                       }}
-                      className={`rounded-[22px] border p-4 text-left transition ${
+                    className={`rounded-[22px] border p-4 text-left transition ${
                         active
                           ? "border-[#2f6df6] bg-[#eff4ff] shadow-[0_14px_26px_rgba(47,109,246,0.12)]"
                           : "border-[#d7e0ed] bg-white hover:border-[#b8c5da]"
-                      }`}
-                    >
-                      <span className="text-sm font-semibold text-[#111827]">
+                    }`}
+                  >
+                    {form.gameType === "wheel" ? <WheelTemplateThumbnail templateId={template.value} /> : null}
+                    <span className="text-sm font-semibold text-[#111827]">
                         {template.title}
                       </span>
                       <span className="mt-1 block text-sm leading-6 text-[#5c6577]">
@@ -3165,13 +3289,21 @@ export function CampaignEditor({
                 <span className="mb-2 block text-[#616b7c]">Phrase affichée sur la page de jeu</span>
                 <textarea
                   value={form.subtitle}
-                  onChange={(event) => setField("subtitle", limitCampaignSubtitleLines(event.target.value))}
-                  rows={3}
+                  onChange={(event) => setField(
+                    "subtitle",
+                    limitCampaignSubtitleLines(
+                      event.target.value,
+                      form.gameType === "wheel" && isBeautyWheelTemplate(form.presentation.layout.templateId)
+                        ? MAX_BEAUTY_WHEEL_TITLE_LINES
+                        : undefined,
+                    ),
+                  )}
+                  rows={form.gameType === "wheel" && isBeautyWheelTemplate(form.presentation.layout.templateId) ? MAX_BEAUTY_WHEEL_TITLE_LINES : 3}
                   maxLength={MAX_CAMPAIGN_SUBTITLE_LENGTH}
                   className="w-full rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
                 />
                 <span className="mt-1 block text-xs text-[#8993a6]">
-                  {form.subtitle.length}/{MAX_CAMPAIGN_SUBTITLE_LENGTH} caractères · 3 lignes maximum pour conserver un rendu lisible sur mobile.
+                  {form.subtitle.length}/{MAX_CAMPAIGN_SUBTITLE_LENGTH} caractères · {form.gameType === "wheel" && isBeautyWheelTemplate(form.presentation.layout.templateId) ? `${MAX_BEAUTY_WHEEL_TITLE_LINES} lignes de saisie maximum · la taille reste celle que vous choisissez.` : "3 lignes maximum pour conserver un rendu lisible sur mobile."}
                 </span>
               </label>
 
@@ -3277,7 +3409,7 @@ export function CampaignEditor({
                   <div className="text-sm">
                     <span className="mb-3 block text-[#616b7c]">Police du texte</span>
                     <div className="grid gap-3">
-                      {(isCocoricoWheelTemplate(form.presentation.layout.templateId) ? cocoricoTextFontOptions : textFontOptions).map((font) => {
+                      {(beautyWheelFontOptions(form.presentation.layout.templateId) ?? (isCocoricoWheelTemplate(form.presentation.layout.templateId) ? cocoricoTextFontOptions : textFontOptions)).map((font) => {
                         const active = form.presentation.heading.fontFamily === font;
 
                         return (
@@ -3752,7 +3884,7 @@ export function CampaignEditor({
               <div className="text-sm">
                 <span className="mb-3 block text-[#616b7c]">Police du texte</span>
                 <div className="grid gap-3">
-                  {(isCocoricoWheelTemplate(form.presentation.layout.templateId) ? cocoricoTextFontOptions : textFontOptions).map((font) => {
+                  {(beautyWheelFontOptions(form.presentation.layout.templateId) ?? (isCocoricoWheelTemplate(form.presentation.layout.templateId) ? cocoricoTextFontOptions : textFontOptions)).map((font) => {
                     const active = form.presentation.poster.headlineFontFamily === font;
 
                     return (
@@ -3915,7 +4047,7 @@ export function CampaignEditor({
               <div className="text-sm">
                 <span className="mb-3 block text-[#616b7c]">Police du texte</span>
                 <div className="grid gap-3">
-                  {(isCocoricoWheelTemplate(form.presentation.layout.templateId) ? cocoricoTextFontOptions : textFontOptions).map((font) => {
+                  {(beautyWheelFontOptions(form.presentation.layout.templateId) ?? (isCocoricoWheelTemplate(form.presentation.layout.templateId) ? cocoricoTextFontOptions : textFontOptions)).map((font) => {
                     const active = form.presentation.heading.fontFamily === font;
 
                     return (
@@ -3973,7 +4105,7 @@ export function CampaignEditor({
                   />
                 </label>
 
-                {currentTemplateId === "cocorico-duo-wheel" ? (
+                {currentTemplateId === "cocorico-duo-wheel" || isBeautyWheelTemplate(currentTemplateId) ? (
                   <label className="text-sm">
                     <span className="mb-2 block text-[#616b7c]">Couleur secondaire</span>
                     <input

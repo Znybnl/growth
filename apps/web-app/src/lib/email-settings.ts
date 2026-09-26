@@ -88,6 +88,25 @@ function escapeHtml(value: string) {
     .replaceAll("'", "&#39;");
 }
 
+function getSafeAppointmentUrl(value?: string) {
+  const appointmentUrl = value?.trim();
+  if (!appointmentUrl) return undefined;
+
+  try {
+    const parsedUrl = new URL(appointmentUrl);
+    if (
+      (parsedUrl.protocol !== "https:" && parsedUrl.protocol !== "http:") ||
+      parsedUrl.username ||
+      parsedUrl.password
+    ) {
+      return undefined;
+    }
+    return appointmentUrl;
+  } catch {
+    return undefined;
+  }
+}
+
 function emphasizePrizeLabelHtml(value: string, prizeLabel: string) {
   const escapedPrizeLabel = escapeHtml(prizeLabel);
   if (!escapedPrizeLabel) return value;
@@ -205,9 +224,11 @@ export function normalizeCampaignEmailSettings(
 export function renderRewardEmailText(
   settings: CampaignEmailSettings,
   variables: RewardEmailVariables,
+  options: { appointmentUrl?: string } = {},
 ) {
   const shouldAppendUsageConditions =
     Boolean(variables.usageConditions.trim()) && !hasUsageConditionsPlaceholder(settings);
+  const appointmentUrl = getSafeAppointmentUrl(options.appointmentUrl);
 
   return [
     renderEmailTemplate(settings.headline, variables),
@@ -221,6 +242,7 @@ export function renderRewardEmailText(
     "",
     renderEmailTemplate(settings.footerNote, variables),
     variables.qrUrl ? `QR code : ${variables.qrUrl}` : "",
+    appointmentUrl ? `Prendre rendez-vous : ${appointmentUrl}` : "",
   ]
     .filter(Boolean)
     .join("\n");
@@ -229,7 +251,7 @@ export function renderRewardEmailText(
 export function renderRewardEmailHtml(
   settings: CampaignEmailSettings,
   variables: RewardEmailVariables,
-  options: { logoSrc?: string } = {},
+  options: { logoSrc?: string; appointmentUrl?: string } = {},
 ) {
   const headline = escapeHtml(renderEmailTemplate(settings.headline, variables));
   const preheader = escapeHtml(renderEmailTemplate(settings.preheader, variables));
@@ -241,6 +263,7 @@ export function renderRewardEmailHtml(
   );
   const buttonLabel = escapeHtml(renderEmailTemplate(settings.buttonLabel, variables));
   const accentColor = settings.accentColor;
+  const appointmentUrl = getSafeAppointmentUrl(options.appointmentUrl);
   const shouldAppendUsageConditions =
     Boolean(variables.usageConditions.trim()) && !hasUsageConditionsPlaceholder(settings);
   const usageConditionsBlock = shouldAppendUsageConditions
@@ -252,6 +275,9 @@ export function renderRewardEmailHtml(
   const logoBlock = options.logoSrc
     ? `<div style="margin:0 0 20px;text-align:center;"><img src="${escapeHtml(options.logoSrc)}" alt="Logo de ${escapeHtml(variables.merchantName)}" style="display:inline-block;max-width:220px;max-height:72px;width:auto;height:auto;object-fit:contain;" /></div>`
     : `<p style="margin:0 0 12px;font-size:12px;letter-spacing:0.22em;text-transform:uppercase;color:#7b8496;">${escapeHtml(variables.merchantName)}</p>`;
+  const appointmentCta = appointmentUrl
+    ? `<div style="margin:12px 0 0;"><a href="${escapeHtml(appointmentUrl)}" target="_blank" rel="noopener noreferrer" style="display:inline-block;padding:12px 20px;border-radius:12px;border:1px solid ${escapeHtml(accentColor)};background:#ffffff;color:${escapeHtml(accentColor)};text-decoration:none;font-weight:700;">Prendre rendez-vous</a></div>`
+    : "";
 
   return `
     <div style="display:none;max-height:0;overflow:hidden;opacity:0;">${preheader}</div>
@@ -274,6 +300,7 @@ export function renderRewardEmailHtml(
           <img src="${variables.qrUrl}" alt="QR code de retrait" width="180" height="180" style="display:block;width:180px;height:180px;border-radius:20px;border:1px solid #dbe4f0;background:#ffffff;" />
         </div>
         <a href="${variables.qrUrl}" target="_blank" style="display:inline-block;padding:14px 20px;border-radius:16px;background:${accentColor};color:#ffffff;text-decoration:none;font-weight:700;">${buttonLabel}</a>
+        ${appointmentCta}
         ${footerBlocks
           .map(
             (block) =>

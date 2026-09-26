@@ -5,10 +5,12 @@ Utiliser ces termes dans l'interface, les Issues, les critères d'acceptation, l
 | Terme | Définition officielle | Ne pas confondre avec | Exemple |
 |---|---|---|---|
 | Jeu | Animation visible par le client, créée et pilotée par un marchand. | Campagne, qui est le terme technique/historique. | « Publier le jeu de rentrée ». |
-| Campagne | Terme technique ou historique pour l'enregistrement persistant d'un jeu. À éviter dans les textes affichés au marchand. | Jeu. | `campaign_id` dans la base de données. |
+| Campagne | Nom de la rubrique de navigation qui regroupe les jeux du marchand, et terme technique/historique pour leur enregistrement persistant. | Un jeu individuel. | « Ouvrir Campagnes » ; `campaign_id` dans la base de données. |
 | Administrateur plateforme | Pierre-Henri BRUNELLE, unique administrateur de la plateforme et valideur des PR. | Marchand ou personnel du commerce. | Administration de la plateforme. |
 | Marchand | Compte professionnel qui possède et pilote un ou plusieurs établissements. | Client/joueur. | « Le marchand crée un jeu ». |
 | Établissement | Site physique d'un marchand, avec ses informations et ses jeux propres. | Workspace. | « Le Comptoir des Îles · Nanterre ». |
+| Secteur d’activité | Catégorie générale de l’activité d’un établissement, utilisée pour contextualiser les réglages et les suggestions de lots. Elle peut rester non renseignée. | Sous-secteur. | Beauté, Restauration, Services. |
+| Sous-secteur | Précision facultative du secteur Beauté : Coiffure, Institut & soins, Ongles & cils ou Massage & spa. | Secteur d’activité. | Institut & soins. |
 | Multi-sites | Fonction qui permet à un marchand de gérer plusieurs établissements. | Workspace. | « Déployer ce jeu sur plusieurs sites ». |
 | Workspace | Conteneur technique d'organisation auquel sont rattachés les marchands, utilisateurs et établissements autorisés. | Établissement. | Un workspace peut contenir plusieurs établissements. |
 | Joueur | Client final qui accède au jeu et y participe. | Marchand ou personnel du commerce. | « Le joueur scanne le QR code ». |

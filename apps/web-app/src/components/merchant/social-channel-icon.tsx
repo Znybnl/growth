@@ -1,4 +1,5 @@
 import {
+  CalendarDays,
   Camera,
   Link,
   Map,
@@ -9,11 +10,12 @@ import {
 
 import { ActionKind } from "@/lib/types";
 
-type SocialChannel = ActionKind | "googleReview" | "custom";
+type SocialChannel = ActionKind | "googleReview" | "appointment" | "custom";
 
 const channelIcons = {
   google: Star,
   googleReview: Star,
+  appointment: CalendarDays,
   instagram: Camera,
   facebook: Users,
   tiktok: Music,

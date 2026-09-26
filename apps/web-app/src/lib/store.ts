@@ -88,6 +88,7 @@ import {
   DrawSession,
   DrawRequest,
   DrawResult,
+  DrawResultWithEmailContext,
   FinalizeDrawSessionRequest,
   Lead,
   Merchant,
@@ -234,6 +235,7 @@ const merchantSeed: Merchant = {
   phone: "01 40 00 00 00",
   restaurantEmail: "contact@maisonsora.fr",
   websiteUrl: "https://maisonsora.fr",
+  appointmentUrl: "",
   onboardingCompleted: true,
   preferredGoals: ["Avis Google", "Collecte CRM"],
   diffusionSupport: ["QR code vitrine et comptoir", "Script équipe magasin"],
@@ -1067,6 +1069,7 @@ function createMerchantAccountInMemory(input: MerchantSignUpInput) {
     phone,
     restaurantEmail: "",
     websiteUrl: "",
+    appointmentUrl: "",
     onboardingCompleted: false,
     preferredGoals: [],
     diffusionSupport: [],
@@ -1136,6 +1139,7 @@ function updateMerchantOnboardingInMemory(userId: string, input: MerchantOnboard
   merchant.companyName = input.companyName.trim();
   merchant.logoText = input.companyName.trim().slice(0, 2).toUpperCase();
   merchant.industry = input.industry.trim();
+  merchant.industrySubsector = input.industrySubsector?.trim() || undefined;
   merchant.restaurantType = input.restaurantType.trim();
   merchant.city = input.city.trim();
   merchant.address = input.address.trim();
@@ -1143,6 +1147,7 @@ function updateMerchantOnboardingInMemory(userId: string, input: MerchantOnboard
   merchant.phone = input.phone.trim();
   merchant.restaurantEmail = input.restaurantEmail.trim().toLowerCase();
   merchant.websiteUrl = input.websiteUrl.trim();
+  merchant.appointmentUrl = input.appointmentUrl.trim();
   merchant.defaultPrizeCost = input.defaultPrizeCost;
   merchant.preferredGoals = input.preferredGoals;
   merchant.diffusionSupport = input.diffusionSupport;
@@ -1197,6 +1202,7 @@ function updateMerchantAccountInMemory(
   merchant.companyName = input.companyName.trim();
   merchant.logoText = input.companyName.trim().slice(0, 2).toUpperCase();
   merchant.industry = input.industry.trim();
+  merchant.industrySubsector = input.industrySubsector?.trim() || undefined;
   merchant.restaurantType = input.restaurantType.trim();
   merchant.city = input.city.trim();
   merchant.address = input.address.trim();
@@ -1204,6 +1210,7 @@ function updateMerchantAccountInMemory(
   merchant.phone = input.phone.trim();
   merchant.restaurantEmail = input.restaurantEmail.trim().toLowerCase();
   merchant.websiteUrl = input.websiteUrl.trim();
+  merchant.appointmentUrl = input.appointmentUrl.trim();
   merchant.googleReviewUrl = input.googleReviewUrl.trim();
   merchant.googlePlaceName = input.googlePlaceName?.trim() || undefined;
   merchant.googlePlaceAddress = input.googlePlaceAddress?.trim() || undefined;
@@ -1813,7 +1820,7 @@ export async function finalizePreviewParticipation(input: {
   firstName: string;
   email: string;
   marketingConsent?: boolean;
-}): Promise<DrawResult> {
+}): Promise<DrawResultWithEmailContext> {
   const performance = await getCampaignPerformance(input.campaignId);
   const campaign = await getCampaignPreview(input.campaignId);
   if (!performance || !campaign) {
@@ -1877,6 +1884,7 @@ export async function finalizePreviewParticipation(input: {
   return {
     lead: clone(lead),
     prize: prize ? clone(prize) : null,
+    rewardEmailAppointmentUrl: performance.merchant.appointmentUrl,
     campaign,
   };
 }
@@ -1952,7 +1960,7 @@ export function invalidateMerchantCampaignOverview(merchantId: string) {
   invalidateCampaignNavigationCache(merchantId);
 }
 
-function finalizeDrawSessionFromMemory(input: FinalizeDrawSessionRequest): DrawResult {
+function finalizeDrawSessionFromMemory(input: FinalizeDrawSessionRequest): DrawResultWithEmailContext {
   expireDrawSessionsFromMemory();
   const session = store.drawSessions.find((item) => item.id === input.sessionId);
 
@@ -1992,11 +2000,12 @@ function finalizeDrawSessionFromMemory(input: FinalizeDrawSessionRequest): DrawR
   return {
     lead: clone(lead),
     prize: prize ? clone(prize) : null,
+    rewardEmailAppointmentUrl: getMerchant(campaign.merchantId)?.appointmentUrl,
     campaign: toPublicCampaign(campaign, actionForVisit ? [actionForVisit] : []),
   };
 }
 
-function drawForLeadFromMemory(input: DrawRequest): DrawResult {
+function drawForLeadFromMemory(input: DrawRequest): DrawResultWithEmailContext {
   const preview = createDrawSessionFromMemory({ campaignId: input.campaignId });
 
   return finalizeDrawSessionFromMemory({
@@ -2629,6 +2638,12 @@ export async function drawForLead(input: DrawRequest, fallbackMerchant?: Merchan
   return drawForLeadFromMemory(input);
 }
 
+export function toPublicDrawResult(result: DrawResultWithEmailContext): DrawResult {
+  const { rewardEmailAppointmentUrl, ...publicResult } = result;
+  void rewardEmailAppointmentUrl;
+  return publicResult;
+}
+
 export async function createDrawSession(
   input: CreateDrawSessionRequest,
   fallbackMerchant?: Merchant,
@@ -2763,6 +2778,18 @@ export async function updateCampaignSetup(input: CampaignSetupInput) {
   }
 
   return updateCampaignSetupInMemory(input);
+}
+
+export async function saveCampaignSetup(input: CampaignSetupInput) {
+  assertCampaignCanPublish(input);
+
+  if (getDataBackend("la mise à jour d'une campagne") === "supabase") {
+    const campaignId = await updateCampaignSetupInSupabase(input);
+    invalidateCampaignNavigationCache(input.merchantId, campaignId);
+    return campaignId;
+  }
+
+  return updateCampaignSetupInMemory(input).id;
 }
 
 export async function updateCampaignPosterSettings(

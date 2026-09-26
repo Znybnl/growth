@@ -13,7 +13,7 @@ import {
   CreateDrawSessionResult,
   DrawSession,
   DrawRequest,
-  DrawResult,
+  DrawResultWithEmailContext,
   FinalizeDrawSessionRequest,
   Lead,
   Merchant,
@@ -331,7 +331,13 @@ type CampaignOverviewEventRow = {
 type CampaignOverviewPrizeRow = {
   id: string;
   campaign_id: string;
+  label: string;
+  total_quantity: number | null;
+  remaining_quantity: number | null;
+  probability: number;
   estimated_unit_cost: number;
+  purchase_required: boolean;
+  created_at: string;
 };
 
 type MerchantRow = {
@@ -341,6 +347,7 @@ type MerchantRow = {
   logo_text: string;
   logo_url: string | null;
   industry: string | null;
+  industry_subsector?: string | null;
   city: string | null;
   contact_name: string | null;
   phone: string | null;
@@ -445,6 +452,7 @@ function toMerchant(row: MerchantRow): Merchant {
     logoText: row.logo_text,
     logoUrl: row.logo_url ?? undefined,
     industry: row.industry ?? undefined,
+    industrySubsector: row.industry_subsector ?? undefined,
     city: row.city ?? undefined,
     contactName: row.contact_name ?? undefined,
     phone: row.phone ?? undefined,
@@ -579,6 +587,7 @@ function toCampaign(
       layout: {
         blockSpacingPx: localSettings.blockSpacingPx ?? 50,
         templateId,
+        wheelTemplateStyles: localSettings.wheelTemplateStyles,
         wheelSubtitle: localSettings.wheelSubtitle ?? "",
         subtitleSpacingPx:
           localSettings.subtitleSpacingPx ?? defaultWheelSubtitleSpacingForTemplate(templateId),
@@ -1051,6 +1060,7 @@ function buildCampaignOverviewFallbackBundle(
   const leadsByCampaignId = new Map<string, CampaignOverviewLeadRow[]>();
   const eventsByCampaignId = new Map<string, CampaignOverviewEventRow[]>();
   const estimatedCostByPrizeId = new Map<string, number>();
+  const prizesByCampaignId = new Map<string, CampaignOverviewPrizeRow[]>();
 
   for (const lead of leadRows) {
     const campaignLeads = leadsByCampaignId.get(lead.campaign_id) ?? [];
@@ -1066,6 +1076,9 @@ function buildCampaignOverviewFallbackBundle(
 
   for (const prize of prizeRows) {
     estimatedCostByPrizeId.set(prize.id, Number(prize.estimated_unit_cost) || 0);
+    const campaignPrizes = prizesByCampaignId.get(prize.campaign_id) ?? [];
+    campaignPrizes.push(prize);
+    prizesByCampaignId.set(prize.campaign_id, campaignPrizes);
   }
 
   return campaignRows.map((row) => {
@@ -1074,7 +1087,7 @@ function buildCampaignOverviewFallbackBundle(
     return {
       campaign,
       merchant: clone(merchant),
-      prizes: [],
+      prizes: (prizesByCampaignId.get(row.id) ?? []).map(toPrize),
       kpis: computeOverviewKpisFromRows(
         campaign,
         leadsByCampaignId.get(row.id) ?? [],
@@ -1292,22 +1305,38 @@ export async function getSupabaseMerchantCampaignOverview(
       logoUrl: undefined,
     };
     const campaignIds = rows.map((row) => row.id);
-    const optInResult = campaignIds.length
-      ? await supabase
-          .from("leads")
-          .select("campaign_id")
-          .eq("marketing_consent", true)
-          .in("campaign_id", campaignIds)
-      : { data: [] as Array<{ campaign_id: string }>, error: null };
+    const [optInResult, prizesResult] = campaignIds.length
+      ? await Promise.all([
+          supabase
+            .from("leads")
+            .select("campaign_id")
+            .eq("marketing_consent", true)
+            .in("campaign_id", campaignIds),
+          supabase
+            .from("prizes")
+            .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,purchase_required,created_at")
+            .in("campaign_id", campaignIds),
+        ])
+      : [
+          { data: [] as Array<{ campaign_id: string }>, error: null },
+          { data: [] as PrizeRow[], error: null },
+        ];
     const optInRows = unwrapSupabaseResult(optInResult, "Lecture des opt-ins impossible");
+    const prizesData = unwrapSupabaseResult(prizesResult, "Lecture des stocks de lots impossible");
     const optInsByCampaignId = new Map<string, number>();
+    const prizesByCampaignId = new Map<string, Prize[]>();
     for (const row of (optInRows as Array<{ campaign_id: string }> | null) ?? []) {
       optInsByCampaignId.set(row.campaign_id, (optInsByCampaignId.get(row.campaign_id) ?? 0) + 1);
+    }
+    for (const row of (prizesData as PrizeRow[] | null) ?? []) {
+      const campaignPrizes = prizesByCampaignId.get(row.campaign_id) ?? [];
+      campaignPrizes.push(toPrize(row));
+      prizesByCampaignId.set(row.campaign_id, campaignPrizes);
     }
     const campaigns = rows.map((row) => ({
       campaign: toCampaignOverview(row, overviewMerchant),
       merchant: clone(overviewMerchant),
-      prizes: [],
+      prizes: prizesByCampaignId.get(row.id) ?? [],
       kpis: toOverviewKpis(row, optInsByCampaignId.get(row.id) ?? 0),
     }));
     const totalLeads = campaigns.reduce((total, item) => total + item.kpis.leads, 0);
@@ -1361,7 +1390,7 @@ export async function getSupabaseMerchantCampaignOverview(
       .in("campaign_id", campaignIds),
     supabase
       .from("prizes")
-      .select("id,campaign_id,estimated_unit_cost")
+      .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,purchase_required,created_at")
       .in("campaign_id", campaignIds),
   ]);
   const leadsData = unwrapSupabaseResult(leadsResult, "Lecture des contacts impossible");
@@ -2193,24 +2222,49 @@ async function recordCampaignPublicationAudit(
 }
 
 export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
+  const totalStartedAt = performance.now();
   const supabase = getSupabaseAdmin();
   const isNewCampaign = !input.id;
   const campaignId = input.id ?? generateId("camp");
 
-  if (!isNewCampaign) {
-    const { data: existingCampaign, error: existingCampaignError } = await supabase
-      .from("campaigns")
-      .select("id,merchant_id")
-      .eq("id", campaignId)
-      .maybeSingle();
+  const needsExistingPrizeQuantities = !isNewCampaign && input.prizes.some((prize) =>
+    prize.remainingQuantity === undefined &&
+    Boolean(prize.id) &&
+    !prize.id!.startsWith("local-prize-") &&
+    !prize.id!.startsWith("default-prize-"),
+  );
+  const needsExistingActionIds = !isNewCampaign && input.actions.some((action) =>
+    Boolean(action.id) && !action.id!.startsWith("local-action-"),
+  );
 
-    if (existingCampaignError) {
-      throw new Error(`Lecture de la campagne impossible: ${existingCampaignError.message}`);
-    }
+  const readsStartedAt = performance.now();
+  const [existingCampaignQuery, existingPrizesQuery, existingActionsQuery] = await Promise.all([
+    isNewCampaign
+      ? Promise.resolve(null)
+      : supabase.from("campaigns").select("id,merchant_id").eq("id", campaignId).maybeSingle(),
+    needsExistingPrizeQuantities
+      ? supabase.from("prizes").select("id,remaining_quantity").eq("campaign_id", campaignId)
+      : Promise.resolve(null),
+    needsExistingActionIds
+      ? supabase.from("campaign_actions").select("id").eq("campaign_id", campaignId)
+      : Promise.resolve(null),
+  ]);
+  const existingReadMs = Math.round((performance.now() - readsStartedAt) * 10) / 10;
 
-    if (!existingCampaign || existingCampaign.merchant_id !== input.merchantId) {
-      throw new Error("Campagne introuvable");
-    }
+  if (existingCampaignQuery?.error) {
+    throw new Error(`Lecture de la campagne impossible: ${existingCampaignQuery.error.message}`);
+  }
+  if (
+    !isNewCampaign &&
+    (!existingCampaignQuery?.data || existingCampaignQuery.data.merchant_id !== input.merchantId)
+  ) {
+    throw new Error("Campagne introuvable");
+  }
+  if (existingPrizesQuery?.error) {
+    throw new Error(`Lecture des lots existants impossible: ${existingPrizesQuery.error.message}`);
+  }
+  if (existingActionsQuery?.error) {
+    throw new Error(`Lecture des actions existantes impossible: ${existingActionsQuery.error.message}`);
   }
 
   const payload = {
@@ -2256,27 +2310,14 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
     is_winning_every_time: input.rewardRules.isWinningEveryTime,
   };
 
-  const existingPrizesQuery = await supabase.from("prizes").select("*").eq("campaign_id", campaignId);
-  if (existingPrizesQuery.error) {
-    throw new Error(`Lecture des lots existants impossible: ${existingPrizesQuery.error.message}`);
-  }
-
-  const { data: existingPrizesData } = existingPrizesQuery;
-  const existingPrizes = (existingPrizesData as PrizeRow[] | null) ?? [];
+  const existingPrizes = (existingPrizesQuery?.data ?? []) as Array<
+    Pick<PrizeRow, "id" | "remaining_quantity">
+  >;
   const remainingMap = new Map(existingPrizes.map((item) => [item.id, item.remaining_quantity]));
 
   const existingActionIds = new Set<string>();
-  if (!isNewCampaign) {
-    const existingActionsQuery = await supabase
-      .from("campaign_actions")
-      .select("id")
-      .eq("campaign_id", campaignId);
-    if (existingActionsQuery.error) {
-      throw new Error(`Lecture des actions existantes impossible: ${existingActionsQuery.error.message}`);
-    }
-    for (const action of (existingActionsQuery.data as Array<{ id: string }> | null) ?? []) {
-      existingActionIds.add(action.id);
-    }
+  for (const action of existingActionsQuery?.data ?? []) {
+    existingActionIds.add(action.id);
   }
 
   const usedActionIds = new Set<string>();
@@ -2345,6 +2386,7 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
     headingFontFamily: input.presentation.heading.fontFamily,
     headingFontWeight: input.presentation.heading.fontWeight ?? 600,
     gamePageTemplateId: templateId,
+    wheelTemplateStyles: input.presentation.layout.wheelTemplateStyles,
     logoMode: input.logoMode,
     logoText: input.logoText,
     logoTextColor: input.presentation.logo.textColor ?? input.presentation.heading.textColor,
@@ -2367,20 +2409,36 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
     },
   };
 
+  const rpcStartedAt = performance.now();
   const atomicSave = await supabase.rpc("save_campaign_setup", {
     p_campaign: payload,
     p_actions: atomicActions,
     p_prizes: atomicPrizes,
     p_settings: localSettings,
   });
+  const rpcMs = Math.round((performance.now() - rpcStartedAt) * 10) / 10;
 
   if (!atomicSave.error) {
+    const auditStartedAt = performance.now();
     await recordCampaignPublicationAudit(
       campaignId,
       input,
       localSettings.compliance.configurationVersion,
       input.isActive ? "published" : "draft_saved",
     );
+    const auditMs = Math.round((performance.now() - auditStartedAt) * 10) / 10;
+    console.info(JSON.stringify({
+      event: "campaign_setup_storage_timing",
+      mode: isNewCampaign ? "create" : "update",
+      game_type: input.gameType,
+      actions_count: input.actions.length,
+      prizes_count: input.prizes.length,
+      write_path: "atomic_rpc",
+      existing_reads_ms: existingReadMs,
+      write_ms: rpcMs,
+      audit_ms: auditMs,
+      total_ms: Math.round((performance.now() - totalStartedAt) * 10) / 10,
+    }));
     return campaignId;
   }
 
@@ -2388,6 +2446,7 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
     throw new Error(`La campagne n'a pas pu être enregistrée: ${atomicSave.error.message}`);
   }
 
+  const fallbackStartedAt = performance.now();
   const upsert = await supabase.from("campaigns").upsert(payload).select("*").single();
   if (upsert.error || !upsert.data) {
     throw new Error(
@@ -2444,12 +2503,26 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
   }
 
   await setCampaignLocalSettings(campaignId, localSettings);
+  const auditStartedAt = performance.now();
   await recordCampaignPublicationAudit(
     campaignId,
     input,
     localSettings.compliance.configurationVersion,
     input.isActive ? "published_fallback" : "draft_saved_fallback",
   );
+  const auditMs = Math.round((performance.now() - auditStartedAt) * 10) / 10;
+  console.info(JSON.stringify({
+    event: "campaign_setup_storage_timing",
+    mode: isNewCampaign ? "create" : "update",
+    game_type: input.gameType,
+    actions_count: input.actions.length,
+    prizes_count: input.prizes.length,
+    write_path: "fallback",
+    existing_reads_ms: existingReadMs,
+    write_ms: Math.round((performance.now() - fallbackStartedAt - auditMs) * 10) / 10,
+    audit_ms: auditMs,
+    total_ms: Math.round((performance.now() - totalStartedAt) * 10) / 10,
+  }));
 
   return campaignId;
 }
@@ -2730,7 +2803,7 @@ export async function createDrawSessionInSupabase(
 export async function finalizeDrawSessionInSupabase(
   input: FinalizeDrawSessionRequest,
   merchant?: Merchant,
-): Promise<DrawResult> {
+): Promise<DrawResultWithEmailContext> {
   const supabase = getSupabaseAdmin();
   const { data: sessionRow } = await supabase
     .from("draw_sessions")
@@ -2808,6 +2881,7 @@ export async function finalizeDrawSessionInSupabase(
   return {
     lead,
     prize,
+    rewardEmailAppointmentUrl: campaignMerchant.appointmentUrl,
     campaign: toPublicCampaign(
       campaign,
       campaignMerchant,
@@ -2817,7 +2891,10 @@ export async function finalizeDrawSessionInSupabase(
   };
 }
 
-export async function drawForLeadInSupabase(input: DrawRequest, merchant: Merchant): Promise<DrawResult> {
+export async function drawForLeadInSupabase(
+  input: DrawRequest,
+  merchant: Merchant,
+): Promise<DrawResultWithEmailContext> {
   const performance = await getSupabaseCampaignPerformance(input.campaignId, merchant);
   if (!performance || !performance.campaign.isActive) throw new Error("Campagne indisponible");
   await assertEffectiveMerchantBillingAccess(performance.merchant, "campaign_public");
@@ -2864,6 +2941,7 @@ export async function drawForLeadInSupabase(input: DrawRequest, merchant: Mercha
   return {
     lead,
     prize,
+    rewardEmailAppointmentUrl: performance.merchant.appointmentUrl,
     campaign: toPublicCampaign(campaign, merchant, prizes, actionForVisit ? [actionForVisit] : []),
   };
 }

@@ -18,6 +18,12 @@
   font-family: var(--font-cormorant-garamond), Georgia, serif;
 }
 
+.font-playfair { font-family: var(--font-playfair), Georgia, serif; }
+.font-dm-sans { font-family: var(--font-dm-sans), sans-serif; }
+.font-poppins { font-family: var(--font-poppins), sans-serif; }
+.font-bodoni { font-family: var(--font-bodoni), Georgia, serif; }
+.font-space-grotesk { font-family: var(--font-space-grotesk), sans-serif; }
+
 .font-fredoka {
   font-family: var(--font-fredoka), "Inter", ui-sans-serif, system-ui, sans-serif;
 }
@@ -1591,6 +1597,189 @@ button:disabled,
 
 .okado-wheel-subtitle--public {
   margin-top: 40px;
+}
+
+/* Beauty collection: the same restrained typography and decorative geometry
+   is used by the merchant preview and the public game. */
+.okado-public-experience[data-template-id^="beauty-"] .okado-beauty-heading,
+.okado-preview-surface[data-template-id^="beauty-"] .okado-beauty-heading {
+  max-width: 20ch;
+  margin-inline: auto;
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+/* Rose poudré: restrained floral depth, shared by public and merchant views. */
+.okado-rose-powder-surface { isolation: isolate; }
+
+.okado-rose-powder-decor {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.okado-rose-powder-decor__glow {
+  position: absolute;
+  display: block;
+  border-radius: 49% 51% 58% 42% / 54% 44% 56% 46%;
+}
+
+.okado-rose-powder-decor__glow--top {
+  top: -90px;
+  left: -105px;
+  width: 340px;
+  height: 340px;
+  background: radial-gradient(ellipse at 52% 48%, color-mix(in srgb, var(--rose-accent) 27%, transparent), color-mix(in srgb, var(--rose-accent) 12%, transparent) 58%, transparent 80%);
+  filter: blur(22px);
+}
+
+.okado-rose-powder-decor__glow--bottom {
+  right: -106px;
+  bottom: -124px;
+  width: 370px;
+  height: 370px;
+  border-radius: 61% 39% 48% 52% / 52% 57% 43% 48%;
+  background: radial-gradient(ellipse at 45% 45%, color-mix(in srgb, var(--rose-accent) 24%, transparent), color-mix(in srgb, var(--rose-accent) 10%, transparent) 60%, transparent 82%);
+  filter: blur(26px);
+}
+
+.okado-rose-powder-decor__petal {
+  position: absolute;
+  display: block;
+  width: 20px;
+  height: 26px;
+  border-radius: 95% 5% 86% 14% / 83% 17% 83% 17%;
+  background: var(--rose-accent);
+  opacity: .075;
+}
+
+.okado-rose-powder-decor__petal--1 { top: 14%; left: 1%; width: 12px; height: 18px; transform: rotate(-25deg); }
+.okado-rose-powder-decor__petal--2 { top: 27%; right: 2%; width: 17px; height: 24px; transform: rotate(41deg); }
+.okado-rose-powder-decor__petal--3 { top: 44%; left: -4px; width: 25px; height: 28px; transform: rotate(68deg); opacity: .08; }
+.okado-rose-powder-decor__petal--4 { top: 55%; right: 1%; width: 12px; height: 18px; transform: rotate(-47deg); }
+.okado-rose-powder-decor__petal--5 { bottom: 25%; left: 2%; width: 19px; height: 23px; transform: rotate(32deg); opacity: .09; }
+.okado-rose-powder-decor__petal--6 { right: 2%; bottom: 17%; width: 26px; height: 28px; transform: rotate(-70deg); opacity: .07; }
+.okado-rose-powder-decor__petal--7 { bottom: 5%; left: 2%; width: 11px; height: 16px; transform: rotate(18deg); }
+
+.okado-public-experience[data-template-id="beauty-rose"] .okado-beauty-heading,
+.okado-preview-surface[data-template-id="beauty-rose"] .okado-beauty-heading {
+  max-width: 19ch;
+  line-height: 1.06;
+  letter-spacing: -.02em;
+  font-weight: 600 !important;
+}
+
+.okado-public-experience[data-template-id="beauty-rose"] .okado-wheel-subtitle,
+.okado-preview-surface[data-template-id="beauty-rose"] .okado-wheel-subtitle {
+  font-family: var(--font-dm-sans), sans-serif !important;
+  letter-spacing: .01em;
+}
+
+.okado-public-experience[data-template-id="beauty-rose"] .okado-rules-button {
+  border-color: rgba(185, 95, 117, .25);
+  background: rgba(255, 253, 252, .9);
+  color: #724958;
+  box-shadow: 0 4px 14px rgba(90, 45, 60, .11);
+  font-weight: 500;
+}
+
+.okado-public-experience[data-template-id="beauty-editorial"] .okado-beauty-heading,
+.okado-preview-surface[data-template-id="beauty-editorial"] .okado-beauty-heading {
+  max-width: 18ch;
+  margin-left: 0;
+  letter-spacing: -0.045em;
+}
+
+.okado-public-experience[data-template-id="beauty-pop"] .okado-beauty-heading,
+.okado-preview-surface[data-template-id="beauty-pop"] .okado-beauty-heading {
+  font-weight: 800 !important;
+  line-height: 1.04;
+}
+
+.okado-public-experience[data-template-id^="beauty-"] .okado-wheel-subtitle,
+.okado-preview-surface[data-template-id^="beauty-"] .okado-wheel-subtitle {
+  max-width: 32rem;
+  margin-bottom: 0;
+  font-size: clamp(0.9rem, 3.7vw, 1.06rem);
+  font-weight: 400;
+  line-height: 1.42;
+  opacity: .86;
+}
+
+.okado-public-experience[data-template-id="beauty-nude"] .okado-wheel-subtitle,
+.okado-preview-surface[data-template-id="beauty-nude"] .okado-wheel-subtitle {
+  font-size: clamp(0.88rem, 3.5vw, 1rem);
+  letter-spacing: .025em;
+}
+
+.okado-public-experience[data-template-id="beauty-botanical"] .okado-wheel-subtitle,
+.okado-preview-surface[data-template-id="beauty-botanical"] .okado-wheel-subtitle {
+  font-size: clamp(0.9rem, 3.6vw, 1.02rem);
+  font-weight: 500;
+  letter-spacing: .01em;
+}
+
+.okado-public-experience[data-template-id="beauty-rose"] .okado-wheel-subtitle,
+.okado-preview-surface[data-template-id="beauty-rose"] .okado-wheel-subtitle {
+  opacity: .76;
+  font-weight: 400;
+  font-size: clamp(.9rem, 3.8vw, 1rem);
+  line-height: 1.4;
+}
+
+.okado-public-experience[data-template-id="beauty-pop"] .okado-wheel-subtitle,
+.okado-preview-surface[data-template-id="beauty-pop"] .okado-wheel-subtitle {
+  font-size: clamp(0.94rem, 3.8vw, 1.08rem);
+  font-weight: 500;
+}
+
+.okado-public-experience[data-template-id="beauty-editorial"] .okado-wheel-subtitle,
+.okado-preview-surface[data-template-id="beauty-editorial"] .okado-wheel-subtitle {
+  max-width: 29ch;
+  font-size: clamp(0.84rem, 3.3vw, 0.98rem);
+  letter-spacing: .055em;
+}
+
+.okado-public-experience[data-template-id="beauty-tech"] .okado-wheel-subtitle,
+.okado-preview-surface[data-template-id="beauty-tech"] .okado-wheel-subtitle {
+  font-size: clamp(0.88rem, 3.5vw, 1rem);
+  font-weight: 500;
+  opacity: .9;
+}
+
+.okado-beauty-wheel-center::after {
+  position: absolute;
+  inset: 5px;
+  border: 1px solid rgba(255, 255, 255, .38);
+  border-radius: inherit;
+  content: "";
+  pointer-events: none;
+}
+
+.okado-beauty-wheel-center--beauty-nude::after {
+  border-color: rgba(255, 248, 232, .58);
+}
+
+.okado-beauty-wheel-center--beauty-botanical::after {
+  border-color: rgba(245, 250, 241, .58);
+}
+
+.okado-beauty-wheel-center--beauty-editorial::after {
+  border-color: rgba(255, 247, 229, .62);
+}
+
+.okado-beauty-wheel-center--beauty-tech::after {
+  border-color: rgba(232, 221, 255, .64);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .okado-public-experience[data-template-id^="beauty-"] .transition-transform {
+    transition-duration: 0.01ms !important;
+  }
 }
 
 .okado-preview-surface[data-template-id="cocorico-wheel"] .okado-cocorico-promo-text,

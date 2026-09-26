@@ -20,6 +20,9 @@ import { ImmersiveWheel } from "@/components/public/immersive-wheel";
 import { ImmersiveScratchTicket } from "@/components/public/immersive-scratch-ticket";
 import { ScratchGame } from "@/components/public/scratch-game";
 import { WheelOfFortune } from "@/components/public/wheel-of-fortune";
+import { BeautyWheelDecorations } from "@/components/public/beauty-wheel-decorations";
+import { beautyWheelBackground, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
+import { RosePowderDecor } from "@/components/public/rose-powder-decor";
 import { fluidType } from "@/lib/responsive";
 import { textFontClass, textFontFamily, wheelSubtitleFontFamily } from "@/lib/format";
 import { userBackgroundImageStyle } from "@/lib/campaign-background";
@@ -29,6 +32,7 @@ import {
   clampCampaignSpacingPx,
   defaultWheelSubtitleSpacingForTemplate,
   DEFAULT_SCRATCH_SUBTITLE,
+  MAX_BEAUTY_WHEEL_TITLE_LINES,
   limitCampaignSubtitleLines,
   resolveScratchAccent,
   resolveCocoricoPrimaryColor,
@@ -495,6 +499,7 @@ export function CampaignExperience({
   const isClassicTemplate = campaign.presentation.layout.templateId === "classic" || !campaign.presentation.layout.templateId;
   const isRestaurantPopTemplate = pageTemplate === "restaurant-pop";
   const isRoseInstitutTemplate = isRoseInstitutWheelTemplate(pageTemplate);
+  const isBeautyTemplate = isBeautyWheelTemplate(pageTemplate);
   const isCocoricoTemplate = isCocoricoWheelTemplate(pageTemplate);
   const isCocoricoDuoTemplate = pageTemplate === "cocorico-duo-wheel";
   const isCosmicTemplate = pageTemplate === "cosmic-orbit";
@@ -530,8 +535,12 @@ export function CampaignExperience({
   const logoWidthPx = Math.round(
     Math.max(56, Math.min(720, logoSizePercent * 3)),
   );
-  const logoTextSizePx = campaignLogoTextSizePx(logoSizePercent, campaign.gameType);
-  const safeSubtitle = limitCampaignSubtitleLines(campaign.subtitle);
+  const logoTextSizePx = Math.round(campaignLogoTextSizePx(logoSizePercent, campaign.gameType) * (isBeautyTemplate || isRoseInstitutTemplate ? 0.9 : 1));
+  const isRosePowderTemplate = pageTemplate === "beauty-rose";
+  const safeSubtitle = limitCampaignSubtitleLines(
+    campaign.subtitle,
+    campaign.gameType === "wheel" && isBeautyTemplate ? MAX_BEAUTY_WHEEL_TITLE_LINES : undefined,
+  );
   const wheelSubtitle = campaign.gameType === "wheel"
     ? limitCampaignSubtitleLines(campaign.presentation.layout.wheelSubtitle ?? "")
     : "";
@@ -818,16 +827,20 @@ export function CampaignExperience({
         ? restaurantPopBackground(campaign.presentation.background.color)
         : isRoseInstitutTemplate
         ? roseInstitutWheelBackground(campaign.presentation.background.color)
+        : isBeautyTemplate
+        ? beautyWheelBackground(pageTemplate, campaign.presentation.background.color, primaryColor)
         : isCocoricoTemplate
         ? `radial-gradient(circle at 12% 12%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(campaign.presentation.background.color), 0.32), "e6")} 0 10%, transparent 11%), radial-gradient(circle at 90% 18%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(campaign.presentation.background.color), 0.12), "b3")} 0 16%, transparent 17%), linear-gradient(160deg, ${resolveCocoricoBackgroundColor(campaign.presentation.background.color)} 0%, ${resolveCocoricoBackgroundColor(campaign.presentation.background.color)} 48%, #063d78 100%)`
         : `radial-gradient(circle at 50% 50%, ${withHexAlpha(primaryColor, "33")}, transparent 50%), linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.08))`;
   const restaurantPopHeadingLines = buildRestaurantPopHeadingLines(safeSubtitle);
 
-  const headingFontSize = fluidType(campaign.presentation.heading.fontSizePx, {
-    minRatio: 0.82,
-    maxRatio: 1.08,
-    viewportStep: 0.3,
-  });
+  const headingFontSize = isBeautyTemplate
+    ? `${campaign.presentation.heading.fontSizePx}px`
+    : fluidType(campaign.presentation.heading.fontSizePx, {
+        minRatio: 0.82,
+        maxRatio: 1.08,
+        viewportStep: 0.3,
+      });
   const buttonFontSize = fluidType(campaign.presentation.button.textSizePx, {
     minRatio: 0.86,
     maxRatio: 1.08,
@@ -837,11 +850,11 @@ export function CampaignExperience({
   // Keep the brand mark anchored at the same distance from the top for every
   // game mechanic. Scratch templates render the logo inside their ticket
   // component, but that component now uses the same top spacing as the wheel.
-  const pageTopPaddingClass = "pt-12 sm:pt-14";
+  const pageTopPaddingClass = isBeautyTemplate ? "pt-8 sm:pt-10" : "pt-12 sm:pt-14";
 
   return (
     <div
-      className="okado-public-experience relative min-h-screen overflow-hidden"
+      className={`okado-public-experience relative min-h-screen overflow-hidden ${pageTemplate === "beauty-rose" ? "okado-rose-powder-surface" : ""}`}
       data-template-id={pageTemplate}
       style={{
         backgroundColor: campaign.presentation.background.color,
@@ -851,14 +864,18 @@ export function CampaignExperience({
         fontFamily: textFontFamily(campaign.presentation.heading.fontFamily),
       }}
     >
+      {isBeautyTemplate && !isRosePowderTemplate && !(campaign.presentation.background.mode === "image" && campaign.presentation.background.imageUrl) ? (
+        <BeautyWheelDecorations templateId={pageTemplate} primaryColor={primaryColor} />
+      ) : null}
       {isPreview ? (
         <div
           role="status"
-          className="sticky top-0 z-50 flex min-h-11 items-center justify-center border-b border-[#d7a91f] bg-[#f4c14a] px-4 py-2 text-center text-xs font-semibold tracking-[0.01em] text-[#111827] shadow-[0_8px_24px_rgba(122,91,0,0.22)] sm:text-sm"
+          className="sticky top-0 z-50 flex min-h-11 items-center justify-center border-b border-[#d7a91f] bg-[#f4c14a] px-4 text-center text-xs font-semibold tracking-[0.01em] text-[#111827] shadow-[0_8px_24px_rgba(122,91,0,0.22)] sm:text-sm"
         >
           Mode prévisualisation — cette participation est simulée et n&apos;affecte ni vos statistiques ni vos stocks.
         </div>
       ) : null}
+      {pageTemplate === "beauty-rose" && campaign.presentation.background.mode !== "image" ? <RosePowderDecor primaryColor={primaryColor} /> : null}
       {isSunburstTemplate || isCosmicTemplate || isScratchVaultTemplate || isScratchConfettiTemplate || isScratchCoralTemplate || isScratchLilacTemplate || isScratchSunburstTemplate ? (
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
           <div
@@ -874,7 +891,7 @@ export function CampaignExperience({
           />
         </div>
       ) : null}
-      <div className={`relative mx-auto flex ${isPreview ? "h-[calc(100dvh-44px)] min-h-[560px]" : "h-screen"} w-full flex-col overflow-hidden px-4 pb-0 sm:px-6 ${pageTopPaddingClass}`}>
+      <div className={`relative z-10 mx-auto flex ${isBeautyTemplate ? "min-h-[calc(100dvh-44px)]" : isPreview ? "h-[calc(100dvh-44px)] min-h-[560px]" : "h-screen"} w-full flex-col ${isBeautyTemplate ? "overflow-visible pb-8" : "overflow-hidden pb-0"} px-4 sm:px-6 ${pageTopPaddingClass}`}>
         {!isImmersiveScratchTemplate && ((campaign.logoMode === "image" && campaign.logoUrl) ||
         campaign.logoMode === "text" ||
         campaign.gameType === "scratch") ? (
@@ -886,9 +903,10 @@ export function CampaignExperience({
                 size="lg"
                 variant="transparent"
                 imageWidthPx={logoWidthPx}
-                textSizePx={logoTextSizePx}
+                textSizePx={isRosePowderTemplate ? Math.round(logoTextSizePx * 0.9) : logoTextSizePx}
                 textClassName="text-2xl"
                 textColor={campaign.presentation.logo.textColor ?? headingTextColor}
+                textFontWeight={isRosePowderTemplate ? 600 : undefined}
               />
             </div>
           </div>
@@ -913,8 +931,8 @@ export function CampaignExperience({
             variant={isCocoricoTemplate ? "cocorico" : "inspired"}
             rotate={isCocoricoTemplate}
           /> : <h1
-            className={`${headingFontClass} line-clamp-3 whitespace-pre-line leading-[1] text-[#151826] ${isRoseInstitutTemplate ? "max-h-[3.3em] overflow-hidden" : ""}`}
-            style={{ color: headingTextColor, fontSize: headingFontSize, fontWeight: isRoseInstitutTemplate ? 800 : campaign.presentation.heading.fontWeight ?? 600 }}
+            className={`${headingFontClass} ${isBeautyTemplate ? "okado-beauty-heading" : isRoseInstitutTemplate ? "line-clamp-5 leading-[1]" : "line-clamp-3 leading-[1]"} whitespace-pre-line text-[#151826]`}
+            style={{ color: headingTextColor, fontSize: headingFontSize, fontWeight: isRoseInstitutTemplate || pageTemplate === "beauty-pop" ? 800 : campaign.presentation.heading.fontWeight ?? 600 }}
           >
             {isRestaurantPopTemplate
               ? restaurantPopHeadingLines.map((line, lineIndex) => (
@@ -1003,7 +1021,7 @@ export function CampaignExperience({
                   key={`${campaign.id}-${drawSession?.id ?? "idle"}`}
                   accent={campaign.accent}
                   wheelStyle={campaign.presentation.wheel}
-                  pageTemplate={pageTemplate === "restaurant-pop" ? "restaurant-pop" : isRoseInstitutTemplate ? "rose-institut" : "classic"}
+                  pageTemplate={pageTemplate === "restaurant-pop" ? "restaurant-pop" : isRoseInstitutTemplate ? "rose-institut" : isBeautyTemplate ? pageTemplate : "classic"}
                   buttonStyle={{
                     backgroundColor: campaign.presentation.button.backgroundColor,
                     textColor: campaign.presentation.button.textColor,
@@ -1105,7 +1123,7 @@ export function CampaignExperience({
       <button
         type="button"
         onClick={() => setRulesOpen(true)}
-        className="fixed bottom-4 right-4 z-20 rounded-full border border-white/70 bg-white/82 px-4 py-2 text-sm font-semibold text-[#111827] shadow-[0_14px_34px_rgba(17,24,39,0.12)] backdrop-blur"
+        className="okado-rules-button fixed bottom-4 right-4 z-20 rounded-full border border-white/70 bg-white/82 px-4 py-2 text-sm font-semibold text-[#111827] shadow-[0_14px_34px_rgba(17,24,39,0.12)] backdrop-blur"
       >
         Règlement
       </button>

@@ -16,6 +16,11 @@ export type TextFont =
   | "display"
   | "serif"
   | "cormorant"
+  | "playfair"
+  | "dm-sans"
+  | "poppins"
+  | "bodoni"
+  | "space-grotesk"
   | "fredoka"
   | "inter"
   | "bebas"
@@ -37,6 +42,12 @@ export type GamePageTemplateId =
   | "cocorico-wheel"
   | "cocorico-duo-wheel"
   | "rose-institut"
+  | "beauty-rose"
+  | "beauty-nude"
+  | "beauty-botanical"
+  | "beauty-pop"
+  | "beauty-editorial"
+  | "beauty-tech"
   | "cosmic-orbit"
   | "sunburst-festival"
   | "scratch-vault"
@@ -101,6 +112,7 @@ export type EventType =
 export interface PrizeSuggestion {
   id: string;
   industry: string;
+  industrySubsector?: string;
   label: string;
   description: string;
   probability: number;
@@ -121,6 +133,7 @@ export interface Merchant {
   logoText: string;
   logoUrl?: string;
   industry?: string;
+  industrySubsector?: string;
   restaurantType?: string;
   city?: string;
   address?: string;
@@ -128,6 +141,7 @@ export interface Merchant {
   phone?: string;
   restaurantEmail?: string;
   websiteUrl?: string;
+  appointmentUrl?: string;
   onboardingCompleted?: boolean;
   preferredGoals?: string[];
   diffusionSupport?: string[];
@@ -299,12 +313,14 @@ export interface MerchantSignInInput {
 export interface MerchantOnboardingInput {
   companyName: string;
   industry: string;
+  industrySubsector?: string;
   restaurantType: string;
   city: string;
   contactName: string;
   phone: string;
   restaurantEmail: string;
   websiteUrl: string;
+  appointmentUrl: string;
   address: string;
   defaultPrizeCost: number;
   preferredGoals: string[];
@@ -336,6 +352,7 @@ export interface MerchantSessionContext {
 export interface MerchantAccountSettingsInput {
   companyName: string;
   industry: string;
+  industrySubsector?: string;
   restaurantType: string;
   city: string;
   address: string;
@@ -343,6 +360,7 @@ export interface MerchantAccountSettingsInput {
   phone: string;
   restaurantEmail: string;
   websiteUrl: string;
+  appointmentUrl: string;
   googleReviewUrl: string;
   googlePlaceName?: string;
   googlePlaceAddress?: string;
@@ -413,6 +431,21 @@ export interface CampaignLayoutSettings {
   blockSpacingPx: number;
   templateId?: GamePageTemplateId;
   wheelSubtitle?: string;
+  subtitleSpacingPx?: number;
+  wheelTemplateStyles?: Partial<Record<GamePageTemplateId, WheelTemplateStyle>>;
+}
+
+export interface WheelTemplateStyle {
+  wheel: CampaignWheelSettings;
+  backgroundColor: string;
+  scratchSignal: string;
+  headingTextColor: string;
+  logoTextColor: string;
+  headingFontFamily: TextFont;
+  headingAlign: TextAlign;
+  logoAlign: TextAlign;
+  buttonBackgroundColor: string;
+  blockSpacingPx?: number;
   subtitleSpacingPx?: number;
 }
 
@@ -723,6 +756,11 @@ export interface DrawResult {
   lead: Lead;
   prize: Prize | null;
   campaign: PublicCampaign;
+}
+
+/** Server-only draw metadata used for transactional email delivery. */
+export interface DrawResultWithEmailContext extends DrawResult {
+  rewardEmailAppointmentUrl?: string;
 }
 
 export interface CampaignKpi {

@@ -242,6 +242,11 @@ export function textFontLabel(font: TextFont) {
       return "Serif";
     case "cormorant":
       return "Cormorant Garamond";
+    case "playfair": return "Playfair Display";
+    case "dm-sans": return "DM Sans";
+    case "poppins": return "Poppins";
+    case "bodoni": return "Bodoni Moda";
+    case "space-grotesk": return "Space Grotesk";
     case "fredoka":
       return "Fredoka";
     case "inter":
@@ -282,6 +287,11 @@ export function textFontClass(font: TextFont) {
       return "font-serif";
     case "cormorant":
       return "font-cormorant";
+    case "playfair": return "font-playfair";
+    case "dm-sans": return "font-dm-sans";
+    case "poppins": return "font-poppins";
+    case "bodoni": return "font-bodoni";
+    case "space-grotesk": return "font-space-grotesk";
     case "fredoka":
       return "font-fredoka";
     case "inter":
@@ -310,6 +320,11 @@ export function textFontFamily(font: TextFont) {
     case "anton": return '"Anton", "Inter", ui-sans-serif, system-ui, sans-serif';
     case "serif": return 'ui-serif, Georgia, serif';
     case "cormorant": return 'var(--font-cormorant-garamond), Georgia, serif';
+    case "playfair": return 'var(--font-playfair), Georgia, serif';
+    case "dm-sans": return 'var(--font-dm-sans), sans-serif';
+    case "poppins": return 'var(--font-poppins), sans-serif';
+    case "bodoni": return 'var(--font-bodoni), Georgia, serif';
+    case "space-grotesk": return 'var(--font-space-grotesk), sans-serif';
     case "fredoka": return 'var(--font-fredoka), "Inter", ui-sans-serif, system-ui, sans-serif';
     case "bebas": return 'var(--font-bebas-neue), "Anton", ui-sans-serif, system-ui, sans-serif';
     case "inter":

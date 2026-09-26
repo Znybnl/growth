@@ -20,6 +20,17 @@ test.describe("Parcours marchand authentifié", () => {
     await expect(page).not.toHaveURL(/\/onboarding/);
     await expect(page.getByRole("heading", { name: "Créer une campagne", exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Le jeu", exact: true })).toBeVisible();
+    const wheelChoice = page.getByRole("button", { name: /Roue de la fortune/ });
+    const scratchChoice = page.getByRole("button", { name: /Ticket à gratter/ });
+    await expect(wheelChoice).toHaveAttribute("aria-pressed", "true");
+    await expect(scratchChoice).toHaveAttribute("aria-pressed", "false");
+    await scratchChoice.focus();
+    await scratchChoice.press("Space");
+    await expect(scratchChoice).toHaveAttribute("aria-pressed", "true");
+    await expect(wheelChoice).toHaveAttribute("aria-pressed", "false");
+    await wheelChoice.focus();
+    await wheelChoice.press("Space");
+    await expect(wheelChoice).toHaveAttribute("aria-pressed", "true");
     await expect(page.getByText("Progression", { exact: true })).toBeVisible();
     await expect(page.getByText("En création", { exact: true })).toBeVisible();
     await expect(page.getByText("Jeu en brouillon", { exact: true })).toHaveCount(0);
@@ -27,7 +38,7 @@ test.describe("Parcours marchand authentifié", () => {
     await expect(page.getByTestId("wizard-phone-preview")).toHaveCSS("height", "550px");
   });
 
-  test("le Wizard propose le catalogue de polices et Roboto par défaut", async ({ page }) => {
+  test("le Wizard propose les polices adaptées aux templates", async ({ page }) => {
     const email = process.env.OKADO_E2E_EMAIL;
     const password = process.env.OKADO_E2E_PASSWORD;
     if (!email || !password) {
@@ -51,20 +62,14 @@ test.describe("Parcours marchand authentifié", () => {
     await expect(page.getByText("Logo", { exact: true })).toBeVisible();
     await page.getByText("Paramètres avancés", { exact: false }).click();
     await expect(page.getByText("Fond", { exact: true })).toBeVisible();
-    await expect(page.getByText("Réglages du texte", { exact: true })).toBeVisible();
-
     const fontSelect = page.locator('select:has(option[value="roboto"])').first();
-    await expect(fontSelect).toHaveValue("roboto");
-    await expect(fontSelect.locator("option")).toHaveText([
-      "Roboto",
-      "Geogrotesque",
-      "Comfortaa",
-      "Days One",
-      "Delius Unicase",
-      "Lato",
-      "Lobster",
-      "Pacifico",
-      "Syncopate",
-    ]);
+    await expect(fontSelect).toHaveValue("fredoka");
+    await expect(fontSelect.locator("option")).toHaveText(["Roboto", "Days One", "Fredoka"]);
+    await page.getByRole("button", { name: /^Classique\b/ }).click();
+    const availableFonts = await fontSelect.locator("option").allTextContents();
+    expect(availableFonts).toEqual(expect.arrayContaining([
+      "Roboto", "Geogrotesque", "Cormorant Garamond", "Playfair Display",
+      "DM Sans", "Poppins", "Bodoni Moda", "Space Grotesk",
+    ]));
   });
 });

@@ -4,10 +4,13 @@ import { signIn as cachedSignIn } from "./auth-session";
 test.describe("Statut de campagne après l’affiche", () => {
   test("conserve une campagne publiée après la sauvegarde de l’affiche", async ({ page }) => {
     await cachedSignIn(page);
+    await page.setViewportSize({ width: 1440, height: 900 });
 
     const title = `E2E — statut affiche ${Date.now()}`;
     await page.goto("/campaigns/new/guided");
     await expect(page.getByRole("heading", { name: "Le jeu", exact: true })).toBeVisible();
+    const topPublishButton = page.getByRole("button", { name: "Publier", exact: true });
+    await expect(topPublishButton).toHaveCount(0);
 
     for (let step = 0; step < 4; step += 1) {
       await page.getByRole("button", { name: "Continuer", exact: true }).click();
@@ -16,6 +19,7 @@ test.describe("Statut de campagne après l’affiche", () => {
       }
     }
 
+    await expect(topPublishButton).toBeVisible();
     await page.getByRole("button", { name: "Publier la campagne", exact: true }).click();
     await expect(page.getByRole("heading", { name: "Votre jeu est enregistré.", exact: true })).toBeVisible({
       timeout: 15_000,

@@ -141,7 +141,7 @@ export function GoogleReviewPlacePicker({
             <div className="mb-2 flex flex-wrap items-center gap-2">
               <div>
                 <p className="text-sm font-semibold text-carbon">Avis Google</p>
-                <p className="mt-0.5 text-xs text-ash">Fiche utilisée pour les avis Google</p>
+                <p className="mt-0.5 text-xs text-ash">Sélectionnez la fiche à proposer après la participation.</p>
               </div>
             </div>
             {showSearchInput ? (
