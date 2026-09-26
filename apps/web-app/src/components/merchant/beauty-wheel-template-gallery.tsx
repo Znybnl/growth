@@ -32,15 +32,15 @@ export function BeautyWheelTemplateGallery({
                 className="relative h-40 overflow-hidden px-4 pt-3"
                 style={{ backgroundColor: theme.background, backgroundImage: beautyWheelBackground(theme.id, theme.background, theme.primary), color: theme.text }}
               >
-                <div className="relative z-10 max-w-[70%] truncate text-[10px] font-semibold tracking-[0.08em]">Votre établissement</div>
-                <div className="relative z-10 mt-3 max-w-[80%] text-sm font-bold leading-tight" style={{ fontFamily: textFontFamily(theme.font) }}>Votre animation<br />vous réserve une surprise</div>
+                <div className="relative z-10 max-w-[58%] truncate text-[10px] font-semibold tracking-[0.08em]">Votre établissement</div>
+                <div className="relative z-10 mt-3 max-w-[58%] text-sm font-bold leading-tight" style={{ fontFamily: textFontFamily(theme.font) }}>Votre animation<br />vous réserve une surprise</div>
                 <div className="relative z-10 mt-1 text-[9px]">Des surprises vous attendent</div>
                 <div
                   aria-hidden="true"
-                  className="absolute -bottom-[6.4rem] right-[-1.5rem] h-44 w-44 rounded-full border-[7px] border-white shadow-[0_8px_24px_rgba(0,0,0,.12)]"
+                  className="absolute -bottom-9 right-[-1.1rem] h-32 w-32 rounded-full border-[5px] border-white shadow-[0_8px_24px_rgba(0,0,0,.12)]"
                   style={{ background: `repeating-conic-gradient(from -22deg, ${theme.primary} 0deg 45deg, ${theme.secondary} 45deg 90deg)` }}
                 >
-                  <span className="absolute left-1/2 top-1/2 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full border-[3px] border-white text-[7px] font-bold text-white" style={{ background: theme.primary }}><Pointer aria-hidden="true" className="h-4 w-4" />JOUER</span>
+                  <span className="absolute left-1/2 top-1/2 flex h-9 w-9 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full border-2 border-white text-[6px] font-bold text-white" style={{ background: theme.primary }}><Pointer aria-hidden="true" className="h-3 w-3" />JOUER</span>
                 </div>
               </div>
               <div className="flex items-start justify-between gap-2 px-4 py-3">
