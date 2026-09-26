@@ -22,7 +22,7 @@ import {
   Trash2,
   UtensilsCrossed,
 } from "lucide-react";
-import { type ChangeEvent, type ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import { type ChangeEvent, type ReactNode, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
 import { CampaignPreviewQrDialog } from "@/components/merchant/campaign-preview-qr";
@@ -844,12 +844,15 @@ export function CampaignWizard({
     initialCampaign ? draftFromCampaign(merchant, initialCampaign) : createWizardDraft(merchant),
   );
   const [stepIndex, setStepIndex] = useState(0);
+  const stepHeadingRef = useRef<HTMLHeadingElement>(null);
   const previousStepIndexRef = useRef(stepIndex);
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (previousStepIndexRef.current === stepIndex) return;
     previousStepIndexRef.current = stepIndex;
-    const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
-    window.scrollTo({ top: 0, behavior });
+    const scrollContainer = stepHeadingRef.current?.closest<HTMLElement>("main[aria-busy]");
+    stepHeadingRef.current?.focus({ preventScroll: true });
+    if (scrollContainer) scrollContainer.scrollTop = 0;
+    else window.scrollTo(0, 0);
   }, [stepIndex]);
   const [furthestStepIndex, setFurthestStepIndex] = useState(() =>
     initialCampaign ? WIZARD_STEPS.length - 1 : 0,
@@ -1555,7 +1558,7 @@ export function CampaignWizard({
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-aubergine">
                 Étape {step.number}
               </p>
-              <h2 className="okado-section-title mt-2">{step.title}</h2>
+              <h2 ref={stepHeadingRef} tabIndex={-1} className="okado-section-title mt-2">{step.title}</h2>
               {step.description ? (
                 <p className="mt-2 hidden text-sm text-[#7a8498]">{step.description}</p>
               ) : null}

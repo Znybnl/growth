@@ -24,10 +24,17 @@ test.describe("Navigation du Wizard en modification", () => {
     const title = `E2E — modification ${Date.now()}`;
     await page.goto("/campaigns/new/guided");
     await expect(page.getByRole("heading", { name: "Le jeu", exact: true })).toBeVisible();
-    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    const scrollContainer = page.locator("main[aria-busy]");
+    await scrollContainer.evaluate((element) => { element.scrollTop = element.scrollHeight; });
+    await expect.poll(() => scrollContainer.evaluate((element) => element.scrollTop)).toBeGreaterThan(50);
     await page.getByRole("button", { name: "Continuer", exact: true }).click();
     await expect(page.getByRole("heading", { name: "La promesse", exact: true })).toBeVisible();
-    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThan(2);
+    await expect.poll(() => scrollContainer.evaluate((element) => element.scrollTop)).toBeLessThan(2);
+    await scrollContainer.evaluate((element) => { element.scrollTop = element.scrollHeight; });
+    await expect.poll(() => scrollContainer.evaluate((element) => element.scrollTop)).toBeGreaterThan(50);
+    await page.getByRole("button", { name: "Continuer", exact: true }).click();
+    await expect(page.getByRole("heading", { name: "La promesse", exact: true })).toBeVisible();
+    await expect.poll(() => scrollContainer.evaluate((element) => element.scrollTop)).toBeGreaterThan(50);
     await page.getByPlaceholder("Ex. La roue gourmande de juin").fill(title);
     await page
       .getByRole("button", { name: "Enregistrer le brouillon", exact: true })
@@ -58,16 +65,29 @@ test.describe("Navigation du Wizard en modification", () => {
     for (const step of steps) {
       const stepButton = page.getByRole("button", { name: step.button });
       await expect(stepButton).toBeEnabled();
-      await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
-      await stepButton.click();
+      await scrollContainer.evaluate((element) => { element.scrollTop = element.scrollHeight; });
+      await expect.poll(() => scrollContainer.evaluate((element) => element.scrollTop)).toBeGreaterThan(50);
+      // A normal Playwright click scrolls the sidebar button into view first,
+      // which would hide a regression in the wizard's own scroll handling.
+      await stepButton.evaluate((element) => (element as HTMLButtonElement).click());
       await expect(page.getByRole("heading", { name: step.heading, exact: true })).toBeVisible();
-      await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThan(2);
+      await expect.poll(() => scrollContainer.evaluate((element) => element.scrollTop)).toBeLessThan(2);
     }
+
+    await scrollContainer.evaluate((element) => { element.scrollTop = element.scrollHeight; });
+    await expect.poll(() => scrollContainer.evaluate((element) => element.scrollTop)).toBeGreaterThan(50);
+    await page.getByRole("button", { name: "Retour", exact: true }).click();
+    await expect(page.getByRole("heading", { name: "Les lots", exact: true })).toBeVisible();
+    await expect.poll(() => scrollContainer.evaluate((element) => element.scrollTop)).toBeLessThan(2);
 
     await page.setViewportSize({ width: 390, height: 844 });
     for (const step of steps) {
       await expect(page.getByRole("button", { name: step.button })).toBeEnabled();
     }
+    await scrollContainer.evaluate((element) => { element.scrollTop = element.scrollHeight; });
+    await expect.poll(() => scrollContainer.evaluate((element) => element.scrollTop)).toBeGreaterThan(50);
+    await page.getByRole("button", { name: /La promesse/ }).click();
+    await expect.poll(() => scrollContainer.evaluate((element) => element.scrollTop)).toBeLessThan(2);
 
     await removeE2ECampaigns(page, title);
   });
