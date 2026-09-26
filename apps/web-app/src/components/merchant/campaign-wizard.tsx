@@ -828,6 +828,13 @@ export function CampaignWizard({
     initialCampaign ? draftFromCampaign(merchant, initialCampaign) : createWizardDraft(merchant),
   );
   const [stepIndex, setStepIndex] = useState(0);
+  const previousStepIndexRef = useRef(stepIndex);
+  useEffect(() => {
+    if (previousStepIndexRef.current === stepIndex) return;
+    previousStepIndexRef.current = stepIndex;
+    const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+    window.scrollTo({ top: 0, behavior });
+  }, [stepIndex]);
   const [furthestStepIndex, setFurthestStepIndex] = useState(() =>
     initialCampaign ? WIZARD_STEPS.length - 1 : 0,
   );
