@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Pointer } from "lucide-react";
 import { textFontFamily } from "@/lib/format";
-import { beautyWheelLegibleText, beautyWheelTheme, isBeautyWheelTemplate, type BeautyWheelTemplateId } from "@/lib/beauty-wheel-themes";
+import { beautyWheelButtonTextColor, beautyWheelLegibleText, beautyWheelTheme, isBeautyWheelTemplate, type BeautyWheelTemplateId } from "@/lib/beauty-wheel-themes";
 import { buildBeautyWheelSegmentColors, limitBeautyWheelSegments } from "@/lib/beauty-wheel-segments";
 
 type WheelSegment = {
@@ -213,7 +213,7 @@ export function WheelOfFortune({
   const beautyTemplateId = isBeautyWheelTemplate(pageTemplate) ? pageTemplate : undefined;
   const beautyTheme = beautyWheelTheme(pageTemplate);
   const baseVisualSegments = isBeautyTemplate
-    ? limitBeautyWheelSegments(segments, winningSegmentId, pageTemplate === "beauty-rose" ? 8 : 9)
+    ? limitBeautyWheelSegments(segments, winningSegmentId)
     : isRoseInstitutTemplate
       ? segments.slice(0, 8)
       : isRestaurantPopTemplate
@@ -263,20 +263,21 @@ export function WheelOfFortune({
       : pageTemplate === "beauty-nude" || pageTemplate === "beauty-editorial"
         ? "drop-shadow(0 12px 22px rgba(88,68,43,.13))"
         : "drop-shadow(0 12px 22px rgba(102,44,65,.13))";
+  const centerButtonBackground = buttonStyle?.backgroundColor ?? accent.signal;
   const classicLightColor = deriveLighterHex(colors.loseColor);
   const wheelTop =
     framing === "public" ? undefined : isBeautyTemplate ? (framing === "mobile-preview" ? "35%" : "40%") : framing === "editor" ? "83%" : framing === "mobile-preview" ? "70%" : "62%";
   const wheelFrameSizeClass =
     framing === "public"
       ? isBeautyTemplate
-        ? "top-1 w-[min(calc(100vw-28px),calc(100dvh-315px),480px)] sm:w-[min(calc(100vw-36px),calc(100dvh-315px),560px)] md:w-[min(52vw,calc(100dvh-260px),640px)]"
+        ? "top-1 w-[min(calc(100vw-20px),calc(100dvh-315px),492px)] sm:w-[min(calc(100vw-28px),calc(100dvh-315px),572px)] md:w-[min(54vw,calc(100dvh-260px),652px)]"
       : isRoseInstitutTemplate
         ? "top-1 w-[min(calc(100vw-32px),calc(100dvh-320px),430px)] sm:w-[min(calc(100vw-36px),calc(100dvh-320px),520px)] md:w-[min(52vw,640px)] lg:w-[min(48vw,680px)]"
         : "top-2 w-[max(130vw,calc(100svh-240px))] max-w-none sm:w-[min(118vw,calc(100svh-220px))] md:w-[min(98vw,calc(100svh-220px))] lg:w-[min(52vw,calc(100svh-220px))] xl:w-[min(42vw,calc(100svh-220px))] 2xl:w-[min(38vw,calc(100svh-220px))]"
       : framing === "editor"
-        ? isBeautyTemplate ? "w-[86%] max-w-none" : isRoseInstitutTemplate ? "w-[122%] max-w-none" : "w-[150%] max-w-none"
+          ? isBeautyTemplate ? "w-[90%] max-w-none" : isRoseInstitutTemplate ? "w-[122%] max-w-none" : "w-[150%] max-w-none"
         : framing === "mobile-preview"
-          ? isBeautyTemplate ? "w-[86%] max-w-none" : isRoseInstitutTemplate ? "w-[122%] max-w-none" : "w-[150%] max-w-none"
+          ? isBeautyTemplate ? "w-[90%] max-w-none" : isRoseInstitutTemplate ? "w-[122%] max-w-none" : "w-[150%] max-w-none"
           : "w-full";
   const wheelTransformClass =
     framing === "public" ? "-translate-x-1/2" : "-translate-x-1/2 -translate-y-1/2";
@@ -468,7 +469,9 @@ export function WheelOfFortune({
               const textStyles = segmentTextStyles(labelLines, isRoseInstitutTemplate);
               if (isBeautyTemplate) {
                 const manySegments = visualSegments.length >= 8;
-                textStyles.fontSize = manySegments ? 22 : visualSegments.length >= 6 ? 26 : 30;
+                textStyles.fontSize = pageTemplate === "beauty-rose"
+                  ? manySegments ? 19 : visualSegments.length >= 6 ? 23 : 27
+                  : manySegments ? 22 : visualSegments.length >= 6 ? 26 : 30;
                 if (labelLines.length >= 3) textStyles.fontSize -= 2;
               }
               // Colors are an aesthetic rhythm, independent from the winning outcome.
@@ -552,37 +555,50 @@ export function WheelOfFortune({
         </div>
 
         <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center">
-          <div
-            className="absolute"
-            style={{
-              top: isRoseInstitutTemplate || isBeautyTemplate ? "-1.2%" : "31.2%",
-              left: "50%",
-              width: isRestaurantPopTemplate ? "12.4%" : isRoseInstitutTemplate ? "13.2%" : isBeautyTemplate ? "11.4%" : "10.3%",
-              height: isRestaurantPopTemplate ? "20.4%" : isRoseInstitutTemplate ? "18.5%" : isBeautyTemplate ? "16%" : "18.9%",
-              transform: "translateX(-50%)",
-              clipPath: "polygon(50% 0, 84% 14%, 72% 76%, 50% 100%, 28% 76%, 16% 14%)",
-              background: isBeautyTemplate ? colors.rimColor : isRestaurantPopTemplate
-                ? "#fffdf7"
-                : isRoseInstitutTemplate
-                  ? "#ffffff"
-                : "linear-gradient(180deg, #ffffff 0%, #f8fafc 62%, #ffffff 100%)",
-              filter: isBeautyTemplate ? "drop-shadow(0 5px 6px rgba(0,0,0,.16))" : isRoseInstitutTemplate
-                ? "drop-shadow(0 6px 10px rgba(11,78,162,0.18))"
-                : "drop-shadow(0 12px 18px rgba(15,23,42,0.2))",
-            }}
-          >
-            {isRestaurantPopTemplate || isRoseInstitutTemplate || isBeautyTemplate ? (
-              <div
-                className="absolute inset-[9%]"
-                style={{
-                  clipPath: "polygon(50% 0, 82% 18%, 67% 73%, 50% 94%, 33% 73%, 18% 18%)",
-                  background: isBeautyTemplate ? colors.rimColor : isRoseInstitutTemplate
-                    ? colors.loseColor
-                    : `linear-gradient(180deg, ${colors.rimColor}, ${colors.winColor})`,
-                }}
-              />
-            ) : null}
-          </div>
+          {!(isBeautyTemplate && pageTemplate === "beauty-nude") ? (
+            <div
+              className="absolute"
+              style={{
+                top: isRoseInstitutTemplate || isBeautyTemplate ? "-1.2%" : "31.2%",
+                left: "50%",
+                width: isRestaurantPopTemplate ? "12.4%" : isRoseInstitutTemplate ? "13.2%" : isBeautyTemplate ? "11.4%" : "10.3%",
+                height: isRestaurantPopTemplate ? "20.4%" : isRoseInstitutTemplate ? "18.5%" : isBeautyTemplate ? "16%" : "18.9%",
+                transform: "translateX(-50%)",
+                clipPath: "polygon(50% 0, 84% 14%, 72% 76%, 50% 100%, 28% 76%, 16% 14%)",
+                background: isBeautyTemplate ? colors.rimColor : isRestaurantPopTemplate
+                  ? "#fffdf7"
+                  : isRoseInstitutTemplate
+                    ? "#ffffff"
+                    : "linear-gradient(180deg, #ffffff 0%, #f8fafc 62%, #ffffff 100%)",
+                filter: isBeautyTemplate ? "drop-shadow(0 5px 6px rgba(0,0,0,.16))" : isRoseInstitutTemplate
+                  ? "drop-shadow(0 6px 10px rgba(11,78,162,0.18))"
+                  : "drop-shadow(0 12px 18px rgba(15,23,42,0.2))",
+              }}
+            >
+              {isRestaurantPopTemplate || isRoseInstitutTemplate || isBeautyTemplate ? (
+                <div
+                  className="absolute inset-[9%]"
+                  style={{
+                    clipPath: "polygon(50% 0, 82% 18%, 67% 73%, 50% 94%, 33% 73%, 18% 18%)",
+                    background: isBeautyTemplate ? colors.rimColor : isRoseInstitutTemplate
+                      ? colors.loseColor
+                      : `linear-gradient(180deg, ${colors.rimColor}, ${colors.winColor})`,
+                  }}
+                />
+              ) : null}
+            </div>
+          ) : null}
+          {isBeautyTemplate && pageTemplate === "beauty-nude" ? (
+            <svg
+              aria-hidden="true"
+              className="absolute pointer-events-none"
+              style={{ top: "-1.2%", left: "50%", width: "11.4%", height: "16%", transform: "translateX(-50%)", overflow: "visible", filter: "drop-shadow(0 4px 5px rgba(91,66,37,.16))" }}
+              viewBox="0 0 48 64"
+            >
+              <path d="M24 2 C36 2 44 10 44 22 C44 36 31 52 24 61 C17 52 4 36 4 22 C4 10 12 2 24 2 Z" fill={colors.rimColor} stroke="#fffaf0" strokeWidth="3" strokeLinejoin="round" />
+              <path d="M24 8 C33 8 38 14 38 23 C38 33 29 45 24 51 C19 45 10 33 10 23 C10 14 15 8 24 8 Z" fill="rgba(255,255,255,.16)" />
+            </svg>
+          ) : null}
           {!isRestaurantPopTemplate && !isRoseInstitutTemplate && !isBeautyTemplate ? (
             <div
               className="absolute rounded-b-[22px] bg-white"
@@ -607,10 +623,12 @@ export function WheelOfFortune({
             background:
               buttonEnabled && !hasSpun
                 ? isRoseInstitutTemplate || isBeautyTemplate
-                  ? buttonStyle?.backgroundColor ?? accent.signal
-                  : `linear-gradient(180deg, ${buttonStyle?.backgroundColor ?? accent.signal}, ${buttonStyle?.backgroundColor ?? colors.rimColor})`
+                  ? centerButtonBackground
+                  : `linear-gradient(180deg, ${centerButtonBackground}, ${buttonStyle?.backgroundColor ?? colors.rimColor})`
                 : "linear-gradient(180deg, #aeb8c7, #7f8a9d)",
-            color: isBeautyTemplate ? beautyWheelLegibleText(buttonStyle?.backgroundColor ?? colors.loseColor, buttonStyle?.textColor) : buttonStyle?.textColor ?? "#ffffff",
+            color: isBeautyTemplate
+              ? beautyWheelButtonTextColor(beautyTemplateId!, centerButtonBackground, buttonStyle?.textColor)
+              : buttonStyle?.textColor ?? "#ffffff",
             borderColor: isRestaurantPopTemplate ? "transparent" : isRoseInstitutTemplate || isBeautyTemplate ? "#ffffff" : buttonStyle?.borderColor ?? "#ffffff",
             fontSize: isRestaurantPopTemplate
               ? "clamp(0.88rem, 5.1cqw, 1.75rem)"

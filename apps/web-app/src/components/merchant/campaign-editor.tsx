@@ -1548,8 +1548,8 @@ export function buildCampaignLivePreviewModel(
       ? resolveScratchAccent(form.accent, templateId)
       : form.accent;
   const previewSegments = buildPreviewSegments(form.prizes);
-  const winningSegmentId =
-    previewSegments.find((segment) => segment.tone === "win")?.id ?? previewSegments[0]?.id ?? "win";
+  const previewWinningSegment = previewSegments.find((segment) => segment.tone === "win") ?? previewSegments[0];
+  const winningSegmentId = previewWinningSegment?.id ?? "win";
   const logoAlignmentClass =
     form.presentation.logo.align === "left"
       ? "justify-start"
@@ -1650,7 +1650,7 @@ export function buildCampaignLivePreviewModel(
     },
     previewSegments,
     winningSegmentId,
-    previewPrize: form.prizes[0]?.label || "Cadeau surprise",
+    previewPrize: form.prizes.find((prize) => prize.id === previewWinningSegment?.id)?.label || previewWinningSegment?.label || "Cadeau surprise",
     ctaLabel: form.ctaLabel,
     previewCtaClass: buttonSizeMap[form.presentation.button.size],
   };
@@ -1848,7 +1848,8 @@ export function CampaignEditor({
     [form.prizes, form.rewardRules.isWinningEveryTime],
   );
   const remainingPrizeProbability = Math.max(0, 100 - totalPrizeProbability);
-  const previewPrize = form.prizes[0]?.label || "Cadeau surprise";
+  const previewWinningSegment = previewSegments.find((segment) => segment.tone === "win") ?? previewSegments[0];
+  const previewPrize = form.prizes.find((prize) => prize.id === previewWinningSegment?.id)?.label || previewWinningSegment?.label || "Cadeau surprise";
   const previewCtaClass = buttonSizeMap[form.presentation.button.size];
   const logoSizePercent = clampCampaignLogoSizePercent(form.presentation.logo.sizePercent);
   const logoWidthPx = Math.round(
@@ -1882,8 +1883,7 @@ export function CampaignEditor({
       form.gameType === "scratch"
         ? resolveScratchAccent(form.accent, currentTemplateId)
         : form.accent;
-    const winningSegmentId =
-      previewSegments.find((segment) => segment.tone === "win")?.id ?? previewSegments[0]?.id ?? "win";
+    const winningSegmentId = previewWinningSegment?.id ?? "win";
 
     return {
       formId: form.id ?? "new-campaign",
@@ -2004,6 +2004,7 @@ export function CampaignEditor({
     merchant.companyName,
     previewCtaClass,
     previewPrize,
+    previewWinningSegment,
     previewSegments,
   ]);
   const deferredPreview = useDeferredValue(previewModel);

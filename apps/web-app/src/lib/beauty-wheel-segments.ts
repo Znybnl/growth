@@ -1,7 +1,7 @@
 import { beautyWheelTheme, type BeautyWheelTemplateId } from "@/lib/beauty-wheel-themes";
 import type { WheelVisualSegment } from "@/lib/wheel-segments";
 
-const MAX_BEAUTY_WHEEL_SEGMENTS = 9;
+const MAX_BEAUTY_WHEEL_SEGMENTS = 8;
 
 function normalizeHex(color: string | undefined, fallback: string) {
   return color && /^#[\da-f]{6}$/i.test(color) ? color.toLowerCase() : fallback.toLowerCase();

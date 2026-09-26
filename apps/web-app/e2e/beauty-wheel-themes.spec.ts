@@ -3,6 +3,7 @@ import { expect, test } from "@playwright/test";
 import {
   BEAUTY_WHEEL_THEMES,
   beautyWheelBackground,
+  beautyWheelButtonTextColor,
   beautyWheelFontOptions,
   beautyWheelLegibleText,
   beautyWheelTheme,
@@ -66,27 +67,37 @@ test("la validation conserve les couleurs et la police propres à un thème visi
 
 test("les roues Beauté sont plafonnées sans perdre le segment du gain effectivement tiré", () => {
   const prizes = Array.from({ length: 10 }, (_, index) => ({
-    id: `prize-${index}`,
-    label: `Lot ${index + 1}`,
+    id: index === 9 ? "minus-ten" : `prize-${index}`,
+    label: index === 9 ? "-10% PROCHAINE VISITE" : `Lot ${index + 1}`,
     probability: 5,
   }));
   const segments = buildWheelVisualSegments(prizes);
-  const capped = limitBeautyWheelSegments(segments, "prize-9", 9);
-  const roseCapped = limitBeautyWheelSegments(segments, "prize-9", 8);
+  const capped = limitBeautyWheelSegments(segments, "minus-ten");
+  const cappedWhenNineIsRequested = limitBeautyWheelSegments(segments, "minus-ten", 9);
 
   expect(segments).toHaveLength(11);
-  expect(capped).toHaveLength(9);
-  expect(capped.at(-1)?.id).toBe("prize-9");
-  expect(roseCapped).toHaveLength(8);
-  expect(roseCapped.at(-1)?.id).toBe("prize-9");
+  expect(capped).toHaveLength(8);
+  expect(capped.at(-1)?.id).toBe("minus-ten");
+  expect(capped.at(-1)?.label).toBe("-10% PROCHAINE VISITE");
+  expect(cappedWhenNineIsRequested).toHaveLength(8);
+  expect(cappedWhenNineIsRequested.at(-1)?.label).toBe("-10% PROCHAINE VISITE");
+});
+
+test("les boutons Nude & Or, Beauty Pop et Botanical adaptent leur texte au fond", () => {
+  for (const templateId of ["beauty-nude", "beauty-pop", "beauty-botanical"] as const) {
+    const theme = beautyWheelTheme(templateId)!;
+    expect(beautyWheelButtonTextColor(templateId, theme.primary, theme.text)).toBe("#ffffff");
+  }
+  expect(beautyWheelButtonTextColor("beauty-botanical", "#ffffff", "#ffffff")).toBe("#171614");
+  expect(beautyWheelButtonTextColor("beauty-botanical", "#243b2a", "#171614")).toBe("#ffffff");
 });
 
 test("aucune couleur de segment Beauté ne se répète entre deux voisins, fermeture comprise", () => {
   for (const theme of BEAUTY_WHEEL_THEMES) {
-    for (const segmentCount of [8, 9]) {
+    for (const segmentCount of [7, 8]) {
       const colors = buildBeautyWheelSegmentColors(theme.id, segmentCount, "#ffffff", "#ffffff");
       expect(colors).toHaveLength(segmentCount);
-      expect(new Set(colors).size).toBeGreaterThanOrEqual(segmentCount === 9 ? 3 : 2);
+      expect(new Set(colors).size).toBeGreaterThanOrEqual(2);
       for (let index = 0; index < colors.length; index += 1) {
         expect(colors[index]).not.toBe(colors[(index + 1) % colors.length]);
       }
