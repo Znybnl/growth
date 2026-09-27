@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { enforceMinimumWheelPrizeLabelFontSize } from "../src/lib/wheel-labels";
 
 import {
   DEFAULT_COCORICO_DUO_YELLOW,
@@ -19,6 +20,14 @@ test("un espacement réglé à zéro garde un dégagement structurel avant la ro
   expect(campaignWheelBlockSpacingPx(24)).toBe(24);
   expect(campaignWheelBlockSpacingPx(25)).toBe(25);
   expect(campaignWheelBlockSpacingPx(80)).toBe(80);
+});
+
+test("les libellés de lots des roues ne descendent jamais sous 25 px", () => {
+  for (const currentSize of [17, 20, 22, 23, 24, 25]) {
+    expect(enforceMinimumWheelPrizeLabelFontSize(currentSize)).toBe(25);
+  }
+  expect(enforceMinimumWheelPrizeLabelFontSize(26)).toBe(26);
+  expect(enforceMinimumWheelPrizeLabelFontSize(30)).toBe(30);
 });
 
 test("Dynamique ne reprend pas le fond jaune de Bicolore à sa première sélection", () => {
