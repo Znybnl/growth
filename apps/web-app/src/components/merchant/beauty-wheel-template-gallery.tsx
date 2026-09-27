@@ -63,11 +63,11 @@ function EclatWheelThumbnail() {
   return (
     <div
       aria-hidden="true"
-      className="absolute -bottom-5 right-[-0.8rem] z-10 grid size-32 place-items-center rounded-full border-[5px] border-white p-1 shadow-[0_9px_24px_rgba(0,60,180,0.2)]"
-      style={{ backgroundImage: "conic-gradient(from -22.5deg, #fff 0deg 45deg, #dce8ff 45deg 90deg, #fff 90deg 135deg, #dce8ff 135deg 180deg, #fff 180deg 225deg, #dce8ff 225deg 270deg, #fff 270deg 315deg, #dce8ff 315deg 360deg)" }}
+      className="absolute -bottom-5 right-[-0.8rem] z-10 grid size-32 place-items-center rounded-full border-[5px] border-white p-1 shadow-[0_9px_24px_rgba(222,103,151,0.18)]"
+      style={{ backgroundImage: "conic-gradient(from -22.5deg, #f3a4c4 0deg 45deg, #fff9fb 45deg 90deg, #f3a4c4 90deg 135deg, #fff9fb 135deg 180deg, #f3a4c4 180deg 225deg, #fff9fb 225deg 270deg, #f3a4c4 270deg 315deg, #fff9fb 315deg 360deg)" }}
     >
-      <div className="relative size-full rounded-full border-2 border-[#003cb4]/35">
-        <div className="absolute left-1/2 top-1 -translate-x-1/2 border-x-[7px] border-t-[13px] border-x-transparent border-t-[#003cb4]" />
+      <div className="relative size-full rounded-full border-2 border-[#e78ab0]/50">
+        <div className="absolute left-1/2 top-1 -translate-x-1/2 border-x-[7px] border-t-[13px] border-x-transparent border-t-[#e78ab0]" />
         <div className="absolute left-1/2 top-1/2 grid size-10 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border-[3px] border-white bg-[#003cb4] text-[6px] font-bold tracking-wide text-white shadow-md">
           JOUER
         </div>
@@ -106,7 +106,7 @@ export function BeautyWheelTemplateGallery({
                 style={{ backgroundColor: theme.background, backgroundImage: beautyWheelBackground(theme.id, theme.background, theme.primary), color: theme.text }}
               >
                 <BeautyThumbnailDecor theme={theme} />
-                <div className="relative z-10 max-w-[56%] truncate text-[9px] font-semibold uppercase tracking-[0.12em]">Votre établissement</div>
+                <div data-testid="beauty-thumbnail-logo" className="relative z-10 min-h-[20px] max-w-[56%] text-[8px] font-semibold uppercase leading-[1.15] tracking-[0.06em]">Votre établissement</div>
                 <div className="relative z-10 mt-3 max-w-[56%] text-[13px] font-bold leading-[1.12]" style={{ fontFamily: textFontFamily(theme.font) }}>Votre animation<br />vous réserve une surprise</div>
                 <div className="relative z-10 mt-1 max-w-[55%] text-[8px] leading-tight opacity-75">Des surprises vous attendent</div>
                 <BeautyWheelThumbnail theme={theme} />
@@ -124,8 +124,8 @@ export function BeautyWheelTemplateGallery({
           onClick={() => onSelect("rose-institut")}
           className={`group min-w-0 overflow-hidden rounded-2xl border bg-white text-left transition hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6b3774] ${selectedTemplateId === "rose-institut" ? "border-[#6b3774] ring-2 ring-[#6b3774]/15" : "border-[#ded8e1]"}`}
         >
-          <div className="relative h-40 overflow-hidden bg-[radial-gradient(ellipse_at_18%_8%,rgba(47,109,246,0.16),transparent_48%),linear-gradient(145deg,#f7f9ff,#eaf0ff)] px-4 pt-3 text-[#003cb4]">
-            <div className="relative z-10 max-w-[56%] truncate text-[9px] font-semibold uppercase tracking-[0.12em]">Votre établissement</div>
+          <div data-testid="eclat-thumbnail" className="relative h-40 overflow-hidden bg-[radial-gradient(ellipse_at_18%_8%,rgba(243,164,196,0.22),transparent_48%),linear-gradient(145deg,#fff8fb,#ffeaf2)] px-4 pt-3 text-[#003cb4]">
+            <div data-testid="beauty-thumbnail-logo" className="relative z-10 min-h-[20px] max-w-[56%] text-[8px] font-semibold uppercase leading-[1.15] tracking-[0.06em]">Votre établissement</div>
             <div className="relative z-10 mt-3 max-w-[56%] font-playfair text-[13px] font-bold leading-[1.12]">Tournez la roue<br />et tentez de gagner</div>
             <div className="relative z-10 mt-1 max-w-[55%] text-[8px] leading-tight opacity-75">Une roue lumineuse à vos couleurs</div>
             <EclatWheelThumbnail />

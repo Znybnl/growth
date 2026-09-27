@@ -949,7 +949,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
         className={`mx-auto w-full overflow-hidden border border-[#ced7e6] shadow-[0_30px_70px_rgba(18,24,39,0.18)] ${previewFrameClass} ${isRosePowderTemplate ? "okado-rose-powder-surface relative" : ""}`}
         style={preview.backgroundStyle}
       >
-        {isBeautyTemplate && preview.gameType === "wheel" && !preview.hasCustomBackgroundImage ? (
+        {(isBeautyTemplate || isRoseInstitutTemplate) && preview.gameType === "wheel" && !preview.hasCustomBackgroundImage ? (
           isRosePowderTemplate ? (
             <RosePowderDecor primaryColor={preview.wheelStyle.loseColor} />
           ) : (
@@ -989,10 +989,10 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
                 size="lg"
                 variant="transparent"
                 imageWidthPx={scalePreviewValue(preview.logoWidthPx)}
-                textSizePx={scalePreviewValue(preview.logoTextSizePx) * (isBeautyTemplate ? 0.9 : 1)}
+                textSizePx={scalePreviewValue(preview.logoTextSizePx) * (isBeautyTemplate || isRoseInstitutTemplate ? 0.9 : 1)}
                 textColor={preview.logoTextColor}
                 textClassName="text-2xl"
-                textFontWeight={isBeautyTemplate ? 600 : undefined}
+                textFontWeight={isBeautyTemplate || isRoseInstitutTemplate ? 600 : undefined}
               />
             </div>
           </div>
@@ -1010,10 +1010,10 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
                 size="lg"
                 variant="transparent"
                 imageWidthPx={scalePreviewValue(preview.logoWidthPx)}
-                textSizePx={scalePreviewValue(preview.logoTextSizePx) * (isBeautyTemplate ? 0.9 : 1)}
+                textSizePx={scalePreviewValue(preview.logoTextSizePx) * (isBeautyTemplate || isRoseInstitutTemplate ? 0.9 : 1)}
                 textColor={preview.logoTextColor}
                 textClassName="text-2xl"
-                textFontWeight={isBeautyTemplate ? 600 : undefined}
+                textFontWeight={isBeautyTemplate || isRoseInstitutTemplate ? 600 : undefined}
               />
             </div>
           </div>
@@ -1048,7 +1048,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
               style={{
                 color: previewHeadingTextColor,
                 fontSize: previewHeadingFontSize,
-                fontWeight: preview.gamePageTemplateId === "beauty-pop" ? 800 : preview.headingFontWeight,
+                fontWeight: isRoseInstitutTemplate ? 600 : preview.gamePageTemplateId === "beauty-pop" ? 800 : preview.headingFontWeight,
               }}
             >
               {preview.subtitle.trim() || (preview.gameType === "scratch" ? DEFAULT_SCRATCH_SUBTITLE : "Découvrez votre animation")}
@@ -1802,7 +1802,7 @@ export function CampaignEditor({
             },
             background: {
               ...current.presentation.background,
-              color: remembered?.backgroundColor ?? wheelBackgroundForTemplate(templateId, current.presentation.background.color),
+              color: remembered?.backgroundColor ?? wheelBackgroundForTemplateSelection(templateId, current.presentation.background.color),
             },
             wheel,
             heading: {
