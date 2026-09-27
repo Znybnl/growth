@@ -1781,11 +1781,10 @@ button:disabled,
   border-color: rgba(232, 221, 255, .64);
 }
 
-/* Éclat keeps its merchant-selected typeface, with a calmer headline and a
-   more legible central action. Both rules apply to the live game and preview. */
+/* Éclat keeps its merchant-selected typeface; its central action remains
+   legible without the heavier outlined lettering. */
 .okado-eclat-play-label {
-  font-weight: 900;
-  -webkit-text-stroke: .35px currentColor;
+  font-weight: 700;
   letter-spacing: .02em;
 }
 

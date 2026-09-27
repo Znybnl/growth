@@ -539,6 +539,7 @@ export function WheelOfFortune({
               const midAngle = startAngle + (endAngle - startAngle) / 2;
               const textPoint = polarToCartesian(isRosePowderTemplate ? 208 : isBeautyTemplate ? 194 : 208, midAngle);
               const radialTextAngle = midAngle + 90;
+              const beautyTextAngle = midAngle > 90 && midAngle < 270 ? midAngle - 180 : midAngle;
               const labelLines = wrapSegmentLabel(segment.label);
               const textStyles = segmentTextStyles(labelLines, isRoseInstitutTemplate);
               if (isBeautyTemplate) {
@@ -592,7 +593,7 @@ export function WheelOfFortune({
                     fontWeight={isBeautyTemplate ? "600" : "850"}
                     textAnchor="middle"
                     dominantBaseline="middle"
-                    transform={isBeautyTemplate ? undefined : `rotate(${radialTextAngle} ${textPoint.x} ${textPoint.y})`}
+                    transform={`rotate(${isBeautyTemplate ? beautyTextAngle : radialTextAngle} ${textPoint.x} ${textPoint.y})`}
                   >
                     {labelLines.map((line, lineIndex) => (
                       <tspan
