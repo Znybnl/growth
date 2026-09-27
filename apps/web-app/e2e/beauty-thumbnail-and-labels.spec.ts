@@ -40,8 +40,27 @@ test("les miniatures Beauté et Éclat restent fidèles et les lots suivent leur
     await expect(labels.first()).toBeVisible();
     const rotations = await labels.evaluateAll((elements) => elements.map((element) => element.getAttribute("transform")));
     expect(new Set(rotations).size).toBeGreaterThan(2);
+    const expectedAngles = await labels.evaluateAll((elements) => {
+      const segmentAngle = 360 / elements.length;
+      return elements.map((_, index) => {
+        const radialAngle = index * segmentAngle + segmentAngle / 2 + 90;
+        return radialAngle > 90 && radialAngle < 270 ? radialAngle - 180 : radialAngle;
+      });
+    });
+    expect(rotations.map((transform) => Number(transform?.match(/^rotate\(([-\d.]+)/)?.[1]))).toEqual(expectedAngles);
   }
 
   await gallery.getByRole("button", { name: /^Éclat/ }).click();
   await expect(page.locator('.okado-preview-surface[data-template-id="rose-institut"] .okado-eclat-play-label')).toHaveCSS("font-weight", "700");
+  const eclatLabels = page.locator('.okado-preview-surface[data-template-id="rose-institut"] svg[viewBox="0 0 640 640"] text[transform]');
+  await expect(eclatLabels.first()).toBeVisible();
+  const eclatAngles = await eclatLabels.evaluateAll((elements) => {
+    const segmentAngle = 360 / elements.length;
+    return elements.map((_, index) => {
+      const radialAngle = index * segmentAngle + segmentAngle / 2 + 90;
+      return radialAngle > 90 && radialAngle < 270 ? radialAngle - 180 : radialAngle;
+    });
+  });
+  const eclatTransforms = await eclatLabels.evaluateAll((elements) => elements.map((element) => element.getAttribute("transform")));
+  expect(eclatTransforms.map((transform) => Number(transform?.match(/^rotate\(([-\d.]+)/)?.[1]))).toEqual(eclatAngles);
 });
