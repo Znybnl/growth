@@ -4,6 +4,7 @@ import {
   DEFAULT_COCORICO_DUO_YELLOW,
   DEFAULT_CLASSIC_WHEEL_PRIMARY_COLOR,
   DEFAULT_ROSE_INSTITUT_BACKGROUND_COLOR,
+  campaignWheelBlockSpacingPx,
   deriveLighterHex,
   dynamicWheelLightSegmentColor,
   wheelPaletteForTemplate,
@@ -11,6 +12,14 @@ import {
   wheelBackgroundForTemplateSelection,
   wheelHeadingColorForTemplateSelection,
 } from "../src/lib/campaign-defaults";
+
+test("un espacement réglé à zéro garde un dégagement structurel avant la roue", () => {
+  expect(campaignWheelBlockSpacingPx(0)).toBe(24);
+  expect(campaignWheelBlockSpacingPx(12)).toBe(24);
+  expect(campaignWheelBlockSpacingPx(24)).toBe(24);
+  expect(campaignWheelBlockSpacingPx(25)).toBe(25);
+  expect(campaignWheelBlockSpacingPx(80)).toBe(80);
+});
 
 test("Dynamique ne reprend pas le fond jaune de Bicolore à sa première sélection", () => {
   expect(wheelBackgroundForTemplateSelection("classic", DEFAULT_COCORICO_DUO_YELLOW)).toBe("#ffffff");

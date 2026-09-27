@@ -99,6 +99,7 @@ import {
   MAX_BEAUTY_WHEEL_TITLE_LINES,
   MAX_CAMPAIGN_SUBTITLE_LENGTH,
   campaignLogoTextSizePx,
+  campaignWheelBlockSpacingPx,
   clampCampaignLogoSizePercent,
   clampCampaignSpacingPx,
   deriveLighterHex,
@@ -1081,7 +1082,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
               : undefined
           }
           style={{
-            marginTop: `${isImmersiveScratchTemplate ? 0 : scalePreviewValue(preview.blockSpacingPx)}px`,
+            marginTop: `${isImmersiveScratchTemplate ? 0 : scalePreviewValue(preview.gameType === "wheel" ? campaignWheelBlockSpacingPx(preview.blockSpacingPx) : preview.blockSpacingPx)}px`,
             height: preview.gameType === "wheel" ? compact ? "376px" : "470px" : undefined,
             marginBottom:
               preview.gameType === "wheel" ? (compact ? "-20px" : "-24px") : undefined,
