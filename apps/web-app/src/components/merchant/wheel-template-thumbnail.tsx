@@ -1,4 +1,3 @@
-import { Pointer } from "lucide-react";
 import type { CSSProperties } from "react";
 import { DEFAULT_COCORICO_DUO_BLUE, DEFAULT_COCORICO_DUO_YELLOW } from "@/lib/campaign-defaults";
 import type { GamePageTemplateId } from "@/lib/types";
@@ -23,10 +22,10 @@ const THUMBNAIL_STYLES: Partial<Record<GamePageTemplateId, {
     background: "linear-gradient(145deg,#eff6ff,#d8e9ff)", rim: "#f8fbff", segments: ["#184c9b", "#f8fbff", "#72a9e8", "#e9f3ff"], center: "#1554a5", centerText: "#fff", marker: "#f3a4c4", glow: "rgba(21,84,165,.18)",
   },
   classic: {
-    background: "linear-gradient(145deg,#f5f7fc,#e8edf7)", rim: "#fff", segments: ["#1b2842", "#ffffff", "#506181", "#eef2f8"], center: "#1b2842", centerText: "#fff", marker: "#1b2842", glow: "rgba(27,40,66,.16)",
+    background: "repeating-conic-gradient(from -8deg at 50% 83%,rgba(255,255,255,.14) 0deg 14deg,transparent 14deg 28deg),linear-gradient(145deg,#096fea,#003cb9)", rim: "#fff", segments: ["#003cb9", "#d7e9ff", "#003cb9", "#d7e9ff"], center: "#003cb9", centerText: "#fff", marker: "#fff", glow: "rgba(3,31,95,.28)",
   },
   "restaurant-pop": {
-    background: "linear-gradient(145deg,#fff6dd,#fbe6a2)", rim: "#fff8e7", segments: ["#f4c14a", "#1b2842", "#fff5d8", "#a778eb"], center: "#1b2842", centerText: "#fff", marker: "#f4c14a", glow: "rgba(159,105,30,.2)",
+    background: "radial-gradient(circle at 50% 70%,#ede1ff,#fffdfa 72%)", rim: "#fff", segments: ["#3c05a0", "#fffdfa", "#3c05a0", "#fffdfa"], center: "#3c05a0", centerText: "#fff", marker: "#3c05a0", glow: "rgba(60,5,160,.17)",
   },
   "cosmic-orbit": {
     background: "radial-gradient(circle at 50% 0%,#3b2c70,#100c24 78%)", rim: "#8b6cff", segments: ["#221644", "#6e52d9", "#15122b", "#c14ee3"], center: "#211841", centerText: "#fff", marker: "#8b6cff", glow: "rgba(124,77,255,.35)",
@@ -39,6 +38,7 @@ const THUMBNAIL_STYLES: Partial<Record<GamePageTemplateId, {
 export function WheelTemplateThumbnail({ templateId }: { templateId: GamePageTemplateId }) {
   const style = THUMBNAIL_STYLES[templateId];
   if (!style) return null;
+  const overflowingWheel = templateId === "classic";
 
   const wheelStyle: CSSProperties = {
     background: `conic-gradient(from -22deg, ${style.segments[0]} 0deg 45deg, ${style.segments[1]} 45deg 90deg, ${style.segments[2]} 90deg 135deg, ${style.segments[3]} 135deg 180deg, ${style.segments[0]} 180deg 225deg, ${style.segments[1]} 225deg 270deg, ${style.segments[2]} 270deg 315deg, ${style.segments[3]} 315deg 360deg)`,
@@ -54,16 +54,15 @@ export function WheelTemplateThumbnail({ templateId }: { templateId: GamePageTem
       style={{ background: style.background }}
     >
       <span className="absolute -right-4 -top-8 h-28 w-28 rounded-full opacity-30 blur-2xl" style={{ backgroundColor: style.marker }} />
-      <div className="relative h-[88px] w-[88px] rounded-full border-[5px]" style={wheelStyle}>
+      <div className={`relative shrink-0 rounded-full border-[5px] ${overflowingWheel ? "absolute top-9 h-[126px] w-[126px]" : "h-[88px] w-[88px]"}`} style={wheelStyle}>
         <span
-          className="absolute -top-[7px] left-1/2 z-10 h-[18px] w-[16px] -translate-x-1/2 rounded-b-[10px]"
-          style={{ backgroundColor: style.marker, clipPath: "polygon(50% 100%,0 0,100% 0)" }}
+          className="absolute -top-[9px] left-1/2 z-10 h-[19px] w-[18px] -translate-x-1/2"
+          style={{ backgroundColor: style.marker, clipPath: "polygon(8% 0,92% 0,50% 100%)", filter: "drop-shadow(0 2px 2px rgba(15,23,42,.28))" }}
         />
         <span
-          className="absolute left-1/2 top-1/2 flex h-8 w-8 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full border-2 border-white/90 text-[5px] font-bold tracking-wide"
+          className="absolute left-1/2 top-1/2 flex h-9 w-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-[3px] border-white text-[6px] font-extrabold tracking-wide shadow-md"
           style={{ backgroundColor: style.center, color: style.centerText }}
         >
-          <Pointer className="h-3.5 w-3.5" strokeWidth={2.2} />
           JOUER
         </span>
       </div>

@@ -26,6 +26,7 @@ import {
   isCocoricoWheelTemplate,
   resolveCocoricoBackgroundColor,
   restaurantPopBackground,
+  classicWheelBackground,
   roseInstitutWheelBackground,
   deriveLighterHex,
   scratchTemplatePrimaryColor,
@@ -147,7 +148,10 @@ function previewBackgroundImage(
     return userBackgroundImageStyle(form.presentation.background.imageUrl);
   }
   if (templateId === "restaurant-pop") {
-    return restaurantPopBackground(form.presentation.background.color);
+    return restaurantPopBackground(form.presentation.background.color, form.presentation.wheel.loseColor);
+  }
+  if (templateId === "classic") {
+    return classicWheelBackground(form.presentation.wheel.loseColor);
   }
   if (templateId === "rose-institut") {
     return roseInstitutWheelBackground(form.presentation.background.color);
@@ -313,7 +317,30 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
             {preview.logoMode === "text" ? <div className={`flex ${preview.logoAlignmentClass}`}><div style={{ marginBottom: `${scalePreviewValue(preview.logoBottomSpacingPx)}px` }}><BrandMark logoText={preview.logoText} size="lg" variant="transparent" imageWidthPx={scalePreviewValue(preview.logoWidthPx)} textSizePx={scalePreviewValue(preview.logoTextSizePx) * (isBeautyTemplate || isRoseInstitutTemplate ? 0.9 : 1)} textColor={preview.logoTextColor} textClassName="text-2xl" textFontWeight={isBeautyTemplate || isRoseInstitutTemplate ? 600 : undefined} /></div></div> : null}
             {preview.gameType === "scratch" && preview.logoMode === "none" ? <div className={`flex ${preview.logoAlignmentClass}`}><div style={{ marginBottom: `${scalePreviewValue(preview.logoBottomSpacingPx)}px` }}><BrandMark logoText={preview.logoText || merchant.companyName} size="lg" variant="transparent" imageWidthPx={scalePreviewValue(preview.logoWidthPx)} textSizePx={scalePreviewValue(preview.logoTextSizePx) * (isBeautyTemplate ? 0.9 : 1)} textColor={preview.logoTextColor} textClassName="text-2xl" textFontWeight={isBeautyTemplate ? 600 : undefined} /></div></div> : null}
             {preview.logoMode === "none" || (preview.logoMode === "image" && !preview.logoUrl) ? <div aria-hidden="true" className="h-5" /> : null}
-            <div className={preview.headingAlignmentClass}>{isCocoricoTemplate || isRestaurantPopTemplate || preview.gamePageTemplateId === "classic" ? <CocoricoPromoText text={preview.subtitle.trim() || (preview.gameType === "scratch" ? DEFAULT_SCRATCH_SUBTITLE : "Découvrez votre animation")} as="h3" fontFamily={textFontFamily(preview.headingFontFamily)} fontSize={fluidType(Math.round(preview.headingFontSizePx * previewHeadingScale), { minRatio: 0.82, maxRatio: 1.08, viewportStep: 0.3, viewportUnit: compact ? "cqw" : "vw" })} fontWeight={isCocoricoTemplate ? undefined : 850} textColor={isCocoricoTemplate ? undefined : previewHeadingTextColor} secondaryTextColor={isCocoricoTemplate ? undefined : previewHeadingTextColor} strokeColor={isCocoricoTemplate ? undefined : resolvePromoStrokeColor(previewHeadingTextColor)} strokeWidth={isCocoricoTemplate ? undefined : 5} variant={isCocoricoTemplate ? "cocorico" : "inspired"} rotate={isCocoricoTemplate} /> : <h3 className={`${preview.headingFontClass} ${isBeautyTemplate ? "okado-beauty-heading" : isRoseInstitutTemplate ? "line-clamp-5 leading-[1]" : "line-clamp-3 leading-[1]"} whitespace-pre-line`} style={{ color: previewHeadingTextColor, fontSize: previewHeadingFontSize, fontWeight: isRoseInstitutTemplate ? 600 : preview.headingFontWeight }}>{preview.subtitle.trim() || (preview.gameType === "scratch" ? DEFAULT_SCRATCH_SUBTITLE : "Découvrez votre animation")}</h3>}</div>
+            <div className={preview.headingAlignmentClass}>
+              {isCocoricoTemplate || isRestaurantPopTemplate || preview.gamePageTemplateId === "classic" ? (
+                <CocoricoPromoText
+                  text={preview.subtitle.trim() || (preview.gameType === "scratch" ? DEFAULT_SCRATCH_SUBTITLE : "Découvrez votre animation")}
+                  as="h3"
+                  fontFamily={textFontFamily(preview.headingFontFamily)}
+                  fontSize={fluidType(Math.round(preview.headingFontSizePx * previewHeadingScale), { minRatio: 0.82, maxRatio: 1.08, viewportStep: 0.3, viewportUnit: compact ? "cqw" : "vw" })}
+                  fontWeight={isCocoricoTemplate ? undefined : preview.gamePageTemplateId === "classic" ? 850 : 700}
+                  textColor={isCocoricoTemplate ? undefined : previewHeadingTextColor}
+                  secondaryTextColor={isCocoricoTemplate ? undefined : previewHeadingTextColor}
+                  strokeColor={isCocoricoTemplate ? undefined : resolvePromoStrokeColor(previewHeadingTextColor)}
+                  strokeWidth={isCocoricoTemplate ? undefined : preview.gamePageTemplateId === "classic" ? 1.5 : 0}
+                  variant={isCocoricoTemplate ? "cocorico" : "inspired"}
+                  rotate={isCocoricoTemplate}
+                />
+              ) : (
+                <h3
+                  className={`${preview.headingFontClass} ${isBeautyTemplate ? "okado-beauty-heading" : isRoseInstitutTemplate ? "line-clamp-5 leading-[1]" : "line-clamp-3 leading-[1]"} whitespace-pre-line`}
+                  style={{ color: previewHeadingTextColor, fontSize: previewHeadingFontSize, fontWeight: isRoseInstitutTemplate ? 600 : preview.headingFontWeight }}
+                >
+                  {preview.subtitle.trim() || (preview.gameType === "scratch" ? DEFAULT_SCRATCH_SUBTITLE : "Découvrez votre animation")}
+                </h3>
+              )}
+            </div>
             {preview.gameType === "wheel" && preview.wheelSubtitle.trim() ? <p className={`okado-wheel-subtitle ${preview.headingAlignmentClass}`} style={{ color: preview.logoTextColor, fontFamily: wheelSubtitleFontFamily(preview.headingFontFamily), marginTop: `${preview.subtitleSpacingPx}px` }}>{preview.wheelSubtitle}</p> : null}
           </>
         ) : null}

@@ -167,7 +167,7 @@ export function wheelPaletteForTemplate(
       ...current,
       loseColor: DEFAULT_CLASSIC_WHEEL_PRIMARY_COLOR,
       rimColor: deriveLighterHex(DEFAULT_CLASSIC_WHEEL_PRIMARY_COLOR),
-      alternateLoseColor: deriveLighterHex(DEFAULT_CLASSIC_WHEEL_PRIMARY_COLOR),
+      alternateLoseColor: deriveLighterHex(DEFAULT_CLASSIC_WHEEL_PRIMARY_COLOR, 0.7),
     };
   }
 
@@ -175,7 +175,7 @@ export function wheelPaletteForTemplate(
     return {
       ...current,
       loseColor: DEFAULT_CLASSIC_POP_PRIMARY_COLOR,
-      winColor: "#ffffff",
+      winColor: "#faf9f7",
       rimColor: deriveLighterHex(DEFAULT_CLASSIC_POP_PRIMARY_COLOR),
       alternateLoseColor: deriveLighterHex(DEFAULT_CLASSIC_POP_PRIMARY_COLOR),
     };
@@ -251,8 +251,16 @@ export function wheelBackgroundForTemplateSelection(
   currentColor: string,
 ) {
   if (templateId === "classic") return "#ffffff";
+  if (templateId === "restaurant-pop") return "#fffdfa";
   if (templateId === "rose-institut") return DEFAULT_ROSE_INSTITUT_BACKGROUND_COLOR;
   return wheelBackgroundForTemplate(templateId, currentColor);
+}
+
+/** First selection only; remembered per-template text colors always take precedence. */
+export function wheelHeadingColorForTemplateSelection(templateId: GamePageTemplateId, currentColor: string) {
+  if (templateId === "classic") return "#ffffff";
+  if (templateId === "restaurant-pop") return "#1b2842";
+  return currentColor;
 }
 
 export function roseInstitutWheelBackground(configuredColor: string | undefined) {
@@ -260,13 +268,22 @@ export function roseInstitutWheelBackground(configuredColor: string | undefined)
   return `radial-gradient(circle at 50% 28%, rgba(255,255,255,0.72) 0 24%, transparent 54%), linear-gradient(180deg, ${color} 0%, ${color} 100%)`;
 }
 
-/** Keep the Dynamique reflections while using the merchant's configured page color. */
-export function restaurantPopBackground(configuredColor: string | undefined) {
+/** Signature: a quiet ivory surface with a halo derived from the wheel color. */
+export function restaurantPopBackground(configuredColor: string | undefined, primaryColor = DEFAULT_CLASSIC_POP_PRIMARY_COLOR) {
   const color = configuredColor && /^#[0-9a-f]{3,8}$/i.test(configuredColor.trim())
     ? configuredColor.trim()
-    : "#fff2dd";
+    : "#fffdfa";
+  const surface = color.toLowerCase() === "#fff2dd" ? "#fffdfa" : color;
+  const halo = /^#[0-9a-f]{6}$/i.test(primaryColor) ? `${primaryColor}1c` : "#3c05a01c";
 
-  return `radial-gradient(ellipse 72% 32% at 16% 14%, rgba(255,255,255,0.52) 0%, rgba(255,255,255,0.22) 34%, transparent 74%), radial-gradient(ellipse 68% 28% at 86% 28%, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.14) 38%, transparent 76%), radial-gradient(ellipse 54% 22% at 48% 92%, rgba(255,255,255,0.22) 0%, transparent 76%), linear-gradient(180deg, ${color} 0%, ${color} 48%, ${color} 100%)`;
+  return `radial-gradient(ellipse 75% 40% at 50% 64%, ${halo} 0%, transparent 75%), linear-gradient(180deg, ${surface} 0%, ${surface} 100%)`;
+}
+
+/** Dynamique: saturated rays and a soft spotlight follow the selected primary color. */
+export function classicWheelBackground(primaryColor: string) {
+  const color = /^#[0-9a-f]{6}$/i.test(primaryColor) ? primaryColor : DEFAULT_CLASSIC_WHEEL_PRIMARY_COLOR;
+  const deep = deriveLighterHex(color, 0.16);
+  return `radial-gradient(circle at 50% 57%, rgba(89,203,255,.35) 0%, transparent 37%), repeating-conic-gradient(from -8deg at 50% 57%, rgba(255,255,255,.11) 0deg 13deg, transparent 13deg 27deg), linear-gradient(160deg, ${color} 0%, ${deep} 100%)`;
 }
 
 /** Resolve the blue used by the Cocorico template without changing legacy data. */
@@ -488,6 +505,13 @@ export function deriveLighterHex(hex: string, ratio = 0.58) {
   return `#${nextRed.toString(16).padStart(2, "0")}${nextGreen
     .toString(16)
     .padStart(2, "0")}${nextBlue.toString(16).padStart(2, "0")}`;
+}
+
+/** Refresh Dynamique's legacy light segments without changing a merchant-selected secondary color. */
+export function dynamicWheelLightSegmentColor(primaryColor: string, secondaryColor: string) {
+  return secondaryColor.toLowerCase() === deriveLighterHex(primaryColor).toLowerCase()
+    ? deriveLighterHex(primaryColor, 0.7)
+    : secondaryColor;
 }
 
 export function createDefaultWheelSettings(
