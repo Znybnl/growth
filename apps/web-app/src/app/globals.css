@@ -1768,12 +1768,24 @@ button:disabled,
   border-color: rgba(245, 250, 241, .58);
 }
 
+.okado-beauty-wheel-center--beauty-botanical .okado-beauty-wheel-center-label {
+  font-size: clamp(11px, 3.2cqw, 15px);
+  font-weight: 700;
+}
+
 .okado-beauty-wheel-center--beauty-editorial::after {
   border-color: rgba(255, 247, 229, .62);
 }
 
 .okado-beauty-wheel-center--beauty-tech::after {
   border-color: rgba(232, 221, 255, .64);
+}
+
+/* Éclat keeps its merchant-selected typeface; its central action remains
+   legible without the heavier outlined lettering. */
+.okado-eclat-play-label {
+  font-weight: 700;
+  letter-spacing: .02em;
 }
 
 @media (prefers-reduced-motion: reduce) {
