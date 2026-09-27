@@ -1127,7 +1127,7 @@ export function CampaignExperience({
       <button
         type="button"
         onClick={() => setRulesOpen(true)}
-        className={`okado-rules-button z-20 rounded-full border border-white/70 bg-white/82 font-semibold text-[#111827] backdrop-blur ${isClassicTemplate || isRestaurantPopTemplate ? "absolute bottom-1 right-3 px-3 py-1.5 text-xs shadow-[0_10px_24px_rgba(17,24,39,0.10)]" : "fixed bottom-4 right-4 px-4 py-2 text-sm shadow-[0_14px_34px_rgba(17,24,39,0.12)]"}`}
+        className={`okado-rules-button z-20 rounded-full border border-white/70 bg-white/82 font-semibold text-[#111827] backdrop-blur ${isRestaurantPopTemplate ? "absolute bottom-4 right-4 px-3 py-1.5 text-xs shadow-[0_10px_24px_rgba(17,24,39,0.10)]" : isClassicTemplate ? "absolute bottom-1 right-3 px-3 py-1.5 text-xs shadow-[0_10px_24px_rgba(17,24,39,0.10)]" : "fixed bottom-4 right-4 px-4 py-2 text-sm shadow-[0_14px_34px_rgba(17,24,39,0.12)]"}`}
       >
         Règlement
       </button>

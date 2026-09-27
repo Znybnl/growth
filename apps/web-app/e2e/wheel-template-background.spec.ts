@@ -34,6 +34,10 @@ test("Dynamique éclaircit ses segments clairs par défaut sans écraser une cou
 
 test("Signature démarre sur un fond neutre et chaque modèle a sa couleur de titre", () => {
   expect(wheelBackgroundForTemplateSelection("restaurant-pop", "#003cb9")).toBe("#fffdfa");
+  expect(wheelPaletteForTemplate("restaurant-pop", {
+    rimColor: "#ffffff", winColor: "#ffffff", alternateWinColor: "#ffffff",
+    loseColor: "#003cb9", alternateLoseColor: "#ffffff",
+  }).winColor).toBe("#faf9f7");
   expect(wheelHeadingColorForTemplateSelection("classic", "#1b2842")).toBe("#ffffff");
   expect(wheelHeadingColorForTemplateSelection("restaurant-pop", "#ffffff")).toBe("#1b2842");
   expect(wheelBackgroundForTemplate("restaurant-pop", "#ced9e8")).toBe("#ced9e8");

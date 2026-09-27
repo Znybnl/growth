@@ -175,7 +175,7 @@ export function wheelPaletteForTemplate(
     return {
       ...current,
       loseColor: DEFAULT_CLASSIC_POP_PRIMARY_COLOR,
-      winColor: "#ffffff",
+      winColor: "#faf9f7",
       rimColor: deriveLighterHex(DEFAULT_CLASSIC_POP_PRIMARY_COLOR),
       alternateLoseColor: deriveLighterHex(DEFAULT_CLASSIC_POP_PRIMARY_COLOR),
     };
