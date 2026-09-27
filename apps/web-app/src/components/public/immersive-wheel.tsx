@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useState } from "react";
+import { legibleSegmentTextColor } from "@/lib/color-contrast";
 
 type WheelSegment = {
   id: string;
@@ -78,14 +79,6 @@ function blendWithWhite(color: string, ratio: number) {
     .map((channel) => Math.round(channel + (255 - channel) * ratio))
     .map((channel) => channel.toString(16).padStart(2, "0"))
     .join("")}`;
-}
-
-function readableTextColor(fill: string, fallback = "#ffffff") {
-  const normalized = fill.replace("#", "");
-  if (!/^[0-9a-f]{6}$/i.test(normalized)) return fallback;
-  const channels = [0, 2, 4].map((offset) => Number.parseInt(normalized.slice(offset, offset + 2), 16));
-  const luminance = (0.299 * channels[0] + 0.587 * channels[1] + 0.114 * channels[2]) / 255;
-  return luminance > 0.67 ? "#10213f" : "#ffffff";
 }
 
 function labelLines(label: string) {
@@ -211,7 +204,7 @@ export function ImmersiveWheel({
               const fill = isCosmic
                 ? index % 2 === 0 ? primary : secondary
                 : index % 2 === 0 ? palePrimary : paleSecondary;
-              const textColor = readableTextColor(fill, isCosmic ? "#ffffff" : "#10213f");
+              const textColor = legibleSegmentTextColor(fill, isCosmic ? "#ffffff" : "#10213f", "#10213f");
               const lines = labelLines(segment.label);
 
               return (
