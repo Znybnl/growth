@@ -44,10 +44,18 @@ export type PosterTemplateConfig = {
   logoX?: number;
   logoY?: number;
   logoFontWeight?: number;
+  logoFontSizeMultiplier?: number;
   logoLetterSpacing?: number;
   logoFontFamily?: TextFont;
   logoTextAnchor?: "start" | "middle";
   logoImageAnchor?: "start" | "middle";
+  logoTextMaxCharactersPerLine?: number;
+  headlineTextAnchor?: "start" | "middle";
+  headlineStretchToWidth?: boolean;
+  supportingTextAnchor?: "start" | "middle";
+  subtitleLetterSpacing?: number;
+  subtitleUppercase?: boolean;
+  subtitleMaxCharactersPerLine?: number;
   logoUnderlineWidth?: number;
   logoUnderlineColor?: string;
   inlineQrCta?: boolean;
@@ -64,7 +72,7 @@ export type PosterTemplateConfig = {
   supportingTextLineHeight?: number;
   supportingTextColor?: string;
   supportingTextLetterSpacing?: number;
-  footerVariant?: "premium" | "botanical";
+  footerVariant?: "premium" | "botanical" | "botanical-editorial";
   backdropAsset?: string;
   /**
    * The template supplies its own decorative composition and must not render
@@ -335,6 +343,75 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
       loseColor: "#f6f3ed",
       alternateLoseColor: "#f6f3ed",
       rimColor: "#718578",
+    },
+  },
+  {
+    id: "botanical-editorial-poster",
+    label: "Botanique éditorial",
+    description: "Feuillages sauge, typographie éditoriale et composition végétale.",
+    background: "#fbf9f1",
+    accent: "#77845e",
+    accentDark: "#1d2a16",
+    headline: "#1d2a16",
+    headlineStroke: "none",
+    headlineTextColor: "#1d2a16",
+    headlineFontSizePx: 40,
+    qrFrame: "#d6bd8c",
+    logoVariant: "lined",
+    wheelX: 0,
+    wheelY: 0,
+    wheelRadius: 0,
+    qrX: 277,
+    qrY: 582,
+    qrSize: 286,
+    ctaX: 0,
+    ctaY: 0,
+    ctaWidth: 0,
+    ctaHeight: 0,
+    ctaRotation: 0,
+    headlineY: 210,
+    headlineSizeMultiplier: 2.8,
+    headlineX: 397,
+    headlineMaxWidth: 470,
+    subtitleMaxWidth: 650,
+    headlineBlockBottom: 470,
+    headlineLogoGapPx: 40,
+    headlineFontWeight: 500,
+    headlineItalic: false,
+    headlineFontFamily: "cormorant",
+    headlineTextAnchor: "middle",
+    headlineStretchToWidth: true,
+    logoX: 397,
+    logoY: 52,
+    logoFontWeight: 500,
+    logoFontSizeMultiplier: 1.55,
+    logoTextMaxCharactersPerLine: 22,
+    logoLetterSpacing: 2,
+    logoFontFamily: "cormorant",
+    logoTextAnchor: "middle",
+    logoImageAnchor: "middle",
+    logoUnderlineWidth: 80,
+    logoUnderlineColor: "#77845e",
+    subtitleLetterSpacing: 6,
+    subtitleUppercase: true,
+    subtitleMaxCharactersPerLine: 18,
+    supportingText: "De jolis\ncadeaux\nà gagner !",
+    supportingTextX: 136,
+    supportingTextY: 650,
+    supportingTextFontFamily: "cormorant",
+    supportingTextFontSize: 37,
+    supportingTextLineHeight: 48,
+    supportingTextColor: "#1d2a16",
+    supportingTextAnchor: "middle",
+    footerVariant: "botanical-editorial",
+    backdropAsset: "botanical-editorial-poster-backdrop.svg",
+    backgroundOnly: true,
+    wheel: {
+      winColor: "#77845e",
+      alternateWinColor: "#77845e",
+      loseColor: "#fbf9f1",
+      alternateLoseColor: "#fbf9f1",
+      rimColor: "#d6bd8c",
     },
   },
 ];

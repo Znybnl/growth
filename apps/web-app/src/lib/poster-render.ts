@@ -263,9 +263,17 @@ function renderBackground(
 
   if (template.backdropAsset) {
     if (premiumBackdropSource) {
-      return `
+      const backdrop = `
         <image href="${escapeXml(premiumBackdropSource)}" x="0" y="0" width="${A4_WIDTH}" height="${A4_HEIGHT}" preserveAspectRatio="xMidYMid slice"/>
       `;
+      if (template.id === "botanical-editorial-poster") {
+        return `${backdrop}
+          <circle cx="137" cy="676" r="120" fill="${template.accent}"/>
+          <circle cx="137" cy="676" r="116" fill="none" stroke="#f7f4e8" stroke-opacity=".65" stroke-width="2"/>
+          <path d="M104 779c17-16 32-23 52-25m-52 25c11-10 25-17 52-25m-28 13c-8 1-14-3-17-8m27-4c-1-8 2-13 7-18" fill="none" stroke="#edf0df" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" opacity=".94"/>
+        `;
+      }
+      return backdrop;
     }
 
     return `
@@ -288,6 +296,23 @@ function getLogoLayout(poster: CampaignPosterSettings, template: PosterTemplateC
     logoY,
     bottomY: logoY + logoSize + poster.logoBottomMarginPx,
   };
+}
+
+function wrapPosterLogoText(text: string, maxCharacters?: number) {
+  if (!maxCharacters || maxCharacters < 8) return [text];
+  const lines: string[] = [];
+  let current = "";
+  for (const word of text.split(/\s+/).filter(Boolean)) {
+    const next = current ? `${current} ${word}` : word;
+    if (current && next.length > maxCharacters) {
+      lines.push(current);
+      current = word;
+    } else {
+      current = next;
+    }
+  }
+  if (current) lines.push(current);
+  return lines.slice(0, 2);
 }
 
 function renderLogo(campaign: Campaign, poster: CampaignPosterSettings, template: PosterTemplateConfig) {
@@ -313,17 +338,22 @@ function renderLogo(campaign: Campaign, poster: CampaignPosterSettings, template
   // Keep the merchant name visually secondary to the poster headline. The
   // 100% slider value represents the reference logo box, not a full-size
   // headline; use the same restrained text scale across poster templates.
-  const fontSize = clamp(logoSize * 0.2, 18, 51);
+  const fontSize = clamp(logoSize * 0.2 * (template.logoFontSizeMultiplier ?? 1), 18, 51);
   const centerY = logoY + logoSize / 2;
   const logoTextColor = poster.headlineTextColor || template.headline;
   const logoFamily = fontFamily(template.logoFontFamily ?? "inter");
   const textAnchor = template.logoTextAnchor ?? "middle";
+  const logoLines = wrapPosterLogoText(logoText, template.logoTextMaxCharactersPerLine);
+  const firstLineY = centerY + fontSize * 0.34 - ((logoLines.length - 1) * fontSize * 0.84) / 2;
+  const logoMarkup = logoLines.length > 1
+    ? logoLines.map((line, index) => `<tspan x="${logoX}" y="${firstLineY + index * fontSize * 0.84}">${escapeXml(line)}</tspan>`).join("")
+    : escapeXml(logoLines[0] ?? text);
   const underline = template.logoUnderlineWidth
-    ? `<line x1="${logoX}" y1="${centerY + fontSize * 0.34 + 30}" x2="${logoX + template.logoUnderlineWidth}" y2="${centerY + fontSize * 0.34 + 30}" stroke="${template.logoUnderlineColor ?? logoTextColor}" stroke-width="3"/>`
+    ? `<line x1="${textAnchor === "middle" ? logoX - template.logoUnderlineWidth / 2 : logoX}" y1="${centerY + fontSize * 0.34 + 30}" x2="${textAnchor === "middle" ? logoX + template.logoUnderlineWidth / 2 : logoX + template.logoUnderlineWidth}" y2="${centerY + fontSize * 0.34 + 30}" stroke="${template.logoUnderlineColor ?? logoTextColor}" stroke-width="3"/>`
     : "";
 
   return `
-    <text x="${logoX}" y="${centerY + fontSize * 0.34}" text-anchor="${textAnchor}" fill="${logoTextColor}" font-family="${logoFamily}" font-size="${fontSize}" font-weight="${template.logoFontWeight ?? 800}" letter-spacing="${template.logoLetterSpacing ?? 0}">${text}</text>
+    <text x="${logoX}" y="${firstLineY}" text-anchor="${textAnchor}" fill="${logoTextColor}" font-family="${logoFamily}" font-size="${fontSize}" font-weight="${template.logoFontWeight ?? 800}" letter-spacing="${template.logoLetterSpacing ?? 0}">${logoMarkup}</text>
     ${underline}
   `;
 }
@@ -339,6 +369,8 @@ export type PosterSubtitleLayout = {
   top: number;
   headlineGap: number;
   fontWeight: number;
+  letterSpacing: number;
+  uppercase: boolean;
 };
 
 type StandardHeadlineLayout = {
@@ -349,8 +381,8 @@ type StandardHeadlineLayout = {
   lines: string[];
 };
 
-function posterSubtitleLines(text: string, width: number, size: number) {
-  const maxChars = clamp(Math.floor(width / (size * 0.54)), 16, 52);
+function posterSubtitleLines(text: string, width: number, size: number, maxCharactersPerLine?: number) {
+  const maxChars = maxCharactersPerLine ?? clamp(Math.floor(width / (size * 0.54)), 16, 52);
   return splitLines(text, maxChars).slice(0, 3);
 }
 
@@ -402,13 +434,16 @@ export function getPosterSubtitleLayout(
     return null;
   }
 
-  const fontSize = template.backdropAsset ? 24 : 25;
+  const isBotanicalEditorial = template.id === "botanical-editorial-poster";
+  const fontSize = isBotanicalEditorial ? 28 : template.backdropAsset ? 24 : 25;
   const lineHeight = fontSize * 1.42;
   const isPremiumTemplate = template.id === "premium-wheel";
   const width = isPremiumTemplate
     ? Math.min(template.qrSize, A4_WIDTH - template.qrX - 24)
+    : isBotanicalEditorial
+      ? template.subtitleMaxWidth ?? 620
     : Math.min(template.subtitleMaxWidth ?? template.headlineMaxWidth ?? 620, A4_WIDTH - 48);
-  const lines = posterSubtitleLines(text, width, fontSize);
+  const lines = posterSubtitleLines(text, width, fontSize, isBotanicalEditorial ? template.subtitleMaxCharactersPerLine : undefined);
   const configuredHeadlineGap = clampCampaignSpacingPx(
     campaign.presentation.layout.subtitleSpacingPx,
     defaultWheelSubtitleSpacingForTemplate(campaign.presentation.layout.templateId),
@@ -419,7 +454,7 @@ export function getPosterSubtitleLayout(
   const standardHeadlineLayout = !isPremiumTemplate && !template.backdropAsset
     ? getStandardHeadlineLayout(campaign, poster, template)
     : null;
-  const botanicalHeadlineLayout = template.id === "botanical-wheel"
+  const botanicalHeadlineLayout = template.id === "botanical-wheel" || isBotanicalEditorial
     ? getPremiumHeadlineLayout(
       poster.headline || campaign.subtitle || "Faites tourner la roue",
       poster,
@@ -450,7 +485,7 @@ export function getPosterSubtitleLayout(
         botanicalHeadlineLayout.size * 0.18 +
         headlineGap
     : Math.max(0, visualTop - premiumVisualGap - textHeight);
-  const textAnchor = template.backdropAsset ? "start" : "middle";
+  const textAnchor = template.backdropAsset && !isBotanicalEditorial ? "start" : "middle";
 
   return {
     color: poster.headlineTextColor || template.headlineTextColor || template.headline,
@@ -461,24 +496,32 @@ export function getPosterSubtitleLayout(
     textAnchor,
     x: isPremiumTemplate
       ? template.qrX
+      : isBotanicalEditorial
+        ? A4_WIDTH / 2
       : template.backdropAsset
         ? template.headlineX ?? 72
         : template.headlineX ?? A4_WIDTH / 2,
     top,
     headlineGap,
-    fontWeight: isPremiumTemplate ? 400 : 600,
+    fontWeight: isPremiumTemplate ? 400 : isBotanicalEditorial ? 500 : 600,
+    letterSpacing: isBotanicalEditorial ? template.subtitleLetterSpacing ?? 4 : 0.28,
+    uppercase: isBotanicalEditorial && template.subtitleUppercase === true,
   };
 }
 
 export function getPremiumHeadlineLayout(headline: string, poster: CampaignPosterSettings, template: PosterTemplateConfig,
   measure?: (text: string, size: number) => number, reservedBottom?: number) {
     const x = template.headlineX ?? 284;
-    const width = Math.min(template.headlineMaxWidth ?? 466, A4_WIDTH - x - 40);
+    const width = template.headlineTextAnchor === "middle"
+      ? Math.min(template.headlineMaxWidth ?? 700, 2 * Math.min(x, A4_WIDTH - x) - 40)
+      : Math.min(template.headlineMaxWidth ?? 466, A4_WIDTH - x - 40);
     const logo = getLogoLayout(poster, template);
-    const logoFontSize = clamp(logo.logoSize * 0.2, 18, 51);
+    const logoFontSize = clamp(logo.logoSize * 0.2 * (template.logoFontSizeMultiplier ?? 1), 18, 51);
     const logoBottom = poster.logoMode === "image"
       ? logo.logoY + logo.logoSize
-      : poster.logoMode === "text" ? logo.logoY + logo.logoSize / 2 + logoFontSize * 0.6 : 0;
+      : poster.logoMode === "text"
+        ? logo.logoY + logo.logoSize / 2 + logoFontSize * 0.6 + (wrapPosterLogoText((poster.logoText ?? "").trim(), template.logoTextMaxCharactersPerLine).length - 1) * logoFontSize * 0.84
+        : 0;
     const logoMargin = poster.logoMode === "none" ? 0 : poster.logoBottomMarginPx;
     const top = template.headlineLogoGapPx !== undefined && poster.logoMode !== "none"
       ? logoBottom + template.headlineLogoGapPx + logoMargin
@@ -537,13 +580,18 @@ function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, temp
       poster,
       template,
       measure,
-      template.id === "premium-wheel" && subtitleLayout
+      (template.id === "premium-wheel" || template.id === "botanical-editorial-poster") && subtitleLayout
         ? subtitleLayout.top - subtitleLayout.headlineGap
         : undefined,
     );
-    return `<g data-headline-size="${size}">${lines.map((line, index) => `<text x="${x}" y="${top + size * 0.82 + index * size * 1.08}"
-      text-anchor="start" fill="${color}" font-family="${family}" font-size="${size}"
-      font-weight="${template.headlineFontWeight ?? 500}">${escapeXml(line)}</text>`).join("")}</g>`;
+    return `<g data-headline-size="${size}">${lines.map((line, index) => {
+      const stretch = template.headlineStretchToWidth && lines.length === 2
+        ? ` textLength="${template.headlineMaxWidth}" lengthAdjust="spacingAndGlyphs"`
+        : "";
+      return `<text x="${x}" y="${top + size * 0.82 + index * size * 1.08}"
+        text-anchor="${template.headlineTextAnchor ?? "start"}" fill="${color}" font-family="${family}" font-size="${size}"
+        font-weight="${template.headlineFontWeight ?? 500}"${stretch}>${escapeXml(line)}</text>`;
+    }).join("")}</g>`;
   }
   // Reuse the same title geometry for the preview and PNG so the subtitle
   // follows the actual number of rendered title lines.
@@ -604,7 +652,7 @@ function renderPosterSubtitle(layout: PosterSubtitleLayout | null) {
     <g data-poster-subtitle="true">
       ${layout.lines.map((line, index) => `<text x="${layout.x}" y="${layout.top + layout.fontSize * 0.82 + index * layout.lineHeight}"
         text-anchor="${layout.textAnchor}" fill="${layout.color}" font-family="${layout.family}" font-size="${layout.fontSize}"
-        font-weight="${layout.fontWeight}" letter-spacing="0.28">${escapeXml(line)}</text>`).join("")}
+        font-weight="${layout.fontWeight}" letter-spacing="${layout.letterSpacing}">${escapeXml(layout.uppercase ? line.toLocaleUpperCase("fr-FR") : line)}</text>`).join("")}
     </g>
   `;
 }
@@ -625,7 +673,7 @@ function renderSupportingText(template: PosterTemplateConfig) {
 
   return `
     <g>
-      ${lines.map((line, index) => `<text x="${x}" y="${y + index * lineHeight}" text-anchor="start" fill="${color}" font-family="${family}" font-size="${size}" font-weight="500" letter-spacing="${letterSpacing}">${escapeXml(line)}</text>`).join("")}
+      ${lines.map((line, index) => `<text x="${x}" y="${y + index * lineHeight}" text-anchor="${template.supportingTextAnchor ?? "start"}" fill="${color}" font-family="${family}" font-size="${size}" font-weight="500" letter-spacing="${letterSpacing}">${escapeXml(line)}</text>`).join("")}
     </g>
   `;
 }
@@ -755,6 +803,17 @@ function renderQrAndCta(qrDataUrl: string, template: PosterTemplateConfig) {
     `;
   }
 
+  if (template.id === "botanical-editorial-poster") {
+    const frameInset = 18;
+    return `
+      <g filter="url(#posterShadow)" transform="translate(${template.qrX} ${template.qrY})">
+        <rect x="-${frameInset}" y="-${frameInset}" width="${template.qrSize + frameInset * 2}" height="${template.qrSize + frameInset * 2}" rx="26" fill="#fffefa" stroke="${template.qrFrame}" stroke-width="5"/>
+        <rect x="-${frameInset - 5}" y="-${frameInset - 5}" width="${template.qrSize + (frameInset - 5) * 2}" height="${template.qrSize + (frameInset - 5) * 2}" rx="21" fill="none" stroke="#ffffff" stroke-width="2"/>
+        <image href="${escapeXml(qrDataUrl)}" x="0" y="0" width="${template.qrSize}" height="${template.qrSize}"/>
+      </g>
+    `;
+  }
+
   return `
     <g filter="url(#posterShadow)" transform="translate(${template.qrX} ${template.qrY})">
       <rect x="-18" y="-18" width="${template.qrSize + 36}" height="${template.qrSize + 36}" rx="28" fill="${template.qrFrame}"/>
@@ -808,6 +867,21 @@ function renderSteps(template: PosterTemplateConfig, gameType: Campaign["gameTyp
           </g>
           <text x="132" y="138" text-anchor="middle" fill="#111111" font-family="${SAFE_FONT}" font-size="28" font-weight="700">${gift}</text>
         </g>
+      </g>
+    `;
+  }
+
+  if (template.footerVariant === "botanical-editorial") {
+    const editorialAction = gameType === "wheel" ? "JOUEZ" : "GRATTEZ";
+    const points = [190, 397, 604];
+    const scanIcon = (x: number) => `<g transform="translate(${x} 60)" fill="none" stroke="${template.accentDark}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><rect x="-22" y="-35" width="44" height="70" rx="7"/><path d="M-14-23h28M-14 22h28" stroke-width="3"/><circle cx="0" cy="28" r="2" fill="${template.accentDark}"/></g>`;
+    const gameIcon = (x: number) => `<g transform="translate(${x} 60)" fill="none" stroke="${template.accentDark}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M-43-13c2-11 10-17 21-17h44c11 0 19 6 21 17l7 35c2 11-9 18-18 10L13 15h-26l-19 17c-9 8-20 1-18-10z"/><path d="M-22-13v20m-10-10h20"/><circle cx="22" cy="-10" r="3" fill="${template.accentDark}"/><circle cx="34" cy="1" r="3" fill="${template.accentDark}"/><circle cx="20" cy="9" r="3" fill="${template.accentDark}"/></g>`;
+    const giftIcon = (x: number) => `<g transform="translate(${x} 60)" fill="none" stroke="${template.accentDark}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><rect x="-30" y="-4" width="60" height="43" rx="3"/><path d="M-36-16h72v17h-72zm36 0v59M0-16c-24 0-28-24-13-24 12 0 18 24 13 24zm0 0c24 0 28-24 13-24-12 0-18 24-13 24z"/></g>`;
+    return `
+      <g transform="translate(0 908)">
+        <rect width="${A4_WIDTH}" height="${A4_HEIGHT - 908}" fill="#fbf9f1" fill-opacity=".84"/>
+        <path d="M310 60h37m100 0h37" stroke="${template.accentDark}" stroke-width="2.5" marker-end="url(#posterArrow)"/>
+        ${points.map((x, index) => `<circle cx="${x}" cy="60" r="50" fill="#f5f1e2" fill-opacity=".9" stroke="${template.qrFrame}" stroke-opacity=".56" stroke-width="2"/>${index === 0 ? scanIcon(x) : index === 1 ? gameIcon(x) : giftIcon(x)}<text x="${x}" y="143" text-anchor="middle" fill="${template.accentDark}" font-family="${SAFE_FONT}" font-size="22" font-weight="700" letter-spacing="2">${index === 0 ? "1. SCANNEZ" : index === 1 ? `2. ${editorialAction}` : "3. GAGNEZ"}</text>`).join("")}
       </g>
     `;
   }
@@ -969,6 +1043,9 @@ export function buildPosterSvg(args: {
         <filter id="posterShadow" x="-25%" y="-25%" width="150%" height="150%">
           <feDropShadow dx="0" dy="14" stdDeviation="14" flood-color="#020617" flood-opacity="0.25"/>
         </filter>
+        <marker id="posterArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0 0 10 5 0 10" fill="none" stroke="${template.accentDark}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
         <linearGradient id="scratchMetal" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stop-color="#dbe2ee"/>
           <stop offset="48%" stop-color="#ffffff"/>

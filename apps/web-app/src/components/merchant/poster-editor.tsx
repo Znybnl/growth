@@ -184,7 +184,8 @@ async function loadPremiumBackdropAsDataUrl(templateId: PosterTemplateId) {
       binary += String.fromCharCode(...bytes.subarray(index, index + chunkSize));
     }
 
-    return `data:image/png;base64,${window.btoa(binary)}`;
+    const mimeType = asset.toLowerCase().endsWith(".svg") ? "image/svg+xml" : "image/png";
+    return `data:${mimeType};base64,${window.btoa(binary)}`;
   } catch {
     throw new Error(`Impossible de charger le décor ${getPosterTemplate(templateId).label}. Réessayez en rechargeant la page.`);
   }
