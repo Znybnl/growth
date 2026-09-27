@@ -63,6 +63,77 @@ function QrThumbnail({ template }: { template: PosterTemplateConfig }) {
   );
 }
 
+function EditorialPosterThumbnail({
+  gameType,
+  qrDataUrl,
+}: {
+  gameType: GameType;
+  qrDataUrl?: string | null;
+}) {
+  const action = gameType === "wheel" ? "JOUEZ" : "GRATTEZ";
+
+  return (
+    <svg viewBox="0 0 794 1123" className="h-full w-full" aria-hidden="true" data-testid="editorial-poster-thumbnail">
+      <defs>
+        <linearGradient id="editorialPosterThumbnailBackground" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#ffe3d4" />
+          <stop offset="52%" stopColor="#f5d0df" />
+          <stop offset="100%" stopColor="#e6d2f3" />
+        </linearGradient>
+      </defs>
+      <rect width="794" height="1123" fill="url(#editorialPosterThumbnailBackground)" />
+      <path d="M0 520 C130 660 135 850 0 1060Z" fill="#f6adc3" fillOpacity="0.55" />
+      <path d="M794 454 C640 495 538 651 520 850 C510 977 440 1070 386 1123H794Z" fill="#e3c7ed" fillOpacity="0.7" />
+      <text x="397" y="98" textAnchor="middle" fontSize="34" fontFamily="Georgia,serif" fontWeight="600" fill="#111111">Votre logo</text>
+      <line x1="354" y1="130" x2="440" y2="130" stroke="#111111" strokeWidth="3" />
+      <text x="76" y="292" fontSize="88" fontFamily="Georgia,serif" fill="#111111">
+        <tspan x="76">Scannez et</tspan><tspan x="76" dy="84">jouez</tspan>
+      </text>
+      <text x="76" y="465" fontSize="25" fontFamily="Arial,sans-serif" letterSpacing="4" fill="#111111">
+        <tspan x="76">TENTEZ DE GAGNER</tspan><tspan x="76" dy="35">UN CADEAU !</tspan>
+      </text>
+      <g data-testid="editorial-thumbnail-qr">
+        <rect x="104" y="624" width="344" height="344" rx="30" fill="#fffdfb" stroke="#f4b5c3" strokeWidth="5" />
+        {qrDataUrl ? (
+          <image href={qrDataUrl} x="128" y="648" width="296" height="296" />
+        ) : (
+          <QrCode x="128" y="648" width="296" height="296" color="#111111" strokeWidth="1.6" />
+        )}
+      </g>
+      <path d="M208 1058 C172 1042 164 1004 184 974 L164 991 M184 974 L191 1000" fill="none" stroke="#111111" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+      <text x="226" y="1080" fontSize="42" fontFamily="Georgia,serif" fontStyle="italic" fill="#111111">Scannez ici</text>
+      {[
+        { y: 605, number: "1.", label: "SCANNEZ", kind: "phone" },
+        { y: 784, number: "2.", label: action, kind: "game" },
+        { y: 963, number: "3.", label: "GAGNEZ", kind: "gift" },
+      ].map((step) => (
+        <g key={step.number}>
+          <circle cx="638" cy={step.y} r="60" fill="#fffaf7" fillOpacity="0.54" stroke="#ffffff" strokeWidth="4" />
+          {step.kind === "phone" ? (
+            <g transform={`translate(638 ${step.y})`} fill="none" stroke="#111111" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="-23" y="-39" width="46" height="78" rx="8" />
+              <path d="M-21 -27H21M-21 27H21" />
+            </g>
+          ) : step.kind === "game" ? (
+            <g transform={`translate(638 ${step.y})`} fill="none" stroke="#111111" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M-35 -15C-39 -34-22 -35-9 -27H9C22 -35 39 -34 35 -15L29 14C26 27 17 30 7 17H-7C-17 30-26 27-29 14Z" />
+              <path d="M-19 -8V8M-27 0H-11" />
+              <circle cx="17" cy="-7" r="2.5" fill="#111111" /><circle cx="24" cy="4" r="2.5" fill="#111111" />
+            </g>
+          ) : (
+            <g transform={`translate(638 ${step.y})`} fill="none" stroke="#111111" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M-29 -9H29V29H-29ZM-36 -23H36V-9H-36ZM0 -23V29M0 -23C-27 -23-31 -38-20 -40-11 -42-4 -32 0 -23ZM0 -23C27 -23 31 -38 20 -40 11 -42 4 -32 0 -23Z" />
+            </g>
+          )}
+          <text x="638" y={step.y + 96} textAnchor="middle" fontSize="20" fontFamily="Arial,sans-serif" fontWeight="600" letterSpacing="3.2" fill="#111111">
+            {step.number} {step.label}
+          </text>
+        </g>
+      ))}
+    </svg>
+  );
+}
+
 type ThumbnailStepIconKind = "scan" | "wheel" | "gift";
 
 function ThumbnailStepIcon({
@@ -147,7 +218,9 @@ export function PosterTemplateSelector({
               <span aria-hidden="true" className="relative block h-[220px] overflow-hidden" style={{
                 background: visualTemplate.background,
               }}>
-                {visualTemplate.id === "premium-wheel" ? (
+                {visualTemplate.id === "pastel-editorial-wheel" ? (
+                  <EditorialPosterThumbnail gameType={gameType} qrDataUrl={qrDataUrl} />
+                ) : visualTemplate.id === "premium-wheel" ? (
                   <svg viewBox="0 0 794 1123" className="h-full w-full" aria-hidden="true">
                     <image href="/backgrounds/premium-poster-backdrop.png" width="794" height="1123" />
                     <text x="520" y="102" textAnchor="middle" fontSize="28" fill="#171412">Votre établissement</text>
