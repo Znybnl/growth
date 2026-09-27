@@ -167,7 +167,7 @@ export function wheelPaletteForTemplate(
       ...current,
       loseColor: DEFAULT_CLASSIC_WHEEL_PRIMARY_COLOR,
       rimColor: deriveLighterHex(DEFAULT_CLASSIC_WHEEL_PRIMARY_COLOR),
-      alternateLoseColor: deriveLighterHex(DEFAULT_CLASSIC_WHEEL_PRIMARY_COLOR),
+      alternateLoseColor: deriveLighterHex(DEFAULT_CLASSIC_WHEEL_PRIMARY_COLOR, 0.7),
     };
   }
 
@@ -504,6 +504,13 @@ export function deriveLighterHex(hex: string, ratio = 0.58) {
   return `#${nextRed.toString(16).padStart(2, "0")}${nextGreen
     .toString(16)
     .padStart(2, "0")}${nextBlue.toString(16).padStart(2, "0")}`;
+}
+
+/** Refresh Dynamique's legacy light segments without changing a merchant-selected secondary color. */
+export function dynamicWheelLightSegmentColor(primaryColor: string, secondaryColor: string) {
+  return secondaryColor.toLowerCase() === deriveLighterHex(primaryColor).toLowerCase()
+    ? deriveLighterHex(primaryColor, 0.7)
+    : secondaryColor;
 }
 
 export function createDefaultWheelSettings(

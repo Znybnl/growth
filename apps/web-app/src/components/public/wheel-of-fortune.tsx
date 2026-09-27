@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Pointer } from "lucide-react";
 import { RoseFlowerMark } from "@/components/public/rose-powder-decor";
 import { textFontFamily } from "@/lib/format";
+import { dynamicWheelLightSegmentColor } from "@/lib/campaign-defaults";
 import { beautyWheelButtonTextColor, beautyWheelLegibleText, beautyWheelTheme, isBeautyWheelTemplate, type BeautyWheelTemplateId } from "@/lib/beauty-wheel-themes";
 import { rosePowderVisualSegments } from "@/lib/wheel-segments";
 import { buildBeautyWheelSegmentColors, limitBeautyWheelSegments } from "@/lib/beauty-wheel-segments";
@@ -340,6 +341,9 @@ export function WheelOfFortune({
   const beautySeparatorWidth = pageTemplate === "beauty-pop" ? 1.8 : pageTemplate === "beauty-botanical" ? 1.6 : 1.25;
   const centerButtonBackground = buttonStyle?.backgroundColor ?? accent.signal;
   const isClassicTemplate = pageTemplate === "classic";
+  const dynamicLightSegmentColor = isClassicTemplate
+    ? dynamicWheelLightSegmentColor(colors.loseColor, colors.alternateLoseColor)
+    : colors.alternateLoseColor;
   const roseAccent = colors.loseColor.toLowerCase() === "#d58a9a" ? "#b95f75" : deriveDarkerHex(colors.loseColor);
   const isDefaultRoseColor = colors.loseColor.toLowerCase() === "#d58a9a";
   const roseIvory = colors.alternateLoseColor.toLowerCase() === "#fff7f8" ? "#fffdfc" : colors.alternateLoseColor;
@@ -578,7 +582,7 @@ export function WheelOfFortune({
                     : colors.alternateLoseColor
                 : index % 2 === 0
                   ? colors.loseColor
-                  : colors.alternateLoseColor;
+                  : dynamicLightSegmentColor;
               const textColor = isBeautyTemplate
                 ? beautyWheelLegibleText(fillColor, beautyTheme?.text)
                 : isRoseInstitutTemplate
