@@ -1,6 +1,7 @@
 "use client";
 
 import { Pointer } from "lucide-react";
+import { wheelButtonBackgroundForWhiteText } from "@/lib/wheel-button-contrast";
 import { useCallback, useEffect, useState } from "react";
 
 type WheelSegment = {
@@ -119,6 +120,10 @@ export function CocoricoWheel({
     0,
     visualSegments.findIndex((segment) => segment.id === winningSegmentId),
   );
+  const buttonTextColor = buttonStyle?.textColor ?? "#ffffff";
+  const visiblePrimaryButtonColor = wheelButtonBackgroundForWhiteText(primaryColor, buttonTextColor);
+  const visibleSecondaryButtonColor = wheelButtonBackgroundForWhiteText(secondaryColor, buttonTextColor);
+  const visibleDeepButtonColor = wheelButtonBackgroundForWhiteText(DEEP_BLUE, buttonTextColor);
   const wheelSizeClass =
     framing === "public"
       ? "top-[4%] w-[min(calc(100vw-20px),380px)] sm:w-[min(calc(100vw-20px),440px)] md:w-[min(calc(100vw-24px),540px)] lg:w-[min(48vw,620px)] xl:w-[min(40vw,680px)]"
@@ -233,15 +238,17 @@ export function CocoricoWheel({
           onClick={handleButton}
           disabled={!buttonEnabled || isSpinning || hasSpun}
           aria-label={buttonLabel}
-          className="okado-wheel-center-button absolute left-1/2 top-1/2 z-40 flex aspect-square w-[24%] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-[4px] border-white text-center font-black uppercase transition active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-75"
+          className="okado-wheel-center-button absolute left-1/2 top-1/2 z-40 flex aspect-square w-[24%] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-[4px] border-white text-center font-black uppercase transition active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-100"
           style={{
             background:
               buttonEnabled && !hasSpun
-                ? buttonStyle?.backgroundColor ?? (palette === "duo"
-                  ? `linear-gradient(145deg, ${secondaryColor}, ${primaryColor})`
-                  : `linear-gradient(145deg, ${primaryColor}, ${DEEP_BLUE})`)
-                : "#94a3b8",
-            color: buttonStyle?.textColor ?? "#ffffff",
+                ? buttonStyle?.backgroundColor
+                  ? wheelButtonBackgroundForWhiteText(buttonStyle.backgroundColor, buttonTextColor)
+                  : palette === "duo"
+                    ? `linear-gradient(145deg, ${visibleSecondaryButtonColor}, ${visiblePrimaryButtonColor})`
+                    : `linear-gradient(145deg, ${visiblePrimaryButtonColor}, ${visibleDeepButtonColor})`
+                : "#64748b",
+            color: buttonEnabled && !hasSpun ? buttonTextColor : "#ffffff",
             boxShadow: "inset 0 -8px 13px rgba(0,0,0,0.2), 0 12px 23px rgba(4,48,93,0.3)",
           }}
         >
