@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useState } from "react";
 import { legibleSegmentTextColor } from "@/lib/color-contrast";
+import { wheelButtonBackgroundForWhiteText } from "@/lib/wheel-button-contrast";
 
 type WheelSegment = {
   id: string;
@@ -117,6 +118,9 @@ export function ImmersiveWheel({
   const secondary = wheelStyle?.winColor ?? accent.paper;
   const palePrimary = blendWithWhite(primary, isCosmic ? 0.16 : 0.72);
   const paleSecondary = blendWithWhite(secondary, isCosmic ? 0.2 : 0.75);
+  const buttonTextColor = buttonStyle?.textColor ?? "#ffffff";
+  const visibleButtonColor = wheelButtonBackgroundForWhiteText(buttonStyle?.backgroundColor ?? primary, buttonTextColor);
+  const visibleGradientEnd = wheelButtonBackgroundForWhiteText(primary, buttonTextColor, 5.2);
   const wheelSizeClass =
     framing === "public"
       ? "top-2 w-[max(126vw,calc(100svh-240px))] sm:w-[min(104vw,calc(100svh-220px))] md:w-[min(96vw,calc(100svh-220px))] lg:w-[min(48vw,calc(100svh-220px))] xl:w-[min(40vw,calc(100svh-220px))]"
@@ -252,10 +256,16 @@ export function ImmersiveWheel({
           type="button"
           onClick={handleButton}
           disabled={!buttonEnabled || isSpinning || hasSpun}
-          className={`okado-wheel-center-button absolute left-1/2 top-1/2 z-40 flex aspect-square w-[23%] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-[5px] text-center font-black tracking-[0.04em] transition active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-75 ${isCosmic ? "font-display" : "font-fredoka"}`}
+          className={`okado-wheel-center-button absolute left-1/2 top-1/2 z-40 flex aspect-square w-[23%] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-[5px] text-center font-black tracking-[0.04em] transition active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-100 ${isCosmic ? "font-display" : "font-fredoka"}`}
           style={{
-            background: buttonEnabled && !hasSpun ? buttonStyle?.backgroundColor ?? `linear-gradient(145deg, ${primary}, ${withAlpha(primary, "cc")})` : "#94a3b8",
-            color: buttonStyle?.textColor ?? "#ffffff",
+            background: buttonEnabled && !hasSpun
+              ? buttonStyle?.backgroundColor
+                ? visibleButtonColor
+                : ["#fff", "#ffffff"].includes(buttonTextColor.toLowerCase())
+                  ? `linear-gradient(145deg, ${visibleButtonColor}, ${visibleGradientEnd})`
+                  : `linear-gradient(145deg, ${primary}, ${withAlpha(primary, "cc")})`
+              : "#64748b",
+            color: buttonEnabled && !hasSpun ? buttonTextColor : "#ffffff",
             borderColor: isCosmic ? secondary : "#fffdf7",
             fontSize: isCosmic ? "clamp(0.72rem, 4.2cqw, 1.22rem)" : "clamp(0.78rem, 4.5cqw, 1.32rem)",
             boxShadow: isCosmic

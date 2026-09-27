@@ -6,6 +6,7 @@ import { RoseFlowerMark } from "@/components/public/rose-powder-decor";
 import { textFontFamily } from "@/lib/format";
 import { dynamicWheelLightSegmentColor } from "@/lib/campaign-defaults";
 import { legibleSegmentTextColor } from "@/lib/color-contrast";
+import { wheelButtonBackgroundForWhiteText } from "@/lib/wheel-button-contrast";
 import { beautyWheelButtonTextColor, beautyWheelLegibleText, beautyWheelTheme, isBeautyWheelTemplate, type BeautyWheelTemplateId } from "@/lib/beauty-wheel-themes";
 import { rosePowderVisualSegments } from "@/lib/wheel-segments";
 import { buildBeautyWheelSegmentColors, limitBeautyWheelSegments } from "@/lib/beauty-wheel-segments";
@@ -332,6 +333,16 @@ export function WheelOfFortune({
     ? dynamicWheelLightSegmentColor(colors.loseColor, colors.alternateLoseColor)
     : colors.alternateLoseColor;
   const roseAccent = colors.loseColor.toLowerCase() === "#d58a9a" ? "#b95f75" : deriveDarkerHex(colors.loseColor);
+  const centerButtonTextColor = isRosePowderTemplate
+    ? (buttonStyle?.backgroundColor?.toLowerCase() === colors.loseColor.toLowerCase() ? roseAccent : buttonStyle?.backgroundColor ?? roseAccent)
+    : isBeautyTemplate
+      ? beautyWheelButtonTextColor(beautyTemplateId!, centerButtonBackground, buttonStyle?.textColor)
+      : buttonStyle?.textColor ?? "#ffffff";
+  const visibleCenterBackground = wheelButtonBackgroundForWhiteText(centerButtonBackground, centerButtonTextColor);
+  const visibleCenterGradientEnd = wheelButtonBackgroundForWhiteText(
+    buttonStyle?.backgroundColor ?? colors.rimColor,
+    centerButtonTextColor,
+  );
   const isDefaultRoseColor = colors.loseColor.toLowerCase() === "#d58a9a";
   const roseIvory = colors.alternateLoseColor.toLowerCase() === "#fff7f8" ? "#fffdfc" : colors.alternateLoseColor;
   const roseLight = isDefaultRoseColor ? "#f3cdd5" : deriveLighterHex(colors.loseColor, 0.67);
@@ -730,16 +741,14 @@ export function WheelOfFortune({
           aria-label={isBeautyTemplate ? (isSpinning ? "La roue tourne" : "Jouer à la roue") : undefined}
           onClick={handleCentralButton}
           disabled={!buttonEnabled || isSpinning || hasSpun}
-          className={`okado-wheel-center-button absolute left-1/2 top-1/2 z-40 flex aspect-square ${isRestaurantPopTemplate ? "w-[27%]" : isClassicTemplate ? "w-[28%]" : isRoseInstitutTemplate ? "w-[28%]" : isRosePowderTemplate ? "w-[25%]" : pageTemplate === "beauty-botanical" ? "w-[33%]" : pageTemplate === "beauty-nude" ? "w-[31.5%]" : isBeautyTemplate ? "w-[30%]" : "w-[19.2%]"} -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full ${isClassicTemplate || isRestaurantPopTemplate ? "border-[5px]" : isRosePowderTemplate || isBeautyTemplate ? "border-2" : isRoseInstitutTemplate ? "border-[3px]" : "border-[4px]"} ${isBeautyTemplate && !isRosePowderTemplate ? `okado-beauty-wheel-center okado-beauty-wheel-center--${pageTemplate} relative isolate overflow-hidden` : ""} text-[19px] font-black uppercase transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-75 shadow-[0_10px_20px_rgba(15,23,42,0.16)]`}
+          className={`okado-wheel-center-button absolute left-1/2 top-1/2 z-40 flex aspect-square ${isRestaurantPopTemplate ? "w-[27%]" : isClassicTemplate ? "w-[28%]" : isRoseInstitutTemplate ? "w-[28%]" : isRosePowderTemplate ? "w-[25%]" : pageTemplate === "beauty-botanical" ? "w-[33%]" : pageTemplate === "beauty-nude" ? "w-[31.5%]" : isBeautyTemplate ? "w-[30%]" : "w-[19.2%]"} -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full ${isClassicTemplate || isRestaurantPopTemplate ? "border-[5px]" : isRosePowderTemplate || isBeautyTemplate ? "border-2" : isRoseInstitutTemplate ? "border-[3px]" : "border-[4px]"} ${isBeautyTemplate && !isRosePowderTemplate ? `okado-beauty-wheel-center okado-beauty-wheel-center--${pageTemplate} relative isolate overflow-hidden` : ""} text-[19px] font-black uppercase transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-100 shadow-[0_10px_20px_rgba(15,23,42,0.16)]`}
           style={{
             width: isRosePowderTemplate ? "30%" : undefined,
             background: isRosePowderTemplate ? "#fffdfc" :
               buttonEnabled && !hasSpun
-                ? isRoseInstitutTemplate || isBeautyTemplate
-                  ? centerButtonBackground
-                  : isClassicTemplate || isRestaurantPopTemplate
-                    ? centerButtonBackground
-                  : `linear-gradient(180deg, ${centerButtonBackground}, ${buttonStyle?.backgroundColor ?? colors.rimColor})`
+                ? isRoseInstitutTemplate || isBeautyTemplate || isClassicTemplate || isRestaurantPopTemplate
+                  ? visibleCenterBackground
+                  : `linear-gradient(180deg, ${visibleCenterBackground}, ${visibleCenterGradientEnd})`
                 : "linear-gradient(180deg, #aeb8c7, #7f8a9d)",
             color: isRosePowderTemplate
               ? (buttonStyle?.backgroundColor?.toLowerCase() === colors.loseColor.toLowerCase() ? roseAccent : buttonStyle?.backgroundColor ?? roseAccent)
@@ -747,7 +756,7 @@ export function WheelOfFortune({
                 ? beautyWheelButtonTextColor(beautyTemplateId!, centerButtonBackground, buttonStyle?.textColor)
                 : isClassicTemplate || isRestaurantPopTemplate
                   ? highContrastTextColor(centerButtonBackground)
-                  : buttonStyle?.textColor ?? "#ffffff",
+                  : centerButtonTextColor,
             borderColor: isRosePowderTemplate ? "#d58a9a" : isClassicTemplate || isRestaurantPopTemplate ? "#ffffff" : isRoseInstitutTemplate || isBeautyTemplate ? "#ffffff" : buttonStyle?.borderColor ?? "#ffffff",
             fontSize: isClassicTemplate
               ? "clamp(0.88rem, 5.1cqw, 1.75rem)"
