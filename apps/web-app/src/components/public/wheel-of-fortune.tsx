@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Pointer } from "lucide-react";
 import { RoseFlowerMark } from "@/components/public/rose-powder-decor";
 import { textFontFamily } from "@/lib/format";
+import { legibleSegmentTextColor } from "@/lib/color-contrast";
 import { beautyWheelButtonTextColor, beautyWheelLegibleText, beautyWheelTheme, isBeautyWheelTemplate, type BeautyWheelTemplateId } from "@/lib/beauty-wheel-themes";
 import { rosePowderVisualSegments } from "@/lib/wheel-segments";
 import { buildBeautyWheelSegmentColors, limitBeautyWheelSegments } from "@/lib/beauty-wheel-segments";
@@ -112,21 +113,6 @@ function describeSlice(startAngle: number, endAngle: number, innerRadius = INNER
     `A ${innerRadius} ${innerRadius} 0 ${largeArcFlag} 0 ${innerStart.x} ${innerStart.y}`,
     "Z",
   ].join(" ");
-}
-
-function readableTextColor(fill: string, fallback: string) {
-  const hex = fill.replace("#", "");
-
-  if (hex.length !== 6) {
-    return fallback;
-  }
-
-  const red = Number.parseInt(hex.slice(0, 2), 16);
-  const green = Number.parseInt(hex.slice(2, 4), 16);
-  const blue = Number.parseInt(hex.slice(4, 6), 16);
-  const luminance = (0.299 * red + 0.587 * green + 0.114 * blue) / 255;
-
-  return luminance > 0.68 ? "#111827" : "#ffffff";
 }
 
 function deriveLighterHex(hex: string, ratio = 0.76) {
@@ -570,8 +556,8 @@ export function WheelOfFortune({
               const textColor = isBeautyTemplate
                 ? beautyWheelLegibleText(fillColor, beautyTheme?.text)
                 : isRoseInstitutTemplate
-                ? buttonStyle?.backgroundColor ?? "#0b4ea2"
-                : readableTextColor(fillColor, segment.tone === "win" ? accent.ink : "#111827");
+                ? legibleSegmentTextColor(fillColor, buttonStyle?.backgroundColor ?? "#0b4ea2")
+                : legibleSegmentTextColor(fillColor, segment.tone === "win" ? accent.ink : "#111827");
 
               return (
                 <g key={segment.id}>
