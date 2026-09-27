@@ -10,6 +10,7 @@ import { wheelButtonBackgroundForWhiteText } from "@/lib/wheel-button-contrast";
 import { beautyWheelButtonTextColor, beautyWheelLegibleText, beautyWheelTheme, isBeautyWheelTemplate, type BeautyWheelTemplateId } from "@/lib/beauty-wheel-themes";
 import { rosePowderVisualSegments } from "@/lib/wheel-segments";
 import { buildBeautyWheelSegmentColors, limitBeautyWheelSegments } from "@/lib/beauty-wheel-segments";
+import { enforceMinimumWheelPrizeLabelFontSize } from "@/lib/wheel-labels";
 
 type WheelSegment = {
   id: string;
@@ -575,8 +576,15 @@ export function WheelOfFortune({
                 if (labelLines.length >= 3) textStyles.fontSize -= isRosePowderTemplate ? 1 : 2;
                 if (isRosePowderTemplate) {
                   textStyles.lineHeight = textStyles.fontSize * 0.94;
-                  textStyles.initialOffset = -((labelLines.length - 1) * textStyles.lineHeight) / 2;
                 }
+              }
+              textStyles.fontSize = enforceMinimumWheelPrizeLabelFontSize(textStyles.fontSize);
+              if (labelLines.length > 1) {
+                textStyles.lineHeight = Math.max(
+                  textStyles.lineHeight,
+                  textStyles.fontSize * (isRosePowderTemplate ? 0.94 : 0.9),
+                );
+                textStyles.initialOffset = -((labelLines.length - 1) * textStyles.lineHeight) / 2;
               }
               // Colors are an aesthetic rhythm, independent from the winning outcome.
               const fillColor = isRosePowderTemplate

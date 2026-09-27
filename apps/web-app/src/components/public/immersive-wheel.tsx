@@ -3,6 +3,7 @@
 import { useEffect, useId, useState } from "react";
 import { legibleSegmentTextColor } from "@/lib/color-contrast";
 import { wheelButtonBackgroundForWhiteText } from "@/lib/wheel-button-contrast";
+import { enforceMinimumWheelPrizeLabelFontSize } from "@/lib/wheel-labels";
 
 type WheelSegment = {
   id: string;
@@ -210,6 +211,7 @@ export function ImmersiveWheel({
                 : index % 2 === 0 ? palePrimary : paleSecondary;
               const textColor = legibleSegmentTextColor(fill, isCosmic ? "#ffffff" : "#10213f", "#10213f");
               const lines = labelLines(segment.label);
+              const labelFontSize = enforceMinimumWheelPrizeLabelFontSize(20);
 
               return (
                 <g key={segment.id}>
@@ -221,13 +223,13 @@ export function ImmersiveWheel({
                     textAnchor="middle"
                     dominantBaseline="middle"
                     fill={textColor}
-                    fontSize="20"
+                    fontSize={String(labelFontSize)}
                     fontWeight="800"
                     letterSpacing="0.5"
                     transform={`rotate(${midAngle + 90} ${point.x} ${point.y})`}
                   >
                     {lines.map((line, lineIndex) => (
-                      <tspan key={`${segment.id}-${lineIndex}`} x={point.x} dy={lineIndex === 0 ? `${lines.length > 1 ? -9 : 0}px` : "18px"}>{line}</tspan>
+                      <tspan key={`${segment.id}-${lineIndex}`} x={point.x} dy={lineIndex === 0 ? `${lines.length > 1 ? -labelFontSize * 0.45 : 0}px` : `${labelFontSize * 0.9}px`}>{line}</tspan>
                     ))}
                   </text>
                 </g>
