@@ -352,6 +352,7 @@ export type PosterSubtitleLayout = {
   x: number;
   top: number;
   headlineGap: number;
+  headlineLayoutBottom?: number;
   fontWeight: number;
   letterSpacing: number;
   uppercase: boolean;
@@ -426,6 +427,7 @@ export function getPosterSubtitleLayout(
     ? Math.min(template.qrSize, A4_WIDTH - template.qrX - 24)
     : Math.min(template.subtitleMaxWidth ?? template.headlineMaxWidth ?? 620, A4_WIDTH - 48);
   const lines = posterSubtitleLines(text, width, fontSize);
+  const textHeight = fontSize + Math.max(0, lines.length - 1) * lineHeight;
   const configuredHeadlineGap = clampCampaignSpacingPx(
     campaign.presentation.layout.subtitleSpacingPx,
     defaultWheelSubtitleSpacingForTemplate(campaign.presentation.layout.templateId),
@@ -438,12 +440,20 @@ export function getPosterSubtitleLayout(
   const standardHeadlineLayout = !isPremiumTemplate && !template.backdropAsset && !isEditorialTemplate
     ? getStandardHeadlineLayout(campaign, poster, template)
     : null;
+  const editorialHeadline = poster.headline || campaign.subtitle || "Faites tourner la roue";
+  const editorialHeadlineBottomLimit = isEditorialTemplate
+    ? Math.min(
+      template.headlineBlockBottom ?? Number.POSITIVE_INFINITY,
+      template.qrY - 32 - textHeight - headlineGap,
+    )
+    : undefined;
   const editorialHeadlineLayout = isEditorialTemplate || template.id === "botanical-wheel"
     ? getPremiumHeadlineLayout(
-      poster.headline || campaign.subtitle || "Faites tourner la roue",
+      editorialHeadline,
       poster,
       template,
       measure,
+      editorialHeadlineBottomLimit,
     )
     : null;
   const visualTop = isPremiumTemplate
@@ -457,10 +467,16 @@ export function getPosterSubtitleLayout(
     : campaign.gameType === "scratch"
       ? 480
       : template.wheelY - template.wheelRadius - 36;
-  const textHeight = fontSize + Math.max(0, lines.length - 1) * lineHeight;
   const premiumVisualGap = isPremiumTemplate ? 52 : 36;
-  const top = isEditorialTemplate
-    ? visualTop
+  const editorialHeadlineLayoutBottom = isEditorialTemplate && editorialHeadlineLayout
+    ? editorialHeadlineLayout.top +
+      editorialHeadlineLayout.size * 0.82 +
+      Math.max(0, editorialHeadlineLayout.lines.length - 1) *
+        editorialHeadlineLayout.size * (template.headlineLineHeightMultiplier ?? 1.08) +
+      editorialHeadlineLayout.size * 0.18
+    : undefined;
+  const top = isEditorialTemplate && editorialHeadlineLayoutBottom !== undefined
+    ? editorialHeadlineLayoutBottom + headlineGap
     : standardHeadlineLayout
     ? standardHeadlineLayout.firstLineY +
       Math.max(0, standardHeadlineLayout.lines.length - 1) * standardHeadlineLayout.lineHeight +
@@ -489,6 +505,7 @@ export function getPosterSubtitleLayout(
         : template.headlineX ?? A4_WIDTH / 2,
     top,
     headlineGap,
+    headlineLayoutBottom: editorialHeadlineLayoutBottom,
     fontWeight: isPremiumTemplate || isEditorialTemplate ? 400 : 600,
     letterSpacing: isEditorialTemplate ? 3.2 : 0.28,
     uppercase: isEditorialTemplate,
@@ -563,7 +580,9 @@ function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, temp
       poster,
       template,
       measure,
-      (template.id === "premium-wheel" || template.id === "pastel-editorial-wheel") && subtitleLayout
+      template.id === "pastel-editorial-wheel" && subtitleLayout?.headlineLayoutBottom !== undefined
+        ? subtitleLayout.headlineLayoutBottom
+        : template.id === "premium-wheel" && subtitleLayout
         ? subtitleLayout.top - subtitleLayout.headlineGap
         : undefined,
     );
@@ -827,26 +846,26 @@ function renderSteps(template: PosterTemplateConfig, gameType: Campaign["gameTyp
         ${steps.map(({ number, label, cy }, index) => `
           <circle cx="638" cy="${cy}" r="60" fill="#fffaf7" fill-opacity="0.54" stroke="#ffffff" stroke-width="4"/>
           ${index === 0 ? `
-            <g transform="translate(638 ${cy})" fill="none" stroke="#111111" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+            <g transform="translate(638 ${cy}) scale(0.9)" fill="none" stroke="#111111" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
               <rect x="-23" y="-39" width="46" height="78" rx="8"/>
               <path d="M-21 -27 H21 M-21 27 H21"/>
               <circle cx="0" cy="33" r="2.5" fill="#111111" stroke="none"/>
             </g>
           ` : index === 1 ? gameType === "wheel" ? `
-            <g transform="translate(638 ${cy})" fill="none" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
+            <g transform="translate(638 ${cy}) scale(0.9)" fill="none" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M0 -35 V-7 M24.75 -24.75 5 -5 M35 0 H7 M24.75 24.75 5 5 M0 35 V7 M-24.75 24.75 -5 5 M-35 0 H-7 M-24.75 -24.75 -5 -5"/>
               <circle r="34" stroke-width="5"/>
               <circle r="6" fill="#111111" stroke="none"/>
               <path d="M0 -35 -9 -49 H9 Z" fill="#111111" stroke="none"/>
             </g>
           ` : `
-            <g transform="translate(638 ${cy})" fill="none" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
+            <g transform="translate(638 ${cy}) scale(0.9)" fill="none" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
               <rect x="-30" y="-36" width="60" height="72" rx="8"/>
               <path d="M-20 -15 H20 M-20 0 H20 M-20 15 H20" stroke-dasharray="5 6"/>
               <path d="M-30 -24 H30 M-30 24 H30"/>
             </g>
           ` : `
-            <g transform="translate(638 ${cy})" fill="none" stroke="#111111" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+            <g transform="translate(638 ${cy}) scale(0.9)" fill="none" stroke="#111111" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M-29 -9 H29 V29 H-29 Z M-36 -23 H36 V-9 H-36 Z M0 -23 V29"/>
               <path d="M0 -23 C-27 -23 -31 -38 -20 -40 C-11 -42 -4 -32 0 -23 Z M0 -23 C27 -23 31 -38 20 -40 C11 -42 4 -32 0 -23 Z"/>
             </g>
