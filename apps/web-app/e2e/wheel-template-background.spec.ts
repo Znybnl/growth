@@ -2,14 +2,46 @@ import { expect, test } from "@playwright/test";
 
 import {
   DEFAULT_COCORICO_DUO_YELLOW,
+  DEFAULT_CLASSIC_WHEEL_PRIMARY_COLOR,
   DEFAULT_ROSE_INSTITUT_BACKGROUND_COLOR,
+  deriveLighterHex,
+  dynamicWheelLightSegmentColor,
+  wheelPaletteForTemplate,
   wheelBackgroundForTemplate,
   wheelBackgroundForTemplateSelection,
+  wheelHeadingColorForTemplateSelection,
 } from "../src/lib/campaign-defaults";
 
-test("Classique ne reprend pas le fond jaune de Bicolore à sa première sélection", () => {
+test("Dynamique ne reprend pas le fond jaune de Bicolore à sa première sélection", () => {
   expect(wheelBackgroundForTemplateSelection("classic", DEFAULT_COCORICO_DUO_YELLOW)).toBe("#ffffff");
   expect(wheelBackgroundForTemplateSelection("classic", "#2563eb")).toBe("#ffffff");
+});
+
+test("Dynamique éclaircit ses segments clairs par défaut sans écraser une couleur secondaire choisie", () => {
+  const primary = DEFAULT_CLASSIC_WHEEL_PRIMARY_COLOR;
+  const legacyLight = deriveLighterHex(primary);
+  const updatedLight = deriveLighterHex(primary, 0.7);
+  expect(wheelPaletteForTemplate("classic", {
+    rimColor: legacyLight,
+    winColor: "#ffffff",
+    alternateWinColor: "#ffffff",
+    loseColor: primary,
+    alternateLoseColor: legacyLight,
+  }).alternateLoseColor).toBe(updatedLight);
+  expect(dynamicWheelLightSegmentColor(primary, legacyLight)).toBe(updatedLight);
+  expect(dynamicWheelLightSegmentColor(primary, updatedLight)).toBe(updatedLight);
+  expect(dynamicWheelLightSegmentColor(primary, "#f0dcbb")).toBe("#f0dcbb");
+});
+
+test("Signature démarre sur un fond neutre et chaque modèle a sa couleur de titre", () => {
+  expect(wheelBackgroundForTemplateSelection("restaurant-pop", "#003cb9")).toBe("#fffdfa");
+  expect(wheelPaletteForTemplate("restaurant-pop", {
+    rimColor: "#ffffff", winColor: "#ffffff", alternateWinColor: "#ffffff",
+    loseColor: "#003cb9", alternateLoseColor: "#ffffff",
+  }).winColor).toBe("#faf9f7");
+  expect(wheelHeadingColorForTemplateSelection("classic", "#1b2842")).toBe("#ffffff");
+  expect(wheelHeadingColorForTemplateSelection("restaurant-pop", "#ffffff")).toBe("#1b2842");
+  expect(wheelBackgroundForTemplate("restaurant-pop", "#ced9e8")).toBe("#ced9e8");
 });
 
 test("Éclat initialise son fond rose après un template sombre", () => {

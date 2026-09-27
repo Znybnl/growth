@@ -65,7 +65,7 @@ test.describe("Parcours marchand authentifié", () => {
     const fontSelect = page.locator('select:has(option[value="roboto"])').first();
     await expect(fontSelect).toHaveValue("fredoka");
     await expect(fontSelect.locator("option")).toHaveText(["Roboto", "Days One", "Fredoka"]);
-    await page.getByRole("button", { name: /^Classique\b/ }).click();
+    await page.getByRole("button", { name: /^Dynamique\b/ }).click();
     const availableFonts = await fontSelect.locator("option").allTextContents();
     expect(availableFonts).toEqual(expect.arrayContaining([
       "Roboto", "Geogrotesque", "Cormorant Garamond", "Playfair Display",
