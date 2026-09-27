@@ -251,6 +251,7 @@ export function wheelBackgroundForTemplateSelection(
   currentColor: string,
 ) {
   if (templateId === "classic") return "#ffffff";
+  if (templateId === "rose-institut") return DEFAULT_ROSE_INSTITUT_BACKGROUND_COLOR;
   return wheelBackgroundForTemplate(templateId, currentColor);
 }
 
