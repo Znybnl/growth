@@ -44,12 +44,16 @@ export type PosterTemplateConfig = {
   logoX?: number;
   logoY?: number;
   logoFontWeight?: number;
+  logoFontSizeMultiplier?: number;
   logoLetterSpacing?: number;
   logoFontFamily?: TextFont;
   logoTextAnchor?: "start" | "middle";
   logoImageAnchor?: "start" | "middle";
   logoUnderlineWidth?: number;
   logoUnderlineColor?: string;
+  logoUnderlineGapPx?: number;
+  logoUnderlineCentered?: boolean;
+  headlineTextAnchor?: "start" | "middle";
   inlineQrCta?: boolean;
   inlineQrLabelBackground?: string;
   inlineQrLabelTextColor?: string;
@@ -335,6 +339,70 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
       loseColor: "#f6f3ed",
       alternateLoseColor: "#f6f3ed",
       rimColor: "#718578",
+    },
+  },
+  {
+    id: "ivory-editorial-wheel",
+    label: "Éditorial ivoire",
+    description: "Composition sérif centrée, fond ivoire et QR code encadré.",
+    background: "#fffdf8",
+    accent: "#f2c3b2",
+    accentDark: "#151412",
+    headline: "#111111",
+    headlineStroke: "none",
+    headlineTextColor: "#111111",
+    headlineFontSizePx: 84,
+    qrFrame: "#f3c0ad",
+    logoVariant: "lined",
+    wheelX: 0,
+    wheelY: 0,
+    wheelRadius: 0,
+    qrX: 210,
+    qrY: 638,
+    qrSize: 340,
+    ctaX: 0,
+    ctaY: 0,
+    ctaWidth: 0,
+    ctaHeight: 0,
+    ctaRotation: 0,
+    headlineY: 260,
+    headlineSizeMultiplier: 1.68,
+    colorsCustomizable: false,
+    headlineX: 397,
+    headlineMaxWidth: 710,
+    subtitleMaxWidth: 700,
+    headlineBlockBottom: 590,
+    headlineLogoGapPx: 82,
+    headlineFontWeight: 500,
+    headlineItalic: false,
+    headlineFontFamily: "cormorant",
+    headlineTextAnchor: "middle",
+    logoX: 397,
+    logoY: 12,
+    logoFontWeight: 600,
+    logoFontSizeMultiplier: 1.7,
+    logoLetterSpacing: 0,
+    logoFontFamily: "cormorant",
+    logoTextAnchor: "middle",
+    logoImageAnchor: "middle",
+    logoUnderlineWidth: 84,
+    logoUnderlineColor: "#191817",
+    logoUnderlineCentered: true,
+    logoUnderlineGapPx: 68,
+    supportingTextX: 397,
+    supportingTextY: 516,
+    supportingTextFontFamily: "inter",
+    supportingTextFontSize: 29,
+    supportingTextLineHeight: 44,
+    supportingTextColor: "#171614",
+    supportingTextLetterSpacing: 5,
+    backgroundOnly: true,
+    wheel: {
+      winColor: "#f2c3b2",
+      alternateWinColor: "#fffdf8",
+      loseColor: "#fffdf8",
+      alternateLoseColor: "#fffdf8",
+      rimColor: "#f2c3b2",
     },
   },
 ];
