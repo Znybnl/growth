@@ -9,7 +9,7 @@ export function BeautyWheelDecorations({
   templateId: GamePageTemplateId;
   primaryColor: string;
 }) {
-  if (!isBeautyWheelTemplate(templateId) || templateId === "beauty-rose") return null;
+  if ((!isBeautyWheelTemplate(templateId) && templateId !== "rose-institut") || templateId === "beauty-rose") return null;
 
   const primary = /^#[\da-f]{6}$/i.test(primaryColor)
     ? primaryColor
@@ -23,6 +23,14 @@ export function BeautyWheelDecorations({
       preserveAspectRatio="xMidYMid slice"
       focusable="false"
     >
+      {templateId === "rose-institut" ? (
+        <g fill="none" stroke={primary} strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="195" cy="520" r="132" fill={primary} fillOpacity=".055" stroke="none" style={{ filter: "blur(34px)" }} />
+          <path d="M356 153v13m-6.5-6.5h13M29 286v9m-4.5-4.5h9M362 647v8m-4-4h8M22 741v11m-5.5-5.5h11" strokeOpacity=".24" strokeWidth="1.3" />
+          <circle cx="345" cy="284" r="1.5" fill={primary} fillOpacity=".22" stroke="none" />
+        </g>
+      ) : null}
+
       {templateId === "beauty-nude" ? (
         <g fill="none" stroke={primary} strokeLinecap="round">
           <ellipse cx="-20" cy="710" rx="150" ry="95" fill={primary} fillOpacity=".075" style={{ filter: "blur(28px)" }} stroke="none" />

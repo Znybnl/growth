@@ -868,7 +868,7 @@ export function CampaignExperience({
         fontFamily: textFontFamily(campaign.presentation.heading.fontFamily),
       }}
     >
-      {isBeautyTemplate && !isRosePowderTemplate && !(campaign.presentation.background.mode === "image" && campaign.presentation.background.imageUrl) ? (
+      {(isBeautyTemplate || isRoseInstitutTemplate) && !isRosePowderTemplate && !(campaign.presentation.background.mode === "image" && campaign.presentation.background.imageUrl) ? (
         <BeautyWheelDecorations templateId={pageTemplate} primaryColor={primaryColor} />
       ) : null}
       {isPreview ? (
@@ -907,7 +907,7 @@ export function CampaignExperience({
                 size="lg"
                 variant="transparent"
                 imageWidthPx={logoWidthPx}
-                textSizePx={isRosePowderTemplate ? Math.round(logoTextSizePx * 0.9) : logoTextSizePx}
+                textSizePx={isRosePowderTemplate || isRoseInstitutTemplate ? Math.round(logoTextSizePx * 0.9) : logoTextSizePx}
                 textClassName="text-2xl"
                 textColor={campaign.presentation.logo.textColor ?? headingTextColor}
                 textFontWeight={isRosePowderTemplate ? 600 : undefined}
@@ -936,7 +936,7 @@ export function CampaignExperience({
             rotate={isCocoricoTemplate}
           /> : <h1
             className={`${headingFontClass} ${isBeautyTemplate ? "okado-beauty-heading" : isRoseInstitutTemplate ? "line-clamp-5 leading-[1]" : "line-clamp-3 leading-[1]"} whitespace-pre-line text-[#151826]`}
-            style={{ color: headingTextColor, fontSize: headingFontSize, fontWeight: isRoseInstitutTemplate || pageTemplate === "beauty-pop" ? 800 : campaign.presentation.heading.fontWeight ?? 600 }}
+            style={{ color: headingTextColor, fontSize: headingFontSize, fontWeight: isRoseInstitutTemplate ? 600 : pageTemplate === "beauty-pop" ? 800 : campaign.presentation.heading.fontWeight ?? 600 }}
           >
             {isRestaurantPopTemplate
               ? restaurantPopHeadingLines.map((line, lineIndex) => (

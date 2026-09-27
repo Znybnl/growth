@@ -252,6 +252,7 @@ export function wheelBackgroundForTemplateSelection(
 ) {
   if (templateId === "classic") return "#ffffff";
   if (templateId === "restaurant-pop") return "#fffdfa";
+  if (templateId === "rose-institut") return DEFAULT_ROSE_INSTITUT_BACKGROUND_COLOR;
   return wheelBackgroundForTemplate(templateId, currentColor);
 }
 

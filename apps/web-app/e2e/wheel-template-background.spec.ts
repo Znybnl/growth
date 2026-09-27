@@ -3,6 +3,7 @@ import { expect, test } from "@playwright/test";
 import {
   DEFAULT_COCORICO_DUO_YELLOW,
   DEFAULT_CLASSIC_WHEEL_PRIMARY_COLOR,
+  DEFAULT_ROSE_INSTITUT_BACKGROUND_COLOR,
   deriveLighterHex,
   dynamicWheelLightSegmentColor,
   wheelPaletteForTemplate,
@@ -41,6 +42,15 @@ test("Signature démarre sur un fond neutre et chaque modèle a sa couleur de ti
   expect(wheelHeadingColorForTemplateSelection("classic", "#1b2842")).toBe("#ffffff");
   expect(wheelHeadingColorForTemplateSelection("restaurant-pop", "#ffffff")).toBe("#1b2842");
   expect(wheelBackgroundForTemplate("restaurant-pop", "#ced9e8")).toBe("#ced9e8");
+});
+
+test("Éclat initialise son fond rose après un template sombre", () => {
+  expect(wheelBackgroundForTemplateSelection("rose-institut", "#171126")).toBe(
+    DEFAULT_ROSE_INSTITUT_BACKGROUND_COLOR,
+  );
+  expect(wheelBackgroundForTemplateSelection("rose-institut", "#24183a")).toBe(
+    DEFAULT_ROSE_INSTITUT_BACKGROUND_COLOR,
+  );
 });
 
 test("les fonds personnalisés enregistrés restent inchangés au chargement", () => {
