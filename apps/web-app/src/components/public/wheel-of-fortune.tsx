@@ -493,7 +493,7 @@ export function WheelOfFortune({
                   r={OUTER_RADIUS + 10}
                   fill="#fffdfa"
                   stroke="#ffffff"
-                  strokeWidth="9"
+                  strokeWidth="12"
                 />
                 <circle
                   cx={CENTER}
@@ -501,7 +501,7 @@ export function WheelOfFortune({
                   r={OUTER_RADIUS + 4}
                   fill="none"
                   stroke={withAlpha(colors.rimColor, 0.36)}
-                  strokeWidth="1.5"
+                  strokeWidth="2"
                 />
               </>
             ) : isRosePowderTemplate ? (
@@ -671,12 +671,18 @@ export function WheelOfFortune({
           ) : isClassicTemplate || isRestaurantPopTemplate ? (
             <svg
               aria-hidden="true"
-              className="absolute left-1/2 top-[-2%] h-[13%] w-[10%] -translate-x-1/2 overflow-visible"
+              className={`absolute left-1/2 -translate-x-1/2 overflow-visible ${isClassicTemplate ? "top-[-4%] h-[17%] w-[13%]" : "top-[-2%] h-[13%] w-[10%]"}`}
               viewBox="0 0 52 58"
               style={{ filter: "drop-shadow(0 4px 5px rgba(17,24,39,.25))" }}
             >
-              <path d="M8 4 Q5 4 6 10 L23 50 Q26 55 29 50 L46 10 Q47 4 44 4 Z" fill={isClassicTemplate ? "#ffffff" : colors.loseColor} stroke="#ffffff" strokeWidth="4" strokeLinejoin="round" />
-              <path d="M10 7 L42 7 L26 47 Z" fill={isClassicTemplate ? "#ffffff" : colors.loseColor} stroke={isClassicTemplate ? colors.loseColor : "none"} strokeWidth="1.5" strokeLinejoin="round" />
+              {isClassicTemplate ? (
+                <>
+                  <path d="M8 5 Q5 5 7 11 L22 49 Q26 57 30 49 L45 11 Q47 5 44 5 Z" fill="#ffffff" stroke={colors.loseColor} strokeWidth="8" strokeLinejoin="round" />
+                  <path d="M8 5 Q5 5 7 11 L22 49 Q26 57 30 49 L45 11 Q47 5 44 5 Z" fill="#ffffff" stroke="#ffffff" strokeWidth="4" strokeLinejoin="round" />
+                </>
+              ) : (
+                <path d="M12 4 C6 4 4 8 6 14 L21 47 C23 55 29 55 31 47 L46 14 C48 8 46 4 40 4 Z" fill={colors.loseColor} stroke="#ffffff" strokeWidth="4" strokeLinejoin="round" />
+              )}
             </svg>
           ) : <div
             className="absolute"
