@@ -86,8 +86,8 @@ function EditorialPosterThumbnail({
       <path d="M794 454 C640 495 538 651 520 850 C510 977 440 1070 386 1123H794Z" fill="#e3c7ed" fillOpacity="0.7" />
       <text x="397" y="98" textAnchor="middle" fontSize="34" fontFamily="Georgia,serif" fontWeight="600" fill="#111111">Votre logo</text>
       <line x1="354" y1="130" x2="440" y2="130" stroke="#111111" strokeWidth="3" />
-      <text x="76" y="292" fontSize="88" fontFamily="Georgia,serif" fill="#111111">
-        <tspan x="76">Scannez et</tspan><tspan x="76" dy="84">jouez</tspan>
+      <text x="76" y="292" fontSize="88" fontFamily="Georgia,serif" fontWeight="600" fill="#111111">
+        <tspan x="76">Scannez et</tspan><tspan x="76" dy="77">jouez</tspan>
       </text>
       <text x="76" y="465" fontSize="25" fontFamily="Arial,sans-serif" letterSpacing="4" fill="#111111">
         <tspan x="76">TENTEZ DE GAGNER</tspan><tspan x="76" dy="35">UN CADEAU !</tspan>
@@ -101,10 +101,10 @@ function EditorialPosterThumbnail({
         )}
       </g>
       <path d="M208 1058 C172 1042 164 1004 184 974 L164 991 M184 974 L191 1000" fill="none" stroke="#111111" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
-      <text x="226" y="1080" fontSize="42" fontFamily="Georgia,serif" fontStyle="italic" fill="#111111">Scannez ici</text>
+      <text x="226" y="1080" fontSize="42" fontFamily="Georgia,serif" fontStyle="italic" fontWeight="600" fill="#111111">Scannez ici</text>
       {[
         { y: 605, number: "1.", label: "SCANNEZ", kind: "phone" },
-        { y: 784, number: "2.", label: action, kind: "game" },
+        { y: 784, number: "2.", label: action, kind: gameType === "wheel" ? "wheel" : "scratch" },
         { y: 963, number: "3.", label: "GAGNEZ", kind: "gift" },
       ].map((step) => (
         <g key={step.number}>
@@ -114,11 +114,18 @@ function EditorialPosterThumbnail({
               <rect x="-23" y="-39" width="46" height="78" rx="8" />
               <path d="M-21 -27H21M-21 27H21" />
             </g>
-          ) : step.kind === "game" ? (
-            <g transform={`translate(638 ${step.y})`} fill="none" stroke="#111111" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M-35 -15C-39 -34-22 -35-9 -27H9C22 -35 39 -34 35 -15L29 14C26 27 17 30 7 17H-7C-17 30-26 27-29 14Z" />
-              <path d="M-19 -8V8M-27 0H-11" />
-              <circle cx="17" cy="-7" r="2.5" fill="#111111" /><circle cx="24" cy="4" r="2.5" fill="#111111" />
+          ) : step.kind === "wheel" ? (
+            <g data-testid="editorial-step-wheel-icon" transform={`translate(638 ${step.y})`} fill="none" stroke="#111111" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M0-35V-7M24.75-24.75 5-5M35 0H7M24.75 24.75 5 5M0 35V7M-24.75 24.75-5 5M-35 0H-7M-24.75-24.75-5-5" />
+              <circle r="34" strokeWidth="5" />
+              <circle r="6" fill="#111111" stroke="none" />
+              <path d="M0-35-9-49H9Z" fill="#111111" stroke="none" />
+            </g>
+          ) : step.kind === "scratch" ? (
+            <g transform={`translate(638 ${step.y})`} fill="none" stroke="#111111" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="-30" y="-36" width="60" height="72" rx="8" />
+              <path d="M-20-15H20M-20 0H20M-20 15H20" strokeDasharray="5 6" />
+              <path d="M-30-24H30M-30 24H30" />
             </g>
           ) : (
             <g transform={`translate(638 ${step.y})`} fill="none" stroke="#111111" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round">

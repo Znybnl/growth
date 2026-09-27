@@ -542,9 +542,10 @@ export function getPremiumHeadlineLayout(headline: string, poster: CampaignPoste
       return lines;
     };
     const requestedSize = poster.headlineFontSizePx * template.headlineSizeMultiplier;
+    const lineHeightMultiplier = template.headlineLineHeightMultiplier ?? 1.08;
     let size = requestedSize;
     let lines = wrap(size);
-    while (size > 12 && (lines.length > 4 || lines.length * size * 1.08 > availableHeight)) {
+    while (size > 12 && (lines.length > 4 || lines.length * size * lineHeightMultiplier > availableHeight)) {
       size -= 1;
       lines = wrap(size);
     }
@@ -566,7 +567,8 @@ function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, temp
         ? subtitleLayout.top - subtitleLayout.headlineGap
         : undefined,
     );
-    return `<g data-headline-size="${size}">${lines.map((line, index) => `<text x="${x}" y="${top + size * 0.82 + index * size * 1.08}"
+    const lineHeightMultiplier = template.headlineLineHeightMultiplier ?? 1.08;
+    return `<g data-headline-size="${size}">${lines.map((line, index) => `<text x="${x}" y="${top + size * 0.82 + index * size * lineHeightMultiplier}"
       text-anchor="start" fill="${color}" font-family="${family}" font-size="${size}"
       font-weight="${template.headlineFontWeight ?? 500}">${escapeXml(line)}</text>`).join("")}</g>`;
   }
@@ -751,7 +753,7 @@ function renderQrAndCta(qrDataUrl: string, template: PosterTemplateConfig) {
         <path d="M208 1058 C172 1042 164 1004 184 974"/>
         <path d="M184 974 L164 991 M184 974 L191 1000"/>
       </g>
-      <text x="226" y="1080" text-anchor="start" fill="#111111" font-family="${fontFamily("cormorant")}" font-size="42" font-style="italic">Scannez ici</text>
+      <text x="226" y="1080" text-anchor="start" fill="#111111" font-family="${fontFamily("cormorant")}" font-size="42" font-style="italic" font-weight="600">Scannez ici</text>
     `;
   }
 
@@ -830,11 +832,18 @@ function renderSteps(template: PosterTemplateConfig, gameType: Campaign["gameTyp
               <path d="M-21 -27 H21 M-21 27 H21"/>
               <circle cx="0" cy="33" r="2.5" fill="#111111" stroke="none"/>
             </g>
-          ` : index === 1 ? `
-            <g transform="translate(638 ${cy})" fill="none" stroke="#111111" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M-35 -15 C-39 -34 -22 -35 -9 -27 H9 C22 -35 39 -34 35 -15 L29 14 C26 27 17 30 7 17 H-7 C-17 30 -26 27 -29 14 Z"/>
-              <path d="M-19 -8 V8 M-27 0 H-11"/>
-              <circle cx="17" cy="-7" r="2.5" fill="#111111"/><circle cx="24" cy="4" r="2.5" fill="#111111"/>
+          ` : index === 1 ? gameType === "wheel" ? `
+            <g transform="translate(638 ${cy})" fill="none" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M0 -35 V-7 M24.75 -24.75 5 -5 M35 0 H7 M24.75 24.75 5 5 M0 35 V7 M-24.75 24.75 -5 5 M-35 0 H-7 M-24.75 -24.75 -5 -5"/>
+              <circle r="34" stroke-width="5"/>
+              <circle r="6" fill="#111111" stroke="none"/>
+              <path d="M0 -35 -9 -49 H9 Z" fill="#111111" stroke="none"/>
+            </g>
+          ` : `
+            <g transform="translate(638 ${cy})" fill="none" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="-30" y="-36" width="60" height="72" rx="8"/>
+              <path d="M-20 -15 H20 M-20 0 H20 M-20 15 H20" stroke-dasharray="5 6"/>
+              <path d="M-30 -24 H30 M-30 24 H30"/>
             </g>
           ` : `
             <g transform="translate(638 ${cy})" fill="none" stroke="#111111" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">

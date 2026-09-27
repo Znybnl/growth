@@ -39,6 +39,7 @@ export type PosterTemplateConfig = {
   headlineBlockBottom?: number;
   headlineLogoGapPx?: number;
   headlineFontWeight?: number;
+  headlineLineHeightMultiplier?: number;
   headlineItalic?: boolean;
   headlineFontFamily?: TextFont;
   logoX?: number;
@@ -371,7 +372,8 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     subtitleMaxWidth: 520,
     headlineBlockBottom: 476,
     headlineLogoGapPx: 42,
-    headlineFontWeight: 500,
+    headlineFontWeight: 600,
+    headlineLineHeightMultiplier: 1.0,
     headlineItalic: false,
     headlineFontFamily: "cormorant",
     logoX: 397,
