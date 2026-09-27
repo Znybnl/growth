@@ -54,21 +54,21 @@ const INNER_RADIUS = 76;
 const MAX_LABEL_LINES = 3;
 
 const BEAUTY_PUBLIC_WHEEL_FRAME_CLASSES: Record<BeautyWheelTemplateId, string> = {
-  "beauty-rose": "top-[18px] w-[min(82vw,calc(100dvh-315px),360px)] sm:w-[min(82vw,calc(100dvh-315px),380px)] md:w-[min(46vw,calc(100dvh-260px),390px)] lg:w-[min(39vw,calc(100dvh-260px),390px)]",
-  "beauty-nude": "top-1 w-[min(82vw,calc(100dvh-315px),376px)] sm:w-[min(82vw,calc(100dvh-315px),390px)] md:w-[min(48vw,calc(100dvh-260px),400px)] lg:w-[min(41vw,calc(100dvh-260px),400px)]",
-  "beauty-botanical": "top-1 w-[min(84vw,calc(100dvh-315px),376px)] sm:w-[min(84vw,calc(100dvh-315px),390px)] md:w-[min(48vw,calc(100dvh-260px),400px)] lg:w-[min(41vw,calc(100dvh-260px),400px)]",
+  "beauty-rose": "top-[18px] w-[min(86vw,calc(100dvh-315px),380px)] sm:w-[min(86vw,calc(100dvh-315px),380px)] md:w-[min(46vw,calc(100dvh-260px),390px)] lg:w-[min(39vw,calc(100dvh-260px),390px)]",
+  "beauty-nude": "top-1 w-[min(86vw,calc(100dvh-315px),380px)] sm:w-[min(86vw,calc(100dvh-315px),380px)] md:w-[min(46vw,calc(100dvh-260px),390px)] lg:w-[min(39vw,calc(100dvh-260px),390px)]",
+  "beauty-botanical": "top-1 w-[min(86vw,calc(100dvh-315px),380px)] sm:w-[min(86vw,calc(100dvh-315px),380px)] md:w-[min(46vw,calc(100dvh-260px),390px)] lg:w-[min(39vw,calc(100dvh-260px),390px)]",
   "beauty-pop": "top-1 w-[min(86vw,calc(100dvh-315px),380px)] sm:w-[min(86vw,calc(100dvh-315px),380px)] md:w-[min(46vw,calc(100dvh-260px),390px)] lg:w-[min(39vw,calc(100dvh-260px),390px)]",
-  "beauty-editorial": "top-1 w-[min(82vw,calc(100dvh-315px),360px)] sm:w-[min(82vw,calc(100dvh-315px),380px)] md:w-[min(46vw,calc(100dvh-260px),390px)] lg:w-[min(39vw,calc(100dvh-260px),390px)]",
-  "beauty-tech": "top-1 w-[min(82vw,calc(100dvh-315px),360px)] sm:w-[min(82vw,calc(100dvh-315px),380px)] md:w-[min(46vw,calc(100dvh-260px),390px)] lg:w-[min(39vw,calc(100dvh-260px),390px)]",
+  "beauty-editorial": "top-1 w-[min(86vw,calc(100dvh-315px),380px)] sm:w-[min(86vw,calc(100dvh-315px),380px)] md:w-[min(46vw,calc(100dvh-260px),390px)] lg:w-[min(39vw,calc(100dvh-260px),390px)]",
+  "beauty-tech": "top-1 w-[min(86vw,calc(100dvh-315px),380px)] sm:w-[min(86vw,calc(100dvh-315px),380px)] md:w-[min(46vw,calc(100dvh-260px),390px)] lg:w-[min(39vw,calc(100dvh-260px),390px)]",
 };
 
 const BEAUTY_PREVIEW_WHEEL_FRAME_CLASSES: Record<BeautyWheelTemplateId, string> = {
   "beauty-rose": "w-[90%] max-w-none",
-  "beauty-nude": "w-[82%] max-w-none",
-  "beauty-botanical": "w-[84%] max-w-none",
+  "beauty-nude": "w-[86%] max-w-none",
+  "beauty-botanical": "w-[86%] max-w-none",
   "beauty-pop": "w-[86%] max-w-none",
-  "beauty-editorial": "w-[82%] max-w-none",
-  "beauty-tech": "w-[82%] max-w-none",
+  "beauty-editorial": "w-[86%] max-w-none",
+  "beauty-tech": "w-[86%] max-w-none",
 };
 
 const BEAUTY_POINTER_PATHS: Record<Exclude<BeautyWheelTemplateId, "beauty-rose">, string> = {
@@ -113,6 +113,13 @@ function describeSlice(startAngle: number, endAngle: number, innerRadius = INNER
     `A ${innerRadius} ${innerRadius} 0 ${largeArcFlag} 0 ${innerStart.x} ${innerStart.y}`,
     "Z",
   ].join(" ");
+}
+
+function describeBeautySeparator(angle: number, innerRadius: number) {
+  const innerPoint = polarToCartesian(innerRadius, angle);
+  const outerPoint = polarToCartesian(OUTER_RADIUS, angle);
+
+  return `M ${innerPoint.x} ${innerPoint.y} L ${outerPoint.x} ${outerPoint.y}`;
 }
 
 function deriveLighterHex(hex: string, ratio = 0.76) {
@@ -550,8 +557,8 @@ export function WheelOfFortune({
               <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 18} fill="#ffffff" stroke={colors.rimColor} strokeWidth="4" opacity="0.98" />
             )}
             {visualSegments.map((segment, index) => {
-              const startAngle = index * segmentAngle + (isRosePowderTemplate ? 0 : 1.2);
-              const endAngle = startAngle + segmentAngle - (isRosePowderTemplate ? 0 : 2.4);
+              const startAngle = index * segmentAngle + (isRosePowderTemplate || isBeautyTemplate ? 0 : 1.2);
+              const endAngle = startAngle + segmentAngle - (isRosePowderTemplate || isBeautyTemplate ? 0 : 2.4);
               const midAngle = startAngle + (endAngle - startAngle) / 2;
               const textPoint = polarToCartesian(isRosePowderTemplate ? 208 : isBeautyTemplate ? 194 : 208, midAngle);
               const radialTextAngle = midAngle + 90;
@@ -599,10 +606,20 @@ export function WheelOfFortune({
                   <path
                     d={describeSlice(startAngle, endAngle, isRosePowderTemplate ? 62 : INNER_RADIUS)}
                     fill={fillColor}
-                    stroke={isBeautyTemplate ? beautySeparatorColor : isRoseInstitutTemplate ? "rgba(255,255,255,0.9)" : "rgba(255,255,255,0.9)"}
-                    strokeWidth={isBeautyTemplate ? beautySeparatorWidth : isRoseInstitutTemplate ? "7" : "5"}
+                    stroke={isBeautyTemplate ? "none" : "rgba(255,255,255,0.9)"}
+                    strokeWidth={isRoseInstitutTemplate ? "7" : "5"}
                     strokeLinejoin="round"
                   />
+                  {isBeautyTemplate ? (
+                    <path
+                      d={describeBeautySeparator(startAngle, isRosePowderTemplate ? 62 : INNER_RADIUS)}
+                      fill="none"
+                      stroke={beautySeparatorColor}
+                      strokeWidth={beautySeparatorWidth}
+                      strokeLinecap="round"
+                      vectorEffect="non-scaling-stroke"
+                    />
+                  ) : null}
                   <text
                     x={textPoint.x}
                     y={textPoint.y}
@@ -658,7 +675,7 @@ export function WheelOfFortune({
           {isRosePowderTemplate ? (
             <svg
               aria-hidden="true"
-              className="absolute left-1/2 top-[-1%] h-[16%] w-[10%] -translate-x-1/2 overflow-visible"
+              className="absolute left-1/2 top-[-2.6%] h-[17.6%] w-[11%] -translate-x-1/2 overflow-visible"
               viewBox="0 0 48 64"
               style={{ filter: "drop-shadow(0 3px 5px rgba(74,47,54,.13))" }}
             >
@@ -668,7 +685,7 @@ export function WheelOfFortune({
           ) : beautyPointerTemplateId ? (
             <svg
               aria-hidden="true"
-              className="pointer-events-none absolute left-1/2 top-[-1.2%] h-[16%] w-[11.4%] -translate-x-1/2 overflow-visible"
+              className="pointer-events-none absolute left-1/2 top-[-2.8%] h-[17.6%] w-[12.54%] -translate-x-1/2 overflow-visible"
               viewBox="0 0 48 64"
               style={{ filter: "drop-shadow(0 3px 5px rgba(58,43,39,.18))" }}
             >
