@@ -1802,7 +1802,7 @@ export function CampaignEditor({
             },
             background: {
               ...current.presentation.background,
-              color: remembered?.backgroundColor ?? wheelBackgroundForTemplate(templateId, current.presentation.background.color),
+              color: remembered?.backgroundColor ?? wheelBackgroundForTemplateSelection(templateId, current.presentation.background.color),
             },
             wheel,
             heading: {
