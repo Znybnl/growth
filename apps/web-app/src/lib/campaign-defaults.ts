@@ -42,6 +42,12 @@ export const CAMPAIGN_SPACING_MAX_PX = 80;
 export const DEFAULT_WHEEL_SPACING_PX = 50;
 export const DEFAULT_ROSE_POWDER_WHEEL_SPACING_PX = 25;
 export const DEFAULT_WHEEL_SUBTITLE_SPACING_PX = 15;
+export const MIN_WHEEL_BLOCK_SPACING_PX = 24;
+
+/** Preserve a small structural clearance even when the configurable gap is zero. */
+export function campaignWheelBlockSpacingPx(value: number | undefined) {
+  return Math.max(MIN_WHEEL_BLOCK_SPACING_PX, clampCampaignSpacingPx(value));
+}
 
 export function campaignSubtitleForGameTypeChange(
   currentSubtitle: string,

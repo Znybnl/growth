@@ -28,6 +28,7 @@ import { textFontClass, textFontFamily, wheelSubtitleFontFamily } from "@/lib/fo
 import { userBackgroundImageStyle } from "@/lib/campaign-background";
 import {
   campaignLogoTextSizePx,
+  campaignWheelBlockSpacingPx,
   clampCampaignLogoSizePercent,
   clampCampaignSpacingPx,
   defaultWheelSubtitleSpacingForTemplate,
@@ -976,7 +977,7 @@ export function CampaignExperience({
         {campaign.gameType === "wheel" ? (
           <div
             className="relative left-1/2 min-h-0 w-screen -translate-x-1/2 flex-1 overflow-visible"
-            style={{ minHeight: "min(52vh, 520px)", marginTop: `${clampCampaignSpacingPx(campaign.presentation.layout.blockSpacingPx)}px` }}
+            style={{ minHeight: "min(52vh, 520px)", marginTop: `${campaignWheelBlockSpacingPx(campaign.presentation.layout.blockSpacingPx)}px` }}
           >
             <div className="absolute inset-0 overflow-visible">
               {isCocoricoTemplate ? (
