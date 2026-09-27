@@ -426,9 +426,11 @@ export function getPosterSubtitleLayout(
     campaign.presentation.layout.subtitleSpacingPx,
     defaultWheelSubtitleSpacingForTemplate(campaign.presentation.layout.templateId),
   );
-  const headlineGap = template.id === "botanical-wheel"
-    ? Math.max(30, configuredHeadlineGap)
-    : configuredHeadlineGap;
+  const headlineGap = isIvoryTemplate
+    ? configuredHeadlineGap + 10
+    : template.id === "botanical-wheel"
+      ? Math.max(30, configuredHeadlineGap)
+      : configuredHeadlineGap;
   const standardHeadlineLayout = !isPremiumTemplate && !template.backdropAsset && !isIvoryTemplate
     ? getStandardHeadlineLayout(campaign, poster, template)
     : null;
@@ -546,9 +548,10 @@ export function getPremiumHeadlineLayout(headline: string, poster: CampaignPoste
       return lines;
     };
     const requestedSize = poster.headlineFontSizePx * template.headlineSizeMultiplier;
+    const lineHeightMultiplier = template.headlineLineHeightMultiplier ?? 1.08;
     let size = requestedSize;
     let lines = wrap(size);
-    while (size > 12 && (lines.length > 4 || lines.length * size * 1.08 > availableHeight)) {
+    while (size > 12 && (lines.length > 4 || lines.length * size * lineHeightMultiplier > availableHeight)) {
       size -= 1;
       lines = wrap(size);
     }
@@ -570,7 +573,8 @@ function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, temp
         ? subtitleLayout.top - subtitleLayout.headlineGap
         : undefined,
     );
-    return `<g data-headline-size="${size}">${lines.map((line, index) => `<text x="${x}" y="${top + size * 0.82 + index * size * 1.08}"
+    const lineHeightMultiplier = template.headlineLineHeightMultiplier ?? 1.08;
+    return `<g data-headline-size="${size}">${lines.map((line, index) => `<text x="${x}" y="${top + size * 0.82 + index * size * lineHeightMultiplier}"
       text-anchor="${template.headlineTextAnchor ?? "start"}" fill="${color}" font-family="${family}" font-size="${size}"
       font-weight="${template.headlineFontWeight ?? 500}">${escapeXml(line)}</text>`).join("")}</g>`;
   }
@@ -754,10 +758,10 @@ function renderQrAndCta(qrDataUrl: string, template: PosterTemplateConfig) {
         <image href="${escapeXml(qrDataUrl)}" x="${qrInset}" y="${qrInset}" width="${qrContentSize}" height="${qrContentSize}" preserveAspectRatio="xMidYMid meet"/>
       </g>
       <g fill="none" stroke="#111111" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M${cardCenter - 136} ${cardBottom + 46} C${cardCenter - 198} ${cardBottom + 34} ${cardCenter - 230} ${cardBottom - 28} ${cardCenter - 220} ${cardBottom - 66}"/>
-        <path d="M${cardCenter - 220} ${cardBottom - 66} L${cardCenter - 248} ${cardBottom - 47} M${cardCenter - 220} ${cardBottom - 66} L${cardCenter - 214} ${cardBottom - 32}"/>
+        <path d="M${cardCenter - 136} ${cardBottom + 64} C${cardCenter - 198} ${cardBottom + 52} ${cardCenter - 230} ${cardBottom - 10} ${cardCenter - 220} ${cardBottom - 48}"/>
+        <path d="M${cardCenter - 220} ${cardBottom - 48} L${cardCenter - 248} ${cardBottom - 29} M${cardCenter - 220} ${cardBottom - 48} L${cardCenter - 214} ${cardBottom - 14}"/>
       </g>
-      <text x="${cardCenter}" y="${cardBottom + 82}" text-anchor="middle" fill="#111111" font-family="${fontFamily("cormorant")}" font-size="44" font-style="italic">Scannez ici</text>
+      <text x="${cardCenter}" y="${cardBottom + 82}" text-anchor="middle" fill="#111111" font-family="${fontFamily("cormorant")}" font-size="44" font-style="italic" font-weight="600">Scannez ici</text>
     `;
   }
 

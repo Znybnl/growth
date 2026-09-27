@@ -75,11 +75,11 @@ function IvoryEditorialThumbnail({ qrDataUrl }: { qrDataUrl?: string | null }) {
       </defs>
       <rect width="794" height="1123" fill="url(#ivoryEditorialThumbnailBackground)" />
       <text x="397" y="102" textAnchor="middle" fontSize="55" fontFamily="Georgia,serif" fontWeight="600" fill="#111111">Votre logo</text>
-      <line x1="354" y1="150" x2="440" y2="150" stroke="#191817" strokeWidth="3" />
-      <text x="397" y="329" textAnchor="middle" fontSize="150" fontFamily="Georgia,serif" fill="#111111">
-        <tspan x="397">Scannez</tspan><tspan x="397" dy="143">et jouez</tspan>
+      <line x1="361" y1="150" x2="433" y2="150" stroke="#191817" strokeWidth="3" />
+      <text data-testid="ivory-editorial-thumbnail-headline" x="397" y="329" textAnchor="middle" fontSize="150" fontFamily="Georgia,serif" fontWeight="600" fill="#111111">
+        <tspan x="397">Scannez</tspan><tspan x="397" dy="135">et jouez</tspan>
       </text>
-      <text x="397" y="535" textAnchor="middle" fontSize="29" fontFamily="Arial,sans-serif" letterSpacing="5" fill="#171614">
+      <text x="397" y="547" textAnchor="middle" fontSize="29" fontFamily="Arial,sans-serif" letterSpacing="5" fill="#171614">
         <tspan x="397">TENTEZ DE GAGNER</tspan><tspan x="397" dy="43">UN CADEAU</tspan>
       </text>
       <g data-testid="ivory-editorial-thumbnail-qr">
@@ -90,8 +90,8 @@ function IvoryEditorialThumbnail({ qrDataUrl }: { qrDataUrl?: string | null }) {
           <QrCode x="234" y="662" width="326" height="326" color="#111111" strokeWidth="1.6" />
         )}
       </g>
-      <path d="M301 1052 C243 1042 221 981 237 946 L210 965 M237 946 L243 980" fill="none" stroke="#111111" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
-      <text x="397" y="1095" textAnchor="middle" fontSize="44" fontFamily="Georgia,serif" fontStyle="italic" fill="#111111">Scannez ici</text>
+      <path d="M301 1070 C243 1060 221 999 237 964 L210 983 M237 964 L243 998" fill="none" stroke="#111111" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+      <text data-testid="ivory-editorial-thumbnail-qr-label" x="397" y="1095" textAnchor="middle" fontSize="44" fontFamily="Georgia,serif" fontStyle="italic" fontWeight="600" fill="#111111">Scannez ici</text>
     </svg>
   );
 }

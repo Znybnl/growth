@@ -39,6 +39,7 @@ export type PosterTemplateConfig = {
   headlineBlockBottom?: number;
   headlineLogoGapPx?: number;
   headlineFontWeight?: number;
+  headlineLineHeightMultiplier?: number;
   headlineItalic?: boolean;
   headlineFontFamily?: TextFont;
   logoX?: number;
@@ -373,7 +374,8 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     subtitleMaxWidth: 700,
     headlineBlockBottom: 590,
     headlineLogoGapPx: 82,
-    headlineFontWeight: 500,
+    headlineFontWeight: 600,
+    headlineLineHeightMultiplier: 1.0,
     headlineItalic: false,
     headlineFontFamily: "cormorant",
     headlineTextAnchor: "middle",
@@ -385,12 +387,12 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     logoFontFamily: "cormorant",
     logoTextAnchor: "middle",
     logoImageAnchor: "middle",
-    logoUnderlineWidth: 84,
+    logoUnderlineWidth: 72,
     logoUnderlineColor: "#191817",
     logoUnderlineCentered: true,
     logoUnderlineGapPx: 68,
     supportingTextX: 397,
-    supportingTextY: 516,
+    supportingTextY: 528,
     supportingTextFontFamily: "inter",
     supportingTextFontSize: 29,
     supportingTextLineHeight: 44,

@@ -30,6 +30,8 @@ test("le template Éditorial ivoire reste centré et exporte le même rendu que 
     await expect(page.getByLabel("Police du texte principal")).toHaveValue("cormorant");
     await expect(page.getByTestId("ivory-editorial-poster-thumbnail")).toBeAttached();
     await expect(page.getByTestId("ivory-editorial-thumbnail-qr")).toBeAttached();
+    await expect(page.getByTestId("ivory-editorial-thumbnail-headline")).toHaveAttribute("font-weight", "600");
+    await expect(page.getByTestId("ivory-editorial-thumbnail-qr-label")).toHaveAttribute("font-weight", "600");
     await page.getByRole("button", { name: "Texte", exact: true }).click();
     await page.getByLabel("Texte affiché à la place du logo").fill("Logo marchand E2E");
 
