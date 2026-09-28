@@ -1,8 +1,12 @@
 import { expect, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { signIn } from "./auth-session";
+import { getPosterTemplate } from "../src/lib/poster-templates";
 
 test("Gradient clair est la première variante de Classique et garde le même aperçu que le PNG", async ({ page }, testInfo) => {
+  const gradientTemplate = getPosterTemplate("classic-wheel", "soft-gradient");
+  expect(gradientTemplate.wheelRadius).toBe(247);
+  expect(gradientTemplate.qrSize).toBe(277.4);
   test.setTimeout(180_000);
   page.setDefaultTimeout(20_000);
   page.setDefaultNavigationTimeout(20_000);
@@ -32,7 +36,10 @@ test("Gradient clair est la première variante de Classique et garde le même ap
     await expect(gradientMotif).toHaveAttribute("aria-pressed", "true");
     await expect(motifs.getByRole("button").first()).toHaveAccessibleName("Gradient clair");
     await expect(page.getByTestId("gradient-clair-thumbnail")).toBeVisible();
+    await expect(page.getByTestId("gradient-clair-thumbnail-wheel")).toHaveAttribute("data-wheel-radius", "242.25");
     await expect(page.getByTestId("gradient-clair-thumbnail-qr")).toBeAttached();
+    await expect(page.getByTestId("gradient-clair-thumbnail-qr-image")).toHaveAttribute("width", "222.3");
+    await expect(page.getByTestId("gradient-clair-thumbnail-cta")).toHaveText("scannez pour jouer");
     await motifs.getByRole("button", { name: "Terracotta" }).click();
     await expect(motifs.getByRole("button", { name: "Terracotta" })).toHaveAttribute("aria-pressed", "true");
     await gradientMotif.click();

@@ -66,7 +66,7 @@ function QrThumbnail({ template }: { template: PosterTemplateConfig }) {
 function GradientClairThumbnail({ qrDataUrl }: { qrDataUrl?: string | null }) {
   const cx = 380;
   const cy = 835;
-  const radius = 255;
+  const radius = 242.25;
   const point = (angle: number, distance: number) => {
     const radians = (angle * Math.PI) / 180;
     return [cx + Math.cos(radians) * distance, cy + Math.sin(radians) * distance] as const;
@@ -89,29 +89,31 @@ function GradientClairThumbnail({ qrDataUrl }: { qrDataUrl?: string | null }) {
       <text x="397" y="220" textAnchor="middle" fontSize="58" fontWeight="700" fill="#050644" fontFamily="Arial, sans-serif">
         <tspan x="397">Scannez, jouez,</tspan><tspan x="397" dy="64">récupérez votre</tspan><tspan x="397" dy="64">cadeau !</tspan>
       </text>
-      {[0, 1, 2, 3, 4, 5].map((index) => {
-        const startAngle = -120 + index * 60;
-        const endAngle = startAngle + 60;
-        const [startX, startY] = point(startAngle, radius);
-        const [endX, endY] = point(endAngle, radius);
-        const [giftX, giftY] = point(startAngle + 30, radius * 0.58);
-        return (
-          <g key={index}>
-            <path d={`M ${cx} ${cy} L ${startX} ${startY} A ${radius} ${radius} 0 0 1 ${endX} ${endY} Z`} fill={index % 2 ? "#fff7ef" : "#4b35c9"} stroke="#403c70" strokeWidth="3" />
-            <g transform={`translate(${giftX} ${giftY}) rotate(${startAngle + 30})`} fill="none" stroke={index % 2 ? "#2100b8" : "#fff7ef"} strokeWidth="7" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="-19" y="-10" width="38" height="29" rx="3" />
-              <path d="M-22-10h44v10h-44zM0-10v29M-22 0h44M0-10c-15 0-20-3-17-10 3-6 12-2 17 10Zm0 0c15 0 20-3 17-10-3-6-12-2-17 10Z" />
+      <g data-testid="gradient-clair-thumbnail-wheel" data-wheel-radius={radius}>
+        {[0, 1, 2, 3, 4, 5].map((index) => {
+          const startAngle = -120 + index * 60;
+          const endAngle = startAngle + 60;
+          const [startX, startY] = point(startAngle, radius);
+          const [endX, endY] = point(endAngle, radius);
+          const [giftX, giftY] = point(startAngle + 30, radius * 0.58);
+          return (
+            <g key={index}>
+              <path d={`M ${cx} ${cy} L ${startX} ${startY} A ${radius} ${radius} 0 0 1 ${endX} ${endY} Z`} fill={index % 2 ? "#fff7ef" : "#4b35c9"} stroke="#403c70" strokeWidth="3" />
+              <g transform={`translate(${giftX} ${giftY}) rotate(${startAngle + 30})`} fill="none" stroke={index % 2 ? "#2100b8" : "#fff7ef"} strokeWidth="7" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="-19" y="-10" width="38" height="29" rx="3" />
+                <path d="M-22-10h44v10h-44zM0-10v29M-22 0h44M0-10c-15 0-20-3-17-10 3-6 12-2 17 10Zm0 0c15 0 20-3 17-10-3-6-12-2-17 10Z" />
+              </g>
             </g>
-          </g>
-        );
-      })}
-      <circle cx={cx} cy={cy} r="45" fill="#060642" />
-      <path d={`M ${cx - 28} ${cy - radius - 38} Q ${cx - 32} ${cy - radius - 38} ${cx - 28} ${cy - radius - 30} L ${cx - 4} ${cy - radius + 12} Q ${cx} ${cy - radius + 18} ${cx + 4} ${cy - radius + 12} L ${cx + 28} ${cy - radius - 30} Q ${cx + 32} ${cy - radius - 38} ${cx + 28} ${cy - radius - 38} Z`} fill="#060642" stroke="white" strokeWidth="8" strokeLinejoin="round" />
+          );
+        })}
+        <circle cx={cx} cy={cy} r="45" fill="#060642" />
+        <path d={`M ${cx - 28} ${cy - radius - 38} Q ${cx - 32} ${cy - radius - 38} ${cx - 28} ${cy - radius - 30} L ${cx - 4} ${cy - radius + 12} Q ${cx} ${cy - radius + 18} ${cx + 4} ${cy - radius + 12} L ${cx + 28} ${cy - radius - 30} Q ${cx + 32} ${cy - radius - 38} ${cx + 28} ${cy - radius - 38} Z`} fill="#060642" stroke="white" strokeWidth="8" strokeLinejoin="round" />
+      </g>
       <g data-testid="gradient-clair-thumbnail-qr">
-        <rect x="475" y="505" width="270" height="310" rx="26" fill="white" stroke="#2100b8" strokeWidth="2.5" />
-        {qrDataUrl ? <image href={qrDataUrl} x="493" y="523" width="234" height="234" /> : <QrCode x="493" y="523" width="234" height="234" color="#111" strokeWidth="1.5" />}
+        <rect x="480.85" y="510.85" width="256.5" height="294.5" rx="24.7" fill="white" stroke="#2100b8" strokeWidth="2.5" />
+        {qrDataUrl ? <image data-testid="gradient-clair-thumbnail-qr-image" href={qrDataUrl} x="498.85" y="528.85" width="222.3" height="222.3" /> : <QrCode data-testid="gradient-clair-thumbnail-qr-image" x="498.85" y="528.85" width="222.3" height="222.3" color="#111" strokeWidth="1.5" />}
         <rect x="433" y="831" width="354" height="64" rx="30" fill="#2100b8" stroke="white" strokeWidth="3" />
-        <text x="610" y="871" textAnchor="middle" fontSize="21" fontWeight="800" fill="white">SCANNEZ POUR JOUER</text>
+        <text data-testid="gradient-clair-thumbnail-cta" x="610" y="871" textAnchor="middle" fontSize="21" fontWeight="800" fill="white">scannez pour jouer</text>
       </g>
     </svg>
   );
