@@ -26,20 +26,26 @@ export function selectPosterTemplate(
   templateId: PosterTemplateId,
   campaignPrimaryColor = poster.wheel.winColor,
 ) {
-  if (poster.templateId === templateId) return poster;
-  const currentMotif =
-    poster.backgroundMotif ?? legacyPosterTemplateMotif(poster.templateId) ?? "plain";
-  const template = getPosterTemplate(
-    templateId,
-    templateId === "classic-wheel" ? poster.backgroundMotif : undefined,
-  );
+  if (
+    poster.templateId === templateId &&
+    !(templateId === "classic-wheel" && poster.backgroundMotif === "soft-gradient")
+  ) return poster;
+  const currentMotif = poster.templateId === "classic-wheel"
+    ? poster.backgroundMotif ?? legacyPosterTemplateMotif(poster.templateId) ?? "plain"
+    : legacyPosterTemplateMotif(poster.templateId) ?? "plain";
+  const targetMotif = templateId === "classic-wheel" ? "plain" : legacyPosterTemplateMotif(templateId);
+  const template = getPosterTemplate(templateId, targetMotif);
   const templateStyles = {
     ...poster.templateStyles,
-    [poster.templateId ?? "classic-wheel"]: styleOf(poster),
+    ...(poster.templateId === "classic-wheel" && currentMotif !== "plain"
+      ? {}
+      : { [poster.templateId ?? "classic-wheel"]: styleOf(poster) }),
   };
   const backgroundMotifStyles = {
     ...poster.backgroundMotifStyles,
-    ...(poster.templateId === "classic-wheel" ? { [currentMotif]: styleOf(poster) } : {}),
+    ...((poster.templateId === "classic-wheel" || !poster.templateId)
+      ? { [currentMotif]: styleOf(poster) }
+      : {}),
   };
   // Never seed a customizable template from Élégance's fixed palette/font.
   const source = getPosterTemplate(poster.templateId, poster.backgroundMotif).colorsCustomizable === false
@@ -47,9 +53,16 @@ export function selectPosterTemplate(
     : styleOf(poster);
   const fixed = template.colorsCustomizable === false;
   const winColor = fixed ? template.wheel.winColor : source?.wheel.winColor ?? template.wheel.winColor;
+  const currentClassicStyle = poster.templateId === "classic-wheel" && currentMotif === "plain"
+    ? styleOf(poster)
+    : undefined;
+  const savedClassicStyle = backgroundMotifStyles["soft-gradient"]
+    ? undefined
+    : templateStyles["classic-wheel"];
   const style =
-    (templateId === "classic-wheel" ? backgroundMotifStyles[currentMotif] : undefined) ??
-    templateStyles[templateId] ?? {
+    (templateId === "classic-wheel"
+      ? backgroundMotifStyles.plain ?? currentClassicStyle ?? savedClassicStyle
+      : (targetMotif ? backgroundMotifStyles[targetMotif] : undefined) ?? templateStyles[templateId]) ?? {
     backgroundMode: "color" as const,
     backgroundColor: template.background,
     backgroundImageUrl: "",
@@ -59,7 +72,14 @@ export function selectPosterTemplate(
     wheel: { ...template.wheel, winColor, alternateWinColor: fixed ? template.wheel.alternateWinColor : winColor },
   };
   return resolvePosterWheelPalette(
-    { ...poster, ...style, templateId, templateStyles, backgroundMotifStyles },
+    {
+      ...poster,
+      ...style,
+      templateId,
+      ...(targetMotif ? { backgroundMotif: targetMotif } : {}),
+      templateStyles,
+      backgroundMotifStyles,
+    },
     campaignPrimaryColor,
   );
 }

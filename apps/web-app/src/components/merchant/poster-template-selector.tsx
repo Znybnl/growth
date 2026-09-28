@@ -63,6 +63,60 @@ function QrThumbnail({ template }: { template: PosterTemplateConfig }) {
   );
 }
 
+function GradientClairThumbnail({ qrDataUrl }: { qrDataUrl?: string | null }) {
+  const cx = 380;
+  const cy = 835;
+  const radius = 255;
+  const point = (angle: number, distance: number) => {
+    const radians = (angle * Math.PI) / 180;
+    return [cx + Math.cos(radians) * distance, cy + Math.sin(radians) * distance] as const;
+  };
+
+  return (
+    <svg viewBox="0 0 794 1123" className="h-full w-full" aria-hidden="true" data-testid="gradient-clair-thumbnail">
+      <defs>
+        <linearGradient id="gradient-clair-thumbnail-bg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#efedff" />
+          <stop offset="55%" stopColor="#f8f7ff" />
+          <stop offset="100%" stopColor="#ffffff" />
+        </linearGradient>
+      </defs>
+      <rect width="794" height="1123" fill="url(#gradient-clair-thumbnail-bg)" />
+      <circle cx="240" cy="285" r="410" fill="#2100b8" opacity="0.085" />
+      <circle cx="570" cy="650" r="310" fill="white" opacity="0.38" />
+      <text x="397" y="96" textAnchor="middle" fontSize="30" fontWeight="600" fill="#050644">Votre établissement</text>
+      <line x1="367" y1="132" x2="427" y2="132" stroke="#403c70" strokeWidth="2" />
+      <text x="397" y="220" textAnchor="middle" fontSize="58" fontWeight="700" fill="#050644" fontFamily="Arial, sans-serif">
+        <tspan x="397">Scannez, jouez,</tspan><tspan x="397" dy="64">récupérez votre</tspan><tspan x="397" dy="64">cadeau !</tspan>
+      </text>
+      {[0, 1, 2, 3, 4, 5].map((index) => {
+        const startAngle = -120 + index * 60;
+        const endAngle = startAngle + 60;
+        const [startX, startY] = point(startAngle, radius);
+        const [endX, endY] = point(endAngle, radius);
+        const [giftX, giftY] = point(startAngle + 30, radius * 0.58);
+        return (
+          <g key={index}>
+            <path d={`M ${cx} ${cy} L ${startX} ${startY} A ${radius} ${radius} 0 0 1 ${endX} ${endY} Z`} fill={index % 2 ? "#fff7ef" : "#4b35c9"} stroke="#403c70" strokeWidth="3" />
+            <g transform={`translate(${giftX} ${giftY}) rotate(${startAngle + 30})`} fill="none" stroke={index % 2 ? "#2100b8" : "#fff7ef"} strokeWidth="7" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="-19" y="-10" width="38" height="29" rx="3" />
+              <path d="M-22-10h44v10h-44zM0-10v29M-22 0h44M0-10c-15 0-20-3-17-10 3-6 12-2 17 10Zm0 0c15 0 20-3 17-10-3-6-12-2-17 10Z" />
+            </g>
+          </g>
+        );
+      })}
+      <circle cx={cx} cy={cy} r="45" fill="#060642" />
+      <path d={`M ${cx - 28} ${cy - radius - 38} Q ${cx - 32} ${cy - radius - 38} ${cx - 28} ${cy - radius - 30} L ${cx - 4} ${cy - radius + 12} Q ${cx} ${cy - radius + 18} ${cx + 4} ${cy - radius + 12} L ${cx + 28} ${cy - radius - 30} Q ${cx + 32} ${cy - radius - 38} ${cx + 28} ${cy - radius - 38} Z`} fill="#060642" stroke="white" strokeWidth="8" strokeLinejoin="round" />
+      <g data-testid="gradient-clair-thumbnail-qr">
+        <rect x="475" y="505" width="270" height="310" rx="26" fill="white" stroke="#2100b8" strokeWidth="1.5" />
+        {qrDataUrl ? <image href={qrDataUrl} x="493" y="523" width="234" height="234" /> : <QrCode x="493" y="523" width="234" height="234" color="#111" strokeWidth="1.5" />}
+        <rect x="443" y="831" width="334" height="64" rx="30" fill="#2100b8" stroke="white" strokeWidth="3" />
+        <text x="610" y="871" textAnchor="middle" fontSize="21" fontWeight="800" fill="white">SCANNEZ POUR JOUER</text>
+      </g>
+    </svg>
+  );
+}
+
 type ThumbnailStepIconKind = "scan" | "wheel" | "gift";
 
 function ThumbnailStepIcon({
@@ -123,7 +177,12 @@ export function PosterTemplateSelector({
       </p>
       <div className="mt-6 grid gap-4 md:grid-cols-3">
         {POSTER_TEMPLATE_CHOICES.map((template) => {
-          const active = (selectedTemplateId ?? "classic-wheel") === template.id;
+          const isLegacyGradient = selectedTemplateId === "classic-wheel" && selectedBackgroundMotif === "soft-gradient";
+          const active = template.id === "soft-gradient-wheel"
+            ? selectedTemplateId === "soft-gradient-wheel" || isLegacyGradient
+            : template.id === "classic-wheel"
+              ? selectedTemplateId === "classic-wheel" && !isLegacyGradient
+              : selectedTemplateId === template.id;
           const visualTemplate = template.id === "classic-wheel"
             ? getPosterTemplate("classic-wheel", selectedBackgroundMotif)
             : template;
@@ -147,7 +206,9 @@ export function PosterTemplateSelector({
               <span aria-hidden="true" className="relative block h-[220px] overflow-hidden" style={{
                 background: visualTemplate.background,
               }}>
-                {visualTemplate.id === "premium-wheel" ? (
+                {visualTemplate.id === "soft-gradient-wheel" ? (
+                  <GradientClairThumbnail qrDataUrl={qrDataUrl} />
+                ) : visualTemplate.id === "premium-wheel" ? (
                   <svg viewBox="0 0 794 1123" className="h-full w-full" aria-hidden="true">
                     <image href="/backgrounds/premium-poster-backdrop.png" width="794" height="1123" />
                     <text x="520" y="102" textAnchor="middle" fontSize="28" fill="#171412">Votre établissement</text>
@@ -213,7 +274,7 @@ export function PosterTemplateSelector({
                 <div className="border-t border-[#e6d8eb] px-4 pb-4 pt-3">
                   <p className="text-xs font-semibold uppercase tracking-[0.16em] text-charcoal">Motif du fond</p>
                   <div className="mt-2 grid gap-2" role="group" aria-label="Motif du fond">
-                    {POSTER_BACKGROUND_MOTIFS.map((motif) => {
+                    {POSTER_BACKGROUND_MOTIFS.filter((motif) => motif.id !== "soft-gradient").map((motif) => {
                       const motifActive = selectedBackgroundMotif === motif.id;
                       return (
                         <button

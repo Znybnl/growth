@@ -50,12 +50,19 @@ export type PosterTemplateConfig = {
   logoImageAnchor?: "start" | "middle";
   logoUnderlineWidth?: number;
   logoUnderlineColor?: string;
+  logoUnderlineStrokeWidth?: number;
   inlineQrCta?: boolean;
   inlineQrLabelBackground?: string;
   inlineQrLabelTextColor?: string;
   inlineQrLabelWidth?: number;
   inlineQrLabelHeight?: number;
   inlineQrLabelGap?: number;
+  qrBorderWidth?: number;
+  ctaCornerRadius?: number;
+  ctaBorderWidth?: number;
+  wheelLabelVariant?: "prize-labels" | "gift-icons";
+  wheelPointerVariant?: "standard" | "rounded-triangle";
+  subtitleSpacingAdjustmentPx?: number;
   supportingText?: string;
   supportingTextX?: number;
   supportingTextY?: number;
@@ -151,12 +158,12 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
   {
     id: "soft-gradient-wheel",
     label: "Gradient clair",
-    description: "Design élégant et titre avec contour blanc.",
+    description: "Fond lavande lumineux et composition graphique épurée.",
     background: "#f4f3ff",
     accent: "#2100b8",
     accentDark: "#060642",
     headline: "#050644",
-    headlineStroke: "#ffffff",
+    headlineStroke: "none",
     headlineTextColor: "#050644",
     headlineFontSizePx: 40,
     qrFrame: "#2100b8",
@@ -170,10 +177,22 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     ctaX: 369,
     ctaY: 838,
     ctaWidth: 370,
-    ctaHeight: 86,
+    ctaHeight: 68,
     ctaRotation: 0,
-    headlineY: 250,
+    headlineY: 208,
     headlineSizeMultiplier: 1.52,
+    headlineItalic: false,
+    logoY: 0,
+    logoFontWeight: 600,
+    logoUnderlineWidth: 54,
+    logoUnderlineColor: "#403c70",
+    logoUnderlineStrokeWidth: 2,
+    subtitleSpacingAdjustmentPx: 8,
+    qrBorderWidth: 1.5,
+    ctaCornerRadius: 30,
+    ctaBorderWidth: 3,
+    wheelLabelVariant: "gift-icons",
+    wheelPointerVariant: "rounded-triangle",
     motif: "soft-gradient",
     wheel: {
       winColor: "#4b35c9",
@@ -345,9 +364,20 @@ export const POSTER_TEMPLATE_CONFIGS: Record<PosterTemplateId, PosterTemplateCon
     PosterTemplateConfig
   >;
 
-export const POSTER_TEMPLATE_CHOICES = POSTER_TEMPLATES.filter(
-  (template) => !["soft-gradient-wheel", "terracotta-wheel"].includes(template.id),
-);
+const POSTER_TEMPLATE_BY_ID = Object.fromEntries(
+  POSTER_TEMPLATES.map((template) => [template.id, template]),
+) as Record<PosterTemplateId, PosterTemplateConfig>;
+
+// Gradient clair is now a first-level design. Terracotta remains available as
+// a background variation of Classique, while Classique stays last in the list.
+export const POSTER_TEMPLATE_CHOICES = [
+  POSTER_TEMPLATE_BY_ID["soft-gradient-wheel"],
+  POSTER_TEMPLATE_BY_ID["terracotta-wheel"],
+  ...POSTER_TEMPLATES.filter(
+    (template) => !["soft-gradient-wheel", "terracotta-wheel", "classic-wheel"].includes(template.id),
+  ),
+  POSTER_TEMPLATE_BY_ID["classic-wheel"],
+];
 
 const MOTIF_TEMPLATE_IDS: Record<PosterBackgroundMotif, PosterTemplateId> = {
   plain: "classic-wheel",

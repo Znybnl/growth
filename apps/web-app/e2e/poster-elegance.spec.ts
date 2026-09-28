@@ -205,13 +205,13 @@ test("Élégance et motifs d’affiche conservent les styles et téléchargent e
     await expect(primary).toHaveValue("#146c70");
     await expect(background).toHaveValue("#e7f2ed");
     await expect(page.getByLabel("Taille du texte principal", { exact: true })).toHaveValue("44");
-    await page.getByRole("button", { name: "Gradient clair", exact: true }).click();
-    await page.getByRole("button", { name: /^Classique/ }).screenshot({ path: testInfo.outputPath("classic-motif-selector.png") });
-    await page.getByRole("group", { name: "Motif du fond" }).screenshot({ path: testInfo.outputPath("background-motif-options.png") });
+    await page.getByRole("button", { name: /^Gradient clair/ }).click();
+    await expect(page.getByRole("button", { name: /^Gradient clair/ })).toHaveAttribute("aria-pressed", "true");
+    await page.getByRole("button", { name: /^Gradient clair/ }).screenshot({ path: testInfo.outputPath("gradient-clair-template-selector.png") });
     await font.selectOption("fredoka");
     await choose("Élégance");
     await choose("Classique");
-    await page.getByRole("button", { name: "Gradient clair", exact: true }).click();
+    await page.getByRole("button", { name: /^Gradient clair/ }).click();
     await expect(font).toHaveValue("fredoka");
     await choose("Élégance");
     await save();
