@@ -14,5 +14,7 @@ node_modules
 !apps/web-app/public/backgrounds/premium-poster-backdrop.png
 # Keep the production asset required by the Botanique poster preview and PNG.
 !apps/web-app/public/backgrounds/botanical-poster-backdrop.png
+# Keep the production asset required by the Botanique éditorial poster preview and PNG.
+!apps/web-app/public/backgrounds/botanical-editorial-poster-backdrop.webp
 docs
 supabase
