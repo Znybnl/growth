@@ -281,7 +281,9 @@ function renderBackground(
 
 function getLogoLayout(poster: CampaignPosterSettings, template: PosterTemplateConfig) {
   const logoSize = clamp((poster.logoSizePercent / 100) * 170, 72, 300);
-  const logoY = template.logoY ?? (template.id === "classic-wheel" ? 28 : 22);
+  const logoY = poster.logoMode === "text"
+    ? template.logoTextY ?? template.logoY ?? (template.id === "classic-wheel" ? 28 : 22)
+    : template.logoY ?? (template.id === "classic-wheel" ? 28 : 22);
 
   return {
     logoSize,
@@ -772,7 +774,7 @@ function renderQrAndCta(qrDataUrl: string, template: PosterTemplateConfig) {
       </g>
       <g filter="url(#posterShadow)" transform="translate(${template.ctaX} ${ctaY}) rotate(${template.ctaRotation} ${template.ctaWidth / 2} ${template.ctaHeight / 2})">
         <rect width="${template.ctaWidth}" height="${template.ctaHeight}" rx="${template.ctaCornerRadius ?? 24}" fill="${accent}" stroke="#ffffff" stroke-width="${template.ctaBorderWidth ?? 7}"/>
-        <text x="${template.ctaWidth / 2}" y="${template.ctaHeight / 2 + 9}" text-anchor="middle" fill="#ffffff" font-family="${SAFE_FONT}" font-size="26" font-weight="900" letter-spacing="0.5">scannez pour jouer</text>
+        <text x="${template.ctaWidth / 2}" y="${template.ctaHeight / 2 + 9}" text-anchor="middle" fill="#ffffff" font-family="${SAFE_FONT}" font-size="27" font-weight="900" letter-spacing="0.5">Scannez pour jouer</text>
       </g>
     `;
   }

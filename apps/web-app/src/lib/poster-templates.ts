@@ -43,6 +43,7 @@ export type PosterTemplateConfig = {
   headlineFontFamily?: TextFont;
   logoX?: number;
   logoY?: number;
+  logoTextY?: number;
   logoFontWeight?: number;
   logoLetterSpacing?: number;
   logoFontFamily?: TextFont;
@@ -174,15 +175,16 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     qrX: 408,
     qrY: 512,
     qrSize: 277.4,
-    ctaX: 349,
+    ctaX: 359,
     ctaY: 838,
-    ctaWidth: 410,
+    ctaWidth: 390,
     ctaHeight: 68,
     ctaRotation: 0,
     headlineY: 208,
     headlineSizeMultiplier: 1.52,
     headlineItalic: false,
-    logoY: 30,
+    logoY: 26,
+    logoTextY: -24,
     logoFontWeight: 600,
     logoUnderlineWidth: 54,
     logoUnderlineColor: "#403c70",
