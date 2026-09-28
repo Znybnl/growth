@@ -186,7 +186,9 @@ async function loadPremiumBackdropAsDataUrl(templateId: PosterTemplateId) {
       binary += String.fromCharCode(...bytes.subarray(index, index + chunkSize));
     }
 
-    return `data:image/png;base64,${window.btoa(binary)}`;
+    const extension = asset.toLowerCase().split(".").pop();
+    const mimeType = extension === "svg" ? "image/svg+xml" : extension === "webp" ? "image/webp" : "image/png";
+    return `data:${mimeType};base64,${window.btoa(binary)}`;
   } catch {
     throw new Error(`Impossible de charger le décor ${getPosterTemplate(templateId).label}. Réessayez en rechargeant la page.`);
   }
@@ -477,11 +479,20 @@ export function PosterEditor({ campaign, prizes, settingsEndpoint, returnHref }:
       poster,
       posterTemplate,
       headlineMeasure,
-      posterTemplate.id === "premium-wheel" && posterSubtitleLayout
+      (posterTemplate.id === "premium-wheel" || posterTemplate.id === "botanical-editorial-poster") && posterSubtitleLayout
         ? posterSubtitleLayout.top - posterSubtitleLayout.headlineGap
         : undefined,
     )
     : null, [poster, campaign.subtitle, headlineMeasure, posterSubtitleLayout, posterTemplate]);
+  const headlineLastBaseline = premiumHeadlineLayout
+    ? premiumHeadlineLayout.top + premiumHeadlineLayout.size * 0.82 + Math.max(0, premiumHeadlineLayout.lines.length - 1) * premiumHeadlineLayout.size * 1.08
+    : undefined;
+  const subtitleFirstBaseline = posterSubtitleLayout
+    ? posterSubtitleLayout.top + posterSubtitleLayout.fontSize * 0.82
+    : undefined;
+  const subtitleLastBaseline = posterSubtitleLayout
+    ? posterSubtitleLayout.top + posterSubtitleLayout.fontSize * 0.82 + Math.max(0, posterSubtitleLayout.lines.length - 1) * posterSubtitleLayout.lineHeight
+    : undefined;
 
   const previewPosterSvg = useMemo(
     () =>
@@ -1136,7 +1147,7 @@ export function PosterEditor({ campaign, prizes, settingsEndpoint, returnHref }:
           </div>
 
           <div className="flex min-h-0 flex-1 items-center justify-center overflow-auto rounded-[var(--okado-radius-card)] bg-[var(--okado-surface-muted)] p-4">
-            <div className="relative aspect-[794/1123] w-full max-w-[470px] overflow-hidden rounded-[var(--okado-radius-control)] border border-[var(--okado-border-control)] bg-white shadow-[var(--shadow-product-card)]">
+            <div className="relative aspect-[794/1123] w-full max-w-[470px] overflow-hidden rounded-[var(--okado-radius-control)] border border-[var(--okado-border-control)] bg-white shadow-[var(--shadow-product-card)]" data-testid="poster-preview-frame" data-headline-size={premiumHeadlineLayout?.size} data-headline-x={premiumHeadlineLayout?.x} data-headline-last-baseline={headlineLastBaseline} data-subtitle-x={posterSubtitleLayout?.x} data-subtitle-first-baseline={subtitleFirstBaseline} data-subtitle-last-baseline={subtitleLastBaseline} data-subtitle-headline-gap={posterSubtitleLayout?.headlineGap}>
               {previewPng && !currentPreviewError ? (
                 <Image
                   src={previewPng.url}

@@ -274,6 +274,39 @@ export function PosterTemplateSelector({
                       <text x="629" y="1063" textAnchor="middle" fontSize="28" fontWeight="600" fill="#171412">Gagnez</text>
                     </g>
                   </svg>
+                ) : visualTemplate.id === "botanical-editorial-poster" ? (
+                  <svg viewBox="0 0 794 1123" className="h-full w-full" aria-hidden="true">
+                    <rect width="794" height="1123" fill="#fbf9f1" />
+                    <image data-testid="botanical-editorial-thumbnail-backdrop" href="/backgrounds/botanical-editorial-poster-backdrop.webp" width="794" height="1123" preserveAspectRatio="xMidYMid slice" />
+                    <circle data-testid="botanical-editorial-thumbnail-medallion" cx="137" cy="676" r="120" fill={visualTemplate.medallionFill ?? visualTemplate.accent} />
+                    <circle cx="137" cy="676" r="116" fill="none" stroke="#f7f4e8" strokeOpacity=".65" strokeWidth="2" />
+                    <text x="397" y="118" textAnchor="middle" fontFamily="Georgia, serif" fontSize="30" fill="#1d2a16">Votre logo</text>
+                    <line x1="357" y1="161" x2="437" y2="161" stroke="#77845e" strokeWidth="3" />
+                    <text x="443" y="300" textAnchor="middle" fontFamily="Georgia, serif" fontSize="83" fill="#1d2a16">
+                      <tspan x="443">Scannez</tspan><tspan x="443" dy="82">et jouez</tspan>
+                    </text>
+                    <text x="443" y="468" textAnchor="middle" fontSize="23" letterSpacing="4" fill="#1d2a16">TENTEZ DE GAGNER</text>
+                    <text x="443" y="500" textAnchor="middle" fontSize="23" letterSpacing="4" fill="#1d2a16">UN CADEAU !</text>
+                    <g textAnchor="middle" fontFamily="Georgia, serif" fontSize="25" fill="#1d2a16"><text x="137" y="636">De jolis</text><text x="137" y="662">cadeaux</text><text x="137" y="688">à gagner !</text></g>
+                    <g data-testid="botanical-editorial-thumbnail-leaf" fill="#f7f4e8" fillOpacity=".12" stroke="#f7f4e8" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" opacity=".96">
+                      <path d="M108 770c5-24 23-43 54-54-3 29-22 48-54 54z" />
+                      <path d="M109 769c18-17 36-35 53-52m-37 36c-2-7-7-12-13-14m24 3c-1-8-4-14-10-19m21 4c1-8 0-14-4-20" fill="none" />
+                    </g>
+                    <g data-testid="botanical-editorial-thumbnail-qr">
+                      <rect x="282" y="564" width="322" height="322" rx="24" fill="#fffefa" stroke={visualTemplate.qrFrame} strokeWidth="4" />
+                      {qrDataUrl ? <image href={qrDataUrl} x="300" y="582" width="286" height="286" /> : <QrCode x="314" y="596" width="258" height="258" color="#111" strokeWidth="1.5" />}
+                    </g>
+                    <g data-testid="botanical-editorial-thumbnail-footer">
+                      <path data-testid="botanical-editorial-thumbnail-arrow-one" d="M268 980h48" stroke="#1d2a16" strokeWidth="2" markerEnd="url(#thumbnailArrow)" />
+                      <path data-testid="botanical-editorial-thumbnail-arrow-two" d="M475 980h48" stroke="#1d2a16" strokeWidth="2" markerEnd="url(#thumbnailArrow)" />
+                      <defs><marker id="thumbnailArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 10 5 0 10" fill="none" stroke="#1d2a16" strokeWidth="1.5" /></marker></defs>
+                      {[190, 397, 604].map((x, index) => <g key={x}>
+                        <circle cx={x} cy="980" r="47" fill="#f5f1e2" stroke="#77845e" strokeWidth="2.5" />
+                        {index === 0 ? <g fill="none" stroke="#1d2a16" strokeWidth="3" transform={`translate(${x} 980) scale(.8)`}><rect x="-14" y="-24" width="28" height="48" rx="5" /><path d="M-9-16h18M-9 18h18" /></g> : index === 1 ? (gameType === "wheel" ? <g fill="none" stroke="#1d2a16" strokeWidth="3" transform={`translate(${x} 980) scale(.78)`}><circle r="34" /><path d="M0-30v60M-30 0h60M-21-21l42 42M21-21l-42 42" /></g> : <g fill="none" stroke="#1d2a16" strokeWidth="3" transform={`translate(${x} 980) scale(.8)`}><path d="M-25-31h42l9 9v52h-51zM17-31v10h9M-14-9h22M-14 3h22M-14 15h15" /><circle cx="15" cy="18" r="8" fill="#f5f1e2" /></g>) : <g fill="none" stroke="#1d2a16" strokeWidth="3" transform={`translate(${x} 980) scale(.8)`}><rect x="-18" y="-5" width="36" height="27" /><path d={`M-22-13h44v11h-44zm22 0v40m0-40c-15 0-17-15-8-15 7 0 11 15 8 15m0 0c15 0 17-15 8-15-7 0-11 15-8 15`} /></g>}
+                        <text x={x} y="1062" textAnchor="middle" fontSize="17" fontWeight="700" letterSpacing="1.5" fill="#1d2a16">{index === 0 ? "1. SCANNEZ" : index === 1 ? "2. JOUEZ" : "3. GAGNEZ"}</text>
+                      </g>)}
+                    </g>
+                  </svg>
                 ) : visualTemplate.id === "botanical-wheel" ? (
                   <svg viewBox="0 0 794 1123" className="h-full w-full" aria-hidden="true">
                     <image href="/backgrounds/botanical-poster-backdrop.png" width="794" height="1123" />

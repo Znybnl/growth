@@ -36,6 +36,7 @@ export type PosterTemplateId =
   | "terracotta-wheel"
   | "premium-wheel"
   | "botanical-wheel"
+  | "botanical-editorial-poster"
   | "pastel-editorial-wheel";
 export type GamePageTemplateId =
   | "classic"
