@@ -268,9 +268,12 @@ function renderBackground(
       `;
       if (template.id === "botanical-editorial-poster") {
         return `${backdrop}
-          <circle cx="137" cy="676" r="120" fill="${template.accent}"/>
+          <circle cx="137" cy="676" r="120" fill="${template.medallionFill ?? template.accent}"/>
           <circle cx="137" cy="676" r="116" fill="none" stroke="#f7f4e8" stroke-opacity=".65" stroke-width="2"/>
-          <path d="M104 779c17-16 32-23 52-25m-52 25c11-10 25-17 52-25m-28 13c-8 1-14-3-17-8m27-4c-1-8 2-13 7-18" fill="none" stroke="#edf0df" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" opacity=".94"/>
+          <g fill="#f7f4e8" fill-opacity=".12" stroke="#f7f4e8" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" opacity=".96">
+            <path d="M108 770c5-24 23-43 54-54-3 29-22 48-54 54z"/>
+            <path d="M109 769c18-17 36-35 53-52m-37 36c-2-7-7-12-13-14m24 3c-1-8-4-14-10-19m21 4c1-8 0-14-4-20" fill="none"/>
+          </g>
         `;
       }
       return backdrop;
@@ -913,7 +916,8 @@ function renderSteps(template: PosterTemplateConfig, gameType: Campaign["gameTyp
     return `
       <g transform="translate(0 908)">
         <rect width="${A4_WIDTH}" height="${A4_HEIGHT - 908}" fill="#fbf9f1" fill-opacity=".84"/>
-        <path d="M310 60h37m100 0h37" stroke="${template.accentDark}" stroke-width="2.5" marker-end="url(#posterArrow)"/>
+        <path d="M258 60h67" stroke="${template.accentDark}" stroke-width="2.5" marker-end="url(#posterArrow)"/>
+        <path d="M465 60h67" stroke="${template.accentDark}" stroke-width="2.5" marker-end="url(#posterArrow)"/>
         ${points.map((x, index) => `<circle cx="${x}" cy="60" r="47" fill="#f5f1e2" fill-opacity=".94" stroke="${template.accent}" stroke-opacity=".72" stroke-width="2.5"/>${index === 0 ? scanIcon(x) : index === 1 ? gameIcon(x) : giftIcon(x)}<text x="${x}" y="143" text-anchor="middle" fill="${template.accentDark}" font-family="${SAFE_FONT}" font-size="22" font-weight="700" letter-spacing="2">${index === 0 ? "1. SCANNEZ" : index === 1 ? `2. ${editorialAction}` : "3. GAGNEZ"}</text>`).join("")}
       </g>
     `;

@@ -234,8 +234,9 @@ export function PosterTemplateSelector({
                   </svg>
                 ) : visualTemplate.id === "botanical-editorial-poster" ? (
                   <svg viewBox="0 0 794 1123" className="h-full w-full" aria-hidden="true">
-                    <image href="/backgrounds/botanical-editorial-poster-backdrop.webp" width="794" height="1123" />
-                    <circle cx="137" cy="676" r="120" fill="#77845e" />
+                    <rect width="794" height="1123" fill="#fbf9f1" />
+                    <image data-testid="botanical-editorial-thumbnail-backdrop" href="/backgrounds/botanical-editorial-poster-backdrop.webp" width="794" height="1123" preserveAspectRatio="xMidYMid slice" />
+                    <circle data-testid="botanical-editorial-thumbnail-medallion" cx="137" cy="676" r="120" fill={visualTemplate.medallionFill ?? visualTemplate.accent} />
                     <circle cx="137" cy="676" r="116" fill="none" stroke="#f7f4e8" strokeOpacity=".65" strokeWidth="2" />
                     <text x="397" y="118" textAnchor="middle" fontFamily="Georgia, serif" fontSize="30" fill="#1d2a16">Votre logo</text>
                     <line x1="357" y1="161" x2="437" y2="161" stroke="#77845e" strokeWidth="3" />
@@ -245,13 +246,17 @@ export function PosterTemplateSelector({
                     <text x="397" y="468" textAnchor="middle" fontSize="23" letterSpacing="4" fill="#1d2a16">TENTEZ DE GAGNER</text>
                     <text x="397" y="500" textAnchor="middle" fontSize="23" letterSpacing="4" fill="#1d2a16">UN CADEAU !</text>
                     <g textAnchor="middle" fontFamily="Georgia, serif" fontSize="25" fill="#1d2a16"><text x="137" y="651">De jolis</text><text x="137" y="680">cadeaux</text><text x="137" y="709">à gagner !</text></g>
-                    <path d="M104 779c17-16 32-23 52-25m-52 25c11-10 25-17 52-25m-28 13c-8 1-14-3-17-8m27-4c-1-8 2-13 7-18" fill="none" stroke="#edf0df" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" opacity=".94" />
+                    <g data-testid="botanical-editorial-thumbnail-leaf" fill="#f7f4e8" fillOpacity=".12" stroke="#f7f4e8" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" opacity=".96">
+                      <path d="M108 770c5-24 23-43 54-54-3 29-22 48-54 54z" />
+                      <path d="M109 769c18-17 36-35 53-52m-37 36c-2-7-7-12-13-14m24 3c-1-8-4-14-10-19m21 4c1-8 0-14-4-20" fill="none" />
+                    </g>
                     <g data-testid="botanical-editorial-thumbnail-qr">
                       <rect x="282" y="564" width="322" height="322" rx="24" fill="#fffefa" stroke="#d6bd8c" strokeWidth="4" />
                       {qrDataUrl ? <image href={qrDataUrl} x="300" y="582" width="286" height="286" /> : <QrCode x="314" y="596" width="258" height="258" color="#111" strokeWidth="1.5" />}
                     </g>
                     <g data-testid="botanical-editorial-thumbnail-footer">
-                      <path d="M310 968h37m100 0h37" stroke="#1d2a16" strokeWidth="2" markerEnd="url(#thumbnailArrow)" />
+                      <path data-testid="botanical-editorial-thumbnail-arrow-one" d="M258 968h67" stroke="#1d2a16" strokeWidth="2.5" markerEnd="url(#thumbnailArrow)" />
+                      <path data-testid="botanical-editorial-thumbnail-arrow-two" d="M465 968h67" stroke="#1d2a16" strokeWidth="2.5" markerEnd="url(#thumbnailArrow)" />
                       <defs><marker id="thumbnailArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 10 5 0 10" fill="none" stroke="#1d2a16" strokeWidth="1.5" /></marker></defs>
                       {[190, 397, 604].map((x, index) => <g key={x}>
                         <circle cx={x} cy="968" r="47" fill="#f5f1e2" stroke="#77845e" strokeWidth="2.5" />

@@ -48,6 +48,13 @@ test("Botanique éditorial utilise le logo marchand et exporte le même rendu qu
 
     await page.reload();
     await expect(page.getByRole("button", { name: /^Botanique éditorial/ })).toHaveAttribute("aria-pressed", "true");
+    const thumbnailBackdrop = page.getByTestId("botanical-editorial-thumbnail-backdrop");
+    await expect(thumbnailBackdrop).toHaveAttribute("href", "/backgrounds/botanical-editorial-poster-backdrop.webp");
+    await expect(thumbnailBackdrop).toBeAttached();
+    await expect(page.getByTestId("botanical-editorial-thumbnail-medallion")).toHaveAttribute("fill", "#AAB590");
+    await expect(page.getByTestId("botanical-editorial-thumbnail-leaf").locator("path")).toHaveCount(2);
+    await expect(page.getByTestId("botanical-editorial-thumbnail-arrow-one")).toHaveAttribute("marker-end", "url(#thumbnailArrow)");
+    await expect(page.getByTestId("botanical-editorial-thumbnail-arrow-two")).toHaveAttribute("marker-end", "url(#thumbnailArrow)");
     await expect(page.getByTestId("botanical-editorial-thumbnail-qr")).toBeAttached();
     await expect(page.getByTestId("botanical-editorial-thumbnail-footer")).toBeAttached();
     await expect(page.getByLabel("Police du texte principal")).toHaveValue("cormorant");
@@ -62,6 +69,7 @@ test("Botanique éditorial utilise le logo marchand et exporte le même rendu qu
 
     const preview = page.getByAltText("Prévisualisation affiche");
     await expect(preview).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByText("Impossible de charger le décor Botanique éditorial. Réessayez en rechargeant la page.")).toHaveCount(0);
     await page.screenshot({ path: testInfo.outputPath("botanical-editorial-preview.png"), fullPage: true });
     const previewBytes = await preview.evaluate(async (img) => {
       const response = await fetch((img as HTMLImageElement).src);

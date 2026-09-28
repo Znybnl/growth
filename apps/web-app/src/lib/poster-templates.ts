@@ -79,6 +79,7 @@ export type PosterTemplateConfig = {
   supportingTextFontSize?: number;
   supportingTextLineHeight?: number;
   supportingTextColor?: string;
+  medallionFill?: string;
   supportingTextLetterSpacing?: number;
   footerVariant?: "premium" | "botanical" | "botanical-editorial";
   backdropAsset?: string;
@@ -425,6 +426,7 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     supportingTextLineHeight: 48,
     supportingTextColor: "#1d2a16",
     supportingTextAnchor: "middle",
+    medallionFill: "#AAB590",
     footerVariant: "botanical-editorial",
     backdropAsset: "botanical-editorial-poster-backdrop.webp",
     backgroundOnly: true,
