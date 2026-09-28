@@ -694,6 +694,8 @@ export interface PublicCampaignPrize {
   purchaseRequired: boolean;
 }
 
+export type PublicCampaignPresentation = Omit<CampaignPresentation, "poster">;
+
 export interface PublicCampaign {
   id: string;
   title: string;
@@ -710,7 +712,7 @@ export interface PublicCampaign {
   logoUrl?: string;
   accent: CampaignAccent;
   prizes: PublicCampaignPrize[];
-  presentation: CampaignPresentation;
+  presentation: PublicCampaignPresentation;
   actions: CampaignAction[];
   rewardRules: CampaignRewardRules;
 }
@@ -759,6 +761,11 @@ export interface DrawResult {
   lead: Lead;
   prize: Prize | null;
   campaign: PublicCampaign;
+}
+
+/** Compact campaign update sent to public clients after a participation. */
+export interface PublicDrawResult extends Omit<DrawResult, "campaign"> {
+  campaign: Pick<PublicCampaign, "actions">;
 }
 
 /** Server-only draw metadata used for transactional email delivery. */

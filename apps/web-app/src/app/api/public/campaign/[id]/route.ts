@@ -53,7 +53,9 @@ export async function GET(request: NextRequest, { params }: RouteProps) {
     await recordEvent(id, "scan");
   }
 
-  const response = NextResponse.json({ campaign });
+  // The page already received its full game configuration in the server-rendered
+  // payload. This request only refreshes the participant-specific action list.
+  const response = NextResponse.json({ campaign: { actions: campaign.actions } });
   if (!isPreview && !alreadyCounted) {
     response.cookies.set(scanCookie, "1", {
       httpOnly: true,

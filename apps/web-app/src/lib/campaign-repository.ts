@@ -30,6 +30,7 @@ import {
   RewardEmailDelivery,
   RewardEmailEvent,
 } from "@/lib/types";
+import { toPublicCampaignPresentation } from "@/lib/public-campaign";
 import { assertMerchantBillingAccess } from "@/lib/billing";
 import {
   getCampaignLocalSettings,
@@ -51,6 +52,7 @@ import {
   unwrapSupabaseResult,
 } from "@/lib/supabase";
 import { WebhookEventPayload } from "resend";
+import { logSupportEvent } from "@/lib/support-log";
 
 type CampaignRow = {
   id: string;
@@ -801,10 +803,25 @@ function toPublicCampaign(
       probability: prize.probability,
       purchaseRequired: prize.purchaseRequired,
     })),
-    presentation: campaign.presentation,
+    presentation: toPublicCampaignPresentation(campaign.presentation),
     actions,
     rewardRules: campaign.rewardRules,
   };
+}
+
+export function toPublicCampaignFromPerformance(
+  performance: CampaignPerformance,
+): PublicCampaign {
+  const marketingActions = performance.campaign.actions.filter(
+    (action) => action.kind !== "crm",
+  );
+
+  return toPublicCampaign(
+    performance.campaign,
+    performance.merchant,
+    performance.prizes,
+    marketingActions.length ? [marketingActions[0]] : [],
+  );
 }
 
 function computeKpis(campaign: Campaign, prizes: Prize[], leads: Lead[], events: CampaignEvent[]): CampaignKpi {
@@ -2777,18 +2794,23 @@ export async function createDrawSessionInSupabase(
   input: CreateDrawSessionRequest,
   merchant?: Merchant,
 ): Promise<CreateDrawSessionResult> {
+  const preparationStartedAt = globalThis.performance.now();
+  const campaignReadStartedAt = globalThis.performance.now();
   const performance = await getSupabaseCampaignPerformance(input.campaignId, merchant);
+  const campaignReadMs = Math.round(globalThis.performance.now() - campaignReadStartedAt);
   if (!performance || !performance.campaign.isActive) throw new Error("Campagne indisponible");
   await assertEffectiveMerchantBillingAccess(performance.merchant, "campaign_public");
   const { campaign, merchant: campaignMerchant, prizes } = performance;
   const supabase = getSupabaseAdmin();
   const sessionId = generateId("session");
+  const sessionRpcStartedAt = globalThis.performance.now();
   const { data, error } = await supabase
     .rpc("create_draw_session", {
       p_campaign_id: campaign.id,
       p_session_id: sessionId,
     })
     .single<CreateDrawSessionRpcRow>();
+  const sessionRpcMs = Math.round(globalThis.performance.now() - sessionRpcStartedAt);
 
   if (error || !data) {
     throw new Error(
@@ -2804,16 +2826,15 @@ export async function createDrawSessionInSupabase(
     created_at: data.created_at,
     expires_at: data.expires_at,
   });
-  const { data: snapshot } = await supabase
-    .from("draw_sessions")
-    .select("configuration_version,configuration_snapshot")
-    .eq("id", sessionId)
-    .maybeSingle<{ configuration_version: string | null; configuration_snapshot: Record<string, unknown> | null }>();
-  if (snapshot) {
-    session.configurationVersion = snapshot.configuration_version ?? undefined;
-    session.configurationSnapshot = snapshot.configuration_snapshot ?? undefined;
-  }
   const prize = data.prize_id ? prizes.find((item) => item.id === data.prize_id) ?? null : null;
+
+  logSupportEvent("info", "draw_session_repository_timing", {
+    campaignId: campaign.id,
+    totalMs: Math.round(globalThis.performance.now() - preparationStartedAt),
+    campaignReadMs,
+    sessionRpcMs,
+    mode: "production",
+  });
 
   return {
     session,
