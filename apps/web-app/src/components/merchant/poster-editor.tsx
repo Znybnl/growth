@@ -285,22 +285,25 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
       return posterWithCurrentPalette;
     }
 
-    const template = POSTER_TEMPLATES[0];
+    const template = getPosterTemplate("classic-wheel", posterWithCurrentPalette.backgroundMotif);
 
-    return applyTemplateDefaults(
-      {
-        ...posterWithCurrentPalette,
-        headlineTextColor: campaign.gameType === "scratch" ? "#1b2842" : campaignGainColor,
-        headlineFontFamily: "geogrotesque",
-        wheel: {
-          ...posterWithCurrentPalette.wheel,
-          winColor: campaignPrimaryColor,
-          alternateWinColor: campaignPrimaryColor,
+    return {
+      ...applyTemplateDefaults(
+        {
+          ...posterWithCurrentPalette,
+          headlineTextColor: campaign.gameType === "scratch" ? "#1b2842" : campaignGainColor,
+          headlineFontFamily: "geogrotesque",
+          wheel: {
+            ...posterWithCurrentPalette.wheel,
+            winColor: campaignPrimaryColor,
+            alternateWinColor: campaignPrimaryColor,
+          },
         },
-      },
-      template,
-      { preserveWinColor: true, preserveHeadlineTextColor: true },
-    );
+        template,
+        { preserveWinColor: true, preserveHeadlineTextColor: true },
+      ),
+      templateId: "classic-wheel",
+    };
   });
   const [posterSubtitle, setPosterSubtitle] = useState(() => campaign.presentation.layout.wheelSubtitle ?? "");
   const [isSaving, setIsSaving] = useState(false);

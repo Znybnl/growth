@@ -43,6 +43,7 @@ export type PosterTemplateConfig = {
   headlineFontFamily?: TextFont;
   logoX?: number;
   logoY?: number;
+  logoTextY?: number;
   logoFontWeight?: number;
   logoFontSizeMultiplier?: number;
   logoLetterSpacing?: number;
@@ -58,12 +59,19 @@ export type PosterTemplateConfig = {
   subtitleMaxCharactersPerLine?: number;
   logoUnderlineWidth?: number;
   logoUnderlineColor?: string;
+  logoUnderlineStrokeWidth?: number;
   inlineQrCta?: boolean;
   inlineQrLabelBackground?: string;
   inlineQrLabelTextColor?: string;
   inlineQrLabelWidth?: number;
   inlineQrLabelHeight?: number;
   inlineQrLabelGap?: number;
+  qrBorderWidth?: number;
+  ctaCornerRadius?: number;
+  ctaBorderWidth?: number;
+  wheelLabelVariant?: "prize-labels" | "gift-icons";
+  wheelPointerVariant?: "standard" | "rounded-triangle";
+  subtitleSpacingAdjustmentPx?: number;
   supportingText?: string;
   supportingTextX?: number;
   supportingTextY?: number;
@@ -89,12 +97,6 @@ export const POSTER_BACKGROUND_MOTIFS: Array<{
   preview: string;
 }> = [
   {
-    id: "plain",
-    label: "Clair uni",
-    description: "Une surface lumineuse et intemporelle.",
-    preview: "#fff6ee",
-  },
-  {
     id: "soft-gradient",
     label: "Gradient clair",
     description: "Des halos lavande très doux.",
@@ -105,6 +107,12 @@ export const POSTER_BACKGROUND_MOTIFS: Array<{
     label: "Terracotta",
     description: "Une ambiance chaude et chaleureuse.",
     preview: "linear-gradient(135deg,#ddc9b8 0%,#f7eee7 100%)",
+  },
+  {
+    id: "plain",
+    label: "Clair uni",
+    description: "Une surface lumineuse et intemporelle.",
+    preview: "#fff6ee",
   },
 ];
 
@@ -159,29 +167,42 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
   {
     id: "soft-gradient-wheel",
     label: "Gradient clair",
-    description: "Design élégant et titre avec contour blanc.",
+    description: "Fond lavande lumineux et composition graphique épurée.",
     background: "#f4f3ff",
     accent: "#2100b8",
     accentDark: "#060642",
     headline: "#050644",
-    headlineStroke: "#ffffff",
+    headlineStroke: "none",
     headlineTextColor: "#050644",
     headlineFontSizePx: 40,
     qrFrame: "#2100b8",
     logoVariant: "badge",
     wheelX: 272,
     wheelY: 716,
-    wheelRadius: 260,
+    wheelRadius: 247,
     qrX: 408,
     qrY: 512,
-    qrSize: 292,
-    ctaX: 369,
+    qrSize: 277.4,
+    ctaX: 359,
     ctaY: 838,
-    ctaWidth: 370,
-    ctaHeight: 86,
+    ctaWidth: 390,
+    ctaHeight: 68,
     ctaRotation: 0,
-    headlineY: 250,
+    headlineY: 208,
     headlineSizeMultiplier: 1.52,
+    headlineItalic: false,
+    logoY: 26,
+    logoTextY: -24,
+    logoFontWeight: 600,
+    logoUnderlineWidth: 54,
+    logoUnderlineColor: "#403c70",
+    logoUnderlineStrokeWidth: 2,
+    subtitleSpacingAdjustmentPx: 8,
+    qrBorderWidth: 2.5,
+    ctaCornerRadius: 30,
+    ctaBorderWidth: 3,
+    wheelLabelVariant: "gift-icons",
+    wheelPointerVariant: "rounded-triangle",
     motif: "soft-gradient",
     wheel: {
       winColor: "#4b35c9",
@@ -423,9 +444,17 @@ export const POSTER_TEMPLATE_CONFIGS: Record<PosterTemplateId, PosterTemplateCon
     PosterTemplateConfig
   >;
 
-export const POSTER_TEMPLATE_CHOICES = POSTER_TEMPLATES.filter(
-  (template) => !["soft-gradient-wheel", "terracotta-wheel"].includes(template.id),
-);
+const POSTER_TEMPLATE_BY_ID = Object.fromEntries(
+  POSTER_TEMPLATES.map((template) => [template.id, template]),
+) as Record<PosterTemplateId, PosterTemplateConfig>;
+
+// Gradient clair and Terracotta are background variations of Classique.
+export const POSTER_TEMPLATE_CHOICES = [
+  ...POSTER_TEMPLATES.filter(
+    (template) => !["soft-gradient-wheel", "terracotta-wheel", "classic-wheel"].includes(template.id),
+  ),
+  POSTER_TEMPLATE_BY_ID["classic-wheel"],
+];
 
 const MOTIF_TEMPLATE_IDS: Record<PosterBackgroundMotif, PosterTemplateId> = {
   plain: "classic-wheel",
