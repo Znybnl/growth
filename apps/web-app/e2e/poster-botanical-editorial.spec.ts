@@ -1,6 +1,16 @@
 import { expect, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { signIn } from "./auth-session";
+import { getPosterTemplate } from "../src/lib/poster-templates";
+
+test("Botanique éditorial et Classique conservent leurs réglages de logo texte", () => {
+  const botanicalTemplate = getPosterTemplate("botanical-editorial-poster");
+  expect(botanicalTemplate.logoX).toBe(botanicalTemplate.headlineX);
+  expect(botanicalTemplate.logoTextY).toBe(32);
+  expect(botanicalTemplate.medallionFill).toBe("#D3DCC5");
+  expect(getPosterTemplate("classic-wheel", "plain").logoTextY).toBe(40);
+  expect(getPosterTemplate("classic-wheel", "soft-gradient").logoTextY).toBe(-12);
+});
 
 test("Botanique éditorial utilise le logo marchand et exporte le même rendu que l’aperçu", async ({ page }, testInfo) => {
   test.setTimeout(180_000);
@@ -52,7 +62,7 @@ test("Botanique éditorial utilise le logo marchand et exporte le même rendu qu
     const thumbnailBackdrop = page.getByTestId("botanical-editorial-thumbnail-backdrop");
     await expect(thumbnailBackdrop).toHaveAttribute("href", "/backgrounds/botanical-editorial-poster-backdrop.webp");
     await expect(thumbnailBackdrop).toBeAttached();
-    await expect(page.getByTestId("botanical-editorial-thumbnail-medallion")).toHaveAttribute("fill", "#AAB590");
+    await expect(page.getByTestId("botanical-editorial-thumbnail-medallion")).toHaveAttribute("fill", "#D3DCC5");
     await expect(page.getByTestId("botanical-editorial-thumbnail-supporting-text")).toBeAttached();
     await expect(page.getByTestId("botanical-editorial-thumbnail-leaf")).toHaveCount(0);
     await expect(page.getByTestId("botanical-editorial-thumbnail-gift")).toBeAttached();
