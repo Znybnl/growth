@@ -1187,8 +1187,9 @@ export async function getSupabaseMerchantDashboard(
       campaignIds.length
         ? supabase
             .from("leads")
-            .select("prize_id,status")
+            .select("prize_id")
             .in("campaign_id", campaignIds)
+            .eq("status", "claimed")
             .not("prize_id", "is", null)
         : Promise.resolve({ data: [], error: null }),
     ]);
@@ -1213,8 +1214,8 @@ export async function getSupabaseMerchantDashboard(
       kpis: toOverviewKpis(row),
     } satisfies CampaignPerformance));
     const pendingRedemptionsByPrizeId = new Map<string, number>();
-    for (const row of (prizeClaimsData as Array<{ prize_id: string | null; status: Lead["status"] }> | null) ?? []) {
-      if (row.prize_id && row.status === "claimed") {
+    for (const row of (prizeClaimsData as Array<{ prize_id: string | null }> | null) ?? []) {
+      if (row.prize_id) {
         pendingRedemptionsByPrizeId.set(
           row.prize_id,
           (pendingRedemptionsByPrizeId.get(row.prize_id) ?? 0) + 1,
@@ -2057,6 +2058,7 @@ export async function getSupabaseCampaignDataView(
     summaryResult,
     leadsResult,
     eventsResult,
+    optInsResult,
     localSettings,
   ] = await Promise.all([
     merchant && merchant.id === row.merchant_id
@@ -2085,6 +2087,11 @@ export async function getSupabaseCampaignDataView(
       .eq("campaign_id", campaignId)
       .order("created_at", { ascending: false })
       .limit(8),
+    supabase
+      .from("leads")
+      .select("id", { count: "exact", head: true })
+      .eq("campaign_id", campaignId)
+      .eq("marketing_consent", true),
     getCampaignLocalSettings(campaignId),
   ]);
 
@@ -2153,19 +2160,14 @@ export async function getSupabaseCampaignDataView(
   const leadRows = (leadsResult.data as unknown as LeadRow[] | null) ?? [];
   performance.kpis.contacts = Number(summary.leads_count) || leadRows.length;
   const leadIds = leadRows.map((lead) => lead.id);
-  const [optInsResult, deliveriesResult] = await Promise.all([
-    supabase
-      .from("leads")
-      .select("id", { count: "exact", head: true })
-      .eq("campaign_id", campaignId)
-      .eq("marketing_consent", true),
+  const deliveriesResult = await (
     leadIds.length
       ? supabase
           .from("reward_email_deliveries")
           .select("lead_id,status,sent_at,delivered_at,error_message")
           .in("lead_id", leadIds)
-      : Promise.resolve({ data: [], error: null }),
-  ]);
+      : Promise.resolve({ data: [], error: null })
+  );
   assertSupabaseResult(optInsResult, "Lecture des opt-ins impossible");
   assertSupabaseResult(deliveriesResult, "Lecture des e-mails de gain impossible");
   const optInsCount = optInsResult.count;
