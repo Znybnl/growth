@@ -261,6 +261,17 @@ function renderBackground(
     `;
   }
 
+  if (template.id === "pastel-editorial-wheel") {
+    return `
+      <rect width="${A4_WIDTH}" height="${A4_HEIGHT}" fill="url(#posterPastelBase)"/>
+      <circle cx="92" cy="246" r="330" fill="#fffaf4" opacity="0.5"/>
+      <path d="M0 510 C95 624 148 742 111 875 C82 981 19 1039 0 1069 Z" fill="url(#posterPastelSweep)" opacity="0.82"/>
+      <path d="M794 450 C687 470 589 535 532 652 C460 798 459 976 361 1123 H794 Z" fill="url(#posterPastelLilac)" opacity="0.75"/>
+      <path d="M0 1033 C154 929 274 883 402 898 C552 916 678 1044 794 989 V1123 H0 Z" fill="#ffd9ce" opacity="0.52"/>
+      <path d="M794 88 C756 209 695 294 611 376 C703 341 761 314 794 272 Z" fill="#fff8f1" opacity="0.36"/>
+    `;
+  }
+
   if (template.backdropAsset) {
     if (premiumBackdropSource) {
       const backdrop = `
@@ -355,11 +366,12 @@ function renderLogo(campaign: Campaign, poster: CampaignPosterSettings, template
   const logoMarkup = logoLines.length > 1
     ? logoLines.map((line, index) => `<tspan x="${logoX}" y="${firstLineY + index * fontSize * 0.84}">${escapeXml(line)}</tspan>`).join("")
     : escapeXml(logoLines[0] ?? text);
-  const underlineX1 = textAnchor === "middle"
+  const underlineCentered = template.logoUnderlineCentered ?? textAnchor === "middle";
+  const underlineX = underlineCentered
     ? logoX - (template.logoUnderlineWidth ?? 0) / 2
     : logoX;
   const underline = template.logoUnderlineWidth
-    ? `<line x1="${underlineX1}" y1="${centerY + fontSize * 0.34 + 30}" x2="${underlineX1 + template.logoUnderlineWidth}" y2="${centerY + fontSize * 0.34 + 30}" stroke="${template.logoUnderlineColor ?? logoTextColor}" stroke-width="${template.logoUnderlineStrokeWidth ?? 3}"/>`
+    ? `<line x1="${underlineX}" y1="${centerY + fontSize * 0.34 + (template.logoUnderlineGapPx ?? 30)}" x2="${underlineX + template.logoUnderlineWidth}" y2="${centerY + fontSize * 0.34 + (template.logoUnderlineGapPx ?? 30)}" stroke="${template.logoUnderlineColor ?? logoTextColor}" stroke-width="${template.logoUnderlineStrokeWidth ?? 3}"/>`
     : "";
 
   return `
@@ -378,6 +390,7 @@ export type PosterSubtitleLayout = {
   x: number;
   top: number;
   headlineGap: number;
+  headlineLayoutBottom?: number;
   fontWeight: number;
   letterSpacing: number;
   uppercase: boolean;
@@ -445,8 +458,9 @@ export function getPosterSubtitleLayout(
   }
 
   const isBotanicalEditorial = template.id === "botanical-editorial-poster";
-  const fontSize = isBotanicalEditorial ? 28 : template.backdropAsset ? 24 : 25;
-  const lineHeight = fontSize * 1.42;
+  const isEditorialTemplate = template.id === "pastel-editorial-wheel";
+  const fontSize = isBotanicalEditorial || isEditorialTemplate ? 28 : template.backdropAsset ? 24 : 25;
+  const lineHeight = fontSize * (isEditorialTemplate ? 1.5 : 1.42);
   const isPremiumTemplate = template.id === "premium-wheel";
   const width = isPremiumTemplate
     ? Math.min(template.qrSize, A4_WIDTH - template.qrX - 24)
@@ -454,32 +468,46 @@ export function getPosterSubtitleLayout(
       ? template.subtitleMaxWidth ?? 620
     : Math.min(template.subtitleMaxWidth ?? template.headlineMaxWidth ?? 620, A4_WIDTH - 48);
   const lines = posterSubtitleLines(text, width, fontSize, isBotanicalEditorial ? template.subtitleMaxCharactersPerLine : undefined);
+  const textHeight = fontSize + Math.max(0, lines.length - 1) * lineHeight;
   const configuredHeadlineGap = clampCampaignSpacingPx(
     campaign.presentation.layout.subtitleSpacingPx,
     defaultWheelSubtitleSpacingForTemplate(campaign.presentation.layout.templateId),
   );
+  const baseHeadlineGap = template.id === "botanical-wheel"
+    ? Math.max(30, configuredHeadlineGap)
+    : isEditorialTemplate
+      ? Math.max(28, configuredHeadlineGap)
+      : configuredHeadlineGap;
   const headlineGap = clamp(
-    (template.id === "botanical-wheel" ? Math.max(30, configuredHeadlineGap) : configuredHeadlineGap) +
-      (template.subtitleSpacingAdjustmentPx ?? 0),
+    baseHeadlineGap + (template.subtitleSpacingAdjustmentPx ?? 0),
     0,
     100,
   );
-  const standardHeadlineLayout = !isPremiumTemplate && !template.backdropAsset
+  const standardHeadlineLayout = !isPremiumTemplate && !template.backdropAsset && !isEditorialTemplate
     ? getStandardHeadlineLayout(campaign, poster, template)
     : null;
-  const botanicalHeadlineLayout = template.id === "botanical-wheel" || isBotanicalEditorial
+  const editorialHeadline = poster.headline || campaign.subtitle || "Faites tourner la roue";
+  const editorialHeadlineBottomLimit = isEditorialTemplate
+    ? Math.min(
+      template.headlineBlockBottom ?? Number.POSITIVE_INFINITY,
+      template.qrY - 32 - textHeight - headlineGap,
+    )
+    : isBotanicalEditorial
+      ? template.qrY - 36 - headlineGap - fontSize * 0.82 - Math.max(0, lines.length - 1) * lineHeight
+      : undefined;
+  const editorialHeadlineLayout = isEditorialTemplate || isBotanicalEditorial || template.id === "botanical-wheel"
     ? getPremiumHeadlineLayout(
-      poster.headline || campaign.subtitle || "Faites tourner la roue",
+      editorialHeadline,
       poster,
       template,
       measure,
-      isBotanicalEditorial
-        ? template.qrY - 18 - 18 - headlineGap - fontSize * 0.82 - Math.max(0, lines.length - 1) * lineHeight
-        : undefined,
+      editorialHeadlineBottomLimit,
     )
     : null;
   const visualTop = isPremiumTemplate
     ? template.qrY
+    : isEditorialTemplate
+      ? template.supportingTextY ?? 484
     : template.backdropAsset
     ? template.supportingTextY
       ? template.supportingTextY - 18
@@ -487,21 +515,29 @@ export function getPosterSubtitleLayout(
     : campaign.gameType === "scratch"
       ? 480
       : template.wheelY - template.wheelRadius - 36;
-  const textHeight = fontSize + Math.max(0, lines.length - 1) * lineHeight;
   const premiumVisualGap = isPremiumTemplate ? 52 : 36;
-  const top = standardHeadlineLayout
+  const editorialHeadlineLayoutBottom = isEditorialTemplate && editorialHeadlineLayout
+    ? editorialHeadlineLayout.top +
+      editorialHeadlineLayout.size * 0.82 +
+      Math.max(0, editorialHeadlineLayout.lines.length - 1) *
+        editorialHeadlineLayout.size * (template.headlineLineHeightMultiplier ?? 1.08) +
+      editorialHeadlineLayout.size * 0.18
+    : undefined;
+  const top = isEditorialTemplate && editorialHeadlineLayoutBottom !== undefined
+    ? editorialHeadlineLayoutBottom + headlineGap
+    : standardHeadlineLayout
     ? standardHeadlineLayout.firstLineY +
       Math.max(0, standardHeadlineLayout.lines.length - 1) * standardHeadlineLayout.lineHeight +
       standardHeadlineLayout.size * 0.2 +
       headlineGap
-    : botanicalHeadlineLayout
-      ? botanicalHeadlineLayout.top +
-        botanicalHeadlineLayout.size * 0.82 +
-        Math.max(0, botanicalHeadlineLayout.lines.length - 1) * botanicalHeadlineLayout.size * 1.08 +
-        botanicalHeadlineLayout.size * 0.18 +
+    : editorialHeadlineLayout && !isEditorialTemplate
+      ? editorialHeadlineLayout.top +
+        editorialHeadlineLayout.size * 0.82 +
+        Math.max(0, editorialHeadlineLayout.lines.length - 1) * editorialHeadlineLayout.size * 1.08 +
+        editorialHeadlineLayout.size * 0.18 +
         headlineGap
     : Math.max(0, visualTop - premiumVisualGap - textHeight);
-  const textAnchor = template.backdropAsset && !isBotanicalEditorial ? "start" : "middle";
+  const textAnchor = (template.backdropAsset && !isBotanicalEditorial) || isEditorialTemplate ? "start" : "middle";
 
   return {
     color: template.colorsCustomizable === false
@@ -516,14 +552,15 @@ export function getPosterSubtitleLayout(
       ? template.qrX
       : isBotanicalEditorial
         ? template.qrX + template.qrSize / 2
-      : template.backdropAsset
+        : template.backdropAsset || isEditorialTemplate
         ? template.headlineX ?? 72
         : template.headlineX ?? A4_WIDTH / 2,
     top,
     headlineGap,
-    fontWeight: isPremiumTemplate ? 400 : isBotanicalEditorial ? 500 : 600,
-    letterSpacing: isBotanicalEditorial ? template.subtitleLetterSpacing ?? 4 : 0.28,
-    uppercase: isBotanicalEditorial && template.subtitleUppercase === true,
+    headlineLayoutBottom: editorialHeadlineLayoutBottom,
+    fontWeight: isPremiumTemplate || isEditorialTemplate ? 400 : isBotanicalEditorial ? 500 : 600,
+    letterSpacing: isBotanicalEditorial ? template.subtitleLetterSpacing ?? 4 : isEditorialTemplate ? 3.2 : 0.28,
+    uppercase: (isBotanicalEditorial && template.subtitleUppercase === true) || isEditorialTemplate,
   };
 }
 
@@ -578,9 +615,10 @@ export function getPremiumHeadlineLayout(headline: string, poster: CampaignPoste
       return lines;
     };
     const requestedSize = poster.headlineFontSizePx * template.headlineSizeMultiplier;
+    const lineHeightMultiplier = template.headlineLineHeightMultiplier ?? 1.08;
     let size = requestedSize;
     let lines = wrap(size);
-    while (size > 12 && (lines.length > 4 || lines.length * size * 1.08 > availableHeight)) {
+    while (size > 12 && (lines.length > 4 || lines.length * size * lineHeightMultiplier > availableHeight)) {
       size -= 1;
       lines = wrap(size);
     }
@@ -594,21 +632,25 @@ function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, temp
   const color = template.colorsCustomizable === false
     ? template.headlineTextColor
     : poster.headlineTextColor || template.headline;
-  if (template.backdropAsset) {
+  if (template.backdropAsset || template.id === "pastel-editorial-wheel") {
+    const reservedBottom = template.id === "pastel-editorial-wheel" && subtitleLayout?.headlineLayoutBottom !== undefined
+      ? subtitleLayout.headlineLayoutBottom
+      : (template.id === "premium-wheel" || template.id === "botanical-editorial-poster") && subtitleLayout
+        ? subtitleLayout.top - subtitleLayout.headlineGap
+        : undefined;
     const { x, top, size, lines } = getPremiumHeadlineLayout(
       headline,
       poster,
       template,
       measure,
-      (template.id === "premium-wheel" || template.id === "botanical-editorial-poster") && subtitleLayout
-        ? subtitleLayout.top - subtitleLayout.headlineGap
-        : undefined,
+      reservedBottom,
     );
+    const lineHeightMultiplier = template.headlineLineHeightMultiplier ?? 1.08;
     return `<g data-headline-size="${size}">${lines.map((line, index) => {
       const stretch = template.headlineStretchToWidth && lines.length === 2
         ? ` textLength="${template.headlineMaxWidth}" lengthAdjust="spacingAndGlyphs"`
         : "";
-      return `<text x="${x}" y="${top + size * 0.82 + index * size * 1.08}"
+      return `<text x="${x}" y="${top + size * 0.82 + index * size * lineHeightMultiplier}"
         text-anchor="${template.headlineTextAnchor ?? "start"}" fill="${color}" font-family="${family}" font-size="${size}"
         font-weight="${template.headlineFontWeight ?? 500}"${stretch}>${escapeXml(line)}</text>`;
     }).join("")}</g>`;
@@ -784,6 +826,23 @@ function renderQrAndCta(qrDataUrl: string, template: PosterTemplateConfig) {
   const qrFrameBottom = template.qrY + template.qrSize + 18;
   const ctaY = Math.max(template.ctaY, qrFrameBottom + 16);
 
+  if (template.id === "pastel-editorial-wheel") {
+    const cardSize = template.qrSize + 34;
+    const qrInset = 24;
+    const qrContentSize = template.qrSize - 14;
+    return `
+      <g filter="url(#posterSoftShadow)" transform="translate(${template.qrX} ${template.qrY})">
+        <rect width="${cardSize}" height="${cardSize}" rx="30" fill="#fffdfb" stroke="${template.qrFrame}" stroke-width="5"/>
+        <image href="${escapeXml(qrDataUrl)}" x="${qrInset}" y="${qrInset}" width="${qrContentSize}" height="${qrContentSize}" preserveAspectRatio="xMidYMid meet"/>
+      </g>
+      <g fill="none" stroke="#111111" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M208 1058 C172 1042 164 1004 184 974"/>
+        <path d="M184 974 L164 991 M184 974 L191 1000"/>
+      </g>
+      <text x="226" y="1080" text-anchor="start" fill="#111111" font-family="${fontFamily("cormorant")}" font-size="42" font-style="italic" font-weight="600">Scannez ici</text>
+    `;
+  }
+
   if (template.inlineQrCta) {
     const cardWidth = template.qrSize + 36;
     const cardHeight = template.qrSize + 60;
@@ -866,6 +925,47 @@ function renderQrAndCta(qrDataUrl: string, template: PosterTemplateConfig) {
 function renderSteps(template: PosterTemplateConfig, gameType: Campaign["gameType"]) {
   const action = gameType === "wheel" ? "Jouez" : "Grattez";
   const gift = "Gagnez";
+
+  if (template.id === "pastel-editorial-wheel") {
+    const steps = [
+      { number: "1.", label: "SCANNEZ", cy: 605 },
+      { number: "2.", label: gameType === "wheel" ? "JOUEZ" : "GRATTEZ", cy: 784 },
+      { number: "3.", label: "GAGNEZ", cy: 963 },
+    ];
+    return `
+      <g>
+        ${steps.map(({ number, label, cy }, index) => `
+          <circle cx="638" cy="${cy}" r="60" fill="#fffaf7" fill-opacity="0.54" stroke="#ffffff" stroke-width="4"/>
+          ${index === 0 ? `
+            <g transform="translate(638 ${cy}) scale(0.9)" fill="none" stroke="#111111" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="-23" y="-39" width="46" height="78" rx="8"/>
+              <path d="M-21 -27 H21 M-21 27 H21"/>
+              <circle cx="0" cy="33" r="2.5" fill="#111111" stroke="none"/>
+            </g>
+          ` : index === 1 ? gameType === "wheel" ? `
+            <g transform="translate(638 ${cy}) scale(0.9)" fill="none" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M0 -35 V-7 M24.75 -24.75 5 -5 M35 0 H7 M24.75 24.75 5 5 M0 35 V7 M-24.75 24.75 -5 5 M-35 0 H-7 M-24.75 -24.75 -5 -5"/>
+              <circle r="34" stroke-width="5"/>
+              <circle r="6" fill="#111111" stroke="none"/>
+              <path d="M0 -35 -9 -49 H9 Z" fill="#111111" stroke="none"/>
+            </g>
+          ` : `
+            <g transform="translate(638 ${cy}) scale(0.9)" fill="none" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="-30" y="-36" width="60" height="72" rx="8"/>
+              <path d="M-20 -15 H20 M-20 0 H20 M-20 15 H20" stroke-dasharray="5 6"/>
+              <path d="M-30 -24 H30 M-30 24 H30"/>
+            </g>
+          ` : `
+            <g transform="translate(638 ${cy}) scale(0.9)" fill="none" stroke="#111111" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M-29 -9 H29 V29 H-29 Z M-36 -23 H36 V-9 H-36 Z M0 -23 V29"/>
+              <path d="M0 -23 C-27 -23 -31 -38 -20 -40 C-11 -42 -4 -32 0 -23 Z M0 -23 C27 -23 31 -38 20 -40 C11 -42 4 -32 0 -23 Z"/>
+            </g>
+          `}
+          <text x="638" y="${cy + 96}" text-anchor="middle" fill="#111111" font-family="${SAFE_FONT}" font-size="20" font-weight="600" letter-spacing="3.2">${number} ${label}</text>
+        `).join("")}
+      </g>
+    `;
+  }
 
   if (template.id === "premium-wheel") {
     return `
@@ -1086,6 +1186,23 @@ export function buildPosterSvg(args: {
         <marker id="posterArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
           <path d="M0 0 10 5 0 10" fill="none" stroke="${template.accentDark}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         </marker>
+        <filter id="posterSoftShadow" x="-25%" y="-25%" width="150%" height="150%">
+          <feDropShadow dx="0" dy="9" stdDeviation="12" flood-color="#6b425b" flood-opacity="0.14"/>
+        </filter>
+        <linearGradient id="posterPastelBase" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#ffe3d4"/>
+          <stop offset="49%" stop-color="#f5d0df"/>
+          <stop offset="100%" stop-color="#e6d2f3"/>
+        </linearGradient>
+        <linearGradient id="posterPastelSweep" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#f6adc3"/>
+          <stop offset="55%" stop-color="#f8c2c5"/>
+          <stop offset="100%" stop-color="#ffdacc"/>
+        </linearGradient>
+        <linearGradient id="posterPastelLilac" x1="0" y1="0" x2="0.9" y2="1">
+          <stop offset="0%" stop-color="#e3c7ed"/>
+          <stop offset="100%" stop-color="#f4cbdc"/>
+        </linearGradient>
         <linearGradient id="scratchMetal" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stop-color="#dbe2ee"/>
           <stop offset="48%" stop-color="#ffffff"/>
@@ -1103,5 +1220,63 @@ export function buildPosterSvg(args: {
       ${renderSteps(template, campaign.gameType)}
     </svg>
   `;
+}
+
+/** Build a privacy-safe selector preview with the same renderer as the printable poster. */
+export function buildClassicPosterThumbnailSvg(gameType: Campaign["gameType"], backgroundMotif: CampaignPosterSettings["backgroundMotif"]) {
+  const template = getPosterTemplate("classic-wheel", backgroundMotif);
+  const poster: CampaignPosterSettings = {
+    templateId: "classic-wheel",
+    backgroundMotif,
+    logoMode: "text",
+    logoText: "Votre établissement",
+    logoSizePercent: 70,
+    logoBottomMarginPx: 10,
+    posterSubtitleEnabled: true,
+    backgroundMode: "color",
+    backgroundColor: template.background,
+    backgroundImageUrl: "",
+    headline: "Scannez, jouez, récupérez votre cadeau !",
+    headlineTextColor: template.headlineTextColor,
+    headlineFontSizePx: template.headlineFontSizePx,
+    headlineFontFamily: template.headlineFontFamily ?? "geogrotesque",
+    wheel: { ...template.wheel },
+    footerBackgroundColor: "transparent",
+  };
+  const campaign: Campaign = {
+    id: "poster-template-thumbnail",
+    merchantId: "poster-template-thumbnail",
+    title: "Aperçu du template",
+    subtitle: "Scannez, jouez, récupérez votre cadeau !",
+    goalType: null,
+    emailCaptureEnabled: false,
+    ctaLabel: "Scannez pour jouer",
+    successMetric: "",
+    isActive: false,
+    createdAt: "",
+    accent: { ink: template.accentDark, paper: template.background, signal: template.accent },
+    gameType,
+    logoMode: "text",
+    logoText: "Votre établissement",
+    presentation: {
+      logo: { sizePercent: 70, marginBottomPx: 10, align: "center", textColor: template.headlineTextColor },
+      background: { mode: "color", color: template.background },
+      heading: { textColor: template.headlineTextColor, fontSizePx: template.headlineFontSizePx, fontFamily: "geogrotesque", fontWeight: 700, align: "center" },
+      button: { backgroundColor: template.accent, textColor: "#ffffff", borderColor: "#ffffff", size: "md", textSizePx: 16, isBold: true },
+      layout: { blockSpacingPx: 20, templateId: "classic", wheelSubtitle: "Des cadeaux à gagner dans votre établissement.", subtitleSpacingPx: 15 },
+      wheel: { ...template.wheel },
+      poster,
+      email: { senderName: "Votre établissement", replyTo: "", subject: "", preheader: "", headline: "", body: "", buttonLabel: "", footerNote: "", accentColor: template.accent },
+    },
+    actions: [],
+    rewardRules: { rewardExpiryMinutes: 0, purchaseRequired: false, availableAfterHours: 0, availabilityDurationDays: 30, participationIntervalDays: 0, isWinningEveryTime: false },
+  };
+  const prizes: Array<Pick<Prize, "label">> = [
+    { label: "-10 % prochaine visite" },
+    { label: "Soin découverte" },
+    { label: "Cadeau surprise" },
+  ];
+
+  return buildPosterSvg({ campaign, poster, prizes, qrDataUrl: createPosterPreviewQrDataUrl() });
 }
 

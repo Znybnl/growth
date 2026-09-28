@@ -36,7 +36,8 @@ export type PosterTemplateId =
   | "terracotta-wheel"
   | "premium-wheel"
   | "botanical-wheel"
-  | "botanical-editorial-poster";
+  | "botanical-editorial-poster"
+  | "pastel-editorial-wheel";
 export type GamePageTemplateId =
   | "classic"
   | "restaurant-pop"
@@ -888,6 +889,11 @@ export interface CampaignDataView {
 export interface CampaignSetupInput {
   id?: string;
   merchantId: string;
+  /** Server-only attribution set by the platform-admin campaign endpoint. */
+  adminCreationAudit?: {
+    adminUserId: string;
+    accountMerchantId: string;
+  };
   creationMode?: "editor" | "wizard";
   title: string;
   subtitle: string;

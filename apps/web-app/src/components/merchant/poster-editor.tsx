@@ -7,7 +7,7 @@ import { Loader2 } from "lucide-react";
 import QRCode from "qrcode";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 
-import { buildPosterSvg, getPosterSubtitleLayout, getPremiumHeadlineLayout } from "@/lib/poster-render";
+import { buildClassicPosterThumbnailSvg, buildPosterSvg, getPosterSubtitleLayout, getPremiumHeadlineLayout } from "@/lib/poster-render";
 import { selectPosterBackgroundMotif, selectPosterTemplate } from "@/lib/poster-template-settings";
 import { getPosterFontAsset, getPosterFontSourceUrl, getPosterSubtitleFont, POSTER_FONT_OPTIONS } from "@/lib/poster-fonts";
 import { limitCampaignSubtitleLines, MAX_CAMPAIGN_SUBTITLE_LENGTH } from "@/lib/campaign-defaults";
@@ -34,6 +34,8 @@ import { PageHeader } from "@/components/ui/workspace";
 type PosterEditorProps = {
   campaign: Campaign;
   prizes: Prize[];
+  settingsEndpoint?: string;
+  returnHref?: string;
 };
 
 const MAX_UPLOAD_IMAGE_BYTES = 2 * 1024 * 1024;
@@ -244,8 +246,9 @@ function applyTemplateDefaults(
   };
 }
 
-export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
+export function PosterEditor({ campaign, prizes, settingsEndpoint, returnHref }: PosterEditorProps) {
   const router = useRouter();
+  const resolvedSettingsEndpoint = settingsEndpoint ?? `/api/campaigns/${campaign.id}/poster-settings`;
   const campaignPrimaryColor =
     campaign.gameType === "scratch"
       ? campaign.accent.signal
@@ -449,6 +452,10 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
   const posterSubtitleFontSource =
     loadedPosterSubtitleFont?.font === posterSubtitleFont ? loadedPosterSubtitleFont.source : null;
   const posterTemplate = getPosterTemplate(poster.templateId, poster.backgroundMotif);
+  const classicThumbnailSvg = useMemo(
+    () => buildClassicPosterThumbnailSvg(campaign.gameType, poster.backgroundMotif ?? "soft-gradient"),
+    [campaign.gameType, poster.backgroundMotif],
+  );
   const posterCampaign = useMemo(
     () => ({
       ...campaign,
@@ -656,7 +663,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
     setMessage(null);
 
     try {
-      const response = await fetch(`/api/campaigns/${campaign.id}/poster-settings`, {
+      const response = await fetch(resolvedSettingsEndpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ poster, wheelSubtitle: posterSubtitle }),
@@ -748,7 +755,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
           description="Cet écran ne modifie que l&apos;affiche imprimable. La page de jeu reste paramétrée dans l&apos;éditeur de campagne."
           actions={<>
             <Link
-              href={`/campaigns/${campaign.id}/edit/guided`}
+              href={returnHref ?? `/campaigns/${campaign.id}/edit/guided`}
               prefetch={false}
               className="okado-primary-action px-4"
             >
@@ -778,6 +785,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
 
         <PosterTemplateSelector
           qrDataUrl={posterQrDataUrl}
+          classicThumbnailSvg={classicThumbnailSvg}
           gameType={campaign.gameType}
           selectedTemplateId={poster.templateId}
           selectedBackgroundMotif={poster.backgroundMotif}

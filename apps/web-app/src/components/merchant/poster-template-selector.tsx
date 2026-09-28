@@ -6,12 +6,14 @@ import {
   PosterTemplateConfig,
 } from "@/lib/poster-templates";
 import { QrCode } from "lucide-react";
+import Image from "next/image";
 
 type PosterTemplateSelectorProps = {
   gameType: GameType;
   selectedTemplateId?: PosterTemplateId;
   qrDataUrl?: string | null;
   selectedBackgroundMotif?: PosterBackgroundMotif;
+  classicThumbnailSvg: string;
   onSelect: (templateId: PosterTemplateId) => void;
   onSelectMotif: (backgroundMotif: PosterBackgroundMotif) => void;
 };
@@ -63,59 +65,96 @@ function QrThumbnail({ template }: { template: PosterTemplateConfig }) {
   );
 }
 
-function GradientClairThumbnail({ qrDataUrl }: { qrDataUrl?: string | null }) {
-  const cx = 380;
-  const cy = 835;
-  const radius = 242.25;
-  const point = (angle: number, distance: number) => {
-    const radians = (angle * Math.PI) / 180;
-    return [cx + Math.cos(radians) * distance, cy + Math.sin(radians) * distance] as const;
-  };
+function EditorialPosterThumbnail({
+  gameType,
+  qrDataUrl,
+}: {
+  gameType: GameType;
+  qrDataUrl?: string | null;
+}) {
+  const action = gameType === "wheel" ? "JOUEZ" : "GRATTEZ";
 
   return (
-    <svg viewBox="0 0 794 1123" className="h-full w-full" aria-hidden="true" data-testid="gradient-clair-thumbnail">
+    <svg viewBox="0 0 794 1123" className="h-full w-full" aria-hidden="true" data-testid="editorial-poster-thumbnail">
       <defs>
-        <linearGradient id="gradient-clair-thumbnail-bg" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#efedff" />
-          <stop offset="55%" stopColor="#f8f7ff" />
-          <stop offset="100%" stopColor="#ffffff" />
+        <linearGradient id="editorialPosterThumbnailBackground" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#ffe3d4" />
+          <stop offset="52%" stopColor="#f5d0df" />
+          <stop offset="100%" stopColor="#e6d2f3" />
         </linearGradient>
       </defs>
-      <rect width="794" height="1123" fill="url(#gradient-clair-thumbnail-bg)" />
-      <circle cx="240" cy="285" r="410" fill="#2100b8" opacity="0.085" />
-      <circle cx="570" cy="650" r="310" fill="white" opacity="0.38" />
-      <text x="397" y="126" textAnchor="middle" fontSize="30" fontWeight="600" fill="#050644">Votre établissement</text>
-      <line x1="367" y1="162" x2="427" y2="162" stroke="#403c70" strokeWidth="2" />
-      <text x="397" y="220" textAnchor="middle" fontSize="58" fontWeight="700" fill="#050644" fontFamily="Arial, sans-serif">
-        <tspan x="397">Scannez, jouez,</tspan><tspan x="397" dy="64">récupérez votre</tspan><tspan x="397" dy="64">cadeau !</tspan>
+      <rect width="794" height="1123" fill="url(#editorialPosterThumbnailBackground)" />
+      <path d="M0 520 C130 660 135 850 0 1060Z" fill="#f6adc3" fillOpacity="0.55" />
+      <path d="M794 454 C640 495 538 651 520 850 C510 977 440 1070 386 1123H794Z" fill="#e3c7ed" fillOpacity="0.7" />
+      <text data-testid="editorial-thumbnail-logo" x="397" y="126" textAnchor="middle" fontSize="38" fontFamily="Georgia,serif" fontWeight="500" fill="#111111">Votre logo</text>
+      <line x1="354" y1="158" x2="440" y2="158" stroke="#111111" strokeWidth="3" />
+      <text x="76" y="292" fontSize="88" fontFamily="Georgia,serif" fontWeight="600" fill="#111111">
+        <tspan x="76">Scannez et</tspan><tspan x="76" dy="77">jouez</tspan>
       </text>
-      <g data-testid="gradient-clair-thumbnail-wheel" data-wheel-radius={radius}>
-        {[0, 1, 2, 3, 4, 5].map((index) => {
-          const startAngle = -120 + index * 60;
-          const endAngle = startAngle + 60;
-          const [startX, startY] = point(startAngle, radius);
-          const [endX, endY] = point(endAngle, radius);
-          const [giftX, giftY] = point(startAngle + 30, radius * 0.58);
-          return (
-            <g key={index}>
-              <path d={`M ${cx} ${cy} L ${startX} ${startY} A ${radius} ${radius} 0 0 1 ${endX} ${endY} Z`} fill={index % 2 ? "#fff7ef" : "#4b35c9"} stroke="#403c70" strokeWidth="3" />
-              <g transform={`translate(${giftX} ${giftY}) rotate(${startAngle + 30})`} fill="none" stroke={index % 2 ? "#2100b8" : "#fff7ef"} strokeWidth="7" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="-19" y="-10" width="38" height="29" rx="3" />
-                <path d="M-22-10h44v10h-44zM0-10v29M-22 0h44M0-10c-15 0-20-3-17-10 3-6 12-2 17 10Zm0 0c15 0 20-3 17-10-3-6-12-2-17 10Z" />
-              </g>
+      <text x="76" y="465" fontSize="25" fontFamily="Arial,sans-serif" letterSpacing="4" fill="#111111">
+        <tspan x="76">TENTEZ DE GAGNER</tspan><tspan x="76" dy="35">UN CADEAU !</tspan>
+      </text>
+      <g data-testid="editorial-thumbnail-qr">
+        <rect x="104" y="624" width="344" height="344" rx="30" fill="#fffdfb" stroke="#f4b5c3" strokeWidth="5" />
+        {qrDataUrl ? (
+          <image href={qrDataUrl} x="128" y="648" width="296" height="296" />
+        ) : (
+          <QrCode x="128" y="648" width="296" height="296" color="#111111" strokeWidth="1.6" />
+        )}
+      </g>
+      <path d="M208 1058 C172 1042 164 1004 184 974 L164 991 M184 974 L191 1000" fill="none" stroke="#111111" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+      <text x="226" y="1080" fontSize="42" fontFamily="Georgia,serif" fontStyle="italic" fontWeight="600" fill="#111111">Scannez ici</text>
+      {[
+        { y: 605, number: "1.", label: "SCANNEZ", kind: "phone" },
+        { y: 784, number: "2.", label: action, kind: gameType === "wheel" ? "wheel" : "scratch" },
+        { y: 963, number: "3.", label: "GAGNEZ", kind: "gift" },
+      ].map((step) => (
+        <g key={step.number}>
+          <circle cx="638" cy={step.y} r="60" fill="#fffaf7" fillOpacity="0.54" stroke="#ffffff" strokeWidth="4" />
+          {step.kind === "phone" ? (
+            <g transform={`translate(638 ${step.y}) scale(0.9)`} fill="none" stroke="#111111" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="-23" y="-39" width="46" height="78" rx="8" />
+              <path d="M-21 -27H21M-21 27H21" />
             </g>
-          );
-        })}
-        <circle cx={cx} cy={cy} r="45" fill="#060642" />
-        <path d={`M ${cx - 28} ${cy - radius - 38} Q ${cx - 32} ${cy - radius - 38} ${cx - 28} ${cy - radius - 30} L ${cx - 4} ${cy - radius + 12} Q ${cx} ${cy - radius + 18} ${cx + 4} ${cy - radius + 12} L ${cx + 28} ${cy - radius - 30} Q ${cx + 32} ${cy - radius - 38} ${cx + 28} ${cy - radius - 38} Z`} fill="#060642" stroke="white" strokeWidth="8" strokeLinejoin="round" />
-      </g>
-      <g data-testid="gradient-clair-thumbnail-qr">
-        <rect x="480.85" y="510.85" width="256.5" height="294.5" rx="24.7" fill="white" stroke="#2100b8" strokeWidth="2.5" />
-        {qrDataUrl ? <image data-testid="gradient-clair-thumbnail-qr-image" href={qrDataUrl} x="498.85" y="528.85" width="222.3" height="222.3" /> : <QrCode data-testid="gradient-clair-thumbnail-qr-image" x="498.85" y="528.85" width="222.3" height="222.3" color="#111" strokeWidth="1.5" />}
-        <rect x="440" y="831" width="340" height="64" rx="30" fill="#2100b8" stroke="white" strokeWidth="3" />
-        <text data-testid="gradient-clair-thumbnail-cta" x="610" y="871" textAnchor="middle" fontSize="22" fontWeight="800" fill="white">Scannez pour jouer</text>
-      </g>
+          ) : step.kind === "wheel" ? (
+            <g data-testid="editorial-step-wheel-icon" transform={`translate(638 ${step.y}) scale(0.9)`} fill="none" stroke="#111111" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M0-35V-7M24.75-24.75 5-5M35 0H7M24.75 24.75 5 5M0 35V7M-24.75 24.75-5 5M-35 0H-7M-24.75-24.75-5-5" />
+              <circle r="34" strokeWidth="5" />
+              <circle r="6" fill="#111111" stroke="none" />
+              <path d="M0-35-9-49H9Z" fill="#111111" stroke="none" />
+            </g>
+          ) : step.kind === "scratch" ? (
+            <g transform={`translate(638 ${step.y}) scale(0.9)`} fill="none" stroke="#111111" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="-30" y="-36" width="60" height="72" rx="8" />
+              <path d="M-20-15H20M-20 0H20M-20 15H20" strokeDasharray="5 6" />
+              <path d="M-30-24H30M-30 24H30" />
+            </g>
+          ) : (
+            <g transform={`translate(638 ${step.y}) scale(0.9)`} fill="none" stroke="#111111" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M-29 -9H29V29H-29ZM-36 -23H36V-9H-36ZM0 -23V29M0 -23C-27 -23-31 -38-20 -40-11 -42-4 -32 0 -23ZM0 -23C27 -23 31 -38 20 -40 11 -42 4 -32 0 -23Z" />
+            </g>
+          )}
+          <text x="638" y={step.y + 96} textAnchor="middle" fontSize="20" fontFamily="Arial,sans-serif" fontWeight="600" letterSpacing="3.2" fill="#111111">
+            {step.number} {step.label}
+          </text>
+        </g>
+      ))}
     </svg>
+  );
+}
+
+function ClassicPosterThumbnail({ posterSvg }: { posterSvg: string }) {
+  return (
+    <Image
+      src={`data:image/svg+xml;charset=utf-8,${encodeURIComponent(posterSvg)}`}
+      width={794}
+      height={1123}
+      alt=""
+      aria-hidden="true"
+      unoptimized
+      className="h-full w-full object-contain"
+      data-testid="classic-poster-thumbnail"
+    />
   );
 }
 
@@ -167,6 +206,7 @@ export function PosterTemplateSelector({
   selectedTemplateId,
   qrDataUrl,
   selectedBackgroundMotif = "plain",
+  classicThumbnailSvg,
   onSelect,
   onSelectMotif,
 }: PosterTemplateSelectorProps) {
@@ -203,8 +243,10 @@ export function PosterTemplateSelector({
               <span aria-hidden="true" className="relative block h-[220px] overflow-hidden" style={{
                 background: visualTemplate.background,
               }}>
-                {visualTemplate.id === "soft-gradient-wheel" ? (
-                  <GradientClairThumbnail qrDataUrl={qrDataUrl} />
+                {visualTemplate.id === "pastel-editorial-wheel" ? (
+                  <EditorialPosterThumbnail gameType={gameType} qrDataUrl={qrDataUrl} />
+                ) : visualTemplate.id === "soft-gradient-wheel" ? (
+                  <ClassicPosterThumbnail posterSvg={classicThumbnailSvg} />
                 ) : visualTemplate.id === "premium-wheel" ? (
                   <svg viewBox="0 0 794 1123" className="h-full w-full" aria-hidden="true">
                     <image href="/backgrounds/premium-poster-backdrop.png" width="794" height="1123" />

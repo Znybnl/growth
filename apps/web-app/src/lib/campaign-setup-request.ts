@@ -1,9 +1,12 @@
-export async function postCampaignSetup<TPayload>(payload: unknown) {
+export async function postCampaignSetup<TPayload>(
+  payload: unknown,
+  endpoint = "/api/campaigns/setup",
+) {
   const serializationStartedAt = performance.now();
   const body = JSON.stringify(payload);
   const serializationMs = Math.round((performance.now() - serializationStartedAt) * 10) / 10;
 
-  const response = await fetch("/api/campaigns/setup", {
+  const response = await fetch(endpoint, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { signIn } from "./auth-session";
 import { getPosterTemplate } from "../src/lib/poster-templates";
+import { buildClassicPosterThumbnailSvg } from "../src/lib/poster-render";
 
 test("Gradient clair est la première variante de Classique et garde le même aperçu que le PNG", async ({ page }, testInfo) => {
   const gradientTemplate = getPosterTemplate("classic-wheel", "soft-gradient");
@@ -12,6 +13,7 @@ test("Gradient clair est la première variante de Classique et garde le même ap
   expect(gradientTemplate.ctaWidth).toBe(390);
   expect(getPosterTemplate("classic-wheel", "terracotta").id).toBe("terracotta-wheel");
   expect(getPosterTemplate("classic-wheel", "plain").id).toBe("classic-wheel");
+  expect(buildClassicPosterThumbnailSvg("scratch", "soft-gradient")).toContain("GRATTEZ ICI");
   test.setTimeout(180_000);
   page.setDefaultTimeout(20_000);
   page.setDefaultNavigationTimeout(20_000);
@@ -42,11 +44,20 @@ test("Gradient clair est la première variante de Classique et garde le même ap
     const gradientMotif = motifs.getByRole("button", { name: "Gradient clair" });
     await expect(gradientMotif).toHaveAttribute("aria-pressed", "true");
     await expect(motifs.getByRole("button").first()).toHaveAccessibleName("Gradient clair");
-    await expect(page.getByTestId("gradient-clair-thumbnail")).toBeVisible();
-    await expect(page.getByTestId("gradient-clair-thumbnail-wheel")).toHaveAttribute("data-wheel-radius", "242.25");
-    await expect(page.getByTestId("gradient-clair-thumbnail-qr")).toBeAttached();
-    await expect(page.getByTestId("gradient-clair-thumbnail-qr-image")).toHaveAttribute("width", "222.3");
-    await expect(page.getByTestId("gradient-clair-thumbnail-cta")).toHaveText("Scannez pour jouer");
+    const thumbnail = page.getByTestId("classic-poster-thumbnail");
+    await expect(thumbnail).toBeVisible();
+    await expect.poll(() => thumbnail.evaluate((image) => (image as HTMLImageElement).naturalWidth)).toBe(794);
+    const thumbnailSvg = await thumbnail.evaluate((image) => {
+      const source = (image as HTMLImageElement).src;
+      return decodeURIComponent(source.slice(source.indexOf(",") + 1));
+    });
+    expect(thumbnailSvg).toContain("Votre établissement");
+    expect(thumbnailSvg).toContain("Des cadeaux à gagner dans votre</text><text");
+    expect(thumbnailSvg).toContain(">établissement.</text>");
+    expect(thumbnailSvg).toContain("Scannez pour jouer");
+    expect(thumbnailSvg).toContain('translate(28 954)');
+    expect(thumbnailSvg).toContain(">Jouez</text>");
+    expect(thumbnailSvg).not.toContain("E2E — Gradient clair");
     await page.getByRole("button", { name: /^Élégance/ }).click();
     await page.getByRole("button", { name: /^Classique/ }).click();
     await expect(page.getByRole("button", { name: /^Classique/ })).toHaveAttribute("aria-pressed", "true");
@@ -85,7 +96,7 @@ test("Gradient clair est la première variante de Classique et garde le même ap
     await expect(page.getByRole("button", { name: /^Classique/ })).toHaveAttribute("aria-pressed", "true");
     await expect(gradientMotif).toHaveAttribute("aria-pressed", "true");
 
-    await gradientMotif.screenshot({ path: testInfo.outputPath("gradient-clair-thumbnail.png") });
+    await thumbnail.screenshot({ path: testInfo.outputPath("gradient-clair-thumbnail.png") });
     await page.setViewportSize({ width: 390, height: 844 });
     await preview.scrollIntoViewIfNeeded();
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
