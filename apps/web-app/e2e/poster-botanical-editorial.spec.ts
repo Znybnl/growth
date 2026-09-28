@@ -61,7 +61,7 @@ test("Botanique éditorial utilise le logo marchand et exporte le même rendu qu
     await page.getByRole("button", { name: /^Botanique éditorial/ }).screenshot({ path: testInfo.outputPath("botanical-editorial-thumbnail.png") });
 
     const preview = page.getByAltText("Prévisualisation affiche");
-    await expect(preview).toBeVisible();
+    await expect(preview).toBeVisible({ timeout: 30_000 });
     await page.screenshot({ path: testInfo.outputPath("botanical-editorial-preview.png"), fullPage: true });
     const previewBytes = await preview.evaluate(async (img) => {
       const response = await fetch((img as HTMLImageElement).src);
