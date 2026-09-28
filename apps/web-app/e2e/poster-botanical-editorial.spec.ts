@@ -53,7 +53,9 @@ test("Botanique éditorial utilise le logo marchand et exporte le même rendu qu
     await expect(thumbnailBackdrop).toHaveAttribute("href", "/backgrounds/botanical-editorial-poster-backdrop.webp");
     await expect(thumbnailBackdrop).toBeAttached();
     await expect(page.getByTestId("botanical-editorial-thumbnail-medallion")).toHaveAttribute("fill", "#AAB590");
-    await expect(page.getByTestId("botanical-editorial-thumbnail-leaf").locator("path")).toHaveCount(2);
+    await expect(page.getByTestId("botanical-editorial-thumbnail-supporting-text")).toBeAttached();
+    await expect(page.getByTestId("botanical-editorial-thumbnail-leaf")).toHaveCount(0);
+    await expect(page.getByTestId("botanical-editorial-thumbnail-gift")).toBeAttached();
     await expect(page.getByTestId("botanical-editorial-thumbnail-arrow-one")).toHaveAttribute("marker-end", "url(#thumbnailArrow)");
     await expect(page.getByTestId("botanical-editorial-thumbnail-arrow-two")).toHaveAttribute("marker-end", "url(#thumbnailArrow)");
     await expect(page.getByTestId("botanical-editorial-thumbnail-qr")).toBeAttached();
