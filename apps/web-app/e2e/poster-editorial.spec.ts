@@ -43,6 +43,7 @@ test("le template Éditorial pastel affiche son QR, son logo et exporte le même
 
     const downloadEvent = page.waitForEvent("download");
     await page.getByRole("button", { name: "Télécharger le PNG", exact: true }).click();
+    await page.getByRole("button", { name: "Enregistrer et télécharger", exact: true }).click();
     const download = await downloadEvent;
     const downloadedPng = testInfo.outputPath("editorial-poster-download.png");
     await download.saveAs(downloadedPng);
