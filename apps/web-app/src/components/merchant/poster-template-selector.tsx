@@ -63,6 +63,62 @@ function QrThumbnail({ template }: { template: PosterTemplateConfig }) {
   );
 }
 
+function GradientClairThumbnail({ qrDataUrl }: { qrDataUrl?: string | null }) {
+  const cx = 380;
+  const cy = 835;
+  const radius = 242.25;
+  const point = (angle: number, distance: number) => {
+    const radians = (angle * Math.PI) / 180;
+    return [cx + Math.cos(radians) * distance, cy + Math.sin(radians) * distance] as const;
+  };
+
+  return (
+    <svg viewBox="0 0 794 1123" className="h-full w-full" aria-hidden="true" data-testid="gradient-clair-thumbnail">
+      <defs>
+        <linearGradient id="gradient-clair-thumbnail-bg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#efedff" />
+          <stop offset="55%" stopColor="#f8f7ff" />
+          <stop offset="100%" stopColor="#ffffff" />
+        </linearGradient>
+      </defs>
+      <rect width="794" height="1123" fill="url(#gradient-clair-thumbnail-bg)" />
+      <circle cx="240" cy="285" r="410" fill="#2100b8" opacity="0.085" />
+      <circle cx="570" cy="650" r="310" fill="white" opacity="0.38" />
+      <text x="397" y="126" textAnchor="middle" fontSize="30" fontWeight="600" fill="#050644">Votre établissement</text>
+      <line x1="367" y1="162" x2="427" y2="162" stroke="#403c70" strokeWidth="2" />
+      <text x="397" y="220" textAnchor="middle" fontSize="58" fontWeight="700" fill="#050644" fontFamily="Arial, sans-serif">
+        <tspan x="397">Scannez, jouez,</tspan><tspan x="397" dy="64">récupérez votre</tspan><tspan x="397" dy="64">cadeau !</tspan>
+      </text>
+      <g data-testid="gradient-clair-thumbnail-wheel" data-wheel-radius={radius}>
+        {[0, 1, 2, 3, 4, 5].map((index) => {
+          const startAngle = -120 + index * 60;
+          const endAngle = startAngle + 60;
+          const [startX, startY] = point(startAngle, radius);
+          const [endX, endY] = point(endAngle, radius);
+          const [giftX, giftY] = point(startAngle + 30, radius * 0.58);
+          return (
+            <g key={index}>
+              <path d={`M ${cx} ${cy} L ${startX} ${startY} A ${radius} ${radius} 0 0 1 ${endX} ${endY} Z`} fill={index % 2 ? "#fff7ef" : "#4b35c9"} stroke="#403c70" strokeWidth="3" />
+              <g transform={`translate(${giftX} ${giftY}) rotate(${startAngle + 30})`} fill="none" stroke={index % 2 ? "#2100b8" : "#fff7ef"} strokeWidth="7" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="-19" y="-10" width="38" height="29" rx="3" />
+                <path d="M-22-10h44v10h-44zM0-10v29M-22 0h44M0-10c-15 0-20-3-17-10 3-6 12-2 17 10Zm0 0c15 0 20-3 17-10-3-6-12-2-17 10Z" />
+              </g>
+            </g>
+          );
+        })}
+        <circle cx={cx} cy={cy} r="45" fill="#060642" />
+        <path d={`M ${cx - 28} ${cy - radius - 38} Q ${cx - 32} ${cy - radius - 38} ${cx - 28} ${cy - radius - 30} L ${cx - 4} ${cy - radius + 12} Q ${cx} ${cy - radius + 18} ${cx + 4} ${cy - radius + 12} L ${cx + 28} ${cy - radius - 30} Q ${cx + 32} ${cy - radius - 38} ${cx + 28} ${cy - radius - 38} Z`} fill="#060642" stroke="white" strokeWidth="8" strokeLinejoin="round" />
+      </g>
+      <g data-testid="gradient-clair-thumbnail-qr">
+        <rect x="480.85" y="510.85" width="256.5" height="294.5" rx="24.7" fill="white" stroke="#2100b8" strokeWidth="2.5" />
+        {qrDataUrl ? <image data-testid="gradient-clair-thumbnail-qr-image" href={qrDataUrl} x="498.85" y="528.85" width="222.3" height="222.3" /> : <QrCode data-testid="gradient-clair-thumbnail-qr-image" x="498.85" y="528.85" width="222.3" height="222.3" color="#111" strokeWidth="1.5" />}
+        <rect x="433" y="831" width="354" height="64" rx="30" fill="#2100b8" stroke="white" strokeWidth="3" />
+        <text data-testid="gradient-clair-thumbnail-cta" x="610" y="871" textAnchor="middle" fontSize="21" fontWeight="800" fill="white">scannez pour jouer</text>
+      </g>
+    </svg>
+  );
+}
+
 type ThumbnailStepIconKind = "scan" | "wheel" | "gift";
 
 function ThumbnailStepIcon({
@@ -147,7 +203,9 @@ export function PosterTemplateSelector({
               <span aria-hidden="true" className="relative block h-[220px] overflow-hidden" style={{
                 background: visualTemplate.background,
               }}>
-                {visualTemplate.id === "premium-wheel" ? (
+                {visualTemplate.id === "soft-gradient-wheel" ? (
+                  <GradientClairThumbnail qrDataUrl={qrDataUrl} />
+                ) : visualTemplate.id === "premium-wheel" ? (
                   <svg viewBox="0 0 794 1123" className="h-full w-full" aria-hidden="true">
                     <image href="/backgrounds/premium-poster-backdrop.png" width="794" height="1123" />
                     <text x="520" y="102" textAnchor="middle" fontSize="28" fill="#171412">Votre établissement</text>
