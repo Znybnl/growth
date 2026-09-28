@@ -184,7 +184,7 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     headlineSizeMultiplier: 1.52,
     headlineItalic: false,
     logoY: 26,
-    logoTextY: -4,
+    logoTextY: -24,
     logoFontWeight: 600,
     logoUnderlineWidth: 54,
     logoUnderlineColor: "#403c70",

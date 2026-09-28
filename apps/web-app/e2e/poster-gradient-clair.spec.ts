@@ -8,7 +8,7 @@ test("Gradient clair est la première variante de Classique et garde le même ap
   expect(gradientTemplate.wheelRadius).toBe(247);
   expect(gradientTemplate.qrSize).toBe(277.4);
   expect(gradientTemplate.logoY).toBe(26);
-  expect(gradientTemplate.logoTextY).toBe(-4);
+  expect(gradientTemplate.logoTextY).toBe(-24);
   expect(gradientTemplate.ctaWidth).toBe(390);
   expect(getPosterTemplate("classic-wheel", "terracotta").id).toBe("terracotta-wheel");
   expect(getPosterTemplate("classic-wheel", "plain").id).toBe("classic-wheel");
