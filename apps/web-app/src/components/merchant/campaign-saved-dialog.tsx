@@ -8,6 +8,8 @@ import { DialogShell } from "@/components/ui/dialog";
 type CampaignSavedDialogProps = {
   open: boolean;
   campaignId: string;
+  adminTargetName?: string;
+  adminIsActive?: boolean;
   onClose: () => void;
   onPreview: () => void;
   onPreviewQr: () => void;
@@ -16,6 +18,8 @@ type CampaignSavedDialogProps = {
 export function CampaignSavedDialog({
   open,
   campaignId,
+  adminTargetName,
+  adminIsActive,
   onClose,
   onPreview,
   onPreviewQr,
@@ -45,23 +49,43 @@ export function CampaignSavedDialog({
         </div>
 
         <p className="mt-5 text-xs font-semibold uppercase tracking-[0.18em] text-ash">
-          Jeu prêt
+          {adminTargetName ? (adminIsActive ? "Jeu publié" : "Brouillon enregistré") : "Jeu prêt"}
         </p>
         <h2 id="campaign-saved-dialog-title" className="okado-dialog-title">
-          Votre jeu est enregistré.
+          {adminTargetName
+            ? adminIsActive
+              ? `Le jeu est publié pour ${adminTargetName}.`
+              : `Le brouillon est prêt pour ${adminTargetName}.`
+            : "Votre jeu est enregistré."}
         </h2>
         <p id="campaign-saved-dialog-description" className="okado-dialog-description max-w-xl">
-          Testez le parcours ou reprenez sa configuration. Vous restez sur la campagne en cours.
+          {adminTargetName
+            ? adminIsActive
+              ? "Le jeu est maintenant public. Vous pouvez poursuivre sa configuration dans le wizard."
+              : "Le jeu n’est pas publié. Vous pouvez poursuivre sa configuration dans le wizard."
+            : "Testez le parcours ou reprenez sa configuration. Vous restez sur la campagne en cours."}
         </p>
 
-        <Button asChild variant="primary" size="default" className="mt-6 w-full">
+        {adminTargetName ? (
+          <>
+            <Button type="button" variant="primary" size="default" className="mt-6 w-full" onClick={onClose}>
+              Continuer la configuration
+            </Button>
+            <Button asChild variant="default" size="default" className="mt-2 w-full">
+              <a href={`/admin/campaigns/${campaignId}/poster`}>
+                <ImageIcon className="h-4 w-4" aria-hidden="true" />
+                Personnaliser l’affiche
+              </a>
+            </Button>
+          </>
+        ) : <Button asChild variant="primary" size="default" className="mt-6 w-full">
           <a href={`/api/campaigns/${campaignId}/qr`} download>
             <Download className="h-4 w-4" aria-hidden="true" />
             Télécharger le QR code de diffusion
           </a>
-        </Button>
+        </Button>}
 
-        <div className="mt-2 grid gap-2 sm:grid-cols-2">
+        {!adminTargetName ? <div className="mt-2 grid gap-2 sm:grid-cols-2">
           <Button type="button" variant="default" size="default" onClick={onPreview}>
             <Eye className="h-4 w-4" aria-hidden="true" />
             Prévisualiser
@@ -76,7 +100,7 @@ export function CampaignSavedDialog({
               Affiche
             </a>
           </Button>
-        </div>
+        </div> : null}
     </DialogShell>
   );
 }

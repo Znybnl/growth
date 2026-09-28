@@ -367,6 +367,26 @@ function createWizardActions(
   return [];
 }
 
+function createAdminWizardActions(merchant: Merchant): CampaignAction[] {
+  const configuredActions: Array<{ kind: ActionKind; url?: string; label?: string }> = [
+    { kind: "google", url: merchant.googleReviewUrl },
+    { kind: "instagram", url: merchant.instagramUrl },
+    { kind: "facebook", url: merchant.facebookUrl },
+    { kind: "tiktok", url: merchant.tiktokUrl },
+    { kind: "tripadvisor", url: merchant.tripadvisorUrl },
+    { kind: "custom", url: merchant.customLinkUrl },
+    { kind: "custom", url: merchant.appointmentUrl, label: "Prendre rendez-vous" },
+  ];
+
+  return configuredActions
+    .map(({ kind, url, label }) => ({ kind, url: normalizeUrl(url ?? ""), label }))
+    .filter(({ url }) => Boolean(url))
+    .map(({ kind, url, label }, index) => ({
+      ...createWizardAction(`admin-wizard-action-${index + 1}`, kind, url),
+      ...(label ? { label } : {}),
+    }));
+}
+
 function createWizardDraft(merchant: Merchant): WizardDraft {
   const wheel = createDefaultWheelSettings(DEFAULT_COCORICO_PRIMARY_COLOR);
 
@@ -829,21 +849,35 @@ export function CampaignWizard({
   merchant,
   initialCampaign,
   deferInlineAssets = false,
+  adminSaveEndpoint,
+  adminAssetsEndpoint,
 }: {
   merchant: Merchant;
   initialCampaign?: CampaignPerformance | null;
   deferInlineAssets?: boolean;
+  adminSaveEndpoint?: string;
+  adminAssetsEndpoint?: string;
 }) {
   const router = useRouter();
   const isEditing = Boolean(initialCampaign);
   useEffect(() => {
-    if (!isEditing) {
+    if (!isEditing && !adminSaveEndpoint) {
       captureClientProductEvent("campaign_creation_started", { wizardMode: "guided" });
     }
-  }, [isEditing]);
-  const [draft, setDraft] = useState<WizardDraft>(() =>
-    initialCampaign ? draftFromCampaign(merchant, initialCampaign) : createWizardDraft(merchant),
-  );
+  }, [adminSaveEndpoint, isEditing]);
+  const [draft, setDraft] = useState<WizardDraft>(() => {
+    if (initialCampaign) return draftFromCampaign(merchant, initialCampaign);
+    const initialDraft = createWizardDraft(merchant);
+    if (!adminSaveEndpoint) return initialDraft;
+    return {
+      ...initialDraft,
+      logoMode: merchant.logoUrl ? "image" : "text",
+      logoText: merchant.logoText || merchant.companyName,
+      logoUrl: merchant.logoUrl,
+      targetUrl: merchant.googleReviewUrl || undefined,
+      actions: createAdminWizardActions(merchant),
+    };
+  });
   const [stepIndex, setStepIndex] = useState(0);
   const stepHeadingRef = useRef<HTMLHeadingElement>(null);
   const previousStepIndexRef = useRef(stepIndex);
@@ -883,9 +917,20 @@ export function CampaignWizard({
     logo?: string;
     background?: string;
   }>({});
-  const [lastSavedDraftSnapshot, setLastSavedDraftSnapshot] = useState(() =>
-    JSON.stringify(initialCampaign ? draftFromCampaign(merchant, initialCampaign) : createWizardDraft(merchant)),
-  );
+  const [lastSavedDraftSnapshot, setLastSavedDraftSnapshot] = useState(() => {
+    if (initialCampaign) return JSON.stringify(draftFromCampaign(merchant, initialCampaign));
+    const initialDraft = createWizardDraft(merchant);
+    return JSON.stringify(adminSaveEndpoint
+      ? {
+          ...initialDraft,
+          logoMode: merchant.logoUrl ? "image" : "text",
+          logoText: merchant.logoText || merchant.companyName,
+          logoUrl: merchant.logoUrl,
+          targetUrl: merchant.googleReviewUrl || undefined,
+          actions: createAdminWizardActions(merchant),
+        }
+      : initialDraft);
+  });
   const isDirty = lastSavedDraftSnapshot !== JSON.stringify(draft);
   const saveActionLabel = draft.isActive ? "Enregistrer" : "Enregistrer le brouillon";
   const [pendingNavigation, setPendingNavigation] = useState<PendingWizardNavigation | null>(null);
@@ -1036,7 +1081,10 @@ export function CampaignWizard({
     if (!deferInlineAssets || !draft.id || deferredAssetsLoaded) return;
     let cancelled = false;
 
-    fetch(`/api/campaigns/${draft.id}/assets?includeLogo=false`, { cache: "no-store" })
+    fetch(
+      adminAssetsEndpoint ?? `/api/campaigns/${draft.id}/assets?includeLogo=false`,
+      { cache: "no-store" },
+    )
       .then(async (response) => {
         const payload = (await response.json().catch(() => null)) as {
           assets?: {
@@ -1073,7 +1121,7 @@ export function CampaignWizard({
     return () => {
       cancelled = true;
     };
-  }, [deferInlineAssets, draft, deferredAssetsLoaded]);
+  }, [adminAssetsEndpoint, deferInlineAssets, draft, deferredAssetsLoaded]);
 
   useEffect(() => {
     // The completion screen is already backed by a saved campaign. Do not let
@@ -1274,7 +1322,11 @@ export function CampaignWizard({
       return null;
     }
 
-    const targetIsActive = isPublishing ? true : isEditing ? draft.isActive : false;
+    const targetIsActive = isPublishing
+      ? true
+      : isEditing || (adminSaveEndpoint && draft.id)
+        ? draft.isActive
+        : false;
     if (saveRequestInFlightRef.current) return null;
     saveRequestInFlightRef.current = true;
     setIsSaving(true);
@@ -1302,7 +1354,7 @@ export function CampaignWizard({
           ...prize,
           probability: Number(prize.probability || 0),
         })),
-      });
+      }, adminSaveEndpoint);
       if (!response.ok)
         throw new Error(
           payload?.error || "La campagne n’a pas pu être enregistrée.",
@@ -1425,9 +1477,15 @@ export function CampaignWizard({
       <section data-mode={isEditing ? "edit" : "create"} className="flex flex-col gap-5 px-1 py-2 xl:flex-row xl:items-end xl:justify-between">
         <div>
           <p className="okado-label">Assistant de création</p>
-          <h1 className="okado-page-title mt-3">Créer une campagne</h1>
+          <h1 className="okado-page-title mt-3">
+            {adminSaveEndpoint
+              ? isEditing
+                ? `Modifier le jeu pour ${merchant.companyName}`
+                : `Créer un jeu pour ${merchant.companyName}`
+              : "Créer une campagne"}
+          </h1>
         </div>
-        {draft.id ? (
+        {draft.id && !adminSaveEndpoint ? (
           <div className="flex flex-wrap items-center gap-2">
             {isEditing ? <StatusBadge tone="muted">Mode modification</StatusBadge> : null}
             <button
@@ -3111,6 +3169,8 @@ export function CampaignWizard({
         <CampaignSavedDialog
           open
           campaignId={savedCampaignId}
+          adminTargetName={adminSaveEndpoint ? merchant.companyName : undefined}
+          adminIsActive={adminSaveEndpoint ? draft.isActive : undefined}
           onClose={() => setSavedCampaignId(null)}
           onPreview={() => {
             setSavedPreviewCampaignId(savedCampaignId);
