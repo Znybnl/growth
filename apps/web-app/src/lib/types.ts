@@ -888,6 +888,11 @@ export interface CampaignDataView {
 export interface CampaignSetupInput {
   id?: string;
   merchantId: string;
+  /** Server-only attribution set by the platform-admin campaign endpoint. */
+  adminCreationAudit?: {
+    adminUserId: string;
+    accountMerchantId: string;
+  };
   creationMode?: "editor" | "wizard";
   title: string;
   subtitle: string;

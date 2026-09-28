@@ -6,12 +6,14 @@ import {
   PosterTemplateConfig,
 } from "@/lib/poster-templates";
 import { QrCode } from "lucide-react";
+import Image from "next/image";
 
 type PosterTemplateSelectorProps = {
   gameType: GameType;
   selectedTemplateId?: PosterTemplateId;
   qrDataUrl?: string | null;
   selectedBackgroundMotif?: PosterBackgroundMotif;
+  classicThumbnailSvg: string;
   onSelect: (templateId: PosterTemplateId) => void;
   onSelectMotif: (backgroundMotif: PosterBackgroundMotif) => void;
 };
@@ -141,6 +143,21 @@ function EditorialPosterThumbnail({
   );
 }
 
+function ClassicPosterThumbnail({ posterSvg }: { posterSvg: string }) {
+  return (
+    <Image
+      src={`data:image/svg+xml;charset=utf-8,${encodeURIComponent(posterSvg)}`}
+      width={794}
+      height={1123}
+      alt=""
+      aria-hidden="true"
+      unoptimized
+      className="h-full w-full object-contain"
+      data-testid="classic-poster-thumbnail"
+    />
+  );
+}
+
 type ThumbnailStepIconKind = "scan" | "wheel" | "gift";
 
 function ThumbnailStepIcon({
@@ -189,6 +206,7 @@ export function PosterTemplateSelector({
   selectedTemplateId,
   qrDataUrl,
   selectedBackgroundMotif = "plain",
+  classicThumbnailSvg,
   onSelect,
   onSelectMotif,
 }: PosterTemplateSelectorProps) {
@@ -227,6 +245,8 @@ export function PosterTemplateSelector({
               }}>
                 {visualTemplate.id === "pastel-editorial-wheel" ? (
                   <EditorialPosterThumbnail gameType={gameType} qrDataUrl={qrDataUrl} />
+                ) : visualTemplate.id === "soft-gradient-wheel" ? (
+                  <ClassicPosterThumbnail posterSvg={classicThumbnailSvg} />
                 ) : visualTemplate.id === "premium-wheel" ? (
                   <svg viewBox="0 0 794 1123" className="h-full w-full" aria-hidden="true">
                     <image href="/backgrounds/premium-poster-backdrop.png" width="794" height="1123" />
@@ -293,7 +313,7 @@ export function PosterTemplateSelector({
                 <div className="border-t border-[#e6d8eb] px-4 pb-4 pt-3">
                   <p className="text-xs font-semibold uppercase tracking-[0.16em] text-charcoal">Motif du fond</p>
                   <div className="mt-2 grid gap-2" role="group" aria-label="Motif du fond">
-                    {POSTER_BACKGROUND_MOTIFS.map((motif) => {
+                    {POSTER_BACKGROUND_MOTIFS.filter((motif) => motif.id === "soft-gradient").map((motif) => {
                       const motifActive = selectedBackgroundMotif === motif.id;
                       return (
                         <button

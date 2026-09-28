@@ -248,8 +248,8 @@ function renderBackground(
   if (template.id === "soft-gradient-wheel") {
     return `
       <rect width="${A4_WIDTH}" height="${A4_HEIGHT}" fill="${baseColor}"/>
-      <circle cx="398" cy="530" r="470" fill="${template.accent}" opacity="0.055"/>
-      <circle cx="510" cy="706" r="360" fill="#ffffff" opacity="0.48"/>
+      <circle cx="398" cy="530" r="470" fill="${template.accent}" opacity="0.085"/>
+      <circle cx="510" cy="706" r="360" fill="#ffffff" opacity="0.38"/>
     `;
   }
 
@@ -292,7 +292,9 @@ function renderBackground(
 
 function getLogoLayout(poster: CampaignPosterSettings, template: PosterTemplateConfig) {
   const logoSize = clamp((poster.logoSizePercent / 100) * 170, 72, 300);
-  const logoY = template.logoY ?? (template.id === "classic-wheel" ? 28 : 22);
+  const logoY = poster.logoMode === "text"
+    ? template.logoTextY ?? template.logoY ?? (template.id === "classic-wheel" ? 28 : 22)
+    : template.logoY ?? (template.id === "classic-wheel" ? 28 : 22);
 
   return {
     logoSize,
@@ -329,11 +331,12 @@ function renderLogo(campaign: Campaign, poster: CampaignPosterSettings, template
   const logoTextColor = poster.headlineTextColor || template.headline;
   const logoFamily = fontFamily(template.logoFontFamily ?? "inter");
   const textAnchor = template.logoTextAnchor ?? "middle";
-  const underlineX = template.logoUnderlineCentered
+  const underlineCentered = template.logoUnderlineCentered ?? textAnchor === "middle";
+  const underlineX = underlineCentered
     ? logoX - (template.logoUnderlineWidth ?? 0) / 2
     : logoX;
   const underline = template.logoUnderlineWidth
-    ? `<line x1="${underlineX}" y1="${centerY + fontSize * 0.34 + 30}" x2="${underlineX + template.logoUnderlineWidth}" y2="${centerY + fontSize * 0.34 + 30}" stroke="${template.logoUnderlineColor ?? logoTextColor}" stroke-width="3"/>`
+    ? `<line x1="${underlineX}" y1="${centerY + fontSize * 0.34 + 30}" x2="${underlineX + template.logoUnderlineWidth}" y2="${centerY + fontSize * 0.34 + 30}" stroke="${template.logoUnderlineColor ?? logoTextColor}" stroke-width="${template.logoUnderlineStrokeWidth ?? 3}"/>`
     : "";
 
   return `
@@ -432,11 +435,16 @@ export function getPosterSubtitleLayout(
     campaign.presentation.layout.subtitleSpacingPx,
     defaultWheelSubtitleSpacingForTemplate(campaign.presentation.layout.templateId),
   );
-  const headlineGap = template.id === "botanical-wheel"
+  const baseHeadlineGap = template.id === "botanical-wheel"
     ? Math.max(30, configuredHeadlineGap)
     : isEditorialTemplate
-      ? 28
-    : configuredHeadlineGap;
+      ? Math.max(28, configuredHeadlineGap)
+      : configuredHeadlineGap;
+  const headlineGap = clamp(
+    baseHeadlineGap + (template.subtitleSpacingAdjustmentPx ?? 0),
+    0,
+    100,
+  );
   const standardHeadlineLayout = !isPremiumTemplate && !template.backdropAsset && !isEditorialTemplate
     ? getStandardHeadlineLayout(campaign, poster, template)
     : null;
@@ -702,21 +710,22 @@ function renderWheel(template: PosterTemplateConfig, poster: CampaignPosterSetti
         .join("");
       const clipId = `posterWheelSegmentClip${index}`;
       const slicePath = segmentPath(cx, cy, radius, start, end);
+      const segmentMark = template.wheelLabelVariant === "gift-icons"
+        ? `<g transform="translate(${labelPoint.x.toFixed(1)} ${labelPoint.y.toFixed(1)}) rotate(${labelAngle})" fill="none" stroke="${segment.textColor}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="-19" y="-10" width="38" height="29" rx="3"/>
+            <path d="M-22 -10h44v10h-44zM0 -10v29M-22 0h44"/>
+            <path d="M0 -10c-15 0-20-3-17-10 3-6 12-2 17 10Zm0 0c15 0 20-3 17-10-3-6-12-2-17 10Z"/>
+          </g>`
+        : `<g clip-path="url(#${clipId})">
+            <text x="${labelPoint.x.toFixed(1)}" y="${labelPoint.y.toFixed(1)}"
+              transform="rotate(${labelAngle} ${labelPoint.x.toFixed(1)} ${labelPoint.y.toFixed(1)})"
+              text-anchor="middle" fill="${segment.textColor}" font-family="${SAFE_FONT}"
+              font-size="${fontSize}" font-weight="900">${labelLines}</text>
+          </g>`;
 
       return `
         <path d="${slicePath}" fill="${fill}" stroke="${rimColor}" stroke-width="2"/>
-        <g clip-path="url(#${clipId})">
-          <text
-            x="${labelPoint.x.toFixed(1)}"
-            y="${labelPoint.y.toFixed(1)}"
-            transform="rotate(${labelAngle} ${labelPoint.x.toFixed(1)} ${labelPoint.y.toFixed(1)})"
-            text-anchor="middle"
-            fill="${segment.textColor}"
-            font-family="${SAFE_FONT}"
-            font-size="${fontSize}"
-            font-weight="900"
-          >${labelLines}</text>
-        </g>
+        ${segmentMark}
       `;
     })
     .join("");
@@ -736,7 +745,9 @@ function renderWheel(template: PosterTemplateConfig, poster: CampaignPosterSetti
       <circle cx="${cx}" cy="${cy}" r="${radius}" fill="#ffffff" stroke="${rimColor}" stroke-width="9"/>
       ${slices}
       <circle cx="${cx}" cy="${cy}" r="33" fill="${template.accentDark}"/>
-      <path d="M ${cx - 32} ${cy - radius - 50} L ${cx + 32} ${cy - radius - 50} L ${cx} ${cy - radius + 8} Z" fill="${template.accentDark}"/>
+      ${template.wheelPointerVariant === "rounded-triangle"
+        ? `<path d="M ${cx - 29} ${cy - radius - 46} Q ${cx - 32} ${cy - radius - 46} ${cx - 29} ${cy - radius - 40} L ${cx - 4} ${cy - radius + 6} Q ${cx} ${cy - radius + 14} ${cx + 4} ${cy - radius + 6} L ${cx + 29} ${cy - radius - 40} Q ${cx + 32} ${cy - radius - 46} ${cx + 29} ${cy - radius - 46} Z" fill="${template.accentDark}" stroke="#ffffff" stroke-width="8" stroke-linejoin="round"/>`
+        : `<path d="M ${cx - 32} ${cy - radius - 50} L ${cx + 32} ${cy - radius - 50} L ${cx} ${cy - radius + 8} Z" fill="${template.accentDark}"/>`}
     </g>
   `;
 }
@@ -818,6 +829,19 @@ function renderQrAndCta(qrDataUrl: string, template: PosterTemplateConfig) {
     `;
   }
 
+  if (template.id === "soft-gradient-wheel") {
+    return `
+      <g filter="url(#posterShadow)" transform="translate(${template.qrX} ${template.qrY})">
+        <rect x="-18" y="-18" width="${template.qrSize + 36}" height="${template.qrSize + 36}" rx="30" fill="#ffffff" stroke="${template.qrFrame}" stroke-width="${template.qrBorderWidth ?? 1.5}"/>
+        <image href="${escapeXml(qrDataUrl)}" x="0" y="0" width="${template.qrSize}" height="${template.qrSize}"/>
+      </g>
+      <g filter="url(#posterShadow)" transform="translate(${template.ctaX} ${ctaY}) rotate(${template.ctaRotation} ${template.ctaWidth / 2} ${template.ctaHeight / 2})">
+        <rect width="${template.ctaWidth}" height="${template.ctaHeight}" rx="${template.ctaCornerRadius ?? 24}" fill="${accent}" stroke="#ffffff" stroke-width="${template.ctaBorderWidth ?? 7}"/>
+        <text x="${template.ctaWidth / 2}" y="${template.ctaHeight / 2 + 9}" text-anchor="middle" fill="#ffffff" font-family="${SAFE_FONT}" font-size="27" font-weight="900" letter-spacing="0.5">Scannez pour jouer</text>
+      </g>
+    `;
+  }
+
   return `
     <g filter="url(#posterShadow)" transform="translate(${template.qrX} ${template.qrY})">
       <rect x="-18" y="-18" width="${template.qrSize + 36}" height="${template.qrSize + 36}" rx="28" fill="${template.qrFrame}"/>
@@ -825,7 +849,7 @@ function renderQrAndCta(qrDataUrl: string, template: PosterTemplateConfig) {
       <image href="${escapeXml(qrDataUrl)}" x="18" y="18" width="${template.qrSize - 36}" height="${template.qrSize - 36}"/>
     </g>
     <g filter="url(#posterShadow)" transform="translate(${template.ctaX} ${ctaY}) rotate(${template.ctaRotation} ${template.ctaWidth / 2} ${template.ctaHeight / 2})">
-      <rect width="${template.ctaWidth}" height="${template.ctaHeight}" rx="24" fill="${accent}" stroke="#ffffff" stroke-width="7"/>
+      <rect width="${template.ctaWidth}" height="${template.ctaHeight}" rx="${template.ctaCornerRadius ?? 24}" fill="${accent}" stroke="#ffffff" stroke-width="${template.ctaBorderWidth ?? 7}"/>
       <text x="${template.ctaWidth / 2}" y="${template.ctaHeight / 2 + 11}" text-anchor="middle" fill="#ffffff" font-family="${SAFE_FONT}" font-size="26" font-weight="900" letter-spacing="0.5">SCANNEZ POUR JOUER</text>
     </g>
   `;
@@ -1107,5 +1131,63 @@ export function buildPosterSvg(args: {
       ${renderSteps(template, campaign.gameType)}
     </svg>
   `;
+}
+
+/** Build a privacy-safe selector preview with the same renderer as the printable poster. */
+export function buildClassicPosterThumbnailSvg(gameType: Campaign["gameType"], backgroundMotif: CampaignPosterSettings["backgroundMotif"]) {
+  const template = getPosterTemplate("classic-wheel", backgroundMotif);
+  const poster: CampaignPosterSettings = {
+    templateId: "classic-wheel",
+    backgroundMotif,
+    logoMode: "text",
+    logoText: "Votre établissement",
+    logoSizePercent: 70,
+    logoBottomMarginPx: 10,
+    posterSubtitleEnabled: true,
+    backgroundMode: "color",
+    backgroundColor: template.background,
+    backgroundImageUrl: "",
+    headline: "Scannez, jouez, récupérez votre cadeau !",
+    headlineTextColor: template.headlineTextColor,
+    headlineFontSizePx: template.headlineFontSizePx,
+    headlineFontFamily: template.headlineFontFamily ?? "geogrotesque",
+    wheel: { ...template.wheel },
+    footerBackgroundColor: "transparent",
+  };
+  const campaign: Campaign = {
+    id: "poster-template-thumbnail",
+    merchantId: "poster-template-thumbnail",
+    title: "Aperçu du template",
+    subtitle: "Scannez, jouez, récupérez votre cadeau !",
+    goalType: null,
+    emailCaptureEnabled: false,
+    ctaLabel: "Scannez pour jouer",
+    successMetric: "",
+    isActive: false,
+    createdAt: "",
+    accent: { ink: template.accentDark, paper: template.background, signal: template.accent },
+    gameType,
+    logoMode: "text",
+    logoText: "Votre établissement",
+    presentation: {
+      logo: { sizePercent: 70, marginBottomPx: 10, align: "center", textColor: template.headlineTextColor },
+      background: { mode: "color", color: template.background },
+      heading: { textColor: template.headlineTextColor, fontSizePx: template.headlineFontSizePx, fontFamily: "geogrotesque", fontWeight: 700, align: "center" },
+      button: { backgroundColor: template.accent, textColor: "#ffffff", borderColor: "#ffffff", size: "md", textSizePx: 16, isBold: true },
+      layout: { blockSpacingPx: 20, templateId: "classic", wheelSubtitle: "Des cadeaux à gagner dans votre établissement.", subtitleSpacingPx: 15 },
+      wheel: { ...template.wheel },
+      poster,
+      email: { senderName: "Votre établissement", replyTo: "", subject: "", preheader: "", headline: "", body: "", buttonLabel: "", footerNote: "", accentColor: template.accent },
+    },
+    actions: [],
+    rewardRules: { rewardExpiryMinutes: 0, purchaseRequired: false, availableAfterHours: 0, availabilityDurationDays: 30, participationIntervalDays: 0, isWinningEveryTime: false },
+  };
+  const prizes: Array<Pick<Prize, "label">> = [
+    { label: "-10 % prochaine visite" },
+    { label: "Soin découverte" },
+    { label: "Cadeau surprise" },
+  ];
+
+  return buildPosterSvg({ campaign, poster, prizes, qrDataUrl: createPosterPreviewQrDataUrl() });
 }
 
