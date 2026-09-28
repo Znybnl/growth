@@ -84,8 +84,8 @@ function EditorialPosterThumbnail({
       <rect width="794" height="1123" fill="url(#editorialPosterThumbnailBackground)" />
       <path d="M0 520 C130 660 135 850 0 1060Z" fill="#f6adc3" fillOpacity="0.55" />
       <path d="M794 454 C640 495 538 651 520 850 C510 977 440 1070 386 1123H794Z" fill="#e3c7ed" fillOpacity="0.7" />
-      <text x="397" y="98" textAnchor="middle" fontSize="34" fontFamily="Georgia,serif" fontWeight="500" fill="#111111">Votre logo</text>
-      <line x1="354" y1="130" x2="440" y2="130" stroke="#111111" strokeWidth="3" />
+      <text data-testid="editorial-thumbnail-logo" x="397" y="126" textAnchor="middle" fontSize="38" fontFamily="Georgia,serif" fontWeight="500" fill="#111111">Votre logo</text>
+      <line x1="354" y1="158" x2="440" y2="158" stroke="#111111" strokeWidth="3" />
       <text x="76" y="292" fontSize="88" fontFamily="Georgia,serif" fontWeight="600" fill="#111111">
         <tspan x="76">Scannez et</tspan><tspan x="76" dy="77">jouez</tspan>
       </text>

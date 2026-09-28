@@ -28,6 +28,8 @@ test("le template Éditorial pastel affiche son QR, son logo et exporte le même
     await expect(page.locator('input[type="color"]')).toHaveCount(0);
     await expect(page.getByLabel("Police du texte principal")).toHaveValue("cormorant");
     await expect(page.getByTestId("editorial-poster-thumbnail")).toBeAttached();
+    await expect(page.getByTestId("editorial-thumbnail-logo")).toHaveAttribute("font-size", "38");
+    await expect(page.getByTestId("editorial-thumbnail-logo")).toHaveAttribute("y", "126");
     await expect(page.getByTestId("editorial-thumbnail-qr")).toBeAttached();
     await expect(page.getByTestId("editorial-step-wheel-icon")).toBeAttached();
 
