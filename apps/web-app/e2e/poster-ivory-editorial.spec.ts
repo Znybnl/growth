@@ -48,6 +48,9 @@ test("le template Éditorial ivoire reste centré et exporte le même rendu que 
 
     const downloadEvent = page.waitForEvent("download");
     await page.getByRole("button", { name: "Télécharger le PNG", exact: true }).click();
+    const saveBeforeDownload = page.getByRole("dialog", { name: "Enregistrer avant le téléchargement ?", exact: true });
+    await expect(saveBeforeDownload).toBeVisible();
+    await saveBeforeDownload.getByRole("button", { name: "Enregistrer et télécharger", exact: true }).click();
     const download = await downloadEvent;
     const downloadedPng = testInfo.outputPath("ivory-editorial-poster-download.png");
     await download.saveAs(downloadedPng);
