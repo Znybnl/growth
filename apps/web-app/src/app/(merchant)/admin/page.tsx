@@ -94,8 +94,9 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                 <th className="px-3 py-3 font-medium">Inscription</th>
                 <th className="px-3 py-3 font-medium">Parcours</th>
                 <th className="px-3 py-3 font-medium">Abonnement</th>
-                <th className="px-3 py-3 font-medium">Activite</th>
-                <th className="px-3 py-3 font-medium">Alertes</th>
+                  <th className="px-3 py-3 font-medium">Activite</th>
+                  <th className="px-3 py-3 font-medium">Alertes</th>
+                  <th className="px-3 py-3 font-medium">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#eef2f7]">
@@ -122,6 +123,14 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                         {user.failedEmailCount ? `${user.failedEmailCount} e-mail(s)` : ""}
                       </span>
                     ) : <span className="text-xs text-ash">Aucune</span>}
+                  </td>
+                  <td className="px-3 py-4">
+                    <Link
+                      href={`/admin/campaigns/new?merchantId=${encodeURIComponent(user.merchantId)}`}
+                      className="okado-secondary-action okado-compact-action whitespace-nowrap px-3 text-xs"
+                    >
+                      Créer un jeu
+                    </Link>
                   </td>
                 </tr>
               ))}

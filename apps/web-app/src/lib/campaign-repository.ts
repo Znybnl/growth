@@ -2375,6 +2375,16 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
   });
   const templateId = input.presentation.layout.templateId ?? "classic";
   const localSettings = {
+    ...(!input.id && input.adminCreationAudit
+      ? {
+          adminCreation: {
+            adminUserId: input.adminCreationAudit.adminUserId,
+            accountMerchantId: input.adminCreationAudit.accountMerchantId,
+            targetLocationId: input.merchantId,
+            createdAt: new Date().toISOString(),
+          },
+        }
+      : {}),
     emailCaptureEnabled: input.emailCaptureEnabled,
     buttonTextSizePx: input.presentation.button.textSizePx,
     buttonIsBold: input.presentation.button.isBold,
