@@ -44,6 +44,9 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
         description="Suivez les comptes marchands, les campagnes produit et les alertes qui demandent une action."
         actions={
           <>
+          <Link href="/admin/campaigns" className="okado-secondary-action okado-compact-action px-4 text-sm">
+            Jeux créés
+          </Link>
           <Link href="/admin/prize-suggestions" className="okado-secondary-action okado-compact-action px-4 text-sm">
             Gérer les suggestions de lots
           </Link>

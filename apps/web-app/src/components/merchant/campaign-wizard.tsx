@@ -850,11 +850,13 @@ export function CampaignWizard({
   initialCampaign,
   deferInlineAssets = false,
   adminSaveEndpoint,
+  adminAssetsEndpoint,
 }: {
   merchant: Merchant;
   initialCampaign?: CampaignPerformance | null;
   deferInlineAssets?: boolean;
   adminSaveEndpoint?: string;
+  adminAssetsEndpoint?: string;
 }) {
   const router = useRouter();
   const isEditing = Boolean(initialCampaign);
@@ -1079,7 +1081,10 @@ export function CampaignWizard({
     if (!deferInlineAssets || !draft.id || deferredAssetsLoaded) return;
     let cancelled = false;
 
-    fetch(`/api/campaigns/${draft.id}/assets?includeLogo=false`, { cache: "no-store" })
+    fetch(
+      adminAssetsEndpoint ?? `/api/campaigns/${draft.id}/assets?includeLogo=false`,
+      { cache: "no-store" },
+    )
       .then(async (response) => {
         const payload = (await response.json().catch(() => null)) as {
           assets?: {
@@ -1116,7 +1121,7 @@ export function CampaignWizard({
     return () => {
       cancelled = true;
     };
-  }, [deferInlineAssets, draft, deferredAssetsLoaded]);
+  }, [adminAssetsEndpoint, deferInlineAssets, draft, deferredAssetsLoaded]);
 
   useEffect(() => {
     // The completion screen is already backed by a saved campaign. Do not let
@@ -1473,7 +1478,11 @@ export function CampaignWizard({
         <div>
           <p className="okado-label">Assistant de création</p>
           <h1 className="okado-page-title mt-3">
-            {adminSaveEndpoint ? `Créer un jeu pour ${merchant.companyName}` : "Créer une campagne"}
+            {adminSaveEndpoint
+              ? isEditing
+                ? `Modifier le jeu pour ${merchant.companyName}`
+                : `Créer un jeu pour ${merchant.companyName}`
+              : "Créer une campagne"}
           </h1>
         </div>
         {draft.id && !adminSaveEndpoint ? (

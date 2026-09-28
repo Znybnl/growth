@@ -34,6 +34,8 @@ import { PageHeader } from "@/components/ui/workspace";
 type PosterEditorProps = {
   campaign: Campaign;
   prizes: Prize[];
+  settingsEndpoint?: string;
+  returnHref?: string;
 };
 
 const MAX_UPLOAD_IMAGE_BYTES = 2 * 1024 * 1024;
@@ -242,8 +244,9 @@ function applyTemplateDefaults(
   };
 }
 
-export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
+export function PosterEditor({ campaign, prizes, settingsEndpoint, returnHref }: PosterEditorProps) {
   const router = useRouter();
+  const resolvedSettingsEndpoint = settingsEndpoint ?? `/api/campaigns/${campaign.id}/poster-settings`;
   const campaignPrimaryColor =
     campaign.gameType === "scratch"
       ? campaign.accent.signal
@@ -645,7 +648,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
     setMessage(null);
 
     try {
-      const response = await fetch(`/api/campaigns/${campaign.id}/poster-settings`, {
+      const response = await fetch(resolvedSettingsEndpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ poster, wheelSubtitle: posterSubtitle }),
@@ -737,7 +740,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
           description="Cet écran ne modifie que l&apos;affiche imprimable. La page de jeu reste paramétrée dans l&apos;éditeur de campagne."
           actions={<>
             <Link
-              href={`/campaigns/${campaign.id}/edit/guided`}
+              href={returnHref ?? `/campaigns/${campaign.id}/edit/guided`}
               prefetch={false}
               className="okado-primary-action px-4"
             >

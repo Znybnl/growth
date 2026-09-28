@@ -67,9 +67,17 @@ export function CampaignSavedDialog({
         </p>
 
         {adminTargetName ? (
-          <Button type="button" variant="primary" size="default" className="mt-6 w-full" onClick={onClose}>
-            Continuer la configuration
-          </Button>
+          <>
+            <Button type="button" variant="primary" size="default" className="mt-6 w-full" onClick={onClose}>
+              Continuer la configuration
+            </Button>
+            <Button asChild variant="default" size="default" className="mt-2 w-full">
+              <a href={`/admin/campaigns/${campaignId}/poster`}>
+                <ImageIcon className="h-4 w-4" aria-hidden="true" />
+                Personnaliser l’affiche
+              </a>
+            </Button>
+          </>
         ) : <Button asChild variant="primary" size="default" className="mt-6 w-full">
           <a href={`/api/campaigns/${campaignId}/qr`} download>
             <Download className="h-4 w-4" aria-hidden="true" />

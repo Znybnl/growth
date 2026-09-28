@@ -2241,7 +2241,11 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
   const [existingCampaignQuery, existingPrizesQuery, existingActionsQuery] = await Promise.all([
     isNewCampaign
       ? Promise.resolve(null)
-      : supabase.from("campaigns").select("id,merchant_id").eq("id", campaignId).maybeSingle(),
+      : supabase
+          .from("campaigns")
+          .select("id,merchant_id,campaign_local_settings")
+          .eq("id", campaignId)
+          .maybeSingle(),
     needsExistingPrizeQuantities
       ? supabase.from("prizes").select("id,remaining_quantity").eq("campaign_id", campaignId)
       : Promise.resolve(null),
@@ -2374,17 +2378,23 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
     };
   });
   const templateId = input.presentation.layout.templateId ?? "classic";
+  const storedAdminCreation = (
+    existingCampaignQuery?.data as {
+      campaign_local_settings?: { adminCreation?: unknown } | null;
+    } | null
+  )?.campaign_local_settings?.adminCreation;
+  const adminCreation = input.adminCreationAudit
+    ? {
+        adminUserId: input.adminCreationAudit.adminUserId,
+        accountMerchantId: input.adminCreationAudit.accountMerchantId,
+        targetLocationId: input.merchantId,
+        createdAt: new Date().toISOString(),
+      }
+    : storedAdminCreation && typeof storedAdminCreation === "object" && !Array.isArray(storedAdminCreation)
+      ? storedAdminCreation
+      : undefined;
   const localSettings = {
-    ...(!input.id && input.adminCreationAudit
-      ? {
-          adminCreation: {
-            adminUserId: input.adminCreationAudit.adminUserId,
-            accountMerchantId: input.adminCreationAudit.accountMerchantId,
-            targetLocationId: input.merchantId,
-            createdAt: new Date().toISOString(),
-          },
-        }
-      : {}),
+    ...(adminCreation ? { adminCreation } : {}),
     emailCaptureEnabled: input.emailCaptureEnabled,
     buttonTextSizePx: input.presentation.button.textSizePx,
     buttonIsBold: input.presentation.button.isBold,
