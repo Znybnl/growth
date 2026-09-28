@@ -74,8 +74,8 @@ function IvoryEditorialThumbnail({ qrDataUrl }: { qrDataUrl?: string | null }) {
         </radialGradient>
       </defs>
       <rect width="794" height="1123" fill="url(#ivoryEditorialThumbnailBackground)" />
-      <text data-testid="ivory-editorial-thumbnail-logo" x="397" y="102" textAnchor="middle" fontSize="55" fontFamily="Georgia,serif" fontWeight="400" fill="#111111">Votre logo</text>
-      <line x1="361" y1="150" x2="433" y2="150" stroke="#191817" strokeWidth="3" />
+      <text data-testid="ivory-editorial-thumbnail-logo" x="397" y="130" textAnchor="middle" fontSize="61" fontFamily="Georgia,serif" fontWeight="400" fill="#111111">Votre logo</text>
+      <line x1="361" y1="178" x2="433" y2="178" stroke="#191817" strokeWidth="3" />
       <text data-testid="ivory-editorial-thumbnail-headline" x="397" y="329" textAnchor="middle" fontSize="150" fontFamily="Georgia,serif" fontWeight="600" fill="#111111">
         <tspan x="397">Scannez</tspan><tspan x="397" dy="135">et jouez</tspan>
       </text>
