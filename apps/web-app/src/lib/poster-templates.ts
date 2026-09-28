@@ -275,6 +275,7 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     headlineFontFamily: "cormorant",
     logoX: 516,
     logoY: 12,
+    logoTextY: 6,
     logoFontWeight: 500,
     logoLetterSpacing: 5,
     inlineQrCta: true,
