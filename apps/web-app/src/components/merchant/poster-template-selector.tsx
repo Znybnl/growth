@@ -65,6 +65,39 @@ function QrThumbnail({ template }: { template: PosterTemplateConfig }) {
   );
 }
 
+function IvoryEditorialThumbnail({ qrDataUrl }: { qrDataUrl?: string | null }) {
+  return (
+    <svg viewBox="0 0 794 1123" className="h-full w-full" aria-hidden="true" data-testid="ivory-editorial-poster-thumbnail">
+      <defs>
+        <radialGradient id="ivoryEditorialThumbnailBackground" cx="50%" cy="38%" r="85%">
+          <stop offset="0%" stopColor="#fffefa" />
+          <stop offset="72%" stopColor="#fffdf8" />
+          <stop offset="100%" stopColor="#f8f4eb" />
+        </radialGradient>
+      </defs>
+      <rect width="794" height="1123" fill="url(#ivoryEditorialThumbnailBackground)" />
+      <text data-testid="ivory-editorial-thumbnail-logo" x="397" y="130" textAnchor="middle" fontSize="61" fontFamily="Georgia,serif" fontWeight="400" fill="#111111">Votre logo</text>
+      <line x1="361" y1="178" x2="433" y2="178" stroke="#191817" strokeWidth="3" />
+      <text data-testid="ivory-editorial-thumbnail-headline" x="397" y="329" textAnchor="middle" fontSize="150" fontFamily="Georgia,serif" fontWeight="600" fill="#111111">
+        <tspan x="397">Scannez</tspan><tspan x="397" dy="135">et jouez</tspan>
+      </text>
+      <text x="397" y="547" textAnchor="middle" fontSize="29" fontFamily="Arial,sans-serif" letterSpacing="5" fill="#171614">
+        <tspan x="397">TENTEZ DE GAGNER</tspan><tspan x="397" dy="43">UN CADEAU</tspan>
+      </text>
+      <g data-testid="ivory-editorial-thumbnail-qr">
+        <rect x="210" y="638" width="374" height="374" rx="32" fill="#fffefa" stroke="#f3c0ad" strokeWidth="7" />
+        {qrDataUrl ? (
+          <image href={qrDataUrl} x="234" y="662" width="326" height="326" preserveAspectRatio="xMidYMid meet" />
+        ) : (
+          <QrCode x="234" y="662" width="326" height="326" color="#111111" strokeWidth="1.6" />
+        )}
+      </g>
+      <path d="M301 1070 C243 1060 221 999 237 964 L210 983 M237 964 L243 998" fill="none" stroke="#111111" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+      <text data-testid="ivory-editorial-thumbnail-qr-label" x="397" y="1095" textAnchor="middle" fontSize="44" fontFamily="Georgia,serif" fontStyle="italic" fontWeight="600" fill="#111111">Scannez ici</text>
+    </svg>
+  );
+}
+
 function EditorialPosterThumbnail({
   gameType,
   qrDataUrl,
@@ -243,7 +276,9 @@ export function PosterTemplateSelector({
               <span aria-hidden="true" className="relative block h-[220px] overflow-hidden" style={{
                 background: visualTemplate.background,
               }}>
-                {visualTemplate.id === "pastel-editorial-wheel" ? (
+                {visualTemplate.id === "ivory-editorial-wheel" ? (
+                  <IvoryEditorialThumbnail qrDataUrl={qrDataUrl} />
+                ) : visualTemplate.id === "pastel-editorial-wheel" ? (
                   <EditorialPosterThumbnail gameType={gameType} qrDataUrl={qrDataUrl} />
                 ) : visualTemplate.id === "soft-gradient-wheel" ? (
                   <ClassicPosterThumbnail posterSvg={classicThumbnailSvg} />

@@ -245,6 +245,10 @@ function renderBackground(
       ? poster.backgroundColor || template.background
       : template.background;
 
+  if (template.id === "ivory-editorial-wheel") {
+    return `<rect width="${A4_WIDTH}" height="${A4_HEIGHT}" fill="url(#posterIvoryBackdrop)"/>`;
+  }
+
   if (template.id === "soft-gradient-wheel") {
     return `
       <rect width="${A4_WIDTH}" height="${A4_HEIGHT}" fill="${baseColor}"/>
@@ -354,7 +358,7 @@ function renderLogo(campaign: Campaign, poster: CampaignPosterSettings, template
   // Keep the merchant name visually secondary to the poster headline. The
   // 100% slider value represents the reference logo box, not a full-size
   // headline; use the same restrained text scale across poster templates.
-  const fontSize = clamp(logoSize * 0.2 * (template.logoFontSizeMultiplier ?? 1), 18, 51);
+  const fontSize = clamp(logoSize * 0.2 * (template.logoFontSizeMultiplier ?? 1), 18, template.id === "ivory-editorial-wheel" ? 64 : 51);
   const centerY = logoY + logoSize / 2;
   const logoTextColor = template.colorsCustomizable === false
     ? template.headlineTextColor
@@ -459,8 +463,9 @@ export function getPosterSubtitleLayout(
 
   const isBotanicalEditorial = template.id === "botanical-editorial-poster";
   const isEditorialTemplate = template.id === "pastel-editorial-wheel";
-  const fontSize = isBotanicalEditorial || isEditorialTemplate ? 28 : template.backdropAsset ? 24 : 25;
-  const lineHeight = fontSize * (isEditorialTemplate ? 1.5 : 1.42);
+  const isIvoryTemplate = template.id === "ivory-editorial-wheel";
+  const fontSize = isIvoryTemplate ? 29 : isBotanicalEditorial || isEditorialTemplate ? 28 : template.backdropAsset ? 24 : 25;
+  const lineHeight = fontSize * (isIvoryTemplate ? 1.52 : isEditorialTemplate ? 1.5 : 1.42);
   const isPremiumTemplate = template.id === "premium-wheel";
   const width = isPremiumTemplate
     ? Math.min(template.qrSize, A4_WIDTH - template.qrX - 24)
@@ -479,11 +484,11 @@ export function getPosterSubtitleLayout(
       ? Math.max(28, configuredHeadlineGap)
       : configuredHeadlineGap;
   const headlineGap = clamp(
-    baseHeadlineGap + (template.subtitleSpacingAdjustmentPx ?? 0),
+    baseHeadlineGap + (template.subtitleSpacingAdjustmentPx ?? 0) + (isIvoryTemplate ? 10 : 0),
     0,
     100,
   );
-  const standardHeadlineLayout = !isPremiumTemplate && !template.backdropAsset && !isEditorialTemplate
+  const standardHeadlineLayout = !isPremiumTemplate && !template.backdropAsset && !isEditorialTemplate && !isIvoryTemplate
     ? getStandardHeadlineLayout(campaign, poster, template)
     : null;
   const editorialHeadline = poster.headline || campaign.subtitle || "Faites tourner la roue";
@@ -506,6 +511,8 @@ export function getPosterSubtitleLayout(
     : null;
   const visualTop = isPremiumTemplate
     ? template.qrY
+    : isIvoryTemplate
+      ? template.supportingTextY ?? 516
     : isEditorialTemplate
       ? template.supportingTextY ?? 484
     : template.backdropAsset
@@ -523,7 +530,9 @@ export function getPosterSubtitleLayout(
         editorialHeadlineLayout.size * (template.headlineLineHeightMultiplier ?? 1.08) +
       editorialHeadlineLayout.size * 0.18
     : undefined;
-  const top = isEditorialTemplate && editorialHeadlineLayoutBottom !== undefined
+  const top = isIvoryTemplate
+    ? visualTop
+    : isEditorialTemplate && editorialHeadlineLayoutBottom !== undefined
     ? editorialHeadlineLayoutBottom + headlineGap
     : standardHeadlineLayout
     ? standardHeadlineLayout.firstLineY +
@@ -537,19 +546,21 @@ export function getPosterSubtitleLayout(
         editorialHeadlineLayout.size * 0.18 +
         headlineGap
     : Math.max(0, visualTop - premiumVisualGap - textHeight);
-  const textAnchor = (template.backdropAsset && !isBotanicalEditorial) || isEditorialTemplate ? "start" : "middle";
+  const textAnchor = isIvoryTemplate ? "middle" : (template.backdropAsset && !isBotanicalEditorial) || isEditorialTemplate ? "start" : "middle";
 
   return {
     color: template.colorsCustomizable === false
       ? template.headlineTextColor
       : poster.headlineTextColor || template.headlineTextColor || template.headline,
-    family: fontFamily(getPosterSubtitleFont(campaign.presentation.heading.fontFamily)),
+    family: fontFamily(isIvoryTemplate ? template.supportingTextFontFamily ?? "inter" : getPosterSubtitleFont(campaign.presentation.heading.fontFamily)),
     fontSize,
     lineHeight,
     lines,
     textAnchor,
     x: isPremiumTemplate
       ? template.qrX
+      : isIvoryTemplate
+        ? template.supportingTextX ?? A4_WIDTH / 2
       : isBotanicalEditorial
         ? template.qrX + template.qrSize / 2
         : template.backdropAsset || isEditorialTemplate
@@ -558,9 +569,9 @@ export function getPosterSubtitleLayout(
     top,
     headlineGap,
     headlineLayoutBottom: editorialHeadlineLayoutBottom,
-    fontWeight: isPremiumTemplate || isEditorialTemplate ? 400 : isBotanicalEditorial ? 500 : 600,
-    letterSpacing: isBotanicalEditorial ? template.subtitleLetterSpacing ?? 4 : isEditorialTemplate ? 3.2 : 0.28,
-    uppercase: (isBotanicalEditorial && template.subtitleUppercase === true) || isEditorialTemplate,
+    fontWeight: isPremiumTemplate || isEditorialTemplate || isIvoryTemplate ? 400 : isBotanicalEditorial ? 500 : 600,
+    letterSpacing: isIvoryTemplate ? template.supportingTextLetterSpacing ?? 5 : isBotanicalEditorial ? template.subtitleLetterSpacing ?? 4 : isEditorialTemplate ? 3.2 : 0.28,
+    uppercase: isIvoryTemplate || (isBotanicalEditorial && template.subtitleUppercase === true) || isEditorialTemplate,
   };
 }
 
@@ -632,10 +643,10 @@ function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, temp
   const color = template.colorsCustomizable === false
     ? template.headlineTextColor
     : poster.headlineTextColor || template.headline;
-  if (template.backdropAsset || template.id === "pastel-editorial-wheel") {
+  if (template.backdropAsset || template.id === "pastel-editorial-wheel" || template.id === "ivory-editorial-wheel") {
     const reservedBottom = template.id === "pastel-editorial-wheel" && subtitleLayout?.headlineLayoutBottom !== undefined
       ? subtitleLayout.headlineLayoutBottom
-      : (template.id === "premium-wheel" || template.id === "botanical-editorial-poster") && subtitleLayout
+      : (template.id === "premium-wheel" || template.id === "botanical-editorial-poster" || template.id === "ivory-editorial-wheel") && subtitleLayout
         ? subtitleLayout.top - subtitleLayout.headlineGap
         : undefined;
     const { x, top, size, lines } = getPremiumHeadlineLayout(
@@ -826,6 +837,25 @@ function renderQrAndCta(qrDataUrl: string, template: PosterTemplateConfig) {
   const qrFrameBottom = template.qrY + template.qrSize + 18;
   const ctaY = Math.max(template.ctaY, qrFrameBottom + 16);
 
+  if (template.id === "ivory-editorial-wheel") {
+    const cardSize = template.qrSize + 34;
+    const qrInset = 24;
+    const qrContentSize = template.qrSize - 14;
+    const cardCenter = template.qrX + cardSize / 2;
+    const cardBottom = template.qrY + cardSize;
+    return `
+      <g filter="url(#posterSoftShadow)" transform="translate(${template.qrX} ${template.qrY})">
+        <rect width="${cardSize}" height="${cardSize}" rx="32" fill="#fffefa" stroke="${template.qrFrame}" stroke-width="7"/>
+        <image href="${escapeXml(qrDataUrl)}" x="${qrInset}" y="${qrInset}" width="${qrContentSize}" height="${qrContentSize}" preserveAspectRatio="xMidYMid meet"/>
+      </g>
+      <g fill="none" stroke="#111111" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M${cardCenter - 136} ${cardBottom + 64} C${cardCenter - 198} ${cardBottom + 52} ${cardCenter - 230} ${cardBottom - 10} ${cardCenter - 220} ${cardBottom - 48}"/>
+        <path d="M${cardCenter - 220} ${cardBottom - 48} L${cardCenter - 248} ${cardBottom - 29} M${cardCenter - 220} ${cardBottom - 48} L${cardCenter - 214} ${cardBottom - 14}"/>
+      </g>
+      <text x="${cardCenter}" y="${cardBottom + 82}" text-anchor="middle" fill="#111111" font-family="${fontFamily("cormorant")}" font-size="44" font-style="italic" font-weight="600">Scannez ici</text>
+    `;
+  }
+
   if (template.id === "pastel-editorial-wheel") {
     const cardSize = template.qrSize + 34;
     const qrInset = 24;
@@ -925,6 +955,8 @@ function renderQrAndCta(qrDataUrl: string, template: PosterTemplateConfig) {
 function renderSteps(template: PosterTemplateConfig, gameType: Campaign["gameType"]) {
   const action = gameType === "wheel" ? "Jouez" : "Grattez";
   const gift = "Gagnez";
+
+  if (template.id === "ivory-editorial-wheel") return "";
 
   if (template.id === "pastel-editorial-wheel") {
     const steps = [
@@ -1189,6 +1221,11 @@ export function buildPosterSvg(args: {
         <filter id="posterSoftShadow" x="-25%" y="-25%" width="150%" height="150%">
           <feDropShadow dx="0" dy="9" stdDeviation="12" flood-color="#6b425b" flood-opacity="0.14"/>
         </filter>
+        <radialGradient id="posterIvoryBackdrop" cx="50%" cy="38%" r="85%">
+          <stop offset="0%" stop-color="#fffefa"/>
+          <stop offset="72%" stop-color="#fffdf8"/>
+          <stop offset="100%" stop-color="#f8f4eb"/>
+        </radialGradient>
         <linearGradient id="posterPastelBase" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stop-color="#ffe3d4"/>
           <stop offset="49%" stop-color="#f5d0df"/>

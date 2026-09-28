@@ -96,6 +96,7 @@ const POSTER_TEMPLATE_IDS = new Set<PosterTemplateId>([
   "botanical-wheel",
   "botanical-editorial-poster",
   "pastel-editorial-wheel",
+  "ivory-editorial-wheel",
 ]);
 const POSTER_BACKGROUND_MOTIFS = new Set<PosterBackgroundMotif>([
   "plain",
