@@ -285,10 +285,6 @@ function renderBackground(
         return `${backdrop}
           <circle cx="137" cy="676" r="120" fill="${template.medallionFill ?? template.accent}"/>
           <circle cx="137" cy="676" r="116" fill="none" stroke="#f7f4e8" stroke-opacity=".65" stroke-width="2"/>
-          <g fill="#f7f4e8" fill-opacity=".12" stroke="#f7f4e8" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" opacity=".96">
-            <path d="M108 770c5-24 23-43 54-54-3 29-22 48-54 54z"/>
-            <path d="M109 769c18-17 36-35 53-52m-37 36c-2-7-7-12-13-14m24 3c-1-8-4-14-10-19m21 4c1-8 0-14-4-20" fill="none"/>
-          </g>
         `;
       }
       return backdrop;
@@ -743,10 +739,16 @@ function renderSupportingText(template: PosterTemplateConfig) {
   const family = fontFamily(template.supportingTextFontFamily ?? "inter");
   const color = template.supportingTextColor ?? template.headline;
   const letterSpacing = template.supportingTextLetterSpacing ?? 0;
+  const isBotanicalEditorial = template.id === "botanical-editorial-poster";
+  const textX = isBotanicalEditorial ? 137 : x;
+  const firstBaseline = isBotanicalEditorial
+    ? 676 - ((lines.length - 1) * lineHeight) / 2 + size * 0.38
+    : y;
+  const textAnchor = isBotanicalEditorial ? "middle" : template.supportingTextAnchor ?? "start";
 
   return `
     <g>
-      ${lines.map((line, index) => `<text x="${x}" y="${y + index * lineHeight}" text-anchor="${template.supportingTextAnchor ?? "start"}" fill="${color}" font-family="${family}" font-size="${size}" font-weight="500" letter-spacing="${letterSpacing}">${escapeXml(line)}</text>`).join("")}
+      ${lines.map((line, index) => `<text x="${textX}" y="${firstBaseline + index * lineHeight}" text-anchor="${textAnchor}" fill="${color}" font-family="${family}" font-size="${size}" font-weight="500" letter-spacing="${letterSpacing}">${escapeXml(line)}</text>`).join("")}
     </g>
   `;
 }
@@ -1047,7 +1049,8 @@ function renderSteps(template: PosterTemplateConfig, gameType: Campaign["gameTyp
     const wheelIcon = (x: number) => `<g transform="translate(${x} 72) scale(.8)" fill="none" stroke="${iconColor}" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><circle r="34"/><circle r="4" fill="${iconColor}" stroke="none"/><path d="M0-30v60M-30 0h60M-21-21l42 42M21-21l-42 42"/></g>`;
     const scratchIcon = (x: number) => `<g transform="translate(${x} 72) scale(.78)" fill="none" stroke="${iconColor}" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M-25-31h42l9 9v52h-51z"/><path d="M17-31v10h9M-14-9h22M-14 3h22M-14 15h15"/><circle cx="15" cy="18" r="8" fill="#f5f1e2" stroke="${iconColor}"/></g>`;
     const gameIcon = (x: number) => gameType === "wheel" ? wheelIcon(x) : scratchIcon(x);
-    const giftIcon = (x: number) => `<g transform="translate(${x} 72) scale(.78)" fill="none" stroke="${iconColor}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><rect x="-30" y="-4" width="60" height="43" rx="3"/><path d="M-36-16h72v17h-72zm36 0v59M0-16c-24 0-28-24-13-24 12 0 18 24 13 24zm0 0c24 0 28-24 13-24-12 0-18-24-13-24z"/></g>`;
+    // Lucide Gift icon geometry (24x24), reused verbatim in this static SVG renderer.
+    const giftIcon = (x: number) => `<g transform="translate(${x} 72) scale(2.25) translate(-12 -12)" fill="none" stroke="${iconColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/></g>`;
     return `
       <g transform="translate(0 908)">
         <rect width="${A4_WIDTH}" height="${A4_HEIGHT - 908}" fill="#fbf9f1" fill-opacity=".84"/>
