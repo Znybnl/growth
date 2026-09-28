@@ -7,7 +7,7 @@ import { Loader2 } from "lucide-react";
 import QRCode from "qrcode";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 
-import { buildPosterSvg, getPosterSubtitleLayout, getPremiumHeadlineLayout } from "@/lib/poster-render";
+import { buildClassicPosterThumbnailSvg, buildPosterSvg, getPosterSubtitleLayout, getPremiumHeadlineLayout } from "@/lib/poster-render";
 import { selectPosterBackgroundMotif, selectPosterTemplate } from "@/lib/poster-template-settings";
 import { getPosterFontAsset, getPosterFontSourceUrl, getPosterSubtitleFont, POSTER_FONT_OPTIONS } from "@/lib/poster-fonts";
 import { limitCampaignSubtitleLines, MAX_CAMPAIGN_SUBTITLE_LENGTH } from "@/lib/campaign-defaults";
@@ -450,6 +450,10 @@ export function PosterEditor({ campaign, prizes, settingsEndpoint, returnHref }:
   const posterSubtitleFontSource =
     loadedPosterSubtitleFont?.font === posterSubtitleFont ? loadedPosterSubtitleFont.source : null;
   const posterTemplate = getPosterTemplate(poster.templateId, poster.backgroundMotif);
+  const classicThumbnailSvg = useMemo(
+    () => buildClassicPosterThumbnailSvg(campaign.gameType, poster.backgroundMotif ?? "soft-gradient"),
+    [campaign.gameType, poster.backgroundMotif],
+  );
   const posterCampaign = useMemo(
     () => ({
       ...campaign,
@@ -770,6 +774,7 @@ export function PosterEditor({ campaign, prizes, settingsEndpoint, returnHref }:
 
         <PosterTemplateSelector
           qrDataUrl={posterQrDataUrl}
+          classicThumbnailSvg={classicThumbnailSvg}
           gameType={campaign.gameType}
           selectedTemplateId={poster.templateId}
           selectedBackgroundMotif={poster.backgroundMotif}
