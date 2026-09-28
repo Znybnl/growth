@@ -1,15 +1,15 @@
 import { expect, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { signIn } from "./auth-session";
-import { getPosterTemplate } from "../src/lib/poster-templates";
+import { getPosterLogoTopY, POSTER_TEMPLATES, getPosterTemplate } from "../src/lib/poster-templates";
 
-test("Botanique éditorial et Classique conservent leurs réglages de logo texte", () => {
+test("tous les templates d'affiche utilisent le même alignement vertical des logos", () => {
   const botanicalTemplate = getPosterTemplate("botanical-editorial-poster");
   expect(botanicalTemplate.logoX).toBe(botanicalTemplate.headlineX);
-  expect(botanicalTemplate.logoTextY).toBe(32);
   expect(botanicalTemplate.medallionFill).toBe("#D3DCC5");
-  expect(getPosterTemplate("classic-wheel", "plain").logoTextY).toBe(40);
-  expect(getPosterTemplate("classic-wheel", "soft-gradient").logoTextY).toBe(-12);
+  expect(POSTER_TEMPLATES.every((template) => !("logoY" in template) && !("logoTextY" in template))).toBe(true);
+  expect(getPosterLogoTopY("text")).toBe(30);
+  expect(getPosterLogoTopY("image")).toBe(36);
 });
 
 test("Botanique éditorial utilise le logo marchand et exporte le même rendu que l’aperçu", async ({ page }, testInfo) => {
