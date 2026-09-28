@@ -39,18 +39,21 @@ export type PosterTemplateConfig = {
   headlineBlockBottom?: number;
   headlineLogoGapPx?: number;
   headlineFontWeight?: number;
+  headlineLineHeightMultiplier?: number;
   headlineItalic?: boolean;
   headlineFontFamily?: TextFont;
   logoX?: number;
   logoY?: number;
   logoTextY?: number;
   logoFontWeight?: number;
+  logoFontSizeMultiplier?: number;
   logoLetterSpacing?: number;
   logoFontFamily?: TextFont;
   logoTextAnchor?: "start" | "middle";
   logoImageAnchor?: "start" | "middle";
   logoUnderlineWidth?: number;
   logoUnderlineColor?: string;
+  logoUnderlineCentered?: boolean;
   logoUnderlineStrokeWidth?: number;
   inlineQrCta?: boolean;
   inlineQrLabelBackground?: string;
@@ -357,6 +360,69 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
       loseColor: "#f6f3ed",
       alternateLoseColor: "#f6f3ed",
       rimColor: "#718578",
+    },
+  },
+  {
+    id: "pastel-editorial-wheel",
+    label: "Éditorial pastel",
+    description: "Fond organique rose-lilas, titrage sérif et QR code mis en scène.",
+    background: "linear-gradient(135deg,#ffe2d3 0%,#f6d2e0 48%,#e7d4f5 100%)",
+    accent: "#e9a9b9",
+    accentDark: "#111111",
+    headline: "#111111",
+    headlineStroke: "none",
+    headlineTextColor: "#111111",
+    headlineFontSizePx: 72,
+    qrFrame: "#f4b5c3",
+    logoVariant: "lined",
+    wheelX: 0,
+    wheelY: 0,
+    wheelRadius: 0,
+    qrX: 112,
+    qrY: 620,
+    qrSize: 310,
+    ctaX: 0,
+    ctaY: 0,
+    ctaWidth: 0,
+    ctaHeight: 0,
+    ctaRotation: 0,
+    headlineY: 188,
+    headlineSizeMultiplier: 1.3,
+    colorsCustomizable: false,
+    headlineX: 76,
+    headlineMaxWidth: 560,
+    subtitleMaxWidth: 450,
+    headlineBlockBottom: 476,
+    headlineLogoGapPx: 42,
+    headlineFontWeight: 600,
+    headlineLineHeightMultiplier: 1.0,
+    headlineItalic: false,
+    headlineFontFamily: "cormorant",
+    logoX: 397,
+    logoY: 40,
+    logoFontWeight: 500,
+    logoFontSizeMultiplier: 1.65,
+    logoLetterSpacing: 0,
+    logoFontFamily: "cormorant",
+    logoTextAnchor: "middle",
+    logoImageAnchor: "middle",
+    logoUnderlineWidth: 86,
+    logoUnderlineColor: "#111111",
+    logoUnderlineCentered: true,
+    supportingTextX: 76,
+    supportingTextY: 476,
+    supportingTextFontFamily: "inter",
+    supportingTextFontSize: 28,
+    supportingTextLineHeight: 42,
+    supportingTextColor: "#111111",
+    supportingTextLetterSpacing: 3.2,
+    backgroundOnly: true,
+    wheel: {
+      winColor: "#e9a9b9",
+      alternateWinColor: "#fffaf7",
+      loseColor: "#fffaf7",
+      alternateLoseColor: "#fffaf7",
+      rimColor: "#e9a9b9",
     },
   },
 ];
