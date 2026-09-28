@@ -42,6 +42,7 @@ test("Botanique éditorial utilise le logo marchand et exporte le même rendu qu
         logoText: "Établissement E2E",
         headline: "Scannez et jouez",
         headlineFontFamily: "cormorant",
+        posterSubtitleEnabled: true,
       },
     });
     expect(update.ok()).toBe(true);
@@ -58,17 +59,34 @@ test("Botanique éditorial utilise le logo marchand et exporte le même rendu qu
     await expect(page.getByTestId("botanical-editorial-thumbnail-qr")).toBeAttached();
     await expect(page.getByTestId("botanical-editorial-thumbnail-footer")).toBeAttached();
     await expect(page.getByLabel("Police du texte principal")).toHaveValue("cormorant");
+    await page.locator('input[type="checkbox"]').check();
+    await page.locator('textarea[aria-describedby="poster-secondary-text-help"]').fill("Tentez de gagner un beau cadeau !");
     expect(await page.locator('input[type="color"]').count()).toBe(0);
     const headlineSize = page.getByLabel("Taille du texte principal");
     const previewFrame = page.getByTestId("poster-preview-frame");
     await headlineSize.press("Home");
     await expect(previewFrame).toHaveAttribute("data-headline-size", "24");
     await headlineSize.press("End");
-    await expect(previewFrame).toHaveAttribute("data-headline-size", "84");
+    await expect(headlineSize).toHaveValue("84");
+    const renderedHeadlineSize = Number(await previewFrame.getAttribute("data-headline-size"));
+    expect(renderedHeadlineSize).toBeGreaterThan(24);
+    expect(renderedHeadlineSize).toBeLessThanOrEqual(84);
     await page.getByRole("button", { name: /^Botanique éditorial/ }).screenshot({ path: testInfo.outputPath("botanical-editorial-thumbnail.png") });
 
     const preview = page.getByAltText("Prévisualisation affiche");
     await expect(preview).toBeVisible({ timeout: 30_000 });
+    const layout = await page.getByTestId("poster-preview-frame").evaluate((frame) => ({
+      headlineX: Number(frame.getAttribute("data-headline-x")),
+      headlineLastBaseline: Number(frame.getAttribute("data-headline-last-baseline")),
+      subtitleX: Number(frame.getAttribute("data-subtitle-x")),
+      subtitleFirstBaseline: Number(frame.getAttribute("data-subtitle-first-baseline")),
+      subtitleLastBaseline: Number(frame.getAttribute("data-subtitle-last-baseline")),
+      headlineGap: Number(frame.getAttribute("data-subtitle-headline-gap")),
+    }));
+    expect(layout.headlineX).toBe(443);
+    expect(layout.subtitleX).toBe(443);
+    expect(layout.subtitleFirstBaseline - layout.headlineLastBaseline).toBeGreaterThanOrEqual(layout.headlineGap);
+    expect(layout.subtitleLastBaseline).toBeLessThan(546);
     await expect(page.getByText("Impossible de charger le décor Botanique éditorial. Réessayez en rechargeant la page.")).toHaveCount(0);
     await page.screenshot({ path: testInfo.outputPath("botanical-editorial-preview.png"), fullPage: true });
     const previewBytes = await preview.evaluate(async (img) => {

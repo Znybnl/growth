@@ -477,6 +477,15 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
         : undefined,
     )
     : null, [poster, campaign.subtitle, headlineMeasure, posterSubtitleLayout, posterTemplate]);
+  const headlineLastBaseline = premiumHeadlineLayout
+    ? premiumHeadlineLayout.top + premiumHeadlineLayout.size * 0.82 + Math.max(0, premiumHeadlineLayout.lines.length - 1) * premiumHeadlineLayout.size * 1.08
+    : undefined;
+  const subtitleFirstBaseline = posterSubtitleLayout
+    ? posterSubtitleLayout.top + posterSubtitleLayout.fontSize * 0.82
+    : undefined;
+  const subtitleLastBaseline = posterSubtitleLayout
+    ? posterSubtitleLayout.top + posterSubtitleLayout.fontSize * 0.82 + Math.max(0, posterSubtitleLayout.lines.length - 1) * posterSubtitleLayout.lineHeight
+    : undefined;
 
   const previewPosterSvg = useMemo(
     () =>
@@ -1130,7 +1139,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
           </div>
 
           <div className="flex min-h-0 flex-1 items-center justify-center overflow-auto rounded-[var(--okado-radius-card)] bg-[var(--okado-surface-muted)] p-4">
-            <div className="relative aspect-[794/1123] w-full max-w-[470px] overflow-hidden rounded-[var(--okado-radius-control)] border border-[var(--okado-border-control)] bg-white shadow-[var(--shadow-product-card)]" data-testid="poster-preview-frame" data-headline-size={premiumHeadlineLayout?.size}>
+            <div className="relative aspect-[794/1123] w-full max-w-[470px] overflow-hidden rounded-[var(--okado-radius-control)] border border-[var(--okado-border-control)] bg-white shadow-[var(--shadow-product-card)]" data-testid="poster-preview-frame" data-headline-size={premiumHeadlineLayout?.size} data-headline-x={premiumHeadlineLayout?.x} data-headline-last-baseline={headlineLastBaseline} data-subtitle-x={posterSubtitleLayout?.x} data-subtitle-first-baseline={subtitleFirstBaseline} data-subtitle-last-baseline={subtitleLastBaseline} data-subtitle-headline-gap={posterSubtitleLayout?.headlineGap}>
               {previewPng && !currentPreviewError ? (
                 <Image
                   src={previewPng.url}
