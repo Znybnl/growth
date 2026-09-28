@@ -70,6 +70,9 @@ test("Botanique éditorial utilise le logo marchand et exporte le même rendu qu
 
     const downloadEvent = page.waitForEvent("download");
     await page.getByRole("button", { name: "Télécharger le PNG", exact: true }).click();
+    const saveBeforeDownload = page.getByRole("dialog", { name: "Enregistrer avant le téléchargement ?", exact: true });
+    await expect(saveBeforeDownload).toBeVisible();
+    await saveBeforeDownload.getByRole("button", { name: "Enregistrer et télécharger", exact: true }).click();
     const download = await downloadEvent;
     const downloadedFile = testInfo.outputPath("botanical-editorial.png");
     await download.saveAs(downloadedFile);
