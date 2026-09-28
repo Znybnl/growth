@@ -1012,3 +1012,61 @@ export function buildPosterSvg(args: {
   `;
 }
 
+/** Build a privacy-safe selector preview with the same renderer as the printable poster. */
+export function buildClassicPosterThumbnailSvg(gameType: Campaign["gameType"], backgroundMotif: CampaignPosterSettings["backgroundMotif"]) {
+  const template = getPosterTemplate("classic-wheel", backgroundMotif);
+  const poster: CampaignPosterSettings = {
+    templateId: "classic-wheel",
+    backgroundMotif,
+    logoMode: "text",
+    logoText: "Votre établissement",
+    logoSizePercent: 70,
+    logoBottomMarginPx: 10,
+    posterSubtitleEnabled: true,
+    backgroundMode: "color",
+    backgroundColor: template.background,
+    backgroundImageUrl: "",
+    headline: "Scannez, jouez, récupérez votre cadeau !",
+    headlineTextColor: template.headlineTextColor,
+    headlineFontSizePx: template.headlineFontSizePx,
+    headlineFontFamily: template.headlineFontFamily ?? "geogrotesque",
+    wheel: { ...template.wheel },
+    footerBackgroundColor: "transparent",
+  };
+  const campaign: Campaign = {
+    id: "poster-template-thumbnail",
+    merchantId: "poster-template-thumbnail",
+    title: "Aperçu du template",
+    subtitle: "Scannez, jouez, récupérez votre cadeau !",
+    goalType: null,
+    emailCaptureEnabled: false,
+    ctaLabel: "Scannez pour jouer",
+    successMetric: "",
+    isActive: false,
+    createdAt: "",
+    accent: { ink: template.accentDark, paper: template.background, signal: template.accent },
+    gameType,
+    logoMode: "text",
+    logoText: "Votre établissement",
+    presentation: {
+      logo: { sizePercent: 70, marginBottomPx: 10, align: "center", textColor: template.headlineTextColor },
+      background: { mode: "color", color: template.background },
+      heading: { textColor: template.headlineTextColor, fontSizePx: template.headlineFontSizePx, fontFamily: "geogrotesque", fontWeight: 700, align: "center" },
+      button: { backgroundColor: template.accent, textColor: "#ffffff", borderColor: "#ffffff", size: "md", textSizePx: 16, isBold: true },
+      layout: { blockSpacingPx: 20, templateId: "classic", wheelSubtitle: "Des cadeaux à gagner dans votre établissement.", subtitleSpacingPx: 15 },
+      wheel: { ...template.wheel },
+      poster,
+      email: { senderName: "Votre établissement", replyTo: "", subject: "", preheader: "", headline: "", body: "", buttonLabel: "", footerNote: "", accentColor: template.accent },
+    },
+    actions: [],
+    rewardRules: { rewardExpiryMinutes: 0, purchaseRequired: false, availableAfterHours: 0, availabilityDurationDays: 30, participationIntervalDays: 0, isWinningEveryTime: false },
+  };
+  const prizes: Array<Pick<Prize, "label">> = [
+    { label: "-10 % prochaine visite" },
+    { label: "Soin découverte" },
+    { label: "Cadeau surprise" },
+  ];
+
+  return buildPosterSvg({ campaign, poster, prizes, qrDataUrl: createPosterPreviewQrDataUrl() });
+}
+
