@@ -26,14 +26,13 @@ export function selectPosterTemplate(
   templateId: PosterTemplateId,
   campaignPrimaryColor = poster.wheel.winColor,
 ) {
-  if (
-    poster.templateId === templateId &&
-    !(templateId === "classic-wheel" && poster.backgroundMotif === "soft-gradient")
-  ) return poster;
+  if (poster.templateId === templateId) return poster;
   const currentMotif = poster.templateId === "classic-wheel"
     ? poster.backgroundMotif ?? legacyPosterTemplateMotif(poster.templateId) ?? "plain"
     : legacyPosterTemplateMotif(poster.templateId) ?? "plain";
-  const targetMotif = templateId === "classic-wheel" ? "plain" : legacyPosterTemplateMotif(templateId);
+  const targetMotif = templateId === "classic-wheel"
+    ? poster.backgroundMotif ?? "soft-gradient"
+    : legacyPosterTemplateMotif(templateId);
   const template = getPosterTemplate(templateId, targetMotif);
   const templateStyles = {
     ...poster.templateStyles,

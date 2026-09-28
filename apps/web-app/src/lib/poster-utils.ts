@@ -145,7 +145,7 @@ export function createPosterSettingsDefaults(input: {
   return {
     templateId: input.templateId ?? "classic-wheel",
     wheelPrimaryColorSource: "campaign",
-    backgroundMotif: input.backgroundMotif ?? "plain",
+    backgroundMotif: input.backgroundMotif ?? "soft-gradient",
     logoMode: input.logoMode ?? (input.logoUrl ? "image" : input.logoText ? "text" : "none"),
     logoText: input.logoText ?? "",
     logoUrl: input.logoUrl,

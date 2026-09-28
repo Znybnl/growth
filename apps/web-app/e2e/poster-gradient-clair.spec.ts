@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { signIn } from "./auth-session";
 
-test("Gradient clair est un template de premier niveau et garde le même aperçu que le PNG", async ({ page }, testInfo) => {
+test("Gradient clair est la première variante de Classique et garde le même aperçu que le PNG", async ({ page }, testInfo) => {
   test.setTimeout(180_000);
   page.setDefaultTimeout(20_000);
   page.setDefaultNavigationTimeout(20_000);
@@ -24,16 +24,22 @@ test("Gradient clair est un template de premier niveau et garde le même aperçu
 
     const picker = page.locator("section.okado-card").filter({ hasText: "Choisir le design de l'affiche" });
     const choices = picker.locator('button[aria-pressed]:not([aria-label])');
-    await expect(choices.first()).toContainText("Gradient clair");
+    await expect(choices.getByText("Gradient clair", { exact: true })).toHaveCount(0);
+    await expect(choices.getByText("Terracotta", { exact: true })).toHaveCount(0);
     await expect(choices.last()).toContainText("Classique");
+    const motifs = page.getByRole("group", { name: "Motif du fond" });
+    const gradientMotif = motifs.getByRole("button", { name: "Gradient clair" });
+    await expect(gradientMotif).toHaveAttribute("aria-pressed", "true");
+    await expect(motifs.getByRole("button").first()).toHaveAccessibleName("Gradient clair");
     await expect(page.getByTestId("gradient-clair-thumbnail")).toBeVisible();
     await expect(page.getByTestId("gradient-clair-thumbnail-qr")).toBeAttached();
-    await page.getByRole("button", { name: /^Gradient clair/ }).click();
-    await expect(page.getByRole("button", { name: /^Gradient clair/ })).toHaveAttribute("aria-pressed", "true");
+    await motifs.getByRole("button", { name: "Terracotta" }).click();
+    await expect(motifs.getByRole("button", { name: "Terracotta" })).toHaveAttribute("aria-pressed", "true");
+    await gradientMotif.click();
+    await expect(gradientMotif).toHaveAttribute("aria-pressed", "true");
     await page.getByRole("button", { name: /^Classique/ }).click();
     await expect(page.getByRole("button", { name: /^Classique/ })).toHaveAttribute("aria-pressed", "true");
-    await page.getByRole("button", { name: /^Gradient clair/ }).click();
-    await expect(page.getByRole("button", { name: /^Gradient clair/ })).toHaveAttribute("aria-pressed", "true");
+    await expect(gradientMotif).toHaveAttribute("aria-pressed", "true");
 
     const saveResponse = page.waitForResponse(response => response.url().includes("/poster-settings") && response.request().method() === "POST");
     await page.getByRole("button", { name: "Enregistrer", exact: true }).click();
@@ -68,12 +74,12 @@ test("Gradient clair est un template de premier niveau et garde le même aperçu
     });
     expect(legacyResponse.ok()).toBe(true);
     await page.reload();
-    await expect(page.getByRole("button", { name: /^Gradient clair/ })).toHaveAttribute("aria-pressed", "true");
+    await expect(gradientMotif).toHaveAttribute("aria-pressed", "true");
     await page.getByRole("button", { name: /^Classique/ }).click();
     await expect(page.getByRole("button", { name: /^Classique/ })).toHaveAttribute("aria-pressed", "true");
-    await expect(page.getByRole("group", { name: "Motif du fond" }).getByRole("button", { name: "Gradient clair" })).toHaveCount(0);
+    await expect(gradientMotif).toHaveAttribute("aria-pressed", "true");
 
-    await page.getByRole("button", { name: /^Gradient clair/ }).screenshot({ path: testInfo.outputPath("gradient-clair-thumbnail.png") });
+    await gradientMotif.screenshot({ path: testInfo.outputPath("gradient-clair-thumbnail.png") });
     await page.setViewportSize({ width: 390, height: 844 });
     await preview.scrollIntoViewIfNeeded();
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);

@@ -88,12 +88,6 @@ export const POSTER_BACKGROUND_MOTIFS: Array<{
   preview: string;
 }> = [
   {
-    id: "plain",
-    label: "Clair uni",
-    description: "Une surface lumineuse et intemporelle.",
-    preview: "#fff6ee",
-  },
-  {
     id: "soft-gradient",
     label: "Gradient clair",
     description: "Des halos lavande très doux.",
@@ -104,6 +98,12 @@ export const POSTER_BACKGROUND_MOTIFS: Array<{
     label: "Terracotta",
     description: "Une ambiance chaude et chaleureuse.",
     preview: "linear-gradient(135deg,#ddc9b8 0%,#f7eee7 100%)",
+  },
+  {
+    id: "plain",
+    label: "Clair uni",
+    description: "Une surface lumineuse et intemporelle.",
+    preview: "#fff6ee",
   },
 ];
 
@@ -174,21 +174,21 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     qrX: 408,
     qrY: 512,
     qrSize: 292,
-    ctaX: 369,
+    ctaX: 349,
     ctaY: 838,
-    ctaWidth: 370,
+    ctaWidth: 410,
     ctaHeight: 68,
     ctaRotation: 0,
     headlineY: 208,
     headlineSizeMultiplier: 1.52,
     headlineItalic: false,
-    logoY: 0,
+    logoY: 30,
     logoFontWeight: 600,
     logoUnderlineWidth: 54,
     logoUnderlineColor: "#403c70",
     logoUnderlineStrokeWidth: 2,
     subtitleSpacingAdjustmentPx: 8,
-    qrBorderWidth: 1.5,
+    qrBorderWidth: 2.5,
     ctaCornerRadius: 30,
     ctaBorderWidth: 3,
     wheelLabelVariant: "gift-icons",
@@ -368,11 +368,8 @@ const POSTER_TEMPLATE_BY_ID = Object.fromEntries(
   POSTER_TEMPLATES.map((template) => [template.id, template]),
 ) as Record<PosterTemplateId, PosterTemplateConfig>;
 
-// Gradient clair is now a first-level design. Terracotta remains available as
-// a background variation of Classique, while Classique stays last in the list.
+// Gradient clair and Terracotta are background variations of Classique.
 export const POSTER_TEMPLATE_CHOICES = [
-  POSTER_TEMPLATE_BY_ID["soft-gradient-wheel"],
-  POSTER_TEMPLATE_BY_ID["terracotta-wheel"],
   ...POSTER_TEMPLATES.filter(
     (template) => !["soft-gradient-wheel", "terracotta-wheel", "classic-wheel"].includes(template.id),
   ),

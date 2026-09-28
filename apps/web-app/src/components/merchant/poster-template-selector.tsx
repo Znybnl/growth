@@ -84,8 +84,8 @@ function GradientClairThumbnail({ qrDataUrl }: { qrDataUrl?: string | null }) {
       <rect width="794" height="1123" fill="url(#gradient-clair-thumbnail-bg)" />
       <circle cx="240" cy="285" r="410" fill="#2100b8" opacity="0.085" />
       <circle cx="570" cy="650" r="310" fill="white" opacity="0.38" />
-      <text x="397" y="96" textAnchor="middle" fontSize="30" fontWeight="600" fill="#050644">Votre établissement</text>
-      <line x1="367" y1="132" x2="427" y2="132" stroke="#403c70" strokeWidth="2" />
+      <text x="397" y="126" textAnchor="middle" fontSize="30" fontWeight="600" fill="#050644">Votre établissement</text>
+      <line x1="367" y1="162" x2="427" y2="162" stroke="#403c70" strokeWidth="2" />
       <text x="397" y="220" textAnchor="middle" fontSize="58" fontWeight="700" fill="#050644" fontFamily="Arial, sans-serif">
         <tspan x="397">Scannez, jouez,</tspan><tspan x="397" dy="64">récupérez votre</tspan><tspan x="397" dy="64">cadeau !</tspan>
       </text>
@@ -108,9 +108,9 @@ function GradientClairThumbnail({ qrDataUrl }: { qrDataUrl?: string | null }) {
       <circle cx={cx} cy={cy} r="45" fill="#060642" />
       <path d={`M ${cx - 28} ${cy - radius - 38} Q ${cx - 32} ${cy - radius - 38} ${cx - 28} ${cy - radius - 30} L ${cx - 4} ${cy - radius + 12} Q ${cx} ${cy - radius + 18} ${cx + 4} ${cy - radius + 12} L ${cx + 28} ${cy - radius - 30} Q ${cx + 32} ${cy - radius - 38} ${cx + 28} ${cy - radius - 38} Z`} fill="#060642" stroke="white" strokeWidth="8" strokeLinejoin="round" />
       <g data-testid="gradient-clair-thumbnail-qr">
-        <rect x="475" y="505" width="270" height="310" rx="26" fill="white" stroke="#2100b8" strokeWidth="1.5" />
+        <rect x="475" y="505" width="270" height="310" rx="26" fill="white" stroke="#2100b8" strokeWidth="2.5" />
         {qrDataUrl ? <image href={qrDataUrl} x="493" y="523" width="234" height="234" /> : <QrCode x="493" y="523" width="234" height="234" color="#111" strokeWidth="1.5" />}
-        <rect x="443" y="831" width="334" height="64" rx="30" fill="#2100b8" stroke="white" strokeWidth="3" />
+        <rect x="433" y="831" width="354" height="64" rx="30" fill="#2100b8" stroke="white" strokeWidth="3" />
         <text x="610" y="871" textAnchor="middle" fontSize="21" fontWeight="800" fill="white">SCANNEZ POUR JOUER</text>
       </g>
     </svg>
@@ -177,12 +177,7 @@ export function PosterTemplateSelector({
       </p>
       <div className="mt-6 grid gap-4 md:grid-cols-3">
         {POSTER_TEMPLATE_CHOICES.map((template) => {
-          const isLegacyGradient = selectedTemplateId === "classic-wheel" && selectedBackgroundMotif === "soft-gradient";
-          const active = template.id === "soft-gradient-wheel"
-            ? selectedTemplateId === "soft-gradient-wheel" || isLegacyGradient
-            : template.id === "classic-wheel"
-              ? selectedTemplateId === "classic-wheel" && !isLegacyGradient
-              : selectedTemplateId === template.id;
+          const active = (selectedTemplateId ?? "classic-wheel") === template.id;
           const visualTemplate = template.id === "classic-wheel"
             ? getPosterTemplate("classic-wheel", selectedBackgroundMotif)
             : template;
@@ -274,7 +269,7 @@ export function PosterTemplateSelector({
                 <div className="border-t border-[#e6d8eb] px-4 pb-4 pt-3">
                   <p className="text-xs font-semibold uppercase tracking-[0.16em] text-charcoal">Motif du fond</p>
                   <div className="mt-2 grid gap-2" role="group" aria-label="Motif du fond">
-                    {POSTER_BACKGROUND_MOTIFS.filter((motif) => motif.id !== "soft-gradient").map((motif) => {
+                    {POSTER_BACKGROUND_MOTIFS.map((motif) => {
                       const motifActive = selectedBackgroundMotif === motif.id;
                       return (
                         <button
