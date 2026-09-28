@@ -3,6 +3,7 @@ import { ArrowRight, CircleStop, Gift, PackageCheck, PackageX, Pause, Play, Tria
 
 import { DashboardActivityChart } from "@/components/merchant/dashboard-activity-chart";
 import { DashboardCampaignActionsMenu } from "@/components/merchant/dashboard-campaign-actions-menu";
+import { ConsumptionRateInfo } from "@/components/merchant/consumption-rate-info";
 import { DashboardOperationalAlerts } from "@/components/merchant/dashboard-operational-alerts";
 import { OnboardingWelcomeDialog } from "@/components/merchant/onboarding-welcome-dialog";
 import { EmptyState, MetricCard, PageHeader } from "@/components/ui/workspace";
@@ -15,7 +16,7 @@ import {
   leadStatusLabel,
 } from "@/lib/format";
 import { getMerchantDashboard, getMerchantRecentLeads, getMerchantWorkspaceDashboard } from "@/lib/store";
-import { calculatePrizeConsumption } from "@/lib/dashboard-metrics";
+import { calculateCampaignConsumptionMetrics } from "@/lib/dashboard-metrics";
 
 export const dynamic = "force-dynamic";
 
@@ -46,9 +47,9 @@ export default async function DashboardPage({
 
   const activeCampaigns = filteredCampaigns.filter((item) => item.campaign.isActive);
   const activeCampaignIds = new Set(activeCampaigns.map((item) => item.campaign.id));
-  const stockConsumption = calculatePrizeConsumption(
-    dashboard.prizeInventory.filter((item) => merchantCampaignIds.has(item.campaignId)),
-  );
+  const campaignWins = filteredCampaigns.reduce((total, item) => total + item.kpis.wins, 0);
+  const redeemedLots = filteredCampaigns.reduce((total, item) => total + item.kpis.redeemed, 0);
+  const consumption = calculateCampaignConsumptionMetrics(campaignWins, redeemedLots);
   const participationCount = filteredCampaigns.reduce(
     (total, item) => total + item.kpis.leads,
     0,
@@ -152,17 +153,16 @@ export default async function DashboardPage({
         <MetricCard label="Participations" value={String(participationCount)} />
         <MetricCard
           label="Lots consommés"
-          value={String(stockConsumption.consumed)}
-          detail="Stock initial − stock disponible"
+          value={String(consumption.lotsUsed)}
         />
         <MetricCard
-          label="Taux de consommation"
-          value={stockConsumption.rate === null ? "—" : formatPercent(stockConsumption.rate)}
-          detail={
-            stockConsumption.initial
-              ? "Part du stock initial quantifié consommée"
-              : "Aucun stock quantifié"
+          label={
+            <span className="inline-flex items-center gap-1">
+              Taux de consommation
+              <ConsumptionRateInfo id="dashboard-consumption-help" />
+            </span>
           }
+          value={formatPercent(consumption.consumptionRate)}
         />
       </section>
 

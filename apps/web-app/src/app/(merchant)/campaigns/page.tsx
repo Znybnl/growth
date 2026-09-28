@@ -1,12 +1,13 @@
 import Link from "next/link";
 
 import { CampaignActionsMenu } from "@/components/merchant/campaign-actions-menu";
+import { ConsumptionRateInfo } from "@/components/merchant/consumption-rate-info";
 import { EmptyState, PageHeader, ResponsiveTable } from "@/components/ui/workspace";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import { formatPercent, gameTypeLabel } from "@/lib/format";
-import { getCampaignStockMetrics } from "@/lib/campaign-table-metrics";
+import { calculateCampaignConsumptionMetrics } from "@/lib/dashboard-metrics";
 import { getMerchantCampaignOverview } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
@@ -25,9 +26,9 @@ export default async function CampaignsPage({
         `${item.campaign.title} ${item.campaign.subtitle}`.toLowerCase().includes(query),
       )
     : dashboard.campaigns;
-  const campaignsWithStockMetrics = campaigns.map((item) => ({
+  const campaignsWithMetrics = campaigns.map((item) => ({
     ...item,
-    stockMetrics: getCampaignStockMetrics(item.prizes),
+    consumptionMetrics: calculateCampaignConsumptionMetrics(item.kpis.wins, item.kpis.redeemed),
   }));
   const activeCount = campaigns.filter((item) => item.campaign.isActive).length;
   const campaignTableGrid = "grid-cols-[minmax(170px,1.45fr)_minmax(88px,0.75fr)_minmax(78px,0.7fr)_minmax(64px,0.55fr)_minmax(82px,0.7fr)_minmax(100px,0.85fr)_minmax(116px,auto)]";
@@ -51,15 +52,11 @@ export default async function CampaignsPage({
       />
 
       <section>
-        <p className="mb-3 text-xs leading-5 text-ash">
-          Les lots utilisés et leur taux sont calculés sur le stock quantifié (stock initial moins stock restant). Les lots dont
-          le stock initial ou restant n’est pas quantifié sont exclus ; le taux affiche « — » si aucun stock n’est quantifiable.
-        </p>
         <ResponsiveTable
           mobile={
-            campaignsWithStockMetrics.length ? (
+            campaignsWithMetrics.length ? (
               <div className="okado-mobile-table-list">
-                {campaignsWithStockMetrics.map((item) => (
+                {campaignsWithMetrics.map((item) => (
                   <article key={item.campaign.id} className="okado-mobile-table-row">
                     <div className="flex items-start justify-between gap-4">
                       <div className="min-w-0">
@@ -73,11 +70,16 @@ export default async function CampaignsPage({
                         ["Jeu", gameTypeLabel(item.campaign.gameType)],
                         ["Participations", item.kpis.leads],
                         ["Gagnants", item.kpis.wins],
-                        ["Lots utilisés", formatCampaignCount(item.stockMetrics.lotsUsed)],
-                        ["Taux de consommation", formatCampaignRate(item.stockMetrics.consumptionRate)],
+                        ["Lots utilisés", formatCampaignCount(item.consumptionMetrics.lotsUsed)],
+                        ["Taux de consommation", formatCampaignRate(item.consumptionMetrics.consumptionRate)],
                       ].map(([label, value]) => (
                         <div key={label} className="okado-mobile-table-stat">
-                          <p className="okado-mobile-table-stat-label">{label}</p>
+                          <p className="okado-mobile-table-stat-label">
+                            {label}
+                            {label === "Taux de consommation" ? (
+                              <ConsumptionRateInfo id={`consumption-help-${item.campaign.id}`} />
+                            ) : null}
+                          </p>
                           <p className="mt-1 okado-mobile-table-stat-value">{value}</p>
                         </div>
                       ))}
@@ -98,12 +100,15 @@ export default async function CampaignsPage({
             <span className="text-left">Participations</span>
             <span className="text-left">Gagnants</span>
             <span className="text-left">Lots utilisés</span>
-            <span className="text-left">Taux de consommation</span>
+            <span className="inline-flex items-center gap-1 text-left">
+              Taux de consommation
+              <ConsumptionRateInfo id="campaign-consumption-help" />
+            </span>
             <span className="sr-only">Actions</span>
           </div>
           <div className="space-y-0">
-            {campaignsWithStockMetrics.length ? (
-              campaignsWithStockMetrics.map((item) => (
+            {campaignsWithMetrics.length ? (
+              campaignsWithMetrics.map((item) => (
                 <div key={item.campaign.id} className={`okado-table-row grid ${campaignTableGrid} items-center gap-3 px-5 py-4`}>
                   <div className="flex min-w-0 items-center gap-3">
                     <StatusBadge tone={item.campaign.isActive ? "active" : "muted"}>
@@ -122,10 +127,10 @@ export default async function CampaignsPage({
                     {item.kpis.wins}
                   </span>
                   <span data-align="right" className="tabular-nums text-right font-semibold text-graphite">
-                    {formatCampaignCount(item.stockMetrics.lotsUsed)}
+                    {formatCampaignCount(item.consumptionMetrics.lotsUsed)}
                   </span>
                   <span data-align="right" className="tabular-nums text-right font-semibold text-graphite">
-                    {formatCampaignRate(item.stockMetrics.consumptionRate)}
+                    {formatCampaignRate(item.consumptionMetrics.consumptionRate)}
                   </span>
                   <div className="flex items-center justify-end gap-2">
                     <Link
@@ -149,10 +154,10 @@ export default async function CampaignsPage({
   );
 }
 
-function formatCampaignCount(value: number | null) {
-  return value === null ? "—" : new Intl.NumberFormat("fr-FR").format(value);
+function formatCampaignCount(value: number) {
+  return new Intl.NumberFormat("fr-FR").format(value);
 }
 
-function formatCampaignRate(value: number | null) {
-  return value === null ? "—" : formatPercent(value);
+function formatCampaignRate(value: number) {
+  return formatPercent(value);
 }

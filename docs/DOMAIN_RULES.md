@@ -43,6 +43,7 @@ Ce document regroupe les invariants fonctionnels approuvés d'Okado. Il ne rempl
 ## Gain et retrait
 
 - Un gain obtenu donne accès à un code et un QR code de retrait, ainsi qu'aux conditions de disponibilité applicables.
+- Les indicateurs « lots utilisés » et « taux de consommation » sont calculés à partir des gains attribués et des retraits effectifs, jamais du stock initial ou disponible. Un lot à stock illimité compte comme tout autre lot : taux de consommation = nombre de lots retirés ÷ nombre de lots gagnés × 100 ; si aucun lot n'a été gagné, le taux est de 0 %.
 - La page de retrait doit afficher au personnel le lot, les conditions, la période de validité et le statut du retrait avant confirmation.
 - Le retrait standard est confirmé au moyen du PIN marchand et journalisé.
 - Un retrait forcé reste possible pour le marchand ou le personnel du commerce, y compris hors période de validité. Il exige la saisie d'un motif et du PIN marchand avant confirmation.
