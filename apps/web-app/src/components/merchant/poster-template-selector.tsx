@@ -176,7 +176,7 @@ export function PosterTemplateSelector({
                   </svg>
                 ) : visualTemplate.id === "botanical-editorial-poster" ? (
                   <svg viewBox="0 0 794 1123" className="h-full w-full" aria-hidden="true">
-                    <image href="/backgrounds/botanical-editorial-poster-backdrop.svg" width="794" height="1123" />
+                    <image href="/backgrounds/botanical-editorial-poster-backdrop.webp" width="794" height="1123" />
                     <circle cx="137" cy="676" r="120" fill="#77845e" />
                     <circle cx="137" cy="676" r="116" fill="none" stroke="#f7f4e8" strokeOpacity=".65" strokeWidth="2" />
                     <text x="397" y="118" textAnchor="middle" fontFamily="Georgia, serif" fontSize="30" fill="#1d2a16">Votre logo</text>
@@ -189,15 +189,15 @@ export function PosterTemplateSelector({
                     <g textAnchor="middle" fontFamily="Georgia, serif" fontSize="25" fill="#1d2a16"><text x="137" y="651">De jolis</text><text x="137" y="680">cadeaux</text><text x="137" y="709">à gagner !</text></g>
                     <path d="M104 779c17-16 32-23 52-25m-52 25c11-10 25-17 52-25m-28 13c-8 1-14-3-17-8m27-4c-1-8 2-13 7-18" fill="none" stroke="#edf0df" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" opacity=".94" />
                     <g data-testid="botanical-editorial-thumbnail-qr">
-                      <rect x="259" y="564" width="322" height="322" rx="24" fill="#fffefa" stroke="#d6bd8c" strokeWidth="4" />
-                      {qrDataUrl ? <image href={qrDataUrl} x="277" y="582" width="286" height="286" /> : <QrCode x="291" y="596" width="258" height="258" color="#111" strokeWidth="1.5" />}
+                      <rect x="282" y="564" width="322" height="322" rx="24" fill="#fffefa" stroke="#d6bd8c" strokeWidth="4" />
+                      {qrDataUrl ? <image href={qrDataUrl} x="300" y="582" width="286" height="286" /> : <QrCode x="314" y="596" width="258" height="258" color="#111" strokeWidth="1.5" />}
                     </g>
                     <g data-testid="botanical-editorial-thumbnail-footer">
                       <path d="M310 968h37m100 0h37" stroke="#1d2a16" strokeWidth="2" markerEnd="url(#thumbnailArrow)" />
                       <defs><marker id="thumbnailArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 10 5 0 10" fill="none" stroke="#1d2a16" strokeWidth="1.5" /></marker></defs>
                       {[190, 397, 604].map((x, index) => <g key={x}>
-                        <circle cx={x} cy="968" r="49" fill="#f5f1e2" stroke="#d6bd8c" strokeWidth="2" />
-                        {index === 0 ? <g fill="none" stroke="#1d2a16" strokeWidth="3"><rect x={x - 14} y="944" width="28" height="48" rx="5" /><path d={`M${x - 9} 952h18m-18 34h18`} /></g> : index === 1 ? <g fill="none" stroke="#1d2a16" strokeWidth="3"><path d={`M${x - 27} 961q2-12 14-12h26q12 0 14 12l4 18q1 9-9 6l-11-9h-22l-11 9q-10 3-9-6z`} /><path d={`M${x - 17} 958v13m-6.5-6.5h13`} /></g> : <g fill="none" stroke="#1d2a16" strokeWidth="3"><rect x={x - 18} y="963" width="36" height="27" /><path d={`M${x - 22} 955h44v11h-44zm22 0v35m0-35c-15 0-17-15-8-15 7 0 11 15 8 15m0 0c15 0 17-15 8-15-7 0-11 15-8 15`} /></g>}
+                        <circle cx={x} cy="968" r="47" fill="#f5f1e2" stroke="#77845e" strokeWidth="2.5" />
+                        {index === 0 ? <g fill="none" stroke="#1d2a16" strokeWidth="3" transform={`translate(${x} 968) scale(.8)`}><rect x="-14" y="-24" width="28" height="48" rx="5" /><path d="M-9-16h18M-9 18h18" /></g> : index === 1 ? (gameType === "wheel" ? <g fill="none" stroke="#1d2a16" strokeWidth="3" transform={`translate(${x} 968) scale(.78)`}><circle r="34" /><path d="M0-30v60M-30 0h60M-21-21l42 42M21-21l-42 42" /></g> : <g fill="none" stroke="#1d2a16" strokeWidth="3" transform={`translate(${x} 968) scale(.8)`}><path d="M-25-31h42l9 9v52h-51zM17-31v10h9M-14-9h22M-14 3h22M-14 15h15" /><circle cx="15" cy="18" r="8" fill="#f5f1e2" /></g>) : <g fill="none" stroke="#1d2a16" strokeWidth="3" transform={`translate(${x} 968) scale(.8)`}><rect x="-18" y="-5" width="36" height="27" /><path d={`M-22-13h44v11h-44zm22 0v40m0-40c-15 0-17-15-8-15 7 0 11 15 8 15m0 0c15 0 17-15 8-15-7 0-11 15-8 15`} /></g>}
                         <text x={x} y="1050" textAnchor="middle" fontSize="17" fontWeight="700" letterSpacing="1.5" fill="#1d2a16">{index === 0 ? "1. SCANNEZ" : index === 1 ? "2. JOUEZ" : "3. GAGNEZ"}</text>
                       </g>)}
                     </g>

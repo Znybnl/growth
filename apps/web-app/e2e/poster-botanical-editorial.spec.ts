@@ -9,9 +9,9 @@ test("Botanique éditorial utilise le logo marchand et exporte le même rendu qu
   await page.setViewportSize({ width: 1440, height: 1000 });
   await signIn(page);
 
-  const backdrop = await page.request.get("/backgrounds/botanical-editorial-poster-backdrop.svg");
+  const backdrop = await page.request.get("/backgrounds/botanical-editorial-poster-backdrop.webp");
   expect(backdrop.ok(), "Le décor botanique éditorial doit être livré par le déploiement").toBe(true);
-  expect(backdrop.headers()["content-type"]).toContain("image/svg+xml");
+  expect(backdrop.headers()["content-type"]).toContain("image/webp");
 
   let campaignId: string | undefined;
   try {
@@ -51,7 +51,13 @@ test("Botanique éditorial utilise le logo marchand et exporte le même rendu qu
     await expect(page.getByTestId("botanical-editorial-thumbnail-qr")).toBeAttached();
     await expect(page.getByTestId("botanical-editorial-thumbnail-footer")).toBeAttached();
     await expect(page.getByLabel("Police du texte principal")).toHaveValue("cormorant");
-    expect(await page.locator('input[type="color"]').count()).toBeGreaterThan(0);
+    expect(await page.locator('input[type="color"]').count()).toBe(0);
+    const headlineSize = page.getByLabel("Taille du texte principal");
+    const previewFrame = page.getByTestId("poster-preview-frame");
+    await headlineSize.press("Home");
+    await expect(previewFrame).toHaveAttribute("data-headline-size", "24");
+    await headlineSize.press("End");
+    await expect(previewFrame).toHaveAttribute("data-headline-size", "84");
     await page.getByRole("button", { name: /^Botanique éditorial/ }).screenshot({ path: testInfo.outputPath("botanical-editorial-thumbnail.png") });
 
     const preview = page.getByAltText("Prévisualisation affiche");
