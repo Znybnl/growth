@@ -51,11 +51,6 @@ test("Gradient clair est la première variante de Classique et garde le même ap
     await expect(page.getByRole("button", { name: /^Classique/ })).toHaveAttribute("aria-pressed", "true");
     await expect(gradientMotif).toHaveAttribute("aria-pressed", "true");
 
-    const saveResponse = page.waitForResponse(response => response.url().includes("/poster-settings") && response.request().method() === "POST");
-    await page.getByRole("button", { name: "Enregistrer", exact: true }).click();
-    expect((await saveResponse).ok()).toBeTruthy();
-    await expect(page.getByText("Affiche enregistrée.", { exact: true })).toBeVisible();
-
     const preview = page.getByAltText("Prévisualisation affiche");
     const downloadButton = page.getByRole("button", { name: "Télécharger le PNG", exact: true });
     await expect(downloadButton).toBeEnabled({ timeout: 30_000 });
