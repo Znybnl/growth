@@ -7,7 +7,7 @@ import { Loader2 } from "lucide-react";
 import QRCode from "qrcode";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 
-import { buildPosterSvg, getPosterSubtitleLayout, getPremiumHeadlineLayout } from "@/lib/poster-render";
+import { buildClassicPosterThumbnailSvg, buildPosterSvg, getPosterSubtitleLayout, getPremiumHeadlineLayout } from "@/lib/poster-render";
 import { selectPosterBackgroundMotif, selectPosterTemplate } from "@/lib/poster-template-settings";
 import { getPosterFontAsset, getPosterFontSourceUrl, getPosterSubtitleFont, POSTER_FONT_OPTIONS } from "@/lib/poster-fonts";
 import { limitCampaignSubtitleLines, MAX_CAMPAIGN_SUBTITLE_LENGTH } from "@/lib/campaign-defaults";
@@ -34,6 +34,8 @@ import { PageHeader } from "@/components/ui/workspace";
 type PosterEditorProps = {
   campaign: Campaign;
   prizes: Prize[];
+  settingsEndpoint?: string;
+  returnHref?: string;
 };
 
 const MAX_UPLOAD_IMAGE_BYTES = 2 * 1024 * 1024;
@@ -184,7 +186,9 @@ async function loadPremiumBackdropAsDataUrl(templateId: PosterTemplateId) {
       binary += String.fromCharCode(...bytes.subarray(index, index + chunkSize));
     }
 
-    return `data:image/png;base64,${window.btoa(binary)}`;
+    const extension = asset.toLowerCase().split(".").pop();
+    const mimeType = extension === "svg" ? "image/svg+xml" : extension === "webp" ? "image/webp" : "image/png";
+    return `data:${mimeType};base64,${window.btoa(binary)}`;
   } catch {
     throw new Error(`Impossible de charger le décor ${getPosterTemplate(templateId).label}. Réessayez en rechargeant la page.`);
   }
@@ -242,8 +246,9 @@ function applyTemplateDefaults(
   };
 }
 
-export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
+export function PosterEditor({ campaign, prizes, settingsEndpoint, returnHref }: PosterEditorProps) {
   const router = useRouter();
+  const resolvedSettingsEndpoint = settingsEndpoint ?? `/api/campaigns/${campaign.id}/poster-settings`;
   const campaignPrimaryColor =
     campaign.gameType === "scratch"
       ? campaign.accent.signal
@@ -283,22 +288,25 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
       return posterWithCurrentPalette;
     }
 
-    const template = POSTER_TEMPLATES[0];
+    const template = getPosterTemplate("classic-wheel", posterWithCurrentPalette.backgroundMotif);
 
-    return applyTemplateDefaults(
-      {
-        ...posterWithCurrentPalette,
-        headlineTextColor: campaign.gameType === "scratch" ? "#1b2842" : campaignGainColor,
-        headlineFontFamily: "geogrotesque",
-        wheel: {
-          ...posterWithCurrentPalette.wheel,
-          winColor: campaignPrimaryColor,
-          alternateWinColor: campaignPrimaryColor,
+    return {
+      ...applyTemplateDefaults(
+        {
+          ...posterWithCurrentPalette,
+          headlineTextColor: campaign.gameType === "scratch" ? "#1b2842" : campaignGainColor,
+          headlineFontFamily: "geogrotesque",
+          wheel: {
+            ...posterWithCurrentPalette.wheel,
+            winColor: campaignPrimaryColor,
+            alternateWinColor: campaignPrimaryColor,
+          },
         },
-      },
-      template,
-      { preserveWinColor: true, preserveHeadlineTextColor: true },
-    );
+        template,
+        { preserveWinColor: true, preserveHeadlineTextColor: true },
+      ),
+      templateId: "classic-wheel",
+    };
   });
   const [posterSubtitle, setPosterSubtitle] = useState(() => campaign.presentation.layout.wheelSubtitle ?? "");
   const [isSaving, setIsSaving] = useState(false);
@@ -444,6 +452,10 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
   const posterSubtitleFontSource =
     loadedPosterSubtitleFont?.font === posterSubtitleFont ? loadedPosterSubtitleFont.source : null;
   const posterTemplate = getPosterTemplate(poster.templateId, poster.backgroundMotif);
+  const classicThumbnailSvg = useMemo(
+    () => buildClassicPosterThumbnailSvg(campaign.gameType, poster.backgroundMotif ?? "soft-gradient"),
+    [campaign.gameType, poster.backgroundMotif],
+  );
   const posterCampaign = useMemo(
     () => ({
       ...campaign,
@@ -467,11 +479,20 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
       poster,
       posterTemplate,
       headlineMeasure,
-      posterTemplate.id === "premium-wheel" && posterSubtitleLayout
+      (posterTemplate.id === "premium-wheel" || posterTemplate.id === "botanical-editorial-poster") && posterSubtitleLayout
         ? posterSubtitleLayout.top - posterSubtitleLayout.headlineGap
         : undefined,
     )
     : null, [poster, campaign.subtitle, headlineMeasure, posterSubtitleLayout, posterTemplate]);
+  const headlineLastBaseline = premiumHeadlineLayout
+    ? premiumHeadlineLayout.top + premiumHeadlineLayout.size * 0.82 + Math.max(0, premiumHeadlineLayout.lines.length - 1) * premiumHeadlineLayout.size * 1.08
+    : undefined;
+  const subtitleFirstBaseline = posterSubtitleLayout
+    ? posterSubtitleLayout.top + posterSubtitleLayout.fontSize * 0.82
+    : undefined;
+  const subtitleLastBaseline = posterSubtitleLayout
+    ? posterSubtitleLayout.top + posterSubtitleLayout.fontSize * 0.82 + Math.max(0, posterSubtitleLayout.lines.length - 1) * posterSubtitleLayout.lineHeight
+    : undefined;
 
   const previewPosterSvg = useMemo(
     () =>
@@ -642,7 +663,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
     setMessage(null);
 
     try {
-      const response = await fetch(`/api/campaigns/${campaign.id}/poster-settings`, {
+      const response = await fetch(resolvedSettingsEndpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ poster, wheelSubtitle: posterSubtitle }),
@@ -734,7 +755,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
           description="Cet écran ne modifie que l&apos;affiche imprimable. La page de jeu reste paramétrée dans l&apos;éditeur de campagne."
           actions={<>
             <Link
-              href={`/campaigns/${campaign.id}/edit/guided`}
+              href={returnHref ?? `/campaigns/${campaign.id}/edit/guided`}
               prefetch={false}
               className="okado-primary-action px-4"
             >
@@ -764,6 +785,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
 
         <PosterTemplateSelector
           qrDataUrl={posterQrDataUrl}
+          classicThumbnailSvg={classicThumbnailSvg}
           gameType={campaign.gameType}
           selectedTemplateId={poster.templateId}
           selectedBackgroundMotif={poster.backgroundMotif}
@@ -1125,7 +1147,7 @@ export function PosterEditor({ campaign, prizes }: PosterEditorProps) {
           </div>
 
           <div className="flex min-h-0 flex-1 items-center justify-center overflow-auto rounded-[var(--okado-radius-card)] bg-[var(--okado-surface-muted)] p-4">
-            <div className="relative aspect-[794/1123] w-full max-w-[470px] overflow-hidden rounded-[var(--okado-radius-control)] border border-[var(--okado-border-control)] bg-white shadow-[var(--shadow-product-card)]">
+            <div className="relative aspect-[794/1123] w-full max-w-[470px] overflow-hidden rounded-[var(--okado-radius-control)] border border-[var(--okado-border-control)] bg-white shadow-[var(--shadow-product-card)]" data-testid="poster-preview-frame" data-headline-size={premiumHeadlineLayout?.size} data-headline-x={premiumHeadlineLayout?.x} data-headline-last-baseline={headlineLastBaseline} data-subtitle-x={posterSubtitleLayout?.x} data-subtitle-first-baseline={subtitleFirstBaseline} data-subtitle-last-baseline={subtitleLastBaseline} data-subtitle-headline-gap={posterSubtitleLayout?.headlineGap}>
               {previewPng && !currentPreviewError ? (
                 <Image
                   src={previewPng.url}

@@ -44,23 +44,37 @@ export type PosterTemplateConfig = {
   headlineFontFamily?: TextFont;
   logoX?: number;
   logoY?: number;
+  logoTextY?: number;
   logoFontWeight?: number;
   logoFontSizeMultiplier?: number;
   logoLetterSpacing?: number;
   logoFontFamily?: TextFont;
   logoTextAnchor?: "start" | "middle";
   logoImageAnchor?: "start" | "middle";
+  logoTextMaxCharactersPerLine?: number;
+  headlineTextAnchor?: "start" | "middle";
+  headlineStretchToWidth?: boolean;
+  supportingTextAnchor?: "start" | "middle";
+  subtitleLetterSpacing?: number;
+  subtitleUppercase?: boolean;
+  subtitleMaxCharactersPerLine?: number;
   logoUnderlineWidth?: number;
   logoUnderlineColor?: string;
-  logoUnderlineGapPx?: number;
   logoUnderlineCentered?: boolean;
-  headlineTextAnchor?: "start" | "middle";
+  logoUnderlineGapPx?: number;
+  logoUnderlineStrokeWidth?: number;
   inlineQrCta?: boolean;
   inlineQrLabelBackground?: string;
   inlineQrLabelTextColor?: string;
   inlineQrLabelWidth?: number;
   inlineQrLabelHeight?: number;
   inlineQrLabelGap?: number;
+  qrBorderWidth?: number;
+  ctaCornerRadius?: number;
+  ctaBorderWidth?: number;
+  wheelLabelVariant?: "prize-labels" | "gift-icons";
+  wheelPointerVariant?: "standard" | "rounded-triangle";
+  subtitleSpacingAdjustmentPx?: number;
   supportingText?: string;
   supportingTextX?: number;
   supportingTextY?: number;
@@ -68,8 +82,9 @@ export type PosterTemplateConfig = {
   supportingTextFontSize?: number;
   supportingTextLineHeight?: number;
   supportingTextColor?: string;
+  medallionFill?: string;
   supportingTextLetterSpacing?: number;
-  footerVariant?: "premium" | "botanical";
+  footerVariant?: "premium" | "botanical" | "botanical-editorial";
   backdropAsset?: string;
   /**
    * The template supplies its own decorative composition and must not render
@@ -86,12 +101,6 @@ export const POSTER_BACKGROUND_MOTIFS: Array<{
   preview: string;
 }> = [
   {
-    id: "plain",
-    label: "Clair uni",
-    description: "Une surface lumineuse et intemporelle.",
-    preview: "#fff6ee",
-  },
-  {
     id: "soft-gradient",
     label: "Gradient clair",
     description: "Des halos lavande très doux.",
@@ -102,6 +111,12 @@ export const POSTER_BACKGROUND_MOTIFS: Array<{
     label: "Terracotta",
     description: "Une ambiance chaude et chaleureuse.",
     preview: "linear-gradient(135deg,#ddc9b8 0%,#f7eee7 100%)",
+  },
+  {
+    id: "plain",
+    label: "Clair uni",
+    description: "Une surface lumineuse et intemporelle.",
+    preview: "#fff6ee",
   },
 ];
 
@@ -156,29 +171,42 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
   {
     id: "soft-gradient-wheel",
     label: "Gradient clair",
-    description: "Design élégant et titre avec contour blanc.",
+    description: "Fond lavande lumineux et composition graphique épurée.",
     background: "#f4f3ff",
     accent: "#2100b8",
     accentDark: "#060642",
     headline: "#050644",
-    headlineStroke: "#ffffff",
+    headlineStroke: "none",
     headlineTextColor: "#050644",
     headlineFontSizePx: 40,
     qrFrame: "#2100b8",
     logoVariant: "badge",
     wheelX: 272,
     wheelY: 716,
-    wheelRadius: 260,
+    wheelRadius: 247,
     qrX: 408,
     qrY: 512,
-    qrSize: 292,
-    ctaX: 369,
+    qrSize: 277.4,
+    ctaX: 359,
     ctaY: 838,
-    ctaWidth: 370,
-    ctaHeight: 86,
+    ctaWidth: 390,
+    ctaHeight: 68,
     ctaRotation: 0,
-    headlineY: 250,
+    headlineY: 208,
     headlineSizeMultiplier: 1.52,
+    headlineItalic: false,
+    logoY: 26,
+    logoTextY: -24,
+    logoFontWeight: 600,
+    logoUnderlineWidth: 54,
+    logoUnderlineColor: "#403c70",
+    logoUnderlineStrokeWidth: 2,
+    subtitleSpacingAdjustmentPx: 8,
+    qrBorderWidth: 2.5,
+    ctaCornerRadius: 30,
+    ctaBorderWidth: 3,
+    wheelLabelVariant: "gift-icons",
+    wheelPointerVariant: "rounded-triangle",
     motif: "soft-gradient",
     wheel: {
       winColor: "#4b35c9",
@@ -259,6 +287,7 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     headlineFontFamily: "cormorant",
     logoX: 516,
     logoY: 12,
+    logoTextY: 6,
     logoFontWeight: 500,
     logoLetterSpacing: 5,
     inlineQrCta: true,
@@ -343,6 +372,140 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     },
   },
   {
+    id: "botanical-editorial-poster",
+    label: "Botanique éditorial",
+    description: "Feuillages sauge, typographie éditoriale et composition végétale.",
+    background: "#fbf9f1",
+    accent: "#77845e",
+    accentDark: "#1d2a16",
+    headline: "#1d2a16",
+    headlineStroke: "none",
+    headlineTextColor: "#1d2a16",
+    headlineFontSizePx: 84,
+    qrFrame: "#77845e",
+    logoVariant: "lined",
+    wheelX: 0,
+    wheelY: 0,
+    wheelRadius: 0,
+    qrX: 300,
+    qrY: 582,
+    qrSize: 286,
+    ctaX: 0,
+    ctaY: 0,
+    ctaWidth: 0,
+    ctaHeight: 0,
+    ctaRotation: 0,
+    headlineY: 210,
+    headlineSizeMultiplier: 1,
+    colorsCustomizable: false,
+    headlineX: 443,
+    headlineMaxWidth: 470,
+    subtitleMaxWidth: 650,
+    headlineBlockBottom: 520,
+    headlineLogoGapPx: 40,
+    headlineFontWeight: 500,
+    headlineItalic: false,
+    headlineFontFamily: "cormorant",
+    headlineTextAnchor: "middle",
+    headlineStretchToWidth: true,
+    logoX: 397,
+    logoY: 52,
+    logoFontWeight: 500,
+    logoFontSizeMultiplier: 1.55,
+    logoTextMaxCharactersPerLine: 22,
+    logoLetterSpacing: 2,
+    logoFontFamily: "cormorant",
+    logoTextAnchor: "middle",
+    logoImageAnchor: "middle",
+    logoUnderlineWidth: 80,
+    logoUnderlineColor: "#77845e",
+    subtitleLetterSpacing: 6,
+    subtitleUppercase: true,
+    subtitleMaxCharactersPerLine: 18,
+    supportingText: "De jolis\ncadeaux\nà gagner !",
+    supportingTextX: 136,
+    supportingTextY: 635,
+    supportingTextFontFamily: "cormorant",
+    supportingTextFontSize: 37,
+    supportingTextLineHeight: 40,
+    supportingTextColor: "#1d2a16",
+    supportingTextAnchor: "middle",
+    medallionFill: "#AAB590",
+    footerVariant: "botanical-editorial",
+    backdropAsset: "botanical-editorial-poster-backdrop.webp",
+    backgroundOnly: true,
+    wheel: {
+      winColor: "#77845e",
+      alternateWinColor: "#77845e",
+      loseColor: "#fbf9f1",
+      alternateLoseColor: "#fbf9f1",
+      rimColor: "#d6bd8c",
+    },
+  },
+  {
+    id: "pastel-editorial-wheel",
+    label: "Éditorial pastel",
+    description: "Fond organique rose-lilas, titrage sérif et QR code mis en scène.",
+    background: "linear-gradient(135deg,#ffe2d3 0%,#f6d2e0 48%,#e7d4f5 100%)",
+    accent: "#e9a9b9",
+    accentDark: "#111111",
+    headline: "#111111",
+    headlineStroke: "none",
+    headlineTextColor: "#111111",
+    headlineFontSizePx: 72,
+    qrFrame: "#f4b5c3",
+    logoVariant: "lined",
+    wheelX: 0,
+    wheelY: 0,
+    wheelRadius: 0,
+    qrX: 112,
+    qrY: 620,
+    qrSize: 310,
+    ctaX: 0,
+    ctaY: 0,
+    ctaWidth: 0,
+    ctaHeight: 0,
+    ctaRotation: 0,
+    headlineY: 188,
+    headlineSizeMultiplier: 1.3,
+    colorsCustomizable: false,
+    headlineX: 76,
+    headlineMaxWidth: 560,
+    subtitleMaxWidth: 450,
+    headlineBlockBottom: 476,
+    headlineLogoGapPx: 42,
+    headlineFontWeight: 600,
+    headlineLineHeightMultiplier: 1.0,
+    headlineItalic: false,
+    headlineFontFamily: "cormorant",
+    logoX: 397,
+    logoY: 40,
+    logoFontWeight: 500,
+    logoFontSizeMultiplier: 1.65,
+    logoLetterSpacing: 0,
+    logoFontFamily: "cormorant",
+    logoTextAnchor: "middle",
+    logoImageAnchor: "middle",
+    logoUnderlineWidth: 86,
+    logoUnderlineColor: "#111111",
+    logoUnderlineCentered: true,
+    supportingTextX: 76,
+    supportingTextY: 476,
+    supportingTextFontFamily: "inter",
+    supportingTextFontSize: 28,
+    supportingTextLineHeight: 42,
+    supportingTextColor: "#111111",
+    supportingTextLetterSpacing: 3.2,
+    backgroundOnly: true,
+    wheel: {
+      winColor: "#e9a9b9",
+      alternateWinColor: "#fffaf7",
+      loseColor: "#fffaf7",
+      alternateLoseColor: "#fffaf7",
+      rimColor: "#e9a9b9",
+    },
+  },
+  {
     id: "ivory-editorial-wheel",
     label: "Éditorial ivoire",
     description: "Composition sérif centrée, fond ivoire et QR code encadré.",
@@ -391,6 +554,7 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     logoUnderlineColor: "#191817",
     logoUnderlineCentered: true,
     logoUnderlineGapPx: 68,
+    logoUnderlineStrokeWidth: 3,
     supportingTextX: 397,
     supportingTextY: 528,
     supportingTextFontFamily: "inter",
@@ -415,9 +579,17 @@ export const POSTER_TEMPLATE_CONFIGS: Record<PosterTemplateId, PosterTemplateCon
     PosterTemplateConfig
   >;
 
-export const POSTER_TEMPLATE_CHOICES = POSTER_TEMPLATES.filter(
-  (template) => !["soft-gradient-wheel", "terracotta-wheel"].includes(template.id),
-);
+const POSTER_TEMPLATE_BY_ID = Object.fromEntries(
+  POSTER_TEMPLATES.map((template) => [template.id, template]),
+) as Record<PosterTemplateId, PosterTemplateConfig>;
+
+// Gradient clair and Terracotta are background variations of Classique.
+export const POSTER_TEMPLATE_CHOICES = [
+  ...POSTER_TEMPLATES.filter(
+    (template) => !["soft-gradient-wheel", "terracotta-wheel", "classic-wheel"].includes(template.id),
+  ),
+  POSTER_TEMPLATE_BY_ID["classic-wheel"],
+];
 
 const MOTIF_TEMPLATE_IDS: Record<PosterBackgroundMotif, PosterTemplateId> = {
   plain: "classic-wheel",

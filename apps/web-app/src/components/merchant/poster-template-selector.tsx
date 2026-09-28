@@ -6,12 +6,14 @@ import {
   PosterTemplateConfig,
 } from "@/lib/poster-templates";
 import { QrCode } from "lucide-react";
+import Image from "next/image";
 
 type PosterTemplateSelectorProps = {
   gameType: GameType;
   selectedTemplateId?: PosterTemplateId;
   qrDataUrl?: string | null;
   selectedBackgroundMotif?: PosterBackgroundMotif;
+  classicThumbnailSvg: string;
   onSelect: (templateId: PosterTemplateId) => void;
   onSelectMotif: (backgroundMotif: PosterBackgroundMotif) => void;
 };
@@ -96,6 +98,99 @@ function IvoryEditorialThumbnail({ qrDataUrl }: { qrDataUrl?: string | null }) {
   );
 }
 
+function EditorialPosterThumbnail({
+  gameType,
+  qrDataUrl,
+}: {
+  gameType: GameType;
+  qrDataUrl?: string | null;
+}) {
+  const action = gameType === "wheel" ? "JOUEZ" : "GRATTEZ";
+
+  return (
+    <svg viewBox="0 0 794 1123" className="h-full w-full" aria-hidden="true" data-testid="editorial-poster-thumbnail">
+      <defs>
+        <linearGradient id="editorialPosterThumbnailBackground" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#ffe3d4" />
+          <stop offset="52%" stopColor="#f5d0df" />
+          <stop offset="100%" stopColor="#e6d2f3" />
+        </linearGradient>
+      </defs>
+      <rect width="794" height="1123" fill="url(#editorialPosterThumbnailBackground)" />
+      <path d="M0 520 C130 660 135 850 0 1060Z" fill="#f6adc3" fillOpacity="0.55" />
+      <path d="M794 454 C640 495 538 651 520 850 C510 977 440 1070 386 1123H794Z" fill="#e3c7ed" fillOpacity="0.7" />
+      <text data-testid="editorial-thumbnail-logo" x="397" y="126" textAnchor="middle" fontSize="38" fontFamily="Georgia,serif" fontWeight="500" fill="#111111">Votre logo</text>
+      <line x1="354" y1="158" x2="440" y2="158" stroke="#111111" strokeWidth="3" />
+      <text x="76" y="292" fontSize="88" fontFamily="Georgia,serif" fontWeight="600" fill="#111111">
+        <tspan x="76">Scannez et</tspan><tspan x="76" dy="77">jouez</tspan>
+      </text>
+      <text x="76" y="465" fontSize="25" fontFamily="Arial,sans-serif" letterSpacing="4" fill="#111111">
+        <tspan x="76">TENTEZ DE GAGNER</tspan><tspan x="76" dy="35">UN CADEAU !</tspan>
+      </text>
+      <g data-testid="editorial-thumbnail-qr">
+        <rect x="104" y="624" width="344" height="344" rx="30" fill="#fffdfb" stroke="#f4b5c3" strokeWidth="5" />
+        {qrDataUrl ? (
+          <image href={qrDataUrl} x="128" y="648" width="296" height="296" />
+        ) : (
+          <QrCode x="128" y="648" width="296" height="296" color="#111111" strokeWidth="1.6" />
+        )}
+      </g>
+      <path d="M208 1058 C172 1042 164 1004 184 974 L164 991 M184 974 L191 1000" fill="none" stroke="#111111" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+      <text x="226" y="1080" fontSize="42" fontFamily="Georgia,serif" fontStyle="italic" fontWeight="600" fill="#111111">Scannez ici</text>
+      {[
+        { y: 605, number: "1.", label: "SCANNEZ", kind: "phone" },
+        { y: 784, number: "2.", label: action, kind: gameType === "wheel" ? "wheel" : "scratch" },
+        { y: 963, number: "3.", label: "GAGNEZ", kind: "gift" },
+      ].map((step) => (
+        <g key={step.number}>
+          <circle cx="638" cy={step.y} r="60" fill="#fffaf7" fillOpacity="0.54" stroke="#ffffff" strokeWidth="4" />
+          {step.kind === "phone" ? (
+            <g transform={`translate(638 ${step.y}) scale(0.9)`} fill="none" stroke="#111111" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="-23" y="-39" width="46" height="78" rx="8" />
+              <path d="M-21 -27H21M-21 27H21" />
+            </g>
+          ) : step.kind === "wheel" ? (
+            <g data-testid="editorial-step-wheel-icon" transform={`translate(638 ${step.y}) scale(0.9)`} fill="none" stroke="#111111" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M0-35V-7M24.75-24.75 5-5M35 0H7M24.75 24.75 5 5M0 35V7M-24.75 24.75-5 5M-35 0H-7M-24.75-24.75-5-5" />
+              <circle r="34" strokeWidth="5" />
+              <circle r="6" fill="#111111" stroke="none" />
+              <path d="M0-35-9-49H9Z" fill="#111111" stroke="none" />
+            </g>
+          ) : step.kind === "scratch" ? (
+            <g transform={`translate(638 ${step.y}) scale(0.9)`} fill="none" stroke="#111111" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="-30" y="-36" width="60" height="72" rx="8" />
+              <path d="M-20-15H20M-20 0H20M-20 15H20" strokeDasharray="5 6" />
+              <path d="M-30-24H30M-30 24H30" />
+            </g>
+          ) : (
+            <g transform={`translate(638 ${step.y}) scale(0.9)`} fill="none" stroke="#111111" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M-29 -9H29V29H-29ZM-36 -23H36V-9H-36ZM0 -23V29M0 -23C-27 -23-31 -38-20 -40-11 -42-4 -32 0 -23ZM0 -23C27 -23 31 -38 20 -40 11 -42 4 -32 0 -23Z" />
+            </g>
+          )}
+          <text x="638" y={step.y + 96} textAnchor="middle" fontSize="20" fontFamily="Arial,sans-serif" fontWeight="600" letterSpacing="3.2" fill="#111111">
+            {step.number} {step.label}
+          </text>
+        </g>
+      ))}
+    </svg>
+  );
+}
+
+function ClassicPosterThumbnail({ posterSvg }: { posterSvg: string }) {
+  return (
+    <Image
+      src={`data:image/svg+xml;charset=utf-8,${encodeURIComponent(posterSvg)}`}
+      width={794}
+      height={1123}
+      alt=""
+      aria-hidden="true"
+      unoptimized
+      className="h-full w-full object-contain"
+      data-testid="classic-poster-thumbnail"
+    />
+  );
+}
+
 type ThumbnailStepIconKind = "scan" | "wheel" | "gift";
 
 function ThumbnailStepIcon({
@@ -144,6 +239,7 @@ export function PosterTemplateSelector({
   selectedTemplateId,
   qrDataUrl,
   selectedBackgroundMotif = "plain",
+  classicThumbnailSvg,
   onSelect,
   onSelectMotif,
 }: PosterTemplateSelectorProps) {
@@ -182,6 +278,10 @@ export function PosterTemplateSelector({
               }}>
                 {visualTemplate.id === "ivory-editorial-wheel" ? (
                   <IvoryEditorialThumbnail qrDataUrl={qrDataUrl} />
+                ) : visualTemplate.id === "pastel-editorial-wheel" ? (
+                  <EditorialPosterThumbnail gameType={gameType} qrDataUrl={qrDataUrl} />
+                ) : visualTemplate.id === "soft-gradient-wheel" ? (
+                  <ClassicPosterThumbnail posterSvg={classicThumbnailSvg} />
                 ) : visualTemplate.id === "premium-wheel" ? (
                   <svg viewBox="0 0 794 1123" className="h-full w-full" aria-hidden="true">
                     <image href="/backgrounds/premium-poster-backdrop.png" width="794" height="1123" />
@@ -207,6 +307,39 @@ export function PosterTemplateSelector({
                       <circle cx="629" cy="987" r="42" fill="#a17d57" />
                       <ThumbnailStepIcon kind="gift" x={629} y={987} scale={1.6} />
                       <text x="629" y="1063" textAnchor="middle" fontSize="28" fontWeight="600" fill="#171412">Gagnez</text>
+                    </g>
+                  </svg>
+                ) : visualTemplate.id === "botanical-editorial-poster" ? (
+                  <svg viewBox="0 0 794 1123" className="h-full w-full" aria-hidden="true">
+                    <rect width="794" height="1123" fill="#fbf9f1" />
+                    <image data-testid="botanical-editorial-thumbnail-backdrop" href="/backgrounds/botanical-editorial-poster-backdrop.webp" width="794" height="1123" preserveAspectRatio="xMidYMid slice" />
+                    <circle data-testid="botanical-editorial-thumbnail-medallion" cx="137" cy="676" r="120" fill={visualTemplate.medallionFill ?? visualTemplate.accent} />
+                    <circle cx="137" cy="676" r="116" fill="none" stroke="#f7f4e8" strokeOpacity=".65" strokeWidth="2" />
+                    <text x="397" y="118" textAnchor="middle" fontFamily="Georgia, serif" fontSize="30" fill="#1d2a16">Votre logo</text>
+                    <line x1="357" y1="161" x2="437" y2="161" stroke="#77845e" strokeWidth="3" />
+                    <text x="443" y="300" textAnchor="middle" fontFamily="Georgia, serif" fontSize="83" fill="#1d2a16">
+                      <tspan x="443">Scannez</tspan><tspan x="443" dy="82">et jouez</tspan>
+                    </text>
+                    <text x="443" y="468" textAnchor="middle" fontSize="23" letterSpacing="4" fill="#1d2a16">TENTEZ DE GAGNER</text>
+                    <text x="443" y="500" textAnchor="middle" fontSize="23" letterSpacing="4" fill="#1d2a16">UN CADEAU !</text>
+                    <g textAnchor="middle" fontFamily="Georgia, serif" fontSize="25" fill="#1d2a16"><text x="137" y="636">De jolis</text><text x="137" y="662">cadeaux</text><text x="137" y="688">à gagner !</text></g>
+                    <g data-testid="botanical-editorial-thumbnail-leaf" fill="#f7f4e8" fillOpacity=".12" stroke="#f7f4e8" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" opacity=".96">
+                      <path d="M108 770c5-24 23-43 54-54-3 29-22 48-54 54z" />
+                      <path d="M109 769c18-17 36-35 53-52m-37 36c-2-7-7-12-13-14m24 3c-1-8-4-14-10-19m21 4c1-8 0-14-4-20" fill="none" />
+                    </g>
+                    <g data-testid="botanical-editorial-thumbnail-qr">
+                      <rect x="282" y="564" width="322" height="322" rx="24" fill="#fffefa" stroke={visualTemplate.qrFrame} strokeWidth="4" />
+                      {qrDataUrl ? <image href={qrDataUrl} x="300" y="582" width="286" height="286" /> : <QrCode x="314" y="596" width="258" height="258" color="#111" strokeWidth="1.5" />}
+                    </g>
+                    <g data-testid="botanical-editorial-thumbnail-footer">
+                      <path data-testid="botanical-editorial-thumbnail-arrow-one" d="M268 980h48" stroke="#1d2a16" strokeWidth="2" markerEnd="url(#thumbnailArrow)" />
+                      <path data-testid="botanical-editorial-thumbnail-arrow-two" d="M475 980h48" stroke="#1d2a16" strokeWidth="2" markerEnd="url(#thumbnailArrow)" />
+                      <defs><marker id="thumbnailArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 10 5 0 10" fill="none" stroke="#1d2a16" strokeWidth="1.5" /></marker></defs>
+                      {[190, 397, 604].map((x, index) => <g key={x}>
+                        <circle cx={x} cy="980" r="47" fill="#f5f1e2" stroke="#77845e" strokeWidth="2.5" />
+                        {index === 0 ? <g fill="none" stroke="#1d2a16" strokeWidth="3" transform={`translate(${x} 980) scale(.8)`}><rect x="-14" y="-24" width="28" height="48" rx="5" /><path d="M-9-16h18M-9 18h18" /></g> : index === 1 ? (gameType === "wheel" ? <g fill="none" stroke="#1d2a16" strokeWidth="3" transform={`translate(${x} 980) scale(.78)`}><circle r="34" /><path d="M0-30v60M-30 0h60M-21-21l42 42M21-21l-42 42" /></g> : <g fill="none" stroke="#1d2a16" strokeWidth="3" transform={`translate(${x} 980) scale(.8)`}><path d="M-25-31h42l9 9v52h-51zM17-31v10h9M-14-9h22M-14 3h22M-14 15h15" /><circle cx="15" cy="18" r="8" fill="#f5f1e2" /></g>) : <g fill="none" stroke="#1d2a16" strokeWidth="3" transform={`translate(${x} 980) scale(.8)`}><rect x="-18" y="-5" width="36" height="27" /><path d={`M-22-13h44v11h-44zm22 0v40m0-40c-15 0-17-15-8-15 7 0 11 15 8 15m0 0c15 0 17-15 8-15-7 0-11 15-8 15`} /></g>}
+                        <text x={x} y="1062" textAnchor="middle" fontSize="17" fontWeight="700" letterSpacing="1.5" fill="#1d2a16">{index === 0 ? "1. SCANNEZ" : index === 1 ? "2. JOUEZ" : "3. GAGNEZ"}</text>
+                      </g>)}
                     </g>
                   </svg>
                 ) : visualTemplate.id === "botanical-wheel" ? (
@@ -248,7 +381,7 @@ export function PosterTemplateSelector({
                 <div className="border-t border-[#e6d8eb] px-4 pb-4 pt-3">
                   <p className="text-xs font-semibold uppercase tracking-[0.16em] text-charcoal">Motif du fond</p>
                   <div className="mt-2 grid gap-2" role="group" aria-label="Motif du fond">
-                    {POSTER_BACKGROUND_MOTIFS.map((motif) => {
+                    {POSTER_BACKGROUND_MOTIFS.filter((motif) => motif.id === "soft-gradient").map((motif) => {
                       const motifActive = selectedBackgroundMotif === motif.id;
                       return (
                         <button
