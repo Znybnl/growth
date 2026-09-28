@@ -4,7 +4,7 @@ import {
   defaultWheelSubtitleSpacingForTemplate,
   limitCampaignSubtitleLines,
 } from "@/lib/campaign-defaults";
-import { getPosterTemplate, PosterTemplateConfig } from "@/lib/poster-templates";
+import { getPosterLogoTopY, getPosterTemplate, PosterTemplateConfig } from "@/lib/poster-templates";
 import { getPosterFontAsset, getPosterSubtitleFont } from "@/lib/poster-fonts";
 import { Campaign, CampaignPosterSettings, Prize, TextFont } from "@/lib/types";
 
@@ -301,11 +301,9 @@ function renderBackground(
   `;
 }
 
-function getLogoLayout(poster: CampaignPosterSettings, template: PosterTemplateConfig) {
+function getLogoLayout(poster: CampaignPosterSettings) {
   const logoSize = clamp((poster.logoSizePercent / 100) * 170, 72, 300);
-  const logoY = poster.logoMode === "text"
-    ? template.logoTextY ?? template.logoY ?? (template.id === "classic-wheel" ? 28 : 22)
-    : template.logoY ?? (template.id === "classic-wheel" ? 28 : 22);
+  const logoY = getPosterLogoTopY(poster.logoMode);
 
   return {
     logoSize,
@@ -336,7 +334,7 @@ function renderLogo(campaign: Campaign, poster: CampaignPosterSettings, template
   const logoUrl = logoMode === "image" ? poster.logoUrl || campaign.logoUrl : undefined;
   const logoText =
     logoMode === "text" ? (poster.logoText ?? campaign.logoText ?? "").trim() : "";
-  const { logoSize, logoY } = getLogoLayout(poster, template);
+  const { logoSize, logoY } = getLogoLayout(poster);
   const logoX = template.logoX ?? A4_WIDTH / 2;
 
   if (logoMode === "image" && logoUrl) {
@@ -421,7 +419,7 @@ function getStandardHeadlineLayout(
   const headlineMaxWidth = template.headlineMaxWidth ?? POSTER_HEADLINE_MAX_WIDTH;
   const lines = splitHeadlineLines(headline.toUpperCase(), size, headlineMaxWidth);
   const logoAwareHeadlineY = template.headlineY + (poster.logoBottomMarginPx - 28);
-  const firstLineY = Math.max(logoAwareHeadlineY, getLogoLayout(poster, template).bottomY + size * 0.15);
+  const firstLineY = Math.max(logoAwareHeadlineY, getLogoLayout(poster).bottomY + size * 0.15);
   const lineHeight = size * (template.id === "classic-wheel" ? 1.02 : 1.08);
   const visualBottom = Math.min(
     A4_HEIGHT,
@@ -577,7 +575,7 @@ export function getPremiumHeadlineLayout(headline: string, poster: CampaignPoste
     const width = template.headlineTextAnchor === "middle"
       ? Math.min(template.headlineMaxWidth ?? 700, 2 * Math.min(x, A4_WIDTH - x) - 40)
       : Math.min(template.headlineMaxWidth ?? 466, A4_WIDTH - x - 40);
-    const logo = getLogoLayout(poster, template);
+    const logo = getLogoLayout(poster);
     const logoFontSize = clamp(logo.logoSize * 0.2 * (template.logoFontSizeMultiplier ?? 1), 18, 51);
     const logoBottom = poster.logoMode === "image"
       ? logo.logoY + logo.logoSize

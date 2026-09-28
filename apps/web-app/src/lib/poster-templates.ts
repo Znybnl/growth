@@ -43,8 +43,6 @@ export type PosterTemplateConfig = {
   headlineItalic?: boolean;
   headlineFontFamily?: TextFont;
   logoX?: number;
-  logoY?: number;
-  logoTextY?: number;
   logoFontWeight?: number;
   logoFontSizeMultiplier?: number;
   logoLetterSpacing?: number;
@@ -93,6 +91,13 @@ export type PosterTemplateConfig = {
   backgroundOnly?: boolean;
   wheel: CampaignPosterSettings["wheel"];
 };
+
+export const POSTER_LOGO_TEXT_TOP_PX = 30;
+export const POSTER_LOGO_IMAGE_TOP_PX = 36;
+
+export function getPosterLogoTopY(logoMode: CampaignPosterSettings["logoMode"]) {
+  return logoMode === "text" ? POSTER_LOGO_TEXT_TOP_PX : POSTER_LOGO_IMAGE_TOP_PX;
+}
 
 export const POSTER_BACKGROUND_MOTIFS: Array<{
   id: PosterBackgroundMotif;
@@ -195,8 +200,6 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     headlineY: 208,
     headlineSizeMultiplier: 1.52,
     headlineItalic: false,
-    logoY: 26,
-    logoTextY: -24,
     logoFontWeight: 600,
     logoUnderlineWidth: 54,
     logoUnderlineColor: "#403c70",
@@ -286,8 +289,6 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     headlineItalic: false,
     headlineFontFamily: "cormorant",
     logoX: 516,
-    logoY: 12,
-    logoTextY: 6,
     logoFontWeight: 500,
     logoLetterSpacing: 5,
     inlineQrCta: true,
@@ -336,7 +337,6 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     headlineItalic: false,
     headlineFontFamily: "cormorant",
     logoX: 72,
-    logoY: 34,
     logoFontWeight: 500,
     logoLetterSpacing: 5,
     logoFontFamily: "syncopate",
@@ -408,8 +408,7 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     headlineFontFamily: "cormorant",
     headlineTextAnchor: "middle",
     headlineStretchToWidth: true,
-    logoX: 397,
-    logoY: 52,
+    logoX: 443,
     logoFontWeight: 500,
     logoFontSizeMultiplier: 1.55,
     logoTextMaxCharactersPerLine: 22,
@@ -430,7 +429,7 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     supportingTextLineHeight: 40,
     supportingTextColor: "#1d2a16",
     supportingTextAnchor: "middle",
-    medallionFill: "#AAB590",
+    medallionFill: "#D3DCC5",
     footerVariant: "botanical-editorial",
     backdropAsset: "botanical-editorial-poster-backdrop.webp",
     backgroundOnly: true,
@@ -479,7 +478,6 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     headlineItalic: false,
     headlineFontFamily: "cormorant",
     logoX: 397,
-    logoY: 40,
     logoFontWeight: 500,
     logoFontSizeMultiplier: 1.65,
     logoLetterSpacing: 0,
@@ -543,7 +541,6 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     headlineFontFamily: "cormorant",
     headlineTextAnchor: "middle",
     logoX: 397,
-    logoY: 40,
     logoFontWeight: 400,
     logoFontSizeMultiplier: 1.9,
     logoLetterSpacing: 0,

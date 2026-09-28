@@ -1,12 +1,13 @@
 import { expect, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { signIn } from "./auth-session";
-import { getPosterTemplate } from "../src/lib/poster-templates";
+import { getPosterLogoTopY, getPosterTemplate } from "../src/lib/poster-templates";
 
-test("Élégance réduit le retrait du logo texte sans déplacer le logo image", async ({ page }, testInfo) => {
+test("Élégance conserve les positions verticales communes du logo", async ({ page }, testInfo) => {
   const eleganceTemplate = getPosterTemplate("premium-wheel");
-  expect(eleganceTemplate.logoTextY).toBe(6);
-  expect(eleganceTemplate.logoY).toBe(12);
+  expect(getPosterLogoTopY("text")).toBe(30);
+  expect(getPosterLogoTopY("image")).toBe(36);
+  expect("logoY" in eleganceTemplate || "logoTextY" in eleganceTemplate).toBe(false);
 
   test.setTimeout(180_000);
   page.setDefaultTimeout(20_000);
