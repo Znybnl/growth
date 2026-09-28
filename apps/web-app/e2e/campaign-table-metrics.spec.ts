@@ -26,7 +26,7 @@ test.describe("Indicateurs du tableau des campagnes", () => {
     await expect(desktopTable.getByText("Participations", { exact: true })).toBeVisible();
     await expect(desktopTable.getByText("Gagnants", { exact: true })).toBeVisible();
     await expect(desktopTable.getByText("Lots utilisés", { exact: true })).toBeVisible();
-    await expect(desktopTable.getByText("Taux de consommation", { exact: true })).toBeVisible();
+    await expect(desktopTable.locator(".okado-table-header")).toContainText("Taux de consommation");
     await expect(page.getByText(/Les lots utilisés et leur taux sont calculés sur le stock quantifié/)).toHaveCount(0);
     const desktopHelp = desktopTable.getByRole("button", { name: "À propos du taux de consommation" });
     await desktopHelp.focus();
