@@ -112,8 +112,8 @@ function GradientClairThumbnail({ qrDataUrl }: { qrDataUrl?: string | null }) {
       <g data-testid="gradient-clair-thumbnail-qr">
         <rect x="480.85" y="510.85" width="256.5" height="294.5" rx="24.7" fill="white" stroke="#2100b8" strokeWidth="2.5" />
         {qrDataUrl ? <image data-testid="gradient-clair-thumbnail-qr-image" href={qrDataUrl} x="498.85" y="528.85" width="222.3" height="222.3" /> : <QrCode data-testid="gradient-clair-thumbnail-qr-image" x="498.85" y="528.85" width="222.3" height="222.3" color="#111" strokeWidth="1.5" />}
-        <rect x="433" y="831" width="354" height="64" rx="30" fill="#2100b8" stroke="white" strokeWidth="3" />
-        <text data-testid="gradient-clair-thumbnail-cta" x="610" y="871" textAnchor="middle" fontSize="21" fontWeight="800" fill="white">scannez pour jouer</text>
+        <rect x="440" y="831" width="340" height="64" rx="30" fill="#2100b8" stroke="white" strokeWidth="3" />
+        <text data-testid="gradient-clair-thumbnail-cta" x="610" y="871" textAnchor="middle" fontSize="22" fontWeight="800" fill="white">Scannez pour jouer</text>
       </g>
     </svg>
   );
@@ -271,7 +271,7 @@ export function PosterTemplateSelector({
                 <div className="border-t border-[#e6d8eb] px-4 pb-4 pt-3">
                   <p className="text-xs font-semibold uppercase tracking-[0.16em] text-charcoal">Motif du fond</p>
                   <div className="mt-2 grid gap-2" role="group" aria-label="Motif du fond">
-                    {POSTER_BACKGROUND_MOTIFS.map((motif) => {
+                    {POSTER_BACKGROUND_MOTIFS.filter((motif) => motif.id === "soft-gradient").map((motif) => {
                       const motifActive = selectedBackgroundMotif === motif.id;
                       return (
                         <button
