@@ -46,7 +46,9 @@ test.describe("Indicateurs du tableau des campagnes", () => {
     await expect(firstCampaign.getByText("Participations", { exact: true })).toBeVisible();
     await expect(firstCampaign.getByText("Gagnants", { exact: true })).toBeVisible();
     await expect(firstCampaign.getByText("Lots utilisés", { exact: true })).toBeVisible();
-    await expect(firstCampaign.getByText("Taux de consommation", { exact: true })).toBeVisible();
+    const mobileRate = firstCampaign.locator(".okado-mobile-table-stat").filter({ hasText: "Taux de consommation" });
+    await expect(mobileRate).toContainText("Taux de consommation");
+    await expect(mobileRate.getByRole("button", { name: "À propos du taux de consommation" })).toBeVisible();
     await expect
       .poll(() => firstCampaign.evaluate((element) => element.scrollWidth <= element.clientWidth))
       .toBe(true);
