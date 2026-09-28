@@ -25,6 +25,8 @@ Utiliser ces termes dans l'interface, les Issues, les critères d'acceptation, l
 | Stock disponible | Quantité de lots encore attribuable ou ajustée par le marchand. | Stock initial. | 37 réductions disponibles. |
 | Jeu 100 % gagnant | Règle imposant que la somme des probabilités des lots soit exactement de 100 %. | Une campagne avec un lot majoritaire. | Chaque participation reçoit un lot. |
 | Retrait | Remise effective d'un gain par le personnel du commerce. | Gain ou validation de participation. | « Valider un retrait ». |
+| Lot utilisé | Lot gagné dont le retrait a été effectivement confirmé. Sa mesure ne dépend pas du stock du lot. | Lot attribué mais pas encore retiré. | Un retrait confirmé compte aussi lorsque le lot est à stock illimité. |
+| Taux de consommation | Nombre de lots utilisés divisé par le nombre de lots gagnés, multiplié par 100 ; vaut 0 % en l'absence de gain. | Quantité de stock initial consommée. | 2 lots utilisés sur 4 gagnés = 50 %. |
 | Code de retrait | Code unique associé à un gain, utilisable par le personnel pour ouvrir sa page de validation. | PIN marchand. | `OKA-XXXXXX`. |
 | QR code de retrait | QR code présenté par le joueur au personnel pour ouvrir la page de validation du gain. | QR code de diffusion. | QR inclus dans l'e-mail de gain. |
 | PIN marchand | Code secret du commerce utilisé pour confirmer un retrait. | Code de retrait du joueur. | `0000` par défaut tant qu'il n'est pas personnalisé. |
