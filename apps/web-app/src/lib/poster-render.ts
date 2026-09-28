@@ -281,7 +281,9 @@ function renderBackground(
 
 function getLogoLayout(poster: CampaignPosterSettings, template: PosterTemplateConfig) {
   const logoSize = clamp((poster.logoSizePercent / 100) * 170, 72, 300);
-  const logoY = template.logoY ?? (template.id === "classic-wheel" ? 28 : 22);
+  const logoY = poster.logoMode === "text"
+    ? template.logoTextY ?? template.logoY ?? (template.id === "classic-wheel" ? 28 : 22)
+    : template.logoY ?? (template.id === "classic-wheel" ? 28 : 22);
 
   return {
     logoSize,
