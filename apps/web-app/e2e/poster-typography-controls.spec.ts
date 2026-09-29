@@ -52,6 +52,9 @@ test("les contrôles typographiques de l’affiche sont ordonnés et s’adapten
     });
 
     await page.setViewportSize({ width: 390, height: 844 });
+    await page.reload();
+    await expect(font).toBeVisible();
+    await expect(size).toBeVisible();
     const mobileFontField = await fontField.boundingBox();
     const mobileSizeField = await sizeField.boundingBox();
     expect(mobileFontField).not.toBeNull();
