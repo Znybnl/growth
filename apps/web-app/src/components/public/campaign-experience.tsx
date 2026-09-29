@@ -1209,7 +1209,7 @@ export function CampaignExperience({
             disabled={isLoading}
             className={
               actionVisited
-                ? "w-full rounded-[20px] border-0 bg-[#111827] px-5 py-4 text-lg font-semibold leading-7 text-white shadow-[0_12px_24px_rgba(17,24,39,0.16)] disabled:opacity-60"
+                ? "w-full rounded-[20px] border-0 bg-[#111827] px-5 py-4 text-xl font-semibold leading-7 text-white shadow-[0_12px_24px_rgba(17,24,39,0.16)] disabled:opacity-60"
                 : !currentAction
                   ? "w-full rounded-[20px] border-0 bg-[#111827] px-5 py-4 text-xl font-semibold text-white shadow-[0_12px_24px_rgba(17,24,39,0.16)] disabled:opacity-60"
                   : "w-full rounded-[12px] border-0 bg-transparent px-3 py-2 text-sm font-medium text-[#61687a] underline decoration-[#c4c9d4] underline-offset-4 transition hover:text-[#111827] disabled:opacity-60"
@@ -1243,7 +1243,7 @@ export function CampaignExperience({
               </>
             : "Merci pour votre participation"}
         </h2>
-        <div className="mt-5 rounded-[22px] bg-[#f6f7fb] px-5 py-4 text-base leading-7 text-[#475067]">
+        <div className="mt-5 rounded-[22px] bg-[#f6f7fb] px-5 py-4 text-base leading-6 text-[#475067]">
           {isPreGameLeadCapture
             ? "Saisissez vos coordonnées et acceptez le consentement pour participer au jeu."
             : previewResult?.prize
@@ -1279,7 +1279,7 @@ export function CampaignExperience({
           />
           <label
             htmlFor="marketing-consent"
-            className="flex cursor-pointer items-start gap-3 rounded-[18px] bg-[#f6f7fb] px-4 py-3 text-left text-sm leading-6 text-[#475067]"
+            className="flex cursor-pointer items-start gap-3 rounded-[18px] bg-[#f6f7fb] px-4 py-3 text-left text-sm leading-5 text-[#475067]"
           >
             <input
               id="marketing-consent"
@@ -1326,7 +1326,7 @@ export function CampaignExperience({
           <span className="mt-2 block">Vous avez remporté</span>
           <span className="mt-2 block">« {drawResult?.prize?.label} »</span>
         </h2>
-        <p className="mt-5 rounded-[22px] bg-[#f6f7fb] px-5 py-4 text-center text-base leading-7 text-[#475067]">
+        <p className="mt-5 rounded-[22px] bg-[#f6f7fb] px-5 py-4 text-center text-base leading-6 text-[#475067]">
           Votre gain est confirmé. Cliquez sur suivant pour afficher les informations de retrait.
         </p>
         <button
