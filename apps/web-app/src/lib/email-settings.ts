@@ -146,27 +146,25 @@ export function renderEmailTemplate(template: string, variables: RewardEmailVari
 
 export function createCampaignEmailDefaults(merchant: Merchant): CampaignEmailSettings {
   return {
-    ...createCampaignEmailDefaultsForMerchantName(
-      merchant.companyName,
+    ...createCampaignEmailDefaultsForBusinessNoun(
       isRestaurantIndustry(merchant.industry) ? "restaurant" : "commerce",
     ),
     replyTo: merchant.restaurantEmail ?? "",
   };
 }
 
-function createCampaignEmailDefaultsForMerchantName(
-  companyName: string,
+function createCampaignEmailDefaultsForBusinessNoun(
   businessNoun = "commerce",
 ): CampaignEmailSettings {
   return {
-    senderName: companyName,
+    senderName: "{{merchantName}}",
     replyTo: "",
     subject: "{{merchantName}} · récupérez votre lot",
     preheader: `Conservez ce QR code pour retirer votre cadeau au ${businessNoun}.`,
     headline: "Récupérez votre lot, {{firstName}}",
     body: [
       "Vous avez gagné le lot {{prizeLabel}} chez {{merchantName}} le {{rewardDate}}.",
-      "Ce coupon sera valable lors de votre prochaine visite. Rendez-vous sur place demain et montrez le QR code ci-dessous au personnel de l'établissement pour récupérer votre cadeau.",
+      "Ce coupon sera valable lors de votre prochaine visite. Rendez-vous sur place à partir de demain et montrez le QR code ci-dessous au personnel de l'établissement pour récupérer votre cadeau.",
       "{{rewardAvailability}}",
       "{{rewardExpiry}}",
       "{{purchaseCondition}}",
@@ -181,9 +179,8 @@ function createCampaignEmailDefaultsForMerchantName(
 
 export function upgradeLegacyRewardEmailSettings(
   settings: CampaignEmailSettings,
-  merchantName: string,
 ): CampaignEmailSettings {
-  const defaults = createCampaignEmailDefaultsForMerchantName(merchantName);
+  const defaults = createCampaignEmailDefaultsForBusinessNoun();
   const legacyReadySubject = `votre lot est pr${String.fromCharCode(195, 170)}t`;
   const legacyReadyHeadline = `Votre lot est pr${String.fromCharCode(195, 170)}t`;
   const hasLegacyBody =
