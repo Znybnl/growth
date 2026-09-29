@@ -44,7 +44,6 @@ export type PosterTemplateConfig = {
   headlineFontFamily?: TextFont;
   logoX?: number;
   logoFontWeight?: number;
-  logoFontSizeMultiplier?: number;
   logoLetterSpacing?: number;
   logoFontFamily?: TextFont;
   logoTextAnchor?: "start" | "middle";
@@ -92,11 +91,19 @@ export type PosterTemplateConfig = {
   wheel: CampaignPosterSettings["wheel"];
 };
 
-export const POSTER_LOGO_TEXT_TOP_PX = 30;
-export const POSTER_LOGO_IMAGE_TOP_PX = 36;
+export const POSTER_LOGO_TEXT_TOP_PX = 24;
+export const POSTER_LOGO_IMAGE_TOP_PX = 32;
+export const POSTER_LOGO_TEXT_SCALE = 0.17;
+export const POSTER_LOGO_TEXT_MIN_SIZE_PX = 18;
+export const POSTER_LOGO_TEXT_MAX_SIZE_PX = 51;
 
 export function getPosterLogoTopY(logoMode: CampaignPosterSettings["logoMode"]) {
   return logoMode === "text" ? POSTER_LOGO_TEXT_TOP_PX : POSTER_LOGO_IMAGE_TOP_PX;
+}
+
+export function getPosterLogoTextFontSizePx(logoBoxSizePx: number) {
+  const scaledSize = Math.max(POSTER_LOGO_TEXT_MIN_SIZE_PX, logoBoxSizePx * POSTER_LOGO_TEXT_SCALE);
+  return Math.round(Math.min(POSTER_LOGO_TEXT_MAX_SIZE_PX, scaledSize) * 10) / 10;
 }
 
 export const POSTER_BACKGROUND_MOTIFS: Array<{
@@ -410,7 +417,6 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     headlineStretchToWidth: true,
     logoX: 443,
     logoFontWeight: 500,
-    logoFontSizeMultiplier: 1.55,
     logoTextMaxCharactersPerLine: 22,
     logoLetterSpacing: 2,
     logoFontFamily: "cormorant",
@@ -479,7 +485,6 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     headlineFontFamily: "cormorant",
     logoX: 397,
     logoFontWeight: 500,
-    logoFontSizeMultiplier: 1.65,
     logoLetterSpacing: 0,
     logoFontFamily: "cormorant",
     logoTextAnchor: "middle",
@@ -542,7 +547,6 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     headlineTextAnchor: "middle",
     logoX: 397,
     logoFontWeight: 400,
-    logoFontSizeMultiplier: 1.9,
     logoLetterSpacing: 0,
     logoFontFamily: "cormorant",
     logoTextAnchor: "middle",

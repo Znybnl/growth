@@ -1,15 +1,17 @@
 import { expect, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { signIn } from "./auth-session";
-import { getPosterLogoTopY, POSTER_TEMPLATES, getPosterTemplate } from "../src/lib/poster-templates";
+import { getPosterLogoTextFontSizePx, getPosterLogoTopY, POSTER_TEMPLATES, getPosterTemplate } from "../src/lib/poster-templates";
 
 test("tous les templates d'affiche utilisent le même alignement vertical des logos", () => {
   const botanicalTemplate = getPosterTemplate("botanical-editorial-poster");
   expect(botanicalTemplate.logoX).toBe(botanicalTemplate.headlineX);
   expect(botanicalTemplate.medallionFill).toBe("#D3DCC5");
-  expect(POSTER_TEMPLATES.every((template) => !("logoY" in template) && !("logoTextY" in template))).toBe(true);
-  expect(getPosterLogoTopY("text")).toBe(30);
-  expect(getPosterLogoTopY("image")).toBe(36);
+  expect(POSTER_TEMPLATES.every((template) => !("logoY" in template) && !("logoTextY" in template) && !("logoFontSizeMultiplier" in template))).toBe(true);
+  expect(getPosterLogoTopY("text")).toBe(24);
+  expect(getPosterLogoTopY("image")).toBe(32);
+  expect(getPosterLogoTextFontSizePx(170)).toBe(28.9);
+  expect(getPosterLogoTextFontSizePx(119)).toBe(20.2);
 });
 
 test("Botanique éditorial utilise le logo marchand et exporte le même rendu que l’aperçu", async ({ page }, testInfo) => {

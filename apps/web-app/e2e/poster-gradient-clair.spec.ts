@@ -1,15 +1,16 @@
 import { expect, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { signIn } from "./auth-session";
-import { getPosterLogoTopY, getPosterTemplate } from "../src/lib/poster-templates";
+import { getPosterLogoTextFontSizePx, getPosterLogoTopY, getPosterTemplate } from "../src/lib/poster-templates";
 import { buildClassicPosterThumbnailSvg } from "../src/lib/poster-render";
 
 test("Gradient clair est la première variante de Classique et garde le même aperçu que le PNG", async ({ page }, testInfo) => {
   const gradientTemplate = getPosterTemplate("classic-wheel", "soft-gradient");
   expect(gradientTemplate.wheelRadius).toBe(247);
   expect(gradientTemplate.qrSize).toBe(277.4);
-  expect(getPosterLogoTopY("text")).toBe(30);
-  expect(getPosterLogoTopY("image")).toBe(36);
+  expect(getPosterLogoTopY("text")).toBe(24);
+  expect(getPosterLogoTopY("image")).toBe(32);
+  expect(getPosterLogoTextFontSizePx(170)).toBe(28.9);
   expect("logoY" in gradientTemplate || "logoTextY" in gradientTemplate).toBe(false);
   expect(gradientTemplate.ctaWidth).toBe(390);
   expect(getPosterTemplate("classic-wheel", "terracotta").id).toBe("terracotta-wheel");

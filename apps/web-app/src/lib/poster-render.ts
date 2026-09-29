@@ -4,7 +4,7 @@ import {
   defaultWheelSubtitleSpacingForTemplate,
   limitCampaignSubtitleLines,
 } from "@/lib/campaign-defaults";
-import { getPosterLogoTopY, getPosterTemplate, PosterTemplateConfig } from "@/lib/poster-templates";
+import { getPosterLogoTextFontSizePx, getPosterLogoTopY, getPosterTemplate, PosterTemplateConfig } from "@/lib/poster-templates";
 import { getPosterFontAsset, getPosterSubtitleFont } from "@/lib/poster-fonts";
 import { Campaign, CampaignPosterSettings, Prize, TextFont } from "@/lib/types";
 
@@ -352,7 +352,7 @@ function renderLogo(campaign: Campaign, poster: CampaignPosterSettings, template
   // Keep the merchant name visually secondary to the poster headline. The
   // 100% slider value represents the reference logo box, not a full-size
   // headline; use the same restrained text scale across poster templates.
-  const fontSize = clamp(logoSize * 0.2 * (template.logoFontSizeMultiplier ?? 1), 18, template.id === "ivory-editorial-wheel" ? 64 : 51);
+  const fontSize = getPosterLogoTextFontSizePx(logoSize);
   const centerY = logoY + logoSize / 2;
   const logoTextColor = template.colorsCustomizable === false
     ? template.headlineTextColor
@@ -576,7 +576,7 @@ export function getPremiumHeadlineLayout(headline: string, poster: CampaignPoste
       ? Math.min(template.headlineMaxWidth ?? 700, 2 * Math.min(x, A4_WIDTH - x) - 40)
       : Math.min(template.headlineMaxWidth ?? 466, A4_WIDTH - x - 40);
     const logo = getLogoLayout(poster);
-    const logoFontSize = clamp(logo.logoSize * 0.2 * (template.logoFontSizeMultiplier ?? 1), 18, 51);
+    const logoFontSize = getPosterLogoTextFontSizePx(logo.logoSize);
     const logoBottom = poster.logoMode === "image"
       ? logo.logoY + logo.logoSize
       : poster.logoMode === "text"
