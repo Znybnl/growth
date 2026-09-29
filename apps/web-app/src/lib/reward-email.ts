@@ -126,7 +126,11 @@ export async function sendRewardEmail(input: SendRewardEmailInput) {
     purchaseCondition: purchaseMessage,
     usageConditions: usageConditionsMessage,
   });
-  const emailSettings = upgradeLegacyRewardEmailSettings(input.emailSettings, input.merchantName);
+  const emailSettings = upgradeLegacyRewardEmailSettings(input.emailSettings);
+  const renderedSenderName = renderEmailTemplate(
+    emailSettings.senderName || "{{merchantName}}",
+    variables,
+  );
   const emailLogo = prepareEmailLogo(input.logoUrl, input.origin);
   const renderedSubject = renderEmailTemplate(emailSettings.subject, variables);
   const subject = input.preview
@@ -150,7 +154,7 @@ export async function sendRewardEmail(input: SendRewardEmailInput) {
 
   try {
     const result = await resend.emails.send({
-      from: formatSenderName(emailSettings.senderName || input.merchantName, from),
+      from: formatSenderName(renderedSenderName || input.merchantName, from),
       to: input.leadEmail,
       subject,
       replyTo: emailSettings.replyTo || undefined,

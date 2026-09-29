@@ -179,6 +179,10 @@ export function EmailEditor({ campaign, merchant }: EmailEditorProps) {
               <div className="text-xs uppercase tracking-[0.22em] text-[#94a3b8]">Objet</div>
               <div className="mt-2 text-base font-semibold text-[#111827]">{preview.subject}</div>
               <div className="mt-2 text-sm text-[#64748b]">{preview.preheader}</div>
+              <div className="mt-2 text-xs text-[#64748b]">
+                Expéditeur : {replaceVariables(email.senderName, campaign, merchant)}
+                {email.replyTo ? ` · Reply-to : ${email.replyTo}` : ""}
+              </div>
             </div>
 
             <div className="bg-[#f8fafc] px-4 py-6 sm:px-6 sm:py-8">
@@ -234,7 +238,6 @@ export function EmailEditor({ campaign, merchant }: EmailEditorProps) {
                   {preview.footer.map((block) => (
                     <p key={block}>{block}</p>
                   ))}
-                  {email.replyTo ? <p>Reply-to : {email.replyTo}</p> : null}
                 </div>
               </div>
             </div>
