@@ -534,7 +534,7 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     headlineMaxWidth: 642,
     subtitleMaxWidth: 642,
     headlineBlockBottom: 590,
-    headlineLogoGapPx: 82,
+    headlineLogoGapPx: 18,
     headlineFontWeight: 600,
     headlineLineHeightMultiplier: 1.0,
     headlineItalic: false,
