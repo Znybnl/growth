@@ -35,6 +35,14 @@ test("le template Éditorial ivoire reste centré et exporte le même rendu que 
     await expect(page.getByTestId("ivory-editorial-thumbnail-qr")).toBeAttached();
     await expect(page.getByTestId("ivory-editorial-thumbnail-headline")).toHaveAttribute("font-weight", "600");
     await expect(page.getByTestId("ivory-editorial-thumbnail-qr-label")).toHaveAttribute("font-weight", "600");
+    const logoMargin = page.getByLabel("Marge sous le logo");
+    await logoMargin.focus();
+    await logoMargin.press("Home");
+    await expect(page.locator('output').filter({ hasText: /^0 px$/ })).toBeVisible();
+    const previewFrame = page.getByTestId("poster-preview-frame");
+    await expect(previewFrame).toHaveAttribute("data-headline-top", /^\d+(?:\.\d+)?$/);
+    const headlineTop = Number(await previewFrame.getAttribute("data-headline-top"));
+    expect(headlineTop).toBeLessThan(240);
     await page.getByRole("button", { name: "Texte", exact: true }).click();
     await page.getByLabel("Texte affiché à la place du logo").fill("Logo marchand E2E");
 

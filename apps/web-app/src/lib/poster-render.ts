@@ -582,10 +582,14 @@ export function getPremiumHeadlineLayout(headline: string, poster: CampaignPoste
       : poster.logoMode === "text"
         ? logo.logoY + logo.logoSize / 2 + logoFontSize * 0.6 + (wrapPosterLogoText((poster.logoText ?? "").trim(), template.logoTextMaxCharactersPerLine).length - 1) * logoFontSize * 0.84
         : 0;
+    const logoUnderlineBottom = template.id === "ivory-editorial-wheel" && poster.logoMode === "text" && template.logoUnderlineWidth
+      ? logo.logoY + logo.logoSize / 2 + logoFontSize * 0.34 + (template.logoUnderlineGapPx ?? 30) + (template.logoUnderlineStrokeWidth ?? 3) / 2
+      : 0;
+    const visualLogoBottom = Math.max(logoBottom, logoUnderlineBottom);
     const logoMargin = poster.logoMode === "none" ? 0 : poster.logoBottomMarginPx;
     const top = template.headlineLogoGapPx !== undefined && poster.logoMode !== "none"
-      ? logoBottom + template.headlineLogoGapPx + logoMargin
-      : Math.max(template.headlineY ?? 150, logoBottom) + logoMargin;
+      ? visualLogoBottom + template.headlineLogoGapPx + logoMargin
+      : Math.max(template.headlineY ?? 150, visualLogoBottom) + logoMargin;
     const layoutBottom = Math.min(
       reservedBottom ?? Number.POSITIVE_INFINITY,
       template.headlineBlockBottom ?? (template.supportingTextY ? template.supportingTextY - 18 : 350),
