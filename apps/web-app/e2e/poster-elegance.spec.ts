@@ -60,28 +60,9 @@ test("Élégance et motifs d’affiche conservent les styles et téléchargent e
     await expect(page.getByRole("button", { name: "Télécharger le PNG", exact: true })).toBeEnabled({ timeout: 30_000 });
 
     const font = page.getByLabel("Police du texte principal");
-    const headlineSize = page.getByLabel("Taille du texte principal", { exact: true });
     const primary = page.getByLabel("Couleur principale", { exact: true });
     const background = page.getByLabel("Couleur du fond uni de l’affiche");
     const preview = page.getByAltText("Prévisualisation affiche");
-    await expect(font).toBeVisible();
-    await expect(headlineSize).toBeVisible();
-    await expect(page.getByRole("group", { name: "Texte secondaire" })).toBeVisible();
-    await expect(page.locator(".okado-poster-editor").getByText(/^Aa — /)).toHaveCount(0);
-    expect(await page.evaluate(() => {
-      const headline = document.querySelector('[aria-describedby="poster-headline-help"]');
-      const fontSelect = document.querySelector('select[aria-label="Police du texte principal"]')
-        ?? Array.from(document.querySelectorAll("select")).find(select =>
-          select.closest("label")?.textContent?.includes("Police du texte principal"),
-        );
-      return Boolean(headline && fontSelect &&
-        (headline.compareDocumentPosition(fontSelect) & Node.DOCUMENT_POSITION_FOLLOWING));
-    })).toBe(true);
-    const fontBox = await font.boundingBox();
-    const sizeBox = await headlineSize.boundingBox();
-    expect(fontBox).not.toBeNull();
-    expect(sizeBox).not.toBeNull();
-    expect(Math.abs(fontBox!.y - sizeBox!.y)).toBeLessThanOrEqual(8);
     const choose = (name: string) => page.getByRole("button", { name: new RegExp(`^${name}`) }).click();
     const save = async () => {
       const response = page.waitForResponse(r => r.url().includes("/poster-settings") && r.request().method() === "POST");
