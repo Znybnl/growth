@@ -997,38 +997,87 @@ export function PosterEditor({ campaign, prizes, settingsEndpoint, returnHref }:
               </p>
             </label>
 
-            <label className="text-sm md:col-span-2">
-              <span className="mb-2 block text-charcoal">Texte secondaire</span>
-              <span className="mb-3 flex items-start gap-3 rounded-[12px] border border-border bg-soft-white px-3 py-3">
-                <input
-                  type="checkbox"
-                  checked={Boolean(poster.posterSubtitleEnabled)}
-                  onChange={(event) => updatePoster({ posterSubtitleEnabled: event.target.checked })}
-                  aria-describedby="poster-secondary-display-help"
-                  className="mt-0.5 h-4 w-4 accent-aubergine"
-                />
-                <span>
-                  <span className="block font-medium text-charcoal">Afficher le texte secondaire sur l&apos;affiche</span>
-                  <span id="poster-secondary-display-help" className="mt-1 block text-xs leading-5 text-ash">
-                    Désactivé par défaut. Le texte saisi reste enregistré et peut être réactivé à tout moment.
-                  </span>
+            <div className="grid gap-4 md:col-span-2 md:grid-cols-2">
+              <label className="text-sm">
+                <span className="mb-2 block text-charcoal">Police du texte principal</span>
+                <select
+                  value={poster.headlineFontFamily}
+                  onChange={(event) =>
+                    updatePoster({ headlineFontFamily: event.target.value as CampaignPosterSettings["headlineFontFamily"] })
+                  }
+                  className="w-full rounded-[var(--okado-radius-control)] border border-border bg-soft-white px-4 py-3 outline-none transition focus:border-aubergine focus:bg-white"
+                >
+                  {POSTER_FONT_OPTIONS.map((font) => (
+                    <option key={font} value={font} className={textFontClass(font)}>
+                      {textFontLabel(font)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="text-sm">
+                <span className="mb-2 flex items-center justify-between gap-3 text-charcoal">
+                  <span>Taille du texte</span>
+                  <output className="font-semibold text-aubergine">
+                    {Math.round(poster.headlineFontSizePx)} px
+                  </output>
                 </span>
-              </span>
-              <textarea
-                rows={3}
-                maxLength={MAX_CAMPAIGN_SUBTITLE_LENGTH}
-                value={posterSubtitle}
-                onChange={(event) => setPosterSubtitle(limitCampaignSubtitleLines(event.target.value))}
-                aria-describedby="poster-secondary-text-help"
-                className="w-full rounded-[var(--okado-radius-control)] border border-border bg-soft-white px-4 py-3 outline-none transition focus:border-aubergine focus:bg-white"
-              />
-              <p id="poster-secondary-text-help" className="mt-2 text-xs leading-5 text-ash">
-                Affiché entre le texte principal et le visuel lorsque l&apos;option est activée. Un texte vide masque également ce bloc.
-              </p>
-              <p className="mt-1 text-xs text-ash">
-                {posterSubtitle.length}/{MAX_CAMPAIGN_SUBTITLE_LENGTH} caractères · 3 lignes maximum.
-              </p>
-            </label>
+                <input
+                  type="range"
+                  min={24}
+                  max={84}
+                  step={1}
+                  value={poster.headlineFontSizePx}
+                  onChange={(event) =>
+                    updatePoster({ headlineFontSizePx: Number(event.target.value) })
+                  }
+                  className="w-full cursor-pointer accent-aubergine"
+                  aria-label="Taille du texte principal"
+                  aria-describedby={premiumHeadlineLayout?.adjusted ? "poster-headline-fit" : undefined}
+                />
+                {premiumHeadlineLayout?.adjusted ? <span id="poster-headline-fit" role="status" className="mt-2 block text-xs text-charcoal">
+                  Taille ajustée à {Math.round(premiumHeadlineLayout.size / getPosterTemplate(poster.templateId, poster.backgroundMotif).headlineSizeMultiplier)} px pour conserver le titre dans l’affiche. Raccourcissez le texte pour l’agrandir davantage.
+                </span> : null}
+              </label>
+            </div>
+
+            <fieldset className="md:col-span-2 rounded-[var(--okado-radius-card)] border border-border p-4">
+              <legend className="px-1 text-sm font-semibold text-charcoal">Texte secondaire</legend>
+              <div className="space-y-4">
+                <label className="flex items-start gap-3 rounded-[12px] border border-border bg-soft-white px-3 py-3 text-sm">
+                  <input
+                    type="checkbox"
+                    checked={Boolean(poster.posterSubtitleEnabled)}
+                    onChange={(event) => updatePoster({ posterSubtitleEnabled: event.target.checked })}
+                    aria-describedby="poster-secondary-display-help"
+                    className="mt-0.5 h-4 w-4 accent-aubergine"
+                  />
+                  <span>
+                    <span className="block font-medium text-charcoal">Afficher le texte secondaire sur l&apos;affiche</span>
+                    <span id="poster-secondary-display-help" className="mt-1 block text-xs leading-5 text-ash">
+                      Désactivé par défaut. Le texte saisi reste enregistré et peut être réactivé à tout moment.
+                    </span>
+                  </span>
+                </label>
+                <label className="block text-sm">
+                  <span className="mb-2 block text-charcoal">Texte secondaire</span>
+                  <textarea
+                    rows={3}
+                    maxLength={MAX_CAMPAIGN_SUBTITLE_LENGTH}
+                    value={posterSubtitle}
+                    onChange={(event) => setPosterSubtitle(limitCampaignSubtitleLines(event.target.value))}
+                    aria-describedby="poster-secondary-text-help"
+                    className="w-full rounded-[var(--okado-radius-control)] border border-border bg-soft-white px-4 py-3 outline-none transition focus:border-aubergine focus:bg-white"
+                  />
+                  <span id="poster-secondary-text-help" className="mt-2 block text-xs leading-5 text-ash">
+                    Affiché entre le texte principal et le visuel lorsque l&apos;option est activée. Un texte vide masque également ce bloc.
+                  </span>
+                  <span className="mt-1 block text-xs text-ash">
+                    {posterSubtitle.length}/{MAX_CAMPAIGN_SUBTITLE_LENGTH} caractères · 3 lignes maximum.
+                  </span>
+                </label>
+              </div>
+            </fieldset>
 
             {getPosterTemplate(poster.templateId, poster.backgroundMotif).colorsCustomizable !== false ? (
               <label className="text-sm">
@@ -1041,51 +1090,6 @@ export function PosterEditor({ campaign, prizes, settingsEndpoint, returnHref }:
                 />
               </label>
             ) : null}
-
-            <label className="text-sm">
-              <span className="mb-2 flex items-center justify-between gap-3 text-charcoal">
-                <span>Taille du texte</span>
-                <output className="font-semibold text-aubergine">
-                  {Math.round(poster.headlineFontSizePx)} px
-                </output>
-              </span>
-              <input
-                type="range"
-                min={24}
-                max={84}
-                step={1}
-                value={poster.headlineFontSizePx}
-                onChange={(event) =>
-                  updatePoster({ headlineFontSizePx: Number(event.target.value) })
-                }
-                className="w-full cursor-pointer accent-aubergine"
-                aria-label="Taille du texte principal"
-                aria-describedby={premiumHeadlineLayout?.adjusted ? "poster-headline-fit" : undefined}
-              />
-              {premiumHeadlineLayout?.adjusted ? <span id="poster-headline-fit" role="status" className="mt-2 block text-xs text-charcoal">
-                Taille ajustée à {Math.round(premiumHeadlineLayout.size / getPosterTemplate(poster.templateId, poster.backgroundMotif).headlineSizeMultiplier)} px pour conserver le titre dans l’affiche. Raccourcissez le texte pour l’agrandir davantage.
-              </span> : null}
-            </label>
-
-            <label className="text-sm md:col-span-2">
-              <span className="mb-2 block text-charcoal">Police du texte principal</span>
-              <select
-                value={poster.headlineFontFamily}
-                onChange={(event) =>
-                  updatePoster({ headlineFontFamily: event.target.value as CampaignPosterSettings["headlineFontFamily"] })
-                }
-                className="w-full rounded-[var(--okado-radius-control)] border border-border bg-soft-white px-4 py-3 outline-none transition focus:border-aubergine focus:bg-white"
-              >
-                {POSTER_FONT_OPTIONS.map((font) => (
-                  <option key={font} value={font} className={textFontClass(font)}>
-                    {textFontLabel(font)}
-                  </option>
-                ))}
-              </select>
-              <span className={`mt-3 block text-lg font-semibold ${textFontClass(poster.headlineFontFamily)}`}>
-                Aa — {textFontLabel(poster.headlineFontFamily)}
-              </span>
-            </label>
 
           </div>
         </section>
