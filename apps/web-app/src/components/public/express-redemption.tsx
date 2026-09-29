@@ -4,6 +4,7 @@ import { Check, ChevronRight, CircleAlert, LockKeyhole, ShieldCheck } from "luci
 import { useRef, useState } from "react";
 
 import { CashierRedemptionContext, PublicRedemptionContext } from "@/lib/types";
+import { redeemedStatusLabel } from "@/lib/redemption-status-label";
 
 type ExpressRedemptionProps = {
   code: string;
@@ -17,10 +18,10 @@ function formatDateTime(value?: string) {
   return new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium", timeStyle: "short" }).format(new Date(value));
 }
 
-function statusContent(status: CashierRedemptionContext["status"]) {
+function statusContent(status: CashierRedemptionContext["status"], redeemedAt?: string) {
   switch (status) {
     case "redeemed":
-      return { label: "Lot déjà retiré", tone: "border-[#f2c8c8] bg-[#fff5f5] text-[#8f1d1d]" };
+      return { label: redeemedStatusLabel(redeemedAt), tone: "border-[#f2c8c8] bg-[#fff5f5] text-[#8f1d1d]" };
     case "expired":
       return { label: "Lot expiré", tone: "border-[#f0dfaa] bg-[#fff9e8] text-[#74570b]" };
     case "not_available":
@@ -42,7 +43,7 @@ export function ExpressRedemption({ code, context: initialContext }: ExpressRede
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const status = statusContent(context.status);
+  const status = statusContent(context.status, context.redeemedAt);
   const isAvailable = context.status === "available";
   const canForce = context.status === "expired" || context.status === "not_available";
 
