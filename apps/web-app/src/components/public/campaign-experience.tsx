@@ -50,10 +50,10 @@ import {
 import { buildWheelVisualSegments } from "@/lib/wheel-segments";
 import {
   CreateDrawSessionResult,
-  DrawResult,
   DrawSession,
   FinalizeDrawSessionRequest,
   PublicCampaign,
+  PublicDrawResult,
 } from "@/lib/types";
 
 type CampaignExperienceProps = {
@@ -463,8 +463,8 @@ export function CampaignExperience({
   );
   const [drawSession, setDrawSession] = useState<DrawSession | null>(null);
   const [previewToken, setPreviewToken] = useState<string | null>(initialPreviewToken ?? null);
-  const [previewResult, setPreviewResult] = useState<CreateDrawSessionResult | null>(null);
-  const [drawResult, setDrawResult] = useState<DrawResult | null>(null);
+  const [previewResult, setPreviewResult] = useState<Pick<CreateDrawSessionResult, "prize"> | null>(null);
+  const [drawResult, setDrawResult] = useState<PublicDrawResult | null>(null);
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
   const [marketingConsent, setMarketingConsent] = useState(false);
@@ -578,8 +578,13 @@ export function CampaignExperience({
         return;
       }
 
-      const payload = (await response.json()) as { campaign: PublicCampaign };
-      setCampaign(payload.campaign);
+      const payload = (await response.json()) as {
+        campaign: Pick<PublicCampaign, "actions">;
+      };
+      setCampaign((currentCampaign) => ({
+        ...currentCampaign,
+        actions: payload.campaign.actions,
+      }));
     }
 
     void loadCampaign();
@@ -663,10 +668,9 @@ export function CampaignExperience({
         throw new Error(payload?.error ?? "Impossible de préparer la partie.");
       }
 
-      const payload = (await response.json()) as CreateDrawSessionResult;
-      setPreviewResult(payload);
+      const payload = (await response.json()) as Omit<CreateDrawSessionResult, "campaign">;
+      setPreviewResult({ prize: payload.prize });
       setDrawSession(payload.session);
-      setCampaign(payload.campaign);
       setStage(nextStage);
     } catch (sessionError) {
       setError(
@@ -746,9 +750,12 @@ export function CampaignExperience({
         throw new Error(failure?.error ?? "Impossible d’enregistrer vos coordonnées.");
       }
 
-      const result = (await response.json()) as DrawResult;
+      const result = (await response.json()) as PublicDrawResult;
       setDrawResult(result);
-      setCampaign(result.campaign);
+      setCampaign((currentCampaign) => ({
+        ...currentCampaign,
+        actions: result.campaign.actions,
+      }));
       setStage(result.prize ? "won" : "success");
     } catch (submitError) {
       setError(

@@ -21,6 +21,7 @@ import {
   redeemSupabaseCashierLeadPrize,
   redeemSupabasePreviewParticipation,
   getSupabasePublicCampaign,
+  toPublicCampaignFromPerformance,
   createPublicCampaignIdentity,
   deleteCampaignInSupabase,
   duplicateCampaignInSupabase,
@@ -36,6 +37,7 @@ import {
   updateCampaignPosterSettingsInSupabase,
   updateCampaignSetupInSupabase,
 } from "@/lib/campaign-repository";
+import { toPublicCampaignPresentation } from "@/lib/public-campaign";
 import {
   authenticateMerchantInSupabase,
   createMerchantAccountInSupabase,
@@ -52,7 +54,7 @@ import {
 } from "@/lib/merchant-account-repository";
 import { assertDataBackendAvailable } from "@/lib/supabase";
 import { assertCampaignCanPublish } from "@/lib/campaign-compliance";
-import { getMemorySupportLogs } from "@/lib/support-log";
+import { getMemorySupportLogs, logSupportEvent } from "@/lib/support-log";
 import {
   createPosterSettingsDefaults,
   normalizePosterSettings,
@@ -87,7 +89,6 @@ import {
   CreateDrawSessionResult,
   DrawSession,
   DrawRequest,
-  DrawResult,
   DrawResultWithEmailContext,
   FinalizeDrawSessionRequest,
   Lead,
@@ -105,6 +106,7 @@ import {
   MerchantUser,
   Prize,
   PublicCampaign,
+  PublicDrawResult,
   PublicRedemptionContext,
 } from "@/lib/types";
 import { createCampaignEmailDefaults, normalizeCampaignEmailSettings } from "@/lib/email-settings";
@@ -813,7 +815,7 @@ function toPublicCampaign(campaign: Campaign, actions = campaign.actions): Publi
       probability: prize.probability,
       purchaseRequired: prize.purchaseRequired,
     })),
-    presentation: campaign.presentation,
+    presentation: toPublicCampaignPresentation(campaign.presentation),
     actions,
     rewardRules: campaign.rewardRules,
   };
@@ -1789,13 +1791,18 @@ function choosePreviewPrize(prizes: Prize[]) {
 export async function createPreviewDrawSession(
   input: CreateDrawSessionRequest,
 ): Promise<CreateDrawSessionResult> {
+  const preparationStartedAt = globalThis.performance.now();
+  const campaignReadStartedAt = globalThis.performance.now();
   const performance = await getCampaignPerformance(input.campaignId);
-  const campaign = await getCampaignPreview(input.campaignId);
-  if (!performance || !campaign) {
+  const campaignReadMs = Math.round(globalThis.performance.now() - campaignReadStartedAt);
+  if (!performance) {
     throw new Error("Campagne indisponible");
   }
+  const campaign = toPublicCampaignFromPerformance(performance);
 
+  const selectionStartedAt = globalThis.performance.now();
   const prize = choosePreviewPrize(performance.prizes);
+  const selectionMs = Math.round(globalThis.performance.now() - selectionStartedAt);
   const session: DrawSession = {
     id: generateId("preview-session"),
     campaignId: input.campaignId,
@@ -1805,6 +1812,14 @@ export async function createPreviewDrawSession(
     expiresAt: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
     isPreview: true,
   };
+
+  logSupportEvent("info", "preview_draw_repository_timing", {
+    campaignId: input.campaignId,
+    totalMs: Math.round(globalThis.performance.now() - preparationStartedAt),
+    campaignReadMs,
+    selectionMs,
+    mode: "preview",
+  });
 
   return {
     session,
@@ -1822,10 +1837,10 @@ export async function finalizePreviewParticipation(input: {
   marketingConsent?: boolean;
 }): Promise<DrawResultWithEmailContext> {
   const performance = await getCampaignPerformance(input.campaignId);
-  const campaign = await getCampaignPreview(input.campaignId);
-  if (!performance || !campaign) {
+  if (!performance) {
     throw new Error("Campagne indisponible");
   }
+  const campaign = toPublicCampaignFromPerformance(performance);
 
   const prize = input.prizeId
     ? performance.prizes.find((item) => item.id === input.prizeId) ?? null
@@ -2638,10 +2653,13 @@ export async function drawForLead(input: DrawRequest, fallbackMerchant?: Merchan
   return drawForLeadFromMemory(input);
 }
 
-export function toPublicDrawResult(result: DrawResultWithEmailContext): DrawResult {
+export function toPublicDrawResult(result: DrawResultWithEmailContext): PublicDrawResult {
   const { rewardEmailAppointmentUrl, ...publicResult } = result;
   void rewardEmailAppointmentUrl;
-  return publicResult;
+  return {
+    ...publicResult,
+    campaign: { actions: result.campaign.actions },
+  };
 }
 
 export async function createDrawSession(

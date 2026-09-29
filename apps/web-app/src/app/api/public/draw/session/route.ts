@@ -68,7 +68,17 @@ export async function POST(request: NextRequest) {
         sessionCreationMs,
         mode: "preview",
       });
-      return NextResponse.json(result, { status: 201, headers: { "Cache-Control": "no-store" } });
+      return NextResponse.json(
+        {
+          session: result.session,
+          prize: result.prize,
+          previewSessionToken: result.previewSessionToken,
+        },
+        {
+          status: 201,
+          headers: { "Cache-Control": "no-store" },
+        },
+      );
     }
 
     const cookieName = getDailyParticipationCookieName(campaignId);
@@ -121,7 +131,10 @@ export async function POST(request: NextRequest) {
       mode: "production",
     });
 
-    const response = NextResponse.json(result, { status: 201 });
+    const response = NextResponse.json(
+      { session: result.session, prize: result.prize },
+      { status: 201 },
+    );
     response.cookies.set(
       cookieName,
       getDailyParticipationCookieValue(
