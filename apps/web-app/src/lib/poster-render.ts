@@ -781,12 +781,9 @@ function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, temp
     );
     const lineHeightMultiplier = template.headlineLineHeightMultiplier ?? 1.08;
     return `<g data-headline-size="${size}">${lines.map((line, index) => {
-      const stretch = template.headlineStretchToWidth && lines.length === 2
-        ? ` textLength="${template.headlineMaxWidth}" lengthAdjust="spacingAndGlyphs"`
-        : "";
       return `<text x="${x}" y="${top + size * 0.82 + index * size * lineHeightMultiplier}"
         text-anchor="${template.headlineTextAnchor ?? "start"}" fill="${color}" font-family="${family}" font-size="${size}"
-        font-weight="${template.headlineFontWeight ?? 500}"${stretch}>${escapeXml(line)}</text>`;
+        font-weight="${template.headlineFontWeight ?? 500}">${escapeXml(line)}</text>`;
     }).join("")}</g>`;
   }
   // Reuse the same title geometry for the preview and PNG so the subtitle
