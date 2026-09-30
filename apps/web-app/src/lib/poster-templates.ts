@@ -557,10 +557,10 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     supportingTextX: 397,
     supportingTextY: 528,
     supportingTextFontFamily: "inter",
-    supportingTextFontSize: 29,
-    supportingTextLineHeight: 44,
+    supportingTextFontSize: 24,
+    supportingTextLineHeight: 32,
     supportingTextColor: "#171614",
-    supportingTextLetterSpacing: 5,
+    supportingTextLetterSpacing: 1.2,
     backgroundOnly: true,
     wheel: {
       winColor: "#f2c3b2",

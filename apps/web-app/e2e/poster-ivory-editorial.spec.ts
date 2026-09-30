@@ -45,9 +45,21 @@ test("le template Éditorial ivoire reste centré et exporte le même rendu que 
     expect(headlineTop).toBeLessThan(240);
     await page.getByRole("button", { name: "Texte", exact: true }).click();
     await page.getByLabel("Texte affiché à la place du logo").fill("Logo marchand E2E");
+    await page.getByText("Afficher le texte secondaire sur l'affiche").click();
+    await page.getByLabel("Texte secondaire", { exact: true }).fill(
+      "AFFICHÉ ENTRE LE TEXTE PRINCIPAL ET LE VISUEL LORSQUE L'OPTION EST ACTIVÉE. UN TEXTE VIDE MASQUE ÉGALEMENT CE BLOC.",
+    );
 
     const preview = page.getByAltText("Prévisualisation affiche");
     await expect(preview).toBeVisible();
+    const subtitleWidth = Number(await previewFrame.getAttribute("data-subtitle-rendered-width"));
+    const subtitleMaxWidth = Number(await previewFrame.getAttribute("data-subtitle-max-width"));
+    const subtitleLastBaseline = Number(await previewFrame.getAttribute("data-subtitle-last-baseline"));
+    const headlineLastBaseline = Number(await previewFrame.getAttribute("data-headline-last-baseline"));
+    expect(subtitleWidth).toBeGreaterThan(0);
+    expect(subtitleWidth).toBeLessThan(subtitleMaxWidth);
+    expect(Number(await previewFrame.getAttribute("data-subtitle-first-baseline"))).toBeGreaterThan(headlineLastBaseline);
+    expect(subtitleLastBaseline).toBeLessThan(638);
     await preview.screenshot({ path: testInfo.outputPath("ivory-editorial-poster-preview.png") });
     const previewBytes = await preview.evaluate(async (img) => {
       const response = await fetch((img as HTMLImageElement).src);
