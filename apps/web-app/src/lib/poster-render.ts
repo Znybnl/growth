@@ -301,14 +301,65 @@ function renderBackground(
   `;
 }
 
-function getLogoLayout(poster: CampaignPosterSettings) {
+export function getPosterLogoLayout(
+  poster: CampaignPosterSettings,
+  template: PosterTemplateConfig,
+  logoText = poster.logoText,
+): {
+  logoSize: number;
+  logoY: number;
+  textFontSize?: number;
+  textLines?: string[];
+  textFirstLineY?: number;
+  textLineHeight?: number;
+  underlineY?: number;
+  visualBottomY: number;
+  bottomY: number;
+} {
   const logoSize = clamp((poster.logoSizePercent / 100) * 170, 72, 300);
   const logoY = getPosterLogoTopY(poster.logoMode);
+  const logoMode = poster.logoMode ?? "none";
+
+  if (logoMode === "text" && (logoText ?? "").trim()) {
+    const fontSize = getPosterLogoTextFontSizePx(logoSize);
+    const lines = wrapPosterLogoText((logoText ?? "").trim(), template.logoTextMaxCharactersPerLine);
+    // Anchor the visible top edge to the fixed logo position. Font-size changes
+    // then grow the text downwards instead of moving its center and its margins.
+    const firstLineY = logoY + fontSize * 0.82;
+    const lastLineY = firstLineY + (lines.length - 1) * fontSize * 0.84;
+    const textBottomY = lastLineY + fontSize * 0.2;
+    const underlineY = template.logoUnderlineWidth
+      ? lastLineY + (template.logoUnderlineGapPx ?? 30)
+      : undefined;
+    const visualBottomY = Math.max(
+      textBottomY,
+      underlineY === undefined
+        ? Number.NEGATIVE_INFINITY
+        : underlineY + (template.logoUnderlineStrokeWidth ?? 3) / 2,
+    );
+
+    return {
+      logoSize,
+      logoY,
+      textFontSize: fontSize,
+      textLines: lines,
+      textFirstLineY: firstLineY,
+      textLineHeight: fontSize * 0.84,
+      underlineY,
+      visualBottomY,
+      bottomY: visualBottomY + poster.logoBottomMarginPx,
+    };
+  }
+
+  const visualBottomY = logoMode === "none" ? 0 : logoY + logoSize;
 
   return {
     logoSize,
     logoY,
-    bottomY: logoY + logoSize + poster.logoBottomMarginPx,
+    visualBottomY,
+    bottomY: logoMode === "none"
+      ? logoY + logoSize + poster.logoBottomMarginPx
+      : visualBottomY + poster.logoBottomMarginPx,
   };
 }
 
@@ -334,7 +385,8 @@ function renderLogo(campaign: Campaign, poster: CampaignPosterSettings, template
   const logoUrl = logoMode === "image" ? poster.logoUrl || campaign.logoUrl : undefined;
   const logoText =
     logoMode === "text" ? (poster.logoText ?? campaign.logoText ?? "").trim() : "";
-  const { logoSize, logoY } = getLogoLayout(poster);
+  const logoLayout = getPosterLogoLayout(poster, template, logoText);
+  const { logoSize, logoY } = logoLayout;
   const logoX = template.logoX ?? A4_WIDTH / 2;
 
   if (logoMode === "image" && logoUrl) {
@@ -352,24 +404,23 @@ function renderLogo(campaign: Campaign, poster: CampaignPosterSettings, template
   // Keep the merchant name visually secondary to the poster headline. The
   // 100% slider value represents the reference logo box, not a full-size
   // headline; use the same restrained text scale across poster templates.
-  const fontSize = getPosterLogoTextFontSizePx(logoSize);
-  const centerY = logoY + logoSize / 2;
+  const fontSize = logoLayout.textFontSize ?? getPosterLogoTextFontSizePx(logoSize);
   const logoTextColor = template.colorsCustomizable === false
     ? template.headlineTextColor
     : poster.headlineTextColor || template.headline;
   const logoFamily = fontFamily(template.logoFontFamily ?? "inter");
   const textAnchor = template.logoTextAnchor ?? "middle";
-  const logoLines = wrapPosterLogoText(logoText, template.logoTextMaxCharactersPerLine);
-  const firstLineY = centerY + fontSize * 0.34 - ((logoLines.length - 1) * fontSize * 0.84) / 2;
+  const logoLines = logoLayout.textLines ?? wrapPosterLogoText(logoText, template.logoTextMaxCharactersPerLine);
+  const firstLineY = logoLayout.textFirstLineY ?? logoY + fontSize * 0.82;
   const logoMarkup = logoLines.length > 1
-    ? logoLines.map((line, index) => `<tspan x="${logoX}" y="${firstLineY + index * fontSize * 0.84}">${escapeXml(line)}</tspan>`).join("")
+    ? logoLines.map((line, index) => `<tspan x="${logoX}" y="${firstLineY + index * (logoLayout.textLineHeight ?? fontSize * 0.84)}">${escapeXml(line)}</tspan>`).join("")
     : escapeXml(logoLines[0] ?? text);
   const underlineCentered = template.logoUnderlineCentered ?? textAnchor === "middle";
   const underlineX = underlineCentered
     ? logoX - (template.logoUnderlineWidth ?? 0) / 2
     : logoX;
-  const underline = template.logoUnderlineWidth
-    ? `<line x1="${underlineX}" y1="${centerY + fontSize * 0.34 + (template.logoUnderlineGapPx ?? 30)}" x2="${underlineX + template.logoUnderlineWidth}" y2="${centerY + fontSize * 0.34 + (template.logoUnderlineGapPx ?? 30)}" stroke="${template.logoUnderlineColor ?? logoTextColor}" stroke-width="${template.logoUnderlineStrokeWidth ?? 3}"/>`
+  const underline = template.logoUnderlineWidth && logoLayout.underlineY !== undefined
+    ? `<line x1="${underlineX}" y1="${logoLayout.underlineY}" x2="${underlineX + template.logoUnderlineWidth}" y2="${logoLayout.underlineY}" stroke="${template.logoUnderlineColor ?? logoTextColor}" stroke-width="${template.logoUnderlineStrokeWidth ?? 3}"/>`
     : "";
 
   return `
@@ -476,7 +527,10 @@ function getStandardHeadlineLayout(
   const headlineMaxWidth = template.headlineMaxWidth ?? POSTER_HEADLINE_MAX_WIDTH;
   const lines = splitHeadlineLines(headline.toUpperCase(), size, headlineMaxWidth);
   const logoAwareHeadlineY = template.headlineY + (poster.logoBottomMarginPx - 28);
-  const firstLineY = Math.max(logoAwareHeadlineY, getLogoLayout(poster).bottomY + size * 0.15);
+  const firstLineY = Math.max(
+    logoAwareHeadlineY,
+    getPosterLogoLayout(poster, template, poster.logoText ?? campaign.logoText ?? "").bottomY + size * 0.15,
+  );
   const lineHeight = size * (template.id === "classic-wheel" ? 1.02 : 1.08);
   const visualBottom = Math.min(
     A4_HEIGHT,
@@ -649,22 +703,13 @@ export function getPosterSubtitleLayout(
 }
 
 export function getPremiumHeadlineLayout(headline: string, poster: CampaignPosterSettings, template: PosterTemplateConfig,
-  measure?: (text: string, size: number) => number, reservedBottom?: number) {
+  measure?: (text: string, size: number) => number, reservedBottom?: number, logoText?: string) {
     const x = template.headlineX ?? 284;
     const width = template.headlineTextAnchor === "middle"
       ? Math.min(template.headlineMaxWidth ?? 700, 2 * Math.min(x, A4_WIDTH - x) - 40)
       : Math.min(template.headlineMaxWidth ?? 466, A4_WIDTH - x - 40);
-    const logo = getLogoLayout(poster);
-    const logoFontSize = getPosterLogoTextFontSizePx(logo.logoSize);
-    const logoBottom = poster.logoMode === "image"
-      ? logo.logoY + logo.logoSize
-      : poster.logoMode === "text"
-        ? logo.logoY + logo.logoSize / 2 + logoFontSize * 0.6 + (wrapPosterLogoText((poster.logoText ?? "").trim(), template.logoTextMaxCharactersPerLine).length - 1) * logoFontSize * 0.84
-        : 0;
-    const logoUnderlineBottom = template.id === "ivory-editorial-wheel" && poster.logoMode === "text" && template.logoUnderlineWidth
-      ? logo.logoY + logo.logoSize / 2 + logoFontSize * 0.34 + (template.logoUnderlineGapPx ?? 30) + (template.logoUnderlineStrokeWidth ?? 3) / 2
-      : 0;
-    const visualLogoBottom = Math.max(logoBottom, logoUnderlineBottom);
+    const logo = getPosterLogoLayout(poster, template, logoText);
+    const visualLogoBottom = logo.visualBottomY;
     const logoMargin = poster.logoMode === "none" ? 0 : poster.logoBottomMarginPx;
     const top = template.headlineLogoGapPx !== undefined && poster.logoMode !== "none"
       ? visualLogoBottom + template.headlineLogoGapPx + logoMargin
@@ -732,6 +777,7 @@ function renderHeadline(campaign: Campaign, poster: CampaignPosterSettings, temp
       template,
       measure,
       reservedBottom,
+      poster.logoText ?? campaign.logoText ?? "",
     );
     const lineHeightMultiplier = template.headlineLineHeightMultiplier ?? 1.08;
     return `<g data-headline-size="${size}">${lines.map((line, index) => {
