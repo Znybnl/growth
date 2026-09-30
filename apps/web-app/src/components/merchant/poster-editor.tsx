@@ -1151,7 +1151,7 @@ export function PosterEditor({ campaign, prizes, settingsEndpoint, returnHref }:
           </div>
 
           <div className="flex min-h-0 flex-1 items-center justify-center overflow-auto rounded-[var(--okado-radius-card)] bg-[var(--okado-surface-muted)] p-4">
-            <div className="relative aspect-[794/1123] w-full max-w-[470px] overflow-hidden rounded-[var(--okado-radius-control)] border border-[var(--okado-border-control)] bg-white shadow-[var(--shadow-product-card)]" data-testid="poster-preview-frame" data-headline-size={premiumHeadlineLayout?.size} data-headline-x={premiumHeadlineLayout?.x} data-headline-top={premiumHeadlineLayout?.top} data-headline-last-baseline={headlineLastBaseline} data-subtitle-x={posterSubtitleLayout?.x} data-subtitle-first-baseline={subtitleFirstBaseline} data-subtitle-last-baseline={subtitleLastBaseline} data-subtitle-headline-gap={posterSubtitleLayout?.headlineGap}>
+            <div className="relative aspect-[794/1123] w-full max-w-[470px] overflow-hidden rounded-[var(--okado-radius-control)] border border-[var(--okado-border-control)] bg-white shadow-[var(--shadow-product-card)]" data-testid="poster-preview-frame" data-headline-size={premiumHeadlineLayout?.size} data-headline-line-count={premiumHeadlineLayout?.lines.length} data-headline-x={premiumHeadlineLayout?.x} data-headline-top={premiumHeadlineLayout?.top} data-headline-last-baseline={headlineLastBaseline} data-subtitle-x={posterSubtitleLayout?.x} data-subtitle-first-baseline={subtitleFirstBaseline} data-subtitle-last-baseline={subtitleLastBaseline} data-subtitle-headline-gap={posterSubtitleLayout?.headlineGap}>
               {previewPng && !currentPreviewError ? (
                 <Image
                   src={previewPng.url}

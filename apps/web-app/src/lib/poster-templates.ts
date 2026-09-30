@@ -50,7 +50,6 @@ export type PosterTemplateConfig = {
   logoImageAnchor?: "start" | "middle";
   logoTextMaxCharactersPerLine?: number;
   headlineTextAnchor?: "start" | "middle";
-  headlineStretchToWidth?: boolean;
   supportingTextAnchor?: "start" | "middle";
   subtitleLetterSpacing?: number;
   subtitleUppercase?: boolean;
@@ -414,7 +413,6 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     headlineItalic: false,
     headlineFontFamily: "cormorant",
     headlineTextAnchor: "middle",
-    headlineStretchToWidth: true,
     logoX: 443,
     logoFontWeight: 500,
     logoTextMaxCharactersPerLine: 22,
