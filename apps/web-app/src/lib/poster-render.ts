@@ -384,6 +384,8 @@ export type PosterSubtitleLayout = {
   fontSize: number;
   lineHeight: number;
   lines: string[];
+  maxWidth: number;
+  maxRenderedLineWidth: number;
   textAnchor: "start" | "middle";
   x: number;
   top: number;
@@ -405,6 +407,61 @@ type StandardHeadlineLayout = {
 function posterSubtitleLines(text: string, width: number, size: number, maxCharactersPerLine?: number) {
   const maxChars = maxCharactersPerLine ?? clamp(Math.floor(width / (size * 0.54)), 16, 52);
   return splitLines(text, maxChars).slice(0, 3);
+}
+
+function estimateIvorySubtitleLineWidth(text: string, size: number, letterSpacing: number) {
+  const glyphWidth = [...text.toLocaleUpperCase("fr-FR")].reduce((total, character) => {
+    if (character === " ") return total + size * 0.28;
+    if ("MW@%&".includes(character)) return total + size * 0.82;
+    if ("I!.,':;|".includes(character)) return total + size * 0.32;
+    return total + size * 0.58;
+  }, 0);
+
+  return glyphWidth + Math.max(0, [...text].length - 1) * letterSpacing;
+}
+
+function wrapIvorySubtitle(text: string, maxWidth: number, size: number, letterSpacing: number) {
+  const safeWidth = Math.max(1, maxWidth - 24);
+  const lines: string[] = [];
+  const paragraphs = text.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+
+  for (const paragraph of paragraphs.length ? paragraphs : [text.trim()]) {
+    let current = "";
+    for (const word of paragraph.split(/\s+/).filter(Boolean)) {
+      let remainingWord = word;
+      while (remainingWord) {
+        const candidate = current ? `${current} ${remainingWord}` : remainingWord;
+        if (estimateIvorySubtitleLineWidth(candidate, size, letterSpacing) <= safeWidth) {
+          current = candidate;
+          break;
+        }
+
+        if (current) {
+          lines.push(current);
+          current = "";
+          continue;
+        }
+
+        const characters = [...remainingWord];
+        let fittingLength = 1;
+        while (
+          fittingLength < characters.length &&
+          estimateIvorySubtitleLineWidth(characters.slice(0, fittingLength + 1).join(""), size, letterSpacing) <= safeWidth
+        ) {
+          fittingLength += 1;
+        }
+        current = characters.slice(0, fittingLength).join("");
+        remainingWord = characters.slice(fittingLength).join("");
+        if (remainingWord) {
+          lines.push(current);
+          current = "";
+        }
+      }
+    }
+    if (current) lines.push(current);
+  }
+
+  return lines;
 }
 
 function getStandardHeadlineLayout(
@@ -458,16 +515,21 @@ export function getPosterSubtitleLayout(
   const isBotanicalEditorial = template.id === "botanical-editorial-poster";
   const isEditorialTemplate = template.id === "pastel-editorial-wheel";
   const isIvoryTemplate = template.id === "ivory-editorial-wheel";
-  const fontSize = isIvoryTemplate ? 29 : isBotanicalEditorial || isEditorialTemplate ? 28 : template.backdropAsset ? 24 : 25;
-  const lineHeight = fontSize * (isIvoryTemplate ? 1.52 : isEditorialTemplate ? 1.5 : 1.42);
+  let fontSize = isIvoryTemplate ? template.supportingTextFontSize ?? 24 : isBotanicalEditorial || isEditorialTemplate ? 28 : template.backdropAsset ? 24 : 25;
+  let lineHeight = isIvoryTemplate ? template.supportingTextLineHeight ?? 32 : fontSize * (isEditorialTemplate ? 1.5 : 1.42);
+  const letterSpacing = isIvoryTemplate
+    ? template.supportingTextLetterSpacing ?? 1.2
+    : isBotanicalEditorial ? template.subtitleLetterSpacing ?? 4 : isEditorialTemplate ? 3.2 : 0.28;
   const isPremiumTemplate = template.id === "premium-wheel";
   const width = isPremiumTemplate
     ? Math.min(template.qrSize, A4_WIDTH - template.qrX - 24)
     : isBotanicalEditorial
       ? template.subtitleMaxWidth ?? 620
     : Math.min(template.subtitleMaxWidth ?? template.headlineMaxWidth ?? 620, A4_WIDTH - 48);
-  const lines = posterSubtitleLines(text, width, fontSize, isBotanicalEditorial ? template.subtitleMaxCharactersPerLine : undefined);
-  const textHeight = fontSize + Math.max(0, lines.length - 1) * lineHeight;
+  let lines = isIvoryTemplate
+    ? wrapIvorySubtitle(text.toLocaleUpperCase("fr-FR"), width, fontSize, letterSpacing)
+    : posterSubtitleLines(text, width, fontSize, isBotanicalEditorial ? template.subtitleMaxCharactersPerLine : undefined);
+  let textHeight = fontSize + Math.max(0, lines.length - 1) * lineHeight;
   const configuredHeadlineGap = clampCampaignSpacingPx(
     campaign.presentation.layout.subtitleSpacingPx,
     defaultWheelSubtitleSpacingForTemplate(campaign.presentation.layout.templateId),
@@ -491,10 +553,15 @@ export function getPosterSubtitleLayout(
       template.headlineBlockBottom ?? Number.POSITIVE_INFINITY,
       template.qrY - 32 - textHeight - headlineGap,
     )
+    : isIvoryTemplate
+      ? Math.min(
+        template.headlineBlockBottom ?? Number.POSITIVE_INFINITY,
+        template.qrY - 20 - textHeight - headlineGap,
+      )
     : isBotanicalEditorial
       ? template.qrY - 36 - headlineGap - fontSize * 0.82 - Math.max(0, lines.length - 1) * lineHeight
       : undefined;
-  const editorialHeadlineLayout = isEditorialTemplate || isBotanicalEditorial || template.id === "botanical-wheel"
+  const editorialHeadlineLayout = isEditorialTemplate || isBotanicalEditorial || template.id === "botanical-wheel" || isIvoryTemplate
     ? getPremiumHeadlineLayout(
       editorialHeadline,
       poster,
@@ -517,16 +584,14 @@ export function getPosterSubtitleLayout(
       ? 480
       : template.wheelY - template.wheelRadius - 36;
   const premiumVisualGap = isPremiumTemplate ? 52 : 36;
-  const editorialHeadlineLayoutBottom = isEditorialTemplate && editorialHeadlineLayout
+  const editorialHeadlineLayoutBottom = (isEditorialTemplate || isIvoryTemplate) && editorialHeadlineLayout
     ? editorialHeadlineLayout.top +
       editorialHeadlineLayout.size * 0.82 +
       Math.max(0, editorialHeadlineLayout.lines.length - 1) *
         editorialHeadlineLayout.size * (template.headlineLineHeightMultiplier ?? 1.08) +
       editorialHeadlineLayout.size * 0.18
     : undefined;
-  const top = isIvoryTemplate
-    ? visualTop
-    : isEditorialTemplate && editorialHeadlineLayoutBottom !== undefined
+  const top = (isEditorialTemplate || isIvoryTemplate) && editorialHeadlineLayoutBottom !== undefined
     ? editorialHeadlineLayoutBottom + headlineGap
     : standardHeadlineLayout
     ? standardHeadlineLayout.firstLineY +
@@ -540,6 +605,16 @@ export function getPosterSubtitleLayout(
         editorialHeadlineLayout.size * 0.18 +
         headlineGap
     : Math.max(0, visualTop - premiumVisualGap - textHeight);
+  if (isIvoryTemplate) {
+    const availableHeight = Math.max(0, (template.qrY ?? A4_HEIGHT) - 20 - top);
+    while ((textHeight > availableHeight || lines.length > 6) && fontSize > 16) {
+      fontSize -= 1;
+      lineHeight = fontSize * 1.28;
+      lines = wrapIvorySubtitle(text.toLocaleUpperCase("fr-FR"), width, fontSize, letterSpacing);
+      textHeight = fontSize + Math.max(0, lines.length - 1) * lineHeight;
+    }
+    lineHeight = fontSize * 1.28;
+  }
   const textAnchor = isIvoryTemplate ? "middle" : (template.backdropAsset && !isBotanicalEditorial) || isEditorialTemplate ? "start" : "middle";
 
   return {
@@ -550,6 +625,10 @@ export function getPosterSubtitleLayout(
     fontSize,
     lineHeight,
     lines,
+    maxWidth: width,
+    maxRenderedLineWidth: isIvoryTemplate
+      ? Math.max(0, ...lines.map((line) => estimateIvorySubtitleLineWidth(line, fontSize, letterSpacing)))
+      : width,
     textAnchor,
     x: isPremiumTemplate
       ? template.qrX
@@ -564,7 +643,7 @@ export function getPosterSubtitleLayout(
     headlineGap,
     headlineLayoutBottom: editorialHeadlineLayoutBottom,
     fontWeight: isPremiumTemplate || isEditorialTemplate || isIvoryTemplate ? 400 : isBotanicalEditorial ? 500 : 600,
-    letterSpacing: isIvoryTemplate ? template.supportingTextLetterSpacing ?? 5 : isBotanicalEditorial ? template.subtitleLetterSpacing ?? 4 : isEditorialTemplate ? 3.2 : 0.28,
+    letterSpacing,
     uppercase: isIvoryTemplate || (isBotanicalEditorial && template.subtitleUppercase === true) || isEditorialTemplate,
   };
 }
