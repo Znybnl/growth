@@ -52,7 +52,7 @@ test("Botanique éditorial utilise le logo marchand et exporte le même rendu qu
         templateId: "botanical-editorial-poster",
         logoMode: "text",
         logoText: "Établissement E2E",
-        headline: "Scannez et jouez",
+        headline: "Participez à notre jeu 100% gagnant",
         headlineFontFamily: "cormorant",
         posterSubtitleEnabled: true,
       },
@@ -85,6 +85,9 @@ test("Botanique éditorial utilise le logo marchand et exporte le même rendu qu
     const renderedHeadlineSize = Number(await previewFrame.getAttribute("data-headline-size"));
     expect(renderedHeadlineSize).toBeGreaterThan(24);
     expect(renderedHeadlineSize).toBeLessThanOrEqual(84);
+    const headlineLineCount = Number(await previewFrame.getAttribute("data-headline-line-count"));
+    expect(headlineLineCount).toBeGreaterThanOrEqual(2);
+    expect(headlineLineCount).toBeLessThanOrEqual(4);
     await page.getByRole("button", { name: /^Botanique éditorial/ }).screenshot({ path: testInfo.outputPath("botanical-editorial-thumbnail.png") });
 
     const preview = page.getByAltText("Prévisualisation affiche");
