@@ -7,26 +7,12 @@ import { requireAuthenticatedSession } from "@/lib/auth";
 import { formatDateTime } from "@/lib/format";
 import { MetricCard, PageHeader, ResponsiveTable } from "@/components/ui/workspace";
 import { StatusBadge as SharedStatusBadge } from "@/components/ui/status-badge";
+import { AdminTrialExtensionButton } from "@/components/merchant/admin-trial-extension-button";
+import { canExtendMerchantTrial, getAdminSubscriptionDisplay } from "@/lib/admin-trial";
 
 type AdminPageProps = {
   searchParams: Promise<{ q?: string }>;
 };
-
-function StatusBadge({ status }: { status: string | null }) {
-  if (status === "active") {
-    return <SharedStatusBadge tone="active">Actif</SharedStatusBadge>;
-  }
-  if (status === "trialing") {
-    return <SharedStatusBadge tone="info">Essai</SharedStatusBadge>;
-  }
-  if (status === "past_due" || status === "unpaid") {
-    return <SharedStatusBadge tone="warning">Paiement à suivre</SharedStatusBadge>;
-  }
-  if (status === "canceled") {
-    return <SharedStatusBadge tone="muted">Résilié</SharedStatusBadge>;
-  }
-  return <SharedStatusBadge tone="muted">Inactive</SharedStatusBadge>;
-}
 
 export default async function AdminPage({ searchParams }: AdminPageProps) {
   const session = await requireAuthenticatedSession();
@@ -103,8 +89,21 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
               </tr>
             </thead>
             <tbody className="divide-y divide-[#eef2f7]">
-              {overview.users.map((user) => (
-                <tr key={user.id} className="text-graphite">
+              {overview.users.map((user) => {
+                const subscriptionDisplay = getAdminSubscriptionDisplay(
+                  user.subscriptionStatus,
+                  user.trialEndDate,
+                  user.subscriptionCancelAtPeriodEnd,
+                  user.subscriptionCurrentPeriodEnd,
+                );
+                const canExtendTrial = canExtendMerchantTrial(
+                  user.subscriptionStatus,
+                  user.trialEndDate,
+                  user.subscriptionCancelAtPeriodEnd,
+                  user.stripeSubscriptionId,
+                );
+
+                return <tr key={user.id} className="text-graphite">
                   <td className="px-3 py-4">
                     <p className="font-medium">{`${user.firstName} ${user.lastName}`.trim()}</p>
                     <p className="mt-1 text-xs text-ash">{user.email}</p>
@@ -116,7 +115,22 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                       {user.onboardingCompleted ? "Termine" : "A finaliser"}
                     </span>
                   </td>
-                  <td className="px-3 py-4"><StatusBadge status={user.subscriptionStatus} /></td>
+                  <td className="px-3 py-4">
+                    {canExtendTrial && user.trialEndDate ? (
+                      <AdminTrialExtensionButton
+                        merchantId={user.merchantId}
+                        subscriptionStatus={user.subscriptionStatus}
+                        trialEndDate={user.trialEndDate}
+                        subscriptionCancelAtPeriodEnd={user.subscriptionCancelAtPeriodEnd}
+                        initialDisplay={subscriptionDisplay}
+                        canExtend={canExtendTrial}
+                      />
+                    ) : (
+                      <SharedStatusBadge tone={subscriptionDisplay.tone}>
+                        {subscriptionDisplay.label}
+                      </SharedStatusBadge>
+                    )}
+                  </td>
                   <td className="px-3 py-4 text-ash">{user.campaignCount} animation(s) · {user.leadCount} participation(s)</td>
                   <td className="px-3 py-4">
                     {user.lowStockCount || user.failedEmailCount ? (
@@ -136,7 +150,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                     </Link>
                   </td>
                 </tr>
-              ))}
+              })}
             </tbody>
           </table>
           {!overview.users.length ? <p className="px-3 py-8 text-sm text-ash">Aucun utilisateur ne correspond a votre recherche.</p> : null}
