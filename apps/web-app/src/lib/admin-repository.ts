@@ -1,11 +1,22 @@
 import { getSupabaseAdmin } from "@/lib/supabase";
+import { updateMerchantBillingFromStripeSubscriptionInSupabase } from "@/lib/merchant-account-repository";
+import { getStripeClient } from "@/lib/stripe";
+import { logSupportEvent } from "@/lib/support-log";
+import {
+  canExtendMerchantTrial,
+  getTrialExtensionDate,
+  MAX_TRIAL_EXTENSION_DAYS,
+} from "@/lib/admin-trial";
 
 type MerchantRow = {
   id: string;
   company_name: string;
   onboarding_completed: boolean;
   stripe_subscription_status: string | null;
+  stripe_subscription_id: string | null;
   trial_end_date: string | null;
+  subscription_current_period_end: string | null;
+  subscription_cancel_at_period_end: boolean;
   created_at: string;
 };
 
@@ -28,6 +39,10 @@ export type SaasAdminUserRow = {
   createdAt: string;
   onboardingCompleted: boolean;
   subscriptionStatus: string | null;
+  stripeSubscriptionId: string | null;
+  trialEndDate: string | null;
+  subscriptionCurrentPeriodEnd: string | null;
+  subscriptionCancelAtPeriodEnd: boolean;
   campaignCount: number;
   leadCount: number;
   lowStockCount: number;
@@ -57,7 +72,7 @@ export async function getSaasAdminOverview(query = ""): Promise<SaasAdminOvervie
     await Promise.all([
       supabase
         .from("merchants")
-        .select("id, company_name, onboarding_completed, stripe_subscription_status, trial_end_date, created_at"),
+        .select("id, company_name, onboarding_completed, stripe_subscription_status, stripe_subscription_id, trial_end_date, subscription_current_period_end, subscription_cancel_at_period_end, created_at"),
       supabase.from("merchant_users").select("id, merchant_id, first_name, last_name, email, created_at"),
       supabase.from("campaigns").select("id, merchant_id, is_active"),
       supabase.from("leads").select("campaign_id, status"),
@@ -135,6 +150,10 @@ export async function getSaasAdminOverview(query = ""): Promise<SaasAdminOvervie
         createdAt: user.created_at,
         onboardingCompleted: merchant?.onboarding_completed ?? false,
         subscriptionStatus: merchant?.stripe_subscription_status ?? null,
+        stripeSubscriptionId: merchant?.stripe_subscription_id ?? null,
+        trialEndDate: merchant?.trial_end_date ?? null,
+        subscriptionCurrentPeriodEnd: merchant?.subscription_current_period_end ?? null,
+        subscriptionCancelAtPeriodEnd: merchant?.subscription_cancel_at_period_end ?? false,
         campaignCount: merchantCampaigns.length,
         leadCount: leadCounts.get(user.merchant_id) ?? 0,
         lowStockCount: lowStockCounts.get(user.merchant_id) ?? 0,
@@ -163,5 +182,141 @@ export async function getSaasAdminOverview(query = ""): Promise<SaasAdminOvervie
       failedRewardEmails,
     },
     users: rows,
+  };
+}
+
+export class AdminTrialExtensionError extends Error {
+  constructor(message: string, readonly status: 400 | 404 | 409) {
+    super(message);
+    this.name = "AdminTrialExtensionError";
+  }
+}
+
+export async function extendMerchantTrial(
+  merchantId: string,
+  daysToAdd: number,
+  now = Date.now(),
+) {
+  if (
+    !Number.isInteger(daysToAdd) ||
+    daysToAdd < 1 ||
+    daysToAdd > MAX_TRIAL_EXTENSION_DAYS
+  ) {
+    throw new AdminTrialExtensionError(
+      `Saisissez un nombre entier de 1 à ${MAX_TRIAL_EXTENSION_DAYS} jours.`,
+      400,
+    );
+  }
+
+  const supabase = getSupabaseAdmin();
+  const { data: merchant, error: readError } = await supabase
+    .from("merchants")
+    .select("id, trial_end_date, stripe_subscription_status, stripe_subscription_id, subscription_cancel_at_period_end")
+    .eq("id", merchantId)
+    .maybeSingle();
+
+  if (readError) throw new Error("Lecture de la période d’essai impossible.");
+  if (!merchant) throw new AdminTrialExtensionError("Compte marchand introuvable.", 404);
+  if (!canExtendMerchantTrial(
+    merchant.stripe_subscription_status,
+    merchant.trial_end_date,
+    merchant.subscription_cancel_at_period_end ?? false,
+    merchant.stripe_subscription_id,
+    now,
+  )) {
+    throw new AdminTrialExtensionError(
+      "Cette période d’essai ne peut pas être prolongée depuis le pilotage. Vérifiez le statut de l’abonnement et rechargez la page.",
+      409,
+    );
+  }
+
+  const previousTrialEnd = merchant.trial_end_date;
+  const nextTrialEnd = getTrialExtensionDate(previousTrialEnd, daysToAdd, now);
+
+  if (merchant.stripe_subscription_id) {
+    const stripe = getStripeClient();
+    const subscription = await stripe.subscriptions.retrieve(merchant.stripe_subscription_id);
+    const stripeTrialEnd = subscription.trial_end
+      ? new Date(subscription.trial_end * 1000).toISOString()
+      : null;
+
+    if (
+      merchant.stripe_subscription_status !== "trialing" ||
+      subscription.status !== "trialing" ||
+      subscription.cancel_at_period_end ||
+      !stripeTrialEnd ||
+      Math.abs(Date.parse(stripeTrialEnd) - Date.parse(previousTrialEnd)) > 1_000
+    ) {
+      throw new AdminTrialExtensionError(
+        "L’essai Stripe a changé ou n’est plus prolongeable. Rechargez le pilotage avant de réessayer.",
+        409,
+      );
+    }
+
+    const updatedSubscription = await stripe.subscriptions.update(merchant.stripe_subscription_id, {
+      trial_end: Math.floor(Date.parse(nextTrialEnd) / 1_000),
+      proration_behavior: "none",
+    });
+    try {
+      await updateMerchantBillingFromStripeSubscriptionInSupabase(merchantId, updatedSubscription);
+    } catch {
+      logSupportEvent("error", "admin-trial-stripe-sync-failed", {
+        merchantId,
+        stripeSubscriptionId: merchant.stripe_subscription_id,
+        trialEndDate: updatedSubscription.trial_end
+          ? new Date(updatedSubscription.trial_end * 1_000).toISOString()
+          : nextTrialEnd,
+      });
+      throw new AdminTrialExtensionError(
+        "Stripe a accepté la prolongation, mais Okado n’a pas encore synchronisé la nouvelle échéance. Rechargez Pilotage avant toute nouvelle tentative.",
+        409,
+      );
+    }
+
+    return {
+      merchantId,
+      previousTrialEnd,
+      trialEndDate: updatedSubscription.trial_end
+        ? new Date(updatedSubscription.trial_end * 1_000).toISOString()
+        : nextTrialEnd,
+    };
+  }
+
+  if (merchant.stripe_subscription_status === "trialing") {
+    throw new AdminTrialExtensionError(
+      "L’abonnement d’essai Stripe est introuvable. Rechargez le pilotage avant de réessayer.",
+      409,
+    );
+  }
+
+  let update = supabase
+    .from("merchants")
+    .update({ trial_end_date: nextTrialEnd })
+    .eq("id", merchantId)
+    .eq("trial_end_date", previousTrialEnd);
+
+  update = merchant.stripe_subscription_status === null
+    ? update.is("stripe_subscription_status", null)
+    : update.eq("stripe_subscription_status", merchant.stripe_subscription_status);
+  update = merchant.stripe_subscription_id === null
+    ? update.is("stripe_subscription_id", null)
+    : update.eq("stripe_subscription_id", merchant.stripe_subscription_id);
+
+  const { data: updatedMerchant, error: updateError } = await update
+    .select("id, trial_end_date")
+    .maybeSingle();
+
+  if (updateError) throw new Error("La période d’essai n’a pas pu être prolongée.");
+  if (!updatedMerchant) {
+    throw new AdminTrialExtensionError(
+      "Le statut d’abonnement a changé pendant l’opération. Rechargez la page avant de réessayer.",
+      409,
+    );
+  }
+
+  return {
+    merchantId: updatedMerchant.id,
+    previousTrialEnd,
+    trialEndDate: updatedMerchant.trial_end_date,
   };
 }
