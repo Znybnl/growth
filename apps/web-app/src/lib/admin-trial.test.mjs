@@ -34,6 +34,26 @@ test("affiche les jours restants d’un essai sans statut Stripe", () => {
   });
 });
 
+test("privilégie une période d’essai encore valide aux statuts Stripe périmés ou non actifs", () => {
+  for (const status of ["incomplete", "incomplete_expired", "canceled", "paused"]) {
+    const display = getAdminSubscriptionDisplay(status, ACTIVE_TRIAL_END, false, null, NOW);
+    assert.match(display.label, /^Essai \(10 jours restants\)/, status ?? "null");
+  }
+
+  assert.deepEqual(
+    getAdminSubscriptionDisplay("past_due", ACTIVE_TRIAL_END, false, null, NOW),
+    { label: "Essai (10 jours restants) · paiement à suivre", tone: "warning" },
+  );
+  assert.deepEqual(
+    getAdminSubscriptionDisplay("trialing", ACTIVE_TRIAL_END, true, null, NOW),
+    { label: "Essai (10 jours restants) · résiliation le 10 oct. 2026", tone: "warning" },
+  );
+  assert.deepEqual(
+    getAdminSubscriptionDisplay("active", ACTIVE_TRIAL_END, false, null, NOW),
+    { label: "Actif", tone: "active" },
+  );
+});
+
 test("rend prolongeable un essai sans abonnement Stripe, même expiré, et refuse les abonnements Stripe non admissibles", () => {
   assert.equal(canExtendMerchantTrial("trialing", ACTIVE_TRIAL_END, false, "sub_test", NOW), true);
   assert.equal(canExtendMerchantTrial(null, ACTIVE_TRIAL_END, false, null, NOW), true);

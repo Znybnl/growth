@@ -27,52 +27,61 @@ export function getAdminSubscriptionDisplay(
   subscriptionCurrentPeriodEnd: string | null = null,
   now = Date.now(),
 ): AdminSubscriptionDisplay {
-  if (status === "active" || status === "trialing") {
-    if (subscriptionCancelAtPeriodEnd) {
-      const endDate = subscriptionCurrentPeriodEnd
-        ? new Date(subscriptionCurrentPeriodEnd)
-        : status === "trialing" && trialEndDate
-          ? new Date(trialEndDate)
-          : null;
-      const formattedDate = endDate && Number.isFinite(endDate.getTime())
-        ? new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(endDate)
-        : null;
-      return {
-        label: status === "trialing"
-          ? formattedDate ? `Essai · résiliation le ${formattedDate}` : "Essai · résiliation programmée"
-          : formattedDate ? `Actif jusqu’au ${formattedDate}` : "Résiliation programmée",
-        tone: "warning",
-      };
-    }
-    if (status === "active") return { label: "Actif", tone: "active" };
-  }
+  if (status === "active") {
+    if (!subscriptionCancelAtPeriodEnd) return { label: "Actif", tone: "active" };
 
-  if (status === "past_due" || status === "unpaid") {
-    return { label: "Paiement à suivre", tone: "warning" };
+    const endDate = subscriptionCurrentPeriodEnd ? new Date(subscriptionCurrentPeriodEnd) : null;
+    const formattedDate = endDate && Number.isFinite(endDate.getTime())
+      ? new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(endDate)
+      : null;
+    return {
+      label: formattedDate ? `Actif jusqu’au ${formattedDate}` : "Résiliation programmée",
+      tone: "warning",
+    };
   }
 
   const trialEnd = trialEndDate ? Date.parse(trialEndDate) : Number.NaN;
   const remaining = trialEnd - now;
   const activeTrial = Number.isFinite(trialEnd) && remaining > 0;
 
-  if (status === "trialing") {
-    if (!Number.isFinite(trialEnd)) return { label: "Essai", tone: "info" };
-    if (!activeTrial) return { label: "Inactif", tone: "muted" };
-  }
+  // The billing access rules use the trial end date as the source of truth.
+  // Keep Pilotage consistent even when Stripe reports a stale/non-active status.
+  if (activeTrial) {
+    const days = Math.ceil(remaining / DAY_IN_MS);
+    const trialLabel = remaining < DAY_IN_MS
+      ? "Essai (moins d’un jour restant)"
+      : `Essai (${days} jour${days > 1 ? "s" : ""} restant${days > 1 ? "s" : ""})`;
+    const suffixes: string[] = [];
 
-  if ((status === null || status === "trialing") && activeTrial) {
-    if (remaining < DAY_IN_MS) {
-      return { label: "Essai (moins d’un jour restant)", tone: "info" };
+    if (status === "past_due" || status === "unpaid") suffixes.push("paiement à suivre");
+    if (status === "canceled") suffixes.push("abonnement résilié");
+    if (status === "incomplete") suffixes.push("inscription à terminer");
+    if (status === "paused") suffixes.push("abonnement suspendu");
+    if (subscriptionCancelAtPeriodEnd) {
+      const endDate = subscriptionCurrentPeriodEnd
+        ? new Date(subscriptionCurrentPeriodEnd)
+        : new Date(trialEnd);
+      const formattedDate = Number.isFinite(endDate.getTime())
+        ? new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(endDate)
+        : null;
+      suffixes.push(formattedDate ? `résiliation le ${formattedDate}` : "résiliation programmée");
     }
 
-    const days = Math.ceil(remaining / DAY_IN_MS);
+    const warning = suffixes.length > 0;
     return {
-      label: `Essai (${days} jour${days > 1 ? "s" : ""} restant${days > 1 ? "s" : ""})`,
-      tone: "info",
+      label: [trialLabel, ...suffixes].join(" · "),
+      tone: warning ? "warning" : "info",
     };
   }
 
+  if (status === "trialing" && !Number.isFinite(trialEnd)) {
+    return { label: "Essai", tone: "info" };
+  }
+
   if (status === "canceled") return { label: "Résilié", tone: "muted" };
+  if (status === "past_due" || status === "unpaid") {
+    return { label: "Paiement à suivre", tone: "warning" };
+  }
   if (status === "incomplete") return { label: "Inscription à terminer", tone: "warning" };
   if (status === "incomplete_expired") return { label: "Inactif", tone: "muted" };
   if (status === "paused") return { label: "Suspendu", tone: "muted" };
