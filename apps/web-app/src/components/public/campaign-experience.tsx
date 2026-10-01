@@ -1193,7 +1193,7 @@ export function CampaignExperience({
         <h2 className="mt-6 text-center text-[2rem] font-semibold leading-[1.05] text-[#121826]">
           {currentAction ? "Avant de jouer" : "Prêt à jouer ?"}
         </h2>
-        <p className="mt-4 text-center text-lg leading-8 text-[#5f6678]">
+        <p className="mt-4 text-center text-lg leading-7 text-[#5f6678]">
           {currentAction?.kind === "google"
             ? "Découvrez notre établissement sur Google, puis revenez ici pour jouer."
             : currentAction?.kind === "instagram"
@@ -1227,9 +1227,10 @@ export function CampaignExperience({
             type="button"
             onClick={() => void launchPreparedGame()}
             disabled={isLoading}
+            style={actionVisited ? { fontSize: "24px", fontWeight: 700, lineHeight: "28px" } : undefined}
             className={
               actionVisited
-                ? "w-full rounded-[20px] border-0 bg-[#111827] px-5 py-4 text-xl font-semibold leading-7 text-white shadow-[0_12px_24px_rgba(17,24,39,0.16)] disabled:opacity-60"
+                ? "w-full rounded-[20px] border-0 bg-[#111827] px-6 py-[18px] text-2xl font-bold leading-7 text-white shadow-[0_12px_24px_rgba(17,24,39,0.16)] disabled:opacity-60"
                 : !currentAction
                   ? "w-full rounded-[20px] border-0 bg-[#111827] px-5 py-4 text-xl font-semibold text-white shadow-[0_12px_24px_rgba(17,24,39,0.16)] disabled:opacity-60"
                   : "w-full rounded-[12px] border-0 bg-transparent px-3 py-2 text-sm font-medium text-[#61687a] underline decoration-[#c4c9d4] underline-offset-4 transition hover:text-[#111827] disabled:opacity-60"

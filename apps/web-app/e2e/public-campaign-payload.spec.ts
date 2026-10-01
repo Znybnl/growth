@@ -46,3 +46,52 @@ test("public game preview renders and refreshes only participant actions", async
     fullPage: true,
   });
 });
+
+const marketingActionScenarios = [
+  {
+    campaignId: "camp-sora-review",
+    initialButton: "Je participe",
+    actionLabel: "Écrire un avis",
+    explanation:
+      "Découvrez notre établissement sur Google, puis revenez ici pour jouer.",
+  },
+  {
+    campaignId: "camp-sora-social",
+    initialButton: "JOUER",
+    actionLabel: "Suivez-nous sur Instagram",
+    explanation:
+      "Suivez-nous sur Instagram pour découvrir les nouveautés du commerce, puis revenez ici pour jouer.",
+  },
+];
+
+for (const isPreview of [true, false]) {
+  for (const scenario of marketingActionScenarios) {
+    test(`marketing action typography stays clear for ${scenario.actionLabel} (${isPreview ? "preview" : "public game"})`, async ({ page }, testInfo) => {
+      await page.setViewportSize({ width: 390, height: 844 });
+      await page.route("**/api/public/event", (route) =>
+        route.fulfill({ status: 200, contentType: "application/json", body: "{}" }),
+      );
+      await page.goto(
+        `/campaign/${scenario.campaignId}${isPreview ? "?preview=1" : ""}`,
+      );
+      await page.getByRole("button", { name: scenario.initialButton }).click();
+
+      const dialog = page.getByRole("dialog");
+      await expect(dialog).toBeVisible();
+      const explanation = dialog.getByText(scenario.explanation, { exact: true });
+      await expect(explanation).toHaveCSS("line-height", "28px");
+
+      const action = dialog.getByRole("link", { name: scenario.actionLabel });
+      const popupPromise = page.waitForEvent("popup");
+      await action.click();
+      await (await popupPromise).close();
+
+      const playButton = dialog.getByRole("button", { name: "Jouer" });
+      await expect(playButton).toHaveCSS("font-size", "24px");
+      await expect(playButton).toHaveCSS("font-weight", "700");
+      await expect(playButton).toHaveCSS("padding-top", "18px");
+      await expect(action).toHaveCSS("font-size", "18px");
+      await page.screenshot({ path: testInfo.outputPath("marketing-action-typography.png") });
+    });
+  }
+}
