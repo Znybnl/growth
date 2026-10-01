@@ -54,7 +54,7 @@ import { captureClientError } from "@/lib/client-observability";
 import { captureClientProductEvent } from "@/lib/client-product-analytics";
 import { postCampaignSetup } from "@/lib/campaign-setup-request";
 import { beautyWheelFontOptions, beautyWheelTheme, isBeautyIndustry, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
-import { beautyScratchTemplate, type BeautyScratchTemplateId } from "@/lib/beauty-scratch-templates";
+import { beautyScratchTemplate, isHiddenScratchTemplate, isImmersiveScratchTemplate, type BeautyScratchTemplateId } from "@/lib/beauty-scratch-templates";
 import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
 import {
   createAdminWizardMarketingActionDefaults,
@@ -1590,7 +1590,7 @@ export function CampaignWizard({
                   {draft.subtitle.length}/{MAX_CAMPAIGN_SUBTITLE_LENGTH} caractères · {draft.gameType === "wheel" && (isBeautyIndustry(merchant.industry) || isBeautyWheelTemplate(draft.presentation.layout.templateId)) ? `${MAX_BEAUTY_WHEEL_TITLE_LINES} lignes de saisie maximum · la taille reste celle que vous choisissez.` : "3 lignes maximum pour conserver un rendu lisible sur mobile."}
                 </span>
               </label>
-              {draft.gameType === "scratch" && beautyScratchTemplate(draft.presentation.layout.templateId) ? (
+              {draft.gameType === "scratch" && isImmersiveScratchTemplate(draft.presentation.layout.templateId) ? (
                 <label className="block">
                   <span className="text-sm font-semibold text-[#182033]">
                     Sous-titre du ticket <span className="font-normal text-[#8993a6]">(optionnel)</span>
@@ -2405,6 +2405,7 @@ export function CampaignWizard({
                       ] as const
                 )
                   .filter((template) => template.id !== "cosmic-orbit" && template.id !== "sunburst-festival")
+                  .filter((template) => draft.gameType !== "scratch" || !isHiddenScratchTemplate(template.id))
                   .filter((template) => !isBeautyIndustry(merchant.industry) || template.id !== "rose-institut")
                   .slice()
                   .sort((left, right) => (left.id === "scratch-coral" ? -1 : right.id === "scratch-coral" ? 1 : 0))
@@ -2526,14 +2527,13 @@ export function CampaignWizard({
                      {draft.gameType === "wheel" ? "Couleur principale de la roue" : "Couleur principale du ticket"}
                      {draft.gameType === "scratch" &&
                      (beautyScratchTemplate(draft.presentation.layout.templateId) ||
-                       draft.presentation.layout.templateId === "scratch-confetti" ||
-                       draft.presentation.layout.templateId === "scratch-lilac") ? (
+                       draft.presentation.layout.templateId === "scratch-confetti") ? (
                        <span className="rounded-full bg-[#f1ebff] px-2 py-0.5 text-[11px] font-semibold text-[#6944a1]">Palette fixe</span>
                      ) : null}
                    </span>
                    <input
                      type="color"
-                      disabled={draft.gameType === "scratch" && (Boolean(beautyScratchTemplate(draft.presentation.layout.templateId)) || draft.presentation.layout.templateId === "scratch-confetti" || draft.presentation.layout.templateId === "scratch-lilac")}
+                      disabled={draft.gameType === "scratch" && (Boolean(beautyScratchTemplate(draft.presentation.layout.templateId)) || draft.presentation.layout.templateId === "scratch-confetti")}
                      value={draft.gameType === "wheel" ? draft.presentation.wheel.loseColor : draft.accent.signal}
                      onChange={(event) => {
                        const color = event.target.value;
@@ -2800,8 +2800,7 @@ export function CampaignWizard({
                     Couleur principale du ticket
                   </span>
                   <span className="mt-1 block text-xs text-[#8993a6]">
-                    {draft.presentation.layout.templateId === "scratch-confetti" ||
-                    draft.presentation.layout.templateId === "scratch-lilac"
+                    {draft.presentation.layout.templateId === "scratch-confetti"
                       ? "Ce template utilise sa propre palette ; la couleur sélectionnée ici n’est pas utilisée."
                       : "Elle colore la zone à gratter et les éléments graphiques du template."}
                   </span>

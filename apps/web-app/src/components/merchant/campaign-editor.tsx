@@ -66,7 +66,7 @@ import {
 import { captureClientProductEvent } from "@/lib/client-product-analytics";
 import { postCampaignSetup } from "@/lib/campaign-setup-request";
 import { beautyWheelBackground, beautyWheelFontOptions, beautyWheelTheme, isBeautyIndustry, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
-import { beautyScratchTemplate, isImmersiveScratchTemplate as isImmersiveScratchPageTemplate, type BeautyScratchTemplateId, type ImmersiveScratchTemplateId } from "@/lib/beauty-scratch-templates";
+import { beautyScratchTemplate, isHiddenScratchTemplate, isImmersiveScratchTemplate as isImmersiveScratchPageTemplate, type BeautyScratchTemplateId, type ImmersiveScratchTemplateId } from "@/lib/beauty-scratch-templates";
 import { RosePowderDecor } from "@/components/public/rose-powder-decor";
 import {
   createCampaignEmailDefaults,
@@ -410,7 +410,7 @@ const scratchPageTemplateOptions: Array<{
   {
     value: "scratch-lilac",
     title: "Cadeau lilas",
-    description: "Un univers lilas doux, avec une illustration cadeau claire et contrastée. La couleur principale sélectionnée n’est pas utilisée.",
+    description: "Un univers lilas doux, avec une illustration cadeau claire et contrastée.",
   },
   {
     value: "scratch-sunburst",
@@ -2960,7 +2960,7 @@ export function CampaignEditor({
                   : [
                       ...scratchPageTemplateOptions.filter((template) => template.value === "scratch-coral"),
                       ...scratchPageTemplateOptions.filter((template) => template.value !== "scratch-coral"),
-                    ]
+                    ].filter((template) => !isHiddenScratchTemplate(template.value))
                 ).map((template) => {
                   const active =
                     (form.presentation.layout.templateId ?? "classic") === template.value;
@@ -3355,7 +3355,7 @@ export function CampaignEditor({
                 </span>
               </label>
 
-              {form.gameType === "scratch" && beautyScratchTemplate(form.presentation.layout.templateId) ? (
+              {form.gameType === "scratch" && isImmersiveScratchPageTemplate(form.presentation.layout.templateId) ? (
                 <label className="text-sm md:col-span-2">
                   <span className="mb-2 block font-semibold text-[#182033]">
                     Sous-titre du ticket <span className="font-normal text-[#8993a6]">(optionnel)</span>
@@ -4235,7 +4235,9 @@ export function CampaignEditor({
                 </label>
 
                 <label className="text-sm">
-                  <span className="mb-2 block text-[#616b7c]">Couleur de révélation</span>
+                  <span className="mb-2 block text-[#616b7c]">
+                    {currentTemplateId === "scratch-lilac" ? "Couleur principale du ticket" : "Couleur de révélation"}
+                  </span>
                   <input
                     type="color"
                     value={form.accent.signal}
@@ -4255,7 +4257,7 @@ export function CampaignEditor({
                 <label className="text-sm md:col-span-2">
                   <span className="mb-2 block text-[#616b7c]">Couleur du texte du ticket</span>
                   <span className="mb-3 block text-xs leading-5 text-[#8993a6]">
-                    {currentTemplateId === "scratch-confetti" || currentTemplateId === "scratch-lilac"
+                    {currentTemplateId === "scratch-confetti"
                       ? "Ce template utilise sa propre palette ; la couleur sélectionnée ici n’est pas utilisée."
                       : "Utilisée pour le logo, le titre et les consignes. Elle est ajustée automatiquement pour rester lisible selon le template."}
                   </span>

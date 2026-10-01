@@ -2,6 +2,45 @@ import { expect, test } from "@playwright/test";
 import { BEAUTY_SCRATCH_TEMPLATES } from "../src/lib/beauty-scratch-templates";
 import { signIn } from "./auth-session";
 
+test("les tickets initiaux affichent le sous-titre, masquent les deux cartes retirées et personnalisent Cadeau lilas", async ({ page }, testInfo) => {
+  test.setTimeout(120_000);
+  await signIn(page);
+  await page.goto("/campaigns/new/guided");
+  await page.getByRole("button", { name: /Ticket à gratter/ }).click();
+  await page.getByRole("button", { name: "Continuer", exact: true }).click();
+  await page.getByPlaceholder("Ex. La roue gourmande de juin").fill("Contrôle ticket initial");
+  const secondarySubtitle = page.getByLabel(/Sous-titre du ticket/);
+  await expect(secondarySubtitle).toBeVisible();
+  await secondarySubtitle.fill("Une surprise pour vous");
+  await page.getByRole("button", { name: "Continuer", exact: true }).click();
+
+  await expect(page.getByRole("button", { name: /Carte confettis/i })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: /Rayons soleil/i })).toHaveCount(0);
+
+  for (const template of [
+    { id: "scratch-vault", label: "Coffre néon" },
+    { id: "scratch-coral", label: "Corail joyeux" },
+    { id: "scratch-lilac", label: "Cadeau lilas" },
+  ]) {
+    await page.getByRole("button", { name: new RegExp(template.label, "i") }).click();
+    const preview = page.locator(`.okado-preview-surface[data-template-id="${template.id}"]`);
+    await expect(preview).toBeVisible();
+    await expect(preview.getByText("Une surprise pour vous")).toBeVisible();
+
+    if (template.id === "scratch-lilac") {
+      const primaryColor = page.getByRole("textbox", { name: "Couleur principale du ticket" }).first();
+      await expect(primaryColor).toBeEnabled();
+      await primaryColor.fill("#245780");
+      await expect(primaryColor).toHaveValue("#245780");
+      await expect.poll(() => preview.locator(":scope > div").evaluate((element) => getComputedStyle(element).backgroundImage)).toContain("36, 87, 128");
+      await preview.screenshot({
+        path: testInfo.outputPath("cadeau-lilas-custom-color-and-subtitle.png"),
+        animations: "disabled",
+      });
+    }
+  }
+});
+
 test("les espacements avancés contrôlent bien le rendu d’un ticket à gratter", async ({ page }, testInfo) => {
   test.setTimeout(120_000);
   await signIn(page);

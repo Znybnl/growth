@@ -89,6 +89,19 @@ export const IMMERSIVE_SCRATCH_TEMPLATE_IDS = [
   "beauty-scratch-corail",
 ] as const satisfies readonly GamePageTemplateId[];
 
+/** Retired from new template pickers; existing campaigns may still render them. */
+export const HIDDEN_SCRATCH_TEMPLATE_IDS = [
+  "scratch-confetti",
+  "scratch-sunburst",
+] as const satisfies readonly GamePageTemplateId[];
+
+export function isHiddenScratchTemplate(templateId?: string | null) {
+  return Boolean(
+    templateId &&
+      (HIDDEN_SCRATCH_TEMPLATE_IDS as readonly string[]).includes(templateId),
+  );
+}
+
 export type ImmersiveScratchTemplateId = (typeof IMMERSIVE_SCRATCH_TEMPLATE_IDS)[number];
 
 export function isImmersiveScratchTemplate(
