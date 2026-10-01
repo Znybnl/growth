@@ -1164,9 +1164,9 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
                 headingFontWeight={preview.headingFontWeight}
                 headingAlignmentClass={preview.headingAlignmentClass}
                 logoAlignmentClass={preview.logoAlignmentClass}
-                logoBottomSpacingPx={scalePreviewValue(
-                  Math.max(0, preview.logoBottomSpacingPx - preview.blockSpacingPx),
-                )}
+                logoBottomSpacingPx={scalePreviewValue(preview.logoBottomSpacingPx)}
+                textToScratchSpacingPx={scalePreviewValue(preview.blockSpacingPx)}
+                subtitleSpacingPx={scalePreviewValue(preview.subtitleSpacingPx)}
                 logoWidthPx={scalePreviewValue(preview.logoWidthPx)}
                 logoTextSizePx={scalePreviewValue(preview.logoTextSizePx)}
                 fitContainer
@@ -3272,7 +3272,7 @@ export function CampaignEditor({
             </div>
           </section>
 
-          {isExpertMode && (form.logoMode !== "none" || form.gameType === "wheel") ? (
+          {isExpertMode ? (
             <section className="okado-card p-6">
               <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Mise en page</p>
               <h2 className="mt-2 text-2xl font-semibold text-[#111827]">Espacements</h2>
@@ -3280,6 +3280,7 @@ export function CampaignEditor({
                 <CampaignSpacingControls
                   gameType={form.gameType}
                   logoMode={form.logoMode}
+                  hasScratchSubtitle={Boolean(beautyScratchTemplate(form.presentation.layout.templateId))}
                   logoSpacingPx={form.presentation.logo.marginBottomPx}
                   blockSpacingPx={form.presentation.layout.blockSpacingPx}
                   subtitleSpacingPx={form.presentation.layout.subtitleSpacingPx ?? DEFAULT_WHEEL_SUBTITLE_SPACING_PX}
