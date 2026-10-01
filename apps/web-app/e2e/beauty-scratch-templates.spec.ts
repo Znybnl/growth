@@ -17,6 +17,14 @@ test("les tickets initiaux affichent le sous-titre, masquent les deux cartes ret
   await expect(page.getByRole("button", { name: /Carte confettis/i })).toHaveCount(0);
   await expect(page.getByRole("button", { name: /Rayons soleil/i })).toHaveCount(0);
 
+  await expect(page.getByTestId("scratch-template-thumbnail-scratch-coral")).toBeVisible();
+  await expect(page.getByTestId("scratch-template-thumbnail-scratch-vault")).toBeVisible();
+  await expect(page.getByTestId("scratch-template-thumbnail-scratch-lilac")).toBeVisible();
+  await page.getByTestId("scratch-template-thumbnail-scratch-coral").locator("xpath=../..").screenshot({
+    path: testInfo.outputPath("initial-scratch-template-thumbnails.png"),
+    animations: "disabled",
+  });
+
   for (const template of [
     { id: "scratch-vault", label: "Coffre néon" },
     { id: "scratch-coral", label: "Corail joyeux" },
@@ -39,6 +47,19 @@ test("les tickets initiaux affichent le sous-titre, masquent les deux cartes ret
       });
     }
   }
+});
+
+test("les miniatures des tickets sont aussi visibles dans l'éditeur de campagne", async ({ page }) => {
+  test.setTimeout(120_000);
+  await signIn(page);
+  await page.goto("/campaigns/new");
+  await page.getByRole("button", { name: /Ticket à gratter/ }).click();
+
+  for (const templateId of ["scratch-vault", "scratch-coral", "scratch-lilac"]) {
+    await expect(page.getByTestId(`scratch-template-thumbnail-${templateId}`)).toBeVisible();
+  }
+  await expect(page.getByRole("button", { name: /Carte confettis/i })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: /Rayons soleil/i })).toHaveCount(0);
 });
 
 test("les espacements avancés contrôlent bien le rendu d’un ticket à gratter", async ({ page }, testInfo) => {

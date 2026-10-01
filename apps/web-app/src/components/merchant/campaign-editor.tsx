@@ -43,6 +43,7 @@ import { CampaignSpacingControls } from "@/components/merchant/campaign-spacing-
 import { GameTypeChoice } from "@/components/merchant/game-type-choice";
 import { BeautyWheelTemplateGallery } from "@/components/merchant/beauty-wheel-template-gallery";
 import { BeautyScratchTemplateGallery } from "@/components/merchant/beauty-scratch-template-gallery";
+import { ScratchTemplateThumbnail } from "@/components/merchant/scratch-template-thumbnail";
 import { WheelTemplateThumbnail } from "@/components/merchant/wheel-template-thumbnail";
 import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
 import { Switch } from "@/components/ui/switch";
@@ -3071,6 +3072,7 @@ export function CampaignEditor({
                     }`}
                   >
                     {form.gameType === "wheel" ? <WheelTemplateThumbnail templateId={template.value} /> : null}
+                    {form.gameType === "scratch" ? <ScratchTemplateThumbnail templateId={template.value} /> : null}
                     <span className="text-sm font-semibold text-[#111827]">
                         {template.title}
                       </span>
