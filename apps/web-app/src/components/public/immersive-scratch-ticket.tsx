@@ -494,8 +494,11 @@ export function ImmersiveScratchTicket({
         </div>
 
         <p
-          className={`relative z-10 mx-auto max-w-[28ch] text-center ${beautyTheme ? `mt-5 ${beautyTheme.fontClass} text-[11px] leading-[1.45] tracking-[0.015em]` : "mt-4 text-sm leading-5"}`}
-          style={{ color: withAlpha(ink, isVault || isConfetti ? "d9" : "c7") }}
+          className={`relative z-10 mx-auto max-w-[28ch] text-center ${beautyTheme ? `${beautyTheme.fontClass} text-[11px] leading-[1.45] tracking-[0.015em]` : "text-sm leading-5"}`}
+          style={{
+            color: withAlpha(ink, isVault || isConfetti ? "d9" : "c7"),
+            marginTop: `${Math.max(0, textToScratchSpacingPx)}px`,
+          }}
         >
           {beautyTheme ? "Le résultat s'affiche automatiquement." : isCoral ? "Le gain sera disponible selon les conditions de retrait." : isSunburst ? "Votre gain sera confirmé après la révélation." : "Le résultat apparaît dès que la zone est suffisamment grattée."}
         </p>
