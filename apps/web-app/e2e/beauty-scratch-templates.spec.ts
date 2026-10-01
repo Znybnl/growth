@@ -87,6 +87,8 @@ test("les cinq tickets Beauté restent lisibles et chargent leur fond sur plusie
     await expect(card).toHaveAttribute("aria-pressed", "true");
     const preview = page.locator(`.okado-preview-surface[data-template-id="${theme.id}"]`);
     await expect(preview).toBeVisible();
+    const resultHint = preview.getByText("Le résultat s'affiche automatiquement.", { exact: true });
+    await expect.poll(() => resultHint.evaluate((element) => getComputedStyle(element).marginTop)).toBe("20px");
     await expect.poll(() => preview.getByText("Des soins délicats pour votre bien-être", { exact: true }).evaluate((element) => (element as HTMLElement).style.marginTop)).toBe("0px");
     const scratchSurface = preview.locator(`canvas[data-foil-texture="${theme.id}"]`).locator("xpath=..");
     await expect.poll(() => scratchSurface.evaluate((element) => (element as HTMLElement).style.marginTop)).toBe("0px");
@@ -102,6 +104,12 @@ test("les cinq tickets Beauté restent lisibles et chargent leur fond sur plusie
     const foilResponse = await page.request.get(theme.scratch.texture);
     expect(foilResponse.ok()).toBe(true);
     expect(foilResponse.headers()["content-type"]).toContain("image/webp");
+    await scratchSpacing.focus();
+    await scratchSpacing.press("ArrowRight");
+    await expect.poll(() => scratchSurface.evaluate((element) => (element as HTMLElement).style.marginTop)).toBe("1px");
+    await expect.poll(() => resultHint.evaluate((element) => getComputedStyle(element).marginTop)).toBe("20px");
+    await scratchSpacing.focus();
+    await scratchSpacing.press("Home");
     await preview.screenshot({
       path: testInfo.outputPath(`${theme.id}-390.png`),
       animations: "disabled",
