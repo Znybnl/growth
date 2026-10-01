@@ -216,18 +216,24 @@ export function ImmersiveScratchTicket({
   const displayHeadline = headline?.trim() || DEFAULT_SCRATCH_SUBTITLE;
   const instruction = "Grattez la carte pour révéler votre cadeau.";
 
-  const surfaceClass = beautyTheme?.id === "beauty-scratch-nude"
-    ? "mx-auto aspect-[1.14/1] w-[74%] max-w-[250px] rounded-[28px]"
-    : beautyTheme
-      ? "mx-auto aspect-square w-[70%] max-w-[216px] rounded-full"
-      : isSunburst
+  const surfaceClass = beautyTheme
+    ? "mx-auto aspect-square w-[70%] max-w-[216px] rounded-full"
+    : isSunburst
     ? "aspect-[1.18/1] w-full"
     : "aspect-square w-full";
+  const surfaceRimClass = beautyTheme?.id === "beauty-scratch-noir-or"
+    ? "border-2 border-[#f0d798] ring-1 ring-[#9b7134]/75"
+    : beautyTheme?.id === "beauty-scratch-lilas"
+      ? "border-2 border-[#fffaff] ring-1 ring-[#8a7893]/60"
+      : beautyTheme
+        ? "border-2 border-[#fff7e8] ring-1 ring-[#ae9161]/55"
+        : "";
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const context = canvas?.getContext("2d");
     if (!canvas || !context) return;
+    if (beautyTheme) canvas.dataset.foilLoaded = "false";
 
     const gradient = context.createLinearGradient(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     const cover = beautyTheme?.scratch.base ?? (isLilac ? "#b85be5" : isVault ? "#171d38" : primary);
@@ -269,46 +275,45 @@ export function ImmersiveScratchTicket({
     context.fillStyle = gradient;
     context.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-    context.save();
-    context.globalAlpha = beautyTheme ? 0.095 : isSunburst ? 0.14 : 0.18;
-    context.strokeStyle = beautyTheme?.scratch.edge ?? (isLilac || isSunburst ? "#ffffff" : readableTextColor(primary));
-    context.lineWidth = beautyTheme ? 1.15 : 2;
-    for (let offset = -CANVAS_HEIGHT; offset < CANVAS_WIDTH; offset += beautyTheme ? 40 : isSunburst ? 28 : 34) {
-      context.beginPath();
-      context.moveTo(offset, 0);
-      context.lineTo(offset + CANVAS_HEIGHT, CANVAS_HEIGHT);
-      context.stroke();
-    }
-    if (beautyTheme?.id === "beauty-scratch-botanical" || beautyTheme?.id === "beauty-scratch-lilas") {
-      const engraving = beautyTheme.id === "beauty-scratch-botanical" ? "#65734f" : "#756282";
-      context.globalAlpha = beautyTheme.id === "beauty-scratch-botanical" ? 0.38 : 0.3;
-      context.strokeStyle = engraving;
-      context.lineWidth = 1.8;
-      context.lineCap = "round";
-      context.beginPath();
-      context.moveTo(160, 312);
-      context.bezierCurveTo(208, 274, 285, 205, 358, 124);
-      context.stroke();
-      for (let index = 0; index < 5; index += 1) {
-        const progress = 0.18 + index * 0.145;
-        const x = 160 + (358 - 160) * progress;
-        const y = 312 + (124 - 312) * progress;
-        const reach = (beautyTheme.id === "beauty-scratch-botanical" ? 35 : 28) - index * 1.3;
+    if (!beautyTheme) {
+      context.save();
+      context.globalAlpha = isSunburst ? 0.14 : 0.18;
+      context.strokeStyle = isLilac || isSunburst ? "#ffffff" : readableTextColor(primary);
+      context.lineWidth = 2;
+      for (let offset = -CANVAS_HEIGHT; offset < CANVAS_WIDTH; offset += isSunburst ? 28 : 34) {
         context.beginPath();
-        context.moveTo(x, y);
-        context.quadraticCurveTo(x - 9, y - reach * 0.72, x - reach, y - reach);
-        context.moveTo(x, y);
-        context.quadraticCurveTo(x + 9, y + reach * 0.72, x + reach, y + reach);
+        context.moveTo(offset, 0);
+        context.lineTo(offset + CANVAS_HEIGHT, CANVAS_HEIGHT);
         context.stroke();
       }
+      context.restore();
     }
-    context.restore();
     checksRef.current = 0;
     revealedRef.current = false;
     scratchStartedRef.current = false;
     setRevealed(false);
     setHasTouched(false);
   }, [beautyTheme, isCoral, isLilac, isSunburst, isVault, primary, resultLabel]);
+
+  useEffect(() => {
+    if (!beautyTheme) return;
+    const canvas = canvasRef.current;
+    const texture = new window.Image();
+    texture.onload = () => {
+      const context = canvas?.getContext("2d");
+      if (!canvas || !context) return;
+      context.save();
+      context.globalCompositeOperation = "source-over";
+      context.globalAlpha = beautyTheme.scratch.textureOpacity;
+      context.drawImage(texture, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      context.restore();
+      canvas.dataset.foilLoaded = "true";
+    };
+    texture.src = beautyTheme.scratch.texture;
+    return () => {
+      texture.onload = null;
+    };
+  }, [beautyTheme, primary, resultLabel]);
 
   function reveal() {
     if (revealedRef.current) return;
@@ -356,7 +361,7 @@ export function ImmersiveScratchTicket({
   }
 
   const rootClass = beautyTheme
-    ? "bg-transparent px-6 pb-8 pt-[76px]"
+    ? `flex flex-col bg-transparent px-6 pb-8 ${fitContainer ? "pt-2" : "pt-[76px]"}`
     : isVault || isConfetti
     ? "bg-transparent px-5"
     : isLilac
@@ -368,9 +373,13 @@ export function ImmersiveScratchTicket({
           : "bg-[#111936] px-5";
 
   return (
-    <div className={`mx-auto w-full ${fitContainer ? "max-w-full" : "max-w-[370px]"}`}>
+    <div
+    className={`mx-auto w-full ${fitContainer ? "max-w-full" : "max-w-[370px]"} ${beautyTheme ? "flex flex-1 flex-col" : ""}`}
+      style={beautyTheme ? { containerType: "inline-size" } : undefined}
+    >
       <div
-        className={`relative isolate overflow-hidden ${rootClass}`}
+        className={`relative isolate overflow-hidden ${rootClass} ${beautyTheme ? "flex-1" : ""}`}
+        style={beautyTheme ? { minHeight: fitContainer ? "min(844px, 212cqw)" : "min(100svh, 212cqw)" } : undefined}
       >
         <div className={`relative z-10 ${headingAlignmentClass}`}>
           {logoMode !== "none" ? (
@@ -388,14 +397,14 @@ export function ImmersiveScratchTicket({
             </div>
           ) : null}
           <h2
-            className={`${beautyTheme ? "mx-auto max-w-[14ch]" : ""} line-clamp-3 pb-2.5 text-2xl leading-[1.08] ${resolvedHeadingFontClass}`}
+            className={`${beautyTheme ? "mx-auto max-w-[11ch]" : ""} line-clamp-3 pb-2.5 text-2xl leading-[1.08] ${resolvedHeadingFontClass}`}
             style={{ color: ink, fontSize: headingFontSize, fontWeight: headingFontWeight }}
           >
             {displayHeadline}
           </h2>
           {beautyTheme && secondaryText?.trim() ? (
             <p
-              className={`mx-auto mt-3 max-w-[290px] text-[12px] leading-5 ${headingAlignmentClass}`}
+              className={`mx-auto mt-3 max-w-[250px] text-[10px] uppercase leading-[1.55] tracking-[0.13em] ${headingAlignmentClass}`}
               style={{ color: withAlpha(ink, "d9") }}
             >
               {secondaryText.trim()}
@@ -403,7 +412,7 @@ export function ImmersiveScratchTicket({
           ) : null}
         </div>
 
-        <div className={`relative z-10 ${beautyTheme ? secondaryText?.trim() ? "mt-4" : "mt-5" : "mt-5"} overflow-hidden ${surfaceClass} ${beautyTheme ? "border border-white/90 shadow-[0_14px_34px_rgba(55,42,30,.18)] ring-1 ring-black/10" : "rounded-[26px]"}`}>
+        <div className={`relative z-10 ${beautyTheme ? "mt-[clamp(32px,11svh,88px)]" : "mt-5"} overflow-hidden ${surfaceClass} ${beautyTheme ? `${surfaceRimClass} shadow-[0_14px_34px_rgba(55,42,30,.18)]` : "rounded-[26px]"}`}>
           {!revealed && !hasTouched ? (
             <div
               aria-hidden="true"
@@ -434,6 +443,8 @@ export function ImmersiveScratchTicket({
               ref={canvasRef}
               width={CANVAS_WIDTH}
               height={CANVAS_HEIGHT}
+              data-foil-texture={beautyTheme?.id}
+              data-foil-loaded={beautyTheme ? "false" : undefined}
               aria-label={instruction}
               className="relative z-20 block h-full w-full touch-none cursor-crosshair"
               onPointerDown={(event) => {
@@ -477,7 +488,7 @@ export function ImmersiveScratchTicket({
         </div>
 
         <p
-          className={`relative z-10 mx-auto mt-4 max-w-[28ch] text-center ${beautyTheme ? `${beautyTheme.fontClass} text-[11px] leading-[1.45] tracking-[0.015em]` : "text-sm leading-5"}`}
+          className={`relative z-10 mx-auto max-w-[28ch] text-center ${beautyTheme ? `mt-auto pt-5 ${beautyTheme.fontClass} text-[11px] leading-[1.45] tracking-[0.015em]` : "mt-4 text-sm leading-5"}`}
           style={{ color: withAlpha(ink, isVault || isConfetti ? "d9" : "c7") }}
         >
           {beautyTheme ? "Le résultat s'affiche automatiquement." : isCoral ? "Le gain sera disponible selon les conditions de retrait." : isSunburst ? "Votre gain sera confirmé après la révélation." : "Le résultat apparaît dès que la zone est suffisamment grattée."}

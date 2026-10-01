@@ -49,6 +49,11 @@ test("les cinq tickets Beauté restent lisibles et chargent leur fond sur plusie
     const assetResponse = await page.request.get(theme.background);
     expect(assetResponse.ok()).toBe(true);
     expect(assetResponse.headers()["content-type"]).toContain("image/webp");
+    const foil = preview.locator(`canvas[data-foil-texture="${theme.id}"]`);
+    await expect(foil).toHaveAttribute("data-foil-loaded", "true");
+    const foilResponse = await page.request.get(theme.scratch.texture);
+    expect(foilResponse.ok()).toBe(true);
+    expect(foilResponse.headers()["content-type"]).toContain("image/webp");
     await preview.screenshot({
       path: testInfo.outputPath(`${theme.id}-390.png`),
       animations: "disabled",

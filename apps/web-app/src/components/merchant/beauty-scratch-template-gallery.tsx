@@ -42,8 +42,8 @@ export function BeautyScratchTemplateGallery({
                     {template.sampleSubline}
                   </span>
                   <span
-                    className={`mt-5 block w-[67%] border border-white/90 shadow-[0_5px_12px_rgba(48,39,28,.16)] ${template.id === "beauty-scratch-nude" ? "aspect-[1.14/1] rounded-[18px]" : "aspect-square rounded-full"}`}
-                    style={{ background: `linear-gradient(140deg, ${template.scratch.highlight}, ${template.scratch.base} 52%, ${template.scratch.edge})` }}
+                    className="mt-5 block aspect-square w-[67%] rounded-full border border-white/90 bg-cover bg-center shadow-[0_5px_12px_rgba(48,39,28,.16)]"
+                    style={{ backgroundImage: `url("${template.scratch.texture}")` }}
                   />
                   <span className="mt-auto pt-3 text-[7px] leading-tight" style={{ color: template.text }}>
                     Le résultat s&apos;affiche automatiquement.

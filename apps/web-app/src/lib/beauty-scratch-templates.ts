@@ -8,7 +8,7 @@ export const BEAUTY_SCRATCH_TEMPLATES = [
     sampleHeadline: "Grattez et gagnez",
     sampleSubline: "De belles surprises pour prendre soin de vous",
     background: "/images/scratch-templates/beauty-nude-elegance.webp",
-    scratch: { base: "#b99a6a", highlight: "#e4d0aa", edge: "#fff7e9" },
+    scratch: { base: "#b99a6a", highlight: "#e4d0aa", edge: "#fff7e9", texture: "/images/scratch-templates/beauty-foil-nude.webp", textureOpacity: 0.16 },
     text: "#49372c",
     font: "playfair",
     fontClass: "font-playfair",
@@ -20,7 +20,7 @@ export const BEAUTY_SCRATCH_TEMPLATES = [
     sampleHeadline: "Grattez votre cadeau",
     sampleSubline: "Des surprises naturelles pour votre bien-être",
     background: "/images/scratch-templates/beauty-botanical-premium.webp",
-    scratch: { base: "#b69a63", highlight: "#e8d8b3", edge: "#fff9eb" },
+    scratch: { base: "#b69a63", highlight: "#e8d8b3", edge: "#fff9eb", texture: "/images/scratch-templates/beauty-foil-botanical.webp", textureOpacity: 0.32 },
     text: "#26392e",
     font: "cormorant",
     fontClass: "font-cormorant",
@@ -32,7 +32,7 @@ export const BEAUTY_SCRATCH_TEMPLATES = [
     sampleHeadline: "Grattez et découvrez",
     sampleSubline: "Des expériences beauté exclusives",
     background: "/images/scratch-templates/beauty-noir-or.webp",
-    scratch: { base: "#a17a3d", highlight: "#d5b671", edge: "#f0dfb8" },
+    scratch: { base: "#a17a3d", highlight: "#d5b671", edge: "#f0dfb8", texture: "/images/scratch-templates/beauty-foil-noir-or.webp", textureOpacity: 0.2 },
     text: "#f6e7c6",
     font: "bodoni",
     fontClass: "font-bodoni",
@@ -44,7 +44,7 @@ export const BEAUTY_SCRATCH_TEMPLATES = [
     sampleHeadline: "Grattez votre surprise",
     sampleSubline: "Des soins d'exception pour votre bien-être",
     background: "/images/scratch-templates/beauty-lilas-soin-doux.webp",
-    scratch: { base: "#a99aae", highlight: "#e9e1eb", edge: "#fffaff" },
+    scratch: { base: "#a99aae", highlight: "#e9e1eb", edge: "#fffaff", texture: "/images/scratch-templates/beauty-foil-lilas.webp", textureOpacity: 0.22 },
     text: "#49384f",
     font: "playfair",
     fontClass: "font-playfair",
@@ -56,10 +56,10 @@ export const BEAUTY_SCRATCH_TEMPLATES = [
     sampleHeadline: "Grattez et laissez-vous surprendre",
     sampleSubline: "Des moments beauté qui font du bien",
     background: "/images/scratch-templates/beauty-corail-lumiere.webp",
-    scratch: { base: "#b89460", highlight: "#ead8b4", edge: "#fff8eb" },
+    scratch: { base: "#b89460", highlight: "#ead8b4", edge: "#fff8eb", texture: "/images/scratch-templates/beauty-foil-corail.webp", textureOpacity: 0.16 },
     text: "#573126",
-    font: "lato",
-    fontClass: "font-lato",
+    font: "playfair",
+    fontClass: "font-playfair",
   },
 ] as const satisfies ReadonlyArray<{
   id: GamePageTemplateId;
@@ -68,7 +68,7 @@ export const BEAUTY_SCRATCH_TEMPLATES = [
   sampleHeadline: string;
   sampleSubline: string;
   background: string;
-  scratch: { base: string; highlight: string; edge: string };
+  scratch: { base: string; highlight: string; edge: string; texture: string; textureOpacity: number };
   text: string;
   font: TextFont;
   fontClass: string;
