@@ -57,6 +57,11 @@ import { beautyWheelFontOptions, beautyWheelTheme, isBeautyIndustry, isBeautyWhe
 import { beautyScratchTemplate, isHiddenScratchTemplate, isImmersiveScratchTemplate, type BeautyScratchTemplateId } from "@/lib/beauty-scratch-templates";
 import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
 import {
+  createAdminWizardMarketingActionDefaults,
+  createWizardMarketingActionDefaults,
+  wizardMarketingActionUrl,
+} from "@/lib/wizard-marketing-actions.mjs";
+import {
   createDefaultPosterSettings,
   createDefaultWheelSettings,
   DEFAULT_SCRATCH_PRIMARY_COLOR,
@@ -91,7 +96,6 @@ import {
   wheelPaletteForTemplate,
 } from "@/lib/campaign-defaults";
 import {
-  ActionKind,
   CampaignAction,
   CampaignPerformance,
   CampaignSetupInput,
@@ -254,139 +258,21 @@ function normalizeUrl(value: string) {
   return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
 }
 
-const REVIEW_ACTION_PRIORITY: Array<{
-  kind: Exclude<ActionKind, "google" | "crm">;
-  getUrl: (merchant: Merchant) => string | undefined;
-}> = [
-  { kind: "instagram", getUrl: (merchant) => merchant.instagramUrl },
-  { kind: "facebook", getUrl: (merchant) => merchant.facebookUrl },
-  { kind: "tiktok", getUrl: (merchant) => merchant.tiktokUrl },
-  { kind: "tripadvisor", getUrl: (merchant) => merchant.tripadvisorUrl },
-  { kind: "custom", getUrl: (merchant) => merchant.customLinkUrl },
-];
-
-function createWizardAction(id: string, kind: ActionKind, url: string) {
-  return {
-    id,
-    kind,
-    label: actionKindCta(kind),
-    url,
-  } satisfies CampaignAction;
-}
-
-function wizardActionUrl(merchant: Merchant, kind: ActionKind) {
-  switch (kind) {
-    case "google":
-      return normalizeUrl(merchant.googleReviewUrl ?? "") || "https://google.com";
-    case "instagram":
-      return normalizeUrl(merchant.instagramUrl ?? "") || "https://instagram.com";
-    case "facebook":
-      return normalizeUrl(merchant.facebookUrl ?? "") || "https://facebook.com";
-    case "tiktok":
-      return normalizeUrl(merchant.tiktokUrl ?? "") || "https://tiktok.com";
-    case "tripadvisor":
-      return normalizeUrl(merchant.tripadvisorUrl ?? "") || "https://tripadvisor.com";
-    case "custom":
-      return normalizeUrl(merchant.customLinkUrl ?? "") || "https://";
-    case "crm":
-      return normalizeUrl(merchant.websiteUrl ?? "") || "https://";
-    default:
-      return "https://";
-  }
-}
-
 function createWizardActions(
   merchant: Merchant,
   goalType: WizardDraft["goalType"],
 ): CampaignAction[] {
-  if (goalType === "review_prompt") {
-    const additionalActions = REVIEW_ACTION_PRIORITY.map(
-      ({ kind, getUrl }) => ({
-        kind,
-        url: normalizeUrl(getUrl(merchant) ?? ""),
-      }),
-    )
-      .filter(({ url }) => Boolean(url))
-      .slice(0, 2)
-      .map(({ kind, url }, index) =>
-        createWizardAction(`wizard-additional-action-${index + 2}`, kind, url),
-      );
-
-    return [
-      createWizardAction(
-        "wizard-google-action",
-        "google",
-        wizardActionUrl(merchant, "google"),
-      ),
-      ...additionalActions,
-    ];
-  }
-
-  if (goalType === "social_follow") {
-    return [
-      createWizardAction(
-        "wizard-instagram-action",
-        "instagram",
-        wizardActionUrl(merchant, "instagram"),
-      ),
-      createWizardAction(
-        "wizard-google-action",
-        "google",
-        wizardActionUrl(merchant, "google"),
-      ),
-      createWizardAction(
-        "wizard-facebook-action",
-        "facebook",
-        wizardActionUrl(merchant, "facebook"),
-      ),
-    ];
-  }
-
-  if (goalType === "lead_capture") {
-    const optionalActions: Array<{
-      kind: Exclude<ActionKind, "google" | "crm">;
-      url?: string;
-    }> = [
-      { kind: "instagram", url: merchant.instagramUrl },
-      { kind: "facebook", url: merchant.facebookUrl },
-      { kind: "tripadvisor", url: merchant.tripadvisorUrl },
-      { kind: "custom", url: merchant.customLinkUrl },
-    ];
-
-    return [
-      createWizardAction(
-        "wizard-google-action",
-        "google",
-        wizardActionUrl(merchant, "google"),
-      ),
-      ...optionalActions
-        .map(({ kind, url }) => ({ kind, url: normalizeUrl(url ?? "") }))
-        .filter(({ url }) => Boolean(url))
-        .map(({ kind, url }) => createWizardAction(`wizard-${kind}-action`, kind, url)),
-    ];
-  }
-
-  return [];
+  return createWizardMarketingActionDefaults(merchant, goalType).map((action) => ({
+    ...action,
+    label: actionKindCta(action.kind),
+  }));
 }
 
 function createAdminWizardActions(merchant: Merchant): CampaignAction[] {
-  const configuredActions: Array<{ kind: ActionKind; url?: string; label?: string }> = [
-    { kind: "google", url: merchant.googleReviewUrl },
-    { kind: "instagram", url: merchant.instagramUrl },
-    { kind: "facebook", url: merchant.facebookUrl },
-    { kind: "tiktok", url: merchant.tiktokUrl },
-    { kind: "tripadvisor", url: merchant.tripadvisorUrl },
-    { kind: "custom", url: merchant.customLinkUrl },
-    { kind: "custom", url: merchant.appointmentUrl, label: "Prendre rendez-vous" },
-  ];
-
-  return configuredActions
-    .map(({ kind, url, label }) => ({ kind, url: normalizeUrl(url ?? ""), label }))
-    .filter(({ url }) => Boolean(url))
-    .map(({ kind, url, label }, index) => ({
-      ...createWizardAction(`admin-wizard-action-${index + 1}`, kind, url),
-      ...(label ? { label } : {}),
-    }));
+  return createAdminWizardMarketingActionDefaults(merchant).map((action) => ({
+    ...action,
+    label: action.label ?? actionKindCta(action.kind),
+  }));
 }
 
 function createWizardDraft(merchant: Merchant): WizardDraft {
@@ -400,7 +286,7 @@ function createWizardDraft(merchant: Merchant): WizardDraft {
     emailCaptureEnabled: false,
     ctaLabel: "Je participe",
     successMetric: "Avis Google",
-    targetUrl: wizardActionUrl(merchant, "google"),
+    targetUrl: wizardMarketingActionUrl(merchant, "google") || undefined,
     isActive: false,
     logoMode: "text",
     logoText: merchant.companyName || merchant.logoText,
@@ -1242,7 +1128,7 @@ export function CampaignWizard({
         if (actionIndex !== index) return action;
         const nextAction = { ...action, ...patch };
         return patch.kind
-          ? { ...nextAction, url: wizardActionUrl(merchant, patch.kind) }
+          ? { ...nextAction, url: wizardMarketingActionUrl(merchant, patch.kind) }
           : nextAction;
       }),
     }));
@@ -1258,7 +1144,7 @@ export function CampaignWizard({
           id: `wizard-action-${Date.now()}`,
           kind: "custom",
           label: "Découvrir",
-          url: wizardActionUrl(merchant, "custom"),
+          url: wizardMarketingActionUrl(merchant, "custom"),
         },
       ],
     }));
@@ -2775,6 +2661,7 @@ export function CampaignWizard({
                        <CampaignSpacingControls
                          gameType={draft.gameType}
                          logoMode={draft.logoMode}
+                         hasScratchSubtitle={Boolean(beautyScratchTemplate(draft.presentation.layout.templateId))}
                          logoSpacingPx={draft.presentation.logo.marginBottomPx}
                          blockSpacingPx={draft.presentation.layout.blockSpacingPx}
                          subtitleSpacingPx={draft.presentation.layout.subtitleSpacingPx ?? DEFAULT_WHEEL_SUBTITLE_SPACING_PX}
