@@ -2,6 +2,36 @@ import { expect, test } from "@playwright/test";
 import { BEAUTY_SCRATCH_TEMPLATES } from "../src/lib/beauty-scratch-templates";
 import { signIn } from "./auth-session";
 
+test("les espacements avancés contrôlent bien le rendu d’un ticket à gratter", async ({ page }, testInfo) => {
+  test.setTimeout(120_000);
+  await signIn(page);
+  await page.goto("/campaigns/new/guided");
+  await page.getByRole("button", { name: /Ticket à gratter/ }).click();
+  await page.getByRole("button", { name: "Continuer", exact: true }).click();
+  await page.getByPlaceholder("Ex. La roue gourmande de juin").fill("Contrôle espacements ticket");
+  await page.getByRole("button", { name: "Continuer", exact: true }).click();
+
+  await page.getByText("Paramètres avancés").click();
+  const logoSpacing = page.getByRole("slider", { name: "Espacement sous le logo (px)" });
+  const scratchSpacing = page.getByRole("slider", { name: "Espacement entre le texte et la zone à gratter (px)" });
+  await expect(logoSpacing).toBeVisible();
+  await expect(scratchSpacing).toBeVisible();
+
+  const preview = page.locator(".okado-preview-surface").first();
+  const scratchSurface = preview.locator("canvas").locator("xpath=..");
+  for (const slider of [logoSpacing, scratchSpacing]) {
+    await slider.focus();
+    await slider.press("Home");
+  }
+  await expect.poll(() => scratchSurface.evaluate((element) => (element as HTMLElement).style.marginTop)).toBe("0px");
+  await expect.poll(() => preview.locator("div[style*='margin-bottom']").first().evaluate((element) => (element as HTMLElement).style.marginBottom)).toBe("0px");
+
+  await scratchSpacing.focus();
+  await scratchSpacing.press("ArrowRight");
+  await expect.poll(() => scratchSurface.evaluate((element) => (element as HTMLElement).style.marginTop)).toBe("1px");
+  await page.screenshot({ path: testInfo.outputPath("scratch-spacing-zero-and-one.png") });
+});
+
 test("les cinq tickets Beauté restent lisibles et chargent leur fond sur plusieurs écrans", async ({ page }, testInfo) => {
   test.setTimeout(120_000);
   await signIn(page);
@@ -21,8 +51,22 @@ test("les cinq tickets Beauté restent lisibles et chargent leur fond sur plusie
   const subtitleInput = page.getByLabel(/Sous-titre du ticket/);
   await subtitleInput.fill("Des soins délicats pour votre bien-être");
   await expect(page.getByText("Des soins délicats pour votre bien-être").last()).toBeVisible();
+
+  await page.getByText("Paramètres avancés").click();
+  const logoSpacing = page.getByRole("slider", { name: "Espacement sous le logo (px)" });
+  const scratchSpacing = page.getByRole("slider", { name: "Espacement entre le texte et la zone à gratter (px)" });
+  const subtitleSpacing = page.getByRole("slider", { name: "Espacement entre le titre et le sous-titre du ticket (px)" });
+  await expect(scratchSpacing).toBeVisible();
+  await expect(subtitleSpacing).toBeVisible();
+  await expect(logoSpacing).toBeVisible();
+  for (const slider of [logoSpacing, scratchSpacing, subtitleSpacing]) {
+    await slider.focus();
+    await slider.press("Home");
+  }
+
   await subtitleInput.fill("");
   await expect(page.getByText("Des soins délicats pour votre bien-être")).toHaveCount(0);
+  await subtitleInput.fill("Des soins délicats pour votre bien-être");
 
   for (const width of [320, 375, 390, 430, 1280]) {
     await page.setViewportSize({ width, height: width === 1280 ? 900 : 844 });
@@ -43,6 +87,10 @@ test("les cinq tickets Beauté restent lisibles et chargent leur fond sur plusie
     await expect(card).toHaveAttribute("aria-pressed", "true");
     const preview = page.locator(`.okado-preview-surface[data-template-id="${theme.id}"]`);
     await expect(preview).toBeVisible();
+    await expect.poll(() => preview.getByText("Des soins délicats pour votre bien-être", { exact: true }).evaluate((element) => (element as HTMLElement).style.marginTop)).toBe("0px");
+    const scratchSurface = preview.locator(`canvas[data-foil-texture="${theme.id}"]`).locator("xpath=..");
+    await expect.poll(() => scratchSurface.evaluate((element) => (element as HTMLElement).style.marginTop)).toBe("0px");
+    await expect.poll(() => preview.locator("div[style*='margin-bottom']").first().evaluate((element) => (element as HTMLElement).style.marginBottom)).toBe("0px");
     const art = preview.locator(`img[data-template-art="${theme.id}"]`);
     await expect(art).toBeVisible();
     await expect.poll(() => art.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0 && image.naturalHeight > 0)).toBe(true);

@@ -10,6 +10,7 @@ import { GameType, LogoMode } from "@/lib/types";
 type CampaignSpacingControlsProps = {
   gameType: GameType;
   logoMode?: LogoMode;
+  hasScratchSubtitle?: boolean;
   logoSpacingPx: number;
   blockSpacingPx: number;
   subtitleSpacingPx: number;
@@ -21,6 +22,7 @@ type CampaignSpacingControlsProps = {
 export function CampaignSpacingControls({
   gameType,
   logoMode,
+  hasScratchSubtitle = false,
   logoSpacingPx,
   blockSpacingPx,
   subtitleSpacingPx,
@@ -29,7 +31,9 @@ export function CampaignSpacingControls({
   onSubtitleSpacingChange,
 }: CampaignSpacingControlsProps) {
   const showLogoSpacing = logoMode !== "none";
-  const showBlockSpacing = gameType === "wheel";
+  const showBlockSpacing = gameType === "wheel" || gameType === "scratch";
+  const showSubtitleSpacing =
+    gameType === "wheel" || (gameType === "scratch" && hasScratchSubtitle);
 
   if (!showLogoSpacing && !showBlockSpacing) return null;
 
@@ -59,7 +63,11 @@ export function CampaignSpacingControls({
       {showBlockSpacing ? (
         <label className="block text-sm">
           <span className="mb-1 flex items-center justify-between gap-3 font-semibold text-[#182033]">
-            <span>Espacement entre le texte et la roue (px)</span>
+            <span>
+              {gameType === "wheel"
+                ? "Espacement entre le texte et la roue (px)"
+                : "Espacement entre le texte et la zone à gratter (px)"}
+            </span>
             <output className="text-aubergine">
               {clampCampaignSpacingPx(blockSpacingPx)} px
             </output>
@@ -72,15 +80,23 @@ export function CampaignSpacingControls({
             value={clampCampaignSpacingPx(blockSpacingPx)}
             onChange={(event) => onBlockSpacingChange(Number(event.target.value))}
             className="mt-3 w-full cursor-pointer accent-aubergine"
-            aria-label="Espacement entre le texte et la roue (px)"
+            aria-label={
+              gameType === "wheel"
+                ? "Espacement entre le texte et la roue (px)"
+                : "Espacement entre le texte et la zone à gratter (px)"
+            }
           />
         </label>
       ) : null}
 
-      {showBlockSpacing ? (
+      {showSubtitleSpacing ? (
         <label className="block text-sm">
           <span className="mb-1 flex items-center justify-between gap-3 font-semibold text-[#182033]">
-            <span>Espacement entre le texte principal et le sous-titre (px)</span>
+            <span>
+              {gameType === "wheel"
+                ? "Espacement entre le texte principal et le sous-titre (px)"
+                : "Espacement entre le titre et le sous-titre du ticket (px)"}
+            </span>
             <output className="text-aubergine">
               {clampCampaignSpacingPx(subtitleSpacingPx)} px
             </output>
@@ -93,7 +109,11 @@ export function CampaignSpacingControls({
             value={clampCampaignSpacingPx(subtitleSpacingPx)}
             onChange={(event) => onSubtitleSpacingChange(Number(event.target.value))}
             className="mt-3 w-full cursor-pointer accent-aubergine"
-            aria-label="Espacement entre le texte principal et le sous-titre (px)"
+            aria-label={
+              gameType === "wheel"
+                ? "Espacement entre le texte principal et le sous-titre (px)"
+                : "Espacement entre le titre et le sous-titre du ticket (px)"
+            }
           />
         </label>
       ) : null}

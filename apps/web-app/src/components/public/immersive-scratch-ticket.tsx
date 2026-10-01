@@ -38,6 +38,8 @@ type ImmersiveScratchTicketProps = {
   headingAlignmentClass?: string;
   logoAlignmentClass?: string;
   logoBottomSpacingPx?: number;
+  textToScratchSpacingPx?: number;
+  subtitleSpacingPx?: number;
   logoWidthPx?: number;
   logoTextSizePx?: number;
   /** Let editor previews use the full phone frame width while keeping the public game constrained. */
@@ -164,6 +166,8 @@ export function ImmersiveScratchTicket({
   headingAlignmentClass = "text-center",
   logoAlignmentClass = "justify-center",
   logoBottomSpacingPx = 32,
+  textToScratchSpacingPx = 20,
+  subtitleSpacingPx = 15,
   logoWidthPx = 170,
   logoTextSizePx = 30,
   fitContainer = false,
@@ -383,7 +387,7 @@ export function ImmersiveScratchTicket({
       >
         <div className={`relative z-10 ${headingAlignmentClass}`}>
           {logoMode !== "none" ? (
-            <div className={`flex ${logoAlignmentClass}`} style={{ marginBottom: `${Math.max(0, logoBottomSpacingPx) + (beautyTheme ? 24 : 0)}px` }}>
+            <div className={`flex ${logoAlignmentClass}`} style={{ marginBottom: `${Math.max(0, logoBottomSpacingPx)}px` }}>
               <BrandMark
                 logoText={logoText || "Votre commerce"}
                 logoUrl={logoMode === "image" ? logoUrl : undefined}
@@ -397,22 +401,25 @@ export function ImmersiveScratchTicket({
             </div>
           ) : null}
           <h2
-            className={`${beautyTheme ? "mx-auto max-w-[11ch]" : ""} line-clamp-3 pb-2.5 text-2xl leading-[1.08] ${resolvedHeadingFontClass}`}
+            className={`${beautyTheme ? "mx-auto max-w-[11ch]" : ""} line-clamp-3 text-2xl leading-[1.08] ${resolvedHeadingFontClass}`}
             style={{ color: ink, fontSize: headingFontSize, fontWeight: headingFontWeight }}
           >
             {displayHeadline}
           </h2>
           {beautyTheme && secondaryText?.trim() ? (
             <p
-              className={`mx-auto mt-3 max-w-[250px] text-[10px] uppercase leading-[1.55] tracking-[0.13em] ${headingAlignmentClass}`}
-              style={{ color: withAlpha(ink, "d9") }}
+              className={`mx-auto max-w-[250px] text-[10px] uppercase leading-[1.55] tracking-[0.13em] ${headingAlignmentClass}`}
+              style={{ color: withAlpha(ink, "d9"), marginTop: `${Math.max(0, subtitleSpacingPx)}px` }}
             >
               {secondaryText.trim()}
             </p>
           ) : null}
         </div>
 
-        <div className={`relative z-10 ${beautyTheme ? "mt-[clamp(32px,11svh,88px)]" : "mt-5"} overflow-hidden ${surfaceClass} ${beautyTheme ? `${surfaceRimClass} shadow-[0_14px_34px_rgba(55,42,30,.18)]` : "rounded-[26px]"}`}>
+        <div
+          className={`relative z-10 overflow-hidden ${surfaceClass} ${beautyTheme ? `${surfaceRimClass} shadow-[0_14px_34px_rgba(55,42,30,.18)]` : "rounded-[26px]"}`}
+          style={{ marginTop: `${Math.max(0, textToScratchSpacingPx)}px` }}
+        >
           {!revealed && !hasTouched ? (
             <div
               aria-hidden="true"
