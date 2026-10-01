@@ -42,6 +42,7 @@ import { CampaignLivePreview as SharedCampaignLivePreview } from "@/components/m
 import { CampaignSpacingControls } from "@/components/merchant/campaign-spacing-controls";
 import { GameTypeChoice } from "@/components/merchant/game-type-choice";
 import { BeautyWheelTemplateGallery } from "@/components/merchant/beauty-wheel-template-gallery";
+import { BeautyScratchTemplateGallery } from "@/components/merchant/beauty-scratch-template-gallery";
 import { WheelTemplateThumbnail } from "@/components/merchant/wheel-template-thumbnail";
 import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
 import { Switch } from "@/components/ui/switch";
@@ -65,6 +66,7 @@ import {
 import { captureClientProductEvent } from "@/lib/client-product-analytics";
 import { postCampaignSetup } from "@/lib/campaign-setup-request";
 import { beautyWheelBackground, beautyWheelFontOptions, beautyWheelTheme, isBeautyIndustry, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
+import { beautyScratchTemplate, isImmersiveScratchTemplate as isImmersiveScratchPageTemplate, type BeautyScratchTemplateId, type ImmersiveScratchTemplateId } from "@/lib/beauty-scratch-templates";
 import { RosePowderDecor } from "@/components/public/rose-powder-decor";
 import {
   createCampaignEmailDefaults,
@@ -268,6 +270,7 @@ export type CampaignEditorPreviewModel = {
   headingFontSizePx: number;
   headingFontWeight: number;
   subtitle: string;
+  scratchSubtitle: string;
   wheelSubtitle: string;
   blockSpacingPx: number;
   subtitleSpacingPx: number;
@@ -919,12 +922,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
   const isCosmicTemplate = preview.gamePageTemplateId === "cosmic-orbit";
   const isImmersiveTemplate =
     !isCocoricoTemplate && (isCosmicTemplate || preview.gamePageTemplateId === "sunburst-festival");
-  const isImmersiveScratchTemplate =
-    preview.gamePageTemplateId === "scratch-vault" ||
-    preview.gamePageTemplateId === "scratch-confetti" ||
-    preview.gamePageTemplateId === "scratch-coral" ||
-    preview.gamePageTemplateId === "scratch-lilac" ||
-    preview.gamePageTemplateId === "scratch-sunburst";
+  const isImmersiveScratchTemplate = isImmersiveScratchPageTemplate(preview.gamePageTemplateId);
   const showStandardHeader = !isImmersiveScratchTemplate;
   const previewScale = compact ? 0.8 : 1;
   const previewHeadingScale = compact ? 0.65 : 1;
@@ -1153,7 +1151,9 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
                 logoText={preview.logoText}
                 logoUrl={preview.logoUrl}
                 headline={preview.subtitle}
+                secondaryText={preview.scratchSubtitle}
                 headingTextColor={previewHeadingTextColor}
+                logoTextColor={preview.logoTextColor}
                 headingFontClass={preview.headingFontClass}
                 headingFontSize={fluidType(scalePreviewValue(preview.headingFontSizePx), {
                   minRatio: 0.82,
@@ -1169,7 +1169,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
                 logoWidthPx={scalePreviewValue(preview.logoWidthPx)}
                 logoTextSizePx={scalePreviewValue(preview.logoTextSizePx)}
                 fitContainer
-                template={preview.gamePageTemplateId as "scratch-vault" | "scratch-confetti" | "scratch-coral" | "scratch-lilac" | "scratch-sunburst"}
+                template={preview.gamePageTemplateId as ImmersiveScratchTemplateId}
               />
             ) : (
               <ScratchGame
@@ -1592,7 +1592,9 @@ export function buildCampaignLivePreviewModel(
     campaignLogoTextSizePx(logoSizePercent, form.gameType) * (isBeautyWheelTemplate(templateId) || templateId === "rose-institut" ? 0.9 : 1),
   );
   const backgroundImage =
-    form.presentation.background.mode === "image" && form.presentation.background.imageUrl
+    beautyScratchTemplate(templateId)
+      ? `url("${beautyScratchTemplate(templateId)!.background}")`
+      : form.presentation.background.mode === "image" && form.presentation.background.imageUrl
       ? userBackgroundImageStyle(form.presentation.background.imageUrl)
       : templateId === "restaurant-pop"
         ? restaurantPopBackground(form.presentation.background.color, form.presentation.wheel.loseColor)
@@ -1656,6 +1658,7 @@ export function buildCampaignLivePreviewModel(
         ? MAX_BEAUTY_WHEEL_TITLE_LINES
         : undefined,
     ),
+    scratchSubtitle: limitCampaignSubtitleLines(form.presentation.layout.scratchSubtitle ?? ""),
     wheelSubtitle: limitCampaignSubtitleLines(form.presentation.layout.wheelSubtitle ?? ""),
     blockSpacingPx: clampCampaignSpacingPx(form.presentation.layout.blockSpacingPx),
     subtitleSpacingPx: clampCampaignSpacingPx(
@@ -1870,6 +1873,32 @@ export function CampaignEditor({
       };
     });
   }
+  function selectBeautyScratchTemplate(templateId: BeautyScratchTemplateId) {
+    const theme = beautyScratchTemplate(templateId);
+    if (!theme) return;
+    captureClientProductEvent("campaign_template_selected", {
+      campaignType: "scratch",
+      templateKey: templateId,
+      wizardMode: "classic",
+    });
+    setForm((current) => {
+      if (current.presentation.layout.templateId === templateId) return current;
+      return {
+        ...current,
+        presentation: {
+          ...current.presentation,
+          layout: { ...current.presentation.layout, templateId },
+          heading: { ...current.presentation.heading, fontFamily: theme.font, textColor: theme.text },
+          logo: { ...current.presentation.logo, textColor: theme.text },
+        },
+        accent: {
+          ...normalizeScratchAccent(current.accent, templateId),
+          signal: theme.scratch.base,
+          ink: theme.text,
+        },
+      };
+    });
+  }
   const gameTypeState = useRef<Partial<Record<EditorState["gameType"], GameTypeState>>>({});
   const [backgroundLibrary, setBackgroundLibrary] = useState<BackgroundLibraryAsset[]>([]);
   const [isLibraryLoading, setIsLibraryLoading] = useState(false);
@@ -1988,7 +2017,9 @@ export function CampaignEditor({
       backgroundStyle: {
         backgroundColor: form.presentation.background.color,
         backgroundImage:
-          form.presentation.background.mode === "image" && form.presentation.background.imageUrl
+          beautyScratchTemplate(form.presentation.layout.templateId)
+            ? `url("${beautyScratchTemplate(form.presentation.layout.templateId)!.background}")`
+            : form.presentation.background.mode === "image" && form.presentation.background.imageUrl
             ? userBackgroundImageStyle(form.presentation.background.imageUrl)
             : (form.presentation.layout.templateId ?? "classic") === "restaurant-pop"
               ? restaurantPopBackground(form.presentation.background.color, form.presentation.wheel.loseColor)
@@ -2040,6 +2071,7 @@ export function CampaignEditor({
           ? MAX_BEAUTY_WHEEL_TITLE_LINES
           : undefined,
       ),
+      scratchSubtitle: limitCampaignSubtitleLines(form.presentation.layout.scratchSubtitle ?? ""),
       wheelSubtitle: limitCampaignSubtitleLines(form.presentation.layout.wheelSubtitle ?? ""),
       blockSpacingPx: clampCampaignSpacingPx(form.presentation.layout.blockSpacingPx),
       subtitleSpacingPx: clampCampaignSpacingPx(
@@ -2093,6 +2125,7 @@ export function CampaignEditor({
     form.presentation.heading.fontWeight,
     form.presentation.heading.textColor,
     form.presentation.layout.blockSpacingPx,
+    form.presentation.layout.scratchSubtitle,
     form.presentation.layout.subtitleSpacingPx,
     form.presentation.layout.templateId,
     form.presentation.layout.wheelSubtitle,
@@ -2912,6 +2945,12 @@ export function CampaignEditor({
                   onSelect={selectBeautyWheelTemplate}
                 />
               ) : null}
+              {form.gameType === "scratch" && isBeautyIndustry(merchant.industry) ? (
+                <BeautyScratchTemplateGallery
+                  selectedTemplateId={form.presentation.layout.templateId}
+                  onSelect={selectBeautyScratchTemplate}
+                />
+              ) : null}
               <p className="text-xs uppercase tracking-[0.24em] text-[#7b8496]">
                 {form.gameType === "wheel" ? "Autres templates de roue" : "Template de page de jeu"}
               </p>
@@ -3314,6 +3353,36 @@ export function CampaignEditor({
                   {form.subtitle.length}/{MAX_CAMPAIGN_SUBTITLE_LENGTH} caractères · {form.gameType === "wheel" && isBeautyWheelTemplate(form.presentation.layout.templateId) ? `${MAX_BEAUTY_WHEEL_TITLE_LINES} lignes de saisie maximum · la taille reste celle que vous choisissez.` : "3 lignes maximum pour conserver un rendu lisible sur mobile."}
                 </span>
               </label>
+
+              {form.gameType === "scratch" && beautyScratchTemplate(form.presentation.layout.templateId) ? (
+                <label className="text-sm md:col-span-2">
+                  <span className="mb-2 block font-semibold text-[#182033]">
+                    Sous-titre du ticket <span className="font-normal text-[#8993a6]">(optionnel)</span>
+                  </span>
+                  <textarea
+                    value={form.presentation.layout.scratchSubtitle ?? ""}
+                    onChange={(event) =>
+                      setForm((current) => ({
+                        ...current,
+                        presentation: {
+                          ...current.presentation,
+                          layout: {
+                            ...current.presentation.layout,
+                            scratchSubtitle: limitCampaignSubtitleLines(event.target.value),
+                          },
+                        },
+                      }))
+                    }
+                    rows={2}
+                    maxLength={MAX_CAMPAIGN_SUBTITLE_LENGTH}
+                    placeholder="Ex. De belles surprises pour prendre soin de vous"
+                    className="w-full resize-none rounded-[12px] border border-[#d7e0ed] bg-white px-4 py-3 leading-6 outline-none"
+                  />
+                  <span className="mt-1 block text-xs text-[#8993a6]">
+                    {(form.presentation.layout.scratchSubtitle ?? "").length}/{MAX_CAMPAIGN_SUBTITLE_LENGTH} caractères · s’affiche sous le texte principal.
+                  </span>
+                </label>
+              ) : null}
 
               {form.gameType === "wheel" ? (
                 <label className="text-sm md:col-span-2">

@@ -9,13 +9,9 @@ import {
   DEFAULT_SCRATCH_SUBTITLE,
   scratchTemplatePrimaryColor,
 } from "@/lib/campaign-defaults";
+import { beautyScratchTemplate, type ImmersiveScratchTemplateId } from "@/lib/beauty-scratch-templates";
 
-type ScratchTemplateId =
-  | "scratch-vault"
-  | "scratch-confetti"
-  | "scratch-coral"
-  | "scratch-lilac"
-  | "scratch-sunburst";
+type ScratchTemplateId = ImmersiveScratchTemplateId;
 
 type ImmersiveScratchTicketProps = {
   accent: {
@@ -33,7 +29,9 @@ type ImmersiveScratchTicketProps = {
   logoText?: string;
   logoUrl?: string;
   headline?: string;
+  secondaryText?: string;
   headingTextColor?: string;
+  logoTextColor?: string;
   headingFontClass?: string;
   headingFontSize?: string;
   headingFontWeight?: number;
@@ -158,7 +156,9 @@ export function ImmersiveScratchTicket({
   logoText,
   logoUrl,
   headline,
+  secondaryText,
   headingTextColor,
+  logoTextColor,
   headingFontClass,
   headingFontWeight = 600,
   headingAlignmentClass = "text-center",
@@ -181,6 +181,7 @@ export function ImmersiveScratchTicket({
   const isCoral = template === "scratch-coral";
   const isLilac = template === "scratch-lilac";
   const isSunburst = template === "scratch-sunburst";
+  const beautyTheme = beautyScratchTemplate(template);
   const configuredPrimary = accent.signal;
   const primary = scratchTemplatePrimaryColor(configuredPrimary, template);
   const hasCustomPrimary =
@@ -199,60 +200,120 @@ export function ImmersiveScratchTicket({
         ? blendWithWhite(ticketBaseColor, 0.58)
         : "#86e8ff"
       : blendWithWhite(ticketBaseColor, 0.48);
-  const defaultInk = isVault || isConfetti
+  const defaultInk = beautyTheme?.text ?? (isVault || isConfetti
     ? "#f8fbff"
     : isLilac
       ? "#4c1d95"
       : isSunburst
         ? "#3b2500"
-        : "#111827";
+        : "#111827");
   const ink = headingTextColor || defaultInk;
   const resultInk = highestContrastTextColor(ticketBaseColor);
   const resultTextShadow = resultInk === "#ffffff"
     ? "0 2px 10px rgba(0, 0, 0, 0.58)"
     : "0 2px 8px rgba(255, 255, 255, 0.72)";
-  const resolvedHeadingFontClass = headingFontClass || (isLilac ? "font-fredoka" : "font-display");
+  const resolvedHeadingFontClass = headingFontClass || beautyTheme?.fontClass || (isLilac ? "font-fredoka" : "font-display");
   const displayHeadline = headline?.trim() || DEFAULT_SCRATCH_SUBTITLE;
   const instruction = "Grattez la carte pour révéler votre cadeau.";
 
-  const surfaceClass = isSunburst
+  const surfaceClass = beautyTheme
+    ? "mx-auto aspect-square w-[70%] max-w-[216px] rounded-full"
+    : isSunburst
     ? "aspect-[1.18/1] w-full"
     : "aspect-square w-full";
+  const surfaceRimClass = beautyTheme?.id === "beauty-scratch-noir-or"
+    ? "border-2 border-[#f0d798] ring-1 ring-[#9b7134]/75"
+    : beautyTheme?.id === "beauty-scratch-lilas"
+      ? "border-2 border-[#fffaff] ring-1 ring-[#8a7893]/60"
+      : beautyTheme
+        ? "border-2 border-[#fff7e8] ring-1 ring-[#ae9161]/55"
+        : "";
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const context = canvas?.getContext("2d");
     if (!canvas || !context) return;
+    if (beautyTheme) canvas.dataset.foilLoaded = "false";
 
     const gradient = context.createLinearGradient(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-    const cover = isLilac ? "#b85be5" : isVault ? "#171d38" : primary;
-    const highlight = isLilac ? "#e2a7fa" : isSunburst ? blendWithWhite(cover, 0.2) : blendWithWhite(cover, 0.34);
-    gradient.addColorStop(0, cover);
-    gradient.addColorStop(0.42, highlight);
-    gradient.addColorStop(0.72, cover);
-    gradient.addColorStop(1, isSunburst ? blendWithWhite(cover, 0.04) : blendWithWhite(cover, 0.08));
+    const cover = beautyTheme?.scratch.base ?? (isLilac ? "#b85be5" : isVault ? "#171d38" : primary);
+    const highlight = beautyTheme?.scratch.highlight ?? (isLilac ? "#e2a7fa" : isSunburst ? blendWithWhite(cover, 0.2) : blendWithWhite(cover, 0.34));
+    if (beautyTheme?.id === "beauty-scratch-nude") {
+      gradient.addColorStop(0, "#c4a675");
+      gradient.addColorStop(0.24, "#ead8b2");
+      gradient.addColorStop(0.52, "#c9ad7c");
+      gradient.addColorStop(0.78, "#e3d0a9");
+      gradient.addColorStop(1, "#b99862");
+    } else if (beautyTheme?.id === "beauty-scratch-botanical") {
+      gradient.addColorStop(0, "#c3a875");
+      gradient.addColorStop(0.38, "#eee1c4");
+      gradient.addColorStop(0.7, "#d2bb89");
+      gradient.addColorStop(1, "#b3935d");
+    } else if (beautyTheme?.id === "beauty-scratch-noir-or") {
+      gradient.addColorStop(0, "#98713a");
+      gradient.addColorStop(0.32, "#e8cf8c");
+      gradient.addColorStop(0.62, "#c39b52");
+      gradient.addColorStop(1, "#8f6834");
+    } else if (beautyTheme?.id === "beauty-scratch-lilas") {
+      gradient.addColorStop(0, "#b9aebe");
+      gradient.addColorStop(0.36, "#eee8ef");
+      gradient.addColorStop(0.68, "#d5cbd9");
+      gradient.addColorStop(1, "#a99aaf");
+    } else if (beautyTheme?.id === "beauty-scratch-corail") {
+      gradient.addColorStop(0, "#c29e6b");
+      gradient.addColorStop(0.35, "#f0dfbf");
+      gradient.addColorStop(0.68, "#d7b780");
+      gradient.addColorStop(1, "#b18a56");
+    } else {
+      gradient.addColorStop(0, cover);
+      gradient.addColorStop(0.42, highlight);
+      gradient.addColorStop(0.72, cover);
+      gradient.addColorStop(1, isSunburst ? blendWithWhite(cover, 0.04) : blendWithWhite(cover, 0.08));
+    }
     context.globalCompositeOperation = "source-over";
     context.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     context.fillStyle = gradient;
     context.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-    context.save();
-    context.globalAlpha = isSunburst ? 0.14 : 0.18;
-    context.strokeStyle = isLilac || isSunburst ? "#ffffff" : readableTextColor(primary);
-    context.lineWidth = 2;
-    for (let offset = -CANVAS_HEIGHT; offset < CANVAS_WIDTH; offset += isSunburst ? 28 : 34) {
-      context.beginPath();
-      context.moveTo(offset, 0);
-      context.lineTo(offset + CANVAS_HEIGHT, CANVAS_HEIGHT);
-      context.stroke();
+    if (!beautyTheme) {
+      context.save();
+      context.globalAlpha = isSunburst ? 0.14 : 0.18;
+      context.strokeStyle = isLilac || isSunburst ? "#ffffff" : readableTextColor(primary);
+      context.lineWidth = 2;
+      for (let offset = -CANVAS_HEIGHT; offset < CANVAS_WIDTH; offset += isSunburst ? 28 : 34) {
+        context.beginPath();
+        context.moveTo(offset, 0);
+        context.lineTo(offset + CANVAS_HEIGHT, CANVAS_HEIGHT);
+        context.stroke();
+      }
+      context.restore();
     }
-    context.restore();
     checksRef.current = 0;
     revealedRef.current = false;
     scratchStartedRef.current = false;
     setRevealed(false);
     setHasTouched(false);
-  }, [isCoral, isLilac, isSunburst, isVault, primary, resultLabel]);
+  }, [beautyTheme, isCoral, isLilac, isSunburst, isVault, primary, resultLabel]);
+
+  useEffect(() => {
+    if (!beautyTheme) return;
+    const canvas = canvasRef.current;
+    const texture = new window.Image();
+    texture.onload = () => {
+      const context = canvas?.getContext("2d");
+      if (!canvas || !context) return;
+      context.save();
+      context.globalCompositeOperation = "source-over";
+      context.globalAlpha = beautyTheme.scratch.textureOpacity;
+      context.drawImage(texture, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      context.restore();
+      canvas.dataset.foilLoaded = "true";
+    };
+    texture.src = beautyTheme.scratch.texture;
+    return () => {
+      texture.onload = null;
+    };
+  }, [beautyTheme, primary, resultLabel]);
 
   function reveal() {
     if (revealedRef.current) return;
@@ -299,7 +360,9 @@ export function ImmersiveScratchTicket({
     };
   }
 
-  const rootClass = isVault || isConfetti
+  const rootClass = beautyTheme
+    ? `flex flex-col bg-transparent px-6 pb-8 ${fitContainer ? "pt-2" : "pt-[76px]"}`
+    : isVault || isConfetti
     ? "bg-transparent px-5"
     : isLilac
       ? "bg-transparent px-6"
@@ -310,11 +373,17 @@ export function ImmersiveScratchTicket({
           : "bg-[#111936] px-5";
 
   return (
-    <div className={`mx-auto w-full ${fitContainer ? "max-w-full" : "max-w-[370px]"}`}>
-      <div className={`relative overflow-hidden ${rootClass}`}>
+    <div
+    className={`mx-auto w-full ${fitContainer ? "max-w-full" : "max-w-[370px]"} ${beautyTheme ? "flex flex-1 flex-col" : ""}`}
+      style={beautyTheme ? { containerType: "inline-size" } : undefined}
+    >
+      <div
+        className={`relative isolate overflow-hidden ${rootClass} ${beautyTheme ? "flex-1" : ""}`}
+        style={beautyTheme ? { minHeight: fitContainer ? "min(844px, 212cqw)" : "min(100svh, 212cqw)" } : undefined}
+      >
         <div className={`relative z-10 ${headingAlignmentClass}`}>
           {logoMode !== "none" ? (
-            <div className={`flex ${logoAlignmentClass}`} style={{ marginBottom: `${Math.max(0, logoBottomSpacingPx)}px` }}>
+            <div className={`flex ${logoAlignmentClass}`} style={{ marginBottom: `${Math.max(0, logoBottomSpacingPx) + (beautyTheme ? 24 : 0)}px` }}>
               <BrandMark
                 logoText={logoText || "Votre commerce"}
                 logoUrl={logoMode === "image" ? logoUrl : undefined}
@@ -323,25 +392,27 @@ export function ImmersiveScratchTicket({
                 imageWidthPx={logoWidthPx}
                 textSizePx={logoTextSizePx}
                 textClassName="text-2xl"
-                textColor={ink}
+                textColor={logoTextColor || ink}
               />
             </div>
           ) : null}
           <h2
-            className={`line-clamp-3 pb-2.5 text-2xl leading-[1.08] ${resolvedHeadingFontClass}`}
+            className={`${beautyTheme ? "mx-auto max-w-[11ch]" : ""} line-clamp-3 pb-2.5 text-2xl leading-[1.08] ${resolvedHeadingFontClass}`}
             style={{ color: ink, fontSize: headingFontSize, fontWeight: headingFontWeight }}
           >
             {displayHeadline}
           </h2>
-          <p
-            className={`mx-auto mt-9 max-w-[270px] text-sm leading-5 ${headingAlignmentClass}`}
-            style={{ color: withAlpha(ink, isVault || isConfetti ? "e0" : "d9") }}
-          >
-            {instruction}
-          </p>
+          {beautyTheme && secondaryText?.trim() ? (
+            <p
+              className={`mx-auto mt-3 max-w-[250px] text-[10px] uppercase leading-[1.55] tracking-[0.13em] ${headingAlignmentClass}`}
+              style={{ color: withAlpha(ink, "d9") }}
+            >
+              {secondaryText.trim()}
+            </p>
+          ) : null}
         </div>
 
-        <div className={`relative z-10 mx-auto mt-4 overflow-hidden rounded-[26px] ${surfaceClass}`}>
+        <div className={`relative z-10 ${beautyTheme ? "mt-[clamp(32px,11svh,88px)]" : "mt-5"} overflow-hidden ${surfaceClass} ${beautyTheme ? `${surfaceRimClass} shadow-[0_14px_34px_rgba(55,42,30,.18)]` : "rounded-[26px]"}`}>
           {!revealed && !hasTouched ? (
             <div
               aria-hidden="true"
@@ -349,7 +420,7 @@ export function ImmersiveScratchTicket({
             >
               {isVault ? <VaultIllustration color={illustrationColor} /> : null}
               {!isVault && isLilac ? <GiftIllustration color={illustrationColor} /> : null}
-              {!isVault && !isLilac && !isCoral && !isSunburst ? <GiftIllustration color={illustrationColor} /> : null}
+              {!beautyTheme && !isVault && !isLilac && !isCoral && !isSunburst ? <GiftIllustration color={illustrationColor} /> : null}
               {isSunburst ? <ScratchMark color={illustrationColor} /> : null}
             </div>
           ) : null}
@@ -372,6 +443,8 @@ export function ImmersiveScratchTicket({
               ref={canvasRef}
               width={CANVAS_WIDTH}
               height={CANVAS_HEIGHT}
+              data-foil-texture={beautyTheme?.id}
+              data-foil-loaded={beautyTheme ? "false" : undefined}
               aria-label={instruction}
               className="relative z-20 block h-full w-full touch-none cursor-crosshair"
               onPointerDown={(event) => {
@@ -415,10 +488,10 @@ export function ImmersiveScratchTicket({
         </div>
 
         <p
-          className="relative z-10 mt-4 text-center text-sm leading-5"
+          className={`relative z-10 mx-auto max-w-[28ch] text-center ${beautyTheme ? `mt-auto pt-5 ${beautyTheme.fontClass} text-[11px] leading-[1.45] tracking-[0.015em]` : "mt-4 text-sm leading-5"}`}
           style={{ color: withAlpha(ink, isVault || isConfetti ? "d9" : "c7") }}
         >
-          {isCoral ? "Le gain sera disponible selon les conditions de retrait." : isSunburst ? "Votre gain sera confirmé après la révélation." : "Le résultat apparaît dès que la zone est suffisamment grattée."}
+          {beautyTheme ? "Le résultat s'affiche automatiquement." : isCoral ? "Le gain sera disponible selon les conditions de retrait." : isSunburst ? "Votre gain sera confirmé après la révélation." : "Le résultat apparaît dès que la zone est suffisamment grattée."}
         </p>
       </div>
     </div>

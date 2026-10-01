@@ -1,11 +1,13 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { memo } from "react";
 
 import { BrandMark } from "@/components/brand-mark";
 import { BeautyWheelDecorations } from "@/components/public/beauty-wheel-decorations";
 import { beautyWheelBackground, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
+import { beautyScratchTemplate, isImmersiveScratchTemplate as isImmersiveScratchPageTemplate, type ImmersiveScratchTemplateId } from "@/lib/beauty-scratch-templates";
 import { RosePowderDecor } from "@/components/public/rose-powder-decor";
 import { CocoricoPromoText } from "@/components/public/cocorico-promo-text";
 import { ImmersiveScratchTicket } from "@/components/public/immersive-scratch-ticket";
@@ -85,6 +87,7 @@ export type CampaignEditorPreviewModel = {
   headingFontSizePx: number;
   headingFontWeight: number;
   subtitle: string;
+  scratchSubtitle: string;
   wheelSubtitle: string;
   blockSpacingPx: number;
   subtitleSpacingPx: number;
@@ -145,6 +148,8 @@ function previewBackgroundImage(
   templateId: GamePageTemplateId,
   accent: CampaignSetupInput["accent"],
 ) {
+  const beautyTheme = beautyScratchTemplate(templateId);
+  if (beautyTheme) return `url("${beautyTheme.background}")`;
   if (form.presentation.background.mode === "image" && form.presentation.background.imageUrl) {
     return userBackgroundImageStyle(form.presentation.background.imageUrl);
   }
@@ -235,6 +240,7 @@ export function buildCampaignLivePreviewModel(form: CampaignSetupInput, merchant
         ? MAX_BEAUTY_WHEEL_TITLE_LINES
         : undefined,
     ),
+    scratchSubtitle: limitCampaignSubtitleLines(form.presentation.layout.scratchSubtitle ?? ""),
     wheelSubtitle: limitCampaignSubtitleLines(form.presentation.layout.wheelSubtitle ?? ""),
     blockSpacingPx: clampCampaignSpacingPx(form.presentation.layout.blockSpacingPx),
     subtitleSpacingPx: clampCampaignSpacingPx(
@@ -280,7 +286,8 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
   const isCocoricoDuoTemplate = preview.gamePageTemplateId === "cocorico-duo-wheel";
   const isCosmicTemplate = preview.gamePageTemplateId === "cosmic-orbit";
   const isImmersiveTemplate = isCosmicTemplate || preview.gamePageTemplateId === "sunburst-festival";
-  const isImmersiveScratchTemplate = ["scratch-vault", "scratch-confetti", "scratch-coral", "scratch-lilac", "scratch-sunburst"].includes(preview.gamePageTemplateId);
+  const isImmersiveScratchTemplate = isImmersiveScratchPageTemplate(preview.gamePageTemplateId);
+  const beautyScratchTheme = beautyScratchTemplate(preview.gamePageTemplateId);
   const showStandardHeader = !isImmersiveScratchTemplate;
   // The compact preview has 254px of usable content width inside its phone
   // frame. A .74 ratio mirrors a 375px mobile viewport while container query
@@ -297,13 +304,24 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
         viewportUnit: compact ? "cqw" : "vw",
       });
   const previewHeadingTextColor = isCosmicTemplate || isCocoricoTemplate ? "#ffffff" : (preview.gamePageTemplateId === "scratch-vault" && preview.headingTextColor.toLowerCase() === "#1f2937") ? "#f8fbff" : preview.headingTextColor;
-  const previewFrameClass = compact ? "relative isolate h-full min-h-0 max-w-none rounded-[30px] px-3 pb-5 pt-7" : "relative isolate min-h-[600px] max-w-[450px] rounded-[38px] px-4 pb-6 pt-8";
+  const previewFrameClass = `${compact ? "relative isolate h-full min-h-0 max-w-none rounded-[30px] px-3 pb-5 pt-7" : "relative isolate min-h-[600px] max-w-[450px] rounded-[38px] px-4 pb-6 pt-8"} ${beautyScratchTheme ? "flex flex-col" : ""}`;
   const previewWrapperClass = compact ? "h-full" : flushTop ? "" : "mt-6";
   const wheelPreviewHeight = compact ? "330px" : "470px";
 
   return (
     <div className={`okado-preview-surface ${previewWrapperClass}`} data-template-id={preview.gamePageTemplateId}>
-      <div className={`mx-auto w-full ${(isRosePowderTemplate || isRoseInstitutTemplate) && compact ? "overflow-x-hidden overflow-y-auto" : "overflow-hidden"} border border-[#ced7e6] shadow-[0_30px_70px_rgba(18,24,39,0.18)] ${previewFrameClass} ${isRosePowderTemplate ? "okado-rose-powder-surface relative" : ""}`} style={{ ...preview.backgroundStyle, ...(compact ? { containerType: "inline-size" } : {}) }}>
+      <div className={`mx-auto w-full ${(isRosePowderTemplate || isRoseInstitutTemplate) && compact ? "overflow-x-hidden overflow-y-auto" : "overflow-hidden"} border border-[#ced7e6] shadow-[0_30px_70px_rgba(18,24,39,0.18)] ${previewFrameClass} ${isRosePowderTemplate ? "okado-rose-powder-surface relative" : ""}`} style={{ ...preview.backgroundStyle, backgroundImage: beautyScratchTheme ? "none" : preview.backgroundStyle.backgroundImage, backgroundRepeat: "no-repeat", ...(compact ? { containerType: "inline-size" } : {}) }}>
+        {beautyScratchTheme ? (
+          <Image
+            src={beautyScratchTheme.background}
+            alt=""
+            fill
+            priority
+            sizes={compact ? "260px" : "450px"}
+            data-template-art={beautyScratchTheme.id}
+            className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover"
+          />
+        ) : null}
         {(isBeautyTemplate || isRoseInstitutTemplate) && preview.gameType === "wheel" && !preview.hasCustomBackgroundImage ? (
           isRosePowderTemplate ? (
             <RosePowderDecor primaryColor={preview.wheelStyle.loseColor} />
@@ -345,8 +363,8 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
             {preview.gameType === "wheel" && preview.wheelSubtitle.trim() ? <p className={`okado-wheel-subtitle ${preview.headingAlignmentClass}`} style={{ color: preview.logoTextColor, fontFamily: wheelSubtitleFontFamily(preview.headingFontFamily), marginTop: `${preview.subtitleSpacingPx}px` }}>{preview.wheelSubtitle}</p> : null}
           </>
         ) : null}
-        <div className={preview.gameType === "wheel" ? compact ? "-mx-3" : "-mx-4" : undefined} style={{ marginTop: `${isImmersiveScratchTemplate ? 0 : scalePreviewValue(preview.gameType === "wheel" ? campaignWheelBlockSpacingPx(preview.blockSpacingPx) : preview.blockSpacingPx)}px`, height: preview.gameType === "wheel" && !isRoseInstitutTemplate ? wheelPreviewHeight : undefined, aspectRatio: preview.gameType === "wheel" && isRoseInstitutTemplate ? "1 / 1.22" : undefined, marginBottom: preview.gameType === "wheel" ? compact ? "-12px" : "-24px" : undefined }}>
-         {preview.gameType === "wheel" ? isCocoricoTemplate ? <CocoricoWheel primaryColor={preview.cocoricoPrimaryColor} secondaryColor={isCocoricoDuoTemplate ? preview.cocoricoSecondaryColor : undefined} palette={isCocoricoDuoTemplate ? "duo" : "classic"} segments={preview.previewSegments} winningSegmentId={preview.winningSegmentId} buttonStyle={{ backgroundColor: preview.buttonStyle.backgroundColor, textColor: preview.buttonStyle.textColor }} buttonEnabled framing={compact ? "mobile-preview" : "editor"} /> : isImmersiveTemplate ? <ImmersiveWheel accent={preview.accent} wheelStyle={preview.wheelStyle} template={preview.gamePageTemplateId as "cosmic-orbit" | "sunburst-festival"} buttonStyle={{ backgroundColor: preview.buttonStyle.backgroundColor, textColor: preview.buttonStyle.textColor, borderColor: preview.buttonStyle.borderColor }} segments={preview.previewSegments} buttonEnabled winningSegmentId={preview.winningSegmentId} framing={compact ? "mobile-preview" : "editor"} /> : <WheelOfFortune accent={preview.accent} wheelStyle={preview.wheelStyle} pageTemplate={preview.gamePageTemplateId === "restaurant-pop" ? "restaurant-pop" : isRoseInstitutTemplate ? "rose-institut" : isBeautyWheelTemplate(preview.gamePageTemplateId) ? preview.gamePageTemplateId : "classic"} buttonStyle={{ backgroundColor: preview.buttonStyle.backgroundColor, textColor: preview.buttonStyle.textColor, borderColor: preview.buttonStyle.borderColor }} segments={preview.previewSegments} buttonEnabled winningSegmentId={preview.winningSegmentId} framing={compact ? "mobile-preview" : "editor"} /> : isImmersiveScratchTemplate ? <ImmersiveScratchTicket accent={preview.accent} resultLabel={preview.previewPrize} enabled={false} onReveal={() => undefined} logoMode={preview.logoMode} logoText={preview.logoText} logoUrl={preview.logoUrl} headline={preview.subtitle} headingTextColor={previewHeadingTextColor} headingFontClass={preview.headingFontClass} headingFontSize={fluidType(scalePreviewValue(preview.headingFontSizePx), { minRatio: 0.82, maxRatio: 1.08, viewportStep: 0.3, viewportUnit: compact ? "cqw" : "vw" })} headingFontWeight={preview.headingFontWeight} headingAlignmentClass={preview.headingAlignmentClass} logoAlignmentClass={preview.logoAlignmentClass} logoBottomSpacingPx={scalePreviewValue(preview.logoBottomSpacingPx)} logoWidthPx={scalePreviewValue(preview.logoWidthPx)} logoTextSizePx={scalePreviewValue(preview.logoTextSizePx)} fitContainer template={preview.gamePageTemplateId as "scratch-vault" | "scratch-confetti" | "scratch-coral" | "scratch-lilac" | "scratch-sunburst"} /> : <ScratchGame accent={preview.accent} resultLabel={preview.previewPrize} enabled={false} onReveal={() => undefined} />}
+        <div className={preview.gameType === "wheel" ? compact ? "-mx-3" : "-mx-4" : isImmersiveScratchTemplate ? "flex min-h-0 flex-1 flex-col" : undefined} style={{ marginTop: `${isImmersiveScratchTemplate ? 0 : scalePreviewValue(preview.gameType === "wheel" ? campaignWheelBlockSpacingPx(preview.blockSpacingPx) : preview.blockSpacingPx)}px`, height: preview.gameType === "wheel" && !isRoseInstitutTemplate ? wheelPreviewHeight : undefined, aspectRatio: preview.gameType === "wheel" && isRoseInstitutTemplate ? "1 / 1.22" : undefined, marginBottom: preview.gameType === "wheel" ? compact ? "-12px" : "-24px" : undefined }}>
+         {preview.gameType === "wheel" ? isCocoricoTemplate ? <CocoricoWheel primaryColor={preview.cocoricoPrimaryColor} secondaryColor={isCocoricoDuoTemplate ? preview.cocoricoSecondaryColor : undefined} palette={isCocoricoDuoTemplate ? "duo" : "classic"} segments={preview.previewSegments} winningSegmentId={preview.winningSegmentId} buttonStyle={{ backgroundColor: preview.buttonStyle.backgroundColor, textColor: preview.buttonStyle.textColor }} buttonEnabled framing={compact ? "mobile-preview" : "editor"} /> : isImmersiveTemplate ? <ImmersiveWheel accent={preview.accent} wheelStyle={preview.wheelStyle} template={preview.gamePageTemplateId as "cosmic-orbit" | "sunburst-festival"} buttonStyle={{ backgroundColor: preview.buttonStyle.backgroundColor, textColor: preview.buttonStyle.textColor, borderColor: preview.buttonStyle.borderColor }} segments={preview.previewSegments} buttonEnabled winningSegmentId={preview.winningSegmentId} framing={compact ? "mobile-preview" : "editor"} /> : <WheelOfFortune accent={preview.accent} wheelStyle={preview.wheelStyle} pageTemplate={preview.gamePageTemplateId === "restaurant-pop" ? "restaurant-pop" : isRoseInstitutTemplate ? "rose-institut" : isBeautyWheelTemplate(preview.gamePageTemplateId) ? preview.gamePageTemplateId : "classic"} buttonStyle={{ backgroundColor: preview.buttonStyle.backgroundColor, textColor: preview.buttonStyle.textColor, borderColor: preview.buttonStyle.borderColor }} segments={preview.previewSegments} buttonEnabled winningSegmentId={preview.winningSegmentId} framing={compact ? "mobile-preview" : "editor"} /> : isImmersiveScratchTemplate ? <ImmersiveScratchTicket accent={preview.accent} resultLabel={preview.previewPrize} enabled={false} onReveal={() => undefined} logoMode={preview.logoMode} logoText={preview.logoText} logoUrl={preview.logoUrl} headline={preview.subtitle} secondaryText={preview.scratchSubtitle} headingTextColor={previewHeadingTextColor} logoTextColor={preview.logoTextColor} headingFontClass={preview.headingFontClass} headingFontSize={fluidType(scalePreviewValue(preview.headingFontSizePx), { minRatio: 0.82, maxRatio: 1.08, viewportStep: 0.3, viewportUnit: compact ? "cqw" : "vw" })} headingFontWeight={preview.headingFontWeight} headingAlignmentClass={preview.headingAlignmentClass} logoAlignmentClass={preview.logoAlignmentClass} logoBottomSpacingPx={scalePreviewValue(preview.logoBottomSpacingPx)} logoWidthPx={scalePreviewValue(preview.logoWidthPx)} logoTextSizePx={scalePreviewValue(preview.logoTextSizePx)} fitContainer template={preview.gamePageTemplateId as ImmersiveScratchTemplateId} /> : <ScratchGame accent={preview.accent} resultLabel={preview.previewPrize} enabled={false} onReveal={() => undefined} />}
         </div>
         {preview.gameType !== "wheel" && !isImmersiveScratchTemplate ? <button type="button" className={`okado-preview-cta mx-auto block w-full max-w-[360px] rounded-[24px] border font-semibold ${preview.previewCtaClass}`} style={{ marginTop: `${scalePreviewValue(preview.blockSpacingPx)}px`, backgroundColor: preview.buttonStyle.backgroundColor, color: preview.buttonStyle.textColor, borderColor: preview.buttonStyle.borderColor, fontSize: fluidType(scalePreviewValue(preview.buttonStyle.textSizePx), { minRatio: 0.86, maxRatio: 1.08, viewportStep: 0.24, viewportUnit: compact ? "cqw" : "vw" }), fontWeight: preview.buttonStyle.isBold ? 700 : 400 }}>{preview.ctaLabel}</button> : null}
         </div>

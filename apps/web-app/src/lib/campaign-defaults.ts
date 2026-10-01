@@ -8,6 +8,7 @@ import {
 import { createPosterSettingsDefaults } from "@/lib/poster-utils";
 import { getPosterTemplate } from "@/lib/poster-templates";
 import { beautyWheelTheme } from "@/lib/beauty-wheel-themes";
+import { BEAUTY_SCRATCH_TEMPLATES, beautyScratchTemplate } from "@/lib/beauty-scratch-templates";
 
 export const LEGACY_DEFAULT_WHEEL_SUBTITLE = "Faites tournez la roue pour jouer !";
 export const DEFAULT_WHEEL_SUBTITLE = "Tounez la roue et tentez de gagner !";
@@ -84,6 +85,8 @@ export function defaultWheelBlockSpacingForTemplate(templateId?: GamePageTemplat
 }
 
 export function scratchTemplateDefaultPrimaryColor(templateId?: GamePageTemplateId) {
+  const beautyTemplate = beautyScratchTemplate(templateId);
+  if (beautyTemplate) return beautyTemplate.scratch.base;
   switch (templateId) {
     case "scratch-confetti":
       return DEFAULT_SCRATCH_CONFETTI_COLOR;
@@ -105,6 +108,7 @@ export function shouldApplyScratchTemplateDefaultPrimaryColor(configuredColor: s
     DEFAULT_SCRATCH_CORAL_COLOR,
     DEFAULT_SCRATCH_SUNBURST_COLOR,
     DEFAULT_SCRATCH_LILAC_COLOR,
+    ...BEAUTY_SCRATCH_TEMPLATES.map((template) => template.scratch.base),
   ].includes(configuredColor.trim().toLowerCase());
 }
 
@@ -128,6 +132,7 @@ export function resolveWheelPrimaryColorAfterGameTypeSwitch(configuredColor: str
     DEFAULT_SCRATCH_CORAL_COLOR,
     DEFAULT_SCRATCH_SUNBURST_COLOR,
     DEFAULT_SCRATCH_LILAC_COLOR,
+    ...BEAUTY_SCRATCH_TEMPLATES.map((template) => template.scratch.base),
   ];
 
   return !normalized || knownTemplateDefaults.includes(normalized)
@@ -313,6 +318,8 @@ export function scratchTemplatePrimaryColor(
   configuredColor: string,
   templateId?: GamePageTemplateId,
 ) {
+  const beautyTemplate = beautyScratchTemplate(templateId);
+  if (beautyTemplate) return beautyTemplate.scratch.base;
   if (templateId === "scratch-confetti") return DEFAULT_SCRATCH_CONFETTI_COLOR;
   if (templateId === "scratch-lilac") return DEFAULT_SCRATCH_LILAC_COLOR;
   return configuredColor;
@@ -413,6 +420,8 @@ const SCRATCH_DEFAULT_INK_VALUES = new Set([
 ]);
 
 export function defaultScratchTextColor(templateId?: GamePageTemplateId) {
+  const beautyTemplate = beautyScratchTemplate(templateId);
+  if (beautyTemplate) return beautyTemplate.text;
   switch (templateId) {
     case "scratch-vault":
     case "scratch-confetti":
@@ -442,7 +451,7 @@ export function scratchTemplateUsesTicketTextColor(templateId?: GamePageTemplate
     case "scratch-sunburst":
       return false;
     default:
-      return true;
+      return !beautyScratchTemplate(templateId);
   }
 }
 

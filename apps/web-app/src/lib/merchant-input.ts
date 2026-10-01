@@ -87,6 +87,11 @@ const GAME_PAGE_TEMPLATE_IDS = new Set<GamePageTemplateId>([
   "scratch-coral",
   "scratch-lilac",
   "scratch-sunburst",
+  "beauty-scratch-nude",
+  "beauty-scratch-botanical",
+  "beauty-scratch-noir-or",
+  "beauty-scratch-lilas",
+  "beauty-scratch-corail",
 ]);
 const POSTER_TEMPLATE_IDS = new Set<PosterTemplateId>([
   "classic-wheel",
@@ -613,6 +618,7 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
         templateId,
         wheelTemplateStyles: normalizeWheelTemplateStyles(layout.wheelTemplateStyles),
         wheelSubtitle: normalizeMultiline(layout.wheelSubtitle, 240),
+        scratchSubtitle: normalizeMultiline(layout.scratchSubtitle, 240),
         subtitleSpacingPx: normalizeNumber(layout.subtitleSpacingPx, {
           min: CAMPAIGN_SPACING_MIN_PX,
           max: CAMPAIGN_SPACING_MAX_PX,

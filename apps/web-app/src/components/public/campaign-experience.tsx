@@ -22,6 +22,7 @@ import { ScratchGame } from "@/components/public/scratch-game";
 import { WheelOfFortune } from "@/components/public/wheel-of-fortune";
 import { BeautyWheelDecorations } from "@/components/public/beauty-wheel-decorations";
 import { beautyWheelBackground, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
+import { beautyScratchTemplate, isImmersiveScratchTemplate as isImmersiveScratchPageTemplate, type ImmersiveScratchTemplateId } from "@/lib/beauty-scratch-templates";
 import { RosePowderDecor } from "@/components/public/rose-powder-decor";
 import { fluidType } from "@/lib/responsive";
 import { textFontClass, textFontFamily, wheelSubtitleFontFamily } from "@/lib/format";
@@ -512,12 +513,8 @@ export function CampaignExperience({
   const isScratchCoralTemplate = pageTemplate === "scratch-coral";
   const isScratchLilacTemplate = pageTemplate === "scratch-lilac";
   const isScratchSunburstTemplate = pageTemplate === "scratch-sunburst";
-  const isImmersiveScratchTemplate =
-    isScratchVaultTemplate ||
-    isScratchConfettiTemplate ||
-    isScratchCoralTemplate ||
-    isScratchLilacTemplate ||
-    isScratchSunburstTemplate;
+  const beautyScratchTheme = beautyScratchTemplate(pageTemplate);
+  const isImmersiveScratchTemplate = isImmersiveScratchPageTemplate(pageTemplate);
   const scratchAccent =
     campaign.gameType === "scratch"
       ? resolveScratchAccent(campaign.accent, pageTemplate)
@@ -815,7 +812,9 @@ export function CampaignExperience({
   }
 
   const backgroundStyle =
-    campaign.presentation.background.mode === "image" &&
+    beautyScratchTheme
+      ? "none"
+      : campaign.presentation.background.mode === "image" &&
     campaign.presentation.background.imageUrl
       ? userBackgroundImageStyle(campaign.presentation.background.imageUrl)
       : isScratchVaultTemplate
@@ -861,7 +860,7 @@ export function CampaignExperience({
   // Keep the brand mark anchored at the same distance from the top for every
   // game mechanic. Scratch templates render the logo inside their ticket
   // component, but that component now uses the same top spacing as the wheel.
-  const pageTopPaddingClass = isBeautyTemplate ? "pt-8 sm:pt-10" : "pt-12 sm:pt-14";
+  const pageTopPaddingClass = isImmersiveScratchTemplate ? "pt-0" : isBeautyTemplate ? "pt-8 sm:pt-10" : "pt-12 sm:pt-14";
   const hasFlexibleWheelLayout = campaign.gameType === "wheel" && (isBeautyTemplate || isClassicTemplate || isRestaurantPopTemplate);
 
   return (
@@ -873,9 +872,21 @@ export function CampaignExperience({
         backgroundImage: backgroundStyle,
         backgroundPosition: "center",
         backgroundSize: "cover",
+        backgroundRepeat: "no-repeat",
         fontFamily: textFontFamily(campaign.presentation.heading.fontFamily),
       }}
     >
+      {beautyScratchTheme ? (
+        <Image
+          src={beautyScratchTheme.background}
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          data-template-art={beautyScratchTheme.id}
+          className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover"
+        />
+      ) : null}
       {(isBeautyTemplate || isRoseInstitutTemplate) && !isRosePowderTemplate && !(campaign.presentation.background.mode === "image" && campaign.presentation.background.imageUrl) ? (
         <BeautyWheelDecorations templateId={pageTemplate} primaryColor={primaryColor} />
       ) : null}
@@ -903,7 +914,7 @@ export function CampaignExperience({
           />
         </div>
       ) : null}
-      <div className={`relative z-10 mx-auto flex ${hasFlexibleWheelLayout ? isPreview ? "min-h-[calc(100dvh-44px)]" : "min-h-dvh" : isPreview ? "h-[calc(100dvh-44px)] min-h-[560px]" : "h-screen"} w-full flex-col ${isBeautyTemplate ? "overflow-visible pb-8" : hasFlexibleWheelLayout ? "overflow-visible pb-16" : "overflow-hidden pb-0"} px-4 sm:px-6 ${pageTopPaddingClass}`}>
+      <div className={`relative z-10 mx-auto flex ${hasFlexibleWheelLayout ? isPreview ? "min-h-[calc(100dvh-44px)]" : "min-h-dvh" : isImmersiveScratchTemplate ? isPreview ? "min-h-[calc(100dvh-44px)]" : "min-h-dvh" : isPreview ? "h-[calc(100dvh-44px)] min-h-[560px]" : "h-screen"} w-full flex-col ${isBeautyTemplate || isImmersiveScratchTemplate ? "overflow-visible pb-8" : hasFlexibleWheelLayout ? "overflow-visible pb-16" : "overflow-hidden pb-0"} px-4 sm:px-6 ${pageTopPaddingClass}`}>
         {!isImmersiveScratchTemplate && ((campaign.logoMode === "image" && campaign.logoUrl) ||
         campaign.logoMode === "text" ||
         campaign.gameType === "scratch") ? (
@@ -1056,7 +1067,7 @@ export function CampaignExperience({
             </div>
           </div>
         ) : (
-          <div className={isImmersiveScratchTemplate ? "mt-0" : "mt-[40px] sm:mt-20 lg:mt-8"}>
+          <div className={isImmersiveScratchTemplate ? "mt-0 flex min-h-0 flex-1 flex-col" : "mt-[40px] sm:mt-20 lg:mt-8"}>
             {isImmersiveScratchTemplate ? (
               <ImmersiveScratchTicket
                 key={`${campaign.id}-${drawSession?.id ?? "idle"}`}
@@ -1070,7 +1081,9 @@ export function CampaignExperience({
                 logoText={campaign.logoText ?? campaign.merchantLogoText}
                 logoUrl={campaign.logoUrl}
                 headline={safeSubtitle}
+                secondaryText={campaign.presentation.layout.scratchSubtitle}
                 headingTextColor={headingTextColor}
+                logoTextColor={campaign.presentation.logo.textColor ?? headingTextColor}
                 headingFontClass={headingFontClass}
                 headingFontSize={headingFontSize}
                 headingFontWeight={campaign.presentation.heading.fontWeight ?? 600}
@@ -1079,7 +1092,7 @@ export function CampaignExperience({
                 logoBottomSpacingPx={clampCampaignSpacingPx(campaign.presentation.logo.marginBottomPx)}
                 logoWidthPx={logoWidthPx}
                 logoTextSizePx={logoTextSizePx}
-                template={pageTemplate as "scratch-vault" | "scratch-confetti" | "scratch-coral" | "scratch-lilac" | "scratch-sunburst"}
+                template={pageTemplate as ImmersiveScratchTemplateId}
               />
             ) : (
               <ScratchGame

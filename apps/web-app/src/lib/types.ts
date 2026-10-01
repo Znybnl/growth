@@ -57,7 +57,12 @@ export type GamePageTemplateId =
   | "scratch-confetti"
   | "scratch-coral"
   | "scratch-lilac"
-  | "scratch-sunburst";
+  | "scratch-sunburst"
+  | "beauty-scratch-nude"
+  | "beauty-scratch-botanical"
+  | "beauty-scratch-noir-or"
+  | "beauty-scratch-lilas"
+  | "beauty-scratch-corail";
 export type ActionKind =
   | "google"
   | "instagram"
@@ -434,6 +439,7 @@ export interface CampaignLayoutSettings {
   blockSpacingPx: number;
   templateId?: GamePageTemplateId;
   wheelSubtitle?: string;
+  scratchSubtitle?: string;
   subtitleSpacingPx?: number;
   wheelTemplateStyles?: Partial<Record<GamePageTemplateId, WheelTemplateStyle>>;
 }

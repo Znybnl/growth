@@ -31,6 +31,7 @@ import { CampaignSavedDialog } from "@/components/merchant/campaign-saved-dialog
 import { CampaignSpacingControls } from "@/components/merchant/campaign-spacing-controls";
 import { GameTypeChoice } from "@/components/merchant/game-type-choice";
 import { BeautyWheelTemplateGallery } from "@/components/merchant/beauty-wheel-template-gallery";
+import { BeautyScratchTemplateGallery } from "@/components/merchant/beauty-scratch-template-gallery";
 import { WheelTemplateThumbnail } from "@/components/merchant/wheel-template-thumbnail";
 import { DialogShell } from "@/components/ui/dialog";
 import { ValidationDialog } from "@/components/ui/validation-dialog";
@@ -53,6 +54,7 @@ import { captureClientError } from "@/lib/client-observability";
 import { captureClientProductEvent } from "@/lib/client-product-analytics";
 import { postCampaignSetup } from "@/lib/campaign-setup-request";
 import { beautyWheelFontOptions, beautyWheelTheme, isBeautyIndustry, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
+import { beautyScratchTemplate, type BeautyScratchTemplateId } from "@/lib/beauty-scratch-templates";
 import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
 import {
   createDefaultPosterSettings,
@@ -1040,6 +1042,33 @@ export function CampaignWizard({
     });
   }
 
+  function selectBeautyScratchTemplate(templateId: BeautyScratchTemplateId) {
+    const theme = beautyScratchTemplate(templateId);
+    if (!theme) return;
+    captureClientProductEvent("campaign_template_selected", {
+      campaignType: "scratch",
+      templateKey: templateId,
+      wizardMode: "guided",
+    });
+    setDraft((current) => {
+      if (current.presentation.layout.templateId === templateId) return current;
+      return {
+        ...current,
+        presentation: {
+          ...current.presentation,
+          layout: { ...current.presentation.layout, templateId },
+          heading: { ...current.presentation.heading, fontFamily: theme.font, textColor: theme.text },
+          logo: { ...current.presentation.logo, textColor: theme.text },
+        },
+        accent: {
+          ...normalizeScratchAccent(current.accent, templateId),
+          signal: theme.scratch.base,
+          ink: theme.text,
+        },
+      };
+    });
+  }
+
   useEffect(() => {
     let cancelled = false;
     const query = new URLSearchParams({ industry: merchant.industry ?? "" });
@@ -1675,6 +1704,34 @@ export function CampaignWizard({
                   {draft.subtitle.length}/{MAX_CAMPAIGN_SUBTITLE_LENGTH} caractères · {draft.gameType === "wheel" && (isBeautyIndustry(merchant.industry) || isBeautyWheelTemplate(draft.presentation.layout.templateId)) ? `${MAX_BEAUTY_WHEEL_TITLE_LINES} lignes de saisie maximum · la taille reste celle que vous choisissez.` : "3 lignes maximum pour conserver un rendu lisible sur mobile."}
                 </span>
               </label>
+              {draft.gameType === "scratch" && beautyScratchTemplate(draft.presentation.layout.templateId) ? (
+                <label className="block">
+                  <span className="text-sm font-semibold text-[#182033]">
+                    Sous-titre du ticket <span className="font-normal text-[#8993a6]">(optionnel)</span>
+                  </span>
+                  <textarea
+                    value={draft.presentation.layout.scratchSubtitle ?? ""}
+                    onChange={(event) =>
+                      patchDraft({
+                        presentation: {
+                          ...draft.presentation,
+                          layout: {
+                            ...draft.presentation.layout,
+                            scratchSubtitle: limitCampaignSubtitleLines(event.target.value),
+                          },
+                        },
+                      })
+                    }
+                    rows={2}
+                    maxLength={MAX_CAMPAIGN_SUBTITLE_LENGTH}
+                    placeholder="Ex. De belles surprises pour prendre soin de vous"
+                    className="mt-3 w-full resize-none rounded-[12px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm leading-6 text-[#182033] outline-none transition focus:border-aubergine focus:ring-4 focus:ring-aubergine/15"
+                  />
+                  <span className="mt-1 block text-xs text-[#8993a6]">
+                    {(draft.presentation.layout.scratchSubtitle ?? "").length}/{MAX_CAMPAIGN_SUBTITLE_LENGTH} caractères · s’affiche sous le texte principal.
+                  </span>
+                </label>
+              ) : null}
               {draft.gameType === "wheel" ? (
                 <label className="block">
                   <span className="text-sm font-semibold text-[#182033]">
@@ -2406,6 +2463,12 @@ export function CampaignWizard({
                   onSelect={selectBeautyWheelTemplate}
                 />
               ) : null}
+              {draft.gameType === "scratch" && isBeautyIndustry(merchant.industry) ? (
+                <BeautyScratchTemplateGallery
+                  selectedTemplateId={draft.presentation.layout.templateId}
+                  onSelect={selectBeautyScratchTemplate}
+                />
+              ) : null}
               {draft.gameType === "wheel" ? <h3 className="text-sm font-semibold text-[#241b2a]">Autres templates de roue</h3> : null}
               <div className="grid min-w-0 grid-cols-[repeat(auto-fit,minmax(min(100%,14rem),1fr))] gap-4">
                 {(
@@ -2576,13 +2639,15 @@ export function CampaignWizard({
                    <span className="flex flex-wrap items-center gap-2 text-sm font-semibold text-[#182033]">
                      {draft.gameType === "wheel" ? "Couleur principale de la roue" : "Couleur principale du ticket"}
                      {draft.gameType === "scratch" &&
-                     (draft.presentation.layout.templateId === "scratch-confetti" ||
+                     (beautyScratchTemplate(draft.presentation.layout.templateId) ||
+                       draft.presentation.layout.templateId === "scratch-confetti" ||
                        draft.presentation.layout.templateId === "scratch-lilac") ? (
                        <span className="rounded-full bg-[#f1ebff] px-2 py-0.5 text-[11px] font-semibold text-[#6944a1]">Palette fixe</span>
                      ) : null}
                    </span>
                    <input
                      type="color"
+                      disabled={draft.gameType === "scratch" && (Boolean(beautyScratchTemplate(draft.presentation.layout.templateId)) || draft.presentation.layout.templateId === "scratch-confetti" || draft.presentation.layout.templateId === "scratch-lilac")}
                      value={draft.gameType === "wheel" ? draft.presentation.wheel.loseColor : draft.accent.signal}
                      onChange={(event) => {
                        const color = event.target.value;
@@ -2618,10 +2683,7 @@ export function CampaignWizard({
                          };
                        });
                      }}
-                     disabled={draft.gameType === "scratch" &&
-                       (draft.presentation.layout.templateId === "scratch-confetti" ||
-                         draft.presentation.layout.templateId === "scratch-lilac")}
-                     className="mt-3 h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] bg-white p-1 disabled:cursor-not-allowed disabled:opacity-55"
+                      className="mt-3 h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] bg-white p-1 disabled:cursor-not-allowed disabled:opacity-55"
                    />
                  </label>
 
