@@ -313,7 +313,7 @@ export function resolveCocoricoBackgroundColor(configuredColor: string | undefin
     : configuredColor!;
 }
 
-/** Fixed-palette templates intentionally ignore the merchant's primary color. */
+/** Resolve the scratch card's primary color, preserving only explicitly fixed palettes. */
 export function scratchTemplatePrimaryColor(
   configuredColor: string,
   templateId?: GamePageTemplateId,
@@ -321,7 +321,6 @@ export function scratchTemplatePrimaryColor(
   const beautyTemplate = beautyScratchTemplate(templateId);
   if (beautyTemplate) return beautyTemplate.scratch.base;
   if (templateId === "scratch-confetti") return DEFAULT_SCRATCH_CONFETTI_COLOR;
-  if (templateId === "scratch-lilac") return DEFAULT_SCRATCH_LILAC_COLOR;
   return configuredColor;
 }
 

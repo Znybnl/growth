@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 
 import { BrandMark } from "@/components/brand-mark";
 import {
-  DEFAULT_SCRATCH_LILAC_COLOR,
   DEFAULT_SCRATCH_PRIMARY_COLOR,
   DEFAULT_SCRATCH_SUBTITLE,
   scratchTemplatePrimaryColor,
@@ -189,7 +188,7 @@ export function ImmersiveScratchTicket({
     !isConfetti &&
     !isLilac;
   const ticketBaseColor = isLilac
-    ? DEFAULT_SCRATCH_LILAC_COLOR
+    ? primary
     : isVault
       ? "#171d38"
       : primary;
@@ -236,8 +235,8 @@ export function ImmersiveScratchTicket({
     if (beautyTheme) canvas.dataset.foilLoaded = "false";
 
     const gradient = context.createLinearGradient(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-    const cover = beautyTheme?.scratch.base ?? (isLilac ? "#b85be5" : isVault ? "#171d38" : primary);
-    const highlight = beautyTheme?.scratch.highlight ?? (isLilac ? "#e2a7fa" : isSunburst ? blendWithWhite(cover, 0.2) : blendWithWhite(cover, 0.34));
+    const cover = beautyTheme?.scratch.base ?? (isVault ? "#171d38" : primary);
+    const highlight = beautyTheme?.scratch.highlight ?? (isSunburst ? blendWithWhite(cover, 0.2) : blendWithWhite(cover, 0.34));
     if (beautyTheme?.id === "beauty-scratch-nude") {
       gradient.addColorStop(0, "#c4a675");
       gradient.addColorStop(0.24, "#ead8b2");
@@ -402,7 +401,7 @@ export function ImmersiveScratchTicket({
           >
             {displayHeadline}
           </h2>
-          {beautyTheme && secondaryText?.trim() ? (
+          {secondaryText?.trim() ? (
             <p
               className={`mx-auto mt-3 max-w-[250px] text-[10px] uppercase leading-[1.55] tracking-[0.13em] ${headingAlignmentClass}`}
               style={{ color: withAlpha(ink, "d9") }}
