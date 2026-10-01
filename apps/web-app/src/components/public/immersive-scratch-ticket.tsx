@@ -400,7 +400,7 @@ export function ImmersiveScratchTicket({
             </div>
           ) : null}
           <h2
-            className={`${beautyTheme ? "mx-auto max-w-[11ch]" : ""} line-clamp-3 text-2xl leading-[1.08] ${resolvedHeadingFontClass}`}
+            className={`${beautyTheme ? "mx-auto max-w-[11ch]" : ""} text-2xl leading-[1.04] ${resolvedHeadingFontClass}`}
             style={{ color: ink, fontSize: headingFontSize, fontWeight: headingFontWeight }}
           >
             {displayHeadline}
