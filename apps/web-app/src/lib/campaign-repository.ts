@@ -591,6 +591,7 @@ function toCampaign(
         templateId,
         wheelTemplateStyles: localSettings.wheelTemplateStyles,
         wheelSubtitle: localSettings.wheelSubtitle ?? "",
+        scratchSubtitle: localSettings.scratchSubtitle ?? "",
         subtitleSpacingPx:
           localSettings.subtitleSpacingPx ?? defaultWheelSubtitleSpacingForTemplate(templateId),
       },
@@ -2419,6 +2420,7 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
     buttonIsBold: input.presentation.button.isBold,
     blockSpacingPx: input.presentation.layout.blockSpacingPx,
     wheelSubtitle: input.presentation.layout.wheelSubtitle?.trim() ?? "",
+    scratchSubtitle: input.presentation.layout.scratchSubtitle?.trim() ?? "",
     subtitleSpacingPx:
       input.presentation.layout.subtitleSpacingPx ?? defaultWheelSubtitleSpacingForTemplate(templateId),
     participationIntervalDays: input.rewardRules.participationIntervalDays,

@@ -9,13 +9,9 @@ import {
   DEFAULT_SCRATCH_SUBTITLE,
   scratchTemplatePrimaryColor,
 } from "@/lib/campaign-defaults";
+import { beautyScratchTemplate, type ImmersiveScratchTemplateId } from "@/lib/beauty-scratch-templates";
 
-type ScratchTemplateId =
-  | "scratch-vault"
-  | "scratch-confetti"
-  | "scratch-coral"
-  | "scratch-lilac"
-  | "scratch-sunburst";
+type ScratchTemplateId = ImmersiveScratchTemplateId;
 
 type ImmersiveScratchTicketProps = {
   accent: {
@@ -33,7 +29,9 @@ type ImmersiveScratchTicketProps = {
   logoText?: string;
   logoUrl?: string;
   headline?: string;
+  secondaryText?: string;
   headingTextColor?: string;
+  logoTextColor?: string;
   headingFontClass?: string;
   headingFontSize?: string;
   headingFontWeight?: number;
@@ -158,7 +156,9 @@ export function ImmersiveScratchTicket({
   logoText,
   logoUrl,
   headline,
+  secondaryText,
   headingTextColor,
+  logoTextColor,
   headingFontClass,
   headingFontWeight = 600,
   headingAlignmentClass = "text-center",
@@ -181,6 +181,7 @@ export function ImmersiveScratchTicket({
   const isCoral = template === "scratch-coral";
   const isLilac = template === "scratch-lilac";
   const isSunburst = template === "scratch-sunburst";
+  const beautyTheme = beautyScratchTemplate(template);
   const configuredPrimary = accent.signal;
   const primary = scratchTemplatePrimaryColor(configuredPrimary, template);
   const hasCustomPrimary =
@@ -199,23 +200,27 @@ export function ImmersiveScratchTicket({
         ? blendWithWhite(ticketBaseColor, 0.58)
         : "#86e8ff"
       : blendWithWhite(ticketBaseColor, 0.48);
-  const defaultInk = isVault || isConfetti
+  const defaultInk = beautyTheme?.text ?? (isVault || isConfetti
     ? "#f8fbff"
     : isLilac
       ? "#4c1d95"
       : isSunburst
         ? "#3b2500"
-        : "#111827";
+        : "#111827");
   const ink = headingTextColor || defaultInk;
   const resultInk = highestContrastTextColor(ticketBaseColor);
   const resultTextShadow = resultInk === "#ffffff"
     ? "0 2px 10px rgba(0, 0, 0, 0.58)"
     : "0 2px 8px rgba(255, 255, 255, 0.72)";
-  const resolvedHeadingFontClass = headingFontClass || (isLilac ? "font-fredoka" : "font-display");
+  const resolvedHeadingFontClass = headingFontClass || beautyTheme?.fontClass || (isLilac ? "font-fredoka" : "font-display");
   const displayHeadline = headline?.trim() || DEFAULT_SCRATCH_SUBTITLE;
   const instruction = "Grattez la carte pour révéler votre cadeau.";
 
-  const surfaceClass = isSunburst
+  const surfaceClass = beautyTheme?.id === "beauty-scratch-nude"
+    ? "mx-auto aspect-[1.16/1] w-full max-w-[310px] rounded-[30px]"
+    : beautyTheme
+      ? "mx-auto aspect-square w-full max-w-[286px] rounded-full"
+      : isSunburst
     ? "aspect-[1.18/1] w-full"
     : "aspect-square w-full";
 
@@ -225,26 +230,48 @@ export function ImmersiveScratchTicket({
     if (!canvas || !context) return;
 
     const gradient = context.createLinearGradient(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-    const cover = isLilac ? "#b85be5" : isVault ? "#171d38" : primary;
-    const highlight = isLilac ? "#e2a7fa" : isSunburst ? blendWithWhite(cover, 0.2) : blendWithWhite(cover, 0.34);
+    const cover = beautyTheme?.scratch.base ?? (isLilac ? "#b85be5" : isVault ? "#171d38" : primary);
+    const highlight = beautyTheme?.scratch.highlight ?? (isLilac ? "#e2a7fa" : isSunburst ? blendWithWhite(cover, 0.2) : blendWithWhite(cover, 0.34));
     gradient.addColorStop(0, cover);
     gradient.addColorStop(0.42, highlight);
     gradient.addColorStop(0.72, cover);
-    gradient.addColorStop(1, isSunburst ? blendWithWhite(cover, 0.04) : blendWithWhite(cover, 0.08));
+    gradient.addColorStop(1, beautyTheme?.scratch.edge ?? (isSunburst ? blendWithWhite(cover, 0.04) : blendWithWhite(cover, 0.08)));
     context.globalCompositeOperation = "source-over";
     context.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     context.fillStyle = gradient;
     context.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
     context.save();
-    context.globalAlpha = isSunburst ? 0.14 : 0.18;
-    context.strokeStyle = isLilac || isSunburst ? "#ffffff" : readableTextColor(primary);
-    context.lineWidth = 2;
-    for (let offset = -CANVAS_HEIGHT; offset < CANVAS_WIDTH; offset += isSunburst ? 28 : 34) {
+    context.globalAlpha = beautyTheme ? 0.12 : isSunburst ? 0.14 : 0.18;
+    context.strokeStyle = beautyTheme?.scratch.edge ?? (isLilac || isSunburst ? "#ffffff" : readableTextColor(primary));
+    context.lineWidth = beautyTheme ? 1.5 : 2;
+    for (let offset = -CANVAS_HEIGHT; offset < CANVAS_WIDTH; offset += beautyTheme ? 46 : isSunburst ? 28 : 34) {
       context.beginPath();
       context.moveTo(offset, 0);
       context.lineTo(offset + CANVAS_HEIGHT, CANVAS_HEIGHT);
       context.stroke();
+    }
+    if (beautyTheme?.id === "beauty-scratch-botanical") {
+      context.globalAlpha = 0.26;
+      context.strokeStyle = beautyTheme.scratch.edge;
+      context.lineWidth = 2.4;
+      context.lineCap = "round";
+      context.beginPath();
+      context.moveTo(174, 294);
+      context.bezierCurveTo(218, 256, 287, 202, 346, 139);
+      context.stroke();
+      for (let index = 0; index < 5; index += 1) {
+        const progress = 0.18 + index * 0.145;
+        const x = 174 + (346 - 174) * progress;
+        const y = 294 + (139 - 294) * progress;
+        const reach = 36 - index * 1.5;
+        context.beginPath();
+        context.moveTo(x, y);
+        context.quadraticCurveTo(x - 10, y - reach * 0.75, x - reach, y - reach);
+        context.moveTo(x, y);
+        context.quadraticCurveTo(x + 10, y + reach * 0.75, x + reach, y + reach);
+        context.stroke();
+      }
     }
     context.restore();
     checksRef.current = 0;
@@ -252,7 +279,7 @@ export function ImmersiveScratchTicket({
     scratchStartedRef.current = false;
     setRevealed(false);
     setHasTouched(false);
-  }, [isCoral, isLilac, isSunburst, isVault, primary, resultLabel]);
+  }, [beautyTheme, isCoral, isLilac, isSunburst, isVault, primary, resultLabel]);
 
   function reveal() {
     if (revealedRef.current) return;
@@ -299,7 +326,9 @@ export function ImmersiveScratchTicket({
     };
   }
 
-  const rootClass = isVault || isConfetti
+  const rootClass = beautyTheme
+    ? "bg-transparent px-6 py-8"
+    : isVault || isConfetti
     ? "bg-transparent px-5"
     : isLilac
       ? "bg-transparent px-6"
@@ -311,7 +340,9 @@ export function ImmersiveScratchTicket({
 
   return (
     <div className={`mx-auto w-full ${fitContainer ? "max-w-full" : "max-w-[370px]"}`}>
-      <div className={`relative overflow-hidden ${rootClass}`}>
+      <div
+        className={`relative overflow-hidden ${rootClass}`}
+      >
         <div className={`relative z-10 ${headingAlignmentClass}`}>
           {logoMode !== "none" ? (
             <div className={`flex ${logoAlignmentClass}`} style={{ marginBottom: `${Math.max(0, logoBottomSpacingPx)}px` }}>
@@ -323,7 +354,7 @@ export function ImmersiveScratchTicket({
                 imageWidthPx={logoWidthPx}
                 textSizePx={logoTextSizePx}
                 textClassName="text-2xl"
-                textColor={ink}
+                textColor={logoTextColor || ink}
               />
             </div>
           ) : null}
@@ -333,15 +364,17 @@ export function ImmersiveScratchTicket({
           >
             {displayHeadline}
           </h2>
-          <p
-            className={`mx-auto mt-9 max-w-[270px] text-sm leading-5 ${headingAlignmentClass}`}
-            style={{ color: withAlpha(ink, isVault || isConfetti ? "e0" : "d9") }}
-          >
-            {instruction}
-          </p>
+          {beautyTheme && secondaryText?.trim() ? (
+            <p
+              className={`mx-auto mt-3 max-w-[290px] text-[12px] leading-5 ${headingAlignmentClass}`}
+              style={{ color: withAlpha(ink, "d9") }}
+            >
+              {secondaryText.trim()}
+            </p>
+          ) : null}
         </div>
 
-        <div className={`relative z-10 mx-auto mt-4 overflow-hidden rounded-[26px] ${surfaceClass}`}>
+        <div className={`relative z-10 ${beautyTheme ? secondaryText?.trim() ? "mt-4" : "mt-5" : "mt-5"} overflow-hidden ${surfaceClass} ${beautyTheme ? "border border-white/75 shadow-[0_12px_30px_rgba(49,39,28,.16)] ring-1 ring-black/5" : "rounded-[26px]"}`}>
           {!revealed && !hasTouched ? (
             <div
               aria-hidden="true"
@@ -349,7 +382,7 @@ export function ImmersiveScratchTicket({
             >
               {isVault ? <VaultIllustration color={illustrationColor} /> : null}
               {!isVault && isLilac ? <GiftIllustration color={illustrationColor} /> : null}
-              {!isVault && !isLilac && !isCoral && !isSunburst ? <GiftIllustration color={illustrationColor} /> : null}
+              {!beautyTheme && !isVault && !isLilac && !isCoral && !isSunburst ? <GiftIllustration color={illustrationColor} /> : null}
               {isSunburst ? <ScratchMark color={illustrationColor} /> : null}
             </div>
           ) : null}

@@ -22,6 +22,7 @@ import { ScratchGame } from "@/components/public/scratch-game";
 import { WheelOfFortune } from "@/components/public/wheel-of-fortune";
 import { BeautyWheelDecorations } from "@/components/public/beauty-wheel-decorations";
 import { beautyWheelBackground, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
+import { beautyScratchTemplate, isImmersiveScratchTemplate as isImmersiveScratchPageTemplate, type ImmersiveScratchTemplateId } from "@/lib/beauty-scratch-templates";
 import { RosePowderDecor } from "@/components/public/rose-powder-decor";
 import { fluidType } from "@/lib/responsive";
 import { textFontClass, textFontFamily, wheelSubtitleFontFamily } from "@/lib/format";
@@ -512,12 +513,7 @@ export function CampaignExperience({
   const isScratchCoralTemplate = pageTemplate === "scratch-coral";
   const isScratchLilacTemplate = pageTemplate === "scratch-lilac";
   const isScratchSunburstTemplate = pageTemplate === "scratch-sunburst";
-  const isImmersiveScratchTemplate =
-    isScratchVaultTemplate ||
-    isScratchConfettiTemplate ||
-    isScratchCoralTemplate ||
-    isScratchLilacTemplate ||
-    isScratchSunburstTemplate;
+  const isImmersiveScratchTemplate = isImmersiveScratchPageTemplate(pageTemplate);
   const scratchAccent =
     campaign.gameType === "scratch"
       ? resolveScratchAccent(campaign.accent, pageTemplate)
@@ -815,7 +811,9 @@ export function CampaignExperience({
   }
 
   const backgroundStyle =
-    campaign.presentation.background.mode === "image" &&
+    beautyScratchTemplate(pageTemplate)
+      ? `url("${beautyScratchTemplate(pageTemplate)!.background}")`
+      : campaign.presentation.background.mode === "image" &&
     campaign.presentation.background.imageUrl
       ? userBackgroundImageStyle(campaign.presentation.background.imageUrl)
       : isScratchVaultTemplate
@@ -1070,7 +1068,9 @@ export function CampaignExperience({
                 logoText={campaign.logoText ?? campaign.merchantLogoText}
                 logoUrl={campaign.logoUrl}
                 headline={safeSubtitle}
+                secondaryText={campaign.presentation.layout.scratchSubtitle}
                 headingTextColor={headingTextColor}
+                logoTextColor={campaign.presentation.logo.textColor ?? headingTextColor}
                 headingFontClass={headingFontClass}
                 headingFontSize={headingFontSize}
                 headingFontWeight={campaign.presentation.heading.fontWeight ?? 600}
@@ -1079,7 +1079,7 @@ export function CampaignExperience({
                 logoBottomSpacingPx={clampCampaignSpacingPx(campaign.presentation.logo.marginBottomPx)}
                 logoWidthPx={logoWidthPx}
                 logoTextSizePx={logoTextSizePx}
-                template={pageTemplate as "scratch-vault" | "scratch-confetti" | "scratch-coral" | "scratch-lilac" | "scratch-sunburst"}
+                template={pageTemplate as ImmersiveScratchTemplateId}
               />
             ) : (
               <ScratchGame
