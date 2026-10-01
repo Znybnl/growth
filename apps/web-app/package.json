@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "test:e2e": "playwright test",
+    "test:wizard-marketing-actions": "node --test src/lib/wizard-marketing-actions.test.mjs",
     "check:gotomarket": "node scripts/check-gotomarket-config.mjs",
     "check:dependencies": "node scripts/check-dependency-exceptions.mjs",
     "check:supabase": "node scripts/check-supabase-schema.mjs",
