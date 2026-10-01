@@ -513,6 +513,7 @@ export function CampaignExperience({
   const isScratchCoralTemplate = pageTemplate === "scratch-coral";
   const isScratchLilacTemplate = pageTemplate === "scratch-lilac";
   const isScratchSunburstTemplate = pageTemplate === "scratch-sunburst";
+  const beautyScratchTheme = beautyScratchTemplate(pageTemplate);
   const isImmersiveScratchTemplate = isImmersiveScratchPageTemplate(pageTemplate);
   const scratchAccent =
     campaign.gameType === "scratch"
@@ -811,8 +812,8 @@ export function CampaignExperience({
   }
 
   const backgroundStyle =
-    beautyScratchTemplate(pageTemplate)
-      ? `url("${beautyScratchTemplate(pageTemplate)!.background}")`
+    beautyScratchTheme
+      ? "none"
       : campaign.presentation.background.mode === "image" &&
     campaign.presentation.background.imageUrl
       ? userBackgroundImageStyle(campaign.presentation.background.imageUrl)
@@ -871,9 +872,21 @@ export function CampaignExperience({
         backgroundImage: backgroundStyle,
         backgroundPosition: "center",
         backgroundSize: "cover",
+        backgroundRepeat: "no-repeat",
         fontFamily: textFontFamily(campaign.presentation.heading.fontFamily),
       }}
     >
+      {beautyScratchTheme ? (
+        <Image
+          src={beautyScratchTheme.background}
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          data-template-art={beautyScratchTheme.id}
+          className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover"
+        />
+      ) : null}
       {(isBeautyTemplate || isRoseInstitutTemplate) && !isRosePowderTemplate && !(campaign.presentation.background.mode === "image" && campaign.presentation.background.imageUrl) ? (
         <BeautyWheelDecorations templateId={pageTemplate} primaryColor={primaryColor} />
       ) : null}

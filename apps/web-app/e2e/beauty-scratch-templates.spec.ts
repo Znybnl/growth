@@ -43,7 +43,9 @@ test("les cinq tickets Beauté restent lisibles et chargent leur fond sur plusie
     await expect(card).toHaveAttribute("aria-pressed", "true");
     const preview = page.locator(`.okado-preview-surface[data-template-id="${theme.id}"]`);
     await expect(preview).toBeVisible();
-    await expect(preview).toHaveCSS("background-image", new RegExp(theme.background.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+    const art = preview.locator(`img[data-template-art="${theme.id}"]`);
+    await expect(art).toBeVisible();
+    await expect.poll(() => art.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0 && image.naturalHeight > 0)).toBe(true);
     const assetResponse = await page.request.get(theme.background);
     expect(assetResponse.ok()).toBe(true);
     expect(assetResponse.headers()["content-type"]).toContain("image/webp");

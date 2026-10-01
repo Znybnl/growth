@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { memo } from "react";
 
 import { BrandMark } from "@/components/brand-mark";
@@ -286,6 +287,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
   const isCosmicTemplate = preview.gamePageTemplateId === "cosmic-orbit";
   const isImmersiveTemplate = isCosmicTemplate || preview.gamePageTemplateId === "sunburst-festival";
   const isImmersiveScratchTemplate = isImmersiveScratchPageTemplate(preview.gamePageTemplateId);
+  const beautyScratchTheme = beautyScratchTemplate(preview.gamePageTemplateId);
   const showStandardHeader = !isImmersiveScratchTemplate;
   // The compact preview has 254px of usable content width inside its phone
   // frame. A .74 ratio mirrors a 375px mobile viewport while container query
@@ -308,7 +310,18 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
 
   return (
     <div className={`okado-preview-surface ${previewWrapperClass}`} data-template-id={preview.gamePageTemplateId}>
-      <div className={`mx-auto w-full ${(isRosePowderTemplate || isRoseInstitutTemplate) && compact ? "overflow-x-hidden overflow-y-auto" : "overflow-hidden"} border border-[#ced7e6] shadow-[0_30px_70px_rgba(18,24,39,0.18)] ${previewFrameClass} ${isRosePowderTemplate ? "okado-rose-powder-surface relative" : ""}`} style={{ ...preview.backgroundStyle, ...(compact ? { containerType: "inline-size" } : {}) }}>
+      <div className={`mx-auto w-full ${(isRosePowderTemplate || isRoseInstitutTemplate) && compact ? "overflow-x-hidden overflow-y-auto" : "overflow-hidden"} border border-[#ced7e6] shadow-[0_30px_70px_rgba(18,24,39,0.18)] ${previewFrameClass} ${isRosePowderTemplate ? "okado-rose-powder-surface relative" : ""}`} style={{ ...preview.backgroundStyle, backgroundImage: beautyScratchTheme ? "none" : preview.backgroundStyle.backgroundImage, backgroundRepeat: "no-repeat", ...(compact ? { containerType: "inline-size" } : {}) }}>
+        {beautyScratchTheme ? (
+          <Image
+            src={beautyScratchTheme.background}
+            alt=""
+            fill
+            priority
+            sizes={compact ? "260px" : "450px"}
+            data-template-art={beautyScratchTheme.id}
+            className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover"
+          />
+        ) : null}
         {(isBeautyTemplate || isRoseInstitutTemplate) && preview.gameType === "wheel" && !preview.hasCustomBackgroundImage ? (
           isRosePowderTemplate ? (
             <RosePowderDecor primaryColor={preview.wheelStyle.loseColor} />

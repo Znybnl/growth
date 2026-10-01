@@ -28,20 +28,26 @@ export function BeautyScratchTemplateGallery({
             >
               <span
                 aria-hidden="true"
-                className="relative block aspect-[1.7/1] overflow-hidden bg-cover bg-center"
+                className="relative block aspect-[0.68/1] overflow-hidden bg-cover bg-center"
                 style={{ backgroundImage: `url("${template.background}")` }}
               >
-                <span className="absolute inset-0 flex flex-col items-center justify-center bg-white/10 px-3 text-center">
-                  <span className={`${template.fontClass} max-w-full truncate text-[13px] font-semibold`} style={{ color: template.text }}>
+                <span className="absolute inset-0 flex flex-col items-center px-3 pb-4 pt-7 text-center">
+                  <span className={`${template.fontClass} max-w-full truncate text-[12px] font-semibold`} style={{ color: template.text }}>
                     Votre établissement
                   </span>
-                  <span className={`${template.fontClass} mt-1 max-w-[88%] text-[10px] leading-tight`} style={{ color: template.text }}>
-                    Grattez et découvrez votre surprise
+                  <span className={`${template.fontClass} mt-3 line-clamp-3 max-w-[92%] text-[17px] leading-[1.05]`} style={{ color: template.text }}>
+                    {template.sampleHeadline}
+                  </span>
+                  <span className="mt-2 max-w-[90%] text-[8px] uppercase tracking-[0.12em]" style={{ color: template.text }}>
+                    {template.sampleSubline}
                   </span>
                   <span
-                    className="mt-2 block h-8 w-8 rounded-full border border-white/90 shadow-sm"
+                    className={`mt-5 block w-[67%] border border-white/90 shadow-[0_5px_12px_rgba(48,39,28,.16)] ${template.id === "beauty-scratch-nude" ? "aspect-[1.14/1] rounded-[18px]" : "aspect-square rounded-full"}`}
                     style={{ background: `linear-gradient(140deg, ${template.scratch.highlight}, ${template.scratch.base} 52%, ${template.scratch.edge})` }}
                   />
+                  <span className="mt-auto pt-3 text-[7px] leading-tight" style={{ color: template.text }}>
+                    Le résultat s&apos;affiche automatiquement.
+                  </span>
                 </span>
               </span>
               <span className="block px-3 py-3">

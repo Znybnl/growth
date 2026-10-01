@@ -5,6 +5,8 @@ export const BEAUTY_SCRATCH_TEMPLATES = [
     id: "beauty-scratch-nude",
     name: "Nude Élégance",
     description: "Crème, sable et détails fins pour un rendu intemporel.",
+    sampleHeadline: "Grattez et gagnez",
+    sampleSubline: "De belles surprises pour prendre soin de vous",
     background: "/images/scratch-templates/beauty-nude-elegance.webp",
     scratch: { base: "#b99a6a", highlight: "#e4d0aa", edge: "#fff7e9" },
     text: "#49372c",
@@ -15,8 +17,10 @@ export const BEAUTY_SCRATCH_TEMPLATES = [
     id: "beauty-scratch-botanical",
     name: "Botanique Premium",
     description: "Ivoire et feuillages sauge, naturel et apaisant.",
+    sampleHeadline: "Grattez votre cadeau",
+    sampleSubline: "Des surprises naturelles pour votre bien-être",
     background: "/images/scratch-templates/beauty-botanical-premium.webp",
-    scratch: { base: "#9ba58a", highlight: "#cbd0b9", edge: "#f4f2e6" },
+    scratch: { base: "#b69a63", highlight: "#e8d8b3", edge: "#fff9eb" },
     text: "#26392e",
     font: "cormorant",
     fontClass: "font-cormorant",
@@ -25,6 +29,8 @@ export const BEAUTY_SCRATCH_TEMPLATES = [
     id: "beauty-scratch-noir-or",
     name: "Noir & Or Signature",
     description: "Noir mat et champagne doré, sobre et exclusif.",
+    sampleHeadline: "Grattez et découvrez",
+    sampleSubline: "Des expériences beauté exclusives",
     background: "/images/scratch-templates/beauty-noir-or.webp",
     scratch: { base: "#a17a3d", highlight: "#d5b671", edge: "#f0dfb8" },
     text: "#f6e7c6",
@@ -35,8 +41,10 @@ export const BEAUTY_SCRATCH_TEMPLATES = [
     id: "beauty-scratch-lilas",
     name: "Lilas Soin Doux",
     description: "Lavande et ivoire dans une ambiance douce et sereine.",
+    sampleHeadline: "Grattez votre surprise",
+    sampleSubline: "Des soins d'exception pour votre bien-être",
     background: "/images/scratch-templates/beauty-lilas-soin-doux.webp",
-    scratch: { base: "#8e7b9d", highlight: "#c9bdd2", edge: "#f4eefa" },
+    scratch: { base: "#a99aae", highlight: "#e9e1eb", edge: "#fffaff" },
     text: "#49384f",
     font: "playfair",
     fontClass: "font-playfair",
@@ -45,8 +53,10 @@ export const BEAUTY_SCRATCH_TEMPLATES = [
     id: "beauty-scratch-corail",
     name: "Corail Lumière",
     description: "Pêche et corail lumineux, chaleureux et contemporain.",
+    sampleHeadline: "Grattez et laissez-vous surprendre",
+    sampleSubline: "Des moments beauté qui font du bien",
     background: "/images/scratch-templates/beauty-corail-lumiere.webp",
-    scratch: { base: "#c96e54", highlight: "#efa184", edge: "#fff0e5" },
+    scratch: { base: "#b89460", highlight: "#ead8b4", edge: "#fff8eb" },
     text: "#573126",
     font: "lato",
     fontClass: "font-lato",
@@ -55,6 +65,8 @@ export const BEAUTY_SCRATCH_TEMPLATES = [
   id: GamePageTemplateId;
   name: string;
   description: string;
+  sampleHeadline: string;
+  sampleSubline: string;
   background: string;
   scratch: { base: string; highlight: string; edge: string };
   text: string;

@@ -217,9 +217,9 @@ export function ImmersiveScratchTicket({
   const instruction = "Grattez la carte pour révéler votre cadeau.";
 
   const surfaceClass = beautyTheme?.id === "beauty-scratch-nude"
-    ? "mx-auto aspect-[1.16/1] w-full max-w-[310px] rounded-[30px]"
+    ? "mx-auto aspect-[1.14/1] w-[74%] max-w-[250px] rounded-[28px]"
     : beautyTheme
-      ? "mx-auto aspect-square w-full max-w-[286px] rounded-full"
+      ? "mx-auto aspect-square w-[70%] max-w-[216px] rounded-full"
       : isSunburst
     ? "aspect-[1.18/1] w-full"
     : "aspect-square w-full";
@@ -232,44 +232,73 @@ export function ImmersiveScratchTicket({
     const gradient = context.createLinearGradient(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     const cover = beautyTheme?.scratch.base ?? (isLilac ? "#b85be5" : isVault ? "#171d38" : primary);
     const highlight = beautyTheme?.scratch.highlight ?? (isLilac ? "#e2a7fa" : isSunburst ? blendWithWhite(cover, 0.2) : blendWithWhite(cover, 0.34));
-    gradient.addColorStop(0, cover);
-    gradient.addColorStop(0.42, highlight);
-    gradient.addColorStop(0.72, cover);
-    gradient.addColorStop(1, beautyTheme?.scratch.edge ?? (isSunburst ? blendWithWhite(cover, 0.04) : blendWithWhite(cover, 0.08)));
+    if (beautyTheme?.id === "beauty-scratch-nude") {
+      gradient.addColorStop(0, "#c4a675");
+      gradient.addColorStop(0.24, "#ead8b2");
+      gradient.addColorStop(0.52, "#c9ad7c");
+      gradient.addColorStop(0.78, "#e3d0a9");
+      gradient.addColorStop(1, "#b99862");
+    } else if (beautyTheme?.id === "beauty-scratch-botanical") {
+      gradient.addColorStop(0, "#c3a875");
+      gradient.addColorStop(0.38, "#eee1c4");
+      gradient.addColorStop(0.7, "#d2bb89");
+      gradient.addColorStop(1, "#b3935d");
+    } else if (beautyTheme?.id === "beauty-scratch-noir-or") {
+      gradient.addColorStop(0, "#98713a");
+      gradient.addColorStop(0.32, "#e8cf8c");
+      gradient.addColorStop(0.62, "#c39b52");
+      gradient.addColorStop(1, "#8f6834");
+    } else if (beautyTheme?.id === "beauty-scratch-lilas") {
+      gradient.addColorStop(0, "#b9aebe");
+      gradient.addColorStop(0.36, "#eee8ef");
+      gradient.addColorStop(0.68, "#d5cbd9");
+      gradient.addColorStop(1, "#a99aaf");
+    } else if (beautyTheme?.id === "beauty-scratch-corail") {
+      gradient.addColorStop(0, "#c29e6b");
+      gradient.addColorStop(0.35, "#f0dfbf");
+      gradient.addColorStop(0.68, "#d7b780");
+      gradient.addColorStop(1, "#b18a56");
+    } else {
+      gradient.addColorStop(0, cover);
+      gradient.addColorStop(0.42, highlight);
+      gradient.addColorStop(0.72, cover);
+      gradient.addColorStop(1, isSunburst ? blendWithWhite(cover, 0.04) : blendWithWhite(cover, 0.08));
+    }
     context.globalCompositeOperation = "source-over";
     context.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     context.fillStyle = gradient;
     context.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
     context.save();
-    context.globalAlpha = beautyTheme ? 0.12 : isSunburst ? 0.14 : 0.18;
+    context.globalAlpha = beautyTheme ? 0.095 : isSunburst ? 0.14 : 0.18;
     context.strokeStyle = beautyTheme?.scratch.edge ?? (isLilac || isSunburst ? "#ffffff" : readableTextColor(primary));
-    context.lineWidth = beautyTheme ? 1.5 : 2;
-    for (let offset = -CANVAS_HEIGHT; offset < CANVAS_WIDTH; offset += beautyTheme ? 46 : isSunburst ? 28 : 34) {
+    context.lineWidth = beautyTheme ? 1.15 : 2;
+    for (let offset = -CANVAS_HEIGHT; offset < CANVAS_WIDTH; offset += beautyTheme ? 40 : isSunburst ? 28 : 34) {
       context.beginPath();
       context.moveTo(offset, 0);
       context.lineTo(offset + CANVAS_HEIGHT, CANVAS_HEIGHT);
       context.stroke();
     }
-    if (beautyTheme?.id === "beauty-scratch-botanical") {
-      context.globalAlpha = 0.26;
-      context.strokeStyle = beautyTheme.scratch.edge;
-      context.lineWidth = 2.4;
+    if (beautyTheme?.id === "beauty-scratch-botanical" || beautyTheme?.id === "beauty-scratch-lilas") {
+      const engraving = beautyTheme.id === "beauty-scratch-botanical" ? "#65734f" : "#756282";
+      context.globalAlpha = beautyTheme.id === "beauty-scratch-botanical" ? 0.38 : 0.3;
+      context.strokeStyle = engraving;
+      context.lineWidth = 1.8;
       context.lineCap = "round";
       context.beginPath();
-      context.moveTo(174, 294);
-      context.bezierCurveTo(218, 256, 287, 202, 346, 139);
+      context.moveTo(160, 312);
+      context.bezierCurveTo(208, 274, 285, 205, 358, 124);
       context.stroke();
       for (let index = 0; index < 5; index += 1) {
         const progress = 0.18 + index * 0.145;
-        const x = 174 + (346 - 174) * progress;
-        const y = 294 + (139 - 294) * progress;
-        const reach = 36 - index * 1.5;
+        const x = 160 + (358 - 160) * progress;
+        const y = 312 + (124 - 312) * progress;
+        const reach = (beautyTheme.id === "beauty-scratch-botanical" ? 35 : 28) - index * 1.3;
         context.beginPath();
         context.moveTo(x, y);
-        context.quadraticCurveTo(x - 10, y - reach * 0.75, x - reach, y - reach);
+        context.quadraticCurveTo(x - 9, y - reach * 0.72, x - reach, y - reach);
         context.moveTo(x, y);
-        context.quadraticCurveTo(x + 10, y + reach * 0.75, x + reach, y + reach);
+        context.quadraticCurveTo(x + 9, y + reach * 0.72, x + reach, y + reach);
         context.stroke();
       }
     }
@@ -327,7 +356,7 @@ export function ImmersiveScratchTicket({
   }
 
   const rootClass = beautyTheme
-    ? "bg-transparent px-6 py-8"
+    ? "bg-transparent px-6 pb-8 pt-[76px]"
     : isVault || isConfetti
     ? "bg-transparent px-5"
     : isLilac
@@ -341,11 +370,11 @@ export function ImmersiveScratchTicket({
   return (
     <div className={`mx-auto w-full ${fitContainer ? "max-w-full" : "max-w-[370px]"}`}>
       <div
-        className={`relative overflow-hidden ${rootClass}`}
+        className={`relative isolate overflow-hidden ${rootClass}`}
       >
         <div className={`relative z-10 ${headingAlignmentClass}`}>
           {logoMode !== "none" ? (
-            <div className={`flex ${logoAlignmentClass}`} style={{ marginBottom: `${Math.max(0, logoBottomSpacingPx)}px` }}>
+            <div className={`flex ${logoAlignmentClass}`} style={{ marginBottom: `${Math.max(0, logoBottomSpacingPx) + (beautyTheme ? 24 : 0)}px` }}>
               <BrandMark
                 logoText={logoText || "Votre commerce"}
                 logoUrl={logoMode === "image" ? logoUrl : undefined}
@@ -359,7 +388,7 @@ export function ImmersiveScratchTicket({
             </div>
           ) : null}
           <h2
-            className={`line-clamp-3 pb-2.5 text-2xl leading-[1.08] ${resolvedHeadingFontClass}`}
+            className={`${beautyTheme ? "mx-auto max-w-[14ch]" : ""} line-clamp-3 pb-2.5 text-2xl leading-[1.08] ${resolvedHeadingFontClass}`}
             style={{ color: ink, fontSize: headingFontSize, fontWeight: headingFontWeight }}
           >
             {displayHeadline}
@@ -374,7 +403,7 @@ export function ImmersiveScratchTicket({
           ) : null}
         </div>
 
-        <div className={`relative z-10 ${beautyTheme ? secondaryText?.trim() ? "mt-4" : "mt-5" : "mt-5"} overflow-hidden ${surfaceClass} ${beautyTheme ? "border border-white/75 shadow-[0_12px_30px_rgba(49,39,28,.16)] ring-1 ring-black/5" : "rounded-[26px]"}`}>
+        <div className={`relative z-10 ${beautyTheme ? secondaryText?.trim() ? "mt-4" : "mt-5" : "mt-5"} overflow-hidden ${surfaceClass} ${beautyTheme ? "border border-white/90 shadow-[0_14px_34px_rgba(55,42,30,.18)] ring-1 ring-black/10" : "rounded-[26px]"}`}>
           {!revealed && !hasTouched ? (
             <div
               aria-hidden="true"
@@ -448,10 +477,10 @@ export function ImmersiveScratchTicket({
         </div>
 
         <p
-          className="relative z-10 mt-4 text-center text-sm leading-5"
+          className={`relative z-10 mx-auto mt-4 max-w-[28ch] text-center ${beautyTheme ? `${beautyTheme.fontClass} text-[11px] leading-[1.45] tracking-[0.015em]` : "text-sm leading-5"}`}
           style={{ color: withAlpha(ink, isVault || isConfetti ? "d9" : "c7") }}
         >
-          {isCoral ? "Le gain sera disponible selon les conditions de retrait." : isSunburst ? "Votre gain sera confirmé après la révélation." : "Le résultat apparaît dès que la zone est suffisamment grattée."}
+          {beautyTheme ? "Le résultat s'affiche automatiquement." : isCoral ? "Le gain sera disponible selon les conditions de retrait." : isSunburst ? "Votre gain sera confirmé après la révélation." : "Le résultat apparaît dès que la zone est suffisamment grattée."}
         </p>
       </div>
     </div>
