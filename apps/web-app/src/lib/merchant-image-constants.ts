@@ -1,0 +1,5 @@
+export const MAX_MERCHANT_IMAGE_SOURCE_BYTES = 4 * 1024 * 1024;
+export const MAX_MERCHANT_IMAGE_PIXELS = 32_000_000;
+export const MAX_MERCHANT_IMAGE_SIDE_PX = 10_000;
+export const MERCHANT_IMAGE_BUCKET = "merchant-images";
+export const MERCHANT_IMAGE_ORPHAN_AGE_MS = 24 * 60 * 60 * 1000;

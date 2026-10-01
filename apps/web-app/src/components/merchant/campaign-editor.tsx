@@ -66,6 +66,7 @@ import {
 } from "@/lib/format";
 import { captureClientProductEvent } from "@/lib/client-product-analytics";
 import { postCampaignSetup } from "@/lib/campaign-setup-request";
+import { uploadMerchantImageFile, MERCHANT_IMAGE_ACCEPT } from "@/lib/merchant-image-upload";
 import { beautyWheelBackground, beautyWheelFontOptions, beautyWheelTheme, isBeautyIndustry, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
 import { beautyScratchTemplate, isHiddenScratchTemplate, isImmersiveScratchTemplate as isImmersiveScratchPageTemplate, type BeautyScratchTemplateId, type ImmersiveScratchTemplateId } from "@/lib/beauty-scratch-templates";
 import { RosePowderDecor } from "@/components/public/rose-powder-decor";
@@ -1722,14 +1723,13 @@ function buildClassicSetupPayload(form: EditorState) {
   };
 }
 
-const MAX_UPLOAD_IMAGE_BYTES = 2 * 1024 * 1024;
-const ACCEPTED_IMAGE_TYPES = new Set(["image/png", "image/jpeg", "image/webp", "image/gif"]);
 type ImageUploadField = "campaign-logo" | "background" | "poster-logo" | "poster-background";
 
-function uploadAsDataUrl(
+function uploadUserImage(
   event: ChangeEvent<HTMLInputElement>,
   onLoaded: (value: string) => void,
-  onError?: (message: string) => void,
+  onError: ((message: string) => void) | undefined,
+  field: ImageUploadField,
 ) {
   const file = event.target.files?.[0];
 
@@ -1737,27 +1737,11 @@ function uploadAsDataUrl(
     return;
   }
 
-  if (file.type && !ACCEPTED_IMAGE_TYPES.has(file.type)) {
-    event.target.value = "";
-    onError?.("Format d'image non pris en charge. Utilisez un PNG, JPEG, WebP ou GIF.");
-    return;
-  }
-
-  if (file.size > MAX_UPLOAD_IMAGE_BYTES) {
-    event.target.value = "";
-    onError?.("Image trop volumineuse. Importez une image de 2 Mo maximum.");
-    return;
-  }
-
-  const reader = new FileReader();
-
-  reader.onload = () => {
-    if (typeof reader.result === "string") {
-      onLoaded(reader.result);
-    }
-  };
-
-  reader.readAsDataURL(file);
+  event.target.value = "";
+  const kind = field === "background" || field === "poster-background" ? "background" : "logo";
+  void uploadMerchantImageFile(file, kind)
+    .then(({ url }) => onLoaded(url))
+    .catch((error: unknown) => onError?.(error instanceof Error ? error.message : "Import de l’image impossible."));
 }
 
 export function CampaignEditor({
@@ -3168,7 +3152,7 @@ export function CampaignEditor({
                 <div>
                   <span className="mb-2 block text-[#616b7c]">Importer un logo</span>
                   <p className="max-w-md text-sm leading-6 text-[#516073]">
-                    Déposez un fichier PNG, JPG ou SVG pour remplacer le logo affiché sur la
+                    Déposez un fichier PNG, JPEG ou WebP pour remplacer le logo affiché sur la
                     page de jeu.
                   </p>
                 </div>
@@ -3207,15 +3191,15 @@ export function CampaignEditor({
                     </span>
                     <p className="text-xs leading-5 text-[#64748b]">
                       L&apos;aperçu reprend le fond actuellement sélectionné pour la page de jeu.
-                      Formats PNG, JPEG, WebP ou GIF, 2 Mo maximum.
+                      Formats PNG, JPEG ou WebP, 4 Mo maximum. L’image est optimisée avant stockage.
                     </p>
                   </div>
                 </div>
                 <input
                   type="file"
-                  accept="image/png,image/jpeg,image/webp,image/gif"
+                  accept={MERCHANT_IMAGE_ACCEPT}
                   onChange={(event) =>
-                    uploadAsDataUrl(
+                    uploadUserImage(
                       event,
                       (value) => {
                         setImageUploadErrors((current) => ({ ...current, "campaign-logo": undefined }));
@@ -3224,6 +3208,7 @@ export function CampaignEditor({
                       (error) => {
                         setImageUploadErrors((current) => ({ ...current, "campaign-logo": error }));
                       },
+                      "campaign-logo",
                     )
                   }
                   className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
@@ -3636,7 +3621,7 @@ export function CampaignEditor({
                         </span>
                         <p className="mt-2 text-sm leading-6 text-[#64748b]">
                           Chargez votre propre image ou sélectionnez un visuel existant dans la bibliothèque publique.
-                          Formats PNG, JPEG, WebP ou GIF, 2 Mo maximum.
+                          Formats PNG, JPEG ou WebP, 4 Mo maximum. L’image est optimisée avant stockage.
                         </p>
                         <div className="mt-4 flex flex-wrap items-center gap-3">
                           <div className="flex flex-col items-start">
@@ -3644,9 +3629,9 @@ export function CampaignEditor({
                             Importer une image
                             <input
                               type="file"
-                              accept="image/png,image/jpeg,image/webp,image/gif"
+                              accept={MERCHANT_IMAGE_ACCEPT}
                               onChange={(event) =>
-                                uploadAsDataUrl(
+                                uploadUserImage(
                                   event,
                                    (value) => {
                                      setImageUploadErrors((current) => ({ ...current, background: undefined }));
@@ -3665,6 +3650,7 @@ export function CampaignEditor({
                                    (error) => {
                                      setImageUploadErrors((current) => ({ ...current, background: error }));
                                    },
+                                   "background",
                                 )
                               }
                               className="hidden"
@@ -3761,7 +3747,7 @@ export function CampaignEditor({
                   <span className="mb-2 block text-[#616b7c]">Logo de l&apos;affiche</span>
                   <p className="max-w-md text-sm leading-6 text-[#516073]">
                     Par défaut, le logo de la campagne publique est utilisé.
-                    Formats PNG, JPEG, WebP ou GIF, 2 Mo maximum.
+                    Formats PNG, JPEG ou WebP, 4 Mo maximum. L’image est optimisée avant stockage.
                   </p>
                 </div>
                 <div className="mt-4 flex items-center justify-between gap-3">
@@ -3774,9 +3760,9 @@ export function CampaignEditor({
                 </div>
                 <input
                   type="file"
-                  accept="image/png,image/jpeg,image/webp,image/gif"
+                  accept={MERCHANT_IMAGE_ACCEPT}
                   onChange={(event) =>
-                    uploadAsDataUrl(
+                    uploadUserImage(
                       event,
                        (value) => {
                          setImageUploadErrors((current) => ({ ...current, "poster-logo": undefined }));
@@ -3794,6 +3780,7 @@ export function CampaignEditor({
                        (error) => {
                          setImageUploadErrors((current) => ({ ...current, "poster-logo": error }));
                        },
+                       "poster-logo",
                     )
                   }
                   className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
@@ -3835,7 +3822,7 @@ export function CampaignEditor({
                   <span className="mb-2 block text-[#616b7c]">Image de fond de l&apos;affiche</span>
                   <p className="max-w-md text-sm leading-6 text-[#516073]">
                     Une image par d&eacute;faut est appliqu&eacute;e tant qu&apos;aucun visuel personnalis&eacute; n&apos;est s&eacute;lectionn&eacute;.
-                    Formats PNG, JPEG, WebP ou GIF, 2 Mo maximum.
+                    Formats PNG, JPEG ou WebP, 4 Mo maximum. L’image est optimisée avant stockage.
                   </p>
                 </div>
                 <div className="mt-4 flex items-center justify-between gap-3">
@@ -3848,9 +3835,9 @@ export function CampaignEditor({
                 </div>
                 <input
                   type="file"
-                  accept="image/png,image/jpeg,image/webp,image/gif"
+                  accept={MERCHANT_IMAGE_ACCEPT}
                   onChange={(event) =>
-                    uploadAsDataUrl(
+                    uploadUserImage(
                       event,
                        (value) => {
                          setImageUploadErrors((current) => ({ ...current, "poster-background": undefined }));
@@ -3868,6 +3855,7 @@ export function CampaignEditor({
                        (error) => {
                          setImageUploadErrors((current) => ({ ...current, "poster-background": error }));
                        },
+                       "poster-background",
                     )
                   }
                   className="absolute inset-0 h-full w-full cursor-pointer opacity-0"

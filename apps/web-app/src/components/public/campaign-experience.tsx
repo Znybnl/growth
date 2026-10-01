@@ -27,6 +27,7 @@ import { RosePowderDecor } from "@/components/public/rose-powder-decor";
 import { fluidType } from "@/lib/responsive";
 import { textFontClass, textFontFamily, wheelSubtitleFontFamily } from "@/lib/format";
 import { userBackgroundImageStyle } from "@/lib/campaign-background";
+import { isMerchantOptimizedImageUrl } from "@/lib/merchant-image-upload";
 import {
   campaignLogoTextSizePx,
   campaignWheelBlockSpacingPx,
@@ -812,10 +813,16 @@ export function CampaignExperience({
     });
   }
 
+  const managedBackgroundUrl = campaign.presentation.background.mode === "image" &&
+    isMerchantOptimizedImageUrl(campaign.presentation.background.imageUrl)
+    ? campaign.presentation.background.imageUrl
+    : null;
   const backgroundStyle =
     beautyScratchTheme
       ? "none"
-      : campaign.presentation.background.mode === "image" &&
+      : managedBackgroundUrl
+        ? "none"
+        : campaign.presentation.background.mode === "image" &&
     campaign.presentation.background.imageUrl
       ? userBackgroundImageStyle(campaign.presentation.background.imageUrl)
       : isScratchVaultTemplate
@@ -877,6 +884,16 @@ export function CampaignExperience({
         fontFamily: textFontFamily(campaign.presentation.heading.fontFamily),
       }}
     >
+      {managedBackgroundUrl ? (
+        <Image
+          src={managedBackgroundUrl}
+          alt=""
+          fill
+          sizes="100vw"
+          priority
+          className="pointer-events-none absolute inset-0 z-0 object-cover"
+        />
+      ) : null}
       {beautyScratchTheme ? (
         <Image
           src={beautyScratchTheme.background}

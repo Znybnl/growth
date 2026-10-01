@@ -64,6 +64,7 @@ export default async function AdminCampaignEditPage({ params }: AdminCampaignEdi
       initialCampaign={initialState.campaign}
       deferInlineAssets={initialState.hasDeferredAssets}
       adminSaveEndpoint={saveEndpoint}
+      adminAccountMerchantId={context.accountMerchantId}
       adminAssetsEndpoint={`/api/admin/campaigns/${encodeURIComponent(id)}/assets`}
     />
   );

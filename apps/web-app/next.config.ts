@@ -1,8 +1,28 @@
 import type { NextConfig } from "next";
 
+const supabaseImagePattern = (() => {
+  const value = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!value) return undefined;
+  try {
+    const url = new URL(value);
+    if (url.protocol !== "https:" && url.protocol !== "http:") return undefined;
+    return {
+      protocol: url.protocol.slice(0, -1) as "http" | "https",
+      hostname: url.hostname,
+      ...(url.port ? { port: url.port } : {}),
+      pathname: "/storage/v1/object/public/merchant-images/**",
+    };
+  } catch {
+    return undefined;
+  }
+})();
+
 const nextConfig: NextConfig = {
   allowedDevOrigins: ["127.0.0.1"],
   serverExternalPackages: ["sharp"],
+  images: {
+    remotePatterns: supabaseImagePattern ? [supabaseImagePattern] : [],
+  },
   turbopack: {
     // Recharts imports this subpath through victory-vendor. Pinning the
     // resolver to d3-shape's ESM entry avoids a clean-build Turbopack export
@@ -62,6 +82,26 @@ const nextConfig: NextConfig = {
       "./node_modules/@img/sharp-libvips-linux-x64/**/*",
     ],
     "/api/campaigns/[id]/poster": [
+      "./node_modules/sharp/**/*",
+      "./node_modules/@img/sharp-linux-x64/**/*",
+      "./node_modules/@img/sharp-libvips-linux-x64/**/*",
+    ],
+    "/api/merchant/images": [
+      "./node_modules/sharp/**/*",
+      "./node_modules/@img/sharp-linux-x64/**/*",
+      "./node_modules/@img/sharp-libvips-linux-x64/**/*",
+    ],
+    "/api/campaigns/setup": [
+      "./node_modules/sharp/**/*",
+      "./node_modules/@img/sharp-linux-x64/**/*",
+      "./node_modules/@img/sharp-libvips-linux-x64/**/*",
+    ],
+    "/api/campaigns/[id]/poster-settings": [
+      "./node_modules/sharp/**/*",
+      "./node_modules/@img/sharp-linux-x64/**/*",
+      "./node_modules/@img/sharp-libvips-linux-x64/**/*",
+    ],
+    "/api/admin/merchants/[merchantId]/locations/[locationId]/campaigns/setup": [
       "./node_modules/sharp/**/*",
       "./node_modules/@img/sharp-linux-x64/**/*",
       "./node_modules/@img/sharp-libvips-linux-x64/**/*",

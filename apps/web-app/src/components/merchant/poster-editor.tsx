@@ -30,6 +30,7 @@ import { getPosterTemplate, POSTER_TEMPLATES } from "@/lib/poster-templates";
 import { PosterTemplateSelector } from "@/components/merchant/poster-template-selector";
 import { ValidationDialog } from "@/components/ui/validation-dialog";
 import { PageHeader } from "@/components/ui/workspace";
+import { isMerchantOptimizedImageUrl, uploadMerchantImageFile, MERCHANT_IMAGE_ACCEPT } from "@/lib/merchant-image-upload";
 
 type PosterEditorProps = {
   campaign: Campaign;
@@ -37,9 +38,6 @@ type PosterEditorProps = {
   settingsEndpoint?: string;
   returnHref?: string;
 };
-
-const MAX_UPLOAD_IMAGE_BYTES = 2 * 1024 * 1024;
-const ACCEPTED_IMAGE_TYPES = new Set(["image/png", "image/jpeg", "image/webp", "image/gif"]);
 
 type PosterPngPreview = {
   svg: string;
@@ -51,7 +49,7 @@ type PendingPosterNavigation = {
   href: string;
 };
 
-function uploadAsDataUrl(
+function uploadPosterLogo(
   event: ChangeEvent<HTMLInputElement>,
   onLoaded: (value: string) => void,
   onError?: (message: string) => void,
@@ -60,25 +58,10 @@ function uploadAsDataUrl(
 
   if (!file) return;
 
-  if (file.type && !ACCEPTED_IMAGE_TYPES.has(file.type)) {
-    event.target.value = "";
-    onError?.("Format d'image non pris en charge. Utilisez un PNG, JPEG, WebP ou GIF.");
-    return;
-  }
-
-  if (file.size > MAX_UPLOAD_IMAGE_BYTES) {
-    event.target.value = "";
-    onError?.("Image trop volumineuse. Importez une image de 2 Mo maximum.");
-    return;
-  }
-
-  const reader = new FileReader();
-  reader.onload = () => {
-    if (typeof reader.result === "string") {
-      onLoaded(reader.result);
-    }
-  };
-  reader.readAsDataURL(file);
+  event.target.value = "";
+  void uploadMerchantImageFile(file, "logo")
+    .then(({ url }) => onLoaded(url))
+    .catch((error: unknown) => onError?.(error instanceof Error ? error.message : "Import de l’image impossible."));
 }
 
 function downloadBlob(blob: Blob, fileName: string) {
@@ -880,7 +863,7 @@ export function PosterEditor({ campaign, prizes, settingsEndpoint, returnHref }:
                 <div>
                   <span className="mb-2 block text-charcoal">Importer le logo affiche</span>
                   <p className="max-w-md text-sm leading-6 text-ash">
-                    PNG, JPEG, WebP ou GIF, 2 Mo maximum. Le logo restera centré en haut de l&apos;affiche.
+                    PNG, JPEG ou WebP, 4 Mo maximum. L’image est optimisée avant stockage ; le logo restera centré en haut de l&apos;affiche.
                   </p>
                 </div>
                 <div className="mt-4 flex items-center justify-between gap-3">
@@ -898,16 +881,16 @@ export function PosterEditor({ campaign, prizes, settingsEndpoint, returnHref }:
                       alt="Aperçu du logo"
                       width={220}
                       height={92}
-                      unoptimized
+                      unoptimized={!isMerchantOptimizedImageUrl(poster.logoUrl || campaign.logoUrl)}
                       className="max-h-[70px] w-auto object-contain"
                     />
                   </div>
                 ) : null}
                 <input
                   type="file"
-                  accept="image/png,image/jpeg,image/webp,image/gif"
+                  accept={MERCHANT_IMAGE_ACCEPT}
                   onChange={(event) =>
-                    uploadAsDataUrl(
+                    uploadPosterLogo(
                       event,
                       (value) => {
                         setImageUploadError(null);

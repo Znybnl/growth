@@ -6,6 +6,7 @@ import { parseCampaignSetupInput } from "@/lib/merchant-input";
 import { captureProductEvent, merchantDistinctId } from "@/lib/product-analytics";
 import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
 import { saveCampaignSetup } from "@/lib/store";
+import { optimizeMerchantImage, MerchantImageValidationError } from "@/lib/merchant-image-processing";
 import {
   emitServerError,
   flushServerTelemetry,
@@ -13,6 +14,24 @@ import {
   isServerTelemetryEnabled,
 } from "@/lib/observability";
 import { logSupportEvent } from "@/lib/support-log";
+import { deleteMerchantImagesIfUnreferenced, getCampaignMerchantImageUrls } from "@/lib/merchant-image-storage";
+import { uploadMerchantImage } from "@/lib/merchant-image-storage";
+
+async function migrateInlineImage(value: string | undefined, kind: "logo" | "background", merchantId: string) {
+  if (!value?.startsWith("data:image/")) return value;
+  const match = /^data:image\/(png|jpe?g|webp);base64,([a-z0-9+/=\s]+)$/i.exec(value);
+  if (!match) return value; // Keep previously accepted animated GIFs readable.
+  const source = Buffer.from(match[2].replace(/\s/g, ""), "base64");
+  const optimized = await optimizeMerchantImage(source, kind);
+  const stored = await uploadMerchantImage({
+    buffer: optimized.buffer,
+    kind,
+    merchantId,
+    width: optimized.width,
+    height: optimized.height,
+  });
+  return stored.url;
+}
 
 export async function POST(request: Request) {
   const requestStartedAt = performance.now();
@@ -42,6 +61,24 @@ export async function POST(request: Request) {
 
     const parseStartedAt = performance.now();
     const body = parseCampaignSetupInput(await request.json(), session.merchant.id);
+    body.logoUrl = await migrateInlineImage(body.logoUrl, "logo", session.merchant.id);
+    body.presentation.background.imageUrl = await migrateInlineImage(
+      body.presentation.background.imageUrl,
+      "background",
+      session.merchant.id,
+    ) ?? "";
+    if (body.presentation.poster) {
+      body.presentation.poster.logoUrl = await migrateInlineImage(
+        body.presentation.poster.logoUrl,
+        "logo",
+        session.merchant.id,
+      );
+      body.presentation.poster.backgroundImageUrl = await migrateInlineImage(
+        body.presentation.poster.backgroundImageUrl,
+        "background",
+        session.merchant.id,
+      );
+    }
     parseMs = Math.round((performance.now() - parseStartedAt) * 10) / 10;
     saveContext = {
       mode: body.id ? "update" : "create",
@@ -50,6 +87,17 @@ export async function POST(request: Request) {
       actions_count: body.actions.length,
       prizes_count: body.prizes.length,
     };
+    let previousImageUrls: string[] = [];
+    if (body.id) {
+      try {
+        previousImageUrls = await getCampaignMerchantImageUrls(session.merchant.id, body.id);
+      } catch (imageCleanupReadError) {
+        logSupportEvent("error", "campaign_image_cleanup_reference_read_failed", {
+          campaignId: body.id,
+          error: imageCleanupReadError instanceof Error ? imageCleanupReadError.message : "Reference lookup failed",
+        });
+      }
+    }
     telemetryContext = {
       ...telemetryContext,
       campaign_id: body.id,
@@ -64,6 +112,17 @@ export async function POST(request: Request) {
     saveMs = Math.round((performance.now() - saveStartedAt) * 10) / 10;
     if (!savedCampaignId) {
       throw new Error("La campagne n'a pas pu être enregistrée.");
+    }
+
+    if (previousImageUrls.length > 0) {
+      try {
+        await deleteMerchantImagesIfUnreferenced(previousImageUrls);
+      } catch (imageCleanupError) {
+        logSupportEvent("error", "campaign_image_cleanup_failed", {
+          campaignId: savedCampaignId,
+          error: imageCleanupError instanceof Error ? imageCleanupError.message : "Image cleanup failed",
+        });
+      }
     }
 
     logSupportEvent("info", body.id ? "campaign_saved" : "campaign_created", {
@@ -144,6 +203,8 @@ export async function POST(request: Request) {
       ? 403
       : error instanceof CampaignComplianceError
         ? error.status
+        : error instanceof MerchantImageValidationError
+          ? 400
         : 500;
     const message =
       status === 403
