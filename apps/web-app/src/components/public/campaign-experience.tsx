@@ -32,6 +32,7 @@ import {
   campaignWheelBlockSpacingPx,
   clampCampaignLogoSizePercent,
   clampCampaignSpacingPx,
+  DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
   defaultWheelSubtitleSpacingForTemplate,
   DEFAULT_SCRATCH_SUBTITLE,
   MAX_BEAUTY_WHEEL_TITLE_LINES,
@@ -1067,7 +1068,10 @@ export function CampaignExperience({
             </div>
           </div>
         ) : (
-          <div className={isImmersiveScratchTemplate ? "mt-0 flex min-h-0 flex-1 flex-col" : "mt-[40px] sm:mt-20 lg:mt-8"}>
+          <div
+            className={isImmersiveScratchTemplate ? "mt-0 flex min-h-0 flex-1 flex-col" : ""}
+            style={isImmersiveScratchTemplate ? undefined : { marginTop: `${clampCampaignSpacingPx(campaign.presentation.layout.blockSpacingPx)}px` }}
+          >
             {isImmersiveScratchTemplate ? (
               <ImmersiveScratchTicket
                 key={`${campaign.id}-${drawSession?.id ?? "idle"}`}
@@ -1090,6 +1094,8 @@ export function CampaignExperience({
                 headingAlignmentClass={headingAlignmentClass}
                 logoAlignmentClass={logoAlignmentClass}
                 logoBottomSpacingPx={clampCampaignSpacingPx(campaign.presentation.logo.marginBottomPx)}
+                textToScratchSpacingPx={clampCampaignSpacingPx(campaign.presentation.layout.blockSpacingPx)}
+                subtitleSpacingPx={clampCampaignSpacingPx(campaign.presentation.layout.subtitleSpacingPx, DEFAULT_WHEEL_SUBTITLE_SPACING_PX)}
                 logoWidthPx={logoWidthPx}
                 logoTextSizePx={logoTextSizePx}
                 template={pageTemplate as ImmersiveScratchTemplateId}

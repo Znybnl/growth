@@ -2775,6 +2775,7 @@ export function CampaignWizard({
                        <CampaignSpacingControls
                          gameType={draft.gameType}
                          logoMode={draft.logoMode}
+                         hasScratchSubtitle={Boolean(beautyScratchTemplate(draft.presentation.layout.templateId))}
                          logoSpacingPx={draft.presentation.logo.marginBottomPx}
                          blockSpacingPx={draft.presentation.layout.blockSpacingPx}
                          subtitleSpacingPx={draft.presentation.layout.subtitleSpacingPx ?? DEFAULT_WHEEL_SUBTITLE_SPACING_PX}
