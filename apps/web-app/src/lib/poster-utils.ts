@@ -151,7 +151,7 @@ export function createPosterSettingsDefaults(input: {
     logoUrl: input.logoUrl,
     logoSizePercent: input.logoSizePercent ?? 70,
     logoBottomMarginPx: input.logoBottomMarginPx ?? 10,
-    posterSubtitleEnabled: input.posterSubtitleEnabled ?? false,
+    posterSubtitleEnabled: input.posterSubtitleEnabled ?? true,
     backgroundMode: input.backgroundMode ?? (input.backgroundImageUrl ? "image" : "color"),
     backgroundColor: input.backgroundColor ?? "#ffffff",
     backgroundImageUrl: input.backgroundImageUrl ?? "",
@@ -171,8 +171,12 @@ export function normalizePosterSettings(
   defaults: CampaignPosterSettings,
 ): CampaignPosterSettings {
   const legacyMotif = legacyPosterTemplateMotif(poster?.templateId);
-  const backgroundMotif = poster?.backgroundMotif ?? legacyMotif ?? defaults.backgroundMotif ?? "plain";
   const templateId = legacyMotif ? "classic-wheel" : poster?.templateId ?? defaults.templateId ?? "classic-wheel";
+  const requestedBackgroundMotif = poster?.backgroundMotif ?? legacyMotif ?? defaults.backgroundMotif ?? "soft-gradient";
+  const backgroundMotif = templateId === "classic-wheel" ? "soft-gradient" : requestedBackgroundMotif;
+  const hasLegacyClassicBackground = templateId === "classic-wheel" && requestedBackgroundMotif !== "soft-gradient";
+  const savedGradientStyle = poster?.backgroundMotifStyles?.["soft-gradient"];
+  const classicGradientTemplate = getPosterTemplate("soft-gradient-wheel");
 
   return {
     ...defaults,
@@ -185,11 +189,13 @@ export function normalizePosterSettings(
     backgroundMotifStyles: poster?.backgroundMotifStyles ?? defaults.backgroundMotifStyles,
     logoSizePercent: clamp(poster?.logoSizePercent ?? defaults.logoSizePercent ?? 70, 0, 200),
     logoBottomMarginPx: clamp(poster?.logoBottomMarginPx ?? defaults.logoBottomMarginPx, 0, 80),
-    posterSubtitleEnabled: poster?.posterSubtitleEnabled ?? defaults.posterSubtitleEnabled ?? false,
+    posterSubtitleEnabled: poster?.posterSubtitleEnabled ?? defaults.posterSubtitleEnabled ?? true,
     logoMode: poster?.logoMode ?? defaults.logoMode,
     logoText: poster?.logoText ?? defaults.logoText,
     backgroundMode: poster?.backgroundMode ?? defaults.backgroundMode,
-    backgroundColor: poster?.backgroundColor ?? defaults.backgroundColor,
+    backgroundColor: hasLegacyClassicBackground && poster?.backgroundMode !== "image"
+      ? savedGradientStyle?.backgroundColor ?? classicGradientTemplate.background
+      : poster?.backgroundColor ?? defaults.backgroundColor,
     headline: poster?.headline?.slice(0, MAX_POSTER_HEADLINE_LENGTH) ?? defaults.headline,
     wheel: {
       ...defaults.wheel,

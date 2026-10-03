@@ -145,7 +145,7 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
   {
     id: "classic-wheel",
     label: "Classique",
-    description: "Une structure claire avec plusieurs motifs de fond.",
+    description: "Une composition lumineuse sur fond dégradé clair.",
     background: "#fff6ee",
     accent: "#1b04b8",
     accentDark: "#050644",
@@ -217,6 +217,7 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     wheelLabelVariant: "gift-icons",
     wheelPointerVariant: "rounded-triangle",
     motif: "soft-gradient",
+    footerVariant: "botanical-editorial",
     wheel: {
       winColor: "#4b35c9",
       alternateWinColor: "#fff7ef",
@@ -591,9 +592,9 @@ export const POSTER_TEMPLATE_CHOICES = [
 ];
 
 const MOTIF_TEMPLATE_IDS: Record<PosterBackgroundMotif, PosterTemplateId> = {
-  plain: "classic-wheel",
+  plain: "soft-gradient-wheel",
   "soft-gradient": "soft-gradient-wheel",
-  terracotta: "terracotta-wheel",
+  terracotta: "soft-gradient-wheel",
 };
 
 export function getPosterTemplate(
@@ -601,10 +602,9 @@ export function getPosterTemplate(
   backgroundMotif?: PosterBackgroundMotif,
 ) {
   const normalizedId = templateId ?? "classic-wheel";
-  const motifTemplateId =
-    normalizedId === "classic-wheel" && backgroundMotif
-      ? MOTIF_TEMPLATE_IDS[backgroundMotif]
-      : normalizedId;
+  const motifTemplateId = normalizedId === "classic-wheel"
+    ? MOTIF_TEMPLATE_IDS[backgroundMotif ?? "soft-gradient"]
+    : normalizedId;
 
   return POSTER_TEMPLATE_CONFIGS[motifTemplateId] ?? POSTER_TEMPLATE_CONFIGS["classic-wheel"];
 }

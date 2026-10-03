@@ -28,10 +28,10 @@ export function selectPosterTemplate(
 ) {
   if (poster.templateId === templateId) return poster;
   const currentMotif = poster.templateId === "classic-wheel"
-    ? poster.backgroundMotif ?? legacyPosterTemplateMotif(poster.templateId) ?? "plain"
+    ? "soft-gradient"
     : legacyPosterTemplateMotif(poster.templateId) ?? "plain";
   const targetMotif = templateId === "classic-wheel"
-    ? poster.backgroundMotif ?? "soft-gradient"
+    ? "soft-gradient"
     : legacyPosterTemplateMotif(templateId);
   const template = getPosterTemplate(templateId, targetMotif);
   const templateStyles = {
@@ -60,7 +60,7 @@ export function selectPosterTemplate(
     : templateStyles["classic-wheel"];
   const style =
     (templateId === "classic-wheel"
-      ? backgroundMotifStyles.plain ?? currentClassicStyle ?? savedClassicStyle
+      ? backgroundMotifStyles["soft-gradient"] ?? currentClassicStyle ?? savedClassicStyle
       : (targetMotif ? backgroundMotifStyles[targetMotif] : undefined) ?? templateStyles[templateId]) ?? {
     backgroundMode: "color" as const,
     backgroundColor: template.background,

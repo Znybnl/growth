@@ -3,6 +3,27 @@ import { readFile } from "node:fs/promises";
 import { signIn } from "./auth-session";
 import { getPosterLogoTextFontSizePx, getPosterLogoTopY, getPosterTemplate } from "../src/lib/poster-templates";
 import { buildClassicPosterThumbnailSvg } from "../src/lib/poster-render";
+import { createPosterSettingsDefaults, normalizePosterSettings } from "../src/lib/poster-utils";
+
+test("les affiches utilisent Gradient clair et activent le texte secondaire par défaut", () => {
+  const gradientTemplate = getPosterTemplate("classic-wheel");
+  const defaults = createPosterSettingsDefaults({ wheel: gradientTemplate.wheel });
+  const normalizedLegacyPoster = normalizePosterSettings(
+    { templateId: "classic-wheel", backgroundMotif: "terracotta", backgroundMode: "color", backgroundColor: "#ddc9b8" },
+    defaults,
+  );
+
+  expect(gradientTemplate.id).toBe("soft-gradient-wheel");
+  expect(getPosterTemplate("classic-wheel", "terracotta").id).toBe("soft-gradient-wheel");
+  expect(getPosterTemplate("classic-wheel", "plain").id).toBe("soft-gradient-wheel");
+  expect(normalizedLegacyPoster.backgroundMotif).toBe("soft-gradient");
+  expect(normalizedLegacyPoster.backgroundColor).toBe(gradientTemplate.background);
+  expect(normalizedLegacyPoster.posterSubtitleEnabled).toBe(true);
+  expect(normalizePosterSettings(
+    { templateId: "classic-wheel", backgroundMotif: "plain", posterSubtitleEnabled: false },
+    defaults,
+  ).posterSubtitleEnabled).toBe(false);
+});
 
 test("Gradient clair est la première variante de Classique et garde le même aperçu que le PNG", async ({ page }, testInfo) => {
   const gradientTemplate = getPosterTemplate("classic-wheel", "soft-gradient");
@@ -13,9 +34,12 @@ test("Gradient clair est la première variante de Classique et garde le même ap
   expect(getPosterLogoTextFontSizePx(170)).toBe(28.9);
   expect("logoY" in gradientTemplate || "logoTextY" in gradientTemplate).toBe(false);
   expect(gradientTemplate.ctaWidth).toBe(390);
-  expect(getPosterTemplate("classic-wheel", "terracotta").id).toBe("terracotta-wheel");
-  expect(getPosterTemplate("classic-wheel", "plain").id).toBe("classic-wheel");
-  expect(buildClassicPosterThumbnailSvg("scratch", "soft-gradient")).toContain("GRATTEZ ICI");
+  expect(getPosterTemplate("classic-wheel").id).toBe("soft-gradient-wheel");
+  expect(getPosterTemplate("classic-wheel", "terracotta").id).toBe("soft-gradient-wheel");
+  expect(getPosterTemplate("classic-wheel", "plain").id).toBe("soft-gradient-wheel");
+  const classicScratchThumbnail = buildClassicPosterThumbnailSvg("scratch", "soft-gradient");
+  expect(classicScratchThumbnail).toContain("GRATTEZ ICI");
+  expect(classicScratchThumbnail).toContain('data-poster-footer="editorial-steps"');
   test.setTimeout(180_000);
   page.setDefaultTimeout(20_000);
   page.setDefaultNavigationTimeout(20_000);
@@ -40,12 +64,7 @@ test("Gradient clair est la première variante de Classique et garde le même ap
     await expect(choices.getByText("Gradient clair", { exact: true })).toHaveCount(0);
     await expect(choices.getByText("Terracotta", { exact: true })).toHaveCount(0);
     await expect(choices.last()).toContainText("Classique");
-    const motifs = page.getByRole("group", { name: "Motif du fond" });
-    await expect(motifs.getByRole("button", { name: "Terracotta" })).toHaveCount(0);
-    await expect(motifs.getByRole("button", { name: "Clair uni" })).toHaveCount(0);
-    const gradientMotif = motifs.getByRole("button", { name: "Gradient clair" });
-    await expect(gradientMotif).toHaveAttribute("aria-pressed", "true");
-    await expect(motifs.getByRole("button").first()).toHaveAccessibleName("Gradient clair");
+    await expect(page.getByRole("group", { name: "Motif du fond" })).toHaveCount(0);
     const thumbnail = page.getByTestId("classic-poster-thumbnail");
     await expect(thumbnail).toBeVisible();
     await expect.poll(() => thumbnail.evaluate((image) => (image as HTMLImageElement).naturalWidth)).toBe(794);
@@ -57,13 +76,14 @@ test("Gradient clair est la première variante de Classique et garde le même ap
     expect(thumbnailSvg).toContain("Des cadeaux à gagner dans votre</text><text");
     expect(thumbnailSvg).toContain(">établissement.</text>");
     expect(thumbnailSvg).toContain("Scannez pour jouer");
-    expect(thumbnailSvg).toContain('translate(28 954)');
-    expect(thumbnailSvg).toContain(">Jouez</text>");
+    expect(thumbnailSvg).toContain('data-poster-footer="editorial-steps"');
+    expect(thumbnailSvg).not.toContain('translate(28 954)');
+    expect(thumbnailSvg).toContain(">2. JOUEZ</text>");
     expect(thumbnailSvg).not.toContain("E2E — Gradient clair");
     await page.getByRole("button", { name: /^Élégance/ }).click();
     await page.getByRole("button", { name: /^Classique/ }).click();
     await expect(page.getByRole("button", { name: /^Classique/ })).toHaveAttribute("aria-pressed", "true");
-    await expect(gradientMotif).toHaveAttribute("aria-pressed", "true");
+    await expect(page.getByRole("group", { name: "Motif du fond" })).toHaveCount(0);
 
     const preview = page.getByAltText("Prévisualisation affiche");
     const downloadButton = page.getByRole("button", { name: "Télécharger le PNG", exact: true });
@@ -93,10 +113,21 @@ test("Gradient clair est la première variante de Classique et garde le même ap
     });
     expect(legacyResponse.ok()).toBe(true);
     await page.reload();
-    await expect(gradientMotif).toHaveAttribute("aria-pressed", "true");
+    await expect(page.getByRole("group", { name: "Motif du fond" })).toHaveCount(0);
     await page.getByRole("button", { name: /^Classique/ }).click();
     await expect(page.getByRole("button", { name: /^Classique/ })).toHaveAttribute("aria-pressed", "true");
-    await expect(gradientMotif).toHaveAttribute("aria-pressed", "true");
+    const saveResponsePromise = page.waitForResponse((response) =>
+      response.url().includes(`/api/campaigns/${campaignId}/poster-settings`) && response.request().method() === "POST",
+    );
+    await page.getByRole("button", { name: "Enregistrer", exact: true }).click();
+    const saveResponse = await saveResponsePromise;
+    expect(saveResponse.ok()).toBe(true);
+    const normalizedCampaignResponse = await page.request.get(`/api/campaigns/${campaignId}`);
+    expect(normalizedCampaignResponse.ok()).toBe(true);
+    const normalizedCampaignPayload = (await normalizedCampaignResponse.json()) as {
+      campaign?: { campaign?: { presentation?: { poster?: Record<string, unknown> } } };
+    };
+    expect(normalizedCampaignPayload.campaign?.campaign?.presentation?.poster?.backgroundMotif).toBe("soft-gradient");
 
     await thumbnail.screenshot({ path: testInfo.outputPath("gradient-clair-thumbnail.png") });
     await page.setViewportSize({ width: 390, height: 844 });
