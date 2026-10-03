@@ -4,7 +4,9 @@ import { expect, test } from "@playwright/test";
 // All participation writes are intercepted: no contact, stock or e-mail is changed.
 for (const isPreview of [false, true]) {
   for (const hasConditions of [true, false]) {
-    test(`gain reception and QR confirmation (${isPreview ? "preview" : "public"}, ${hasConditions ? "with" : "without"} conditions)`, async ({ page }, testInfo) => {
+    for (const gameType of ["wheel", "scratch"]) {
+    test(`gain reception and QR confirmation (${gameType}, ${isPreview ? "preview" : "public"}, ${hasConditions ? "with" : "without"} conditions)`, async ({ page }, testInfo) => {
+      const campaignId = gameType === "wheel" ? "camp-sora-social" : "camp-sora-review";
       await page.setViewportSize({ width: 390, height: 844 });
       await page.emulateMedia({ reducedMotion: "reduce" });
       const conditions = "Valable sur une prestation de 30 € minimum.\nNon cumulable avec une autre offre.";
@@ -22,7 +24,7 @@ for (const isPreview of [false, true]) {
         return route.fulfill({ json: {
           session: {
             id: "session-gain-popin",
-            campaignId: "camp-sora-social",
+            campaignId,
             status: "pending",
             isPreview,
             previewSessionToken: isPreview ? "test-preview-session" : undefined,
@@ -42,13 +44,30 @@ for (const isPreview of [false, true]) {
           campaign: { actions: [] },
         } });
       });
-      await page.goto(`/campaign/camp-sora-social${isPreview ? "?preview=1" : ""}`);
-      await page.getByRole("button", { name: "JOUER", exact: true }).click();
+      await page.goto(`/campaign/${campaignId}${isPreview ? "?preview=1" : ""}`);
+      await page.getByRole("button", { name: gameType === "wheel" ? "JOUER" : "Je participe", exact: true }).click();
       await page.getByRole("dialog").getByRole("button", { name: "Jouer maintenant", exact: true }).click();
+
+      if (gameType === "scratch") {
+        const canvas = page.locator("canvas");
+        await canvas.scrollIntoViewIfNeeded();
+        const box = await canvas.boundingBox();
+        expect(box).not.toBeNull();
+        for (let y = 15; y < box!.height; y += 22) {
+          if (await page.getByRole("button", { name: "Recevoir mon gain", exact: true }).isVisible()) break;
+          await page.mouse.move(box!.x + 10, box!.y + y);
+          await page.mouse.down();
+          await page.mouse.move(box!.x + box!.width - 10, box!.y + y, { steps: 24 });
+          await page.mouse.up();
+        }
+      }
 
       const dialog = page.getByRole("dialog");
       const receive = dialog.getByRole("button", { name: "Recevoir mon gain", exact: true });
       await expect(receive).toBeVisible({ timeout: 15_000 });
+      await expect(receive).toHaveCSS("font-size", "20px");
+      await expect(receive).toHaveCSS("font-weight", "700");
+      await expect(receive).toHaveCSS("line-height", "28px");
       await expect(dialog.getByRole("checkbox")).not.toBeChecked();
       const usage = dialog.getByText(conditions, { exact: true });
       if (hasConditions) {
@@ -63,10 +82,11 @@ for (const isPreview of [false, true]) {
       await dialog.getByPlaceholder("E-mail", { exact: true }).fill("e2e@okado.app");
       await page.screenshot({ path: testInfo.outputPath("receive-gain-mobile.png") });
       await receive.click();
+      await expect(dialog.getByText("Votre gain est confirmé. Cliquez sur suivant pour afficher les informations de retrait.", { exact: true })).toBeVisible();
       await dialog.getByRole("button", { name: "Suivant", exact: true }).click();
       await expect(dialog.getByRole("heading", { name: "Votre gain est confirmé !", exact: true })).toBeVisible();
-      await expect(dialog.getByText("Vous allez recevoir votre gain par e-mail.", { exact: true })).toBeVisible();
-      await expect(dialog.getByText("Conservez également ce QR code : il vous sera demandé lors du retrait.", { exact: true })).toBeVisible();
+      await expect(dialog.getByText("Vous allez recevoir votre gain par e-mail (vérifiez vos spams).", { exact: true })).toBeVisible();
+      await expect(dialog.getByText(/Conservez.*ce QR code/)).toHaveCount(0);
       const dates = dialog.getByText("Vous avez entre le 04/10/2026 et le 04/11/2026 pour venir le récupérer.", { exact: true });
       await expect(dates).toBeVisible();
       const dateBlock = dates.locator("..");
@@ -105,5 +125,6 @@ for (const isPreview of [false, true]) {
       await save.click();
       expect((await downloadEvent).suggestedFilename()).toBe("qr-lot-E2E-GAIN-449.svg");
     });
+    }
   }
 }

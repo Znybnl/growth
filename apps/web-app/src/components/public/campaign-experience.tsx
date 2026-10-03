@@ -1352,6 +1352,9 @@ export function CampaignExperience({
             type="submit"
             disabled={isLoading}
             className="w-full rounded-[18px] bg-[#111827] px-5 py-4 text-lg font-semibold text-white disabled:opacity-60"
+            style={!isPreGameLeadCapture && previewResult?.prize
+              ? { fontSize: "20px", fontWeight: 700, lineHeight: "28px" }
+              : undefined}
           >
             {isLoading
               ? isPreGameLeadCapture
@@ -1406,13 +1409,13 @@ export function CampaignExperience({
           <p className="mt-4 text-lg leading-7 text-[#1a2f76]">
             {isContactOnlySuccess
               ? "Votre contact est bien enregistré."
-              : "Vous allez recevoir votre gain par e-mail."}
+              : "Vous allez recevoir votre gain par e-mail (vérifiez vos spams)."}
           </p>
-          <p className="mt-3 text-sm leading-6 text-[#61687a]">
-            {isContactOnlySuccess
-              ? "Merci pour votre confiance."
-              : "Conservez également ce QR code : il vous sera demandé lors du retrait."}
-          </p>
+          {isContactOnlySuccess ? (
+            <p className="mt-3 text-sm leading-6 text-[#61687a]">
+              Merci pour votre confiance.
+            </p>
+          ) : null}
 
           {isPreview ? (
             <p className="mt-3 rounded-[14px] bg-[#eef2ff] px-3 py-2 text-xs font-semibold leading-5 text-[#334477]">
