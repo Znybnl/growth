@@ -1,4 +1,7 @@
 import type { CSSProperties } from "react";
+import Image from "next/image";
+import { HalloweenWheelVisual } from "@/components/public/halloween-wheel-art";
+import { HALLOWEEN_WHEEL_BACKGROUND } from "@/lib/halloween-wheel-theme";
 import { DEFAULT_COCORICO_DUO_BLUE, DEFAULT_COCORICO_DUO_YELLOW } from "@/lib/campaign-defaults";
 import type { GamePageTemplateId } from "@/lib/types";
 
@@ -36,6 +39,10 @@ const THUMBNAIL_STYLES: Partial<Record<GamePageTemplateId, {
 };
 
 export function WheelTemplateThumbnail({ templateId }: { templateId: GamePageTemplateId }) {
+  if (templateId === "halloween-gold") return <div aria-hidden="true" data-testid="wheel-template-thumbnail-halloween-gold" className="relative mb-3 flex h-28 items-center justify-center overflow-hidden rounded-xl bg-black">
+    <Image src={HALLOWEEN_WHEEL_BACKGROUND} alt="" fill sizes="220px" className="object-cover" />
+    <div className="relative w-[94px] pt-2"><HalloweenWheelVisual segments={Array.from({ length: 6 }, (_, index) => ({ id: `thumbnail-${index}`, label: "Cadeau", tone: "win" as const }))} interactive={false} /></div>
+  </div>;
   const style = THUMBNAIL_STYLES[templateId];
   if (!style) return null;
   const overflowingWheel = templateId === "classic";

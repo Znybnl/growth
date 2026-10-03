@@ -76,6 +76,15 @@
 - Le secteur Beauté propose les sous-secteurs Coiffure, Institut & soins, Ongles & cils, et Massage & spa. Les suggestions de lots peuvent être ciblées par sous-secteur ; tant qu'un catalogue dédié n'est pas configuré, le catalogue Beauté général reste disponible en repli.
 - Les établissements du secteur Beauté disposent de six styles de roue supplémentaires, quel que soit leur sous-secteur. Cette collection apparaît avant les modèles génériques dans les éditeurs ; les joueurs voient le modèle enregistré sans restriction de secteur. Le logo, le titre, le sous-titre, les couleurs et la police restent personnalisables. Le centre utilise une main pointeur, sauf sur « Rose poudré » où une fleur abstraite à quatre pétales remplace uniquement son apparence. L'interaction du bouton reste identique.
 
+## Roue Halloween dorée — issue #456
+
+- Modèle générique disponible pour tous les secteurs, dans le wizard et l’éditeur classique : `halloween-gold`.
+- Le logo (texte, image ou aucun), le titre, le sous-titre, les polices, tailles, alignements et espacements restent configurables. Bodoni est la police initiale du titre ; la courte marge sous le logo est propre à ce modèle et les marges des autres modèles sont mémorisées/restaurées.
+- Le décor raster, les dorures du titre, la mention « Spécial Halloween », les couleurs et le traitement de la roue sont fixes. Aucun pictogramme dans le bouton central JOUER.
+- Six secteurs alternés noir/or reprennent la référence. Les pictogrammes sont décoratifs, pas une promesse de lot : les vrais lots, probabilités, résultat serveur, action marketing et parcours de gain ne changent pas. Si plus de six résultats distincts sont configurés, le rendu s’étend au nombre pair nécessaire pour ne masquer aucun lot.
+- Le même rendu sert à la page de jeu, la prévisualisation mobile et l’aperçu intégré. Les assets locaux sont versionnés et ne dépendent pas d’un fichier présent uniquement sur le poste du développeur.
+- Preuves visuelles, provenance des images et grille de correspondance : [dossier de validation](design/halloween-wheel-456.md). Validation du propriétaire requise avant merge/déploiement.
+
 ## Questions ouvertes
 
 - [ ] Définir les critères de retrait forcé à afficher et à journaliser pour le personnel du commerce.

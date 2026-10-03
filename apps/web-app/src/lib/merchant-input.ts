@@ -69,6 +69,7 @@ const TEXT_FONTS = new Set<TextFont>([
 const BUTTON_SIZES = new Set<ButtonSize>(["sm", "md", "lg"]);
 const BACKGROUND_MODES = new Set<BackgroundMode>(["color", "image"]);
 const GAME_PAGE_TEMPLATE_IDS = new Set<GamePageTemplateId>([
+  "halloween-gold",
   "classic",
   "restaurant-pop",
   "cocorico-wheel",
@@ -312,6 +313,7 @@ function normalizeWheelTemplateStyles(value: unknown): Partial<Record<GamePageTe
       ? style.wheel as Record<string, unknown>
       : {};
     styles[id as GamePageTemplateId] = {
+      logoBottomSpacingPx: normalizeOptionalNumber(style.logoBottomSpacingPx, { min: 0, max: 80, integer: true }),
       wheel: {
         rimColor: normalizeColor(wheel.rimColor, "#ffffff"),
         winColor: normalizeColor(wheel.winColor, "#ffffff"),

@@ -65,6 +65,14 @@ Un changement qui touche l'un de ces parcours doit avoir une preuve de test auto
 - **Changement auth, jeu, gain, retrait, e-mail, paiement, prévisualisation ou multi-sites** : contrôles précédents + smoke ou E2E adapté + validation fonctionnelle du propriétaire.
 - **Évolution majeure** : régression complète de tous les parcours du tableau avant production.
 
+## Roue Halloween dorée — #456
+
+- Unitaire : `node --experimental-strip-types --import ./scripts/ts-alias-loader.mjs --test src/lib/halloween-wheel-theme.test.mjs` depuis `apps/web-app` : tous les lots et le résultat conservés, 1 à 50 lots, aucune mutation des sources.
+- Navigateur local : démarrer `npm run dev -- --port 3000 --webpack`, puis `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3000 npx playwright test e2e/halloween-wheel.spec.ts e2e/wheel-template-background.spec.ts --project=chromium` (adapter la définition de variable à PowerShell).
+- Les fixtures `/dev/halloween-proof` ne sont accessibles qu’en développement. Les APIs du jeu sont interceptées : aucun lot réservé, aucun e-mail envoyé, aucune écriture métier.
+- Vérifier 320/390/600/1280 px, chargement des neuf assets, hydratation, logo texte/image/aucun, sous-titre, titre éditable, zéro espacement sans superposition, miniature non interactive, clic/auto-animation et formulaire du véritable lot.
+- Contrôler également qu’un build production refuse la route de fixture. Comparaison et images : [validation visuelle](design/halloween-wheel-456.md).
+
 ## Compte rendu attendu
 
 Chaque demande de merge ou de production doit indiquer, en quelques lignes :

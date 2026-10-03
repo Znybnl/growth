@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { HalloweenWheelVisual } from "@/components/public/halloween-wheel-art";
+import { halloweenWheelVisualSegments } from "@/lib/halloween-wheel-theme";
 import { Pointer } from "lucide-react";
 import { RoseFlowerMark } from "@/components/public/rose-powder-decor";
 import { textFontFamily } from "@/lib/format";
@@ -45,7 +47,7 @@ type WheelOfFortuneProps = {
     borderColor?: string;
   };
   framing?: "default" | "public" | "editor" | "mobile-preview";
-  pageTemplate?: "classic" | "restaurant-pop" | "rose-institut" | BeautyWheelTemplateId;
+  pageTemplate?: "classic" | "restaurant-pop" | "rose-institut" | "halloween-gold" | BeautyWheelTemplateId;
 };
 
 const SVG_SIZE = 640;
@@ -270,7 +272,9 @@ export function WheelOfFortune({
     ? pageTemplate as Exclude<BeautyWheelTemplateId, "beauty-rose">
     : null;
   const beautyTheme = beautyWheelTheme(pageTemplate);
-  const baseVisualSegments = isRosePowderTemplate
+  const baseVisualSegments = pageTemplate === "halloween-gold"
+    ? halloweenWheelVisualSegments(segments, winningSegmentId)
+    : isRosePowderTemplate
     ? rosePowderVisualSegments(segments, winningSegmentId)
     : isBeautyTemplate
       ? limitBeautyWheelSegments(segments, winningSegmentId)
@@ -442,6 +446,10 @@ export function WheelOfFortune({
     }
 
     startSpin();
+  }
+
+  if (pageTemplate === "halloween-gold") {
+    return <HalloweenWheelVisual segments={visualSegments} rotation={rotation} spinning={isSpinning} disabled={!buttonEnabled || isSpinning || hasSpun} buttonLabel={buttonLabel} onClick={handleCentralButton} />;
   }
 
   return (
