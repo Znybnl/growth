@@ -23,6 +23,9 @@ import {
 } from "lucide-react";
 
 import { LandingDemo } from "@/components/marketing/landing-demo";
+import { BrandMark as OkadoBrandMark } from "@/components/marketing/brand-mark";
+import { PrimaryButton } from "@/components/marketing/primary-button";
+import { accountConnectionFaq } from "@/lib/marketing-faqs";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://app.okado.app";
 
@@ -92,6 +95,7 @@ const launchSteps: IconCard[] = [
 ];
 
 const faqs = [
+  accountConnectionFaq,
   { question: "Est-ce que le jeu impose un avis Google positif ?", answer: "Non. Okado n'impose pas d'avis positif et ne conditionne jamais le gain à une note. L'avis peut être proposé comme action, de manière transparente." },
   { question: "Quels cadeaux fonctionnent en institut ?", answer: "Les remises sur une prochaine prestation, mini-produits, suppléments soins, crédits et prestations signature sont simples à comprendre et compatibles avec différents niveaux de marge." },
   { question: "Mes données clientes restent-elles ma propriété ?", answer: "Oui. Votre institut reste propriétaire des contacts collectés. Okado vous permet de les consulter et de les exporter depuis votre espace." },
@@ -99,16 +103,7 @@ const faqs = [
 ];
 
 function BrandMark() {
-  return (
-    <Link href="/" className="inline-flex items-center gap-2 text-[#24142a]">
-      <span className="grid h-9 w-9 place-items-center rounded-[12px] bg-[#24142a] text-sm font-black text-white">O</span>
-      <span className="font-serif text-2xl font-semibold tracking-[-0.06em]">Okado</span>
-    </Link>
-  );
-}
-
-function PrimaryButton({ href, children }: { href: string; children: React.ReactNode }) {
-  return <Link href={href} className="inline-flex items-center justify-center gap-2 rounded-[12px] bg-[#24142a] px-5 py-3 text-[15px] font-semibold text-white shadow-[0_16px_30px_rgba(60,26,64,0.16)] transition hover:-translate-y-0.5 hover:bg-[#9b3e62]">{children}<ArrowRight className="h-4 w-4" /></Link>;
+  return <OkadoBrandMark subtitle="instituts de beauté" />;
 }
 
 function SectionTitle({ eyebrow, title, text }: { eyebrow: string; title: string; text: string }) {

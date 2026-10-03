@@ -22,6 +22,8 @@ import {
 } from "lucide-react";
 
 import { LandingDemo, LocalizedPrice } from "@/components/marketing/landing-demo";
+import { BrandMark } from "@/components/marketing/brand-mark";
+import { accountConnectionFaq } from "@/lib/marketing-faqs";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://app.okado.app";
 
@@ -133,6 +135,7 @@ const included = [
 ];
 
 const faqs = [
+  accountConnectionFaq,
   {
     question: "Comment fonctionne l’essai gratuit de 30 jours ?",
     answer:
@@ -184,22 +187,6 @@ const secureSteps: Array<{ title: string; icon: LucideIcon; text: string }> = [
     text: "Les quantités limitées sont réservées et suivies.",
   },
 ];
-
-function BrandMark() {
-  return (
-    <Link href="/" className="flex items-center gap-3" aria-label="Retour à l'accueil Okado">
-      <span className="grid h-9 w-9 place-items-center rounded-[8px] bg-[#6c00f6] text-sm font-bold text-white shadow-[0_0_24px_rgba(108,0,246,0.20)]">
-        <Star className="h-5 w-5 fill-white text-white" aria-hidden="true" />
-      </span>
-      <span className="flex flex-col leading-none">
-        <span className="text-[17px] font-bold tracking-[-0.03em] text-[#0f172b]">Okado</span>
-        <span className="mt-1 text-[11px] font-medium text-[#90a1b9]">
-          campagne phygitale
-        </span>
-      </span>
-    </Link>
-  );
-}
 
 function PurpleButton({
   href,
@@ -265,7 +252,7 @@ export default function IndexPage() {
 
       <header className="sticky top-0 z-30 border-b border-[#e5e7eb] bg-white/92 backdrop-blur-xl">
         <div className="mx-auto flex h-[72px] max-w-[1200px] items-center justify-between px-5">
-          <BrandMark />
+          <BrandMark subtitle="campagne phygitale" />
           <nav className="hidden items-center gap-7 text-sm font-medium text-[#0f172b] md:flex">
             <a href="#fonctionnalites" className="hover:text-[#6c00f6]">
               Fonctionnalités
@@ -524,7 +511,7 @@ export default function IndexPage() {
       <footer className="border-t border-[#e5e7eb] bg-white px-5 py-12">
         <div className="mx-auto grid max-w-[1200px] gap-10 md:grid-cols-[1.2fr_0.8fr_0.8fr]">
           <div>
-            <BrandMark />
+            <BrandMark subtitle="campagne phygitale" />
             <p className="mt-5 max-w-sm text-sm leading-7 text-[#475569]">
               Solution SaaS d’animation phygitale et de capture de leads locaux via QR Code.
               Déployée sur une infrastructure rapide et pensée pour les équipes terrain.

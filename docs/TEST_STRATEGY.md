@@ -19,6 +19,7 @@ L'objectif est de détecter les régressions importantes sans transformer le pro
 | `npm run smoke:critical` | Exerce les flux critiques avec un compte et un environnement explicitement configurés. À lancer uniquement avec l'autorisation adaptée, car il crée puis nettoie des données de test. |
 | `npm run smoke:security` | Vérifie les garde-fous de sécurité prévus par le projet. |
 | `npm run test:e2e` | Lance les tests navigateur Playwright du SaaS. Le serveur local démarre automatiquement, sauf si `PLAYWRIGHT_BASE_URL` désigne une URL de test explicite. |
+| `npm run test:landing` | Après `npm run build:landing`, vérifie les logos, CTA, FAQ et liens du site marketing sur desktop, mobile 390 px et mobile 320 px. Lance le site construit sur le port 3200, sauf si `PLAYWRIGHT_BASE_URL` est renseignée. Aucun compte ni écriture métier. |
 
 La CI GitHub exécute la vérification de source, le lint et le build de l'application web, ainsi que le lint et le build du site marketing, pour les PR et `main`.
 
