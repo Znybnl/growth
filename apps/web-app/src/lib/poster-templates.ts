@@ -90,7 +90,7 @@ export type PosterTemplateConfig = {
   wheel: CampaignPosterSettings["wheel"];
 };
 
-export const POSTER_LOGO_TEXT_TOP_PX = 24;
+export const POSTER_LOGO_TEXT_TOP_PX = 36;
 export const POSTER_LOGO_IMAGE_TOP_PX = 32;
 export const POSTER_LOGO_TEXT_SCALE = 0.17;
 export const POSTER_LOGO_TEXT_MIN_SIZE_PX = 18;

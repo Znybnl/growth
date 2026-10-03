@@ -64,10 +64,64 @@ test("tous les templates d'affiche utilisent le même alignement vertical des lo
   expect(botanicalTemplate.logoX).toBe(botanicalTemplate.headlineX);
   expect(botanicalTemplate.medallionFill).toBe("#D3DCC5");
   expect(POSTER_TEMPLATES.every((template) => !("logoY" in template) && !("logoTextY" in template) && !("logoFontSizeMultiplier" in template))).toBe(true);
-  expect(getPosterLogoTopY("text")).toBe(24);
+  expect(getPosterLogoTopY("text")).toBe(36);
   expect(getPosterLogoTopY("image")).toBe(32);
   expect(getPosterLogoTextFontSizePx(170)).toBe(28.9);
   expect(getPosterLogoTextFontSizePx(119)).toBe(20.2);
+});
+
+test("tous les pieds d'affiche avec trois étapes utilisent le même pictogramme Gratter", async ({ page }, testInfo) => {
+  const qrDataUrl = createPosterPreviewQrDataUrl();
+
+  for (const template of POSTER_TEMPLATES.filter((candidate) => candidate.id !== "ivory-editorial-wheel")) {
+    const poster = createPosterSettingsDefaults({
+      templateId: template.id,
+      logoMode: "text",
+      logoText: "Institut test",
+      headline: "Découvrez votre cadeau",
+      headlineTextColor: template.headlineTextColor,
+      headlineFontSizePx: template.headlineFontSizePx,
+      headlineFontFamily: "cormorant",
+      wheel: template.wheel,
+    });
+    const campaign: Campaign = {
+      id: `poster-${template.id}`,
+      merchantId: "poster-render-test",
+      title: "Jeu test",
+      subtitle: "Une surprise vous attend",
+      goalType: null,
+      emailCaptureEnabled: false,
+      ctaLabel: "Jouer",
+      successMetric: "",
+      isActive: false,
+      createdAt: "",
+      accent: { ink: template.accentDark, paper: template.background, signal: template.accent },
+      gameType: "scratch",
+      logoMode: "text",
+      logoText: "Institut test",
+      presentation: {
+        logo: { sizePercent: 100, marginBottomPx: 10, align: "center" },
+        background: { mode: "color", color: template.background },
+        heading: { textColor: template.headlineTextColor, fontSizePx: template.headlineFontSizePx, fontFamily: "cormorant", align: "center" },
+        button: { backgroundColor: template.accent, textColor: "#ffffff", borderColor: "#ffffff", size: "md", textSizePx: 16, isBold: true },
+        layout: { blockSpacingPx: 15, templateId: "classic", wheelSubtitle: "Une surprise vous attend", subtitleSpacingPx: 15 },
+        wheel: template.wheel,
+        poster,
+        email: { senderName: "", replyTo: "", subject: "", preheader: "", headline: "", body: "", buttonLabel: "", footerNote: "", accentColor: template.accent },
+      },
+      actions: [],
+      rewardRules: { rewardExpiryMinutes: 0, purchaseRequired: false, availableAfterHours: 0, availabilityDurationDays: 0, participationIntervalDays: 0, isWinningEveryTime: false },
+    };
+    const svg = buildPosterSvg({ campaign, poster, prizes: [], qrDataUrl });
+
+    expect(svg, template.id).toContain('data-poster-game-icon="scratch-ticket"');
+    if (template.id === "soft-gradient-wheel") {
+      expect(svg).toContain('transform="translate(0 925)"');
+      expect(svg).toContain('fill-opacity=".68"');
+      await page.setContent(svg);
+      await page.screenshot({ path: testInfo.outputPath("classic-gradient-scratch-footer.png"), fullPage: true });
+    }
+  }
 });
 
 test("Botanique éditorial utilise le logo marchand et exporte le même rendu que l’aperçu", async ({ page }, testInfo) => {

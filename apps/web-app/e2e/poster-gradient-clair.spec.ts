@@ -29,7 +29,7 @@ test("Gradient clair est la première variante de Classique et garde le même ap
   const gradientTemplate = getPosterTemplate("classic-wheel", "soft-gradient");
   expect(gradientTemplate.wheelRadius).toBe(247);
   expect(gradientTemplate.qrSize).toBe(277.4);
-  expect(getPosterLogoTopY("text")).toBe(24);
+  expect(getPosterLogoTopY("text")).toBe(36);
   expect(getPosterLogoTopY("image")).toBe(32);
   expect(getPosterLogoTextFontSizePx(170)).toBe(28.9);
   expect("logoY" in gradientTemplate || "logoTextY" in gradientTemplate).toBe(false);

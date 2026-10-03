@@ -154,11 +154,7 @@ function EditorialPosterThumbnail({
               <path d="M0-35-9-49H9Z" fill="#111111" stroke="none" />
             </g>
           ) : step.kind === "scratch" ? (
-            <g transform={`translate(638 ${step.y}) scale(0.9)`} fill="none" stroke="#111111" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="-30" y="-36" width="60" height="72" rx="8" />
-              <path d="M-20-15H20M-20 0H20M-20 15H20" strokeDasharray="5 6" />
-              <path d="M-30-24H30M-30 24H30" />
-            </g>
+            <ThumbnailStepIcon kind="scratch" x={638} y={step.y} scale={2.25} color="#111111" />
           ) : (
             <g transform={`translate(638 ${step.y}) scale(0.9)`} fill="none" stroke="#111111" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M-29 -9H29V29H-29ZM-36 -23H36V-9H-36ZM0 -23V29M0 -23C-27 -23-31 -38-20 -40-11 -42-4 -32 0 -23ZM0 -23C27 -23 31 -38 20 -40 11 -42 4 -32 0 -23Z" />
@@ -188,18 +184,20 @@ function ClassicPosterThumbnail({ posterSvg }: { posterSvg: string }) {
   );
 }
 
-type ThumbnailStepIconKind = "scan" | "wheel" | "gift";
+type ThumbnailStepIconKind = "scan" | "wheel" | "scratch" | "gift";
 
 function ThumbnailStepIcon({
   kind,
   x,
   y,
   scale = 1,
+  color = "#ffffff",
 }: {
   kind: ThumbnailStepIconKind;
   x: number;
   y: number;
   scale?: number;
+  color?: string;
 }) {
   if (kind === "scan") {
     return (
@@ -218,6 +216,15 @@ function ThumbnailStepIcon({
       <g transform={`translate(${x} ${y}) scale(${scale})`} fill="none" stroke="#ffffff" strokeLinecap="round">
         <circle r="25" strokeWidth="4" />
         <path d="M0-25v50M-25 0h50M-18-18l36 36M18-18l-36 36" strokeWidth="3" />
+      </g>
+    );
+  }
+
+  if (kind === "scratch") {
+    return (
+      <g data-testid="poster-thumbnail-scratch-ticket" transform={`translate(${x} ${y}) scale(${scale}) translate(-12 -12)`} fill="none" stroke={color} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
+        <path d="M13 5v2M13 17v2M13 11v2" />
       </g>
     );
   }
@@ -297,7 +304,7 @@ export function PosterTemplateSelector({
                       <ThumbnailStepIcon kind="scan" x={165} y={987} scale={0.9} />
                       <text x="165" y="1063" textAnchor="middle" fontSize="28" fontWeight="600" fill="#171412">Scannez</text>
                       <circle cx="396" cy="987" r="42" fill="#a17d57" />
-                      <ThumbnailStepIcon kind="wheel" x={396} y={987} />
+                      <ThumbnailStepIcon kind={gameType === "wheel" ? "wheel" : "scratch"} x={396} y={987} scale={gameType === "wheel" ? 1 : 1.8} />
                       <text x="396" y="1063" textAnchor="middle" fontSize="28" fontWeight="600" fill="#171412">{footerAction}</text>
                       <circle cx="629" cy="987" r="42" fill="#a17d57" />
                       <ThumbnailStepIcon kind="gift" x={629} y={987} scale={1.6} />
@@ -350,7 +357,7 @@ export function PosterTemplateSelector({
                     <g data-testid="botanical-thumbnail-footer">
                       <rect y="944" width="794" height="179" fill="#fbf8f2" fillOpacity="0.96" />
                       <circle cx="132" cy="992" r="32" fill="#718578" /><text x="132" y="1004" textAnchor="middle" fontSize="30" fontWeight="700" fill="white">1</text>
-                      <circle cx="397" cy="992" r="32" fill="#718578" /><circle cx="397" cy="992" r="18" fill="none" stroke="white" strokeWidth="3" /><path d="M397 974v36M379 992h36M384 979l26 26M410 979l-26 26" stroke="white" strokeWidth="2" />
+                      <circle cx="397" cy="992" r="32" fill="#718578" />{gameType === "wheel" ? <><circle cx="397" cy="992" r="18" fill="none" stroke="white" strokeWidth="3" /><path d="M397 974v36M379 992h36M384 979l26 26M410 979l-26 26" stroke="white" strokeWidth="2" /></> : <ThumbnailStepIcon kind="scratch" x={397} y={992} scale={1.65} color="#ffffff" />}
                       <circle cx="662" cy="992" r="32" fill="#718578" /><path d="M647 989h30v24h-30zM643 982h38v9h-38zM662 982v31M652 982c-11-9 4-14 10 0M672 982c6-14 21-9 10 0" fill="none" stroke="white" strokeWidth="2" strokeLinejoin="round" />
                       <line x1="270" y1="960" x2="270" y2="1036" stroke="#718578" strokeWidth="2" /><line x1="524" y1="960" x2="524" y2="1036" stroke="#718578" strokeWidth="2" />
                       <text x="132" y="1072" textAnchor="middle" fontSize="24" fontWeight="700" fill="#153a35">Scannez</text>
