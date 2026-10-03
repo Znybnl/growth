@@ -12,6 +12,8 @@ import {
   wheelBackgroundForTemplate,
   wheelBackgroundForTemplateSelection,
   wheelHeadingColorForTemplateSelection,
+  wheelHeadingFontForTemplateSelection,
+  wheelLogoColorForTemplateSelection,
 } from "../src/lib/campaign-defaults";
 
 test("un espacement réglé à zéro garde un dégagement structurel avant la roue", () => {
@@ -60,6 +62,13 @@ test("Signature démarre sur un fond neutre et chaque modèle a sa couleur de ti
   expect(wheelHeadingColorForTemplateSelection("classic", "#1b2842")).toBe("#ffffff");
   expect(wheelHeadingColorForTemplateSelection("restaurant-pop", "#ffffff")).toBe("#1b2842");
   expect(wheelBackgroundForTemplate("restaurant-pop", "#ced9e8")).toBe("#ced9e8");
+});
+
+test("Moderne utilise un logo blanc et Dynamique démarre avec Poppins", () => {
+  expect(wheelLogoColorForTemplateSelection("cocorico-wheel", "#1b2842")).toBe("#ffffff");
+  expect(wheelLogoColorForTemplateSelection("cocorico-duo-wheel", "#1b2842")).toBe("#1b2842");
+  expect(wheelHeadingFontForTemplateSelection("classic", "fredoka")).toBe("poppins");
+  expect(wheelHeadingFontForTemplateSelection("cocorico-wheel", "fredoka")).toBe("fredoka");
 });
 
 test("Éclat initialise son fond rose après un template sombre", () => {

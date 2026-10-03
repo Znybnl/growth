@@ -64,12 +64,22 @@ test.describe("Parcours marchand authentifié", () => {
     await expect(page.getByText("Fond", { exact: true })).toBeVisible();
     const fontSelect = page.locator('select:has(option[value="roboto"])').first();
     await expect(fontSelect).toHaveValue("fredoka");
+    const logoColorInput = page.getByLabel("Couleur du logo et sous-titre");
+    await expect(logoColorInput).toHaveValue("#ffffff");
     await expect(fontSelect.locator("option")).toHaveText(["Roboto", "Days One", "Fredoka"]);
     await page.getByRole("button", { name: /^Dynamique\b/ }).click();
+    await expect(fontSelect).toHaveValue("poppins");
     const availableFonts = await fontSelect.locator("option").allTextContents();
     expect(availableFonts).toEqual(expect.arrayContaining([
       "Roboto", "Geogrotesque", "Cormorant Garamond", "Playfair Display",
       "DM Sans", "Poppins", "Bodoni Moda", "Space Grotesk",
     ]));
+    await fontSelect.selectOption("dm-sans");
+    await page.getByRole("button", { name: /^Moderne\b/ }).click();
+    await logoColorInput.fill("#aa0000");
+    await page.getByRole("button", { name: /^Dynamique\b/ }).click();
+    await expect(fontSelect).toHaveValue("dm-sans");
+    await page.getByRole("button", { name: /^Moderne\b/ }).click();
+    await expect(logoColorInput).toHaveValue("#aa0000");
   });
 });
