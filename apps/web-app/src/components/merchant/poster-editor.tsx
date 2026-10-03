@@ -1107,7 +1107,7 @@ export function PosterEditor({ campaign, prizes, settingsEndpoint, returnHref }:
         ) : null}
       </div>
 
-      <aside className="xl:sticky xl:top-6 xl:h-[calc(100dvh-48px)]">
+      <aside className="xl:sticky xl:top-6 xl:h-[calc(100dvh-144px)]" data-testid="poster-preview-panel">
         <div className="okado-card flex h-full min-h-0 flex-col p-5">
           <div className="mb-4 flex shrink-0 items-center justify-between gap-3">
             <div>
