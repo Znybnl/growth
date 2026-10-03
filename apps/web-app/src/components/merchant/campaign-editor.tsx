@@ -19,6 +19,7 @@ import {
   SquareArrowOutUpRight,
   Trash2,
   UtensilsCrossed,
+  Loader2,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
@@ -1730,6 +1731,7 @@ function uploadUserImage(
   onLoaded: (value: string) => void,
   onError: ((message: string) => void) | undefined,
   field: ImageUploadField,
+  onUploadStateChange: (isUploading: boolean) => void,
 ) {
   const file = event.target.files?.[0];
 
@@ -1739,9 +1741,11 @@ function uploadUserImage(
 
   event.target.value = "";
   const kind = field === "background" || field === "poster-background" ? "background" : "logo";
+  onUploadStateChange(true);
   void uploadMerchantImageFile(file, kind)
     .then(({ url }) => onLoaded(url))
-    .catch((error: unknown) => onError?.(error instanceof Error ? error.message : "Import de l’image impossible."));
+    .catch((error: unknown) => onError?.(error instanceof Error ? error.message : "Import de l’image impossible."))
+    .finally(() => onUploadStateChange(false));
 }
 
 export function CampaignEditor({
@@ -1914,6 +1918,7 @@ export function CampaignEditor({
   const [imageUploadErrors, setImageUploadErrors] = useState<
     Partial<Record<ImageUploadField, string>>
   >({});
+  const [imageUploads, setImageUploads] = useState<Partial<Record<ImageUploadField, boolean>>>({});
 
   useEffect(() => {
     let cancelled = false;
@@ -3186,8 +3191,8 @@ export function CampaignEditor({
                     <span className="inline-flex rounded-full bg-white px-3 py-2 text-xs font-semibold text-[#214ccf] shadow-sm">
                       {form.logoUrl ? "Logo chargé" : "Déposer un logo"}
                     </span>
-                    <span className="block rounded-[16px] bg-[#2f6df6] px-4 py-2 text-center text-xs font-semibold text-white shadow-[0_10px_18px_rgba(47,109,246,0.2)]">
-                      Choisir un fichier
+                    <span aria-live="polite" className="flex items-center justify-center gap-2 rounded-[16px] bg-[#2f6df6] px-4 py-2 text-center text-xs font-semibold text-white shadow-[0_10px_18px_rgba(47,109,246,0.2)]">
+                      {imageUploads["campaign-logo"] ? <><Loader2 className="size-4 animate-spin" aria-hidden="true" /> Import et optimisation…</> : "Choisir un fichier"}
                     </span>
                     <p className="text-xs leading-5 text-[#64748b]">
                       L&apos;aperçu reprend le fond actuellement sélectionné pour la page de jeu.
@@ -3209,8 +3214,10 @@ export function CampaignEditor({
                         setImageUploadErrors((current) => ({ ...current, "campaign-logo": error }));
                       },
                       "campaign-logo",
+                      (isUploading) => setImageUploads((current) => ({ ...current, "campaign-logo": isUploading })),
                     )
                   }
+                  disabled={imageUploads["campaign-logo"]}
                   className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                 />
               </label>
@@ -3625,11 +3632,12 @@ export function CampaignEditor({
                         </p>
                         <div className="mt-4 flex flex-wrap items-center gap-3">
                           <div className="flex flex-col items-start">
-                          <label className="cursor-pointer rounded-[18px] border border-[#d7e0ed] bg-white px-4 py-3 text-sm font-semibold text-[#182033]">
-                            Importer une image
+                          <label aria-live="polite" className={`inline-flex items-center gap-2 rounded-[18px] border border-[#d7e0ed] bg-white px-4 py-3 text-sm font-semibold text-[#182033] ${imageUploads.background ? "cursor-wait opacity-75" : "cursor-pointer"}`}>
+                            {imageUploads.background ? <><Loader2 className="size-4 animate-spin" aria-hidden="true" /> Import et optimisation…</> : "Importer une image"}
                             <input
                               type="file"
                               accept={MERCHANT_IMAGE_ACCEPT}
+                              disabled={imageUploads.background}
                               onChange={(event) =>
                                 uploadUserImage(
                                   event,
@@ -3651,7 +3659,8 @@ export function CampaignEditor({
                                      setImageUploadErrors((current) => ({ ...current, background: error }));
                                    },
                                    "background",
-                                )
+                                   (isUploading) => setImageUploads((current) => ({ ...current, background: isUploading })),
+                                 )
                               }
                               className="hidden"
                             />
@@ -3754,8 +3763,8 @@ export function CampaignEditor({
                   <span className="inline-flex rounded-full bg-white px-3 py-2 text-xs font-semibold text-[#214ccf] shadow-sm">
                     {form.presentation.poster.logoUrl ? "Logo chargé" : "Déposer un logo"}
                   </span>
-                  <span className="rounded-[16px] bg-[#2f6df6] px-4 py-2 text-xs font-semibold text-white shadow-[0_10px_18px_rgba(47,109,246,0.2)]">
-                    Choisir un fichier
+                  <span aria-live="polite" className="inline-flex items-center gap-2 rounded-[16px] bg-[#2f6df6] px-4 py-2 text-xs font-semibold text-white shadow-[0_10px_18px_rgba(47,109,246,0.2)]">
+                    {imageUploads["poster-logo"] ? <><Loader2 className="size-4 animate-spin" aria-hidden="true" /> Optimisation…</> : "Choisir un fichier"}
                   </span>
                 </div>
                 <input
@@ -3781,8 +3790,10 @@ export function CampaignEditor({
                          setImageUploadErrors((current) => ({ ...current, "poster-logo": error }));
                        },
                        "poster-logo",
-                    )
+                       (isUploading) => setImageUploads((current) => ({ ...current, "poster-logo": isUploading })),
+                     )
                   }
+                  disabled={imageUploads["poster-logo"]}
                   className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                 />
               </label>
@@ -3829,8 +3840,8 @@ export function CampaignEditor({
                   <span className="inline-flex rounded-full bg-white px-3 py-2 text-xs font-semibold text-[#214ccf] shadow-sm">
                     {form.presentation.poster.backgroundImageUrl ? "Image chargée" : "Image par défaut"}
                   </span>
-                  <span className="rounded-[16px] bg-[#2f6df6] px-4 py-2 text-xs font-semibold text-white shadow-[0_10px_18px_rgba(47,109,246,0.2)]">
-                    Choisir un fichier
+                  <span aria-live="polite" className="inline-flex items-center gap-2 rounded-[16px] bg-[#2f6df6] px-4 py-2 text-xs font-semibold text-white shadow-[0_10px_18px_rgba(47,109,246,0.2)]">
+                    {imageUploads["poster-background"] ? <><Loader2 className="size-4 animate-spin" aria-hidden="true" /> Optimisation…</> : "Choisir un fichier"}
                   </span>
                 </div>
                 <input
@@ -3856,8 +3867,10 @@ export function CampaignEditor({
                          setImageUploadErrors((current) => ({ ...current, "poster-background": error }));
                        },
                        "poster-background",
-                    )
+                       (isUploading) => setImageUploads((current) => ({ ...current, "poster-background": isUploading })),
+                     )
                   }
+                  disabled={imageUploads["poster-background"]}
                   className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                 />
               </label>

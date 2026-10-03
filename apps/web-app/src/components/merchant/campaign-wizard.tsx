@@ -15,6 +15,7 @@ import {
   Download,
   Eye,
   Gift,
+  Loader2,
   Plus,
   QrCode,
   Sparkles,
@@ -211,13 +212,16 @@ function uploadWizardImage(
   onError: (message: string) => void,
   kind: "logo" | "background",
   adminTarget?: { accountMerchantId: string; locationId: string },
+  onUploadStateChange?: (isUploading: boolean) => void,
 ) {
   const file = event.target.files?.[0];
   if (!file) return;
   event.target.value = "";
+  onUploadStateChange?.(true);
   void uploadMerchantImageFile(file, kind, adminTarget)
     .then(({ url }) => onLoaded(url))
-    .catch((error: unknown) => onError(error instanceof Error ? error.message : "Import de l’image impossible."));
+    .catch((error: unknown) => onError(error instanceof Error ? error.message : "Import de l’image impossible."))
+    .finally(() => onUploadStateChange?.(false));
 }
 
 function wizardActionVisitLabel(index: number) {
@@ -791,6 +795,7 @@ export function CampaignWizard({
     logo?: string;
     background?: string;
   }>({});
+  const [imageUploads, setImageUploads] = useState<{ logo?: boolean; background?: boolean }>({});
   const [lastSavedDraftSnapshot, setLastSavedDraftSnapshot] = useState(() => {
     if (initialCampaign) return JSON.stringify(draftFromCampaign(merchant, initialCampaign));
     const initialDraft = createWizardDraft(merchant);
@@ -1367,7 +1372,7 @@ export function CampaignWizard({
         ))}
       </div>
       {draft.logoMode === "text" ? <label className="mt-3 block text-sm"><span className="mb-2 block font-semibold text-carbon">Texte du logo</span><input value={draft.logoText ?? merchant.companyName} onChange={(event) => patchDraft({ logoText: event.target.value })} className="w-full rounded-[12px] border border-fog bg-white px-3 py-3 text-carbon outline-none focus:border-aubergine focus:ring-4 focus:ring-aubergine/15" /></label> : null}
-      {draft.logoMode === "image" ? <label className="mt-3 flex cursor-pointer items-center justify-between rounded-[12px] border border-dashed border-[#b8c5d8] px-3 py-3 text-sm font-semibold"><span>Importer un logo</span><input type="file" accept={MERCHANT_IMAGE_ACCEPT} className="hidden" onChange={(event) => uploadWizardImage(event, (value) => { setImageUploadErrors((current) => ({ ...current, logo: undefined })); patchDraft({ logoUrl: value, logoMode: "image" }); }, (message) => setImageUploadErrors((current) => ({ ...current, logo: message })), "logo", adminAccountMerchantId ? { accountMerchantId: adminAccountMerchantId, locationId: merchant.id } : undefined)} /></label> : null}
+      {draft.logoMode === "image" ? <label aria-live="polite" className={`mt-3 flex items-center justify-between rounded-[12px] border border-dashed border-[#b8c5d8] px-3 py-3 text-sm font-semibold ${imageUploads.logo ? "cursor-wait opacity-75" : "cursor-pointer"}`}><span className="inline-flex items-center gap-2">{imageUploads.logo ? <><Loader2 className="size-4 animate-spin" aria-hidden="true" /> Import et optimisation…</> : "Importer un logo"}</span><input type="file" accept={MERCHANT_IMAGE_ACCEPT} className="hidden" disabled={imageUploads.logo} onChange={(event) => uploadWizardImage(event, (value) => { setImageUploadErrors((current) => ({ ...current, logo: undefined })); patchDraft({ logoUrl: value, logoMode: "image" }); }, (message) => setImageUploadErrors((current) => ({ ...current, logo: message })), "logo", adminAccountMerchantId ? { accountMerchantId: adminAccountMerchantId, locationId: merchant.id } : undefined, (isUploading) => setImageUploads((current) => ({ ...current, logo: isUploading })))} /></label> : null}
       {imageUploadErrors.logo ? <p role="alert" className="mt-2 text-xs text-coral-alert">{imageUploadErrors.logo}</p> : null}
       {draft.logoMode !== "none" ? <div className="mt-3"><label className="block text-sm"><span className="mb-2 flex items-center justify-between gap-3 font-semibold"><span>Taille du logo</span><output className="text-aubergine">{draft.presentation.logo.sizePercent}%</output></span><input type="range" min={0} max={200} value={draft.presentation.logo.sizePercent} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, logo: { ...draft.presentation.logo, sizePercent: Number(event.target.value) } } })} className="w-full cursor-pointer accent-aubergine" aria-label="Taille du logo" /></label></div> : null}
     </section>
@@ -2865,7 +2870,7 @@ export function CampaignWizard({
                   <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
                     <p className="text-sm font-semibold text-[#182033]">Fond</p>
                <div className="mt-3 grid gap-3 sm:grid-cols-2">{([{ value: "color", label: "Couleur" }, { value: "image", label: "Image" }] as const).map((mode) => <button key={mode.value} type="button" onClick={() => patchDraft({ presentation: { ...draft.presentation, background: { ...draft.presentation.background, mode: mode.value } } })} className={`cursor-pointer rounded-[12px] border px-3 py-2.5 text-sm font-semibold ${draft.presentation.background.mode === mode.value ? "border-aubergine bg-purple-haze text-deep-plum" : "border-[#dbe3ed] bg-white text-[#526078]"}`}>{mode.label}</button>)}</div>
-                    {draft.presentation.background.mode === "color" ? <label className="mt-3 block text-sm"><span className="mb-2 block font-semibold">Couleur de fond</span><input type="color" value={draft.presentation.background.color} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, background: { ...draft.presentation.background, color: event.target.value } } })} className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] p-1" /></label> : <label className="mt-3 flex cursor-pointer items-center justify-between rounded-[12px] border border-dashed border-[#b8c5d8] px-3 py-3 text-sm font-semibold"><span>Importer une image de fond</span><input type="file" accept={MERCHANT_IMAGE_ACCEPT} className="hidden" onChange={(event) => uploadWizardImage(event, (value) => { setImageUploadErrors((current) => ({ ...current, background: undefined })); patchDraft({ presentation: { ...draft.presentation, background: { ...draft.presentation.background, mode: "image", imageUrl: value } } }); }, (message) => setImageUploadErrors((current) => ({ ...current, background: message })), "background", adminAccountMerchantId ? { accountMerchantId: adminAccountMerchantId, locationId: merchant.id } : undefined)} /></label>}
+                    {draft.presentation.background.mode === "color" ? <label className="mt-3 block text-sm"><span className="mb-2 block font-semibold">Couleur de fond</span><input type="color" value={draft.presentation.background.color} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, background: { ...draft.presentation.background, color: event.target.value } } })} className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] p-1" /></label> : <label aria-live="polite" className={`mt-3 flex items-center justify-between rounded-[12px] border border-dashed border-[#b8c5d8] px-3 py-3 text-sm font-semibold ${imageUploads.background ? "cursor-wait opacity-75" : "cursor-pointer"}`}><span className="inline-flex items-center gap-2">{imageUploads.background ? <><Loader2 className="size-4 animate-spin" aria-hidden="true" /> Import et optimisation…</> : "Importer une image de fond"}</span><input type="file" accept={MERCHANT_IMAGE_ACCEPT} className="hidden" disabled={imageUploads.background} onChange={(event) => uploadWizardImage(event, (value) => { setImageUploadErrors((current) => ({ ...current, background: undefined })); patchDraft({ presentation: { ...draft.presentation, background: { ...draft.presentation.background, mode: "image", imageUrl: value } } }); }, (message) => setImageUploadErrors((current) => ({ ...current, background: message })), "background", adminAccountMerchantId ? { accountMerchantId: adminAccountMerchantId, locationId: merchant.id } : undefined, (isUploading) => setImageUploads((current) => ({ ...current, background: isUploading })))} /></label>}
                     {imageUploadErrors.background ? <p role="alert" className="mt-2 text-xs text-[#b42318]">{imageUploadErrors.background}</p> : null}
                     {draft.presentation.background.mode === "image" ? <div className="mt-3 flex flex-wrap items-center gap-2"><button type="button" onClick={() => setBackgroundLibraryOpen(true)} className="cursor-pointer rounded-[4px] border border-aubergine bg-aubergine px-3 py-2.5 text-sm font-semibold text-white">Choisir dans la bibliothèque</button>{draft.presentation.background.imageUrl ? <span className="rounded-full bg-[#e9f8ec] px-3 py-1.5 text-xs font-semibold text-[#18864b]">Image sélectionnée</span> : null}</div> : null}
                   </section>

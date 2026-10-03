@@ -53,15 +53,18 @@ function uploadPosterLogo(
   event: ChangeEvent<HTMLInputElement>,
   onLoaded: (value: string) => void,
   onError?: (message: string) => void,
+  onUploadStateChange?: (isUploading: boolean) => void,
 ) {
   const file = event.target.files?.[0];
 
   if (!file) return;
 
   event.target.value = "";
+  onUploadStateChange?.(true);
   void uploadMerchantImageFile(file, "logo")
     .then(({ url }) => onLoaded(url))
-    .catch((error: unknown) => onError?.(error instanceof Error ? error.message : "Import de l’image impossible."));
+    .catch((error: unknown) => onError?.(error instanceof Error ? error.message : "Import de l’image impossible."))
+    .finally(() => onUploadStateChange?.(false));
 }
 
 function downloadBlob(blob: Blob, fileName: string) {
@@ -302,6 +305,7 @@ export function PosterEditor({ campaign, prizes, settingsEndpoint, returnHref }:
   const [isSavingBeforeNavigation, setIsSavingBeforeNavigation] = useState(false);
   const [downloadConfirmationOpen, setDownloadConfirmationOpen] = useState(false);
   const [imageUploadError, setImageUploadError] = useState<string | null>(null);
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
   const [draftWinColor, setDraftWinColor] = useState(poster.wheel.winColor);
   const [posterQrDataUrl, setPosterQrDataUrl] = useState<string | null>(null);
   const [loadedPosterFont, setLoadedPosterFont] = useState<{
@@ -870,8 +874,8 @@ export function PosterEditor({ campaign, prizes, settingsEndpoint, returnHref }:
                   <span className="inline-flex rounded-[4px] bg-white px-3 py-2 text-xs font-semibold text-aubergine shadow-sm">
                     {poster.logoUrl || campaign.logoUrl ? "Logo chargé" : "Aucun logo"}
                   </span>
-                  <span className="rounded-[4px] bg-aubergine px-4 py-2 text-xs font-semibold text-white">
-                    Choisir
+                  <span aria-live="polite" className="inline-flex items-center gap-2 rounded-[4px] bg-aubergine px-4 py-2 text-xs font-semibold text-white">
+                    {isUploadingLogo ? <><Loader2 className="size-4 animate-spin" aria-hidden="true" /> Optimisation…</> : "Choisir"}
                   </span>
                 </div>
                 {poster.logoUrl || campaign.logoUrl ? (
@@ -897,8 +901,10 @@ export function PosterEditor({ campaign, prizes, settingsEndpoint, returnHref }:
                         updatePoster({ logoMode: "image", logoUrl: value });
                       },
                       setImageUploadError,
+                      setIsUploadingLogo,
                     )
                   }
+                  disabled={isUploadingLogo}
                   className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                 />
               </label>
