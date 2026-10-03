@@ -180,6 +180,26 @@ async function loadPremiumBackdropAsDataUrl(templateId: PosterTemplateId) {
   }
 }
 
+async function loadPosterLogoAsDataUrl(campaignId: string, imageUrl: string, settingsEndpoint?: string) {
+  if (imageUrl.startsWith("data:image/")) return imageUrl;
+
+  const query = new URLSearchParams({ url: imageUrl });
+  const routePrefix = settingsEndpoint?.startsWith("/api/admin/")
+    ? "/api/admin"
+    : "/api";
+  const response = await fetch(`${routePrefix}/campaigns/${encodeURIComponent(campaignId)}/poster-logo?${query}`, {
+    credentials: "same-origin",
+    cache: "no-store",
+  });
+  const payload = await response.json().catch(() => null) as { dataUrl?: string; error?: string } | null;
+
+  if (!response.ok || !payload?.dataUrl?.startsWith("data:image/png;base64,")) {
+    throw new Error(payload?.error ?? "Impossible de charger le logo de l’affiche.");
+  }
+
+  return payload.dataUrl;
+}
+
 function createHeadlineMeasure(font: CampaignPosterSettings["headlineFontFamily"]) {
   const context = document.createElement("canvas").getContext("2d");
   const asset = getPosterFontAsset(font);
@@ -320,12 +340,40 @@ export function PosterEditor({ campaign, prizes, settingsEndpoint, returnHref }:
     templateId: PosterTemplateId;
     source: string;
   } | null>(null);
+  const [loadedPosterLogo, setLoadedPosterLogo] = useState<{
+    imageUrl: string;
+    source: string;
+  } | null>(null);
+  const [posterLogoLoadError, setPosterLogoLoadError] = useState<{
+    imageUrl: string;
+    message: string;
+  } | null>(null);
   const [previewPng, setPreviewPng] = useState<PosterPngPreview | null>(null);
   const [previewError, setPreviewError] = useState<{ svg: string; message: string } | null>(null);
   const [posterQrError, setPosterQrError] = useState<string | null>(null);
   const [fontLoadError, setFontLoadError] = useState<{ font: string; message: string } | null>(null);
   const [subtitleFontLoadError, setSubtitleFontLoadError] = useState<{ font: string; message: string } | null>(null);
   const [backdropLoadError, setBackdropLoadError] = useState<string | null>(null);
+
+  const posterLogoUrl = poster.logoMode === "image"
+    ? poster.logoUrl || campaign.logoUrl
+    : undefined;
+
+  useEffect(() => {
+    if (!posterLogoUrl) return;
+
+    let active = true;
+
+    void loadPosterLogoAsDataUrl(campaign.id, posterLogoUrl, settingsEndpoint).then((source) => {
+      if (active) setLoadedPosterLogo({ imageUrl: posterLogoUrl, source });
+    }).catch((error: Error) => {
+      if (active) setPosterLogoLoadError({ imageUrl: posterLogoUrl, message: error.message });
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [campaign.id, posterLogoUrl, settingsEndpoint]);
 
   useEffect(() => {
     let active = true;
@@ -433,6 +481,9 @@ export function PosterEditor({ campaign, prizes, settingsEndpoint, returnHref }:
   const premiumBackdropSource = loadedBackdrop?.templateId === (poster.templateId ?? "classic-wheel")
     ? loadedBackdrop.source
     : null;
+  const posterLogoDataSource = posterLogoUrl
+    ? loadedPosterLogo?.imageUrl === posterLogoUrl ? loadedPosterLogo.source : null
+    : undefined;
 
   const posterFontSource =
     loadedPosterFont?.font === poster.headlineFontFamily ? loadedPosterFont.source : null;
@@ -485,6 +536,7 @@ export function PosterEditor({ campaign, prizes, settingsEndpoint, returnHref }:
     () =>
       posterQrDataUrl &&
       posterFontSource !== null &&
+      (!posterLogoUrl || posterLogoDataSource !== null) &&
       (!posterSubtitleLayout || posterSubtitleFontSource !== null) &&
       (!posterTemplate.backdropAsset || premiumBackdropSource !== null)
         ? buildPosterSvg({
@@ -495,10 +547,11 @@ export function PosterEditor({ campaign, prizes, settingsEndpoint, returnHref }:
             posterFontSource: posterFontSource || undefined,
             posterSubtitleFontSource: posterSubtitleFontSource || undefined,
             premiumBackdropSource: premiumBackdropSource || undefined,
+            logoDataSource: posterLogoDataSource || undefined,
             measureHeadline: headlineMeasure,
           })
         : null,
-    [posterCampaign, poster, posterFontSource, posterSubtitleFontSource, posterQrDataUrl, premiumBackdropSource, prizes, headlineMeasure, posterSubtitleLayout, posterTemplate],
+    [posterCampaign, poster, posterFontSource, posterSubtitleFontSource, posterQrDataUrl, premiumBackdropSource, posterLogoUrl, posterLogoDataSource, prizes, headlineMeasure, posterSubtitleLayout, posterTemplate],
   );
 
   useEffect(() => {
@@ -545,8 +598,11 @@ export function PosterEditor({ campaign, prizes, settingsEndpoint, returnHref }:
       : null) ?? posterQrError ??
       (fontLoadError?.font === poster.headlineFontFamily ? fontLoadError.message : null) ??
       (subtitleFontLoadError?.font === posterSubtitleFont ? subtitleFontLoadError.message : null) ??
+      (posterLogoLoadError && posterLogoLoadError.imageUrl === posterLogoUrl
+        ? posterLogoLoadError.message
+        : null) ??
       (getPosterTemplate(poster.templateId, poster.backgroundMotif).backdropAsset ? backdropLoadError : null);
-  const isRenderingPreview = Boolean(previewPosterSvg && !previewIsReady && !currentPreviewError);
+  const isRenderingPreview = Boolean((previewPosterSvg || (posterLogoUrl && !posterLogoDataSource)) && !previewIsReady && !currentPreviewError);
   const currentPosterDraftSnapshot = JSON.stringify({ poster, posterSubtitle });
   const isDirty = lastSavedPosterSnapshot !== currentPosterDraftSnapshot;
 

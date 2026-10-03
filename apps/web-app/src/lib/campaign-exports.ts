@@ -4,6 +4,8 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 
 import { buildPosterSvg } from "@/lib/poster-render";
+import { getMerchantPosterLogoDataUrl } from "@/lib/merchant-image-storage";
+import { isMerchantOptimizedImageUrl } from "@/lib/merchant-image-upload";
 import { getPosterFontAsset, getPosterSubtitleFont } from "@/lib/poster-fonts";
 import {
   createPosterSettingsDefaults,
@@ -188,6 +190,13 @@ export async function createCampaignPosterSvg(
         },
       );
 
+  const posterLogoUrl = poster.logoMode === "image"
+    ? poster.logoUrl || campaign.logoUrl
+    : undefined;
+  const logoDataSource = posterLogoUrl && isMerchantOptimizedImageUrl(posterLogoUrl)
+    ? await getMerchantPosterLogoDataUrl(posterLogoUrl, campaign.merchantId)
+    : undefined;
+
   const qrDataUrl = await QRCode.toDataURL(publicUrl, {
     margin: 1,
     width: 720,
@@ -205,6 +214,7 @@ export async function createCampaignPosterSvg(
     posterSubtitleFontSource: getPosterFontSource(
       getPosterSubtitleFont(campaign.presentation.heading.fontFamily),
     ),
+    logoDataSource,
     premiumBackdropSource: getPosterBackdropSource(poster.templateId, poster.backgroundMotif),
   });
 }
