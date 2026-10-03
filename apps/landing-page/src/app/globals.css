@@ -141,11 +141,6 @@ body {
   letter-spacing: 0.06px;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
 button,
 input,
 textarea,
@@ -233,6 +228,12 @@ select {
 }
 
 @layer base {
+  /* Keep link defaults below Tailwind utilities, including CTA text and hover colors. */
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
   * {
     @apply border-border outline-ring/50;
   }

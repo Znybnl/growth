@@ -24,6 +24,9 @@ import {
 } from "lucide-react";
 
 import { LandingDemo } from "@/components/marketing/landing-demo";
+import { BrandMark } from "@/components/marketing/brand-mark";
+import { PrimaryButton } from "@/components/marketing/primary-button";
+import { accountConnectionFaq } from "@/lib/marketing-faqs";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://app.okado.app";
 
@@ -353,6 +356,7 @@ const comparisonRows = [
 ];
 
 const faqs = [
+  accountConnectionFaq,
   {
     question: "Comment obtenir plus d'avis Google pour un restaurant ?",
     answer:
@@ -399,32 +403,6 @@ const faqs = [
       "Non. Okado génère une affiche A4 avec QR code, logo, texte et visuel de jeu. Vous pouvez aussi télécharger le QR code seul pour l'ajouter sur vos propres supports.",
   },
 ];
-
-function BrandMark() {
-  return (
-    <Link href="/" className="flex items-center gap-3" aria-label="Retour à l'accueil Okado">
-      <span className="grid h-9 w-9 place-items-center rounded-[8px] bg-[#6c00f6] text-white shadow-[0_0_24px_rgba(108,0,246,0.20)]">
-        <Star className="h-5 w-5 fill-white text-white" aria-hidden="true" />
-      </span>
-      <span className="flex flex-col leading-none">
-        <span className="text-[17px] font-bold tracking-[-0.03em] text-[#0f172b]">Okado</span>
-        <span className="mt-1 text-[11px] font-medium text-[#90a1b9]">restaurants</span>
-      </span>
-    </Link>
-  );
-}
-
-function PrimaryButton({ children, href }: { children: React.ReactNode; href: string }) {
-  return (
-    <Link
-      href={href}
-      className="inline-flex items-center justify-center gap-2 rounded-[10px] bg-[#6c00f6] px-5 py-3 text-[15px] font-semibold !text-white shadow-[0_16px_36px_rgba(108,0,246,0.24)] transition hover:-translate-y-0.5 hover:bg-[#5700ce]"
-    >
-      {children}
-      <ArrowRight className="h-4 w-4" />
-    </Link>
-  );
-}
 
 function SectionTitle({
   eyebrow,
@@ -676,7 +654,7 @@ export default function RestaurantsPage() {
 
       <header className="sticky top-0 z-30 border-b border-[#f0dfcf] bg-[#fffaf4]/92 backdrop-blur-xl">
         <div className="mx-auto flex h-[72px] max-w-[1200px] items-center justify-between px-5">
-          <BrandMark />
+          <BrandMark subtitle="restaurants" />
           <nav className="hidden items-center gap-7 text-sm font-semibold text-[#31190b] md:flex">
             <a href="#avis-google" className="hover:text-[#6c00f6]">
               Avis Google
