@@ -33,6 +33,8 @@ import {
   roseInstitutWheelBackground,
   deriveLighterHex,
   scratchTemplatePrimaryColor,
+  scratchTemplateDefaultBackground,
+  resolveScratchTemplateTextColor,
   resolvePromoStrokeColor,
 } from "@/lib/campaign-defaults";
 import { buildWheelVisualSegments, WheelVisualSegment } from "@/lib/wheel-segments";
@@ -148,11 +150,13 @@ function previewBackgroundImage(
   templateId: GamePageTemplateId,
   accent: CampaignSetupInput["accent"],
 ) {
-  const beautyTheme = beautyScratchTemplate(templateId);
-  if (beautyTheme) return `url("${beautyTheme.background}")`;
   if (form.presentation.background.mode === "image" && form.presentation.background.imageUrl) {
     return userBackgroundImageStyle(form.presentation.background.imageUrl);
   }
+  const templateBackground = scratchTemplateDefaultBackground(templateId, form.presentation.background);
+  if (templateBackground) return `url("${templateBackground}")`;
+  const beautyTheme = beautyScratchTemplate(templateId);
+  if (beautyTheme) return `url("${beautyTheme.background}")`;
   if (templateId === "restaurant-pop") {
     return restaurantPopBackground(form.presentation.background.color, form.presentation.wheel.loseColor);
   }
@@ -183,7 +187,7 @@ function previewBackgroundImage(
     return `radial-gradient(circle at 12% 10%, ${withHexAlpha(form.presentation.wheel.loseColor, "33")} 0 12%, transparent 13%), radial-gradient(circle at 94% 18%, ${withHexAlpha(form.presentation.wheel.winColor, "38")} 0 14%, transparent 15%), linear-gradient(180deg, #fffdf5 0%, #fff8e8 56%, #fff2ce 100%)`;
   }
   if (templateId === "scratch-coral") {
-    return `radial-gradient(circle at 50% 0%, ${withHexAlpha(accent.signal, "24")} 0 18%, transparent 42%), linear-gradient(180deg, #fffaf580 0%, #ffffff66 72%, #fff3e880 100%)`;
+    return `radial-gradient(ellipse at 50% 112%, ${withHexAlpha(accent.signal, "36")} 0 8%, transparent 56%), radial-gradient(circle at 50% 0%, ${withHexAlpha(accent.signal, "24")} 0 18%, transparent 42%), linear-gradient(180deg, #fffaf580 0%, #ffffff66 72%, #fff3e880 100%)`;
   }
   if (templateId === "scratch-lilac") {
     const templatePrimary = scratchTemplatePrimaryColor(form.accent.signal, templateId);
@@ -223,11 +227,13 @@ export function buildCampaignLivePreviewModel(form: CampaignSetupInput, merchant
     logoTextSizePx: Math.round(campaignLogoTextSizePx(logoSizePercent, form.gameType) * (isBeautyWheelTemplate(templateId) || templateId === "rose-institut" ? 0.9 : 1)),
     logoUrl: form.logoUrl ?? "",
     logoText: form.logoText?.trim() || merchant.companyName,
-    logoTextColor: form.presentation.logo.textColor ?? form.presentation.heading.textColor,
+    logoTextColor: form.gameType === "scratch"
+      ? resolveScratchTemplateTextColor(form.presentation.logo.textColor ?? form.presentation.heading.textColor, templateId)
+      : form.presentation.logo.textColor ?? form.presentation.heading.textColor,
     headingAlignmentClass,
     headingFontClass: headingFontClassFor(form),
     headingFontFamily: form.presentation.heading.fontFamily,
-    headingTextColor: templateId === "cosmic-orbit" ? "#f8fbff" : isCocoricoWheelTemplate(templateId) ? "#ffffff" : form.gameType === "scratch" && form.presentation.heading.textColor.toLowerCase() === "#1f2937" ? previewAccent.ink : form.presentation.heading.textColor,
+    headingTextColor: templateId === "cosmic-orbit" ? "#f8fbff" : isCocoricoWheelTemplate(templateId) ? "#ffffff" : form.gameType === "scratch" ? resolveScratchTemplateTextColor(form.presentation.heading.textColor.toLowerCase() === "#1f2937" ? previewAccent.ink : form.presentation.heading.textColor, templateId) : form.presentation.heading.textColor,
     headingFontSizePx: form.presentation.heading.fontSizePx,
     headingFontWeight: isCocoricoWheelTemplate(templateId)
       ? 900
@@ -288,6 +294,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
   const isImmersiveTemplate = isCosmicTemplate || preview.gamePageTemplateId === "sunburst-festival";
   const isImmersiveScratchTemplate = isImmersiveScratchPageTemplate(preview.gamePageTemplateId);
   const beautyScratchTheme = beautyScratchTemplate(preview.gamePageTemplateId);
+  const useBeautyScratchThemeBackground = Boolean(beautyScratchTheme && !preview.hasCustomBackgroundImage);
   const showStandardHeader = !isImmersiveScratchTemplate;
   // The compact preview has 254px of usable content width inside its phone
   // frame. A .74 ratio mirrors a 375px mobile viewport while container query
@@ -303,15 +310,15 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
         viewportStep: 0.3,
         viewportUnit: compact ? "cqw" : "vw",
       });
-  const previewHeadingTextColor = isCosmicTemplate || isCocoricoTemplate ? "#ffffff" : (preview.gamePageTemplateId === "scratch-vault" && preview.headingTextColor.toLowerCase() === "#1f2937") ? "#f8fbff" : preview.headingTextColor;
+  const previewHeadingTextColor = isCosmicTemplate || isCocoricoTemplate ? "#ffffff" : (preview.gamePageTemplateId === "scratch-vault" && preview.headingTextColor.toLowerCase() === "#1f2937") ? "#f8fbff" : preview.gamePageTemplateId === "scratch-lilac" ? resolveScratchTemplateTextColor(preview.headingTextColor, preview.gamePageTemplateId) : preview.headingTextColor;
   const previewFrameClass = `${compact ? "relative isolate h-full min-h-0 max-w-none rounded-[30px] px-3 pb-5 pt-7" : "relative isolate min-h-[600px] max-w-[450px] rounded-[38px] px-4 pb-6 pt-8"} ${beautyScratchTheme ? "flex flex-col" : ""}`;
   const previewWrapperClass = compact ? "h-full" : flushTop ? "" : "mt-6";
   const wheelPreviewHeight = compact ? "330px" : "470px";
 
   return (
     <div className={`okado-preview-surface ${previewWrapperClass}`} data-template-id={preview.gamePageTemplateId}>
-      <div className={`mx-auto w-full ${(isRosePowderTemplate || isRoseInstitutTemplate) && compact ? "overflow-x-hidden overflow-y-auto" : "overflow-hidden"} border border-[#ced7e6] shadow-[0_30px_70px_rgba(18,24,39,0.18)] ${previewFrameClass} ${isRosePowderTemplate ? "okado-rose-powder-surface relative" : ""}`} style={{ ...preview.backgroundStyle, backgroundImage: beautyScratchTheme ? "none" : preview.backgroundStyle.backgroundImage, backgroundRepeat: "no-repeat", ...(compact ? { containerType: "inline-size" } : {}) }}>
-        {beautyScratchTheme ? (
+      <div className={`mx-auto w-full ${(isRosePowderTemplate || isRoseInstitutTemplate) && compact ? "overflow-x-hidden overflow-y-auto" : "overflow-hidden"} border border-[#ced7e6] shadow-[0_30px_70px_rgba(18,24,39,0.18)] ${previewFrameClass} ${isRosePowderTemplate ? "okado-rose-powder-surface relative" : ""}`} style={{ ...preview.backgroundStyle, backgroundImage: useBeautyScratchThemeBackground ? "none" : preview.backgroundStyle.backgroundImage, backgroundRepeat: "no-repeat", ...(compact ? { containerType: "inline-size" } : {}) }}>
+        {useBeautyScratchThemeBackground && beautyScratchTheme ? (
           <Image
             src={beautyScratchTheme.background}
             alt=""

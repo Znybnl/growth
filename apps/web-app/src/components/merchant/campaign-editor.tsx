@@ -69,7 +69,7 @@ import { captureClientProductEvent } from "@/lib/client-product-analytics";
 import { postCampaignSetup } from "@/lib/campaign-setup-request";
 import { uploadMerchantImageFile, MERCHANT_IMAGE_ACCEPT } from "@/lib/merchant-image-upload";
 import { beautyWheelBackground, beautyWheelFontOptions, beautyWheelTheme, isBeautyIndustry, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
-import { beautyScratchTemplate, isHiddenScratchTemplate, isImmersiveScratchTemplate as isImmersiveScratchPageTemplate, type BeautyScratchTemplateId, type ImmersiveScratchTemplateId } from "@/lib/beauty-scratch-templates";
+import { beautyScratchTemplate, scratchVisualTheme, isHiddenScratchTemplate, isImmersiveScratchTemplate as isImmersiveScratchPageTemplate, CLASSIC_NUDE_SCRATCH_TEMPLATE_ID, type BeautyScratchTemplateId, type ImmersiveScratchTemplateId } from "@/lib/beauty-scratch-templates";
 import { RosePowderDecor } from "@/components/public/rose-powder-decor";
 import {
   createCampaignEmailDefaults,
@@ -87,6 +87,7 @@ import {
   DEFAULT_SCRATCH_SUBTITLE,
   DEFAULT_SCRATCH_HEADING_FONT_SIZE_PX,
   defaultScratchTemplateFont,
+  defaultScratchTemplateForIndustry,
   defaultScratchTextColor,
   scratchTemplateDefaultPrimaryColor,
   shouldApplyScratchTemplateDefaultPrimaryColor,
@@ -123,6 +124,8 @@ import {
   wheelBackgroundForTemplate,
   wheelBackgroundForTemplateSelection,
   wheelHeadingColorForTemplateSelection,
+  wheelHeadingFontForTemplateSelection,
+  wheelLogoColorForTemplateSelection,
   restaurantPopBackground,
   classicWheelBackground,
   wheelPaletteForTemplate,
@@ -403,6 +406,11 @@ const scratchPageTemplateOptions: Array<{
   title: string;
   description: string;
 }> = [
+  {
+    value: "scratch-nude-classic",
+    title: "Nude",
+    description: "Un fond doux et neutre, personnalisable avec votre propre image.",
+  },
   {
     value: "scratch-vault",
     title: "Coffre néon",
@@ -2319,16 +2327,14 @@ export function CampaignEditor({
         };
       }
 
-      const scratchTemplateId = isBeautyIndustry(merchant.industry)
-        ? "beauty-scratch-nude"
-        : "scratch-coral";
+      const scratchTemplateId = defaultScratchTemplateForIndustry(merchant.industry);
       const beautyScratch = beautyScratchTemplate(scratchTemplateId);
       const scratchTextColor = beautyScratch?.text ?? defaultScratchTextColor(scratchTemplateId);
       const scratchFontFamily = beautyScratch?.font ?? defaultScratchTemplateFont(scratchTemplateId) ?? current.presentation.heading.fontFamily;
 
       const nextPrimaryColor =
         gameType === "scratch"
-          ? beautyScratch?.scratch.base ?? DEFAULT_SCRATCH_CORAL_COLOR
+          ? scratchTemplateDefaultPrimaryColor(scratchTemplateId) ?? DEFAULT_SCRATCH_CORAL_COLOR
           : resolveWheelPrimaryColorAfterGameTypeSwitch(current.presentation.wheel.loseColor);
 
       return {
@@ -2997,13 +3003,10 @@ export function CampaignEditor({
               <p className="text-xs uppercase tracking-[0.24em] text-[#7b8496]">
                 {form.gameType === "wheel" ? "Autres templates de roue" : "Template de page de jeu"}
               </p>
-              <div className="mt-3 grid gap-3 md:grid-cols-2">
+              <div className="mt-3 grid gap-3 md:grid-cols-2" data-testid="classic-template-options">
                 {(form.gameType === "wheel"
                   ? wheelPageTemplateOptions.filter((template) => !isBeautyIndustry(merchant.industry) || template.value !== "rose-institut")
-                  : [
-                      ...scratchPageTemplateOptions.filter((template) => template.value === "scratch-coral"),
-                      ...scratchPageTemplateOptions.filter((template) => template.value !== "scratch-coral"),
-                    ].filter((template) => !isHiddenScratchTemplate(template.value))
+                  : scratchPageTemplateOptions.filter((template) => !isHiddenScratchTemplate(template.value))
                 ).map((template) => {
                   const active =
                     (form.presentation.layout.templateId ?? "classic") === template.value;
@@ -3042,7 +3045,10 @@ export function CampaignEditor({
                           const wheel = remembered?.wheel ?? wheelPaletteForTemplate(template.value, current.presentation.wheel);
                           const backgroundColor = remembered?.backgroundColor ?? wheelBackgroundForTemplateSelection(template.value, current.presentation.background.color);
                           const headingTextColor = remembered?.headingTextColor ?? (current.gameType === "scratch" ? defaultScratchTextColor(template.value) : template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheelHeadingColorForTemplateSelection(template.value, isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.heading.textColor));
-                          const logoTextColor = remembered?.logoTextColor ?? (current.gameType === "scratch" ? defaultScratchTextColor(template.value) : template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheelHeadingColorForTemplateSelection(template.value, isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.logo.textColor ?? current.presentation.heading.textColor));
+                          const logoTextColor = remembered?.logoTextColor ?? (current.gameType === "scratch" ? defaultScratchTextColor(template.value) : template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheelLogoColorForTemplateSelection(template.value, wheelHeadingColorForTemplateSelection(template.value, isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.logo.textColor ?? current.presentation.heading.textColor)));
+                          const firstSelectionHeadingFont = template.value === "classic"
+                            ? wheelHeadingFontForTemplateSelection(template.value, current.presentation.heading.fontFamily)
+                            : current.presentation.heading.fontFamily;
                           const buttonBackgroundColor = remembered?.buttonBackgroundColor ?? (template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheel.loseColor);
                           const scratchSignal =
                             remembered?.scratchSignal ??
@@ -3082,9 +3088,11 @@ export function CampaignEditor({
                                       ? defaultScratchTemplateFont(template.value) ?? current.presentation.heading.fontFamily
                                       : template.value === "rose-institut"
                                       ? DEFAULT_ROSE_INSTITUT_HEADING_FONT_FAMILY
+                                      : template.value === "classic"
+                                      ? firstSelectionHeadingFont
                                       : isCocoricoWheelTemplate(template.value) || isClassicPopWheelTemplate(template.value)
                                       ? template.value === "restaurant-pop" ? "lato" : "fredoka"
-                                      : current.presentation.heading.fontFamily),
+                                      : firstSelectionHeadingFont),
                                 },
                               logo: {
                                 ...current.presentation.logo,
@@ -3130,7 +3138,7 @@ export function CampaignEditor({
                 })}
               </div>
             </div>
-            {form.gameType === "scratch" ? (
+            {form.gameType === "scratch" && currentTemplateId !== CLASSIC_NUDE_SCRATCH_TEMPLATE_ID ? (
               <label className="mt-6 block max-w-md text-sm">
                 <span className="mb-1 block font-semibold text-[#111827]">
                   Couleur principale du ticket
@@ -3329,7 +3337,7 @@ export function CampaignEditor({
                 <CampaignSpacingControls
                   gameType={form.gameType}
                   logoMode={form.logoMode}
-                  hasScratchSubtitle={Boolean(beautyScratchTemplate(form.presentation.layout.templateId))}
+                  hasScratchSubtitle={Boolean(scratchVisualTheme(form.presentation.layout.templateId))}
                   logoSpacingPx={form.presentation.logo.marginBottomPx}
                   blockSpacingPx={form.presentation.layout.blockSpacingPx}
                   subtitleSpacingPx={form.presentation.layout.subtitleSpacingPx ?? DEFAULT_WHEEL_SUBTITLE_SPACING_PX}

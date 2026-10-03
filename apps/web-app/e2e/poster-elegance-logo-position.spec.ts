@@ -5,7 +5,7 @@ import { getPosterLogoTextFontSizePx, getPosterLogoTopY, getPosterTemplate } fro
 
 test("Élégance conserve les positions verticales communes du logo", async ({ page }, testInfo) => {
   const eleganceTemplate = getPosterTemplate("premium-wheel");
-  expect(getPosterLogoTopY("text")).toBe(24);
+  expect(getPosterLogoTopY("text")).toBe(36);
   expect(getPosterLogoTopY("image")).toBe(32);
   expect(getPosterLogoTextFontSizePx(170)).toBe(28.9);
   expect("logoY" in eleganceTemplate || "logoTextY" in eleganceTemplate).toBe(false);

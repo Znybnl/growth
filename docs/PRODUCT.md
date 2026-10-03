@@ -61,6 +61,7 @@
 
 ## Décisions produit confirmées
 
+- Lors de l’initialisation d’un nouveau ticket à gratter, le template par défaut est **Nude Élégance** pour le secteur Beauté, et **Nude** pour les autres secteurs (y compris un secteur non renseigné). Un template déjà enregistré ou un choix déjà effectué n’est pas remplacé (Issue #441 / PR #442).
 - Une animation créée et pilotée par un marchand est un **jeu**. La rubrique de navigation qui regroupe ces jeux s’intitule **Campagnes** ; *campagne* reste aussi le terme technique/historique du modèle de données.
 - Les actions marketing sont proposées **avant** le jeu et sont séquencées par visite.
 - La collecte d'e-mail est une option indépendante des actions marketing.
