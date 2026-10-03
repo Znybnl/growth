@@ -99,6 +99,8 @@ import {
   wheelBackgroundForTemplate,
   wheelBackgroundForTemplateSelection,
   wheelHeadingColorForTemplateSelection,
+  wheelHeadingFontForTemplateSelection,
+  wheelLogoColorForTemplateSelection,
   wheelPaletteForTemplate,
 } from "@/lib/campaign-defaults";
 import {
@@ -284,7 +286,12 @@ function createWizardDraft(merchant: Merchant): WizardDraft {
     accent: { ink: "#111827", paper: "#eef2ff", signal: DEFAULT_SCRATCH_PRIMARY_COLOR },
     gameType: "wheel",
     presentation: {
-      logo: { sizePercent: 100, marginBottomPx: DEFAULT_WHEEL_SPACING_PX, align: "center" },
+      logo: {
+        sizePercent: 100,
+        marginBottomPx: DEFAULT_WHEEL_SPACING_PX,
+        align: "center",
+        textColor: wheelLogoColorForTemplateSelection(DEFAULT_GAME_PAGE_TEMPLATE_ID, "#1f2937"),
+      },
       background: { mode: "color", color: "#ffffff", imageUrl: "" },
       heading: {
         textColor: "#1f2937",
@@ -2489,7 +2496,10 @@ export function CampaignWizard({
                         const wheel = remembered?.wheel ?? wheelPaletteForTemplate(template.id, current.presentation.wheel);
                         const backgroundColor = remembered?.backgroundColor ?? wheelBackgroundForTemplateSelection(template.id, current.presentation.background.color);
                         const headingTextColor = remembered?.headingTextColor ?? (current.gameType === "scratch" ? defaultScratchTextColor(template.id) : template.id === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheelHeadingColorForTemplateSelection(template.id, isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.heading.textColor));
-                        const logoTextColor = remembered?.logoTextColor ?? (current.gameType === "scratch" ? defaultScratchTextColor(template.id) : template.id === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheelHeadingColorForTemplateSelection(template.id, isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.logo.textColor ?? current.presentation.heading.textColor));
+                        const logoTextColor = remembered?.logoTextColor ?? (current.gameType === "scratch" ? defaultScratchTextColor(template.id) : template.id === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheelLogoColorForTemplateSelection(template.id, wheelHeadingColorForTemplateSelection(template.id, isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.logo.textColor ?? current.presentation.heading.textColor)));
+                        const firstSelectionHeadingFont = template.id === "classic"
+                          ? wheelHeadingFontForTemplateSelection(template.id, current.presentation.heading.fontFamily)
+                          : current.presentation.heading.fontFamily;
                         const buttonBackgroundColor = remembered?.buttonBackgroundColor ?? (template.id === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheel.loseColor);
                         const scratchSignal =
                           remembered?.scratchSignal ??
@@ -2529,9 +2539,11 @@ export function CampaignWizard({
                                     ? defaultScratchTemplateFont(template.id) ?? current.presentation.heading.fontFamily
                                     : template.id === "rose-institut"
                                     ? DEFAULT_ROSE_INSTITUT_HEADING_FONT_FAMILY
+                                    : template.id === "classic"
+                                    ? firstSelectionHeadingFont
                                     : isCocoricoWheelTemplate(template.id) || isClassicPopWheelTemplate(template.id)
                                     ? template.id === "restaurant-pop" ? "lato" : "fredoka"
-                                    : current.presentation.heading.fontFamily),
+                                    : firstSelectionHeadingFont),
                               },
                             logo: {
                               ...current.presentation.logo,

@@ -4,6 +4,7 @@ import {
   CampaignWheelSettings,
   GamePageTemplateId,
   Merchant,
+  TextFont,
 } from "@/lib/types";
 import { createPosterSettingsDefaults } from "@/lib/poster-utils";
 import { getPosterTemplate } from "@/lib/poster-templates";
@@ -273,6 +274,16 @@ export function wheelHeadingColorForTemplateSelection(templateId: GamePageTempla
   if (templateId === "classic") return "#ffffff";
   if (templateId === "restaurant-pop") return "#1b2842";
   return currentColor;
+}
+
+/** Moderne uses a white brand mark by default on its blue game background. */
+export function wheelLogoColorForTemplateSelection(templateId: GamePageTemplateId, currentColor: string) {
+  return templateId === "cocorico-wheel" ? "#ffffff" : currentColor;
+}
+
+/** Dynamique starts with Poppins unless the merchant already chose a font for it. */
+export function wheelHeadingFontForTemplateSelection(templateId: GamePageTemplateId, currentFont: TextFont): TextFont {
+  return templateId === "classic" ? "poppins" : currentFont;
 }
 
 export function roseInstitutWheelBackground(configuredColor: string | undefined) {

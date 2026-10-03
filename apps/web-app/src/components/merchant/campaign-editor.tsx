@@ -123,6 +123,8 @@ import {
   wheelBackgroundForTemplate,
   wheelBackgroundForTemplateSelection,
   wheelHeadingColorForTemplateSelection,
+  wheelHeadingFontForTemplateSelection,
+  wheelLogoColorForTemplateSelection,
   restaurantPopBackground,
   classicWheelBackground,
   wheelPaletteForTemplate,
@@ -3042,7 +3044,10 @@ export function CampaignEditor({
                           const wheel = remembered?.wheel ?? wheelPaletteForTemplate(template.value, current.presentation.wheel);
                           const backgroundColor = remembered?.backgroundColor ?? wheelBackgroundForTemplateSelection(template.value, current.presentation.background.color);
                           const headingTextColor = remembered?.headingTextColor ?? (current.gameType === "scratch" ? defaultScratchTextColor(template.value) : template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheelHeadingColorForTemplateSelection(template.value, isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.heading.textColor));
-                          const logoTextColor = remembered?.logoTextColor ?? (current.gameType === "scratch" ? defaultScratchTextColor(template.value) : template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheelHeadingColorForTemplateSelection(template.value, isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.logo.textColor ?? current.presentation.heading.textColor));
+                          const logoTextColor = remembered?.logoTextColor ?? (current.gameType === "scratch" ? defaultScratchTextColor(template.value) : template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheelLogoColorForTemplateSelection(template.value, wheelHeadingColorForTemplateSelection(template.value, isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.logo.textColor ?? current.presentation.heading.textColor)));
+                          const firstSelectionHeadingFont = template.value === "classic"
+                            ? wheelHeadingFontForTemplateSelection(template.value, current.presentation.heading.fontFamily)
+                            : current.presentation.heading.fontFamily;
                           const buttonBackgroundColor = remembered?.buttonBackgroundColor ?? (template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheel.loseColor);
                           const scratchSignal =
                             remembered?.scratchSignal ??
@@ -3082,9 +3087,11 @@ export function CampaignEditor({
                                       ? defaultScratchTemplateFont(template.value) ?? current.presentation.heading.fontFamily
                                       : template.value === "rose-institut"
                                       ? DEFAULT_ROSE_INSTITUT_HEADING_FONT_FAMILY
+                                      : template.value === "classic"
+                                      ? firstSelectionHeadingFont
                                       : isCocoricoWheelTemplate(template.value) || isClassicPopWheelTemplate(template.value)
                                       ? template.value === "restaurant-pop" ? "lato" : "fredoka"
-                                      : current.presentation.heading.fontFamily),
+                                      : firstSelectionHeadingFont),
                                 },
                               logo: {
                                 ...current.presentation.logo,
