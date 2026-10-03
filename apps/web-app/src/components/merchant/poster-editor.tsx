@@ -1107,9 +1107,9 @@ export function PosterEditor({ campaign, prizes, settingsEndpoint, returnHref }:
         ) : null}
       </div>
 
-      <aside className="xl:sticky xl:top-6 xl:h-[calc(100vh-48px)]">
-        <div className="okado-card flex h-full flex-col p-5">
-          <div className="mb-4 flex items-center justify-between gap-3">
+      <aside className="xl:sticky xl:top-6 xl:h-[calc(100dvh-144px)]" data-testid="poster-preview-panel">
+        <div className="okado-card flex h-full min-h-0 flex-col p-5">
+          <div className="mb-4 flex shrink-0 items-center justify-between gap-3">
             <div>
               <p className="okado-label">Prévisualisation</p>
               <h2 className="okado-section-title mt-1">Affiche A4 / A5</h2>
@@ -1139,8 +1139,11 @@ export function PosterEditor({ campaign, prizes, settingsEndpoint, returnHref }:
             </button>
           </div>
 
-          <div className="flex min-h-0 flex-1 items-center justify-center overflow-auto rounded-[var(--okado-radius-card)] bg-[var(--okado-surface-muted)] p-4">
-            <div className="relative aspect-[794/1123] w-full max-w-[470px] overflow-hidden rounded-[var(--okado-radius-control)] border border-[var(--okado-border-control)] bg-white shadow-[var(--shadow-product-card)]" data-testid="poster-preview-frame" data-headline-size={premiumHeadlineLayout?.size} data-headline-line-count={premiumHeadlineLayout?.lines.length} data-headline-x={premiumHeadlineLayout?.x} data-headline-top={premiumHeadlineLayout?.top} data-headline-last-baseline={headlineLastBaseline} data-subtitle-x={posterSubtitleLayout?.x} data-subtitle-first-baseline={subtitleFirstBaseline} data-subtitle-last-baseline={subtitleLastBaseline} data-subtitle-headline-gap={posterSubtitleLayout?.headlineGap} data-subtitle-max-width={posterSubtitleLayout?.maxWidth} data-subtitle-rendered-width={posterSubtitleLayout?.maxRenderedLineWidth}>
+          <div
+            className="poster-preview-viewport flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-hidden rounded-[var(--okado-radius-card)] bg-[var(--okado-surface-muted)] p-2 sm:p-4"
+            data-testid="poster-preview-viewport"
+          >
+            <div className="poster-preview-artwork relative aspect-[794/1123] w-full max-w-[470px] overflow-hidden rounded-[var(--okado-radius-control)] border border-[var(--okado-border-control)] bg-white shadow-[var(--shadow-product-card)] xl:h-full xl:w-auto xl:max-h-[664px] xl:max-w-full" data-testid="poster-preview-frame" data-headline-size={premiumHeadlineLayout?.size} data-headline-line-count={premiumHeadlineLayout?.lines.length} data-headline-x={premiumHeadlineLayout?.x} data-headline-top={premiumHeadlineLayout?.top} data-headline-last-baseline={headlineLastBaseline} data-subtitle-x={posterSubtitleLayout?.x} data-subtitle-first-baseline={subtitleFirstBaseline} data-subtitle-last-baseline={subtitleLastBaseline} data-subtitle-headline-gap={posterSubtitleLayout?.headlineGap} data-subtitle-max-width={posterSubtitleLayout?.maxWidth} data-subtitle-rendered-width={posterSubtitleLayout?.maxRenderedLineWidth}>
               {previewPng && !currentPreviewError ? (
                 <Image
                   src={previewPng.url}
