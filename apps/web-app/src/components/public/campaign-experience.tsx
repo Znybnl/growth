@@ -225,7 +225,7 @@ function PublicModal({
   return (
     <div role="dialog" aria-modal="true" aria-label="Fenêtre de participation" className="fixed inset-0 z-40 flex items-end justify-center bg-[#0f1220]/52 px-4 pb-4 pt-10 backdrop-blur-[6px] sm:items-center sm:p-6">
       <div
-        className={`w-full max-w-[390px] rounded-[34px] bg-white text-[#111827] shadow-[0_34px_90px_rgba(18,24,39,0.24)] ${
+        className={`max-h-full w-full max-w-[390px] overflow-y-auto rounded-[34px] bg-white text-[#111827] shadow-[0_34px_90px_rgba(18,24,39,0.24)] ${
           compact ? "p-5" : "p-6"
         }`}
       >
@@ -762,7 +762,9 @@ export function CampaignExperience({
         ...currentCampaign,
         actions: result.campaign.actions,
       }));
-      setStage(result.prize ? "won" : "success");
+      // Only players who supplied their details before playing need the
+      // announcement step. The winner form already announces the prize.
+      setStage(result.prize && contactCaptured ? "won" : "success");
     } catch (submitError) {
       setError(
         submitError instanceof Error ? submitError.message : "Une erreur est survenue.",
@@ -1305,14 +1307,6 @@ export function CampaignExperience({
             ? "Vos informations sont nécessaires pour valider et envoyer votre gain."
             : "Laissez vos coordonnées pour recevoir les prochaines opportunités du commerce."}
         </div>
-        {!isPreGameLeadCapture && previewUsageConditions ? (
-          <div className="mt-4 rounded-[22px] bg-[#fff8e8] px-5 py-4 text-left text-sm leading-7 text-[#6c5313]">
-            <p className="text-xs uppercase tracking-[0.2em] text-[#8a6a18]">
-              Conditions d&apos;utilisation
-            </p>
-            <p className="mt-2 whitespace-pre-line">{previewUsageConditions}</p>
-          </div>
-        ) : null}
         <form className="mt-5 space-y-4" onSubmit={submitWinnerForm}>
           <input
             value={firstName}
@@ -1360,6 +1354,9 @@ export function CampaignExperience({
             type="submit"
             disabled={isLoading}
             className="w-full rounded-[18px] bg-[#111827] px-5 py-4 text-lg font-semibold text-white disabled:opacity-60"
+            style={!isPreGameLeadCapture && previewResult?.prize
+              ? { fontSize: "20px", fontWeight: 700, lineHeight: "28px" }
+              : undefined}
           >
             {isLoading
               ? isPreGameLeadCapture
@@ -1367,8 +1364,18 @@ export function CampaignExperience({
                 : "Enregistrement..."
               : isPreGameLeadCapture
                 ? "Continuer vers le jeu"
-                : "Enregistrer"}
+                : previewResult?.prize
+                  ? "Recevoir mon gain"
+                  : "Enregistrer"}
           </button>
+          {!isPreGameLeadCapture && previewUsageConditions ? (
+            <div className="rounded-[22px] bg-[#fff8e8] px-5 py-4 text-left text-sm leading-6 text-[#6c5313]">
+              <p className="text-xs uppercase tracking-[0.2em] text-[#8a6a18]">
+                Conditions d&apos;utilisation
+              </p>
+              <p className="mt-2 whitespace-pre-line break-words">{previewUsageConditions}</p>
+            </div>
+          ) : null}
         </form>
       </PublicModal>
 
@@ -1396,7 +1403,7 @@ export function CampaignExperience({
       <PublicModal open={stage === "success" && Boolean(drawResult)} compact>
         <div className="text-center">
           <h2 className="text-[1.75rem] font-semibold leading-[1.05] text-[#121826]">
-            Merci pour votre participation !
+            {drawResult?.prize ? "Votre gain est confirmé !" : "Merci pour votre participation !"}
           </h2>
           <div className="mx-auto mt-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#f7f7fb] text-4xl shadow-[0_16px_34px_rgba(17,24,39,0.10)]">
             <Mail className="h-8 w-8" aria-hidden="true" />
@@ -1404,13 +1411,13 @@ export function CampaignExperience({
           <p className="mt-4 text-lg leading-7 text-[#1a2f76]">
             {isContactOnlySuccess
               ? "Votre contact est bien enregistré."
-              : "Vous recevrez votre gain par e-mail avec les informations de retrait"}
+              : "Vous allez recevoir votre gain par e-mail (vérifiez vos spams)."}
           </p>
-          <p className="mt-3 text-sm leading-6 text-[#61687a]">
-            {isContactOnlySuccess
-              ? "Merci pour votre confiance."
-              : "Conservez ce QR code pour retirer votre gain. Si l’e-mail tarde à arriver, vérifiez vos spams."}
-          </p>
+          {isContactOnlySuccess ? (
+            <p className="mt-3 text-sm leading-6 text-[#61687a]">
+              Merci pour votre confiance.
+            </p>
+          ) : null}
 
           {isPreview ? (
             <p className="mt-3 rounded-[14px] bg-[#eef2ff] px-3 py-2 text-xs font-semibold leading-5 text-[#334477]">
@@ -1418,34 +1425,30 @@ export function CampaignExperience({
             </p>
           ) : null}
 
-          {drawResult?.prize ? <div className="mt-4 rounded-[18px] bg-[#fff4cb] px-4 py-3 text-left text-sm leading-6 text-[#4d3810]">
-            <p>
-              Vous avez entre le {availableDate ?? "maintenant"} et le {expiryDate ?? "bientôt"}{" "}
-              pour venir le récupérer.
-            </p>
-          </div> : null}
-
-          {drawResult?.prize?.purchaseRequired ? (
-            <div className="mt-3 rounded-[18px] bg-[#f7f7fb] px-4 py-3 text-left text-sm leading-6 text-[#61687a]">
-              Le retrait du lot est soumis à une condition d’achat.
-            </div>
-          ) : null}
-
-          {drawResult?.prize && resolvedUsageConditions ? (
-            <div className="mt-3 rounded-[18px] bg-[#fff4cb] px-4 py-3 text-left text-sm leading-6 text-[#4d3810]">
-              <p className="text-xs uppercase tracking-[0.2em] text-[#8a6a18]">
-                Conditions d&apos;utilisation
+          {drawResult?.prize ? (
+            <div className="mt-4 space-y-2 rounded-[18px] bg-[#fff4cb] px-4 py-3 text-left text-sm leading-6 text-[#4d3810]">
+              <p>
+                Vous avez entre le {availableDate ?? "maintenant"} et le {expiryDate ?? "bientôt"}{" "}
+                pour venir le récupérer.
               </p>
-              <p className="mt-2 whitespace-pre-line">{resolvedUsageConditions}</p>
+              {drawResult.prize.purchaseRequired ? (
+                <p>Le retrait du lot est soumis à une condition d’achat.</p>
+              ) : null}
+              {resolvedUsageConditions ? (
+                <div>
+                  <p className="text-xs uppercase tracking-[0.2em] text-[#8a6a18]">
+                    Conditions d&apos;utilisation
+                  </p>
+                  <p className="mt-1 whitespace-pre-line break-words">{resolvedUsageConditions}</p>
+                </div>
+              ) : null}
             </div>
           ) : null}
 
           {redemptionCode ? (
             <div className="mt-4 rounded-[20px] border border-[#e5e7ef] bg-[#fafbff] p-3">
-              <p className="text-xs uppercase tracking-[0.24em] text-[#8b93a5]">Code de retrait</p>
-              <p className="mt-1 text-xl font-semibold text-[#121826]">{redemptionCode}</p>
               {qrPath ? (
-                <div className="mt-3 flex items-center gap-3 rounded-[16px] bg-white p-2.5 text-left">
+                <div className="flex flex-col items-center rounded-[16px] bg-white p-2.5">
                   <Image
                     src={qrPath}
                     alt={`QR code ${redemptionCode}`}
@@ -1454,20 +1457,21 @@ export function CampaignExperience({
                     unoptimized
                     className="h-20 w-20 rounded-[12px]"
                   />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs leading-5 text-[#61687a]">
-                      Enregistrez-le pour le retrouver facilement.
-                    </p>
-                    <a
-                      href={qrPath}
-                      download={`qr-lot-${redemptionCode}.svg`}
-                      className="mt-2 inline-flex rounded-[12px] bg-[#111827] px-3 py-2 text-xs font-semibold !text-white"
-                    >
-                      Enregistrer
-                    </a>
-                  </div>
+                  <p className="mt-2 text-xs leading-5 text-[#61687a]">
+                    Présentez ce QR code lors de votre rendez-vous.
+                  </p>
+                  <a
+                    href={qrPath}
+                    download={`qr-lot-${redemptionCode}.svg`}
+                    className="mt-2 inline-flex rounded-[12px] bg-[#111827] px-3 py-2 text-xs font-semibold !text-white"
+                  >
+                    Enregistrer mon QR code
+                  </a>
                 </div>
               ) : null}
+              <p className="mt-3 break-words text-xs leading-5 text-[#61687a]">
+                Code de retrait : <span className="font-semibold">{redemptionCode}</span>
+              </p>
             </div>
           ) : null}
         </div>
