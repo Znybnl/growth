@@ -8,6 +8,8 @@ import { getSupabaseAdmin } from "@/lib/supabase";
 import { saveCampaignSetup } from "@/lib/store";
 import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
 import { logSupportEvent } from "@/lib/support-log";
+import { MerchantImageValidationError, optimizeMerchantImage } from "@/lib/merchant-image-processing";
+import { deleteMerchantImagesIfUnreferenced, getCampaignMerchantImageUrls, uploadMerchantImage } from "@/lib/merchant-image-storage";
 
 type RouteProps = {
   params: Promise<{ merchantId: string; locationId: string }>;
@@ -15,6 +17,22 @@ type RouteProps = {
 
 function isAdminAccessError(error: unknown) {
   return error instanceof Error && error.message === "Accès réservé à l'administration.";
+}
+
+async function migrateInlineImage(value: string | undefined, kind: "logo" | "background", merchantId: string) {
+  if (!value?.startsWith("data:image/")) return value;
+  const match = /^data:image\/(png|jpe?g|webp);base64,([a-z0-9+/=\s]+)$/i.exec(value);
+  if (!match) return value;
+  const source = Buffer.from(match[2].replace(/\s/g, ""), "base64");
+  const optimized = await optimizeMerchantImage(source, kind);
+  const stored = await uploadMerchantImage({
+    buffer: optimized.buffer,
+    kind,
+    merchantId,
+    width: optimized.width,
+    height: optimized.height,
+  });
+  return stored.url;
 }
 
 export async function POST(request: Request, { params }: RouteProps) {
@@ -65,12 +83,36 @@ export async function POST(request: Request, { params }: RouteProps) {
       { ...inputPayload, isActive: isNewCampaign ? false : inputPayload.isActive },
       locationId,
     );
+    let previousImageUrls: string[] = [];
+    if (campaignInput.id) {
+      previousImageUrls = await getCampaignMerchantImageUrls(locationId, campaignInput.id).catch(() => []);
+    }
+    campaignInput.logoUrl = await migrateInlineImage(campaignInput.logoUrl, "logo", locationId);
+    campaignInput.presentation.background.imageUrl = await migrateInlineImage(
+      campaignInput.presentation.background.imageUrl,
+      "background",
+      locationId,
+    ) ?? "";
+    if (campaignInput.presentation.poster) {
+      campaignInput.presentation.poster.logoUrl = await migrateInlineImage(
+        campaignInput.presentation.poster.logoUrl,
+        "logo",
+        locationId,
+      );
+      campaignInput.presentation.poster.backgroundImageUrl = await migrateInlineImage(
+        campaignInput.presentation.poster.backgroundImageUrl,
+        "background",
+        locationId,
+      );
+    }
     campaignInput.adminCreationAudit = isNewCampaign
       ? { adminUserId: session.user.id, accountMerchantId }
       : undefined;
 
     const campaignId = await saveCampaignSetup(campaignInput);
     if (!campaignId) throw new Error("Le brouillon n’a pas pu être enregistré.");
+    try { await deleteMerchantImagesIfUnreferenced(previousImageUrls); }
+    catch { /* Do not fail a saved admin campaign if cleanup needs a retry. */ }
 
     if (isNewCampaign) {
       logSupportEvent("info", "admin_campaign_created", {
@@ -88,6 +130,8 @@ export async function POST(request: Request, { params }: RouteProps) {
       ? 403
       : getRequestSecurityErrorStatus(error) === 403
         ? 403
+        : error instanceof MerchantImageValidationError
+          ? 400
         : error instanceof SyntaxError
           ? 400
           : 500;

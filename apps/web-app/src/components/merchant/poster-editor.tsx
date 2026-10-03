@@ -30,6 +30,7 @@ import { getPosterTemplate, POSTER_TEMPLATES } from "@/lib/poster-templates";
 import { PosterTemplateSelector } from "@/components/merchant/poster-template-selector";
 import { ValidationDialog } from "@/components/ui/validation-dialog";
 import { PageHeader } from "@/components/ui/workspace";
+import { isMerchantOptimizedImageUrl, uploadMerchantImageFile, MERCHANT_IMAGE_ACCEPT } from "@/lib/merchant-image-upload";
 
 type PosterEditorProps = {
   campaign: Campaign;
@@ -37,9 +38,6 @@ type PosterEditorProps = {
   settingsEndpoint?: string;
   returnHref?: string;
 };
-
-const MAX_UPLOAD_IMAGE_BYTES = 2 * 1024 * 1024;
-const ACCEPTED_IMAGE_TYPES = new Set(["image/png", "image/jpeg", "image/webp", "image/gif"]);
 
 type PosterPngPreview = {
   svg: string;
@@ -51,34 +49,22 @@ type PendingPosterNavigation = {
   href: string;
 };
 
-function uploadAsDataUrl(
+function uploadPosterLogo(
   event: ChangeEvent<HTMLInputElement>,
   onLoaded: (value: string) => void,
   onError?: (message: string) => void,
+  onUploadStateChange?: (isUploading: boolean) => void,
 ) {
   const file = event.target.files?.[0];
 
   if (!file) return;
 
-  if (file.type && !ACCEPTED_IMAGE_TYPES.has(file.type)) {
-    event.target.value = "";
-    onError?.("Format d'image non pris en charge. Utilisez un PNG, JPEG, WebP ou GIF.");
-    return;
-  }
-
-  if (file.size > MAX_UPLOAD_IMAGE_BYTES) {
-    event.target.value = "";
-    onError?.("Image trop volumineuse. Importez une image de 2 Mo maximum.");
-    return;
-  }
-
-  const reader = new FileReader();
-  reader.onload = () => {
-    if (typeof reader.result === "string") {
-      onLoaded(reader.result);
-    }
-  };
-  reader.readAsDataURL(file);
+  event.target.value = "";
+  onUploadStateChange?.(true);
+  void uploadMerchantImageFile(file, "logo")
+    .then(({ url }) => onLoaded(url))
+    .catch((error: unknown) => onError?.(error instanceof Error ? error.message : "Import de l’image impossible."))
+    .finally(() => onUploadStateChange?.(false));
 }
 
 function downloadBlob(blob: Blob, fileName: string) {
@@ -319,6 +305,7 @@ export function PosterEditor({ campaign, prizes, settingsEndpoint, returnHref }:
   const [isSavingBeforeNavigation, setIsSavingBeforeNavigation] = useState(false);
   const [downloadConfirmationOpen, setDownloadConfirmationOpen] = useState(false);
   const [imageUploadError, setImageUploadError] = useState<string | null>(null);
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
   const [draftWinColor, setDraftWinColor] = useState(poster.wheel.winColor);
   const [posterQrDataUrl, setPosterQrDataUrl] = useState<string | null>(null);
   const [loadedPosterFont, setLoadedPosterFont] = useState<{
@@ -880,15 +867,15 @@ export function PosterEditor({ campaign, prizes, settingsEndpoint, returnHref }:
                 <div>
                   <span className="mb-2 block text-charcoal">Importer le logo affiche</span>
                   <p className="max-w-md text-sm leading-6 text-ash">
-                    PNG, JPEG, WebP ou GIF, 2 Mo maximum. Le logo restera centré en haut de l&apos;affiche.
+                    PNG, JPEG ou WebP, 4 Mo maximum. L’image est optimisée avant stockage ; le logo restera centré en haut de l&apos;affiche.
                   </p>
                 </div>
                 <div className="mt-4 flex items-center justify-between gap-3">
                   <span className="inline-flex rounded-[4px] bg-white px-3 py-2 text-xs font-semibold text-aubergine shadow-sm">
                     {poster.logoUrl || campaign.logoUrl ? "Logo chargé" : "Aucun logo"}
                   </span>
-                  <span className="rounded-[4px] bg-aubergine px-4 py-2 text-xs font-semibold text-white">
-                    Choisir
+                  <span aria-live="polite" className="inline-flex items-center gap-2 rounded-[4px] bg-aubergine px-4 py-2 text-xs font-semibold text-white">
+                    {isUploadingLogo ? <><Loader2 className="size-4 animate-spin" aria-hidden="true" /> Optimisation…</> : "Choisir"}
                   </span>
                 </div>
                 {poster.logoUrl || campaign.logoUrl ? (
@@ -898,24 +885,26 @@ export function PosterEditor({ campaign, prizes, settingsEndpoint, returnHref }:
                       alt="Aperçu du logo"
                       width={220}
                       height={92}
-                      unoptimized
+                      unoptimized={!isMerchantOptimizedImageUrl(poster.logoUrl || campaign.logoUrl)}
                       className="max-h-[70px] w-auto object-contain"
                     />
                   </div>
                 ) : null}
                 <input
                   type="file"
-                  accept="image/png,image/jpeg,image/webp,image/gif"
+                  accept={MERCHANT_IMAGE_ACCEPT}
                   onChange={(event) =>
-                    uploadAsDataUrl(
+                    uploadPosterLogo(
                       event,
                       (value) => {
                         setImageUploadError(null);
                         updatePoster({ logoMode: "image", logoUrl: value });
                       },
                       setImageUploadError,
+                      setIsUploadingLogo,
                     )
                   }
+                  disabled={isUploadingLogo}
                   className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                 />
               </label>

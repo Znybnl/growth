@@ -19,6 +19,7 @@ import {
   SquareArrowOutUpRight,
   Trash2,
   UtensilsCrossed,
+  Loader2,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
@@ -66,6 +67,7 @@ import {
 } from "@/lib/format";
 import { captureClientProductEvent } from "@/lib/client-product-analytics";
 import { postCampaignSetup } from "@/lib/campaign-setup-request";
+import { uploadMerchantImageFile, MERCHANT_IMAGE_ACCEPT } from "@/lib/merchant-image-upload";
 import { beautyWheelBackground, beautyWheelFontOptions, beautyWheelTheme, isBeautyIndustry, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
 import { beautyScratchTemplate, isHiddenScratchTemplate, isImmersiveScratchTemplate as isImmersiveScratchPageTemplate, type BeautyScratchTemplateId, type ImmersiveScratchTemplateId } from "@/lib/beauty-scratch-templates";
 import { RosePowderDecor } from "@/components/public/rose-powder-decor";
@@ -1722,14 +1724,14 @@ function buildClassicSetupPayload(form: EditorState) {
   };
 }
 
-const MAX_UPLOAD_IMAGE_BYTES = 2 * 1024 * 1024;
-const ACCEPTED_IMAGE_TYPES = new Set(["image/png", "image/jpeg", "image/webp", "image/gif"]);
 type ImageUploadField = "campaign-logo" | "background" | "poster-logo" | "poster-background";
 
-function uploadAsDataUrl(
+function uploadUserImage(
   event: ChangeEvent<HTMLInputElement>,
   onLoaded: (value: string) => void,
-  onError?: (message: string) => void,
+  onError: ((message: string) => void) | undefined,
+  field: ImageUploadField,
+  onUploadStateChange: (isUploading: boolean) => void,
 ) {
   const file = event.target.files?.[0];
 
@@ -1737,27 +1739,13 @@ function uploadAsDataUrl(
     return;
   }
 
-  if (file.type && !ACCEPTED_IMAGE_TYPES.has(file.type)) {
-    event.target.value = "";
-    onError?.("Format d'image non pris en charge. Utilisez un PNG, JPEG, WebP ou GIF.");
-    return;
-  }
-
-  if (file.size > MAX_UPLOAD_IMAGE_BYTES) {
-    event.target.value = "";
-    onError?.("Image trop volumineuse. Importez une image de 2 Mo maximum.");
-    return;
-  }
-
-  const reader = new FileReader();
-
-  reader.onload = () => {
-    if (typeof reader.result === "string") {
-      onLoaded(reader.result);
-    }
-  };
-
-  reader.readAsDataURL(file);
+  event.target.value = "";
+  const kind = field === "background" || field === "poster-background" ? "background" : "logo";
+  onUploadStateChange(true);
+  void uploadMerchantImageFile(file, kind)
+    .then(({ url }) => onLoaded(url))
+    .catch((error: unknown) => onError?.(error instanceof Error ? error.message : "Import de l’image impossible."))
+    .finally(() => onUploadStateChange(false));
 }
 
 export function CampaignEditor({
@@ -1930,6 +1918,7 @@ export function CampaignEditor({
   const [imageUploadErrors, setImageUploadErrors] = useState<
     Partial<Record<ImageUploadField, string>>
   >({});
+  const [imageUploads, setImageUploads] = useState<Partial<Record<ImageUploadField, boolean>>>({});
 
   useEffect(() => {
     let cancelled = false;
@@ -3168,7 +3157,7 @@ export function CampaignEditor({
                 <div>
                   <span className="mb-2 block text-[#616b7c]">Importer un logo</span>
                   <p className="max-w-md text-sm leading-6 text-[#516073]">
-                    Déposez un fichier PNG, JPG ou SVG pour remplacer le logo affiché sur la
+                    Déposez un fichier PNG, JPEG ou WebP pour remplacer le logo affiché sur la
                     page de jeu.
                   </p>
                 </div>
@@ -3202,20 +3191,20 @@ export function CampaignEditor({
                     <span className="inline-flex rounded-full bg-white px-3 py-2 text-xs font-semibold text-[#214ccf] shadow-sm">
                       {form.logoUrl ? "Logo chargé" : "Déposer un logo"}
                     </span>
-                    <span className="block rounded-[16px] bg-[#2f6df6] px-4 py-2 text-center text-xs font-semibold text-white shadow-[0_10px_18px_rgba(47,109,246,0.2)]">
-                      Choisir un fichier
+                    <span aria-live="polite" className="flex items-center justify-center gap-2 rounded-[16px] bg-[#2f6df6] px-4 py-2 text-center text-xs font-semibold text-white shadow-[0_10px_18px_rgba(47,109,246,0.2)]">
+                      {imageUploads["campaign-logo"] ? <><Loader2 className="size-4 animate-spin" aria-hidden="true" /> Import et optimisation…</> : "Choisir un fichier"}
                     </span>
                     <p className="text-xs leading-5 text-[#64748b]">
                       L&apos;aperçu reprend le fond actuellement sélectionné pour la page de jeu.
-                      Formats PNG, JPEG, WebP ou GIF, 2 Mo maximum.
+                      Formats PNG, JPEG ou WebP, 4 Mo maximum. L’image est optimisée avant stockage.
                     </p>
                   </div>
                 </div>
                 <input
                   type="file"
-                  accept="image/png,image/jpeg,image/webp,image/gif"
+                  accept={MERCHANT_IMAGE_ACCEPT}
                   onChange={(event) =>
-                    uploadAsDataUrl(
+                    uploadUserImage(
                       event,
                       (value) => {
                         setImageUploadErrors((current) => ({ ...current, "campaign-logo": undefined }));
@@ -3224,8 +3213,11 @@ export function CampaignEditor({
                       (error) => {
                         setImageUploadErrors((current) => ({ ...current, "campaign-logo": error }));
                       },
+                      "campaign-logo",
+                      (isUploading) => setImageUploads((current) => ({ ...current, "campaign-logo": isUploading })),
                     )
                   }
+                  disabled={imageUploads["campaign-logo"]}
                   className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                 />
               </label>
@@ -3636,17 +3628,18 @@ export function CampaignEditor({
                         </span>
                         <p className="mt-2 text-sm leading-6 text-[#64748b]">
                           Chargez votre propre image ou sélectionnez un visuel existant dans la bibliothèque publique.
-                          Formats PNG, JPEG, WebP ou GIF, 2 Mo maximum.
+                          Formats PNG, JPEG ou WebP, 4 Mo maximum. L’image est optimisée avant stockage.
                         </p>
                         <div className="mt-4 flex flex-wrap items-center gap-3">
                           <div className="flex flex-col items-start">
-                          <label className="cursor-pointer rounded-[18px] border border-[#d7e0ed] bg-white px-4 py-3 text-sm font-semibold text-[#182033]">
-                            Importer une image
+                          <label aria-live="polite" className={`inline-flex items-center gap-2 rounded-[18px] border border-[#d7e0ed] bg-white px-4 py-3 text-sm font-semibold text-[#182033] ${imageUploads.background ? "cursor-wait opacity-75" : "cursor-pointer"}`}>
+                            {imageUploads.background ? <><Loader2 className="size-4 animate-spin" aria-hidden="true" /> Import et optimisation…</> : "Importer une image"}
                             <input
                               type="file"
-                              accept="image/png,image/jpeg,image/webp,image/gif"
+                              accept={MERCHANT_IMAGE_ACCEPT}
+                              disabled={imageUploads.background}
                               onChange={(event) =>
-                                uploadAsDataUrl(
+                                uploadUserImage(
                                   event,
                                    (value) => {
                                      setImageUploadErrors((current) => ({ ...current, background: undefined }));
@@ -3665,7 +3658,9 @@ export function CampaignEditor({
                                    (error) => {
                                      setImageUploadErrors((current) => ({ ...current, background: error }));
                                    },
-                                )
+                                   "background",
+                                   (isUploading) => setImageUploads((current) => ({ ...current, background: isUploading })),
+                                 )
                               }
                               className="hidden"
                             />
@@ -3761,22 +3756,22 @@ export function CampaignEditor({
                   <span className="mb-2 block text-[#616b7c]">Logo de l&apos;affiche</span>
                   <p className="max-w-md text-sm leading-6 text-[#516073]">
                     Par défaut, le logo de la campagne publique est utilisé.
-                    Formats PNG, JPEG, WebP ou GIF, 2 Mo maximum.
+                    Formats PNG, JPEG ou WebP, 4 Mo maximum. L’image est optimisée avant stockage.
                   </p>
                 </div>
                 <div className="mt-4 flex items-center justify-between gap-3">
                   <span className="inline-flex rounded-full bg-white px-3 py-2 text-xs font-semibold text-[#214ccf] shadow-sm">
                     {form.presentation.poster.logoUrl ? "Logo chargé" : "Déposer un logo"}
                   </span>
-                  <span className="rounded-[16px] bg-[#2f6df6] px-4 py-2 text-xs font-semibold text-white shadow-[0_10px_18px_rgba(47,109,246,0.2)]">
-                    Choisir un fichier
+                  <span aria-live="polite" className="inline-flex items-center gap-2 rounded-[16px] bg-[#2f6df6] px-4 py-2 text-xs font-semibold text-white shadow-[0_10px_18px_rgba(47,109,246,0.2)]">
+                    {imageUploads["poster-logo"] ? <><Loader2 className="size-4 animate-spin" aria-hidden="true" /> Optimisation…</> : "Choisir un fichier"}
                   </span>
                 </div>
                 <input
                   type="file"
-                  accept="image/png,image/jpeg,image/webp,image/gif"
+                  accept={MERCHANT_IMAGE_ACCEPT}
                   onChange={(event) =>
-                    uploadAsDataUrl(
+                    uploadUserImage(
                       event,
                        (value) => {
                          setImageUploadErrors((current) => ({ ...current, "poster-logo": undefined }));
@@ -3794,8 +3789,11 @@ export function CampaignEditor({
                        (error) => {
                          setImageUploadErrors((current) => ({ ...current, "poster-logo": error }));
                        },
-                    )
+                       "poster-logo",
+                       (isUploading) => setImageUploads((current) => ({ ...current, "poster-logo": isUploading })),
+                     )
                   }
+                  disabled={imageUploads["poster-logo"]}
                   className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                 />
               </label>
@@ -3835,22 +3833,22 @@ export function CampaignEditor({
                   <span className="mb-2 block text-[#616b7c]">Image de fond de l&apos;affiche</span>
                   <p className="max-w-md text-sm leading-6 text-[#516073]">
                     Une image par d&eacute;faut est appliqu&eacute;e tant qu&apos;aucun visuel personnalis&eacute; n&apos;est s&eacute;lectionn&eacute;.
-                    Formats PNG, JPEG, WebP ou GIF, 2 Mo maximum.
+                    Formats PNG, JPEG ou WebP, 4 Mo maximum. L’image est optimisée avant stockage.
                   </p>
                 </div>
                 <div className="mt-4 flex items-center justify-between gap-3">
                   <span className="inline-flex rounded-full bg-white px-3 py-2 text-xs font-semibold text-[#214ccf] shadow-sm">
                     {form.presentation.poster.backgroundImageUrl ? "Image chargée" : "Image par défaut"}
                   </span>
-                  <span className="rounded-[16px] bg-[#2f6df6] px-4 py-2 text-xs font-semibold text-white shadow-[0_10px_18px_rgba(47,109,246,0.2)]">
-                    Choisir un fichier
+                  <span aria-live="polite" className="inline-flex items-center gap-2 rounded-[16px] bg-[#2f6df6] px-4 py-2 text-xs font-semibold text-white shadow-[0_10px_18px_rgba(47,109,246,0.2)]">
+                    {imageUploads["poster-background"] ? <><Loader2 className="size-4 animate-spin" aria-hidden="true" /> Optimisation…</> : "Choisir un fichier"}
                   </span>
                 </div>
                 <input
                   type="file"
-                  accept="image/png,image/jpeg,image/webp,image/gif"
+                  accept={MERCHANT_IMAGE_ACCEPT}
                   onChange={(event) =>
-                    uploadAsDataUrl(
+                    uploadUserImage(
                       event,
                        (value) => {
                          setImageUploadErrors((current) => ({ ...current, "poster-background": undefined }));
@@ -3868,8 +3866,11 @@ export function CampaignEditor({
                        (error) => {
                          setImageUploadErrors((current) => ({ ...current, "poster-background": error }));
                        },
-                    )
+                       "poster-background",
+                       (isUploading) => setImageUploads((current) => ({ ...current, "poster-background": isUploading })),
+                     )
                   }
+                  disabled={imageUploads["poster-background"]}
                   className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                 />
               </label>

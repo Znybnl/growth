@@ -1,6 +1,8 @@
 import Image from "next/image";
 import { Star } from "lucide-react";
 
+import { getMerchantOptimizedImageDimensions, isMerchantOptimizedImageUrl } from "@/lib/merchant-image-upload";
+
 type BrandMarkProps = {
   logoText: string;
   logoUrl?: string;
@@ -36,6 +38,9 @@ export function BrandMark({
   const isOkadoFallback = logoText.trim().toUpperCase() === "OK";
 
   if (logoUrl) {
+    const imageDimensions = getMerchantOptimizedImageDimensions(logoUrl);
+    const imageProps = imageDimensions ?? { width: imageWidthPx ?? 180, height: imageWidthPx ?? 180 };
+    const unoptimized = !isMerchantOptimizedImageUrl(logoUrl);
     if (variant === "transparent") {
       return (
         <div
@@ -45,9 +50,9 @@ export function BrandMark({
           <Image
             src={logoUrl}
             alt="Logo"
-            width={imageWidthPx ?? 180}
-            height={imageWidthPx ?? 180}
-            unoptimized
+            width={imageProps.width}
+            height={imageProps.height}
+            unoptimized={unoptimized}
             className="block h-auto w-full object-contain"
           />
         </div>
@@ -58,7 +63,7 @@ export function BrandMark({
       <div
         className={`relative ${sizing} overflow-hidden border border-black/6 bg-white shadow-[0_10px_24px_rgba(0,0,0,0.08)] ${className}`}
       >
-        <Image src={logoUrl} alt="Logo" fill unoptimized className="object-contain p-3" />
+        <Image src={logoUrl} alt="Logo" fill unoptimized={unoptimized} className="object-contain p-3" />
       </div>
     );
   }

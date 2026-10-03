@@ -8,6 +8,7 @@ import {
 import { sendRewardEmail } from "@/lib/reward-email";
 import { logSupportEvent } from "@/lib/support-log";
 import { getSupabaseAdmin } from "@/lib/supabase";
+import { purgeUnreferencedMerchantImages } from "@/lib/merchant-image-storage";
 
 export async function GET(request: NextRequest) {
   const secret = process.env.CRON_SECRET;
@@ -71,6 +72,15 @@ export async function GET(request: NextRequest) {
   }
 
   const result = { ...(data ?? {}), personalDataLifecycle: lifecycleData ?? null, retried, retryFailures };
+  try {
+    const deletedMerchantImages = await purgeUnreferencedMerchantImages();
+    Object.assign(result, { deletedMerchantImages });
+  } catch (cleanupError) {
+    // Image orphan cleanup must not block other scheduled maintenance work.
+    logSupportEvent("error", "merchant_image_cleanup_failed", {
+      error: cleanupError instanceof Error ? cleanupError.message : "Cleanup failed",
+    });
+  }
   logSupportEvent("info", "maintenance_purge_completed", { result });
   return NextResponse.json({ ok: true, result });
 }

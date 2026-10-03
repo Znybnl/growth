@@ -81,7 +81,7 @@ export default async function AdminCreateCampaignPage({ searchParams }: AdminCre
           {locations.length > 1 ? <button type="submit" className="okado-secondary-action h-11 px-4 text-sm">Choisir ce site</button> : null}
         </form>
       </section>
-      <CampaignWizard key={selectedLocation.id} merchant={wizardMerchant} adminSaveEndpoint={saveEndpoint} />
+      <CampaignWizard key={selectedLocation.id} merchant={wizardMerchant} adminSaveEndpoint={saveEndpoint} adminAccountMerchantId={merchantId} />
     </div>
   );
 }
