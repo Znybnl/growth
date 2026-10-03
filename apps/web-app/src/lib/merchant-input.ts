@@ -320,6 +320,10 @@ function normalizeWheelTemplateStyles(value: unknown): Partial<Record<GamePageTe
       },
       backgroundColor: normalizeColor(style.backgroundColor, "#ffffff"),
       scratchSignal: normalizeColor(style.scratchSignal, "#2563eb"),
+      scratchTextColor:
+        typeof style.scratchTextColor === "string"
+          ? normalizeColor(style.scratchTextColor, "")
+          : undefined,
       headingTextColor: normalizeColor(style.headingTextColor, "#1f2937"),
       logoTextColor: normalizeColor(style.logoTextColor, "#1f2937"),
       headingFontFamily: normalizeEnum(style.headingFontFamily, TEXT_FONTS, "roboto"),

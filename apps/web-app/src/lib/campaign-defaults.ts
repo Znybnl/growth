@@ -35,6 +35,7 @@ export const DEFAULT_SCRATCH_SUNBURST_COLOR = "#e69600";
 export const DEFAULT_SCRATCH_LILAC_COLOR = "#b85be5";
 export const DEFAULT_SCRATCH_TICKET_COLOR = "#f7f7f7";
 export const DEFAULT_SCRATCH_TEXT_COLOR = "#ffffff";
+export const DEFAULT_SCRATCH_HEADING_FONT_SIZE_PX = 42;
 export const MAX_CAMPAIGN_SUBTITLE_LINES = 3;
 export const MAX_BEAUTY_WHEEL_TITLE_LINES = 5;
 export const MAX_CAMPAIGN_SUBTITLE_LENGTH = 240;
@@ -433,6 +434,18 @@ export function defaultScratchTextColor(templateId?: GamePageTemplateId) {
       return "#172033";
     default:
       return DEFAULT_SCRATCH_TEXT_COLOR;
+  }
+}
+
+/** The initial font used by the legacy scratch-card themes called out in issue #439. */
+export function defaultScratchTemplateFont(templateId?: GamePageTemplateId) {
+  switch (templateId) {
+    case "scratch-coral":
+    case "scratch-vault":
+    case "scratch-lilac":
+      return "roboto" as const;
+    default:
+      return undefined;
   }
 }
 
