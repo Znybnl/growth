@@ -6,6 +6,7 @@ import { BrandMark } from "@/components/brand-mark";
 import {
   DEFAULT_SCRATCH_PRIMARY_COLOR,
   DEFAULT_SCRATCH_SUBTITLE,
+  defaultScratchTextColor,
   scratchTemplatePrimaryColor,
 } from "@/lib/campaign-defaults";
 import { scratchVisualTheme, type ImmersiveScratchTemplateId } from "@/lib/beauty-scratch-templates";
@@ -206,7 +207,7 @@ export function ImmersiveScratchTicket({
   const defaultInk = beautyTheme?.text ?? (isVault || isConfetti
     ? "#f8fbff"
     : isLilac
-      ? "#4c1d95"
+      ? defaultScratchTextColor(template)
       : isSunburst
         ? "#3b2500"
         : "#111827");

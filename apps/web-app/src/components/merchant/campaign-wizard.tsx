@@ -71,6 +71,7 @@ import {
   DEFAULT_SCRATCH_CORAL_COLOR,
   DEFAULT_SCRATCH_HEADING_FONT_SIZE_PX,
   defaultScratchTemplateFont,
+  defaultScratchTemplateForIndustry,
   defaultScratchTextColor,
   scratchTemplateDefaultPrimaryColor,
   scratchTemplateUsesFixedPrimaryColor,
@@ -1770,9 +1771,7 @@ export function CampaignWizard({
                           };
                         }
 
-                        const scratchTemplateId = isBeautyIndustry(merchant.industry)
-                          ? "beauty-scratch-nude"
-                          : "scratch-coral";
+                        const scratchTemplateId = defaultScratchTemplateForIndustry(merchant.industry);
                         const beautyScratch = beautyScratchTemplate(scratchTemplateId);
                         const scratchTextColor = beautyScratch?.text ?? defaultScratchTextColor(scratchTemplateId);
                         const scratchFontFamily = beautyScratch?.font ?? defaultScratchTemplateFont(scratchTemplateId) ?? current.presentation.heading.fontFamily;
@@ -1782,7 +1781,7 @@ export function CampaignWizard({
                             ? resolveWheelPrimaryColorAfterGameTypeSwitch(
                                 current.presentation.wheel.loseColor,
                               )
-                            : DEFAULT_SCRATCH_CORAL_COLOR;
+                            : scratchTemplateDefaultPrimaryColor(scratchTemplateId) ?? DEFAULT_SCRATCH_CORAL_COLOR;
 
                         return {
                           ...current,
@@ -1845,7 +1844,7 @@ export function CampaignWizard({
                             option.value === "scratch"
                               ? {
                                   ...normalizeScratchAccent(current.accent, scratchTemplateId),
-                                  signal: beautyScratch?.scratch.base ?? DEFAULT_SCRATCH_CORAL_COLOR,
+                                  signal: nextPrimaryColor,
                                   ink: scratchTextColor,
                                 }
                               : current.accent,

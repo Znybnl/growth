@@ -7,7 +7,7 @@ import {
 } from "@/lib/types";
 import { createPosterSettingsDefaults } from "@/lib/poster-utils";
 import { getPosterTemplate } from "@/lib/poster-templates";
-import { beautyWheelTheme } from "@/lib/beauty-wheel-themes";
+import { beautyWheelTheme, isBeautyIndustry } from "@/lib/beauty-wheel-themes";
 import { BEAUTY_SCRATCH_TEMPLATES, CLASSIC_NUDE_SCRATCH_TEMPLATE_ID, NUDE_SCRATCH_TEMPLATE_BACKGROUND_URL, beautyScratchTemplate } from "@/lib/beauty-scratch-templates";
 
 export const LEGACY_DEFAULT_WHEEL_SUBTITLE = "Faites tournez la roue pour jouer !";
@@ -35,6 +35,7 @@ export const DEFAULT_SCRATCH_SUNBURST_COLOR = "#e69600";
 export const DEFAULT_SCRATCH_LILAC_COLOR = "#b85be5";
 export const DEFAULT_SCRATCH_TICKET_COLOR = "#f7f7f7";
 export const DEFAULT_SCRATCH_TEXT_COLOR = "#ffffff";
+export const DEFAULT_SCRATCH_LILAC_TEXT_COLOR = "#210b32";
 export const DEFAULT_SCRATCH_HEADING_FONT_SIZE_PX = 46;
 export const MAX_CAMPAIGN_SUBTITLE_LINES = 3;
 export const MAX_BEAUTY_WHEEL_TITLE_LINES = 5;
@@ -83,6 +84,11 @@ export function defaultWheelBlockSpacingForTemplate(templateId?: GamePageTemplat
   return templateId === "beauty-rose"
     ? DEFAULT_ROSE_POWDER_WHEEL_SPACING_PX
     : DEFAULT_WHEEL_SPACING_PX;
+}
+
+/** Only used to initialize a new scratch design; saved choices remain unchanged. */
+export function defaultScratchTemplateForIndustry(industry?: string | null): GamePageTemplateId {
+  return isBeautyIndustry(industry) ? "beauty-scratch-nude" : CLASSIC_NUDE_SCRATCH_TEMPLATE_ID;
 }
 
 export function scratchTemplateDefaultPrimaryColor(templateId?: GamePageTemplateId) {
@@ -423,6 +429,8 @@ const SCRATCH_DEFAULT_INK_VALUES = new Set([
   "#3b2500",
 ]);
 
+const LEGACY_SCRATCH_LILAC_TEXT_COLORS = new Set(["#4c1d95", "#32104f"]);
+
 export function defaultScratchTextColor(templateId?: GamePageTemplateId) {
   if (templateId === CLASSIC_NUDE_SCRATCH_TEMPLATE_ID) return "#49372c";
   const beautyTemplate = beautyScratchTemplate(templateId);
@@ -432,7 +440,7 @@ export function defaultScratchTextColor(templateId?: GamePageTemplateId) {
     case "scratch-confetti":
       return "#f8fbff";
     case "scratch-lilac":
-      return "#32104f";
+      return DEFAULT_SCRATCH_LILAC_TEXT_COLOR;
     case "scratch-sunburst":
       return "#3b2500";
     case "scratch-coral":
@@ -447,7 +455,8 @@ export function resolveScratchTemplateTextColor(
   templateId?: GamePageTemplateId,
 ) {
   const normalized = color.trim().toLowerCase();
-  if (templateId === "scratch-lilac" && SCRATCH_DEFAULT_INK_VALUES.has(normalized)) {
+  if (templateId === "scratch-lilac" &&
+      (SCRATCH_DEFAULT_INK_VALUES.has(normalized) || LEGACY_SCRATCH_LILAC_TEXT_COLORS.has(normalized))) {
     return defaultScratchTextColor(templateId);
   }
   return color;
@@ -514,7 +523,8 @@ export function normalizeScratchAccent(
         ? DEFAULT_SCRATCH_TICKET_COLOR
         : accent.paper,
     ink:
-      SCRATCH_DEFAULT_INK_VALUES.has(normalizedInk)
+      (SCRATCH_DEFAULT_INK_VALUES.has(normalizedInk) ||
+        (templateId === "scratch-lilac" && LEGACY_SCRATCH_LILAC_TEXT_COLORS.has(normalizedInk)))
         ? defaultScratchTextColor(templateId)
         : accent.ink,
   };

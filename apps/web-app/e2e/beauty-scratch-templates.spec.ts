@@ -10,6 +10,8 @@ import {
   scratchTemplateUsesFixedPrimaryColor,
   DEFAULT_SCRATCH_HEADING_FONT_SIZE_PX,
   defaultScratchTextColor,
+  defaultScratchTemplateForIndustry,
+  normalizeScratchAccent,
   resolveScratchTemplateTextColor,
 } from "../src/lib/campaign-defaults";
 import { builtInBackgroundAssets } from "../src/lib/background-library";
@@ -30,8 +32,17 @@ test("Nude a son propre fond par défaut, laisse la priorité à une image chois
   expect(scratchTemplateUsesFixedPrimaryColor(CLASSIC_NUDE_SCRATCH_TEMPLATE_ID)).toBe(true);
   expect(scratchTemplateUsesFixedPrimaryColor("scratch-coral")).toBe(false);
   expect(DEFAULT_SCRATCH_HEADING_FONT_SIZE_PX).toBe(46);
-  expect(defaultScratchTextColor("scratch-lilac")).toBe("#32104f");
-  expect(resolveScratchTemplateTextColor("#4c1d95", "scratch-lilac")).toBe("#32104f");
+  expect(defaultScratchTextColor("scratch-lilac")).toBe("#210b32");
+  expect(resolveScratchTemplateTextColor("#4c1d95", "scratch-lilac")).toBe("#210b32");
+  expect(resolveScratchTemplateTextColor("#32104f", "scratch-lilac")).toBe("#210b32");
+  expect(resolveScratchTemplateTextColor("#123456", "scratch-lilac")).toBe("#123456");
+  expect(normalizeScratchAccent({ ink: "#32104f", paper: "#ffffff", signal: "#b85be5" }, "scratch-lilac").ink).toBe("#210b32");
+  expect(normalizeScratchAccent({ ink: "#123456", paper: "#ffffff", signal: "#b85be5" }, "scratch-lilac").ink).toBe("#123456");
+  for (const industry of [undefined, null, "", "Restauration", "Retail", "Sport", "Services", "Automobile", "Hôtellerie"]) {
+    expect(defaultScratchTemplateForIndustry(industry)).toBe(CLASSIC_NUDE_SCRATCH_TEMPLATE_ID);
+  }
+  expect(defaultScratchTemplateForIndustry("Beauté")).toBe("beauty-scratch-nude");
+  expect(defaultScratchTemplateForIndustry(" beauté ")).toBe("beauty-scratch-nude");
 
   const scratchBackgrounds = builtInBackgroundAssets.filter((asset) => asset.id.startsWith("builtin-scratch-"));
   expect(scratchBackgrounds).toHaveLength(6);
@@ -59,6 +70,9 @@ test("les tickets initiaux affichent le sous-titre, masquent les deux cartes ret
   await secondarySubtitle.fill("Une surprise pour vous");
   await page.getByRole("button", { name: "Continuer", exact: true }).click();
   await expect(page.getByTestId("classic-template-options").getByRole("button").first()).toContainText("Nude");
+  const hasBeautyGallery = await page.locator('section[aria-labelledby="beauty-scratch-templates-title"]').count();
+  const initialScratchTemplate = hasBeautyGallery ? "beauty-scratch-nude" : "scratch-nude-classic";
+  await expect(page.locator(`.okado-preview-surface[data-template-id="${initialScratchTemplate}"]`)).toBeVisible();
 
   await expect(page.getByRole("button", { name: /Carte confettis/i })).toHaveCount(0);
   await expect(page.getByRole("button", { name: /Rayons soleil/i })).toHaveCount(0);
@@ -86,7 +100,9 @@ test("les tickets initiaux affichent le sous-titre, masquent les deux cartes ret
     }
 
     if (template.id === "scratch-lilac") {
-      await expect(preview.getByText("Une surprise pour vous", { exact: true })).toHaveCSS("color", "rgba(50, 16, 79, 0.85)");
+      await expect(preview.getByText("Une surprise pour vous", { exact: true })).toHaveCSS("color", "rgba(33, 11, 50, 0.85)");
+      await expect(preview.locator("h2")).toHaveCSS("color", "rgb(33, 11, 50)");
+      await expect(preview.locator("div.inline-flex > span").first()).toHaveCSS("color", "rgb(33, 11, 50)");
       const primaryColor = page.getByRole("textbox", { name: "Couleur principale du ticket" }).first();
       await expect(primaryColor).toBeEnabled();
       await primaryColor.fill("#245780");
@@ -128,12 +144,20 @@ test("les miniatures des tickets sont aussi visibles dans l'éditeur de campagne
   await page.goto("/campaigns/new");
   await page.getByRole("button", { name: /Ticket à gratter/ }).click();
   await expect(page.getByTestId("classic-template-options").getByRole("button").first()).toContainText("Nude");
+  const hasBeautyGallery = await page.locator('section[aria-labelledby="beauty-scratch-templates-title"]').count();
+  const initialScratchTemplate = hasBeautyGallery ? "beauty-scratch-nude" : "scratch-nude-classic";
+  await expect(page.locator(`.okado-preview-surface[data-template-id="${initialScratchTemplate}"]`)).toBeVisible();
 
   for (const templateId of ["scratch-vault", "scratch-coral", "scratch-lilac"]) {
     await expect(page.getByTestId(`scratch-template-thumbnail-${templateId}`)).toBeVisible();
   }
   await page.getByTestId("scratch-template-thumbnail-scratch-nude-classic").locator("xpath=..").click();
   await expect(page.getByText("Couleur principale du ticket", { exact: true })).toHaveCount(0);
+  await page.getByRole("button", { name: /Cadeau lilas/i }).click();
+  await expect(page.locator('.okado-preview-surface[data-template-id="scratch-lilac"]')).toBeVisible();
+  await page.getByRole("button", { name: /Roue de la fortune/i }).click();
+  await page.getByRole("button", { name: /Ticket à gratter/i }).click();
+  await expect(page.locator('.okado-preview-surface[data-template-id="scratch-lilac"]')).toBeVisible();
   await expect(page.getByRole("button", { name: /Carte confettis/i })).toHaveCount(0);
   await expect(page.getByRole("button", { name: /Rayons soleil/i })).toHaveCount(0);
 });
