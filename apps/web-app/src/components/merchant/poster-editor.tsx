@@ -8,7 +8,7 @@ import QRCode from "qrcode";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 
 import { buildClassicPosterThumbnailSvg, buildPosterSvg, getPosterSubtitleLayout, getPremiumHeadlineLayout } from "@/lib/poster-render";
-import { selectPosterBackgroundMotif, selectPosterTemplate } from "@/lib/poster-template-settings";
+import { selectPosterTemplate } from "@/lib/poster-template-settings";
 import { getPosterFontAsset, getPosterFontSourceUrl, getPosterSubtitleFont, POSTER_FONT_OPTIONS } from "@/lib/poster-fonts";
 import { limitCampaignSubtitleLines, MAX_CAMPAIGN_SUBTITLE_LENGTH } from "@/lib/campaign-defaults";
 import { textFontClass, textFontLabel } from "@/lib/format";
@@ -22,7 +22,6 @@ import { captureClientProductEvent } from "@/lib/client-product-analytics";
 import {
   Campaign,
   CampaignPosterSettings,
-  PosterBackgroundMotif,
   PosterTemplateId,
   Prize,
 } from "@/lib/types";
@@ -639,12 +638,6 @@ export function PosterEditor({ campaign, prizes, settingsEndpoint, returnHref }:
     setPoster(next);
   }
 
-  function selectBackgroundMotif(backgroundMotif: PosterBackgroundMotif) {
-    const next = selectPosterBackgroundMotif(poster, backgroundMotif, campaignPrimaryColor);
-    setDraftWinColor(next.wheel.winColor);
-    setPoster(next);
-  }
-
   async function savePoster() {
     setIsSaving(true);
     setMessage(null);
@@ -775,37 +768,8 @@ export function PosterEditor({ campaign, prizes, settingsEndpoint, returnHref }:
           classicThumbnailSvg={classicThumbnailSvg}
           gameType={campaign.gameType}
           selectedTemplateId={poster.templateId}
-          selectedBackgroundMotif={poster.backgroundMotif}
           onSelect={selectTemplate}
-          onSelectMotif={selectBackgroundMotif}
         />
-
-        {poster.templateId === "classic-wheel" && (poster.backgroundMotif ?? "plain") === "plain" ? (
-          <section className="okado-card p-6 md:p-8">
-            <p className="okado-label">Fond de l&apos;affiche</p>
-            <h2 className="okado-section-title mt-2">Personnaliser le fond uni</h2>
-            <p className="mt-2 text-sm leading-6 text-ash">
-              Cette couleur s&apos;applique au motif Clair uni, pour la roue comme pour le ticket à gratter.
-            </p>
-
-            <label className="mt-6 block max-w-sm text-sm">
-                <span className="mb-2 block text-charcoal">Couleur du fond uni</span>
-              <input
-                type="color"
-                value={poster.backgroundColor}
-                onChange={(event) =>
-                  updatePoster({
-                    backgroundMode: "color",
-                    backgroundColor: event.target.value,
-                    backgroundImageUrl: "",
-                  })
-                }
-                className="h-14 w-full rounded-[12px] border border-fog bg-white px-2 py-2 outline-none focus:border-aubergine focus:ring-4 focus:ring-aubergine/15"
-                aria-label="Couleur du fond uni de l’affiche"
-              />
-            </label>
-          </section>
-        ) : null}
 
         <section className="okado-card p-6 md:p-8">
           <p className="okado-label">Logo</p>

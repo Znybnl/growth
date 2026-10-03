@@ -2,6 +2,62 @@ import { expect, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { signIn } from "./auth-session";
 import { getPosterLogoTextFontSizePx, getPosterLogoTopY, POSTER_TEMPLATES, getPosterTemplate } from "../src/lib/poster-templates";
+import { buildPosterSvg, createPosterPreviewQrDataUrl } from "../src/lib/poster-render";
+import { createPosterSettingsDefaults } from "../src/lib/poster-utils";
+import type { Campaign } from "../src/lib/types";
+
+test("Botanique éditorial affiche un billet perforé pour l'étape Gratter et abaisse ses icônes", async ({ page }, testInfo) => {
+  const template = getPosterTemplate("botanical-editorial-poster");
+  const poster = {
+    ...createPosterSettingsDefaults({
+      templateId: "botanical-editorial-poster",
+      logoMode: "text",
+      logoText: "Établissement test",
+      headline: "Découvrez votre cadeau",
+      headlineTextColor: template.headlineTextColor,
+      headlineFontSizePx: template.headlineFontSizePx,
+      headlineFontFamily: "cormorant",
+      wheel: template.wheel,
+    }),
+    posterSubtitleEnabled: true,
+  };
+  const campaign: Campaign = {
+    id: "poster-render-test",
+    merchantId: "poster-render-test",
+    title: "Jeu test",
+    subtitle: "Une surprise naturelle vous attend",
+    goalType: null,
+    emailCaptureEnabled: false,
+    ctaLabel: "Jouer",
+    successMetric: "",
+    isActive: false,
+    createdAt: "",
+    accent: { ink: template.accentDark, paper: template.background, signal: template.accent },
+    gameType: "scratch",
+    logoMode: "text",
+    logoText: "Établissement test",
+    presentation: {
+      logo: { sizePercent: 70, marginBottomPx: 10, align: "center" },
+      background: { mode: "color", color: template.background },
+      heading: { textColor: template.headlineTextColor, fontSizePx: template.headlineFontSizePx, fontFamily: "cormorant", align: "center" },
+      button: { backgroundColor: template.accent, textColor: "#ffffff", borderColor: "#ffffff", size: "md", textSizePx: 16, isBold: true },
+      layout: { blockSpacingPx: 15, templateId: "classic", wheelSubtitle: "Une surprise naturelle vous attend", subtitleSpacingPx: 15 },
+      wheel: template.wheel,
+      poster,
+      email: { senderName: "", replyTo: "", subject: "", preheader: "", headline: "", body: "", buttonLabel: "", footerNote: "", accentColor: template.accent },
+    },
+    actions: [],
+    rewardRules: { rewardExpiryMinutes: 0, purchaseRequired: false, availableAfterHours: 0, availabilityDurationDays: 0, participationIntervalDays: 0, isWinningEveryTime: false },
+  };
+  const svg = buildPosterSvg({ campaign, poster, prizes: [], qrDataUrl: createPosterPreviewQrDataUrl() });
+
+  expect(svg).toContain('data-poster-footer="editorial-steps"');
+  expect(svg).toContain('data-poster-game-icon="scratch-ticket"');
+  expect(svg).toContain('cx="190" cy="80"');
+  expect(svg).toContain('M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16');
+  await page.setContent(svg);
+  await page.screenshot({ path: testInfo.outputPath("botanical-editorial-scratch-poster.png"), fullPage: true });
+});
 
 test("tous les templates d'affiche utilisent le même alignement vertical des logos", () => {
   const botanicalTemplate = getPosterTemplate("botanical-editorial-poster");
