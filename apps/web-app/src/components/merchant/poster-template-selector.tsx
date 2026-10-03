@@ -1,7 +1,6 @@
-import { GameType, PosterBackgroundMotif, PosterTemplateId } from "@/lib/types";
+import { GameType, PosterTemplateId } from "@/lib/types";
 import {
   getPosterTemplate,
-  POSTER_BACKGROUND_MOTIFS,
   POSTER_TEMPLATE_CHOICES,
   PosterTemplateConfig,
 } from "@/lib/poster-templates";
@@ -12,10 +11,8 @@ type PosterTemplateSelectorProps = {
   gameType: GameType;
   selectedTemplateId?: PosterTemplateId;
   qrDataUrl?: string | null;
-  selectedBackgroundMotif?: PosterBackgroundMotif;
   classicThumbnailSvg: string;
   onSelect: (templateId: PosterTemplateId) => void;
-  onSelectMotif: (backgroundMotif: PosterBackgroundMotif) => void;
 };
 
 function WheelThumbnail({ template }: { template: PosterTemplateConfig }) {
@@ -157,11 +154,7 @@ function EditorialPosterThumbnail({
               <path d="M0-35-9-49H9Z" fill="#111111" stroke="none" />
             </g>
           ) : step.kind === "scratch" ? (
-            <g transform={`translate(638 ${step.y}) scale(0.9)`} fill="none" stroke="#111111" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="-30" y="-36" width="60" height="72" rx="8" />
-              <path d="M-20-15H20M-20 0H20M-20 15H20" strokeDasharray="5 6" />
-              <path d="M-30-24H30M-30 24H30" />
-            </g>
+            <ThumbnailStepIcon kind="scratch" x={638} y={step.y} scale={2.25} color="#111111" />
           ) : (
             <g transform={`translate(638 ${step.y}) scale(0.9)`} fill="none" stroke="#111111" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M-29 -9H29V29H-29ZM-36 -23H36V-9H-36ZM0 -23V29M0 -23C-27 -23-31 -38-20 -40-11 -42-4 -32 0 -23ZM0 -23C27 -23 31 -38 20 -40 11 -42 4 -32 0 -23Z" />
@@ -191,18 +184,20 @@ function ClassicPosterThumbnail({ posterSvg }: { posterSvg: string }) {
   );
 }
 
-type ThumbnailStepIconKind = "scan" | "wheel" | "gift";
+type ThumbnailStepIconKind = "scan" | "wheel" | "scratch" | "gift";
 
 function ThumbnailStepIcon({
   kind,
   x,
   y,
   scale = 1,
+  color = "#ffffff",
 }: {
   kind: ThumbnailStepIconKind;
   x: number;
   y: number;
   scale?: number;
+  color?: string;
 }) {
   if (kind === "scan") {
     return (
@@ -225,6 +220,15 @@ function ThumbnailStepIcon({
     );
   }
 
+  if (kind === "scratch") {
+    return (
+      <g data-testid="poster-thumbnail-scratch-ticket" transform={`translate(${x} ${y}) scale(${scale}) translate(-12 -12)`} fill="none" stroke={color} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
+        <path d="M13 5v2M13 17v2M13 11v2" />
+      </g>
+    );
+  }
+
   return (
     <g transform={`translate(${x} ${y}) scale(${scale})`} fill="none" stroke="#ffffff" strokeLinecap="round" strokeLinejoin="round">
       <rect x="-13" y="-5" width="26" height="19" rx="2" strokeWidth="2.25" />
@@ -238,10 +242,8 @@ export function PosterTemplateSelector({
   gameType,
   selectedTemplateId,
   qrDataUrl,
-  selectedBackgroundMotif = "plain",
   classicThumbnailSvg,
   onSelect,
-  onSelectMotif,
 }: PosterTemplateSelectorProps) {
   return (
     <section className="okado-card p-6 md:p-8">
@@ -254,7 +256,7 @@ export function PosterTemplateSelector({
         {POSTER_TEMPLATE_CHOICES.map((template) => {
           const active = (selectedTemplateId ?? "classic-wheel") === template.id;
           const visualTemplate = template.id === "classic-wheel"
-            ? getPosterTemplate("classic-wheel", selectedBackgroundMotif)
+            ? getPosterTemplate("classic-wheel")
             : template;
           const footerAction = gameType === "wheel" ? "Jouez" : "Grattez";
 
@@ -302,7 +304,7 @@ export function PosterTemplateSelector({
                       <ThumbnailStepIcon kind="scan" x={165} y={987} scale={0.9} />
                       <text x="165" y="1063" textAnchor="middle" fontSize="28" fontWeight="600" fill="#171412">Scannez</text>
                       <circle cx="396" cy="987" r="42" fill="#a17d57" />
-                      <ThumbnailStepIcon kind="wheel" x={396} y={987} />
+                      <ThumbnailStepIcon kind={gameType === "wheel" ? "wheel" : "scratch"} x={396} y={987} scale={gameType === "wheel" ? 1 : 1.8} />
                       <text x="396" y="1063" textAnchor="middle" fontSize="28" fontWeight="600" fill="#171412">{footerAction}</text>
                       <circle cx="629" cy="987" r="42" fill="#a17d57" />
                       <ThumbnailStepIcon kind="gift" x={629} y={987} scale={1.6} />
@@ -328,12 +330,12 @@ export function PosterTemplateSelector({
                       {qrDataUrl ? <image href={qrDataUrl} x="300" y="582" width="286" height="286" /> : <QrCode x="314" y="596" width="258" height="258" color="#111" strokeWidth="1.5" />}
                     </g>
                     <g data-testid="botanical-editorial-thumbnail-footer">
-                      <path data-testid="botanical-editorial-thumbnail-arrow-one" d="M268 980h48" stroke="#1d2a16" strokeWidth="2" markerEnd="url(#thumbnailArrow)" />
-                      <path data-testid="botanical-editorial-thumbnail-arrow-two" d="M475 980h48" stroke="#1d2a16" strokeWidth="2" markerEnd="url(#thumbnailArrow)" />
+                      <path data-testid="botanical-editorial-thumbnail-arrow-one" d="M268 988h48" stroke="#1d2a16" strokeWidth="2" markerEnd="url(#thumbnailArrow)" />
+                      <path data-testid="botanical-editorial-thumbnail-arrow-two" d="M475 988h48" stroke="#1d2a16" strokeWidth="2" markerEnd="url(#thumbnailArrow)" />
                       <defs><marker id="thumbnailArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 10 5 0 10" fill="none" stroke="#1d2a16" strokeWidth="1.5" /></marker></defs>
                       {[190, 397, 604].map((x, index) => <g key={x}>
-                        <circle cx={x} cy="980" r="47" fill="#f5f1e2" stroke="#77845e" strokeWidth="2.5" />
-                        {index === 0 ? <g fill="none" stroke="#1d2a16" strokeWidth="3" transform={`translate(${x} 980) scale(.8)`}><rect x="-14" y="-24" width="28" height="48" rx="5" /><path d="M-9-16h18M-9 18h18" /></g> : index === 1 ? (gameType === "wheel" ? <g fill="none" stroke="#1d2a16" strokeWidth="3" transform={`translate(${x} 980) scale(.78)`}><circle r="34" /><path d="M0-30v60M-30 0h60M-21-21l42 42M21-21l-42 42" /></g> : <g fill="none" stroke="#1d2a16" strokeWidth="3" transform={`translate(${x} 980) scale(.8)`}><path d="M-25-31h42l9 9v52h-51zM17-31v10h9M-14-9h22M-14 3h22M-14 15h15" /><circle cx="15" cy="18" r="8" fill="#f5f1e2" /></g>) : <Gift data-testid="botanical-editorial-thumbnail-gift" x={x - 23} y={957} width={46} height={46} color="#1d2a16" strokeWidth={1.7} aria-hidden="true" />}
+                        <circle cx={x} cy="988" r="47" fill="#f5f1e2" stroke="#77845e" strokeWidth="2.5" />
+                        {index === 0 ? <g fill="none" stroke="#1d2a16" strokeWidth="3" transform={`translate(${x} 988) scale(.8)`}><rect x="-14" y="-24" width="28" height="48" rx="5" /><path d="M-9-16h18M-9 18h18" /></g> : index === 1 ? (gameType === "wheel" ? <g fill="none" stroke="#1d2a16" strokeWidth="3" transform={`translate(${x} 988) scale(.78)`}><circle r="34" /><path d="M0-30v60M-30 0h60M-21-21l42 42M21-21l-42 42" /></g> : <g data-testid="botanical-editorial-thumbnail-scratch-ticket" fill="none" stroke="#1d2a16" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" transform={`translate(${x - 27} 961) scale(2.25)`}><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2M13 17v2M13 11v2" /></g>) : <Gift data-testid="botanical-editorial-thumbnail-gift" x={x - 23} y={965} width={46} height={46} color="#1d2a16" strokeWidth={1.7} aria-hidden="true" />}
                         <text x={x} y="1062" textAnchor="middle" fontSize="17" fontWeight="700" letterSpacing="1.5" fill="#1d2a16">{index === 0 ? "1. SCANNEZ" : index === 1 ? "2. JOUEZ" : "3. GAGNEZ"}</text>
                       </g>)}
                     </g>
@@ -355,7 +357,7 @@ export function PosterTemplateSelector({
                     <g data-testid="botanical-thumbnail-footer">
                       <rect y="944" width="794" height="179" fill="#fbf8f2" fillOpacity="0.96" />
                       <circle cx="132" cy="992" r="32" fill="#718578" /><text x="132" y="1004" textAnchor="middle" fontSize="30" fontWeight="700" fill="white">1</text>
-                      <circle cx="397" cy="992" r="32" fill="#718578" /><circle cx="397" cy="992" r="18" fill="none" stroke="white" strokeWidth="3" /><path d="M397 974v36M379 992h36M384 979l26 26M410 979l-26 26" stroke="white" strokeWidth="2" />
+                      <circle cx="397" cy="992" r="32" fill="#718578" />{gameType === "wheel" ? <><circle cx="397" cy="992" r="18" fill="none" stroke="white" strokeWidth="3" /><path d="M397 974v36M379 992h36M384 979l26 26M410 979l-26 26" stroke="white" strokeWidth="2" /></> : <ThumbnailStepIcon kind="scratch" x={397} y={992} scale={1.65} color="#ffffff" />}
                       <circle cx="662" cy="992" r="32" fill="#718578" /><path d="M647 989h30v24h-30zM643 982h38v9h-38zM662 982v31M652 982c-11-9 4-14 10 0M672 982c6-14 21-9 10 0" fill="none" stroke="white" strokeWidth="2" strokeLinejoin="round" />
                       <line x1="270" y1="960" x2="270" y2="1036" stroke="#718578" strokeWidth="2" /><line x1="524" y1="960" x2="524" y2="1036" stroke="#718578" strokeWidth="2" />
                       <text x="132" y="1072" textAnchor="middle" fontSize="24" fontWeight="700" fill="#153a35">Scannez</text>
@@ -373,34 +375,6 @@ export function PosterTemplateSelector({
                 <span className="mt-1 block text-xs leading-5 text-[#5c6577]">{template.description}</span>
               </span>
               </button>
-              {active && template.id === "classic-wheel" ? (
-                <div className="border-t border-[#e6d8eb] px-4 pb-4 pt-3">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-charcoal">Motif du fond</p>
-                  <div className="mt-2 grid gap-2" role="group" aria-label="Motif du fond">
-                    {POSTER_BACKGROUND_MOTIFS.filter((motif) => motif.id === "soft-gradient").map((motif) => {
-                      const motifActive = selectedBackgroundMotif === motif.id;
-                      return (
-                        <button
-                          key={motif.id}
-                          type="button"
-                          aria-pressed={motifActive}
-                          aria-label={motif.label}
-                          title={motif.description}
-                          onClick={() => onSelectMotif(motif.id)}
-                          className={`flex min-w-0 items-center gap-2 rounded-[8px] border px-2 py-2 text-left text-[11px] font-semibold transition ${
-                            motifActive
-                              ? "border-aubergine bg-white text-aubergine shadow-sm"
-                              : "border-[#e2e8f0] bg-white/60 text-graphite hover:border-aubergine"
-                          }`}
-                        >
-                          <span className="block h-6 w-12 shrink-0 rounded-[4px] border border-black/5" style={{ background: motif.preview }} />
-                          <span className="block break-words leading-4">{motif.label}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              ) : null}
             </div>
           );
         })}
