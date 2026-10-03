@@ -37,6 +37,7 @@
 - **Déclencheur** : un client remporte un lot puis le présente au commerce.
 - **Résultat attendu** : le personnel consulte le lot, vérifie ses conditions, saisit le PIN marchand et valide le retrait.
 - **Mesure de réussite** : un retrait est journalisé, non rejouable et les exceptions de validité sont explicites.
+- **Réception du gain (Issue #449)** : après un gain, le formulaire propose « Recevoir mon gain » et présente les conditions d’utilisation du lot sous ce bouton. La confirmation « Votre gain est confirmé ! » annonce l’e-mail, regroupe les dates et conditions de retrait, puis présente le QR code avec « Enregistrer mon QR code ». Le code de retrait reste disponible, plus discret, en bas. Cette présentation ne modifie ni l’attribution, ni le consentement, ni l’envoi de l’e-mail.
 
 ### P-05 — Prévisualiser sans impact métier
 
