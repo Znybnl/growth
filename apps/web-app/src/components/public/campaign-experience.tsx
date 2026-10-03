@@ -762,7 +762,9 @@ export function CampaignExperience({
         ...currentCampaign,
         actions: result.campaign.actions,
       }));
-      setStage(result.prize ? "won" : "success");
+      // Only players who supplied their details before playing need the
+      // announcement step. The winner form already announces the prize.
+      setStage(result.prize && contactCaptured ? "won" : "success");
     } catch (submitError) {
       setError(
         submitError instanceof Error ? submitError.message : "Une erreur est survenue.",
