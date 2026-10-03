@@ -48,8 +48,48 @@ test("HTML follows brief, shows real prize/merchant, conditions, QR then backup 
 
 test("plain text contains the same information and backup code", () => {
   const text = renderRewardEmailText(defaults, variables, options);
-  for (const item of ["Félicitations Pierre-Henri 🎁", variables.prizeLabel, "chez AZURA", "Conditions", variables.usageConditions, "Utilisable une seule fois", variables.qrUrl, "Code de secours : 3042EF1A-1", "En cas de difficulté à scanner"]) assert.ok(text.includes(item));
+  for (const item of ["Félicitations Pierre-Henri 🎁", variables.prizeLabel, "chez AZURA", "Conditions", variables.usageConditions, "Utilisable une seule fois", variables.qrUrl, "Code de secours : 3042EF1A-1", "En cas de problème avec le QR code, présentez ce code à l’établissement."]) assert.ok(text.includes(item));
   assert.ok(text.indexOf("QR CODE DE RETRAIT") < text.indexOf("Code de secours"));
+});
+
+test("requested instructions are identical in HTML and text, without the old wording", () => {
+  for (const content of [renderRewardEmailHtml(defaults, variables), renderRewardEmailText(defaults, variables)]) {
+    assert.ok(content.includes("Présentez ce QR code lors de votre prochaine visite."));
+    assert.ok(content.includes("En cas de problème avec le QR code, présentez ce code à l’établissement."));
+    assert.ok(!content.includes("Présentez simplement le QR code"));
+    assert.ok(!content.includes("En cas de difficulté à scanner"));
+  }
+  const html = renderRewardEmailHtml(defaults, variables);
+  assert.match(html, /<strong[^>]*>Code de secours : <code[^>]*>3042EF1A-1<\/code><\/strong>/);
+});
+
+test("recipient, merchant, prize, conditions, dates and backup code depend on the gain", () => {
+  const other = { ...variables, firstName: "Camille", merchantName: "Autre établissement", prizeLabel: "Soin offert", usageConditions: "Valable avec un massage", redemptionCode: "ABC12345-2", qrUrl: "https://example.test/autre-qr" };
+  const dates = { rewardAvailableAt: "2027-01-02T12:00:00Z", rewardExpiresAt: "2027-02-03T12:00:00Z" };
+  for (const content of [renderRewardEmailHtml(defaults, other, dates), renderRewardEmailText(defaults, other, dates)]) {
+    for (const item of [other.firstName, other.merchantName, other.prizeLabel, other.usageConditions, other.redemptionCode, other.qrUrl, "2 janvier 2027", "3 février 2027"]) assert.ok(content.includes(item), item);
+    for (const example of [variables.firstName, variables.merchantName, variables.prizeLabel, variables.usageConditions, variables.redemptionCode, "4 octobre 2026"]) assert.ok(!content.includes(example), example);
+  }
+});
+
+test("merchant header logo is retained, including CID logos, with a name fallback", () => {
+  for (const logoSrc of ["https://example.test/merchant-logo.webp", "cid:campaign-logo"]) {
+    const html = renderRewardEmailHtml(defaults, variables, { logoSrc });
+    assert.ok(html.includes(`src="${logoSrc}" alt="Logo de AZURA"`));
+    assert.ok(html.indexOf('alt="Logo de AZURA"') < html.indexOf("<h1"));
+  }
+  const withoutLogo = renderRewardEmailHtml(defaults, variables);
+  assert.ok(!withoutLogo.includes('alt="Logo de'));
+  assert.ok(withoutLogo.indexOf("AZURA") < withoutLogo.indexOf("<h1"));
+});
+
+test("the earlier PR455 standard wording upgrades without rewriting customized bodies", () => {
+  const previous = { ...defaults, body: defaults.body.replace("Présentez ce QR code lors de votre prochaine visite.", "Présentez simplement le QR code ci-dessous lors de votre prochaine visite."), footerNote: "En cas de difficulté à scanner le QR code, présentez simplement ce code à l’établissement." };
+  assert.deepEqual(normalizeCampaignEmailSettings(previous, defaults), defaults);
+  assert.equal(renderRewardEmailHtml(previous, variables), renderRewardEmailHtml(defaults, variables));
+  const custom = { ...previous, body: `${previous.body}\n\nUn message personnel.`, footerNote: "Notre équipe reste à votre disposition." };
+  assert.equal(upgradeLegacyRewardEmailSettings(custom).body, custom.body);
+  assert.equal(upgradeLegacyRewardEmailSettings(custom).footerNote, custom.footerNote);
 });
 
 test("no invented purchase condition, no empty bullets or dates without an expiry", () => {
@@ -122,7 +162,16 @@ test("desktop/mobile render: loaded QR, readable text, no horizontal overflow", 
       assert.ok(await page.locator('img[alt="QR code de retrait"]').evaluate((img) => img.complete && img.naturalWidth === 200));
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth));
       assert.ok(await page.getByRole("heading", { name: "ÉPILATION OFFERTE" }).isVisible());
+      const backupLine = page.locator("p").filter({ hasText: /^Code de secours :/ });
+      assert.equal(await backupLine.innerText(), "Code de secours : 3042EF1A-1");
+      assert.equal(await backupLine.locator("strong").evaluate((el) => new Set(Array.from(el.getClientRects(), (rect) => rect.top)).size), 1);
+      assert.equal(await backupLine.locator("br").count(), 0);
+      assert.equal(await backupLine.locator("strong").evaluate((el) => getComputedStyle(el).fontWeight), "700");
       await page.screenshot({ path: path.join(output, `${width}px.png`), fullPage: true });
+      await page.setContent(renderRewardEmailHtml(defaults, { ...variables, qrUrl, redemptionCode: "PREVIEW-8F1A822C-A" }, options));
+      assert.equal(await page.locator("p").filter({ hasText: /^Code de secours :/ }).locator("strong").evaluate((el) => new Set(Array.from(el.getClientRects(), (rect) => rect.top)).size), 1);
+      const previewMetrics = await page.locator("p").filter({ hasText: /^Code de secours :/ }).evaluate((el) => ({ viewport: window.innerWidth, page: document.documentElement.scrollWidth, paragraph: el.getBoundingClientRect().width, line: el.querySelector("strong").getBoundingClientRect().width, font: getComputedStyle(el).fontFamily }));
+      assert.ok(previewMetrics.page <= previewMetrics.viewport, JSON.stringify(previewMetrics));
       // Stress content, not just the short example from the brief.
       await page.setContent(renderRewardEmailHtml(defaults, { ...variables, qrUrl, prizeLabel: "LOT".repeat(80), usageConditions: "Condition détaillée ".repeat(40) }, options));
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth));

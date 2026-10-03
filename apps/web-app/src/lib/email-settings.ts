@@ -3,8 +3,8 @@ import { isRestaurantIndustry } from "@/lib/merchant-options";
 
 const EMAIL_VARIABLE_PATTERN = /\{\{\s*(\w+)\s*\}\}/g;
 
-const REWARD_INSTRUCTIONS = "Présentez simplement le QR code ci-dessous lors de votre prochaine visite.";
-const REWARD_BACKUP_NOTE = "En cas de difficulté à scanner le QR code, présentez simplement ce code à l’établissement.";
+const REWARD_INSTRUCTIONS = "Présentez ce QR code lors de votre prochaine visite.";
+const REWARD_BACKUP_NOTE = "En cas de problème avec le QR code, présentez ce code à l’établissement.";
 const RECOMMENDED_REWARD_BODY = [
   "Vous avez gagné :\n{{prizeLabel}}\nchez {{merchantName}}",
   `Comment profiter de votre gain ?\n${REWARD_INSTRUCTIONS}`,
@@ -18,7 +18,10 @@ const LEGACY_REWARD_BODIES = ["demain", "à partir de demain"].flatMap((wording)
     `Ce coupon sera valable lors de votre prochaine visite. Rendez-vous sur place ${wording} et montrez le QR code ci-dessous au personnel de l'établissement pour récupérer votre cadeau.`,
     "{{rewardAvailability}}", "{{rewardExpiry}}", "{{purchaseCondition}}", "{{usageConditions}}",
   ].join("\n\n")),
-);
+).concat(RECOMMENDED_REWARD_BODY.replace(
+  REWARD_INSTRUCTIONS,
+  "Présentez simplement le QR code ci-dessous lors de votre prochaine visite.",
+));
 
 export type RewardEmailRenderOptions = {
   logoSrc?: string;
@@ -210,7 +213,10 @@ export function upgradeLegacyRewardEmailSettings(
       ? defaults.headline
       : settings.headline,
     body: hasLegacyBody ? defaults.body : settings.body,
-    footerNote: settings.footerNote === "Présentez ce QR code au comptoir. Il ne pourra être consommé qu'une seule fois."
+    footerNote: [
+      "Présentez ce QR code au comptoir. Il ne pourra être consommé qu'une seule fois.",
+      "En cas de difficulté à scanner le QR code, présentez simplement ce code à l’établissement.",
+    ].includes(settings.footerNote)
       ? defaults.footerNote
       : settings.footerNote,
     buttonLabel:
@@ -314,6 +320,8 @@ export function renderRewardEmailHtml(
     (block) => escapeHtml(block).replaceAll("\n", "<br />"),
   );
   const buttonLabel = escapeHtml(renderEmailTemplate(settings.buttonLabel, variables));
+  // Preview codes are longer; keep the complete bold label/code on one mobile line.
+  const backupCodeFontSize = variables.redemptionCode.length > 14 ? 12 : 14;
   const accentColor = /^#[\da-f]{6}$/i.test(settings.accentColor) ? settings.accentColor : "#111827";
   const appointmentUrl = getSafeAppointmentUrl(options.appointmentUrl);
   const shouldAppendUsageConditions =
@@ -356,7 +364,7 @@ export function renderRewardEmailHtml(
         <div style="margin:0 0 20px;">
           <img src="${escapeHtml(variables.qrUrl)}" alt="QR code de retrait" width="200" height="200" style="display:block;width:200px;height:200px;max-width:100%;border:1px solid #dbe4f0;background:#ffffff;" />
         </div>
-        <p style="margin:0 0 8px;font-size:14px;line-height:1.5;"><strong>Code de secours :</strong><br /><code style="font-family:Consolas,monospace;font-size:17px;font-weight:700;">${escapeHtml(variables.redemptionCode)}</code></p>
+        <p style="margin:0 0 8px;font-size:${backupCodeFontSize}px;line-height:1.5;"><strong style="white-space:nowrap;">Code de secours : <code style="font-family:inherit;font-size:inherit;">${escapeHtml(variables.redemptionCode)}</code></strong></p>
         <p style="margin:0 0 20px;font-size:14px;line-height:1.5;color:#64748b;">${REWARD_BACKUP_NOTE}</p>
         <a href="${escapeHtml(variables.qrUrl)}" target="_blank" rel="noopener noreferrer" style="display:inline-block;padding:12px 18px;border-radius:12px;border:1px solid ${accentColor};color:${accentColor};text-decoration:none;font-weight:700;">${buttonLabel}</a>
         ${appointmentCta}
