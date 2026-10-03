@@ -1,4 +1,4 @@
-import { getSupabaseAdmin } from "@/lib/supabase";
+import { getSupabaseAdmin, supabaseUrl } from "@/lib/supabase";
 import { MERCHANT_IMAGE_BUCKET, MERCHANT_IMAGE_ORPHAN_AGE_MS } from "@/lib/merchant-image-constants";
 import type { MerchantImageKind } from "@/lib/merchant-image-processing";
 
@@ -44,6 +44,48 @@ function getManagedObjectPath(imageUrl: string, merchantId?: string) {
   } catch {
     return null;
   }
+}
+
+function getOwnedManagedImageObjectPath(imageUrl: string, merchantId: string) {
+  const object = getManagedObjectPath(imageUrl, merchantId);
+  if (!object || !supabaseUrl) return null;
+
+  try {
+    if (new URL(imageUrl).origin !== new URL(supabaseUrl).origin) return null;
+  } catch {
+    return null;
+  }
+
+  return object;
+}
+
+/**
+ * Read a merchant-owned optimized logo and inline it as PNG for SVG renderers.
+ * SVG rasterizers do not reliably load remote WebP resources; embedding the
+ * bytes also keeps the browser preview and server PNG export consistent.
+ */
+export async function getMerchantPosterLogoDataUrl(imageUrl: string, merchantId: string) {
+  const object = getOwnedManagedImageObjectPath(imageUrl, merchantId);
+  if (!object) throw new Error("Le logo de l’affiche n’est pas une image autorisée.");
+
+  const { data, error } = await getSupabaseAdmin().storage
+    .from(MERCHANT_IMAGE_BUCKET)
+    .download(object.path);
+  if (error || !data) throw new Error("Impossible de charger le logo de l’affiche.");
+  if (data.size === 0 || data.size > MAX_STORED_IMAGE_BYTES) {
+    throw new Error("Le fichier du logo de l’affiche dépasse la taille autorisée.");
+  }
+
+  const imageBuffer = Buffer.from(await data.arrayBuffer());
+  const { default: sharp } = await import("sharp");
+  const pngBuffer = await sharp(imageBuffer, {
+    failOn: "error",
+    limitInputPixels: 32_000_000,
+  })
+    .png()
+    .toBuffer();
+
+  return `data:image/png;base64,${pngBuffer.toString("base64")}`;
 }
 
 async function ensureMerchantImagesBucket() {
