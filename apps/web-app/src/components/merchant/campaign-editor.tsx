@@ -3087,6 +3087,8 @@ export function CampaignEditor({
                                       ? defaultScratchTemplateFont(template.value) ?? current.presentation.heading.fontFamily
                                       : template.value === "rose-institut"
                                       ? DEFAULT_ROSE_INSTITUT_HEADING_FONT_FAMILY
+                                      : template.value === "classic"
+                                      ? firstSelectionHeadingFont
                                       : isCocoricoWheelTemplate(template.value) || isClassicPopWheelTemplate(template.value)
                                       ? template.value === "restaurant-pop" ? "lato" : "fredoka"
                                       : firstSelectionHeadingFont),

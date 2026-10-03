@@ -2539,6 +2539,8 @@ export function CampaignWizard({
                                     ? defaultScratchTemplateFont(template.id) ?? current.presentation.heading.fontFamily
                                     : template.id === "rose-institut"
                                     ? DEFAULT_ROSE_INSTITUT_HEADING_FONT_FAMILY
+                                    : template.id === "classic"
+                                    ? firstSelectionHeadingFont
                                     : isCocoricoWheelTemplate(template.id) || isClassicPopWheelTemplate(template.id)
                                     ? template.id === "restaurant-pop" ? "lato" : "fredoka"
                                     : firstSelectionHeadingFont),
