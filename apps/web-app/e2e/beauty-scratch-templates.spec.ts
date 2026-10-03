@@ -109,6 +109,8 @@ test("les miniatures des tickets sont aussi visibles dans l'éditeur de campagne
   for (const templateId of ["scratch-vault", "scratch-coral", "scratch-lilac"]) {
     await expect(page.getByTestId(`scratch-template-thumbnail-${templateId}`)).toBeVisible();
   }
+  await page.getByTestId("scratch-template-thumbnail-scratch-nude-classic").locator("xpath=..").click();
+  await expect(page.getByText("Couleur principale du ticket", { exact: true })).toHaveCount(0);
   await expect(page.getByRole("button", { name: /Carte confettis/i })).toHaveCount(0);
   await expect(page.getByRole("button", { name: /Rayons soleil/i })).toHaveCount(0);
 });
