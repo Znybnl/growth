@@ -448,6 +448,7 @@ export interface WheelTemplateStyle {
   wheel: CampaignWheelSettings;
   backgroundColor: string;
   scratchSignal: string;
+  scratchTextColor?: string;
   headingTextColor: string;
   logoTextColor: string;
   headingFontFamily: TextFont;

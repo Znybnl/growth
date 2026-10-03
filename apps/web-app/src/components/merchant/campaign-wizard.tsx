@@ -69,6 +69,9 @@ import {
   createDefaultWheelSettings,
   DEFAULT_SCRATCH_PRIMARY_COLOR,
   DEFAULT_SCRATCH_CORAL_COLOR,
+  DEFAULT_SCRATCH_HEADING_FONT_SIZE_PX,
+  defaultScratchTemplateFont,
+  defaultScratchTextColor,
   scratchTemplateDefaultPrimaryColor,
   shouldApplyScratchTemplateDefaultPrimaryColor,
   DEFAULT_WHEEL_SUBTITLE,
@@ -833,6 +836,7 @@ export function CampaignWizard({
           wheel: current.presentation.wheel,
           backgroundColor: current.presentation.background.color,
           scratchSignal: current.accent.signal,
+          scratchTextColor: current.accent.ink,
           headingTextColor: current.presentation.heading.textColor,
           logoTextColor: current.presentation.logo.textColor ?? current.presentation.heading.textColor,
           headingFontFamily: current.presentation.heading.fontFamily,
@@ -894,6 +898,7 @@ export function CampaignWizard({
         wheel: current.presentation.wheel,
         backgroundColor: current.presentation.background.color,
         scratchSignal: current.accent.signal,
+        scratchTextColor: current.accent.ink,
         headingTextColor: current.presentation.heading.textColor,
         logoTextColor: current.presentation.logo.textColor ?? current.presentation.heading.textColor,
         headingFontFamily: current.presentation.heading.fontFamily,
@@ -929,18 +934,49 @@ export function CampaignWizard({
     });
     setDraft((current) => {
       if (current.presentation.layout.templateId === templateId) return current;
+      const previousId = current.presentation.layout.templateId ?? DEFAULT_GAME_PAGE_TEMPLATE_ID;
+      wheelTemplateState.current[previousId] = {
+        wheel: current.presentation.wheel,
+        backgroundColor: current.presentation.background.color,
+        scratchSignal: current.accent.signal,
+        scratchTextColor: current.accent.ink,
+        headingTextColor: current.presentation.heading.textColor,
+        logoTextColor: current.presentation.logo.textColor ?? current.presentation.heading.textColor,
+        headingFontFamily: current.presentation.heading.fontFamily,
+        headingAlign: current.presentation.heading.align,
+        logoAlign: current.presentation.logo.align,
+        buttonBackgroundColor: current.presentation.button.backgroundColor,
+        blockSpacingPx: current.presentation.layout.blockSpacingPx,
+        subtitleSpacingPx: current.presentation.layout.subtitleSpacingPx,
+      };
+      const remembered = wheelTemplateState.current[templateId];
+      const textColor = remembered?.scratchTextColor ?? theme.text;
       return {
         ...current,
         presentation: {
           ...current.presentation,
-          layout: { ...current.presentation.layout, templateId },
-          heading: { ...current.presentation.heading, fontFamily: theme.font, textColor: theme.text },
-          logo: { ...current.presentation.logo, textColor: theme.text },
+          layout: {
+            ...current.presentation.layout,
+            templateId,
+            wheelTemplateStyles: {
+              ...current.presentation.layout.wheelTemplateStyles,
+              [previousId]: wheelTemplateState.current[previousId],
+            },
+          },
+          heading: {
+            ...current.presentation.heading,
+            fontFamily: remembered?.headingFontFamily ?? theme.font,
+            textColor: remembered?.headingTextColor ?? theme.text,
+          },
+          logo: {
+            ...current.presentation.logo,
+            textColor: remembered?.logoTextColor ?? theme.text,
+          },
         },
         accent: {
           ...normalizeScratchAccent(current.accent, templateId),
-          signal: theme.scratch.base,
-          ink: theme.text,
+          signal: remembered?.scratchSignal ?? theme.scratch.base,
+          ink: textColor,
         },
       };
     });
@@ -1733,6 +1769,13 @@ export function CampaignWizard({
                           };
                         }
 
+                        const scratchTemplateId = isBeautyIndustry(merchant.industry)
+                          ? "beauty-scratch-nude"
+                          : "scratch-coral";
+                        const beautyScratch = beautyScratchTemplate(scratchTemplateId);
+                        const scratchTextColor = beautyScratch?.text ?? defaultScratchTextColor(scratchTemplateId);
+                        const scratchFontFamily = beautyScratch?.font ?? defaultScratchTemplateFont(scratchTemplateId) ?? current.presentation.heading.fontFamily;
+
                         const nextPrimaryColor =
                           option.value === "wheel"
                             ? resolveWheelPrimaryColorAfterGameTypeSwitch(
@@ -1747,18 +1790,33 @@ export function CampaignWizard({
                             ...current.presentation,
                             heading: {
                               ...current.presentation.heading,
+                              textColor:
+                                option.value === "scratch"
+                                  ? scratchTextColor
+                                  : current.presentation.heading.textColor,
+                              fontFamily:
+                                option.value === "scratch"
+                                  ? scratchFontFamily
+                                  : current.presentation.heading.fontFamily,
                               fontSizePx:
                                 option.value === "scratch" && current.presentation.heading.fontSizePx === 40
-                                  ? 32
-                                  : option.value === "wheel" && current.presentation.heading.fontSizePx === 32
+                                  ? DEFAULT_SCRATCH_HEADING_FONT_SIZE_PX
+                                  : option.value === "wheel" && current.presentation.heading.fontSizePx === DEFAULT_SCRATCH_HEADING_FONT_SIZE_PX
                                     ? 40
                                     : current.presentation.heading.fontSizePx,
+                            },
+                            logo: {
+                              ...current.presentation.logo,
+                              textColor:
+                                option.value === "scratch"
+                                  ? scratchTextColor
+                                  : current.presentation.logo.textColor,
                             },
                             layout: {
                               ...current.presentation.layout,
                               templateId:
                                 option.value === "scratch"
-                                  ? "scratch-coral"
+                                  ? scratchTemplateId
                                   : "cocorico-wheel",
                             },
                             wheel:
@@ -1785,12 +1843,9 @@ export function CampaignWizard({
                           accent:
                             option.value === "scratch"
                               ? {
-                                  ...normalizeScratchAccent(current.accent, "scratch-coral"),
-                                  signal:
-                                    current.gameType === "scratch" &&
-                                    !shouldApplyScratchTemplateDefaultPrimaryColor(current.accent.signal)
-                                      ? current.accent.signal
-                                      : DEFAULT_SCRATCH_CORAL_COLOR,
+                                  ...normalizeScratchAccent(current.accent, scratchTemplateId),
+                                  signal: beautyScratch?.scratch.base ?? DEFAULT_SCRATCH_CORAL_COLOR,
+                                  ink: scratchTextColor,
                                 }
                               : current.accent,
                         };
@@ -2420,6 +2475,7 @@ export function CampaignWizard({
                           wheel: current.presentation.wheel,
                           backgroundColor: current.presentation.background.color,
                           scratchSignal: current.accent.signal,
+                          scratchTextColor: current.accent.ink,
                           headingTextColor: current.presentation.heading.textColor,
                           logoTextColor: current.presentation.logo.textColor ?? current.presentation.heading.textColor,
                           headingFontFamily: current.presentation.heading.fontFamily,
@@ -2432,8 +2488,8 @@ export function CampaignWizard({
                         const remembered = wheelTemplateState.current[template.id];
                         const wheel = remembered?.wheel ?? wheelPaletteForTemplate(template.id, current.presentation.wheel);
                         const backgroundColor = remembered?.backgroundColor ?? wheelBackgroundForTemplateSelection(template.id, current.presentation.background.color);
-                        const headingTextColor = remembered?.headingTextColor ?? (template.id === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheelHeadingColorForTemplateSelection(template.id, isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.heading.textColor));
-                        const logoTextColor = remembered?.logoTextColor ?? (template.id === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheelHeadingColorForTemplateSelection(template.id, isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.logo.textColor ?? current.presentation.heading.textColor));
+                        const headingTextColor = remembered?.headingTextColor ?? (current.gameType === "scratch" ? defaultScratchTextColor(template.id) : template.id === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheelHeadingColorForTemplateSelection(template.id, isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.heading.textColor));
+                        const logoTextColor = remembered?.logoTextColor ?? (current.gameType === "scratch" ? defaultScratchTextColor(template.id) : template.id === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheelHeadingColorForTemplateSelection(template.id, isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.logo.textColor ?? current.presentation.heading.textColor));
                         const buttonBackgroundColor = remembered?.buttonBackgroundColor ?? (template.id === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheel.loseColor);
                         const scratchSignal =
                           remembered?.scratchSignal ??
@@ -2469,7 +2525,9 @@ export function CampaignWizard({
                                     : current.presentation.heading.fontSizePx,
                                 fontFamily:
                                   remembered?.headingFontFamily ??
-                                  (template.id === "rose-institut"
+                                  (current.gameType === "scratch"
+                                    ? defaultScratchTemplateFont(template.id) ?? current.presentation.heading.fontFamily
+                                    : template.id === "rose-institut"
                                     ? DEFAULT_ROSE_INSTITUT_HEADING_FONT_FAMILY
                                     : isCocoricoWheelTemplate(template.id) || isClassicPopWheelTemplate(template.id)
                                     ? template.id === "restaurant-pop" ? "lato" : "fredoka"
@@ -2494,6 +2552,7 @@ export function CampaignWizard({
                               ? {
                                   ...normalizeScratchAccent(current.accent, template.id),
                                   signal: scratchSignal,
+                                  ink: remembered?.scratchTextColor ?? defaultScratchTextColor(template.id),
                                 }
                               : current.accent,
                         };
