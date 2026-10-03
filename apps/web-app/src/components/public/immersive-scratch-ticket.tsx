@@ -8,7 +8,7 @@ import {
   DEFAULT_SCRATCH_SUBTITLE,
   scratchTemplatePrimaryColor,
 } from "@/lib/campaign-defaults";
-import { beautyScratchTemplate, type ImmersiveScratchTemplateId } from "@/lib/beauty-scratch-templates";
+import { scratchVisualTheme, type ImmersiveScratchTemplateId } from "@/lib/beauty-scratch-templates";
 
 type ScratchTemplateId = ImmersiveScratchTemplateId;
 
@@ -184,7 +184,7 @@ export function ImmersiveScratchTicket({
   const isCoral = template === "scratch-coral";
   const isLilac = template === "scratch-lilac";
   const isSunburst = template === "scratch-sunburst";
-  const beautyTheme = beautyScratchTemplate(template);
+  const beautyTheme = scratchVisualTheme(template);
   const configuredPrimary = accent.signal;
   const primary = scratchTemplatePrimaryColor(configuredPrimary, template);
   const hasCustomPrimary =
@@ -241,7 +241,7 @@ export function ImmersiveScratchTicket({
     const gradient = context.createLinearGradient(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     const cover = beautyTheme?.scratch.base ?? (isVault ? "#171d38" : primary);
     const highlight = beautyTheme?.scratch.highlight ?? (isSunburst ? blendWithWhite(cover, 0.2) : blendWithWhite(cover, 0.34));
-    if (beautyTheme?.id === "beauty-scratch-nude") {
+    if (beautyTheme?.id === "beauty-scratch-nude" || beautyTheme?.id === "scratch-nude-classic") {
       gradient.addColorStop(0, "#c4a675");
       gradient.addColorStop(0.24, "#ead8b2");
       gradient.addColorStop(0.52, "#c9ad7c");

@@ -1,4 +1,5 @@
 import type { GamePageTemplateId, TextFont } from "@/lib/types";
+import { SOFT_STUDIO_BACKGROUND_URL } from "@/lib/background-library";
 
 export const BEAUTY_SCRATCH_TEMPLATES = [
   {
@@ -76,12 +77,36 @@ export const BEAUTY_SCRATCH_TEMPLATES = [
 
 export type BeautyScratchTemplateId = (typeof BEAUTY_SCRATCH_TEMPLATES)[number]["id"];
 
+export const CLASSIC_NUDE_SCRATCH_TEMPLATE_ID = "scratch-nude-classic" as const;
+
+type ScratchVisualTheme = {
+  id: GamePageTemplateId;
+  name: string;
+  description: string;
+  sampleHeadline: string;
+  sampleSubline: string;
+  background: string;
+  scratch: { base: string; highlight: string; edge: string; texture: string; textureOpacity: number };
+  text: string;
+  font: TextFont;
+  fontClass: string;
+};
+
+const CLASSIC_NUDE_SCRATCH_THEME: ScratchVisualTheme = {
+  ...BEAUTY_SCRATCH_TEMPLATES[0],
+  id: CLASSIC_NUDE_SCRATCH_TEMPLATE_ID,
+  name: "Nude Élégance personnalisable",
+  description: "L’élégance Nude avec le fond de votre choix.",
+  background: SOFT_STUDIO_BACKGROUND_URL,
+};
+
 export const IMMERSIVE_SCRATCH_TEMPLATE_IDS = [
   "scratch-vault",
   "scratch-confetti",
   "scratch-coral",
   "scratch-lilac",
   "scratch-sunburst",
+  CLASSIC_NUDE_SCRATCH_TEMPLATE_ID,
   "beauty-scratch-nude",
   "beauty-scratch-botanical",
   "beauty-scratch-noir-or",
@@ -118,4 +143,9 @@ export function isBeautyScratchTemplate(
 
 export function beautyScratchTemplate(templateId?: string | null) {
   return BEAUTY_SCRATCH_TEMPLATES.find((template) => template.id === templateId);
+}
+
+export function scratchVisualTheme(templateId?: string | null): ScratchVisualTheme | undefined {
+  if (templateId === CLASSIC_NUDE_SCRATCH_TEMPLATE_ID) return CLASSIC_NUDE_SCRATCH_THEME;
+  return beautyScratchTemplate(templateId);
 }

@@ -1,5 +1,6 @@
 import {
   CampaignAccent,
+  CampaignBackgroundSettings,
   CampaignPosterSettings,
   CampaignWheelSettings,
   GamePageTemplateId,
@@ -8,7 +9,8 @@ import {
 import { createPosterSettingsDefaults } from "@/lib/poster-utils";
 import { getPosterTemplate } from "@/lib/poster-templates";
 import { beautyWheelTheme } from "@/lib/beauty-wheel-themes";
-import { BEAUTY_SCRATCH_TEMPLATES, beautyScratchTemplate } from "@/lib/beauty-scratch-templates";
+import { BEAUTY_SCRATCH_TEMPLATES, CLASSIC_NUDE_SCRATCH_TEMPLATE_ID, beautyScratchTemplate } from "@/lib/beauty-scratch-templates";
+import { SOFT_STUDIO_BACKGROUND_URL } from "@/lib/background-library";
 
 export const LEGACY_DEFAULT_WHEEL_SUBTITLE = "Faites tournez la roue pour jouer !";
 export const DEFAULT_WHEEL_SUBTITLE = "Tounez la roue et tentez de gagner !";
@@ -86,6 +88,7 @@ export function defaultWheelBlockSpacingForTemplate(templateId?: GamePageTemplat
 }
 
 export function scratchTemplateDefaultPrimaryColor(templateId?: GamePageTemplateId) {
+  if (templateId === CLASSIC_NUDE_SCRATCH_TEMPLATE_ID) return "#b99a6a";
   const beautyTemplate = beautyScratchTemplate(templateId);
   if (beautyTemplate) return beautyTemplate.scratch.base;
   switch (templateId) {
@@ -109,6 +112,7 @@ export function shouldApplyScratchTemplateDefaultPrimaryColor(configuredColor: s
     DEFAULT_SCRATCH_CORAL_COLOR,
     DEFAULT_SCRATCH_SUNBURST_COLOR,
     DEFAULT_SCRATCH_LILAC_COLOR,
+    "#b99a6a",
     ...BEAUTY_SCRATCH_TEMPLATES.map((template) => template.scratch.base),
   ].includes(configuredColor.trim().toLowerCase());
 }
@@ -420,6 +424,7 @@ const SCRATCH_DEFAULT_INK_VALUES = new Set([
 ]);
 
 export function defaultScratchTextColor(templateId?: GamePageTemplateId) {
+  if (templateId === CLASSIC_NUDE_SCRATCH_TEMPLATE_ID) return "#49372c";
   const beautyTemplate = beautyScratchTemplate(templateId);
   if (beautyTemplate) return beautyTemplate.text;
   switch (templateId) {
@@ -440,6 +445,8 @@ export function defaultScratchTextColor(templateId?: GamePageTemplateId) {
 /** The initial font used by the legacy scratch-card themes called out in issue #439. */
 export function defaultScratchTemplateFont(templateId?: GamePageTemplateId) {
   switch (templateId) {
+    case CLASSIC_NUDE_SCRATCH_TEMPLATE_ID:
+      return "playfair" as const;
     case "scratch-coral":
     case "scratch-vault":
     case "scratch-lilac":
@@ -447,6 +454,19 @@ export function defaultScratchTemplateFont(templateId?: GamePageTemplateId) {
     default:
       return undefined;
   }
+}
+
+export function scratchTemplateBackgroundForSelection(
+  templateId: GamePageTemplateId,
+  background: CampaignBackgroundSettings,
+): CampaignBackgroundSettings {
+  if (templateId !== CLASSIC_NUDE_SCRATCH_TEMPLATE_ID) return background;
+  if (background.mode === "image" && background.imageUrl) return background;
+  return {
+    ...background,
+    mode: "image",
+    imageUrl: SOFT_STUDIO_BACKGROUND_URL,
+  };
 }
 
 /**

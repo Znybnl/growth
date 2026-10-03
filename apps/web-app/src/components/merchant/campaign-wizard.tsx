@@ -57,7 +57,7 @@ import { captureClientProductEvent } from "@/lib/client-product-analytics";
 import { uploadMerchantImageFile, MERCHANT_IMAGE_ACCEPT } from "@/lib/merchant-image-upload";
 import { postCampaignSetup } from "@/lib/campaign-setup-request";
 import { beautyWheelFontOptions, beautyWheelTheme, isBeautyIndustry, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
-import { beautyScratchTemplate, isHiddenScratchTemplate, isImmersiveScratchTemplate, type BeautyScratchTemplateId } from "@/lib/beauty-scratch-templates";
+import { beautyScratchTemplate, scratchVisualTheme, isHiddenScratchTemplate, isImmersiveScratchTemplate, type BeautyScratchTemplateId } from "@/lib/beauty-scratch-templates";
 import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
 import {
   createAdminWizardMarketingActionDefaults,
@@ -73,6 +73,7 @@ import {
   defaultScratchTemplateFont,
   defaultScratchTextColor,
   scratchTemplateDefaultPrimaryColor,
+  scratchTemplateBackgroundForSelection,
   shouldApplyScratchTemplateDefaultPrimaryColor,
   DEFAULT_WHEEL_SUBTITLE,
   campaignSubtitleForGameTypeChange,
@@ -2410,6 +2411,7 @@ export function CampaignWizard({
                         { id: "scratch-confetti", label: "Carte confettis", text: "Solaire et festif" },
                         { id: "scratch-coral", label: "Corail joyeux", text: "Clair et chaleureux" },
                         { id: "scratch-lilac", label: "Cadeau lilas", text: "Cadeau clair et contrasté" },
+                        { id: "scratch-nude-classic", label: "Nude Élégance personnalisable", text: "Élégant et personnalisable avec votre fond" },
                         { id: "scratch-sunburst", label: "Rayons soleil", text: "Éclatant et visible" },
                       ] as const
                     : [
@@ -2502,10 +2504,10 @@ export function CampaignWizard({
                           ...current,
                           presentation: {
                             ...current.presentation,
-                            background: {
+                            background: scratchTemplateBackgroundForSelection(template.id, {
                               ...current.presentation.background,
                               color: backgroundColor,
-                            },
+                            }),
                             layout: {
                               ...current.presentation.layout,
                               templateId: template.id,
@@ -2712,7 +2714,7 @@ export function CampaignWizard({
                        <CampaignSpacingControls
                          gameType={draft.gameType}
                          logoMode={draft.logoMode}
-                         hasScratchSubtitle={Boolean(beautyScratchTemplate(draft.presentation.layout.templateId))}
+                         hasScratchSubtitle={Boolean(scratchVisualTheme(draft.presentation.layout.templateId))}
                          logoSpacingPx={draft.presentation.logo.marginBottomPx}
                          blockSpacingPx={draft.presentation.layout.blockSpacingPx}
                          subtitleSpacingPx={draft.presentation.layout.subtitleSpacingPx ?? DEFAULT_WHEEL_SUBTITLE_SPACING_PX}
