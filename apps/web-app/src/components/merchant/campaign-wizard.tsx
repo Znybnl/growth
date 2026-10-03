@@ -57,7 +57,7 @@ import { captureClientProductEvent } from "@/lib/client-product-analytics";
 import { uploadMerchantImageFile, MERCHANT_IMAGE_ACCEPT } from "@/lib/merchant-image-upload";
 import { postCampaignSetup } from "@/lib/campaign-setup-request";
 import { beautyWheelFontOptions, beautyWheelTheme, isBeautyIndustry, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
-import { beautyScratchTemplate, isHiddenScratchTemplate, isImmersiveScratchTemplate, type BeautyScratchTemplateId } from "@/lib/beauty-scratch-templates";
+import { beautyScratchTemplate, scratchVisualTheme, isHiddenScratchTemplate, isImmersiveScratchTemplate, type BeautyScratchTemplateId } from "@/lib/beauty-scratch-templates";
 import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
 import {
   createAdminWizardMarketingActionDefaults,
@@ -71,8 +71,10 @@ import {
   DEFAULT_SCRATCH_CORAL_COLOR,
   DEFAULT_SCRATCH_HEADING_FONT_SIZE_PX,
   defaultScratchTemplateFont,
+  defaultScratchTemplateForIndustry,
   defaultScratchTextColor,
   scratchTemplateDefaultPrimaryColor,
+  scratchTemplateUsesFixedPrimaryColor,
   shouldApplyScratchTemplateDefaultPrimaryColor,
   DEFAULT_WHEEL_SUBTITLE,
   campaignSubtitleForGameTypeChange,
@@ -1776,9 +1778,7 @@ export function CampaignWizard({
                           };
                         }
 
-                        const scratchTemplateId = isBeautyIndustry(merchant.industry)
-                          ? "beauty-scratch-nude"
-                          : "scratch-coral";
+                        const scratchTemplateId = defaultScratchTemplateForIndustry(merchant.industry);
                         const beautyScratch = beautyScratchTemplate(scratchTemplateId);
                         const scratchTextColor = beautyScratch?.text ?? defaultScratchTextColor(scratchTemplateId);
                         const scratchFontFamily = beautyScratch?.font ?? defaultScratchTemplateFont(scratchTemplateId) ?? current.presentation.heading.fontFamily;
@@ -1788,7 +1788,7 @@ export function CampaignWizard({
                             ? resolveWheelPrimaryColorAfterGameTypeSwitch(
                                 current.presentation.wheel.loseColor,
                               )
-                            : DEFAULT_SCRATCH_CORAL_COLOR;
+                            : scratchTemplateDefaultPrimaryColor(scratchTemplateId) ?? DEFAULT_SCRATCH_CORAL_COLOR;
 
                         return {
                           ...current,
@@ -1851,7 +1851,7 @@ export function CampaignWizard({
                             option.value === "scratch"
                               ? {
                                   ...normalizeScratchAccent(current.accent, scratchTemplateId),
-                                  signal: beautyScratch?.scratch.base ?? DEFAULT_SCRATCH_CORAL_COLOR,
+                                  signal: nextPrimaryColor,
                                   ink: scratchTextColor,
                                 }
                               : current.accent,
@@ -2409,10 +2409,11 @@ export function CampaignWizard({
                 />
               ) : null}
               {draft.gameType === "wheel" ? <h3 className="text-sm font-semibold text-[#241b2a]">Autres templates de roue</h3> : null}
-              <div className="grid min-w-0 grid-cols-[repeat(auto-fit,minmax(min(100%,14rem),1fr))] gap-4">
+              <div className="grid min-w-0 grid-cols-[repeat(auto-fit,minmax(min(100%,14rem),1fr))] gap-4" data-testid="classic-template-options">
                 {(
                   draft.gameType === "scratch"
                     ? [
+                        { id: "scratch-nude-classic", label: "Nude", text: "Un fond doux et neutre, personnalisable avec votre image" },
                         { id: "scratch-vault", label: "Coffre néon", text: "Coffre illustré avant grattage" },
                         { id: "scratch-confetti", label: "Carte confettis", text: "Solaire et festif" },
                         { id: "scratch-coral", label: "Corail joyeux", text: "Clair et chaleureux" },
@@ -2461,7 +2462,6 @@ export function CampaignWizard({
                   .filter((template) => draft.gameType !== "scratch" || !isHiddenScratchTemplate(template.id))
                   .filter((template) => !isBeautyIndustry(merchant.industry) || template.id !== "rose-institut")
                   .slice()
-                  .sort((left, right) => (left.id === "scratch-coral" ? -1 : right.id === "scratch-coral" ? 1 : 0))
                   .map((template) => (
                   <button
                     type="button"
@@ -2589,14 +2589,13 @@ export function CampaignWizard({
                    <span className="flex flex-wrap items-center gap-2 text-sm font-semibold text-[#182033]">
                      {draft.gameType === "wheel" ? "Couleur principale de la roue" : "Couleur principale du ticket"}
                      {draft.gameType === "scratch" &&
-                     (beautyScratchTemplate(draft.presentation.layout.templateId) ||
-                       draft.presentation.layout.templateId === "scratch-confetti") ? (
+                     scratchTemplateUsesFixedPrimaryColor(draft.presentation.layout.templateId) ? (
                        <span className="rounded-full bg-[#f1ebff] px-2 py-0.5 text-[11px] font-semibold text-[#6944a1]">Palette fixe</span>
                      ) : null}
                    </span>
                    <input
                      type="color"
-                      disabled={draft.gameType === "scratch" && (Boolean(beautyScratchTemplate(draft.presentation.layout.templateId)) || draft.presentation.layout.templateId === "scratch-confetti")}
+                      disabled={draft.gameType === "scratch" && scratchTemplateUsesFixedPrimaryColor(draft.presentation.layout.templateId)}
                      value={draft.gameType === "wheel" ? draft.presentation.wheel.loseColor : draft.accent.signal}
                      onChange={(event) => {
                        const color = event.target.value;
@@ -2724,7 +2723,7 @@ export function CampaignWizard({
                        <CampaignSpacingControls
                          gameType={draft.gameType}
                          logoMode={draft.logoMode}
-                         hasScratchSubtitle={Boolean(beautyScratchTemplate(draft.presentation.layout.templateId))}
+                         hasScratchSubtitle={Boolean(scratchVisualTheme(draft.presentation.layout.templateId))}
                          logoSpacingPx={draft.presentation.logo.marginBottomPx}
                          blockSpacingPx={draft.presentation.layout.blockSpacingPx}
                          subtitleSpacingPx={draft.presentation.layout.subtitleSpacingPx ?? DEFAULT_WHEEL_SUBTITLE_SPACING_PX}

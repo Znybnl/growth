@@ -58,6 +58,7 @@ export type GamePageTemplateId =
   | "scratch-coral"
   | "scratch-lilac"
   | "scratch-sunburst"
+  | "scratch-nude-classic"
   | "beauty-scratch-nude"
   | "beauty-scratch-botanical"
   | "beauty-scratch-noir-or"

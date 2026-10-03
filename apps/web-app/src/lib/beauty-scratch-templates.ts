@@ -45,7 +45,7 @@ export const BEAUTY_SCRATCH_TEMPLATES = [
     sampleSubline: "Des soins d'exception pour votre bien-être",
     background: "/images/scratch-templates/beauty-lilas-soin-doux.webp",
     scratch: { base: "#a99aae", highlight: "#e9e1eb", edge: "#fffaff", texture: "/images/scratch-templates/beauty-foil-lilas.webp", textureOpacity: 0.22 },
-    text: "#49384f",
+    text: "#302039",
     font: "playfair",
     fontClass: "font-playfair",
   },
@@ -76,12 +76,38 @@ export const BEAUTY_SCRATCH_TEMPLATES = [
 
 export type BeautyScratchTemplateId = (typeof BEAUTY_SCRATCH_TEMPLATES)[number]["id"];
 
+export const CLASSIC_NUDE_SCRATCH_TEMPLATE_ID = "scratch-nude-classic" as const;
+export const NUDE_SCRATCH_TEMPLATE_BACKGROUND_URL =
+  "/images/scratch-templates/nude-neutral-background.webp";
+
+type ScratchVisualTheme = {
+  id: GamePageTemplateId;
+  name: string;
+  description: string;
+  sampleHeadline: string;
+  sampleSubline: string;
+  background: string;
+  scratch: { base: string; highlight: string; edge: string; texture: string; textureOpacity: number };
+  text: string;
+  font: TextFont;
+  fontClass: string;
+};
+
+const CLASSIC_NUDE_SCRATCH_THEME: ScratchVisualTheme = {
+  ...BEAUTY_SCRATCH_TEMPLATES[0],
+  id: CLASSIC_NUDE_SCRATCH_TEMPLATE_ID,
+  name: "Nude",
+  description: "Un fond doux et neutre, personnalisable avec votre propre image.",
+  background: NUDE_SCRATCH_TEMPLATE_BACKGROUND_URL,
+};
+
 export const IMMERSIVE_SCRATCH_TEMPLATE_IDS = [
   "scratch-vault",
   "scratch-confetti",
   "scratch-coral",
   "scratch-lilac",
   "scratch-sunburst",
+  CLASSIC_NUDE_SCRATCH_TEMPLATE_ID,
   "beauty-scratch-nude",
   "beauty-scratch-botanical",
   "beauty-scratch-noir-or",
@@ -118,4 +144,9 @@ export function isBeautyScratchTemplate(
 
 export function beautyScratchTemplate(templateId?: string | null) {
   return BEAUTY_SCRATCH_TEMPLATES.find((template) => template.id === templateId);
+}
+
+export function scratchVisualTheme(templateId?: string | null): ScratchVisualTheme | undefined {
+  if (templateId === CLASSIC_NUDE_SCRATCH_TEMPLATE_ID) return CLASSIC_NUDE_SCRATCH_THEME;
+  return beautyScratchTemplate(templateId);
 }

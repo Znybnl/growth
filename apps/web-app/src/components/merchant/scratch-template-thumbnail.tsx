@@ -1,6 +1,7 @@
 import { Gift, LockKeyhole, PartyPopper, Sparkles, Sun } from "lucide-react";
 
 import type { GamePageTemplateId } from "@/lib/types";
+import { defaultScratchTextColor } from "@/lib/campaign-defaults";
 
 const SCRATCH_THUMBNAILS = {
   "scratch-vault": {
@@ -35,11 +36,24 @@ const SCRATCH_THUMBNAILS = {
     headline: "Grattez pour découvrir",
     background: "radial-gradient(ellipse at 78% 0%, #f0dcff, #f8f3ff 58%, #ebe1fb)",
     ticket: "linear-gradient(145deg, #fffaff, #f7f1ff)",
-    ink: "#523968",
-    muted: "#8d79a1",
+    ink: defaultScratchTextColor("scratch-lilac"),
+    muted: defaultScratchTextColor("scratch-lilac"),
     foil: "linear-gradient(145deg, #a978cf, #d4b4ee 48%, #9564c2)",
     foilEdge: "#fffaff",
     foilInk: "#fffaff",
+    motif: "gift",
+  },
+  "scratch-nude-classic": {
+    name: "Nude",
+    eyebrow: "UNE SURPRISE RAFFINÉE",
+    headline: "Grattez & découvrez",
+    background: "url('/images/scratch-templates/nude-neutral-background.webp') center / cover no-repeat",
+    ticket: "linear-gradient(155deg, #fffdf8, #f6eee3 58%, #fffaf2)",
+    ink: "#49372c",
+    muted: "#8a725c",
+    foil: "linear-gradient(135deg, #b99a6a, #e4d0aa 48%, #a98450)",
+    foilEdge: "#fff7e9",
+    foilInk: "#fff7e9",
     motif: "gift",
   },
   "scratch-confetti": {
