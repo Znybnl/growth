@@ -1177,12 +1177,14 @@ function renderSteps(template: PosterTemplateConfig, gameType: Campaign["gameTyp
     const circleColor = isGradientClassic ? "#ffffff" : "#f5f1e2";
     const scanIcon = (x: number) => `<g transform="translate(${x} 80) scale(.78)" fill="none" stroke="${iconColor}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><rect x="-22" y="-35" width="44" height="70" rx="7"/><path d="M-14-23h28M-14 22h28" stroke-width="3"/><circle cx="0" cy="28" r="2" fill="${iconColor}"/></g>`;
     const wheelIcon = (x: number) => `<g transform="translate(${x} 80) scale(.8)" fill="none" stroke="${iconColor}" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><circle r="34"/><circle r="4" fill="${iconColor}" stroke="none"/><path d="M0-30v60M-30 0h60M-21-21l42 42M21-21l-42 42"/></g>`;
+<<<<<<< HEAD
     const gameIcon = (x: number) => gameType === "wheel" ? wheelIcon(x) : renderScratchTicketIcon(x, 80, iconColor);
     // Lucide Gift icon geometry (24x24), reused verbatim in this static SVG renderer.
     const giftIcon = (x: number) => `<g transform="translate(${x} 80) scale(2.25) translate(-12 -12)" fill="none" stroke="${iconColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/></g>`;
+    const footerTopY = isGradientClassic ? 925 : 908;
     return `
-      <g data-poster-footer="editorial-steps" transform="translate(0 925)">
-        <rect width="${A4_WIDTH}" height="${A4_HEIGHT - 925}" fill="${bandColor}" fill-opacity="${isGradientClassic ? ".68" : ".84"}"/>
+      <g data-poster-footer="editorial-steps" transform="translate(0 ${footerTopY})">
+        <rect width="${A4_WIDTH}" height="${A4_HEIGHT - footerTopY}" fill="${bandColor}" fill-opacity="${isGradientClassic ? ".68" : ".84"}"/>
         <path d="M268 80h48" stroke="${template.accentDark}" stroke-width="2" marker-end="url(#posterArrow)"/>
         <path d="M475 80h48" stroke="${template.accentDark}" stroke-width="2" marker-end="url(#posterArrow)"/>
         ${points.map((x, index) => `<circle cx="${x}" cy="80" r="47" fill="${circleColor}" fill-opacity="${isGradientClassic ? ".82" : ".94"}" stroke="${template.accent}" stroke-opacity=".72" stroke-width="2.5"/>${index === 0 ? scanIcon(x) : index === 1 ? gameIcon(x) : giftIcon(x)}<text x="${x}" y="155" text-anchor="middle" fill="${template.accentDark}" font-family="${SAFE_FONT}" font-size="22" font-weight="700" letter-spacing="2">${index === 0 ? "1. SCANNEZ" : index === 1 ? `2. ${editorialAction}` : "3. GAGNEZ"}</text>`).join("")}
