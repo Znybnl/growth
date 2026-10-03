@@ -45,7 +45,7 @@ export const BEAUTY_SCRATCH_TEMPLATES = [
     sampleSubline: "Des soins d'exception pour votre bien-être",
     background: "/images/scratch-templates/beauty-lilas-soin-doux.webp",
     scratch: { base: "#a99aae", highlight: "#e9e1eb", edge: "#fffaff", texture: "/images/scratch-templates/beauty-foil-lilas.webp", textureOpacity: 0.22 },
-    text: "#49384f",
+    text: "#302039",
     font: "playfair",
     fontClass: "font-playfair",
   },

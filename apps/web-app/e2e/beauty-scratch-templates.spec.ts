@@ -8,7 +8,11 @@ import {
   scratchTemplateDefaultBackground,
   scratchTemplatePrimaryColor,
   scratchTemplateUsesFixedPrimaryColor,
+  DEFAULT_SCRATCH_HEADING_FONT_SIZE_PX,
+  defaultScratchTextColor,
+  resolveScratchTemplateTextColor,
 } from "../src/lib/campaign-defaults";
+import { builtInBackgroundAssets } from "../src/lib/background-library";
 import { signIn } from "./auth-session";
 
 test("Nude a son propre fond par défaut, laisse la priorité à une image choisie et fixe sa couleur", async ({ request }) => {
@@ -25,6 +29,18 @@ test("Nude a son propre fond par défaut, laisse la priorité à une image chois
   expect(scratchTemplatePrimaryColor("#ff00ff", CLASSIC_NUDE_SCRATCH_TEMPLATE_ID)).toBe("#b99a6a");
   expect(scratchTemplateUsesFixedPrimaryColor(CLASSIC_NUDE_SCRATCH_TEMPLATE_ID)).toBe(true);
   expect(scratchTemplateUsesFixedPrimaryColor("scratch-coral")).toBe(false);
+  expect(DEFAULT_SCRATCH_HEADING_FONT_SIZE_PX).toBe(46);
+  expect(defaultScratchTextColor("scratch-lilac")).toBe("#32104f");
+  expect(resolveScratchTemplateTextColor("#4c1d95", "scratch-lilac")).toBe("#32104f");
+
+  const scratchBackgrounds = builtInBackgroundAssets.filter((asset) => asset.id.startsWith("builtin-scratch-"));
+  expect(scratchBackgrounds).toHaveLength(6);
+  expect(scratchBackgrounds.every((asset) => asset.category === "Beauté & bien-être")).toBe(true);
+  for (const asset of scratchBackgrounds) {
+    const response = await request.get(asset.imageUrl);
+    expect(response.ok(), `${asset.label} doit être accessible dans la bibliothèque`).toBe(true);
+    expect(response.headers()["content-type"]).toContain("image/webp");
+  }
 
   const asset = await request.get(NUDE_SCRATCH_TEMPLATE_BACKGROUND_URL);
   expect(asset.ok()).toBe(true);
@@ -42,6 +58,7 @@ test("les tickets initiaux affichent le sous-titre, masquent les deux cartes ret
   await expect(secondarySubtitle).toBeVisible();
   await secondarySubtitle.fill("Une surprise pour vous");
   await page.getByRole("button", { name: "Continuer", exact: true }).click();
+  await expect(page.getByTestId("classic-template-options").getByRole("button").first()).toContainText("Nude");
 
   await expect(page.getByRole("button", { name: /Carte confettis/i })).toHaveCount(0);
   await expect(page.getByRole("button", { name: /Rayons soleil/i })).toHaveCount(0);
@@ -64,7 +81,12 @@ test("les tickets initiaux affichent le sous-titre, masquent les deux cartes ret
     await expect(preview).toBeVisible();
     await expect(preview.getByText("Une surprise pour vous")).toBeVisible();
 
+    if (template.id === "scratch-coral") {
+      await expect.poll(() => preview.locator(":scope > div").evaluate((element) => getComputedStyle(element).backgroundImage)).toContain("112%");
+    }
+
     if (template.id === "scratch-lilac") {
+      await expect(preview.getByText("Une surprise pour vous", { exact: true })).toHaveCSS("color", "rgba(50, 16, 79, 0.85)");
       const primaryColor = page.getByRole("textbox", { name: "Couleur principale du ticket" }).first();
       await expect(primaryColor).toBeEnabled();
       await primaryColor.fill("#245780");
@@ -105,6 +127,7 @@ test("les miniatures des tickets sont aussi visibles dans l'éditeur de campagne
   await signIn(page);
   await page.goto("/campaigns/new");
   await page.getByRole("button", { name: /Ticket à gratter/ }).click();
+  await expect(page.getByTestId("classic-template-options").getByRole("button").first()).toContainText("Nude");
 
   for (const templateId of ["scratch-vault", "scratch-coral", "scratch-lilac"]) {
     await expect(page.getByTestId(`scratch-template-thumbnail-${templateId}`)).toBeVisible();

@@ -2403,15 +2403,15 @@ export function CampaignWizard({
                 />
               ) : null}
               {draft.gameType === "wheel" ? <h3 className="text-sm font-semibold text-[#241b2a]">Autres templates de roue</h3> : null}
-              <div className="grid min-w-0 grid-cols-[repeat(auto-fit,minmax(min(100%,14rem),1fr))] gap-4">
+              <div className="grid min-w-0 grid-cols-[repeat(auto-fit,minmax(min(100%,14rem),1fr))] gap-4" data-testid="classic-template-options">
                 {(
                   draft.gameType === "scratch"
                     ? [
+                        { id: "scratch-nude-classic", label: "Nude", text: "Un fond doux et neutre, personnalisable avec votre image" },
                         { id: "scratch-vault", label: "Coffre néon", text: "Coffre illustré avant grattage" },
                         { id: "scratch-confetti", label: "Carte confettis", text: "Solaire et festif" },
                         { id: "scratch-coral", label: "Corail joyeux", text: "Clair et chaleureux" },
                         { id: "scratch-lilac", label: "Cadeau lilas", text: "Cadeau clair et contrasté" },
-                        { id: "scratch-nude-classic", label: "Nude", text: "Un fond doux et neutre, personnalisable avec votre image" },
                         { id: "scratch-sunburst", label: "Rayons soleil", text: "Éclatant et visible" },
                       ] as const
                     : [
@@ -2456,7 +2456,6 @@ export function CampaignWizard({
                   .filter((template) => draft.gameType !== "scratch" || !isHiddenScratchTemplate(template.id))
                   .filter((template) => !isBeautyIndustry(merchant.industry) || template.id !== "rose-institut")
                   .slice()
-                  .sort((left, right) => (left.id === "scratch-coral" ? -1 : right.id === "scratch-coral" ? 1 : 0))
                   .map((template) => (
                   <button
                     type="button"

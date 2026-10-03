@@ -404,6 +404,11 @@ const scratchPageTemplateOptions: Array<{
   description: string;
 }> = [
   {
+    value: "scratch-nude-classic",
+    title: "Nude",
+    description: "Un fond doux et neutre, personnalisable avec votre propre image.",
+  },
+  {
     value: "scratch-vault",
     title: "Coffre néon",
     description: "Un univers nocturne et lumineux, avec une illustration de coffre-fort avant le grattage.",
@@ -417,11 +422,6 @@ const scratchPageTemplateOptions: Array<{
     value: "scratch-lilac",
     title: "Cadeau lilas",
     description: "Un univers lilas doux, avec une illustration cadeau claire et contrastée.",
-  },
-  {
-    value: "scratch-nude-classic",
-    title: "Nude",
-    description: "Un fond doux et neutre, personnalisable avec votre propre image.",
   },
   {
     value: "scratch-sunburst",
@@ -3002,13 +3002,10 @@ export function CampaignEditor({
               <p className="text-xs uppercase tracking-[0.24em] text-[#7b8496]">
                 {form.gameType === "wheel" ? "Autres templates de roue" : "Template de page de jeu"}
               </p>
-              <div className="mt-3 grid gap-3 md:grid-cols-2">
+              <div className="mt-3 grid gap-3 md:grid-cols-2" data-testid="classic-template-options">
                 {(form.gameType === "wheel"
                   ? wheelPageTemplateOptions.filter((template) => !isBeautyIndustry(merchant.industry) || template.value !== "rose-institut")
-                  : [
-                      ...scratchPageTemplateOptions.filter((template) => template.value === "scratch-coral"),
-                      ...scratchPageTemplateOptions.filter((template) => template.value !== "scratch-coral"),
-                    ].filter((template) => !isHiddenScratchTemplate(template.value))
+                  : scratchPageTemplateOptions.filter((template) => !isHiddenScratchTemplate(template.value))
                 ).map((template) => {
                   const active =
                     (form.presentation.layout.templateId ?? "classic") === template.value;

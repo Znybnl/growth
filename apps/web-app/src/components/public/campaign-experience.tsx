@@ -49,6 +49,7 @@ import {
   deriveLighterHex,
   scratchTemplatePrimaryColor,
   scratchTemplateDefaultBackground,
+  resolveScratchTemplateTextColor,
   resolvePromoStrokeColor,
 } from "@/lib/campaign-defaults";
 import { buildWheelVisualSegments } from "@/lib/wheel-segments";
@@ -531,8 +532,13 @@ export function CampaignExperience({
       ? "#f8fbff"
       : campaign.gameType === "scratch" &&
           campaign.presentation.heading.textColor.toLowerCase() === "#1f2937"
-        ? scratchAccent.ink
+        ? resolveScratchTemplateTextColor(scratchAccent.ink, pageTemplate)
+      : campaign.gameType === "scratch"
+        ? resolveScratchTemplateTextColor(campaign.presentation.heading.textColor, pageTemplate)
       : campaign.presentation.heading.textColor;
+  const logoTextColor = campaign.gameType === "scratch"
+    ? resolveScratchTemplateTextColor(campaign.presentation.logo.textColor ?? headingTextColor, pageTemplate)
+    : campaign.presentation.logo.textColor ?? headingTextColor;
   const logoSizePercent = clampCampaignLogoSizePercent(campaign.presentation.logo.sizePercent);
   const logoWidthPx = Math.round(
     Math.max(56, Math.min(720, logoSizePercent * 3)),
@@ -818,9 +824,10 @@ export function CampaignExperience({
     isMerchantOptimizedImageUrl(campaign.presentation.background.imageUrl)
     ? campaign.presentation.background.imageUrl
     : null;
+  const hasCustomSelectedBackground = campaign.presentation.background.mode === "image" && Boolean(campaign.presentation.background.imageUrl);
   const templateDefaultBackground = scratchTemplateDefaultBackground(pageTemplate, campaign.presentation.background);
   const backgroundStyle =
-    beautyScratchTheme
+    beautyScratchTheme && !hasCustomSelectedBackground
       ? "none"
       : managedBackgroundUrl
         ? "none"
@@ -834,7 +841,7 @@ export function CampaignExperience({
         : isScratchConfettiTemplate
           ? `radial-gradient(circle at 12% 9%, ${withHexAlpha(primaryColor, "52")} 0 10%, transparent 11%), radial-gradient(circle at 94% 12%, ${withHexAlpha(secondaryColor, "30")} 0 12%, transparent 13%), linear-gradient(180deg, #f59e0b99 0%, #f9731680 58%, #ea580c99 100%)`
         : isScratchCoralTemplate
-          ? `radial-gradient(circle at 50% 0%, ${withHexAlpha(primaryColor, "24")} 0 18%, transparent 42%), linear-gradient(180deg, #fffaf580 0%, #ffffff66 72%, #fff3e880 100%)`
+          ? `radial-gradient(ellipse at 50% 112%, ${withHexAlpha(primaryColor, "36")} 0 8%, transparent 56%), radial-gradient(circle at 50% 0%, ${withHexAlpha(primaryColor, "24")} 0 18%, transparent 42%), linear-gradient(180deg, #fffaf580 0%, #ffffff66 72%, #fff3e880 100%)`
         : isScratchLilacTemplate
           ? `radial-gradient(circle at 50% 0%, ${withHexAlpha(primaryColor, "2c")} 0 20%, transparent 44%), linear-gradient(180deg, #fffaff80 0%, #f7edff80 100%)`
         : isScratchSunburstTemplate
@@ -898,7 +905,7 @@ export function CampaignExperience({
           className="pointer-events-none absolute inset-0 z-0 object-cover"
         />
       ) : null}
-      {beautyScratchTheme ? (
+      {beautyScratchTheme && !hasCustomSelectedBackground ? (
         <Image
           src={beautyScratchTheme.background}
           alt=""
@@ -950,7 +957,7 @@ export function CampaignExperience({
                 imageWidthPx={logoWidthPx}
                 textSizePx={isRosePowderTemplate || isRoseInstitutTemplate ? Math.round(logoTextSizePx * 0.9) : logoTextSizePx}
                 textClassName="text-2xl"
-                textColor={campaign.presentation.logo.textColor ?? headingTextColor}
+                textColor={logoTextColor}
                 textFontWeight={isRosePowderTemplate ? 600 : undefined}
               />
             </div>
@@ -1005,7 +1012,7 @@ export function CampaignExperience({
           <p
             className={`okado-wheel-subtitle okado-wheel-subtitle--public ${headingAlignmentClass}`}
             style={{
-              color: campaign.presentation.logo.textColor ?? headingTextColor,
+              color: logoTextColor,
               fontFamily: wheelSubtitleFontFamily(campaign.presentation.heading.fontFamily),
               marginTop: `${clampCampaignSpacingPx(campaign.presentation.layout.subtitleSpacingPx, defaultWheelSubtitleSpacingForTemplate(campaign.presentation.layout.templateId))}px`,
             }}
@@ -1108,7 +1115,7 @@ export function CampaignExperience({
                 headline={safeSubtitle}
                 secondaryText={campaign.presentation.layout.scratchSubtitle}
                 headingTextColor={headingTextColor}
-                logoTextColor={campaign.presentation.logo.textColor ?? headingTextColor}
+                logoTextColor={logoTextColor}
                 headingFontClass={headingFontClass}
                 headingFontSize={headingFontSize}
                 headingFontWeight={campaign.presentation.heading.fontWeight ?? 600}

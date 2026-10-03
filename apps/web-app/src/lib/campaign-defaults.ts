@@ -35,7 +35,7 @@ export const DEFAULT_SCRATCH_SUNBURST_COLOR = "#e69600";
 export const DEFAULT_SCRATCH_LILAC_COLOR = "#b85be5";
 export const DEFAULT_SCRATCH_TICKET_COLOR = "#f7f7f7";
 export const DEFAULT_SCRATCH_TEXT_COLOR = "#ffffff";
-export const DEFAULT_SCRATCH_HEADING_FONT_SIZE_PX = 42;
+export const DEFAULT_SCRATCH_HEADING_FONT_SIZE_PX = 46;
 export const MAX_CAMPAIGN_SUBTITLE_LINES = 3;
 export const MAX_BEAUTY_WHEEL_TITLE_LINES = 5;
 export const MAX_CAMPAIGN_SUBTITLE_LENGTH = 240;
@@ -414,6 +414,7 @@ export function campaignLogoTextSizePx(
 
 const SCRATCH_DEFAULT_INK_VALUES = new Set([
   "",
+  "#1f2937",
   "#111827",
   "#ffffff",
   "#f8fbff",
@@ -431,7 +432,7 @@ export function defaultScratchTextColor(templateId?: GamePageTemplateId) {
     case "scratch-confetti":
       return "#f8fbff";
     case "scratch-lilac":
-      return "#4c1d95";
+      return "#32104f";
     case "scratch-sunburst":
       return "#3b2500";
     case "scratch-coral":
@@ -439,6 +440,17 @@ export function defaultScratchTextColor(templateId?: GamePageTemplateId) {
     default:
       return DEFAULT_SCRATCH_TEXT_COLOR;
   }
+}
+
+export function resolveScratchTemplateTextColor(
+  color: string,
+  templateId?: GamePageTemplateId,
+) {
+  const normalized = color.trim().toLowerCase();
+  if (templateId === "scratch-lilac" && SCRATCH_DEFAULT_INK_VALUES.has(normalized)) {
+    return defaultScratchTextColor(templateId);
+  }
+  return color;
 }
 
 /** The initial font used by the legacy scratch-card themes called out in issue #439. */
