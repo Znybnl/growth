@@ -69,7 +69,7 @@ import { captureClientProductEvent } from "@/lib/client-product-analytics";
 import { postCampaignSetup } from "@/lib/campaign-setup-request";
 import { uploadMerchantImageFile, MERCHANT_IMAGE_ACCEPT } from "@/lib/merchant-image-upload";
 import { beautyWheelBackground, beautyWheelFontOptions, beautyWheelTheme, isBeautyIndustry, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
-import { beautyScratchTemplate, scratchVisualTheme, isHiddenScratchTemplate, isImmersiveScratchTemplate as isImmersiveScratchPageTemplate, type BeautyScratchTemplateId, type ImmersiveScratchTemplateId } from "@/lib/beauty-scratch-templates";
+import { beautyScratchTemplate, scratchVisualTheme, isHiddenScratchTemplate, isImmersiveScratchTemplate as isImmersiveScratchPageTemplate, CLASSIC_NUDE_SCRATCH_TEMPLATE_ID, type BeautyScratchTemplateId, type ImmersiveScratchTemplateId } from "@/lib/beauty-scratch-templates";
 import { RosePowderDecor } from "@/components/public/rose-powder-decor";
 import {
   createCampaignEmailDefaults,
@@ -89,7 +89,6 @@ import {
   defaultScratchTemplateFont,
   defaultScratchTextColor,
   scratchTemplateDefaultPrimaryColor,
-  scratchTemplateBackgroundForSelection,
   shouldApplyScratchTemplateDefaultPrimaryColor,
   campaignSubtitleForGameTypeChange,
   DEFAULT_GAME_PAGE_TEMPLATE_ID,
@@ -421,8 +420,8 @@ const scratchPageTemplateOptions: Array<{
   },
   {
     value: "scratch-nude-classic",
-    title: "Nude Élégance personnalisable",
-    description: "Une carte raffinée inspirée de Nude Élégance, avec le fond de votre choix.",
+    title: "Nude",
+    description: "Un fond doux et neutre, personnalisable avec votre propre image.",
   },
   {
     value: "scratch-sunburst",
@@ -3061,10 +3060,10 @@ export function CampaignEditor({
                             ...current,
                             presentation: {
                               ...current.presentation,
-                              background: scratchTemplateBackgroundForSelection(template.value, {
+                              background: {
                                 ...current.presentation.background,
                                 color: backgroundColor,
-                              }),
+                              },
                               layout: {
                                 ...current.presentation.layout,
                                 templateId: template.value,
@@ -3136,7 +3135,7 @@ export function CampaignEditor({
                 })}
               </div>
             </div>
-            {form.gameType === "scratch" ? (
+            {form.gameType === "scratch" && currentTemplateId !== CLASSIC_NUDE_SCRATCH_TEMPLATE_ID ? (
               <label className="mt-6 block max-w-md text-sm">
                 <span className="mb-1 block font-semibold text-[#111827]">
                   Couleur principale du ticket

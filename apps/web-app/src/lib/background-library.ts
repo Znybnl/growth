@@ -114,7 +114,3 @@ export const builtInBackgroundAssets: BackgroundLibraryAsset[] = [
     height: 1536,
   },
 ];
-
-export const SOFT_STUDIO_BACKGROUND_URL =
-  builtInBackgroundAssets.find((asset) => asset.id === "builtin-soft-studio")?.imageUrl ??
-  "/backgrounds/soft-studio.svg";

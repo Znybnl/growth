@@ -48,6 +48,7 @@ import {
   roseInstitutWheelBackground,
   deriveLighterHex,
   scratchTemplatePrimaryColor,
+  scratchTemplateDefaultBackground,
   resolvePromoStrokeColor,
 } from "@/lib/campaign-defaults";
 import { buildWheelVisualSegments } from "@/lib/wheel-segments";
@@ -817,14 +818,17 @@ export function CampaignExperience({
     isMerchantOptimizedImageUrl(campaign.presentation.background.imageUrl)
     ? campaign.presentation.background.imageUrl
     : null;
+  const templateDefaultBackground = scratchTemplateDefaultBackground(pageTemplate, campaign.presentation.background);
   const backgroundStyle =
     beautyScratchTheme
       ? "none"
       : managedBackgroundUrl
         ? "none"
-        : campaign.presentation.background.mode === "image" &&
+      : campaign.presentation.background.mode === "image" &&
     campaign.presentation.background.imageUrl
       ? userBackgroundImageStyle(campaign.presentation.background.imageUrl)
+      : templateDefaultBackground
+        ? `url("${templateDefaultBackground}")`
       : isScratchVaultTemplate
         ? `radial-gradient(circle at 50% 108%, ${withHexAlpha(primaryColor, "58")} 0 27%, transparent 48%), radial-gradient(circle at 15% 10%, ${withHexAlpha(secondaryColor, "4d")} 0 12%, transparent 22%), linear-gradient(155deg, #071126b8 0%, #111b3b99 56%, #071126b8 100%)`
         : isScratchConfettiTemplate

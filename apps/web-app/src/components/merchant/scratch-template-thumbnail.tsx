@@ -43,10 +43,10 @@ const SCRATCH_THUMBNAILS = {
     motif: "gift",
   },
   "scratch-nude-classic": {
-    name: "Nude Élégance personnalisé",
+    name: "Nude",
     eyebrow: "UNE SURPRISE RAFFINÉE",
     headline: "Grattez & découvrez",
-    background: "url('/backgrounds/soft-studio.svg') center / cover no-repeat",
+    background: "url('/images/scratch-templates/nude-neutral-background.webp') center / cover no-repeat",
     ticket: "linear-gradient(155deg, #fffdf8, #f6eee3 58%, #fffaf2)",
     ink: "#49372c",
     muted: "#8a725c",

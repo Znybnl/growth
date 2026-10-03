@@ -33,6 +33,7 @@ import {
   roseInstitutWheelBackground,
   deriveLighterHex,
   scratchTemplatePrimaryColor,
+  scratchTemplateDefaultBackground,
   resolvePromoStrokeColor,
 } from "@/lib/campaign-defaults";
 import { buildWheelVisualSegments, WheelVisualSegment } from "@/lib/wheel-segments";
@@ -148,6 +149,8 @@ function previewBackgroundImage(
   templateId: GamePageTemplateId,
   accent: CampaignSetupInput["accent"],
 ) {
+  const templateBackground = scratchTemplateDefaultBackground(templateId, form.presentation.background);
+  if (templateBackground) return `url("${templateBackground}")`;
   const beautyTheme = beautyScratchTemplate(templateId);
   if (beautyTheme) return `url("${beautyTheme.background}")`;
   if (form.presentation.background.mode === "image" && form.presentation.background.imageUrl) {

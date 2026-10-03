@@ -73,7 +73,7 @@ import {
   defaultScratchTemplateFont,
   defaultScratchTextColor,
   scratchTemplateDefaultPrimaryColor,
-  scratchTemplateBackgroundForSelection,
+  scratchTemplateUsesFixedPrimaryColor,
   shouldApplyScratchTemplateDefaultPrimaryColor,
   DEFAULT_WHEEL_SUBTITLE,
   campaignSubtitleForGameTypeChange,
@@ -2411,7 +2411,7 @@ export function CampaignWizard({
                         { id: "scratch-confetti", label: "Carte confettis", text: "Solaire et festif" },
                         { id: "scratch-coral", label: "Corail joyeux", text: "Clair et chaleureux" },
                         { id: "scratch-lilac", label: "Cadeau lilas", text: "Cadeau clair et contrasté" },
-                        { id: "scratch-nude-classic", label: "Nude Élégance personnalisable", text: "Élégant et personnalisable avec votre fond" },
+                        { id: "scratch-nude-classic", label: "Nude", text: "Un fond doux et neutre, personnalisable avec votre image" },
                         { id: "scratch-sunburst", label: "Rayons soleil", text: "Éclatant et visible" },
                       ] as const
                     : [
@@ -2504,10 +2504,10 @@ export function CampaignWizard({
                           ...current,
                           presentation: {
                             ...current.presentation,
-                            background: scratchTemplateBackgroundForSelection(template.id, {
+                            background: {
                               ...current.presentation.background,
                               color: backgroundColor,
-                            }),
+                            },
                             layout: {
                               ...current.presentation.layout,
                               templateId: template.id,
@@ -2579,14 +2579,13 @@ export function CampaignWizard({
                    <span className="flex flex-wrap items-center gap-2 text-sm font-semibold text-[#182033]">
                      {draft.gameType === "wheel" ? "Couleur principale de la roue" : "Couleur principale du ticket"}
                      {draft.gameType === "scratch" &&
-                     (beautyScratchTemplate(draft.presentation.layout.templateId) ||
-                       draft.presentation.layout.templateId === "scratch-confetti") ? (
+                     scratchTemplateUsesFixedPrimaryColor(draft.presentation.layout.templateId) ? (
                        <span className="rounded-full bg-[#f1ebff] px-2 py-0.5 text-[11px] font-semibold text-[#6944a1]">Palette fixe</span>
                      ) : null}
                    </span>
                    <input
                      type="color"
-                      disabled={draft.gameType === "scratch" && (Boolean(beautyScratchTemplate(draft.presentation.layout.templateId)) || draft.presentation.layout.templateId === "scratch-confetti")}
+                      disabled={draft.gameType === "scratch" && scratchTemplateUsesFixedPrimaryColor(draft.presentation.layout.templateId)}
                      value={draft.gameType === "wheel" ? draft.presentation.wheel.loseColor : draft.accent.signal}
                      onChange={(event) => {
                        const color = event.target.value;

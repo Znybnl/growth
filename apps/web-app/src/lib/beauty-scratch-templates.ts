@@ -1,5 +1,4 @@
 import type { GamePageTemplateId, TextFont } from "@/lib/types";
-import { SOFT_STUDIO_BACKGROUND_URL } from "@/lib/background-library";
 
 export const BEAUTY_SCRATCH_TEMPLATES = [
   {
@@ -78,6 +77,8 @@ export const BEAUTY_SCRATCH_TEMPLATES = [
 export type BeautyScratchTemplateId = (typeof BEAUTY_SCRATCH_TEMPLATES)[number]["id"];
 
 export const CLASSIC_NUDE_SCRATCH_TEMPLATE_ID = "scratch-nude-classic" as const;
+export const NUDE_SCRATCH_TEMPLATE_BACKGROUND_URL =
+  "/images/scratch-templates/nude-neutral-background.webp";
 
 type ScratchVisualTheme = {
   id: GamePageTemplateId;
@@ -95,9 +96,9 @@ type ScratchVisualTheme = {
 const CLASSIC_NUDE_SCRATCH_THEME: ScratchVisualTheme = {
   ...BEAUTY_SCRATCH_TEMPLATES[0],
   id: CLASSIC_NUDE_SCRATCH_TEMPLATE_ID,
-  name: "Nude Élégance personnalisable",
-  description: "L’élégance Nude avec le fond de votre choix.",
-  background: SOFT_STUDIO_BACKGROUND_URL,
+  name: "Nude",
+  description: "Un fond doux et neutre, personnalisable avec votre propre image.",
+  background: NUDE_SCRATCH_TEMPLATE_BACKGROUND_URL,
 };
 
 export const IMMERSIVE_SCRATCH_TEMPLATE_IDS = [

@@ -1,6 +1,5 @@
 import {
   CampaignAccent,
-  CampaignBackgroundSettings,
   CampaignPosterSettings,
   CampaignWheelSettings,
   GamePageTemplateId,
@@ -9,8 +8,7 @@ import {
 import { createPosterSettingsDefaults } from "@/lib/poster-utils";
 import { getPosterTemplate } from "@/lib/poster-templates";
 import { beautyWheelTheme } from "@/lib/beauty-wheel-themes";
-import { BEAUTY_SCRATCH_TEMPLATES, CLASSIC_NUDE_SCRATCH_TEMPLATE_ID, beautyScratchTemplate } from "@/lib/beauty-scratch-templates";
-import { SOFT_STUDIO_BACKGROUND_URL } from "@/lib/background-library";
+import { BEAUTY_SCRATCH_TEMPLATES, CLASSIC_NUDE_SCRATCH_TEMPLATE_ID, NUDE_SCRATCH_TEMPLATE_BACKGROUND_URL, beautyScratchTemplate } from "@/lib/beauty-scratch-templates";
 
 export const LEGACY_DEFAULT_WHEEL_SUBTITLE = "Faites tournez la roue pour jouer !";
 export const DEFAULT_WHEEL_SUBTITLE = "Tounez la roue et tentez de gagner !";
@@ -323,6 +321,7 @@ export function scratchTemplatePrimaryColor(
   configuredColor: string,
   templateId?: GamePageTemplateId,
 ) {
+  if (templateId === CLASSIC_NUDE_SCRATCH_TEMPLATE_ID) return "#b99a6a";
   const beautyTemplate = beautyScratchTemplate(templateId);
   if (beautyTemplate) return beautyTemplate.scratch.base;
   if (templateId === "scratch-confetti") return DEFAULT_SCRATCH_CONFETTI_COLOR;
@@ -456,17 +455,21 @@ export function defaultScratchTemplateFont(templateId?: GamePageTemplateId) {
   }
 }
 
-export function scratchTemplateBackgroundForSelection(
+export function scratchTemplateDefaultBackground(
   templateId: GamePageTemplateId,
-  background: CampaignBackgroundSettings,
-): CampaignBackgroundSettings {
-  if (templateId !== CLASSIC_NUDE_SCRATCH_TEMPLATE_ID) return background;
-  if (background.mode === "image" && background.imageUrl) return background;
-  return {
-    ...background,
-    mode: "image",
-    imageUrl: SOFT_STUDIO_BACKGROUND_URL,
-  };
+  background: { mode: "color" | "image"; imageUrl?: string | null },
+): string | undefined {
+  if (templateId !== CLASSIC_NUDE_SCRATCH_TEMPLATE_ID) return undefined;
+  if (background.mode === "image" && background.imageUrl?.trim()) return undefined;
+  return NUDE_SCRATCH_TEMPLATE_BACKGROUND_URL;
+}
+
+export function scratchTemplateUsesFixedPrimaryColor(templateId?: GamePageTemplateId) {
+  return Boolean(
+    templateId === CLASSIC_NUDE_SCRATCH_TEMPLATE_ID ||
+      beautyScratchTemplate(templateId) ||
+      templateId === "scratch-confetti",
+  );
 }
 
 /**

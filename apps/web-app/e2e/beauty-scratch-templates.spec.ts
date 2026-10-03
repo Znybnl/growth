@@ -1,6 +1,35 @@
 import { expect, test } from "@playwright/test";
-import { BEAUTY_SCRATCH_TEMPLATES } from "../src/lib/beauty-scratch-templates";
+import {
+  BEAUTY_SCRATCH_TEMPLATES,
+  CLASSIC_NUDE_SCRATCH_TEMPLATE_ID,
+  NUDE_SCRATCH_TEMPLATE_BACKGROUND_URL,
+} from "../src/lib/beauty-scratch-templates";
+import {
+  scratchTemplateDefaultBackground,
+  scratchTemplatePrimaryColor,
+  scratchTemplateUsesFixedPrimaryColor,
+} from "../src/lib/campaign-defaults";
 import { signIn } from "./auth-session";
+
+test("Nude a son propre fond par défaut, laisse la priorité à une image choisie et fixe sa couleur", async ({ request }) => {
+  expect(scratchTemplateDefaultBackground(CLASSIC_NUDE_SCRATCH_TEMPLATE_ID, { mode: "color" })).toBe(
+    NUDE_SCRATCH_TEMPLATE_BACKGROUND_URL,
+  );
+  expect(
+    scratchTemplateDefaultBackground(CLASSIC_NUDE_SCRATCH_TEMPLATE_ID, {
+      mode: "image",
+      imageUrl: "/backgrounds/aurora-retail.svg",
+    }),
+  ).toBeUndefined();
+  expect(scratchTemplateDefaultBackground("scratch-coral", { mode: "color" })).toBeUndefined();
+  expect(scratchTemplatePrimaryColor("#ff00ff", CLASSIC_NUDE_SCRATCH_TEMPLATE_ID)).toBe("#b99a6a");
+  expect(scratchTemplateUsesFixedPrimaryColor(CLASSIC_NUDE_SCRATCH_TEMPLATE_ID)).toBe(true);
+  expect(scratchTemplateUsesFixedPrimaryColor("scratch-coral")).toBe(false);
+
+  const asset = await request.get(NUDE_SCRATCH_TEMPLATE_BACKGROUND_URL);
+  expect(asset.ok()).toBe(true);
+  expect(asset.headers()["content-type"]).toContain("image/webp");
+});
 
 test("les tickets initiaux affichent le sous-titre, masquent les deux cartes retirées et personnalisent Cadeau lilas", async ({ page }, testInfo) => {
   test.setTimeout(120_000);
@@ -47,6 +76,28 @@ test("les tickets initiaux affichent le sous-titre, masquent les deux cartes ret
       });
     }
   }
+
+  await page.getByTestId("scratch-template-thumbnail-scratch-nude-classic").locator("xpath=..").click();
+  const nudePreview = page.locator('.okado-preview-surface[data-template-id="scratch-nude-classic"]');
+  await expect(nudePreview).toBeVisible();
+  await expect.poll(() => nudePreview.locator(":scope > div").evaluate((element) => getComputedStyle(element).backgroundImage)).toContain(
+    "nude-neutral-background.webp",
+  );
+  await expect(page.getByText("Palette fixe")).toBeVisible();
+  const nudePrimaryColor = page.locator("label").filter({ hasText: "Couleur principale du ticket" }).locator('input[type="color"]').first();
+  await expect(nudePrimaryColor).toBeDisabled();
+  await expect(nudePreview).toHaveAttribute("data-template-id", "scratch-nude-classic");
+  await nudePreview.screenshot({
+    path: testInfo.outputPath("nude-neutral-background-preview.png"),
+    animations: "disabled",
+  });
+
+  await page.getByRole("button", { name: /Corail joyeux/i }).click();
+  const coralPreview = page.locator('.okado-preview-surface[data-template-id="scratch-coral"]');
+  await expect(coralPreview).toBeVisible();
+  await expect.poll(() => coralPreview.locator(":scope > div").evaluate((element) => getComputedStyle(element).backgroundImage)).not.toContain(
+    "nude-neutral-background.webp",
+  );
 });
 
 test("les miniatures des tickets sont aussi visibles dans l'éditeur de campagne", async ({ page }) => {
