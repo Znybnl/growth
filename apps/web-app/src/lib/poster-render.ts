@@ -5,6 +5,7 @@ import {
   limitCampaignSubtitleLines,
 } from "@/lib/campaign-defaults";
 import { getPosterLogoTextFontSizePx, getPosterLogoTopY, getPosterTemplate, PosterTemplateConfig } from "@/lib/poster-templates";
+import { resolvePosterLogoSource } from "@/lib/poster-logo-source";
 import { getPosterFontAsset, getPosterSubtitleFont } from "@/lib/poster-fonts";
 import { Campaign, CampaignPosterSettings, Prize, TextFont } from "@/lib/types";
 
@@ -380,9 +381,14 @@ function wrapPosterLogoText(text: string, maxCharacters?: number) {
   return lines.slice(0, 2);
 }
 
-function renderLogo(campaign: Campaign, poster: CampaignPosterSettings, template: PosterTemplateConfig) {
+function renderLogo(
+  campaign: Campaign,
+  poster: CampaignPosterSettings,
+  template: PosterTemplateConfig,
+  logoDataSource?: string,
+) {
   const logoMode = poster.logoMode ?? "none";
-  const logoUrl = logoMode === "image" ? poster.logoUrl || campaign.logoUrl : undefined;
+  const logoUrl = resolvePosterLogoSource(logoMode, logoDataSource, poster.logoUrl, campaign.logoUrl);
   const logoText =
     logoMode === "text" ? (poster.logoText ?? campaign.logoText ?? "").trim() : "";
   const logoLayout = getPosterLogoLayout(poster, template, logoText);
@@ -1268,6 +1274,7 @@ export function buildPosterSvg(args: {
   posterFontSource?: string;
   posterSubtitleFontSource?: string;
   premiumBackdropSource?: string;
+  logoDataSource?: string;
   measureHeadline?: (text: string, size: number) => number;
 }) {
   const {
@@ -1278,6 +1285,7 @@ export function buildPosterSvg(args: {
     posterFontSource,
     posterSubtitleFontSource,
     premiumBackdropSource,
+    logoDataSource,
     measureHeadline,
   } = args;
   const posterFontAsset = getPosterFontAsset(poster.headlineFontFamily);
@@ -1375,7 +1383,7 @@ export function buildPosterSvg(args: {
       </defs>
 
       ${renderBackground(effectivePoster, template, premiumBackdropSource)}
-      ${renderLogo(campaign, effectivePoster, template)}
+      ${renderLogo(campaign, effectivePoster, template, logoDataSource)}
       ${renderHeadline(campaign, effectivePoster, template, measureHeadline, subtitleLayout)}
       ${renderPosterSubtitle(subtitleLayout)}
       ${renderSupportingText(template)}
