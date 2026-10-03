@@ -160,10 +160,14 @@ export async function sendRewardEmail(input: SendRewardEmailInput) {
       replyTo: emailSettings.replyTo || undefined,
       text: renderRewardEmailText(emailSettings, variables, {
         appointmentUrl: input.appointmentUrl,
+        rewardAvailableAt: input.rewardAvailableAt,
+        rewardExpiresAt: input.rewardExpiresAt,
       }),
       html: renderRewardEmailHtml(emailSettings, variables, {
         logoSrc: emailLogo.src,
         appointmentUrl: input.appointmentUrl,
+        rewardAvailableAt: input.rewardAvailableAt,
+        rewardExpiresAt: input.rewardExpiresAt,
       }),
       ...(emailLogo.attachment ? { attachments: [emailLogo.attachment] } : {}),
     });

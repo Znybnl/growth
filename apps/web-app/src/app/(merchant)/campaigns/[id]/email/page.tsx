@@ -19,5 +19,5 @@ export default async function CampaignEmailPage({ params }: CampaignEmailPagePro
     notFound();
   }
 
-  return <EmailEditor campaign={performance.campaign} merchant={performance.merchant} />;
+  return <EmailEditor campaign={performance.campaign} merchant={performance.merchant} prizes={performance.prizes} />;
 }

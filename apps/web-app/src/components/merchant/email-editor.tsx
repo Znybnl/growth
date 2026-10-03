@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
@@ -10,13 +9,17 @@ import {
   createCampaignEmailDefaults,
   normalizeCampaignEmailSettings,
   validateCampaignEmailSettings,
+  renderEmailTemplate,
+  renderRewardEmailHtml,
 } from "@/lib/email-settings";
-import { Campaign, CampaignEmailSettings, Merchant } from "@/lib/types";
+import { RewardEmailPreviewFrame } from "@/components/merchant/reward-email-preview-frame";
+import { Campaign, CampaignEmailSettings, Merchant, Prize } from "@/lib/types";
 import { PageHeader } from "@/components/ui/workspace";
 
 type EmailEditorProps = {
   campaign: Campaign;
   merchant: Merchant;
+  prizes: Prize[];
 };
 
 const sampleData = {
@@ -28,26 +31,7 @@ const sampleData = {
   purchaseCondition: "",
 };
 
-function replaceVariables(template: string, campaign: Campaign, merchant: Merchant) {
-  return template
-    .replaceAll("{{firstName}}", sampleData.firstName)
-    .replaceAll("{{merchantName}}", merchant.companyName)
-    .replaceAll("{{campaignTitle}}", campaign.title)
-    .replaceAll("{{prizeLabel}}", sampleData.prizeLabel)
-    .replaceAll("{{redemptionCode}}", sampleData.redemptionCode)
-    .replaceAll("{{rewardAvailability}}", sampleData.rewardAvailability)
-    .replaceAll("{{rewardExpiry}}", sampleData.rewardExpiry)
-    .replaceAll("{{purchaseCondition}}", sampleData.purchaseCondition);
-}
-
-function splitBlocks(text: string) {
-  return text
-    .split(/\n{2,}/)
-    .map((block) => block.trim())
-    .filter(Boolean);
-}
-
-export function EmailEditor({ campaign, merchant }: EmailEditorProps) {
+export function EmailEditor({ campaign, merchant, prizes }: EmailEditorProps) {
   const router = useRouter();
   const [email, setEmail] = useState<CampaignEmailSettings>(() =>
     normalizeCampaignEmailSettings(
@@ -59,16 +43,29 @@ export function EmailEditor({ campaign, merchant }: EmailEditorProps) {
   const [message, setMessage] = useState<string | null>(null);
   const validationErrors = useMemo(() => validateCampaignEmailSettings(email), [email]);
 
-  const preview = useMemo(
-    () => ({
-      subject: replaceVariables(email.subject, campaign, merchant),
-      preheader: replaceVariables(email.preheader, campaign, merchant),
-      headline: replaceVariables(email.headline, campaign, merchant),
-      body: splitBlocks(replaceVariables(email.body, campaign, merchant)),
-      footer: splitBlocks(replaceVariables(email.footerNote, campaign, merchant)),
-    }),
-    [campaign, email, merchant],
-  );
+  const preview = useMemo(() => {
+    const prize = prizes[0];
+    const variables = {
+      ...sampleData,
+      merchantName: merchant.companyName,
+      campaignTitle: campaign.title,
+      prizeLabel: prize?.label || sampleData.prizeLabel,
+      redeemUrl: "https://app.okado.app/redeem/OK-AB12CD34",
+      qrUrl: "/email-demo-qr.png",
+      rewardDate: "3 octobre 2026",
+      usageConditions: prize?.usageConditions || "",
+      purchaseCondition: prize?.purchaseRequired ? "Retrait du lot soumis à une condition d’achat." : "",
+    };
+    return {
+      subject: renderEmailTemplate(email.subject, variables),
+      preheader: renderEmailTemplate(email.preheader, variables),
+      senderName: renderEmailTemplate(email.senderName, variables),
+      html: renderRewardEmailHtml(email, variables, {
+        logoSrc: campaign.logoUrl,
+        appointmentUrl: merchant.appointmentUrl,
+      }),
+    };
+  }, [campaign, email, merchant, prizes]);
 
   function updateField<Key extends keyof CampaignEmailSettings>(
     key: Key,
@@ -180,67 +177,12 @@ export function EmailEditor({ campaign, merchant }: EmailEditorProps) {
               <div className="mt-2 text-base font-semibold text-[#111827]">{preview.subject}</div>
               <div className="mt-2 text-sm text-[#64748b]">{preview.preheader}</div>
               <div className="mt-2 text-xs text-[#64748b]">
-                Expéditeur : {replaceVariables(email.senderName, campaign, merchant)}
+                Expéditeur : {preview.senderName}
                 {email.replyTo ? ` · Reply-to : ${email.replyTo}` : ""}
               </div>
             </div>
 
-            <div className="bg-[#f8fafc] px-4 py-6 sm:px-6 sm:py-8">
-              <div className="rounded-[20px] bg-white p-5 shadow-[0_8px_24px_rgba(15,23,42,0.08)] sm:p-6">
-                <div className="text-center">
-                  {campaign.logoUrl ? (
-                    <Image
-                      src={campaign.logoUrl}
-                      alt="Logo"
-                      width={180}
-                      height={70}
-                      unoptimized
-                      className="mx-auto max-h-[56px] w-auto object-contain"
-                    />
-                  ) : (
-                    <div className="text-2xl font-semibold text-[#111827]">
-                      {campaign.logoText ?? merchant.companyName}
-                    </div>
-                  )}
-                </div>
-
-                <h3 className="mt-6 text-3xl font-semibold leading-tight text-[#111827]">
-                  {preview.headline}
-                </h3>
-
-                <div className="mt-5 space-y-4 text-sm leading-7 text-[#475569]">
-                  {preview.body.map((block) => (
-                    <p key={block}>{block}</p>
-                  ))}
-                </div>
-
-                <div className="mt-6 rounded-[18px] border border-[#e2e8f0] bg-[#f8fafc] px-4 py-4">
-                  <div className="text-xs uppercase tracking-[0.2em] text-[#94a3b8]">
-                    Code de retrait
-                  </div>
-                  <div className="mt-2 text-2xl font-semibold text-[#0f172a]">
-                    {sampleData.redemptionCode}
-                  </div>
-                </div>
-
-                <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center">
-                  <div className="h-[128px] w-[128px] rounded-[18px] border border-[#dbe4f0] bg-[radial-gradient(#111827_1.5px,transparent_1.5px)] [background-size:8px_8px]" />
-                  <button
-                    type="button"
-                    className="rounded-[14px] px-5 py-3 text-sm font-semibold text-white"
-                    style={{ backgroundColor: email.accentColor }}
-                  >
-                    {email.buttonLabel}
-                  </button>
-                </div>
-
-                <div className="mt-6 space-y-3 text-xs leading-6 text-[#64748b]">
-                  {preview.footer.map((block) => (
-                    <p key={block}>{block}</p>
-                  ))}
-                </div>
-              </div>
-            </div>
+            <RewardEmailPreviewFrame html={preview.html} />
           </div>
         </div>
       </section>
