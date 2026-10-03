@@ -82,7 +82,7 @@ export function defaultWheelSubtitleSpacingForTemplate(templateId?: GamePageTemp
 }
 
 export function defaultWheelBlockSpacingForTemplate(templateId?: GamePageTemplateId) {
-  if (templateId === "halloween-gold") return 38;
+  if (templateId === "halloween-gold") return 32;
   return templateId === "beauty-rose"
     ? DEFAULT_ROSE_POWDER_WHEEL_SPACING_PX
     : DEFAULT_WHEEL_SPACING_PX;

@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { parseCampaignSetupInput } from "../src/lib/merchant-input";
 import {
+  defaultWheelBlockSpacingForTemplate,
   wheelHeadingFontForTemplateSelection,
   wheelLogoColorForTemplateSelection,
   wheelLogoGapForTemplateSelection,
@@ -48,6 +49,7 @@ test("enregistrement du template Halloween et isolation des réglages des autres
   expect(wheelHeadingFontForTemplateSelection("classic", "fredoka")).toBe(
     "poppins",
   );
+  expect(defaultWheelBlockSpacingForTemplate("halloween-gold")).toBe(32);
   expect(
     wheelLogoGapForTemplateSelection("halloween-gold", "classic", 50),
   ).toBe(5);
@@ -118,6 +120,36 @@ for (const width of [320, 390, 600, 1280]) {
     expect(errors).toEqual([]);
   });
 }
+
+test("proportions de la roue, cadre et centre fidèles à la référence à 390px", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/dev/halloween-proof");
+  await page.evaluate(() => document.fonts.ready);
+  const scene = await page.getByTestId("halloween-wheel-scene").boundingBox();
+  const wheel = await page.getByTestId("halloween-wheel").boundingBox();
+  const center = await page
+    .getByRole("button", { name: "Jouer à la roue" })
+    .boundingBox();
+  expect(scene).not.toBeNull();
+  expect(wheel).not.toBeNull();
+  expect(center).not.toBeNull();
+  expect(wheel!.width / scene!.width).toBeCloseTo(0.82, 2);
+  expect((wheel!.y + wheel!.height / 2 - scene!.y) / scene!.width).toBeCloseTo(
+    1.04,
+    2,
+  );
+  expect(center!.width / wheel!.width).toBeCloseTo(0.31, 2);
+  await expect(
+    page
+      .getByTestId("halloween-wheel-scene")
+      .locator('img[alt="Spécial Halloween"]'),
+  ).toHaveAttribute("src", /wordmark-v3/);
+  await expect(
+    page.getByTestId("halloween-wheel").locator("image[href$='foil.webp']"),
+  ).toHaveCount(1);
+});
 
 test("le titre reste éditable, sans réduction automatique ni chevauchement avec la roue", async ({
   page,
@@ -269,13 +301,14 @@ test("page de jeu en prévisualisation : clic, session simulée, animation et fo
   expect(sessionRequests).toBe(1);
 });
 
-test("les trois assets et les six pictogrammes sont réellement servis", async ({
+test("les quatre assets et les six pictogrammes sont réellement servis", async ({
   request,
 }) => {
   for (const asset of [
     "background",
-    "frame",
-    "wordmark",
+    "frame-v2",
+    "wordmark-v3",
+    "foil",
     "gift",
     "mask",
     "pumpkin",

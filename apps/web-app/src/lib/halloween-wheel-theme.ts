@@ -4,7 +4,7 @@ export const HALLOWEEN_WHEEL_TEMPLATE_ID = "halloween-gold" as const;
 export const HALLOWEEN_WHEEL_BACKGROUND =
   "/images/templates/halloween-gold/background.webp";
 export const HALLOWEEN_WHEEL_FRAME =
-  "/images/templates/halloween-gold/frame.webp";
+  "/images/templates/halloween-gold/frame-v2.webp";
 
 /** Presentation only: retain every distinct configured reward and the actual result. */
 export function halloweenWheelVisualSegments(

@@ -28,7 +28,7 @@ export function HalloweenWheelScene({
   titleFontWeight = 500,
   secondaryText = "",
   subtitleSpacingPx = 15,
-  blockSpacingPx = 38,
+  blockSpacingPx = 32,
   children,
 }: {
   logoMode?: LogoMode;
@@ -117,11 +117,11 @@ export function HalloweenWheelScene({
         ) : null}
         <p className={styles.halloween}>
           <Image
-            src="/images/templates/halloween-gold/wordmark.webp"
+            src="/images/templates/halloween-gold/wordmark-v3.webp"
             alt="Spécial Halloween"
             width={900}
-            height={207}
-            sizes="(max-width: 600px) 76vw, 456px"
+            height={196}
+            sizes="(max-width: 600px) 79vw, 474px"
             className={styles.wordmark}
           />
         </p>
@@ -177,16 +177,27 @@ export function HalloweenWheelVisual({
       >
         <svg viewBox="0 0 640 640" className={styles.disc} aria-hidden="true">
           <defs>
-            <linearGradient id={gold} x1="0" y1=".1" x2="1" y2=".7">
-              <stop stopColor="#a95b20" />
-              <stop offset=".26" stopColor="#f9ad50" />
-              <stop offset=".48" stopColor="#ffe4a1" />
-              <stop offset=".7" stopColor="#f8b459" />
-              <stop offset="1" stopColor="#a7571a" />
-            </linearGradient>
+            <radialGradient id={gold} cx=".5" cy=".47" r=".65">
+              <stop stopColor="#ffdb88" />
+              <stop offset=".28" stopColor="#ffc56b" />
+              <stop offset=".7" stopColor="#ed9b37" />
+              <stop offset="1" stopColor="#a9551b" />
+            </radialGradient>
+            <pattern
+              id={`${uid}-foil`}
+              width="640"
+              height="640"
+              patternUnits="userSpaceOnUse"
+            >
+              <image
+                href="/images/templates/halloween-gold/foil.webp"
+                width="640"
+                height="640"
+              />
+            </pattern>
             <radialGradient id={black} cx=".3" cy=".25" r=".9">
-              <stop stopColor="#30291e" />
-              <stop offset=".6" stopColor="#100e0a" />
+              <stop stopColor="#352f26" />
+              <stop offset=".6" stopColor="#15110d" />
               <stop offset="1" stopColor="#020201" />
             </radialGradient>
           </defs>
@@ -204,6 +215,13 @@ export function HalloweenWheelVisual({
                   stroke="#f7c46e"
                   strokeWidth="1.25"
                 />
+                {light ? (
+                  <path
+                    d={`M320 320 L${start.join(" ")} A303 303 0 ${angle > 180 ? 1 : 0} 1 ${end.join(" ")} Z`}
+                    fill={`url(#${uid}-foil)`}
+                    opacity=".12"
+                  />
+                ) : null}
                 <image
                   href={`/images/templates/halloween-gold/${icons[index % icons.length]}.webp`}
                   x={center[0] - (index % 6 === 1 ? 61 : 47)}

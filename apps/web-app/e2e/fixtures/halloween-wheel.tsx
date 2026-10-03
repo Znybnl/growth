@@ -64,7 +64,7 @@ export const halloweenFixture = parseCampaignSetupInput(
       },
       layout: {
         templateId: "halloween-gold",
-        blockSpacingPx: 38,
+        blockSpacingPx: 32,
         wheelSubtitle: "",
         subtitleSpacingPx: 15,
       },
@@ -99,7 +99,7 @@ export function HalloweenFixture({
   const [automatic, setAutomatic] = useState<string | null>(null);
   const [logoMode, setLogoMode] = useState<LogoMode>("text");
   const [subtitle, setSubtitle] = useState("");
-  const [gap, setGap] = useState(38);
+  const [gap, setGap] = useState(32);
   const form = {
     ...halloweenFixture,
     subtitle: title,
