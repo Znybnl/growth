@@ -1177,7 +1177,6 @@ function renderSteps(template: PosterTemplateConfig, gameType: Campaign["gameTyp
     const circleColor = isGradientClassic ? "#ffffff" : "#f5f1e2";
     const scanIcon = (x: number) => `<g transform="translate(${x} 80) scale(.78)" fill="none" stroke="${iconColor}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><rect x="-22" y="-35" width="44" height="70" rx="7"/><path d="M-14-23h28M-14 22h28" stroke-width="3"/><circle cx="0" cy="28" r="2" fill="${iconColor}"/></g>`;
     const wheelIcon = (x: number) => `<g transform="translate(${x} 80) scale(.8)" fill="none" stroke="${iconColor}" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><circle r="34"/><circle r="4" fill="${iconColor}" stroke="none"/><path d="M0-30v60M-30 0h60M-21-21l42 42M21-21l-42 42"/></g>`;
-<<<<<<< HEAD
     const gameIcon = (x: number) => gameType === "wheel" ? wheelIcon(x) : renderScratchTicketIcon(x, 80, iconColor);
     // Lucide Gift icon geometry (24x24), reused verbatim in this static SVG renderer.
     const giftIcon = (x: number) => `<g transform="translate(${x} 80) scale(2.25) translate(-12 -12)" fill="none" stroke="${iconColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/></g>`;
