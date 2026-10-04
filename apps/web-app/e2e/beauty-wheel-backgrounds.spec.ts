@@ -2,9 +2,9 @@ import { expect, test } from "@playwright/test";
 import { beautyWheelDefaultBackground, BEAUTY_WHEEL_THEMES } from "../src/lib/beauty-wheel-themes";
 import { beautyScratchTemplate } from "../src/lib/beauty-scratch-templates";
 
-for (const [template, scratch] of [["beauty-nude", "beauty-scratch-nude"], ["beauty-botanical", "beauty-scratch-botanical"]] as const) {
+for (const [template, scratch] of [["beauty-nude", "beauty-scratch-nude"], ["beauty-botanical", "beauty-scratch-botanical"], ["beauty-editorial", "beauty-scratch-noir-or"], ["beauty-rose", null]] as const) {
   const theme = BEAUTY_WHEEL_THEMES.find((item) => item.id === template)!;
-  const url = beautyScratchTemplate(scratch)!.background;
+  const url = scratch ? beautyScratchTemplate(scratch)!.background : "/images/wheel-templates/beauty-rose-satin.webp";
   test(`${template} : fond du ticket, priorité aux choix manuels, aucun enregistrement implicite`, () => {
     const background = { mode: "color", color: theme.background };
     const original = { ...background };
@@ -34,7 +34,8 @@ for (const [template, scratch] of [["beauty-nude", "beauty-scratch-nude"], ["bea
         } else {
           await expect(art).toHaveCount(0);
           const container = mode === "public" ? surface : surface.locator(":scope > div");
-          await expect(container).toHaveCSS("background-color", background === "color" ? "rgb(224, 242, 254)" : theme.background === "#f8f3ea" ? "rgb(248, 243, 234)" : "rgb(246, 247, 241)");
+          const rgb = [0, 2, 4].map((offset) => Number.parseInt(theme.background.slice(offset + 1, offset + 3), 16));
+          await expect(container).toHaveCSS("background-color", background === "color" ? "rgb(224, 242, 254)" : `rgb(${rgb.join(", ")})`);
           if (background === "image") {
             await expect(container).toHaveCSS("background-image", /beauty-lilas-soin-doux/);
             await expect(surface.locator('svg[viewBox="0 0 390 844"]')).toHaveCount(0);
@@ -49,7 +50,7 @@ for (const [template, scratch] of [["beauty-nude", "beauty-scratch-nude"], ["bea
 }
 
 test("les autres templates ne reçoivent pas le fond Nude ou Botanique", () => {
-  for (const theme of BEAUTY_WHEEL_THEMES.filter((item) => !["beauty-nude", "beauty-botanical"].includes(item.id))) {
+  for (const theme of BEAUTY_WHEEL_THEMES.filter((item) => !["beauty-nude", "beauty-botanical", "beauty-rose", "beauty-editorial"].includes(item.id))) {
     expect(beautyWheelDefaultBackground(theme.id, { mode: "color", color: theme.background })).toBeNull();
   }
   expect(beautyWheelDefaultBackground("classic", { mode: "color", color: "#ffffff" })).toBeNull();
@@ -59,7 +60,8 @@ test("changer de template ne propage pas le fond natif et conserve une image man
   await page.goto("/dev/beauty-wheel-backgrounds");
   await expect(page.locator('img[data-template-art="beauty-nude"]')).toHaveCount(1);
   await page.getByLabel("Template de test").selectOption("beauty-rose");
-  await expect(page.locator("img[data-template-art]")).toHaveCount(0);
+  await expect(page.locator('img[data-template-art="beauty-rose"]')).toHaveCount(1);
+  await expect(page.locator('img[data-template-art="beauty-nude"]')).toHaveCount(0);
   await page.getByLabel("Template de test").selectOption("beauty-botanical");
   await expect(page.locator('img[data-template-art="beauty-botanical"]')).toHaveCount(1);
   await page.getByLabel("Fond de test").selectOption("image");
@@ -70,14 +72,14 @@ test("changer de template ne propage pas le fond natif et conserve une image man
 
 test("les miniatures reprennent les mêmes images raster", async ({ page }) => {
   await page.goto("/dev/beauty-wheel-backgrounds?mode=gallery");
-  for (const id of ["beauty-nude", "beauty-botanical"]) {
+  for (const id of ["beauty-nude", "beauty-botanical", "beauty-rose", "beauty-editorial"]) {
     const art = page.locator(`img[data-template-art="${id}"]`);
     await expect(art).toHaveJSProperty("complete", true);
     expect(await art.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
   }
 });
 
-for (const template of ["beauty-nude", "beauty-botanical"]) {
+for (const template of ["beauty-nude", "beauty-botanical", "beauty-rose", "beauty-editorial"]) {
   for (const width of [320, 1280]) {
     test(`${template} : fond mobile plein écran à ${width}px`, async ({ page }) => {
       await page.route("**/api/public/campaign/fixture-wheel-backgrounds?*", (route) => route.fulfill({ json: { campaign: { actions: [] } } }));

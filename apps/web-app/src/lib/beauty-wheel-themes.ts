@@ -6,7 +6,7 @@ export const BEAUTY_WHEEL_THEMES = [
   { id: "beauty-nude", name: "Nude & Or", tagline: "Minimal & premium", primary: "#b99052", secondary: "#f8f3ea", background: "#f8f3ea", text: "#47382c", font: "playfair" },
   { id: "beauty-botanical", name: "Botanical", tagline: "Naturel & apaisant", primary: "#8da480", secondary: "#f6f7f1", background: "#f6f7f1", text: "#254238", font: "dm-sans" },
   { id: "beauty-pop", name: "Beauty Pop", tagline: "Vif & ludique", primary: "#ff4f87", secondary: "#fff2f5", background: "#fff2f5", text: "#4b2440", font: "poppins" },
-  { id: "beauty-editorial", name: "Éditorial chic", tagline: "Sophistiqué & mode", primary: "#171614", secondary: "#f4f0e8", background: "#f4f0e8", text: "#171614", font: "bodoni" },
+  { id: "beauty-editorial", name: "Noir & Or", tagline: "Sobre & précieux", primary: "#171614", secondary: "#f4f0e8", background: "#0b0c0b", text: "#e4c17c", font: "bodoni" },
   { id: "beauty-tech", name: "Beauty Tech", tagline: "Moderne & lumineux", primary: "#7c4dff", secondary: "#24183a", background: "#171126", text: "#f8f5ff", font: "space-grotesk" },
 ] as const satisfies ReadonlyArray<{
   id: GamePageTemplateId;
@@ -46,19 +46,25 @@ export function isBeautyIndustry(industry?: string | null) {
   return (industry ?? "").trim().toLocaleLowerCase("fr") === "beauté";
 }
 
+export function beautyWheelLogoColor(templateId: BeautyWheelTemplateId) {
+  return templateId === "beauty-editorial" ? "#f6e7c6" : beautyWheelTheme(templateId)!.text;
+}
+
 /** Native artwork is resolved at render time, never saved as a merchant image. */
 export function beautyWheelDefaultBackground(
   templateId: GamePageTemplateId | undefined,
   background: { mode: string; color: string; imageUrl?: string },
 ): string | null {
-  const scratchId = templateId === "beauty-nude"
-    ? "beauty-scratch-nude"
-    : templateId === "beauty-botanical" ? "beauty-scratch-botanical" : null;
-  if (!scratchId || (background.mode === "image" && background.imageUrl)) return null;
+  const artwork = templateId === "beauty-rose"
+    ? "/images/wheel-templates/beauty-rose-satin.webp"
+    : templateId === "beauty-nude" ? beautyScratchTemplate("beauty-scratch-nude")!.background
+    : templateId === "beauty-botanical" ? beautyScratchTemplate("beauty-scratch-botanical")!.background
+    : templateId === "beauty-editorial" ? beautyScratchTemplate("beauty-scratch-noir-or")!.background : null;
+  if (!artwork || (background.mode === "image" && background.imageUrl)) return null;
   // Keep a previously chosen solid color effective as well as a manual image.
   const theme = beautyWheelTheme(templateId)!;
   if (background.mode === "color" && background.color.toLowerCase() !== theme.background) return null;
-  return beautyScratchTemplate(scratchId)!.background;
+  return artwork;
 }
 
 function luminance(hex: string) {

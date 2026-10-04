@@ -1,4 +1,4 @@
-import { BEAUTY_WHEEL_THEMES, beautyWheelBackground, beautyWheelDefaultBackground, beautyWheelButtonTextColor } from "@/lib/beauty-wheel-themes";
+import { BEAUTY_WHEEL_THEMES, beautyWheelBackground, beautyWheelDefaultBackground, beautyWheelButtonTextColor, beautyWheelLogoColor } from "@/lib/beauty-wheel-themes";
 import Image from "next/image";
 import { buildBeautyWheelSegmentColors } from "@/lib/beauty-wheel-segments";
 import { BeautyLogoRule, BeautyWheelPointer } from "@/components/public/beauty-wheel-finishes";
@@ -31,7 +31,7 @@ function BeautyWheelThumbnail({ theme }: { theme: BeautyTheme }) {
         <div
           data-testid="beauty-thumbnail-center"
           className="absolute left-1/2 top-1/2 flex size-[2.7rem] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 text-[8px] font-semibold tracking-[0.025em]"
-          style={{ background: beautyCenterFinish(centerBackground), color: centerTextColor, fontFamily: textFontFamily("dm-sans"), ...beautyCenterRelief(theme.primary) }}
+          style={{ background: beautyCenterFinish(centerBackground), color: centerTextColor, fontFamily: textFontFamily("dm-sans"), ...beautyCenterRelief(theme.id === "beauty-editorial" ? ringColor : theme.primary) }}
         >
           <span>JOUER</span>
         </div>
@@ -103,7 +103,7 @@ export function BeautyWheelTemplateGallery({
                 style={{ backgroundColor: theme.background, backgroundImage: nativeBackground ? "none" : beautyWheelBackground(theme.id, theme.background, theme.primary), color: theme.text }}
               >
                 {nativeBackground ? <Image src={nativeBackground} alt="" fill sizes="320px" data-template-art={theme.id} className="pointer-events-none object-cover" /> : <BeautyThumbnailDecor theme={theme} />}
-                <div data-testid="beauty-thumbnail-logo" className="relative z-10 min-h-[20px] max-w-[56%] text-[8px] font-semibold uppercase leading-[1.15] tracking-[0.06em]">Votre établissement<BeautyLogoRule color={theme.text} /></div>
+                <div data-testid="beauty-thumbnail-logo" className="relative z-10 min-h-[20px] max-w-[56%] text-[8px] font-semibold uppercase leading-[1.15] tracking-[0.06em]" style={{ color: beautyWheelLogoColor(theme.id) }}>Votre établissement<BeautyLogoRule color={beautyWheelLogoColor(theme.id)} /></div>
                 <div className="relative z-10 mt-3 max-w-[56%] text-[13px] font-bold leading-[1.12]" style={{ fontFamily: textFontFamily(theme.font) }}>Votre animation<br />vous réserve une surprise</div>
                 <div className="relative z-10 mt-1 max-w-[55%] text-[8px] leading-tight opacity-75">Des surprises vous attendent</div>
                 <BeautyWheelThumbnail theme={theme} />

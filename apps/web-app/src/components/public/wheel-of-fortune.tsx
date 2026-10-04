@@ -460,7 +460,6 @@ export function WheelOfFortune({
         }`}
         style={{
           top: wheelTop,
-          left: pageTemplate === "beauty-editorial" ? "53%" : undefined,
         }}
       >
         {(isRoseInstitutTemplate || isBeautyTemplate || isRestaurantPopTemplate) && !isRosePowderTemplate ? (
@@ -746,7 +745,7 @@ export function WheelOfFortune({
                 : isClassicTemplate || isRestaurantPopTemplate
                   ? highContrastTextColor(centerButtonBackground)
                   : centerButtonTextColor,
-            borderColor: hasBeautyFinish ? beautyCenterRelief(isRosePowderTemplate ? roseAccent : centerButtonBackground).borderColor : isRoseInstitutTemplate || isClassicTemplate || isRestaurantPopTemplate ? "#ffffff" : buttonStyle?.borderColor ?? "#ffffff",
+            borderColor: hasBeautyFinish ? beautyCenterRelief(isRosePowderTemplate ? roseAccent : pageTemplate === "beauty-editorial" ? beautyOuterRingColor : centerButtonBackground).borderColor : isRoseInstitutTemplate || isClassicTemplate || isRestaurantPopTemplate ? "#ffffff" : buttonStyle?.borderColor ?? "#ffffff",
             fontSize: isClassicTemplate
               ? "clamp(0.88rem, 5.1cqw, 1.75rem)"
               : isRestaurantPopTemplate

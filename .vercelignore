@@ -14,6 +14,8 @@ node_modules
 !apps/web-app/public/images/templates/halloween-gold/*.webp
 # Keep the production backgrounds and scratch textures used by the beauty scratch templates.
 !apps/web-app/public/images/scratch-templates/*.webp
+# Native Rose poudré wheel artwork must also be packaged on Vercel.
+!apps/web-app/public/images/wheel-templates/beauty-rose-satin.webp
 # Keep the production asset required by the Elegance poster preview and PNG.
 !apps/web-app/public/backgrounds/premium-poster-backdrop.png
 # Keep the production asset required by the Botanique poster preview and PNG.
