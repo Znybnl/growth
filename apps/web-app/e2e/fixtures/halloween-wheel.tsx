@@ -11,6 +11,7 @@ import { HalloweenWheelScene } from "@/components/public/halloween-wheel-art";
 import { WheelOfFortune } from "@/components/public/wheel-of-fortune";
 import { parseCampaignSetupInput } from "@/lib/merchant-input";
 import { buildWheelVisualSegments } from "@/lib/wheel-segments";
+import { DEFAULT_WHEEL_SPACING_PX } from "@/lib/campaign-defaults";
 import type {
   Merchant,
   PublicCampaign,
@@ -46,7 +47,7 @@ export const halloweenFixture = parseCampaignSetupInput(
       email: {},
       logo: {
         sizePercent: 100,
-        marginBottomPx: 5,
+        marginBottomPx: DEFAULT_WHEEL_SPACING_PX,
         textColor: "#ffffff",
         align: "center",
       },
@@ -64,7 +65,7 @@ export const halloweenFixture = parseCampaignSetupInput(
       },
       layout: {
         templateId: "halloween-gold",
-        blockSpacingPx: 32,
+        blockSpacingPx: DEFAULT_WHEEL_SPACING_PX,
         wheelSubtitle: "",
         subtitleSpacingPx: 15,
       },
@@ -99,7 +100,7 @@ export function HalloweenFixture({
   const [automatic, setAutomatic] = useState<string | null>(null);
   const [logoMode, setLogoMode] = useState<LogoMode>("text");
   const [subtitle, setSubtitle] = useState("");
-  const [gap, setGap] = useState(32);
+  const [gap, setGap] = useState(DEFAULT_WHEEL_SPACING_PX);
   const form = {
     ...halloweenFixture,
     subtitle: title,

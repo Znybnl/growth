@@ -82,7 +82,6 @@ export function defaultWheelSubtitleSpacingForTemplate(templateId?: GamePageTemp
 }
 
 export function defaultWheelBlockSpacingForTemplate(templateId?: GamePageTemplateId) {
-  if (templateId === "halloween-gold") return 32;
   return templateId === "beauty-rose"
     ? DEFAULT_ROSE_POWDER_WHEEL_SPACING_PX
     : DEFAULT_WHEEL_SPACING_PX;
@@ -296,10 +295,10 @@ export function wheelHeadingFontForTemplateSelection(templateId: GamePageTemplat
   return templateId === "classic" ? "poppins" : currentFont;
 }
 
-/** Isolate Halloween's compact header preset from the other templates' saved spacing. */
+/** Initialize Halloween with the shared wheel spacing, preserving saved template choices. */
 export function wheelLogoGapForTemplateSelection(target: GamePageTemplateId, previous: GamePageTemplateId, current: number, saved?: number) {
   if (typeof saved === "number") return saved;
-  if (target === "halloween-gold") return 5;
+  if (target === "halloween-gold") return DEFAULT_WHEEL_SPACING_PX;
   return previous === "halloween-gold" ? DEFAULT_WHEEL_SPACING_PX : current;
 }
 

@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useId, type ReactNode } from "react";
 import type { LogoMode, TextAlign } from "@/lib/types";
 import type { WheelVisualSegment } from "@/lib/wheel-segments";
+import { DEFAULT_WHEEL_SPACING_PX } from "@/lib/campaign-defaults";
 import {
   HALLOWEEN_WHEEL_BACKGROUND,
   HALLOWEEN_WHEEL_FRAME,
@@ -20,7 +21,7 @@ export function HalloweenWheelScene({
   logoTextSizePx = 24,
   logoTextColor = "#f8f6ef",
   logoAlign = "center",
-  logoBottomSpacingPx = 5,
+  logoBottomSpacingPx = DEFAULT_WHEEL_SPACING_PX,
   title,
   titleAlign = "center",
   titleFontSizePx = 40,
@@ -28,7 +29,7 @@ export function HalloweenWheelScene({
   titleFontWeight = 500,
   secondaryText = "",
   subtitleSpacingPx = 15,
-  blockSpacingPx = 32,
+  blockSpacingPx = DEFAULT_WHEEL_SPACING_PX,
   children,
 }: {
   logoMode?: LogoMode;

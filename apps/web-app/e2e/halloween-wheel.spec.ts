@@ -1,7 +1,10 @@
 import { expect, test } from "@playwright/test";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { parseCampaignSetupInput } from "../src/lib/merchant-input";
 import {
   defaultWheelBlockSpacingForTemplate,
+  DEFAULT_WHEEL_SPACING_PX,
   wheelHeadingFontForTemplateSelection,
   wheelLogoColorForTemplateSelection,
   wheelLogoGapForTemplateSelection,
@@ -49,9 +52,15 @@ test("enregistrement du template Halloween et isolation des réglages des autres
   expect(wheelHeadingFontForTemplateSelection("classic", "fredoka")).toBe(
     "poppins",
   );
-  expect(defaultWheelBlockSpacingForTemplate("halloween-gold")).toBe(32);
+  expect(defaultWheelBlockSpacingForTemplate("halloween-gold")).toBe(DEFAULT_WHEEL_SPACING_PX);
   expect(
     wheelLogoGapForTemplateSelection("halloween-gold", "classic", 50),
+  ).toBe(DEFAULT_WHEEL_SPACING_PX);
+  expect(
+    wheelLogoGapForTemplateSelection("halloween-gold", "classic", 21, 0),
+  ).toBe(0);
+  expect(
+    wheelLogoGapForTemplateSelection("halloween-gold", "classic", 50, 5),
   ).toBe(5);
   expect(
     wheelLogoGapForTemplateSelection("classic", "halloween-gold", 5, 37),
@@ -62,6 +71,14 @@ test("enregistrement du template Halloween et isolation des réglages des autres
   expect(
     wheelLogoGapForTemplateSelection("classic", "restaurant-pop", 21),
   ).toBe(21);
+});
+
+test("le packaging Vercel inclut les assets Halloween malgré l’exclusion globale WebP", () => {
+  const rules = readFileSync(resolve(__dirname, "../../../.vercelignore"), "utf8");
+  const allowRule = "!apps/web-app/public/images/templates/halloween-gold/*.webp";
+  const lines = rules.split(/\r?\n/);
+  expect(lines).toContain(allowRule);
+  expect(lines.lastIndexOf(allowRule)).toBeGreaterThan(lines.lastIndexOf("*.webp"));
 });
 
 for (const width of [320, 390, 600, 1280]) {
@@ -121,7 +138,7 @@ for (const width of [320, 390, 600, 1280]) {
   });
 }
 
-test("proportions de la roue, cadre et centre fidèles à la référence à 390px", async ({
+test("proportions de roue préservées et espacements communs de 50px à 390px", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
@@ -137,10 +154,15 @@ test("proportions de la roue, cadre et centre fidèles à la référence à 390p
   expect(center).not.toBeNull();
   expect(wheel!.width / scene!.width).toBeCloseTo(0.82, 2);
   expect((wheel!.y + wheel!.height / 2 - scene!.y) / scene!.width).toBeCloseTo(
-    1.04,
+    1.20,
     2,
   );
   expect(center!.width / wheel!.width).toBeCloseTo(0.31, 2);
+  const gaps = await page.getByTestId("halloween-wheel-scene").evaluate((scene) => ({
+    logo: getComputedStyle(scene.querySelector("header")!).marginBottom,
+    wheel: getComputedStyle(scene.querySelector('[data-testid="halloween-wheel"]')!.parentElement!).marginTop,
+  }));
+  expect(gaps).toEqual({ logo: "50px", wheel: "50px" });
   await expect(
     page
       .getByTestId("halloween-wheel-scene")

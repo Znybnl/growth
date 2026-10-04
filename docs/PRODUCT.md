@@ -79,11 +79,12 @@
 ## Roue Halloween dorée — issue #456
 
 - Modèle générique disponible pour tous les secteurs, dans le wizard et l’éditeur classique : `halloween-gold`.
-- Le logo (texte, image ou aucun), le titre, le sous-titre, les polices, tailles, alignements et espacements restent configurables. Bodoni est la police initiale du titre ; la courte marge sous le logo est propre à ce modèle et les marges des autres modèles sont mémorisées/restaurées.
+- Le logo (texte, image ou aucun), le titre, le sous-titre, les polices, tailles, alignements et espacements restent configurables. Bodoni est la police initiale du titre ; les marges de chaque modèle sont mémorisées/restaurées.
 - Le décor raster, les dorures du titre, la mention « Spécial Halloween », les couleurs et le traitement de la roue sont fixes. Aucun pictogramme dans le bouton central JOUER.
 - Six secteurs alternés noir/or reprennent la référence. Les pictogrammes sont décoratifs, pas une promesse de lot : les vrais lots, probabilités, résultat serveur, action marketing et parcours de gain ne changent pas. Si plus de six résultats distincts sont configurés, le rendu s’étend au nombre pair nécessaire pour ne masquer aucun lot.
 - Le même rendu sert à la page de jeu, la prévisualisation mobile et l’aperçu intégré. Les assets locaux sont versionnés et ne dépendent pas d’un fichier présent uniquement sur le poste du développeur.
-- La composition affinée utilise une roue de 82 % de la largeur, des anneaux fins et une microtexture métallique ; l’espacement initial avant la roue est de 32 px sur ce modèle uniquement. Les valeurs déjà enregistrées et les réglages des autres templates restent préservés.
+- La composition affinée utilise une roue de 82 % de la largeur, des anneaux fins et une microtexture métallique. À la demande du propriétaire du 4 octobre, les espacements initiaux sous le logo et avant la roue utilisent désormais la valeur commune des roues, 50 px. Les valeurs déjà enregistrées, y compris 0 px, et les réglages des autres templates restent préservés.
+- Les assets raster Halloween doivent être inclus explicitement dans `.vercelignore` ; leur présence dans Git ou sur le serveur local ne prouve pas leur présence sur Vercel. Contrôler les URL statiques et optimisées sur le déploiement candidat.
 - Preuves visuelles, provenance des images et grille de correspondance : [dossier de validation](design/halloween-wheel-456.md). Validation du propriétaire requise avant merge/déploiement.
 
 ## Questions ouvertes

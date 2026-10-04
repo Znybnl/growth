@@ -76,6 +76,18 @@ Génération : outil intégré `imagegen`, édition guidée par la référence, 
 
 ## Validation propriétaire
 
+### Retour Vercel et espacements — 4 octobre
+
+La preview du commit `022b297` déployait bien le composant, mais pas ses images : `.vercelignore` excluait globalement `*.webp` sans exception pour Halloween. Fond et cadeau ont été contrôlés sur le déploiement `dpl_UHN4UM2zeDz986PE79H9oAQLJzJ7` : HTTP 404, `text/html`. La présence dans Git et le succès des tests locaux ne couvraient donc pas le packaging Vercel.
+
+Correctif : exception limitée à `apps/web-app/public/images/templates/halloween-gold/*.webp`, sans élargir la publication aux pièces jointes ou originaux générés. Un test vérifie cette exception après l’exclusion globale ; le contrôle des dix images et des trois images optimisées doit également être rejoué sur la nouvelle preview avant de la présenter comme corrigée.
+
+À la demande du propriétaire, la marge initiale sous le logo passe de 5 à 50 px et l’espacement initial avant la roue de 32 à 50 px, à partir de la constante commune des roues. Les valeurs déjà enregistrées, notamment 0 ou 5 px, restent prioritaires. Le centre est donc volontairement plus bas que dans la capture affinée précédente ; aucune réduction du diamètre, de la police ou modification de mécanique ne compense ce nouvel espacement.
+
+![Espacements communs de 50 px, capture locale à 390 px](halloween-wheel-456-spacing.webp)
+
+Vérifications locales du correctif : 22 tests Playwright, 3 tests unitaires de conservation des lots, lint sans erreur (4 avertissements préexistants) et build réussis. Le contrôle navigateur mesure 50 px pour les deux espacements à 390 px. Le serveur 3001 reste inchangé.
+
 Créer un brouillon de roue, choisir « Halloween doré », comparer la capture à la référence, modifier le logo/titre/taille, puis revenir sur un autre template pour contrôler que ses espacements sont restaurés. Prévisualiser une campagne avec un lot de 50 %, jouer et vérifier le gain réel. Valider aussi le rendu du titre réel de l’établissement, qui peut différer du texte de démonstration.
 
 Retour arrière : revert de la PR ; aucun changement de données métier à annuler. Les campagnes ayant sélectionné Halloween doivent être réaffectées à un modèle existant avant un retrait définitif de ce modèle.
