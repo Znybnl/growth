@@ -935,7 +935,7 @@ export function CampaignExperience({
           Mode prévisualisation — cette participation est simulée et n&apos;affecte ni vos statistiques ni vos stocks.
         </div>
       ) : null}
-      {pageTemplate === "beauty-rose" && campaign.presentation.background.mode !== "image" ? <RosePowderDecor primaryColor={primaryColor} /> : null}
+      {pageTemplate === "beauty-rose" && !nativeWheelBackgroundUrl && campaign.presentation.background.mode !== "image" ? <RosePowderDecor primaryColor={primaryColor} /> : null}
       {isSunburstTemplate || isCosmicTemplate || isScratchVaultTemplate || isScratchConfettiTemplate || isScratchCoralTemplate || isScratchLilacTemplate || isScratchSunburstTemplate ? (
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
           <div

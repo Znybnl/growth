@@ -5,7 +5,8 @@ import { CampaignLivePreview, buildCampaignLivePreviewModel } from "@/components
 import { BeautyWheelTemplateGallery } from "@/components/merchant/beauty-wheel-template-gallery";
 import { WizardPhoneFrame } from "@/components/merchant/campaign-wizard";
 import { CampaignExperience } from "@/components/public/campaign-experience";
-import { beautyWheelTheme } from "@/lib/beauty-wheel-themes";
+import { beautyWheelLogoColor, beautyWheelTheme } from "@/lib/beauty-wheel-themes";
+import { wheelPaletteForTemplate } from "@/lib/campaign-defaults";
 import { WheelOfFortune } from "@/components/public/wheel-of-fortune";
 import type { GamePageTemplateId, LogoMode, Merchant, PublicCampaign } from "@/lib/types";
 import { halloweenFixture } from "./halloween-wheel";
@@ -22,6 +23,7 @@ export function BeautyWheelBackgroundFixture({
   const [clicks, setClicks] = useState(0);
   const [finished, setFinished] = useState(0);
   const theme = beautyWheelTheme(selectedTemplate);
+  const legacy = selectedTemplate === "beauty-editorial" && selectedBackground === "legacy";
   const form = {
     ...halloweenFixture,
     id: "fixture-wheel-backgrounds",
@@ -31,15 +33,15 @@ export function BeautyWheelBackgroundFixture({
     logoUrl: selectedLogoMode === "image" ? "/images/scratch-templates/beauty-nude-elegance.webp" : undefined,
     presentation: {
       ...halloweenFixture.presentation,
-      logo: { ...halloweenFixture.presentation.logo, textColor: theme?.text ?? "#111827" },
+      logo: { ...halloweenFixture.presentation.logo, textColor: legacy ? "#171614" : theme ? beautyWheelLogoColor(theme.id) : "#111827", align: legacy ? "left" as const : "center" as const },
       button: { ...halloweenFixture.presentation.button, backgroundColor: theme?.primary ?? "#003cb4" },
-      heading: { ...halloweenFixture.presentation.heading, textColor: theme?.text ?? "#111827", fontFamily: theme?.font ?? "poppins" as const },
+      heading: { ...halloweenFixture.presentation.heading, textColor: legacy ? "#171614" : theme?.text ?? "#111827", fontFamily: theme?.font ?? "poppins" as const, align: legacy ? "left" as const : "center" as const },
       background: {
         mode: selectedBackground === "image" ? "image" as const : "color" as const,
-        color: selectedBackground === "color" ? "#e0f2fe" : theme?.background ?? "#ffffff",
+        color: legacy ? "#f4f0e8" : selectedBackground === "color" ? "#e0f2fe" : theme?.background ?? "#ffffff",
         imageUrl: selectedBackground === "image" ? "/images/scratch-templates/beauty-lilas-soin-doux.webp" : undefined,
       },
-      wheel: { ...halloweenFixture.presentation.wheel, rimColor: theme?.secondary ?? "#ffffff", loseColor: theme?.primary ?? "#f3a4c4", alternateLoseColor: theme?.secondary ?? "#fff9fb" },
+      wheel: theme ? wheelPaletteForTemplate(theme.id, halloweenFixture.presentation.wheel) : { ...halloweenFixture.presentation.wheel, rimColor: "#ffffff", loseColor: "#f3a4c4", alternateLoseColor: "#fff9fb" },
       layout: { ...halloweenFixture.presentation.layout, templateId: selectedTemplate, wheelSubtitle: "Des surprises vous attendent" },
     },
   };
@@ -70,7 +72,7 @@ export function BeautyWheelBackgroundFixture({
         {["text", "image", "none"].map((value) => <option key={value} value={value}>{value}</option>)}
       </select></label>
       <label>Fond de test<select value={selectedBackground} onChange={(event) => setSelectedBackground(event.target.value)}>
-        {["native", "image", "color"].map((value) => <option key={value} value={value}>{value}</option>)}
+        {["native", "image", "color", "legacy"].map((value) => <option key={value} value={value}>{value}</option>)}
       </select></label>
     </div>
   </main>;

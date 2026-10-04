@@ -65,6 +65,10 @@ Un changement qui touche l'un de ces parcours doit avoir une preuve de test auto
 - **Changement auth, jeu, gain, retrait, e-mail, paiement, prévisualisation ou multi-sites** : contrôles précédents + smoke ou E2E adapté + validation fonctionnelle du propriétaire.
 - **Évolution majeure** : régression complète de tous les parcours du tableau avant production.
 
+## Rose poudré / Noir & Or — #462 / #463
+
+Rejouer `beauty-wheel-backgrounds.spec.ts`, `beauty-rose-noir.spec.ts`, `beauty-wheel-polish.spec.ts`, `beauty-wheel-themes.spec.ts`, `wheel-template-background.spec.ts` et `halloween-wheel.spec.ts` en Chromium sur le serveur de développement. Contrôles : fonds natifs/manuels/couleurs sans mutation, anciennes couleurs enregistrées, images décodées, galerie, mobile 320/390 px, couverture à 1280 px, roue centrée Noir & Or, vrais lots/contrastes/voisins, clic/résultat unique et finitions #461. Les appels de jeu sont interceptés, sans écriture métier. Après build, contrôler les URL statiques et optimisées des deux fonds sur le SHA candidat Vercel ; la fixture doit rester HTTP 404 en production.
+
 ## Roue Halloween dorée — #456
 
 - Unitaire : `node --experimental-strip-types --import ./scripts/ts-alias-loader.mjs --test src/lib/halloween-wheel-theme.test.mjs` depuis `apps/web-app` : tous les lots et le résultat conservés, 1 à 50 lots, aucune mutation des sources.

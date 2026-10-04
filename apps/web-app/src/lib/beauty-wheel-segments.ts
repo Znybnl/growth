@@ -49,7 +49,7 @@ function preferredBeautySegmentColor(
         mixHex("#ffd76a", "#ffffff", 0.28),
       ][index % 4];
     case "beauty-editorial":
-      return [secondary, mixHex("#c4a879", "#ffffff", 0.45), primary][index % 3];
+      return [secondary, primary, "#c4a879"][index % 3];
     case "beauty-tech":
       return [secondary, mixHex(primary, secondary, 0.55), mixHex(primary, "#ffffff", 0.58)][index % 3];
     case "beauty-rose":

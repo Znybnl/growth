@@ -179,7 +179,7 @@ export function wheelPaletteForTemplate(
       alternateLoseColor: beautyTheme.secondary,
       winColor: beautyTheme.secondary,
       alternateWinColor: beautyTheme.secondary,
-      rimColor: beautyTheme.primary,
+      rimColor: templateId === "beauty-editorial" ? "#b99a68" : beautyTheme.primary,
     };
   }
 
