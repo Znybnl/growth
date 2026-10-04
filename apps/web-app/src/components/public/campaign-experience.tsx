@@ -22,7 +22,8 @@ import { ScratchGame } from "@/components/public/scratch-game";
 import { WheelOfFortune } from "@/components/public/wheel-of-fortune";
 import { HalloweenWheelScene } from "@/components/public/halloween-wheel-art";
 import { BeautyWheelDecorations } from "@/components/public/beauty-wheel-decorations";
-import { beautyWheelBackground, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
+import { BeautyLogoRule } from "@/components/public/beauty-wheel-finishes";
+import { beautyWheelBackground, beautyWheelDefaultBackground, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
 import { beautyScratchTemplate, isImmersiveScratchTemplate as isImmersiveScratchPageTemplate, type ImmersiveScratchTemplateId } from "@/lib/beauty-scratch-templates";
 import { RosePowderDecor } from "@/components/public/rose-powder-decor";
 import { fluidType } from "@/lib/responsive";
@@ -829,9 +830,12 @@ export function CampaignExperience({
     ? campaign.presentation.background.imageUrl
     : null;
   const hasCustomSelectedBackground = campaign.presentation.background.mode === "image" && Boolean(campaign.presentation.background.imageUrl);
+  const nativeWheelBackgroundUrl = campaign.gameType === "wheel"
+    ? beautyWheelDefaultBackground(pageTemplate, campaign.presentation.background)
+    : null;
   const templateDefaultBackground = scratchTemplateDefaultBackground(pageTemplate, campaign.presentation.background);
   const backgroundStyle =
-    beautyScratchTheme && !hasCustomSelectedBackground
+    (beautyScratchTheme && !hasCustomSelectedBackground) || nativeWheelBackgroundUrl
       ? "none"
       : managedBackgroundUrl
         ? "none"
@@ -909,18 +913,18 @@ export function CampaignExperience({
           className="pointer-events-none absolute inset-0 z-0 object-cover"
         />
       ) : null}
-      {beautyScratchTheme && !hasCustomSelectedBackground ? (
+      {(beautyScratchTheme && !hasCustomSelectedBackground) || nativeWheelBackgroundUrl ? (
         <Image
-          src={beautyScratchTheme.background}
+          src={nativeWheelBackgroundUrl ?? beautyScratchTheme!.background}
           alt=""
           fill
           priority
           sizes="100vw"
-          data-template-art={beautyScratchTheme.id}
+          data-template-art={pageTemplate}
           className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover"
         />
       ) : null}
-      {(isBeautyTemplate || isRoseInstitutTemplate) && !isRosePowderTemplate && !(campaign.presentation.background.mode === "image" && campaign.presentation.background.imageUrl) ? (
+      {(isBeautyTemplate || isRoseInstitutTemplate) && !isRosePowderTemplate && !nativeWheelBackgroundUrl && !hasCustomSelectedBackground ? (
         <BeautyWheelDecorations templateId={pageTemplate} primaryColor={primaryColor} />
       ) : null}
       {isPreview ? (
@@ -971,6 +975,7 @@ export function CampaignExperience({
                 textColor={logoTextColor}
                 textFontWeight={isRosePowderTemplate ? 600 : undefined}
               />
+              {campaign.gameType === "wheel" && campaign.logoMode === "text" && (isBeautyTemplate || isRoseInstitutTemplate) ? <BeautyLogoRule color={logoTextColor} /> : null}
             </div>
           </div>
         ) : null}

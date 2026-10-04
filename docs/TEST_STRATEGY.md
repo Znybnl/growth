@@ -75,6 +75,21 @@ Un changement qui touche l'un de ces parcours doit avoir une preuve de test auto
 - Rejouer le vrai cadre de téléphone du wizard : sans sous-titre et avec sous-titre long/non sécable, à 320/390/1280 px. Vérifier la couverture jusqu’au bas de l’écran, la teinte dorée indépendante du logo blanc, le bloc secondaire à 60 % sans débordement et le disque carré non étiré.
 - Contrôler également qu’un build production refuse la route de fixture. Comparaison et images : [validation visuelle](design/halloween-wheel-456.md).
 
+## Fonds de roues issus des tickets — #458
+
+- `e2e/beauty-wheel-backgrounds.spec.ts` : fonds natifs identiques aux tickets, import/bibliothèque prioritaire, couleur personnalisée conservée, URL absente non bloquante, aucune mutation des paramètres, miniatures et absence de propagation vers les autres roues.
+- Fixtures synthétiques `/dev/beauty-wheel-backgrounds`, limitées au développement ; tester les vrais composants de l'aperçu et du jeu public à 390 px, images effectivement chargées et sans SVG décoratif superposé. Intercepter l'API de lecture ; aucune écriture métier ou e-mail.
+- Rejouer `beauty-wheel-themes.spec.ts`, `wheel-template-background.spec.ts` et `halloween-wheel.spec.ts` pour les lots, couleurs, fonds et interactions existantes. Vérifier que le build production renvoie 404 pour la fixture.
+
+## Finitions des roues Beauté — #460
+
+- `e2e/beauty-wheel-polish.spec.ts` : six thèmes `beauty-*`, aperçu compact et jeu public à 320/390 px, JOUER sans icône et police agrandie non tronquée, reflet haut-gauche, police DM Sans des vrais lots, contour coloré unique + liseré blanc, pointeur en relief et identifiants SVG uniques. Éclat est testé séparément : centre uni/bord blanc/poids 700 et taille héritée, pointeur facetté, anneau SVG blanc de 18 unités identiques à la base de #461, miniature d'origine et clic/résultat inchangés.
+- Logo texte/image/aucun : filet uniquement sous le texte. Vérifier les choix de contour personnalisés et l'absence de changement hors Beauté.
+- Retour PR #461 : mesurer la réduction exacte de 1 px de JOUER à 320/390 px, vérifier l'absence du pseudo-élément de filet blanc intérieur, la bordure centrale non blanche et son ombre, le liseré blanc extérieur de 2 px et les miniatures actualisées.
+- Pour chaque thème, rejouer le clic qui ouvre l'action puis l'animation jusqu'à son unique callback de résultat, sans API métier. Le mécanisme, la rotation et les probabilités ne sont pas modifiés.
+- Rejouer les suites #458, thèmes Beauté, fonds de roues et Halloween ; vérifier les captures et le build. Les fixtures demeurent exclusivement accessibles en développement.
+- Référence, captures et recette : [finitions Beauté](design/wheel-polish-460.md).
+
 ## Compte rendu attendu
 
 Chaque demande de merge ou de production doit indiquer, en quelques lignes :
