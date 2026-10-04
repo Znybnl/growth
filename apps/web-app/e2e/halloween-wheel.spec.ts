@@ -245,6 +245,7 @@ test("logo image, logo absent et sous-titre conservés ; zéro espacement sans c
   await expect(
     page.getByText("Une surprise pour votre prochaine visite", { exact: true }),
   ).toBeVisible();
+  await expect(page.getByTestId("halloween-wheel-subtitle")).toHaveCSS("color", "rgb(239, 184, 102)");
   await page.getByLabel("Espacement de test").fill("0");
   const boxes = await page.evaluate(() => ({
     title: document.querySelector("h1")!.getBoundingClientRect().bottom,
@@ -258,6 +259,56 @@ test("logo image, logo absent et sous-titre conservés ; zéro espacement sans c
     page.getByTestId("halloween-wheel-scene").locator("header"),
   ).toHaveCount(0);
 });
+
+for (const width of [320, 390, 1280]) {
+  for (const withSubtitle of [false, true]) {
+    test(`aperçu téléphone rempli jusqu’en bas, sous-titre ${withSubtitle ? "long doré" : "absent"}, viewport ${width}px`, async ({ page }, testInfo) => {
+      const errors: string[] = [];
+      page.on("pageerror", error => errors.push(error.message));
+      await page.setViewportSize({ width, height: 844 });
+      await page.goto("/dev/halloween-proof?mode=phone");
+      if (withSubtitle) {
+        await page.getByLabel("Sous-titre de test").fill("W".repeat(47));
+        await expect(page.getByTestId("halloween-wheel-subtitle")).toHaveCSS("color", "rgb(239, 184, 102)");
+      } else {
+        await expect(page.getByTestId("halloween-wheel-subtitle")).toHaveCount(0);
+      }
+      const geometry = await page.getByTestId("wizard-phone-preview").evaluate(phone => {
+        const screen = phone.lastElementChild!;
+        const scene = phone.querySelector('[data-testid="halloween-wheel-scene"]')!;
+        const wheel = phone.querySelector('[data-testid="halloween-wheel"]')!;
+        const secondary = phone.querySelector('[data-testid="halloween-wheel-subtitle"]');
+        const screenBox = screen.getBoundingClientRect();
+        const sceneBox = scene.getBoundingClientRect();
+        const wheelBox = wheel.getBoundingClientRect();
+        const secondaryBox = secondary?.getBoundingClientRect();
+        return {
+          screenBottom: screenBox.bottom,
+          sceneBottom: sceneBox.bottom,
+          backgroundBottom: scene.querySelector("img")!.getBoundingClientRect().bottom,
+          sceneWidth: sceneBox.width,
+          sceneScrollWidth: scene.scrollWidth,
+          wheelWidth: wheelBox.width,
+          wheelHeight: wheelBox.height,
+          secondaryWidth: secondaryBox?.width,
+          secondaryScrollWidth: secondary?.scrollWidth,
+        };
+      });
+      expect(geometry.sceneBottom).toBeGreaterThanOrEqual(geometry.screenBottom - 1);
+      expect(geometry.backgroundBottom).toBeGreaterThanOrEqual(geometry.screenBottom - 1);
+      expect(geometry.wheelWidth).toBeCloseTo(geometry.wheelHeight, 0);
+      expect(geometry.sceneScrollWidth).toBeLessThanOrEqual(Math.ceil(geometry.sceneWidth));
+      if (withSubtitle) {
+        expect(geometry.secondaryWidth! / geometry.sceneWidth).toBeCloseTo(.60, 2);
+        expect(geometry.secondaryScrollWidth!).toBeLessThanOrEqual(Math.ceil(geometry.secondaryWidth!));
+      }
+      await page.evaluate(() => document.fonts.ready);
+      await expect.poll(() => page.getByTestId("halloween-wheel-scene").locator("img").evaluateAll(images => images.every(image => (image as HTMLImageElement).complete && (image as HTMLImageElement).naturalWidth > 0))).toBe(true);
+      await page.getByTestId("wizard-phone-preview").screenshot({ path: testInfo.outputPath("phone-preview.png") });
+      expect(errors).toEqual([]);
+    });
+  }
+}
 
 test("miniature fidèle et non interactive, sans bouton imbriqué dans le sélecteur", async ({
   page,

@@ -317,7 +317,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
   const wheelPreviewHeight = compact ? "330px" : "470px";
 
   if (preview.gameType === "wheel" && preview.gamePageTemplateId === "halloween-gold") {
-    return <HalloweenCampaignPreview preview={preview} />;
+    return <HalloweenCampaignPreview preview={preview} compact={compact} />;
   }
 
   return (

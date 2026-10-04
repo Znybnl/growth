@@ -435,7 +435,7 @@ function updatePrize(
   };
 }
 
-function WizardPhoneFrame({ children }: { children: ReactNode }) {
+export function WizardPhoneFrame({ children }: { children: ReactNode }) {
   return (
     <div data-testid="wizard-phone-preview" className="okado-preview-surface relative mx-auto box-border h-[550px] w-[300px] rounded-[36px] border-[5px] border-[#172033] bg-[#172033] p-1.5 shadow-[0_24px_54px_rgba(18,24,39,0.2)]">
       <div

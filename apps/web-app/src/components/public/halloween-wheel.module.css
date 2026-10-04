@@ -10,6 +10,13 @@
   overflow: hidden;
   color: #fff1d5;
 }
+.compactPreview {
+  height: 100%;
+  background: #050403;
+}
+.compactPreview > .scene {
+  min-height: 100%;
+}
 .background {
   position: absolute;
   inset: 0;
@@ -114,10 +121,10 @@
   top: 42%;
 }
 .secondary {
-  width: 76%;
+  width: 60%;
   margin: 0 auto;
   text-align: center;
-  color: #ffe3ad;
+  color: #efb866;
   font-family: var(--font-roboto), sans-serif;
   font-size: 3.6cqw;
   line-height: 1.3;

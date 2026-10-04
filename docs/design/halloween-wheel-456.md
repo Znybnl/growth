@@ -76,6 +76,16 @@ Génération : outil intégré `imagegen`, édition guidée par la référence, 
 
 ## Validation propriétaire
 
+### Sous-titre et cadre de téléphone — retour du 4 octobre
+
+La couleur du sous-titre était écrasée en ligne par celle du logo : un logo blanc entraînait donc un sous-titre blanc. Suppression de ce couplage ; la teinte fixe est désormais `#efb866` et le bloc centré passe de 76 % à 60 % de la largeur. Un texte sans espaces se replie sans dépasser le bloc ; un sous-titre vide ne produit aucun élément.
+
+La bande blanche provenait de la différence entre le ratio naturel 9:16 du décor et l’écran interne plus haut du téléphone du wizard. En aperçu compact seulement, le conteneur utilise toute la hauteur disponible et le décor couvre cette hauteur minimale. La roue reste carrée, conserve son diamètre et son animation ; aucun agrandissement vertical n’est appliqué aux segments.
+
+![Aperçu dans le vrai cadre de téléphone, logo blanc et sous-titre doré](halloween-wheel-456-phone.webp)
+
+Six tests supplémentaires réutilisent le composant `WizardPhoneFrame` réel (300 × 550 px), à 320/390/1280 px, sans sous-titre et avec un texte long non sécable : couverture du bas d’écran, largeur de 60 %, couleur dorée, roue carrée, images chargées et absence d’erreur navigateur. Le composant du cadre est seulement exporté pour la fixture ; aucun changement de structure ou de logique du wizard. Vérification totale : 28 tests navigateur et 3 tests unitaires, lint et build réussis.
+
 ### Retour Vercel et espacements — 4 octobre
 
 La preview du commit `022b297` déployait bien le composant, mais pas ses images : `.vercelignore` excluait globalement `*.webp` sans exception pour Halloween. Fond et cadeau ont été contrôlés sur le déploiement `dpl_UHN4UM2zeDz986PE79H9oAQLJzJ7` : HTTP 404, `text/html`. La présence dans Git et le succès des tests locaux ne couvraient donc pas le packaging Vercel.

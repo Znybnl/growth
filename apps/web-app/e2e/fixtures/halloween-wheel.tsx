@@ -6,6 +6,7 @@ import {
   buildCampaignLivePreviewModel,
 } from "@/components/merchant/campaign-live-preview";
 import { WheelTemplateThumbnail } from "@/components/merchant/wheel-template-thumbnail";
+import { WizardPhoneFrame } from "@/components/merchant/campaign-wizard";
 import { CampaignExperience } from "@/components/public/campaign-experience";
 import { HalloweenWheelScene } from "@/components/public/halloween-wheel-art";
 import { WheelOfFortune } from "@/components/public/wheel-of-fortune";
@@ -159,6 +160,15 @@ export function HalloweenFixture({
             onSpinEnd={() => setFinished((count) => count + 1)}
           />
         </HalloweenWheelScene>
+      ) : mode === "phone" ? (
+        <WizardPhoneFrame>
+          <CampaignLivePreview
+            merchant={merchant}
+            preview={buildCampaignLivePreviewModel(form, merchant)}
+            compact
+            flushTop
+          />
+        </WizardPhoneFrame>
       ) : (
         <CampaignLivePreview
           merchant={merchant}

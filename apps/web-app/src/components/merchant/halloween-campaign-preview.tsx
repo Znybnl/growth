@@ -4,15 +4,18 @@ import { HalloweenWheelScene } from "@/components/public/halloween-wheel-art";
 import { WheelOfFortune } from "@/components/public/wheel-of-fortune";
 import { textFontFamily } from "@/lib/format";
 import type { CampaignEditorPreviewModel } from "./campaign-live-preview";
+import styles from "@/components/public/halloween-wheel.module.css";
 
 export function HalloweenCampaignPreview({
   preview,
+  compact = false,
 }: {
   preview: CampaignEditorPreviewModel;
+  compact?: boolean;
 }) {
   return (
     <div
-      className="okado-preview-surface overflow-hidden rounded-[30px]"
+      className={`okado-preview-surface overflow-hidden rounded-[30px] ${compact ? styles.compactPreview : ""}`}
       data-template-id="halloween-gold"
     >
       <HalloweenWheelScene

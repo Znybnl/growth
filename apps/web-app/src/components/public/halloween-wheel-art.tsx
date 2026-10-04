@@ -111,7 +111,8 @@ export function HalloweenWheelScene({
         {secondaryText.trim() ? (
           <p
             className={styles.secondary}
-            style={{ marginTop: unit(subtitleSpacingPx), color: logoTextColor }}
+            data-testid="halloween-wheel-subtitle"
+            style={{ marginTop: unit(subtitleSpacingPx) }}
           >
             {secondaryText}
           </p>
