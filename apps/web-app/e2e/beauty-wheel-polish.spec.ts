@@ -25,7 +25,19 @@ for (const template of templates) {
         await expect(button.locator("svg")).toHaveCount(0);
         await expect(button).toHaveCSS("background-image", /radial-gradient/);
         const label = button.locator(".okado-beauty-wheel-center-label");
-        expect(await label.evaluate((node) => Number.parseFloat(getComputedStyle(node).fontSize))).toBeGreaterThanOrEqual(17);
+        const fontSizes = await label.evaluate((node) => {
+          const current = Number.parseFloat(getComputedStyle(node).fontSize);
+          const element = node as HTMLElement;
+          element.style.fontSize = "clamp(17px, 6cqw, 28px)";
+          const previous = Number.parseFloat(getComputedStyle(node).fontSize);
+          element.style.removeProperty("font-size");
+          return { current, previous };
+        });
+        expect(fontSizes.current).toBeGreaterThanOrEqual(16);
+        expect(fontSizes.previous - fontSizes.current).toBeCloseTo(1, 2);
+        expect(await button.evaluate((node) => getComputedStyle(node, "::after").content)).toBe("none");
+        await expect(button).not.toHaveCSS("border-top-color", "rgb(255, 255, 255)");
+        await expect(button).not.toHaveCSS("box-shadow", "none");
         const buttonBox = (await button.boundingBox())!;
         const labelBox = (await label.boundingBox())!;
         expect(labelBox.width).toBeLessThan(buttonBox.width - 4);
@@ -34,6 +46,9 @@ for (const template of templates) {
         await expect(ring.locator("circle")).toHaveCount(2);
         await expect(ring.locator("circle").first()).toHaveAttribute("stroke", "#ffffff");
         await expect(surface.getByTestId("beauty-wheel-colored-rim")).toHaveAttribute("stroke-width", template === "beauty-nude" ? "2.5" : template === "beauty-pop" ? "3.2" : "3");
+        const whiteStroke = Number(await ring.locator("circle").first().getAttribute("stroke-width"));
+        const colorStroke = Number(await surface.getByTestId("beauty-wheel-colored-rim").getAttribute("stroke-width"));
+        expect((whiteStroke - colorStroke) / 2).toBeCloseTo(2);
         const pointer = surface.getByTestId("beauty-wheel-pointer");
         await expect(pointer).toHaveCSS("filter", /drop-shadow/);
         await expect(pointer.getByTestId("beauty-pointer-body")).toHaveAttribute("fill", /url\(#beauty-pointer-/);
@@ -80,6 +95,9 @@ test("les sept miniatures ont le centre sans icône, le reflet et un pointeur en
   for (const center of await centers.all()) {
     await expect(center.locator("svg")).toHaveCount(0);
     await expect(center).toHaveCSS("background-image", /radial-gradient/);
+    await expect(center).toHaveCSS("font-size", "8px");
+    await expect(center).not.toHaveCSS("border-top-color", "rgb(255, 255, 255)");
+    await expect(center).not.toHaveCSS("box-shadow", "none");
   }
   await expect(page.getByTestId("beauty-wheel-pointer")).toHaveCount(7);
   await expect(page.getByTestId("beauty-logo-rule")).toHaveCount(7);

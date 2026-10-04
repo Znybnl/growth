@@ -85,6 +85,7 @@ Un changement qui touche l'un de ces parcours doit avoir une preuve de test auto
 
 - `e2e/beauty-wheel-polish.spec.ts` : six thèmes Beauté et Éclat, aperçu compact et jeu public à 320/390 px, JOUER sans icône et police agrandie non tronquée, reflet haut-gauche, police DM Sans des vrais lots, contour coloré unique + liseré blanc, pointeur en relief et identifiants SVG uniques.
 - Logo texte/image/aucun : filet uniquement sous le texte. Vérifier les choix de contour personnalisés et l'absence de changement hors Beauté.
+- Retour PR #461 : mesurer la réduction exacte de 1 px de JOUER à 320/390 px, vérifier l'absence du pseudo-élément de filet blanc intérieur, la bordure centrale non blanche et son ombre, le liseré blanc extérieur de 2 px et les miniatures actualisées.
 - Pour chaque thème, rejouer le clic qui ouvre l'action puis l'animation jusqu'à son unique callback de résultat, sans API métier. Le mécanisme, la rotation et les probabilités ne sont pas modifiés.
 - Rejouer les suites #458, thèmes Beauté, fonds de roues et Halloween ; vérifier les captures et le build. Les fixtures demeurent exclusivement accessibles en développement.
 - Référence, captures et recette : [finitions Beauté](design/wheel-polish-460.md).

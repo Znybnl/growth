@@ -1751,37 +1751,12 @@ button:disabled,
   opacity: .9;
 }
 
-.okado-beauty-wheel-center::after {
-  position: absolute;
-  inset: 5px;
-  border: 1px solid rgba(255, 255, 255, .38);
-  border-radius: inherit;
-  content: "";
-  pointer-events: none;
-}
-
-.okado-beauty-wheel-center--beauty-nude::after {
-  border-color: rgba(255, 248, 232, .58);
-}
-
-.okado-beauty-wheel-center--beauty-botanical::after {
-  border-color: rgba(245, 250, 241, .58);
-}
-
 .okado-beauty-wheel-center .okado-beauty-wheel-center-label {
   font-family: var(--font-dm-sans), sans-serif;
-  font-size: clamp(17px, 6cqw, 28px);
+  font-size: calc(clamp(17px, 6cqw, 28px) - 1px);
   font-weight: 600;
   line-height: 1;
   letter-spacing: .025em;
-}
-
-.okado-beauty-wheel-center--beauty-editorial::after {
-  border-color: rgba(255, 247, 229, .62);
-}
-
-.okado-beauty-wheel-center--beauty-tech::after {
-  border-color: rgba(232, 221, 255, .64);
 }
 
 /* Éclat keeps its merchant-selected typeface; its central action remains

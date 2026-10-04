@@ -2,7 +2,7 @@ import { BEAUTY_WHEEL_THEMES, beautyWheelBackground, beautyWheelDefaultBackgroun
 import Image from "next/image";
 import { buildBeautyWheelSegmentColors } from "@/lib/beauty-wheel-segments";
 import { BeautyLogoRule, BeautyWheelPointer } from "@/components/public/beauty-wheel-finishes";
-import { beautyCenterFinish } from "@/lib/beauty-wheel-finishes";
+import { beautyCenterFinish, beautyCenterRelief } from "@/lib/beauty-wheel-finishes";
 import { wheelButtonBackgroundForWhiteText } from "@/lib/wheel-button-contrast";
 import { textFontFamily } from "@/lib/format";
 import type { GamePageTemplateId } from "@/lib/types";
@@ -22,7 +22,7 @@ function BeautyWheelThumbnail({ theme }: { theme: BeautyTheme }) {
     <div
       aria-hidden="true"
       className="absolute -bottom-5 right-[-0.8rem] z-10 grid size-32 place-items-center rounded-full border-[3px] p-[3px]"
-      style={{ borderColor: ringColor, backgroundColor: theme.secondary, outline: "1px solid white", boxShadow: `0 8px 22px color-mix(in srgb, ${theme.primary} 22%, transparent)` }}
+      style={{ borderColor: ringColor, backgroundColor: theme.secondary, outline: "2px solid white", boxShadow: `0 8px 22px color-mix(in srgb, ${theme.primary} 22%, transparent)` }}
     >
       <div
         className="relative size-full rounded-full"
@@ -30,8 +30,8 @@ function BeautyWheelThumbnail({ theme }: { theme: BeautyTheme }) {
       >
         <div
           data-testid="beauty-thumbnail-center"
-          className="absolute left-1/2 top-1/2 flex size-[2.7rem] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 text-[9px] font-semibold tracking-[0.025em]"
-          style={{ background: beautyCenterFinish(centerBackground), borderColor: theme.id === "beauty-rose" ? theme.primary : "#ffffff", color: centerTextColor, fontFamily: textFontFamily("dm-sans"), boxShadow: `0 2px 6px color-mix(in srgb, ${theme.primary} 25%, transparent)` }}
+          className="absolute left-1/2 top-1/2 flex size-[2.7rem] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 text-[8px] font-semibold tracking-[0.025em]"
+          style={{ background: beautyCenterFinish(centerBackground), color: centerTextColor, fontFamily: textFontFamily("dm-sans"), ...beautyCenterRelief(theme.primary) }}
         >
           <span>JOUER</span>
         </div>
@@ -59,10 +59,10 @@ function EclatWheelThumbnail() {
     <div
       aria-hidden="true"
       className="absolute -bottom-5 right-[-0.8rem] z-10 grid size-32 place-items-center rounded-full border-[3px] border-[#f3a4c4] p-1 shadow-[0_9px_24px_rgba(222,103,151,0.18)]"
-      style={{ outline: "1px solid white", backgroundImage: "conic-gradient(from -22.5deg, #f3a4c4 0deg 45deg, #fff9fb 45deg 90deg, #f3a4c4 90deg 135deg, #fff9fb 135deg 180deg, #f3a4c4 180deg 225deg, #fff9fb 225deg 270deg, #f3a4c4 270deg 315deg, #fff9fb 315deg 360deg)" }}
+      style={{ outline: "2px solid white", backgroundImage: "conic-gradient(from -22.5deg, #f3a4c4 0deg 45deg, #fff9fb 45deg 90deg, #f3a4c4 90deg 135deg, #fff9fb 135deg 180deg, #f3a4c4 180deg 225deg, #fff9fb 225deg 270deg, #f3a4c4 270deg 315deg, #fff9fb 315deg 360deg)" }}
     >
       <div className="relative size-full rounded-full">
-        <div data-testid="beauty-thumbnail-center" className="absolute left-1/2 top-1/2 grid size-10 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border-2 border-white text-[9px] font-semibold tracking-wide text-white shadow-md" style={{ background: beautyCenterFinish("#003cb4"), fontFamily: textFontFamily("dm-sans") }}>
+        <div data-testid="beauty-thumbnail-center" className="absolute left-1/2 top-1/2 grid size-10 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border-2 text-[8px] font-semibold tracking-wide text-white" style={{ background: beautyCenterFinish("#003cb4"), fontFamily: textFontFamily("dm-sans"), ...beautyCenterRelief("#003cb4") }}>
           JOUER
         </div>
       </div>

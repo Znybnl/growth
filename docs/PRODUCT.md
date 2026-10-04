@@ -78,7 +78,7 @@
 
 ## Finitions des roues Beauté — issue #460
 
-Les six thèmes Beauté et Éclat partagent une finition de disque central en relief, sans icône, avec JOUER en DM Sans. Les libellés des lots utilisent également DM Sans, graisse 600, sans modifier leur orientation relative aux segments ni leur taille minimale. Le contour coloré est renforcé de 1 px et suivi d'un liseré blanc, sans anneau coloré extérieur en doublon. Les pointeurs gardent leur ancrage et bénéficient d'un dégradé/reflet et d'une ombre douce. Un filet fin suit le logo uniquement en mode texte ; il est absent en mode image et sans logo. Les diamètres des centres, palettes, réglages de textes/espacements, fonds et mécanique de jeu sont préservés. Les miniatures reprennent les mêmes finitions.
+Les six thèmes Beauté et Éclat partagent une finition de disque central en relief, sans icône, avec JOUER en DM Sans. Après le retour propriétaire sur la PR #461, JOUER est réduit de 1 px (16–27 px), le filet blanc intérieur du bouton est supprimé et remplacé par un contour assombri et une ombre douce. Les libellés des lots utilisent également DM Sans, graisse 600, sans modifier leur orientation relative aux segments ni leur taille minimale. Le contour coloré est renforcé de 1 px et suivi d'un liseré blanc extérieur de 2 px, sans anneau coloré extérieur en doublon. Les pointeurs gardent leur ancrage et bénéficient d'un dégradé/reflet et d'une ombre douce. Un filet fin suit le logo uniquement en mode texte ; il est absent en mode image et sans logo. Les diamètres des centres, palettes, réglages de textes/espacements, fonds et mécanique de jeu sont préservés. Les miniatures reprennent les mêmes finitions.
 
 ## Fonds des roues Nude & Or et Botanical — issue #458
 

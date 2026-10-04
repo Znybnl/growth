@@ -8,11 +8,11 @@ La demande concerne les finitions, pas une copie du fond ou des pictogrammes de 
 
 ## Choix visuels
 
-- JOUER seul, sans main ni fleur, en DM Sans 600. Taille responsive de 17 à 28 px, sans diminuer les diamètres des disques centraux.
-- Reflet radial discret en haut à gauche, léger modelé diagonal et liseré intérieur. Rose poudré garde son disque ivoire ; les autres thèmes gardent leur teinte propre et la correction de contraste existante.
+- JOUER seul, sans main ni fleur, en DM Sans 600. Taille responsive de 16 à 27 px : réduction exacte de 1 px par rapport à la première version de la PR #461, sans diminuer les diamètres des disques centraux.
+- Reflet radial discret en haut à gauche et léger modelé diagonal. Aucun filet blanc intérieur ; contour assombri de la teinte du bouton et ombre portée douce. Rose poudré garde son disque ivoire ; les autres thèmes gardent leur teinte propre et la correction de contraste existante.
 - Filet de 32 × 1 px sous un logo texte, absent avec une image ou sans logo.
 - Lots en DM Sans 600, déjà disponible : tailles minimales, contenu et orientation relative aux segments inchangés.
-- Un seul contour coloré, renforcé de 1 px (2,5 px Nude, 3,2 px Pop, 3 px pour les autres), accompagné d'un liseré blanc extérieur de 1 px. Épaisseur stable en pixels CSS grâce au trait non redimensionné.
+- Un seul contour coloré, renforcé de 1 px (2,5 px Nude, 3,2 px Pop, 3 px pour les autres), accompagné d'un liseré blanc extérieur de 2 px, augmenté de 1 px à la demande du propriétaire. Épaisseur stable en pixels CSS grâce au trait non redimensionné.
 - Pointeur avec modelé, reflet haut-gauche, bord blanc et ombre douce. Les ancrages et dimensions précédents restent inchangés ; Éclat adopte la finition goutte.
 - Les couleurs de contour explicitement personnalisées restent prioritaires ; les contours natifs suivent l'accent du thème.
 
@@ -44,6 +44,10 @@ Base : PR #459, commit `b83ab06`, issue #458. PR empilée, sans fusion implicite
 - Inspection des sept captures publiques, des aperçus et de la galerie : aucune icône au centre, texte JOUER non tronqué à 320/390 px, vrais lots conservés et aucune erreur de page.
 - Revue React : aucun effet, callback ou état de jeu ajouté/modifié ; finitions communes, dégradés CSS légers, identifiants SVG uniques et décor non interactif.
 - Serveur construit en mode production : la fixture `/dev/beauty-wheel-backgrounds` reste inaccessible (HTTP 404).
+
+### Itération après retour sur la PR #461
+
+Le même jour, les 127 tests sont rejoués avec succès après réduction du libellé de 1 px, suppression du filet blanc intérieur, contour assombri/ombre du centre et liseré extérieur passé à 2 px. Les sept captures et la galerie ci-dessus sont remplacées par ce dernier rendu. Les tests mesurent le delta exact de police et l'épaisseur du liseré ; lint toujours sans erreur (quatre avertissements existants). Aucun changement de dimensions, de palette ni de handlers.
 
 ## Recette propriétaire
 

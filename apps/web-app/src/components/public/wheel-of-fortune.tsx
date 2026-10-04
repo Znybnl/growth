@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { HalloweenWheelVisual } from "@/components/public/halloween-wheel-art";
 import { halloweenWheelVisualSegments } from "@/lib/halloween-wheel-theme";
 import { BeautyWheelPointer, BeautyWheelRim } from "@/components/public/beauty-wheel-finishes";
-import { beautyCenterFinish, beautyWheelRimColor } from "@/lib/beauty-wheel-finishes";
+import { beautyCenterFinish, beautyCenterRelief, beautyWheelRimColor } from "@/lib/beauty-wheel-finishes";
 import { textFontFamily } from "@/lib/format";
 import { dynamicWheelLightSegmentColor } from "@/lib/campaign-defaults";
 import { legibleSegmentTextColor } from "@/lib/color-contrast";
@@ -741,7 +741,7 @@ export function WheelOfFortune({
                 : isClassicTemplate || isRestaurantPopTemplate
                   ? highContrastTextColor(centerButtonBackground)
                   : centerButtonTextColor,
-            borderColor: isRosePowderTemplate ? "#d58a9a" : isClassicTemplate || isRestaurantPopTemplate ? "#ffffff" : isRoseInstitutTemplate || isBeautyTemplate ? "#ffffff" : buttonStyle?.borderColor ?? "#ffffff",
+            borderColor: hasBeautyFinish ? beautyCenterRelief(isRosePowderTemplate ? roseAccent : centerButtonBackground).borderColor : isClassicTemplate || isRestaurantPopTemplate ? "#ffffff" : buttonStyle?.borderColor ?? "#ffffff",
             fontSize: isClassicTemplate
               ? "clamp(0.88rem, 5.1cqw, 1.75rem)"
               : isRestaurantPopTemplate
@@ -749,7 +749,7 @@ export function WheelOfFortune({
               : isRoseInstitutTemplate
                 ? "clamp(0.92rem, 5.6cqw, 1.8rem)"
               : "clamp(0.84rem, 4.7cqw, 1.55rem)",
-            boxShadow: isRosePowderTemplate ? "0 4px 12px rgba(90,45,60,.10), 0 0 0 3px rgba(255,253,252,.88)" : isClassicTemplate || isRestaurantPopTemplate ? `0 6px 20px ${withAlpha(colors.loseColor, 0.26)}, 0 0 0 2px ${withAlpha(colors.rimColor, 0.24)}` : isBeautyTemplate ? `0 6px 16px ${withAlpha(colors.rimColor, pageTemplate === "beauty-botanical" ? 0.26 : 0.2)}, 0 0 0 2px ${withAlpha(beautyTheme?.secondary ?? "#ffffff", 0.88)}` : isRoseInstitutTemplate ? "0 8px 18px rgba(11,78,162,0.22)" : undefined,
+            boxShadow: hasBeautyFinish ? beautyCenterRelief(isRosePowderTemplate ? roseAccent : centerButtonBackground).boxShadow : isClassicTemplate || isRestaurantPopTemplate ? `0 6px 20px ${withAlpha(colors.loseColor, 0.26)}, 0 0 0 2px ${withAlpha(colors.rimColor, 0.24)}` : undefined,
             WebkitTextStroke: isRestaurantPopTemplate ? "0.35px currentColor" : undefined,
           }}
         >

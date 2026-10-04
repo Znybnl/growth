@@ -5,7 +5,7 @@ import { useId, type CSSProperties } from "react";
 /** Decorative only: no interaction, segment selection or animation state. */
 export function BeautyWheelRim({ color, width, fill }: { color: string; width: number; fill: string }) {
   return <g data-testid="beauty-wheel-rim">
-    <circle cx="320" cy="320" r="317" fill={fill} stroke="#ffffff" strokeWidth={width + 2} vectorEffect="non-scaling-stroke" />
+    <circle cx="320" cy="320" r="317" fill={fill} stroke="#ffffff" strokeWidth={width + 4} vectorEffect="non-scaling-stroke" />
     <circle data-testid="beauty-wheel-colored-rim" cx="320" cy="320" r="317" fill="none" stroke={color} strokeWidth={width} vectorEffect="non-scaling-stroke" />
   </g>;
 }
