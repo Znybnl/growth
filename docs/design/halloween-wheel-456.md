@@ -76,6 +76,10 @@ Génération : outil intégré `imagegen`, édition guidée par la référence, 
 
 ## Validation propriétaire
 
+### Palette du logo — validation du 4 octobre
+
+Le sélecteur « Couleur du logo et sous-titre » affiche un blanc fixe et le badge « Palette fixe » pour Halloween uniquement. Il est désactivé, avec une explication : logo blanc, sous-titre doré. Le rendu impose également le blanc au logo texte lorsqu'une ancienne couleur a été enregistrée ; les images de logo conservent leurs pixels. La couleur enregistrée reste intacte et les autres templates gardent leur personnalisation. Fusion et production autorisées par le propriétaire après ce dernier réglage.
+
 ### Sous-titre et cadre de téléphone — retour du 4 octobre
 
 La couleur du sous-titre était écrasée en ligne par celle du logo : un logo blanc entraînait donc un sous-titre blanc. Suppression de ce couplage ; la teinte fixe est désormais `#efb866` et le bloc centré passe de 76 % à 60 % de la largeur. Un texte sans espaces se replie sans dépasser le bloc ; un sous-titre vide ne produit aucun élément.

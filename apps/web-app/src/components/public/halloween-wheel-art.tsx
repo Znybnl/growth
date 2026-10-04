@@ -19,7 +19,6 @@ export function HalloweenWheelScene({
   logoUrl,
   logoWidthPx = 180,
   logoTextSizePx = 24,
-  logoTextColor = "#f8f6ef",
   logoAlign = "center",
   logoBottomSpacingPx = DEFAULT_WHEEL_SPACING_PX,
   title,
@@ -85,7 +84,7 @@ export function HalloweenWheelScene({
                 className={styles.logoText}
                 style={{
                   fontSize: unit(logoTextSizePx * 0.62),
-                  color: logoTextColor,
+                  color: "#ffffff",
                   textAlign: logoAlign,
                 }}
               >

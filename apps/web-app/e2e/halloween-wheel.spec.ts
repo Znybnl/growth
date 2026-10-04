@@ -81,6 +81,14 @@ test("le packaging Vercel inclut les assets Halloween malgré l’exclusion glob
   expect(lines.lastIndexOf(allowRule)).toBeGreaterThan(lines.lastIndexOf("*.webp"));
 });
 
+test("le sélecteur Halloween affiche un blanc désactivé avec Palette fixe", () => {
+  const wizard = readFileSync(resolve(__dirname, "../src/components/merchant/campaign-wizard.tsx"), "utf8");
+  const control = wizard.slice(wizard.indexOf('>Couleur du logo et sous-titre'), wizard.indexOf('aria-label="Couleur du logo et sous-titre"'));
+  expect(control).toContain('>Palette fixe</span>');
+  expect(control).toContain('disabled={draft.presentation.layout.templateId === "halloween-gold"}');
+  expect(control).toContain('draft.presentation.layout.templateId === "halloween-gold" ? "#ffffff"');
+});
+
 for (const width of [320, 390, 600, 1280]) {
   test(`affichage Halloween sans débordement à ${width}px`, async ({
     page,
@@ -143,6 +151,7 @@ test("proportions de roue préservées et espacements communs de 50px à 390px",
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/dev/halloween-proof");
+  await expect(page.getByTestId("halloween-wheel-scene").locator("header p")).toHaveCSS("color", "rgb(255, 255, 255)");
   await page.evaluate(() => document.fonts.ready);
   const scene = await page.getByTestId("halloween-wheel-scene").boundingBox();
   const wheel = await page.getByTestId("halloween-wheel").boundingBox();

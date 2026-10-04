@@ -49,7 +49,7 @@ export const halloweenFixture = parseCampaignSetupInput(
       logo: {
         sizePercent: 100,
         marginBottomPx: DEFAULT_WHEEL_SPACING_PX,
-        textColor: "#ffffff",
+        textColor: "#ff00ff",
         align: "center",
       },
       heading: {

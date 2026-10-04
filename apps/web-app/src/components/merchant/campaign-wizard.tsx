@@ -2964,14 +2964,18 @@ export function CampaignWizard({
                          <input type="color" value={draft.presentation.heading.textColor} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, heading: { ...draft.presentation.heading, textColor: event.target.value } } })} className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] p-1" aria-label="Couleur du texte principal" />
                        </label> : null}
                        <label className="block text-sm">
-                         <span className="mb-2 block font-semibold">Couleur du logo et sous-titre</span>
+                         <span className="mb-2 flex items-center justify-between gap-2 font-semibold">Couleur du logo et sous-titre
+                           {draft.presentation.layout.templateId === "halloween-gold" ? <span className="rounded-full bg-[#f1ebff] px-2 py-0.5 text-[11px] font-semibold text-[#6944a1]">Palette fixe</span> : null}
+                         </span>
                          <input
                            type="color"
-                           value={draft.presentation.logo.textColor ?? draft.presentation.heading.textColor}
+                           disabled={draft.presentation.layout.templateId === "halloween-gold"}
+                           value={draft.presentation.layout.templateId === "halloween-gold" ? "#ffffff" : draft.presentation.logo.textColor ?? draft.presentation.heading.textColor}
                            onChange={(event) => patchDraft({ presentation: { ...draft.presentation, logo: { ...draft.presentation.logo, textColor: event.target.value } } })}
-                           className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] bg-white p-1"
+                           className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] bg-white p-1 disabled:cursor-not-allowed"
                            aria-label="Couleur du logo et sous-titre"
                          />
+                         {draft.presentation.layout.templateId === "halloween-gold" ? <span className="mt-2 block text-xs text-[#526078]">Logo blanc et sous-titre doré : couleurs fixes du template.</span> : null}
                        </label>
                    </div>
                    </section>
