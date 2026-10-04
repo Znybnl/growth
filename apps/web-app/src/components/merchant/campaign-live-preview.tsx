@@ -7,7 +7,7 @@ import { memo } from "react";
 import { BrandMark } from "@/components/brand-mark";
 import { HalloweenCampaignPreview } from "./halloween-campaign-preview";
 import { BeautyWheelDecorations } from "@/components/public/beauty-wheel-decorations";
-import { beautyWheelBackground, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
+import { beautyWheelBackground, beautyWheelDefaultBackground, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
 import { beautyScratchTemplate, isImmersiveScratchTemplate as isImmersiveScratchPageTemplate, type ImmersiveScratchTemplateId } from "@/lib/beauty-scratch-templates";
 import { RosePowderDecor } from "@/components/public/rose-powder-decor";
 import { CocoricoPromoText } from "@/components/public/cocorico-promo-text";
@@ -75,6 +75,7 @@ export type CampaignEditorPreviewModel = {
     fontFamily: string;
   };
   hasCustomBackgroundImage: boolean;
+  nativeWheelBackgroundUrl?: string | null;
   logoMode: CampaignSetupInput["logoMode"];
   logoAlignmentClass: string;
   logoBottomSpacingPx: number;
@@ -154,6 +155,7 @@ function previewBackgroundImage(
   if (form.presentation.background.mode === "image" && form.presentation.background.imageUrl) {
     return userBackgroundImageStyle(form.presentation.background.imageUrl);
   }
+  if (form.gameType === "wheel" && beautyWheelDefaultBackground(templateId, form.presentation.background)) return "none";
   const templateBackground = scratchTemplateDefaultBackground(templateId, form.presentation.background);
   if (templateBackground) return `url("${templateBackground}")`;
   const beautyTheme = beautyScratchTemplate(templateId);
@@ -219,6 +221,7 @@ export function buildCampaignLivePreviewModel(form: CampaignSetupInput, merchant
       fontFamily: textFontFamily(form.presentation.heading.fontFamily),
     },
     hasCustomBackgroundImage: form.presentation.background.mode === "image" && Boolean(form.presentation.background.imageUrl),
+    nativeWheelBackgroundUrl: form.gameType === "wheel" ? beautyWheelDefaultBackground(templateId, form.presentation.background) : null,
     logoMode: form.logoMode,
     logoAlignmentClass,
     // The public game uses the logo margin directly. Keep the wizard preview
@@ -296,6 +299,9 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
   const isImmersiveScratchTemplate = isImmersiveScratchPageTemplate(preview.gamePageTemplateId);
   const beautyScratchTheme = beautyScratchTemplate(preview.gamePageTemplateId);
   const useBeautyScratchThemeBackground = Boolean(beautyScratchTheme && !preview.hasCustomBackgroundImage);
+  const nativeBackgroundImageUrl = useBeautyScratchThemeBackground
+    ? beautyScratchTheme?.background
+    : preview.nativeWheelBackgroundUrl;
   const showStandardHeader = !isImmersiveScratchTemplate;
   // The compact preview has 254px of usable content width inside its phone
   // frame. A .74 ratio mirrors a 375px mobile viewport while container query
@@ -323,18 +329,18 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
   return (
     <div className={`okado-preview-surface ${previewWrapperClass}`} data-template-id={preview.gamePageTemplateId}>
       <div className={`mx-auto w-full ${(isRosePowderTemplate || isRoseInstitutTemplate) && compact ? "overflow-x-hidden overflow-y-auto" : "overflow-hidden"} border border-[#ced7e6] shadow-[0_30px_70px_rgba(18,24,39,0.18)] ${previewFrameClass} ${isRosePowderTemplate ? "okado-rose-powder-surface relative" : ""}`} style={{ ...preview.backgroundStyle, backgroundImage: useBeautyScratchThemeBackground ? "none" : preview.backgroundStyle.backgroundImage, backgroundRepeat: "no-repeat", ...(compact ? { containerType: "inline-size" } : {}) }}>
-        {useBeautyScratchThemeBackground && beautyScratchTheme ? (
+        {nativeBackgroundImageUrl ? (
           <Image
-            src={beautyScratchTheme.background}
+            src={nativeBackgroundImageUrl}
             alt=""
             fill
             priority
             sizes={compact ? "260px" : "450px"}
-            data-template-art={beautyScratchTheme.id}
+            data-template-art={preview.gamePageTemplateId}
             className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover"
           />
         ) : null}
-        {(isBeautyTemplate || isRoseInstitutTemplate) && preview.gameType === "wheel" && !preview.hasCustomBackgroundImage ? (
+        {(isBeautyTemplate || isRoseInstitutTemplate) && preview.gameType === "wheel" && !preview.hasCustomBackgroundImage && !preview.nativeWheelBackgroundUrl ? (
           isRosePowderTemplate ? (
             <RosePowderDecor primaryColor={preview.wheelStyle.loseColor} />
           ) : (

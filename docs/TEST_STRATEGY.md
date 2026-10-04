@@ -75,6 +75,12 @@ Un changement qui touche l'un de ces parcours doit avoir une preuve de test auto
 - Rejouer le vrai cadre de téléphone du wizard : sans sous-titre et avec sous-titre long/non sécable, à 320/390/1280 px. Vérifier la couverture jusqu’au bas de l’écran, la teinte dorée indépendante du logo blanc, le bloc secondaire à 60 % sans débordement et le disque carré non étiré.
 - Contrôler également qu’un build production refuse la route de fixture. Comparaison et images : [validation visuelle](design/halloween-wheel-456.md).
 
+## Fonds de roues issus des tickets — #458
+
+- `e2e/beauty-wheel-backgrounds.spec.ts` : fonds natifs identiques aux tickets, import/bibliothèque prioritaire, couleur personnalisée conservée, URL absente non bloquante, aucune mutation des paramètres, miniatures et absence de propagation vers les autres roues.
+- Fixtures synthétiques `/dev/beauty-wheel-backgrounds`, limitées au développement ; tester les vrais composants de l'aperçu et du jeu public à 390 px, images effectivement chargées et sans SVG décoratif superposé. Intercepter l'API de lecture ; aucune écriture métier ou e-mail.
+- Rejouer `beauty-wheel-themes.spec.ts`, `wheel-template-background.spec.ts` et `halloween-wheel.spec.ts` pour les lots, couleurs, fonds et interactions existantes. Vérifier que le build production renvoie 404 pour la fixture.
+
 ## Compte rendu attendu
 
 Chaque demande de merge ou de production doit indiquer, en quelques lignes :

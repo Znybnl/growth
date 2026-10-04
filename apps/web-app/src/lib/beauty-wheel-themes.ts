@@ -1,4 +1,5 @@
 import type { GamePageTemplateId, TextFont } from "@/lib/types";
+import { beautyScratchTemplate } from "@/lib/beauty-scratch-templates";
 
 export const BEAUTY_WHEEL_THEMES = [
   { id: "beauty-rose", name: "Rose poudré", tagline: "Doux & élégant", primary: "#d58a9a", secondary: "#fff7f8", background: "#fff7f8", text: "#512d3b", font: "cormorant" },
@@ -43,6 +44,21 @@ export function isBeautyWheelTemplate(templateId?: GamePageTemplateId): template
 
 export function isBeautyIndustry(industry?: string | null) {
   return (industry ?? "").trim().toLocaleLowerCase("fr") === "beauté";
+}
+
+/** Native artwork is resolved at render time, never saved as a merchant image. */
+export function beautyWheelDefaultBackground(
+  templateId: GamePageTemplateId | undefined,
+  background: { mode: string; color: string; imageUrl?: string },
+): string | null {
+  const scratchId = templateId === "beauty-nude"
+    ? "beauty-scratch-nude"
+    : templateId === "beauty-botanical" ? "beauty-scratch-botanical" : null;
+  if (!scratchId || (background.mode === "image" && background.imageUrl)) return null;
+  // Keep a previously chosen solid color effective as well as a manual image.
+  const theme = beautyWheelTheme(templateId)!;
+  if (background.mode === "color" && background.color.toLowerCase() !== theme.background) return null;
+  return beautyScratchTemplate(scratchId)!.background;
 }
 
 function luminance(hex: string) {

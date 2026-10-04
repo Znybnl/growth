@@ -1,4 +1,5 @@
-import { BEAUTY_WHEEL_THEMES, beautyWheelBackground } from "@/lib/beauty-wheel-themes";
+import { BEAUTY_WHEEL_THEMES, beautyWheelBackground, beautyWheelDefaultBackground } from "@/lib/beauty-wheel-themes";
+import Image from "next/image";
 import { buildBeautyWheelSegmentColors } from "@/lib/beauty-wheel-segments";
 import { Pointer } from "lucide-react";
 import { textFontFamily } from "@/lib/format";
@@ -93,6 +94,7 @@ export function BeautyWheelTemplateGallery({
       <div className="grid min-w-0 grid-cols-[repeat(auto-fit,minmax(min(100%,13rem),1fr))] gap-3">
         {BEAUTY_WHEEL_THEMES.map((theme) => {
           const selected = selectedTemplateId === theme.id;
+          const nativeBackground = beautyWheelDefaultBackground(theme.id, { mode: "color", color: theme.background });
           return (
             <button
               key={theme.id}
@@ -103,9 +105,9 @@ export function BeautyWheelTemplateGallery({
             >
               <div
                 className={`relative h-40 overflow-hidden px-4 pt-3 ${theme.id === "beauty-rose" ? "okado-rose-powder-surface" : ""}`}
-                style={{ backgroundColor: theme.background, backgroundImage: beautyWheelBackground(theme.id, theme.background, theme.primary), color: theme.text }}
+                style={{ backgroundColor: theme.background, backgroundImage: nativeBackground ? "none" : beautyWheelBackground(theme.id, theme.background, theme.primary), color: theme.text }}
               >
-                <BeautyThumbnailDecor theme={theme} />
+                {nativeBackground ? <Image src={nativeBackground} alt="" fill sizes="320px" data-template-art={theme.id} className="pointer-events-none object-cover" /> : <BeautyThumbnailDecor theme={theme} />}
                 <div data-testid="beauty-thumbnail-logo" className="relative z-10 min-h-[20px] max-w-[56%] text-[8px] font-semibold uppercase leading-[1.15] tracking-[0.06em]">Votre établissement</div>
                 <div className="relative z-10 mt-3 max-w-[56%] text-[13px] font-bold leading-[1.12]" style={{ fontFamily: textFontFamily(theme.font) }}>Votre animation<br />vous réserve une surprise</div>
                 <div className="relative z-10 mt-1 max-w-[55%] text-[8px] leading-tight opacity-75">Des surprises vous attendent</div>
