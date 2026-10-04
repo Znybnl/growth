@@ -58,15 +58,16 @@ function EclatWheelThumbnail() {
   return (
     <div
       aria-hidden="true"
-      className="absolute -bottom-5 right-[-0.8rem] z-10 grid size-32 place-items-center rounded-full border-[3px] border-[#f3a4c4] p-1 shadow-[0_9px_24px_rgba(222,103,151,0.18)]"
-      style={{ outline: "2px solid white", backgroundImage: "conic-gradient(from -22.5deg, #f3a4c4 0deg 45deg, #fff9fb 45deg 90deg, #f3a4c4 90deg 135deg, #fff9fb 135deg 180deg, #f3a4c4 180deg 225deg, #fff9fb 225deg 270deg, #f3a4c4 270deg 315deg, #fff9fb 315deg 360deg)" }}
+      data-testid="eclat-thumbnail-wheel"
+      className="absolute -bottom-5 right-[-0.8rem] z-10 grid size-32 place-items-center rounded-full border-[5px] border-white p-1 shadow-[0_9px_24px_rgba(222,103,151,0.18)]"
+      style={{ backgroundImage: "conic-gradient(from -22.5deg, #f3a4c4 0deg 45deg, #fff9fb 45deg 90deg, #f3a4c4 90deg 135deg, #fff9fb 135deg 180deg, #f3a4c4 180deg 225deg, #fff9fb 225deg 270deg, #f3a4c4 270deg 315deg, #fff9fb 315deg 360deg)" }}
     >
-      <div className="relative size-full rounded-full">
-        <div data-testid="beauty-thumbnail-center" className="absolute left-1/2 top-1/2 grid size-10 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border-2 text-[8px] font-semibold tracking-wide text-white" style={{ background: beautyCenterFinish("#003cb4"), fontFamily: textFontFamily("dm-sans"), ...beautyCenterRelief("#003cb4") }}>
+      <div className="relative size-full rounded-full border-2 border-[#e78ab0]/50">
+        <div data-testid="eclat-thumbnail-pointer" className="absolute left-1/2 top-1 -translate-x-1/2 border-x-[7px] border-t-[13px] border-x-transparent border-t-[#e78ab0]" />
+        <div data-testid="eclat-thumbnail-center" className="absolute left-1/2 top-1/2 grid size-10 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border-[3px] border-white bg-[#003cb4] text-[6px] font-bold tracking-wide text-white shadow-md">
           JOUER
         </div>
       </div>
-      <BeautyWheelPointer color="#f3a4c4" className="absolute left-1/2 -top-2 h-7 w-5 -translate-x-1/2 overflow-visible" />
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { beautyWheelRimColor } from "../src/lib/beauty-wheel-finishes";
 
-const templates = ["beauty-rose", "beauty-nude", "beauty-botanical", "beauty-pop", "beauty-editorial", "beauty-tech", "rose-institut"];
+const templates = ["beauty-rose", "beauty-nude", "beauty-botanical", "beauty-pop", "beauty-editorial", "beauty-tech"];
 
 test("la couleur d'un contour personnalisé reste effective", () => {
   expect(beautyWheelRimColor("beauty-nude", "#f8f3ea", "#b99052")).toBe("#b99052");
@@ -88,10 +88,10 @@ for (const template of templates) {
   });
 }
 
-test("les sept miniatures ont le centre sans icône, le reflet et un pointeur en relief", async ({ page }, testInfo) => {
+test("les six miniatures Beauté ont les nouvelles finitions, Éclat garde son rendu antérieur", async ({ page }, testInfo) => {
   await page.goto("/dev/beauty-wheel-backgrounds?mode=gallery");
   const centers = page.getByTestId("beauty-thumbnail-center");
-  await expect(centers).toHaveCount(7);
+  await expect(centers).toHaveCount(6);
   for (const center of await centers.all()) {
     await expect(center.locator("svg")).toHaveCount(0);
     await expect(center).toHaveCSS("background-image", /radial-gradient/);
@@ -99,11 +99,85 @@ test("les sept miniatures ont le centre sans icône, le reflet et un pointeur en
     await expect(center).not.toHaveCSS("border-top-color", "rgb(255, 255, 255)");
     await expect(center).not.toHaveCSS("box-shadow", "none");
   }
-  await expect(page.getByTestId("beauty-wheel-pointer")).toHaveCount(7);
+  await expect(page.getByTestId("beauty-wheel-pointer")).toHaveCount(6);
   await expect(page.getByTestId("beauty-logo-rule")).toHaveCount(7);
+  const eclat = page.getByTestId("eclat-thumbnail");
+  await expect(eclat.getByTestId("eclat-thumbnail-wheel")).toHaveCSS("border-top-width", "5px");
+  await expect(eclat.getByTestId("eclat-thumbnail-wheel")).toHaveCSS("border-top-color", "rgb(255, 255, 255)");
+  await expect(eclat.getByTestId("eclat-thumbnail-wheel")).toHaveCSS("outline-style", "none");
+  await expect(eclat.getByTestId("eclat-thumbnail-center")).toHaveCSS("background-image", "none");
+  await expect(eclat.getByTestId("eclat-thumbnail-center")).toHaveCSS("border-top-width", "3px");
+  await expect(eclat.getByTestId("eclat-thumbnail-center")).toHaveCSS("border-top-color", "rgb(255, 255, 255)");
+  await expect(eclat.getByTestId("eclat-thumbnail-center")).toHaveCSS("font-size", "6px");
+  await expect(eclat.getByTestId("eclat-thumbnail-pointer")).toHaveCSS("border-top-width", "13px");
   const ids = await page.locator("svg linearGradient").evaluateAll((nodes) => nodes.map((node) => node.id));
   expect(new Set(ids).size).toBe(ids.length);
   await page.screenshot({ path: testInfo.outputPath("gallery.png"), fullPage: true });
+});
+
+for (const mode of ["preview", "public"]) {
+  for (const width of [320, 390]) {
+    test(`Éclat ${mode} à ${width}px : centre, pointeur et anneau d'origine`, async ({ page }, testInfo) => {
+      const errors: string[] = [];
+      page.on("pageerror", (error) => errors.push(error.message));
+      await page.route("**/api/public/campaign/fixture-wheel-backgrounds?*", (route) => route.fulfill({ json: { campaign: { actions: [] } } }));
+      await page.setViewportSize({ width, height: 844 });
+      await page.goto(`/dev/beauty-wheel-backgrounds?template=rose-institut&mode=${mode}`);
+      const surface = page.locator('[data-template-id="rose-institut"]');
+      const button = surface.getByRole("button", { name: "Jouer à la roue" });
+      await expect(button).toBeVisible();
+      await expect(button).toHaveCSS("background-image", "none");
+      await expect(button).toHaveCSS("border-top-color", "rgb(255, 255, 255)");
+      await expect(button).toHaveCSS("border-top-width", "3px");
+      await expect(button).toHaveCSS("box-shadow", "rgba(11, 78, 162, 0.22) 0px 8px 18px 0px");
+      const label = button.locator(".okado-eclat-play-label");
+      await expect(label).toHaveCSS("font-weight", "700");
+      await expect(button.locator(".okado-beauty-wheel-center-label")).toHaveCount(0);
+      const sizing = await button.evaluate((node) => {
+        const element = node as HTMLElement;
+        const before = getComputedStyle(element).fontSize;
+        element.style.fontSize = "clamp(0.92rem, 5.6cqw, 1.8rem)";
+        return { before, expected: getComputedStyle(element).fontSize };
+      });
+      expect(sizing.before).toBe(sizing.expected);
+      const pointer = surface.getByTestId("eclat-wheel-pointer");
+      await expect(pointer).toHaveCSS("background-color", "rgb(255, 255, 255)");
+      await expect(pointer).toHaveCSS("clip-path", "polygon(50% 0px, 84% 14%, 72% 76%, 50% 100%, 28% 76%, 16% 14%)");
+      await expect(pointer.locator("div")).toHaveCSS("background-color", "rgb(243, 164, 196)");
+      const circles = surface.getByTestId("eclat-wheel-rim").locator("circle");
+      await expect(circles).toHaveCount(2);
+      await expect(circles.first()).toHaveAttribute("stroke", "#ffffff");
+      await expect(circles.first()).toHaveAttribute("stroke-width", "18");
+      await expect(circles.first()).toHaveAttribute("r", "322");
+      await expect(circles.nth(1)).toHaveAttribute("stroke", "rgba(11,78,162,0.12)");
+      await expect(surface.getByTestId("beauty-wheel-pointer")).toHaveCount(0);
+      await expect(surface.getByTestId("beauty-wheel-rim")).toHaveCount(0);
+      await expect(surface.getByTestId("beauty-logo-rule")).toHaveCount(1);
+      expect(await surface.locator("svg text").allTextContents()).toContain("-10%PROCHAINEVISITE");
+      expect(errors).toEqual([]);
+      await page.evaluate(() => document.fonts.ready);
+      await surface.screenshot({ path: testInfo.outputPath(`eclat-restored-${mode}-${width}.png`) });
+    });
+  }
+  for (const logo of ["image", "none"]) {
+    test(`Éclat ${mode} : filet absent en mode logo ${logo}`, async ({ page }) => {
+      await page.route("**/api/public/campaign/fixture-wheel-backgrounds?*", (route) => route.fulfill({ json: { campaign: { actions: [] } } }));
+      await page.goto(`/dev/beauty-wheel-backgrounds?template=rose-institut&mode=${mode}&logo=${logo}`);
+      await expect(page.getByTestId("beauty-logo-rule")).toHaveCount(0);
+    });
+  }
+}
+
+test("Éclat : clic action, animation et résultat conservés", async ({ page }) => {
+  await page.goto("/dev/beauty-wheel-backgrounds?template=rose-institut&mode=interaction");
+  const button = page.getByRole("button", { name: "Jouer à la roue" });
+  await button.click();
+  await expect(page.getByTestId("action-count")).toHaveText("1");
+  await expect(page.getByTestId("result-count")).toHaveText("0");
+  await button.click();
+  await expect(page.getByTestId("result-count")).toHaveText("1");
+  await expect(button).toBeDisabled();
+  await expect(page.getByTestId("action-count")).toHaveText("1");
 });
 
 test("la roue hors Beauté conserve son style et n'a pas le filet Beauté", async ({ page }) => {
