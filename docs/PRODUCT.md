@@ -76,6 +76,19 @@
 - Le secteur Beauté propose les sous-secteurs Coiffure, Institut & soins, Ongles & cils, et Massage & spa. Les suggestions de lots peuvent être ciblées par sous-secteur ; tant qu'un catalogue dédié n'est pas configuré, le catalogue Beauté général reste disponible en repli.
 - Les établissements du secteur Beauté disposent de six styles de roue supplémentaires, quel que soit leur sous-secteur. Cette collection apparaît avant les modèles génériques dans les éditeurs ; les joueurs voient le modèle enregistré sans restriction de secteur. Le logo, le titre, le sous-titre, les couleurs et la police restent personnalisables. Le centre utilise une main pointeur, sauf sur « Rose poudré » où une fleur abstraite à quatre pétales remplace uniquement son apparence. L'interaction du bouton reste identique.
 
+## Roue Halloween dorée — issue #456
+
+- Modèle générique disponible pour tous les secteurs, dans le wizard et l’éditeur classique : `halloween-gold`.
+- Le logo (texte, image ou aucun), le titre, le sous-titre, les polices, tailles, alignements et espacements restent configurables. Bodoni est la police initiale du titre ; les marges de chaque modèle sont mémorisées/restaurées.
+- Le décor raster, les dorures du titre, la mention « Spécial Halloween », les couleurs et le traitement de la roue sont fixes. Aucun pictogramme dans le bouton central JOUER.
+- Six secteurs alternés noir/or reprennent la référence. Les pictogrammes sont décoratifs, pas une promesse de lot : les vrais lots, probabilités, résultat serveur, action marketing et parcours de gain ne changent pas. Si plus de six résultats distincts sont configurés, le rendu s’étend au nombre pair nécessaire pour ne masquer aucun lot.
+- Le même rendu sert à la page de jeu, la prévisualisation mobile et l’aperçu intégré. Les assets locaux sont versionnés et ne dépendent pas d’un fichier présent uniquement sur le poste du développeur.
+- La composition affinée utilise une roue de 82 % de la largeur, des anneaux fins et une microtexture métallique. À la demande du propriétaire du 4 octobre, les espacements initiaux sous le logo et avant la roue utilisent désormais la valeur commune des roues, 50 px. Les valeurs déjà enregistrées, y compris 0 px, et les réglages des autres templates restent préservés.
+- Les assets raster Halloween doivent être inclus explicitement dans `.vercelignore` ; leur présence dans Git ou sur le serveur local ne prouve pas leur présence sur Vercel. Contrôler les URL statiques et optimisées sur le déploiement candidat.
+- Le sous-titre Halloween utilise la teinte dorée fixe `#efb866`, indépendamment de la couleur du logo, et une largeur centrée de 60 %. Le décor de l’aperçu compact remplit toute la hauteur de l’écran interne du téléphone ; le diamètre et les proportions de roue ne sont pas étirés pour remplir cette hauteur.
+- Le logo texte Halloween est blanc fixe (`#ffffff`), même avec une ancienne couleur sauvegardée. Le sélecteur « Couleur du logo et sous-titre » est blanc, désactivé et accompagné du badge « Palette fixe » ; une aide précise que le sous-titre reste doré. Les images de logo ne sont pas recolorées et les réglages enregistrés des autres modèles restent personnalisables.
+- Preuves visuelles, provenance des images et grille de correspondance : [dossier de validation](design/halloween-wheel-456.md). Validation du propriétaire requise avant merge/déploiement.
+
 ## Questions ouvertes
 
 - [ ] Définir les critères de retrait forcé à afficher et à journaliser pour le personnel du commerce.

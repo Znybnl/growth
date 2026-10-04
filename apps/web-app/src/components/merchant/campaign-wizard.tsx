@@ -102,6 +102,7 @@ import {
   wheelBackgroundForTemplateSelection,
   wheelHeadingColorForTemplateSelection,
   wheelHeadingFontForTemplateSelection,
+  wheelLogoGapForTemplateSelection,
   wheelLogoColorForTemplateSelection,
   wheelPaletteForTemplate,
 } from "@/lib/campaign-defaults";
@@ -434,7 +435,7 @@ function updatePrize(
   };
 }
 
-function WizardPhoneFrame({ children }: { children: ReactNode }) {
+export function WizardPhoneFrame({ children }: { children: ReactNode }) {
   return (
     <div data-testid="wizard-phone-preview" className="okado-preview-surface relative mx-auto box-border h-[550px] w-[300px] rounded-[36px] border-[5px] border-[#172033] bg-[#172033] p-1.5 shadow-[0_24px_54px_rgba(18,24,39,0.2)]">
       <div
@@ -851,6 +852,7 @@ export function CampaignWizard({
           headingFontFamily: current.presentation.heading.fontFamily,
           headingAlign: current.presentation.heading.align,
           logoAlign: current.presentation.logo.align,
+          logoBottomSpacingPx: current.presentation.logo.marginBottomPx,
           buttonBackgroundColor: current.presentation.button.backgroundColor,
           subtitleSpacingPx: current.presentation.layout.subtitleSpacingPx,
         };
@@ -883,6 +885,7 @@ export function CampaignWizard({
             logo: {
               ...current.presentation.logo,
               textColor: remembered?.logoTextColor ?? DEFAULT_ROSE_INSTITUT_TEXT_COLOR,
+              marginBottomPx: wheelLogoGapForTemplateSelection(templateId, previousId, current.presentation.logo.marginBottomPx, remembered?.logoBottomSpacingPx),
               align: remembered?.logoAlign ?? "center",
             },
             button: {
@@ -913,6 +916,7 @@ export function CampaignWizard({
         headingFontFamily: current.presentation.heading.fontFamily,
         headingAlign: current.presentation.heading.align,
         logoAlign: current.presentation.logo.align,
+        logoBottomSpacingPx: current.presentation.logo.marginBottomPx,
         buttonBackgroundColor: current.presentation.button.backgroundColor,
         blockSpacingPx: current.presentation.layout.blockSpacingPx,
         subtitleSpacingPx: current.presentation.layout.subtitleSpacingPx,
@@ -926,7 +930,7 @@ export function CampaignWizard({
           background: { ...current.presentation.background, color: remembered?.backgroundColor ?? theme.background },
           wheel: remembered?.wheel ?? wheelPaletteForTemplate(templateId, current.presentation.wheel),
           heading: { ...current.presentation.heading, fontFamily: remembered?.headingFontFamily ?? theme.font, textColor: remembered?.headingTextColor ?? theme.text, align: remembered?.headingAlign ?? (templateId === "beauty-editorial" ? "left" : "center") },
-          logo: { ...current.presentation.logo, textColor: remembered?.logoTextColor ?? theme.text, align: remembered?.logoAlign ?? (templateId === "beauty-editorial" ? "left" : "center") },
+          logo: { ...current.presentation.logo, marginBottomPx: wheelLogoGapForTemplateSelection(templateId, previousId, current.presentation.logo.marginBottomPx, remembered?.logoBottomSpacingPx), textColor: remembered?.logoTextColor ?? theme.text, align: remembered?.logoAlign ?? (templateId === "beauty-editorial" ? "left" : "center") },
           button: { ...current.presentation.button, backgroundColor: remembered?.buttonBackgroundColor ?? theme.primary },
         },
       };
@@ -954,6 +958,7 @@ export function CampaignWizard({
         headingFontFamily: current.presentation.heading.fontFamily,
         headingAlign: current.presentation.heading.align,
         logoAlign: current.presentation.logo.align,
+        logoBottomSpacingPx: current.presentation.logo.marginBottomPx,
         buttonBackgroundColor: current.presentation.button.backgroundColor,
         blockSpacingPx: current.presentation.layout.blockSpacingPx,
         subtitleSpacingPx: current.presentation.layout.subtitleSpacingPx,
@@ -980,6 +985,7 @@ export function CampaignWizard({
           logo: {
             ...current.presentation.logo,
             textColor: remembered?.logoTextColor ?? theme.text,
+            marginBottomPx: wheelLogoGapForTemplateSelection(templateId, previousId, current.presentation.logo.marginBottomPx, remembered?.logoBottomSpacingPx),
           },
         },
         accent: {
@@ -2421,6 +2427,7 @@ export function CampaignWizard({
                         { id: "scratch-sunburst", label: "Rayons soleil", text: "Éclatant et visible" },
                       ] as const
                     : [
+                     { id: "halloween-gold", label: "Halloween doré", text: "Roses noires et dorures, décor et palette fixes" },
                      {
                        id: "cocorico-wheel",
                        label: "Moderne",
@@ -2488,6 +2495,7 @@ export function CampaignWizard({
                           headingFontFamily: current.presentation.heading.fontFamily,
                           headingAlign: current.presentation.heading.align,
                           logoAlign: current.presentation.logo.align,
+                          logoBottomSpacingPx: current.presentation.logo.marginBottomPx,
                           buttonBackgroundColor: current.presentation.button.backgroundColor,
                           blockSpacingPx: current.presentation.layout.blockSpacingPx,
                           subtitleSpacingPx: current.presentation.layout.subtitleSpacingPx,
@@ -2497,7 +2505,7 @@ export function CampaignWizard({
                         const backgroundColor = remembered?.backgroundColor ?? wheelBackgroundForTemplateSelection(template.id, current.presentation.background.color);
                         const headingTextColor = remembered?.headingTextColor ?? (current.gameType === "scratch" ? defaultScratchTextColor(template.id) : template.id === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheelHeadingColorForTemplateSelection(template.id, isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.heading.textColor));
                         const logoTextColor = remembered?.logoTextColor ?? (current.gameType === "scratch" ? defaultScratchTextColor(template.id) : template.id === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheelLogoColorForTemplateSelection(template.id, wheelHeadingColorForTemplateSelection(template.id, isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.logo.textColor ?? current.presentation.heading.textColor)));
-                        const firstSelectionHeadingFont = template.id === "classic"
+                        const firstSelectionHeadingFont = template.id === "classic" || template.id === "halloween-gold"
                           ? wheelHeadingFontForTemplateSelection(template.id, current.presentation.heading.fontFamily)
                           : current.presentation.heading.fontFamily;
                         const buttonBackgroundColor = remembered?.buttonBackgroundColor ?? (template.id === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheel.loseColor);
@@ -2510,6 +2518,7 @@ export function CampaignWizard({
 
                         return {
                           ...current,
+                          subtitle: template.id === "halloween-gold" && current.subtitle === DEFAULT_WHEEL_SUBTITLE ? "TOURNEZ\nLA ROUE" : current.subtitle,
                           presentation: {
                             ...current.presentation,
                             background: {
@@ -2548,6 +2557,7 @@ export function CampaignWizard({
                             logo: {
                               ...current.presentation.logo,
                               textColor: logoTextColor,
+                              marginBottomPx: wheelLogoGapForTemplateSelection(template.id, currentTemplateId, current.presentation.logo.marginBottomPx, remembered?.logoBottomSpacingPx),
                               align: remembered?.logoAlign ?? (isBeautyWheelTemplate(currentTemplateId) ? "center" : current.presentation.logo.align),
                             },
                             button:
@@ -2588,15 +2598,15 @@ export function CampaignWizard({
                  <label className="block">
                    <span className="flex flex-wrap items-center gap-2 text-sm font-semibold text-[#182033]">
                      {draft.gameType === "wheel" ? "Couleur principale de la roue" : "Couleur principale du ticket"}
-                     {draft.gameType === "scratch" &&
-                     scratchTemplateUsesFixedPrimaryColor(draft.presentation.layout.templateId) ? (
+                     {draft.presentation.layout.templateId === "halloween-gold" || (draft.gameType === "scratch" &&
+                     scratchTemplateUsesFixedPrimaryColor(draft.presentation.layout.templateId)) ? (
                        <span className="rounded-full bg-[#f1ebff] px-2 py-0.5 text-[11px] font-semibold text-[#6944a1]">Palette fixe</span>
                      ) : null}
                    </span>
                    <input
                      type="color"
-                      disabled={draft.gameType === "scratch" && scratchTemplateUsesFixedPrimaryColor(draft.presentation.layout.templateId)}
-                     value={draft.gameType === "wheel" ? draft.presentation.wheel.loseColor : draft.accent.signal}
+                      disabled={draft.presentation.layout.templateId === "halloween-gold" || (draft.gameType === "scratch" && scratchTemplateUsesFixedPrimaryColor(draft.presentation.layout.templateId))}
+                     value={draft.presentation.layout.templateId === "halloween-gold" ? "#ecac52" : draft.gameType === "wheel" ? draft.presentation.wheel.loseColor : draft.accent.signal}
                      onChange={(event) => {
                        const color = event.target.value;
                        setDraft((current) => {
@@ -2939,31 +2949,37 @@ export function CampaignWizard({
                 <div className="space-y-5">
                   <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
                     <p className="text-sm font-semibold text-[#182033]">Fond</p>
+                    {draft.presentation.layout.templateId === "halloween-gold" ? <p className="mt-3 text-sm text-[#526078]">Décor Halloween, dorures du titre et roue fixes. Le logo, les textes, leurs tailles et espacements restent personnalisables.</p> : <>
                <div className="mt-3 grid gap-3 sm:grid-cols-2">{([{ value: "color", label: "Couleur" }, { value: "image", label: "Image" }] as const).map((mode) => <button key={mode.value} type="button" onClick={() => patchDraft({ presentation: { ...draft.presentation, background: { ...draft.presentation.background, mode: mode.value } } })} className={`cursor-pointer rounded-[12px] border px-3 py-2.5 text-sm font-semibold ${draft.presentation.background.mode === mode.value ? "border-aubergine bg-purple-haze text-deep-plum" : "border-[#dbe3ed] bg-white text-[#526078]"}`}>{mode.label}</button>)}</div>
                     {draft.presentation.background.mode === "color" ? <label className="mt-3 block text-sm"><span className="mb-2 block font-semibold">Couleur de fond</span><input type="color" value={draft.presentation.background.color} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, background: { ...draft.presentation.background, color: event.target.value } } })} className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] p-1" /></label> : <label aria-live="polite" className={`mt-3 flex items-center justify-between rounded-[12px] border border-dashed border-[#b8c5d8] px-3 py-3 text-sm font-semibold ${imageUploads.background ? "cursor-wait opacity-75" : "cursor-pointer"}`}><span className="inline-flex items-center gap-2">{imageUploads.background ? <><Loader2 className="size-4 animate-spin" aria-hidden="true" /> Import et optimisation…</> : "Importer une image de fond"}</span><input type="file" accept={MERCHANT_IMAGE_ACCEPT} className="hidden" disabled={imageUploads.background} onChange={(event) => uploadWizardImage(event, (value) => { setImageUploadErrors((current) => ({ ...current, background: undefined })); patchDraft({ presentation: { ...draft.presentation, background: { ...draft.presentation.background, mode: "image", imageUrl: value } } }); }, (message) => setImageUploadErrors((current) => ({ ...current, background: message })), "background", adminAccountMerchantId ? { accountMerchantId: adminAccountMerchantId, locationId: merchant.id } : undefined, (isUploading) => setImageUploads((current) => ({ ...current, background: isUploading })))} /></label>}
                     {imageUploadErrors.background ? <p role="alert" className="mt-2 text-xs text-[#b42318]">{imageUploadErrors.background}</p> : null}
                     {draft.presentation.background.mode === "image" ? <div className="mt-3 flex flex-wrap items-center gap-2"><button type="button" onClick={() => setBackgroundLibraryOpen(true)} className="cursor-pointer rounded-[4px] border border-aubergine bg-aubergine px-3 py-2.5 text-sm font-semibold text-white">Choisir dans la bibliothèque</button>{draft.presentation.background.imageUrl ? <span className="rounded-full bg-[#e9f8ec] px-3 py-1.5 text-xs font-semibold text-[#18864b]">Image sélectionnée</span> : null}</div> : null}
+                    </>}
                   </section>
                    <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
                      <p className="text-sm font-semibold text-[#182033]">Couleur du texte</p>
                      <div className="mt-3 grid gap-4 sm:grid-cols-2">
-                       {!isCocoricoWheelTemplate(draft.presentation.layout.templateId) ? <label className="block text-sm">
+                       {!isCocoricoWheelTemplate(draft.presentation.layout.templateId) && draft.presentation.layout.templateId !== "halloween-gold" ? <label className="block text-sm">
                          <span className="mb-2 block font-semibold">Couleur du texte principal</span>
                          <input type="color" value={draft.presentation.heading.textColor} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, heading: { ...draft.presentation.heading, textColor: event.target.value } } })} className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] p-1" aria-label="Couleur du texte principal" />
                        </label> : null}
                        <label className="block text-sm">
-                         <span className="mb-2 block font-semibold">Couleur du logo et sous-titre</span>
+                         <span className="mb-2 flex items-center justify-between gap-2 font-semibold">Couleur du logo et sous-titre
+                           {draft.presentation.layout.templateId === "halloween-gold" ? <span className="rounded-full bg-[#f1ebff] px-2 py-0.5 text-[11px] font-semibold text-[#6944a1]">Palette fixe</span> : null}
+                         </span>
                          <input
                            type="color"
-                           value={draft.presentation.logo.textColor ?? draft.presentation.heading.textColor}
+                           disabled={draft.presentation.layout.templateId === "halloween-gold"}
+                           value={draft.presentation.layout.templateId === "halloween-gold" ? "#ffffff" : draft.presentation.logo.textColor ?? draft.presentation.heading.textColor}
                            onChange={(event) => patchDraft({ presentation: { ...draft.presentation, logo: { ...draft.presentation.logo, textColor: event.target.value } } })}
-                           className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] bg-white p-1"
+                           className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] bg-white p-1 disabled:cursor-not-allowed"
                            aria-label="Couleur du logo et sous-titre"
                          />
+                         {draft.presentation.layout.templateId === "halloween-gold" ? <span className="mt-2 block text-xs text-[#526078]">Logo blanc et sous-titre doré : couleurs fixes du template.</span> : null}
                        </label>
                    </div>
                    </section>
-                   {draft.gameType === "wheel" ? <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
+                   {draft.gameType === "wheel" && draft.presentation.layout.templateId !== "halloween-gold" ? <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
                      <p className="text-sm font-semibold text-[#182033]">Bouton JOUER</p>
                      <p className="mt-1 text-xs leading-5 text-[#8993a6]">
                        Personnalisez la couleur du bouton central de la roue. Par défaut, elle reprend celle du texte principal.

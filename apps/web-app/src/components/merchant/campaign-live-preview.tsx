@@ -5,6 +5,7 @@ import Image from "next/image";
 import { memo } from "react";
 
 import { BrandMark } from "@/components/brand-mark";
+import { HalloweenCampaignPreview } from "./halloween-campaign-preview";
 import { BeautyWheelDecorations } from "@/components/public/beauty-wheel-decorations";
 import { beautyWheelBackground, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
 import { beautyScratchTemplate, isImmersiveScratchTemplate as isImmersiveScratchPageTemplate, type ImmersiveScratchTemplateId } from "@/lib/beauty-scratch-templates";
@@ -314,6 +315,10 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
   const previewFrameClass = `${compact ? "relative isolate h-full min-h-0 max-w-none rounded-[30px] px-3 pb-5 pt-7" : "relative isolate min-h-[600px] max-w-[450px] rounded-[38px] px-4 pb-6 pt-8"} ${beautyScratchTheme ? "flex flex-col" : ""}`;
   const previewWrapperClass = compact ? "h-full" : flushTop ? "" : "mt-6";
   const wheelPreviewHeight = compact ? "330px" : "470px";
+
+  if (preview.gameType === "wheel" && preview.gamePageTemplateId === "halloween-gold") {
+    return <HalloweenCampaignPreview preview={preview} compact={compact} />;
+  }
 
   return (
     <div className={`okado-preview-surface ${previewWrapperClass}`} data-template-id={preview.gamePageTemplateId}>

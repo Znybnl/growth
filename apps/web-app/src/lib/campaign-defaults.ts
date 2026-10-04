@@ -286,12 +286,20 @@ export function wheelHeadingColorForTemplateSelection(templateId: GamePageTempla
 
 /** Moderne uses a white brand mark by default on its blue game background. */
 export function wheelLogoColorForTemplateSelection(templateId: GamePageTemplateId, currentColor: string) {
-  return templateId === "cocorico-wheel" ? "#ffffff" : currentColor;
+  return templateId === "cocorico-wheel" || templateId === "halloween-gold" ? "#ffffff" : currentColor;
 }
 
 /** Dynamique starts with Poppins unless the merchant already chose a font for it. */
 export function wheelHeadingFontForTemplateSelection(templateId: GamePageTemplateId, currentFont: TextFont): TextFont {
+  if (templateId === "halloween-gold") return "bodoni";
   return templateId === "classic" ? "poppins" : currentFont;
+}
+
+/** Initialize Halloween with the shared wheel spacing, preserving saved template choices. */
+export function wheelLogoGapForTemplateSelection(target: GamePageTemplateId, previous: GamePageTemplateId, current: number, saved?: number) {
+  if (typeof saved === "number") return saved;
+  if (target === "halloween-gold") return DEFAULT_WHEEL_SPACING_PX;
+  return previous === "halloween-gold" ? DEFAULT_WHEEL_SPACING_PX : current;
 }
 
 export function roseInstitutWheelBackground(configuredColor: string | undefined) {

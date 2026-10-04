@@ -34,6 +34,7 @@ import {
 } from "react";
 
 import { BrandMark } from "@/components/brand-mark";
+import { HalloweenCampaignPreview } from "./halloween-campaign-preview";
 import { BeautyWheelDecorations } from "@/components/public/beauty-wheel-decorations";
 import { CocoricoPromoText } from "@/components/public/cocorico-promo-text";
 import { CampaignEmailPreview } from "@/components/merchant/campaign-email-preview";
@@ -125,6 +126,7 @@ import {
   wheelBackgroundForTemplateSelection,
   wheelHeadingColorForTemplateSelection,
   wheelHeadingFontForTemplateSelection,
+  wheelLogoGapForTemplateSelection,
   wheelLogoColorForTemplateSelection,
   restaurantPopBackground,
   classicWheelBackground,
@@ -338,6 +340,7 @@ const wheelPageTemplateOptions: Array<{
   title: string;
   description: string;
 }> = [
+  { value: "halloween-gold", title: "Halloween doré", description: "Roses noires, bougies et roue dorée. Décor et palette fixes." },
   {
     value: "cocorico-wheel",
     title: "Moderne",
@@ -957,6 +960,10 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
   const previewFrameClass = compact
       ? "relative isolate min-h-[480px] max-w-[360px] rounded-[30px] px-3 pb-5 pt-7"
       : "relative isolate min-h-[600px] max-w-[450px] rounded-[38px] px-4 pb-6 pt-8";
+
+  if (preview.gameType === "wheel" && preview.gamePageTemplateId === "halloween-gold") {
+    return <HalloweenCampaignPreview preview={preview} />;
+  }
 
   return (
     <div className={`okado-preview-surface ${flushTop ? "" : "mt-6"}`} data-template-id={preview.gamePageTemplateId}>
@@ -1794,6 +1801,7 @@ export function CampaignEditor({
           headingFontFamily: current.presentation.heading.fontFamily,
           headingAlign: current.presentation.heading.align,
           logoAlign: current.presentation.logo.align,
+          logoBottomSpacingPx: current.presentation.logo.marginBottomPx,
           buttonBackgroundColor: current.presentation.button.backgroundColor,
           subtitleSpacingPx: current.presentation.layout.subtitleSpacingPx,
         };
@@ -1826,6 +1834,7 @@ export function CampaignEditor({
             logo: {
               ...current.presentation.logo,
               textColor: remembered?.logoTextColor ?? DEFAULT_ROSE_INSTITUT_TEXT_COLOR,
+              marginBottomPx: wheelLogoGapForTemplateSelection(templateId, previousId, current.presentation.logo.marginBottomPx, remembered?.logoBottomSpacingPx),
               align: remembered?.logoAlign ?? "center",
             },
             button: {
@@ -1856,6 +1865,7 @@ export function CampaignEditor({
         headingFontFamily: current.presentation.heading.fontFamily,
         headingAlign: current.presentation.heading.align,
         logoAlign: current.presentation.logo.align,
+        logoBottomSpacingPx: current.presentation.logo.marginBottomPx,
         buttonBackgroundColor: current.presentation.button.backgroundColor,
         blockSpacingPx: current.presentation.layout.blockSpacingPx,
         subtitleSpacingPx: current.presentation.layout.subtitleSpacingPx,
@@ -1869,7 +1879,7 @@ export function CampaignEditor({
           background: { ...current.presentation.background, color: remembered?.backgroundColor ?? theme.background },
           wheel: remembered?.wheel ?? wheelPaletteForTemplate(templateId, current.presentation.wheel),
           heading: { ...current.presentation.heading, fontFamily: remembered?.headingFontFamily ?? theme.font, textColor: remembered?.headingTextColor ?? theme.text, align: remembered?.headingAlign ?? (templateId === "beauty-editorial" ? "left" : "center") },
-          logo: { ...current.presentation.logo, textColor: remembered?.logoTextColor ?? theme.text, align: remembered?.logoAlign ?? (templateId === "beauty-editorial" ? "left" : "center") },
+          logo: { ...current.presentation.logo, marginBottomPx: wheelLogoGapForTemplateSelection(templateId, previousId, current.presentation.logo.marginBottomPx, remembered?.logoBottomSpacingPx), textColor: remembered?.logoTextColor ?? theme.text, align: remembered?.logoAlign ?? (templateId === "beauty-editorial" ? "left" : "center") },
           button: { ...current.presentation.button, backgroundColor: remembered?.buttonBackgroundColor ?? theme.primary },
         },
       };
@@ -1896,6 +1906,7 @@ export function CampaignEditor({
         headingFontFamily: current.presentation.heading.fontFamily,
         headingAlign: current.presentation.heading.align,
         logoAlign: current.presentation.logo.align,
+        logoBottomSpacingPx: current.presentation.logo.marginBottomPx,
         buttonBackgroundColor: current.presentation.button.backgroundColor,
         blockSpacingPx: current.presentation.layout.blockSpacingPx,
         subtitleSpacingPx: current.presentation.layout.subtitleSpacingPx,
@@ -1921,6 +1932,7 @@ export function CampaignEditor({
           logo: {
             ...current.presentation.logo,
             textColor: remembered?.logoTextColor ?? theme.text,
+            marginBottomPx: wheelLogoGapForTemplateSelection(templateId, previousId, current.presentation.logo.marginBottomPx, remembered?.logoBottomSpacingPx),
           },
         },
         accent: {
@@ -2034,6 +2046,7 @@ export function CampaignEditor({
         : "text-center";
   const headingFontClass = textFontClass(form.presentation.heading.fontFamily);
   const currentTemplateId = form.presentation.layout.templateId ?? "classic";
+  const isHalloweenTemplate = form.gameType === "wheel" && currentTemplateId === "halloween-gold";
   const showBackgroundColor =
     currentTemplateId === "classic" ||
     currentTemplateId === "restaurant-pop" ||
@@ -3037,6 +3050,7 @@ export function CampaignEditor({
                             headingFontFamily: current.presentation.heading.fontFamily,
                             headingAlign: current.presentation.heading.align,
                             logoAlign: current.presentation.logo.align,
+                            logoBottomSpacingPx: current.presentation.logo.marginBottomPx,
                             buttonBackgroundColor: current.presentation.button.backgroundColor,
                             blockSpacingPx: current.presentation.layout.blockSpacingPx,
                             subtitleSpacingPx: current.presentation.layout.subtitleSpacingPx,
@@ -3046,7 +3060,7 @@ export function CampaignEditor({
                           const backgroundColor = remembered?.backgroundColor ?? wheelBackgroundForTemplateSelection(template.value, current.presentation.background.color);
                           const headingTextColor = remembered?.headingTextColor ?? (current.gameType === "scratch" ? defaultScratchTextColor(template.value) : template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheelHeadingColorForTemplateSelection(template.value, isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.heading.textColor));
                           const logoTextColor = remembered?.logoTextColor ?? (current.gameType === "scratch" ? defaultScratchTextColor(template.value) : template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheelLogoColorForTemplateSelection(template.value, wheelHeadingColorForTemplateSelection(template.value, isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.logo.textColor ?? current.presentation.heading.textColor)));
-                          const firstSelectionHeadingFont = template.value === "classic"
+                          const firstSelectionHeadingFont = template.value === "classic" || template.value === "halloween-gold"
                             ? wheelHeadingFontForTemplateSelection(template.value, current.presentation.heading.fontFamily)
                             : current.presentation.heading.fontFamily;
                           const buttonBackgroundColor = remembered?.buttonBackgroundColor ?? (template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheel.loseColor);
@@ -3059,6 +3073,7 @@ export function CampaignEditor({
 
                           return {
                             ...current,
+                            subtitle: template.value === "halloween-gold" && current.subtitle === DEFAULT_WHEEL_SUBTITLE ? "TOURNEZ\nLA ROUE" : current.subtitle,
                             presentation: {
                               ...current.presentation,
                               background: {
@@ -3097,6 +3112,7 @@ export function CampaignEditor({
                               logo: {
                                 ...current.presentation.logo,
                                 textColor: logoTextColor,
+                                marginBottomPx: wheelLogoGapForTemplateSelection(template.value, currentTemplateId, current.presentation.logo.marginBottomPx, remembered?.logoBottomSpacingPx),
                                 align: remembered?.logoAlign ?? (isBeautyWheelTemplate(currentTemplateId) ? "center" : current.presentation.logo.align),
                               },
                               button:
@@ -3138,6 +3154,7 @@ export function CampaignEditor({
                 })}
               </div>
             </div>
+            {isHalloweenTemplate ? <p className="mt-5 text-sm leading-6 text-[#616b7c]">Décor Halloween, dorures du titre et roue fixes. Le logo, les textes, leurs tailles et espacements restent personnalisables.</p> : null}
             {form.gameType === "scratch" && currentTemplateId !== CLASSIC_NUDE_SCRATCH_TEMPLATE_ID ? (
               <label className="mt-6 block max-w-md text-sm">
                 <span className="mb-1 block font-semibold text-[#111827]">
@@ -3477,7 +3494,7 @@ export function CampaignEditor({
               {isExpertMode ? (
                 <>
                   <div className="grid gap-4 md:col-span-2 md:grid-cols-2">
-                    <label className="text-sm">
+                    <label className="text-sm" hidden={isHalloweenTemplate}>
                       <span className="mb-2 block text-[#616b7c]">Couleur du texte principal</span>
                       <input
                         type="color"
@@ -3611,7 +3628,7 @@ export function CampaignEditor({
             </div>
           </section>
 
-          {isExpertMode ? (
+          {isExpertMode && !isHalloweenTemplate ? (
             <section className="okado-card p-6">
               <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Fond</p>
               <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
@@ -4229,7 +4246,7 @@ export function CampaignEditor({
           </section>
           ) : null}
 
-          {form.gameType === "wheel" ? (
+          {form.gameType === "wheel" && !isHalloweenTemplate ? (
             <section className="okado-card p-6">
               <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Roue de la fortune</p>
               <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
@@ -4348,7 +4365,7 @@ export function CampaignEditor({
             </section>
           ) : null}
 
-          <section className="okado-card p-6">
+          <section className="okado-card p-6" hidden={isHalloweenTemplate}>
               <p className="text-xs uppercase tracking-[0.28em] text-[#7b8496]">Bouton public</p>
               <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
                 Personnalisation du bouton

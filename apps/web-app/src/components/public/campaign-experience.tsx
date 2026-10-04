@@ -20,6 +20,7 @@ import { ImmersiveWheel } from "@/components/public/immersive-wheel";
 import { ImmersiveScratchTicket } from "@/components/public/immersive-scratch-ticket";
 import { ScratchGame } from "@/components/public/scratch-game";
 import { WheelOfFortune } from "@/components/public/wheel-of-fortune";
+import { HalloweenWheelScene } from "@/components/public/halloween-wheel-art";
 import { BeautyWheelDecorations } from "@/components/public/beauty-wheel-decorations";
 import { beautyWheelBackground, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
 import { beautyScratchTemplate, isImmersiveScratchTemplate as isImmersiveScratchPageTemplate, type ImmersiveScratchTemplateId } from "@/lib/beauty-scratch-templates";
@@ -545,6 +546,7 @@ export function CampaignExperience({
   );
   const logoTextSizePx = Math.round(campaignLogoTextSizePx(logoSizePercent, campaign.gameType) * (isBeautyTemplate || isRoseInstitutTemplate ? 0.9 : 1));
   const isRosePowderTemplate = pageTemplate === "beauty-rose";
+  const isHalloweenTemplate = campaign.gameType === "wheel" && pageTemplate === "halloween-gold";
   const safeSubtitle = limitCampaignSubtitleLines(
     campaign.subtitle,
     campaign.gameType === "wheel" && isBeautyTemplate ? MAX_BEAUTY_WHEEL_TITLE_LINES : undefined,
@@ -889,15 +891,15 @@ export function CampaignExperience({
       className={`okado-public-experience relative min-h-screen overflow-hidden ${pageTemplate === "beauty-rose" ? "okado-rose-powder-surface" : ""}`}
       data-template-id={pageTemplate}
       style={{
-        backgroundColor: campaign.presentation.background.color,
-        backgroundImage: backgroundStyle,
+        backgroundColor: isHalloweenTemplate ? "#050403" : campaign.presentation.background.color,
+        backgroundImage: isHalloweenTemplate ? "none" : backgroundStyle,
         backgroundPosition: "center",
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
         fontFamily: textFontFamily(campaign.presentation.heading.fontFamily),
       }}
     >
-      {managedBackgroundUrl ? (
+      {managedBackgroundUrl && !isHalloweenTemplate ? (
         <Image
           src={managedBackgroundUrl}
           alt=""
@@ -945,7 +947,14 @@ export function CampaignExperience({
           />
         </div>
       ) : null}
-      <div className={`relative z-10 mx-auto flex ${hasFlexibleWheelLayout ? isPreview ? "min-h-[calc(100dvh-44px)]" : "min-h-dvh" : isImmersiveScratchTemplate ? isPreview ? "min-h-[calc(100dvh-44px)]" : "min-h-dvh" : isPreview ? "h-[calc(100dvh-44px)] min-h-[560px]" : "h-screen"} w-full flex-col ${isBeautyTemplate || isImmersiveScratchTemplate ? "overflow-visible pb-8" : hasFlexibleWheelLayout ? "overflow-visible pb-16" : "overflow-hidden pb-0"} px-4 sm:px-6 ${pageTopPaddingClass}`}>
+      {isHalloweenTemplate ? <HalloweenWheelScene logoMode={campaign.logoMode} logoText={campaign.logoText ?? campaign.merchantLogoText} logoUrl={campaign.logoUrl}
+        logoWidthPx={logoWidthPx} logoTextSizePx={logoTextSizePx} logoTextColor={logoTextColor} logoAlign={campaign.presentation.logo.align} titleAlign={campaign.presentation.heading.align} logoBottomSpacingPx={clampCampaignSpacingPx(campaign.presentation.logo.marginBottomPx)}
+        title={safeSubtitle} titleFontSizePx={campaign.presentation.heading.fontSizePx} titleFontFamily={textFontFamily(campaign.presentation.heading.fontFamily)} titleFontWeight={campaign.presentation.heading.fontWeight ?? 500}
+        secondaryText={wheelSubtitle} subtitleSpacingPx={clampCampaignSpacingPx(campaign.presentation.layout.subtitleSpacingPx)} blockSpacingPx={clampCampaignSpacingPx(campaign.presentation.layout.blockSpacingPx)}>
+        <WheelOfFortune key={`${campaign.id}-${drawSession?.id ?? "idle"}`} accent={campaign.accent} pageTemplate="halloween-gold" segments={segments} winningSegmentId={winningSegmentId}
+          canSpin={stage === "ready"} buttonEnabled={stage === "idle" || stage === "ready"} buttonLabel="JOUER" onButtonClick={() => void openActionAndTrack()}
+          autoSpinKey={autoSpinKey} onSpinEnd={() => void handleGameReveal()} />
+      </HalloweenWheelScene> : <div className={`relative z-10 mx-auto flex ${hasFlexibleWheelLayout ? isPreview ? "min-h-[calc(100dvh-44px)]" : "min-h-dvh" : isImmersiveScratchTemplate ? isPreview ? "min-h-[calc(100dvh-44px)]" : "min-h-dvh" : isPreview ? "h-[calc(100dvh-44px)] min-h-[560px]" : "h-screen"} w-full flex-col ${isBeautyTemplate || isImmersiveScratchTemplate ? "overflow-visible pb-8" : hasFlexibleWheelLayout ? "overflow-visible pb-16" : "overflow-hidden pb-0"} px-4 sm:px-6 ${pageTopPaddingClass}`}>
         {!isImmersiveScratchTemplate && ((campaign.logoMode === "image" && campaign.logoUrl) ||
         campaign.logoMode === "text" ||
         campaign.gameType === "scratch") ? (
@@ -1179,7 +1188,7 @@ export function CampaignExperience({
             </div>
           ) : null}
         </div> : null}
-      </div>
+      </div>}
 
       <button
         type="button"

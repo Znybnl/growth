@@ -40,6 +40,7 @@ export type PosterTemplateId =
   | "pastel-editorial-wheel"
   | "ivory-editorial-wheel";
 export type GamePageTemplateId =
+  | "halloween-gold"
   | "classic"
   | "restaurant-pop"
   | "cocorico-wheel"
@@ -446,6 +447,7 @@ export interface CampaignLayoutSettings {
 }
 
 export interface WheelTemplateStyle {
+  logoBottomSpacingPx?: number;
   wheel: CampaignWheelSettings;
   backgroundColor: string;
   scratchSignal: string;
