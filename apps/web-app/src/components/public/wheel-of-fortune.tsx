@@ -258,7 +258,8 @@ export function WheelOfFortune({
   const isRestaurantPopTemplate = pageTemplate === "restaurant-pop";
   const isRoseInstitutTemplate = pageTemplate === "rose-institut";
   const isBeautyTemplate = isBeautyWheelTemplate(pageTemplate);
-  const hasBeautyFinish = isBeautyTemplate || isRoseInstitutTemplate;
+  // Éclat keeps its original center, pointer and white rim (PR #461).
+  const hasBeautyFinish = isBeautyTemplate;
   const isRosePowderTemplate = pageTemplate === "beauty-rose";
   const beautyTemplateId = isBeautyWheelTemplate(pageTemplate) ? pageTemplate : undefined;
   const beautyPointerTemplateId = isBeautyTemplate && !isRosePowderTemplate
@@ -517,6 +518,11 @@ export function WheelOfFortune({
               </>
             ) : hasBeautyFinish ? (
               <BeautyWheelRim color={isRosePowderTemplate ? roseAccent : beautyOuterRingColor} width={beautyRimWidth} fill={beautyTheme?.secondary ?? "#ffffff"} />
+            ) : isRoseInstitutTemplate ? (
+              <g data-testid="eclat-wheel-rim">
+                <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 18} fill="#ffffff" stroke="#ffffff" strokeWidth="18" />
+                <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 8} fill="none" stroke="rgba(11,78,162,0.12)" strokeWidth="2" />
+              </g>
             ) : isClassicTemplate ? (
               <>
                 <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS + 14} fill="#ffffff" stroke="#ffffff" strokeWidth="9" />
@@ -602,9 +608,9 @@ export function WheelOfFortune({
                     x={textPoint.x}
                     y={textPoint.y}
                     fill={textColor}
-                    fontFamily={hasBeautyFinish ? textFontFamily("dm-sans") : "Roboto, sans-serif"}
+                    fontFamily={isBeautyTemplate || isRoseInstitutTemplate ? textFontFamily("dm-sans") : "Roboto, sans-serif"}
                     fontSize={String(textStyles.fontSize)}
-                    fontWeight={hasBeautyFinish ? "600" : "850"}
+                    fontWeight={isBeautyTemplate || isRoseInstitutTemplate ? "600" : "850"}
                     textAnchor="middle"
                     dominantBaseline="middle"
                     transform={`rotate(${isBeautyTemplate || isRoseInstitutTemplate ? uprightRadialTextAngle : radialTextAngle} ${textPoint.x} ${textPoint.y})`}
@@ -655,9 +661,7 @@ export function WheelOfFortune({
               path={beautyPointerTemplateId ? BEAUTY_POINTER_PATHS[beautyPointerTemplateId] : undefined}
               className={isRosePowderTemplate
                 ? "absolute left-1/2 top-[-2.6%] h-[17.6%] w-[11%] -translate-x-1/2 overflow-visible"
-                : isRoseInstitutTemplate
-                  ? "absolute left-1/2 top-[-1.2%] h-[18.5%] w-[13.2%] -translate-x-1/2 overflow-visible"
-                  : "absolute left-1/2 top-[-2.8%] h-[17.6%] w-[12.54%] -translate-x-1/2 overflow-visible"} />
+                : "absolute left-1/2 top-[-2.8%] h-[17.6%] w-[12.54%] -translate-x-1/2 overflow-visible"} />
           ) : isClassicTemplate || isRestaurantPopTemplate ? (
             <svg
               aria-hidden="true"
@@ -676,6 +680,7 @@ export function WheelOfFortune({
             </svg>
           ) : <div
             className="absolute"
+            data-testid={isRoseInstitutTemplate ? "eclat-wheel-pointer" : undefined}
             style={{
               top: isRoseInstitutTemplate || isBeautyTemplate || isRestaurantPopTemplate ? "-1.2%" : "31.2%",
               left: "50%",
@@ -721,7 +726,7 @@ export function WheelOfFortune({
 
         <button
           type="button"
-          aria-label={hasBeautyFinish ? (isSpinning ? "La roue tourne" : "Jouer à la roue") : undefined}
+          aria-label={isBeautyTemplate || isRoseInstitutTemplate ? (isSpinning ? "La roue tourne" : "Jouer à la roue") : undefined}
           onClick={handleCentralButton}
           disabled={!buttonEnabled || isSpinning || hasSpun}
           className={`okado-wheel-center-button absolute left-1/2 top-1/2 z-40 flex aspect-square ${isRestaurantPopTemplate ? "w-[27%]" : isClassicTemplate ? "w-[28%]" : isRoseInstitutTemplate ? "w-[28%]" : isRosePowderTemplate ? "w-[25%]" : pageTemplate === "beauty-botanical" ? "w-[33%]" : pageTemplate === "beauty-nude" ? "w-[31.5%]" : isBeautyTemplate ? "w-[30%]" : "w-[19.2%]"} -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full ${isClassicTemplate || isRestaurantPopTemplate ? "border-[5px]" : isRosePowderTemplate || isBeautyTemplate ? "border-2" : isRoseInstitutTemplate ? "border-[3px]" : "border-[4px]"} ${hasBeautyFinish ? `okado-beauty-wheel-center okado-beauty-wheel-center--${pageTemplate} isolate overflow-hidden` : ""} text-[19px] font-black uppercase transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-100 shadow-[0_10px_20px_rgba(15,23,42,0.16)]`}
@@ -740,7 +745,7 @@ export function WheelOfFortune({
                 : isClassicTemplate || isRestaurantPopTemplate
                   ? highContrastTextColor(centerButtonBackground)
                   : centerButtonTextColor,
-            borderColor: hasBeautyFinish ? beautyCenterRelief(isRosePowderTemplate ? roseAccent : pageTemplate === "beauty-editorial" ? beautyOuterRingColor : centerButtonBackground).borderColor : isClassicTemplate || isRestaurantPopTemplate ? "#ffffff" : buttonStyle?.borderColor ?? "#ffffff",
+            borderColor: hasBeautyFinish ? beautyCenterRelief(isRosePowderTemplate ? roseAccent : pageTemplate === "beauty-editorial" ? beautyOuterRingColor : centerButtonBackground).borderColor : isRoseInstitutTemplate || isClassicTemplate || isRestaurantPopTemplate ? "#ffffff" : buttonStyle?.borderColor ?? "#ffffff",
             fontSize: isClassicTemplate
               ? "clamp(0.88rem, 5.1cqw, 1.75rem)"
               : isRestaurantPopTemplate
@@ -748,11 +753,11 @@ export function WheelOfFortune({
               : isRoseInstitutTemplate
                 ? "clamp(0.92rem, 5.6cqw, 1.8rem)"
               : "clamp(0.84rem, 4.7cqw, 1.55rem)",
-            boxShadow: hasBeautyFinish ? beautyCenterRelief(isRosePowderTemplate ? roseAccent : centerButtonBackground).boxShadow : isClassicTemplate || isRestaurantPopTemplate ? `0 6px 20px ${withAlpha(colors.loseColor, 0.26)}, 0 0 0 2px ${withAlpha(colors.rimColor, 0.24)}` : undefined,
+            boxShadow: hasBeautyFinish ? beautyCenterRelief(isRosePowderTemplate ? roseAccent : centerButtonBackground).boxShadow : isClassicTemplate || isRestaurantPopTemplate ? `0 6px 20px ${withAlpha(colors.loseColor, 0.26)}, 0 0 0 2px ${withAlpha(colors.rimColor, 0.24)}` : isRoseInstitutTemplate ? "0 8px 18px rgba(11,78,162,0.22)" : undefined,
             WebkitTextStroke: isRestaurantPopTemplate ? "0.35px currentColor" : undefined,
           }}
         >
-          {hasBeautyFinish ? <span className="okado-beauty-wheel-center-label relative z-10">{isSpinning ? "..." : buttonLabel}</span> : isSpinning ? "..." : buttonLabel}
+          {hasBeautyFinish ? <span className="okado-beauty-wheel-center-label relative z-10">{isSpinning ? "..." : buttonLabel}</span> : isRoseInstitutTemplate ? <span className="okado-eclat-play-label">{isSpinning ? "..." : buttonLabel}</span> : isSpinning ? "..." : buttonLabel}
         </button>
       </div>
     </div>
