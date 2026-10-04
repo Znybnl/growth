@@ -22,6 +22,7 @@ import { ScratchGame } from "@/components/public/scratch-game";
 import { WheelOfFortune } from "@/components/public/wheel-of-fortune";
 import { HalloweenWheelScene } from "@/components/public/halloween-wheel-art";
 import { BeautyWheelDecorations } from "@/components/public/beauty-wheel-decorations";
+import { BeautyLogoRule } from "@/components/public/beauty-wheel-finishes";
 import { beautyWheelBackground, beautyWheelDefaultBackground, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
 import { beautyScratchTemplate, isImmersiveScratchTemplate as isImmersiveScratchPageTemplate, type ImmersiveScratchTemplateId } from "@/lib/beauty-scratch-templates";
 import { RosePowderDecor } from "@/components/public/rose-powder-decor";
@@ -974,6 +975,7 @@ export function CampaignExperience({
                 textColor={logoTextColor}
                 textFontWeight={isRosePowderTemplate ? 600 : undefined}
               />
+              {campaign.gameType === "wheel" && campaign.logoMode === "text" && (isBeautyTemplate || isRoseInstitutTemplate) ? <BeautyLogoRule color={logoTextColor} /> : null}
             </div>
           </div>
         ) : null}

@@ -1768,9 +1768,12 @@ button:disabled,
   border-color: rgba(245, 250, 241, .58);
 }
 
-.okado-beauty-wheel-center--beauty-botanical .okado-beauty-wheel-center-label {
-  font-size: clamp(11px, 3.2cqw, 15px);
-  font-weight: 700;
+.okado-beauty-wheel-center .okado-beauty-wheel-center-label {
+  font-family: var(--font-dm-sans), sans-serif;
+  font-size: clamp(17px, 6cqw, 28px);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: .025em;
 }
 
 .okado-beauty-wheel-center--beauty-editorial::after {

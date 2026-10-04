@@ -1,7 +1,9 @@
-import { BEAUTY_WHEEL_THEMES, beautyWheelBackground, beautyWheelDefaultBackground } from "@/lib/beauty-wheel-themes";
+import { BEAUTY_WHEEL_THEMES, beautyWheelBackground, beautyWheelDefaultBackground, beautyWheelButtonTextColor } from "@/lib/beauty-wheel-themes";
 import Image from "next/image";
 import { buildBeautyWheelSegmentColors } from "@/lib/beauty-wheel-segments";
-import { Pointer } from "lucide-react";
+import { BeautyLogoRule, BeautyWheelPointer } from "@/components/public/beauty-wheel-finishes";
+import { beautyCenterFinish } from "@/lib/beauty-wheel-finishes";
+import { wheelButtonBackgroundForWhiteText } from "@/lib/wheel-button-contrast";
 import { textFontFamily } from "@/lib/format";
 import type { GamePageTemplateId } from "@/lib/types";
 
@@ -12,37 +14,29 @@ function BeautyWheelThumbnail({ theme }: { theme: BeautyTheme }) {
   const wedgeStops = colors
     .map((color, index) => `${color} ${index * 45}deg ${(index + 1) * 45}deg`)
     .join(", ");
-  const ringColor = theme.id === "beauty-editorial" ? "#b99a68" : theme.id === "beauty-tech" ? "#d9ccff" : theme.id === "beauty-rose" ? "#d58a9a" : "#fffdfb";
-  const centerTextColor = theme.id === "beauty-nude" || theme.id === "beauty-botanical" ? theme.text : "#fffdfc";
+  const ringColor = theme.id === "beauty-editorial" ? "#b99a68" : theme.id === "beauty-rose" ? "#b95f75" : theme.primary;
+  const centerTextColor = theme.id === "beauty-rose" ? "#b95f75" : beautyWheelButtonTextColor(theme.id, theme.primary);
+  const centerBackground = theme.id === "beauty-rose" ? "#fffdfc" : wheelButtonBackgroundForWhiteText(theme.primary, centerTextColor);
 
   return (
     <div
       aria-hidden="true"
-      className="absolute -bottom-5 right-[-0.8rem] z-10 grid size-32 place-items-center rounded-full p-[3px]"
-      style={{ backgroundColor: ringColor, boxShadow: `0 8px 22px color-mix(in srgb, ${theme.primary} 22%, transparent)` }}
+      className="absolute -bottom-5 right-[-0.8rem] z-10 grid size-32 place-items-center rounded-full border-[3px] p-[3px]"
+      style={{ borderColor: ringColor, backgroundColor: theme.secondary, outline: "1px solid white", boxShadow: `0 8px 22px color-mix(in srgb, ${theme.primary} 22%, transparent)` }}
     >
       <div
-        className="relative size-full rounded-full border border-white/75"
+        className="relative size-full rounded-full"
         style={{ backgroundImage: `repeating-conic-gradient(from -22.5deg, transparent 0deg 44deg, rgba(255,255,255,.88) 44deg 45deg), conic-gradient(from -22.5deg, ${wedgeStops})` }}
       >
         <div
-          className="absolute left-1/2 top-1/2 flex size-[2.7rem] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full border-2 text-[6px] font-semibold tracking-[0.04em]"
-          style={{ backgroundColor: theme.primary, borderColor: ringColor, color: centerTextColor, boxShadow: `0 2px 6px color-mix(in srgb, ${theme.primary} 25%, transparent)` }}
+          data-testid="beauty-thumbnail-center"
+          className="absolute left-1/2 top-1/2 flex size-[2.7rem] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 text-[9px] font-semibold tracking-[0.025em]"
+          style={{ background: beautyCenterFinish(centerBackground), borderColor: theme.id === "beauty-rose" ? theme.primary : "#ffffff", color: centerTextColor, fontFamily: textFontFamily("dm-sans"), boxShadow: `0 2px 6px color-mix(in srgb, ${theme.primary} 25%, transparent)` }}
         >
-          {theme.id === "beauty-rose" ? (
-            <svg viewBox="0 0 24 24" className="mb-0.5 size-[0.9rem]" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" aria-hidden="true">
-              <ellipse cx="12" cy="7.5" rx="2.8" ry="4.2" />
-              <ellipse cx="12" cy="7.5" rx="2.8" ry="4.2" transform="rotate(90 12 12)" />
-              <ellipse cx="12" cy="7.5" rx="2.8" ry="4.2" transform="rotate(180 12 12)" />
-              <ellipse cx="12" cy="7.5" rx="2.8" ry="4.2" transform="rotate(270 12 12)" />
-              <circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none" />
-            </svg>
-          ) : (
-            <Pointer className="mb-0.5 size-[0.9rem]" strokeWidth={2} />
-          )}
           <span>JOUER</span>
         </div>
       </div>
+      <BeautyWheelPointer color={ringColor} className="absolute left-1/2 -top-2 h-7 w-5 -translate-x-1/2 overflow-visible" />
     </div>
   );
 }
@@ -64,15 +58,15 @@ function EclatWheelThumbnail() {
   return (
     <div
       aria-hidden="true"
-      className="absolute -bottom-5 right-[-0.8rem] z-10 grid size-32 place-items-center rounded-full border-[5px] border-white p-1 shadow-[0_9px_24px_rgba(222,103,151,0.18)]"
-      style={{ backgroundImage: "conic-gradient(from -22.5deg, #f3a4c4 0deg 45deg, #fff9fb 45deg 90deg, #f3a4c4 90deg 135deg, #fff9fb 135deg 180deg, #f3a4c4 180deg 225deg, #fff9fb 225deg 270deg, #f3a4c4 270deg 315deg, #fff9fb 315deg 360deg)" }}
+      className="absolute -bottom-5 right-[-0.8rem] z-10 grid size-32 place-items-center rounded-full border-[3px] border-[#f3a4c4] p-1 shadow-[0_9px_24px_rgba(222,103,151,0.18)]"
+      style={{ outline: "1px solid white", backgroundImage: "conic-gradient(from -22.5deg, #f3a4c4 0deg 45deg, #fff9fb 45deg 90deg, #f3a4c4 90deg 135deg, #fff9fb 135deg 180deg, #f3a4c4 180deg 225deg, #fff9fb 225deg 270deg, #f3a4c4 270deg 315deg, #fff9fb 315deg 360deg)" }}
     >
-      <div className="relative size-full rounded-full border-2 border-[#e78ab0]/50">
-        <div className="absolute left-1/2 top-1 -translate-x-1/2 border-x-[7px] border-t-[13px] border-x-transparent border-t-[#e78ab0]" />
-        <div className="absolute left-1/2 top-1/2 grid size-10 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border-[3px] border-white bg-[#003cb4] text-[6px] font-bold tracking-wide text-white shadow-md">
+      <div className="relative size-full rounded-full">
+        <div data-testid="beauty-thumbnail-center" className="absolute left-1/2 top-1/2 grid size-10 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border-2 border-white text-[9px] font-semibold tracking-wide text-white shadow-md" style={{ background: beautyCenterFinish("#003cb4"), fontFamily: textFontFamily("dm-sans") }}>
           JOUER
         </div>
       </div>
+      <BeautyWheelPointer color="#f3a4c4" className="absolute left-1/2 -top-2 h-7 w-5 -translate-x-1/2 overflow-visible" />
     </div>
   );
 }
@@ -108,7 +102,7 @@ export function BeautyWheelTemplateGallery({
                 style={{ backgroundColor: theme.background, backgroundImage: nativeBackground ? "none" : beautyWheelBackground(theme.id, theme.background, theme.primary), color: theme.text }}
               >
                 {nativeBackground ? <Image src={nativeBackground} alt="" fill sizes="320px" data-template-art={theme.id} className="pointer-events-none object-cover" /> : <BeautyThumbnailDecor theme={theme} />}
-                <div data-testid="beauty-thumbnail-logo" className="relative z-10 min-h-[20px] max-w-[56%] text-[8px] font-semibold uppercase leading-[1.15] tracking-[0.06em]">Votre établissement</div>
+                <div data-testid="beauty-thumbnail-logo" className="relative z-10 min-h-[20px] max-w-[56%] text-[8px] font-semibold uppercase leading-[1.15] tracking-[0.06em]">Votre établissement<BeautyLogoRule color={theme.text} /></div>
                 <div className="relative z-10 mt-3 max-w-[56%] text-[13px] font-bold leading-[1.12]" style={{ fontFamily: textFontFamily(theme.font) }}>Votre animation<br />vous réserve une surprise</div>
                 <div className="relative z-10 mt-1 max-w-[55%] text-[8px] leading-tight opacity-75">Des surprises vous attendent</div>
                 <BeautyWheelThumbnail theme={theme} />
@@ -127,7 +121,7 @@ export function BeautyWheelTemplateGallery({
           className={`group min-w-0 overflow-hidden rounded-2xl border bg-white text-left transition hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6b3774] ${selectedTemplateId === "rose-institut" ? "border-[#6b3774] ring-2 ring-[#6b3774]/15" : "border-[#ded8e1]"}`}
         >
           <div data-testid="eclat-thumbnail" className="relative h-40 overflow-hidden bg-[radial-gradient(ellipse_at_18%_8%,rgba(243,164,196,0.22),transparent_48%),linear-gradient(145deg,#fff8fb,#ffeaf2)] px-4 pt-3 text-[#003cb4]">
-            <div data-testid="beauty-thumbnail-logo" className="relative z-10 min-h-[20px] max-w-[56%] text-[8px] font-semibold uppercase leading-[1.15] tracking-[0.06em]">Votre établissement</div>
+            <div data-testid="beauty-thumbnail-logo" className="relative z-10 min-h-[20px] max-w-[56%] text-[8px] font-semibold uppercase leading-[1.15] tracking-[0.06em]">Votre établissement<BeautyLogoRule color="#003cb4" /></div>
             <div className="relative z-10 mt-3 max-w-[56%] font-playfair text-[13px] font-bold leading-[1.12]">Tournez la roue<br />et tentez de gagner</div>
             <div className="relative z-10 mt-1 max-w-[55%] text-[8px] leading-tight opacity-75">Une roue lumineuse à vos couleurs</div>
             <EclatWheelThumbnail />

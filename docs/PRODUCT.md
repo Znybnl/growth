@@ -74,7 +74,11 @@
 - Le formulaire classique ne peut être supprimé qu'après reprise fonctionnelle suffisante dans le wizard et validation des parcours de bout en bout, à la fois par le propriétaire et par les tests automatisés.
 - Le secteur d'activité d'un établissement n'est pas prérempli pour un nouveau profil et peut rester vide ; les choix déjà enregistrés pour les établissements existants sont préservés.
 - Le secteur Beauté propose les sous-secteurs Coiffure, Institut & soins, Ongles & cils, et Massage & spa. Les suggestions de lots peuvent être ciblées par sous-secteur ; tant qu'un catalogue dédié n'est pas configuré, le catalogue Beauté général reste disponible en repli.
-- Les établissements du secteur Beauté disposent de six styles de roue supplémentaires, quel que soit leur sous-secteur. Cette collection apparaît avant les modèles génériques dans les éditeurs ; les joueurs voient le modèle enregistré sans restriction de secteur. Le logo, le titre, le sous-titre, les couleurs et la police restent personnalisables. Le centre utilise une main pointeur, sauf sur « Rose poudré » où une fleur abstraite à quatre pétales remplace uniquement son apparence. L'interaction du bouton reste identique.
+- Les établissements du secteur Beauté disposent de six styles de roue supplémentaires, quel que soit leur sous-secteur. Cette collection apparaît avant les modèles génériques dans les éditeurs ; les joueurs voient le modèle enregistré sans restriction de secteur. Le logo, le titre, le sous-titre, les couleurs et la police restent personnalisables. Les centres JOUER de cette collection et d'Éclat sont sans icône, avec une police agrandie et un reflet discret en haut à gauche (issue #460). L'interaction du bouton reste identique.
+
+## Finitions des roues Beauté — issue #460
+
+Les six thèmes Beauté et Éclat partagent une finition de disque central en relief, sans icône, avec JOUER en DM Sans. Les libellés des lots utilisent également DM Sans, graisse 600, sans modifier leur orientation relative aux segments ni leur taille minimale. Le contour coloré est renforcé de 1 px et suivi d'un liseré blanc, sans anneau coloré extérieur en doublon. Les pointeurs gardent leur ancrage et bénéficient d'un dégradé/reflet et d'une ombre douce. Un filet fin suit le logo uniquement en mode texte ; il est absent en mode image et sans logo. Les diamètres des centres, palettes, réglages de textes/espacements, fonds et mécanique de jeu sont préservés. Les miniatures reprennent les mêmes finitions.
 
 ## Fonds des roues Nude & Or et Botanical — issue #458
 

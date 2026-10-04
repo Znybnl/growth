@@ -7,6 +7,7 @@ import { memo } from "react";
 import { BrandMark } from "@/components/brand-mark";
 import { HalloweenCampaignPreview } from "./halloween-campaign-preview";
 import { BeautyWheelDecorations } from "@/components/public/beauty-wheel-decorations";
+import { BeautyLogoRule } from "@/components/public/beauty-wheel-finishes";
 import { beautyWheelBackground, beautyWheelDefaultBackground, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
 import { beautyScratchTemplate, isImmersiveScratchTemplate as isImmersiveScratchPageTemplate, type ImmersiveScratchTemplateId } from "@/lib/beauty-scratch-templates";
 import { RosePowderDecor } from "@/components/public/rose-powder-decor";
@@ -351,7 +352,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
         {showStandardHeader ? (
           <>
             {preview.logoMode === "image" && preview.logoUrl ? <div className={`flex ${preview.logoAlignmentClass}`}><div style={{ marginBottom: `${scalePreviewValue(preview.logoBottomSpacingPx)}px` }}><BrandMark logoText={merchant.logoText} logoUrl={preview.logoUrl} size="lg" variant="transparent" imageWidthPx={scalePreviewValue(preview.logoWidthPx)} /></div></div> : null}
-            {preview.logoMode === "text" ? <div className={`flex ${preview.logoAlignmentClass}`}><div style={{ marginBottom: `${scalePreviewValue(preview.logoBottomSpacingPx)}px` }}><BrandMark logoText={preview.logoText} size="lg" variant="transparent" imageWidthPx={scalePreviewValue(preview.logoWidthPx)} textSizePx={scalePreviewValue(preview.logoTextSizePx) * (isBeautyTemplate || isRoseInstitutTemplate ? 0.9 : 1)} textColor={preview.logoTextColor} textClassName="text-2xl" textFontWeight={isBeautyTemplate || isRoseInstitutTemplate ? 600 : undefined} /></div></div> : null}
+            {preview.logoMode === "text" ? <div className={`flex ${preview.logoAlignmentClass}`}><div style={{ marginBottom: `${scalePreviewValue(preview.logoBottomSpacingPx)}px` }}><BrandMark logoText={preview.logoText} size="lg" variant="transparent" imageWidthPx={scalePreviewValue(preview.logoWidthPx)} textSizePx={scalePreviewValue(preview.logoTextSizePx) * (isBeautyTemplate || isRoseInstitutTemplate ? 0.9 : 1)} textColor={preview.logoTextColor} textClassName="text-2xl" textFontWeight={isBeautyTemplate || isRoseInstitutTemplate ? 600 : undefined} />{preview.gameType === "wheel" && (isBeautyTemplate || isRoseInstitutTemplate) ? <BeautyLogoRule color={preview.logoTextColor} /> : null}</div></div> : null}
             {preview.gameType === "scratch" && preview.logoMode === "none" ? <div className={`flex ${preview.logoAlignmentClass}`}><div style={{ marginBottom: `${scalePreviewValue(preview.logoBottomSpacingPx)}px` }}><BrandMark logoText={preview.logoText || merchant.companyName} size="lg" variant="transparent" imageWidthPx={scalePreviewValue(preview.logoWidthPx)} textSizePx={scalePreviewValue(preview.logoTextSizePx) * (isBeautyTemplate ? 0.9 : 1)} textColor={preview.logoTextColor} textClassName="text-2xl" textFontWeight={isBeautyTemplate ? 600 : undefined} /></div></div> : null}
             {preview.logoMode === "none" || (preview.logoMode === "image" && !preview.logoUrl) ? <div aria-hidden="true" className="h-5" /> : null}
             <div className={preview.headingAlignmentClass}>
