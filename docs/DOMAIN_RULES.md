@@ -15,6 +15,8 @@ Ce document regroupe les invariants fonctionnels approuvés d'Okado. Il ne rempl
 
 ## Cycle de vie d'un jeu
 
+- L’administration peut télécharger le QR de diffusion d’un jeu marchand depuis Pilotage et l’éditeur dédié (issue #470), après vérification serveur de son rôle et du contexte du jeu. Le téléchargement ne publie pas un brouillon, n’ajoute pas de jeton de prévisualisation et ne modifie pas les indicateurs du marchand. Un QR de brouillon est identifié comme à diffuser après publication.
+
 - Un jeu peut être enregistré en **brouillon**, même incomplet.
 - La publication d'un jeu est bloquée tant que les données obligatoires ou les règles de dotation ne sont pas valides.
 - Un brouillon reste prévisualisable, mais son QR code de diffusion ne doit pas être présenté comme un QR code public actif.
