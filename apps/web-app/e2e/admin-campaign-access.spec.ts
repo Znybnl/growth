@@ -58,10 +58,11 @@ test.describe("Création et modification des jeux par l’administration platefo
       const responses = await Promise.all([
         fetch("/api/admin/campaigns/campaign-test/preview"),
         fetch("/api/admin/campaigns/campaign-test/preview?format=qr"),
+        fetch("/api/admin/campaigns/campaign-test/qr"),
       ]);
       return responses.map(({ status }) => status);
     });
-    expect(statuses).toEqual([401, 401]);
+    expect(statuses).toEqual([401, 401, 401]);
   });
 
   test("un visiteur non authentifié ne peut pas enregistrer une affiche via la route admin", async ({ page }) => {
@@ -118,6 +119,7 @@ test.describe("Création et modification des jeux par l’administration platefo
         fetch("/api/admin/campaigns/campaign-test/assets"),
         fetch("/api/admin/campaigns/campaign-test/preview"),
         fetch("/api/admin/campaigns/campaign-test/preview?format=qr"),
+        fetch("/api/admin/campaigns/campaign-test/qr"),
         fetch("/api/admin/campaigns/campaign-test/poster-logo?url=image"),
         fetch("/api/admin/campaigns/campaign-test/duplicate-merchant"),
         fetch("/api/admin/campaigns/campaign-test/duplicate-merchant", {
@@ -127,6 +129,6 @@ test.describe("Création et modification des jeux par l’administration platefo
       ]);
       return requests.map(({ status }) => status);
     });
-    expect(statuses).toEqual([403, 403, 403, 403, 403, 403, 403, 403]);
+    expect(statuses).toEqual([403, 403, 403, 403, 403, 403, 403, 403, 403]);
   });
 });

@@ -19,6 +19,8 @@
 
 ### P-02 — Participer à un jeu depuis un QR code
 
+- Assistance administrative (issue #470) : « QR de diffusion » dans Pilotage → Voir les jeux, puis téléchargement dans le Wizard administrateur et après son enregistrement. Ce fichier SVG mène au jeu public du bon établissement ; le « QR de test » reste séparé. Un brouillon reste non publié et un avertissement demande d’attendre sa publication avant diffusion. Le bouton signale le téléchargement en cours et affiche une erreur en cas d’accès refusé ou de connexion interrompue, sans enregistrer un fichier JSON/HTML à la place du QR.
+
 - **Acteur** : client.
 - **Déclencheur** : le client scanne le QR code de diffusion du jeu.
 - **Résultat attendu** : il effectue, lorsque prévue, l'action marketing de sa visite, participe au jeu et reçoit le résultat.

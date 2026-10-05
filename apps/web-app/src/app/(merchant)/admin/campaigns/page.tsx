@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
 import { PageHeader, ResponsiveTable } from "@/components/ui/workspace";
+import { AdminCampaignQrDownload } from "@/components/merchant/admin-campaign-qr-download";
 import { isSaasAdminEmail } from "@/lib/admin";
 import { getAdminCampaigns } from "@/lib/admin-campaign-repository";
 import { getSupabaseMerchantProfile } from "@/lib/merchant-account-repository";
@@ -85,7 +86,7 @@ export default async function AdminCampaignsPage({ searchParams }: AdminCampaign
                   </td>
                   <td className="px-3 py-4 text-ash">{formatDateTime(campaign.createdAt)}</td>
                   <td className="px-3 py-4">
-                    <div className="flex justify-end gap-2">
+                    <div className="flex flex-wrap justify-end gap-2">
                       <Link
                         href={`/admin/campaigns/${encodeURIComponent(campaign.id)}/edit`}
                         className="okado-primary-action okado-compact-action whitespace-nowrap px-3 text-xs"
@@ -98,6 +99,12 @@ export default async function AdminCampaignsPage({ searchParams }: AdminCampaign
                       >
                         Affiche
                       </Link>
+                      <AdminCampaignQrDownload
+                        campaignId={campaign.id}
+                        isActive={campaign.isActive}
+                        label="QR de diffusion"
+                        className="okado-secondary-action okado-compact-action gap-2 whitespace-nowrap px-3 text-xs"
+                      />
                     </div>
                   </td>
                 </tr>

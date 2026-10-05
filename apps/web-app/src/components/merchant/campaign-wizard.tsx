@@ -29,6 +29,7 @@ import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
 import { CampaignPreviewQrDialog } from "@/components/merchant/campaign-preview-qr";
 import { CampaignPreviewDialog, openCampaignPreview } from "@/components/merchant/campaign-preview-dialog";
 import { CampaignSavedDialog } from "@/components/merchant/campaign-saved-dialog";
+import { AdminCampaignQrDownload } from "@/components/merchant/admin-campaign-qr-download";
 import { CampaignSpacingControls } from "@/components/merchant/campaign-spacing-controls";
 import { GameTypeChoice } from "@/components/merchant/game-type-choice";
 import { BeautyWheelTemplateGallery } from "@/components/merchant/beauty-wheel-template-gallery";
@@ -1450,7 +1451,9 @@ export function CampaignWizard({
               <Eye className="h-4 w-4" aria-hidden="true" /> Prévisualiser
             </button>
             <button type="button" onClick={() => setQrPreviewOpen(true)} className="okado-secondary-action px-4 text-sm">QR de test</button>
+            <AdminCampaignQrDownload campaignId={draft.id} isActive={draft.isActive} />
             <Link href={`/admin/campaigns/${encodeURIComponent(draft.id)}/poster`} prefetch={false} className="okado-secondary-action px-4 text-sm">Affiche</Link>
+            {!draft.isActive ? <p className="w-full text-xs text-ash">Le QR de diffusion n’ouvre le jeu qu’après sa publication.</p> : null}
           </div>
         ) : null}
         {draft.id && !adminSaveEndpoint ? (

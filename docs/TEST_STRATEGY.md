@@ -107,6 +107,12 @@ La suite `test:admin-campaigns` couvre aussi les vrais handlers de duplication a
 
 `e2e/admin-campaign-duplication.spec.ts` exerce les vrais composants à 320/390/1280 px : menu admin vs marchand, recherche/pagination, sélection, option d’identité, création et liens, affichage des échecs partiels, non-répétition et absence d’erreur d’hydratation. Les requêtes de cette fixture synthétique `/dev/admin-duplication-proof` sont interceptées ; aucun accès administrateur n’est accordé par la fixture, qui renvoie 404 en production. `admin-campaign-access.spec.ts` teste les refus HTTP réels. Recette propriétaire : depuis une campagne de l’établissement administrateur, dupliquer vers un compte pilote de test, vérifier ses données/logo/liens/affiche et son stock initial, puis ouvrir le brouillon depuis Pilotage. La source doit rester inchangée ; aucun test ne modifie un commerce réel.
 
+## QR de diffusion administrateur — #470
+
+La suite `test:admin-campaigns` vérifie la nouvelle route avec sessions/base simulées et le vrai générateur SVG partagé : refus 401/403 avant lecture, jeu absent/site archivé, erreur de base sans divulgation, bon lien public sans jeton de test, fichier téléchargeable privé, brouillon sans publication et audit technique hors indicateurs marchand. Les tests de rendu/câblage couvrent la liste, le Wizard et sa confirmation. Les permissions HTTP réelles sont ajoutées à `admin-campaign-access.spec.ts`. La fixture `/dev/admin-qr-proof` (404 en production) teste les vrais composants à 320/390/1280 px et le téléchargement d’un fichier synthétique, sans contourner l’authentification serveur.
+
+Recette : Pilotage → Voir les jeux → QR de diffusion, puis Modifier le jeu et Télécharger le QR de diffusion après enregistrement. Scanner le SVG d’un jeu publié doit ouvrir le bon jeu public ; celui d’un brouillon ne le publie pas. Le QR de test reste temporaire et isolé. Aucune campagne réelle n’est modifiée par les tests.
+
 ## Compte rendu attendu
 
 Chaque demande de merge ou de production doit indiquer, en quelques lignes :

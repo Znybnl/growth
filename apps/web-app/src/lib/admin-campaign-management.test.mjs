@@ -1,9 +1,10 @@
 import assert from "node:assert/strict";
 import { beforeEach, test } from "node:test";
 import { registerHooks } from "node:module";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import ts from "typescript";
 import { renderToStaticMarkup } from "react-dom/server";
+import { createElement } from "react";
 
 // These hooks exist only in this test process. No application auth bypass, database
 // connection, real merchant write, image upload or email is used by this suite.
@@ -30,7 +31,10 @@ const mocks = {
 registerHooks({
   resolve(specifier, context, nextResolve) {
     if (mocks[specifier]) return {url:`data:text/javascript,${encodeURIComponent(mocks[specifier])}`,shortCircuit:true};
-    if (specifier.startsWith("@/")) return nextResolve(new URL(`${specifier.slice(2)}.ts`, src).href, context);
+    if (specifier.startsWith("@/")) {
+      const tsUrl = new URL(`${specifier.slice(2)}.ts`, src);
+      return nextResolve(existsSync(tsUrl) ? tsUrl.href : new URL(`${specifier.slice(2)}.tsx`, src).href, context);
+    }
     if (specifier === "next/server") return nextResolve("next/server.js", context);
     return nextResolve(specifier, context.parentURL?.startsWith("data:") ? {...context,parentURL:import.meta.url} : context);
   },
@@ -46,6 +50,9 @@ const poster = await import("../app/api/admin/campaigns/[id]/poster-settings/rou
 const assets = await import("../app/api/admin/campaigns/[id]/assets/route.ts");
 const logo = await import("../app/api/admin/campaigns/[id]/poster-logo/route.ts");
 const preview = await import("../app/api/admin/campaigns/[id]/preview/route.ts");
+const diffusionQr = await import("../app/api/admin/campaigns/[id]/qr/route.ts");
+const {createCampaignQrSvg} = await import("./campaign-qr.ts");
+const {AdminCampaignQrDownload} = await import("../components/merchant/admin-campaign-qr-download.tsx");
 const {verifyPreviewAccessToken} = await import("./preview-token.ts");
 const listPage = (await import("../app/(merchant)/admin/campaigns/page.tsx")).default;
 const editPage = (await import("../app/(merchant)/admin/campaigns/[id]/edit/page.tsx")).default;
@@ -148,6 +155,9 @@ test("tous les endpoints admin refusent 401/403 sans accès à la base", async (
     assert.equal((await assets.GET(new Request("http://localhost:3001"),params)).status,expected);
     assert.equal((await logo.GET(new Request("http://localhost:3001?url=x"),params)).status,expected);
     assert.equal((await preview.GET(new Request("http://localhost:3001"),params)).status,expected);
+    const download = await diffusionQr.GET(new Request("http://localhost:3001"),params);
+    assert.equal(download.status,expected);
+    assert.equal(download.headers.get("cache-control"),"private, no-store");
   }
   assert.deepEqual(state.reads,[]);
   assert.deepEqual(state.saves,[]);
@@ -208,6 +218,8 @@ test("rendu de la liste : compte cible, liens de modification et filtre conserv�
   assert.match(html,/Modifier le jeu/);
   assert.match(html,/admin\/campaigns\/game-0\/edit/);
   assert.match(html,/admin\/campaigns\/game-0\/poster/);
+  assert.match(html,/api\/admin\/campaigns\/game-0\/qr/);
+  assert.match(html,/QR de diffusion/);
   assert.match(html,/name="merchantId" value="root"/);
   assert.match(html,/page=2&amp;q=Jeu&amp;merchantId=root/);
 });
@@ -263,6 +275,62 @@ test("contrats de câblage UI : preview, QR et logo admin sans modifier le parco
   assert.match(wizard,/qrEndpoint=\{adminSaveEndpoint/);
   assert.match(wizard,/previewPath=\{adminSaveEndpoint/);
   assert.match(posterEditor,/uploadMerchantImageFile\(file, "logo", adminTarget\)/);
+  assert.match(wizard,/<AdminCampaignQrDownload campaignId=\{draft.id\} isActive=\{draft.isActive\}/);
+  assert.match(wizard,/Le QR de diffusion n’ouvre le jeu qu’après sa publication/);
+  const confirmation = readFileSync(new URL("components/merchant/campaign-saved-dialog.tsx",src),"utf8");
+  assert.match(confirmation,/<AdminCampaignQrDownload/);
+  assert.match(confirmation,/isActive=\{adminIsActive\}/);
+  assert.ok(confirmation.includes('href={`/api/campaigns/${campaignId}/qr`}'));
+});
+
+test("QR de diffusion admin : vrai SVG téléchargeable du bon jeu, sans jeton ni changement métier", async () => {
+  const before = structuredClone(state.campaigns);
+  const response = await diffusionQr.GET(new Request("https://app.okado.app/api/admin/campaigns/existing/qr?preview=1&previewToken=ignored&id=foreign"),params);
+  assert.equal(response.status,200);
+  assert.equal(response.headers.get("content-disposition"),'attachment; filename="existing-qr.svg"');
+  assert.equal(response.headers.get("content-type"),"image/svg+xml; charset=utf-8");
+  assert.equal(response.headers.get("cache-control"),"private, no-store");
+  assert.equal(response.headers.get("x-content-type-options"),"nosniff");
+  const svg = await response.text();
+  assert.equal(svg,await createCampaignQrSvg("https://app.okado.app/campaign/existing"));
+  assert.notEqual(svg,await createCampaignQrSvg("https://app.okado.app/campaign/foreign"));
+  assert.match(svg,/<svg/);
+  assert.deepEqual(state.campaigns,before);
+  assert.deepEqual(state.saves,[]);
+  assert.deepEqual(state.qrUrls,[]);
+  assert.deepEqual(state.logs,[["info","admin_campaign_qr_downloaded",{adminUserId:"admin-user",campaignId:"existing",merchantId:"site"}]]);
+});
+
+test("le QR d’un brouillon est préparé sans publier ni modifier ses stocks", async () => {
+  state.campaigns[0].is_active = false;
+  const before = structuredClone(state.campaigns);
+  assert.equal((await diffusionQr.GET(new Request("http://localhost:3001"),params)).status,200);
+  assert.deepEqual(state.campaigns,before);
+  assert.deepEqual(state.saves,[]);
+});
+
+test("QR admin : jeu absent, établissement archivé et panne de lecture refusés sans divulgation", async () => {
+  const request = new Request("https://app.okado.app/api/admin/campaigns/existing/qr");
+  assert.equal((await diffusionQr.GET(request,{params:Promise.resolve({id:"missing"})})).status,404);
+  state.profiles.site.locationStatus = "archived";
+  assert.equal((await diffusionQr.GET(request,params)).status,404);
+  state.profiles.site.locationStatus = "active";
+  state.errorTable = "campaigns";
+  const response = await diffusionQr.GET(request,params);
+  assert.equal(response.status,500);
+  assert.deepEqual(await response.json(),{error:"Impossible de télécharger le QR code de diffusion."});
+  assert.deepEqual(state.saves,[]);
+  assert.deepEqual(state.logs,[]);
+});
+
+test("le lien de diffusion admin encode l’identifiant et distingue le brouillon du QR de test", () => {
+  const html = renderToStaticMarkup(createElement(AdminCampaignQrDownload,{campaignId:'a/b?x="',isActive:false}));
+  assert.ok(html.includes("/api/admin/campaigns/a%2Fb%3Fx%3D%22/qr"));
+  assert.match(html,/download/);
+  assert.match(html,/brouillon, à diffuser après publication/);
+  assert.doesNotMatch(html,/previewToken|preview=1/);
+  const active = renderToStaticMarkup(createElement(AdminCampaignQrDownload,{campaignId:"existing",isActive:true}));
+  assert.doesNotMatch(active,/brouillon|Brouillon/);
 });
 
 function sourcePerformance(merchantId = "site") {
