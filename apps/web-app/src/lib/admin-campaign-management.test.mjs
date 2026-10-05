@@ -12,12 +12,12 @@ const adminEmail = "pierreh.brunelle@gmail.com";
 let state;
 const mocks = {
   "@/lib/auth": "export const getAuthenticatedSession = async () => globalThis.__adminCampaignTest.session; export const requireAuthenticatedSession = async () => { const s = globalThis.__adminCampaignTest.session; if (!s) throw new Error('redirect:/connexion'); return s; };",
-  "@/lib/supabase": "export const isSupabaseConfigured = () => true; export const getSupabaseAdmin = () => globalThis.__adminCampaignTest.db;",
+  "@/lib/supabase": "export const supabaseUrl = 'https://storage.example.test'; export const isSupabaseConfigured = () => true; export const getSupabaseAdmin = () => globalThis.__adminCampaignTest.db;",
   "@/lib/merchant-account-repository": "export const getSupabaseMerchantProfile = async id => globalThis.__adminCampaignTest.profiles[id] ?? null; export const getSupabaseMerchantWorkspaceContext = async (_id, account) => ({locations: (globalThis.__adminCampaignTest.associated[account.id] ?? [account.id]).map(id => ({merchant:globalThis.__adminCampaignTest.profiles[id]}))});",
-  "@/lib/store": "export const saveCampaignSetup = async input => {globalThis.__adminCampaignTest.saves.push(input); return input.id ?? 'new-game';}; export const updateCampaignPosterSettings = async (...args) => globalThis.__adminCampaignTest.posters.push(args); export const getCampaignSetupPerformance = async (id, merchant) => {globalThis.__adminCampaignTest.performanceMerchant = merchant; return {campaign:{id,merchantId:globalThis.__adminCampaignTest.wrongPerformance ? 'other' : merchant.id,presentation:{background:{},poster:{}}},prizes:[]};}; export const getCampaignPerformance = getCampaignSetupPerformance;",
+  "@/lib/store": "export const saveCampaignSetup = async input => {if (globalThis.__adminCampaignTest.failMerchant === input.merchantId) throw new Error('save failed'); globalThis.__adminCampaignTest.saves.push(input); return input.id ?? 'new-game';}; export const updateCampaignPosterSettings = async (...args) => globalThis.__adminCampaignTest.posters.push(args); export const getCampaignSetupPerformance = async (id, merchant) => {globalThis.__adminCampaignTest.performanceMerchant = merchant; return globalThis.__adminCampaignTest.performance ?? {campaign:{id,merchantId:globalThis.__adminCampaignTest.wrongPerformance ? 'other' : merchant.id,presentation:{background:{},poster:{}}},prizes:[]};}; export const getCampaignPerformance = getCampaignSetupPerformance;",
   "@/lib/merchant-input": "export const parseCampaignSetupInput = input => ({...input,presentation:input.presentation ?? {background:{},poster:{}}});",
   "@/lib/merchant-image-processing": "export class MerchantImageValidationError extends Error {} export const optimizeMerchantImage = async () => {throw new Error('Unexpected image processing');};",
-  "@/lib/merchant-image-storage": "export const getCampaignMerchantImageUrls = async () => []; export const deleteMerchantImagesIfUnreferenced = async () => {}; export const uploadMerchantImage = async () => {throw new Error('Unexpected storage write');}; export const getMerchantPosterLogoDataUrl = async (_url, id) => 'logo-for:' + id;",
+  "@/lib/merchant-image-storage": "export const copyCampaignMediaToMerchant = async input => structuredClone(input); export const getCampaignMerchantImageUrls = async () => []; export const deleteMerchantImagesIfUnreferenced = async () => {}; export const uploadMerchantImage = async () => {throw new Error('Unexpected storage write');}; export const getMerchantPosterLogoDataUrl = async (_url, id) => 'logo-for:' + id;",
   "@/lib/support-log": "export const logSupportEvent = (...args) => globalThis.__adminCampaignTest.logs.push(args);",
   "@/lib/campaign-exports": "export const createCampaignQrSvg = async url => {globalThis.__adminCampaignTest.qrUrls.push(url); return '<svg></svg>';};",
   "@/lib/format": "export const formatDateTime = value => value;",
@@ -40,7 +40,7 @@ registerHooks({
   },
 });
 
-const {getAdminCampaignContext, getAdminCampaigns} = await import("./admin-campaign-repository.ts");
+const {getAdminCampaignContext, getAdminCampaigns, getAdminDuplicationAccounts} = await import("./admin-campaign-repository.ts");
 const setup = await import("../app/api/admin/merchants/[merchantId]/locations/[locationId]/campaigns/setup/route.ts");
 const poster = await import("../app/api/admin/campaigns/[id]/poster-settings/route.ts");
 const assets = await import("../app/api/admin/campaigns/[id]/assets/route.ts");
@@ -51,6 +51,9 @@ const listPage = (await import("../app/(merchant)/admin/campaigns/page.tsx")).de
 const editPage = (await import("../app/(merchant)/admin/campaigns/[id]/edit/page.tsx")).default;
 const posterPage = (await import("../app/(merchant)/admin/campaigns/[id]/poster/page.tsx")).default;
 const {uploadMerchantImageFile} = await import("./merchant-image-upload.ts");
+const duplicateMerchant = await import("../app/api/admin/campaigns/[id]/duplicate-merchant/route.ts");
+const {buildAdminCampaignCopy} = await import("./admin-campaign-duplication.ts");
+const realImageStorage = await import("./merchant-image-storage.ts");
 
 function fakeDb() {
   return {from(table) {
@@ -69,7 +72,7 @@ function fakeDb() {
       then(resolve,reject) {
         const rows = table === "campaigns" ? state.campaigns
           : table === "merchant_users" ? [{id:"user-root",merchant_id:"root"}]
-          : Object.values(state.profiles).map(p => ({id:p.id,company_name:p.companyName}));
+          : Object.values(state.profiles).map(p => ({id:p.id,company_name:p.companyName,location_status:p.locationStatus ?? "active",city:p.city}));
         let data = rows.filter(row => filters.every(filter => filter(row)));
         if (range) data = data.slice(range[0],range[1]+1);
         return Promise.resolve({data:single ? data[0] ?? null : data,error:state.errorTable === table ? {message:"test error"} : null}).then(resolve,reject);
@@ -260,4 +263,148 @@ test("contrats de câblage UI : preview, QR et logo admin sans modifier le parco
   assert.match(wizard,/qrEndpoint=\{adminSaveEndpoint/);
   assert.match(wizard,/previewPath=\{adminSaveEndpoint/);
   assert.match(posterEditor,/uploadMerchantImageFile\(file, "logo", adminTarget\)/);
+});
+
+function sourcePerformance(merchantId = "site") {
+  return {
+    campaign: {
+      id: "existing", merchantId, title: "Modèle", subtitle: "Un cadeau vous attend", isActive: true,
+      goalType: "social_follow", gameType: "scratch", emailCaptureEnabled: true,
+      ctaLabel: "Suivez-nous", successMetric: "Fidélité", targetUrl: "https://source.test",
+      accent: {ink:"#111111",paper:"#ffffff",signal:"#ccaa88"},
+      logoMode:"image",logoText:"Logo source",logoUrl:"https://example.test/source-logo.webp",
+      presentation:{background:{imageUrl:"/backgrounds/nude.webp"},poster:{logoMode:"image",logoSource:"poster",logoUrl:"https://example.test/source-logo.webp",headline:"Titre de l’affiche",headlineFontSizePx:46},email:{senderName:"Source",replyTo:"source@example.test",body:"Personnalisation {{merchantName}}"},layout:{scratchSubtitle:"Sous-titre",blockSpacingPx:25},heading:{fontSizePx:46}},
+      actions:[{id:"old-action",kind:"instagram",label:"Suivez-nous",url:"https://instagram.com/source"},{id:"old-google",kind:"google",label:"Google",url:"https://g.page/source"}],
+      rewardRules:{isWinningEveryTime:true,availableAfterHours:24,availabilityDurationDays:60,participationIntervalDays:30},
+    },
+    prizes:[{id:"old-prize",campaignId:"existing",label:"-10%",totalQuantity:100,remainingQuantity:7,probability:100,estimatedUnitCost:2,purchaseRequired:true,usageConditions:"Sur la prochaine visite"}],
+    kpis:{wins:93},leads:[{email:"never-copy@example.test"}],
+  };
+}
+const duplicationRequest = (body = {accountMerchantId:"other",locationIds:["other"],adaptMerchantIdentity:true}, origin = "http://localhost:3001") => new Request("http://localhost:3001/api/admin/campaigns/existing/duplicate-merchant",{method:"POST",headers:{"Content-Type":"application/json",Origin:origin},body:JSON.stringify(body)});
+
+test("duplication : 401/403 sans lecture ou copie et anti-CSRF", async () => {
+  for (const [session,status] of [[null,401],[{user:{email:"merchant@example.test"}},403]]) {
+    state.session = session;
+    assert.equal((await duplicateMerchant.GET(new Request("http://localhost:3001/api/admin/campaigns/existing/duplicate-merchant"),params)).status,status);
+    assert.equal((await duplicateMerchant.POST(duplicationRequest(),params)).status,status);
+  }
+  assert.deepEqual(state.reads,[]);
+  assert.equal((await duplicateMerchant.POST(duplicationRequest(undefined,"https://attacker.test"),params)).status,403);
+  assert.deepEqual(state.saves,[]);
+});
+test("duplication : ne copie que mon jeu actif, jamais un jeu marchand découvert via Pilotage", async () => {
+  assert.equal((await duplicateMerchant.POST(duplicationRequest(),params)).status,404);
+  assert.deepEqual(state.saves,[]);
+  state.session.merchant.id = "site";
+  assert.equal((await duplicateMerchant.POST(duplicationRequest(),{params:Promise.resolve({id:"foreign"})})).status,404);
+  assert.deepEqual(state.saves,[]);
+});
+test("duplication : sélection vide/invalide, mauvais compte/site, site source et archivage refusés avant écriture", async () => {
+  state.session.merchant.id = "site";
+  for (const body of [null,{}, {accountMerchantId:"root",locationIds:[],adaptMerchantIdentity:true}, {accountMerchantId:"root",locationIds:["root"]}, {accountMerchantId:"root",locationIds:Array(21).fill("root"),adaptMerchantIdentity:true}]) {
+    assert.equal((await duplicateMerchant.POST(duplicationRequest(body),params)).status,400);
+  }
+  for (const body of [{accountMerchantId:"root",locationIds:["site"],adaptMerchantIdentity:true},{accountMerchantId:"root",locationIds:["other"],adaptMerchantIdentity:true}]) {
+    assert.equal((await duplicateMerchant.POST(duplicationRequest(body),params)).status,404);
+  }
+  state.profiles.other.locationStatus="archived";
+  assert.equal((await duplicateMerchant.POST(duplicationRequest(),params)).status,404);
+  assert.deepEqual(state.saves,[]);
+});
+test("copie : réglages conservés, nouveaux IDs, stock initial, aucun résultat et aucune mutation", () => {
+  const source = sourcePerformance();
+  const before = structuredClone(source);
+  const copy = buildAdminCampaignCopy(source,state.profiles.site,state.profiles.other,"admin-user","other",false);
+  assert.equal(copy.merchantId,"other");
+  assert.equal(copy.isActive,false);
+  assert.equal(copy.id,undefined);
+  assert.equal(copy.gameType,"scratch");
+  assert.deepEqual(copy.presentation,source.campaign.presentation);
+  assert.deepEqual(copy.rewardRules,source.campaign.rewardRules);
+  assert.equal(copy.prizes[0].id,undefined);
+  assert.equal(copy.prizes[0].remainingQuantity,undefined);
+  assert.equal(copy.prizes[0].totalQuantity,100);
+  assert.equal(copy.prizes[0].usageConditions,"Sur la prochaine visite");
+  assert.notEqual(copy.actions[0].id,"old-action");
+  assert.equal(copy.leads,undefined); assert.equal(copy.kpis,undefined);
+  assert.deepEqual(copy.adminCreationAudit,{adminUserId:"admin-user",accountMerchantId:"other"});
+  copy.presentation.heading.fontSizePx=30;
+  assert.deepEqual(source,before);
+});
+test("copie adaptée : identité/liens/e-mail cible et omission d’une action sans lien", () => {
+  const target = {...state.profiles.other,instagramUrl:"https://instagram.com/target",restaurantEmail:"target@example.test",logoText:"Destinataire"};
+  const copy = buildAdminCampaignCopy(sourcePerformance(),state.profiles.site,target,"admin-user","other",true);
+  assert.equal(copy.logoMode,"text");assert.equal(copy.logoText,"Destinataire");assert.equal(copy.logoUrl,undefined);
+  assert.equal(copy.presentation.poster.logoMode,"text");assert.equal(copy.presentation.poster.logoText,"Destinataire");
+  assert.equal(copy.actions.length,1);assert.equal(copy.actions[0].url,"https://instagram.com/target");
+  assert.equal(copy.targetUrl,copy.actions[0].url);
+  assert.equal(copy.presentation.email.senderName,"{{merchantName}}");assert.equal(copy.presentation.email.replyTo,"target@example.test");
+  assert.equal(copy.presentation.email.body,"Personnalisation {{merchantName}}");
+});
+test("duplication : création réelle du handler en brouillon, dédoublonnage et audit", async () => {
+  state.session.merchant.id="site";state.performance=sourcePerformance();
+  const response=await duplicateMerchant.POST(duplicationRequest({accountMerchantId:"other",locationIds:["other","other"],adaptMerchantIdentity:false}),params);
+  assert.equal(response.status,201);assert.equal(state.saves.length,1);
+  assert.equal(state.saves[0].merchantId,"other");assert.equal(state.saves[0].isActive,false);
+  assert.equal((await response.json()).created[0].locationId,"other");
+  assert.equal(state.logs[0][1],"admin_campaign_duplicated");
+});
+test("duplication : échec partiel explicitement remonté sans recommencer les copies réussies", async () => {
+  state.session.merchant.id="other";state.performance=sourcePerformance("other");state.failMerchant="site";
+  const response=await duplicateMerchant.POST(duplicationRequest({accountMerchantId:"root",locationIds:["root","site"],adaptMerchantIdentity:false}),{params:Promise.resolve({id:"foreign"})});
+  assert.equal(response.status,500);
+  assert.deepEqual((await response.json()).created.map(c=>c.locationId),["root"]);
+  assert.equal(state.saves.length,1);
+});
+test("sélecteur admin léger : pagination/recherche sans données personnelles ou statistiques", async () => {
+  const result=await getAdminDuplicationAccounts(adminEmail,"100%_",NaN);
+  assert.equal(result.page,1);assert.equal(state.pattern,"%100\\%\\_%");
+  assert.deepEqual(Object.keys(result.accounts[0]),["id","companyName","city"]);
+  assert.deepEqual(state.reads,["merchants"]);
+  assert.equal(state.projections[0],"id,company_name,city,merchant_users!inner(id)");
+});
+test("sélecteur sites : pas de source ni données privées", async () => {
+  state.session.merchant.id="site";
+  const response=await duplicateMerchant.GET(new Request("http://localhost:3001/api/admin/campaigns/existing/duplicate-merchant?merchantId=root"),params);
+  assert.equal(response.status,200);
+  assert.deepEqual((await response.json()).locations,[{id:"root",companyName:"Marchand pilote"}]);
+  assert.match(response.headers.get("Cache-Control"),/no-store/);
+});
+test("médias : copie indépendante, dédoublonnage, styles mémorisés et rejet d’une autre origine/propriété", async () => {
+  const calls=[];
+  const bucket={copy:async(from,to)=>{calls.push({from,to});return {error:null};},getPublicUrl:path=>({data:{publicUrl:`https://storage.example.test/storage/v1/object/public/merchant-images/${path}`}})};
+  state.db.storage={from:name=>{assert.equal(name,"merchant-images");return bucket;}};
+  const image="https://storage.example.test/storage/v1/object/public/merchant-images/site/11111111-1111-1111-1111-111111111111_800x600.webp";
+  const input={logoUrl:image,presentation:{background:{imageUrl:image},poster:{templateStyles:{classic:{backgroundImageUrl:image}}}}};
+  const urls=[];
+  const copy=await realImageStorage.copyCampaignMediaToMerchant(input,"site","other",urls);
+  assert.equal(calls.length,1);assert.equal(urls.length,1);
+  assert.match(copy.logoUrl,/merchant-images\/other\//);assert.equal(copy.presentation.background.imageUrl,copy.logoUrl);
+  assert.equal(input.logoUrl,image);
+  assert.equal(await realImageStorage.copyCampaignImageToMerchant("/backgrounds/native.webp","site","other"),"/backgrounds/native.webp");
+  await assert.rejects(realImageStorage.copyCampaignImageToMerchant(image,"root","other"),/autorisée/);
+  await assert.rejects(realImageStorage.copyCampaignImageToMerchant(image.replace("storage.example.test","attacker.test"),"site","other"),/autorisée/);
+  await assert.rejects(realImageStorage.copyCampaignImageToMerchant(image + "?token=ignored","site","other"),/autorisée/);
+  assert.equal(await realImageStorage.copyCampaignImageToMerchant(copy.logoUrl,"site","other"),copy.logoUrl);
+  bucket.copy=async()=>({error:{message:"test"}});
+  await assert.rejects(realImageStorage.copyCampaignImageToMerchant(image,"site","other"),/échoué/);
+});
+
+test("copie adaptée : logo absent conservé, rendez-vous remappé et chaque brouillon isolé", () => {
+  const source=sourcePerformance();source.campaign.logoMode="none";source.campaign.presentation.poster.logoMode="none";
+  source.campaign.actions=[{id:"appointment",kind:"custom",label:"Prendre rendez-vous",url:"https://source.test/book"}];
+  const profile={...state.profiles.site,appointmentUrl:"https://source.test/book"};
+  const target={...state.profiles.other,appointmentUrl:"https://target.test/book",logoUrl:"https://target.test/logo.webp"};
+  const copy=buildAdminCampaignCopy(source,profile,target,"admin-user","other",true);
+  assert.equal(copy.logoMode,"none");assert.equal(copy.presentation.poster.logoMode,"none");
+  assert.equal(copy.actions[0].url,"https://target.test/book");
+  const otherCopy=buildAdminCampaignCopy(source,profile,target,"admin-user","other",true);
+  assert.notEqual(copy.actions[0].id,otherCopy.actions[0].id);
+  copy.prizes[0].label="Changed";assert.equal(otherCopy.prizes[0].label,"-10%");
+});
+test("duplication : mauvais rattachement du contenu source n’effectue aucune création", async () => {
+  state.session.merchant.id="site";state.performance=sourcePerformance("other");
+  assert.equal((await duplicateMerchant.POST(duplicationRequest(),params)).status,404);
+  assert.deepEqual(state.saves,[]);
 });

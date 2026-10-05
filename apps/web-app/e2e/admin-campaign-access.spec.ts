@@ -39,6 +39,19 @@ test.describe("Création et modification des jeux par l’administration platefo
     await expect(page).toHaveURL(/\/connexion/);
   });
 
+  test("un visiteur ne peut pas consulter les destinataires ni dupliquer vers un marchand", async ({ page }) => {
+    await page.goto("/connexion");
+    const statuses = await page.evaluate(async () => {
+      const url = "/api/admin/campaigns/campaign-test/duplicate-merchant";
+      const responses = await Promise.all([fetch(url), fetch(url, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ accountMerchantId: "merchant-primary", locationIds: ["merchant-primary"], adaptMerchantIdentity: true }),
+      })]);
+      return responses.map(({ status }) => status);
+    });
+    expect(statuses).toEqual([401, 401]);
+  });
+
   test("un visiteur non authentifié ne peut pas générer de prévisualisation admin ni de QR", async ({ page }) => {
     await page.goto("/connexion");
     const statuses = await page.evaluate(async () => {
@@ -106,9 +119,14 @@ test.describe("Création et modification des jeux par l’administration platefo
         fetch("/api/admin/campaigns/campaign-test/preview"),
         fetch("/api/admin/campaigns/campaign-test/preview?format=qr"),
         fetch("/api/admin/campaigns/campaign-test/poster-logo?url=image"),
+        fetch("/api/admin/campaigns/campaign-test/duplicate-merchant"),
+        fetch("/api/admin/campaigns/campaign-test/duplicate-merchant", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ accountMerchantId: "merchant-primary", locationIds: ["merchant-primary"], adaptMerchantIdentity: true }),
+        }),
       ]);
       return requests.map(({ status }) => status);
     });
-    expect(statuses).toEqual([403, 403, 403, 403, 403, 403]);
+    expect(statuses).toEqual([403, 403, 403, 403, 403, 403, 403, 403]);
   });
 });

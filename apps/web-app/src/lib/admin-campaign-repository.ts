@@ -102,6 +102,28 @@ export async function getAdminCampaignContext(
 
 export const ADMIN_CAMPAIGNS_PAGE_SIZE = 50;
 
+/** Minimal account selector: no contacts, billing data or campaign assets. */
+export async function getAdminDuplicationAccounts(adminEmail: string, query = "", page = 1) {
+  assertSaasAdminEmail(adminEmail);
+  if (!isSupabaseConfigured()) throw new Error("La base de données n’est pas configurée.");
+  const safePage = Number.isSafeInteger(page) && page > 0 ? Math.min(page, 100_000) : 1;
+  let request = getSupabaseAdmin().from("merchants")
+    .select("id,company_name,city,merchant_users!inner(id)")
+    .eq("location_status", "active")
+    .order("company_name").order("id");
+  if (query.trim()) request = request.ilike("company_name", `%${query.trim().replace(/[\\%_]/g, "\\$&")}%`);
+  const offset = (safePage - 1) * ADMIN_CAMPAIGNS_PAGE_SIZE;
+  const result = await request.range(offset, offset + ADMIN_CAMPAIGNS_PAGE_SIZE);
+  if (result.error) throw new Error("Lecture des comptes marchands impossible.");
+  return {
+    accounts: (result.data ?? []).slice(0, ADMIN_CAMPAIGNS_PAGE_SIZE).map((row) => ({
+      id: row.id, companyName: row.company_name, city: row.city,
+    })),
+    hasNextPage: (result.data?.length ?? 0) > ADMIN_CAMPAIGNS_PAGE_SIZE,
+    page: safePage,
+  };
+}
+
 export async function getAdminCampaigns(
   adminEmail: string,
   options: { accountMerchantId?: string; query?: string; page?: number } = {},
