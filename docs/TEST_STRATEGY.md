@@ -95,6 +95,18 @@ Rejouer `beauty-wheel-backgrounds.spec.ts`, `beauty-rose-noir.spec.ts`, `beauty-
 - Rejouer les suites #458, thèmes Beauté, fonds de roues et Halloween ; vérifier les captures et le build. Les fixtures demeurent exclusivement accessibles en développement.
 - Référence, captures et recette : [finitions Beauté](design/wheel-polish-460.md).
 
+## Assistance administrative aux jeux — #467
+
+`npm run test:admin-campaigns -w @okado/web-app` teste les vrais handlers et le repository avec session/base/stockage simulés exclusivement dans le processus de test : jeu marchand sans audit, ancien créateur différent, compte multi-sites, mauvais site/jeu, refus 401/403 avant lecture, sauvegarde sans changement de propriétaire, création toujours brouillon, journalisation, affiche/logo et jeton de prévisualisation limité au jeu. Le rendu de la liste vérifie les liens, le filtre compte et la pagination au-delà de 500 jeux. Aucun accès Supabase réel ni e-mail.
+
+Rejouer `admin-campaign-access.spec.ts` sur le serveur local pour le refus HTTP des visiteurs et du compte marchand E2E. Recette propriétaire : Pilotage → Voir les jeux d’un marchand → Modifier le jeu, tester son aperçu et son QR de test, puis son affiche/logo ; vérifier les données conservées et qu’une sauvegarde ne publie pas un brouillon. Les modifications d’un jeu actif prennent effet sur ce jeu, comme dans l’éditeur marchand. Aucun test ne doit modifier une campagne réelle sans instruction explicite.
+
+## Duplication administrative vers un marchand — #469
+
+La suite `test:admin-campaigns` couvre aussi les vrais handlers de duplication avec base/session/stockage simulés : source appartenant à l’établissement actif de l’admin, cibles associées au compte, sites archivés, refus 401/403/404, sélection invalide, brouillons sans historique/stock consommé, adaptation facultative de l’identité et des liens, audit et erreur partielle. Les helpers réels de copie des médias sont testés avec un bucket simulé (propriété/origine, dédoublonnage et indépendance de stockage).
+
+`e2e/admin-campaign-duplication.spec.ts` exerce les vrais composants à 320/390/1280 px : menu admin vs marchand, recherche/pagination, sélection, option d’identité, création et liens, affichage des échecs partiels, non-répétition et absence d’erreur d’hydratation. Les requêtes de cette fixture synthétique `/dev/admin-duplication-proof` sont interceptées ; aucun accès administrateur n’est accordé par la fixture, qui renvoie 404 en production. `admin-campaign-access.spec.ts` teste les refus HTTP réels. Recette propriétaire : depuis une campagne de l’établissement administrateur, dupliquer vers un compte pilote de test, vérifier ses données/logo/liens/affiche et son stock initial, puis ouvrir le brouillon depuis Pilotage. La source doit rester inchangée ; aucun test ne modifie un commerce réel.
+
 ## Compte rendu attendu
 
 Chaque demande de merge ou de production doit indiquer, en quelques lignes :

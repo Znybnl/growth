@@ -5,14 +5,14 @@ import { X } from "lucide-react";
 
 import { DialogShell } from "@/components/ui/dialog";
 
-export function CampaignPreviewQr({ campaignId }: { campaignId: string }) {
+export function CampaignPreviewQr({ campaignId, qrEndpoint }: { campaignId: string; qrEndpoint?: string }) {
   return (
     <div
       className="okado-card flex flex-col gap-4 p-4 sm:flex-row sm:items-center"
       onContextMenu={(event) => event.preventDefault()}
     >
       <Image
-        src={`/api/campaigns/${campaignId}/qr?preview=1&inline=1`}
+        src={qrEndpoint ?? `/api/campaigns/${campaignId}/qr?preview=1&inline=1`}
         alt="QR code de prévisualisation — réservé aux tests, ne pas transmettre aux clients"
         width={192}
         height={192}
@@ -41,10 +41,12 @@ export function CampaignPreviewQrDialog({
   open,
   campaignId,
   onClose,
+  qrEndpoint,
 }: {
   open: boolean;
   campaignId: string;
   onClose: () => void;
+  qrEndpoint?: string;
 }) {
   if (!open) {
     return null;
@@ -73,7 +75,7 @@ export function CampaignPreviewQrDialog({
         </div>
 
         <div className="mt-6">
-          <CampaignPreviewQr campaignId={campaignId} />
+          <CampaignPreviewQr campaignId={campaignId} qrEndpoint={qrEndpoint} />
         </div>
 
         <div className="mt-5 flex justify-end">

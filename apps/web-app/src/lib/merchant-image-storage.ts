@@ -112,6 +112,56 @@ async function ensureMerchantImagesBucket() {
   if (updateError) throw new Error("Configuration du stockage des images impossible.");
 }
 
+/** Independent object in the recipient's storage; never fetch an arbitrary URL. */
+export async function copyCampaignImageToMerchant(imageUrl: string, sourceMerchantId: string, targetMerchantId: string) {
+  const managed = getManagedObjectPath(imageUrl);
+  if (!managed) {
+    if (imageUrl.includes(`/storage/v1/object/public/${MERCHANT_IMAGE_BUCKET}/`)) {
+      throw new Error("Une image du jeu source n’est pas autorisée pour cette copie.");
+    }
+    return imageUrl; // Native assets, library images and legacy inline images.
+  }
+  if (getOwnedManagedImageObjectPath(imageUrl, targetMerchantId)) return imageUrl;
+  const source = getOwnedManagedImageObjectPath(imageUrl, sourceMerchantId);
+  if (!source || !/^[a-zA-Z0-9_-]{1,100}$/.test(targetMerchantId)) {
+    throw new Error("Une image du jeu source n’est pas autorisée pour cette copie.");
+  }
+  const dimensions = source.path.match(/_(\d{1,5}x\d{1,5})\.webp$/)?.[1];
+  if (!dimensions) throw new Error("L’image source ne peut pas être copiée.");
+  const bucket = getSupabaseAdmin().storage.from(MERCHANT_IMAGE_BUCKET);
+  const path = `${targetMerchantId}/${crypto.randomUUID()}_${dimensions}.webp`;
+  const { error } = await bucket.copy(source.path, path);
+  if (error) throw new Error("La copie d’une image du jeu a échoué.");
+  return bucket.getPublicUrl(path).data.publicUrl;
+}
+
+export async function copyCampaignMediaToMerchant<T>(
+  input: T, sourceMerchantId: string, targetMerchantId: string, copiedUrls: string[],
+): Promise<T> {
+  const copies = new Map<string, string>();
+  async function visit(value: unknown, key = ""): Promise<unknown> {
+    if (typeof value === "string" && ["logoUrl", "imageUrl", "backgroundImageUrl"].includes(key) && value) {
+      if (copies.has(value)) return copies.get(value);
+      const result = await copyCampaignImageToMerchant(value, sourceMerchantId, targetMerchantId);
+      copies.set(value, result);
+      if (result !== value) copiedUrls.push(result);
+      return result;
+    }
+    if (Array.isArray(value)) {
+      const items = [];
+      for (const item of value) items.push(await visit(item));
+      return items;
+    }
+    if (value && typeof value === "object") {
+      const result: Record<string, unknown> = {};
+      for (const [name, item] of Object.entries(value)) result[name] = await visit(item, name);
+      return result;
+    }
+    return value;
+  }
+  return await visit(input) as T;
+}
+
 export async function uploadMerchantImage(input: {
   buffer: Buffer;
   kind: MerchantImageKind;

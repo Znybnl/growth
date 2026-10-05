@@ -1,31 +1,20 @@
 import { getSupabaseMerchantProfile, getSupabaseMerchantWorkspaceContext } from "@/lib/merchant-account-repository";
-import {
-  isAdminCampaignLocationAllowed,
-  isAdminCreatedCampaignAccessible,
-} from "@/lib/admin-campaign-access";
+import { isAdminCampaignLocationAllowed } from "@/lib/admin-campaign-access";
+import { assertSaasAdminEmail } from "@/lib/admin";
 import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/supabase";
 import type { Merchant } from "@/lib/types";
 
-export type AdminCreatedCampaign = {
+export type AdminCampaign = {
   id: string;
   title: string;
   isActive: boolean;
   createdAt: string;
   merchantName: string;
-  accountMerchantName: string;
   accountMerchantId: string;
   locationId: string;
 };
 
-type AdminCampaignSettings = {
-  adminCreation?: {
-    adminUserId?: unknown;
-    accountMerchantId?: unknown;
-    targetLocationId?: unknown;
-  };
-};
-
-export type AdminCreatedCampaignContext = {
+export type AdminCampaignContext = {
   accountMerchantId: string;
   targetLocationId: string;
   location: Merchant;
@@ -66,6 +55,10 @@ export async function getAdminCampaignLocation(
   accountMerchantId: string,
   targetLocationId: string,
 ) {
+  if (accountMerchantId === targetLocationId) {
+    const location = await getSupabaseMerchantProfile(targetLocationId);
+    return location?.locationStatus !== "archived" ? location : null;
+  }
   const locations = await getAdminCampaignLocations(accountMerchantId);
   if (!isAdminCampaignLocationAllowed(accountMerchantId, targetLocationId, locations.map(({ id }) => id))) {
     return null;
@@ -73,10 +66,13 @@ export async function getAdminCampaignLocation(
   return locations.find(({ id }) => id === targetLocationId) ?? null;
 }
 
-export async function getAdminCreatedCampaignContext(
+/** Only call with the email from a verified server session, never from request input. */
+export async function getAdminCampaignContext(
   campaignId: string,
-  adminUserId: string,
-): Promise<AdminCreatedCampaignContext | null> {
+  adminEmail: string,
+  accountMerchantId?: string,
+): Promise<AdminCampaignContext | null> {
+  assertSaasAdminEmail(adminEmail);
   if (!isSupabaseConfigured()) {
     throw new Error("La base de données n’est pas configurée.");
   }
@@ -84,94 +80,104 @@ export async function getAdminCreatedCampaignContext(
   const supabase = getSupabaseAdmin();
   const result = await supabase
     .from("campaigns")
-    .select("merchant_id,campaign_local_settings")
+    .select("merchant_id")
     .eq("id", campaignId)
     .maybeSingle<{
       merchant_id: string;
-      campaign_local_settings: AdminCampaignSettings | null;
     }>();
 
-  if (result.error) throw new Error("Vérification du jeu créé par l’administration impossible.");
+  if (result.error) throw new Error("Vérification du jeu impossible.");
   if (!result.data) return null;
 
-  const audit = result.data.campaign_local_settings?.adminCreation;
-  if (!isAdminCreatedCampaignAccessible(result.data.merchant_id, adminUserId, audit)) return null;
-
-  const accountMerchantId = audit?.accountMerchantId;
-  if (typeof accountMerchantId !== "string") return null;
-
-  const location = await getAdminCampaignLocation(accountMerchantId, result.data.merchant_id);
+  const resolvedAccountId = accountMerchantId ?? result.data.merchant_id;
+  const location = await getAdminCampaignLocation(resolvedAccountId, result.data.merchant_id);
   if (!location) return null;
 
   return {
-    accountMerchantId,
+    accountMerchantId: resolvedAccountId,
     targetLocationId: result.data.merchant_id,
     location,
   };
 }
 
-export async function getAdminCreatedCampaigns(
-  adminUserId: string,
-  query = "",
-): Promise<AdminCreatedCampaign[]> {
+export const ADMIN_CAMPAIGNS_PAGE_SIZE = 50;
+
+/** Minimal account selector: no contacts, billing data or campaign assets. */
+export async function getAdminDuplicationAccounts(adminEmail: string, query = "", page = 1) {
+  assertSaasAdminEmail(adminEmail);
+  if (!isSupabaseConfigured()) throw new Error("La base de données n’est pas configurée.");
+  const safePage = Number.isSafeInteger(page) && page > 0 ? Math.min(page, 100_000) : 1;
+  let request = getSupabaseAdmin().from("merchants")
+    .select("id,company_name,city,merchant_users!inner(id)")
+    .eq("location_status", "active")
+    .order("company_name").order("id");
+  if (query.trim()) request = request.ilike("company_name", `%${query.trim().replace(/[\\%_]/g, "\\$&")}%`);
+  const offset = (safePage - 1) * ADMIN_CAMPAIGNS_PAGE_SIZE;
+  const result = await request.range(offset, offset + ADMIN_CAMPAIGNS_PAGE_SIZE);
+  if (result.error) throw new Error("Lecture des comptes marchands impossible.");
+  return {
+    accounts: (result.data ?? []).slice(0, ADMIN_CAMPAIGNS_PAGE_SIZE).map((row) => ({
+      id: row.id, companyName: row.company_name, city: row.city,
+    })),
+    hasNextPage: (result.data?.length ?? 0) > ADMIN_CAMPAIGNS_PAGE_SIZE,
+    page: safePage,
+  };
+}
+
+export async function getAdminCampaigns(
+  adminEmail: string,
+  options: { accountMerchantId?: string; query?: string; page?: number } = {},
+): Promise<{ campaigns: AdminCampaign[]; hasNextPage: boolean; page: number }> {
+  assertSaasAdminEmail(adminEmail);
   if (!isSupabaseConfigured()) {
     throw new Error("La base de données n’est pas configurée.");
   }
 
   const supabase = getSupabaseAdmin();
-  const result = await supabase
+  const requestedPage = options.page ?? 1;
+  const page = Number.isSafeInteger(requestedPage) && requestedPage > 0
+    ? Math.min(requestedPage, 100_000) : 1;
+  const offset = (page - 1) * ADMIN_CAMPAIGNS_PAGE_SIZE;
+  let request = supabase
     .from("campaigns")
-    .select("id,merchant_id,title,is_active,created_at,campaign_local_settings")
-    .contains("campaign_local_settings", { adminCreation: { adminUserId } })
+    .select("id,merchant_id,title,is_active,created_at")
     .order("created_at", { ascending: false })
-    .limit(500);
+    .order("id", { ascending: false });
 
-  if (result.error) throw new Error("Lecture des jeux créés par l’administration impossible.");
+  if (options.accountMerchantId) {
+    const locations = await getAdminCampaignLocations(options.accountMerchantId);
+    if (!locations.length) return { campaigns: [], hasNextPage: false, page };
+    request = request.in("merchant_id", locations.map(({ id }) => id));
+  }
+  const query = options.query?.trim();
+  if (query) request = request.ilike("title", `%${query.replace(/[\\%_]/g, "\\$&")}%`);
+  // One extra row detects the next page, without downloading all campaign settings/assets.
+  const result = await request.range(offset, offset + ADMIN_CAMPAIGNS_PAGE_SIZE);
 
-  const rows = (result.data ?? []).filter((row) =>
-    isAdminCreatedCampaignAccessible(
-      row.merchant_id,
-      adminUserId,
-      (row.campaign_local_settings as AdminCampaignSettings | null)?.adminCreation,
-    ),
-  );
-  if (!rows.length) return [];
+  if (result.error) throw new Error("Lecture des jeux des marchands impossible.");
+  const hasNextPage = (result.data?.length ?? 0) > ADMIN_CAMPAIGNS_PAGE_SIZE;
+  const rows = (result.data ?? []).slice(0, ADMIN_CAMPAIGNS_PAGE_SIZE);
+  if (!rows.length) return { campaigns: [], hasNextPage: false, page };
 
   const locationIds = [...new Set(rows.map(({ merchant_id }) => merchant_id))];
-  const accountIds = [...new Set(rows.flatMap(({ campaign_local_settings }) => {
-    const audit = (campaign_local_settings as AdminCampaignSettings | null)?.adminCreation;
-    return typeof audit?.accountMerchantId === "string" ? [audit.accountMerchantId] : [];
-  }))];
-  const merchantIds = [...new Set([...locationIds, ...accountIds])];
   const merchantsResult = await supabase
     .from("merchants")
     .select("id,company_name")
-    .in("id", merchantIds);
+    .in("id", locationIds);
 
   if (merchantsResult.error) throw new Error("Lecture des noms d’établissement impossible.");
 
   const merchantNames = new Map(
     (merchantsResult.data ?? []).map((merchant) => [merchant.id, merchant.company_name]),
   );
-  const normalizedQuery = query.trim().toLocaleLowerCase("fr");
-
-  return rows.flatMap((row) => {
-    const audit = (row.campaign_local_settings as AdminCampaignSettings | null)?.adminCreation;
-    const accountMerchantId = audit?.accountMerchantId;
-    if (typeof accountMerchantId !== "string") return [];
-
-    const campaign = {
-      id: row.id,
-      title: row.title,
-      isActive: row.is_active,
-      createdAt: row.created_at,
-      merchantName: merchantNames.get(row.merchant_id) ?? "Établissement introuvable",
-      accountMerchantName: merchantNames.get(accountMerchantId) ?? "Compte marchand introuvable",
-      accountMerchantId,
-      locationId: row.merchant_id,
-    } satisfies AdminCreatedCampaign;
-    const haystack = `${campaign.title} ${campaign.merchantName} ${campaign.accountMerchantName}`
-      .toLocaleLowerCase("fr");
-    return !normalizedQuery || haystack.includes(normalizedQuery) ? [campaign] : [];
-  });
+  const campaigns = rows.map((row) => ({
+    id: row.id,
+    title: row.title,
+    isActive: row.is_active,
+    createdAt: row.created_at,
+    merchantName: merchantNames.get(row.merchant_id) ?? "Établissement introuvable",
+    accountMerchantId: options.accountMerchantId ?? row.merchant_id,
+    locationId: row.merchant_id,
+  } satisfies AdminCampaign));
+  return { campaigns, hasNextPage, page };
 }

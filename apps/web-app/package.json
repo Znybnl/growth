@@ -10,6 +10,7 @@
     "test:e2e": "playwright test",
     "test:reward-email": "node --experimental-strip-types --import ./scripts/ts-alias-loader.mjs --test src/lib/email-settings.test.mjs",
     "test:image-optimization": "node --experimental-strip-types --import ./scripts/ts-alias-loader.mjs --test src/lib/merchant-image-processing.test.mjs",
+    "test:admin-campaigns": "node --experimental-strip-types --test src/lib/admin-campaign-management.test.mjs",
     "test:wizard-marketing-actions": "node --test src/lib/wizard-marketing-actions.test.mjs",
     "check:gotomarket": "node scripts/check-gotomarket-config.mjs",
     "check:dependencies": "node scripts/check-dependency-exceptions.mjs",

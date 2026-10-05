@@ -2,7 +2,7 @@ import { notFound, redirect } from "next/navigation";
 
 import { CampaignWizard } from "@/components/merchant/campaign-wizard";
 import { isSaasAdminEmail } from "@/lib/admin";
-import { getAdminCreatedCampaignContext } from "@/lib/admin-campaign-repository";
+import { getAdminCampaignContext } from "@/lib/admin-campaign-repository";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import { getCampaignSetupPerformance } from "@/lib/store";
 import type { CampaignPerformance } from "@/lib/types";
@@ -49,7 +49,7 @@ export default async function AdminCampaignEditPage({ params }: AdminCampaignEdi
   if (!isSaasAdminEmail(session.user.email)) redirect("/");
 
   const { id } = await params;
-  const context = await getAdminCreatedCampaignContext(id, session.user.id);
+  const context = await getAdminCampaignContext(id, session.user.email);
   if (!context) notFound();
 
   const campaign = await getCampaignSetupPerformance(id, context.location);

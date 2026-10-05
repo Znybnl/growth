@@ -6,6 +6,7 @@ import { EmptyState, PageHeader, ResponsiveTable } from "@/components/ui/workspa
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { requireAuthenticatedSession } from "@/lib/auth";
+import { isSaasAdminEmail } from "@/lib/admin";
 import { formatPercent, gameTypeLabel } from "@/lib/format";
 import { calculateCampaignConsumptionMetrics } from "@/lib/dashboard-metrics";
 import { getMerchantCampaignOverview } from "@/lib/store";
@@ -86,7 +87,7 @@ export default async function CampaignsPage({
                     </div>
                     <div className="mt-4 flex items-center gap-2 border-t border-border pt-3">
                       <Link href={`/campaigns/${item.campaign.id}/edit/guided`} prefetch={false} className="okado-primary-action min-w-0 flex-1 px-3 text-sm">Modifier</Link>
-                      <CampaignActionsMenu campaignId={item.campaign.id} campaignTitle={item.campaign.title} />
+                      <CampaignActionsMenu campaignId={item.campaign.id} campaignTitle={item.campaign.title} allowAdminDuplicate={isSaasAdminEmail(session.user.email)} />
                     </div>
                   </article>
                 ))}
@@ -140,7 +141,7 @@ export default async function CampaignsPage({
                     >
                       Modifier
                     </Link>
-                    <CampaignActionsMenu campaignId={item.campaign.id} campaignTitle={item.campaign.title} />
+                    <CampaignActionsMenu campaignId={item.campaign.id} campaignTitle={item.campaign.title} allowAdminDuplicate={isSaasAdminEmail(session.user.email)} />
                   </div>
                 </div>
               ))

@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 
 import { isSaasAdminEmail } from "@/lib/admin";
-import { getAdminCreatedCampaignContext } from "@/lib/admin-campaign-repository";
+import { getAdminCampaignContext } from "@/lib/admin-campaign-repository";
 import { getAuthenticatedSession } from "@/lib/auth";
 import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
 import { updateCampaignPosterSettings } from "@/lib/store";
 import type { CampaignPosterSettings } from "@/lib/types";
+import { logSupportEvent } from "@/lib/support-log";
 
 type AdminPosterSettingsRouteProps = {
   params: Promise<{ id: string }>;
@@ -21,7 +22,7 @@ export async function POST(request: Request, { params }: AdminPosterSettingsRout
     }
 
     const { id } = await params;
-    const context = await getAdminCreatedCampaignContext(id, session.user.id);
+    const context = await getAdminCampaignContext(id, session.user.email);
     if (!context) return NextResponse.json({ error: "Jeu introuvable." }, { status: 404 });
 
     const body = await request.json();
@@ -39,6 +40,11 @@ export async function POST(request: Request, { params }: AdminPosterSettingsRout
     }
 
     await updateCampaignPosterSettings(id, poster, context.targetLocationId, wheelSubtitle);
+    logSupportEvent("info", "admin_campaign_poster_updated", {
+      merchantId: context.targetLocationId,
+      campaignId: id,
+      adminUserId: session.user.id,
+    });
 
     return NextResponse.json({ campaignId: id });
   } catch (error) {
