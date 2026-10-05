@@ -11,12 +11,14 @@ import {
 import {
   createCampaignEmailDefaults,
   normalizeCampaignEmailSettings,
+  renderRewardEmailHtml,
 } from "@/lib/email-settings";
+import { RewardEmailPreviewFrame } from "@/components/merchant/reward-email-preview-frame";
 import { CampaignSetupInput, Merchant } from "@/lib/types";
 
 type CampaignEmailPreviewProps = {
   merchant: Merchant;
-  form: Pick<CampaignSetupInput, "id" | "title" | "prizes" | "presentation">;
+  form: Pick<CampaignSetupInput, "id" | "title" | "prizes" | "presentation" | "logoUrl">;
 };
 
 const sampleData = {
@@ -28,13 +30,6 @@ const sampleData = {
 
 function replaceVariables(template: string, variables: Record<string, string>) {
   return template.replace(/\{\{\s*(\w+)\s*\}\}/g, (_, key: string) => variables[key] ?? "");
-}
-
-function splitBlocks(value: string) {
-  return value
-    .split(/\n{2,}/)
-    .map((block) => block.trim())
-    .filter(Boolean);
 }
 
 export function CampaignEmailPreview({ merchant, form }: CampaignEmailPreviewProps) {
@@ -50,20 +45,22 @@ export function CampaignEmailPreview({ merchant, form }: CampaignEmailPreviewPro
     prizeLabel: prize?.label || "Cadeau surprise",
     redemptionCode: sampleData.redemptionCode,
     redeemUrl: "https://app.okado.app/redeem/OK-TEST-1234",
-    qrUrl: "https://app.okado.app/redeem/OK-TEST-1234",
+    qrUrl: "/email-demo-qr.png",
     rewardAvailability: sampleData.rewardAvailability,
     rewardExpiry: sampleData.rewardExpiry,
     rewardDate: "24 juillet 2026",
     purchaseCondition: prize?.purchaseRequired
       ? "Achat requis pour retirer ce lot."
-      : "Aucun achat requis pour retirer ce lot.",
-    usageConditions: prize?.usageConditions || "Présentez le QR code au comptoir.",
+      : "",
+    usageConditions: prize?.usageConditions || "",
   };
   const subject = replaceVariables(email.subject, variables);
   const preheader = replaceVariables(email.preheader, variables);
-  const headline = replaceVariables(email.headline, variables);
-  const body = splitBlocks(replaceVariables(email.body, variables));
-  const footer = splitBlocks(replaceVariables(email.footerNote, variables));
+  const html = renderRewardEmailHtml(email, variables, {
+    // A non-redeemable demo QR, never a real player's code.
+    logoSrc: form.logoUrl,
+    appointmentUrl: merchant.appointmentUrl,
+  });
 
   return (
     <Collapsible className="okado-card overflow-hidden" defaultOpen={false}>
@@ -97,26 +94,7 @@ export function CampaignEmailPreview({ merchant, form }: CampaignEmailPreviewPro
         </div>
 
         <div className="mx-auto mt-5 w-full max-w-[620px] overflow-hidden rounded-[20px] border border-[#dbe4f0] bg-white shadow-[0_16px_38px_rgba(17,24,39,0.1)]">
-          <div className="bg-[#f8fafc] px-5 py-6 sm:px-8 sm:py-8">
-            <div className="rounded-[18px] bg-white p-5 shadow-[0_8px_24px_rgba(15,23,42,0.08)] sm:p-7">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#7b8496]">{merchant.companyName}</p>
-              <h3 className="mt-5 text-2xl font-semibold leading-tight text-[#111827]">{headline}</h3>
-              <div className="mt-4 space-y-3 text-sm leading-6 text-[#475569]">
-                {body.map((block) => <p key={block}>{block}</p>)}
-              </div>
-              <div className="mt-5 rounded-[16px] border border-[#e2e8f0] bg-[#f8fafc] px-4 py-4">
-                <p className="text-[11px] uppercase tracking-[0.18em] text-[#94a3b8]">Code de retrait</p>
-                <p className="mt-1 text-xl font-semibold tracking-[0.08em] text-[#0f172a]">{sampleData.redemptionCode}</p>
-              </div>
-              <div className="mt-5 flex flex-wrap items-center gap-4">
-                <div className="h-24 w-24 rounded-[14px] border border-[#dbe4f0] bg-[radial-gradient(#111827_1.5px,transparent_1.5px)] [background-size:8px_8px]" aria-label="QR code de test" />
-                <span className="rounded-[12px] px-4 py-2.5 text-sm font-semibold text-white" style={{ backgroundColor: email.accentColor }}>{replaceVariables(email.buttonLabel, variables)}</span>
-              </div>
-              <div className="mt-5 space-y-2 text-xs leading-5 text-[#64748b]">
-                {footer.map((block) => <p key={block}>{block}</p>)}
-              </div>
-            </div>
-          </div>
+          <RewardEmailPreviewFrame html={html} />
         </div>
       </CollapsibleContent>
     </Collapsible>
