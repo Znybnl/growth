@@ -1356,6 +1356,7 @@ export function CampaignWizard({
         setPreviewOpen(true);
       },
       (path) => router.push(path),
+      adminSaveEndpoint ? `/api/admin/campaigns/${encodeURIComponent(campaignId)}/preview` : undefined,
     );
   }
 
@@ -1442,6 +1443,16 @@ export function CampaignWizard({
               : "Créer une campagne"}
           </h1>
         </div>
+        {draft.id && adminSaveEndpoint ? (
+          <div className="flex flex-wrap items-center gap-2">
+            <StatusBadge tone="muted">Administration · {merchant.companyName}</StatusBadge>
+            <button type="button" onClick={requestPreview} disabled={isSaving || isSavingBeforePreview} className="okado-secondary-action gap-2 px-4 text-sm">
+              <Eye className="h-4 w-4" aria-hidden="true" /> Prévisualiser
+            </button>
+            <button type="button" onClick={() => setQrPreviewOpen(true)} className="okado-secondary-action px-4 text-sm">QR de test</button>
+            <Link href={`/admin/campaigns/${encodeURIComponent(draft.id)}/poster`} prefetch={false} className="okado-secondary-action px-4 text-sm">Affiche</Link>
+          </div>
+        ) : null}
         {draft.id && !adminSaveEndpoint ? (
           <div className="flex flex-wrap items-center gap-2">
             {isEditing ? <StatusBadge tone="muted">Mode modification</StatusBadge> : null}
@@ -3174,6 +3185,7 @@ export function CampaignWizard({
         <CampaignPreviewQrDialog
           open={qrPreviewOpen}
           campaignId={previewCampaignId ?? draft.id}
+          qrEndpoint={adminSaveEndpoint ? `/api/admin/campaigns/${encodeURIComponent(previewCampaignId ?? draft.id)}/preview?format=qr` : undefined}
           onClose={() => setQrPreviewOpen(false)}
         />
       ) : null}
@@ -3181,6 +3193,7 @@ export function CampaignWizard({
         <CampaignPreviewDialog
           open={previewOpen}
           campaignId={draft.id}
+          previewPath={adminSaveEndpoint ? `/api/admin/campaigns/${encodeURIComponent(draft.id)}/preview?embed=1` : undefined}
           onClose={() => setPreviewOpen(false)}
         />
       ) : null}
@@ -3188,6 +3201,7 @@ export function CampaignWizard({
         <CampaignPreviewDialog
           open
           campaignId={savedPreviewCampaignId}
+          previewPath={adminSaveEndpoint ? `/api/admin/campaigns/${encodeURIComponent(savedPreviewCampaignId)}/preview?embed=1` : undefined}
           onClose={() => setSavedPreviewCampaignId(null)}
         />
       ) : null}

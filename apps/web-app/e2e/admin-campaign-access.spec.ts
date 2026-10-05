@@ -2,28 +2,20 @@ import { expect, test } from "@playwright/test";
 
 import {
   isAdminCampaignLocationAllowed,
-  isAdminCreatedCampaignAccessible,
 } from "@/lib/admin-campaign-access";
-import { signIn } from "./auth-session";
+import { isSaasAdminEmail } from "@/lib/admin";
 
-test.describe("Création d’un jeu par l’administration plateforme", () => {
+test.describe("Création et modification des jeux par l’administration plateforme", () => {
   test("limite la sélection aux établissements associés au compte choisi", () => {
     expect(isAdminCampaignLocationAllowed("merchant-primary", "merchant-primary", ["merchant-site-2"])).toBe(true);
     expect(isAdminCampaignLocationAllowed("merchant-primary", "merchant-site-2", ["merchant-site-2"])).toBe(true);
     expect(isAdminCampaignLocationAllowed("merchant-primary", "merchant-other", ["merchant-site-2"])).toBe(false);
   });
 
-  test("un administrateur ne retrouve que ses jeux rattachés au bon établissement", () => {
-    const audit = {
-      adminUserId: "admin-1",
-      accountMerchantId: "merchant-primary",
-      targetLocationId: "merchant-site-2",
-    };
-
-    expect(isAdminCreatedCampaignAccessible("merchant-site-2", "admin-1", audit)).toBe(true);
-    expect(isAdminCreatedCampaignAccessible("merchant-site-2", "admin-2", audit)).toBe(false);
-    expect(isAdminCreatedCampaignAccessible("merchant-primary", "admin-1", audit)).toBe(false);
-    expect(isAdminCreatedCampaignAccessible("merchant-site-2", "admin-1", null)).toBe(false);
+  test("l’assistance globale reste réservée aux administrateurs plateforme", () => {
+    expect(isSaasAdminEmail("pierreh.brunelle@gmail.com")).toBe(true);
+    expect(isSaasAdminEmail("merchant@example.test")).toBe(false);
+    expect(isSaasAdminEmail(null)).toBe(false);
   });
 
   test("un visiteur non authentifié ne peut pas appeler la création dédiée", async ({ page }) => {
@@ -42,9 +34,21 @@ test.describe("Création d’un jeu par l’administration plateforme", () => {
     expect(status).toBe(401);
   });
 
-  test("un visiteur non authentifié ne peut pas ouvrir la liste admin des jeux créés", async ({ page }) => {
+  test("un visiteur non authentifié ne peut pas ouvrir la liste admin des jeux", async ({ page }) => {
     await page.goto("/admin/campaigns");
     await expect(page).toHaveURL(/\/connexion/);
+  });
+
+  test("un visiteur non authentifié ne peut pas générer de prévisualisation admin ni de QR", async ({ page }) => {
+    await page.goto("/connexion");
+    const statuses = await page.evaluate(async () => {
+      const responses = await Promise.all([
+        fetch("/api/admin/campaigns/campaign-test/preview"),
+        fetch("/api/admin/campaigns/campaign-test/preview?format=qr"),
+      ]);
+      return responses.map(({ status }) => status);
+    });
+    expect(statuses).toEqual([401, 401]);
   });
 
   test("un visiteur non authentifié ne peut pas enregistrer une affiche via la route admin", async ({ page }) => {
@@ -75,7 +79,14 @@ test.describe("Création d’un jeu par l’administration plateforme", () => {
       return;
     }
 
-    await signIn(page);
+    // Test the server permission boundary without depending on dashboard loading
+    // or the post-login client navigation of an unrelated page.
+    await page.goto("/connexion");
+    const login = await page.request.post("/api/auth/signin", {
+      headers: { Origin: new URL(page.url()).origin },
+      data: { email: process.env.OKADO_E2E_EMAIL, password: process.env.OKADO_E2E_PASSWORD },
+    });
+    expect(login.ok()).toBe(true);
     const statuses = await page.evaluate(async () => {
       const requests = await Promise.all([
         fetch(
@@ -91,9 +102,13 @@ test.describe("Création d’un jeu par l’administration plateforme", () => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ poster: {} }),
         }),
+        fetch("/api/admin/campaigns/campaign-test/assets"),
+        fetch("/api/admin/campaigns/campaign-test/preview"),
+        fetch("/api/admin/campaigns/campaign-test/preview?format=qr"),
+        fetch("/api/admin/campaigns/campaign-test/poster-logo?url=image"),
       ]);
       return requests.map(({ status }) => status);
     });
-    expect(statuses).toEqual([403, 403]);
+    expect(statuses).toEqual([403, 403, 403, 403, 403, 403]);
   });
 });

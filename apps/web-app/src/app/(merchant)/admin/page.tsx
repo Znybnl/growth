@@ -31,7 +31,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
         actions={
           <>
           <Link href="/admin/campaigns" className="okado-secondary-action okado-compact-action px-4 text-sm">
-            Jeux créés
+            Jeux des marchands
           </Link>
           <Link href="/admin/prize-suggestions" className="okado-secondary-action okado-compact-action px-4 text-sm">
             Gérer les suggestions de lots
@@ -142,12 +142,20 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                     ) : <span className="text-xs text-ash">Aucune</span>}
                   </td>
                   <td className="px-3 py-4">
-                    <Link
-                      href={`/admin/campaigns/new?merchantId=${encodeURIComponent(user.merchantId)}`}
-                      className="okado-secondary-action okado-compact-action whitespace-nowrap px-3 text-xs"
-                    >
-                      Créer un jeu
-                    </Link>
+                    <div className="flex flex-wrap gap-2">
+                      <Link
+                        href={`/admin/campaigns?merchantId=${encodeURIComponent(user.merchantId)}`}
+                        className="okado-primary-action okado-compact-action whitespace-nowrap px-3 text-xs"
+                      >
+                        Voir les jeux
+                      </Link>
+                      <Link
+                        href={`/admin/campaigns/new?merchantId=${encodeURIComponent(user.merchantId)}`}
+                        className="okado-secondary-action okado-compact-action whitespace-nowrap px-3 text-xs"
+                      >
+                        Créer un jeu
+                      </Link>
+                    </div>
                   </td>
                 </tr>
               })}

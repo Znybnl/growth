@@ -10,6 +10,7 @@ Ce document regroupe les invariants fonctionnels approuvés d'Okado. Il ne rempl
 - Un marchand ne consulte et ne pilote que ses établissements, ses jeux, ses résultats et ses paramètres autorisés.
 - Le personnel du commerce ne possède pas de compte Okado dédié. Il peut ouvrir la page de retrait avec le QR code présenté par le joueur et confirme la remise avec le PIN marchand.
 - Un joueur ne peut pas accéder à l'espace marchand depuis les parcours publics de jeu ou de retrait.
+- Depuis Pilotage, l’administrateur plateforme peut consulter et modifier les jeux existants des marchands et leur affiche, indépendamment de leur créateur (issue #467). Chaque accès est vérifié côté serveur ; une sauvegarde vérifie également le rattachement jeu/établissement/compte. Cette assistance ne change ni la session, ni le propriétaire du jeu, ni la fiche établissement. La publication reste explicite et suit les validations habituelles. Les sauvegardes administratives sont journalisées ; l’audit de création existant est préservé.
 
 ## Cycle de vie d'un jeu
 
