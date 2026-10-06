@@ -73,6 +73,7 @@ Les durées de la deuxième ligne constituent une recommandation opérationnelle
 
 ## Notifications de gains aux utilisateurs d’établissement (Issue #473)
 
+- Les notifications destinées aux utilisateurs d’établissement gardent un ton professionnel : aucun émoticône cadeau ajouté par le modèle dans l’objet, le titre, le contenu HTML ou la version texte (retour propriétaire sur la PR #474). Les libellés dynamiques et l’e-mail de gain du participant ne sont pas modifiés par cette décision.
 - Préférence personnelle par utilisateur et établissement autorisé, désactivée par défaut. L’adresse destinataire vient du compte ; les droits actifs et l’adresse courante sont revérifiés avant chaque envoi.
 - Seuls les gains réels persistés après activation sont notifiés (roue ou ticket, collecte avant ou après jeu). Ni perte, ni participation simulée, ni ancien gain rejoué.
 - Synthèses quotidienne, hebdomadaire et mensuelle sur périodes locales closes, à partir de 9 h selon le fuseau du site ; aucun e-mail vide. Listing détaillé complet par date/heure, prénom et nom, jeu et lot, fractionné en parties numérotées si nécessaire.

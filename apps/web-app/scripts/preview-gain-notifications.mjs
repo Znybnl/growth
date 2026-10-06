@@ -25,6 +25,7 @@ const browser=await chromium.launch();
 try{
   for(const example of examples){
     const email=renderMerchantGainNotification({...base,...example});
+    for(const content of [email.subject,email.html,email.text]) assert.doesNotMatch(content,/🎁/);
     assert.doesNotMatch(email.html,/✦ Okado|<img|Vos gains/);
     assert.match(email.html,/Camille Martin/);
     assert.match(email.text,/Camille Martin/);

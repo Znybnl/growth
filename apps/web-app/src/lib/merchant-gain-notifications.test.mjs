@@ -237,7 +237,7 @@ test("anciens snapshots et noms manquants ou partiels, sans identité inventée"
 });
 
 test("objets datés : journée réelle, semaine, changement de mois/année et parties",()=>{
-  assert.equal(renderMerchantGainNotification({...input,frequency:"instant"}).subject,"Nouveau gain — Institut Démo 🎁");
+  assert.equal(renderMerchantGainNotification({...input,frequency:"instant"}).subject,"Nouveau gain — Institut Démo");
   assert.equal(renderMerchantGainNotification(input).subject,"Les gains du 6 octobre 2026 — Institut Démo");
   for(const [periodStart,periodEnd,expected] of [
     ["2026-10-04T22:00Z","2026-10-11T22:00Z","Les gains du 5 au 11 octobre 2026 — Institut Démo"],
@@ -245,4 +245,17 @@ test("objets datés : journée réelle, semaine, changement de mois/année et pa
     ["2026-12-27T23:00Z","2027-01-03T23:00Z","Les gains du 28 décembre 2026 au 3 janvier 2027 — Institut Démo"],
   ])assert.equal(renderMerchantGainNotification({...input,frequency:"weekly",periodStart,periodEnd}).subject,expected);
   assert.equal(renderMerchantGainNotification({...input,frequency:"monthly",periodStart:"2026-09-30T22:00Z",periodEnd:"2026-10-31T23:00Z",part:2,parts:3}).subject,"Les gains d’octobre 2026 — Institut Démo — partie 2/3");
+});
+
+test("notifications professionnelles : aucun pictogramme cadeau dans l’objet, le titre ou le texte",()=>{
+  for(const frequency of ["instant","daily","weekly","monthly"]){
+    const email=renderMerchantGainNotification({...input,frequency});
+    for(const content of [email.subject,email.html,email.text]){
+      assert.doesNotMatch(content,/🎁/);
+    }
+    if(frequency==="instant"){
+      assert.match(email.html,/<h1[^>]*>Un nouveau gain<\/h1>/);
+      assert.match(email.text,/\n\nUn nouveau gain\n\n/);
+    }
+  }
 });

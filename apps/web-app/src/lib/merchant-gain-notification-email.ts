@@ -47,9 +47,9 @@ export function renderMerchantGainNotification(input: GainNotificationEmail) {
   const subjectPeriod = input.frequency === "daily" ? `du ${date(input.periodStart)}`
     : input.frequency === "weekly" ? `du ${rangeStart} au ${date(inclusiveEnd)}`
     : `${/^[aeiouéèê]/i.test(month) ? "d’" : "de "}${month}`;
-  const subject = instant ? `Nouveau gain — ${input.merchantName} 🎁`
+  const subject = instant ? `Nouveau gain — ${input.merchantName}`
     : `Les gains ${subjectPeriod} — ${input.merchantName}${pagination}`;
-  const heading = { instant: "Un nouveau gain 🎁", daily: "Les gains de la journée",
+  const heading = { instant: "Un nouveau gain", daily: "Les gains de la journée",
     weekly: "Les gains de la semaine", monthly: "Les gains du mois" }[input.frequency];
   const period = instant ? `Le ${date(input.gains[0].wonAt)} à ${format(input.gains[0].wonAt, { hour: "2-digit", minute: "2-digit" })}`
     : input.frequency === "daily" ? `Le ${date(input.periodStart)}` : `Du ${date(input.periodStart)} au ${date(inclusiveEnd)}`;

@@ -10,6 +10,7 @@ Les quatre messages n’affichent aucun logo Okado. En-tête avec le nom du site
 
 ## Impacts et non-régressions
 
+- Retour propriétaire PR #474 : supprimer l’émoticône cadeau de l’objet et du titre de l’alerte immédiate, en HTML et texte. L’objet devient « Nouveau gain — [établissement] » ; le titre « Un nouveau gain ». Les synthèses, données dynamiques, préférences et e-mails des participants ne sont pas modifiés. Le contrôle dédié et les rendus des quatre modèles vérifient cette absence.
 - Ajout de trois tables privées et de fonctions service role ; aucune réécriture de campagne, lot, contact, consentement ou stock. Le trigger ne concerne que les gains réels persistés. Les previews restent dans leur table séparée.
 - Enregistrement durable dans la transaction de gain ; un échec SQL ne doit jamais être ignoré au prix d’une notification perdue. La migration doit donc être vérifiée avant livraison, y compris un gain réel avec notifications désactivées. Le traitement réseau est exclusivement après réponse ou au cron.
 - Droits et adresse revérifiés à chaque envoi. Seuls le prénom et le nom sont copiés dans le job/payload privé, pas l’e-mail du participant, QR ou code de retrait ; aucun nom dans les événements/logs. Le snapshot du job est effacé après acceptation, annulation ou effacement du lead concerné ; les événements suivent le lead par cascade.
@@ -47,6 +48,8 @@ Worker protégé, dix jobs maximum par appel (jusqu’à 20 si explicitement dem
 Surveiller les retours `failed` du cron, ses 401/503, l’ancienneté des événements non préparés et les jobs `needs_review`. Les périodes manquées sont rattrapées dans l’ordre ; au-delà de dix jobs par exécution, le reste attend l’appel suivant. Un retrait d’accès, changement d’adresse ou reset de gain arrête un job préparé plutôt que rejouer un payload potentiellement déjà accepté. Si une participation est effacée, la partie préparée qui la contient est annulée et expurgée : les autres gains de cette partie restent consultables dans Résultats, sans renvoi risquant un doublon.
 
 ## Preuves et limites
+
+Révision professionnelle PR #474 : tests notifications **25/25** (dont absence de l’émoticône dans l’objet/HTML/texte des quatre modèles), non-régression e-mail joueur **16/16**, source et build réussis ; lint **0 erreur / 4 avertissements préexistants**. Douze rendus 680/390/320 px régénérés sans débordement, composite desktop et synthèse à 320 px inspectés ; scénario de 40 lignes longues à 320 px réussi. Aucun envoi réel, changement SQL ou activation. Les améliorations éditoriales supplémentaires proposées au propriétaire restent des recommandations, pas des changements de périmètre implémentés.
 
 Révision après retour propriétaire du 6 octobre : tests notifications **24/24**, E2E **5/5**, e-mail joueur **16/16**, source/lint/build OK (quatre avertissements ESLint préexistants). Rendus des quatre modèles avec noms fictifs à 680/390/320 px, inspectés visuellement ; cas de 40 lignes longues à 320 px sans débordement. La migration encore non livrée contient maintenant la lecture des noms : utiliser sa dernière version candidate, sans régénérer les anciens payloads figés. Aucun envoi réel, migration de cible ou activation de production dans cette révision.
 
