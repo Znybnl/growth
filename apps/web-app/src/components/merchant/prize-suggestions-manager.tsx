@@ -8,7 +8,7 @@ import { ConfirmDialog } from "@/components/ui/validation-dialog";
 import { PageHeader, SectionCard } from "@/components/ui/workspace";
 import { StatusBadge } from "@/components/ui/status-badge";
 import {
-  BEAUTY_SUBSECTOR_OPTIONS,
+  beautySubsectorOptions,
   INDUSTRY_OPTIONS,
   isBeautyIndustry,
 } from "@/lib/merchant-options";
@@ -191,7 +191,7 @@ export function PrizeSuggestionsManager({ initialSuggestions }: { initialSuggest
                   >
                     <option value="all">Tous les sous-secteurs</option>
                     <option value="">Beauté générale</option>
-                    {BEAUTY_SUBSECTOR_OPTIONS.map((subsector) => (
+                    {beautySubsectorOptions(...suggestions.map((item) => item.industrySubsector)).map((subsector) => (
                       <option key={subsector} value={subsector}>{subsector}</option>
                     ))}
                   </select>
@@ -236,14 +236,14 @@ export function PrizeSuggestionsManager({ initialSuggestions }: { initialSuggest
                   className="mt-2 w-full"
                 >
                   <option value="">Bibliothèque Beauté générale</option>
-                  {BEAUTY_SUBSECTOR_OPTIONS.map((subsector) => (
+                  {beautySubsectorOptions(form.industrySubsector).map((subsector) => (
                     <option key={subsector} value={subsector}>{subsector}</option>
                   ))}
                 </select>
               </label>
             ) : null}
             <label className="block text-sm font-medium text-[#44516a]">Nom du lot<input value={form.label} onChange={(event) => updateForm("label", event.target.value)} className="mt-2 w-full" placeholder="Ex. Un dessert offert" /></label>
-            <label className="block text-sm font-medium text-[#44516a]">Description<textarea value={form.description} onChange={(event) => updateForm("description", event.target.value)} className="mt-2 min-h-24 w-full" placeholder="Décrivez l'intérêt du lot." /></label>
+            <label className="block text-sm font-medium text-[#44516a]">{isBeautyIndustry(form.industry) ? "Condition suggérée" : "Description"}<textarea value={form.description} onChange={(event) => updateForm("description", event.target.value)} className="mt-2 min-h-24 w-full" placeholder={isBeautyIndustry(form.industry) ? "Précisez les conditions d’utilisation proposées." : "Décrivez l'intérêt du lot."} /></label>
             <div className="grid grid-cols-2 gap-3"><label className="text-sm font-medium text-[#44516a]">Probabilité (%)<input type="number" min="0" max="100" value={form.probability} onChange={(event) => updateForm("probability", Number(event.target.value))} className="mt-2 w-full" /></label><label className="text-sm font-medium text-[#44516a]">Coût estimé (€)<input type="number" min="0" step="0.01" value={form.estimatedUnitCost} onChange={(event) => updateForm("estimatedUnitCost", Number(event.target.value))} className="mt-2 w-full" /></label></div>
             <div className="grid grid-cols-2 gap-3"><label className="text-sm font-medium text-[#44516a]">Icône<select value={form.icon} onChange={(event) => updateForm("icon", event.target.value)} className="mt-2 w-full">{ICON_OPTIONS.map((icon) => <option key={icon.value} value={icon.value}>{icon.label}</option>)}</select></label><label className="text-sm font-medium text-[#44516a]">Ordre<input type="number" value={form.sortOrder} onChange={(event) => updateForm("sortOrder", Number(event.target.value))} className="mt-2 w-full" /></label></div>
             <label className="flex items-center gap-3 rounded-[12px] border border-[#e3eaf3] bg-purple-haze px-3 py-3 text-sm font-medium text-charcoal"><input type="checkbox" checked={form.isActive} onChange={(event) => updateForm("isActive", event.target.checked)} className="accent-aubergine" /> Afficher aux commerçants</label>

@@ -12,7 +12,8 @@ import { Button } from "@/components/ui/button";
 import { ValidationDialog } from "@/components/ui/validation-dialog";
 import { captureClientProductEvent } from "@/lib/client-product-analytics";
 import {
-  BEAUTY_SUBSECTOR_OPTIONS,
+  beautySubsectorOptions,
+  isLegacyBeautySubsector,
   INDUSTRY_OPTIONS,
   isBeautyIndustry,
   isRestaurantIndustry,
@@ -438,10 +439,13 @@ export function AccountSettingsForm({
                 className={inputClass}
               >
                 <option value="">Choisir un sous-secteur</option>
-                {BEAUTY_SUBSECTOR_OPTIONS.map((option) => (
+                {beautySubsectorOptions(form.industrySubsector).map((option) => (
                   <option key={option} value={option}>{option}</option>
                 ))}
               </select>
+              {isLegacyBeautySubsector(form.industrySubsector) ? (
+                <p className="mt-2 text-xs text-ash">Ancienne catégorie conservée. Choisissez une spécialité pour adapter vos suggestions de lots.</p>
+              ) : null}
             </label>
           ) : null}
           <label className="text-sm">

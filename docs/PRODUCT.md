@@ -83,7 +83,7 @@
 - Le personnel du commerce n'a pas de compte dédié à la plateforme : il valide un retrait depuis le QR code du client avec le PIN marchand.
 - Le formulaire classique ne peut être supprimé qu'après reprise fonctionnelle suffisante dans le wizard et validation des parcours de bout en bout, à la fois par le propriétaire et par les tests automatisés.
 - Le secteur d'activité d'un établissement n'est pas prérempli pour un nouveau profil et peut rester vide ; les choix déjà enregistrés pour les établissements existants sont préservés.
-- Le secteur Beauté propose les sous-secteurs Coiffure, Institut & soins, Ongles & cils, et Massage & spa. Les suggestions de lots peuvent être ciblées par sous-secteur ; tant qu'un catalogue dédié n'est pas configuré, le catalogue Beauté général reste disponible en repli.
+- Le secteur Beauté propose six sous-secteurs : Beauté généraliste / multi-activité, Coiffure, Ongles, Regard — cils & sourcils, Massage & Spa et Soins visage & corps. Les anciennes valeurs ne sont conservées que si référencées. Les suggestions sont ciblées par sous-secteur ; sans bibliothèque dédiée, la bibliothèque généraliste reste disponible en repli.
 - Les établissements du secteur Beauté disposent de six styles de roue supplémentaires, quel que soit leur sous-secteur. Cette collection apparaît avant les modèles génériques dans les éditeurs ; les joueurs voient le modèle enregistré sans restriction de secteur. Le logo, le titre, le sous-titre, les couleurs et la police restent personnalisables. Les centres JOUER des six thèmes `beauty-*` sont sans icône, avec une police agrandie et un reflet discret en haut à gauche (issue #460). Éclat conserve son bouton, son pointeur et son anneau blanc antérieurs à la PR #461. L'interaction du bouton reste identique.
 
 ## Fonds Rose poudré et remplacement Noir & Or — issues #462 / #463
@@ -112,6 +112,14 @@ Les roues **Nude & Or** et **Botanical** utilisent par défaut les images raster
 - Le sous-titre Halloween utilise la teinte dorée fixe `#efb866`, indépendamment de la couleur du logo, et une largeur centrée de 60 %. Le décor de l’aperçu compact remplit toute la hauteur de l’écran interne du téléphone ; le diamètre et les proportions de roue ne sont pas étirés pour remplir cette hauteur.
 - Le logo texte Halloween est blanc fixe (`#ffffff`), même avec une ancienne couleur sauvegardée. Le sélecteur « Couleur du logo et sous-titre » est blanc, désactivé et accompagné du badge « Palette fixe » ; une aide précise que le sous-titre reste doré. Les images de logo ne sont pas recolorées et les réglages enregistrés des autres modèles restent personnalisables.
 - Preuves visuelles, provenance des images et grille de correspondance : [dossier de validation](design/halloween-wheel-456.md). Validation du propriétaire requise avant merge/déploiement.
+
+## Suggestions de lots Beauté — issue #466
+
+Les établissements disposent de six bibliothèques adaptées : généraliste (7 suggestions), Coiffure (10), Ongles (12), Regard — cils & sourcils (11), Massage & Spa (10), Soins visage & corps (11). Les 61 valeurs de référence sont celles des tableaux de l'issue #466. Le wizard et l'éditeur classique copient libellé, probabilité, coût et condition uniquement lorsque le marchand ajoute une suggestion ; l'achat requis est précoché si la condition le prévoit. Tout reste ajustable.
+
+Les choix sont disponibles dans le profil, l'onboarding et la gestion administrative du catalogue. Un établissement sans spécialité ou conservant une ancienne catégorie ambiguë reçoit le catalogue généraliste, avec ses éventuelles suggestions personnalisées générales/historiques. Une bibliothèque spécialisée vide conserve le repli général existant. Le changement de contexte annule les chargements périmés.
+
+Les anciennes catégories ambiguës ne sont pas proposées à un nouveau profil ; une valeur déjà enregistrée reste sélectionnable pour ce profil. La migration ne remplace que les sept suggestions du catalogue standard restées strictement identiques à leur référence. Les personnalisations, les autres secteurs et les lots des jeux ne sont pas modifiés. [Migration, retour arrière et recette](releases/beauty-catalog-466.md).
 
 ## Questions ouvertes
 

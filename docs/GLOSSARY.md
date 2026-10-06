@@ -10,7 +10,7 @@ Utiliser ces termes dans l'interface, les Issues, les critères d'acceptation, l
 | Marchand | Compte professionnel qui possède et pilote un ou plusieurs établissements. | Client/joueur. | « Le marchand crée un jeu ». |
 | Établissement | Site physique d'un marchand, avec ses informations et ses jeux propres. | Workspace. | « Le Comptoir des Îles · Nanterre ». |
 | Secteur d’activité | Catégorie générale de l’activité d’un établissement, utilisée pour contextualiser les réglages et les suggestions de lots. Elle peut rester non renseignée. | Sous-secteur. | Beauté, Restauration, Services. |
-| Sous-secteur | Précision facultative du secteur Beauté : Coiffure, Institut & soins, Ongles & cils ou Massage & spa. | Secteur d’activité. | Institut & soins. |
+| Sous-secteur | Spécialité facultative du secteur Beauté : Beauté généraliste / multi-activité, Coiffure, Ongles, Regard — cils & sourcils, Massage & Spa ou Soins visage & corps. Une ancienne valeur n'est conservée que si référencée. | Secteur d’activité. | Regard — cils & sourcils. |
 | Multi-sites | Fonction qui permet à un marchand de gérer plusieurs établissements. | Workspace. | « Déployer ce jeu sur plusieurs sites ». |
 | Workspace | Conteneur technique d'organisation auquel sont rattachés les marchands, utilisateurs et établissements autorisés. | Établissement. | Un workspace peut contenir plusieurs établissements. |
 | Joueur | Client final qui accède au jeu et y participe. | Marchand ou personnel du commerce. | « Le joueur scanne le QR code ». |
@@ -38,6 +38,13 @@ Utiliser ces termes dans l'interface, les Issues, les critères d'acceptation, l
 | Jeu actif | Jeu publié et accessible au public par son QR code de diffusion. | Brouillon. | Le jeu peut recevoir des participations de production. |
 | E-mail de gain | E-mail transactionnel envoyé au joueur après un gain avec les informations de retrait. | Collecte d'e-mail. | Objet contenant le nom du lot remporté. |
 | Lead | Enregistrement d'un joueur/participant utilisable par le marchand dans les résultats. | Simple scan. | Contact ayant laissé son e-mail. |
+
+## Catalogue de suggestions — issue #466
+
+- **Suggestion de lot** : proposition réutilisable avec libellé, probabilité, coût estimé et description ; ce n'est pas un lot enregistré dans un jeu.
+- **Condition suggérée** : pour le catalogue Beauté, texte de la suggestion qui préremplit les conditions d'utilisation du nouveau lot, modifiable par le marchand.
+- **Sous-secteur Beauté** : spécialité déclarée par l'établissement, utilisée pour choisir la bibliothèque ; sans spécialité, repli vers Beauté généraliste / multi-activité sans modifier son profil.
+- **Catégorie historique ambiguë** : « Institut & soins » ou « Ongles & cils », conservée uniquement si utilisée, sans attribution automatique à une nouvelle spécialité.
 
 ## Règles de rédaction
 
