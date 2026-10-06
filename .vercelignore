@@ -10,6 +10,8 @@ node_modules
 *.jpg
 *.jpeg
 *.webp
+# Keep the non-redeemable QR used by the merchant reward-email previews.
+!apps/web-app/public/email-demo-qr.png
 # Keep every raster asset used by the Halloween wheel, including SVG image references.
 !apps/web-app/public/images/templates/halloween-gold/*.webp
 # Keep the production backgrounds and scratch textures used by the beauty scratch templates.

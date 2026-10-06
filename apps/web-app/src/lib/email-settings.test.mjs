@@ -16,6 +16,16 @@ import {
 } from "./email-settings.ts";
 
 const defaults = createCampaignEmailDefaults({ industry: "Beauté", restaurantEmail: "contact@example.test" });
+
+test("merchant preview QR is a real PNG explicitly included in Vercel packaging", async () => {
+  const ignore = await readFile(new URL("../../../../.vercelignore", import.meta.url), "utf8");
+  const rules = ignore.split(/\r?\n/).map((line) => line.trim());
+  const include = rules.lastIndexOf("!apps/web-app/public/email-demo-qr.png");
+  assert.ok(include >= 0 && include > rules.lastIndexOf("*.png"));
+  const png = await readFile(new URL("../../public/email-demo-qr.png", import.meta.url));
+  assert.deepEqual([...png.subarray(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10]);
+});
+
 const variables = {
   firstName: "Pierre-Henri", merchantName: "AZURA", campaignTitle: "Jeu de test",
   prizeLabel: "ÉPILATION OFFERTE", redemptionCode: "3042EF1A-1",
