@@ -5,6 +5,7 @@ import { PGlite } from "@electric-sql/pglite";
 import { renderMerchantGainNotification } from "./merchant-gain-notification-email.ts";
 
 const migration = readFileSync(new URL("../../../../supabase/migrations/20261006_merchant_gain_notifications_473.sql",import.meta.url),"utf8");
+const schemaCompatibilityMigration = readFileSync(new URL("../../../../supabase/migrations/20261007_fix_gain_notification_claim_lead_name_schema.sql",import.meta.url),"utf8");
 const rollback = readFileSync(new URL("../../../../supabase/rollback/20261006_merchant_gain_notifications_473.sql",import.meta.url),"utf8");
 async function database() {
   const db = new PGlite();
@@ -16,7 +17,7 @@ async function database() {
     create table merchant_membership_locations(membership_id text,merchant_id text);
     create table campaigns(id text primary key,merchant_id text,title text,game_type text);
     create table prizes(id text primary key,campaign_id text,label text);
-    create table leads(id text primary key,campaign_id text,prize_id text,status text,created_at timestamptz,first_name text,last_name text);
+    create table leads(id text primary key,campaign_id text,prize_id text,status text,created_at timestamptz,first_name text);
     create table preview_participations(like leads);
     insert into merchants values ('a','Institut Démo','w','active','Europe/Paris'),('b','Autre site','w2','active','Europe/Paris');
     insert into merchant_users values ('u','owner@example.test'),('v','other@example.test');
@@ -26,6 +27,7 @@ async function database() {
     insert into prizes values ('p','c','Soin offert'),('ps','s','-10% PROCHAINE VISITE'),('px','x','Autre lot');
   `);
   await db.exec(migration);
+  await db.exec(schemaCompatibilityMigration);
   return db;
 }
 const pref = (db,f="daily",user="u",site="a") =>
@@ -75,7 +77,9 @@ test("fréquences et fuseaux : 09h locale, lundi et premier du mois, périodes n
 test("immédiat : un e-mail par gain même horodatage ; lease, reprise et déduplication",async()=>{
   const db=await database();
   try {await pref(db,"instant");await gain(db,"a","2026-10-06T09:00Z");await gain(db,"b","2026-10-06T09:00Z");
+    await db.exec("update leads set first_name='Camille' where id='a'");
     const first=await claim(db,"2026-10-06T09:01Z","a");assert.equal(first.gains.length,1);
+    assert.equal(first.gains[0].firstName,"Camille");assert.equal(first.gains[0].lastName,null);
     assert.equal(await claim(db,"2026-10-06T09:02Z","a"),null);
     const retried=await claim(db,"2026-10-06T09:07Z","a");
     assert.equal(retried.id,first.id);assert.notEqual(retried.lease_token,first.lease_token);
@@ -236,15 +240,16 @@ test("noms lus dans la participation, snapshot privé stable et expurgé à l’
     const db=await database();
     try{
       await pref(db,frequency);await gain(db,"named","2026-10-05T12:00Z");
-      await db.exec("update leads set first_name='Camille',last_name='Martin' where id='named'");
+      await db.exec("update leads set first_name='Camille' where id='named'");
       const job=await claim(db,"2026-11-02T08:00Z");
-      assert.equal(job.gains[0].firstName,"Camille");assert.equal(job.gains[0].lastName,"Martin");
+      assert.equal(job.gains[0].firstName,"Camille");assert.equal(job.gains[0].lastName,null);
       assert.deepEqual(Object.keys(job.gains[0]).sort(),["leadId","campaignId","campaignTitle","prizeLabel","wonAt","firstName","lastName"].sort());
-      assert.match(renderMerchantGainNotification({...input,frequency,gains:job.gains}).html,/Camille Martin/);
-      await db.exec("update leads set first_name='Changed',last_name='Changed' where id='named'");
+      assert.match(renderMerchantGainNotification({...input,frequency,gains:job.gains}).html,/Camille/);
+      assert.doesNotMatch(renderMerchantGainNotification({...input,frequency,gains:job.gains}).html,/Martin/);
+      await db.exec("update leads set first_name='Changed' where id='named'");
       const retry=await claim(db,"2026-11-02T08:06Z");
       assert.deepEqual(retry.gains,job.gains);
-      const payload={subject:"Camille",html:"<p>Camille Martin</p>",text:"Camille Martin",from:"Okado <test@example.test>"};
+      const payload={subject:"Camille",html:"<p>Camille</p>",text:"Camille",from:"Okado <test@example.test>"};
       await db.query("select prepare_merchant_gain_notification_payload($1,$2,$3,$4)",[retry.id,retry.lease_token,JSON.stringify(payload),"2026-11-02T08:07Z"]);
       await db.exec("delete from leads where id='named'");
       const redacted=(await db.query("select status,gains,recipient,email_payload from merchant_gain_notification_jobs where id=$1",[job.id])).rows[0];
