@@ -38,8 +38,19 @@ Ne pas supprimer les nouvelles catégories des contraintes après qu'un profil l
 
 Recette propriétaire après migration : choisir une spécialité dans Mon compte, ouvrir Suggestions de lots dans les deux éditeurs, ajouter un supplément conditionné puis une réduction non conditionnée ; vérifier coût/probabilité/condition/case d'achat, les modifier puis enregistrer un brouillon de test. Recharger et vérifier les valeurs. Ouvrir une campagne antérieure et confirmer que ses lots/stocks n'ont pas changé. Vérifier la gestion admin du catalogue et un compte d'un autre secteur. Ne pas utiliser un jeu marchand réel pour ces essais sans autorisation.
 
-À ce stade, aucune migration, sauvegarde de campagne ni publication de production n'a été effectuée. Validation propriétaire requise avant merge et déploiement.
+Au moment de l'ouverture de la PR, aucune migration, sauvegarde de campagne ni publication de production n'avait été effectuée. Le propriétaire a ensuite confirmé avoir exécuté la migration initiale. Le merge et le déploiement du code restent soumis à sa validation.
+
+### Retrait des valeurs historiques inutilisées
+
+Après la requalification explicitement demandée par le propriétaire, l'audit du 6 octobre ne trouve plus aucune référence à « Institut & soins », « Ongles & cils » ni « Massage & spa » dans les établissements et suggestions (y compris inactives). Les nouvelles spécialités sont conservées. Aucune campagne, lot ni suggestion personnalisée n'a été modifié lors de cette requalification.
+
+- Exécuter `supabase/migrations/20261006_beauty_subsector_cleanup_466.sql` **après le déploiement de l'application compatible avec les six catégories**, et après la migration initiale. Ne pas rejouer cette dernière pour nettoyer les contraintes.
+- Ce fichier retire des contraintes les anciennes valeurs non référencées ; il relit les références sous verrou et conserve toute valeur redevenue utilisée. Il ne modifie aucune ligne métier, policy RLS ou permission. Le délai d'attente du verrou est limité à 5 secondes ; en cas de contention, la transaction échoue sans nettoyage partiel.
+- Vérifier les deux contraintes `merchants_beauty_subsector_check` et `prize_suggestions_beauty_subsector_check` dans `pg_constraint`, les six choix dans Mon compte et l'intégrité des profils/catalogues. Sans accès administratif SQL à la production, la préparation et les tests du fichier ne signifient pas qu'il y est appliqué.
+- Retour arrière explicite : `supabase/rollback/20261006_beauty_subsector_cleanup_466.sql` réautorise les trois anciennes valeurs et les six nouvelles, sans rétablir les anciennes affectations de profils ni changer les données. Il élargit temporairement la validation, puis permet de rejouer le nettoyage.
 
 ### Résultats locaux du 6 octobre 2026
 
 15/15 tests catalogue/migration/rollback, 22/22 tests navigateur et 37/37 tests de non-régression administrateur réussis. Build et vérification UTF-8/source réussis. Lint : 0 erreur, 4 avertissements préexistants hors périmètre (`window.location.assign` dans les composants de compte/connexion). Captures 320/390/1280 px inspectées ; aucun débordement horizontal du catalogue ni erreur JavaScript dans ces contrôles. Le build de production confirme la barrière 404 de la fixture.
+
+Après ajout du nettoyage : 22/22 tests catalogue/migration/rollback réussis (7 tests supplémentaires : valeurs inutilisées, références de profil/suggestion inactive pour chacune des trois valeurs, idempotence, RLS et réautorisation contrôlée). Build, vérification de source et diff réussis ; lint toujours sans erreur avec les mêmes 4 avertissements. Le SQL de nettoyage n'a pas été exécuté en production par l'agent.

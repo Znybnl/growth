@@ -27,6 +27,8 @@ const { NextRequest } = await import("next/server.js");
 const migrations = new URL("../../../../supabase/migrations/", import.meta.url);
 const migration = readFileSync(new URL("20261006_beauty_catalog_466.sql", migrations), "utf8");
 const rollback = readFileSync(new URL("../rollback/20261006_beauty_catalog_466.sql", migrations), "utf8");
+const cleanup = readFileSync(new URL("20261006_beauty_subsector_cleanup_466.sql", migrations), "utf8");
+const cleanupRollback = readFileSync(new URL("../rollback/20261006_beauty_subsector_cleanup_466.sql", migrations), "utf8");
 const sql = name => readFileSync(new URL(name, migrations), "utf8");
 const row = item => ({
   id: item.id, industry: item.industry, industry_subsector: item.industrySubsector,
@@ -150,6 +152,71 @@ async function rehearsal() {
   await db.exec(sql("20260715_beauty_prize_suggestions.sql"));
   await db.exec(sql("20260924_beauty_subsectors.sql"));
   return db;
+}
+
+test("nettoyage : retire les trois valeurs inutilisées, sans modification de données/RLS, idempotent et réversible", async () => {
+  const db = await rehearsal();
+  try {
+    await db.exec(migration);
+    await db.exec("insert into public.merchants values ('current','Beauté','Regard — cils & sourcils')");
+    const snapshots = async () => ({
+      merchants: await db.query("select * from public.merchants order by id"),
+      suggestions: await db.query("select * from public.prize_suggestions order by id"),
+      prizes: await db.query("select * from public.prizes order by id"),
+      policies: await db.query("select * from pg_policies order by tablename, policyname"),
+      rls: await db.query("select relname, relrowsecurity from pg_class where relname in ('merchants','prize_suggestions','beauty_catalog_466_backup') order by relname"),
+    });
+    const before = await snapshots();
+    await db.exec(cleanup);
+    await db.exec(cleanup);
+    assert.deepEqual(await snapshots(), before);
+    for (const legacy of ["Institut & soins", "Ongles & cils", "Massage & spa"]) {
+      await assert.rejects(db.query("insert into public.merchants values ('obsolete','Beauté',$1)", [legacy]), /constraint/);
+      await assert.rejects(db.query("update public.prize_suggestions set industry_subsector=$1 where id='ps-beauty-466-general-1'", [legacy]), /constraint/);
+    }
+    for (const current of options.BEAUTY_SUBSECTOR_OPTIONS) {
+      await db.query("update public.merchants set industry_subsector=$1 where id='current'", [current]);
+    }
+    await assert.rejects(db.exec("insert into public.merchants values ('bad','Restauration','Ongles')"), /constraint/);
+    const beforeRollback = await snapshots();
+    await db.exec(cleanupRollback);
+    await db.exec(cleanupRollback);
+    assert.deepEqual(await snapshots(), beforeRollback);
+    for (const legacy of ["Institut & soins", "Ongles & cils", "Massage & spa"]) {
+      await db.query("update public.merchants set industry_subsector=$1 where id='current'", [legacy]);
+    }
+    await db.exec("update public.merchants set industry_subsector='Regard — cils & sourcils' where id='current'");
+    await db.exec(cleanup);
+    await assert.rejects(db.exec("update public.merchants set industry_subsector='Massage & spa' where id='current'"), /constraint/);
+  } finally { await db.close(); }
+});
+
+for (const legacy of ["Institut & soins", "Ongles & cils", "Massage & spa"]) {
+  for (const source of ["merchant", "inactive-custom-suggestion"]) {
+    test(`nettoyage : conserve ${legacy} référencé par ${source}, sans réaffectation`, async () => {
+      const db = await rehearsal();
+      try {
+        if (source === "merchant") {
+          await db.query("insert into public.merchants values ('legacy','Beauté',$1)", [legacy]);
+        } else {
+          await db.query("insert into public.prize_suggestions(id,industry,industry_subsector,label,description,probability,is_active) values ('custom','Beauté',$1,'Personnalisé','Conserver',17,false)", [legacy]);
+        }
+        await db.exec(migration);
+        const before = await db.query("select * from public.prize_suggestions order by id");
+        const merchants = await db.query("select * from public.merchants order by id");
+        await db.exec(cleanup);
+        await db.exec(cleanup);
+        assert.deepEqual(await db.query("select * from public.prize_suggestions order by id"), before);
+        assert.deepEqual(await db.query("select * from public.merchants order by id"), merchants);
+        const constraints = (await db.query("select pg_get_constraintdef(oid) definition from pg_constraint where conname in ('merchants_beauty_subsector_check','prize_suggestions_beauty_subsector_check')")).rows;
+        assert.equal(constraints.length, 2);
+        assert.ok(constraints.every(c => c.definition.includes(legacy)));
+        for (const unused of ["Institut & soins", "Ongles & cils", "Massage & spa"].filter(c => c !== legacy)) {
+          assert.ok(constraints.every(c => !c.definition.includes(unused)));
+        }
+      } finally { await db.close(); }
+    });
+  }
 }
 
 test("retour arrière : restaure le catalogue initial, conserve les personnalisations et les profils", async () => {
