@@ -111,6 +111,14 @@ Les roues **Nude & Or** et **Botanical** utilisent par défaut les images raster
 - Le logo texte Halloween est blanc fixe (`#ffffff`), même avec une ancienne couleur sauvegardée. Le sélecteur « Couleur du logo et sous-titre » est blanc, désactivé et accompagné du badge « Palette fixe » ; une aide précise que le sous-titre reste doré. Les images de logo ne sont pas recolorées et les réglages enregistrés des autres modèles restent personnalisables.
 - Preuves visuelles, provenance des images et grille de correspondance : [dossier de validation](design/halloween-wheel-456.md). Validation du propriétaire requise avant merge/déploiement.
 
+## Suggestions de lots Beauté — issue #466
+
+Les établissements disposent de six bibliothèques adaptées : généraliste (7 suggestions), Coiffure (10), Ongles (12), Regard — cils & sourcils (11), Massage & Spa (10), Soins visage & corps (11). Les 61 valeurs de référence sont celles des tableaux de l'issue #466. Le wizard et l'éditeur classique copient libellé, probabilité, coût et condition uniquement lorsque le marchand ajoute une suggestion ; l'achat requis est précoché si la condition le prévoit. Tout reste ajustable.
+
+Les choix sont disponibles dans le profil, l'onboarding et la gestion administrative du catalogue. Un établissement sans spécialité ou conservant une ancienne catégorie ambiguë reçoit le catalogue généraliste, avec ses éventuelles suggestions personnalisées générales/historiques. Une bibliothèque spécialisée vide conserve le repli général existant. Le changement de contexte annule les chargements périmés.
+
+Les anciennes catégories ambiguës ne sont pas proposées à un nouveau profil ; une valeur déjà enregistrée reste sélectionnable pour ce profil. La migration ne remplace que les sept suggestions du catalogue standard restées strictement identiques à leur référence. Les personnalisations, les autres secteurs et les lots des jeux ne sont pas modifiés. [Migration, retour arrière et recette](releases/beauty-catalog-466.md).
+
 ## Questions ouvertes
 
 - [ ] Définir les critères de retrait forcé à afficher et à journaliser pour le personnel du commerce.

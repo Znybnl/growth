@@ -5,7 +5,7 @@ import { useState } from "react";
 
 import { GoogleReviewPlacePicker } from "@/components/merchant/google-review-place-picker";
 import {
-  BEAUTY_SUBSECTOR_OPTIONS,
+  beautySubsectorOptions,
   INDUSTRY_OPTIONS,
   isBeautyIndustry,
   isRestaurantIndustry,
@@ -141,7 +141,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
                   className={inputClass}
                 >
                   <option value="">Choisir un sous-secteur</option>
-                  {BEAUTY_SUBSECTOR_OPTIONS.map((option) => (
+                  {beautySubsectorOptions(industrySubsector).map((option) => (
                     <option key={option} value={option}>{option}</option>
                   ))}
                 </select>

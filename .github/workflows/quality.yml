@@ -30,6 +30,8 @@ jobs:
         run: npm run lint:web
       - name: Test administrator campaign permissions
         run: npm run test:admin-campaigns -w @okado/web-app
+      - name: Test Beauty suggestion catalog and migration
+        run: npm run test:beauty-catalog -w @okado/web-app
       - name: Build web app
         run: npm run build:web
 

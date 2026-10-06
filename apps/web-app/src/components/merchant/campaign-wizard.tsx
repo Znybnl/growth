@@ -1,5 +1,8 @@
 "use client";
 
+import { prizeFieldsFromSuggestion } from "@/lib/prize-suggestion-fields";
+import { usePrizeSuggestions } from "@/lib/use-prize-suggestions";
+
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -640,7 +643,7 @@ function PrizeSuggestionsPanel({
                       const Icon = iconStyle.Icon;
                       return (
                         <span
-                          className={`flex h-9 w-9 items-center justify-center rounded-[4px] ${iconStyle.className}`}
+                          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-[4px] ${iconStyle.className}`}
                           aria-hidden="true"
                         >
                           <Icon className="h-4 w-4" />
@@ -656,7 +659,7 @@ function PrizeSuggestionsPanel({
                       </p>
                     </div>
                   </div>
-                  <span className="text-xs font-semibold text-aubergine">
+                  <span className="shrink-0 whitespace-nowrap text-xs font-semibold text-aubergine">
                     {suggestion.probability} %
                   </span>
                 </div>
@@ -785,9 +788,7 @@ export function CampaignWizard({
     initialCampaign ? WIZARD_STEPS.length - 1 : 0,
   );
   const actionEnabled = true;
-  const [prizeSuggestions, setPrizeSuggestions] = useState<PrizeSuggestion[]>(
-    [],
-  );
+  const prizeSuggestions = usePrizeSuggestions(merchant);
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -998,25 +999,6 @@ export function CampaignWizard({
     });
   }
 
-  useEffect(() => {
-    let cancelled = false;
-    const query = new URLSearchParams({ industry: merchant.industry ?? "" });
-    if (merchant.industrySubsector) query.set("subsector", merchant.industrySubsector);
-    fetch(`/api/prize-suggestions?${query.toString()}`)
-      .then(async (response) => {
-        if (!response.ok) throw new Error("Suggestions indisponibles");
-        return (await response.json()) as { suggestions?: PrizeSuggestion[] };
-      })
-      .then((payload) => {
-        if (!cancelled) setPrizeSuggestions(payload.suggestions ?? []);
-      })
-      .catch(() => {
-        if (!cancelled) setPrizeSuggestions([]);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [merchant.industry, merchant.industrySubsector]);
 
   useEffect(() => {
     if (!backgroundLibraryOpen || backgroundLibrary.length) return;
@@ -1225,11 +1207,7 @@ export function CampaignWizard({
         ...current.prizes,
         {
           id: `wizard-prize-${Date.now()}-${suggestion.id}`,
-          label: suggestion.label,
-          totalQuantity: null,
-          probability: suggestion.probability,
-          estimatedUnitCost: suggestion.estimatedUnitCost,
-          usageConditions: "",
+          ...prizeFieldsFromSuggestion(suggestion),
         },
       ],
     }));
