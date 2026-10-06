@@ -43,22 +43,29 @@ beforeEach(() => {
     session:{user:{email:adminEmail}},reads:[],logs:[],
     profiles:{root:profile("root"),site:profile("site"),foreign:profile("foreign"),archived:{...profile("archived"),locationStatus:"archived"}},
     memberships:{"root-user":["root","site","site","archived"]},
-    users:[{id:"root-user",merchant_id:"root"},{id:"foreign-user",merchant_id:"foreign"}],
+    users:[{id:"root-user",merchant_id:"root"},{id:"foreign-user",merchant_id:"foreign"}],preferences:[],preferenceReads:[],
   };
   state.db = {from(table) {
-    assert.equal(table,"merchant_users");
+    assert.ok(["merchant_users","merchant_gain_notification_preferences"].includes(table));
     const filters = [];
+    const result = () => {
+      if (table === "merchant_gain_notification_preferences") state.preferenceReads.push(table);
+      return {data:(table === "merchant_users" ? state.users : state.preferences).filter(row=>filters.every(f=>f(row))),
+        error:state.dbError || (table === "merchant_gain_notification_preferences" && state.preferenceError) ? {message:"PRIVATE DATABASE DETAIL"} : null};
+    };
     const q = {
       select() {return q;},eq(key,value) {filters.push(row=>row[key]===value);return q;},
+      in(key,values) {filters.push(row=>values.includes(row[key]));return q;},
       order() {return q;},limit() {return q;},
-      then(resolve,reject) {return Promise.resolve({data:state.users.filter(row=>filters.every(f=>f(row))),error:state.dbError ? {message:"PRIVATE DATABASE DETAIL"} : null}).then(resolve,reject);},
+      maybeSingle() {const r=result();return Promise.resolve({...r,data:r.data[0]??null});},
+      then(resolve,reject) {return Promise.resolve(result()).then(resolve,reject);},
       update() {throw new Error("Read-only route must not write");},
       insert() {throw new Error("Read-only route must not write");},
     };
     return q;
   }};
 });
-const request = () => new Request("https://app.example.test/api/admin/merchants/root/profile?adminEmail=" + adminEmail + "&locationId=foreign");
+const request = (userId="root-user") => new Request("https://app.example.test/api/admin/merchants/root/profile?adminEmail=" + adminEmail + "&locationId=foreign" + (userId === null ? "" : `&userId=${encodeURIComponent(userId)}`));
 const params = (merchantId="root") => ({params:Promise.resolve({merchantId})});
 
 test("401 sans session avant toute lecture", async () => {
@@ -74,7 +81,7 @@ test("403 marchand, même avec un adminEmail usurpé dans la requête", async ()
   assert.deepEqual(state.reads,[]);
 });
 test("la DAL vérifie aussi l'administration avant lecture", async () => {
-  await assert.rejects(getAdminEstablishmentProfiles("root","merchant@example.test"),/réservé/);
+  await assert.rejects(getAdminEstablishmentProfiles("root","merchant@example.test","root-user"),/réservé/);
   assert.deepEqual(state.reads,[]);
 });
 test("multi-sites liés au compte, sans doublon ni établissement archivé/étranger", async () => {
@@ -86,6 +93,53 @@ test("multi-sites liés au compte, sans doublon ni établissement archivé/étra
 test("404 pour un compte absent ou archivé", async () => {
   assert.equal((await GET(request(),params("missing"))).status,404);
   assert.equal((await GET(request(),params("archived"))).status,404);
+});
+test("compte utilisateur requis et association au marchand vérifiée avant les préférences", async () => {
+  assert.equal((await GET(request(null),params())).status,400);
+  assert.equal((await GET(request("foreign-user"),params())).status,404);
+  assert.deepEqual(state.preferenceReads,[]);
+});
+test("absence de préférence : notifications désactivées sans aucune écriture", async () => {
+  const response=await GET(request(),params());
+  assert.equal(response.status,200);
+  for (const p of (await response.json()).locations) {
+    assert.deepEqual(p.gainNotification,{frequency:"disabled",updatedAt:null});
+  }
+  assert.equal(state.preferenceReads.length,1);
+  assert.deepEqual(state.preferences,[]);
+});
+test("fréquences exactes, personnelles et distinctes par site, lecture groupée", async () => {
+  for (const frequency of ["disabled","instant","daily","weekly","monthly"]) {
+    state.preferences=[
+      {user_id:"root-user",merchant_id:"root",frequency,updated_at:"2026-10-06T10:00:00Z"},
+      {user_id:"foreign-user",merchant_id:"root",frequency:"instant",updated_at:"PRIVATE"},
+      {user_id:"root-user",merchant_id:"foreign",frequency:"weekly",updated_at:"PRIVATE"},
+    ];
+    const response=await GET(request(),params());
+    const payload=await response.json();
+    assert.deepEqual(payload.locations[0].gainNotification,{frequency,updatedAt:"2026-10-06T10:00:00Z"});
+    assert.deepEqual(payload.locations[1].gainNotification,{frequency:"disabled",updatedAt:null});
+    assert.ok(!JSON.stringify(payload).includes("PRIVATE"));
+  }
+  assert.equal(state.preferenceReads.length,5);
+});
+test("deux utilisateurs du même compte : aucun mélange de sites et préférences", async () => {
+  state.users.push({id:"other-user",merchant_id:"root"});
+  state.memberships["other-user"]=["root","foreign"];
+  state.preferences=[{user_id:"other-user",merchant_id:"root",frequency:"monthly",updated_at:"2026-10-06T10:00:00Z"}];
+  const own=await (await GET(request(),params())).json();
+  assert.deepEqual(own.locations.map(p=>p.id),["root","site"]);
+  assert.equal(own.locations[0].gainNotification.frequency,"disabled");
+  const other=await (await GET(request("other-user"),params())).json();
+  assert.deepEqual(other.locations.map(p=>p.id),["root","foreign"]);
+  assert.equal(other.locations[0].gainNotification.frequency,"monthly");
+});
+test("erreur de lecture ou fréquence invalide : jamais de faux statut désactivé", async () => {
+  state.preferenceError=true;
+  assert.equal((await GET(request(),params())).status,503);
+  state.preferenceError=false;
+  state.preferences=[{user_id:"root-user",merchant_id:"root",frequency:"INVALID",updated_at:null}];
+  assert.equal((await GET(request(),params())).status,503);
 });
 test("DTO explicite excluant même des secrets ajoutés au profil à l'exécution", async () => {
   Object.assign(state.profiles.root,{phone:"0123456789",restaurantEmail:"contact@example.test",instagramUrl:"https://instagram.com/example",googlePlaceRating:0,googlePlaceReviewCount:0,defaultPrizeCost:0,stripeCustomerId:"SECRET",stripeSubscriptionId:"SECRET",redemptionPin:"SECRET",redemptionPinHash:"SECRET",accessToken:"SECRET",private:{password:"SECRET"}});
@@ -120,7 +174,7 @@ test("aucune URL dangereuse ou contenant des identifiants ne devient un lien", (
   assert.equal(getSafeProfileUrl("http://example.test"),"http://example.test/");
 });
 test("le bouton n'embarque pas de profil ni ne précharge les données", () => {
-  const html = renderToStaticMarkup(createElement(AdminEstablishmentProfileButton,{merchantId:"root"}));
+  const html = renderToStaticMarkup(createElement(AdminEstablishmentProfileButton,{merchantId:"root",userId:"root-user"}));
   assert.ok(html.includes("Voir la fiche"));
   assert.ok(html.includes('aria-haspopup="dialog"'));
   assert.ok(!html.includes('role="dialog"'));
@@ -128,7 +182,7 @@ test("le bouton n'embarque pas de profil ni ne précharge les données", () => {
 });
 test("Pilotage utilise le compte de la ligne sans ajouter un chargement global", () => {
   const source = readFileSync(new URL("../app/(merchant)/admin/page.tsx",import.meta.url),"utf8");
-  assert.ok(source.includes("<AdminEstablishmentProfileButton merchantId={user.merchantId} />"));
+  assert.ok(source.includes("<AdminEstablishmentProfileButton merchantId={user.merchantId} userId={user.id} />"));
   assert.ok(!source.includes("getAdminEstablishmentProfiles("));
 });
 test("la fixture de recette est inaccessible en production", () => {

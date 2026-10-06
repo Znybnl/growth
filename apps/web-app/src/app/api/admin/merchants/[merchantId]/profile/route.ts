@@ -6,7 +6,7 @@ import { logSupportEvent } from "@/lib/support-log";
 
 const headers = { "Cache-Control": "private, no-store", Vary: "Cookie" };
 
-export async function GET(_request: Request, { params }: { params: Promise<{ merchantId: string }> }) {
+export async function GET(request: Request, { params }: { params: Promise<{ merchantId: string }> }) {
   try {
     const session = await getAuthenticatedSession();
     if (!session) return NextResponse.json({ error: "Authentification requise." }, { status: 401, headers });
@@ -14,7 +14,11 @@ export async function GET(_request: Request, { params }: { params: Promise<{ mer
       return NextResponse.json({ error: "Accès réservé à l’administration." }, { status: 403, headers });
     }
     const { merchantId } = await params;
-    const locations = await getAdminEstablishmentProfiles(merchantId, session.user.email);
+    const userId = new URL(request.url).searchParams.get("userId")?.trim();
+    if (!userId || userId.length > 100) {
+      return NextResponse.json({ error: "Compte utilisateur requis." }, { status: 400, headers });
+    }
+    const locations = await getAdminEstablishmentProfiles(merchantId, session.user.email, userId);
     if (!locations.length) {
       return NextResponse.json({ error: "Établissement introuvable ou archivé." }, { status: 404, headers });
     }

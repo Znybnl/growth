@@ -20,6 +20,7 @@ L'objectif est de détecter les régressions importantes sans transformer le pro
 | `npm run smoke:security` | Vérifie les garde-fous de sécurité prévus par le projet. |
 | `npm run test:e2e` | Lance les tests navigateur Playwright du SaaS. Le serveur local démarre automatiquement, sauf si `PLAYWRIGHT_BASE_URL` désigne une URL de test explicite. |
 | `npm run test:reward-email -w @okado/web-app` | Vérifie le modèle recommandé, les anciens standards, les personnalisations, conditions/dates, QR et code de secours, échappement HTML et lien RDV conditionnel. Contrôle le rendu en 680/390/320 px sans envoyer d’e-mail ni écrire en base. |
+| `npm run test:gain-notifications -w @okado/web-app` | Vérifie migration/rollback/RLS dans PostgreSQL isolé PGlite, les vraies routes et le worker avec dépendances simulées, les périodes locales, listings complets et reprises idempotentes. Inclut cron quotidien, reprise indépendante avant 23 h, maintenance désactivée par défaut sans purge, traitement au-delà de 20 parties, budget et limite de volume sans troncature. Aucune écriture de production ni e-mail réel. |
 | `npm run test:landing` | Après `npm run build:landing`, vérifie les logos, CTA, FAQ et liens du site marketing sur desktop, mobile 390 px et mobile 320 px. Lance le site construit sur le port 3200, sauf si `PLAYWRIGHT_BASE_URL` est renseignée. Aucun compte ni écriture métier. |
 
 La CI GitHub exécute la vérification de source, le lint et le build de l'application web, ainsi que le lint et le build du site marketing, pour les PR et `main`.
@@ -27,6 +28,14 @@ La CI GitHub exécute la vérification de source, le lint et le build de l'appli
 La [matrice des parcours critiques](TEST_MATRIX.md) relie chaque parcours bloquant à sa preuve actuelle et indique les tests restant à ajouter.
 
 ## E2E : mise en place progressive
+
+### Notifications de gains — #473
+
+Le retour propriétaire du 6 octobre ajoute les tests SQL de lecture des noms, stabilité et expurgation des snapshots privés ; échappement HTML, noms absents/partiels et compatibilité des anciens jobs ; objets datés aux changements de mois/année et parties numérotées. Le lien de préférences est testé sans session, sans droit sur le site et en multisite : cookie de site autorisé, redirection interne fixe et aucune mutation de préférence. Les rendus doivent montrer les noms et le pied de page, sans logo Okado.
+
+`npm run test:e2e -w @okado/web-app -- gain-notification-settings.spec.ts` teste le composant réel dans une fixture uniquement développement, à 320/390/1280 px : défaut désactivé, cinq fréquences, sauvegarde, rechargement, isolation par établissement et erreurs sans faux succès. Les API de préférences sont interceptées ; la fixture n’accorde aucun accès et renvoie 404 en production. Les droits des vraies routes sont vérifiés séparément par les tests serveur.
+
+`node --experimental-strip-types scripts/preview-gain-notifications.mjs` depuis `apps/web-app` génère le HTML exact des quatre modèles avec données fictives et 12 captures à 680/390/320 px, sans Resend ni Supabase. Inspection visuelle requise après génération ; compatibilité Gmail/Outlook réelle à valider avec un destinataire de test autorisé avant activation générale. Les tests isolés ne prouvent ni la migration de production ni le fonctionnement du cron Vercel.
 
 Le socle Playwright est suivi dans l'Issue [#2](https://github.com/Znybnl/growth/issues/2). Les premiers tests non destructifs couvrent les pages de connexion et d'inscription, l'explication d'un QR de prévisualisation invalide et l'absence de donnée révélée par un code de retrait inconnu. Un test d'accès au Wizard existe aussi, mais ne s'exécute qu'avec un compte de test fourni explicitement par `OKADO_E2E_EMAIL` et `OKADO_E2E_PASSWORD`.
 
@@ -122,6 +131,8 @@ Recette : Pilotage → Voir les jeux → QR de diffusion, puis Modifier le jeu e
 Recette et limites : [livraison #466](releases/beauty-catalog-466.md). Une fixture ne prouve pas l'exécution de la migration en production.
 
 ## Fiche établissement administrative — #475
+
+Complément #473 : les tests du handler/DAL vérifient les cinq fréquences, le défaut désactivé sans écriture, l’association utilisateur/compte avant lecture, deux utilisateurs partageant un compte et leurs sites distincts, une lecture groupée des préférences, et l’erreur sans faux statut désactivé. Les E2E contrôlent le nouveau bloc en lecture seule, le changement de site, le défaut et l’absence de requête supplémentaire à 320/390/1280 px.
 
 `npm run test:admin-profiles -w @okado/web-app` teste le handler, le repository et le DTO réels avec infrastructure simulée uniquement dans le processus de test : 401/403 avant lecture, compte absent/archivé, multi-sites associés sans site étranger ni doublon, exclusion des secrets ajoutés au profil à l’exécution, valeurs absentes et numériques nulles, URL non sûres, erreur sans fuite de données, absence de préchargement dans Pilotage et fixture interdite en production. Aucun accès à une base réelle ni écriture.
 

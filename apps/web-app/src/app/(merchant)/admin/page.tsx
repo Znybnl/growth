@@ -144,7 +144,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                   </td>
                   <td className="px-3 py-4">
                     <div className="flex flex-wrap gap-2">
-                      <AdminEstablishmentProfileButton merchantId={user.merchantId} />
+                      <AdminEstablishmentProfileButton merchantId={user.merchantId} userId={user.id} />
                       <Link
                         href={`/admin/campaigns?merchantId=${encodeURIComponent(user.merchantId)}`}
                         className="okado-primary-action okado-compact-action whitespace-nowrap px-3 text-xs"

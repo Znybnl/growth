@@ -16,8 +16,9 @@ const locations = [
     preferredGoals:["Collecter des contacts","Faire revenir les clients"],
     diffusionSupport:["QR code vitrine et comptoir"],onboardingCompleted:true,
     redemptionPinConfigured:true,createdAt:"2026-10-01T12:00:00Z",
+    gainNotification:{frequency:"weekly",updatedAt:"2026-10-06T10:00:00Z"},
   },
-  {id:"test-second",companyName:"Site secondaire de test",logoText:"Site secondaire",createdAt:"2026-10-01T12:00:00Z",customLinkUrl:"javascript:alert(1)"},
+  {id:"test-second",companyName:"Site secondaire de test",logoText:"Site secondaire",createdAt:"2026-10-01T12:00:00Z",customLinkUrl:"javascript:alert(1)",gainNotification:{frequency:"disabled",updatedAt:null}},
 ];
 
 for (const width of [320,390,1280]) {
@@ -26,7 +27,7 @@ for (const width of [320,390,1280]) {
     const errors:string[] = [];
     page.on("pageerror",error=>errors.push(error.message));
     let requests = 0;
-    await page.route("**/api/admin/merchants/profile-fixture/profile",route=>{
+    await page.route("**/api/admin/merchants/profile-fixture/profile?userId=profile-user",route=>{
       requests++;
       return route.fulfill({json:{locations}});
     });
@@ -57,11 +58,20 @@ for (const width of [320,390,1280]) {
     expect(await dialog.evaluate(el=>el.scrollWidth<=el.clientWidth)).toBe(true);
     await expect(dialog.getByRole("button",{name:"Fermer",exact:true})).toBeInViewport();
     await page.screenshot({path:testInfo.outputPath(`profile-${width}.png`)});
+    const notification=dialog.locator("section").filter({has:page.getByRole("heading",{name:"Notifications de gains"})});
+    await notification.scrollIntoViewIfNeeded();
+    await expect(notification.getByText("Synthèse hebdomadaire",{exact:true})).toBeVisible();
+    await expect(notification.getByText("Réglage personnel du compte consulté pour cet établissement.")).toBeVisible();
+    await expect(notification.locator("button, input, select")).toHaveCount(0);
+    await expect(dialog.getByRole("button",{name:"Fermer",exact:true})).toBeInViewport();
+    await page.screenshot({path:testInfo.outputPath(`profile-notifications-${width}.png`)});
     await dialog.getByLabel("Établissement du compte").selectOption("test-second");
     await expect(dialog.locator("dd").filter({hasText:/^Site secondaire de test$/})).toBeVisible();
     await expect(dialog.getByText("Non renseigné").first()).toBeVisible();
     await expect(dialog.getByRole("link")).toHaveCount(0);
     await expect(dialog.getByText("(lien non ouvrable)",{exact:false})).toBeAttached();
+    await notification.scrollIntoViewIfNeeded();
+    await expect(notification.getByText("Désactivées (par défaut)",{exact:true})).toBeVisible();
     expect(requests).toBe(openedRequests);
     await page.keyboard.press("Escape");
     await expect(dialog).toHaveCount(0);
@@ -79,7 +89,7 @@ test("chargement, erreur, reprise et confinement du focus",async ({page})=>{
   let canSucceed=false;
   let releaseFirst!:()=>void;
   const firstResponse = new Promise<void>(resolve=>{releaseFirst=resolve;});
-  await page.route("**/api/admin/merchants/profile-fixture/profile",async route=>{
+  await page.route("**/api/admin/merchants/profile-fixture/profile?userId=profile-user",async route=>{
     if(!canSucceed) {
       await firstResponse;
       return route.fulfill({status:503,json:{error:"La fiche n’a pas pu être chargée. Réessayez."}});
@@ -119,7 +129,7 @@ test("mono-site : logo visible puis repli propre si l'image est indisponible",as
     ? route.fulfill({status:404})
     : route.fulfill({path:join(process.cwd(),"src/app/icon.svg"),contentType:"image/svg+xml"}));
   await page.route("https://example.test/missing-logo.svg",route=>route.fulfill({status:404}));
-  await page.route("**/api/admin/merchants/profile-fixture/profile",route=>route.fulfill({
+  await page.route("**/api/admin/merchants/profile-fixture/profile?userId=profile-user",route=>route.fulfill({
     json:{locations:[{...locations[0],logoUrl:broken ? "https://example.test/missing-logo.svg" : "https://example.test/logo.svg"}]},
   }));
   await page.goto("/dev/admin-location-profile-proof");

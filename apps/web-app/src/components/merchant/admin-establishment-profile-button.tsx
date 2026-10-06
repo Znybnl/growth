@@ -5,6 +5,7 @@ import { Building2, ExternalLink, LoaderCircle, X } from "lucide-react";
 import { useCallback, useEffect, useId, useState, type ReactNode } from "react";
 import { DialogShell } from "@/components/ui/dialog";
 import { getSafeProfileUrl, type AdminEstablishmentProfile } from "@/lib/admin-establishment-profile";
+import { GAIN_NOTIFICATION_LABELS } from "@/lib/merchant-gain-notification-email";
 
 const marketingLinks = [
   ["googleReviewUrl", "Avis Google"],
@@ -113,11 +114,21 @@ function ProfileDetails({ profile }: { profile: AdminEstablishmentProfile }) {
         <Field label="Parcours de configuration" value={profile.onboardingCompleted ? "Terminé" : "À finaliser"} />
         <Field label="Date de création" value={displayDate(profile.createdAt)} />
       </Section>
+      <Section title="Notifications de gains">
+        <Field label="Fréquence" value={profile.gainNotification
+          ? profile.gainNotification.frequency === "disabled"
+            ? `Désactivées${profile.gainNotification.updatedAt ? "" : " (par défaut)"}`
+            : GAIN_NOTIFICATION_LABELS[profile.gainNotification.frequency]
+          : "Non disponible"} />
+        <Field label="Dernière modification" value={displayDate(profile.gainNotification?.updatedAt ?? undefined)} />
+        <Field label="Portée" value="Réglage personnel du compte consulté pour cet établissement." />
+        <Field label="Modification" value="Mon compte → Utilisateur." />
+      </Section>
     </div>
   );
 }
 
-function ProfileContent({ merchantId, onRetry }: { merchantId: string; onRetry: () => void }) {
+function ProfileContent({ merchantId, userId, onRetry }: { merchantId: string; userId: string; onRetry: () => void }) {
   const [result, setResult] = useState<{ locations?: AdminEstablishmentProfile[]; error?: string }>({});
   const [selectedId, setSelectedId] = useState("");
   const selectId = useId();
@@ -127,7 +138,7 @@ function ProfileContent({ merchantId, onRetry }: { merchantId: string; onRetry: 
     const timeout = setTimeout(() => controller.abort(), 20_000);
     async function load() {
       try {
-        const response = await fetch(`/api/admin/merchants/${encodeURIComponent(merchantId)}/profile`, {
+        const response = await fetch(`/api/admin/merchants/${encodeURIComponent(merchantId)}/profile?userId=${encodeURIComponent(userId)}`, {
           credentials: "same-origin", cache: "no-store", signal: controller.signal,
         });
         const payload = await response.json();
@@ -145,7 +156,7 @@ function ProfileContent({ merchantId, onRetry }: { merchantId: string; onRetry: 
     }
     void load();
     return () => { cancelled = true; clearTimeout(timeout); controller.abort(); };
-  }, [merchantId]);
+  }, [merchantId, userId]);
 
   if (result.error) return (
     <div className="rounded-xl border border-fog p-5">
@@ -174,7 +185,7 @@ function ProfileContent({ merchantId, onRetry }: { merchantId: string; onRetry: 
   );
 }
 
-export function AdminEstablishmentProfileButton({ merchantId }: { merchantId: string }) {
+export function AdminEstablishmentProfileButton({ merchantId, userId }: { merchantId: string; userId: string }) {
   const [open, setOpen] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const id = useId();
@@ -195,7 +206,7 @@ export function AdminEstablishmentProfileButton({ merchantId }: { merchantId: st
             <button type="button" onClick={close} aria-label="Fermer la fiche établissement" className="okado-dialog-dismiss shrink-0"><X size={18} aria-hidden="true" /></button>
           </header>
           <div className="min-h-0 overflow-y-auto py-4 pr-1">
-            <ProfileContent key={`${merchantId}-${attempt}`} merchantId={merchantId} onRetry={() => setAttempt((value) => value + 1)} />
+            <ProfileContent key={`${merchantId}-${userId}-${attempt}`} merchantId={merchantId} userId={userId} onRetry={() => setAttempt((value) => value + 1)} />
           </div>
           <footer className="flex shrink-0 justify-end border-t border-fog pt-4">
             <button type="button" onClick={close} className="okado-secondary-action px-5 text-sm">Fermer</button>

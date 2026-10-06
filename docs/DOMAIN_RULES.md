@@ -80,6 +80,18 @@ La fiche dans Pilotage est réservée à l’administration de la plateforme et 
 
 Les durées de la deuxième ligne constituent une recommandation opérationnelle, non un avis juridique. Toute modification de ces règles exige une décision explicite du propriétaire et, si nécessaire, une validation juridique.
 
+## Notifications de gains aux utilisateurs d’établissement (Issue #473)
+
+- Décision propriétaire : les tâches de notifications et leurs reprises n’exécutent pas de purge. La maintenance historique requiert une activation opérationnelle distincte et explicite ; elle reste désactivée par défaut. Configurer l’authentification du planificateur ne vaut pas autorisation de supprimer des données.
+
+- Les notifications destinées aux utilisateurs d’établissement gardent un ton professionnel : aucun émoticône cadeau ajouté par le modèle dans l’objet, le titre, le contenu HTML ou la version texte (retour propriétaire sur la PR #474). Les libellés dynamiques et l’e-mail de gain du participant ne sont pas modifiés par cette décision.
+- Préférence personnelle par utilisateur et établissement autorisé, désactivée par défaut. L’adresse destinataire vient du compte ; les droits actifs et l’adresse courante sont revérifiés avant chaque envoi.
+- Pilotage → Voir la fiche consulte cette préférence pour l’utilisateur de la ligne et le site autorisé sélectionné, sans la modifier. L’association utilisateur/compte est contrôlée côté serveur avant lecture ; aucun mélange des sites ou préférences des autres membres. Aucune ligne = désactivé ; un échec de base n’est pas une préférence désactivée.
+- Seuls les gains réels persistés après activation sont notifiés (roue ou ticket, collecte avant ou après jeu). Ni perte, ni participation simulée, ni ancien gain rejoué.
+- Synthèses quotidienne, hebdomadaire et mensuelle sur périodes locales closes, lors d'un passage quotidien le matin en heure de France, à horaire indicatif (choix propriétaire, sans garantie de 9 h ni changement de forfait). Le seuil SQL de 9 h locale reste une condition d'éligibilité, pas une promesse de réception ; hors du fuseau français une période peut attendre le passage suivant. Aucun e-mail vide. Listing détaillé complet par date/heure, prénom et nom, jeu et lot, fractionné en parties numérotées si nécessaire.
+- Décision propriétaire du 6 octobre : prénom et nom de la participation autorisés dans l’alerte immédiate et les synthèses. Pas d’e-mail du joueur, QR, code de retrait ni accès public aux résultats. Le lien Mon compte vérifie les droits sur l’établissement et ne modifie pas les préférences. La modification des préférences n’affecte pas la collecte, le résultat, le stock, le consentement, le retrait ou l’e-mail du joueur.
+- Les tentatives ambiguës ne sont pas rejouées automatiquement au-delà de la fenêtre d’idempotence du fournisseur. Une désactivation stoppe les envois non encore acceptés. Les noms sont lus lors de la préparation, uniquement dans le snapshot/payload privé, jamais dans les événements ni les logs. Ces snapshots sont expurgés après acceptation, annulation et effacement d’une participation ; aucun archivage nominatif supplémentaire.
+
 ## Règle de changement
 
 Toute modification de ce document exige une Issue non triviale, une analyse d'impact et les tests adaptés. Les changements de ce document priment sur les comportements implicites du code existant.

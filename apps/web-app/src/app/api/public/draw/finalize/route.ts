@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
+import { dispatchMerchantGainNotifications } from "@/lib/merchant-gain-notifications";
 import { randomUUID } from "crypto";
 
 import {
@@ -179,6 +180,10 @@ export async function POST(request: Request) {
     }
 
     const response = NextResponse.json(toPublicDrawResult(result), { status: 201 });
+    if (result.prize) after(async () => {
+      try { await dispatchMerchantGainNotifications(result.lead.id); }
+      catch { logSupportEvent("error", "merchant_gain_notification_dispatch_failed", { leadId: result.lead.id }); }
+    });
     if (participantToken) {
       response.cookies.set(
         `okado_player_${encodeURIComponent(result.campaign.id).slice(0, 80)}`,

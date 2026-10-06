@@ -10,12 +10,22 @@ import { logSupportEvent } from "@/lib/support-log";
 import { getSupabaseAdmin } from "@/lib/supabase";
 import { purgeUnreferencedMerchantImages } from "@/lib/merchant-image-storage";
 
+export const maxDuration = 300;
+
 export async function GET(request: NextRequest) {
   const secret = process.env.CRON_SECRET;
   const authorization = request.headers.get("authorization");
 
   if (!secret || authorization !== `Bearer ${secret}`) {
     return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+  }
+
+  // Configuring the notification cron secret must never enable data purges.
+  // Maintenance requires a separate, explicit operational decision.
+  if (process.env.MAINTENANCE_ENABLED !== "true") {
+    return NextResponse.json({ ok: true, skipped: true }, {
+      headers: { "Cache-Control": "no-store" },
+    });
   }
 
   const supabase = getSupabaseAdmin();

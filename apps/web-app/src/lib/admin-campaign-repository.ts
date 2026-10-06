@@ -20,7 +20,7 @@ export type AdminCampaignContext = {
   location: Merchant;
 };
 
-export async function getAdminCampaignLocations(accountMerchantId: string): Promise<Merchant[]> {
+export async function getAdminCampaignLocations(accountMerchantId: string, targetUserId?: string): Promise<Merchant[]> {
   if (!isSupabaseConfigured()) {
     throw new Error("La base de données n’est pas configurée.");
   }
@@ -29,10 +29,12 @@ export async function getAdminCampaignLocations(accountMerchantId: string): Prom
   if (!account) return [];
 
   const supabase = getSupabaseAdmin();
-  const usersResult = await supabase
+  let usersQuery = supabase
     .from("merchant_users")
     .select("id")
-    .eq("merchant_id", accountMerchantId)
+    .eq("merchant_id", accountMerchantId);
+  if (targetUserId) usersQuery = usersQuery.eq("id", targetUserId);
+  const usersResult = await usersQuery
     .order("created_at", { ascending: true })
     .limit(50);
 

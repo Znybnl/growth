@@ -1,7 +1,10 @@
 import type { Merchant } from "@/lib/types";
+import type { GainNotificationFrequency } from "@/lib/merchant-gain-notification-email";
 
 /** Explicit public-to-admin DTO. Never serialize/spread the full Merchant. */
-export function toAdminEstablishmentProfile(merchant: Merchant) {
+export function toAdminEstablishmentProfile(merchant: Merchant, gainNotification?: {
+  frequency: GainNotificationFrequency; updatedAt: string | null;
+}) {
   return {
     id: merchant.id,
     companyName: merchant.companyName,
@@ -35,6 +38,10 @@ export function toAdminEstablishmentProfile(merchant: Merchant) {
     onboardingCompleted: merchant.onboardingCompleted,
     redemptionPinConfigured: merchant.redemptionPinConfigured,
     createdAt: merchant.createdAt,
+    gainNotification: gainNotification ? {
+      frequency: gainNotification.frequency,
+      updatedAt: gainNotification.updatedAt,
+    } : undefined,
   };
 }
 

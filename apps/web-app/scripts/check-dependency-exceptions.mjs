@@ -31,7 +31,7 @@ const allowedNames = [];
 const unexpectedNames = names.filter((name) => !allowedNames.includes(name));
 const total = audit.metadata?.vulnerabilities?.total ?? names.length;
 const nextVersion = webPackage.dependencies?.next;
-const nextIsPinnedToPatchedRelease = nextVersion === "16.3.3";
+const nextIsPinnedToPatchedRelease = nextVersion === "16.3.6";
 
 if (
   unexpectedNames.length ||
@@ -47,5 +47,5 @@ if (
 }
 
 console.log(
-  "OK - Aucun avis npm audit de production détecté avec Next.js 16.3.3.",
+  "OK - Aucun avis npm audit de production détecté avec Next.js 16.3.6.",
 );
