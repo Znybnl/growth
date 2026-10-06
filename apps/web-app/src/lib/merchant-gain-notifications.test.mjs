@@ -86,6 +86,23 @@ test("immédiat : un e-mail par gain même horodatage ; lease, reprise et dédup
     assert.equal((await claim(db,"2026-10-06T09:08Z","b")).gains.length,1);
   }finally{await db.close();}
 });
+
+test("passage quotidien : reprise à la maintenance dans les 23h, sans anticiper la synthèse du matin",async()=>{
+  const db=await database();
+  try {
+    await pref(db);await gain(db,"monday","2026-10-05T12:00Z");
+    const original=await claim(db,"2026-10-06T08:00Z");
+    await finish(db,original,false,"2026-10-06T08:00Z");
+    await gain(db,"tuesday","2026-10-06T14:00Z");
+    const recovered=await claim(db,"2026-10-07T03:15Z");
+    assert.equal(recovered.id,original.id);assert.deepEqual(recovered.gains,original.gains);
+    assert.equal(recovered.attempts,2);
+    await finish(db,recovered,true,"2026-10-07T03:15Z");
+    assert.equal(await claim(db,"2026-10-07T03:16Z"),null);
+    const morning=await claim(db,"2026-10-07T08:00Z");
+    assert.deepEqual(morning.gains.map(g=>g.leadId),["tuesday"]);
+  }finally{await db.close();}
+});
 test("listing complet en parties numérotées, sans limite arbitraire de gains",async()=>{
   const db=await database();
   try {await pref(db);

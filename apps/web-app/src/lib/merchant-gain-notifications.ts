@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { setTimeout as delay } from "node:timers/promises";
 import { getSupabaseAdmin } from "@/lib/supabase";
 import {
   renderMerchantGainNotification,
@@ -24,7 +25,10 @@ type NotificationJob = {
   time_zone: string; frequency: Exclude<GainNotificationFrequency, "disabled">;
   period_start: string; period_end: string; part: number; parts: number; gains: NotificationGain[];
 };
-export async function dispatchMerchantGainNotifications(leadId?: string, limit = 10) {
+export async function dispatchMerchantGainNotifications(
+  leadId?: string, limit = 10,
+  options: { budgetMs?: number; minIntervalMs?: number } = {},
+) {
   // Never send from previews/local development. A production cron recovers the
   // durable SQL outbox even if the post-response callback is interrupted.
   if (process.env.VERCEL_ENV !== "production" || process.env.MERCHANT_GAIN_NOTIFICATIONS_ENABLED !== "true") {
@@ -36,11 +40,19 @@ export async function dispatchMerchantGainNotifications(leadId?: string, limit =
   if (!key || !from || !origin) throw new Error("Configuration des notifications incomplète.");
   const resend = new Resend(key);
   const db = getSupabaseAdmin();
-  let sent = 0; let failed = 0;
-  for (let i = 0; i < Math.min(limit, 20); i++) {
+  const maxJobs = Math.min(Math.max(Math.trunc(limit), 0), 200);
+  const deadline = Date.now() + Math.min(Math.max(options.budgetMs ?? 45_000, 0), 240_000);
+  const interval = Math.min(Math.max(options.minIntervalMs ?? 0, 0), 1_000);
+  let sent = 0; let failed = 0; let processed = 0; let limitReached = false;
+  for (let i = 0; i < maxJobs; i++) {
+    if (i > 0 && interval > 0) await delay(interval);
+    // Stop before acquiring another lease. Unattempted parts remain durable
+    // for the next run; never relax the provider's idempotency safety window.
+    if (Date.now() >= deadline) { limitReached = true; break; }
     const { data, error } = await db.rpc("claim_merchant_gain_notification", { p_lead: leadId ?? null });
     if (error) throw new Error("Impossible de préparer les notifications.");
     if (!data) break;
+    processed++;
     const job = data as NotificationJob;
     const email = renderMerchantGainNotification({
       origin, merchantName: job.merchant_name, merchantId: job.merchant_id,
@@ -77,5 +89,5 @@ export async function dispatchMerchantGainNotifications(leadId?: string, limit =
     if (finish.error) throw new Error("Impossible de confirmer l’état de notification.");
     if (providerId) sent++;
   }
-  return { sent, failed, skipped: false };
+  return { sent, failed, skipped: false, limitReached: limitReached || processed === maxJobs };
 }

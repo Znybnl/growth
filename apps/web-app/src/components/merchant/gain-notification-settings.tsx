@@ -57,7 +57,7 @@ export function GainNotificationSettings(props: Props) {
         {busy ? "Enregistrement…" : "Enregistrer la fréquence"}
       </button>
     </div>
-    <p className="mt-3 text-xs leading-5 text-ash">Désactivées par défaut. Synthèse quotidienne conseillée : à 9 h ({props.timeZone}), pour la veille. Hebdomadaire : lundi à 9 h. Mensuelle : premier du mois à 9 h. Aucun e-mail si aucun gain.</p>
+    <p className="mt-3 text-xs leading-5 text-ash">Désactivées par défaut. À chaque gain : envoi après confirmation du gain. Synthèses : un passage quotidien le matin, en heure de France et à horaire indicatif, sans garantie d’envoi à 9 h. Quotidienne conseillée pour la veille ; hebdomadaire pour la semaine précédente ; mensuelle pour le mois précédent. Périodes et dates des gains calculées dans le fuseau de l’établissement ({props.timeZone}). Aucun e-mail si aucun gain.</p>
     <p className="mt-2 text-xs leading-5 text-ash">Activation non rétroactive. La nouvelle fréquence s’applique aux gains non encore regroupés ; les e-mails déjà préparés conservent leur fréquence. Une désactivation annule les envois en attente. Les e-mails déjà transmis ne peuvent pas être rappelés.</p>
     {saved?.updatedAt ? <p className="mt-2 text-xs text-ash">Réglage enregistré le {new Date(saved.updatedAt).toLocaleString("fr-FR", { timeZone: props.timeZone })}.</p> : null}
     {!loaded && !error ? <p role="status" className="mt-3 text-sm text-ash">Chargement des préférences…</p> : null}

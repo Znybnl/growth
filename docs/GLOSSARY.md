@@ -38,7 +38,7 @@ Utiliser ces termes dans l'interface, les Issues, les critères d'acceptation, l
 | Jeu actif | Jeu publié et accessible au public par son QR code de diffusion. | Brouillon. | Le jeu peut recevoir des participations de production. |
 | E-mail de gain | E-mail transactionnel envoyé au joueur après un gain avec les informations de retrait. | Collecte d'e-mail. | Objet contenant le nom du lot remporté. |
 | Notification de gains | Alerte personnelle envoyée à l’utilisateur d’un établissement pour ses gains réels, activable dans Mon compte. | E-mail de gain du joueur. | Synthèse quotidienne des gains de l’établissement. |
-| Synthèse de gains | E-mail récapitulant une période close et contenant une ligne par gain : date/heure, prénom et nom du participant, jeu et lot. | Consommation ou retrait des lots. | Synthèse de la semaine précédente, le lundi à partir de 9 h locale. |
+| Synthèse de gains | E-mail récapitulant une période locale close et contenant une ligne par gain : date/heure, prénom et nom du participant, jeu et lot. | Consommation ou retrait des lots ; garantie de réception exactement à 9 h. | Synthèse de la semaine précédente, au passage quotidien du lundi matin en heure de France (horaire indicatif). |
 | Lead | Enregistrement d'un joueur/participant utilisable par le marchand dans les résultats. | Simple scan. | Contact ayant laissé son e-mail. |
 
 ## Catalogue de suggestions — issue #466

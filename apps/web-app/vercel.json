@@ -6,7 +6,7 @@
     },
     {
       "path": "/api/internal/gain-notifications",
-      "schedule": "*/5 * * * *"
+      "schedule": "0 8 * * *"
     }
   ]
 }

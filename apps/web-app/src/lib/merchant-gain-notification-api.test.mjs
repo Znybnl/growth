@@ -5,9 +5,13 @@ import { readFileSync } from "node:fs";
 const source=new URL("../",import.meta.url);
 registerHooks({
   resolve(name,context,next){
-    if(name==="next/server")return next("next/server.js",context);
+    if(name==="next/server")return {url:`data:text/javascript,export {NextRequest,NextResponse} from ${JSON.stringify(import.meta.resolve("next/server.js"))};export const after=fn=>globalThis.__notifyTest.afters.push(fn);`,shortCircuit:true};
     if(name==="@/lib/auth")return {url:"data:text/javascript,export const getAuthenticatedSession=async()=>globalThis.__notifyTest.session",shortCircuit:true};
     if(name==="@/lib/supabase")return {url:"data:text/javascript,export const getSupabaseAdmin=()=>globalThis.__notifyTest.db",shortCircuit:true};
+    if(name==="@/lib/campaign-repository")return {url:"data:text/javascript,export const getSupabaseRetryableRewardEmailCandidates=async()=>[];export const getSupabaseCampaignPerformance=async()=>null;export const getSupabaseRewardEmailResendPayload=async()=>null",shortCircuit:true};
+    if(name==="@/lib/reward-email")return {url:"data:text/javascript,export const sendRewardEmail=async()=>{throw Error('Unexpected participant email')}",shortCircuit:true};
+    if(name==="@/lib/merchant-image-storage")return {url:"data:text/javascript,export const purgeUnreferencedMerchantImages=async()=>0",shortCircuit:true};
+    if(name==="@/lib/support-log")return {url:"data:text/javascript,export const logSupportEvent=(...args)=>globalThis.__notifyTest.logs.push(args)",shortCircuit:true};
     if(name==="resend")return {url:"data:text/javascript,export class Resend {constructor(){this.emails={send:async (...args)=>{globalThis.__notifyTest.sends.push(args);if(globalThis.__notifyTest.fail)throw Error('secret@example.test');return {data:{id:'sent-demo'}}}}}}",shortCircuit:true};
     if(name.startsWith("@/"))return next(new URL(name.slice(2)+".ts",source).href,context);
     return next(name,context);
@@ -17,10 +21,12 @@ const route=await import("../app/api/merchant/gain-notifications/route.ts");
 const results=await import("../app/api/merchant/gain-notifications/results/route.ts");
 const account=await import("../app/api/merchant/gain-notifications/account/route.ts");
 const cron=await import("../app/api/internal/gain-notifications/route.ts");
+const maintenance=await import("../app/api/internal/maintenance/route.ts");
+const { NextRequest }=await import("next/server");
 const repo=await import("./merchant-gain-notifications.ts");
 let state;
 beforeEach(()=>{
-  state=globalThis.__notifyTest={session:{user:{id:"u"},merchant:{id:"a"},locations:[{merchant:{id:"a"}},{merchant:{id:"b"}}]},calls:[],sends:[],jobs:[]};
+  state=globalThis.__notifyTest={session:{user:{id:"u"},merchant:{id:"a"},locations:[{merchant:{id:"a"}},{merchant:{id:"b"}}]},calls:[],sends:[],jobs:[],afters:[],logs:[]};
   state.db={
     from(table){state.calls.push(table);const q={select(){return q},eq(){return q},async maybeSingle(){return {data:state.preference??null,error:state.dbError}}};return q;},
     async rpc(name,args){state.calls.push([name,args]);
@@ -94,7 +100,7 @@ test("cron protégé y compris lorsque le secret est absent",async()=>{
 const job={id:"job-demo",lease_token:"lease-demo",merchant_id:"a",merchant_name:"Institut Démo",recipient:"owner@example.test",frequency:"instant",time_zone:"Europe/Paris",period_start:"2026-10-06T10:00Z",period_end:"2026-10-06T10:01Z",part:1,parts:1,gains:[{leadId:"g",campaignId:"c",campaignTitle:"Jeu Démo",prizeLabel:"Soin offert",wonAt:"2026-10-06T10:00Z",firstName:"Camille",lastName:"Martin"}]};
 function config(){process.env.VERCEL_ENV="production";process.env.MERCHANT_GAIN_NOTIFICATIONS_ENABLED="true";process.env.RESEND_API_KEY="fake-test";process.env.RESEND_FROM_EMAIL="test@example.test";process.env.MERCHANT_GAIN_NOTIFICATIONS_ORIGIN="https://app.okado.app";}
 test("envoi réel simulé : payload dynamique, clé idempotente et confirmation persistante",async()=>{
-  config();state.jobs=[job];assert.deepEqual(await repo.dispatchMerchantGainNotifications("g"),{sent:1,failed:0,skipped:false});
+  config();state.jobs=[job];assert.deepEqual(await repo.dispatchMerchantGainNotifications("g"),{sent:1,failed:0,skipped:false,limitReached:false});
   assert.equal(state.sends.length,1);assert.deepEqual(state.sends[0][1],{idempotencyKey:"merchant-gain/job-demo"});
   assert.equal(state.sends[0][0].to,"owner@example.test");assert.match(state.sends[0][0].html,/Soin offert/);
   assert.match(state.sends[0][0].html,/Camille Martin/);assert.match(state.sends[0][0].text,/Camille Martin/);
@@ -121,4 +127,62 @@ test("câblage non bloquant uniquement des deux finalisations réelles",()=>{
   }
   const finalize=readFileSync(new URL("../app/api/public/draw/finalize/route.ts",import.meta.url),"utf8");
   assert.doesNotMatch(finalize.split("return NextResponse.json(toPublicDrawResult(result)")[0],/dispatchMerchantGainNotifications\(result.lead/);
+});
+
+test("planification quotidienne sans forfait supérieur, maintenance inchangée",()=>{
+  const config=JSON.parse(readFileSync(new URL("../../vercel.json",import.meta.url),"utf8"));
+  assert.deepEqual(config.crons,[
+    {path:"/api/internal/maintenance",schedule:"15 3 * * *"},
+    {path:"/api/internal/gain-notifications",schedule:"0 8 * * *"},
+  ]);
+  const ui=readFileSync(new URL("../components/merchant/gain-notification-settings.tsx",import.meta.url),"utf8");
+  assert.match(ui,/horaire indicatif/);assert.doesNotMatch(ui,/lundi à 9 h/);
+  const route=readFileSync(new URL("../app/api/internal/gain-notifications/route.ts",import.meta.url),"utf8");
+  assert.match(route,/budgetMs: 240_000, minIntervalMs: 600/);
+});
+
+test("un passage traite plus de vingt destinataires ou parties sans changer leurs clés",async()=>{
+  config();state.jobs=Array.from({length:25},(_,i)=>({...job,id:`job-${i}`}));
+  const result=await repo.dispatchMerchantGainNotifications(undefined,200);
+  assert.deepEqual(result,{sent:25,failed:0,skipped:false,limitReached:false});
+  assert.equal(new Set(state.sends.map(s=>s[1].idempotencyKey)).size,25);
+});
+
+test("budget épuisé : aucune nouvelle lease ni envoi, limite signalée",async()=>{
+  config();state.jobs=[job];
+  assert.deepEqual(await repo.dispatchMerchantGainNotifications(undefined,200,{budgetMs:0}),
+    {sent:0,failed:0,skipped:false,limitReached:true});
+  assert.equal(state.calls.length,0);assert.equal(state.jobs.length,1);
+});
+
+test("volume borné : les parties non tentées restent en attente, sans troncature",async()=>{
+  config();state.jobs=Array.from({length:205},(_,i)=>({...job,id:`job-${i}`}));
+  const result=await repo.dispatchMerchantGainNotifications(undefined,1000);
+  assert.equal(result.sent,200);assert.equal(result.limitReached,true);
+  assert.equal(state.jobs.length,5);
+});
+
+test("maintenance existante : reprise après réponse, seulement après authentification",async()=>{
+  config();process.env.CRON_SECRET="test-only";
+  const url="https://app.okado.app/api/internal/maintenance";
+  assert.equal((await maintenance.GET(new NextRequest(url))).status,401);
+  assert.equal(state.afters.length,0);
+  state.jobs=[job];
+  assert.equal((await maintenance.GET(new NextRequest(url,{headers:{authorization:"Bearer test-only"}}))).status,200);
+  assert.equal(state.sends.length,0);assert.equal(state.afters.length,1);
+  await state.afters[0]();
+  assert.equal(state.sends.length,1);
+  assert.ok(state.logs.some(l=>l[1]==="merchant_gain_notification_recovery"));
+});
+
+test("la reprise reste enregistrée en cas d'échec de purge et ne divulgue pas l'erreur fournisseur",async()=>{
+  config();process.env.CRON_SECRET="test-only";
+  const rpc=state.db.rpc;
+  state.db.rpc=async(name,args)=>name==="purge_operational_data"?{error:{message:"purge failed"}}:rpc(name,args);
+  assert.equal((await maintenance.GET(new NextRequest("https://app.okado.app/api/internal/maintenance",{headers:{authorization:"Bearer test-only"}}))).status,500);
+  assert.equal(state.afters.length,1);
+  state.dbError={message:"secret@example.test"};
+  await state.afters[0]();
+  assert.doesNotMatch(JSON.stringify(state.logs),/secret@example/);
+  assert.ok(state.logs.some(l=>l[1]==="merchant_gain_notification_recovery_failed"));
 });
