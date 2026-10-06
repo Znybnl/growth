@@ -1,4 +1,4 @@
-import { after, NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 import {
   getSupabaseCampaignPerformance,
@@ -9,12 +9,10 @@ import { sendRewardEmail } from "@/lib/reward-email";
 import { logSupportEvent } from "@/lib/support-log";
 import { getSupabaseAdmin } from "@/lib/supabase";
 import { purgeUnreferencedMerchantImages } from "@/lib/merchant-image-storage";
-import { dispatchMerchantGainNotifications } from "@/lib/merchant-gain-notifications";
 
 export const maxDuration = 300;
 
 export async function GET(request: NextRequest) {
-  const startedAt = Date.now();
   const secret = process.env.CRON_SECRET;
   const authorization = request.headers.get("authorization");
 
@@ -22,22 +20,13 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
   }
 
-  // Reuse the existing daily maintenance as a recovery pass within Resend's
-  // idempotency window. SQL's local cutoff excludes the new morning digests.
-  // Register before purges: a maintenance failure must not disable recovery.
-  after(async () => {
-    try {
-      const notifications = await dispatchMerchantGainNotifications(undefined, 200, {
-        budgetMs: Math.max(0, 240_000 - (Date.now() - startedAt)), minIntervalMs: 600,
-      });
-      if (!notifications.skipped) logSupportEvent(
-        notifications.failed || notifications.limitReached ? "error" : "info",
-        "merchant_gain_notification_recovery", notifications,
-      );
-    } catch {
-      logSupportEvent("error", "merchant_gain_notification_recovery_failed", {});
-    }
-  });
+  // Configuring the notification cron secret must never enable data purges.
+  // Maintenance requires a separate, explicit operational decision.
+  if (process.env.MAINTENANCE_ENABLED !== "true") {
+    return NextResponse.json({ ok: true, skipped: true }, {
+      headers: { "Cache-Control": "no-store" },
+    });
+  }
 
   const supabase = getSupabaseAdmin();
   const { data, error } = await supabase.rpc("purge_operational_data");

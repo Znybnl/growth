@@ -5,6 +5,10 @@
       "schedule": "15 3 * * *"
     },
     {
+      "path": "/api/internal/gain-notifications/recovery",
+      "schedule": "15 3 * * *"
+    },
+    {
       "path": "/api/internal/gain-notifications",
       "schedule": "0 8 * * *"
     }

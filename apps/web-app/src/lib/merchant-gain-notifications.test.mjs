@@ -87,7 +87,7 @@ test("immédiat : un e-mail par gain même horodatage ; lease, reprise et dédup
   }finally{await db.close();}
 });
 
-test("passage quotidien : reprise à la maintenance dans les 23h, sans anticiper la synthèse du matin",async()=>{
+test("passage quotidien : reprise indépendante dans les 23h, sans anticiper la synthèse du matin",async()=>{
   const db=await database();
   try {
     await pref(db);await gain(db,"monday","2026-10-05T12:00Z");

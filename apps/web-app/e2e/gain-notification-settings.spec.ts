@@ -6,6 +6,8 @@ test("routes réelles : visiteur refusé et cron protégé, aucun accès aux don
     headers: { Origin: new URL(baseURL!).origin }, data: { location: "site-a", frequency: "daily" },
   })).status()).toBe(401);
   expect((await request.get("/api/internal/gain-notifications")).status()).toBe(401);
+  expect((await request.get("/api/internal/gain-notifications/recovery")).status()).toBe(401);
+  expect((await request.get("/api/internal/maintenance")).status()).toBe(401);
   const results = await request.get("/api/merchant/gain-notifications/results?location=site-a", { maxRedirects: 0 });
   expect(results.status()).toBe(307); expect(results.headers().location).toContain("/connexion");
   const account = await request.get("/api/merchant/gain-notifications/account?location=site-a", { maxRedirects: 0 });

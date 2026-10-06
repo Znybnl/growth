@@ -21,11 +21,13 @@ const route=await import("../app/api/merchant/gain-notifications/route.ts");
 const results=await import("../app/api/merchant/gain-notifications/results/route.ts");
 const account=await import("../app/api/merchant/gain-notifications/account/route.ts");
 const cron=await import("../app/api/internal/gain-notifications/route.ts");
+const recovery=await import("../app/api/internal/gain-notifications/recovery/route.ts");
 const maintenance=await import("../app/api/internal/maintenance/route.ts");
 const { NextRequest }=await import("next/server");
 const repo=await import("./merchant-gain-notifications.ts");
 let state;
 beforeEach(()=>{
+  delete process.env.MAINTENANCE_ENABLED;
   state=globalThis.__notifyTest={session:{user:{id:"u"},merchant:{id:"a"},locations:[{merchant:{id:"a"}},{merchant:{id:"b"}}]},calls:[],sends:[],jobs:[],afters:[],logs:[]};
   state.db={
     from(table){state.calls.push(table);const q={select(){return q},eq(){return q},async maybeSingle(){return {data:state.preference??null,error:state.dbError}}};return q;},
@@ -129,10 +131,11 @@ test("câblage non bloquant uniquement des deux finalisations réelles",()=>{
   assert.doesNotMatch(finalize.split("return NextResponse.json(toPublicDrawResult(result)")[0],/dispatchMerchantGainNotifications\(result.lead/);
 });
 
-test("planification quotidienne sans forfait supérieur, maintenance inchangée",()=>{
+test("planification quotidienne sans forfait supérieur, reprise indépendante des purges",()=>{
   const config=JSON.parse(readFileSync(new URL("../../vercel.json",import.meta.url),"utf8"));
   assert.deepEqual(config.crons,[
     {path:"/api/internal/maintenance",schedule:"15 3 * * *"},
+    {path:"/api/internal/gain-notifications/recovery",schedule:"15 3 * * *"},
     {path:"/api/internal/gain-notifications",schedule:"0 8 * * *"},
   ]);
   const ui=readFileSync(new URL("../components/merchant/gain-notification-settings.tsx",import.meta.url),"utf8");
@@ -162,27 +165,47 @@ test("volume borné : les parties non tentées restent en attente, sans troncatu
   assert.equal(state.jobs.length,5);
 });
 
-test("maintenance existante : reprise après réponse, seulement après authentification",async()=>{
+test("maintenance désactivée par défaut : authentification sans purge ni notification",async()=>{
   config();process.env.CRON_SECRET="test-only";
   const url="https://app.okado.app/api/internal/maintenance";
   assert.equal((await maintenance.GET(new NextRequest(url))).status,401);
   assert.equal(state.afters.length,0);
   state.jobs=[job];
   assert.equal((await maintenance.GET(new NextRequest(url,{headers:{authorization:"Bearer test-only"}}))).status,200);
-  assert.equal(state.sends.length,0);assert.equal(state.afters.length,1);
-  await state.afters[0]();
-  assert.equal(state.sends.length,1);
-  assert.ok(state.logs.some(l=>l[1]==="merchant_gain_notification_recovery"));
+  const response=await maintenance.GET(new NextRequest(url,{headers:{authorization:"Bearer test-only"}}));
+  assert.deepEqual(await response.json(),{ok:true,skipped:true});
+  assert.equal(response.headers.get("cache-control"),"no-store");
+  assert.equal(state.calls.length,0);assert.equal(state.sends.length,0);assert.equal(state.afters.length,0);
+  process.env.MAINTENANCE_ENABLED="false";
+  await maintenance.GET(new NextRequest(url,{headers:{authorization:"Bearer test-only"}}));
+  assert.equal(state.calls.length,0);
 });
 
-test("la reprise reste enregistrée en cas d'échec de purge et ne divulgue pas l'erreur fournisseur",async()=>{
+test("la maintenance explicitement activée conserve les purges sans envoyer de notification",async()=>{
+  config();process.env.CRON_SECRET="test-only";process.env.MAINTENANCE_ENABLED="true";state.jobs=[job];
+  const response=await maintenance.GET(new NextRequest("https://app.okado.app/api/internal/maintenance",{headers:{authorization:"Bearer test-only"}}));
+  assert.equal(response.status,200);
+  assert.deepEqual(state.calls.map(c=>c[0]),["purge_operational_data","purge_personal_data"]);
+  assert.equal(state.sends.length,0);assert.equal(state.afters.length,0);assert.equal(state.jobs.length,1);
+});
+
+test("reprise protégée indépendante d'une purge en panne, erreur sans données sensibles",async()=>{
   config();process.env.CRON_SECRET="test-only";
+  const url="https://app.okado.app/api/internal/gain-notifications/recovery";
+  assert.equal((await recovery.GET(new Request(url))).status,401);
+  assert.equal((await recovery.GET(new Request(url,{headers:{authorization:"Bearer wrong"}}))).status,401);
+  assert.equal(state.calls.length,0);
   const rpc=state.db.rpc;
   state.db.rpc=async(name,args)=>name==="purge_operational_data"?{error:{message:"purge failed"}}:rpc(name,args);
+  process.env.MAINTENANCE_ENABLED="true";
   assert.equal((await maintenance.GET(new NextRequest("https://app.okado.app/api/internal/maintenance",{headers:{authorization:"Bearer test-only"}}))).status,500);
-  assert.equal(state.afters.length,1);
+  state.calls=[];state.jobs=[job];
+  const response=await recovery.GET(new Request(url,{headers:{authorization:"Bearer test-only"}}));
+  assert.equal(response.status,200);assert.equal((await response.json()).sent,1);
+  assert.ok(state.calls.every(c=>!c[0].startsWith("purge_")));
   state.dbError={message:"secret@example.test"};
-  await state.afters[0]();
+  const failed=await recovery.GET(new Request(url,{headers:{authorization:"Bearer test-only"}}));
+  assert.equal(failed.status,503);assert.doesNotMatch(await failed.text(),/secret@example/);
   assert.doesNotMatch(JSON.stringify(state.logs),/secret@example/);
-  assert.ok(state.logs.some(l=>l[1]==="merchant_gain_notification_recovery_failed"));
+  assert.ok(state.logs.some(l=>l[1]==="merchant_gain_notification_dispatch_failed"));
 });

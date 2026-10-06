@@ -82,6 +82,8 @@ Les durées de la deuxième ligne constituent une recommandation opérationnelle
 
 ## Notifications de gains aux utilisateurs d’établissement (Issue #473)
 
+- Décision propriétaire : les tâches de notifications et leurs reprises n’exécutent pas de purge. La maintenance historique requiert une activation opérationnelle distincte et explicite ; elle reste désactivée par défaut. Configurer l’authentification du planificateur ne vaut pas autorisation de supprimer des données.
+
 - Les notifications destinées aux utilisateurs d’établissement gardent un ton professionnel : aucun émoticône cadeau ajouté par le modèle dans l’objet, le titre, le contenu HTML ou la version texte (retour propriétaire sur la PR #474). Les libellés dynamiques et l’e-mail de gain du participant ne sont pas modifiés par cette décision.
 - Préférence personnelle par utilisateur et établissement autorisé, désactivée par défaut. L’adresse destinataire vient du compte ; les droits actifs et l’adresse courante sont revérifiés avant chaque envoi.
 - Pilotage → Voir la fiche consulte cette préférence pour l’utilisateur de la ligne et le site autorisé sélectionné, sans la modifier. L’association utilisateur/compte est contrôlée côté serveur avant lecture ; aucun mélange des sites ou préférences des autres membres. Aucune ligne = désactivé ; un échec de base n’est pas une préférence désactivée.
