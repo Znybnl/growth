@@ -32,6 +32,10 @@ jobs:
         run: npm run test:admin-campaigns -w @okado/web-app
       - name: Test merchant gain notifications and RLS
         run: npm run test:gain-notifications -w @okado/web-app
+      - name: Test Beauty suggestion catalog and migration
+        run: npm run test:beauty-catalog -w @okado/web-app
+      - name: Test administrator establishment profiles
+        run: npm run test:admin-profiles -w @okado/web-app
       - name: Build web app
         run: npm run build:web
 

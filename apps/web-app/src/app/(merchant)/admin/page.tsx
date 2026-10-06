@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AdminEstablishmentProfileButton } from "@/components/merchant/admin-establishment-profile-button";
 import { redirect } from "next/navigation";
 
 import { isSaasAdminEmail } from "@/lib/admin";
@@ -143,6 +144,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                   </td>
                   <td className="px-3 py-4">
                     <div className="flex flex-wrap gap-2">
+                      <AdminEstablishmentProfileButton merchantId={user.merchantId} />
                       <Link
                         href={`/admin/campaigns?merchantId=${encodeURIComponent(user.merchantId)}`}
                         className="okado-primary-action okado-compact-action whitespace-nowrap px-3 text-xs"

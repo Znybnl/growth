@@ -15,7 +15,7 @@ import {
   TextFont,
   WheelTemplateStyle,
 } from "@/lib/types";
-import { BEAUTY_INDUSTRY, isBeautySubsector } from "@/lib/merchant-options";
+import { BEAUTY_INDUSTRY, isBeautySubsector, normalizeBeautySubsector } from "@/lib/merchant-options";
 import {
   CAMPAIGN_SPACING_MAX_PX,
   CAMPAIGN_SPACING_MIN_PX,
@@ -348,7 +348,7 @@ function normalizeOptionalNumber(value: unknown, options: { min: number; max: nu
 }
 
 function normalizeIndustrySubsector(value: unknown, industry: string) {
-  const subsector = normalizeString(value, 80);
+  const subsector = normalizeBeautySubsector(normalizeString(value, 80));
   if (!subsector) return "";
   if (industry !== BEAUTY_INDUSTRY || !isBeautySubsector(subsector)) {
     throw new Error("Le sous-secteur sélectionné n'est pas valide pour ce secteur.");

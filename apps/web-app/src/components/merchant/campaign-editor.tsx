@@ -1,5 +1,8 @@
 "use client";
 
+import { prizeFieldsFromSuggestion } from "@/lib/prize-suggestion-fields";
+import { usePrizeSuggestions } from "@/lib/use-prize-suggestions";
+
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
@@ -1964,7 +1967,7 @@ export function CampaignEditor({
   const [isExpertMode, setIsExpertMode] = useState(false);
   const [editingPrizeConditionsId, setEditingPrizeConditionsId] = useState<string | null>(null);
   const [prizeSuggestionsOpen, setPrizeSuggestionsOpen] = useState(false);
-  const [prizeSuggestions, setPrizeSuggestions] = useState<PrizeSuggestion[]>([]);
+  const prizeSuggestions = usePrizeSuggestions(merchant);
   const [qrPreviewOpen, setQrPreviewOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewSaveDialogOpen, setPreviewSaveDialogOpen] = useState(false);
@@ -1975,34 +1978,6 @@ export function CampaignEditor({
   >({});
   const [imageUploads, setImageUploads] = useState<Partial<Record<ImageUploadField, boolean>>>({});
 
-  useEffect(() => {
-    let cancelled = false;
-    const industry = merchant.industry?.trim();
-
-    if (!industry) {
-      return;
-    }
-
-    const industrySubsector = merchant.industrySubsector?.trim();
-    const query = new URLSearchParams({ industry });
-    if (industrySubsector) query.set("subsector", industrySubsector);
-
-    fetch(`/api/prize-suggestions?${query.toString()}`)
-      .then(async (response) => {
-        if (!response.ok) throw new Error("Lecture impossible.");
-        return (await response.json()) as { suggestions?: PrizeSuggestion[] };
-      })
-      .then((payload) => {
-        if (!cancelled) setPrizeSuggestions(payload.suggestions ?? []);
-      })
-      .catch(() => {
-        if (!cancelled) setPrizeSuggestions([]);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [merchant.industry, merchant.industrySubsector]);
 
   const previewSegments = useMemo(() => buildPreviewSegments(form.prizes), [form.prizes]);
   const formSnapshot = useMemo(() => JSON.stringify(form), [form]);
@@ -2655,12 +2630,7 @@ export function CampaignEditor({
         ...current.prizes,
         {
           id: createPrizeId(),
-          label: suggestion.label,
-          totalQuantity: null,
-          probability: suggestion.probability,
-          estimatedUnitCost: suggestion.estimatedUnitCost,
-          purchaseRequired: false,
-          usageConditions: "",
+          ...prizeFieldsFromSuggestion(suggestion),
         },
       ],
     }));

@@ -2,8 +2,11 @@ import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/supabase";
 import {
   BEAUTY_INDUSTRY,
   isBeautySubsector,
+  GENERAL_BEAUTY_SUBSECTOR,
+  isLegacyBeautySubsector,
+  normalizeBeautySubsector,
 } from "@/lib/merchant-options";
-import { PrizeSuggestion } from "@/lib/types";
+import type { PrizeSuggestion } from "@/lib/types";
 
 type PrizeSuggestionRow = {
   id: string;
@@ -81,7 +84,7 @@ export function validatePrizeSuggestionInput(input: Partial<PrizeSuggestionInput
   const icon = String(input.icon ?? "gift").trim();
   const sortOrder = Number(input.sortOrder ?? 0);
   const isActive = input.isActive !== false;
-  const industrySubsector = normalizeIndustry(String(input.industrySubsector ?? ""));
+  const industrySubsector = normalizeBeautySubsector(normalizeIndustry(String(input.industrySubsector ?? "")));
   const validIcons = new Set(["coffee", "dessert", "drink", "discount", "supplement", "menu", "gift"]);
 
   if (!industry) throw new Error("Le secteur d'activité est requis.");
@@ -128,7 +131,9 @@ async function fetchPrizeSuggestions(
 
   if (useSubsectorColumn) {
     query = industrySubsector
-      ? query.eq("industry_subsector", industrySubsector)
+      ? industrySubsector === "Massage & Spa"
+        ? query.in("industry_subsector", ["Massage & Spa", "Massage & spa"])
+        : query.eq("industry_subsector", industrySubsector)
       : query.is("industry_subsector", null);
   }
 
@@ -160,9 +165,20 @@ export async function getPrizeSuggestions(
   const normalizedIndustry = normalizeIndustry(industry);
   if (!isSupabaseConfigured() || !normalizedIndustry) return [];
 
-  const requestedSubsector = normalizeIndustry(industrySubsector ?? "");
+  const requestedSubsector = normalizeBeautySubsector(normalizeIndustry(industrySubsector ?? ""));
   if (requestedSubsector && (normalizedIndustry !== BEAUTY_INDUSTRY || !isBeautySubsector(requestedSubsector))) {
     throw new Error("Le sous-secteur sélectionné n'est pas valide pour ce secteur.");
+  }
+
+  if (normalizedIndustry === BEAUTY_INDUSTRY
+    && (!requestedSubsector || requestedSubsector === GENERAL_BEAUTY_SUBSECTOR || isLegacyBeautySubsector(requestedSubsector))) {
+    const groups = await Promise.all([
+      fetchPrizeSuggestions(BEAUTY_INDUSTRY, GENERAL_BEAUTY_SUBSECTOR, includeInactive),
+      fetchPrizeSuggestions(BEAUTY_INDUSTRY, undefined, includeInactive),
+      ...(isLegacyBeautySubsector(requestedSubsector)
+        ? [fetchPrizeSuggestions(BEAUTY_INDUSTRY, requestedSubsector, includeInactive)] : []),
+    ]);
+    return mergeSuggestions(groups);
   }
 
   const scopedSuggestions = await fetchPrizeSuggestions(
@@ -174,7 +190,13 @@ export async function getPrizeSuggestions(
 
   // Keep the existing general Beauty catalog usable until a dedicated
   // catalog has been configured for the selected subsector.
-  return fetchPrizeSuggestions(BEAUTY_INDUSTRY, undefined, includeInactive);
+  return getPrizeSuggestions(BEAUTY_INDUSTRY, includeInactive);
+}
+
+function mergeSuggestions(groups: PrizeSuggestion[][]) {
+  return [...new Map(groups.flat().map((item) => [item.id, item])).values()]
+    .sort((a, b) => b.probability - a.probability || a.sortOrder - b.sortOrder
+      || (a.createdAt ?? "").localeCompare(b.createdAt ?? ""));
 }
 
 export async function getAllPrizeSuggestions() {
