@@ -37,6 +37,8 @@ Utiliser ces termes dans l'interface, les Issues, les critères d'acceptation, l
 | Brouillon | Jeu enregistré sans être publié ; il peut être incomplet. | Jeu actif. | Un brouillon est prévisualisable. |
 | Jeu actif | Jeu publié et accessible au public par son QR code de diffusion. | Brouillon. | Le jeu peut recevoir des participations de production. |
 | E-mail de gain | E-mail transactionnel envoyé au joueur après un gain avec les informations de retrait. | Collecte d'e-mail. | Objet contenant le nom du lot remporté. |
+| Notification de gains | Alerte personnelle envoyée à l’utilisateur d’un établissement pour ses gains réels, activable dans Mon compte. | E-mail de gain du joueur. | Synthèse quotidienne des gains de l’établissement. |
+| Synthèse de gains | E-mail récapitulant une période close et contenant une ligne par gain : date/heure, jeu et lot. | Consommation ou retrait des lots. | Synthèse de la semaine précédente, le lundi à partir de 9 h locale. |
 | Lead | Enregistrement d'un joueur/participant utilisable par le marchand dans les résultats. | Simple scan. | Contact ayant laissé son e-mail. |
 
 ## Règles de rédaction

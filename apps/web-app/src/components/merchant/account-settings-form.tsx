@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Link2, ShieldCheck, Store, UserRound } from "lucide-react";
 
 import { AccountSectionCard } from "@/components/merchant/account-section-card";
+import { GainNotificationSettings } from "@/components/merchant/gain-notification-settings";
 import { AccountLocationPanel } from "@/components/merchant/account-location-panel";
 import { BillingSubscriptionCard } from "@/components/merchant/billing-subscription-card";
 import { GoogleReviewPlacePicker } from "@/components/merchant/google-review-place-picker";
@@ -100,6 +101,7 @@ export function AccountSettingsForm({
     createAccountSettingsForm(merchant, user, redemptionPinStates[merchant.id]),
   );
   const [isSaving, setIsSaving] = useState(false);
+  const [notificationEmail, setNotificationEmail] = useState(user.email);
   const [error, setError] = useState<string | null>(null);
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
@@ -237,7 +239,7 @@ export function AccountSettingsForm({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...form, locationId: selectedLocationId }),
       });
-      const payload = (await response.json()) as { error?: string };
+      const payload = (await response.json()) as { error?: string; user?: { email: string } };
 
       if (!response.ok) {
         throw new Error(payload.error ?? "Mise à jour impossible.");
@@ -245,6 +247,7 @@ export function AccountSettingsForm({
 
       setIsDirty(false);
       onDirtyChange?.(false);
+      setNotificationEmail(payload.user?.email ?? form.email.trim().toLowerCase());
       setIsSuccessOpen(true);
       captureClientProductEvent("account_settings_saved", {
         hasGoogleReviewUrl: Boolean(form.googleReviewUrl),
@@ -365,6 +368,9 @@ export function AccountSettingsForm({
           </label>
         </div>
         </AccountSectionCard>
+        <GainNotificationSettings key={selectedMerchant.id} locationId={selectedMerchant.id}
+          merchantName={selectedMerchant.companyName} email={notificationEmail}
+          timeZone={selectedMerchant.timeZone ?? "Europe/Paris"} />
         </div> : null}
 
         {activeTab === "establishment" ? <div id="account-tabpanel-establishment" role="tabpanel" aria-labelledby="account-establishment-tab">

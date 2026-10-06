@@ -54,8 +54,11 @@ async function checkRpc(name, args) {
   checks.push({ type: "rpc", name, ok: true });
 }
 
-async function checkPublicAccessIsBlocked(table) {
-  const { data, error } = await supabasePublic.from(table).select("id").limit(1);
+async function checkPublicAccessIsBlocked(table, columns = "id", strict = false) {
+  const { data, error } = await supabasePublic.from(table).select(columns).limit(1);
+  if (strict && error?.code !== "42501") {
+    throw new Error(`Lecture anonyme non refusée explicitement sur ${table}`);
+  }
   if (!error && (data?.length ?? 0) > 0) {
     throw new Error(`RLS publique absente ou trop permissive sur ${table}`);
   }
@@ -71,6 +74,9 @@ for (const [table, columns] of [
   ["draw_sessions", "id,campaign_id,status"],
   ["campaign_actions", "id,campaign_id,position"],
   ["reward_email_deliveries", "id,lead_id,status"],
+  ["merchant_gain_notification_preferences", "user_id,merchant_id,frequency,updated_at"],
+  ["merchant_gain_notification_events", "user_id,merchant_id,lead_id,job_id,won_at"],
+  ["merchant_gain_notification_jobs", "id,status,lease_token,gains,email_payload,recipient"],
   ["public_rate_limits", "key,count,reset_at"],
   ["daily_participation_locks", "campaign_id,date_key,fingerprint_hash"],
   ["cashier_redemption_audits", "id,merchant_id,lead_id"],
@@ -84,6 +90,19 @@ for (const [table, columns] of [
 for (const table of ["merchants", "campaigns", "leads", "reward_email_deliveries"]) {
   await checkPublicAccessIsBlocked(table);
 }
+for (const [table, columns] of [
+  ["merchant_gain_notification_preferences", "user_id"],
+  ["merchant_gain_notification_events", "lead_id"],
+  ["merchant_gain_notification_jobs", "id"],
+]) {
+  await checkPublicAccessIsBlocked(table, columns, true);
+}
+// Read-only permission probe: never call a claim/enqueue RPC on real data here.
+const permissionArgs = { p_user: "schema-probe-no-user", p_merchant: "schema-probe-no-site" };
+await checkRpc("can_receive_merchant_gain_notification", permissionArgs);
+const { error: gainRpcPublicError } = await supabasePublic.rpc("can_receive_merchant_gain_notification", permissionArgs);
+if (gainRpcPublicError?.code !== "42501") throw new Error("La RPC de notification n’est pas privée.");
+checks.push({ type: "rls", name: "gain_notification_rpc", ok: true, access: "denied" });
 
 const { data: campaign, error: campaignError } = await supabase
   .from("campaigns")
@@ -112,6 +131,7 @@ if (campaign?.id) {
 }
 
 const migrationChecks = [
+  ["20261006_merchant_gain_notifications_473.sql", ["merchant_gain_notification_preferences", "prepare_merchant_gain_notification_payload", "enable row level security"]],
   ["20260710_security_p0_hardening.sql", ["enable row level security", "consume_public_rate_limit", "claim_daily_participation_lock"]],
   ["20260718_cashier_redemption.sql", ["cashier_redemption_audits", "redeem_cashier_lead_prize"]],
   ["20260720_fix_cashier_rpc_status_scope.sql", ["redeem_cashier_lead_prize", "p_merchant_id"]],

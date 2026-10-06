@@ -1,5 +1,15 @@
 # Produit — Okado
 
+## Notifications de gains au marchand (Issue #473)
+
+Décision propriétaire : réglage dans **Mon compte → Utilisateur**, personnel et par établissement, **désactivé par défaut** pour les comptes existants et nouveaux. Choix : désactivé, à chaque gain, synthèse quotidienne (conseillée), hebdomadaire ou mensuelle. Le destinataire est l’e-mail actuel du compte, pas celui du joueur ni une adresse libre.
+
+- Gains réels des roues et tickets seulement ; pertes et prévisualisations exclues. Activation non rétroactive.
+- Synthèses à partir de 9 h dans le fuseau de l’établissement : veille, semaine précédente le lundi, mois précédent le premier. Aucun e-mail sans gain ; une exécution retardée rattrape les périodes closes.
+- Le listing complet est **directement dans l’e-mail**, une ligne par gain : date/heure locale, jeu, lot. Au-delà de 40 lignes, plusieurs e-mails numérotés couvrent toute la période. Pas de nom/e-mail du joueur, QR ou code de retrait ; le bouton Résultats exige une connexion et les droits sur le site.
+- La nouvelle fréquence regroupe les gains non encore préparés ; les e-mails déjà préparés gardent leur fréquence et leur contenu pour des reprises sans doublon. Désactiver annule les envois en attente ; un e-mail accepté par le fournisseur ne peut pas être rappelé.
+- L’alerte immédiate et les synthèses sont distinctes de l’e-mail de gain du joueur. Aucun changement au tirage, au stock, au retrait ou au consentement du participant.
+
 ## Fiche d'identité
 
 - **Problème résolu** : permettre à un commerce local de concevoir, diffuser et piloter simplement un jeu en point de vente afin d'animer sa clientèle, collecter des contacts et encourager des actions marketing.

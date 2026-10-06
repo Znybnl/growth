@@ -50,6 +50,14 @@ app.okado.app              →  SaaS marchand et parcours publics de jeu
 - Vercel déploie la production. En cas de régression, le rollback Vercel vers le dernier déploiement sain est prioritaire ; le correctif est analysé ensuite.
 - Toute migration Supabase doit suivre les règles de `AGENTS.md` et posséder un plan de retour arrière.
 
+## Notifications de gains (Issue #473)
+
+Le trigger d’insertion sur les **leads réels** enregistre un événement durable pour chaque préférence activée et autorisée. Aucune requête réseau dans ce trigger ; aucune modification de la table de prévisualisation. Les API de finalisation réelle appellent un worker dans `after()` (Next.js 16), sans nouvelle attente d’e-mail dans la réponse joueur. Le cron protégé récupère les interruptions et prépare les synthèses closes.
+
+Les tables `merchant_gain_notification_preferences`, `merchant_gain_notification_events` et `merchant_gain_notification_jobs` ont RLS activée, sans accès anon/authenticated. Seules les routes serveur authentifiées utilisent la service role, avec contrôle multisite et origine des mutations ; les RPC privées revérifient les droits. Une lease transactionnelle et une clé Resend stable par job protègent les reprises. Le nom du site et le fuseau sont figés à la préparation, puis le HTML/texte/objet/expéditeur exacts avant l’envoi, pour conserver le payload même à travers les déploiements. Les parties contiennent au plus 40 gains, sans tronquer la période. Les détails, le payload et l’adresse sont effacés du job après acceptation ou annulation, et à l’effacement d’une participation concernée. Les événements sont supprimés par cascade avec le lead.
+
+Le cron toutes les cinq minutes exige un forfait Vercel compatible et `CRON_SECRET`. Le dispatcher n’envoie que lorsque `VERCEL_ENV=production` et `MERCHANT_GAIN_NOTIFICATIONS_ENABLED=true`. Le drapeau est désactivé par défaut ; la migration SQL, la configuration et la validation des e-mails précèdent l’activation. Une acceptation fournisseur n’est pas une preuve de réception dans la boîte mail. Procédure et limites : [release #473](releases/issue-473-merchant-gain-notifications.md).
+
 ## À ne pas supposer
 
 - Les règles RLS, les schémas Supabase et les API font foi dans le code et les migrations ; ils doivent être inspectés avant toute modification de données ou d'autorisation.

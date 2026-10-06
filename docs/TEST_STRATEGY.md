@@ -20,6 +20,7 @@ L'objectif est de détecter les régressions importantes sans transformer le pro
 | `npm run smoke:security` | Vérifie les garde-fous de sécurité prévus par le projet. |
 | `npm run test:e2e` | Lance les tests navigateur Playwright du SaaS. Le serveur local démarre automatiquement, sauf si `PLAYWRIGHT_BASE_URL` désigne une URL de test explicite. |
 | `npm run test:reward-email -w @okado/web-app` | Vérifie le modèle recommandé, les anciens standards, les personnalisations, conditions/dates, QR et code de secours, échappement HTML et lien RDV conditionnel. Contrôle le rendu en 680/390/320 px sans envoyer d’e-mail ni écrire en base. |
+| `npm run test:gain-notifications -w @okado/web-app` | Vérifie migration/rollback/RLS dans PostgreSQL isolé PGlite, les vraies routes et le worker avec dépendances simulées, les périodes locales, listings complets et reprises idempotentes. Aucune écriture de production ni e-mail réel. |
 | `npm run test:landing` | Après `npm run build:landing`, vérifie les logos, CTA, FAQ et liens du site marketing sur desktop, mobile 390 px et mobile 320 px. Lance le site construit sur le port 3200, sauf si `PLAYWRIGHT_BASE_URL` est renseignée. Aucun compte ni écriture métier. |
 
 La CI GitHub exécute la vérification de source, le lint et le build de l'application web, ainsi que le lint et le build du site marketing, pour les PR et `main`.
@@ -27,6 +28,12 @@ La CI GitHub exécute la vérification de source, le lint et le build de l'appli
 La [matrice des parcours critiques](TEST_MATRIX.md) relie chaque parcours bloquant à sa preuve actuelle et indique les tests restant à ajouter.
 
 ## E2E : mise en place progressive
+
+### Notifications de gains — #473
+
+`npm run test:e2e -w @okado/web-app -- gain-notification-settings.spec.ts` teste le composant réel dans une fixture uniquement développement, à 320/390/1280 px : défaut désactivé, cinq fréquences, sauvegarde, rechargement, isolation par établissement et erreurs sans faux succès. Les API de préférences sont interceptées ; la fixture n’accorde aucun accès et renvoie 404 en production. Les droits des vraies routes sont vérifiés séparément par les tests serveur.
+
+`node --experimental-strip-types scripts/preview-gain-notifications.mjs` depuis `apps/web-app` génère le HTML exact des quatre modèles avec données fictives et 12 captures à 680/390/320 px, sans Resend ni Supabase. Inspection visuelle requise après génération ; compatibilité Gmail/Outlook réelle à valider avec un destinataire de test autorisé avant activation générale. Les tests isolés ne prouvent ni la migration de production ni le fonctionnement du cron Vercel.
 
 Le socle Playwright est suivi dans l'Issue [#2](https://github.com/Znybnl/growth/issues/2). Les premiers tests non destructifs couvrent les pages de connexion et d'inscription, l'explication d'un QR de prévisualisation invalide et l'absence de donnée révélée par un code de retrait inconnu. Un test d'accès au Wizard existe aussi, mais ne s'exécute qu'avec un compte de test fourni explicitement par `OKADO_E2E_EMAIL` et `OKADO_E2E_PASSWORD`.
 

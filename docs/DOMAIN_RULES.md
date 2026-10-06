@@ -71,6 +71,14 @@ Ce document regroupe les invariants fonctionnels approuvés d'Okado. Il ne rempl
 
 Les durées de la deuxième ligne constituent une recommandation opérationnelle, non un avis juridique. Toute modification de ces règles exige une décision explicite du propriétaire et, si nécessaire, une validation juridique.
 
+## Notifications de gains aux utilisateurs d’établissement (Issue #473)
+
+- Préférence personnelle par utilisateur et établissement autorisé, désactivée par défaut. L’adresse destinataire vient du compte ; les droits actifs et l’adresse courante sont revérifiés avant chaque envoi.
+- Seuls les gains réels persistés après activation sont notifiés (roue ou ticket, collecte avant ou après jeu). Ni perte, ni participation simulée, ni ancien gain rejoué.
+- Synthèses quotidienne, hebdomadaire et mensuelle sur périodes locales closes, à partir de 9 h selon le fuseau du site ; aucun e-mail vide. Listing détaillé complet par date/heure, jeu et lot, fractionné en parties numérotées si nécessaire.
+- Pas d’identité du joueur, QR, code de retrait ni accès public aux résultats dans ces notifications. La modification des préférences n’affecte pas la collecte, le résultat, le stock, le consentement, le retrait ou l’e-mail du joueur.
+- Les tentatives ambiguës ne sont pas rejouées automatiquement au-delà de la fenêtre d’idempotence du fournisseur. Une désactivation stoppe les envois non encore acceptés. Les snapshots suivent l’effacement des participations ; aucun nouvel archivage nominatif de participants n’est créé.
+
 ## Règle de changement
 
 Toute modification de ce document exige une Issue non triviale, une analyse d'impact et les tests adaptés. Les changements de ce document priment sur les comportements implicites du code existant.
