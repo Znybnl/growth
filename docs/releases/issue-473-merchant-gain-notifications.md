@@ -4,13 +4,15 @@ Issue : https://github.com/Znybnl/growth/issues/473. Plan et contenu détaillé 
 
 ## Résultat utilisateur
 
-Mon compte → Utilisateur → Notifications de gains, préférence **personnelle par établissement**, désactivée par défaut. E-mail du compte comme destinataire. À chaque gain, quotidien, hebdomadaire ou mensuel. Synthèses à partir de 9 h locale (veille / semaine précédente le lundi / mois précédent le premier), sans e-mail vide. Date/heure, jeu et lot **dans l’e-mail**, aucun participant nommé, QR ou code de retrait. Le listing couvre tous les gains ; parties de 40 lignes maximum, numérotées. Une période commencée après activation peut naturellement être partielle (pas d’historique rejoué).
+Mon compte → Utilisateur → Notifications de gains, préférence **personnelle par établissement**, désactivée par défaut. E-mail du compte comme destinataire. À chaque gain, quotidien, hebdomadaire ou mensuel. Synthèses à partir de 9 h locale (veille / semaine précédente le lundi / mois précédent le premier), sans e-mail vide. Date/heure, prénom et nom, jeu et lot **dans l’e-mail** (noms approuvés le 6 octobre), sans e-mail du participant, QR ou code de retrait. Le listing couvre tous les gains ; parties de 40 lignes maximum, numérotées. Une période commencée après activation peut naturellement être partielle (pas d’historique rejoué).
+
+Les quatre messages n’affichent aucun logo Okado. En-tête avec le nom du site ; « Les gains » et période datée dans les synthèses ; pied de page vers les préférences du bon établissement (fréquence/désactivation), avec contrôle des droits et connexion obligatoire. Le listing est lisible sur mobile, avec date dans une colonne et participant/jeu/lot dans l’autre.
 
 ## Impacts et non-régressions
 
 - Ajout de trois tables privées et de fonctions service role ; aucune réécriture de campagne, lot, contact, consentement ou stock. Le trigger ne concerne que les gains réels persistés. Les previews restent dans leur table séparée.
 - Enregistrement durable dans la transaction de gain ; un échec SQL ne doit jamais être ignoré au prix d’une notification perdue. La migration doit donc être vérifiée avant livraison, y compris un gain réel avec notifications désactivées. Le traitement réseau est exclusivement après réponse ou au cron.
-- Droits et adresse revérifiés à chaque envoi. Les coordonnées du participant ne sont pas copiées. Le snapshot du job est effacé après acceptation, annulation ou effacement du lead concerné ; les événements suivent le lead par cascade.
+- Droits et adresse revérifiés à chaque envoi. Seuls le prénom et le nom sont copiés dans le job/payload privé, pas l’e-mail du participant, QR ou code de retrait ; aucun nom dans les événements/logs. Le snapshot du job est effacé après acceptation, annulation ou effacement du lead concerné ; les événements suivent le lead par cascade.
 - L’e-mail de gain du joueur, les probabilités, la réserve de stock, le parcours public, le retrait et les métriques existants sont inchangés.
 - Une nouvelle fréquence s’applique aux événements non préparés ; les jobs déjà préparés gardent leur fréquence/payload. Désactiver annule les jobs en attente, pas les e-mails déjà acceptés par Resend.
 
@@ -45,6 +47,8 @@ Worker protégé, dix jobs maximum par appel (jusqu’à 20 si explicitement dem
 Surveiller les retours `failed` du cron, ses 401/503, l’ancienneté des événements non préparés et les jobs `needs_review`. Les périodes manquées sont rattrapées dans l’ordre ; au-delà de dix jobs par exécution, le reste attend l’appel suivant. Un retrait d’accès, changement d’adresse ou reset de gain arrête un job préparé plutôt que rejouer un payload potentiellement déjà accepté. Si une participation est effacée, la partie préparée qui la contient est annulée et expurgée : les autres gains de cette partie restent consultables dans Résultats, sans renvoi risquant un doublon.
 
 ## Preuves et limites
+
+Révision après retour propriétaire du 6 octobre : tests notifications **24/24**, E2E **5/5**, e-mail joueur **16/16**, source/lint/build OK (quatre avertissements ESLint préexistants). Rendus des quatre modèles avec noms fictifs à 680/390/320 px, inspectés visuellement ; cas de 40 lignes longues à 320 px sans débordement. La migration encore non livrée contient maintenant la lecture des noms : utiliser sa dernière version candidate, sans régénérer les anciens payloads figés. Aucun envoi réel, migration de cible ou activation de production dans cette révision.
 
 Contrôles locaux du 6 octobre 2026 : `verify:source` OK ; lint web **0 erreur / 4 avertissements préexistants** de navigation interne ; build Next.js **OK**. `test:gain-notifications` **20/20**, E2E ciblés **5/5**, non-régression administration **37/37**, e-mail joueur **16/16**. Génération des quatre e-mails et **12 rendus** à 680/390/320 px : pas de débordement horizontal, inspection visuelle desktop et mobile effectuée. Le test d’erreur initial utilisait un sélecteur `alert` ambigu avec l’annonceur Next.js ; il a été limité au composant, puis tous les E2E ont été rejoués avec succès. L’audit npm initial du dépôt signale 24 vulnérabilités (1 faible, 6 modérées, 15 élevées, 2 critiques) : elles n’ont pas été corrigées hors périmètre et ne constituent pas une preuve de sécurité globale.
 

@@ -15,6 +15,7 @@ registerHooks({
 });
 const route=await import("../app/api/merchant/gain-notifications/route.ts");
 const results=await import("../app/api/merchant/gain-notifications/results/route.ts");
+const account=await import("../app/api/merchant/gain-notifications/account/route.ts");
 const cron=await import("../app/api/internal/gain-notifications/route.ts");
 const repo=await import("./merchant-gain-notifications.ts");
 let state;
@@ -65,6 +66,22 @@ test("lien résultats authentifié vers le bon site, aucun accès élargi ni tok
   assert.match(response.headers.get("set-cookie"),/okado_active_location=a/);
   assert.match(response.headers.get("set-cookie"),/HttpOnly/);
 });
+test("lien préférences authentifié, bon établissement, aucune modification de préférence",async()=>{
+  const url="https://app.okado.app/api/merchant/gain-notifications/account";
+  state.session=null;
+  assert.match((await account.GET(new Request(url+"?location=a"))).headers.get("location"),/connexion/);
+  state.session={locations:[{merchant:{id:"a"}}]};
+  assert.equal((await account.GET(new Request(url+"?location=b&next=https://evil.test"))).status,403);
+  assert.equal((await account.GET(new Request(url))).status,403);
+  state.session.locations.push({merchant:{id:"b"}});
+  const response=await account.GET(new Request(url+"?location=b&next=https://evil.test"));
+  assert.equal(response.headers.get("location"),"https://app.okado.app/account#account-user");
+  assert.equal(response.headers.get("cache-control"),"private, no-store");
+  assert.match(response.headers.get("set-cookie"),/okado_active_location=b/);
+  assert.match(response.headers.get("set-cookie"),/HttpOnly/);
+  assert.equal(state.calls.length,0);
+});
+
 test("cron protégé y compris lorsque le secret est absent",async()=>{
   delete process.env.CRON_SECRET;
   assert.equal((await cron.GET(new Request("https://app.okado.app/api/internal/gain-notifications"))).status,401);
@@ -74,12 +91,13 @@ test("cron protégé y compris lorsque le secret est absent",async()=>{
   assert.equal((await cron.GET(new Request("https://app.okado.app/api/internal/gain-notifications",{headers:{authorization:"Bearer test-only"}}))).status,200);
   assert.equal(state.calls.length,0);assert.equal(state.sends.length,0);
 });
-const job={id:"job-demo",lease_token:"lease-demo",merchant_id:"a",merchant_name:"Institut Démo",recipient:"owner@example.test",frequency:"instant",time_zone:"Europe/Paris",period_start:"2026-10-06T10:00Z",period_end:"2026-10-06T10:01Z",part:1,parts:1,gains:[{leadId:"g",campaignId:"c",campaignTitle:"Jeu Démo",prizeLabel:"Soin offert",wonAt:"2026-10-06T10:00Z"}]};
+const job={id:"job-demo",lease_token:"lease-demo",merchant_id:"a",merchant_name:"Institut Démo",recipient:"owner@example.test",frequency:"instant",time_zone:"Europe/Paris",period_start:"2026-10-06T10:00Z",period_end:"2026-10-06T10:01Z",part:1,parts:1,gains:[{leadId:"g",campaignId:"c",campaignTitle:"Jeu Démo",prizeLabel:"Soin offert",wonAt:"2026-10-06T10:00Z",firstName:"Camille",lastName:"Martin"}]};
 function config(){process.env.VERCEL_ENV="production";process.env.MERCHANT_GAIN_NOTIFICATIONS_ENABLED="true";process.env.RESEND_API_KEY="fake-test";process.env.RESEND_FROM_EMAIL="test@example.test";process.env.MERCHANT_GAIN_NOTIFICATIONS_ORIGIN="https://app.okado.app";}
 test("envoi réel simulé : payload dynamique, clé idempotente et confirmation persistante",async()=>{
   config();state.jobs=[job];assert.deepEqual(await repo.dispatchMerchantGainNotifications("g"),{sent:1,failed:0,skipped:false});
   assert.equal(state.sends.length,1);assert.deepEqual(state.sends[0][1],{idempotencyKey:"merchant-gain/job-demo"});
   assert.equal(state.sends[0][0].to,"owner@example.test");assert.match(state.sends[0][0].html,/Soin offert/);
+  assert.match(state.sends[0][0].html,/Camille Martin/);assert.match(state.sends[0][0].text,/Camille Martin/);
   assert.deepEqual(state.calls.find(c=>c[0]==="finish_merchant_gain_notification")[1],{p_id:"job-demo",p_token:"lease-demo",p_sent:true,p_provider_id:"sent-demo"});
 });
 test("erreur fournisseur et accès perdu : aucun envoi hors périmètre ; reprise sans erreur sensible",async()=>{

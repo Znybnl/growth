@@ -75,9 +75,9 @@ Les durées de la deuxième ligne constituent une recommandation opérationnelle
 
 - Préférence personnelle par utilisateur et établissement autorisé, désactivée par défaut. L’adresse destinataire vient du compte ; les droits actifs et l’adresse courante sont revérifiés avant chaque envoi.
 - Seuls les gains réels persistés après activation sont notifiés (roue ou ticket, collecte avant ou après jeu). Ni perte, ni participation simulée, ni ancien gain rejoué.
-- Synthèses quotidienne, hebdomadaire et mensuelle sur périodes locales closes, à partir de 9 h selon le fuseau du site ; aucun e-mail vide. Listing détaillé complet par date/heure, jeu et lot, fractionné en parties numérotées si nécessaire.
-- Pas d’identité du joueur, QR, code de retrait ni accès public aux résultats dans ces notifications. La modification des préférences n’affecte pas la collecte, le résultat, le stock, le consentement, le retrait ou l’e-mail du joueur.
-- Les tentatives ambiguës ne sont pas rejouées automatiquement au-delà de la fenêtre d’idempotence du fournisseur. Une désactivation stoppe les envois non encore acceptés. Les snapshots suivent l’effacement des participations ; aucun nouvel archivage nominatif de participants n’est créé.
+- Synthèses quotidienne, hebdomadaire et mensuelle sur périodes locales closes, à partir de 9 h selon le fuseau du site ; aucun e-mail vide. Listing détaillé complet par date/heure, prénom et nom, jeu et lot, fractionné en parties numérotées si nécessaire.
+- Décision propriétaire du 6 octobre : prénom et nom de la participation autorisés dans l’alerte immédiate et les synthèses. Pas d’e-mail du joueur, QR, code de retrait ni accès public aux résultats. Le lien Mon compte vérifie les droits sur l’établissement et ne modifie pas les préférences. La modification des préférences n’affecte pas la collecte, le résultat, le stock, le consentement, le retrait ou l’e-mail du joueur.
+- Les tentatives ambiguës ne sont pas rejouées automatiquement au-delà de la fenêtre d’idempotence du fournisseur. Une désactivation stoppe les envois non encore acceptés. Les noms sont lus lors de la préparation, uniquement dans le snapshot/payload privé, jamais dans les événements ni les logs. Ces snapshots sont expurgés après acceptation, annulation et effacement d’une participation ; aucun archivage nominatif supplémentaire.
 
 ## Règle de changement
 

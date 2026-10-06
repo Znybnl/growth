@@ -8,6 +8,8 @@ test("routes réelles : visiteur refusé et cron protégé, aucun accès aux don
   expect((await request.get("/api/internal/gain-notifications")).status()).toBe(401);
   const results = await request.get("/api/merchant/gain-notifications/results?location=site-a", { maxRedirects: 0 });
   expect(results.status()).toBe(307); expect(results.headers().location).toContain("/connexion");
+  const account = await request.get("/api/merchant/gain-notifications/account?location=site-a", { maxRedirects: 0 });
+  expect(account.status()).toBe(307); expect(account.headers().location).toContain("/connexion");
 });
 
 for (const width of [320, 390, 1280]) {

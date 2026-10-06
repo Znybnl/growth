@@ -6,7 +6,8 @@ Décision propriétaire : réglage dans **Mon compte → Utilisateur**, personne
 
 - Gains réels des roues et tickets seulement ; pertes et prévisualisations exclues. Activation non rétroactive.
 - Synthèses à partir de 9 h dans le fuseau de l’établissement : veille, semaine précédente le lundi, mois précédent le premier. Aucun e-mail sans gain ; une exécution retardée rattrape les périodes closes.
-- Le listing complet est **directement dans l’e-mail**, une ligne par gain : date/heure locale, jeu, lot. Au-delà de 40 lignes, plusieurs e-mails numérotés couvrent toute la période. Pas de nom/e-mail du joueur, QR ou code de retrait ; le bouton Résultats exige une connexion et les droits sur le site.
+- Le listing complet est **directement dans l’e-mail**, une ligne par gain : date/heure locale, prénom et nom du participant, jeu, lot. Au-delà de 40 lignes, plusieurs e-mails numérotés couvrent toute la période. Retour propriétaire du 6 octobre : les noms sont également présents dans l’alerte immédiate ; une identité absente n’est jamais déduite de l’e-mail. Pas d’e-mail du joueur, QR ou code de retrait ; le bouton Résultats exige une connexion et les droits sur le site.
+- Aucun logo Okado dans les messages ; le nom de l’établissement identifie le site. Les synthèses utilisent « Les gains » et un objet précisant la journée, la semaine ou le mois réellement couverts. Le pied de page permet de modifier la fréquence ou de désactiver les notifications dans Mon compte, avec un lien authentifié vers le bon établissement.
 - La nouvelle fréquence regroupe les gains non encore préparés ; les e-mails déjà préparés gardent leur fréquence et leur contenu pour des reprises sans doublon. Désactiver annule les envois en attente ; un e-mail accepté par le fournisseur ne peut pas être rappelé.
 - L’alerte immédiate et les synthèses sont distinctes de l’e-mail de gain du joueur. Aucun changement au tirage, au stock, au retrait ou au consentement du participant.
 

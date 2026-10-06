@@ -16,7 +16,7 @@ async function database() {
     create table merchant_membership_locations(membership_id text,merchant_id text);
     create table campaigns(id text primary key,merchant_id text,title text,game_type text);
     create table prizes(id text primary key,campaign_id text,label text);
-    create table leads(id text primary key,campaign_id text,prize_id text,status text,created_at timestamptz);
+    create table leads(id text primary key,campaign_id text,prize_id text,status text,created_at timestamptz,first_name text,last_name text);
     create table preview_participations(like leads);
     insert into merchants values ('a','Institut Démo','w','active','Europe/Paris'),('b','Autre site','w2','active','Europe/Paris');
     insert into merchant_users values ('u','owner@example.test'),('v','other@example.test');
@@ -31,7 +31,7 @@ async function database() {
 const pref = (db,f="daily",user="u",site="a") =>
   db.query("select set_merchant_gain_notification_preference($1,$2,$3)",[user,site,f]);
 const gain = (db,id,date,c="c",p="p",status="claimed") =>
-  db.query("insert into leads values ($1,$2,$3,$4,$5)",[id,c,p,status,date]);
+  db.query("insert into leads(id,campaign_id,prize_id,status,created_at) values ($1,$2,$3,$4,$5)",[id,c,p,status,date]);
 async function claim(db,date,lead=null) {
   return (await db.query("select claim_merchant_gain_notification($1,$2) job",[date,lead])).rows[0].job;
 }
@@ -48,7 +48,7 @@ test("désactivé par défaut, activation non rétroactive, gains réels roue/ti
     await gain(db,"scratch","2026-10-05T13:00Z","s","ps");
     await gain(db,"lost","2026-10-05T14:00Z","c",null,"lost");
     await gain(db,"other","2026-10-05T14:00Z","x","px");
-    await db.exec("insert into preview_participations values ('preview','c','p','claimed','2026-10-05T14:00Z')");
+    await db.exec("insert into preview_participations(id,campaign_id,prize_id,status,created_at) values ('preview','c','p','claimed','2026-10-05T14:00Z')");
     const job=await claim(db,"2026-10-06T07:00Z");
     assert.equal(job.frequency,"daily");assert.equal(job.gains.length,2);
     assert.deepEqual(job.gains.map(g=>g.leadId),["real","scratch"]);
@@ -89,7 +89,7 @@ test("immédiat : un e-mail par gain même horodatage ; lease, reprise et dédup
 test("listing complet en parties numérotées, sans limite arbitraire de gains",async()=>{
   const db=await database();
   try {await pref(db);
-    await db.exec("insert into leads select 'g'||n,'c','p','claimed','2026-10-05T12:00Z'::timestamptz from generate_series(1,85)n");
+    await db.exec("insert into leads(id,campaign_id,prize_id,status,created_at) select 'g'||n,'c','p','claimed','2026-10-05T12:00Z'::timestamptz from generate_series(1,85)n");
     const jobs=[];for(let n=0;n<3;n++){const job=await claim(db,"2026-10-06T07:00Z");jobs.push(job);await finish(db,job);}
     assert.deepEqual(jobs.map(j=>j.gains.length).sort((a,b)=>a-b),[5,40,40]);
     assert.ok(jobs.every(j=>j.parts===3));assert.equal(new Set(jobs.flatMap(j=>j.gains.map(g=>g.leadId))).size,85);
@@ -185,15 +185,64 @@ test("travailleurs simultanés : une seule lease par gain ; périodes manquées 
   }finally{await db.close();}
 });
 const input={merchantName:"Institut Démo",merchantId:"a",frequency:"daily",timeZone:"Europe/Paris",periodStart:"2026-10-05T22:00Z",periodEnd:"2026-10-06T22:00Z",origin:"https://app.okado.app",
-  gains:[{leadId:"g",campaignId:"c",campaignTitle:"Jeu Démo",prizeLabel:"Soin offert",wonAt:"2026-10-06T12:00Z"}]};
-test("rendu dynamique, listing détaillé, échappement, sans données/code du participant",()=>{
+  gains:[{leadId:"g",campaignId:"c",campaignTitle:"Jeu Démo",prizeLabel:"Soin offert",wonAt:"2026-10-06T12:00Z",firstName:"Camille",lastName:"Martin"}]};
+test("rendu nominatif autorisé, listing détaillé et préférences, sans e-mail ni code du participant",()=>{
   for(const frequency of ["instant","daily","weekly","monthly"]){
     const email=renderMerchantGainNotification({...input,frequency});
     assert.match(email.html,/Soin offert/);assert.match(email.text,/06\/10.*14:00/);
     assert.match(email.html,/location=a/);assert.doesNotMatch(email.html,/QR code|Code de retrait|participant@example/);
+    assert.match(email.html,/Camille Martin/);assert.match(email.text,/Camille Martin/);
+    assert.doesNotMatch(email.html,/✦ Okado|<img|Vos gains/);
+    assert.match(email.html,/modifier vos préférences de notifications/);
+    assert.match(email.html,/\/api\/merchant\/gain-notifications\/account\?location=a/);
+    assert.match(email.text,/\/api\/merchant\/gain-notifications\/account\?location=a/);
   }
-  const hostile=renderMerchantGainNotification({...input,merchantName:"<script>alert(1)</script>",gains:[{...input.gains[0],prizeLabel:"<img src=x onerror=alert(1)>"}]});
+  const hostile=renderMerchantGainNotification({...input,merchantName:"<script>alert(1)</script>",gains:[{...input.gains[0],firstName:"<script>bad</script>",lastName:"<img src=x>",prizeLabel:"<img src=x onerror=alert(1)>"}]});
   assert.doesNotMatch(hostile.html,/<script|<img src=x/);assert.match(hostile.html,/&lt;img/);
   assert.throws(()=>renderMerchantGainNotification({...input,gains:[]}),/vide/);
   assert.throws(()=>renderMerchantGainNotification({...input,origin:"javascript:alert(1)"}));
+});
+
+test("noms lus dans la participation, snapshot privé stable et expurgé à l’effacement",async()=>{
+  for(const frequency of ["instant","daily","weekly","monthly"]){
+    const db=await database();
+    try{
+      await pref(db,frequency);await gain(db,"named","2026-10-05T12:00Z");
+      await db.exec("update leads set first_name='Camille',last_name='Martin' where id='named'");
+      const job=await claim(db,"2026-11-02T08:00Z");
+      assert.equal(job.gains[0].firstName,"Camille");assert.equal(job.gains[0].lastName,"Martin");
+      assert.deepEqual(Object.keys(job.gains[0]).sort(),["leadId","campaignId","campaignTitle","prizeLabel","wonAt","firstName","lastName"].sort());
+      assert.match(renderMerchantGainNotification({...input,frequency,gains:job.gains}).html,/Camille Martin/);
+      await db.exec("update leads set first_name='Changed',last_name='Changed' where id='named'");
+      const retry=await claim(db,"2026-11-02T08:06Z");
+      assert.deepEqual(retry.gains,job.gains);
+      const payload={subject:"Camille",html:"<p>Camille Martin</p>",text:"Camille Martin",from:"Okado <test@example.test>"};
+      await db.query("select prepare_merchant_gain_notification_payload($1,$2,$3,$4)",[retry.id,retry.lease_token,JSON.stringify(payload),"2026-11-02T08:07Z"]);
+      await db.exec("delete from leads where id='named'");
+      const redacted=(await db.query("select status,gains,recipient,email_payload from merchant_gain_notification_jobs where id=$1",[job.id])).rows[0];
+      assert.deepEqual(redacted,{status:"cancelled",gains:[],recipient:null,email_payload:null});
+    }finally{await db.close();}
+  }
+});
+
+test("anciens snapshots et noms manquants ou partiels, sans identité inventée",()=>{
+  for(const frequency of ["instant","daily"]){
+    for(const names of [{firstName:undefined,lastName:undefined},{firstName:null,lastName:null},{firstName:" ",lastName:" "}]){
+      const email=renderMerchantGainNotification({...input,frequency,gains:[{...input.gains[0],...names}]});
+      assert.match(email.html,/Nom non renseigné/);assert.match(email.text,/Nom non renseigné/);
+      assert.doesNotMatch(email.html,/undefined|null|Camille/);
+    }
+  }
+  assert.match(renderMerchantGainNotification({...input,frequency:"instant",gains:[{...input.gains[0],firstName:" Camille ",lastName:null}]}).text,/Camille a remporté/);
+});
+
+test("objets datés : journée réelle, semaine, changement de mois/année et parties",()=>{
+  assert.equal(renderMerchantGainNotification({...input,frequency:"instant"}).subject,"Nouveau gain — Institut Démo 🎁");
+  assert.equal(renderMerchantGainNotification(input).subject,"Les gains du 6 octobre 2026 — Institut Démo");
+  for(const [periodStart,periodEnd,expected] of [
+    ["2026-10-04T22:00Z","2026-10-11T22:00Z","Les gains du 5 au 11 octobre 2026 — Institut Démo"],
+    ["2026-09-27T22:00Z","2026-10-04T22:00Z","Les gains du 28 septembre au 4 octobre 2026 — Institut Démo"],
+    ["2026-12-27T23:00Z","2027-01-03T23:00Z","Les gains du 28 décembre 2026 au 3 janvier 2027 — Institut Démo"],
+  ])assert.equal(renderMerchantGainNotification({...input,frequency:"weekly",periodStart,periodEnd}).subject,expected);
+  assert.equal(renderMerchantGainNotification({...input,frequency:"monthly",periodStart:"2026-09-30T22:00Z",periodEnd:"2026-10-31T23:00Z",part:2,parts:3}).subject,"Les gains d’octobre 2026 — Institut Démo — partie 2/3");
 });

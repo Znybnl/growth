@@ -192,7 +192,8 @@ begin
     end if;
     select array_agg(e.lead_id order by e.won_at,e.lead_id),
       jsonb_agg(jsonb_build_object('leadId',e.lead_id,'campaignId',e.campaign_id,
-        'campaignTitle',e.campaign_title,'prizeLabel',e.prize_label,'wonAt',e.won_at)
+        'campaignTitle',e.campaign_title,'prizeLabel',e.prize_label,'wonAt',e.won_at,
+        'firstName',l.first_name,'lastName',l.last_name)
         order by e.won_at,e.lead_id)
       into selected_ids,all_gains from public.merchant_gain_notification_events e
       join public.leads l on l.id=e.lead_id
