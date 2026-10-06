@@ -87,6 +87,17 @@ test("immédiat : un e-mail par gain même horodatage ; lease, reprise et dédup
   }finally{await db.close();}
 });
 
+test("un événement immédiat resté sans tâche est repris par le worker général",async()=>{
+  const db=await database();
+  try {
+    await pref(db,"instant");await gain(db,"queued","2026-10-06T09:00Z");
+    assert.equal((await db.query("select job_id from merchant_gain_notification_events where lead_id='queued'")).rows[0].job_id,null);
+    const recovered=await claim(db,"2026-10-06T09:01Z");
+    assert.deepEqual(recovered.gains.map(g=>g.leadId),["queued"]);
+    assert.notEqual((await db.query("select job_id from merchant_gain_notification_events where lead_id='queued'")).rows[0].job_id,null);
+  }finally{await db.close();}
+});
+
 test("passage quotidien : reprise indépendante dans les 23h, sans anticiper la synthèse du matin",async()=>{
   const db=await database();
   try {

@@ -103,6 +103,8 @@ const job={id:"job-demo",lease_token:"lease-demo",merchant_id:"a",merchant_name:
 function config(){process.env.VERCEL_ENV="production";process.env.MERCHANT_GAIN_NOTIFICATIONS_ENABLED="true";process.env.RESEND_API_KEY="fake-test";process.env.RESEND_FROM_EMAIL="test@example.test";process.env.MERCHANT_GAIN_NOTIFICATIONS_ORIGIN="https://app.okado.app";}
 test("envoi réel simulé : payload dynamique, clé idempotente et confirmation persistante",async()=>{
   config();state.jobs=[job];assert.deepEqual(await repo.dispatchMerchantGainNotifications("g"),{sent:1,failed:0,skipped:false,limitReached:false});
+  const claim=state.calls.find(c=>Array.isArray(c)&&c[0]==="claim_merchant_gain_notification");
+  assert.equal(typeof claim[1].p_now,"string");assert.equal(claim[1].p_lead,"g");
   assert.equal(state.sends.length,1);assert.deepEqual(state.sends[0][1],{idempotencyKey:"merchant-gain/job-demo"});
   assert.equal(state.sends[0][0].to,"owner@example.test");assert.match(state.sends[0][0].html,/Soin offert/);
   assert.match(state.sends[0][0].html,/Camille Martin/);assert.match(state.sends[0][0].text,/Camille Martin/);
@@ -203,9 +205,9 @@ test("reprise protégée indépendante d'une purge en panne, erreur sans donnée
   const response=await recovery.GET(new Request(url,{headers:{authorization:"Bearer test-only"}}));
   assert.equal(response.status,200);assert.equal((await response.json()).sent,1);
   assert.ok(state.calls.every(c=>!c[0].startsWith("purge_")));
-  state.dbError={message:"secret@example.test"};
+  state.dbError={message:"secret@example.test",code:"PGRST202"};
   const failed=await recovery.GET(new Request(url,{headers:{authorization:"Bearer test-only"}}));
   assert.equal(failed.status,503);assert.doesNotMatch(await failed.text(),/secret@example/);
   assert.doesNotMatch(JSON.stringify(state.logs),/secret@example/);
-  assert.ok(state.logs.some(l=>l[1]==="merchant_gain_notification_dispatch_failed"));
+  assert.ok(state.logs.some(l=>l[1]==="merchant_gain_notification_dispatch_failed"&&l[2]?.stage==="claim"&&l[2]?.errorCode==="PGRST202"));
 });

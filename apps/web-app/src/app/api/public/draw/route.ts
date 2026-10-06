@@ -1,5 +1,5 @@
 import { after, NextRequest, NextResponse } from "next/server";
-import { dispatchMerchantGainNotifications } from "@/lib/merchant-gain-notifications";
+import { dispatchMerchantGainNotifications, getMerchantGainNotificationFailureContext } from "@/lib/merchant-gain-notifications";
 
 import {
   assertDailyParticipationCookie,
@@ -114,7 +114,7 @@ export async function POST(request: NextRequest) {
     const response = NextResponse.json(toPublicDrawResult(result), { status: 201 });
     if (result.prize) after(async () => {
       try { await dispatchMerchantGainNotifications(result.lead.id); }
-      catch { logSupportEvent("error", "merchant_gain_notification_dispatch_failed", { leadId: result.lead.id }); }
+      catch (error) { logSupportEvent("error", "merchant_gain_notification_dispatch_failed", getMerchantGainNotificationFailureContext(error)); }
     });
     response.cookies.set(
       cookieName,

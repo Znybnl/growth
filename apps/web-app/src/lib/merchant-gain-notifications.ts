@@ -7,6 +7,36 @@ import {
 } from "@/lib/merchant-gain-notification-email";
 
 export type GainNotificationPreference = { frequency: GainNotificationFrequency; updatedAt: string | null };
+export type MerchantGainNotificationStage = "configuration" | "claim" | "render" | "prepare" | "authorize" | "finish";
+
+class MerchantGainNotificationError extends Error {
+  readonly stage: MerchantGainNotificationStage;
+  readonly errorCode?: string;
+
+  constructor(stage: MerchantGainNotificationStage, errorCode?: string) {
+    super("Traitement de notification indisponible.");
+    this.name = "MerchantGainNotificationError";
+    this.stage = stage;
+    this.errorCode = errorCode;
+  }
+}
+
+function safeDatabaseErrorCode(error: unknown) {
+  if (!error || typeof error !== "object" || !("code" in error)) return undefined;
+  const code = (error as { code?: unknown }).code;
+  return typeof code === "string" && (/^PGRST\d{3}$/.test(code) || /^[0-9A-Z]{5}$/.test(code))
+    ? code
+    : undefined;
+}
+
+/** Only fixed stages and allowlisted database codes may reach operational logs. */
+export function getMerchantGainNotificationFailureContext(error: unknown) {
+  if (error instanceof MerchantGainNotificationError) {
+    return { stage: error.stage, errorCode: error.errorCode };
+  }
+  return { stage: "unknown" as const };
+}
+
 export async function getGainNotificationPreference(userId: string, merchantId: string): Promise<GainNotificationPreference> {
   const { data, error } = await getSupabaseAdmin().from("merchant_gain_notification_preferences")
     .select("frequency,updated_at").eq("user_id", userId).eq("merchant_id", merchantId).maybeSingle();
@@ -37,7 +67,7 @@ export async function dispatchMerchantGainNotifications(
   const key = process.env.RESEND_API_KEY;
   const from = process.env.RESEND_FROM_EMAIL;
   const origin = process.env.MERCHANT_GAIN_NOTIFICATIONS_ORIGIN;
-  if (!key || !from || !origin) throw new Error("Configuration des notifications incomplète.");
+  if (!key || !from || !origin) throw new MerchantGainNotificationError("configuration");
   const resend = new Resend(key);
   const db = getSupabaseAdmin();
   const maxJobs = Math.min(Math.max(Math.trunc(limit), 0), 200);
@@ -49,27 +79,36 @@ export async function dispatchMerchantGainNotifications(
     // Stop before acquiring another lease. Unattempted parts remain durable
     // for the next run; never relax the provider's idempotency safety window.
     if (Date.now() >= deadline) { limitReached = true; break; }
-    const { data, error } = await db.rpc("claim_merchant_gain_notification", { p_lead: leadId ?? null });
-    if (error) throw new Error("Impossible de préparer les notifications.");
+    const { data, error } = await db.rpc("claim_merchant_gain_notification", {
+      // Pass both SQL arguments explicitly so PostgREST resolves the exact
+      // migration signature instead of relying on a defaulted named argument.
+      p_now: new Date().toISOString(), p_lead: leadId ?? null,
+    });
+    if (error) throw new MerchantGainNotificationError("claim", safeDatabaseErrorCode(error));
     if (!data) break;
     processed++;
     const job = data as NotificationJob;
-    const email = renderMerchantGainNotification({
-      origin, merchantName: job.merchant_name, merchantId: job.merchant_id,
-      frequency: job.frequency, timeZone: job.time_zone, periodStart: job.period_start,
-      periodEnd: job.period_end, gains: job.gains, part: job.part, parts: job.parts,
-    });
+    let email: ReturnType<typeof renderMerchantGainNotification>;
+    try {
+      email = renderMerchantGainNotification({
+        origin, merchantName: job.merchant_name, merchantId: job.merchant_id,
+        frequency: job.frequency, timeZone: job.time_zone, periodStart: job.period_start,
+        periodEnd: job.period_end, gains: job.gains, part: job.part, parts: job.parts,
+      });
+    } catch {
+      throw new MerchantGainNotificationError("render");
+    }
     const prepared = await db.rpc("prepare_merchant_gain_notification_payload", {
       p_id: job.id, p_token: job.lease_token,
       p_payload: { ...email, from: `Okado <${from.replace(/^.*<(.+)>$/, "$1")}>` },
     });
-    if (prepared.error) throw new Error("Impossible de préparer le contenu de notification.");
+    if (prepared.error) throw new MerchantGainNotificationError("prepare", safeDatabaseErrorCode(prepared.error));
     if (!prepared.data) continue;
     const payload = prepared.data as typeof email & { from: string };
     const authorization = await db.rpc("authorize_merchant_gain_notification", {
       p_id: job.id, p_token: job.lease_token,
     });
-    if (authorization.error) throw new Error("Impossible de vérifier la notification.");
+    if (authorization.error) throw new MerchantGainNotificationError("authorize", safeDatabaseErrorCode(authorization.error));
     if (authorization.data !== true) continue;
     let providerId: string | null = null;
     try {
@@ -86,7 +125,7 @@ export async function dispatchMerchantGainNotifications(
     const finish = await db.rpc("finish_merchant_gain_notification", {
       p_id: job.id, p_token: job.lease_token, p_sent: providerId !== null, p_provider_id: providerId,
     });
-    if (finish.error) throw new Error("Impossible de confirmer l’état de notification.");
+    if (finish.error) throw new MerchantGainNotificationError("finish", safeDatabaseErrorCode(finish.error));
     if (providerId) sent++;
   }
   return { sent, failed, skipped: false, limitReached: limitReached || processed === maxJobs };
