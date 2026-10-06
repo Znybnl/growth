@@ -121,6 +121,12 @@ Recette : Pilotage → Voir les jeux → QR de diffusion, puis Modifier le jeu e
 
 Recette et limites : [livraison #466](releases/beauty-catalog-466.md). Une fixture ne prouve pas l'exécution de la migration en production.
 
+## Fiche établissement administrative — #475
+
+`npm run test:admin-profiles -w @okado/web-app` teste le handler, le repository et le DTO réels avec infrastructure simulée uniquement dans le processus de test : 401/403 avant lecture, compte absent/archivé, multi-sites associés sans site étranger ni doublon, exclusion des secrets ajoutés au profil à l’exécution, valeurs absentes et numériques nulles, URL non sûres, erreur sans fuite de données, absence de préchargement dans Pilotage et fixture interdite en production. Aucun accès à une base réelle ni écriture.
+
+`e2e/admin-establishment-profile.spec.ts` teste le vrai composant avec réponses synthétiques à 320/390/1280 px : fiche complète, sélection de site, champs absents, liens externes sûrs, dimensions et défilement interne sans débordement, chargement/erreur/reprise, fermeture, focus confiné et restauré. Il vérifie aussi le refus HTTP réel d’un visiteur sur la nouvelle route. La fixture `/dev/admin-location-profile-proof` est limitée au développement, sans contournement d’authentification serveur. Recette propriétaire : Pilotage → Voir la fiche, consulter un compte mono-site puis multi-sites, vérifier ses coordonnées/liens et refermer ; les informations et la sélection de site active doivent rester inchangées.
+
 ## Compte rendu attendu
 
 Chaque demande de merge ou de production doit indiquer, en quelques lignes :

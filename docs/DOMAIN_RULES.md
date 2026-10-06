@@ -2,6 +2,10 @@
 
 Ce document regroupe les invariants fonctionnels approuvés d'Okado. Il ne remplace pas un avis juridique. Toute évolution du consentement, des données personnelles, des avis Google ou des règles de retrait doit être validée par le propriétaire avant implémentation.
 
+## Consultation administrative des établissements — #475
+
+La fiche dans Pilotage est réservée à l’administration de la plateforme et consultable uniquement en lecture seule. Chaque site présenté est résolu via les associations existantes du compte, sans modifier le site actif de la session. La réponse serveur utilise une liste explicite de champs : coordonnées, identité, liens marketing et paramètres non secrets. Aucun PIN, empreinte/chiffrement de PIN, jeton, mot de passe ou identifiant privé Stripe n’est transmis. Le navigateur ne mémorise pas ces profils dans un stockage persistant et la réponse HTTP est privée et non mise en cache.
+
 ## Autorité et périmètre
 
 - Pierre-Henri BRUNELLE est l'administrateur de la plateforme et l'unique valideur des PR, merges et déploiements en production.
