@@ -23,6 +23,11 @@ function cookieHeader() {
 async function request(path, options = {}) {
   const headers = new Headers(options.headers ?? {});
   if (!headers.has("Accept")) headers.set("Accept", "application/json");
+  // Isolate authentication from CSRF: send a legitimate origin by default.
+  // Explicit malicious origins below remain untouched and must still fail.
+  if (options.method && options.method !== "GET" && !headers.has("Origin")) {
+    headers.set("Origin", baseUrl);
+  }
   if (options.body && !headers.has("Content-Type")) {
     headers.set("Content-Type", "application/json");
   }
