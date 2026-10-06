@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { dispatchMerchantGainNotifications } from "@/lib/merchant-gain-notifications";
+import { dispatchMerchantGainNotifications, getMerchantGainNotificationFailureContext } from "@/lib/merchant-gain-notifications";
 import { logSupportEvent } from "@/lib/support-log";
 export const maxDuration = 300;
 export async function GET(request: Request) {
@@ -18,8 +18,8 @@ export async function GET(request: Request) {
       "merchant_gain_notification_dispatch", result,
     );
     return NextResponse.json(result, { headers: { "Cache-Control": "no-store" } });
-  } catch {
-    logSupportEvent("error", "merchant_gain_notification_dispatch_failed", {});
+  } catch (error) {
+    logSupportEvent("error", "merchant_gain_notification_dispatch_failed", getMerchantGainNotificationFailureContext(error));
     return NextResponse.json({ error: "Traitement des notifications indisponible." }, { status: 503 });
   }
 }
