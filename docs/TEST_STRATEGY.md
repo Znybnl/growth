@@ -138,6 +138,10 @@ Complément #473 : les tests du handler/DAL vérifient les cinq fréquences, le 
 
 `e2e/admin-establishment-profile.spec.ts` teste le vrai composant avec réponses synthétiques à 320/390/1280 px : fiche complète, sélection de site, champs absents, liens externes sûrs, dimensions et défilement interne sans débordement, chargement/erreur/reprise, fermeture, focus confiné et restauré. Il vérifie aussi le refus HTTP réel d’un visiteur sur la nouvelle route. La fixture `/dev/admin-location-profile-proof` est limitée au développement, sans contournement d’authentification serveur. Recette propriétaire : Pilotage → Voir la fiche, consulter un compte mono-site puis multi-sites, vérifier ses coordonnées/liens et refermer ; les informations et la sélection de site active doivent rester inchangées.
 
+## Métadonnées de partage des jeux — #486
+
+`npm run test:social-metadata -w @okado/web-app` couvre roue et ticket à gratter, l'association établissement/promesse, le sous-titre propre au jeu en description et les replis lorsque des champs sont vides. Un smoke test HTTP sur le HTML initial vérifie `title`, Open Graph et Twitter, puisque les robots de partage doivent lire ces métadonnées sans exécuter le JavaScript.
+
 ## Compte rendu attendu
 
 Chaque demande de merge ou de production doit indiquer, en quelques lignes :

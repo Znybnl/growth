@@ -14,6 +14,7 @@
     "test:admin-campaigns": "node --experimental-strip-types --test src/lib/admin-campaign-management.test.mjs",
     "test:beauty-catalog": "node --experimental-strip-types --test src/lib/beauty-catalog.test.mjs",
     "test:admin-profiles": "node --experimental-strip-types --test src/lib/admin-establishment-profile.test.mjs",
+    "test:social-metadata": "node --experimental-strip-types --test src/lib/campaign-social-metadata.test.mjs",
     "test:wizard-marketing-actions": "node --test src/lib/wizard-marketing-actions.test.mjs",
     "check:gotomarket": "node scripts/check-gotomarket-config.mjs",
     "check:dependencies": "node scripts/check-dependency-exceptions.mjs",
