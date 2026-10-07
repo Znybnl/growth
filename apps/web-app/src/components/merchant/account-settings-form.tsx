@@ -321,7 +321,7 @@ export function AccountSettingsForm({
           ))}
         </div>
 
-        {activeTab === "user" ? <div id="account-tabpanel-user" role="tabpanel" aria-labelledby="account-user-tab">
+        {activeTab === "user" ? <div id="account-tabpanel-user" role="tabpanel" aria-labelledby="account-user-tab" className="space-y-4">
         <AccountSectionCard
         id="account-user"
         eyebrow="Mon compte"
