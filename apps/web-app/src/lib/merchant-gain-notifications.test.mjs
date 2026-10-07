@@ -7,6 +7,8 @@ import { renderMerchantGainNotification } from "./merchant-gain-notification-ema
 const migration = readFileSync(new URL("../../../../supabase/migrations/20261006_merchant_gain_notifications_473.sql",import.meta.url),"utf8");
 const schemaCompatibilityMigration = readFileSync(new URL("../../../../supabase/migrations/20261007_fix_gain_notification_claim_lead_name_schema.sql",import.meta.url),"utf8");
 const multiNotificationMigration = readFileSync(new URL("../../../../supabase/migrations/20261007_multi_gain_notifications_484.sql",import.meta.url),"utf8");
+const digestContextMigration = readFileSync(new URL("../../../../supabase/migrations/20261007110000_gain_notification_digest_context_484.sql",import.meta.url),"utf8");
+const digestContextRollback = readFileSync(new URL("../../../../supabase/rollback/20261007110000_gain_notification_digest_context_484.sql",import.meta.url),"utf8");
 const rollback = readFileSync(new URL("../../../../supabase/rollback/20261006_merchant_gain_notifications_473.sql",import.meta.url),"utf8");
 async function database(applyChannelMigration = true) {
   const db = new PGlite();
@@ -16,20 +18,24 @@ async function database(applyChannelMigration = true) {
     create table merchant_users(id text primary key,email text);
     create table merchant_workspace_memberships(id text primary key,workspace_id text,merchant_user_id text,role text,status text);
     create table merchant_membership_locations(membership_id text,merchant_id text);
-    create table campaigns(id text primary key,merchant_id text,title text,game_type text);
-    create table prizes(id text primary key,campaign_id text,label text);
+    create table campaigns(id text primary key,merchant_id text,title text,game_type text,is_active boolean not null default true);
+    create table prizes(id text primary key,campaign_id text,label text,total_quantity integer,remaining_quantity integer,created_at timestamptz default now());
     create table leads(id text primary key,campaign_id text,prize_id text,status text,created_at timestamptz,first_name text,reward_expires_at timestamptz,redeemed_at timestamptz);
     create table preview_participations(like leads);
     insert into merchants values ('a','Institut Démo','w','active','Europe/Paris'),('b','Autre site','w2','active','Europe/Paris');
     insert into merchant_users values ('u','owner@example.test'),('v','other@example.test');
     insert into merchant_workspace_memberships values ('wu','w','u','owner','active'),('wv','w2','v','manager','active');
     insert into merchant_membership_locations values ('wv','b');
-    insert into campaigns values ('c','a','Jeu Démo','wheel'),('s','a','Ticket Démo','scratch'),('x','b','Autre Jeu','wheel');
-    insert into prizes values ('p','c','Soin offert'),('ps','s','-10% PROCHAINE VISITE'),('px','x','Autre lot');
+    insert into campaigns(id,merchant_id,title,game_type) values ('c','a','Jeu Démo','wheel'),('s','a','Ticket Démo','scratch'),('x','b','Autre Jeu','wheel'),('inactive','a','Jeu arrêté','wheel');
+    update campaigns set is_active=false where id='inactive';
+    insert into prizes(id,campaign_id,label,total_quantity,remaining_quantity) values
+      ('p','c','Soin offert',10,0),('ps','s','-10% PROCHAINE VISITE',null,null),
+      ('px','x','Autre lot',8,4),('pi','inactive','Lot inactif',5,0);
   `);
   await db.exec(migration);
   await db.exec(schemaCompatibilityMigration);
   if (applyChannelMigration) await db.exec(multiNotificationMigration);
+  if (applyChannelMigration) await db.exec(digestContextMigration);
   return db;
 }
 const pref = (db,f="daily",user="u",site="a") =>
@@ -296,6 +302,51 @@ test("rendu nominatif autorisé, listing détaillé, statut de retrait exclusif 
   assert.doesNotMatch(hostile.html,/<script|<img src=x/);assert.match(hostile.html,/&lt;img/);
   assert.throws(()=>renderMerchantGainNotification({...input,gains:[]}),/vide/);
   assert.throws(()=>renderMerchantGainNotification({...input,origin:"javascript:alert(1)"}));
+});
+
+test("KPI de retraits suit redeemed_at, inclut un gain antérieur et les stocks sont limités à l'établissement actif",async()=>{
+  const db=await database();
+  try {
+    await gain(db,"won-before-period","2026-10-01T12:00Z");
+    await db.exec("update leads set status='redeemed',redeemed_at='2026-10-06T12:00Z' where id='won-before-period'");
+    await gain(db,"redeemed-before-period","2026-10-01T12:00Z");
+    await db.exec("update leads set status='redeemed',redeemed_at='2026-10-05T21:59:59Z' where id='redeemed-before-period'");
+    await gain(db,"other-merchant","2026-10-01T12:00Z","x","px","redeemed");
+    await db.exec("update leads set redeemed_at='2026-10-06T12:00Z' where id='other-merchant'");
+    const result=await db.query(
+      "select get_merchant_gain_notification_digest_context($1,$2,$3) context",
+      ["a","2026-10-05T22:00Z","2026-10-06T22:00Z"],
+    );
+    const context=result.rows[0].context;
+    assert.equal(context.redeemedCount,1);
+    assert.deepEqual(context.stocks.map(({campaignTitle,prizeLabel,totalQuantity,remainingQuantity})=>({campaignTitle,prizeLabel,totalQuantity,remainingQuantity})),[
+      {campaignTitle:"Jeu Démo",prizeLabel:"Soin offert",totalQuantity:10,remainingQuantity:0},
+      {campaignTitle:"Ticket Démo",prizeLabel:"-10% PROCHAINE VISITE",totalQuantity:null,remainingQuantity:null},
+    ]);
+    await db.exec("set role authenticated");
+    await assert.rejects(db.query("select get_merchant_gain_notification_digest_context($1,$2,$3)",["a","2026-10-05T22:00Z","2026-10-06T22:00Z"]),/permission denied/);
+    await db.exec("reset role");
+    await db.exec(digestContextRollback);
+    await assert.rejects(db.query("select get_merchant_gain_notification_digest_context($1,$2,$3)",["a","2026-10-05T22:00Z","2026-10-06T22:00Z"]),/function .* does not exist/);
+  } finally { await db.close(); }
+});
+
+test("les synthèses montrent le KPI de retraits et les stocks épuisés/illimités, pas l'alerte immédiate",()=>{
+  const digest=renderMerchantGainNotification({...input,frequency:"daily",redeemedCount:3,stocks:[
+    {campaignTitle:"Jeu Démo",prizeLabel:"Soin offert",totalQuantity:10,remainingQuantity:0},
+    {campaignTitle:"Ticket Démo",prizeLabel:"-10%",totalQuantity:null,remainingQuantity:null},
+  ]});
+  assert.match(digest.html,/Lots récupérés pendant la période/);
+  assert.match(digest.html,/>3<\/p>/);
+  assert.match(digest.html,/STOCK ÉPUISÉ/);
+  assert.match(digest.html,/Illimité/);
+  assert.match(digest.text,/Lots récupérés pendant la période : 3/);
+  assert.match(digest.text,/STOCK ÉPUISÉ/);
+  const instant=renderMerchantGainNotification({...input,frequency:"instant",redeemedCount:3,stocks:[
+    {campaignTitle:"Jeu Démo",prizeLabel:"Soin offert",totalQuantity:10,remainingQuantity:0},
+  ]});
+  assert.doesNotMatch(instant.html,/Indicateurs de la période|Stocks des campagnes actives/);
+  assert.doesNotMatch(instant.text,/Lots récupérés pendant la période|Stocks des campagnes actives/);
 });
 
 test("noms lus dans la participation, snapshot privé stable et expurgé à l’effacement",async()=>{

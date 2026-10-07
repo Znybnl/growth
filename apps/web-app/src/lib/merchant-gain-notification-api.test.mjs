@@ -34,6 +34,7 @@ beforeEach(()=>{
     async rpc(name,args){state.calls.push([name,args]);
       if(state.dbError)return {error:state.dbError};
       if(name==="claim_merchant_gain_notification")return {data:state.jobs.shift()??null};
+      if(name==="get_merchant_gain_notification_digest_context")return {data:state.digestContext??{redeemedCount:0,stocks:[]}};
       if(name==="authorize_merchant_gain_notification")return {data:state.authorized??true};
       if(name==="prepare_merchant_gain_notification_payload")return {data:state.frozenPayload??args.p_payload};
       if(name==="set_merchant_gain_notification_preferences")return {data:{enabled_frequencies:args.p_frequencies,updated_at:"2026-10-06T12:00Z"}};
@@ -124,6 +125,21 @@ test("une reprise envoie le payload déjà figé même après un changement de r
   state.frozenPayload={subject:"Original",html:"<p>Original</p>",text:"Original",from:"Okado <original@example.test>"};
   await repo.dispatchMerchantGainNotifications();
   assert.deepEqual(state.sends[0][0],{...state.frozenPayload,to:"owner@example.test"});
+});
+test("une synthèse lit le KPI et les stocks pour la fenêtre et l'établissement du job",async()=>{
+  config();
+  state.jobs=[{...job,frequency:"weekly",period_start:"2026-10-05T22:00:00Z",period_end:"2026-10-12T22:00:00Z"}];
+  state.digestContext={redeemedCount:2,stocks:[
+    {campaignTitle:"Jeu actif",prizeLabel:"Soin",totalQuantity:5,remainingQuantity:0},
+  ]};
+  await repo.dispatchMerchantGainNotifications();
+  const contextCall=state.calls.find(c=>Array.isArray(c)&&c[0]==="get_merchant_gain_notification_digest_context");
+  assert.deepEqual(contextCall[1],{
+    p_merchant_id:"a",p_period_start:"2026-10-05T22:00:00Z",p_period_end:"2026-10-12T22:00:00Z",
+  });
+  assert.match(state.sends[0][0].html,/Lots récupérés pendant la période/);
+  assert.match(state.sends[0][0].html,/STOCK ÉPUISÉ/);
+  assert.match(state.sends[0][0].text,/Lots récupérés pendant la période : 2/);
 });
 test("câblage non bloquant uniquement des deux finalisations réelles",()=>{
   for(const name of ["route.ts","finalize/route.ts"]){

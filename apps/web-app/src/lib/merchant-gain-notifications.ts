@@ -7,7 +7,7 @@ import {
 } from "@/lib/merchant-gain-notification-email";
 
 export type GainNotificationPreference = { frequencies: GainNotificationFrequency[]; updatedAt: string | null };
-export type MerchantGainNotificationStage = "configuration" | "claim" | "render" | "prepare" | "authorize" | "finish";
+export type MerchantGainNotificationStage = "configuration" | "claim" | "digest" | "render" | "prepare" | "authorize" | "finish";
 
 class MerchantGainNotificationError extends Error {
   readonly stage: MerchantGainNotificationStage;
@@ -60,6 +60,35 @@ type NotificationJob = {
   time_zone: string; frequency: Exclude<GainNotificationFrequency, "disabled">;
   period_start: string; period_end: string; part: number; parts: number; gains: NotificationGain[];
 };
+type NotificationDigestContext = {
+  redeemedCount: number;
+  stocks: Array<{
+    campaignTitle: string;
+    prizeLabel: string;
+    totalQuantity: number | null;
+    remainingQuantity: number | null;
+  }>;
+};
+
+function parseNotificationDigestContext(value: unknown): NotificationDigestContext {
+  if (!value || typeof value !== "object") throw new MerchantGainNotificationError("digest");
+  const context = value as Partial<NotificationDigestContext>;
+  if (!Number.isInteger(context.redeemedCount) || (context.redeemedCount ?? -1) < 0 || !Array.isArray(context.stocks)) {
+    throw new MerchantGainNotificationError("digest");
+  }
+  const stocks = context.stocks.map((stock) => {
+    if (!stock || typeof stock.campaignTitle !== "string" || typeof stock.prizeLabel !== "string") {
+      throw new MerchantGainNotificationError("digest");
+    }
+    if ((stock.totalQuantity !== null && !Number.isInteger(stock.totalQuantity)) ||
+      (stock.remainingQuantity !== null && !Number.isInteger(stock.remainingQuantity))) {
+      throw new MerchantGainNotificationError("digest");
+    }
+    return stock;
+  });
+  return { redeemedCount: context.redeemedCount!, stocks };
+}
+
 export async function dispatchMerchantGainNotifications(
   leadId?: string, limit = 10,
   options: { budgetMs?: number; minIntervalMs?: number } = {},
@@ -93,12 +122,25 @@ export async function dispatchMerchantGainNotifications(
     if (!data) break;
     processed++;
     const job = data as NotificationJob;
+    let digestContext: NotificationDigestContext = { redeemedCount: 0, stocks: [] };
+    if (job.frequency !== "instant") {
+      const contextResult = await db.rpc("get_merchant_gain_notification_digest_context", {
+        p_merchant_id: job.merchant_id,
+        p_period_start: job.period_start,
+        p_period_end: job.period_end,
+      });
+      if (contextResult.error) {
+        throw new MerchantGainNotificationError("digest", safeDatabaseErrorCode(contextResult.error));
+      }
+      digestContext = parseNotificationDigestContext(contextResult.data);
+    }
     let email: ReturnType<typeof renderMerchantGainNotification>;
     try {
       email = renderMerchantGainNotification({
         origin, merchantName: job.merchant_name, merchantId: job.merchant_id,
         frequency: job.frequency, timeZone: job.time_zone, periodStart: job.period_start,
         periodEnd: job.period_end, gains: job.gains, part: job.part, parts: job.parts,
+        ...digestContext,
       });
     } catch {
       throw new MerchantGainNotificationError("render");
