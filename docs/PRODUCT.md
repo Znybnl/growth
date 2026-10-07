@@ -23,6 +23,10 @@ Dans Pilotage → Voir la fiche, l’administrateur consulte la fréquence et la
 
 ## Parcours principaux
 
+### Aperçu d'un jeu partagé
+
+Les métadonnées de la page publique destinées aux aperçus sociaux associent le nom de l'établissement et la promesse visible du jeu dans le titre. La description reprend le sous-titre secondaire configuré pour la roue ou le ticket à gratter. Si l'un de ces textes est absent, il est omis du titre ou la description générique de la plateforme est conservée ; les prévisualisations privées ne publient pas les textes d'un brouillon.
+
 ### P-01 — Créer et publier un jeu
 
 - **Acteur** : marchand.
