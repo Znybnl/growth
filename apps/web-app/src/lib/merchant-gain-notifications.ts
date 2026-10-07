@@ -2,12 +2,12 @@ import { Resend } from "resend";
 import { setTimeout as delay } from "node:timers/promises";
 import { getSupabaseAdmin } from "@/lib/supabase";
 import {
-  renderMerchantGainNotification,
+  GAIN_NOTIFICATION_FREQUENCIES, renderMerchantGainNotification,
   type GainNotificationFrequency, type NotificationGain,
 } from "@/lib/merchant-gain-notification-email";
 
-export type GainNotificationPreference = { frequency: GainNotificationFrequency; updatedAt: string | null };
-export type MerchantGainNotificationStage = "configuration" | "claim" | "render" | "prepare" | "authorize" | "finish";
+export type GainNotificationPreference = { frequencies: GainNotificationFrequency[]; updatedAt: string | null };
+export type MerchantGainNotificationStage = "configuration" | "claim" | "digest" | "render" | "prepare" | "authorize" | "finish";
 
 class MerchantGainNotificationError extends Error {
   readonly stage: MerchantGainNotificationStage;
@@ -39,22 +39,56 @@ export function getMerchantGainNotificationFailureContext(error: unknown) {
 
 export async function getGainNotificationPreference(userId: string, merchantId: string): Promise<GainNotificationPreference> {
   const { data, error } = await getSupabaseAdmin().from("merchant_gain_notification_preferences")
-    .select("frequency,updated_at").eq("user_id", userId).eq("merchant_id", merchantId).maybeSingle();
+    .select("enabled_frequencies,updated_at").eq("user_id", userId).eq("merchant_id", merchantId).maybeSingle();
   if (error) throw new Error("Impossible de charger les préférences de notification.");
-  return { frequency: data?.frequency ?? "disabled", updatedAt: data?.updated_at ?? null };
+  const frequencies = data?.enabled_frequencies;
+  if (frequencies != null && (!Array.isArray(frequencies) || frequencies.some((frequency) =>
+    !GAIN_NOTIFICATION_FREQUENCIES.includes(frequency as GainNotificationFrequency)))) {
+    throw new Error("Préférences de notification invalides.");
+  }
+  return { frequencies: (frequencies ?? []) as GainNotificationFrequency[], updatedAt: data?.updated_at ?? null };
 }
-export async function saveGainNotificationPreference(userId: string, merchantId: string, frequency: GainNotificationFrequency) {
-  const { data, error } = await getSupabaseAdmin().rpc("set_merchant_gain_notification_preference", {
-    p_user: userId, p_merchant: merchantId, p_frequency: frequency,
+export async function saveGainNotificationPreferences(userId: string, merchantId: string, frequencies: GainNotificationFrequency[]) {
+  const { data, error } = await getSupabaseAdmin().rpc("set_merchant_gain_notification_preferences", {
+    p_user: userId, p_merchant: merchantId, p_frequencies: frequencies,
   });
   if (error || !data) throw new Error("Impossible d’enregistrer les préférences de notification.");
-  return { frequency: data.frequency, updatedAt: data.updated_at } as GainNotificationPreference;
+  return { frequencies: data.enabled_frequencies, updatedAt: data.updated_at } as GainNotificationPreference;
 }
 type NotificationJob = {
   id: string; lease_token: string; merchant_id: string; merchant_name: string; recipient: string;
   time_zone: string; frequency: Exclude<GainNotificationFrequency, "disabled">;
   period_start: string; period_end: string; part: number; parts: number; gains: NotificationGain[];
 };
+type NotificationDigestContext = {
+  redeemedCount: number;
+  stocks: Array<{
+    campaignTitle: string;
+    prizeLabel: string;
+    totalQuantity: number | null;
+    remainingQuantity: number | null;
+  }>;
+};
+
+function parseNotificationDigestContext(value: unknown): NotificationDigestContext {
+  if (!value || typeof value !== "object") throw new MerchantGainNotificationError("digest");
+  const context = value as Partial<NotificationDigestContext>;
+  if (!Number.isInteger(context.redeemedCount) || (context.redeemedCount ?? -1) < 0 || !Array.isArray(context.stocks)) {
+    throw new MerchantGainNotificationError("digest");
+  }
+  const stocks = context.stocks.map((stock) => {
+    if (!stock || typeof stock.campaignTitle !== "string" || typeof stock.prizeLabel !== "string") {
+      throw new MerchantGainNotificationError("digest");
+    }
+    if ((stock.totalQuantity !== null && !Number.isInteger(stock.totalQuantity)) ||
+      (stock.remainingQuantity !== null && !Number.isInteger(stock.remainingQuantity))) {
+      throw new MerchantGainNotificationError("digest");
+    }
+    return stock;
+  });
+  return { redeemedCount: context.redeemedCount!, stocks };
+}
+
 export async function dispatchMerchantGainNotifications(
   leadId?: string, limit = 10,
   options: { budgetMs?: number; minIntervalMs?: number } = {},
@@ -88,12 +122,25 @@ export async function dispatchMerchantGainNotifications(
     if (!data) break;
     processed++;
     const job = data as NotificationJob;
+    let digestContext: NotificationDigestContext = { redeemedCount: 0, stocks: [] };
+    if (job.frequency !== "instant") {
+      const contextResult = await db.rpc("get_merchant_gain_notification_digest_context", {
+        p_merchant_id: job.merchant_id,
+        p_period_start: job.period_start,
+        p_period_end: job.period_end,
+      });
+      if (contextResult.error) {
+        throw new MerchantGainNotificationError("digest", safeDatabaseErrorCode(contextResult.error));
+      }
+      digestContext = parseNotificationDigestContext(contextResult.data);
+    }
     let email: ReturnType<typeof renderMerchantGainNotification>;
     try {
       email = renderMerchantGainNotification({
         origin, merchantName: job.merchant_name, merchantId: job.merchant_id,
         frequency: job.frequency, timeZone: job.time_zone, periodStart: job.period_start,
         periodEnd: job.period_end, gains: job.gains, part: job.part, parts: job.parts,
+        ...digestContext,
       });
     } catch {
       throw new MerchantGainNotificationError("render");

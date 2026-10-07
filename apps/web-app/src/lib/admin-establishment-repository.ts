@@ -16,16 +16,17 @@ export async function getAdminEstablishmentProfiles(accountMerchantId: string, a
   const locations = await getAdminCampaignLocations(accountMerchantId, targetUserId);
   if (!locations.length) return [];
   const preferences = await db.from("merchant_gain_notification_preferences")
-    .select("merchant_id,frequency,updated_at")
+    .select("merchant_id,enabled_frequencies,updated_at")
     .eq("user_id", targetUserId).in("merchant_id", locations.map(({ id }) => id));
   if (preferences.error) throw new Error("Lecture des préférences de notification impossible.");
-  const byLocation = new Map<string, { frequency: GainNotificationFrequency; updatedAt: string | null }>();
+  const byLocation = new Map<string, { frequencies: GainNotificationFrequency[]; updatedAt: string | null }>();
   for (const row of preferences.data ?? []) {
-    if (!GAIN_NOTIFICATION_FREQUENCIES.includes(row.frequency)) {
+    if (!Array.isArray(row.enabled_frequencies) || row.enabled_frequencies.some((frequency: string) =>
+      !GAIN_NOTIFICATION_FREQUENCIES.includes(frequency as GainNotificationFrequency))) {
       throw new Error("Préférence de notification invalide.");
     }
-    byLocation.set(row.merchant_id, { frequency: row.frequency, updatedAt: row.updated_at });
+    byLocation.set(row.merchant_id, { frequencies: row.enabled_frequencies as GainNotificationFrequency[], updatedAt: row.updated_at });
   }
   return locations.map(location => toAdminEstablishmentProfile(location,
-    byLocation.get(location.id) ?? { frequency: "disabled", updatedAt: null }));
+    byLocation.get(location.id) ?? { frequencies: [], updatedAt: null }));
 }

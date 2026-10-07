@@ -34,9 +34,10 @@ beforeEach(()=>{
     async rpc(name,args){state.calls.push([name,args]);
       if(state.dbError)return {error:state.dbError};
       if(name==="claim_merchant_gain_notification")return {data:state.jobs.shift()??null};
+      if(name==="get_merchant_gain_notification_digest_context")return {data:state.digestContext??{redeemedCount:0,stocks:[]}};
       if(name==="authorize_merchant_gain_notification")return {data:state.authorized??true};
       if(name==="prepare_merchant_gain_notification_payload")return {data:state.frozenPayload??args.p_payload};
-      if(name==="set_merchant_gain_notification_preference")return {data:{frequency:args.p_frequency,updated_at:"2026-10-06T12:00Z"}};
+      if(name==="set_merchant_gain_notification_preferences")return {data:{enabled_frequencies:args.p_frequencies,updated_at:"2026-10-06T12:00Z"}};
       return {data:null};
     },
   };
@@ -44,25 +45,27 @@ beforeEach(()=>{
 const request=body=>new Request("https://app.okado.app/api/merchant/gain-notifications",{
   method:"POST",headers:{"origin":"https://app.okado.app","content-type":"application/json"},body:JSON.stringify(body),
 });
-test("préférence : authentification, cloisonnement, origine, fréquence et destinataire non injectable",async()=>{
+test("préférence : authentification, cloisonnement, origine, sélections multiples et destinataire non injectable",async()=>{
   state.session=null;assert.equal((await route.GET(new Request("https://app.okado.app/api/merchant/gain-notifications"))).status,401);
   assert.equal(state.calls.length,0);
   state.session={user:{id:"u"},merchant:{id:"a"},locations:[{merchant:{id:"a"}}]};
   assert.equal((await route.GET(new Request("https://app.okado.app/api/merchant/gain-notifications?location=b"))).status,403);
-  assert.equal((await route.POST(request({location:"b",frequency:"daily"}))).status,403);
-  assert.equal((await route.POST(request({location:"a",frequency:"inconnu"}))).status,400);
+  assert.equal((await route.POST(request({location:"b",frequencies:["daily"]}))).status,403);
+  assert.equal((await route.POST(request({location:"a",frequencies:["inconnu"]}))).status,400);
+  assert.equal((await route.POST(request({location:"a",frequencies:["daily","disabled"]}))).status,400);
   const crossOrigin=new Request("https://app.okado.app/api/merchant/gain-notifications",{method:"POST",headers:{origin:"https://evil.test"},body:"{}"});
   assert.equal((await route.POST(crossOrigin)).status,403);
   const defaults=await route.GET(new Request("https://app.okado.app/api/merchant/gain-notifications?location=a"));
   assert.equal(defaults.headers.get("cache-control"),"private, no-store");
-  assert.equal((await defaults.json()).frequency,"disabled");
-  const response=await route.POST(request({location:"a",frequency:"weekly",userId:"v",recipient:"injected@example.test"}));
+  assert.deepEqual((await defaults.json()).frequencies,[]);
+  const response=await route.POST(request({location:"a",frequencies:["daily","weekly","daily"],userId:"v",recipient:"injected@example.test"}));
   assert.equal(response.status,200);
-  assert.deepEqual(state.calls.at(-1),["set_merchant_gain_notification_preference",{p_user:"u",p_merchant:"a",p_frequency:"weekly"}]);
+  assert.deepEqual(await response.json(),{frequencies:["daily","weekly"],updatedAt:"2026-10-06T12:00Z"});
+  assert.deepEqual(state.calls.at(-1),["set_merchant_gain_notification_preferences",{p_user:"u",p_merchant:"a",p_frequencies:["daily","weekly"]}]);
 });
 test("réponses d’erreur sans secret, pas de préférence faussement enregistrée",async()=>{
   state.dbError={message:"secret@example.test"};
-  const response=await route.POST(request({location:"a",frequency:"daily"}));
+  const response=await route.POST(request({location:"a",frequencies:["daily"]}));
   assert.equal(response.status,503);assert.doesNotMatch(await response.text(),/secret/);
 });
 test("lien résultats authentifié vers le bon site, aucun accès élargi ni token public",async()=>{
@@ -122,6 +125,21 @@ test("une reprise envoie le payload déjà figé même après un changement de r
   state.frozenPayload={subject:"Original",html:"<p>Original</p>",text:"Original",from:"Okado <original@example.test>"};
   await repo.dispatchMerchantGainNotifications();
   assert.deepEqual(state.sends[0][0],{...state.frozenPayload,to:"owner@example.test"});
+});
+test("une synthèse lit le KPI et les stocks pour la fenêtre et l'établissement du job",async()=>{
+  config();
+  state.jobs=[{...job,frequency:"weekly",period_start:"2026-10-05T22:00:00Z",period_end:"2026-10-12T22:00:00Z"}];
+  state.digestContext={redeemedCount:2,stocks:[
+    {campaignTitle:"Jeu actif",prizeLabel:"Soin",totalQuantity:5,remainingQuantity:0},
+  ]};
+  await repo.dispatchMerchantGainNotifications();
+  const contextCall=state.calls.find(c=>Array.isArray(c)&&c[0]==="get_merchant_gain_notification_digest_context");
+  assert.deepEqual(contextCall[1],{
+    p_merchant_id:"a",p_period_start:"2026-10-05T22:00:00Z",p_period_end:"2026-10-12T22:00:00Z",
+  });
+  assert.match(state.sends[0][0].html,/Lots récupérés pendant la période/);
+  assert.match(state.sends[0][0].html,/STOCK ÉPUISÉ/);
+  assert.match(state.sends[0][0].text,/Lots récupérés pendant la période : 2/);
 });
 test("câblage non bloquant uniquement des deux finalisations réelles",()=>{
   for(const name of ["route.ts","finalize/route.ts"]){

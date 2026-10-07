@@ -103,42 +103,42 @@ test("absence de préférence : notifications désactivées sans aucune écritur
   const response=await GET(request(),params());
   assert.equal(response.status,200);
   for (const p of (await response.json()).locations) {
-    assert.deepEqual(p.gainNotification,{frequency:"disabled",updatedAt:null});
+    assert.deepEqual(p.gainNotification,{frequencies:[],updatedAt:null});
   }
   assert.equal(state.preferenceReads.length,1);
   assert.deepEqual(state.preferences,[]);
 });
-test("fréquences exactes, personnelles et distinctes par site, lecture groupée", async () => {
-  for (const frequency of ["disabled","instant","daily","weekly","monthly"]) {
+test("sélections exactes, personnelles et distinctes par site, lecture groupée", async () => {
+  for (const frequencies of [[],["instant"],["daily","weekly","monthly"]]) {
     state.preferences=[
-      {user_id:"root-user",merchant_id:"root",frequency,updated_at:"2026-10-06T10:00:00Z"},
-      {user_id:"foreign-user",merchant_id:"root",frequency:"instant",updated_at:"PRIVATE"},
-      {user_id:"root-user",merchant_id:"foreign",frequency:"weekly",updated_at:"PRIVATE"},
+      {user_id:"root-user",merchant_id:"root",enabled_frequencies:frequencies,updated_at:"2026-10-06T10:00:00Z"},
+      {user_id:"foreign-user",merchant_id:"root",enabled_frequencies:["instant"],updated_at:"PRIVATE"},
+      {user_id:"root-user",merchant_id:"foreign",enabled_frequencies:["weekly"],updated_at:"PRIVATE"},
     ];
     const response=await GET(request(),params());
     const payload=await response.json();
-    assert.deepEqual(payload.locations[0].gainNotification,{frequency,updatedAt:"2026-10-06T10:00:00Z"});
-    assert.deepEqual(payload.locations[1].gainNotification,{frequency:"disabled",updatedAt:null});
+    assert.deepEqual(payload.locations[0].gainNotification,{frequencies,updatedAt:"2026-10-06T10:00:00Z"});
+    assert.deepEqual(payload.locations[1].gainNotification,{frequencies:[],updatedAt:null});
     assert.ok(!JSON.stringify(payload).includes("PRIVATE"));
   }
-  assert.equal(state.preferenceReads.length,5);
+  assert.equal(state.preferenceReads.length,3);
 });
 test("deux utilisateurs du même compte : aucun mélange de sites et préférences", async () => {
   state.users.push({id:"other-user",merchant_id:"root"});
   state.memberships["other-user"]=["root","foreign"];
-  state.preferences=[{user_id:"other-user",merchant_id:"root",frequency:"monthly",updated_at:"2026-10-06T10:00:00Z"}];
+  state.preferences=[{user_id:"other-user",merchant_id:"root",enabled_frequencies:["daily","monthly"],updated_at:"2026-10-06T10:00:00Z"}];
   const own=await (await GET(request(),params())).json();
   assert.deepEqual(own.locations.map(p=>p.id),["root","site"]);
-  assert.equal(own.locations[0].gainNotification.frequency,"disabled");
+  assert.deepEqual(own.locations[0].gainNotification.frequencies,[]);
   const other=await (await GET(request("other-user"),params())).json();
   assert.deepEqual(other.locations.map(p=>p.id),["root","foreign"]);
-  assert.equal(other.locations[0].gainNotification.frequency,"monthly");
+  assert.deepEqual(other.locations[0].gainNotification.frequencies,["daily","monthly"]);
 });
 test("erreur de lecture ou fréquence invalide : jamais de faux statut désactivé", async () => {
   state.preferenceError=true;
   assert.equal((await GET(request(),params())).status,503);
   state.preferenceError=false;
-  state.preferences=[{user_id:"root-user",merchant_id:"root",frequency:"INVALID",updated_at:null}];
+  state.preferences=[{user_id:"root-user",merchant_id:"root",enabled_frequencies:["INVALID"],updated_at:null}];
   assert.equal((await GET(request(),params())).status,503);
 });
 test("DTO explicite excluant même des secrets ajoutés au profil à l'exécution", async () => {
