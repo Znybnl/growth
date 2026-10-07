@@ -3,7 +3,7 @@ import type { GainNotificationFrequency } from "@/lib/merchant-gain-notification
 
 /** Explicit public-to-admin DTO. Never serialize/spread the full Merchant. */
 export function toAdminEstablishmentProfile(merchant: Merchant, gainNotification?: {
-  frequency: GainNotificationFrequency; updatedAt: string | null;
+  frequencies: GainNotificationFrequency[]; updatedAt: string | null;
 }) {
   return {
     id: merchant.id,
@@ -39,7 +39,7 @@ export function toAdminEstablishmentProfile(merchant: Merchant, gainNotification
     redemptionPinConfigured: merchant.redemptionPinConfigured,
     createdAt: merchant.createdAt,
     gainNotification: gainNotification ? {
-      frequency: gainNotification.frequency,
+      frequencies: gainNotification.frequencies,
       updatedAt: gainNotification.updatedAt,
     } : undefined,
   };

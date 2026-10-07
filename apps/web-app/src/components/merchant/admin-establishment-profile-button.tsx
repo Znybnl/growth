@@ -115,10 +115,10 @@ function ProfileDetails({ profile }: { profile: AdminEstablishmentProfile }) {
         <Field label="Date de création" value={displayDate(profile.createdAt)} />
       </Section>
       <Section title="Notifications de gains">
-        <Field label="Fréquence" value={profile.gainNotification
-          ? profile.gainNotification.frequency === "disabled"
-            ? `Désactivées${profile.gainNotification.updatedAt ? "" : " (par défaut)"}`
-            : GAIN_NOTIFICATION_LABELS[profile.gainNotification.frequency]
+        <Field label="Notifications activées" value={profile.gainNotification
+          ? profile.gainNotification.frequencies.length === 0
+            ? `Aucune${profile.gainNotification.updatedAt ? "" : " (désactivées par défaut)"}`
+            : profile.gainNotification.frequencies.map(frequency => GAIN_NOTIFICATION_LABELS[frequency]).join(", ")
           : "Non disponible"} />
         <Field label="Dernière modification" value={displayDate(profile.gainNotification?.updatedAt ?? undefined)} />
         <Field label="Portée" value="Réglage personnel du compte consulté pour cet établissement." />

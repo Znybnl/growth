@@ -6,8 +6,9 @@ import { renderMerchantGainNotification } from "./merchant-gain-notification-ema
 
 const migration = readFileSync(new URL("../../../../supabase/migrations/20261006_merchant_gain_notifications_473.sql",import.meta.url),"utf8");
 const schemaCompatibilityMigration = readFileSync(new URL("../../../../supabase/migrations/20261007_fix_gain_notification_claim_lead_name_schema.sql",import.meta.url),"utf8");
+const multiNotificationMigration = readFileSync(new URL("../../../../supabase/migrations/20261007_multi_gain_notifications_484.sql",import.meta.url),"utf8");
 const rollback = readFileSync(new URL("../../../../supabase/rollback/20261006_merchant_gain_notifications_473.sql",import.meta.url),"utf8");
-async function database() {
+async function database(applyChannelMigration = true) {
   const db = new PGlite();
   await db.exec(`
     create role anon; create role authenticated; create role service_role;
@@ -17,7 +18,7 @@ async function database() {
     create table merchant_membership_locations(membership_id text,merchant_id text);
     create table campaigns(id text primary key,merchant_id text,title text,game_type text);
     create table prizes(id text primary key,campaign_id text,label text);
-    create table leads(id text primary key,campaign_id text,prize_id text,status text,created_at timestamptz,first_name text);
+    create table leads(id text primary key,campaign_id text,prize_id text,status text,created_at timestamptz,first_name text,reward_expires_at timestamptz,redeemed_at timestamptz);
     create table preview_participations(like leads);
     insert into merchants values ('a','Institut Démo','w','active','Europe/Paris'),('b','Autre site','w2','active','Europe/Paris');
     insert into merchant_users values ('u','owner@example.test'),('v','other@example.test');
@@ -28,10 +29,13 @@ async function database() {
   `);
   await db.exec(migration);
   await db.exec(schemaCompatibilityMigration);
+  if (applyChannelMigration) await db.exec(multiNotificationMigration);
   return db;
 }
 const pref = (db,f="daily",user="u",site="a") =>
   db.query("select set_merchant_gain_notification_preference($1,$2,$3)",[user,site,f]);
+const prefs = (db,frequencies,user="u",site="a") =>
+  db.query("select set_merchant_gain_notification_preferences($1,$2,$3)",[user,site,frequencies]);
 const gain = (db,id,date,c="c",p="p",status="claimed") =>
   db.query("insert into leads(id,campaign_id,prize_id,status,created_at) values ($1,$2,$3,$4,$5)",[id,c,p,status,date]);
 async function claim(db,date,lead=null) {
@@ -39,6 +43,23 @@ async function claim(db,date,lead=null) {
 }
 const finish = (db,job,sent=true,date="2026-10-06T07:00:00Z") =>
   db.query("select finish_merchant_gain_notification($1,$2,$3,$4,$5)",[job.id,job.lease_token,sent,sent?"provider-demo":null,date]);
+
+test("migration : conserve les sélections et associe l'outbox existant à son canal",async()=>{
+  const db=await database(false);
+  try {
+    await pref(db,"daily");
+    await gain(db,"already-prepared","2026-10-05T12:00Z");
+    await gain(db,"still-pending","2026-10-06T12:00Z");
+    const prepared=await claim(db,"2026-10-06T07:00Z");
+    assert.equal(prepared.frequency,"daily");
+    await db.exec(multiNotificationMigration);
+    assert.deepEqual((await db.query("select enabled_frequencies from merchant_gain_notification_preferences where user_id='u'")).rows[0].enabled_frequencies,["daily"]);
+    assert.deepEqual((await db.query("select lead_id,frequency,job_id from merchant_gain_notification_events order by lead_id")).rows.map(row=>[row.lead_id,row.frequency,row.job_id===null]),[
+      ["already-prepared","daily",false],["still-pending","daily",true],
+    ]);
+    assert.equal((await db.query("select id from merchant_gain_notification_jobs where id=$1",[prepared.id])).rows.length,1);
+  } finally { await db.close(); }
+});
 
 test("désactivé par défaut, activation non rétroactive, gains réels roue/ticket seulement",async()=>{
   const db=await database();
@@ -58,6 +79,40 @@ test("désactivé par défaut, activation non rétroactive, gains réels roue/ti
     await finish(db,job);assert.equal(await claim(db,"2026-10-06T07:01Z"),null);
     assert.deepEqual((await db.query("select gains from merchant_gain_notification_jobs")).rows[0].gains,[]);
   }finally{await db.close();}
+});
+test("un même gain rejoint chaque canal choisi et peut être notifié immédiatement puis dans les synthèses",async()=>{
+  const db=await database();
+  try {
+    await prefs(db,["instant","daily","weekly","monthly","daily"]);
+    await gain(db,"multi","2026-10-05T12:00Z");
+    assert.deepEqual((await db.query("select frequency from merchant_gain_notification_events order by array_position(array['instant','daily','weekly','monthly'],frequency)")).rows.map(row=>row.frequency),["instant","daily","weekly","monthly"]);
+    const instant=await claim(db,"2026-10-05T12:01Z","multi");
+    assert.equal(instant.frequency,"instant");assert.deepEqual(instant.gains.map(g=>g.leadId),["multi"]);
+    await finish(db,instant);
+    const daily=await claim(db,"2026-10-06T07:00Z");
+    assert.equal(daily.frequency,"daily");assert.deepEqual(daily.gains.map(g=>g.leadId),["multi"]);
+    await finish(db,daily);
+    const weekly=await claim(db,"2026-10-12T07:00Z");
+    assert.equal(weekly.frequency,"weekly");assert.deepEqual(weekly.gains.map(g=>g.leadId),["multi"]);
+    await finish(db,weekly);
+    const monthly=await claim(db,"2026-11-01T08:00Z");
+    assert.equal(monthly.frequency,"monthly");assert.deepEqual(monthly.gains.map(g=>g.leadId),["multi"]);
+  } finally { await db.close(); }
+});
+test("ajouter un canal n'est pas rétroactif et retirer un canal préserve les autres",async()=>{
+  const db=await database();
+  try {
+    await prefs(db,["daily"]);await gain(db,"before","2026-10-05T12:00Z");
+    await prefs(db,["daily","weekly"]);
+    assert.deepEqual((await db.query("select frequency from merchant_gain_notification_events where lead_id='before'")).rows.map(row=>row.frequency),["daily"]);
+    await gain(db,"after","2026-10-06T12:00Z");
+    assert.deepEqual((await db.query("select frequency from merchant_gain_notification_events where lead_id='after' order by frequency")).rows.map(row=>row.frequency),["daily","weekly"]);
+    const daily=await claim(db,"2026-10-07T07:00Z");assert.equal(daily.frequency,"daily");
+    await prefs(db,["weekly"]);
+    assert.equal((await db.query("select status,gains from merchant_gain_notification_jobs where id=$1",[daily.id])).rows[0].status,"cancelled");
+    assert.equal((await db.query("select count(*)::int n from merchant_gain_notification_events where frequency='daily'")).rows[0].n,0);
+    assert.equal((await db.query("select count(*)::int n from merchant_gain_notification_events where frequency='weekly'")).rows[0].n,1);
+  } finally { await db.close(); }
 });
 test("fréquences et fuseaux : 09h locale, lundi et premier du mois, périodes non chevauchantes",async()=>{
   for (const [frequency,date,before,due] of [
@@ -129,13 +184,15 @@ test("listing complet en parties numérotées, sans limite arbitraire de gains",
     assert.equal(await claim(db,"2026-10-06T07:00Z"),null);
   }finally{await db.close();}
 });
-test("changement de fréquence garde les gains en attente ; désactivation ne les rejoue pas",async()=>{
+test("changer ou désactiver des canaux ne rejoue pas les gains historiques",async()=>{
   const db=await database();
   try {await pref(db,"monthly");await gain(db,"g","2026-10-05T12:00Z");
-    await pref(db,"daily");const job=await claim(db,"2026-10-06T07:00Z");assert.equal(job.gains.length,1);
+    await pref(db,"daily");assert.equal(await claim(db,"2026-10-06T07:00Z"),null);
+    assert.equal((await db.query("select count(*)::int n from merchant_gain_notification_events")).rows[0].n,0);
+    await gain(db,"new","2026-10-06T12:00Z");const job=await claim(db,"2026-10-07T07:00Z");assert.equal(job.gains.length,1);
     await pref(db,"disabled");assert.equal(await claim(db,"2026-10-06T07:06Z"),null);
     await pref(db,"daily");assert.equal(await claim(db,"2026-10-07T07:00Z"),null);
-    await gain(db,"new","2026-10-06T12:00Z");assert.equal((await claim(db,"2026-10-07T07:00Z")).gains[0].leadId,"new");
+    await gain(db,"newer","2026-10-07T12:00Z");assert.equal((await claim(db,"2026-10-08T07:00Z")).gains[0].leadId,"newer");
   }finally{await db.close();}
 });
 test("permission retirée, site archivé, e-mail changé et reset de gain bloquent la reprise",async()=>{
@@ -218,17 +275,23 @@ test("travailleurs simultanés : une seule lease par gain ; périodes manquées 
 });
 const input={merchantName:"Institut Démo",merchantId:"a",frequency:"daily",timeZone:"Europe/Paris",periodStart:"2026-10-05T22:00Z",periodEnd:"2026-10-06T22:00Z",origin:"https://app.okado.app",
   gains:[{leadId:"g",campaignId:"c",campaignTitle:"Jeu Démo",prizeLabel:"Soin offert",wonAt:"2026-10-06T12:00Z",firstName:"Camille",lastName:"Martin"}]};
-test("rendu nominatif autorisé, listing détaillé et préférences, sans e-mail ni code du participant",()=>{
+test("rendu nominatif autorisé, listing détaillé, statut de retrait exclusif à l'expiration",()=>{
   for(const frequency of ["instant","daily","weekly","monthly"]){
     const email=renderMerchantGainNotification({...input,frequency});
     assert.match(email.html,/Soin offert/);assert.match(email.text,/06\/10.*14:00/);
     assert.match(email.html,/location=a/);assert.doesNotMatch(email.html,/QR code|Code de retrait|participant@example/);
     assert.match(email.html,/Camille Martin/);assert.match(email.text,/Camille Martin/);
     assert.doesNotMatch(email.html,/✦ Okado|<img|Vos gains/);
-    assert.match(email.html,/modifier vos préférences de notifications/);
+    assert.match(email.html,/modifier vos options de notification/);
     assert.match(email.html,/\/api\/merchant\/gain-notifications\/account\?location=a/);
     assert.match(email.text,/\/api\/merchant\/gain-notifications\/account\?location=a/);
   }
+  const redeemed=renderMerchantGainNotification({...input,frequency:"daily",gains:[{...input.gains[0],rewardExpiresAt:"2026-11-06T12:00:00Z",redeemed:true}]});
+  assert.match(redeemed.html,/Récupéré/);assert.doesNotMatch(redeemed.html,/6 novembre 2026/);
+  const pending=renderMerchantGainNotification({...input,frequency:"daily",gains:[{...input.gains[0],rewardExpiresAt:"2026-11-06T12:00:00Z",redeemed:false}]});
+  assert.match(pending.html,/À utiliser avant le 6 novembre 2026/);assert.doesNotMatch(pending.html,/Récupéré/);
+  const noExpiry=renderMerchantGainNotification({...input,frequency:"monthly",gains:[{...input.gains[0],rewardExpiresAt:null,redeemed:false}]});
+  assert.match(noExpiry.html,/Sans date d'expiration/);
   const hostile=renderMerchantGainNotification({...input,merchantName:"<script>alert(1)</script>",gains:[{...input.gains[0],firstName:"<script>bad</script>",lastName:"<img src=x>",prizeLabel:"<img src=x onerror=alert(1)>"}]});
   assert.doesNotMatch(hostile.html,/<script|<img src=x/);assert.match(hostile.html,/&lt;img/);
   assert.throws(()=>renderMerchantGainNotification({...input,gains:[]}),/vide/);
@@ -243,7 +306,7 @@ test("noms lus dans la participation, snapshot privé stable et expurgé à l’
       await db.exec("update leads set first_name='Camille' where id='named'");
       const job=await claim(db,"2026-11-02T08:00Z");
       assert.equal(job.gains[0].firstName,"Camille");assert.equal(job.gains[0].lastName,null);
-      assert.deepEqual(Object.keys(job.gains[0]).sort(),["leadId","campaignId","campaignTitle","prizeLabel","wonAt","firstName","lastName"].sort());
+      assert.deepEqual(Object.keys(job.gains[0]).sort(),["leadId","campaignId","campaignTitle","prizeLabel","wonAt","firstName","lastName","rewardExpiresAt","redeemed"].sort());
       assert.match(renderMerchantGainNotification({...input,frequency,gains:job.gains}).html,/Camille/);
       assert.doesNotMatch(renderMerchantGainNotification({...input,frequency,gains:job.gains}).html,/Martin/);
       await db.exec("update leads set first_name='Changed' where id='named'");

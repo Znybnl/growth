@@ -36,7 +36,7 @@ beforeEach(()=>{
       if(name==="claim_merchant_gain_notification")return {data:state.jobs.shift()??null};
       if(name==="authorize_merchant_gain_notification")return {data:state.authorized??true};
       if(name==="prepare_merchant_gain_notification_payload")return {data:state.frozenPayload??args.p_payload};
-      if(name==="set_merchant_gain_notification_preference")return {data:{frequency:args.p_frequency,updated_at:"2026-10-06T12:00Z"}};
+      if(name==="set_merchant_gain_notification_preferences")return {data:{enabled_frequencies:args.p_frequencies,updated_at:"2026-10-06T12:00Z"}};
       return {data:null};
     },
   };
@@ -44,25 +44,27 @@ beforeEach(()=>{
 const request=body=>new Request("https://app.okado.app/api/merchant/gain-notifications",{
   method:"POST",headers:{"origin":"https://app.okado.app","content-type":"application/json"},body:JSON.stringify(body),
 });
-test("préférence : authentification, cloisonnement, origine, fréquence et destinataire non injectable",async()=>{
+test("préférence : authentification, cloisonnement, origine, sélections multiples et destinataire non injectable",async()=>{
   state.session=null;assert.equal((await route.GET(new Request("https://app.okado.app/api/merchant/gain-notifications"))).status,401);
   assert.equal(state.calls.length,0);
   state.session={user:{id:"u"},merchant:{id:"a"},locations:[{merchant:{id:"a"}}]};
   assert.equal((await route.GET(new Request("https://app.okado.app/api/merchant/gain-notifications?location=b"))).status,403);
-  assert.equal((await route.POST(request({location:"b",frequency:"daily"}))).status,403);
-  assert.equal((await route.POST(request({location:"a",frequency:"inconnu"}))).status,400);
+  assert.equal((await route.POST(request({location:"b",frequencies:["daily"]}))).status,403);
+  assert.equal((await route.POST(request({location:"a",frequencies:["inconnu"]}))).status,400);
+  assert.equal((await route.POST(request({location:"a",frequencies:["daily","disabled"]}))).status,400);
   const crossOrigin=new Request("https://app.okado.app/api/merchant/gain-notifications",{method:"POST",headers:{origin:"https://evil.test"},body:"{}"});
   assert.equal((await route.POST(crossOrigin)).status,403);
   const defaults=await route.GET(new Request("https://app.okado.app/api/merchant/gain-notifications?location=a"));
   assert.equal(defaults.headers.get("cache-control"),"private, no-store");
-  assert.equal((await defaults.json()).frequency,"disabled");
-  const response=await route.POST(request({location:"a",frequency:"weekly",userId:"v",recipient:"injected@example.test"}));
+  assert.deepEqual((await defaults.json()).frequencies,[]);
+  const response=await route.POST(request({location:"a",frequencies:["daily","weekly","daily"],userId:"v",recipient:"injected@example.test"}));
   assert.equal(response.status,200);
-  assert.deepEqual(state.calls.at(-1),["set_merchant_gain_notification_preference",{p_user:"u",p_merchant:"a",p_frequency:"weekly"}]);
+  assert.deepEqual(await response.json(),{frequencies:["daily","weekly"],updatedAt:"2026-10-06T12:00Z"});
+  assert.deepEqual(state.calls.at(-1),["set_merchant_gain_notification_preferences",{p_user:"u",p_merchant:"a",p_frequencies:["daily","weekly"]}]);
 });
 test("réponses d’erreur sans secret, pas de préférence faussement enregistrée",async()=>{
   state.dbError={message:"secret@example.test"};
-  const response=await route.POST(request({location:"a",frequency:"daily"}));
+  const response=await route.POST(request({location:"a",frequencies:["daily"]}));
   assert.equal(response.status,503);assert.doesNotMatch(await response.text(),/secret/);
 });
 test("lien résultats authentifié vers le bon site, aucun accès élargi ni token public",async()=>{
