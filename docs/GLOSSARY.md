@@ -50,6 +50,8 @@ Utiliser ces termes dans l'interface, les Issues, les critères d'acceptation, l
 
 ## Règles de rédaction
 
+- **Incident d’e-mail traité** : anomalie de délivrabilité acquittée par l’administrateur pour le dernier événement observé. Ne signifie ni « e-mail livré » ni « e-mail renvoyé » ; un nouvel événement rend l’incident de nouveau à traiter.
+
 - Un terme porte un seul sens. Si un nouveau sens est nécessaire, créer une nouvelle entrée.
 - Préférer la forme affichée dans l'interface : **jeu**, **retrait**, **établissement**, **multi-sites**.
 - Les critères d'acceptation et les tests doivent reprendre les termes du tableau, sans synonymes.

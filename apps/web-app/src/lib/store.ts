@@ -2608,6 +2608,8 @@ export const getMerchantSupportOverview = cache(async function getMerchantSuppor
 
   return {
     failedEmails: [],
+    handledEmails: [],
+    activeEmailCount: 0,
     webhooks: [],
     pendingClaims,
     businessLogs: getMemorySupportLogs()

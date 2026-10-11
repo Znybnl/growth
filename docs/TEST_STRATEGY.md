@@ -144,6 +144,12 @@ Compléments #473/#484 : les tests du handler/DAL vérifient les options multipl
 
 ## Compte rendu attendu
 
+### Incidents d’e-mail traités — #487
+
+`npm run test:support-incidents -w @okado/web-app` couvre les vrais handlers, la DAL et le rendu de Supervision avec infrastructure simulée, puis la migration/RPC et son rollback sous PostgreSQL PGlite : admin uniquement, refus visiteur/marchand/origine étrangère, validation, identité non injectable, timestamp sans perte de précision, conflit sans faux succès, compteur exact au-delà de 20 lignes, filtre traités et exclusion des compteurs Pilotage/navigation. Les tests SQL contrôlent les droits anon/authenticated/service_role, la clôture idempotente, la réapparition après événement/statut nouveau, les anciens événements nuls et la conservation des données et reprises. Aucun e-mail réel ni écriture de production.
+
+`e2e/support-email-incidents.spec.ts` teste le vrai bouton à 320/390/1280 px avec API interceptée : chargement, erreur de conflit, reprise, succès, absence de doublon et de débordement. La fixture est HTTP 404 en production et ne donne aucun accès administrateur. Les refus HTTP de la vraie route sont également exercés. Recette propriétaire : Supervision → Marquer comme traité → vérifier disparition de l’alerte et compteurs, puis filtre Traités → vérifier statut réel et date ; ne pas renvoyer l’e-mail pour ce test.
+
 Chaque demande de merge ou de production doit indiquer, en quelques lignes :
 
 - le résultat utilisateur livré ;

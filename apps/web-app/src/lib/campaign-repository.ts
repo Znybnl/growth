@@ -3900,6 +3900,8 @@ export async function getSupabaseMerchantSupportOverview(
   if (!campaignIds.length) {
     return {
       failedEmails: [],
+      handledEmails: [],
+      activeEmailCount: 0,
       webhooks: [],
       pendingClaims: [],
       businessLogs: [],
@@ -3916,13 +3918,22 @@ export async function getSupabaseMerchantSupportOverview(
     businessLogQuery.eq("merchant_id", merchant.id);
   }
 
-  const [failedEmailResult, pendingClaimResult, deliveryResult, webhookResult, businessLogResult] = await Promise.all([
+  const [failedEmailResult, handledEmailResult, pendingClaimResult, deliveryResult, webhookResult, businessLogResult] = await Promise.all([
     supabase
       .from("reward_email_deliveries")
-      .select("id,campaign_id,lead_id,recipient_email,status,error_message,last_event_at")
+      .select("id,campaign_id,lead_id,recipient_email,status,error_message,last_event_at,created_at,support_handled_at", { count: "exact" })
       .in("campaign_id", campaignIds)
       .in("status", ["failed", "bounced", "complained", "suppressed"])
+      .eq("support_is_handled", false)
       .order("last_event_at", { ascending: false })
+      .limit(20),
+    supabase
+      .from("reward_email_deliveries")
+      .select("id,campaign_id,lead_id,recipient_email,status,error_message,last_event_at,created_at,support_handled_at")
+      .in("campaign_id", campaignIds)
+      .in("status", ["failed", "bounced", "complained", "suppressed"])
+      .eq("support_is_handled", true)
+      .order("support_handled_at", { ascending: false })
       .limit(20),
     supabase
       .from("leads")
@@ -3949,6 +3960,9 @@ export async function getSupabaseMerchantSupportOverview(
   if (failedEmailResult.error) {
     throw new Error(`Lecture des e-mails en échec impossible: ${failedEmailResult.error.message}`);
   }
+  if (handledEmailResult.error) {
+    throw new Error("Lecture des incidents traités impossible.");
+  }
   if (pendingClaimResult.error) {
     throw new Error(`Lecture des gains en attente impossible: ${pendingClaimResult.error.message}`);
   }
@@ -3970,7 +3984,7 @@ export async function getSupabaseMerchantSupportOverview(
   const deliveryById = new Map(deliveryRows.map((row) => [row.id, row]));
 
   const leadIds = new Set<string>();
-  for (const row of (failedEmailResult.data ?? []) as Array<{ lead_id: string }>) {
+  for (const row of [...(failedEmailResult.data ?? []), ...(handledEmailResult.data ?? [])] as Array<{ lead_id: string }>) {
     leadIds.add(row.lead_id);
   }
   for (const row of (pendingClaimResult.data ?? []) as Array<{ id: string }>) {
@@ -4019,8 +4033,8 @@ export async function getSupabaseMerchantSupportOverview(
     ((prizeRows ?? []) as Array<{ id: string; label: string }>).map((row) => [row.id, row.label]),
   );
 
-  const failedEmails: MerchantFailedEmailItem[] = (
-    (failedEmailResult.data ?? []) as Array<{
+  const mapEmailIncidents = (rows: unknown[]): MerchantFailedEmailItem[] => (
+    rows as Array<{
       id: string;
       campaign_id: string;
       lead_id: string;
@@ -4028,6 +4042,8 @@ export async function getSupabaseMerchantSupportOverview(
       status: RewardEmailDelivery["status"];
       error_message: string | null;
       last_event_at: string | null;
+      created_at: string;
+      support_handled_at: string | null;
     }>
   ).map((row) => {
     const lead = leadById.get(row.lead_id);
@@ -4041,9 +4057,13 @@ export async function getSupabaseMerchantSupportOverview(
       recipientEmail: row.recipient_email,
       status: row.status,
       errorMessage: row.error_message ?? undefined,
-      lastEventAt: row.last_event_at ?? new Date().toISOString(),
+      lastEventAt: row.last_event_at ?? row.created_at,
+      eventAt: row.last_event_at,
+      handledAt: row.support_handled_at ?? undefined,
     };
   });
+  const failedEmails = mapEmailIncidents(failedEmailResult.data ?? []);
+  const handledEmails = mapEmailIncidents(handledEmailResult.data ?? []);
 
   const pendingClaims: MerchantPendingClaimItem[] = (
     (pendingClaimResult.data ?? []) as Array<{
@@ -4135,6 +4155,8 @@ export async function getSupabaseMerchantSupportOverview(
 
   return {
     failedEmails,
+    handledEmails,
+    activeEmailCount: failedEmailResult.count ?? failedEmails.length,
     webhooks,
     pendingClaims,
     businessLogs,

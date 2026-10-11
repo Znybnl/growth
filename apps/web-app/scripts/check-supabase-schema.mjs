@@ -73,7 +73,7 @@ for (const [table, columns] of [
   ["campaign_events", "id,campaign_id,event_type"],
   ["draw_sessions", "id,campaign_id,status"],
   ["campaign_actions", "id,campaign_id,position"],
-  ["reward_email_deliveries", "id,lead_id,status"],
+  ["reward_email_deliveries", "id,lead_id,status,support_handled_at,support_handled_by,support_handled_event_at,support_handled_status,support_is_handled"],
   ["merchant_gain_notification_preferences", "user_id,merchant_id,frequency,updated_at"],
   ["merchant_gain_notification_events", "user_id,merchant_id,lead_id,job_id,won_at"],
   ["merchant_gain_notification_jobs", "id,status,lease_token,gains,email_payload,recipient"],
@@ -104,6 +104,22 @@ const { error: gainRpcPublicError } = await supabasePublic.rpc("can_receive_merc
 if (gainRpcPublicError?.code !== "42501") throw new Error("La RPC de notification n’est pas privée.");
 checks.push({ type: "rls", name: "gain_notification_rpc", ok: true, access: "denied" });
 
+// Unknown actor is rejected before reading/updating a delivery: non-mutating probe.
+const supportArgs = {
+  p_delivery_id: "00000000-0000-0000-0000-000000000000",
+  p_actor_user_id: "schema-probe-no-user",
+  p_expected_event_at: null, p_expected_status: "failed",
+};
+const { error: supportProbeError } = await supabase.rpc("handle_support_email_incident", supportArgs);
+if (supportProbeError?.code !== "42501" || supportProbeError.message !== "Unknown actor") {
+  throw new Error("La RPC de traitement des incidents n’est pas disponible ou son garde-fou acteur est absent.");
+}
+const { error: supportPublicError } = await supabasePublic.rpc("handle_support_email_incident", supportArgs);
+if (supportPublicError?.code !== "42501" || supportPublicError.message === "Unknown actor") {
+  throw new Error("La RPC de traitement des incidents n’est pas privée.");
+}
+checks.push({ type: "rpc", name: "handle_support_email_incident", ok: true, access: "service_role_only" });
+
 const { data: campaign, error: campaignError } = await supabase
   .from("campaigns")
   .select("id")
@@ -131,6 +147,7 @@ if (campaign?.id) {
 }
 
 const migrationChecks = [
+  ["20261011_support_email_incidents_487.sql", ["support_is_handled", "handle_support_email_incident", "revoke all"]],
   ["20261006_merchant_gain_notifications_473.sql", ["merchant_gain_notification_preferences", "prepare_merchant_gain_notification_payload", "enable row level security"]],
   ["20260710_security_p0_hardening.sql", ["enable row level security", "consume_public_rate_limit", "claim_daily_participation_lock"]],
   ["20260718_cashier_redemption.sql", ["cashier_redemption_audits", "redeem_cashier_lead_prize"]],

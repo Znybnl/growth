@@ -77,7 +77,7 @@ export async function getSaasAdminOverview(query = ""): Promise<SaasAdminOvervie
       supabase.from("campaigns").select("id, merchant_id, is_active"),
       supabase.from("leads").select("campaign_id, status"),
       supabase.from("prizes").select("campaign_id, total_quantity, remaining_quantity"),
-      supabase.from("reward_email_deliveries").select("campaign_id, status"),
+      supabase.from("reward_email_deliveries").select("campaign_id, status").eq("support_is_handled", false),
     ]);
 
   const error = [
