@@ -144,7 +144,13 @@ Compléments #473/#484 : les tests du handler/DAL vérifient les options multipl
 
 ## Compte rendu attendu
 
+### Fiabilité de Supervision — #491
+
+`test:support-incidents` inclut les tests DAL/page, filtres, pannes partielles, refus administratifs et journalisation planifiée non nominative. La RPC réelle et son rollback sont exécutés sous PGlite : plus de 50 résultats, recherche historique et littérale, pagination sans doublon, microsecondes, établissement, dates et statuts, événements sans envoi associé, états de notification et refus anon/authenticated. `e2e/support-monitoring.spec.ts` vérifie le rendu à 320/390/1280 px, filtres GET, remise à zéro des pages, liens conservant les filtres, absence de débordement, source indisponible et historiques traités. Les données de la fixture sont fictives ; `/dev/support-monitoring` reste HTTP 404 en production. Rejouer aussi les tests de notifications et les suites d’acquittement/tableaux existantes. Aucun envoi ni modification de gain réel.
+
 ### Incidents d’e-mail traités — #487
+
+Complément #489 : `e2e/support-tables.spec.ts` vérifie les quatre tableaux réels superposés à 320/390/1280 px, en-têtes accessibles, longues erreurs non sécables, absence de débordement de page, défilement au clavier, action d’acquittement conservée, historique et états vides. La fixture `/dev/support-tables` utilise uniquement des données synthétiques, sans accès base ni session, et reste HTTP 404 en production. Les tests serveur existants vérifient aussi le rendu de la vraie page, les filtres actifs/traités et le refus d’un marchand.
 
 `npm run test:support-incidents -w @okado/web-app` couvre les vrais handlers, la DAL et le rendu de Supervision avec infrastructure simulée, puis la migration/RPC et son rollback sous PostgreSQL PGlite : admin uniquement, refus visiteur/marchand/origine étrangère, validation, identité non injectable, timestamp sans perte de précision, conflit sans faux succès, compteur exact au-delà de 20 lignes, filtre traités et exclusion des compteurs Pilotage/navigation. Les tests SQL contrôlent les droits anon/authenticated/service_role, la clôture idempotente, la réapparition après événement/statut nouveau, les anciens événements nuls et la conservation des données et reprises. Aucun e-mail réel ni écriture de production.
 

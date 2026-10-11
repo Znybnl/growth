@@ -36,7 +36,7 @@ const route = await import("../app/api/admin/support/email-incidents/[id]/handle
 const alerts = await import("../app/api/merchant/email-alerts/route.ts");
 const { getSaasAdminOverview } = await import("./admin-repository.ts");
 const { getSupabaseMerchantSupportOverview } = await import("./campaign-repository.ts");
-const page = (await import("../app/(merchant)/support/page.tsx")).default;
+const { SupportTables } = await import("../components/merchant/support-tables.tsx");
 const id = "11111111-1111-4111-8111-111111111111";
 const eventAt = "2026-06-30T09:05:00.123456+00:00";
 let state;
@@ -123,7 +123,7 @@ test("les alertes navigation et Pilotage excluent les traités, sans changer les
   assert.equal((await (await alerts.GET()).json()).emailCount,0);
   assert.equal((await getSaasAdminOverview()).totals.failedRewardEmails,0);
 });
-test("Supervision sépare actifs/traités avant limite ; compteur exact et date historique stable",async()=>{
+test("Supervision historique : actifs/traités, compteur exact et date conservée dans les tableaux",async()=>{
   state.tables.reward_email_deliveries.push(...Array.from({length:25},(_,i)=>({...state.tables.reward_email_deliveries[0],id:"active-"+i})));
   const overview=await getSupabaseMerchantSupportOverview({id:"site"},{includeAllMerchants:true});
   assert.equal(overview.failedEmails.length,20);
@@ -131,13 +131,29 @@ test("Supervision sépare actifs/traités avant limite ; compteur exact et date 
   assert.equal(overview.handledEmails.length,1);
   assert.equal(overview.failedEmails[0].eventAt,eventAt);
   assert.equal(overview.handledEmails[0].handledAt,"2026-10-11T12:00Z");
-  state.overview=overview;
-  const active=renderToStaticMarkup(await page({searchParams:Promise.resolve({})}));
+  const render=(rows,showHandled)=>renderToStaticMarkup(SupportTables({rows,showHandled,hasFilter:false}));
+  const active=render(overview,false);
+  assert.equal((active.match(/<table\b/g)??[]).length,4);
   assert.match(active,/Marquer comme traité/);assert.doesNotMatch(active,/handled@example/);
-  const history=renderToStaticMarkup(await page({searchParams:Promise.resolve({incidents:"handled"})}));
+  const history=render({...overview,failedEmails:overview.handledEmails},true);
   assert.match(history,/handled@example/);assert.match(history,/Traité le/);assert.doesNotMatch(history,/Marquer comme traité/);
-  const filtered=renderToStaticMarkup(await page({searchParams:Promise.resolve({incidents:"handled",q:"absent"})}));
-  assert.match(filtered,/Aucun e-mail ne correspond/);
-  state.session.user.email="owner@example.test";
-  await assert.rejects(page({searchParams:Promise.resolve({})}),/redirect/);
+});
+
+test("tableaux partagés : échappement HTML, données, états vides sans mutation",async()=>{
+  const rows={failedEmails:[{deliveryId:id,campaignTitle:"Jeu e-mail",leadFirstName:"Camille",recipientEmail:"player@example.test",
+    status:"failed",lastEventAt:eventAt,eventAt,errorMessage:"<script>alerte</script>"}],
+    webhooks:[{id:"event",createdAt:eventAt,eventType:"email.delivered",campaignTitle:"Jeu webhook",
+      recipientEmail:"webhook@example.test",deliveryStatus:"delivered",summary:"Détail webhook"}],
+    pendingClaims:[{leadId:"claim",campaignTitle:"Jeu gain",firstName:"Camille",email:"gain@example.test",
+      prizeLabel:"Soin offert",redemptionCode:"DEMO-CODE",status:"claimed",availableAt:eventAt,expiresAt:eventAt}],
+    businessLogs:[{id:"log",createdAt:eventAt,event:"demo_log",level:"warn",campaignId:"demo",leadId:"lead",
+      email:"journal@example.test",redemptionCode:"DEMO-CODE",summary:"Détail journal"}]};
+  const html=renderToStaticMarkup(SupportTables({rows,showHandled:false,hasFilter:false}));
+  for(const value of ["player@example.test","webhook@example.test","gain@example.test","journal@example.test","DEMO-CODE","Détail journal"])
+    assert.ok(html.includes(value));
+  assert.ok(html.includes("&lt;script&gt;"));assert.doesNotMatch(html,/<script>/);
+  const empty=renderToStaticMarkup(SupportTables({rows:{failedEmails:[],webhooks:[],pendingClaims:[],businessLogs:[]},
+    showHandled:false,hasFilter:true}));
+  assert.match(empty,/Aucun e-mail ne correspond/);
+  assert.deepEqual(state.calls,[]);assert.deepEqual(state.reads,[]);
 });
