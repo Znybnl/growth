@@ -1,4 +1,5 @@
 import { BrevoSyncButton } from "@/components/merchant/brevo-sync-button";
+import { HandleEmailIncidentButton } from "@/components/merchant/handle-email-incident-button";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import { isSaasAdminEmail } from "@/lib/admin";
 import { formatDateTime, leadStatusLabel, rewardEmailStatusLabel } from "@/lib/format";
@@ -12,6 +13,7 @@ type SupportPageProps = {
     q?: string;
     status?: string;
     section?: string;
+    incidents?: string;
   }>;
 };
 
@@ -53,10 +55,11 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
   const query = params.q?.trim().toLowerCase() ?? "";
   const status = params.status?.trim() ?? "all";
   const section = params.section?.trim() ?? "all";
+  const showHandled = params.incidents === "handled";
   const filteredOverview = {
     failedEmails:
       section === "all" || section === "emails"
-        ? overview.failedEmails.filter(
+        ? (showHandled ? overview.handledEmails : overview.failedEmails).filter(
             (item) =>
               (status === "all" || item.status === status) &&
               includesQuery(
@@ -128,9 +131,9 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
           )
         : [],
   };
-  const hasFilter = Boolean(query || status !== "all" || section !== "all");
+  const hasFilter = Boolean(query || status !== "all" || section !== "all" || showHandled);
   const errorLogsCount = overview.businessLogs.filter((item) => item.level === "error").length;
-  const failedEmailCount = overview.failedEmails.length;
+  const failedEmailCount = overview.activeEmailCount;
   const pendingClaimCount = overview.pendingClaims.length;
   const webhookCount = overview.webhooks.length;
   const healthItems = [
@@ -170,7 +173,7 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
 
       <section className="grid gap-4 md:grid-cols-4">
         {[
-          ["E-mails en échec", String(filteredOverview.failedEmails.length)],
+          ["E-mails à traiter", String(failedEmailCount)],
           ["Webhooks reçus", String(filteredOverview.webhooks.length)],
           ["Gains sans retrait", String(filteredOverview.pendingClaims.length)],
           ["Logs métier", String(filteredOverview.businessLogs.length)],
@@ -209,7 +212,7 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
       <BrevoSyncButton />
 
       <section className="okado-card p-5">
-        <form className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_220px_220px_auto]" action="/support">
+        <form className="grid gap-3 md:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_150px_180px_160px_auto]" action="/support">
           <label className="text-sm">
             <span className="mb-2 block text-ash">Recherche support</span>
             <input
@@ -257,6 +260,15 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
             </select>
           </label>
 
+          <label className="text-sm">
+            <span className="mb-2 block text-ash">Incidents d’e-mail</span>
+            <select name="incidents" defaultValue={showHandled ? "handled" : "active"}
+              className="w-full rounded-[12px] border border-[#cfcfcf] bg-white px-4 py-3 outline-none">
+              <option value="active">À traiter</option>
+              <option value="handled">Traités</option>
+            </select>
+          </label>
+
           <div className="flex items-end gap-2">
             <button
               type="submit"
@@ -281,10 +293,15 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="okado-label">E-mails</p>
-              <h2 className="okado-section-title mt-2">En échec</h2>
+              <h2 className="okado-section-title mt-2">{showHandled ? "Incidents traités" : "À traiter"}</h2>
             </div>
-            <StatusBadge label={`${filteredOverview.failedEmails.length} à traiter`} tone="danger" />
+            <StatusBadge label={`${filteredOverview.failedEmails.length} affichés`} tone={showHandled ? "neutral" : "danger"} />
           </div>
+          <p className="mt-3 text-sm text-ash">
+            {showHandled ? "Derniers incidents traités. Le statut réel d’envoi et les événements fournisseur sont conservés."
+              : "Marquer un incident comme traité retire son alerte, sans renvoyer l’e-mail ni changer son statut d’envoi."}
+          </p>
+          <p className="mt-2 text-xs text-ash">Les 20 incidents les plus récents de cette liste sont affichés.</p>
 
           <div className="mt-6 space-y-3">
             {filteredOverview.failedEmails.length ? (
@@ -294,7 +311,7 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
                   className="rounded-[8px] border border-[#edf1f6] bg-[#fbfcfe] p-4"
                 >
                   <div className="flex items-start justify-between gap-3">
-                    <div>
+                    <div className="min-w-0 break-words">
                       <p className="text-sm font-semibold text-graphite">{item.campaignTitle}</p>
                       <p className="text-sm text-ash">
                         {item.leadFirstName} · {item.recipientEmail}
@@ -302,12 +319,18 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
                     </div>
                     <StatusBadge label={rewardEmailStatusLabel(item.status)} tone="danger" />
                   </div>
-                  <p className="mt-3 text-sm text-ash">
+                  <p className="mt-3 break-words text-sm text-ash">
                     {item.errorMessage || "Erreur de délivrabilité non précisée."}
                   </p>
                   <p className="mt-3 okado-label text-fog">
                     Dernier événement {formatDateTime(item.lastEventAt)}
                   </p>
+                  {showHandled && item.handledAt ? (
+                    <p className="mt-3 text-sm text-ash">Traité le {formatDateTime(item.handledAt)}</p>
+                  ) : (
+                    <HandleEmailIncidentButton key={`${item.deliveryId}:${item.eventAt}:${item.status}`}
+                      deliveryId={item.deliveryId} eventAt={item.eventAt} status={item.status} />
+                  )}
                 </div>
               ))
             ) : (

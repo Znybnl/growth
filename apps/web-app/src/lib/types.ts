@@ -649,6 +649,8 @@ export interface MerchantFailedEmailItem {
   status: RewardEmailDeliveryStatus;
   errorMessage?: string;
   lastEventAt: string;
+  eventAt: string | null;
+  handledAt?: string;
 }
 
 export interface MerchantWebhookItem {
@@ -690,6 +692,8 @@ export interface MerchantBusinessLogItem {
 
 export interface MerchantSupportOverview {
   failedEmails: MerchantFailedEmailItem[];
+  handledEmails: MerchantFailedEmailItem[];
+  activeEmailCount: number;
   webhooks: MerchantWebhookItem[];
   pendingClaims: MerchantPendingClaimItem[];
   businessLogs: MerchantBusinessLogItem[];

@@ -33,6 +33,7 @@ export async function GET() {
       .from("reward_email_deliveries")
       .select("id,campaign_id,lead_id,status,updated_at")
       .in("campaign_id", campaignIds)
+      .eq("support_is_handled", false)
       .in("status", ATTENTION_STATUSES),
     supabase
       .from("prizes")
