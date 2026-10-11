@@ -1,10 +1,9 @@
 import { BrevoSyncButton } from "@/components/merchant/brevo-sync-button";
-import { HandleEmailIncidentButton } from "@/components/merchant/handle-email-incident-button";
+import { SupportTables } from "@/components/merchant/support-tables";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import { isSaasAdminEmail } from "@/lib/admin";
-import { formatDateTime, leadStatusLabel, rewardEmailStatusLabel } from "@/lib/format";
 import { getMerchantSupportOverview } from "@/lib/store";
-import { MetricCard, PageHeader, ResponsiveTable } from "@/components/ui/workspace";
+import { MetricCard, PageHeader } from "@/components/ui/workspace";
 import { StatusBadge as SharedStatusBadge } from "@/components/ui/status-badge";
 import { redirect } from "next/navigation";
 
@@ -33,12 +32,6 @@ function includesQuery(values: Array<string | undefined>, query: string) {
   }
 
   return values.some((value) => value?.toLowerCase().includes(query));
-}
-
-function supportLogTone(level: "info" | "warn" | "error") {
-  if (level === "error") return "danger";
-  if (level === "warn") return "warning";
-  return "neutral";
 }
 
 export default async function SupportPage({ searchParams }: SupportPageProps) {
@@ -164,7 +157,7 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
   ] as const;
 
   return (
-    <div className="space-y-6">
+    <div className="min-w-0 space-y-6">
       <PageHeader
         eyebrow="Supervision"
         title="Centre de supervision"
@@ -288,219 +281,7 @@ export default async function SupportPage({ searchParams }: SupportPageProps) {
         </form>
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-3">
-        <article className="okado-card p-6 xl:col-span-1">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="okado-label">E-mails</p>
-              <h2 className="okado-section-title mt-2">{showHandled ? "Incidents traités" : "À traiter"}</h2>
-            </div>
-            <StatusBadge label={`${filteredOverview.failedEmails.length} affichés`} tone={showHandled ? "neutral" : "danger"} />
-          </div>
-          <p className="mt-3 text-sm text-ash">
-            {showHandled ? "Derniers incidents traités. Le statut réel d’envoi et les événements fournisseur sont conservés."
-              : "Marquer un incident comme traité retire son alerte, sans renvoyer l’e-mail ni changer son statut d’envoi."}
-          </p>
-          <p className="mt-2 text-xs text-ash">Les 20 incidents les plus récents de cette liste sont affichés.</p>
-
-          <div className="mt-6 space-y-3">
-            {filteredOverview.failedEmails.length ? (
-              filteredOverview.failedEmails.map((item) => (
-                <div
-                  key={item.deliveryId}
-                  className="rounded-[8px] border border-[#edf1f6] bg-[#fbfcfe] p-4"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0 break-words">
-                      <p className="text-sm font-semibold text-graphite">{item.campaignTitle}</p>
-                      <p className="text-sm text-ash">
-                        {item.leadFirstName} · {item.recipientEmail}
-                      </p>
-                    </div>
-                    <StatusBadge label={rewardEmailStatusLabel(item.status)} tone="danger" />
-                  </div>
-                  <p className="mt-3 break-words text-sm text-ash">
-                    {item.errorMessage || "Erreur de délivrabilité non précisée."}
-                  </p>
-                  <p className="mt-3 okado-label text-fog">
-                    Dernier événement {formatDateTime(item.lastEventAt)}
-                  </p>
-                  {showHandled && item.handledAt ? (
-                    <p className="mt-3 text-sm text-ash">Traité le {formatDateTime(item.handledAt)}</p>
-                  ) : (
-                    <HandleEmailIncidentButton key={`${item.deliveryId}:${item.eventAt}:${item.status}`}
-                      deliveryId={item.deliveryId} eventAt={item.eventAt} status={item.status} />
-                  )}
-                </div>
-              ))
-            ) : (
-              <p className="px-4 py-8 text-sm text-ash">
-                {hasFilter
-                  ? "Aucun e-mail ne correspond aux filtres."
-                  : "Aucun e-mail en échec sur les dernières campagnes."}
-              </p>
-            )}
-          </div>
-        </article>
-
-        <article className="okado-card p-6 xl:col-span-1">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="okado-label">Webhooks</p>
-              <h2 className="okado-section-title mt-2">Reçus récemment</h2>
-            </div>
-            <StatusBadge label={`${filteredOverview.webhooks.length} événements`} />
-          </div>
-
-          <div className="mt-6 space-y-3">
-            {filteredOverview.webhooks.length ? (
-              filteredOverview.webhooks.map((item) => (
-                <div
-                  key={item.id}
-                  className="rounded-[8px] border border-[#edf1f6] bg-[#fbfcfe] p-4"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-sm font-semibold text-graphite">{item.eventType}</p>
-                      <p className="text-sm text-ash">
-                        {item.campaignTitle || "Campagne inconnue"}
-                        {item.recipientEmail ? ` · ${item.recipientEmail}` : ""}
-                      </p>
-                    </div>
-                    <StatusBadge
-                      label={
-                        item.deliveryStatus
-                          ? rewardEmailStatusLabel(item.deliveryStatus)
-                          : "Archivé"
-                      }
-                      tone={
-                        item.deliveryStatus === "failed" || item.deliveryStatus === "bounced"
-                          ? "danger"
-                          : "neutral"
-                      }
-                    />
-                  </div>
-                  {item.summary ? (
-                    <p className="mt-3 text-sm text-ash">{item.summary}</p>
-                  ) : null}
-                  <p className="mt-3 okado-label text-fog">
-                    {formatDateTime(item.createdAt)}
-                  </p>
-                </div>
-              ))
-            ) : (
-              <p className="rounded-[8px] border border-dashed border-[#dbe4f0] bg-[#fbfcfe] px-4 py-8 text-sm text-[#64748b]">
-                {hasFilter
-                  ? "Aucun webhook ne correspond aux filtres."
-                  : "Aucun webhook archivé pour le moment."}
-              </p>
-            )}
-          </div>
-        </article>
-
-        <article className="okado-card p-6 xl:col-span-1">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="okado-label">Gains</p>
-              <h2 className="okado-section-title mt-2">Sans retrait</h2>
-            </div>
-            <StatusBadge label={`${filteredOverview.pendingClaims.length} en attente`} tone="warning" />
-          </div>
-
-          <div className="mt-6 space-y-3">
-            {filteredOverview.pendingClaims.length ? (
-              filteredOverview.pendingClaims.map((item) => (
-                <div
-                  key={item.leadId}
-                  className="rounded-[8px] border border-[#edf1f6] bg-[#fbfcfe] p-4"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-sm font-semibold text-graphite">{item.prizeLabel}</p>
-                      <p className="text-sm text-ash">
-                        {item.campaignTitle} · {item.firstName} · {item.email}
-                      </p>
-                    </div>
-                    <StatusBadge label={leadStatusLabel(item.status)} tone="warning" />
-                  </div>
-                  <div className="mt-3 flex flex-wrap gap-2 text-xs text-[#64748b]">
-                    <span className="rounded-[4px] bg-white px-3 py-1">Code {item.redemptionCode}</span>
-                    <span className="rounded-[4px] bg-white px-3 py-1">
-                      Disponible {item.availableAt ? formatDateTime(item.availableAt) : "immédiatement"}
-                    </span>
-                    {item.expiresAt ? (
-                      <span className="rounded-[4px] bg-white px-3 py-1">
-                        Expire {formatDateTime(item.expiresAt)}
-                      </span>
-                    ) : null}
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p className="rounded-[8px] border border-dashed border-[#dbe4f0] bg-[#fbfcfe] px-4 py-8 text-sm text-[#64748b]">
-                {hasFilter
-                  ? "Aucun gain ne correspond aux filtres."
-                  : "Aucun gain en attente de retrait."}
-              </p>
-            )}
-          </div>
-        </article>
-
-        <article className="xl:col-span-3">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="okado-label">Journal</p>
-              <h2 className="okado-section-title mt-2">Logs métier</h2>
-            </div>
-            <StatusBadge label={`${filteredOverview.businessLogs.length} lignes`} />
-          </div>
-
-          <ResponsiveTable className="mt-6">
-            {filteredOverview.businessLogs.length ? (
-              <table className="okado-data-table okado-support-table w-full text-left text-sm">
-                <thead className="okado-table-header">
-                  <tr>
-                    <th className="px-3 py-3">Date</th>
-                    <th className="px-3 py-3">Evenement</th>
-                    <th className="px-3 py-3">Niveau</th>
-                    <th className="px-3 py-3">Contexte</th>
-                    <th className="px-3 py-3">Detail</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredOverview.businessLogs.map((item) => (
-                    <tr key={item.id} className="border-b border-[#eef2f7] align-top text-slate">
-                      <td className="whitespace-nowrap px-3 py-3 text-xs text-ash">
-                        {formatDateTime(item.createdAt)}
-                      </td>
-                      <td className="max-w-[220px] break-all px-3 py-3 font-semibold text-graphite">
-                        {item.event}
-                      </td>
-                      <td className="px-3 py-3">
-                        <StatusBadge label={item.level} tone={supportLogTone(item.level)} />
-                      </td>
-                      <td className="max-w-[280px] px-3 py-3 text-xs text-ash">
-                        {[item.campaignId && `Campagne ${item.campaignId}`, item.leadId && `Participant ${item.leadId}`, item.email, item.redemptionCode && `Code ${item.redemptionCode}`]
-                          .filter(Boolean)
-                          .join(" · ") || "-"}
-                      </td>
-                      <td className="max-w-[420px] px-3 py-3 text-xs leading-5 text-ash">
-                        {item.summary || "-"}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <p className="rounded-[8px] border border-dashed border-[#dbe4f0] bg-[#fbfcfe] px-4 py-8 text-sm text-[#64748b]">
-                {hasFilter
-                  ? "Aucun log ne correspond aux filtres."
-                  : "Aucun log métier récent."}
-              </p>
-            )}
-          </ResponsiveTable>
-        </article>
-      </section>
+      <SupportTables rows={filteredOverview} showHandled={showHandled} hasFilter={hasFilter} />
     </div>
   );
 }

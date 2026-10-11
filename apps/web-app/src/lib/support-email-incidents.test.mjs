@@ -133,6 +133,10 @@ test("Supervision sépare actifs/traités avant limite ; compteur exact et date 
   assert.equal(overview.handledEmails[0].handledAt,"2026-10-11T12:00Z");
   state.overview=overview;
   const active=renderToStaticMarkup(await page({searchParams:Promise.resolve({})}));
+  assert.equal((active.match(/<table\b/g) ?? []).length,4);
+  assert.equal((active.match(/scope="col"/g) ?? []).length,23);
+  for (const title of ["E-mails", "Webhooks", "Gains", "Journal"]) assert.ok(active.includes(`Tableau ${title}`));
+  assert.doesNotMatch(active,/xl:grid-cols-3/);
   assert.match(active,/Marquer comme traité/);assert.doesNotMatch(active,/handled@example/);
   const history=renderToStaticMarkup(await page({searchParams:Promise.resolve({incidents:"handled"})}));
   assert.match(history,/handled@example/);assert.match(history,/Traité le/);assert.doesNotMatch(history,/Marquer comme traité/);
@@ -140,4 +144,24 @@ test("Supervision sépare actifs/traités avant limite ; compteur exact et date 
   assert.match(filtered,/Aucun e-mail ne correspond/);
   state.session.user.email="owner@example.test";
   await assert.rejects(page({searchParams:Promise.resolve({})}),/redirect/);
+});
+
+test("tableaux : données échappées et filtres des quatre sections conservés sans mutation",async()=>{
+  state.overview={activeEmailCount:1,handledEmails:[],
+    failedEmails:[{deliveryId:id,campaignTitle:"Jeu e-mail",leadFirstName:"Camille",recipientEmail:"player@example.test",status:"failed",lastEventAt:eventAt,eventAt,errorMessage:"<script>alerte</script>"}],
+    webhooks:[{id:"event",createdAt:eventAt,eventType:"email.delivered",campaignTitle:"Jeu webhook",recipientEmail:"webhook@example.test",deliveryStatus:"delivered",summary:"Détail webhook"}],
+    pendingClaims:[{leadId:"claim",campaignTitle:"Jeu gain",firstName:"Camille",email:"gain@example.test",prizeLabel:"Soin offert",redemptionCode:"DEMO-CODE",status:"claimed",availableAt:eventAt,expiresAt:eventAt}],
+    businessLogs:[{id:"log",createdAt:eventAt,event:"demo_log",level:"warn",campaignId:"demo",leadId:"lead",email:"journal@example.test",redemptionCode:"DEMO-CODE",summary:"Détail journal"}],
+  };
+  const render=async params=>renderToStaticMarkup(await page({searchParams:Promise.resolve(params)}));
+  const all=await render({});
+  for(const value of ["player@example.test","webhook@example.test","gain@example.test","journal@example.test","DEMO-CODE","Détail journal"])assert.ok(all.includes(value));
+  assert.ok(all.includes("&lt;script&gt;"));assert.doesNotMatch(all,/<script>/);
+  for(const [section,value] of [["emails","player@example.test"],["webhooks","webhook@example.test"],["claims","gain@example.test"],["logs","journal@example.test"]]){
+    const html=await render({section});assert.ok(html.includes(value));
+    for(const other of ["player@example.test","webhook@example.test","gain@example.test","journal@example.test"].filter(v=>v!==value))assert.ok(!html.includes(other));
+  }
+  assert.ok((await render({q:"SOiN OFFERT",status:"claimed"})).includes("gain@example.test"));
+  assert.ok(!(await render({status:"failed"})).includes("webhook@example.test"));
+  assert.deepEqual(state.calls,[]);assert.deepEqual(state.reads,[]);
 });
