@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { dispatchMerchantGainNotifications, getMerchantGainNotificationFailureContext } from "@/lib/merchant-gain-notifications";
 import { logSupportEvent } from "@/lib/support-log";
+import { recordGainNotificationRun } from "@/lib/support-task-log";
 export const maxDuration = 300;
 export async function GET(request: Request) {
   const secret = process.env.CRON_SECRET;
@@ -13,12 +14,14 @@ export async function GET(request: Request) {
     const result = await dispatchMerchantGainNotifications(undefined, 200, {
       budgetMs: 240_000, minIntervalMs: 600,
     });
+    await recordGainNotificationRun(new URL(request.url).pathname.endsWith("/recovery"), result);
     if (!result.skipped) logSupportEvent(
       result.failed || result.limitReached ? "error" : "info",
       "merchant_gain_notification_dispatch", result,
     );
     return NextResponse.json(result, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
+    await recordGainNotificationRun(new URL(request.url).pathname.endsWith("/recovery"), {}, true);
     logSupportEvent("error", "merchant_gain_notification_dispatch_failed", getMerchantGainNotificationFailureContext(error));
     return NextResponse.json({ error: "Traitement des notifications indisponible." }, { status: 503 });
   }

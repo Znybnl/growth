@@ -9,7 +9,7 @@ type SupportRows = Pick<MerchantSupportOverview, "failedEmails" | "webhooks" | "
 const cell = "border-b border-fog px-4 py-4 align-top text-sm leading-5 text-ash [overflow-wrap:anywhere]";
 const strong = "font-semibold text-graphite";
 
-function IncidentError({ message }: { message?: string }) {
+export function IncidentError({ message }: { message?: string }) {
   const text = message || "Erreur de délivrabilité non précisée.";
   if (text.length <= 200) return <>{text}</>;
   return <details>
@@ -20,7 +20,7 @@ function IncidentError({ message }: { message?: string }) {
   </details>;
 }
 
-function SupportTable({ id, title, subtitle, count, headers, empty, children, hasRows }: {
+export function SupportTable({ id, title, subtitle, count, headers, empty, children, hasRows }: {
   id: string; title: string; subtitle: string; count: string; headers: string[];
   empty: string; children: ReactNode; hasRows: boolean;
 }) {

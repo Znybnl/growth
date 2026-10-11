@@ -98,6 +98,12 @@ for (const [table, columns] of [
   await checkPublicAccessIsBlocked(table, columns, true);
 }
 // Read-only permission probe: never call a claim/enqueue RPC on real data here.
+for (const section of ["emails", "webhooks", "claims", "logs"]) {
+  await checkRpc("get_support_monitoring", { p_section: section, p_merchant: "schema-probe-no-site" });
+}
+const { error: monitoringPublicError } = await supabasePublic.rpc("get_support_monitoring", { p_section: "locations" });
+if (monitoringPublicError?.code !== "42501") throw new Error("La RPC de Supervision n’est pas privée.");
+checks.push({ type: "rls", name: "get_support_monitoring", ok: true, access: "denied" });
 const permissionArgs = { p_user: "schema-probe-no-user", p_merchant: "schema-probe-no-site" };
 await checkRpc("can_receive_merchant_gain_notification", permissionArgs);
 const { error: gainRpcPublicError } = await supabasePublic.rpc("can_receive_merchant_gain_notification", permissionArgs);
@@ -147,6 +153,7 @@ if (campaign?.id) {
 }
 
 const migrationChecks = [
+  ["20261011220000_support_monitoring_491.sql", ["get_support_monitoring", "security definer", "revoke all"]],
   ["20261011_support_email_incidents_487.sql", ["support_is_handled", "handle_support_email_incident", "revoke all"]],
   ["20261006_merchant_gain_notifications_473.sql", ["merchant_gain_notification_preferences", "prepare_merchant_gain_notification_payload", "enable row level security"]],
   ["20260710_security_p0_hardening.sql", ["enable row level security", "consume_public_rate_limit", "claim_daily_participation_lock"]],
