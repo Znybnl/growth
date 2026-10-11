@@ -33,8 +33,10 @@ export function SupportTable({ id, title, subtitle, count, headers, empty, child
       <StatusBadge tone="muted">{count}</StatusBadge>
     </header>
     <p className="mt-4 text-xs text-ash lg:hidden">Faites défiler le tableau horizontalement pour voir toutes les colonnes.</p>
+    {/* Contain the absolutely positioned accessible caption inside the scroller,
+        otherwise it extends the document beyond the merchant shell. */}
     <div role="region" aria-label={`Tableau ${title}`} tabIndex={0}
-      className="mt-4 max-w-full overflow-x-auto rounded-lg border border-border focus-visible:outline-2 focus-visible:outline-primary-action">
+      className="relative mt-4 max-w-full overflow-x-auto rounded-lg border border-border focus-visible:outline-2 focus-visible:outline-primary-action">
       <table className="w-full min-w-[980px] table-fixed border-collapse text-left">
         <caption className="sr-only">{title} — {subtitle}</caption>
         <thead className="okado-table-header">

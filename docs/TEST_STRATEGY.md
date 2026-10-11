@@ -146,6 +146,8 @@ Compléments #473/#484 : les tests du handler/DAL vérifient les options multipl
 
 ### Fiabilité de Supervision — #491
 
+Non-régression #492 : `e2e/support-scroll.spec.ts` utilise le vrai cadre marchand dans la fixture de développement (`?shell=1`), avec données fictives et API interceptées. À 320/390/1280 px et 1536 × 540 px, vérifier une seule zone verticale scrollable (`main`), aucun débordement du document, légendes accessibles contenues dans chaque tableau, défilement horizontal au clavier, erreur dépliée et fin de page accessible. Aucun changement de permissions ou de données ; la fixture demeure interdite en production.
+
 `test:support-incidents` inclut les tests DAL/page, filtres, pannes partielles, refus administratifs et journalisation planifiée non nominative. La RPC réelle et son rollback sont exécutés sous PGlite : plus de 50 résultats, recherche historique et littérale, pagination sans doublon, microsecondes, établissement, dates et statuts, événements sans envoi associé, états de notification et refus anon/authenticated. `e2e/support-monitoring.spec.ts` vérifie le rendu à 320/390/1280 px, filtres GET, remise à zéro des pages, liens conservant les filtres, absence de débordement, source indisponible et historiques traités. Les données de la fixture sont fictives ; `/dev/support-monitoring` reste HTTP 404 en production. Rejouer aussi les tests de notifications et les suites d’acquittement/tableaux existantes. Aucun envoi ni modification de gain réel.
 
 ### Incidents d’e-mail traités — #487
