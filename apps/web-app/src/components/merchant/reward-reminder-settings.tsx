@@ -49,7 +49,7 @@ export function RewardReminderSettings({ accountKey }: { accountKey: string }) {
       <button type="button" onClick={save} disabled={!valid || !saved || (enabled === saved.enabled && Number(days) === saved.days)}
         className="okado-primary-action mt-4 px-4 disabled:opacity-50">{busy ? "Enregistrement…" : "Enregistrer la relance"}</button>
     </fieldset>
-    <p className="mt-3 text-xs leading-5 text-ash">Désactivée par défaut. Une seule relance par gain, prévue à 9 h dans le fuseau de l’établissement, sans rattrapage d’un jour passé. Seuls les gains non retirés, encore valides et dont la validité initiale est d’au moins 20 jours sont concernés. L’e-mail initial de gain reste inchangé.</p>
+    <p className="mt-3 text-xs leading-5 text-ash">Désactivée par défaut. Une seule relance par gain, lors d’un passage quotidien le matin à heure indicative en France. Le jour de relance est calculé dans le fuseau de l’établissement, sans rattrapage d’un jour passé. Seuls les gains non retirés, encore valides et dont la validité initiale est d’au moins 20 jours sont concernés. L’e-mail initial de gain reste inchangé.</p>
     {saved && !saved.canEdit ? <p className="mt-2 text-sm text-ash">Seul un propriétaire ou administrateur du compte peut modifier ce réglage commun.</p> : null}
     {!saved && !error ? <p role="status" className="mt-3 text-sm">Chargement du réglage…</p> : null}
     {message ? <p role="status" className="mt-3 text-sm text-green-800">{message}</p> : null}

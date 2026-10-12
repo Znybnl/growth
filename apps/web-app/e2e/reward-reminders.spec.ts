@@ -17,6 +17,7 @@ for (const width of [320, 390, 1280]) {
     const days = page.getByLabel("Nombre de jours avant l’expiration");
     const save = page.getByRole("button", { name: "Enregistrer la relance" });
     await expect(checkbox).toBeEnabled(); await expect(checkbox).not.toBeChecked(); await expect(days).toHaveValue("7");
+    await expect(page.getByText(/passage quotidien le matin à heure indicative/)).toBeVisible();
     await expect(save).toBeDisabled();
     await checkbox.check(); await days.fill("3"); await save.click();
     await expect(page.getByRole("status").filter({ hasText: "réglage commun" })).toBeVisible(); expect(writes).toBe(1);

@@ -4,7 +4,7 @@ import { getSupabaseAdmin } from "@/lib/supabase";
 export const maxDuration = 300;
 
 async function recordRun(summary: string, level: "info" | "error") {
-  if (process.env.VERCEL_ENV !== "production" || process.env.REWARD_REMINDERS_ENABLED !== "true") return;
+  if (process.env.VERCEL_ENV !== "production" || process.env.REWARD_REMINDERS_ENABLED === "false") return;
   try {
     const { error } = await getSupabaseAdmin().from("business_logs").insert({
       event: "reward_expiry_reminder_run", level, summary, payload: {}, created_at: new Date().toISOString(),
@@ -13,7 +13,7 @@ async function recordRun(summary: string, level: "info" | "error") {
   } catch { console.error("[SUPPORT][reward-reminder-run-unavailable]"); }
 }
 export async function GET(request: Request) {
-  const secret = process.env.REWARD_REMINDER_CRON_SECRET;
+  const secret = process.env.CRON_SECRET;
   if (!secret || request.headers.get("authorization") !== `Bearer ${secret}`) {
     return NextResponse.json({ error: "Non autorisé." }, { status: 401 });
   }

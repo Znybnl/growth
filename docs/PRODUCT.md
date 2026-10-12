@@ -2,7 +2,7 @@
 
 ## Relance avant expiration — #304
 
-Mon compte → Utilisateur affiche un réglage commun à tous les établissements : case décochée par défaut et nombre de jours avant expiration, initialement 7. Seul propriétaire/administrateur du compte peut sauvegarder ; les membres actifs consultent sans écrire. L’e-mail de service reprend le format du gain initial et est destiné au gagnant : une seule relance à 09:00 le jour J−N, sans rattrapage. Les notifications personnelles de gains et leurs fréquences restent indépendantes. Configuration Supabase approuvée pour la planification, Resend pour l’envoi. [Périmètre et recette](releases/reward-expiry-reminders-304.md).
+Mon compte → Utilisateur affiche un réglage commun à tous les établissements : case décochée par défaut et nombre de jours avant expiration, initialement 7. Seul propriétaire/administrateur du compte peut sauvegarder ; les membres actifs consultent sans écrire. L’e-mail de service reprend le format du gain initial et est destiné au gagnant : une seule relance le jour civil J−N au passage quotidien, sans rattrapage d’un jour passé. Le propriétaire confirme le 12 octobre que 9 h est approximatif : planification Vercel Hobby, envoi Resend existant, aucun secret ou job Supabase à configurer. Les notifications personnelles de gains et leurs fréquences restent indépendantes. [Périmètre, horaires indicatifs et recette](releases/reward-expiry-reminders-304.md).
 
 ## Notifications de gains au marchand (Issues #473 et #484)
 
