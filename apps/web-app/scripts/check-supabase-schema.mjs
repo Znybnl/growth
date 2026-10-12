@@ -77,6 +77,9 @@ for (const [table, columns] of [
   ["merchant_gain_notification_preferences", "user_id,merchant_id,frequency,updated_at"],
   ["merchant_gain_notification_events", "user_id,merchant_id,lead_id,job_id,won_at"],
   ["merchant_gain_notification_jobs", "id,status,lease_token,gains,email_payload,recipient"],
+  ["reward_reminder_settings", "workspace_id,enabled,days,version,updated_at"],
+  ["reward_reminder_jobs", "id,lead_id,status,email_payload,provider_id"],
+  ["reward_reminder_runner", "singleton,token,lease_until"],
   ["public_rate_limits", "key,count,reset_at"],
   ["daily_participation_locks", "campaign_id,date_key,fingerprint_hash"],
   ["cashier_redemption_audits", "id,merchant_id,lead_id"],
@@ -94,10 +97,19 @@ for (const [table, columns] of [
   ["merchant_gain_notification_preferences", "user_id"],
   ["merchant_gain_notification_events", "lead_id"],
   ["merchant_gain_notification_jobs", "id"],
+  ["reward_reminder_settings", "workspace_id"],
+  ["reward_reminder_jobs", "id"],
+  ["reward_reminder_runner", "singleton"],
 ]) {
   await checkPublicAccessIsBlocked(table, columns, true);
 }
 // Read-only permission probe: never call a claim/enqueue RPC on real data here.
+const reminderArgs = { p_user: "schema-probe-no-user", p_workspace: "schema-probe-no-workspace" };
+for (const client of [supabase, supabasePublic]) {
+  const { error } = await client.rpc("get_reward_reminder_settings", reminderArgs);
+  if (error?.code !== "42501") throw new Error("La RPC de relance doit refuser l’utilisateur non autorisé.");
+}
+await checkRpc("reward_reminder_due", { p_expiry: "2030-10-19T12:00:00Z", p_days: 7, p_zone: "Europe/Paris" });
 for (const section of ["emails", "webhooks", "claims", "logs"]) {
   await checkRpc("get_support_monitoring", { p_section: section, p_merchant: "schema-probe-no-site" });
 }

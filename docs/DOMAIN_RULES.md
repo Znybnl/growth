@@ -80,6 +80,10 @@ La fiche dans Pilotage est réservée à l’administration de la plateforme et 
 
 Les durées de la deuxième ligne constituent une recommandation opérationnelle, non un avis juridique. Toute modification de ces règles exige une décision explicite du propriétaire et, si nécessaire, une validation juridique.
 
+## Relance d’expiration du gain — #304
+
+Décisions propriétaire du 12 octobre 2026 : préférence commune au compte marchand et à ses établissements, désactivée par défaut, délai personnalisable (7 jours initialement). Le destinataire est le gagnant, pas le marchand. Une seule relance par gain réel encore disponible/non retiré, à validité initiale d’au moins 20 jours, prévue à 09:00 dans le fuseau du site le jour J−N ; aucun rattrapage. Le changement de délai ne rejoue pas une relance déjà tentée/transmise. Paramétrage par propriétaire/administrateur du compte, contrôle serveur et isolation des comptes. Planification Supabase et Resend existant approuvés, sans nouvelle offre Vercel. Le format reprend l’e-mail initial, sans changer celui-ci, les conditions/dates, stocks, retrait ou consentement. Désactivation revérifiée avant déclenchement ; une requête fournisseur déjà déclenchée ne peut être rappelée. [Limites temporelles, données et recette](releases/reward-expiry-reminders-304.md).
+
 ## Notifications de gains aux utilisateurs d’établissement (Issue #473)
 
 - Décision propriétaire : les tâches de notifications et leurs reprises n’exécutent pas de purge. La maintenance historique requiert une activation opérationnelle distincte et explicite ; elle reste désactivée par défaut. Configurer l’authentification du planificateur ne vaut pas autorisation de supprimer des données.

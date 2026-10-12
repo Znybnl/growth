@@ -70,6 +70,10 @@ Un changement qui touche l'un de ces parcours doit avoir une preuve de test auto
 
 ## Choisir le bon niveau de test
 
+### Relances d’expiration — #304
+
+`test:reward-reminders` exécute le vrai SQL sous PostgreSQL PGlite (défauts sans écriture, droits, isolation, 20 jours, DST, J−N, exclusions, payload immuable, reprise/lease/verrou, désactivation, absence de doublon, rollback et planification Supabase avec réseau simulé). Les vrais handlers/worker sont testés avec dépendances isolées : origine/session/compte, configuration production, refus avant envoi, idempotence, rendu, données non nominatives. `reward-reminders.spec.ts` couvre le composant réel sur fixture de développement, API interceptées, à 320/390/1280 px ; compte/site, persistance, lecture seule, validation indépendante de l’autre formulaire. Rejouer les tests e-mail initial, notifications et Supervision. Maquettes 680/390/320 px issues du vrai renderer, QR fictif ; fixture HTTP 404 en production, routes sans session/secret 401. Aucun test ne programme ni n’envoie de relance réelle.
+
 - **Changement visuel localisé** : lint, build et vérification visuelle de la page touchée.
 - **Changement métier ou API** : lint, build, test du parcours concerné et non-régression des autorisations/données.
 - **Changement auth, jeu, gain, retrait, e-mail, paiement, prévisualisation ou multi-sites** : contrôles précédents + smoke ou E2E adapté + validation fonctionnelle du propriétaire.
