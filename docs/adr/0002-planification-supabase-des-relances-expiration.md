@@ -1,6 +1,6 @@
 # 0002 — Planifier les relances d’expiration dans Supabase
 
-**Statut :** accepté — accord écrit du propriétaire le 12 octobre 2026, issue #304.
+**Statut :** remplacé — le propriétaire précise le 12 octobre 2026 que 9 h est approximatif et valide la réutilisation de Vercel Hobby. Voir [ADR 0003](0003-relances-quotidiennes-vercel-hobby.md). Les décisions ci-dessous sont historiques, ne pas configurer ce planificateur.
 
 ## Contexte
 

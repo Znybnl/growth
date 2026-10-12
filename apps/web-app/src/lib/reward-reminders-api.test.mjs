@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { beforeEach, test } from "node:test";
 import { registerHooks } from "node:module";
+import { readFileSync } from "node:fs";
 const src=new URL('../',import.meta.url);
 registerHooks({resolve(name,context,next){
 if(name==='next/server')return next('next/server.js',context);
@@ -19,12 +20,14 @@ redemptionCode:'DEMO-NON-VALIDE',expiresAt:'2030-10-19T12:00Z',availableAt:'2030
 usageConditions:'Valable avec un Brow Lift',merchantEmail:'shop@example.test',recipient:'camille@example.test'};
 let state;
 beforeEach(()=>{
-delete process.env.REWARD_REMINDERS_ENABLED;delete process.env.VERCEL_ENV;delete process.env.REWARD_REMINDERS_ORIGIN;
+delete process.env.REWARD_REMINDERS_ENABLED;delete process.env.VERCEL_ENV;delete process.env.MERCHANT_GAIN_NOTIFICATIONS_ORIGIN;
+delete process.env.CRON_SECRET;delete process.env.REWARD_REMINDER_CRON_SECRET;
 state=globalThis.__reminder={session:{user:{id:'u'},workspace:{id:'w'}},calls:[],sends:[],jobs:[],logs:[],settings:{enabled:false,days:7,canEdit:true,updatedAt:null}};
 state.db={from(){return {insert:async row=>{state.logs.push(row);return {error:state.logError}}};},async rpc(name,args){state.calls.push([name,args]);
 if(state.dbError)return {error:{code:state.dbCode??'private',message:'secret@example.test'}};
 if(name==='get_reward_reminder_settings')return {data:state.settings};
 if(name==='set_reward_reminder_settings')return {data:{...state.settings,enabled:args.p_enabled,days:args.p_days}};
+if(name==='reward_reminder_schedule_version')return {data:state.version??'vercel-daily-v1'};
 if(name==='acquire_reward_reminder_runner')return {data:state.locked?null:'runner'};
 if(name==='claim_reward_reminder')return {data:state.jobs.shift()??null};
 if(name==='get_reward_reminder_input')return {data:fixture};
@@ -33,7 +36,7 @@ if(name==='authorize_reward_reminder')return {data:state.authorized??true};
 return {data:true};}};
 });
 const request=body=>new Request('https://app.okado.app/api/merchant/reward-reminders',{method:'POST',headers:{origin:'https://app.okado.app','content-type':'application/json'},body:JSON.stringify(body)});
-function config(){process.env.VERCEL_ENV='production';process.env.REWARD_REMINDERS_ENABLED='true';process.env.REWARD_REMINDERS_ORIGIN='https://app.okado.app';process.env.RESEND_API_KEY='TEST-NOT-A-REAL-KEY';process.env.RESEND_FROM_EMAIL='sender@example.test';}
+function config(){process.env.VERCEL_ENV='production';process.env.MERCHANT_GAIN_NOTIFICATIONS_ORIGIN='https://app.okado.app';process.env.RESEND_API_KEY='TEST-NOT-A-REAL-KEY';process.env.RESEND_FROM_EMAIL='sender@example.test';}
 
 test('API : visiteur/origine refusés, compte issu de la session, droits et délai strict',async()=>{
 state.session=null;assert.equal((await route.GET()).status,401);assert.equal(state.calls.length,0);
@@ -45,7 +48,7 @@ assert.equal(res.headers.get('cache-control'),'private, no-store');assert.deepEq
 });
 test('API : erreur sans secret ni faux défaut enregistré',async()=>{state.dbError=true;const res=await route.GET();assert.equal(res.status,503);assert.doesNotMatch(await res.text(),/secret/);state.dbCode='42501';assert.equal((await route.GET()).status,403);});
 test('worker : aucune base ni envoi local/preview/désactivé, configuration de cible obligatoire',async()=>{
-assert.equal((await worker.dispatchRewardReminders()).skipped,true);assert.equal(state.calls.length,0);config();process.env.REWARD_REMINDERS_ORIGIN='https://preview.example.test';await assert.rejects(worker.dispatchRewardReminders());assert.equal(state.sends.length,0);
+assert.equal((await worker.dispatchRewardReminders()).skipped,true);assert.equal(state.calls.length,0);config();process.env.MERCHANT_GAIN_NOTIFICATIONS_ORIGIN='https://preview.example.test';await assert.rejects(worker.dispatchRewardReminders());assert.equal(state.sends.length,0);
 });
 test('worker : payload exact figé, clé stable, autorisation avant envoi, aucun chemin e-mail initial',async()=>{
 config();state.jobs=[{id:'j',lease_token:'lease',email_payload:null}];const result=await worker.dispatchRewardReminders({minIntervalMs:0});assert.equal(result.sent,1);
@@ -59,13 +62,15 @@ finally {fixture.merchantName=originalName;}
 });
 test('worker : aucun envoi si retiré/désactivé, provider ambigu sûr et verrou partagé',async()=>{
 config();state.jobs=[{id:'j',lease_token:'l',email_payload:null}];state.authorized=false;await worker.dispatchRewardReminders({minIntervalMs:0});assert.equal(state.sends.length,0);
-state.authorized=true;state.failSend=true;state.jobs=[{id:'j',lease_token:'l',email_payload:null}];assert.equal((await worker.dispatchRewardReminders({minIntervalMs:0})).failed,1);
+state.authorized=true;state.failSend=true;state.jobs=[{id:'j',lease_token:'l',email_payload:null}];assert.equal((await worker.dispatchRewardReminders({minIntervalMs:0,wait:async()=>{}})).failed,1);
 assert.equal(state.calls.findLast(c=>c[0]==='finish_reward_reminder')[1].p_provider,null);state.locked=true;assert.equal((await worker.dispatchRewardReminders()).skipped,true);
 });
-test('route planifiée : secret dédié, journal non nominatif et défaut sans envoi',async()=>{
+test('route planifiée : secret cron existant, ancien secret refusé et journal non nominatif',async()=>{
 assert.equal((await cron.GET(new Request('https://app.okado.app/api/internal/reward-reminders'))).status,401);
-process.env.REWARD_REMINDER_CRON_SECRET='test-only-scheduler-secret-not-production';config();state.jobs=[{id:'j',lease_token:'l',email_payload:null}];
-const res=await cron.POST(new Request('https://app.okado.app/api/internal/reward-reminders',{headers:{authorization:'Bearer test-only-scheduler-secret-not-production'}}));assert.equal(res.status,200);
+process.env.REWARD_REMINDER_CRON_SECRET='test-only-legacy-secret';
+assert.equal((await cron.POST(new Request('https://app.okado.app/api/internal/reward-reminders',{headers:{authorization:'Bearer test-only-legacy-secret'}}))).status,401);
+process.env.CRON_SECRET='test-only-existing-cron-secret';config();state.jobs=[{id:'j',lease_token:'l',email_payload:null}];
+const res=await cron.POST(new Request('https://app.okado.app/api/internal/reward-reminders',{headers:{authorization:'Bearer test-only-existing-cron-secret'}}));assert.equal(res.status,200);
 assert.equal(state.logs[0].event,'reward_expiry_reminder_run');assert.doesNotMatch(JSON.stringify(state.logs),/camille|shop@|Brow|DEMO-NON|private@/);
 });
 test('email : même format que le gain, données réelles injectées, logo/conditions/QR et échappement',()=>{
@@ -77,4 +82,30 @@ assert.doesNotThrow(()=>renderRewardReminder({...input,logoUrl:'http://['}));
 const cid=renderRewardReminder({...input,logoUrl:'data:image/png;base64,AAAA'});assert.match(cid.html,/cid:campaign-logo/);assert.equal(cid.attachments[0].content,'AAAA');
 const custom=renderRewardReminder({...input,prizeLabel:'<script>bad</script>',emailSettings:{senderName:'Mon institut',replyTo:'reply@example.test',body:'Texte personnalisé {{prizeLabel}} {{rewardExpiry}}',accentColor:'#481a54'}});
 assert.equal(custom.senderName,'Mon institut');assert.equal(custom.replyTo,'reply@example.test');assert.match(custom.html,/Texte personnalisé/);assert.doesNotMatch(custom.html,/<script>/);assert.match(custom.html,/#481a54/);
+});
+
+test('configuration Hobby : passage quotidien dédié, secret commun et crons existants inchangés',()=>{
+const config=JSON.parse(readFileSync(new URL('../../vercel.json',import.meta.url),'utf8'));
+assert.deepEqual(config.crons.filter(c=>c.path!=='/api/internal/reward-reminders'),[
+{path:'/api/internal/maintenance',schedule:'15 3 * * *'},
+{path:'/api/internal/gain-notifications/recovery',schedule:'15 3 * * *'},
+{path:'/api/internal/gain-notifications',schedule:'0 8 * * *'}]);
+assert.deepEqual(config.crons.filter(c=>c.path==='/api/internal/reward-reminders'),[{path:'/api/internal/reward-reminders',schedule:'0 8 * * *'}]);
+});
+
+test('migration requise et arrêt serveur optionnel : pas de claim ni envoi sur ancien schéma',async()=>{
+config();state.version='supabase-nine-v1';await assert.rejects(worker.dispatchRewardReminders());
+assert.equal(state.calls.some(c=>c[0]==='acquire_reward_reminder_runner'),false);assert.equal(state.sends.length,0);
+state.calls=[];process.env.REWARD_REMINDERS_ENABLED='false';assert.equal((await worker.dispatchRewardReminders()).skipped,true);assert.equal(state.calls.length,0);
+});
+
+test('reprise dans le passage quotidien : attente bornée, payload et identité identiques',async()=>{
+config();state.failSend=true;state.jobs=[{id:'retry',lease_token:'one',email_payload:null}];const waits=[];
+const result=await worker.dispatchRewardReminders({minIntervalMs:0,wait:async ms=>{
+waits.push(ms);if(ms===30000){state.failSend=false;state.frozen=state.sends[0][0];state.jobs.push({id:'retry',lease_token:'two',email_payload:state.frozen});}
+}});
+assert.ok(waits.includes(30000));assert.equal(result.sent,1);assert.equal(result.failed,1);assert.equal(state.sends.length,2);
+assert.deepEqual(state.sends[0],state.sends[1]);assert.equal(state.calls.filter(c=>c[0]==='get_reward_reminder_input').length,1);
+state.sends=[];state.frozen=null;state.failSend=true;state.jobs=[{id:'budget',lease_token:'l',email_payload:null}];let waited=false;
+await worker.dispatchRewardReminders({minIntervalMs:0,budgetMs:1000,wait:async ms=>{if(ms===30000)waited=true;}});assert.equal(waited,false);
 });

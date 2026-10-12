@@ -110,6 +110,10 @@ for (const client of [supabase, supabasePublic]) {
   if (error?.code !== "42501") throw new Error("La RPC de relance doit refuser l’utilisateur non autorisé.");
 }
 await checkRpc("reward_reminder_due", { p_expiry: "2030-10-19T12:00:00Z", p_days: 7, p_zone: "Europe/Paris" });
+const reminderVersion = await supabase.rpc("reward_reminder_schedule_version", {});
+if (reminderVersion.error || reminderVersion.data !== "vercel-daily-v1") {
+  throw new Error("La migration de relance quotidienne Vercel est nécessaire.");
+}
 for (const section of ["emails", "webhooks", "claims", "logs"]) {
   await checkRpc("get_support_monitoring", { p_section: section, p_merchant: "schema-probe-no-site" });
 }

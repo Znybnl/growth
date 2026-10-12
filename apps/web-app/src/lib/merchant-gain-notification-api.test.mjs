@@ -157,6 +157,7 @@ test("planification quotidienne sans forfait supérieur, reprise indépendante d
     {path:"/api/internal/maintenance",schedule:"15 3 * * *"},
     {path:"/api/internal/gain-notifications/recovery",schedule:"15 3 * * *"},
     {path:"/api/internal/gain-notifications",schedule:"0 8 * * *"},
+    {path:"/api/internal/reward-reminders",schedule:"0 8 * * *"},
   ]);
   const ui=readFileSync(new URL("../components/merchant/gain-notification-settings.tsx",import.meta.url),"utf8");
   assert.match(ui,/horaire indicatif/);assert.doesNotMatch(ui,/lundi à 9 h/);
