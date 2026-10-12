@@ -68,6 +68,10 @@ Le propriétaire valide un passage quotidien le matin à horaire indicatif, sans
 
 ## À ne pas supposer
 
+### Relances d’expiration — #304
+
+Réglage partagé au workspace, RPC privées service_role et autorisation des membres/propriétaires côté serveur. Outbox distincte et unique par gain, leases de job/worker, payload exact persistant pour les reprises et clé Resend stable ; contrôle d’éligibilité/préférence/version avant transmission. Supabase pg_cron/pg_net/Vault déclenche la route protégée à 09:00 locale, avec un créneau court sans rattrapage, uniquement après activation opérationnelle explicite. Aucun changement aux crons Vercel ou aux purges. Journal non nominatif, payload expurgé après acceptation/annulation/arrêt et suppression par cascade à l’effacement du gain. Le modèle initial est réutilisé avec une option de rendu de relance ; son suivi de livraison reste indépendant. [Configuration et rollback](releases/reward-expiry-reminders-304.md).
+
 ### Supervision administrative — #491
 
 La RPC privée `get_support_monitoring` réalise recherche, jointures, comptages et pagination en base, avec paramètres liés et liste fixe de sources. Seul `service_role` peut l’exécuter ; page et DAL revérifient l’administrateur. Les lectures des quatre sources et du sélecteur sont parallèles ; une panne partielle reste visible et n’annule pas les autres lectures. Aucun payload de webhook, snapshot de gain ou payload d’e-mail n’est renvoyé. Les passages programmés et de reprise enregistrent désormais un résultat global non nominatif dans `business_logs`, attendu avant la réponse HTTP, sans changer la planification ou le worker. Un échec de journalisation ne transforme pas un envoi accepté en échec/reprise. Les anciens passages ne sont pas inventés ni reconstitués.

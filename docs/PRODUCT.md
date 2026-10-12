@@ -1,5 +1,9 @@
 # Produit — Okado
 
+## Relance avant expiration — #304
+
+Mon compte → Utilisateur affiche un réglage commun à tous les établissements : case décochée par défaut et nombre de jours avant expiration, initialement 7. Seul propriétaire/administrateur du compte peut sauvegarder ; les membres actifs consultent sans écrire. L’e-mail de service reprend le format du gain initial et est destiné au gagnant : une seule relance à 09:00 le jour J−N, sans rattrapage. Les notifications personnelles de gains et leurs fréquences restent indépendantes. Configuration Supabase approuvée pour la planification, Resend pour l’envoi. [Périmètre et recette](releases/reward-expiry-reminders-304.md).
+
 ## Notifications de gains au marchand (Issues #473 et #484)
 
 Décision propriétaire : réglage dans **Mon compte → Utilisateur**, personnel et par établissement, **désactivé par défaut** pour les comptes existants et nouveaux. L’utilisateur peut cocher indépendamment une ou plusieurs options : à chaque gain, synthèse quotidienne (conseillée), hebdomadaire et/ou mensuelle. Un même gain peut donc figurer dans chacune des synthèses choisies et générer en plus son alerte immédiate si elle est activée. Le destinataire est l’e-mail actuel du compte, pas celui du joueur ni une adresse libre.

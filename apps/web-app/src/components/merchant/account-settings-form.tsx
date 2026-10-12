@@ -5,6 +5,7 @@ import { Link2, ShieldCheck, Store, UserRound } from "lucide-react";
 
 import { AccountSectionCard } from "@/components/merchant/account-section-card";
 import { GainNotificationSettings } from "@/components/merchant/gain-notification-settings";
+import { RewardReminderSettings } from "@/components/merchant/reward-reminder-settings";
 import { AccountLocationPanel } from "@/components/merchant/account-location-panel";
 import { BillingSubscriptionCard } from "@/components/merchant/billing-subscription-card";
 import { GoogleReviewPlacePicker } from "@/components/merchant/google-review-place-picker";
@@ -372,6 +373,7 @@ export function AccountSettingsForm({
         <GainNotificationSettings key={selectedMerchant.id} locationId={selectedMerchant.id}
           merchantName={selectedMerchant.companyName} email={notificationEmail}
           timeZone={selectedMerchant.timeZone ?? "Europe/Paris"} />
+        <RewardReminderSettings key={selectedMerchant.workspaceId ?? selectedMerchant.id} accountKey={selectedMerchant.workspaceId ?? selectedMerchant.id} />
         </div> : null}
 
         {activeTab === "establishment" ? <div id="account-tabpanel-establishment" role="tabpanel" aria-labelledby="account-establishment-tab">
