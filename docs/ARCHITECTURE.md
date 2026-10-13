@@ -32,6 +32,26 @@ app.okado.app              →  SaaS marchand et parcours publics de jeu
 
 ## Données et accès
 
+### Indicateurs communs — #498
+
+La RPC privée get_campaign_metric_counts fournit les agrégats communs à overview/summary.
+get_merchant_metric_details apporte opt-ins et attentes par lot sans charger les contacts ;
+get_platform_operational_metrics agrège Pilotage en base. La vue privée security_invoker
+campaign_effective_redemptions lit la date effective et la preuve historique admissible,
+sans réécrire de lead. Un trigger renseigne/annule redeemed_at dans la même mutation
+que le statut, y compris pour l'ancien chemin marchand. Les retraits caisse/forcés restent
+transactionnels, via leurs RPC privées avec contrôles inchangés ; le chemin forcé direct
+à plusieurs requêtes est retiré. Le total des retraits conserve les lignes dont la date
+est inconnue, tandis que les répartitions ne les inventent pas. Les RPC/vues sont service_role
+uniquement ; les handlers conservent l'authentification, le périmètre établissement et le PIN.
+
+record_marketing_click conserve un identifiant stable d'action et de clic ; sa clé unique
+par jeu/événement rend une reprise idempotente. Le endpoint public valide action/type et
+ne permet ni association arbitraire à un contact ni événement game_played. Les anciens
+clients sans métadonnées restent compatibles, avec clic non attribué. Les lectures de
+liste/repli utilisent une pagination ordonnée avec total exact, pas la longueur d'une page.
+Contrat, limites, migration et retour arrière : [livraison #498](releases/consistent-metrics-498.md).
+
 ### Comptage des participations — #496
 
 La vue privée `campaign_participations` (security_invoker, SELECT service_role uniquement) dédoublonne les événements `game_played` et les contacts historiques finalisés par identité de session, puis de lead quand le lien manque. La date retenue est la première preuve de jeu, pas la date ultérieure du formulaire. Il n'y a ni nouvelle collecte de données personnelles ni réécriture historique. Les archives et durées de conservation existantes sont inchangées.

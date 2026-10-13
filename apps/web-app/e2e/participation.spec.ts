@@ -64,3 +64,31 @@ test("prévisualisation : premier grattage sans enregistrement réel",async({pag
   await canvas.click();
   expect(played).toBe(0);expect(events).toBe(0);
 });
+
+for(const width of [320,390,1280]) {
+  test(`clic marketing indépendant du formulaire, contexte stable et preview exclue à ${width}px`,async({page})=>{
+    await page.setViewportSize({width,height:900});
+    const clicks:Array<{eventType:string;metadata:{actionId:string;eventId:string;sessionId:string}}> = [];
+    const errors:string[]=[];page.on("pageerror",e=>errors.push(e.message));
+    await page.route("https://example.test/**",route=>route.fulfill({body:"Page fictive"}));
+    await page.route("**/api/**",route=>{
+      const path=new URL(route.request().url()).pathname;
+      if(path.includes("/campaign/"))return route.fulfill({json:{campaign:{actions:[{id:"fixture-instagram",kind:"instagram",label:"Suivez-nous",url:"https://example.test"}]}}});
+      if(path.endsWith("/event")){const body=route.request().postDataJSON();if(body.eventType==="social_clicked")clicks.push(body);return route.fulfill({json:{event:{}}});}
+      throw Error("Unexpected request "+path);
+    });
+    await page.goto("/dev/participation-proof?marketing=1");
+    await page.locator("canvas").first().click();
+    const action=page.getByRole("link",{name:/Instagram/i});
+    await expect(action).toBeVisible();await action.click();await action.click();
+    await expect.poll(()=>clicks.length).toBe(2);
+    expect(clicks[0].metadata.actionId).toBe("fixture-instagram");
+    expect(clicks[0].metadata.eventId).not.toBe(clicks[1].metadata.eventId);
+    expect(clicks[0].metadata.sessionId).toBe(clicks[1].metadata.sessionId);
+    expect(clicks[0].metadata.sessionId).not.toBe("");
+    expect(errors).toEqual([]);
+    await page.goto("/dev/participation-proof?marketing=1&preview=1");
+    await page.locator("canvas").first().click();await page.getByRole("link",{name:/Instagram/i}).click();
+    expect(clicks).toHaveLength(2);expect(errors).toEqual([]);
+  });
+}

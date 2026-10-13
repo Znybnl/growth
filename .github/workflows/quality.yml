@@ -38,6 +38,8 @@ jobs:
         run: npm run test:admin-profiles -w @okado/web-app
       - name: Test support email incident permissions and migration
         run: npm run test:support-incidents -w @okado/web-app
+      - name: Test metric consistency and private SQL aggregates
+        run: npm run test:metrics -w @okado/web-app
       - name: Build web app
         run: npm run build:web
 

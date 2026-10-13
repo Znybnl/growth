@@ -802,7 +802,8 @@ export interface CampaignKpi {
   wins: number;
   redeemed: number;
   conversionRate: number;
-  actionRate: number;
+  /** Deprecated: clicks/contacts was not a marketing completion rate. */
+  actionRate?: number;
   redemptionRate: number;
   estimatedSpend: number;
   costPerLead: number;
@@ -907,8 +908,10 @@ export interface CampaignDataView {
   }>;
   actionVolumes: Array<{
     actionIndex: number;
+    actionId?: string | null;
     value: number;
   }>;
+  undatedRedemptions?: number;
 }
 
 export interface CampaignSetupInput {

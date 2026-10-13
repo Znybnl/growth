@@ -40,6 +40,21 @@ La fiche dans Pilotage est réservée à l’administration de la plateforme et 
 
 ## Parcours joueur et actions marketing
 
+### Cohérence des indicateurs — #498
+
+Décision propriétaire du 13 octobre 2026 : traiter les recommandations de #498.
+Un même indicateur utilise la même source et la même formule à périmètre égal.
+
+- « Clics sur les actions marketing » compte les événements réels Google, sociaux et liens personnalisés, indépendamment du formulaire. Ce n'est pas une preuve d'avis publié ou de suivi. Le total et les volumes par action reposent sur ces clics ; les anciens clics sans identifiant stable restent non attribués. Une reprise technique d'un même événement n'ajoute pas de clic ; deux clics volontaires distincts sont deux événements.
+- La conversion globale est le ratio des totaux de participations/scans, arrondi une fois, jamais une moyenne des taux par jeu. Pas de bornage artificiel à 100 % ; zéro si aucun scan.
+- Les opt-ins sont les enregistrements ayant un consentement marketing, pas des personnes uniques. Un échec de lecture n'est pas un zéro réel.
+- « Gains à suivre » / « À retirer » : lot associé, statut claimed, expiration absente ou non passée. Une disponibilité future reste à suivre ; ce compteur ne promet pas que le retrait est déjà possible. Les pertes, lignes sans lot, gains retirés/expirés sont exclus. Les incidents techniques de Supervision gardent leur propre périmètre.
+- La date de retrait effective vient de redeemed_at. Pour l'historique où elle manque, seule la dernière preuve de retrait postérieure à la création du gain et à sa dernière réinitialisation est utilisable, jamais une date estimée. Les cas non datables restent dans le total mais sont signalés/exclus des répartitions par période. Une réinitialisation annule le retrait courant ; le prochain retrait possède sa nouvelle date.
+- Les graphiques couvrent des jours calendaires UTC complets ; les synthèses gardent leurs périodes locales closes et leur contenu figé. Aucun e-mail historique n'est rejoué.
+- Stock faible : stock fini et initial positif, restant strictement positif et au plus max(1, ceil(initial × 20 %)). Stock nul = épuisé, catégorie distincte ; illimité = aucune alerte de seuil. Les alertes opérationnelles portent sur les jeux actifs. Ces états n'interviennent jamais dans la consommation ou les participations.
+- Pilotage compte les établissements ayant un abonnement actif ou un essai valide, cohérent avec l'état présenté dans les lignes. Un essai applicatif n'exige pas Stripe. L'unité établissement est explicite, sans modification de droits ou facturation.
+- Les totaux ne dépendent pas d'une page REST ni des filtres de recherche/pagination des contacts. L'interface distingue contacts collectés, participations, gains et personnes uniques.
+
 - Décision propriétaire du 13 octobre 2026 (#496) : une **participation** est une partie effectivement commencée, distincte du scan et du contact. Elle est comptée une fois par session, que le joueur gagne ou perde, fournisse ou non ses coordonnées. Pour la roue, le tirage préparé au clic Jouer démarre immédiatement ; pour le ticket, seule la première action de grattage compte, pas sa préparation. Le formulaire et ses reprises n'ajoutent pas de partie. Les prévisualisations sont exclues.
 - Les KPI Participations, courbes et sélecteurs utilisent ce même comptage. Conversion = participations / scans ; coût par participation = coût estimé des gains / participations (0 sans partie). Contacts, opt-ins, gagnants, retraits et coût par contact restent séparés. Les listes/exports de contacts n'inventent aucune coordonnée pour les parties anonymes.
 - L'historique utilise les événements de jeu persistés et les contacts effectivement finalisés, rattachés à la même session lorsque ce lien existe. Une session simplement préparée ne constitue pas une preuve historique de grattage. Les parties anciennes non tracées ne sont pas reconstituées par estimation.

@@ -43,7 +43,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard label="Comptes" value={overview.totals.merchants} detail={`${overview.totals.onboardedMerchants} onboarding terminés`} />
-        <MetricCard label="Abonnements" value={overview.totals.activeSubscriptions} detail="Essais et abonnements actifs" />
+        <MetricCard label="Établissements avec accès actif" value={overview.totals.activeSubscriptions} detail="Essais valides et abonnements actifs" />
         <MetricCard label="Animations" value={overview.totals.activeCampaigns} detail={`${overview.totals.leads} contacts collectés`} />
         <MetricCard label="Gains à suivre" value={overview.totals.pendingRewards} detail="Gains en attente de retrait" />
       </section>
@@ -132,13 +132,15 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                       </SharedStatusBadge>
                     )}
                   </td>
-                  <td className="px-3 py-4 text-ash">{user.campaignCount} animation(s) · {user.leadCount} participation(s)</td>
+                  <td className="px-3 py-4 text-ash">{user.campaignCount} jeu(x) · {user.leadCount} contact(s)</td>
                   <td className="px-3 py-4">
-                    {user.lowStockCount || user.failedEmailCount ? (
+                    {user.lowStockCount || user.exhaustedStockCount || user.failedEmailCount ? (
                       <span className="text-xs font-medium text-[#a15c00]">
-                        {user.lowStockCount ? `${user.lowStockCount} stock` : ""}
-                        {user.lowStockCount && user.failedEmailCount ? " · " : ""}
-                        {user.failedEmailCount ? `${user.failedEmailCount} e-mail(s)` : ""}
+                        {[
+                          user.lowStockCount ? `${user.lowStockCount} stock(s) faible(s)` : "",
+                          user.exhaustedStockCount ? `${user.exhaustedStockCount} stock(s) épuisé(s)` : "",
+                          user.failedEmailCount ? `${user.failedEmailCount} e-mail(s)` : "",
+                        ].filter(Boolean).join(" · ")}
                       </span>
                     ) : <span className="text-xs text-ash">Aucune</span>}
                   </td>

@@ -87,7 +87,7 @@ function eventLabel(eventType: CampaignEvent["eventType"]) {
     case "form_started":
       return "Formulaire démarré";
     case "lead_created":
-      return "Participation enregistrée";
+      return "Contact enregistré";
     case "review_clicked":
       return "Avis Google ouvert";
     case "review_confirmed":
@@ -110,21 +110,19 @@ function eventLabel(eventType: CampaignEvent["eventType"]) {
 }
 
 function buildActionVolumes(
-  volumes: Array<{ actionIndex: number; value: number }>,
+  volumes: Array<{ actionIndex: number; actionId?: string | null; value: number }>,
   actions: CampaignAction[],
 ) {
-  if (!actions.length) {
-    return [];
-  }
-
-  const byIndex = new Map(volumes.map((item) => [item.actionIndex, item.value]));
-
-  return actions.map((action, index) => ({
+  const result: Array<{ id: string; label: string; kind: string; value: number }> = actions.map((action, index) => ({
     id: action.id,
     label: `Action ${index + 1}`,
     kind: action.kind,
-    value: byIndex.get(index) ?? 0,
+    value: volumes.filter((item) => item.actionId === action.id).reduce((n, item) => n + item.value, 0),
   }));
+  const unknown = volumes.filter((item) => !item.actionId || !actions.some((a) => a.id === item.actionId))
+    .reduce((n, item) => n + item.value, 0);
+  if (unknown) result.push({ id: "historical", label: "Historique / action non attribuée", kind: "Non attribuée", value: unknown });
+  return result;
 }
 
 function leadStatusTone(status: MerchantLeadRow["status"]) {
@@ -174,7 +172,7 @@ function LeadsExportSection({
         <div>
           <p className="okado-label">Saisies et export</p>
           <h2 className="okado-section-title mt-2">
-            Participations, statuts et consentements
+            Contacts, statuts et consentements
           </h2>
         </div>
         <Link
@@ -435,17 +433,22 @@ export default async function DataPage({ searchParams }: DataPageProps) {
       <section className="grid gap-6 xl:grid-cols-2">
         <Histogram
           eyebrow="Participations"
-          title="Évolution des participations par jour"
+          title="Participations par jour — 7 jours UTC"
           bars={participationsPerDay}
           color={dataView.performance.campaign.accent.signal}
         />
         <Histogram
           eyebrow="Lots récupérés"
-          title="Évolution des lots récupérés par jour"
+          title="Lots récupérés par jour — 7 jours UTC"
           bars={redeemedPerDay}
           color="var(--color-deep-plum)"
         />
       </section>
+
+      {Boolean(dataView.undatedRedemptions) ? <StatusNotice tone="warning">
+        {dataView.undatedRedemptions} retrait(s) historique(s) sans date vérifiable : inclus dans le total,
+        mais non répartis par jour. Aucune date n’a été estimée.
+      </StatusNotice> : null}
 
       <LeadsExportSection
         campaignId={dataView.performance.campaign.id}
@@ -553,13 +556,13 @@ export default async function DataPage({ searchParams }: DataPageProps) {
         </div>
 
         <div className="space-y-6">
-          {actionVolumes.length > 1 ? (
+          {actionVolumes.length > 0 ? (
             <div className="okado-card p-6">
               <p className="okado-label">
                 Actions marketing
               </p>
               <h2 className="okado-section-title mt-2">
-                Volume par action
+                Clics par action marketing
               </h2>
 
               <div className="mt-6 space-y-4">

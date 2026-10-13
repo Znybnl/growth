@@ -73,6 +73,7 @@ for (const [table, columns] of [
   ["campaign_events", "id,campaign_id,event_type"],
   ["draw_sessions", "id,campaign_id,status"],
   ["campaign_participations", "campaign_id,participation_id,created_at"],
+  ["campaign_effective_redemptions", "lead_id,campaign_id,redeemed_at"],
   ["campaign_actions", "id,campaign_id,position"],
   ["reward_email_deliveries", "id,lead_id,status,support_handled_at,support_handled_by,support_handled_event_at,support_handled_status,support_is_handled"],
   ["merchant_gain_notification_preferences", "user_id,merchant_id,frequency,updated_at"],
@@ -102,12 +103,25 @@ for (const [table, columns] of [
   ["reward_reminder_jobs", "id"],
   ["reward_reminder_runner", "singleton"],
   ["campaign_participations", "campaign_id"],
+  ["campaign_effective_redemptions", "lead_id"],
 ]) {
   await checkPublicAccessIsBlocked(table, columns, true);
 }
 // Read-only permission probe: never call a claim/enqueue RPC on real data here.
 await checkRpc("get_merchant_participation_activity", {p_merchant_id:"schema-probe-no-merchant"});
 await checkRpc("get_merchant_participation_counts", {p_merchant_id:"schema-probe-no-merchant"});
+await checkRpc("get_campaign_metric_counts", {p_campaign_ids:["schema-probe-no-campaign"]});
+await checkRpc("get_merchant_metric_details", {p_merchant_id:"schema-probe-no-merchant"});
+await checkRpc("get_platform_operational_metrics", {});
+for (const [name,args] of [
+  ["get_campaign_metric_counts", {p_campaign_ids:["schema-probe-no-campaign"]}],
+  ["get_merchant_metric_details", {p_merchant_id:"schema-probe-no-merchant"}],
+  ["get_platform_operational_metrics", {}],
+  ["record_marketing_click", {p_campaign_id:"schema-probe-no-campaign",p_event_id:"probe",p_event_type:"social_clicked",p_action_id:"probe",p_session_id:"probe"}],
+]) {
+  const {error}=await supabasePublic.rpc(name,args);
+  if(error?.code!=="42501")throw new Error(`La RPC ${name} doit être privée.`);
+}
 const participationProbe = await supabase.rpc("record_draw_session_participation", {
   p_campaign_id:"schema-probe-no-campaign",p_session_id:"schema-probe-no-session",
 });

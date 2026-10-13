@@ -50,6 +50,10 @@ Utiliser ces termes dans l'interface, les Issues, les critères d'acceptation, l
 
 ## Règles de rédaction
 
+- **Clic marketing** (#498) : événement d'ouverture d'une action Google, sociale ou d'un lien personnalisé. Ni avis publié ni suivi confirmé ; les clics historiques sans identifiant restent non attribués.
+- **Gain à suivre** (#498) : gain avec lot associé, non retiré et non expiré ; sa disponibilité peut être future.
+- **Conversion globale** (#498) : total des participations divisé par total des scans, avec un seul arrondi final. Période et établissements identiques au numérateur et dénominateur.
+
 - **Incident d’e-mail traité** : anomalie de délivrabilité acquittée par l’administrateur pour le dernier événement observé. Ne signifie ni « e-mail livré » ni « e-mail renvoyé » ; un nouvel événement rend l’incident de nouveau à traiter.
 
 - Un terme porte un seul sens. Si un nouveau sens est nécessaire, créer une nouvelle entrée.
