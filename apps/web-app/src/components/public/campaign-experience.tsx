@@ -470,6 +470,7 @@ export function CampaignExperience({
     "Une seule participation est possible par jour. Revenez demain pour tenter votre chance à nouveau.",
   );
   const [drawSession, setDrawSession] = useState<DrawSession | null>(null);
+  const marketingVisitId = useRef<string | null>(null);
   const [previewToken, setPreviewToken] = useState<string | null>(initialPreviewToken ?? null);
   const [previewResult, setPreviewResult] = useState<Pick<CreateDrawSessionResult, "prize"> | null>(null);
   const [drawResult, setDrawResult] = useState<PublicDrawResult | null>(null);
@@ -647,6 +648,16 @@ export function CampaignExperience({
         eventType,
         metadata,
       }),
+    });
+  }
+
+  function trackMarketingClick() {
+    if (!currentAction || isPreview) return;
+    marketingVisitId.current ??= crypto.randomUUID();
+    void trackEvent(currentAction.kind === "google" ? "review_clicked" : "social_clicked", undefined, {
+      actionId: currentAction.id,
+      eventId: crypto.randomUUID(),
+      sessionId: drawSession?.id ?? marketingVisitId.current,
     });
   }
 
@@ -1258,12 +1269,12 @@ export function CampaignExperience({
               onClick={() => {
                 if (currentAction.kind === "google") {
                   setActionVisited(true);
-                  void trackEvent("review_clicked");
+                  trackMarketingClick();
                   return;
                 }
 
                 setActionVisited(true);
-                void trackEvent("social_clicked");
+                trackMarketingClick();
               }}
               className="block w-full rounded-[20px] border border-[#f3b229] bg-[#f3b229] px-5 py-4 text-center text-lg font-semibold leading-7 text-[#111827] shadow-[0_12px_22px_rgba(243,178,41,0.28)]"
             >

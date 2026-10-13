@@ -17,6 +17,7 @@ import {
 } from "@/lib/format";
 import { getMerchantDashboard, getMerchantRecentLeads, getMerchantWorkspaceDashboard } from "@/lib/store";
 import { calculateCampaignConsumptionMetrics } from "@/lib/dashboard-metrics";
+import { stockState as getStockState } from "@/lib/metric-rules";
 
 export const dynamic = "force-dynamic";
 
@@ -66,10 +67,7 @@ export default async function DashboardPage({
     }
 
     if (
-      item.remainingQuantity !== null &&
-      item.totalQuantity !== null &&
-      item.totalQuantity > 0 &&
-      item.remainingQuantity <= Math.max(1, Math.ceil(item.totalQuantity * 0.1))
+      getStockState(item.remainingQuantity, item.totalQuantity) === "low"
     ) {
       return { label: "Stock faible", tone: "warning", icon: TriangleAlert } as const;
     }

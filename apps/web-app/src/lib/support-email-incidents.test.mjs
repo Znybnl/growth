@@ -42,20 +42,30 @@ const eventAt = "2026-06-30T09:05:00.123456+00:00";
 let state;
 function fakeDb() {
   return {
-    async rpc(name,args) { state.calls.push([name,args]); return {data:state.rpcResult,error:state.rpcError}; },
+    rpc(name,args) {
+      state.calls.push([name,args]);
+      if (name === "get_platform_operational_metrics") {
+        const rows=[{merchant_id:"site",contacts:1,pending_rewards:1,low_stock:0,exhausted_stock:1,
+          failed_emails:state.tables.reward_email_deliveries.filter(d=>!d.support_is_handled && ["failed","bounced","complained","suppressed"].includes(d.status)).length}];
+        const q={order(){return q},range(){return q},then(resolve,reject){return Promise.resolve({data:rows,count:rows.length,error:null}).then(resolve,reject)}};
+        return q;
+      }
+      return Promise.resolve({data:state.rpcResult,error:state.rpcError});
+    },
     from(table) {
       state.reads.push(table);
       const filters = [];
-      let maximum = Infinity, exact = false;
+      let maximum = Infinity, exact = false, offset = 0;
       const q = {
         select(_fields,options) {exact=options?.count === "exact";return q;},
         eq(key,value) {filters.push(row=>row[key] === value);return q;},
         in(key,values) {filters.push(row=>values.includes(row[key]));return q;},
         not(key,_op,value) {filters.push(row=>row[key] !== value);return q;},
         order() {return q;}, limit(n) {maximum=n;return q;},
+        range(start,end) {offset=start;maximum=end-start+1;return q;},
         then(resolve,reject) {
           const rows = (state.tables[table] ?? []).filter(row=>filters.every(filter=>filter(row)));
-          return Promise.resolve({data:rows.slice(0,maximum),count:exact?rows.length:null,error:state.errorTable===table?{message:"secret@example.test"}:null}).then(resolve,reject);
+          return Promise.resolve({data:rows.slice(offset,offset+maximum),count:exact?rows.length:null,error:state.errorTable===table?{message:"secret@example.test"}:null}).then(resolve,reject);
         },
       };
       return q;
@@ -118,7 +128,8 @@ test("les alertes navigation et Pilotage excluent les traités, sans changer les
   const overview=await getSaasAdminOverview();
   assert.equal(overview.totals.failedRewardEmails,1);
   assert.equal(overview.users[0].failedEmailCount,1);
-  assert.equal(overview.totals.lowStockPrizes,1);
+  assert.equal(overview.totals.lowStockPrizes,0);
+  assert.equal(overview.users[0].exhaustedStockCount,1);
   state.tables.reward_email_deliveries[0].support_is_handled=true;
   assert.equal((await (await alerts.GET()).json()).emailCount,0);
   assert.equal((await getSaasAdminOverview()).totals.failedRewardEmails,0);

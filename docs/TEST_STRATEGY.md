@@ -11,6 +11,16 @@ L'objectif est de détecter les régressions importantes sans transformer le pro
 
 ## Contrôles automatisés existants
 
+#498 : `npm run test:metrics -w @okado/web-app` vérifie les helpers partagés,
+les vrais repository/handlers, les nouveaux agrégats SQL et rollback sous PGlite :
+1 005 contacts/opt-ins, historique de retrait prouvé/inconnu, premier jour UTC,
+pertes/expiration, stock 20 %/illimité/épuisé, essais sans Stripe, ratio pondéré,
+refus publics, caisse/forçage/achat, réinitialisation et clés idempotentes.
+Rejouer les suites #496, notifications, e-mails, Supervision et essais. Les sept
+scénarios `participation.spec.ts` couvrent aussi le vrai clic social à 320/390/1280 px,
+deux clics volontaires distincts et aucun événement en preview. API interceptées,
+aucune écriture métier réelle ni e-mail pendant les tests.
+
 #496 : `npm run test:participations -w @okado/web-app` exécute la migration réelle sous PGlite, les vrais handlers avec infrastructure isolée, les capacités signées et le client de grattage. Couvrir pertes anonymes, gain/perte avec formulaire avant/après jeu, doublons, 1 005 parties, UTC, sites, RLS, sessions expirées/brouillons, anciennes preuves et rollback sans suppression de données. `e2e/participation.spec.ts` utilise le vrai parcours sur fixture développement à 320/390/1280 px, toutes API interceptées : préparation non comptée, premier grattage sans coordonnées, absence de deuxième requête et preview sans compteur réel. Aucun accès base ni e-mail réel ; fixture HTTP 404 en production.
 
 | Contrôle | Usage |
