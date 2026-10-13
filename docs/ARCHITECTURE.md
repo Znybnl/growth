@@ -32,6 +32,14 @@ app.okado.app              →  SaaS marchand et parcours publics de jeu
 
 ## Données et accès
 
+### Comptage des participations — #496
+
+La vue privée `campaign_participations` (security_invoker, SELECT service_role uniquement) dédoublonne les événements `game_played` et les contacts historiques finalisés par identité de session, puis de lead quand le lien manque. La date retenue est la première preuve de jeu, pas la date ultérieure du formulaire. Il n'y a ni nouvelle collecte de données personnelles ni réécriture historique. Les archives et durées de conservation existantes sont inchangées.
+
+La roue enregistre déjà l'événement côté serveur dans sa transaction de préparation. Le ticket appelle `/api/public/draw/played` au premier grattage avec une capacité HMAC courte délivrée seulement pour une vraie session. La RPC privée verrouille la session et enregistre l'événement au plus une fois, sans gain, stock, contact ou e-mail. Une capacité de preview est d'un autre type et ne peut pas être réutilisée. L'API d'événements arbitraires refuse toujours `game_played`.
+
+Les RPC overview et summary gardent leurs signatures : `games_count` devient le comptage commun de participations, `leads_count` reste le nombre de contacts. Les jours des graphiques sont explicitement UTC, avec bornes calendaires et agrégation en base (pas de plafond REST à 1 000 lignes). Migration, limites réseau/historique et rollback : [livraison #496](releases/participation-metrics-496.md).
+
 - Le marchand est responsable de traitement pour les données de ses contacts. Okado est sous-traitant technique pour la plateforme.
 - Les données d'un établissement ne doivent jamais être accessibles par un autre marchand sans autorisation explicite.
 - Seul Pierre-Henri BRUNELLE détient les accès aux sauvegardes Supabase/Vercel et aux secrets de production.

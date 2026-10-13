@@ -14,7 +14,7 @@ Utiliser ces termes dans l'interface, les Issues, les critères d'acceptation, l
 | Multi-sites | Fonction qui permet à un marchand de gérer plusieurs établissements. | Workspace. | « Déployer ce jeu sur plusieurs sites ». |
 | Workspace | Conteneur technique d'organisation auquel sont rattachés les marchands, utilisateurs et établissements autorisés. | Établissement. | Un workspace peut contenir plusieurs établissements. |
 | Joueur | Client final qui accède au jeu et y participe. | Marchand ou personnel du commerce. | « Le joueur scanne le QR code ». |
-| Participation | Tentative de jeu enregistrée pour un joueur et une visite données. | Scan ou action marketing. | Une participation peut produire un gain ou une perte. |
+| Participation | Partie commencée et enregistrée une fois par session, indépendamment du résultat et des coordonnées ; premier grattage pour un ticket. | Scan, contact ou action marketing. | Une perte sans e-mail compte aussi (#496). |
 | Visite | Rang de participation d'un joueur dans un jeu, utilisé pour proposer l'action marketing suivante. | Session technique. | La deuxième visite propose l'action 2. |
 | Scan | Ouverture du jeu à partir d'un QR code de diffusion. | Participation. | Un scan peut ne jamais devenir une participation. |
 | Action marketing | Action proposée au joueur avant le jeu : avis Google, suivi social ou lien personnalisé. | Collecte d'e-mail. | « Suivre sur Instagram ». |

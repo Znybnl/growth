@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { recordScratchParticipation } from "@/lib/public-participation";
 import {
   ArrowRight,
   AtSign,
@@ -818,11 +819,7 @@ export function CampaignExperience({
   }
 
   function handleScratchStart() {
-    void trackEvent("game_played", undefined, {
-      mechanic: "scratch",
-      trigger: "first_touch",
-      sessionId: drawSession?.id ?? null,
-    });
+    if (!isPreview && drawSession) void recordScratchParticipation(drawSession);
   }
 
   const managedBackgroundUrl = campaign.presentation.background.mode === "image" &&
