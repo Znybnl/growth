@@ -52,7 +52,8 @@ import {
   updateMerchantOnboardingInSupabase,
   verifySupabaseMerchantRedemptionPin,
 } from "@/lib/merchant-account-repository";
-import { assertDataBackendAvailable } from "@/lib/supabase";
+import { assertDataBackendAvailable, getSupabaseAdmin } from "@/lib/supabase";
+import { participationDates } from "@/lib/participation-metrics";
 import { assertCampaignCanPublish } from "@/lib/campaign-compliance";
 import { getMemorySupportLogs, logSupportEvent } from "@/lib/support-log";
 import {
@@ -851,7 +852,7 @@ function computeKpis(campaign: Campaign) {
   const events = store.events.filter((event) => event.campaignId === campaign.id);
   const scans = events.filter((event) => event.eventType === "scan").length;
   const actions = events.filter((event) => event.eventType === "review_clicked").length;
-  const games = events.filter((event) => event.eventType === "game_played").length;
+  const games = participationDates(leads, events).length;
   const wins = leads.filter((lead) => Boolean(lead.prizeId)).length;
   const redeemed = leads.filter((lead) => lead.status === "redeemed").length;
   const estimatedSpend = leads.reduce((total, lead) => {
@@ -868,7 +869,7 @@ function computeKpis(campaign: Campaign) {
     games,
     wins,
     redeemed,
-    conversionRate: scans ? Math.round((leads.length / scans) * 100) : 0,
+    conversionRate: scans ? Math.round((games / scans) * 100) : 0,
     actionRate: leads.length ? Math.round((actions / leads.length) * 100) : 0,
     redemptionRate: wins ? Math.round((redeemed / wins) * 100) : 0,
     estimatedSpend: Number(estimatedSpend.toFixed(2)),
@@ -1604,8 +1605,8 @@ function getMerchantDashboardFromMemory(
     }
   }
 
-  for (const lead of relevantLeads) {
-    const day = lead.createdAt.slice(0, 10);
+  for (const playedAt of participationDates(relevantLeads, relevantEvents)) {
+    const day = playedAt.slice(0, 10);
     participationsByDay.set(day, (participationsByDay.get(day) ?? 0) + 1);
   }
 
@@ -1678,7 +1679,8 @@ function getCampaignDataViewFromMemory(
 
     return {
       label,
-      participations: allLeads.filter((lead) => lead.createdAt.slice(0, 10) === label).length,
+      participations: participationDates(store.leads.filter((lead) => lead.campaignId === campaignId), allEvents)
+        .filter((date) => date.slice(0, 10) === label).length,
       redeemed: allEvents.filter(
         (event) => event.eventType === "prize_redeemed" && event.createdAt.slice(0, 10) === label,
       ).length,
@@ -1719,6 +1721,7 @@ function createDrawSessionFromMemory(input: CreateDrawSessionRequest): CreateDra
   if (campaign.gameType === "wheel") {
     recordEventInMemory(campaign.id, "game_played", undefined, {
       trigger: "session_started",
+      sessionId: session.id,
     });
   }
 
@@ -1924,6 +1927,10 @@ function getMerchantCampaignLibraryFromMemory(
         gameType: campaign.gameType,
         isActive: campaign.isActive,
         createdAt: campaign.createdAt,
+        participations: participationDates(
+          store.leads.filter((lead) => lead.campaignId === campaign.id),
+          store.events.filter((event) => event.campaignId === campaign.id),
+        ).length,
         scans: store.events.filter(
           (event) => event.campaignId === campaign.id && event.eventType === "scan",
         ).length,
@@ -2006,7 +2013,7 @@ function finalizeDrawSessionFromMemory(input: FinalizeDrawSessionRequest): DrawR
 
   store.leads.push(lead);
   session.status = "completed";
-  recordEventInMemory(campaign.id, "lead_created", lead.id);
+  recordEventInMemory(campaign.id, "lead_created", lead.id, { sessionId: session.id });
 
   if (prize) {
     recordEventInMemory(campaign.id, "prize_won", lead.id, { prizeId: prize.id });
@@ -2378,6 +2385,28 @@ export async function recordEvent(
   }
 
   return recordEventInMemory(campaignId, eventType, leadId, metadata);
+}
+
+export async function recordDrawSessionParticipation(campaignId: string, sessionId: string) {
+  if (getDataBackend("l'enregistrement d'une participation") === "supabase") {
+    const { data, error } = await getSupabaseAdmin().rpc("record_draw_session_participation", {
+      p_campaign_id: campaignId, p_session_id: sessionId,
+    });
+    if (error) throw new Error("Enregistrement de la participation indisponible.");
+    return data === true;
+  }
+  const session = store.drawSessions.find((item) => item.id === sessionId && item.campaignId === campaignId);
+  if (!session || session.isPreview) return false;
+  if (session.status === "completed" && store.events.some((event) =>
+      event.campaignId === campaignId && event.eventType === "lead_created" &&
+      event.metadata?.sessionId === sessionId)) return true;
+  if (store.events.some((event) => event.campaignId === campaignId &&
+      event.eventType === "game_played" && event.metadata?.sessionId === sessionId)) return true;
+  const campaign = getCampaign(campaignId);
+  if (!campaign?.isActive || campaign.gameType !== "scratch" ||
+      session.status !== "pending" || Date.parse(session.expiresAt) <= Date.now()) return false;
+  recordEventInMemory(campaignId, "game_played", undefined, { sessionId, trigger: "first_touch" });
+  return true;
 }
 
 export const getPublicCampaign = cache(async function getPublicCampaign(

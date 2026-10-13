@@ -69,7 +69,7 @@ export default async function CampaignsPage({
                     <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
                       {[
                         ["Jeu", gameTypeLabel(item.campaign.gameType)],
-                        ["Participations", item.kpis.leads],
+                        ["Participations", item.kpis.games],
                         ["Gagnants", item.kpis.wins],
                         ["Lots utilisés", formatCampaignCount(item.consumptionMetrics.lotsUsed)],
                         ["Taux de consommation", formatCampaignRate(item.consumptionMetrics.consumptionRate)],
@@ -122,7 +122,7 @@ export default async function CampaignsPage({
                   </div>
                   <span className="text-slate">{gameTypeLabel(item.campaign.gameType)}</span>
                   <span data-align="right" className="tabular-nums text-right font-semibold text-graphite">
-                    {item.kpis.leads}
+                    {item.kpis.games}
                   </span>
                   <span data-align="right" className="tabular-nums text-right font-semibold text-graphite">
                     {item.kpis.wins}

@@ -20,6 +20,7 @@ import { createDrawSession } from "@/lib/store";
 import { createPreviewDrawSession } from "@/lib/store";
 import { issuePreviewSessionToken, verifyPreviewAccessToken } from "@/lib/preview-token";
 import { logSupportEvent } from "@/lib/support-log";
+import { issueParticipationToken } from "@/lib/participation-token";
 import { CreateDrawSessionRequest, CreateDrawSessionResult } from "@/lib/types";
 
 export async function POST(request: NextRequest) {
@@ -132,8 +133,10 @@ export async function POST(request: NextRequest) {
     });
 
     const response = NextResponse.json(
-      { session: result.session, prize: result.prize },
-      { status: 201 },
+      { session: { ...result.session,
+        participationToken: issueParticipationToken(campaignId, result.session.id, result.session.expiresAt),
+      }, prize: result.prize },
+      { status: 201, headers: { "Cache-Control": "no-store" } },
     );
     response.cookies.set(
       cookieName,

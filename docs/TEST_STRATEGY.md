@@ -11,6 +11,8 @@ L'objectif est de détecter les régressions importantes sans transformer le pro
 
 ## Contrôles automatisés existants
 
+#496 : `npm run test:participations -w @okado/web-app` exécute la migration réelle sous PGlite, les vrais handlers avec infrastructure isolée, les capacités signées et le client de grattage. Couvrir pertes anonymes, gain/perte avec formulaire avant/après jeu, doublons, 1 005 parties, UTC, sites, RLS, sessions expirées/brouillons, anciennes preuves et rollback sans suppression de données. `e2e/participation.spec.ts` utilise le vrai parcours sur fixture développement à 320/390/1280 px, toutes API interceptées : préparation non comptée, premier grattage sans coordonnées, absence de deuxième requête et preview sans compteur réel. Aucun accès base ni e-mail réel ; fixture HTTP 404 en production.
+
 | Contrôle | Usage |
 |---|---|
 | `npm run verify:source` | Vérifie les fichiers critiques et l'encodage. |

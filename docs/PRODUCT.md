@@ -47,6 +47,7 @@ Les métadonnées de la page publique destinées aux aperçus sociaux associent 
 - **Déclencheur** : le client scanne le QR code de diffusion du jeu.
 - **Résultat attendu** : il effectue, lorsque prévue, l'action marketing de sa visite, participe au jeu et reçoit le résultat.
 - **Mesure de réussite** : la participation est comptabilisée une seule fois et respecte le délai entre deux participations.
+- #496 : les perdants sans coordonnées et les gagnants qui abandonnent le formulaire restent des participations. Le scan est une ouverture, pas une partie ; le ticket compte au premier grattage. Les écrans Accueil, Campagnes, Résultats et leurs courbes/sélecteurs utilisent les parties, tandis que « Contacts récents » et les exports restent limités aux saisies.
 
 ### P-03 — Collecter un contact
 

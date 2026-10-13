@@ -749,6 +749,8 @@ export interface DrawSession {
   configurationSnapshot?: Record<string, unknown>;
   isPreview?: boolean;
   previewSessionToken?: string;
+  /** Short-lived server capability; previews never receive one. */
+  participationToken?: string;
 }
 
 export interface CreateDrawSessionRequest {
@@ -831,6 +833,7 @@ export interface CampaignLibraryItem {
   isActive: boolean;
   createdAt: string;
   scans: number;
+  participations?: number;
 }
 
 export interface MerchantDashboardData {

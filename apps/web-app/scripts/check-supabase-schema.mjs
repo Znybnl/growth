@@ -72,6 +72,7 @@ for (const [table, columns] of [
   ["prizes", "id,campaign_id,remaining_quantity"],
   ["campaign_events", "id,campaign_id,event_type"],
   ["draw_sessions", "id,campaign_id,status"],
+  ["campaign_participations", "campaign_id,participation_id,created_at"],
   ["campaign_actions", "id,campaign_id,position"],
   ["reward_email_deliveries", "id,lead_id,status,support_handled_at,support_handled_by,support_handled_event_at,support_handled_status,support_is_handled"],
   ["merchant_gain_notification_preferences", "user_id,merchant_id,frequency,updated_at"],
@@ -100,10 +101,19 @@ for (const [table, columns] of [
   ["reward_reminder_settings", "workspace_id"],
   ["reward_reminder_jobs", "id"],
   ["reward_reminder_runner", "singleton"],
+  ["campaign_participations", "campaign_id"],
 ]) {
   await checkPublicAccessIsBlocked(table, columns, true);
 }
 // Read-only permission probe: never call a claim/enqueue RPC on real data here.
+await checkRpc("get_merchant_participation_activity", {p_merchant_id:"schema-probe-no-merchant"});
+await checkRpc("get_merchant_participation_counts", {p_merchant_id:"schema-probe-no-merchant"});
+const participationProbe = await supabase.rpc("record_draw_session_participation", {
+  p_campaign_id:"schema-probe-no-campaign",p_session_id:"schema-probe-no-session",
+});
+if (participationProbe.error || participationProbe.data !== false) {
+  throw new Error("La RPC de participation doit refuser une session inexistante.");
+}
 const reminderArgs = { p_user: "schema-probe-no-user", p_workspace: "schema-probe-no-workspace" };
 for (const client of [supabase, supabasePublic]) {
   const { error } = await client.rpc("get_reward_reminder_settings", reminderArgs);

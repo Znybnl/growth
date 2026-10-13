@@ -8,6 +8,7 @@ type CampaignOption = {
   id: string;
   title: string;
   scans: number;
+  participations?: number;
   isActive?: boolean;
 };
 
@@ -61,7 +62,7 @@ export function DataCampaignSelector({ campaigns, selectedCampaignId, query, ema
       <button type="button" id="data-campaign" aria-haspopup="listbox" aria-expanded={isOpen} disabled={isPending} onClick={() => setIsOpen((open) => !open)} className="flex min-h-12 w-full items-center justify-between gap-3 rounded-[4px] border border-border bg-white px-4 text-left outline-none transition hover:border-aubergine focus:border-aubergine focus:ring-2 focus:ring-aubergine/15 disabled:cursor-wait disabled:opacity-60">
         <span className="min-w-0">
           <span className="block truncate text-sm font-semibold text-carbon">{selectedCampaign?.title ?? "Sélectionner une campagne"}</span>
-          {selectedCampaign ? <span className="mt-0.5 block text-xs text-ash">{selectedCampaign.isActive === false ? "Terminée" : "Active"} · {selectedCampaign.scans.toLocaleString("fr-FR")} participations</span> : null}
+          {selectedCampaign ? <span className="mt-0.5 block text-xs text-ash">{selectedCampaign.isActive === false ? "Terminée" : "Active"} · {(selectedCampaign.participations ?? 0).toLocaleString("fr-FR")} participations</span> : null}
         </span>
         {isPending ? <Loader2 className="size-4 shrink-0 animate-spin text-aubergine" aria-hidden="true" /> : <ChevronDown className="size-4 shrink-0 text-ash" aria-hidden="true" />}
       </button>
@@ -78,7 +79,7 @@ export function DataCampaignSelector({ campaigns, selectedCampaignId, query, ema
             const isSelected = campaign.id === selectedCampaignId;
             return <button key={campaign.id} type="button" role="option" aria-selected={isSelected} onClick={() => selectCampaign(campaign.id)} className="flex w-full items-center gap-3 rounded-[4px] px-3 py-2.5 text-left transition hover:bg-purple-haze focus:bg-purple-haze focus:outline-none">
               <span className={`grid size-5 shrink-0 place-items-center rounded-[4px] ${isSelected ? "bg-aubergine text-white" : "border border-border text-transparent"}`}><Check className="size-3" aria-hidden="true" /></span>
-              <span className="min-w-0 flex-1"><span className="block truncate text-sm font-semibold text-carbon">{campaign.title}</span><span className="mt-0.5 block text-xs text-ash">{campaign.isActive === false ? "Terminée" : "Active"} · {campaign.scans.toLocaleString("fr-FR")} participations</span></span>
+              <span className="min-w-0 flex-1"><span className="block truncate text-sm font-semibold text-carbon">{campaign.title}</span><span className="mt-0.5 block text-xs text-ash">{campaign.isActive === false ? "Terminée" : "Active"} · {(campaign.participations ?? 0).toLocaleString("fr-FR")} participations</span></span>
             </button>;
           }) : <p className="px-3 py-6 text-center text-sm text-ash">Aucune campagne trouvée.</p>}
         </div>

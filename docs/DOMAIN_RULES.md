@@ -40,6 +40,10 @@ La fiche dans Pilotage est réservée à l’administration de la plateforme et 
 
 ## Parcours joueur et actions marketing
 
+- Décision propriétaire du 13 octobre 2026 (#496) : une **participation** est une partie effectivement commencée, distincte du scan et du contact. Elle est comptée une fois par session, que le joueur gagne ou perde, fournisse ou non ses coordonnées. Pour la roue, le tirage préparé au clic Jouer démarre immédiatement ; pour le ticket, seule la première action de grattage compte, pas sa préparation. Le formulaire et ses reprises n'ajoutent pas de partie. Les prévisualisations sont exclues.
+- Les KPI Participations, courbes et sélecteurs utilisent ce même comptage. Conversion = participations / scans ; coût par participation = coût estimé des gains / participations (0 sans partie). Contacts, opt-ins, gagnants, retraits et coût par contact restent séparés. Les listes/exports de contacts n'inventent aucune coordonnée pour les parties anonymes.
+- L'historique utilise les événements de jeu persistés et les contacts effectivement finalisés, rattachés à la même session lorsque ce lien existe. Une session simplement préparée ne constitue pas une preuve historique de grattage. Les parties anciennes non tracées ne sont pas reconstituées par estimation.
+
 - Les actions marketing sont proposées avant la participation au jeu.
 - Les actions sont séquencées par visite : action 1 pour la première visite, action 2 pour la deuxième, puis ainsi de suite.
 - La collecte d'e-mail avant le jeu est une option indépendante des actions marketing. Elle ne doit jamais être traitée comme une action de visite.

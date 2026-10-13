@@ -351,7 +351,7 @@ export default async function DataPage({ searchParams }: DataPageProps) {
 
   const performanceMax = Math.max(
     dataView.performance.kpis.scans,
-    dataView.performance.kpis.leads,
+    dataView.performance.kpis.games,
     dataView.performance.kpis.redeemed,
     1,
   );
@@ -423,11 +423,12 @@ export default async function DataPage({ searchParams }: DataPageProps) {
       <section className="grid gap-4 md:grid-cols-3 xl:grid-cols-6">
         {[
           ["Scans", String(dataView.performance.kpis.scans)],
-          ["Participations", String(dataView.performance.kpis.contacts)],
+          ["Participations", String(dataView.performance.kpis.games)],
           ["Opt-ins", String(dataView.performance.kpis.optIns)],
           ["Conversion", formatPercent(dataView.performance.kpis.conversionRate)],
           ["Lots retirés", String(dataView.performance.kpis.redeemed)],
-          ["Coût / participation", formatCurrency(dataView.performance.kpis.costPerLead)],
+          ["Coût / participation", formatCurrency(dataView.performance.kpis.games
+            ? dataView.performance.kpis.estimatedSpend / dataView.performance.kpis.games : 0)],
         ].map(([label, value]) => <MetricCard key={label} label={label} value={value} />)}
       </section>
 
@@ -468,6 +469,11 @@ export default async function DataPage({ searchParams }: DataPageProps) {
                   label: "Scans",
                   value: dataView.performance.kpis.scans,
                   width: performanceWidth(dataView.performance.kpis.scans),
+                },
+                {
+                  label: "Participations",
+                  value: dataView.performance.kpis.games,
+                  width: performanceWidth(dataView.performance.kpis.games),
                 },
                 {
                   label: "Contacts collectés",

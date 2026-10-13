@@ -1,3 +1,4 @@
+import { participationDates } from "@/lib/participation-metrics";
 import {
   Campaign,
   CampaignAction,
@@ -319,6 +320,8 @@ type CampaignOverviewRpcRow = CampaignRow & {
 };
 
 type CampaignOverviewLeadRow = {
+  id: string;
+  created_at: string;
   campaign_id: string;
   prize_id: string | null;
   status: Lead["status"];
@@ -326,6 +329,10 @@ type CampaignOverviewLeadRow = {
 };
 
 type CampaignOverviewEventRow = {
+  id: string;
+  lead_id: string | null;
+  created_at: string;
+  metadata: CampaignEvent["metadata"];
   campaign_id: string;
   event_type: CampaignEvent["eventType"];
 };
@@ -828,7 +835,7 @@ export function toPublicCampaignFromPerformance(
 function computeKpis(campaign: Campaign, prizes: Prize[], leads: Lead[], events: CampaignEvent[]): CampaignKpi {
   const scans = events.filter((event) => event.eventType === "scan").length;
   const actions = events.filter((event) => event.eventType === "review_clicked").length;
-  const games = events.filter((event) => event.eventType === "game_played").length;
+  const games = participationDates(leads, events).length;
   const wins = leads.filter((lead) => Boolean(lead.prizeId)).length;
   const redeemed = leads.filter((lead) => lead.status === "redeemed").length;
   const estimatedSpend = leads.reduce((total, lead) => {
@@ -845,7 +852,7 @@ function computeKpis(campaign: Campaign, prizes: Prize[], leads: Lead[], events:
     games,
     wins,
     redeemed,
-    conversionRate: scans ? Math.round((leads.length / scans) * 100) : 0,
+    conversionRate: scans ? Math.round((games / scans) * 100) : 0,
     actionRate: leads.length ? Math.round((actions / leads.length) * 100) : 0,
     redemptionRate: wins ? Math.round((redeemed / wins) * 100) : 0,
     estimatedSpend: Number(estimatedSpend.toFixed(2)),
@@ -957,55 +964,6 @@ async function fetchCampaignConfiguration(campaignId: string) {
   };
 }
 
-function buildLastDays(referenceDates: string[], days = 30) {
-  const today = new Date();
-  const latestReference = referenceDates.length
-    ? new Date(
-        [...referenceDates].sort((a, b) => a.localeCompare(b)).at(-1) ?? today.toISOString(),
-      )
-    : null;
-  const latest = latestReference && latestReference > today ? latestReference : today;
-
-  return Array.from({ length: days }, (_, index) => {
-    const date = new Date(
-      Date.UTC(latest.getUTCFullYear(), latest.getUTCMonth(), latest.getUTCDate()),
-    );
-    date.setUTCDate(latest.getUTCDate() - (days - index - 1));
-    return date.toISOString().slice(0, 10);
-  });
-}
-
-function countByDay(values: string[]) {
-  const counts = new Map<string, number>();
-
-  for (const value of values) {
-    counts.set(value, (counts.get(value) ?? 0) + 1);
-  }
-
-  return counts;
-}
-
-function buildDashboardActivityPoints(
-  leads: Array<Pick<LeadRow, "created_at">>,
-  events: Array<Pick<EventRow, "created_at" | "event_type">>,
-) {
-  const dayKeys = buildLastDays([
-    ...leads.map((lead) => lead.created_at),
-    ...events.map((event) => event.created_at),
-  ]);
-  const scansByDay = countByDay(
-    events
-      .filter((event) => event.event_type === "scan")
-      .map((event) => event.created_at.slice(0, 10)),
-  );
-  const participationsByDay = countByDay(leads.map((lead) => lead.created_at.slice(0, 10)));
-
-  return dayKeys.map((label) => ({
-    label,
-    scans: scansByDay.get(label) ?? 0,
-    participations: participationsByDay.get(label) ?? 0,
-  }));
-}
 
 function toOverviewKpis(row: CampaignOverviewRpcRow, optIns = 0): CampaignKpi {
   const scans = Number(row.scans_count) || 0;
@@ -1025,13 +983,24 @@ function toOverviewKpis(row: CampaignOverviewRpcRow, optIns = 0): CampaignKpi {
     games,
     wins,
     redeemed,
-    conversionRate: scans ? Math.round((leads / scans) * 100) : 0,
+    conversionRate: scans ? Math.round((games / scans) * 100) : 0,
     actionRate: leads ? Math.round((actions / leads) * 100) : 0,
     redemptionRate: wins ? Math.round((redeemed / wins) * 100) : 0,
     estimatedSpend,
     costPerLead: leads ? Number((estimatedSpend / leads).toFixed(2)) : 0,
     costPerRedeemed: redeemed ? Number((estimatedSpend / redeemed).toFixed(2)) : 0,
   };
+}
+
+async function applyParticipationCounts(campaigns: CampaignPerformance[], merchantId: string) {
+  const result = await getSupabaseAdmin().rpc("get_merchant_participation_counts", { p_merchant_id: merchantId });
+  const rows = unwrapSupabaseResult(result, "Lecture des participations impossible") as
+    Array<{ campaign_id: string; participations: number }> | null;
+  const counts = new Map((rows ?? []).map((row) => [row.campaign_id, Number(row.participations)]));
+  for (const item of campaigns) {
+    item.kpis.games = counts.get(item.campaign.id) ?? 0;
+    item.kpis.conversionRate = item.kpis.scans ? Math.round(item.kpis.games / item.kpis.scans * 100) : 0;
+  }
 }
 
 function computeOverviewKpisFromRows(
@@ -1042,7 +1011,11 @@ function computeOverviewKpisFromRows(
 ): CampaignKpi {
   const scans = events.filter((event) => event.event_type === "scan").length;
   const actions = events.filter((event) => event.event_type === "review_clicked").length;
-  const games = events.filter((event) => event.event_type === "game_played").length;
+  const games = participationDates(
+    leads.map((lead) => ({ id: lead.id, campaignId: lead.campaign_id, createdAt: lead.created_at })),
+    events.map((event) => ({ id: event.id, campaignId: event.campaign_id, leadId: event.lead_id ?? undefined,
+      metadata: event.metadata, createdAt: event.created_at, eventType: event.event_type })),
+  ).length;
   const wins = leads.filter((lead) => Boolean(lead.prize_id)).length;
   const redeemed = leads.filter((lead) => lead.status === "redeemed").length;
   const estimatedSpend = leads.reduce((total, lead) => {
@@ -1059,7 +1032,7 @@ function computeOverviewKpisFromRows(
     games,
     wins,
     redeemed,
-    conversionRate: scans ? Math.round((leads.length / scans) * 100) : 0,
+    conversionRate: scans ? Math.round((games / scans) * 100) : 0,
     actionRate: leads.length ? Math.round((actions / leads.length) * 100) : 0,
     redemptionRate: wins ? Math.round((redeemed / wins) * 100) : 0,
     estimatedSpend: Number(estimatedSpend.toFixed(2)),
@@ -1180,28 +1153,14 @@ export async function getSupabaseMerchantDashboard(
   if (!overviewResult.error) {
     const rows = (overviewResult.data as CampaignOverviewRpcRow[] | null) ?? [];
     const campaignIds = rows.map((row) => row.id);
-    const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
-    const [prizesResult, leadsResult, eventsResult, prizeClaimsResult] = await Promise.all([
+    const [prizesResult, activityResult, prizeClaimsResult] = await Promise.all([
       campaignIds.length
         ? supabase
             .from("prizes")
             .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,purchase_required,created_at")
             .in("campaign_id", campaignIds)
         : Promise.resolve({ data: [], error: null }),
-      campaignIds.length
-        ? supabase
-            .from("leads")
-            .select("campaign_id,created_at")
-            .in("campaign_id", campaignIds)
-            .gte("created_at", since)
-        : Promise.resolve({ data: [], error: null }),
-      campaignIds.length
-        ? supabase
-            .from("campaign_events")
-            .select("campaign_id,event_type,created_at")
-            .in("campaign_id", campaignIds)
-            .gte("created_at", since)
-        : Promise.resolve({ data: [], error: null }),
+      supabase.rpc("get_merchant_participation_activity", { p_merchant_id: merchant.id }),
       campaignIds.length
         ? supabase
             .from("leads")
@@ -1212,8 +1171,7 @@ export async function getSupabaseMerchantDashboard(
         : Promise.resolve({ data: [], error: null }),
     ]);
     const prizesData = unwrapSupabaseResult(prizesResult, "Lecture des lots du tableau de bord impossible");
-    const leadsData = unwrapSupabaseResult(leadsResult, "Lecture des contacts du tableau de bord impossible");
-    const eventsData = unwrapSupabaseResult(eventsResult, "Lecture des événements du tableau de bord impossible");
+    const activityData = unwrapSupabaseResult(activityResult, "Lecture des participations du tableau de bord impossible");
     const prizeClaimsData = unwrapSupabaseResult(
       prizeClaimsResult,
       "Lecture des retraits du tableau de bord impossible",
@@ -1253,10 +1211,8 @@ export async function getSupabaseMerchantDashboard(
       totalLeads,
       totalRedeemed,
       averageConversion,
-      activityPoints: buildDashboardActivityPoints(
-        (leadsData as Array<Pick<LeadRow, "created_at">> | null) ?? [],
-        (eventsData as Array<Pick<EventRow, "created_at" | "event_type">> | null) ?? [],
-      ),
+      activityPoints: ((activityData as Array<{label: string; scans: number; participations: number}> | null) ?? [])
+        .map((point) => ({ label: point.label, scans: Number(point.scans), participations: Number(point.participations) })),
     };
   }
 
@@ -1283,6 +1239,7 @@ export async function getSupabaseMerchantDashboard(
     events,
     localSettingsByCampaignId,
   );
+  await applyParticipationCounts(campaigns, merchant.id);
   const pendingRedemptionsByPrizeId = new Map<string, number>();
   for (const lead of leads) {
     if (lead.prize_id && lead.status === "claimed") {
@@ -1305,7 +1262,11 @@ export async function getSupabaseMerchantDashboard(
     totalLeads,
     totalRedeemed,
     averageConversion,
-    activityPoints: buildDashboardActivityPoints(leads, events),
+    activityPoints: ((unwrapSupabaseResult(
+      await supabase.rpc("get_merchant_participation_activity", { p_merchant_id: merchant.id }),
+      "Lecture des participations impossible",
+    ) as Array<{ label: string; scans: number; participations: number }> | null) ?? [])
+      .map((point) => ({ label: point.label, scans: Number(point.scans), participations: Number(point.participations) })),
   };
 }
 
@@ -1401,11 +1362,11 @@ export async function getSupabaseMerchantCampaignOverview(
   const [leadsResult, eventsResult, prizesResult] = await Promise.all([
     supabase
       .from("leads")
-      .select("campaign_id,prize_id,status,marketing_consent")
+      .select("id,created_at,campaign_id,prize_id,status,marketing_consent")
       .in("campaign_id", campaignIds),
     supabase
       .from("campaign_events")
-      .select("campaign_id,event_type")
+      .select("id,created_at,lead_id,metadata,campaign_id,event_type")
       .in("campaign_id", campaignIds),
     supabase
       .from("prizes")
@@ -1423,6 +1384,7 @@ export async function getSupabaseMerchantCampaignOverview(
     (eventsData as CampaignOverviewEventRow[] | null) ?? [],
     (prizesData as CampaignOverviewPrizeRow[] | null) ?? [],
   );
+  await applyParticipationCounts(campaigns, merchant.id);
   const totalLeads = campaigns.reduce((total, item) => total + item.kpis.leads, 0);
   const totalRedeemed = campaigns.reduce((total, item) => total + item.kpis.redeemed, 0);
   const averageConversion = campaigns.length
@@ -1456,9 +1418,17 @@ export async function getSupabaseMerchantCampaignLibrary(
       isActive: item.is_active,
       createdAt: item.created_at,
       scans: Number(item.scans_count) || 0,
+      participations: Number(item.games_count) || 0,
     }));
   }
 
+  const participationResult = await supabase.rpc("get_merchant_participation_counts", {
+    p_merchant_id: merchantId,
+  });
+  const participationRows = unwrapSupabaseResult(participationResult, "Lecture des participations impossible") as
+    Array<{ campaign_id: string; participations: number }> | null;
+  const participationsByCampaignId = new Map((participationRows ?? []).map((item) =>
+    [item.campaign_id, Number(item.participations)]));
   const campaignsResult = await supabase
     .from("campaigns")
     .select("id,title,game_type,is_active,created_at")
@@ -1493,6 +1463,7 @@ export async function getSupabaseMerchantCampaignLibrary(
     isActive: item.is_active,
     createdAt: item.created_at,
     scans: scansByCampaignId.get(item.id) ?? 0,
+    participations: participationsByCampaignId.get(item.id) ?? 0,
   }));
 }
 
@@ -1902,6 +1873,20 @@ async function getSupabaseCampaignDataViewLegacy(
   if (!performance) return null;
 
   const prizes = performance.prizes;
+  await applyParticipationCounts([performance], resolvedMerchant.id);
+  const participationDatesForChart: string[] = [];
+  const since = new Date();
+  since.setUTCHours(0, 0, 0, 0);
+  since.setUTCDate(since.getUTCDate() - 6);
+  for (let offset = 0; ; offset += 1000) {
+    const result = await supabase.from("campaign_participations").select("created_at,participation_id")
+      .eq("campaign_id", campaignId).gte("created_at", since.toISOString())
+      .order("created_at").order("participation_id").range(offset, offset + 999);
+    const rows = unwrapSupabaseResult(result, "Lecture des participations impossible") as
+      Array<{ created_at: string }> | null;
+    participationDatesForChart.push(...(rows ?? []).map((item) => item.created_at));
+    if ((rows?.length ?? 0) < 1000) break;
+  }
   const allLeads = enrichLeadRowsWithEmailDeliveries(
     ((leadsData as LeadRow[] | null) ?? [])
       .map(toLead)
@@ -1930,9 +1915,7 @@ async function getSupabaseCampaignDataViewLegacy(
   const events = ((eventsResult.data as EventRow[] | null) ?? [])
     .map(toEvent)
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-  const latestDates = [...leads.map((lead) => lead.createdAt), ...events.map((event) => event.createdAt)];
-  const latestDate = latestDates.sort((a, b) => a.localeCompare(b)).at(-1) ?? new Date().toISOString();
-  const baseDate = new Date(latestDate);
+  const baseDate = new Date();
   const dailyStats = Array.from({ length: 7 }, (_, index) => {
     const date = new Date(Date.UTC(baseDate.getUTCFullYear(), baseDate.getUTCMonth(), baseDate.getUTCDate()));
     date.setUTCDate(date.getUTCDate() - (6 - index));
@@ -1940,7 +1923,7 @@ async function getSupabaseCampaignDataViewLegacy(
 
     return {
       label,
-      participations: leads.filter((lead) => lead.createdAt.slice(0, 10) === label).length,
+      participations: participationDatesForChart.filter((date) => date.slice(0, 10) === label).length,
       redeemed: events.filter(
         (event) => event.eventType === "prize_redeemed" && event.createdAt.slice(0, 10) === label,
       ).length,
@@ -2158,7 +2141,7 @@ export async function getSupabaseCampaignDataView(
     wins: Number(summary.wins_count) || 0,
     redeemed: Number(summary.redeemed_count) || 0,
     conversionRate: summary.scans_count
-      ? Math.round((Number(summary.leads_count) / Number(summary.scans_count)) * 100)
+      ? Math.round((Number(summary.games_count) / Number(summary.scans_count)) * 100)
       : 0,
     actionRate: summary.leads_count
       ? Math.round((Number(summary.actions_count) / Number(summary.leads_count)) * 100)
