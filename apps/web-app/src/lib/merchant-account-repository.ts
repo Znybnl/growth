@@ -20,6 +20,7 @@ import {
 import { getMerchantBillingSummary } from "@/lib/billing";
 import type { User as SupabaseAuthUser } from "@supabase/supabase-js";
 import Stripe from "stripe";
+import { defaultMerchantLogoText, resolveMerchantLogoText } from "@/lib/merchant-logo-text";
 
 type MerchantRow = {
   id: string;
@@ -116,7 +117,7 @@ const DEMO_MERCHANT_PROFILE = {
   merchantId: "merchant-maison-sora",
   merchantUserId: "user-maison-sora-admin",
   companyName: "Maison Sora",
-  logoText: "MS",
+  logoText: "Maison Sora",
   industry: "Mode et maison",
   restaurantType: "Brasserie",
   city: "Paris Marais",
@@ -334,7 +335,7 @@ function toMerchant(row: MerchantRow): Merchant {
     locationCode: row.location_code ?? undefined,
     locationStatus: row.location_status ?? "active",
     companyName: row.company_name,
-    logoText: row.logo_text,
+    logoText: resolveMerchantLogoText(row.company_name, row.logo_text),
     logoUrl: row.logo_url ?? undefined,
     industry: row.industry ?? undefined,
     industrySubsector: row.industry_subsector ?? undefined,
@@ -767,7 +768,7 @@ export async function createMerchantAccountInSupabase(input: MerchantSignUpInput
           }
         : {}),
       company_name: companyName,
-      logo_text: companyName.slice(0, 2).toUpperCase(),
+      logo_text: defaultMerchantLogoText(companyName),
       logo_url: null,
       industry: "",
       restaurant_type: "Brasserie",
@@ -860,7 +861,7 @@ export async function createMerchantAccountInSupabase(input: MerchantSignUpInput
     merchant: {
       id: merchantId,
       companyName,
-      logoText: companyName.slice(0, 2).toUpperCase(),
+      logoText: defaultMerchantLogoText(companyName),
       logoUrl: undefined,
       industry: undefined,
       restaurantType: "Brasserie",
@@ -1019,7 +1020,7 @@ export async function authenticateOrProvisionMerchantWithGoogle(
     location_status: "active",
     time_zone: "Europe/Paris",
     company_name: companyName,
-    logo_text: companyName.slice(0, 2).toUpperCase(),
+    logo_text: defaultMerchantLogoText(companyName),
     logo_url: null,
     industry: "",
     restaurant_type: "Brasserie",
@@ -1128,7 +1129,7 @@ export async function authenticateOrProvisionMerchantWithGoogle(
       locationCode,
       locationStatus: "active" as const,
       companyName,
-      logoText: companyName.slice(0, 2).toUpperCase(),
+      logoText: defaultMerchantLogoText(companyName),
       logoUrl: undefined,
       industry: undefined,
       restaurantType: "Brasserie",
@@ -1308,7 +1309,7 @@ export async function createSupabaseMerchantLocation(input: {
       location_code: locationCode || merchantId.slice(-6).toUpperCase(),
       location_status: "active",
       company_name: companyName,
-      logo_text: companyName.slice(0, 2).toUpperCase(),
+      logo_text: defaultMerchantLogoText(companyName),
       logo_url: null,
       industry: "",
       restaurant_type: "Brasserie",
@@ -1528,7 +1529,7 @@ export async function updateMerchantOnboardingInSupabase(
     .from("merchants")
     .update({
       company_name: companyName,
-      logo_text: companyName.slice(0, 2).toUpperCase(),
+      logo_text: defaultMerchantLogoText(companyName),
       industry: input.industry.trim(),
       industry_subsector: input.industrySubsector?.trim() || null,
       restaurant_type: input.restaurantType.trim(),
@@ -1632,7 +1633,7 @@ export async function updateMerchantAccountInSupabase(
     .from("merchants")
     .update({
       company_name: companyName,
-      logo_text: companyName.slice(0, 2).toUpperCase(),
+      logo_text: defaultMerchantLogoText(companyName),
       industry: input.industry.trim(),
       industry_subsector: input.industrySubsector?.trim() || null,
       restaurant_type: input.restaurantType.trim(),
