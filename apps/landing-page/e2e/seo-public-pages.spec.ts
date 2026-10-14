@@ -118,7 +118,9 @@ test("sitemap, robots, OG et fichiers distribués sont utilisables", async ({
     "/_next/image?url=%2Fimages%2Frestaurant-a5-counter.webp&w=640&q=75",
   );
   expect(optimized.status()).toBe(200);
-  expect((await request.get("/page-inconnue-test-seo")).status()).toBe(404);
+  for (const path of ["/page-inconnue-test-seo", "/guides/guide-inexistant-test-seo", "/fichier-inconnu-test-seo.png"]) {
+    expect((await request.get(path)).status(), path).toBe(404);
+  }
 });
 
 test("la démonstration reste indépendante de l’avis et ne transmet aucune donnée", async ({

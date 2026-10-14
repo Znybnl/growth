@@ -6,7 +6,8 @@ import { TemplateGallery } from "@/components/marketing/template-gallery";
 import { contentByPath, publicContent } from "@/lib/public-content";
 import { APP_URL, CONTENT_REVIEWED_AT, pageMetadata } from "@/lib/site";
 
-export const dynamicParams = false;
+// Unknown paths reach notFound() below. dynamicParams=false causes Next 16.3.6
+// to log Internal: NoFallbackError for ordinary 404s on this catch-all route.
 export function generateStaticParams() {
   return publicContent.map((page) => ({ slug: page.path.slice(1).split("/") }));
 }
