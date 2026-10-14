@@ -44,6 +44,13 @@ function fakeDb() {
   return {
     rpc(name,args) {
       state.calls.push([name,args]);
+      if (name === "get_merchant_operational_alerts") {
+        assert.equal(args.p_merchant_id,"site");
+        const failures=state.tables.reward_email_deliveries.filter(d=>!d.support_is_handled &&
+          ["failed","bounced","complained","suppressed"].includes(d.status));
+        return Promise.resolve({data:[{email_count:failures.length,email_campaign_id:failures[0]?.campaign_id??null,
+          low_stock_count:0,exhausted_stock_count:1,stock_campaign_id:"c"}],error:null});
+      }
       if (name === "get_platform_operational_metrics") {
         const rows=[{merchant_id:"site",contacts:1,pending_rewards:1,low_stock:0,exhausted_stock:1,
           failed_emails:state.tables.reward_email_deliveries.filter(d=>!d.support_is_handled && ["failed","bounced","complained","suppressed"].includes(d.status)).length}];

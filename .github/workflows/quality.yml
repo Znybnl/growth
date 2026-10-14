@@ -40,6 +40,8 @@ jobs:
         run: npm run test:support-incidents -w @okado/web-app
       - name: Test metric consistency and private SQL aggregates
         run: npm run test:metrics -w @okado/web-app
+      - name: Test merchant page reads, session isolation and private timings
+        run: npm run test:page-performance -w @okado/web-app
       - name: Build web app
         run: npm run build:web
 

@@ -181,3 +181,7 @@ Chaque demande de merge ou de production doit indiquer, en quelques lignes :
 - les commandes exécutées et leur résultat ;
 - les tests manuels à effectuer par le propriétaire ;
 - les risques connus ou limites restantes.
+
+## Performances des écrans marchands — #500
+
+`test:page-performance`, les tests SQL complémentaires de `test:metrics` et `e2e/page-performance.spec.ts` contrôlent les charges utiles sans médias, la parité des indicateurs, les ACL privées, l'isolation multi-sites, les conditions des lots, la déduplication des alertes et les invalidations concurrentes. Les tests navigateur utilisent une fixture synthétique 404 en production et aucune base réelle. Voir [protocole avant/après et limites des mesures](releases/2026-10-14-page-performance-500.md).

@@ -1,3 +1,4 @@
+import { measureServerStage } from "@/lib/server-performance";
 import Link from "next/link";
 import { ArrowRight, CircleStop, Gift, PackageCheck, PackageX, Pause, Play, TriangleAlert } from "lucide-react";
 
@@ -21,7 +22,11 @@ import { stockState as getStockState } from "@/lib/metric-rules";
 
 export const dynamic = "force-dynamic";
 
-export default async function DashboardPage({
+export default async function DashboardPage(props: Parameters<typeof DashboardPageContent>[0]) {
+  return measureServerStage("page.home", () => DashboardPageContent(props));
+}
+
+async function DashboardPageContent({
   searchParams,
 }: {
   searchParams: Promise<{ q?: string; scope?: string; welcome?: string }>;

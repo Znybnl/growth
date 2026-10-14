@@ -1,3 +1,4 @@
+import { measureServerStage } from "@/lib/server-performance";
 import Link from "next/link";
 
 import { CampaignActionsMenu } from "@/components/merchant/campaign-actions-menu";
@@ -13,7 +14,11 @@ import { getMerchantCampaignOverview } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
 
-export default async function CampaignsPage({
+export default async function CampaignsPage(props: Parameters<typeof CampaignsPageContent>[0]) {
+  return measureServerStage("page.campaigns", () => CampaignsPageContent(props));
+}
+
+async function CampaignsPageContent({
   searchParams,
 }: {
   searchParams: Promise<{ q?: string }>;

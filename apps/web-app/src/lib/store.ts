@@ -68,6 +68,7 @@ import {
   DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
 } from "@/lib/campaign-defaults";
 import { cache } from "react";
+import { measureServerStage } from "@/lib/server-performance";
 import {
   Campaign,
   CashierRedemptionContext,
@@ -1257,7 +1258,7 @@ export const getMerchantProfile = cache(async function getMerchantProfile(mercha
 
 export async function getMerchantRedemptionPinStates(merchantIds: string[]) {
   if (getDataBackend("la lecture des PIN de retrait") === "supabase") {
-    return getSupabaseMerchantRedemptionPinStates(merchantIds);
+    return measureServerStage("data.account-pins", () => getSupabaseMerchantRedemptionPinStates(merchantIds));
   }
 
   return Object.fromEntries(
@@ -2566,7 +2567,7 @@ export const getMerchantRecentLeads = cache(async function getMerchantRecentLead
   query = "",
 ) {
   if (getDataBackend("la lecture des leads récents") === "supabase") {
-    return getSupabaseMerchantRecentLeads(merchantId, limit, query);
+    return measureServerStage("data.recent-contacts", () => getSupabaseMerchantRecentLeads(merchantId, limit, query));
   }
 
   const normalizedQuery = query.trim().toLowerCase();
@@ -2586,7 +2587,7 @@ export const getCampaignDataView = cache(async function getCampaignDataView(
   options: { leadLimit?: number; leadOffset?: number; query?: string; emailStatus?: "attention" } = {},
 ) {
   if (getDataBackend("la lecture des données campagne") === "supabase") {
-    return getSupabaseCampaignDataView(campaignId, fallbackMerchant, options);
+    return measureServerStage("data.results", () => getSupabaseCampaignDataView(campaignId, fallbackMerchant, options));
   }
 
   return getCampaignDataViewFromMemory(campaignId, options);

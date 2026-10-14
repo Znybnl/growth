@@ -1,6 +1,8 @@
 import { hashPassword, verifyPassword } from "@/lib/passwords";
 import { decryptRedemptionPin, encryptRedemptionPin } from "@/lib/redemption-pin-crypto";
 import { getStripeClient } from "@/lib/stripe";
+import { measureServerStage } from "@/lib/server-performance";
+import { readAllRows } from "@/lib/paginated-read";
 import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/supabase";
 import { syncCampaignDefaultEmailSenderNames } from "@/lib/campaign-local-settings";
 import {
@@ -521,13 +523,16 @@ export async function resolveMerchantSessionFromAuthUser(
     });
   }
 
-  const merchant = await getSupabaseMerchantProfile(merchantUser.merchantId);
+  const [merchant, membershipQuery] = await Promise.all([
+    getSupabaseMerchantProfile(merchantUser.merchantId),
+    readWorkspaceMembership(merchantUser.id),
+  ]);
 
   if (!merchant) {
     throw new Error("Marchand introuvable.");
   }
 
-  const workspaceContext = await getSupabaseMerchantWorkspaceContext(merchantUser.id, merchant);
+  const workspaceContext = await getSupabaseMerchantWorkspaceContext(merchantUser.id, merchant, membershipQuery);
   const activeLocation =
     workspaceContext.locations.find(({ merchant: location }) => location.id === activeLocationId)?.merchant ??
     workspaceContext.locations.find(({ merchant: location }) => location.id === merchant.id)?.merchant ??
@@ -1170,9 +1175,30 @@ function toMerchantWorkspace(row: MerchantWorkspaceRow): MerchantWorkspace {
   };
 }
 
+type WorkspaceMembershipRow = {
+  id: string; workspace_id: string; role: MerchantWorkspaceRole; status: string;
+};
+
+async function readWorkspaceMembership(merchantUserId: string) {
+  return getSupabaseAdmin().from("merchant_workspace_memberships")
+    .select("id, workspace_id, role, status").eq("merchant_user_id", merchantUserId)
+    .eq("status", "active").order("created_at", { ascending: true }).limit(1)
+    .maybeSingle<WorkspaceMembershipRow>();
+}
+
 export async function getSupabaseMerchantWorkspaceContext(
   merchantUserId: string,
   fallbackMerchant: Merchant,
+  existingMembership?: Awaited<ReturnType<typeof readWorkspaceMembership>>,
+) {
+  return measureServerStage("auth.workspace", () =>
+    resolveMerchantWorkspaceContext(merchantUserId, fallbackMerchant, existingMembership));
+}
+
+async function resolveMerchantWorkspaceContext(
+  merchantUserId: string,
+  fallbackMerchant: Merchant,
+  existingMembership?: Awaited<ReturnType<typeof readWorkspaceMembership>>,
 ) {
   if (!isSupabaseConfigured()) {
     return {
@@ -1183,14 +1209,7 @@ export async function getSupabaseMerchantWorkspaceContext(
 
   try {
     const supabase = getSupabaseAdmin();
-    const membershipQuery = await supabase
-      .from("merchant_workspace_memberships")
-      .select("id, workspace_id, role, status")
-      .eq("merchant_user_id", merchantUserId)
-      .eq("status", "active")
-      .order("created_at", { ascending: true })
-      .limit(1)
-      .maybeSingle<{ id: string; workspace_id: string; role: MerchantWorkspaceRole; status: string }>();
+    const membershipQuery = existingMembership ?? await readWorkspaceMembership(merchantUserId);
 
     if (membershipQuery.error || !membershipQuery.data) {
       return {
@@ -1213,13 +1232,18 @@ export async function getSupabaseMerchantWorkspaceContext(
     ]);
 
     const locationIds = (locationRows ?? []).map((row) => row.merchant_id);
-    const profiles = await Promise.all(
-      locationIds.map((locationId) =>
-        locationId === fallbackMerchant.id
-          ? Promise.resolve(fallbackMerchant)
-          : getSupabaseMerchantProfile(locationId),
-      ),
-    );
+    const otherIds = [...new Set(locationIds.filter(id => id !== fallbackMerchant.id))];
+    const profilesById = new Map<string, Merchant>([[fallbackMerchant.id, fallbackMerchant]]);
+    // Bound URL size for large workspaces; the common multi-site case is one read.
+    for (let offset = 0; offset < otherIds.length; offset += 200) {
+      const { data, error } = await readAllRows((start, end) => supabase.from("merchants")
+        .select("*", { count: "exact" }).in("id", otherIds.slice(offset, offset + 200))
+        .order("id").range(start, end));
+      if (!error) for (const row of (data ?? []) as MerchantRow[]) {
+        profilesById.set(row.id, toMerchant(row));
+      }
+    }
+    const profiles = locationIds.map(id => profilesById.get(id));
     const locations = profiles
       .filter((merchant): merchant is Merchant => Boolean(merchant))
       .filter((merchant) => merchant.locationStatus !== "archived")

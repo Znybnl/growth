@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { cache } from "react";
+import { measureServerStage } from "@/lib/server-performance";
 import { cookies } from "next/headers";
 
 import { resolveMerchantSessionFromAuthUser } from "@/lib/merchant-account-repository";
@@ -36,7 +37,7 @@ export const getAuthenticatedSession = cache(async function getAuthenticatedSess
   const {
     data: { user },
     error,
-  } = await supabase.auth.getUser();
+  } = await measureServerStage("auth.validate", () => supabase.auth.getUser());
 
   if (error || !user) {
     return null;
@@ -44,7 +45,7 @@ export const getAuthenticatedSession = cache(async function getAuthenticatedSess
 
   try {
     const activeLocationId = cookieStore.get("okado_active_location")?.value;
-    return await resolveMerchantSessionFromAuthUser(user, activeLocationId);
+    return await measureServerStage("auth.context", () => resolveMerchantSessionFromAuthUser(user, activeLocationId));
   } catch {
     return null;
   }
