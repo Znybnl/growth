@@ -36,7 +36,7 @@ export function SignUpForm() {
     password: "",
     confirmPassword: "",
   });
-  const [accept, setAccept] = useState(true);
+  const [accept, setAccept] = useState(false);
   const [referralCode] = useState(readReferralCodeFromBrowser);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -89,7 +89,7 @@ export function SignUpForm() {
         <p className="okado-label">Créer un compte</p>
         <h1 className="okado-page-title mt-3">Ouvrez votre espace marchand</h1>
         <p className="mt-4 text-sm leading-8 text-ash">
-          Finalisez votre inscription et créez votre premier jeu.
+          30 jours d’essai gratuit, sans carte bancaire. Créez votre premier jeu avant diffusion.
         </p>
       </div>
 
@@ -174,10 +174,10 @@ export function SignUpForm() {
             onChange={(event) => setAccept(event.target.checked)}
           />
           <span>
-            J’accepte les conditions d’utilisation et je souhaite recevoir les conseils de mise en
-            route de la plateforme.
+            J’accepte les <a href="https://www.okado.app/cgv" target="_blank" rel="noreferrer" className="underline">conditions générales de vente et d’abonnement</a>.
           </span>
         </label>
+        <p className="mt-3 text-xs">Consultez notre <a href="https://www.okado.app/confidentialite" target="_blank" rel="noreferrer" className="underline">politique de confidentialité</a>. Cette acceptation ne constitue pas un consentement à la prospection commerciale.</p>
       </div>
 
       {error ? (

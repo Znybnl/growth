@@ -1,12 +1,11 @@
-import type { Metadata } from "next";
-
 import { LegalPage } from "@/components/legal/legal-page";
+import { pageMetadata } from "@/lib/site";
 
-export const metadata: Metadata = {
-  title: "CGU et règlement du jeu | Okado",
-  description:
-    "Conditions générales d'utilisation et règlement applicable aux jeux concours phygitaux déployés avec Okado.",
-};
+export const metadata = pageMetadata(
+  "/campaign/reglement",
+  "CGU et règlement du jeu | Okado",
+  "Conditions générales d’utilisation et règlement applicable aux jeux par QR code déployés avec Okado.",
+);
 
 const sections = [
   {
@@ -30,14 +29,14 @@ const sections = [
     paragraphs: [
       "La participation au jeu s’effectue exclusivement en scannant le QR Code mis à disposition au sein de l’établissement de la Société Organisatrice.",
       "Selon le paramétrage défini sous la seule responsabilité de la Société Organisatrice, le Participant pourra être invité à consulter des liens externes, tels que la fiche Google Business Profile de l’établissement ou un réseau social.",
-      "Le dépôt d’un avis en ligne est strictement facultatif. Il ne constitue en aucun cas une condition obligatoire de participation ni une obligation pour valider l’obtention d’un gain.",
+      "Le dépôt d’un avis en ligne est strictement facultatif et indépendant du jeu. L’accès au jeu, la probabilité et l’obtention d’un gain ne dépendent ni du dépôt ni du contenu d’un avis. Un clic sur un lien ne prouve pas la publication d’un avis.",
       "L’Éditeur décline toute responsabilité quant à l’utilisation de ces fonctionnalités par la Société Organisatrice au regard des conditions d’utilisation des plateformes tierces, notamment Google.",
     ],
   },
   {
     title: "Article 3 - Désignation des gagnants et responsabilité des lots",
     paragraphs: [
-      "L’attribution des gains est gérée automatiquement dès la soumission du formulaire, via un mécanisme de tirage aléatoire tenant compte des probabilités et des stocks paramétrés par la Société Organisatrice.",
+      "Le résultat est déterminé lors de la participation au jeu, via un mécanisme de tirage aléatoire tenant compte des probabilités et des stocks paramétrés par la Société Organisatrice. Selon le parcours configuré, les coordonnées sont recueillies avant le jeu ou après un gain pour permettre son enregistrement et son retrait. Un résultat perdant reste une participation, même sans coordonnées recueillies.",
       "La Société Organisatrice est seule responsable de la fourniture, de la conformité, de la disponibilité et de la remise effective des lots.",
       "La responsabilité du Prestataire Technique ne saurait être engagée pour toute réclamation relative à une rupture de stock, un défaut du lot, un refus de remise par le personnel en magasin ou tout litige lié à l’exécution du jeu.",
     ],
@@ -64,6 +63,7 @@ const sections = [
     paragraphs: [
       "Dans le cadre du jeu, des données à caractère personnel peuvent être collectées, notamment le prénom, l’adresse e-mail et les informations nécessaires à la gestion du gain.",
       "La Société Organisatrice agit en qualité de responsable de traitement. Les données sont collectées pour ses besoins légitimes de gestion du jeu et, sous réserve du consentement du Participant, pour l’envoi de prospection commerciale.",
+      "Le consentement à la prospection commerciale est distinct de la gestion du jeu, facultatif et non précoché. Le refuser n’empêche ni de jouer ni de recevoir un gain.",
       "Le Prestataire Technique agit en qualité de sous-traitant. Il héberge ces données de manière sécurisée pour le compte exclusif de la Société Organisatrice.",
       "Conformément à la réglementation applicable, notamment le RGPD en Europe et la LPRPDE au Canada, le Participant dispose d’un droit d’accès, de rectification, de portabilité et d’effacement de ses données. Pour exercer ces droits, il doit s’adresser directement à la Société Organisatrice par le biais de ses coordonnées habituelles.",
     ],

@@ -10,6 +10,9 @@ node_modules
 *.jpg
 *.jpeg
 *.webp
+# Assets used by the public marketing website must be included in deployments.
+!apps/landing-page/public/images/*.png
+!apps/landing-page/public/images/*.webp
 # Keep every raster asset used by the Halloween wheel, including SVG image references.
 !apps/web-app/public/images/templates/halloween-gold/*.webp
 # Keep the production backgrounds and scratch textures used by the beauty scratch templates.
