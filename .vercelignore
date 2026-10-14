@@ -13,6 +13,9 @@ node_modules
 # Assets used by the public marketing website must be included in deployments.
 !apps/landing-page/public/images/*.png
 !apps/landing-page/public/images/*.webp
+# The *.png exclusion also matches directory names: keep the static OG route.
+!apps/landing-page/src/app/og-image.png
+!apps/landing-page/src/app/og-image.png/**
 # Keep every raster asset used by the Halloween wheel, including SVG image references.
 !apps/web-app/public/images/templates/halloween-gold/*.webp
 # Keep the production backgrounds and scratch textures used by the beauty scratch templates.
