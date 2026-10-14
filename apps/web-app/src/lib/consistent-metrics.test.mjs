@@ -45,6 +45,67 @@ test("seuil de stock commun, épuisé distinct, illimité et petit stock", () =>
   assert.equal(stockState(0,100), "exhausted"); assert.equal(stockState(null,null), "unlimited");
   assert.equal(stockState(1,2), "low"); assert.equal(stockState(3,null), "available");
 });
+
+test("#500 SQL : charge utile sans images, mêmes indicateurs, alertes isolées, ACL et rollback", async () => {
+  const db = await database();
+  try {
+    await db.exec("alter table reward_email_deliveries add column lead_id text, add column updated_at timestamptz;");
+    const optimized = sql("20261014150000_merchant_page_performance_500.sql");
+    await db.exec(optimized);
+    await db.exec(optimized);
+    await db.exec(`update campaigns set background_image_url='data:image/png;base64,'||repeat('A',1700000),
+      logo_url='data:image/png;base64,'||repeat('B',150000) where id='c';
+      insert into leads(id,campaign_id,first_name,email,marketing_consent,prize_id,status,reward_expires_at)
+      select 'pending-'||n,'c','Fictif','test@example.test',true,'unlimited','claimed',null from generate_series(1,1005) n;
+      insert into leads(id,campaign_id,first_name,email,prize_id,status,reward_expires_at) values
+      ('expired','c','Fictif','test@example.test','p','claimed',now()-interval '1 day'),
+      ('redeemed','c','Fictif','test@example.test','p','redeemed',null),
+      ('loss','c','Fictif','test@example.test',null,'claimed',null),
+      ('other','foreign-c','Autre','test@example.test',null,'claimed',null);
+      insert into reward_email_deliveries(id,campaign_id,lead_id,status,support_is_handled,updated_at) values
+      ('valid','c','pending-1','failed',false,now()),
+      ('handled','c','pending-2','failed',true,now()),
+      ('expired','c','expired','failed',false,now()),
+      ('redeemed','c','redeemed','bounced',false,now()),
+      ('loss','c','loss','failed',false,now()),
+      ('cross','c','other','failed',false,now());
+      insert into prizes(id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost)
+      values('zero','c','Épuisé',10,0,0,0);`);
+    const [page] = (await db.query("select * from get_merchant_page_overview('m')")).rows;
+    const [old] = (await db.query("select * from get_merchant_campaign_overview('m')")).rows;
+    for (const key of ['scans_count','games_count','leads_count','wins_count','redeemed_count','actions_count','estimated_spend'])
+      assert.equal(Number(page.metrics[key]),Number(old[key]),key);
+    assert.equal(page.metrics.opt_ins,1005);
+    assert.deepEqual(page.pending_redemptions,[{prizeId:'unlimited',count:1005}]);
+    assert.equal(page.campaign.logo_url,null);
+    assert.equal(page.campaign.background_image_url,null);
+    assert.equal('campaign_local_settings' in page.campaign,false);
+    assert.ok(JSON.stringify(page).length < 5000);
+    assert.ok(JSON.stringify(page).length < JSON.stringify(old).length * .01);
+    assert.equal((await db.query("select * from get_merchant_page_overview('missing')")).rows.length,0);
+    const [alerts] = (await db.query("select * from get_merchant_operational_alerts('m')")).rows;
+    assert.equal(alerts.email_count,1);
+    assert.equal(alerts.low_stock_count,1);
+    assert.equal(alerts.exhausted_stock_count,1);
+    const [foreign] = (await db.query("select * from get_merchant_operational_alerts('foreign')")).rows;
+    assert.equal(foreign.email_count,0);
+    assert.equal(foreign.low_stock_count,0);
+    await db.exec("update campaigns set is_active=false where id='c'");
+    assert.equal((await db.query("select * from get_merchant_operational_alerts('m')")).rows[0].low_stock_count,0);
+    for (const role of ['anon','authenticated']) {
+      await db.exec('set role '+role);
+      for (const name of ['get_merchant_page_overview','get_merchant_operational_alerts'])
+        await assert.rejects(()=>db.query("select * from "+name+"('m')"),/permission denied/);
+      await db.exec('reset role');
+    }
+    await db.exec('set role service_role');
+    assert.equal((await db.query("select * from get_merchant_page_overview('m')")).rows.length,1);
+    await db.exec('reset role');
+    await db.exec(readFileSync(new URL("../../../../supabase/rollback/20261014150000_merchant_page_performance_500.sql",import.meta.url),'utf8'));
+    assert.equal((await db.query("select count(*) n from leads")).rows[0].n,1009);
+    assert.ok((await db.query("select * from get_merchant_campaign_overview('m')")).rows.length);
+  } finally { await db.close(); }
+});
 test("gain en attente : lot, état et expiration ; disponibilité future reste à suivre", () => {
   const now=Date.now(), base={prizeId:"p",status:"claimed"};
   assert.equal(isPendingGain(base,now),true);

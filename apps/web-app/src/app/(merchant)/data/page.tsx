@@ -1,3 +1,4 @@
+import { measureServerStage } from "@/lib/server-performance";
 import Link from "next/link";
 
 import { DataCampaignSelector } from "@/components/merchant/data-campaign-selector";
@@ -307,7 +308,11 @@ function rewardEmailTone(status?: RewardEmailDeliveryStatus) {
   }
 }
 
-export default async function DataPage({ searchParams }: DataPageProps) {
+export default async function DataPage(props: Parameters<typeof DataPageContent>[0]) {
+  return measureServerStage("page.results", () => DataPageContent(props));
+}
+
+async function DataPageContent({ searchParams }: DataPageProps) {
   const session = await requireAuthenticatedSession();
   const params = await searchParams;
   const query = params.q?.trim() ?? params.code?.trim() ?? "";

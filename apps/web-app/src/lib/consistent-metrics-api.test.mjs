@@ -27,15 +27,18 @@ const unwrap=r=>{if(r.error)throw Error('Unavailable');return r.data};
 function repository({error=null}={}) {
   const db={
     rpc(name){
-      if(name==='get_merchant_campaign_overview')return query([{id:'c',merchant_id:'m',title:'Fictif',game_type:'wheel',
-        scans_count:100,games_count:2,leads_count:1,wins_count:1,redeemed_count:0,actions_count:2,estimated_spend:4}]);
-      if(name==='get_merchant_metric_details')return query([{campaign_id:'c',opt_ins:1,pending_redemptions:[{prizeId:'p',count:3}]}],error);
+      if(name==='get_merchant_page_overview')return query([{campaign_id:'c',
+        campaign:{id:'c',merchant_id:'m',title:'Fictif',game_type:'wheel',created_at:'2026-01-01'},
+        metrics:{campaign_id:'c',opt_ins:1,undated_redemptions:0,
+          scans_count:100,games_count:2,leads_count:1,wins_count:1,redeemed_count:0,actions_count:2,estimated_spend:4},
+        pending_redemptions:[{prizeId:'p',count:3}]}],error);
       if(name==='get_merchant_participation_activity')return query([]);
       throw Error('Unexpected RPC '+name);
     },
     from(table){if(table==='prizes')return query([{id:'p',campaign_id:'c',label:'Lot',remaining_quantity:2,total_quantity:10}]);throw Error('Unexpected read '+table)},
   };
   return load('./campaign-repository.ts',{
+    '@/lib/server-performance':{measureServerStage:(_stage,work)=>work()},
     '@/lib/metric-rules':rules,'@/lib/paginated-read':{readAllRows},
     '@/lib/supabase':{getSupabaseAdmin:()=>db,unwrapSupabaseResult:unwrap},
     '@/lib/campaign-defaults':{defaultWheelSubtitleSpacingForTemplate:()=>0},
@@ -53,6 +56,18 @@ test('vrai repository dashboard : opt-ins exacts, attente agrégée, clics et co
 });
 test('vrai repository : échec des métriques ne devient pas un zéro fabriqué',async()=>{
   await assert.rejects(()=>repository({error:{message:'database error'}}).getSupabaseMerchantDashboard({id:'m'}));
+});
+
+test('#500 sélecteur de campagnes : DTO sans configuration ni image',async()=>{
+  const [campaign]=await repository().getSupabaseMerchantCampaignLibrary('m');
+  assert.deepEqual(Object.keys(campaign).sort(),
+    ['createdAt','gameType','id','isActive','participations','scans','title']);
+  assert.equal(campaign.participations,2);
+});
+
+test('#500 Résultats : campagne étrangère refusée avant contacts ou configuration',async()=>{
+  const result=await repository().getSupabaseCampaignDataView('foreign',{id:'m'});
+  assert.equal(result,null);
 });
 test('export paginé : identifiant de jeu étranger refusé avant lecture des contacts',async()=>{
   const reads=[];

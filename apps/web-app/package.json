@@ -18,6 +18,7 @@
     "test:social-metadata": "node --experimental-strip-types --test src/lib/campaign-social-metadata.test.mjs",
     "test:participations": "node --experimental-strip-types --test src/lib/participation-metrics.test.mjs src/lib/participation-api.test.mjs",
     "test:metrics": "node --experimental-strip-types --test src/lib/consistent-metrics.test.mjs src/lib/consistent-metrics-api.test.mjs src/lib/dashboard-metrics.test.mjs",
+    "test:page-performance": "node --experimental-strip-types --test src/lib/page-performance.test.mjs",
     "test:reward-reminders": "node --experimental-strip-types --test src/lib/reward-reminders-sql.test.mjs src/lib/reward-reminders-api.test.mjs",
     "test:wizard-marketing-actions": "node --test src/lib/wizard-marketing-actions.test.mjs",
     "check:gotomarket": "node scripts/check-gotomarket-config.mjs",

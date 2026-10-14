@@ -106,3 +106,7 @@ La RPC privée `get_support_monitoring` réalise recherche, jointures, comptages
 
 - Les règles RLS, les schémas Supabase et les API font foi dans le code et les migrations ; ils doivent être inspectés avant toute modification de données ou d'autorisation.
 - Une nouvelle intégration externe, un nouveau sous-traitant ou un nouveau transfert de données exige une analyse avant implémentation.
+
+## Lectures des écrans marchands — #500
+
+Les écrans de consultation utilisent un snapshot SQL privé sans images ni configuration complète ; les métriques canoniques #498 restent la source de calcul. La déduplication React est limitée au rendu courant et à une clé d'établissement. Les alertes navigation/Accueil partagent un fournisseur client réinitialisé au changement de compte/site et un agrégat service_role. Les profils multi-sites restent bornés à l'adhésion vérifiée, lus par lots paginés. Voir [analyse, migration et retour arrière](releases/2026-10-14-page-performance-500.md). Aucun changement de région sans confirmation de la région primaire Supabase.

@@ -1,3 +1,4 @@
+import { measureServerStage } from "@/lib/server-performance";
 import { AccountSettingsForm } from "@/components/merchant/account-settings-form";
 import { Settings2 } from "lucide-react";
 import { PageHeader } from "@/components/ui/workspace";
@@ -13,7 +14,11 @@ type AccountPageProps = {
   }>;
 };
 
-export default async function AccountPage({ searchParams }: AccountPageProps) {
+export default async function AccountPage(props: Parameters<typeof AccountPageContent>[0]) {
+  return measureServerStage("page.account", () => AccountPageContent(props));
+}
+
+async function AccountPageContent({ searchParams }: AccountPageProps) {
   const session = await requireAuthenticatedSession();
   const resolvedSearchParams = searchParams ? await searchParams : undefined;
   let merchant = session.merchant;
