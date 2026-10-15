@@ -234,10 +234,11 @@ export function wheelPaletteForTemplate(
   return current;
 }
 
-/** Initialize the Bicolore page background from its secondary palette color. */
+/** Resolve Bicolore's default background from its primary, preserving custom colors. */
 export function wheelBackgroundForTemplate(
   templateId: GamePageTemplateId,
   currentColor: string,
+  primaryColor = DEFAULT_COCORICO_DUO_BLUE,
 ) {
   // A Beauty theme's default is applied when selected in the editor. On load,
   // this resolver must preserve the merchant's saved background color.
@@ -251,8 +252,9 @@ export function wheelBackgroundForTemplate(
     DEFAULT_COCORICO_DUO_YELLOW,
   ];
 
-  if (templateId === "cocorico-duo-wheel" && knownTemplateBackgrounds.includes(normalized)) {
-    return DEFAULT_COCORICO_DUO_YELLOW;
+  if (templateId === "cocorico-duo-wheel" &&
+      (knownTemplateBackgrounds.includes(normalized) || normalized === DEFAULT_COCORICO_DUO_BLUE)) {
+    return primaryColor;
   }
 
   if (isCocoricoWheelTemplate(templateId) && knownTemplateBackgrounds.includes(normalized)) {
@@ -270,11 +272,25 @@ export function wheelBackgroundForTemplate(
 export function wheelBackgroundForTemplateSelection(
   templateId: GamePageTemplateId,
   currentColor: string,
+  primaryColor = DEFAULT_COCORICO_DUO_BLUE,
 ) {
+  if (templateId === "cocorico-duo-wheel") return primaryColor;
   if (templateId === "classic") return "#ffffff";
   if (templateId === "restaurant-pop") return "#fffdfa";
   if (templateId === "rose-institut") return DEFAULT_ROSE_INSTITUT_BACKGROUND_COLOR;
-  return wheelBackgroundForTemplate(templateId, currentColor);
+  return wheelBackgroundForTemplate(templateId, currentColor, primaryColor);
+}
+
+/** Keep a default Bicolore background linked to its wheel, not a custom background. */
+export function wheelBackgroundAfterPrimaryColorChange(
+  templateId: GamePageTemplateId | undefined,
+  backgroundColor: string,
+  previousPrimary: string,
+  nextPrimary: string,
+) {
+  if (templateId !== "cocorico-duo-wheel") return backgroundColor;
+  if (backgroundColor.trim().toLowerCase() === previousPrimary.trim().toLowerCase()) return nextPrimary;
+  return wheelBackgroundForTemplate(templateId, backgroundColor, nextPrimary);
 }
 
 /** First selection only; remembered per-template text colors always take precedence. */
@@ -448,7 +464,8 @@ const SCRATCH_DEFAULT_INK_VALUES = new Set([
   "#3b2500",
 ]);
 
-const LEGACY_SCRATCH_LILAC_TEXT_COLORS = new Set(["#4c1d95", "#32104f"]);
+// The blue was the shared logo default inherited from another wheel template.
+const LEGACY_SCRATCH_LILAC_TEXT_COLORS = new Set(["#4c1d95", "#32104f", "#003cb4"]);
 
 export function defaultScratchTextColor(templateId?: GamePageTemplateId) {
   if (templateId === CLASSIC_NUDE_SCRATCH_TEMPLATE_ID) return "#49372c";
