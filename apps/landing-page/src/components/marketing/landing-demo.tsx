@@ -1,47 +1,44 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { Gift, Mail, RotateCw, Star } from "lucide-react";
+import { useEffect, useId, useRef, useState } from "react";
+import {
+  ArrowRight,
+  Check,
+  Gift,
+  Mail,
+  RotateCcw,
+  ShieldCheck,
+  Star,
+} from "lucide-react";
 import { captureMarketingEvent } from "@/lib/marketing-analytics";
+import styles from "./landing-demo.module.css";
 
 const wheelSegments = [
-  { label: "Dessert", fill: "#9aa7e6" },
-  { label: "Perdu", fill: "#162238" },
-  { label: "Café", fill: "#f8fafc" },
-  { label: "Perdu", fill: "#162238" },
-  { label: "Remise", fill: "#f8fafc" },
-  { label: "Perdu", fill: "#162238" },
-  { label: "Boisson", fill: "#9aa7e6" },
-  { label: "Perdu", fill: "#162238" },
-  { label: "Surprise", fill: "#f8fafc" },
-  { label: "Perdu", fill: "#162238" },
+  { label: "Dessert", fill: "#b5bfea", dark: false },
+  { label: "Perdu", fill: "#162238", dark: true },
+  { label: "Café", fill: "#fffaf1", dark: false },
+  { label: "Perdu", fill: "#162238", dark: true },
+  { label: "Remise", fill: "#fffaf1", dark: false },
+  { label: "Perdu", fill: "#162238", dark: true },
+  { label: "Boisson", fill: "#b5bfea", dark: false },
+  { label: "Perdu", fill: "#162238", dark: true },
+  { label: "Surprise", fill: "#fffaf1", dark: false },
+  { label: "Perdu", fill: "#162238", dark: true },
 ];
-
 const beautyWheelSegments = [
-  { label: "Soin", fill: "#edb9c8" },
-  { label: "Perdu", fill: "#3b1936" },
-  { label: "-10%", fill: "#fff8f2" },
-  { label: "Perdu", fill: "#3b1936" },
-  { label: "Mini soin", fill: "#edb9c8" },
-  { label: "Perdu", fill: "#3b1936" },
-  { label: "15€", fill: "#fff8f2" },
-  { label: "Perdu", fill: "#3b1936" },
-  { label: "Trousse", fill: "#edb9c8" },
-  { label: "Perdu", fill: "#3b1936" },
+  { label: "Soin", fill: "#edb9c8", dark: false },
+  { label: "Perdu", fill: "#3b1936", dark: true },
+  { label: "−10 %", fill: "#fff8f2", dark: false },
+  { label: "Perdu", fill: "#3b1936", dark: true },
+  { label: "Mini soin", fill: "#edb9c8", dark: false },
+  { label: "Perdu", fill: "#3b1936", dark: true },
+  { label: "15 €", fill: "#fff8f2", dark: false },
+  { label: "Perdu", fill: "#3b1936", dark: true },
+  { label: "Trousse", fill: "#edb9c8", dark: false },
+  { label: "Perdu", fill: "#3b1936", dark: true },
 ];
-
-function createWheelGradient(segments: typeof wheelSegments) {
-  return `conic-gradient(from 0deg, ${segments
-    .map((segment, index) => {
-      const start = index * 36;
-      const end = start + 36;
-      return `${segment.fill} ${start}deg ${end}deg`;
-    })
-    .join(", ")})`;
-}
 const winningSegmentCenterDegrees = 18;
 const winningRotationDegrees = 360 - winningSegmentCenterDegrees;
-
 const demoChartData = [
   { day: "Lun.", scans: 22, leads: 7 },
   { day: "Mar.", scans: 34, leads: 11 },
@@ -51,330 +48,438 @@ const demoChartData = [
   { day: "Sam.", scans: 74, leads: 31 },
   { day: "Dim.", scans: 52, leads: 19 },
 ];
+const kpis = [
+  { label: "Scans", value: "320" },
+  { label: "Participations", value: "224" },
+  { label: "Contacts collectés", value: "117" },
+  { label: "Conversion parties / scans", value: "70 %" },
+];
+const stages = ["Le jeu", "Le gain", "La suite"];
+type DemoStep = "intro" | "action" | "spinning" | "form" | "done";
+
+function wheelPoint(degrees: number) {
+  const radians = ((degrees - 90) * Math.PI) / 180;
+  return `${150 + 146 * Math.cos(radians)},${150 + 146 * Math.sin(radians)}`;
+}
 
 export function LandingDemo({
   variant = "restaurant",
 }: {
   variant?: "restaurant" | "beauty";
 }) {
-  const [step, setStep] = useState<
-    "intro" | "action" | "spinning" | "form" | "done"
-  >("intro");
+  const id = useId();
+  const [step, setStep] = useState<DemoStep>("intro");
   const [rotation, setRotation] = useState(16);
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
-  const hasModal = step === "action" || step === "form" || step === "done";
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const panelHeading = useRef<HTMLHeadingElement>(null);
+  const playButton = useRef<HTMLButtonElement>(null);
+  const previousStep = useRef<DemoStep>("intro");
   const isBeauty = variant === "beauty";
   const segments = isBeauty ? beautyWheelSegments : wheelSegments;
-  const wheelGradient = createWheelGradient(segments);
-  const accentColor = isBeauty ? "#9b3e62" : "#d6a51f";
-  const businessName = isBeauty ? "L'atelier beauté" : "Le bistro";
-  const gameHeading = isBeauty ? "Prenez soin de vous." : "Jouez et gagnez.";
+  const businessName = isBeauty ? "L’atelier beauté" : "Le bistro";
   const rewardLabel = isBeauty ? "un soin découverte" : "1 dessert";
+  const hasPanel = step === "action" || step === "form" || step === "done";
+  const stage = step === "done" ? 2 : step === "form" ? 1 : 0;
 
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(
     () => () => {
       if (timer.current) clearTimeout(timer.current);
     },
     [],
   );
-  const kpis = [
-    { label: "Scans", value: "320" },
-    { label: "Participations", value: "224" },
-    { label: "Contacts collectés", value: "117" },
-    { label: "Conversion parties / scans", value: "70 %" },
-  ];
+  useEffect(() => {
+    if (hasPanel) panelHeading.current?.focus({ preventScroll: true });
+    if (step === "intro" && previousStep.current !== "intro")
+      playButton.current?.focus({ preventScroll: true });
+    previousStep.current = step;
+  }, [step, hasPanel]);
 
-  const resetDemo = () => {
+  function resetDemo() {
     if (timer.current) clearTimeout(timer.current);
     setStep("intro");
     setFirstName("");
     setEmail("");
     setRotation(16);
-  };
+  }
 
-  const startSpin = () => {
-    if (step === "intro") {
+  function startSpin() {
+    if (step === "intro")
       captureMarketingEvent("marketing_demo_started", { variant });
-    }
     setStep("spinning");
     setRotation((value) => {
-      const normalizedRotation = ((value % 360) + 360) % 360;
-      const rotationToWinningSegment =
-        (winningRotationDegrees - normalizedRotation + 360) % 360;
-
-      return value + 4 * 360 + rotationToWinningSegment;
+      const normalized = ((value % 360) + 360) % 360;
+      return (
+        value + 4 * 360 + ((winningRotationDegrees - normalized + 360) % 360)
+      );
     });
     if (timer.current) clearTimeout(timer.current);
-    timer.current = setTimeout(() => setStep("form"), 2100);
-  };
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    timer.current = setTimeout(
+      () => setStep("form"),
+      reducedMotion ? 100 : 2100,
+    );
+  }
 
-  const complete = () => {
+  function complete() {
     setStep("done");
     captureMarketingEvent("marketing_demo_completed", { variant });
-  };
+  }
 
   return (
-    <div className="relative mx-auto mt-16 max-w-[1080px]">
-      <p className="relative z-10 mb-4 text-center text-sm text-[#475569]">
-        Démonstration simplifiée : aucun lot réel, aucune coordonnée transmise,
-        aucun e-mail envoyé.
-      </p>
-      <div className="absolute left-[8%] top-8 h-56 w-56 rounded-full bg-[#fb64b6]/20 blur-3xl" />
-      <div className="absolute right-[10%] top-0 h-64 w-64 rounded-full bg-[#6c00f6]/15 blur-3xl" />
-
-      <div className="relative grid items-stretch gap-5 rounded-[24px] border border-[#e5e7eb] bg-white p-5 shadow-[0_24px_80px_rgba(15,23,43,0.12)] md:grid-cols-[0.86fr_1.14fr] md:p-8">
-        <div className="flex flex-col items-center justify-center rounded-[20px] border border-[#e5e7eb] bg-[#f8fafc] p-4">
-          <div className="mx-auto max-w-[300px] overflow-hidden rounded-[32px] border-[10px] border-[#0f172b] bg-white shadow-[0_20px_50px_rgba(15,23,43,0.18)]">
-            <div className="relative min-h-[560px] overflow-hidden bg-[radial-gradient(circle_at_top,#fff7ed_0%,#ffffff_42%,#eef2ff_100%)] px-5 py-7 text-center">
-              <p className="text-[24px] font-black tracking-[-0.05em] text-[#0f172b]">
+    <div className={styles.demo} data-variant={variant}>
+      <header className={styles.heading}>
+        <p className={styles.eyebrow}>
+          <span className={styles.liveDot} /> Démo interactive
+        </p>
+        <h2>À vous de jouer.</h2>
+        <p>
+          Découvrez le parcours côté client, puis les résultats côté commerce.
+        </p>
+      </header>
+      <div className={styles.workspace}>
+        <div className={styles.player}>
+          <div className={styles.columnLabel}>
+            <span>01</span> Côté client{" "}
+            <span className={styles.tryHint}>
+              Essayez ici <ArrowRight size={14} aria-hidden="true" />
+            </span>
+          </div>
+          <ol
+            className={styles.progress}
+            aria-label="Étapes de la démonstration"
+          >
+            {stages.map((label, index) => (
+              <li
+                key={label}
+                aria-current={stage === index ? "step" : undefined}
+                data-complete={stage > index}
+              >
+                <span>
+                  {stage > index ? (
+                    <Check size={12} aria-hidden="true" />
+                  ) : (
+                    index + 1
+                  )}
+                </span>
+                {label}
+              </li>
+            ))}
+          </ol>
+          <div className={styles.phone} data-testid="demo-phone">
+            <div className={styles.phoneTop} aria-hidden="true">
+              <span>9:41</span>
+              <span className={styles.speaker} />
+              <span>•••</span>
+            </div>
+            <div className={styles.screen}>
+              <p className={styles.business}>
+                <Star size={17} aria-hidden="true" />
                 {businessName}
               </p>
-              <p className="mt-8 text-[31px] font-black leading-[1.03] tracking-[-0.05em] text-[#0f172b]">
-                {gameHeading}
-              </p>
-
-              {hasModal ? (
+              <div className={styles.stageContent}>
+                {hasPanel && (
+                  <section
+                    className={styles.panel}
+                    aria-labelledby={`${id}-panel-title`}
+                  >
+                    <div className={styles.panelIcon} aria-hidden="true">
+                      {step === "action" ? (
+                        <Star />
+                      ) : step === "form" ? (
+                        <Gift />
+                      ) : (
+                        <Check />
+                      )}
+                    </div>
+                    <p className={styles.panelEyebrow}>
+                      {step === "action"
+                        ? "Avant de jouer"
+                        : step === "form"
+                          ? "Bien joué !"
+                          : "Et voilà !"}
+                    </p>
+                    <h3
+                      id={`${id}-panel-title`}
+                      ref={panelHeading}
+                      tabIndex={-1}
+                    >
+                      {step === "action"
+                        ? "Partager votre expérience ?"
+                        : step === "form"
+                          ? `Bravo, vous avez gagné ${rewardLabel}.`
+                          : "Exemple de confirmation du gain."}
+                    </h3>
+                    {step === "action" ? (
+                      <>
+                        <p>
+                          Un avis reste facultatif, libre et indépendant du jeu.
+                          Dans cette démo, aucun avis n’est publié.
+                        </p>
+                        <button
+                          type="button"
+                          onClick={startSpin}
+                          className={styles.primary}
+                        >
+                          Simuler le clic vers Google{" "}
+                          <ArrowRight size={16} aria-hidden="true" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={startSpin}
+                          className={styles.secondary}
+                        >
+                          Continuer sans laisser d’avis
+                        </button>
+                      </>
+                    ) : step === "form" ? (
+                      <>
+                        <p>
+                          Exemple de formulaire après un gain. Vous pouvez
+                          laisser ces champs vides dans la démo.
+                        </p>
+                        <div className={styles.fields}>
+                          <label>
+                            Prénom
+                            <input
+                              value={firstName}
+                              onChange={(event) =>
+                                setFirstName(event.target.value)
+                              }
+                              placeholder="Ex. Camille"
+                              aria-label="Prénom de démonstration"
+                              autoComplete="off"
+                            />
+                          </label>
+                          <label>
+                            E-mail
+                            <input
+                              value={email}
+                              onChange={(event) => setEmail(event.target.value)}
+                              placeholder="Ex. camille@exemple.fr"
+                              aria-label="E-mail de démonstration"
+                              type="email"
+                              autoComplete="off"
+                            />
+                          </label>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={complete}
+                          className={styles.primary}
+                        >
+                          Simuler la confirmation{" "}
+                          <ArrowRight size={16} aria-hidden="true" />
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <div className={styles.reward}>
+                          <Gift size={20} aria-hidden="true" />
+                          <span>
+                            {rewardLabel}
+                            <small>Gain fictif · démonstration</small>
+                          </span>
+                        </div>
+                        <p>
+                          Dans une campagne réelle, le joueur reçoit ses
+                          informations de retrait. Aucun e-mail n’est envoyé
+                          ici.
+                        </p>
+                        <p className={styles.receipt}>
+                          <Mail size={16} aria-hidden="true" />
+                          Vous avez terminé le parcours client.
+                        </p>
+                      </>
+                    )}
+                  </section>
+                )}
                 <div
-                  className="absolute inset-0 z-30 bg-[#0f172b]/55 backdrop-blur-[2px]"
-                  aria-hidden="true"
-                />
-              ) : null}
-
-              {step === "action" && (
-                <div className="absolute left-5 right-5 top-[126px] z-40 rounded-[18px] border border-[#e5e7eb] bg-white/95 p-4 text-center shadow-[0_20px_45px_rgba(15,23,43,0.18)] backdrop-blur">
-                  <Star
-                    className="mx-auto h-8 w-8"
-                    style={{ color: accentColor }}
-                  />
-                  <p className="mt-3 text-base font-black tracking-[-0.03em] text-[#0f172b]">
-                    Partager votre expérience ?
-                  </p>
-                  <p className="mt-1 text-xs leading-5 text-[#475569]">
-                    Un avis reste facultatif, libre et indépendant du jeu. Dans
-                    cette démo, aucun avis n’est publié.
-                  </p>
-                  <button
-                    type="button"
-                    onClick={startSpin}
-                    className="mt-3 rounded-[10px] px-4 py-2 text-xs font-black text-white"
-                    style={{ backgroundColor: accentColor }}
-                  >
-                    Simuler le clic vers Google
-                  </button>
-                  <button
-                    type="button"
-                    onClick={startSpin}
-                    className="mt-3 block w-full rounded-lg border border-[#64748b] px-2 py-2 text-xs font-bold text-[#0f172b]"
-                  >
-                    Continuer sans laisser d’avis
-                  </button>
-                </div>
-              )}
-
-              {step === "form" && (
-                <div className="absolute left-5 right-5 top-[108px] z-40 rounded-[18px] border border-[#e5e7eb] bg-white/95 p-4 text-center shadow-[0_20px_45px_rgba(15,23,43,0.18)] backdrop-blur">
-                  <Gift className="mx-auto h-8 w-8 text-[#6c00f6]" />
-                  <p className="mt-3 text-base font-black tracking-[-0.03em] text-[#0f172b]">
-                    Bravo, vous avez gagné {rewardLabel}.
-                  </p>
-                  <p className="mt-1 text-xs leading-5 text-[#475569]">
-                    Exemple de formulaire après un gain. Vous pouvez laisser ces
-                    champs vides dans la démo.
-                  </p>
-                  <div className="mt-3 grid gap-2">
-                    <input
-                      value={firstName}
-                      onChange={(event) => setFirstName(event.target.value)}
-                      placeholder="Prénom"
-                      aria-label="Prénom de démonstration"
-                      className="h-10 rounded-[10px] border border-[#dbe3ef] bg-white px-3 text-sm text-[#0f172b] outline-none focus:border-[#6c00f6]"
-                    />
-                    <input
-                      value={email}
-                      onChange={(event) => setEmail(event.target.value)}
-                      placeholder="E-mail"
-                      aria-label="E-mail de démonstration"
-                      type="email"
-                      className="h-10 rounded-[10px] border border-[#dbe3ef] bg-white px-3 text-sm text-[#0f172b] outline-none focus:border-[#6c00f6]"
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={complete}
-                    className="mt-3 inline-flex items-center justify-center gap-2 rounded-[10px] bg-[#0f172b] px-4 py-2 text-xs font-black text-white"
-                  >
-                    Simuler la confirmation
-                    <Mail className="h-3.5 w-3.5" />
-                  </button>
-                </div>
-              )}
-
-              {step === "done" && (
-                <div className="absolute left-5 right-5 top-[132px] z-40 rounded-[18px] border border-[#e5e7eb] bg-white/95 p-4 text-center shadow-[0_20px_45px_rgba(15,23,43,0.18)] backdrop-blur">
-                  <Mail className="mx-auto h-8 w-8 text-[#6c00f6]" />
-                  <p className="mt-3 text-base font-black tracking-[-0.03em] text-[#0f172b]">
-                    Exemple de confirmation du gain.
-                  </p>
-                  <p className="mt-1 text-xs leading-5 text-[#475569]">
-                    Dans une campagne réelle, le joueur reçoit ses informations
-                    de retrait. Aucun e-mail n’est envoyé ici.
-                  </p>
-                </div>
-              )}
-
-              <div className="relative mt-10 h-[330px]">
-                <div
-                  className="absolute left-1/2 top-[66px] h-[410px] w-[410px] -translate-x-1/2 rounded-full border-[10px] border-white shadow-[inset_0_0_38px_rgba(15,23,43,0.14),0_22px_55px_rgba(15,23,43,0.16)] transition-transform duration-[1650ms]"
-                  style={{
-                    background: wheelGradient,
-                    transform: `rotate(${rotation}deg)`,
-                    transitionTimingFunction:
-                      "cubic-bezier(0.12, 0.86, 0.08, 1)",
-                  }}
+                  className={styles.game}
+                  data-hidden={hasPanel}
+                  inert={hasPanel}
+                  aria-hidden={hasPanel || undefined}
                 >
-                  {segments.map((segment, index) => (
-                    <span
-                      key={`${segment.label}-${index}`}
-                      className="absolute left-1/2 top-1/2 h-0 w-0 origin-center"
+                  <p className={styles.gameTitle}>
+                    {isBeauty ? "Prenez soin de vous." : "Jouez et gagnez."}
+                  </p>
+                  <p className={styles.gameHint}>
+                    Un tour de roue, une surprise à découvrir.
+                  </p>
+                  <div className={styles.wheel}>
+                    <div
+                      className={styles.rotor}
+                      data-testid="demo-wheel"
                       style={{
-                        transform: `rotate(${index * 36 + winningSegmentCenterDegrees}deg)`,
+                        transform: `rotate(${rotation}deg)`,
+                        transitionDuration:
+                          step === "spinning" ? "1650ms" : "0ms",
                       }}
                     >
-                      <span
-                        className="absolute left-0 top-0 whitespace-nowrap text-[14px] font-black uppercase leading-none tracking-[-0.05em]"
-                        style={{
-                          color: "#ffffff",
-                          textShadow:
-                            "0 1px 0 rgba(15,23,43,0.78), 0 -1px 0 rgba(15,23,43,0.62), 1px 0 0 rgba(15,23,43,0.62), -1px 0 0 rgba(15,23,43,0.62), 0 5px 12px rgba(15,23,43,0.28)",
-                          transform: "translate(-50%, -158px)",
-                          writingMode: "vertical-rl",
-                        }}
-                      >
-                        {segment.label}
-                      </span>
-                    </span>
-                  ))}
+                      <svg viewBox="0 0 300 300" aria-hidden="true">
+                        {segments.map((segment, index) => (
+                          <g key={index}>
+                            <path
+                              d={`M150,150 L${wheelPoint(index * 36)} A146,146 0 0 1 ${wheelPoint((index + 1) * 36)} Z`}
+                              fill={segment.fill}
+                              stroke="#ffffff"
+                              strokeWidth="1"
+                            />
+                            <text
+                              x="150"
+                              y="51"
+                              textAnchor="middle"
+                              dominantBaseline="middle"
+                              transform={`rotate(${index * 36 + winningSegmentCenterDegrees} 150 150)`}
+                              fill={segment.dark ? "#ffffff" : "#162238"}
+                              fontSize="12"
+                              fontWeight="700"
+                            >
+                              {segment.label}
+                            </text>
+                          </g>
+                        ))}
+                        <circle
+                          cx="150"
+                          cy="150"
+                          r="147"
+                          fill="none"
+                          stroke="#ffffff"
+                          strokeWidth="6"
+                        />
+                      </svg>
+                    </div>
+                    <span
+                      className={styles.pointer}
+                      data-testid="demo-pointer"
+                      aria-hidden="true"
+                    />
+                    <button
+                      ref={playButton}
+                      type="button"
+                      onClick={() => setStep("action")}
+                      disabled={step === "spinning"}
+                      className={styles.play}
+                      aria-label={
+                        step === "spinning"
+                          ? "Roue en cours de rotation"
+                          : "Jouer"
+                      }
+                    >
+                      {step === "spinning" ? (
+                        <span className={styles.spinner} aria-hidden="true" />
+                      ) : (
+                        <>
+                          Jouer
+                          <ArrowRight size={16} aria-hidden="true" />
+                        </>
+                      )}
+                    </button>
+                  </div>
+                  <p className={styles.wheelHint}>
+                    {step === "spinning"
+                      ? "La roue tourne…"
+                      : "Appuyez sur Jouer pour commencer."}
+                  </p>
                 </div>
-
-                <div className="absolute left-1/2 top-[168px] z-10 h-16 w-9 -translate-x-1/2 rounded-t-[18px] bg-white shadow-[0_10px_26px_rgba(15,23,43,0.14)] [clip-path:polygon(50%_0,100%_100%,0_100%)]" />
-                <button
-                  type="button"
-                  onClick={
-                    step === "intro" ? () => setStep("action") : startSpin
-                  }
-                  disabled={
-                    step === "spinning" || step === "form" || step === "done"
-                  }
-                  className="absolute left-1/2 top-[215px] z-20 grid h-28 w-28 -translate-x-1/2 place-items-center rounded-full border-[6px] border-white text-sm font-black uppercase text-white shadow-[0_18px_34px_rgba(15,23,43,0.22)] transition hover:scale-105 disabled:cursor-not-allowed disabled:opacity-80"
-                  style={{ backgroundColor: accentColor }}
-                >
-                  {step === "spinning" ? (
-                    <RotateCw className="h-6 w-6 animate-spin" />
-                  ) : (
-                    "Jouer"
-                  )}
-                </button>
               </div>
+              <p className={styles.screenFooter}>
+                <ShieldCheck size={13} aria-hidden="true" /> Démonstration ·
+                aucun lot réel
+              </p>
             </div>
           </div>
-
-          <button
-            type="button"
-            onClick={resetDemo}
-            className="mt-4 inline-flex items-center justify-center gap-2 rounded-[10px] border border-[#dbe3ef] bg-white px-4 py-2.5 text-sm font-bold text-[#0f172b] shadow-[0_10px_24px_rgba(15,23,43,0.06)] transition hover:-translate-y-0.5 hover:border-[#6c00f6]"
-          >
+          <p className={styles.srOnly} role="status">
+            {step === "spinning"
+              ? "La roue tourne…"
+              : `Étape ${stage + 1} sur 3 : ${stages[stage]}`}
+          </p>
+          <button type="button" onClick={resetDemo} className={styles.reset}>
+            <RotateCcw size={15} aria-hidden="true" />
             Redémarrer la démo
           </button>
         </div>
-
-        <div className="hidden content-center gap-5 md:grid">
-          <div className="rounded-[20px] border border-[#e5e7eb] bg-white p-5 text-left shadow-[0_0_24px_rgba(55,65,81,0.08)]">
-            <div className="flex flex-col gap-4 border-b border-[#e5e7eb] pb-4 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#7f22fe]">
-                  Impact en point de vente
-                </p>
-                <p className="mt-1 text-xl font-semibold text-[#0f172b]">
-                  Une animation qui transforme le passage en données activables
-                </p>
+        <div className={styles.merchant}>
+          <div className={styles.columnLabel}>
+            <span>02</span> Côté commerce{" "}
+            <span className={styles.example}>Exemple fictif</span>
+          </div>
+          <div className={styles.resultsHeading}>
+            <p className={styles.eyebrow}>Vos résultats, en un regard</p>
+            <h3>
+              Du passage en boutique
+              <br />
+              aux prochaines visites.
+            </h3>
+            <p>
+              Distinguez les scans, les parties jouées et les contacts
+              collectés.
+            </p>
+          </div>
+          <dl className={styles.kpis}>
+            {kpis.map((kpi) => (
+              <div key={kpi.label}>
+                <dt>{kpi.label}</dt>
+                <dd>{kpi.value}</dd>
               </div>
-              <span className="w-fit rounded-[4px] bg-[#7f22fe]/10 px-2 py-1 text-xs font-medium text-[#7f22fe]">
-                Exemple fictif
+            ))}
+          </dl>
+          <div className={styles.chart}>
+            <div className={styles.chartHeading}>
+              <div>
+                <h4>Scans et contacts sur 7 jours</h4>
+                <p>Courbe de démonstration</p>
+              </div>
+              <span>7 jours</span>
+            </div>
+            <div className={styles.legend} aria-hidden="true">
+              <span>
+                <i />
+                Scans
+              </span>
+              <span>
+                <i />
+                Contacts
               </span>
             </div>
-
-            <div className="mt-5 grid grid-cols-2 gap-3">
-              {kpis.map((kpi) => (
-                <div
-                  key={kpi.label}
-                  className="rounded-[14px] border border-[#e5e7eb] bg-[#f8fafc] p-4"
-                >
-                  <p className="text-xs font-medium text-[#64748b]">
-                    {kpi.label}
-                  </p>
-                  <p className="mt-2 text-3xl font-black tracking-[-0.05em] text-[#0f172b]">
-                    {kpi.value}
-                  </p>
+            <div
+              className={styles.bars}
+              role="img"
+              aria-label="Exemple fictif sur 7 jours : 320 scans et 117 contacts collectés. Chaque paire de barres représente un jour."
+            >
+              {demoChartData.map((day) => (
+                <div key={day.day} className={styles.day}>
+                  <div>
+                    <span
+                      title={`${day.scans} scans`}
+                      style={{ height: `${(day.scans / 80) * 100}%` }}
+                    />
+                    <span
+                      title={`${day.leads} contacts`}
+                      style={{ height: `${(day.leads / 80) * 100}%` }}
+                    />
+                  </div>
+                  <span>{day.day}</span>
                 </div>
               ))}
             </div>
-
-            <div className="mt-5 rounded-[18px] border border-[#e5e7eb] bg-[#f8fafc] p-4">
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <p className="text-sm font-black tracking-[-0.03em] text-[#0f172b]">
-                    Scans et contacts sur 7 jours
-                  </p>
-                  <p className="mt-1 text-xs text-[#64748b]">
-                    Courbe de démonstration
-                  </p>
-                </div>
-                <div className="flex items-center gap-3 text-xs font-semibold text-[#475569]">
-                  <span className="inline-flex items-center gap-1.5">
-                    <span className="h-2 w-2 rounded-full bg-[#145aff]" />
-                    Scans
-                  </span>
-                  <span className="inline-flex items-center gap-1.5">
-                    <span className="h-2 w-2 rounded-full bg-[#0f1f3d]" />
-                    Contacts
-                  </span>
-                </div>
-              </div>
-
-              <div
-                className="mt-5 flex h-[220px] items-end gap-3"
-                role="img"
-                aria-label="Exemple fictif sur 7 jours : 320 scans et 117 contacts collectés. Chaque paire de barres représente un jour."
-              >
-                {demoChartData.map((day) => (
-                  <div
-                    key={day.day}
-                    className="flex h-full min-w-0 flex-1 flex-col justify-end"
-                  >
-                    <div className="flex h-[180px] items-end justify-center gap-1">
-                      <span
-                        title={day.scans + " scans"}
-                        className="w-3 rounded-t bg-[#145aff]"
-                        style={{ height: (day.scans / 80) * 100 + "%" }}
-                      />
-                      <span
-                        title={day.leads + " contacts"}
-                        className="w-3 rounded-t bg-[#0f1f3d]"
-                        style={{ height: (day.leads / 80) * 100 + "%" }}
-                      />
-                    </div>
-                    <span className="mt-3 text-center text-xs text-[#64748b]">
-                      {day.day}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
+          <p className={styles.resultsNote}>
+            Données illustratives, pas une promesse de résultats. La conversion
+            correspond aux participations divisées par les scans.
+          </p>
         </div>
       </div>
+      <p className={styles.disclaimer}>
+        <ShieldCheck size={16} aria-hidden="true" />
+        <span>
+          Démonstration simplifiée : aucun lot réel, aucune coordonnée
+          transmise, aucun e-mail envoyé.
+        </span>
+      </p>
     </div>
   );
 }
