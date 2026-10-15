@@ -35,6 +35,7 @@ test("Nude a son propre fond par défaut, laisse la priorité à une image chois
   expect(defaultScratchTextColor("scratch-lilac")).toBe("#210b32");
   expect(resolveScratchTemplateTextColor("#4c1d95", "scratch-lilac")).toBe("#210b32");
   expect(resolveScratchTemplateTextColor("#32104f", "scratch-lilac")).toBe("#210b32");
+  expect(resolveScratchTemplateTextColor("#003cb4", "scratch-lilac")).toBe("#210b32");
   expect(resolveScratchTemplateTextColor("#123456", "scratch-lilac")).toBe("#123456");
   expect(normalizeScratchAccent({ ink: "#32104f", paper: "#ffffff", signal: "#b85be5" }, "scratch-lilac").ink).toBe("#210b32");
   expect(normalizeScratchAccent({ ink: "#123456", paper: "#ffffff", signal: "#b85be5" }, "scratch-lilac").ink).toBe("#123456");
@@ -248,7 +249,7 @@ test("les cinq tickets Beauté restent lisibles et chargent leur fond sur plusie
     const preview = page.locator(`.okado-preview-surface[data-template-id="${theme.id}"]`);
     await expect(preview).toBeVisible();
     const resultHint = preview.getByText("Le résultat s'affiche automatiquement.", { exact: true });
-    await expect.poll(() => resultHint.evaluate((element) => getComputedStyle(element).marginTop)).toBe("20px");
+    await expect(resultHint).toHaveCount(0);
     await expect.poll(() => preview.getByText("Des soins délicats pour votre bien-être", { exact: true }).evaluate((element) => (element as HTMLElement).style.marginTop)).toBe("0px");
     const scratchSurface = preview.locator(`canvas[data-foil-texture="${theme.id}"]`).locator("xpath=..");
     await expect.poll(() => scratchSurface.evaluate((element) => (element as HTMLElement).style.marginTop)).toBe("0px");
@@ -267,7 +268,7 @@ test("les cinq tickets Beauté restent lisibles et chargent leur fond sur plusie
     await scratchSpacing.focus();
     await scratchSpacing.press("ArrowRight");
     await expect.poll(() => scratchSurface.evaluate((element) => (element as HTMLElement).style.marginTop)).toBe("1px");
-    await expect.poll(() => resultHint.evaluate((element) => getComputedStyle(element).marginTop)).toBe("20px");
+    await expect(resultHint).toHaveCount(0);
     await scratchSpacing.focus();
     await scratchSpacing.press("Home");
     await preview.screenshot({

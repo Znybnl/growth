@@ -30,6 +30,7 @@ import {
   resolveCocoricoPrimaryColor,
   isCocoricoWheelTemplate,
   resolveCocoricoBackgroundColor,
+  wheelBackgroundForTemplate,
   restaurantPopBackground,
   classicWheelBackground,
   roseInstitutWheelBackground,
@@ -173,6 +174,10 @@ function previewBackgroundImage(
   if (isBeautyWheelTemplate(templateId)) {
     return beautyWheelBackground(templateId, form.presentation.background.color, form.presentation.wheel.loseColor);
   }
+  if (templateId === "cocorico-duo-wheel") {
+    const color = wheelBackgroundForTemplate(templateId, form.presentation.background.color, form.presentation.wheel.loseColor);
+    return `linear-gradient(${color}, ${color})`;
+  }
   if (isCocoricoWheelTemplate(templateId)) {
     const backgroundColor = resolveCocoricoBackgroundColor(form.presentation.background.color);
     return `radial-gradient(circle at 14% 12%, ${withHexAlpha(deriveLighterHex(backgroundColor, 0.32), "e6")} 0 10%, transparent 11%), radial-gradient(circle at 88% 26%, ${withHexAlpha(deriveLighterHex(backgroundColor, 0.12), "b3")} 0 15%, transparent 16%), linear-gradient(160deg, ${backgroundColor} 0%, ${backgroundColor} 48%, #063d78 100%)`;
@@ -215,7 +220,9 @@ export function buildCampaignLivePreviewModel(form: CampaignSetupInput, merchant
   return {
     formId: form.id ?? "new-campaign",
     backgroundStyle: {
-      backgroundColor: form.presentation.background.color,
+      backgroundColor: templateId === "cocorico-duo-wheel"
+        ? wheelBackgroundForTemplate(templateId, form.presentation.background.color, form.presentation.wheel.loseColor)
+        : form.presentation.background.color,
       backgroundImage: previewBackgroundImage(form, templateId, previewAccent),
       backgroundPosition: "center",
       backgroundSize: "cover",

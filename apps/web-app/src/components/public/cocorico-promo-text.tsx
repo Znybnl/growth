@@ -53,7 +53,7 @@ export function CocoricoPromoText({
         <span
           className="okado-cocorico-promo-line"
           data-text={line}
-          style={{ color: index === 0 ? textColor : secondaryTextColor }}
+          style={{ color: index === 0 ? textColor : secondaryTextColor, whiteSpace: splitLines ? "normal" : "pre-line" }}
           key={`${line}-${index}`}
         >
           {line}

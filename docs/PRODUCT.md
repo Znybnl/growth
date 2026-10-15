@@ -156,6 +156,13 @@ Le site public décrit Okado comme un logiciel de jeux par QR code pour commerce
 
 L'inscription par formulaire demande uniquement l'acceptation des CGV dans une case non précochée ; cette case ne recueille aucun accord commercial. La présente évolution ne crée pas une preuve serveur d'acceptation ni une préférence marketing, et ne change pas la connexion Google ou la synchronisation Brevo existante. Les décisions restantes sur les traceurs, contrats, preuves et conservation sont suivies dans #507–#509. [Périmètre, recette et retour arrière](releases/2026-10-14-site-seo-506.md).
 
+## Cohérence des templates de jeu — issue #511
+
+- Le fond par défaut de **Bicolore** suit la couleur principale de la roue, et non la couleur secondaire jaune. Un ancien fond standard est résolu à l'affichage ; une image manuelle ou une couleur de fond personnalisée distincte reste prioritaire. Les changements de couleur principale suivent le fond standard dans les deux éditeurs.
+- **Dynamique** et **Signature** conservent les retours à la ligne explicites de la promesse, sans appliquer le découpage automatique des autres roues. Le rendu est commun au jeu et à ses prévisualisations.
+- Les tickets à gratter n'affichent plus de phrase d'aide sous la zone à gratter, y compris « Le résultat s'affiche automatiquement. ». Le titre, le sous-titre personnalisable, les espacements avant la zone, le geste de grattage et le résultat restent inchangés.
+- **Cadeau lilas** utilise son encre prune foncée `#210b32` pour le logo et les textes par défaut. Le bleu historique hérité `#003cb4` est traité comme un ancien défaut, au même titre que les anciennes encres du modèle. Les autres couleurs personnalisées et les styles propres mémorisés sont conservés. La correction porte sur la lecture/sélection et le rendu ; aucune réécriture de campagne en base.
+
 ## Questions ouvertes
 
 - [ ] Définir les critères de retrait forcé à afficher et à journaliser pour le personnel du commerce.
