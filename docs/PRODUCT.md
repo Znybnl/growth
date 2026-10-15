@@ -150,6 +150,12 @@ Les choix sont disponibles dans le profil, l'onboarding et la gestion administra
 
 Les anciennes catégories ambiguës ne sont pas proposées à un nouveau profil ; une valeur déjà enregistrée reste sélectionnable pour ce profil. La migration ne remplace que les sept suggestions du catalogue standard restées strictement identiques à leur référence. Les personnalisations, les autres secteurs et les lots des jeux ne sont pas modifiés. [Migration, retour arrière et recette](releases/beauty-catalog-466.md).
 
+## Site public — audit #506
+
+Le site public décrit Okado comme un logiciel de jeux par QR code pour commerces : roue, ticket à gratter, affiches et suivi des gains/retraits. Les pages métiers, fonctionnement, tarifs et guides partagent la marque étoile violette, la navigation et les mêmes définitions produit. Les exemples chiffrés et la démo simplifiée sont explicitement fictifs ; un clic Google ne prouve pas un avis publié, et ni le dépôt ni la note d'un avis ne conditionnent le jeu ou le gain. Collecte avant jeu et coordonnées du gagnant sont deux parcours, distincts du consentement marketing facultatif.
+
+L'inscription par formulaire demande uniquement l'acceptation des CGV dans une case non précochée ; cette case ne recueille aucun accord commercial. La présente évolution ne crée pas une preuve serveur d'acceptation ni une préférence marketing, et ne change pas la connexion Google ou la synchronisation Brevo existante. Les décisions restantes sur les traceurs, contrats, preuves et conservation sont suivies dans #507–#509. [Périmètre, recette et retour arrière](releases/2026-10-14-site-seo-506.md).
+
 ## Questions ouvertes
 
 - [ ] Définir les critères de retrait forcé à afficher et à journaliser pour le personnel du commerce.

@@ -1,15 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Gift, Mail, RotateCw, Star } from "lucide-react";
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
-
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
 
 const wheelSegments = [
   { label: "Dessert", fill: "#9aa7e6" },
@@ -39,26 +31,15 @@ const beautyWheelSegments = [
 
 function createWheelGradient(segments: typeof wheelSegments) {
   return `conic-gradient(from 0deg, ${segments
-  .map((segment, index) => {
-    const start = index * 36;
-    const end = start + 36;
-    return `${segment.fill} ${start}deg ${end}deg`;
-  })
-  .join(", ")})`;
+    .map((segment, index) => {
+      const start = index * 36;
+      const end = start + 36;
+      return `${segment.fill} ${start}deg ${end}deg`;
+    })
+    .join(", ")})`;
 }
 const winningSegmentCenterDegrees = 18;
 const winningRotationDegrees = 360 - winningSegmentCenterDegrees;
-
-const demoChartConfig = {
-  scans: {
-    label: "Scans",
-    color: "#145aff",
-  },
-  leads: {
-    label: "Leads",
-    color: "#0f1f3d",
-  },
-} satisfies ChartConfig;
 
 const demoChartData = [
   { day: "Lun.", scans: 22, leads: 7 },
@@ -70,56 +51,14 @@ const demoChartData = [
   { day: "Dim.", scans: 52, leads: 19 },
 ];
 
-function getInitialCountry() {
-  if (typeof window === "undefined") {
-    return "FR";
-  }
-
-  const params = new URLSearchParams(window.location.search);
-  if (params.get("country")?.toUpperCase() === "CA") {
-    return "CA";
-  }
-
-  const locale = navigator.language.toLowerCase();
-  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone.toLowerCase();
-
-  return locale.includes("-ca") || timezone.includes("canada") || timezone.includes("toronto")
-    ? "CA"
-    : "FR";
-}
-
-export function LocalizedPrice() {
-  const [country] = useState<"FR" | "CA">(getInitialCountry);
-
-  if (country === "CA") {
-    return (
-      <>
-        <div className="mt-4 flex items-end gap-2">
-          <span className="text-6xl font-bold tracking-[-0.06em] text-[#0f172b]">29$</span>
-          <span className="pb-2 text-sm font-medium text-[#475569]">CAD / mois</span>
-        </div>
-        <p className="mt-4 text-sm leading-6 text-[#475569]">
-          Prix affiché pour le Canada. Taxes calculées au moment de la facturation.
-        </p>
-      </>
-    );
-  }
-
-  return (
-    <>
-      <div className="mt-4 flex items-end gap-2">
-        <span className="text-6xl font-bold tracking-[-0.06em] text-[#0f172b]">20€</span>
-        <span className="pb-2 text-sm font-medium text-[#475569]">HT / mois</span>
-      </div>
-      <p className="mt-4 text-sm leading-6 text-[#475569]">
-        Soit 24,00 € TTC en France avec TVA à 20%. Sans engagement.
-      </p>
-    </>
-  );
-}
-
-export function LandingDemo({ variant = "restaurant" }: { variant?: "restaurant" | "beauty" }) {
-  const [step, setStep] = useState<"intro" | "action" | "spinning" | "form" | "done">("intro");
+export function LandingDemo({
+  variant = "restaurant",
+}: {
+  variant?: "restaurant" | "beauty";
+}) {
+  const [step, setStep] = useState<
+    "intro" | "action" | "spinning" | "form" | "done"
+  >("intro");
   const [rotation, setRotation] = useState(16);
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
@@ -132,16 +71,22 @@ export function LandingDemo({ variant = "restaurant" }: { variant?: "restaurant"
   const gameHeading = isBeauty ? "Prenez soin de vous." : "Jouez et gagnez.";
   const rewardLabel = isBeauty ? "un soin découverte" : "1 dessert";
 
-  const kpis = useMemo(
-    () => [
-      { label: "Scans cette semaine", value: "320", trend: "+28%" },
-      { label: "Leads collectés", value: "117", trend: "+19%" },
-      { label: "Taux de conversion", value: "36%", trend: "+6 pts" },
-    ],
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(
+    () => () => {
+      if (timer.current) clearTimeout(timer.current);
+    },
     [],
   );
+  const kpis = [
+    { label: "Scans", value: "320" },
+    { label: "Participations", value: "224" },
+    { label: "Contacts collectés", value: "117" },
+    { label: "Conversion parties / scans", value: "70 %" },
+  ];
 
   const resetDemo = () => {
+    if (timer.current) clearTimeout(timer.current);
     setStep("intro");
     setFirstName("");
     setEmail("");
@@ -157,7 +102,8 @@ export function LandingDemo({ variant = "restaurant" }: { variant?: "restaurant"
 
       return value + 4 * 360 + rotationToWinningSegment;
     });
-    window.setTimeout(() => setStep("form"), 2100);
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(() => setStep("form"), 2100);
   };
 
   const complete = () => {
@@ -166,6 +112,10 @@ export function LandingDemo({ variant = "restaurant" }: { variant?: "restaurant"
 
   return (
     <div className="relative mx-auto mt-16 max-w-[1080px]">
+      <p className="relative z-10 mb-4 text-center text-sm text-[#475569]">
+        Démonstration simplifiée : aucun lot réel, aucune donnée transmise,
+        aucun e-mail envoyé.
+      </p>
       <div className="absolute left-[8%] top-8 h-56 w-56 rounded-full bg-[#fb64b6]/20 blur-3xl" />
       <div className="absolute right-[10%] top-0 h-64 w-64 rounded-full bg-[#6c00f6]/15 blur-3xl" />
 
@@ -189,12 +139,16 @@ export function LandingDemo({ variant = "restaurant" }: { variant?: "restaurant"
 
               {step === "action" && (
                 <div className="absolute left-5 right-5 top-[126px] z-40 rounded-[18px] border border-[#e5e7eb] bg-white/95 p-4 text-center shadow-[0_20px_45px_rgba(15,23,43,0.18)] backdrop-blur">
-                  <Star className="mx-auto h-8 w-8" style={{ color: accentColor }} />
+                  <Star
+                    className="mx-auto h-8 w-8"
+                    style={{ color: accentColor }}
+                  />
                   <p className="mt-3 text-base font-black tracking-[-0.03em] text-[#0f172b]">
-                    Laissez un avis Google
+                    Partager votre expérience ?
                   </p>
                   <p className="mt-1 text-xs leading-5 text-[#475569]">
-                    Partagez votre expérience, puis lancez la roue.
+                    Un avis reste facultatif, libre et indépendant du jeu. Dans
+                    cette démo, aucun avis n’est publié.
                   </p>
                   <button
                     type="button"
@@ -202,7 +156,14 @@ export function LandingDemo({ variant = "restaurant" }: { variant?: "restaurant"
                     className="mt-3 rounded-[10px] px-4 py-2 text-xs font-black text-white"
                     style={{ backgroundColor: accentColor }}
                   >
-                    Écrire un avis
+                    Simuler le clic vers Google
+                  </button>
+                  <button
+                    type="button"
+                    onClick={startSpin}
+                    className="mt-3 block w-full rounded-lg border border-[#64748b] px-2 py-2 text-xs font-bold text-[#0f172b]"
+                  >
+                    Continuer sans laisser d’avis
                   </button>
                 </div>
               )}
@@ -214,19 +175,22 @@ export function LandingDemo({ variant = "restaurant" }: { variant?: "restaurant"
                     Bravo, vous avez gagné {rewardLabel}.
                   </p>
                   <p className="mt-1 text-xs leading-5 text-[#475569]">
-                    Renseignez vos coordonnées pour recevoir le coupon.
+                    Exemple de formulaire après un gain. Vous pouvez laisser ces
+                    champs vides dans la démo.
                   </p>
                   <div className="mt-3 grid gap-2">
                     <input
                       value={firstName}
                       onChange={(event) => setFirstName(event.target.value)}
                       placeholder="Prénom"
+                      aria-label="Prénom de démonstration"
                       className="h-10 rounded-[10px] border border-[#dbe3ef] bg-white px-3 text-sm text-[#0f172b] outline-none focus:border-[#6c00f6]"
                     />
                     <input
                       value={email}
                       onChange={(event) => setEmail(event.target.value)}
                       placeholder="E-mail"
+                      aria-label="E-mail de démonstration"
                       type="email"
                       className="h-10 rounded-[10px] border border-[#dbe3ef] bg-white px-3 text-sm text-[#0f172b] outline-none focus:border-[#6c00f6]"
                     />
@@ -236,7 +200,7 @@ export function LandingDemo({ variant = "restaurant" }: { variant?: "restaurant"
                     onClick={complete}
                     className="mt-3 inline-flex items-center justify-center gap-2 rounded-[10px] bg-[#0f172b] px-4 py-2 text-xs font-black text-white"
                   >
-                    Récupérer mon lot
+                    Simuler la confirmation
                     <Mail className="h-3.5 w-3.5" />
                   </button>
                 </div>
@@ -246,10 +210,11 @@ export function LandingDemo({ variant = "restaurant" }: { variant?: "restaurant"
                 <div className="absolute left-5 right-5 top-[132px] z-40 rounded-[18px] border border-[#e5e7eb] bg-white/95 p-4 text-center shadow-[0_20px_45px_rgba(15,23,43,0.18)] backdrop-blur">
                   <Mail className="mx-auto h-8 w-8 text-[#6c00f6]" />
                   <p className="mt-3 text-base font-black tracking-[-0.03em] text-[#0f172b]">
-                    Coupon envoyé par e-mail.
+                    Exemple de confirmation du gain.
                   </p>
                   <p className="mt-1 text-xs leading-5 text-[#475569]">
-                    Le QR Code de retrait est prêt à présenter en boutique.
+                    Dans une campagne réelle, le joueur reçoit ses informations
+                    de retrait. Aucun e-mail n’est envoyé ici.
                   </p>
                 </div>
               )}
@@ -260,7 +225,8 @@ export function LandingDemo({ variant = "restaurant" }: { variant?: "restaurant"
                   style={{
                     background: wheelGradient,
                     transform: `rotate(${rotation}deg)`,
-                    transitionTimingFunction: "cubic-bezier(0.12, 0.86, 0.08, 1)",
+                    transitionTimingFunction:
+                      "cubic-bezier(0.12, 0.86, 0.08, 1)",
                   }}
                 >
                   {segments.map((segment, index) => (
@@ -290,12 +256,20 @@ export function LandingDemo({ variant = "restaurant" }: { variant?: "restaurant"
                 <div className="absolute left-1/2 top-[168px] z-10 h-16 w-9 -translate-x-1/2 rounded-t-[18px] bg-white shadow-[0_10px_26px_rgba(15,23,43,0.14)] [clip-path:polygon(50%_0,100%_100%,0_100%)]" />
                 <button
                   type="button"
-                  onClick={step === "intro" ? () => setStep("action") : startSpin}
-                  disabled={step === "spinning" || step === "form" || step === "done"}
+                  onClick={
+                    step === "intro" ? () => setStep("action") : startSpin
+                  }
+                  disabled={
+                    step === "spinning" || step === "form" || step === "done"
+                  }
                   className="absolute left-1/2 top-[215px] z-20 grid h-28 w-28 -translate-x-1/2 place-items-center rounded-full border-[6px] border-white text-sm font-black uppercase text-white shadow-[0_18px_34px_rgba(15,23,43,0.22)] transition hover:scale-105 disabled:cursor-not-allowed disabled:opacity-80"
                   style={{ backgroundColor: accentColor }}
                 >
-                  {step === "spinning" ? <RotateCw className="h-6 w-6 animate-spin" /> : "Jouer"}
+                  {step === "spinning" ? (
+                    <RotateCw className="h-6 w-6 animate-spin" />
+                  ) : (
+                    "Jouer"
+                  )}
                 </button>
               </div>
             </div>
@@ -326,14 +300,18 @@ export function LandingDemo({ variant = "restaurant" }: { variant?: "restaurant"
               </span>
             </div>
 
-            <div className="mt-5 grid gap-3 sm:grid-cols-3">
+            <div className="mt-5 grid grid-cols-2 gap-3">
               {kpis.map((kpi) => (
-                <div key={kpi.label} className="rounded-[14px] border border-[#e5e7eb] bg-[#f8fafc] p-4">
-                  <p className="text-xs font-medium text-[#64748b]">{kpi.label}</p>
+                <div
+                  key={kpi.label}
+                  className="rounded-[14px] border border-[#e5e7eb] bg-[#f8fafc] p-4"
+                >
+                  <p className="text-xs font-medium text-[#64748b]">
+                    {kpi.label}
+                  </p>
                   <p className="mt-2 text-3xl font-black tracking-[-0.05em] text-[#0f172b]">
                     {kpi.value}
                   </p>
-                  <p className="mt-1 text-xs font-bold text-[#16a34a]">{kpi.trend}</p>
                 </div>
               ))}
             </div>
@@ -342,9 +320,11 @@ export function LandingDemo({ variant = "restaurant" }: { variant?: "restaurant"
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="text-sm font-black tracking-[-0.03em] text-[#0f172b]">
-                    Scans et leads sur 7 jours
+                    Scans et contacts sur 7 jours
                   </p>
-                  <p className="mt-1 text-xs text-[#64748b]">Courbe de démonstration</p>
+                  <p className="mt-1 text-xs text-[#64748b]">
+                    Courbe de démonstration
+                  </p>
                 </div>
                 <div className="flex items-center gap-3 text-xs font-semibold text-[#475569]">
                   <span className="inline-flex items-center gap-1.5">
@@ -353,61 +333,39 @@ export function LandingDemo({ variant = "restaurant" }: { variant?: "restaurant"
                   </span>
                   <span className="inline-flex items-center gap-1.5">
                     <span className="h-2 w-2 rounded-full bg-[#0f1f3d]" />
-                    Leads
+                    Contacts
                   </span>
                 </div>
               </div>
 
-              <ChartContainer
-                config={demoChartConfig}
-                className="mt-3 h-[250px] w-full"
-                initialDimension={{ width: 640, height: 250 }}
+              <div
+                className="mt-5 flex h-[220px] items-end gap-3"
+                role="img"
+                aria-label="Exemple fictif sur 7 jours : 320 scans et 117 contacts collectés. Chaque paire de barres représente un jour."
               >
-                <AreaChart
-                  accessibilityLayer
-                  data={demoChartData}
-                  margin={{ left: 0, right: 10, top: 20, bottom: 0 }}
-                >
-                  <defs>
-                    <linearGradient id="demoScans" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#145aff" stopOpacity={0.26} />
-                      <stop offset="95%" stopColor="#145aff" stopOpacity={0.02} />
-                    </linearGradient>
-                    <linearGradient id="demoLeads" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#0f1f3d" stopOpacity={0.22} />
-                      <stop offset="95%" stopColor="#0f1f3d" stopOpacity={0.02} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid vertical={false} stroke="#dfe6f2" strokeDasharray="4 8" />
-                  <XAxis dataKey="day" tickLine={false} axisLine={false} tickMargin={10} />
-                  <YAxis hide domain={[0, "dataMax + 12"]} />
-                  <ChartTooltip
-                    cursor={{ stroke: "#145aff", strokeWidth: 1, strokeDasharray: "4 6" }}
-                    content={
-                      <ChartTooltipContent
-                        className="min-w-[170px] rounded-[8px] border-[#0f172b] bg-[#0f172b] px-3 py-2 text-sm text-white shadow-[0_18px_36px_rgba(15,23,40,0.24)] [&_*]:!text-white [&_.text-muted-foreground]:!text-white/70"
-                        indicator="dot"
+                {demoChartData.map((day) => (
+                  <div
+                    key={day.day}
+                    className="flex h-full min-w-0 flex-1 flex-col justify-end"
+                  >
+                    <div className="flex h-[180px] items-end justify-center gap-1">
+                      <span
+                        title={day.scans + " scans"}
+                        className="w-3 rounded-t bg-[#145aff]"
+                        style={{ height: (day.scans / 80) * 100 + "%" }}
                       />
-                    }
-                  />
-                  <Area
-                    dataKey="scans"
-                    type="monotone"
-                    stroke="var(--color-scans)"
-                    strokeWidth={3}
-                    fill="url(#demoScans)"
-                    activeDot={{ r: 5, strokeWidth: 3, stroke: "#ffffff" }}
-                  />
-                  <Area
-                    dataKey="leads"
-                    type="monotone"
-                    stroke="var(--color-leads)"
-                    strokeWidth={3}
-                    fill="url(#demoLeads)"
-                    activeDot={{ r: 5, strokeWidth: 3, stroke: "#ffffff" }}
-                  />
-                </AreaChart>
-              </ChartContainer>
+                      <span
+                        title={day.leads + " contacts"}
+                        className="w-3 rounded-t bg-[#0f1f3d]"
+                        style={{ height: (day.leads / 80) * 100 + "%" }}
+                      />
+                    </div>
+                    <span className="mt-3 text-center text-xs text-[#64748b]">
+                      {day.day}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>

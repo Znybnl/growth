@@ -1,12 +1,11 @@
-import type { Metadata } from "next";
-
 import { LegalPage } from "@/components/legal/legal-page";
+import { pageMetadata } from "@/lib/site";
 
-export const metadata: Metadata = {
-  title: "CGV et abonnement | Okado",
-  description:
-    "Conditions générales de vente, d'abonnement et accord de traitement des données de la plateforme Okado.",
-};
+export const metadata = pageMetadata(
+  "/cgv",
+  "CGV et abonnement | Okado",
+  "Conditions générales de vente, d’abonnement et accord de traitement des données de la plateforme Okado.",
+);
 
 const sections = [
   {
@@ -88,7 +87,7 @@ const sections = [
       "La plateforme fournit un outil SaaS permettant le recueil, la centralisation et la gestion de données de clients et de prospects pour le compte des utilisateurs marchands, afin de leur permettre de piloter leur activité commerciale et marketing.",
       "Les catégories de personnes concernées sont les clients finaux et prospects du Client. Les types de données traitées peuvent inclure des données d’identification telles que noms, prénoms, adresses e-mail, numéros de téléphone et toute autre donnée commerciale ou de navigation collectée via l’outil.",
       "L’Éditeur s’engage à traiter les données personnelles uniquement sur instructions documentées du Client, à veiller à la confidentialité des personnes autorisées à traiter ces données, à mettre en œuvre des mesures de sécurité appropriées et à notifier le Client dans les meilleurs délais en cas de violation de données personnelles.",
-      "Le Client autorise l’Éditeur à faire appel à des sous-traitants ultérieurs, notamment Stripe pour le paiement, Vercel pour l’hébergement de l’application et Supabase pour la base de données. L’Éditeur s’engage à répercuter les mêmes obligations de protection des données sur ses sous-traitants ultérieurs.",
+      "Le Client autorise l’Éditeur à faire appel à des sous-traitants ultérieurs, notamment Stripe pour le paiement, Vercel pour l’hébergement de l’application, Supabase pour l’authentification, la base de données et les fichiers, et Resend pour les e-mails transactionnels. Selon les fonctions et intégrations activées, Brevo intervient pour la synchronisation des contacts et PostHog pour l’analyse d’usage du produit. L’Éditeur s’engage à répercuter les mêmes obligations de protection des données sur ses sous-traitants ultérieurs.",
       "Le Client reconnaît que la plateforme fournit l’infrastructure technique permettant la collecte directe de données auprès d’utilisateurs finaux. Il est seul responsable de fournir les mentions d’information obligatoires, les textes juridiques et les modalités de recueil du consentement devant être affichés sur l’interface du jeu.",
       "Le Client garantit l’Éditeur contre toute action, réclamation ou condamnation émanant d’un utilisateur final ou d’une autorité de contrôle résultant d’une absence, d’une insuffisance ou d’une non-conformité des mentions d’information ou des consentements collectés via l’interface configurée par le Client.",
     ],

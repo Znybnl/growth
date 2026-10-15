@@ -4,6 +4,12 @@ import { AuthShell } from "@/components/auth/auth-shell";
 import { SignInForm } from "@/components/auth/sign-in-form";
 import { redirectAuthenticatedMerchant } from "@/lib/auth";
 
+export const metadata = {
+  title: "Connexion à votre compte marchand | Okado",
+  description: "Accédez à vos jeux, participations, gains et retraits dans votre compte Okado.",
+  robots: { index: false, follow: true },
+};
+
 export default async function SignInPage() {
   await redirectAuthenticatedMerchant();
 
