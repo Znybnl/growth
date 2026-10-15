@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Gift, Mail, RotateCw, Star } from "lucide-react";
+import { captureMarketingEvent } from "@/lib/marketing-analytics";
 
 const wheelSegments = [
   { label: "Dessert", fill: "#9aa7e6" },
@@ -94,6 +95,9 @@ export function LandingDemo({
   };
 
   const startSpin = () => {
+    if (step === "intro") {
+      captureMarketingEvent("marketing_demo_started", { variant });
+    }
     setStep("spinning");
     setRotation((value) => {
       const normalizedRotation = ((value % 360) + 360) % 360;
@@ -108,12 +112,13 @@ export function LandingDemo({
 
   const complete = () => {
     setStep("done");
+    captureMarketingEvent("marketing_demo_completed", { variant });
   };
 
   return (
     <div className="relative mx-auto mt-16 max-w-[1080px]">
       <p className="relative z-10 mb-4 text-center text-sm text-[#475569]">
-        Démonstration simplifiée : aucun lot réel, aucune donnée transmise,
+        Démonstration simplifiée : aucun lot réel, aucune coordonnée transmise,
         aucun e-mail envoyé.
       </p>
       <div className="absolute left-[8%] top-8 h-56 w-56 rounded-full bg-[#fb64b6]/20 blur-3xl" />

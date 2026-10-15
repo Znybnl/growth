@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Analytics } from "@vercel/analytics/next";
+import { CookiePreferences } from "@/components/privacy/cookie-preferences";
 import {
   Bebas_Neue,
   Comfortaa,
@@ -168,7 +168,7 @@ export default function RootLayout({
     >
       <body className="min-h-full">
         {children}
-        <Analytics />
+        <CookiePreferences />
       </body>
     </html>
   );

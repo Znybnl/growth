@@ -18,9 +18,10 @@ Ce socle couvre les règles minimales adaptées à un produit opéré par une se
 
 ## Fournisseurs et sous-traitance
 
-- Les dépendances externes pertinentes incluent Supabase, Vercel, Resend et Stripe.
+- Les dépendances externes pertinentes incluent Supabase, Vercel, Resend, Stripe, Brevo et PostHog.
 - Toute nouvelle intégration qui reçoit des données personnelles ou agit sur les parcours de jeu fait l'objet d'une analyse de sécurité et de conformité avant mise en service.
 - Les rôles responsable de traitement / sous-traitant et les obligations contractuelles sont précisés dans `DOMAIN_RULES.md` ; la politique de conservation est suivie dans l'Issue [#1](https://github.com/Znybnl/growth/issues/1).
+- Pour PostHog, l'accès d'administration et la destination d'ingestion sont contrôlés séparément : l'analyse Okado utilise exclusivement le projet **212872** en région **EU**. Le project token public ne donne pas accès aux données privées.
 
 ## Sauvegardes et restauration
 

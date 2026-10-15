@@ -22,6 +22,7 @@ export async function generateMetadata({ params }: Props) {
 export default async function ContentPage({ params }: Props) {
   const page = contentByPath(`/${(await params).slug.join("/")}`);
   if (!page) notFound();
+  const reviewedAt = page.reviewedAt ?? CONTENT_REVIEWED_AT;
   return (
     <main
       id="contenu"
@@ -52,7 +53,9 @@ export default async function ContentPage({ params }: Props) {
           <p className="mt-6 text-lg leading-8 text-[#475569]">{page.intro}</p>
           <p className="mt-5 text-xs text-[#64748b]">
             Par l’équipe Okado · Vérifié le{" "}
-            <time dateTime={CONTENT_REVIEWED_AT}>14 octobre 2026</time>
+            <time dateTime={reviewedAt}>
+              {new Intl.DateTimeFormat("fr-FR", { dateStyle: "long", timeZone: "UTC" }).format(new Date(reviewedAt))}
+            </time>
           </p>
         </header>
         <div className="grid items-start gap-10 lg:grid-cols-[230px_minmax(0,1fr)]">
@@ -154,7 +157,7 @@ export default async function ContentPage({ params }: Props) {
               30 jours d’essai, sans carte bancaire.
             </span>
           </p>
-          <PrimaryButton href={`${APP_URL}/inscription`}>
+          <PrimaryButton href={`${APP_URL}/inscription`} trackingName="start_trial" trackingLocation="content_page">
             Essayer Okado
           </PrimaryButton>
         </div>

@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { publicContent } from "../src/lib/public-content";
+import { ANALYTICS_CONSENT_COOKIE, ANALYTICS_CONSENT_VERSION } from "../src/lib/analytics-consent";
 
 const routes = [
   "/",
@@ -123,9 +124,16 @@ test("sitemap, robots, OG et fichiers distribués sont utilisables", async ({
   }
 });
 
-test("la démonstration reste indépendante de l’avis et ne transmet aucune donnée", async ({
+test("la démonstration reste indépendante de l’avis et ne transmet aucune coordonnée", async ({
   page,
+  baseURL,
 }) => {
+  // This scenario checks the demo after refusal. Consent itself has its own suite.
+  await page.context().addCookies([{
+    name: ANALYTICS_CONSENT_COOKIE,
+    value: encodeURIComponent(JSON.stringify({ version: ANALYTICS_CONSENT_VERSION, choice: "rejected", decidedAt: Date.now() })),
+    url: baseURL!,
+  }]);
   const mutations: string[] = [];
   page.on("request", (request) => {
     if (request.method() === "POST") mutations.push(request.url());

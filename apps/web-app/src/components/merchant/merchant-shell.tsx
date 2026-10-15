@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { APP_NAME_CAPITALIZED } from "@/lib/branding";
 import { getMerchantBillingSummary } from "@/lib/billing";
 import { identifyMerchantForAnalytics } from "@/lib/client-product-analytics";
+import { ANALYTICS_CONSENT_EVENT } from "@/lib/analytics-consent";
 import { getPlatformAdminNavigationItems } from "@/lib/platform-admin-navigation";
 import { Merchant, MerchantLocationAccess, MerchantUser } from "@/lib/types";
 
@@ -106,7 +107,10 @@ function MerchantShellContent({ children, merchant, user, locations, activeLocat
   }, []);
 
   useEffect(() => {
-    identifyMerchantForAnalytics(merchant.id, user.id);
+    const identify = () => identifyMerchantForAnalytics(merchant.id, user.id);
+    identify();
+    window.addEventListener(ANALYTICS_CONSENT_EVENT, identify);
+    return () => window.removeEventListener(ANALYTICS_CONSENT_EVENT, identify);
   }, [
     merchant.id,
     user.id,

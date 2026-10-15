@@ -91,7 +91,7 @@ export default function IndexPage() {
           participations, les gains et les retraits.
         </p>
         <div className="mt-7 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
-          <PrimaryButton href={`${APP_URL}/inscription`}>
+          <PrimaryButton href={`${APP_URL}/inscription`} trackingName="start_trial" trackingLocation="hero">
             Lancer mon essai gratuit de 30 jours
           </PrimaryButton>
           <Link
@@ -217,7 +217,7 @@ export default function IndexPage() {
             <p className="font-semibold text-[#6c00f6]">Okado Pro</p>
             <LocalizedPrice />
             <div className="mt-6">
-              <PrimaryButton href={`${APP_URL}/inscription`}>
+              <PrimaryButton href={`${APP_URL}/inscription`} trackingName="start_trial" trackingLocation="pricing">
                 Commencer mon essai gratuit
               </PrimaryButton>
             </div>

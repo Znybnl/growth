@@ -4,6 +4,10 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { GoogleAuthButton } from "@/components/auth/google-auth-button";
+import {
+  captureClientProductEvent,
+  identifyMerchantForAnalytics,
+} from "@/lib/client-product-analytics";
 
 function readReferralCodeFromBrowser() {
   if (typeof window === "undefined") return "";
@@ -57,6 +61,7 @@ export function SignUpForm() {
     event.preventDefault();
     setError(null);
     setIsLoading(true);
+    captureClientProductEvent("signup_started", { method: "email" });
 
     try {
       if (!accept) throw new Error("Vous devez accepter les conditions pour continuer.");
@@ -72,11 +77,19 @@ export function SignUpForm() {
           referralCode,
         }),
       });
-      const payload = (await response.json()) as { error?: string };
+      const payload = (await response.json()) as {
+        error?: string;
+        merchant?: { id?: string };
+        user?: { id?: string };
+      };
 
       if (!response.ok) throw new Error(payload.error ?? "Inscription impossible.");
+      if (payload.merchant?.id && payload.user?.id) {
+        identifyMerchantForAnalytics(payload.merchant.id, payload.user.id);
+      }
       window.location.assign("/onboarding");
     } catch (submitError) {
+      captureClientProductEvent("signup_failed", { method: "email" });
       setError(submitError instanceof Error ? submitError.message : "Inscription impossible.");
     } finally {
       setIsLoading(false);

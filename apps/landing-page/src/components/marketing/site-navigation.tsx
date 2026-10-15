@@ -46,7 +46,7 @@ export function SiteHeader() {
             >
               Connexion
             </Link>
-            <PrimaryButton href={`${APP_URL}/inscription`}>
+            <PrimaryButton href={`${APP_URL}/inscription`} trackingName="start_trial" trackingLocation="header">
               Essai gratuit
             </PrimaryButton>
           </div>

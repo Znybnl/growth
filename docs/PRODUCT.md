@@ -163,6 +163,17 @@ L'inscription par formulaire demande uniquement l'acceptation des CGV dans une c
 - Les tickets à gratter n'affichent plus de phrase d'aide sous la zone à gratter, y compris « Le résultat s'affiche automatiquement. ». Le titre, le sous-titre personnalisable, les espacements avant la zone, le geste de grattage et le résultat restent inchangés.
 - **Cadeau lilas** utilise son encre prune foncée `#210b32` pour le logo et les textes par défaut. Le bleu historique hérité `#003cb4` est traité comme un ancien défaut, au même titre que les anciennes encres du modèle. Les autres couleurs personnalisées et les styles propres mémorisés sont conservés. La correction porte sur la lecture/sélection et le rendu ; aucune réécriture de campagne en base.
 
+## Mesure d'usage — #508
+
+Consentement de mesure (#508, accord propriétaire du 15 octobre 2026) : le site
+public et l'application présentent Accepter / Refuser et un accès permanent
+Gérer les cookies. Le choix porte sur la mesure PostHog et Vercel Analytics,
+distincte de la prospection du marchand et de l'acceptation des CGV. La collecte
+produit, y compris côté serveur, attend un accord valide. Le refus laisse les
+parcours métier disponibles. Les textes de confidentialité et le DPA sont
+complétés pour revue ; les preuves fournisseurs et décisions de conservation
+par finalité sont recensées dans [le dossier données](DATA_PROCESSING_REGISTER.md).
+
 ## Questions ouvertes
 
 - [ ] Définir les critères de retrait forcé à afficher et à journaliser pour le personnel du commerce.

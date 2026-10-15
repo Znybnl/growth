@@ -9,10 +9,12 @@ export function LegalPage({
   title,
   subtitle,
   sections,
+  updatedAt = "14 octobre 2026",
 }: {
   title: string;
   subtitle: string;
   sections: LegalSection[];
+  updatedAt?: string;
 }) {
   return (
     <main
@@ -36,7 +38,7 @@ export function LegalPage({
           </h1>
           <p className="mt-5 text-base leading-7 text-[#475569]">{subtitle}</p>
           <p className="mt-6 text-sm text-[#64748b]">
-            Dernière mise à jour : 14 octobre 2026
+            Dernière mise à jour : {updatedAt}
           </p>
         </header>
 

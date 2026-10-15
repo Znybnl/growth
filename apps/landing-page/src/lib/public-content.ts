@@ -12,6 +12,7 @@ export type PublicContent = {
   sections: ContentSection[];
   related: string[];
   source?: { label: string; href: string }[];
+  reviewedAt?: string;
 };
 
 export const publicContent: PublicContent[] = [
@@ -639,6 +640,7 @@ export const publicContent: PublicContent[] = [
   },
   {
     path: "/confidentialite",
+    reviewedAt: "2026-10-15",
     title: "Confidentialité et données personnelles dans Okado",
     eyebrow: "Informations sur les données",
     description:
@@ -649,7 +651,9 @@ export const publicContent: PublicContent[] = [
       {
         title: "Pour les comptes marchands",
         paragraphs: [
-          "Les informations du compte servent à créer et administrer l’accès au service, renseigner les établissements, gérer l’abonnement et fournir l’assistance. L’éditeur du service est BRUNELLE PEROLS INVESTISSEMENT ; pour une demande relative à votre compte, écrivez à contact@okado.app.",
+          "BRUNELLE PEROLS INVESTISSEMENT, éditeur d’Okado, est responsable des traitements liés aux comptes professionnels, à la facturation, à la sécurité du service et à la mesure d’usage. Pour toute question ou demande : contact@okado.app. L’identité et les coordonnées de l’éditeur figurent aussi sur la page À propos.",
+          "Les coordonnées professionnelles, identifiants de compte et informations d’établissement servent à créer l’accès, gérer l’abonnement et fournir l’assistance. La base est l’exécution du contrat lorsque vous êtes personnellement partie au contrat ; pour les utilisateurs d’une société cliente, l’intérêt légitime à administrer la relation professionnelle. Les traitements de facturation répondent aux obligations légales applicables. Les données nécessaires à la sécurité servent à prévenir les abus et protéger les accès, au titre de l’intérêt légitime du service.",
+          "Les champs indispensables sont signalés lors de la collecte : sans les informations requises pour le compte ou le paiement, la fonction correspondante ne peut pas être fournie. Le refus de la prospection ou de la mesure d’audience ne bloque pas l’accès au service.",
         ],
       },
       {
@@ -660,16 +664,27 @@ export const publicContent: PublicContent[] = [
         ],
       },
       {
-        title: "Fournisseurs et mesure du service",
+        title: "Destinataires, fournisseurs et transferts",
         paragraphs: [
-          "Le service s’appuie notamment sur Supabase, Vercel, Resend et Stripe pour ses fonctions techniques. La mesure de fréquentation et le suivi produit sont distincts des données nécessaires à votre gain. Les informations détaillées sur les outils de mesure et leur configuration peuvent être demandées à contact@okado.app.",
+          "Les données sont accessibles aux utilisateurs autorisés de l’établissement et aux personnes habilitées pour l’assistance et l’exploitation. Supabase fournit l’authentification, la base et les fichiers ; Vercel héberge les applications ; Resend transmet les e-mails de service et notifications ; Stripe traite les données nécessaires au paiement et à l’abonnement. Les coordonnées des joueurs ne sont pas transmises à Stripe pour la seule gestion d’un jeu.",
+          "Brevo peut recevoir les coordonnées professionnelles des utilisateurs marchands pour la gestion de la relation. Cette synchronisation ne prouve aucun consentement commercial et ne concerne pas automatiquement les joueurs. Les messages nécessaires au service et les sollicitations commerciales ont des finalités distinctes ; la prospection reste soumise à sa base légale et aux possibilités d’opposition ou de retrait applicables.",
+          "Le projet PostHog utilisé pour Okado est en région EU. Une région d’hébergement ne suffit pas à exclure les accès ou traitements hors de l’Espace économique européen chez l’ensemble des fournisseurs. Les destinataires et mécanismes de transfert applicables à votre traitement, notamment les décisions d’adéquation ou clauses contractuelles types lorsqu’elles sont utilisées, peuvent être demandés à contact@okado.app. Le DPA précise les obligations de sous-traitance ; aucune localisation exclusivement européenne de tous les traitements n’est annoncée.",
+        ],
+      },
+      {
+        title: "Mesure d’audience et choix des cookies",
+        paragraphs: [
+          "Avec votre consentement préalable, PostHog mesure les visites et les étapes d’acquisition, d’inscription et de publication d’un jeu ; Vercel Analytics mesure la fréquentation. Après création du compte, des identifiants techniques peuvent relier ces étapes à votre compte marchand. Les textes saisis, e-mails, mots de passe, codes de retrait et paramètres d’URL ne sont pas des données prévues pour cette mesure. L’autocapture des interactions et la relecture des sessions ne sont pas activées par ce dispositif.",
+          "Le bouton Gérer les cookies permet d’accepter, de refuser ou de retirer l’accord à tout moment, avec des choix de même visibilité. Le choix concerne okado.app, www.okado.app et app.okado.app et est mémorisé dans un cookie de préférence pendant 180 jours au maximum ; une nouvelle visite ne renouvelle pas ce délai. Sans accord valide, la collecte de mesure concernée n’est pas déclenchée, y compris pour les événements produit envoyés par le serveur.",
+          "Après acceptation, PostHog peut utiliser un cookie d’identification partagé entre ces sous-domaines. Lors du retrait, ses identifiants stockés par ce dispositif sont supprimés du navigateur et les nouvelles captures sont arrêtées. Le retrait n’efface pas rétroactivement les données déjà collectées ; une demande d’effacement peut être adressée à contact@okado.app. Les cookies nécessaires à la connexion, à la sécurité ou à l’exécution du jeu répondent à leurs propres finalités et restent distincts de ce choix.",
         ],
       },
       {
         title: "Demandes et conservation",
         paragraphs: [
-          "Selon le traitement et les règles applicables, vous pouvez demander l’accès, la rectification, l’effacement ou la portabilité de vos données, ou vous opposer à certains usages. Contactez l’établissement pour les données de son jeu et l’éditeur pour votre compte marchand. Vous pouvez également saisir l’autorité de protection des données compétente.",
-          "Les durées de conservation dépendent de la finalité : compte marchand, facturation ou gestion d’un jeu. Pour connaître la durée applicable à vos données et les modalités de suppression, contactez le responsable du traitement concerné. Le cadre contractuel de sous-traitance figure dans le DPA.",
+          "Selon le traitement, vous pouvez exercer les droits d’accès, de rectification, d’effacement, de limitation, d’opposition et, lorsque ses conditions sont réunies, de portabilité. Vous pouvez retirer un consentement sans remettre en cause les traitements antérieurs licites. Contactez l’établissement pour les données de son jeu et contact@okado.app pour le compte marchand ou la mesure du service. Nous vérifions uniquement les éléments nécessaires pour traiter la demande. Vous pouvez saisir la CNIL en France ou l’autorité compétente pour votre situation.",
+          "Les données de compte sont utilisées pendant la relation contractuelle et le traitement des demandes liées au service. Après sa fin, seules les données dont la conservation est justifiée pour une obligation légale ou une réclamation peuvent être conservées avec un accès restreint. Les pièces comptables françaises, dont les factures, relèvent d’une conservation de dix ans à compter de la clôture de l’exercice concerné ; cette obligation ne s’étend pas automatiquement aux données des joueurs ni à l’ensemble du compte.",
+          "Pour un jeu, l’organisateur précise les durées ou critères nécessaires à la participation, à la validité et au retrait des gains, puis à la gestion justifiée des réclamations. Pour la prospection, le retrait ou l’opposition met fin à cet usage ; les éléments strictement nécessaires au respect de cette opposition sont distincts du fichier utilisé pour prospecter. Aucun délai uniforme de trois ou cinq ans ni mécanisme de suppression automatique de toutes les données n’est promis. Contactez le responsable concerné pour les modalités applicables à votre situation.",
         ],
       },
     ],
