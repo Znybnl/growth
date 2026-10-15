@@ -174,6 +174,16 @@ parcours métier disponibles. Les textes de confidentialité et le DPA sont
 complétés pour revue ; les preuves fournisseurs et décisions de conservation
 par finalité sont recensées dans [le dossier données](DATA_PROCESSING_REGISTER.md).
 
+## Démonstration du site marketing — #514
+
+La démo partagée par l'accueil, Restaurants et Instituts de beauté distingue le
+parcours client des résultats du commerce. La roue complète, la progression et
+les résultats fictifs restent lisibles sur mobile. Les écrans d'action, de gain
+et de confirmation restent des simulations locales : avis facultatif, champs
+facultatifs, aucun lot réel, aucune coordonnée transmise et aucun e-mail envoyé.
+Les exemples chiffrés ne promettent pas de résultats. Le suivi d'audience reste
+soumis au choix existant, sans nouveau traitement.
+
 ## Questions ouvertes
 
 - [ ] Définir les critères de retrait forcé à afficher et à journaliser pour le personnel du commerce.

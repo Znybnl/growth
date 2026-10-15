@@ -60,6 +60,18 @@ La CI GitHub exécute la vérification de source, le lint et le build de l'appli
 
 La [matrice des parcours critiques](TEST_MATRIX.md) relie chaque parcours bloquant à sa preuve actuelle et indique les tests restant à ajouter.
 
+## Démo marketing responsive — #514
+
+`apps/landing-page/e2e/landing-demo.spec.ts` vérifie l'accueil, Restaurants et
+Instituts de beauté à 320/390/768/1440 px : roue contenue dans le téléphone,
+étapes et résultats accessibles, boutons tactiles, absence de débordement,
+parcours avec/sans simulation Google, retour du focus et remise à zéro des
+champs. Un scénario clavier et mouvement réduit couvre le parcours sans saisie ;
+un autre annule le résultat différé lors d'un redémarrage pendant la rotation.
+Les captures sont locales ; les coordonnées sont fictives, le choix de mesure
+est refusé et les requêtes analytics interceptées. Aucun POST métier attendu.
+Rejouer aussi les suites SEO, marque/FAQ et consentement existantes.
+
 ## E2E : mise en place progressive
 
 ### Notifications de gains — #473
