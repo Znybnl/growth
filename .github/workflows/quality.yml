@@ -28,6 +28,10 @@ jobs:
         run: npm run verify:source
       - name: Lint web app
         run: npm run lint:web
+      - name: Test analytics consent in both apps and server capture
+        run: npm run test:analytics-consent -w @okado/web-app
+      - name: Test historical personal data lifecycle in isolated PostgreSQL
+        run: npm run test:data-lifecycle -w @okado/web-app
       - name: Test administrator campaign permissions
         run: npm run test:admin-campaigns -w @okado/web-app
       - name: Test merchant gain notifications and RLS

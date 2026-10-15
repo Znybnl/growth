@@ -11,6 +11,27 @@ L'objectif est de détecter les régressions importantes sans transformer le pro
 
 ## Contrôles automatisés existants
 
+`test:analytics-consent -w @okado/web-app` vérifie les deux implémentations,
+absence/refus/expiration/version du choix, retrait et nouvel accord, nettoyage
+des identifiants sans toucher aux autres stockages, minimisation des propriétés
+et absence d'envoi serveur sans consentement ou sans contexte de requête.
+`test:data-lifecycle -w @okado/web-app` exécute le SQL historique sous PGlite
+sur des données fictives (seuils 3/5 ans depuis création, dépendances, absence de
+métadonnées libres en archive, droits/RLS et exécution répétée). Ces suites sont
+dans la CI ; elles ne prouvent ni le contrat fournisseur ni l'activation de la
+maintenance sur la production.
+
+`analytics-consent.spec.ts`, dans chaque application, teste le vrai SDK et le
+bandeau : aucun appel avant accord, refus durable, reprise après accord,
+suppression navigateur au retrait et navigation disponible. L'API PostHog et
+Vercel Analytics sont interceptés, le token est une fixture locale, aucun
+événement n'est transmis au projet réel. Les indices headless du navigateur
+de test sont neutralisés uniquement dans la fixture pour vérifier la capture
+humaine ; le filtrage des bots du code applicatif reste inchangé. Pour lancer
+ces tests, construire/démarrer la landing et le SaaS local avec
+`NEXT_PUBLIC_POSTHOG_KEY=phc_consent_fixture` et `NEXT_PUBLIC_POSTHOG_ENABLED=true`.
+Ne jamais réutiliser une clé réelle pour cette recette.
+
 #498 : `npm run test:metrics -w @okado/web-app` vérifie les helpers partagés,
 les vrais repository/handlers, les nouveaux agrégats SQL et rollback sous PGlite :
 1 005 contacts/opt-ins, historique de retrait prouvé/inconnu, premier jour UTC,

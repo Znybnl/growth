@@ -1,6 +1,7 @@
 "use client";
 
 import posthog from "posthog-js";
+import { hasAnalyticsConsent } from "@/lib/analytics-consent";
 
 import {
   analyticsEnvironment,
@@ -17,7 +18,7 @@ export function captureClientProductEvent(
   event: ProductAnalyticsEvent,
   properties?: ProductAnalyticsProperties,
 ) {
-  if (!posthogKey || !posthogEnabled) {
+  if (!posthogKey || !posthogEnabled || !hasAnalyticsConsent()) {
     return;
   }
 
@@ -30,7 +31,7 @@ export function captureClientProductEvent(
 }
 
 export function identifyMerchantForAnalytics(merchantId: string, userId: string) {
-  if (!posthogKey || !posthogEnabled || !merchantId || !userId) {
+  if (!posthogKey || !posthogEnabled || !hasAnalyticsConsent() || !merchantId || !userId) {
     return;
   }
 
@@ -43,7 +44,7 @@ export function identifyMerchantForAnalytics(merchantId: string, userId: string)
 }
 
 export function resetProductAnalytics() {
-  if (posthogKey && posthogEnabled) {
+  if (posthogKey && posthogEnabled && hasAnalyticsConsent()) {
     posthog.reset();
   }
 }

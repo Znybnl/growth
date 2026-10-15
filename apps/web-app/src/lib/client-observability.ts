@@ -1,6 +1,8 @@
 "use client";
 
 import posthog from "posthog-js";
+import { hasAnalyticsConsent } from "@/lib/analytics-consent";
+import { sanitizeAnalyticsProperties } from "@/lib/product-analytics-events";
 
 type ClientTelemetryAttributes = Record<
   string,
@@ -25,7 +27,7 @@ export function captureClientError(
   error: unknown,
   attributes: ClientTelemetryAttributes = {},
 ) {
-  if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) return;
+  if (!process.env.NEXT_PUBLIC_POSTHOG_KEY || process.env.NEXT_PUBLIC_POSTHOG_ENABLED === "false" || !hasAnalyticsConsent()) return;
 
   try {
     posthog.captureLog({
@@ -35,7 +37,7 @@ export function captureClientError(
         event_name: event,
         error_code: classifyError(error),
         error_type: error instanceof Error ? error.name : "UnknownError",
-        ...attributes,
+        ...sanitizeAnalyticsProperties(attributes),
       },
     });
   } catch {

@@ -51,7 +51,7 @@ export default function PricingPage() {
               sont choisis et financés par votre établissement.
             </p>
             <div className="mt-7">
-              <PrimaryButton href={`${APP_URL}/inscription`}>
+              <PrimaryButton href={`${APP_URL}/inscription`} trackingName="start_trial" trackingLocation="pricing_page">
                 Commencer mon essai gratuit
               </PrimaryButton>
             </div>

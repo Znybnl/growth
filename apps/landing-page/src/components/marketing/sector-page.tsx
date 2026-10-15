@@ -114,7 +114,7 @@ export function SectorPage({ beauty }: { beauty: boolean }) {
             : "Vos clients jouent sur leur téléphone, découvrent leur résultat et conservent leur coupon de gain. Vous choisissez les lots et votre équipe valide leur remise : du QR code au retrait, le parcours reste lisible."}
         </p>
         <div className="mt-7 flex flex-col items-start gap-3 sm:flex-row">
-          <PrimaryButton href={`${APP_URL}/inscription`}>
+          <PrimaryButton href={`${APP_URL}/inscription`} trackingName="start_trial" trackingLocation={beauty ? "beauty_hero" : "restaurant_hero"}>
             {beauty
               ? "Créer mon animation institut"
               : "Créer mon animation restaurant"}
@@ -304,7 +304,7 @@ export function SectorPage({ beauty }: { beauty: boolean }) {
               carte.
             </p>
           </div>
-          <PrimaryButton href={`${APP_URL}/inscription`}>
+          <PrimaryButton href={`${APP_URL}/inscription`} trackingName="start_trial" trackingLocation={beauty ? "beauty_footer" : "restaurant_footer"}>
             Démarrer mon essai gratuit
           </PrimaryButton>
         </div>

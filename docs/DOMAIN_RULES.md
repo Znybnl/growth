@@ -97,7 +97,24 @@ Un même indicateur utilise la même source et la même formule à périmètre �
 | QR codes et jetons de prévisualisation | Test temporaire du parcours | Durée courte liée à l'expiration du jeton | Suppression automatique. |
 | Données agrégées | Statistiques produit sans ré-identification | Sans limite si l'anonymisation est effective | Conservation des seules données anonymes. |
 
-Les durées de la deuxième ligne constituent une recommandation opérationnelle, non un avis juridique. Toute modification de ces règles exige une décision explicite du propriétaire et, si nécessaire, une validation juridique.
+Les durées ci-dessus restent des propositions par finalité, non un avis juridique.
+Le SQL historique `20260831_personal_data_lifecycle.sql` existe et calcule ses
+seuils depuis `created_at`, pas depuis le dernier événement métier. Il ne prouve
+ni l'activation de la maintenance, ni une politique adaptée à toutes les données.
+Le [dossier #508](DATA_PROCESSING_REGISTER.md) distingue les finalités et les preuves manquantes.
+
+### Mesure d'usage — accord propriétaire du 15 octobre 2026, #508
+
+Le propriétaire autorise la mise en place du consentement préalable recommandé.
+PostHog et Vercel Analytics suivent le choix explicite présenté pour les domaines
+Okado nommés dans l'information. Accepter et refuser ont la même visibilité ;
+le refus ne conditionne aucun parcours métier. La préférence dure au maximum
+180 jours sans renouvellement à la visite et reste modifiable via Gérer les cookies.
+Sans accord valide, le SDK PostHog n'est pas initialisé et la capture produit
+serveur est bloquée. Le retrait arrête les nouvelles captures et efface les
+identifiants PostHog de ce navigateur ; l'effacement des données déjà hébergées
+est une demande distincte. Le suivi d'acquisition ne décrit donc que les personnes
+ayant accepté cette mesure. Aucune autorisation de purge n'est déduite de cet accord.
 
 ## Relance d’expiration du gain — #304
 

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Analytics } from "@vercel/analytics/next";
+import { CookiePreferences } from "@/components/privacy/cookie-preferences";
 import { Inter, Roboto_Mono } from "next/font/google";
 
 import { cn } from "@/lib/utils";
@@ -46,7 +46,7 @@ export default function RootLayout({
         />
         {children}
         <SiteFooter />
-        <Analytics />
+        <CookiePreferences />
       </body>
     </html>
   );
