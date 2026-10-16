@@ -34,6 +34,38 @@ function clearAnalyticsStorage() {
 // URL queries, fragments, page titles and provider-generated person properties
 // can contain authentication tokens or personal data. They are not analytics inputs.
 const privateProperty = /email|phone|password|token|secret|pin|comment|message|name|address|reason|referrer|referring|url|title|\$set|initial|search|utm_|gclid|fbclid|msclkid/i;
+
+// Only named product/public routes are useful here. Never retain arbitrary
+// path segments (campaign IDs, redemption codes, OAuth callbacks, etc.).
+const measuredPages = new Set([
+  "/", "/restaurants", "/instituts-beaute", "/tarifs", "/comment-ca-marche",
+  "/roue-de-la-fortune", "/ticket-a-gratter", "/affiches-qr-code", "/guides",
+  "/guides/lots-institut-beaute", "/guides/lots-restaurant",
+  "/guides/avis-google-jeu-concours", "/guides/collecte-email-jeu",
+  "/guides/mesurer-jeu-qr-code", "/guides/cout-jeu-marketing",
+  "/guides/placer-qr-code-jeu", "/aide/notifications-et-relances",
+  "/a-propos", "/securite-et-donnees", "/confidentialite", "/cgv",
+  "/campaign/reglement", "/connexion", "/inscription", "/onboarding",
+]);
+
+export function safeAnalyticsPage(pathname: string) {
+  return measuredPages.has(pathname) ? pathname : "/other";
+}
+
+function acquisitionContext() {
+  const params = new URLSearchParams(window.location.search);
+  const utm = (key: string) => {
+    const value = params.get(key);
+    return value && /^[a-z0-9_-]{1,80}$/i.test(value) ? value : undefined;
+  };
+  return {
+    page: safeAnalyticsPage(window.location.pathname),
+    utmSource: utm("utm_source"),
+    utmMedium: utm("utm_medium"),
+    utmCampaign: utm("utm_campaign"),
+  };
+}
+
 export function safeAnalyticsProperties(properties: Record<string, unknown>) {
   return Object.fromEntries(Object.entries(properties).filter(([name, value]) =>
     (name === "token" || !privateProperty.test(name)) &&
@@ -83,8 +115,14 @@ export function syncAnalyticsConsent() {
       before_send: (event) => {
         if (!event || !hasAnalyticsConsent()) return null;
         const consent = readAnalyticsConsent()!;
+        // The SDK also attaches person properties at the payload root on
+        // identification, not only inside properties. They can contain the
+        // original URL/referrer even when event properties were sanitized.
+        delete event.$set;
+        delete event.$set_once;
         event.properties = {
           ...safeAnalyticsProperties(event.properties),
+          ...acquisitionContext(),
           source: "client",
           trackingVersion: "v1",
           environment: process.env.NEXT_PUBLIC_VERCEL_ENV || "local",

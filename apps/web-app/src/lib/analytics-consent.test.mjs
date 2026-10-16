@@ -95,7 +95,7 @@ for (const app of ["web-app", "landing-page"]) {
     assert.equal(config.autocapture, false);
     assert.equal(config.disable_session_recording, true);
     assert.equal(config.advanced_disable_flags, true);
-    const sanitized = config.before_send({ event: "$identify", properties: {
+    const sanitized = config.before_send({ event: "$identify", $set: { email: "private@example.test" }, $set_once: { $initial_current_url: "https://example.test/?token=secret" }, properties: {
       token: "public-project-token", distinct_id: "merchant:user", $anon_distinct_id: "anonymous",
       email: "person@example.test", $current_url: "https://example.test/?token=secret",
       $initial_referrer: "https://example.test/?email=private", $set: { email: "private" },
@@ -108,17 +108,45 @@ for (const app of ["web-app", "landing-page"]) {
     assert.equal(JSON.stringify(sanitized).includes("person@example"), false);
     assert.equal(sanitized.properties.$current_url, undefined);
     assert.equal(sanitized.properties.$set, undefined);
+    assert.equal(sanitized.$set, undefined);
+    assert.equal(sanitized.$set_once, undefined);
+    assert.equal(sanitized.properties.page, "/inscription");
+    for (const path of ["/", "/restaurants", "/instituts-beaute", "/tarifs", "/onboarding", "/guides/lots-restaurant"]) {
+      assert.equal(client.safeAnalyticsPage(path), path);
+    }
+    for (const path of ["/campaign/private-id", "/redeem/secret", "/auth/callback", "/api/private", "/guides/person@example.test"]) {
+      assert.equal(client.safeAnalyticsPage(path), "/other");
+    }
+    window.location.search = "?utm_source=google&utm_medium=cpc&utm_campaign=launch_2026&email=private%40example.test#secret";
+    const acquisition = config.before_send({ event: "$pageview", properties: {} }).properties;
+    assert.equal(acquisition.utmSource, "google");
+    assert.equal(acquisition.utmMedium, "cpc");
+    assert.equal(acquisition.utmCampaign, "launch_2026");
+    assert.equal(JSON.stringify(acquisition).includes("#secret"), false);
+    assert.equal(JSON.stringify(acquisition).includes("private@"), false);
+    window.location.pathname = "/redeem/private-gain";
+    window.location.search = "?utm_source=private%40example.test&utm_medium=cpc&utm_campaign=launch_2026";
+    const restricted = config.before_send({ event: "$pageview", properties: {} }).properties;
+    assert.equal(restricted.page, "/other");
+    assert.equal(restricted.utmSource, undefined);
+    assert.equal(restricted.utmCampaign, "launch_2026");
+    window.location.pathname = "/inscription";
+    window.location.search = "?utm_campaign=person%40example.test";
     const remembered = document.cookie;
     client.syncAnalyticsConsent();
     assert.equal(document.cookie, remembered, "la visite ne prolonge pas le choix");
     if (app === "web-app") {
       const analytics = await import("./client-product-analytics.ts");
       const { captureClientError } = await import("./client-observability.ts");
+      const sdk = (await import("posthog-js")).default;
+      const originalCapture = sdk.capture;
       analytics.identifyMerchantForAnalytics("merchant", "user");
+      assert.equal(sdk.capture, originalCapture, "le transport natif est restauré après identify");
       analytics.captureClientProductEvent("signup_started", { email: "private" });
       captureClientError("campaign_setup_failed", Error("private@example.test"), { email: "private", mode: "create" });
       assert.equal(state.identities.length, 1);
       assert.equal(state.events.length, 1);
+      assert.deepEqual(state.events[0][2], { transport: "sendBeacon", send_instantly: true });
       assert.equal(state.logs.length, 1);
       assert.equal(state.logs[0].attributes.email, undefined);
       assert.equal(JSON.stringify(state.logs).includes("private@example"), false);
@@ -126,6 +154,7 @@ for (const app of ["web-app", "landing-page"]) {
       const analytics = await import(new URL("apps/landing-page/src/lib/marketing-analytics.ts", root));
       analytics.captureMarketingEvent("marketing_cta_clicked", { cta: "start_trial" });
       assert.equal(state.events[0][1].utmCampaign, undefined);
+      assert.deepEqual(state.events[0][2], { transport: "sendBeacon", send_instantly: true });
     }
     assert.equal(client.setAnalyticsChoice("rejected"), true);
     assert.ok(state.calls.includes("out"));
@@ -145,6 +174,26 @@ for (const app of ["web-app", "landing-page"]) {
     assert.ok(state.calls.includes("in"));
   });
 }
+
+test("identité : envoi immédiat unique, options préservées et capture restaurée même en échec", async () => {
+  const jar = browser();
+  const consent = await import("./analytics-consent.ts");
+  jar.set(consent.ANALYTICS_CONSENT_COOKIE, encodeURIComponent(JSON.stringify({ version: consent.ANALYTICS_CONSENT_VERSION, choice: "accepted", decidedAt: Date.now() })));
+  const analytics = await import("./client-product-analytics.ts");
+  const sdk = (await import("posthog-js")).default;
+  const originalIdentify = sdk.identify;
+  const originalCapture = sdk.capture;
+  try {
+    sdk.identify = () => sdk.capture("$identify", { distinct_id: "merchant:user", $anon_distinct_id: "anonymous" }, { $set: { merchantId: "merchant" } });
+    analytics.identifyMerchantForAnalytics("merchant", "user");
+    assert.equal(state.events.length, 1);
+    assert.deepEqual(state.events[0][2], { $set: { merchantId: "merchant" }, transport: "sendBeacon", send_instantly: true });
+    assert.equal(sdk.capture, originalCapture);
+    sdk.identify = () => { throw Error("SDK unavailable"); };
+    assert.doesNotThrow(() => analytics.identifyMerchantForAnalytics("merchant", "user"));
+    assert.equal(sdk.capture, originalCapture);
+  } finally { sdk.identify = originalIdentify; sdk.capture = originalCapture; }
+});
 
 test("serveur : absence, refus, expiration et contexte manquant ne déclenchent aucun envoi", async () => {
   browser();

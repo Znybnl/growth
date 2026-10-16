@@ -176,6 +176,13 @@ par finalité sont recensées dans [le dossier données](DATA_PROCESSING_REGISTE
 
 ## Démonstration du site marketing — #514
 
+Finalisation de la mesure autorisée le 16 octobre 2026 (#507) : compter le
+démarrage au clic Jouer, conserver les événements de conversion aux changements
+de sous-domaine et permettre une lecture par page/UTM autorisés, sous le choix
+de mesure existant. Aucun compte, gain ou e-mail réel n'est créé pour tester.
+Les définitions, dénominateurs, fenêtres et limites sont dans
+[le plan de tracking](ANALYTICS_TRACKING.md#exploitation-et-fiabilisation--507-16-octobre-2026).
+
 La démo partagée par l'accueil, Restaurants et Instituts de beauté distingue le
 parcours client des résultats du commerce. La roue complète, la progression et
 les résultats fictifs restent lisibles sur mobile. Les écrans d'action, de gain
