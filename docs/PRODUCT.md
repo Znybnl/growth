@@ -184,6 +184,23 @@ facultatifs, aucun lot réel, aucune coordonnée transmise et aucun e-mail envoy
 Les exemples chiffrés ne promettent pas de résultats. Le suivi d'audience reste
 soumis au choix existant, sans nouveau traitement.
 
+### Parcours de démonstration approuvé le 16 octobre 2026 — #516
+
+Les enseignes fictives ont une identité typographique distincte de l'étoile
+Okado. La roue de démonstration a huit secteurs (quatre lots/quatre pertes) et
+un gain déterminé pour montrer la suite, sans représenter une probabilité réelle.
+L'invitation Google peut être ignorée ; son écran simulé propose de une à cinq
+étoiles sans présélection. Aucune note, y compris l'absence de note, n'influence
+le jeu ou le gain ; rien n'est publié, envoyé ni persisté depuis cet écran.
+
+Le formulaire local reste facultatif et explique la réception du gain par
+e-mail, avec « Recevoir mon gain ». La confirmation reprend « Votre gain est
+confirmé ! » et la réception par e-mail/spams, avec rappel explicite qu'aucun
+e-mail réel n'est envoyé. Un aperçu facultatif utilise exclusivement une identité
+et une adresse fictives, ainsi qu'un QR illustratif non utilisable. L'explication
+côté commerce suit l'étape, sans incrémenter les indicateurs fictifs. Les jeux,
+avis, tirages, consentements et e-mails réels du SaaS ne sont pas modifiés.
+
 ## Questions ouvertes
 
 - [ ] Définir les critères de retrait forcé à afficher et à journaliser pour le personnel du commerce.
