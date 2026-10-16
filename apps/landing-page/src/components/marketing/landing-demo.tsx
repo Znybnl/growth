@@ -122,9 +122,12 @@ export function LandingDemo({
     setRotation(16);
   }
 
+  function beginDemo() {
+    captureMarketingEvent("marketing_demo_started", { variant });
+    setStep("action");
+  }
+
   function startSpin() {
-    if (step === "intro")
-      captureMarketingEvent("marketing_demo_started", { variant });
     setStep("spinning");
     setRotation((value) => {
       const normalized = ((value % 360) + 360) % 360;
@@ -400,7 +403,7 @@ export function LandingDemo({
                     <button
                       ref={playButton}
                       type="button"
-                      onClick={() => setStep("action")}
+                      onClick={beginDemo}
                       disabled={step === "spinning"}
                       className={styles.play}
                       aria-label={

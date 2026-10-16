@@ -67,7 +67,7 @@ Référence : [API PostHog — endpoints publics et privés, authentification](h
 | `draw_finalized` | participation finalisée | `campaignId`, `gameType` |
 | `prize_redeemed` | lot validé par un marchand | `campaignId`, `leadId` |
 | `marketing_cta_clicked` | clic sur un CTA du site public | `cta`, `location`, `destination`, `page`, UTM sans donnée personnelle |
-| `marketing_demo_started` | première interaction avec la démo publique | `variant`, `page`, UTM sans donnée personnelle |
+| `marketing_demo_started` | clic Jouer ouvrant l'invitation, une fois par tentative ; reset seul non compté | `variant`, `page`, UTM sans donnée personnelle |
 | `marketing_demo_completed` | confirmation de la démo publique | `variant`, `page`, UTM sans donnée personnelle |
 | `signup_started` | soumission du formulaire d'inscription | `method` |
 | `signup_failed` | inscription refusée ou échouée côté formulaire | `method` |
@@ -153,3 +153,86 @@ Les cinq étapes de ce funnel ont été filtrées sur
 `consentVersion = 2026-10-15` et relues par API après mise à jour ; les anciens
 événements sans ce marqueur n'y entrent pas. Avant déploiement du code de
 consentement, l'absence de nouveaux résultats est attendue.
+
+## Exploitation et fiabilisation — #507, 16 octobre 2026
+
+Accord propriétaire : finaliser la mesure et son exploitation, sans nouvelle
+collecte personnelle, nouveau fournisseur ou changement de consentement.
+Les correctifs applicatifs restent soumis à PR et validation de publication.
+
+### Qualité de capture
+
+- Le début de démo est capturé au clic Jouer, pas au lancement de la rotation
+  depuis un écran où la condition de capture était devenue impossible.
+  Retours Google/e-mail et reset seul ne sont ni un nouveau début ni une fin.
+- Les CTA vers l'application et `signup_started` utilisent l'envoi immédiat
+  `sendBeacon` pour limiter les pertes à la navigation. Le parcours n'attend pas
+  une réponse analytics. Le SDK est initialisé/synchronisé après vérification du
+  consentement avant une capture ou identification, même si le composant de
+  préférences n'a pas encore terminé son initialisation.
+- Le rapprochement `$identify` garde l'API SDK et ses règles d'identité. Un
+  adaptateur de la méthode publique capture, limité à l'appel synchrone identify,
+  ajoute l'option SDK d'envoi immédiat sendBeacon à ce seul paquet ; la méthode
+  habituelle est restaurée immédiatement en finally. Pas de fusion manuelle,
+  duplication d'événement, attente réseau ou désactivation de compression.
+- Les propriétés de profil automatiques `$set`/`$set_once`, également attachées
+  à la racine du paquet d'identification, sont retirées ; l'identifiant anonyme
+  et l'identifiant technique marchand restent disponibles pour le rapprochement.
+- Les événements navigateur reçoivent une `page` issue d'une liste fermée de
+  routes publiques et d'entrée produit ; tous les autres chemins deviennent
+  `/other`. Aucun identifiant de jeu, code de retrait ou chemin libre n'est envoyé.
+  La liste est volontairement identique dans les deux applications.
+- Les trois UTM explicites déjà autorisés sont lus sur l'URL courante, avec la
+  même validation de codes courts. Ils ne créent aucun stockage d'attribution
+  supplémentaire. URL complète, paramètres libres, fragments, référents et
+  propriétés personnelles automatiques restent exclus. Source absente ne
+  signifie pas trafic direct.
+- Un consentement donné au milieu du parcours ne rejoue pas les clics antérieurs ;
+  son retrait peut laisser une séquence partielle. Ne pas classer ces cas comme
+  des abandons certains. Un refus ne bloque aucune opération métier.
+
+### Rapports privés dans 212872 EU
+
+Tous les rapports exigent `environment=production`,
+`consentVersion=2026-10-15`, `trackingVersion=v1`, avec exclusion des comptes
+internes/tests selon la cohorte déjà configurée. Cette cohorte n'est pas une
+preuve que tout le trafic interne a été identifié. Le fuseau du projet est UTC.
+
+| Rapport | Dénominateur et fenêtre |
+| --- | --- |
+| [Acquisition complète](https://eu.posthog.com/project/212872/insights/0gtandAv) | Personnes uniques ayant cliqué start_trial, puis inscription commencée/terminée, onboarding, publication, en ordre avec événements intermédiaires autorisés ; 30 jours pour convertir. Ne couvre pas les inscriptions directes. |
+| [Inscription → publication](https://eu.posthog.com/project/212872/insights/awBx9gfa) | Personnes uniques ayant signup_completed, puis campaign_published en 30 jours ; inscriptions directes incluses, onboarding non exigé. Première publication observée après cette inscription, pas historique reconstitué. |
+| [Démo → confirmation](https://eu.posthog.com/project/212872/insights/kLONjXG3) | Personnes uniques ayant commencé puis confirmé en 30 minutes ; pas ratio de tentatives. Historique antérieur au correctif non exploitable. |
+| [Pages vues](https://eu.posthog.com/project/212872/insights/qXHjKxpv) | Nombre de vues par page autorisée, pas personnes uniques. Valeurs historiques absentes non attribuables. |
+| [CTA par source](https://eu.posthog.com/project/212872/insights/VeBB7gA1) | Nombre de clics start_trial par utmSource du clic, pas inscriptions ni attribution multi-touch. |
+
+Fenêtre d'observation : 90 jours pour les deux funnels à conversion sous 30 jours,
+28 jours pour démo, pages et sources. Cela permet de relire des cohortes matures
+sans les limiter à une période plus courte que leur délai de conversion.
+Cela ne signifie pas que cette profondeur de données consenties existe.
+Les cohortes des 30 derniers jours n'ont pas
+toutes terminé leur fenêtre de conversion. Zéro entrant donne un taux **N/D**,
+pas 0 % ni 100 % d'abandon. Taux global = dernière étape / entrées ; conversion
+intermédiaire = étape suivante / étape précédente ; ne pas les confondre.
+Le catalogue de métriques était vide lors du contrôle : ces définitions de
+travail sont documentées, pas des métriques certifiées du catalogue PostHog.
+
+### Recette et lecture récurrente
+
+`node scripts/audit-conversion.mjs` relit le projet, les requêtes et les comptes
+agrégés en lecture seule. Il vérifie obligatoirement 212872/EU et ne publie
+aucun identifiant personnel ou secret. Il lit les variables privées serveur
+autorisées dans l'environnement ou le `.env.local` non suivi du SaaS.
+`--configure-insights` modifie uniquement le funnel connu et les quatre insights
+nommés, sans doublon ; ne pas l'utiliser pour une simple lecture. Aucun dashboard
+historique ni cohorte, rétention, ingestion ou événement passé n'est modifié.
+
+Lecture hebdomadaire proposée : vérifier d'abord les volumes et la qualité de
+capture, puis les étapes et les sources ; revue mensuelle des cohortes matures.
+C'est une procédure manuelle, pas une automation activée. GSC/Bing reste un
+chantier SEO distinct. Le [bilan initial](releases/2026-10-16-conversion-507.md)
+consigne les valeurs et les limites avant déploiement du correctif.
+
+Références : [funnels](https://posthog.com/docs/product-analytics/funnels),
+[envoi avant navigation](https://posthog.com/docs/libraries/js/usage),
+[sous-domaines](https://posthog.com/tutorials/cross-domain-tracking).

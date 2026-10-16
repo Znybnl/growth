@@ -91,6 +91,29 @@ radios clavier, reset et protections réseau/stockage après l'allègement.
 
 ## E2E : mise en place progressive
 
+### Qualité du funnel d'acquisition — #507
+
+`landing-conversion.spec.ts` exerce le vrai SDK, avec tous les paquets gzip/JSON
+interceptés : début/fin une fois par tentative, pas de double comptage sur les
+retours, reset, refus/absence/retrait, absence de replay après accord, CTA avant
+navigation, pages autorisées et UTM sans donnée libre. Les quatre tailles de la
+landing sont couvertes ; le token est la fixture locale, jamais une clé réelle.
+
+`acquisition-identity.spec.ts` nécessite deux builds locaux avec cette fixture :
+`PLAYWRIGHT_BASE_URL=http://localhost:3310 LANDING_TEST_BASE_URL=http://localhost:3308
+npm run test:e2e -w @okado/web-app -- acquisition-identity.spec.ts`.
+Les espaces d'URL www/app sont intégralement redirigés vers ces serveurs locaux ;
+le POST signup et l'onboarding sont simulés, toute autre sortie est bloquée.
+Vérifier cookie partagé, identifiant anonyme conservé au début d'inscription et
+rapprochement `$identify` au même identifiant marchand que le contrat serveur.
+Ce test n'est pas une création de compte ni une preuve de conversion organique.
+Sans le second serveur explicitement fourni, ce scénario est ignoré.
+
+La suite isolée `test:analytics-consent` vérifie aussi les routes sensibles
+regroupées en `/other`, les UTM rejetés, les options d'envoi immédiat et la
+synchronisation volontaire des deux implémentations. Relancer lint/build des
+deux apps, les suites de consentement et les régressions publiques d'auth.
+
 ### Notifications de gains — #473
 
 Le retour propriétaire du 6 octobre ajoute les tests SQL de lecture des noms, stabilité et expurgation des snapshots privés ; échappement HTML, noms absents/partiels et compatibilité des anciens jobs ; objets datés aux changements de mois/année et parties numérotées. Le lien de préférences est testé sans session, sans droit sur le site et en multisite : cookie de site autorisé, redirection interne fixe et aucune mutation de préférence. Les rendus doivent montrer les noms et le pied de page, sans logo Okado.
