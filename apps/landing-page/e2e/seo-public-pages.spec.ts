@@ -140,20 +140,20 @@ test("la démonstration reste indépendante de l’avis et ne transmet aucune co
   });
   await page.goto("/");
   await expect(
-    page.getByText("Démonstration simplifiée :", { exact: false }),
+    page.getByText("Démo : aucun lot réel", { exact: false }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Jouer", exact: true }).click();
   await page
-    .getByRole("button", { name: "Continuer sans laisser d’avis" })
+    .getByRole("button", { name: "Jouer maintenant" })
     .click();
   await expect(
-    page.getByRole("button", { name: "Simuler la confirmation" }),
+    page.getByRole("button", { name: "Recevoir mon gain" }),
   ).toBeVisible();
   await page.getByLabel("Prénom de démonstration").fill("Camille");
   await page.getByLabel("E-mail de démonstration").fill("demo@example.com");
-  await page.getByRole("button", { name: "Simuler la confirmation" }).click();
+  await page.getByRole("button", { name: "Recevoir mon gain" }).click();
   await expect(
-    page.getByText("Exemple de confirmation du gain.", { exact: true }),
+    page.getByRole("heading", { name: "Votre gain est confirmé !", exact: true }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Redémarrer la démo" }).click();
   await expect(

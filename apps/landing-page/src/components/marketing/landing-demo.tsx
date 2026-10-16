@@ -6,11 +6,16 @@ import {
   Check,
   Gift,
   Mail,
+  MessageSquare,
   RotateCcw,
   ShieldCheck,
-  Star,
 } from "lucide-react";
 import { captureMarketingEvent } from "@/lib/marketing-analytics";
+import {
+  DemoMailPreview,
+  DemoRedemption,
+  DemoReview,
+} from "./demo-story-panels";
 import styles from "./landing-demo.module.css";
 
 const wheelSegments = [
@@ -22,8 +27,6 @@ const wheelSegments = [
   { label: "Perdu", fill: "#162238", dark: true },
   { label: "Boisson", fill: "#b5bfea", dark: false },
   { label: "Perdu", fill: "#162238", dark: true },
-  { label: "Surprise", fill: "#fffaf1", dark: false },
-  { label: "Perdu", fill: "#162238", dark: true },
 ];
 const beautyWheelSegments = [
   { label: "Soin", fill: "#edb9c8", dark: false },
@@ -32,13 +35,9 @@ const beautyWheelSegments = [
   { label: "Perdu", fill: "#3b1936", dark: true },
   { label: "Mini soin", fill: "#edb9c8", dark: false },
   { label: "Perdu", fill: "#3b1936", dark: true },
-  { label: "15 €", fill: "#fff8f2", dark: false },
-  { label: "Perdu", fill: "#3b1936", dark: true },
   { label: "Trousse", fill: "#edb9c8", dark: false },
   { label: "Perdu", fill: "#3b1936", dark: true },
 ];
-const winningSegmentCenterDegrees = 18;
-const winningRotationDegrees = 360 - winningSegmentCenterDegrees;
 const demoChartData = [
   { day: "Lun.", scans: 22, leads: 7 },
   { day: "Mar.", scans: 34, leads: 11 },
@@ -54,8 +53,21 @@ const kpis = [
   { label: "Contacts collectés", value: "117" },
   { label: "Conversion parties / scans", value: "70 %" },
 ];
-const stages = ["Le jeu", "Le gain", "La suite"];
-type DemoStep = "intro" | "action" | "spinning" | "form" | "done";
+const stages = ["Jouer", "Recevoir", "E-mail"];
+type DemoStep =
+  | "intro"
+  | "action"
+  | "google"
+  | "spinning"
+  | "form"
+  | "done"
+  | "mail";
+const panelTitles: Partial<Record<DemoStep, string>> = {
+  action: "Avant de jouer",
+  google: "Votre avis sur Google",
+  done: "Votre gain est confirmé !",
+  mail: "Votre e-mail de gain",
+};
 
 function wheelPoint(degrees: number) {
   const radians = ((degrees - 90) * Math.PI) / 180;
@@ -72,16 +84,21 @@ export function LandingDemo({
   const [rotation, setRotation] = useState(16);
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
+  const [rating, setRating] = useState(0);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const panelHeading = useRef<HTMLHeadingElement>(null);
   const playButton = useRef<HTMLButtonElement>(null);
   const previousStep = useRef<DemoStep>("intro");
   const isBeauty = variant === "beauty";
   const segments = isBeauty ? beautyWheelSegments : wheelSegments;
+  const segmentDegrees = 360 / segments.length;
+  const winningSegmentCenterDegrees = segmentDegrees / 2;
+  const winningRotationDegrees = 360 - winningSegmentCenterDegrees;
   const businessName = isBeauty ? "L’atelier beauté" : "Le bistro";
   const rewardLabel = isBeauty ? "un soin découverte" : "1 dessert";
-  const hasPanel = step === "action" || step === "form" || step === "done";
-  const stage = step === "done" ? 2 : step === "form" ? 1 : 0;
+  const hasPanel = step !== "intro" && step !== "spinning";
+  const stage =
+    step === "done" || step === "mail" ? 2 : step === "form" ? 1 : 0;
 
   useEffect(
     () => () => {
@@ -101,6 +118,7 @@ export function LandingDemo({
     setStep("intro");
     setFirstName("");
     setEmail("");
+    setRating(0);
     setRotation(16);
   }
 
@@ -177,54 +195,64 @@ export function LandingDemo({
             </div>
             <div className={styles.screen}>
               <p className={styles.business}>
-                <Star size={17} aria-hidden="true" />
-                {businessName}
+                <span
+                  className={styles.businessMark}
+                  data-testid="demo-business-mark"
+                  aria-hidden="true"
+                >
+                  {isBeauty ? "ab" : "lb"}
+                </span>
+                <span>
+                  {businessName}
+                  <small>
+                    {isBeauty ? "Institut de beauté" : "Café · restaurant"}
+                  </small>
+                </span>
               </p>
               <div className={styles.stageContent}>
                 {hasPanel && (
                   <section
                     className={styles.panel}
+                    data-step={step}
                     aria-labelledby={`${id}-panel-title`}
                   >
                     <div className={styles.panelIcon} aria-hidden="true">
-                      {step === "action" ? (
-                        <Star />
+                      {step === "action" || step === "google" ? (
+                        <MessageSquare />
                       ) : step === "form" ? (
                         <Gift />
                       ) : (
-                        <Check />
+                        <Mail />
                       )}
                     </div>
-                    <p className={styles.panelEyebrow}>
-                      {step === "action"
-                        ? "Avant de jouer"
-                        : step === "form"
-                          ? "Bien joué !"
-                          : "Et voilà !"}
-                    </p>
                     <h3
                       id={`${id}-panel-title`}
                       ref={panelHeading}
                       tabIndex={-1}
                     >
-                      {step === "action"
-                        ? "Partager votre expérience ?"
-                        : step === "form"
-                          ? `Bravo, vous avez gagné ${rewardLabel}.`
-                          : "Exemple de confirmation du gain."}
+                      {step === "form" ? (
+                        <>
+                          Félicitations ! Vous avez remporté
+                          <span className={styles.prizeLabel}>
+                            « {rewardLabel} »
+                          </span>
+                        </>
+                      ) : (
+                        panelTitles[step]
+                      )}
                     </h3>
                     {step === "action" ? (
                       <>
                         <p>
-                          Un avis reste facultatif, libre et indépendant du jeu.
-                          Dans cette démo, aucun avis n’est publié.
+                          Découvrez notre établissement sur Google, puis revenez
+                          ici pour jouer.
                         </p>
                         <button
                           type="button"
-                          onClick={startSpin}
+                          onClick={() => setStep("google")}
                           className={styles.primary}
                         >
-                          Simuler le clic vers Google{" "}
+                          Écrire un avis{" "}
                           <ArrowRight size={16} aria-hidden="true" />
                         </button>
                         <button
@@ -232,34 +260,46 @@ export function LandingDemo({
                           onClick={startSpin}
                           className={styles.secondary}
                         >
-                          Continuer sans laisser d’avis
+                          Jouer maintenant
                         </button>
                       </>
+                    ) : step === "google" ? (
+                      <DemoReview
+                        rating={rating}
+                        onRatingChange={setRating}
+                        onContinue={startSpin}
+                      />
+                    ) : step === "mail" ? (
+                      <DemoMailPreview
+                        businessName={businessName}
+                        rewardLabel={rewardLabel}
+                        onBack={() => setStep("done")}
+                      />
                     ) : step === "form" ? (
                       <>
                         <p>
-                          Exemple de formulaire après un gain. Vous pouvez
-                          laisser ces champs vides dans la démo.
+                          Vos informations sont nécessaires pour valider et
+                          envoyer votre gain.
                         </p>
                         <div className={styles.fields}>
                           <label>
-                            Prénom
+                            <span className={styles.srOnly}>Prénom</span>
                             <input
                               value={firstName}
                               onChange={(event) =>
                                 setFirstName(event.target.value)
                               }
-                              placeholder="Ex. Camille"
+                              placeholder="Prénom"
                               aria-label="Prénom de démonstration"
                               autoComplete="off"
                             />
                           </label>
                           <label>
-                            E-mail
+                            <span className={styles.srOnly}>E-mail</span>
                             <input
                               value={email}
                               onChange={(event) => setEmail(event.target.value)}
-                              placeholder="Ex. camille@exemple.fr"
+                              placeholder="E-mail"
                               aria-label="E-mail de démonstration"
                               type="email"
                               autoComplete="off"
@@ -269,30 +309,30 @@ export function LandingDemo({
                         <button
                           type="button"
                           onClick={complete}
-                          className={styles.primary}
+                          className={`${styles.primary} ${styles.receive}`}
                         >
-                          Simuler la confirmation{" "}
-                          <ArrowRight size={16} aria-hidden="true" />
+                          Recevoir mon gain
                         </button>
                       </>
                     ) : (
                       <>
                         <div className={styles.reward}>
                           <Gift size={20} aria-hidden="true" />
-                          <span>
-                            {rewardLabel}
-                            <small>Gain fictif · démonstration</small>
-                          </span>
+                          <span>{rewardLabel}</span>
                         </div>
                         <p>
-                          Dans une campagne réelle, le joueur reçoit ses
-                          informations de retrait. Aucun e-mail n’est envoyé
-                          ici.
+                          Vous allez recevoir votre gain par e-mail (vérifiez
+                          vos spams).
                         </p>
-                        <p className={styles.receipt}>
-                          <Mail size={16} aria-hidden="true" />
-                          Vous avez terminé le parcours client.
-                        </p>
+                        <DemoRedemption />
+                        <button
+                          type="button"
+                          onClick={() => setStep("mail")}
+                          className={styles.secondary}
+                        >
+                          Voir l’e-mail{" "}
+                          <ArrowRight size={16} aria-hidden="true" />
+                        </button>
                       </>
                     )}
                   </section>
@@ -323,7 +363,7 @@ export function LandingDemo({
                         {segments.map((segment, index) => (
                           <g key={index}>
                             <path
-                              d={`M150,150 L${wheelPoint(index * 36)} A146,146 0 0 1 ${wheelPoint((index + 1) * 36)} Z`}
+                              d={`M150,150 L${wheelPoint(index * segmentDegrees)} A146,146 0 0 1 ${wheelPoint((index + 1) * segmentDegrees)} Z`}
                               fill={segment.fill}
                               stroke="#ffffff"
                               strokeWidth="1"
@@ -333,9 +373,9 @@ export function LandingDemo({
                               y="51"
                               textAnchor="middle"
                               dominantBaseline="middle"
-                              transform={`rotate(${index * 36 + winningSegmentCenterDegrees} 150 150)`}
+                              transform={`rotate(${index * segmentDegrees + winningSegmentCenterDegrees} 150 150)`}
                               fill={segment.dark ? "#ffffff" : "#162238"}
-                              fontSize="12"
+                              fontSize="14"
                               fontWeight="700"
                             >
                               {segment.label}
@@ -380,22 +420,23 @@ export function LandingDemo({
                     </button>
                   </div>
                   <p className={styles.wheelHint}>
-                    {step === "spinning"
-                      ? "La roue tourne…"
-                      : "Appuyez sur Jouer pour commencer."}
+                    {step === "spinning" ? "La roue tourne…" : ""}
                   </p>
                 </div>
               </div>
-              <p className={styles.screenFooter}>
-                <ShieldCheck size={13} aria-hidden="true" /> Démonstration ·
-                aucun lot réel
-              </p>
             </div>
           </div>
+          <p className={styles.disclaimer} data-testid="demo-disclaimer">
+            <ShieldCheck size={16} aria-hidden="true" />
+            <span>
+              Démo : aucun lot réel, avis publié ou e-mail envoyé. Saisies non
+              transmises.
+            </span>
+          </p>
           <p className={styles.srOnly} role="status">
             {step === "spinning"
               ? "La roue tourne…"
-              : `Étape ${stage + 1} sur 3 : ${stages[stage]}`}
+              : `Étape ${stage + 1} sur 3 : ${panelTitles[step] ?? stages[stage]}`}
           </p>
           <button type="button" onClick={resetDemo} className={styles.reset}>
             <RotateCcw size={15} aria-hidden="true" />
@@ -473,13 +514,6 @@ export function LandingDemo({
           </p>
         </div>
       </div>
-      <p className={styles.disclaimer}>
-        <ShieldCheck size={16} aria-hidden="true" />
-        <span>
-          Démonstration simplifiée : aucun lot réel, aucune coordonnée
-          transmise, aucun e-mail envoyé.
-        </span>
-      </p>
     </div>
   );
 }

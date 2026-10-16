@@ -72,6 +72,23 @@ Les captures sont locales ; les coordonnées sont fictives, le choix de mesure
 est refusé et les requêtes analytics interceptées. Aucun POST métier attendu.
 Rejouer aussi les suites SEO, marque/FAQ et consentement existantes.
 
+Complément #516 : contrôler les huit secteurs/quatre pertes et le centre
+gagnant à 337,5° (rotation cible 1 777,5°), les logos sans étoile, puis les
+parcours Google sans note/1 étoile/5 étoiles sur les trois pages. Les tests
+contrôlent les radios natifs au clavier, la remise à zéro de la note et des
+champs depuis Google/l'e-mail, l'absence de requête Google/POST et de stockage
+local/session supplémentaire. La confirmation explicite l'e-mail/spams ;
+l'aperçu utilise une adresse fictive fixe et un QR non utilisable, jamais les
+coordonnées saisies. Les KPI restent inchangés et les nouvelles étapes n'ajoutent
+aucun événement ni propriété analytics.
+
+Simplification #516 : contrôler les noms inchangés « Le bistro » / « L’atelier
+beauté », les libellés repris du SaaS, l'absence d'encart pédagogique et des
+mentions répétées de simulation dans le téléphone. Un seul avertissement reste
+à l'extérieur. Le QR illustratif est visible dès la confirmation ; aucun lien
+de retrait réel ni téléchargement n'est exposé. Rejouer les mêmes parcours,
+radios clavier, reset et protections réseau/stockage après l'allègement.
+
 ## E2E : mise en place progressive
 
 ### Notifications de gains — #473

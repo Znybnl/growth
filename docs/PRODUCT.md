@@ -184,6 +184,34 @@ facultatifs, aucun lot réel, aucune coordonnée transmise et aucun e-mail envoy
 Les exemples chiffrés ne promettent pas de résultats. Le suivi d'audience reste
 soumis au choix existant, sans nouveau traitement.
 
+### Parcours de démonstration approuvé le 16 octobre 2026 — #516
+
+Les enseignes fictives ont une identité typographique distincte de l'étoile
+Okado. La roue de démonstration a huit secteurs (quatre lots/quatre pertes) et
+un gain déterminé pour montrer la suite, sans représenter une probabilité réelle.
+L'invitation Google peut être ignorée ; son écran simulé propose de une à cinq
+étoiles sans présélection. Aucune note, y compris l'absence de note, n'influence
+le jeu ou le gain ; rien n'est publié, envoyé ni persisté depuis cet écran.
+
+Simplification validée ensuite par le propriétaire le même jour : montrer le
+parcours plutôt qu'en expliquer chaque étape. Les noms « Le bistro » et
+« L’atelier beauté » sont conservés. L'invitation reprend « Avant de jouer »,
+« Écrire un avis » et « Jouer maintenant » du jeu réel. L'écran Google se limite
+au titre, aux cinq étoiles et au retour au jeu ; il ne reproduit pas toute
+l'interface externe. Les explications contextuelles côté commerce sont retirées.
+
+Le formulaire local reste facultatif ; son titre, son information sur l'envoi
+du gain, ses placeholders et « Recevoir mon gain » reprennent le SaaS.
+La confirmation reprend « Votre gain est confirmé ! » et le texte réel
+e-mail/spams, avec un QR illustratif et l'instruction de présentation.
+Un aperçu facultatif utilise exclusivement une identité et une adresse fictives.
+Un seul avertissement, hors du téléphone, précise l'absence de lot, d'avis publié,
+d'envoi et de transmission des saisies ; les écrans ne répètent plus ces mentions.
+Les QR n'encodent aucune capacité de retrait. Aucun indicateur fictif n'est
+incrémenté. Les jeux, avis, tirages, consentements et e-mails réels du SaaS ne
+sont pas modifiés. La démo n'est pas une reproduction exhaustive des formulaires,
+conditions ou téléchargements du jeu réel.
+
 ## Questions ouvertes
 
 - [ ] Définir les critères de retrait forcé à afficher et à journaliser pour le personnel du commerce.
