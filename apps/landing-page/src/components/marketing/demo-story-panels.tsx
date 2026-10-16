@@ -16,12 +16,8 @@ export function DemoReview({
   const id = useId();
   return (
     <>
-      <p>
-        Dans un jeu réel, le lien ouvre Google. Cet écran simplifié reste dans
-        la démo : aucun compte connecté, aucun avis publié.
-      </p>
-      <fieldset className={styles.rating} aria-describedby={`${id}-notice`}>
-        <legend>Votre note de démonstration</legend>
+      <fieldset className={styles.rating}>
+        <legend className={styles.srOnly}>Votre note</legend>
         <div className={styles.ratingOptions}>
           {[1, 2, 3, 4, 5].map((value) => (
             <label key={value} className={styles.ratingOption}>
@@ -44,21 +40,20 @@ export function DemoReview({
             </label>
           ))}
         </div>
-        <p className={styles.ratingValue}>
-          {rating
-            ? `${rating} sur 5 · sélection fictive`
-            : "Aucune note sélectionnée"}
-        </p>
       </fieldset>
-      <p id={`${id}-notice`} className={styles.reviewNotice}>
-        Avec ou sans note, le jeu et le gain sont identiques. Rien n’est
-        transmis à Google.
-      </p>
       <button type="button" onClick={onContinue} className={styles.primary}>
         Revenir au jeu <ArrowRight size={16} aria-hidden="true" />
       </button>
-      <p className={styles.noPublish}>Ce bouton ne publie pas d’avis.</p>
     </>
+  );
+}
+
+export function DemoRedemption() {
+  return (
+    <div className={styles.mockQr} data-testid="demo-redemption-qr">
+      <QrCode size={72} aria-hidden="true" />
+      <p>Présentez ce QR code lors de votre rendez-vous.</p>
+    </div>
   );
 }
 
@@ -73,34 +68,16 @@ export function DemoMailPreview({
 }) {
   return (
     <>
-      <p className={styles.mailNotice}>
-        Aperçu fictif : aucun e-mail n’est envoyé.
-      </p>
       <div className={styles.mailPreview}>
         <div className={styles.mailMeta}>
-          <span>De : {businessName} · exemple</span>
+          <span>De : {businessName}</span>
           <span>À : camille@exemple.test</span>
         </div>
         <h4>Félicitations Camille&nbsp;!</h4>
         <p>
           Votre gain : <strong>{rewardLabel}</strong>
         </p>
-        <p>
-          Lors de votre prochaine visite, présentez votre QR de retrait à
-          l’établissement.
-        </p>
-        <div className={styles.mockQr}>
-          <QrCode size={64} aria-hidden="true" />
-          <span>
-            QR illustratif
-            <br />
-            Non utilisable
-          </span>
-        </div>
-        <p className={styles.mailConditions}>
-          Dans un jeu réel, les conditions et dates de validité définies par
-          l’établissement figurent ici.
-        </p>
+        <DemoRedemption />
       </div>
       <button type="button" onClick={onBack} className={styles.secondary}>
         <ArrowLeft size={16} aria-hidden="true" />

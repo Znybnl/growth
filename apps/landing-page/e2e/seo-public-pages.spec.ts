@@ -140,11 +140,11 @@ test("la démonstration reste indépendante de l’avis et ne transmet aucune co
   });
   await page.goto("/");
   await expect(
-    page.getByText("Démonstration simplifiée :", { exact: false }),
+    page.getByText("Démo : aucun lot réel", { exact: false }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Jouer", exact: true }).click();
   await page
-    .getByRole("button", { name: "Continuer sans laisser d’avis" })
+    .getByRole("button", { name: "Jouer maintenant" })
     .click();
   await expect(
     page.getByRole("button", { name: "Recevoir mon gain" }),

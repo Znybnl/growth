@@ -82,6 +82,13 @@ l'aperçu utilise une adresse fictive fixe et un QR non utilisable, jamais les
 coordonnées saisies. Les KPI restent inchangés et les nouvelles étapes n'ajoutent
 aucun événement ni propriété analytics.
 
+Simplification #516 : contrôler les noms inchangés « Le bistro » / « L’atelier
+beauté », les libellés repris du SaaS, l'absence d'encart pédagogique et des
+mentions répétées de simulation dans le téléphone. Un seul avertissement reste
+à l'extérieur. Le QR illustratif est visible dès la confirmation ; aucun lien
+de retrait réel ni téléchargement n'est exposé. Rejouer les mêmes parcours,
+radios clavier, reset et protections réseau/stockage après l'allègement.
+
 ## E2E : mise en place progressive
 
 ### Notifications de gains — #473

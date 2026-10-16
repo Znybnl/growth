@@ -13,15 +13,29 @@ restaurant/beauté, pas les jeux réels ou la configuration des fournisseurs.
   pas d'étoile Okado utilisée comme logo marchand.
 - Huit secteurs et libellés agrandis ; géométrie calculée depuis le nombre de
   secteurs, bouton centré et rotation cohérente avec le premier lot déterminé.
-- Écran Google simplifié explicitement simulé, sans compte, publication,
+- Écran Google simplifié, sans compte, publication,
   présélection ou commentaire demandé. Radios de une à cinq étoiles natifs,
   accessibles au clavier ; retour au jeu possible sans note.
 - Aucun effet du choix Google ou de sa note sur le gain.
 - Formulaire facultatif expliquant la finalité e-mail et CTA « Recevoir mon
   gain » ; confirmation du gain, réception par e-mail et spams explicites.
-- Rappel permanent de simulation et absence d'envoi réel ; aperçu d'e-mail
+- Un seul rappel hors téléphone de simulation et absence d'envoi réel ; aperçu d'e-mail
   facultatif avec identité/adresse fictives fixes et QR illustratif non utilisable.
-- Explication contextuelle côté commerce ; statistiques d'exemple inchangées.
+- Statistiques d'exemple inchangées, sans encart pédagogique contextuel.
+
+### Ajustement validé après la première revue
+
+Le propriétaire demande une démo à regarder et à essayer, plus proche des vrais
+écrans, sans explications répétées. Cet accord du 16 octobre remplace la proposition
+d'encart « Comprendre cette étape » et les badges de simulation dans le téléphone.
+Les noms « Le bistro » et « L’atelier beauté » sont inchangés, ainsi que les
+monogrammes et les huit secteurs. Les textes de l'invitation, du formulaire et de
+la confirmation viennent de `campaign-experience.tsx` ; pas de réécriture du SaaS.
+Le QR illustratif et l'instruction réelle sont montrés dès la confirmation.
+L'écran Google garde uniquement titre, étoiles et retour ; l'e-mail garde son
+contenu utile, sans texte expliquant la démonstration. Les variantes restent
+simplifiées : pas de conditions/dates inventées, ni de téléchargement ou code
+de retrait fonctionnel, ni de collecte réelle.
 
 ## Données et limites
 
@@ -45,7 +59,7 @@ synthétiques, refus de mesure et interceptions analytics. Le build local utilis
 une clé de fixture : ne pas le publier, Vercel reconstruira depuis le commit.
 Les résultats finaux sont consignés dans la PR.
 
-Résultats locaux : **68/68 tests navigateur** sur les quatre tailles d'écran,
+Première version, avant simplification : **68/68 tests navigateur** sur les quatre tailles d'écran,
 puis **20/20 scénarios démo rejoués sur le build final** après les deux finitions
 de texte/typographie ; **4/4 tests isolés de consentement**. Lint, build (27 pages),
 source/UTF-8 et diff vérifiés. Captures des sept états relues en 320/1440 px,
@@ -54,6 +68,17 @@ puis des écrans Google/e-mail en 390/768 px. Rotation réelle contrôlée à
 de panneau visibles sous l'en-tête fixe à 320 px. Revue React : état local,
 radios natifs, focus sans réinitialisation au choix d'une note, nettoyage du
 timer et animation du conteneur SVG ; aucune dépendance ajoutée.
+Les preuves après simplification sont consignées séparément dans la PR et
+doivent être renouvelées sur son dernier commit.
+
+Après simplification : **68/68 tests navigateur** (dont 20 scénarios démo)
+à 320/390/768/1440 px et **4/4 tests isolés de consentement**. Lint, build
+(27 pages), source/UTF-8 et diff vérifiés. Les nouveaux contrôles protègent les
+noms d'enseigne, les textes du SaaS, l'avertissement unique extérieur et le QR
+dès la confirmation. Captures restaurant et beauté relues ; absence de
+débordement sur les quatre tailles. Animation réelle à −22,5° et titre focalisé
+visible à 320 px. Le premier essai ciblé avait rencontré un serveur local non
+démarré (commande corrigée) ; la suite complète a ensuite réussi en 3,3 minutes.
 
 Recette propriétaire : tester l'accueil et la variante beauté, sans Google puis
 avec zéro/une/cinq étoiles ; confirmer sans coordonnées, ouvrir et refermer

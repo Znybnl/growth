@@ -11,7 +11,11 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { captureMarketingEvent } from "@/lib/marketing-analytics";
-import { DemoMailPreview, DemoReview } from "./demo-story-panels";
+import {
+  DemoMailPreview,
+  DemoRedemption,
+  DemoReview,
+} from "./demo-story-panels";
 import styles from "./landing-demo.module.css";
 
 const wheelSegments = [
@@ -58,39 +62,9 @@ type DemoStep =
   | "form"
   | "done"
   | "mail";
-const story: Record<DemoStep, { title: string; text: string }> = {
-  intro: {
-    title: "Le QR ouvre votre jeu",
-    text: "Votre enseigne, vos couleurs et vos lots accompagnent le client dès son arrivée.",
-  },
-  action: {
-    title: "Une invitation, pas une condition",
-    text: "Le joueur peut ignorer l’invitation Google. Le jeu et le gain ne dépendent ni d’un avis ni de sa note.",
-  },
-  google: {
-    title: "Google est un écran distinct",
-    text: "Dans un parcours réel, le lien ouvre Google. Un clic ne prouve pas qu’un avis a été publié. Ici, aucune note n’est transmise.",
-  },
-  spinning: {
-    title: "Une partie, un résultat",
-    text: "Dans cette démo, le gain est déterminé pour illustrer la suite. Les règles et probabilités des jeux réels ne sont pas modifiées.",
-  },
-  form: {
-    title: "L’e-mail sert à recevoir le gain",
-    text: "Les coordonnées permettent au gagnant de retrouver son gain. Elles ne constituent pas un accord pour recevoir de la prospection.",
-  },
-  done: {
-    title: "Le gain accompagne la prochaine visite",
-    text: "Dans un jeu réel, l’e-mail contient le gain et ses informations de retrait. Rien n’est envoyé depuis cette démonstration.",
-  },
-  mail: {
-    title: "Un gain facile à retrouver",
-    text: "Le client retrouve son lot et les instructions de retrait dans son e-mail. Cet aperçu et son QR sont purement illustratifs.",
-  },
-};
 const panelTitles: Partial<Record<DemoStep, string>> = {
-  action: "Partager votre expérience ?",
-  google: "Simulation d’avis Google",
+  action: "Avant de jouer",
+  google: "Votre avis sur Google",
   done: "Votre gain est confirmé !",
   mail: "Votre e-mail de gain",
 };
@@ -220,9 +194,6 @@ export function LandingDemo({
               <span>•••</span>
             </div>
             <div className={styles.screen}>
-              <p className={styles.simulationBadge}>
-                Démo · aucune action réelle
-              </p>
               <p className={styles.business}>
                 <span
                   className={styles.businessMark}
@@ -242,6 +213,7 @@ export function LandingDemo({
                 {hasPanel && (
                   <section
                     className={styles.panel}
+                    data-step={step}
                     aria-labelledby={`${id}-panel-title`}
                   >
                     <div className={styles.panelIcon} aria-hidden="true">
@@ -253,38 +225,34 @@ export function LandingDemo({
                         <Mail />
                       )}
                     </div>
-                    <p className={styles.panelEyebrow}>
-                      {step === "action"
-                        ? "Avant de jouer"
-                        : step === "google"
-                          ? "Écran externe simulé"
-                          : step === "form"
-                            ? "Bien joué !"
-                            : step === "mail"
-                              ? "Boîte de réception · exemple"
-                              : "À retrouver par e-mail"}
-                    </p>
                     <h3
                       id={`${id}-panel-title`}
                       ref={panelHeading}
                       tabIndex={-1}
                     >
-                      {step === "form"
-                        ? `Bravo, vous avez gagné ${rewardLabel}.`
-                        : panelTitles[step]}
+                      {step === "form" ? (
+                        <>
+                          Félicitations ! Vous avez remporté
+                          <span className={styles.prizeLabel}>
+                            « {rewardLabel} »
+                          </span>
+                        </>
+                      ) : (
+                        panelTitles[step]
+                      )}
                     </h3>
                     {step === "action" ? (
                       <>
                         <p>
-                          Un avis reste facultatif, libre et indépendant du jeu.
-                          Dans cette démo, aucun avis n’est publié.
+                          Découvrez notre établissement sur Google, puis revenez
+                          ici pour jouer.
                         </p>
                         <button
                           type="button"
                           onClick={() => setStep("google")}
                           className={styles.primary}
                         >
-                          Découvrir l’écran Google{" "}
+                          Écrire un avis{" "}
                           <ArrowRight size={16} aria-hidden="true" />
                         </button>
                         <button
@@ -292,7 +260,7 @@ export function LandingDemo({
                           onClick={startSpin}
                           className={styles.secondary}
                         >
-                          Continuer sans laisser d’avis
+                          Jouer maintenant
                         </button>
                       </>
                     ) : step === "google" ? (
@@ -310,29 +278,28 @@ export function LandingDemo({
                     ) : step === "form" ? (
                       <>
                         <p>
-                          Recevez votre gain et ses informations de retrait par
-                          e-mail. Dans cette démo, les champs restent
-                          facultatifs et rien n’est transmis.
+                          Vos informations sont nécessaires pour valider et
+                          envoyer votre gain.
                         </p>
                         <div className={styles.fields}>
                           <label>
-                            Prénom
+                            <span className={styles.srOnly}>Prénom</span>
                             <input
                               value={firstName}
                               onChange={(event) =>
                                 setFirstName(event.target.value)
                               }
-                              placeholder="Ex. Camille"
+                              placeholder="Prénom"
                               aria-label="Prénom de démonstration"
                               autoComplete="off"
                             />
                           </label>
                           <label>
-                            E-mail
+                            <span className={styles.srOnly}>E-mail</span>
                             <input
                               value={email}
                               onChange={(event) => setEmail(event.target.value)}
-                              placeholder="Ex. camille@exemple.test"
+                              placeholder="E-mail"
                               aria-label="E-mail de démonstration"
                               type="email"
                               autoComplete="off"
@@ -351,25 +318,19 @@ export function LandingDemo({
                       <>
                         <div className={styles.reward}>
                           <Gift size={20} aria-hidden="true" />
-                          <span>
-                            {rewardLabel}
-                            <small>Gain fictif · démonstration</small>
-                          </span>
+                          <span>{rewardLabel}</span>
                         </div>
                         <p>
-                          Vous allez recevoir votre gain par e-mail. Pensez à
-                          vérifier vos spams.
+                          Vous allez recevoir votre gain par e-mail (vérifiez
+                          vos spams).
                         </p>
-                        <p className={styles.receipt}>
-                          <Mail size={16} aria-hidden="true" />
-                          Simulation : aucun e-mail n’est réellement envoyé.
-                        </p>
+                        <DemoRedemption />
                         <button
                           type="button"
                           onClick={() => setStep("mail")}
                           className={styles.secondary}
                         >
-                          Voir l’exemple d’e-mail{" "}
+                          Voir l’e-mail{" "}
                           <ArrowRight size={16} aria-hidden="true" />
                         </button>
                       </>
@@ -459,18 +420,19 @@ export function LandingDemo({
                     </button>
                   </div>
                   <p className={styles.wheelHint}>
-                    {step === "spinning"
-                      ? "La roue tourne…"
-                      : "Appuyez sur Jouer pour commencer."}
+                    {step === "spinning" ? "La roue tourne…" : ""}
                   </p>
                 </div>
               </div>
-              <p className={styles.screenFooter}>
-                <ShieldCheck size={13} aria-hidden="true" /> Aucun lot réel ·
-                aucun e-mail envoyé
-              </p>
             </div>
           </div>
+          <p className={styles.disclaimer} data-testid="demo-disclaimer">
+            <ShieldCheck size={16} aria-hidden="true" />
+            <span>
+              Démo : aucun lot réel, avis publié ou e-mail envoyé. Saisies non
+              transmises.
+            </span>
+          </p>
           <p className={styles.srOnly} role="status">
             {step === "spinning"
               ? "La roue tourne…"
@@ -498,11 +460,6 @@ export function LandingDemo({
               collectés.
             </p>
           </div>
-          <aside className={styles.story} aria-labelledby={`${id}-story-title`}>
-            <p>Comprendre cette étape</p>
-            <h4 id={`${id}-story-title`}>{story[step].title}</h4>
-            <p>{story[step].text}</p>
-          </aside>
           <dl className={styles.kpis}>
             {kpis.map((kpi) => (
               <div key={kpi.label}>
@@ -557,13 +514,6 @@ export function LandingDemo({
           </p>
         </div>
       </div>
-      <p className={styles.disclaimer}>
-        <ShieldCheck size={16} aria-hidden="true" />
-        <span>
-          Démonstration simplifiée : aucun lot réel, aucune coordonnée
-          transmise, aucun e-mail envoyé.
-        </span>
-      </p>
     </div>
   );
 }

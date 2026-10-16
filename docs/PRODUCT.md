@@ -193,13 +193,24 @@ L'invitation Google peut être ignorée ; son écran simulé propose de une à c
 étoiles sans présélection. Aucune note, y compris l'absence de note, n'influence
 le jeu ou le gain ; rien n'est publié, envoyé ni persisté depuis cet écran.
 
-Le formulaire local reste facultatif et explique la réception du gain par
-e-mail, avec « Recevoir mon gain ». La confirmation reprend « Votre gain est
-confirmé ! » et la réception par e-mail/spams, avec rappel explicite qu'aucun
-e-mail réel n'est envoyé. Un aperçu facultatif utilise exclusivement une identité
-et une adresse fictives, ainsi qu'un QR illustratif non utilisable. L'explication
-côté commerce suit l'étape, sans incrémenter les indicateurs fictifs. Les jeux,
-avis, tirages, consentements et e-mails réels du SaaS ne sont pas modifiés.
+Simplification validée ensuite par le propriétaire le même jour : montrer le
+parcours plutôt qu'en expliquer chaque étape. Les noms « Le bistro » et
+« L’atelier beauté » sont conservés. L'invitation reprend « Avant de jouer »,
+« Écrire un avis » et « Jouer maintenant » du jeu réel. L'écran Google se limite
+au titre, aux cinq étoiles et au retour au jeu ; il ne reproduit pas toute
+l'interface externe. Les explications contextuelles côté commerce sont retirées.
+
+Le formulaire local reste facultatif ; son titre, son information sur l'envoi
+du gain, ses placeholders et « Recevoir mon gain » reprennent le SaaS.
+La confirmation reprend « Votre gain est confirmé ! » et le texte réel
+e-mail/spams, avec un QR illustratif et l'instruction de présentation.
+Un aperçu facultatif utilise exclusivement une identité et une adresse fictives.
+Un seul avertissement, hors du téléphone, précise l'absence de lot, d'avis publié,
+d'envoi et de transmission des saisies ; les écrans ne répètent plus ces mentions.
+Les QR n'encodent aucune capacité de retrait. Aucun indicateur fictif n'est
+incrémenté. Les jeux, avis, tirages, consentements et e-mails réels du SaaS ne
+sont pas modifiés. La démo n'est pas une reproduction exhaustive des formulaires,
+conditions ou téléchargements du jeu réel.
 
 ## Questions ouvertes
 

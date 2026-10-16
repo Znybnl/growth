@@ -41,6 +41,16 @@ test("roue entière, étapes lisibles et résultats accessibles dans les trois v
   ]) {
     await page.goto(path);
     const demo = page.locator("#demo");
+    const phoneScreen = demo.getByTestId("demo-phone");
+    await expect(phoneScreen).toContainText(
+      path === "/instituts-beaute" ? "L’atelier beauté" : "Le bistro",
+    );
+    await expect(demo.getByText("Comprendre cette étape")).toHaveCount(0);
+    await expect(demo.getByTestId("demo-disclaimer")).toHaveCount(1);
+    await expect(phoneScreen.getByTestId("demo-disclaimer")).toHaveCount(0);
+    await expect(phoneScreen).not.toContainText(
+      /simulation|démonstration|fictif/i,
+    );
     const play = demo.getByRole("button", { name: "Jouer", exact: true });
     await expect(play).toBeEnabled();
     await expect(demo.getByTestId("demo-business-mark")).toHaveText(
@@ -84,27 +94,21 @@ test("roue entière, étapes lisibles et résultats accessibles dans les trois v
 
     await play.click();
     await expect(
-      demo.getByRole("heading", { name: "Partager votre expérience ?" }),
+      demo.getByRole("heading", { name: "Avant de jouer" }),
     ).toBeFocused();
-    for (const name of [
-      "Découvrir l’écran Google",
-      "Continuer sans laisser d’avis",
-    ]) {
+    for (const name of ["Écrire un avis", "Jouer maintenant"]) {
       const button = demo.getByRole("button", { name });
       await expect(button).toBeVisible();
       expect((await button.boundingBox())!.height).toBeGreaterThanOrEqual(44);
     }
     await demo
       .getByRole("button", {
-        name:
-          path === "/"
-            ? "Continuer sans laisser d’avis"
-            : "Découvrir l’écran Google",
+        name: path === "/" ? "Jouer maintenant" : "Écrire un avis",
       })
       .click();
     if (path !== "/") {
       await expect(
-        demo.getByRole("heading", { name: "Simulation d’avis Google" }),
+        demo.getByRole("heading", { name: "Votre avis sur Google" }),
       ).toBeFocused();
       await demo.getByRole("radio", { name: "5 étoiles", exact: true }).check();
       await demo
@@ -117,9 +121,17 @@ test("roue entière, étapes lisibles et résultats accessibles dans les trois v
     ).toBeDisabled();
     await expect(rotor).toHaveAttribute("style", /rotate\(1777\.5deg\)/);
     const formTitle = demo.getByRole("heading", {
-      name: `Bravo, vous avez gagné ${reward}.`,
+      name: `Félicitations ! Vous avez remporté « ${reward} »`,
     });
     await expect(formTitle).toBeFocused();
+    await expect(
+      demo.getByText(
+        "Vos informations sont nécessaires pour valider et envoyer votre gain.",
+      ),
+    ).toBeVisible();
+    await expect(phoneScreen).not.toContainText(
+      /simulation|démonstration|fictif/i,
+    );
     await expect(demo.locator('li[aria-current="step"]')).toHaveText(
       /Recevoir/,
     );
@@ -140,19 +152,28 @@ test("roue entière, étapes lisibles et résultats accessibles dans les trois v
     await expect(
       demo.getByText(/Vous allez recevoir votre gain par e-mail/),
     ).toBeVisible();
+    await expect(demo.getByTestId("demo-redemption-qr")).toBeVisible();
     await expect(
-      demo.getByText(/Simulation : aucun e-mail n’est réellement envoyé/),
+      demo.getByText(
+        "Vous allez recevoir votre gain par e-mail (vérifiez vos spams).",
+        { exact: true },
+      ),
     ).toBeVisible();
-    await demo.getByRole("button", { name: "Voir l’exemple d’e-mail" }).click();
+    await expect(phoneScreen).not.toContainText(
+      /simulation|démonstration|fictif/i,
+    );
+    await demo.getByRole("button", { name: "Voir l’e-mail" }).click();
     await expect(
       demo.getByRole("heading", { name: "Votre e-mail de gain" }),
     ).toBeFocused();
     await expect(
       demo.getByText("À : camille@exemple.test", { exact: true }),
     ).toBeVisible();
-    await expect(
-      demo.getByText("Non utilisable", { exact: false }),
-    ).toBeVisible();
+    await expect(demo.getByTestId("demo-redemption-qr")).toBeVisible();
+    await expect(phoneScreen.locator("a")).toHaveCount(0);
+    await expect(phoneScreen).not.toContainText(
+      /simulation|démonstration|fictif|Dans un jeu réel/i,
+    );
     await demo
       .getByRole("button", { name: "Revenir à la confirmation" })
       .click();
@@ -165,9 +186,7 @@ test("roue entière, étapes lisibles et résultats accessibles dans les trois v
     await demo.getByRole("button", { name: "Redémarrer la démo" }).click();
     await expect(play).toBeFocused();
     await play.click();
-    await demo
-      .getByRole("button", { name: "Continuer sans laisser d’avis" })
-      .click();
+    await demo.getByRole("button", { name: "Jouer maintenant" }).click();
     await expect(page.getByLabel("Prénom de démonstration")).toHaveValue("");
     await expect(page.getByLabel("E-mail de démonstration")).toHaveValue("");
   }
@@ -188,15 +207,15 @@ test("parcours clavier et mouvement réduit : pas de rotation animée ni de form
   ).not.toBe("none");
   await page.keyboard.press("Enter");
   await expect(
-    demo.getByRole("heading", { name: "Partager votre expérience ?" }),
+    demo.getByRole("heading", { name: "Avant de jouer" }),
   ).toBeFocused();
   await page.keyboard.press("Tab");
   await expect(
-    demo.getByRole("button", { name: "Découvrir l’écran Google" }),
+    demo.getByRole("button", { name: "Écrire un avis" }),
   ).toBeFocused();
   await page.keyboard.press("Tab");
   await expect(
-    demo.getByRole("button", { name: "Continuer sans laisser d’avis" }),
+    demo.getByRole("button", { name: "Jouer maintenant" }),
   ).toBeFocused();
   await page.keyboard.press("Enter");
   expect(
@@ -204,7 +223,9 @@ test("parcours clavier et mouvement réduit : pas de rotation animée ni de form
       .getByTestId("demo-wheel")
       .evaluate((wheel) => getComputedStyle(wheel).transitionDuration),
   ).toBe("0s");
-  await expect(demo.getByRole("heading", { name: /Bravo/ })).toBeFocused({
+  await expect(
+    demo.getByRole("heading", { name: /Félicitations/ }),
+  ).toBeFocused({
     timeout: 1500,
   });
   await page.keyboard.press("Tab");
@@ -227,16 +248,16 @@ test("redémarrer pendant la rotation annule le résultat différé", async ({
   await page.goto("/");
   const demo = page.locator("#demo");
   await demo.getByRole("button", { name: "Jouer", exact: true }).click();
-  await demo
-    .getByRole("button", { name: "Continuer sans laisser d’avis" })
-    .click();
+  await demo.getByRole("button", { name: "Jouer maintenant" }).click();
   await expect(demo.getByRole("status")).toHaveText("La roue tourne…");
   await demo.getByRole("button", { name: "Redémarrer la démo" }).click();
   await page.waitForTimeout(2300);
   await expect(
     demo.getByRole("button", { name: "Jouer", exact: true }),
   ).toBeEnabled();
-  await expect(demo.getByRole("heading", { name: /Bravo/ })).toHaveCount(0);
+  await expect(
+    demo.getByRole("heading", { name: /Félicitations/ }),
+  ).toHaveCount(0);
 });
 
 test("Google simulé : aucune note, 1 ou 5 étoiles donnent le même gain sans échange réseau ni stockage", async ({
@@ -266,11 +287,9 @@ test("Google simulé : aucune note, 1 ou 5 étoiles donnent le même gain sans �
       ]);
       const demo = page.locator("#demo");
       await demo.getByRole("button", { name: "Jouer", exact: true }).click();
-      await demo
-        .getByRole("button", { name: "Découvrir l’écran Google" })
-        .click();
+      await demo.getByRole("button", { name: "Écrire un avis" }).click();
       await expect(
-        demo.getByRole("heading", { name: "Simulation d’avis Google" }),
+        demo.getByRole("heading", { name: "Votre avis sur Google" }),
       ).toBeFocused();
       await expect(demo.getByRole("radio")).toHaveCount(5);
       await expect(demo.locator('input[type="radio"]:checked')).toHaveCount(0);
@@ -283,13 +302,13 @@ test("Google simulé : aucune note, 1 ou 5 étoiles donnent le même gain sans �
           .check();
       await expect(
         demo.getByText("Comprendre cette étape", { exact: true }),
-      ).toBeVisible();
+      ).toHaveCount(0);
       await demo
         .getByRole("button", { name: "Revenir au jeu", exact: true })
         .click();
       await expect(
         demo.getByRole("heading", {
-          name: `Bravo, vous avez gagné ${reward}.`,
+          name: `Félicitations ! Vous avez remporté « ${reward} »`,
         }),
       ).toBeFocused();
       await demo
@@ -321,7 +340,7 @@ test("étoiles au clavier, retour de l’aperçu e-mail et remise à zéro de to
   await page.goto("/");
   const demo = page.locator("#demo");
   await demo.getByRole("button", { name: "Jouer", exact: true }).click();
-  await demo.getByRole("button", { name: "Découvrir l’écran Google" }).click();
+  await demo.getByRole("button", { name: "Écrire un avis" }).click();
   await page.keyboard.press("Tab");
   const first = demo.getByRole("radio", { name: "1 étoile", exact: true });
   await expect(first).toBeFocused();
@@ -334,7 +353,7 @@ test("étoiles au clavier, retour de l’aperçu e-mail et remise à zéro de to
   await expect(first).toBeChecked();
   await demo.getByRole("button", { name: "Redémarrer la démo" }).click();
   await demo.getByRole("button", { name: "Jouer", exact: true }).click();
-  await demo.getByRole("button", { name: "Découvrir l’écran Google" }).click();
+  await demo.getByRole("button", { name: "Écrire un avis" }).click();
   await expect(demo.locator('input[type="radio"]:checked')).toHaveCount(0);
   await demo
     .getByRole("button", { name: "Revenir au jeu", exact: true })
@@ -346,7 +365,7 @@ test("étoiles au clavier, retour de l’aperçu e-mail et remise à zéro de to
   await demo
     .getByRole("button", { name: "Recevoir mon gain", exact: true })
     .click();
-  await demo.getByRole("button", { name: "Voir l’exemple d’e-mail" }).click();
+  await demo.getByRole("button", { name: "Voir l’e-mail" }).click();
   await expect(
     demo.getByRole("heading", { name: "Votre e-mail de gain" }),
   ).toBeFocused();
@@ -360,15 +379,13 @@ test("étoiles au clavier, retour de l’aperçu e-mail et remise à zéro de to
   await expect(
     demo.getByRole("heading", { name: "Votre gain est confirmé !" }),
   ).toBeFocused();
-  await demo.getByRole("button", { name: "Voir l’exemple d’e-mail" }).click();
+  await demo.getByRole("button", { name: "Voir l’e-mail" }).click();
   await demo.getByRole("button", { name: "Redémarrer la démo" }).click();
   await expect(
     demo.getByRole("button", { name: "Jouer", exact: true }),
   ).toBeFocused();
   await demo.getByRole("button", { name: "Jouer", exact: true }).click();
-  await demo
-    .getByRole("button", { name: "Continuer sans laisser d’avis" })
-    .click();
+  await demo.getByRole("button", { name: "Jouer maintenant" }).click();
   await expect(page.getByLabel("Prénom de démonstration")).toHaveValue("");
   await expect(page.getByLabel("E-mail de démonstration")).toHaveValue("");
 });
