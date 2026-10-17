@@ -280,3 +280,13 @@ Chaque demande de merge ou de production doit indiquer, en quelques lignes :
 ## Performances des écrans marchands — #500
 
 `test:page-performance`, les tests SQL complémentaires de `test:metrics` et `e2e/page-performance.spec.ts` contrôlent les charges utiles sans médias, la parité des indicateurs, les ACL privées, l'isolation multi-sites, les conditions des lots, la déduplication des alertes et les invalidations concurrentes. Les tests navigateur utilisent une fixture synthétique 404 en production et aucune base réelle. Voir [protocole avant/après et limites des mesures](releases/2026-10-14-page-performance-500.md).
+
+## Popins de gain — #558
+
+`e2e/gain-popins.spec.ts` couvre la roue et le ticket, en public/prévisualisation,
+avec/sans conditions et collecte avant/après jeu. La première popin de gain ne
+présente plus les conditions, mais la confirmation détaillée les conserve,
+y compris en repli sur le résultat préparé si la réponse finale les omet. Les
+tests contrôlent aussi dates/QR/téléchargement, consentement inchangé, échec et
+nouvelle tentative, absence de lot et captures mobile/desktop. Serveur local en
+mémoire, mutations et sorties HTTPS interceptées : aucun envoi ni écriture réelle.

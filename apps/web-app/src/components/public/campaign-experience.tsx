@@ -1396,14 +1396,6 @@ export function CampaignExperience({
                   ? "Recevoir mon gain"
                   : "Enregistrer"}
           </button>
-          {!isPreGameLeadCapture && previewUsageConditions ? (
-            <div className="rounded-[22px] bg-[#fff8e8] px-5 py-4 text-left text-sm leading-6 text-[#6c5313]">
-              <p className="text-xs uppercase tracking-[0.2em] text-[#8a6a18]">
-                Conditions d&apos;utilisation
-              </p>
-              <p className="mt-2 whitespace-pre-line break-words">{previewUsageConditions}</p>
-            </div>
-          ) : null}
         </form>
       </PublicModal>
 
