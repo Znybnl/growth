@@ -15,6 +15,9 @@ function relatedTitle(path: string) {
     {
       "/comment-ca-marche": "Comment fonctionne un jeu QR code ?",
       "/affiches-qr-code": "Créer une affiche et tester son QR code",
+      "/restaurants": "Jeu QR code pour restaurant",
+      "/instituts-beaute": "Animation pour institut de beauté",
+      "/guides/placer-qr-code-jeu": "Où placer un QR code de jeu ?",
       "/guides/mesurer-jeu-qr-code": "Lire les bons indicateurs",
       "/tarifs": "Tarifs et essai gratuit",
     }[path] ?? path
@@ -134,8 +137,12 @@ export function BlogPostTemplate({ post }: { post: BlogPost }) {
             Découvrez comment Okado relie un support en point de vente, un jeu mobile et le suivi des gains.
           </p>
           <div className="mt-6">
-            <PrimaryButton href={`${APP_URL}/inscription`} trackingName="start_trial" trackingLocation="blog_article">
-              Essayer Okado
+            <PrimaryButton
+              href={post.ctaHref ?? `${APP_URL}/inscription`}
+              trackingName="start_trial"
+              trackingLocation="blog_article"
+            >
+              {post.ctaLabel ?? "Essayer Okado"}
             </PrimaryButton>
           </div>
         </aside>

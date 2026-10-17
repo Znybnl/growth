@@ -15,6 +15,8 @@ export type BlogPost = {
   reviewedAt: string;
   readingTime: string;
   image?: string;
+  ctaLabel?: string;
+  ctaHref?: string;
 };
 
 export const blogPosts: BlogPost[] = [
@@ -117,6 +119,8 @@ export const blogPosts: BlogPost[] = [
     updatedAt: "2026-10-17",
     reviewedAt: "2026-10-17",
     readingTime: "7 min de lecture",
+    ctaLabel: "Voir un exemple d’animation QR code",
+    ctaHref: "/comment-ca-marche",
     sections: [
       {
         title: "Un QR code ne crée pas l’animation à lui seul",
@@ -183,6 +187,8 @@ export const blogPosts: BlogPost[] = [
     related: [
       "/affiches-qr-code",
       "/comment-ca-marche",
+      "/restaurants",
+      "/instituts-beaute",
       "/guides/placer-qr-code-jeu",
       "/guides/mesurer-jeu-qr-code",
     ],
