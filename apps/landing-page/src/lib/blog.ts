@@ -402,6 +402,118 @@ export const blogPosts: BlogPost[] = [
       },
     ],
   },
+  {
+    path: "/blog/jeu-concours-ou-promotion",
+    title: "Jeu-concours ou promotion : quelle stratégie choisir ?",
+    description:
+      "Jeu-concours ou promotion ? Comparez objectifs, effort, perception client, lots, durée, collecte consentie et mesure avant de choisir votre campagne locale.",
+    eyebrow: "Stratégie marketing local",
+    intro:
+      "Une promotion réduit ou valorise immédiatement une offre ; un jeu-concours ajoute une participation et une expérience. Le bon choix dépend de ce que vous cherchez à provoquer, de ce que votre équipe peut délivrer et de ce que vous voulez réellement mesurer.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-17",
+    updatedAt: "2026-10-17",
+    reviewedAt: "2026-10-17",
+    readingTime: "8 min de lecture",
+    ctaLabel: "Choisir un format d’animation",
+    ctaHref: "/comment-ca-marche",
+    sections: [
+      {
+        title: "La différence en une phrase",
+        paragraphs: [
+          "Une promotion met en avant une offre et sa condition d’achat ; un jeu-concours demande une participation pour découvrir un résultat, un lot ou une sélection. La promotion répond souvent à une décision immédiate. Le jeu-concours ajoute une étape d’attention et peut créer un moment mémorable, sans garantir une vente ou une prochaine visite.",
+          "Il n’existe pas de meilleur format dans l’absolu. Commencez par l’objectif de la campagne : trafic, découverte d’un produit, prochaine visite, animation d’un temps d’attente ou collecte facultative et consentie. Un objectif principal rend le choix et la mesure plus cohérents.",
+        ],
+      },
+      {
+        title: "Une matrice simple pour choisir",
+        paragraphs: [
+          "Utilisez cette grille comme point de départ, puis adaptez-la à votre activité, vos conditions et votre clientèle :",
+        ],
+        items: [
+          "Choisissez une promotion si l’offre doit être comprise en quelques secondes, si le bénéfice est certain et si votre priorité est une décision d’achat immédiate.",
+          "Choisissez un jeu-concours si vous voulez créer une interaction courte, faire découvrir plusieurs lots ou animer un support visible dans votre point de vente.",
+          "Choisissez une dotation utilisable plus tard si l’objectif est d’inviter à une prochaine visite et si vous pouvez gérer une date de validité claire.",
+          "Choisissez une collecte uniquement si elle est réellement utile, expliquée, facultative et séparée de l’accès au jeu ou de l’obtention du gain.",
+          "Combinez les formats seulement si chaque étape garde un rôle compréhensible : le jeu attire l’attention, la promotion décrit l’offre et les conditions restent lisibles.",
+        ],
+      },
+      {
+        title: "Trafic, découverte ou prochaine visite : partez de l’objectif",
+        paragraphs: [
+          "Pour soutenir un lancement ou rendre une offre visible, une promotion peut être plus directe : le produit, la réduction ou l’avantage est annoncé sans détour. Pour animer une zone d’attente, une table, un accueil ou un événement, un jeu par QR code peut ajouter une expérience mobile à un support physique.",
+          "Pour favoriser une prochaine visite, les deux formats peuvent fonctionner à condition de préciser la période, les jours concernés et les éventuelles conditions d’achat. Une dotation attribuée n’est pas une visite future ; une promotion affichée n’est pas une réservation.",
+          "Si l’objectif est la découverte produit, choisissez un lot ou une offre que l’équipe sait présenter. Évitez de faire gagner une prestation ou un article indisponible, difficile à expliquer ou incompatible avec votre capacité de service.",
+        ],
+      },
+      {
+        title: "Comparez coût et effort sans inventer un ROI",
+        paragraphs: [
+          "Une promotion consomme généralement une partie de votre marge ou de votre stock. Un jeu-concours demande en plus de préparer une mécanique, des lots, un support, des conditions et une procédure de retrait. Le coût réel dépend de votre activité, de votre volume et du temps de l’équipe.",
+          "Pour un jeu mobile, prévoyez les lots, leurs probabilités ou stocks, leur validité et la manière de confirmer un retrait. Dans Okado, la roue ou le ticket, le QR de diffusion et le suivi des participations, gains et retraits structurent ce parcours ; ils ne remplacent pas vos décisions de budget et de capacité.",
+          "Ne comparez pas les formats avec un taux de retour universel. Notez plutôt les hypothèses avant le lancement : coût d’un lot, durée, emplacement, objectif, étapes mesurées et capacité de remise. Vous pourrez ensuite comparer des campagnes dans un contexte comparable.",
+        ],
+      },
+      {
+        title: "Perception client : certitude ou surprise",
+        paragraphs: [
+          "Une promotion annonce un avantage déterminé : le client sait ce qu’il obtient et sous quelle condition. Elle convient lorsque la clarté et la rapidité priment. Un jeu-concours introduit de la surprise, mais aussi une incertitude : le message doit expliquer la mécanique, les lots possibles et les conditions sans créer de fausse attente.",
+          "Le ton compte autant que la mécanique. Une roue personnalisée peut s’intégrer à un univers de marque ; un ticket à gratter peut mettre en scène une découverte tactile sur smartphone. Le choix doit suivre votre positionnement, pas une promesse de conversion automatique.",
+          "Dans les deux cas, n’échangez pas un gain contre un avis Google ou une note. Une invitation à partager une expérience, si elle existe, doit rester indépendante de la participation et du résultat.",
+        ],
+      },
+      {
+        title: "Lots, conditions et collecte : trois sujets à séparer",
+        paragraphs: [
+          "Un lot doit être désirable, disponible et compréhensible. Indiquez les dates, les produits ou prestations concernés, les éventuelles conditions d’achat et la procédure de retrait. Une réduction immédiate, un cadeau avec achat et une prestation valable lors d’une prochaine visite ne sont pas la même offre.",
+          "La collecte de coordonnées répond à une finalité différente de la participation. Si vous demandez un e-mail pour transmettre un gain, expliquez cette utilisation. Si vous proposez une prospection, son consentement doit rester distinct, facultatif et non nécessaire pour jouer ou retirer le lot.",
+          "Pour les règles commerciales ou les jeux avec tirage, vérifiez les obligations applicables à votre situation et faites relire les mentions nécessaires. Cet article ne remplace pas un avis juridique local et ne fournit pas de modèle de règlement universel.",
+        ],
+      },
+      {
+        title: "Durée et mesure : observez les bonnes étapes",
+        paragraphs: [
+          "Une promotion peut être liée à une date ou à un stock ; un jeu-concours peut avoir une période de participation, une date de sélection ou une durée de validité des gains. Dans les deux cas, affichez une fin compréhensible et retirez les supports devenus inexacts.",
+          "Pour une promotion, vous pouvez suivre l’utilisation de l’offre avec les données dont vous disposez. Pour un jeu, distinguez scans, participations, contacts éventuellement collectés, gains attribués et retraits confirmés. Aucun de ces événements ne prouve seul une vente causée par la campagne.",
+          "Comparez les résultats avec le contexte : emplacement, période, lot, prix, météo, horaires, équipe et fréquentation. Une campagne peu performante peut avoir un problème de visibilité ou de conditions, pas nécessairement de format.",
+        ],
+      },
+      {
+        title: "Dans quels cas combiner les deux approches ?",
+        paragraphs: [
+          "Une combinaison peut être utile lorsque le jeu crée l’attention et que la promotion explique une offre certaine. Par exemple, un QR code peut ouvrir une animation, puis une condition de remise peut être affichée clairement pour un lot précis. Le client doit savoir ce qui relève du résultat du jeu et ce qui relève de la promotion.",
+          "Évitez l’empilement de conditions : participation obligatoire, achat minimum, durée courte, stock limité et collecte marketing peuvent rendre l’expérience illisible. Si l’équipe ne peut pas expliquer le parcours en une phrase, simplifiez-le avant de diffuser.",
+          "La combinaison n’est pas une garantie de meilleure performance. Elle est pertinente seulement si elle sert un objectif précis et si vous pouvez suivre chaque étape sans confondre participation, gain, retrait et vente.",
+        ],
+      },
+      {
+        title: "Checklist de décision avant lancement",
+        paragraphs: [
+          "Avant de choisir votre format, répondez à ces questions :",
+        ],
+        items: [
+          "L’objectif principal est-il une décision immédiate, une découverte, une prochaine visite ou une animation ?",
+          "Le client a-t-il besoin de certitude ou une expérience de surprise est-elle pertinente ?",
+          "L’équipe peut-elle expliquer l’offre, les lots et les conditions en quelques secondes ?",
+          "Le coût du stock, des lots, du support et du temps de remise est-il compatible avec votre campagne ?",
+          "Les données collectées sont-elles nécessaires, expliquées et séparées du consentement marketing ?",
+          "Les indicateurs permettent-ils de distinguer attention, participation, gain, retrait et vente ?",
+        ],
+      },
+    ],
+    related: [
+      "/tarifs",
+      "/comment-ca-marche",
+      "/guides/cout-jeu-marketing",
+      "/guides/mesurer-jeu-qr-code",
+    ],
+    source: [
+      {
+        label: "Google Search Central — contenu utile",
+        href: "https://developers.google.com/search/docs/fundamentals/creating-helpful-content",
+      },
+    ],
+  },
 ];
 
 export function blogPostByPath(path: string) {
