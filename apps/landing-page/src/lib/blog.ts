@@ -1590,6 +1590,183 @@ export const blogPosts: BlogPost[] = [
       "/comment-ca-marche",
     ],
   },
+  {
+    path: "/blog/animer-periode-creuse-commerce-local",
+    title: "Comment animer une période creuse dans un commerce local ?",
+    description:
+      "Identifiez un vrai créneau calme et choisissez une animation locale adaptée à votre équipe, sans promettre de remplir le commerce ni baisser les prix en continu.",
+    eyebrow: "Animation commerciale locale",
+    intro:
+      "Pour animer une période creuse, commencez par identifier le jour ou l’horaire réellement calme, puis choisissez une action compatible avec votre capacité de service. Une offre ponctuelle, un jeu ou un atelier peut créer une raison de venir, mais ne garantit ni le remplissage du créneau ni une hausse automatique du chiffre d’affaires.",
+    answer:
+      "Une animation de période creuse se construit autour d’un créneau précis, d’un objectif limité, d’une promesse compréhensible et d’une durée courte. Comparez ensuite le passage, les participations, les utilisations d’offre, les retraits et la charge de l’équipe avec un contexte comparable, sans confondre fréquentation et rentabilité.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-17",
+    updatedAt: "2026-10-17",
+    reviewedAt: "2026-10-17",
+    readingTime: "9 min de lecture",
+    image: "/images/blog/animer-periode-creuse-commerce-local.webp",
+    imageAlt: "Illustration d’un commerce local qui prépare une animation sur un créneau calme",
+    ctaLabel: "Préparer une opération sur un créneau calme",
+    ctaHref: "/tarifs",
+    sections: [
+      {
+        title: "Diagnostiquez le creux avant de créer l’animation",
+        paragraphs: [
+          "Une période creuse peut être un jour précis, une heure entre deux services, une saison ou un moment où l’équipe dispose de capacité. Ne partez pas d’une impression générale : regardez les passages, les réservations, les ventes, les demandes et les contraintes de service sur plusieurs périodes comparables.",
+          "Notez aussi ce qui rend le créneau difficile : accès, transport, météo, habitudes de la clientèle, horaires voisins ou manque de visibilité. Une animation ne corrige pas une contrainte structurelle à elle seule. Elle doit répondre à un contexte identifiable et rester réversible si l’hypothèse ne se vérifie pas.",
+        ],
+        items: [
+          "Jour ou horaire concerné, plutôt qu’une promesse vague de dynamiser toute la semaine.",
+          "Capacité disponible de l’équipe, de l’espace et du stock.",
+          "Type de fréquentation observée et public que vous souhaitez toucher.",
+          "Facteurs externes : saison, événement local, travaux, météo ou calendrier de réservation.",
+        ],
+      },
+      {
+        title: "Choisissez un objectif adapté au créneau",
+        paragraphs: [
+          "Un créneau calme ne doit pas forcément être rempli à tout prix. Vous pouvez chercher à faire découvrir un produit, tester un service, faciliter une réservation, créer une prochaine visite ou utiliser une capacité déjà disponible. Un objectif principal permet de choisir une mécanique simple et de mesurer un résultat précis.",
+          "Évitez de mélanger fréquentation, ventes, contacts et fidélité dans une seule promesse. Un passage supplémentaire est un événement ; il ne prouve pas à lui seul une vente rentable ni une relation durable. Définissez ce qui sera observé avant le lancement.",
+        ],
+        items: [
+          "Faire découvrir une nouveauté pendant une heure identifiée.",
+          "Proposer une expérience ou un atelier lorsque l’équipe peut l’accompagner.",
+          "Encourager une prochaine visite avec une condition claire et limitée.",
+          "Tester une offre ou une animation avant d’envisager une diffusion plus large.",
+        ],
+      },
+      {
+        title: "Faut-il choisir une offre, un jeu ou un atelier ?",
+        paragraphs: [
+          "Le bon format dépend de ce que le commerce peut délivrer pendant le créneau. Une offre est souvent facile à expliquer, un jeu par QR code peut créer une participation courte, et un atelier donne une raison de rester mais demande davantage de préparation et d’espace.",
+          "Ne choisissez pas une mécanique seulement parce qu’elle attire l’attention ailleurs. Vérifiez la capacité de l’équipe, le stock, la durée, les règles et le parcours client. Pour trouver d’autres formats, consultez le [calendrier marketing pour commerce local](/blog/calendrier-marketing-commerce-local) et les [idées de promotions pour commerce local](/blog/idees-promotions-commerce-local).",
+        ],
+        items: [
+          "Offre ponctuelle : utile pour une décision simple, avec marge, dates et exclusions vérifiées.",
+          "Jeu par QR code : adapté à une participation autonome ou à une animation courte, avec lots et conditions préparés.",
+          "Atelier ou démonstration : pertinent pour faire découvrir un savoir-faire, si la capacité d’accueil est réelle.",
+          "Partenariat local : intéressant pour croiser les publics, à condition de répartir clairement les rôles.",
+        ],
+      },
+      {
+        title: "Limitez la durée et le périmètre",
+        paragraphs: [
+          "Une animation de période creuse gagne à être limitée à un créneau, une date, un produit ou une capacité. Une durée courte facilite la communication, le briefing et le bilan. Elle évite aussi de transformer une opération de test en remise permanente que la clientèle finirait par attendre.",
+          "Choisissez à l’avance les conditions d’arrêt : stock épuisé, capacité atteinte, fin du créneau ou date prévue. Si l’opération est reconduite, décidez-le après un bilan plutôt que de laisser une promesse se prolonger par défaut.",
+        ],
+        items: [
+          "Un créneau identifiable dans les horaires habituels.",
+          "Une date de début et une date de fin visibles.",
+          "Un volume ou une capacité que l’équipe peut réellement absorber.",
+          "Une règle de fin si les lots, places ou produits disponibles sont épuisés.",
+        ],
+      },
+      {
+        title: "Préparez les lots et les conditions avant de communiquer",
+        paragraphs: [
+          "Une animation peut perdre sa crédibilité si la dotation n’est pas disponible ou si la condition est découverte trop tard. Définissez les lots, leur quantité, leur validité, les produits concernés, l’éventuel achat requis et la procédure de retrait avant de publier l’invitation.",
+          "Dans un jeu mobile, le gain obtenu, la participation et le retrait restent des étapes distinctes. L’équipe doit savoir vérifier la validité et remettre un lot une seule fois selon les règles prévues. Une probabilité configure une répartition ; elle ne promet ni fréquentation, ni ventes, ni nombre de retraits.",
+          "Si la récompense est une remise, vérifiez sa compatibilité avec la marge et les conditions commerciales. Une dotation issue du stock doit aussi être considérée comme une ressource mobilisée, même si elle n’entraîne pas de facture externe.",
+        ],
+      },
+      {
+        title: "Donnez à l’équipe une consigne facile à répéter",
+        paragraphs: [
+          "Une animation sur un créneau calme ne doit pas rendre le service plus complexe. Préparez une phrase qui explique l’objectif, la durée, l’action attendue et la condition principale. Précisez qui répond aux questions, qui vérifie un gain et qui décide en cas de stock épuisé.",
+          "Testez la consigne avec une personne qui n’a pas préparé l’opération. Si elle ne comprend pas le parcours, la clientèle risque de rencontrer la même difficulté. Le temps passé à expliquer, remettre ou corriger une participation fait partie de l’effort réel de l’animation.",
+        ],
+        items: [
+          "Message de présentation en une phrase.",
+          "Rôle de chaque membre de l’équipe pendant le créneau.",
+          "Réponse prévue pour les conditions, les lots et les données demandées.",
+          "Procédure simple si le support, le QR code ou le stock pose problème.",
+        ],
+      },
+      {
+        title: "Communiquez localement sans surpromettre",
+        paragraphs: [
+          "La communication doit préciser où, quand, pour qui et pourquoi venir. Utilisez les canaux déjà consultés par votre clientèle : affichage en boutique, vitrine, réseaux sociaux locaux, partenaires, agenda de quartier ou message lié à une réservation. Une invitation claire vaut mieux qu’une annonce permanente et vague.",
+          "Pour une animation par QR code, le support doit être visible et testable. La page dédiée aux [affiches QR code](/affiches-qr-code) peut servir de point de départ pour préparer le visuel, mais vérifiez toujours le support final dans les conditions réelles de lumière et de distance.",
+          "Ne présentez pas le créneau comme une garantie de gain ou de remplissage. Indiquez la disponibilité, les conditions et la date de fin. Si un contact est proposé, il doit être facultatif et séparé de la participation ou du retrait d’un lot.",
+        ],
+      },
+      {
+        title: "Évitez de déplacer la demande au lieu de la créer",
+        paragraphs: [
+          "Une offre sur un créneau calme peut simplement déplacer une visite depuis une heure qui était déjà active. Pour l’identifier, regardez les passages sur le créneau ciblé et sur les périodes voisines. Une baisse ailleurs ne doit pas être ignorée dans le bilan.",
+          "Le risque est plus élevé si la promesse est valable toute la journée, si elle est reconduite sans limite ou si elle récompense un achat qui aurait eu lieu sans animation. Préférez une durée et une condition liées au moment que vous cherchez à tester.",
+        ],
+        items: [
+          "Comparer le créneau animé avec un créneau voisin non animé lorsque c’est possible.",
+          "Observer les visites et ventes des périodes voisines, pas seulement du créneau ciblé.",
+          "Distinguer passage, participation, utilisation d’offre et vente.",
+          "Arrêter ou ajuster une mécanique qui dégrade le service ou la marge.",
+        ],
+      },
+      {
+        title: "Mesurez avant et après avec un contexte comparable",
+        paragraphs: [
+          "Avant le lancement, notez la situation de référence : période, fréquentation observée, réservations, offre active, équipe présente et capacité disponible. Après l’opération, relevez les mêmes éléments et ajoutez les participations, gains, retraits, utilisations et incidents.",
+          "Ne concluez pas qu’une animation a rempli le commerce à partir d’un seul jour. La météo, un événement voisin, une publication locale ou une variation de stock peuvent expliquer une partie du résultat. Si le contexte n’est pas comparable, présentez les données comme une observation et non comme une causalité.",
+          "Pour une méthode plus complète, séparez les étapes du parcours comme expliqué dans l’article [mesurer une animation commerciale](/blog/mesurer-animation-commerciale).",
+        ],
+        items: [
+          "Fréquentation ou réservations du créneau avant l’opération.",
+          "Scans, participations, contacts consentis, gains et retraits pendant l’opération.",
+          "Utilisations d’offre et ventes éventuelles avec une attribution documentée.",
+          "Temps de préparation, temps de service, lots remis et incidents.",
+          "Décision suivante : conserver, simplifier, déplacer, tester ou arrêter.",
+        ],
+      },
+      {
+        title: "Trois scénarios à adapter à votre activité",
+        paragraphs: [
+          "Les scénarios suivants sont des pistes, pas des résultats garantis. Adaptez-les au rythme, aux produits, aux stocks et aux obligations de votre établissement.",
+        ],
+        items: [
+          "Restaurant : proposer une découverte ou une animation courte sur un service moins demandé, sans dépasser la capacité de la cuisine et de la salle. Suivre réservations, présence, utilisation de l’offre et charge du service.",
+          "Institut de beauté : organiser une démonstration ou une expérience sur un créneau de rendez-vous disponible, avec une règle de réservation claire. Suivre demandes, rendez-vous honorés, temps de prestation et éventuelles prochaines visites.",
+          "Boutique : installer une table de découverte ou un jeu par QR code pendant une heure calme, avec un lot ou une offre réellement disponible. Suivre scans, participations, retraits, passages et utilisations séparément.",
+          "Commerce multi-activité : commencer par un seul créneau et un seul point de vente avant d’étendre l’opération à plusieurs équipes ou établissements.",
+        ],
+      },
+      {
+        title: "Questions fréquentes sur les périodes creuses",
+        paragraphs: [
+          "Quelle animation proposer pour un jour calme ? Choisissez une offre, un jeu, une démonstration ou un atelier qui correspond à la capacité réelle de l’équipe et à l’objectif du créneau. Il n’existe pas de format universel.",
+          "Faut-il baisser les prix pour attirer du monde ? Pas nécessairement. Une expérience, une découverte, une dotation ou une réservation facilitée peuvent répondre à l’objectif. Toute remise doit rester limitée, compréhensible et compatible avec votre marge.",
+          "Comment éviter de déplacer la demande ? Limitez la promesse au créneau ciblé, comparez les périodes voisines et observez si l’offre est utilisée par des clients qui seraient venus de toute façon.",
+          "Une animation peut-elle remplir un créneau calme ? Elle peut créer une raison de venir ou aider à tester une hypothèse, mais aucun remplissage ne doit être garanti sans données et contexte comparables.",
+          "Peut-on utiliser un jeu mobile pendant une période creuse ? Oui, si le support, le parcours, les lots, les conditions et le rôle de l’équipe sont prêts. Les participations ne doivent pas être confondues avec des ventes.",
+        ],
+      },
+      {
+        title: "Checklist pour préparer une opération sur un créneau calme",
+        paragraphs: [
+          "Avant de diffuser l’animation, vérifiez les points suivants :",
+        ],
+        items: [
+          "Le jour ou l’horaire calme est identifié à partir d’observations réelles.",
+          "L’objectif principal et la preuve recherchée sont formulés en une phrase.",
+          "Le format est compatible avec la capacité de service, l’espace et le stock.",
+          "La durée, la date de fin, les lots et les conditions sont visibles.",
+          "L’équipe connaît la consigne, le parcours et la procédure de retrait.",
+          "Le support, le QR code et la page mobile ont été testés.",
+          "La communication locale ne promet ni remplissage, ni gain, ni chiffre d’affaires.",
+          "La mesure sépare fréquentation, participation, retrait, utilisation d’offre et vente.",
+          "Un bilan est prévu pour décider de la suite sans reconduire automatiquement la remise.",
+        ],
+      },
+    ],
+    related: [
+      "/blog/calendrier-marketing-commerce-local",
+      "/blog/idees-promotions-commerce-local",
+      "/restaurants",
+      "/instituts-beaute",
+      "/affiches-qr-code",
+    ],
+  },
 ];
 
 export function blogPostByPath(path: string) {
