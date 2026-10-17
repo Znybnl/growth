@@ -94,6 +94,8 @@ test("le blog utilise un gabarit commun sans commentaires", async ({ page }) => 
     await expect(page.locator("main#contenu")).toHaveCount(1);
     await expect(page.locator("form")).toHaveCount(0);
     await expect(page.getByText("Commentaire", { exact: false })).toHaveCount(0);
+    await expect(page.getByRole("heading", { name: "Pour aller plus loin", exact: true })).toHaveCount(0);
+    await expect(page.getByText("Google Search Central", { exact: false })).toHaveCount(0);
   }
   for (const post of blogPosts) {
     await page.goto(post.path);

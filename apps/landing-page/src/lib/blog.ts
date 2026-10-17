@@ -105,12 +105,6 @@ export const blogPosts: BlogPost[] = [
       "/guides/mesurer-jeu-qr-code",
       "/tarifs",
     ],
-    source: [
-      {
-        label: "Google Search Central — contenu utile",
-        href: "https://developers.google.com/search/docs/fundamentals/creating-helpful-content",
-      },
-    ],
   },
   {
     path: "/blog/animer-point-de-vente-qr-code",
@@ -201,12 +195,6 @@ export const blogPosts: BlogPost[] = [
       "/instituts-beaute",
       "/guides/placer-qr-code-jeu",
       "/guides/mesurer-jeu-qr-code",
-    ],
-    source: [
-      {
-        label: "Google Search Central — contenu utile",
-        href: "https://developers.google.com/search/docs/fundamentals/creating-helpful-content",
-      },
     ],
   },
   {
@@ -307,12 +295,6 @@ export const blogPosts: BlogPost[] = [
       "/affiches-qr-code",
       "/guides/mesurer-jeu-qr-code",
     ],
-    source: [
-      {
-        label: "Google Search Central — contenu utile",
-        href: "https://developers.google.com/search/docs/fundamentals/creating-helpful-content",
-      },
-    ],
   },
   {
     path: "/blog/animation-commerciale-institut-beaute",
@@ -412,12 +394,6 @@ export const blogPosts: BlogPost[] = [
       "/ticket-a-gratter",
       "/roue-de-la-fortune",
       "/tarifs",
-    ],
-    source: [
-      {
-        label: "Google Search Central — contenu utile",
-        href: "https://developers.google.com/search/docs/fundamentals/creating-helpful-content",
-      },
     ],
   },
   {
@@ -529,12 +505,6 @@ export const blogPosts: BlogPost[] = [
       "/guides/cout-jeu-marketing",
       "/guides/mesurer-jeu-qr-code",
     ],
-    source: [
-      {
-        label: "Google Search Central — contenu utile",
-        href: "https://developers.google.com/search/docs/fundamentals/creating-helpful-content",
-      },
-    ],
   },
   {
     path: "/blog/fideliser-clients-sans-programme-points",
@@ -637,12 +607,6 @@ export const blogPosts: BlogPost[] = [
       "/instituts-beaute",
       "/comment-ca-marche",
       "/tarifs",
-    ],
-    source: [
-      {
-        label: "Google Search Central — contenu utile",
-        href: "https://developers.google.com/search/docs/fundamentals/creating-helpful-content",
-      },
     ],
   },
   {
@@ -747,12 +711,6 @@ export const blogPosts: BlogPost[] = [
       "/guides/cout-jeu-marketing",
       "/affiches-qr-code",
       "/tarifs",
-    ],
-    source: [
-      {
-        label: "Google Search Central — contenu utile",
-        href: "https://developers.google.com/search/docs/fundamentals/creating-helpful-content",
-      },
     ],
   },
   {
@@ -866,12 +824,6 @@ export const blogPosts: BlogPost[] = [
       "/instituts-beaute",
       "/restaurants",
       "/comment-ca-marche",
-    ],
-    source: [
-      {
-        label: "Google Search Central — contenu utile",
-        href: "https://developers.google.com/search/docs/fundamentals/creating-helpful-content",
-      },
     ],
   },
 ];
