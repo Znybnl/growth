@@ -17,27 +17,26 @@ import {
   DemoReview,
 } from "./demo-story-panels";
 import styles from "./landing-demo.module.css";
-import { DemoMerchantRedemption } from "./demo-merchant-redemption";
 
 const wheelSegments = [
-  { label: "Dessert", fill: "#b5bfea", dark: false },
-  { label: "Perdu", fill: "#162238", dark: true },
-  { label: "Café", fill: "#fffaf1", dark: false },
-  { label: "Perdu", fill: "#162238", dark: true },
-  { label: "Remise", fill: "#fffaf1", dark: false },
-  { label: "Perdu", fill: "#162238", dark: true },
-  { label: "Boisson", fill: "#b5bfea", dark: false },
-  { label: "Perdu", fill: "#162238", dark: true },
+  { label: "Dessert", dark: false },
+  { label: "Perdu", dark: true },
+  { label: "Café", dark: false },
+  { label: "Perdu", dark: true },
+  { label: "Remise", dark: false },
+  { label: "Perdu", dark: true },
+  { label: "Boisson", dark: false },
+  { label: "Perdu", dark: true },
 ];
 const beautyWheelSegments = [
-  { label: "Soin", fill: "#edb9c8", dark: false },
-  { label: "Perdu", fill: "#3b1936", dark: true },
-  { label: "−10 %", fill: "#fff8f2", dark: false },
-  { label: "Perdu", fill: "#3b1936", dark: true },
-  { label: "Mini soin", fill: "#edb9c8", dark: false },
-  { label: "Perdu", fill: "#3b1936", dark: true },
-  { label: "Trousse", fill: "#edb9c8", dark: false },
-  { label: "Perdu", fill: "#3b1936", dark: true },
+  { label: "Soin", dark: false },
+  { label: "Perdu", dark: true },
+  { label: "−10 %", dark: false },
+  { label: "Perdu", dark: true },
+  { label: "Mini soin", dark: false },
+  { label: "Perdu", dark: true },
+  { label: "Trousse", dark: false },
+  { label: "Perdu", dark: true },
 ];
 const demoChartData = [
   { day: "Lun.", scans: 22, leads: 7 },
@@ -86,10 +85,8 @@ export function LandingDemo({
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
   const [rating, setRating] = useState(0);
-  const [redeemed, setRedeemed] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const panelHeading = useRef<HTMLHeadingElement>(null);
-  const merchantRedemption = useRef<HTMLDivElement>(null);
   const playButton = useRef<HTMLButtonElement>(null);
   const previousStep = useRef<DemoStep>("intro");
   const isBeauty = variant === "beauty";
@@ -122,7 +119,6 @@ export function LandingDemo({
     setFirstName("");
     setEmail("");
     setRating(0);
-    setRedeemed(false);
     setRotation(16);
   }
 
@@ -162,7 +158,7 @@ export function LandingDemo({
         </p>
         <h2>À vous de jouer.</h2>
         <p>
-          Jouez côté client, puis essayez la validation du retrait côté commerce.
+          Découvrez le parcours de vos clients, du premier tour de roue à l’e-mail de gain.
         </p>
       </header>
       <div className={styles.workspace}>
@@ -216,6 +212,7 @@ export function LandingDemo({
                   </small>
                 </span>
               </p>
+              <span className={styles.businessRule} aria-hidden="true" />
               <div className={styles.stageContent}>
                 {hasPanel && (
                   <section
@@ -228,6 +225,8 @@ export function LandingDemo({
                         <MessageSquare />
                       ) : step === "form" ? (
                         <Gift />
+                      ) : step === "done" ? (
+                        <Check />
                       ) : (
                         <Mail />
                       )}
@@ -340,10 +339,6 @@ export function LandingDemo({
                           Voir l’e-mail{" "}
                           <ArrowRight size={16} aria-hidden="true" />
                         </button>
-                        <button type="button" className={styles.secondary} aria-controls={`${id}-redemption`} onClick={() => {
-                          merchantRedemption.current?.scrollIntoView({ block: "center" });
-                          merchantRedemption.current?.focus({ preventScroll: true });
-                        }}>Voir le retrait côté commerce</button>
                       </>
                     )}
                   </section>
@@ -354,13 +349,15 @@ export function LandingDemo({
                   inert={hasPanel}
                   aria-hidden={hasPanel || undefined}
                 >
+                  <p className={styles.gameEyebrow}>Une attention, juste pour vous</p>
                   <p className={styles.gameTitle}>
-                    {isBeauty ? "Prenez soin de vous." : "Jouez et gagnez."}
+                    {isBeauty ? <>Prenez soin<br />de vous.</> : <>Jouez<br />et gagnez.</>}
                   </p>
                   <p className={styles.gameHint}>
                     Un tour de roue, une surprise à découvrir.
                   </p>
                   <div className={styles.wheel}>
+                    <div className={styles.wheelFrame} aria-hidden="true" />
                     <div
                       className={styles.rotor}
                       data-testid="demo-wheel"
@@ -371,13 +368,23 @@ export function LandingDemo({
                       }}
                     >
                       <svg viewBox="0 0 300 300" aria-hidden="true">
+                        <defs>
+                          <linearGradient id={`${id}-light`} x1="0" y1="0" x2="1" y2="1">
+                            <stop stopColor={isBeauty ? "#fff9f5" : "#fffdf5"} />
+                            <stop offset="1" stopColor={isBeauty ? "#f2d6dc" : "#e7d0a9"} />
+                          </linearGradient>
+                          <linearGradient id={`${id}-dark`} x1="0" y1="0" x2="1" y2="1">
+                            <stop stopColor={isBeauty ? "#ad6078" : "#916337"} />
+                            <stop offset="1" stopColor={isBeauty ? "#62304a" : "#49351e"} />
+                          </linearGradient>
+                        </defs>
                         {segments.map((segment, index) => (
                           <g key={index}>
                             <path
                               d={`M150,150 L${wheelPoint(index * segmentDegrees)} A146,146 0 0 1 ${wheelPoint((index + 1) * segmentDegrees)} Z`}
-                              fill={segment.fill}
-                              stroke="#ffffff"
-                              strokeWidth="1"
+                              fill={`url(#${id}-${segment.dark ? "dark" : "light"})`}
+                              stroke="#fff9ef"
+                              strokeWidth="1.5"
                             />
                             <text
                               x="150"
@@ -385,7 +392,7 @@ export function LandingDemo({
                               textAnchor="middle"
                               dominantBaseline="middle"
                               transform={`rotate(${index * segmentDegrees + winningSegmentCenterDegrees} 150 150)`}
-                              fill={segment.dark ? "#ffffff" : "#162238"}
+                              fill={segment.dark ? "#ffffff" : isBeauty ? "#57253c" : "#49351e"}
                               fontSize="14"
                               fontWeight="700"
                             >
@@ -403,11 +410,14 @@ export function LandingDemo({
                         />
                       </svg>
                     </div>
-                    <span
+                    <svg
                       className={styles.pointer}
                       data-testid="demo-pointer"
                       aria-hidden="true"
-                    />
+                      viewBox="0 0 32 42"
+                    >
+                      <path d="M5 3 Q2 3 3 7 L13 36 Q16 42 19 36 L29 7 Q30 3 27 3 Z" fill="currentColor" stroke="#fffaf2" strokeWidth="3" strokeLinejoin="round" />
+                    </svg>
                     <button
                       ref={playButton}
                       type="button"
@@ -423,10 +433,7 @@ export function LandingDemo({
                       {step === "spinning" ? (
                         <span className={styles.spinner} aria-hidden="true" />
                       ) : (
-                        <>
-                          Jouer
-                          <ArrowRight size={16} aria-hidden="true" />
-                        </>
+                        "Jouer"
                       )}
                     </button>
                   </div>
@@ -479,9 +486,6 @@ export function LandingDemo({
               </div>
             ))}
           </dl>
-          <div ref={merchantRedemption} id={`${id}-redemption`} tabIndex={-1}>
-            <DemoMerchantRedemption rewardLabel={rewardLabel} redeemed={redeemed} onConfirm={() => setRedeemed(true)} />
-          </div>
           <div className={styles.chart}>
             <div className={styles.chartHeading}>
               <div>

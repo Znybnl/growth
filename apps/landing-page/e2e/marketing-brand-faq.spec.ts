@@ -77,7 +77,9 @@ test("Beauté : survol, focus clavier et CTA secondaire lisibles", async ({ page
   await expect(cta).toHaveCSS("color", "rgb(255, 255, 255)");
   await page.mouse.move(0, 0);
   await page.locator('header a[aria-label="Retour à l\'accueil Okado"]').focus();
-  for (let index = 0; index < 6 && !(await cta.evaluate((element) => element === document.activeElement)); index++) {
+  // The Blog entry adds a focus stop on desktop; don't hard-code the menu length.
+  const headerLinks = await page.locator("header a:visible").count();
+  for (let index = 0; index < headerLinks && !(await cta.evaluate((element) => element === document.activeElement)); index++) {
     await page.keyboard.press("Tab");
   }
   await expect(cta).toBeFocused();

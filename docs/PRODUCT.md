@@ -229,10 +229,14 @@ existants ; ce ne sont ni des jeux actifs ni des captures exhaustives du SaaS.
 Les cinq fonds restent consultables dans la page Ticket à gratter.
 
 La démonstration conserve ses étapes Google/jeu/formulaire/confirmation/e-mail
-et ses événements de mesure existants. Un exemple local côté commerce montre
-la vérification des conditions puis une validation de retrait simulée, son état
-déjà retiré et sa remise à zéro. Il ne demande aucun PIN réel, n'appelle aucune
-API métier, ne mémorise rien et ne modifie aucun compteur illustratif.
+et ses événements de mesure existants. Retour propriétaire du 17 octobre (#536) :
+la simulation de validation du retrait côté commerce et son bouton sont retirés
+de la démo. Le parcours s'arrête à la confirmation et à l'aperçu e-mail ;
+les indicateurs illustratifs et synthèses restent visibles séparément.
+Le téléphone, la roue ivoire/dorée (restaurant) ou rose (Beauté), le pointeur et
+les panneaux partagent une présentation plus soignée. Le bouton Jouer n'a pas
+d'icône. Aucun appel métier, PIN, stockage ou compteur modifié ; le retrait
+sécurisé réel dans le SaaS reste inchangé.
 
 L'accueil et la page Beauté montrent une synthèse marchand fictive : détail des
 gains, expiration ou statut Récupéré, retraits sur la période pouvant concerner

@@ -1,8 +1,26 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Locator } from "@playwright/test";
 import {
   ANALYTICS_CONSENT_COOKIE,
   ANALYTICS_CONSENT_VERSION,
 } from "../src/lib/analytics-consent";
+
+// Remove only fixed overlays from element screenshots, never from the app.
+const snapshotStyle = 'header.sticky, button[aria-controls="okado-cookie-preferences"] { visibility: hidden !important; }';
+
+async function expectContentInsidePhone(phone: Locator) {
+  const overflow = await phone.evaluate((frame) => {
+    const bounds = frame.getBoundingClientRect();
+    return [...frame.querySelectorAll<HTMLElement>("h3, p, button, input, fieldset")]
+      .filter((element) => getComputedStyle(element).visibility !== "hidden")
+      .filter((element) => {
+        const box = element.getBoundingClientRect();
+        return box.width > 0 && (box.left < bounds.left || box.right > bounds.right
+          || box.top < bounds.top || box.bottom > bounds.bottom
+          || element.scrollWidth > element.clientWidth + 1);
+      }).map((element) => element.tagName + ": " + element.textContent);
+  });
+  expect(overflow).toEqual([]);
+}
 
 test.beforeEach(async ({ context, baseURL }) => {
   await context.addCookies([
@@ -27,6 +45,8 @@ test.beforeEach(async ({ context, baseURL }) => {
 test("roue entière, étapes lisibles et résultats accessibles dans les trois variantes", async ({
   page,
 }, testInfo) => {
+  // Three complete journeys, real rotations and per-screen visual evidence.
+  test.setTimeout(60000);
   const mutations: string[] = [];
   const errors: string[] = [];
   page.on("request", (request) => {
@@ -53,6 +73,8 @@ test("roue entière, étapes lisibles et résultats accessibles dans les trois v
     );
     const play = demo.getByRole("button", { name: "Jouer", exact: true });
     await expect(play).toBeEnabled();
+    await expect(play.locator("svg")).toHaveCount(0);
+    await expectContentInsidePhone(phoneScreen);
     await expect(demo.getByTestId("demo-business-mark")).toHaveText(
       path === "/instituts-beaute" ? "ab" : "lb",
     );
@@ -87,6 +109,7 @@ test("roue entière, étapes lisibles et résultats accessibles dans les trois v
     ).toBeLessThanOrEqual(page.viewportSize()!.width);
     if (path !== "/restaurants")
       await demo.screenshot({
+        style: snapshotStyle,
         path: testInfo.outputPath(
           `${path === "/" ? "restaurant" : "beauty"}-demo.png`,
         ),
@@ -96,6 +119,8 @@ test("roue entière, étapes lisibles et résultats accessibles dans les trois v
     await expect(
       demo.getByRole("heading", { name: "Avant de jouer" }),
     ).toBeFocused();
+    await expectContentInsidePhone(phoneScreen);
+    if (path !== "/restaurants") await phoneScreen.screenshot({ path: testInfo.outputPath(`${path === "/" ? "restaurant" : "beauty"}-action.png`), style: snapshotStyle });
     for (const name of ["Écrire un avis", "Jouer maintenant"]) {
       const button = demo.getByRole("button", { name });
       await expect(button).toBeVisible();
@@ -110,6 +135,8 @@ test("roue entière, étapes lisibles et résultats accessibles dans les trois v
       await expect(
         demo.getByRole("heading", { name: "Votre avis sur Google" }),
       ).toBeFocused();
+      await expectContentInsidePhone(phoneScreen);
+      if (path === "/instituts-beaute") await phoneScreen.screenshot({ path: testInfo.outputPath("beauty-google.png"), style: snapshotStyle });
       await demo.getByRole("radio", { name: "5 étoiles", exact: true }).check();
       await demo
         .getByRole("button", { name: "Revenir au jeu", exact: true })
@@ -124,6 +151,8 @@ test("roue entière, étapes lisibles et résultats accessibles dans les trois v
       name: `Félicitations ! Vous avez remporté « ${reward} »`,
     });
     await expect(formTitle).toBeFocused();
+    await expectContentInsidePhone(phoneScreen);
+    if (path !== "/restaurants") await phoneScreen.screenshot({ path: testInfo.outputPath(`${path === "/" ? "restaurant" : "beauty"}-form.png`), style: snapshotStyle });
     await expect(
       demo.getByText(
         "Vos informations sont nécessaires pour valider et envoyer votre gain.",
@@ -153,6 +182,8 @@ test("roue entière, étapes lisibles et résultats accessibles dans les trois v
       demo.getByText(/Vous allez recevoir votre gain par e-mail/),
     ).toBeVisible();
     await expect(demo.getByTestId("demo-redemption-qr")).toBeVisible();
+    await expectContentInsidePhone(phoneScreen);
+    if (path !== "/restaurants") await phoneScreen.screenshot({ path: testInfo.outputPath(`${path === "/" ? "restaurant" : "beauty"}-confirmation.png`), style: snapshotStyle });
     await expect(
       demo.getByText(
         "Vous allez recevoir votre gain par e-mail (vérifiez vos spams).",
@@ -169,6 +200,8 @@ test("roue entière, étapes lisibles et résultats accessibles dans les trois v
     await expect(
       demo.getByText("À : camille@exemple.test", { exact: true }),
     ).toBeVisible();
+    await expectContentInsidePhone(phoneScreen);
+    if (path !== "/restaurants") await phoneScreen.screenshot({ path: testInfo.outputPath(`${path === "/" ? "restaurant" : "beauty"}-mail.png`), style: snapshotStyle });
     await expect(demo.getByTestId("demo-redemption-qr")).toBeVisible();
     await expect(phoneScreen.locator("a")).toHaveCount(0);
     await expect(phoneScreen).not.toContainText(

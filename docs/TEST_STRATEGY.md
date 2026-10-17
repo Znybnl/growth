@@ -91,6 +91,14 @@ radios clavier, reset et protections réseau/stockage après l'allègement.
 
 ## E2E : mise en place progressive
 
+Complément #536 : la démo ne propose plus de validation marchand ni son CTA,
+sur les trois pages. Vérifier le focus confirmation → aperçu e-mail, les KPI
+inchangés, l'absence d'appel métier/stockage et le reset. Les captures de la
+roue, action, formulaire, confirmation et e-mail sont inspectées aux quatre
+largeurs ; les textes/boutons restent contenus et la roue complète. Le retrait
+réel SaaS n'est pas modifié. Les preuves métier et synthèses de #520 restent
+couvertes par `product-proof.spec.ts`.
+
 ### Qualité du funnel d'acquisition — #507
 
 `landing-conversion.spec.ts` exerce le vrai SDK, avec tous les paquets gzip/JSON
