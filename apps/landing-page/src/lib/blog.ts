@@ -725,6 +725,121 @@ export const blogPosts: BlogPost[] = [
       },
     ],
   },
+  {
+    path: "/blog/experience-client-boutique",
+    title: "Comment créer une expérience client mémorable en boutique ?",
+    description:
+      "Découvrez comment créer une expérience client mémorable en boutique grâce aux micro-moments, à l’équipe, à la cohérence visuelle et à une mesure réaliste.",
+    eyebrow: "Expérience en point de vente",
+    intro:
+      "Une visite mémorable ne dépend pas forcément d’un grand événement. Elle se construit dans des micro-moments : être bien accueilli, comprendre rapidement l’offre, attendre sans frustration, participer si cela a du sens et repartir avec une promesse tenue.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-17",
+    updatedAt: "2026-10-17",
+    reviewedAt: "2026-10-17",
+    readingTime: "8 min de lecture",
+    ctaLabel: "Concevoir un parcours simple à tester",
+    ctaHref: "/comment-ca-marche",
+    sections: [
+      {
+        title: "Une expérience mémorable n’est pas forcément spectaculaire",
+        paragraphs: [
+          "Une boutique peut marquer un client par une attention simple, une information bien placée ou une équipe qui tient sa promesse. Une animation peut renforcer un moment, mais elle ne compense pas une attente confuse, un prix incompréhensible ou un lot indisponible.",
+          "Commencez par observer le parcours réel : que voit la personne avant d’entrer, que comprend-elle dans les premières secondes, où attend-elle, quand pose-t-elle une question et que garde-t-elle en tête en repartant ? Ces observations donnent des pistes plus utiles qu’une liste de tendances.",
+        ],
+      },
+      {
+        title: "Micro-moment 1 : rendre l’accueil immédiatement lisible",
+        paragraphs: [
+          "L’accueil ne signifie pas nécessairement une longue présentation. Il peut s’agir d’un message court, d’un repère visuel, d’une personne disponible ou d’une consigne qui évite au client de chercher seul. Le premier écran, comptoir ou panneau doit répondre à une question simple : que peut-on faire ici maintenant ?",
+          "Si un QR code ouvre une animation, indiquez clairement ce qu’il déclenche et le temps approximatif nécessaire pour participer. Un code visible mais sans promesse ne crée pas une expérience ; un message trop chargé ralentit la compréhension.",
+          "Testez le parcours avec une personne qui ne connaît pas votre commerce. Demandez-lui ce qu’elle pense pouvoir faire après avoir vu le support, sans lui donner d’explication supplémentaire.",
+        ],
+      },
+      {
+        title: "Micro-moment 2 : transformer l’attente en temps utile",
+        paragraphs: [
+          "L’attente peut devenir un temps de découverte si le client a assez d’espace, de lumière et d’attention pour lire ou participer. Une activité doit rester optionnelle : certaines personnes veulent simplement être servies, d’autres préfèrent explorer une nouveauté ou jouer quelques secondes.",
+          "Une roue ou un ticket à gratter sur smartphone peut accompagner ce moment. Avec Okado, le jeu s’ouvre dans le navigateur depuis un QR code, sans application ni compte joueur. Le format reste pertinent seulement si l’équipe peut répondre aux questions et remettre les gains dans les conditions annoncées.",
+          "Ne transformez pas chaque attente en obligation marketing. Une invitation facultative, une information utile ou un support à parcourir peut être plus cohérent avec votre clientèle qu’un écran ou un jeu permanent.",
+        ],
+      },
+      {
+        title: "Micro-moment 3 : faciliter la découverte sans surcharger",
+        paragraphs: [
+          "Une découverte réussie donne juste assez d’information pour aider à choisir. Regroupez les messages, limitez les appels à l’action concurrents et vérifiez que les prix, disponibilités et conditions correspondent à ce que l’équipe peut expliquer.",
+          "Un jeu peut servir de porte d’entrée vers une nouveauté, une offre saisonnière ou une expérience à tester. Il ne doit pas masquer le produit ni promettre une disponibilité que le stock ne permet pas d’assurer. La participation est une étape, pas la preuve que le produit a été choisi.",
+          "Dans un restaurant, le moment peut être la table ou l’attente ; dans un institut, l’accueil ou l’après-prestation ; dans une boutique, la découverte d’une gamme ou le passage en caisse. Ces exemples sont à adapter à la circulation et au rythme de chaque lieu.",
+        ],
+      },
+      {
+        title: "Micro-moment 4 : rendre la participation simple et volontaire",
+        paragraphs: [
+          "Une participation mémorable commence par une consigne compréhensible. Le client doit savoir ce qu’il fait, ce qu’il peut obtenir et quelles conditions s’appliquent. Réduisez les étapes inutiles et testez le parcours sur un petit écran, avec le support final.",
+          "Distinguez le QR public de participation du QR de prévisualisation. Après publication, testez le lien depuis plusieurs téléphones et vérifiez le nom de l’établissement, les dates, les lots et les conditions. Une erreur de lien transforme un moment de surprise en déception immédiate.",
+          "La participation ne doit pas dépendre d’un avis Google ou d’une note. Une collecte d’e-mail pour transmettre un gain et une prospection marketing ont des finalités différentes ; le consentement commercial doit rester séparé, facultatif et compréhensible.",
+        ],
+      },
+      {
+        title: "Micro-moment 5 : faire de la récompense une promesse tenue",
+        paragraphs: [
+          "Une récompense peut être un produit, une option, une remise ou une invitation à revenir, selon votre activité. Elle doit être disponible, correctement décrite et compatible avec le temps de l’équipe. Une dotation impressionnante mais difficile à remettre dégrade davantage l’expérience qu’un petit lot clair.",
+          "Expliquez la durée de validité, les jours concernés, les éventuelles conditions d’achat et la procédure de retrait. Dans Okado, l’équipe vérifie le gain et confirme un retrait avec le PIN de l’établissement ; la validation doit accompagner la remise effective et un gain déjà retiré ne doit pas être consommé une deuxième fois.",
+          "Un retrait réussi ne prouve pas une fidélité durable. Il montre que le parcours de remise a fonctionné à un instant donné. Pour parler de retour, définissez une mesure distincte et une période d’observation.",
+        ],
+      },
+      {
+        title: "L’équipe est la partie visible de l’expérience",
+        paragraphs: [
+          "Une affiche, une roue ou un ticket ne remplacent pas les personnes qui répondent aux questions. Écrivez une procédure courte : quoi dire, où vérifier les conditions, qui connaît le PIN, que faire si un lot est épuisé et comment traiter une demande concernant les coordonnées.",
+          "Informez les remplaçants avant le lancement et faites un test en situation réelle. Si la consigne ne tient pas dans une phrase ou si elle dépend d’une seule personne, simplifiez l’opération avant de la diffuser.",
+          "L’expérience doit rester cohérente quel que soit le canal : support imprimé, message oral, page mobile et remise au comptoir. Une condition différente selon le support crée une frustration difficile à corriger après coup.",
+        ],
+      },
+      {
+        title: "La cohérence visuelle crée de la confiance",
+        paragraphs: [
+          "Les couleurs, le logo, le vocabulaire et les images doivent appartenir au même univers que le lieu. Une animation n’a pas besoin d’être criarde pour être remarquée ; elle doit être identifiable, lisible et proportionnée à l’espace où elle apparaît.",
+          "Vérifiez le contraste, la marge du QR code, la taille du texte et la distance de lecture. Testez l’impression sous l’éclairage réel, puis regardez le support depuis le point de vue du client : ce qui semble lisible sur un écran peut devenir discret dans une boutique animée.",
+          "La cohérence ne signifie pas uniformité. Un restaurant, un institut et une boutique peuvent utiliser la même logique de parcours avec des messages, des lots et des visuels différents.",
+        ],
+      },
+      {
+        title: "Grille d’auto-évaluation en six questions",
+        paragraphs: [
+          "Avant de modifier votre parcours, notez chaque point de 0 à 2 : 0 si le point est absent, 1 s’il est partiellement traité, 2 s’il est clair et testé. Le score sert à prioriser des améliorations ; il ne mesure pas directement la satisfaction ou les ventes.",
+        ],
+        items: [
+          "Accueil : une personne comprend-elle quoi faire et où commencer ?",
+          "Attente : existe-t-il une activité facultative ou une information utile au bon moment ?",
+          "Découverte : les produits, prix et conditions sont-ils faciles à comprendre ?",
+          "Participation : le parcours mobile ou en boutique est-il court, volontaire et testé ?",
+          "Récompense : le lot est-il disponible, compréhensible et simple à remettre ?",
+          "Équipe et visuel : les personnes, supports et messages racontent-ils la même histoire ?",
+        ],
+      },
+      {
+        title: "Mesurez le ressenti et les étapes, pas seulement le volume",
+        paragraphs: [
+          "Une mesure quantitative peut suivre les scans, participations, gains et retraits. Une mesure qualitative peut recueillir les questions fréquentes, les incompréhensions, les verbatims spontanés ou les observations de l’équipe. Les deux approches se complètent sans prouver automatiquement une hausse de chiffre d’affaires.",
+          "Comparez avant et après une modification, ou entre deux périodes comparables, en notant le contexte. Si vous changez le support, le lot, les horaires et le message en même temps, vous ne saurez pas ce qui a amélioré l’expérience.",
+          "Une bonne expérience peut se traduire par moins de questions, un retrait plus fluide ou une meilleure compréhension, même si le nombre de participations ne progresse pas. Définissez la preuve recherchée avant de lancer l’opération.",
+        ],
+      },
+    ],
+    related: [
+      "/blog/animer-point-de-vente-qr-code",
+      "/instituts-beaute",
+      "/restaurants",
+      "/comment-ca-marche",
+    ],
+    source: [
+      {
+        label: "Google Search Central — contenu utile",
+        href: "https://developers.google.com/search/docs/fundamentals/creating-helpful-content",
+      },
+    ],
+  },
 ];
 
 export function blogPostByPath(path: string) {
