@@ -6,6 +6,7 @@ export type BlogPost = {
   description: string;
   eyebrow: string;
   intro: string;
+  answer?: string;
   sections: ContentSection[];
   related: string[];
   source?: { label: string; href: string }[];
@@ -28,6 +29,8 @@ export const blogPosts: BlogPost[] = [
     eyebrow: "Marketing local",
     intro:
       "Une bonne animation commerciale ne se résume pas à une remise. Elle donne une raison concrète d’entrer, de participer ou de revenir, tout en restant simple à expliquer à l’équipe.",
+    answer:
+      "Pour attirer des clients en boutique, choisissez une animation liée à un objectif précis, avec une promesse claire, une dotation disponible et une mesure séparant participations, gains et retraits.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
     updatedAt: "2026-10-17",
@@ -114,6 +117,8 @@ export const blogPosts: BlogPost[] = [
     eyebrow: "Animation locale",
     intro:
       "Un QR code peut transformer un support imprimé en point d’entrée vers une animation mobile. Pour qu’il génère une expérience utile en magasin, il faut surtout soigner la promesse, le parcours et les conditions de participation.",
+    answer:
+      "Pour animer un point de vente avec un QR code, placez-le dans un moment où le client peut agir, ouvrez un parcours mobile simple, testez le QR public avant impression et mesurez séparément scans, participations et retraits.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
     updatedAt: "2026-10-17",
@@ -207,6 +212,8 @@ export const blogPosts: BlogPost[] = [
     eyebrow: "Marketing restaurant",
     intro:
       "Un jeu-concours peut créer un moment de surprise au restaurant, remplir une période plus calme ou donner une raison de revenir. Le bon format est celui que le client comprend vite et que l’équipe peut remettre sans ralentir le service.",
+    answer:
+      "Les meilleurs jeux-concours pour un restaurant sont ceux qui correspondent à un moment précis du service, avec des lots faciles à remettre, des conditions visibles et une mesure distincte des participations et des retraits.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
     updatedAt: "2026-10-17",
@@ -308,6 +315,8 @@ export const blogPosts: BlogPost[] = [
     eyebrow: "Marketing beauté",
     intro:
       "Une animation commerciale peut créer un temps fort dans un institut de beauté sans banaliser l’expérience. Le format doit rester cohérent avec votre univers, vos prestations et le temps réellement disponible pour votre équipe.",
+    answer:
+      "Pour animer un institut de beauté sans dégrader son image premium, choisissez une mécanique et des lots cohérents avec vos prestations, votre planning et votre univers visuel, puis testez le parcours avant diffusion.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
     updatedAt: "2026-10-17",
@@ -410,6 +419,8 @@ export const blogPosts: BlogPost[] = [
     eyebrow: "Stratégie marketing local",
     intro:
       "Une promotion réduit ou valorise immédiatement une offre ; un jeu-concours ajoute une participation et une expérience. Le bon choix dépend de ce que vous cherchez à provoquer, de ce que votre équipe peut délivrer et de ce que vous voulez réellement mesurer.",
+    answer:
+      "Choisissez une promotion pour une offre certaine et immédiatement compréhensible ; choisissez un jeu-concours pour créer une interaction ; combinez-les seulement si chaque étape, condition et indicateur reste lisible.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
     updatedAt: "2026-10-17",
@@ -522,6 +533,8 @@ export const blogPosts: BlogPost[] = [
     eyebrow: "Fidélisation locale",
     intro:
       "Fidéliser ne signifie pas forcément cumuler des points. Un commerce peut créer des raisons de revenir avec une expérience cohérente, une attention ponctuelle, une offre valable plus tard ou une animation bien cadrée, sans transformer chaque visite en compte à gérer.",
+    answer:
+      "Pour fidéliser sans programme de points, travaillez une expérience cohérente et des raisons de revenir, puis utilisez une animation ponctuelle si elle sert un objectif précis ; une participation ne prouve pas une fidélité durable.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
     updatedAt: "2026-10-17",
@@ -627,6 +640,8 @@ export const blogPosts: BlogPost[] = [
     eyebrow: "Promotion locale",
     intro:
       "Une promotion locale doit être attractive pour le client et soutenable pour le commerce. Voici 15 idées à adapter à votre stock, votre marge, votre équipe et la durée réelle de l’opération, sans confondre offre utilisée et vente causée.",
+    answer:
+      "Une promotion locale fonctionne mieux lorsqu’elle associe une offre simple, des conditions et dates visibles, un coût maîtrisé et une mesure qui distingue utilisation, retrait et vente non automatiquement attribuée.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
     updatedAt: "2026-10-17",
@@ -733,6 +748,8 @@ export const blogPosts: BlogPost[] = [
     eyebrow: "Expérience en point de vente",
     intro:
       "Une visite mémorable ne dépend pas forcément d’un grand événement. Elle se construit dans des micro-moments : être bien accueilli, comprendre rapidement l’offre, attendre sans frustration, participer si cela a du sens et repartir avec une promesse tenue.",
+    answer:
+      "Pour créer une expérience mémorable en boutique, améliorez d’abord l’accueil, l’attente, la découverte, la participation et la remise, puis vérifiez la cohérence entre équipe, supports et promesse.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
     updatedAt: "2026-10-17",

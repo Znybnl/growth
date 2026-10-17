@@ -96,6 +96,11 @@ test("le blog utilise un gabarit commun sans commentaires", async ({ page }) => 
   await page.goto(blogPosts[0].path);
   await expect(page.locator("article")).toHaveCount(1);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(blogPosts[0].title);
+  await expect(page.getByText(blogPosts[0].answer!, { exact: true })).toBeVisible();
+  const structuredData = await page.locator('script[type="application/ld+json"]').allTextContents();
+  expect(structuredData.join("\n")).toContain('"@type":"BlogPosting"');
+  expect(structuredData.join("\n")).toContain('"author"');
+  expect(structuredData.join("\n")).toContain('"image"');
   await expect(page.getByText("À retenir", { exact: true })).toBeVisible();
 });
 

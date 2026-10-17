@@ -65,10 +65,20 @@ export function BlogPostTemplate({ post }: { post: BlogPost }) {
               <span>
                 Publié le <time dateTime={post.publishedAt}>{formatDate(post.publishedAt)}</time>
               </span>
+              <span>
+                Relu le <time dateTime={post.reviewedAt}>{formatDate(post.reviewedAt)}</time>
+              </span>
               <span>{post.readingTime}</span>
             </div>
           </div>
         </header>
+
+        {post.answer ? (
+          <aside className="mt-8 rounded-2xl border border-[#d9c8f4] bg-[#f2ecff] p-6" aria-label="Réponse courte">
+            <p className="text-xs font-bold uppercase tracking-[0.15em] text-[#6c00f6]">Réponse courte</p>
+            <p className="mt-3 text-lg leading-8 text-[#30264a]">{post.answer}</p>
+          </aside>
+        ) : null}
 
         <div className="mt-10 grid items-start gap-10 lg:grid-cols-[220px_minmax(0,1fr)]">
           <aside className="rounded-2xl border border-[#e4ddd3] bg-[#fffdf9] p-5 lg:sticky lg:top-28">

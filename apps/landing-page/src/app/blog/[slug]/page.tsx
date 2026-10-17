@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { BlogPostTemplate } from "@/components/marketing/blog-post";
 import { PageSchema } from "@/components/marketing/structured-data";
 import { blogPostByPath, blogPosts } from "@/lib/blog";
-import { pageMetadata } from "@/lib/site";
+import { pageMetadata, SITE_URL } from "@/lib/site";
 
 export const dynamicParams = false;
 
@@ -19,7 +19,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = postFromSlug((await params).slug);
   if (!post) notFound();
-  const base = pageMetadata(post.path, `${post.title} | Blog Okado`, post.description);
+  const base = pageMetadata(post.path, post.title, post.description);
   return {
     ...base,
     openGraph: {
@@ -42,6 +42,8 @@ export default async function BlogPostPage({ params }: Props) {
         path={post.path}
         name={post.title}
         description={post.description}
+        author={post.author}
+        image={`${SITE_URL}/og-image.png`}
         article
         articleType="BlogPosting"
         datePublished={post.publishedAt}

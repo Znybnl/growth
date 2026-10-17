@@ -11,6 +11,8 @@ export function PageSchema({
   articleType = "Article",
   datePublished,
   dateModified,
+  author,
+  image,
 }: {
   path: string;
   name: string;
@@ -20,6 +22,8 @@ export function PageSchema({
   articleType?: "Article" | "BlogPosting";
   datePublished?: string;
   dateModified?: string;
+  author?: string;
+  image?: string;
 }) {
   const url = new URL(path, SITE_URL).href;
   const graph: Record<string, unknown>[] = [
@@ -35,8 +39,12 @@ export function PageSchema({
             datePublished: datePublished ?? CONTENT_REVIEWED_AT,
             dateModified: dateModified ?? CONTENT_REVIEWED_AT,
             inLanguage: "fr",
-            author: { "@id": `${SITE_URL}/#organization` },
+            ...(author
+              ? { author: { "@type": "Organization", name: author, url: SITE_URL } }
+              : { author: { "@id": `${SITE_URL}/#organization` } }),
             publisher: { "@id": `${SITE_URL}/#organization` },
+            ...(image ? { image: [image] } : {}),
+            mainEntityOfPage: { "@type": "WebPage", "@id": `${url}#page` },
           }
         : {}),
       isPartOf: { "@id": `${SITE_URL}/#website` },
