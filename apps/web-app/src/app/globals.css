@@ -1141,6 +1141,28 @@ button:disabled,
   box-shadow: var(--shadow-floating);
 }
 
+/* Action library layout must override the shared modal's unlayered width/padding. */
+.okado-marketing-actions {
+  --okado-radius-card: 12px;
+}
+
+.okado-marketing-library.okado-dialog-surface {
+  max-width: 740px;
+  padding: 0;
+}
+
+@media (max-width: 639px) {
+  .okado-dialog-overlay:has(.okado-marketing-library) {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .okado-marketing-library.okado-dialog-surface {
+    max-height: 92dvh;
+    border-radius: 20px 20px 0 0;
+  }
+}
+
 .okado-dialog-dismiss {
   display: inline-flex;
   height: 2.5rem;

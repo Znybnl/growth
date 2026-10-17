@@ -41,6 +41,22 @@ export function TemplateRenderingProof({ mode = "preview", templateId = "classic
     kpis: { scans: 0, contacts: 0, optIns: 0, leads: 0, actions: 0, games: 0, wins: 0, redeemed: 0,
       conversionRate: 0, actionRate: 0, redemptionRate: 0, estimatedSpend: 0, costPerLead: 0, costPerRedeemed: 0 },
   };
+  if (mode.startsWith("wizard-actions") || mode === "editor-actions-empty") {
+    const target = { ...merchant, industry: "Restauration", googleReviewUrl: "https://g.page/r/fixture",
+      instagramUrl: "https://www.instagram.com/fixture/", websiteUrl: "https://fixture.example.test",
+      appointmentUrl: "https://booking.example.test" };
+    const empty = mode.includes("empty");
+    const fixture: CampaignPerformance = { ...performance, merchant: target,
+      campaign: { ...performance.campaign, actions: empty ? [] : [
+        { id: "legacy-instagram", kind: "instagram", label: "Notre compte personnalisé",
+          url: mode === "wizard-actions-invalid" ? "http://instagram.com/fixture" : target.instagramUrl },
+        { id: "legacy-website", kind: "custom", label: "Visiter le site", url: target.websiteUrl },
+      ] } };
+    if (mode === "editor-actions-empty") return <CampaignEditor merchant={target} initialCampaign={fixture} deferInlineAssets />;
+    return <CampaignWizard merchant={target} initialCampaign={fixture}
+      {...(mode === "wizard-actions-admin" ? { adminAccountMerchantId: "fixture-account",
+        adminSaveEndpoint: "/api/admin/merchants/fixture-account/locations/template-proof-merchant/campaigns/setup" } : {})} />;
+  }
   if (mode === "wizard-new") return <CampaignWizard merchant={merchant} />;
   if (mode === "wizard-custom-goal") return <CampaignWizard merchant={merchant} initialCampaign={{ ...performance,
     campaign: { ...performance.campaign, goalType: "social_follow", emailCaptureEnabled: true,

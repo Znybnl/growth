@@ -61,6 +61,8 @@ Un même indicateur utilise la même source et la même formule à périmètre �
 
 - Les actions marketing sont proposées avant la participation au jeu.
 - Les actions sont séquencées par visite : action 1 pour la première visite, action 2 pour la deuxième, puis ainsi de suite.
+- Décision propriétaire du 17 octobre 2026 (#564) : les liens réutilisables appartiennent à chaque établissement et correspondent aux champs de **Mon compte**. Configurer une destination absente depuis la bibliothèque du Wizard enregistre uniquement ce lien, puis ajoute l'action au jeu. Une modification d'action existante concerne ce jeu uniquement ; les autres jeux ne sont pas réécrits.
+- Un jeu sans action marketing est autorisé. Le Wizard et l'éditeur classique demandent une confirmation explicite avant l'enregistrement d'un jeu actif sans action ; annuler n'enregistre ni ne publie. L'enregistrement d'un brouillon sans action ne demande pas cette confirmation. Une action renseignée mais invalide reste bloquante à la publication ; aucune URL générique n'est créée pour la remplacer.
 - La collecte d'e-mail avant le jeu est une option indépendante des actions marketing. Elle ne doit jamais être traitée comme une action de visite.
 - L'objectif choisi lors de la création sert uniquement à proposer une configuration initiale des actions. Après publication, sa modification ne doit pas écraser les actions configurées.
 - Décision propriétaire #553 : le Wizard masque ce choix et utilise `review_prompt` (« Obtenir des avis ») pour les nouveaux jeux. Une édition conserve l'objectif, les actions et la collecte e-mail enregistrés ; aucune conversion de campagne ni action sans URL renseignée n'est déclenchée par ce masquage.

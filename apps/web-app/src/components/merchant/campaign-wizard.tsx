@@ -12,7 +12,6 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  ChevronUp,
   CirclePlus,
   Coffee,
   Download,
@@ -28,7 +27,9 @@ import {
 } from "lucide-react";
 import { type ChangeEvent, type ReactNode, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
-import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
+import { MarketingActionsStep } from "@/components/merchant/marketing-actions-step";
+import { useNoMarketingActionConfirmation } from "@/components/merchant/no-marketing-action-dialog";
+import { marketingActionEntry, marketingActionKey, normalizeMarketingActionUrl } from "@/lib/marketing-action-library";
 import { CampaignPreviewQrDialog } from "@/components/merchant/campaign-preview-qr";
 import { CampaignPreviewDialog, openCampaignPreview } from "@/components/merchant/campaign-preview-dialog";
 import { CampaignSavedDialog } from "@/components/merchant/campaign-saved-dialog";
@@ -195,8 +196,8 @@ const WIZARD_STEPS: WizardStep[] = [
   {
     id: "action",
     number: "05",
-    title: "L’action",
-    description: "L’action de vos clients",
+    title: "Les actions · Facultatif",
+    description: "Composez les actions proposées avant le jeu.",
   },
 ];
 
@@ -236,10 +237,6 @@ function uploadWizardImage(
     .then(({ url }) => onLoaded(url))
     .catch((error: unknown) => onError(error instanceof Error ? error.message : "Import de l’image impossible."))
     .finally(() => onUploadStateChange?.(false));
-}
-
-function wizardActionVisitLabel(index: number) {
-  return index === 0 ? "1\u00e8re visite" : `${index + 1}\u00e8me visite`;
 }
 
 const GOOGLE_REVIEW_HOSTS = new Set([
@@ -385,13 +382,13 @@ function validateStep(
   }
 
   if (step === "action" && actionEnabled) {
-    if (!draft.actions.length)
-      return "Ajoutez au moins une action à proposer avant le jeu.";
     for (const action of draft.actions) {
       if (action.kind === "crm") continue;
       if (!action.url.trim())
-        return "Chaque action doit avoir un lien de destination.";
+        return "Une action marketing doit être corrigée avant de publier la campagne.";
       try {
+        const key = marketingActionKey(action);
+        if (key) normalizeMarketingActionUrl(key, action.url);
         const parsed = new URL(normalizeUrl(action.url));
         if (parsed.protocol !== "https:")
           return "Le lien doit utiliser HTTPS pour protéger les joueurs.";
@@ -410,7 +407,7 @@ function validateStep(
           return "L’invitation ne peut pas promettre un lot en échange d’un avis.";
         }
       } catch {
-        return "Saisissez une adresse web valide.";
+        return "Une action marketing doit être corrigée avant de publier la campagne.";
       }
     }
   }
@@ -760,6 +757,8 @@ export function CampaignWizard({
   adminAccountMerchantId?: string;
 }) {
   const router = useRouter();
+  const { confirmNoMarketingAction, noMarketingActionDialog } = useNoMarketingActionConfirmation();
+  const [marketingLinks, setMarketingLinks] = useState(merchant);
   const isEditing = Boolean(initialCampaign);
   useEffect(() => {
     if (!isEditing && !adminSaveEndpoint) {
@@ -1149,62 +1148,6 @@ export function CampaignWizard({
     setError(null);
   }
 
-  function patchAction(
-    index: number,
-    patch: Partial<WizardDraft["actions"][number]>,
-  ) {
-    setDraft((current) => ({
-      ...current,
-      actions: current.actions.map((action, actionIndex) => {
-        if (actionIndex !== index) return action;
-        const nextAction = { ...action, ...patch };
-        return patch.kind
-          ? { ...nextAction, url: wizardMarketingActionUrl(merchant, patch.kind) }
-          : nextAction;
-      }),
-    }));
-    setError(null);
-  }
-
-  function addAction() {
-    setDraft((current) => ({
-      ...current,
-      actions: [
-        ...current.actions,
-        {
-          id: `wizard-action-${Date.now()}`,
-          kind: "custom",
-          label: "Découvrir",
-          url: wizardMarketingActionUrl(merchant, "custom"),
-        },
-      ],
-    }));
-    setError(null);
-  }
-
-  function removeAction(index: number) {
-    setDraft((current) => ({
-      ...current,
-      actions: current.actions.filter(
-        (_, actionIndex) => actionIndex !== index,
-      ),
-    }));
-    setError(null);
-  }
-
-  function moveAction(index: number, direction: -1 | 1) {
-    setDraft((current) => {
-      const nextIndex = index + direction;
-      if (nextIndex < 0 || nextIndex >= current.actions.length) return current;
-      const actions = [...current.actions];
-      [actions[index], actions[nextIndex]] = [
-        actions[nextIndex],
-        actions[index],
-      ];
-      return { ...current, actions };
-    });
-    setError(null);
-  }
 
   function addSuggestedPrize(suggestion: PrizeSuggestion) {
     setDraft((current) => ({
@@ -1270,6 +1213,7 @@ export function CampaignWizard({
         ? draft.isActive
         : false;
     if (saveRequestInFlightRef.current) return null;
+    if (targetIsActive && !draft.actions.length && !await confirmNoMarketingAction()) return null;
     saveRequestInFlightRef.current = true;
     setIsSaving(true);
     setError(null);
@@ -1417,6 +1361,7 @@ export function CampaignWizard({
 
   return (
     <div className="okado-wizard space-y-6 pb-10">
+      {noMarketingActionDialog}
       <section data-mode={isEditing ? "edit" : "create"} className="flex flex-col gap-5 px-1 py-2 xl:flex-row xl:items-end xl:justify-between">
         <div>
           <p className="okado-label">Assistant de création</p>
@@ -2262,109 +2207,12 @@ export function CampaignWizard({
           ) : null}
 
           {step.id === "action" ? (
-            <div className="mt-7 space-y-5">
-              <div className="space-y-4">
-                {draft.actions.map((action, index) => (
-                  <div
-                    key={action.id ?? `wizard-action-${index}`}
-                    className="rounded-[16px] border border-[#e2e8f0] bg-white p-5"
-                  >
-                    <div className="flex items-center justify-between gap-3">
-                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#8993a6]">
-                        {wizardActionVisitLabel(index)}
-                      </p>
-                      <div className="flex items-center gap-1">
-                        <button
-                          type="button"
-                          onClick={() => moveAction(index, -1)}
-                          disabled={index === 0}
-                          aria-label="Monter l’action"
-                          className="rounded-[9px] p-1.5 text-[#69758a] hover:bg-[#f2f4f7] disabled:opacity-30"
-                        >
-                          <ChevronUp className="h-4 w-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => moveAction(index, 1)}
-                          disabled={index === draft.actions.length - 1}
-                          aria-label="Descendre l’action"
-                          className="rounded-[9px] p-1.5 text-[#69758a] hover:bg-[#f2f4f7] disabled:opacity-30"
-                        >
-                          <ChevronDown className="h-4 w-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => removeAction(index)}
-                          aria-label="Supprimer l’action"
-                          className="rounded-[9px] p-1.5 text-[#69758a] hover:bg-[#fff0f0] hover:text-[#b42318]"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </div>
-                    <div className="mt-4 grid gap-4">
-                      <label className="block">
-                        <span className="flex items-center gap-3 text-sm font-semibold text-[#182033]">
-                          <SocialChannelIcon channel={action.kind} />
-                          <span>Action proposée</span>
-                        </span>
-                        <select
-                          value={action.kind}
-                          onChange={(event) => {
-                            const kind = event.target
-                              .value as WizardDraft["actions"][number]["kind"];
-                            patchAction(index, {
-                              kind,
-                              label: actionKindCta(kind),
-                              url:
-                                kind === "google"
-                                  ? merchant.googleReviewUrl || action.url
-                                  : action.url,
-                            });
-                          }}
-                          className="mt-3 w-full rounded-[14px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3 text-sm text-[#182033]"
-                        >
-                          <option value="google">Laisser un avis Google</option>
-                          <option value="instagram">
-                            Suivre sur Instagram
-                          </option>
-                          <option value="facebook">Suivre sur Facebook</option>
-                          <option value="tiktok">Suivre sur TikTok</option>
-                          <option value="tripadvisor">
-                            Laisser un avis Tripadvisor
-                          </option>
-                          <option value="custom">
-                            Ouvrir un lien personnalisé
-                          </option>
-                        </select>
-                      </label>
-                    </div>
-                    {action.kind !== "crm" ? (
-                      <label className="mt-4 block">
-                        <span className="text-sm font-semibold text-[#182033]">
-                          Lien de destination
-                        </span>
-                        <input
-                          value={action.url}
-                          onChange={(event) =>
-                            patchAction(index, { url: event.target.value })
-                          }
-                          placeholder="https://..."
-                          className="mt-3 w-full rounded-[14px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3 text-sm text-[#182033]"
-                        />
-                      </label>
-                    ) : null}
-                  </div>
-                ))}
-                <button
-                  type="button"
-                  onClick={addAction}
-                className="inline-flex items-center gap-2 rounded-[12px] border border-dashed border-[#b8c5d8] px-4 py-3 text-sm font-semibold text-[#526078] hover:border-aubergine hover:text-[#182033]"
-                >
-                  <Plus className="h-4 w-4" />
-                  Ajouter une action
-                </button>
-              </div>
+            <div className="mt-7">
+              <MarketingActionsStep merchant={merchant} links={marketingLinks} actions={draft.actions}
+                adminAccountMerchantId={adminAccountMerchantId}
+                onChange={actions => { setDraft(current => ({ ...current, actions })); setError(null); }}
+                onLinkSaved={(key, url) => setMarketingLinks(current => ({ ...current, [marketingActionEntry(key).field]: url }))}
+              />
             </div>
           ) : null}
 
