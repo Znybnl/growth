@@ -1260,6 +1260,165 @@ export const blogPosts: BlogPost[] = [
       "/tarifs",
     ],
   },
+  {
+    path: "/blog/cout-animation-commerciale-commerce",
+    title: "Combien coûte une animation commerciale pour un commerce local ?",
+    description:
+      "Estimez le coût d’une animation commerciale en séparant préparation, supports, lots, temps d’équipe, outil et mesure, sans promettre un ROI universel.",
+    eyebrow: "Budget marketing local",
+    intro:
+      "Le coût d’une animation commerciale ne se résume ni au prix d’un outil ni à celui d’un lot. Pour préparer un budget réaliste, additionnez la conception, les supports, les dotations, le temps de l’équipe, les éventuels partenaires et la mesure de l’opération.",
+    answer:
+      "Pour estimer le coût d’une animation commerciale, séparez les coûts fixes, les coûts variables et le temps d’exécution. Chiffrez ensuite le support, les lots réellement remis, la préparation, l’outil, la communication et le suivi. Comparez enfin ce budget à un objectif mesurable, sans transformer une hypothèse de coût en promesse de chiffre d’affaires.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-17",
+    updatedAt: "2026-10-17",
+    reviewedAt: "2026-10-17",
+    readingTime: "9 min de lecture",
+    image: "/images/blog/cout-animation-commerciale-commerce.webp",
+    imageAlt: "Illustration d’un commerce qui prépare le budget d’une animation commerciale",
+    ctaLabel: "Estimer votre prochaine opération",
+    ctaHref: "/tarifs",
+    sections: [
+      {
+        title: "Commencez par définir ce que vous voulez financer",
+        paragraphs: [
+          "Avant de demander combien coûte une animation, décrivez ce qu’elle doit réellement contenir. Une opération peut être une remise en caisse, un atelier, une démonstration, un partenariat local ou un jeu mobile par QR code. Ces formats ne mobilisent ni les mêmes lots, ni le même temps d’équipe, ni les mêmes supports.",
+          "Définissez aussi l’objectif principal : faire découvrir une offre, animer une période creuse, accompagner un lancement, encourager une prochaine visite ou créer des contacts consentis. Le budget doit être relié à cet objectif, pas à une liste de dépenses ajoutées au dernier moment.",
+        ],
+        items: [
+          "Format : promotion, atelier, événement, roue, ticket à gratter ou combinaison de plusieurs actions.",
+          "Périmètre : un établissement, un créneau, une saison ou plusieurs sites.",
+          "Public : clientèle habituelle, nouveaux visiteurs, clientèle de passage ou audience d’un partenaire.",
+          "Preuve recherchée : participation, utilisation d’une offre, retrait d’un lot, contact consenti ou retour qualitatif.",
+        ],
+      },
+      {
+        title: "Séparez coûts fixes, variables et temps d’exécution",
+        paragraphs: [
+          "Une première distinction rend le budget plus lisible. Les coûts fixes sont engagés même si peu de personnes participent : préparation, création d’un support, paramétrage initial ou abonnement. Les coûts variables évoluent avec l’opération : lots remis, impressions supplémentaires, emballages ou frais d’un partenaire. Le temps d’exécution correspond au travail de l’équipe avant, pendant et après la diffusion.",
+          "Ne masquez pas le temps de l’équipe sous la mention « gratuit ». Une affiche créée en interne, une réponse au comptoir, une vérification de lot ou un bilan prennent du temps, même s’ils ne donnent pas lieu à une facture distincte. Vous pouvez conserver une estimation interne sans publier de taux horaire universel.",
+        ],
+        items: [
+          "Coûts fixes : conception, abonnement outil, création du parcours ou support réutilisable.",
+          "Coûts variables : lots effectivement remis, impressions, consommables, livraison ou partenaire.",
+          "Temps d’exécution : préparation, briefing, réponses, retrait des gains et bilan.",
+          "Coûts d’opportunité : créneau, espace, attention de l’équipe et opération non réalisée en parallèle.",
+        ],
+      },
+      {
+        title: "Chiffrez la préparation avant de choisir le format",
+        paragraphs: [
+          "La préparation comprend la définition de l’objectif, la promesse, les conditions, les lots, la période et les responsabilités. Elle inclut aussi la relecture des messages et le test du parcours. Plus une animation comporte de règles ou de partenaires, plus cette phase doit être planifiée avant la diffusion.",
+          "Un format très simple peut demander peu de préparation, mais il reste nécessaire de vérifier la date de fin, la disponibilité du produit et la capacité de remise. À l’inverse, une opération commune avec plusieurs établissements peut nécessiter davantage de coordination, même si le support est réutilisé.",
+          "Notez ces décisions dans une fiche opérationnelle. Elle permet de comparer deux formats sans oublier les tâches invisibles et évite de présenter une estimation théorique comme le coût final de l’opération.",
+        ],
+      },
+      {
+        title: "N’oubliez pas les supports et la diffusion",
+        paragraphs: [
+          "Une animation doit être visible là où le client peut agir. Le budget peut donc inclure une affiche, un chevalet, un support de table, un QR code intégré à un visuel, une publication locale ou le temps de mise en place. Le coût dépend du format, de la quantité et de ce que votre équipe peut déjà produire.",
+          "Si vous utilisez un QR code, testez le support final avant impression en quantité. Vérifiez le contraste, la taille, la distance de lecture, la lumière et la page ouverte après le scan. Une série de supports inutilisables est un coût réel, même si le fichier initial était gratuit.",
+          "Prévoyez aussi la fin de l’opération : retrait des affiches, mise à jour des horaires, arrêt d’un message ou remplacement d’un lot épuisé. Une campagne qui continue d’annoncer une offre terminée crée une friction qui ne figure pas dans le budget initial.",
+        ],
+      },
+      {
+        title: "Évaluez les lots sans confondre valeur affichée et coût réel",
+        paragraphs: [
+          "Un lot peut être un produit, une prestation, une option, une remise ou une invitation à revenir. Pour le budget, distinguez sa valeur présentée au client, son coût pour le commerce et le coût réellement engagé au moment du retrait. Ces trois éléments ne sont pas nécessairement identiques.",
+          "Ajoutez les conditions qui modifient le coût : quantité disponible, durée de validité, achat requis, jours concernés, réservation, capacité de service ou produit remplaçant. Un lot généreux mais impossible à remettre dans le délai prévu peut coûter plus cher en incompréhension qu’un avantage plus simple.",
+          "Pour un jeu, une probabilité décrit une répartition configurée et non une prévision de chiffre d’affaires. Établissez le budget à partir des scénarios que vous êtes capable d’assumer, sans annoncer un volume de gains ou de ventes qui n’a pas été mesuré.",
+        ],
+      },
+      {
+        title: "Comparez une remise, une dotation et une animation",
+        paragraphs: [
+          "Une remise réduit directement le prix d’une transaction selon ses conditions. Une dotation peut être remise à certains participants ou gagnants, avec un coût lié au stock et au retrait. Une animation ajoute une expérience et du temps d’organisation. Comparer ces formats exige de regarder à la fois le coût unitaire, le volume possible et la charge de l’équipe.",
+          "Il n’existe pas de meilleur format pour tous les commerces. Une remise peut être plus lisible pour une décision immédiate ; une dotation peut créer une surprise ; un atelier peut servir la découverte d’un savoir-faire. Le choix doit suivre l’objectif et les contraintes de l’établissement, pas une promesse de performance générale.",
+        ],
+        items: [
+          "Remise : coût concentré sur les utilisations, avec une attention particulière à la marge et aux exclusions.",
+          "Dotation : coût lié aux lots, à leur disponibilité, à leur validité et au temps de retrait.",
+          "Animation : coût de préparation, de communication et d’exécution, même lorsque le lot est limité.",
+          "Combinaison : additionner les postes et préciser quelle étape justifie chaque dépense.",
+        ],
+      },
+      {
+        title: "Intégrez le coût de l’outil sans le présenter comme le budget total",
+        paragraphs: [
+          "Un outil peut réduire certaines tâches ou rendre un parcours plus simple, mais il ne remplace ni les lots, ni l’impression, ni le briefing de l’équipe. Comparez son coût avec les fonctionnalités réellement utilisées et avec la durée de l’opération. Une estimation honnête indique ce qui est inclus et ce qui reste à organiser par le commerce.",
+          "Avec Okado, le marchand peut créer une roue ou un ticket à gratter mobile, définir des lots, des probabilités, des stocks et des conditions, puis diffuser le parcours par QR code. Le suivi des participations, gains et retraits accompagne l’opération, sans supprimer les coûts propres au commerce.",
+          "Consultez les conditions et le tarif en vigueur avant de décider. Ne mélangez pas l’abonnement avec les dépenses de la campagne et ne supposez pas qu’un outil garantit un retour financier.",
+        ],
+      },
+      {
+        title: "Construisez un exemple de budget sans inventer de montant",
+        paragraphs: [
+          "Un exemple utile peut rester chiffrable sans publier de faux prix. Créez un tableau avec une ligne par poste, une quantité, un coût unitaire connu, un coût total et une personne responsable de la vérification. Remplissez uniquement les valeurs réellement disponibles pour votre commerce ou laissez le champ à confirmer.",
+          "Par exemple, un commerce peut comparer deux scénarios : une opération courte avec un support déjà disponible et quelques lots, puis une opération plus visible avec nouvelle impression, briefing renforcé et partenaire local. L’objectif est de voir quel poste explique l’écart, pas d’annoncer qu’un scénario coûte toujours moins cher.",
+        ],
+        items: [
+          "Scénario léger : support existant, durée courte, lot disponible et briefing limité.",
+          "Scénario renforcé : nouveau support, plusieurs points de diffusion, lots distincts et temps d’équipe dédié.",
+          "Pour chaque scénario : inscrire les coûts connus, les coûts à confirmer et les hypothèses à vérifier.",
+          "Après l’opération : remplacer les hypothèses par les dépenses et le temps réellement observés.",
+        ],
+      },
+      {
+        title: "Choisissez selon le budget et la capacité de l’équipe",
+        paragraphs: [
+          "Le budget n’est pas le seul critère. Une opération peut être financièrement accessible mais trop lourde à remettre, ou plus ambitieuse mais facile à exécuter parce que le support et les rôles sont déjà prêts. Classez donc les formats selon leur effort et leur capacité de service.",
+          "Une première opération gagne à rester limitée : un objectif, une période, un support, des conditions et quelques indicateurs. Vous pourrez ensuite augmenter la couverture si l’équipe comprend le parcours et si les coûts réellement observés sont compatibles avec votre activité.",
+        ],
+        items: [
+          "Budget et effort faibles : message local, support existant, offre simple et suivi manuel limité.",
+          "Budget intermédiaire : animation QR, impression ciblée, lots contrôlés et briefing formalisé.",
+          "Budget et coordination élevés : plusieurs établissements, partenaires, supports distincts et reporting séparé.",
+          "Décision à reporter : conditions inconnues, stock incertain, responsable absent ou coût impossible à vérifier.",
+        ],
+      },
+      {
+        title: "Mesurez le coût et le résultat sans promettre un ROI",
+        paragraphs: [
+          "Avant le lancement, notez le coût prévu, l’objectif et la preuve recherchée. Après l’opération, comparez le prévu au réel : dépenses, temps, lots remis, participations, contacts consentis, utilisations et retraits. Cette comparaison vous aide à améliorer le prochain budget, même si vous ne pouvez pas calculer un ROI complet.",
+          "Une vente observée pendant une animation n’est pas automatiquement causée par celle-ci. Pour parler de retour financier, il faudrait connaître les coûts pertinents, la méthode d’attribution, la période de comparaison et les facteurs externes. Si ces éléments manquent, restez sur des indicateurs observables et indiquez la limite.",
+          "Ajoutez une observation qualitative : question fréquente, étape trop longue, lot mal compris ou temps de remise supérieur à ce qui était prévu. Une animation peut être simplifiée grâce à ces informations sans qu’un pourcentage de chiffre d’affaires soit nécessaire.",
+        ],
+      },
+      {
+        title: "Questions fréquentes sur le coût d’une animation",
+        paragraphs: [
+          "Combien coûte un jeu-concours en magasin ? Il n’existe pas de montant universel. Le budget dépend du support, des lots, du temps d’équipe, de l’outil, de la durée et du nombre d’établissements.",
+          "Une animation gratuite ne coûte-t-elle rien ? Non. Même sans achat externe, elle mobilise du temps, un espace, un support, une organisation et parfois un produit ou une prestation remis au client.",
+          "Faut-il prévoir un budget pour les lots ? Oui, même si le lot provient du stock ou d’une prestation interne. Notez sa disponibilité, son coût pour le commerce, sa validité et son temps de remise.",
+          "Peut-on comparer une remise et une roue ? Oui, en comparant l’objectif, le coût d’utilisation, la charge d’équipe, les conditions et les indicateurs. Il ne faut pas conclure à un ROI supérieur sans données comparables.",
+          "L’abonnement d’un outil inclut-il toute l’opération ? Non. Vérifiez précisément le périmètre de l’offre et ajoutez les coûts propres à votre support, vos lots, votre équipe et votre diffusion.",
+        ],
+      },
+      {
+        title: "Checklist avant de valider votre budget",
+        paragraphs: [
+          "Avant de lancer une animation, vérifiez les points suivants :",
+        ],
+        items: [
+          "L’objectif et la période de l’opération sont clairement définis.",
+          "Les coûts fixes, variables, temps d’équipe et coûts d’opportunité sont séparés.",
+          "Les lots, stocks, conditions, dates et capacités de remise sont vérifiés.",
+          "Le support, le QR code public et le parcours mobile ont été testés.",
+          "Les coûts connus sont distingués des hypothèses à confirmer.",
+          "Les indicateurs et la date du bilan sont définis avant la diffusion.",
+          "Aucune promesse de chiffre d’affaires ou de ROI n’est déduite du budget prévisionnel.",
+        ],
+      },
+    ],
+    related: [
+      "/tarifs",
+      "/guides/cout-jeu-marketing",
+      "/blog/jeu-concours-ou-promotion",
+      "/blog/idees-promotions-commerce-local",
+      "/comment-ca-marche",
+    ],
+  },
 ];
 
 export function blogPostByPath(path: string) {
