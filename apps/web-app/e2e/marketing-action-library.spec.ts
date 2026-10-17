@@ -55,7 +55,7 @@ test("configuration : validation, annulation, erreur serveur, succès normalisé
     const body = route.request().postDataJSON(); requests.push(body);
     await route.fulfill({ status: fail ? 503 : 200, json: fail ? { error: "Réessayez cet enregistrement." } : { key: body.key, url: body.url } });
   });
-  await openActions(page, "wizard-actions-empty", "nude-scratch");
+  await openActions(page, "wizard-actions-empty", "scratch-nude-classic");
   await add(page, "tiktok");
   await page.getByRole("textbox", { name: "Lien ou nom du compte" }).fill("http://tiktok.com/@fixture");
   await page.getByRole("button", { name: "Enregistrer et ajouter" }).click();
