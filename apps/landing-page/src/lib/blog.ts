@@ -826,6 +826,141 @@ export const blogPosts: BlogPost[] = [
       "/comment-ca-marche",
     ],
   },
+  {
+    path: "/blog/calendrier-marketing-commerce-local",
+    title: "Calendrier marketing annuel : les temps forts d’un commerce local",
+    description:
+      "Construisez un calendrier marketing annuel pour planifier vos temps forts, vos promotions et vos animations locales sans surcharger votre équipe.",
+    eyebrow: "Marketing local",
+    intro:
+      "Un calendrier marketing utile ne consiste pas à remplir douze mois d’offres. Il aide à choisir quelques temps forts cohérents avec votre activité, à préparer les supports à temps et à mesurer ce qui mérite d’être reconduit.",
+    answer:
+      "Pour construire un calendrier marketing annuel, partez de vos objectifs commerciaux, répartissez les temps forts par trimestre, préparez chaque opération avec une fiche simple et comparez les participations, utilisations et retraits sans promettre un chiffre d’affaires automatique.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-17",
+    updatedAt: "2026-10-17",
+    reviewedAt: "2026-10-17",
+    readingTime: "9 min de lecture",
+    image: "/images/blog/calendrier-marketing-commerce-local.webp",
+    imageAlt: "Illustration d’un calendrier marketing saisonnier dans une boutique de proximité",
+    ctaLabel: "Préparer le prochain temps fort",
+    ctaHref: "/comment-ca-marche",
+    sections: [
+      {
+        title: "Commencez par vos objectifs, pas par les dates",
+        paragraphs: [
+          "Un calendrier marketing devient vite une liste de fêtes et de promotions si vous commencez par les dates. Commencez plutôt par les moments que vous voulez améliorer : faire découvrir une gamme, soutenir une période calme, accompagner un lancement, préparer une prochaine visite ou créer un rendez-vous local.",
+          "Un commerce n’a pas besoin d’activer chaque occasion. Trois à six temps forts bien préparés peuvent être plus faciles à expliquer et à mesurer qu’une opération différente chaque semaine. Choisissez un objectif principal par période et gardez les autres comme indicateurs secondaires.",
+        ],
+      },
+      {
+        title: "Construisez une vue annuelle en quatre saisons",
+        paragraphs: [
+          "Une première vue par trimestre permet de répartir la charge et d’éviter les lancements improvisés. Les exemples ci-dessous sont des pistes à adapter à votre secteur, à votre zone de chalandise, à vos stocks et au calendrier commercial applicable en France. Les dates officielles ou réglementées doivent être vérifiées avant toute communication.",
+          "Le calendrier ne doit pas prédire les ventes. Il sert à organiser des hypothèses d’action : un message, une offre ou une animation, puis une mesure et un bilan. Une saison peut aussi être consacrée à l’observation, à la préparation ou à l’amélioration d’un parcours existant.",
+        ],
+        items: [
+          "Premier trimestre : relance après les fêtes, découverte d’une nouvelle gamme, animation d’une période calme ou préparation d’un rendez-vous de printemps.",
+          "Deuxième trimestre : mise en avant d’une saison, partenariat avec un commerce voisin, atelier court ou opération liée à un événement local réellement pertinent.",
+          "Troisième trimestre : animation estivale, retour de congés, préparation de la rentrée ou activation d’un flux touristique, si cela correspond à votre zone.",
+          "Quatrième trimestre : cadeaux, fin d’année, remerciement des clients et préparation du bilan, avec des stocks et des conditions définis avant diffusion.",
+        ],
+      },
+      {
+        title: "Détaillez chaque temps fort dans une fiche simple",
+        paragraphs: [
+          "Une ligne dans un calendrier ne suffit pas à lancer une opération. Pour chaque temps fort, créez une fiche que l’équipe peut relire rapidement. Elle doit transformer une intention générale en décisions vérifiables avant de produire une affiche ou de publier une offre.",
+          "Cette fiche sert aussi à comparer les opérations entre elles. Si vous changez le message, le lot, le canal et la période en même temps, le bilan sera difficile à interpréter. Notez donc vos hypothèses avant le lancement, sans les présenter comme des résultats attendus.",
+        ],
+        items: [
+          "Objectif principal : découverte, visite, utilisation d’une offre, prochaine visite ou animation d’un moment d’attente.",
+          "Public et zone concernés : clientèle habituelle, nouveaux visiteurs, quartier, partenaires ou clientèle de passage.",
+          "Promesse et action attendue : ce que la personne comprend, fait et peut obtenir, en quelques secondes.",
+          "Période et capacité : dates, horaires, stock, temps d’équipe et conditions de remise réellement disponibles.",
+          "Supports et canaux : comptoir, affiche, table, réseaux sociaux, partenaire local ou QR code public.",
+          "Preuves à suivre : scans, participations, utilisations, gains attribués, retraits confirmés, demandes ou retours qualitatifs.",
+        ],
+      },
+      {
+        title: "Choisissez le bon format pour chaque période",
+        paragraphs: [
+          "Le même format ne convient pas à tous les temps forts. Une promotion peut faciliter une décision immédiate, tandis qu’un jeu-concours ou une roue peut créer un moment de participation. Un atelier, une démonstration ou un partenariat peut mieux servir un objectif de découverte qu’une remise générale.",
+          "Choisissez le format selon le comportement que vous voulez provoquer et la capacité de votre équipe à le délivrer. Une animation par QR code peut accompagner une attente ou un support imprimé, mais elle ne remplace pas une promesse lisible, des conditions visibles et un parcours testé.",
+        ],
+        items: [
+          "Découvrir : démonstration, échantillon, conseil, atelier court ou lancement d’un produit disponible.",
+          "Décider maintenant : offre limitée, avantage clairement défini ou mise en avant d’un produit avec stock contrôlé.",
+          "Participer : roue, ticket à gratter, tirage ou jeu simple, avec une dotation et des règles préparées à l’avance.",
+          "Revenir : avantage valable plus tard, invitation ou prochaine étape dont la durée et les conditions sont faciles à comprendre.",
+        ],
+      },
+      {
+        title: "Préparez les supports et les lots avant le lancement",
+        paragraphs: [
+          "Un temps fort prévu dans le calendrier devient une opération concrète seulement lorsque le support, l’offre et le parcours sont prêts. Réservez une date de validation avant la date de diffusion : le temps nécessaire pour créer, imprimer, tester et expliquer est souvent supérieur au temps imaginé au départ.",
+          "Le support doit présenter le bénéfice, la période, l’action attendue et les conditions essentielles. Si vous utilisez un QR code, testez le code public sur le support final, depuis plusieurs téléphones et à la distance réelle. Ne confondez pas une prévisualisation avec le lien de participation.",
+          "Pour un jeu ou une offre avec lot, contrôlez la disponibilité, les éventuelles probabilités ou limites, la durée de validité et la procédure de retrait. Un petit lot clair et disponible vaut mieux qu’une dotation difficile à expliquer ou à remettre.",
+        ],
+      },
+      {
+        title: "Donnez un rôle clair à l’équipe",
+        paragraphs: [
+          "Le calendrier est aussi un outil d’organisation interne. Avant chaque opération, indiquez qui vérifie le support, qui répond aux questions, qui suit les stocks, qui remet un gain et qui note les problèmes rencontrés. Cette répartition évite qu’une animation repose sur une seule personne.",
+          "Écrivez une consigne d’une phrase : ce que le client fait, ce que l’équipe doit contrôler et ce qui est mesuré. Si la phrase devient trop longue, simplifiez le parcours ou les conditions avant le lancement.",
+          "Prévoyez une solution si un lot est épuisé, si un support est mal placé ou si l’opération se termine plus tôt. Une date de fin visible et un message cohérent protègent davantage l’expérience qu’une promesse permanente que l’équipe ne peut plus tenir.",
+        ],
+      },
+      {
+        title: "Mesurez l’opération sans surévaluer le calendrier",
+        paragraphs: [
+          "Un calendrier permet de comparer des périodes, mais il ne prouve pas à lui seul qu’une animation a créé une vente. Pour une promotion, suivez l’utilisation avec un code, un coupon, un retrait confirmé ou une période documentée. Pour un jeu, séparez scans, participations, gains attribués et retraits.",
+          "Notez le contexte de chaque temps fort : horaires, emplacement, durée, stock, prix, météo ou événement local connu. Comparez des opérations suffisamment proches pour apprendre quelque chose, sans conclure qu’un seul changement explique tout le résultat.",
+          "Ajoutez une observation qualitative : question fréquente, étape incomprise, réaction de l’équipe, demande d’un client ou friction au retrait. Ces informations peuvent justifier une amélioration même lorsque le volume de participations reste stable.",
+        ],
+      },
+      {
+        title: "Adaptez le calendrier au commerce local",
+        paragraphs: [
+          "Un calendrier national ne reflète pas toujours la réalité d’un quartier. Ajoutez les événements qui modifient réellement la fréquentation : marché, fête locale, travaux, rentrée d’une zone, saison touristique, partenariat ou période de fermeture. Retirez les occasions qui n’ont aucun lien avec votre clientèle.",
+          "Les commerces voisins peuvent partager une audience ou une période, mais définissez les rôles avant de communiquer. Séparez les conditions de chaque établissement, les responsabilités de remise et les usages de coordonnées. Un partenariat lisible est plus utile qu’une campagne commune impossible à expliquer au client.",
+        ],
+      },
+      {
+        title: "Faites un bilan trimestriel et annuel",
+        paragraphs: [
+          "Un bilan trimestriel évite d’attendre la fin de l’année pour découvrir qu’une opération était trop lourde ou impossible à mesurer. Gardez une page par temps fort : objectif, déroulement, indicateurs, problèmes rencontrés et décision pour la suite.",
+          "Le bilan annuel ne doit pas seulement classer les opérations par volume. Demandez lesquelles étaient simples à délivrer, lesquelles ont produit des retours utiles et lesquelles doivent être abandonnées ou repensées. Un calendrier efficace devient progressivement plus sélectif.",
+        ],
+        items: [
+          "À conserver : les formats compris rapidement, disponibles et mesurables.",
+          "À améliorer : les opérations utiles mais ralenties par un support, une condition ou une remise trop complexe.",
+          "À arrêter : les campagnes sans objectif clair, sans capacité de service ou sans preuve exploitable.",
+          "À tester plus tard : les idées pertinentes pour une autre saison, un autre public ou un partenaire mieux préparé.",
+        ],
+      },
+      {
+        title: "Checklist pour préparer votre prochain temps fort",
+        paragraphs: [
+          "Avant d’inscrire une opération dans votre calendrier, vérifiez les points suivants :",
+        ],
+        items: [
+          "L’objectif principal et le public concerné sont formulés en une phrase.",
+          "La date tient compte de la saison, de la zone locale et de la capacité réelle de l’équipe.",
+          "L’offre, le jeu ou l’événement a des conditions visibles et une date de fin.",
+          "Les stocks, lots, supports, liens et éventuels partenaires sont vérifiés avant diffusion.",
+          "Le QR code public et le parcours mobile ont été testés dans le contexte réel.",
+          "Les indicateurs et observations à recueillir sont définis avant le lancement.",
+          "Une date de bilan est prévue pour décider de reconduire, améliorer, arrêter ou tester autrement.",
+        ],
+      },
+    ],
+    related: [
+      "/blog/idees-animations-commerciales-boutique",
+      "/blog/idees-promotions-commerce-local",
+      "/affiches-qr-code",
+      "/tarifs",
+    ],
+  },
 ];
 
 export function blogPostByPath(path: string) {
