@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { PrimaryButton } from "@/components/marketing/primary-button";
 import { blogPostByPath, type BlogPost } from "@/lib/blog";
 import { APP_URL } from "@/lib/site";
@@ -47,7 +48,20 @@ export function BlogPostTemplate({ post }: { post: BlogPost }) {
           {post.eyebrow}
         </nav>
 
-        <header className="relative mt-8 overflow-hidden rounded-[28px] bg-[#132238] px-6 py-10 text-white shadow-[0_24px_70px_rgba(19,34,56,0.18)] md:px-12 md:py-14">
+        {post.image ? (
+          <figure className="relative mt-8 aspect-[2/1] overflow-hidden rounded-[28px] border border-[#e4ddd3] bg-[#f3e9da] shadow-[0_18px_50px_rgba(19,34,56,0.12)]">
+            <Image
+              src={post.image}
+              alt={post.imageAlt ?? post.title}
+              fill
+              priority
+              sizes="(max-width: 1120px) 100vw, 1120px"
+              className="object-contain"
+            />
+          </figure>
+        ) : null}
+
+        <header className="relative mt-6 overflow-hidden rounded-[28px] bg-[#132238] px-6 py-10 text-white shadow-[0_24px_70px_rgba(19,34,56,0.18)] md:px-12 md:py-14">
           <div className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full border-[34px] border-[#ffb36b]/70" />
           <div className="pointer-events-none absolute bottom-[-100px] left-1/2 h-56 w-56 -translate-x-1/2 rounded-full bg-[#6c00f6]/70 blur-3xl" />
           <div className="relative max-w-[860px]">

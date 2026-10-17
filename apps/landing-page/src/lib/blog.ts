@@ -16,6 +16,7 @@ export type BlogPost = {
   reviewedAt: string;
   readingTime: string;
   image?: string;
+  imageAlt?: string;
   ctaLabel?: string;
   ctaHref?: string;
 };
@@ -36,6 +37,8 @@ export const blogPosts: BlogPost[] = [
     updatedAt: "2026-10-17",
     reviewedAt: "2026-10-17",
     readingTime: "8 min de lecture",
+    image: "/images/blog/animations-commerciales-boutique.webp",
+    imageAlt: "Illustration d’une animation commerciale dans une boutique de proximité",
     sections: [
       {
         title: "Commencez par un objectif précis",
@@ -124,6 +127,8 @@ export const blogPosts: BlogPost[] = [
     updatedAt: "2026-10-17",
     reviewedAt: "2026-10-17",
     readingTime: "7 min de lecture",
+    image: "/images/blog/qr-code-point-de-vente.webp",
+    imageAlt: "Illustration d’un client scannant un QR code pour une animation en point de vente",
     ctaLabel: "Voir un exemple d’animation QR code",
     ctaHref: "/comment-ca-marche",
     sections: [
@@ -219,6 +224,8 @@ export const blogPosts: BlogPost[] = [
     updatedAt: "2026-10-17",
     reviewedAt: "2026-10-17",
     readingTime: "8 min de lecture",
+    image: "/images/blog/jeux-concours-restaurant.webp",
+    imageAlt: "Illustration d’un jeu-concours organisé dans un restaurant",
     ctaLabel: "Préparer une animation pour votre restaurant",
     ctaHref: "/restaurants",
     sections: [
@@ -322,6 +329,8 @@ export const blogPosts: BlogPost[] = [
     updatedAt: "2026-10-17",
     reviewedAt: "2026-10-17",
     readingTime: "8 min de lecture",
+    image: "/images/blog/animation-institut-beaute.webp",
+    imageAlt: "Illustration d’une animation commerciale dans un institut de beauté",
     ctaLabel: "Imaginer une animation à votre image",
     ctaHref: "/instituts-beaute",
     sections: [
@@ -426,6 +435,8 @@ export const blogPosts: BlogPost[] = [
     updatedAt: "2026-10-17",
     reviewedAt: "2026-10-17",
     readingTime: "8 min de lecture",
+    image: "/images/blog/jeu-concours-ou-promotion.webp",
+    imageAlt: "Illustration comparant une promotion et un jeu-concours pour un commerce local",
     ctaLabel: "Choisir un format d’animation",
     ctaHref: "/comment-ca-marche",
     sections: [
@@ -540,6 +551,8 @@ export const blogPosts: BlogPost[] = [
     updatedAt: "2026-10-17",
     reviewedAt: "2026-10-17",
     readingTime: "8 min de lecture",
+    image: "/images/blog/fideliser-sans-programme-points.webp",
+    imageAlt: "Illustration d’une relation client sans programme de points",
     ctaLabel: "Voir si une animation ponctuelle convient à votre commerce",
     ctaHref: "/comment-ca-marche",
     sections: [
@@ -647,6 +660,8 @@ export const blogPosts: BlogPost[] = [
     updatedAt: "2026-10-17",
     reviewedAt: "2026-10-17",
     readingTime: "9 min de lecture",
+    image: "/images/blog/promotions-commerce-local.webp",
+    imageAlt: "Illustration de promotions pour un commerce local",
     ctaLabel: "Préparer une opération locale",
     ctaHref: "/comment-ca-marche",
     sections: [
@@ -755,6 +770,8 @@ export const blogPosts: BlogPost[] = [
     updatedAt: "2026-10-17",
     reviewedAt: "2026-10-17",
     readingTime: "8 min de lecture",
+    image: "/images/blog/experience-client-boutique.webp",
+    imageAlt: "Illustration des moments d’une expérience client en boutique",
     ctaLabel: "Concevoir un parcours simple à tester",
     ctaHref: "/comment-ca-marche",
     sections: [

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { PageSchema } from "@/components/marketing/structured-data";
 import { blogPosts } from "@/lib/blog";
 import { pageMetadata } from "@/lib/site";
@@ -29,6 +30,18 @@ export default function BlogPage() {
         {featured ? (
           <article className="relative mt-12 overflow-hidden rounded-[28px] bg-[#132238] p-7 text-white shadow-[0_24px_70px_rgba(19,34,56,0.16)] md:p-11">
             <div className="pointer-events-none absolute -right-16 -top-20 h-60 w-60 rounded-full border-[32px] border-[#ffb36b]/70" />
+            {featured.image ? (
+              <div className="relative mb-8 aspect-[2/1] overflow-hidden rounded-[22px] bg-[#f3e9da]">
+                <Image
+                  src={featured.image}
+                  alt={featured.imageAlt ?? featured.title}
+                  fill
+                  priority
+                  sizes="(max-width: 1120px) 100vw, 1060px"
+                  className="object-contain"
+                />
+              </div>
+            ) : null}
             <div className="relative max-w-[760px]">
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#ffcf9c]">À la une · {featured.eyebrow}</p>
               <h2 className="mt-5 text-3xl font-semibold leading-tight tracking-[-0.04em] md:text-5xl">
@@ -53,6 +66,17 @@ export default function BlogPage() {
             <div className="mt-5 grid gap-5 md:grid-cols-2">
               {rest.map((post) => (
                 <article key={post.path} className="rounded-2xl border border-[#e4ddd3] bg-[#fffdf9] p-7">
+                  {post.image ? (
+                    <div className="relative aspect-[2/1] overflow-hidden rounded-xl bg-[#f3e9da]">
+                      <Image
+                        src={post.image}
+                        alt={post.imageAlt ?? post.title}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                        className="object-contain"
+                      />
+                    </div>
+                  ) : null}
                   <p className="text-xs font-bold uppercase tracking-[0.15em] text-[#6c00f6]">{post.eyebrow}</p>
                   <h3 className="mt-4 text-2xl font-semibold leading-snug">
                     <Link href={post.path} className="hover:text-[#6c00f6]">{post.title}</Link>

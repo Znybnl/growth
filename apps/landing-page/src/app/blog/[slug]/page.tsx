@@ -20,6 +20,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = postFromSlug((await params).slug);
   if (!post) notFound();
   const base = pageMetadata(post.path, post.title, post.description);
+  const image = post.image ? `${SITE_URL}${post.image}` : undefined;
   return {
     ...base,
     openGraph: {
@@ -28,7 +29,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       publishedTime: post.publishedAt,
       modifiedTime: post.updatedAt,
       authors: [post.author],
+      ...(image
+        ? {
+            images: [{ url: image, alt: post.imageAlt ?? post.title }],
+          }
+        : {}),
     },
+    ...(image
+      ? {
+          twitter: {
+            ...base.twitter,
+            images: [image],
+          },
+        }
+      : {}),
   };
 }
 
@@ -43,7 +57,7 @@ export default async function BlogPostPage({ params }: Props) {
         name={post.title}
         description={post.description}
         author={post.author}
-        image={`${SITE_URL}/og-image.png`}
+        image={`${SITE_URL}${post.image ?? "/og-image.png"}`}
         article
         articleType="BlogPosting"
         datePublished={post.publishedAt}

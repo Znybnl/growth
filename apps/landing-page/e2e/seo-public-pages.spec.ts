@@ -41,9 +41,11 @@ test("chaque page publique : HTML indexable, canonical, image sociale et navigat
         .locator('meta[name="robots"]')
         .evaluateAll((metas) => metas[0]?.getAttribute("content") ?? ""),
     ).not.toContain("noindex");
-    await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
-      "content",
-      "https://www.okado.app/og-image.png",
+    const ogImage = await page.locator('meta[property="og:image"]').getAttribute("content");
+    expect(ogImage).toEqual(
+      blogPosts.some((post) => post.path === route)
+        ? expect.stringContaining("https://www.okado.app/images/blog/")
+        : "https://www.okado.app/og-image.png",
     );
     await expect(page.locator('meta[name="description"]')).toHaveAttribute(
       "content",
@@ -93,6 +95,10 @@ test("le blog utilise un gabarit commun sans commentaires", async ({ page }) => 
     await expect(page.locator("form")).toHaveCount(0);
     await expect(page.getByText("Commentaire", { exact: false })).toHaveCount(0);
   }
+  for (const post of blogPosts) {
+    await page.goto(post.path);
+    await expect(page.getByAltText(post.imageAlt!, { exact: true })).toBeVisible();
+  }
   await page.goto(blogPosts[0].path);
   await expect(page.locator("article")).toHaveCount(1);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(blogPosts[0].title);
@@ -140,6 +146,12 @@ test("sitemap, robots, OG et fichiers distribués sont utilisables", async ({
     expect(response.status(), imagePath).toBe(200);
     expect(response.headers()["content-type"]).toContain("image/webp");
     expect((await response.body()).length, imagePath).toBeLessThan(300_000);
+  }
+  for (const post of blogPosts) {
+    const imagePath = post.image!;
+    const response = await request.get(imagePath);
+    expect(response.status(), imagePath).toBe(200);
+    expect(response.headers()["content-type"], imagePath).toContain("image/webp");
   }
   const optimized = await request.get(
     "/_next/image?url=%2Fimages%2Frestaurant-a5-counter.webp&w=640&q=75",
