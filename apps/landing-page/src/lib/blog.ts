@@ -1767,6 +1767,167 @@ export const blogPosts: BlogPost[] = [
       "/affiches-qr-code",
     ],
   },
+  {
+    path: "/blog/faire-revenir-clients-animation",
+    title: "Comment faire revenir des clients après une animation commerciale ?",
+    description:
+      "Découvrez comment préparer une prochaine visite après une animation commerciale, avec une offre claire, un consentement séparé et une mesure réaliste.",
+    eyebrow: "Fidélisation locale",
+    intro:
+      "Une animation commerciale peut créer un premier contact, mais elle ne suffit pas à prouver une fidélité durable. Pour donner envie de revenir, prévoyez la prochaine étape dès la conception : une invitation claire, une validité réaliste, une expérience cohérente et une mesure séparant participation, retrait, seconde visite et vente.",
+    answer:
+      "Pour faire revenir des clients après une animation, proposez une prochaine action simple et facultative, liée à une date, un produit ou une expérience que votre commerce peut réellement délivrer. Communiquez à nouveau uniquement avec un consentement adapté, puis mesurez les utilisations et visites observées sans inventer de taux de retour.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-17",
+    updatedAt: "2026-10-17",
+    reviewedAt: "2026-10-17",
+    readingTime: "9 min de lecture",
+    image: "/images/blog/faire-revenir-clients-animation.webp",
+    imageAlt: "Illustration d’un commerce qui propose une prochaine visite après une animation",
+    ctaLabel: "Concevoir une prochaine étape",
+    ctaHref: "/tarifs",
+    sections: [
+      {
+        title: "Distinguez animation ponctuelle et fidélité",
+        paragraphs: [
+          "Une participation montre qu’une personne a pris part à une action à un moment donné. Elle ne prouve pas une préférence durable, une prochaine visite ou une augmentation de la fréquence d’achat. Pour parler de fidélisation, il faut observer un comportement dans le temps et définir la période de référence.",
+          "La bonne question n’est donc pas seulement « combien de personnes ont joué ? », mais « quelle prochaine étape était proposée et combien d’utilisations ou de visites avons-nous réellement pu observer ? ». Cette distinction rend le bilan plus crédible et évite de transformer un gain en preuve de fidélité.",
+        ],
+        items: [
+          "Animation : une action ponctuelle avec une date, une mécanique et une promesse.",
+          "Prochaine visite : un événement ultérieur qui doit être mesuré séparément.",
+          "Fidélisation : une relation qui se vérifie dans la durée, pas sur un seul gain.",
+          "Vente : une transaction qui ne doit pas être attribuée sans méthode adaptée.",
+        ],
+      },
+      {
+        title: "Préparez la prochaine étape avant le lancement",
+        paragraphs: [
+          "La prochaine visite ne doit pas être ajoutée au dernier moment. Dès la conception, décidez ce que vous souhaitez proposer après l’animation : découvrir un nouveau produit, revenir sur un créneau, réserver une prestation, utiliser une offre ou participer à une prochaine rencontre.",
+          "Une seule prochaine étape est souvent plus lisible qu’un catalogue de possibilités. Elle doit être réalisable par l’équipe, compatible avec les stocks et compréhensible sans explication longue. Si elle est facultative, dites-le clairement et ne la présentez pas comme une condition cachée du gain.",
+        ],
+        items: [
+          "Une action : revenir, réserver, découvrir ou utiliser un avantage précis.",
+          "Une période : validité assez longue pour être réaliste, mais pas indéfinie.",
+          "Une condition : achat requis, créneau, produit, réservation ou limite de stock clairement indiqués.",
+          "Une preuve : utilisation de l’offre, réservation honorée, visite identifiée ou retour déclaré.",
+        ],
+      },
+      {
+        title: "Choisissez une invitation utile et facile à comprendre",
+        paragraphs: [
+          "Une invitation peut prendre la forme d’un avantage limité, d’une découverte, d’un rendez-vous, d’un atelier ou d’une information pratique. Elle n’a pas besoin d’être la plus généreuse possible pour être pertinente. Elle doit donner une raison de revenir qui correspond à l’expérience du commerce.",
+          "Présentez la date ou la durée, le lieu, les produits concernés et les éventuelles exclusions. Un avantage difficile à comprendre ou impossible à utiliser dégrade la confiance et augmente la charge de l’équipe au moment du retour.",
+          "Pour choisir entre une promotion et une mécanique de jeu, consultez l’article [jeu-concours ou promotion](/blog/jeu-concours-ou-promotion) et vérifiez que la prochaine étape reste distincte du gain initial.",
+        ],
+        items: [
+          "Découverte : faire essayer ou présenter un produit lors d’une prochaine visite.",
+          "Avantage ponctuel : proposer une condition claire sur une période définie.",
+          "Réservation : faciliter un retour à une date ou un créneau précis.",
+          "Événement : inviter à une rencontre dont la capacité d’accueil est vérifiée.",
+        ],
+      },
+      {
+        title: "Rendez la validité réaliste",
+        paragraphs: [
+          "Une validité trop courte laisse peu de chances d’utiliser l’invitation ; une validité indéfinie rend l’offre difficile à gérer et à mesurer. Choisissez une période compatible avec la fréquence de visite de votre clientèle, vos horaires, vos stocks et votre capacité de service.",
+          "Indiquez la date de début et de fin, les jours concernés, les produits ou prestations inclus, le besoin éventuel de réservation et la procédure d’utilisation. Si la capacité est limitée, prévoyez une règle compréhensible avant de diffuser le message.",
+          "Une date de fin doit aussi être respectée dans les supports et les messages de suivi. Une invitation qui continue de circuler après son expiration crée une friction qui peut être évitée par une vérification simple.",
+        ],
+      },
+      {
+        title: "Soignez l’expérience après l’animation",
+        paragraphs: [
+          "Faire revenir quelqu’un dépend aussi de ce qui s’est passé pendant la première expérience : accueil, clarté de la consigne, disponibilité du lot, délai de remise et compréhension des conditions. Une prochaine visite ne compense pas une animation difficile à vivre.",
+          "Demandez à l’équipe quelles étapes ont posé problème et corrigez-les avant de relancer une invitation. Le parcours doit rester cohérent entre le support, la page mobile, la remise du gain et le retour en établissement.",
+          "Si une donnée est recueillie pour faciliter un retour, expliquez son usage et obtenez un consentement distinct. Ne faites pas dépendre une récompense d’un avis public et ne transformez pas une participation en inscription automatique.",
+        ],
+      },
+      {
+        title: "Envoyez un message de suivi seulement avec le consentement adapté",
+        paragraphs: [
+          "Un message après l’animation peut rappeler une date, une réservation ou une invitation, mais il ne doit pas être envoyé à toute personne ayant joué par défaut. La participation, la remise d’un gain et l’accord pour recevoir une prospection sont des événements différents.",
+          "Expliquez au moment de la collecte ce que la personne recevra, par quel canal et à quelle fréquence. Conservez une possibilité simple de ne plus recevoir de messages. Si aucun consentement n’est disponible, privilégiez un support affiché ou une invitation remise directement au client.",
+          "La collecte d’un contact n’est donc pas obligatoire pour mesurer le retour. Elle n’est pertinente que si elle sert un objectif clair et si l’équipe peut respecter l’usage annoncé.",
+        ],
+        items: [
+          "Participation : le client prend part à l’animation.",
+          "Contact : une donnée est transmise avec une information et un consentement explicites.",
+          "Suivi : un message est envoyé dans le cadre autorisé et annoncé.",
+          "Désinscription : le client peut interrompre les messages simplement.",
+        ],
+      },
+      {
+        title: "Mesurez une seconde visite sans inventer de taux",
+        paragraphs: [
+          "Avant le lancement, définissez ce qui compte comme un retour observé : utilisation d’un code, réservation liée à l’invitation, retrait identifié, scan d’un support de suivi ou déclaration recueillie avec une méthode constante. Notez la période et les limites de ce signal.",
+          "Une seconde visite non identifiée peut rester invisible dans vos données. À l’inverse, une utilisation d’offre ne prouve pas toujours que la visite a été provoquée par l’animation. Présentez donc les résultats comme des utilisations ou retours attribuables selon une méthode, pas comme un taux de fidélité universel.",
+          "Pour structurer le bilan, séparez les indicateurs du parcours dans l’article [mesurer une animation commerciale](/blog/mesurer-animation-commerciale). Vous pourrez comparer les participations, gains, retraits, utilisations et retours observés sans les additionner artificiellement.",
+        ],
+        items: [
+          "Nombre de participants éligibles à la prochaine étape.",
+          "Invitations présentées ou messages envoyés dans le cadre autorisé.",
+          "Utilisations, réservations honorées ou retours identifiés.",
+          "Délai entre l’animation et le retour observé.",
+          "Contexte et méthode d’identification, avec les retours non mesurables explicités.",
+        ],
+      },
+      {
+        title: "Ponctuel ou récurrent : choisissez selon votre capacité",
+        paragraphs: [
+          "Une animation ponctuelle peut tester une promesse ou accompagner un moment particulier. Un rendez-vous récurrent peut créer une habitude, mais demande une régularité de contenu, de stock, d’équipe et de communication. Aucun des deux formats ne garantit une fidélité durable.",
+          "Commencez par un format que vous pouvez délivrer correctement. Si les retours sont observés et que la charge reste compatible avec votre activité, vous pourrez décider d’une répétition. Une récurrence ne doit pas devenir une remise automatique attendue à chaque visite.",
+        ],
+        items: [
+          "Ponctuel : adapté à un lancement, une saison ou un test limité.",
+          "Récurrent : pertinent si le contenu et la capacité peuvent être renouvelés.",
+          "Alterné : une invitation différente selon les périodes, avec des règles explicites.",
+          "À éviter : reconduire une récompense sans bilan ni contrôle de marge et de stock.",
+        ],
+      },
+      {
+        title: "Faut-il un programme de fidélité ?",
+        paragraphs: [
+          "Non, une prochaine étape ne nécessite pas forcément un programme de points. Une invitation ponctuelle, une réservation, un atelier ou une offre liée à une date peut suffire pour tester un retour. Le bon choix dépend de la fréquence d’achat, de la capacité de suivi et de l’expérience que vous souhaitez créer.",
+          "Un programme récurrent ajoute des règles, des données à gérer et une promesse de continuité. Avant de le créer, vérifiez que le commerce peut expliquer les conditions, suivre les avantages et répondre aux demandes dans la durée.",
+          "Pour approfondir les alternatives, consultez [fidéliser ses clients sans programme de points](/blog/fideliser-clients-sans-programme-points).",
+        ],
+      },
+      {
+        title: "Questions fréquentes sur le retour des clients",
+        paragraphs: [
+          "Comment prolonger une animation commerciale ? Préparez une prochaine étape dès la conception : invitation, offre, réservation, découverte ou événement, avec une validité et des conditions réalistes.",
+          "Comment mesurer une seconde visite ? Utilisez un code, une réservation ou un support de suivi si cela correspond au parcours, puis indiquez ce qui reste non identifié. Une participation ou un gain ne suffit pas.",
+          "Faut-il envoyer un e-mail après chaque animation ? Non. Un message de suivi nécessite un consentement adapté et une information claire sur son usage. Sans accord, remettez une invitation ou utilisez un support public.",
+          "Une récompense garantit-elle le retour ? Non. Elle peut créer une occasion de revenir, mais le comportement ultérieur dépend aussi de l’expérience, du besoin, de la validité et du contexte.",
+          "Un programme de fidélité est-il obligatoire ? Non. Testez d’abord une prochaine étape simple avant d’ajouter un système récurrent de points ou d’avantages.",
+        ],
+      },
+      {
+        title: "Checklist pour concevoir une prochaine étape",
+        paragraphs: [
+          "Avant de lancer l’animation, vérifiez les points suivants :",
+        ],
+        items: [
+          "La prochaine action est définie avant la diffusion de l’animation.",
+          "L’invitation, l’offre ou la réservation est compréhensible en quelques secondes.",
+          "La validité, les conditions, les stocks et la capacité de service sont vérifiés.",
+          "Le gain initial reste distinct de la promesse de retour.",
+          "La collecte d’un contact est facultative, expliquée et consentie séparément.",
+          "Le message de suivi et la possibilité de ne plus le recevoir sont prévus.",
+          "Les participations, gains, retraits, utilisations et secondes visites sont séparés.",
+          "Le bilan indique ce qui est observé, attribuable, inconnu et à tester ensuite.",
+        ],
+      },
+    ],
+    related: [
+      "/blog/fideliser-clients-sans-programme-points",
+      "/blog/jeu-concours-ou-promotion",
+      "/blog/mesurer-animation-commerciale",
+      "/tarifs",
+      "/comment-ca-marche",
+    ],
+  },
 ];
 
 export function blogPostByPath(path: string) {
