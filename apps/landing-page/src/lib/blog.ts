@@ -2428,6 +2428,164 @@ export const blogPosts: BlogPost[] = [
       "/blog/mesurer-animation-commerciale",
     ],
   },
+  {
+    path: "/blog/jeu-concours-evenement-local",
+    title: "Comment organiser un jeu-concours pour un événement local ?",
+    description:
+      "Organisez un jeu-concours lors d’un événement local avec une mécanique courte, des conditions visibles, une équipe préparée et une mesure distincte des participations et retraits.",
+    eyebrow: "Événement local",
+    intro:
+      "Un jeu-concours peut donner une raison de s’arrêter sur un stand ou de prolonger une visite, mais il doit rester simple à comprendre et à délivrer. La préparation du lieu, des lots, de l’équipe et des informations compte autant que la mécanique choisie.",
+    answer:
+      "Pour organiser un jeu-concours lors d’un événement local, définissez d’abord l’objectif et les responsabilités, choisissez une participation courte, préparez les lots et les conditions, testez le parcours avant l’ouverture, puis mesurez séparément passage, scans, participations, contacts, gains et retraits.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-17",
+    updatedAt: "2026-10-17",
+    reviewedAt: "2026-10-17",
+    readingTime: "9 min de lecture",
+    image: "/images/blog/jeu-concours-evenement-local.webp",
+    imageAlt: "Illustration d’un jeu-concours par QR code sur un stand lors d’un événement local",
+    ctaLabel: "Préparer une animation événementielle",
+    ctaHref: "/comment-ca-marche",
+    sections: [
+      {
+        title: "Commencez par le rôle du jeu dans l’événement",
+        paragraphs: [
+          "Un jeu-concours ne doit pas être ajouté à un événement simplement parce qu’il attire l’attention. Il peut aider à faire découvrir un stand, créer un temps d’échange, présenter un produit ou proposer une prochaine étape après la visite. Choisissez un objectif principal avant de choisir la roue, le ticket ou le tirage.",
+          "Un passage devant un stand, un scan, une participation, un contact, un gain et un retrait sont des événements différents. Cette distinction vous permet de concevoir une expérience réaliste et d’éviter de présenter un volume de participants comme une preuve de ventes ou de fidélité.",
+          "Les exemples de cet article sont des scénarios à adapter à votre événement, à votre pays, au lieu et à votre public. Les règles applicables à un jeu-concours ou à la collecte de données doivent être vérifiées avec les personnes compétentes avant diffusion.",
+        ],
+      },
+      {
+        title: "Définissez l’objectif et les responsabilités avant l’ouverture",
+        paragraphs: [
+          "Un événement local rassemble souvent plusieurs acteurs : commerce, association, organisateur, partenaire ou équipe de stand. Écrivez qui porte le jeu, qui valide les conditions, qui répond aux questions, qui remet les lots et qui conserve les éléments nécessaires au bilan.",
+          "La responsabilité ne disparaît pas parce que la participation est numérique. Le marchand ou l’organisateur doit connaître les lots réellement disponibles, les périodes annoncées et la procédure de retrait. Si plusieurs partenaires sont présents, séparez leurs rôles et les informations qu’ils peuvent consulter.",
+        ],
+        items: [
+          "Objectif principal : découverte, participation sur le stand, prochaine visite ou présentation d’une offre disponible.",
+          "Responsable de l’opération : personne qui valide le message, les conditions, les lots et la date de fin.",
+          "Responsable sur place : personne qui explique le jeu, répond aux questions et accompagne les retraits.",
+          "Partenaires : rôles, dotations, supports et usages de coordonnées séparés avant la communication.",
+          "Mesure : indicateurs choisis avant l’événement, avec une méthode pour distinguer chaque étape.",
+        ],
+      },
+      {
+        title: "Choisissez une mécanique courte pour un flux réel",
+        paragraphs: [
+          "Sur un événement, les visiteurs peuvent être pressés, entourés de bruit ou en déplacement entre plusieurs stands. Une participation par QR code peut convenir si le message est lisible, si la page s’ouvre rapidement et si le jeu ne demande pas une explication longue. La roue peut rendre le moment visible ; le ticket à gratter peut être plus discret et autonome.",
+          "Dans Okado, la roue et le ticket à gratter s’utilisent dans le navigateur du téléphone, sans application ni compte joueur à créer. Le QR de diffusion destiné au public doit être distinct du lien ou QR de prévisualisation utilisé pour tester le parcours. La prévisualisation sert au contrôle interne et n’alimente pas les indicateurs de production.",
+          "Prévoyez une solution d’accompagnement pour les visiteurs qui ne peuvent pas scanner ou qui ne comprennent pas le parcours. L’aide de l’équipe ne doit pas transformer la participation en une collecte obligatoire ni créer une promesse différente de celle affichée.",
+        ],
+        items: [
+          "Roue : moment visible et animé, à condition que le stand puisse absorber quelques secondes d’accompagnement.",
+          "Ticket à gratter : expérience plus autonome, avec une consigne et des conditions faciles à relire.",
+          "Tirage différé : période, sélection, information du gagnant et remise à préparer avant l’ouverture.",
+          "Participation accompagnée : alternative pour expliquer le jeu sans demander de donnée personnelle non nécessaire.",
+        ],
+      },
+      {
+        title: "Préparez des lots disponibles et compréhensibles",
+        paragraphs: [
+          "Un lot adapté à un événement est un lot que l’équipe peut expliquer, remettre ou faire retirer dans les conditions annoncées. Il peut être remis sur place, valable plus tard ou fourni par un partenaire. Ces choix ne répondent pas au même objectif et ne demandent pas la même organisation.",
+          "Indiquez la nature du lot, sa disponibilité, sa période de validité, les éventuelles conditions d’achat, le lieu de retrait et la personne qui confirme la remise. Une formulation courte sur l’affiche doit rester cohérente avec les conditions détaillées présentées pendant le parcours.",
+          "Dans Okado, un lot gagné donne accès aux informations de retrait prévues par le jeu. Le personnel consulte le lot et ses conditions, puis confirme un retrait avec le PIN marchand. La prévision d’un volume de visiteurs ne crée pas de stock supplémentaire : dimensionnez la dotation selon ce que vous pouvez réellement délivrer.",
+        ],
+        items: [
+          "Lot immédiat : remise possible sur le stand, avec une procédure rapide et un stock contrôlé.",
+          "Lot différé : date, lieu, durée de validité et éventuelle réservation clairement annoncés.",
+          "Lot partenaire : responsable de la remise, conditions et usage des coordonnées validés séparément.",
+          "Lot épuisé ou événement terminé : support retiré, message mis à jour et équipe informée.",
+        ],
+      },
+      {
+        title: "Construisez un support visible sur le lieu de l’événement",
+        paragraphs: [
+          "Le visiteur doit comprendre en quelques secondes ce qui est proposé et ce qu’il doit faire. Placez la promesse, l’action attendue, la période et les conditions essentielles autour du QR code, sans réduire le support à un code isolé. La page [affiches QR code](/affiches-qr-code) peut servir de point de départ pour préparer le visuel.",
+          "Choisissez l’emplacement selon le flux : devant le stand pour attirer l’attention, sur le comptoir pour accompagner la participation, ou dans une zone d’attente pour laisser le temps de lire. Testez la hauteur, la distance, la lumière, les reflets et la circulation avec le support imprimé final.",
+          "Avant l’événement, scannez le QR public avec plusieurs téléphones et réalisez le parcours complet. Vérifiez le nom du bon établissement, les dates, les lots, les conditions, la page de résultat et la procédure de retrait. Un QR de test imprimé par erreur peut envoyer les visiteurs vers un parcours qui n’est pas destiné au public.",
+        ],
+        items: [
+          "Une promesse compréhensible sans explication orale longue.",
+          "Un verbe d’action directement lié à la page ouverte après le scan.",
+          "Une marge et un contraste suffisants autour du QR code.",
+          "Les dates, limites, conditions et modalités de retrait accessibles avant la participation.",
+          "Une version de secours ou une aide de l’équipe pour les visiteurs qui ne peuvent pas scanner.",
+        ],
+      },
+      {
+        title: "Séparez participation, contact et consentement",
+        paragraphs: [
+          "Un jeu-concours peut fonctionner sans demander de coordonnées. Si une adresse e-mail est nécessaire pour envoyer un gain ou gérer une réclamation, expliquez cette finalité au moment approprié. Ne présentez pas cette donnée comme obligatoire pour une prospection si elle ne l’est pas.",
+          "Le consentement à recevoir des communications marketing doit rester distinct, facultatif, décoché par défaut et révocable. Il ne doit conditionner ni l’accès au jeu, ni l’attribution d’un lot, ni son retrait. Un partenaire ne doit pas réutiliser une adresse pour une autre finalité sans information et base appropriées.",
+          "L’organisateur ou le marchand reste responsable du respect des règles de son opération et de l’usage des contacts collectés. Cet article ne certifie pas une conformité juridique globale : faites valider les textes, finalités, durées, droits et supports selon le pays et le contexte de l’événement.",
+        ],
+      },
+      {
+        title: "Préparez le déroulé avant, pendant et après",
+        paragraphs: [
+          "Un déroulé en trois temps réduit les improvisations. Avant l’événement, préparez les supports et testez le jeu. Pendant, gardez une consigne courte et une personne capable d’expliquer les conditions. Après, retirez les supports devenus inexacts et consignez les observations avant de conclure.",
+        ],
+        items: [
+          "Avant : valider l’objectif, les rôles, la mécanique, les lots, les conditions, le QR public, l’emplacement et la procédure de retrait.",
+          "Avant : imprimer le support final, tester plusieurs téléphones et préparer une fiche interne avec les réponses aux questions fréquentes.",
+          "Pendant : observer le passage, expliquer l’action attendue, aider sans forcer la collecte et signaler immédiatement un lot ou un lien incorrect.",
+          "Pendant : distinguer un simple scan d’une participation commencée et ne pas annoncer un résultat commercial que vous ne pouvez pas mesurer.",
+          "Après : retirer ou mettre à jour les supports, vérifier les retraits, séparer les données et noter les améliorations pour le prochain événement.",
+        ],
+      },
+      {
+        title: "Mesurez l’événement sans inventer son impact",
+        paragraphs: [
+          "Un événement permet de documenter un parcours, pas de prouver automatiquement une vente. Notez séparément le passage observé si vous disposez d’une méthode définie, les scans, les participations, les contacts consentis, les gains attribués et les retraits confirmés. Les données réellement disponibles dépendent du support et du contexte.",
+          "Comparez les résultats avec les conditions de l’événement : durée, emplacement du stand, météo, horaires, affluence, partenaire, lot et nombre de personnes présentes. Une différence entre deux opérations ne permet pas toujours d’isoler une cause unique.",
+          "Pour structurer le bilan, consultez [mesurer une animation commerciale](/blog/mesurer-animation-commerciale) et décrivez ce qui a été observé, ce qui reste hypothétique et ce qui n’a pas été mesuré. Une participation n’est pas un contact ; un gain n’est pas un retrait ; un retrait ne prouve pas une fidélité durable.",
+        ],
+        items: [
+          "Visibilité : emplacement du stand, supports utilisés et durée d’exposition.",
+          "Entrée : scans ou visites vers la page publique, sans les confondre avec une partie.",
+          "Participation : parties effectivement commencées, hors prévisualisation.",
+          "Suite : gains attribués, retraits confirmés et contacts avec consentement applicable.",
+          "Apprentissage : questions posées, étape incomprise, lot indisponible ou friction de remise.",
+        ],
+      },
+      {
+        title: "Questions fréquentes sur un jeu-concours événementiel",
+        paragraphs: [
+          "Quel jeu choisir pour un événement local ? Choisissez la mécanique selon le flux, le temps disponible et la capacité de l’équipe. Une roue rend la participation visible ; un ticket peut être plus autonome ; un tirage demande une organisation après l’événement.",
+          "Comment gérer beaucoup de participants ? Réduisez le nombre d’étapes, affichez une consigne courte, préparez les réponses de l’équipe et séparez la participation de toute collecte facultative. Prévoyez une file ou une zone qui ne bloque pas les autres visiteurs.",
+          "Que faut-il afficher ? Affichez la promesse, l’action, la période, le public concerné, les limites importantes, les lots disponibles et la manière de connaître ou retirer un gain. Les détails complémentaires doivent rester accessibles avant la confirmation de participation.",
+          "Faut-il demander un e-mail pour jouer ? Pas nécessairement. Demandez seulement les informations justifiées par le parcours, expliquez leur finalité et gardez la prospection marketing séparée et facultative.",
+          "Un jeu-concours garantit-il plus de ventes ? Non. Il crée une interaction mesurable dans un contexte donné, mais une vente, une prochaine visite ou une fidélité ne peuvent pas être déduites d’un scan ou d’une participation seuls.",
+        ],
+      },
+      {
+        title: "Checklist avant l’ouverture du stand",
+        paragraphs: [
+          "Avant de diffuser le jeu-concours, vérifiez les points suivants :",
+        ],
+        items: [
+          "L’objectif et la personne responsable de l’opération sont formulés clairement.",
+          "Les partenaires connaissent leurs rôles, leurs lots et leurs responsabilités.",
+          "La mécanique est assez courte pour le flux et le temps réel du lieu.",
+          "Le QR public est distinct de la prévisualisation et ouvre le bon jeu publié.",
+          "Les lots, stocks, dates, conditions et lieux de retrait sont disponibles et cohérents.",
+          "L’affiche reste lisible à la distance réelle, avec un contraste et une marge suffisants.",
+          "L’équipe sait expliquer le jeu, aider sans forcer et confirmer un retrait avec le PIN marchand.",
+          "Les données nécessaires, le consentement marketing et les usages partenaires sont séparés.",
+          "Les indicateurs distinguent passage, scans, participations, contacts, gains et retraits.",
+          "Une date de bilan et une procédure de retrait des supports sont prévues après l’événement.",
+        ],
+      },
+    ],
+    related: [
+      "/blog/idees-jeux-concours-restaurant",
+      "/blog/idees-animations-commerciales-boutique",
+      "/affiches-qr-code",
+      "/guides/mesurer-jeu-qr-code",
+      "/comment-ca-marche",
+    ],
+  },
 ];
 
 export function blogPostByPath(path: string) {
