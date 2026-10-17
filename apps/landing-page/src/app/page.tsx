@@ -108,7 +108,7 @@ export default function IndexPage() {
         </p>
         <ul aria-label="Les points forts d’Okado" className="mt-6 flex flex-wrap gap-x-6 gap-y-3 text-sm font-semibold text-[#513049]">
           <li><Link href="/instituts-beaute#exemples-metiers" className="underline underline-offset-4">Des lots adaptés à votre métier</Link></li>
-          <li><Link href="#demo" className="underline underline-offset-4">Du jeu au retrait validé</Link></li>
+          <li><Link href="#demo" className="underline underline-offset-4">Le parcours de vos clients, en direct</Link></li>
           <li><Link href="#suivi" className="underline underline-offset-4">Votre suivi dans votre boîte mail</Link></li>
         </ul>
       </section>

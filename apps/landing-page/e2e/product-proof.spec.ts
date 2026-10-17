@@ -8,7 +8,7 @@ test.beforeEach(async ({ context, baseURL, page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
 });
 
-test("le retrait côté commerce est local, bloqué après validation et réinitialisable", async ({ page }) => {
+test("la démo reste locale et ne propose plus de validation marchand", async ({ page }) => {
   const mutations: string[] = [];
   page.on("request", request => { if (request.method() !== "GET") mutations.push(request.url()); });
   const errors: string[] = [];
@@ -16,26 +16,22 @@ test("le retrait côté commerce est local, bloqué après validation et réinit
   for (const path of ["/", "/instituts-beaute", "/restaurants"]) {
     await page.goto(path);
     const demo = page.locator("#demo");
+    await expect(demo.getByTestId("merchant-redemption-demo")).toHaveCount(0);
+    await expect(demo).not.toContainText(/validation du retrait|Simuler la validation par PIN/);
+    const kpis = await demo.locator("dl").first().innerText();
     const storage = await page.evaluate(() => [Object.entries(localStorage), Object.entries(sessionStorage)]);
     await demo.getByRole("button", { name: "Jouer", exact: true }).click();
     await demo.getByRole("button", { name: "Jouer maintenant" }).click();
     await demo.getByRole("button", { name: "Recevoir mon gain", exact: true }).click();
-    const link = demo.getByRole("button", { name: "Voir le retrait côté commerce" });
-    await link.focus();
-    await page.keyboard.press("Enter");
-    const redemption = demo.getByTestId("merchant-redemption-demo");
-    await expect(redemption.locator("..")).toBeFocused();
-    const kpis = await demo.locator("dl").first().innerText();
-    const confirm = redemption.getByRole("button", { name: "Simuler la validation par PIN" });
+    await expect(demo.getByRole("button", { name: "Voir le retrait côté commerce" })).toHaveCount(0);
+    await expect(demo.getByRole("heading", { name: "Votre gain est confirmé !" })).toBeFocused();
     await page.keyboard.press("Tab");
-    await expect(confirm).toBeFocused();
+    await expect(demo.getByRole("button", { name: "Voir l’e-mail" })).toBeFocused();
     await page.keyboard.press("Enter");
-    await expect(redemption.getByRole("status")).toHaveText(/Lot déjà retiré le 16 octobre 2026 à 14:30/);
-    await expect(redemption.getByRole("button", { name: "Retrait validé" })).toBeDisabled();
+    await expect(demo.getByRole("heading", { name: "Votre e-mail de gain" })).toBeFocused();
     expect(await demo.locator("dl").first().innerText()).toBe(kpis);
     expect(await page.evaluate(() => [Object.entries(localStorage), Object.entries(sessionStorage)])).toEqual(storage);
     await demo.getByRole("button", { name: "Redémarrer la démo" }).click();
-    await expect(confirm).toBeEnabled();
     await expect(demo.getByRole("button", { name: "Jouer", exact: true })).toBeFocused();
   }
   expect(mutations).toEqual([]);
