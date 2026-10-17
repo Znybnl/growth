@@ -961,6 +961,150 @@ export const blogPosts: BlogPost[] = [
       "/tarifs",
     ],
   },
+  {
+    path: "/blog/attirer-clients-commerce-local",
+    title: "Comment attirer des clients dans un commerce local ?",
+    description:
+      "Découvrez une méthode concrète pour attirer des clients dans un commerce local : visibilité, partenariats, contenu, animation et mesure sur 30 jours.",
+    eyebrow: "Acquisition locale",
+    intro:
+      "Attirer des clients dans un commerce local ne dépend pas d’un canal unique. Il faut rendre le lieu visible dans sa zone, donner une raison de venir, proposer une expérience simple sur place et mesurer les étapes sans attribuer automatiquement chaque vente à une action.",
+    answer:
+      "Pour attirer des clients dans un commerce local, travaillez d’abord votre visibilité de proximité, puis combinez contenu utile, partenariats, événements et animation en point de vente. Lancez une action à la fois, recueillez les contacts avec un consentement clair et mesurez séparément visibilité, participations, visites et retours.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-17",
+    updatedAt: "2026-10-17",
+    reviewedAt: "2026-10-17",
+    readingTime: "10 min de lecture",
+    image: "/images/blog/attirer-clients-commerce-local.webp",
+    imageAlt: "Illustration d’un commerce de proximité qui combine visibilité locale et animation",
+    ctaLabel: "Tester une animation locale",
+    ctaHref: "/comment-ca-marche",
+    sections: [
+      {
+        title: "Commencez par votre zone et votre objectif",
+        paragraphs: [
+          "Un commerce local ne s’adresse pas à tout le monde de la même manière. Décrivez la zone qui peut réellement vous rendre visite : quartier, commune, lieu de passage, zone touristique ou clientèle venue pour un rendez-vous. Cette limite aide à choisir les bons messages et les bons partenaires.",
+          "Fixez ensuite un objectif principal pour les prochaines semaines : faire découvrir une offre, remplir un créneau calme, accompagner un lancement, encourager une prochaine visite ou créer davantage de contacts qualifiés. Une action avec un seul objectif est plus facile à expliquer et à évaluer qu’une campagne qui promet tout à la fois.",
+        ],
+        items: [
+          "Objectif de visibilité : être trouvé et reconnu par les personnes qui cherchent déjà une activité proche.",
+          "Objectif de visite : donner une raison concrète de se déplacer pendant une période définie.",
+          "Objectif d’expérience : créer un moment utile ou mémorable une fois la personne sur place.",
+          "Objectif de retour : proposer une prochaine étape avec une durée et des conditions compréhensibles.",
+        ],
+      },
+      {
+        title: "Rendez votre commerce visible localement",
+        paragraphs: [
+          "La visibilité locale commence par des informations cohérentes et faciles à vérifier : nom du commerce, adresse, horaires, téléphone, services, accessibilité et périodes de fermeture. Une personne qui vous découvre doit pouvoir comprendre rapidement ce que vous proposez, où vous trouver et si le lieu correspond à son besoin.",
+          "Travaillez aussi les questions que vos clients posent réellement. Une page qui explique un service, une spécialité, une zone desservie ou le déroulement d’une visite peut être plus utile qu’une suite de mots-clés. Écrivez pour une personne de votre zone, avec le vocabulaire qu’elle emploie, puis relisez les informations dès qu’un horaire, un prix ou une disponibilité change.",
+          "Les avis peuvent aider une personne à se décider, mais ils doivent rester authentiques et indépendants. Ne conditionnez jamais un gain, un jeu ou un avantage à une note positive. Une demande d’avis ne remplace ni la qualité de l’accueil ni une information locale exacte.",
+        ],
+      },
+      {
+        title: "Créez des partenariats avec les commerces voisins",
+        paragraphs: [
+          "Un partenariat local est pertinent lorsque les commerces partagent une zone ou un moment de fréquentation sans proposer exactement la même chose. Un restaurant peut s’associer à une activité voisine, un institut à un commerce complémentaire, ou une boutique à un événement de quartier. L’objectif n’est pas de mélanger les marques, mais de faciliter une découverte réciproque.",
+          "Commencez par une opération courte et attribuez un rôle à chacun : qui communique, qui accueille, qui remet un avantage, qui répond aux questions et qui mesure les participations. Les conditions de chaque établissement doivent rester distinctes, notamment pour les stocks, les dates de validité et l’utilisation des coordonnées.",
+          "Un support commun n’est utile que si le parcours reste compréhensible. Indiquez clairement où la personne doit se rendre, ce qu’elle peut obtenir et jusqu’à quand. Si plusieurs commerces participent, évitez une mécanique qui oblige l’équipe à vérifier des règles différentes au comptoir.",
+        ],
+      },
+      {
+        title: "Publiez du contenu qui aide vraiment votre clientèle",
+        paragraphs: [
+          "Le contenu local sert à répondre à une question avant la visite. Expliquez un choix, comparez deux options, montrez les étapes d’un service, présentez une nouveauté ou indiquez comment préparer un rendez-vous. Un article utile peut aussi mentionner les contraintes locales : horaires particuliers, saison, accès, réservation ou disponibilité.",
+          "Chaque publication doit avoir une intention claire et une prochaine étape proportionnée. Une personne qui cherche une information n’a pas forcément besoin d’une remise ; elle peut simplement vouloir comprendre votre offre ou vérifier que vous êtes adapté à son besoin. Reliez ensuite le contenu à la page commerciale, à la prise de contact ou à l’animation concernée.",
+          "Évitez de produire plusieurs pages presque identiques pour des quartiers différents si vous n’apportez aucune information locale réelle. Le contenu géographique gagne en pertinence lorsqu’il s’appuie sur une expérience, un service, un partenaire ou une contrainte propre à la zone.",
+        ],
+      },
+      {
+        title: "Utilisez les événements pour donner une raison de venir",
+        paragraphs: [
+          "Une animation fonctionne mieux lorsqu’elle s’insère dans un moment identifiable : lancement, période calme, fête de quartier, atelier, démonstration, dégustation ou opération avec un partenaire. Elle doit préciser ce qui se passe, pour qui, quand et dans quelles conditions. Une date de début et une date de fin évitent qu’une promesse reste affichée après la fin de l’opération.",
+          "Choisissez un format que votre équipe peut délivrer sans interrompre le service. Un atelier court peut faire découvrir un savoir-faire ; une offre limitée peut faciliter une décision ; un jeu peut créer une participation rapide. Aucun format ne garantit à lui seul une hausse des ventes : l’intérêt est de créer un parcours observable et d’apprendre de l’opération.",
+          "Préparez les réponses aux questions avant la diffusion. Qui peut participer ? Quel lot ou avantage est disponible ? Peut-il être utilisé plus tard ? Que se passe-t-il si le stock est épuisé ? Ces détails font partie de l’expérience, pas seulement des conditions écrites en petit.",
+        ],
+      },
+      {
+        title: "Animez le point de vente avec un parcours simple",
+        paragraphs: [
+          "Une animation en point de vente doit être visible au bon moment et compréhensible sans explication longue. À l’accueil, en zone d’attente, à table ou près de la caisse, le support doit dire ce que la personne peut faire et ce qu’elle peut obtenir. Laissez assez d’espace pour que le message et le QR code restent lisibles.",
+          "Avec Okado, un QR code peut ouvrir une roue de la fortune ou un ticket à gratter dans le navigateur du client. Le commerce définit les lots, les conditions et le support de diffusion ; l’équipe peut ensuite vérifier les informations d’un gain et confirmer son retrait avec le PIN de l’établissement. La prévisualisation doit être distinguée du QR code public avant impression.",
+          "Testez le parcours dans les conditions réelles : support imprimé, distance de lecture, lumière du lieu, plusieurs smartphones, participation, résultat et retrait. Un jeu bien conçu mais relié au mauvais établissement ou à un ancien lot ne crée pas une bonne expérience.",
+        ],
+      },
+      {
+        title: "Collectez des contacts avec un consentement clair",
+        paragraphs: [
+          "Un contact n’a de valeur que si sa finalité est comprise et si la personne sait ce qu’elle accepte. Séparez les informations nécessaires à l’envoi d’un gain d’une inscription à des communications commerciales. La participation à une animation ne doit pas être conditionnée à une prospection future lorsqu’elle n’est pas nécessaire au parcours.",
+          "Expliquez le type de message envoyé, sa fréquence lorsqu’elle est connue et la façon de ne plus le recevoir. Limitez les données demandées à ce qui est utile, protégez les accès et ne transférez pas les coordonnées à un partenaire simplement parce qu’une opération était commune.",
+          "Mesurez la collecte comme une étape distincte : nombre de participants, contacts valides, consentements obtenus et désinscriptions éventuelles. Un formulaire plus long peut réduire la participation sans améliorer la qualité des contacts ; testez seulement ce qui sert votre objectif.",
+        ],
+      },
+      {
+        title: "Mesurez les étapes sans promettre un résultat automatique",
+        paragraphs: [
+          "Pour savoir si une action mérite d’être reconduite, séparez les signaux : visibilité d’un support, scans, participations, contacts, gains attribués, utilisations d’une offre et retraits confirmés. Une visite ou une vente peut avoir plusieurs causes ; ne la rattachez pas automatiquement à la dernière action vue.",
+          "Notez le contexte de chaque opération : période, horaires, emplacement, message, lot, stock, partenaire et événement local. Comparez des périodes suffisamment proches et changez peu d’éléments à la fois si vous voulez apprendre quelque chose. Un résultat stable peut être utile s’il s’accompagne de moins de questions ou d’un retrait plus fluide.",
+          "Ajoutez un retour qualitatif de l’équipe : question fréquente, étape incomprise, support mal placé, lot difficile à remettre ou demande récurrente. Ces observations indiquent souvent la prochaine amélioration avant qu’un indicateur de volume ne bouge.",
+        ],
+        items: [
+          "Visibilité : impressions ou présence du support, avec une méthode de mesure explicitée.",
+          "Engagement : scans et participations, sans les confondre avec des visites ou des ventes.",
+          "Conversion de l’opération : contacts consentis, utilisations, gains et retraits confirmés.",
+          "Qualité d’exécution : questions, erreurs de parcours, disponibilité des lots et retours de l’équipe.",
+        ],
+      },
+      {
+        title: "Plan d’action sur 30 jours",
+        paragraphs: [
+          "Un plan de 30 jours permet de commencer avec une action mesurable plutôt que de multiplier les canaux. Adaptez le rythme à votre activité et prévoyez une date de bilan avant le lancement.",
+        ],
+        items: [
+          "Jours 1 à 7 — cadrer : préciser la zone, l’objectif principal, le public, la promesse et l’indicateur qui permettra de décider.",
+          "Jours 8 à 14 — préparer : mettre à jour les informations locales, choisir un partenaire ou un support, définir les conditions et vérifier les stocks.",
+          "Jours 15 à 21 — tester : publier un contenu utile, installer l’animation dans un point précis et effectuer un parcours complet sur plusieurs téléphones.",
+          "Jours 22 à 30 — observer : suivre les étapes, recueillir les questions de l’équipe et décider de conserver, simplifier, arrêter ou prolonger l’opération.",
+        ],
+      },
+      {
+        title: "Les limites à garder en tête",
+        paragraphs: [
+          "Aucune méthode ne remplace la qualité du produit, de l’accueil et de la disponibilité. Une action locale peut augmenter la visibilité sans produire immédiatement plus de visites ; une animation peut être appréciée sans créer une fidélité durable ; un contact collecté peut ne jamais devenir client. Ces limites ne rendent pas la mesure inutile : elles évitent simplement de lui faire dire plus qu’elle ne prouve.",
+          "Commencez petit, documentez ce qui s’est réellement passé et améliorez une friction à la fois. Un commerce local progresse souvent en rendant son offre plus claire, son parcours plus facile et son équipe plus autonome, plutôt qu’en ajoutant une nouvelle campagne chaque semaine.",
+        ],
+        items: [
+          "Ne promettez pas un classement, un volume de clients ou un chiffre d’affaires sans preuve directement mesurée.",
+          "N’achetez pas de faux avis et ne conditionnez pas un avantage à une note positive.",
+          "Ne collectez pas de coordonnées sans expliquer la finalité et le consentement associé.",
+          "Ne lancez pas un QR code ou un lot avant d’avoir testé le parcours et la capacité de remise.",
+        ],
+      },
+      {
+        title: "Checklist pour attirer des clients localement",
+        paragraphs: [
+          "Avant de lancer votre prochaine action, vérifiez les points suivants :",
+        ],
+        items: [
+          "La zone de chalandise et le besoin local sont décrits avec des éléments concrets.",
+          "L’objectif principal, la promesse et la prochaine étape tiennent en une phrase.",
+          "Les informations du commerce sont cohérentes, à jour et faciles à vérifier.",
+          "Le contenu, le partenariat ou l’animation apporte une raison réelle de venir.",
+          "Le QR code public et le parcours mobile ont été testés dans le lieu concerné.",
+          "Les contacts, consentements, participations, gains et retraits sont suivis séparément.",
+          "Une date de bilan est fixée pour améliorer, reconduire ou arrêter l’action.",
+        ],
+      },
+    ],
+    related: [
+      "/blog/idees-animations-commerciales-boutique",
+      "/blog/animer-point-de-vente-qr-code",
+      "/restaurants",
+      "/instituts-beaute",
+      "/tarifs",
+    ],
+  },
 ];
 
 export function blogPostByPath(path: string) {
