@@ -2087,6 +2087,178 @@ export const blogPosts: BlogPost[] = [
       "/tarifs",
     ],
   },
+  {
+    path: "/blog/animation-marketing-multi-sites",
+    title: "Comment déployer une animation marketing dans plusieurs établissements ?",
+    description:
+      "Structurez une animation multi-sites avec un socle commun, des QR codes et conditions par établissement, des équipes formées et une mesure séparée.",
+    eyebrow: "Marketing multi-sites",
+    intro:
+      "Déployer une animation marketing dans plusieurs établissements demande un équilibre entre standardisation et adaptation locale. Définissez un socle commun, attribuez les supports et QR codes à chaque site, vérifiez les lots et conditions, puis comparez les résultats sans mélanger les contextes.",
+    answer:
+      "Pour déployer une animation dans plusieurs établissements, standardisez la promesse, la mécanique et les règles communes, puis localisez le nom du site, les dates, les stocks, les supports et les responsabilités. Testez d’abord un établissement pilote et suivez séparément scans, participations, gains, retraits, visites et ventes par site.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-17",
+    updatedAt: "2026-10-17",
+    reviewedAt: "2026-10-17",
+    readingTime: "10 min de lecture",
+    image: "/images/blog/animation-marketing-multi-sites.webp",
+    imageAlt: "Illustration d’une responsable qui coordonne une animation dans plusieurs commerces",
+    ctaLabel: "Évaluer un déploiement multi-sites",
+    ctaHref: "/tarifs",
+    sections: [
+      {
+        title: "Standardisez le socle et localisez ce qui doit l’être",
+        paragraphs: [
+          "Une animation multi-sites ne consiste pas à copier un fichier sans contrôle. Le socle commun peut contenir l’objectif, la mécanique, la promesse, les règles générales, le calendrier de référence et les indicateurs. Chaque établissement doit ensuite renseigner ses propres informations et valider son support avant diffusion.",
+          "Cette séparation évite deux risques opposés : des campagnes différentes impossibles à comparer, ou un support identique qui affiche le mauvais lieu, la mauvaise date ou un lot indisponible. Documentez ce qui ne doit jamais changer et ce qui doit être adapté localement.",
+        ],
+        items: [
+          "Socle commun : mécanique, message principal, règles, structure du support et indicateurs.",
+          "Éléments locaux : nom, adresse, horaires, dates, stocks, lots, équipe et responsable.",
+          "Validation : personne qui relit et personne qui autorise la diffusion pour chaque site.",
+          "Version : fichier ou support associé à un établissement et à une période précise.",
+        ],
+      },
+      {
+        title: "Définissez le modèle de jeu ou d’animation",
+        paragraphs: [
+          "Choisissez une mécanique que chaque équipe peut expliquer et délivrer. Il peut s’agir d’une roue, d’un ticket à gratter, d’une offre, d’une démonstration ou d’une invitation. La question n’est pas seulement de savoir si le format est duplicable, mais si ses lots, ses conditions et son retrait restent maîtrisables dans chaque établissement.",
+          "Décrivez le parcours de bout en bout : support, scan ou entrée, participation, résultat, conditions, gain, retrait et éventuelle prochaine visite. Les étapes doivent être les mêmes dans le socle, même si les lots ou les créneaux varient selon le site.",
+          "Pour un parcours QR, consultez l’article [animer un point de vente avec un QR code](/blog/animer-point-de-vente-qr-code) et testez la page dans le contexte réel de chaque établissement.",
+        ],
+        items: [
+          "Objectif commun et action attendue du public.",
+          "Parcours identique ou variantes autorisées explicitement.",
+          "Règles de gains, validité, stock et retrait documentées.",
+          "Indicateurs communs et événements qui restent propres à chaque site.",
+        ],
+      },
+      {
+        title: "Attribuez un QR public et un support à chaque site",
+        paragraphs: [
+          "Le mauvais QR code peut envoyer un client vers le mauvais établissement, la mauvaise condition ou le mauvais stock. Pour éviter cette erreur, attribuez chaque QR public à un site et à une version de campagne, puis vérifiez le parcours avec le support réellement imprimé.",
+          "Ne mélangez pas le QR de prévisualisation, le QR public et les liens de test de l’équipe. Identifiez-les dans votre fiche de déploiement et retirez les anciens supports lorsque la campagne change.",
+          "Lorsque la comparaison entre sites est utile, utilisez une attribution distincte ou une information de provenance qui reste compréhensible pour l’équipe. Cela permet de suivre les scans et participations sans déduire une performance à partir d’un support partagé.",
+        ],
+        items: [
+          "Un établissement, un support validé et un QR public identifié.",
+          "Une vérification sur plusieurs téléphones et dans les conditions de lumière du site.",
+          "Une date de remplacement ou de retrait des anciennes affiches.",
+          "Un registre des versions pour retrouver quel support était diffusé.",
+        ],
+      },
+      {
+        title: "Gérez les lots et les stocks établissement par établissement",
+        paragraphs: [
+          "Un réseau peut partager une promesse tout en ayant des stocks, des capacités de service et des produits différents. Définissez donc les lots et quantités par établissement, ou prévoyez une règle claire lorsque le stock est mutualisé.",
+          "Un gain attribué n’est pas encore un retrait. Chaque équipe doit savoir vérifier la validité, la disponibilité et le statut du lot avant de le remettre. Si un établissement ne peut plus honorer une dotation, le support et la page doivent être actualisés rapidement.",
+          "Les probabilités ou répartitions configurées ne prédisent ni le nombre de participations ni le nombre de ventes. Le suivi doit porter sur les gains attribués, les retraits réalisés et les stocks restants par site.",
+        ],
+        items: [
+          "Stock initial et stock de sécurité par établissement.",
+          "Lot, quantité, date de validité et condition de retrait.",
+          "Responsable de la mise à jour et procédure en cas d’épuisement.",
+          "Séparation entre gains attribués, lots retirés et lots encore disponibles.",
+        ],
+      },
+      {
+        title: "Définissez les droits et les responsabilités des équipes",
+        paragraphs: [
+          "Un déploiement multi-sites fonctionne mieux lorsque chacun sait ce qu’il peut modifier. Le responsable réseau peut préparer le socle ; le responsable d’établissement peut valider ses horaires, ses lots et son support ; l’équipe sur place peut expliquer le parcours et remettre un gain selon la procédure.",
+          "N’accordez pas plus de droits que nécessaire et prévoyez une personne capable de corriger une erreur de support ou de condition. Une modification locale non documentée peut rendre les résultats difficiles à comparer et les règles incohérentes entre sites.",
+        ],
+        items: [
+          "Création et modification du socle commun.",
+          "Validation locale des dates, lots, horaires et supports.",
+          "Gestion opérationnelle des participations et retraits.",
+          "Accès au bilan du site et au bilan consolidé, selon le rôle.",
+          "Escalade en cas de stock épuisé, erreur de QR ou demande particulière.",
+        ],
+      },
+      {
+        title: "Préparez les supports sans multiplier les erreurs",
+        paragraphs: [
+          "Le support doit être compréhensible dans chaque établissement : promesse, période, QR code, conditions essentielles et point de retrait. Utilisez un modèle commun, mais générez ou relisez chaque version locale avant impression.",
+          "Un contrôle visuel ne suffit pas. Scannez le QR, vérifiez le nom du site, la date, les lots, la page ouverte et le parcours de retrait. Faites relire le support par une personne qui n’a pas participé à sa création.",
+          "Le [calendrier marketing pour commerce local](/blog/calendrier-marketing-commerce-local) peut aider à coordonner les dates, mais chaque établissement doit confirmer ses contraintes propres avant publication.",
+        ],
+      },
+      {
+        title: "Commencez par un déploiement pilote",
+        paragraphs: [
+          "Un pilote sur un établissement permet de vérifier la mécanique dans des conditions réelles avant de multiplier les supports et les équipes. Choisissez un site capable de documenter les questions, les incidents, les temps de remise et les étapes qui posent problème.",
+          "Le pilote ne prouve pas qu’un résultat sera identique ailleurs. Il sert à améliorer le modèle, la fiche de déploiement et la formation. Avant l’extension, corrigez les erreurs qui pourraient se répéter sur tous les sites.",
+        ],
+        items: [
+          "Choisir un établissement représentatif et un responsable identifié.",
+          "Tester le support, le QR, le parcours et les règles de retrait.",
+          "Noter les questions et incidents sans les présenter comme des résultats universels.",
+          "Mettre à jour le socle et la formation avant le déploiement réseau.",
+        ],
+      },
+      {
+        title: "Mesurez chaque établissement séparément",
+        paragraphs: [
+          "Un bilan réseau ne doit pas additionner des contextes incomparables sans les expliquer. Pour chaque site, suivez au minimum la période, le support, les scans, les participations, les contacts consentis, les gains, les retraits, les utilisations d’offre, les ventes attribuables selon une méthode définie et les incidents.",
+          "Documentez aussi les différences : emplacement, horaires, équipe, stock, communication locale, météo, événement voisin ou fermeture partielle. Un site peut avoir moins de participations mais une procédure plus fluide ; un autre peut avoir plus de scans mais davantage d’abandons.",
+          "Pour la méthode d’attribution et les limites, référez-vous à [mesurer une animation commerciale](/blog/mesurer-animation-commerciale). Une participation ou une vente ne devient pas une preuve de rentabilité simplement parce qu’elle est agrégée au niveau du réseau.",
+        ],
+        items: [
+          "Données de parcours : scans, participations, contacts, gains et retraits.",
+          "Données commerciales : utilisations, réservations ou ventes selon une méthode connue.",
+          "Données d’exécution : stock, temps d’équipe, incidents et questions.",
+          "Contexte : horaires, emplacement, support, communication et contraintes locales.",
+        ],
+      },
+      {
+        title: "Construisez un bilan réseau utile à la décision",
+        paragraphs: [
+          "Commencez le bilan par une vue site par site, puis cherchez les écarts qui méritent une action. Le but n’est pas de classer automatiquement les établissements, mais de comprendre ce qui dépend du modèle commun et ce qui relève du contexte local.",
+          "Un bon bilan peut répondre à quatre questions : le parcours a-t-il été délivré comme prévu, quelles conditions locales ont changé, quels indicateurs sont réellement comparables et quelle modification faut-il tester ensuite ? Les résultats non mesurés doivent rester identifiés comme tels.",
+        ],
+        items: [
+          "Ce qui est commun et doit rester inchangé.",
+          "Ce qui doit être adapté par établissement.",
+          "Ce qui a créé une friction ou une erreur répétée.",
+          "Ce qui peut être testé sur un sous-ensemble avant une nouvelle extension.",
+        ],
+      },
+      {
+        title: "Questions fréquentes sur une animation multi-sites",
+        paragraphs: [
+          "Faut-il un jeu par établissement ? Pas nécessairement. Une même mécanique peut être utilisée avec des supports, lots, conditions et attributions distincts, si les responsabilités et les stocks sont correctement séparés.",
+          "Comment suivre les stocks ? Définissez le stock initial, les gains attribués, les retraits, les dates et la personne responsable pour chaque établissement. Actualisez les supports si une dotation devient indisponible.",
+          "Comment éviter le mauvais QR code ? Associez chaque QR à un site et une version, testez le support final sur plusieurs téléphones et retirez les anciennes affiches lors d’un changement.",
+          "Peut-on comparer les sites ? Oui, à condition de conserver les données et le contexte de chaque site. Une comparaison ne doit pas masquer les écarts d’horaires, de public, de stock ou de communication.",
+          "Faut-il déployer partout en même temps ? Non. Un pilote peut révéler les erreurs de parcours et améliorer la documentation avant l’extension, sans garantir les mêmes résultats dans les autres établissements.",
+        ],
+      },
+      {
+        title: "Checklist de déploiement multi-sites",
+        paragraphs: [
+          "Avant de diffuser l’animation dans plusieurs établissements, vérifiez les points suivants :",
+        ],
+        items: [
+          "Le socle commun, les variantes locales et les responsables sont définis.",
+          "Chaque établissement a validé ses dates, horaires, lots, stocks et conditions.",
+          "Chaque support possède le bon QR public et a été testé dans le lieu réel.",
+          "Le QR de test, la prévisualisation et le QR public sont clairement distingués.",
+          "Les équipes connaissent le parcours, la procédure de retrait et la personne à contacter en cas d’erreur.",
+          "Un pilote a été réalisé et ses enseignements ont été intégrés au modèle.",
+          "Les indicateurs et le contexte sont suivis séparément par établissement.",
+          "Le bilan réseau ne confond pas agrégation, comparaison, fréquentation, ventes et rentabilité.",
+        ],
+      },
+    ],
+    related: [
+      "/blog/animer-point-de-vente-qr-code",
+      "/blog/calendrier-marketing-commerce-local",
+      "/comment-ca-marche",
+      "/tarifs",
+      "/blog/mesurer-animation-commerciale",
+    ],
+  },
 ];
 
 export function blogPostByPath(path: string) {
