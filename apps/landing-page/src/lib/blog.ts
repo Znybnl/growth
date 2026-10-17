@@ -2259,6 +2259,175 @@ export const blogPosts: BlogPost[] = [
       "/blog/mesurer-animation-commerciale",
     ],
   },
+  {
+    path: "/blog/affiche-qr-code-animation-commerciale",
+    title: "Comment créer une affiche QR code pour une animation commerciale ?",
+    description:
+      "Concevez une affiche QR code claire et lisible : promesse, appel à l’action, conditions, emplacement, test multi-téléphones et checklist avant impression.",
+    eyebrow: "Support d’animation",
+    intro:
+      "Une affiche QR code efficace ne se résume pas à placer un carré à scanner. Elle hiérarchise la promesse, l’action attendue, les conditions essentielles et le QR code, puis elle est testée dans le lieu réel avant d’être imprimée en quantité.",
+    answer:
+      "Pour créer une affiche QR code d’animation commerciale, formulez une promesse courte, indiquez clairement quoi faire, rendez le code et les conditions visibles, choisissez un emplacement adapté au parcours client et testez le support imprimé sur plusieurs téléphones. Un scan ne garantit ni participation, ni gain, ni vente : le parcours doit être vérifié séparément.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-17",
+    updatedAt: "2026-10-17",
+    reviewedAt: "2026-10-17",
+    readingTime: "9 min de lecture",
+    image: "/images/blog/affiche-qr-code-animation-commerciale.webp",
+    imageAlt: "Illustration d’une affiche QR code testée dans un commerce local",
+    ctaLabel: "Préparer votre support d’animation",
+    ctaHref: "/affiches-qr-code",
+    sections: [
+      {
+        title: "Commencez par un message principal",
+        paragraphs: [
+          "Une personne doit comprendre l’intérêt de l’affiche avant de sortir son téléphone. Formulez une promesse concrète et compatible avec l’animation : participer à un jeu, découvrir une offre, essayer un produit ou accéder à une invitation. Évitez les phrases générales qui ne disent pas ce qui se passe après le scan.",
+          "Le message doit rester honnête sur la disponibilité, la durée et les conditions. Une affiche ne doit pas annoncer un gain ou une offre que le commerce ne peut plus remettre. Si le stock ou le nombre de places est limité, prévoyez une formulation et une procédure de mise à jour.",
+        ],
+        items: [
+          "Une promesse compréhensible sans connaître le produit ou l’outil.",
+          "Une action précise : scanner, participer, découvrir, réserver ou essayer.",
+          "Une période ou une date de fin lorsque l’animation est limitée.",
+          "Une information sur les conditions essentielles, sans microtexte illisible.",
+        ],
+      },
+      {
+        title: "Placez un appel à l’action près du QR code",
+        paragraphs: [
+          "Le QR code doit être accompagné d’une consigne visible. « Scannez pour participer » ou « Ouvrez la page pour découvrir l’offre » donne une direction plus claire qu’un code isolé. Adaptez la phrase à l’étape réellement proposée et ne promettez pas un résultat qui dépend d’un tirage ou d’un stock.",
+          "L’appel à l’action doit être lisible à la distance où l’affiche est observée. Il peut être placé au-dessus ou à côté du code, avec assez d’espace pour que les éléments ne se confondent pas. Le support doit rester compréhensible même si le client ne lit pas tous les détails.",
+        ],
+        items: [
+          "Verbe d’action visible et directement lié au parcours.",
+          "QR code suffisamment dégagé pour être cadré par l’appareil photo.",
+          "Promesse et consigne regroupées dans la même zone visuelle.",
+          "Conditions importantes accessibles avant ou au moment de la participation.",
+        ],
+      },
+      {
+        title: "Construisez une hiérarchie visuelle simple",
+        paragraphs: [
+          "Une affiche doit être comprise en quelques secondes. Organisez les éléments dans cet ordre : ce qui est proposé, ce qu’il faut faire, les conditions essentielles et les informations pratiques. Le QR code est un moyen d’entrée, pas le message principal.",
+          "Limitez le nombre de couleurs, de polices et d’éléments décoratifs. Un visuel trop chargé peut réduire la lisibilité de la consigne et détourner l’attention du code. Si une information est indispensable, donnez-lui un emplacement fixe dans le modèle.",
+          "Vous pouvez partir du support prévu sur la page [affiches QR code](/affiches-qr-code), puis l’adapter à votre lieu et à votre animation. Relisez toujours le visuel final plutôt que de considérer le modèle comme validé automatiquement.",
+        ],
+        items: [
+          "Niveau 1 : promesse ou bénéfice de l’animation.",
+          "Niveau 2 : action attendue autour du QR code.",
+          "Niveau 3 : période, conditions et lieu.",
+          "Niveau 4 : informations complémentaires qui ne doivent pas concurrencer l’action.",
+        ],
+      },
+      {
+        title: "Vérifiez contraste, taille et lisibilité",
+        paragraphs: [
+          "Le QR code et le texte doivent rester lisibles selon le support, la distance, la lumière et les reflets. Un fichier qui paraît correct sur un écran peut devenir difficile à scanner après impression ou derrière une vitre.",
+          "Contrôlez le contraste entre le code et son fond, la netteté à la taille finale et la présence d’une marge autour du code. Évitez les fonds chargés, les déformations, les couleurs trop proches et les éléments qui passent sur la zone de lecture.",
+          "Pensez aussi aux personnes qui ne peuvent pas scanner facilement. Affichez une consigne alternative ou un moyen simple de demander de l’aide à l’équipe, sans faire dépendre un gain d’une capacité technique particulière.",
+        ],
+        items: [
+          "Contraste suffisant entre le QR code et son arrière-plan.",
+          "Taille adaptée à la distance réelle de lecture.",
+          "Marge blanche ou zone dégagée autour du code.",
+          "Texte assez grand pour être lu sans agrandissement du téléphone.",
+          "Alternative de compréhension ou d’accompagnement par l’équipe.",
+        ],
+      },
+      {
+        title: "Choisissez l’emplacement selon le parcours client",
+        paragraphs: [
+          "Le meilleur emplacement est celui où le client peut voir l’affiche, sortir son téléphone et agir sans bloquer le service. Une vitrine attire l’attention avant l’entrée ; un comptoir peut convenir à une participation accompagnée ; une table ou une zone d’attente laisse davantage de temps pour lire.",
+          "Ne placez pas le QR derrière un reflet, trop près d’un obstacle ou dans une zone où le client ne peut pas tenir son téléphone. Testez l’angle, la distance, la lumière et la circulation à l’heure réelle de l’animation.",
+          "Si plusieurs emplacements utilisent la même campagne, notez où se trouve chaque affiche. Si vous souhaitez comparer les supports, attribuez-les distinctement sans créer de parcours contradictoires.",
+        ],
+        items: [
+          "Vitrine : visibilité avant la visite et consigne courte.",
+          "Comptoir : accompagnement possible, avec un espace qui ne gêne pas la file.",
+          "Table ou attente : lecture plus longue et participation autonome.",
+          "Événement : support à hauteur et distance adaptées au flux du stand.",
+        ],
+      },
+      {
+        title: "Montrez les conditions sans cacher l’essentiel",
+        paragraphs: [
+          "Une affiche n’a pas à reproduire tout le règlement, mais elle doit rendre visibles les conditions qui changent la décision de participer : période, public concerné, achat requis, stock, dates d’utilisation, lieu de retrait ou réservation.",
+          "Si les détails sont accessibles après le scan, indiquez-le clairement. Le client doit pouvoir comprendre qu’il va ouvrir une page présentant les conditions avant de confirmer sa participation. Ne rendez pas une information importante dépendante d’un texte minuscule placé en bas du support.",
+          "La participation, le gain et le retrait restent des étapes distinctes. Une affiche peut présenter le parcours, mais l’équipe doit aussi savoir expliquer la remise et les limites au moment concerné.",
+        ],
+      },
+      {
+        title: "Séparez QR public, prévisualisation et tests",
+        paragraphs: [
+          "Utilisez le QR public prévu pour les clients sur le support final. La prévisualisation et les liens de test servent à contrôler le parcours avant diffusion, mais ils ne doivent pas être imprimés par erreur. Identifiez les fichiers et les versions pour éviter une confusion.",
+          "Après chaque modification de date, lot, condition ou établissement, relisez le support et vérifiez le QR correspondant. Un QR qui ouvre encore une ancienne campagne peut générer des participations sur un parcours ou un stock qui n’est plus valable.",
+          "Dans un contexte multi-sites, associez le QR au bon établissement et suivez les supports imprimés. Les données de plusieurs lieux ne doivent pas être mélangées par défaut.",
+        ],
+        items: [
+          "Prévisualisation : contrôle interne du rendu et du parcours.",
+          "QR public : lien réellement diffusé aux clients.",
+          "Version imprimée : support associé à une date, un lieu et une campagne.",
+          "Ancienne version : support retiré ou clairement désactivé avant la nouvelle diffusion.",
+        ],
+      },
+      {
+        title: "Testez l’affiche imprimée sur plusieurs téléphones",
+        paragraphs: [
+          "Un test utile se fait avec le papier, la taille et l’emplacement définitifs. Utilisez plusieurs téléphones, différents niveaux de luminosité et plusieurs distances. Vérifiez que la caméra reconnaît le code sans que le client ait besoin de chercher un réglage particulier.",
+          "Effectuez ensuite le parcours complet : ouverture de la page, participation, affichage du résultat, lecture des conditions et éventuelle procédure de retrait. Un scan réussi ne suffit pas si la page se charge mal ou si l’action suivante est incomprise.",
+          "Conservez une trace de la version testée, de la date, de l’emplacement et des corrections. Cela facilite le remplacement d’un support si le lot, le lien ou la date change.",
+        ],
+        items: [
+          "Impression à la taille et sur le papier réellement utilisés.",
+          "Plusieurs téléphones et systèmes d’exploitation.",
+          "Distance, angle, lumière, reflet et emplacement réels.",
+          "Parcours complet jusqu’à la compréhension du gain ou de l’offre.",
+          "Validation de la date, du lieu, des conditions et du stock.",
+        ],
+      },
+      {
+        title: "Mesurez les scans sans les confondre avec les participations",
+        paragraphs: [
+          "Une affiche peut être évaluée avec plusieurs indicateurs : scans, participations, abandons, contacts consentis, gains, retraits, utilisations d’offre et éventuelles ventes selon une méthode documentée. Ces événements ne doivent pas être additionnés comme s’ils représentaient tous la même action.",
+          "Si plusieurs supports sont diffusés, notez leur emplacement et leur période. Un support très visible peut générer des scans mais demander davantage d’accompagnement ; un autre peut être moins consulté mais plus simple à délivrer. Le contexte est nécessaire pour interpréter l’écart.",
+          "Pour organiser ce suivi, consultez [mesurer une animation commerciale](/blog/mesurer-animation-commerciale) et décrivez ce qui a été observé, supposé ou laissé inconnu. Un QR code ne prouve ni la fidélité ni le chiffre d’affaires.",
+        ],
+      },
+      {
+        title: "Questions fréquentes sur une affiche QR code",
+        paragraphs: [
+          "Quelle phrase mettre près d’un QR code ? Utilisez une consigne courte qui décrit l’action réelle, par exemple participer, découvrir, essayer ou réserver. La phrase doit correspondre à la page ouverte et aux conditions de l’animation.",
+          "Où placer l’affiche ? Placez-la là où le client peut la voir et agir sans gêner la circulation : vitrine, comptoir, zone d’attente, table ou stand. Testez la distance, l’angle et la lumière dans le lieu réel.",
+          "Comment vérifier qu’un QR fonctionne après impression ? Scannez le support imprimé avec plusieurs téléphones, puis réalisez le parcours complet jusqu’à la page, la participation et la lecture des conditions.",
+          "Faut-il afficher tout le règlement ? Non, mais les conditions qui modifient la décision de participer doivent être visibles ou annoncées clairement avant la confirmation.",
+          "Un QR code garantit-il des participations ? Non. Il facilite une entrée dans le parcours ; la visibilité, la promesse, la page, le contexte et l’expérience influencent la suite.",
+        ],
+      },
+      {
+        title: "Checklist avant d’imprimer votre affiche",
+        paragraphs: [
+          "Avant de lancer une impression en quantité, vérifiez les points suivants :",
+        ],
+        items: [
+          "La promesse et l’action attendue sont compréhensibles en quelques secondes.",
+          "Le QR code public est distinct de la prévisualisation et des liens de test.",
+          "Le contraste, la taille, la marge et la netteté sont adaptés au support final.",
+          "L’emplacement permet de lire, scanner et agir sans gêner le parcours.",
+          "Les dates, conditions, stocks, lieux et modalités de retrait sont à jour.",
+          "Le support imprimé a été testé sur plusieurs téléphones et dans le lieu réel.",
+          "Une version alternative ou une aide de l’équipe est prévue pour les clients qui ne peuvent pas scanner.",
+          "Les indicateurs distinguent scans, participations, gains, retraits, offres utilisées et ventes éventuelles.",
+        ],
+      },
+    ],
+    related: [
+      "/affiches-qr-code",
+      "/blog/animer-point-de-vente-qr-code",
+      "/blog/idees-animations-commerciales-boutique",
+      "/comment-ca-marche",
+      "/blog/mesurer-animation-commerciale",
+    ],
+  },
 ];
 
 export function blogPostByPath(path: string) {
