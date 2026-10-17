@@ -1928,6 +1928,165 @@ export const blogPosts: BlogPost[] = [
       "/comment-ca-marche",
     ],
   },
+  {
+    path: "/blog/animation-lancement-nouveau-produit",
+    title: "Comment lancer un nouveau produit avec une animation commerciale ?",
+    description:
+      "Préparez le lancement d’un nouveau produit avec une animation claire : découverte, démonstration, offre, stock, équipe et mesure sans promesse de ventes.",
+    eyebrow: "Lancement produit local",
+    intro:
+      "Une animation de lancement doit aider les clients à comprendre et essayer une nouveauté, sans masquer ses caractéristiques, sa disponibilité ou ses conditions. Préparez une découverte simple, une démonstration maîtrisée et une mesure séparant compréhension, essais, participations et ventes réellement observées.",
+    answer:
+      "Pour lancer un nouveau produit avec une animation commerciale, définissez d’abord ce que le client doit découvrir, choisissez une démonstration ou une participation compatible avec votre équipe, préparez un stock et des conditions visibles, puis mesurez les essais et actions observées. Une animation peut faciliter la découverte sans garantir les ventes ni remplacer la qualité du produit.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-17",
+    updatedAt: "2026-10-17",
+    reviewedAt: "2026-10-17",
+    readingTime: "9 min de lecture",
+    image: "/images/blog/animation-lancement-nouveau-produit.webp",
+    imageAlt: "Illustration d’un commerce qui présente un nouveau produit pendant une animation",
+    ctaLabel: "Préparer un lancement local",
+    ctaHref: "/tarifs",
+    sections: [
+      {
+        title: "Définissez ce que le lancement doit faire découvrir",
+        paragraphs: [
+          "Un nouveau produit peut être difficile à comprendre parce qu’il est inédit, qu’il répond à un usage précis ou qu’il arrive dans une gamme déjà connue. Avant de choisir une animation, formulez la découverte attendue : usage, bénéfice, geste, parfum, texture, format, prestation ou différence avec une offre existante.",
+          "Un lancement ne doit pas tout expliquer en même temps. Choisissez un message principal, puis prévoyez les informations nécessaires sur le prix, la disponibilité, les conditions et les limites. Une animation rend la découverte plus concrète, mais elle ne doit pas dissimuler les caractéristiques importantes.",
+        ],
+        items: [
+          "Produit ou prestation présenté et public concerné.",
+          "Point de compréhension prioritaire pour le client.",
+          "Action attendue : regarder, essayer, réserver, participer ou acheter.",
+          "Informations obligatoires : prix, stock, durée, conditions ou précautions utiles.",
+        ],
+      },
+      {
+        title: "Choisissez entre découverte, démonstration et jeu",
+        paragraphs: [
+          "Une démonstration convient lorsque le produit doit être montré ou expliqué. Un échantillon ou un essai peut être pertinent lorsque le client doit se faire une idée par l’expérience. Un jeu par QR code peut créer une participation autour du lancement, à condition que la mécanique ne prenne pas le pas sur la nouveauté présentée.",
+          "Le format doit suivre le produit et la capacité de l’équipe. Une animation très visible mais difficile à délivrer peut nuire au lancement. Pour comparer plusieurs formats, consultez les [idées d’animations commerciales en boutique](/blog/idees-animations-commerciales-boutique) et les [idées de promotions pour commerce local](/blog/idees-promotions-commerce-local).",
+        ],
+        items: [
+          "Découverte libre : présentation visible, fiche claire et équipe disponible pour répondre.",
+          "Démonstration : séquence courte, répétable et compatible avec le rythme du lieu.",
+          "Essai : quantité, hygiène, sécurité, stock et conditions vérifiés avant diffusion.",
+          "Jeu ou offre : participation distincte de la découverte et conditions affichées.",
+        ],
+      },
+      {
+        title: "Construisez une promesse claire sans dévaloriser le produit",
+        paragraphs: [
+          "Une animation peut donner une raison de venir découvrir une nouveauté sans réduire systématiquement son prix. Vous pouvez proposer une démonstration, un conseil, une expérience, une réservation prioritaire, un avantage limité ou un jeu lié au lancement. L’important est que la promesse reste cohérente avec le positionnement du produit.",
+          "Une remise n’est pas le seul moyen de faire essayer. Si vous en proposez une, précisez sa durée, ses produits concernés, ses exclusions et son éventuelle non-cumulabilité. Ne présentez pas un avantage ponctuel comme le prix normal du produit.",
+          "Un lot ou un gain ne doit pas remplacer l’information sur la nouveauté. Le client doit comprendre ce qu’il découvre, ce qui est proposé et ce qu’il peut faire ensuite.",
+        ],
+      },
+      {
+        title: "Préparez le stock et les conditions avant l’annonce",
+        paragraphs: [
+          "Une animation de lancement attire l’attention sur la disponibilité. Vérifiez donc les quantités réellement accessibles, la date d’arrivée, les variantes, le réassort et la capacité à honorer une réservation. Si le stock est limité, indiquez-le sans créer une urgence artificielle.",
+          "Préparez aussi les règles de l’animation : durée, produits concernés, achat requis, réservation, quantité par personne, remplacement éventuel et procédure si le produit est épuisé. Ces conditions doivent être comprises par l’équipe et visibles par le public.",
+          "Un lancement peut continuer à susciter des demandes après la fin de l’animation. Décidez comment l’équipe répondra lorsque l’essai, le lot ou la disponibilité annoncée n’est plus possible.",
+        ],
+        items: [
+          "Stock disponible pour la démonstration, l’essai et la vente.",
+          "Réassort ou solution de réservation si le stock est limité.",
+          "Dates, variantes, prix et conditions d’utilisation à jour.",
+          "Réponse prévue si le produit est indisponible ou remplacé.",
+        ],
+      },
+      {
+        title: "Donnez à l’équipe une démonstration répétable",
+        paragraphs: [
+          "Une démonstration efficace n’a pas besoin d’être longue. Préparez une séquence courte : présenter le besoin, montrer le produit, expliquer ce qui le distingue et indiquer l’étape suivante. Chaque membre de l’équipe doit pouvoir reprendre le même cadre sans réciter un discours identique.",
+          "Testez la démonstration avec une personne qui ne connaît pas encore le produit. Notez les questions sur l’usage, le prix, la disponibilité, les différences et les conditions. Ces questions peuvent conduire à améliorer le support avant le lancement public.",
+        ],
+        items: [
+          "Une phrase pour expliquer à qui le produit s’adresse.",
+          "Un geste ou une preuve concrète à montrer.",
+          "Une réponse préparée sur le prix, le stock et les conditions.",
+          "Une étape suivante : essayer, réserver, revenir ou acheter sans pression.",
+        ],
+      },
+      {
+        title: "Associez les partenaires sans diluer le message",
+        paragraphs: [
+          "Un partenaire local peut aider à faire connaître le lancement, fournir un lieu ou compléter l’expérience. Définissez cependant qui présente le produit, qui gère les stocks, qui répond aux questions et qui recueille éventuellement une demande.",
+          "Une communication à plusieurs voix peut rendre les conditions difficiles à comprendre. Préparez un message commun, une date de fin et un point de contact clair. Chaque partenaire doit aussi éviter de présenter comme observé un résultat qui n’a pas été mesuré.",
+          "Commencez avec un périmètre que les équipes peuvent coordonner. Un lancement dans plusieurs établissements ou canaux demande un suivi séparé pour distinguer les supports et les responsabilités.",
+        ],
+      },
+      {
+        title: "Créez un contenu local utile avant et pendant le lancement",
+        paragraphs: [
+          "Un contenu local peut expliquer pourquoi le produit arrive, à qui il s’adresse, comment le découvrir et quand le trouver. Utilisez une vitrine, une page locale, un agenda, un partenaire ou un message adressé à une audience qui a consenti à le recevoir.",
+          "Un QR code peut ouvrir une page de présentation, une démonstration ou un jeu. Testez le support dans le lieu réel et distinguez les scans, les participations, les demandes d’information et les ventes. Un clic ne prouve pas que le produit a été compris ou acheté.",
+          "Pour une expérience cohérente, relisez les principes de l’[expérience client en boutique](/blog/experience-client-boutique) et adaptez le support à la place réellement disponible.",
+        ],
+      },
+      {
+        title: "Mesurez compréhension, essais et actions observées",
+        paragraphs: [
+          "Avant le lancement, définissez ce que vous souhaitez apprendre : le produit est-il compris, la démonstration est-elle réalisable, l’essai est-il demandé, les questions changent-elles, les réservations sont-elles honorées ou le stock est-il adapté ? Ces indicateurs sont plus proches de la décision de lancement que le nombre de vues seul.",
+          "Après l’opération, séparez les scans, participations, contacts consentis, essais, gains, retraits, réservations, utilisations d’offre et ventes. Une vente observée pendant la campagne ne prouve pas automatiquement qu’elle a été créée par l’animation.",
+          "Comparez des périodes ou des supports comparables et documentez les facteurs externes : communication, événement local, météo, disponibilité, emplacement ou changement de prix. Si l’attribution est incomplète, dites-le dans le bilan.",
+        ],
+        items: [
+          "Compréhension : questions, demandes d’explication et erreurs récurrentes.",
+          "Essai : démonstration réalisée ou échantillon remis selon une règle connue.",
+          "Intérêt : réservation, demande d’information ou retour volontaire.",
+          "Action commerciale : utilisation d’une offre ou vente avec méthode d’attribution documentée.",
+          "Exécution : temps d’équipe, stock, incidents et capacité de service.",
+        ],
+      },
+      {
+        title: "Un plan de lancement en trois phases",
+        paragraphs: [
+          "Un lancement local peut être organisé en trois phases simples. Elles peuvent être adaptées à une boutique, un restaurant, un institut ou un service qui ajoute une nouvelle prestation.",
+        ],
+        items: [
+          "Avant : définir le message, préparer le stock, former l’équipe, tester le support et annoncer les dates et conditions.",
+          "Pendant : présenter le produit, écouter les questions, suivre les essais et maintenir une information fiable sur la disponibilité.",
+          "Après : traiter les demandes restantes, proposer une prochaine étape consentie, comparer les indicateurs et décider d’un ajustement.",
+          "Si le produit est épuisé : arrêter ou adapter la promesse, actualiser les supports et proposer une réservation seulement si elle peut être tenue.",
+        ],
+      },
+      {
+        title: "Questions fréquentes sur une animation de lancement",
+        paragraphs: [
+          "Quelle animation choisir pour un lancement ? Choisissez entre découverte, démonstration, essai, jeu ou offre selon le produit, l’objectif, la capacité de l’équipe et le stock. Aucun format n’est universel.",
+          "Comment faire tester un produit sans le dévaloriser ? Mettez l’accent sur l’expérience, l’explication et la disponibilité. Une remise limitée peut compléter le lancement, mais elle ne doit pas remplacer la présentation de la valeur du produit.",
+          "Comment gérer un stock limité ? Annoncez la disponibilité réelle, fixez les conditions, prévoyez une règle en cas d’épuisement et ne promettez une réservation que si elle peut être honorée.",
+          "Un jeu suffit-il à lancer un produit ? Non. Il peut attirer une participation, mais la découverte, les caractéristiques, les conditions et l’accès au produit doivent rester explicites.",
+          "Peut-on attribuer les ventes au lancement ? Seulement avec une méthode définie avant l’opération et des données comparables. Une vente pendant la campagne n’est pas automatiquement causée par l’animation.",
+        ],
+      },
+      {
+        title: "Checklist pour préparer un lancement local",
+        paragraphs: [
+          "Avant de lancer l’animation, vérifiez les points suivants :",
+        ],
+        items: [
+          "Le produit, son usage principal et son public sont décrits clairement.",
+          "La découverte, la démonstration, l’essai ou le jeu a un objectif précis.",
+          "Le stock, le prix, les dates, les variantes et les conditions sont vérifiés.",
+          "L’équipe peut répéter une démonstration courte et répondre aux questions principales.",
+          "Les supports locaux, QR codes et pages de destination ont été testés.",
+          "Les partenaires connaissent leurs rôles, leurs limites et les informations à transmettre.",
+          "La mesure distingue compréhension, essais, participations, contacts, retraits, réservations et ventes.",
+          "Le bilan prévoit une décision : continuer, ajuster, ralentir ou arrêter.",
+        ],
+      },
+    ],
+    related: [
+      "/blog/idees-animations-commerciales-boutique",
+      "/blog/idees-promotions-commerce-local",
+      "/blog/experience-client-boutique",
+      "/comment-ca-marche",
+      "/tarifs",
+    ],
+  },
 ];
 
 export function blogPostByPath(path: string) {
