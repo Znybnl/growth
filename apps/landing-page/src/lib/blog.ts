@@ -514,6 +514,111 @@ export const blogPosts: BlogPost[] = [
       },
     ],
   },
+  {
+    path: "/blog/fideliser-clients-sans-programme-points",
+    title: "Comment fidéliser ses clients sans programme de points ?",
+    description:
+      "Découvrez comment fidéliser vos clients sans carte à points : expérience, prochaine visite, animation ponctuelle, QR code, consentement et limites.",
+    eyebrow: "Fidélisation locale",
+    intro:
+      "Fidéliser ne signifie pas forcément cumuler des points. Un commerce peut créer des raisons de revenir avec une expérience cohérente, une attention ponctuelle, une offre valable plus tard ou une animation bien cadrée, sans transformer chaque visite en compte à gérer.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-17",
+    updatedAt: "2026-10-17",
+    reviewedAt: "2026-10-17",
+    readingTime: "8 min de lecture",
+    ctaLabel: "Voir si une animation ponctuelle convient à votre commerce",
+    ctaHref: "/comment-ca-marche",
+    sections: [
+      {
+        title: "La fidélisation commence par une raison de revenir",
+        paragraphs: [
+          "Un programme de points formalise des visites répétées, mais il n’est pas la seule façon de travailler la relation client. La clarté de l’offre, la qualité de l’accueil, la régularité du service et la pertinence d’une prochaine invitation peuvent aussi contribuer à donner envie de revenir.",
+          "Aucune animation ne prouve à elle seule qu’un client est devenu fidèle. Une participation, un gain ou un retrait sont des étapes observables d’une campagne ; ils ne remplacent ni une nouvelle visite mesurée ni une relation durable. Cette distinction permet de choisir un objectif honnête.",
+        ],
+      },
+      {
+        title: "Cinq leviers simples sans carte à points",
+        paragraphs: [
+          "Avant d’ajouter un programme récurrent, vérifiez si une action plus légère répond à votre besoin. Les leviers suivants peuvent se combiner, mais chacun doit avoir une finalité claire :",
+        ],
+        items: [
+          "Créer une expérience reconnaissable : un accueil, un conseil ou une attention cohérente avec votre commerce donne une valeur au retour, au-delà d’une remise.",
+          "Proposer une prochaine visite : un avantage daté et compréhensible peut inviter à revenir, si l’équipe peut réellement le remettre dans les conditions annoncées.",
+          "Animer un moment précis : une journée découverte, une heure creuse, un lancement ou une période saisonnière crée un rendez-vous ponctuel sans engagement permanent.",
+          "Faire découvrir une nouveauté : un lot, une option ou une expérience courte peut aider à présenter une offre, sans promettre qu’elle sera choisie à la prochaine visite.",
+          "Entretenir un lien consenti : une information utile ou une invitation peut être envoyée uniquement lorsque la collecte et la prospection sont expliquées, facultatives et correctement séparées.",
+        ],
+      },
+      {
+        title: "Animation ponctuelle ou programme récurrent ?",
+        paragraphs: [
+          "Une animation ponctuelle convient lorsque vous voulez tester une idée, créer un temps fort, accompagner un lancement ou dynamiser un emplacement sans administrer un solde de points. Elle a une période, une dotation, des conditions et une procédure de retrait à préparer.",
+          "Un programme récurrent convient davantage lorsque vous êtes prêt à définir des règles durables, à identifier les clients concernés et à maintenir une promesse dans le temps. Il demande une réflexion sur les avantages, la fréquence, la gestion des données et la communication.",
+          "Le choix n’est pas définitif. Une animation peut servir de test limité, mais ses résultats ne suffisent pas à prouver qu’un programme de points serait rentable. Comparez les efforts de gestion avec l’objectif réel avant d’ajouter une mécanique permanente.",
+        ],
+      },
+      {
+        title: "Le QR code peut créer un rendez-vous sans compte de points",
+        paragraphs: [
+          "Un QR code placé à l’accueil, sur une table, au comptoir ou dans une zone d’attente peut ouvrir une animation mobile. Avec Okado, le client accède à une roue ou à un ticket à gratter dans son navigateur, sans application ni compte joueur à créer.",
+          "Le format fonctionne surtout pour une opération située dans le temps : découverte d’un lot, événement client, lancement, heure creuse ou invitation à une prochaine visite. Le QR est un point d’entrée ; il ne remplace pas une promesse claire, des conditions lisibles et une équipe capable de remettre le gain.",
+          "Testez toujours le QR public après publication et distinguez-le de la prévisualisation. Les participations, gains et retraits peuvent être suivis séparément, mais ces indicateurs ne constituent pas une preuve automatique de fidélité.",
+        ],
+      },
+      {
+        title: "Adaptez l’approche à votre secteur",
+        paragraphs: [
+          "Dans un restaurant, une animation peut accompagner une prochaine visite ou un temps d’attente, avec un lot simple à remettre pendant le service. Dans un institut, un avantage peut être lié à une option, un soin ou une prochaine prestation, à condition de respecter le planning et le positionnement de l’établissement.",
+          "Dans une boutique, un jeu peut présenter une nouveauté, une saison ou un partenariat local. Dans tous les cas, les exemples de lots et de conditions sont à adapter : un café, un supplément, une option de soin ou une remise n’ont ni le même coût ni la même capacité de délivrance.",
+          "Ne copiez pas une mécanique uniquement parce qu’elle existe ailleurs. Demandez-vous quel moment vous voulez améliorer, quelle promesse vous pouvez tenir et comment l’équipe répondra aux questions le jour de l’opération.",
+        ],
+      },
+      {
+        title: "Une relation utile ne dépend pas d’une collecte forcée",
+        paragraphs: [
+          "Une participation peut rester possible sans transformer chaque client en contact marketing. Si un e-mail est demandé pour transmettre un gain, expliquez cette finalité. Si vous proposez une prospection ou une invitation future, son consentement doit rester distinct, facultatif et réversible.",
+          "Ne conditionnez ni l’accès au jeu ni le gain à un avis Google ou à une note. Une relation de confiance se construit avec une expérience et une communication pertinentes, pas avec une récompense échangée contre une opinion publique.",
+          "Conservez uniquement les informations nécessaires à l’usage prévu et vérifiez que votre équipe sait répondre à une demande ou à une opposition. Cet article donne des principes généraux ; les obligations applicables dépendent de votre situation et doivent être validées si nécessaire.",
+        ],
+      },
+      {
+        title: "Mesurez un retour, pas une fidélité supposée",
+        paragraphs: [
+          "Pour une animation, observez les scans, les participations, les contacts éventuellement collectés, les gains et les retraits. Pour évaluer un retour en boutique, définissez séparément ce qui compte comme visite suivante et sur quelle période vous l’observez.",
+          "Comparez des périodes comparables et notez le contexte : type de support, durée, lot, emplacement, horaires et changements de fréquentation. Un faible retrait peut venir d’une condition peu claire ; une forte participation peut correspondre à un événement unique plutôt qu’à une fidélité durable.",
+          "Ne présentez pas une vente ou un retour comme causé par le jeu sans méthode d’attribution. La bonne mesure est celle qui répond à votre question, avec ses limites clairement écrites.",
+        ],
+      },
+      {
+        title: "Checklist pour choisir une approche légère",
+        paragraphs: [
+          "Avant de lancer une animation sans programme de points, vérifiez :",
+        ],
+        items: [
+          "L’objectif est-il une prochaine visite, une découverte, un temps fort ou simplement une relation plus utile ?",
+          "La promesse peut-elle être expliquée et tenue sans compte de points à maintenir ?",
+          "Le lot, sa validité, ses conditions et son retrait sont-ils adaptés au planning de l’équipe ?",
+          "Le QR code public, le parcours mobile et la prévisualisation ont-ils été distingués et testés ?",
+          "La collecte éventuelle est-elle nécessaire, expliquée et séparée du consentement marketing ?",
+          "Les indicateurs distinguent-ils participation, gain, retrait et visite suivante ?",
+        ],
+      },
+    ],
+    related: [
+      "/blog/jeu-concours-ou-promotion",
+      "/restaurants",
+      "/instituts-beaute",
+      "/comment-ca-marche",
+      "/tarifs",
+    ],
+    source: [
+      {
+        label: "Google Search Central — contenu utile",
+        href: "https://developers.google.com/search/docs/fundamentals/creating-helpful-content",
+      },
+    ],
+  },
 ];
 
 export function blogPostByPath(path: string) {
