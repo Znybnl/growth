@@ -300,6 +300,108 @@ export const blogPosts: BlogPost[] = [
       },
     ],
   },
+  {
+    path: "/blog/animation-commerciale-institut-beaute",
+    title: "Animation commerciale pour institut de beauté : idées et exemples",
+    description:
+      "Découvrez 10 idées d’animation commerciale pour un institut de beauté, un spa ou un salon : soins, prochaine visite, lancement, lots et calendrier.",
+    eyebrow: "Marketing beauté",
+    intro:
+      "Une animation commerciale peut créer un temps fort dans un institut de beauté sans banaliser l’expérience. Le format doit rester cohérent avec votre univers, vos prestations et le temps réellement disponible pour votre équipe.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-17",
+    updatedAt: "2026-10-17",
+    reviewedAt: "2026-10-17",
+    readingTime: "8 min de lecture",
+    ctaLabel: "Imaginer une animation à votre image",
+    ctaHref: "/instituts-beaute",
+    sections: [
+      {
+        title: "Définissez l’objectif de votre animation",
+        paragraphs: [
+          "Un institut peut vouloir faire découvrir un soin, présenter un nouveau protocole, valoriser une gamme ou donner envie de revenir. Ces objectifs ne demandent pas forcément le même lot ni le même moment de diffusion. Commencez par une intention principale pour préserver la lisibilité de l’expérience.",
+          "Une animation ne garantit ni réservation, ni chiffre d’affaires, ni fidélisation. Elle peut en revanche créer un parcours observable : participation, gain, retrait et éventuelle prochaine visite. Cette distinction protège votre image premium et vous aide à mesurer ce qui s’est réellement passé.",
+        ],
+      },
+      {
+        title: "10 idées d’animations commerciales pour un institut de beauté",
+        paragraphs: [
+          "Les idées ci-dessous sont des scénarios à adapter à votre positionnement, vos prestations, vos stocks et votre planning. Les exemples de lots et de coûts sont hypothétiques : validez-les avec votre réalité avant toute diffusion.",
+        ],
+        items: [
+          "Découverte d’un soin : faites gagner une option courte ou un avantage lié à une prestation que votre équipe peut réellement expliquer et délivrer.",
+          "Prochaine visite : proposez un lot valable sur un rendez-vous ultérieur, avec une date limite réaliste et les éventuelles conditions d’utilisation visibles.",
+          "Lancement d’un protocole : accompagnez la présentation d’un nouveau rituel ou d’une nouvelle gamme avec une expérience découverte, sans promettre une disponibilité illimitée.",
+          "Partenariat local : imaginez une dotation commune avec un salon, une boutique ou un commerce voisin, en clarifiant qui organise, qui remet et qui protège les coordonnées.",
+          "Événement client : utilisez une roue ou un ticket à gratter pendant une soirée, une journée découverte ou une présentation, avec une dotation préparée pour le volume attendu.",
+          "Roue élégante : choisissez une roue mobile avec un message court, un logo et des lots cohérents avec votre identité, plutôt qu’une mécanique trop promotionnelle pour votre clientèle.",
+          "Ticket surprise : proposez une révélation tactile sur smartphone pour une opération de découverte, en conservant des conditions lisibles avant et après la participation.",
+          "Offre duo : construisez un avantage pour une prestation ou une découverte à deux, sans transformer le jeu en promesse automatique de réservation.",
+          "Invitation parrainage : préparez une offre de recommandation gérée par votre équipe, avec des règles explicites ; le jeu ne remplace pas un programme de parrainage automatisé.",
+          "Temps fort saisonnier : adaptez le thème, le support et la durée à une période de l’année, puis retirez les affiches et les lots lorsque l’opération est terminée.",
+        ],
+      },
+      {
+        title: "Choisissez des lots cohérents avec votre univers",
+        paragraphs: [
+          "Un lot peut être une option de soin, un mini-produit, une décoration, un complément de prestation ou un avantage valable lors d’une prochaine visite. Ce sont des pistes, pas des recommandations universelles : vérifiez votre coût, votre marge, vos stocks et le temps nécessaire à la remise.",
+          "Une prestation offerte sans achat n’a pas le même coût qu’une option ajoutée à un rendez-vous existant. Écrivez la condition au moment de configurer le lot et vérifiez que le texte court de la roue ou du ticket ne contredit pas le coupon détaillé.",
+          "Dans Okado, vous pouvez choisir une roue ou un ticket à gratter, personnaliser les textes et le logo selon le modèle, puis définir les lots, probabilités, stocks et conditions. La responsabilité du choix de la dotation et de sa capacité de délivrance reste celle de l’institut.",
+        ],
+      },
+      {
+        title: "Construisez un calendrier qui respecte votre planning",
+        paragraphs: [
+          "Une animation peut accompagner le lancement d’un protocole, une journée découverte, une saison ou une période où vous avez le temps de répondre aux participantes. Évitez de multiplier les opérations sans prévoir qui remet les gains et combien de temps ils restent valables.",
+          "Préparez le support, les lots, les dates et la procédure avant la diffusion. Si une prestation nécessite un rendez-vous ou une disponibilité particulière, laissez un délai réaliste. Lorsque l’opération se termine ou qu’un lot n’est plus disponible, retirez les supports et mettez à jour le jeu.",
+          "Le calendrier est un outil d’organisation, pas une promesse de remplissage. Comparez les opérations dans leur contexte en notant la période, le support, les prestations concernées et les changements de planning.",
+        ],
+      },
+      {
+        title: "Préservez l’expérience en point de vente",
+        paragraphs: [
+          "Le QR code peut être placé à l’accueil, dans une zone d’attente ou sur un support remis après la prestation. Le message doit rester court, lisible et aligné avec le ton de l’institut. Testez le support imprimé dans la lumière réelle et à la distance où il sera consulté.",
+          "La roue et le ticket fonctionnent dans le navigateur du téléphone, sans application ni compte joueur à créer. Distinguez le QR de prévisualisation du QR public de participation, puis faites un parcours complet avant de le présenter à vos clientes.",
+          "Une invitation à laisser un avis reste indépendante du jeu. Ni la participation ni le gain ne doivent être échangés contre un avis Google ou une note. De même, une collecte de contacts et la prospection marketing doivent rester clairement distinctes.",
+        ],
+      },
+      {
+        title: "Mesurez l’intérêt sans dégrader la promesse",
+        paragraphs: [
+          "Suivez séparément les scans, les participations, les gains attribués et les retraits confirmés. Un scan ne prouve pas une participation ; un gain n’est pas toujours retiré ; un retrait ne prouve pas une réservation ou un chiffre d’affaires causé par l’animation.",
+          "Si l’opération vise la découverte d’un soin, observez les participations et les retraits associés à la dotation. Si elle vise une prochaine visite, regardez les conditions de validité et la capacité de l’équipe à remettre le lot. Ne tirez pas de conclusion générale à partir d’un seul événement.",
+          "Un résultat décevant peut venir d’un support peu visible, d’un lot mal compris, d’une période trop courte ou d’une condition difficile à appliquer. Analysez l’étape qui bloque avant de changer tout le positionnement de l’institut.",
+        ],
+      },
+      {
+        title: "Checklist avant de lancer l’opération",
+        paragraphs: [
+          "Avant de diffuser votre animation, vérifiez :",
+        ],
+        items: [
+          "L’objectif, le ton et le lot sont cohérents avec votre positionnement.",
+          "Le QR code public ouvre le bon jeu publié et non une prévisualisation.",
+          "Les textes, dates, stocks, probabilités et conditions ont été relus par l’équipe.",
+          "Le support a été testé sur smartphone, dans la zone d’accueil ou d’attente réelle.",
+          "Une personne sait expliquer le gain, vérifier sa validité et confirmer un retrait unique.",
+          "L’animation ne conditionne ni le gain ni la participation à un avis Google, et les indicateurs sont définis avant le lancement.",
+        ],
+      },
+    ],
+    related: [
+      "/instituts-beaute",
+      "/guides/lots-institut-beaute",
+      "/ticket-a-gratter",
+      "/roue-de-la-fortune",
+      "/tarifs",
+    ],
+    source: [
+      {
+        label: "Google Search Central — contenu utile",
+        href: "https://developers.google.com/search/docs/fundamentals/creating-helpful-content",
+      },
+    ],
+  },
 ];
 
 export function blogPostByPath(path: string) {
