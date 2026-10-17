@@ -5,7 +5,8 @@ import { LandingDemo } from "@/components/marketing/landing-demo";
 import { PrimaryButton } from "@/components/marketing/primary-button";
 import { PageSchema } from "@/components/marketing/structured-data";
 import { PricingReminder } from "@/components/marketing/site-navigation";
-import { TemplateGallery } from "@/components/marketing/template-gallery";
+import { BeautyUseCases } from "@/components/marketing/beauty-use-cases";
+import { MerchantProof } from "@/components/marketing/merchant-proof";
 import { accountConnectionFaq } from "@/lib/marketing-faqs";
 import { APP_URL, reviewIndependence } from "@/lib/site";
 
@@ -110,7 +111,7 @@ export function SectorPage({ beauty }: { beauty: boolean }) {
         </h1>
         <p className="mt-6 max-w-[750px] text-lg leading-8 text-[#475569]">
           {beauty
-            ? "Créez une roue ou un ticket à gratter avec votre logo, votre message et vos lots. La cliente joue sur son téléphone ; votre équipe contrôle ensuite les conditions et valide le retrait."
+            ? "Des modèles soignés, des cadeaux adaptés à vos prestations et des conditions que vous maîtrisez. De la participation au retrait validé, suivez votre animation, y compris par e-mail entre deux rendez-vous."
             : "Vos clients jouent sur leur téléphone, découvrent leur résultat et conservent leur coupon de gain. Vous choisissez les lots et votre équipe valide leur remise : du QR code au retrait, le parcours reste lisible."}
         </p>
         <div className="mt-7 flex flex-col items-start gap-3 sm:flex-row">
@@ -138,6 +139,7 @@ export function SectorPage({ beauty }: { beauty: boolean }) {
             </li>
           ))}
         </ul>
+        {beauty ? <Link href="#exemples-metiers" className="mt-5 inline-block min-h-11 py-2 text-sm font-semibold text-[#6c00f6] underline underline-offset-4">Voir les exemples Regard, Ongles et Spa</Link> : null}
       </section>
       <div className="px-5">
         <PricingReminder />
@@ -149,7 +151,7 @@ export function SectorPage({ beauty }: { beauty: boolean }) {
       >
         <LandingDemo variant={beauty ? "beauty" : "restaurant"} />
       </section>
-      <section className="mx-auto max-w-[1100px] px-5 py-14">
+      {beauty ? <BeautyUseCases /> : <section className="mx-auto max-w-[1100px] px-5 py-14">
         <h2 className="text-3xl font-bold tracking-[-0.03em]">
           Des lots adaptés à votre activité.
         </h2>
@@ -178,9 +180,9 @@ export function SectorPage({ beauty }: { beauty: boolean }) {
         >
           Choisir des lots et leurs conditions
         </Link>
-      </section>
+      </section>}
       {beauty ? (
-        <TemplateGallery />
+        <MerchantProof beauty />
       ) : (
         <section className="mx-auto grid max-w-[1100px] items-center gap-8 px-5 py-14 md:grid-cols-2">
           <div>
@@ -242,10 +244,10 @@ export function SectorPage({ beauty }: { beauty: boolean }) {
         <div className="grid gap-9 md:grid-cols-2">
           <div>
             <h2 className="text-3xl font-bold">
-              Mesurez les participations, les gains et les retraits.
+              {beauty ? "Quels cadeaux sont récupérés ? Quels lots ajuster ?" : "Mesurez les participations, les gains et les retraits."}
             </h2>
             <p className="mt-5 leading-8 text-[#475569]">
-              Un scan n’est pas encore une partie ; un gain n’est pas encore un
+              {beauty ? "Observez les gains et les retraits pour revoir vos dotations. " : ""}Un scan n’est pas encore une partie ; un gain n’est pas encore un
               retrait. Une partie perdue sans coordonnées est comptée. La
               collecte d’e-mail avant le jeu est une option indépendante ; sinon
               les coordonnées nécessaires sont demandées aux gagnants.

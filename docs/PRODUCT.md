@@ -219,6 +219,31 @@ incrémenté. Les jeux, avis, tirages, consentements et e-mails réels du SaaS n
 sont pas modifiés. La démo n'est pas une reproduction exhaustive des formulaires,
 conditions ou téléchargements du jeu réel.
 
+## Preuves produit sur le site public — #520
+
+L'accueil reste généraliste. Ses liens de premier niveau présentent les lots
+adaptés au métier, le retrait validé et le suivi par e-mail. La page Beauté
+montre trois compositions illustratives Regard, Ongles et Spa avec identité,
+jeu mobile, affiche, lot et condition explicite. Elles utilisent les fonds
+existants ; ce ne sont ni des jeux actifs ni des captures exhaustives du SaaS.
+Les cinq fonds restent consultables dans la page Ticket à gratter.
+
+La démonstration conserve ses étapes Google/jeu/formulaire/confirmation/e-mail
+et ses événements de mesure existants. Un exemple local côté commerce montre
+la vérification des conditions puis une validation de retrait simulée, son état
+déjà retiré et sa remise à zéro. Il ne demande aucun PIN réel, n'appelle aucune
+API métier, ne mémorise rien et ne modifie aucun compteur illustratif.
+
+L'accueil et la page Beauté montrent une synthèse marchand fictive : détail des
+gains, expiration ou statut Récupéré, retraits sur la période pouvant concerner
+un gain antérieur, stocks disponibles/illimités/épuisés. La relance au gagnant
+est présentée séparément, comme une option désactivée par défaut au niveau du
+compte avec délai personnalisable et règles d'éligibilité existantes. Les
+aperçus sont éditoriaux, pas de nouveaux modèles transactionnels. Aucun e-mail
+n'est envoyé. Aucune hausse de CA, témoignage client ou exclusivité concurrentielle
+n'est inventée ; un cas pilote exige des chiffres vérifiés et une autorisation
+de publication distincte. [Périmètre et recette](releases/2026-10-16-marketing-proof-520.md).
+
 ## Questions ouvertes
 
 - [ ] Définir les critères de retrait forcé à afficher et à journaliser pour le personnel du commerce.

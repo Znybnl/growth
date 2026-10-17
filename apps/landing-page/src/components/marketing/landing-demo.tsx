@@ -17,6 +17,7 @@ import {
   DemoReview,
 } from "./demo-story-panels";
 import styles from "./landing-demo.module.css";
+import { DemoMerchantRedemption } from "./demo-merchant-redemption";
 
 const wheelSegments = [
   { label: "Dessert", fill: "#b5bfea", dark: false },
@@ -85,8 +86,10 @@ export function LandingDemo({
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
   const [rating, setRating] = useState(0);
+  const [redeemed, setRedeemed] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const panelHeading = useRef<HTMLHeadingElement>(null);
+  const merchantRedemption = useRef<HTMLDivElement>(null);
   const playButton = useRef<HTMLButtonElement>(null);
   const previousStep = useRef<DemoStep>("intro");
   const isBeauty = variant === "beauty";
@@ -119,6 +122,7 @@ export function LandingDemo({
     setFirstName("");
     setEmail("");
     setRating(0);
+    setRedeemed(false);
     setRotation(16);
   }
 
@@ -158,7 +162,7 @@ export function LandingDemo({
         </p>
         <h2>À vous de jouer.</h2>
         <p>
-          Découvrez le parcours côté client, puis les résultats côté commerce.
+          Jouez côté client, puis essayez la validation du retrait côté commerce.
         </p>
       </header>
       <div className={styles.workspace}>
@@ -336,6 +340,10 @@ export function LandingDemo({
                           Voir l’e-mail{" "}
                           <ArrowRight size={16} aria-hidden="true" />
                         </button>
+                        <button type="button" className={styles.secondary} aria-controls={`${id}-redemption`} onClick={() => {
+                          merchantRedemption.current?.scrollIntoView({ block: "center" });
+                          merchantRedemption.current?.focus({ preventScroll: true });
+                        }}>Voir le retrait côté commerce</button>
                       </>
                     )}
                   </section>
@@ -459,8 +467,8 @@ export function LandingDemo({
               aux prochaines visites.
             </h3>
             <p>
-              Distinguez les scans, les parties jouées et les contacts
-              collectés.
+              Repérez les cadeaux à suivre et les lots à ajuster. Scans,
+              parties jouées et retraits restent des événements différents.
             </p>
           </div>
           <dl className={styles.kpis}>
@@ -471,6 +479,9 @@ export function LandingDemo({
               </div>
             ))}
           </dl>
+          <div ref={merchantRedemption} id={`${id}-redemption`} tabIndex={-1}>
+            <DemoMerchantRedemption rewardLabel={rewardLabel} redeemed={redeemed} onConfirm={() => setRedeemed(true)} />
+          </div>
           <div className={styles.chart}>
             <div className={styles.chartHeading}>
               <div>
