@@ -17,6 +17,7 @@ function relatedTitle(path: string) {
       "/affiches-qr-code": "Créer une affiche et tester son QR code",
       "/restaurants": "Jeu QR code pour restaurant",
       "/instituts-beaute": "Animation pour institut de beauté",
+      "/guides/lots-restaurant": "Choisir les lots d’un jeu en restaurant",
       "/guides/placer-qr-code-jeu": "Où placer un QR code de jeu ?",
       "/guides/mesurer-jeu-qr-code": "Lire les bons indicateurs",
       "/tarifs": "Tarifs et essai gratuit",

@@ -199,6 +199,107 @@ export const blogPosts: BlogPost[] = [
       },
     ],
   },
+  {
+    path: "/blog/idees-jeux-concours-restaurant",
+    title: "10 idées de jeux-concours pour un restaurant",
+    description:
+      "Découvrez 10 idées de jeux-concours pour un restaurant : QR code à table, lots simples à remettre, heures creuses, événements et prochaine visite.",
+    eyebrow: "Marketing restaurant",
+    intro:
+      "Un jeu-concours peut créer un moment de surprise au restaurant, remplir une période plus calme ou donner une raison de revenir. Le bon format est celui que le client comprend vite et que l’équipe peut remettre sans ralentir le service.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-17",
+    updatedAt: "2026-10-17",
+    reviewedAt: "2026-10-17",
+    readingTime: "8 min de lecture",
+    ctaLabel: "Préparer une animation pour votre restaurant",
+    ctaHref: "/restaurants",
+    sections: [
+      {
+        title: "Commencez par le moment que vous voulez améliorer",
+        paragraphs: [
+          "Avant de choisir un jeu-concours, identifiez le moment à animer : attente avant le service, déjeuner en semaine, fin de repas, lancement d’une carte ou prochaine visite. Le même lot n’a pas le même intérêt selon l’objectif. Un dessert offert peut créer une surprise immédiate ; une remise valable plus tard peut encourager un retour.",
+          "Un jeu ne garantit ni une réservation ni une hausse du chiffre d’affaires. Il peut en revanche créer un parcours mesurable : scan du QR code, participation, gain attribué, retrait et éventuelle visite suivante. Cette distinction aide à choisir un format réaliste et à interpréter les résultats sans surpromesse.",
+        ],
+      },
+      {
+        title: "10 idées de jeux-concours adaptées à un restaurant",
+        paragraphs: [
+          "Les idées suivantes sont des formats à adapter à votre carte, votre capacité de service et vos conditions commerciales. Elles décrivent des scénarios d’animation ; elles ne constituent pas une promesse de résultat ni une règle automatique pour votre établissement.",
+        ],
+        items: [
+          "QR code à table : proposez une roue ou un ticket à gratter accessible depuis le téléphone pendant l’attente, avec des lots définis à l’avance.",
+          "Dessert offert : faites gagner un dessert clairement identifié, avec une période de validité et les éventuelles conditions d’utilisation visibles.",
+          "Animation en heure creuse : réservez le jeu ou un lot à certains créneaux de faible affluence, si l’équipe peut l’expliquer et le remettre pendant le service.",
+          "Lancement d’une nouvelle carte : associez la découverte d’un plat ou d’une boisson à une participation courte, sans annoncer une disponibilité que le stock ne permet pas d’assurer.",
+          "Jeu lié à un événement : créez une opération pour une soirée, une fête locale ou une date saisonnière, avec une date de fin et une dotation préparées avant la diffusion.",
+          "Lot pour une prochaine visite : choisissez une récompense utilisable plus tard, avec une durée de validité, les jours concernés et les éventuelles conditions d’achat explicitement indiqués.",
+          "Menu enfant : prévoyez une petite surprise ou un lot dédié, en vérifiant que la remise reste simple pour l’équipe et que la communication s’adresse correctement aux adultes accompagnants.",
+          "Partenariat local : construisez une dotation avec un commerce voisin, en séparant les responsabilités, les conditions de retrait et les usages de coordonnées de chaque partenaire.",
+          "Jeu saisonnier : adaptez le thème, les lots et la période à une saison ou à un produit disponible, puis retirez le support lorsque l’opération est terminée.",
+          "Tirage parmi les participants : annoncez une période de participation, les modalités de sélection et la façon de prévenir ou remettre le lot, sans présenter le tirage comme une vente garantie.",
+        ],
+      },
+      {
+        title: "Choisissez des lots faciles à remettre pendant le service",
+        paragraphs: [
+          "Un café, une boisson sans alcool, un dessert ou un supplément peuvent être des points de départ si votre carte, vos stocks et votre marge le permettent. La bonne dotation dépend de votre coût matière et du moment où le client peut l’utiliser ; aucune idée de lot ne convient à tous les restaurants.",
+          "Un lot immédiat et un lot valable lors d’une prochaine visite répondent à deux objectifs différents. Dans les deux cas, indiquez la durée de validité, les jours ou produits concernés, l’éventuel achat requis et la personne qui doit valider le retrait. Une promesse courte ne doit pas contredire les conditions détaillées.",
+          "Dans Okado, l’équipe peut contrôler le gain présenté par le client, vérifier les conditions et confirmer un retrait avec le PIN de l’établissement. Le jeu ne doit pas conditionner l’accès ou le gain à un avis Google ou à une note.",
+        ],
+      },
+      {
+        title: "Adaptez le jeu à l’organisation de votre équipe",
+        paragraphs: [
+          "Un restaurant fonctionne avec des temps forts et des remplacements. Avant de lancer le jeu, décidez qui répond aux questions, qui vérifie le lot et qui connaît le PIN de l’établissement. Une procédure courte affichée en interne vaut mieux qu’une règle connue d’une seule personne.",
+          "Testez le parcours depuis la table ou le comptoir : le QR code public doit ouvrir le bon jeu, sans application à installer ni compte joueur. Contrôlez ensuite le QR de gain et la validation du retrait. Le personnel n’a pas besoin d’un compte joueur Okado pour confirmer une remise, mais il doit connaître les conditions annoncées.",
+          "Si le lot est épuisé ou si la carte change, mettez à jour le jeu et retirez les supports qui ne correspondent plus à l’offre. Une animation limitée et maîtrisée est plus fiable qu’un concours permanent que le service ne peut plus honorer.",
+        ],
+      },
+      {
+        title: "Rédigez des règles compréhensibles avant la diffusion",
+        paragraphs: [
+          "Expliquez qui peut participer, pendant quelle période, ce qui peut être gagné et comment le retrait se déroule. Les conditions d’achat, les jours d’exclusion, la date limite et les éventuelles limites de stock doivent être accessibles avant ou au moment de la participation.",
+          "Séparez la participation, l’envoi des informations du gain et la prospection marketing. Une collecte d’e-mail peut être configurée selon le parcours, mais le consentement commercial reste distinct et facultatif. Un avis ou une note ne doit jamais devenir le prix à payer pour participer ou gagner.",
+          "Pour un partenariat ou un tirage, ajoutez les informations nécessaires sur l’organisateur, la période, la sélection et le contact. Ne reprenez pas un règlement générique sans vérifier qu’il correspond réellement à votre opération et à votre pays.",
+        ],
+      },
+      {
+        title: "Mesurez les participations et les retraits séparément",
+        paragraphs: [
+          "Suivez les scans, les participations, les gains attribués et les retraits confirmés comme des étapes différentes. Une personne qui scanne sans jouer n’est pas une participation ; un gain attribué n’est pas forcément consommé ; une prochaine visite ne peut pas être déduite d’un seul scan.",
+          "Comparez des périodes comparables en notant le créneau, le support, le lot, la durée et les changements de fréquentation. Si vous testez une opération en heure creuse, documentez aussi les horaires et les contraintes du service. Ces éléments permettent de décider quoi ajuster sans attribuer automatiquement une vente au jeu.",
+          "Un résultat faible peut venir d’un QR peu visible, d’une promesse mal comprise, d’un lot indisponible ou d’une remise difficile pendant le service. Cherchez d’abord l’étape qui bloque avant de modifier toute la dotation.",
+        ],
+      },
+      {
+        title: "Checklist avant de lancer votre jeu-concours",
+        paragraphs: [
+          "Avant d’imprimer une affiche ou de placer un QR code sur les tables, vérifiez :",
+        ],
+        items: [
+          "L’objectif est formulé en une phrase : animer l’attente, faire découvrir une nouveauté ou encourager une prochaine visite.",
+          "Le QR code public ouvre le bon jeu publié et a été testé sur plusieurs smartphones.",
+          "Les lots, stocks, dates de validité et conditions correspondent à votre carte et à votre capacité de service.",
+          "L’équipe sait reconnaître un gain, vérifier ses conditions et confirmer un retrait unique avec le PIN de l’établissement.",
+          "La participation ne dépend ni d’un avis Google ni d’une note, et le consentement marketing reste séparé.",
+          "Les indicateurs de suivi sont définis avant le lancement et ne sont pas présentés comme une preuve de ventes causées.",
+        ],
+      },
+    ],
+    related: [
+      "/restaurants",
+      "/guides/lots-restaurant",
+      "/affiches-qr-code",
+      "/guides/mesurer-jeu-qr-code",
+    ],
+    source: [
+      {
+        label: "Google Search Central — contenu utile",
+        href: "https://developers.google.com/search/docs/fundamentals/creating-helpful-content",
+      },
+    ],
+  },
 ];
 
 export function blogPostByPath(path: string) {
