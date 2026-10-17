@@ -619,6 +619,112 @@ export const blogPosts: BlogPost[] = [
       },
     ],
   },
+  {
+    path: "/blog/idees-promotions-commerce-local",
+    title: "15 idées de promotions pour un commerce local",
+    description:
+      "Découvrez 15 idées de promotions pour un commerce local, classées par effort : offre produit, prochaine visite, événement, partenariat, QR code et mesure.",
+    eyebrow: "Promotion locale",
+    intro:
+      "Une promotion locale doit être attractive pour le client et soutenable pour le commerce. Voici 15 idées à adapter à votre stock, votre marge, votre équipe et la durée réelle de l’opération, sans confondre offre utilisée et vente causée.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-17",
+    updatedAt: "2026-10-17",
+    reviewedAt: "2026-10-17",
+    readingTime: "9 min de lecture",
+    ctaLabel: "Préparer une opération locale",
+    ctaHref: "/comment-ca-marche",
+    sections: [
+      {
+        title: "Choisissez d’abord le rôle de la promotion",
+        paragraphs: [
+          "Une promotion peut aider à faire découvrir un produit, écouler un stock daté, encourager une prochaine visite, animer un événement ou rendre une offre plus visible. Elle ne répond pas à tous ces objectifs de la même façon : une remise immédiate favorise la compréhension, tandis qu’un avantage différé demande une condition et un suivi plus précis.",
+          "Avant de choisir l’idée, écrivez ce que le client doit comprendre, ce que l’équipe doit remettre et ce que vous voulez observer. Cette phrase de cadrage évite de multiplier les conditions et de présenter une opération comme une garantie de chiffre d’affaires.",
+        ],
+      },
+      {
+        title: "15 idées classées par niveau d’effort",
+        paragraphs: [
+          "Les formats ci-dessous sont des exemples à adapter. Le niveau d’effort est indicatif : il dépend de vos supports, de votre stock, du nombre de points de vente et de la capacité de l’équipe.",
+        ],
+        items: [
+          "Effort faible — Offre découverte : appliquez un avantage sur un produit ou une prestation clairement identifié, avec une date de fin visible.",
+          "Effort faible — Lot complémentaire : ajoutez un accessoire, un supplément ou une option si sa disponibilité et son coût sont maîtrisés.",
+          "Effort faible — Créneau calme : réservez une offre à certaines heures ou journées, en vérifiant que l’équipe peut l’expliquer et la délivrer.",
+          "Effort faible — Prochaine visite : proposez un avantage valable plus tard, avec une durée, des jours et les éventuelles conditions d’achat précisées.",
+          "Effort faible — Offre saisonnière : adaptez un produit, un message et une période à une saison, puis retirez les supports à la fin de l’opération.",
+          "Effort modéré — Duo ou complément : construisez une offre pour deux produits ou deux personnes, sans masquer le prix réel ni les conditions de chaque élément.",
+          "Effort modéré — Lancement local : accompagnez la découverte d’une nouveauté par une offre limitée, seulement si le stock annoncé peut suivre la communication.",
+          "Effort modéré — Événement de quartier : associez une offre à une journée locale, une ouverture spéciale ou une animation, avec un responsable et une date de clôture.",
+          "Effort modéré — Partenariat voisin : échangez une visibilité ou une dotation avec un commerce proche, en séparant les responsabilités et les données collectées.",
+          "Effort modéré — QR code informatif : placez un QR code vers le jeu, l’offre ou les conditions, puis testez le lien public avant d’imprimer le support.",
+          "Effort modéré — Surprise encadrée : proposez une roue ou un ticket à gratter sur smartphone avec des lots définis, des probabilités, des stocks et des conditions contrôlables.",
+          "Effort modéré — Offre pour une nouvelle catégorie : utilisez une dotation ou une remise pour faire découvrir une famille de produits sans promettre qu’elle sera rachetée.",
+          "Effort modéré — Invitation client : créez une opération de remerciement ou de découverte pour une audience définie, sans conditionner le gain à un avis public.",
+          "Effort élevé — Déclinaison multi-sites : diffusez une même campagne dans plusieurs établissements seulement après avoir vérifié les stocks, les dates, les supports et les équipes de chaque lieu.",
+          "Effort élevé — Parcours combiné : associez un jeu, une offre et une prochaine visite uniquement si chaque étape reste lisible et si vous pouvez mesurer séparément participation, gain, retrait et utilisation.",
+        ],
+      },
+      {
+        title: "Calculez le coût avant de communiquer",
+        paragraphs: [
+          "Le coût d’une promotion ne se limite pas au pourcentage affiché. Incluez la marge abandonnée, le coût matière ou d’achat, le stock réservé, l’impression, le temps de l’équipe et les éventuels lots remis. Un avantage valable plus tard peut aussi créer une charge de service à une autre date.",
+          "Pour une animation par QR code, prévoyez la dotation, les probabilités ou stocks, la validité et la procédure de retrait. Dans Okado, ces paramètres sont configurables pour une roue ou un ticket ; ils ne fournissent pas une estimation universelle de coût ou de rentabilité.",
+          "Écrivez vos hypothèses avant le lancement : nombre de participations envisagé, lot moyen, taux d’utilisation attendu, durée et capacité de remise. Utilisez ensuite les résultats réels pour ajuster, sans présenter l’hypothèse comme une prévision garantie.",
+        ],
+      },
+      {
+        title: "Rendez l’offre lisible au premier regard",
+        paragraphs: [
+          "Un support doit préciser le bénéfice, le produit ou service concerné, la période et l’action attendue. Si un achat minimum, une exclusion, un stock limité ou une réservation est nécessaire, indiquez-le au bon niveau de visibilité. Une petite mention qui change le sens de l’offre crée de la friction au comptoir.",
+          "Le QR code doit être contrasté, entouré d’une marge et testé sur le support final à la distance réelle. Le QR de prévisualisation ne doit pas être diffusé par erreur. Après publication, vérifiez le nom de l’établissement, les dates, les lots et le parcours depuis un autre téléphone.",
+          "Évitez le vocabulaire qui transforme une possibilité en certitude : une offre peut inviter à découvrir, tester ou revenir, mais elle ne prouve pas une réservation, une vente additionnelle ou une fidélité durable.",
+        ],
+      },
+      {
+        title: "Respectez les limites d’une récompense",
+        paragraphs: [
+          "Un avantage doit être remis dans les conditions annoncées, sans dépendre d’un avis Google, d’une note ou d’une recommandation publique. Une invitation à partager une expérience, si vous en proposez une, reste indépendante de la participation et du gain.",
+          "La collecte d’un e-mail pour transmettre un gain et la prospection commerciale n’ont pas la même finalité. Si une collecte est proposée, expliquez-la et séparez le consentement marketing de l’accès à l’offre ou au jeu.",
+          "Pour les opérations avec tirage, partenariat ou règles spécifiques, faites valider les mentions applicables à votre situation et à votre marché. Cet article donne des pistes marketing, pas un règlement juridique prêt à l’emploi.",
+        ],
+      },
+      {
+        title: "Mesurez l’offre sans lui attribuer toutes les ventes",
+        paragraphs: [
+          "Pour une promotion, suivez l’utilisation de l’offre avec les moyens réellement disponibles : code, coupon, retrait confirmé ou période documentée. Pour un jeu, séparez scans, participations, contacts, gains et retraits. Une participation ou un coupon utilisé ne suffit pas à démontrer que la campagne a créé la vente.",
+          "Comparez des périodes et supports comparables. Notez la durée, le canal, l’emplacement, le prix, le stock, les horaires et les événements qui peuvent influencer la fréquentation. Une opération courte ou déplacée ne se compare pas automatiquement à une campagne permanente.",
+          "Si le résultat est inférieur à l’attendu, examinez d’abord la visibilité, la compréhension, la disponibilité et la simplicité du retrait. Le problème peut venir de l’exécution ou de la condition, pas nécessairement de l’idée promotionnelle.",
+        ],
+      },
+      {
+        title: "Checklist avant de lancer votre opération",
+        paragraphs: [
+          "Avant de diffuser une promotion locale, vérifiez :",
+        ],
+        items: [
+          "L’objectif principal et le bénéfice client tiennent dans un message simple.",
+          "Le coût attendu, la marge, le stock, les lots et le temps de remise ont été estimés.",
+          "Les dates, conditions, exclusions, limites et éventuels achats requis sont visibles.",
+          "Le support et le QR code public ont été testés sur smartphone, dans le contexte réel.",
+          "L’offre ne dépend ni d’un avis Google ni d’une note, et la prospection est séparée du service attendu.",
+          "Les indicateurs sont définis avant le lancement et ne confondent pas utilisation, retrait et vente causée.",
+        ],
+      },
+    ],
+    related: [
+      "/blog/idees-animations-commerciales-boutique",
+      "/guides/cout-jeu-marketing",
+      "/affiches-qr-code",
+      "/tarifs",
+    ],
+    source: [
+      {
+        label: "Google Search Central — contenu utile",
+        href: "https://developers.google.com/search/docs/fundamentals/creating-helpful-content",
+      },
+    ],
+  },
 ];
 
 export function blogPostByPath(path: string) {
