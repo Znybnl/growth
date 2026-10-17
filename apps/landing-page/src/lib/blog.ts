@@ -1419,6 +1419,177 @@ export const blogPosts: BlogPost[] = [
       "/comment-ca-marche",
     ],
   },
+  {
+    path: "/blog/mesurer-animation-commerciale",
+    title: "Comment mesurer une animation commerciale sans inventer son ROI ?",
+    description:
+      "Apprenez à mesurer une animation commerciale avec des indicateurs observables, sans confondre scans, participations, ventes et ROI.",
+    eyebrow: "Mesure marketing local",
+    intro:
+      "Mesurer une animation commerciale commence par un objectif et un parcours observable, pas par un pourcentage de ROI. Séparez les scans, participations, contacts consentis, gains, retraits et ventes éventuelles pour savoir ce qui s’est réellement passé.",
+    answer:
+      "Pour mesurer une animation commerciale, définissez l’objectif avant le lancement, documentez chaque étape du parcours, rapprochez les coûts réellement connus des résultats observés et comparez des périodes ou des groupes comparables. Un ROI n’est calculable que si les coûts, l’attribution et la méthode de comparaison sont suffisamment fiables.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-17",
+    updatedAt: "2026-10-17",
+    reviewedAt: "2026-10-17",
+    readingTime: "9 min de lecture",
+    image: "/images/blog/mesurer-animation-commerciale.webp",
+    imageAlt: "Illustration d’un commerce qui suit les étapes d’une animation commerciale",
+    ctaLabel: "Préparer une mesure simple",
+    ctaHref: "/tarifs",
+    sections: [
+      {
+        title: "Commencez par une hypothèse mesurable",
+        paragraphs: [
+          "Avant de créer une animation, formulez ce que vous cherchez à apprendre. Par exemple : vérifier si une offre est comprise, observer la participation sur un créneau calme, faciliter une prochaine visite ou recueillir des contacts avec un consentement explicite. Une hypothèse précise aide à choisir les bons indicateurs.",
+          "Évitez les objectifs trop larges comme « augmenter les ventes » si vous ne pouvez pas isoler l’effet de l’animation. Une formulation plus prudente décrit un comportement observable et une période : « suivre les participations et les retraits pendant la campagne, puis comparer les questions de l’équipe avec celles d’une période comparable ».",
+        ],
+        items: [
+          "Objectif : ce que l’opération doit aider à comprendre ou à provoquer.",
+          "Période : dates de début et de fin, horaires et éventuels créneaux comparés.",
+          "Public : clientèle habituelle, visiteurs de passage, nouveaux contacts ou participants d’un événement.",
+          "Décision : ce qui fera évoluer, reconduire, réduire ou arrêter le format.",
+        ],
+      },
+      {
+        title: "Séparez les étapes du parcours",
+        paragraphs: [
+          "Un QR code scanné ne signifie pas qu’une personne a participé. Une participation ne signifie pas qu’un lot a été retiré, et un retrait ne prouve pas une vente. En séparant les événements, vous repérez les étapes qui fonctionnent et celles qui demandent une amélioration.",
+          "Utilisez le même vocabulaire dans le tableau de suivi et dans les consignes de l’équipe. Cette discipline évite de compter deux fois une personne ou de présenter un clic sortant comme une action réalisée sur place.",
+        ],
+        items: [
+          "Scan : le QR code ou le lien a été ouvert.",
+          "Participation : le parcours de jeu ou d’animation a été complété.",
+          "Contact : une donnée a été transmise avec un consentement distinct et explicite, si cette collecte est prévue.",
+          "Gain : un résultat ou un avantage a été attribué au participant.",
+          "Retrait : l’équipe a vérifié et remis le gain selon les conditions prévues.",
+          "Vente ou visite suivante : un événement commercial séparé, à attribuer seulement avec une méthode adaptée.",
+        ],
+      },
+      {
+        title: "Que mesurer avec un QR code ?",
+        paragraphs: [
+          "Un QR code est un point d’entrée pratique, mais il ne mesure que ce que le dispositif et le contexte permettent d’observer. Notez au minimum les scans ou ouvertures, la période, le support utilisé et, lorsque c’est possible, les participations complètes. Ne déduisez pas l’identité d’une personne ou une vente à partir d’un scan anonyme.",
+          "Si plusieurs affiches ou établissements diffusent la même opération, utilisez des supports ou des liens distincts lorsque le besoin de comparaison est réel. Sinon, vous ne saurez pas quel emplacement a généré l’ouverture. Chaque variante doit rester compréhensible et être documentée avant impression.",
+          "Le test du QR public doit être séparé de la prévisualisation. Les tests de l’équipe, les scans de contrôle et les participations de démonstration ne doivent pas être mélangés aux données de campagne.",
+        ],
+      },
+      {
+        title: "Documentez le contexte avant de comparer",
+        paragraphs: [
+          "Une comparaison n’est utile que si les situations sont suffisamment proches. Notez la durée, les horaires, l’emplacement, le support, la dotation, la météo si elle influence le passage, les événements voisins et toute promotion active. Ces éléments expliquent parfois une variation sans que l’animation soit la cause unique.",
+          "Comparez autant que possible des créneaux, points de vente ou périodes comparables. Une semaine de lancement avec une forte communication ne doit pas être présentée comme la référence universelle d’un commerce calme. Si le contexte change, dites-le dans le bilan.",
+        ],
+        items: [
+          "Format et promesse affichée.",
+          "Dates, horaires et durée d’exposition.",
+          "Lieu, support et visibilité du QR code.",
+          "Lots, stock, conditions et capacité de remise.",
+          "Communication parallèle, événement local ou changement d’offre.",
+          "Incidents, interruptions et tests exclus des données finales.",
+        ],
+      },
+      {
+        title: "Suivez les coûts réellement liés à l’opération",
+        paragraphs: [
+          "Pour mesurer un retour financier, commencez par connaître les coûts pertinents. Listez la préparation, le support, les impressions, les lots remis, le temps d’équipe, l’outil, la diffusion et les éventuels partenaires. Séparez ce qui est payé pour cette opération de ce qui est réutilisable ou déjà engagé.",
+          "Une estimation de budget ne devient pas automatiquement un coût réel. Après la campagne, remplacez les hypothèses par les dépenses observées et indiquez les postes encore incertains. Le temps interne peut être suivi en durée sans lui attribuer un taux générique non validé.",
+          "Pour une méthode détaillée de cadrage budgétaire, consultez le guide dédié au [coût d’un jeu marketing](/guides/mesurer-jeu-qr-code) et l’article sur le [coût d’une animation commerciale](/blog/cout-animation-commerciale-commerce).",
+        ],
+      },
+      {
+        title: "Construisez un tableau de suivi simple",
+        paragraphs: [
+          "Un tableau utile doit permettre de distinguer les faits, les hypothèses et les décisions. Une ligne par jour, créneau, support ou établissement suffit souvent pour une première opération. N’ajoutez pas des colonnes que l’équipe ne pourra pas renseigner de manière régulière.",
+          "Voici une structure de départ : période, lieu ou support, scans, participations, contacts consentis, gains, retraits, ventes attribuables selon une méthode documentée, coûts connus, incidents et observation qualitative. Les cellules non mesurées doivent rester vides ou être marquées « non disponible », pas remplacées par zéro.",
+        ],
+        items: [
+          "Prévu : objectif, dates, lots, supports et indicateurs retenus.",
+          "Observé : scans, participations, contacts, gains, retraits et événements commerciaux réellement enregistrés.",
+          "Qualitatif : questions posées, blocages, visibilité, compréhension et charge de l’équipe.",
+          "Interprétation : ce que les données permettent de dire et ce qu’elles ne permettent pas de conclure.",
+          "Décision : conserver, modifier, tester ou arrêter un élément du dispositif.",
+        ],
+      },
+      {
+        title: "Ajoutez une lecture qualitative",
+        paragraphs: [
+          "Les chiffres ne montrent pas toujours pourquoi une étape bloque. Demandez à l’équipe quelles consignes sont répétées, quel lot est mal compris, combien de temps prend un retrait et où les participants abandonnent. Ces observations sont utiles même avec un petit volume.",
+          "Vous pouvez aussi recueillir un retour volontaire, sans conditionner une récompense à un avis et sans transformer une question de satisfaction en collecte implicite. Séparez le retour sur l’expérience de toute inscription à une prospection future.",
+          "Une observation qualitative n’est pas une preuve statistique. Présentez-la comme un signal à confirmer lors d’une prochaine opération ou d’un test mieux contrôlé.",
+        ],
+      },
+      {
+        title: "Attribuez une vente avec prudence",
+        paragraphs: [
+          "Une vente réalisée pendant une animation peut avoir plusieurs causes : passage habituel, promotion simultanée, recommandation, événement local ou effet du jeu. Sans protocole, il est impossible d’affirmer que l’animation a créé toute la vente.",
+          "Si l’attribution est importante, définissez avant le lancement ce qui sera considéré comme une vente liée : code distinct, offre clairement identifiée, fenêtre temporelle, groupe de comparaison ou question posée avec une méthode cohérente. Documentez aussi les limites et les ventes non observées.",
+          "Même avec un code ou un coupon, vous mesurez principalement une utilisation attribuable au dispositif. Cela ne prouve pas nécessairement la marge incrémentale, la fidélité ou l’absence d’un achat qui aurait eu lieu autrement.",
+        ],
+        items: [
+          "Attribution directe : le client utilise une offre ou un code propre à l’animation.",
+          "Comparaison : les résultats sont rapprochés d’une période ou d’un groupe comparable.",
+          "Retour déclaré : le client indique un motif, avec le biais et le périmètre précisés.",
+          "Limite : les ventes sans identifiant ou hors période ne sont pas automatiquement rattachées.",
+        ],
+      },
+      {
+        title: "Quand peut-on parler de ROI ?",
+        paragraphs: [
+          "Le ROI n’est pas un chiffre à déduire d’un nombre de participations. Il suppose de connaître les coûts pertinents, le bénéfice ou la marge réellement attribuable et la méthode de comparaison. Si l’un de ces éléments manque, vous pouvez parler d’indicateurs ou de retour observé, mais pas d’un ROI établi.",
+          "Un calcul peut s’écrire simplement comme une relation entre un gain net attribuable et le coût de l’opération, mais cette formule ne rend pas les données plus fiables. Le point difficile est de justifier ce qui est attribué, sur quelle période et avec quelles exclusions.",
+          "Pour une première campagne, un bilan honnête peut donc conclure : « les scans et retraits ont été observés ; la rentabilité n’est pas calculable avec les données disponibles ; le prochain test devra mieux isoler l’utilisation de l’offre ». Cette conclusion est plus utile qu’un pourcentage précis mais fragile.",
+        ],
+      },
+      {
+        title: "Bilan de campagne en cinq questions",
+        paragraphs: [
+          "À la fin de l’opération, réunissez les données et les observations dans un bilan court. L’objectif est de décider de la suite, pas de produire un chiffre flatteur.",
+        ],
+        items: [
+          "L’objectif initial a-t-il été observé avec les indicateurs prévus ?",
+          "À quelle étape les participants ont-ils avancé ou abandonné ?",
+          "Quels coûts et temps ont réellement été engagés ?",
+          "Quelle partie du résultat peut être attribuée avec une méthode documentée ?",
+          "Quelle modification tester lors de la prochaine opération ?",
+        ],
+      },
+      {
+        title: "Questions fréquentes sur la mesure d’une animation",
+        paragraphs: [
+          "Quel est le meilleur indicateur pour une animation commerciale ? Il n’existe pas d’indicateur unique. Choisissez celui qui correspond à l’objectif : participation, retrait, utilisation d’une offre, contact consenti ou observation de l’équipe.",
+          "Un QR code permet-il de mesurer les ventes ? Il mesure surtout les ouvertures et, selon le parcours, les participations. Une vente ne peut être reliée à l’animation que si une méthode d’attribution est définie et appliquée.",
+          "Comment savoir si une animation fonctionne ? Comparez l’objectif, les étapes observées, les coûts, les incidents et le contexte. Une opération peut être utile pour tester une promesse même si un ROI financier n’est pas calculable.",
+          "Faut-il collecter l’adresse e-mail pour mesurer ? Non. La collecte n’est nécessaire que si elle sert un objectif clair, avec un consentement explicite et une utilisation séparée de la participation ou du gain.",
+          "Peut-on mesurer une petite animation ? Oui, avec peu d’indicateurs bien définis. Il faut simplement éviter de généraliser un petit test ou de présenter une observation locale comme une preuve universelle.",
+        ],
+      },
+      {
+        title: "Checklist avant de tirer une conclusion",
+        paragraphs: [
+          "Avant de publier ou de partager votre bilan, vérifiez les points suivants :",
+        ],
+        items: [
+          "L’objectif et l’hypothèse étaient définis avant le lancement.",
+          "Les scans, participations, contacts, gains, retraits et ventes sont séparés.",
+          "Les tests internes et incidents sont identifiés et exclus si nécessaire.",
+          "Le contexte, la période, le support et les promotions parallèles sont documentés.",
+          "Les coûts réels sont distingués des estimations et des coûts non mesurés.",
+          "Toute attribution commerciale repose sur une méthode annoncée à l’avance.",
+          "Le bilan indique clairement ce qui est observé, supposé et encore inconnu.",
+          "La prochaine action est formulée comme un test ou une amélioration vérifiable.",
+        ],
+      },
+    ],
+    related: [
+      "/guides/mesurer-jeu-qr-code",
+      "/blog/attirer-clients-commerce-local",
+      "/blog/calendrier-marketing-commerce-local",
+      "/tarifs",
+      "/comment-ca-marche",
+    ],
+  },
 ];
 
 export function blogPostByPath(path: string) {
