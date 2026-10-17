@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { LandingDemo } from "@/components/marketing/landing-demo";
+import { MerchantProof } from "@/components/marketing/merchant-proof";
 import { LocalizedPrice } from "@/components/marketing/localized-price";
 import { PrimaryButton } from "@/components/marketing/primary-button";
 import { PageSchema } from "@/components/marketing/structured-data";
@@ -33,14 +34,14 @@ const features = [
     href: "/comment-ca-marche",
   },
   {
-    title: "Des résultats lisibles",
-    text: "Distinguez scans, parties, contacts, gains et retraits, y compris les participations sans coordonnées.",
+    title: "Des décisions mieux éclairées",
+    text: "Identifiez les lots récupérés et ajustez vos cadeaux à partir des participations, gains et retraits réellement suivis.",
     href: "/guides/mesurer-jeu-qr-code",
   },
   {
-    title: "Des nouvelles par e-mail",
-    text: "Choisissez vos alertes et synthèses, et activez si besoin les rappels aux gagnants.",
-    href: "/aide/notifications-et-relances",
+    title: "Le suivi sans vous connecter",
+    text: "Recevez le bilan des gains, des retraits et des stocks directement dans votre boîte mail, aux fréquences choisies.",
+    href: "#suivi",
   },
 ];
 const faqs = [
@@ -87,8 +88,8 @@ export default function IndexPage() {
         </h1>
         <p className="mt-6 max-w-[750px] text-lg leading-8 text-[#475569]">
           Une roue de la fortune ou un ticket à gratter avec votre logo et vos
-          lots. Affichez le QR dans votre établissement, puis suivez les
-          participations, les gains et les retraits.
+          lots. Vos clients jouent ; vous gardez la main sur les conditions,
+          validez les retraits et recevez votre bilan par e-mail si vous le souhaitez.
         </p>
         <div className="mt-7 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
           <PrimaryButton href={`${APP_URL}/inscription`} trackingName="start_trial" trackingLocation="hero">
@@ -105,6 +106,11 @@ export default function IndexPage() {
           Sans carte bancaire. 20 € HT / mois après l’essai, sans engagement.
           Lots à votre charge.
         </p>
+        <ul aria-label="Les points forts d’Okado" className="mt-6 flex flex-wrap gap-x-6 gap-y-3 text-sm font-semibold text-[#513049]">
+          <li><Link href="/instituts-beaute#exemples-metiers" className="underline underline-offset-4">Des lots adaptés à votre métier</Link></li>
+          <li><Link href="#demo" className="underline underline-offset-4">Du jeu au retrait validé</Link></li>
+          <li><Link href="#suivi" className="underline underline-offset-4">Votre suivi dans votre boîte mail</Link></li>
+        </ul>
       </section>
       <section
         id="demo"
@@ -113,6 +119,7 @@ export default function IndexPage() {
       >
         <LandingDemo />
       </section>
+      <MerchantProof />
       <section
         id="fonctionnalites"
         className="scroll-mt-32 bg-[#f8f6fe] px-5 py-16"

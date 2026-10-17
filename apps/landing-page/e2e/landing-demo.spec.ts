@@ -249,7 +249,7 @@ test("redémarrer pendant la rotation annule le résultat différé", async ({
   const demo = page.locator("#demo");
   await demo.getByRole("button", { name: "Jouer", exact: true }).click();
   await demo.getByRole("button", { name: "Jouer maintenant" }).click();
-  await expect(demo.getByRole("status")).toHaveText("La roue tourne…");
+  await expect(demo.getByRole("status").filter({ hasText: "La roue tourne…" })).toHaveText("La roue tourne…");
   await demo.getByRole("button", { name: "Redémarrer la démo" }).click();
   await page.waitForTimeout(2300);
   await expect(

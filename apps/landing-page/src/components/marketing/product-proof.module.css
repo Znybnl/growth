@@ -1,0 +1,84 @@
+.section { max-width: 1100px; margin: 0 auto; padding: 64px 20px; scroll-margin-top: 128px; color: #162238; }
+.sectionHeading { max-width: 720px; margin-bottom: 34px; }
+.eyebrow { display: flex; align-items: center; gap: 8px; color: #6c00f6; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.sectionHeading h2 { margin: 14px 0 18px; font-size: clamp(30px, 3.5vw, 44px); font-weight: 750; line-height: 1.12; letter-spacing: -.04em; }
+.sectionHeading > p:last-child, .followupCopy > p, .reminder > div > p:not(.eyebrow) { color: #475569; font-size: 15px; line-height: 1.85; }
+.link { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin-top: 16px; font-size: 14px; font-weight: 650; color: #6c00f6; text-decoration: underline; text-underline-offset: 4px; }
+.link svg { flex-shrink: 0; }
+.link:focus-visible, .confirmRedemption:focus-visible, .tableViewport:focus-visible { outline: 3px solid #6c00f6; outline-offset: 4px; }
+.note { margin-top: 14px; font-size: 12px; line-height: 1.8; color: #64748b; }
+.followupGrid { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: 48px; align-items: center; }
+.followupCopy, .digest, .reminder > *, .useCase { min-width: 0; }
+.icon { display: grid; place-items: center; width: 48px; height: 48px; border: 1px solid #ddd0f0; border-radius: 14px; color: #6c00f6; background: #f8f4ff; }
+.followupCopy h3 { margin: 20px 0; font-size: 28px; line-height: 1.2; letter-spacing: -.025em; font-weight: 700; }
+.checks { display: grid; gap: 14px; padding: 0; margin: 24px 0 8px; list-style: none; }
+.checks li { display: flex; align-items: flex-start; gap: 10px; color: #334155; font-size: 14px; line-height: 1.65; }
+.checks svg { flex-shrink: 0; margin-top: 3px; color: #27715a; }
+.followupCopy .note { font-size: 12px; }
+.digest { margin: 0; border: 1px solid #ddd5e6; border-radius: 20px; background: white; box-shadow: 0 16px 45px -28px #24142a60; overflow: hidden; }
+.mailCaption { display: flex; align-items: center; gap: 8px; padding: 12px 18px; color: #536176; font-size: 11px; line-height: 1.6; background: #f7f5fa; border-bottom: 1px solid #e5e7eb; }
+.mailBody { padding: 24px; }
+.mailSubject { color: #6b5c76; font-size: 11px; letter-spacing: .04em; }
+.mailBody h3 { margin: 10px 0 0; font-size: 24px; line-height: 1.2; font-weight: 700; letter-spacing: -.025em; }
+.mailBody > .note { margin-top: 8px; }
+.digestKpis { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; margin: 24px 0 12px; }
+.digestKpis > div { display: flex; flex-direction: column; justify-content: space-between; gap: 12px; border: 1px solid #e5e0eb; border-radius: 12px; padding: 14px; background: #fcfbff; }
+.digestKpis dt { font-size: 11px; line-height: 1.5; color: #536176; }
+.digestKpis dd { font-size: 30px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+.tableViewport { max-width: 100%; overflow-x: auto; margin-top: 18px; }
+.digestTable { width: 100%; border-collapse: collapse; text-align: left; font-size: 12px; line-height: 1.6; }
+.digestTable th { font-weight: 600; color: #536176; }
+.digestTable th, .digestTable td { padding: 12px 8px; vertical-align: top; border-bottom: 1px solid #e8e5ed; }
+.digestTable th:first-child, .digestTable td:first-child { padding-left: 0; }
+.digestTable td span:not(.redeemed) { display: block; color: #64748b; font-size: 11px; margin-top: 4px; }
+.redeemed { color: #216349; font-size: 11px; font-weight: 650; }
+.stockBox { margin-top: 20px; padding: 14px; border-radius: 12px; background: #f8f7fa; }
+.stockBox > p { font-size: 12px; font-weight: 650; }
+.stockBox ul { display: grid; gap: 10px; margin-top: 12px; }
+.stockBox li { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: 11px; line-height: 1.5; }
+.stockBox li strong { flex-shrink: 0; font-weight: 600; }
+.stockBox .exhausted { color: #a13d21; }
+.reminder { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 24px 40px; margin-top: 48px; padding: 32px; background: #f5f2fa; border: 1px solid #e3dcec; border-radius: 22px; }
+.reminder h3 { margin: 16px 0; font-size: 25px; line-height: 1.25; font-weight: 700; letter-spacing: -.025em; }
+.reminderMail { align-self: center; border: 1px solid #ddd5e6; border-radius: 12px; background: white; overflow: hidden; }
+.reminderMail h4 { padding: 18px 20px 0; font-size: 18px; font-weight: 650; line-height: 1.4; }
+.reminderMail > p:last-child { padding: 12px 20px 20px; color: #536176; font-size: 12px; line-height: 1.8; }
+.reminderNote { grid-column: 1/-1; margin: 0; font-size: 11px; color: #64748b; line-height: 1.9; }
+.useCaseGrid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 20px; scroll-margin-top: 128px; }
+.useCase { --case-ink: #49372c; --case-paper: #f8eee4; --case-foil: #c6ab7e; border: 1px solid #e5dedb; border-radius: 20px; background: white; overflow: hidden; }
+.useCase[data-theme="lilac"] { --case-ink: #472d4f; --case-paper: #f4eaf7; --case-foil: #c4b5cd; }
+.useCase[data-theme="botanical"] { --case-ink: #253d28; --case-paper: #f1f2e7; --case-foil: #b4bda1; }
+.composition { position: relative; display: flex; align-items: center; justify-content: center; min-height: 400px; padding: 28px 16px 44px; background: var(--case-paper); color: var(--case-ink); }
+.ticket { position: relative; width: 200px; max-width: 78%; border: 5px solid #24212a; border-radius: 24px; overflow: hidden; box-shadow: 0 12px 24px -16px #24142a80; }
+.artwork { object-fit: cover; }
+.ticketContent { position: relative; display: flex; flex-direction: column; align-items: center; min-height: 310px; padding: 23px 16px 28px; text-align: center; }
+.exampleBrand { font-family: Georgia, serif; font-size: 16px; line-height: 1.2; }
+.brandRule { display: block; width: 24px; height: 1px; margin: 12px auto; background: currentColor; opacity: .6; }
+.ticketTitle { font-family: Georgia, serif; font-size: 26px; line-height: 1.05; letter-spacing: -.03em; }
+.ticketSubtitle { max-width: 135px; margin-top: 12px; font-size: 8px; text-transform: uppercase; line-height: 1.6; letter-spacing: .09em; }
+.foil { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-height: 100px; width: 100%; margin-top: 24px; border-radius: 18px; border: 1px solid #ffffffc0; background: linear-gradient(120deg,#ffffff70,transparent 45%,#ffffff50),var(--case-foil); color: var(--case-ink); box-shadow: 0 5px 12px -8px #24142a70; }
+.foil span { font-size: 9px; }
+.poster { position: absolute; right: 12px; bottom: 49px; display: grid; justify-items: center; width: 94px; padding: 14px 7px; border: 1px solid #dbcac0; background: var(--case-paper); border-radius: 3px; box-shadow: 0 12px 20px -12px #24142a90; transform: rotate(5deg); font-family: Georgia,serif; text-align: center; }
+.poster > p { font-size: 9px; }
+.poster .brandRule { margin: 8px 0; width: 20px; }
+.poster strong { font-size: 19px; line-height: 1; font-weight: 400; }
+.poster svg { margin: 12px 0 8px; padding: 3px; background: white; color: #162238; }
+.poster > span:last-child { font-family: var(--font-sans); font-size: 6px; line-height: 1.5; }
+.compositionLabel { position: absolute; bottom: 13px; left: 16px; right: 16px; text-align: center; font-size: 10px; color: #536176; }
+.useCaseCopy { padding: 24px; }
+.useCaseCopy h3 { margin: 14px 0; font-size: 21px; line-height: 1.25; font-weight: 650; letter-spacing: -.025em; }
+.useCaseCopy > p:not(.eyebrow):not(.note) { color: #475569; font-size: 13px; line-height: 1.85; }
+.redemption { margin-top: 28px; padding: 20px; background: #f9f7fc; border: 1px solid #e3dcec; border-radius: 16px; }
+.redemption h4 { font-size: 20px; font-weight: 700; line-height: 1.2; letter-spacing: -.025em; margin: 12px 0 16px; }
+.redemption dl { display: grid; gap: 12px; margin: 0; }
+.redemption dt { font-size: 10px; text-transform: uppercase; letter-spacing: .06em; color: #64748b; }
+.redemption dd { margin: 4px 0 0; font-size: 12px; line-height: 1.65; }
+.confirmRedemption { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 44px; padding: 10px; margin-top: 18px; border-radius: 10px; background: #162238; color: white; border: 1px solid #162238; font-size: 12px; font-weight: 600; cursor: pointer; }
+.confirmRedemption:hover:enabled { background: #38214e; }
+.confirmRedemption:disabled { background: #e6f2eb; border-color: #a6cdb5; color: #216349; cursor: default; }
+.redemptionStatus { margin-top: 12px; font-size: 12px; line-height: 1.75; color: #475569; }
+.redemption .note { font-size: 10px; }
+.srOnly { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+@media (max-width: 1023px) { .useCaseGrid { gap: 14px; } .useCaseCopy { padding: 18px; } .poster { width: 82px; right: 6px; } .composition { padding-inline: 8px; } .ticket { max-width: 87%; } .followupGrid { gap: 28px; } }
+@media (max-width: 767px) { .followupGrid, .reminder { grid-template-columns: minmax(0,1fr); } .useCaseGrid { grid-template-columns: minmax(0,1fr); gap: 24px; } .useCase { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); } .composition { min-height: 370px; } .useCaseCopy { align-self: center; padding: 22px; } .reminder { padding: 24px; gap: 20px; } }
+@media (max-width: 539px) { .useCase { display: block; } .composition { min-height: 390px; } .ticket { width: 210px; max-width: 76%; } .poster { width: 102px; right: 20px; } .useCaseCopy { padding: 24px; } .mailBody { padding: 18px; } .section { padding-block: 44px; } .digestKpis { gap: 8px; } .digestKpis > div { padding: 12px; } .digestTable { font-size: 11px; } .digestTable td span:not(.redeemed) { font-size: 10px; } .reminder { padding: 20px; } }
