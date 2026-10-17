@@ -5,25 +5,35 @@ type Faq = { question: string; answer: string };
 export function PageSchema({
   path,
   name,
+  description,
   faqs = [],
   article = false,
+  articleType = "Article",
+  datePublished,
+  dateModified,
 }: {
   path: string;
   name: string;
+  description?: string;
   faqs?: Faq[];
   article?: boolean;
+  articleType?: "Article" | "BlogPosting";
+  datePublished?: string;
+  dateModified?: string;
 }) {
   const url = new URL(path, SITE_URL).href;
   const graph: Record<string, unknown>[] = [
     {
-      "@type": article ? "Article" : "WebPage",
+      "@type": article ? articleType : "WebPage",
       "@id": `${url}#page`,
       url,
       name,
       ...(article
         ? {
             headline: name,
-            dateModified: CONTENT_REVIEWED_AT,
+            ...(description ? { description } : {}),
+            datePublished: datePublished ?? CONTENT_REVIEWED_AT,
+            dateModified: dateModified ?? CONTENT_REVIEWED_AT,
             inLanguage: "fr",
             author: { "@id": `${SITE_URL}/#organization` },
             publisher: { "@id": `${SITE_URL}/#organization` },

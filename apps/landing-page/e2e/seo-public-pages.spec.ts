@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { blogPosts } from "../src/lib/blog";
 import { publicContent } from "../src/lib/public-content";
 import { ANALYTICS_CONSENT_COOKIE, ANALYTICS_CONSENT_VERSION } from "../src/lib/analytics-consent";
 
@@ -10,7 +11,9 @@ const routes = [
   "/campaign/reglement",
   "/tarifs",
   "/guides",
+  "/blog",
   ...publicContent.map((page) => page.path),
+  ...blogPosts.map((post) => post.path),
 ];
 
 test("chaque page publique : HTML indexable, canonical, image sociale et navigation mobile", async ({
@@ -64,6 +67,7 @@ test("chaque page publique : HTML indexable, canonical, image sociale et navigat
         "/tarifs",
         "/ticket-a-gratter",
         "/guides/mesurer-jeu-qr-code",
+        "/blog",
       ].includes(route)
     )
       await page.screenshot({
@@ -76,6 +80,23 @@ test("chaque page publique : HTML indexable, canonical, image sociale et navigat
   for (const path of internalLinks)
     expect(routes, `Lien interne valide : ${path}`).toContain(path);
   expect(errors).toEqual([]);
+});
+
+test("le blog utilise un gabarit commun sans commentaires", async ({ page }) => {
+  await page.goto("/blog");
+  for (const post of blogPosts)
+    await expect(page.getByRole("link", { name: post.title, exact: true })).toHaveCount(1);
+
+  for (const route of ["/blog", ...blogPosts.map((post) => post.path)]) {
+    await page.goto(route);
+    await expect(page.locator("main#contenu")).toHaveCount(1);
+    await expect(page.locator("form")).toHaveCount(0);
+    await expect(page.getByText("Commentaire", { exact: false })).toHaveCount(0);
+  }
+  await page.goto(blogPosts[0].path);
+  await expect(page.locator("article")).toHaveCount(1);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(blogPosts[0].title);
+  await expect(page.getByText("À retenir", { exact: true })).toBeVisible();
 });
 
 test("sitemap, robots, OG et fichiers distribués sont utilisables", async ({
@@ -119,7 +140,7 @@ test("sitemap, robots, OG et fichiers distribués sont utilisables", async ({
     "/_next/image?url=%2Fimages%2Frestaurant-a5-counter.webp&w=640&q=75",
   );
   expect(optimized.status()).toBe(200);
-  for (const path of ["/page-inconnue-test-seo", "/guides/guide-inexistant-test-seo", "/fichier-inconnu-test-seo.png"]) {
+  for (const path of ["/page-inconnue-test-seo", "/guides/guide-inexistant-test-seo", "/blog/article-inexistant-test-seo", "/fichier-inconnu-test-seo.png"]) {
     expect((await request.get(path)).status(), path).toBe(404);
   }
 });
