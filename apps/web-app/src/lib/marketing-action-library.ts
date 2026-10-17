@@ -6,9 +6,8 @@ export const MARKETING_ACTION_CATALOG = [
   { key: "facebook", kind: "facebook", field: "facebookUrl", label: "Facebook", cta: "Suivre sur Facebook", placeholder: "https://facebook.com/votre_page" },
   { key: "tiktok", kind: "tiktok", field: "tiktokUrl", label: "TikTok", cta: "Suivre sur TikTok", placeholder: "https://www.tiktok.com/@votre_compte" },
   { key: "tripadvisor", kind: "tripadvisor", field: "tripadvisorUrl", label: "Tripadvisor", cta: "Voir Tripadvisor", placeholder: "https://www.tripadvisor.fr/…" },
-  { key: "appointment", kind: "custom", field: "appointmentUrl", label: "Réservation", cta: "Prendre rendez-vous", placeholder: "https://www.planity.com/…" },
   { key: "website", kind: "custom", field: "websiteUrl", label: "Site web", cta: "Visiter le site", placeholder: "https://votre-site.fr" },
-  { key: "custom", kind: "custom", field: "customLinkUrl", label: "Autre lien", cta: "Découvrir", placeholder: "https://…" },
+  { key: "custom", kind: "custom", field: "customLinkUrl", label: "Lien personnalisé", cta: "Découvrir", placeholder: "https://…" },
 ] as const satisfies ReadonlyArray<{ key: string; kind: ActionKind; field: keyof Merchant; label: string; cta: string; placeholder: string }>;
 
 export type MarketingActionKey = typeof MARKETING_ACTION_CATALOG[number]["key"];
@@ -59,7 +58,6 @@ export function configuredMarketingUrl(links: MarketingLinks, key: MarketingActi
 export function marketingActionKey(action: Pick<CampaignAction, "kind" | "label">): MarketingActionKey | null {
   if (action.kind === "crm") return null;
   if (action.kind !== "custom") return action.kind;
-  if (action.label === "Prendre rendez-vous") return "appointment";
   if (action.label === "Visiter le site") return "website";
   return "custom";
 }

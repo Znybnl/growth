@@ -28,25 +28,25 @@ async function save(page: Page) {
 test("bibliothèque : configurées en premier, ajout immédiat, doublon désactivé, clavier et destinations distinctes", async ({ page }) => {
   await openActions(page);
   await page.getByRole("button", { name: "Ajouter une action", exact: true }).click();
-  await expect(library(page).getByRole("region", { name: "Vos actions configurées" }).locator("button")).toHaveCount(4);
+  await expect(library(page).getByRole("region", { name: "Vos actions configurées" }).locator("button")).toHaveCount(3);
+  await expect(page.getByTestId("action-library-appointment")).toHaveCount(0);
+  await expect(library(page).getByText("Réservation", { exact: true })).toHaveCount(0);
   await expect(page.getByTestId("action-library-instagram")).toBeDisabled();
   await expect(page.getByTestId("action-library-website")).toBeDisabled();
-  await page.getByTestId("action-library-appointment").click();
-  await expect(page.getByTestId("selected-action-2")).toContainText("Réservation");
-  await add(page, "google");
-  await expect(page.getByTestId("selected-action-3")).toContainText("Avis Google");
+  await page.getByTestId("action-library-google").click();
+  await expect(page.getByTestId("selected-action-2")).toContainText("Avis Google");
   await page.getByRole("button", { name: /Monter Avis Google/ }).focus();
   await page.keyboard.press("Enter");
-  await expect(page.getByTestId("selected-action-2")).toContainText("Avis Google");
+  await expect(page.getByTestId("selected-action-1")).toContainText("Avis Google");
   await page.getByRole("button", { name: /Supprimer Avis Google/ }).click();
   await page.getByRole("status").getByRole("button", { name: "Annuler" }).click();
-  await expect(page.getByTestId("selected-action-2")).toContainText("Avis Google");
+  await expect(page.getByTestId("selected-action-1")).toContainText("Avis Google");
   const payload = await save(page);
-  expect(payload.actions.map((action: { id: string }) => action.id).slice(0, 2)).toEqual(["legacy-instagram", "legacy-website"]);
+  expect(payload.actions[0].id).toBe("legacy-instagram");
+  expect(payload.actions[2].id).toBe("legacy-website");
   expect(payload.actions[0].label).toBe("Notre compte personnalisé");
-  expect(payload.actions[1].url).toBe("https://fixture.example.test");
-  expect(payload.actions[3].kind).toBe("custom");
-  expect(payload.actions[3].url).toBe("https://booking.example.test/");
+  expect(payload.actions[2].url).toBe("https://fixture.example.test");
+  expect(payload.actions[1].kind).toBe("google");
 });
 test("configuration : validation, annulation, erreur serveur, succès normalisé, modification propre au jeu", async ({ page }) => {
   const requests: unknown[] = [];
@@ -92,6 +92,74 @@ test("drag desktop conserve les identifiants et l’ordre envoyé", async ({ pag
   await expect(page.getByTestId("selected-action-0")).toContainText("Site web");
   const payload = await save(page);
   expect(payload.actions.map((action: { id: string }) => action.id)).toEqual(["legacy-website", "legacy-instagram"]);
+});
+
+for (const width of [320, 1440]) {
+  test(`${width}px : plusieurs liens personnalisés restent ajoutables sans écraser Mon compte`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    const updates: unknown[] = [];
+    await page.route("**/api/merchant/marketing-links", route => {
+      const body = route.request().postDataJSON(); updates.push(body);
+      return route.fulfill({ json: { key: body.key, url: body.url } });
+    });
+    await openActions(page, "wizard-actions-empty");
+    await add(page, "custom");
+    await page.getByRole("textbox", { name: "Lien de destination" }).fill("https://first.example.test");
+    await page.getByRole("button", { name: "Enregistrer et ajouter" }).click();
+    await expect(page.getByTestId("selected-action-0")).toContainText("first.example.test");
+    expect(updates).toEqual([{ key: "custom", url: "https://first.example.test/", locationId: "template-proof-merchant" }]);
+
+    await page.getByRole("button", { name: "Ajouter une action", exact: true }).click();
+    await expect(page.getByTestId("action-library-custom")).toBeEnabled();
+    await expect(page.getByTestId("action-library-custom")).not.toContainText("Déjà ajoutée");
+    await page.getByTestId("action-library-custom").click();
+    await expect(page.getByRole("textbox", { name: "Lien de destination" })).toHaveValue("");
+    await expect(page.getByRole("dialog")).toContainText("Mon compte restera inchangé");
+    await page.getByRole("textbox", { name: "Lien de destination" }).fill("javascript:alert(1)");
+    await page.getByRole("button", { name: "Ajouter au jeu", exact: true }).click();
+    await expect(page.locator("#marketing-link-error")).toContainText("HTTPS");
+    await page.getByRole("button", { name: "Annuler", exact: true }).click();
+    await expect(page.getByTestId("selected-action-1")).toHaveCount(0);
+
+    await add(page, "custom");
+    await page.getByRole("textbox", { name: "Lien de destination" }).fill("https://second.example.test");
+    await page.getByRole("button", { name: "Ajouter au jeu", exact: true }).click();
+    await expect(page.getByTestId("selected-action-1")).toContainText("second.example.test");
+    await page.getByTestId("selected-action-0").getByRole("button", { name: /Supprimer/ }).click();
+    await page.getByRole("status").getByRole("button", { name: "Annuler" }).click();
+    await expect(page.getByTestId("selected-action-0")).toContainText("first.example.test");
+    expect(updates).toHaveLength(1);
+    const payload = await save(page);
+    expect(payload.actions.map((action: { url: string }) => action.url)).toEqual(["https://first.example.test/", "https://second.example.test/"]);
+    expect(new Set(payload.actions.map((action: { id: string }) => action.id)).size).toBe(2);
+  });
+}
+
+test("lien personnalisé déjà configuré : nouveau lien possible sans aucune écriture de profil", async ({ page }) => {
+  let updates = 0;
+  await page.route("**/api/merchant/marketing-links", route => { updates++; return route.fulfill({ json: {} }); });
+  await openActions(page, "wizard-actions-custom-configured");
+  await add(page, "custom");
+  await expect(page.getByRole("textbox", { name: "Lien de destination" })).toHaveValue("https://saved-link.example.test");
+  await page.getByRole("textbox", { name: "Lien de destination" }).fill("https://new-game-only.example.test");
+  await page.getByRole("button", { name: "Ajouter au jeu" }).click();
+  await add(page, "custom");
+  await page.getByRole("textbox", { name: "Lien de destination" }).fill("https://another-game-only.example.test");
+  await page.getByRole("button", { name: "Ajouter au jeu" }).click();
+  const payload = await save(page);
+  expect(payload.actions.slice(2).map((action: { url: string }) => action.url)).toEqual(["https://new-game-only.example.test/", "https://another-game-only.example.test/"]);
+  expect(updates).toBe(0);
+});
+
+test("ancienne réservation conservée et modifiable sans la réintroduire dans la bibliothèque", async ({ page }) => {
+  await openActions(page, "wizard-actions-legacy-booking");
+  await expect(page.getByTestId("selected-action-2")).toContainText("Prendre rendez-vous");
+  await page.getByRole("button", { name: "Ajouter une action", exact: true }).click();
+  await expect(page.getByTestId("action-library-appointment")).toHaveCount(0);
+  await expect(page.getByTestId("action-library-custom")).toBeEnabled();
+  await page.keyboard.press("Escape");
+  const payload = await save(page);
+  expect(payload.actions[2]).toEqual({ id: "legacy-booking", kind: "custom", label: "Prendre rendez-vous", url: "https://booking.example.test" });
 });
 test("ancienne action invalide conservée et corrigeable, publication bloquée", async ({ page }) => {
   let posts = 0;

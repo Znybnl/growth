@@ -23,7 +23,7 @@ let state;
 beforeEach(() => {
   state = globalThis.__links = {
     session: { user: { id: "user-a", email: "owner@example.test" }, locations: [{ merchant: { id: "site-a" } }, { merchant: { id: "archived", locationStatus: "archived" } }] },
-    profile: { id: "site-a", logo_text: "Mon établissement", withdrawal_pin: "untouched", instagram_url: "", google_review_url: "https://g.page/r/old" },
+    profile: { id: "site-a", logo_text: "Mon établissement", withdrawal_pin: "untouched", instagram_url: "", google_review_url: "https://g.page/r/old", appointment_url: "https://booking.example.test/unchanged" },
     campaigns: [{ id: "existing", actions: [{ url: "https://instagram.com/old" }] }],
     writes: [], logs: [], revalidated: [],
   };
@@ -48,8 +48,9 @@ const request = (body, origin = "https://app.okado.app") => new Request("https:/
 });
 const target = { params: Promise.resolve({ merchantId: "account-b", locationId: "site-b" }) };
 
-test("catalogue : 8 services, URL réutilisables, pas de page générique ni de destination trompeuse", () => {
-  assert.equal(library.MARKETING_ACTION_CATALOG.length, 8);
+test("catalogue : 7 services sans réservation, URL réutilisables et destinations sûres", () => {
+  assert.equal(library.MARKETING_ACTION_CATALOG.length, 7);
+  assert.throws(() => library.marketingActionEntry("appointment"), /inconnue/);
   for (const [key, input, expected] of [
     ["instagram", "@institut.test", "https://www.instagram.com/institut.test"],
     ["tiktok", "@institut", "https://www.tiktok.com/@institut"],
@@ -57,7 +58,6 @@ test("catalogue : 8 services, URL réutilisables, pas de page générique ni de 
     ["facebook", "https://facebook.com/test", "https://facebook.com/test"],
     ["tripadvisor", "https://www.tripadvisor.fr/Attraction-test", "https://www.tripadvisor.fr/Attraction-test"],
     ["website", "example.test", "https://example.test/"],
-    ["appointment", "https://booking.example.test/test", "https://booking.example.test/test"],
     ["custom", "https://example.test/path?a=b", "https://example.test/path?a=b"],
   ]) assert.equal(library.normalizeMarketingActionUrl(key, input), expected);
   for (const input of ["", "https://google.com", "http://g.page/r/test", "https://google.com.evil.test/maps", "javascript:alert(1)", "https://user:password@g.page/r/test", "https://g.page:444/r/test", "https://g.page/r/te st", "https://localhost", "https://127.0.0.1"]) {
@@ -65,7 +65,7 @@ test("catalogue : 8 services, URL réutilisables, pas de page générique ni de 
   }
   assert.throws(() => library.normalizeMarketingActionUrl("instagram", "instagram.com"));
   assert.equal(library.configuredMarketingUrl({ googleReviewUrl: "https://google.com" }, "google"), "");
-  assert.equal(library.marketingActionKey({ kind: "custom", label: "Prendre rendez-vous" }), "appointment");
+  assert.equal(library.marketingActionKey({ kind: "custom", label: "Prendre rendez-vous" }), "custom");
   assert.equal(library.marketingActionKey({ kind: "custom", label: "Visiter le site" }), "website");
   assert.equal(library.marketingActionKey({ kind: "custom", label: "CTA historique" }), "custom");
   assert.equal(library.marketingActionKey({ kind: "crm", label: "E-mail" }), null);
@@ -82,6 +82,7 @@ test("un seul champ Mon compte modifié ; ni logo, ni PIN, ni campagne réécrit
   assert.equal(state.profile.withdrawal_pin, "untouched");
   assert.equal(state.profile.logo_text, "Mon établissement");
   assert.equal(state.profile.google_review_url, "https://g.page/r/old");
+  assert.equal(state.profile.appointment_url, "https://booking.example.test/unchanged");
   assert.deepEqual(state.campaigns, before);
   assert.deepEqual(state.revalidated, ["/account"]);
   assert.doesNotMatch(JSON.stringify(state.logs), /nouveau|owner@example|untouched/);
@@ -92,7 +93,7 @@ test("API : session, origine, établissement autorisé, archive, allowlist des c
   assert.equal((await route.PATCH(request(valid, "https://evil.test"))).status, 403);
   assert.equal((await route.PATCH(request({ ...valid, locationId: "site-b" }))).status, 403);
   assert.equal((await route.PATCH(request({ ...valid, locationId: "archived" }))).status, 403);
-  for (const body of [{ ...valid, key: "logoText" }, { ...valid, url: "https://evil.test/test" }, { ...valid, userId: "other" }, { ...valid, logo_text: "bad" }, { ...valid, locationId: null }, [], null]) {
+  for (const body of [{ ...valid, key: "appointment" }, { ...valid, key: "logoText" }, { ...valid, url: "https://evil.test/test" }, { ...valid, userId: "other" }, { ...valid, logo_text: "bad" }, { ...valid, locationId: null }, [], null]) {
     assert.equal((await route.PATCH(request(body))).status, 400);
   }
   state.session = null;
@@ -100,14 +101,13 @@ test("API : session, origine, établissement autorisé, archive, allowlist des c
   assert.deepEqual(state.writes, []);
 });
 
-test("les huit destinations utilisent exactement les champs existants de Mon compte", async () => {
+test("les sept destinations utilisent exactement les champs existants de Mon compte", async () => {
   for (const [key, column, url] of [
     ["google", "google_review_url", "https://g.page/r/test"],
     ["instagram", "instagram_url", "https://instagram.com/test"],
     ["facebook", "facebook_url", "https://facebook.com/test"],
     ["tiktok", "tiktok_url", "https://tiktok.com/@test"],
     ["tripadvisor", "tripadvisor_url", "https://tripadvisor.fr/test"],
-    ["appointment", "appointment_url", "https://booking.example.test"],
     ["website", "website_url", "https://example.test"],
     ["custom", "custom_link_url", "https://custom.example.test"],
   ]) {

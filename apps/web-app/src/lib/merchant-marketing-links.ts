@@ -9,7 +9,7 @@ import { marketingActionEntry, normalizeMarketingActionUrl, type MarketingAction
 
 const columns = {
   google: "google_review_url", instagram: "instagram_url", facebook: "facebook_url",
-  tiktok: "tiktok_url", tripadvisor: "tripadvisor_url", appointment: "appointment_url",
+  tiktok: "tiktok_url", tripadvisor: "tripadvisor_url",
   website: "website_url", custom: "custom_link_url",
 } as const;
 const headers = { "Cache-Control": "private, no-store", Vary: "Cookie" };

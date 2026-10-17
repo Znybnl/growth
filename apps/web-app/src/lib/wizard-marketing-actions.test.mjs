@@ -88,12 +88,14 @@ test("admin wizard defaults also omit missing and invalid URLs", () => {
         url: "https://instagram.com/my-beauty-studio",
         label: undefined,
       },
-      {
-        id: "admin-wizard-action-2",
-        kind: "custom",
-        url: "https://booking.example.com/studio",
-        label: "Prendre rendez-vous",
-      },
     ],
   );
+});
+
+test("reservation links never create marketing actions in merchant or admin defaults", () => {
+  const merchant = { appointmentUrl: "https://booking.example.com/studio" };
+  assert.deepEqual(createAdminWizardMarketingActionDefaults(merchant), []);
+  for (const goal of ["review_prompt", "social_follow", "lead_capture"]) {
+    assert.deepEqual(createWizardMarketingActionDefaults(merchant, goal), []);
+  }
 });

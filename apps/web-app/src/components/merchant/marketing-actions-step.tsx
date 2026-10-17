@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, CalendarCheck2, CheckCircle2, Globe2, GripVertical, Link2, Loader2, Pencil, Plus, Trash2, X } from "lucide-react";
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, CheckCircle2, Globe2, GripVertical, Link2, Loader2, Pencil, Plus, Trash2, X } from "lucide-react";
 import { siFacebook, siGoogle, siInstagram, siTiktok, siTripadvisor } from "simple-icons";
 import { DialogShell } from "@/components/ui/dialog";
 import { MARKETING_ACTION_CATALOG, configuredMarketingUrl, marketingActionEntry, marketingActionKey, marketingDestinationSummary, normalizeMarketingActionUrl, type MarketingActionKey, type MarketingLinks } from "@/lib/marketing-action-library";
@@ -10,7 +10,7 @@ import type { CampaignAction, Merchant } from "@/lib/types";
 const brands = { google: siGoogle, instagram: siInstagram, facebook: siFacebook, tiktok: siTiktok, tripadvisor: siTripadvisor };
 function ActionIcon({ actionKey }: { actionKey: MarketingActionKey | null }) {
   const brand = actionKey && actionKey in brands ? brands[actionKey as keyof typeof brands] : null;
-  const Icon = actionKey === "appointment" ? CalendarCheck2 : actionKey === "website" ? Globe2 : Link2;
+  const Icon = actionKey === "website" ? Globe2 : Link2;
   return <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-purple-haze text-aubergine" aria-hidden="true">
     {brand ? <svg viewBox="0 0 24 24" className="size-5 fill-current"><path d={brand.path} /></svg> : <Icon className="size-5" />}
   </span>;
@@ -35,16 +35,19 @@ export function MarketingActionsStep({ merchant, links, actions, onChange, onLin
   const unconfigured = MARKETING_ACTION_CATALOG.filter(entry => !configuredMarketingUrl(links, entry.key));
   const editing = configuration?.index !== undefined;
   const entry = configuration ? marketingActionEntry(configuration.key) : null;
+  const customGameOnly = configuration?.key === "custom" && Boolean(configuredMarketingUrl(links, "custom"));
   const atLimit = actions.length >= 12;
 
   function close() { if (!savingRef.current) { setOpen(false); setConfiguration(null); setError(null); } }
   function configure(key: MarketingActionKey, index?: number) {
     setConfiguration({ key, index });
-    setDestination(index === undefined ? links[marketingActionEntry(key).field] ?? "" : actions[index].url);
+    setDestination(index === undefined
+      ? key === "custom" && selectedKeys.has("custom") ? "" : links[marketingActionEntry(key).field] ?? ""
+      : actions[index].url);
     setError(null); setOpen(true);
   }
   function add(key: MarketingActionKey, url: string) {
-    if (actions.length >= 12 || selectedKeys.has(key)) return;
+    if (actions.length >= 12 || (key !== "custom" && selectedKeys.has(key))) return;
     const entry = marketingActionEntry(key);
     onChange([...actions, { id: `wizard-action-${crypto.randomUUID()}`, kind: entry.kind, label: entry.cta, url }]);
     setOpen(false); setConfiguration(null);
@@ -61,7 +64,8 @@ export function MarketingActionsStep({ merchant, links, actions, onChange, onLin
       onChange(actions.map((action, index) => index === snapshot.index ? { ...action, url } : action));
       close(); return;
     }
-    if (atLimit || selectedKeys.has(snapshot.key)) return;
+    if (atLimit || (snapshot.key !== "custom" && selectedKeys.has(snapshot.key))) return;
+    if (customGameOnly) { add(snapshot.key, url); return; }
     savingRef.current = true; setSaving(true);
     try {
       const endpoint = adminAccountMerchantId
@@ -85,29 +89,29 @@ export function MarketingActionsStep({ merchant, links, actions, onChange, onLin
     return entries.length ? <section className="mt-6" aria-label={title}>
       <h4 className="text-sm font-semibold text-carbon">{title}</h4>
       <div className="mt-3 grid gap-3 sm:grid-cols-2">{entries.map(entry => {
-        const added = selectedKeys.has(entry.key); const url = configuredMarketingUrl(links, entry.key);
+        const added = entry.key !== "custom" && selectedKeys.has(entry.key); const url = configuredMarketingUrl(links, entry.key);
         return <button key={entry.key} type="button" disabled={added || atLimit} data-testid={`action-library-${entry.key}`}
-          onClick={() => url ? add(entry.key, url) : configure(entry.key)}
+          onClick={() => entry.key === "custom" || !url ? configure(entry.key) : add(entry.key, url)}
           className="group flex min-w-0 items-start gap-3 rounded-[12px] border border-fog bg-white p-4 text-left transition-colors hover:border-aubergine/50 hover:bg-purple-haze/40 focus-visible:outline-2 focus-visible:outline-aubergine disabled:cursor-not-allowed disabled:bg-[#f5f3f5] disabled:opacity-55">
           <ActionIcon actionKey={entry.key} />
           <span className="min-w-0 flex-1"><span className="block text-sm font-semibold text-carbon">{entry.label}</span>
-            <span className="mt-1 block truncate text-xs text-ash" title={url}>{url ? marketingDestinationSummary(entry.key, url, merchant.googlePlaceName || merchant.companyName) : "Configurer un lien sans quitter ce jeu"}</span>
+            <span className="mt-1 block truncate text-xs text-ash" title={url}>{entry.key === "custom" ? "Plusieurs liens possibles" : url ? marketingDestinationSummary(entry.key, url, merchant.googlePlaceName || merchant.companyName) : "Configurer un lien sans quitter ce jeu"}</span>
             <span className={`mt-3 inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-semibold ${added ? "bg-fog text-ash" : url ? "bg-[#edf8f2] text-[#246c49]" : "bg-[#fff7e8] text-[#835313]"}`}>
               {added ? <><CheckCircle2 className="size-3" />Déjà ajoutée</> : url ? "Configurée" : "À configurer"}
             </span>
           </span>
-          {!added && <span className="mt-1 text-aubergine">{url ? <ArrowRight className="size-4" aria-hidden="true" /> : <span className="text-xs font-semibold">Configurer</span>}</span>}
+          {!added && <span className="mt-1 text-aubergine">{entry.key === "custom" ? <Plus className="size-4" aria-hidden="true" /> : url ? <ArrowRight className="size-4" aria-hidden="true" /> : <span className="text-xs font-semibold">Configurer</span>}</span>}
         </button>;
       })}</div>
     </section> : null;
   }
   return <section className="okado-marketing-actions @container space-y-5" aria-label="Actions proposées">
     <div><h3 className="text-lg font-semibold text-carbon">Les actions de vos clients</h3>
-      <p className="mt-2 text-sm leading-6 text-ash">Choisissez les actions à proposer avant le jeu : découvrir votre fiche Google, suivre vos réseaux ou réserver un rendez-vous.</p>
+      <p className="mt-2 text-sm leading-6 text-ash">Choisissez les actions à proposer avant le jeu : découvrir votre fiche Google, suivre vos réseaux ou ouvrir un lien personnalisé.</p>
       <p className="mt-2 text-xs leading-5 text-ash">Une action par visite, dans l’ordre ci-dessous. Les liens configurés proviennent de Mon compte · {merchant.companyName}.</p>
     </div>
     {actions.length ? <div className="grid gap-3 @min-[560px]:grid-cols-2" data-testid="selected-marketing-actions">{actions.map((action, index) => {
-      const key = marketingActionKey(action); const label = key ? marketingActionEntry(key).label : action.label || "Action existante";
+      const key = marketingActionKey(action); const label = key === "custom" ? action.label || "Lien personnalisé" : key ? marketingActionEntry(key).label : action.label || "Action existante";
       let invalid = false;
       try { if (key) normalizeMarketingActionUrl(key, action.url); } catch { invalid = true; }
       return <article key={action.id || `legacy-action-${index}`} data-testid={`selected-action-${index}`}
@@ -135,10 +139,10 @@ export function MarketingActionsStep({ merchant, links, actions, onChange, onLin
       </article>;
     })}</div> : <div className="rounded-xl border border-dashed border-lavender-mist bg-purple-haze/30 px-5 py-8 text-center">
       <Plus className="mx-auto size-6 text-aubergine" aria-hidden="true" /><h4 className="mt-3 font-semibold text-carbon">Aucune action ajoutée</h4>
-      <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-ash">Avis, réseaux sociaux, réservation… Composez le parcours de vos clients. Vous pouvez aussi publier sans action marketing, après confirmation.</p>
+      <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-ash">Avis, réseaux sociaux, liens personnalisés… Composez le parcours de vos clients. Vous pouvez aussi publier sans action marketing, après confirmation.</p>
     </div>}
     {removed && <div role="status" className="flex items-center justify-between gap-3 rounded-xl bg-purple-haze px-4 py-3 text-sm text-carbon">Action supprimée
-      <button type="button" disabled={atLimit || actions.filter(item => marketingActionKey(item) === marketingActionKey(removed.action)).length >= removed.previousCount} onClick={() => { const next = [...actions]; next.splice(Math.min(removed.index, next.length), 0, removed.action); onChange(next); setRemoved(null); }} className="font-semibold text-aubergine disabled:opacity-50">Annuler</button>
+      <button type="button" disabled={atLimit || (marketingActionKey(removed.action) !== "custom" && actions.filter(item => marketingActionKey(item) === marketingActionKey(removed.action)).length >= removed.previousCount)} onClick={() => { const next = [...actions]; next.splice(Math.min(removed.index, next.length), 0, removed.action); onChange(next); setRemoved(null); }} className="font-semibold text-aubergine disabled:opacity-50">Annuler</button>
     </div>}
     <button type="button" disabled={atLimit} onClick={() => { setConfiguration(null); setError(null); setOpen(true); }} className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-aubergine px-4 py-3 text-sm font-semibold text-aubergine transition hover:bg-purple-haze disabled:opacity-50"><Plus className="size-4" />Ajouter une action</button>
     {atLimit && <p className="text-xs text-ash">La limite de 12 actions est atteinte.</p>}
@@ -147,7 +151,7 @@ export function MarketingActionsStep({ merchant, links, actions, onChange, onLin
         <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-aubergine">Bibliothèque d’actions</p>
         <h3 id="marketing-library-title" className="mt-2 text-xl font-semibold text-carbon">{entry ? `${editing ? "Modifier" : "Configurer"} ${entry.label}` : "Ajouter une action"}</h3>
       </div><button type="button" onClick={close} disabled={saving} aria-label="Fermer la bibliothèque d’actions" className="rounded-lg p-2 text-ash hover:bg-purple-haze"><X className="size-5" /></button></div>
-        <p id="marketing-library-description" className="mt-2 text-sm leading-6 text-ash">{entry ? editing ? "Cette modification concerne uniquement ce jeu, pas les liens de Mon compte." : `Ce lien sera enregistré dans Mon compte pour ${merchant.companyName}, puis ajouté à ce jeu.` : "Choisissez une action à proposer à vos clients avant leur participation."}</p>
+        <p id="marketing-library-description" className="mt-2 text-sm leading-6 text-ash">{entry ? editing ? "Cette modification concerne uniquement ce jeu, pas les liens de Mon compte." : customGameOnly ? "Ce lien sera ajouté à ce jeu uniquement. Le lien personnalisé de Mon compte restera inchangé." : `Ce lien sera enregistré dans Mon compte pour ${merchant.companyName}, puis ajouté à ce jeu.` : "Choisissez une action à proposer à vos clients avant leur participation."}</p>
       </div>
       <div className="min-h-0 overflow-y-auto overscroll-contain px-5 pb-6 sm:px-6">
         {entry ? <form onSubmit={saveConfiguration} className="pt-5">
@@ -156,7 +160,7 @@ export function MarketingActionsStep({ merchant, links, actions, onChange, onLin
           <input id="marketing-link-input" value={destination} onChange={event => { setDestination(event.target.value); setError(null); }} disabled={saving} aria-invalid={Boolean(error)} aria-describedby={error ? "marketing-link-error" : undefined} autoComplete="off" placeholder={entry.placeholder} className="mt-3 w-full rounded-xl border border-fog px-4 py-3 text-sm text-carbon outline-none focus:border-aubergine focus:ring-4 focus:ring-aubergine/10" />
           {error && <p id="marketing-link-error" role="alert" className="mt-2 text-sm text-[#b42318]">{error}</p>}
           <div className="mt-6 flex flex-wrap justify-end gap-3"><button type="button" disabled={saving} onClick={close} className="okado-secondary-action px-4 text-sm">Annuler</button>
-            <button type="submit" disabled={saving} className="okado-primary-action gap-2 px-4 text-sm">{saving && <Loader2 className="size-4 animate-spin" aria-hidden="true" />}{saving ? "Enregistrement…" : editing ? "Enregistrer" : "Enregistrer et ajouter"}</button></div>
+            <button type="submit" disabled={saving} className="okado-primary-action gap-2 px-4 text-sm">{saving && <Loader2 className="size-4 animate-spin" aria-hidden="true" />}{saving ? "Enregistrement…" : editing ? "Enregistrer" : customGameOnly ? "Ajouter au jeu" : "Enregistrer et ajouter"}</button></div>
         </form> : <>{librarySection("Vos actions configurées", configured)}{librarySection("Autres actions", unconfigured)}</>}
       </div>
     </DialogShell>

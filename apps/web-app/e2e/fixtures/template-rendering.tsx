@@ -44,13 +44,16 @@ export function TemplateRenderingProof({ mode = "preview", templateId = "classic
   if (mode.startsWith("wizard-actions") || mode === "editor-actions-empty") {
     const target = { ...merchant, industry: "Restauration", googleReviewUrl: "https://g.page/r/fixture",
       instagramUrl: "https://www.instagram.com/fixture/", websiteUrl: "https://fixture.example.test",
-      appointmentUrl: "https://booking.example.test" };
+      appointmentUrl: "https://booking.example.test",
+      ...(mode.includes("custom-configured") ? { customLinkUrl: "https://saved-link.example.test" } : {}) };
     const empty = mode.includes("empty");
     const fixture: CampaignPerformance = { ...performance, merchant: target,
       campaign: { ...performance.campaign, actions: empty ? [] : [
         { id: "legacy-instagram", kind: "instagram", label: "Notre compte personnalisé",
           url: mode === "wizard-actions-invalid" ? "http://instagram.com/fixture" : target.instagramUrl },
         { id: "legacy-website", kind: "custom", label: "Visiter le site", url: target.websiteUrl },
+        ...(mode === "wizard-actions-legacy-booking" ? [{ id: "legacy-booking", kind: "custom" as const,
+          label: "Prendre rendez-vous", url: target.appointmentUrl }] : []),
       ] } };
     if (mode === "editor-actions-empty") return <CampaignEditor merchant={target} initialCampaign={fixture} deferInlineAssets />;
     return <CampaignWizard merchant={target} initialCampaign={fixture}
