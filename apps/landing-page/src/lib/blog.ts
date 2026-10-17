@@ -1105,6 +1105,161 @@ export const blogPosts: BlogPost[] = [
       "/tarifs",
     ],
   },
+  {
+    path: "/blog/roue-ou-ticket-a-gratter-commerce",
+    title: "Roue de la fortune ou ticket à gratter : quel format choisir pour un commerce ?",
+    description:
+      "Roue de la fortune ou ticket à gratter : comparez la visibilité, la durée, les lots et l’organisation pour choisir une animation adaptée à votre commerce.",
+    eyebrow: "Jeu marketing",
+    intro:
+      "La roue de la fortune et le ticket à gratter peuvent tous deux ouvrir une animation mobile par QR code, mais ils ne créent pas le même moment en point de vente. La roue rend la participation plus visible ; le ticket laisse une expérience plus discrète et autonome.",
+    answer:
+      "Choisissez une roue si vous voulez créer un moment visible et animé, notamment avec une équipe disponible pour accompagner la participation. Préférez un ticket à gratter si le client doit jouer rapidement et de façon plus autonome. Dans les deux cas, le bon choix dépend surtout du lieu, du support, des lots, des conditions et de la capacité de remise.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-17",
+    updatedAt: "2026-10-17",
+    reviewedAt: "2026-10-17",
+    readingTime: "8 min de lecture",
+    image: "/images/blog/roue-ou-ticket-a-gratter-commerce.webp",
+    imageAlt: "Illustration comparant une roue de la fortune mobile et un ticket à gratter dans un commerce",
+    ctaLabel: "Choisir une mécanique d’animation",
+    ctaHref: "/comment-ca-marche",
+    sections: [
+      {
+        title: "Commencez par le moment que vous voulez créer",
+        paragraphs: [
+          "Le choix d’une mécanique ne devrait pas commencer par son apparence, mais par la situation du client. Voulez-vous créer un échange au comptoir, occuper une attente, faire découvrir un produit ou proposer une participation rapide avant une prochaine visite ? La même mécanique peut être pertinente dans un lieu et peu adaptée dans un autre.",
+          "Définissez aussi ce que l’équipe doit faire. Une animation visible peut attirer l’attention, mais elle peut demander une explication ou une intervention au bon moment. Une expérience plus autonome peut être plus facile à diffuser sur une table, une affiche ou une zone où le personnel ne peut pas accompagner chaque personne.",
+        ],
+        items: [
+          "Créer un moment collectif : privilégiez une participation que l’on remarque et que l’équipe peut expliquer.",
+          "Occuper une attente : privilégiez un parcours court, lisible et utilisable sans interrompre le service.",
+          "Faire découvrir une offre : choisissez la mécanique qui laisse assez de place à la présentation du produit.",
+          "Préparer une prochaine visite : définissez d’abord la validité et les conditions du lot ou de l’avantage.",
+        ],
+      },
+      {
+        title: "Roue de la fortune et ticket à gratter : deux expériences différentes",
+        paragraphs: [
+          "Une roue de la fortune met en scène le hasard et le résultat. Sur un téléphone, elle peut rendre la participation plus expressive : le client lance la roue, voit son animation et découvre le résultat dans un format immédiatement compréhensible. Cela peut servir un accueil, une démonstration ou un moment où l’équipe peut proposer une consigne courte.",
+          "Un ticket à gratter reproduit une attente plus progressive. Le client révèle son résultat à son rythme, ce qui peut mieux convenir à une participation individuelle ou à un support posé dans un espace d’attente. Il ne demande pas nécessairement de faire tourner une animation devant les autres personnes présentes.",
+          "Ces différences décrivent des usages, pas des performances garanties. Aucune mécanique n’est automatiquement plus rentable, plus virale ou plus efficace. Le résultat dépend de l’objectif, du message, des lots, du lieu, du trafic et de la capacité de l’équipe à remettre ce qui est annoncé.",
+        ],
+      },
+      {
+        title: "Choisissez la roue pour une participation visible",
+        paragraphs: [
+          "La roue est souvent adaptée lorsque l’animation doit se voir ou se raconter en quelques secondes. Elle peut donner un repère visuel à une personne qui découvre l’opération et faciliter une présentation par l’équipe. Dans un commerce, ce caractère visible peut devenir un élément de l’accueil plutôt qu’un simple lien posé sur un support.",
+          "Elle demande toutefois un message clair et un espace où le client peut regarder son écran. Si la caisse est encombrée, si le service est continu ou si l’équipe ne peut pas répondre aux questions, simplifiez la consigne et testez le parcours avant de retenir ce format.",
+        ],
+        items: [
+          "Accueil ou comptoir où une personne peut être orientée vers l’animation.",
+          "Lancement d’un produit ou d’une offre qui mérite un moment de présentation.",
+          "Événement ou partenariat où plusieurs participants doivent comprendre rapidement la mécanique.",
+          "Animation où la surprise visuelle compte autant que la remise du lot.",
+        ],
+      },
+      {
+        title: "Choisissez le ticket pour une expérience plus autonome",
+        paragraphs: [
+          "Le ticket à gratter peut convenir lorsque le client dispose de quelques instants mais ne souhaite pas forcément attirer l’attention. Le support peut orienter vers un QR code, puis le client découvre les zones à révéler sur son téléphone. Cette logique se prête bien à une table, une salle d’attente, un comptoir ou une affiche consultée sans accompagnement permanent.",
+          "L’autonomie ne dispense pas d’expliquer la promesse et les conditions. Le client doit savoir ce qu’il fait, ce qu’il peut obtenir, pendant combien de temps et où retirer un gain éventuel. Un ticket plus discret reste une expérience à tester sur le support final et dans le contexte réel.",
+        ],
+        items: [
+          "Zone d’attente où la participation doit rester courte et individuelle.",
+          "Support imprimé diffusé à plusieurs endroits d’un même établissement.",
+          "Équipe occupée qui veut éviter une explication différente à chaque participation.",
+          "Animation où le geste de révéler le résultat est plus important que la mise en scène collective.",
+        ],
+      },
+      {
+        title: "Comparez la durée, le support et le rôle de l’équipe",
+        paragraphs: [
+          "Une roue et un ticket peuvent être ouverts depuis le navigateur du client après un scan. La différence ne tient donc pas seulement au support technique : elle concerne le moment où le client joue, la place de l’équipe et la manière dont le résultat est présenté.",
+          "Avant de décider, observez le parcours complet : lecture du QR code, ouverture de la page, participation, résultat, lecture des conditions et éventuel retrait. Une mécanique qui semble simple sur un écran de configuration peut être moins adaptée à la circulation réelle dans votre établissement.",
+        ],
+        items: [
+          "Visibilité : la roue attire davantage le regard pendant l’action ; le ticket peut rester plus discret.",
+          "Accompagnement : la roue se prête à une consigne orale ; le ticket favorise une découverte autonome.",
+          "Support : les deux peuvent être reliés à une affiche ou un QR public, mais l’emplacement doit laisser agir le client.",
+          "Durée : mesurez le temps nécessaire à la participation et au retrait, sans annoncer une durée universelle.",
+        ],
+      },
+      {
+        title: "Les lots, probabilités et stocks comptent plus que l’effet visuel",
+        paragraphs: [
+          "Une belle mécanique ne compense pas une dotation impossible à remettre. Pour chaque format, définissez les lots, leurs conditions, leur durée de validité et leur stock. Une probabilité décrit une répartition configurée ; elle ne garantit ni un nombre de ventes ni un nombre de retraits.",
+          "Dans Okado, une roue ou un ticket peut être associé à des lots, des probabilités, des stocks limités ou illimités et des conditions d’utilisation. La prévisualisation sert à contrôler le parcours sans consommer les stocks de production. Avant de diffuser le QR public, vérifiez le nom de l’établissement, les dates et les conditions.",
+          "Le retrait est une étape distincte de la participation. L’équipe doit pouvoir vérifier un gain, sa validité et son statut, puis confirmer une remise unique avec le PIN de l’établissement. Cette procédure doit être comprise avant le lancement, quelle que soit la mécanique choisie.",
+        ],
+      },
+      {
+        title: "Quelle mécanique pour un restaurant, un institut ou une boutique ?",
+        paragraphs: [
+          "Ces scénarios sont des pistes à adapter, pas des résultats observés. Le bon choix dépend des horaires, du service, des produits, des stocks et du temps réellement disponible pour l’équipe.",
+        ],
+        items: [
+          "Restaurant : une roue peut accompagner un moment d’accueil ou de fin de repas ; un ticket peut mieux convenir à une participation à table sans interrompre le service.",
+          "Institut de beauté : une roue peut créer un échange lors de l’accueil ou d’un lancement de prestation ; un ticket peut prolonger une expérience après le rendez-vous.",
+          "Boutique : une roue peut rendre une opération visible près du comptoir ; un ticket peut être proposé pendant la découverte ou l’attente en caisse.",
+          "Événement local : une roue peut faciliter une animation de stand ; un ticket peut absorber des participations plus autonomes lorsque le flux est irrégulier.",
+        ],
+      },
+      {
+        title: "Matrice de décision rapide",
+        paragraphs: [
+          "Utilisez cette matrice pour formuler une première hypothèse, puis validez-la avec un test réel. Elle ne classe pas les mécaniques par rentabilité et ne remplace pas l’observation du parcours.",
+        ],
+        items: [
+          "Vous voulez créer un moment visible avec une consigne orale : commencez par la roue.",
+          "Vous voulez proposer une participation courte sans mobiliser l’équipe : commencez par le ticket.",
+          "Votre lot doit être découvert après une démonstration : choisissez le format qui laisse le temps d’expliquer le produit.",
+          "Votre lieu est très passant et peu propice à l’attente : privilégiez le parcours le plus court et testez la lecture du support.",
+          "Vous hésitez encore : utilisez la prévisualisation, testez les deux formats sur un petit groupe et mesurez les questions, participations et retraits séparément.",
+        ],
+      },
+      {
+        title: "Testez avant de choisir définitivement",
+        paragraphs: [
+          "Une comparaison utile se fait dans le lieu où l’animation sera diffusée. Imprimez le support prévu, placez-le à la distance réelle et utilisez plusieurs smartphones. Contrôlez la lumière, les reflets, le temps nécessaire pour scanner et la compréhension de la consigne.",
+          "Faites ensuite un parcours complet pour chaque mécanique : scan, participation, résultat, affichage des conditions, réception des informations du gain si nécessaire et contrôle par l’équipe. Distinguez le QR de prévisualisation du QR public destiné aux clients.",
+          "Notez les observations sans transformer un petit test en preuve de performance : questions posées, étapes bloquantes, temps de remise, lot mal compris ou support peu visible. Ces éléments suffisent souvent à choisir une mécanique plus facile à délivrer.",
+        ],
+      },
+      {
+        title: "Questions fréquentes",
+        paragraphs: [
+          "Roue ou ticket : lequel attire le plus de clients ? Aucun format ne permet de l’affirmer universellement. La visibilité dépend du support, de l’emplacement, de la promesse et du contexte de diffusion.",
+          "Le client doit-il installer une application ? Non, le jeu mobile peut s’ouvrir dans son navigateur depuis le QR code public. Le parcours doit néanmoins être testé sur les téléphones réellement utilisés par votre clientèle.",
+          "Peut-on essayer les deux formats avant publication ? Oui, la prévisualisation permet de contrôler le rendu et le parcours sans modifier les stocks de production. Elle ne remplace pas le test du QR public avant impression.",
+          "Le ticket est-il toujours plus simple que la roue ? Pas nécessairement. Il peut être plus autonome, mais les conditions, le lot et la procédure de retrait doivent rester aussi clairs que pour une roue.",
+          "Une participation prouve-t-elle une vente ou une fidélité ? Non. Suivez séparément les scans, participations, contacts consentis, gains, retraits, utilisations d’offre et éventuelles visites suivantes.",
+        ],
+      },
+      {
+        title: "Checklist pour choisir votre format",
+        paragraphs: [
+          "Avant de configurer votre animation, vérifiez les points suivants :",
+        ],
+        items: [
+          "L’objectif principal et le moment de diffusion sont formulés en une phrase.",
+          "Le support laisse assez de place pour le QR code, la promesse et les conditions essentielles.",
+          "Le rôle de l’équipe est compatible avec le rythme du lieu et le retrait des gains.",
+          "Les lots, probabilités, stocks, dates et conditions sont définis avant diffusion.",
+          "La prévisualisation et le QR public sont clairement distingués.",
+          "Les deux formats ont été testés sur le support final si le choix reste incertain.",
+          "Les indicateurs sont séparés : scans, participations, contacts, gains, retraits et ventes éventuelles.",
+        ],
+      },
+    ],
+    related: [
+      "/roue-de-la-fortune",
+      "/ticket-a-gratter",
+      "/blog/jeu-concours-ou-promotion",
+      "/comment-ca-marche",
+      "/tarifs",
+    ],
+  },
 ];
 
 export function blogPostByPath(path: string) {
