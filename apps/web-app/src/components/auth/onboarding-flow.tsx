@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 
 import { GoogleReviewPlacePicker } from "@/components/merchant/google-review-place-picker";
 import {
@@ -10,18 +10,29 @@ import {
   isBeautyIndustry,
   isRestaurantIndustry,
 } from "@/lib/merchant-options";
+import { ONBOARDING_STEPS, shouldShowAppointmentUrl, validateOnboardingStep } from "@/lib/onboarding-configuration";
 import { Merchant } from "@/lib/types";
-
-const steps = [
-  { id: "profil", label: "Profil", title: "Informations de base" },
-  { id: "restaurant", label: "Coordonnées", title: "Coordonnées du commerce" },
-  { id: "reseaux", label: "Liens marketing", title: "Liens repris dans vos campagnes" },
-] as const;
 
 const inputClass =
   "w-full rounded-[12px] border border-fog bg-white px-4 py-3 text-carbon outline-none transition focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.16)]";
 
 type OnboardingFlowProps = { merchant: Merchant };
+
+function FieldLabel({ children, required = false }: { children: ReactNode; required?: boolean }) {
+  return (
+    <span className="mb-2 block text-charcoal">
+      {children}{" "}
+      {required ? (
+        <>
+          <span aria-hidden="true" className="font-semibold text-coral-alert">*</span>
+          <span className="sr-only">(obligatoire)</span>
+        </>
+      ) : (
+        <span className="text-ash">(facultatif)</span>
+      )}
+    </span>
+  );
+}
 
 export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
   const router = useRouter();
@@ -33,8 +44,6 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
   const [contactName, setContactName] = useState(merchant.contactName ?? "");
   const [restaurantType] = useState(merchant.onboardingCompleted ? merchant.restaurantType ?? "" : "");
   const [phone, setPhone] = useState(merchant.phone ?? "");
-  const [restaurantEmail, setRestaurantEmail] = useState(merchant.restaurantEmail ?? "");
-  const [websiteUrl, setWebsiteUrl] = useState(merchant.websiteUrl ?? "");
   const [appointmentUrl, setAppointmentUrl] = useState(merchant.appointmentUrl ?? "");
   const [address, setAddress] = useState(merchant.address ?? "");
   const defaultPrizeCost = merchant.defaultPrizeCost ?? 3;
@@ -51,10 +60,36 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
-  const activeStep = steps[activeIndex];
+  const activeStep = ONBOARDING_STEPS[activeIndex];
   const isRestaurant = isRestaurantIndustry(industry);
 
+  function validateStep(stepIndex: number) {
+    return validateOnboardingStep(ONBOARDING_STEPS[stepIndex].id, { companyName, industry, city, redemptionPin });
+  }
+
+  function goToNextStep() {
+    const validationError = validateStep(activeIndex);
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+    setError(null);
+    setActiveIndex((current) => Math.min(current + 1, ONBOARDING_STEPS.length - 1));
+  }
+
   async function saveOnboarding() {
+    const profileError = validateStep(0);
+    if (profileError) {
+      setActiveIndex(0);
+      setError(profileError);
+      return;
+    }
+    const pinError = validateStep(ONBOARDING_STEPS.length - 1);
+    if (pinError) {
+      setError(pinError);
+      return;
+    }
+
     setIsSaving(true);
     setError(null);
 
@@ -71,8 +106,9 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
           address,
           contactName,
           phone,
-          restaurantEmail,
-          websiteUrl,
+          // Keep previously saved contact details; this step is no longer part of onboarding.
+          restaurantEmail: merchant.restaurantEmail ?? "",
+          websiteUrl: merchant.websiteUrl ?? "",
           appointmentUrl,
           defaultPrizeCost,
           preferredGoals: [],
@@ -105,6 +141,9 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
       <div>
         <p className="okado-label">Bienvenue</p>
         <h1 className="okado-page-title mt-3">Préparez votre espace en 3 étapes</h1>
+        <p className="mt-2 text-sm text-ash">
+          Les champs marqués d’une <span className="font-semibold text-coral-alert">*</span> sont obligatoires ; les autres sont facultatifs.
+        </p>
       </div>
 
       <div className="mt-8">
@@ -114,12 +153,13 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
         {activeStep.id === "profil" ? (
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             <label className="text-sm">
-              <span className="mb-2 block text-charcoal">Nom de l’enseigne</span>
-              <input value={companyName} onChange={(event) => setCompanyName(event.target.value)} className={inputClass} />
+              <FieldLabel required>Nom de l’enseigne</FieldLabel>
+              <input required value={companyName} onChange={(event) => setCompanyName(event.target.value)} className={inputClass} />
             </label>
             <label className="text-sm">
-              <span className="mb-2 block text-charcoal">Secteur d’activité</span>
+              <FieldLabel required>Secteur d’activité</FieldLabel>
               <select
+                required
                 value={industry}
                 onChange={(event) => {
                   const nextIndustry = event.target.value;
@@ -134,7 +174,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
             </label>
             {isBeautyIndustry(industry) ? (
               <label className="text-sm">
-                <span className="mb-2 block text-charcoal">Sous-secteur</span>
+                <FieldLabel>Sous-secteur</FieldLabel>
                 <select
                   value={industrySubsector}
                   onChange={(event) => setIndustrySubsector(event.target.value)}
@@ -148,30 +188,13 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
               </label>
             ) : null}
             <label className="text-sm">
-              <span className="mb-2 block text-charcoal">Ville / {isRestaurant ? "restaurant" : "commerce"}</span>
-              <input value={city} onChange={(event) => setCity(event.target.value)} className={inputClass} />
+              <FieldLabel required>Ville / {isRestaurant ? "restaurant" : "commerce"}</FieldLabel>
+              <input required value={city} onChange={(event) => setCity(event.target.value)} className={inputClass} />
             </label>
             <label className="text-sm">
-              <span className="mb-2 block text-charcoal">Référent campagne</span>
+              <FieldLabel>Référent campagne</FieldLabel>
               <input value={contactName} onChange={(event) => setContactName(event.target.value)} className={inputClass} />
             </label>
-          </div>
-        ) : null}
-
-        {activeStep.id === "restaurant" ? (
-          <div className="mt-6 grid gap-4 md:grid-cols-2">
-            <label className="text-sm">
-              <span className="mb-2 block text-charcoal">E-mail du {isRestaurant ? "restaurant" : "commerce"}</span>
-              <input type="email" value={restaurantEmail} onChange={(event) => setRestaurantEmail(event.target.value)} className={inputClass} />
-            </label>
-            <label className="text-sm">
-              <span className="mb-2 block text-charcoal">Site internet du {isRestaurant ? "restaurant" : "commerce"}</span>
-              <input type="url" value={websiteUrl} onChange={(event) => setWebsiteUrl(event.target.value)} placeholder="https://..." className={inputClass} />
-            </label>
-            <div className="rounded-[8px] bg-purple-haze px-4 py-3 text-sm leading-6 text-charcoal md:col-span-2">
-              L’adresse et le téléphone seront récupérés automatiquement depuis l’établissement Google sélectionné à l’étape suivante.
-              {address ? <span className="mt-1 block font-medium text-graphite">Adresse actuelle : {address}</span> : null}
-            </div>
           </div>
         ) : null}
 
@@ -180,6 +203,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
             <p className="mt-4 text-sm leading-7 text-ash">Ces liens seront repris par défaut dans les actions marketing de vos futures campagnes.</p>
             <div className="mt-6 grid gap-4 md:grid-cols-2">
               <div className="md:col-span-2">
+                <p className="mb-2 text-sm text-charcoal">Avis Google <span className="text-ash">(facultatif)</span></p>
                 <GoogleReviewPlacePicker
                   value={googleReviewUrl}
                   onChange={setGoogleReviewUrl}
@@ -202,21 +226,28 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
                   }}
                 />
               </div>
-              <label className="text-sm md:col-span-2">
-                <span className="mb-2 block text-charcoal">Lien de prise de rendez-vous</span>
-                <input type="url" inputMode="url" maxLength={500} value={appointmentUrl} onChange={(event) => setAppointmentUrl(event.target.value)} placeholder="https://www.planity.com/..." className={inputClass} />
-                <span className="mt-2 block text-xs leading-5 text-ash">Facultatif — Planity ou votre outil de réservation. Vous pourrez aussi le renseigner plus tard dans Mon compte.</span>
-              </label>
-              <label className="text-sm"><span className="mb-2 block text-charcoal">Instagram</span><input type="url" value={instagramUrl} onChange={(event) => setInstagramUrl(event.target.value)} placeholder="https://instagram.com/..." className={inputClass} /></label>
-              <label className="text-sm"><span className="mb-2 block text-charcoal">Facebook</span><input type="url" value={facebookUrl} onChange={(event) => setFacebookUrl(event.target.value)} placeholder="https://facebook.com/..." className={inputClass} /></label>
-              <label className="text-sm"><span className="mb-2 block text-charcoal">TikTok</span><input type="url" value={tiktokUrl} onChange={(event) => setTiktokUrl(event.target.value)} placeholder="https://tiktok.com/@..." className={inputClass} /></label>
-              <label className="text-sm"><span className="mb-2 block text-charcoal">Tripadvisor</span><input type="url" value={tripadvisorUrl} onChange={(event) => setTripadvisorUrl(event.target.value)} placeholder="https://tripadvisor.com/..." className={inputClass} /></label>
-              <label className="text-sm md:col-span-2">
-                <span className="mb-2 block text-charcoal">PIN de validation du retrait</span>
-                <input type="text" inputMode="numeric" autoComplete="new-password" pattern="[0-9]{4}" maxLength={4} minLength={4} required value={redemptionPin} onChange={(event) => setRedemptionPin(event.target.value.replace(/\D/g, ""))} className={inputClass} />
-                <span className="mt-2 block text-xs leading-5 text-ash">Ce code de 4 chiffres est demandé à un employé pour valider un retrait. Il est prérempli à 0000 et pourra être modifié depuis Mon compte.</span>
-              </label>
+              {shouldShowAppointmentUrl(industry) ? (
+                <label className="text-sm md:col-span-2">
+                  <FieldLabel>Lien de prise de rendez-vous</FieldLabel>
+                  <input type="url" inputMode="url" maxLength={500} value={appointmentUrl} onChange={(event) => setAppointmentUrl(event.target.value)} placeholder="https://www.planity.com/..." className={inputClass} />
+                  <span className="mt-2 block text-xs leading-5 text-ash">Planity ou votre outil de réservation. Vous pourrez aussi le renseigner plus tard dans Mon compte.</span>
+                </label>
+              ) : null}
+              <label className="text-sm"><FieldLabel>Instagram</FieldLabel><input type="url" value={instagramUrl} onChange={(event) => setInstagramUrl(event.target.value)} placeholder="https://instagram.com/..." className={inputClass} /></label>
+              <label className="text-sm"><FieldLabel>Facebook</FieldLabel><input type="url" value={facebookUrl} onChange={(event) => setFacebookUrl(event.target.value)} placeholder="https://facebook.com/..." className={inputClass} /></label>
+              <label className="text-sm"><FieldLabel>TikTok</FieldLabel><input type="url" value={tiktokUrl} onChange={(event) => setTiktokUrl(event.target.value)} placeholder="https://tiktok.com/@..." className={inputClass} /></label>
+              <label className="text-sm"><FieldLabel>Tripadvisor</FieldLabel><input type="url" value={tripadvisorUrl} onChange={(event) => setTripadvisorUrl(event.target.value)} placeholder="https://tripadvisor.com/..." className={inputClass} /></label>
             </div>
+          </div>
+        ) : null}
+
+        {activeStep.id === "pin" ? (
+          <div className="mt-6 max-w-xl">
+            <label className="text-sm">
+              <FieldLabel required>PIN de validation du retrait</FieldLabel>
+              <input type="text" inputMode="numeric" autoComplete="new-password" pattern="[0-9]{4}" maxLength={4} minLength={4} required value={redemptionPin} onChange={(event) => setRedemptionPin(event.target.value.replace(/\D/g, ""))} className={inputClass} />
+              <span className="mt-2 block text-xs leading-5 text-ash">Ce code de 4 chiffres est demandé à un employé pour valider un retrait. Il est prérempli à 0000 et pourra être modifié depuis Mon compte.</span>
+            </label>
           </div>
         ) : null}
 
@@ -225,10 +256,9 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
         <div className="mt-8 flex flex-col gap-3 border-t border-fog pt-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex gap-3">
             <button type="button" onClick={() => setActiveIndex((current) => Math.max(current - 1, 0))} disabled={activeIndex === 0} className="okado-primary-action px-5 disabled:opacity-40">Retour</button>
-            <button type="button" onClick={saveOnboarding} disabled={isSaving} className="okado-primary-action px-5 disabled:opacity-60">{isSaving ? "Enregistrement…" : "Passer"}</button>
           </div>
-          {activeIndex < steps.length - 1 ? (
-            <button type="button" onClick={() => setActiveIndex((current) => Math.min(current + 1, steps.length - 1))} className="okado-filled-action px-5">Étape suivante</button>
+          {activeIndex < ONBOARDING_STEPS.length - 1 ? (
+            <button type="button" onClick={goToNextStep} className="okado-filled-action px-5">Étape suivante</button>
           ) : (
             <button type="button" onClick={saveOnboarding} disabled={isSaving} className="okado-filled-action px-5 disabled:opacity-60">{isSaving ? "Enregistrement…" : "Terminer"}</button>
           )}
