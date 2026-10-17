@@ -961,6 +961,1473 @@ export const blogPosts: BlogPost[] = [
       "/tarifs",
     ],
   },
+  {
+    path: "/blog/attirer-clients-commerce-local",
+    title: "Comment attirer des clients dans un commerce local ?",
+    description:
+      "Découvrez une méthode concrète pour attirer des clients dans un commerce local : visibilité, partenariats, contenu, animation et mesure sur 30 jours.",
+    eyebrow: "Acquisition locale",
+    intro:
+      "Attirer des clients dans un commerce local ne dépend pas d’un canal unique. Il faut rendre le lieu visible dans sa zone, donner une raison de venir, proposer une expérience simple sur place et mesurer les étapes sans attribuer automatiquement chaque vente à une action.",
+    answer:
+      "Pour attirer des clients dans un commerce local, travaillez d’abord votre visibilité de proximité, puis combinez contenu utile, partenariats, événements et animation en point de vente. Lancez une action à la fois, recueillez les contacts avec un consentement clair et mesurez séparément visibilité, participations, visites et retours.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-17",
+    updatedAt: "2026-10-17",
+    reviewedAt: "2026-10-17",
+    readingTime: "10 min de lecture",
+    image: "/images/blog/attirer-clients-commerce-local.webp",
+    imageAlt: "Illustration d’un commerce de proximité qui combine visibilité locale et animation",
+    ctaLabel: "Tester une animation locale",
+    ctaHref: "/comment-ca-marche",
+    sections: [
+      {
+        title: "Commencez par votre zone et votre objectif",
+        paragraphs: [
+          "Un commerce local ne s’adresse pas à tout le monde de la même manière. Décrivez la zone qui peut réellement vous rendre visite : quartier, commune, lieu de passage, zone touristique ou clientèle venue pour un rendez-vous. Cette limite aide à choisir les bons messages et les bons partenaires.",
+          "Fixez ensuite un objectif principal pour les prochaines semaines : faire découvrir une offre, remplir un créneau calme, accompagner un lancement, encourager une prochaine visite ou créer davantage de contacts qualifiés. Une action avec un seul objectif est plus facile à expliquer et à évaluer qu’une campagne qui promet tout à la fois.",
+        ],
+        items: [
+          "Objectif de visibilité : être trouvé et reconnu par les personnes qui cherchent déjà une activité proche.",
+          "Objectif de visite : donner une raison concrète de se déplacer pendant une période définie.",
+          "Objectif d’expérience : créer un moment utile ou mémorable une fois la personne sur place.",
+          "Objectif de retour : proposer une prochaine étape avec une durée et des conditions compréhensibles.",
+        ],
+      },
+      {
+        title: "Rendez votre commerce visible localement",
+        paragraphs: [
+          "La visibilité locale commence par des informations cohérentes et faciles à vérifier : nom du commerce, adresse, horaires, téléphone, services, accessibilité et périodes de fermeture. Une personne qui vous découvre doit pouvoir comprendre rapidement ce que vous proposez, où vous trouver et si le lieu correspond à son besoin.",
+          "Travaillez aussi les questions que vos clients posent réellement. Une page qui explique un service, une spécialité, une zone desservie ou le déroulement d’une visite peut être plus utile qu’une suite de mots-clés. Écrivez pour une personne de votre zone, avec le vocabulaire qu’elle emploie, puis relisez les informations dès qu’un horaire, un prix ou une disponibilité change.",
+          "Les avis peuvent aider une personne à se décider, mais ils doivent rester authentiques et indépendants. Ne conditionnez jamais un gain, un jeu ou un avantage à une note positive. Une demande d’avis ne remplace ni la qualité de l’accueil ni une information locale exacte.",
+        ],
+      },
+      {
+        title: "Créez des partenariats avec les commerces voisins",
+        paragraphs: [
+          "Un partenariat local est pertinent lorsque les commerces partagent une zone ou un moment de fréquentation sans proposer exactement la même chose. Un restaurant peut s’associer à une activité voisine, un institut à un commerce complémentaire, ou une boutique à un événement de quartier. L’objectif n’est pas de mélanger les marques, mais de faciliter une découverte réciproque.",
+          "Commencez par une opération courte et attribuez un rôle à chacun : qui communique, qui accueille, qui remet un avantage, qui répond aux questions et qui mesure les participations. Les conditions de chaque établissement doivent rester distinctes, notamment pour les stocks, les dates de validité et l’utilisation des coordonnées.",
+          "Un support commun n’est utile que si le parcours reste compréhensible. Indiquez clairement où la personne doit se rendre, ce qu’elle peut obtenir et jusqu’à quand. Si plusieurs commerces participent, évitez une mécanique qui oblige l’équipe à vérifier des règles différentes au comptoir.",
+        ],
+      },
+      {
+        title: "Publiez du contenu qui aide vraiment votre clientèle",
+        paragraphs: [
+          "Le contenu local sert à répondre à une question avant la visite. Expliquez un choix, comparez deux options, montrez les étapes d’un service, présentez une nouveauté ou indiquez comment préparer un rendez-vous. Un article utile peut aussi mentionner les contraintes locales : horaires particuliers, saison, accès, réservation ou disponibilité.",
+          "Chaque publication doit avoir une intention claire et une prochaine étape proportionnée. Une personne qui cherche une information n’a pas forcément besoin d’une remise ; elle peut simplement vouloir comprendre votre offre ou vérifier que vous êtes adapté à son besoin. Reliez ensuite le contenu à la page commerciale, à la prise de contact ou à l’animation concernée.",
+          "Évitez de produire plusieurs pages presque identiques pour des quartiers différents si vous n’apportez aucune information locale réelle. Le contenu géographique gagne en pertinence lorsqu’il s’appuie sur une expérience, un service, un partenaire ou une contrainte propre à la zone.",
+        ],
+      },
+      {
+        title: "Utilisez les événements pour donner une raison de venir",
+        paragraphs: [
+          "Une animation fonctionne mieux lorsqu’elle s’insère dans un moment identifiable : lancement, période calme, fête de quartier, atelier, démonstration, dégustation ou opération avec un partenaire. Elle doit préciser ce qui se passe, pour qui, quand et dans quelles conditions. Une date de début et une date de fin évitent qu’une promesse reste affichée après la fin de l’opération.",
+          "Choisissez un format que votre équipe peut délivrer sans interrompre le service. Un atelier court peut faire découvrir un savoir-faire ; une offre limitée peut faciliter une décision ; un jeu peut créer une participation rapide. Aucun format ne garantit à lui seul une hausse des ventes : l’intérêt est de créer un parcours observable et d’apprendre de l’opération.",
+          "Préparez les réponses aux questions avant la diffusion. Qui peut participer ? Quel lot ou avantage est disponible ? Peut-il être utilisé plus tard ? Que se passe-t-il si le stock est épuisé ? Ces détails font partie de l’expérience, pas seulement des conditions écrites en petit.",
+        ],
+      },
+      {
+        title: "Animez le point de vente avec un parcours simple",
+        paragraphs: [
+          "Une animation en point de vente doit être visible au bon moment et compréhensible sans explication longue. À l’accueil, en zone d’attente, à table ou près de la caisse, le support doit dire ce que la personne peut faire et ce qu’elle peut obtenir. Laissez assez d’espace pour que le message et le QR code restent lisibles.",
+          "Avec Okado, un QR code peut ouvrir une roue de la fortune ou un ticket à gratter dans le navigateur du client. Le commerce définit les lots, les conditions et le support de diffusion ; l’équipe peut ensuite vérifier les informations d’un gain et confirmer son retrait avec le PIN de l’établissement. La prévisualisation doit être distinguée du QR code public avant impression.",
+          "Testez le parcours dans les conditions réelles : support imprimé, distance de lecture, lumière du lieu, plusieurs smartphones, participation, résultat et retrait. Un jeu bien conçu mais relié au mauvais établissement ou à un ancien lot ne crée pas une bonne expérience.",
+        ],
+      },
+      {
+        title: "Collectez des contacts avec un consentement clair",
+        paragraphs: [
+          "Un contact n’a de valeur que si sa finalité est comprise et si la personne sait ce qu’elle accepte. Séparez les informations nécessaires à l’envoi d’un gain d’une inscription à des communications commerciales. La participation à une animation ne doit pas être conditionnée à une prospection future lorsqu’elle n’est pas nécessaire au parcours.",
+          "Expliquez le type de message envoyé, sa fréquence lorsqu’elle est connue et la façon de ne plus le recevoir. Limitez les données demandées à ce qui est utile, protégez les accès et ne transférez pas les coordonnées à un partenaire simplement parce qu’une opération était commune.",
+          "Mesurez la collecte comme une étape distincte : nombre de participants, contacts valides, consentements obtenus et désinscriptions éventuelles. Un formulaire plus long peut réduire la participation sans améliorer la qualité des contacts ; testez seulement ce qui sert votre objectif.",
+        ],
+      },
+      {
+        title: "Mesurez les étapes sans promettre un résultat automatique",
+        paragraphs: [
+          "Pour savoir si une action mérite d’être reconduite, séparez les signaux : visibilité d’un support, scans, participations, contacts, gains attribués, utilisations d’une offre et retraits confirmés. Une visite ou une vente peut avoir plusieurs causes ; ne la rattachez pas automatiquement à la dernière action vue.",
+          "Notez le contexte de chaque opération : période, horaires, emplacement, message, lot, stock, partenaire et événement local. Comparez des périodes suffisamment proches et changez peu d’éléments à la fois si vous voulez apprendre quelque chose. Un résultat stable peut être utile s’il s’accompagne de moins de questions ou d’un retrait plus fluide.",
+          "Ajoutez un retour qualitatif de l’équipe : question fréquente, étape incomprise, support mal placé, lot difficile à remettre ou demande récurrente. Ces observations indiquent souvent la prochaine amélioration avant qu’un indicateur de volume ne bouge.",
+        ],
+        items: [
+          "Visibilité : impressions ou présence du support, avec une méthode de mesure explicitée.",
+          "Engagement : scans et participations, sans les confondre avec des visites ou des ventes.",
+          "Conversion de l’opération : contacts consentis, utilisations, gains et retraits confirmés.",
+          "Qualité d’exécution : questions, erreurs de parcours, disponibilité des lots et retours de l’équipe.",
+        ],
+      },
+      {
+        title: "Plan d’action sur 30 jours",
+        paragraphs: [
+          "Un plan de 30 jours permet de commencer avec une action mesurable plutôt que de multiplier les canaux. Adaptez le rythme à votre activité et prévoyez une date de bilan avant le lancement.",
+        ],
+        items: [
+          "Jours 1 à 7 — cadrer : préciser la zone, l’objectif principal, le public, la promesse et l’indicateur qui permettra de décider.",
+          "Jours 8 à 14 — préparer : mettre à jour les informations locales, choisir un partenaire ou un support, définir les conditions et vérifier les stocks.",
+          "Jours 15 à 21 — tester : publier un contenu utile, installer l’animation dans un point précis et effectuer un parcours complet sur plusieurs téléphones.",
+          "Jours 22 à 30 — observer : suivre les étapes, recueillir les questions de l’équipe et décider de conserver, simplifier, arrêter ou prolonger l’opération.",
+        ],
+      },
+      {
+        title: "Les limites à garder en tête",
+        paragraphs: [
+          "Aucune méthode ne remplace la qualité du produit, de l’accueil et de la disponibilité. Une action locale peut augmenter la visibilité sans produire immédiatement plus de visites ; une animation peut être appréciée sans créer une fidélité durable ; un contact collecté peut ne jamais devenir client. Ces limites ne rendent pas la mesure inutile : elles évitent simplement de lui faire dire plus qu’elle ne prouve.",
+          "Commencez petit, documentez ce qui s’est réellement passé et améliorez une friction à la fois. Un commerce local progresse souvent en rendant son offre plus claire, son parcours plus facile et son équipe plus autonome, plutôt qu’en ajoutant une nouvelle campagne chaque semaine.",
+        ],
+        items: [
+          "Ne promettez pas un classement, un volume de clients ou un chiffre d’affaires sans preuve directement mesurée.",
+          "N’achetez pas de faux avis et ne conditionnez pas un avantage à une note positive.",
+          "Ne collectez pas de coordonnées sans expliquer la finalité et le consentement associé.",
+          "Ne lancez pas un QR code ou un lot avant d’avoir testé le parcours et la capacité de remise.",
+        ],
+      },
+      {
+        title: "Checklist pour attirer des clients localement",
+        paragraphs: [
+          "Avant de lancer votre prochaine action, vérifiez les points suivants :",
+        ],
+        items: [
+          "La zone de chalandise et le besoin local sont décrits avec des éléments concrets.",
+          "L’objectif principal, la promesse et la prochaine étape tiennent en une phrase.",
+          "Les informations du commerce sont cohérentes, à jour et faciles à vérifier.",
+          "Le contenu, le partenariat ou l’animation apporte une raison réelle de venir.",
+          "Le QR code public et le parcours mobile ont été testés dans le lieu concerné.",
+          "Les contacts, consentements, participations, gains et retraits sont suivis séparément.",
+          "Une date de bilan est fixée pour améliorer, reconduire ou arrêter l’action.",
+        ],
+      },
+    ],
+    related: [
+      "/blog/idees-animations-commerciales-boutique",
+      "/blog/animer-point-de-vente-qr-code",
+      "/restaurants",
+      "/instituts-beaute",
+      "/tarifs",
+    ],
+  },
+  {
+    path: "/blog/roue-ou-ticket-a-gratter-commerce",
+    title: "Roue de la fortune ou ticket à gratter : quel format choisir pour un commerce ?",
+    description:
+      "Roue de la fortune ou ticket à gratter : comparez la visibilité, la durée, les lots et l’organisation pour choisir une animation adaptée à votre commerce.",
+    eyebrow: "Jeu marketing",
+    intro:
+      "La roue de la fortune et le ticket à gratter peuvent tous deux ouvrir une animation mobile par QR code, mais ils ne créent pas le même moment en point de vente. La roue rend la participation plus visible ; le ticket laisse une expérience plus discrète et autonome.",
+    answer:
+      "Choisissez une roue si vous voulez créer un moment visible et animé, notamment avec une équipe disponible pour accompagner la participation. Préférez un ticket à gratter si le client doit jouer rapidement et de façon plus autonome. Dans les deux cas, le bon choix dépend surtout du lieu, du support, des lots, des conditions et de la capacité de remise.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-17",
+    updatedAt: "2026-10-17",
+    reviewedAt: "2026-10-17",
+    readingTime: "8 min de lecture",
+    image: "/images/blog/roue-ou-ticket-a-gratter-commerce.webp",
+    imageAlt: "Illustration comparant une roue de la fortune mobile et un ticket à gratter dans un commerce",
+    ctaLabel: "Choisir une mécanique d’animation",
+    ctaHref: "/comment-ca-marche",
+    sections: [
+      {
+        title: "Commencez par le moment que vous voulez créer",
+        paragraphs: [
+          "Le choix d’une mécanique ne devrait pas commencer par son apparence, mais par la situation du client. Voulez-vous créer un échange au comptoir, occuper une attente, faire découvrir un produit ou proposer une participation rapide avant une prochaine visite ? La même mécanique peut être pertinente dans un lieu et peu adaptée dans un autre.",
+          "Définissez aussi ce que l’équipe doit faire. Une animation visible peut attirer l’attention, mais elle peut demander une explication ou une intervention au bon moment. Une expérience plus autonome peut être plus facile à diffuser sur une table, une affiche ou une zone où le personnel ne peut pas accompagner chaque personne.",
+        ],
+        items: [
+          "Créer un moment collectif : privilégiez une participation que l’on remarque et que l’équipe peut expliquer.",
+          "Occuper une attente : privilégiez un parcours court, lisible et utilisable sans interrompre le service.",
+          "Faire découvrir une offre : choisissez la mécanique qui laisse assez de place à la présentation du produit.",
+          "Préparer une prochaine visite : définissez d’abord la validité et les conditions du lot ou de l’avantage.",
+        ],
+      },
+      {
+        title: "Roue de la fortune et ticket à gratter : deux expériences différentes",
+        paragraphs: [
+          "Une roue de la fortune met en scène le hasard et le résultat. Sur un téléphone, elle peut rendre la participation plus expressive : le client lance la roue, voit son animation et découvre le résultat dans un format immédiatement compréhensible. Cela peut servir un accueil, une démonstration ou un moment où l’équipe peut proposer une consigne courte.",
+          "Un ticket à gratter reproduit une attente plus progressive. Le client révèle son résultat à son rythme, ce qui peut mieux convenir à une participation individuelle ou à un support posé dans un espace d’attente. Il ne demande pas nécessairement de faire tourner une animation devant les autres personnes présentes.",
+          "Ces différences décrivent des usages, pas des performances garanties. Aucune mécanique n’est automatiquement plus rentable, plus virale ou plus efficace. Le résultat dépend de l’objectif, du message, des lots, du lieu, du trafic et de la capacité de l’équipe à remettre ce qui est annoncé.",
+        ],
+      },
+      {
+        title: "Choisissez la roue pour une participation visible",
+        paragraphs: [
+          "La roue est souvent adaptée lorsque l’animation doit se voir ou se raconter en quelques secondes. Elle peut donner un repère visuel à une personne qui découvre l’opération et faciliter une présentation par l’équipe. Dans un commerce, ce caractère visible peut devenir un élément de l’accueil plutôt qu’un simple lien posé sur un support.",
+          "Elle demande toutefois un message clair et un espace où le client peut regarder son écran. Si la caisse est encombrée, si le service est continu ou si l’équipe ne peut pas répondre aux questions, simplifiez la consigne et testez le parcours avant de retenir ce format.",
+        ],
+        items: [
+          "Accueil ou comptoir où une personne peut être orientée vers l’animation.",
+          "Lancement d’un produit ou d’une offre qui mérite un moment de présentation.",
+          "Événement ou partenariat où plusieurs participants doivent comprendre rapidement la mécanique.",
+          "Animation où la surprise visuelle compte autant que la remise du lot.",
+        ],
+      },
+      {
+        title: "Choisissez le ticket pour une expérience plus autonome",
+        paragraphs: [
+          "Le ticket à gratter peut convenir lorsque le client dispose de quelques instants mais ne souhaite pas forcément attirer l’attention. Le support peut orienter vers un QR code, puis le client découvre les zones à révéler sur son téléphone. Cette logique se prête bien à une table, une salle d’attente, un comptoir ou une affiche consultée sans accompagnement permanent.",
+          "L’autonomie ne dispense pas d’expliquer la promesse et les conditions. Le client doit savoir ce qu’il fait, ce qu’il peut obtenir, pendant combien de temps et où retirer un gain éventuel. Un ticket plus discret reste une expérience à tester sur le support final et dans le contexte réel.",
+        ],
+        items: [
+          "Zone d’attente où la participation doit rester courte et individuelle.",
+          "Support imprimé diffusé à plusieurs endroits d’un même établissement.",
+          "Équipe occupée qui veut éviter une explication différente à chaque participation.",
+          "Animation où le geste de révéler le résultat est plus important que la mise en scène collective.",
+        ],
+      },
+      {
+        title: "Comparez la durée, le support et le rôle de l’équipe",
+        paragraphs: [
+          "Une roue et un ticket peuvent être ouverts depuis le navigateur du client après un scan. La différence ne tient donc pas seulement au support technique : elle concerne le moment où le client joue, la place de l’équipe et la manière dont le résultat est présenté.",
+          "Avant de décider, observez le parcours complet : lecture du QR code, ouverture de la page, participation, résultat, lecture des conditions et éventuel retrait. Une mécanique qui semble simple sur un écran de configuration peut être moins adaptée à la circulation réelle dans votre établissement.",
+        ],
+        items: [
+          "Visibilité : la roue attire davantage le regard pendant l’action ; le ticket peut rester plus discret.",
+          "Accompagnement : la roue se prête à une consigne orale ; le ticket favorise une découverte autonome.",
+          "Support : les deux peuvent être reliés à une affiche ou un QR public, mais l’emplacement doit laisser agir le client.",
+          "Durée : mesurez le temps nécessaire à la participation et au retrait, sans annoncer une durée universelle.",
+        ],
+      },
+      {
+        title: "Les lots, probabilités et stocks comptent plus que l’effet visuel",
+        paragraphs: [
+          "Une belle mécanique ne compense pas une dotation impossible à remettre. Pour chaque format, définissez les lots, leurs conditions, leur durée de validité et leur stock. Une probabilité décrit une répartition configurée ; elle ne garantit ni un nombre de ventes ni un nombre de retraits.",
+          "Dans Okado, une roue ou un ticket peut être associé à des lots, des probabilités, des stocks limités ou illimités et des conditions d’utilisation. La prévisualisation sert à contrôler le parcours sans consommer les stocks de production. Avant de diffuser le QR public, vérifiez le nom de l’établissement, les dates et les conditions.",
+          "Le retrait est une étape distincte de la participation. L’équipe doit pouvoir vérifier un gain, sa validité et son statut, puis confirmer une remise unique avec le PIN de l’établissement. Cette procédure doit être comprise avant le lancement, quelle que soit la mécanique choisie.",
+        ],
+      },
+      {
+        title: "Quelle mécanique pour un restaurant, un institut ou une boutique ?",
+        paragraphs: [
+          "Ces scénarios sont des pistes à adapter, pas des résultats observés. Le bon choix dépend des horaires, du service, des produits, des stocks et du temps réellement disponible pour l’équipe.",
+        ],
+        items: [
+          "Restaurant : une roue peut accompagner un moment d’accueil ou de fin de repas ; un ticket peut mieux convenir à une participation à table sans interrompre le service.",
+          "Institut de beauté : une roue peut créer un échange lors de l’accueil ou d’un lancement de prestation ; un ticket peut prolonger une expérience après le rendez-vous.",
+          "Boutique : une roue peut rendre une opération visible près du comptoir ; un ticket peut être proposé pendant la découverte ou l’attente en caisse.",
+          "Événement local : une roue peut faciliter une animation de stand ; un ticket peut absorber des participations plus autonomes lorsque le flux est irrégulier.",
+        ],
+      },
+      {
+        title: "Matrice de décision rapide",
+        paragraphs: [
+          "Utilisez cette matrice pour formuler une première hypothèse, puis validez-la avec un test réel. Elle ne classe pas les mécaniques par rentabilité et ne remplace pas l’observation du parcours.",
+        ],
+        items: [
+          "Vous voulez créer un moment visible avec une consigne orale : commencez par la roue.",
+          "Vous voulez proposer une participation courte sans mobiliser l’équipe : commencez par le ticket.",
+          "Votre lot doit être découvert après une démonstration : choisissez le format qui laisse le temps d’expliquer le produit.",
+          "Votre lieu est très passant et peu propice à l’attente : privilégiez le parcours le plus court et testez la lecture du support.",
+          "Vous hésitez encore : utilisez la prévisualisation, testez les deux formats sur un petit groupe et mesurez les questions, participations et retraits séparément.",
+        ],
+      },
+      {
+        title: "Testez avant de choisir définitivement",
+        paragraphs: [
+          "Une comparaison utile se fait dans le lieu où l’animation sera diffusée. Imprimez le support prévu, placez-le à la distance réelle et utilisez plusieurs smartphones. Contrôlez la lumière, les reflets, le temps nécessaire pour scanner et la compréhension de la consigne.",
+          "Faites ensuite un parcours complet pour chaque mécanique : scan, participation, résultat, affichage des conditions, réception des informations du gain si nécessaire et contrôle par l’équipe. Distinguez le QR de prévisualisation du QR public destiné aux clients.",
+          "Notez les observations sans transformer un petit test en preuve de performance : questions posées, étapes bloquantes, temps de remise, lot mal compris ou support peu visible. Ces éléments suffisent souvent à choisir une mécanique plus facile à délivrer.",
+        ],
+      },
+      {
+        title: "Questions fréquentes",
+        paragraphs: [
+          "Roue ou ticket : lequel attire le plus de clients ? Aucun format ne permet de l’affirmer universellement. La visibilité dépend du support, de l’emplacement, de la promesse et du contexte de diffusion.",
+          "Le client doit-il installer une application ? Non, le jeu mobile peut s’ouvrir dans son navigateur depuis le QR code public. Le parcours doit néanmoins être testé sur les téléphones réellement utilisés par votre clientèle.",
+          "Peut-on essayer les deux formats avant publication ? Oui, la prévisualisation permet de contrôler le rendu et le parcours sans modifier les stocks de production. Elle ne remplace pas le test du QR public avant impression.",
+          "Le ticket est-il toujours plus simple que la roue ? Pas nécessairement. Il peut être plus autonome, mais les conditions, le lot et la procédure de retrait doivent rester aussi clairs que pour une roue.",
+          "Une participation prouve-t-elle une vente ou une fidélité ? Non. Suivez séparément les scans, participations, contacts consentis, gains, retraits, utilisations d’offre et éventuelles visites suivantes.",
+        ],
+      },
+      {
+        title: "Checklist pour choisir votre format",
+        paragraphs: [
+          "Avant de configurer votre animation, vérifiez les points suivants :",
+        ],
+        items: [
+          "L’objectif principal et le moment de diffusion sont formulés en une phrase.",
+          "Le support laisse assez de place pour le QR code, la promesse et les conditions essentielles.",
+          "Le rôle de l’équipe est compatible avec le rythme du lieu et le retrait des gains.",
+          "Les lots, probabilités, stocks, dates et conditions sont définis avant diffusion.",
+          "La prévisualisation et le QR public sont clairement distingués.",
+          "Les deux formats ont été testés sur le support final si le choix reste incertain.",
+          "Les indicateurs sont séparés : scans, participations, contacts, gains, retraits et ventes éventuelles.",
+        ],
+      },
+    ],
+    related: [
+      "/roue-de-la-fortune",
+      "/ticket-a-gratter",
+      "/blog/jeu-concours-ou-promotion",
+      "/comment-ca-marche",
+      "/tarifs",
+    ],
+  },
+  {
+    path: "/blog/cout-animation-commerciale-commerce",
+    title: "Combien coûte une animation commerciale pour un commerce local ?",
+    description:
+      "Estimez le coût d’une animation commerciale en séparant préparation, supports, lots, temps d’équipe, outil et mesure, sans promettre un ROI universel.",
+    eyebrow: "Budget marketing local",
+    intro:
+      "Le coût d’une animation commerciale ne se résume ni au prix d’un outil ni à celui d’un lot. Pour préparer un budget réaliste, additionnez la conception, les supports, les dotations, le temps de l’équipe, les éventuels partenaires et la mesure de l’opération.",
+    answer:
+      "Pour estimer le coût d’une animation commerciale, séparez les coûts fixes, les coûts variables et le temps d’exécution. Chiffrez ensuite le support, les lots réellement remis, la préparation, l’outil, la communication et le suivi. Comparez enfin ce budget à un objectif mesurable, sans transformer une hypothèse de coût en promesse de chiffre d’affaires.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-17",
+    updatedAt: "2026-10-17",
+    reviewedAt: "2026-10-17",
+    readingTime: "9 min de lecture",
+    image: "/images/blog/cout-animation-commerciale-commerce.webp",
+    imageAlt: "Illustration d’un commerce qui prépare le budget d’une animation commerciale",
+    ctaLabel: "Estimer votre prochaine opération",
+    ctaHref: "/tarifs",
+    sections: [
+      {
+        title: "Commencez par définir ce que vous voulez financer",
+        paragraphs: [
+          "Avant de demander combien coûte une animation, décrivez ce qu’elle doit réellement contenir. Une opération peut être une remise en caisse, un atelier, une démonstration, un partenariat local ou un jeu mobile par QR code. Ces formats ne mobilisent ni les mêmes lots, ni le même temps d’équipe, ni les mêmes supports.",
+          "Définissez aussi l’objectif principal : faire découvrir une offre, animer une période creuse, accompagner un lancement, encourager une prochaine visite ou créer des contacts consentis. Le budget doit être relié à cet objectif, pas à une liste de dépenses ajoutées au dernier moment.",
+        ],
+        items: [
+          "Format : promotion, atelier, événement, roue, ticket à gratter ou combinaison de plusieurs actions.",
+          "Périmètre : un établissement, un créneau, une saison ou plusieurs sites.",
+          "Public : clientèle habituelle, nouveaux visiteurs, clientèle de passage ou audience d’un partenaire.",
+          "Preuve recherchée : participation, utilisation d’une offre, retrait d’un lot, contact consenti ou retour qualitatif.",
+        ],
+      },
+      {
+        title: "Séparez coûts fixes, variables et temps d’exécution",
+        paragraphs: [
+          "Une première distinction rend le budget plus lisible. Les coûts fixes sont engagés même si peu de personnes participent : préparation, création d’un support, paramétrage initial ou abonnement. Les coûts variables évoluent avec l’opération : lots remis, impressions supplémentaires, emballages ou frais d’un partenaire. Le temps d’exécution correspond au travail de l’équipe avant, pendant et après la diffusion.",
+          "Ne masquez pas le temps de l’équipe sous la mention « gratuit ». Une affiche créée en interne, une réponse au comptoir, une vérification de lot ou un bilan prennent du temps, même s’ils ne donnent pas lieu à une facture distincte. Vous pouvez conserver une estimation interne sans publier de taux horaire universel.",
+        ],
+        items: [
+          "Coûts fixes : conception, abonnement outil, création du parcours ou support réutilisable.",
+          "Coûts variables : lots effectivement remis, impressions, consommables, livraison ou partenaire.",
+          "Temps d’exécution : préparation, briefing, réponses, retrait des gains et bilan.",
+          "Coûts d’opportunité : créneau, espace, attention de l’équipe et opération non réalisée en parallèle.",
+        ],
+      },
+      {
+        title: "Chiffrez la préparation avant de choisir le format",
+        paragraphs: [
+          "La préparation comprend la définition de l’objectif, la promesse, les conditions, les lots, la période et les responsabilités. Elle inclut aussi la relecture des messages et le test du parcours. Plus une animation comporte de règles ou de partenaires, plus cette phase doit être planifiée avant la diffusion.",
+          "Un format très simple peut demander peu de préparation, mais il reste nécessaire de vérifier la date de fin, la disponibilité du produit et la capacité de remise. À l’inverse, une opération commune avec plusieurs établissements peut nécessiter davantage de coordination, même si le support est réutilisé.",
+          "Notez ces décisions dans une fiche opérationnelle. Elle permet de comparer deux formats sans oublier les tâches invisibles et évite de présenter une estimation théorique comme le coût final de l’opération.",
+        ],
+      },
+      {
+        title: "N’oubliez pas les supports et la diffusion",
+        paragraphs: [
+          "Une animation doit être visible là où le client peut agir. Le budget peut donc inclure une affiche, un chevalet, un support de table, un QR code intégré à un visuel, une publication locale ou le temps de mise en place. Le coût dépend du format, de la quantité et de ce que votre équipe peut déjà produire.",
+          "Si vous utilisez un QR code, testez le support final avant impression en quantité. Vérifiez le contraste, la taille, la distance de lecture, la lumière et la page ouverte après le scan. Une série de supports inutilisables est un coût réel, même si le fichier initial était gratuit.",
+          "Prévoyez aussi la fin de l’opération : retrait des affiches, mise à jour des horaires, arrêt d’un message ou remplacement d’un lot épuisé. Une campagne qui continue d’annoncer une offre terminée crée une friction qui ne figure pas dans le budget initial.",
+        ],
+      },
+      {
+        title: "Évaluez les lots sans confondre valeur affichée et coût réel",
+        paragraphs: [
+          "Un lot peut être un produit, une prestation, une option, une remise ou une invitation à revenir. Pour le budget, distinguez sa valeur présentée au client, son coût pour le commerce et le coût réellement engagé au moment du retrait. Ces trois éléments ne sont pas nécessairement identiques.",
+          "Ajoutez les conditions qui modifient le coût : quantité disponible, durée de validité, achat requis, jours concernés, réservation, capacité de service ou produit remplaçant. Un lot généreux mais impossible à remettre dans le délai prévu peut coûter plus cher en incompréhension qu’un avantage plus simple.",
+          "Pour un jeu, une probabilité décrit une répartition configurée et non une prévision de chiffre d’affaires. Établissez le budget à partir des scénarios que vous êtes capable d’assumer, sans annoncer un volume de gains ou de ventes qui n’a pas été mesuré.",
+        ],
+      },
+      {
+        title: "Comparez une remise, une dotation et une animation",
+        paragraphs: [
+          "Une remise réduit directement le prix d’une transaction selon ses conditions. Une dotation peut être remise à certains participants ou gagnants, avec un coût lié au stock et au retrait. Une animation ajoute une expérience et du temps d’organisation. Comparer ces formats exige de regarder à la fois le coût unitaire, le volume possible et la charge de l’équipe.",
+          "Il n’existe pas de meilleur format pour tous les commerces. Une remise peut être plus lisible pour une décision immédiate ; une dotation peut créer une surprise ; un atelier peut servir la découverte d’un savoir-faire. Le choix doit suivre l’objectif et les contraintes de l’établissement, pas une promesse de performance générale.",
+        ],
+        items: [
+          "Remise : coût concentré sur les utilisations, avec une attention particulière à la marge et aux exclusions.",
+          "Dotation : coût lié aux lots, à leur disponibilité, à leur validité et au temps de retrait.",
+          "Animation : coût de préparation, de communication et d’exécution, même lorsque le lot est limité.",
+          "Combinaison : additionner les postes et préciser quelle étape justifie chaque dépense.",
+        ],
+      },
+      {
+        title: "Intégrez le coût de l’outil sans le présenter comme le budget total",
+        paragraphs: [
+          "Un outil peut réduire certaines tâches ou rendre un parcours plus simple, mais il ne remplace ni les lots, ni l’impression, ni le briefing de l’équipe. Comparez son coût avec les fonctionnalités réellement utilisées et avec la durée de l’opération. Une estimation honnête indique ce qui est inclus et ce qui reste à organiser par le commerce.",
+          "Avec Okado, le marchand peut créer une roue ou un ticket à gratter mobile, définir des lots, des probabilités, des stocks et des conditions, puis diffuser le parcours par QR code. Le suivi des participations, gains et retraits accompagne l’opération, sans supprimer les coûts propres au commerce.",
+          "Consultez les conditions et le tarif en vigueur avant de décider. Ne mélangez pas l’abonnement avec les dépenses de la campagne et ne supposez pas qu’un outil garantit un retour financier.",
+        ],
+      },
+      {
+        title: "Construisez un exemple de budget sans inventer de montant",
+        paragraphs: [
+          "Un exemple utile peut rester chiffrable sans publier de faux prix. Créez un tableau avec une ligne par poste, une quantité, un coût unitaire connu, un coût total et une personne responsable de la vérification. Remplissez uniquement les valeurs réellement disponibles pour votre commerce ou laissez le champ à confirmer.",
+          "Par exemple, un commerce peut comparer deux scénarios : une opération courte avec un support déjà disponible et quelques lots, puis une opération plus visible avec nouvelle impression, briefing renforcé et partenaire local. L’objectif est de voir quel poste explique l’écart, pas d’annoncer qu’un scénario coûte toujours moins cher.",
+        ],
+        items: [
+          "Scénario léger : support existant, durée courte, lot disponible et briefing limité.",
+          "Scénario renforcé : nouveau support, plusieurs points de diffusion, lots distincts et temps d’équipe dédié.",
+          "Pour chaque scénario : inscrire les coûts connus, les coûts à confirmer et les hypothèses à vérifier.",
+          "Après l’opération : remplacer les hypothèses par les dépenses et le temps réellement observés.",
+        ],
+      },
+      {
+        title: "Choisissez selon le budget et la capacité de l’équipe",
+        paragraphs: [
+          "Le budget n’est pas le seul critère. Une opération peut être financièrement accessible mais trop lourde à remettre, ou plus ambitieuse mais facile à exécuter parce que le support et les rôles sont déjà prêts. Classez donc les formats selon leur effort et leur capacité de service.",
+          "Une première opération gagne à rester limitée : un objectif, une période, un support, des conditions et quelques indicateurs. Vous pourrez ensuite augmenter la couverture si l’équipe comprend le parcours et si les coûts réellement observés sont compatibles avec votre activité.",
+        ],
+        items: [
+          "Budget et effort faibles : message local, support existant, offre simple et suivi manuel limité.",
+          "Budget intermédiaire : animation QR, impression ciblée, lots contrôlés et briefing formalisé.",
+          "Budget et coordination élevés : plusieurs établissements, partenaires, supports distincts et reporting séparé.",
+          "Décision à reporter : conditions inconnues, stock incertain, responsable absent ou coût impossible à vérifier.",
+        ],
+      },
+      {
+        title: "Mesurez le coût et le résultat sans promettre un ROI",
+        paragraphs: [
+          "Avant le lancement, notez le coût prévu, l’objectif et la preuve recherchée. Après l’opération, comparez le prévu au réel : dépenses, temps, lots remis, participations, contacts consentis, utilisations et retraits. Cette comparaison vous aide à améliorer le prochain budget, même si vous ne pouvez pas calculer un ROI complet.",
+          "Une vente observée pendant une animation n’est pas automatiquement causée par celle-ci. Pour parler de retour financier, il faudrait connaître les coûts pertinents, la méthode d’attribution, la période de comparaison et les facteurs externes. Si ces éléments manquent, restez sur des indicateurs observables et indiquez la limite.",
+          "Ajoutez une observation qualitative : question fréquente, étape trop longue, lot mal compris ou temps de remise supérieur à ce qui était prévu. Une animation peut être simplifiée grâce à ces informations sans qu’un pourcentage de chiffre d’affaires soit nécessaire.",
+        ],
+      },
+      {
+        title: "Questions fréquentes sur le coût d’une animation",
+        paragraphs: [
+          "Combien coûte un jeu-concours en magasin ? Il n’existe pas de montant universel. Le budget dépend du support, des lots, du temps d’équipe, de l’outil, de la durée et du nombre d’établissements.",
+          "Une animation gratuite ne coûte-t-elle rien ? Non. Même sans achat externe, elle mobilise du temps, un espace, un support, une organisation et parfois un produit ou une prestation remis au client.",
+          "Faut-il prévoir un budget pour les lots ? Oui, même si le lot provient du stock ou d’une prestation interne. Notez sa disponibilité, son coût pour le commerce, sa validité et son temps de remise.",
+          "Peut-on comparer une remise et une roue ? Oui, en comparant l’objectif, le coût d’utilisation, la charge d’équipe, les conditions et les indicateurs. Il ne faut pas conclure à un ROI supérieur sans données comparables.",
+          "L’abonnement d’un outil inclut-il toute l’opération ? Non. Vérifiez précisément le périmètre de l’offre et ajoutez les coûts propres à votre support, vos lots, votre équipe et votre diffusion.",
+        ],
+      },
+      {
+        title: "Checklist avant de valider votre budget",
+        paragraphs: [
+          "Avant de lancer une animation, vérifiez les points suivants :",
+        ],
+        items: [
+          "L’objectif et la période de l’opération sont clairement définis.",
+          "Les coûts fixes, variables, temps d’équipe et coûts d’opportunité sont séparés.",
+          "Les lots, stocks, conditions, dates et capacités de remise sont vérifiés.",
+          "Le support, le QR code public et le parcours mobile ont été testés.",
+          "Les coûts connus sont distingués des hypothèses à confirmer.",
+          "Les indicateurs et la date du bilan sont définis avant la diffusion.",
+          "Aucune promesse de chiffre d’affaires ou de ROI n’est déduite du budget prévisionnel.",
+        ],
+      },
+    ],
+    related: [
+      "/tarifs",
+      "/guides/cout-jeu-marketing",
+      "/blog/jeu-concours-ou-promotion",
+      "/blog/idees-promotions-commerce-local",
+      "/comment-ca-marche",
+    ],
+  },
+  {
+    path: "/blog/mesurer-animation-commerciale",
+    title: "Comment mesurer une animation commerciale sans inventer son ROI ?",
+    description:
+      "Apprenez à mesurer une animation commerciale avec des indicateurs observables, sans confondre scans, participations, ventes et ROI.",
+    eyebrow: "Mesure marketing local",
+    intro:
+      "Mesurer une animation commerciale commence par un objectif et un parcours observable, pas par un pourcentage de ROI. Séparez les scans, participations, contacts consentis, gains, retraits et ventes éventuelles pour savoir ce qui s’est réellement passé.",
+    answer:
+      "Pour mesurer une animation commerciale, définissez l’objectif avant le lancement, documentez chaque étape du parcours, rapprochez les coûts réellement connus des résultats observés et comparez des périodes ou des groupes comparables. Un ROI n’est calculable que si les coûts, l’attribution et la méthode de comparaison sont suffisamment fiables.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-17",
+    updatedAt: "2026-10-17",
+    reviewedAt: "2026-10-17",
+    readingTime: "9 min de lecture",
+    image: "/images/blog/mesurer-animation-commerciale.webp",
+    imageAlt: "Illustration d’un commerce qui suit les étapes d’une animation commerciale",
+    ctaLabel: "Préparer une mesure simple",
+    ctaHref: "/tarifs",
+    sections: [
+      {
+        title: "Commencez par une hypothèse mesurable",
+        paragraphs: [
+          "Avant de créer une animation, formulez ce que vous cherchez à apprendre. Par exemple : vérifier si une offre est comprise, observer la participation sur un créneau calme, faciliter une prochaine visite ou recueillir des contacts avec un consentement explicite. Une hypothèse précise aide à choisir les bons indicateurs.",
+          "Évitez les objectifs trop larges comme « augmenter les ventes » si vous ne pouvez pas isoler l’effet de l’animation. Une formulation plus prudente décrit un comportement observable et une période : « suivre les participations et les retraits pendant la campagne, puis comparer les questions de l’équipe avec celles d’une période comparable ».",
+        ],
+        items: [
+          "Objectif : ce que l’opération doit aider à comprendre ou à provoquer.",
+          "Période : dates de début et de fin, horaires et éventuels créneaux comparés.",
+          "Public : clientèle habituelle, visiteurs de passage, nouveaux contacts ou participants d’un événement.",
+          "Décision : ce qui fera évoluer, reconduire, réduire ou arrêter le format.",
+        ],
+      },
+      {
+        title: "Séparez les étapes du parcours",
+        paragraphs: [
+          "Un QR code scanné ne signifie pas qu’une personne a participé. Une participation ne signifie pas qu’un lot a été retiré, et un retrait ne prouve pas une vente. En séparant les événements, vous repérez les étapes qui fonctionnent et celles qui demandent une amélioration.",
+          "Utilisez le même vocabulaire dans le tableau de suivi et dans les consignes de l’équipe. Cette discipline évite de compter deux fois une personne ou de présenter un clic sortant comme une action réalisée sur place.",
+        ],
+        items: [
+          "Scan : le QR code ou le lien a été ouvert.",
+          "Participation : le parcours de jeu ou d’animation a été complété.",
+          "Contact : une donnée a été transmise avec un consentement distinct et explicite, si cette collecte est prévue.",
+          "Gain : un résultat ou un avantage a été attribué au participant.",
+          "Retrait : l’équipe a vérifié et remis le gain selon les conditions prévues.",
+          "Vente ou visite suivante : un événement commercial séparé, à attribuer seulement avec une méthode adaptée.",
+        ],
+      },
+      {
+        title: "Que mesurer avec un QR code ?",
+        paragraphs: [
+          "Un QR code est un point d’entrée pratique, mais il ne mesure que ce que le dispositif et le contexte permettent d’observer. Notez au minimum les scans ou ouvertures, la période, le support utilisé et, lorsque c’est possible, les participations complètes. Ne déduisez pas l’identité d’une personne ou une vente à partir d’un scan anonyme.",
+          "Si plusieurs affiches ou établissements diffusent la même opération, utilisez des supports ou des liens distincts lorsque le besoin de comparaison est réel. Sinon, vous ne saurez pas quel emplacement a généré l’ouverture. Chaque variante doit rester compréhensible et être documentée avant impression.",
+          "Le test du QR public doit être séparé de la prévisualisation. Les tests de l’équipe, les scans de contrôle et les participations de démonstration ne doivent pas être mélangés aux données de campagne.",
+        ],
+      },
+      {
+        title: "Documentez le contexte avant de comparer",
+        paragraphs: [
+          "Une comparaison n’est utile que si les situations sont suffisamment proches. Notez la durée, les horaires, l’emplacement, le support, la dotation, la météo si elle influence le passage, les événements voisins et toute promotion active. Ces éléments expliquent parfois une variation sans que l’animation soit la cause unique.",
+          "Comparez autant que possible des créneaux, points de vente ou périodes comparables. Une semaine de lancement avec une forte communication ne doit pas être présentée comme la référence universelle d’un commerce calme. Si le contexte change, dites-le dans le bilan.",
+        ],
+        items: [
+          "Format et promesse affichée.",
+          "Dates, horaires et durée d’exposition.",
+          "Lieu, support et visibilité du QR code.",
+          "Lots, stock, conditions et capacité de remise.",
+          "Communication parallèle, événement local ou changement d’offre.",
+          "Incidents, interruptions et tests exclus des données finales.",
+        ],
+      },
+      {
+        title: "Suivez les coûts réellement liés à l’opération",
+        paragraphs: [
+          "Pour mesurer un retour financier, commencez par connaître les coûts pertinents. Listez la préparation, le support, les impressions, les lots remis, le temps d’équipe, l’outil, la diffusion et les éventuels partenaires. Séparez ce qui est payé pour cette opération de ce qui est réutilisable ou déjà engagé.",
+          "Une estimation de budget ne devient pas automatiquement un coût réel. Après la campagne, remplacez les hypothèses par les dépenses observées et indiquez les postes encore incertains. Le temps interne peut être suivi en durée sans lui attribuer un taux générique non validé.",
+          "Pour une méthode détaillée de cadrage budgétaire, consultez le guide dédié au [coût d’un jeu marketing](/guides/mesurer-jeu-qr-code) et l’article sur le [coût d’une animation commerciale](/blog/cout-animation-commerciale-commerce).",
+        ],
+      },
+      {
+        title: "Construisez un tableau de suivi simple",
+        paragraphs: [
+          "Un tableau utile doit permettre de distinguer les faits, les hypothèses et les décisions. Une ligne par jour, créneau, support ou établissement suffit souvent pour une première opération. N’ajoutez pas des colonnes que l’équipe ne pourra pas renseigner de manière régulière.",
+          "Voici une structure de départ : période, lieu ou support, scans, participations, contacts consentis, gains, retraits, ventes attribuables selon une méthode documentée, coûts connus, incidents et observation qualitative. Les cellules non mesurées doivent rester vides ou être marquées « non disponible », pas remplacées par zéro.",
+        ],
+        items: [
+          "Prévu : objectif, dates, lots, supports et indicateurs retenus.",
+          "Observé : scans, participations, contacts, gains, retraits et événements commerciaux réellement enregistrés.",
+          "Qualitatif : questions posées, blocages, visibilité, compréhension et charge de l’équipe.",
+          "Interprétation : ce que les données permettent de dire et ce qu’elles ne permettent pas de conclure.",
+          "Décision : conserver, modifier, tester ou arrêter un élément du dispositif.",
+        ],
+      },
+      {
+        title: "Ajoutez une lecture qualitative",
+        paragraphs: [
+          "Les chiffres ne montrent pas toujours pourquoi une étape bloque. Demandez à l’équipe quelles consignes sont répétées, quel lot est mal compris, combien de temps prend un retrait et où les participants abandonnent. Ces observations sont utiles même avec un petit volume.",
+          "Vous pouvez aussi recueillir un retour volontaire, sans conditionner une récompense à un avis et sans transformer une question de satisfaction en collecte implicite. Séparez le retour sur l’expérience de toute inscription à une prospection future.",
+          "Une observation qualitative n’est pas une preuve statistique. Présentez-la comme un signal à confirmer lors d’une prochaine opération ou d’un test mieux contrôlé.",
+        ],
+      },
+      {
+        title: "Attribuez une vente avec prudence",
+        paragraphs: [
+          "Une vente réalisée pendant une animation peut avoir plusieurs causes : passage habituel, promotion simultanée, recommandation, événement local ou effet du jeu. Sans protocole, il est impossible d’affirmer que l’animation a créé toute la vente.",
+          "Si l’attribution est importante, définissez avant le lancement ce qui sera considéré comme une vente liée : code distinct, offre clairement identifiée, fenêtre temporelle, groupe de comparaison ou question posée avec une méthode cohérente. Documentez aussi les limites et les ventes non observées.",
+          "Même avec un code ou un coupon, vous mesurez principalement une utilisation attribuable au dispositif. Cela ne prouve pas nécessairement la marge incrémentale, la fidélité ou l’absence d’un achat qui aurait eu lieu autrement.",
+        ],
+        items: [
+          "Attribution directe : le client utilise une offre ou un code propre à l’animation.",
+          "Comparaison : les résultats sont rapprochés d’une période ou d’un groupe comparable.",
+          "Retour déclaré : le client indique un motif, avec le biais et le périmètre précisés.",
+          "Limite : les ventes sans identifiant ou hors période ne sont pas automatiquement rattachées.",
+        ],
+      },
+      {
+        title: "Quand peut-on parler de ROI ?",
+        paragraphs: [
+          "Le ROI n’est pas un chiffre à déduire d’un nombre de participations. Il suppose de connaître les coûts pertinents, le bénéfice ou la marge réellement attribuable et la méthode de comparaison. Si l’un de ces éléments manque, vous pouvez parler d’indicateurs ou de retour observé, mais pas d’un ROI établi.",
+          "Un calcul peut s’écrire simplement comme une relation entre un gain net attribuable et le coût de l’opération, mais cette formule ne rend pas les données plus fiables. Le point difficile est de justifier ce qui est attribué, sur quelle période et avec quelles exclusions.",
+          "Pour une première campagne, un bilan honnête peut donc conclure : « les scans et retraits ont été observés ; la rentabilité n’est pas calculable avec les données disponibles ; le prochain test devra mieux isoler l’utilisation de l’offre ». Cette conclusion est plus utile qu’un pourcentage précis mais fragile.",
+        ],
+      },
+      {
+        title: "Bilan de campagne en cinq questions",
+        paragraphs: [
+          "À la fin de l’opération, réunissez les données et les observations dans un bilan court. L’objectif est de décider de la suite, pas de produire un chiffre flatteur.",
+        ],
+        items: [
+          "L’objectif initial a-t-il été observé avec les indicateurs prévus ?",
+          "À quelle étape les participants ont-ils avancé ou abandonné ?",
+          "Quels coûts et temps ont réellement été engagés ?",
+          "Quelle partie du résultat peut être attribuée avec une méthode documentée ?",
+          "Quelle modification tester lors de la prochaine opération ?",
+        ],
+      },
+      {
+        title: "Questions fréquentes sur la mesure d’une animation",
+        paragraphs: [
+          "Quel est le meilleur indicateur pour une animation commerciale ? Il n’existe pas d’indicateur unique. Choisissez celui qui correspond à l’objectif : participation, retrait, utilisation d’une offre, contact consenti ou observation de l’équipe.",
+          "Un QR code permet-il de mesurer les ventes ? Il mesure surtout les ouvertures et, selon le parcours, les participations. Une vente ne peut être reliée à l’animation que si une méthode d’attribution est définie et appliquée.",
+          "Comment savoir si une animation fonctionne ? Comparez l’objectif, les étapes observées, les coûts, les incidents et le contexte. Une opération peut être utile pour tester une promesse même si un ROI financier n’est pas calculable.",
+          "Faut-il collecter l’adresse e-mail pour mesurer ? Non. La collecte n’est nécessaire que si elle sert un objectif clair, avec un consentement explicite et une utilisation séparée de la participation ou du gain.",
+          "Peut-on mesurer une petite animation ? Oui, avec peu d’indicateurs bien définis. Il faut simplement éviter de généraliser un petit test ou de présenter une observation locale comme une preuve universelle.",
+        ],
+      },
+      {
+        title: "Checklist avant de tirer une conclusion",
+        paragraphs: [
+          "Avant de publier ou de partager votre bilan, vérifiez les points suivants :",
+        ],
+        items: [
+          "L’objectif et l’hypothèse étaient définis avant le lancement.",
+          "Les scans, participations, contacts, gains, retraits et ventes sont séparés.",
+          "Les tests internes et incidents sont identifiés et exclus si nécessaire.",
+          "Le contexte, la période, le support et les promotions parallèles sont documentés.",
+          "Les coûts réels sont distingués des estimations et des coûts non mesurés.",
+          "Toute attribution commerciale repose sur une méthode annoncée à l’avance.",
+          "Le bilan indique clairement ce qui est observé, supposé et encore inconnu.",
+          "La prochaine action est formulée comme un test ou une amélioration vérifiable.",
+        ],
+      },
+    ],
+    related: [
+      "/guides/mesurer-jeu-qr-code",
+      "/blog/attirer-clients-commerce-local",
+      "/blog/calendrier-marketing-commerce-local",
+      "/tarifs",
+      "/comment-ca-marche",
+    ],
+  },
+  {
+    path: "/blog/animer-periode-creuse-commerce-local",
+    title: "Comment animer une période creuse dans un commerce local ?",
+    description:
+      "Identifiez un vrai créneau calme et choisissez une animation locale adaptée à votre équipe, sans promettre de remplir le commerce ni baisser les prix en continu.",
+    eyebrow: "Animation commerciale locale",
+    intro:
+      "Pour animer une période creuse, commencez par identifier le jour ou l’horaire réellement calme, puis choisissez une action compatible avec votre capacité de service. Une offre ponctuelle, un jeu ou un atelier peut créer une raison de venir, mais ne garantit ni le remplissage du créneau ni une hausse automatique du chiffre d’affaires.",
+    answer:
+      "Une animation de période creuse se construit autour d’un créneau précis, d’un objectif limité, d’une promesse compréhensible et d’une durée courte. Comparez ensuite le passage, les participations, les utilisations d’offre, les retraits et la charge de l’équipe avec un contexte comparable, sans confondre fréquentation et rentabilité.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-17",
+    updatedAt: "2026-10-17",
+    reviewedAt: "2026-10-17",
+    readingTime: "9 min de lecture",
+    image: "/images/blog/animer-periode-creuse-commerce-local.webp",
+    imageAlt: "Illustration d’un commerce local qui prépare une animation sur un créneau calme",
+    ctaLabel: "Préparer une opération sur un créneau calme",
+    ctaHref: "/tarifs",
+    sections: [
+      {
+        title: "Diagnostiquez le creux avant de créer l’animation",
+        paragraphs: [
+          "Une période creuse peut être un jour précis, une heure entre deux services, une saison ou un moment où l’équipe dispose de capacité. Ne partez pas d’une impression générale : regardez les passages, les réservations, les ventes, les demandes et les contraintes de service sur plusieurs périodes comparables.",
+          "Notez aussi ce qui rend le créneau difficile : accès, transport, météo, habitudes de la clientèle, horaires voisins ou manque de visibilité. Une animation ne corrige pas une contrainte structurelle à elle seule. Elle doit répondre à un contexte identifiable et rester réversible si l’hypothèse ne se vérifie pas.",
+        ],
+        items: [
+          "Jour ou horaire concerné, plutôt qu’une promesse vague de dynamiser toute la semaine.",
+          "Capacité disponible de l’équipe, de l’espace et du stock.",
+          "Type de fréquentation observée et public que vous souhaitez toucher.",
+          "Facteurs externes : saison, événement local, travaux, météo ou calendrier de réservation.",
+        ],
+      },
+      {
+        title: "Choisissez un objectif adapté au créneau",
+        paragraphs: [
+          "Un créneau calme ne doit pas forcément être rempli à tout prix. Vous pouvez chercher à faire découvrir un produit, tester un service, faciliter une réservation, créer une prochaine visite ou utiliser une capacité déjà disponible. Un objectif principal permet de choisir une mécanique simple et de mesurer un résultat précis.",
+          "Évitez de mélanger fréquentation, ventes, contacts et fidélité dans une seule promesse. Un passage supplémentaire est un événement ; il ne prouve pas à lui seul une vente rentable ni une relation durable. Définissez ce qui sera observé avant le lancement.",
+        ],
+        items: [
+          "Faire découvrir une nouveauté pendant une heure identifiée.",
+          "Proposer une expérience ou un atelier lorsque l’équipe peut l’accompagner.",
+          "Encourager une prochaine visite avec une condition claire et limitée.",
+          "Tester une offre ou une animation avant d’envisager une diffusion plus large.",
+        ],
+      },
+      {
+        title: "Faut-il choisir une offre, un jeu ou un atelier ?",
+        paragraphs: [
+          "Le bon format dépend de ce que le commerce peut délivrer pendant le créneau. Une offre est souvent facile à expliquer, un jeu par QR code peut créer une participation courte, et un atelier donne une raison de rester mais demande davantage de préparation et d’espace.",
+          "Ne choisissez pas une mécanique seulement parce qu’elle attire l’attention ailleurs. Vérifiez la capacité de l’équipe, le stock, la durée, les règles et le parcours client. Pour trouver d’autres formats, consultez le [calendrier marketing pour commerce local](/blog/calendrier-marketing-commerce-local) et les [idées de promotions pour commerce local](/blog/idees-promotions-commerce-local).",
+        ],
+        items: [
+          "Offre ponctuelle : utile pour une décision simple, avec marge, dates et exclusions vérifiées.",
+          "Jeu par QR code : adapté à une participation autonome ou à une animation courte, avec lots et conditions préparés.",
+          "Atelier ou démonstration : pertinent pour faire découvrir un savoir-faire, si la capacité d’accueil est réelle.",
+          "Partenariat local : intéressant pour croiser les publics, à condition de répartir clairement les rôles.",
+        ],
+      },
+      {
+        title: "Limitez la durée et le périmètre",
+        paragraphs: [
+          "Une animation de période creuse gagne à être limitée à un créneau, une date, un produit ou une capacité. Une durée courte facilite la communication, le briefing et le bilan. Elle évite aussi de transformer une opération de test en remise permanente que la clientèle finirait par attendre.",
+          "Choisissez à l’avance les conditions d’arrêt : stock épuisé, capacité atteinte, fin du créneau ou date prévue. Si l’opération est reconduite, décidez-le après un bilan plutôt que de laisser une promesse se prolonger par défaut.",
+        ],
+        items: [
+          "Un créneau identifiable dans les horaires habituels.",
+          "Une date de début et une date de fin visibles.",
+          "Un volume ou une capacité que l’équipe peut réellement absorber.",
+          "Une règle de fin si les lots, places ou produits disponibles sont épuisés.",
+        ],
+      },
+      {
+        title: "Préparez les lots et les conditions avant de communiquer",
+        paragraphs: [
+          "Une animation peut perdre sa crédibilité si la dotation n’est pas disponible ou si la condition est découverte trop tard. Définissez les lots, leur quantité, leur validité, les produits concernés, l’éventuel achat requis et la procédure de retrait avant de publier l’invitation.",
+          "Dans un jeu mobile, le gain obtenu, la participation et le retrait restent des étapes distinctes. L’équipe doit savoir vérifier la validité et remettre un lot une seule fois selon les règles prévues. Une probabilité configure une répartition ; elle ne promet ni fréquentation, ni ventes, ni nombre de retraits.",
+          "Si la récompense est une remise, vérifiez sa compatibilité avec la marge et les conditions commerciales. Une dotation issue du stock doit aussi être considérée comme une ressource mobilisée, même si elle n’entraîne pas de facture externe.",
+        ],
+      },
+      {
+        title: "Donnez à l’équipe une consigne facile à répéter",
+        paragraphs: [
+          "Une animation sur un créneau calme ne doit pas rendre le service plus complexe. Préparez une phrase qui explique l’objectif, la durée, l’action attendue et la condition principale. Précisez qui répond aux questions, qui vérifie un gain et qui décide en cas de stock épuisé.",
+          "Testez la consigne avec une personne qui n’a pas préparé l’opération. Si elle ne comprend pas le parcours, la clientèle risque de rencontrer la même difficulté. Le temps passé à expliquer, remettre ou corriger une participation fait partie de l’effort réel de l’animation.",
+        ],
+        items: [
+          "Message de présentation en une phrase.",
+          "Rôle de chaque membre de l’équipe pendant le créneau.",
+          "Réponse prévue pour les conditions, les lots et les données demandées.",
+          "Procédure simple si le support, le QR code ou le stock pose problème.",
+        ],
+      },
+      {
+        title: "Communiquez localement sans surpromettre",
+        paragraphs: [
+          "La communication doit préciser où, quand, pour qui et pourquoi venir. Utilisez les canaux déjà consultés par votre clientèle : affichage en boutique, vitrine, réseaux sociaux locaux, partenaires, agenda de quartier ou message lié à une réservation. Une invitation claire vaut mieux qu’une annonce permanente et vague.",
+          "Pour une animation par QR code, le support doit être visible et testable. La page dédiée aux [affiches QR code](/affiches-qr-code) peut servir de point de départ pour préparer le visuel, mais vérifiez toujours le support final dans les conditions réelles de lumière et de distance.",
+          "Ne présentez pas le créneau comme une garantie de gain ou de remplissage. Indiquez la disponibilité, les conditions et la date de fin. Si un contact est proposé, il doit être facultatif et séparé de la participation ou du retrait d’un lot.",
+        ],
+      },
+      {
+        title: "Évitez de déplacer la demande au lieu de la créer",
+        paragraphs: [
+          "Une offre sur un créneau calme peut simplement déplacer une visite depuis une heure qui était déjà active. Pour l’identifier, regardez les passages sur le créneau ciblé et sur les périodes voisines. Une baisse ailleurs ne doit pas être ignorée dans le bilan.",
+          "Le risque est plus élevé si la promesse est valable toute la journée, si elle est reconduite sans limite ou si elle récompense un achat qui aurait eu lieu sans animation. Préférez une durée et une condition liées au moment que vous cherchez à tester.",
+        ],
+        items: [
+          "Comparer le créneau animé avec un créneau voisin non animé lorsque c’est possible.",
+          "Observer les visites et ventes des périodes voisines, pas seulement du créneau ciblé.",
+          "Distinguer passage, participation, utilisation d’offre et vente.",
+          "Arrêter ou ajuster une mécanique qui dégrade le service ou la marge.",
+        ],
+      },
+      {
+        title: "Mesurez avant et après avec un contexte comparable",
+        paragraphs: [
+          "Avant le lancement, notez la situation de référence : période, fréquentation observée, réservations, offre active, équipe présente et capacité disponible. Après l’opération, relevez les mêmes éléments et ajoutez les participations, gains, retraits, utilisations et incidents.",
+          "Ne concluez pas qu’une animation a rempli le commerce à partir d’un seul jour. La météo, un événement voisin, une publication locale ou une variation de stock peuvent expliquer une partie du résultat. Si le contexte n’est pas comparable, présentez les données comme une observation et non comme une causalité.",
+          "Pour une méthode plus complète, séparez les étapes du parcours comme expliqué dans l’article [mesurer une animation commerciale](/blog/mesurer-animation-commerciale).",
+        ],
+        items: [
+          "Fréquentation ou réservations du créneau avant l’opération.",
+          "Scans, participations, contacts consentis, gains et retraits pendant l’opération.",
+          "Utilisations d’offre et ventes éventuelles avec une attribution documentée.",
+          "Temps de préparation, temps de service, lots remis et incidents.",
+          "Décision suivante : conserver, simplifier, déplacer, tester ou arrêter.",
+        ],
+      },
+      {
+        title: "Trois scénarios à adapter à votre activité",
+        paragraphs: [
+          "Les scénarios suivants sont des pistes, pas des résultats garantis. Adaptez-les au rythme, aux produits, aux stocks et aux obligations de votre établissement.",
+        ],
+        items: [
+          "Restaurant : proposer une découverte ou une animation courte sur un service moins demandé, sans dépasser la capacité de la cuisine et de la salle. Suivre réservations, présence, utilisation de l’offre et charge du service.",
+          "Institut de beauté : organiser une démonstration ou une expérience sur un créneau de rendez-vous disponible, avec une règle de réservation claire. Suivre demandes, rendez-vous honorés, temps de prestation et éventuelles prochaines visites.",
+          "Boutique : installer une table de découverte ou un jeu par QR code pendant une heure calme, avec un lot ou une offre réellement disponible. Suivre scans, participations, retraits, passages et utilisations séparément.",
+          "Commerce multi-activité : commencer par un seul créneau et un seul point de vente avant d’étendre l’opération à plusieurs équipes ou établissements.",
+        ],
+      },
+      {
+        title: "Questions fréquentes sur les périodes creuses",
+        paragraphs: [
+          "Quelle animation proposer pour un jour calme ? Choisissez une offre, un jeu, une démonstration ou un atelier qui correspond à la capacité réelle de l’équipe et à l’objectif du créneau. Il n’existe pas de format universel.",
+          "Faut-il baisser les prix pour attirer du monde ? Pas nécessairement. Une expérience, une découverte, une dotation ou une réservation facilitée peuvent répondre à l’objectif. Toute remise doit rester limitée, compréhensible et compatible avec votre marge.",
+          "Comment éviter de déplacer la demande ? Limitez la promesse au créneau ciblé, comparez les périodes voisines et observez si l’offre est utilisée par des clients qui seraient venus de toute façon.",
+          "Une animation peut-elle remplir un créneau calme ? Elle peut créer une raison de venir ou aider à tester une hypothèse, mais aucun remplissage ne doit être garanti sans données et contexte comparables.",
+          "Peut-on utiliser un jeu mobile pendant une période creuse ? Oui, si le support, le parcours, les lots, les conditions et le rôle de l’équipe sont prêts. Les participations ne doivent pas être confondues avec des ventes.",
+        ],
+      },
+      {
+        title: "Checklist pour préparer une opération sur un créneau calme",
+        paragraphs: [
+          "Avant de diffuser l’animation, vérifiez les points suivants :",
+        ],
+        items: [
+          "Le jour ou l’horaire calme est identifié à partir d’observations réelles.",
+          "L’objectif principal et la preuve recherchée sont formulés en une phrase.",
+          "Le format est compatible avec la capacité de service, l’espace et le stock.",
+          "La durée, la date de fin, les lots et les conditions sont visibles.",
+          "L’équipe connaît la consigne, le parcours et la procédure de retrait.",
+          "Le support, le QR code et la page mobile ont été testés.",
+          "La communication locale ne promet ni remplissage, ni gain, ni chiffre d’affaires.",
+          "La mesure sépare fréquentation, participation, retrait, utilisation d’offre et vente.",
+          "Un bilan est prévu pour décider de la suite sans reconduire automatiquement la remise.",
+        ],
+      },
+    ],
+    related: [
+      "/blog/calendrier-marketing-commerce-local",
+      "/blog/idees-promotions-commerce-local",
+      "/restaurants",
+      "/instituts-beaute",
+      "/affiches-qr-code",
+    ],
+  },
+  {
+    path: "/blog/faire-revenir-clients-animation",
+    title: "Comment faire revenir des clients après une animation commerciale ?",
+    description:
+      "Découvrez comment préparer une prochaine visite après une animation commerciale, avec une offre claire, un consentement séparé et une mesure réaliste.",
+    eyebrow: "Fidélisation locale",
+    intro:
+      "Une animation commerciale peut créer un premier contact, mais elle ne suffit pas à prouver une fidélité durable. Pour donner envie de revenir, prévoyez la prochaine étape dès la conception : une invitation claire, une validité réaliste, une expérience cohérente et une mesure séparant participation, retrait, seconde visite et vente.",
+    answer:
+      "Pour faire revenir des clients après une animation, proposez une prochaine action simple et facultative, liée à une date, un produit ou une expérience que votre commerce peut réellement délivrer. Communiquez à nouveau uniquement avec un consentement adapté, puis mesurez les utilisations et visites observées sans inventer de taux de retour.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-17",
+    updatedAt: "2026-10-17",
+    reviewedAt: "2026-10-17",
+    readingTime: "9 min de lecture",
+    image: "/images/blog/faire-revenir-clients-animation.webp",
+    imageAlt: "Illustration d’un commerce qui propose une prochaine visite après une animation",
+    ctaLabel: "Concevoir une prochaine étape",
+    ctaHref: "/tarifs",
+    sections: [
+      {
+        title: "Distinguez animation ponctuelle et fidélité",
+        paragraphs: [
+          "Une participation montre qu’une personne a pris part à une action à un moment donné. Elle ne prouve pas une préférence durable, une prochaine visite ou une augmentation de la fréquence d’achat. Pour parler de fidélisation, il faut observer un comportement dans le temps et définir la période de référence.",
+          "La bonne question n’est donc pas seulement « combien de personnes ont joué ? », mais « quelle prochaine étape était proposée et combien d’utilisations ou de visites avons-nous réellement pu observer ? ». Cette distinction rend le bilan plus crédible et évite de transformer un gain en preuve de fidélité.",
+        ],
+        items: [
+          "Animation : une action ponctuelle avec une date, une mécanique et une promesse.",
+          "Prochaine visite : un événement ultérieur qui doit être mesuré séparément.",
+          "Fidélisation : une relation qui se vérifie dans la durée, pas sur un seul gain.",
+          "Vente : une transaction qui ne doit pas être attribuée sans méthode adaptée.",
+        ],
+      },
+      {
+        title: "Préparez la prochaine étape avant le lancement",
+        paragraphs: [
+          "La prochaine visite ne doit pas être ajoutée au dernier moment. Dès la conception, décidez ce que vous souhaitez proposer après l’animation : découvrir un nouveau produit, revenir sur un créneau, réserver une prestation, utiliser une offre ou participer à une prochaine rencontre.",
+          "Une seule prochaine étape est souvent plus lisible qu’un catalogue de possibilités. Elle doit être réalisable par l’équipe, compatible avec les stocks et compréhensible sans explication longue. Si elle est facultative, dites-le clairement et ne la présentez pas comme une condition cachée du gain.",
+        ],
+        items: [
+          "Une action : revenir, réserver, découvrir ou utiliser un avantage précis.",
+          "Une période : validité assez longue pour être réaliste, mais pas indéfinie.",
+          "Une condition : achat requis, créneau, produit, réservation ou limite de stock clairement indiqués.",
+          "Une preuve : utilisation de l’offre, réservation honorée, visite identifiée ou retour déclaré.",
+        ],
+      },
+      {
+        title: "Choisissez une invitation utile et facile à comprendre",
+        paragraphs: [
+          "Une invitation peut prendre la forme d’un avantage limité, d’une découverte, d’un rendez-vous, d’un atelier ou d’une information pratique. Elle n’a pas besoin d’être la plus généreuse possible pour être pertinente. Elle doit donner une raison de revenir qui correspond à l’expérience du commerce.",
+          "Présentez la date ou la durée, le lieu, les produits concernés et les éventuelles exclusions. Un avantage difficile à comprendre ou impossible à utiliser dégrade la confiance et augmente la charge de l’équipe au moment du retour.",
+          "Pour choisir entre une promotion et une mécanique de jeu, consultez l’article [jeu-concours ou promotion](/blog/jeu-concours-ou-promotion) et vérifiez que la prochaine étape reste distincte du gain initial.",
+        ],
+        items: [
+          "Découverte : faire essayer ou présenter un produit lors d’une prochaine visite.",
+          "Avantage ponctuel : proposer une condition claire sur une période définie.",
+          "Réservation : faciliter un retour à une date ou un créneau précis.",
+          "Événement : inviter à une rencontre dont la capacité d’accueil est vérifiée.",
+        ],
+      },
+      {
+        title: "Rendez la validité réaliste",
+        paragraphs: [
+          "Une validité trop courte laisse peu de chances d’utiliser l’invitation ; une validité indéfinie rend l’offre difficile à gérer et à mesurer. Choisissez une période compatible avec la fréquence de visite de votre clientèle, vos horaires, vos stocks et votre capacité de service.",
+          "Indiquez la date de début et de fin, les jours concernés, les produits ou prestations inclus, le besoin éventuel de réservation et la procédure d’utilisation. Si la capacité est limitée, prévoyez une règle compréhensible avant de diffuser le message.",
+          "Une date de fin doit aussi être respectée dans les supports et les messages de suivi. Une invitation qui continue de circuler après son expiration crée une friction qui peut être évitée par une vérification simple.",
+        ],
+      },
+      {
+        title: "Soignez l’expérience après l’animation",
+        paragraphs: [
+          "Faire revenir quelqu’un dépend aussi de ce qui s’est passé pendant la première expérience : accueil, clarté de la consigne, disponibilité du lot, délai de remise et compréhension des conditions. Une prochaine visite ne compense pas une animation difficile à vivre.",
+          "Demandez à l’équipe quelles étapes ont posé problème et corrigez-les avant de relancer une invitation. Le parcours doit rester cohérent entre le support, la page mobile, la remise du gain et le retour en établissement.",
+          "Si une donnée est recueillie pour faciliter un retour, expliquez son usage et obtenez un consentement distinct. Ne faites pas dépendre une récompense d’un avis public et ne transformez pas une participation en inscription automatique.",
+        ],
+      },
+      {
+        title: "Envoyez un message de suivi seulement avec le consentement adapté",
+        paragraphs: [
+          "Un message après l’animation peut rappeler une date, une réservation ou une invitation, mais il ne doit pas être envoyé à toute personne ayant joué par défaut. La participation, la remise d’un gain et l’accord pour recevoir une prospection sont des événements différents.",
+          "Expliquez au moment de la collecte ce que la personne recevra, par quel canal et à quelle fréquence. Conservez une possibilité simple de ne plus recevoir de messages. Si aucun consentement n’est disponible, privilégiez un support affiché ou une invitation remise directement au client.",
+          "La collecte d’un contact n’est donc pas obligatoire pour mesurer le retour. Elle n’est pertinente que si elle sert un objectif clair et si l’équipe peut respecter l’usage annoncé.",
+        ],
+        items: [
+          "Participation : le client prend part à l’animation.",
+          "Contact : une donnée est transmise avec une information et un consentement explicites.",
+          "Suivi : un message est envoyé dans le cadre autorisé et annoncé.",
+          "Désinscription : le client peut interrompre les messages simplement.",
+        ],
+      },
+      {
+        title: "Mesurez une seconde visite sans inventer de taux",
+        paragraphs: [
+          "Avant le lancement, définissez ce qui compte comme un retour observé : utilisation d’un code, réservation liée à l’invitation, retrait identifié, scan d’un support de suivi ou déclaration recueillie avec une méthode constante. Notez la période et les limites de ce signal.",
+          "Une seconde visite non identifiée peut rester invisible dans vos données. À l’inverse, une utilisation d’offre ne prouve pas toujours que la visite a été provoquée par l’animation. Présentez donc les résultats comme des utilisations ou retours attribuables selon une méthode, pas comme un taux de fidélité universel.",
+          "Pour structurer le bilan, séparez les indicateurs du parcours dans l’article [mesurer une animation commerciale](/blog/mesurer-animation-commerciale). Vous pourrez comparer les participations, gains, retraits, utilisations et retours observés sans les additionner artificiellement.",
+        ],
+        items: [
+          "Nombre de participants éligibles à la prochaine étape.",
+          "Invitations présentées ou messages envoyés dans le cadre autorisé.",
+          "Utilisations, réservations honorées ou retours identifiés.",
+          "Délai entre l’animation et le retour observé.",
+          "Contexte et méthode d’identification, avec les retours non mesurables explicités.",
+        ],
+      },
+      {
+        title: "Ponctuel ou récurrent : choisissez selon votre capacité",
+        paragraphs: [
+          "Une animation ponctuelle peut tester une promesse ou accompagner un moment particulier. Un rendez-vous récurrent peut créer une habitude, mais demande une régularité de contenu, de stock, d’équipe et de communication. Aucun des deux formats ne garantit une fidélité durable.",
+          "Commencez par un format que vous pouvez délivrer correctement. Si les retours sont observés et que la charge reste compatible avec votre activité, vous pourrez décider d’une répétition. Une récurrence ne doit pas devenir une remise automatique attendue à chaque visite.",
+        ],
+        items: [
+          "Ponctuel : adapté à un lancement, une saison ou un test limité.",
+          "Récurrent : pertinent si le contenu et la capacité peuvent être renouvelés.",
+          "Alterné : une invitation différente selon les périodes, avec des règles explicites.",
+          "À éviter : reconduire une récompense sans bilan ni contrôle de marge et de stock.",
+        ],
+      },
+      {
+        title: "Faut-il un programme de fidélité ?",
+        paragraphs: [
+          "Non, une prochaine étape ne nécessite pas forcément un programme de points. Une invitation ponctuelle, une réservation, un atelier ou une offre liée à une date peut suffire pour tester un retour. Le bon choix dépend de la fréquence d’achat, de la capacité de suivi et de l’expérience que vous souhaitez créer.",
+          "Un programme récurrent ajoute des règles, des données à gérer et une promesse de continuité. Avant de le créer, vérifiez que le commerce peut expliquer les conditions, suivre les avantages et répondre aux demandes dans la durée.",
+          "Pour approfondir les alternatives, consultez [fidéliser ses clients sans programme de points](/blog/fideliser-clients-sans-programme-points).",
+        ],
+      },
+      {
+        title: "Questions fréquentes sur le retour des clients",
+        paragraphs: [
+          "Comment prolonger une animation commerciale ? Préparez une prochaine étape dès la conception : invitation, offre, réservation, découverte ou événement, avec une validité et des conditions réalistes.",
+          "Comment mesurer une seconde visite ? Utilisez un code, une réservation ou un support de suivi si cela correspond au parcours, puis indiquez ce qui reste non identifié. Une participation ou un gain ne suffit pas.",
+          "Faut-il envoyer un e-mail après chaque animation ? Non. Un message de suivi nécessite un consentement adapté et une information claire sur son usage. Sans accord, remettez une invitation ou utilisez un support public.",
+          "Une récompense garantit-elle le retour ? Non. Elle peut créer une occasion de revenir, mais le comportement ultérieur dépend aussi de l’expérience, du besoin, de la validité et du contexte.",
+          "Un programme de fidélité est-il obligatoire ? Non. Testez d’abord une prochaine étape simple avant d’ajouter un système récurrent de points ou d’avantages.",
+        ],
+      },
+      {
+        title: "Checklist pour concevoir une prochaine étape",
+        paragraphs: [
+          "Avant de lancer l’animation, vérifiez les points suivants :",
+        ],
+        items: [
+          "La prochaine action est définie avant la diffusion de l’animation.",
+          "L’invitation, l’offre ou la réservation est compréhensible en quelques secondes.",
+          "La validité, les conditions, les stocks et la capacité de service sont vérifiés.",
+          "Le gain initial reste distinct de la promesse de retour.",
+          "La collecte d’un contact est facultative, expliquée et consentie séparément.",
+          "Le message de suivi et la possibilité de ne plus le recevoir sont prévus.",
+          "Les participations, gains, retraits, utilisations et secondes visites sont séparés.",
+          "Le bilan indique ce qui est observé, attribuable, inconnu et à tester ensuite.",
+        ],
+      },
+    ],
+    related: [
+      "/blog/fideliser-clients-sans-programme-points",
+      "/blog/jeu-concours-ou-promotion",
+      "/blog/mesurer-animation-commerciale",
+      "/tarifs",
+      "/comment-ca-marche",
+    ],
+  },
+  {
+    path: "/blog/animation-lancement-nouveau-produit",
+    title: "Comment lancer un nouveau produit avec une animation commerciale ?",
+    description:
+      "Préparez le lancement d’un nouveau produit avec une animation claire : découverte, démonstration, offre, stock, équipe et mesure sans promesse de ventes.",
+    eyebrow: "Lancement produit local",
+    intro:
+      "Une animation de lancement doit aider les clients à comprendre et essayer une nouveauté, sans masquer ses caractéristiques, sa disponibilité ou ses conditions. Préparez une découverte simple, une démonstration maîtrisée et une mesure séparant compréhension, essais, participations et ventes réellement observées.",
+    answer:
+      "Pour lancer un nouveau produit avec une animation commerciale, définissez d’abord ce que le client doit découvrir, choisissez une démonstration ou une participation compatible avec votre équipe, préparez un stock et des conditions visibles, puis mesurez les essais et actions observées. Une animation peut faciliter la découverte sans garantir les ventes ni remplacer la qualité du produit.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-17",
+    updatedAt: "2026-10-17",
+    reviewedAt: "2026-10-17",
+    readingTime: "9 min de lecture",
+    image: "/images/blog/animation-lancement-nouveau-produit.webp",
+    imageAlt: "Illustration d’un commerce qui présente un nouveau produit pendant une animation",
+    ctaLabel: "Préparer un lancement local",
+    ctaHref: "/tarifs",
+    sections: [
+      {
+        title: "Définissez ce que le lancement doit faire découvrir",
+        paragraphs: [
+          "Un nouveau produit peut être difficile à comprendre parce qu’il est inédit, qu’il répond à un usage précis ou qu’il arrive dans une gamme déjà connue. Avant de choisir une animation, formulez la découverte attendue : usage, bénéfice, geste, parfum, texture, format, prestation ou différence avec une offre existante.",
+          "Un lancement ne doit pas tout expliquer en même temps. Choisissez un message principal, puis prévoyez les informations nécessaires sur le prix, la disponibilité, les conditions et les limites. Une animation rend la découverte plus concrète, mais elle ne doit pas dissimuler les caractéristiques importantes.",
+        ],
+        items: [
+          "Produit ou prestation présenté et public concerné.",
+          "Point de compréhension prioritaire pour le client.",
+          "Action attendue : regarder, essayer, réserver, participer ou acheter.",
+          "Informations obligatoires : prix, stock, durée, conditions ou précautions utiles.",
+        ],
+      },
+      {
+        title: "Choisissez entre découverte, démonstration et jeu",
+        paragraphs: [
+          "Une démonstration convient lorsque le produit doit être montré ou expliqué. Un échantillon ou un essai peut être pertinent lorsque le client doit se faire une idée par l’expérience. Un jeu par QR code peut créer une participation autour du lancement, à condition que la mécanique ne prenne pas le pas sur la nouveauté présentée.",
+          "Le format doit suivre le produit et la capacité de l’équipe. Une animation très visible mais difficile à délivrer peut nuire au lancement. Pour comparer plusieurs formats, consultez les [idées d’animations commerciales en boutique](/blog/idees-animations-commerciales-boutique) et les [idées de promotions pour commerce local](/blog/idees-promotions-commerce-local).",
+        ],
+        items: [
+          "Découverte libre : présentation visible, fiche claire et équipe disponible pour répondre.",
+          "Démonstration : séquence courte, répétable et compatible avec le rythme du lieu.",
+          "Essai : quantité, hygiène, sécurité, stock et conditions vérifiés avant diffusion.",
+          "Jeu ou offre : participation distincte de la découverte et conditions affichées.",
+        ],
+      },
+      {
+        title: "Construisez une promesse claire sans dévaloriser le produit",
+        paragraphs: [
+          "Une animation peut donner une raison de venir découvrir une nouveauté sans réduire systématiquement son prix. Vous pouvez proposer une démonstration, un conseil, une expérience, une réservation prioritaire, un avantage limité ou un jeu lié au lancement. L’important est que la promesse reste cohérente avec le positionnement du produit.",
+          "Une remise n’est pas le seul moyen de faire essayer. Si vous en proposez une, précisez sa durée, ses produits concernés, ses exclusions et son éventuelle non-cumulabilité. Ne présentez pas un avantage ponctuel comme le prix normal du produit.",
+          "Un lot ou un gain ne doit pas remplacer l’information sur la nouveauté. Le client doit comprendre ce qu’il découvre, ce qui est proposé et ce qu’il peut faire ensuite.",
+        ],
+      },
+      {
+        title: "Préparez le stock et les conditions avant l’annonce",
+        paragraphs: [
+          "Une animation de lancement attire l’attention sur la disponibilité. Vérifiez donc les quantités réellement accessibles, la date d’arrivée, les variantes, le réassort et la capacité à honorer une réservation. Si le stock est limité, indiquez-le sans créer une urgence artificielle.",
+          "Préparez aussi les règles de l’animation : durée, produits concernés, achat requis, réservation, quantité par personne, remplacement éventuel et procédure si le produit est épuisé. Ces conditions doivent être comprises par l’équipe et visibles par le public.",
+          "Un lancement peut continuer à susciter des demandes après la fin de l’animation. Décidez comment l’équipe répondra lorsque l’essai, le lot ou la disponibilité annoncée n’est plus possible.",
+        ],
+        items: [
+          "Stock disponible pour la démonstration, l’essai et la vente.",
+          "Réassort ou solution de réservation si le stock est limité.",
+          "Dates, variantes, prix et conditions d’utilisation à jour.",
+          "Réponse prévue si le produit est indisponible ou remplacé.",
+        ],
+      },
+      {
+        title: "Donnez à l’équipe une démonstration répétable",
+        paragraphs: [
+          "Une démonstration efficace n’a pas besoin d’être longue. Préparez une séquence courte : présenter le besoin, montrer le produit, expliquer ce qui le distingue et indiquer l’étape suivante. Chaque membre de l’équipe doit pouvoir reprendre le même cadre sans réciter un discours identique.",
+          "Testez la démonstration avec une personne qui ne connaît pas encore le produit. Notez les questions sur l’usage, le prix, la disponibilité, les différences et les conditions. Ces questions peuvent conduire à améliorer le support avant le lancement public.",
+        ],
+        items: [
+          "Une phrase pour expliquer à qui le produit s’adresse.",
+          "Un geste ou une preuve concrète à montrer.",
+          "Une réponse préparée sur le prix, le stock et les conditions.",
+          "Une étape suivante : essayer, réserver, revenir ou acheter sans pression.",
+        ],
+      },
+      {
+        title: "Associez les partenaires sans diluer le message",
+        paragraphs: [
+          "Un partenaire local peut aider à faire connaître le lancement, fournir un lieu ou compléter l’expérience. Définissez cependant qui présente le produit, qui gère les stocks, qui répond aux questions et qui recueille éventuellement une demande.",
+          "Une communication à plusieurs voix peut rendre les conditions difficiles à comprendre. Préparez un message commun, une date de fin et un point de contact clair. Chaque partenaire doit aussi éviter de présenter comme observé un résultat qui n’a pas été mesuré.",
+          "Commencez avec un périmètre que les équipes peuvent coordonner. Un lancement dans plusieurs établissements ou canaux demande un suivi séparé pour distinguer les supports et les responsabilités.",
+        ],
+      },
+      {
+        title: "Créez un contenu local utile avant et pendant le lancement",
+        paragraphs: [
+          "Un contenu local peut expliquer pourquoi le produit arrive, à qui il s’adresse, comment le découvrir et quand le trouver. Utilisez une vitrine, une page locale, un agenda, un partenaire ou un message adressé à une audience qui a consenti à le recevoir.",
+          "Un QR code peut ouvrir une page de présentation, une démonstration ou un jeu. Testez le support dans le lieu réel et distinguez les scans, les participations, les demandes d’information et les ventes. Un clic ne prouve pas que le produit a été compris ou acheté.",
+          "Pour une expérience cohérente, relisez les principes de l’[expérience client en boutique](/blog/experience-client-boutique) et adaptez le support à la place réellement disponible.",
+        ],
+      },
+      {
+        title: "Mesurez compréhension, essais et actions observées",
+        paragraphs: [
+          "Avant le lancement, définissez ce que vous souhaitez apprendre : le produit est-il compris, la démonstration est-elle réalisable, l’essai est-il demandé, les questions changent-elles, les réservations sont-elles honorées ou le stock est-il adapté ? Ces indicateurs sont plus proches de la décision de lancement que le nombre de vues seul.",
+          "Après l’opération, séparez les scans, participations, contacts consentis, essais, gains, retraits, réservations, utilisations d’offre et ventes. Une vente observée pendant la campagne ne prouve pas automatiquement qu’elle a été créée par l’animation.",
+          "Comparez des périodes ou des supports comparables et documentez les facteurs externes : communication, événement local, météo, disponibilité, emplacement ou changement de prix. Si l’attribution est incomplète, dites-le dans le bilan.",
+        ],
+        items: [
+          "Compréhension : questions, demandes d’explication et erreurs récurrentes.",
+          "Essai : démonstration réalisée ou échantillon remis selon une règle connue.",
+          "Intérêt : réservation, demande d’information ou retour volontaire.",
+          "Action commerciale : utilisation d’une offre ou vente avec méthode d’attribution documentée.",
+          "Exécution : temps d’équipe, stock, incidents et capacité de service.",
+        ],
+      },
+      {
+        title: "Un plan de lancement en trois phases",
+        paragraphs: [
+          "Un lancement local peut être organisé en trois phases simples. Elles peuvent être adaptées à une boutique, un restaurant, un institut ou un service qui ajoute une nouvelle prestation.",
+        ],
+        items: [
+          "Avant : définir le message, préparer le stock, former l’équipe, tester le support et annoncer les dates et conditions.",
+          "Pendant : présenter le produit, écouter les questions, suivre les essais et maintenir une information fiable sur la disponibilité.",
+          "Après : traiter les demandes restantes, proposer une prochaine étape consentie, comparer les indicateurs et décider d’un ajustement.",
+          "Si le produit est épuisé : arrêter ou adapter la promesse, actualiser les supports et proposer une réservation seulement si elle peut être tenue.",
+        ],
+      },
+      {
+        title: "Questions fréquentes sur une animation de lancement",
+        paragraphs: [
+          "Quelle animation choisir pour un lancement ? Choisissez entre découverte, démonstration, essai, jeu ou offre selon le produit, l’objectif, la capacité de l’équipe et le stock. Aucun format n’est universel.",
+          "Comment faire tester un produit sans le dévaloriser ? Mettez l’accent sur l’expérience, l’explication et la disponibilité. Une remise limitée peut compléter le lancement, mais elle ne doit pas remplacer la présentation de la valeur du produit.",
+          "Comment gérer un stock limité ? Annoncez la disponibilité réelle, fixez les conditions, prévoyez une règle en cas d’épuisement et ne promettez une réservation que si elle peut être honorée.",
+          "Un jeu suffit-il à lancer un produit ? Non. Il peut attirer une participation, mais la découverte, les caractéristiques, les conditions et l’accès au produit doivent rester explicites.",
+          "Peut-on attribuer les ventes au lancement ? Seulement avec une méthode définie avant l’opération et des données comparables. Une vente pendant la campagne n’est pas automatiquement causée par l’animation.",
+        ],
+      },
+      {
+        title: "Checklist pour préparer un lancement local",
+        paragraphs: [
+          "Avant de lancer l’animation, vérifiez les points suivants :",
+        ],
+        items: [
+          "Le produit, son usage principal et son public sont décrits clairement.",
+          "La découverte, la démonstration, l’essai ou le jeu a un objectif précis.",
+          "Le stock, le prix, les dates, les variantes et les conditions sont vérifiés.",
+          "L’équipe peut répéter une démonstration courte et répondre aux questions principales.",
+          "Les supports locaux, QR codes et pages de destination ont été testés.",
+          "Les partenaires connaissent leurs rôles, leurs limites et les informations à transmettre.",
+          "La mesure distingue compréhension, essais, participations, contacts, retraits, réservations et ventes.",
+          "Le bilan prévoit une décision : continuer, ajuster, ralentir ou arrêter.",
+        ],
+      },
+    ],
+    related: [
+      "/blog/idees-animations-commerciales-boutique",
+      "/blog/idees-promotions-commerce-local",
+      "/blog/experience-client-boutique",
+      "/comment-ca-marche",
+      "/tarifs",
+    ],
+  },
+  {
+    path: "/blog/animation-marketing-multi-sites",
+    title: "Comment déployer une animation marketing dans plusieurs établissements ?",
+    description:
+      "Structurez une animation multi-sites avec un socle commun, des QR codes et conditions par établissement, des équipes formées et une mesure séparée.",
+    eyebrow: "Marketing multi-sites",
+    intro:
+      "Déployer une animation marketing dans plusieurs établissements demande un équilibre entre standardisation et adaptation locale. Définissez un socle commun, attribuez les supports et QR codes à chaque site, vérifiez les lots et conditions, puis comparez les résultats sans mélanger les contextes.",
+    answer:
+      "Pour déployer une animation dans plusieurs établissements, standardisez la promesse, la mécanique et les règles communes, puis localisez le nom du site, les dates, les stocks, les supports et les responsabilités. Testez d’abord un établissement pilote et suivez séparément scans, participations, gains, retraits, visites et ventes par site.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-17",
+    updatedAt: "2026-10-17",
+    reviewedAt: "2026-10-17",
+    readingTime: "10 min de lecture",
+    image: "/images/blog/animation-marketing-multi-sites.webp",
+    imageAlt: "Illustration d’une responsable qui coordonne une animation dans plusieurs commerces",
+    ctaLabel: "Évaluer un déploiement multi-sites",
+    ctaHref: "/tarifs",
+    sections: [
+      {
+        title: "Standardisez le socle et localisez ce qui doit l’être",
+        paragraphs: [
+          "Une animation multi-sites ne consiste pas à copier un fichier sans contrôle. Le socle commun peut contenir l’objectif, la mécanique, la promesse, les règles générales, le calendrier de référence et les indicateurs. Chaque établissement doit ensuite renseigner ses propres informations et valider son support avant diffusion.",
+          "Cette séparation évite deux risques opposés : des campagnes différentes impossibles à comparer, ou un support identique qui affiche le mauvais lieu, la mauvaise date ou un lot indisponible. Documentez ce qui ne doit jamais changer et ce qui doit être adapté localement.",
+        ],
+        items: [
+          "Socle commun : mécanique, message principal, règles, structure du support et indicateurs.",
+          "Éléments locaux : nom, adresse, horaires, dates, stocks, lots, équipe et responsable.",
+          "Validation : personne qui relit et personne qui autorise la diffusion pour chaque site.",
+          "Version : fichier ou support associé à un établissement et à une période précise.",
+        ],
+      },
+      {
+        title: "Définissez le modèle de jeu ou d’animation",
+        paragraphs: [
+          "Choisissez une mécanique que chaque équipe peut expliquer et délivrer. Il peut s’agir d’une roue, d’un ticket à gratter, d’une offre, d’une démonstration ou d’une invitation. La question n’est pas seulement de savoir si le format est duplicable, mais si ses lots, ses conditions et son retrait restent maîtrisables dans chaque établissement.",
+          "Décrivez le parcours de bout en bout : support, scan ou entrée, participation, résultat, conditions, gain, retrait et éventuelle prochaine visite. Les étapes doivent être les mêmes dans le socle, même si les lots ou les créneaux varient selon le site.",
+          "Pour un parcours QR, consultez l’article [animer un point de vente avec un QR code](/blog/animer-point-de-vente-qr-code) et testez la page dans le contexte réel de chaque établissement.",
+        ],
+        items: [
+          "Objectif commun et action attendue du public.",
+          "Parcours identique ou variantes autorisées explicitement.",
+          "Règles de gains, validité, stock et retrait documentées.",
+          "Indicateurs communs et événements qui restent propres à chaque site.",
+        ],
+      },
+      {
+        title: "Attribuez un QR public et un support à chaque site",
+        paragraphs: [
+          "Le mauvais QR code peut envoyer un client vers le mauvais établissement, la mauvaise condition ou le mauvais stock. Pour éviter cette erreur, attribuez chaque QR public à un site et à une version de campagne, puis vérifiez le parcours avec le support réellement imprimé.",
+          "Ne mélangez pas le QR de prévisualisation, le QR public et les liens de test de l’équipe. Identifiez-les dans votre fiche de déploiement et retirez les anciens supports lorsque la campagne change.",
+          "Lorsque la comparaison entre sites est utile, utilisez une attribution distincte ou une information de provenance qui reste compréhensible pour l’équipe. Cela permet de suivre les scans et participations sans déduire une performance à partir d’un support partagé.",
+        ],
+        items: [
+          "Un établissement, un support validé et un QR public identifié.",
+          "Une vérification sur plusieurs téléphones et dans les conditions de lumière du site.",
+          "Une date de remplacement ou de retrait des anciennes affiches.",
+          "Un registre des versions pour retrouver quel support était diffusé.",
+        ],
+      },
+      {
+        title: "Gérez les lots et les stocks établissement par établissement",
+        paragraphs: [
+          "Un réseau peut partager une promesse tout en ayant des stocks, des capacités de service et des produits différents. Définissez donc les lots et quantités par établissement, ou prévoyez une règle claire lorsque le stock est mutualisé.",
+          "Un gain attribué n’est pas encore un retrait. Chaque équipe doit savoir vérifier la validité, la disponibilité et le statut du lot avant de le remettre. Si un établissement ne peut plus honorer une dotation, le support et la page doivent être actualisés rapidement.",
+          "Les probabilités ou répartitions configurées ne prédisent ni le nombre de participations ni le nombre de ventes. Le suivi doit porter sur les gains attribués, les retraits réalisés et les stocks restants par site.",
+        ],
+        items: [
+          "Stock initial et stock de sécurité par établissement.",
+          "Lot, quantité, date de validité et condition de retrait.",
+          "Responsable de la mise à jour et procédure en cas d’épuisement.",
+          "Séparation entre gains attribués, lots retirés et lots encore disponibles.",
+        ],
+      },
+      {
+        title: "Définissez les droits et les responsabilités des équipes",
+        paragraphs: [
+          "Un déploiement multi-sites fonctionne mieux lorsque chacun sait ce qu’il peut modifier. Le responsable réseau peut préparer le socle ; le responsable d’établissement peut valider ses horaires, ses lots et son support ; l’équipe sur place peut expliquer le parcours et remettre un gain selon la procédure.",
+          "N’accordez pas plus de droits que nécessaire et prévoyez une personne capable de corriger une erreur de support ou de condition. Une modification locale non documentée peut rendre les résultats difficiles à comparer et les règles incohérentes entre sites.",
+        ],
+        items: [
+          "Création et modification du socle commun.",
+          "Validation locale des dates, lots, horaires et supports.",
+          "Gestion opérationnelle des participations et retraits.",
+          "Accès au bilan du site et au bilan consolidé, selon le rôle.",
+          "Escalade en cas de stock épuisé, erreur de QR ou demande particulière.",
+        ],
+      },
+      {
+        title: "Préparez les supports sans multiplier les erreurs",
+        paragraphs: [
+          "Le support doit être compréhensible dans chaque établissement : promesse, période, QR code, conditions essentielles et point de retrait. Utilisez un modèle commun, mais générez ou relisez chaque version locale avant impression.",
+          "Un contrôle visuel ne suffit pas. Scannez le QR, vérifiez le nom du site, la date, les lots, la page ouverte et le parcours de retrait. Faites relire le support par une personne qui n’a pas participé à sa création.",
+          "Le [calendrier marketing pour commerce local](/blog/calendrier-marketing-commerce-local) peut aider à coordonner les dates, mais chaque établissement doit confirmer ses contraintes propres avant publication.",
+        ],
+      },
+      {
+        title: "Commencez par un déploiement pilote",
+        paragraphs: [
+          "Un pilote sur un établissement permet de vérifier la mécanique dans des conditions réelles avant de multiplier les supports et les équipes. Choisissez un site capable de documenter les questions, les incidents, les temps de remise et les étapes qui posent problème.",
+          "Le pilote ne prouve pas qu’un résultat sera identique ailleurs. Il sert à améliorer le modèle, la fiche de déploiement et la formation. Avant l’extension, corrigez les erreurs qui pourraient se répéter sur tous les sites.",
+        ],
+        items: [
+          "Choisir un établissement représentatif et un responsable identifié.",
+          "Tester le support, le QR, le parcours et les règles de retrait.",
+          "Noter les questions et incidents sans les présenter comme des résultats universels.",
+          "Mettre à jour le socle et la formation avant le déploiement réseau.",
+        ],
+      },
+      {
+        title: "Mesurez chaque établissement séparément",
+        paragraphs: [
+          "Un bilan réseau ne doit pas additionner des contextes incomparables sans les expliquer. Pour chaque site, suivez au minimum la période, le support, les scans, les participations, les contacts consentis, les gains, les retraits, les utilisations d’offre, les ventes attribuables selon une méthode définie et les incidents.",
+          "Documentez aussi les différences : emplacement, horaires, équipe, stock, communication locale, météo, événement voisin ou fermeture partielle. Un site peut avoir moins de participations mais une procédure plus fluide ; un autre peut avoir plus de scans mais davantage d’abandons.",
+          "Pour la méthode d’attribution et les limites, référez-vous à [mesurer une animation commerciale](/blog/mesurer-animation-commerciale). Une participation ou une vente ne devient pas une preuve de rentabilité simplement parce qu’elle est agrégée au niveau du réseau.",
+        ],
+        items: [
+          "Données de parcours : scans, participations, contacts, gains et retraits.",
+          "Données commerciales : utilisations, réservations ou ventes selon une méthode connue.",
+          "Données d’exécution : stock, temps d’équipe, incidents et questions.",
+          "Contexte : horaires, emplacement, support, communication et contraintes locales.",
+        ],
+      },
+      {
+        title: "Construisez un bilan réseau utile à la décision",
+        paragraphs: [
+          "Commencez le bilan par une vue site par site, puis cherchez les écarts qui méritent une action. Le but n’est pas de classer automatiquement les établissements, mais de comprendre ce qui dépend du modèle commun et ce qui relève du contexte local.",
+          "Un bon bilan peut répondre à quatre questions : le parcours a-t-il été délivré comme prévu, quelles conditions locales ont changé, quels indicateurs sont réellement comparables et quelle modification faut-il tester ensuite ? Les résultats non mesurés doivent rester identifiés comme tels.",
+        ],
+        items: [
+          "Ce qui est commun et doit rester inchangé.",
+          "Ce qui doit être adapté par établissement.",
+          "Ce qui a créé une friction ou une erreur répétée.",
+          "Ce qui peut être testé sur un sous-ensemble avant une nouvelle extension.",
+        ],
+      },
+      {
+        title: "Questions fréquentes sur une animation multi-sites",
+        paragraphs: [
+          "Faut-il un jeu par établissement ? Pas nécessairement. Une même mécanique peut être utilisée avec des supports, lots, conditions et attributions distincts, si les responsabilités et les stocks sont correctement séparés.",
+          "Comment suivre les stocks ? Définissez le stock initial, les gains attribués, les retraits, les dates et la personne responsable pour chaque établissement. Actualisez les supports si une dotation devient indisponible.",
+          "Comment éviter le mauvais QR code ? Associez chaque QR à un site et une version, testez le support final sur plusieurs téléphones et retirez les anciennes affiches lors d’un changement.",
+          "Peut-on comparer les sites ? Oui, à condition de conserver les données et le contexte de chaque site. Une comparaison ne doit pas masquer les écarts d’horaires, de public, de stock ou de communication.",
+          "Faut-il déployer partout en même temps ? Non. Un pilote peut révéler les erreurs de parcours et améliorer la documentation avant l’extension, sans garantir les mêmes résultats dans les autres établissements.",
+        ],
+      },
+      {
+        title: "Checklist de déploiement multi-sites",
+        paragraphs: [
+          "Avant de diffuser l’animation dans plusieurs établissements, vérifiez les points suivants :",
+        ],
+        items: [
+          "Le socle commun, les variantes locales et les responsables sont définis.",
+          "Chaque établissement a validé ses dates, horaires, lots, stocks et conditions.",
+          "Chaque support possède le bon QR public et a été testé dans le lieu réel.",
+          "Le QR de test, la prévisualisation et le QR public sont clairement distingués.",
+          "Les équipes connaissent le parcours, la procédure de retrait et la personne à contacter en cas d’erreur.",
+          "Un pilote a été réalisé et ses enseignements ont été intégrés au modèle.",
+          "Les indicateurs et le contexte sont suivis séparément par établissement.",
+          "Le bilan réseau ne confond pas agrégation, comparaison, fréquentation, ventes et rentabilité.",
+        ],
+      },
+    ],
+    related: [
+      "/blog/animer-point-de-vente-qr-code",
+      "/blog/calendrier-marketing-commerce-local",
+      "/comment-ca-marche",
+      "/tarifs",
+      "/blog/mesurer-animation-commerciale",
+    ],
+  },
+  {
+    path: "/blog/affiche-qr-code-animation-commerciale",
+    title: "Comment créer une affiche QR code pour une animation commerciale ?",
+    description:
+      "Concevez une affiche QR code claire et lisible : promesse, appel à l’action, conditions, emplacement, test multi-téléphones et checklist avant impression.",
+    eyebrow: "Support d’animation",
+    intro:
+      "Une affiche QR code efficace ne se résume pas à placer un carré à scanner. Elle hiérarchise la promesse, l’action attendue, les conditions essentielles et le QR code, puis elle est testée dans le lieu réel avant d’être imprimée en quantité.",
+    answer:
+      "Pour créer une affiche QR code d’animation commerciale, formulez une promesse courte, indiquez clairement quoi faire, rendez le code et les conditions visibles, choisissez un emplacement adapté au parcours client et testez le support imprimé sur plusieurs téléphones. Un scan ne garantit ni participation, ni gain, ni vente : le parcours doit être vérifié séparément.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-17",
+    updatedAt: "2026-10-17",
+    reviewedAt: "2026-10-17",
+    readingTime: "9 min de lecture",
+    image: "/images/blog/affiche-qr-code-animation-commerciale.webp",
+    imageAlt: "Illustration d’une affiche QR code testée dans un commerce local",
+    ctaLabel: "Préparer votre support d’animation",
+    ctaHref: "/affiches-qr-code",
+    sections: [
+      {
+        title: "Commencez par un message principal",
+        paragraphs: [
+          "Une personne doit comprendre l’intérêt de l’affiche avant de sortir son téléphone. Formulez une promesse concrète et compatible avec l’animation : participer à un jeu, découvrir une offre, essayer un produit ou accéder à une invitation. Évitez les phrases générales qui ne disent pas ce qui se passe après le scan.",
+          "Le message doit rester honnête sur la disponibilité, la durée et les conditions. Une affiche ne doit pas annoncer un gain ou une offre que le commerce ne peut plus remettre. Si le stock ou le nombre de places est limité, prévoyez une formulation et une procédure de mise à jour.",
+        ],
+        items: [
+          "Une promesse compréhensible sans connaître le produit ou l’outil.",
+          "Une action précise : scanner, participer, découvrir, réserver ou essayer.",
+          "Une période ou une date de fin lorsque l’animation est limitée.",
+          "Une information sur les conditions essentielles, sans microtexte illisible.",
+        ],
+      },
+      {
+        title: "Placez un appel à l’action près du QR code",
+        paragraphs: [
+          "Le QR code doit être accompagné d’une consigne visible. « Scannez pour participer » ou « Ouvrez la page pour découvrir l’offre » donne une direction plus claire qu’un code isolé. Adaptez la phrase à l’étape réellement proposée et ne promettez pas un résultat qui dépend d’un tirage ou d’un stock.",
+          "L’appel à l’action doit être lisible à la distance où l’affiche est observée. Il peut être placé au-dessus ou à côté du code, avec assez d’espace pour que les éléments ne se confondent pas. Le support doit rester compréhensible même si le client ne lit pas tous les détails.",
+        ],
+        items: [
+          "Verbe d’action visible et directement lié au parcours.",
+          "QR code suffisamment dégagé pour être cadré par l’appareil photo.",
+          "Promesse et consigne regroupées dans la même zone visuelle.",
+          "Conditions importantes accessibles avant ou au moment de la participation.",
+        ],
+      },
+      {
+        title: "Construisez une hiérarchie visuelle simple",
+        paragraphs: [
+          "Une affiche doit être comprise en quelques secondes. Organisez les éléments dans cet ordre : ce qui est proposé, ce qu’il faut faire, les conditions essentielles et les informations pratiques. Le QR code est un moyen d’entrée, pas le message principal.",
+          "Limitez le nombre de couleurs, de polices et d’éléments décoratifs. Un visuel trop chargé peut réduire la lisibilité de la consigne et détourner l’attention du code. Si une information est indispensable, donnez-lui un emplacement fixe dans le modèle.",
+          "Vous pouvez partir du support prévu sur la page [affiches QR code](/affiches-qr-code), puis l’adapter à votre lieu et à votre animation. Relisez toujours le visuel final plutôt que de considérer le modèle comme validé automatiquement.",
+        ],
+        items: [
+          "Niveau 1 : promesse ou bénéfice de l’animation.",
+          "Niveau 2 : action attendue autour du QR code.",
+          "Niveau 3 : période, conditions et lieu.",
+          "Niveau 4 : informations complémentaires qui ne doivent pas concurrencer l’action.",
+        ],
+      },
+      {
+        title: "Vérifiez contraste, taille et lisibilité",
+        paragraphs: [
+          "Le QR code et le texte doivent rester lisibles selon le support, la distance, la lumière et les reflets. Un fichier qui paraît correct sur un écran peut devenir difficile à scanner après impression ou derrière une vitre.",
+          "Contrôlez le contraste entre le code et son fond, la netteté à la taille finale et la présence d’une marge autour du code. Évitez les fonds chargés, les déformations, les couleurs trop proches et les éléments qui passent sur la zone de lecture.",
+          "Pensez aussi aux personnes qui ne peuvent pas scanner facilement. Affichez une consigne alternative ou un moyen simple de demander de l’aide à l’équipe, sans faire dépendre un gain d’une capacité technique particulière.",
+        ],
+        items: [
+          "Contraste suffisant entre le QR code et son arrière-plan.",
+          "Taille adaptée à la distance réelle de lecture.",
+          "Marge blanche ou zone dégagée autour du code.",
+          "Texte assez grand pour être lu sans agrandissement du téléphone.",
+          "Alternative de compréhension ou d’accompagnement par l’équipe.",
+        ],
+      },
+      {
+        title: "Choisissez l’emplacement selon le parcours client",
+        paragraphs: [
+          "Le meilleur emplacement est celui où le client peut voir l’affiche, sortir son téléphone et agir sans bloquer le service. Une vitrine attire l’attention avant l’entrée ; un comptoir peut convenir à une participation accompagnée ; une table ou une zone d’attente laisse davantage de temps pour lire.",
+          "Ne placez pas le QR derrière un reflet, trop près d’un obstacle ou dans une zone où le client ne peut pas tenir son téléphone. Testez l’angle, la distance, la lumière et la circulation à l’heure réelle de l’animation.",
+          "Si plusieurs emplacements utilisent la même campagne, notez où se trouve chaque affiche. Si vous souhaitez comparer les supports, attribuez-les distinctement sans créer de parcours contradictoires.",
+        ],
+        items: [
+          "Vitrine : visibilité avant la visite et consigne courte.",
+          "Comptoir : accompagnement possible, avec un espace qui ne gêne pas la file.",
+          "Table ou attente : lecture plus longue et participation autonome.",
+          "Événement : support à hauteur et distance adaptées au flux du stand.",
+        ],
+      },
+      {
+        title: "Montrez les conditions sans cacher l’essentiel",
+        paragraphs: [
+          "Une affiche n’a pas à reproduire tout le règlement, mais elle doit rendre visibles les conditions qui changent la décision de participer : période, public concerné, achat requis, stock, dates d’utilisation, lieu de retrait ou réservation.",
+          "Si les détails sont accessibles après le scan, indiquez-le clairement. Le client doit pouvoir comprendre qu’il va ouvrir une page présentant les conditions avant de confirmer sa participation. Ne rendez pas une information importante dépendante d’un texte minuscule placé en bas du support.",
+          "La participation, le gain et le retrait restent des étapes distinctes. Une affiche peut présenter le parcours, mais l’équipe doit aussi savoir expliquer la remise et les limites au moment concerné.",
+        ],
+      },
+      {
+        title: "Séparez QR public, prévisualisation et tests",
+        paragraphs: [
+          "Utilisez le QR public prévu pour les clients sur le support final. La prévisualisation et les liens de test servent à contrôler le parcours avant diffusion, mais ils ne doivent pas être imprimés par erreur. Identifiez les fichiers et les versions pour éviter une confusion.",
+          "Après chaque modification de date, lot, condition ou établissement, relisez le support et vérifiez le QR correspondant. Un QR qui ouvre encore une ancienne campagne peut générer des participations sur un parcours ou un stock qui n’est plus valable.",
+          "Dans un contexte multi-sites, associez le QR au bon établissement et suivez les supports imprimés. Les données de plusieurs lieux ne doivent pas être mélangées par défaut.",
+        ],
+        items: [
+          "Prévisualisation : contrôle interne du rendu et du parcours.",
+          "QR public : lien réellement diffusé aux clients.",
+          "Version imprimée : support associé à une date, un lieu et une campagne.",
+          "Ancienne version : support retiré ou clairement désactivé avant la nouvelle diffusion.",
+        ],
+      },
+      {
+        title: "Testez l’affiche imprimée sur plusieurs téléphones",
+        paragraphs: [
+          "Un test utile se fait avec le papier, la taille et l’emplacement définitifs. Utilisez plusieurs téléphones, différents niveaux de luminosité et plusieurs distances. Vérifiez que la caméra reconnaît le code sans que le client ait besoin de chercher un réglage particulier.",
+          "Effectuez ensuite le parcours complet : ouverture de la page, participation, affichage du résultat, lecture des conditions et éventuelle procédure de retrait. Un scan réussi ne suffit pas si la page se charge mal ou si l’action suivante est incomprise.",
+          "Conservez une trace de la version testée, de la date, de l’emplacement et des corrections. Cela facilite le remplacement d’un support si le lot, le lien ou la date change.",
+        ],
+        items: [
+          "Impression à la taille et sur le papier réellement utilisés.",
+          "Plusieurs téléphones et systèmes d’exploitation.",
+          "Distance, angle, lumière, reflet et emplacement réels.",
+          "Parcours complet jusqu’à la compréhension du gain ou de l’offre.",
+          "Validation de la date, du lieu, des conditions et du stock.",
+        ],
+      },
+      {
+        title: "Mesurez les scans sans les confondre avec les participations",
+        paragraphs: [
+          "Une affiche peut être évaluée avec plusieurs indicateurs : scans, participations, abandons, contacts consentis, gains, retraits, utilisations d’offre et éventuelles ventes selon une méthode documentée. Ces événements ne doivent pas être additionnés comme s’ils représentaient tous la même action.",
+          "Si plusieurs supports sont diffusés, notez leur emplacement et leur période. Un support très visible peut générer des scans mais demander davantage d’accompagnement ; un autre peut être moins consulté mais plus simple à délivrer. Le contexte est nécessaire pour interpréter l’écart.",
+          "Pour organiser ce suivi, consultez [mesurer une animation commerciale](/blog/mesurer-animation-commerciale) et décrivez ce qui a été observé, supposé ou laissé inconnu. Un QR code ne prouve ni la fidélité ni le chiffre d’affaires.",
+        ],
+      },
+      {
+        title: "Questions fréquentes sur une affiche QR code",
+        paragraphs: [
+          "Quelle phrase mettre près d’un QR code ? Utilisez une consigne courte qui décrit l’action réelle, par exemple participer, découvrir, essayer ou réserver. La phrase doit correspondre à la page ouverte et aux conditions de l’animation.",
+          "Où placer l’affiche ? Placez-la là où le client peut la voir et agir sans gêner la circulation : vitrine, comptoir, zone d’attente, table ou stand. Testez la distance, l’angle et la lumière dans le lieu réel.",
+          "Comment vérifier qu’un QR fonctionne après impression ? Scannez le support imprimé avec plusieurs téléphones, puis réalisez le parcours complet jusqu’à la page, la participation et la lecture des conditions.",
+          "Faut-il afficher tout le règlement ? Non, mais les conditions qui modifient la décision de participer doivent être visibles ou annoncées clairement avant la confirmation.",
+          "Un QR code garantit-il des participations ? Non. Il facilite une entrée dans le parcours ; la visibilité, la promesse, la page, le contexte et l’expérience influencent la suite.",
+        ],
+      },
+      {
+        title: "Checklist avant d’imprimer votre affiche",
+        paragraphs: [
+          "Avant de lancer une impression en quantité, vérifiez les points suivants :",
+        ],
+        items: [
+          "La promesse et l’action attendue sont compréhensibles en quelques secondes.",
+          "Le QR code public est distinct de la prévisualisation et des liens de test.",
+          "Le contraste, la taille, la marge et la netteté sont adaptés au support final.",
+          "L’emplacement permet de lire, scanner et agir sans gêner le parcours.",
+          "Les dates, conditions, stocks, lieux et modalités de retrait sont à jour.",
+          "Le support imprimé a été testé sur plusieurs téléphones et dans le lieu réel.",
+          "Une version alternative ou une aide de l’équipe est prévue pour les clients qui ne peuvent pas scanner.",
+          "Les indicateurs distinguent scans, participations, gains, retraits, offres utilisées et ventes éventuelles.",
+        ],
+      },
+    ],
+    related: [
+      "/affiches-qr-code",
+      "/blog/animer-point-de-vente-qr-code",
+      "/blog/idees-animations-commerciales-boutique",
+      "/comment-ca-marche",
+      "/blog/mesurer-animation-commerciale",
+    ],
+  },
 ];
 
 export function blogPostByPath(path: string) {

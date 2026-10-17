@@ -19,6 +19,7 @@ const routes = [
 test("chaque page publique : HTML indexable, canonical, image sociale et navigation mobile", async ({
   page,
 }, testInfo) => {
+  test.setTimeout(60_000);
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   const titles = new Set<string>();
