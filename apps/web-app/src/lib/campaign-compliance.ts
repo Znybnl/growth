@@ -1,4 +1,5 @@
-import { CampaignSetupInput } from "@/lib/types";
+import type { CampaignSetupInput } from "@/lib/types";
+import { normalizeMarketingActionUrl, type MarketingActionKey } from "@/lib/marketing-action-library";
 
 const GOOGLE_REVIEW_HOSTS = new Set([
   "google.com",
@@ -34,6 +35,7 @@ function assertSecureActionUrl(url: string, kind: string) {
   if (kind === "google" && !GOOGLE_REVIEW_HOSTS.has(parsed.hostname.toLowerCase())) {
     throw new Error("Le lien d’avis doit pointer vers une adresse Google officielle.");
   }
+  normalizeMarketingActionUrl(kind as MarketingActionKey, url);
 }
 
 function assertNoReviewIncentiveCopy(input: CampaignSetupInput) {
@@ -69,10 +71,6 @@ function assertCampaignCanPublishInternal(input: CampaignSetupInput) {
   if (totalProbability > 100.0001) throw new Error("Le total des probabilités ne peut pas dépasser 100 %.");
   if (input.rewardRules.isWinningEveryTime && totalProbability < 99.9999) {
     throw new Error("Un jeu 100 % gagnant doit totaliser exactement 100 % de probabilités.");
-  }
-
-  if (input.actions.length === 0) {
-    throw new Error("Ajoutez au moins une action marketing avant publication.");
   }
 
   for (const action of input.actions) {

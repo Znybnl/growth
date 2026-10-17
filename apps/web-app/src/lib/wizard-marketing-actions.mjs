@@ -85,7 +85,6 @@ export function createAdminWizardMarketingActionDefaults(merchant) {
     ["tiktok", merchant.tiktokUrl],
     ["tripadvisor", merchant.tripadvisorUrl],
     ["custom", merchant.customLinkUrl],
-    ["custom", merchant.appointmentUrl, "Prendre rendez-vous"],
   ];
 
   return configuredActions
