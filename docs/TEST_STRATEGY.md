@@ -11,6 +11,20 @@ L'objectif est de détecter les régressions importantes sans transformer le pro
 
 ## Contrôles automatisés existants
 
+### Options du Wizard et polices Beauté — #551 / #553
+
+`e2e/wizard-options-551-553.spec.ts` utilise les vrais Wizard/éditeur et rendus de
+jeu dans la fixture développement existante `template-rendering-proof`, HTTP 404
+en production. Toutes les API et sorties HTTPS sont interceptées : création
+`review_prompt` sans URL Google, objectif/actions/collecte existants conservés,
+sélection des trois familles sur chaque roue/ticket (Éclat inclus), corps de sauvegarde réel
+et réhydratation synthétique, rendus intégré/public/prévisualisation à 320/1280 px.
+Les rendus vérifient aussi la famille CSS calculée et des accents/retours à la ligne.
+La validation d'entrée accepte chaque couple template/police, sans changer les
+défauts ni les options d'affiche. Rejouer aussi `beauty-wheel-themes.spec.ts` et
+`test:wizard-marketing-actions -w @okado/web-app`. Aucun compte, gain ou e-mail
+réel n'est créé ; cette recette ne teste pas une écriture en base de production.
+
 `test:analytics-consent -w @okado/web-app` vérifie les deux implémentations,
 absence/refus/expiration/version du choix, retrait et nouvel accord, nettoyage
 des identifiants sans toucher aux autres stockages, minimisation des propriétés

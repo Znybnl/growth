@@ -4048,7 +4048,7 @@ export function CampaignEditor({
               <div className="text-sm">
                 <span className="mb-3 block text-[#616b7c]">Police du texte</span>
                 <div className="grid gap-3">
-                  {(beautyWheelFontOptions(form.presentation.layout.templateId) ?? (isCocoricoWheelTemplate(form.presentation.layout.templateId) ? cocoricoTextFontOptions : textFontOptions)).map((font) => {
+                  {(beautyWheelFontOptions(form.presentation.layout.templateId, "poster") ?? (isCocoricoWheelTemplate(form.presentation.layout.templateId) ? cocoricoTextFontOptions : textFontOptions)).map((font) => {
                     const active = form.presentation.poster.headlineFontFamily === font;
 
                     return (

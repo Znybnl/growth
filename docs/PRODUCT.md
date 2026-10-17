@@ -105,7 +105,7 @@ Les métadonnées de la page publique destinées aux aperçus sociaux associent 
 - Une animation créée et pilotée par un marchand est un **jeu**. La rubrique de navigation qui regroupe ces jeux s’intitule **Campagnes** ; *campagne* reste aussi le terme technique/historique du modèle de données.
 - Les actions marketing sont proposées **avant** le jeu et sont séquencées par visite.
 - La collecte d'e-mail est une option indépendante des actions marketing.
-- L'objectif de création sert à initialiser les actions dans le wizard ; il ne doit pas écraser les actions d'un jeu existant.
+- Le Wizard masque le sélecteur Objectif (#553) et initialise les nouveaux jeux sur « Obtenir des avis » (`review_prompt`). Les actions restent modifiables à leur étape ; aucune action Google sans URL renseignée n'est créée. En édition, l'objectif enregistré, les actions et la collecte e-mail existants sont conservés : le masquage n'est pas une migration.
 - Un brouillon peut être sauvegardé incomplet ; la publication est bloquée tant que les éléments requis sont invalides.
 - La prévisualisation est isolée : elle ne décrémente pas les lots et ne nourrit pas les indicateurs de production.
 - Seul l'administrateur de la plateforme accède aux fonctionnalités qui lui sont dédiées. Les utilisateurs marchands pilotent leurs propres établissements et jeux.
@@ -114,6 +114,15 @@ Les métadonnées de la page publique destinées aux aperçus sociaux associent 
 - Le secteur d'activité d'un établissement n'est pas prérempli pour un nouveau profil et peut rester vide ; les choix déjà enregistrés pour les établissements existants sont préservés.
 - Le secteur Beauté propose six sous-secteurs : Beauté généraliste / multi-activité, Coiffure, Ongles, Regard — cils & sourcils, Massage & Spa et Soins visage & corps. Les anciennes valeurs ne sont conservées que si référencées. Les suggestions sont ciblées par sous-secteur ; sans bibliothèque dédiée, la bibliothèque généraliste reste disponible en repli.
 - Les établissements du secteur Beauté disposent de six styles de roue supplémentaires, quel que soit leur sous-secteur. Cette collection apparaît avant les modèles génériques dans les éditeurs ; les joueurs voient le modèle enregistré sans restriction de secteur. Le logo, le titre, le sous-titre, les couleurs et la police restent personnalisables. Les centres JOUER des six thèmes `beauty-*` sont sans icône, avec une police agrandie et un reflet discret en haut à gauche (issue #460). Éclat conserve son bouton, son pointeur et son anneau blanc antérieurs à la PR #461. L'interaction du bouton reste identique.
+
+## Choix des polices Beauté — #551
+
+Les six roues Beauté proposent Playfair Display, Cormorant Garamond et Bodoni Moda
+en complément de leurs choix existants, dans le Wizard et l'éditeur classique.
+Éclat et les tickets Beauté conservent ces trois polices déjà disponibles. Les polices
+initiales de chaque modèle, les choix enregistrés et les autres personnalisations
+ne sont pas modifiés. Les libellés des segments et JOUER gardent leur police de
+lisibilité dédiée ; les affiches et exports sont hors périmètre.
 
 ## Fonds Rose poudré et remplacement Noir & Or — issues #462 / #463
 

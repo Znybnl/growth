@@ -63,6 +63,7 @@ Un même indicateur utilise la même source et la même formule à périmètre �
 - Les actions sont séquencées par visite : action 1 pour la première visite, action 2 pour la deuxième, puis ainsi de suite.
 - La collecte d'e-mail avant le jeu est une option indépendante des actions marketing. Elle ne doit jamais être traitée comme une action de visite.
 - L'objectif choisi lors de la création sert uniquement à proposer une configuration initiale des actions. Après publication, sa modification ne doit pas écraser les actions configurées.
+- Décision propriétaire #553 : le Wizard masque ce choix et utilise `review_prompt` (« Obtenir des avis ») pour les nouveaux jeux. Une édition conserve l'objectif, les actions et la collecte e-mail enregistrés ; aucune conversion de campagne ni action sans URL renseignée n'est déclenchée par ce masquage.
 - Une invitation à laisser un avis doit rester indépendante : elle ne conditionne ni l'accès au jeu ni l'attribution d'un lot.
 
 ## Prévisualisation

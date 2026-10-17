@@ -178,7 +178,7 @@ const WIZARD_STEPS: WizardStep[] = [
     id: "identity",
     number: "02",
     title: "La promesse",
-    description: "Le texte principal et votre objectif.",
+    description: "Le texte affiché à vos clients.",
   },
   {
     id: "appearance",
@@ -1687,36 +1687,6 @@ export function CampaignWizard({
                 </label>
               ) : null}
               <div className="grid gap-4">
-                {!isEditing ? (
-                  <label className="block">
-                    <span className="text-sm font-semibold text-[#182033]">
-                      Objectif
-                    </span>
-                    <span className="mt-1 block text-xs leading-5 text-[#8993a6]">
-                      Il initialise les actions proposées. Vous pourrez les modifier à l’étape Action.
-                    </span>
-                    <select
-                      value={draft.goalType ?? "review_prompt"}
-                      onChange={(event) => {
-                        const goalType = event.target.value as WizardDraft["goalType"];
-                        patchDraft({
-                          goalType,
-                          successMetric:
-                            goalType === "social_follow"
-                              ? "Abonnements sociaux"
-                              : goalType === "lead_capture"
-                                ? "Participations collectées"
-                                : "Avis Google",
-                        });
-                      }}
-                      className="mt-3 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm text-[#182033] outline-none transition focus:border-aubergine focus:ring-4 focus:ring-aubergine/15"
-                    >
-                      <option value="review_prompt">Obtenir des avis</option>
-                      <option value="lead_capture">Collecter des contacts</option>
-                      <option value="social_follow">Gagner des abonnés</option>
-                    </select>
-                  </label>
-                ) : null}
                 <label className="flex cursor-pointer items-start gap-3 rounded-[12px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3 text-sm text-[#182033]">
                     <input
                       type="checkbox"
