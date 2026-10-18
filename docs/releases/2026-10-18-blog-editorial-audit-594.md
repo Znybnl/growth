@@ -145,5 +145,55 @@ Application : réponses utiles et autonomes, sources associées aux faits, HTML 
 
 ## Phase de correction
 
-À consigner après application, avec les métriques finales, les vérifications et les limites restantes. Aucun merge ou déploiement autorisé par cette demande.
+Les dix fiches ci-dessus ont été consignées dans #594 et dans le commit `94e5cb5` avant cette phase. Les corrections suivantes sont désormais appliquées au contenu ; les URL, dates de publication et images existantes sont conservées. Les dates de modification/relecture restent le 18 octobre 2026, date de l’intervention.
+
+| Article | Correction appliquée | Note avant → après |
+|---|---|---|
+| #580 | Annonce d’atelier explicitement fictive, partenariat librairie relié au bon article, lien CNIL contextuel et référence DGCCRF sur les allégations ajoutés. Le contexte historique 2024/2025 est conservé. | 8,6 → 8,9/10 |
+| #581 | Ancre interne Google reformulée ; vraie aide officielle liée au passage photos. Description recentrée sur collection, tailles et équipe ; règle des réductions contextualisée ; tableau besoin/format/preuve ajouté. | 8,1 → 8,8/10 |
+| #582 | Rabais limité explicitement au cas du livre neuf imprimé en boutique ; FAQ alignée. Vrai lien Google événement, conducteur de 45 minutes et budget en minutes-personnes ajoutés. | 7,9 → 8,8/10 |
+| #583 | Quatre saisons nommées pour la France métropolitaine avec thèmes concrets ; source météo/vigilance ciblée ; exemple en litres puis conditionnements ; références accessibles dans le corps. | 7,5 → 8,8/10 |
+| #584 | Allégations thérapeutiques exclues du conseil sur les aliments courants ; nouveau parcours de service entre deux achats ; formule et limites du taux de retour observé ; alertes ponctuelles distinguées de l’abonnement. | 7,6 → 8,7/10 |
+| #585 | Parcours adulte simplifié et référence CNIL conservée pour son contexte propre ; source ERP ciblée ; exemple de trois rotations intégrant la remise en place, accompagnants et distinction personnes/participations. | 8,0 → 8,8/10 |
+| #586 | Fiche de prestation et tri des demandes remplacent les consignes de rédaction SEO/GEO ; zone d’intervention conditionnée au service mobile ; accord et traçabilité des travaux clarifiés ; lien de mesure ajouté. | 7,8 → 8,7/10 |
+| #587 | Programme fictif de 45 minutes, précision de la périodicité et des conditions d’engagement/résiliation avec source DGCCRF, source ERP ciblée, description recentrée et alternative d’image neutre. | 7,6 → 8,8/10 |
+| #588 | URL hygiène corrigée (HTTP 200) ; exemple fictif de 80 portions/400 grammes hors réserve, coût sans double comptage ; fiche composition/accompagnements au comptoir et FAQ allergènes précisées ; alternative d’image corrigée. | 7,4 → 8,8/10 |
+| #589 | Réponse courte et description recentrées, répétitions QR réduites, conducteur sans essai de 45 minutes et annonce-type ajoutés ; garanties/exclusions à confirmer avant l’essai ; lien Service Public direct. | 7,9 → 8,8/10 |
+
+Les scores après correction restent des jugements éditoriaux. Une relecture par les professionnels de chaque secteur et des retours de terrain autorisés restent des axes d’enrichissement ; aucune validation médicale, juridique exhaustive ou performance d’acquisition n’est revendiquée.
+
+### Couverture et lecture après correction
+
+| Issue | Mots avant → après | Temps de lecture final |
+|---|---:|---|
+| #580 | 2525 → 2620 | 12 min de lecture |
+| #581 | 2053 → 2116 | 10 min de lecture |
+| #582 | 2111 → 2179 | 10 min de lecture |
+| #583 | 1947 → 1932 | 9 min de lecture |
+| #584 | 1750 → 2046 | 10 min de lecture |
+| #585 | 1937 → 1939 | 9 min de lecture |
+| #586 | 1992 → 2089 | 10 min de lecture |
+| #587 | 1998 → 2141 | 10 min de lecture |
+| #588 | 1823 → 1947 | 9 min de lecture |
+| #589 | 1858 → 1888 | 9 min de lecture |
+
+Les ajouts répondent aux décisions manquantes ; #583 est même légèrement raccourci. Aucun seuil minimal de mots n’est imposé. Les dix textes comportent chacun entre trois et sept liens internes et entre deux et cinq liens externes contextuels, en plus des références et lectures associées. Une comparaison des objets du registre avec `da755bb` confirme que **les 20 articles précédents restent inchangés**, et que les dix articles du périmètre ont chacun été modifiés. Les dix images WebP restent présentes (147 à 293 ko environ), avec deux alternatives corrigées.
+
+### Vérifications et livraison
+
+Lint, build landing (58 pages statiques, 30 articles) et `git diff --check` réussis. Les nouvelles destinations Agriculture hygiène, Météo-France vigilance, Service Public ERP et équipements vélo répondent HTTP 200.
+
+Premier passage E2E : 24 réussites, quatre échecs de la même assertion lexicale sur le mot « commentaires ». Elle capturait le paragraphe de #588 sur les retours recueillis pendant la dégustation ; aucune interface de commentaires n’existe. Le test est corrigé pour vérifier les titres et champs d’une véritable interface de commentaires, en conservant l’assertion d’absence de formulaire. Le corpus n’a pas été modifié pour supprimer un mot légitime. La suite complète est relancée après correction, lint et rebuild. Le budget de temps du test de gabarit passe à 120 secondes, comme le test du catalogue HTML, car il visite la liste, les 30 articles et leurs illustrations.
+
+Résultat final :
+
+- `npm run lint:landing` : réussi.
+- `npm run build:landing` : réussi, Next.js 16.3.8, 58 pages statiques.
+- `npm run test:e2e -w @okado/landing-page -- e2e/seo-public-pages.spec.ts` : **28 tests réussis en 7,2 minutes**, aux largeurs 1440, 768, 390 et 320 px. Le catalogue entier de 30 articles est parcouru : HTML, titres/descriptions uniques, canonical, liens, sources, données structurées, fil d’Ariane, dates, images, sitemap, absence de formulaire/commentaires et débordements contrôlés.
+- `git diff --check` : réussi.
+- Les dix illustrations et six captures des tableaux de prêt-à-porter, jardinerie et sport ont été inspectées ; le défilement horizontal local et l’accès clavier sont couverts par les tests aux petites largeurs.
+
+Recette propriétaire proposée : parcourir les dix fiches de cette issue puis ouvrir les dix articles depuis `/blog`. En particulier, vérifier le choix de format prêt-à-porter, les quatre saisons, le parcours animalerie, le programme sport et le calcul de dégustation ; tester les liens et le tableau sur téléphone.
+
+Livraison dans la PR #590, avec référence à #594. Le commit `94e5cb5` conserve les fiches avant correction ; le commit suivant porte les optimisations et les preuves finales. L’issue reste ouverte jusqu’à la fusion validée. Retour arrière : revert du commit d’optimisation pour retrouver les dix articles initiaux, puis reconstruction de la landing. Aucun merge ni déploiement effectué.
 

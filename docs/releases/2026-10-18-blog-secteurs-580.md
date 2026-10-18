@@ -4,8 +4,10 @@
 
 Dix secteurs différents de la restauration et des instituts. Les recherches
 principales sont des hypothèses d’intention, sans volume, difficulté ou trafic
-inventés. Les neuf articles suivants restent au stade du brief : aucune page vide
-ou URL indexable n’est créée pour eux.
+inventés. Les dix articles ci-dessous sont rédigés sur la branche de la PR #590.
+Leur audit indépendant et les corrections sont suivis dans l’issue #594 et le
+[rapport détaillé](2026-10-18-blog-editorial-audit-594.md). Les notes des premières
+relectures ci-dessous sont conservées comme historique.
 
 | Ordre | Secteur | Article et issue | URL prévue |
 |---:|---|---|---|
@@ -411,14 +413,14 @@ et consigner le coût/les portions observés sans généraliser le résultat.
 - Captures du tableau fleuriste sur ordinateur et mobile inspectées : lisibilité
   et défilement local sans débordement global.
 
-Recette proposée au propriétaire : ouvrir les deux nouveaux articles et leurs
+Recette proposée au propriétaire : ouvrir les dix articles de la série et leurs
 cartes dans `/blog`, contrôler les illustrations, tableaux, liens et sommaires.
 
 Périmètre : registre de contenu, illustration, tests du catalogue et ce suivi.
 Aucun changement au SaaS, aux données, aux règles de participation ou au gabarit
 React ; aucune migration ni dépendance ajoutée. Livraison par PR, sans fusion ou
 déploiement de cette nouvelle série à ce stade. Retour arrière : revert du commit
-de l’article et reconstruction de la landing ; les neuf briefs restent disponibles.
+de l’article et reconstruction de la landing ; les briefs et fiches d’audit restent disponibles.
 
 ## Article #589 — journée découverte dans un magasin de vélos
 

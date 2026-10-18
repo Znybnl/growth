@@ -86,6 +86,7 @@ test("chaque page publique : HTML indexable, canonical, image sociale et navigat
 });
 
 test("le blog utilise un gabarit commun sans commentaires", async ({ page }) => {
+  test.setTimeout(120_000); // This batch visits the listing, every article and every illustration.
   await page.goto("/blog");
   for (const post of blogPosts)
     await expect(page.getByRole("link", { name: post.title, exact: true })).toHaveCount(1);
@@ -94,7 +95,11 @@ test("le blog utilise un gabarit commun sans commentaires", async ({ page }) => 
     await page.goto(route);
     await expect(page.locator("main#contenu")).toHaveCount(1);
     await expect(page.locator("form")).toHaveCount(0);
-    await expect(page.getByText("Commentaire", { exact: false })).toHaveCount(0);
+    // Editorial prose can mention customer feedback; assert the absence of comment UI.
+    await expect(page.getByRole("heading", {
+      name: /^(commentaires?|laisser un commentaire|ajouter un commentaire)(?:\s*\(\d+\))?$/i,
+    })).toHaveCount(0);
+    await expect(page.getByRole("textbox", { name: /commentaire/i })).toHaveCount(0);
     await expect(page.getByRole("heading", { name: "Pour aller plus loin", exact: true })).toHaveCount(0);
     await expect(page.getByText("Google Search Central", { exact: false })).toHaveCount(0);
   }
