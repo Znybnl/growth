@@ -12,6 +12,8 @@ test.beforeEach(async ({ page, context, baseURL }) => {
 async function openActions(page: Page, mode = "wizard-actions", template = "classic") {
   await page.goto(`/dev/template-rendering-proof?mode=${mode}&template=${template}`);
   await page.getByRole("button", { name: /05.*actions/i }).click();
+  await expect(page.getByRole("heading", { name: "Les actions", exact: true })).toBeVisible();
+  await expect(page.getByText("Les actions · Facultatif", { exact: true })).toHaveCount(0);
 }
 const library = (page: Page) => page.getByRole("dialog", { name: "Ajouter une action", exact: true });
 async function add(page: Page, key: string) {
@@ -24,6 +26,47 @@ async function save(page: Page) {
   const payload = (await request).postDataJSON();
   await expect(page.getByRole("dialog", { name: "Votre jeu est enregistré.", exact: true })).toBeVisible();
   return payload;
+}
+
+for (const width of [320, 390, 768, 1440]) {
+  test(`${width}px : Mon compte partage les icônes et cartes des actions, liens éditables sans écriture implicite`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    const writes: Record<string, unknown>[] = [];
+    await page.route("**/api/account", route => {
+      if (route.request().method() === "POST") writes.push(route.request().postDataJSON());
+      return route.fulfill({ json: { user: { email: "fixture@example.test" } } });
+    });
+    await page.goto("/dev/template-rendering-proof?mode=account-marketing");
+    const section = page.locator("#account-channels");
+    await section.scrollIntoViewIfNeeded();
+    await expect(section.getByRole("heading", { name: "Liens marketing" })).toBeVisible();
+    for (const key of ["appointment", "google", "instagram", "facebook", "tiktok", "tripadvisor", "custom"]) {
+      const icon = section.locator(`[data-marketing-icon="${key}"]`);
+      await expect(icon).toHaveCount(1);
+      await expect(icon.locator("svg")).toHaveCount(1);
+      expect(await icon.evaluate(element => Math.round(element.getBoundingClientRect().width))).toBe(40);
+    }
+    await expect(page.getByTestId("account-link-instagram")).toContainText("Renseigné");
+    await expect(page.getByTestId("account-link-facebook")).toContainText("Optionnel");
+    await expect(section.getByRole("button", { name: "Changer de fiche Google" })).toBeVisible();
+    const brandPath = await section.locator('[data-marketing-icon="instagram"] path').getAttribute("d");
+    await section.getByRole("textbox", { name: "Facebook", exact: true }).fill("https://facebook.com/fixture");
+    await expect(page.getByTestId("account-link-facebook")).toContainText("Renseigné");
+    await expect(section.getByRole("textbox", { name: "Instagram", exact: true })).toHaveValue("https://www.instagram.com/fixture/");
+    expect(writes).toHaveLength(0);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    expect(await section.evaluate(element => element.scrollWidth <= element.clientWidth)).toBe(true);
+    await section.screenshot({ path: test.info().outputPath(`account-marketing-${width}.png`) });
+    await page.getByRole("button", { name: "Enregistrer", exact: true }).click();
+    await expect(page.getByRole("dialog")).toBeVisible();
+    expect(writes).toHaveLength(1);
+    expect(writes[0]).toMatchObject({ locationId: "template-proof-merchant", facebookUrl: "https://facebook.com/fixture",
+      instagramUrl: "https://www.instagram.com/fixture/", appointmentUrl: "https://booking.example.test" });
+
+    await openActions(page);
+    await page.getByRole("button", { name: "Ajouter une action", exact: true }).click();
+    expect(await page.getByTestId("action-library-instagram").locator("path").first().getAttribute("d")).toBe(brandPath);
+  });
 }
 test("bibliothèque : configurées en premier, ajout immédiat, doublon désactivé, clavier et destinations distinctes", async ({ page }) => {
   await openActions(page);

@@ -27,6 +27,38 @@ Suppression annulable et réordonnancement par boutons ou glisser-déposer.
 Le formulaire classique conserve son interface mais partage la confirmation
 d'enregistrement actif sans action. Les brouillons ne demandent pas confirmation.
 
+## Ajustement visuel propriétaire — 18 octobre 2026
+
+L'étape porte uniquement le titre « Les actions », sans « Facultatif » ; la
+possibilité de publier sans action et sa confirmation restent inchangées.
+Mon compte → Liens marketing reprend les icônes partagées de la bibliothèque
+(marques Simple Icons, pictogrammes génériques Lucide), les cartes de 12 px,
+le fond violet discret des icônes et les badges de présence « Renseigné » / « Optionnel ».
+Un badge indique seulement qu'un champ est rempli, pas qu'un compte social est connecté.
+Les champs, valeurs, sauvegarde et fiche Google restent ceux du formulaire existant.
+Le site web conserve sa place dans les coordonnées ; le rendez-vous reste disponible
+dans Mon compte mais absent de la bibliothèque d'actions.
+
+Les tests de `marketing-action-library.spec.ts` ajoutent le formulaire réel avec
+données fictives à 320/390/768/1440 px : icônes identiques, cartes sans débordement,
+libellé d'étape exact, saisie sans enregistrement implicite, enregistrement explicite
+pour le bon établissement et conservation des autres liens. Les requêtes sont
+interceptées ; aucun profil de production n'est modifié. Le sélecteur Google
+reçoit une icône/description de présentation ; ses autres usages gardent leur rendu.
+
+Vérification de cet ajustement : 27 tests navigateur réussis (20 bibliothèque/
+Mon compte et 7 options du Wizard), 12 tests unitaires/API réussis (7 bibliothèque,
+5 valeurs initiales). Captures à 320/390/768/1440 px inspectées, saisie et sauvegarde
+du formulaire réel vérifiées avec API simulées. Les captures de viewport mobile
+confirment aussi le défilement dans le cadre `main` de la fixture, sur le modèle
+du cadre marchand existant. Aucune donnée ni clé réelle utilisée.
+
+Lint final : zéro erreur, quatre avertissements préexistants. Build et TypeScript
+réussis avec les dépendances verrouillées de cette branche (Next 16.3.6), contrôle
+source et `git diff --check` réussis. Le prérequis sécurité #572 reste inchangé :
+intégrer son correctif Next 16.3.8 et retester avant production. Cet ajustement
+visuel n'intègre pas silencieusement cette PR de sécurité indépendante.
+
 ## Données et sécurité
 
 - Aucune migration SQL, nouveau service ou changement de RLS.

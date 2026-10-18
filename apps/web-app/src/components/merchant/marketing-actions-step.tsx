@@ -1,20 +1,11 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, CheckCircle2, Globe2, GripVertical, Link2, Loader2, Pencil, Plus, Trash2, X } from "lucide-react";
-import { siFacebook, siGoogle, siInstagram, siTiktok, siTripadvisor } from "simple-icons";
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, CheckCircle2, GripVertical, Loader2, Pencil, Plus, Trash2, X } from "lucide-react";
+import { MarketingActionIcon } from "@/components/merchant/marketing-action-icon";
 import { DialogShell } from "@/components/ui/dialog";
 import { MARKETING_ACTION_CATALOG, configuredMarketingUrl, marketingActionEntry, marketingActionKey, marketingDestinationSummary, normalizeMarketingActionUrl, type MarketingActionKey, type MarketingLinks } from "@/lib/marketing-action-library";
 import type { CampaignAction, Merchant } from "@/lib/types";
-
-const brands = { google: siGoogle, instagram: siInstagram, facebook: siFacebook, tiktok: siTiktok, tripadvisor: siTripadvisor };
-function ActionIcon({ actionKey }: { actionKey: MarketingActionKey | null }) {
-  const brand = actionKey && actionKey in brands ? brands[actionKey as keyof typeof brands] : null;
-  const Icon = actionKey === "website" ? Globe2 : Link2;
-  return <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-purple-haze text-aubergine" aria-hidden="true">
-    {brand ? <svg viewBox="0 0 24 24" className="size-5 fill-current"><path d={brand.path} /></svg> : <Icon className="size-5" />}
-  </span>;
-}
 
 export function MarketingActionsStep({ merchant, links, actions, onChange, onLinkSaved, adminAccountMerchantId }: {
   merchant: Merchant; links: MarketingLinks; actions: CampaignAction[];
@@ -93,7 +84,7 @@ export function MarketingActionsStep({ merchant, links, actions, onChange, onLin
         return <button key={entry.key} type="button" disabled={added || atLimit} data-testid={`action-library-${entry.key}`}
           onClick={() => entry.key === "custom" || !url ? configure(entry.key) : add(entry.key, url)}
           className="group flex min-w-0 items-start gap-3 rounded-[12px] border border-fog bg-white p-4 text-left transition-colors hover:border-aubergine/50 hover:bg-purple-haze/40 focus-visible:outline-2 focus-visible:outline-aubergine disabled:cursor-not-allowed disabled:bg-[#f5f3f5] disabled:opacity-55">
-          <ActionIcon actionKey={entry.key} />
+          <MarketingActionIcon actionKey={entry.key} />
           <span className="min-w-0 flex-1"><span className="block text-sm font-semibold text-carbon">{entry.label}</span>
             <span className="mt-1 block truncate text-xs text-ash" title={url}>{entry.key === "custom" ? "Plusieurs liens possibles" : url ? marketingDestinationSummary(entry.key, url, merchant.googlePlaceName || merchant.companyName) : "Configurer un lien sans quitter ce jeu"}</span>
             <span className={`mt-3 inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-semibold ${added ? "bg-fog text-ash" : url ? "bg-[#edf8f2] text-[#246c49]" : "bg-[#fff7e8] text-[#835313]"}`}>
@@ -122,7 +113,7 @@ export function MarketingActionsStep({ merchant, links, actions, onChange, onLin
           <button type="button" draggable onDragStart={event => { dragIndex.current = index; event.dataTransfer.effectAllowed = "move"; event.dataTransfer.setData("text/plain", String(index)); }} onDragEnd={() => { dragIndex.current = null; }}
             aria-label={`Déplacer ${label}, visite ${index + 1}`} title="Glisser pour réordonner, ou utiliser les boutons Monter et Descendre" className="mt-2 cursor-grab rounded-md p-1 text-ash focus-visible:outline-2 focus-visible:outline-aubergine"><GripVertical className="size-4" /></button>
           <button type="button" onClick={() => key && configure(key, index)} disabled={!key} className="flex min-w-0 flex-1 items-start gap-3 text-left focus-visible:outline-2 focus-visible:outline-aubergine" aria-label={`Modifier ${label}, visite ${index + 1}`}>
-            <ActionIcon actionKey={key} /><span className="min-w-0"><span className="block text-[10px] font-semibold uppercase tracking-wider text-ash">Visite {index + 1}</span>
+            <MarketingActionIcon actionKey={key} /><span className="min-w-0"><span className="block text-[10px] font-semibold uppercase tracking-wider text-ash">Visite {index + 1}</span>
               <span className="mt-0.5 block text-sm font-semibold text-carbon">{label}</span>
               <span title={action.url} className="mt-1 block truncate text-xs text-ash">{invalid ? "Lien à corriger" : key ? marketingDestinationSummary(key, action.url, merchant.googlePlaceName || merchant.companyName) : action.label}</span>
             </span>

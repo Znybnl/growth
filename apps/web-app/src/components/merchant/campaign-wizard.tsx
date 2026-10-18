@@ -196,7 +196,7 @@ const WIZARD_STEPS: WizardStep[] = [
   {
     id: "action",
     number: "05",
-    title: "Les actions · Facultatif",
+    title: "Les actions",
     description: "Composez les actions proposées avant le jeu.",
   },
 ];

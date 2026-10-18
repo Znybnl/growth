@@ -11,6 +11,16 @@ L'objectif est de détecter les régressions importantes sans transformer le pro
 
 ## Contrôles automatisés existants
 
+### Actions du Wizard et liens de Mon compte — #564
+
+`e2e/marketing-action-library.spec.ts` teste les composants réels du Wizard et
+de Mon compte dans la fixture `template-rendering-proof`, interdite hors
+développement. À 320/390/768/1440 px : titre exact « Les actions », absence du
+suffixe « Facultatif », mêmes icônes de marques, badges de présence, fiche Google
+préservée, saisie sans sauvegarde implicite, sauvegarde explicite sur le bon site
+et conservation des liens non modifiés. Les API sont interceptées et les données
+synthétiques ; aucune preuve d'écriture Supabase réelle n'est revendiquée.
+
 ### Options du Wizard et polices Beauté — #551 / #553
 
 `e2e/wizard-options-551-553.spec.ts` utilise les vrais Wizard/éditeur et rendus de
