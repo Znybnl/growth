@@ -34,6 +34,7 @@ Ce socle couvre les règles minimales adaptées à un produit opéré par une se
 - Lint et build de l'application touchée sont requis.
 - Les changements d'authentification, autorisation, e-mail, retrait, paiement, données personnelles ou prévisualisation exigent une analyse et des tests dédiés.
 - Les dépendances sont vérifiées régulièrement et toute exception de vulnérabilité est documentée avec sa justification et sa date de révision.
+- Le contrôle de dépendances de production couvre les deux applications et échoue aussi si le registre est indisponible, si le rapport est incomplet ou si Next.js et sa configuration ESLint ne correspondent pas à la version corrective validée. La CI exécute ce contrôle ; une mise à jour locale ne constitue pas une correction déployée. Voir [l'analyse #570](releases/2026-10-18-next-security-audit-570.md).
 
 ## Incident de sécurité
 
