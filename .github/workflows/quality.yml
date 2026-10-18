@@ -26,6 +26,10 @@ jobs:
         run: npm ci
       - name: Verify critical source files and encoding
         run: npm run verify:source
+      - name: Test dependency audit guard
+        run: npm run test:dependency-audit -w @okado/web-app
+      - name: Audit production dependencies in both apps
+        run: npm run check:dependencies
       - name: Lint web app
         run: npm run lint:web
       - name: Test analytics consent in both apps and server capture
