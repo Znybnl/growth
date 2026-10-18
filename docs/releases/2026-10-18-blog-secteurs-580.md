@@ -302,6 +302,41 @@ faisabilité des exemples et la terminologie métier ; publication d’un exempl
 local autorisé ; mesure ultérieure des demandes, rendez-vous et interventions
 selon des critères réellement observables.
 
+## Article #587 — portes ouvertes en salle de sport
+
+URL : `/blog/portes-ouvertes-salle-sport`. L’article propose un parcours de
+découverte, jauge, réservation, essai encadré, conditions d’accès et adhésion,
+contacts, communication locale, mesure et cinq FAQ/checklist. Il distingue
+visite, essai et adhésion, n’annonce pas de transformation physique et
+recommande de ne pas inclure de données de santé dans un formulaire marketing.
+Il rappelle que l’encadrement sportif rémunéré est réglementé et qu’un éventuel
+traitement de données de santé nécessite une finalité et un cadre propres.
+
+Sources officielles vérifiées : Ministère des Sports (qualifications et
+déclaration de l’éducateur rémunéré), CNIL (collecte de données de santé dans le
+sport ; communications électroniques) et Google Business Profile (posts
+événementiels). L’article borne les conseils à ces sources et recommande une
+validation métier des conditions locales d’accès et d’accueil.
+
+Illustration originale réalisée via le skill imagegen intégré puis convertie en
+WebP par Sharp : `apps/landing-page/public/images/blog/portes-ouvertes-salle-sport.webp`
+(1600 × 800, 165 720 octets). Texte alternatif : « Une coach présente un espace
+d’entraînement à une visiteuse lors de portes ouvertes ».
+
+Prompt final :
+
+> Use case: illustration-story. Asset type: wide editorial hero illustration for a French professional blog article about an open house at a neighborhood fitness studio. Primary request: a warm, polished painterly editorial illustration of an adult fitness coach welcoming an adult visitor and calmly showing a bright, well-organized training space during an open house. Scene/backdrop: clean neighborhood gym with visible exercise bikes, mats and a few weights arranged safely; clear walking paths and reception area; no crowded class. Subject: coach in neutral athletic clothing gestures toward the equipment while the visitor listens; both adults, relaxed and fully clothed, neither exercising intensely nor displaying body transformation. Style/medium: textured editorial illustration for a professional local-business blog, natural proportions and realistic gym materials. Composition/framing: wide horizontal approximately 2:1; coach and visitor comfortably within frame, gym floor provides context, suitable for desktop and mobile blog cards. Lighting/mood: soft daylight, welcoming, inclusive and calm, not glossy fitness advertising. Color palette: warm cream, muted sage, soft teal, charcoal, pale wood and restrained navy accents. Constraints: no readable text, no logos, no watermark, no QR code, no fake app interface, no prices or promotional signs, no before-and-after imagery, no body measurement or weighing devices, no visible personal health forms, no medical equipment, no children, no crowded or unsafe equipment layout. This is an editorial illustration, not a claimed photograph of a real gym or people.
+
+Note éditoriale finale : **9,0/10**. Note d’utilité, de différenciation sectorielle,
+de précision des garde-fous et de qualité du maillage ; elle ne représente pas
+un score SEO ni une prédiction de visibilité.
+
+Axes d’amélioration : faire relire le parcours par un gérant et un coach qualifié
+qui connaissent la capacité réelle du lieu ; vérifier séparément les conditions
+d’accès et d’assurance de toute activité ; après publication, analyser les
+visites, essais et adhésions sans attribuer automatiquement les conversions à
+l’événement.
+
 ## Vérifications et livraison
 
 - `npm run lint:landing` : réussi.
@@ -330,6 +365,9 @@ selon des critères réellement observables.
   relancés après cet ajout.
 - Pour l’article #586 : `npm run lint:landing` réussi ; `npm run build:landing`
   réussi avec Next.js 16.3.8 et 55 pages statiques. Les tests E2E n’ont pas été
+  relancés après cet ajout.
+- Pour l’article #587 : `npm run lint:landing` réussi ; `npm run build:landing`
+  réussi avec Next.js 16.3.8 et 56 pages statiques. Les tests E2E n’ont pas été
   relancés après cet ajout.
 - Captures du tableau fleuriste sur ordinateur et mobile inspectées : lisibilité
   et défilement local sans débordement global.

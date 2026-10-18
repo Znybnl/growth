@@ -4006,6 +4006,143 @@ export const blogPosts: BlogPost[] = [
       "/comment-ca-marche",
     ],
   },
+  {
+    path: "/blog/portes-ouvertes-salle-sport",
+    title: "Comment organiser une journée portes ouvertes dans une salle de sport ?",
+    seoTitle: "Portes ouvertes en salle de sport : plan d’action",
+    description:
+      "Un plan concret pour organiser des portes ouvertes en salle de sport : jauge, visites, essais encadrés, inscriptions, suivi et mesure sans promesse de résultat physique.",
+    eyebrow: "Salle de sport et acquisition locale",
+    intro:
+      "Pour organiser une journée portes ouvertes dans une salle de sport, préparez un parcours de découverte qui montre les espaces, les activités réellement proposées et les conditions d’accès. Fixez une jauge compatible avec les locaux et l’équipe, encadrez tout essai sportif avec un intervenant compétent, puis distinguez visite, séance d’essai, demande de contact et adhésion. Une journée découverte peut présenter votre salle ; elle ne doit pas promettre de transformation physique ni collecter des données de santé à des fins marketing.",
+    answer:
+      "Choisissez un objectif principal (faire visiter, présenter les cours ou proposer un essai), listez les espaces accessibles, les créneaux et les personnes qui encadrent, puis limitez les inscriptions à la capacité disponible. Expliquez à l’avance les activités, conditions, tarifs éventuels et modalités d’essai. Collectez séparément les coordonnées nécessaires à l’organisation et le consentement marketing ; ne demandez pas d’informations de santé sur un formulaire de prospection. Après l’événement, comptez les visites, essais, demandes et adhésions comme des étapes distinctes.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-18",
+    updatedAt: "2026-10-18",
+    reviewedAt: "2026-10-18",
+    readingTime: "8 min de lecture",
+    image: "/images/blog/portes-ouvertes-salle-sport.webp",
+    imageAlt:
+      "Une coach présente un espace d’entraînement à une visiteuse lors de portes ouvertes",
+    ctaLabel: "Découvrir les animations par QR code",
+    ctaHref: "/comment-ca-marche",
+    source: [
+      {
+        label: "Ministère des Sports — encadrement sportif contre rémunération",
+        href: "https://www.sports.gouv.fr/se-declarer-educateur-sportif",
+      },
+      {
+        label: "CNIL — collecte de données de santé dans le sport",
+        href: "https://www.cnil.fr/fr/sportifs-quels-cas-et-conditions-collecte-des-donnees-de-sante",
+      },
+      {
+        label: "CNIL — communications électroniques et prospection",
+        href: "https://www.cnil.fr/fr/communication-electronique-quelles-regles",
+      },
+      {
+        label: "Google Business Profile — créer et gérer des posts événementiels",
+        href: "https://support.google.com/business/answer/7342169?hl=fr",
+      },
+      {
+        label: "Service Public Entreprendre — obligations liées à un commerce recevant du public",
+        href: "https://entreprendre.service-public.fr/vosdroits/F23571",
+      },
+    ],
+    sections: [
+      {
+        title: "Définir ce que les visiteurs pourront découvrir",
+        paragraphs: [
+          "Une journée portes ouvertes peut servir à visiter les espaces, rencontrer l’équipe, comprendre le fonctionnement des cours ou essayer une activité. Choisissez un objectif principal avant de préparer le programme : il déterminera la durée des visites, les besoins d’encadrement, le nombre de personnes admises et les informations à communiquer.",
+          "Décrivez ce qui est réellement accessible ce jour-là : plateau de musculation, studio de cours collectifs, espace cardio, vestiaires ou accueil, selon la configuration de votre établissement. Distinguez les zones ouvertes au public de celles réservées à l’équipe ou aux adhérents. Si un espace ne peut pas être visité pendant une activité, dites-le clairement plutôt que de le laisser supposer.",
+          "Précisez le public concerné. Une visite sans séance ne présente pas les mêmes conditions qu’un essai physique. Si la journée accueille aussi des mineurs, les modalités d’accès, l’accompagnement et les activités doivent être définis séparément par l’établissement et son équipe ; cet article se concentre sur une découverte destinée aux adultes.",
+          "Pour compléter la journée par une animation ou un jeu, examinez d’abord si ce format répond à un objectif utile. Le guide [jeu-concours lors d’un événement local](/blog/jeu-concours-evenement-local) distingue ce dispositif d’une visite et d’un essai : ne transformez pas une activité sportive ou une adhésion en lot tiré au sort sans vérifier le cadre applicable.",
+        ],
+      },
+      {
+        title: "Établir la jauge et le parcours avant d’ouvrir les inscriptions",
+        paragraphs: [
+          "Listez les espaces utilisés, la durée moyenne d’une visite, les personnes présentes dans l’équipe et le nombre de visiteurs que chaque créneau peut accueillir. Calculez une capacité opérationnelle à partir des contraintes du lieu et des activités, et faites-la valider par le responsable de l’établissement. N’utilisez pas une jauge marketing qui ignorerait les circulations, l’accueil habituel ou les zones indisponibles.",
+          "Organisez le parcours dans un ordre simple : accueil, présentation générale, visite des espaces, rencontre avec un coach, puis essai éventuel réservé aux créneaux dédiés. Préparez une alternative si une salle est occupée ou si un cours prend du retard. Si les portes ouvertes modifient l’organisation ou l’occupation habituelle des locaux, le responsable doit vérifier les règles de sécurité, d’accessibilité et d’accueil applicables à l’établissement.",
+          "Choisissez entre entrée libre et réservation. L’entrée libre est simple mais rend l’affluence moins prévisible ; les créneaux réservés aident à répartir les visites mais nécessitent un suivi des inscriptions et des annulations. Vous pouvez combiner les deux en gardant quelques places sans réservation, à condition d’annoncer clairement la règle et de ne jamais dépasser la capacité retenue.",
+          "Prévoyez un point d’accueil, une personne qui oriente les visiteurs, un responsable des questions d’adhésion et les coachs mobilisés pour les essais. Cette organisation évite qu’un coach doive simultanément encadrer une séance et répondre à toutes les demandes commerciales.",
+        ],
+      },
+      {
+        title: "Présenter les essais sans improviser l’encadrement sportif",
+        paragraphs: [
+          "Une visite guidée n’est pas un cours. Si vous proposez une séance d’essai ou une démonstration physique, écrivez son contenu, sa durée, le nombre de participants et le matériel utilisé ; affectez un encadrant compétent et disponible. Le Ministère des Sports indique que l’enseignement, l’animation ou l’encadrement d’une activité sportive contre rémunération est soumis à qualification et déclaration, avec une carte professionnelle délivrée lorsque les conditions sont réunies. Vérifiez que les personnes prévues peuvent encadrer l’activité concernée et les conditions de leur qualification.",
+          "Ne promettez pas de perte de poids, de transformation du corps, de prévention de maladie ou de résultat garanti. Présentez les activités, les horaires, le niveau visé et le type d’encadrement, sans assurer qu’une séance conviendra à toutes les personnes. Les questions de santé, de douleur ou de reprise après blessure doivent être orientées vers le professionnel compétent ; la séance découverte ne remplace pas un avis médical.",
+          "Une démonstration d’équipement peut se dérouler sans demander aux visiteurs de l’utiliser. Si des essais sont prévus, expliquez les consignes du lieu et le déroulement avant le début, vérifiez que l’encadrant peut suivre le groupe et gardez une option de visite sans effort physique. Ne faites pas d’un essai intense ou d’une mesure corporelle une condition d’accès à la journée.",
+        ],
+      },
+      {
+        title: "Expliquer les conditions d’accès et d’adhésion",
+        paragraphs: [
+          "Avant l’événement, indiquez si la visite est gratuite, si l’essai nécessite une réservation, quels équipements ou vêtements sont utiles et si une pièce ou un justificatif est demandé par la salle. Ne demandez pas d’achat pour participer à une simple visite si ce n’est pas la règle annoncée. Si une offre d’adhésion est présentée, affichez son prix, sa durée, les services inclus, les frais éventuels et les conditions particulières de manière lisible.",
+          "Séparez l’information commerciale de l’activité sportive. Une réduction d’adhésion, un lot ou un bonus éventuel doit avoir des conditions définies, une période de validité et une disponibilité confirmée. Évitez de faire dépendre un avantage d’un avis positif, d’une photo publiée ou d’une transmission de données à un partenaire.",
+          "Si un visiteur demande une explication personnalisée du contrat, dirigez-le vers une personne habilitée à présenter les conditions exactes de l’offre. La journée portes ouvertes n’est pas un prétexte pour masquer un engagement ou forcer une décision immédiate. Laissez du temps pour comparer et repartir avec les informations utiles.",
+        ],
+      },
+      {
+        title: "Collecter les contacts sans mélanger santé et marketing",
+        paragraphs: [
+          "Pour gérer une réservation, ne demandez que les informations utiles à l’organisation : par exemple un nom, un moyen de joindre l’adulte inscrit en cas de changement et le créneau choisi. Expliquez la finalité et la durée de conservation selon les procédures de l’établissement. Une visite sans réservation n’impose pas de recueillir des coordonnées.",
+          "Ne placez pas de questions sur les blessures, pathologies, traitements, poids ou antécédents médicaux dans un formulaire général de portes ouvertes ou de prospection. La CNIL rappelle que les données de santé ne peuvent être collectées que dans un cadre autorisé et lorsqu’elles sont strictement nécessaires à un usage précis ; le consentement seul ne justifie pas une collecte sans lien direct avec la finalité. Si un dispositif de sécurité ou d’encadrement exige de traiter une information de santé, faites valider le parcours par les responsables compétents et séparez-le du formulaire marketing.",
+          "L’inscription à une visite ou à un essai n’équivaut pas à un consentement pour recevoir des promotions. Pour l’e-mail ou le SMS adressé à des particuliers, la CNIL distingue les messages transactionnels ou relationnels de la prospection commerciale, en principe soumise à un accord préalable, sous réserve des exceptions applicables. Présentez les finalités séparément et permettez un choix clair. Consultez les règles CNIL sur les [communications électroniques et la prospection](https://www.cnil.fr/fr/communication-electronique-quelles-regles).",
+          "Le formulaire d’inscription peut proposer une case distincte et décochée pour les actualités commerciales, mais elle ne doit pas être une condition d’accès à la visite. Si un QR code mène à une inscription, expliquez ce que le visiteur recevra avant la collecte et limitez les données à ce dont le service a besoin.",
+        ],
+      },
+      {
+        title: "Faire connaître les portes ouvertes localement",
+        paragraphs: [
+          "Utilisez des informations concrètes que la salle peut tenir à jour : date, horaires, adresse, accès, modalités de réservation, activités présentées et capacité restante. Publiez-les sur le site et les supports locaux utilisés par votre équipe. Si vous vous adressez à un quartier ou à une commune, vérifiez que le message décrit bien le lieu et l’accès ; évitez les listes artificielles de villes qui ne correspondent pas à la zone réellement desservie.",
+          "Google Business Profile permet de publier un post de type événement avec un titre et des dates et heures de début et de fin, ainsi qu’une description et un bouton d’action. Mettez à jour le post si le programme ou les places changent. Cette fonction informe les personnes qui consultent la fiche ; elle ne garantit pas une position dans les résultats ou un nombre d’inscriptions.",
+          "Vous pouvez proposer à un partenaire local de relayer l’information si le partenariat est réel : association, club ou commerçant voisin. Précisez qui organise l’événement et qui reçoit les inscriptions ; ne transmettez pas automatiquement des coordonnées aux partenaires. Pour les idées de consentement lors d’une animation en point de vente, consultez [comment collecter des contacts en magasin avec consentement](/blog/collecter-contacts-magasin-consentement).",
+        ],
+      },
+      {
+        title: "Mesurer visites, essais et adhésions comme des étapes séparées",
+        paragraphs: [
+          "Définissez avant l’événement quelques indicateurs opérationnels : inscriptions, personnes présentes, visites réalisées, essais commencés et demandes d’information. Si la salle suit les adhésions souscrites après la journée, précisez la période et la manière de les rapprocher de l’événement, dans le respect des règles internes et de confidentialité.",
+          "Ne confondez pas inscription et présence, visite et essai, essai et adhésion. Une personne peut découvrir le lieu sans prendre de cours ou sans souscrire ; ce résultat n’est pas nécessairement un échec si l’objectif était de faire connaître la salle. Une adhésion dans les jours suivants ne prouve pas à elle seule que les portes ouvertes en sont la cause.",
+          "Notez aussi ce qui permet de préparer une meilleure édition : questions fréquentes, créneaux demandés, espaces trop chargés, retards ou demandes auxquelles l’équipe ne pouvait pas répondre. L’article [mesurer une animation commerciale](/blog/mesurer-animation-commerciale) détaille comment documenter une méthode et ses limites sans transformer une observation en promesse de performance.",
+        ],
+      },
+      {
+        title: "Questions fréquentes sur les portes ouvertes en salle de sport",
+        paragraphs: [
+          "Comment limiter le nombre de visiteurs ? Proposez des créneaux réservables avec un nombre de places fixé d’après la capacité du lieu et l’encadrement disponible. Annoncez les conditions et une solution si le créneau est complet.",
+          "Que présenter lors d’une première visite ? Montrez les espaces accessibles, les activités proposées, les horaires, les modalités d’accueil et les conditions d’adhésion. Expliquez aussi les limites des services disponibles et répondez aux questions sans promettre de résultat physique.",
+          "Faut-il obligatoirement proposer un essai sportif ? Non. Une visite et une présentation du fonctionnement peuvent suffire. Si vous organisez un essai, prévoyez un encadrement approprié et les conditions d’accès propres à l’activité.",
+          "Peut-on demander des informations de santé sur le formulaire ? Évitez les données de santé dans un formulaire général d’inscription marketing. Si une information est réellement nécessaire pour un dispositif d’encadrement ou de sécurité, vérifiez le cadre avec les personnes compétentes et ne la réutilisez pas pour la prospection.",
+          "Comment savoir si la journée a conduit à des adhésions ? Suivez séparément les inscriptions, visites, essais et adhésions sur une période définie. Décrivez comment l’origine est établie et évitez d’attribuer automatiquement toute souscription à l’événement.",
+        ],
+      },
+      {
+        title: "Checklist avant vos portes ouvertes",
+        paragraphs: ["Validez ces points avec le responsable de salle et l’équipe :"],
+        items: [
+          "Objectif, public, horaires, activités et espaces accessibles sont définis.",
+          "Jauge et parcours sont compatibles avec le lieu, les circulations et l’accueil habituel.",
+          "Chaque essai sportif est encadré par une personne compétente pour l’activité concernée.",
+          "Conditions d’accès, prix, éventuelle offre et modalités d’adhésion sont expliqués sans pression.",
+          "Aucune promesse de transformation physique ou de résultat individuel n’est faite.",
+          "Les données de santé ne figurent pas dans le formulaire marketing ; toute collecte distincte est justifiée et validée.",
+          "Réservation, suivi opérationnel et consentement à la prospection sont des choix distincts.",
+          "La communication locale contient des informations exactes, mises à jour si le programme change.",
+          "La mesure distingue inscriptions, visites, essais, demandes et adhésions.",
+        ],
+      },
+    ],
+    related: [
+      "/blog/jeu-concours-evenement-local",
+      "/blog/collecter-contacts-magasin-consentement",
+      "/blog/mesurer-animation-commerciale",
+      "/blog/faire-revenir-clients-animation",
+      "/comment-ca-marche",
+    ],
+  },
 ];
 
 export function blogPostByPath(path: string) {
