@@ -11,6 +11,17 @@ L'objectif est de détecter les régressions importantes sans transformer le pro
 
 ## Contrôles automatisés existants
 
+### QR de prévisualisation — #578
+
+`npm run test:preview-qr -w @okado/web-app` teste le handler, le SVG et les jetons
+signés avec infrastructure isolée : session/propriété, brouillon, 30 minutes,
+reprises sans événement de téléchargement. `e2e/preview-qr.spec.ts` teste le
+composant partagé à 320/390/1280 px et les reprises marchand/admin après
+403/500, HTML, panne réseau ou SVG invalide. Fixture interdite en production,
+API interceptées, captures synthétiques inspectées, aucun appel base ou e-mail
+réel. Le replay historique prouve HTTP 200 pour la requête signalée ; ce n'est
+pas une preuve des pixels historiques. [Analyse et recette #578](releases/2026-10-18-preview-qr-replay-578.md).
+
 ### Actions du Wizard et liens de Mon compte — #564
 
 `e2e/marketing-action-library.spec.ts` teste les composants réels du Wizard et
