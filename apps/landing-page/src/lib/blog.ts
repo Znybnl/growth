@@ -3327,6 +3327,140 @@ export const blogPosts: BlogPost[] = [
       "/comment-ca-marche",
     ],
   },
+  {
+    path: "/blog/attirer-clients-librairie-independante",
+    title: "Comment attirer des clients dans une librairie indépendante ?",
+    seoTitle: "Attirer des clients dans une librairie indépendante",
+    description:
+      "Conseil, rencontres, sélections et partenariats : des idées concrètes pour faire connaître une librairie indépendante et fidéliser les lecteurs du quartier.",
+    eyebrow: "Librairie indépendante",
+    intro:
+      "Pour attirer des clients dans une librairie indépendante, rendez visible ce que l’achat en ligne ne remplace pas facilement : un conseil personnalisé, une sélection éditoriale lisible, des rencontres et un lieu de découverte. Choisissez des actions que l’équipe peut préparer, annoncer et accueillir sans promettre des titres ou des places indisponibles.",
+    answer:
+      "Commencez par une sélection thématique expliquée par le libraire, une rencontre à jauge définie ou un rendez-vous régulier autour de la lecture. Vérifiez les livres disponibles, préparez les modalités de commande ou de réservation réellement proposées, puis diffusez une invitation avec date, capacité et conditions claires. Le prix unique du livre en France limite les promotions : l’animation peut plutôt mettre en avant le conseil, la découverte et la vie culturelle locale.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-18",
+    updatedAt: "2026-10-18",
+    reviewedAt: "2026-10-18",
+    readingTime: "10 min de lecture",
+    image: "/images/blog/attirer-clients-librairie-independante.webp",
+    imageAlt: "Un libraire conseille un livre à une lectrice dans une librairie indépendante de quartier",
+    ctaLabel: "Découvrir les animations par QR code",
+    ctaHref: "/comment-ca-marche",
+    source: [
+      {
+        label: "Ministère de la Culture — prix unique du livre et principales exceptions",
+        href: "https://www.culture.gouv.fr/thematiques/livre-et-lecture/pour-les-professionnels-de-l-economie-du-livre/regulation/prix-du-livre",
+      },
+      {
+        label: "Google Business Profile — publier un événement sur la fiche d’établissement",
+        href: "https://support.google.com/business/answer/7342169?hl=fr",
+      },
+      {
+        label: "CNIL — règles des communications électroniques aux prospects et clients",
+        href: "https://www.cnil.fr/fr/communication-electronique-quelles-regles",
+      },
+    ],
+    sections: [
+      {
+        title: "Faire connaître une librairie par ce qui la rend singulière",
+        paragraphs: [
+          "Une librairie ne se résume pas à une liste de références. Le conseil, les coups de cœur argumentés, les rayons spécialisés, les rencontres et la connaissance des lecteurs peuvent donner envie de pousser la porte. L’enjeu est de rendre ces atouts visibles aux personnes qui vivent, travaillent ou étudient à proximité.",
+          "Avant de choisir une animation, demandez-vous ce que les visiteurs doivent découvrir : un rayon peu connu, une nouvelle sélection, un auteur invité, un club de lecture ou la possibilité de commander un ouvrage. Relevez les questions fréquentes au comptoir et les demandes que vous ne pouvez pas satisfaire. Ces observations de l’équipe guident le choix ; elles ne constituent pas une mesure représentative de tout le quartier.",
+          "Fixez un objectif principal et un indicateur praticable : demandes sur un rayon, inscriptions, présence, commandes identifiées ou visites pendant un créneau. Une personne qui s’inscrit n’est pas nécessairement présente ; une vente à la librairie pendant un événement ne prouve pas que l’événement l’a provoquée.",
+          "Pour structurer les dates et éviter de concentrer les efforts sur les seules périodes commerciales, consultez le [calendrier marketing pour un commerce local](/blog/calendrier-marketing-commerce-local). Les idées de cette page restent centrées sur les contraintes et les pratiques d’une librairie.",
+        ],
+      },
+      {
+        title: "7 idées d’animation adaptées à une librairie indépendante",
+        paragraphs: [
+          "Ces formats peuvent être gratuits ou payants selon votre organisation. Vérifiez les droits, coûts, disponibilités et accords nécessaires à chaque événement ; l’exemple décrit une façon de préparer l’action, pas un résultat commercial constaté.",
+        ],
+        items: [
+          "Créer une sélection thématique courte — par exemple premiers romans, récits de voyage ou livres accessibles à lire en famille — accompagnée de recommandations signées par l’équipe. Indiquez les titres effectivement disponibles et actualisez la sélection quand le stock change.",
+          "Organiser une rencontre avec un auteur, traducteur, illustrateur ou éditeur après confirmation de sa disponibilité et des modalités convenues. Définissez la durée, le nombre de places, l’éventuelle séance de dédicace et la façon dont les ouvrages seront proposés, sans laisser entendre que l’invité est confirmé avant son accord.",
+          "Lancer un club de lecture autour d’un genre ou d’une question, avec une fréquence et une capacité réalistes. Les participants peuvent choisir parmi plusieurs titres ; évitez de faire de l’achat d’un livre précis une condition implicite de participation si ce n’est pas clairement annoncé et approprié.",
+          "Proposer une présentation de nouveautés ou de coups de cœur de l’équipe, par exemple un rendez-vous mensuel de vingt minutes. Préparez quelques exemplaires, mais expliquez comment obtenir les titres qui ne sont pas en rayon selon les possibilités réelles de la librairie.",
+          "Inviter une structure voisine — médiathèque, association culturelle, établissement d’enseignement ou commerce complémentaire — à concevoir un échange de visibilité ou une rencontre. Attribuez à chacun un rôle clair : accueil, communication, frais et suivi des inscriptions.",
+          "Aménager un parcours de découverte en magasin autour d’un thème, d’une rentrée littéraire ou d’un fonds de catalogue. Une carte imprimée ou une signalétique simple peut guider les visiteurs ; gardez les passages accessibles et évitez de déplacer les rayons sans plan de remise en place.",
+          "Créer un rendez-vous participatif, comme une recommandation du mois ou une boîte à suggestions de lecture, avec une règle claire sur la sélection et la publication éventuelle des contributions. Demandez l’accord de la personne avant d’attribuer publiquement une recommandation identifiable.",
+        ],
+      },
+      {
+        title: "Organiser une rencontre sans dépasser la capacité du lieu",
+        paragraphs: [
+          "Estimez la jauge à partir de l’espace réellement disponible, des passages, de l’accès aux rayons et de la présence nécessaire au comptoir. Une capacité confortable peut être inférieure au nombre maximal de personnes que le local peut contenir. Prévoyez qui accueille, qui présente l’invité et qui répond aux demandes de paiement ou de commande pendant l’événement.",
+          "Choisissez un mode d’accès adapté : entrée libre si la jauge et le format le permettent, ou inscription préalable avec confirmation et liste de présence gérée par l’équipe. Précisez si l’inscription est obligatoire, gratuite ou payante, comment une place est libérée en cas d’absence et si les personnes peuvent venir sans inscription. Ne présentez pas un scan de QR code comme une réservation si votre système ne bloque pas réellement les places.",
+          "Si une participation financière, une commande ou une dédicace est prévue, annoncez-la distinctement. Confirmez avec l’invité et les partenaires ce qui peut être promis et dans quelles conditions. Une information simple évite que l’accueil doive improviser le jour venu.",
+          "Après l’accord sur la date, mettez à jour les horaires et informations de la librairie sur les canaux utilisés par les clients. La [fiche Google Business Profile](/blog/attirer-clients-commerce-local) permet notamment de partager des actualités et événements selon les fonctionnalités disponibles ; l’aide Google recommande d’indiquer un titre descriptif ainsi que les dates et heures de début et de fin.",
+        ],
+      },
+      {
+        title: "Gérer les livres, les commandes et le prix avec précision",
+        paragraphs: [
+          "Avant l’annonce, vérifiez les titres mis en avant, les quantités présentes et les délais connus pour les commandes que la librairie accepte de prendre. Distinguez un livre en stock d’un titre proposé à la commande ; ne garantissez ni un délai ni une disponibilité fournisseur que vous n’avez pas confirmés. Si un titre est épuisé, préparez une alternative éditoriale ou expliquez clairement les options disponibles.",
+          "En France, le prix de vente du livre est fixé par l’éditeur ou l’importateur. Le Ministère de la Culture indique que les détaillants doivent respecter ce prix et peuvent accorder un rabais allant jusqu’à 5 %, avec des exceptions encadrées selon certaines ventes et certains ouvrages. Avant de communiquer un avantage sur des livres, vérifiez le [cadre officiel du prix du livre et ses exceptions](https://www.culture.gouv.fr/thematiques/livre-et-lecture/pour-les-professionnels-de-l-economie-du-livre/regulation/prix-du-livre) pour votre situation. Cette règle française ne doit pas être transposée telle quelle à un autre pays.",
+          "Vous pouvez aussi animer sans réduction : conseil, rencontre, recommandation, parcours de lecture ou présentation d’un fonds. Si une opération comprend un jeu ou une dotation, séparez clairement la participation, les conditions du gain, une éventuelle commande et le retrait du lot. Un jeu ajoute une interaction, mais ne remplace pas la commande, le paiement ou l’inscription à une rencontre.",
+          "Pour comparer une offre certaine et un jeu avec participation, la page [jeu-concours ou promotion](/blog/jeu-concours-ou-promotion) aide à distinguer leurs objectifs. Pour un événement local avec partenaires, consultez également le guide du [jeu-concours événementiel](/blog/jeu-concours-evenement-local) ; les règles doivent être adaptées au format réellement retenu.",
+        ],
+      },
+      {
+        title: "Inviter le quartier avec des informations à jour",
+        paragraphs: [
+          "Une annonce utile répond aux questions pratiques : quel thème ou invité, quelle date, quelles heures, combien de temps, faut-il réserver, y a-t-il un tarif et comment demander une place ? Ajoutez une adresse exacte et un moyen de contact consulté par l’équipe. Si le programme change, corrigez les supports au lieu de laisser circuler plusieurs versions.",
+          "Utilisez les canaux où la librairie peut réellement tenir l’information à jour : vitrine, site, réseaux sociaux, partenaires et fiche d’établissement. Google permet de publier des posts de type événement sur une fiche ; sa documentation indique notamment les champs de titre et d’horaires à renseigner. Vérifiez les fonctionnalités disponibles pour votre compte et votre région avant de baser la diffusion sur un seul canal.",
+          "Pour les courriels ou SMS d’invitation à caractère promotionnel, vérifiez les règles relatives à la prospection. La CNIL distingue les communications commerciales des messages nécessaires au suivi d’un service. Une adresse utilisée pour confirmer une inscription ne devient pas automatiquement une autorisation générale d’envoyer une newsletter ; précisez la finalité et le choix proposé. Retrouvez les règles actuelles sur les [communications électroniques aux prospects et clients](https://www.cnil.fr/fr/communication-electronique-quelles-regles).",
+        ],
+      },
+      {
+        title: "Prévoir le budget et les tâches de l’équipe",
+        paragraphs: [
+          "Même une rencontre sans billetterie mobilise du temps : échanges avec l’invité, préparation, communication, installation, accueil et rangement. Ajoutez les éventuels frais convenus, matériel, boissons, impression, frais de paiement et exemplaires destinés à la présentation. Le coût réel dépend des accords et de l’organisation de la librairie.",
+          "Exemple fictif d’organisation : une rencontre de 45 minutes avec 20 minutes d’accueil en avance, 30 minutes de préparation de la salle et 20 minutes de rangement mobilise déjà 115 minutes, hors échanges de préparation et temps de présence de l’invité. Ce calcul mesure un temps de travail à prévoir ; il ne constitue ni un tarif, ni une prévision de ventes ou de rentabilité.",
+          "Si vous offrez un lot ou financez une dotation, estimez son coût et définissez à l’avance sa disponibilité et son retrait. Un lot en livres doit être décrit sans ambiguïté : titres déterminés ou bon d’achat, validité, conditions et éventuels choix laissés au bénéficiaire. Vérifiez que la forme choisie respecte le cadre commercial applicable.",
+        ],
+      },
+      {
+        title: "Mesurer la fréquentation et les suites avec prudence",
+        paragraphs: [
+          "Choisissez une mesure avant l’événement : inscriptions, présences, questions sur la sélection, commandes identifiées ou retours des partenaires. Notez la source et la période. Si vous comptez les entrées, annoncez à l’équipe une méthode constante et respectueuse de la vie privée ; pour commencer, un décompte agrégé peut suffire.",
+          "Gardez séparés les indicateurs : une inscription n’est pas une présence, une présence n’est pas un achat et une vente pendant une rencontre n’est pas nécessairement causée par celle-ci. Si les participants achètent des livres, relevez uniquement ce que les systèmes et pratiques de la librairie permettent d’identifier de façon fiable, sans reconstruire des résultats à partir de souvenirs incomplets.",
+          "Après le rendez-vous, consignez les questions, les contraintes de jauge, les titres demandés et les difficultés d’organisation. Ces éléments aident à améliorer la prochaine rencontre, même si le nombre de ventes attribuables reste inconnu. Le guide pour [mesurer une animation commerciale](/blog/mesurer-animation-commerciale) propose un cadre de comparaison sans promesse de ROI.",
+        ],
+      },
+      {
+        title: "Questions fréquentes sur l’acquisition en librairie",
+        paragraphs: [
+          "Comment faire connaître une petite librairie ? Présentez clairement ses horaires, son adresse, ses rayons et ses services réellement proposés. Ajoutez des recommandations signées par l’équipe et des événements à date précise ; demandez aux partenaires locaux de relayer une information cohérente.",
+          "Comment organiser une rencontre avec une capacité limitée ? Fixez une jauge à partir de l’espace et de l’équipe, choisissez une inscription ou une entrée libre adaptée, puis annoncez la règle de participation et le moyen de demander une place. Ne laissez pas entendre qu’un QR code réserve automatiquement un siège s’il ne gère pas la capacité.",
+          "Peut-on offrir une réduction sur les livres ? En France, le prix du livre est encadré et le rabais en vente au détail est généralement limité à 5 %, sous réserve d’exceptions prévues par les textes. Vérifiez les conditions précises avec la source officielle avant de lancer une offre ; les règles diffèrent selon les pays.",
+          "Une rencontre gratuite peut-elle attirer des lecteurs ? Elle peut créer une occasion de découvrir la librairie et un sujet de lecture, mais la fréquentation dépend de l’invité, de la date, de la communication, de la capacité et de l’intérêt du public. Aucune rencontre ne garantit un nombre de visiteurs ou d’achats.",
+          "Faut-il demander une adresse e-mail pour s’inscrire ? Seulement si elle est utile au processus choisi, par exemple pour confirmer ou modifier une place, et avec une information claire sur son utilisation. L’inscription à un événement ne vaut pas automatiquement abonnement à la newsletter.",
+        ],
+      },
+      {
+        title: "Checklist avant d’annoncer un événement en librairie",
+        paragraphs: ["Avant de publier l’invitation, vérifiez les points suivants :"],
+        items: [
+          "Le thème, la date, les horaires, le lieu et les éventuels frais sont confirmés.",
+          "L’invité ou le partenaire a validé son rôle et les modalités annoncées.",
+          "La jauge, l’accueil et la circulation sont compatibles avec le local et l’activité courante.",
+          "Les titres et quantités sont vérifiés ; les possibilités de commande sont formulées sans délai inventé.",
+          "Toute offre sur des livres a été vérifiée au regard du prix unique et des exceptions applicables.",
+          "Les inscriptions et communications distinguent l’organisation de l’événement de l’abonnement marketing.",
+          "Les informations sur la vitrine, le site et les fiches locales concordent et pourront être mises à jour.",
+          "L’équipe sait comment compter les présences et noter les retours sans confondre fréquentation, achats et effet attribuable.",
+        ],
+      },
+    ],
+    related: [
+      "/blog/calendrier-marketing-commerce-local",
+      "/blog/jeu-concours-evenement-local",
+      "/blog/attirer-clients-commerce-local",
+      "/blog/experience-client-boutique",
+      "/blog/mesurer-animation-commerciale",
+    ],
+  },
 ];
 
 export function blogPostByPath(path: string) {

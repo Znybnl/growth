@@ -121,6 +121,40 @@ précision selon boutique multimarque ou enseigne, et ajout ultérieur d’un ca
 documenté avec autorisation. Après publication, observer les requêtes, demandes et
 essayages réellement enregistrés.
 
+## Article #582 — librairie indépendante
+
+URL : `/blog/attirer-clients-librairie-independante`. Le texte développe sept
+formats propres à la librairie : sélections recommandées, rencontres, clubs,
+présentations de nouveautés, partenariats de quartier, parcours en magasin et
+recommandations participatives. Il précise la jauge des rencontres, la
+disponibilité et commande des titres, les invitations, un budget fictif, les
+mesures, cinq FAQ et une checklist.
+
+Le prix du livre en France est expliqué avec ses limites : prix fixé par
+l’éditeur/importateur, possibilité de rabais de détail jusqu’à 5 % et exceptions
+à vérifier. Source primaire : Ministère de la Culture. Les invitations et
+inscriptions sont distinguées de la prospection marketing selon la CNIL. Le
+conseil Google sur les posts événementiels se limite à la fiche d’établissement
+et n’est pas présenté comme promesse de visibilité.
+
+Illustration originale, outil intégré imagegen puis conversion WebP via Sharp :
+`apps/landing-page/public/images/blog/attirer-clients-librairie-independante.webp`
+(1600 × 800, 222 168 octets). Alternative : « Un libraire conseille un livre à
+une lectrice dans une librairie indépendante de quartier ».
+
+Prompt final :
+
+> Use case: illustration-story. Asset type: wide editorial hero illustration for a French professional blog article about attracting customers to an independent neighborhood bookshop. Primary request: a warm, detailed painterly digital illustration of an adult bookseller recommending a book to an adult visitor across a welcoming bookstore counter. Scene/backdrop: intimate independent bookshop with floor-to-ceiling shelves, a clearly arranged face-out table of varied books with blank, unreadable covers, a window looking onto a neighborhood street, and a small handwritten-free event corner with a few chairs. Subject: bookseller holding an open book and explaining it to a visitor; natural, engaged conversation, both adults. Emphasize personal reading advice and discovery, not a large chain or online-shopping interface. Style/medium: polished textured editorial illustration matching a professional local-commerce magazine; expressive but natural proportions and tactile paper/book textures. Composition/framing: wide horizontal approximately 2:1, people and counter comfortably within frame, bookshelves provide depth, suitable for desktop and mobile blog cards. Lighting/mood: soft golden daylight through shop window, quiet lively neighborhood atmosphere, thoughtful and inviting. Color palette: warm cream, chestnut wood, muted terracotta, deep green, dusty blue and restrained navy accents. Constraints: no readable text, no book titles or author names, no logos, no watermark, no QR code, no phone interface, no discount signage, no prices, no performance numbers, no children. This is an editorial illustration, not a claimed photograph of a real bookstore or bookseller.
+
+Note éditoriale finale : **9,1/10**. Pertinence confirmée par des leviers
+spécifiques à la librairie (conseil, fonds, rencontres et vie de quartier) et
+une distinction claire entre animation, inscription et achat. La note porte sur
+le sujet et le contenu ; elle ne prédit ni classement ni citation IA.
+
+Axes restants : relecture par une librairie indépendante, exemple réel documenté
+avec autorisation, puis observation des requêtes, présences et commandes que le
+commerce sait réellement attribuer.
+
 Méthode SEO/GEO consultée :
 - https://developers.google.com/search/docs/fundamentals/creating-helpful-content
 - https://developers.google.com/search/docs/fundamentals/ai-optimization-guide?version=published
@@ -141,6 +175,8 @@ Méthode SEO/GEO consultée :
 - Pour l’article #581 : lint et build réussis ; le test E2E du catalogue n’a pas
   été relancé après cet ajout. Revue de contenu et des liens effectuée, avec
   URLs internes existantes et références officielles intégrées.
+- Pour l’article #582 : lint et build réussis, Next.js 16.3.8 et 51 pages
+  statiques. Le test E2E du catalogue n’a pas été relancé après cet ajout.
 - Captures du tableau fleuriste sur ordinateur et mobile inspectées : lisibilité
   et défilement local sans débordement global.
 
