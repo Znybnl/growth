@@ -165,6 +165,85 @@ test("sitemap, robots, OG et fichiers distribués sont utilisables", async ({
   }
 });
 
+test("les 20 articles exposent liens, sources et métadonnées cohérentes dans le HTML", async ({ page, request }, testInfo) => {
+  test.setTimeout(120_000);
+  expect(blogPosts).toHaveLength(20);
+  const descriptions = new Set<string>();
+  const sitemap = await (await request.get("/sitemap.xml")).text();
+  for (const post of blogPosts) {
+    const response = await page.goto(post.path);
+    expect(response?.status(), post.path).toBe(200);
+    const html = await response!.text();
+    const article = page.locator("article");
+    expect(await article.innerText(), post.path).not.toMatch(/\[[^\]]+\]\([^)]+\)/);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(post.title);
+    expect(await page.title()).toContain(post.seoTitle ?? post.title);
+    const description = await page.locator('meta[name="description"]').getAttribute("content");
+    expect(description).toBe(post.description);
+    expect(descriptions.has(description!)).toBe(false);
+    descriptions.add(description!);
+    await expect(page.locator('meta[property="article:modified_time"]')).toHaveAttribute("content", post.updatedAt);
+    await expect(page.locator('meta[name="twitter:image"]')).toHaveAttribute("content", `https://www.okado.app${post.image}`);
+    await expect(page.getByRole("navigation", { name: "Fil d’Ariane" }).locator('[aria-current="page"]')).toHaveText(post.title);
+    await expect(page.getByText("Mis à jour le", { exact: false })).toContainText("18 octobre 2026");
+
+    const inlineTexts = post.sections.flatMap((section) => [
+      ...section.paragraphs,
+      ...(section.items ?? []),
+      ...(section.table?.rows.flat() ?? []),
+    ]);
+    for (const value of inlineTexts) {
+      for (const [, label, href] of value.matchAll(/\[([^\]]+)\]\(([^)]+)\)/g)) {
+        const link = article.locator(`a[href="${href}"]`).filter({ hasText: label });
+        expect(await link.count(), `${post.path} : ${label}`).toBeGreaterThan(0);
+        // Links must be present in server HTML, not inserted only after hydration.
+        expect(html).toContain(`href="${href}"`);
+      }
+    }
+    expect(post.source?.length, post.path).toBeGreaterThan(0);
+    await expect(article.getByRole("heading", { name: "Sources et références" })).toBeVisible();
+    for (const source of post.source ?? []) {
+      await expect(article.getByRole("link", { name: source.label, exact: true })).toHaveAttribute("href", source.href);
+      expect(new URL(source.href).protocol).toBe("https:");
+      expect(source.href).not.toContain("developers.google.com/search");
+    }
+    for (const section of post.sections.filter((section) => section.table)) {
+      const table = article.getByRole("table", { name: section.table!.caption });
+      await expect(table).toBeVisible();
+      expect(await table.locator('th[scope="col"]').count()).toBe(section.table!.headers.length);
+      expect(await table.locator('th[scope="row"]').count()).toBe(section.table!.rows.length);
+      const region = article.getByRole("region", { name: section.table!.caption });
+      await region.focus();
+      await expect(region).toBeFocused();
+      if (page.viewportSize()!.width <= 390) {
+        await page.keyboard.press("ArrowRight");
+        expect(await region.evaluate((element) => element.scrollWidth)).toBeGreaterThan(await region.evaluate((element) => element.clientWidth));
+      }
+      if (["/blog/idees-animations-commerciales-boutique", "/blog/cout-animation-commerciale-commerce"].includes(post.path)) {
+        await region.screenshot({ path: testInfo.outputPath(`${post.path.split("/").pop()}-table.png`) });
+      }
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth), post.path).toBeLessThanOrEqual(page.viewportSize()!.width);
+    const graph = (await page.locator('script[type="application/ld+json"]').allTextContents())
+      .flatMap((value) => JSON.parse(value)["@graph"] ?? []);
+    const schema = graph.find((item) => item["@type"] === "BlogPosting");
+    expect(schema).toMatchObject({
+      headline: post.title,
+      description: post.description,
+      datePublished: post.publishedAt,
+      dateModified: post.updatedAt,
+      author: { "@type": "Organization", name: post.author },
+      image: [`https://www.okado.app${post.image}`],
+    });
+    expect(graph.find((item) => item["@type"] === "BreadcrumbList").itemListElement).toEqual([
+      { "@type": "ListItem", position: 1, name: "Okado", item: "https://www.okado.app/" },
+      { "@type": "ListItem", position: 2, name: "Blog", item: "https://www.okado.app/blog" },
+      { "@type": "ListItem", position: 3, name: post.title, item: `https://www.okado.app${post.path}` },
+    ]);
+    expect(sitemap).toContain(`<loc>https://www.okado.app${post.path}</loc>\n<lastmod>${post.updatedAt}</lastmod>`);
+  }
+});
+
 test("la démonstration reste indépendante de l’avis et ne transmet aucune coordonnée", async ({
   page,
   baseURL,

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { BlogInlineText } from "@/components/marketing/blog-inline-text";
 import { PrimaryButton } from "@/components/marketing/primary-button";
 import { blogPostByPath, type BlogPost } from "@/lib/blog";
 import { APP_URL } from "@/lib/site";
@@ -45,7 +46,7 @@ export function BlogPostTemplate({ post }: { post: BlogPost }) {
           <span aria-hidden="true" className="mx-2">
             /
           </span>
-          {post.eyebrow}
+          <span aria-current="page">{post.title}</span>
         </nav>
 
         {post.image ? (
@@ -78,6 +79,9 @@ export function BlogPostTemplate({ post }: { post: BlogPost }) {
               <span>Par {post.author}</span>
               <span>
                 Publié le <time dateTime={post.publishedAt}>{formatDate(post.publishedAt)}</time>
+              </span>
+              <span>
+                Mis à jour le <time dateTime={post.updatedAt}>{formatDate(post.updatedAt)}</time>
               </span>
               <span>
                 Relu le <time dateTime={post.reviewedAt}>{formatDate(post.reviewedAt)}</time>
@@ -122,23 +126,53 @@ export function BlogPostTemplate({ post }: { post: BlogPost }) {
                 </h2>
                 {section.paragraphs.map((paragraph) => (
                   <p key={paragraph} className="mt-5 text-base leading-8 text-[#4b5563]">
-                    {paragraph}
+                    <BlogInlineText text={paragraph} />
                   </p>
                 ))}
                 {section.items ? (
                   <ol className="mt-6 grid gap-3 pl-5 text-base leading-7 text-[#4b5563] marker:font-semibold marker:text-[#6c00f6]">
                     {section.items.map((item) => (
                       <li key={item} className="pl-2">
-                        {item}
+                        <BlogInlineText text={item} />
                       </li>
                     ))}
                   </ol>
+                ) : null}
+                {section.table ? (
+                  <div
+                    className="mt-6 overflow-x-auto rounded-xl border border-[#e4ddd3] focus-visible:outline-2 focus-visible:outline-offset-4"
+                    role="region"
+                    aria-label={section.table.caption}
+                    tabIndex={0}
+                  >
+                    <table className="w-full text-left text-sm leading-6 text-[#4b5563]">
+                      <caption className="px-4 py-3 text-left font-semibold text-[#111827]">
+                        {section.table.caption}
+                      </caption>
+                      <thead className="bg-[#f2ecff] text-[#30264a]">
+                        <tr>{section.table.headers.map((header) => (
+                          <th key={header} scope="col" className="min-w-32 px-4 py-3">{header}</th>
+                        ))}</tr>
+                      </thead>
+                      <tbody>{section.table.rows.map((row) => (
+                        <tr key={row[0]} className="border-t border-[#e4ddd3]">
+                          {row.map((cell, cellIndex) => cellIndex === 0 ? (
+                            <th key={cellIndex} scope="row" className="px-4 py-3 font-semibold">
+                              <BlogInlineText text={cell} />
+                            </th>
+                          ) : (
+                            <td key={cellIndex} className="px-4 py-3 align-top"><BlogInlineText text={cell} /></td>
+                          ))}
+                        </tr>
+                      ))}</tbody>
+                    </table>
+                  </div>
                 ) : null}
               </section>
             ))}
             {post.source ? (
               <aside className="mt-8 rounded-2xl bg-[#f2ecff] p-5 text-sm leading-7 text-[#4b5563]">
-                <h2 className="font-semibold text-[#111827]">Pour aller plus loin</h2>
+                <h2 className="font-semibold text-[#111827]">Sources et références</h2>
                 <ul className="mt-2 space-y-1">
                   {post.source.map((source) => (
                     <li key={source.href}>
