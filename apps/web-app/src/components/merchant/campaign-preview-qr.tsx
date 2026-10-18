@@ -1,25 +1,61 @@
 "use client";
 
 import Image from "next/image";
-import { X } from "lucide-react";
+import { useState } from "react";
+import { LoaderCircle, X } from "lucide-react";
 
 import { DialogShell } from "@/components/ui/dialog";
 
+function PreviewQrImage({ endpoint }: { endpoint: string }) {
+  const [status, setStatus] = useState<"loading" | "loaded" | "error">("loading");
+  const [attempt, setAttempt] = useState(0);
+  // Keep the authenticated endpoint and preview parameters on every retry.
+  const src = attempt === 0 ? endpoint : `${endpoint}${endpoint.includes("?") ? "&" : "?"}qrRetry=${attempt}`;
+
+  return (
+    <div className="relative h-48 w-48 max-w-full shrink-0 rounded-[12px] border border-[#edf1f7] bg-white" aria-busy={status === "loading"}>
+      {status !== "error" ? (
+        <Image
+          key={attempt}
+          src={src}
+          alt="QR code de prévisualisation — réservé aux tests, ne pas transmettre aux clients"
+          width={192}
+          height={192}
+          unoptimized
+          loading="eager"
+          draggable={false}
+          onLoad={() => setStatus("loaded")}
+          onError={() => setStatus("error")}
+          className={`h-full w-full select-none rounded-[12px] p-2 ${status === "loaded" ? "opacity-100" : "opacity-0"}`}
+        />
+      ) : null}
+      {status === "loading" ? (
+        <div role="status" className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-3 text-center text-sm text-charcoal">
+          <LoaderCircle className="h-6 w-6 animate-spin motion-reduce:animate-none" aria-hidden="true" />
+          Chargement du QR code…
+        </div>
+      ) : null}
+      {status === "error" ? (
+        <div className="flex h-full flex-col items-center justify-center gap-3 p-3 text-center text-sm text-charcoal">
+          <p role="alert">Impossible de charger le QR code de test.</p>
+          <button type="button" className="okado-secondary-action px-3 text-sm" onClick={() => {
+            setStatus("loading");
+            setAttempt((value) => value + 1);
+          }}>Réessayer</button>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 export function CampaignPreviewQr({ campaignId, qrEndpoint }: { campaignId: string; qrEndpoint?: string }) {
+  const endpoint = qrEndpoint ?? `/api/campaigns/${encodeURIComponent(campaignId)}/qr?preview=1&inline=1`;
   return (
     <div
       className="okado-card flex flex-col gap-4 p-4 sm:flex-row sm:items-center"
       onContextMenu={(event) => event.preventDefault()}
     >
-      <Image
-        src={qrEndpoint ?? `/api/campaigns/${campaignId}/qr?preview=1&inline=1`}
-        alt="QR code de prévisualisation — réservé aux tests, ne pas transmettre aux clients"
-        width={192}
-        height={192}
-        unoptimized
-        draggable={false}
-        className="h-48 w-48 shrink-0 select-none rounded-[12px] border border-[#edf1f7] bg-white p-2"
-      />
+      <PreviewQrImage key={`${campaignId}:${endpoint}`} endpoint={endpoint} />
       <div className="min-w-0">
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-charcoal">
           QR de prévisualisation — test uniquement
