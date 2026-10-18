@@ -165,9 +165,9 @@ test("sitemap, robots, OG et fichiers distribués sont utilisables", async ({
   }
 });
 
-test("les 20 articles exposent liens, sources et métadonnées cohérentes dans le HTML", async ({ page, request }, testInfo) => {
+test("tous les articles exposent liens, sources et métadonnées cohérentes dans le HTML", async ({ page, request }, testInfo) => {
   test.setTimeout(120_000);
-  expect(blogPosts).toHaveLength(20);
+  expect(new Set(blogPosts.map((post) => post.path)).size).toBe(blogPosts.length);
   const descriptions = new Set<string>();
   const sitemap = await (await request.get("/sitemap.xml")).text();
   for (const post of blogPosts) {
@@ -185,7 +185,8 @@ test("les 20 articles exposent liens, sources et métadonnées cohérentes dans 
     await expect(page.locator('meta[property="article:modified_time"]')).toHaveAttribute("content", post.updatedAt);
     await expect(page.locator('meta[name="twitter:image"]')).toHaveAttribute("content", `https://www.okado.app${post.image}`);
     await expect(page.getByRole("navigation", { name: "Fil d’Ariane" }).locator('[aria-current="page"]')).toHaveText(post.title);
-    await expect(page.getByText("Mis à jour le", { exact: false })).toContainText("18 octobre 2026");
+    const updatedDate = new Intl.DateTimeFormat("fr-FR", { dateStyle: "long", timeZone: "UTC" }).format(new Date(post.updatedAt));
+    await expect(page.getByText("Mis à jour le", { exact: false })).toContainText(updatedDate);
 
     const inlineTexts = post.sections.flatMap((section) => [
       ...section.paragraphs,
@@ -219,7 +220,7 @@ test("les 20 articles exposent liens, sources et métadonnées cohérentes dans 
         await page.keyboard.press("ArrowRight");
         expect(await region.evaluate((element) => element.scrollWidth)).toBeGreaterThan(await region.evaluate((element) => element.clientWidth));
       }
-      if (["/blog/idees-animations-commerciales-boutique", "/blog/cout-animation-commerciale-commerce"].includes(post.path)) {
+      if (["/blog/idees-animations-commerciales-boutique", "/blog/cout-animation-commerciale-commerce", "/blog/attirer-clients-fleuriste"].includes(post.path)) {
         await region.screenshot({ path: testInfo.outputPath(`${post.path.split("/").pop()}-table.png`) });
       }
     }

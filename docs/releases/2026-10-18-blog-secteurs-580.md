@@ -1,0 +1,117 @@
+# Nouvelle série d’acquisition sectorielle — 18 octobre 2026
+
+## Plan et issues
+
+Dix secteurs différents de la restauration et des instituts. Les recherches
+principales sont des hypothèses d’intention, sans volume, difficulté ou trafic
+inventés. Les neuf articles suivants restent au stade du brief : aucune page vide
+ou URL indexable n’est créée pour eux.
+
+| Ordre | Secteur | Article et issue | URL prévue |
+|---:|---|---|---|
+| 1 | Fleuristes | [#580](https://github.com/Znybnl/growth/issues/580) — Comment attirer des clients chez un fleuriste ? 10 idées concrètes | `/blog/attirer-clients-fleuriste` |
+| 2 | Prêt-à-porter | [#581](https://github.com/Znybnl/growth/issues/581) — Comment animer une boutique de vêtements sans multiplier les remises ? | `/blog/animation-boutique-vetements` |
+| 3 | Librairies | [#582](https://github.com/Znybnl/growth/issues/582) — Comment attirer des clients dans une librairie indépendante ? | `/blog/attirer-clients-librairie-independante` |
+| 4 | Jardineries | [#583](https://github.com/Znybnl/growth/issues/583) — Quelles animations proposer dans une jardinerie au fil des saisons ? | `/blog/animations-jardinerie-saisons` |
+| 5 | Animaleries | [#584](https://github.com/Znybnl/growth/issues/584) — Comment fidéliser les clients d’une animalerie sans remise permanente ? | `/blog/fideliser-clients-animalerie` |
+| 6 | Magasins de jouets et jeux | [#585](https://github.com/Znybnl/growth/issues/585) — Comment organiser une animation dans un magasin de jouets ou de jeux ? | `/blog/animation-magasin-jouets-jeux` |
+| 7 | Garages automobiles | [#586](https://github.com/Znybnl/growth/issues/586) — Comment attirer et faire revenir des clients dans un garage automobile ? | `/blog/attirer-clients-garage-automobile` |
+| 8 | Salles de sport | [#587](https://github.com/Znybnl/growth/issues/587) — Comment organiser une journée portes ouvertes dans une salle de sport ? | `/blog/portes-ouvertes-salle-sport` |
+| 9 | Épiceries fines | [#588](https://github.com/Znybnl/growth/issues/588) — Comment organiser une dégustation en épicerie fine pour faire découvrir ses produits ? | `/blog/organiser-degustation-epicerie-fine` |
+| 10 | Magasins de vélos | [#589](https://github.com/Znybnl/growth/issues/589) — Comment animer un magasin de vélos avec une journée découverte ? | `/blog/animation-magasin-velos-journee-decouverte` |
+
+Chaque issue précise persona, besoin, angle, plan, FAQ, maillage, sources à
+vérifier, critères SEO/GEO, pertinence et axes d’amélioration. Les situations
+sensibles (livre, mineurs, sécurité, alimentaire, sport) doivent être vérifiées
+lors de leur rédaction : les briefs ne valent pas validation juridique.
+
+## Article #580 — rédaction puis relecture
+
+Titre : « Comment attirer des clients chez un fleuriste ? 10 idées concrètes ».
+URL : `/blog/attirer-clients-fleuriste`.
+
+- Besoin : rendre un fleuriste visible et aider à transformer une découverte en
+  demande, sans dépendre uniquement des grandes fêtes ou des remises.
+- Différenciation : arrivages, tiges, périssabilité, temps de composition, places
+  d’atelier, motifs ordinaires d’achat et engagements de retrait. Le jeu mobile
+  est un levier possible, distinct de la commande ou de la réservation.
+- Contenu : dix idées détaillées, matrice de choix, budget de fournitures avec un
+  calcul explicitement fictif, plan sur 30 jours, mesure, cinq FAQ et checklist.
+- Sources ouvertes : Google Business Profile, FranceAgriMer/VALHOR (achats 2024,
+  publication 2025, date et limites visibles), CNIL, DGCCRF (loteries et
+  allégations environnementales). Pas de lien Search Central dans l’article métier.
+- Illustrations, scénarios et calculs ne sont pas présentés comme des preuves
+  terrain. Aucun témoignage, résultat client ou fonctionnalité non confirmée ajouté.
+
+Corrections après première rédaction :
+
+1. Temps de lecture porté à 12 minutes selon environ 220 mots/minute sur le texte,
+   titres et tableau compris ; la longueur n’est pas un seuil SEO.
+2. Référence FranceAgriMer explicitement historique ; aucune extrapolation en
+   résultats locaux de 2026. La synthèse accessible a été utilisée ; le PDF du
+   rapport 2025, trop volumineux pour l’outil de consultation, n’a pas été prétendu lu.
+3. Mentions d’origine et d’environnement reformulées, avec lien DGCCRF contextuel.
+4. Lien entrant depuis l’article pilier d’acquisition locale et liens sortants vers
+   budget, périodes creuses, mesure et fonctionnement réel.
+5. Distinction commande/atelier/jeu, retrait immédiat/prochaine visite et
+   adresse opérationnelle/accord marketing maintenue.
+6. Tests du catalogue rendus extensibles : contrôle des chemins uniques à la place
+   d’un nombre figé à 20, date attendue calculée depuis chaque article, capture du
+   tableau fleuriste incluse. Les 20 articles précédents restent testés.
+
+## Illustration
+
+Créée avec l’outil intégré de génération d’images, puis optimisée en WebP avec
+Sharp, sans retouche du contenu. Le skill imagegen a guidé le cadrage éditorial,
+la cohérence avec les illustrations du blog et la conservation d’un fichier dans
+le projet.
+
+Fichier livré :
+`apps/landing-page/public/images/blog/attirer-clients-fleuriste.webp`.
+Format : 1600 × 800, 248 800 octets. Illustration sans texte, logo ni QR fictif.
+Alternative : « Illustration d’une fleuriste présentant un bouquet à une cliente
+dans une boutique de quartier ».
+
+Prompt final (outil intégré, pas CLI) :
+
+> Use case: illustration-story. Asset type: wide editorial hero illustration for a French professional blog article about attracting customers to a neighborhood florist. Primary request: a warm, detailed painterly digital illustration of an adult florist in a navy apron presenting a real-looking hand-tied bouquet to an adult woman customer at a wooden counter, inside a small welcoming independent flower shop. Background includes buckets of varied cut flowers, greenery, a modest storefront window and prepared bouquets; communicate craft, clear choice and a friendly local exchange. Wide horizontal composition approximately 2:1, all main subjects comfortably within frame, suitable for desktop and mobile blog cards. Style: polished textured editorial illustration, warm cream light, natural wood, restrained terracotta and lavender accents with deep navy details, consistent with a professional local-commerce magazine. Lighting: soft natural daylight, inviting but not glossy advertising. Constraints: no written text, no brand logo, no watermark, no QR code, no wheel or ticket, no fake app interface, no performance numbers, no real merchant identity, no children. Natural hands and flower stems, coherent perspective. This is an illustration, not a claimed customer photograph.
+
+## Audit après optimisation
+
+Note éditoriale proposée : **9,2/10**. Pertinence confirmée par un besoin de
+prospection sectorielle et un contenu de décision spécifique. La note évalue
+l’intention, la précision, la différenciation, les sources, la structure et le
+maillage ; elle ne mesure ni classement ni probabilité de citation par un agent IA.
+
+Points restant à améliorer après validation : relecture par un fleuriste,
+exemple réel autorisé avec quantités/temps/coûts documentés, observations des
+requêtes et conversions après publication. Aucune expertise métier de terrain ni
+conformité juridique globale revendiquée.
+
+Méthode SEO/GEO consultée :
+- https://developers.google.com/search/docs/fundamentals/creating-helpful-content
+- https://developers.google.com/search/docs/fundamentals/ai-optimization-guide?version=published
+
+## Vérifications et livraison
+
+- `npm run lint:landing` : réussi.
+- `npm run build:landing` : réussi, Next.js 16.3.8, 49 pages statiques.
+- `npm run verify:source` et `git diff --check` : réussis.
+- `npm run test:e2e -w @okado/landing-page -- e2e/seo-public-pages.spec.ts` :
+  28 tests réussis en 6,8 minutes, sur ordinateur, tablette, mobile et 320 px.
+  Les contrôles HTML couvrent les 21 articles : métadonnées, données structurées,
+  maillage, sources, images, sitemap, absence de commentaires et clavier.
+- Contrôle éditorial complémentaire : dix idées, cinq FAQ, six liens internes
+  contextuels, cinq références externes distinctes ; aucun lien interne invalide.
+  Title de 48 caractères, description de 156 caractères.
+- Captures du tableau fleuriste sur ordinateur et mobile inspectées : lisibilité
+  et défilement local sans débordement global.
+
+Recette proposée au propriétaire : ouvrir le nouvel article et sa carte dans
+`/blog`, contrôler l’image, le tableau au clavier/mobile, les liens et le sommaire.
+
+Périmètre : registre de contenu, illustration, tests du catalogue et ce suivi.
+Aucun changement au SaaS, aux données, aux règles de participation ou au gabarit
+React ; aucune migration ni dépendance ajoutée. Livraison par PR, sans fusion ou
+déploiement de cette nouvelle série à ce stade. Retour arrière : revert du commit
+de l’article et reconstruction de la landing ; les neuf briefs restent disponibles.

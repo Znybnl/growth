@@ -1257,6 +1257,7 @@ export const blogPosts: BlogPost[] = [
     related: [
       "/blog/idees-animations-commerciales-boutique",
       "/blog/animer-point-de-vente-qr-code",
+      "/blog/attirer-clients-fleuriste",
       "/restaurants",
       "/instituts-beaute",
       "/tarifs",
@@ -2988,6 +2989,198 @@ export const blogPosts: BlogPost[] = [
       "/blog/attirer-clients-commerce-local",
       "/blog/fideliser-clients-sans-programme-points",
       "/blog/animer-point-de-vente-qr-code",
+      "/comment-ca-marche",
+    ],
+  },
+  {
+    path: "/blog/attirer-clients-fleuriste",
+    title: "Comment attirer des clients chez un fleuriste ? 10 idées concrètes",
+    seoTitle: "Attirer des clients chez un fleuriste : 10 idées",
+    description:
+      "Découvrez 10 idées pour attirer des clients chez un fleuriste : vitrine, visibilité locale, ateliers, partenaires et invitations, avec un plan sur 30 jours.",
+    eyebrow: "Marketing fleuriste",
+    intro:
+      "Un fleuriste peut donner envie de pousser sa porte sans attendre une grande fête ni multiplier les réductions. Le bon levier rend le savoir-faire visible, aide à choisir un bouquet et respecte les arrivages, la durée de vie des fleurs et le temps de préparation de l’équipe.",
+    answer:
+      "Pour attirer des clients chez un fleuriste, commencez par une fiche locale à jour et une vitrine compréhensible, puis testez une action liée à un besoin précis : bouquet du quotidien, atelier, conseil ou partenariat de quartier. Réservez le stock et le temps nécessaires, puis mesurez les demandes, visites et commandes sans attribuer automatiquement chaque vente à l’animation.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-18",
+    updatedAt: "2026-10-18",
+    reviewedAt: "2026-10-18",
+    readingTime: "12 min de lecture",
+    image: "/images/blog/attirer-clients-fleuriste.webp",
+    imageAlt: "Illustration d’une fleuriste présentant un bouquet à une cliente dans une boutique de quartier",
+    ctaLabel: "Voir comment préparer une animation par QR code",
+    ctaHref: "/comment-ca-marche",
+    source: [
+      references.localVisibility,
+      {
+        label: "FranceAgriMer et VALHOR — achats de végétaux en 2024, étude présentée en 2025",
+        href: "https://www.franceagrimer.fr/actualites/retour-sur-le-webinaire-achats-de-vegetaux-par-les-francais-en-2024",
+      },
+      references.prospecting,
+      references.lottery,
+    ],
+    sections: [
+      {
+        title: "Identifiez ce qui manque : être trouvé, faire entrer ou faire revenir",
+        paragraphs: [
+          "Avant de choisir une animation, observez le parcours. Les personnes du quartier savent-elles que vous êtes ouvert ? Les passants comprennent-ils votre offre ? Les visiteurs hésitent-ils sur le budget ou sur les variétés ? Une boutique peu visible sur une carte et une boutique dont la vitrine ne donne aucun repère n’ont pas le même problème.",
+          "Pendant quelques jours comparables, notez les demandes reçues, les questions récurrentes et les horaires où l’équipe dispose de temps de conseil. Un relevé anonyme suffit pour commencer. Choisissez ensuite une difficulté principale et une preuve à observer ; les [leviers d’acquisition d’un commerce local](/blog/attirer-clients-commerce-local) donnent le cadre général, tandis que les actions ci-dessous répondent aux contraintes florales.",
+        ],
+      },
+      {
+        title: "1. Rendez votre fiche locale utile avant de chercher plus de visibilité",
+        paragraphs: [
+          "Vérifiez le nom, l’adresse, le téléphone et les horaires, y compris les ouvertures exceptionnelles. Ajoutez des photos récentes de la devanture et de créations réellement proposées. Expliquez les services existants : retrait sur commande, livraison dans une zone définie ou conseil en boutique. N’annoncez pas un service que votre organisation ne peut pas assurer.",
+          "Les conseils officiels Google Business Profile, cités en source, aident à tenir ces informations à jour. Ils ne garantissent aucune position. Sur votre site, une page pratique avec accès, horaires et conditions de commande sera plus utile qu’une succession de pages presque identiques créées pour chaque quartier voisin.",
+        ],
+      },
+      {
+        title: "2. Donnez un repère de choix dès la vitrine",
+        paragraphs: [
+          "Présentez quelques créations identifiables : bouquet pour remercier, petite attention du quotidien ou composition pour une table. Indiquez clairement le prix de la création montrée et les éventuelles variations. Une personne qui ne connaît pas les fleurs doit pouvoir comprendre ce qu’elle peut demander sans craindre une surprise en caisse.",
+          "Reliez le visuel au stock du jour. Si une variété manque, actualisez la présentation et expliquez les substitutions possibles avant la commande. Testez une seule modification de vitrine, puis notez les questions reçues ; ne changez pas en même temps le message, les horaires et toute l’offre si vous voulez comprendre l’effet de votre essai.",
+        ],
+      },
+      {
+        title: "3. Faites découvrir un bouquet du quotidien, au-delà des grandes occasions",
+        paragraphs: [
+          "Proposez une création simple et clairement décrite à partir des arrivages disponibles : format, gamme de couleurs, prix et moment de retrait. Le principe est d’aider à choisir, pas de promettre une composition identique toute l’année. Précisez si la photo illustre un style ou correspond exactement au bouquet remis.",
+          "La synthèse FranceAgriMer et VALHOR sur les achats de 2024, publiée en 2025, distingue notamment occasions calendaires et occasions personnelles. Ce repère historique invite à examiner plusieurs motifs d’achat ; il ne décrit pas la demande de votre boutique en 2026. Observez vos demandes locales avant de fixer les quantités du bouquet du quotidien.",
+        ],
+      },
+      {
+        title: "4. Organisez un atelier floral à capacité maîtrisée",
+        paragraphs: [
+          "Un atelier de petite composition peut faire connaître votre savoir-faire. Définissez le public, la durée, les fournitures, le prix éventuel et le nombre de places selon votre espace et votre capacité d’accompagnement. Réservez les tiges et le matériel ; le stock de l’atelier ne doit pas manquer aux commandes déjà promises.",
+          "Un format d’essai peut accueillir quelques adultes sur un créneau calme, avec une personne dédiée et des conditions d’inscription claires. Ce scénario reste à valider sur place. Si l’équipe ne peut plus accueillir les clients pendant l’atelier, réduisez le groupe ou choisissez une courte démonstration. Un jeu QR ne remplace pas un outil de réservation ni la gestion des places.",
+        ],
+      },
+      {
+        title: "5. Montrez un geste utile plutôt que de lancer une promotion générale",
+        paragraphs: [
+          "Préparer une composition, choisir un vase adapté ou expliquer l’entretien d’un bouquet donne un sujet concret d’échange. Choisissez un geste que votre équipe maîtrise et dont les consignes correspondent aux végétaux présentés. Évitez de promettre une durée de tenue universelle ou un résultat identique quelles que soient les conditions chez le client.",
+          "Annoncez le thème et le créneau de cette démonstration, puis gardez une version courte pour les personnes pressées. Une fiche de conseils cohérente peut prolonger l’échange. Mesurez d’abord les questions, les démonstrations réalisées et les demandes de renseignement, sans les assimiler à des ventes additionnelles.",
+        ],
+      },
+      {
+        title: "6. Construisez un partenariat de quartier qui a un usage clair",
+        paragraphs: [
+          "Une boutique de décoration peut présenter une composition avec son vase ; une librairie peut accueillir un rendez-vous autour des fleurs ; un lieu de travail voisin peut découvrir une offre florale adaptée à ses espaces. Choisissez un partenaire dont le public et les horaires correspondent à votre capacité, puis définissez qui fournit, explique et remet chaque élément.",
+          "Le support doit identifier le fleuriste, son adresse et l’action proposée. Une collaboration n’implique pas de partager les fichiers clients. Pour comparer les contacts venant du partenaire, utilisez par exemple une question anonyme à l’accueil ou un support identifié, sans prétendre que toute visite ainsi observée a été créée par l’opération.",
+        ],
+      },
+      {
+        title: "7. Préparez les temps forts sans leur consacrer tout votre calendrier",
+        paragraphs: [
+          "Les occasions locales et les fêtes peuvent servir de repères, mais elles ne justifient pas une animation chaque semaine. Confirmez les dates du territoire, vos approvisionnements et la capacité de préparation. Une date nationale ne donne pas automatiquement les habitudes du quartier, et les calendriers varient selon les pays.",
+          "Prévoyez aussi des moments ordinaires : remerciement, invitation ou envie de fleurir son intérieur. Gardez les communications liées au deuil sobres et adaptées au besoin, sans pression promotionnelle déplacée. Le [calendrier marketing local](/blog/calendrier-marketing-commerce-local) aide à répartir préparation, diffusion et bilan plutôt qu’à accumuler les événements.",
+        ],
+      },
+      {
+        title: "8. Publiez un arrivage ou une création avec des informations vérifiables",
+        paragraphs: [
+          "Une photo récente peut expliquer une couleur, une association ou un format disponible. Ajoutez le lieu, le créneau où demander conseil et les modalités de commande réellement proposées. Photographiez vos créations ou utilisez des visuels dont vous avez les droits ; ne présentez pas une illustration comme la photo d’un bouquet livré.",
+          "Dans votre communication, reliez les mentions « local », « de saison » ou « origine France » aux produits concernés et conservez les informations qui les justifient. Une livraison par un fournisseur proche ne démontre pas le lieu de culture. Si une caractéristique reste incertaine, décrivez plutôt la composition et sa disponibilité. Les [repères de la DGCCRF sur les allégations environnementales](https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/allegations-environnementales-ce-quil-faut-retenir) aident à éviter les promesses générales non étayées.",
+        ],
+      },
+      {
+        title: "9. Rendez le retrait et la livraison faciles à comprendre",
+        paragraphs: [
+          "Pour une commande, précisez l’heure limite, le créneau de préparation, le lieu de retrait et les conditions de livraison si ce service existe. Le client doit savoir comment confirmer sa demande et ce qui se passe en cas d’indisponibilité. Ne promettez pas une préparation immédiate pendant un pic d’activité si vous ne pouvez pas la tenir.",
+          "Un panneau pratique ou un lien vers ces informations peut lever une hésitation sans remise. Si vous utilisez un QR code, ajoutez une adresse lisible et une possibilité de demander de l’aide. Le support et la destination doivent avoir le même rôle : consulter une offre, commander via votre canal habituel ou participer à un jeu sont des parcours différents.",
+        ],
+      },
+      {
+        title: "10. Proposez une raison de revenir sans imposer une newsletter",
+        paragraphs: [
+          "Après un échange, vous pouvez remettre une invitation pour une prochaine démonstration ou présenter un avantage daté dont vous maîtrisez le coût. Écrivez les conditions : création concernée, réservation éventuelle, période et disponibilité. Une attention utilisable plus tard doit rester réalisable même si les variétés changent.",
+          "Une invitation remise en boutique et un courriel commercial sont deux démarches distinctes. Pour les messages électroniques en France, vérifiez le cadre CNIL cité, y compris ses exceptions encadrées. Participer à un jeu ou donner un e-mail pour recevoir un gain ne vaut pas abonnement. Le [suivi après une animation](/blog/faire-revenir-clients-animation) explique comment distinguer invitation, contact et retour observé.",
+        ],
+      },
+      {
+        title: "Quelle action choisir selon le problème observé ?",
+        paragraphs: [
+          "Ce tableau sert à sélectionner un premier test. Il compare des contraintes de fleuriste, pas des performances promises. Choisissez une action dont vous pouvez vérifier l’exécution avec les données réellement disponibles.",
+        ],
+        table: {
+          caption: "Choisir un levier d’acquisition pour une boutique de fleurs",
+          headers: ["Besoin observé", "Premier test", "Contrainte et preuve à suivre"],
+          rows: [
+            ["Des horaires mal connus", "Actualiser la fiche locale et la devanture", "Informations identiques ; demandes liées aux horaires"],
+            ["Des passants hésitants", "Montrer une création avec prix et usage", "Stock du jour ; questions et entrées observées"],
+            ["Un savoir-faire peu visible", "Démonstration courte ou atelier limité", "Temps et tiges réservés ; présences réelles"],
+            ["Une prochaine visite à encourager", "Invitation datée remise sur place", "Conditions tenables ; retours observés après la première visite"],
+          ],
+        },
+      },
+      {
+        title: "Budgétez les tiges, le temps et les engagements de remise",
+        paragraphs: [
+          "Chiffrez les fleurs et feuillages au coût d’achat, les consommables, la préparation, l’accueil et les supports. Pour un atelier payant, séparez recettes et coûts ; pour un avantage offert, prévoyez le coût de toutes les remises que vous vous engagez à honorer. Une probabilité de gain n’est pas un planning d’approvisionnement.",
+          "Exemple entièrement fictif : six places d’atelier et cinq tiges par personne mobilisent déjà trente tiges, avant les compositions de démonstration, les feuillages et la réserve que vous jugez nécessaire. Ce calcul dimensionne des fournitures, pas un tarif ni une rentabilité. Le coût dépend de vos achats réels et du temps de l’équipe. La [méthode de budget d’animation](/blog/cout-animation-commerciale-commerce) aide à ne pas oublier ces postes.",
+          "Si un lot floral doit être retiré plus tard, vérifiez la durée de validité et la capacité à fournir ce qui a été promis. Prévoyez dans les conditions la composition ou les substitutions convenues, sans modifier après coup une promesse faite au gagnant. Retirez les supports qui annoncent un produit devenu indisponible.",
+        ],
+      },
+      {
+        title: "Un plan de test sur 30 jours pour commencer",
+        paragraphs: [
+          "Ce plan est une proposition d’organisation, pas une prévision commerciale. Il peut servir à tester une vitrine, une démonstration ou un partenariat. Pour une [période creuse](/blog/animer-periode-creuse-commerce-local), comparez des créneaux documentés et regardez aussi les plages voisines : une visite déplacée ne constitue pas nécessairement une nouvelle demande.",
+        ],
+        items: [
+          "Jours 1 à 7 : relever les questions, les horaires et le parcours ; choisir un besoin et une mesure de départ.",
+          "Jours 8 à 14 : préparer une seule action, réserver les fournitures, relire les conditions et tester le support.",
+          "Jours 15 à 24 : réaliser le test, noter les demandes et difficultés, documenter les changements d’arrivage ou d’équipe.",
+          "Jours 25 à 30 : comparer coût, exécution et preuves observées ; poursuivre le suivi si une invitation ou un gain reste valable après le jour 30.",
+        ],
+      },
+      {
+        title: "Quand une animation par QR code est-elle utile chez un fleuriste ?",
+        paragraphs: [
+          "Un jeu court peut accompagner un moment de découverte si l’équipe peut expliquer les conditions et remettre les lots. Une petite création définie ou un accessoire disponible peuvent être envisagés après calcul de leur coût. Un jeu n’est pas nécessaire pour mettre à jour vos horaires, montrer un bouquet ou donner un conseil.",
+          "Okado permet de préparer une roue ou un ticket à gratter sur mobile, une affiche, des lots et le suivi des gains et retraits. Le client ouvre le jeu dans son navigateur. Testez le QR de prévisualisation séparément, puis le QR public après publication. La plateforme ne remplace ni votre caisse, ni la prise de commandes, ni la réservation d’un atelier.",
+          "Pour une opération avec hasard en France, consultez la fiche DGCCRF sur les loteries publicitaires et vérifiez votre dispositif ; un autre pays peut appliquer d’autres règles. La participation et le gain restent indépendants de tout avis Google ou de sa note. Le choix marketing reste facultatif et distinct de l’e-mail nécessaire à l’envoi du gain.",
+        ],
+      },
+      {
+        title: "Mesurez les demandes et les retours sans inventer de ventes attribuées",
+        paragraphs: [
+          "Définissez la preuve correspondant au test : demande de renseignement, présence à un atelier, commande identifiée ou utilisation d’une invitation. Si vous proposez un jeu, gardez séparés scans, participations, contacts, gains et retraits. Un gain retiré le jour même ne prouve pas une nouvelle visite ultérieure.",
+          "Consignez la durée, le canal, les coûts, les arrivages, les horaires et les incidents. Une commande reçue pendant l’opération n’a pas nécessairement été causée par elle. La [mesure d’une animation commerciale](/blog/mesurer-animation-commerciale) explique comment documenter cette attribution et quand il faut s’abstenir de calculer un ROI.",
+          "Une conclusion utile peut être de simplifier un message, réduire un groupe ou changer de créneau. Prévoyez aussi un bilan des fournitures utilisées et des engagements restant à honorer. Ces informations aident à décider sans annoncer un nombre de clients ou une hausse de chiffre d’affaires non démontrés.",
+        ],
+      },
+      {
+        title: "Questions fréquentes sur l’acquisition de clients chez un fleuriste",
+        paragraphs: [
+          "Comment attirer des clients hors des grandes fêtes ? Travaillez les motifs ordinaires d’achat, la lisibilité de la vitrine, les informations locales et un rendez-vous de conseil ou de découverte. Choisissez le format selon vos arrivages et votre capacité plutôt que de reconduire automatiquement une remise.",
+          "Faut-il offrir un bouquet ? Pas nécessairement. Une démonstration, une création facile à choisir ou une information pratique peut déjà répondre au problème. Si vous offrez un lot, définissez le coût, les quantités, les conditions et le moment de remise avant toute annonce.",
+          "Comment gérer un lot périssable ? Annoncez une validité réaliste, les modalités de réservation éventuelle et la composition promise. Anticipez les approvisionnements ; une indisponibilité ne permet pas de modifier librement les conditions après l’attribution.",
+          "Peut-on relancer toutes les personnes qui ont participé ? Une participation ne vaut pas accord pour recevoir des offres. Vérifiez la finalité, le canal et le cadre applicable avant un envoi ; dans le parcours Okado, le choix marketing est distinct et facultatif.",
+          "Une animation garantit-elle davantage de clients ? Non. Elle permet de tester une proposition et d’observer un parcours. La fréquentation dépend aussi du besoin, de l’emplacement, du calendrier et de l’exécution ; aucun nombre de visites ou de ventes n’est garanti.",
+        ],
+      },
+      {
+        title: "Checklist avant de lancer votre action locale",
+        paragraphs: ["Avant de communiquer, vérifiez ces points avec l’équipe :"],
+        items: [
+          "Le besoin principal est identifié et l’action apporte une réponse compréhensible.",
+          "Les fleurs, feuillages, consommables et temps d’équipe sont réservés.",
+          "Prix, conditions, quantités, validité et éventuelles substitutions sont cohérents sur tous les supports.",
+          "Les photos, mentions d’origine et services annoncés correspondent à ce qui peut être délivré.",
+          "Le public, les places d’atelier et le canal de commande sont clairement définis.",
+          "Le QR éventuel ouvre le bon parcours public ; un accès alternatif est disponible.",
+          "Aucun avis ni accord marketing ne conditionne un gain.",
+          "Les preuves, les coûts et la date du bilan sont prévus, sans attribuer toutes les ventes à l’action.",
+        ],
+      },
+    ],
+    related: [
+      "/blog/attirer-clients-commerce-local",
+      "/blog/animer-periode-creuse-commerce-local",
+      "/blog/cout-animation-commerciale-commerce",
+      "/blog/mesurer-animation-commerciale",
       "/comment-ca-marche",
     ],
   },
