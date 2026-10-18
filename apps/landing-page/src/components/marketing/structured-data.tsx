@@ -13,6 +13,7 @@ export function PageSchema({
   dateModified,
   author,
   image,
+  breadcrumbs,
 }: {
   path: string;
   name: string;
@@ -24,6 +25,7 @@ export function PageSchema({
   dateModified?: string;
   author?: string;
   image?: string;
+  breadcrumbs?: { name: string; path: string }[];
 }) {
   const url = new URL(path, SITE_URL).href;
   const graph: Record<string, unknown>[] = [
@@ -61,7 +63,12 @@ export function PageSchema({
           name: "Okado",
           item: `${SITE_URL}/`,
         },
-        { "@type": "ListItem", position: 2, name, item: url },
+        ...(breadcrumbs ?? [{ name, path }]).map((crumb, index) => ({
+          "@type": "ListItem",
+          position: index + 2,
+          name: crumb.name,
+          item: new URL(crumb.path, SITE_URL).href,
+        })),
       ],
     });
   if (faqs.length)

@@ -18,6 +18,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
   ];
   return paths.map((path) => ({
     url: new URL(path, SITE_URL).href,
-    lastModified: CONTENT_REVIEWED_AT,
+    lastModified: blogPosts.find((post) => post.path === path)?.updatedAt ?? CONTENT_REVIEWED_AT,
   }));
 }
