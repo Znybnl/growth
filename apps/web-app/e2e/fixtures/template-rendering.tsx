@@ -3,6 +3,7 @@
 import { CampaignEditor } from "@/components/merchant/campaign-editor";
 import { CampaignLivePreview, buildCampaignLivePreviewModel } from "@/components/merchant/campaign-live-preview";
 import { CampaignWizard } from "@/components/merchant/campaign-wizard";
+import { AccountSettingsForm } from "@/components/merchant/account-settings-form";
 import { CampaignExperience } from "@/components/public/campaign-experience";
 import { defaultScratchTextColor, wheelHeadingColorForTemplateSelection, wheelPaletteForTemplate } from "@/lib/campaign-defaults";
 import type { CampaignPerformance, GamePageTemplateId, Merchant, PublicCampaign, TextFont } from "@/lib/types";
@@ -41,6 +42,40 @@ export function TemplateRenderingProof({ mode = "preview", templateId = "classic
     kpis: { scans: 0, contacts: 0, optIns: 0, leads: 0, actions: 0, games: 0, wins: 0, redeemed: 0,
       conversionRate: 0, actionRate: 0, redemptionRate: 0, estimatedSpend: 0, costPerLead: 0, costPerRedeemed: 0 },
   };
+  if (mode === "account-marketing") {
+    const accountMerchant = { ...merchant, city: "Reims", address: "1 rue de Test", contactName: "Camille Test",
+      websiteUrl: "https://fixture.example.test", appointmentUrl: "https://booking.example.test",
+      googleReviewUrl: "https://search.google.com/local/writereview?placeid=fixture",
+      googlePlaceName: "Établissement de test", googlePlaceAddress: "1 rue de Test, Reims",
+      instagramUrl: "https://www.instagram.com/fixture/" };
+    return <main className="mx-auto h-dvh w-full min-w-0 max-w-5xl overflow-x-hidden overflow-y-auto p-4 sm:p-6"><AccountSettingsForm merchant={accountMerchant}
+      user={{ id: "fixture-user", merchantId: merchant.id, role: "owner", firstName: "Camille", lastName: "Test",
+        email: "fixture@example.test", password: "", createdAt: merchant.createdAt }}
+      locations={[{ merchant: accountMerchant, role: "owner" }]}
+      redemptionPinStates={{ [merchant.id]: { value: "1234", configured: true, recoverable: true } }}
+      billing={{ subscriptionCancelAtPeriodEnd: false, hasPaymentMethodOnFile: false, isTrialActive: true,
+        isSubscribed: false, isPastDue: false, isBillingLocked: false, daysLeftInTrial: 10 }} />
+    </main>;
+  }
+  if (mode.startsWith("wizard-actions") || mode === "editor-actions-empty") {
+    const target = { ...merchant, industry: "Restauration", googleReviewUrl: "https://g.page/r/fixture",
+      instagramUrl: "https://www.instagram.com/fixture/", websiteUrl: "https://fixture.example.test",
+      appointmentUrl: "https://booking.example.test",
+      ...(mode.includes("custom-configured") ? { customLinkUrl: "https://saved-link.example.test" } : {}) };
+    const empty = mode.includes("empty");
+    const fixture: CampaignPerformance = { ...performance, merchant: target,
+      campaign: { ...performance.campaign, actions: empty ? [] : [
+        { id: "legacy-instagram", kind: "instagram", label: "Notre compte personnalisé",
+          url: mode === "wizard-actions-invalid" ? "http://instagram.com/fixture" : target.instagramUrl },
+        { id: "legacy-website", kind: "custom", label: "Visiter le site", url: target.websiteUrl },
+        ...(mode === "wizard-actions-legacy-booking" ? [{ id: "legacy-booking", kind: "custom" as const,
+          label: "Prendre rendez-vous", url: target.appointmentUrl }] : []),
+      ] } };
+    if (mode === "editor-actions-empty") return <CampaignEditor merchant={target} initialCampaign={fixture} deferInlineAssets />;
+    return <CampaignWizard merchant={target} initialCampaign={fixture}
+      {...(mode === "wizard-actions-admin" ? { adminAccountMerchantId: "fixture-account",
+        adminSaveEndpoint: "/api/admin/merchants/fixture-account/locations/template-proof-merchant/campaigns/setup" } : {})} />;
+  }
   if (mode === "wizard-new") return <CampaignWizard merchant={merchant} />;
   if (mode === "wizard-custom-goal") return <CampaignWizard merchant={merchant} initialCampaign={{ ...performance,
     campaign: { ...performance.campaign, goalType: "social_follow", emailCaptureEnabled: true,

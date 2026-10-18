@@ -9,7 +9,8 @@ import { RewardReminderSettings } from "@/components/merchant/reward-reminder-se
 import { AccountLocationPanel } from "@/components/merchant/account-location-panel";
 import { BillingSubscriptionCard } from "@/components/merchant/billing-subscription-card";
 import { GoogleReviewPlacePicker } from "@/components/merchant/google-review-place-picker";
-import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
+import { MarketingActionIcon } from "@/components/merchant/marketing-action-icon";
+import { MARKETING_ACTION_CATALOG } from "@/lib/marketing-action-library";
 import { Button } from "@/components/ui/button";
 import { ValidationDialog } from "@/components/ui/validation-dialog";
 import { captureClientProductEvent } from "@/lib/client-product-analytics";
@@ -51,6 +52,10 @@ function accountTabFromHash(hash: string): AccountTab {
 
 const inputClass =
   "w-full min-h-[var(--okado-control-height)] rounded-[var(--okado-radius-control)] border border-fog bg-white px-4 py-2.5 text-sm text-carbon outline-none transition placeholder:text-ash focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.14)]";
+
+const accountSocialLinks = MARKETING_ACTION_CATALOG.filter(({ key }) =>
+  ["instagram", "facebook", "tiktok", "tripadvisor", "custom"].includes(key),
+);
 
 function createAccountSettingsForm(
   merchant: Merchant,
@@ -529,13 +534,13 @@ export function AccountSettingsForm({
                 <Link2 className="h-4 w-4 text-primary-action-accent" aria-hidden="true" />
                 <h3 className="text-base font-semibold text-graphite">Liens marketing</h3>
               </div>
-              <p className="mt-1 text-sm text-ash">Ajoutez les liens que vos participants pourront retrouver après leur participation.</p>
+              <p className="mt-1 text-sm text-ash">Gérez les liens de cet établissement et réutilisez-les dans vos jeux.</p>
             </div>
             <div className="grid gap-4 md:grid-cols-2">
-            <label className="flex flex-col gap-3 rounded-[12px] border border-fog bg-white p-4 text-sm md:col-span-2">
-              <span className="flex items-center justify-between gap-3 text-charcoal">
-                <span className="flex items-center gap-3"><SocialChannelIcon channel="appointment" /><span className="font-semibold">Lien de prise de rendez-vous</span></span>
-                <span className="text-xs text-ash">Optionnel</span>
+            <label className="flex min-w-0 flex-col gap-3 rounded-[12px] border border-fog bg-white p-4 text-sm md:col-span-2" data-testid="account-link-appointment">
+              <span className="flex min-w-0 flex-wrap items-center justify-between gap-3 text-carbon">
+                <span className="flex min-w-0 items-center gap-3"><MarketingActionIcon actionKey="appointment" /><span className="font-semibold">Lien de prise de rendez-vous</span></span>
+                <span className={`rounded-full px-2 py-1 text-[11px] font-semibold ${form.appointmentUrl ? "bg-[#edf8f2] text-[#246c49]" : "bg-fog text-ash"}`} aria-hidden="true">{form.appointmentUrl ? "Renseigné" : "Optionnel"}</span>
               </span>
               <input
                 type="url"
@@ -558,6 +563,8 @@ export function AccountSettingsForm({
               defaultQuery={form.companyName}
               city={form.city}
               compact
+              icon={<MarketingActionIcon actionKey="google" />}
+              description="Sélectionnez la fiche à réutiliser dans les actions de vos jeux."
               allowManualInput={false}
               selectedPlace={form.googlePlaceName ? {
                 name: form.googlePlaceName,
@@ -579,61 +586,16 @@ export function AccountSettingsForm({
                 }));
               }}
             />
-          <label className="flex min-h-[152px] flex-col justify-between gap-3 rounded-[12px] border border-fog bg-white p-4 text-sm">
-            <span className="flex items-center justify-between gap-3 text-charcoal"><span className="flex items-center gap-3"><SocialChannelIcon channel="instagram" /><span>Instagram</span></span>{form.instagramUrl ? <span className="text-xs font-semibold text-aubergine">✓</span> : <span className="text-xs text-ash">Optionnel</span>}</span>
-            <input
-              type="text"
-              inputMode="url"
-              value={form.instagramUrl}
-              onChange={(event) => updateField("instagramUrl", event.target.value)}
-              placeholder="https://instagram.com/..."
-              className={`${inputClass} min-h-[40px] px-3 py-2 text-xs`}
-            />
-          </label>
-          <label className="flex min-h-[152px] flex-col justify-between gap-3 rounded-[12px] border border-fog bg-white p-4 text-sm">
-            <span className="flex items-center justify-between gap-3 text-charcoal"><span className="flex items-center gap-3"><SocialChannelIcon channel="facebook" /><span>Facebook</span></span>{form.facebookUrl ? <span className="text-xs font-semibold text-aubergine">✓</span> : <span className="text-xs text-ash">Optionnel</span>}</span>
-            <input
-              type="text"
-              inputMode="url"
-              value={form.facebookUrl}
-              onChange={(event) => updateField("facebookUrl", event.target.value)}
-              placeholder="https://facebook.com/..."
-              className={`${inputClass} min-h-[40px] px-3 py-2 text-xs`}
-            />
-          </label>
-          <label className="flex min-h-[152px] flex-col justify-between gap-3 rounded-[12px] border border-fog bg-white p-4 text-sm">
-            <span className="flex items-center justify-between gap-3 text-charcoal"><span className="flex items-center gap-3"><SocialChannelIcon channel="tiktok" /><span>TikTok</span></span>{form.tiktokUrl ? <span className="text-xs font-semibold text-aubergine">✓</span> : <span className="text-xs text-ash">Optionnel</span>}</span>
-            <input
-              type="text"
-              inputMode="url"
-              value={form.tiktokUrl}
-              onChange={(event) => updateField("tiktokUrl", event.target.value)}
-              placeholder="https://tiktok.com/@..."
-              className={`${inputClass} min-h-[40px] px-3 py-2 text-xs`}
-            />
-          </label>
-          <label className="flex min-h-[152px] flex-col justify-between gap-3 rounded-[12px] border border-fog bg-white p-4 text-sm">
-            <span className="flex items-center justify-between gap-3 text-charcoal"><span className="flex items-center gap-3"><SocialChannelIcon channel="tripadvisor" /><span>Tripadvisor</span></span>{form.tripadvisorUrl ? <span className="text-xs font-semibold text-aubergine">✓</span> : <span className="text-xs text-ash">Optionnel</span>}</span>
-            <input
-              type="text"
-              inputMode="url"
-              value={form.tripadvisorUrl}
-              onChange={(event) => updateField("tripadvisorUrl", event.target.value)}
-              placeholder="https://tripadvisor.com/..."
-              className={`${inputClass} min-h-[40px] px-3 py-2 text-xs`}
-            />
-          </label>
-          <label className="flex min-h-[152px] flex-col justify-between gap-3 rounded-[12px] border border-fog bg-white p-4 text-sm">
-            <span className="flex items-center justify-between gap-3 text-charcoal"><span className="flex items-center gap-3"><SocialChannelIcon channel="custom" /><span>Lien personnalisé</span></span>{form.customLinkUrl ? <span className="text-xs font-semibold text-aubergine">✓</span> : <span className="text-xs text-ash">Optionnel</span>}</span>
-            <input
-              type="text"
-              inputMode="url"
-              value={form.customLinkUrl}
-              onChange={(event) => updateField("customLinkUrl", event.target.value)}
-              placeholder="https://..."
-              className={`${inputClass} min-h-[40px] px-3 py-2 text-xs`}
-            />
-          </label>
+              {accountSocialLinks.map((entry) => <label key={entry.key} data-testid={`account-link-${entry.key}`}
+                className="flex min-w-0 flex-col gap-3 rounded-[12px] border border-fog bg-white p-4 text-sm">
+                <span className="flex min-w-0 flex-wrap items-center justify-between gap-3 text-carbon">
+                  <span className="flex min-w-0 items-center gap-3"><MarketingActionIcon actionKey={entry.key} /><span className="font-semibold">{entry.label}</span></span>
+                  <span className={`rounded-full px-2 py-1 text-[11px] font-semibold ${form[entry.field] ? "bg-[#edf8f2] text-[#246c49]" : "bg-fog text-ash"}`} aria-hidden="true">{form[entry.field] ? "Renseigné" : "Optionnel"}</span>
+                </span>
+                <input type="text" inputMode="url" aria-label={entry.label} value={form[entry.field] ?? ""}
+                  onChange={(event) => updateField(entry.field, event.target.value)} placeholder={entry.placeholder}
+                  className={`${inputClass} min-w-0`} />
+              </label>)}
             </div>
           </div>
 

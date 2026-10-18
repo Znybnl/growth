@@ -59,7 +59,7 @@ test.describe("Navigation du Wizard en modification", () => {
       { button: /La promesse/, heading: "La promesse" },
       { button: /L’apparence/, heading: "L’apparence" },
       { button: /Les lots/, heading: "Les lots" },
-      { button: /L’action/, heading: "L’action" },
+      { button: /Les actions/, heading: "Les actions" },
     ];
 
     for (const step of steps) {

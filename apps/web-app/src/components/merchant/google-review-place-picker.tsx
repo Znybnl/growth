@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 
 import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
 import { captureClientProductEvent } from "@/lib/client-product-analytics";
@@ -29,6 +29,8 @@ type GoogleReviewPlacePickerProps = {
   selectedPlace?: GoogleReviewPlaceSummary | null;
   onPlaceChange?: (place: GoogleReviewPlace) => void;
   className?: string;
+  icon?: ReactNode;
+  description?: string;
 };
 
 function isGoogleGeneratedReviewUrl(value: string) {
@@ -51,6 +53,8 @@ export function GoogleReviewPlacePicker({
   selectedPlace = null,
   onPlaceChange,
   className,
+  icon,
+  description = "Sélectionnez la fiche à proposer après la participation.",
 }: GoogleReviewPlacePickerProps) {
   const [query, setQuery] = useState(() => selectedPlace?.name ?? defaultQuery);
   const [places, setPlaces] = useState<GoogleReviewPlace[]>([]);
@@ -136,12 +140,12 @@ export function GoogleReviewPlacePicker({
     <div className={[compact ? "space-y-3" : "space-y-4", className].filter(Boolean).join(" ")}>
       <div className={`${compact ? "h-full min-h-[152px] rounded-[12px] border border-fog bg-white p-4" : "rounded-[16px] border border-lavender-mist bg-soft-white p-3"} `}>
         <div className="flex items-start gap-3">
-          <SocialChannelIcon channel="googleReview" />
+          {icon ?? <SocialChannelIcon channel="googleReview" />}
           <div className="min-w-0 flex-1">
             <div className="mb-2 flex flex-wrap items-center gap-2">
               <div>
                 <p className="text-sm font-semibold text-carbon">Avis Google</p>
-                <p className="mt-0.5 text-xs text-ash">Sélectionnez la fiche à proposer après la participation.</p>
+                <p className="mt-0.5 text-xs text-ash">{description}</p>
               </div>
             </div>
             {showSearchInput ? (

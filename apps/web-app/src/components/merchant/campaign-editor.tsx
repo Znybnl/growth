@@ -54,6 +54,7 @@ import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
 import { Switch } from "@/components/ui/switch";
 import { DialogShell } from "@/components/ui/dialog";
 import { ValidationDialog } from "@/components/ui/validation-dialog";
+import { useNoMarketingActionConfirmation } from "@/components/merchant/no-marketing-action-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -1793,6 +1794,7 @@ export function CampaignEditor({
   deferInlineAssets = false,
 }: CampaignEditorProps) {
   const router = useRouter();
+  const { confirmNoMarketingAction, noMarketingActionDialog } = useNoMarketingActionConfirmation();
   const [form, setForm] = useState<EditorState>(toEditorState(merchant, initialCampaign));
   const [lastSavedFormSnapshot, setLastSavedFormSnapshot] = useState(() =>
     JSON.stringify(toEditorState(merchant, initialCampaign)),
@@ -2571,6 +2573,7 @@ export function CampaignEditor({
     onError?: (message: string) => void;
   }): Promise<string | null> {
     if (saveRequestInFlightRef.current) return null;
+    if (form.isActive && !form.actions.length && !await confirmNoMarketingAction()) return null;
     saveRequestInFlightRef.current = true;
     setIsSaving(true);
     setMessage(null);
@@ -2801,6 +2804,7 @@ export function CampaignEditor({
 
   return (
     <div className="okado-campaign-editor space-y-6">
+      {noMarketingActionDialog}
       <section className="grid gap-6 px-1 xl:grid-cols-[1.2fr_0.8fr]">
           <div className="min-w-0">
             <p className="okado-label">
