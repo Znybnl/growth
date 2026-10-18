@@ -1,4 +1,4 @@
-# Wizard petits ordinateurs et contrôle visuel 1280 px — #576
+# Wizard, dernières campagnes et contrôle visuel 1280 px — #576
 
 ## Décision propriétaire et périmètre
 
@@ -7,9 +7,69 @@ de #576 et d'ajouter une vérification visuelle à 1280 px lors de toute créati
 ou modification d'écran. Le formulaire est prioritaire ; pas de zoom global ni
 de modification des tailles de texte ou espacements du jeu enregistré.
 
-Les changements restent dans le Wizard, le choix de jeu partagé, les tests et
-les consignes de livraison. Menu global, jeu public, autorisations, API de
+Les changements concernent le Wizard, le choix de jeu partagé, le tableau des
+dernières campagnes de l'accueil (extension demandée le même jour), les tests
+et les consignes de livraison. Menu global, jeu public, autorisations, API de
 sauvegarde, lots et données en base inchangés. Pas de migration.
+
+## Dernières campagnes de l'accueil — extension propriétaire
+
+Le tableau existant n'était visible qu'à partir de 1536 px (`2xl`). À 1280 px,
+les campagnes étaient présentées en cartes, avec leurs statistiques sur
+plusieurs lignes, malgré une largeur utile suffisante pour un tableau.
+
+`DashboardRecentCampaigns` est maintenant partagé entre la vraie page serveur
+et la fixture de développement. Il reçoit la liste déjà filtrée et triée par
+la page ; aucune nouvelle lecture, formule, pagination ou transformation des
+KPI. Les états actif/pause/stock épuisé gardent leur priorité et leurs libellés.
+
+Le CSS local utilise la largeur du contenu de la carte : tableau dès **760 px
+utiles**, cartes en dessous. À **1280 px**, le vrai menu et les marges laissent
+984 px à la section, soit environ **934 px** au tableau. Six colonnes présentent
+sur une ligne le nom/statut, le type de jeu, les scans, les participations, la
+conversion et les actions. Les chiffres restent intégraux, alignés à droite ;
+le nom long peut être abrégé visuellement, son texte intégral restant dans le
+DOM accessible et dans l'infobulle native. Les tailles de police sont conservées.
+
+Le tableau a de vrais en-têtes HTML et les noms servent d'en-têtes de ligne.
+La limite verticale de 380 px et les en-têtes fixes sont conservés ; le dernier
+jeu reste accessible au défilement. Le menu Modifier/Données/Prévisualiser
+réutilise le composant existant. Sous le seuil, les cartes gardent tous les
+indicateurs et affichent les noms longs sur plusieurs lignes.
+
+### Preuves et recette de l'accueil
+
+`e2e/dashboard-responsive.spec.ts` : **3 scénarios réussis**, dont 2 taggés
+`@visual-1280` ; les **5 tests taggés de la PR** passent ensemble. La fixture
+emploie le vrai MerchantShell et le vrai tableau, avec six campagnes fictives,
+les deux mécaniques, les trois statuts, un jeu sans lot, un nom long, des
+compteurs à huit chiffres et une conversion supérieure à 100 % conservée.
+L'état vide est aussi couvert. La fixture illustre le contexte de l'accueil ;
+elle ne reproduit pas le graphique, les contacts et les stocks de la page réelle.
+
+À 1280×720 et 1280×600 : une ligne par campagne (hauteur ≤64 px), aucun chiffre
+ou en-tête tronqué et aucun défilement horizontal interne. Menu au clavier,
+liens propres à la campagne et retour du focus contrôlés. À 320/390/768/1024 px :
+cartes accessibles et menu contenu dans le viewport ; à 1120/1920 px : tableau.
+Redimensionnement, dernier jeu et en-têtes fixes contrôlés ; aucune erreur JS.
+
+Captures `accueil-campagnes-1280x600.png`, `accueil-campagnes-1280x720.png`,
+`accueil-actions-1280x600.png`, `accueil-actions-1280x720.png` et
+`accueil-campagnes-vide-1280x720.png` jointes au rapport Playwright et inspectées.
+Captures complémentaires 320/390/1120 px inspectées localement.
+Les nouvelles captures taggées rejoignent l'artefact CI `visual-1280` existant.
+
+Après cette extension : **21 tests d'indicateurs réussis**, lint sans erreur
+(4 warnings préexistants), build/TypeScript et contrôle source vérifiés.
+Serveur compilé : accueil anonyme **307 /connexion**, fixture **404**, connexion
+**200** ; serveurs locaux dédiés arrêtés après les contrôles.
+Le premier lancement du nouveau test ciblait deux `span[title]` (statut et
+nom) : le sélecteur du nom a été précisé avant la reprise réussie de la suite.
+Toutes les données sont fictives et les API/sorties HTTPS interceptées.
+
+Recette propriétaire : Accueil à 1280 px, lire une campagne sur une ligne,
+ouvrir son menu, vérifier un nom long au survol, puis accéder au dernier jeu
+par défilement. Sur téléphone, vérifier le passage aux cartes et les actions.
 
 ## Mise en page retenue
 
