@@ -255,6 +255,12 @@ Compléments #473/#484 : les tests du handler/DAL vérifient les options multipl
 
 ## Compte rendu attendu
 
+### Réception des webhooks Resend — #573
+
+`npm run test:resend-webhook -w @okado/web-app` utilise le vrai SDK avec signatures HMAC synthétiques : en-têtes Svix, compatibilité historique complète sans mélange/repli abusif, corps brut UTF-8, signature incorrecte, horodatage périmé/futur, JSON invalide, secret absent et panne de stockage. Les événements invalides ne sont jamais persistés ; les erreurs ne divulguent pas les détails internes.
+
+Après `npm run build:web`, `npm run smoke:resend-webhook -w @okado/web-app` lance le vrai serveur compilé et une API de stockage simulée, toutes deux sur loopback, avec clés fictives. Il vérifie les refus HTTP 400 sans appel base, la réponse 200 après mise à jour du suivi et archivage via la vraie DAL, puis HTTP 503 et reprise après une panne simulée. Ces contrôles sont en CI. Aucune base, secret, livraison ou adresse réelle n'est utilisée ; ils ne remplacent pas le replay signé ciblé après déploiement autorisé.
+
 ### Fiabilité de Supervision — #491
 
 Non-régression #492 : `e2e/support-scroll.spec.ts` utilise le vrai cadre marchand dans la fixture de développement (`?shell=1`), avec données fictives et API interceptées. À 320/390/1280 px et 1536 × 540 px, vérifier une seule zone verticale scrollable (`main`), aucun débordement du document, légendes accessibles contenues dans chaque tableau, défilement horizontal au clavier, erreur dépliée et fin de page accessible. Aucun changement de permissions ou de données ; la fixture demeure interdite en production.
