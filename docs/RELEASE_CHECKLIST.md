@@ -8,6 +8,7 @@ Cette checklist tient en une minute. Elle s'applique à chaque changement applic
 - [ ] Le résultat utilisateur et les non-régressions sont décrits.
 - [ ] Le lint et le build de l'application touchée sont verts.
 - [ ] Le parcours touché a été testé ; un E2E ou smoke est ajouté si le risque le justifie.
+- [ ] Pour chaque écran créé/modifié : test et capture **1280×720**, vrai cadre de navigation, inspection des états touchés, pas de débordement ni d'action masquée ; **1280×600** pour les écrans denses et contrôle mobile pertinent. Test `@visual-1280` ajouté/adapté, captures jointes au rapport de PR. Une capture générée n'est pas une validation visuelle automatique.
 - [ ] Les migrations, données sensibles, e-mails, authentification, retrait, prévisualisation, paiement ou autorisations ont été explicitement analysés lorsqu'ils sont concernés.
 - [ ] Pour une migration Supabase, le [runbook de release](MIGRATION_RELEASE_RUNBOOK.md) a été suivi et la cible est contrôlée depuis le commit candidat.
 - [ ] Pour une migration de cycle de vie des données, la cible Supabase confirme les tables/RPC attendues et la preuve de contrôle est conservée sans donnée personnelle.

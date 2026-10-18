@@ -5,6 +5,7 @@ import { CampaignLivePreview, buildCampaignLivePreviewModel } from "@/components
 import { CampaignWizard } from "@/components/merchant/campaign-wizard";
 import { AccountSettingsForm } from "@/components/merchant/account-settings-form";
 import { CampaignExperience } from "@/components/public/campaign-experience";
+import { MerchantShell } from "@/components/merchant/merchant-shell";
 import { defaultScratchTextColor, wheelHeadingColorForTemplateSelection, wheelPaletteForTemplate } from "@/lib/campaign-defaults";
 import type { CampaignPerformance, GamePageTemplateId, Merchant, PublicCampaign, TextFont } from "@/lib/types";
 import { halloweenFixture } from "./halloween-wheel";
@@ -42,6 +43,15 @@ export function TemplateRenderingProof({ mode = "preview", templateId = "classic
     kpis: { scans: 0, contacts: 0, optIns: 0, leads: 0, actions: 0, games: 0, wins: 0, redeemed: 0,
       conversionRate: 0, actionRate: 0, redemptionRate: 0, estimatedSpend: 0, costPerLead: 0, costPerRedeemed: 0 },
   };
+  if (mode.startsWith("wizard-responsive")) {
+    const admin = mode.endsWith("admin");
+    return <MerchantShell merchant={merchant} user={{ id: "responsive-user", merchantId: merchant.id,
+      role: "owner", firstName: "Camille", lastName: "Test", email: "responsive@example.test", password: "", createdAt: merchant.createdAt }}
+      locations={[{ merchant, role: "owner" }]} activeLocationId={merchant.id} isSaasAdmin={admin}>
+      <CampaignWizard merchant={merchant} initialCampaign={mode.endsWith("create") ? undefined : performance}
+        {...(admin ? { adminAccountMerchantId: "fixture-account", adminSaveEndpoint: "/api/admin/merchants/fixture-account/locations/template-proof-merchant/campaigns/setup" } : {})} />
+    </MerchantShell>;
+  }
   if (mode === "account-marketing") {
     const accountMerchant = { ...merchant, city: "Reims", address: "1 rue de Test", contactName: "Camille Test",
       websiteUrl: "https://fixture.example.test", appointmentUrl: "https://booking.example.test",

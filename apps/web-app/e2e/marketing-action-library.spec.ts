@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { selectWizardStep } from "./helpers/wizard-step";
 import { ANALYTICS_CONSENT_COOKIE, ANALYTICS_CONSENT_VERSION } from "../src/lib/analytics-consent";
 
 test.use({ actionTimeout: 15000 });
@@ -11,7 +12,7 @@ test.beforeEach(async ({ page, context, baseURL }) => {
 });
 async function openActions(page: Page, mode = "wizard-actions", template = "classic") {
   await page.goto(`/dev/template-rendering-proof?mode=${mode}&template=${template}`);
-  await page.getByRole("button", { name: /05.*actions/i }).click();
+  await selectWizardStep(page, 4);
   await expect(page.getByRole("heading", { name: "Les actions", exact: true })).toBeVisible();
   await expect(page.getByText("Les actions · Facultatif", { exact: true })).toHaveCount(0);
 }

@@ -11,6 +11,43 @@ L'objectif est de détecter les régressions importantes sans transformer le pro
 
 ## Contrôles automatisés existants
 
+### Contrôle visuel obligatoire des écrans à 1280 px — #576
+
+Toute création/modification d'écran doit ajouter ou adapter un test navigateur
+**1280×720**, dans le vrai cadre de navigation applicable (menu, en-tête et
+barres d'actions inclus), plus **1280×600** pour les écrans denses. Contrôler
+aussi le mobile pertinent. Couvrir les états touchés : formulaire, tableau,
+erreurs et popin ; aucune donnée personnelle ou requête métier réelle dans les
+fixtures. Ne pas utiliser le simple viewport d'un composant nu pour conclure
+que l'écran complet tient dans l'application.
+
+Dans le SaaS : `e2e/helpers/visual-1280.ts` fournit la capture et le contrôle de
+débordement horizontal des pages/formulaires. Le test porte le tag
+`@visual-1280` et se lance avec :
+
+```powershell
+npm run test:visual-1280 -w @okado/web-app
+```
+
+Le job CI **Visual checks at 1280px** exécute ces tests et publie leurs captures
+et le rapport Playwright dans l'artefact `visual-1280` (7 jours). **Les assertions
+et captures ne remplacent pas l'inspection visuelle** : ouvrir les images,
+vérifier lisibilité, chevauchements, zones tronquées, focus et actions, puis
+consigner le résultat dans la PR. Ce n'est pas un comparateur pixel avec une
+baseline automatiquement approuvée. Le helper est réutilisable ; la couverture
+initiale porte sur le Wizard, pas automatiquement sur tous les écrans futurs.
+Pour la landing, appliquer la même exigence dans ses tests navigateur.
+
+`e2e/wizard-responsive.spec.ts` rend le vrai `MerchantShell` et le Wizard sur
+fixture développement : jeu/lots à 1280×600/720, création/édition et assistance,
+roue/ticket, brouillon non sauvegardé visible dans l'aperçu, clavier/Escape/focus,
+320/390/768/1024/1366/1440/1536/1920 px, formulaire et téléphone contenus.
+Les réductions de viewport équivalentes au reflow 125/150/200 % vérifient la
+redistribution CSS et la conservation de l'état ; elles ne constituent pas
+une mesure du zoom du navigateur, du facteur d'échelle OS ou de conformité
+WCAG complète. API/HTTPS interceptées, aucun stockage ou e-mail réel.
+[Mesures, analyse et recette](releases/2026-10-18-responsive-wizard-576.md).
+
 ### Actions du Wizard et liens de Mon compte — #564
 
 `e2e/marketing-action-library.spec.ts` teste les composants réels du Wizard et

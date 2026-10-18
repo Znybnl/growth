@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { selectWizardStep } from "./helpers/wizard-step";
 import { BEAUTY_SCRATCH_TEMPLATES } from "../src/lib/beauty-scratch-templates";
 import { resolveScratchTemplateTextColor } from "../src/lib/campaign-defaults";
 
@@ -79,7 +80,7 @@ for (const mode of ["wizard", "editor"]) {
     await isolate(page);
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.goto(url(mode, "cocorico-duo-wheel", { background: "#f2c94c" }));
-    if (mode === "wizard") await page.getByRole("button", { name: /03.*apparence/i }).click();
+    if (mode === "wizard") await selectWizardStep(page, 2);
     else await page.getByLabel("Activer le mode expert", { exact: true }).check();
     const primary = page.getByLabel(mode === "wizard" ? "Couleur principale de la roue" : "Couleur principale", { exact: true }).first();
     await primary.fill("#125634");
@@ -94,7 +95,7 @@ for (const mode of ["wizard", "editor"]) {
     await isolate(page);
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.goto(url(mode, "scratch-lilac", { ink: "#003cb4" }));
-    if (mode === "wizard") await page.getByRole("button", { name: /03.*apparence/i }).click();
+    if (mode === "wizard") await selectWizardStep(page, 2);
     if (mode === "wizard") await page.getByText("Paramètres avancés", { exact: false }).first().click();
     else await page.getByLabel("Activer le mode expert", { exact: true }).check();
     const logoColor = page.getByLabel("Couleur du logo et sous-titre", { exact: true }).first();
