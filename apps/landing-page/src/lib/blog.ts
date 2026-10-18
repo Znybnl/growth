@@ -1,13 +1,49 @@
 import type { ContentSection } from "@/lib/public-content";
 
+const references = {
+  lottery: {
+    label: "DGCCRF — règles françaises sur les loteries publicitaires",
+    href: "https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/loterie-des-pratiques-commerciales-reglementees",
+  },
+  consent: {
+    label: "CNIL — recueillir un consentement libre et spécifique",
+    href: "https://www.cnil.fr/fr/les-bases-legales/consentement",
+  },
+  prospecting: {
+    label: "CNIL — prospection par courriel et SMS : consentement et exceptions",
+    href: "https://www.cnil.fr/fr/la-prospection-commerciale-par-courrier-electronique-sms-mms-et-automate-dappel",
+  },
+  pricing: {
+    label: "DGCCRF — annonces de réduction de prix en France",
+    href: "https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/annonces-de-reduction-de-prix-ce-que-vous-devez-savoir",
+  },
+  contrast: {
+    label: "W3C — comprendre le contraste des textes numériques (en anglais)",
+    href: "https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html",
+  },
+  localVisibility: {
+    label: "Google Business Profile — visibilité locale et informations de l’établissement",
+    href: "https://support.google.com/business/answer/7091?hl=fr",
+  },
+};
+
+export type BlogSection = ContentSection & {
+  table?: {
+    caption: string;
+    headers: string[];
+    rows: string[][];
+  };
+};
+
 export type BlogPost = {
   path: string;
   title: string;
+  seoTitle?: string;
   description: string;
   eyebrow: string;
   intro: string;
   answer?: string;
-  sections: ContentSection[];
+  sections: BlogSection[];
   related: string[];
   source?: { label: string; href: string }[];
   author: string;
@@ -25,6 +61,8 @@ export const blogPosts: BlogPost[] = [
   {
     path: "/blog/idees-animations-commerciales-boutique",
     title: "15 idées d’animations commerciales pour attirer des clients en boutique",
+    seoTitle: "15 idées d’animations commerciales en boutique",
+    source: [references.lottery],
     description:
       "Découvrez 15 idées d’animations commerciales pour créer du passage en boutique, faire participer vos clients et préparer une opération réaliste.",
     eyebrow: "Marketing local",
@@ -34,9 +72,9 @@ export const blogPosts: BlogPost[] = [
       "Pour attirer des clients en boutique, choisissez une animation liée à un objectif précis, avec une promesse claire, une dotation disponible et une mesure séparant participations, gains et retraits.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
-    updatedAt: "2026-10-17",
-    reviewedAt: "2026-10-17",
-    readingTime: "8 min de lecture",
+    updatedAt: "2026-10-18",
+    reviewedAt: "2026-10-18",
+    readingTime: "5 min de lecture",
     image: "/images/blog/animations-commerciales-boutique.webp",
     imageAlt: "Illustration d’une animation commerciale dans une boutique de proximité",
     sections: [
@@ -68,6 +106,31 @@ export const blogPosts: BlogPost[] = [
           "Opération saisonnière avec une durée, une dotation et une date de fin visibles.",
           "Collecte de contacts facultative, séparée de la participation et de toute prospection future.",
           "Déclinaison d’une même animation sur plusieurs établissements, après contrôle de chaque QR et de chaque condition.",
+        ],
+      },
+      {
+        title: "Quelle animation choisir selon votre activité ?",
+        paragraphs: [
+          "Le tableau compare des efforts d’organisation, pas des performances attendues. Un atelier nécessite du temps de conseil ; un jeu exige une dotation et une procédure de remise. Retenez le format qui sert votre objectif sans perturber le service.",
+        ],
+        table: {
+          caption: "Exemples de choix par objectif et par activité",
+          headers: ["Objectif", "Format et activité", "Effort à prévoir"],
+          rows: [
+            ["Faire découvrir", "Démonstration en boutique", "Préparer un produit et un créneau de conseil"],
+            ["Animer l’attente", "Jeu QR à table au restaurant", "Tester le support et expliquer la remise"],
+            ["Inviter à revenir", "Option sur un prochain rendez-vous en institut", "Réserver la capacité et préciser les dates"],
+            ["Créer un rendez-vous local", "Atelier avec un commerce voisin", "Coordonner horaires, stocks et responsabilités"],
+          ],
+        },
+      },
+      {
+        title: "Trois scénarios pour passer de l’idée au test",
+        paragraphs: [
+          "Boutique de décoration : lors d’une arrivée de collection, préparez une démonstration d’association de produits près de l’entrée. Gardez les références présentées disponibles et notez les questions sur leur usage. L’objectif est de faciliter la découverte ; il ne dépend pas nécessairement d’une remise.",
+          "Restaurant : sur un déjeuner habituellement calme, proposez un jeu à table avec un dessert identifié. Vérifiez que la cuisine et la salle peuvent honorer les gains pendant le créneau annoncé. Observez les participations et les retraits sans compter chaque couvert comme acquis grâce au jeu.",
+          "Institut : après une prestation, présentez une option disponible lors d’un prochain rendez-vous. Précisez les prestations compatibles et la validité. Le retour doit être observé séparément : une invitation remise n’est pas une réservation. Ces trois situations sont des exemples de conception, pas des retours clients documentés.",
+          "Pour approfondir un secteur, consultez les [idées de jeux pour restaurant](/blog/idees-jeux-concours-restaurant) ou les [animations pour institut](/blog/animation-commerciale-institut-beaute). Pour une offre certaine sur le prix, privilégiez les [idées de promotions locales](/blog/idees-promotions-commerce-local). Une opération avec hasard demande aussi de vérifier le cadre des loteries publicitaires indiqué dans les sources françaises.",
         ],
       },
       {
@@ -108,6 +171,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/animer-point-de-vente-qr-code",
+    source: [references.contrast],
     title: "Comment utiliser un QR code pour animer un point de vente ?",
     description:
       "Découvrez comment utiliser un QR code pour animer un point de vente : emplacement, parcours mobile, test avant impression et indicateurs à suivre.",
@@ -118,9 +182,9 @@ export const blogPosts: BlogPost[] = [
       "Pour animer un point de vente avec un QR code, placez-le dans un moment où le client peut agir, ouvrez un parcours mobile simple, testez le QR public avant impression et mesurez séparément scans, participations et retraits.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
-    updatedAt: "2026-10-17",
-    reviewedAt: "2026-10-17",
-    readingTime: "7 min de lecture",
+    updatedAt: "2026-10-18",
+    reviewedAt: "2026-10-18",
+    readingTime: "6 min de lecture",
     image: "/images/blog/qr-code-point-de-vente.webp",
     imageAlt: "Illustration d’un client scannant un QR code pour une animation en point de vente",
     ctaLabel: "Voir un exemple d’animation QR code",
@@ -166,6 +230,13 @@ export const blogPosts: BlogPost[] = [
         ],
       },
       {
+        title: "Prévoyez une lecture accessible et une solution sans scan",
+        paragraphs: [
+          "Associez au code une consigne lisible, une zone dégagée et une adresse web publique recopiable. Sur la page mobile, vérifiez le zoom, le contraste des textes et la navigation au clavier. La référence W3C en fin d’article concerne les textes numériques ; elle ne définit pas une taille universelle de QR imprimé.",
+          "Une personne peut ne pas disposer d’un téléphone compatible ou de connexion. Prévoyez une explication par l’équipe et, si vous l’organisez, un accès alternatif respectant les mêmes conditions. Ne promettez pas un mode hors ligne ou une participation assistée que vous n’avez pas préparé. Pour le support, utilisez la [checklist d’affiche QR code](/blog/affiche-qr-code-animation-commerciale).",
+        ],
+      },
+      {
         title: "Mesurez les étapes sans les confondre",
         paragraphs: [
           "Suivez séparément les scans, les participations commencées, les contacts éventuellement collectés, les gains attribués et les retraits confirmés. Un scan ne garantit pas qu’une partie a été jouée ; un gain attribué ne garantit pas qu’il a été retiré ; un clic sortant ne prouve pas un avis publié.",
@@ -199,6 +270,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/idees-jeux-concours-restaurant",
+    source: [references.lottery],
     title: "10 idées de jeux-concours pour un restaurant",
     description:
       "Découvrez 10 idées de jeux-concours pour un restaurant : QR code à table, lots simples à remettre, heures creuses, événements et prochaine visite.",
@@ -209,9 +281,9 @@ export const blogPosts: BlogPost[] = [
       "Les meilleurs jeux-concours pour un restaurant sont ceux qui correspondent à un moment précis du service, avec des lots faciles à remettre, des conditions visibles et une mesure distincte des participations et des retraits.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
-    updatedAt: "2026-10-17",
-    reviewedAt: "2026-10-17",
-    readingTime: "8 min de lecture",
+    updatedAt: "2026-10-18",
+    reviewedAt: "2026-10-18",
+    readingTime: "6 min de lecture",
     image: "/images/blog/jeux-concours-restaurant.webp",
     imageAlt: "Illustration d’un jeu-concours organisé dans un restaurant",
     ctaLabel: "Préparer une animation pour votre restaurant",
@@ -236,7 +308,7 @@ export const blogPosts: BlogPost[] = [
           "Lancement d’une nouvelle carte : associez la découverte d’un plat ou d’une boisson à une participation courte, sans annoncer une disponibilité que le stock ne permet pas d’assurer.",
           "Jeu lié à un événement : créez une opération pour une soirée, une fête locale ou une date saisonnière, avec une date de fin et une dotation préparées avant la diffusion.",
           "Lot pour une prochaine visite : choisissez une récompense utilisable plus tard, avec une durée de validité, les jours concernés et les éventuelles conditions d’achat explicitement indiqués.",
-          "Menu enfant : prévoyez une petite surprise ou un lot dédié, en vérifiant que la remise reste simple pour l’équipe et que la communication s’adresse correctement aux adultes accompagnants.",
+          "Table familiale : proposez une petite surprise choisie et reçue par l’adulte accompagnant, sans demander de coordonnées à un enfant ; vérifiez l’adéquation du lot au public et les conditions de participation.",
           "Partenariat local : construisez une dotation avec un commerce voisin, en séparant les responsabilités, les conditions de retrait et les usages de coordonnées de chaque partenaire.",
           "Jeu saisonnier : adaptez le thème, les lots et la période à une saison ou à un produit disponible, puis retirez le support lorsque l’opération est terminée.",
           "Tirage parmi les participants : annoncez une période de participation, les modalités de sélection et la façon de prévenir ou remettre le lot, sans présenter le tirage comme une vente garantie.",
@@ -264,6 +336,7 @@ export const blogPosts: BlogPost[] = [
           "Expliquez qui peut participer, pendant quelle période, ce qui peut être gagné et comment le retrait se déroule. Les conditions d’achat, les jours d’exclusion, la date limite et les éventuelles limites de stock doivent être accessibles avant ou au moment de la participation.",
           "Séparez la participation, l’envoi des informations du gain et la prospection marketing. Une collecte d’e-mail peut être configurée selon le parcours, mais le consentement commercial reste distinct et facultatif. Un avis ou une note ne doit jamais devenir le prix à payer pour participer ou gagner.",
           "Pour un partenariat ou un tirage, ajoutez les informations nécessaires sur l’organisateur, la période, la sélection et le contact. Ne reprenez pas un règlement générique sans vérifier qu’il correspond réellement à votre opération et à votre pays.",
+          "En France, vérifiez la distinction entre loterie publicitaire et autre jeu de hasard avec la fiche DGCCRF citée ci-dessous. Précisez l’éligibilité, la méthode de désignation et les dates de remise. Un tirage différé est une organisation à prévoir séparément : sa présence parmi ces idées ne signifie pas qu’Okado l’automatise. Pour une opération hors de France, contrôlez le droit local.",
         ],
       },
       {
@@ -298,6 +371,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/animation-commerciale-institut-beaute",
+    source: [references.consent],
     title: "Animation commerciale pour institut de beauté : idées et exemples",
     description:
       "Découvrez 10 idées d’animation commerciale pour un institut de beauté, un spa ou un salon : soins, prochaine visite, lancement, lots et calendrier.",
@@ -305,12 +379,12 @@ export const blogPosts: BlogPost[] = [
     intro:
       "Une animation commerciale peut créer un temps fort dans un institut de beauté sans banaliser l’expérience. Le format doit rester cohérent avec votre univers, vos prestations et le temps réellement disponible pour votre équipe.",
     answer:
-      "Pour animer un institut de beauté sans dégrader son image premium, choisissez une mécanique et des lots cohérents avec vos prestations, votre planning et votre univers visuel, puis testez le parcours avant diffusion.",
+      "Pour animer un institut de beauté, choisissez une mécanique et des lots cohérents avec votre positionnement, vos prestations et votre planning, puis testez le parcours et les conditions de remise avant diffusion.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
-    updatedAt: "2026-10-17",
-    reviewedAt: "2026-10-17",
-    readingTime: "8 min de lecture",
+    updatedAt: "2026-10-18",
+    reviewedAt: "2026-10-18",
+    readingTime: "6 min de lecture",
     image: "/images/blog/animation-institut-beaute.webp",
     imageAlt: "Illustration d’une animation commerciale dans un institut de beauté",
     ctaLabel: "Imaginer une animation à votre image",
@@ -320,7 +394,7 @@ export const blogPosts: BlogPost[] = [
         title: "Définissez l’objectif de votre animation",
         paragraphs: [
           "Un institut peut vouloir faire découvrir un soin, présenter un nouveau protocole, valoriser une gamme ou donner envie de revenir. Ces objectifs ne demandent pas forcément le même lot ni le même moment de diffusion. Commencez par une intention principale pour préserver la lisibilité de l’expérience.",
-          "Une animation ne garantit ni réservation, ni chiffre d’affaires, ni fidélisation. Elle peut en revanche créer un parcours observable : participation, gain, retrait et éventuelle prochaine visite. Cette distinction protège votre image premium et vous aide à mesurer ce qui s’est réellement passé.",
+          "Une animation ne garantit ni réservation, ni chiffre d’affaires, ni fidélisation. Elle peut en revanche créer un parcours observable : participation, gain, retrait et éventuelle prochaine visite. Cette distinction aide à préserver votre positionnement et à mesurer ce qui s’est réellement passé.",
         ],
       },
       {
@@ -347,6 +421,13 @@ export const blogPosts: BlogPost[] = [
           "Un lot peut être une option de soin, un mini-produit, une décoration, un complément de prestation ou un avantage valable lors d’une prochaine visite. Ce sont des pistes, pas des recommandations universelles : vérifiez votre coût, votre marge, vos stocks et le temps nécessaire à la remise.",
           "Une prestation offerte sans achat n’a pas le même coût qu’une option ajoutée à un rendez-vous existant. Écrivez la condition au moment de configurer le lot et vérifiez que le texte court de la roue ou du ticket ne contredit pas le coupon détaillé.",
           "Dans Okado, vous pouvez choisir une roue ou un ticket à gratter, personnaliser les textes et le logo selon le modèle, puis définir les lots, probabilités, stocks et conditions. La responsabilité du choix de la dotation et de sa capacité de délivrance reste celle de l’institut.",
+        ],
+      },
+      {
+        title: "Vérifiez les prestations avant de promettre un lot",
+        paragraphs: [
+          "Décrivez ce qui est offert, sa durée, les prestations compatibles, la réservation nécessaire et les disponibilités réelles. L’équipe vérifie les précautions propres au soin ou au produit avant la remise ; l’animation ne remplace pas ce contrôle professionnel. N’annoncez aucun résultat esthétique ou de santé garanti.",
+          "N’ajoutez pas de questionnaire de santé au formulaire marketing pour organiser le jeu. Les éventuelles informations nécessaires à la prestation suivent leur propre parcours. Si vous proposez une newsletter, gardez un choix distinct ; la source CNIL précise les critères du consentement. Le [choix des lots en institut](/guides/lots-institut-beaute) complète la préparation opérationnelle.",
         ],
       },
       {
@@ -398,6 +479,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/jeu-concours-ou-promotion",
+    source: [references.lottery, references.pricing],
     title: "Jeu-concours ou promotion : quelle stratégie choisir ?",
     description:
       "Jeu-concours ou promotion ? Comparez objectifs, effort, perception client, lots, durée, collecte consentie et mesure avant de choisir votre campagne locale.",
@@ -408,9 +490,9 @@ export const blogPosts: BlogPost[] = [
       "Choisissez une promotion pour une offre certaine et immédiatement compréhensible ; choisissez un jeu-concours pour créer une interaction ; combinez-les seulement si chaque étape, condition et indicateur reste lisible.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
-    updatedAt: "2026-10-17",
-    reviewedAt: "2026-10-17",
-    readingTime: "8 min de lecture",
+    updatedAt: "2026-10-18",
+    reviewedAt: "2026-10-18",
+    readingTime: "6 min de lecture",
     image: "/images/blog/jeu-concours-ou-promotion.webp",
     imageAlt: "Illustration comparant une promotion et un jeu-concours pour un commerce local",
     ctaLabel: "Choisir un format d’animation",
@@ -428,13 +510,17 @@ export const blogPosts: BlogPost[] = [
         paragraphs: [
           "Utilisez cette grille comme point de départ, puis adaptez-la à votre activité, vos conditions et votre clientèle :",
         ],
-        items: [
-          "Choisissez une promotion si l’offre doit être comprise en quelques secondes, si le bénéfice est certain et si votre priorité est une décision d’achat immédiate.",
-          "Choisissez un jeu-concours si vous voulez créer une interaction courte, faire découvrir plusieurs lots ou animer un support visible dans votre point de vente.",
-          "Choisissez une dotation utilisable plus tard si l’objectif est d’inviter à une prochaine visite et si vous pouvez gérer une date de validité claire.",
-          "Choisissez une collecte uniquement si elle est réellement utile, expliquée, facultative et séparée de l’accès au jeu ou de l’obtention du gain.",
-          "Combinez les formats seulement si chaque étape garde un rôle compréhensible : le jeu attire l’attention, la promotion décrit l’offre et les conditions restent lisibles.",
-        ],
+        table: {
+          caption: "Jeu-concours et promotion : critères de décision",
+          headers: ["Critère", "Promotion certaine", "Jeu-concours"],
+          rows: [
+            ["Objectif", "Rendre une offre immédiatement compréhensible", "Créer une interaction autour d’une dotation"],
+            ["Bénéfice", "Accordé si les conditions de l’offre sont remplies", "Dépend du résultat et des conditions annoncées"],
+            ["Effort", "Calcul de marge et application de l’offre", "Lots, règles, parcours et remise des gains"],
+            ["Mesure", "Utilisations et coût de la remise", "Participations, gains et retraits distincts"],
+            ["Friction à éviter", "Exclusions ou prix peu lisibles", "Étapes inutiles ou conditions de gain ambiguës"],
+          ],
+        },
       },
       {
         title: "Trafic, découverte ou prochaine visite : partez de l’objectif",
@@ -466,6 +552,7 @@ export const blogPosts: BlogPost[] = [
           "Un lot doit être désirable, disponible et compréhensible. Indiquez les dates, les produits ou prestations concernés, les éventuelles conditions d’achat et la procédure de retrait. Une réduction immédiate, un cadeau avec achat et une prestation valable lors d’une prochaine visite ne sont pas la même offre.",
           "La collecte de coordonnées répond à une finalité différente de la participation. Si vous demandez un e-mail pour transmettre un gain, expliquez cette utilisation. Si vous proposez une prospection, son consentement doit rester distinct, facultatif et non nécessaire pour jouer ou retirer le lot.",
           "Pour les règles commerciales ou les jeux avec tirage, vérifiez les obligations applicables à votre situation et faites relire les mentions nécessaires. Cet article ne remplace pas un avis juridique local et ne fournit pas de modèle de règlement universel.",
+          "Les deux fiches DGCCRF citées portent sur la France : l’une concerne les loteries publicitaires, l’autre les annonces de réduction de prix. Leur champ est différent. Pour préparer l’exécution, consultez le [parcours du jeu QR](/comment-ca-marche) et les [tarifs actuels de l’outil](/tarifs), auxquels s’ajoutent vos coûts d’opération.",
         ],
       },
       {
@@ -508,6 +595,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/fideliser-clients-sans-programme-points",
+    source: [references.prospecting],
     title: "Comment fidéliser ses clients sans programme de points ?",
     description:
       "Découvrez comment fidéliser vos clients sans carte à points : expérience, prochaine visite, animation ponctuelle, QR code, consentement et limites.",
@@ -518,9 +606,9 @@ export const blogPosts: BlogPost[] = [
       "Pour fidéliser sans programme de points, travaillez une expérience cohérente et des raisons de revenir, puis utilisez une animation ponctuelle si elle sert un objectif précis ; une participation ne prouve pas une fidélité durable.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
-    updatedAt: "2026-10-17",
-    reviewedAt: "2026-10-17",
-    readingTime: "8 min de lecture",
+    updatedAt: "2026-10-18",
+    reviewedAt: "2026-10-18",
+    readingTime: "6 min de lecture",
     image: "/images/blog/fideliser-sans-programme-points.webp",
     imageAlt: "Illustration d’une relation client sans programme de points",
     ctaLabel: "Voir si une animation ponctuelle convient à votre commerce",
@@ -587,6 +675,14 @@ export const blogPosts: BlogPost[] = [
         ],
       },
       {
+        title: "Un test de prochaine visite sur 30 jours",
+        paragraphs: [
+          "Jours 1 à 7 : choisissez une invitation et définissez la preuve d’un retour, par exemple la présentation d’une offre datée lors d’une visite ultérieure. Notez le volume d’invitations remises et les jours d’ouverture. Une simple participation le jour du lancement ne compte pas comme retour.",
+          "Jours 8 à 21 : testez l’invitation sur une période limitée, sans changer simultanément le lot et les conditions. Une invitation donnée au comptoir ne nécessite pas un envoi électronique. Si vous prévoyez un courriel commercial, vérifiez le cadre applicable dans la fiche CNIL citée ; participer à un jeu ne suffit pas à autoriser une relance.",
+          "Jours 22 à 30 : rapprochez les retours observés des invitations effectivement remises et de leur validité. Si une invitation reste valable après le jour 30, attendez son échéance avant le bilan final. Ce test renseigne une prochaine visite, pas la fidélité durable. Le [suivi après une animation](/blog/faire-revenir-clients-animation) détaille les étapes suivantes.",
+        ],
+      },
+      {
         title: "Checklist pour choisir une approche légère",
         paragraphs: [
           "Avant de lancer une animation sans programme de points, vérifiez :",
@@ -611,6 +707,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/idees-promotions-commerce-local",
+    source: [references.pricing],
     title: "15 idées de promotions pour un commerce local",
     description:
       "Découvrez 15 idées de promotions pour un commerce local, classées par effort : offre produit, prochaine visite, événement, partenariat, QR code et mesure.",
@@ -618,12 +715,12 @@ export const blogPosts: BlogPost[] = [
     intro:
       "Une promotion locale doit être attractive pour le client et soutenable pour le commerce. Voici 15 idées à adapter à votre stock, votre marge, votre équipe et la durée réelle de l’opération, sans confondre offre utilisée et vente causée.",
     answer:
-      "Une promotion locale fonctionne mieux lorsqu’elle associe une offre simple, des conditions et dates visibles, un coût maîtrisé et une mesure qui distingue utilisation, retrait et vente non automatiquement attribuée.",
+      "Pour préparer une promotion locale, associez une offre simple, des conditions et dates visibles, un coût maîtrisé et une mesure qui distingue utilisation, retrait et vente attribuée selon une méthode documentée.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
-    updatedAt: "2026-10-17",
-    reviewedAt: "2026-10-17",
-    readingTime: "9 min de lecture",
+    updatedAt: "2026-10-18",
+    reviewedAt: "2026-10-18",
+    readingTime: "7 min de lecture",
     image: "/images/blog/promotions-commerce-local.webp",
     imageAlt: "Illustration de promotions pour un commerce local",
     ctaLabel: "Préparer une opération locale",
@@ -658,6 +755,23 @@ export const blogPosts: BlogPost[] = [
           "Effort élevé — Déclinaison multi-sites : diffusez une même campagne dans plusieurs établissements seulement après avoir vérifié les stocks, les dates, les supports et les équipes de chaque lieu.",
           "Effort élevé — Parcours combiné : associez un jeu, une offre et une prochaine visite uniquement si chaque étape reste lisible et si vous pouvez mesurer séparément participation, gain, retrait et utilisation.",
         ],
+      },
+      {
+        title: "Comparez marge, stock et effort avant de choisir",
+        paragraphs: [
+          "Cette page aide à concevoir un avantage commercial. Pour un atelier ou une démonstration sans avantage sur le prix, consultez plutôt les [idées d’animations en boutique](/blog/idees-animations-commerciales-boutique). Un jeu avec hasard n’accorde pas la même certitude qu’une promotion offerte à toute personne éligible.",
+          "Si vous annoncez une réduction de prix en France, consultez la fiche DGCCRF en source et vérifiez le prix de référence applicable. Les conditions d’une offre groupée, d’un cadeau ou d’une remise doivent être examinées selon leur dispositif réel ; une seule mention ne convient pas à toutes les offres.",
+        ],
+        table: {
+          caption: "Grille de préparation d’une promotion locale",
+          headers: ["Format", "Marge et stock", "Effort et objectif"],
+          rows: [
+            ["Offre découverte", "Chiffrer la marge après avantage et réserver les unités", "Expliquer un produit précis"],
+            ["Duo ou complément", "Calculer le coût des deux éléments", "Vérifier la compréhension du prix total"],
+            ["Avantage à la prochaine visite", "Prévoir le coût et la capacité à l’échéance", "Suivre les utilisations ultérieures"],
+            ["Jeu avec dotation", "Budgéter les gains possibles et la remise", "Organiser participation et contrôle des lots"],
+          ],
+        },
       },
       {
         title: "Calculez le coût avant de communiquer",
@@ -715,6 +829,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/experience-client-boutique",
+    source: [references.contrast],
     title: "Comment créer une expérience client mémorable en boutique ?",
     description:
       "Découvrez comment créer une expérience client mémorable en boutique grâce aux micro-moments, à l’équipe, à la cohérence visuelle et à une mesure réaliste.",
@@ -725,9 +840,9 @@ export const blogPosts: BlogPost[] = [
       "Pour créer une expérience mémorable en boutique, améliorez d’abord l’accueil, l’attente, la découverte, la participation et la remise, puis vérifiez la cohérence entre équipe, supports et promesse.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
-    updatedAt: "2026-10-17",
-    reviewedAt: "2026-10-17",
-    readingTime: "8 min de lecture",
+    updatedAt: "2026-10-18",
+    reviewedAt: "2026-10-18",
+    readingTime: "7 min de lecture",
     image: "/images/blog/experience-client-boutique.webp",
     imageAlt: "Illustration des moments d’une expérience client en boutique",
     ctaLabel: "Concevoir un parcours simple à tester",
@@ -811,6 +926,14 @@ export const blogPosts: BlogPost[] = [
         ],
       },
       {
+        title: "Cinq observations pour évaluer une amélioration",
+        paragraphs: [
+          "Définissez « mémorable » avec des observations modestes : une personne trouve le début du parcours ; elle reformule l’offre ; elle accède à la page sans aide ; elle comprend les conditions ; l’équipe remet le lot sans contradiction. Ces cinq critères ne constituent pas un score de satisfaction validé, mais donnent des points à tester.",
+          "Exemple de correction à tester : avant, une affiche en caisse cumule trois offres et un QR sans consigne ; après, un seul message annonce l’action, les principales conditions et une adresse alternative. Observez les questions et les étapes bloquantes sur des créneaux comparables. Aucun gain de ventes ou de satisfaction n’est supposé dans cet exemple.",
+          "Pour les textes de la page mobile, la référence W3C sur le contraste aide à vérifier la lisibilité. Complétez le parcours avec les [conseils de QR en point de vente](/blog/animer-point-de-vente-qr-code) et le [test de prochaine visite sans points](/blog/fideliser-clients-sans-programme-points).",
+        ],
+      },
+      {
         title: "Mesurez le ressenti et les étapes, pas seulement le volume",
         paragraphs: [
           "Une mesure quantitative peut suivre les scans, participations, gains et retraits. Une mesure qualitative peut recueillir les questions fréquentes, les incompréhensions, les verbatims spontanés ou les observations de l’équipe. Les deux approches se complètent sans prouver automatiquement une hausse de chiffre d’affaires.",
@@ -828,6 +951,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/calendrier-marketing-commerce-local",
+    source: [references.pricing],
     title: "Calendrier marketing annuel : les temps forts d’un commerce local",
     description:
       "Construisez un calendrier marketing annuel pour planifier vos temps forts, vos promotions et vos animations locales sans surcharger votre équipe.",
@@ -838,8 +962,8 @@ export const blogPosts: BlogPost[] = [
       "Pour construire un calendrier marketing annuel, partez de vos objectifs commerciaux, répartissez les temps forts par trimestre, préparez chaque opération avec une fiche simple et comparez les participations, utilisations et retraits sans promettre un chiffre d’affaires automatique.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
-    updatedAt: "2026-10-17",
-    reviewedAt: "2026-10-17",
+    updatedAt: "2026-10-18",
+    reviewedAt: "2026-10-18",
     readingTime: "9 min de lecture",
     image: "/images/blog/calendrier-marketing-commerce-local.webp",
     imageAlt: "Illustration d’un calendrier marketing saisonnier dans une boutique de proximité",
@@ -867,6 +991,23 @@ export const blogPosts: BlogPost[] = [
         ],
       },
       {
+        title: "Adaptez les trimestres à votre activité et à votre territoire",
+        paragraphs: [
+          "Ces pistes suivent les saisons de France métropolitaine et ne donnent aucune date réglementée. Une destination touristique, une ville universitaire et un quartier de bureaux ont des rythmes différents. Pour le Canada ou un autre territoire, reconstruisez les repères avec le calendrier local, les vacances et la saisonnalité du lieu.",
+          "Chaque année, confirmez les événements auprès de leurs organisateurs, les vacances sur le calendrier officiel du territoire et les périodes de soldes auprès de l’administration compétente. Si vous annoncez des réductions en France, la fiche DGCCRF citée aide à vérifier les règles de prix ; elle ne remplace pas la confirmation des dates locales.",
+        ],
+        table: {
+          caption: "Pistes trimestrielles à valider, sans dates imposées",
+          headers: ["Période", "Boutique", "Restaurant ou institut"],
+          rows: [
+            ["Janvier à mars", "Découverte d’une gamme, observation des creux", "Test sur un créneau réellement disponible"],
+            ["Avril à juin", "Atelier ou partenariat de quartier", "Nouvelle carte ou présentation d’une prestation"],
+            ["Juillet à septembre", "Adapter l’accueil aux congés et aux flux locaux", "Vérifier ouvertures et capacité avant de communiquer"],
+            ["Octobre à décembre", "Préparer les cadeaux et réserver le stock", "Anticiper les réservations et la remise des lots"],
+          ],
+        },
+      },
+      {
         title: "Détaillez chaque temps fort dans une fiche simple",
         paragraphs: [
           "Une ligne dans un calendrier ne suffit pas à lancer une opération. Pour chaque temps fort, créez une fiche que l’équipe peut relire rapidement. Elle doit transformer une intention générale en décisions vérifiables avant de produire une affiche ou de publier une offre.",
@@ -879,6 +1020,13 @@ export const blogPosts: BlogPost[] = [
           "Période et capacité : dates, horaires, stock, temps d’équipe et conditions de remise réellement disponibles.",
           "Supports et canaux : comptoir, affiche, table, réseaux sociaux, partenaire local ou QR code public.",
           "Preuves à suivre : scans, participations, utilisations, gains attribués, retraits confirmés, demandes ou retours qualitatifs.",
+        ],
+      },
+      {
+        title: "Un exemple de fiche événement à compléter",
+        paragraphs: [
+          "Exemple fictif : découverte d’une gamme en boutique. Objectif : expliquer un nouvel usage. Public : visiteurs du quartier. Période : un samedi choisi après vérification du calendrier local. Responsable : une personne nommée en interne. Support : une affiche et une démonstration. Capacité : quantité disponible et temps de conseil à renseigner avant validation.",
+          "Ajoutez la condition de participation, le budget maximal, la personne qui valide le support, la date du test et celle du bilan. Notez les questions reçues et les démonstrations effectuées, sans les transformer en ventes attribuées. Réutilisez cette fiche pour le [lancement d’un produit](/blog/animation-lancement-nouveau-produit) ou une [opération en période creuse](/blog/animer-periode-creuse-commerce-local).",
         ],
       },
       {
@@ -963,6 +1111,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/attirer-clients-commerce-local",
+    source: [references.localVisibility, references.prospecting],
     title: "Comment attirer des clients dans un commerce local ?",
     description:
       "Découvrez une méthode concrète pour attirer des clients dans un commerce local : visibilité, partenariats, contenu, animation et mesure sur 30 jours.",
@@ -973,8 +1122,8 @@ export const blogPosts: BlogPost[] = [
       "Pour attirer des clients dans un commerce local, travaillez d’abord votre visibilité de proximité, puis combinez contenu utile, partenariats, événements et animation en point de vente. Lancez une action à la fois, recueillez les contacts avec un consentement clair et mesurez séparément visibilité, participations, visites et retours.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
-    updatedAt: "2026-10-17",
-    reviewedAt: "2026-10-17",
+    updatedAt: "2026-10-18",
+    reviewedAt: "2026-10-18",
     readingTime: "10 min de lecture",
     image: "/images/blog/attirer-clients-commerce-local.webp",
     imageAlt: "Illustration d’un commerce de proximité qui combine visibilité locale et animation",
@@ -1000,6 +1149,14 @@ export const blogPosts: BlogPost[] = [
           "La visibilité locale commence par des informations cohérentes et faciles à vérifier : nom du commerce, adresse, horaires, téléphone, services, accessibilité et périodes de fermeture. Une personne qui vous découvre doit pouvoir comprendre rapidement ce que vous proposez, où vous trouver et si le lieu correspond à son besoin.",
           "Travaillez aussi les questions que vos clients posent réellement. Une page qui explique un service, une spécialité, une zone desservie ou le déroulement d’une visite peut être plus utile qu’une suite de mots-clés. Écrivez pour une personne de votre zone, avec le vocabulaire qu’elle emploie, puis relisez les informations dès qu’un horaire, un prix ou une disponibilité change.",
           "Les avis peuvent aider une personne à se décider, mais ils doivent rester authentiques et indépendants. Ne conditionnez jamais un gain, un jeu ou un avantage à une note positive. Une demande d’avis ne remplace ni la qualité de l’accueil ni une information locale exacte.",
+        ],
+      },
+      {
+        title: "Choisissez le prochain levier selon le problème observé",
+        paragraphs: [
+          "Si les clients ne trouvent pas vos horaires ou votre adresse, commencez par les informations publiques de l’établissement. La documentation Google Business Profile citée détaille les facteurs de visibilité locale ; compléter une fiche ne garantit pas une position dans les résultats.",
+          "Si des personnes passent devant la vitrine sans comprendre l’offre, travaillez le message et l’accueil. Si elles entrent sans découvrir un produit, testez une démonstration. Si le sujet est une prochaine visite, préparez une invitation et son suivi. Cet article sert à choisir le levier ; les méthodes détaillées sont dans les [idées d’animations](/blog/idees-animations-commerciales-boutique), le [calendrier marketing](/blog/calendrier-marketing-commerce-local) et le [suivi après animation](/blog/faire-revenir-clients-animation).",
+          "Évitez de lancer tous les leviers ensemble : notez le problème de départ, le changement et une période d’observation. Pour les invitations commerciales par courriel, utilisez la référence CNIL en source et vérifiez l’autorisation d’envoi ; une adresse collectée lors d’un jeu n’est pas automatiquement un abonnement.",
         ],
       },
       {
@@ -1107,6 +1264,8 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/roue-ou-ticket-a-gratter-commerce",
+    seoTitle: "Roue ou ticket à gratter : que choisir pour un commerce ?",
+    source: [references.lottery],
     title: "Roue de la fortune ou ticket à gratter : quel format choisir pour un commerce ?",
     description:
       "Roue de la fortune ou ticket à gratter : comparez la visibilité, la durée, les lots et l’organisation pour choisir une animation adaptée à votre commerce.",
@@ -1117,9 +1276,9 @@ export const blogPosts: BlogPost[] = [
       "Choisissez une roue si vous voulez créer un moment visible et animé, notamment avec une équipe disponible pour accompagner la participation. Préférez un ticket à gratter si le client doit jouer rapidement et de façon plus autonome. Dans les deux cas, le bon choix dépend surtout du lieu, du support, des lots, des conditions et de la capacité de remise.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
-    updatedAt: "2026-10-17",
-    reviewedAt: "2026-10-17",
-    readingTime: "8 min de lecture",
+    updatedAt: "2026-10-18",
+    reviewedAt: "2026-10-18",
+    readingTime: "9 min de lecture",
     image: "/images/blog/roue-ou-ticket-a-gratter-commerce.webp",
     imageAlt: "Illustration comparant une roue de la fortune mobile et un ticket à gratter dans un commerce",
     ctaLabel: "Choisir une mécanique d’animation",
@@ -1210,17 +1369,22 @@ export const blogPosts: BlogPost[] = [
         paragraphs: [
           "Utilisez cette matrice pour formuler une première hypothèse, puis validez-la avec un test réel. Elle ne classe pas les mécaniques par rentabilité et ne remplace pas l’observation du parcours.",
         ],
-        items: [
-          "Vous voulez créer un moment visible avec une consigne orale : commencez par la roue.",
-          "Vous voulez proposer une participation courte sans mobiliser l’équipe : commencez par le ticket.",
-          "Votre lot doit être découvert après une démonstration : choisissez le format qui laisse le temps d’expliquer le produit.",
-          "Votre lieu est très passant et peu propice à l’attente : privilégiez le parcours le plus court et testez la lecture du support.",
-          "Vous hésitez encore : utilisez la prévisualisation, testez les deux formats sur un petit groupe et mesurez les questions, participations et retraits séparément.",
-        ],
+        table: {
+          caption: "Roue et ticket : hypothèses à tester sur place",
+          headers: ["Situation", "Roue", "Ticket à gratter"],
+          rows: [
+            ["Participation accompagnée", "Rotation visible, consigne orale possible", "Révélation tactile à expliquer si nécessaire"],
+            ["Client autonome", "Tester la compréhension du bouton de jeu", "Tester le premier geste de grattage"],
+            ["Zone très passante", "Vérifier le temps réel du parcours", "Vérifier le temps réel du parcours"],
+            ["Dotation et retrait", "Lots, stocks et conditions à configurer", "Mêmes vérifications métier"],
+            ["Choix final", "Observer questions et abandons", "Observer questions et abandons"],
+          ],
+        },
       },
       {
         title: "Testez avant de choisir définitivement",
         paragraphs: [
+          "Consultez la [roue de la fortune](/roue-de-la-fortune) et le [ticket à gratter](/ticket-a-gratter) pour voir les parcours proposés. Les deux impliquent une part de hasard : la fiche DGCCRF en source aide à vérifier le cadre français de l’opération, sans certifier votre configuration particulière.",
           "Une comparaison utile se fait dans le lieu où l’animation sera diffusée. Imprimez le support prévu, placez-le à la distance réelle et utilisez plusieurs smartphones. Contrôlez la lumière, les reflets, le temps nécessaire pour scanner et la compréhension de la consigne.",
           "Faites ensuite un parcours complet pour chaque mécanique : scan, participation, résultat, affichage des conditions, réception des informations du gain si nécessaire et contrôle par l’équipe. Distinguez le QR de prévisualisation du QR public destiné aux clients.",
           "Notez les observations sans transformer un petit test en preuve de performance : questions posées, étapes bloquantes, temps de remise, lot mal compris ou support peu visible. Ces éléments suffisent souvent à choisir une mécanique plus facile à délivrer.",
@@ -1262,6 +1426,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/cout-animation-commerciale-commerce",
+    source: [references.pricing],
     title: "Combien coûte une animation commerciale pour un commerce local ?",
     description:
       "Estimez le coût d’une animation commerciale en séparant préparation, supports, lots, temps d’équipe, outil et mesure, sans promettre un ROI universel.",
@@ -1272,9 +1437,9 @@ export const blogPosts: BlogPost[] = [
       "Pour estimer le coût d’une animation commerciale, séparez les coûts fixes, les coûts variables et le temps d’exécution. Chiffrez ensuite le support, les lots réellement remis, la préparation, l’outil, la communication et le suivi. Comparez enfin ce budget à un objectif mesurable, sans transformer une hypothèse de coût en promesse de chiffre d’affaires.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
-    updatedAt: "2026-10-17",
-    reviewedAt: "2026-10-17",
-    readingTime: "9 min de lecture",
+    updatedAt: "2026-10-18",
+    reviewedAt: "2026-10-18",
+    readingTime: "10 min de lecture",
     image: "/images/blog/cout-animation-commerciale-commerce.webp",
     imageAlt: "Illustration d’un commerce qui prépare le budget d’une animation commerciale",
     ctaLabel: "Estimer votre prochaine opération",
@@ -1352,16 +1517,29 @@ export const blogPosts: BlogPost[] = [
         ],
       },
       {
-        title: "Construisez un exemple de budget sans inventer de montant",
+        title: "Deux exemples chiffrés de budget, à titre illustratif",
         paragraphs: [
-          "Un exemple utile peut rester chiffrable sans publier de faux prix. Créez un tableau avec une ligne par poste, une quantité, un coût unitaire connu, un coût total et une personne responsable de la vérification. Remplissez uniquement les valeurs réellement disponibles pour votre commerce ou laissez le champ à confirmer.",
-          "Par exemple, un commerce peut comparer deux scénarios : une opération courte avec un support déjà disponible et quelques lots, puis une opération plus visible avec nouvelle impression, briefing renforcé et partenaire local. L’objectif est de voir quel poste explique l’écart, pas d’annoncer qu’un scénario coûte toujours moins cher.",
+          "Les montants ci-dessous sont des hypothèses pédagogiques en euros, pas des prix de marché, des devis ou des tarifs Okado. Ils montrent comment additionner les postes. Remplacez chaque valeur par votre coût réel et gardez une même convention de TVA. La ligne outil reste à renseigner depuis les [tarifs en vigueur](/tarifs) et la durée réellement facturée.",
+          "Scénario A : une opération dans un point de vente avec un support déjà disponible. Scénario B : une diffusion plus large avec de nouveaux supports. La provision de lots utilise le coût pour le commerce, pas leur valeur faciale. Les quantités et le coût horaire sont eux aussi fictifs ; un stock plafonné et disponible doit être prévu avant diffusion.",
         ],
-        items: [
-          "Scénario léger : support existant, durée courte, lot disponible et briefing limité.",
-          "Scénario renforcé : nouveau support, plusieurs points de diffusion, lots distincts et temps d’équipe dédié.",
-          "Pour chaque scénario : inscrire les coûts connus, les coûts à confirmer et les hypothèses à vérifier.",
-          "Après l’opération : remplacer les hypothèses par les dépenses et le temps réellement observés.",
+        table: {
+          caption: "Budgets fictifs : remplacer les hypothèses avant décision",
+          headers: ["Poste", "Scénario A", "Scénario B"],
+          rows: [
+            ["Supports", "0 € : support existant", "60 € : impression supposée"],
+            ["Temps valorisé à 20 €/h", "2 h × 20 € = 40 €", "5 h × 20 € = 100 €"],
+            ["Provision de lots", "20 lots × 2 € = 40 €", "50 lots × 3 € = 150 €"],
+            ["Diffusion supplémentaire", "0 €", "40 € supposés"],
+            ["Sous-total hors outil", "80 €", "350 €"],
+            ["Total à budgéter", "80 € + outil + autres coûts vérifiés", "350 € + outil + autres coûts vérifiés"],
+          ],
+        },
+      },
+      {
+        title: "Ne confondez pas dépense, dotation et marge abandonnée",
+        paragraphs: [
+          "Pour un lot acheté, comptez son coût d’achat et de remise. Pour une remise, estimez la marge abandonnée selon les utilisations possibles ; n’ajoutez pas deux fois la même réduction dans votre budget. Une annonce de baisse de prix en France demande aussi de vérifier son prix de référence : la fiche DGCCRF citée concerne cet affichage, pas le prix d’une animation.",
+          "Prévoyez une réserve explicite pour les coûts encore incertains plutôt qu’un total présenté comme définitif. Après l’opération, séparez les dépenses payées, le temps valorisé, les lots effectivement remis et les engagements restant à honorer. Pour évaluer le résultat, consultez la [méthode de mesure d’une animation](/blog/mesurer-animation-commerciale).",
         ],
       },
       {
@@ -1421,6 +1599,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/mesurer-animation-commerciale",
+    source: [references.consent],
     title: "Comment mesurer une animation commerciale sans inventer son ROI ?",
     description:
       "Apprenez à mesurer une animation commerciale avec des indicateurs observables, sans confondre scans, participations, ventes et ROI.",
@@ -1431,8 +1610,8 @@ export const blogPosts: BlogPost[] = [
       "Pour mesurer une animation commerciale, définissez l’objectif avant le lancement, documentez chaque étape du parcours, rapprochez les coûts réellement connus des résultats observés et comparez des périodes ou des groupes comparables. Un ROI n’est calculable que si les coûts, l’attribution et la méthode de comparaison sont suffisamment fiables.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
-    updatedAt: "2026-10-17",
-    reviewedAt: "2026-10-17",
+    updatedAt: "2026-10-18",
+    reviewedAt: "2026-10-18",
     readingTime: "9 min de lecture",
     image: "/images/blog/mesurer-animation-commerciale.webp",
     imageAlt: "Illustration d’un commerce qui suit les étapes d’une animation commerciale",
@@ -1543,6 +1722,14 @@ export const blogPosts: BlogPost[] = [
         ],
       },
       {
+        title: "Exemple de bilan avec des dénominateurs explicites",
+        paragraphs: [
+          "Exemple entièrement fictif : une campagne observe 200 scans, 120 participations commencées, 30 gains et 18 retraits. Le ratio participations/scans est 120 ÷ 200 = 60 % ; le ratio retraits/gains est 18 ÷ 30 = 60 %. Les deux pourcentages répondent à des questions différentes. Ces volumes d’événements ne représentent pas nécessairement des personnes uniques et ne démontrent aucune vente supplémentaire.",
+          "Si les coûts documentés sont de 150 € et que 30 nouveaux accords marketing valides sont observés sur le même périmètre, le coût par opt-in est 150 ÷ 30 = 5 €. Définissez auparavant les doublons, les dates et les coûts inclus. Un contact enregistré pour recevoir son gain n’est pas un accord marketing : la source CNIL précise les conditions du consentement.",
+          "Pour une estimation du ROI : (marge additionnelle attribuable avant coût de campagne − coût de campagne) ÷ coût de campagne × 100. Avec une marge additionnelle hypothétique de 240 € et un coût de 150 €, le calcul serait 60 %. Sans preuve de cette marge additionnelle, le résultat reste une simulation, pas le ROI de la campagne. Ne retranchez pas deux fois les mêmes coûts et ne calculez pas ce ratio avec un dénominateur nul.",
+        ],
+      },
+      {
         title: "Bilan de campagne en cinq questions",
         paragraphs: [
           "À la fin de l’opération, réunissez les données et les observations dans un bilan court. L’objectif est de décider de la suite, pas de produire un chiffre flatteur.",
@@ -1592,9 +1779,10 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/animer-periode-creuse-commerce-local",
+    source: [references.pricing],
     title: "Comment animer une période creuse dans un commerce local ?",
     description:
-      "Identifiez un vrai créneau calme et choisissez une animation locale adaptée à votre équipe, sans promettre de remplir le commerce ni baisser les prix en continu.",
+      "Animez une période creuse : repérez les créneaux calmes, choisissez une offre ou une animation et comparez les résultats avec une période documentée.",
     eyebrow: "Animation commerciale locale",
     intro:
       "Pour animer une période creuse, commencez par identifier le jour ou l’horaire réellement calme, puis choisissez une action compatible avec votre capacité de service. Une offre ponctuelle, un jeu ou un atelier peut créer une raison de venir, mais ne garantit ni le remplissage du créneau ni une hausse automatique du chiffre d’affaires.",
@@ -1602,9 +1790,9 @@ export const blogPosts: BlogPost[] = [
       "Une animation de période creuse se construit autour d’un créneau précis, d’un objectif limité, d’une promesse compréhensible et d’une durée courte. Comparez ensuite le passage, les participations, les utilisations d’offre, les retraits et la charge de l’équipe avec un contexte comparable, sans confondre fréquentation et rentabilité.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
-    updatedAt: "2026-10-17",
-    reviewedAt: "2026-10-17",
-    readingTime: "9 min de lecture",
+    updatedAt: "2026-10-18",
+    reviewedAt: "2026-10-18",
+    readingTime: "10 min de lecture",
     image: "/images/blog/animer-periode-creuse-commerce-local.webp",
     imageAlt: "Illustration d’un commerce local qui prépare une animation sur un créneau calme",
     ctaLabel: "Préparer une opération sur un créneau calme",
@@ -1732,6 +1920,14 @@ export const blogPosts: BlogPost[] = [
         ],
       },
       {
+        title: "Un protocole simple de comparaison de créneaux",
+        paragraphs: [
+          "Avant le test, observez plusieurs occurrences du même créneau : jour de semaine, horaires et durée identiques. Notez les entrées ou commandes si vous disposez de ces mesures, les fermetures, la météo et les événements. Un mardi exceptionnel ne suffit pas à qualifier une période de creuse.",
+          "Testez ensuite une seule modification sur le créneau choisi, en gardant les autres paramètres aussi stables que possible. Regardez aussi les créneaux voisins : une hausse le mardi peut accompagner une baisse le mercredi plutôt qu’une demande nouvelle. Un petit échantillon ou une forte différence de contexte limite la conclusion.",
+          "Si le test repose sur une réduction en France, vérifiez la présentation du prix avec la fiche DGCCRF citée. Gardez séparés le diagnostic de fréquentation, les participations au jeu et l’utilisation de l’offre ; la [méthode de mesure](/blog/mesurer-animation-commerciale) aide à construire le bilan.",
+        ],
+      },
+      {
         title: "Questions fréquentes sur les périodes creuses",
         paragraphs: [
           "Quelle animation proposer pour un jour calme ? Choisissez une offre, un jeu, une démonstration ou un atelier qui correspond à la capacité réelle de l’équipe et à l’objectif du créneau. Il n’existe pas de format universel.",
@@ -1769,6 +1965,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/faire-revenir-clients-animation",
+    source: [references.prospecting],
     title: "Comment faire revenir des clients après une animation commerciale ?",
     description:
       "Découvrez comment préparer une prochaine visite après une animation commerciale, avec une offre claire, un consentement séparé et une mesure réaliste.",
@@ -1779,8 +1976,8 @@ export const blogPosts: BlogPost[] = [
       "Pour faire revenir des clients après une animation, proposez une prochaine action simple et facultative, liée à une date, un produit ou une expérience que votre commerce peut réellement délivrer. Communiquez à nouveau uniquement avec un consentement adapté, puis mesurez les utilisations et visites observées sans inventer de taux de retour.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
-    updatedAt: "2026-10-17",
-    reviewedAt: "2026-10-17",
+    updatedAt: "2026-10-18",
+    reviewedAt: "2026-10-18",
     readingTime: "9 min de lecture",
     image: "/images/blog/faire-revenir-clients-animation.webp",
     imageAlt: "Illustration d’un commerce qui propose une prochaine visite après une animation",
@@ -1858,6 +2055,14 @@ export const blogPosts: BlogPost[] = [
         ],
       },
       {
+        title: "Distinguez invitation sur place et message commercial",
+        paragraphs: [
+          "Une carte remise au comptoir et un courriel promotionnel ne reposent pas sur le même parcours. En France, vérifiez avec la fiche CNIL le régime de la prospection électronique, y compris les exceptions encadrées pour certains clients existants. Une participation à un jeu ne démontre ni un achat antérieur ni l’autorisation de recevoir des offres.",
+          "Dans le parcours Okado, l’accord marketing reste séparé, facultatif et décoché par défaut. L’e-mail nécessaire à un gain ne vaut pas abonnement. Une invitation par courriel est une action à organiser avec l’outil d’envoi et les droits adaptés ; la collecte d’un opt-in ne signifie pas qu’une séquence de relance est automatiquement envoyée par Okado.",
+          "Dans votre bilan, écrivez « retour observé pendant la validité de l’invitation » et précisez comment il a été constaté. Évitez d’assimiler un retrait le jour même à une seconde visite. Le [test sur 30 jours sans programme de points](/blog/fideliser-clients-sans-programme-points) fournit un cadre limité pour commencer.",
+        ],
+      },
+      {
         title: "Mesurez une seconde visite sans inventer de taux",
         paragraphs: [
           "Avant le lancement, définissez ce qui compte comme un retour observé : utilisation d’un code, réservation liée à l’invitation, retrait identifié, scan d’un support de suivi ou déclaration recueillie avec une méthode constante. Notez la période et les limites de ce signal.",
@@ -1930,6 +2135,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/animation-lancement-nouveau-produit",
+    source: [references.pricing],
     title: "Comment lancer un nouveau produit avec une animation commerciale ?",
     description:
       "Préparez le lancement d’un nouveau produit avec une animation claire : découverte, démonstration, offre, stock, équipe et mesure sans promesse de ventes.",
@@ -1940,9 +2146,9 @@ export const blogPosts: BlogPost[] = [
       "Pour lancer un nouveau produit avec une animation commerciale, définissez d’abord ce que le client doit découvrir, choisissez une démonstration ou une participation compatible avec votre équipe, préparez un stock et des conditions visibles, puis mesurez les essais et actions observées. Une animation peut faciliter la découverte sans garantir les ventes ni remplacer la qualité du produit.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
-    updatedAt: "2026-10-17",
-    reviewedAt: "2026-10-17",
-    readingTime: "9 min de lecture",
+    updatedAt: "2026-10-18",
+    reviewedAt: "2026-10-18",
+    readingTime: "8 min de lecture",
     image: "/images/blog/animation-lancement-nouveau-produit.webp",
     imageAlt: "Illustration d’un commerce qui présente un nouveau produit pendant une animation",
     ctaLabel: "Préparer un lancement local",
@@ -1994,6 +2200,14 @@ export const blogPosts: BlogPost[] = [
           "Réassort ou solution de réservation si le stock est limité.",
           "Dates, variantes, prix et conditions d’utilisation à jour.",
           "Réponse prévue si le produit est indisponible ou remplacé.",
+        ],
+      },
+      {
+        title: "Faites valider la promesse avant de lancer",
+        paragraphs: [
+          "Avant la première publication, faites relire ensemble la fiche produit, l’affiche, la page mobile et les conditions. Une personne responsable confirme le nom du produit, son usage, sa disponibilité, ses limites, le prix et les dates. Une démonstration ne doit pas annoncer une caractéristique que la fiche produit ne confirme pas.",
+          "Séparez quatre blocs : l’information sur le produit ; l’essai ou la démonstration ; l’offre commerciale éventuelle ; les règles du jeu. Le client doit savoir s’il découvre, teste, achète ou participe. Si le lancement annonce une réduction en France, consultez la fiche DGCCRF sur les prix citée ci-dessous. Préparez aussi le retrait des supports si le stock change.",
+          "Ce contrôle est à refaire après toute modification de la promesse ou des conditions, et pour chaque partenaire. Le [budget d’animation](/blog/cout-animation-commerciale-commerce) aide à vérifier le coût de l’essai et des lots avant diffusion.",
         ],
       },
       {
@@ -2089,6 +2303,8 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/animation-marketing-multi-sites",
+    seoTitle: "Animation marketing multi-sites : préparer le déploiement",
+    source: [references.consent],
     title: "Comment déployer une animation marketing dans plusieurs établissements ?",
     description:
       "Structurez une animation multi-sites avec un socle commun, des QR codes et conditions par établissement, des équipes formées et une mesure séparée.",
@@ -2099,9 +2315,9 @@ export const blogPosts: BlogPost[] = [
       "Pour déployer une animation dans plusieurs établissements, standardisez la promesse, la mécanique et les règles communes, puis localisez le nom du site, les dates, les stocks, les supports et les responsabilités. Testez d’abord un établissement pilote et suivez séparément scans, participations, gains, retraits, visites et ventes par site.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
-    updatedAt: "2026-10-17",
-    reviewedAt: "2026-10-17",
-    readingTime: "10 min de lecture",
+    updatedAt: "2026-10-18",
+    reviewedAt: "2026-10-18",
+    readingTime: "9 min de lecture",
     image: "/images/blog/animation-marketing-multi-sites.webp",
     imageAlt: "Illustration d’une responsable qui coordonne une animation dans plusieurs commerces",
     ctaLabel: "Évaluer un déploiement multi-sites",
@@ -2133,6 +2349,23 @@ export const blogPosts: BlogPost[] = [
           "Règles de gains, validité, stock et retrait documentées.",
           "Indicateurs communs et événements qui restent propres à chaque site.",
         ],
+      },
+      {
+        title: "Dans Okado, chaque copie reste indépendante",
+        paragraphs: [
+          "La duplication vers plusieurs établissements crée des brouillons indépendants, rattachés à leurs sites respectifs. Modifier ensuite le modèle d’origine ne met pas automatiquement à jour les copies. Vérifiez chaque jeu avant publication : identité, liens, textes personnalisés, lots, stocks, dates et conditions.",
+          "Les données et les autorisations restent rattachées à l’établissement concerné. Un membre du réseau n’accède pas de fait à tous les sites, et un accord marketing ne devient pas une autorisation pour tous les partenaires. La référence CNIL en source aide à vérifier la portée d’un consentement ; définissez les destinataires avant de mutualiser une collecte.",
+        ],
+        table: {
+          caption: "Contrôles de lancement et de retour arrière par établissement",
+          headers: ["Étape", "Contrôle local", "Si le contrôle échoue"],
+          rows: [
+            ["Préparation", "Brouillon, dotation et responsabilités validés", "Corriger la copie avant publication"],
+            ["Diffusion", "QR public et affiche du bon établissement", "Retirer le support incorrect et tester le remplacement"],
+            ["Exploitation", "Conditions tenues, retraits et stock vérifiés", "Arrêter la diffusion locale et traiter les gains déjà attribués"],
+            ["Nouvelle version", "Relire et tester chaque copie modifiée", "Conserver une trace de la version et des corrections à reprendre"],
+          ],
+        },
       },
       {
         title: "Attribuez un QR public et un support à chaque site",
@@ -2227,7 +2460,7 @@ export const blogPosts: BlogPost[] = [
       {
         title: "Questions fréquentes sur une animation multi-sites",
         paragraphs: [
-          "Faut-il un jeu par établissement ? Pas nécessairement. Une même mécanique peut être utilisée avec des supports, lots, conditions et attributions distincts, si les responsabilités et les stocks sont correctement séparés.",
+          "Faut-il un jeu par établissement dans Okado ? Oui, chaque jeu est rattaché à un établissement. Vous pouvez réutiliser la même mécanique en la dupliquant en brouillons indépendants, puis vérifier et publier chaque copie avec ses supports et conditions locales.",
           "Comment suivre les stocks ? Définissez le stock initial, les gains attribués, les retraits, les dates et la personne responsable pour chaque établissement. Actualisez les supports si une dotation devient indisponible.",
           "Comment éviter le mauvais QR code ? Associez chaque QR à un site et une version, testez le support final sur plusieurs téléphones et retirez les anciennes affiches lors d’un changement.",
           "Peut-on comparer les sites ? Oui, à condition de conserver les données et le contexte de chaque site. Une comparaison ne doit pas masquer les écarts d’horaires, de public, de stock ou de communication.",
@@ -2261,6 +2494,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/affiche-qr-code-animation-commerciale",
+    source: [references.contrast],
     title: "Comment créer une affiche QR code pour une animation commerciale ?",
     description:
       "Concevez une affiche QR code claire et lisible : promesse, appel à l’action, conditions, emplacement, test multi-téléphones et checklist avant impression.",
@@ -2271,8 +2505,8 @@ export const blogPosts: BlogPost[] = [
       "Pour créer une affiche QR code d’animation commerciale, formulez une promesse courte, indiquez clairement quoi faire, rendez le code et les conditions visibles, choisissez un emplacement adapté au parcours client et testez le support imprimé sur plusieurs téléphones. Un scan ne garantit ni participation, ni gain, ni vente : le parcours doit être vérifié séparément.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
-    updatedAt: "2026-10-17",
-    reviewedAt: "2026-10-17",
+    updatedAt: "2026-10-18",
+    reviewedAt: "2026-10-18",
     readingTime: "9 min de lecture",
     image: "/images/blog/affiche-qr-code-animation-commerciale.webp",
     imageAlt: "Illustration d’une affiche QR code testée dans un commerce local",
@@ -2325,6 +2559,8 @@ export const blogPosts: BlogPost[] = [
           "Le QR code et le texte doivent rester lisibles selon le support, la distance, la lumière et les reflets. Un fichier qui paraît correct sur un écran peut devenir difficile à scanner après impression ou derrière une vitre.",
           "Contrôlez le contraste entre le code et son fond, la netteté à la taille finale et la présence d’une marge autour du code. Évitez les fonds chargés, les déformations, les couleurs trop proches et les éléments qui passent sur la zone de lecture.",
           "Pensez aussi aux personnes qui ne peuvent pas scanner facilement. Affichez une consigne alternative ou un moyen simple de demander de l’aide à l’équipe, sans faire dépendre un gain d’une capacité technique particulière.",
+          "Ajoutez sous le QR une adresse publique lisible et recopiable menant au même parcours. Vérifiez qu’elle ne change pas les conditions d’accès. Sur la page numérique, contrôlez le zoom et la lisibilité des textes avec les recommandations W3C citées ; les seuils de contraste des textes ne constituent pas une certification de la lecture du QR imprimé.",
+          "Gardez visibles sur l’affiche les conditions qui changent la promesse, comme une réservation, une date ou un achat requis. Le lien détaillé complète ces informations ; il ne doit pas être l’unique endroit où le client découvre une restriction essentielle.",
         ],
         items: [
           "Contraste suffisant entre le QR code et son arrière-plan.",
@@ -2430,9 +2666,10 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/jeu-concours-evenement-local",
+    source: [references.lottery, references.consent],
     title: "Comment organiser un jeu-concours pour un événement local ?",
     description:
-      "Organisez un jeu-concours lors d’un événement local avec une mécanique courte, des conditions visibles, une équipe préparée et une mesure distincte des participations et retraits.",
+      "Préparez un jeu-concours pour un événement local : mécanique, lots, conditions, équipe, QR code et bilan des participations et retraits.",
     eyebrow: "Événement local",
     intro:
       "Un jeu-concours peut donner une raison de s’arrêter sur un stand ou de prolonger une visite, mais il doit rester simple à comprendre et à délivrer. La préparation du lieu, des lots, de l’équipe et des informations compte autant que la mécanique choisie.",
@@ -2440,9 +2677,9 @@ export const blogPosts: BlogPost[] = [
       "Pour organiser un jeu-concours lors d’un événement local, définissez d’abord l’objectif et les responsabilités, choisissez une participation courte, préparez les lots et les conditions, testez le parcours avant l’ouverture, puis mesurez séparément passage, scans, participations, contacts, gains et retraits.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
-    updatedAt: "2026-10-17",
-    reviewedAt: "2026-10-17",
-    readingTime: "9 min de lecture",
+    updatedAt: "2026-10-18",
+    reviewedAt: "2026-10-18",
+    readingTime: "10 min de lecture",
     image: "/images/blog/jeu-concours-evenement-local.webp",
     imageAlt: "Illustration d’un jeu-concours par QR code sur un stand lors d’un événement local",
     ctaLabel: "Préparer une animation événementielle",
@@ -2522,6 +2759,13 @@ export const blogPosts: BlogPost[] = [
         ],
       },
       {
+        title: "Vérifiez le cadre de l’événement et de la participation",
+        paragraphs: [
+          "Identifiez l’organisateur du jeu, distinct si nécessaire de l’organisateur du salon ou de la fête. Faites valider l’emplacement, les horaires, l’éligibilité, les règles de désignation et la remise des lots. Un partenaire qui fournit une dotation ne devient pas automatiquement destinataire des coordonnées.",
+          "Pour la France, la fiche DGCCRF citée distingue les loteries publicitaires des autres loteries ; un événement associatif ou une tombola ne relève pas nécessairement du même dispositif. La source CNIL concerne le choix relatif aux données. Pour un événement dans un autre pays, vérifiez les règles locales avant d’utiliser ces repères français.",
+        ],
+      },
+      {
         title: "Préparez le déroulé avant, pendant et après",
         paragraphs: [
           "Un déroulé en trois temps réduit les improvisations. Avant l’événement, préparez les supports et testez le jeu. Pendant, gardez une consigne courte et une personne capable d’expliquer les conditions. Après, retirez les supports devenus inexacts et consignez les observations avant de conclure.",
@@ -2588,19 +2832,21 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/collecter-contacts-magasin-consentement",
+    seoTitle: "Collecter des contacts en magasin : consentement et méthode",
+    source: [references.consent, references.prospecting],
     title: "Comment collecter des contacts en magasin sans dégrader l’expérience ?",
     description:
       "Apprenez à collecter des contacts en magasin avec une finalité claire, peu de données, un consentement séparé et un parcours qui laisse un vrai choix.",
     eyebrow: "Relation client",
     intro:
-      "Une collecte de contacts peut prolonger une visite, mais elle devient contre-productive si le formulaire est obligatoire, trop long ou ambigu. Le bon parcours explique pourquoi une donnée est demandée, à quel moment et ce que la personne peut refuser.",
+      "Une collecte de contacts peut prolonger une visite, mais un formulaire imposé sans nécessité, trop long ou ambigu crée des obstacles. Le bon parcours explique pourquoi une donnée est demandée, à quel moment et ce que la personne peut refuser.",
     answer:
       "Pour collecter des contacts en magasin sans dégrader l’expérience, définissez la finalité avant le formulaire, demandez seulement les données nécessaires, expliquez chaque usage au bon moment et séparez la réception d’un gain de la prospection marketing facultative.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
-    updatedAt: "2026-10-17",
-    reviewedAt: "2026-10-17",
-    readingTime: "8 min de lecture",
+    updatedAt: "2026-10-18",
+    reviewedAt: "2026-10-18",
+    readingTime: "9 min de lecture",
     image: "/images/blog/collecter-contacts-magasin-consentement.webp",
     imageAlt: "Illustration d’un échange en magasin autour d’un formulaire de contact choisi librement",
     ctaLabel: "Concevoir une collecte claire",
@@ -2646,6 +2892,14 @@ export const blogPosts: BlogPost[] = [
           "Un message nécessaire à l’exécution du jeu ou à l’envoi d’un gain n’est pas une newsletter. Si une personne gagne et fournit une adresse pour recevoir les informations de retrait, cette adresse ne doit pas être présentée comme une inscription marketing automatique.",
           "La case de prospection doit être distincte, facultative, décochée par défaut et révocable. Le choix doit être compréhensible sans devoir accepter une communication commerciale pour participer, recevoir un gain ou le retirer. Un avis ou une note ne doit jamais devenir la contrepartie cachée de la collecte.",
           "Dans Okado, les contacts, les participations, les gains et les retraits restent des étapes distinctes. Une action marketing facultative ne transforme pas un scan ou une participation en contact opt-in.",
+        ],
+      },
+      {
+        title: "Information, base légale et choix marketing : trois contrôles",
+        paragraphs: [
+          "Pour un traitement soumis au RGPD, l’information de la personne et le choix d’une base légale sont deux vérifications distinctes. Le consentement n’est pas la seule base possible : déterminez celle qui convient à chaque finalité. Ne présentez pas l’envoi d’un gain comme une autorisation générale de prospection. La référence CNIL sur le consentement explique ce périmètre.",
+          "Pour la prospection électronique auprès de particuliers en France, la seconde fiche CNIL précise le principe d’accord préalable et ses exceptions encadrées. Une simple participation à un jeu ne constitue pas un achat. Dans Okado, le choix marketing demeure distinct, facultatif, décoché par défaut et révocable. Vérifiez séparément les règles du pays et du canal utilisés.",
+          "Avant la validation, rendez accessibles l’identité du responsable, les finalités, les destinataires, la conservation, les droits et le contact pour les exercer, selon le contexte applicable. Informer ne signifie pas imposer une case marketing : testez le parcours avec refus et avec accord. Ces repères ne dispensent pas de valider les cas particuliers.",
         ],
       },
       {
@@ -2705,7 +2959,7 @@ export const blogPosts: BlogPost[] = [
         title: "Questions fréquentes sur la collecte de contacts en magasin",
         paragraphs: [
           "Peut-on demander un e-mail pour participer à un jeu ? Cela dépend de la finalité et du parcours. Une adresse ne doit pas être demandée par défaut si elle n’est pas nécessaire ; si elle est requise pour une étape précise, expliquez cette nécessité avant la validation.",
-          "Comment séparer un gain d’une newsletter ? Utilisez deux messages et deux choix distincts. Le message nécessaire au gain explique l’envoi ou la procédure concernée ; la newsletter demande un consentement marketing séparé et facultatif.",
+          "Comment séparer un gain d’une newsletter ? Expliquez la donnée nécessaire à l’envoi du gain et proposez à part une case marketing facultative. Recevoir le gain ne signifie pas accepter la newsletter ; il n’est pas nécessaire d’inventer une case de consentement pour toute information de service.",
           "Quelles données éviter ? Évitez toute donnée qui n’a pas de finalité définie, notamment les informations sensibles ou les détails personnels sans usage concret. Demandez le minimum utile et faites valider les besoins spécifiques au contexte.",
           "Faut-il une case obligatoire ? Une information obligatoire peut être nécessaire pour exécuter un jeu ou transmettre un gain, mais elle ne doit pas être présentée comme un consentement marketing. La formulation et la base applicable doivent être validées.",
           "Une collecte de contacts garantit-elle une prochaine visite ? Non. Elle indique qu’une donnée a été laissée dans un contexte donné. Elle ne prouve ni une lecture, ni une ouverture, ni une visite, ni une vente future.",
