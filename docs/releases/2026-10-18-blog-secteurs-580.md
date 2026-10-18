@@ -419,3 +419,46 @@ Aucun changement au SaaS, aux données, aux règles de participation ou au gabar
 React ; aucune migration ni dépendance ajoutée. Livraison par PR, sans fusion ou
 déploiement de cette nouvelle série à ce stade. Retour arrière : revert du commit
 de l’article et reconstruction de la landing ; les neuf briefs restent disponibles.
+
+## Article #589 — journée découverte dans un magasin de vélos
+
+URL : `/blog/animation-magasin-velos-journee-decouverte`. Le contenu cible
+l’intention « animation magasin vélo » et distingue les démonstrations en
+magasin, les conseils sur des références précises et tout éventuel essai
+encadré. Il explique comment protéger la capacité de l’atelier, annoncer les
+conditions, choisir un avantage sans promettre une prestation non prévue et
+mesurer séparément visites, demandes et ventes observées. Le QR code Okado est
+présenté comme facultatif et non comme agenda, réservation ou garantie de
+sécurité.
+
+Sources vérifiées : [Google Business Profile — posts événementiels](https://support.google.com/business/answer/7342169?hl=fr),
+[Service-Public.fr — équipements obligatoires à vélo](https://www.service-public.fr/particuliers/vosdroits/F34169),
+[CNIL — communications électroniques](https://www.cnil.fr/fr/communication-electronique-quelles-regles)
+et [DGCCRF — loteries publicitaires](https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/loterie-des-pratiques-commerciales-reglementees).
+Les références règlementaires sont limitées aux affirmations correspondantes ;
+la fiche sur les équipements cyclistes n’est pas présentée comme une règle
+complète pour les essais organisés par un commerce.
+
+Illustration WebP 1600 × 800 :
+`apps/landing-page/public/images/blog/animation-magasin-velos-journee-decouverte.webp`.
+Alt : « Un vélociste montre la transmission d’un vélo installé sur un pied
+d’atelier à une cliente ». Prompt final : « Wide editorial illustration of
+an adult bicycle-shop mechanic demonstrating a bicycle component on a securely
+mounted indoor repair stand to an adult customer in a welcoming independent
+bike shop; painterly magazine illustration, natural warm light, cream, navy
+and forest-green palette; realistic bicycle geometry; no text, logo, brand,
+children, road riding or unsafe handling. »
+
+Note éditoriale : **9,2/10**, évaluation qualitative de la pertinence,
+spécificité du secteur, clarté et prudence — ce n’est ni une note SEO de Google
+ni une mesure de trafic. Pertinence validée comme sujet d’acquisition hors des
+secteurs restauration et beauté. Axe restant : faire relire les conditions
+d’essai par un vélociste et son assureur si un cas réel est ajouté ; enrichir
+ensuite l’article avec des observations de terrain vérifiables, sans résultats
+supposés.
+
+Vérifications #589 : `npm run lint:landing` et `npm run build:landing` réussis
+(58 pages statiques). Le test Playwright desktop « tous les articles exposent
+liens, sources et métadonnées cohérentes dans le HTML » réussit ; il couvre
+canonical, title/description, fil d’Ariane, JSON-LD, sitemap, liens internes,
+sources HTTPS et images servies pour chaque article. `git diff --check` réussi.

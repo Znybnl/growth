@@ -4270,6 +4270,135 @@ export const blogPosts: BlogPost[] = [
       "/comment-ca-marche",
     ],
   },
+  {
+    path: "/blog/animation-magasin-velos-journee-decouverte",
+    title: "Comment animer un magasin de vélos avec une journée découverte ?",
+    seoTitle: "Animation en magasin de vélos : journée découverte",
+    description:
+      "Démonstrations, conseils et essais encadrés : préparez une journée découverte en magasin de vélos sans bloquer l’atelier ni promettre un essai imprudent.",
+    eyebrow: "Vélocistes et commerce local",
+    intro:
+      "Une journée découverte en magasin de vélos peut faire connaître un équipement, une pratique ou le savoir-faire de l’atelier. Pour qu’elle soit utile, choisissez un thème précis, organisez les démonstrations et les créneaux sans perturber les réparations, puis traitez tout essai comme une activité distincte à encadrer selon les conditions définies par le vélociste.",
+    answer:
+      "Pour animer un magasin de vélos, choisissez un thème concret (réglages, accessoires, entretien courant ou découverte d’une gamme), prévoyez une démonstration réalisable en intérieur et dimensionnez l’accueil selon l’espace, le stock et l’équipe disponibles. Réservez les interventions de l’atelier qui ne peuvent pas être interrompues. Si un essai est envisagé, fixez à l’avance ses conditions, son encadrement et son parcours avec le professionnel responsable ; un QR code ou une animation promotionnelle ne gère ni réservation, ni aptitude, ni sécurité. Annoncez les modalités, puis distinguez visiteurs, démonstrations, demandes et ventes observées dans le bilan.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-18",
+    updatedAt: "2026-10-18",
+    reviewedAt: "2026-10-18",
+    readingTime: "8 min de lecture",
+    image: "/images/blog/animation-magasin-velos-journee-decouverte.webp",
+    imageAlt:
+      "Un vélociste montre la transmission d’un vélo installé sur un pied d’atelier à une cliente",
+    ctaLabel: "Découvrir le fonctionnement d’Okado",
+    ctaHref: "/comment-ca-marche",
+    source: [
+      {
+        label: "Google Business Profile — créer et gérer des posts événementiels",
+        href: "https://support.google.com/business/answer/7342169?hl=fr",
+      },
+      {
+        label: "Service-Public.fr — équipements obligatoires à vélo",
+        href: "https://www.service-public.fr/particuliers/vosdroits/F34169",
+      },
+      {
+        label: "CNIL — règles applicables à la prospection par e-mail et SMS",
+        href: "https://www.cnil.fr/fr/communication-electronique-quelles-regles",
+      },
+      {
+        label: "DGCCRF — loteries publicitaires et pratiques commerciales",
+        href: "https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/loterie-des-pratiques-commerciales-reglementees",
+      },
+    ],
+    sections: [
+      {
+        title: "Choisir un thème utile aux clients du magasin",
+        paragraphs: [
+          "Une animation vélo fonctionne mieux lorsqu’elle répond à une question concrète : comment choisir un antivol, comprendre les différences entre deux éclairages, vérifier la pression recommandée par le fabricant ou préparer son vélo avant une sortie ? Le sujet doit correspondre aux produits réellement disponibles et aux compétences de la personne qui fera la démonstration.",
+          "Concentrez la journée sur une famille cohérente : accessoires de visibilité, équipement pour les trajets quotidiens, préparation d’un vélo neuf ou découverte d’une gamme. Évitez de présenter un conseil général comme un diagnostic individuel. Pour un réglage, une réparation ou une question de compatibilité, indiquez quand un examen du vélo ou un rendez-vous d’atelier est nécessaire.",
+          "Définissez un objectif observable : faire découvrir une nouveauté, répondre à des questions fréquentes, présenter les services de l’atelier ou recueillir des demandes de devis. Cet objectif aide à choisir le format et les indicateurs. Une journée découverte peut être pertinente même si elle ne débouche pas immédiatement sur une vente.",
+        ],
+      },
+      {
+        title: "Proposer des démonstrations sans essai sur route",
+        paragraphs: [
+          "Un essai n’est pas indispensable pour rendre l’événement vivant. Le vélociste peut présenter le fonctionnement d’un antivol, comparer des éclairages allumés sur un support, montrer le réglage d’une selle sur un vélo fixé, expliquer une transmission sur pied d’atelier ou faire découvrir les accessoires et leurs compatibilités. Les visiteurs peuvent poser des questions et examiner les produits sans qu’un vélo parte sur la voie publique.",
+          "Préparez un mini-programme répétable : une démonstration courte, un temps de questions, puis quelques minutes pour orienter les visiteurs vers le bon produit ou le bon service. Affichez les horaires et la durée estimée, mais gardez une marge si l’équipe doit répondre à une réparation urgente. Une fiche de démonstration aide plusieurs membres de l’équipe à transmettre les mêmes informations vérifiées.",
+          "Si une présentation porte sur un vélo électrique ou un équipement technique, utilisez la documentation du fabricant et ne généralisez pas une caractéristique à toute une catégorie. Précisez le modèle concerné, les limites d’usage et ce qui varie selon l’équipement ou la configuration.",
+        ],
+      },
+      {
+        title: "Préserver l’atelier, le stock et les capacités d’accueil",
+        paragraphs: [
+          "Avant d’annoncer l’événement, listez les réparations déjà planifiées, les tâches qui demandent un espace dédié et les personnes réellement disponibles pour animer. Délimitez une zone de démonstration qui ne gêne ni les postes de travail, ni les sorties, ni le passage des clients. L’activité habituelle de l’atelier doit rester lisible : un visiteur ne doit pas prendre une démonstration pour un créneau de réparation réservé.",
+          "Choisissez les références disponibles ou annoncez clairement si un produit est présenté sur commande. Vérifiez tailles, compatibilités, batteries, accessoires et documents nécessaires avant la séance. Pour une animation en petits groupes, estimez la jauge à partir de l’espace et du temps que l’équipe peut consacrer à chacun ; évitez de prendre plus d’inscriptions que vous ne pouvez en accueillir.",
+          "Prévoyez un plan simple en cas d’affluence : limiter momentanément l’accès à la zone, proposer le prochain créneau ou orienter vers une démonstration répétée. Un formulaire peut recueillir une demande de rendez-vous s’il existe réellement un canal pour la confirmer ; un QR code seul ne constitue pas un agenda ni une réservation.",
+        ],
+      },
+      {
+        title: "Encadrer séparément tout essai de vélo",
+        paragraphs: [
+          "Un essai de vélo en magasin peut sortir du cadre d’une simple démonstration. Si vous en proposez un, le responsable du magasin doit définir au préalable les modèles concernés, les personnes habilitées à accompagner l’essai, la zone et le parcours autorisés, les consignes données au participant ainsi que les vérifications et documents qu’il juge nécessaires. Les modalités peuvent dépendre du vélo, du lieu et de la situation : faites-les valider par le professionnel compétent et, au besoin, par l’assureur.",
+          "Ne laissez pas entendre qu’une inscription en ligne, une case cochée ou un jeu promotionnel remplace ces décisions. Un QR code peut orienter vers une information ou un jeu, mais il ne vérifie pas l’identité, ne délivre pas une aptitude et ne garantit pas qu’un essai est sécurisé ou assuré. Si les conditions ne sont pas établies, conservez un format de découverte en magasin, sans sortie sur route.",
+          "Si un essai emprunte la voie publique, le vélociste doit aussi tenir compte des règles de circulation et d’équipement qui s’appliquent au vélo et à la personne. La fiche [Service-Public.fr sur les équipements obligatoires à vélo](https://www.service-public.fr/particuliers/vosdroits/F34169) donne des repères généraux ; elle ne remplace pas l’évaluation du lieu, du vélo et des conditions particulières par le responsable.",
+        ],
+      },
+      {
+        title: "Communiquer localement avec des informations exactes",
+        paragraphs: [
+          "L’invitation doit préciser le thème, l’adresse, la date, les horaires et le format : entrée libre, démonstrations à heures fixes ou inscription pour une jauge limitée. Si l’événement ne comprend pas d’essai, dites-le. Si des essais encadrés sont effectivement organisés, expliquez comment connaître leurs conditions sans suggérer que chaque visiteur pourra automatiquement repartir à vélo.",
+          "Vous pouvez relayer la journée sur le site du magasin, en vitrine et sur sa fiche d’établissement. Google permet de publier des posts de type événement avec un titre et des dates/heures ; mettez à jour l’annonce si le programme change. Cette publication renseigne les clients, mais ne garantit ni une position dans les résultats ni un nombre de participants. Pour un événement local, indiquez les détails utiles plutôt que de répéter la ville et le mot-clé dans chaque phrase.",
+          "Pour inviter par e-mail ou SMS, distinguez le message demandé pour confirmer une inscription des communications qui promeuvent les produits ou services. La [CNIL décrit les règles de prospection électronique et leurs exceptions](https://www.cnil.fr/fr/communication-electronique-quelles-regles) ; la base client ou une participation à un jeu ne doit pas être assimilée automatiquement à une autorisation générale de relance commerciale.",
+        ],
+      },
+      {
+        title: "Choisir un avantage sans dévaloriser l’entretien",
+        paragraphs: [
+          "Une découverte peut reposer sur le conseil, le temps d’échange ou l’accès à une démonstration, sans remise sur une prestation technique. D’autres options peuvent être envisagées selon les stocks et les marges : présentation d’un accessoire, comparaison de produits, documentation pratique ou rendez-vous de conseil. Présentez précisément ce qui est inclus et ne promettez pas un diagnostic ou un réglage gratuit si l’équipe n’a pas prévu le temps et le périmètre correspondants.",
+          "Si vous proposez une réduction, un lot ou un jeu, indiquez les produits concernés, la période et les conditions avant la participation. Pour une mécanique avec gain, consultez les repères de la [DGCCRF sur les loteries publicitaires](https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/loterie-des-pratiques-commerciales-reglementees) et vérifiez le dispositif concret avant diffusion. La promotion ne doit pas brouiller la distinction entre une participation, un gain, son retrait et un achat.",
+          "Un jeu par QR code peut compléter l’événement si l’objectif de notoriété ou de participation le justifie. Il reste facultatif : [découvrez le fonctionnement d’Okado](/comment-ca-marche), puis comparez avec des formats plus simples lorsque la démonstration ou le conseil répond déjà au besoin.",
+        ],
+      },
+      {
+        title: "Mesurer la journée sans attribuer toutes les ventes à l’animation",
+        paragraphs: [
+          "Décidez avant l’événement de quelques observations que l’équipe peut réellement noter : visiteurs de la zone, démonstrations effectuées, questions fréquentes, demandes de rendez-vous, produits essayés en magasin et ruptures. Si vous suivez des ventes, définissez la période et la méthode de rapprochement. Ne collectez pas de coordonnées uniquement « au cas où » ; une demande de rendez-vous et un accord marketing ont des finalités différentes.",
+          "Après la journée, comparez les observations avec le temps mobilisé, les produits utilisés et les contraintes de l’atelier. Une vente le même jour n’est pas automatiquement causée par l’événement. Si vous comparez plusieurs éditions, notez aussi les différences de météo, de disponibilité des modèles, d’horaires, de prix et de fréquentation habituelle.",
+          "L’article [mesurer une animation commerciale](/blog/mesurer-animation-commerciale) aide à séparer participation, demande et vente observée. Pour préparer une nouvelle gamme, consultez également [animer le lancement d’un produit](/blog/animation-lancement-nouveau-produit) ; et pour choisir entre un avantage certain et un jeu, [comparer jeu-concours et promotion](/blog/jeu-concours-ou-promotion).",
+        ],
+      },
+      {
+        title: "Questions fréquentes sur une animation en magasin de vélos",
+        paragraphs: [
+          "Quelles animations proposer sans essai sur route ? Une démonstration sur vélo fixé, la comparaison d’accessoires, une présentation d’entretien courant ou un atelier de choix d’équipement permettent de découvrir des produits en magasin. Choisissez un sujet que l’équipe peut expliquer avec des informations propres aux modèles présentés.",
+          "Comment éviter de bloquer l’atelier ? Réservez une zone distincte, désignez la personne qui anime et ne planifiez pas les démonstrations pendant une tâche impossible à interrompre. Limitez les inscriptions selon l’espace, le stock et la disponibilité réelle de l’équipe ; gardez une solution pour accueillir les visiteurs sans rendez-vous.",
+          "Peut-on organiser un essai de vélo pendant la journée ? C’est au vélociste responsable de décider si les conditions d’un essai sont réunies et de les définir selon le vélo, le lieu, l’encadrement et les vérifications nécessaires. Un formulaire ou un QR code ne remplace pas ces conditions. En cas de doute, choisissez une démonstration en magasin.",
+          "Quel avantage proposer sans dévaloriser un entretien ? Vous pouvez privilégier le conseil, une démonstration ou une découverte d’équipement. Si une remise ou un lot est retenu, limitez-le à un périmètre explicite et vérifiez les conditions applicables avant de communiquer ; ne promettez pas une prestation technique non prévue.",
+          "Un jeu QR peut-il réserver un essai ou un rendez-vous ? Non, pas à lui seul. Il peut proposer un parcours de jeu configuré, mais ne doit pas être présenté comme un agenda, un outil de vérification de sécurité ou un système de réservation si ces fonctions ne sont pas réellement disponibles.",
+        ],
+      },
+      {
+        title: "Checklist avant votre journée découverte vélo",
+        paragraphs: ["À valider avec le responsable du magasin et l’équipe :"],
+        items: [
+          "Le thème, le public et l’objectif de la journée sont définis à partir des produits et compétences disponibles.",
+          "Les démonstrations peuvent se tenir sans interrompre l’atelier ni bloquer la circulation.",
+          "Le stock, les tailles, compatibilités et informations des modèles présentés sont vérifiés.",
+          "La jauge et les créneaux sont adaptés à l’espace et à la disponibilité réelle de l’équipe.",
+          "Tout essai éventuel fait l’objet de conditions et d’un encadrement décidés et vérifiés par le responsable compétent.",
+          "L’inscription, une demande de rendez-vous, la participation à un jeu et le consentement marketing restent distincts.",
+          "L’annonce donne le lieu, les horaires, le format, les conditions d’accès et les limites de disponibilité.",
+          "Les avantages, lots ou réductions sont décrits avec leurs conditions avant la diffusion.",
+          "Le bilan distingue visiteurs, démonstrations, demandes et ventes observées sans attribution automatique.",
+        ],
+      },
+    ],
+    related: [
+      "/blog/animation-lancement-nouveau-produit",
+      "/blog/jeu-concours-ou-promotion",
+      "/blog/mesurer-animation-commerciale",
+      "/comment-ca-marche",
+    ],
+  },
 ];
 
 export function blogPostByPath(path: string) {
