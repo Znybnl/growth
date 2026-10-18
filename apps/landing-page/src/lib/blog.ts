@@ -3184,6 +3184,149 @@ export const blogPosts: BlogPost[] = [
       "/comment-ca-marche",
     ],
   },
+  {
+    path: "/blog/animation-boutique-vetements",
+    title: "Comment animer une boutique de vêtements sans multiplier les remises ?",
+    seoTitle: "Animer une boutique de vêtements sans remise",
+    description:
+      "Découvrez 9 idées pour animer une boutique de vêtements : lancement de collection, conseils de silhouettes, essayages, partenaires et suivi sans fausses promesses de stock.",
+    eyebrow: "Prêt-à-porter indépendant",
+    intro:
+      "Pour animer une boutique de vêtements sans multiplier les remises, donnez à chaque rendez-vous un motif concret : découvrir une collection, obtenir un conseil de style, comparer des matières ou rencontrer un créateur local. Choisissez une action adaptée aux tailles réellement disponibles, au temps de conseil et au stock que vous pouvez tenir.",
+    answer:
+      "Commencez par un rendez-vous de découverte facile à organiser, comme une présentation de silhouettes ou un créneau de conseil. Vérifiez les références et tailles disponibles avant d’inviter, annoncez clairement les conditions et mesurez les demandes ou essayages observés. Une animation peut soutenir la découverte d’une collection ; elle ne garantit ni visite ni vente.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-18",
+    updatedAt: "2026-10-18",
+    reviewedAt: "2026-10-18",
+    readingTime: "10 min de lecture",
+    image: "/images/blog/animation-boutique-vetements.webp",
+    imageAlt: "Une commerçante conseille une cliente qui découvre des vêtements dans une boutique indépendante",
+    ctaLabel: "Voir comment fonctionne une animation par QR code",
+    ctaHref: "/comment-ca-marche",
+    source: [
+      {
+        label: "Google Business Profile — ajouter des photos de la boutique et des produits",
+        href: "https://support.google.com/business/answer/6103862?hl=fr",
+      },
+      references.pricing,
+      {
+        label: "CNIL — règles des communications électroniques aux prospects et clients",
+        href: "https://www.cnil.fr/fr/communication-electronique-quelles-regles",
+      },
+    ],
+    sections: [
+      {
+        title: "Définir le rendez-vous avant de choisir l’animation",
+        paragraphs: [
+          "Une animation commerciale réussie commence par une question précise : souhaitez-vous faire connaître une nouvelle collection, aider les visiteurs à composer une tenue, rendre visible un savoir-faire ou créer une occasion de revenir ? Ces objectifs appellent des formats différents. Une présentation de silhouettes peut aider à découvrir des associations ; un rendez-vous de conseil demande du temps individuel ; un jeu ajoute une expérience, mais ne remplace ni l’essayage ni le conseil.",
+          "Observez d’abord les demandes fréquentes, les moments calmes, les tailles manquantes et les articles qui suscitent des questions. Cette observation informelle est un point de départ, pas une étude représentative. Choisissez un seul objectif et une preuve que l’équipe peut relever : questions reçues, essayages commencés, inscriptions volontaires ou utilisation d’une offre précise.",
+          "Si le besoin concerne le lancement d’un produit ou d’une gamme, la [méthode pour préparer une animation de lancement](/blog/animation-lancement-nouveau-produit) complète ces idées. Pour le choix entre une offre certaine et une expérience avec participation, consultez aussi la comparaison [jeu-concours ou promotion](/blog/jeu-concours-ou-promotion).",
+        ],
+      },
+      {
+        title: "9 idées pour animer une boutique de vêtements",
+        paragraphs: [
+          "Adaptez le format à la surface du magasin, au nombre de personnes présentes et à la disponibilité des tailles. Les propositions suivantes sont des scénarios à adapter, pas des résultats de campagnes observés.",
+        ],
+        items: [
+          "Présenter une mini-sélection autour d’un usage concret : vêtements de mi-saison, tenue de cérémonie ou superpositions pour la pluie. Limitez le nombre de pièces et vérifiez que les références affichées sont encore disponibles.",
+          "Composer trois silhouettes à partir de la nouvelle collection. Indiquez les références et les alternatives réellement en rayon ; le but est d’aider à se projeter, pas de promettre que chaque combinaison existe dans toutes les tailles.",
+          "Organiser un créneau de conseil individuel sur inscription auprès de la boutique. Précisez la durée, le nombre de places, les sujets couverts et la manière de modifier ou annuler le rendez-vous. Une animation n’est pas automatiquement un outil de réservation : utilisez votre canal habituel.",
+          "Proposer une présentation courte des matières, coupes ou finitions par un membre de l’équipe ou un intervenant compétent. Évitez les affirmations techniques ou environnementales que vous ne pouvez pas justifier.",
+          "Inviter un créateur ou artisan du quartier pour une rencontre à capacité limitée. Définissez qui accueille, ce qui est présenté, les éventuels frais et la manière dont les ventes ou coordonnées restent séparées entre les participants.",
+          "Créer un parcours de découverte en magasin : une sélection de pièces à associer, des idées de superposition ou une démonstration d’accessoires. Gardez une circulation accessible et ne déplacez pas les portants au point de bloquer l’accès aux rayons.",
+          "Mettre en avant un service réellement proposé, comme un conseil de retouche ou d’entretien, après avoir confirmé les délais, tarifs, conditions et prestataire. Si ce service est assuré par un partenaire, précisez son rôle et les modalités de prise en charge.",
+          "Préparer une journée autour d’une occasion locale ou d’un changement de saison sans inventer de rareté. Communiquez une date et un programme utiles ; ne laissez pas entendre qu’un stock est limité si vous ne l’avez pas vérifié.",
+          "Proposer une invitation de retour liée à un rendez-vous futur, avec période, articles concernés et éventuelles conditions clairement indiqués. Une invitation remise ne prouve pas qu’elle sera utilisée ; relevez les utilisations constatées séparément des ventes globales.",
+        ],
+      },
+      {
+        title: "Préparer les tailles, les références et le parcours d’essayage",
+        paragraphs: [
+          "Avant d’annoncer un événement, faites une vérification simple par référence : coloris, tailles présentes, quantités, pièces réservées et réassort possible. Le stock peut changer entre la préparation et l’événement. Si une taille manque, prévoyez une alternative honnête : autre coupe disponible, commande par le canal habituel si le magasin la propose, ou information sur l’indisponibilité.",
+          "N’utilisez pas de photo d’une tenue complète sans vérifier que les pièces montrées correspondent bien à la collection présentée. Une image d’illustration peut inspirer une association, mais elle ne doit pas laisser croire qu’un article, coloris ou service précis est disponible lorsqu’il ne l’est pas.",
+          "Organisez les essayages selon l’espace et l’équipe : accès aux cabines, circulation, attente et rangement des vêtements. Si vous proposez des créneaux, annoncez qui les confirme et comment les visiteurs peuvent signaler un retard. Ne collectez pas plus d’informations personnelles que nécessaire à l’organisation annoncée.",
+          "Pour la visibilité locale, maintenez à jour les horaires et les informations de l’établissement dans votre [fiche Google Business Profile](/blog/attirer-clients-commerce-local). Google permet d’ajouter des photos de la devanture, des produits et des services à un profil vérifié ; choisissez des images nettes qui représentent réellement la boutique et ses articles.",
+        ],
+      },
+      {
+        title: "Choisir entre découverte, avantage et jeu",
+        paragraphs: [
+          "Une découverte guidée convient si l’objectif est de faire comprendre une collection ou une coupe. Un avantage certain peut aider à déclencher une décision immédiate, à condition de calculer son coût et d’annoncer ses règles. Un jeu par QR code peut créer un moment participatif autour de l’événement ; il ne garantit ni essayage, ni achat, ni retour en boutique.",
+          "Avant d’afficher une réduction en France, vérifiez les règles en vigueur : la DGCCRF indique qu’une annonce de réduction doit se référer au prix le plus bas pratiqué par le professionnel durant les 30 jours précédant la promotion. Cette règle concerne les annonces en ligne comme en magasin. Lisez la [fiche DGCCRF actualisée sur les annonces de réduction de prix](https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/annonces-de-reduction-de-prix-ce-que-vous-devez-savoir) et faites vérifier votre cas si l’offre comporte des conditions particulières.",
+          "Si le format comprend un tirage ou une dotation, définissez les lots, la période, les conditions d’éligibilité et le retrait avant la diffusion. La participation, la remise d’un gain, l’achat et l’accord pour recevoir des offres sont des étapes distinctes. La [fiche sur les jeux et loteries publicitaires](/blog/jeu-concours-ou-promotion) aide à choisir le format ; les obligations dépendent du dispositif et du territoire.",
+        ],
+      },
+      {
+        title: "Inviter sans surcharger l’équipe ni les visiteurs",
+        paragraphs: [
+          "Une invitation courte doit répondre aux questions pratiques : quoi découvrir, à quelle date, où se présenter, faut-il réserver, combien de temps prévoir et les places sont-elles limitées ? N’annoncez une jauge que si vous savez la tenir. Faites coïncider l’affiche, la vitrine, la page de l’événement et les réponses de l’équipe.",
+          "Vous pouvez utiliser les canaux déjà suivis par votre clientèle : affichage en boutique, site, réseaux sociaux ou partenaires locaux. Si vous envoyez un courriel ou un SMS promotionnel, vérifiez les règles applicables au canal et au public. La CNIL distingue notamment prospection commerciale et messages nécessaires au suivi d’un service ; consultez sa page sur les [communications électroniques aux prospects et clients](https://www.cnil.fr/fr/communication-electronique-quelles-regles) avant d’utiliser un fichier de contacts.",
+          "Une adresse recueillie pour confirmer un créneau ou transmettre les informations d’un rendez-vous ne devient pas automatiquement une autorisation de prospection. Pour un jeu Okado, la collecte éventuellement nécessaire à la réception d’un gain est distincte du choix marketing, qui reste facultatif. N’associez jamais l’accès à une animation ou un lot à la publication d’un avis positif.",
+        ],
+      },
+      {
+        title: "Établir un budget qui tient compte du temps et du stock",
+        paragraphs: [
+          "Listez les dépenses et engagements avant de communiquer : heures de préparation et d’accueil, éventuelle rémunération d’un intervenant, matériel, boissons, impression, coût d’un lot et valeur des avantages promis. Ajoutez le temps de rangement et de réponse après l’événement. Le budget dépend de vos coûts réels ; aucun montant type ne permet de conclure à la rentabilité d’une animation.",
+          "Exemple de calcul à adapter, sans valeur de prix de marché : pour un rendez-vous de conseil avec huit créneaux de vingt minutes, l’équipe mobilise au moins 160 minutes de conseil, auxquelles s’ajoutent la préparation, l’accueil et les retards éventuels. Ce temps a un coût même si aucune remise n’est accordée.",
+          "Pour une opération avec une offre, estimez la quantité maximale susceptible d’être utilisée et la marge restante selon vos propres chiffres. Une remise annoncée n’est pas un simple coût par participant : elle s’applique selon ses conditions aux achats éligibles. La [méthode de budget d’une animation commerciale](/blog/cout-animation-commerciale-commerce) aide à comparer les postes sans inventer un retour sur investissement.",
+        ],
+      },
+      {
+        title: "Mesurer ce qui s’est réellement passé",
+        paragraphs: [
+          "Avant le lancement, notez l’objectif, la période, les références concernées et l’indicateur choisi. Selon le format, vous pourrez compter les personnes présentes, les demandes, les essayages commencés, les créneaux honorés, les utilisations d’une offre ou les participations à un jeu. Définissez comment l’équipe relève chaque information et évitez les doubles comptes lorsque c’est possible.",
+          "Séparez les étapes : une inscription n’est pas une présence, un essayage n’est pas une commande, un gain n’est pas un retrait et une vente pendant l’événement n’est pas nécessairement causée par celui-ci. Notez les facteurs de contexte utiles, comme les horaires, la disponibilité des tailles, la météo, un changement d’équipe ou une autre opération en cours.",
+          "Après l’événement, consignez aussi les difficultés : taille annoncée mais absente, attente trop longue, question sans réponse ou offre mal comprise. Comparez avec une période ou un créneau raisonnablement comparable, en gardant les différences visibles. Le guide pour [mesurer une animation commerciale](/blog/mesurer-animation-commerciale) détaille cette logique de suivi.",
+        ],
+      },
+      {
+        title: "Un test simple en quatre semaines",
+        paragraphs: [
+          "Ce calendrier est un exemple d’organisation, pas une prévision de fréquentation :",
+        ],
+        items: [
+          "Semaine 1 : relever les questions, choisir une collection et un besoin client ; vérifier les tailles et le temps disponible.",
+          "Semaine 2 : sélectionner un format, fixer sa capacité, son budget et la preuve à suivre ; faire relire les conditions d’une éventuelle offre.",
+          "Semaine 3 : préparer les supports et briefer l’équipe ; vérifier que toutes les informations correspondent au stock et aux canaux réels.",
+          "Semaine 4 : réaliser l’animation, consigner les demandes et les incidents, puis décider de poursuivre, d’adapter ou d’arrêter selon les éléments observés.",
+        ],
+      },
+      {
+        title: "Questions fréquentes sur l’animation d’une boutique de vêtements",
+        paragraphs: [
+          "Comment animer le lancement d’une collection ? Choisissez un angle de découverte, par exemple les matières, les associations ou les usages. Présentez les références disponibles, les tailles confirmées et un horaire compatible avec le temps de conseil de l’équipe.",
+          "Quelles animations proposer sans faire de remise ? Une présentation de silhouettes, un rendez-vous de conseil, une rencontre avec un créateur ou une démonstration de matières peuvent donner une raison de découvrir le magasin. Le format doit correspondre aux compétences et à la capacité réellement disponibles.",
+          "Comment éviter de promettre une taille indisponible ? Vérifiez les quantités avant l’annonce et précisez si une pièce est uniquement illustrative. Pendant l’événement, signalez les ruptures et ne garantissez une commande ou un réassort que si la boutique peut réellement le proposer.",
+          "Faut-il organiser les essayages sur réservation ? Cela peut faciliter l’organisation si la boutique dispose d’un canal et d’une personne pour confirmer les créneaux. Expliquez la durée et les modalités ; une affiche ou un QR code seul ne constitue pas automatiquement un système de réservation.",
+          "Une animation commerciale augmente-t-elle forcément les ventes ? Non. Elle crée une occasion de découverte et permet d’observer des comportements. Les ventes dépendent de nombreux facteurs ; il faut distinguer fréquentation, essayages et commandes avant d’attribuer un résultat à l’action.",
+        ],
+      },
+      {
+        title: "Checklist avant d’annoncer votre animation",
+        paragraphs: ["Avant de publier l’invitation, vérifiez que l’équipe peut répondre à ces points :"],
+        items: [
+          "L’objectif et le public de l’animation sont compris en une phrase.",
+          "Les articles, coloris, tailles et services annoncés ont été vérifiés.",
+          "La capacité d’accueil, les essayages et le temps de conseil sont réalistes.",
+          "Les avantages, prix, conditions et dates restent identiques sur tous les supports.",
+          "Le budget inclut la préparation, l’accueil, le matériel, les lots et les engagements éventuels.",
+          "Les données demandées sont limitées au besoin expliqué ; la prospection reste traitée selon le canal et le consentement applicable.",
+          "L’indicateur choisi peut être relevé sans confondre inscription, présence, essayage et vente.",
+          "Un bilan est prévu avec les ruptures, questions et ajustements à conserver pour la prochaine opération.",
+        ],
+      },
+    ],
+    related: [
+      "/blog/animation-lancement-nouveau-produit",
+      "/blog/jeu-concours-ou-promotion",
+      "/blog/experience-client-boutique",
+      "/blog/mesurer-animation-commerciale",
+      "/comment-ca-marche",
+    ],
+  },
 ];
 
 export function blogPostByPath(path: string) {

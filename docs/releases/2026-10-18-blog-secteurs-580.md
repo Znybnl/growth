@@ -88,6 +88,39 @@ exemple réel autorisé avec quantités/temps/coûts documentés, observations d
 requêtes et conversions après publication. Aucune expertise métier de terrain ni
 conformité juridique globale revendiquée.
 
+## Article #581 — prêt-à-porter
+
+URL : `/blog/animation-boutique-vetements`. Contenu : neuf formats d’animation,
+préparation des tailles et essayages, choix entre découverte/avantage/jeu,
+invitation et consentement, budget illustré par un calcul fictif, mesure,
+calendrier de test, cinq FAQ et checklist.
+
+Sources métier ouvertes au 18 octobre 2026 : Google Business Profile pour les
+photos réelles, DGCCRF pour la règle actuelle des annonces de réduction (fiche
+datée du 25 août 2026), et CNIL pour les communications électroniques (fiche du
+10 juin 2026). Les conseils ne généralisent pas la règle française à d’autres
+pays et ne remplacent pas une validation de chaque offre.
+
+Illustration générée avec l’outil intégré imagegen et optimisée en WebP avec
+Sharp : `apps/landing-page/public/images/blog/animation-boutique-vetements.webp`
+(1600 × 800, 293 218 octets). Alternative : « Une commerçante conseille une
+cliente qui découvre des vêtements dans une boutique indépendante ».
+
+Prompt final :
+
+> Use case: illustration-story. Asset type: wide editorial hero illustration for a French professional blog article about animating an independent clothing boutique without relying on repeated discounts. Primary request: a warm, detailed painterly digital illustration of an adult shopkeeper helping an adult customer compare two coordinated clothing pieces from a new seasonal collection in a small independent fashion boutique. Scene/backdrop: clothing rails with varied garments, a full-length mirror, folded textiles and a tasteful storefront window; welcoming local shop atmosphere. Subject: two adults, one shopkeeper and one customer, discussing fit and styling; the customer holds a garment at shoulder height while the shopkeeper gestures helpfully. Show a range of sizes on hangers without labels. Style/medium: polished textured editorial illustration consistent with a professional local-commerce magazine; natural proportions and fabric detail. Composition/framing: wide horizontal composition approximately 2:1, all people and garments comfortably within frame, suitable for desktop and mobile article cards. Lighting/mood: soft daylight, calm and confident, collaborative rather than luxury advertising. Color palette: warm cream, natural wood, muted terracotta, sage, denim blue and restrained navy accents, editorial warmth. Constraints: no written text, no price tags, no discount percentages, no brand logos, no watermark, no QR code, no fake app interface, no performance numbers, no minors. This is an illustration, not a claimed customer photograph.
+
+Note éditoriale : **9,0/10**. Pertinence validée pour les boutiques indépendantes
+souhaitant faire découvrir une collection avec les contraintes réelles de tailles,
+stocks, essayages et temps de conseil. La note porte sur le besoin, la
+spécificité, les sources, la structure et le maillage ; elle ne prédit ni
+classement ni citation par un agent IA.
+
+Axes restant à améliorer : relecture par une personne du prêt-à-porter,
+précision selon boutique multimarque ou enseigne, et ajout ultérieur d’un cas
+documenté avec autorisation. Après publication, observer les requêtes, demandes et
+essayages réellement enregistrés.
+
 Méthode SEO/GEO consultée :
 - https://developers.google.com/search/docs/fundamentals/creating-helpful-content
 - https://developers.google.com/search/docs/fundamentals/ai-optimization-guide?version=published
@@ -95,20 +128,24 @@ Méthode SEO/GEO consultée :
 ## Vérifications et livraison
 
 - `npm run lint:landing` : réussi.
-- `npm run build:landing` : réussi, Next.js 16.3.8, 49 pages statiques.
+- `npm run build:landing` après l’ajout de l’article #581 : réussi,
+  Next.js 16.3.8, 50 pages statiques.
 - `npm run verify:source` et `git diff --check` : réussis.
 - `npm run test:e2e -w @okado/landing-page -- e2e/seo-public-pages.spec.ts` :
   28 tests réussis en 6,8 minutes, sur ordinateur, tablette, mobile et 320 px.
   Les contrôles HTML couvrent les 21 articles : métadonnées, données structurées,
   maillage, sources, images, sitemap, absence de commentaires et clavier.
-- Contrôle éditorial complémentaire : dix idées, cinq FAQ, six liens internes
-  contextuels, cinq références externes distinctes ; aucun lien interne invalide.
-  Title de 48 caractères, description de 156 caractères.
+- Pour l’article #580 : contrôle éditorial, dix idées, cinq FAQ, six liens
+  internes contextuels, cinq références externes distinctes ; aucun lien interne
+  invalide. Title de 48 caractères, description de 156 caractères.
+- Pour l’article #581 : lint et build réussis ; le test E2E du catalogue n’a pas
+  été relancé après cet ajout. Revue de contenu et des liens effectuée, avec
+  URLs internes existantes et références officielles intégrées.
 - Captures du tableau fleuriste sur ordinateur et mobile inspectées : lisibilité
   et défilement local sans débordement global.
 
-Recette proposée au propriétaire : ouvrir le nouvel article et sa carte dans
-`/blog`, contrôler l’image, le tableau au clavier/mobile, les liens et le sommaire.
+Recette proposée au propriétaire : ouvrir les deux nouveaux articles et leurs
+cartes dans `/blog`, contrôler les illustrations, tableaux, liens et sommaires.
 
 Périmètre : registre de contenu, illustration, tests du catalogue et ce suivi.
 Aucun changement au SaaS, aux données, aux règles de participation ou au gabarit
