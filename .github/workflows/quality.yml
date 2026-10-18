@@ -40,6 +40,8 @@ jobs:
         run: npm run test:admin-campaigns -w @okado/web-app
       - name: Test merchant gain notifications and RLS
         run: npm run test:gain-notifications -w @okado/web-app
+      - name: Test Resend webhook signatures and storage errors
+        run: npm run test:resend-webhook -w @okado/web-app
       - name: Test Beauty suggestion catalog and migration
         run: npm run test:beauty-catalog -w @okado/web-app
       - name: Test administrator establishment profiles
@@ -52,6 +54,8 @@ jobs:
         run: npm run test:page-performance -w @okado/web-app
       - name: Build web app
         run: npm run build:web
+      - name: Smoke compiled Resend webhook with isolated local storage
+        run: npm run smoke:resend-webhook -w @okado/web-app
 
   landing:
     name: Verify landing page
