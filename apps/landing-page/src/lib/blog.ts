@@ -4143,6 +4143,133 @@ export const blogPosts: BlogPost[] = [
       "/comment-ca-marche",
     ],
   },
+  {
+    path: "/blog/organiser-degustation-epicerie-fine",
+    title: "Comment organiser une dégustation en épicerie fine pour faire découvrir ses produits ?",
+    seoTitle: "Dégustation en épicerie fine : organiser et mesurer",
+    description:
+      "Choisissez un produit, estimez les portions, préparez l’information allergènes et mesurez les retours : une méthode pratique pour une dégustation en épicerie fine.",
+    eyebrow: "Épicerie fine et découverte produit",
+    intro:
+      "Pour organiser une dégustation en épicerie fine, choisissez un produit à faire découvrir, estimez les portions à partir du nombre de visiteurs attendu et préparez son information alimentaire avant l’événement. Un comptoir bien placé, des ustensiles adaptés et une personne disponible pour répondre aux questions rendent la découverte plus simple. Mesurez ensuite les dégustations, demandes et achats séparément : goûter un produit ne garantit pas une vente.",
+    answer:
+      "Fixez l’objectif et la durée, sélectionnez un ou deux produits disponibles, puis calculez les portions prévues à partir des créneaux ou du flux estimé et du nombre de goûts proposés par personne. Vérifiez la liste d’ingrédients et les allergènes avec les informations du fournisseur, préparez les conditions d’hygiène et de conservation adaptées au produit, et placez le comptoir sans gêner la circulation. Annoncez les dates, les produits et les éventuelles limites, puis suivez portions servies, questions et achats observables sans leur attribuer automatiquement un lien causal.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-18",
+    updatedAt: "2026-10-18",
+    reviewedAt: "2026-10-18",
+    readingTime: "8 min de lecture",
+    image: "/images/blog/organiser-degustation-epicerie-fine.webp",
+    imageAlt:
+      "Une commerçante fait goûter une tartinade à une cliente au comptoir d’une épicerie fine",
+    ctaLabel: "Découvrir les animations par QR code",
+    ctaHref: "/comment-ca-marche",
+    source: [
+      {
+        label: "DGCCRF — règles d’étiquetage des denrées alimentaires",
+        href: "https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/etiquetage-des-denrees-alimentaires-les-regles-connaitre",
+      },
+      {
+        label: "Ministère de l’Agriculture — sécurité alimentaire et chaîne du froid",
+        href: "https://agriculture.gouv.fr/securite-sanitaire-des-aliments-tout-sur-la-chaine-du-froid",
+      },
+      {
+        label: "Ministère de l’Agriculture — hygiène adaptée aux manipulations alimentaires",
+        href: "https://agriculture.gouv.fr/restauration-quelles-obligations-en-matiere-de-formation-lhygiene-des-aliments",
+      },
+      {
+        label: "CNIL — communications électroniques et prospection",
+        href: "https://www.cnil.fr/fr/communication-electronique-quelles-regles",
+      },
+      {
+        label: "Google Business Profile — publier un événement local",
+        href: "https://support.google.com/business/answer/7342169?hl=fr",
+      },
+    ],
+    sections: [
+      {
+        title: "Choisir un produit et un objectif de découverte",
+        paragraphs: [
+          "Une dégustation réussie commence par une question simple : qu’aimeriez-vous que le visiteur découvre ? Une nouvelle confiture, une huile d’olive, un chocolat, une tartinade ou un fromage peuvent illustrer le savoir-faire de l’épicerie, à condition que le produit soit disponible et que l’équipe sache le présenter. Cet article privilégie des exemples sans alcool ; adaptez toujours le format aux produits réellement vendus et aux règles qui leur sont propres.",
+          "Limitez le choix à un ou deux produits liés par une idée claire : origine indiquée par le fournisseur, ingrédient distinctif, méthode de fabrication documentée ou association de saveurs proposée à titre d’exemple. N’inventez pas une origine, une qualité nutritionnelle, un label ou une méthode artisanale. Pour comparer plusieurs nouveautés ou structurer leur lancement, l’article [animer le lancement d’un nouveau produit](/blog/animation-lancement-nouveau-produit) propose d’autres formats de présentation.",
+          "Définissez aussi le but de la séance : faire connaître une référence, répondre aux questions sur sa composition ou recueillir des réactions spontanées. Évitez un objectif vague comme « augmenter le panier moyen » si vous n’avez ni méthode d’attribution ni données comparables. Une dégustation est un moment de découverte, pas une promesse de conversion.",
+        ],
+      },
+      {
+        title: "Estimer les portions, le stock et le coût",
+        paragraphs: [
+          "Commencez par la capacité réaliste du comptoir : combien de personnes l’équipe peut-elle accueillir pendant la durée choisie, sans bloquer les achats ? Si vous utilisez des créneaux, le nombre d’inscrits donne une première estimation ; pour une dégustation ouverte, estimez un flux et prévoyez comment interrompre le service lorsque le stock dédié est épuisé.",
+          "Un calcul de préparation peut s’écrire ainsi : portions prévues = personnes attendues × portions par personne, puis ajout d’une marge choisie par le magasin. La taille de portion, la marge et le rendement dépendent du produit et de l’organisation ; ce calcul est un outil de planification, pas une norme ni un résultat observé. Pour une première séance, préparez une quantité limitée et consignez les portions réellement servies et les restes afin d’ajuster la suivante.",
+          "Calculez le coût en tenant compte du produit utilisé, des accompagnements, des consommables, du temps de préparation, du temps de service et des pertes éventuelles. Distinguez le stock qui reste vendable selon les conditions de conservation du stock réservé à la dégustation. L’article [calculer le coût d’une animation commerciale](/blog/cout-animation-commerciale-commerce) fournit un cadre pour recenser les postes sans inventer de rentabilité.",
+          "Vérifiez le stock disponible et le délai de réapprovisionnement avant de faire la publicité. Si une référence peut être vendue ou épuisée pendant la séance, indiquez les conditions de disponibilité plutôt que de promettre à chaque visiteur qu’il pourra l’acheter immédiatement.",
+        ],
+      },
+      {
+        title: "Préparer les informations alimentaires et les allergènes",
+        paragraphs: [
+          "Avant de servir un échantillon, rassemblez l’étiquette, la fiche produit et les informations du fournisseur. Assurez-vous que la dénomination, les ingrédients et les allergènes signalés correspondent à la recette ou au lot effectivement présenté. En cas de changement de lot, de recette ou d’accompagnement, recontrôlez les informations au lieu de réutiliser une fiche devenue incertaine.",
+          "La DGCCRF rappelle que les denrées non préemballées doivent notamment être accompagnées d’une information sur leur dénomination et, le cas échéant, les allergènes. Les règles précises varient avec la présentation et la vente ; une dégustation ne dispense pas de traiter sérieusement l’information alimentaire. Consultez la fiche récente de la [DGCCRF sur les règles d’étiquetage](https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/etiquetage-des-denrees-alimentaires-les-regles-connaitre) et faites vérifier le dispositif retenu par la personne responsable.",
+          "Ne répondez pas au hasard à une question sur la présence d’un allergène ou sur une contamination croisée possible. Si l’information n’est pas vérifiée, dites-le et ne servez pas le produit à la personne qui pose la question. Évitez les promesses telles que « sans allergène » ou « sans risque » qui dépassent les éléments de composition disponibles.",
+          "Si les produits sont périssables ou doivent être maintenus à une température donnée, respectez leurs conditions de conservation et de service ainsi que les procédures de l’établissement. Le [Ministère de l’Agriculture rappelle les principes de la chaîne du froid](https://agriculture.gouv.fr/securite-sanitaire-des-aliments-tout-sur-la-chaine-du-froid). Les règles d’hygiène doivent être adaptées à ce que l’équipe manipule ; le ministère distingue par ailleurs les exigences générales applicables aux personnes manipulant des aliments des obligations propres à la restauration commerciale. En cas de préparation nouvelle ou de doute, faites vérifier l’organisation avec un professionnel compétent ou l’autorité concernée.",
+        ],
+      },
+      {
+        title: "Installer un comptoir pratique et propre",
+        paragraphs: [
+          "Choisissez un emplacement visible depuis l’entrée ou le rayon concerné, mais qui ne bloque ni l’accès aux produits ni la circulation. Laissez de la place pour s’arrêter, lire l’information affichée et repartir sans créer une file devant la caisse. Un comptoir près de la référence peut faciliter le passage du goût à la lecture de l’étiquette ; vérifiez que la mise en scène ne masque ni prix ni information obligatoire.",
+          "Préparez les ustensiles, contenants individuels et surfaces qui conviennent au produit et aux procédures du magasin. Évitez de laisser les visiteurs se servir dans un contenant commun si cela complique l’hygiène ou la maîtrise des portions. Prévoyez où déposer les consommables usagés, comment renouveler les ustensiles et qui surveille le comptoir.",
+          "Désignez une personne qui accueille, explique le produit et répond à partir d’informations vérifiées. Elle peut décrire le goût, la texture, la provenance documentée et les suggestions de service, en séparant les faits du fournisseur des idées d’accord proposées par l’équipe. Une animation n’exige pas de pousser à l’achat : une fiche produit claire ou une réponse utile peut déjà améliorer l’expérience.",
+        ],
+      },
+      {
+        title: "Communiquer sur la dégustation sans ambiguïté",
+        paragraphs: [
+          "L’annonce précise le produit ou la famille présentée, la date, les horaires, l’adresse et le format : accès libre, réservation ou créneaux. Mentionnez les éventuelles limites de stock et le fait que la dégustation porte sur un produit particulier. Si la séance est réservée à un nombre limité de personnes, indiquez comment obtenir une place et quand les inscriptions ferment.",
+          "Vous pouvez relayer l’événement en vitrine, sur le site ou sur la fiche d’établissement. Google Business Profile permet de publier un événement avec un titre et des dates/heures ; vérifiez les champs disponibles pour votre fiche et mettez le contenu à jour si le programme change. Cette publication est un support d’information et ne garantit ni visibilité ni participation.",
+          "Pour envoyer une invitation par e-mail ou SMS, ne réutilisez pas automatiquement les coordonnées d’un achat ou d’une inscription. La CNIL distingue les communications de service de la prospection commerciale électronique, dont les règles dépendent notamment du statut de la personne et du message. Consultez les [repères CNIL sur les communications électroniques](https://www.cnil.fr/fr/communication-electronique-quelles-regles) et séparez la réservation de la dégustation d’un choix de recevoir des offres.",
+        ],
+      },
+      {
+        title: "Mesurer les retours sans confondre dégustation et vente",
+        paragraphs: [
+          "Avant la séance, choisissez quelques mesures faciles à relever : nombre de portions préparées et servies, questions posées, ruptures, retours verbaux et achats de la référence pendant une période définie. Déterminez qui note ces éléments et selon quelle méthode. Les commentaires recueillis peuvent aider à améliorer la présentation, mais ne constituent pas nécessairement un avis représentatif de tous les clients.",
+          "Une dégustation servie ne signifie pas qu’un produit a été apprécié ; un achat le même jour n’établit pas que l’échantillon l’a causé. Si vous comparez des éditions, notez les différences de créneau, de stock, de prix, de météo, de trafic et d’emplacement. Présentez le contexte et la limite de l’observation au lieu d’annoncer une hausse attribuée sans preuve.",
+          "Le guide [mesurer une animation commerciale](/blog/mesurer-animation-commerciale) distingue participation, demande et vente observée. Vous pouvez également comparer les coûts avec la méthode [pour chiffrer une animation commerciale](/blog/cout-animation-commerciale-commerce), sans transformer une estimation locale en référence universelle.",
+        ],
+      },
+      {
+        title: "Questions fréquentes sur une dégustation en épicerie fine",
+        paragraphs: [
+          "Quels produits choisir pour une dégustation en épicerie fine ? Sélectionnez une référence disponible, dont l’équipe connaît la composition et les informations fournies par le producteur. Une huile d’olive, une confiture, un chocolat ou une tartinade peuvent convenir selon le matériel, la conservation et le public ; les exemples ne remplacent pas une vérification du produit réel.",
+          "Comment estimer la quantité à prévoir ? Multipliez le nombre de personnes attendues par la portion prévue par personne, puis ajoutez une marge décidée à partir de l’incertitude du flux. Notez les quantités réellement servies et restantes pour ajuster une prochaine séance ; il n’existe pas de quantité universelle valable pour chaque boutique.",
+          "Faut-il afficher les allergènes pendant une dégustation ? L’information obligatoire dépend notamment de la présentation de la denrée et de son mode de vente. Vérifiez l’étiquette et les informations du fournisseur pour le produit exact, rendez l’information accessible aux visiteurs et validez le support retenu au regard des règles applicables aux denrées préemballées ou non préemballées.",
+          "Comment organiser une dégustation de produit frais ? Respectez les conditions de conservation et de service qui s’appliquent au produit, préparez des ustensiles adaptés et faites valider les manipulations par la personne responsable de l’hygiène. Si vous ne pouvez pas maîtriser ces conditions, choisissez un produit ou un format différent.",
+          "Une dégustation fait-elle forcément augmenter les ventes ? Non. Elle offre une occasion d’essayer et de poser des questions, mais ne garantit aucun achat. Mesurez les portions, réactions et ventes observées sur une période définie, en décrivant la méthode et ses limites.",
+        ],
+      },
+      {
+        title: "Checklist avant votre prochaine dégustation",
+        paragraphs: ["Validez ces éléments avec l’équipe avant de communiquer :"],
+        items: [
+          "Le produit, l’objectif et la durée de la dégustation sont définis.",
+          "Le stock, les portions, le coût et les éventuels restes sont estimés selon une méthode explicite.",
+          "Les ingrédients, allergènes et autres informations produit sont vérifiés sur la référence réellement servie.",
+          "Les conditions d’hygiène et de conservation sont adaptées au produit et aux procédures du magasin.",
+          "Le comptoir, les ustensiles, les contenants et les déchets sont organisés sans gêner la circulation.",
+          "Une personne sait présenter le produit et répondre sans improviser sur les allergènes.",
+          "L’annonce indique le lieu, le créneau, le produit et les limites de stock ou d’accès.",
+          "Les invitations commerciales sont séparées de la réservation et des messages de service.",
+          "La mesure distingue portions servies, retours exprimés et achats constatés.",
+        ],
+      },
+    ],
+    related: [
+      "/blog/animation-lancement-nouveau-produit",
+      "/blog/cout-animation-commerciale-commerce",
+      "/blog/mesurer-animation-commerciale",
+      "/comment-ca-marche",
+    ],
+  },
 ];
 
 export function blogPostByPath(path: string) {

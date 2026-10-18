@@ -337,6 +337,42 @@ d’accès et d’assurance de toute activité ; après publication, analyser le
 visites, essais et adhésions sans attribuer automatiquement les conversions à
 l’événement.
 
+## Article #588 — dégustation en épicerie fine
+
+URL : `/blog/organiser-degustation-epicerie-fine`. L’article détaille le choix
+du produit, un calcul de portions présenté comme estimation (non comme norme),
+le stock et les coûts, l’information allergènes, l’hygiène/conservation, le
+comptoir, les invitations, la mesure et cinq FAQ plus checklist. Les exemples
+alimentaires sont sans alcool. Les réponses sur allergènes et froid renvoient
+aux informations du lot et aux procédures du magasin ; aucune assurance de
+sécurité n’est improvisée. Dégustation, portions servies, réactions et achats
+sont mesurés séparément.
+
+Sources primaires vérifiées : DGCCRF (règles d’étiquetage, informations pour les
+denrées non préemballées), Ministère de l’Agriculture (chaîne du froid et
+consignes adaptées aux manipulations), CNIL (invitations électroniques) et aide
+Google Business Profile (posts événementiels). Le maillage relie le lancement
+produit, le coût d’animation, sa mesure et le parcours Okado.
+
+Illustration originale générée avec le skill imagegen intégré puis convertie en
+WebP par Sharp :
+`apps/landing-page/public/images/blog/organiser-degustation-epicerie-fine.webp`
+(1600 × 800, 206 810 octets). Texte alternatif : « Une commerçante fait goûter
+une tartinade à une cliente au comptoir d’une épicerie fine ».
+
+Prompt final :
+
+> Use case: illustration-story. Asset type: wide editorial hero illustration for a French professional blog about a tasting in an independent gourmet food shop. Primary request: a warm, polished painterly editorial illustration of an adult shopkeeper offering a small sample of a savory spread to an adult customer at a tidy tasting counter in a neighborhood épicerie fine. Scene/backdrop: inviting specialty food shop with shelves of oils, preserves, chocolates and jars in generic packaging with no readable labels; clean counter, small individual tasting portions and serving utensils; no alcohol bottles. Subject: shopkeeper explains a product while the customer tastes from a small individual sample; both adults, relaxed and engaged, with no exaggerated sales gesture. Style/medium: textured editorial illustration for a professional local-commerce blog, natural proportions and believable glass, paper, wood and food textures. Composition/framing: wide horizontal approximately 2:1; people and counter comfortably in frame, shelves softly provide context, suitable for desktop and mobile blog cards. Lighting/mood: warm natural daylight, calm, attentive and appetizing without glossy advertising styling. Color palette: cream, honey gold, olive green, muted terracotta, natural wood and restrained navy accents. Constraints: no readable text, no brands, no logos, no watermark, no QR code, no fake app interface, no prices or promotional signs, no alcohol, no children, no visible allergy claims, no medical claims, no unsafe food handling. This is an editorial illustration, not a claimed photograph of a real shop or people.
+
+Note éditoriale finale : **9,1/10**. Évaluation de la pertinence métier, du
+niveau d’actionnabilité, de la prudence sanitaire et de la structure SEO/GEO ;
+ce n’est ni un score de classement ni une promesse de vente.
+
+Axes d’amélioration : relecture par une épicerie fine qui réalise effectivement
+des dégustations, avec validation du support allergènes et des consignes de
+service par la personne responsable ; publier ensuite un exemple réel autorisé
+et consigner le coût/les portions observés sans généraliser le résultat.
+
 ## Vérifications et livraison
 
 - `npm run lint:landing` : réussi.
@@ -368,6 +404,9 @@ l’événement.
   relancés après cet ajout.
 - Pour l’article #587 : `npm run lint:landing` réussi ; `npm run build:landing`
   réussi avec Next.js 16.3.8 et 56 pages statiques. Les tests E2E n’ont pas été
+  relancés après cet ajout.
+- Pour l’article #588 : `npm run lint:landing` réussi ; `npm run build:landing`
+  réussi avec Next.js 16.3.8 et 57 pages statiques. Les tests E2E n’ont pas été
   relancés après cet ajout.
 - Captures du tableau fleuriste sur ordinateur et mobile inspectées : lisibilité
   et défilement local sans débordement global.
