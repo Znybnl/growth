@@ -52,7 +52,7 @@ export function GoogleCallbackClient() {
         const payload = (await response.json()) as {
           error?: string;
           merchant?: { id?: string };
-          user?: { id?: string };
+          user?: { id?: string; merchantId?: string; email?: string };
           redirectPath?: string;
         };
 
@@ -60,8 +60,8 @@ export function GoogleCallbackClient() {
           throw new Error(payload.error ?? "Connexion Google impossible.");
         }
 
-        if (payload.merchant?.id && payload.user?.id) {
-          identifyMerchantForAnalytics(payload.merchant.id, payload.user.id);
+        if (payload.user?.merchantId && payload.user.id) {
+          identifyMerchantForAnalytics(payload.user.merchantId, payload.user.id, payload.merchant?.id, payload.user.email);
         }
 
         window.location.replace(payload.redirectPath || next);

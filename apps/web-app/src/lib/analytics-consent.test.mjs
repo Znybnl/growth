@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import { registerHooks } from "node:module";
 import { readFileSync } from "node:fs";
+import vm from "node:vm";
+import ts from "typescript";
 import { test } from "node:test";
 
 // No SDK requests, real cookies, Supabase writes or production credentials.
@@ -15,7 +17,7 @@ registerHooks({
       shortCircuit: true,
     };
     if (name === "posthog-js") return {
-      url: "data:text/javascript,export default {init:(key,config)=>{globalThis.__consentFixture.init.push({key,config})},opt_out_capturing:()=>globalThis.__consentFixture.calls.push('out'),opt_in_capturing:()=>globalThis.__consentFixture.calls.push('in'),set_config:config=>globalThis.__consentFixture.calls.push(config),reset:()=>globalThis.__consentFixture.calls.push('reset'),capture:(...args)=>globalThis.__consentFixture.events.push(args),identify:(...args)=>globalThis.__consentFixture.identities.push(args),captureLog:log=>globalThis.__consentFixture.logs.push(log)}",
+      url: "data:text/javascript,export default {init:(key,config)=>{globalThis.__consentFixture.init.push({key,config})},opt_out_capturing:()=>globalThis.__consentFixture.calls.push('out'),opt_in_capturing:()=>globalThis.__consentFixture.calls.push('in'),set_config:config=>globalThis.__consentFixture.calls.push(config),reset:()=>{globalThis.__consentFixture.calls.push('reset');globalThis.__consentFixture.distinctId='fresh-anonymous';globalThis.__consentFixture.properties={}},get_distinct_id:()=>globalThis.__consentFixture.distinctId||'anonymous-fixture',get_property:key=>globalThis.__consentFixture.properties[key],register:props=>Object.assign(globalThis.__consentFixture.properties,props),capture:(...args)=>globalThis.__consentFixture.events.push(args),identify:(...args)=>{globalThis.__consentFixture.identities.push(args);globalThis.__consentFixture.distinctId=args[0];globalThis.__consentFixture.properties.$user_id=args[0]},captureLog:log=>globalThis.__consentFixture.logs.push(log)}",
       shortCircuit: true,
     };
     if (name.startsWith("@/")) {
@@ -29,7 +31,7 @@ registerHooks({
 function browser() {
   const cookies = new Map();
   const listeners = new Map();
-  state = globalThis.__consentFixture = { init: [], calls: [], events: [], identities: [], logs: [] };
+  state = globalThis.__consentFixture = { init: [], calls: [], events: [], identities: [], logs: [], properties: {} };
   globalThis.document = {
     get cookie() { return [...cookies].map(([key, value]) => `${key}=${value}`).join("; "); },
     set cookie(value) {
@@ -110,6 +112,18 @@ for (const app of ["web-app", "landing-page"]) {
     assert.equal(sanitized.properties.$set, undefined);
     assert.equal(sanitized.$set, undefined);
     assert.equal(sanitized.$set_once, undefined);
+    const profile = config.before_send({ event: "$identify", $set: { email: "account@example.test", name: "private", token: "private" },
+      $set_once: { email: "never@example.test" }, properties: { distinct_id: "account:user", accountMerchantId: "account", merchantUserId: "user",
+        email: "ordinary-event@example.test", $set: { email: "account@example.test", address: "private" } } });
+    assert.deepEqual(profile.$set, { email: "account@example.test" });
+    assert.deepEqual(profile.properties.$set, { email: "account@example.test" });
+    assert.equal(profile.$set_once, undefined);
+    assert.equal(profile.properties.email, undefined);
+    for (const event of [
+      { event: "campaign_created", $set: { email: "private@example.test" }, properties: { distinct_id: "account:user", accountMerchantId: "account", merchantUserId: "user" } },
+      { event: "$identify", $set: { email: "private@example.test" }, properties: { distinct_id: "other:user", accountMerchantId: "account", merchantUserId: "user" } },
+      { event: "$set", $set: { email: "not-an-email" }, properties: { distinct_id: "account:user", accountMerchantId: "account", merchantUserId: "user" } },
+    ]) assert.equal(config.before_send(event).$set, undefined);
     assert.equal(sanitized.properties.page, "/inscription");
     for (const path of ["/", "/restaurants", "/instituts-beaute", "/tarifs", "/onboarding", "/guides/lots-restaurant"]) {
       assert.equal(client.safeAnalyticsPage(path), path);
@@ -222,4 +236,100 @@ test("serveur : absence, refus, expiration et contexte manquant ne déclenchent 
     globalThis.fetch = async () => { throw Error("unavailable"); };
     await assert.doesNotReject(captureProductEvent("signup_completed", "merchant:user"));
   } finally { globalThis.fetch = originalFetch; }
+});
+
+test("identité : même utilisateur sur plusieurs établissements, réparation au retour et contexte du site", async () => {
+  const jar = browser();
+  const consent = await import("./analytics-consent.ts");
+  jar.set(consent.ANALYTICS_CONSENT_COOKIE, encodeURIComponent(JSON.stringify({ version: consent.ANALYTICS_CONSENT_VERSION, choice: "accepted", decidedAt: Date.now() })));
+  const analytics = await import("./client-product-analytics.ts");
+  const { merchantDistinctId } = await import("./product-analytics.ts");
+  for (const location of ["merchant-primary", "merchant-secondary", "merchant-third"]) {
+    analytics.identifyMerchantForAnalytics("merchant-primary", "user-fixture", location);
+    assert.equal(state.distinctId, merchantDistinctId("merchant-primary", "user-fixture"));
+    assert.equal(state.properties.merchantId, location);
+    assert.equal(state.properties.accountMerchantId, "merchant-primary");
+    assert.equal(state.properties.merchantUserId, "user-fixture");
+  }
+  assert.equal(new Set(state.identities.map(([id]) => id)).size, 1);
+  assert.equal(state.calls.filter((call) => call === "reset").length, 0, "le changement de site ne recrée pas de session");
+  state.distinctId = "anonymous-after-cookie-reset";
+  state.properties = {};
+  analytics.identifyMerchantForAnalytics("merchant-primary", "user-fixture", "merchant-third");
+  assert.equal(state.distinctId, "merchant-primary:user-fixture", "retour de focus/route : identité rétablie");
+  assert.equal(state.calls.filter((call) => call === "reset").length, 0, "l'anonyme reste rapprochable");
+});
+
+test("identité : ancien site ou autre compte identifiés sont réinitialisés sans fusion implicite", async () => {
+  const jar = browser();
+  const consent = await import("./analytics-consent.ts");
+  jar.set(consent.ANALYTICS_CONSENT_COOKIE, encodeURIComponent(JSON.stringify({ version: consent.ANALYTICS_CONSENT_VERSION, choice: "accepted", decidedAt: Date.now() })));
+  const analytics = await import("./client-product-analytics.ts");
+  for (const previous of ["merchant-secondary:user-fixture", "merchant-other:user-other", "historical-identified-id"]) {
+    state.distinctId = previous;
+    state.properties.$user_id = previous;
+    const resets = state.calls.filter((call) => call === "reset").length;
+    analytics.identifyMerchantForAnalytics("merchant-primary", "user-fixture", "merchant-secondary");
+    assert.equal(state.calls.filter((call) => call === "reset").length, resets + 1);
+    assert.equal(state.distinctId, "merchant-primary:user-fixture");
+  }
+  analytics.resetProductAnalytics();
+  assert.equal(state.distinctId, "fresh-anonymous");
+  assert.equal(state.properties.merchantUserId, undefined);
+  analytics.identifyMerchantForAnalytics("merchant-other", "user-other");
+  assert.equal(state.distinctId, "merchant-other:user-other");
+  assert.equal(state.identities.every((identity) => identity.length === 1), true, "pas d'e-mail ni de texte libre dans identify");
+});
+
+test("vrai handler QR : identité du compte principal, contexte du site actif et contrôle de propriété conservés", async () => {
+  const { merchantDistinctId } = await import("./product-analytics.ts");
+  const calls = [];
+  let campaignMerchantId = "merchant-secondary";
+  const dependencies = {
+    "next/server": { NextResponse: Response },
+    "@/lib/auth": { requireAuthenticatedSession: async () => ({
+      user: { id: "user-fixture", merchantId: "merchant-primary" }, merchant: { id: "merchant-secondary" },
+    }) },
+    "@/lib/campaign-exports": { createCampaignQrSvg: async () => '<svg xmlns="http://www.w3.org/2000/svg" />' },
+    "@/lib/preview-token": { issuePreviewAccessToken: () => { throw Error("Not a preview"); } },
+    "@/lib/product-analytics": { merchantDistinctId, captureProductEvent: async (...args) => calls.push(args) },
+    "@/lib/store": { getCampaignPerformance: async () => ({ campaign: { id: "campaign-fixture", merchantId: campaignMerchantId, createdAt: "2026-10-01T00:00:00Z" } }) },
+  };
+  const testModule = { exports: {} };
+  const source = readFileSync(new URL("../app/api/campaigns/[id]/qr/route.ts", import.meta.url), "utf8");
+  vm.runInNewContext(ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText,
+    { module: testModule, exports: testModule.exports, URL, Date, Math, require: (name) => {
+      if (!(name in dependencies)) throw Error(`Unexpected dependency ${name}`);
+      return dependencies[name];
+    } });
+  const context = { params: Promise.resolve({ id: "campaign-fixture" }) };
+  const response = await testModule.exports.GET(new Request("https://example.test/api/campaigns/campaign-fixture/qr"), context);
+  assert.equal(response.status, 200);
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0][0], "campaign_qr_downloaded");
+  assert.equal(calls[0][1], "merchant-primary:user-fixture");
+  assert.equal(calls[0][2].merchantId, "merchant-secondary");
+  assert.equal(calls[0][2].merchantUserId, "user-fixture");
+  campaignMerchantId = "merchant-foreign";
+  assert.equal((await testModule.exports.GET(new Request("https://example.test/api/campaigns/campaign-fixture/qr"), context)).status, 404);
+  assert.equal(calls.length, 1);
+});
+
+test("e-mail du profil : compte connecté, déduplication et changement d'adresse sans changer d'identité", async () => {
+  const jar = browser();
+  const consent = await import("./analytics-consent.ts");
+  const analytics = await import("./client-product-analytics.ts");
+  analytics.identifyMerchantForAnalytics("merchant-primary", "user-fixture", "merchant-secondary", "account@example.test");
+  assert.equal(state.identities.length, 0, "aucun profil avant accord");
+  jar.set(consent.ANALYTICS_CONSENT_COOKIE, encodeURIComponent(JSON.stringify({ version: consent.ANALYTICS_CONSENT_VERSION, choice: "accepted", decidedAt: Date.now() })));
+  analytics.identifyMerchantForAnalytics("merchant-primary", "user-fixture", "merchant-secondary", " Account@Example.test ");
+  assert.deepEqual(state.identities.at(-1), ["merchant-primary:user-fixture", { email: "account@example.test" }]);
+  analytics.identifyMerchantForAnalytics("merchant-primary", "user-fixture", "merchant-third", "account@example.test");
+  assert.deepEqual(state.identities.at(-1), ["merchant-primary:user-fixture"]);
+  analytics.identifyMerchantForAnalytics("merchant-primary", "user-fixture", "merchant-third", "updated@example.test");
+  assert.deepEqual(state.identities.at(-1), ["merchant-primary:user-fixture", { email: "updated@example.test" }]);
+  assert.equal(state.calls.includes("reset"), false);
+  jar.clear();
+  analytics.identifyMerchantForAnalytics("merchant-primary", "user-fixture", "merchant-third", "refused@example.test");
+  assert.equal(state.identities.length, 3);
 });

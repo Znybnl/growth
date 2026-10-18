@@ -107,7 +107,7 @@ export async function GET(request: Request) {
 
   void captureProductEvent(
     "google_place_search_completed",
-    merchantDistinctId(session.merchant.id, session.user.id),
+    merchantDistinctId(session.user.merchantId, session.user.id),
     {
       resultCount: places.length,
       hasResults: places.length > 0,

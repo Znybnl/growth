@@ -78,10 +78,51 @@ doit passer par `captureClientProductEvent` ou `captureProductEvent`.
 
 ## Identification et confidentialité
 
-Le `distinct_id` marchand repose sur l’identifiant technique du marchand et de
-l’utilisateur. Les propriétés personnelles ne sont pas ajoutées par défaut.
+Le `distinct_id` marchand conserve le format historique
+`<user.merchantId>:<user.id>` : compte principal de l'utilisateur et identifiant
+utilisateur, **jamais l'établissement actif** (#592). Décision propriétaire du
+18 octobre 2026 : l'e-mail de connexion du compte est ajouté à son profil après
+accord de mesure. C'est la seule exception personnelle autorisée à ce mécanisme.
 La capture est désactivable sans modifier les parcours métier en supprimant la
 clé PostHog de l’environnement.
+
+### Identité stable entre établissements — #592
+
+Un même utilisateur garde son identité de compte principal en changeant de site.
+Les événements client et serveur portent le site actif dans `merchantId` et
+l'utilisateur dans `merchantUserId`. Le navigateur conserve aussi
+`accountMerchantId` dans son contexte technique. Les accès publics sans compte
+(par exemple le retrait express par PIN) gardent leur identité technique propre.
+
+La connexion par mot de passe identifie avant `login_completed` et sa redirection ;
+Google et inscription utilisent aussi le compte principal renvoyé par le serveur.
+Le shell vérifie l'identité au montage, au changement de route/site, au retour de
+focus/visibilité et après un nouvel accord de mesure. Le SDK déduplique les
+identifications inchangées ; l'e-mail du profil est actualisé à l'identification,
+au chargement de session ou si l'adresse authentifiée change, pas à chaque
+vérification de route/focus. Il n'y a pas de minuterie d'identification réseau.
+
+Un identifiant anonyme peut être rattaché par `identify`. Un autre compte déjà
+identifié, ou un ancien identifiant composé avec un autre site, est d'abord
+réinitialisé pour éviter de demander une fusion entre comptes identifiés.
+La déconnexion réinitialise l'identité. Ces vérifications restent conditionnées
+au consentement, et une panne du SDK ne bloque pas la connexion/déconnexion.
+
+Le changement réutilise l'identité principale existante et conserve ses propriétés
+historiques (y compris un e-mail déjà présent). Il ne fusionne ni n'efface les
+anciens profils par établissement : `identify`/`alias` répétés ne constituent pas
+une réparation fiable de deux personnes déjà identifiées. Une reprise historique
+éventuelle est une opération administrative distincte après contrôle des profils.
+Le filtre partagé des deux applications autorise uniquement `email` dans le
+`$set` de `$identify`/`$set` quand le contexte technique correspond à l'identité
+du compte. Tous les autres champs de profil automatiques, `$set_once`, e-mails
+ordinaires d'événements, noms et coordonnées de joueurs restent exclus. L'e-mail
+vient du profil authentifié de l'application, jamais d'un input de jeu ou d'une
+URL. La mention de mesure et la politique publique reflètent cette décision.
+
+Références : [identité stable et transitions](https://posthog.com/docs/product-analytics/identity-resolution),
+[identify et alias](https://posthog.com/docs/product-analytics/identify).
+Diagnostic, preuves et recette : [livraison #592](releases/2026-10-18-posthog-identity-592.md).
 
 Avant d’activer des usages non essentiels comme la session replay, vérifier la
 base légale, le consentement et le masquage des champs avec le responsable
@@ -93,8 +134,9 @@ Le site public et l'application utilisent le même projet PostHog et le même
 project token. `posthog-js` conserve l'identifiant anonyme dans un cookie
 partagé entre `www.okado.app` et `app.okado.app`; après la création du compte,
 le navigateur est identifié avec les identifiants techniques du marchand et de
-l'utilisateur. Aucun nom, e-mail, texte saisi, code ou contenu de démo n'est
-envoyé dans ces événements.
+l'utilisateur. L'e-mail de connexion autorisé par #592 est réservé aux mises à
+jour de profil. Aucun nom, e-mail de joueur, texte saisi, code ou contenu de démo
+n'est envoyé dans les événements de parcours.
 
 Le funnel de référence est :
 
@@ -176,8 +218,9 @@ Les correctifs applicatifs restent soumis à PR et validation de publication.
   habituelle est restaurée immédiatement en finally. Pas de fusion manuelle,
   duplication d'événement, attente réseau ou désactivation de compression.
 - Les propriétés de profil automatiques `$set`/`$set_once`, également attachées
-  à la racine du paquet d'identification, sont retirées ; l'identifiant anonyme
-  et l'identifiant technique marchand restent disponibles pour le rapprochement.
+  à la racine du paquet d'identification, sont retirées. Exception #592 : l'e-mail
+  du compte authentifié est conservé seul dans son `$set` de profil après accord ;
+  l'identifiant anonyme et l'identifiant stable restent disponibles pour le rapprochement.
 - Les événements navigateur reçoivent une `page` issue d'une liste fermée de
   routes publiques et d'entrée produit ; tous les autres chemins deviennent
   `/other`. Aucun identifiant de jeu, code de retrait ou chemin libre n'est envoyé.

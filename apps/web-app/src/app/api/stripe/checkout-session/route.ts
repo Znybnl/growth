@@ -90,7 +90,7 @@ export async function POST(request: Request) {
     });
     await captureProductEvent(
       "stripe_checkout_started",
-      merchantDistinctId(session.merchant.id, session.user.id),
+      merchantDistinctId(session.user.merchantId, session.user.id),
       {
         merchantId: session.merchant.id,
         merchantUserId: session.user.id,

@@ -67,6 +67,18 @@ ces tests, construire/démarrer la landing et le SaaS local avec
 `NEXT_PUBLIC_POSTHOG_KEY=phc_consent_fixture` et `NEXT_PUBLIC_POSTHOG_ENABLED=true`.
 Ne jamais réutiliser une clé réelle pour cette recette.
 
+Complément #592 : `analytics-identity.spec.ts` vérifie les vrais paquets du SDK,
+leurs identifiants et le contexte du site dans le vrai shell : session existante,
+premier événement métier, connexion avant redirection, plusieurs établissements,
+focus/route après perte d'identité, changement d'utilisateur et retrait/nouvel
+accord. L'e-mail authentifié est mis à jour dans le profil (y compris son
+changement), dédupliqué et exclu des événements ordinaires. Aucun alias
+automatique. La CI possède un job dédié avec clé fictive et réseau intercepté ;
+les tests unitaires incluent le vrai handler QR (identité principale, site actif,
+refus d'une campagne étrangère) et la liste blanche des profils. Le bandeau
+commun est capturé à 1280×720, 320 et 390 px. L'historique PostHog et les données
+de production ne sont pas modifiés par ces contrôles.
+
 #498 : `npm run test:metrics -w @okado/web-app` vérifie les helpers partagés,
 les vrais repository/handlers, les nouveaux agrégats SQL et rollback sous PGlite :
 1 005 contacts/opt-ins, historique de retrait prouvé/inconnu, premier jour UTC,
