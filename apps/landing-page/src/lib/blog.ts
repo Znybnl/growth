@@ -2586,6 +2586,157 @@ export const blogPosts: BlogPost[] = [
       "/comment-ca-marche",
     ],
   },
+  {
+    path: "/blog/collecter-contacts-magasin-consentement",
+    title: "Comment collecter des contacts en magasin sans dégrader l’expérience ?",
+    description:
+      "Apprenez à collecter des contacts en magasin avec une finalité claire, peu de données, un consentement séparé et un parcours qui laisse un vrai choix.",
+    eyebrow: "Relation client",
+    intro:
+      "Une collecte de contacts peut prolonger une visite, mais elle devient contre-productive si le formulaire est obligatoire, trop long ou ambigu. Le bon parcours explique pourquoi une donnée est demandée, à quel moment et ce que la personne peut refuser.",
+    answer:
+      "Pour collecter des contacts en magasin sans dégrader l’expérience, définissez la finalité avant le formulaire, demandez seulement les données nécessaires, expliquez chaque usage au bon moment et séparez la réception d’un gain de la prospection marketing facultative.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-17",
+    updatedAt: "2026-10-17",
+    reviewedAt: "2026-10-17",
+    readingTime: "8 min de lecture",
+    image: "/images/blog/collecter-contacts-magasin-consentement.webp",
+    imageAlt: "Illustration d’un échange en magasin autour d’un formulaire de contact choisi librement",
+    ctaLabel: "Concevoir une collecte claire",
+    ctaHref: "/comment-ca-marche",
+    sections: [
+      {
+        title: "Commencez par la finalité, pas par l’adresse e-mail",
+        paragraphs: [
+          "Avant d’ajouter un champ, répondez à une question simple : pourquoi cette information est-elle demandée ? Envoyer un gain, répondre à une demande, préparer une réservation, gérer une réclamation et proposer une newsletter sont des finalités différentes. Elles ne doivent pas être regroupées dans une phrase vague comme « rester en contact ».",
+          "Une collecte n’est pas une preuve de fidélité ni une vente future. Elle peut créer une possibilité de suivi si la personne comprend ce qu’elle accepte et si le commerce est capable d’utiliser la donnée conformément à la finalité annoncée. Une petite collecte claire vaut mieux qu’une base volumineuse impossible à qualifier ou à maintenir.",
+          "Le marchand reste responsable de l’usage des contacts qu’il collecte. Cet article propose des principes de conception et ne constitue pas une validation juridique globale : les finalités, textes, durées, droits, outils et responsabilités doivent être vérifiés selon le pays et le contexte.",
+        ],
+      },
+      {
+        title: "Choisissez le bon moment dans le parcours",
+        paragraphs: [
+          "Demander une donnée au mauvais moment peut interrompre une participation ou donner l’impression que le gain est conditionné à une inscription. Le moment dépend de la finalité : une information nécessaire à l’envoi d’un gain peut être demandée après l’attribution ; une proposition marketing peut rester séparée et facultative.",
+          "Expliquez la demande avant la validation, avec un intitulé lisible et une phrase courte. Évitez de cacher la finalité dans un long paragraphe ou de faire apparaître une case marketing comme une étape technique obligatoire.",
+        ],
+        items: [
+          "Avant le jeu : seulement si la finalité et la nécessité sont compréhensibles avant la participation.",
+          "Après un gain : pour transmettre les informations ou instructions réellement nécessaires au gain.",
+          "Après la visite : pour proposer un suivi choisi, avec une finalité et une fréquence compréhensibles.",
+          "Au comptoir : lorsque l’équipe peut répondre aux questions sans faire pression sur la personne.",
+        ],
+      },
+      {
+        title: "Demandez le minimum utile",
+        paragraphs: [
+          "Un formulaire court est plus facile à comprendre, à remplir et à maintenir. Commencez par le minimum nécessaire à la finalité annoncée. Un prénom peut suffire pour personnaliser une remise ; une adresse peut être nécessaire pour un message ; d’autres informations ne doivent pas être ajoutées simplement parce qu’elles pourraient être utiles plus tard.",
+          "Chaque champ supplémentaire crée une question de plus : pourquoi le demander, combien de temps le conserver, qui peut y accéder et que se passe-t-il si la personne ne répond pas ? Si une donnée n’est pas nécessaire au parcours choisi, laissez-la de côté ou rendez la demande indépendante et clairement facultative.",
+        ],
+        items: [
+          "Identifiez la donnée strictement nécessaire à la finalité immédiate.",
+          "Évitez de demander une date de naissance, une adresse postale ou des préférences détaillées sans usage concret validé.",
+          "Ne réutilisez pas une réponse pour une nouvelle finalité sans information et choix adaptés.",
+          "Préparez une alternative lorsque la personne souhaite participer sans laisser de coordonnées.",
+        ],
+      },
+      {
+        title: "Séparez la réception d’un gain de la prospection",
+        paragraphs: [
+          "Un message nécessaire à l’exécution du jeu ou à l’envoi d’un gain n’est pas une newsletter. Si une personne gagne et fournit une adresse pour recevoir les informations de retrait, cette adresse ne doit pas être présentée comme une inscription marketing automatique.",
+          "La case de prospection doit être distincte, facultative, décochée par défaut et révocable. Le choix doit être compréhensible sans devoir accepter une communication commerciale pour participer, recevoir un gain ou le retirer. Un avis ou une note ne doit jamais devenir la contrepartie cachée de la collecte.",
+          "Dans Okado, les contacts, les participations, les gains et les retraits restent des étapes distinctes. Une action marketing facultative ne transforme pas un scan ou une participation en contact opt-in.",
+        ],
+      },
+      {
+        title: "Rédigez une demande compréhensible en quelques secondes",
+        paragraphs: [
+          "En magasin, la personne peut être debout, pressée ou accompagnée. Le formulaire doit expliquer qui demande l’information, pourquoi, ce qui est facultatif et ce qui se passera ensuite. Le texte doit rester cohérent avec les conditions affichées sur le support et avec le message réellement envoyé.",
+          "Préférez une formulation précise à une promesse générale. Par exemple, « Recevoir les informations de mon gain par e-mail » décrit une finalité opérationnelle ; « J’accepte de recevoir des nouveautés et offres par e-mail » décrit une prospection. Les textes définitifs doivent être relus et validés pour le contexte concerné.",
+          "La lisibilité compte autant que le wording : contraste, taille de la police, ordre des actions, état des cases et affichage mobile doivent être contrôlés sur le parcours réel.",
+        ],
+        items: [
+          "Une finalité par message principal.",
+          "Une case marketing séparée de l’information nécessaire au gain.",
+          "Un bouton qui indique l’action réellement effectuée.",
+          "Un accès visible aux informations complémentaires et aux moyens de retrait du consentement.",
+          "Aucun texte qui promet une récompense en échange d’un avis ou d’une inscription commerciale.",
+        ],
+      },
+      {
+        title: "Laissez un choix réel sans punir le refus",
+        paragraphs: [
+          "Une collecte respectueuse prévoit ce qui se passe lorsque la personne refuse. Elle doit pouvoir continuer le parcours autorisé, obtenir les informations nécessaires à un gain ou demander de l’aide sans être humiliée ni redirigée vers un écran incompréhensible.",
+          "L’équipe peut expliquer la différence entre participer, recevoir un gain et accepter une communication. Elle ne doit pas reformuler le refus comme une erreur technique ou multiplier les demandes jusqu’à obtenir un oui.",
+          "Si un parcours ne peut pas fonctionner sans une donnée précise, expliquez la raison avant la confirmation et indiquez l’alternative éventuelle. Ne transformez pas une contrainte opérationnelle en consentement marketing implicite.",
+        ],
+      },
+      {
+        title: "Cadrez les accès et les partenaires",
+        paragraphs: [
+          "Une adresse collectée dans un commerce ne doit pas circuler automatiquement entre l’organisateur, un partenaire, un prestataire et plusieurs établissements. Définissez qui peut accéder à quelle information, pour quelle finalité et pendant quelle durée, avant de lancer l’opération.",
+          "Dans un contexte multi-sites ou événementiel, séparez les établissements, les responsables et les campagnes lorsque le contexte l’exige. Ne mélangez pas les contacts d’un partenaire avec ceux du commerce simplement parce que le même QR code ou le même formulaire a été utilisé.",
+          "Les accès techniques doivent rester limités. L’équipe n’a pas besoin de voir plus de données que nécessaire pour remettre un lot ou répondre à une question. Les données réelles des clients ne doivent pas être utilisées comme exemples dans un support ou un article.",
+        ],
+        items: [
+          "Responsable identifié pour chaque finalité.",
+          "Accès limité aux personnes qui en ont besoin pour leur rôle.",
+          "Partenaires et prestataires connus avant la collecte.",
+          "Établissement et campagne correctement rattachés.",
+          "Procédure prévue pour une demande d’accès, de retrait ou de suppression selon le cadre applicable.",
+        ],
+      },
+      {
+        title: "Mesurez la qualité de la collecte, pas seulement son volume",
+        paragraphs: [
+          "Un grand nombre de contacts ne signifie pas que les personnes ont compris la finalité ou qu’elles souhaitent réellement recevoir des communications. Suivez séparément les visites, les scans, les participations, les formulaires commencés, les contacts finalisés et les opt-ins marketing.",
+          "Documentez le contexte : emplacement du formulaire, message affiché, moment de la demande, lot ou animation associés, équipe présente et éventuelles difficultés. Une baisse du volume peut venir d’une demande plus claire ; une hausse peut venir d’une case ambiguë. Les chiffres seuls ne permettent pas de conclure.",
+          "Pour mesurer une animation sans inventer son ROI, consultez [mesurer une animation commerciale](/blog/mesurer-animation-commerciale). Une collecte utile se juge aussi à la compréhension, à la qualité des finalités, à la capacité de répondre aux demandes et au respect des choix exprimés.",
+        ],
+        items: [
+          "Participation sans contact.",
+          "Contact nécessaire à une finalité opérationnelle.",
+          "Consentement marketing distinct et réellement choisi.",
+          "Demandes de retrait ou de modification traitées selon la procédure applicable.",
+          "Erreurs, doublons et abandons documentés sans inventer de personnes uniques.",
+        ],
+      },
+      {
+        title: "Questions fréquentes sur la collecte de contacts en magasin",
+        paragraphs: [
+          "Peut-on demander un e-mail pour participer à un jeu ? Cela dépend de la finalité et du parcours. Une adresse ne doit pas être demandée par défaut si elle n’est pas nécessaire ; si elle est requise pour une étape précise, expliquez cette nécessité avant la validation.",
+          "Comment séparer un gain d’une newsletter ? Utilisez deux messages et deux choix distincts. Le message nécessaire au gain explique l’envoi ou la procédure concernée ; la newsletter demande un consentement marketing séparé et facultatif.",
+          "Quelles données éviter ? Évitez toute donnée qui n’a pas de finalité définie, notamment les informations sensibles ou les détails personnels sans usage concret. Demandez le minimum utile et faites valider les besoins spécifiques au contexte.",
+          "Faut-il une case obligatoire ? Une information obligatoire peut être nécessaire pour exécuter un jeu ou transmettre un gain, mais elle ne doit pas être présentée comme un consentement marketing. La formulation et la base applicable doivent être validées.",
+          "Une collecte de contacts garantit-elle une prochaine visite ? Non. Elle indique qu’une donnée a été laissée dans un contexte donné. Elle ne prouve ni une lecture, ni une ouverture, ni une visite, ni une vente future.",
+        ],
+      },
+      {
+        title: "Checklist avant de proposer un formulaire",
+        paragraphs: [
+          "Avant de diffuser une collecte en magasin, vérifiez les points suivants :",
+        ],
+        items: [
+          "La finalité de chaque donnée est formulée avant l’ajout du champ.",
+          "Le formulaire demande uniquement les informations nécessaires au parcours prévu.",
+          "La réception d’un gain et la prospection marketing sont présentées séparément.",
+          "La case marketing est facultative, décochée par défaut et révocable.",
+          "Le refus n’empêche pas une participation ou un gain lorsque la donnée n’est pas nécessaire à cette étape.",
+          "Les textes, durées, droits, outils et responsabilités sont relus pour le pays et le contexte concernés.",
+          "Les accès des équipes, partenaires et établissements sont définis avant la collecte.",
+          "Le parcours mobile a été testé avec un choix accepté et un refus, sans écran bloqué ou ambigu.",
+          "Les indicateurs séparent scans, participations, contacts finalisés et opt-ins marketing.",
+          "Une procédure existe pour traiter les demandes liées aux contacts collectés.",
+        ],
+      },
+    ],
+    related: [
+      "/blog/attirer-clients-commerce-local",
+      "/blog/fideliser-clients-sans-programme-points",
+      "/blog/animer-point-de-vente-qr-code",
+      "/comment-ca-marche",
+    ],
+  },
 ];
 
 export function blogPostByPath(path: string) {
