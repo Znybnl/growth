@@ -120,6 +120,15 @@ identifiants PostHog de ce navigateur ; l'effacement des données déjà héberg
 est une demande distincte. Le suivi d'acquisition ne décrit donc que les personnes
 ayant accepté cette mesure. Aucune autorisation de purge n'est déduite de cet accord.
 
+Décision propriétaire du 18 octobre 2026 (#592) : utiliser une identité de
+compte stable entre établissements et afficher l'e-mail de connexion dans le
+profil PostHog des utilisateurs connectés ayant accepté la mesure. L'adresse
+provient de la session/payload authentifié ; elle peut être actualisée sans
+changer d'identité. Cette exception porte sur le profil du compte, pas sur les
+coordonnées des joueurs ou les propriétés libres des événements. La mention
+de mesure et la politique publique précisent cet usage. Aucun nom, mot de passe,
+PIN, contenu de campagne ou e-mail de joueur n'est ajouté.
+
 ## Relance d’expiration du gain — #304
 
 Décisions propriétaire du 12 octobre 2026 : préférence commune au compte marchand et à ses établissements, désactivée par défaut, délai personnalisable (7 jours initialement). Le destinataire est le gagnant, pas le marchand. Une seule relance par gain réel encore disponible/non retiré, à validité initiale d’au moins 20 jours, le jour civil J−N calculé dans le fuseau du site, lors du passage quotidien Vercel ; aucun rattrapage d’un jour passé. Le propriétaire confirme que 9 h est approximatif : la fenêtre de cinq minutes et la planification Supabase spécifique sont abandonnées. L’activation/modification avant le passage effectif du jour est prise en compte ; aucun rappel antérieur n’est rejoué. Le changement de délai ne rejoue pas une relance déjà tentée/transmise. Paramétrage par propriétaire/administrateur du compte, contrôle serveur et isolation des comptes. Envoi Resend existant, pas de nouvelle offre Vercel. Le format reprend l’e-mail initial, sans changer celui-ci, les conditions/dates, stocks, retrait ou consentement. Désactivation revérifiée avant déclenchement ; une requête fournisseur déjà déclenchée ne peut être rappelée. [Limites temporelles, données et recette](releases/reward-expiry-reminders-304.md).

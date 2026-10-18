@@ -105,7 +105,7 @@ export async function POST(request: Request) {
         sideEffects.push(
           captureProductEvent(
             "signup_completed",
-            merchantDistinctId(session.merchant.id, session.user.id),
+            merchantDistinctId(session.user.merchantId, session.user.id),
             {
               merchantId: session.merchant.id,
               merchantUserId: session.user.id,

@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 
 import { GoogleAuthButton } from "@/components/auth/google-auth-button";
-import { captureClientProductEvent } from "@/lib/client-product-analytics";
+import { captureClientProductEvent, identifyMerchantForAnalytics } from "@/lib/client-product-analytics";
 
 export function SignInForm() {
   const searchParams = useSearchParams();
@@ -37,13 +37,17 @@ export function SignInForm() {
       });
       const payload = (await response.json()) as {
         error?: string;
-        merchant?: { onboardingCompleted?: boolean };
+        merchant?: { id?: string; onboardingCompleted?: boolean };
+        user?: { id?: string; merchantId?: string; email?: string };
       };
 
       if (!response.ok) {
         throw new Error(payload.error ?? "Connexion impossible.");
       }
 
+      if (payload.user?.merchantId && payload.user.id) {
+        identifyMerchantForAnalytics(payload.user.merchantId, payload.user.id, payload.merchant?.id, payload.user.email);
+      }
       captureClientProductEvent("login_completed", { method: "password" });
       window.location.assign(payload.merchant?.onboardingCompleted ? "/" : "/onboarding");
     } catch (submitError) {

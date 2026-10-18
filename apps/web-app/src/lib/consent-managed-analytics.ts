@@ -118,6 +118,19 @@ export function syncAnalyticsConsent() {
         // The SDK also attaches person properties at the payload root on
         // identification, not only inside properties. They can contain the
         // original URL/referrer even when event properties were sanitized.
+        // #592: only the authenticated account's explicit profile email is
+        // permitted. Automatic person fields and ordinary event emails stay out.
+        const identity = event.properties;
+        const ownProfile = (event.event === "$identify" || event.event === "$set") &&
+          typeof identity.accountMerchantId === "string" && typeof identity.merchantUserId === "string" &&
+          identity.distinct_id === identity.accountMerchantId + ":" + identity.merchantUserId;
+        const profileSet = (value: unknown) => {
+          const email = value && typeof value === "object" ? (value as Record<string, unknown>).email : undefined;
+          return ownProfile && typeof email === "string" && email.length <= 254 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+            ? { email } : undefined;
+        };
+        const rootProfile = profileSet(event.$set);
+        const eventProfile = profileSet(event.properties.$set);
         delete event.$set;
         delete event.$set_once;
         event.properties = {
@@ -129,6 +142,8 @@ export function syncAnalyticsConsent() {
           consentVersion: ANALYTICS_CONSENT_VERSION,
           consentDecidedAt: consent.decidedAt,
         };
+        if (rootProfile) event.$set = rootProfile;
+        if (eventProfile) event.properties.$set = eventProfile;
         return event;
       },
     });
