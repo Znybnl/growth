@@ -228,6 +228,43 @@ indépendante et un professionnel compétent ; ajouter un exemple réel document
 avec autorisation ; après publication, mesurer seulement les retours que le
 commerce peut effectivement attribuer.
 
+## Article #585 — animation en magasin de jouets et de jeux
+
+URL : `/blog/animation-magasin-jouets-jeux`. L’article distingue démonstration,
+table de découverte, tournoi et jeu promotionnel ; il détaille la sélection des
+jeux, l’âge et les avertissements fabricant, la jauge, l’espace, la personne
+responsable, les inscriptions par l’adulte, la communication et la mesure. Il
+précise que la règle CNIL relative au consentement des moins de 15 ans vise le
+traitement fondé sur le consentement dans le contexte des services en ligne et
+n’est pas étendue sans examen à toute inscription en boutique. Il n’encourage
+pas à collecter l’identité des enfants et interdit de conditionner lot ou place
+à un avis positif.
+
+Sources officielles liées dans l’article : DGCCRF (sécurité des jouets et
+loteries promotionnelles), CNIL (mineurs et consentement) et Service Public
+Entreprendre (ERP). Les assertions sont bornées à ces pages ; l’article renvoie
+à une vérification spécifique lorsque l’organisateur hésite sur les règles.
+Maillage interne vers le jeu-concours local, l’expérience client, l’affiche QR,
+la mesure d’animation et le fonctionnement d’Okado.
+
+Illustration originale générée via le skill imagegen intégré puis convertie en
+WebP avec Sharp : `apps/landing-page/public/images/blog/animation-magasin-jouets-jeux.webp`
+(1600 × 800, 210 252 octets). Texte alternatif : « Un vendeur présente un jeu de
+société à deux adultes autour d’une table en boutique ».
+
+Prompt final :
+
+> Use case: illustration-story. Asset type: wide editorial hero illustration for a French professional blog article about organizing an event in an independent toy and board-game shop. Primary request: a warm, detailed painterly editorial illustration of an adult shop employee explaining a board game to two adult customers seated around a small demonstration table in a welcoming neighborhood toy shop. Scene/backdrop: shelves of board games and toys with blank, unreadable covers and packaging; a tidy shop counter and spacious, clear aisle remain visible; no children present. Subject: three adults enjoying a short game demonstration, with the employee pointing to a game board and pieces while the customers listen and smile naturally; all participants adults. Style/medium: polished textured editorial illustration for a professional local-commerce blog, natural anatomy and believable paper, wood and cardboard textures. Composition/framing: wide horizontal approximately 2:1; people and table centered comfortably in frame, shelves provide context, suitable for desktop and mobile blog cards. Lighting/mood: soft daylight and warm indoor lighting, curious, welcoming and calm, not glossy commercial advertising. Color palette: warm cream, natural wood, muted terracotta, soft teal, sage green and restrained navy accents. Constraints: no readable text, no visible brand names, no logos, no watermark, no QR code, no fake app interface, no promotional signage, no prices, no children, no safety hazards, no crowded blocking of aisles. This is an editorial illustration, not a claimed photograph of a real shop or people.
+
+Note éditoriale finale : **9,0/10**. La note évalue la pertinence pour le secteur,
+la clarté des formats, l’utilité opérationnelle, les sources et le maillage ; ce
+n’est pas un score de référencement ni une prédiction de visibilité.
+
+Axes d’amélioration : faire relire la checklist par un commerçant qui accueille
+réellement des animations et vérifier son plan d’accueil avec le responsable de
+l’établissement ; ajouter ensuite un exemple de séance réelle avec autorisation
+et mesurer des indicateurs attribuables sans confondre présence et vente.
+
 ## Vérifications et livraison
 
 - `npm run lint:landing` : réussi.
@@ -250,6 +287,9 @@ commerce peut effectivement attribuer.
   statiques. Le test E2E du catalogue n’a pas été relancé après cet ajout.
 - Pour l’article #584 : `npm run lint:landing` réussi ; `npm run build:landing`
   réussi avec Next.js 16.3.8 et 53 pages statiques. Les tests E2E n’ont pas été
+  relancés après cet ajout.
+- Pour l’article #585 : `npm run lint:landing` réussi ; `npm run build:landing`
+  réussi avec Next.js 16.3.8 et 54 pages statiques. Les tests E2E n’ont pas été
   relancés après cet ajout.
 - Captures du tableau fleuriste sur ordinateur et mobile inspectées : lisibilité
   et défilement local sans débordement global.

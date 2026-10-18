@@ -3742,6 +3742,141 @@ export const blogPosts: BlogPost[] = [
       "/comment-ca-marche",
     ],
   },
+  {
+    path: "/blog/animation-magasin-jouets-jeux",
+    title: "Comment organiser une animation dans un magasin de jouets ou de jeux ?",
+    seoTitle: "Animation en magasin de jouets : préparer un événement",
+    description:
+      "Démonstration, table de découverte ou tournoi : préparez une animation en magasin de jouets avec un format adapté, un espace maîtrisé et une inscription simple.",
+    eyebrow: "Commerce de jouets et jeux",
+    intro:
+      "Pour organiser une animation réussie dans un magasin de jouets ou de jeux, partez d’un produit que l’équipe peut expliquer, choisissez un format adapté à son public et prévoyez une capacité réaliste. Une démonstration, un tournoi et un jeu promotionnel ne répondent pas au même objectif : fixez les règles, l’encadrement et les modalités d’inscription avant de communiquer.",
+    answer:
+      "Définissez d’abord le public et l’âge recommandé des produits, puis choisissez une activité courte qui tient dans l’espace disponible. Désignez une personne responsable, comptez les places et le matériel, gardez les circulations accessibles, et adressez l’inscription aux adultes accompagnants. Pour un jeu avec lot ou tirage au sort, précisez ses règles et vérifiez le cadre applicable : ce n’est pas la même chose qu’une partie de démonstration ou un tournoi fondé sur les résultats.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-18",
+    updatedAt: "2026-10-18",
+    reviewedAt: "2026-10-18",
+    readingTime: "8 min de lecture",
+    image: "/images/blog/animation-magasin-jouets-jeux.webp",
+    imageAlt:
+      "Un vendeur présente un jeu de société à deux adultes autour d’une table en boutique",
+    ctaLabel: "Découvrir les animations par QR code",
+    ctaHref: "/comment-ca-marche",
+    source: [
+      {
+        label: "DGCCRF — choisir un jouet adapté à l’âge et lire les avertissements",
+        href: "https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/securite-des-jouets-optez-pour-un-produit-adapte-lage-de-lenfant",
+      },
+      {
+        label: "CNIL — données personnelles des mineurs de moins de 15 ans",
+        href: "https://www.cnil.fr/fr/recommandation-4-rechercher-le-consentement-dun-parent-pour-les-mineurs-de-moins-de-15-ans",
+      },
+      {
+        label: "CNIL — recueillir un consentement libre et éclairé",
+        href: "https://www.cnil.fr/les-bases-legales/consentement",
+      },
+      {
+        label: "DGCCRF — loteries et pratiques promotionnelles",
+        href: "https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/loterie-des-pratiques-commerciales-reglementees",
+      },
+      {
+        label: "Service Public Entreprendre — règles applicables aux commerces recevant du public",
+        href: "https://entreprendre.service-public.fr/vosdroits/F23571",
+      },
+    ],
+    sections: [
+      {
+        title: "Choisir un format adapté au magasin et au public",
+        paragraphs: [
+          "Une animation en magasin de jouets fonctionne mieux quand sa promesse est concrète : essayer un jeu, découvrir une nouveauté, apprendre une règle ou participer à une partie encadrée. Avant de choisir le format, demandez-vous qui joue, combien de temps dure une session, quel niveau d’explication l’équipe peut apporter et combien de personnes l’espace peut accueillir sans gêner les achats.",
+          "Une démonstration présente les règles et le matériel ; une table de découverte permet de tester un jeu ; un tournoi ajoute des manches et un classement ; un jeu promotionnel fait espérer un gain. Le mot « animation » peut désigner ces formats différents, mais leurs conditions, leur durée et leurs obligations ne sont pas interchangeables. Pour comparer les mécanismes promotionnels, voir [jeu-concours ou promotion](/blog/jeu-concours-ou-promotion) et [organiser un jeu-concours lors d’un événement local](/blog/jeu-concours-evenement-local).",
+          "Un premier événement peut rester simple : une table, un jeu, des créneaux annoncés et une personne de l’équipe qui explique les règles. Si l’intérêt est confirmé, le magasin pourra envisager plusieurs tables ou un rendez-vous récurrent. Ce test n’est pas une garantie de ventes ou de fidélisation ; il permet surtout de vérifier l’organisation et les retours observables.",
+        ],
+      },
+      {
+        title: "Sélectionner les jeux et respecter leurs indications",
+        paragraphs: [
+          "Choisissez un jeu disponible et complet, dont les règles peuvent être expliquées dans le temps prévu. Vérifiez avant l’événement le contenu de la boîte, l’état des pièces, la durée d’une partie, le nombre de joueurs et les besoins éventuels en piles ou accessoires. Prévoyez une version de démonstration distincte du stock destiné à la vente, si le magasin en a les moyens.",
+          "Pour les jouets destinés aux enfants, lisez les informations et avertissements du fabricant plutôt que d’estimer vous-même l’âge adapté. La [DGCCRF rappelle de tenir compte de l’âge, des aptitudes et des avertissements présents sur le jouet](https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/securite-des-jouets-optez-pour-un-produit-adapte-lage-de-lenfant). Affichez ces indications à proximité de la table si elles sont pertinentes pour l’activité et demandez aux adultes accompagnants de décider si le produit convient à l’enfant concerné.",
+          "Un jeu de société signalé pour un public plus âgé ne devient pas adapté aux plus jeunes parce qu’un adulte est présent. À l’inverse, une activité familiale ne nécessite pas de collecter l’âge exact ou l’identité des enfants : le magasin peut décrire le format et laisser l’accompagnant apprécier sa pertinence.",
+        ],
+      },
+      {
+        title: "Préparer l’espace, le matériel et l’encadrement",
+        paragraphs: [
+          "Dessinez le dispositif avant de publier l’invitation. Repérez les tables, les chaises, la file d’attente éventuelle, les produits à protéger et le passage des autres clients. Ne bloquez ni sorties, ni cheminements, ni accès aux équipements. Si le format change les conditions habituelles d’accueil ou augmente la fréquentation prévue, demandez au responsable du magasin de vérifier les règles de sécurité et la capacité applicables à l’établissement ; la page [Service Public sur l’ouverture d’un commerce](https://entreprendre.service-public.fr/vosdroits/F23571) récapitule notamment les obligations relatives aux ERP.",
+          "Attribuez les rôles : une personne anime et explique ; une autre, si le nombre de visiteurs le justifie, gère l’accueil, les créneaux et les questions d’achat. Cette séparation évite de laisser sans réponse le reste du magasin pendant une partie. Préparez aussi une solution si la table est complète : un autre horaire, une liste d’attente gérée par un adulte ou une démonstration courte sans inscription.",
+          "Comptez les jeux, accessoires et pièces avant puis après la séance. Gardez les petits éléments hors de portée des enfants qui ne participent pas, et ne laissez pas le matériel sans surveillance si les consignes du fabricant l’exigent. Pour les photos, autorisations et affichages, définissez une règle séparée : participer à l’animation ne signifie pas automatiquement accepter d’être photographié ou de recevoir des messages commerciaux.",
+        ],
+      },
+      {
+        title: "Choisir entre démonstration, tournoi et jeu avec lot",
+        paragraphs: [
+          "Pour faire découvrir une référence, la démonstration suffit souvent : expliquez la mécanique, jouez un tour et indiquez où le produit se trouve en rayon. Pour un tournoi, écrivez les critères de participation, les manches, le système de départage, l’horaire et la façon de gérer une égalité. Faites en sorte que les règles restent compréhensibles et identiques pour tous les participants.",
+          "Si une opération promet un lot ou fait intervenir le hasard, ne la traitez pas comme un simple atelier. La [DGCCRF distingue les régimes applicables aux loteries et aux opérations promotionnelles](https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/loterie-des-pratiques-commerciales-reglementees) et rappelle que la présentation ne doit pas être déloyale. Décrivez le lot réellement disponible, la période, les conditions d’accès et la méthode de désignation ; faites vérifier les modalités avant diffusion si le dispositif soulève une question juridique.",
+          "Un tournoi basé sur une partie et un tirage au sort associé à une inscription sont deux mécaniques distinctes, même s’ils sont annoncés le même jour. Séparez-les dans le programme et dans les règles. N’annoncez pas un lot ou un avantage que le magasin n’est pas en mesure de remettre.",
+          "Une dotation n’a pas besoin d’être coûteuse pour être pertinente : elle peut être un jeu identifié, un accessoire disponible ou une place pour une prochaine séance, à condition que les modalités soient claires et tenables. Si l’objectif est simplement la découverte, ne rajoutez pas un concours par réflexe.",
+        ],
+      },
+      {
+        title: "Gérer les inscriptions sans collecter les données des enfants",
+        paragraphs: [
+          "Pour une activité familiale, adressez l’information d’inscription à l’adulte accompagnant. Pour réserver une place, le magasin a généralement besoin de peu d’éléments pratiques : un nom d’adulte, un moyen de contact si un changement d’horaire doit être communiqué et le nombre de places demandées. Expliquez à quoi ces informations servent, qui peut les consulter et quand elles seront supprimées ; ne demandez pas la date de naissance, l’adresse ou le profil d’un enfant si l’organisation n’en a pas besoin.",
+          "Une inscription à une séance ne vaut pas abonnement aux offres du magasin. Si l’équipe souhaite envoyer ensuite des communications commerciales, demandez un choix séparé et explicite, avec une information claire sur les messages. La CNIL précise que, pour les traitements fondés sur le consentement dans le cadre de services en ligne, les règles visant les moins de 15 ans impliquent aussi le consentement parental ; cette règle porte sur ce contexte en ligne précis et ne doit pas être généralisée sans analyse à toute inscription en boutique. La [recommandation CNIL sur les mineurs](https://www.cnil.fr/fr/recommandation-4-rechercher-le-consentement-dun-parent-pour-les-mineurs-de-moins-de-15-ans) et ses [repères sur le consentement](https://www.cnil.fr/les-bases-legales/consentement) aident à distinguer les situations.",
+          "Ne conditionnez pas une place, un lot ou un avantage à la publication d’un avis positif. Une demande de retour d’expérience doit rester distincte de l’accès à l’événement et ne pas dicter le contenu de l’avis.",
+          "Vous pouvez également organiser une séance sans inscription préalable, avec un nombre de places annoncé et une règle d’accès sur place. Si vous utilisez un formulaire ou un QR code, expliquez sa finalité et évitez de rendre la participation dépendante d’une inscription marketing qui n’est pas nécessaire au jeu.",
+        ],
+      },
+      {
+        title: "Communiquer clairement avant le rendez-vous",
+        paragraphs: [
+          "L’annonce doit répondre rapidement aux questions des familles : quel jeu, pour quel âge selon le fabricant, quel format, quelle durée, quelle date, combien de places, faut-il réserver et quel adulte accompagne l’enfant ? Précisez si l’événement est gratuit, si une partie est ouverte à tous et si le tournoi demande une inscription. Évitez les formules vagues comme « pour tous les âges » si les jeux sélectionnés ont des recommandations différentes.",
+          "Mettez à jour l’information sur les supports utilisés par le magasin : vitrine, site, réseaux sociaux ou fiche d’établissement. Si le créneau est complet ou si une référence n’est plus disponible, modifiez l’annonce plutôt que de laisser une attente erronée. Pour une affiche avec QR code, veillez à ce que l’essentiel des informations reste lisible sans scanner ; le guide [afficher un QR code pour une animation commerciale](/blog/affiche-qr-code-animation-commerciale) donne des repères de mise en œuvre.",
+          "Pour réfléchir à l’ambiance, à l’accueil et au parcours sur place, consultez aussi [l’expérience client en boutique](/blog/experience-client-boutique). L’événement doit rester compréhensible pour les visiteurs qui viennent simplement acheter : signalez la zone d’animation et indiquez à l’équipe comment les orienter.",
+        ],
+      },
+      {
+        title: "Mesurer l’animation sans surinterpréter les résultats",
+        paragraphs: [
+          "Avant l’événement, choisissez quelques observations faciles à relever : places proposées et occupées, séances commencées à l’heure, jeux présentés, questions récurrentes et demandes d’information sur les références. Notez aussi les incidents pratiques, comme une file qui bloque un rayon ou un jeu incomplet. Ces éléments aideront à améliorer le format suivant.",
+          "Distinguez les personnes présentes, les adultes inscrits, les parties jouées et les ventes constatées pendant la période. Une présence ne prouve pas un achat futur ; une vente le jour même ne prouve pas qu’elle a été causée par l’animation. Décrivez la période et la méthode si vous comparez des résultats, et ne qualifiez pas de « fidélisation » une seule participation.",
+          "Un jeu QR peut compléter une animation avec une mécanique numérique distincte, si elle est réellement utile au magasin. Consultez [le fonctionnement d’Okado](/comment-ca-marche) sans le confondre avec un système d’inscription, un tournoi, une réservation ou un suivi individuel des enfants.",
+        ],
+      },
+      {
+        title: "Questions fréquentes sur les animations en magasin de jouets",
+        paragraphs: [
+          "Comment organiser une animation familiale dans une petite boutique ? Choisissez une seule table de jeu, limitez la durée et annoncez à l’avance le nombre de places. Préservez un passage libre pour les autres clients et désignez un membre de l’équipe pour animer.",
+          "Qui doit inscrire un enfant à l’événement ? Adressez l’inscription et les informations pratiques à l’adulte accompagnant. Ne collectez pas de données sur l’enfant qui ne sont pas nécessaires. Une inscription à l’événement ne vaut pas inscription à une newsletter.",
+          "Quelle différence entre une démonstration et un jeu-concours ? La démonstration sert à découvrir le fonctionnement d’un produit. Le jeu-concours ou la loterie peut faire espérer un gain et demande de définir des conditions spécifiques ; vérifiez le cadre correspondant avant de communiquer.",
+          "Faut-il prévoir un lot pour attirer des participants ? Non. Une partie de découverte peut être utile sans dotation. Si un lot est prévu, décrivez-le précisément et vérifiez les règles de l’opération avant publication.",
+          "Comment choisir l’âge des participants ? Référez-vous aux indications du fabricant figurant sur le produit et son emballage. L’adulte accompagnant peut ensuite apprécier si l’activité convient à l’enfant ; ne promettez pas une compatibilité universelle.",
+        ],
+      },
+      {
+        title: "Checklist avant d’annoncer votre prochaine animation",
+        paragraphs: ["Vérifiez ces éléments avec l’équipe avant de publier :"],
+        items: [
+          "Le format est nommé précisément : démonstration, découverte, tournoi ou jeu avec lot.",
+          "Les jeux sont disponibles, complets et présentés avec leurs indications d’âge et avertissements fabricant.",
+          "La jauge, la durée, les créneaux et la personne responsable sont définis.",
+          "La disposition des tables préserve les circulations et l’accueil des autres clients.",
+          "Les règles de jeu ou de dotation sont écrites et communiquées avant la participation.",
+          "Les inscriptions sont gérées par l’adulte accompagnant et limitées aux informations nécessaires.",
+          "Inscription à l’événement, photos éventuelles et prospection commerciale restent des choix distincts.",
+          "Les mesures prévues séparent présence, parties jouées, questions et ventes observées.",
+        ],
+      },
+    ],
+    related: [
+      "/blog/jeu-concours-evenement-local",
+      "/blog/experience-client-boutique",
+      "/blog/affiche-qr-code-animation-commerciale",
+      "/blog/mesurer-animation-commerciale",
+      "/comment-ca-marche",
+    ],
+  },
 ];
 
 export function blogPostByPath(path: string) {
