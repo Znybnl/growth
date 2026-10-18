@@ -265,6 +265,43 @@ réellement des animations et vérifier son plan d’accueil avec le responsable
 l’établissement ; ajouter ensuite un exemple de séance réelle avec autorisation
 et mesurer des indicateurs attribuables sans confondre présence et vente.
 
+## Article #586 — acquisition et retour client pour un garage
+
+URL : `/blog/attirer-clients-garage-automobile`. L’article traite de la
+visibilité locale, des pages de services véridiques, de la capacité d’atelier,
+des messages de service et de prospection, de la mesure des demandes, puis
+propose cinq FAQ et une checklist. Il ne promet ni diagnostic/réparation gratuite
+ni résultat mécanique ; il distingue l’information préalable, le devis et
+l’ordre de réparation en tenant compte de la nuance DGCCRF selon les cas. Une
+animation ne peut pas remplacer un contrôle technique ni gamifier une réparation
+nécessaire à la sécurité.
+
+Sources primaires vérifiées : DGCCRF (réparation automobile, ordre de réparation
+et devis), CNIL (prospection électronique), Google Business Profile
+(informations locales et posts). Les liens internes prévus vers commerce local,
+période creuse et retour après animation existent ; les liens de mesure et le
+parcours Okado complètent le maillage.
+
+Illustration originale produite avec le skill imagegen intégré puis convertie
+en WebP par Sharp :
+`apps/landing-page/public/images/blog/attirer-clients-garage-automobile.webp`
+(1600 × 800, 147 076 octets). Texte alternatif : « Un mécanicien explique une
+intervention automobile à une cliente dans un atelier ».
+
+Prompt final :
+
+> Use case: illustration-story. Asset type: wide editorial hero illustration for a French professional blog about attracting and retaining customers at an independent automotive garage. Primary request: a warm, detailed painterly editorial illustration of an adult mechanic calmly explaining a vehicle service to an adult customer in the reception area of a clean independent garage. Scene/backdrop: welcoming workshop reception opens onto a tidy service bay; a modern neutral-colored car is parked safely in the background, no active repair or hazardous equipment in use; tools and shelves organized. Subject: mechanic in clean workwear gestures to a simple, unreadable inspection sheet while the customer listens; both adults, respectful and transparent conversation about the work scope. Style/medium: polished textured editorial illustration for a professional local-commerce blog, natural anatomy and realistic workshop materials. Composition/framing: wide horizontal approximately 2:1; people comfortably within frame, car and workshop softly establish context, suitable for desktop and mobile blog cards. Lighting/mood: natural daylight mixed with warm indoor light, calm, trustworthy and practical, not glossy commercial advertising. Color palette: warm cream, muted navy, slate gray, natural metal, subtle teal and restrained terracotta accents. Constraints: no readable text, no visible logos or car brand, no license plate, no watermark, no QR code, no fake app interface, no prices or discount signs, no unsafe lifting or repair scene, no sparks, no children. This is an editorial illustration, not a claimed photograph of a real garage or people.
+
+Note éditoriale finale : **9,1/10**. Le sujet répond à un besoin d’acquisition
+local avec des garde-fous sectoriels et un contenu distinct des conseils de
+marketing génériques. La note est éditoriale, non métrique SEO et ne prédit pas
+les classements.
+
+Axes d’amélioration : relecture par un garage indépendant pour valider la
+faisabilité des exemples et la terminologie métier ; publication d’un exemple
+local autorisé ; mesure ultérieure des demandes, rendez-vous et interventions
+selon des critères réellement observables.
+
 ## Vérifications et livraison
 
 - `npm run lint:landing` : réussi.
@@ -290,6 +327,9 @@ et mesurer des indicateurs attribuables sans confondre présence et vente.
   relancés après cet ajout.
 - Pour l’article #585 : `npm run lint:landing` réussi ; `npm run build:landing`
   réussi avec Next.js 16.3.8 et 54 pages statiques. Les tests E2E n’ont pas été
+  relancés après cet ajout.
+- Pour l’article #586 : `npm run lint:landing` réussi ; `npm run build:landing`
+  réussi avec Next.js 16.3.8 et 55 pages statiques. Les tests E2E n’ont pas été
   relancés après cet ajout.
 - Captures du tableau fleuriste sur ordinateur et mobile inspectées : lisibilité
   et défilement local sans débordement global.
