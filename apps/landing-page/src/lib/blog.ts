@@ -3461,6 +3461,155 @@ export const blogPosts: BlogPost[] = [
       "/blog/mesurer-animation-commerciale",
     ],
   },
+  {
+    path: "/blog/animations-jardinerie-saisons",
+    title: "Quelles animations proposer dans une jardinerie au fil des saisons ?",
+    seoTitle: "Animations en jardinerie : idées et calendrier",
+    description:
+      "Ateliers, démonstrations et rencontres : organisez des animations de jardinerie selon la saison, la météo locale, les stocks et la capacité de votre équipe.",
+    eyebrow: "Jardinerie et commerce de proximité",
+    intro:
+      "Une jardinerie peut proposer des animations toute l’année en reliant chaque rendez-vous aux besoins du moment, aux produits disponibles et au savoir-faire de l’équipe. Le bon calendrier n’est pas une liste universelle de dates de plantation : il se construit selon la région, la météo, le public, les stocks et la capacité d’accueil.",
+    answer:
+      "Choisissez une animation par saison — démonstration, atelier pratique, séance de questions-réponses ou rencontre avec un spécialiste — puis vérifiez la météo, les références en stock, le matériel et le nombre de places. Préparez un format intérieur de repli et communiquez des horaires et conditions exacts. En période plus calme, privilégiez un rendez-vous ciblé et léger plutôt qu’un événement coûteux sans objectif mesurable.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-18",
+    updatedAt: "2026-10-18",
+    reviewedAt: "2026-10-18",
+    readingTime: "10 min de lecture",
+    image: "/images/blog/animations-jardinerie-saisons.webp",
+    imageAlt: "Une équipe de jardinerie anime une démonstration de rempotage sous serre",
+    ctaLabel: "Découvrir les animations par QR code",
+    ctaHref: "/comment-ca-marche",
+    source: [
+      {
+        label: "FranceAgriMer et VALHOR — panel annuel des achats de végétaux",
+        href: "https://www.franceagrimer.fr/index.php/chiffre-et-analyses-economiques/achats-de-vegetaux-et-prestations-pour-les-espaces-exterieurs",
+      },
+      {
+        label: "Météo-France — variations régionales et saisonnières des précipitations",
+        href: "https://meteofrance.com/changement-climatique/le-changement-climatique-en-france",
+      },
+      {
+        label: "Google Business Profile — créer et gérer des posts événementiels",
+        href: "https://support.google.com/business/answer/7342169?hl=fr",
+      },
+      {
+        label: "DGCCRF — allégations environnementales : précision et justification",
+        href: "https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/allegations-environnementales-ce-quil-faut-retenir",
+      },
+      {
+        label: "CNIL — communications électroniques aux prospects et clients",
+        href: "https://www.cnil.fr/fr/communication-electronique-quelles-regles",
+      },
+    ],
+    sections: [
+      {
+        title: "Partir des usages du moment, pas d’un calendrier universel",
+        paragraphs: [
+          "Une animation de jardinerie fonctionne d’abord comme un rendez-vous utile : voir une démonstration, poser une question, comparer des outils ou apprendre à utiliser une gamme. Les occasions se renouvellent au fil des saisons, mais leur calendrier varie selon les conditions locales et les habitudes des clients. Un thème pertinent pour une jardinerie urbaine avec une grande serre n’est pas forcément adapté à un magasin rural ou à une zone exposée à une météo différente.",
+          "Les relevés de Météo-France montrent que les précipitations diffèrent selon les régions et les saisons, et que les conditions locales ne se résument pas à une moyenne nationale. Utilisez la météo prévue pour choisir le lieu et le format, puis demandez à une personne compétente de valider toute information technique de jardinage. Cet article porte sur l’organisation commerciale ; il ne fournit pas de calendrier agronomique ni de conseil phytosanitaire.",
+          "Pour mieux comprendre les achats de végétaux à l’échelle nationale, FranceAgriMer et VALHOR publient un panel annuel réalisé auprès de ménages français. Ces résultats donnent un contexte de filière, mais ne prédisent pas la fréquentation ou les besoins propres à une jardinerie. Complétez-les par les questions au comptoir, les stocks et les observations de votre zone.",
+          "Pour planifier l’ensemble de vos campagnes locales, le [calendrier marketing du commerce de proximité](/blog/calendrier-marketing-commerce-local) aide à répartir les rendez-vous. L’article sur le [lancement d’un nouveau produit](/blog/animation-lancement-nouveau-produit) propose aussi une méthode transposable à une nouvelle gamme de jardinage.",
+        ],
+      },
+      {
+        title: "Un calendrier d’idées à adapter à votre jardinerie",
+        paragraphs: [
+          "Le tableau ci-dessous suggère des formats d’animation, pas des dates de travaux au jardin. Sélectionnez les sujets en fonction des produits présents, du climat, de l’espace disponible et de l’expertise qui peut être mobilisée.",
+        ],
+        table: {
+          caption: "Exemples de formats saisonniers pour une jardinerie",
+          headers: ["Moment à observer", "Idée d’animation", "Vérifications avant annonce"],
+          rows: [
+            ["Reprise des projets extérieurs", "Démonstration de composition en bac ou de matériel", "Gamme en stock, surface de démonstration, intervenant compétent"],
+            ["Période chaude ou météo incertaine", "Questions-réponses en espace couvert sur les produits et équipements", "Conditions d’accueil, horaires, conseils relus par un spécialiste"],
+            ["Préparation de l’automne", "Atelier de découverte des contenants, outils ou gammes disponibles", "Références et tailles, matériel, circulation dans le magasin"],
+            ["Mois d’activité extérieure plus calme", "Rencontre, entretien d’outils ou découverte des plantes d’intérieur", "Sujet maîtrisé, places, coût et possibilité d’un format court"],
+          ],
+        },
+      },
+      {
+        title: "7 formats pour créer un rendez-vous utile",
+        paragraphs: [
+          "Une animation peut être brève et peu coûteuse si elle répond à une question réelle. Les exemples sont des pistes à valider selon le lieu, les produits et les compétences disponibles ; ils ne constituent pas des résultats de campagne constatés.",
+        ],
+        items: [
+          "Faire une démonstration courte d’un outil ou d’un équipement en stock, avec un membre de l’équipe qui maîtrise son usage et ses limites. Affichez les références concernées et la date de la démonstration.",
+          "Organiser un atelier de rempotage ou de composition en pot. Définissez le matériel fourni, les gestes présentés, le nombre de places, le prix éventuel et ce que les participants peuvent emporter. Faites valider le contenu par une personne compétente.",
+          "Proposer une séance de questions-réponses avec un horticulteur ou un intervenant qualifié. Précisez son rôle, les sujets qu’il traitera et les questions auxquelles il ne répondra pas, par exemple les diagnostics nécessitant une inspection de la plante.",
+          "Créer une présentation guidée d’une gamme — contenants, outils, plantes d’intérieur ou produits associés — en distinguant les caractéristiques vérifiées des arguments commerciaux. Une démonstration aide à comprendre un produit ; elle ne justifie pas à elle seule une promesse de résultat.",
+          "Inviter un partenaire local à présenter son savoir-faire lors d’un format défini. Confirmez son accord, les coûts, le matériel, les responsabilités d’accueil et la manière de recueillir les inscriptions.",
+          "Installer un parcours de découverte à l’intérieur du magasin, avec quelques étapes faciles à parcourir et un conseil à chaque point. Gardez les circulations dégagées et vérifiez que la signalétique reste exacte si une référence est vendue ou déplacée.",
+          "Proposer un rendez-vous régulier, par exemple une démonstration courte le premier samedi du mois, seulement si l’équipe peut maintenir la cadence. Un rendez-vous annoncé comme récurrent doit être corrigé rapidement en cas de changement.",
+        ],
+      },
+      {
+        title: "Prévoir les stocks, le matériel et le nombre de places",
+        paragraphs: [
+          "Pour chaque animation, établissez une petite fiche interne : objectif, produits et consommables, espace utilisé, matériel, durée, personne qui anime, capacité et solution de rangement. Vérifiez les quantités avant de communiquer ; une plante ou une référence vendue entre-temps peut rendre l’exemple annoncé indisponible.",
+          "Pour un atelier pratique, calculez les fournitures par place et ajoutez une marge adaptée à votre méthode. Exemple fictif : dix inscrits utilisant chacun un contenant et un sac de substrat mobilisent dix contenants et dix sacs avant les outils partagés, les échantillons et les pertes éventuelles. Ce calcul sert à préparer l’approvisionnement ; il ne représente ni un tarif moyen ni la rentabilité de l’atelier.",
+          "Choisissez une capacité compatible avec l’espace, l’équipe et le confort des visiteurs. Expliquez si la participation se fait sur inscription, dans la limite des places, ou en accès libre. Si un formulaire est utilisé, précisez comment l’équipe confirme les places et informe en cas de changement. Un QR code d’animation ne réserve pas automatiquement un atelier et ne remplace pas un outil de gestion des inscriptions.",
+          "Les présentations de produits et les conseils doivent rester dans le champ de compétence de la personne qui intervient. Ne donnez pas de consigne sur l’usage d’un produit phytopharmaceutique sans vérifier son étiquette, les règles applicables et les qualifications nécessaires. En cas de doute, renvoyez vers le fabricant ou un professionnel compétent plutôt que d’improviser.",
+        ],
+      },
+      {
+        title: "Construire un plan météo avec une solution de repli",
+        paragraphs: [
+          "Une animation extérieure peut être perturbée par la pluie, le vent, le froid ou une chaleur importante. Fixez à l’avance les critères d’annulation ou de déplacement, la personne qui prend la décision et l’heure limite pour prévenir les inscrits. Vérifiez que le lieu de repli offre assez d’espace et ne gêne pas les opérations habituelles du magasin.",
+          "Prévoyez deux versions de l’activité : la démonstration en extérieur et un format plus court sous abri ou en intérieur. Si le sujet dépend de conditions spécifiques, demandez à l’intervenant de proposer une variante qui reste utile sans reproduire exactement le dispositif initial.",
+          "Si la météo modifie la date, mettez à jour les affiches, la fiche locale, le site, les réseaux sociaux et les messages envoyés aux personnes inscrites. Une information périmée peut entraîner une visite inutile et dégrader la confiance. Sur Google Business Profile, les posts de type événement peuvent préciser titre, dates et heures ; la plateforme permet aussi de modifier ou supprimer un post lorsque les informations changent.",
+        ],
+      },
+      {
+        title: "Communiquer localement sans promesse exagérée",
+        paragraphs: [
+          "Annoncez le sujet, la date, les horaires, le lieu, la durée, le niveau éventuel, le coût et la capacité. Indiquez si les fournitures sont comprises et si les participants repartent avec une réalisation. Présentez une photo correspondant à l’activité ou identifiez clairement une image d’illustration.",
+          "Si vous utilisez des expressions comme « écologique », « naturel », « durable » ou « économe en eau » pour décrire un produit ou l’activité du magasin, vérifiez qu’elles sont précises, justifiables et non trompeuses. La DGCCRF rappelle que les allégations environnementales doivent être claires, vérifiables et étayées ; un atelier sur le jardinage ne suffit pas à prouver la performance environnementale d’une gamme.",
+          "Vous pouvez relayer l’événement en vitrine, sur votre site, dans vos canaux sociaux et auprès de partenaires locaux. Pour un courriel ou un SMS promotionnel, distinguez l’invitation à un événement de la communication nécessaire à une inscription ; vérifiez les règles de la CNIL et le consentement applicable avant d’utiliser une liste de contacts.",
+        ],
+      },
+      {
+        title: "Mesurer les résultats sans confondre présence et vente",
+        paragraphs: [
+          "Avant l’animation, choisissez une mesure correspondant à son objectif : inscriptions, personnes présentes, questions posées, démonstrations suivies ou achats identifiés par un code ou une procédure réellement en place. Ne comptez pas les impressions d’une affiche comme des visiteurs et ne déduisez pas un achat d’une simple participation.",
+          "Consignez les coûts et le temps de préparation, la météo, les références disponibles, le nombre de places utilisées et les changements de programme. Une vente réalisée le jour de l’atelier ne prouve pas à elle seule que l’atelier l’a causée. Comparez les opérations sur des périodes semblables, en notant les différences de saison, de stock et de conditions météo.",
+          "Après l’événement, notez ce qui a été compris, les questions récurrentes et les imprévus. Un résultat utile peut être de réduire la durée, de choisir un sujet plus précis ou de déplacer le rendez-vous à l’intérieur. Le guide pour [mesurer une animation commerciale](/blog/mesurer-animation-commerciale) aide à distinguer les étapes et à éviter un ROI fabriqué.",
+        ],
+      },
+      {
+        title: "Questions fréquentes sur les animations en jardinerie",
+        paragraphs: [
+          "Que proposer en jardinerie hors du pic de printemps ? Un atelier court, une démonstration d’équipement, une rencontre avec un professionnel ou un rendez-vous sur les plantes d’intérieur peuvent fonctionner si la demande, les compétences et les stocks le justifient. Choisissez selon les questions réellement posées dans votre magasin.",
+          "Comment limiter le nombre de places à un atelier ? Annoncez une capacité réaliste, un canal d’inscription consulté par l’équipe, et la façon dont la place est confirmée. Si vous ne pouvez pas gérer une liste d’attente ou les désistements, indiquez une règle simple et n’utilisez pas un QR code comme s’il réservait automatiquement.",
+          "Comment adapter une animation à la météo ? Définissez un seuil de décision et un horaire de communication avant l’ouverture des inscriptions, puis préparez un lieu et un format de repli. Informez directement les inscrits et mettez à jour chaque support public.",
+          "Faut-il proposer les mêmes animations chaque année ? Un rendez-vous récurrent peut aider les clients à le repérer, mais vérifiez que le thème, les stocks et les conditions restent adaptés. Une date répétée n’est pas une raison de conserver une activité qui ne répond plus aux besoins observés.",
+          "Un jeu par QR code est-il nécessaire pour animer une jardinerie ? Non. Une démonstration ou un conseil peut suffire. Un jeu mobile peut ajouter une interaction ponctuelle, à condition que les lots, les règles et leur retrait soient compris par l’équipe ; il ne remplace ni une inscription, ni une réservation, ni la mesure des ventes.",
+        ],
+      },
+      {
+        title: "Checklist avant d’annoncer votre prochaine animation",
+        paragraphs: ["Vérifiez ces points avec l’équipe et les intervenants :"],
+        items: [
+          "Le sujet correspond aux besoins exprimés et aux produits réellement disponibles.",
+          "Le contenu technique a été validé par une personne compétente ; aucun conseil phytosanitaire improvisé n’est diffusé.",
+          "La date, la durée, le prix, le matériel fourni et la capacité sont définis.",
+          "Les stocks et consommables couvrent les places prévues et les démonstrations.",
+          "Un lieu et un format de repli météo sont prêts, avec une règle claire de décision.",
+          "Les photos et allégations sur les produits correspondent à des caractéristiques démontrables.",
+          "Les inscriptions et les messages marketing sont expliqués séparément.",
+          "Les coûts, présences, incidents et indicateurs ont une méthode de suivi définie.",
+        ],
+      },
+    ],
+    related: [
+      "/blog/calendrier-marketing-commerce-local",
+      "/blog/animation-lancement-nouveau-produit",
+      "/blog/mesurer-animation-commerciale",
+      "/blog/animer-periode-creuse-commerce-local",
+      "/comment-ca-marche",
+    ],
+  },
 ];
 
 export function blogPostByPath(path: string) {

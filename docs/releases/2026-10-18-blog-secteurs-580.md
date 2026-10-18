@@ -155,6 +155,39 @@ Axes restants : relecture par une librairie indépendante, exemple réel documen
 avec autorisation, puis observation des requêtes, présences et commandes que le
 commerce sait réellement attribuer.
 
+## Article #583 — jardineries et saisonnalité
+
+URL : `/blog/animations-jardinerie-saisons`. L’article propose sept formats
+adaptables, une matrice saison/animation/vérifications, la préparation du stock
+et de la jauge, un plan de repli météo, des repères de communication, mesure,
+cinq FAQ et une checklist. Il ne prescrit pas de calendrier horticole ni de
+traitement phytosanitaire.
+
+Références vérifiées : FranceAgriMer/VALHOR pour le panel annuel d’achats de
+végétaux (utilisé comme contexte national et non comme résultat d’une jardinerie),
+Météo-France pour la variation des précipitations selon les régions et saisons,
+Google Business Profile pour les posts événementiels, CNIL pour les invitations
+électroniques, DGCCRF pour les allégations environnementales.
+
+Illustration originale générée avec l’outil intégré imagegen, puis optimisée en
+WebP avec Sharp : `apps/landing-page/public/images/blog/animations-jardinerie-saisons.webp`
+(1600 × 800, 280 986 octets). Alternative : « Une équipe de jardinerie anime une
+démonstration de rempotage sous serre ».
+
+Prompt final :
+
+> Use case: illustration-story. Asset type: wide editorial hero illustration for a French professional blog article about seasonal customer events at a garden center. Primary request: a warm, detailed painterly digital illustration of an adult garden-center employee leading a small practical plant-potting demonstration for two adult customers inside a neighborhood garden center. Scene/backdrop: bright covered garden-center greenhouse with shelves of potted plants, seed packets without legible labels, gardening tools and potting table; hint of seasonal change through soft light beyond the greenhouse without specifying a calendar month. Subject: employee calmly demonstrating how to arrange a plant in a pot while customers watch and ask questions; all people adults, welcoming and practical. Style/medium: polished textured editorial illustration consistent with a professional local-commerce magazine; natural proportions, believable leaves, soil and pots. Composition/framing: wide horizontal approximately 2:1, people and demonstration table comfortably within frame, greenery provides depth, suitable for desktop and mobile blog cards. Lighting/mood: soft daylight through greenhouse glazing, fresh and inviting, not glossy commercial advertising. Color palette: natural greens, warm cream, terracotta pots, wooden textures, muted ochre and restrained navy accents. Constraints: no readable text, no signs or price labels, no logos, no watermark, no QR code, no fake app interface, no pesticide bottles or chemical application, no performance numbers, no children. This is an editorial illustration, not a claimed photograph of a real garden center.
+
+Note éditoriale finale : **9,0/10**. Sujet pertinent pour une jardinerie qui
+souhaite structurer des rendez-vous selon ses stocks, son climat local et sa
+capacité. La note évalue l’utilité, la spécificité, la prudence des conseils,
+les sources et le maillage ; elle ne prédit ni classement ni citation IA.
+
+Axes restant à améliorer : relecture par un professionnel horticole et une
+jardinerie en climat ou format de magasin différent ; tester un atelier pilote ;
+après publication, comparer inscriptions, présences et questions réellement
+mesurables selon la période.
+
 Méthode SEO/GEO consultée :
 - https://developers.google.com/search/docs/fundamentals/creating-helpful-content
 - https://developers.google.com/search/docs/fundamentals/ai-optimization-guide?version=published
@@ -176,6 +209,8 @@ Méthode SEO/GEO consultée :
   été relancé après cet ajout. Revue de contenu et des liens effectuée, avec
   URLs internes existantes et références officielles intégrées.
 - Pour l’article #582 : lint et build réussis, Next.js 16.3.8 et 51 pages
+  statiques. Le test E2E du catalogue n’a pas été relancé après cet ajout.
+- Pour l’article #583 : lint et build réussis, Next.js 16.3.8 et 52 pages
   statiques. Le test E2E du catalogue n’a pas été relancé après cet ajout.
 - Captures du tableau fleuriste sur ordinateur et mobile inspectées : lisibilité
   et défilement local sans débordement global.
