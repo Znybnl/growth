@@ -192,6 +192,42 @@ Méthode SEO/GEO consultée :
 - https://developers.google.com/search/docs/fundamentals/creating-helpful-content
 - https://developers.google.com/search/docs/fundamentals/ai-optimization-guide?version=published
 
+## Article #584 — fidélisation d’une animalerie
+
+URL : `/blog/fideliser-clients-animalerie`. L’article présente sept leviers
+éditoriaux et d’expérience en magasin, une checklist et cinq FAQ. Il sépare
+information produit, conseil commercial, santé vétérinaire, alerte de réassort
+et prospection. Il rappelle qu’un animal ne doit jamais être proposé comme lot,
+et ne promet ni effet de santé ni hausse de fidélité. Le maillage interne pointe
+vers les articles sur les programmes de fidélité, les animations, le consentement
+et la mesure.
+
+Sources officielles consultées : Ministère de l’Agriculture (bien-être et
+protection des animaux ; rôle du vétérinaire), CNIL (communications
+électroniques), DGCCRF (information sur l’alimentation animale) et aide Google
+Business Profile (posts événementiels). Les fonctionnalités Google ne sont pas
+présentées comme garantie de visibilité.
+
+Illustration originale, générée avec l’outil intégré imagegen puis convertie en
+WebP avec Sharp :
+`apps/landing-page/public/images/blog/fideliser-clients-animalerie.webp`
+(1600 × 800, 264 232 octets). Texte alternatif : « Une vendeuse conseille une
+cliente sur un accessoire pour son chien dans une animalerie ».
+
+Prompt final :
+
+> Use case: illustration-story. Asset type: wide editorial hero illustration for a French professional blog article about customer loyalty at an independent pet shop without constant discounts. Primary request: a warm, detailed painterly editorial illustration of an adult pet-shop employee helping an adult customer choose a practical dog-walking accessory while the customer's calm adult dog stands beside them on a leash. Scene/backdrop: welcoming neighborhood pet shop with neatly organized collars, leads, toys and pet-care accessories on shelves; no live animals displayed in cages or tanks; clean, spacious aisles. Subject: employee points to two accessory options and explains a product feature; customer listens and holds the leash naturally, dog relaxed, all people adults. Style/medium: polished textured editorial illustration consistent with a professional local-commerce magazine; natural anatomy, believable fabric and shop materials. Composition/framing: wide horizontal approximately 2:1, adult pair and dog comfortably within frame, accessory shelves provide context, suitable for desktop and mobile blog cards. Lighting/mood: soft natural daylight, friendly and helpful, calm animal, not glossy commercial advertising. Color palette: warm cream, soft sage, natural wood, muted terracotta, muted blue and restrained navy accents. Constraints: no readable text, no price signs, no discount tags, no logos, no watermark, no QR code, no fake app interface, no animal as a gift or prize, no medical/veterinary equipment or health claims, no children, no distress or restraint. This is an editorial illustration, not a claimed photograph of a real shop, customer or animal.
+
+Note éditoriale finale : **8,9/10**. L’angle est spécifique au secteur, actionnable
+et prudent sur le bien-être animal, la santé et la mesure de la fidélité. Cette
+note évalue la qualité éditoriale et SEO/GEO du contenu ; elle ne prédit ni
+classement ni citation par un moteur ou un agent IA.
+
+Axes d’amélioration : faire relire les conseils pratiques par une animalerie
+indépendante et un professionnel compétent ; ajouter un exemple réel documenté
+avec autorisation ; après publication, mesurer seulement les retours que le
+commerce peut effectivement attribuer.
+
 ## Vérifications et livraison
 
 - `npm run lint:landing` : réussi.
@@ -212,6 +248,9 @@ Méthode SEO/GEO consultée :
   statiques. Le test E2E du catalogue n’a pas été relancé après cet ajout.
 - Pour l’article #583 : lint et build réussis, Next.js 16.3.8 et 52 pages
   statiques. Le test E2E du catalogue n’a pas été relancé après cet ajout.
+- Pour l’article #584 : `npm run lint:landing` réussi ; `npm run build:landing`
+  réussi avec Next.js 16.3.8 et 53 pages statiques. Les tests E2E n’ont pas été
+  relancés après cet ajout.
 - Captures du tableau fleuriste sur ordinateur et mobile inspectées : lisibilité
   et défilement local sans débordement global.
 

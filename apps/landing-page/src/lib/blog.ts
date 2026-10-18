@@ -3610,6 +3610,138 @@ export const blogPosts: BlogPost[] = [
       "/comment-ca-marche",
     ],
   },
+  {
+    path: "/blog/fideliser-clients-animalerie",
+    title: "Comment fidéliser les clients d’une animalerie sans remise permanente ?",
+    seoTitle: "Fidéliser les clients d’une animalerie sans remise",
+    description:
+      "Conseils, démonstrations et services utiles : 7 idées pour faire revenir les clients d’une animalerie sans promotions permanentes ni promesses vétérinaires.",
+    eyebrow: "Animalerie et commerce de proximité",
+    intro:
+      "Pour fidéliser les clients d’une animalerie sans remise permanente, donnez-leur des raisons concrètes de revenir : un conseil d’usage, une démonstration, une information fiable sur les produits ou une aide pour choisir un accessoire adapté. La relation se construit dans la durée, sans transformer l’animal en lot ni confondre conseil commercial et avis vétérinaire.",
+    answer:
+      "Commencez par repérer les questions récurrentes et les catégories de produits qui demandent une explication. Organisez une démonstration courte, une rencontre avec un professionnel compétent ou un service de disponibilité clairement défini. Vérifiez les produits et les stocks, demandez l’accord avant toute interaction avec un animal, et mesurez les retours observables. Un achat ou un passage en magasin ne prouve pas à lui seul une fidélité durable.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-18",
+    updatedAt: "2026-10-18",
+    reviewedAt: "2026-10-18",
+    readingTime: "9 min de lecture",
+    image: "/images/blog/fideliser-clients-animalerie.webp",
+    imageAlt: "Une vendeuse conseille une cliente sur un accessoire pour son chien dans une animalerie",
+    ctaLabel: "Découvrir les animations par QR code",
+    ctaHref: "/comment-ca-marche",
+    source: [
+      {
+        label: "Ministère de l’Agriculture — bien-être et protection des animaux de compagnie",
+        href: "https://agriculture.gouv.fr/le-bien-etre-et-la-protection-des-animaux-de-compagnie",
+      },
+      {
+        label: "Ministère de l’Agriculture — santé et bien-être : le vétérinaire comme référent",
+        href: "https://agriculture.gouv.fr/comment-garder-son-animal-de-compagnie-en-bonne-sante-et-contribuer-son-bien-etre",
+      },
+      {
+        label: "CNIL — prospection commerciale par e-mail et SMS",
+        href: "https://www.cnil.fr/fr/communication-electronique-quelles-regles",
+      },
+      {
+        label: "DGCCRF — information et règles de l’alimentation animale",
+        href: "https://www.economie.gouv.fr/dgccrf/alimentation-animale",
+      },
+      {
+        label: "Google Business Profile — créer et gérer des posts événementiels",
+        href: "https://support.google.com/business/answer/7342169?hl=fr",
+      },
+    ],
+    sections: [
+      {
+        title: "Fidéliser par l’utilité et la confiance",
+        paragraphs: [
+          "La fidélité en animalerie ne se résume pas à faire revenir quelqu’un grâce à une remise. Les clients peuvent rechercher un produit précis, comparer des accessoires, comprendre une caractéristique ou savoir si une référence est disponible. Une réponse claire et un accueil cohérent peuvent rendre la prochaine visite plus simple, sans promettre de résultat commercial.",
+          "Commencez par noter les questions que l’équipe reçoit souvent : différence entre deux accessoires, taille, compatibilité annoncée par le fabricant, disponibilité d’un produit ou délai de réassort. Distinguez les questions auxquelles un vendeur formé peut répondre à partir des informations du produit de celles qui concernent la santé, un symptôme ou un traitement.",
+          "Le Ministère de l’Agriculture rappelle que le vétérinaire est le référent en cas de maladie et que le bien-être d’un animal dépend de ses besoins physiologiques et comportementaux. L’article porte donc sur l’expérience en magasin et les produits ; il ne donne pas de diagnostic, de conseil de santé ou de recommandation vétérinaire.",
+          "Pour construire une démarche de retour sans points ni remises systématiques, l’article [fidéliser ses clients sans programme de points](/blog/fideliser-clients-sans-programme-points) propose un cadre général. Les exemples ci-dessous l’adaptent aux catégories et aux responsabilités particulières d’une animalerie.",
+        ],
+      },
+      {
+        title: "7 idées pour faire revenir les clients d’une animalerie",
+        paragraphs: [
+          "Choisissez les formats selon les produits réellement vendus et le niveau de compétence disponible. Ces propositions sont des pistes d’organisation, pas des promesses d’augmentation de la rétention.",
+        ],
+        items: [
+          "Organiser une démonstration d’accessoires : comparer les matériaux, les systèmes de fermeture ou les options de rangement à partir des notices et caractéristiques du fabricant. Évitez de présenter une démonstration comme un avis sur la santé ou le comportement de l’animal.",
+          "Proposer un atelier de découverte des jouets et accessoires d’enrichissement. Montrez les fonctions décrites par le fabricant, les consignes d’utilisation et les limites. Ne garantissez pas qu’un produit résoudra un trouble comportemental ; orientez les questions de comportement vers un professionnel qualifié.",
+          "Créer un rendez-vous de découverte d’une nouvelle gamme, avec quelques produits disponibles et une fiche de comparaison lisible. Précisez les espèces ou usages concernés uniquement si cette information figure sur l’étiquetage ou la documentation du produit.",
+          "Tenir une séance questions-réponses avec un vétérinaire, éducateur ou autre intervenant qualifié, si un partenariat est confirmé. Présentez clairement son rôle et son champ d’intervention ; ne laissez pas croire que l’équipe commerciale fournit une consultation médicale.",
+          "Organiser une rencontre d’information avec une association de protection animale ou un refuge au sujet de la responsabilité et de l’adoption, selon les règles et accords applicables. L’animal n’est jamais une dotation ou un lot ; la décision d’adoption reste un acte distinct, encadré et préparé.",
+          "Proposer une aide pratique sur les accessoires : expliquer les tailles disponibles, montrer le fonctionnement d’un produit ou comparer les références en stock. Si la démonstration implique un animal présent, demandez l’accord de son détenteur, gardez une interaction calme et interrompez-la au moindre signe d’inconfort.",
+          "Mettre en place une information de disponibilité à la demande pour un produit manquant, si le magasin dispose d’un moyen fiable pour prévenir le client. Expliquez ce qui sera communiqué, par quel canal et à quelle occasion ; ne transformez pas une demande de réassort en inscription automatique à une newsletter.",
+        ],
+      },
+      {
+        title: "Faire une démonstration qui respecte les animaux et les clients",
+        paragraphs: [
+          "Une démonstration peut parfois se faire sans animal : présenter l’accessoire, montrer son fonctionnement ou comparer les informations figurant sur les emballages suffit souvent. Si un animal est présent, le client doit garder le contrôle de la situation et le personnel doit éviter les gestes imposés, l’exposition prolongée ou la manipulation non nécessaire.",
+          "Prévoyez un espace qui ne bloque pas les allées ni l’accès aux produits, un temps court et une possibilité de s’éloigner. L’objectif commercial ne doit pas conduire à forcer une interaction. Les exigences de bien-être animal concernent aussi les besoins physiologiques et comportementaux ; consultez les [repères du Ministère de l’Agriculture sur la protection animale](https://agriculture.gouv.fr/le-bien-etre-et-la-protection-des-animaux-de-compagnie) et faites valider toute activité impliquant des animaux par des personnes compétentes.",
+          "Vérifiez les produits montrés, les accessoires compatibles et les consignes de sécurité du fabricant. Pour l’alimentation animale, ne formulez pas d’allégations de prévention ou de guérison qui ne figurent pas dans les informations autorisées. La [DGCCRF rappelle les exigences d’information et d’étiquetage des aliments pour animaux](https://www.economie.gouv.fr/dgccrf/alimentation-animale) ; pour toute question de régime liée à un état de santé, orientez le client vers son vétérinaire.",
+        ],
+      },
+      {
+        title: "Choisir un avantage utile sans remise permanente",
+        paragraphs: [
+          "Un avantage peut être un service ou une expérience plutôt qu’une réduction : démonstration, conseil sur une caractéristique produit, présentation d’une gamme ou rencontre avec un intervenant. Il doit correspondre à une capacité réelle du magasin et être décrit avec ses conditions, sa date et les produits concernés.",
+          "Si vous proposez un lot pour un jeu, choisissez un accessoire ou une dotation matérielle dont la disponibilité, la valeur et les modalités de remise sont définies. N’attribuez jamais un animal comme lot ou prime : le Ministère de l’Agriculture rappelle explicitement cette interdiction. La participation à un jeu, l’achat, la collecte d’un contact et le retrait d’un gain sont des étapes différentes.",
+          "Pour les règles d’une mécanique de jeu ou d’une offre promotionnelle, vérifiez le cadre applicable au produit et au dispositif avant diffusion. L’article [jeu-concours ou promotion](/blog/jeu-concours-ou-promotion) compare ces formats. Un QR code peut ouvrir un jeu mobile, mais il ne remplace ni la fiche produit, ni une inscription à un atelier, ni un service de réservation ou de réassort.",
+        ],
+      },
+      {
+        title: "Inviter sans transformer chaque passage en prospection",
+        paragraphs: [
+          "Une invitation claire indique le sujet, le lieu, la date, la durée, le tarif éventuel et la façon de participer. Utilisez des supports que l’équipe peut maintenir à jour : affichage, site, réseaux sociaux ou fiche d’établissement. Google Business Profile permet de publier des posts événementiels avec un titre et des dates et heures ; vérifiez la disponibilité de la fonction pour votre fiche et corrigez le post si le programme change.",
+          "Si le client demande à être averti du retour d’un article, expliquez que son adresse ou son numéro sert à ce message précis. Une demande ponctuelle ne vaut pas automatiquement accord pour recevoir d’autres offres. Pour une newsletter ou des SMS commerciaux, la CNIL indique les règles de consentement et les distinctions entre messages promotionnels et messages nécessaires à un service. Consultez ses [règles sur les communications électroniques](https://www.cnil.fr/fr/communication-electronique-quelles-regles) avant de solliciter une liste de clients.",
+          "Ne liez jamais un avantage, un lot ou un service à la publication d’un avis positif. Si un message après achat est utile, séparez l’information de service de toute proposition marketing et laissez au client un choix explicite lorsque la prospection le requiert.",
+        ],
+      },
+      {
+        title: "Mesurer les retours observés sans inventer de fidélité",
+        paragraphs: [
+          "Choisissez une mesure simple liée à l’action : nombre de personnes présentes, questions reçues, demandes de réassort ou retours utilisant une invitation datée. Définissez la période et la manière de compter avant le lancement. Pour comparer deux opérations, notez aussi les changements de prix, de stock, de météo, d’horaires et d’équipe.",
+          "Un participant n’est pas automatiquement un client récurrent. Un achat pendant une animation ne prouve pas que l’animation l’a provoqué ; une demande de disponibilité n’est pas une vente. Si vous pouvez reconnaître un retour client à partir d’un dispositif existant et légitime, décrivez la méthode et ses limites. Sinon, rapportez les visites ou les interactions agrégées sans les présenter comme une mesure de rétention.",
+          "Le guide sur [la mesure d’une animation commerciale](/blog/mesurer-animation-commerciale) détaille les différences entre participation, contact, vente et retour. L’article [faire revenir des clients après une animation](/blog/faire-revenir-clients-animation) aide aussi à suivre une invitation sans confondre retrait d’un gain et visite ultérieure.",
+        ],
+      },
+      {
+        title: "Questions fréquentes sur la fidélisation en animalerie",
+        paragraphs: [
+          "Quels avantages proposer en animalerie sans remise ? Une démonstration, une comparaison d’accessoires, un conseil sur les caractéristiques publiées ou une rencontre avec un professionnel peuvent apporter une valeur utile. Définissez les produits concernés, le temps de l’équipe et les conditions avant d’inviter.",
+          "Comment prévenir un client lorsqu’un produit est réapprovisionné ? Utilisez un moyen réellement disponible, expliquez quel message sera envoyé et demandez les coordonnées nécessaires à cette demande. Une alerte de disponibilité ne doit pas inscrire implicitement le client à des offres commerciales.",
+          "Peut-on offrir un animal comme lot dans un jeu-concours ? Non. Le Ministère de l’Agriculture rappelle qu’un animal ne peut pas être attribué en lot ou en prime. Si vous organisez un jeu, choisissez une dotation matérielle adaptée et faites vérifier ses conditions.",
+          "Un vendeur peut-il conseiller sur la santé de l’animal ? Le personnel peut expliquer les informations d’un produit dans son champ de compétence, mais un symptôme, un diagnostic ou un traitement relève du vétérinaire. Le Ministère indique que le vétérinaire est le référent en cas de maladie.",
+          "Comment savoir si une animation fidélise vraiment ? Suivez des retours observables sur une période définie et dites comment ils ont été identifiés. La présence à un événement ou une vente le jour même ne suffit pas à prouver un retour régulier ni un effet causé par l’animation.",
+        ],
+      },
+      {
+        title: "Checklist avant votre prochaine animation en animalerie",
+        paragraphs: ["Avant de communiquer, vérifiez ces points avec l’équipe :"],
+        items: [
+          "Le sujet répond à une question fréquente ou présente un produit disponible.",
+          "Les informations utilisées viennent de l’étiquette, du fabricant ou d’un professionnel compétent.",
+          "Aucun diagnostic, traitement ou résultat de santé n’est promis par le personnel commercial.",
+          "La présence ou la manipulation d’un animal n’est pas nécessaire ; si elle l’est, le client conserve le contrôle et le bien-être est prioritaire.",
+          "Aucun animal n’est utilisé comme lot, prime ou avantage de participation.",
+          "Le lot matériel éventuel est disponible, décrit et soumis à des conditions claires.",
+          "Les demandes de réassort et les abonnements marketing sont distingués.",
+          "Les mesures prévues différencient présence, demande, achat et retour réellement constaté.",
+        ],
+      },
+    ],
+    related: [
+      "/blog/fideliser-clients-sans-programme-points",
+      "/blog/faire-revenir-clients-animation",
+      "/blog/collecter-contacts-magasin-consentement",
+      "/blog/mesurer-animation-commerciale",
+      "/comment-ca-marche",
+    ],
+  },
 ];
 
 export function blogPostByPath(path: string) {
