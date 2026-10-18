@@ -69,3 +69,14 @@ Ces seuils sont des seuils opérationnels de départ, à réévaluer après les 
 | Erreur Supabase sur une route métier critique | 3 erreurs en 5 minutes | Vérifier la disponibilité, les migrations et les règles RLS |
 
 Le responsable du pilote est Pierre-Henri BRUNELLE. Les alertes doivent rester dépourvues de données personnelles : identifiants techniques, horodatage, route et statut uniquement.
+
+## Webhook Resend désactivé — #573
+
+- Resend transmet `svix-id`, `svix-timestamp`, `svix-signature`. Le handler les normalise pour le SDK ; les anciens noms `webhook-*` ne servent que de repli complet, jamais de complément à des en-têtes Svix partiels.
+- `Headers webhook Resend manquants` signifie un refus **avant** vérification du secret. Un POST manuel sans ces en-têtes doit être refusé et ne valide pas le fonctionnement du webhook. Consulter une livraison signée dans Resend, pas un simple accès navigateur.
+- Conserver `request.text()` sans transformation et vérifier signature/horodatage avant toute écriture. Ne jamais supprimer la vérification pour « débloquer » les événements. Le secret de cet endpoint doit correspondre à `RESEND_WEBHOOK_SECRET` côté serveur de production ; une modification de variable Vercel demande un nouveau déploiement pour être prise en compte. Ne pas recopier sa valeur dans l'Issue ou les logs.
+- Après accord du propriétaire et déploiement : choisir **un événement récent ciblé**, le rejouer dans Resend si disponible, contrôler HTTP 200 `{received:true}` et sa présence dans Supervision, puis réactiver l'endpoint (ou le réactiver d'abord si le tableau de bord l'impose). Vérifier ensuite un nouvel événement. Le statut d'envoi d'un e-mail et la réception de son webhook sont deux preuves différentes.
+- HTTP 400 : en-têtes absents ou signature/horodatage refusé. HTTP 503 : vérification passée, persistance indisponible ; diagnostiquer le stockage avant de rejouer. HTTP 500 « secret manquant » : configuration serveur absente. Ne jamais renvoyer l'e-mail de gain pour réparer uniquement le suivi.
+- Limite existante : la synchronisation applique le statut reçu et archive chaque réception sans déduplication par identifiant Svix ni protection contre les événements hors ordre. Ne pas rejouer en masse l'historique : un ancien `email.sent` pourrait remplacer un statut plus récent et des lignes d'historique peuvent être dupliquées. Une reprise exhaustive exige une analyse et un correctif dédiés, pas une suppression d'historique.
+
+Preuves, commandes et retour arrière : [livraison #573](releases/2026-10-18-resend-webhook-573.md).

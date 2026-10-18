@@ -9,6 +9,8 @@
     "lint": "eslint",
     "test:e2e": "playwright test",
     "test:reward-email": "node --experimental-strip-types --import ./scripts/ts-alias-loader.mjs --test src/lib/email-settings.test.mjs",
+    "test:resend-webhook": "node --experimental-strip-types --test src/lib/resend-webhook.test.mjs",
+    "smoke:resend-webhook": "node scripts/smoke-resend-webhook.mjs",
     "test:gain-notifications": "node --experimental-strip-types --test src/lib/merchant-gain-notifications.test.mjs src/lib/merchant-gain-notification-api.test.mjs",
     "test:analytics-consent": "node --experimental-strip-types --test src/lib/analytics-consent.test.mjs",
     "test:data-lifecycle": "node --experimental-strip-types --test src/lib/personal-data-lifecycle.test.mjs",
