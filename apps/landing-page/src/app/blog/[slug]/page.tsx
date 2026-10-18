@@ -19,7 +19,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = postFromSlug((await params).slug);
   if (!post) notFound();
-  const base = pageMetadata(post.path, post.title, post.description);
+  const base = pageMetadata(post.path, post.seoTitle ?? post.title, post.description);
   const image = post.image ? `${SITE_URL}${post.image}` : undefined;
   return {
     ...base,
@@ -62,6 +62,7 @@ export default async function BlogPostPage({ params }: Props) {
         articleType="BlogPosting"
         datePublished={post.publishedAt}
         dateModified={post.updatedAt}
+        breadcrumbs={[{ name: "Blog", path: "/blog" }, { name: post.title, path: post.path }]}
       />
       <BlogPostTemplate post={post} />
     </>
