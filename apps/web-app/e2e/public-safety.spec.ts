@@ -1,6 +1,12 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("Parcours publics sûrs", () => {
+  test("l’optimiseur d’images refuse les destinations non autorisées", async ({ request }) => {
+    for (const destination of ["https://example.invalid/image.jpg", "http://127.0.0.1/image.jpg", "file:///image.jpg"]) {
+      const response = await request.get(`/_next/image?url=${encodeURIComponent(destination)}&w=640&q=75`);
+      expect(response.status(), destination).toBe(400);
+    }
+  });
   test("un QR code de prévisualisation invalide affiche une explication", async ({ page }) => {
     await page.goto("/campaign/e2e-preview-invalide?preview=1&previewToken=invalide");
 
