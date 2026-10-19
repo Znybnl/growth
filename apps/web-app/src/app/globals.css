@@ -675,16 +675,49 @@ select {
   outline: none;
 }
 
-.okado-workspace-shell .okado-wizard > .grid > aside {
+.okado-wizard .wizard-progress {
   border-color: var(--color-lavender-mist);
 }
 
-@media (min-width: 1280px) {
-  .okado-workspace-shell .okado-wizard > .grid > aside {
-    position: sticky;
-    top: 1rem;
-  }
+.okado-wizard[data-layout="compact"] .wizard-progress {
+  grid-column: 1 / -1;
 }
+.okado-wizard[data-layout="wide"] .wizard-layout {
+  grid-template-columns: 190px minmax(0, 1fr);
+}
+.okado-wizard[data-layout="wide"][data-inline-preview="true"] .wizard-layout {
+  grid-template-columns: 190px minmax(0, 1fr) 280px;
+}
+.okado-wizard[data-layout="compact"][data-inline-preview="true"] .wizard-layout {
+  grid-template-columns: minmax(0, 1fr) 240px;
+}
+.okado-wizard[data-layout="wide"] .wizard-save-toolbar {
+  display: block;
+}
+.okado-wizard:not([data-layout="wide"]) .wizard-heading {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.75rem;
+}
+.okado-wizard:not([data-layout="wide"]) .wizard-heading h1 {
+  margin-top: 0.5rem;
+  font-size: 1.75rem;
+  line-height: 1.2;
+}
+.okado-wizard[data-layout="compact"] .wizard-progress > p { display: none; }
+.okado-wizard[data-layout="compact"] .wizard-progress > nav { margin-top: 0; }
+.okado-workspace-shell main > .okado-wizard:not([data-layout="wide"]) > .wizard-layout {
+  margin-top: 1rem;
+}
+.okado-wizard[data-layout="wide"] .wizard-progress,
+.okado-wizard[data-inline-preview="true"] .wizard-live-preview {
+  position: sticky;
+  top: 1rem;
+}
+.okado-wizard[data-layout="wide"] .wizard-form { grid-column: 2; grid-row: 1; }
+.okado-wizard[data-layout="wide"] .wizard-live-preview { grid-column: 3; grid-row: 1; }
+.okado-wizard[data-layout="compact"] .wizard-form { grid-column: 1; grid-row: 2; }
+.okado-wizard[data-layout="compact"] .wizard-live-preview { grid-column: 2; grid-row: 2; }
 
 .okado-workspace-shell .okado-cashier :where(aside > section) {
   border-color: var(--color-lavender-mist);
@@ -708,8 +741,8 @@ select {
 }
 
 .okado-workspace-shell .okado-wizard > .grid > main.okado-card {
-  border-left: 1px solid var(--okado-border-subtle);
-  padding-left: 2rem;
+  border-left: 0;
+  padding-inline: 1.25rem;
 }
 
 .okado-workspace-shell .okado-campaign-editor > .grid > .space-y-6 > section.okado-card {
@@ -734,13 +767,6 @@ select {
 .okado-workspace-shell .okado-poster-editor > .grid > .space-y-6 > section.okado-card:first-child,
 .okado-workspace-shell .okado-editor-page > section.okado-card:not(.okado-preview-surface):first-of-type {
   border-top: 0;
-}
-
-@media (max-width: 1279px) {
-  .okado-workspace-shell .okado-wizard > .grid > main.okado-card {
-    border-left: 0;
-    padding-left: 0;
-  }
 }
 
 .okado-workspace-shell :where(.okado-campaign-editor, .okado-wizard, .okado-poster-editor, .okado-editor-page) :where(input:not([type="color"]), textarea, select):not(.okado-preview-surface input):not(.okado-preview-surface textarea):not(.okado-preview-surface select) {

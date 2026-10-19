@@ -7,6 +7,8 @@ import { CampaignWizard } from "@/components/merchant/campaign-wizard";
 import { AccountSettingsForm } from "@/components/merchant/account-settings-form";
 import { CampaignExperience } from "@/components/public/campaign-experience";
 import { MerchantShell } from "@/components/merchant/merchant-shell";
+import { DashboardRecentCampaigns } from "@/components/merchant/dashboard-recent-campaigns";
+import { MetricCard, PageHeader } from "@/components/ui/workspace";
 import { captureClientProductEvent, resetProductAnalytics } from "@/lib/client-product-analytics";
 import { defaultScratchTextColor, wheelHeadingColorForTemplateSelection, wheelPaletteForTemplate } from "@/lib/campaign-defaults";
 import type { CampaignPerformance, GamePageTemplateId, Merchant, PublicCampaign, TextFont } from "@/lib/types";
@@ -74,6 +76,38 @@ export function TemplateRenderingProof({ mode = "preview", templateId = "classic
     kpis: { scans: 0, contacts: 0, optIns: 0, leads: 0, actions: 0, games: 0, wins: 0, redeemed: 0,
       conversionRate: 0, actionRate: 0, redemptionRate: 0, estimatedSpend: 0, costPerLead: 0, costPerRedeemed: 0 },
   };
+  if (mode.startsWith("dashboard-responsive")) {
+    const titles = ["Jeu de bienvenue", "Les surprises de l’automne — un nom de campagne volontairement très long pour vérifier le tableau", "Ticket du samedi", "Pause de saison", "Sans lot disponible", "Jeu sans dotation"];
+    const campaigns = mode.endsWith("empty") ? [] : titles.map((title, index): CampaignPerformance => ({
+      ...performance,
+      campaign: { ...performance.campaign, id: `dashboard-fixture-${index}`, title, gameType: index % 2 ? "scratch" : "wheel", isActive: index !== 3 },
+      prizes: index === 5 ? [] : performance.prizes.map((prize) => ({ ...prize, remainingQuantity: index >= 3 ? 0 : null })),
+      kpis: { ...performance.kpis, scans: index === 1 ? 12345678 : index === 5 ? 0 : 1200 + index,
+        games: index === 1 ? 9876543 : index === 5 ? 2 : 480 + index, conversionRate: index === 5 ? 200 : 40 },
+    }));
+    return <MerchantShell merchant={merchant} user={{ id: "responsive-user", merchantId: merchant.id,
+      role: "owner", firstName: "Camille", lastName: "Test", email: "responsive@example.test", password: "", createdAt: merchant.createdAt }}
+      locations={[{ merchant, role: "owner" }]} activeLocationId={merchant.id} isSaasAdmin={false}>
+      <div className="min-w-0 space-y-5">
+        <PageHeader eyebrow="Vue d'ensemble" title="Pilotez vos campagnes"
+          description="Données fictives pour le contrôle responsive de l’accueil." />
+        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <MetricCard label="Campagnes actives" value="5" /><MetricCard label="Participations" value="9 878 467" />
+          <MetricCard label="Lots consommés" value="182" /><MetricCard label="Taux de consommation" value="25%" />
+        </section>
+        <DashboardRecentCampaigns campaigns={campaigns} />
+      </div>
+    </MerchantShell>;
+  }
+  if (mode.startsWith("wizard-responsive")) {
+    const admin = mode.endsWith("admin");
+    return <MerchantShell merchant={merchant} user={{ id: "responsive-user", merchantId: merchant.id,
+      role: "owner", firstName: "Camille", lastName: "Test", email: "responsive@example.test", password: "", createdAt: merchant.createdAt }}
+      locations={[{ merchant, role: "owner" }]} activeLocationId={merchant.id} isSaasAdmin={admin}>
+      <CampaignWizard merchant={merchant} initialCampaign={mode.endsWith("create") ? undefined : performance}
+        {...(admin ? { adminAccountMerchantId: "fixture-account", adminSaveEndpoint: "/api/admin/merchants/fixture-account/locations/template-proof-merchant/campaigns/setup" } : {})} />
+    </MerchantShell>;
+  }
   if (mode === "account-marketing") {
     const accountMerchant = { ...merchant, city: "Reims", address: "1 rue de Test", contactName: "Camille Test",
       websiteUrl: "https://fixture.example.test", appointmentUrl: "https://booking.example.test",
