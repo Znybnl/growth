@@ -91,6 +91,8 @@ jobs:
         run: npm run test:admin-campaigns -w @okado/web-app
       - name: Test authenticated preview QR and scoped test tokens
         run: npm run test:preview-qr -w @okado/web-app
+      - name: Test new poster defaults and retained template choices
+        run: npm run test:poster-defaults -w @okado/web-app
       - name: Test merchant gain notifications and RLS
         run: npm run test:gain-notifications -w @okado/web-app
       - name: Test Resend webhook signatures and storage errors

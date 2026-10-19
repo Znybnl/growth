@@ -4,14 +4,14 @@ import { useEffect, useState } from "react";
 import { CampaignEditor } from "@/components/merchant/campaign-editor";
 import { CampaignLivePreview, buildCampaignLivePreviewModel } from "@/components/merchant/campaign-live-preview";
 import { CampaignWizard } from "@/components/merchant/campaign-wizard";
-import { AccountSettingsForm } from "@/components/merchant/account-settings-form";
 import { PosterEditor } from "@/components/merchant/poster-editor";
+import { AccountSettingsForm } from "@/components/merchant/account-settings-form";
 import { CampaignExperience } from "@/components/public/campaign-experience";
 import { MerchantShell } from "@/components/merchant/merchant-shell";
 import { DashboardRecentCampaigns } from "@/components/merchant/dashboard-recent-campaigns";
 import { MetricCard, PageHeader } from "@/components/ui/workspace";
 import { captureClientProductEvent, resetProductAnalytics } from "@/lib/client-product-analytics";
-import { defaultScratchTextColor, wheelHeadingColorForTemplateSelection, wheelPaletteForTemplate } from "@/lib/campaign-defaults";
+import { createDefaultPosterSettings, defaultScratchTextColor, wheelHeadingColorForTemplateSelection, wheelPaletteForTemplate } from "@/lib/campaign-defaults";
 import type { CampaignPerformance, GamePageTemplateId, Merchant, PublicCampaign, TextFont } from "@/lib/types";
 import { halloweenFixture } from "./halloween-wheel";
 
@@ -105,7 +105,7 @@ export function TemplateRenderingProof({ mode = "preview", templateId = "classic
     return <MerchantShell merchant={merchant} user={{ id: "responsive-user", merchantId: merchant.id,
       role: "owner", firstName: "Camille", lastName: "Test", email: "responsive@example.test", password: "", createdAt: merchant.createdAt }}
       locations={[{ merchant, role: "owner" }]} activeLocationId={merchant.id} isSaasAdmin={admin}>
-      <CampaignWizard merchant={merchant} initialCampaign={mode.endsWith("create") ? undefined : performance}
+      <CampaignWizard merchant={merchant} initialCampaign={mode.includes("create") ? undefined : performance}
         {...(admin ? { adminAccountMerchantId: "fixture-account", adminSaveEndpoint: "/api/admin/merchants/fixture-account/locations/template-proof-merchant/campaigns/setup" } : {})} />
     </MerchantShell>;
   }
@@ -143,6 +143,12 @@ export function TemplateRenderingProof({ mode = "preview", templateId = "classic
       {...(mode === "wizard-actions-admin" ? { adminAccountMerchantId: "fixture-account",
         adminSaveEndpoint: "/api/admin/merchants/fixture-account/locations/template-proof-merchant/campaigns/setup" } : {})} />;
   }
+  if (mode === "poster-defaults") return <MerchantShell merchant={merchant} user={{ id: "poster-default-user", merchantId: merchant.id,
+    role: "owner", firstName: "Camille", lastName: "Test", email: "poster@example.test", password: "", createdAt: merchant.createdAt }}
+    locations={[{ merchant, role: "owner" }]} activeLocationId={merchant.id} isSaasAdmin={false}>
+    <PosterEditor campaign={{ ...performance.campaign, presentation: { ...performance.campaign.presentation,
+      poster: createDefaultPosterSettings(merchant) } }} prizes={performance.prizes} />
+  </MerchantShell>;
   if (mode === "wizard-new") return <CampaignWizard merchant={merchant} />;
   if (mode === "wizard-custom-goal") return <CampaignWizard merchant={merchant} initialCampaign={{ ...performance,
     campaign: { ...performance.campaign, goalType: "social_follow", emailCaptureEnabled: true,
