@@ -1,3 +1,4 @@
+import { GameTemplateCard } from "./game-template-card";
 import { BEAUTY_WHEEL_THEMES, beautyWheelBackground, beautyWheelDefaultBackground, beautyWheelButtonTextColor, beautyWheelLogoColor } from "@/lib/beauty-wheel-themes";
 import Image from "next/image";
 import { buildBeautyWheelSegmentColors } from "@/lib/beauty-wheel-segments";
@@ -82,56 +83,33 @@ export function BeautyWheelTemplateGallery({
   return (
     <section aria-labelledby="beauty-wheel-templates-title" className="space-y-3">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#6b3774]">Collection Beauté</p>
-        <h3 id="beauty-wheel-templates-title" className="mt-1 text-base font-semibold text-[#241b2a]">Templates Beauté</h3>
-        <p className="mt-1 text-sm text-[#69616c]">Sept styles de roue, personnalisables aux couleurs de votre établissement.</p>
+        <h3 id="beauty-wheel-templates-title" className="text-base font-semibold text-carbon">Templates Beauté</h3>
+        <p className="mt-1 text-sm text-charcoal">Sept styles de roue, personnalisables aux couleurs de votre établissement.</p>
       </div>
       <div className="grid min-w-0 grid-cols-[repeat(auto-fit,minmax(min(100%,13rem),1fr))] gap-3">
         {BEAUTY_WHEEL_THEMES.map((theme) => {
-          const selected = selectedTemplateId === theme.id;
           const nativeBackground = beautyWheelDefaultBackground(theme.id, { mode: "color", color: theme.background });
-          return (
-            <button
-              key={theme.id}
-              type="button"
-              aria-pressed={selected}
-              onClick={() => onSelect(theme.id)}
-              className={`group min-w-0 overflow-hidden rounded-2xl border bg-white text-left transition hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6b3774] ${selected ? "border-[#6b3774] ring-2 ring-[#6b3774]/15" : "border-[#ded8e1]"}`}
-            >
-              <div
-                className={`relative h-40 overflow-hidden px-4 pt-3 ${theme.id === "beauty-rose" ? "okado-rose-powder-surface" : ""}`}
-                style={{ backgroundColor: theme.background, backgroundImage: nativeBackground ? "none" : beautyWheelBackground(theme.id, theme.background, theme.primary), color: theme.text }}
-              >
-                {nativeBackground ? <Image src={nativeBackground} alt="" fill sizes="320px" data-template-art={theme.id} className="pointer-events-none object-cover" /> : <BeautyThumbnailDecor theme={theme} />}
-                <div data-testid="beauty-thumbnail-logo" className="relative z-10 min-h-[20px] max-w-[56%] text-[8px] font-semibold uppercase leading-[1.15] tracking-[0.06em]" style={{ color: beautyWheelLogoColor(theme.id) }}>Votre établissement<BeautyLogoRule color={beautyWheelLogoColor(theme.id)} /></div>
-                <div className="relative z-10 mt-3 max-w-[56%] text-[13px] font-bold leading-[1.12]" style={{ fontFamily: textFontFamily(theme.font) }}>Votre animation<br />vous réserve une surprise</div>
-                <div className="relative z-10 mt-1 max-w-[55%] text-[8px] leading-tight opacity-75">Des surprises vous attendent</div>
-                <BeautyWheelThumbnail theme={theme} />
-              </div>
-              <div className="flex items-start justify-between gap-2 px-4 py-3">
-                <span className="min-w-0"><span className="block text-sm font-semibold text-[#241b2a]">{theme.name}</span><span className="mt-0.5 block text-xs text-[#746c78]">{theme.tagline}</span></span>
-                {selected ? <span className="shrink-0 rounded-full bg-[#f2e7f5] px-2 py-0.5 text-[10px] font-semibold text-[#6b3774]">Sélectionné</span> : null}
-              </div>
-            </button>
-          );
+          return <GameTemplateCard key={theme.id} label={theme.name} description={theme.tagline}
+            selected={selectedTemplateId === theme.id} onSelect={() => onSelect(theme.id)}>
+            <div className={`relative h-full overflow-hidden px-4 pt-3 ${theme.id === "beauty-rose" ? "okado-rose-powder-surface" : ""}`}
+              style={{ backgroundColor: theme.background, backgroundImage: nativeBackground ? "none" : beautyWheelBackground(theme.id, theme.background, theme.primary), color: theme.text }}>
+              {nativeBackground ? <Image src={nativeBackground} alt="" fill sizes="320px" data-template-art={theme.id} className="pointer-events-none object-cover" /> : <BeautyThumbnailDecor theme={theme} />}
+              <div data-testid="beauty-thumbnail-logo" className="relative z-10 min-h-[20px] max-w-[56%] text-[8px] font-semibold uppercase leading-[1.15] tracking-[0.06em]" style={{ color: beautyWheelLogoColor(theme.id) }}>Votre établissement<BeautyLogoRule color={beautyWheelLogoColor(theme.id)} /></div>
+              <div className="relative z-10 mt-3 max-w-[56%] text-[13px] font-bold leading-[1.12]" style={{ fontFamily: textFontFamily(theme.font) }}>Votre animation<br />vous réserve une surprise</div>
+              <div className="relative z-10 mt-1 max-w-[55%] text-[8px] leading-tight opacity-75">Des surprises vous attendent</div>
+              <BeautyWheelThumbnail theme={theme} />
+            </div>
+          </GameTemplateCard>;
         })}
-        <button
-          type="button"
-          aria-pressed={selectedTemplateId === "rose-institut"}
-          onClick={() => onSelect("rose-institut")}
-          className={`group min-w-0 overflow-hidden rounded-2xl border bg-white text-left transition hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6b3774] ${selectedTemplateId === "rose-institut" ? "border-[#6b3774] ring-2 ring-[#6b3774]/15" : "border-[#ded8e1]"}`}
-        >
-          <div data-testid="eclat-thumbnail" className="relative h-40 overflow-hidden bg-[radial-gradient(ellipse_at_18%_8%,rgba(243,164,196,0.22),transparent_48%),linear-gradient(145deg,#fff8fb,#ffeaf2)] px-4 pt-3 text-[#003cb4]">
+        <GameTemplateCard label="Éclat" description="Lumineux & personnalisable" selected={selectedTemplateId === "rose-institut"}
+          onSelect={() => onSelect("rose-institut")}>
+          <div data-testid="eclat-thumbnail" className="relative h-full overflow-hidden bg-[radial-gradient(ellipse_at_18%_8%,rgba(243,164,196,0.22),transparent_48%),linear-gradient(145deg,#fff8fb,#ffeaf2)] px-4 pt-3 text-[#003cb4]">
             <div data-testid="beauty-thumbnail-logo" className="relative z-10 min-h-[20px] max-w-[56%] text-[8px] font-semibold uppercase leading-[1.15] tracking-[0.06em]">Votre établissement<BeautyLogoRule color="#003cb4" /></div>
             <div className="relative z-10 mt-3 max-w-[56%] font-playfair text-[13px] font-bold leading-[1.12]">Tournez la roue<br />et tentez de gagner</div>
             <div className="relative z-10 mt-1 max-w-[55%] text-[8px] leading-tight opacity-75">Une roue lumineuse à vos couleurs</div>
             <EclatWheelThumbnail />
           </div>
-          <div className="flex items-start justify-between gap-2 px-4 py-3">
-            <span className="min-w-0"><span className="block text-sm font-semibold text-[#241b2a]">Éclat</span><span className="mt-0.5 block text-xs text-[#746c78]">Lumineux & personnalisable</span></span>
-            {selectedTemplateId === "rose-institut" ? <span className="shrink-0 rounded-full bg-[#f2e7f5] px-2 py-0.5 text-[10px] font-semibold text-[#6b3774]">Sélectionné</span> : null}
-          </div>
-        </button>
+        </GameTemplateCard>
       </div>
     </section>
   );

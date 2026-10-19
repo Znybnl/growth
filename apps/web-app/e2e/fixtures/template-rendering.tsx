@@ -44,8 +44,8 @@ function AnalyticsIdentityProof() {
 }
 
 /** Synthetic rendering only: tests intercept every API request, no session bypass. */
-export function TemplateRenderingProof({ mode = "preview", templateId = "classic", background = "#ffffff", ink, font }: {
-  mode?: string; templateId?: GamePageTemplateId; background?: string; ink?: string; font?: TextFont;
+export function TemplateRenderingProof({ mode = "preview", templateId = "classic", background = "#ffffff", ink, font, secondary }: {
+  mode?: string; templateId?: GamePageTemplateId; background?: string; ink?: string; font?: TextFont; secondary?: string;
 }) {
   if (mode === "analytics-identity") return <AnalyticsIdentityProof />;
   const scratch = templateId.includes("scratch");
@@ -66,7 +66,7 @@ export function TemplateRenderingProof({ mode = "preview", templateId = "classic
       heading: { ...halloweenFixture.presentation.heading, textColor: color, fontSizePx: 40, fontFamily: font ?? "poppins" as const },
       wheel: wheelPaletteForTemplate(templateId, halloweenFixture.presentation.wheel),
       layout: { ...halloweenFixture.presentation.layout, templateId, blockSpacingPx: 25,
-        scratchSubtitle: "Découvrez votre cadeau", wheelSubtitle: "" },
+        scratchSubtitle: "Découvrez votre cadeau", wheelSubtitle: secondary ?? "" },
     },
   };
   const publicCampaign: PublicCampaign = { ...form, merchantName: merchant.companyName, merchantLogoText: merchant.logoText,

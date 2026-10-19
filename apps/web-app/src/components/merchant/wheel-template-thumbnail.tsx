@@ -4,6 +4,7 @@ import { HalloweenWheelVisual } from "@/components/public/halloween-wheel-art";
 import { HALLOWEEN_WHEEL_BACKGROUND } from "@/lib/halloween-wheel-theme";
 import { DEFAULT_COCORICO_DUO_BLUE, DEFAULT_COCORICO_DUO_YELLOW } from "@/lib/campaign-defaults";
 import type { GamePageTemplateId } from "@/lib/types";
+import { textFontFamily } from "@/lib/format";
 
 const THUMBNAIL_STYLES: Partial<Record<GamePageTemplateId, {
   background: string;
@@ -38,10 +39,11 @@ const THUMBNAIL_STYLES: Partial<Record<GamePageTemplateId, {
   },
 };
 
-export function WheelTemplateThumbnail({ templateId }: { templateId: GamePageTemplateId }) {
-  if (templateId === "halloween-gold") return <div aria-hidden="true" data-testid="wheel-template-thumbnail-halloween-gold" className="relative mb-3 flex h-28 items-center justify-center overflow-hidden rounded-xl bg-black">
+export function WheelTemplateThumbnail({ templateId, card = false }: { templateId: GamePageTemplateId; card?: boolean }) {
+  if (templateId === "halloween-gold") return <div aria-hidden="true" data-testid="wheel-template-thumbnail-halloween-gold" className={`relative overflow-hidden bg-black ${card ? "h-full px-4 pt-3" : "mb-3 flex h-28 items-center justify-center rounded-xl"}`}>
     <Image src={HALLOWEEN_WHEEL_BACKGROUND} alt="" fill sizes="220px" className="object-cover" />
-    <div className="relative w-[94px] pt-2"><HalloweenWheelVisual segments={Array.from({ length: 6 }, (_, index) => ({ id: `thumbnail-${index}`, label: "Cadeau", tone: "win" as const }))} interactive={false} /></div>
+    {card ? <div className="relative z-10 max-w-[56%] text-[#f8f6ef]"><div className="text-[8px] font-semibold uppercase leading-[1.15] tracking-[0.06em]">Votre établissement</div><div className="mt-3 font-cormorant text-[17px] leading-[1.05] text-[#ecac52]">TOURNEZ<br />LA ROUE</div><div className="mt-1 font-serif text-[9px] italic text-[#ecac52]">Spécial Halloween</div></div> : null}
+    <div className={card ? "absolute -bottom-4 -right-3 w-32" : "relative w-[94px] pt-2"}><HalloweenWheelVisual segments={Array.from({ length: 6 }, (_, index) => ({ id: `thumbnail-${index}`, label: "Cadeau", tone: "win" as const }))} interactive={false} /></div>
   </div>;
   const style = THUMBNAIL_STYLES[templateId];
   if (!style) return null;
@@ -57,11 +59,16 @@ export function WheelTemplateThumbnail({ templateId }: { templateId: GamePageTem
     <div
       aria-hidden="true"
       data-testid={`wheel-template-thumbnail-${templateId}`}
-      className="relative mb-3 flex h-28 items-center justify-center overflow-hidden rounded-xl"
+      className={`relative overflow-hidden ${card ? "h-full px-4 pt-3" : "mb-3 flex h-28 items-center justify-center rounded-xl"}`}
       style={{ background: style.background }}
     >
       <span className="absolute -right-4 -top-8 h-28 w-28 rounded-full opacity-30 blur-2xl" style={{ backgroundColor: style.marker }} />
-      <div className={`relative shrink-0 rounded-full border-[5px] ${overflowingWheel ? "absolute top-9 h-[126px] w-[126px]" : "h-[88px] w-[88px]"}`} style={wheelStyle}>
+      {card ? <div className="relative z-10 max-w-[56%]" style={{ color: templateId === "classic" ? "#ffffff" : style.center }}>
+        <div className="min-h-[20px] text-[8px] font-semibold uppercase leading-[1.15] tracking-[0.06em]">Votre établissement</div>
+        <div className="mt-3 text-[13px] font-bold leading-[1.12]" style={{ fontFamily: textFontFamily(templateId === "classic" ? "poppins" : templateId === "restaurant-pop" ? "lato" : templateId === "rose-institut" ? "playfair" : "fredoka") }}>Tournez la roue<br />et tentez de gagner</div>
+        <div className="mt-1 text-[8px] leading-tight opacity-75">Des surprises vous attendent</div>
+      </div> : null}
+      <div className={`shrink-0 rounded-full border-[5px] ${card ? "absolute -bottom-5 -right-3 h-32 w-32" : overflowingWheel ? "absolute top-9 h-[126px] w-[126px]" : "relative h-[88px] w-[88px]"}`} style={wheelStyle}>
         <span
           className="absolute -top-[9px] left-1/2 z-10 h-[19px] w-[18px] -translate-x-1/2"
           style={{ backgroundColor: style.marker, clipPath: "polygon(8% 0,92% 0,50% 100%)", filter: "drop-shadow(0 2px 2px rgba(15,23,42,.28))" }}

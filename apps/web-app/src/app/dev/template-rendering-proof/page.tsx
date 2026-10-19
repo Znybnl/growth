@@ -5,10 +5,10 @@ import type { GamePageTemplateId, TextFont } from "@/lib/types";
 export const metadata = { robots: { index: false, follow: false } };
 
 export default async function Page({ searchParams }: {
-  searchParams: Promise<{ mode?: string; template?: string; background?: string; ink?: string; font?: string }>;
+  searchParams: Promise<{ mode?: string; template?: string; background?: string; ink?: string; font?: string; secondary?: string }>;
 }) {
   if (process.env.NODE_ENV !== "development") notFound();
   const query = await searchParams;
   const font = ["playfair", "cormorant", "bodoni"].includes(query.font ?? "") ? query.font as TextFont : undefined;
-  return <TemplateRenderingProof mode={query.mode} templateId={query.template as GamePageTemplateId} background={query.background} ink={query.ink} font={font} />;
+  return <TemplateRenderingProof mode={query.mode} templateId={query.template as GamePageTemplateId} background={query.background} ink={query.ink} font={font} secondary={query.secondary} />;
 }

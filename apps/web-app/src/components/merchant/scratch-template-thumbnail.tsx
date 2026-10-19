@@ -98,7 +98,7 @@ const MOTIF_ICONS = {
   sun: Sun,
 } as const;
 
-export function ScratchTemplateThumbnail({ templateId }: { templateId: GamePageTemplateId }) {
+export function ScratchTemplateThumbnail({ templateId, card = false }: { templateId: GamePageTemplateId; card?: boolean }) {
   if (!isScratchThumbnailId(templateId)) return null;
 
   const template = SCRATCH_THUMBNAILS[templateId];
@@ -110,7 +110,7 @@ export function ScratchTemplateThumbnail({ templateId }: { templateId: GamePageT
     <span
       aria-hidden="true"
       data-testid={`scratch-template-thumbnail-${templateId}`}
-      className="relative mb-3 flex h-[148px] items-center justify-center overflow-hidden rounded-[14px] p-2"
+      className={`relative flex items-center justify-center overflow-hidden p-2 ${card ? "h-full" : "mb-3 h-[148px] rounded-[14px]"}`}
       style={{ background: template.background }}
     >
       {!isVault && !isSunburst ? (
