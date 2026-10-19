@@ -1,8 +1,9 @@
 import { expect, test, type Page } from "@playwright/test";
-import { assertNoPageOverflow, captureVisualAt1280 } from "./helpers/visual-1280";
+import { assertNoPageOverflow, captureVisualAt1280, rejectAnalyticsForVisualTests } from "./helpers/visual-1280";
 
 const errors = new WeakMap<Page, string[]>();
-test.beforeEach(async ({ page }) => {
+test.beforeEach(async ({ page, context, baseURL }) => {
+  await rejectAnalyticsForVisualTests(context, baseURL!);
   const messages: string[] = [];
   errors.set(page, messages);
   page.on("pageerror", (error) => messages.push(error.message));

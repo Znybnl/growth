@@ -1,4 +1,12 @@
-import { expect, type Page, type TestInfo } from "@playwright/test";
+import { expect, type BrowserContext, type Page, type TestInfo } from "@playwright/test";
+import { ANALYTICS_CONSENT_COOKIE, ANALYTICS_CONSENT_VERSION } from "../../src/lib/analytics-consent";
+
+/** Layout tests exercise the post-choice screen; consent itself has its own suite. */
+export async function rejectAnalyticsForVisualTests(context: BrowserContext, baseURL: string) {
+  await context.addCookies([{ name: ANALYTICS_CONSENT_COOKIE, url: baseURL,
+    value: encodeURIComponent(JSON.stringify({ version: ANALYTICS_CONSENT_VERSION,
+      choice: "rejected", decidedAt: Date.now() })) }]);
+}
 
 /** Required desktop check for any new/changed screen; attach viewport captures
  * for human inspection, not an automatically approved pixel baseline. */

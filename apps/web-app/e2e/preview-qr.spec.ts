@@ -1,12 +1,14 @@
 import { expect, test } from "@playwright/test";
 import QRCode from "qrcode";
+import { rejectAnalyticsForVisualTests } from "./helpers/visual-1280";
 
 let svg: string;
 test.beforeAll(async () => {
   svg = await QRCode.toString("https://example.test/campaign/qr-test?preview=1&previewToken=fictitious", { type: "svg", width: 1200 });
 });
 
-test.beforeEach(async ({ page }) => {
+test.beforeEach(async ({ page, context, baseURL }) => {
+  await rejectAnalyticsForVisualTests(context, baseURL!);
   // Never contact storage, analytics or any production account from this fixture.
   await page.route("**/*", (route) => {
     const url = new URL(route.request().url());
