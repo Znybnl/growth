@@ -6,6 +6,7 @@ import vm from "node:vm";
 import ts from "typescript";
 import * as rules from "./metric-rules.ts";
 import { readAllRows } from "./paginated-read.ts";
+import * as merchantLogoText from "./merchant-logo-text.ts";
 const require=createRequire(import.meta.url);
 function load(relative,dependencies={}) {
   const testModule={exports:{}};
@@ -38,6 +39,7 @@ function repository({error=null}={}) {
     from(table){if(table==='prizes')return query([{id:'p',campaign_id:'c',label:'Lot',remaining_quantity:2,total_quantity:10}]);throw Error('Unexpected read '+table)},
   };
   return load('./campaign-repository.ts',{
+    '@/lib/merchant-logo-text':merchantLogoText,
     '@/lib/server-performance':{measureServerStage:(_stage,work)=>work()},
     '@/lib/metric-rules':rules,'@/lib/paginated-read':{readAllRows},
     '@/lib/supabase':{getSupabaseAdmin:()=>db,unwrapSupabaseResult:unwrap},
@@ -47,7 +49,7 @@ function repository({error=null}={}) {
   });
 }
 test('vrai repository dashboard : opt-ins exacts, attente agrégée, clics et conversion',async()=>{
-  const result=await repository().getSupabaseMerchantDashboard({id:'m'});
+  const result=await repository().getSupabaseMerchantDashboard({id:'m',companyName:'Commerce fictif'});
   assert.equal(result.campaigns[0].kpis.optIns,1);
   assert.equal(result.campaigns[0].kpis.actions,2);
   assert.equal(result.averageConversion,2);
@@ -78,7 +80,7 @@ test('export paginé : identifiant de jeu étranger refusé avant lecture des co
   assert.equal(result.length,0);assert.deepEqual(reads,['campaigns']);
 });
 test('vrai handler stats transmet les opt-ins et la conversion du dashboard',async()=>{
-  const dashboard=await repository().getSupabaseMerchantDashboard({id:'m'});
+  const dashboard=await repository().getSupabaseMerchantDashboard({id:'m',companyName:'Commerce fictif'});
   const route=load('../app/api/merchant/stats/route.ts',{
     'next/server':{NextResponse:response},'@/lib/auth':{requireAuthenticatedSession:async()=>({merchant:{id:'m'}})},
     '@/lib/store':{getMerchantDashboard:async()=>dashboard},

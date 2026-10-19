@@ -68,6 +68,7 @@ import {
   DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
 } from "@/lib/campaign-defaults";
 import { cache } from "react";
+import { defaultMerchantLogoText } from "@/lib/merchant-logo-text";
 import { measureServerStage } from "@/lib/server-performance";
 import {
   Campaign,
@@ -230,7 +231,7 @@ const merchantSeed: Merchant = {
   locationCode: "SORA-PAR",
   locationStatus: "active",
   companyName: "Maison Sora",
-  logoText: "MS",
+  logoText: "Maison Sora",
   logoUrl: undefined,
   industry: "Mode et maison",
   restaurantType: "Brasserie",
@@ -1063,7 +1064,7 @@ function createMerchantAccountInMemory(input: MerchantSignUpInput) {
   const merchant: Merchant = {
     id: merchantId,
     companyName,
-    logoText: companyName.slice(0, 2).toUpperCase(),
+    logoText: defaultMerchantLogoText(companyName),
     logoUrl: undefined,
     industry: "",
     restaurantType: "Brasserie",
@@ -1141,7 +1142,7 @@ function updateMerchantOnboardingInMemory(userId: string, input: MerchantOnboard
   }
 
   merchant.companyName = input.companyName.trim();
-  merchant.logoText = input.companyName.trim().slice(0, 2).toUpperCase();
+  merchant.logoText = defaultMerchantLogoText(input.companyName);
   merchant.industry = input.industry.trim();
   merchant.industrySubsector = input.industrySubsector?.trim() || undefined;
   merchant.restaurantType = input.restaurantType.trim();
@@ -1204,7 +1205,7 @@ function updateMerchantAccountInMemory(
   user.email = email;
 
   merchant.companyName = input.companyName.trim();
-  merchant.logoText = input.companyName.trim().slice(0, 2).toUpperCase();
+  merchant.logoText = defaultMerchantLogoText(input.companyName);
   merchant.industry = input.industry.trim();
   merchant.industrySubsector = input.industrySubsector?.trim() || undefined;
   merchant.restaurantType = input.restaurantType.trim();
@@ -1469,7 +1470,7 @@ export async function createMerchantLocation(input: {
     ...clone(source),
     id: generateId("merchant"),
     companyName: input.companyName.trim(),
-    logoText: input.companyName.trim().slice(0, 2).toUpperCase(),
+    logoText: defaultMerchantLogoText(input.companyName),
     city: input.city.trim(),
     address: input.address?.trim() ?? "",
     locationCode: input.city.trim()

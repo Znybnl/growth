@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import * as merchantLogoText from "./merchant-logo-text.ts";
 import { test } from "node:test";
 import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
@@ -58,6 +59,7 @@ function workspace({ count = 8, cap = 500, archived = false, fail = false } = {}
     }; return q;
   }};
   const repo=load("./merchant-account-repository.ts",{
+    "@/lib/merchant-logo-text":merchantLogoText,
     "@/lib/supabase":{getSupabaseAdmin:()=>db,isSupabaseConfigured:()=>true},
     "@/lib/server-performance":{measureServerStage},
     "@/lib/paginated-read":{readAllRows},
@@ -168,6 +170,7 @@ test("#500 Résultats : projection JSON des conditions, pagination et opt-ins co
     return query(table==="prizes"?[{id:"p",campaign_id:"c",label:"Lot",remaining_quantity:null,total_quantity:null}]:[],table);
   }};
   const repo=load("./campaign-repository.ts",{
+    "@/lib/merchant-logo-text":merchantLogoText,
     "@/lib/server-performance":{measureServerStage},
     "@/lib/paginated-read":{readAllRows},
     "@/lib/supabase":{getSupabaseAdmin:()=>db,unwrapSupabaseResult:r=>{if(r.error)throw Error("Unavailable");return r.data},
@@ -178,7 +181,7 @@ test("#500 Résultats : projection JSON des conditions, pagination et opt-ins co
     "@/lib/poster-utils":{resolvePosterLogoSettings:v=>v,normalizePosterSettings:(v,d)=>d,createPosterSettingsDefaults:()=>({})},
     "@/lib/email-settings":{normalizeCampaignEmailSettings:(v,d)=>d,createCampaignEmailDefaults:()=>({})},
   });
-  const result=await repo.getSupabaseCampaignDataView("c",{id:"m"},{leadOffset:50,leadLimit:50});
+  const result=await repo.getSupabaseCampaignDataView("c",{id:"m",companyName:"Commerce fictif"},{leadOffset:50,leadLimit:50});
   assert.equal(result.performance.kpis.optIns,9);
   assert.equal(result.performance.kpis.games,12);
   assert.equal(result.undatedRedemptions,2);
