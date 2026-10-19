@@ -37,6 +37,7 @@ import { AdminCampaignQrDownload } from "@/components/merchant/admin-campaign-qr
 import { CampaignQrDownloadDialog } from "@/components/merchant/campaign-qr-download";
 import { CampaignSpacingControls } from "@/components/merchant/campaign-spacing-controls";
 import { GameTypeChoice } from "@/components/merchant/game-type-choice";
+import { useWizardLayout, WizardResponsivePreview } from "@/components/merchant/wizard-responsive-layout";
 import { BeautyWheelTemplateGallery } from "@/components/merchant/beauty-wheel-template-gallery";
 import { BeautyScratchTemplateGallery } from "@/components/merchant/beauty-scratch-template-gallery";
 import { ScratchTemplateThumbnail } from "@/components/merchant/scratch-template-thumbnail";
@@ -808,6 +809,7 @@ export function CampaignWizard({
   const [previewOpen, setPreviewOpen] = useState(false);
   const [qrPreviewOpen, setQrPreviewOpen] = useState(false);
   const [diffusionQrOpen, setDiffusionQrOpen] = useState(false);
+  const { ref: wizardLayoutRef, layout: wizardLayout, inlinePreview } = useWizardLayout();
   const [backgroundLibrary, setBackgroundLibrary] = useState<BackgroundLibraryAsset[]>([]);
   const [backgroundLibraryOpen, setBackgroundLibraryOpen] = useState(false);
   const [backgroundLibraryError, setBackgroundLibraryError] = useState<string | null>(null);
@@ -1362,9 +1364,9 @@ export function CampaignWizard({
   );
 
   return (
-    <div className="okado-wizard space-y-6 pb-10">
+    <div ref={wizardLayoutRef} data-layout={wizardLayout} data-inline-preview={inlinePreview} className="okado-wizard space-y-6 pb-10">
       {noMarketingActionDialog}
-      <section data-mode={isEditing ? "edit" : "create"} className="flex flex-col gap-5 px-1 py-2 xl:flex-row xl:items-end xl:justify-between">
+      <section data-mode={isEditing ? "edit" : "create"} className="wizard-heading flex flex-col gap-5 px-1 py-2 xl:flex-row xl:items-end xl:justify-between">
         <div>
           <p className="okado-label">Assistant de création</p>
           <h1 className="okado-page-title mt-3">
@@ -1442,12 +1444,12 @@ export function CampaignWizard({
         ) : null}
       </section>
 
-      <div className="hidden border-b border-fog bg-soft-white/95 py-3 xl:block">
-        <div className="flex items-center justify-between gap-3">
+      <div className="wizard-save-toolbar hidden border-b border-fog bg-soft-white/95 py-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <StatusBadge tone={!draft.id || !draft.isActive ? "muted" : "active"}>
             {!draft.id ? "En création" : draft.isActive ? "En ligne" : "Brouillon"}
           </StatusBadge>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Link href="/campaigns" prefetch={false} className="okado-secondary-action px-4 text-sm">
               Retour aux jeux
             </Link>
@@ -1473,12 +1475,19 @@ export function CampaignWizard({
         </div>
       </div>
 
-      <div className="grid gap-6 xl:items-start xl:grid-cols-[240px_minmax(0,1fr)_360px]">
-        <aside className="okado-card p-4">
+      <div className="wizard-layout grid items-start gap-5">
+        <aside className="wizard-progress okado-card min-w-0 p-3">
           <p className="px-3 text-[10px] uppercase tracking-[0.22em] text-[#8993a6]">
             Progression
           </p>
-          <nav className="mt-4 space-y-1" aria-label="Étapes de création">
+          {wizardLayout === "narrow" ? <label className="mt-2 block text-sm font-semibold">
+            <span className="sr-only">Étape de création</span>
+            <select aria-label="Étape de création" value={stepIndex} onChange={(event) => setStepIndex(Number(event.target.value))} className="w-full rounded-[12px] border border-fog bg-white px-3 py-3 text-sm text-carbon">
+              {WIZARD_STEPS.map((item, index) => <option key={item.id} value={index} disabled={!(isEditing || Boolean(draft.id) || index <= furthestStepIndex)}>
+                Étape {index + 1}/5 — {item.title}{!isEditing && !draft.id && index < stepIndex ? " · Terminée" : ""}
+              </option>)}
+            </select>
+          </label> : <nav className={`mt-3 ${wizardLayout === "compact" ? "grid grid-cols-5 gap-1" : "space-y-1"}`} aria-label="Étapes de création">
             {WIZARD_STEPS.map((item, index) => {
               const active = index === stepIndex;
               const canAccessStep = isEditing || Boolean(draft.id) || index <= furthestStepIndex;
@@ -1490,7 +1499,8 @@ export function CampaignWizard({
                   type="button"
                   onClick={() => canAccessStep && setStepIndex(index)}
                   disabled={!canAccessStep}
-                  className={`flex w-full items-start gap-3 rounded-[4px] px-3 py-3 text-left transition ${active ? "bg-deep-plum text-white" : visited ? "text-[#18864b] hover:bg-purple-haze" : "text-[#a0a9b9]"}`}
+                  aria-current={active ? "step" : undefined}
+                  className={`flex w-full items-start gap-2 rounded-[4px] px-2 py-3 text-left transition ${active ? "bg-deep-plum text-white" : visited ? "text-[#18864b] hover:bg-purple-haze" : "text-[#a0a9b9]"}`}
                 >
                   <span
                     className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-[4px] text-[10px] font-bold ${active ? "bg-white text-aubergine" : complete ? "bg-[#e9f8ec] text-[#18864b]" : visited ? "bg-purple-haze text-aubergine" : "bg-[#f2f4f7]"}`}
@@ -1501,17 +1511,17 @@ export function CampaignWizard({
                     <span className="block text-sm font-semibold">
                       {item.title}
                     </span>
-                    <span className="mt-1 block text-xs leading-5 opacity-75">
+                    <span className={`${wizardLayout === "compact" ? "hidden" : "block"} mt-1 text-xs leading-5 opacity-75`}>
                       {item.description}
                     </span>
                   </span>
                 </button>
               );
             })}
-          </nav>
+          </nav>}
         </aside>
 
-        <main className="okado-card min-w-0 p-5 sm:p-8">
+        <main className="wizard-form okado-card min-w-0 p-4 sm:p-5" data-testid="wizard-form">
           <div className="flex items-start justify-between gap-4 border-b border-[#edf0f4] pb-5">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-aubergine">
@@ -1522,9 +1532,11 @@ export function CampaignWizard({
                 <p className="mt-2 hidden text-sm text-[#7a8498]">{step.description}</p>
               ) : null}
             </div>
-            <div className="hidden rounded-[4px] bg-purple-haze p-3 text-aubergine sm:block">
+            {inlinePreview ? <div className="hidden rounded-[4px] bg-purple-haze p-3 text-aubergine sm:block">
               <Sparkles className="h-5 w-5" />
-            </div>
+            </div> : <WizardResponsivePreview inline={false}>
+              <WizardGamePreview draft={draft} merchant={merchant} />
+            </WizardResponsivePreview>}
           </div>
 
           {step.id === "identity" ? (
@@ -1654,7 +1666,7 @@ export function CampaignWizard({
 
           {step.id === "game" ? (
             <div className="mt-7 space-y-5">
-               <div className="grid gap-4 sm:grid-cols-2">
+               <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,220px),1fr))] gap-4" data-testid="wizard-game-choices">
                 {(
                   [
                     {
@@ -2030,7 +2042,7 @@ export function CampaignWizard({
                         className="mt-2 w-full rounded-[13px] border border-[#dbe3ed] bg-white px-3 py-3 text-sm text-[#182033]"
                       />
                     </label>
-                    <div className="grid gap-3 sm:grid-cols-3">
+                    <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,140px),1fr))] gap-3" data-testid="wizard-prize-fields">
                     <label className="block">
                       <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8993a6]">
                         Probabilité
@@ -2863,7 +2875,7 @@ export function CampaignWizard({
               {error}
             </div>
           ) : null}
-          <div className="mt-8 flex flex-col-reverse gap-3 border-t border-[#edf0f4] pt-5 sm:flex-row sm:items-center sm:justify-between xl:flex-col xl:items-stretch">
+          <div className="mt-8 flex flex-wrap gap-3 border-t border-[#edf0f4] pt-5" data-testid="wizard-footer">
             <button
               type="button"
               onClick={previousStep}
@@ -2873,7 +2885,7 @@ export function CampaignWizard({
               <ChevronLeft className="h-4 w-4" />
               Retour
             </button>
-            <div className="flex min-w-0 flex-col gap-3 sm:flex-row xl:flex-col">
+            <div className="flex min-w-0 flex-wrap gap-3">
               <button
                 type="button"
                 onClick={() => void saveCampaign("save")}
@@ -2906,11 +2918,9 @@ export function CampaignWizard({
           </div>
         </main>
 
-        <aside className="min-w-0 self-start">
-          <div className="mx-auto w-full max-w-[360px] space-y-4">
-            <WizardGamePreview draft={draft} merchant={merchant} />
-          </div>
-        </aside>
+        {inlinePreview ? <WizardResponsivePreview inline>
+          <WizardGamePreview draft={draft} merchant={merchant} />
+        </WizardResponsivePreview> : null}
       </div>
       <PrizeSuggestionsPanel
         open={suggestionsOpen}
@@ -3019,6 +3029,7 @@ export function CampaignWizard({
         <CampaignSavedDialog
           open
           campaignId={savedCampaignId}
+          isActive={draft.isActive}
           adminTargetName={adminSaveEndpoint ? merchant.companyName : undefined}
           adminIsActive={adminSaveEndpoint ? draft.isActive : undefined}
           onClose={() => setSavedCampaignId(null)}

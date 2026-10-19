@@ -36,7 +36,7 @@ export async function GET(request: Request, context: RouteContext) {
     const createdAt = Date.parse(performance.campaign.createdAt);
     await captureProductEvent(
       "campaign_qr_downloaded",
-      merchantDistinctId(session.merchant.id, session.user.id),
+      merchantDistinctId(session.user.merchantId, session.user.id),
       {
         merchantId: session.merchant.id,
         merchantUserId: session.user.id,

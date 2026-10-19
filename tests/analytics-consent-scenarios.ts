@@ -4,7 +4,7 @@ import { expect, test } from "@playwright/test";
 export function analyticsConsentScenarios(entryPath: string, navigationPath: string) {
   // Exercise consenting human traffic: PostHog drops headless client hints.
   // This only affects the local test browser; production keeps its bot filtering.
-  test.use({ userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36" });
+  test.use({ viewport: { width: 1280, height: 720 }, userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36" });
   test.beforeEach(async ({ page }) => {
     await page.addInitScript(() => {
       Object.defineProperty(navigator, "webdriver", { get: () => false });
@@ -27,6 +27,13 @@ export function analyticsConsentScenarios(entryPath: string, navigationPath: str
     await expect(preferences.getByRole("button", { name: "Accepter", exact: true })).toBeVisible();
     await expect(preferences.getByRole("button", { name: "Refuser", exact: true })).toBeVisible();
     await preferences.screenshot({ path: testInfo.outputPath("cookie-choices.png") });
+    await page.screenshot({ path: testInfo.outputPath("analytics-choices-1280x720.png") });
+    for (const width of [320, 390]) {
+      await page.setViewportSize({ width, height: 720 });
+      expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+      await preferences.screenshot({ path: testInfo.outputPath(`analytics-choices-${width}.png`) });
+    }
+    await page.setViewportSize({ width: 1280, height: 720 });
     expect(calls).toEqual([]);
     expect((await context.cookies()).some((cookie) => cookie.name.startsWith("ph_"))).toBe(false);
     await preferences.getByRole("button", { name: "Refuser", exact: true }).click();

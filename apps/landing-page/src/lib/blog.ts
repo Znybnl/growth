@@ -1257,6 +1257,7 @@ export const blogPosts: BlogPost[] = [
     related: [
       "/blog/idees-animations-commerciales-boutique",
       "/blog/animer-point-de-vente-qr-code",
+      "/blog/attirer-clients-fleuriste",
       "/restaurants",
       "/instituts-beaute",
       "/tarifs",
@@ -2988,6 +2989,1459 @@ export const blogPosts: BlogPost[] = [
       "/blog/attirer-clients-commerce-local",
       "/blog/fideliser-clients-sans-programme-points",
       "/blog/animer-point-de-vente-qr-code",
+      "/comment-ca-marche",
+    ],
+  },
+  {
+    path: "/blog/attirer-clients-fleuriste",
+    title: "Comment attirer des clients chez un fleuriste ? 10 idées concrètes",
+    seoTitle: "Attirer des clients chez un fleuriste : 10 idées",
+    description:
+      "Découvrez 10 idées pour attirer des clients chez un fleuriste : vitrine, visibilité locale, ateliers, partenaires et invitations, avec un plan sur 30 jours.",
+    eyebrow: "Marketing fleuriste",
+    intro:
+      "Un fleuriste peut donner envie de pousser sa porte sans attendre une grande fête ni multiplier les réductions. Le bon levier rend le savoir-faire visible, aide à choisir un bouquet et respecte les arrivages, la durée de vie des fleurs et le temps de préparation de l’équipe.",
+    answer:
+      "Pour attirer des clients chez un fleuriste, commencez par une fiche locale à jour et une vitrine compréhensible, puis testez une action liée à un besoin précis : bouquet du quotidien, atelier, conseil ou partenariat de quartier. Réservez le stock et le temps nécessaires, puis mesurez les demandes, visites et commandes sans attribuer automatiquement chaque vente à l’animation.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-18",
+    updatedAt: "2026-10-18",
+    reviewedAt: "2026-10-18",
+    readingTime: "12 min de lecture",
+    image: "/images/blog/attirer-clients-fleuriste.webp",
+    imageAlt: "Illustration d’une fleuriste présentant un bouquet à une cliente dans une boutique de quartier",
+    ctaLabel: "Voir comment préparer une animation par QR code",
+    ctaHref: "/comment-ca-marche",
+    source: [
+      references.localVisibility,
+      {
+        label: "FranceAgriMer et VALHOR — achats de végétaux en 2024, étude présentée en 2025",
+        href: "https://www.franceagrimer.fr/actualites/retour-sur-le-webinaire-achats-de-vegetaux-par-les-francais-en-2024",
+      },
+      references.prospecting,
+      references.lottery,
+      {
+        label: "DGCCRF — justifier les allégations environnementales sur les produits",
+        href: "https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/allegations-environnementales-ce-quil-faut-retenir",
+      },
+    ],
+    sections: [
+      {
+        title: "Identifiez ce qui manque : être trouvé, faire entrer ou faire revenir",
+        paragraphs: [
+          "Avant de choisir une animation, observez le parcours. Les personnes du quartier savent-elles que vous êtes ouvert ? Les passants comprennent-ils votre offre ? Les visiteurs hésitent-ils sur le budget ou sur les variétés ? Une boutique peu visible sur une carte et une boutique dont la vitrine ne donne aucun repère n’ont pas le même problème.",
+          "Pendant quelques jours comparables, notez les demandes reçues, les questions récurrentes et les horaires où l’équipe dispose de temps de conseil. Un relevé anonyme suffit pour commencer. Choisissez ensuite une difficulté principale et une preuve à observer ; les [leviers d’acquisition d’un commerce local](/blog/attirer-clients-commerce-local) donnent le cadre général, tandis que les actions ci-dessous répondent aux contraintes florales.",
+        ],
+      },
+      {
+        title: "1. Rendez votre fiche locale utile avant de chercher plus de visibilité",
+        paragraphs: [
+          "Vérifiez le nom, l’adresse, le téléphone et les horaires, y compris les ouvertures exceptionnelles. Ajoutez des photos récentes de la devanture et de créations réellement proposées. Expliquez les services existants : retrait sur commande, livraison dans une zone définie ou conseil en boutique. N’annoncez pas un service que votre organisation ne peut pas assurer.",
+          "Les conseils officiels Google Business Profile, cités en source, aident à tenir ces informations à jour. Ils ne garantissent aucune position. Sur votre site, une page pratique avec accès, horaires et conditions de commande sera plus utile qu’une succession de pages presque identiques créées pour chaque quartier voisin.",
+        ],
+      },
+      {
+        title: "2. Donnez un repère de choix dès la vitrine",
+        paragraphs: [
+          "Présentez quelques créations identifiables : bouquet pour remercier, petite attention du quotidien ou composition pour une table. Indiquez clairement le prix de la création montrée et les éventuelles variations. Une personne qui ne connaît pas les fleurs doit pouvoir comprendre ce qu’elle peut demander sans craindre une surprise en caisse.",
+          "Reliez le visuel au stock du jour. Si une variété manque, actualisez la présentation et expliquez les substitutions possibles avant la commande. Testez une seule modification de vitrine, puis notez les questions reçues ; ne changez pas en même temps le message, les horaires et toute l’offre si vous voulez comprendre l’effet de votre essai.",
+        ],
+      },
+      {
+        title: "3. Faites découvrir un bouquet du quotidien, au-delà des grandes occasions",
+        paragraphs: [
+          "Proposez une création simple et clairement décrite à partir des arrivages disponibles : format, gamme de couleurs, prix et moment de retrait. Le principe est d’aider à choisir, pas de promettre une composition identique toute l’année. Précisez si la photo illustre un style ou correspond exactement au bouquet remis.",
+          "La synthèse FranceAgriMer et VALHOR sur les achats de 2024, publiée en 2025, distingue notamment occasions calendaires et occasions personnelles. Ce repère historique invite à examiner plusieurs motifs d’achat ; il ne décrit pas la demande de votre boutique en 2026. Observez vos demandes locales avant de fixer les quantités du bouquet du quotidien.",
+        ],
+      },
+      {
+        title: "4. Organisez un atelier floral à capacité maîtrisée",
+        paragraphs: [
+          "Un atelier de petite composition peut faire connaître votre savoir-faire. Définissez le public, la durée, les fournitures, le prix éventuel et le nombre de places selon votre espace et votre capacité d’accompagnement. Réservez les tiges et le matériel ; le stock de l’atelier ne doit pas manquer aux commandes déjà promises.",
+          "Un format d’essai peut accueillir quelques adultes sur un créneau calme, avec une personne dédiée et des conditions d’inscription claires. Ce scénario reste à valider sur place. Si l’équipe ne peut plus accueillir les clients pendant l’atelier, réduisez le groupe ou choisissez une courte démonstration. Un jeu QR ne remplace pas un outil de réservation ni la gestion des places.",
+          "Exemple fictif d’annonce à compléter avec vos conditions : « Atelier petite composition, samedi de 10 h à 10 h 45, six places adultes. Tiges, contenant et matériel compris dans le tarif affiché. Inscription auprès de la boutique ; place confirmée par l’équipe. Les variétés suivront les arrivages annoncés. » Précisez le prix réel, les modalités d’annulation et ce que chaque personne emporte avant de diffuser cette invitation.",
+        ],
+      },
+      {
+        title: "5. Montrez un geste utile plutôt que de lancer une promotion générale",
+        paragraphs: [
+          "Préparer une composition, choisir un vase adapté ou expliquer l’entretien d’un bouquet donne un sujet concret d’échange. Choisissez un geste que votre équipe maîtrise et dont les consignes correspondent aux végétaux présentés. Évitez de promettre une durée de tenue universelle ou un résultat identique quelles que soient les conditions chez le client.",
+          "Annoncez le thème et le créneau de cette démonstration, puis gardez une version courte pour les personnes pressées. Une fiche de conseils cohérente peut prolonger l’échange. Mesurez d’abord les questions, les démonstrations réalisées et les demandes de renseignement, sans les assimiler à des ventes additionnelles.",
+        ],
+      },
+      {
+        title: "6. Construisez un partenariat de quartier qui a un usage clair",
+        paragraphs: [
+          "Une boutique de décoration peut présenter une composition avec son vase ; une librairie peut accueillir un rendez-vous autour des fleurs ; un lieu de travail voisin peut découvrir une offre florale adaptée à ses espaces. Choisissez un partenaire dont le public et les horaires correspondent à votre capacité, puis définissez qui fournit, explique et remet chaque élément.",
+          "Le support doit identifier le fleuriste, son adresse et l’action proposée. Une collaboration n’implique pas de partager les fichiers clients. Pour comparer les contacts venant du partenaire, utilisez par exemple une question anonyme à l’accueil ou un support identifié, sans prétendre que toute visite ainsi observée a été créée par l’opération.",
+          "Pour préparer une rencontre chez un libraire partenaire, les conseils sur [l’accueil d’un événement en librairie indépendante](/blog/attirer-clients-librairie-independante) complètent la répartition des places, des livres et des commandes florales.",
+        ],
+      },
+      {
+        title: "7. Préparez les temps forts sans leur consacrer tout votre calendrier",
+        paragraphs: [
+          "Les occasions locales et les fêtes peuvent servir de repères, mais elles ne justifient pas une animation chaque semaine. Confirmez les dates du territoire, vos approvisionnements et la capacité de préparation. Une date nationale ne donne pas automatiquement les habitudes du quartier, et les calendriers varient selon les pays.",
+          "Prévoyez aussi des moments ordinaires : remerciement, invitation ou envie de fleurir son intérieur. Gardez les communications liées au deuil sobres et adaptées au besoin, sans pression promotionnelle déplacée. Le [calendrier marketing local](/blog/calendrier-marketing-commerce-local) aide à répartir préparation, diffusion et bilan plutôt qu’à accumuler les événements.",
+        ],
+      },
+      {
+        title: "8. Publiez un arrivage ou une création avec des informations vérifiables",
+        paragraphs: [
+          "Une photo récente peut expliquer une couleur, une association ou un format disponible. Ajoutez le lieu, le créneau où demander conseil et les modalités de commande réellement proposées. Photographiez vos créations ou utilisez des visuels dont vous avez les droits ; ne présentez pas une illustration comme la photo d’un bouquet livré.",
+          "Dans votre communication, reliez les mentions « local », « de saison » ou « origine France » aux produits concernés et conservez les informations qui les justifient. Une livraison par un fournisseur proche ne démontre pas le lieu de culture. Si une caractéristique reste incertaine, décrivez plutôt la composition et sa disponibilité. Les [repères de la DGCCRF sur les allégations environnementales](https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/allegations-environnementales-ce-quil-faut-retenir) aident à éviter les promesses générales non étayées.",
+        ],
+      },
+      {
+        title: "9. Rendez le retrait et la livraison faciles à comprendre",
+        paragraphs: [
+          "Pour une commande, précisez l’heure limite, le créneau de préparation, le lieu de retrait et les conditions de livraison si ce service existe. Le client doit savoir comment confirmer sa demande et ce qui se passe en cas d’indisponibilité. Ne promettez pas une préparation immédiate pendant un pic d’activité si vous ne pouvez pas la tenir.",
+          "Un panneau pratique ou un lien vers ces informations peut lever une hésitation sans remise. Si vous utilisez un QR code, ajoutez une adresse lisible et une possibilité de demander de l’aide. Le support et la destination doivent avoir le même rôle : consulter une offre, commander via votre canal habituel ou participer à un jeu sont des parcours différents.",
+        ],
+      },
+      {
+        title: "10. Proposez une raison de revenir sans imposer une newsletter",
+        paragraphs: [
+          "Après un échange, vous pouvez remettre une invitation pour une prochaine démonstration ou présenter un avantage daté dont vous maîtrisez le coût. Écrivez les conditions : création concernée, réservation éventuelle, période et disponibilité. Une attention utilisable plus tard doit rester réalisable même si les variétés changent.",
+          "Une invitation remise en boutique et un courriel commercial sont deux démarches distinctes. Pour les messages électroniques en France, vérifiez les [règles CNIL de prospection et leurs exceptions](https://www.cnil.fr/fr/la-prospection-commerciale-par-courrier-electronique-sms-mms-et-automate-dappel). Participer à un jeu ou donner un e-mail pour recevoir un gain ne vaut pas abonnement. Le [suivi après une animation](/blog/faire-revenir-clients-animation) explique comment distinguer invitation, contact et retour observé.",
+        ],
+      },
+      {
+        title: "Quelle action choisir selon le problème observé ?",
+        paragraphs: [
+          "Ce tableau sert à sélectionner un premier test. Il compare des contraintes de fleuriste, pas des performances promises. Choisissez une action dont vous pouvez vérifier l’exécution avec les données réellement disponibles.",
+        ],
+        table: {
+          caption: "Choisir un levier d’acquisition pour une boutique de fleurs",
+          headers: ["Besoin observé", "Premier test", "Contrainte et preuve à suivre"],
+          rows: [
+            ["Des horaires mal connus", "Actualiser la fiche locale et la devanture", "Informations identiques ; demandes liées aux horaires"],
+            ["Des passants hésitants", "Montrer une création avec prix et usage", "Stock du jour ; questions et entrées observées"],
+            ["Un savoir-faire peu visible", "Démonstration courte ou atelier limité", "Temps et tiges réservés ; présences réelles"],
+            ["Une prochaine visite à encourager", "Invitation datée remise sur place", "Conditions tenables ; retours observés après la première visite"],
+          ],
+        },
+      },
+      {
+        title: "Budgétez les tiges, le temps et les engagements de remise",
+        paragraphs: [
+          "Chiffrez les fleurs et feuillages au coût d’achat, les consommables, la préparation, l’accueil et les supports. Pour un atelier payant, séparez recettes et coûts ; pour un avantage offert, prévoyez le coût de toutes les remises que vous vous engagez à honorer. Une probabilité de gain n’est pas un planning d’approvisionnement.",
+          "Exemple entièrement fictif : six places d’atelier et cinq tiges par personne mobilisent déjà trente tiges, avant les compositions de démonstration, les feuillages et la réserve que vous jugez nécessaire. Ce calcul dimensionne des fournitures, pas un tarif ni une rentabilité. Le coût dépend de vos achats réels et du temps de l’équipe. La [méthode de budget d’animation](/blog/cout-animation-commerciale-commerce) aide à ne pas oublier ces postes.",
+          "Si un lot floral doit être retiré plus tard, vérifiez la durée de validité et la capacité à fournir ce qui a été promis. Prévoyez dans les conditions la composition ou les substitutions convenues, sans modifier après coup une promesse faite au gagnant. Retirez les supports qui annoncent un produit devenu indisponible.",
+        ],
+      },
+      {
+        title: "Un plan de test sur 30 jours pour commencer",
+        paragraphs: [
+          "Ce plan est une proposition d’organisation, pas une prévision commerciale. Il peut servir à tester une vitrine, une démonstration ou un partenariat. Pour une [période creuse](/blog/animer-periode-creuse-commerce-local), comparez des créneaux documentés et regardez aussi les plages voisines : une visite déplacée ne constitue pas nécessairement une nouvelle demande.",
+        ],
+        items: [
+          "Jours 1 à 7 : relever les questions, les horaires et le parcours ; choisir un besoin et une mesure de départ.",
+          "Jours 8 à 14 : préparer une seule action, réserver les fournitures, relire les conditions et tester le support.",
+          "Jours 15 à 24 : réaliser le test, noter les demandes et difficultés, documenter les changements d’arrivage ou d’équipe.",
+          "Jours 25 à 30 : comparer coût, exécution et preuves observées ; poursuivre le suivi si une invitation ou un gain reste valable après le jour 30.",
+        ],
+      },
+      {
+        title: "Quand une animation par QR code est-elle utile chez un fleuriste ?",
+        paragraphs: [
+          "Un jeu court peut accompagner un moment de découverte si l’équipe peut expliquer les conditions et remettre les lots. Une petite création définie ou un accessoire disponible peuvent être envisagés après calcul de leur coût. Un jeu n’est pas nécessaire pour mettre à jour vos horaires, montrer un bouquet ou donner un conseil.",
+          "Okado permet de préparer une roue ou un ticket à gratter sur mobile, une affiche, des lots et le suivi des gains et retraits. Le client ouvre le jeu dans son navigateur. Testez le QR de prévisualisation séparément, puis le QR public après publication. La plateforme ne remplace ni votre caisse, ni la prise de commandes, ni la réservation d’un atelier.",
+          "Pour une opération avec hasard en France, consultez la fiche DGCCRF sur les loteries publicitaires et vérifiez votre dispositif ; un autre pays peut appliquer d’autres règles. La participation et le gain restent indépendants de tout avis Google ou de sa note. Le choix marketing reste facultatif et distinct de l’e-mail nécessaire à l’envoi du gain.",
+        ],
+      },
+      {
+        title: "Mesurez les demandes et les retours sans inventer de ventes attribuées",
+        paragraphs: [
+          "Définissez la preuve correspondant au test : demande de renseignement, présence à un atelier, commande identifiée ou utilisation d’une invitation. Si vous proposez un jeu, gardez séparés scans, participations, contacts, gains et retraits. Un gain retiré le jour même ne prouve pas une nouvelle visite ultérieure.",
+          "Consignez la durée, le canal, les coûts, les arrivages, les horaires et les incidents. Une commande reçue pendant l’opération n’a pas nécessairement été causée par elle. La [mesure d’une animation commerciale](/blog/mesurer-animation-commerciale) explique comment documenter cette attribution et quand il faut s’abstenir de calculer un ROI.",
+          "Une conclusion utile peut être de simplifier un message, réduire un groupe ou changer de créneau. Prévoyez aussi un bilan des fournitures utilisées et des engagements restant à honorer. Ces informations aident à décider sans annoncer un nombre de clients ou une hausse de chiffre d’affaires non démontrés.",
+        ],
+      },
+      {
+        title: "Questions fréquentes sur l’acquisition de clients chez un fleuriste",
+        paragraphs: [
+          "Comment attirer des clients hors des grandes fêtes ? Travaillez les motifs ordinaires d’achat, la lisibilité de la vitrine, les informations locales et un rendez-vous de conseil ou de découverte. Choisissez le format selon vos arrivages et votre capacité plutôt que de reconduire automatiquement une remise.",
+          "Faut-il offrir un bouquet ? Pas nécessairement. Une démonstration, une création facile à choisir ou une information pratique peut déjà répondre au problème. Si vous offrez un lot, définissez le coût, les quantités, les conditions et le moment de remise avant toute annonce.",
+          "Comment gérer un lot périssable ? Annoncez une validité réaliste, les modalités de réservation éventuelle et la composition promise. Anticipez les approvisionnements ; une indisponibilité ne permet pas de modifier librement les conditions après l’attribution.",
+          "Peut-on relancer toutes les personnes qui ont participé ? Une participation ne vaut pas accord pour recevoir des offres. Vérifiez la finalité, le canal et le cadre applicable avant un envoi ; dans le parcours Okado, le choix marketing est distinct et facultatif.",
+          "Une animation garantit-elle davantage de clients ? Non. Elle permet de tester une proposition et d’observer un parcours. La fréquentation dépend aussi du besoin, de l’emplacement, du calendrier et de l’exécution ; aucun nombre de visites ou de ventes n’est garanti.",
+        ],
+      },
+      {
+        title: "Checklist avant de lancer votre action locale",
+        paragraphs: ["Avant de communiquer, vérifiez ces points avec l’équipe :"],
+        items: [
+          "Le besoin principal est identifié et l’action apporte une réponse compréhensible.",
+          "Les fleurs, feuillages, consommables et temps d’équipe sont réservés.",
+          "Prix, conditions, quantités, validité et éventuelles substitutions sont cohérents sur tous les supports.",
+          "Les photos, mentions d’origine et services annoncés correspondent à ce qui peut être délivré.",
+          "Le public, les places d’atelier et le canal de commande sont clairement définis.",
+          "Le QR éventuel ouvre le bon parcours public ; un accès alternatif est disponible.",
+          "Aucun avis ni accord marketing ne conditionne un gain.",
+          "Les preuves, les coûts et la date du bilan sont prévus, sans attribuer toutes les ventes à l’action.",
+        ],
+      },
+    ],
+    related: [
+      "/blog/attirer-clients-commerce-local",
+      "/blog/animer-periode-creuse-commerce-local",
+      "/blog/cout-animation-commerciale-commerce",
+      "/blog/mesurer-animation-commerciale",
+      "/comment-ca-marche",
+    ],
+  },
+  {
+    path: "/blog/animation-boutique-vetements",
+    title: "Comment animer une boutique de vêtements sans multiplier les remises ?",
+    seoTitle: "Animer une boutique de vêtements sans remise",
+    description:
+      "9 idées pour animer une boutique de vêtements : collection, silhouettes, essayages et créateurs. Choisissez un format adapté aux tailles, au stock et à l’équipe.",
+    eyebrow: "Prêt-à-porter indépendant",
+    intro:
+      "Pour animer une boutique de vêtements sans multiplier les remises, donnez à chaque rendez-vous un motif concret : découvrir une collection, obtenir un conseil de style, comparer des matières ou rencontrer un créateur local. Choisissez une action adaptée aux tailles réellement disponibles, au temps de conseil et au stock que vous pouvez tenir.",
+    answer:
+      "Commencez par un rendez-vous de découverte facile à organiser, comme une présentation de silhouettes ou un créneau de conseil. Vérifiez les références et tailles disponibles avant d’inviter, annoncez clairement les conditions et mesurez les demandes ou essayages observés. Une animation peut soutenir la découverte d’une collection ; elle ne garantit ni visite ni vente.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-18",
+    updatedAt: "2026-10-18",
+    reviewedAt: "2026-10-18",
+    readingTime: "10 min de lecture",
+    image: "/images/blog/animation-boutique-vetements.webp",
+    imageAlt: "Une commerçante conseille une cliente qui découvre des vêtements dans une boutique indépendante",
+    ctaLabel: "Voir comment fonctionne une animation par QR code",
+    ctaHref: "/comment-ca-marche",
+    source: [
+      {
+        label: "Google Business Profile — ajouter des photos de la boutique et des produits",
+        href: "https://support.google.com/business/answer/6103862?hl=fr",
+      },
+      references.pricing,
+      {
+        label: "CNIL — règles des communications électroniques aux prospects et clients",
+        href: "https://www.cnil.fr/fr/communication-electronique-quelles-regles",
+      },
+    ],
+    sections: [
+      {
+        title: "Définir le rendez-vous avant de choisir l’animation",
+        paragraphs: [
+          "Une animation commerciale réussie commence par une question précise : souhaitez-vous faire connaître une nouvelle collection, aider les visiteurs à composer une tenue, rendre visible un savoir-faire ou créer une occasion de revenir ? Ces objectifs appellent des formats différents. Une présentation de silhouettes peut aider à découvrir des associations ; un rendez-vous de conseil demande du temps individuel ; un jeu ajoute une expérience, mais ne remplace ni l’essayage ni le conseil.",
+          "Observez d’abord les demandes fréquentes, les moments calmes, les tailles manquantes et les articles qui suscitent des questions. Cette observation informelle est un point de départ, pas une étude représentative. Choisissez un seul objectif et une preuve que l’équipe peut relever : questions reçues, essayages commencés, inscriptions volontaires ou utilisation d’une offre précise.",
+          "Si le besoin concerne le lancement d’un produit ou d’une gamme, la [méthode pour préparer une animation de lancement](/blog/animation-lancement-nouveau-produit) complète ces idées. Pour le choix entre une offre certaine et une expérience avec participation, consultez aussi la comparaison [jeu-concours ou promotion](/blog/jeu-concours-ou-promotion).",
+        ],
+      },
+      {
+        title: "9 idées pour animer une boutique de vêtements",
+        paragraphs: [
+          "Adaptez le format à la surface du magasin, au nombre de personnes présentes et à la disponibilité des tailles. Les propositions suivantes sont des scénarios à adapter, pas des résultats de campagnes observés.",
+        ],
+        items: [
+          "Présenter une mini-sélection autour d’un usage concret : vêtements de mi-saison, tenue de cérémonie ou superpositions pour la pluie. Limitez le nombre de pièces et vérifiez que les références affichées sont encore disponibles.",
+          "Composer trois silhouettes à partir de la nouvelle collection. Indiquez les références et les alternatives réellement en rayon ; le but est d’aider à se projeter, pas de promettre que chaque combinaison existe dans toutes les tailles.",
+          "Organiser un créneau de conseil individuel sur inscription auprès de la boutique. Précisez la durée, le nombre de places, les sujets couverts et la manière de modifier ou annuler le rendez-vous. Une animation n’est pas automatiquement un outil de réservation : utilisez votre canal habituel.",
+          "Proposer une présentation courte des matières, coupes ou finitions par un membre de l’équipe ou un intervenant compétent. Évitez les affirmations techniques ou environnementales que vous ne pouvez pas justifier.",
+          "Inviter un créateur ou artisan du quartier pour une rencontre à capacité limitée. Définissez qui accueille, ce qui est présenté, les éventuels frais et la manière dont les ventes ou coordonnées restent séparées entre les participants.",
+          "Créer un parcours de découverte en magasin : une sélection de pièces à associer, des idées de superposition ou une démonstration d’accessoires. Gardez une circulation accessible et ne déplacez pas les portants au point de bloquer l’accès aux rayons.",
+          "Mettre en avant un service réellement proposé, comme un conseil de retouche ou d’entretien, après avoir confirmé les délais, tarifs, conditions et prestataire. Si ce service est assuré par un partenaire, précisez son rôle et les modalités de prise en charge.",
+          "Préparer une journée autour d’une occasion locale ou d’un changement de saison sans inventer de rareté. Communiquez une date et un programme utiles ; ne laissez pas entendre qu’un stock est limité si vous ne l’avez pas vérifié.",
+          "Proposer une invitation de retour liée à un rendez-vous futur, avec période, articles concernés et éventuelles conditions clairement indiqués. Une invitation remise ne prouve pas qu’elle sera utilisée ; relevez les utilisations constatées séparément des ventes globales.",
+        ],
+      },
+      {
+        title: "Préparer les tailles, les références et le parcours d’essayage",
+        paragraphs: [
+          "Avant d’annoncer un événement, faites une vérification simple par référence : coloris, tailles présentes, quantités, pièces réservées et réassort possible. Le stock peut changer entre la préparation et l’événement. Si une taille manque, prévoyez une alternative honnête : autre coupe disponible, commande par le canal habituel si le magasin la propose, ou information sur l’indisponibilité.",
+          "N’utilisez pas de photo d’une tenue complète sans vérifier que les pièces montrées correspondent bien à la collection présentée. Une image d’illustration peut inspirer une association, mais elle ne doit pas laisser croire qu’un article, coloris ou service précis est disponible lorsqu’il ne l’est pas.",
+          "Organisez les essayages selon l’espace et l’équipe : accès aux cabines, circulation, attente et rangement des vêtements. Si vous proposez des créneaux, annoncez qui les confirme et comment les visiteurs peuvent signaler un retard. Ne collectez pas plus d’informations personnelles que nécessaire à l’organisation annoncée.",
+          "Pour la visibilité locale, consultez les [leviers pour faire connaître un commerce de quartier](/blog/attirer-clients-commerce-local), puis vérifiez les horaires et les coordonnées de votre fiche. L’aide officielle Google explique comment [ajouter des photos de la boutique et des produits](https://support.google.com/business/answer/6103862?hl=fr) ; utilisez des images qui représentent les articles et services réellement proposés.",
+        ],
+      },
+      {
+        title: "Choisir entre découverte, avantage et jeu",
+        paragraphs: [
+          "Une découverte guidée convient si l’objectif est de faire comprendre une collection ou une coupe. Un avantage certain peut aider à déclencher une décision immédiate, à condition de calculer son coût et d’annoncer ses règles. Un jeu par QR code peut créer un moment participatif autour de l’événement ; il ne garantit ni essayage, ni achat, ni retour en boutique.",
+          "Pour une annonce de réduction de prix en France, la DGCCRF indique comme référence le prix le plus bas pratiqué par le professionnel durant les 30 jours précédents. Lisez sa [fiche sur les annonces de réduction de prix](https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/annonces-de-reduction-de-prix-ce-que-vous-devez-savoir) pour vérifier le régime de l’offre envisagée. Une animation de découverte sans réduction n’est pas, par elle-même, une annonce de baisse de prix.",
+          "Si le format comprend un tirage ou une dotation, définissez les lots, la période, les conditions d’éligibilité et le retrait avant la diffusion. La participation, la remise d’un gain, l’achat et l’accord pour recevoir des offres sont des étapes distinctes. La [fiche sur les jeux et loteries publicitaires](/blog/jeu-concours-ou-promotion) aide à choisir le format ; les obligations dépendent du dispositif et du territoire.",
+        ],
+        table: {
+          caption: "Choisir un format de découverte pour une boutique de vêtements",
+          headers: ["Besoin", "Format et ressource à prévoir", "Observation utile"],
+          rows: [
+            ["Faire comprendre une collection", "Présentation de trois silhouettes ; références et tailles vérifiées", "Questions sur les pièces présentées"],
+            ["Accompagner un choix individuel", "Conseil sur créneau ; personne dédiée et cabine disponible", "Rendez-vous honorés et essayages commencés"],
+            ["Montrer un savoir-faire", "Rencontre créateur ou retouche ; intervenant et conditions confirmés", "Demandes sur les matières ou le service"],
+          ],
+        },
+      },
+      {
+        title: "Inviter sans surcharger l’équipe ni les visiteurs",
+        paragraphs: [
+          "Une invitation courte doit répondre aux questions pratiques : quoi découvrir, à quelle date, où se présenter, faut-il réserver, combien de temps prévoir et les places sont-elles limitées ? N’annoncez une jauge que si vous savez la tenir. Faites coïncider l’affiche, la vitrine, la page de l’événement et les réponses de l’équipe.",
+          "Vous pouvez utiliser les canaux déjà suivis par votre clientèle : affichage en boutique, site, réseaux sociaux ou partenaires locaux. Si vous envoyez un courriel ou un SMS promotionnel, vérifiez les règles applicables au canal et au public. La CNIL distingue notamment prospection commerciale et messages nécessaires au suivi d’un service ; consultez sa page sur les [communications électroniques aux prospects et clients](https://www.cnil.fr/fr/communication-electronique-quelles-regles) avant d’utiliser un fichier de contacts.",
+          "Une adresse recueillie pour confirmer un créneau ou transmettre les informations d’un rendez-vous ne devient pas automatiquement une autorisation de prospection. Pour un jeu Okado, la collecte éventuellement nécessaire à la réception d’un gain est distincte du choix marketing, qui reste facultatif. N’associez jamais l’accès à une animation ou un lot à la publication d’un avis positif.",
+        ],
+      },
+      {
+        title: "Établir un budget qui tient compte du temps et du stock",
+        paragraphs: [
+          "Listez les dépenses et engagements avant de communiquer : heures de préparation et d’accueil, éventuelle rémunération d’un intervenant, matériel, boissons, impression, coût d’un lot et valeur des avantages promis. Ajoutez le temps de rangement et de réponse après l’événement. Le budget dépend de vos coûts réels ; aucun montant type ne permet de conclure à la rentabilité d’une animation.",
+          "Exemple de calcul à adapter, sans valeur de prix de marché : pour un rendez-vous de conseil avec huit créneaux de vingt minutes, l’équipe mobilise au moins 160 minutes de conseil, auxquelles s’ajoutent la préparation, l’accueil et les retards éventuels. Ce temps a un coût même si aucune remise n’est accordée.",
+          "Pour une opération avec une offre, estimez la quantité maximale susceptible d’être utilisée et la marge restante selon vos propres chiffres. Une remise annoncée n’est pas un simple coût par participant : elle s’applique selon ses conditions aux achats éligibles. La [méthode de budget d’une animation commerciale](/blog/cout-animation-commerciale-commerce) aide à comparer les postes sans inventer un retour sur investissement.",
+        ],
+      },
+      {
+        title: "Mesurer ce qui s’est réellement passé",
+        paragraphs: [
+          "Avant le lancement, notez l’objectif, la période, les références concernées et l’indicateur choisi. Selon le format, vous pourrez compter les personnes présentes, les demandes, les essayages commencés, les créneaux honorés, les utilisations d’une offre ou les participations à un jeu. Définissez comment l’équipe relève chaque information et évitez les doubles comptes lorsque c’est possible.",
+          "Séparez les étapes : une inscription n’est pas une présence, un essayage n’est pas une commande, un gain n’est pas un retrait et une vente pendant l’événement n’est pas nécessairement causée par celui-ci. Notez les facteurs de contexte utiles, comme les horaires, la disponibilité des tailles, la météo, un changement d’équipe ou une autre opération en cours.",
+          "Après l’événement, consignez aussi les difficultés : taille annoncée mais absente, attente trop longue, question sans réponse ou offre mal comprise. Comparez avec une période ou un créneau raisonnablement comparable, en gardant les différences visibles. Le guide pour [mesurer une animation commerciale](/blog/mesurer-animation-commerciale) détaille cette logique de suivi.",
+        ],
+      },
+      {
+        title: "Un test simple en quatre semaines",
+        paragraphs: [
+          "Ce calendrier est un exemple d’organisation, pas une prévision de fréquentation :",
+        ],
+        items: [
+          "Semaine 1 : relever les questions, choisir une collection et un besoin client ; vérifier les tailles et le temps disponible.",
+          "Semaine 2 : sélectionner un format, fixer sa capacité, son budget et la preuve à suivre ; faire relire les conditions d’une éventuelle offre.",
+          "Semaine 3 : préparer les supports et briefer l’équipe ; vérifier que toutes les informations correspondent au stock et aux canaux réels.",
+          "Semaine 4 : réaliser l’animation, consigner les demandes et les incidents, puis décider de poursuivre, d’adapter ou d’arrêter selon les éléments observés.",
+        ],
+      },
+      {
+        title: "Questions fréquentes sur l’animation d’une boutique de vêtements",
+        paragraphs: [
+          "Comment animer le lancement d’une collection ? Choisissez un angle de découverte, par exemple les matières, les associations ou les usages. Présentez les références disponibles, les tailles confirmées et un horaire compatible avec le temps de conseil de l’équipe.",
+          "Quelles animations proposer sans faire de remise ? Une présentation de silhouettes, un rendez-vous de conseil, une rencontre avec un créateur ou une démonstration de matières peuvent donner une raison de découvrir le magasin. Le format doit correspondre aux compétences et à la capacité réellement disponibles.",
+          "Comment éviter de promettre une taille indisponible ? Vérifiez les quantités avant l’annonce et précisez si une pièce est uniquement illustrative. Pendant l’événement, signalez les ruptures et ne garantissez une commande ou un réassort que si la boutique peut réellement le proposer.",
+          "Faut-il organiser les essayages sur réservation ? Cela peut faciliter l’organisation si la boutique dispose d’un canal et d’une personne pour confirmer les créneaux. Expliquez la durée et les modalités ; une affiche ou un QR code seul ne constitue pas automatiquement un système de réservation.",
+          "Une animation commerciale augmente-t-elle forcément les ventes ? Non. Elle crée une occasion de découverte et permet d’observer des comportements. Les ventes dépendent de nombreux facteurs ; il faut distinguer fréquentation, essayages et commandes avant d’attribuer un résultat à l’action.",
+        ],
+      },
+      {
+        title: "Checklist avant d’annoncer votre animation",
+        paragraphs: ["Avant de publier l’invitation, vérifiez que l’équipe peut répondre à ces points :"],
+        items: [
+          "L’objectif et le public de l’animation sont compris en une phrase.",
+          "Les articles, coloris, tailles et services annoncés ont été vérifiés.",
+          "La capacité d’accueil, les essayages et le temps de conseil sont réalistes.",
+          "Les avantages, prix, conditions et dates restent identiques sur tous les supports.",
+          "Le budget inclut la préparation, l’accueil, le matériel, les lots et les engagements éventuels.",
+          "Les données demandées sont limitées au besoin expliqué ; la prospection reste traitée selon le canal et le consentement applicable.",
+          "L’indicateur choisi peut être relevé sans confondre inscription, présence, essayage et vente.",
+          "Un bilan est prévu avec les ruptures, questions et ajustements à conserver pour la prochaine opération.",
+        ],
+      },
+    ],
+    related: [
+      "/blog/animation-lancement-nouveau-produit",
+      "/blog/jeu-concours-ou-promotion",
+      "/blog/experience-client-boutique",
+      "/blog/mesurer-animation-commerciale",
+      "/comment-ca-marche",
+    ],
+  },
+  {
+    path: "/blog/attirer-clients-librairie-independante",
+    title: "Comment attirer des clients dans une librairie indépendante ?",
+    seoTitle: "Attirer des clients dans une librairie indépendante",
+    description:
+      "Conseil, rencontres, sélections et partenariats : des idées concrètes pour faire connaître une librairie indépendante et fidéliser les lecteurs du quartier.",
+    eyebrow: "Librairie indépendante",
+    intro:
+      "Pour attirer des clients dans une librairie indépendante, rendez visible ce que l’achat en ligne ne remplace pas facilement : un conseil personnalisé, une sélection éditoriale lisible, des rencontres et un lieu de découverte. Choisissez des actions que l’équipe peut préparer, annoncer et accueillir sans promettre des titres ou des places indisponibles.",
+    answer:
+      "Commencez par une sélection thématique expliquée par le libraire, une rencontre à jauge définie ou un rendez-vous régulier autour de la lecture. Vérifiez les livres disponibles, préparez les modalités de commande ou de réservation réellement proposées, puis diffusez une invitation avec date, capacité et conditions claires. Le prix unique du livre en France limite les promotions : l’animation peut plutôt mettre en avant le conseil, la découverte et la vie culturelle locale.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-18",
+    updatedAt: "2026-10-18",
+    reviewedAt: "2026-10-18",
+    readingTime: "10 min de lecture",
+    image: "/images/blog/attirer-clients-librairie-independante.webp",
+    imageAlt: "Un libraire conseille un livre à une lectrice dans une librairie indépendante de quartier",
+    ctaLabel: "Découvrir les animations par QR code",
+    ctaHref: "/comment-ca-marche",
+    source: [
+      {
+        label: "Ministère de la Culture — prix unique du livre et principales exceptions",
+        href: "https://www.culture.gouv.fr/thematiques/livre-et-lecture/pour-les-professionnels-de-l-economie-du-livre/regulation/prix-du-livre",
+      },
+      {
+        label: "Google Business Profile — publier un événement sur la fiche d’établissement",
+        href: "https://support.google.com/business/answer/7342169?hl=fr",
+      },
+      {
+        label: "CNIL — règles des communications électroniques aux prospects et clients",
+        href: "https://www.cnil.fr/fr/communication-electronique-quelles-regles",
+      },
+    ],
+    sections: [
+      {
+        title: "Faire connaître une librairie par ce qui la rend singulière",
+        paragraphs: [
+          "Une librairie ne se résume pas à une liste de références. Le conseil, les coups de cœur argumentés, les rayons spécialisés, les rencontres et la connaissance des lecteurs peuvent donner envie de pousser la porte. L’enjeu est de rendre ces atouts visibles aux personnes qui vivent, travaillent ou étudient à proximité.",
+          "Avant de choisir une animation, demandez-vous ce que les visiteurs doivent découvrir : un rayon peu connu, une nouvelle sélection, un auteur invité, un club de lecture ou la possibilité de commander un ouvrage. Relevez les questions fréquentes au comptoir et les demandes que vous ne pouvez pas satisfaire. Ces observations de l’équipe guident le choix ; elles ne constituent pas une mesure représentative de tout le quartier.",
+          "Fixez un objectif principal et un indicateur praticable : demandes sur un rayon, inscriptions, présence, commandes identifiées ou visites pendant un créneau. Une personne qui s’inscrit n’est pas nécessairement présente ; une vente à la librairie pendant un événement ne prouve pas que l’événement l’a provoquée.",
+          "Pour structurer les dates et éviter de concentrer les efforts sur les seules périodes commerciales, consultez le [calendrier marketing pour un commerce local](/blog/calendrier-marketing-commerce-local). Les idées de cette page restent centrées sur les contraintes et les pratiques d’une librairie.",
+        ],
+      },
+      {
+        title: "7 idées d’animation adaptées à une librairie indépendante",
+        paragraphs: [
+          "Ces formats peuvent être gratuits ou payants selon votre organisation. Vérifiez les droits, coûts, disponibilités et accords nécessaires à chaque événement ; l’exemple décrit une façon de préparer l’action, pas un résultat commercial constaté.",
+        ],
+        items: [
+          "Créer une sélection thématique courte — par exemple premiers romans, récits de voyage ou livres accessibles à lire en famille — accompagnée de recommandations signées par l’équipe. Indiquez les titres effectivement disponibles et actualisez la sélection quand le stock change.",
+          "Organiser une rencontre avec un auteur, traducteur, illustrateur ou éditeur après confirmation de sa disponibilité et des modalités convenues. Définissez la durée, le nombre de places, l’éventuelle séance de dédicace et la façon dont les ouvrages seront proposés, sans laisser entendre que l’invité est confirmé avant son accord.",
+          "Lancer un club de lecture autour d’un genre ou d’une question, avec une fréquence et une capacité réalistes. Les participants peuvent choisir parmi plusieurs titres ; évitez de faire de l’achat d’un livre précis une condition implicite de participation si ce n’est pas clairement annoncé et approprié.",
+          "Proposer une présentation de nouveautés ou de coups de cœur de l’équipe, par exemple un rendez-vous mensuel de vingt minutes. Préparez quelques exemplaires, mais expliquez comment obtenir les titres qui ne sont pas en rayon selon les possibilités réelles de la librairie.",
+          "Inviter une structure voisine — médiathèque, association culturelle, établissement d’enseignement ou commerce complémentaire — à concevoir un échange de visibilité ou une rencontre. Attribuez à chacun un rôle clair : accueil, communication, frais et suivi des inscriptions.",
+          "Aménager un parcours de découverte en magasin autour d’un thème, d’une rentrée littéraire ou d’un fonds de catalogue. Une carte imprimée ou une signalétique simple peut guider les visiteurs ; gardez les passages accessibles et évitez de déplacer les rayons sans plan de remise en place.",
+          "Créer un rendez-vous participatif, comme une recommandation du mois ou une boîte à suggestions de lecture, avec une règle claire sur la sélection et la publication éventuelle des contributions. Demandez l’accord de la personne avant d’attribuer publiquement une recommandation identifiable.",
+        ],
+      },
+      {
+        title: "Organiser une rencontre sans dépasser la capacité du lieu",
+        paragraphs: [
+          "Estimez la jauge à partir de l’espace réellement disponible, des passages, de l’accès aux rayons et de la présence nécessaire au comptoir. Une capacité confortable peut être inférieure au nombre maximal de personnes que le local peut contenir. Prévoyez qui accueille, qui présente l’invité et qui répond aux demandes de paiement ou de commande pendant l’événement.",
+          "Choisissez un mode d’accès adapté : entrée libre si la jauge et le format le permettent, ou inscription préalable avec confirmation et liste de présence gérée par l’équipe. Précisez si l’inscription est obligatoire, gratuite ou payante, comment une place est libérée en cas d’absence et si les personnes peuvent venir sans inscription. Ne présentez pas un scan de QR code comme une réservation si votre système ne bloque pas réellement les places.",
+          "Si une participation financière, une commande ou une dédicace est prévue, annoncez-la distinctement. Confirmez avec l’invité et les partenaires ce qui peut être promis et dans quelles conditions. Une information simple évite que l’accueil doive improviser le jour venu.",
+          "Après l’accord sur la date, mettez à jour les horaires et informations de la librairie sur les canaux utilisés par les clients. L’aide Google explique comment [publier un événement sur une fiche d’établissement](https://support.google.com/business/answer/7342169?hl=fr), avec un titre descriptif et des dates et heures. Les autres [leviers de visibilité d’un commerce local](/blog/attirer-clients-commerce-local) complètent cette annonce.",
+          "Conducteur fictif pour une rencontre de 45 minutes : cinq minutes de présentation, vingt-cinq minutes d’échange et quinze minutes de questions. Prévoyez à part la dédicace et sa file, la mise en rayon des exemplaires et le comptoir de vente. Désignez qui accueille les retardataires et qui tient la caisse pour que la rencontre puisse se poursuivre.",
+        ],
+      },
+      {
+        title: "Gérer les livres, les commandes et le prix avec précision",
+        paragraphs: [
+          "Avant l’annonce, vérifiez les titres mis en avant, les quantités présentes et les délais connus pour les commandes que la librairie accepte de prendre. Distinguez un livre en stock d’un titre proposé à la commande ; ne garantissez ni un délai ni une disponibilité fournisseur que vous n’avez pas confirmés. Si un titre est épuisé, préparez une alternative éditoriale ou expliquez clairement les options disponibles.",
+          "Pour les livres neufs imprimés vendus en boutique en France, le prix est fixé par l’éditeur ou l’importateur ; le rabais au détail peut généralement aller jusqu’à 5 %, sous réserve des exceptions prévues. Le [Ministère de la Culture présente le cadre du prix du livre](https://www.culture.gouv.fr/thematiques/livre-et-lecture/pour-les-professionnels-de-l-economie-du-livre/regulation/prix-du-livre). Identifiez la catégorie et le mode de vente avant d’annoncer une offre : livres d’occasion, livres numériques et commandes livrées doivent être examinés selon les règles qui les concernent. Une rencontre ne crée pas une exception promotionnelle à elle seule.",
+          "Vous pouvez aussi animer sans réduction : conseil, rencontre, recommandation, parcours de lecture ou présentation d’un fonds. Si une opération comprend un jeu ou une dotation, séparez clairement la participation, les conditions du gain, une éventuelle commande et le retrait du lot. Un jeu ajoute une interaction, mais ne remplace pas la commande, le paiement ou l’inscription à une rencontre.",
+          "Pour comparer une offre certaine et un jeu avec participation, la page [jeu-concours ou promotion](/blog/jeu-concours-ou-promotion) aide à distinguer leurs objectifs. Pour un événement local avec partenaires, consultez également le guide du [jeu-concours événementiel](/blog/jeu-concours-evenement-local) ; les règles doivent être adaptées au format réellement retenu.",
+        ],
+      },
+      {
+        title: "Inviter le quartier avec des informations à jour",
+        paragraphs: [
+          "Une annonce utile répond aux questions pratiques : quel thème ou invité, quelle date, quelles heures, combien de temps, faut-il réserver, y a-t-il un tarif et comment demander une place ? Ajoutez une adresse exacte et un moyen de contact consulté par l’équipe. Si le programme change, corrigez les supports au lieu de laisser circuler plusieurs versions.",
+          "Utilisez les canaux où la librairie peut réellement tenir l’information à jour : vitrine, site, réseaux sociaux, partenaires et fiche d’établissement. Google permet de publier des posts de type événement sur une fiche ; sa documentation indique notamment les champs de titre et d’horaires à renseigner. Vérifiez les fonctionnalités disponibles pour votre compte et votre région avant de baser la diffusion sur un seul canal.",
+          "Pour les courriels ou SMS d’invitation à caractère promotionnel, vérifiez les règles relatives à la prospection. La CNIL distingue les communications commerciales des messages nécessaires au suivi d’un service. Une adresse utilisée pour confirmer une inscription ne devient pas automatiquement une autorisation générale d’envoyer une newsletter ; précisez la finalité et le choix proposé. Retrouvez les règles actuelles sur les [communications électroniques aux prospects et clients](https://www.cnil.fr/fr/communication-electronique-quelles-regles).",
+        ],
+      },
+      {
+        title: "Prévoir le budget et les tâches de l’équipe",
+        paragraphs: [
+          "Même une rencontre sans billetterie mobilise du temps : échanges avec l’invité, préparation, communication, installation, accueil et rangement. Ajoutez les éventuels frais convenus, matériel, boissons, impression, frais de paiement et exemplaires destinés à la présentation. Le coût réel dépend des accords et de l’organisation de la librairie.",
+          "Exemple fictif : une seule personne consacrant 30 minutes à l’installation, 20 minutes à l’accueil, 45 minutes à la rencontre et 20 minutes au rangement mobilise 115 minutes-personne. Ajoutez séparément le temps d’un collègue à la caisse, les échanges préparatoires et les éventuels frais de l’invité. Deux personnes travaillant pendant la même demi-heure représentent une heure de travail au total ; le budget suit ce temps cumulé, pas seulement la durée du rendez-vous.",
+          "Si vous offrez un lot ou financez une dotation, estimez son coût et définissez à l’avance sa disponibilité et son retrait. Un lot en livres doit être décrit sans ambiguïté : titres déterminés ou bon d’achat, validité, conditions et éventuels choix laissés au bénéficiaire. Vérifiez que la forme choisie respecte le cadre commercial applicable.",
+        ],
+      },
+      {
+        title: "Mesurer la fréquentation et les suites avec prudence",
+        paragraphs: [
+          "Choisissez une mesure avant l’événement : inscriptions, présences, questions sur la sélection, commandes identifiées ou retours des partenaires. Notez la source et la période. Si vous comptez les entrées, annoncez à l’équipe une méthode constante et respectueuse de la vie privée ; pour commencer, un décompte agrégé peut suffire.",
+          "Gardez séparés les indicateurs : une inscription n’est pas une présence, une présence n’est pas un achat et une vente pendant une rencontre n’est pas nécessairement causée par celle-ci. Si les participants achètent des livres, relevez uniquement ce que les systèmes et pratiques de la librairie permettent d’identifier de façon fiable, sans reconstruire des résultats à partir de souvenirs incomplets.",
+          "Après le rendez-vous, consignez les questions, les contraintes de jauge, les titres demandés et les difficultés d’organisation. Ces éléments aident à améliorer la prochaine rencontre, même si le nombre de ventes attribuables reste inconnu. Le guide pour [mesurer une animation commerciale](/blog/mesurer-animation-commerciale) propose un cadre de comparaison sans promesse de ROI.",
+        ],
+      },
+      {
+        title: "Questions fréquentes sur l’acquisition en librairie",
+        paragraphs: [
+          "Comment faire connaître une petite librairie ? Présentez clairement ses horaires, son adresse, ses rayons et ses services réellement proposés. Ajoutez des recommandations signées par l’équipe et des événements à date précise ; demandez aux partenaires locaux de relayer une information cohérente.",
+          "Comment organiser une rencontre avec une capacité limitée ? Fixez une jauge à partir de l’espace et de l’équipe, choisissez une inscription ou une entrée libre adaptée, puis annoncez la règle de participation et le moyen de demander une place. Ne laissez pas entendre qu’un QR code réserve automatiquement un siège s’il ne gère pas la capacité.",
+          "Peut-on offrir une réduction sur les livres ? Pour les livres neufs imprimés vendus en boutique en France, le rabais est généralement limité à 5 %, sous réserve d’exceptions. Vérifiez la catégorie de livre, le mode de vente et les conditions précises avec la source officielle ; un événement ne permet pas de déroger à lui seul au prix réglementé.",
+          "Une rencontre gratuite peut-elle attirer des lecteurs ? Elle peut créer une occasion de découvrir la librairie et un sujet de lecture, mais la fréquentation dépend de l’invité, de la date, de la communication, de la capacité et de l’intérêt du public. Aucune rencontre ne garantit un nombre de visiteurs ou d’achats.",
+          "Faut-il demander une adresse e-mail pour s’inscrire ? Seulement si elle est utile au processus choisi, par exemple pour confirmer ou modifier une place, et avec une information claire sur son utilisation. L’inscription à un événement ne vaut pas automatiquement abonnement à la newsletter.",
+        ],
+      },
+      {
+        title: "Checklist avant d’annoncer un événement en librairie",
+        paragraphs: ["Avant de publier l’invitation, vérifiez les points suivants :"],
+        items: [
+          "Le thème, la date, les horaires, le lieu et les éventuels frais sont confirmés.",
+          "L’invité ou le partenaire a validé son rôle et les modalités annoncées.",
+          "La jauge, l’accueil et la circulation sont compatibles avec le local et l’activité courante.",
+          "Les titres et quantités sont vérifiés ; les possibilités de commande sont formulées sans délai inventé.",
+          "Toute offre sur des livres a été vérifiée au regard du prix unique et des exceptions applicables.",
+          "Les inscriptions et communications distinguent l’organisation de l’événement de l’abonnement marketing.",
+          "Les informations sur la vitrine, le site et les fiches locales concordent et pourront être mises à jour.",
+          "L’équipe sait comment compter les présences et noter les retours sans confondre fréquentation, achats et effet attribuable.",
+        ],
+      },
+    ],
+    related: [
+      "/blog/calendrier-marketing-commerce-local",
+      "/blog/jeu-concours-evenement-local",
+      "/blog/attirer-clients-commerce-local",
+      "/blog/experience-client-boutique",
+      "/blog/mesurer-animation-commerciale",
+    ],
+  },
+  {
+    path: "/blog/animations-jardinerie-saisons",
+    title: "Quelles animations proposer dans une jardinerie au fil des saisons ?",
+    seoTitle: "Animations en jardinerie : idées et calendrier",
+    description:
+      "Ateliers, démonstrations et rencontres : organisez des animations de jardinerie selon la saison, la météo locale, les stocks et la capacité de votre équipe.",
+    eyebrow: "Jardinerie et commerce de proximité",
+    intro:
+      "Une jardinerie peut proposer des animations toute l’année en reliant chaque rendez-vous aux besoins du moment, aux produits disponibles et au savoir-faire de l’équipe. Le bon calendrier n’est pas une liste universelle de dates de plantation : il se construit selon la région, la météo, le public, les stocks et la capacité d’accueil.",
+    answer:
+      "Choisissez une animation par saison — démonstration, atelier pratique, séance de questions-réponses ou rencontre avec un spécialiste — puis vérifiez la météo, les références en stock, le matériel et le nombre de places. Préparez un format intérieur de repli et communiquez des horaires et conditions exacts. En période plus calme, privilégiez un rendez-vous ciblé et léger plutôt qu’un événement coûteux sans objectif mesurable.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-18",
+    updatedAt: "2026-10-18",
+    reviewedAt: "2026-10-18",
+    readingTime: "9 min de lecture",
+    image: "/images/blog/animations-jardinerie-saisons.webp",
+    imageAlt: "Une équipe de jardinerie anime une démonstration de rempotage sous serre",
+    ctaLabel: "Découvrir les animations par QR code",
+    ctaHref: "/comment-ca-marche",
+    source: [
+      {
+        label: "FranceAgriMer et VALHOR — panel annuel des achats de végétaux",
+        href: "https://www.franceagrimer.fr/index.php/chiffre-et-analyses-economiques/achats-de-vegetaux-et-prestations-pour-les-espaces-exterieurs",
+      },
+      {
+        label: "Météo-France — comprendre la Vigilance et la distinguer des prévisions",
+        href: "https://meteofrance.com/vigilance-et-securite/5-questions-sur-la-vigilance-meteorologique",
+      },
+      {
+        label: "Google Business Profile — créer et gérer des posts événementiels",
+        href: "https://support.google.com/business/answer/7342169?hl=fr",
+      },
+      {
+        label: "DGCCRF — allégations environnementales : précision et justification",
+        href: "https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/allegations-environnementales-ce-quil-faut-retenir",
+      },
+      {
+        label: "CNIL — communications électroniques aux prospects et clients",
+        href: "https://www.cnil.fr/fr/communication-electronique-quelles-regles",
+      },
+    ],
+    sections: [
+      {
+        title: "Partir des usages du moment, pas d’un calendrier universel",
+        paragraphs: [
+          "Une animation de jardinerie fonctionne d’abord comme un rendez-vous utile : voir une démonstration, poser une question, comparer des outils ou apprendre à utiliser une gamme. Les occasions se renouvellent au fil des saisons, mais leur calendrier varie selon les conditions locales et les habitudes des clients. Un thème pertinent pour une jardinerie urbaine avec une grande serre n’est pas forcément adapté à un magasin rural ou à une zone exposée à une météo différente.",
+          "Consultez les prévisions locales pour choisir le lieu et le format, ainsi que la Vigilance lorsqu’un phénomène dangereux est annoncé. Météo-France explique que [la Vigilance complète les prévisions météorologiques](https://meteofrance.com/vigilance-et-securite/5-questions-sur-la-vigilance-meteorologique). Demandez ensuite à une personne compétente de valider le contenu de jardinage : les idées ci-dessous organisent une animation, sans fixer des dates de plantation ni des traitements.",
+          "Les [panels FranceAgriMer et VALHOR sur les achats de végétaux](https://www.franceagrimer.fr/index.php/chiffre-et-analyses-economiques/achats-de-vegetaux-et-prestations-pour-les-espaces-exterieurs) donnent un contexte de filière. Leur année de référence doit être lue avant toute utilisation ; les résultats nationaux ne prédisent pas les besoins de votre magasin. Complétez-les par les questions au comptoir, les stocks et les observations de votre zone.",
+          "Pour planifier l’ensemble de vos campagnes locales, le [calendrier marketing du commerce de proximité](/blog/calendrier-marketing-commerce-local) aide à répartir les rendez-vous. L’article sur le [lancement d’un nouveau produit](/blog/animation-lancement-nouveau-produit) propose aussi une méthode transposable à une nouvelle gamme de jardinage.",
+        ],
+      },
+      {
+        title: "Un calendrier d’idées à adapter à votre jardinerie",
+        paragraphs: [
+          "Pour une jardinerie en France métropolitaine, ce tableau associe les quatre saisons à des thèmes commerciaux possibles. Il ne fixe aucune date de travaux au jardin. Adaptez-le au climat local, au stock et aux compétences disponibles ; les territoires ultramarins et l’hémisphère sud appellent un autre calendrier.",
+        ],
+        table: {
+          caption: "Exemples de formats saisonniers pour une jardinerie",
+          headers: ["Saison à adapter localement", "Idée d’animation", "Vérifications avant annonce"],
+          rows: [
+            ["Printemps", "Atelier de composition en bac et découverte de contenants", "Arrivages, météo locale, espace de travail et fournitures réservées"],
+            ["Été", "Démonstration de matériel d’arrosage à partir des notices", "Compatibilités, conditions d’usage et éventuelles restrictions locales ; aucune économie d’eau promise sans preuve"],
+            ["Automne", "Présentation d’outils et de rangement pour leur entretien", "Références disponibles, consignes fabricant et intervenant compétent"],
+            ["Hiver", "Rencontre autour des plantes d’intérieur et de leurs contenants", "Stock, conditions d’accueil en intérieur et durée de la séance"],
+          ],
+        },
+      },
+      {
+        title: "7 formats pour créer un rendez-vous utile",
+        paragraphs: [
+          "Une animation peut être brève et peu coûteuse si elle répond à une question réelle. Les exemples sont des pistes à valider selon le lieu, les produits et les compétences disponibles ; ils ne constituent pas des résultats de campagne constatés.",
+        ],
+        items: [
+          "Faire une démonstration courte d’un outil ou d’un équipement en stock, avec un membre de l’équipe qui maîtrise son usage et ses limites. Affichez les références concernées et la date de la démonstration.",
+          "Organiser un atelier de rempotage ou de composition en pot. Définissez le matériel fourni, les gestes présentés, le nombre de places, le prix éventuel et ce que les participants peuvent emporter. Faites valider le contenu par une personne compétente.",
+          "Proposer une séance de questions-réponses avec un horticulteur ou un intervenant qualifié. Précisez son rôle, les sujets qu’il traitera et les questions auxquelles il ne répondra pas, par exemple les diagnostics nécessitant une inspection de la plante.",
+          "Créer une présentation guidée d’une gamme — contenants, outils, plantes d’intérieur ou produits associés — en distinguant les caractéristiques vérifiées des arguments commerciaux. Une démonstration aide à comprendre un produit ; elle ne justifie pas à elle seule une promesse de résultat.",
+          "Inviter un partenaire local à présenter son savoir-faire lors d’un format défini. Confirmez son accord, les coûts, le matériel, les responsabilités d’accueil et la manière de recueillir les inscriptions.",
+          "Installer un parcours de découverte à l’intérieur du magasin, avec quelques étapes faciles à parcourir et un conseil à chaque point. Gardez les circulations dégagées et vérifiez que la signalétique reste exacte si une référence est vendue ou déplacée.",
+          "Proposer un rendez-vous régulier, par exemple une démonstration courte le premier samedi du mois, seulement si l’équipe peut maintenir la cadence. Un rendez-vous annoncé comme récurrent doit être corrigé rapidement en cas de changement.",
+        ],
+      },
+      {
+        title: "Prévoir les stocks, le matériel et le nombre de places",
+        paragraphs: [
+          "Pour chaque animation, établissez une petite fiche interne : objectif, produits et consommables, espace utilisé, matériel, durée, personne qui anime, capacité et solution de rangement. Vérifiez les quantités avant de communiquer ; une plante ou une référence vendue entre-temps peut rendre l’exemple annoncé indisponible.",
+          "Pour un atelier pratique, testez une réalisation avant de multiplier les fournitures par place. Exemple fictif : dix postes auxquels vous allouez chacun deux litres de substrat nécessitent vingt litres, avant la réserve décidée par l’équipe et la démonstration. Convertissez ensuite cette quantité dans les sacs réellement achetés ; un sac n’est pas une unité par participant. Ajoutez les dix contenants, les végétaux, les outils partagés, la préparation et le rangement pour établir le budget.",
+          "Choisissez une capacité compatible avec l’espace, l’équipe et le confort des visiteurs. Expliquez si la participation se fait sur inscription, dans la limite des places, ou en accès libre. Si un formulaire est utilisé, précisez comment l’équipe confirme les places et informe en cas de changement. Un QR code d’animation ne réserve pas automatiquement un atelier et ne remplace pas un outil de gestion des inscriptions.",
+          "Les présentations de produits et les conseils doivent rester dans le champ de compétence de la personne qui intervient. Ne donnez pas de consigne sur l’usage d’un produit phytopharmaceutique sans vérifier son étiquette, les règles applicables et les qualifications nécessaires. En cas de doute, renvoyez vers le fabricant ou un professionnel compétent plutôt que d’improviser.",
+        ],
+      },
+      {
+        title: "Construire un plan météo avec une solution de repli",
+        paragraphs: [
+          "Une animation extérieure peut être perturbée par la pluie, le vent, le froid ou une chaleur importante. Fixez à l’avance les critères d’annulation ou de déplacement, la personne qui prend la décision et l’heure limite pour prévenir les inscrits. Vérifiez que le lieu de repli offre assez d’espace et ne gêne pas les opérations habituelles du magasin.",
+          "Prévoyez deux versions de l’activité : la démonstration en extérieur et un format plus court sous abri ou en intérieur. Si le sujet dépend de conditions spécifiques, demandez à l’intervenant de proposer une variante qui reste utile sans reproduire exactement le dispositif initial.",
+          "Si la météo modifie la date, mettez à jour les affiches, la fiche locale, le site, les réseaux sociaux et les messages envoyés aux personnes inscrites. Une information périmée peut entraîner une visite inutile et dégrader la confiance. Sur Google Business Profile, les posts de type événement peuvent préciser titre, dates et heures ; la plateforme permet aussi de modifier ou supprimer un post lorsque les informations changent.",
+        ],
+      },
+      {
+        title: "Communiquer localement sans promesse exagérée",
+        paragraphs: [
+          "Annoncez le sujet, la date, les horaires, le lieu, la durée, le niveau éventuel, le coût et la capacité. Indiquez si les fournitures sont comprises et si les participants repartent avec une réalisation. Présentez une photo correspondant à l’activité ou identifiez clairement une image d’illustration.",
+          "Si vous utilisez des expressions comme « écologique », « naturel », « durable » ou « économe en eau », vérifiez à quel produit et à quelle propriété elles s’appliquent. La [DGCCRF précise comment justifier les allégations environnementales](https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/allegations-environnementales-ce-quil-faut-retenir). Une démonstration d’arrosage ne démontre pas, à elle seule, l’économie d’eau de toute une gamme.",
+          "Vous pouvez relayer l’événement en vitrine, sur votre site, dans vos canaux sociaux et auprès de partenaires locaux. Pour un courriel ou un SMS promotionnel, distinguez l’invitation commerciale du message nécessaire à la gestion d’une place ; les [règles CNIL sur les communications électroniques](https://www.cnil.fr/fr/communication-electronique-quelles-regles) précisent les conditions de prospection et leurs exceptions.",
+        ],
+      },
+      {
+        title: "Mesurer les résultats sans confondre présence et vente",
+        paragraphs: [
+          "Avant l’animation, choisissez une mesure correspondant à son objectif : inscriptions, personnes présentes, questions posées, démonstrations suivies ou achats identifiés par un code ou une procédure réellement en place. Ne comptez pas les impressions d’une affiche comme des visiteurs et ne déduisez pas un achat d’une simple participation.",
+          "Consignez les coûts et le temps de préparation, la météo, les références disponibles, le nombre de places utilisées et les changements de programme. Une vente réalisée le jour de l’atelier ne prouve pas à elle seule que l’atelier l’a causée. Comparez les opérations sur des périodes semblables, en notant les différences de saison, de stock et de conditions météo.",
+          "Après l’événement, notez ce qui a été compris, les questions récurrentes et les imprévus. Un résultat utile peut être de réduire la durée, de choisir un sujet plus précis ou de déplacer le rendez-vous à l’intérieur. Le guide pour [mesurer une animation commerciale](/blog/mesurer-animation-commerciale) aide à distinguer les étapes et à éviter un ROI fabriqué.",
+        ],
+      },
+      {
+        title: "Questions fréquentes sur les animations en jardinerie",
+        paragraphs: [
+          "Que proposer en jardinerie hors du pic de printemps ? Un atelier court, une démonstration d’équipement, une rencontre avec un professionnel ou un rendez-vous sur les plantes d’intérieur peuvent fonctionner si la demande, les compétences et les stocks le justifient. Choisissez selon les questions réellement posées dans votre magasin.",
+          "Comment limiter le nombre de places à un atelier ? Annoncez une capacité réaliste, un canal d’inscription consulté par l’équipe, et la façon dont la place est confirmée. Si vous ne pouvez pas gérer une liste d’attente ou les désistements, indiquez une règle simple et n’utilisez pas un QR code comme s’il réservait automatiquement.",
+          "Comment adapter une animation à la météo ? Définissez un seuil de décision et un horaire de communication avant l’ouverture des inscriptions, puis préparez un lieu et un format de repli. Informez directement les inscrits et mettez à jour chaque support public.",
+          "Faut-il proposer les mêmes animations chaque année ? Un rendez-vous récurrent peut aider les clients à le repérer, mais vérifiez que le thème, les stocks et les conditions restent adaptés. Une date répétée n’est pas une raison de conserver une activité qui ne répond plus aux besoins observés.",
+          "Un jeu par QR code est-il nécessaire pour animer une jardinerie ? Non. Une démonstration ou un conseil peut suffire. Un jeu mobile peut ajouter une interaction ponctuelle, à condition que les lots, les règles et leur retrait soient compris par l’équipe ; il ne remplace ni une inscription, ni une réservation, ni la mesure des ventes.",
+        ],
+      },
+      {
+        title: "Checklist avant d’annoncer votre prochaine animation",
+        paragraphs: ["Vérifiez ces points avec l’équipe et les intervenants :"],
+        items: [
+          "Le sujet correspond aux besoins exprimés et aux produits réellement disponibles.",
+          "Le contenu technique a été validé par une personne compétente ; aucun conseil phytosanitaire improvisé n’est diffusé.",
+          "La date, la durée, le prix, le matériel fourni et la capacité sont définis.",
+          "Les stocks et consommables couvrent les places prévues et les démonstrations.",
+          "Un lieu et un format de repli météo sont prêts, avec une règle claire de décision.",
+          "Les photos et allégations sur les produits correspondent à des caractéristiques démontrables.",
+          "Les inscriptions et les messages marketing sont expliqués séparément.",
+          "Les coûts, présences, incidents et indicateurs ont une méthode de suivi définie.",
+        ],
+      },
+    ],
+    related: [
+      "/blog/calendrier-marketing-commerce-local",
+      "/blog/animation-lancement-nouveau-produit",
+      "/blog/mesurer-animation-commerciale",
+      "/blog/animer-periode-creuse-commerce-local",
+      "/comment-ca-marche",
+    ],
+  },
+  {
+    path: "/blog/fideliser-clients-animalerie",
+    title: "Comment fidéliser les clients d’une animalerie sans remise permanente ?",
+    seoTitle: "Fidéliser les clients d’une animalerie sans remise",
+    description:
+      "Conseils, démonstrations et services utiles : 7 idées pour faire revenir les clients d’une animalerie sans promotions permanentes ni promesses vétérinaires.",
+    eyebrow: "Animalerie et commerce de proximité",
+    intro:
+      "Pour fidéliser les clients d’une animalerie sans remise permanente, donnez-leur des raisons concrètes de revenir : un conseil d’usage, une démonstration, une information fiable sur les produits ou une aide pour choisir un accessoire adapté. La relation se construit dans la durée, sans transformer l’animal en lot ni confondre conseil commercial et avis vétérinaire.",
+    answer:
+      "Commencez par repérer les questions récurrentes et les catégories de produits qui demandent une explication. Organisez une démonstration courte, une rencontre avec un professionnel compétent ou un service de disponibilité clairement défini. Vérifiez les produits et les stocks, demandez l’accord avant toute interaction avec un animal, et mesurez les retours observables. Un achat ou un passage en magasin ne prouve pas à lui seul une fidélité durable.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-18",
+    updatedAt: "2026-10-18",
+    reviewedAt: "2026-10-18",
+    readingTime: "10 min de lecture",
+    image: "/images/blog/fideliser-clients-animalerie.webp",
+    imageAlt: "Une vendeuse conseille une cliente sur un accessoire pour son chien dans une animalerie",
+    ctaLabel: "Découvrir les animations par QR code",
+    ctaHref: "/comment-ca-marche",
+    source: [
+      {
+        label: "Ministère de l’Agriculture — bien-être et protection des animaux de compagnie",
+        href: "https://agriculture.gouv.fr/le-bien-etre-et-la-protection-des-animaux-de-compagnie",
+      },
+      {
+        label: "Ministère de l’Agriculture — santé et bien-être : le vétérinaire comme référent",
+        href: "https://agriculture.gouv.fr/comment-garder-son-animal-de-compagnie-en-bonne-sante-et-contribuer-son-bien-etre",
+      },
+      {
+        label: "CNIL — prospection commerciale par e-mail et SMS",
+        href: "https://www.cnil.fr/fr/communication-electronique-quelles-regles",
+      },
+      {
+        label: "DGCCRF — information et règles de l’alimentation animale",
+        href: "https://www.economie.gouv.fr/dgccrf/alimentation-animale",
+      },
+      {
+        label: "Google Business Profile — créer et gérer des posts événementiels",
+        href: "https://support.google.com/business/answer/7342169?hl=fr",
+      },
+    ],
+    sections: [
+      {
+        title: "Fidéliser par l’utilité et la confiance",
+        paragraphs: [
+          "La fidélité en animalerie ne se résume pas à faire revenir quelqu’un grâce à une remise. Les clients peuvent rechercher un produit précis, comparer des accessoires, comprendre une caractéristique ou savoir si une référence est disponible. Une réponse claire et un accueil cohérent peuvent rendre la prochaine visite plus simple, sans promettre de résultat commercial.",
+          "Commencez par noter les questions que l’équipe reçoit souvent : différence entre deux accessoires, taille, compatibilité annoncée par le fabricant, disponibilité d’un produit ou délai de réassort. Distinguez les questions auxquelles un vendeur formé peut répondre à partir des informations du produit de celles qui concernent la santé, un symptôme ou un traitement.",
+          "Le Ministère de l’Agriculture rappelle que le vétérinaire est le référent en cas de maladie et que le bien-être d’un animal dépend de ses besoins physiologiques et comportementaux. L’article porte donc sur l’expérience en magasin et les produits ; il ne donne pas de diagnostic, de conseil de santé ou de recommandation vétérinaire.",
+          "Pour construire une démarche de retour sans points ni remises systématiques, l’article [fidéliser ses clients sans programme de points](/blog/fideliser-clients-sans-programme-points) propose un cadre général. Les exemples ci-dessous l’adaptent aux catégories et aux responsabilités particulières d’une animalerie.",
+        ],
+      },
+      {
+        title: "7 idées pour faire revenir les clients d’une animalerie",
+        paragraphs: [
+          "Choisissez les formats selon les produits réellement vendus et le niveau de compétence disponible. Ces propositions sont des pistes d’organisation, pas des promesses d’augmentation de la rétention.",
+        ],
+        items: [
+          "Organiser une démonstration d’accessoires : comparer les matériaux, les systèmes de fermeture ou les options de rangement à partir des notices et caractéristiques du fabricant. Évitez de présenter une démonstration comme un avis sur la santé ou le comportement de l’animal.",
+          "Proposer un atelier de découverte des jouets et accessoires d’enrichissement. Montrez les fonctions décrites par le fabricant, les consignes d’utilisation et les limites. Ne garantissez pas qu’un produit résoudra un trouble comportemental ; orientez les questions de comportement vers un professionnel qualifié.",
+          "Créer un rendez-vous de découverte d’une nouvelle gamme, avec quelques produits disponibles et une fiche de comparaison lisible. Précisez les espèces ou usages concernés uniquement si cette information figure sur l’étiquetage ou la documentation du produit.",
+          "Tenir une séance questions-réponses avec un vétérinaire, éducateur ou autre intervenant qualifié, si un partenariat est confirmé. Présentez clairement son rôle et son champ d’intervention ; ne laissez pas croire que l’équipe commerciale fournit une consultation médicale.",
+          "Organiser une rencontre d’information avec une association de protection animale ou un refuge au sujet de la responsabilité et de l’adoption, selon les règles et accords applicables. L’animal n’est jamais une dotation ou un lot ; la décision d’adoption reste un acte distinct, encadré et préparé.",
+          "Proposer une aide pratique sur les accessoires : expliquer les tailles disponibles, montrer le fonctionnement d’un produit ou comparer les références en stock. Si la démonstration implique un animal présent, demandez l’accord de son détenteur, gardez une interaction calme et interrompez-la au moindre signe d’inconfort.",
+          "Mettre en place une information de disponibilité à la demande pour un produit manquant, si le magasin dispose d’un moyen fiable pour prévenir le client. Expliquez ce qui sera communiqué, par quel canal et à quelle occasion ; ne transformez pas une demande de réassort en inscription automatique à une newsletter.",
+        ],
+      },
+      {
+        title: "Installer un parcours de service entre deux achats",
+        paragraphs: [
+          "La fidélisation se joue aussi les jours sans animation. Après l’achat d’un accessoire, remettez sa notice et expliquez où obtenir de l’aide dans le champ du magasin. Pour une référence régulièrement demandée, annoncez sa disponibilité réelle et le canal permettant de vérifier le stock avant le déplacement. Une demande que l’équipe sait reprendre vaut mieux qu’un rendez-vous récurrent sans service précis.",
+          "Exemple d’organisation à adapter : le client découvre les tailles et usages d’un accessoire, repart avec les consignes du fabricant, puis contacte la boutique s’il souhaite une autre référence ou une vérification de disponibilité. Si une alerte ponctuelle est demandée, confirmez son objet et fermez la demande après le message. Aucune fréquence universelle de réachat ne peut être déduite de l’espèce ou du produit ; ne programmez pas des sollicitations automatiques à partir d’une durée supposée.",
+          "Pour améliorer ce parcours, notez de façon agrégée les références souvent manquantes, les questions répétées et les demandes restées sans réponse. Choisissez un point à corriger — disponibilité, information ou délai de réponse — avant d’ajouter une nouvelle animation ou une remise.",
+        ],
+      },
+      {
+        title: "Faire une démonstration qui respecte les animaux et les clients",
+        paragraphs: [
+          "Une démonstration peut parfois se faire sans animal : présenter l’accessoire, montrer son fonctionnement ou comparer les informations figurant sur les emballages suffit souvent. Si un animal est présent, le client doit garder le contrôle de la situation et le personnel doit éviter les gestes imposés, l’exposition prolongée ou la manipulation non nécessaire.",
+          "Prévoyez un espace qui ne bloque pas les allées ni l’accès aux produits, un temps court et une possibilité de s’éloigner. L’objectif commercial ne doit pas conduire à forcer une interaction. Les exigences de bien-être animal concernent aussi les besoins physiologiques et comportementaux ; consultez les [repères du Ministère de l’Agriculture sur la protection animale](https://agriculture.gouv.fr/le-bien-etre-et-la-protection-des-animaux-de-compagnie) et faites valider toute activité impliquant des animaux par des personnes compétentes.",
+          "Vérifiez les produits montrés, les accessoires compatibles et les consignes du fabricant. Pour un aliment courant pour animaux de compagnie, ne présentez pas le produit comme prévenant, traitant ou guérissant une maladie. Une mention commerciale sur un emballage ne suffit pas à justifier une promesse thérapeutique. La [DGCCRF renvoie au cadre des allégations des aliments pour animaux](https://www.economie.gouv.fr/dgccrf/alimentation-animale) ; toute demande de régime liée à un état de santé doit être orientée vers le vétérinaire.",
+        ],
+      },
+      {
+        title: "Choisir un avantage utile sans remise permanente",
+        paragraphs: [
+          "Un avantage peut être un service ou une expérience plutôt qu’une réduction : démonstration, conseil sur une caractéristique produit, présentation d’une gamme ou rencontre avec un intervenant. Il doit correspondre à une capacité réelle du magasin et être décrit avec ses conditions, sa date et les produits concernés.",
+          "Si vous proposez un lot pour un jeu, choisissez un accessoire ou une dotation matérielle dont la disponibilité, la valeur et les modalités de remise sont définies. N’attribuez jamais un animal comme lot ou prime : le Ministère de l’Agriculture rappelle explicitement cette interdiction. La participation à un jeu, l’achat, la collecte d’un contact et le retrait d’un gain sont des étapes différentes.",
+          "Pour les règles d’une mécanique de jeu ou d’une offre promotionnelle, vérifiez le cadre applicable au produit et au dispositif avant diffusion. L’article [jeu-concours ou promotion](/blog/jeu-concours-ou-promotion) compare ces formats. Un QR code peut ouvrir un jeu mobile, mais il ne remplace ni la fiche produit, ni une inscription à un atelier, ni un service de réservation ou de réassort.",
+        ],
+      },
+      {
+        title: "Inviter sans transformer chaque passage en prospection",
+        paragraphs: [
+          "Une invitation claire indique le sujet, le lieu, la date, la durée, le tarif éventuel et la façon de participer. Utilisez des supports que l’équipe peut maintenir à jour : affichage, site, réseaux sociaux ou fiche d’établissement. Google Business Profile permet de publier des posts événementiels avec un titre et des dates et heures ; vérifiez la disponibilité de la fonction pour votre fiche et corrigez le post si le programme change.",
+          "Si le client demande à être averti du retour d’un article, expliquez que son adresse ou son numéro sert à ce message précis. Une demande ponctuelle ne vaut pas automatiquement accord pour recevoir d’autres offres. Pour une newsletter ou des SMS commerciaux, la CNIL indique les règles de consentement et les distinctions entre messages promotionnels et messages nécessaires à un service. Consultez ses [règles sur les communications électroniques](https://www.cnil.fr/fr/communication-electronique-quelles-regles) avant de solliciter une liste de clients.",
+          "Ne liez jamais un avantage, un lot ou un service à la publication d’un avis positif. Si un message après achat est utile, séparez l’information de service de toute proposition marketing et laissez au client un choix explicite lorsque la prospection le requiert.",
+        ],
+      },
+      {
+        title: "Mesurer les retours observés sans inventer de fidélité",
+        paragraphs: [
+          "Choisissez une mesure simple liée à l’action : nombre de personnes présentes, questions reçues, demandes de réassort ou retours utilisant une invitation datée. Définissez la période et la manière de compter avant le lancement. Pour comparer deux opérations, notez aussi les changements de prix, de stock, de météo, d’horaires et d’équipe.",
+          "Un participant n’est pas automatiquement un client récurrent. Un achat pendant une animation ne prouve pas que l’animation l’a provoqué ; une demande de disponibilité n’est pas une vente. Si vous pouvez reconnaître un retour client à partir d’un dispositif existant et légitime, décrivez la méthode et ses limites. Sinon, rapportez les visites ou les interactions agrégées sans les présenter comme une mesure de rétention.",
+          "Si le dispositif existant le permet, définissez d’abord un groupe non vide de clients et une fenêtre d’observation adaptée à la catégorie de produits. Le taux de retour observé correspond au nombre de clients de ce groupe revenus pendant la fenêtre, divisé par le nombre de clients suivis au départ, puis multiplié par 100. Comptez chaque client une seule fois et documentez les retours que vous ne pouvez pas reconnaître. Ce taux décrit le groupe observé ; il ne prouve pas que l’animation a causé les retours et ne doit pas être comparé entre catégories aux rythmes d’achat différents.",
+          "Le guide sur [la mesure d’une animation commerciale](/blog/mesurer-animation-commerciale) détaille les différences entre participation, contact, vente et retour. L’article [faire revenir des clients après une animation](/blog/faire-revenir-clients-animation) aide aussi à suivre une invitation sans confondre retrait d’un gain et visite ultérieure.",
+        ],
+      },
+      {
+        title: "Questions fréquentes sur la fidélisation en animalerie",
+        paragraphs: [
+          "Quels avantages proposer en animalerie sans remise ? Une démonstration, une comparaison d’accessoires, un conseil sur les caractéristiques publiées ou une rencontre avec un professionnel peuvent apporter une valeur utile. Définissez les produits concernés, le temps de l’équipe et les conditions avant d’inviter.",
+          "Comment prévenir un client lorsqu’un produit est réapprovisionné ? Utilisez un moyen réellement disponible, expliquez quel message sera envoyé et demandez les coordonnées nécessaires à cette demande. Une alerte de disponibilité ne doit pas inscrire implicitement le client à des offres commerciales.",
+          "Peut-on offrir un animal comme lot dans un jeu-concours ? Non. Le Ministère de l’Agriculture rappelle qu’un animal ne peut pas être attribué en lot ou en prime. Si vous organisez un jeu, choisissez une dotation matérielle adaptée et faites vérifier ses conditions.",
+          "Un vendeur peut-il conseiller sur la santé de l’animal ? Le personnel peut expliquer les informations d’un produit dans son champ de compétence, mais un symptôme, un diagnostic ou un traitement relève du vétérinaire. Le Ministère indique que le vétérinaire est le référent en cas de maladie.",
+          "Comment savoir si une animation fidélise vraiment ? Suivez des retours observables sur une période définie et dites comment ils ont été identifiés. La présence à un événement ou une vente le jour même ne suffit pas à prouver un retour régulier ni un effet causé par l’animation.",
+        ],
+      },
+      {
+        title: "Checklist avant votre prochaine animation en animalerie",
+        paragraphs: ["Avant de communiquer, vérifiez ces points avec l’équipe :"],
+        items: [
+          "Le sujet répond à une question fréquente ou présente un produit disponible.",
+          "Les informations utilisées viennent de l’étiquette, du fabricant ou d’un professionnel compétent.",
+          "Aucun diagnostic, traitement ou résultat de santé n’est promis par le personnel commercial.",
+          "La présence ou la manipulation d’un animal n’est pas nécessaire ; si elle l’est, le client conserve le contrôle et le bien-être est prioritaire.",
+          "Aucun animal n’est utilisé comme lot, prime ou avantage de participation.",
+          "Le lot matériel éventuel est disponible, décrit et soumis à des conditions claires.",
+          "Les demandes de réassort et les abonnements marketing sont distingués.",
+          "Les mesures prévues différencient présence, demande, achat et retour réellement constaté.",
+        ],
+      },
+    ],
+    related: [
+      "/blog/fideliser-clients-sans-programme-points",
+      "/blog/faire-revenir-clients-animation",
+      "/blog/collecter-contacts-magasin-consentement",
+      "/blog/mesurer-animation-commerciale",
+      "/comment-ca-marche",
+    ],
+  },
+  {
+    path: "/blog/animation-magasin-jouets-jeux",
+    title: "Comment organiser une animation dans un magasin de jouets ou de jeux ?",
+    seoTitle: "Animation en magasin de jouets : préparer un événement",
+    description:
+      "Démonstration, table de découverte ou tournoi : préparez une animation en magasin de jouets avec un format adapté, un espace maîtrisé et une inscription simple.",
+    eyebrow: "Commerce de jouets et jeux",
+    intro:
+      "Pour organiser une animation réussie dans un magasin de jouets ou de jeux, partez d’un produit que l’équipe peut expliquer, choisissez un format adapté à son public et prévoyez une capacité réaliste. Une démonstration, un tournoi et un jeu promotionnel ne répondent pas au même objectif : fixez les règles, l’encadrement et les modalités d’inscription avant de communiquer.",
+    answer:
+      "Définissez d’abord le public et l’âge recommandé des produits, puis choisissez une activité courte qui tient dans l’espace disponible. Désignez une personne responsable, comptez les places et le matériel, gardez les circulations accessibles, et adressez l’inscription aux adultes accompagnants. Pour un jeu avec lot ou tirage au sort, précisez ses règles et vérifiez le cadre applicable : ce n’est pas la même chose qu’une partie de démonstration ou un tournoi fondé sur les résultats.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-18",
+    updatedAt: "2026-10-18",
+    reviewedAt: "2026-10-18",
+    readingTime: "9 min de lecture",
+    image: "/images/blog/animation-magasin-jouets-jeux.webp",
+    imageAlt:
+      "Un vendeur présente un jeu de société à deux adultes autour d’une table en boutique",
+    ctaLabel: "Découvrir les animations par QR code",
+    ctaHref: "/comment-ca-marche",
+    source: [
+      {
+        label: "DGCCRF — choisir un jouet adapté à l’âge et lire les avertissements",
+        href: "https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/securite-des-jouets-optez-pour-un-produit-adapte-lage-de-lenfant",
+      },
+      {
+        label: "CNIL — données personnelles des mineurs de moins de 15 ans",
+        href: "https://www.cnil.fr/fr/recommandation-4-rechercher-le-consentement-dun-parent-pour-les-mineurs-de-moins-de-15-ans",
+      },
+      {
+        label: "CNIL — recueillir un consentement libre et éclairé",
+        href: "https://www.cnil.fr/fr/les-bases-legales/consentement",
+      },
+      {
+        label: "DGCCRF — loteries et pratiques promotionnelles",
+        href: "https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/loterie-des-pratiques-commerciales-reglementees",
+      },
+      {
+        label: "Service Public Entreprendre — sécurité incendie des établissements recevant du public",
+        href: "https://entreprendre.service-public.gouv.fr/vosdroits/F31684",
+      },
+    ],
+    sections: [
+      {
+        title: "Choisir un format adapté au magasin et au public",
+        paragraphs: [
+          "Une animation en magasin de jouets fonctionne mieux quand sa promesse est concrète : essayer un jeu, découvrir une nouveauté, apprendre une règle ou participer à une partie encadrée. Avant de choisir le format, demandez-vous qui joue, combien de temps dure une session, quel niveau d’explication l’équipe peut apporter et combien de personnes l’espace peut accueillir sans gêner les achats.",
+          "Une démonstration présente les règles et le matériel ; une table de découverte permet de tester un jeu ; un tournoi ajoute des manches et un classement ; un jeu promotionnel fait espérer un gain. Le mot « animation » peut désigner ces formats différents, mais leurs conditions, leur durée et leurs obligations ne sont pas interchangeables. Pour comparer les mécanismes promotionnels, voir [jeu-concours ou promotion](/blog/jeu-concours-ou-promotion) et [organiser un jeu-concours lors d’un événement local](/blog/jeu-concours-evenement-local).",
+          "Un premier événement peut rester simple : une table, un jeu, des créneaux annoncés et une personne de l’équipe qui explique les règles. Si l’intérêt est confirmé, le magasin pourra envisager plusieurs tables ou un rendez-vous récurrent. Ce test n’est pas une garantie de ventes ou de fidélisation ; il permet surtout de vérifier l’organisation et les retours observables.",
+        ],
+      },
+      {
+        title: "Sélectionner les jeux et respecter leurs indications",
+        paragraphs: [
+          "Choisissez un jeu disponible et complet, dont les règles peuvent être expliquées dans le temps prévu. Vérifiez avant l’événement le contenu de la boîte, l’état des pièces, la durée d’une partie, le nombre de joueurs et les besoins éventuels en piles ou accessoires. Prévoyez une version de démonstration distincte du stock destiné à la vente, si le magasin en a les moyens.",
+          "Pour les jouets destinés aux enfants, lisez les informations et avertissements du fabricant plutôt que d’estimer vous-même l’âge adapté. La [DGCCRF rappelle de tenir compte de l’âge, des aptitudes et des avertissements présents sur le jouet](https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/securite-des-jouets-optez-pour-un-produit-adapte-lage-de-lenfant). Affichez ces indications à proximité de la table si elles sont pertinentes pour l’activité et demandez aux adultes accompagnants de décider si le produit convient à l’enfant concerné.",
+          "Un jeu de société signalé pour un public plus âgé ne devient pas adapté aux plus jeunes parce qu’un adulte est présent. À l’inverse, une activité familiale ne nécessite pas de collecter l’âge exact ou l’identité des enfants : le magasin peut décrire le format et laisser l’accompagnant apprécier sa pertinence.",
+        ],
+      },
+      {
+        title: "Préparer l’espace, le matériel et l’encadrement",
+        paragraphs: [
+          "Dessinez le dispositif avant de publier l’invitation. Repérez les tables, les chaises, la file d’attente, les produits et le passage des autres clients. Gardez les sorties et cheminements accessibles. Le responsable vérifie la capacité applicable au local et l’organisation de l’accueil ; la fiche [Service Public sur la sécurité incendie des ERP](https://entreprendre.service-public.gouv.fr/vosdroits/F31684) détaille les règles selon le type et la catégorie d’établissement.",
+          "Attribuez les rôles : une personne anime et explique ; une autre, si le nombre de visiteurs le justifie, gère l’accueil, les créneaux et les questions d’achat. Cette séparation évite de laisser sans réponse le reste du magasin pendant une partie. Préparez aussi une solution si la table est complète : un autre horaire, une liste d’attente gérée par un adulte ou une démonstration courte sans inscription.",
+          "Comptez les jeux, accessoires et pièces avant puis après la séance. Gardez les petits éléments hors de portée des enfants qui ne participent pas, et ne laissez pas le matériel sans surveillance si les consignes du fabricant l’exigent. Pour les photos, autorisations et affichages, définissez une règle séparée : participer à l’animation ne signifie pas automatiquement accepter d’être photographié ou de recevoir des messages commerciaux.",
+          "Exemple fictif pour une table : trois sessions comprenant chacune douze minutes de découverte et huit minutes d’accueil et de remise en place occupent une heure. Avec quatre joueurs par session, cela ouvre douze participations possibles, sans supposer douze personnes différentes. Les accompagnants, l’animateur et les autres clients comptent aussi dans l’occupation réelle du magasin ; quatre places de jeu ne définissent pas la capacité totale d’accueil.",
+        ],
+      },
+      {
+        title: "Choisir entre démonstration, tournoi et jeu avec lot",
+        paragraphs: [
+          "Pour faire découvrir une référence, la démonstration suffit souvent : expliquez la mécanique, jouez un tour et indiquez où le produit se trouve en rayon. Pour un tournoi, écrivez les critères de participation, les manches, le système de départage, l’horaire et la façon de gérer une égalité. Faites en sorte que les règles restent compréhensibles et identiques pour tous les participants.",
+          "Si une opération promet un lot ou fait intervenir le hasard, ne la traitez pas comme un simple atelier. La [DGCCRF distingue les régimes applicables aux loteries et aux opérations promotionnelles](https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/loterie-des-pratiques-commerciales-reglementees) et rappelle que la présentation ne doit pas être déloyale. Décrivez le lot réellement disponible, la période, les conditions d’accès et la méthode de désignation ; faites vérifier les modalités avant diffusion si le dispositif soulève une question juridique.",
+          "Un tournoi basé sur une partie et un tirage au sort associé à une inscription sont deux mécaniques distinctes, même s’ils sont annoncés le même jour. Séparez-les dans le programme et dans les règles. N’annoncez pas un lot ou un avantage que le magasin n’est pas en mesure de remettre.",
+          "Une dotation n’a pas besoin d’être coûteuse pour être pertinente : elle peut être un jeu identifié, un accessoire disponible ou une place pour une prochaine séance, à condition que les modalités soient claires et tenables. Si l’objectif est simplement la découverte, ne rajoutez pas un concours par réflexe.",
+        ],
+      },
+      {
+        title: "Gérer les inscriptions sans collecter les données des enfants",
+        paragraphs: [
+          "Pour une activité familiale, adressez l’information d’inscription à l’adulte accompagnant. Pour réserver une place, le magasin a généralement besoin de peu d’éléments pratiques : un nom d’adulte, un moyen de contact si un changement d’horaire doit être communiqué et le nombre de places demandées. Expliquez à quoi ces informations servent, qui peut les consulter et quand elles seront supprimées ; ne demandez pas la date de naissance, l’adresse ou le profil d’un enfant si l’organisation n’en a pas besoin.",
+          "Une inscription à une séance ne vaut pas abonnement aux offres du magasin. Proposez à l’adulte un choix marketing distinct selon les [repères CNIL sur le consentement](https://www.cnil.fr/fr/les-bases-legales/consentement). Ce parcours évite de créer un fichier d’enfants. Si vous développez un service en ligne directement destiné aux mineurs, la [recommandation CNIL sur le consentement parental](https://www.cnil.fr/fr/recommandation-4-rechercher-le-consentement-dun-parent-pour-les-mineurs-de-moins-de-15-ans) doit être examinée dans ce contexte particulier.",
+          "Ne conditionnez pas une place, un lot ou un avantage à la publication d’un avis positif. Une demande de retour d’expérience doit rester distincte de l’accès à l’événement et ne pas dicter le contenu de l’avis.",
+          "Vous pouvez également organiser une séance sans inscription préalable, avec un nombre de places annoncé et une règle d’accès sur place. Si vous utilisez un formulaire ou un QR code, expliquez sa finalité et évitez de rendre la participation dépendante d’une inscription marketing qui n’est pas nécessaire au jeu.",
+        ],
+      },
+      {
+        title: "Communiquer clairement avant le rendez-vous",
+        paragraphs: [
+          "L’annonce doit répondre rapidement aux questions des familles : quel jeu, pour quel âge selon le fabricant, quel format, quelle durée, quelle date, combien de places, faut-il réserver et quel adulte accompagne l’enfant ? Précisez si l’événement est gratuit, si une partie est ouverte à tous et si le tournoi demande une inscription. Évitez les formules vagues comme « pour tous les âges » si les jeux sélectionnés ont des recommandations différentes.",
+          "Mettez à jour l’information sur les supports utilisés par le magasin : vitrine, site, réseaux sociaux ou fiche d’établissement. Si le créneau est complet ou si une référence n’est plus disponible, modifiez l’annonce plutôt que de laisser une attente erronée. Pour une affiche avec QR code, veillez à ce que l’essentiel des informations reste lisible sans scanner ; le guide [afficher un QR code pour une animation commerciale](/blog/affiche-qr-code-animation-commerciale) donne des repères de mise en œuvre.",
+          "Pour réfléchir à l’ambiance, à l’accueil et au parcours sur place, consultez aussi [l’expérience client en boutique](/blog/experience-client-boutique). L’événement doit rester compréhensible pour les visiteurs qui viennent simplement acheter : signalez la zone d’animation et indiquez à l’équipe comment les orienter.",
+        ],
+      },
+      {
+        title: "Mesurer l’animation sans surinterpréter les résultats",
+        paragraphs: [
+          "Avant l’événement, choisissez quelques observations faciles à relever : places proposées et occupées, séances commencées à l’heure, jeux présentés, questions récurrentes et demandes d’information sur les références. Notez aussi les incidents pratiques, comme une file qui bloque un rayon ou un jeu incomplet. Ces éléments aideront à améliorer le format suivant.",
+          "Distinguez les personnes présentes, les adultes inscrits, les parties jouées et les ventes constatées pendant la période. Une présence ne prouve pas un achat futur ; une vente le jour même ne prouve pas qu’elle a été causée par l’animation. Décrivez la période et la méthode si vous comparez des résultats, et ne qualifiez pas de « fidélisation » une seule participation.",
+          "Un jeu QR peut compléter une animation avec une mécanique numérique distincte, si elle est réellement utile au magasin. Consultez [le fonctionnement d’Okado](/comment-ca-marche) sans le confondre avec un système d’inscription, un tournoi, une réservation ou un suivi individuel des enfants.",
+        ],
+      },
+      {
+        title: "Questions fréquentes sur les animations en magasin de jouets",
+        paragraphs: [
+          "Comment organiser une animation familiale dans une petite boutique ? Choisissez une seule table de jeu, limitez la durée et annoncez à l’avance le nombre de places. Préservez un passage libre pour les autres clients et désignez un membre de l’équipe pour animer.",
+          "Qui doit inscrire un enfant à l’événement ? Adressez l’inscription et les informations pratiques à l’adulte accompagnant. Ne collectez pas de données sur l’enfant qui ne sont pas nécessaires. Une inscription à l’événement ne vaut pas inscription à une newsletter.",
+          "Quelle différence entre une démonstration et un jeu-concours ? La démonstration sert à découvrir le fonctionnement d’un produit. Le jeu-concours ou la loterie peut faire espérer un gain et demande de définir des conditions spécifiques ; vérifiez le cadre correspondant avant de communiquer.",
+          "Faut-il prévoir un lot pour attirer des participants ? Non. Une partie de découverte peut être utile sans dotation. Si un lot est prévu, décrivez-le précisément et vérifiez les règles de l’opération avant publication.",
+          "Comment choisir l’âge des participants ? Référez-vous aux indications du fabricant figurant sur le produit et son emballage. L’adulte accompagnant peut ensuite apprécier si l’activité convient à l’enfant ; ne promettez pas une compatibilité universelle.",
+        ],
+      },
+      {
+        title: "Checklist avant d’annoncer votre prochaine animation",
+        paragraphs: ["Vérifiez ces éléments avec l’équipe avant de publier :"],
+        items: [
+          "Le format est nommé précisément : démonstration, découverte, tournoi ou jeu avec lot.",
+          "Les jeux sont disponibles, complets et présentés avec leurs indications d’âge et avertissements fabricant.",
+          "La jauge, la durée, les créneaux et la personne responsable sont définis.",
+          "La disposition des tables préserve les circulations et l’accueil des autres clients.",
+          "Les règles de jeu ou de dotation sont écrites et communiquées avant la participation.",
+          "Les inscriptions sont gérées par l’adulte accompagnant et limitées aux informations nécessaires.",
+          "Inscription à l’événement, photos éventuelles et prospection commerciale restent des choix distincts.",
+          "Les mesures prévues séparent présence, parties jouées, questions et ventes observées.",
+        ],
+      },
+    ],
+    related: [
+      "/blog/jeu-concours-evenement-local",
+      "/blog/experience-client-boutique",
+      "/blog/affiche-qr-code-animation-commerciale",
+      "/blog/mesurer-animation-commerciale",
+      "/comment-ca-marche",
+    ],
+  },
+  {
+    path: "/blog/attirer-clients-garage-automobile",
+    title: "Comment attirer et faire revenir des clients dans un garage automobile ?",
+    seoTitle: "Attirer des clients dans un garage automobile",
+    description:
+      "Visibilité locale, prestations expliquées et suivi utile : des pistes concrètes pour attirer des clients dans un garage sans promettre de réparation gratuite.",
+    eyebrow: "Garage automobile et commerce de proximité",
+    intro:
+      "Pour attirer des clients dans un garage automobile, rendez d’abord visibles les informations qui aident un automobiliste à choisir : prestations réellement proposées, horaires, zone desservie, moyens de contact et prochaines disponibilités. Pour les faire revenir, misez sur une explication claire des travaux, un suivi de service pertinent et une capacité d’atelier maîtrisée — pas sur une promesse de réparation ou de contrôle gratuit aux contours flous.",
+    answer:
+      "Commencez par vérifier vos horaires et coordonnées sur votre fiche locale et votre site, puis décrivez précisément les services réellement assurés. Facilitez une première demande avec les informations nécessaires au tri et annoncez les créneaux que l’atelier peut tenir. Avant les travaux, expliquez leur périmètre et leur prix selon la situation du client ; séparez les messages de suivi liés à une intervention de la prospection commerciale. Mesurez les appels, demandes et rendez-vous confirmés sans attribuer automatiquement chaque vente à une campagne.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-18",
+    updatedAt: "2026-10-18",
+    reviewedAt: "2026-10-18",
+    readingTime: "10 min de lecture",
+    image: "/images/blog/attirer-clients-garage-automobile.webp",
+    imageAlt:
+      "Un mécanicien explique une intervention automobile à une cliente dans un atelier",
+    ctaLabel: "Découvrir les animations par QR code",
+    ctaHref: "/comment-ca-marche",
+    source: [
+      {
+        label: "DGCCRF — information du consommateur et réparation automobile",
+        href: "https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques-et-les-faq/vehicule-automobile-lordre-de-reparation-decrit-la-nature",
+      },
+      {
+        label: "DGCCRF — information sur les prix et les devis",
+        href: "https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/devis",
+      },
+      {
+        label: "CNIL — prospection par e-mail et SMS",
+        href: "https://cnil.fr/fr/la-prospection-commerciale-par-courrier-electronique-sms-mms-et-automate-dappel",
+      },
+      {
+        label: "Google Business Profile — informations locales exactes",
+        href: "https://support.google.com/business/answer/3039617?hl=fr",
+      },
+      {
+        label: "Google Business Profile — posts, offres et événements",
+        href: "https://support.google.com/business/answer/7342169?hl=fr",
+      },
+    ],
+    sections: [
+      {
+        title: "Rendre le garage facile à trouver et à contacter",
+        paragraphs: [
+          "Un automobiliste compare souvent plusieurs ateliers avant d’appeler. Il veut savoir si le garage est ouvert, où il se trouve, comment prendre contact et si le type de prestation recherché est proposé. Vérifiez ces informations sur le site, les annuaires professionnels et la fiche d’établissement Google : nom, adresse, téléphone, horaires habituels et exceptionnels, lien vers le site et zone réellement desservie.",
+          "Google permet de modifier les horaires, coordonnées et photos de la fiche. Pour un garage qui reçoit les véhicules sur place, indiquez d’abord son adresse et son accès. Une zone desservie concerne les prestations effectivement proposées chez le client ou sur un secteur d’intervention ; ne l’utilisez pas comme une liste de villes à ajouter au nom du garage. L’aide [Google sur la mise à jour de la fiche](https://support.google.com/business/answer/3039617?hl=fr) précise les champs disponibles.",
+          "Présentez les services disponibles avec des mots compris par les conducteurs : entretien périodique, pneumatiques, diagnostic, carrosserie ou autre prestation uniquement si l’atelier la réalise effectivement. Précisez les limites : types de véhicules pris en charge, équipement nécessaire, modalités de rendez-vous, prise en charge ou non à domicile. Ne laissez pas penser que le garage intervient sur tous les modèles ou toutes les pannes si ce n’est pas le cas.",
+          "Pour structurer une présence locale sans créer de contenu générique, consultez aussi [comment attirer des clients dans un commerce local](/blog/attirer-clients-commerce-local). Pour un garage, la différenciation vient surtout de ses spécialités confirmées, de son accueil et de la clarté du parcours avant intervention.",
+        ],
+      },
+      {
+        title: "Expliquer les prestations sans promettre un résultat impossible à garantir",
+        paragraphs: [
+          "Une page de service doit aider à comprendre ce qui se passe après le premier contact : quelles informations transmettre, comment l’atelier vérifie la demande, quand un diagnostic peut être nécessaire et comment le client reçoit une proposition de travaux. Cette transparence aide à réduire les demandes mal orientées sans transformer le site en diagnostic à distance.",
+          "Formalisez avec le client le périmètre, le prix ou sa méthode de calcul et le délai annoncé. La [fiche DGCCRF sur la réparation automobile](https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques-et-les-faq/vehicule-automobile-lordre-de-reparation-decrit-la-nature) détaille l’ordre de réparation et le devis, notamment pour des travaux importants ; la [fiche générale sur les devis](https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/devis) complète les règles selon la prestation. Si le diagnostic révèle des travaux supplémentaires, informez le client et recueillez son accord sur la proposition avant de les réaliser. Conservez une trace de ce qui a été autorisé.",
+          "Une opération découverte doit elle aussi être cadrée. Si vous proposez une vérification, dites exactement ce qui est regardé, par qui, combien de temps cela prend, si un rendez-vous est requis et ce qui n’est pas inclus. N’utilisez pas l’expression « contrôle sécurité gratuit » si le contenu, les limites ou la qualification de l’intervenant sont indéfinis ; ne remplacez pas un contrôle technique réglementaire par une vérification commerciale.",
+          "Ne présentez jamais une réparation nécessaire ou un diagnostic de sécurité comme un jeu ou un lot à gagner. Un avantage éventuel peut porter sur une prestation clairement décrite ou un accessoire, mais ses conditions, sa disponibilité, ses limites et son éventuelle combinaison avec d’autres offres doivent être vérifiées avant publication. Le client doit garder le choix d’autoriser ou non les travaux après avoir reçu les informations utiles.",
+        ],
+      },
+      {
+        title: "Organiser l’acquisition sans saturer l’atelier",
+        paragraphs: [
+          "Avant de lancer une campagne, demandez à l’équipe quelles demandes elle peut traiter et à quelles périodes. Estimez le temps de réponse au téléphone, les créneaux de diagnostic, la capacité des ponts et la disponibilité des pièces ou partenaires. Réservez une marge pour les urgences déjà prises en charge et les interventions en cours. Une campagne qui suscite plus de demandes que l’atelier ne peut absorber risque surtout d’allonger les délais et d’abîmer la confiance.",
+          "Choisissez un objectif unique et observable : faire connaître une prestation réellement disponible, remplir quelques créneaux identifiés ou expliquer une démarche de prise de rendez-vous. Définissez la période, le budget et la limite de demandes que l’équipe peut accueillir. Si les créneaux sont pleins, suspendez ou modifiez la communication et indiquez honnêtement le prochain délai disponible.",
+          "Pour trier une demande, demandez seulement les éléments utiles : prestation recherchée, modèle et année du véhicule si nécessaires, description du problème et moyen de réponse. Expliquez quand l’équipe confirmera le créneau. Une demande reçue ne doit pas être annoncée comme un rendez-vous acquis tant que l’atelier n’a pas vérifié sa disponibilité ; les informations sensibles ou documents se transmettent ensuite par le canal de prise en charge approprié.",
+          "Vous pouvez tester un format peu coûteux : une explication courte d’une prestation, une présentation de l’atelier, une rencontre avec un partenaire local (par exemple une auto-école ou un vendeur de véhicules d’occasion, si le partenariat existe), ou un rendez-vous d’information à jauge limitée. Toute recommandation technique doit être validée par un professionnel compétent. Une animation n’est pas un diagnostic individuel et ne remplace pas une intervention.",
+          "Pour les périodes calmes, [les animations en période creuse](/blog/animer-periode-creuse-commerce-local) donnent des pistes de calendrier et de capacité. Adaptez-les aux contraintes mécaniques et à l’organisation réelle de votre atelier plutôt que de reprendre une offre promotionnelle générique.",
+        ],
+      },
+      {
+        title: "Construire le retour client autour d’un suivi utile",
+        paragraphs: [
+          "Après une prestation, le client peut avoir besoin de récupérer un véhicule, de comprendre une facture ou de savoir quand reprendre contact. Un message de service doit rester lié à la demande ou à l’intervention concernée : confirmation de rendez-vous, changement de délai ou information pratique. Distinguez-le d’un message commercial qui propose une nouvelle prestation ou une offre.",
+          "Pour la prospection par e-mail ou SMS auprès des particuliers, la CNIL indique que le consentement préalable est en principe requis, avec des règles et exceptions précises selon la situation. Ne supposez pas qu’un numéro transmis pour un rendez-vous autorise l’envoi de promotions. Présentez séparément la finalité des messages et appliquez les règles de désinscription. Consultez la [fiche CNIL sur la prospection commerciale électronique](https://cnil.fr/fr/la-prospection-commerciale-par-courrier-electronique-sms-mms-et-automate-dappel) avant de réutiliser les coordonnées clients.",
+          "Le retour peut aussi passer par une explication cohérente d’une prestation passée, un rappel d’entretien utile au véhicule selon les recommandations et échéances adaptées, ou une information annoncée par le professionnel. Évitez les rappels automatiques qui prétendent connaître l’état du véhicule sans données ou validation, ainsi que les conseils mécaniques génériques présentés comme un avis sur une voiture particulière.",
+          "Si une animation ponctuelle sert à créer un contact, définissez ce qui est mesuré et ce qui ne l’est pas. L’article [faire revenir des clients après une animation](/blog/faire-revenir-clients-animation) distingue invitation, participation et visite ultérieure ; il aide à ne pas confondre une collecte de coordonnées avec un retour en atelier.",
+        ],
+      },
+      {
+        title: "Mettre à jour la présence locale et annoncer une opération",
+        paragraphs: [
+          "Mettez d’abord à jour les informations stables : adresse, horaires, téléphone, site, types de véhicules pris en charge et prestations. Ajoutez des photos récentes de la façade et de l’espace d’accueil si elles reflètent réellement le lieu ; évitez les images génériques qui pourraient faire croire à des équipements ou services inexistants. Maintenez les horaires exceptionnels à jour lors des congés et jours fériés.",
+          "Si vous annoncez un événement ou une offre sur Google Business Profile, utilisez le type de publication correspondant et renseignez ses dates et conditions. Google permet de publier des posts d’actualité, offres ou événements dans la recherche et Maps. La publication est un canal d’information, pas une garantie d’apparition à chaque recherche ni de résultat commercial.",
+          "Préparez une fiche claire pour chaque prestation mise en avant : véhicules concernés, contenu, éventuelles exclusions, prix annoncé ou méthode de devis, durée indicative et canal de demande. Exemple fictif : une campagne pneumatiques nomme les dimensions ou modèles pris en charge et les créneaux effectivement ouverts ; elle indique que le rendez-vous sera confirmé après vérification. Ces détails aident l’automobiliste à savoir s’il peut faire une demande utile.",
+        ],
+      },
+      {
+        title: "Suivre les demandes et rendez-vous sans surestimer l’effet",
+        paragraphs: [
+          "Choisissez une période de mesure et notez quelques indicateurs que le garage connaît réellement : appels reçus, demandes de rendez-vous, rendez-vous confirmés, rendez-vous honorés et délai avant le prochain créneau. Séparez les demandes liées à une campagne identifiable des demandes habituelles lorsque le canal est connu. N’ajoutez pas de suivi individuel si un décompte agrégé suffit.",
+          "Une demande n’est pas un rendez-vous ; un rendez-vous n’est pas nécessairement une intervention ; une intervention ne prouve pas à elle seule que la campagne l’a provoquée. Comparez des périodes de durée similaire et consignez les changements importants : météo, jours de fermeture, effectif, indisponibilité d’une pièce ou variation du budget. Présentez ces facteurs et les limites de l’attribution dans le compte rendu.",
+          "Le cadre pour [mesurer une animation commerciale](/blog/mesurer-animation-commerciale) aide à définir les étapes et leurs dénominateurs. Pour le garage, gardez aussi le délai de réponse et les demandes refusées faute de capacité : une campagne peut être visible tout en créant une attente que l’atelier ne peut pas satisfaire.",
+          "Si vous organisez un jeu QR, il peut soutenir une animation de notoriété distincte, mais il ne remplace pas la prise de rendez-vous, le devis, le dossier d’intervention ou le suivi technique d’un véhicule. Vérifiez [comment fonctionne Okado](/comment-ca-marche) et n’ajoutez la mécanique que si elle sert un objectif explicite et si l’équipe peut traiter les demandes qui en résultent.",
+        ],
+      },
+      {
+        title: "Questions fréquentes sur l’acquisition pour un garage",
+        paragraphs: [
+          "Comment faire connaître un garage indépendant près de chez moi ? Commencez par des coordonnées, horaires, photos, zone desservie et prestations exactes sur le site et la fiche locale. Ajoutez ensuite du contenu utile sur les interventions réellement réalisées, sans créer des pages identiques pour plusieurs villes.",
+          "Comment attirer des clients sans offrir un diagnostic gratuit ? Expliquez une prestation disponible, montrez les étapes d’accueil ou organisez une rencontre d’information limitée. Si une vérification est proposée, définissez son périmètre, sa durée, ses limites et l’intervenant ; ne la présentez pas comme un contrôle réglementaire ou une expertise si ce n’est pas le cas.",
+          "Comment formaliser les travaux avant l’intervention ? Confirmez avec le client les travaux autorisés, leur prix ou mode de calcul et le délai. La DGCCRF détaille les mentions de l’ordre de réparation et recommande le devis pour les travaux importants. Une information sur le prix et une trace de l’accord évitent de laisser le client découvrir une prestation supplémentaire à la facture.",
+          "Un garage peut-il envoyer un SMS après une intervention ? Un message opérationnel lié à un rendez-vous ou à la prestation n’a pas la même finalité qu’une prospection commerciale. Avant d’envoyer des offres par SMS ou e-mail, vérifiez les règles CNIL applicables et ne réutilisez pas automatiquement les coordonnées fournies pour le suivi du service.",
+          "Comment savoir si une campagne apporte de nouveaux rendez-vous ? Définissez les dates, le canal et les critères de comptage avant la campagne. Suivez séparément demandes, rendez-vous confirmés, passages et interventions ; la coïncidence temporelle ne prouve pas que la campagne a causé chaque demande.",
+        ],
+      },
+      {
+        title: "Checklist avant de communiquer sur votre garage",
+        paragraphs: ["Avant de publier une offre ou une campagne, vérifiez ces points :"],
+        items: [
+          "Adresse, horaires, téléphone, zone desservie et prestations sont exacts sur les supports locaux.",
+          "Les services annoncés sont réellement proposés et les véhicules concernés sont précisés si nécessaire.",
+          "Les tarifs, conditions, limites et disponibilités de toute opération sont écrits et validés.",
+          "Aucune vérification de sécurité, réparation ou promesse de résultat n’est présentée de façon ambiguë ou comme lot.",
+          "La capacité et les créneaux d’atelier sont compatibles avec le volume de demandes attendu.",
+          "Messages de service et prospection commerciale sont séparés ; le canal utilisé respecte les règles applicables.",
+          "Les indicateurs distinguent appels, demandes, rendez-vous, interventions et retours observables.",
+          "Les exemples et chiffres de communication ne sont pas inventés et peuvent être justifiés.",
+        ],
+      },
+    ],
+    related: [
+      "/blog/attirer-clients-commerce-local",
+      "/blog/animer-periode-creuse-commerce-local",
+      "/blog/faire-revenir-clients-animation",
+      "/blog/mesurer-animation-commerciale",
+      "/comment-ca-marche",
+    ],
+  },
+  {
+    path: "/blog/portes-ouvertes-salle-sport",
+    title: "Comment organiser une journée portes ouvertes dans une salle de sport ?",
+    seoTitle: "Portes ouvertes en salle de sport : plan d’action",
+    description:
+      "Organisez les portes ouvertes de votre salle de sport : programme, capacité, essais encadrés, inscriptions et conditions d’adhésion, avec un bilan utile.",
+    eyebrow: "Salle de sport et acquisition locale",
+    intro:
+      "Pour organiser une journée portes ouvertes dans une salle de sport, préparez un parcours de découverte qui montre les espaces, les activités réellement proposées et les conditions d’accès. Fixez une jauge compatible avec les locaux et l’équipe, encadrez tout essai sportif avec un intervenant compétent, puis distinguez visite, séance d’essai, demande de contact et adhésion. Une journée découverte peut présenter votre salle ; elle ne doit pas promettre de transformation physique ni collecter des données de santé à des fins marketing.",
+    answer:
+      "Choisissez un objectif principal (faire visiter, présenter les cours ou proposer un essai), listez les espaces accessibles, les créneaux et les personnes qui encadrent, puis limitez les inscriptions à la capacité disponible. Expliquez à l’avance les activités, conditions, tarifs éventuels et modalités d’essai. Collectez séparément les coordonnées nécessaires à l’organisation et le consentement marketing ; ne demandez pas d’informations de santé sur un formulaire de prospection. Après l’événement, comptez les visites, essais, demandes et adhésions comme des étapes distinctes.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-18",
+    updatedAt: "2026-10-18",
+    reviewedAt: "2026-10-18",
+    readingTime: "10 min de lecture",
+    image: "/images/blog/portes-ouvertes-salle-sport.webp",
+    imageAlt:
+      "Présentation d’un espace d’entraînement à une visiteuse lors de portes ouvertes en salle de sport",
+    ctaLabel: "Découvrir les animations par QR code",
+    ctaHref: "/comment-ca-marche",
+    source: [
+      {
+        label: "Ministère des Sports — encadrement sportif contre rémunération",
+        href: "https://www.sports.gouv.fr/se-declarer-educateur-sportif",
+      },
+      {
+        label: "CNIL — collecte de données de santé dans le sport",
+        href: "https://www.cnil.fr/fr/sportifs-quels-cas-et-conditions-collecte-des-donnees-de-sante",
+      },
+      {
+        label: "CNIL — communications électroniques et prospection",
+        href: "https://www.cnil.fr/fr/communication-electronique-quelles-regles",
+      },
+      {
+        label: "Google Business Profile — créer et gérer des posts événementiels",
+        href: "https://support.google.com/business/answer/7342169?hl=fr",
+      },
+      {
+        label: "Service Public Entreprendre — sécurité incendie des établissements recevant du public",
+        href: "https://entreprendre.service-public.gouv.fr/vosdroits/F31684",
+      },
+      {
+        label: "DGCCRF — informations et conditions d’adhésion à une salle de sport",
+        href: "https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/ladhesion-une-salle-de-sport-ou-de-remise-en-forme",
+      },
+    ],
+    sections: [
+      {
+        title: "Définir ce que les visiteurs pourront découvrir",
+        paragraphs: [
+          "Une journée portes ouvertes peut servir à visiter les espaces, rencontrer l’équipe, comprendre le fonctionnement des cours ou essayer une activité. Choisissez un objectif principal avant de préparer le programme : il déterminera la durée des visites, les besoins d’encadrement, le nombre de personnes admises et les informations à communiquer.",
+          "Décrivez ce qui est réellement accessible ce jour-là : plateau de musculation, studio de cours collectifs, espace cardio, vestiaires ou accueil, selon la configuration de votre établissement. Distinguez les zones ouvertes au public de celles réservées à l’équipe ou aux adhérents. Si un espace ne peut pas être visité pendant une activité, dites-le clairement plutôt que de le laisser supposer.",
+          "Précisez le public concerné. Une visite sans séance ne présente pas les mêmes conditions qu’un essai physique. Si la journée accueille aussi des mineurs, les modalités d’accès, l’accompagnement et les activités doivent être définis séparément par l’établissement et son équipe ; cet article se concentre sur une découverte destinée aux adultes.",
+          "Pour compléter la journée par une animation ou un jeu, examinez d’abord si ce format répond à un objectif utile. Le guide [jeu-concours lors d’un événement local](/blog/jeu-concours-evenement-local) distingue ce dispositif d’une visite et d’un essai : ne transformez pas une activité sportive ou une adhésion en lot tiré au sort sans vérifier le cadre applicable.",
+        ],
+      },
+      {
+        title: "Établir la jauge et le parcours avant d’ouvrir les inscriptions",
+        paragraphs: [
+          "Listez les espaces utilisés, la durée moyenne d’une visite, les personnes présentes dans l’équipe et le nombre de visiteurs que chaque créneau peut accueillir. Calculez une capacité opérationnelle à partir des contraintes du lieu et des activités, et faites-la valider par le responsable de l’établissement. N’utilisez pas une jauge marketing qui ignorerait les circulations, l’accueil habituel ou les zones indisponibles.",
+          "Organisez le parcours dans un ordre simple : accueil, présentation, visite, rencontre avec un coach, puis essai éventuel réservé aux créneaux dédiés. Prévoyez une alternative si une salle est occupée. Le responsable tient compte des règles d’accueil et de la configuration du lieu ; la fiche [Service Public sur la sécurité incendie des ERP](https://entreprendre.service-public.gouv.fr/vosdroits/F31684) précise les dispositions selon le type et la catégorie d’établissement.",
+          "Choisissez entre entrée libre et réservation. L’entrée libre est simple mais rend l’affluence moins prévisible ; les créneaux réservés aident à répartir les visites mais nécessitent un suivi des inscriptions et des annulations. Vous pouvez combiner les deux en gardant quelques places sans réservation, à condition d’annoncer clairement la règle et de ne jamais dépasser la capacité retenue.",
+          "Prévoyez un point d’accueil, une personne qui oriente les visiteurs, un responsable des questions d’adhésion et les coachs mobilisés pour les essais. Cette organisation évite qu’un coach doive simultanément encadrer une séance et répondre à toutes les demandes commerciales.",
+        ],
+        table: {
+          caption: "Exemple fictif de créneau de découverte de 45 minutes",
+          headers: ["Étape", "Temps prévu", "Organisation à confirmer"],
+          rows: [
+            ["Accueil et programme", "5 minutes", "Une personne vérifie le créneau et oriente le groupe"],
+            ["Visite des espaces", "15 minutes", "Le parcours respecte les cours des adhérents et les zones disponibles"],
+            ["Rencontre avec un coach", "15 minutes", "Présentation ou essai prévu, selon l’activité, le groupe et l’encadrement validés"],
+            ["Questions pratiques", "10 minutes", "Une personne présente horaires, tarifs et contrat ; le coach reste disponible pour son groupe"],
+          ],
+        },
+      },
+      {
+        title: "Présenter les essais sans improviser l’encadrement sportif",
+        paragraphs: [
+          "Une visite guidée n’est pas un cours. Si vous proposez une séance d’essai ou une démonstration physique, écrivez son contenu, sa durée, le nombre de participants et le matériel utilisé ; affectez un encadrant compétent et disponible. Le Ministère des Sports indique que l’enseignement, l’animation ou l’encadrement d’une activité sportive contre rémunération est soumis à qualification et déclaration, avec une carte professionnelle délivrée lorsque les conditions sont réunies. Vérifiez que les personnes prévues peuvent encadrer l’activité concernée et les conditions de leur qualification.",
+          "Ne promettez pas de perte de poids, de transformation du corps, de prévention de maladie ou de résultat garanti. Présentez les activités, les horaires, le niveau visé et le type d’encadrement, sans assurer qu’une séance conviendra à toutes les personnes. Les questions de santé, de douleur ou de reprise après blessure doivent être orientées vers le professionnel compétent ; la séance découverte ne remplace pas un avis médical.",
+          "Une démonstration d’équipement peut se dérouler sans demander aux visiteurs de l’utiliser. Si des essais sont prévus, expliquez les consignes du lieu et le déroulement avant le début, vérifiez que l’encadrant peut suivre le groupe et gardez une option de visite sans effort physique. Ne faites pas d’un essai intense ou d’une mesure corporelle une condition d’accès à la journée.",
+        ],
+      },
+      {
+        title: "Expliquer les conditions d’accès et d’adhésion",
+        paragraphs: [
+          "Avant l’événement, indiquez si la visite est gratuite, si l’essai nécessite une réservation, quels équipements ou vêtements sont utiles et si une pièce ou un justificatif est demandé par la salle. Ne demandez pas d’achat pour participer à une simple visite si ce n’est pas la règle annoncée. Si une offre d’adhésion est présentée, affichez son prix, sa durée, les services inclus, les frais éventuels et les conditions particulières de manière lisible.",
+          "Précisez la périodicité du paiement, le coût pour la durée d’engagement, les frais d’inscription et options, ainsi que les conditions de renouvellement et de résiliation prévues. Un montant payé toutes les quatre semaines ne se présente pas comme un prix par mois civil. La [DGCCRF détaille les informations à fournir avant l’adhésion](https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/ladhesion-une-salle-de-sport-ou-de-remise-en-forme) ; le visiteur doit pouvoir lire le contrat avant de décider.",
+          "Séparez l’information commerciale de l’activité sportive. Une réduction d’adhésion, un lot ou un bonus éventuel doit avoir des conditions définies, une période de validité et une disponibilité confirmée. Évitez de faire dépendre un avantage d’un avis positif, d’une photo publiée ou d’une transmission de données à un partenaire.",
+          "Si un visiteur demande une explication personnalisée du contrat, dirigez-le vers une personne habilitée à présenter les conditions exactes de l’offre. La journée portes ouvertes n’est pas un prétexte pour masquer un engagement ou forcer une décision immédiate. Laissez du temps pour comparer et repartir avec les informations utiles.",
+        ],
+      },
+      {
+        title: "Collecter les contacts sans mélanger santé et marketing",
+        paragraphs: [
+          "Pour gérer une réservation, ne demandez que les informations utiles à l’organisation : par exemple un nom, un moyen de joindre l’adulte inscrit en cas de changement et le créneau choisi. Expliquez la finalité et la durée de conservation selon les procédures de l’établissement. Une visite sans réservation n’impose pas de recueillir des coordonnées.",
+          "Ne placez pas de questions sur les blessures, pathologies, traitements, poids ou antécédents médicaux dans un formulaire général de portes ouvertes ou de prospection. La CNIL rappelle que les données de santé ne peuvent être collectées que dans un cadre autorisé et lorsqu’elles sont strictement nécessaires à un usage précis ; le consentement seul ne justifie pas une collecte sans lien direct avec la finalité. Si un dispositif de sécurité ou d’encadrement exige de traiter une information de santé, faites valider le parcours par les responsables compétents et séparez-le du formulaire marketing.",
+          "L’inscription à une visite ou à un essai n’équivaut pas à un consentement pour recevoir des promotions. Pour l’e-mail ou le SMS adressé à des particuliers, la CNIL distingue les messages transactionnels ou relationnels de la prospection commerciale, en principe soumise à un accord préalable, sous réserve des exceptions applicables. Présentez les finalités séparément et permettez un choix clair. Consultez les règles CNIL sur les [communications électroniques et la prospection](https://www.cnil.fr/fr/communication-electronique-quelles-regles).",
+          "Le formulaire d’inscription peut proposer une case distincte et décochée pour les actualités commerciales, mais elle ne doit pas être une condition d’accès à la visite. Si un QR code mène à une inscription, expliquez ce que le visiteur recevra avant la collecte et limitez les données à ce dont le service a besoin.",
+        ],
+      },
+      {
+        title: "Faire connaître les portes ouvertes localement",
+        paragraphs: [
+          "Utilisez des informations concrètes que la salle peut tenir à jour : date, horaires, adresse, accès, modalités de réservation, activités présentées et capacité restante. Publiez-les sur le site et les supports locaux utilisés par votre équipe. Si vous vous adressez à un quartier ou à une commune, vérifiez que le message décrit bien le lieu et l’accès ; évitez les listes artificielles de villes qui ne correspondent pas à la zone réellement desservie.",
+          "Google Business Profile permet de publier un post de type événement avec un titre et des dates et heures de début et de fin, ainsi qu’une description et un bouton d’action. Mettez à jour le post si le programme ou les places changent. Cette fonction informe les personnes qui consultent la fiche ; elle ne garantit pas une position dans les résultats ou un nombre d’inscriptions.",
+          "Vous pouvez proposer à un partenaire local de relayer l’information si le partenariat est réel : association, club ou commerçant voisin. Précisez qui organise l’événement et qui reçoit les inscriptions ; ne transmettez pas automatiquement des coordonnées aux partenaires. Pour les idées de consentement lors d’une animation en point de vente, consultez [comment collecter des contacts en magasin avec consentement](/blog/collecter-contacts-magasin-consentement).",
+        ],
+      },
+      {
+        title: "Mesurer visites, essais et adhésions comme des étapes séparées",
+        paragraphs: [
+          "Définissez avant l’événement quelques indicateurs opérationnels : inscriptions, personnes présentes, visites réalisées, essais commencés et demandes d’information. Si la salle suit les adhésions souscrites après la journée, précisez la période et la manière de les rapprocher de l’événement, dans le respect des règles internes et de confidentialité.",
+          "Ne confondez pas inscription et présence, visite et essai, essai et adhésion. Une personne peut découvrir le lieu sans prendre de cours ou sans souscrire ; ce résultat n’est pas nécessairement un échec si l’objectif était de faire connaître la salle. Une adhésion dans les jours suivants ne prouve pas à elle seule que les portes ouvertes en sont la cause.",
+          "Notez aussi ce qui permet de préparer une meilleure édition : questions fréquentes, créneaux demandés, espaces trop chargés, retards ou demandes auxquelles l’équipe ne pouvait pas répondre. L’article [mesurer une animation commerciale](/blog/mesurer-animation-commerciale) détaille comment documenter une méthode et ses limites sans transformer une observation en promesse de performance.",
+        ],
+      },
+      {
+        title: "Questions fréquentes sur les portes ouvertes en salle de sport",
+        paragraphs: [
+          "Comment limiter le nombre de visiteurs ? Proposez des créneaux réservables avec un nombre de places fixé d’après la capacité du lieu et l’encadrement disponible. Annoncez les conditions et une solution si le créneau est complet.",
+          "Que présenter lors d’une première visite ? Montrez les espaces accessibles, les activités proposées, les horaires, les modalités d’accueil et les conditions d’adhésion. Expliquez aussi les limites des services disponibles et répondez aux questions sans promettre de résultat physique.",
+          "Faut-il obligatoirement proposer un essai sportif ? Non. Une visite et une présentation du fonctionnement peuvent suffire. Si vous organisez un essai, prévoyez un encadrement approprié et les conditions d’accès propres à l’activité.",
+          "Peut-on demander des informations de santé sur le formulaire ? Évitez les données de santé dans un formulaire général d’inscription marketing. Si une information est réellement nécessaire pour un dispositif d’encadrement ou de sécurité, vérifiez le cadre avec les personnes compétentes et ne la réutilisez pas pour la prospection.",
+          "Comment savoir si la journée a conduit à des adhésions ? Suivez séparément les inscriptions, visites, essais et adhésions sur une période définie. Décrivez comment l’origine est établie et évitez d’attribuer automatiquement toute souscription à l’événement.",
+        ],
+      },
+      {
+        title: "Checklist avant vos portes ouvertes",
+        paragraphs: ["Validez ces points avec le responsable de salle et l’équipe :"],
+        items: [
+          "Objectif, public, horaires, activités et espaces accessibles sont définis.",
+          "Jauge et parcours sont compatibles avec le lieu, les circulations et l’accueil habituel.",
+          "Chaque essai sportif est encadré par une personne compétente pour l’activité concernée.",
+          "Conditions d’accès, prix, éventuelle offre et modalités d’adhésion sont expliqués sans pression.",
+          "Aucune promesse de transformation physique ou de résultat individuel n’est faite.",
+          "Les données de santé ne figurent pas dans le formulaire marketing ; toute collecte distincte est justifiée et validée.",
+          "Réservation, suivi opérationnel et consentement à la prospection sont des choix distincts.",
+          "La communication locale contient des informations exactes, mises à jour si le programme change.",
+          "La mesure distingue inscriptions, visites, essais, demandes et adhésions.",
+        ],
+      },
+    ],
+    related: [
+      "/blog/jeu-concours-evenement-local",
+      "/blog/collecter-contacts-magasin-consentement",
+      "/blog/mesurer-animation-commerciale",
+      "/blog/faire-revenir-clients-animation",
+      "/comment-ca-marche",
+    ],
+  },
+  {
+    path: "/blog/organiser-degustation-epicerie-fine",
+    title: "Comment organiser une dégustation en épicerie fine pour faire découvrir ses produits ?",
+    seoTitle: "Dégustation en épicerie fine : organiser et mesurer",
+    description:
+      "Organisez une dégustation en épicerie fine : choix du produit, calcul des portions, allergènes, comptoir et coûts. Préparez la séance et mesurez les retours.",
+    eyebrow: "Épicerie fine et découverte produit",
+    intro:
+      "Pour organiser une dégustation en épicerie fine, choisissez un produit à faire découvrir, estimez les portions à partir du nombre de visiteurs attendu et préparez son information alimentaire avant l’événement. Un comptoir bien placé, des ustensiles adaptés et une personne disponible pour répondre aux questions rendent la découverte plus simple. Mesurez ensuite les dégustations, demandes et achats séparément : goûter un produit ne garantit pas une vente.",
+    answer:
+      "Fixez l’objectif et la durée, sélectionnez un ou deux produits disponibles, puis calculez les portions prévues à partir des créneaux ou du flux estimé et du nombre de goûts proposés par personne. Vérifiez la liste d’ingrédients et les allergènes avec les informations du fournisseur, préparez les conditions d’hygiène et de conservation adaptées au produit, et placez le comptoir sans gêner la circulation. Annoncez les dates, les produits et les éventuelles limites, puis suivez portions servies, questions et achats observables sans leur attribuer automatiquement un lien causal.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-18",
+    updatedAt: "2026-10-18",
+    reviewedAt: "2026-10-18",
+    readingTime: "9 min de lecture",
+    image: "/images/blog/organiser-degustation-epicerie-fine.webp",
+    imageAlt:
+      "Dégustation d’une tartinade au comptoir d’une épicerie fine",
+    ctaLabel: "Découvrir les animations par QR code",
+    ctaHref: "/comment-ca-marche",
+    source: [
+      {
+        label: "DGCCRF — règles d’étiquetage des denrées alimentaires",
+        href: "https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/etiquetage-des-denrees-alimentaires-les-regles-connaitre",
+      },
+      {
+        label: "Ministère de l’Agriculture — sécurité alimentaire et chaîne du froid",
+        href: "https://agriculture.gouv.fr/securite-sanitaire-des-aliments-tout-sur-la-chaine-du-froid",
+      },
+      {
+        label: "Ministère de l’Agriculture — hygiène adaptée aux manipulations alimentaires",
+        href: "https://agriculture.gouv.fr/restauration-quelles-obligations-en-matiere-de-formation-a-lhygiene-des-aliments",
+      },
+      {
+        label: "CNIL — communications électroniques et prospection",
+        href: "https://www.cnil.fr/fr/communication-electronique-quelles-regles",
+      },
+      {
+        label: "Google Business Profile — publier un événement local",
+        href: "https://support.google.com/business/answer/7342169?hl=fr",
+      },
+    ],
+    sections: [
+      {
+        title: "Choisir un produit et un objectif de découverte",
+        paragraphs: [
+          "Une dégustation réussie commence par une question simple : qu’aimeriez-vous que le visiteur découvre ? Une nouvelle confiture, une huile d’olive, un chocolat, une tartinade ou un fromage peuvent illustrer le savoir-faire de l’épicerie, à condition que le produit soit disponible et que l’équipe sache le présenter. Cet article privilégie des exemples sans alcool ; adaptez toujours le format aux produits réellement vendus et aux règles qui leur sont propres.",
+          "Limitez le choix à un ou deux produits liés par une idée claire : origine indiquée par le fournisseur, ingrédient distinctif, méthode de fabrication documentée ou association de saveurs proposée à titre d’exemple. N’inventez pas une origine, une qualité nutritionnelle, un label ou une méthode artisanale. Pour comparer plusieurs nouveautés ou structurer leur lancement, l’article [animer le lancement d’un nouveau produit](/blog/animation-lancement-nouveau-produit) propose d’autres formats de présentation.",
+          "Définissez aussi le but de la séance : faire connaître une référence, répondre aux questions sur sa composition ou recueillir des réactions spontanées. Évitez un objectif vague comme « augmenter le panier moyen » si vous n’avez ni méthode d’attribution ni données comparables. Une dégustation est un moment de découverte, pas une promesse de conversion.",
+        ],
+      },
+      {
+        title: "Estimer les portions, le stock et le coût",
+        paragraphs: [
+          "Commencez par la capacité réaliste du comptoir : combien de personnes l’équipe peut-elle accueillir pendant la durée choisie, sans bloquer les achats ? Si vous utilisez des créneaux, le nombre d’inscrits donne une première estimation ; pour une dégustation ouverte, estimez un flux et prévoyez comment interrompre le service lorsque le stock dédié est épuisé.",
+          "Un calcul de préparation peut s’écrire ainsi : portions prévues = personnes attendues × portions par personne, puis ajout d’une marge choisie par le magasin. La taille de portion, la marge et le rendement dépendent du produit et de l’organisation ; ce calcul est un outil de planification, pas une norme ni un résultat observé. Pour une première séance, préparez une quantité limitée et consignez les portions réellement servies et les restes afin d’ajuster la suivante.",
+          "Exemple fictif : quarante personnes goûtant deux portions de tartinade de cinq grammes représentent quatre-vingts portions et quatre cents grammes de produit, hors réserve et pertes de préparation. Les cinq grammes sont une hypothèse de calcul à tester, pas une portion recommandée. Ajoutez séparément les accompagnements et convertissez la masse dans les conditionnements réellement utilisés. Le produit prélevé pour la séance se compte une seule fois dans le budget, même s’il provient du stock habituellement vendu.",
+          "Calculez le coût en tenant compte du produit utilisé, des accompagnements, des consommables, du temps de préparation, du temps de service et des pertes éventuelles. Distinguez le stock qui reste vendable selon les conditions de conservation du stock réservé à la dégustation. L’article [calculer le coût d’une animation commerciale](/blog/cout-animation-commerciale-commerce) fournit un cadre pour recenser les postes sans inventer de rentabilité.",
+          "Vérifiez le stock disponible et le délai de réapprovisionnement avant de faire la publicité. Si une référence peut être vendue ou épuisée pendant la séance, indiquez les conditions de disponibilité plutôt que de promettre à chaque visiteur qu’il pourra l’acheter immédiatement.",
+        ],
+      },
+      {
+        title: "Préparer les informations alimentaires et les allergènes",
+        paragraphs: [
+          "Avant de servir un échantillon, rassemblez l’étiquette, la fiche produit et les informations du fournisseur. Assurez-vous que la dénomination, les ingrédients et les allergènes signalés correspondent à la recette ou au lot effectivement présenté. En cas de changement de lot, de recette ou d’accompagnement, recontrôlez les informations au lieu de réutiliser une fiche devenue incertaine.",
+          "Préparez une fiche consultable au comptoir pour chaque recette et ses accompagnements : produit exact, informations de composition fournies, allergènes signalés et personne à qui poser une question. Un pain, un biscuit ou une garniture ajoutés au dernier moment doivent être pris en compte. Une réponse orale improvisée ne remplace pas l’information écrite lorsqu’elle est requise.",
+          "La DGCCRF rappelle que les denrées non préemballées doivent notamment être accompagnées d’une information sur leur dénomination et, le cas échéant, les allergènes. Les règles précises varient avec la présentation et la vente ; une dégustation ne dispense pas de traiter sérieusement l’information alimentaire. Consultez la fiche récente de la [DGCCRF sur les règles d’étiquetage](https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/etiquetage-des-denrees-alimentaires-les-regles-connaitre) et faites vérifier le dispositif retenu par la personne responsable.",
+          "Ne répondez pas au hasard à une question sur la présence d’un allergène ou sur une contamination croisée possible. Si l’information n’est pas vérifiée, dites-le et ne servez pas le produit à la personne qui pose la question. Évitez les promesses telles que « sans allergène » ou « sans risque » qui dépassent les éléments de composition disponibles.",
+          "Respectez les conditions de conservation et de service propres au produit, ainsi que les procédures de l’établissement. Le [Ministère de l’Agriculture rappelle les principes de la chaîne du froid](https://agriculture.gouv.fr/securite-sanitaire-des-aliments-tout-sur-la-chaine-du-froid). Sa fiche sur les [instructions et formations à l’hygiène adaptées aux manipulations](https://agriculture.gouv.fr/restauration-quelles-obligations-en-matiere-de-formation-a-lhygiene-des-aliments) distingue les exigences générales et la formation particulière à la restauration commerciale : une dégustation en épicerie ne se décrit pas automatiquement comme une activité de restaurant. Faites valider l’organisation retenue par la personne responsable.",
+        ],
+      },
+      {
+        title: "Installer un comptoir pratique et propre",
+        paragraphs: [
+          "Choisissez un emplacement visible depuis l’entrée ou le rayon concerné, mais qui ne bloque ni l’accès aux produits ni la circulation. Laissez de la place pour s’arrêter, lire l’information affichée et repartir sans créer une file devant la caisse. Un comptoir près de la référence peut faciliter le passage du goût à la lecture de l’étiquette ; vérifiez que la mise en scène ne masque ni prix ni information obligatoire.",
+          "Préparez les ustensiles, contenants individuels et surfaces qui conviennent au produit et aux procédures du magasin. Évitez de laisser les visiteurs se servir dans un contenant commun si cela complique l’hygiène ou la maîtrise des portions. Prévoyez où déposer les consommables usagés, comment renouveler les ustensiles et qui surveille le comptoir.",
+          "Désignez une personne qui accueille, explique le produit et répond à partir d’informations vérifiées. Elle peut décrire le goût, la texture, la provenance documentée et les suggestions de service, en séparant les faits du fournisseur des idées d’accord proposées par l’équipe. Une animation n’exige pas de pousser à l’achat : une fiche produit claire ou une réponse utile peut déjà améliorer l’expérience.",
+        ],
+      },
+      {
+        title: "Communiquer sur la dégustation sans ambiguïté",
+        paragraphs: [
+          "L’annonce précise le produit ou la famille présentée, la date, les horaires, l’adresse et le format : accès libre, réservation ou créneaux. Mentionnez les éventuelles limites de stock et le fait que la dégustation porte sur un produit particulier. Si la séance est réservée à un nombre limité de personnes, indiquez comment obtenir une place et quand les inscriptions ferment.",
+          "Vous pouvez relayer l’événement en vitrine, sur le site ou sur la fiche d’établissement. Google Business Profile permet de publier un événement avec un titre et des dates/heures ; vérifiez les champs disponibles pour votre fiche et mettez le contenu à jour si le programme change. Cette publication est un support d’information et ne garantit ni visibilité ni participation.",
+          "Pour envoyer une invitation par e-mail ou SMS, ne réutilisez pas automatiquement les coordonnées d’un achat ou d’une inscription. La CNIL distingue les communications de service de la prospection commerciale électronique, dont les règles dépendent notamment du statut de la personne et du message. Consultez les [repères CNIL sur les communications électroniques](https://www.cnil.fr/fr/communication-electronique-quelles-regles) et séparez la réservation de la dégustation d’un choix de recevoir des offres.",
+        ],
+      },
+      {
+        title: "Mesurer les retours sans confondre dégustation et vente",
+        paragraphs: [
+          "Avant la séance, choisissez quelques mesures faciles à relever : nombre de portions préparées et servies, questions posées, ruptures, retours verbaux et achats de la référence pendant une période définie. Déterminez qui note ces éléments et selon quelle méthode. Les commentaires recueillis peuvent aider à améliorer la présentation, mais ne constituent pas nécessairement un avis représentatif de tous les clients.",
+          "Une dégustation servie ne signifie pas qu’un produit a été apprécié ; un achat le même jour n’établit pas que l’échantillon l’a causé. Si vous comparez des éditions, notez les différences de créneau, de stock, de prix, de météo, de trafic et d’emplacement. Présentez le contexte et la limite de l’observation au lieu d’annoncer une hausse attribuée sans preuve.",
+          "Le guide [mesurer une animation commerciale](/blog/mesurer-animation-commerciale) distingue participation, demande et vente observée. Vous pouvez également comparer les coûts avec la méthode [pour chiffrer une animation commerciale](/blog/cout-animation-commerciale-commerce), sans transformer une estimation locale en référence universelle.",
+        ],
+      },
+      {
+        title: "Questions fréquentes sur une dégustation en épicerie fine",
+        paragraphs: [
+          "Quels produits choisir pour une dégustation en épicerie fine ? Sélectionnez une référence disponible, dont l’équipe connaît la composition et les informations fournies par le producteur. Une huile d’olive, une confiture, un chocolat ou une tartinade peuvent convenir selon le matériel, la conservation et le public ; les exemples ne remplacent pas une vérification du produit réel.",
+          "Comment estimer la quantité à prévoir ? Multipliez le nombre de personnes attendues par la portion prévue par personne, puis ajoutez une marge décidée à partir de l’incertitude du flux. Notez les quantités réellement servies et restantes pour ajuster une prochaine séance ; il n’existe pas de quantité universelle valable pour chaque boutique.",
+          "Comment informer sur les allergènes pendant une dégustation ? Préparez une fiche accessible au comptoir à partir du produit réellement servi et de tous ses accompagnements. Vérifiez l’étiquette, les informations fournisseur et le dispositif écrit applicable aux denrées présentées. Si une information sur un allergène ou une contamination croisée reste incertaine, dites-le et ne servez pas ce produit à la personne concernée.",
+          "Comment organiser une dégustation de produit frais ? Respectez les conditions de conservation et de service qui s’appliquent au produit, préparez des ustensiles adaptés et faites valider les manipulations par la personne responsable de l’hygiène. Si vous ne pouvez pas maîtriser ces conditions, choisissez un produit ou un format différent.",
+          "Une dégustation fait-elle forcément augmenter les ventes ? Non. Elle offre une occasion d’essayer et de poser des questions, mais ne garantit aucun achat. Mesurez les portions, réactions et ventes observées sur une période définie, en décrivant la méthode et ses limites.",
+        ],
+      },
+      {
+        title: "Checklist avant votre prochaine dégustation",
+        paragraphs: ["Validez ces éléments avec l’équipe avant de communiquer :"],
+        items: [
+          "Le produit, l’objectif et la durée de la dégustation sont définis.",
+          "Le stock, les portions, le coût et les éventuels restes sont estimés selon une méthode explicite.",
+          "Les ingrédients, allergènes et autres informations produit sont vérifiés sur la référence réellement servie.",
+          "Les conditions d’hygiène et de conservation sont adaptées au produit et aux procédures du magasin.",
+          "Le comptoir, les ustensiles, les contenants et les déchets sont organisés sans gêner la circulation.",
+          "Une personne sait présenter le produit et répondre sans improviser sur les allergènes.",
+          "L’annonce indique le lieu, le créneau, le produit et les limites de stock ou d’accès.",
+          "Les invitations commerciales sont séparées de la réservation et des messages de service.",
+          "La mesure distingue portions servies, retours exprimés et achats constatés.",
+        ],
+      },
+    ],
+    related: [
+      "/blog/animation-lancement-nouveau-produit",
+      "/blog/cout-animation-commerciale-commerce",
+      "/blog/mesurer-animation-commerciale",
+      "/comment-ca-marche",
+    ],
+  },
+  {
+    path: "/blog/animation-magasin-velos-journee-decouverte",
+    title: "Comment animer un magasin de vélos avec une journée découverte ?",
+    seoTitle: "Animation en magasin de vélos : journée découverte",
+    description:
+      "Préparez une animation en magasin de vélos : démonstrations, conseil, programme et conditions d’essai. Organisez l’atelier et suivez les demandes.",
+    eyebrow: "Vélocistes et commerce local",
+    intro:
+      "Une journée découverte en magasin de vélos peut faire connaître un équipement, une pratique ou le savoir-faire de l’atelier. Pour qu’elle soit utile, choisissez un thème précis, organisez les démonstrations et les créneaux sans perturber les réparations, puis traitez tout essai comme une activité distincte à encadrer selon les conditions définies par le vélociste.",
+    answer:
+      "Choisissez un thème précis, une démonstration en magasin et une personne disponible pour l’animer. Vérifiez les références présentées, préservez les créneaux d’atelier et annoncez un programme avec ses conditions d’accès. Tout essai éventuel se prépare séparément avec le responsable du magasin. Comptez ensuite les visiteurs, démonstrations et demandes pour décider si le format mérite d’être renouvelé.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-18",
+    updatedAt: "2026-10-18",
+    reviewedAt: "2026-10-18",
+    readingTime: "9 min de lecture",
+    image: "/images/blog/animation-magasin-velos-journee-decouverte.webp",
+    imageAlt:
+      "Un vélociste montre la transmission d’un vélo installé sur un pied d’atelier à une cliente",
+    ctaLabel: "Découvrir le fonctionnement d’Okado",
+    ctaHref: "/comment-ca-marche",
+    source: [
+      {
+        label: "Google Business Profile — créer et gérer des posts événementiels",
+        href: "https://support.google.com/business/answer/7342169?hl=fr",
+      },
+      {
+        label: "Service-Public.fr — équipements obligatoires à vélo",
+        href: "https://www.service-public.gouv.fr/particuliers/vosdroits/F34169",
+      },
+      {
+        label: "CNIL — règles applicables à la prospection par e-mail et SMS",
+        href: "https://www.cnil.fr/fr/communication-electronique-quelles-regles",
+      },
+      {
+        label: "DGCCRF — loteries publicitaires et pratiques commerciales",
+        href: "https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/loterie-des-pratiques-commerciales-reglementees",
+      },
+    ],
+    sections: [
+      {
+        title: "Choisir un thème utile aux clients du magasin",
+        paragraphs: [
+          "Une animation vélo fonctionne mieux lorsqu’elle répond à une question concrète : comment choisir un antivol, comprendre les différences entre deux éclairages, vérifier la pression recommandée par le fabricant ou préparer son vélo avant une sortie ? Le sujet doit correspondre aux produits réellement disponibles et aux compétences de la personne qui fera la démonstration.",
+          "Concentrez la journée sur une famille cohérente : accessoires de visibilité, équipement pour les trajets quotidiens, préparation d’un vélo neuf ou découverte d’une gamme. Évitez de présenter un conseil général comme un diagnostic individuel. Pour un réglage, une réparation ou une question de compatibilité, indiquez quand un examen du vélo ou un rendez-vous d’atelier est nécessaire.",
+          "Définissez un objectif observable : faire découvrir une nouveauté, répondre à des questions fréquentes, présenter les services de l’atelier ou recueillir des demandes de devis. Cet objectif aide à choisir le format et les indicateurs. Une journée découverte peut être pertinente même si elle ne débouche pas immédiatement sur une vente.",
+        ],
+      },
+      {
+        title: "Proposer des démonstrations sans essai sur route",
+        paragraphs: [
+          "Un essai n’est pas indispensable pour rendre l’événement vivant. Le vélociste peut présenter le fonctionnement d’un antivol, comparer des éclairages allumés sur un support, montrer le réglage d’une selle sur un vélo fixé, expliquer une transmission sur pied d’atelier ou faire découvrir les accessoires et leurs compatibilités. Les visiteurs peuvent poser des questions et examiner les produits sans qu’un vélo parte sur la voie publique.",
+          "Préparez un mini-programme répétable : une démonstration courte, un temps de questions, puis quelques minutes pour orienter les visiteurs vers le bon produit ou le bon service. Affichez les horaires et la durée estimée, mais gardez une marge si l’équipe doit répondre à une réparation urgente. Une fiche de démonstration aide plusieurs membres de l’équipe à transmettre les mêmes informations vérifiées.",
+          "Exemple fictif de séance sans essai : dix minutes d’accueil et de présentation des références, quinze minutes de démonstration de transmission sur pied d’atelier, dix minutes de questions et dix minutes de remise en place. Ce bloc de quarante-cinq minutes peut être répété sur des créneaux annoncés si une personne reste disponible pour les clients habituels. Préparez les notices et le vélo avant l’arrivée du groupe ; les réglages individuels se traitent ensuite dans le parcours d’atelier prévu.",
+          "Si une présentation porte sur un vélo électrique ou un équipement technique, utilisez la documentation du fabricant et ne généralisez pas une caractéristique à toute une catégorie. Précisez le modèle concerné, les limites d’usage et ce qui varie selon l’équipement ou la configuration.",
+        ],
+      },
+      {
+        title: "Préserver l’atelier, le stock et les capacités d’accueil",
+        paragraphs: [
+          "Avant d’annoncer l’événement, listez les réparations déjà planifiées, les tâches qui demandent un espace dédié et les personnes réellement disponibles pour animer. Délimitez une zone de démonstration qui ne gêne ni les postes de travail, ni les sorties, ni le passage des clients. L’activité habituelle de l’atelier doit rester lisible : un visiteur ne doit pas prendre une démonstration pour un créneau de réparation réservé.",
+          "Choisissez les références disponibles ou annoncez clairement si un produit est présenté sur commande. Vérifiez tailles, compatibilités, batteries, accessoires et documents nécessaires avant la séance. Pour une animation en petits groupes, estimez la jauge à partir de l’espace et du temps que l’équipe peut consacrer à chacun ; évitez de prendre plus d’inscriptions que vous ne pouvez en accueillir.",
+          "En cas d’affluence, proposez le prochain créneau et indiquez qui confirme la place. Si un produit n’est disponible que sur commande, annoncez le délai confirmé par votre canal habituel. Gardez les vélos de présentation et le matériel identifiés pour qu’ils restent accessibles aux démonstrations sans être confondus avec une réparation en cours.",
+        ],
+      },
+      {
+        title: "Encadrer séparément tout essai de vélo",
+        paragraphs: [
+          "Si vous proposez un essai, le responsable définit les modèles, la personne chargée de l’accueil et du retour, le parcours, les consignes et les vérifications nécessaires. Avant de l’annoncer, confirmez avec l’assureur ce que le contrat couvre pour ce dispositif, notamment les dommages, le vol et les exclusions. Ces questions se traitent selon le vélo et les conditions réelles ; aucun formulaire standard ne permet de conclure à lui seul que tout essai est couvert.",
+          "Ne laissez pas entendre qu’une inscription en ligne, une case cochée ou un jeu promotionnel remplace ces décisions. Un QR code peut orienter vers une information ou un jeu, mais il ne vérifie pas l’identité, ne délivre pas une aptitude et ne garantit pas qu’un essai est sécurisé ou assuré. Si les conditions ne sont pas établies, conservez un format de découverte en magasin, sans sortie sur route.",
+          "Si un essai emprunte la voie publique, le vélociste tient aussi compte des règles de circulation et d’équipement applicables au vélo et à la personne. La fiche [Service Public sur les équipements obligatoires à vélo](https://www.service-public.gouv.fr/particuliers/vosdroits/F34169) donne des repères généraux ; elle ne remplace pas l’évaluation du parcours et du dispositif par le responsable.",
+        ],
+      },
+      {
+        title: "Communiquer localement avec des informations exactes",
+        paragraphs: [
+          "L’invitation doit préciser le thème, l’adresse, la date, les horaires et le format : entrée libre, démonstrations à heures fixes ou inscription pour une jauge limitée. Si l’événement ne comprend pas d’essai, dites-le. Si des essais encadrés sont effectivement organisés, expliquez comment connaître leurs conditions sans suggérer que chaque visiteur pourra automatiquement repartir à vélo.",
+          "Vous pouvez relayer la journée sur le site, en vitrine et sur la fiche d’établissement ; Google explique comment [publier un événement avec titre, dates et horaires](https://support.google.com/business/answer/7342169?hl=fr). Exemple d’annonce à compléter : « Découverte de la transmission, samedi, trois séances de quarante-cinq minutes en magasin. Démonstration sur vélo fixé, questions et présentation des références disponibles. Pas d’essai sur route lors de ce rendez-vous. » Ajoutez les horaires exacts, l’adresse, le prix éventuel et le canal de confirmation des places.",
+          "Pour inviter par e-mail ou SMS, distinguez le message demandé pour confirmer une inscription des communications qui promeuvent les produits ou services. La [CNIL décrit les règles de prospection électronique et leurs exceptions](https://www.cnil.fr/fr/communication-electronique-quelles-regles) ; la base client ou une participation à un jeu ne doit pas être assimilée automatiquement à une autorisation générale de relance commerciale.",
+        ],
+      },
+      {
+        title: "Choisir un avantage sans dévaloriser l’entretien",
+        paragraphs: [
+          "Une découverte peut reposer sur le conseil, le temps d’échange ou l’accès à une démonstration, sans remise sur une prestation technique. D’autres options peuvent être envisagées selon les stocks et les marges : présentation d’un accessoire, comparaison de produits, documentation pratique ou rendez-vous de conseil. Présentez précisément ce qui est inclus et ne promettez pas un diagnostic ou un réglage gratuit si l’équipe n’a pas prévu le temps et le périmètre correspondants.",
+          "Si vous proposez une réduction, un lot ou un jeu, indiquez les produits concernés, la période et les conditions avant la participation. Pour une mécanique avec gain, consultez les repères de la [DGCCRF sur les loteries publicitaires](https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/loterie-des-pratiques-commerciales-reglementees) et vérifiez le dispositif concret avant diffusion. La promotion ne doit pas brouiller la distinction entre une participation, un gain, son retrait et un achat.",
+          "Un jeu par QR code peut compléter l’événement si l’objectif de notoriété ou de participation le justifie. Il reste facultatif : [découvrez le fonctionnement d’Okado](/comment-ca-marche), puis comparez avec des formats plus simples lorsque la démonstration ou le conseil répond déjà au besoin.",
+        ],
+      },
+      {
+        title: "Mesurer la journée sans attribuer toutes les ventes à l’animation",
+        paragraphs: [
+          "Décidez avant l’événement de quelques observations que l’équipe peut réellement noter : visiteurs de la zone, démonstrations effectuées, questions fréquentes, demandes de rendez-vous, produits essayés en magasin et ruptures. Si vous suivez des ventes, définissez la période et la méthode de rapprochement. Ne collectez pas de coordonnées uniquement « au cas où » ; une demande de rendez-vous et un accord marketing ont des finalités différentes.",
+          "Après la journée, comparez les observations avec le temps mobilisé, les produits utilisés et les contraintes de l’atelier. Une vente le même jour n’est pas automatiquement causée par l’événement. Si vous comparez plusieurs éditions, notez aussi les différences de météo, de disponibilité des modèles, d’horaires, de prix et de fréquentation habituelle.",
+          "L’article [mesurer une animation commerciale](/blog/mesurer-animation-commerciale) aide à séparer participation, demande et vente observée. Pour préparer une nouvelle gamme, consultez également [animer le lancement d’un produit](/blog/animation-lancement-nouveau-produit) ; et pour choisir entre un avantage certain et un jeu, [comparer jeu-concours et promotion](/blog/jeu-concours-ou-promotion).",
+        ],
+      },
+      {
+        title: "Questions fréquentes sur une animation en magasin de vélos",
+        paragraphs: [
+          "Quelles animations proposer sans essai sur route ? Une démonstration sur vélo fixé, la comparaison d’accessoires, une présentation d’entretien courant ou un atelier de choix d’équipement permettent de découvrir des produits en magasin. Choisissez un sujet que l’équipe peut expliquer avec des informations propres aux modèles présentés.",
+          "Comment éviter de bloquer l’atelier ? Réservez une zone distincte, désignez la personne qui anime et ne planifiez pas les démonstrations pendant une tâche impossible à interrompre. Limitez les inscriptions selon l’espace, le stock et la disponibilité réelle de l’équipe ; gardez une solution pour accueillir les visiteurs sans rendez-vous.",
+          "Peut-on organiser un essai de vélo pendant la journée ? C’est au vélociste responsable de décider si les conditions d’un essai sont réunies et de les définir selon le vélo, le lieu, l’encadrement et les vérifications nécessaires. Un formulaire ou un QR code ne remplace pas ces conditions. En cas de doute, choisissez une démonstration en magasin.",
+          "Quel avantage proposer sans dévaloriser un entretien ? Vous pouvez privilégier le conseil, une démonstration ou une découverte d’équipement. Si une remise ou un lot est retenu, limitez-le à un périmètre explicite et vérifiez les conditions applicables avant de communiquer ; ne promettez pas une prestation technique non prévue.",
+          "Un jeu QR peut-il réserver un essai ou un rendez-vous ? Non, pas à lui seul. Il peut proposer un parcours de jeu configuré, mais ne doit pas être présenté comme un agenda, un outil de vérification de sécurité ou un système de réservation si ces fonctions ne sont pas réellement disponibles.",
+        ],
+      },
+      {
+        title: "Checklist avant votre journée découverte vélo",
+        paragraphs: ["À valider avec le responsable du magasin et l’équipe :"],
+        items: [
+          "Le thème, le public et l’objectif de la journée sont définis à partir des produits et compétences disponibles.",
+          "Les démonstrations peuvent se tenir sans interrompre l’atelier ni bloquer la circulation.",
+          "Le stock, les tailles, compatibilités et informations des modèles présentés sont vérifiés.",
+          "La jauge et les créneaux sont adaptés à l’espace et à la disponibilité réelle de l’équipe.",
+          "Tout essai éventuel fait l’objet de conditions et d’un encadrement décidés et vérifiés par le responsable compétent.",
+          "L’inscription, une demande de rendez-vous, la participation à un jeu et le consentement marketing restent distincts.",
+          "L’annonce donne le lieu, les horaires, le format, les conditions d’accès et les limites de disponibilité.",
+          "Les avantages, lots ou réductions sont décrits avec leurs conditions avant la diffusion.",
+          "Le bilan distingue visiteurs, démonstrations, demandes et ventes observées sans attribution automatique.",
+        ],
+      },
+    ],
+    related: [
+      "/blog/animation-lancement-nouveau-produit",
+      "/blog/jeu-concours-ou-promotion",
+      "/blog/mesurer-animation-commerciale",
       "/comment-ca-marche",
     ],
   },

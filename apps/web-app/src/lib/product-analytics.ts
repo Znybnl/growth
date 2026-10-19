@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { ANALYTICS_CONSENT_COOKIE, parseAnalyticsConsent } from "@/lib/analytics-consent";
+import { merchantAnalyticsDistinctId } from "@/lib/analytics-identity";
 import {
   analyticsEnvironment,
   PRODUCT_ANALYTICS_VERSION,
@@ -69,6 +70,6 @@ export async function captureProductEvent(
   }
 }
 
-export function merchantDistinctId(merchantId: string, merchantUserId?: string) {
-  return merchantUserId ? `${merchantId}:${merchantUserId}` : merchantId;
+export function merchantDistinctId(accountMerchantId: string, merchantUserId?: string) {
+  return merchantUserId ? merchantAnalyticsDistinctId(accountMerchantId, merchantUserId) : accountMerchantId;
 }

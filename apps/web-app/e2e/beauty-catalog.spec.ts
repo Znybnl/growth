@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { selectWizardStep } from "./helpers/wizard-step";
 import catalog from "../src/lib/beauty-catalog-466.fixture.json";
 import { BEAUTY_SUBSECTOR_OPTIONS } from "../src/lib/merchant-options";
 import { suggestionRequiresPurchase } from "../src/lib/prize-suggestion-fields";
@@ -23,7 +24,7 @@ async function isolate(page: Page) {
 }
 
 async function openSuggestions(page: Page, mode: string) {
-  if (mode === "wizard") await page.getByRole("button", { name: /04.*Les lots/ }).click();
+  if (mode === "wizard") await selectWizardStep(page, 3);
   await page.getByRole("button", { name: mode === "wizard" ? "Suggestions de lots" : "Suggérer des lots" }).click();
   return page.getByRole("dialog");
 }
