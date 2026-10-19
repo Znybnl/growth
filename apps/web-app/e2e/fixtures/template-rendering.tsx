@@ -44,13 +44,15 @@ function AnalyticsIdentityProof() {
 }
 
 /** Synthetic rendering only: tests intercept every API request, no session bypass. */
-export function TemplateRenderingProof({ mode = "preview", templateId = "classic", background = "#ffffff", ink, font }: {
-  mode?: string; templateId?: GamePageTemplateId; background?: string; ink?: string; font?: TextFont;
+export function TemplateRenderingProof({ mode = "preview", templateId = "classic", background = "#ffffff", ink, font, business }: {
+  mode?: string; templateId?: GamePageTemplateId; background?: string; ink?: string; font?: TextFont; business?: string;
 }) {
   if (mode === "analytics-identity") return <AnalyticsIdentityProof />;
   const scratch = templateId.includes("scratch");
-  const merchant: Merchant = { id: "template-proof-merchant", companyName: "Établissement de test",
-    logoText: "Établissement de test", industry: "Beauté", onboardingCompleted: true, createdAt: "2026-10-15T00:00:00Z" };
+  const businessNames = { beauty: "Maison Botanique", restaurant: "Le bistro", retail: "La petite boutique" };
+  const companyName = businessNames[business as keyof typeof businessNames] ?? "Établissement de test";
+  const merchant: Merchant = { id: "template-proof-merchant", companyName,
+    logoText: companyName, industry: "Beauté", onboardingCompleted: true, createdAt: "2026-10-15T00:00:00Z" };
   const color = ink ?? (scratch ? defaultScratchTextColor(templateId) : wheelHeadingColorForTemplateSelection(templateId, "#ffffff"));
   const form = {
     ...halloweenFixture, id: "template-proof-campaign", merchantId: merchant.id,
@@ -160,7 +162,7 @@ export function TemplateRenderingProof({ mode = "preview", templateId = "classic
     locations={[{ merchant, role: "owner" }]} activeLocationId={merchant.id} isSaasAdmin={false}>
     <PosterEditor campaign={performance.campaign} prizes={performance.prizes} />
   </MerchantShell>;
-  if (mode === "public") return <CampaignExperience campaignId={form.id} initialCampaign={publicCampaign} />;
+  if (mode === "public" || mode === "live") return <CampaignExperience campaignId={form.id} initialCampaign={publicCampaign} />;
   if (mode === "game-preview") return <CampaignExperience campaignId={form.id} initialCampaign={publicCampaign} isPreview previewToken="fixture-only" />;
   if (mode === "wizard") return <CampaignWizard merchant={merchant} initialCampaign={performance} />;
   if (mode === "editor") return <CampaignEditor merchant={merchant} initialCampaign={performance} deferInlineAssets />;

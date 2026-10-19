@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Check, CheckCircle2, ChartNoAxesCombined, Gift, Palette, QrCode, SlidersHorizontal } from "lucide-react";
+import { ArrowRight, Check, CheckCircle2, ChartNoAxesCombined, Gift, Leaf, Palette, QrCode, SlidersHorizontal } from "lucide-react";
 import { commerceModel, gameModels, heroModel, restaurantModel } from "@/lib/marketing-examples";
 import { APP_URL } from "@/lib/site";
 import { GamePreview } from "./game-preview";
@@ -23,7 +23,14 @@ export function HomeHero() {
     </div>
     <figure className={styles.heroVisual}>
       <div className={styles.journey}>
-        <div className={styles.journeyScan} aria-hidden="true"><small>MAISON BOTANIQUE</small><strong>Une surprise<br />vous attend.</strong><QrCode /><small>Scannez le QR<br />dans l’établissement.</small></div>
+        <div className={styles.journeyPoster} aria-hidden="true">
+          <span className={styles.posterBrand}><Leaf size={15} />Maison Botanique</span>
+          <span className={styles.posterKicker}>Une attention pour vous</span>
+          <strong className={styles.posterHeadline}>Une surprise<br />vous attend.</strong>
+          <span className={styles.posterCopy}>À découvrir lors de votre prochaine visite.</span>
+          <span className={styles.posterQr}><QrCode size={48} strokeWidth={1.5} /></span>
+          <span className={styles.posterAction}>QR code de votre campagne</span>
+        </div>
         <div className={styles.journeyPlay}><GamePreview model={heroModel} eager /></div>
         <div className={styles.journeyReward} aria-hidden="true"><CheckCircle2 size={28} strokeWidth={1.3} /><strong>Un masque<br />offert.</strong><small>Avec un soin visage payant.<br />Votre gain par e-mail.</small><Gift size={28} strokeWidth={1.3} /></div>
         <div className={styles.journeySteps} aria-hidden="true"><span><b>1</b>Scanne</span><span><b>2</b>Joue</span><span><b>3</b>Découvre</span></div>
