@@ -34,6 +34,33 @@ jobs:
             apps/web-app/test-results
             apps/web-app/playwright-report
           retention-days: 7
+  analytics-identity:
+    name: Verify PostHog identity and consent
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+        working-directory: apps/web-app
+      - name: Exercise the real SDK with synthetic identities and intercepted requests
+        run: npx playwright test e2e/analytics-identity.spec.ts e2e/analytics-consent.spec.ts --project=chromium
+        working-directory: apps/web-app
+        env:
+          NEXT_PUBLIC_POSTHOG_KEY: phc_consent_fixture
+          NEXT_PUBLIC_POSTHOG_ENABLED: "true"
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: analytics-identity-failure
+          path: |
+            apps/web-app/test-results
+            apps/web-app/playwright-report
+          retention-days: 7
   web:
     name: Verify source and web build
     runs-on: ubuntu-latest
@@ -62,6 +89,8 @@ jobs:
         run: npm run test:data-lifecycle -w @okado/web-app
       - name: Test administrator campaign permissions
         run: npm run test:admin-campaigns -w @okado/web-app
+      - name: Test authenticated preview QR and scoped test tokens
+        run: npm run test:preview-qr -w @okado/web-app
       - name: Test merchant gain notifications and RLS
         run: npm run test:gain-notifications -w @okado/web-app
       - name: Test Resend webhook signatures and storage errors

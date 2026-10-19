@@ -15,8 +15,7 @@ import { LocationSwitcher } from "@/components/merchant/location-switcher";
 import { Button } from "@/components/ui/button";
 import { APP_NAME_CAPITALIZED } from "@/lib/branding";
 import { getMerchantBillingSummary } from "@/lib/billing";
-import { identifyMerchantForAnalytics } from "@/lib/client-product-analytics";
-import { ANALYTICS_CONSENT_EVENT } from "@/lib/analytics-consent";
+import { MerchantAnalyticsIdentity } from "@/components/merchant/merchant-analytics-identity";
 import { getPlatformAdminNavigationItems } from "@/lib/platform-admin-navigation";
 import { Merchant, MerchantLocationAccess, MerchantUser } from "@/lib/types";
 
@@ -107,16 +106,6 @@ function MerchantShellContent({ children, merchant, user, locations, activeLocat
   }, []);
 
   useEffect(() => {
-    const identify = () => identifyMerchantForAnalytics(merchant.id, user.id);
-    identify();
-    window.addEventListener(ANALYTICS_CONSENT_EVENT, identify);
-    return () => window.removeEventListener(ANALYTICS_CONSENT_EVENT, identify);
-  }, [
-    merchant.id,
-    user.id,
-  ]);
-
-  useEffect(() => {
     const handleCampaignsUpdated = () => {
       // /campaigns is prefetched by the shell. A versioned URL prevents the
       // next navigation from reusing the snapshot captured before a save.
@@ -149,6 +138,7 @@ function MerchantShellContent({ children, merchant, user, locations, activeLocat
 
   return (
     <div className="okado-workspace-shell h-screen overflow-hidden bg-soft-white text-carbon">
+      <MerchantAnalyticsIdentity accountMerchantId={user.merchantId} userId={user.id} activeMerchantId={merchant.id} email={user.email} />
       <MerchantSessionGuard userId={user.id} />
       {menuOpen ? (
         <button

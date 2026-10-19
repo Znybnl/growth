@@ -35,7 +35,7 @@ export async function POST(request: Request) {
     });
     await captureProductEvent(
       "prize_redeemed",
-      merchantDistinctId(session.merchant.id, session.user.id),
+      merchantDistinctId(session.user.merchantId, session.user.id),
       {
         merchantId: session.merchant.id,
         merchantUserId: session.user.id,

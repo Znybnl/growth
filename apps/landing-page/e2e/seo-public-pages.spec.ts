@@ -86,6 +86,7 @@ test("chaque page publique : HTML indexable, canonical, image sociale et navigat
 });
 
 test("le blog utilise un gabarit commun sans commentaires", async ({ page }) => {
+  test.setTimeout(120_000); // This batch visits the listing, every article and every illustration.
   await page.goto("/blog");
   for (const post of blogPosts)
     await expect(page.getByRole("link", { name: post.title, exact: true })).toHaveCount(1);
@@ -94,7 +95,11 @@ test("le blog utilise un gabarit commun sans commentaires", async ({ page }) => 
     await page.goto(route);
     await expect(page.locator("main#contenu")).toHaveCount(1);
     await expect(page.locator("form")).toHaveCount(0);
-    await expect(page.getByText("Commentaire", { exact: false })).toHaveCount(0);
+    // Editorial prose can mention customer feedback; assert the absence of comment UI.
+    await expect(page.getByRole("heading", {
+      name: /^(commentaires?|laisser un commentaire|ajouter un commentaire)(?:\s*\(\d+\))?$/i,
+    })).toHaveCount(0);
+    await expect(page.getByRole("textbox", { name: /commentaire/i })).toHaveCount(0);
     await expect(page.getByRole("heading", { name: "Pour aller plus loin", exact: true })).toHaveCount(0);
     await expect(page.getByText("Google Search Central", { exact: false })).toHaveCount(0);
   }
@@ -165,9 +170,9 @@ test("sitemap, robots, OG et fichiers distribués sont utilisables", async ({
   }
 });
 
-test("les 20 articles exposent liens, sources et métadonnées cohérentes dans le HTML", async ({ page, request }, testInfo) => {
+test("tous les articles exposent liens, sources et métadonnées cohérentes dans le HTML", async ({ page, request }, testInfo) => {
   test.setTimeout(120_000);
-  expect(blogPosts).toHaveLength(20);
+  expect(new Set(blogPosts.map((post) => post.path)).size).toBe(blogPosts.length);
   const descriptions = new Set<string>();
   const sitemap = await (await request.get("/sitemap.xml")).text();
   for (const post of blogPosts) {
@@ -185,7 +190,8 @@ test("les 20 articles exposent liens, sources et métadonnées cohérentes dans 
     await expect(page.locator('meta[property="article:modified_time"]')).toHaveAttribute("content", post.updatedAt);
     await expect(page.locator('meta[name="twitter:image"]')).toHaveAttribute("content", `https://www.okado.app${post.image}`);
     await expect(page.getByRole("navigation", { name: "Fil d’Ariane" }).locator('[aria-current="page"]')).toHaveText(post.title);
-    await expect(page.getByText("Mis à jour le", { exact: false })).toContainText("18 octobre 2026");
+    const updatedDate = new Intl.DateTimeFormat("fr-FR", { dateStyle: "long", timeZone: "UTC" }).format(new Date(post.updatedAt));
+    await expect(page.getByText("Mis à jour le", { exact: false })).toContainText(updatedDate);
 
     const inlineTexts = post.sections.flatMap((section) => [
       ...section.paragraphs,
@@ -219,7 +225,7 @@ test("les 20 articles exposent liens, sources et métadonnées cohérentes dans 
         await page.keyboard.press("ArrowRight");
         expect(await region.evaluate((element) => element.scrollWidth)).toBeGreaterThan(await region.evaluate((element) => element.clientWidth));
       }
-      if (["/blog/idees-animations-commerciales-boutique", "/blog/cout-animation-commerciale-commerce"].includes(post.path)) {
+      if (["/blog/idees-animations-commerciales-boutique", "/blog/cout-animation-commerciale-commerce", "/blog/attirer-clients-fleuriste"].includes(post.path)) {
         await region.screenshot({ path: testInfo.outputPath(`${post.path.split("/").pop()}-table.png`) });
       }
     }

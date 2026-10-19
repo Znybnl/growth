@@ -55,7 +55,7 @@ export function CookiePreferences() {
           <h2 id="okado-cookie-title" className="text-lg font-bold">Votre choix de mesure d’audience</h2>
           <p className="mt-3 text-sm leading-6">
             Avec votre accord, PostHog mesure vos visites et le parcours jusqu’à la publication d’un jeu ; Vercel Analytics mesure la fréquentation.
-            Ces mesures peuvent être reliées à votre compte marchand.
+            Si vous êtes connecté, votre e-mail de connexion identifie votre profil PostHog et relie ces mesures à votre compte marchand.
             Votre choix s’applique au site Okado et à son application (okado.app, www.okado.app et app.okado.app).
           </p>
           <p className="mt-2 text-sm leading-6">

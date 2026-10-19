@@ -17,6 +17,7 @@
     "test:data-lifecycle": "node --experimental-strip-types --test src/lib/personal-data-lifecycle.test.mjs",
     "test:image-optimization": "node --experimental-strip-types --import ./scripts/ts-alias-loader.mjs --test src/lib/merchant-image-processing.test.mjs",
     "test:admin-campaigns": "node --experimental-strip-types --test src/lib/admin-campaign-management.test.mjs",
+    "test:preview-qr": "node --experimental-strip-types --test src/lib/preview-qr.test.mjs",
     "test:beauty-catalog": "node --experimental-strip-types --test src/lib/beauty-catalog.test.mjs",
     "test:admin-profiles": "node --experimental-strip-types --test src/lib/admin-establishment-profile.test.mjs",
     "test:support-incidents": "node --experimental-strip-types --test src/lib/support-email-incidents.test.mjs src/lib/support-email-incidents-sql.test.mjs src/lib/support-monitoring.test.mjs src/lib/support-monitoring-sql.test.mjs",
