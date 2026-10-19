@@ -58,6 +58,7 @@ import {
 } from "@/lib/supabase";
 import { WebhookEventPayload } from "resend";
 import { logSupportEvent } from "@/lib/support-log";
+import { resolveMerchantLogoText } from "@/lib/merchant-logo-text";
 
 type CampaignRow = {
   id: string;
@@ -550,6 +551,11 @@ function toCampaign(
     alternateLoseColor: row.wheel_alternate_lose_color,
   };
   const templateId = localSettings.gamePageTemplateId ?? "classic";
+  const resolvedLogoText = resolveMerchantLogoText(merchant.companyName, localSettings.logoText);
+  const posterLogoText = resolveMerchantLogoText(
+    merchant.companyName,
+    localSettings.poster?.logoText ?? resolvedLogoText,
+  );
 
   return {
     id: row.id,
@@ -572,7 +578,7 @@ function toCampaign(
     },
     gameType: row.game_type,
     logoMode: localSettings.logoMode ?? (row.logo_url ? "image" : "text"),
-    logoText: localSettings.logoText,
+    logoText: resolvedLogoText,
     logoUrl: row.logo_url ?? undefined,
     presentation: {
       logo: {
@@ -619,7 +625,7 @@ function toCampaign(
           localSettings.poster,
           createPosterSettingsDefaults({
             logoMode: localSettings.logoMode ?? (row.logo_url ? "image" : "text"),
-            logoText: localSettings.logoText ?? row.title,
+            logoText: posterLogoText,
             logoUrl: row.logo_url ?? undefined,
             logoSizePercent: row.logo_size_percent,
             logoBottomMarginPx: localSettings.poster?.logoBottomMarginPx ?? 10,
@@ -636,7 +642,7 @@ function toCampaign(
         ),
         {
           logoMode: localSettings.logoMode ?? (row.logo_url ? "image" : "text"),
-          logoText: localSettings.logoText ?? row.title,
+          logoText: posterLogoText,
           logoUrl: row.logo_url ?? undefined,
           logoSizePercent: row.logo_size_percent,
           logoBottomMarginPx: localSettings.poster?.logoBottomMarginPx ?? 10,
