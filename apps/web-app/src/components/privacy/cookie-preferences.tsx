@@ -1,12 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { Analytics } from "@vercel/analytics/next";
 import { ANALYTICS_CONSENT_EVENT, readAnalyticsConsent } from "@/lib/analytics-consent";
 import { isAnalyticsConfigured, setAnalyticsChoice } from "@/lib/consent-managed-analytics";
+import { isPublicGamePage } from "@/lib/cookie-preferences-visibility";
 import type { AnalyticsChoice } from "@/lib/analytics-consent";
 
 export function CookiePreferences() {
+  const pathname = usePathname();
   const [visible, setVisible] = useState(false);
   const [currentChoice, setCurrentChoice] = useState<AnalyticsChoice | null>(null);
   const [error, setError] = useState(false);
@@ -23,6 +26,8 @@ export function CookiePreferences() {
   }, []);
 
   if (!isAnalyticsConfigured) return null;
+
+  const isGamePage = isPublicGamePage(pathname);
 
   function choose(choice: AnalyticsChoice) {
     if (!setAnalyticsChoice(choice)) {
@@ -44,11 +49,13 @@ export function CookiePreferences() {
         const path = ["campaign", "redeem", "api", "auth"].includes(section) ? "/" + section : url.pathname;
         return { ...event, url: url.origin + path };
       }} />}
-      <button type="button" onClick={() => setVisible(true)}
-        className="fixed bottom-2 left-2 z-[90] rounded-lg border border-[#dbe3ef] bg-white px-3 py-2 text-xs text-[#0f172b] shadow-sm focus-visible:outline-2 focus-visible:outline-[#6c00f6]"
-        aria-expanded={visible} aria-controls="okado-cookie-preferences">
-        Gérer les cookies
-      </button>
+      {!isGamePage && (
+        <button type="button" onClick={() => setVisible(true)}
+          className="fixed bottom-2 left-2 z-[90] rounded-lg border border-[#dbe3ef] bg-white px-3 py-2 text-xs text-[#0f172b] shadow-sm focus-visible:outline-2 focus-visible:outline-[#6c00f6]"
+          aria-expanded={visible} aria-controls="okado-cookie-preferences">
+          Gérer les cookies
+        </button>
+      )}
       {visible && (
         <section id="okado-cookie-preferences" aria-labelledby="okado-cookie-title"
           className="fixed inset-x-3 bottom-14 z-[100] mx-auto max-h-[75dvh] max-w-xl overflow-y-auto rounded-2xl border border-[#dbe3ef] bg-white p-5 text-[#0f172b] shadow-xl sm:inset-x-auto sm:left-4 sm:right-4 sm:mx-0">
