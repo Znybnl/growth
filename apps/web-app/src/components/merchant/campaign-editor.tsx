@@ -25,6 +25,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { CampaignQrDownloadDialog } from "@/components/merchant/campaign-qr-download";
 import {
   ChangeEvent,
   memo,
@@ -1989,6 +1990,7 @@ export function CampaignEditor({
   const [prizeSuggestionsOpen, setPrizeSuggestionsOpen] = useState(false);
   const prizeSuggestions = usePrizeSuggestions(merchant);
   const [qrPreviewOpen, setQrPreviewOpen] = useState(false);
+  const [diffusionQrOpen, setDiffusionQrOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewSaveDialogOpen, setPreviewSaveDialogOpen] = useState(false);
   const [previewSaveError, setPreviewSaveError] = useState<string | null>(null);
@@ -4773,15 +4775,9 @@ export function CampaignEditor({
                       align="end"
                       className="w-[250px] rounded-[var(--okado-radius-control)] border-border p-1.5 shadow-[var(--shadow-product-card)]"
                     >
-                      <DropdownMenuItem asChild className="cursor-pointer gap-2 rounded-[10px] px-3 py-2.5">
-                        <a
-                          href={`/api/campaigns/${form.id}/qr`}
-                          download
-                          title="Télécharger le QR code de production"
-                        >
+                      <DropdownMenuItem onSelect={() => setDiffusionQrOpen(true)} className="cursor-pointer gap-2 rounded-[10px] px-3 py-2.5">
                           <Download className="h-4 w-4" aria-hidden="true" />
                           <span>Télécharger le QR code</span>
-                        </a>
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         className="cursor-pointer gap-2 rounded-[10px] px-3 py-2.5"
@@ -4816,6 +4812,7 @@ export function CampaignEditor({
           </section>
         </div>
       </div>
+      {diffusionQrOpen && form.id ? <CampaignQrDownloadDialog campaignId={form.id} isActive={form.isActive} onClose={() => setDiffusionQrOpen(false)} /> : null}
       {form.id ? (
         <CampaignPreviewQrDialog
           open={qrPreviewOpen}

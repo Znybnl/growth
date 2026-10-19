@@ -57,7 +57,7 @@ Référence : [API PostHog — endpoints publics et privés, authentification](h
 | `campaign_template_selected` | sélection d’un template dans un éditeur | `campaignType`, `templateKey`, `wizardMode` |
 | `campaign_preview_opened` | ouverture de la prévisualisation | `campaignType`, `templateKey` |
 | `campaign_published` | campagne active après sauvegarde | `gameType` |
-| `campaign_qr_downloaded` | QR généré côté serveur | `campaignId`, `preview` |
+| `campaign_qr_downloaded` | QR de diffusion demandé explicitement en téléchargement ; consultation `inline=1` et QR de test exclus (#596) | `campaignId`, `inline` |
 | `poster_downloaded` | affiche générée côté serveur | `campaignId`, `preview` |
 | `account_settings_saved` | compte enregistré avec succès | `hasGoogleReviewUrl`, `hasSocialLinks` |
 | `account_settings_save_failed` | enregistrement du compte en erreur | `errorType` |

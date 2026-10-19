@@ -23,14 +23,15 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     // Diffusion only: never issue a test token or publish a draft on download.
     const publicUrl = new URL(`/campaign/${encodeURIComponent(id)}`, request.url);
     const svg = await createCampaignQrSvg(publicUrl.toString());
-    logSupportEvent("info", "admin_campaign_qr_downloaded", {
+    const inline = new URL(request.url).searchParams.get("inline") === "1";
+    if (!inline) logSupportEvent("info", "admin_campaign_qr_downloaded", {
       adminUserId: session.user.id, campaignId: id, merchantId: context.targetLocationId,
     });
     return new NextResponse(svg, {
       headers: {
         ...privateHeaders,
         "Content-Type": "image/svg+xml; charset=utf-8",
-        "Content-Disposition": `attachment; filename="${encodeURIComponent(id)}-qr.svg"`,
+        "Content-Disposition": `${inline ? "inline" : "attachment"}; filename="${encodeURIComponent(id)}-qr.svg"`,
         "X-Content-Type-Options": "nosniff",
       },
     });

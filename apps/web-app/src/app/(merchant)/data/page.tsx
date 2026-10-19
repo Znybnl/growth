@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { DataCampaignSelector } from "@/components/merchant/data-campaign-selector";
 import { DataSearchForm } from "@/components/merchant/data-search-form";
+import { FileDownloadButton } from "@/components/merchant/download-feedback";
 import { LeadPrizeActions } from "@/components/merchant/lead-prize-actions";
 import { PrizeStockActions } from "@/components/merchant/prize-stock-actions";
 import { EmptyState, MetricCard, PageHeader, ResponsiveTable, StatusNotice } from "@/components/ui/workspace";
@@ -176,13 +177,14 @@ function LeadsExportSection({
             Contacts, statuts et consentements
           </h2>
         </div>
-        <Link
+        <FileDownloadButton
           href={`/api/merchant/leads?format=csv&campaign=${campaignId}`}
-          prefetch={false}
+          fileName="merchant-leads.csv"
+          title="Export des contacts"
           className="okado-primary-action cursor-pointer px-4"
         >
           Export CSV
-        </Link>
+        </FileDownloadButton>
       </div>
 
       <ResponsiveTable className="mt-5">

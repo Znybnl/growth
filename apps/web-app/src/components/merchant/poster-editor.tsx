@@ -27,6 +27,7 @@ import {
 } from "@/lib/types";
 import { getPosterTemplate, POSTER_TEMPLATES } from "@/lib/poster-templates";
 import { PosterTemplateSelector } from "@/components/merchant/poster-template-selector";
+import { DownloadFeedbackDialog, downloadBlob, useDownloadTask } from "@/components/merchant/download-feedback";
 import { ValidationDialog } from "@/components/ui/validation-dialog";
 import { PageHeader } from "@/components/ui/workspace";
 import { isMerchantOptimizedImageUrl, uploadMerchantImageFile, MERCHANT_IMAGE_ACCEPT } from "@/lib/merchant-image-upload";
@@ -66,17 +67,6 @@ function uploadPosterLogo(
     .then(({ url }) => onLoaded(url))
     .catch((error: unknown) => onError?.(error instanceof Error ? error.message : "Import de l’image impossible."))
     .finally(() => onUploadStateChange?.(false));
-}
-
-function downloadBlob(blob: Blob, fileName: string) {
-  const objectUrl = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = objectUrl;
-  link.download = fileName;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
 }
 
 async function renderPosterSvgAsPng(svg: string) {
@@ -317,7 +307,8 @@ export function PosterEditor({ campaign, prizes, settingsEndpoint, returnHref, a
   });
   const [posterSubtitle, setPosterSubtitle] = useState(() => campaign.presentation.layout.wheelSubtitle ?? "");
   const [isSaving, setIsSaving] = useState(false);
-  const [isDownloading, setIsDownloading] = useState(false);
+  const downloadTask = useDownloadTask();
+  const isDownloading = downloadTask.state?.status === "loading";
   const [message, setMessage] = useState<string | null>(null);
   const [lastSavedPosterSnapshot, setLastSavedPosterSnapshot] = useState(() =>
     JSON.stringify({ poster, posterSubtitle: campaign.presentation.layout.wheelSubtitle ?? "" }),
@@ -696,17 +687,19 @@ export function PosterEditor({ campaign, prizes, settingsEndpoint, returnHref, a
     setPoster(next);
   }
 
-  async function savePoster() {
+  async function savePoster(signal?: AbortSignal) {
     setIsSaving(true);
     setMessage(null);
 
     try {
       const response = await fetch(resolvedSettingsEndpoint, {
+        signal,
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ poster, wheelSubtitle: posterSubtitle }),
       });
       const payload = (await response.json()) as { error?: string };
+      signal?.throwIfAborted();
 
       if (!response.ok) {
         throw new Error(payload.error ?? "Enregistrement impossible.");
@@ -717,6 +710,7 @@ export function PosterEditor({ campaign, prizes, settingsEndpoint, returnHref, a
       router.refresh();
       return true;
     } catch (error) {
+      if (signal?.aborted) return false;
       setMessage(error instanceof Error ? error.message : "Enregistrement impossible.");
       return false;
     } finally {
@@ -756,15 +750,15 @@ export function PosterEditor({ campaign, prizes, settingsEndpoint, returnHref, a
   }
 
   async function downloadPoster() {
-    setIsDownloading(true);
     setMessage(null);
-
-    try {
+    await downloadTask.start(async (signal, report) => {
       if (isDirty) {
-        const saved = await savePoster();
-        if (!saved) return;
+        report("Enregistrement des modifications de l’affiche…");
+        const saved = await savePoster(signal);
+        signal.throwIfAborted();
+        if (!saved) throw new Error("L’affiche n’a pas pu être enregistrée. Réessayez avant de télécharger.");
       }
-
+      report("Préparation de votre affiche PNG…");
       if (!previewPosterSvg || !previewIsReady || !previewPng) {
         throw new Error("Le rendu de l’affiche n’est pas encore prêt.");
       }
@@ -776,12 +770,8 @@ export function PosterEditor({ campaign, prizes, settingsEndpoint, returnHref, a
         format: "png",
         gameType: campaign.gameType,
       });
-      setMessage(isDirty ? "Affiche enregistrée et téléchargement lancé." : "Téléchargement lancé.");
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Téléchargement impossible.");
-    } finally {
-      setIsDownloading(false);
-    }
+      return "L’affiche PNG a été transmise au navigateur. Retrouvez-la dans vos téléchargements.";
+    }, isDirty ? "Enregistrement des modifications de l’affiche…" : "Préparation de votre affiche PNG…");
   }
 
   return (
@@ -801,7 +791,7 @@ export function PosterEditor({ campaign, prizes, settingsEndpoint, returnHref, a
             </Link>
             <button
               type="button"
-              onClick={savePoster}
+              onClick={() => void savePoster()}
               disabled={isSaving}
               className="okado-filled-action px-5 disabled:opacity-60"
             >
@@ -1220,6 +1210,7 @@ export function PosterEditor({ campaign, prizes, settingsEndpoint, returnHref, a
       onClose={() => setDownloadConfirmationOpen(false)}
       onCancel={() => setDownloadConfirmationOpen(false)}
     />
+    <DownloadFeedbackDialog state={downloadTask.state} title="Affiche A4 / A5" onClose={downloadTask.close} onRetry={() => void downloadPoster()} />
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { CampaignEditor } from "@/components/merchant/campaign-editor";
 import { CampaignLivePreview, buildCampaignLivePreviewModel } from "@/components/merchant/campaign-live-preview";
 import { CampaignWizard } from "@/components/merchant/campaign-wizard";
 import { AccountSettingsForm } from "@/components/merchant/account-settings-form";
+import { PosterEditor } from "@/components/merchant/poster-editor";
 import { CampaignExperience } from "@/components/public/campaign-experience";
 import { MerchantShell } from "@/components/merchant/merchant-shell";
 import { DashboardRecentCampaigns } from "@/components/merchant/dashboard-recent-campaigns";
@@ -148,6 +149,11 @@ export function TemplateRenderingProof({ mode = "preview", templateId = "classic
       successMetric: "Abonnements sociaux", targetUrl: "https://instagram.com/fixture-test",
       actions: [{ id: "fixture-instagram", kind: "instagram", url: "https://instagram.com/fixture-test", label: "Notre compte" }] },
   }} />;
+  if (mode === "poster-download") return <MerchantShell merchant={merchant} user={{ id: "download-user", merchantId: merchant.id,
+    role: "owner", firstName: "Camille", lastName: "Test", email: "download@example.test", password: "", createdAt: merchant.createdAt }}
+    locations={[{ merchant, role: "owner" }]} activeLocationId={merchant.id} isSaasAdmin={false}>
+    <PosterEditor campaign={performance.campaign} prizes={performance.prizes} />
+  </MerchantShell>;
   if (mode === "public") return <CampaignExperience campaignId={form.id} initialCampaign={publicCampaign} />;
   if (mode === "game-preview") return <CampaignExperience campaignId={form.id} initialCampaign={publicCampaign} isPreview previewToken="fixture-only" />;
   if (mode === "wizard") return <CampaignWizard merchant={merchant} initialCampaign={performance} />;

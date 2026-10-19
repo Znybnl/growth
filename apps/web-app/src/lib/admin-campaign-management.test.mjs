@@ -20,6 +20,7 @@ const mocks = {
   "@/lib/merchant-image-processing": "export class MerchantImageValidationError extends Error {} export const optimizeMerchantImage = async () => {throw new Error('Unexpected image processing');};",
   "@/lib/merchant-image-storage": "export const copyCampaignMediaToMerchant = async input => structuredClone(input); export const getCampaignMerchantImageUrls = async () => []; export const deleteMerchantImagesIfUnreferenced = async () => {}; export const uploadMerchantImage = async () => {throw new Error('Unexpected storage write');}; export const getMerchantPosterLogoDataUrl = async (_url, id) => 'logo-for:' + id;",
   "@/lib/support-log": "export const logSupportEvent = (...args) => globalThis.__adminCampaignTest.logs.push(args);",
+  "@/lib/product-analytics": "export const merchantDistinctId = (merchant, user) => merchant + ':' + user; export const captureProductEvent = async (...args) => globalThis.__adminCampaignTest.analytics.push(args);",
   "@/lib/campaign-exports": "export const createCampaignQrSvg = async url => {globalThis.__adminCampaignTest.qrUrls.push(url); return '<svg></svg>';};",
   "@/lib/format": "export const formatDateTime = value => value;",
   "@/components/ui/workspace": "import {createElement as h} from 'react'; export const PageHeader = ({title,description,actions}) => h('header',null,h('h1',null,title),h('p',null,description),actions); export const ResponsiveTable = ({children}) => h('div',null,children);",
@@ -51,6 +52,7 @@ const assets = await import("../app/api/admin/campaigns/[id]/assets/route.ts");
 const logo = await import("../app/api/admin/campaigns/[id]/poster-logo/route.ts");
 const preview = await import("../app/api/admin/campaigns/[id]/preview/route.ts");
 const diffusionQr = await import("../app/api/admin/campaigns/[id]/qr/route.ts");
+const merchantQr = await import("../app/api/campaigns/[id]/qr/route.ts");
 const {createCampaignQrSvg} = await import("./campaign-qr.ts");
 const {AdminCampaignQrDownload} = await import("../components/merchant/admin-campaign-qr-download.tsx");
 const {verifyPreviewAccessToken} = await import("./preview-token.ts");
@@ -94,7 +96,7 @@ beforeEach(() => {
     profiles:{root:{id:"root",companyName:"Marchand pilote"},site:{id:"site",companyName:"Établissement pilote",logoText:"Logo marchand"},other:{id:"other",companyName:"Autre marchand"}},
     associated:{root:["root","site"],site:["site"],other:["other"]},
     campaigns:[{id:"existing",merchant_id:"site",title:"Jeu existant",is_active:true,created_at:"2026-10-01",campaign_local_settings:{}},{id:"foreign",merchant_id:"other",title:"Autre jeu",is_active:false,created_at:"2026-09-01"}],
-    reads:[],projections:[],saves:[],posters:[],logs:[],qrUrls:[],
+    reads:[],projections:[],saves:[],posters:[],logs:[],qrUrls:[],analytics:[],
   };
   state.db = fakeDb();
 });
@@ -218,7 +220,6 @@ test("rendu de la liste : compte cible, liens de modification et filtre conserv�
   assert.match(html,/Modifier le jeu/);
   assert.match(html,/admin\/campaigns\/game-0\/edit/);
   assert.match(html,/admin\/campaigns\/game-0\/poster/);
-  assert.match(html,/api\/admin\/campaigns\/game-0\/qr/);
   assert.match(html,/QR de diffusion/);
   assert.match(html,/name="merchantId" value="root"/);
   assert.match(html,/page=2&amp;q=Jeu&amp;merchantId=root/);
@@ -278,9 +279,8 @@ test("contrats de câblage UI : preview, QR et logo admin sans modifier le parco
   assert.match(wizard,/<AdminCampaignQrDownload campaignId=\{draft.id\} isActive=\{draft.isActive\}/);
   assert.match(wizard,/Le QR de diffusion n’ouvre le jeu qu’après sa publication/);
   const confirmation = readFileSync(new URL("components/merchant/campaign-saved-dialog.tsx",src),"utf8");
-  assert.match(confirmation,/<AdminCampaignQrDownload/);
-  assert.match(confirmation,/isActive=\{adminIsActive\}/);
-  assert.ok(confirmation.includes('href={`/api/campaigns/${campaignId}/qr`}'));
+  assert.match(confirmation,/<CampaignQrDownloadDialog/);
+  assert.ok(confirmation.includes('admin={Boolean(adminTargetName)}'));
 });
 
 test("QR de diffusion admin : vrai SVG téléchargeable du bon jeu, sans jeton ni changement métier", async () => {
@@ -323,14 +323,45 @@ test("QR admin : jeu absent, établissement archivé et panne de lecture refusé
   assert.deepEqual(state.logs,[]);
 });
 
-test("le lien de diffusion admin encode l’identifiant et distingue le brouillon du QR de test", () => {
+test("le bouton admin ouvre le dialogue commun sans lien privé préchargé", () => {
   const html = renderToStaticMarkup(createElement(AdminCampaignQrDownload,{campaignId:'a/b?x="',isActive:false}));
-  assert.ok(html.includes("/api/admin/campaigns/a%2Fb%3Fx%3D%22/qr"));
-  assert.match(html,/download/);
-  assert.match(html,/brouillon, à diffuser après publication/);
+  assert.match(html,/type="button"/);
+  assert.match(html,/Télécharger le QR de diffusion/);
+  assert.doesNotMatch(html,/href=|<img/);
   assert.doesNotMatch(html,/previewToken|preview=1/);
   const active = renderToStaticMarkup(createElement(AdminCampaignQrDownload,{campaignId:"existing",isActive:true}));
   assert.doesNotMatch(active,/brouillon|Brouillon/);
+});
+
+test("consulter le QR admin inline ne journalise pas de téléchargement", async () => {
+  const response = await diffusionQr.GET(new Request("https://app.okado.app/api/admin/campaigns/existing/qr?inline=1"),params);
+  assert.equal(response.status,200);
+  assert.equal(response.headers.get("content-disposition"),'inline; filename="existing-qr.svg"');
+  assert.deepEqual(state.logs,[]);
+  assert.deepEqual(state.saves,[]);
+});
+
+test("QR marchand : vue inline et preview sans métrique, téléchargement explicite compté une fois", async () => {
+  const inline = await merchantQr.GET(new Request("https://app.okado.app/api/campaigns/existing/qr?inline=1"),params);
+  assert.equal(inline.status,200);
+  assert.match(inline.headers.get("content-disposition"),/^inline;/);
+  assert.equal(state.analytics.length,0);
+  assert.equal(state.qrUrls[0],"https://app.okado.app/campaign/existing");
+  assert.equal((await merchantQr.GET(new Request("https://app.okado.app/api/campaigns/existing/qr?preview=1"),params)).status,200);
+  assert.equal(state.analytics.length,0);
+  assert.equal((await merchantQr.GET(new Request("https://app.okado.app/api/campaigns/existing/qr"),params)).status,200);
+  assert.equal(state.analytics.length,1);
+  assert.equal(state.analytics[0][0],"campaign_qr_downloaded");
+  assert.deepEqual(state.saves,[]);
+});
+
+test("QR marchand : aucune image ni capture pour un jeu étranger ou un visiteur", async () => {
+  state.wrongPerformance = true;
+  assert.equal((await merchantQr.GET(new Request("https://app.okado.app/api/campaigns/existing/qr?inline=1"),params)).status,404);
+  assert.deepEqual(state.qrUrls,[]);
+  assert.deepEqual(state.analytics,[]);
+  state.session = null;
+  await assert.rejects(merchantQr.GET(new Request("https://app.okado.app/api/campaigns/existing/qr"),params),/redirect/);
 });
 
 function sourcePerformance(merchantId = "site") {

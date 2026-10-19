@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { AffiliateAccountSettingsForm } from "@/components/merchant/affiliate-account-settings-form";
+import { FileDownloadButton } from "@/components/merchant/download-feedback";
 import { AffiliateCommissionActions } from "@/components/merchant/affiliate-commission-actions";
 import { getAffiliateAdminOverview } from "@/lib/affiliate-repository";
 import { isSaasAdminEmail } from "@/lib/admin";
@@ -113,12 +114,14 @@ export default async function AffiliatesPage({ searchParams }: AffiliatesPagePro
           <button className="okado-primary-action self-end px-5">
             Filtrer
           </button>
-          <a
+          <FileDownloadButton
             href={`/api/affiliates/commissions?${exportParams.toString()}`}
+            fileName="okado-affiliation-commissions.csv"
+            title="Export des commissions"
             className="okado-secondary-action self-end px-5"
           >
             Export CSV
-          </a>
+          </FileDownloadButton>
         </form>
       </section>
 

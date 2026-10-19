@@ -92,7 +92,7 @@ async function CampaignsPageContent({
                     </div>
                     <div className="mt-4 flex items-center gap-2 border-t border-border pt-3">
                       <Link href={`/campaigns/${item.campaign.id}/edit/guided`} prefetch={false} className="okado-primary-action min-w-0 flex-1 px-3 text-sm">Modifier</Link>
-                      <CampaignActionsMenu campaignId={item.campaign.id} campaignTitle={item.campaign.title} allowAdminDuplicate={isSaasAdminEmail(session.user.email)} />
+                      <CampaignActionsMenu campaignId={item.campaign.id} campaignTitle={item.campaign.title} isActive={item.campaign.isActive} allowAdminDuplicate={isSaasAdminEmail(session.user.email)} />
                     </div>
                   </article>
                 ))}
@@ -146,7 +146,7 @@ async function CampaignsPageContent({
                     >
                       Modifier
                     </Link>
-                    <CampaignActionsMenu campaignId={item.campaign.id} campaignTitle={item.campaign.title} allowAdminDuplicate={isSaasAdminEmail(session.user.email)} />
+                    <CampaignActionsMenu campaignId={item.campaign.id} campaignTitle={item.campaign.title} isActive={item.campaign.isActive} allowAdminDuplicate={isSaasAdminEmail(session.user.email)} />
                   </div>
                 </div>
               ))
