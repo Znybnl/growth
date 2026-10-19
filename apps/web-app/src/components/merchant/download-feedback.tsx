@@ -61,24 +61,24 @@ export async function fetchDownload(url: string, signal: AbortSignal, mime: stri
   return blob;
 }
 
-export function DownloadFeedbackDialog({ state, title, onClose, onRetry, children }: {
-  state: DownloadState | null; title: string; onClose: () => void; onRetry: () => void; children?: ReactNode;
+export function DownloadFeedbackDialog({ state, title, onClose, onRetry, children, compact = false }: {
+  state: DownloadState | null; title: string; onClose: () => void; onRetry: () => void; children?: ReactNode; compact?: boolean;
 }) {
   const id = useId();
   return <DialogShell open={state !== null} onClose={onClose} labelledBy={`${id}-title`} describedBy={`${id}-description`} className="!max-w-lg max-h-[calc(100dvh-3.5rem)] overflow-y-auto">
     <div className="flex items-start justify-between gap-4">
-      <div className="okado-dialog-icon bg-lavender text-aubergine" aria-hidden="true"><Download className="h-6 w-6" /></div>
+      {compact ? <h2 id={`${id}-title`} className="okado-dialog-title !mt-0">{title}</h2> : <div className="okado-dialog-icon bg-lavender text-aubergine" aria-hidden="true"><Download className="h-6 w-6" /></div>}
       <button type="button" onClick={onClose} aria-label="Fermer le téléchargement" className="okado-dialog-dismiss"><X className="h-4 w-4" aria-hidden="true" /></button>
     </div>
-    <p className="mt-5 okado-label">Téléchargement</p>
-    <h2 id={`${id}-title`} className="okado-dialog-title">{title}</h2>
+    {!compact ? <><p className="mt-5 okado-label">Téléchargement</p>
+    <h2 id={`${id}-title`} className="okado-dialog-title">{title}</h2></> : null}
     <p id={`${id}-description`} role={state?.status === "error" ? "alert" : "status"} aria-live="polite" className="okado-dialog-description flex items-start gap-2">
       {state?.status === "loading" ? <Loader2 className="mt-1 h-4 w-4 shrink-0 animate-spin motion-reduce:animate-none" aria-hidden="true" /> : state?.status === "success" ? <Check className="mt-1 h-4 w-4 shrink-0 text-green-700" aria-hidden="true" /> : null}
       <span>{state?.message}</span>
     </p>
     {children}
     {state?.status === "error" ? <button type="button" className="okado-filled-action mt-5 w-full px-4" onClick={onRetry}>Réessayer</button> : null}
-    <button type="button" className="okado-secondary-action mt-3 w-full px-4" onClick={onClose}>Fermer</button>
+    {!compact ? <button type="button" className="okado-secondary-action mt-3 w-full px-4" onClick={onClose}>Fermer</button> : null}
   </DialogShell>;
 }
 

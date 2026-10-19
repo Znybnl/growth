@@ -2,15 +2,16 @@ import { readFile } from "node:fs/promises";
 import QRCode from "qrcode";
 import { expect, test } from "@playwright/test";
 import { ANALYTICS_CONSENT_COOKIE, ANALYTICS_CONSENT_VERSION } from "../src/lib/analytics-consent";
+import { captureVisualAt1280 } from "./helpers/visual-1280";
 
 test.beforeEach(async ({ context, baseURL, page }) => {
   await context.addCookies([{ name: ANALYTICS_CONSENT_COOKIE, url: baseURL!, value: encodeURIComponent(JSON.stringify({ version: ANALYTICS_CONSENT_VERSION, choice: "rejected", decidedAt: Date.now() })) }]);
   await page.route(/https:\/\//, route => route.abort());
 });
 
-for (const width of [320, 390, 1280]) {
-  test(`QR admin à ${width}px : consultation distincte, image enregistrable, fichier réel et clavier`, async ({ page }, testInfo) => {
-    await page.setViewportSize({ width, height: width === 1280 ? 720 : 844 });
+for (const [width, height] of [[320, 844], [390, 844], [1280, 600], [1280, 720]]) {
+  test(`${width === 1280 ? "@visual-1280 " : ""}QR admin à ${width}×${height} : consultation distincte, image enregistrable, fichier réel et clavier`, async ({ page }, testInfo) => {
+    await page.setViewportSize({ width, height });
     const svg = await QRCode.toString("https://game.example.test/campaign/admin-qr-fixture", { type: "svg", width: 512 });
     const requests: string[] = [];
     let release!: () => void;
@@ -35,11 +36,14 @@ for (const width of [320, 390, 1280]) {
     expect(requests[0]).toContain("?inline=1");
     await page.keyboard.press("Shift+Tab");
     expect(await dialog.evaluate(el => el.contains(document.activeElement))).toBe(true);
-    await page.screenshot({ path: testInfo.outputPath(`qr-dialog-${width}.png`), fullPage: true });
+    await expect(dialog.getByRole("button", { name: "Fermer le téléchargement", exact: true })).toBeInViewport();
+    await expect(dialog.getByRole("heading", { name: "QR code de diffusion", exact: true })).toBeInViewport();
+    if (width === 1280) await captureVisualAt1280(page, testInfo, "qr-diffusion", height);
+    else await page.screenshot({ path: testInfo.outputPath(`qr-dialog-${width}.png`), fullPage: true });
     const bounds = await dialog.boundingBox();
     expect(bounds!.x).toBeGreaterThanOrEqual(0);
     expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(width);
-    expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(width === 1280 ? 720 : 844);
+    expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(height);
     const downloading = page.waitForEvent("download");
     await dialog.getByRole("button", { name: "Télécharger le QR code", exact: true }).click();
     const file = await downloading;
@@ -63,6 +67,7 @@ for (const admin of [true, false]) {
     await expect(page.getByRole("dialog")).toHaveCount(1);
     await expect(page.getByRole("dialog", { name: "QR code de diffusion" })).toBeVisible();
     await expect(page.getByRole("dialog").getByAltText("QR code de diffusion du jeu")).toBeVisible();
+    await expect(page.getByRole("dialog")).toContainText("Brouillon : ne diffusez ce QR code");
     await page.keyboard.press("Escape");
     await expect(page.getByRole("dialog")).toHaveCount(1);
     await expect(page.getByRole("dialog")).toContainText(admin ? "Le brouillon est prêt" : "Votre jeu est enregistré");
@@ -83,7 +88,7 @@ test("QR marchand : refus serveur, réessai, aucun fichier JSON téléchargé", 
   expect(downloads).toBe(0);
 });
 
-test("CSV : popin immédiate, HTML refusé, réessai et fichier conforme", async ({ page }, testInfo) => {
+test("@visual-1280 CSV : popin immédiate, HTML refusé, réessai et fichier conforme", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1280, height: 720 });
   let calls = 0;
   const csv = "Prénom,Nom\nCamille,Test\n";
@@ -92,13 +97,67 @@ test("CSV : popin immédiate, HTML refusé, réessai et fichier conforme", async
   await page.getByRole("button", { name: "Export CSV", exact: true }).click();
   const dialog = page.getByRole("dialog", { name: "Export des contacts" });
   await expect(dialog.getByRole("alert")).toContainText("Le fichier n’a pas pu être préparé");
-  await page.screenshot({ path: testInfo.outputPath("download-error-1280.png"), fullPage: true });
+  await captureVisualAt1280(page, testInfo, "export-erreur");
   const waiting = page.waitForEvent("download");
   await dialog.getByRole("button", { name: "Réessayer", exact: true }).click();
   const file = await waiting;
   expect(file.suggestedFilename()).toBe("merchant-leads.csv");
   expect(await readFile((await file.path())!, "utf8")).toBe(csv);
   await expect(dialog.getByRole("status")).toContainText("transmis au navigateur");
+});
+
+test("menu des campagnes : QR consultable sans navigation ni téléchargement implicite", async ({ page }, info) => {
+  await page.setViewportSize({ width: 1280, height: 600 });
+  const requests: string[] = [];
+  let downloads = 0;
+  page.on("download", () => downloads++);
+  const svg = await QRCode.toString("https://game.example.test/campaign/merchant-qr-fixture", { type: "svg" });
+  await page.route("**/api/campaigns/merchant-qr-fixture/qr*", route => {
+    requests.push(route.request().url());
+    return route.fulfill({ contentType: "image/svg+xml", body: svg });
+  });
+  await page.goto("/dev/admin-qr-proof");
+  const trigger = page.getByRole("button", { name: "Ouvrir les actions de la campagne", exact: true });
+  await trigger.click();
+  await page.getByRole("menuitem", { name: "QR Code", exact: true }).click();
+  const dialog = page.getByRole("dialog", { name: "QR code de diffusion" });
+  await expect(dialog.getByRole("button", { name: "Télécharger le QR code", exact: true })).toBeEnabled();
+  await expect(dialog).toContainText("Brouillon : ne diffusez ce QR code");
+  await captureVisualAt1280(page, info, "liste-qr", 600);
+  expect(requests).toHaveLength(1);
+  expect(requests[0]).toContain("?inline=1");
+  expect(downloads).toBe(0);
+  await page.keyboard.press("Escape");
+  await expect(trigger).toBeFocused();
+});
+
+test("@visual-1280 menu des campagnes : PNG en préparation, erreur et réessai", async ({ page }, info) => {
+  await page.setViewportSize({ width: 1280, height: 600 });
+  const png = await readFile("public/email-demo-qr.png");
+  let calls = 0, release!: () => void;
+  const waiting = new Promise<void>(resolve => { release = resolve; });
+  await page.route("**/api/campaigns/merchant-qr-fixture/poster", async route => {
+    if (++calls === 1) {
+      await waiting;
+      return route.fulfill({ status: 500, json: { error: "Erreur synthétique" } });
+    }
+    return route.fulfill({ contentType: "image/png", body: png });
+  });
+  await page.goto("/dev/admin-qr-proof");
+  await page.getByRole("button", { name: "Ouvrir les actions de la campagne", exact: true }).click();
+  await page.getByRole("menuitem", { name: /Télécharger l.affiche/ }).click();
+  const dialog = page.getByRole("dialog", { name: "Affiche A4 / A5", exact: true });
+  await expect(dialog.getByRole("status")).toContainText("Préparation de votre affiche PNG");
+  await captureVisualAt1280(page, info, "liste-affiche-preparation", 600);
+  release();
+  await expect(dialog.getByRole("alert")).toBeVisible();
+  const waitingForDownload = page.waitForEvent("download");
+  await dialog.getByRole("button", { name: "Réessayer", exact: true }).click();
+  const file = await waitingForDownload;
+  expect(file.suggestedFilename()).toBe("merchant-qr-fixture-affiche-a4-a5.png");
+  expect(await readFile((await file.path())!)).toEqual(png);
+  expect(calls).toBe(2);
+  await expect(dialog.getByRole("status")).toContainText("transmise au navigateur");
 });
 
 test("fermer une préparation CSV lente annule la requête, sans téléchargement tardif", async ({ page }) => {
@@ -179,7 +238,7 @@ for (const mode of ["wizard", "editor"]) {
   });
 }
 
-test("affiche : confirmation conservée, sauvegarde lente/erreur/réessai puis PNG", async ({ page }, testInfo) => {
+test("@visual-1280 affiche : confirmation conservée, sauvegarde lente/erreur/réessai puis PNG", async ({ page }, testInfo) => {
   test.setTimeout(120_000);
   await page.setViewportSize({ width: 1280, height: 720 });
   let calls = 0, release!: () => void;
@@ -205,7 +264,7 @@ test("affiche : confirmation conservée, sauvegarde lente/erreur/réessai puis P
   const dialog = page.getByRole("dialog", { name: "Affiche A4 / A5", exact: true });
   await expect(dialog.getByRole("status")).toContainText("Enregistrement des modifications");
   await expect(page.getByRole("dialog")).toHaveCount(1);
-  await page.screenshot({ path: testInfo.outputPath("poster-download-loading-1280.png"), fullPage: true });
+  await captureVisualAt1280(page, testInfo, "affiche-preparation");
   release();
   await expect(dialog.getByRole("alert")).toContainText("n’a pas pu être enregistrée");
   const downloading = page.waitForEvent("download");

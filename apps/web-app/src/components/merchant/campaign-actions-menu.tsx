@@ -18,6 +18,8 @@ import dynamic from "next/dynamic";
 import { DeleteCampaignDialog } from "@/components/merchant/delete-campaign-button";
 import { CampaignPreviewDialog, openCampaignPreview } from "@/components/merchant/campaign-preview-dialog";
 import { DuplicateCampaignButton } from "@/components/merchant/duplicate-campaign-button";
+import { CampaignQrDownloadDialog } from "@/components/merchant/campaign-qr-download";
+import { DownloadFeedbackDialog, downloadBlob, fetchDownload, useDownloadTask } from "@/components/merchant/download-feedback";
 import {
   DuplicateCampaignToLocationsButton,
   DuplicateCampaignToLocationsDialog,
@@ -34,6 +36,7 @@ import {
 type CampaignActionsMenuProps = {
   campaignId: string;
   campaignTitle: string;
+  isActive?: boolean;
   allowAdminDuplicate?: boolean;
 };
 
@@ -45,6 +48,7 @@ const AdminDuplicateCampaignDialog = dynamic(() => import("@/components/merchant
 export function CampaignActionsMenu({
   campaignId,
   campaignTitle,
+  isActive,
   allowAdminDuplicate = false,
 }: CampaignActionsMenuProps) {
   const router = useRouter();
@@ -52,6 +56,14 @@ export function CampaignActionsMenu({
   const [isDuplicateLocationsOpen, setIsDuplicateLocationsOpen] = useState(false);
   const [isAdminDuplicateOpen, setIsAdminDuplicateOpen] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [isQrOpen, setIsQrOpen] = useState(false);
+  const posterTask = useDownloadTask();
+  const downloadPoster = () => void posterTask.start(async (signal) => {
+    const id = encodeURIComponent(campaignId);
+    const blob = await fetchDownload(`/api/campaigns/${id}/poster`, signal, "image/png");
+    downloadBlob(blob, `${id}-affiche-a4-a5.png`);
+    return "L’affiche a été transmise au navigateur. Retrouvez-la dans vos téléchargements.";
+  }, "Préparation de votre affiche PNG…");
 
   return (
     <>
@@ -88,11 +100,9 @@ export function CampaignActionsMenu({
             </a>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem className={itemClass} asChild>
-            <a href={`/api/campaigns/${campaignId}/qr`}>
+          <DropdownMenuItem className={itemClass} onSelect={() => setIsQrOpen(true)}>
               <QrCode className="h-4 w-4" />
               QR Code
-            </a>
           </DropdownMenuItem>
           <DropdownMenuItem className={itemClass} asChild>
             <a href={`/campaigns/${campaignId}/poster`}>
@@ -100,11 +110,9 @@ export function CampaignActionsMenu({
               Affiche
             </a>
           </DropdownMenuItem>
-          <DropdownMenuItem className={itemClass} asChild>
-            <a href={`/api/campaigns/${campaignId}/poster`}>
+          <DropdownMenuItem className={itemClass} onSelect={downloadPoster}>
               <Download className="h-4 w-4" />
               Télécharger l&apos;affiche
-            </a>
           </DropdownMenuItem>
           <DropdownMenuItem className={itemClass} asChild>
             <a href={`/campaigns/${campaignId}/email`}>
@@ -131,6 +139,8 @@ export function CampaignActionsMenu({
           </div>
         </DropdownMenuContent>
       </DropdownMenu>
+      {isQrOpen ? <CampaignQrDownloadDialog campaignId={campaignId} isActive={isActive} onClose={() => setIsQrOpen(false)} /> : null}
+      <DownloadFeedbackDialog state={posterTask.state} title="Affiche A4 / A5" onClose={posterTask.close} onRetry={downloadPoster} />
       <DeleteCampaignDialog
         campaignId={campaignId}
         campaignTitle={campaignTitle}

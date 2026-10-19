@@ -31,7 +31,7 @@ export function CampaignQrDownloadDialog({ campaignId, isActive, admin = false, 
     downloadBlob(blob, `${encodeURIComponent(campaignId)}-qr.svg`);
     return "Le QR code a été transmis au navigateur. Retrouvez-le dans vos téléchargements.";
   }, "Préparation du téléchargement du QR code…");
-  return <DownloadFeedbackDialog state={task.state} title="QR code de diffusion" onClose={() => { task.close(); onClose(); }} onRetry={imageReady ? download : load}>
+  return <DownloadFeedbackDialog compact state={task.state} title="QR code de diffusion" onClose={() => { task.close(); onClose(); }} onRetry={imageReady ? download : load}>
     {isActive === false ? <p className="mt-4 rounded-lg bg-amber-50 p-3 text-sm text-amber-900">Brouillon : ne diffusez ce QR code qu’après la publication du jeu.</p> : null}
     {imageUrl ? <div className="mt-4 flex justify-center rounded-xl border border-border bg-white p-3">
       {/* A real SVG image preserves scanning and right-click saving. */}

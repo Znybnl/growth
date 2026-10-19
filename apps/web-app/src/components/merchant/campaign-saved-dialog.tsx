@@ -10,6 +10,7 @@ import { CampaignQrDownloadDialog } from "@/components/merchant/campaign-qr-down
 type CampaignSavedDialogProps = {
   open: boolean;
   campaignId: string;
+  isActive?: boolean;
   adminTargetName?: string;
   adminIsActive?: boolean;
   onClose: () => void;
@@ -20,6 +21,7 @@ type CampaignSavedDialogProps = {
 export function CampaignSavedDialog({
   open,
   campaignId,
+  isActive,
   adminTargetName,
   adminIsActive,
   onClose,
@@ -28,7 +30,7 @@ export function CampaignSavedDialog({
 }: CampaignSavedDialogProps) {
   const [qrOpen, setQrOpen] = useState(false);
   if (!open && qrOpen) setQrOpen(false);
-  if (open && qrOpen) return <CampaignQrDownloadDialog campaignId={campaignId} admin={Boolean(adminTargetName)} isActive={adminIsActive} onClose={() => setQrOpen(false)} />;
+  if (open && qrOpen) return <CampaignQrDownloadDialog campaignId={campaignId} admin={Boolean(adminTargetName)} isActive={adminTargetName ? adminIsActive : isActive} onClose={() => setQrOpen(false)} />;
   return (
     <DialogShell
       open={open}
