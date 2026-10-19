@@ -165,9 +165,6 @@ export function LandingDemo({
         <div className={styles.player}>
           <div className={styles.columnLabel}>
             <span>01</span> Côté client{" "}
-            <span className={styles.tryHint}>
-              Essayez ici <ArrowRight size={14} aria-hidden="true" />
-            </span>
           </div>
           <ol
             className={styles.progress}
@@ -349,7 +346,6 @@ export function LandingDemo({
                   inert={hasPanel}
                   aria-hidden={hasPanel || undefined}
                 >
-                  <p className={styles.gameEyebrow}>Une attention, juste pour vous</p>
                   <p className={styles.gameTitle}>
                     {isBeauty ? <>Prenez soin<br />de vous.</> : <>Jouez<br />et gagnez.</>}
                   </p>
@@ -392,7 +388,7 @@ export function LandingDemo({
                               textAnchor="middle"
                               dominantBaseline="middle"
                               transform={`rotate(${index * segmentDegrees + winningSegmentCenterDegrees} 150 150)`}
-                              fill={segment.dark ? "#ffffff" : isBeauty ? "#57253c" : "#49351e"}
+                              fill={segment.dark ? "#ffffff" : isBeauty ? "#512d3b" : "#49351e"}
                               fontSize="14"
                               fontWeight="700"
                             >
@@ -447,8 +443,7 @@ export function LandingDemo({
           <p className={styles.disclaimer} data-testid="demo-disclaimer">
             <ShieldCheck size={16} aria-hidden="true" />
             <span>
-              Démo : aucun lot réel, avis publié ou e-mail envoyé. Saisies non
-              transmises.
+              Démo : aucun lot réel, avis publié ou e-mail envoyé.
             </span>
           </p>
           <p className={styles.srOnly} role="status">
