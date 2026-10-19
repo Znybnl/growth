@@ -1,4 +1,4 @@
-import {
+import type {
   CampaignAccent,
   CampaignPosterSettings,
   CampaignWheelSettings,
@@ -636,31 +636,33 @@ export function createDefaultWheelSettings(
 
 /**
  * Keep the poster defaults identical between the classic editor and wizard.
- * The poster has its own wheel palette, intentionally darker than the game
- * wheel so the printed visual stays readable.
+ * Beauty starts with the complete Elegance preset; other sectors keep Classic.
+ * Explicit settings on an existing campaign are normalized separately.
  */
 export function createDefaultPosterSettings(
   merchant: Merchant,
   primaryColor = DEFAULT_WHEEL_PRIMARY_COLOR,
 ): CampaignPosterSettings {
-  const classicPosterWheel = getPosterTemplate("classic-wheel").wheel;
+  const beauty = isBeautyIndustry(merchant.industry);
+  const template = getPosterTemplate(beauty ? "premium-wheel" : "classic-wheel");
 
   return {
     ...createPosterSettingsDefaults({
+      templateId: beauty ? "premium-wheel" : "classic-wheel",
       logoMode: "text",
       logoText: merchant.companyName || merchant.logoText,
       backgroundMode: "color",
-      backgroundColor: "#ffffff",
+      backgroundColor: beauty ? template.background : "#ffffff",
       headline: "Scannez, jouez, récupérez votre cadeau !",
-      headlineTextColor: DEFAULT_WHEEL_PRIMARY_COLOR,
-      headlineFontSizePx: 42,
-      headlineFontFamily: "geogrotesque",
-      wheel: {
-        ...classicPosterWheel,
+      headlineTextColor: beauty ? template.headlineTextColor : DEFAULT_WHEEL_PRIMARY_COLOR,
+      headlineFontSizePx: beauty ? template.headlineFontSizePx : 42,
+      headlineFontFamily: beauty ? template.headlineFontFamily ?? "geogrotesque" : "geogrotesque",
+      wheel: beauty ? { ...template.wheel } : {
+        ...template.wheel,
         winColor: primaryColor,
         alternateWinColor: primaryColor,
       },
-      footerBackgroundColor: deriveLighterHex(primaryColor),
+      footerBackgroundColor: beauty ? "transparent" : deriveLighterHex(primaryColor),
     }),
     logoSource: "wizard",
   };
