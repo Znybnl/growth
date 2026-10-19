@@ -155,6 +155,11 @@ export function TemplateRenderingProof({ mode = "preview", templateId = "classic
       successMetric: "Abonnements sociaux", targetUrl: "https://instagram.com/fixture-test",
       actions: [{ id: "fixture-instagram", kind: "instagram", url: "https://instagram.com/fixture-test", label: "Notre compte" }] },
   }} />;
+  if (mode === "poster-download") return <MerchantShell merchant={merchant} user={{ id: "download-user", merchantId: merchant.id,
+    role: "owner", firstName: "Camille", lastName: "Test", email: "download@example.test", password: "", createdAt: merchant.createdAt }}
+    locations={[{ merchant, role: "owner" }]} activeLocationId={merchant.id} isSaasAdmin={false}>
+    <PosterEditor campaign={performance.campaign} prizes={performance.prizes} />
+  </MerchantShell>;
   if (mode === "public") return <CampaignExperience campaignId={form.id} initialCampaign={publicCampaign} />;
   if (mode === "game-preview") return <CampaignExperience campaignId={form.id} initialCampaign={publicCampaign} isPreview previewToken="fixture-only" />;
   if (mode === "wizard") return <CampaignWizard merchant={merchant} initialCampaign={performance} />;
