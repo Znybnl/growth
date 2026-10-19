@@ -1,9 +1,9 @@
 import { measureServerStage } from "@/lib/server-performance";
 import Link from "next/link";
-import { ArrowRight, CircleStop, Gift, PackageCheck, PackageX, Pause, Play, TriangleAlert } from "lucide-react";
+import { ArrowRight, Gift, PackageCheck, PackageX, TriangleAlert } from "lucide-react";
 
 import { DashboardActivityChart } from "@/components/merchant/dashboard-activity-chart";
-import { DashboardCampaignActionsMenu } from "@/components/merchant/dashboard-campaign-actions-menu";
+import { DashboardRecentCampaigns } from "@/components/merchant/dashboard-recent-campaigns";
 import { ConsumptionRateInfo } from "@/components/merchant/consumption-rate-info";
 import { DashboardOperationalAlerts } from "@/components/merchant/dashboard-operational-alerts";
 import { OnboardingWelcomeDialog } from "@/components/merchant/onboarding-welcome-dialog";
@@ -13,7 +13,6 @@ import { requireAuthenticatedSession } from "@/lib/auth";
 import {
   formatDateTime,
   formatPercent,
-  gameTypeLabel,
   leadStatusLabel,
 } from "@/lib/format";
 import { getMerchantDashboard, getMerchantRecentLeads, getMerchantWorkspaceDashboard } from "@/lib/store";
@@ -80,44 +79,6 @@ async function DashboardPageContent({
     return { label: "Disponible", tone: "success", icon: PackageCheck } as const;
   };
   const activityPoints = dashboard.activityPoints;
-  const getCampaignStatus = (item: (typeof filteredCampaigns)[number]) => {
-    if (!item.campaign.isActive) {
-      return {
-        label: "Campagne en pause",
-        icon: Pause,
-        iconClass: "text-[var(--okado-text-muted)]",
-      };
-    }
-
-    if (item.prizes.length > 0 && item.prizes.every((prize) => prize.remainingQuantity === 0)) {
-      return {
-        label: "Campagne arrêtée : stock épuisé",
-        icon: CircleStop,
-        iconClass: "text-[var(--okado-status-warning-text)]",
-      };
-    }
-
-    return {
-      label: "Campagne active",
-      icon: Play,
-      iconClass: "text-[var(--okado-status-success-text)]",
-    };
-  };
-  const CampaignStatusIcon = ({ item }: { item: (typeof filteredCampaigns)[number] }) => {
-    const status = getCampaignStatus(item);
-    const Icon = status.icon;
-
-    return (
-      <span
-        className={`inline-flex shrink-0 items-center justify-center ${status.iconClass}`}
-        role="img"
-        aria-label={status.label}
-        title={status.label}
-      >
-        <Icon className="h-[18px] w-[18px]" strokeWidth={2.25} aria-hidden="true" />
-      </span>
-    );
-  };
   const leadStatusTone = (status: (typeof recentLeads)[number]["status"]) => {
     switch (status) {
       case "redeemed":
@@ -178,21 +139,7 @@ async function DashboardPageContent({
           points={activityPoints}
         />
 
-        <section className="okado-card min-w-0 p-5 md:p-6">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div className="min-w-0"><p className="okado-label">Toutes les campagnes</p><h2 className="okado-section-title mt-2">Vos dernières campagnes</h2></div>
-          <div className="flex items-center gap-4"><span className="text-sm text-ash">{campaignsForTable.length} {campaignsForTable.length === 1 ? "campagne" : "campagnes"}</span><Link href="/campaigns" prefetch={false} className="okado-link text-sm">Voir toutes les campagnes</Link></div>
-        </div>
-        {campaignsForTable.length ? (
-          <div className="mt-6 max-h-[380px] overflow-y-auto pr-1">
-            <div className="hidden min-w-[680px] 2xl:block">
-              <div className="okado-table-header sticky top-0 z-10 grid grid-cols-[minmax(0,1.65fr)_0.7fr_0.8fr_0.9fr_auto] items-center gap-3 px-4 py-3"><span>Campagne</span><span className="text-right">Scans</span><span className="text-right">Participations</span><span className="text-right">Conversion</span><span className="sr-only">Actions</span></div>
-              {campaignsForTable.map((item) => <div key={item.campaign.id} className="okado-table-row grid grid-cols-[minmax(0,1.65fr)_0.7fr_0.8fr_0.9fr_auto] items-center gap-3 px-4 py-4 text-sm"><div className="flex min-w-0 items-center gap-3"><CampaignStatusIcon item={item} /><div className="min-w-0"><p className="truncate font-semibold text-carbon">{item.campaign.title}</p><p className="truncate text-ash">{gameTypeLabel(item.campaign.gameType)}</p></div></div><span data-align="right" className="font-semibold text-graphite">{item.kpis.scans}</span><span data-align="right" className="font-semibold text-graphite">{item.kpis.games}</span><span data-align="right" className="font-semibold text-graphite">{formatPercent(item.kpis.conversionRate)}</span><DashboardCampaignActionsMenu campaignId={item.campaign.id} /></div>)}
-            </div>
-            <div className="space-y-0 2xl:hidden">{campaignsForTable.map((item) => <article key={item.campaign.id} className="okado-mobile-table-row"><div className="flex items-start justify-between gap-3"><div className="flex min-w-0 items-start gap-3"><CampaignStatusIcon item={item} /><div className="min-w-0"><p className="truncate font-semibold text-graphite">{item.campaign.title}</p><p className="truncate text-sm text-ash">{gameTypeLabel(item.campaign.gameType)}</p></div></div><DashboardCampaignActionsMenu campaignId={item.campaign.id} /></div><div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 text-sm"><div className="okado-mobile-table-stat"><p className="okado-mobile-table-stat-label">Conversion</p><p className="mt-1 okado-mobile-table-stat-value">{formatPercent(item.kpis.conversionRate)}</p></div><div className="okado-mobile-table-stat"><p className="okado-mobile-table-stat-label">Participations</p><p className="mt-1 okado-mobile-table-stat-value">{item.kpis.games}</p></div><div className="okado-mobile-table-stat"><p className="okado-mobile-table-stat-label">Scans</p><p className="mt-1 okado-mobile-table-stat-value">{item.kpis.scans}</p></div></div></article>)}</div>
-          </div>
-        ) : <EmptyState title="Aucune campagne trouvée" description="Créez une campagne pour suivre ses performances ici." />}
-        </section>
+        <DashboardRecentCampaigns campaigns={campaignsForTable} />
       </section>
 
       <section className="okado-card min-w-0 p-5 md:p-6">

@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { selectWizardStep } from "./helpers/wizard-step";
 import { BEAUTY_WHEEL_THEMES, beautyWheelFontOptions } from "../src/lib/beauty-wheel-themes";
 import { BEAUTY_SCRATCH_TEMPLATES } from "../src/lib/beauty-scratch-templates";
 import { parseCampaignSetupInput } from "../src/lib/merchant-input";
@@ -84,7 +85,7 @@ for (const mode of ["wizard", "editor"]) {
     await page.setViewportSize({ width: 1440, height: 1000 });
     for (const template of templates) {
       await page.goto(fixture(mode, template.id));
-      if (mode === "wizard") await page.getByRole("button", { name: /03.*apparence/i }).click();
+      if (mode === "wizard") await selectWizardStep(page, 2);
       else await page.getByLabel("Activer le mode expert", { exact: true }).check();
       for (const [index, font] of fonts.entries()) {
         if (mode === "wizard") await page.getByLabel(/^Police du texte/).first().selectOption(font);
@@ -97,7 +98,7 @@ for (const mode of ["wizard", "editor"]) {
         expect(payload.presentation.heading.fontFamily).toBe("bodoni");
         // Rehydrate from the value actually serialized by the real Wizard.
         await page.goto(fixture(mode, template.id, payload.presentation.heading.fontFamily));
-        await page.getByRole("button", { name: /03.*apparence/i }).click();
+        await selectWizardStep(page, 2);
         await expect(page.getByLabel(/^Police du texte/).first()).toHaveValue("bodoni");
         await page.getByRole("main").screenshot({ path: info.outputPath("botanical-font-options.png") });
       }
