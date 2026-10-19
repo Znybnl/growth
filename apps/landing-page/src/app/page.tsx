@@ -1,266 +1,51 @@
 import Link from "next/link";
+import { Check } from "lucide-react";
 import { LandingDemo } from "@/components/marketing/landing-demo";
-import { MerchantProof } from "@/components/marketing/merchant-proof";
+import { CompactTracking, GiftSuggestions, HomeHero, SectorExamples } from "@/components/marketing/home-showcase";
+import { TemplateGallery } from "@/components/marketing/template-gallery";
 import { LocalizedPrice } from "@/components/marketing/localized-price";
 import { PrimaryButton } from "@/components/marketing/primary-button";
 import { PageSchema } from "@/components/marketing/structured-data";
 import { accountConnectionFaq } from "@/lib/marketing-faqs";
 import { APP_URL, pageMetadata, reviewIndependence } from "@/lib/site";
+import styles from "@/components/marketing/showcase.module.css";
 
-export const metadata = pageMetadata(
-  "/",
-  "Jeux par QR code pour commerces : roue et ticket à gratter | Okado",
-  "Créez un jeu mobile avec votre logo, vos lots et votre affiche QR. Suivez les participations, gains et retraits. Essai de 30 jours sans carte.",
-);
-const features = [
-  {
-    title: "Une roue de la fortune",
-    text: "Présentez vos lots sur une roue mobile avec votre logo et votre message.",
-    href: "/roue-de-la-fortune",
-  },
-  {
-    title: "Un ticket à gratter",
-    text: "Une surprise à découvrir au doigt, dans un modèle adapté à votre univers.",
-    href: "/ticket-a-gratter",
-  },
-  {
-    title: "Votre affiche et son QR",
-    text: "Personnalisez une affiche A4/A5 ou utilisez le QR seul dans Canva.",
-    href: "/affiches-qr-code",
-  },
-  {
-    title: "Des gains sous contrôle",
-    text: "Choisissez les probabilités et conditions, puis validez le retrait unique par PIN.",
-    href: "/comment-ca-marche",
-  },
-  {
-    title: "Des décisions mieux éclairées",
-    text: "Identifiez les lots récupérés et ajustez vos cadeaux à partir des participations, gains et retraits réellement suivis.",
-    href: "/guides/mesurer-jeu-qr-code",
-  },
-  {
-    title: "Le suivi sans vous connecter",
-    text: "Recevez le bilan des gains, des retraits et des stocks directement dans votre boîte mail, aux fréquences choisies.",
-    href: "#suivi",
-  },
-];
+export const metadata = pageMetadata("/", "Jeux par QR code pour commerces : roue et ticket à gratter | Okado",
+  "Donnez à vos clients une raison de revenir avec une roue ou un ticket à gratter par QR code. Jeux personnalisables, lots et retraits suivis. Essai de 30 jours.");
+
 const faqs = [
   accountConnectionFaq,
-  {
-    question: "Comment fonctionne l’essai gratuit de 30 jours ?",
-    answer:
-      "Créez votre compte et votre jeu sans carte bancaire. Testez le parcours en prévisualisation avant de publier. Un abonnement est nécessaire pour poursuivre l’exploitation après l’essai ; les lots restent à votre charge.",
-  },
-  {
-    question: "Le joueur a-t-il besoin d’une application ou d’un compte ?",
-    answer:
-      "Non. Le QR ouvre le jeu dans le navigateur du téléphone. La collecte d’e-mail avant le jeu est optionnelle ; sinon les coordonnées nécessaires sont demandées au gagnant pour lui transmettre son gain.",
-  },
-  {
-    question: "Le jeu oblige-t-il à laisser un avis Google ?",
-    answer:
-      "Non. " +
-      reviewIndependence +
-      " Un clic marketing ne prouve ni un avis publié ni un abonnement social.",
-  },
-  {
-    question: "Comment éviter les doubles retraits ?",
-    answer:
-      "Le personnel ouvre le QR individuel du gagnant, vérifie les conditions puis confirme avec le PIN de l’établissement. Un gain déjà retiré ne peut pas être remis une deuxième fois.",
-  },
-  {
-    question: "Comment sont gérées les données des joueurs ?",
-    answer:
-      "Le consentement marketing est distinct et facultatif. Il ne conditionne ni le jeu ni le gain. Vous définissez l’usage de vos contacts ; les informations de confidentialité et le DPA précisent le périmètre du service.",
-  },
+  { question: "Est-ce compliqué à mettre en place ?", answer: "Choisissez une roue ou un ticket à gratter, personnalisez le modèle et ajoutez vos lots. Testez le parcours en prévisualisation, puis publiez et affichez votre QR code. Vous n’avez pas besoin de développer une application." },
+  { question: "Quels cadeaux puis-je proposer ?", answer: "Une prestation, un complément de soin, un café, un produit découverte ou une remise sur une prochaine visite. La bibliothèque propose des idées ; vous adaptez les lots, leurs stocks et leurs conditions à votre établissement." },
+  { question: "Combien vont me coûter les lots ?", answer: "Les lots restent à votre charge. Vous renseignez leur coût estimé, leurs probabilités et leurs stocks. Les suggestions sont modifiables : choisissez des cadeaux compatibles avec votre coût réel et votre capacité à les remettre." },
+  { question: "Le joueur a-t-il besoin d’une application ou d’un compte ?", answer: "Non. Le QR code ouvre le jeu dans le navigateur du téléphone. La collecte d’e-mail avant le jeu est optionnelle ; sinon les coordonnées nécessaires sont demandées au gagnant pour lui transmettre son gain." },
+  { question: "Comment mes clients récupèrent-ils leur gain ?", answer: "Le gagnant reçoit son gain par e-mail. Dans votre établissement, l’équipe ouvre son QR individuel, vérifie les dates et conditions, puis valide le retrait avec le PIN. Un gain déjà retiré ne peut pas être remis une deuxième fois." },
+  { question: "Puis-je utiliser Okado sans demander d’avis Google ?", answer: "Oui. Vous pouvez créer un jeu sans action Google. " + reviewIndependence + " Un clic vers Google ne prouve pas qu’un avis a été publié." },
+  { question: "Puis-je arrêter après mon essai ?", answer: "L’essai dure 30 jours, sans carte bancaire. Un abonnement est nécessaire pour poursuivre l’exploitation après l’essai. L’offre est sans engagement ; les lots restent à votre charge." },
+  { question: "Comment sont gérées les données des joueurs ?", answer: "Le consentement marketing est distinct et facultatif. Il ne conditionne ni le jeu ni le gain. Vous définissez l’usage de vos contacts ; la politique de confidentialité et le DPA précisent le périmètre du service." },
 ];
 
 export default function IndexPage() {
-  return (
-    <main id="contenu" className="bg-white text-[#0f172b]">
-      <PageSchema path="/" name="Okado — jeux par QR code" faqs={faqs} />
-      <section className="mx-auto max-w-[1100px] px-5 pb-10 pt-14 md:pt-20">
-        <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#6c00f6]">
-          Jeux mobiles pour commerces locaux
-        </p>
-        <h1 className="mt-5 max-w-[950px] text-[40px] font-bold leading-[1.07] tracking-[-0.045em] md:text-[68px]">
-          Créez un jeu par QR code. Donnez une raison de revenir.
-        </h1>
-        <p className="mt-6 max-w-[750px] text-lg leading-8 text-[#475569]">
-          Une roue de la fortune ou un ticket à gratter avec votre logo et vos
-          lots. Vos clients jouent ; vous gardez la main sur les conditions,
-          validez les retraits et recevez votre bilan par e-mail si vous le souhaitez.
-        </p>
-        <div className="mt-7 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
-          <PrimaryButton href={`${APP_URL}/inscription`} trackingName="start_trial" trackingLocation="hero">
-            Lancer mon essai gratuit de 30 jours
-          </PrimaryButton>
-          <Link
-            href="#demo"
-            className="font-semibold text-[#6c00f6] underline underline-offset-4"
-          >
-            Essayer la démo interactive
-          </Link>
-        </div>
-        <p className="mt-4 text-sm leading-7 text-[#64748b]">
-          Sans carte bancaire. 20 € HT / mois après l’essai, sans engagement.
-          Lots à votre charge.
-        </p>
-        <ul aria-label="Les points forts d’Okado" className="mt-6 flex flex-wrap gap-x-6 gap-y-3 text-sm font-semibold text-[#513049]">
-          <li><Link href="/instituts-beaute#exemples-metiers" className="underline underline-offset-4">Des lots adaptés à votre métier</Link></li>
-          <li><Link href="#demo" className="underline underline-offset-4">Le parcours de vos clients, en direct</Link></li>
-          <li><Link href="#suivi" className="underline underline-offset-4">Votre suivi dans votre boîte mail</Link></li>
-        </ul>
-      </section>
-      <section
-        id="demo"
-        aria-label="Démonstration interactive"
-        className="scroll-mt-32 px-5 pb-16"
-      >
-        <LandingDemo />
-      </section>
-      <MerchantProof />
-      <section
-        id="fonctionnalites"
-        className="scroll-mt-32 bg-[#f8f6fe] px-5 py-16"
-      >
-        <div className="mx-auto max-w-[1100px]">
-          <h2 className="max-w-2xl text-3xl font-bold tracking-[-0.03em] md:text-4xl">
-            Du premier scan au retrait, un parcours complet.
-          </h2>
-          <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {features.map((feature) => (
-              <article
-                key={feature.href}
-                className="flex flex-col rounded-2xl border border-[#e5e7eb] bg-white p-7"
-              >
-                <h3 className="text-xl font-semibold">{feature.title}</h3>
-                <p className="mt-4 flex-1 leading-7 text-[#475569]">
-                  {feature.text}
-                </p>
-                <Link
-                  href={feature.href}
-                  className="mt-5 text-sm font-semibold text-[#6c00f6] underline underline-offset-4"
-                >
-                  Découvrir : {feature.title.toLowerCase()}
-                </Link>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-      <section
-        id="cas-usage"
-        className="mx-auto max-w-[1100px] scroll-mt-32 px-5 py-16"
-      >
-        <h2 className="text-3xl font-bold tracking-[-0.03em]">
-          Pensé pour le rythme de votre établissement.
-        </h2>
-        <div className="mt-8 grid gap-6 md:grid-cols-2">
-          {[
-            {
-              title: "Instituts de beauté et bien-être",
-              text: "Des modèles soignés et des lots adaptés au regard, aux ongles, à la coiffure, aux soins et au spa.",
-              href: "/instituts-beaute",
-            },
-            {
-              title: "Restaurants et commerces",
-              text: "Un support pour la salle, l’attente ou le comptoir, avec des lots et conditions compréhensibles.",
-              href: "/restaurants",
-            },
-          ].map((item) => (
-            <article
-              key={item.href}
-              className="rounded-3xl border border-[#e5e7eb] bg-[#fcfbff] p-7"
-            >
-              <h3 className="text-2xl font-semibold">{item.title}</h3>
-              <p className="mt-4 leading-8 text-[#475569]">{item.text}</p>
-              <Link
-                href={item.href}
-                className="mt-5 inline-block font-semibold text-[#6c00f6] underline"
-              >
-                Voir les usages et exemples
-              </Link>
-            </article>
-          ))}
-        </div>
-        <p className="mt-6 max-w-3xl leading-8 text-[#475569]">
-          Une boutique, une journée portes ouvertes ou un événement peuvent
-          aussi accueillir ce parcours : un jeu mobile, des lots définis par
-          l’organisateur et un suivi des retraits.
-        </p>
-      </section>
-      <section className="border-y border-[#e5e7eb] px-5 py-16">
-        <div className="mx-auto max-w-[1100px]">
-          <h2 className="text-3xl font-bold">
-            Vos liens et vos contacts, avec des règles claires.
-          </h2>
-          <p className="mt-5 max-w-3xl leading-8 text-[#475569]">
-            Proposez vos liens Google, Instagram, Facebook, TikTok, Tripadvisor
-            ou un lien personnalisé. La collecte d’e-mail avant le jeu est un
-            réglage indépendant ; l’accord pour recevoir de la prospection reste
-            distinct et facultatif.
-          </p>
-          <p className="mt-4 max-w-3xl leading-8 text-[#475569]">
-            {reviewIndependence}
-          </p>
-          <Link
-            href="/guides/collecte-email-jeu"
-            className="mt-5 inline-block font-semibold text-[#6c00f6] underline"
-          >
-            Comprendre la collecte et les consentements
-          </Link>
-        </div>
-      </section>
-      <section
-        id="tarifs"
-        className="mx-auto max-w-[1000px] scroll-mt-32 px-5 py-16"
-      >
-        <h2 className="text-3xl font-bold">
-          Une offre simple. Des coûts explicites.
-        </h2>
-        <div className="mt-8 grid gap-8 rounded-3xl border border-[#ded4f3] bg-[#fcfbff] p-7 md:grid-cols-2">
-          <div>
-            <p className="font-semibold text-[#6c00f6]">Okado Pro</p>
-            <LocalizedPrice />
-            <div className="mt-6">
-              <PrimaryButton href={`${APP_URL}/inscription`} trackingName="start_trial" trackingLocation="pricing">
-                Commencer mon essai gratuit
-              </PrimaryButton>
-            </div>
-            <Link
-              href="/tarifs"
-              className="mt-5 inline-block text-sm font-semibold text-[#6c00f6] underline"
-            >
-              Voir tous les tarifs et conditions
-            </Link>
-          </div>
-          <p className="leading-8 text-[#475569]">
-            Roue et ticket à gratter, jeux et participations illimités,
-            affiches, QR, e-mails de gain, suivi des retraits et export CSV.
-            L’abonnement ne finance pas vos cadeaux et leur impression :
-            choisissez des lots compatibles avec vos coûts.
-          </p>
-        </div>
-      </section>
-      <section
-        id="faq"
-        className="mx-auto max-w-[900px] scroll-mt-32 px-5 py-16"
-      >
-        <h2 className="text-3xl font-bold">
-          Les réponses avant de vous lancer.
-        </h2>
-        <div className="mt-8 divide-y divide-[#e5e7eb] rounded-2xl border border-[#e5e7eb] bg-white px-6">
-          {faqs.map((item) => (
-            <details key={item.question} className="py-5">
-              <summary className="cursor-pointer font-semibold">
-                {item.question}
-              </summary>
-              <p className="mt-4 leading-8 text-[#475569]">{item.answer}</p>
-            </details>
-          ))}
-        </div>
-      </section>
-    </main>
-  );
+  return <main id="contenu" className={styles.home}>
+    <PageSchema path="/" name="Okado — jeux par QR code" faqs={faqs} />
+    <HomeHero />
+    <section id="demo" aria-label="Démonstration interactive" className={styles.demo}><LandingDemo /></section>
+    <TemplateGallery />
+    <GiftSuggestions />
+    <SectorExamples />
+    <CompactTracking />
+    <section id="tarifs" aria-labelledby="pricing-title" className={`${styles.container} ${styles.section}`}>
+      <h2 id="pricing-title" className={styles.heading}>Une offre simple.<br />Des coûts explicites.</h2>
+      <div className={`${styles.pricing} mt-8`}>
+        <div><h3>Okado Pro</h3><LocalizedPrice /><div className="mt-6"><PrimaryButton href={`${APP_URL}/inscription`} trackingName="start_trial" trackingLocation="pricing">Essayer gratuitement</PrimaryButton></div><Link href="/tarifs" className={`${styles.link} mt-3`}>Voir tous les tarifs et conditions</Link></div>
+        <ul>{["Roue et ticket à gratter personnalisables", "Jeux et participations illimités, affiches A4/A5 et QR", "E-mails de gain, suivi des retraits et export CSV", "30 jours sans carte, puis sans engagement"].map(item => <li key={item}><Check aria-hidden="true" />{item}</li>)}<li>Les lots et l’impression de vos supports restent à votre charge.</li></ul>
+      </div>
+    </section>
+    <section id="faq" aria-labelledby="faq-title" className={`${styles.container} ${styles.section} ${styles.faq}`}>
+      <h2 id="faq-title" className={styles.heading}>Les réponses avant de vous lancer.</h2>
+      <div className="mt-8">{faqs.map(item => <details key={item.question}><summary>{item.question}</summary><p>{item.answer}</p></details>)}</div>
+      <p className={`${styles.note} mt-6`}><Link href="/confidentialite" className="underline underline-offset-4">Confidentialité</Link> · <Link href="/cgv" className="underline underline-offset-4">CGV et DPA</Link> · <Link href="/guides" className="underline underline-offset-4">Guides pratiques</Link></p>
+    </section>
+    <section className={`${styles.container} pb-16`}><div className={styles.finalCta}><h2 className={styles.heading}>Prêt à donner une nouvelle raison de revenir à vos clients ?</h2><PrimaryButton href={`${APP_URL}/inscription`} trackingName="start_trial" trackingLocation="footer">Essayer gratuitement</PrimaryButton></div></section>
+  </main>;
 }

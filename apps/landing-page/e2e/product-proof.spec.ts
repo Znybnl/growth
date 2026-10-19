@@ -39,7 +39,7 @@ test("la démo reste locale et ne propose plus de validation marchand", async ({
 });
 
 test("la synthèse marchand et la relance gagnant sont distinctes et cohérentes", async ({ page }, info) => {
-  for (const path of ["/", "/instituts-beaute"]) {
+  for (const path of ["/instituts-beaute"]) {
     await page.goto(path);
     const followup = page.locator("#suivi");
     await expect(followup.getByRole("heading", { name: /Votre animation avance/ })).toBeVisible();
@@ -66,24 +66,35 @@ test("la synthèse marchand et la relance gagnant sont distinctes et cohérentes
   }
 });
 
-test("trois exemples Beauté complets avec fonds chargés, lots et conditions lisibles", async ({ page }, info) => {
+test("six spécialités Beauté avec un seul panneau visible et navigation clavier", async ({ page }, info) => {
   await page.goto("/instituts-beaute");
   const examples = page.locator("#exemples-metiers");
-  await expect(examples.getByTestId("beauty-use-case")).toHaveCount(3);
-  for (const title of ["Teinture des sourcils offerte", "Nail art sur 2 ongles offert", "Un produit découverte offert"]) {
-    await expect(examples.getByRole("heading", { name: title })).toBeVisible();
-  }
-  await expect(examples).toContainText("Brow Lift acheté");
-  await expect(examples).toContainText("semi-permanent achetée");
-  await expect(examples).toContainText("Sans achat requis");
-  await expect(examples).toContainText("Enseignes, lots et compositions fictifs");
-  for (const image of await examples.locator("img").all()) {
+  await expect(examples.getByRole("tab")).toHaveCount(6);
+  const specialties = [
+    ["Ongles", "French offerte"], ["Regard · cils & sourcils", "Brow Lift offert"],
+    ["Soins visage & corps", "Masque offert"], ["Massage & Spa", "10 minutes de massage offertes"],
+    ["Coiffure", "Brushing offert"], ["Institut généraliste", "Complément de prestation offert"],
+  ];
+  for (const [label, reward] of specialties) {
+    await examples.getByRole("tab", { name: label, exact: true }).click();
+    const panel = examples.getByRole("tabpanel");
+    await expect(panel).toHaveCount(1);
+    await expect(panel).toContainText(reward);
+    await expect(panel).toContainText("Exemple fictif");
+    await expect(panel.getByRole("link", { name: "Essayer la démo beauté" })).toHaveAttribute("href", "#demo");
+    const image = panel.locator("img");
     await image.scrollIntoViewIfNeeded();
     await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);
   }
-  await expect(examples.getByText("Jeu mobile + affiche assortie", { exact: true })).toHaveCount(3);
+  const last = examples.getByRole("tab", { name: "Institut généraliste" });
+  await last.focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(examples.getByRole("tab", { name: "Ongles", exact: true })).toBeFocused();
+  await page.keyboard.press("End");
+  await expect(last).toBeFocused();
+  await expect(last).toHaveAttribute("aria-selected", "true");
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(page.viewportSize()!.width);
   await examples.screenshot({ path: info.outputPath("beauty-examples.png"), style: "header.sticky { visibility: hidden !important; }" });
-  await page.getByRole("link", { name: "Voir les exemples Regard, Ongles et Spa" }).click();
+  await page.getByRole("link", { name: "Explorer les six spécialités beauté" }).click();
   await expect(page).toHaveURL(/#exemples-metiers$/);
 });

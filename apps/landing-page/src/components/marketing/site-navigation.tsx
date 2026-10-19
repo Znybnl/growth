@@ -5,10 +5,10 @@ import { APP_URL } from "@/lib/site";
 
 const navigation = [
   { href: "/comment-ca-marche", label: "Fonctionnement" },
-  { href: "/instituts-beaute", label: "Beauté" },
-  { href: "/restaurants", label: "Restaurants" },
-  { href: "/blog", label: "Blog" },
+  { href: "/#modeles", label: "Modèles" },
+  { href: "/#cas-usage", label: "Secteurs" },
   { href: "/tarifs", label: "Tarifs" },
+  { href: "/blog", label: "Blog" },
 ];
 
 export function SiteHeader() {
@@ -77,6 +77,7 @@ const footerGroups = [
     links: [
       ["Comment ça marche", "/comment-ca-marche"],
       ["Roue de la fortune", "/roue-de-la-fortune"],
+      ["Modèles de jeux", "/#modeles"],
       ["Ticket à gratter", "/ticket-a-gratter"],
       ["Affiches et QR code", "/affiches-qr-code"],
       ["Tarifs", "/tarifs"],
