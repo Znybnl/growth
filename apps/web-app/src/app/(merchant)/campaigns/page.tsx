@@ -1,3 +1,4 @@
+import { measureServerStage } from "@/lib/server-performance";
 import Link from "next/link";
 
 import { CampaignActionsMenu } from "@/components/merchant/campaign-actions-menu";
@@ -6,13 +7,18 @@ import { EmptyState, PageHeader, ResponsiveTable } from "@/components/ui/workspa
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { requireAuthenticatedSession } from "@/lib/auth";
+import { isSaasAdminEmail } from "@/lib/admin";
 import { formatPercent, gameTypeLabel } from "@/lib/format";
 import { calculateCampaignConsumptionMetrics } from "@/lib/dashboard-metrics";
 import { getMerchantCampaignOverview } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
 
-export default async function CampaignsPage({
+export default async function CampaignsPage(props: Parameters<typeof CampaignsPageContent>[0]) {
+  return measureServerStage("page.campaigns", () => CampaignsPageContent(props));
+}
+
+async function CampaignsPageContent({
   searchParams,
 }: {
   searchParams: Promise<{ q?: string }>;
@@ -68,7 +74,7 @@ export default async function CampaignsPage({
                     <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
                       {[
                         ["Jeu", gameTypeLabel(item.campaign.gameType)],
-                        ["Participations", item.kpis.leads],
+                        ["Participations", item.kpis.games],
                         ["Gagnants", item.kpis.wins],
                         ["Lots utilisés", formatCampaignCount(item.consumptionMetrics.lotsUsed)],
                         ["Taux de consommation", formatCampaignRate(item.consumptionMetrics.consumptionRate)],
@@ -86,7 +92,7 @@ export default async function CampaignsPage({
                     </div>
                     <div className="mt-4 flex items-center gap-2 border-t border-border pt-3">
                       <Link href={`/campaigns/${item.campaign.id}/edit/guided`} prefetch={false} className="okado-primary-action min-w-0 flex-1 px-3 text-sm">Modifier</Link>
-                      <CampaignActionsMenu campaignId={item.campaign.id} campaignTitle={item.campaign.title} />
+                      <CampaignActionsMenu campaignId={item.campaign.id} campaignTitle={item.campaign.title} allowAdminDuplicate={isSaasAdminEmail(session.user.email)} />
                     </div>
                   </article>
                 ))}
@@ -121,7 +127,7 @@ export default async function CampaignsPage({
                   </div>
                   <span className="text-slate">{gameTypeLabel(item.campaign.gameType)}</span>
                   <span data-align="right" className="tabular-nums text-right font-semibold text-graphite">
-                    {item.kpis.leads}
+                    {item.kpis.games}
                   </span>
                   <span data-align="right" className="tabular-nums text-right font-semibold text-graphite">
                     {item.kpis.wins}
@@ -140,7 +146,7 @@ export default async function CampaignsPage({
                     >
                       Modifier
                     </Link>
-                    <CampaignActionsMenu campaignId={item.campaign.id} campaignTitle={item.campaign.title} />
+                    <CampaignActionsMenu campaignId={item.campaign.id} campaignTitle={item.campaign.title} allowAdminDuplicate={isSaasAdminEmail(session.user.email)} />
                   </div>
                 </div>
               ))

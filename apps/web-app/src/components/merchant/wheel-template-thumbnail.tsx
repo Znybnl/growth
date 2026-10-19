@@ -19,7 +19,7 @@ const THUMBNAIL_STYLES: Partial<Record<GamePageTemplateId, {
     segments: ["#1354a5", "#ffffff", "#2674c8", "#eaf3ff"], center: "#1458a7", centerText: "#fff", marker: "#174d8f", glow: "rgba(21,84,165,.20)",
   },
   "cocorico-duo-wheel": {
-    background: "linear-gradient(145deg,#eef6ff,#fff8dc)", rim: "#fff", segments: [DEFAULT_COCORICO_DUO_BLUE, DEFAULT_COCORICO_DUO_YELLOW, DEFAULT_COCORICO_DUO_BLUE, DEFAULT_COCORICO_DUO_YELLOW], center: "#1c5d9d", centerText: "#fff", marker: DEFAULT_COCORICO_DUO_YELLOW, glow: "rgba(242,201,76,.20)",
+    background: DEFAULT_COCORICO_DUO_BLUE, rim: "#fff", segments: [DEFAULT_COCORICO_DUO_BLUE, DEFAULT_COCORICO_DUO_YELLOW, DEFAULT_COCORICO_DUO_BLUE, DEFAULT_COCORICO_DUO_YELLOW], center: "#1c5d9d", centerText: "#fff", marker: DEFAULT_COCORICO_DUO_YELLOW, glow: "rgba(242,201,76,.20)",
   },
   "rose-institut": {
     background: "linear-gradient(145deg,#eff6ff,#d8e9ff)", rim: "#f8fbff", segments: ["#184c9b", "#f8fbff", "#72a9e8", "#e9f3ff"], center: "#1554a5", centerText: "#fff", marker: "#f3a4c4", glow: "rgba(21,84,165,.18)",

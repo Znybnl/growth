@@ -3,6 +3,8 @@ import { enforceMinimumWheelPrizeLabelFontSize } from "../src/lib/wheel-labels";
 
 import {
   DEFAULT_COCORICO_DUO_YELLOW,
+  DEFAULT_COCORICO_DUO_BLUE,
+  wheelBackgroundAfterPrimaryColorChange,
   DEFAULT_CLASSIC_WHEEL_PRIMARY_COLOR,
   DEFAULT_ROSE_INSTITUT_BACKGROUND_COLOR,
   campaignWheelBlockSpacingPx,
@@ -83,5 +85,15 @@ test("Éclat initialise son fond rose après un template sombre", () => {
 test("les fonds personnalisés enregistrés restent inchangés au chargement", () => {
   expect(wheelBackgroundForTemplate("classic", DEFAULT_COCORICO_DUO_YELLOW)).toBe(DEFAULT_COCORICO_DUO_YELLOW);
   expect(wheelBackgroundForTemplate("classic", "#aabbcc")).toBe("#aabbcc");
-  expect(wheelBackgroundForTemplateSelection("cocorico-duo-wheel", "#ffffff")).toBe(DEFAULT_COCORICO_DUO_YELLOW);
+  expect(wheelBackgroundForTemplateSelection("cocorico-duo-wheel", "#ffffff")).toBe(DEFAULT_COCORICO_DUO_BLUE);
+});
+
+test("Bicolore lie son fond par défaut à sa couleur principale et conserve les fonds personnalisés", () => {
+  expect(wheelBackgroundForTemplate("cocorico-duo-wheel", DEFAULT_COCORICO_DUO_YELLOW, "#125634")).toBe("#125634");
+  expect(wheelBackgroundForTemplate("cocorico-duo-wheel", "#ffffff", "#125634")).toBe("#125634");
+  expect(wheelBackgroundForTemplate("cocorico-duo-wheel", "#e8dccc", "#125634")).toBe("#e8dccc");
+  expect(wheelBackgroundForTemplateSelection("cocorico-duo-wheel", "#fffdfa", "#125634")).toBe("#125634");
+  expect(wheelBackgroundAfterPrimaryColorChange("cocorico-duo-wheel", "#125634", "#125634", "#456789")).toBe("#456789");
+  expect(wheelBackgroundAfterPrimaryColorChange("cocorico-duo-wheel", "#e8dccc", "#125634", "#456789")).toBe("#e8dccc");
+  expect(wheelBackgroundAfterPrimaryColorChange("classic", "#125634", "#125634", "#456789")).toBe("#125634");
 });

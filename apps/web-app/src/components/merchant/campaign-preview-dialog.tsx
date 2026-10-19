@@ -16,6 +16,7 @@ export function openCampaignPreview(
   campaignId: string,
   onDesktopOpen: () => void,
   onMobileNavigate: (path: string) => void,
+  previewPath?: string,
 ) {
   if (typeof window === "undefined") return;
 
@@ -24,13 +25,14 @@ export function openCampaignPreview(
     return;
   }
 
-  onMobileNavigate(`/campaign/${campaignId}?preview=1`);
+  onMobileNavigate(previewPath ?? `/campaign/${campaignId}?preview=1`);
 }
 
 export function CampaignPreviewDialog(props: {
   open: boolean;
   campaignId: string;
   onClose: () => void;
+  previewPath?: string;
 }) {
   return props.open ? <PreviewSession key={props.campaignId} {...props} /> : null;
 }
@@ -39,10 +41,12 @@ function PreviewSession({
   open,
   campaignId,
   onClose,
+  previewPath,
 }: {
   open: boolean;
   campaignId: string;
   onClose: () => void;
+  previewPath?: string;
 }) {
   const [loadedFrameKey, setLoadedFrameKey] = useState<string | null>(null);
   const [errorFrameKey, setErrorFrameKey] = useState<string | null>(null);
@@ -121,7 +125,7 @@ function PreviewSession({
           <iframe
             key={frameKey}
             title="Prévisualisation mobile du jeu"
-            src={PREVIEW_PATH(campaignId)}
+            src={previewPath ?? PREVIEW_PATH(campaignId)}
             onLoad={() => { setLoadedFrameKey(frameKey); setErrorFrameKey(null); }}
             onError={() => setErrorFrameKey(frameKey)}
             className="absolute left-0 top-0 origin-top-left border-0 bg-white"

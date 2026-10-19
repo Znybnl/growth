@@ -1,3 +1,4 @@
+import { conversionRate, globalConversion, isMarketingClick, isPendingGain, effectiveRedemptionDate, marketingVolumes } from "@/lib/metric-rules";
 import {
   createDrawSessionInSupabase,
   createPreviewParticipationInSupabase,
@@ -52,7 +53,8 @@ import {
   updateMerchantOnboardingInSupabase,
   verifySupabaseMerchantRedemptionPin,
 } from "@/lib/merchant-account-repository";
-import { assertDataBackendAvailable } from "@/lib/supabase";
+import { assertDataBackendAvailable, getSupabaseAdmin } from "@/lib/supabase";
+import { participationDates } from "@/lib/participation-metrics";
 import { assertCampaignCanPublish } from "@/lib/campaign-compliance";
 import { getMemorySupportLogs, logSupportEvent } from "@/lib/support-log";
 import {
@@ -66,6 +68,7 @@ import {
   DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
 } from "@/lib/campaign-defaults";
 import { cache } from "react";
+import { measureServerStage } from "@/lib/server-performance";
 import {
   Campaign,
   CashierRedemptionContext,
@@ -850,8 +853,8 @@ function computeKpis(campaign: Campaign) {
   const leads = store.leads.filter((lead) => lead.campaignId === campaign.id);
   const events = store.events.filter((event) => event.campaignId === campaign.id);
   const scans = events.filter((event) => event.eventType === "scan").length;
-  const actions = events.filter((event) => event.eventType === "review_clicked").length;
-  const games = events.filter((event) => event.eventType === "game_played").length;
+  const actions = events.filter((event) => isMarketingClick(event.eventType)).length;
+  const games = participationDates(leads, events).length;
   const wins = leads.filter((lead) => Boolean(lead.prizeId)).length;
   const redeemed = leads.filter((lead) => lead.status === "redeemed").length;
   const estimatedSpend = leads.reduce((total, lead) => {
@@ -868,8 +871,7 @@ function computeKpis(campaign: Campaign) {
     games,
     wins,
     redeemed,
-    conversionRate: scans ? Math.round((leads.length / scans) * 100) : 0,
-    actionRate: leads.length ? Math.round((actions / leads.length) * 100) : 0,
+    conversionRate: conversionRate(games, scans),
     redemptionRate: wins ? Math.round((redeemed / wins) * 100) : 0,
     estimatedSpend: Number(estimatedSpend.toFixed(2)),
     costPerLead: leads.length ? Number((estimatedSpend / leads.length).toFixed(2)) : 0,
@@ -1256,7 +1258,7 @@ export const getMerchantProfile = cache(async function getMerchantProfile(mercha
 
 export async function getMerchantRedemptionPinStates(merchantIds: string[]) {
   if (getDataBackend("la lecture des PIN de retrait") === "supabase") {
-    return getSupabaseMerchantRedemptionPinStates(merchantIds);
+    return measureServerStage("data.account-pins", () => getSupabaseMerchantRedemptionPinStates(merchantIds));
   }
 
   return Object.fromEntries(
@@ -1551,7 +1553,7 @@ function getMerchantDashboardFromMemory(
   const campaignIds = new Set(campaigns.map((item) => item.campaign.id));
   const pendingRedemptionsByPrizeId = new Map<string, number>();
   for (const lead of store.leads) {
-    if (campaignIds.has(lead.campaignId) && lead.prizeId && lead.status === "claimed") {
+    if (campaignIds.has(lead.campaignId) && lead.prizeId && isPendingGain(lead)) {
       pendingRedemptionsByPrizeId.set(
         lead.prizeId,
         (pendingRedemptionsByPrizeId.get(lead.prizeId) ?? 0) + 1,
@@ -1572,23 +1574,10 @@ function getMerchantDashboardFromMemory(
 
   const totalLeads = campaigns.reduce((total, item) => total + item.kpis.leads, 0);
   const totalRedeemed = campaigns.reduce((total, item) => total + item.kpis.redeemed, 0);
-  const averageConversion = campaigns.length
-    ? Math.round(
-        campaigns.reduce((total, item) => total + item.kpis.conversionRate, 0) /
-          campaigns.length,
-      )
-    : 0;
+  const averageConversion = globalConversion(campaigns);
   const relevantLeads = store.leads.filter((lead) => campaignIds.has(lead.campaignId));
   const relevantEvents = store.events.filter((event) => campaignIds.has(event.campaignId));
-  const referenceDates = [
-    ...relevantLeads.map((lead) => lead.createdAt),
-    ...relevantEvents.map((event) => event.createdAt),
-  ];
-  const today = new Date();
-  const latestReference = referenceDates.length
-    ? new Date([...referenceDates].sort((a, b) => a.localeCompare(b)).at(-1) ?? today.toISOString())
-    : null;
-  const latest = latestReference && latestReference > today ? latestReference : today;
+  const latest = new Date();
   const dayKeys = Array.from({ length: 30 }, (_, index) => {
     const date = new Date(Date.UTC(latest.getUTCFullYear(), latest.getUTCMonth(), latest.getUTCDate()));
     date.setUTCDate(latest.getUTCDate() - (30 - index - 1));
@@ -1604,8 +1593,8 @@ function getMerchantDashboardFromMemory(
     }
   }
 
-  for (const lead of relevantLeads) {
-    const day = lead.createdAt.slice(0, 10);
+  for (const playedAt of participationDates(relevantLeads, relevantEvents)) {
+    const day = playedAt.slice(0, 10);
     participationsByDay.set(day, (participationsByDay.get(day) ?? 0) + 1);
   }
 
@@ -1662,13 +1651,8 @@ function getCampaignDataViewFromMemory(
       .filter((event) => event.campaignId === campaignId)
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
   );
-  const latestDate = [
-    ...allLeads.map((lead) => lead.createdAt),
-    ...allEvents.map((event) => event.createdAt),
-  ]
-    .sort((a, b) => a.localeCompare(b))
-    .at(-1) ?? new Date().toISOString();
-  const reference = new Date(latestDate);
+  const reference = new Date();
+  const metricLeads = store.leads.filter(l => l.campaignId === campaignId);
   const dailyStats = Array.from({ length: 7 }, (_, index) => {
     const date = new Date(
       Date.UTC(reference.getUTCFullYear(), reference.getUTCMonth(), reference.getUTCDate()),
@@ -1678,10 +1662,9 @@ function getCampaignDataViewFromMemory(
 
     return {
       label,
-      participations: allLeads.filter((lead) => lead.createdAt.slice(0, 10) === label).length,
-      redeemed: allEvents.filter(
-        (event) => event.eventType === "prize_redeemed" && event.createdAt.slice(0, 10) === label,
-      ).length,
+      participations: participationDates(store.leads.filter((lead) => lead.campaignId === campaignId), allEvents)
+        .filter((date) => date.slice(0, 10) === label).length,
+      redeemed: metricLeads.filter(l => effectiveRedemptionDate(l, allEvents)?.slice(0,10) === label).length,
     };
   });
 
@@ -1693,7 +1676,8 @@ function getCampaignDataViewFromMemory(
     leadOffset,
     leadLimit,
     dailyStats,
-    actionVolumes: [],
+    actionVolumes: marketingVolumes(allEvents, performance.campaign.actions),
+    undatedRedemptions: metricLeads.filter(l => l.status === "redeemed" && !effectiveRedemptionDate(l, allEvents)).length,
   };
 }
 
@@ -1719,6 +1703,7 @@ function createDrawSessionFromMemory(input: CreateDrawSessionRequest): CreateDra
   if (campaign.gameType === "wheel") {
     recordEventInMemory(campaign.id, "game_played", undefined, {
       trigger: "session_started",
+      sessionId: session.id,
     });
   }
 
@@ -1924,6 +1909,10 @@ function getMerchantCampaignLibraryFromMemory(
         gameType: campaign.gameType,
         isActive: campaign.isActive,
         createdAt: campaign.createdAt,
+        participations: participationDates(
+          store.leads.filter((lead) => lead.campaignId === campaign.id),
+          store.events.filter((event) => event.campaignId === campaign.id),
+        ).length,
         scans: store.events.filter(
           (event) => event.campaignId === campaign.id && event.eventType === "scan",
         ).length,
@@ -2006,7 +1995,7 @@ function finalizeDrawSessionFromMemory(input: FinalizeDrawSessionRequest): DrawR
 
   store.leads.push(lead);
   session.status = "completed";
-  recordEventInMemory(campaign.id, "lead_created", lead.id);
+  recordEventInMemory(campaign.id, "lead_created", lead.id, { sessionId: session.id });
 
   if (prize) {
     recordEventInMemory(campaign.id, "prize_won", lead.id, { prizeId: prize.id });
@@ -2377,7 +2366,38 @@ export async function recordEvent(
     return recordEventInSupabase(campaignId, eventType, leadId, metadata);
   }
 
+  if (isMarketingClick(eventType) && typeof metadata?.eventId === "string") {
+    const existing = store.events.find(e => e.campaignId === campaignId && isMarketingClick(e.eventType) &&
+      e.metadata?.eventId === metadata.eventId);
+    if (existing) {
+      if (existing.eventType !== eventType || existing.metadata?.actionId !== metadata.actionId) throw new Error("Événement incompatible");
+      return clone(existing);
+    }
+  }
+
   return recordEventInMemory(campaignId, eventType, leadId, metadata);
+}
+
+export async function recordDrawSessionParticipation(campaignId: string, sessionId: string) {
+  if (getDataBackend("l'enregistrement d'une participation") === "supabase") {
+    const { data, error } = await getSupabaseAdmin().rpc("record_draw_session_participation", {
+      p_campaign_id: campaignId, p_session_id: sessionId,
+    });
+    if (error) throw new Error("Enregistrement de la participation indisponible.");
+    return data === true;
+  }
+  const session = store.drawSessions.find((item) => item.id === sessionId && item.campaignId === campaignId);
+  if (!session || session.isPreview) return false;
+  if (session.status === "completed" && store.events.some((event) =>
+      event.campaignId === campaignId && event.eventType === "lead_created" &&
+      event.metadata?.sessionId === sessionId)) return true;
+  if (store.events.some((event) => event.campaignId === campaignId &&
+      event.eventType === "game_played" && event.metadata?.sessionId === sessionId)) return true;
+  const campaign = getCampaign(campaignId);
+  if (!campaign?.isActive || campaign.gameType !== "scratch" ||
+      session.status !== "pending" || Date.parse(session.expiresAt) <= Date.now()) return false;
+  recordEventInMemory(campaignId, "game_played", undefined, { sessionId, trigger: "first_touch" });
+  return true;
 }
 
 export const getPublicCampaign = cache(async function getPublicCampaign(
@@ -2473,9 +2493,7 @@ export const getMerchantWorkspaceDashboard = cache(async function getMerchantWor
     prizeInventory,
     totalLeads: dashboards.reduce((total, dashboard) => total + dashboard.totalLeads, 0),
     totalRedeemed: dashboards.reduce((total, dashboard) => total + dashboard.totalRedeemed, 0),
-    averageConversion: campaigns.length
-      ? Math.round(campaigns.reduce((total, item) => total + item.kpis.conversionRate, 0) / campaigns.length)
-      : 0,
+    averageConversion: globalConversion(campaigns),
     activityPoints: [...activityByDay.entries()].map(([label, values]) => ({ label, ...values })),
   } satisfies MerchantDashboardData;
 });
@@ -2509,7 +2527,8 @@ export const getMerchantLeads = cache(async function getMerchantLeads(merchantId
     return getSupabaseMerchantLeads(merchantId, campaignId);
   }
 
-  return getMerchantLeadsFromMemory(campaignId);
+  const allowedCampaignIds = new Set(store.campaigns.filter(c => c.merchantId === merchantId).map(c => c.id));
+  return getMerchantLeadsFromMemory(campaignId).filter(l => allowedCampaignIds.has(l.campaignId));
 });
 
 export async function rememberPublicCampaignParticipant(
@@ -2548,7 +2567,7 @@ export const getMerchantRecentLeads = cache(async function getMerchantRecentLead
   query = "",
 ) {
   if (getDataBackend("la lecture des leads récents") === "supabase") {
-    return getSupabaseMerchantRecentLeads(merchantId, limit, query);
+    return measureServerStage("data.recent-contacts", () => getSupabaseMerchantRecentLeads(merchantId, limit, query));
   }
 
   const normalizedQuery = query.trim().toLowerCase();
@@ -2568,7 +2587,7 @@ export const getCampaignDataView = cache(async function getCampaignDataView(
   options: { leadLimit?: number; leadOffset?: number; query?: string; emailStatus?: "attention" } = {},
 ) {
   if (getDataBackend("la lecture des données campagne") === "supabase") {
-    return getSupabaseCampaignDataView(campaignId, fallbackMerchant, options);
+    return measureServerStage("data.results", () => getSupabaseCampaignDataView(campaignId, fallbackMerchant, options));
   }
 
   return getCampaignDataViewFromMemory(campaignId, options);
@@ -2608,6 +2627,8 @@ export const getMerchantSupportOverview = cache(async function getMerchantSuppor
 
   return {
     failedEmails: [],
+    handledEmails: [],
+    activeEmailCount: 0,
     webhooks: [],
     pendingClaims,
     businessLogs: getMemorySupportLogs()

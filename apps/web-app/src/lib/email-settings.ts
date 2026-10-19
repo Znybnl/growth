@@ -28,6 +28,9 @@ export type RewardEmailRenderOptions = {
   appointmentUrl?: string;
   rewardAvailableAt?: string;
   rewardExpiresAt?: string;
+  /** A service reminder reuses the initial email layout, never its delivery record. */
+  reminder?: boolean;
+  timeZone?: string;
 };
 
 export const CAMPAIGN_EMAIL_VARIABLES = [
@@ -249,7 +252,7 @@ export function getRewardEmailConditions(
   variables: RewardEmailVariables,
   options: RewardEmailRenderOptions = {},
 ) {
-  const dateFormat = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+  const dateFormat = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long", year: "numeric", timeZone: options.timeZone });
   const formatDate = (value?: string) => value && Number.isFinite(Date.parse(value))
     ? dateFormat.format(new Date(value))
     : undefined;
@@ -283,8 +286,9 @@ export function renderRewardEmailText(
   return [
     renderEmailTemplate(settings.headline, variables).replace(/Félicitations\s+🎁/, "Félicitations 🎁"),
     "",
+    options.reminder ? `Votre gain est encore disponible. ${variables.rewardExpiry}` : "",
     isRecommendedBody(settings) ? [
-      "Vous avez gagné :", variables.prizeLabel, `chez ${variables.merchantName}`,
+      options.reminder ? "Vous pouvez encore profiter de :" : "Vous avez gagné :", variables.prizeLabel, `chez ${variables.merchantName}`,
       "", "Comment profiter de votre gain ?", REWARD_INSTRUCTIONS,
       "", "Conditions", ...getRewardEmailConditions(variables, options).map((condition) => `- ${condition}`),
     ].join("\n") : renderEmailTemplate(settings.body, variables),
@@ -339,7 +343,7 @@ export function renderRewardEmailHtml(
     ? `<div style="margin:12px 0 0;"><a href="${escapeHtml(appointmentUrl)}" target="_blank" rel="noopener noreferrer" style="display:inline-block;padding:12px 20px;border-radius:12px;border:1px solid ${escapeHtml(accentColor)};background:#ffffff;color:${escapeHtml(accentColor)};text-decoration:none;font-weight:700;">Prendre rendez-vous</a></div>`
     : "";
   const recommendedBodyHtml = `
-    <p style="margin:24px 0 8px;font-size:16px;line-height:1.5;color:#475569;">Vous avez gagné :</p>
+    <p style="margin:24px 0 8px;font-size:16px;line-height:1.5;color:#475569;">${options.reminder ? "Vous pouvez encore profiter de :" : "Vous avez gagné :"}</p>
     <h2 style="margin:0 0 8px;font-size:28px;line-height:1.2;font-weight:700;text-transform:uppercase;overflow-wrap:anywhere;color:${accentColor};">${escapeHtml(variables.prizeLabel)}</h2>
     <p style="margin:0 0 28px;font-size:16px;line-height:1.5;">chez <strong>${escapeHtml(variables.merchantName)}</strong></p>
     <h3 style="margin:0 0 8px;font-size:18px;line-height:1.35;">Comment profiter de votre gain ?</h3>
@@ -353,6 +357,7 @@ export function renderRewardEmailHtml(
       <div style="max-width:560px;margin:0 auto;background:#ffffff;border-radius:20px;padding:24px;border:1px solid #dbe4f0;overflow-wrap:anywhere;">
         ${logoBlock}
         <h1 style="margin:0 0 16px;font-size:26px;line-height:1.25;">${headline}</h1>
+        ${options.reminder ? `<p style="margin:0 0 20px;font-size:16px;line-height:1.5;color:#374151;">Votre gain est encore disponible. <strong>${escapeHtml(variables.rewardExpiry)}</strong></p>` : ""}
         ${isRecommendedBody(settings) ? recommendedBodyHtml : bodyBlocks
           .map(
             (block) =>

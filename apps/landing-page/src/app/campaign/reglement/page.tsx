@@ -1,12 +1,11 @@
-import type { Metadata } from "next";
-
 import { LegalPage } from "@/components/legal/legal-page";
+import { pageMetadata } from "@/lib/site";
 
-export const metadata: Metadata = {
-  title: "CGU et règlement du jeu | Okado",
-  description:
-    "Conditions générales d'utilisation et règlement applicable aux jeux concours phygitaux déployés avec Okado.",
-};
+export const metadata = pageMetadata(
+  "/campaign/reglement",
+  "CGU et règlement du jeu | Okado",
+  "Conditions générales d’utilisation et règlement applicable aux jeux par QR code déployés avec Okado.",
+);
 
 const sections = [
   {
@@ -30,14 +29,14 @@ const sections = [
     paragraphs: [
       "La participation au jeu s’effectue exclusivement en scannant le QR Code mis à disposition au sein de l’établissement de la Société Organisatrice.",
       "Selon le paramétrage défini sous la seule responsabilité de la Société Organisatrice, le Participant pourra être invité à consulter des liens externes, tels que la fiche Google Business Profile de l’établissement ou un réseau social.",
-      "Le dépôt d’un avis en ligne est strictement facultatif. Il ne constitue en aucun cas une condition obligatoire de participation ni une obligation pour valider l’obtention d’un gain.",
+      "Le dépôt d’un avis en ligne est strictement facultatif et indépendant du jeu. L’accès au jeu, la probabilité et l’obtention d’un gain ne dépendent ni du dépôt ni du contenu d’un avis. Un clic sur un lien ne prouve pas la publication d’un avis.",
       "L’Éditeur décline toute responsabilité quant à l’utilisation de ces fonctionnalités par la Société Organisatrice au regard des conditions d’utilisation des plateformes tierces, notamment Google.",
     ],
   },
   {
     title: "Article 3 - Désignation des gagnants et responsabilité des lots",
     paragraphs: [
-      "L’attribution des gains est gérée automatiquement dès la soumission du formulaire, via un mécanisme de tirage aléatoire tenant compte des probabilités et des stocks paramétrés par la Société Organisatrice.",
+      "Le résultat est déterminé lors de la participation au jeu, via un mécanisme de tirage aléatoire tenant compte des probabilités et des stocks paramétrés par la Société Organisatrice. Selon le parcours configuré, les coordonnées sont recueillies avant le jeu ou après un gain pour permettre son enregistrement et son retrait. Un résultat perdant reste une participation, même sans coordonnées recueillies.",
       "La Société Organisatrice est seule responsable de la fourniture, de la conformité, de la disponibilité et de la remise effective des lots.",
       "La responsabilité du Prestataire Technique ne saurait être engagée pour toute réclamation relative à une rupture de stock, un défaut du lot, un refus de remise par le personnel en magasin ou tout litige lié à l’exécution du jeu.",
     ],
@@ -54,7 +53,7 @@ const sections = [
   {
     title: "Article 5 - Prévention de la fraude et litiges techniques",
     paragraphs: [
-      "La participation est strictement nominative et peut être limitée selon les règles définies par la Société Organisatrice, notamment par jour, par établissement ou par campagne.",
+      "La participation peut être limitée selon les règles définies par la Société Organisatrice, notamment par jour, par établissement ou par jeu. Les coordonnées sont demandées selon le parcours de collecte ou pour gérer un gain ; une participation sans coordonnées reste possible lorsque le parcours le prévoit.",
       "La Société Organisatrice se réserve le droit, à sa seule discrétion, d’annuler la participation ou de refuser la remise d’un lot à toute personne ayant tenté de frauder, notamment par l’utilisation de pseudonymes multiples, d’adresses e-mails frauduleuses ou de captures d’écran falsifiées.",
       "En cas de dysfonctionnement technique temporaire de la plateforme Okado, du réseau internet en magasin ou de l’appareil du Participant empêchant la validation, aucune compensation financière ou matérielle ne pourra être exigée auprès du Prestataire Technique.",
     ],
@@ -64,8 +63,12 @@ const sections = [
     paragraphs: [
       "Dans le cadre du jeu, des données à caractère personnel peuvent être collectées, notamment le prénom, l’adresse e-mail et les informations nécessaires à la gestion du gain.",
       "La Société Organisatrice agit en qualité de responsable de traitement. Les données sont collectées pour ses besoins légitimes de gestion du jeu et, sous réserve du consentement du Participant, pour l’envoi de prospection commerciale.",
+      "Le consentement à la prospection commerciale est distinct de la gestion du jeu, facultatif et non précoché. Le refuser n’empêche ni de jouer ni de recevoir un gain.",
       "Le Prestataire Technique agit en qualité de sous-traitant. Il héberge ces données de manière sécurisée pour le compte exclusif de la Société Organisatrice.",
-      "Conformément à la réglementation applicable, notamment le RGPD en Europe et la LPRPDE au Canada, le Participant dispose d’un droit d’accès, de rectification, de portabilité et d’effacement de ses données. Pour exercer ces droits, il doit s’adresser directement à la Société Organisatrice par le biais de ses coordonnées habituelles.",
+      "Selon le traitement et la réglementation applicable, le Participant peut exercer ses droits d’accès, de rectification, d’effacement, de limitation, d’opposition et, lorsque ses conditions sont réunies, de portabilité, ou retirer son consentement à la prospection. Il contacte l’établissement organisateur ; contact@okado.app peut l’orienter ou assister l’organisateur. Il peut saisir l’autorité de protection des données compétente.",
+      "L’organisateur précise, dans les informations accompagnant son jeu, son identité et son contact, les finalités, les bases légales, les durées ou critères de conservation, les destinataires et les droits applicables. Les données nécessaires au jeu et au gain ne deviennent pas des contacts de prospection du seul fait de la participation. Une conservation de preuve après la fin du jeu doit être justifiée et restreinte ; le présent règlement ne promet pas une suppression automatique à une échéance uniforme.",
+      "La mesure de fréquentation par PostHog et Vercel Analytics dépend du choix présenté dans Gérer les cookies, distinct du consentement à la prospection du marchand. Le refus de cette mesure ne bloque pas le jeu ou le retrait d’un gain.",
+      "Le présent texte ne certifie pas la conformité d’un jeu dans tous les pays. Pour un jeu au Canada, le périmètre fédéral et provincial applicable doit être examiné, notamment au Québec ; les règles particulières du jeu restent à définir par l’organisateur.",
     ],
   },
   {
@@ -93,6 +96,7 @@ export default function GameRulesPage() {
       title="Conditions générales d'utilisation et règlement du jeu"
       subtitle="Règlement applicable aux jeux concours phygitaux déployés en point de vente via la solution Okado."
       sections={sections}
+      updatedAt="15 octobre 2026"
     />
   );
 }

@@ -649,6 +649,8 @@ export interface MerchantFailedEmailItem {
   status: RewardEmailDeliveryStatus;
   errorMessage?: string;
   lastEventAt: string;
+  eventAt: string | null;
+  handledAt?: string;
 }
 
 export interface MerchantWebhookItem {
@@ -690,6 +692,8 @@ export interface MerchantBusinessLogItem {
 
 export interface MerchantSupportOverview {
   failedEmails: MerchantFailedEmailItem[];
+  handledEmails: MerchantFailedEmailItem[];
+  activeEmailCount: number;
   webhooks: MerchantWebhookItem[];
   pendingClaims: MerchantPendingClaimItem[];
   businessLogs: MerchantBusinessLogItem[];
@@ -745,6 +749,8 @@ export interface DrawSession {
   configurationSnapshot?: Record<string, unknown>;
   isPreview?: boolean;
   previewSessionToken?: string;
+  /** Short-lived server capability; previews never receive one. */
+  participationToken?: string;
 }
 
 export interface CreateDrawSessionRequest {
@@ -796,7 +802,8 @@ export interface CampaignKpi {
   wins: number;
   redeemed: number;
   conversionRate: number;
-  actionRate: number;
+  /** Deprecated: clicks/contacts was not a marketing completion rate. */
+  actionRate?: number;
   redemptionRate: number;
   estimatedSpend: number;
   costPerLead: number;
@@ -827,6 +834,7 @@ export interface CampaignLibraryItem {
   isActive: boolean;
   createdAt: string;
   scans: number;
+  participations?: number;
 }
 
 export interface MerchantDashboardData {
@@ -900,8 +908,10 @@ export interface CampaignDataView {
   }>;
   actionVolumes: Array<{
     actionIndex: number;
+    actionId?: string | null;
     value: number;
   }>;
+  undatedRedemptions?: number;
 }
 
 export interface CampaignSetupInput {

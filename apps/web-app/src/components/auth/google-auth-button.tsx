@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { captureClientProductEvent } from "@/lib/client-product-analytics";
 
 type GoogleAuthButtonProps = {
   mode: "signin" | "signup";
@@ -27,6 +28,9 @@ export function GoogleAuthButton({
 
     setError(null);
     setIsLoading(true);
+    if (mode === "signup") {
+      captureClientProductEvent("signup_started", { method: "google" });
+    }
 
     try {
       const startUrl = new URL("/api/auth/google/start", window.location.origin);
@@ -47,6 +51,9 @@ export function GoogleAuthButton({
       // during the provider redirect.
       window.location.assign(startUrl.toString());
     } catch (submitError) {
+      if (mode === "signup") {
+        captureClientProductEvent("signup_failed", { method: "google" });
+      }
       setError(
         submitError instanceof Error ? submitError.message : "Connexion Google impossible.",
       );

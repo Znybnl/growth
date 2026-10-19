@@ -2,6 +2,7 @@
 
 import {
   BarChart3,
+  CopyPlus,
   Download,
   Eye,
   ImageIcon,
@@ -12,6 +13,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 
 import { DeleteCampaignDialog } from "@/components/merchant/delete-campaign-button";
 import { CampaignPreviewDialog, openCampaignPreview } from "@/components/merchant/campaign-preview-dialog";
@@ -32,18 +34,23 @@ import {
 type CampaignActionsMenuProps = {
   campaignId: string;
   campaignTitle: string;
+  allowAdminDuplicate?: boolean;
 };
 
 const itemClass =
   "min-h-9 cursor-pointer gap-2 rounded-[4px] px-2.5 py-2 text-sm font-medium text-graphite focus:bg-purple-haze";
 
+const AdminDuplicateCampaignDialog = dynamic(() => import("@/components/merchant/admin-duplicate-campaign-button").then((module) => module.AdminDuplicateCampaignDialog));
+
 export function CampaignActionsMenu({
   campaignId,
   campaignTitle,
+  allowAdminDuplicate = false,
 }: CampaignActionsMenuProps) {
   const router = useRouter();
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isDuplicateLocationsOpen, setIsDuplicateLocationsOpen] = useState(false);
+  const [isAdminDuplicateOpen, setIsAdminDuplicateOpen] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   return (
@@ -111,6 +118,9 @@ export function CampaignActionsMenu({
           <div className="space-y-1">
             <DuplicateCampaignButton campaignId={campaignId} variant="menu" />
             <DuplicateCampaignToLocationsButton onOpen={() => setIsDuplicateLocationsOpen(true)} />
+            {allowAdminDuplicate ? <DropdownMenuItem className={itemClass} onSelect={() => setIsAdminDuplicateOpen(true)}>
+              <CopyPlus className="h-4 w-4" aria-hidden="true" /> Dupliquer vers un marchand
+            </DropdownMenuItem> : null}
             <DropdownMenuItem
               className={`${itemClass} text-[var(--okado-status-danger-text)] focus:bg-[var(--okado-status-danger-bg)] focus:text-[var(--okado-status-danger-text)]`}
               onSelect={() => setIsDeleteOpen(true)}
@@ -137,6 +147,7 @@ export function CampaignActionsMenu({
         open={isDuplicateLocationsOpen}
         onClose={() => setIsDuplicateLocationsOpen(false)}
       />
+      {allowAdminDuplicate && isAdminDuplicateOpen ? <AdminDuplicateCampaignDialog campaignId={campaignId} onClose={() => setIsAdminDuplicateOpen(false)} /> : null}
     </>
   );
 }

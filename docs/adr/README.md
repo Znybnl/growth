@@ -31,3 +31,5 @@ Un ADR proposé devient accepté uniquement après validation explicite de Pierr
 ## ADR existants
 
 - [0001 — Séparer le site marketing et le SaaS](0001-marketing-et-saas-sur-des-sous-domaines.md)
+- [0002 — Planification Supabase des relances d’expiration](0002-planification-supabase-des-relances-expiration.md)
+- [0003 — Relances quotidiennes Vercel Hobby, remplace 0002](0003-relances-quotidiennes-vercel-hobby.md)

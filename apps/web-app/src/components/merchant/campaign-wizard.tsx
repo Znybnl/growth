@@ -1,5 +1,8 @@
 "use client";
 
+import { prizeFieldsFromSuggestion } from "@/lib/prize-suggestion-fields";
+import { usePrizeSuggestions } from "@/lib/use-prize-suggestions";
+
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -9,7 +12,6 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  ChevronUp,
   CirclePlus,
   Coffee,
   Download,
@@ -25,10 +27,13 @@ import {
 } from "lucide-react";
 import { type ChangeEvent, type ReactNode, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
-import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
+import { MarketingActionsStep } from "@/components/merchant/marketing-actions-step";
+import { useNoMarketingActionConfirmation } from "@/components/merchant/no-marketing-action-dialog";
+import { marketingActionEntry, marketingActionKey, normalizeMarketingActionUrl } from "@/lib/marketing-action-library";
 import { CampaignPreviewQrDialog } from "@/components/merchant/campaign-preview-qr";
 import { CampaignPreviewDialog, openCampaignPreview } from "@/components/merchant/campaign-preview-dialog";
 import { CampaignSavedDialog } from "@/components/merchant/campaign-saved-dialog";
+import { AdminCampaignQrDownload } from "@/components/merchant/admin-campaign-qr-download";
 import { CampaignSpacingControls } from "@/components/merchant/campaign-spacing-controls";
 import { GameTypeChoice } from "@/components/merchant/game-type-choice";
 import { BeautyWheelTemplateGallery } from "@/components/merchant/beauty-wheel-template-gallery";
@@ -99,6 +104,8 @@ import {
   isCocoricoWheelTemplate,
   scratchTemplateUsesTicketTextColor,
   wheelBackgroundForTemplate,
+  wheelBackgroundAfterPrimaryColorChange,
+  resolveScratchTemplateTextColor,
   wheelBackgroundForTemplateSelection,
   wheelHeadingColorForTemplateSelection,
   wheelHeadingFontForTemplateSelection,
@@ -172,7 +179,7 @@ const WIZARD_STEPS: WizardStep[] = [
     id: "identity",
     number: "02",
     title: "La promesse",
-    description: "Le texte principal et votre objectif.",
+    description: "Le texte affiché à vos clients.",
   },
   {
     id: "appearance",
@@ -189,8 +196,8 @@ const WIZARD_STEPS: WizardStep[] = [
   {
     id: "action",
     number: "05",
-    title: "L’action",
-    description: "L’action de vos clients",
+    title: "Les actions",
+    description: "Composez les actions proposées avant le jeu.",
   },
 ];
 
@@ -230,10 +237,6 @@ function uploadWizardImage(
     .then(({ url }) => onLoaded(url))
     .catch((error: unknown) => onError(error instanceof Error ? error.message : "Import de l’image impossible."))
     .finally(() => onUploadStateChange?.(false));
-}
-
-function wizardActionVisitLabel(index: number) {
-  return index === 0 ? "1\u00e8re visite" : `${index + 1}\u00e8me visite`;
 }
 
 const GOOGLE_REVIEW_HOSTS = new Set([
@@ -379,13 +382,13 @@ function validateStep(
   }
 
   if (step === "action" && actionEnabled) {
-    if (!draft.actions.length)
-      return "Ajoutez au moins une action à proposer avant le jeu.";
     for (const action of draft.actions) {
       if (action.kind === "crm") continue;
       if (!action.url.trim())
-        return "Chaque action doit avoir un lien de destination.";
+        return "Une action marketing doit être corrigée avant de publier la campagne.";
       try {
+        const key = marketingActionKey(action);
+        if (key) normalizeMarketingActionUrl(key, action.url);
         const parsed = new URL(normalizeUrl(action.url));
         if (parsed.protocol !== "https:")
           return "Le lien doit utiliser HTTPS pour protéger les joueurs.";
@@ -404,7 +407,7 @@ function validateStep(
           return "L’invitation ne peut pas promettre un lot en échange d’un avis.";
         }
       } catch {
-        return "Saisissez une adresse web valide.";
+        return "Une action marketing doit être corrigée avant de publier la campagne.";
       }
     }
   }
@@ -525,17 +528,21 @@ function draftFromCampaign(merchant: Merchant, performance: CampaignPerformance)
         color: wheelBackgroundForTemplate(
           templateId,
           campaign.presentation.background.color,
+          campaign.presentation.wheel.loseColor,
         ),
       },
       logo: {
         ...campaign.presentation.logo,
+        textColor: campaign.gameType === "scratch"
+          ? resolveScratchTemplateTextColor(campaign.presentation.logo.textColor ?? campaign.presentation.heading.textColor, templateId)
+          : campaign.presentation.logo.textColor,
         marginBottomPx: clampCampaignSpacingPx(
           campaign.presentation.logo.marginBottomPx ??
             (campaign.gameType === "wheel" ? DEFAULT_WHEEL_SPACING_PX : 20),
         ),
         align: isBeautyWheelTemplate(templateId) ? campaign.presentation.logo.align : "center",
       },
-      heading: { ...campaign.presentation.heading, align: isBeautyWheelTemplate(templateId) ? campaign.presentation.heading.align : "center" },
+      heading: { ...campaign.presentation.heading, align: isBeautyWheelTemplate(templateId) ? campaign.presentation.heading.align : "center", textColor: campaign.gameType === "scratch" ? resolveScratchTemplateTextColor(campaign.presentation.heading.textColor, templateId) : campaign.presentation.heading.textColor },
       layout: {
         ...campaign.presentation.layout,
         blockSpacingPx: clampCampaignSpacingPx(
@@ -639,7 +646,7 @@ function PrizeSuggestionsPanel({
                       const Icon = iconStyle.Icon;
                       return (
                         <span
-                          className={`flex h-9 w-9 items-center justify-center rounded-[4px] ${iconStyle.className}`}
+                          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-[4px] ${iconStyle.className}`}
                           aria-hidden="true"
                         >
                           <Icon className="h-4 w-4" />
@@ -655,7 +662,7 @@ function PrizeSuggestionsPanel({
                       </p>
                     </div>
                   </div>
-                  <span className="text-xs font-semibold text-aubergine">
+                  <span className="shrink-0 whitespace-nowrap text-xs font-semibold text-aubergine">
                     {suggestion.probability} %
                   </span>
                 </div>
@@ -750,6 +757,8 @@ export function CampaignWizard({
   adminAccountMerchantId?: string;
 }) {
   const router = useRouter();
+  const { confirmNoMarketingAction, noMarketingActionDialog } = useNoMarketingActionConfirmation();
+  const [marketingLinks, setMarketingLinks] = useState(merchant);
   const isEditing = Boolean(initialCampaign);
   useEffect(() => {
     if (!isEditing && !adminSaveEndpoint) {
@@ -784,9 +793,7 @@ export function CampaignWizard({
     initialCampaign ? WIZARD_STEPS.length - 1 : 0,
   );
   const actionEnabled = true;
-  const [prizeSuggestions, setPrizeSuggestions] = useState<PrizeSuggestion[]>(
-    [],
-  );
+  const prizeSuggestions = usePrizeSuggestions(merchant);
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -997,25 +1004,6 @@ export function CampaignWizard({
     });
   }
 
-  useEffect(() => {
-    let cancelled = false;
-    const query = new URLSearchParams({ industry: merchant.industry ?? "" });
-    if (merchant.industrySubsector) query.set("subsector", merchant.industrySubsector);
-    fetch(`/api/prize-suggestions?${query.toString()}`)
-      .then(async (response) => {
-        if (!response.ok) throw new Error("Suggestions indisponibles");
-        return (await response.json()) as { suggestions?: PrizeSuggestion[] };
-      })
-      .then((payload) => {
-        if (!cancelled) setPrizeSuggestions(payload.suggestions ?? []);
-      })
-      .catch(() => {
-        if (!cancelled) setPrizeSuggestions([]);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [merchant.industry, merchant.industrySubsector]);
 
   useEffect(() => {
     if (!backgroundLibraryOpen || backgroundLibrary.length) return;
@@ -1160,62 +1148,6 @@ export function CampaignWizard({
     setError(null);
   }
 
-  function patchAction(
-    index: number,
-    patch: Partial<WizardDraft["actions"][number]>,
-  ) {
-    setDraft((current) => ({
-      ...current,
-      actions: current.actions.map((action, actionIndex) => {
-        if (actionIndex !== index) return action;
-        const nextAction = { ...action, ...patch };
-        return patch.kind
-          ? { ...nextAction, url: wizardMarketingActionUrl(merchant, patch.kind) }
-          : nextAction;
-      }),
-    }));
-    setError(null);
-  }
-
-  function addAction() {
-    setDraft((current) => ({
-      ...current,
-      actions: [
-        ...current.actions,
-        {
-          id: `wizard-action-${Date.now()}`,
-          kind: "custom",
-          label: "Découvrir",
-          url: wizardMarketingActionUrl(merchant, "custom"),
-        },
-      ],
-    }));
-    setError(null);
-  }
-
-  function removeAction(index: number) {
-    setDraft((current) => ({
-      ...current,
-      actions: current.actions.filter(
-        (_, actionIndex) => actionIndex !== index,
-      ),
-    }));
-    setError(null);
-  }
-
-  function moveAction(index: number, direction: -1 | 1) {
-    setDraft((current) => {
-      const nextIndex = index + direction;
-      if (nextIndex < 0 || nextIndex >= current.actions.length) return current;
-      const actions = [...current.actions];
-      [actions[index], actions[nextIndex]] = [
-        actions[nextIndex],
-        actions[index],
-      ];
-      return { ...current, actions };
-    });
-    setError(null);
-  }
 
   function addSuggestedPrize(suggestion: PrizeSuggestion) {
     setDraft((current) => ({
@@ -1224,11 +1156,7 @@ export function CampaignWizard({
         ...current.prizes,
         {
           id: `wizard-prize-${Date.now()}-${suggestion.id}`,
-          label: suggestion.label,
-          totalQuantity: null,
-          probability: suggestion.probability,
-          estimatedUnitCost: suggestion.estimatedUnitCost,
-          usageConditions: "",
+          ...prizeFieldsFromSuggestion(suggestion),
         },
       ],
     }));
@@ -1285,6 +1213,7 @@ export function CampaignWizard({
         ? draft.isActive
         : false;
     if (saveRequestInFlightRef.current) return null;
+    if (targetIsActive && !draft.actions.length && !await confirmNoMarketingAction()) return null;
     saveRequestInFlightRef.current = true;
     setIsSaving(true);
     setError(null);
@@ -1356,6 +1285,7 @@ export function CampaignWizard({
         setPreviewOpen(true);
       },
       (path) => router.push(path),
+      adminSaveEndpoint ? `/api/admin/campaigns/${encodeURIComponent(campaignId)}/preview` : undefined,
     );
   }
 
@@ -1431,6 +1361,7 @@ export function CampaignWizard({
 
   return (
     <div className="okado-wizard space-y-6 pb-10">
+      {noMarketingActionDialog}
       <section data-mode={isEditing ? "edit" : "create"} className="flex flex-col gap-5 px-1 py-2 xl:flex-row xl:items-end xl:justify-between">
         <div>
           <p className="okado-label">Assistant de création</p>
@@ -1442,6 +1373,18 @@ export function CampaignWizard({
               : "Créer une campagne"}
           </h1>
         </div>
+        {draft.id && adminSaveEndpoint ? (
+          <div className="flex flex-wrap items-center gap-2">
+            <StatusBadge tone="muted">Administration · {merchant.companyName}</StatusBadge>
+            <button type="button" onClick={requestPreview} disabled={isSaving || isSavingBeforePreview} className="okado-secondary-action gap-2 px-4 text-sm">
+              <Eye className="h-4 w-4" aria-hidden="true" /> Prévisualiser
+            </button>
+            <button type="button" onClick={() => setQrPreviewOpen(true)} className="okado-secondary-action px-4 text-sm">QR de test</button>
+            <AdminCampaignQrDownload campaignId={draft.id} isActive={draft.isActive} />
+            <Link href={`/admin/campaigns/${encodeURIComponent(draft.id)}/poster`} prefetch={false} className="okado-secondary-action px-4 text-sm">Affiche</Link>
+            {!draft.isActive ? <p className="w-full text-xs text-ash">Le QR de diffusion n’ouvre le jeu qu’après sa publication.</p> : null}
+          </div>
+        ) : null}
         {draft.id && !adminSaveEndpoint ? (
           <div className="flex flex-wrap items-center gap-2">
             {isEditing ? <StatusBadge tone="muted">Mode modification</StatusBadge> : null}
@@ -1689,36 +1632,6 @@ export function CampaignWizard({
                 </label>
               ) : null}
               <div className="grid gap-4">
-                {!isEditing ? (
-                  <label className="block">
-                    <span className="text-sm font-semibold text-[#182033]">
-                      Objectif
-                    </span>
-                    <span className="mt-1 block text-xs leading-5 text-[#8993a6]">
-                      Il initialise les actions proposées. Vous pourrez les modifier à l’étape Action.
-                    </span>
-                    <select
-                      value={draft.goalType ?? "review_prompt"}
-                      onChange={(event) => {
-                        const goalType = event.target.value as WizardDraft["goalType"];
-                        patchDraft({
-                          goalType,
-                          successMetric:
-                            goalType === "social_follow"
-                              ? "Abonnements sociaux"
-                              : goalType === "lead_capture"
-                                ? "Participations collectées"
-                                : "Avis Google",
-                        });
-                      }}
-                      className="mt-3 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm text-[#182033] outline-none transition focus:border-aubergine focus:ring-4 focus:ring-aubergine/15"
-                    >
-                      <option value="review_prompt">Obtenir des avis</option>
-                      <option value="lead_capture">Collecter des contacts</option>
-                      <option value="social_follow">Gagner des abonnés</option>
-                    </select>
-                  </label>
-                ) : null}
                 <label className="flex cursor-pointer items-start gap-3 rounded-[12px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3 text-sm text-[#182033]">
                     <input
                       type="checkbox"
@@ -2294,109 +2207,12 @@ export function CampaignWizard({
           ) : null}
 
           {step.id === "action" ? (
-            <div className="mt-7 space-y-5">
-              <div className="space-y-4">
-                {draft.actions.map((action, index) => (
-                  <div
-                    key={action.id ?? `wizard-action-${index}`}
-                    className="rounded-[16px] border border-[#e2e8f0] bg-white p-5"
-                  >
-                    <div className="flex items-center justify-between gap-3">
-                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#8993a6]">
-                        {wizardActionVisitLabel(index)}
-                      </p>
-                      <div className="flex items-center gap-1">
-                        <button
-                          type="button"
-                          onClick={() => moveAction(index, -1)}
-                          disabled={index === 0}
-                          aria-label="Monter l’action"
-                          className="rounded-[9px] p-1.5 text-[#69758a] hover:bg-[#f2f4f7] disabled:opacity-30"
-                        >
-                          <ChevronUp className="h-4 w-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => moveAction(index, 1)}
-                          disabled={index === draft.actions.length - 1}
-                          aria-label="Descendre l’action"
-                          className="rounded-[9px] p-1.5 text-[#69758a] hover:bg-[#f2f4f7] disabled:opacity-30"
-                        >
-                          <ChevronDown className="h-4 w-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => removeAction(index)}
-                          aria-label="Supprimer l’action"
-                          className="rounded-[9px] p-1.5 text-[#69758a] hover:bg-[#fff0f0] hover:text-[#b42318]"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </div>
-                    <div className="mt-4 grid gap-4">
-                      <label className="block">
-                        <span className="flex items-center gap-3 text-sm font-semibold text-[#182033]">
-                          <SocialChannelIcon channel={action.kind} />
-                          <span>Action proposée</span>
-                        </span>
-                        <select
-                          value={action.kind}
-                          onChange={(event) => {
-                            const kind = event.target
-                              .value as WizardDraft["actions"][number]["kind"];
-                            patchAction(index, {
-                              kind,
-                              label: actionKindCta(kind),
-                              url:
-                                kind === "google"
-                                  ? merchant.googleReviewUrl || action.url
-                                  : action.url,
-                            });
-                          }}
-                          className="mt-3 w-full rounded-[14px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3 text-sm text-[#182033]"
-                        >
-                          <option value="google">Laisser un avis Google</option>
-                          <option value="instagram">
-                            Suivre sur Instagram
-                          </option>
-                          <option value="facebook">Suivre sur Facebook</option>
-                          <option value="tiktok">Suivre sur TikTok</option>
-                          <option value="tripadvisor">
-                            Laisser un avis Tripadvisor
-                          </option>
-                          <option value="custom">
-                            Ouvrir un lien personnalisé
-                          </option>
-                        </select>
-                      </label>
-                    </div>
-                    {action.kind !== "crm" ? (
-                      <label className="mt-4 block">
-                        <span className="text-sm font-semibold text-[#182033]">
-                          Lien de destination
-                        </span>
-                        <input
-                          value={action.url}
-                          onChange={(event) =>
-                            patchAction(index, { url: event.target.value })
-                          }
-                          placeholder="https://..."
-                          className="mt-3 w-full rounded-[14px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3 text-sm text-[#182033]"
-                        />
-                      </label>
-                    ) : null}
-                  </div>
-                ))}
-                <button
-                  type="button"
-                  onClick={addAction}
-                className="inline-flex items-center gap-2 rounded-[12px] border border-dashed border-[#b8c5d8] px-4 py-3 text-sm font-semibold text-[#526078] hover:border-aubergine hover:text-[#182033]"
-                >
-                  <Plus className="h-4 w-4" />
-                  Ajouter une action
-                </button>
-              </div>
+            <div className="mt-7">
+              <MarketingActionsStep merchant={merchant} links={marketingLinks} actions={draft.actions}
+                adminAccountMerchantId={adminAccountMerchantId}
+                onChange={actions => { setDraft(current => ({ ...current, actions })); setError(null); }}
+                onLinkSaved={(key, url) => setMarketingLinks(current => ({ ...current, [marketingActionEntry(key).field]: url }))}
+              />
             </div>
           ) : null}
 
@@ -2502,7 +2318,7 @@ export function CampaignWizard({
                         };
                         const remembered = wheelTemplateState.current[template.id];
                         const wheel = remembered?.wheel ?? wheelPaletteForTemplate(template.id, current.presentation.wheel);
-                        const backgroundColor = remembered?.backgroundColor ?? wheelBackgroundForTemplateSelection(template.id, current.presentation.background.color);
+                        const backgroundColor = remembered?.backgroundColor ?? wheelBackgroundForTemplateSelection(template.id, current.presentation.background.color, wheel.loseColor);
                         const headingTextColor = remembered?.headingTextColor ?? (current.gameType === "scratch" ? defaultScratchTextColor(template.id) : template.id === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheelHeadingColorForTemplateSelection(template.id, isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.heading.textColor));
                         const logoTextColor = remembered?.logoTextColor ?? (current.gameType === "scratch" ? defaultScratchTextColor(template.id) : template.id === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheelLogoColorForTemplateSelection(template.id, wheelHeadingColorForTemplateSelection(template.id, isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.logo.textColor ?? current.presentation.heading.textColor)));
                         const firstSelectionHeadingFont = template.id === "classic" || template.id === "halloween-gold"
@@ -2556,7 +2372,7 @@ export function CampaignWizard({
                               },
                             logo: {
                               ...current.presentation.logo,
-                              textColor: logoTextColor,
+                              textColor: current.gameType === "scratch" ? resolveScratchTemplateTextColor(logoTextColor, template.id) : logoTextColor,
                               marginBottomPx: wheelLogoGapForTemplateSelection(template.id, currentTemplateId, current.presentation.logo.marginBottomPx, remembered?.logoBottomSpacingPx),
                               align: remembered?.logoAlign ?? (isBeautyWheelTemplate(currentTemplateId) ? "center" : current.presentation.logo.align),
                             },
@@ -2619,6 +2435,10 @@ export function CampaignWizard({
                            accent: current.gameType === "scratch" ? { ...current.accent, signal: color } : current.accent,
                            presentation: {
                              ...current.presentation,
+                             background: {
+                               ...current.presentation.background,
+                               color: wheelBackgroundAfterPrimaryColorChange(current.presentation.layout.templateId, current.presentation.background.color, current.presentation.wheel.loseColor, color),
+                             },
                              button: current.gameType === "wheel"
                                ? {
                                    ...current.presentation.button,
@@ -3174,6 +2994,7 @@ export function CampaignWizard({
         <CampaignPreviewQrDialog
           open={qrPreviewOpen}
           campaignId={previewCampaignId ?? draft.id}
+          qrEndpoint={adminSaveEndpoint ? `/api/admin/campaigns/${encodeURIComponent(previewCampaignId ?? draft.id)}/preview?format=qr` : undefined}
           onClose={() => setQrPreviewOpen(false)}
         />
       ) : null}
@@ -3181,6 +3002,7 @@ export function CampaignWizard({
         <CampaignPreviewDialog
           open={previewOpen}
           campaignId={draft.id}
+          previewPath={adminSaveEndpoint ? `/api/admin/campaigns/${encodeURIComponent(draft.id)}/preview?embed=1` : undefined}
           onClose={() => setPreviewOpen(false)}
         />
       ) : null}
@@ -3188,6 +3010,7 @@ export function CampaignWizard({
         <CampaignPreviewDialog
           open
           campaignId={savedPreviewCampaignId}
+          previewPath={adminSaveEndpoint ? `/api/admin/campaigns/${encodeURIComponent(savedPreviewCampaignId)}/preview?embed=1` : undefined}
           onClose={() => setSavedPreviewCampaignId(null)}
         />
       ) : null}

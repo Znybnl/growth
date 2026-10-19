@@ -2,6 +2,10 @@
 
 Ce document regroupe les invariants fonctionnels approuvés d'Okado. Il ne remplace pas un avis juridique. Toute évolution du consentement, des données personnelles, des avis Google ou des règles de retrait doit être validée par le propriétaire avant implémentation.
 
+## Consultation administrative des établissements — #475
+
+La fiche dans Pilotage est réservée à l’administration de la plateforme et consultable uniquement en lecture seule. Chaque site présenté est résolu via les associations existantes du compte, sans modifier le site actif de la session. La réponse serveur utilise une liste explicite de champs : coordonnées, identité, liens marketing et paramètres non secrets. Aucun PIN, empreinte/chiffrement de PIN, jeton, mot de passe ou identifiant privé Stripe n’est transmis. Le navigateur ne mémorise pas ces profils dans un stockage persistant et la réponse HTTP est privée et non mise en cache.
+
 ## Autorité et périmètre
 
 - Pierre-Henri BRUNELLE est l'administrateur de la plateforme et l'unique valideur des PR, merges et déploiements en production.
@@ -10,8 +14,12 @@ Ce document regroupe les invariants fonctionnels approuvés d'Okado. Il ne rempl
 - Un marchand ne consulte et ne pilote que ses établissements, ses jeux, ses résultats et ses paramètres autorisés.
 - Le personnel du commerce ne possède pas de compte Okado dédié. Il peut ouvrir la page de retrait avec le QR code présenté par le joueur et confirme la remise avec le PIN marchand.
 - Un joueur ne peut pas accéder à l'espace marchand depuis les parcours publics de jeu ou de retrait.
+- Depuis Pilotage, l’administrateur plateforme peut consulter et modifier les jeux existants des marchands et leur affiche, indépendamment de leur créateur (issue #467). Chaque accès est vérifié côté serveur ; une sauvegarde vérifie également le rattachement jeu/établissement/compte. Cette assistance ne change ni la session, ni le propriétaire du jeu, ni la fiche établissement. La publication reste explicite et suit les validations habituelles. Les sauvegardes administratives sont journalisées ; l’audit de création existant est préservé.
+- L’administrateur plateforme peut dupliquer un jeu de son établissement actif vers des établissements d’un compte marchand choisi (issue #469). La duplication crée des brouillons indépendants, avec leurs propres identifiants/QR, les stocks initiaux et aucun historique, contact ou gain copié. Le serveur vérifie la propriété de la source et tous les établissements cibles avant création. La confirmation propose explicitement d’adapter logo, liens marketing et expéditeur/adresse de réponse au destinataire ; si cette option est désactivée, les informations du modèle sont conservées et doivent être revues avant publication. Les médias importés sont copiés dans le stockage cible pour ne pas dépendre du nettoyage de la source. La fiche établissement, la session, les souscriptions et la source ne sont pas modifiées ; les créations sont journalisées.
 
 ## Cycle de vie d'un jeu
+
+- L’administration peut télécharger le QR de diffusion d’un jeu marchand depuis Pilotage et l’éditeur dédié (issue #470), après vérification serveur de son rôle et du contexte du jeu. Le téléchargement ne publie pas un brouillon, n’ajoute pas de jeton de prévisualisation et ne modifie pas les indicateurs du marchand. Un QR de brouillon est identifié comme à diffuser après publication.
 
 - Un jeu peut être enregistré en **brouillon**, même incomplet.
 - La publication d'un jeu est bloquée tant que les données obligatoires ou les règles de dotation ne sont pas valides.
@@ -20,6 +28,11 @@ Ce document regroupe les invariants fonctionnels approuvés d'Okado. Il ne rempl
 
 ## Dotations et probabilités
 
+- Le catalogue de suggestions est indépendant des lots déjà enregistrés dans les jeux. Sa refonte ne modifie aucun lot, gain, stock, coût, condition ou probabilité existant (issue #466, décision propriétaire du 6 octobre 2026).
+- Les six sous-secteurs Beauté sont : Beauté généraliste / multi-activité, Coiffure, Ongles, Regard — cils & sourcils, Massage & Spa, Soins visage & corps. Les anciennes catégories ambiguës ne sont conservées que si un établissement ou une suggestion les utilise ; aucune reclassification automatique. Les suggestions personnalisées restent intactes.
+- Les probabilités de bibliothèque sont des valeurs individuelles proposées, pas une distribution à normaliser. Seuls les lots choisis entrent dans le calcul du jeu.
+- À l'ajout d'une suggestion Beauté, sa condition suggérée préremplit les conditions d'utilisation. « Achat requis pour le retrait » est activé lorsque cette condition impose une prestation payante ou une nouvelle pose ; une réduction à tarif normal ou un cadeau autonome ne l'active pas. Ces réglages restent modifiables, sans recalcul rétroactif sur les lots existants.
+
 - Un lot publiable doit avoir un libellé, une quantité disponible strictement positive et des conditions de retrait cohérentes.
 - Lorsque « Jeu 100 % gagnant » est activé, la somme des probabilités des lots doit être exactement égale à 100 % au moment de la publication.
 - La modification opérationnelle du stock concerne le **stock disponible** ; le stock initial reste la référence de création.
@@ -27,10 +40,33 @@ Ce document regroupe les invariants fonctionnels approuvés d'Okado. Il ne rempl
 
 ## Parcours joueur et actions marketing
 
+### Cohérence des indicateurs — #498
+
+Décision propriétaire du 13 octobre 2026 : traiter les recommandations de #498.
+Un même indicateur utilise la même source et la même formule à périmètre égal.
+
+- « Clics sur les actions marketing » compte les événements réels Google, sociaux et liens personnalisés, indépendamment du formulaire. Ce n'est pas une preuve d'avis publié ou de suivi. Le total et les volumes par action reposent sur ces clics ; les anciens clics sans identifiant stable restent non attribués. Une reprise technique d'un même événement n'ajoute pas de clic ; deux clics volontaires distincts sont deux événements.
+- La conversion globale est le ratio des totaux de participations/scans, arrondi une fois, jamais une moyenne des taux par jeu. Pas de bornage artificiel à 100 % ; zéro si aucun scan.
+- Les opt-ins sont les enregistrements ayant un consentement marketing, pas des personnes uniques. Un échec de lecture n'est pas un zéro réel.
+- « Gains à suivre » / « À retirer » : lot associé, statut claimed, expiration absente ou non passée. Une disponibilité future reste à suivre ; ce compteur ne promet pas que le retrait est déjà possible. Les pertes, lignes sans lot, gains retirés/expirés sont exclus. Les incidents techniques de Supervision gardent leur propre périmètre.
+- La date de retrait effective vient de redeemed_at. Pour l'historique où elle manque, seule la dernière preuve de retrait postérieure à la création du gain et à sa dernière réinitialisation est utilisable, jamais une date estimée. Les cas non datables restent dans le total mais sont signalés/exclus des répartitions par période. Une réinitialisation annule le retrait courant ; le prochain retrait possède sa nouvelle date.
+- Les graphiques couvrent des jours calendaires UTC complets ; les synthèses gardent leurs périodes locales closes et leur contenu figé. Aucun e-mail historique n'est rejoué.
+- Stock faible : stock fini et initial positif, restant strictement positif et au plus max(1, ceil(initial × 20 %)). Stock nul = épuisé, catégorie distincte ; illimité = aucune alerte de seuil. Les alertes opérationnelles portent sur les jeux actifs. Ces états n'interviennent jamais dans la consommation ou les participations.
+- Pilotage compte les établissements ayant un abonnement actif ou un essai valide, cohérent avec l'état présenté dans les lignes. Un essai applicatif n'exige pas Stripe. L'unité établissement est explicite, sans modification de droits ou facturation.
+- Les totaux ne dépendent pas d'une page REST ni des filtres de recherche/pagination des contacts. L'interface distingue contacts collectés, participations, gains et personnes uniques.
+
+- Décision propriétaire du 13 octobre 2026 (#496) : une **participation** est une partie effectivement commencée, distincte du scan et du contact. Elle est comptée une fois par session, que le joueur gagne ou perde, fournisse ou non ses coordonnées. Pour la roue, le tirage préparé au clic Jouer démarre immédiatement ; pour le ticket, seule la première action de grattage compte, pas sa préparation. Le formulaire et ses reprises n'ajoutent pas de partie. Les prévisualisations sont exclues.
+- Les KPI Participations, courbes et sélecteurs utilisent ce même comptage. Conversion = participations / scans ; coût par participation = coût estimé des gains / participations (0 sans partie). Contacts, opt-ins, gagnants, retraits et coût par contact restent séparés. Les listes/exports de contacts n'inventent aucune coordonnée pour les parties anonymes.
+- L'historique utilise les événements de jeu persistés et les contacts effectivement finalisés, rattachés à la même session lorsque ce lien existe. Une session simplement préparée ne constitue pas une preuve historique de grattage. Les parties anciennes non tracées ne sont pas reconstituées par estimation.
+
 - Les actions marketing sont proposées avant la participation au jeu.
 - Les actions sont séquencées par visite : action 1 pour la première visite, action 2 pour la deuxième, puis ainsi de suite.
+- Décision propriétaire du 17 octobre 2026 (#564) : les liens réutilisables appartiennent à chaque établissement et correspondent aux champs de **Mon compte**. Configurer une destination absente depuis la bibliothèque du Wizard enregistre uniquement ce lien, puis ajoute l'action au jeu. Une modification d'action existante concerne ce jeu uniquement ; les autres jeux ne sont pas réécrits.
+- Précision propriétaire #564 : Réservation est retirée des actions proposées et des valeurs initiales du Wizard administrateur, le joueur étant déjà sur place. Les liens de rendez-vous du profil et les actions des jeux existants ne sont pas supprimés. L'ajout de liens personnalisés reste possible lorsqu'une action personnalisée existe déjà, dans la limite de 12 actions ; un lien supplémentaire n'écrase pas le lien personnalisé valide de Mon compte.
+- Un jeu sans action marketing est autorisé. Le Wizard et l'éditeur classique demandent une confirmation explicite avant l'enregistrement d'un jeu actif sans action ; annuler n'enregistre ni ne publie. L'enregistrement d'un brouillon sans action ne demande pas cette confirmation. Une action renseignée mais invalide reste bloquante à la publication ; aucune URL générique n'est créée pour la remplacer.
 - La collecte d'e-mail avant le jeu est une option indépendante des actions marketing. Elle ne doit jamais être traitée comme une action de visite.
 - L'objectif choisi lors de la création sert uniquement à proposer une configuration initiale des actions. Après publication, sa modification ne doit pas écraser les actions configurées.
+- Décision propriétaire #553 : le Wizard masque ce choix et utilise `review_prompt` (« Obtenir des avis ») pour les nouveaux jeux. Une édition conserve l'objectif, les actions et la collecte e-mail enregistrés ; aucune conversion de campagne ni action sans URL renseignée n'est déclenchée par ce masquage.
 - Une invitation à laisser un avis doit rester indépendante : elle ne conditionne ni l'accès au jeu ni l'attribution d'un lot.
 
 ## Prévisualisation
@@ -65,7 +101,49 @@ Ce document regroupe les invariants fonctionnels approuvés d'Okado. Il ne rempl
 | QR codes et jetons de prévisualisation | Test temporaire du parcours | Durée courte liée à l'expiration du jeton | Suppression automatique. |
 | Données agrégées | Statistiques produit sans ré-identification | Sans limite si l'anonymisation est effective | Conservation des seules données anonymes. |
 
-Les durées de la deuxième ligne constituent une recommandation opérationnelle, non un avis juridique. Toute modification de ces règles exige une décision explicite du propriétaire et, si nécessaire, une validation juridique.
+Les durées ci-dessus restent des propositions par finalité, non un avis juridique.
+Le SQL historique `20260831_personal_data_lifecycle.sql` existe et calcule ses
+seuils depuis `created_at`, pas depuis le dernier événement métier. Il ne prouve
+ni l'activation de la maintenance, ni une politique adaptée à toutes les données.
+Le [dossier #508](DATA_PROCESSING_REGISTER.md) distingue les finalités et les preuves manquantes.
+
+### Mesure d'usage — accord propriétaire du 15 octobre 2026, #508
+
+Le propriétaire autorise la mise en place du consentement préalable recommandé.
+PostHog et Vercel Analytics suivent le choix explicite présenté pour les domaines
+Okado nommés dans l'information. Accepter et refuser ont la même visibilité ;
+le refus ne conditionne aucun parcours métier. La préférence dure au maximum
+180 jours sans renouvellement à la visite et reste modifiable via Gérer les cookies.
+Sans accord valide, le SDK PostHog n'est pas initialisé et la capture produit
+serveur est bloquée. Le retrait arrête les nouvelles captures et efface les
+identifiants PostHog de ce navigateur ; l'effacement des données déjà hébergées
+est une demande distincte. Le suivi d'acquisition ne décrit donc que les personnes
+ayant accepté cette mesure. Aucune autorisation de purge n'est déduite de cet accord.
+
+Décision propriétaire du 18 octobre 2026 (#592) : utiliser une identité de
+compte stable entre établissements et afficher l'e-mail de connexion dans le
+profil PostHog des utilisateurs connectés ayant accepté la mesure. L'adresse
+provient de la session/payload authentifié ; elle peut être actualisée sans
+changer d'identité. Cette exception porte sur le profil du compte, pas sur les
+coordonnées des joueurs ou les propriétés libres des événements. La mention
+de mesure et la politique publique précisent cet usage. Aucun nom, mot de passe,
+PIN, contenu de campagne ou e-mail de joueur n'est ajouté.
+
+## Relance d’expiration du gain — #304
+
+Décisions propriétaire du 12 octobre 2026 : préférence commune au compte marchand et à ses établissements, désactivée par défaut, délai personnalisable (7 jours initialement). Le destinataire est le gagnant, pas le marchand. Une seule relance par gain réel encore disponible/non retiré, à validité initiale d’au moins 20 jours, le jour civil J−N calculé dans le fuseau du site, lors du passage quotidien Vercel ; aucun rattrapage d’un jour passé. Le propriétaire confirme que 9 h est approximatif : la fenêtre de cinq minutes et la planification Supabase spécifique sont abandonnées. L’activation/modification avant le passage effectif du jour est prise en compte ; aucun rappel antérieur n’est rejoué. Le changement de délai ne rejoue pas une relance déjà tentée/transmise. Paramétrage par propriétaire/administrateur du compte, contrôle serveur et isolation des comptes. Envoi Resend existant, pas de nouvelle offre Vercel. Le format reprend l’e-mail initial, sans changer celui-ci, les conditions/dates, stocks, retrait ou consentement. Désactivation revérifiée avant déclenchement ; une requête fournisseur déjà déclenchée ne peut être rappelée. [Limites temporelles, données et recette](releases/reward-expiry-reminders-304.md).
+
+## Notifications de gains aux utilisateurs d’établissement (Issue #473)
+
+- Décision propriétaire : les tâches de notifications et leurs reprises n’exécutent pas de purge. La maintenance historique requiert une activation opérationnelle distincte et explicite ; elle reste désactivée par défaut. Configurer l’authentification du planificateur ne vaut pas autorisation de supprimer des données.
+
+- Les notifications destinées aux utilisateurs d’établissement gardent un ton professionnel : aucun émoticône cadeau ajouté par le modèle dans l’objet, le titre, le contenu HTML ou la version texte (retour propriétaire sur la PR #474). Les libellés dynamiques et l’e-mail de gain du participant ne sont pas modifiés par cette décision.
+- Préférence personnelle par utilisateur et établissement autorisé, désactivée par défaut. L’adresse destinataire vient du compte ; les droits actifs et l’adresse courante sont revérifiés avant chaque envoi.
+- Pilotage → Voir la fiche consulte cette préférence pour l’utilisateur de la ligne et le site autorisé sélectionné, sans la modifier. L’association utilisateur/compte est contrôlée côté serveur avant lecture ; aucun mélange des sites ou préférences des autres membres. Aucune ligne = désactivé ; un échec de base n’est pas une préférence désactivée.
+- Seuls les gains réels persistés après activation sont notifiés (roue ou ticket, collecte avant ou après jeu). Ni perte, ni participation simulée, ni ancien gain rejoué.
+- Synthèses quotidienne, hebdomadaire et mensuelle sur périodes locales closes, lors d'un passage quotidien le matin en heure de France, à horaire indicatif (choix propriétaire, sans garantie de 9 h ni changement de forfait). Le seuil SQL de 9 h locale reste une condition d'éligibilité, pas une promesse de réception ; hors du fuseau français une période peut attendre le passage suivant. Aucun e-mail vide. Listing détaillé complet par date/heure, prénom et nom, jeu et lot, fractionné en parties numérotées si nécessaire.
+- Décision propriétaire du 6 octobre : prénom et nom de la participation autorisés dans l’alerte immédiate et les synthèses. Pas d’e-mail du joueur, QR, code de retrait ni accès public aux résultats. Le lien Mon compte vérifie les droits sur l’établissement et ne modifie pas les préférences. La modification des préférences n’affecte pas la collecte, le résultat, le stock, le consentement, le retrait ou l’e-mail du joueur.
+- Les tentatives ambiguës ne sont pas rejouées automatiquement au-delà de la fenêtre d’idempotence du fournisseur. Une désactivation stoppe les envois non encore acceptés. Les noms sont lus lors de la préparation, uniquement dans le snapshot/payload privé, jamais dans les événements ni les logs. Ces snapshots sont expurgés après acceptation, annulation et effacement d’une participation ; aucun archivage nominatif supplémentaire.
 
 ## Règle de changement
 

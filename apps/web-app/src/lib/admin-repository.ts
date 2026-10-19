@@ -1,3 +1,5 @@
+import { readAllRows } from "@/lib/paginated-read";
+import { activeSubscriptionOrTrial } from "@/lib/metric-rules";
 import { getSupabaseAdmin } from "@/lib/supabase";
 import { updateMerchantBillingFromStripeSubscriptionInSupabase } from "@/lib/merchant-account-repository";
 import { getStripeClient } from "@/lib/stripe";
@@ -46,6 +48,7 @@ export type SaasAdminUserRow = {
   campaignCount: number;
   leadCount: number;
   lowStockCount: number;
+  exhaustedStockCount: number;
   failedEmailCount: number;
 };
 
@@ -63,39 +66,29 @@ export type SaasAdminOverview = {
   users: SaasAdminUserRow[];
 };
 
-const ACTIVE_SUBSCRIPTION_STATUSES = new Set(["active", "trialing"]);
-const ATTENTION_EMAIL_STATUSES = new Set(["failed", "bounced", "complained", "suppressed"]);
 
 export async function getSaasAdminOverview(query = ""): Promise<SaasAdminOverview> {
   const supabase = getSupabaseAdmin();
-  const [merchantResult, userResult, campaignResult, leadResult, prizeResult, deliveryResult] =
+  const [merchantResult, userResult, campaignResult, metricResult] =
     await Promise.all([
-      supabase
-        .from("merchants")
-        .select("id, company_name, onboarding_completed, stripe_subscription_status, stripe_subscription_id, trial_end_date, subscription_current_period_end, subscription_cancel_at_period_end, created_at"),
-      supabase.from("merchant_users").select("id, merchant_id, first_name, last_name, email, created_at"),
-      supabase.from("campaigns").select("id, merchant_id, is_active"),
-      supabase.from("leads").select("campaign_id, status"),
-      supabase.from("prizes").select("campaign_id, total_quantity, remaining_quantity"),
-      supabase.from("reward_email_deliveries").select("campaign_id, status"),
+      readAllRows((offset,end) => supabase.from("merchants").select("id, company_name, onboarding_completed, stripe_subscription_status, stripe_subscription_id, trial_end_date, subscription_current_period_end, subscription_cancel_at_period_end, created_at", { count: "exact" }).order("id").range(offset,end)),
+      readAllRows((offset,end) => supabase.from("merchant_users").select("id, merchant_id, first_name, last_name, email, created_at", { count: "exact" }).order("id").range(offset,end)),
+      readAllRows((offset,end) => supabase.from("campaigns").select("id, merchant_id, is_active", { count: "exact" }).order("id").range(offset,end)),
+      readAllRows((offset,end) => supabase.rpc("get_platform_operational_metrics", {}, { count: "exact" }).order("merchant_id").range(offset,end)),
     ]);
 
   const error = [
     merchantResult.error,
     userResult.error,
     campaignResult.error,
-    leadResult.error,
-    prizeResult.error,
-    deliveryResult.error,
+    metricResult.error,
   ].find(Boolean);
   if (error) throw new Error("Lecture du pilotage impossible.");
 
   const merchants = (merchantResult.data ?? []) as MerchantRow[];
   const users = (userResult.data ?? []) as MerchantUserRow[];
   const campaigns = campaignResult.data ?? [];
-  const leads = leadResult.data ?? [];
-  const prizes = prizeResult.data ?? [];
-  const deliveries = deliveryResult.data ?? [];
+  const metrics = (metricResult.data ?? []) as Array<{ merchant_id: string; contacts: number; pending_rewards: number; low_stock: number; exhausted_stock: number; failed_emails: number }>;
 
   const campaignsByMerchant = new Map<string, typeof campaigns>();
   const campaignToMerchant = new Map<string, string>();
@@ -106,34 +99,13 @@ export async function getSaasAdminOverview(query = ""): Promise<SaasAdminOvervie
     campaignsByMerchant.set(campaign.merchant_id, current);
   }
 
-  const leadCounts = new Map<string, number>();
-  let pendingRewards = 0;
-  for (const lead of leads) {
-    const merchantId = campaignToMerchant.get(lead.campaign_id);
-    if (merchantId) leadCounts.set(merchantId, (leadCounts.get(merchantId) ?? 0) + 1);
-    if (lead.status === "claimed") pendingRewards += 1;
-  }
-
-  const lowStockCounts = new Map<string, number>();
-  let lowStockPrizes = 0;
-  for (const prize of prizes) {
-    if (prize.total_quantity == null || prize.remaining_quantity == null) continue;
-    if (prize.remaining_quantity <= Math.max(1, Math.ceil(prize.total_quantity * 0.2))) {
-      const merchantId = campaignToMerchant.get(prize.campaign_id);
-      if (merchantId) lowStockCounts.set(merchantId, (lowStockCounts.get(merchantId) ?? 0) + 1);
-      lowStockPrizes += 1;
-    }
-  }
-
-  const failedEmailCounts = new Map<string, number>();
-  let failedRewardEmails = 0;
-  for (const delivery of deliveries) {
-    if (!ATTENTION_EMAIL_STATUSES.has(delivery.status)) continue;
-    const merchantId = campaignToMerchant.get(delivery.campaign_id);
-    if (merchantId) failedEmailCounts.set(merchantId, (failedEmailCounts.get(merchantId) ?? 0) + 1);
-    failedRewardEmails += 1;
-  }
-
+  const leadCounts = new Map(metrics.map(m => [m.merchant_id, Number(m.contacts)]));
+  const lowStockCounts = new Map(metrics.map(m => [m.merchant_id, Number(m.low_stock)]));
+  const exhaustedStockCounts = new Map(metrics.map(m => [m.merchant_id, Number(m.exhausted_stock)]));
+  const failedEmailCounts = new Map(metrics.map(m => [m.merchant_id, Number(m.failed_emails)]));
+  const pendingRewards = metrics.reduce((n,m) => n + Number(m.pending_rewards), 0);
+  const lowStockPrizes = metrics.reduce((n,m) => n + Number(m.low_stock), 0);
+  const failedRewardEmails = metrics.reduce((n,m) => n + Number(m.failed_emails), 0);
   const merchantsById = new Map(merchants.map((merchant) => [merchant.id, merchant]));
   const normalizedQuery = query.trim().toLowerCase();
   const rows = users
@@ -157,6 +129,7 @@ export async function getSaasAdminOverview(query = ""): Promise<SaasAdminOvervie
         campaignCount: merchantCampaigns.length,
         leadCount: leadCounts.get(user.merchant_id) ?? 0,
         lowStockCount: lowStockCounts.get(user.merchant_id) ?? 0,
+        exhaustedStockCount: exhaustedStockCounts.get(user.merchant_id) ?? 0,
         failedEmailCount: failedEmailCounts.get(user.merchant_id) ?? 0,
       } satisfies SaasAdminUserRow;
     })
@@ -173,10 +146,10 @@ export async function getSaasAdminOverview(query = ""): Promise<SaasAdminOvervie
       merchants: merchants.length,
       onboardedMerchants: merchants.filter((merchant) => merchant.onboarding_completed).length,
       activeSubscriptions: merchants.filter((merchant) =>
-        ACTIVE_SUBSCRIPTION_STATUSES.has(merchant.stripe_subscription_status ?? ""),
+        activeSubscriptionOrTrial(merchant.stripe_subscription_status, merchant.trial_end_date),
       ).length,
       activeCampaigns: campaigns.filter((campaign) => campaign.is_active).length,
-      leads: leads.length,
+      leads: metrics.reduce((n,m) => n + Number(m.contacts), 0),
       pendingRewards,
       lowStockPrizes,
       failedRewardEmails,

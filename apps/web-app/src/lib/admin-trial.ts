@@ -1,4 +1,5 @@
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
+import { activeSubscriptionOrTrial } from "@/lib/metric-rules";
 
 export const MAX_TRIAL_EXTENSION_DAYS = 365;
 
@@ -42,7 +43,7 @@ export function getAdminSubscriptionDisplay(
 
   const trialEnd = trialEndDate ? Date.parse(trialEndDate) : Number.NaN;
   const remaining = trialEnd - now;
-  const activeTrial = Number.isFinite(trialEnd) && remaining > 0;
+  const activeTrial = Number.isFinite(trialEnd) && activeSubscriptionOrTrial(null, trialEndDate, now);
 
   // The billing access rules use the trial end date as the source of truth.
   // Keep Pilotage consistent even when Stripe reports a stale/non-active status.

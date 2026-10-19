@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AdminEstablishmentProfileButton } from "@/components/merchant/admin-establishment-profile-button";
 import { redirect } from "next/navigation";
 
 import { isSaasAdminEmail } from "@/lib/admin";
@@ -31,7 +32,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
         actions={
           <>
           <Link href="/admin/campaigns" className="okado-secondary-action okado-compact-action px-4 text-sm">
-            Jeux créés
+            Jeux des marchands
           </Link>
           <Link href="/admin/prize-suggestions" className="okado-secondary-action okado-compact-action px-4 text-sm">
             Gérer les suggestions de lots
@@ -42,8 +43,8 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard label="Comptes" value={overview.totals.merchants} detail={`${overview.totals.onboardedMerchants} onboarding terminés`} />
-        <MetricCard label="Abonnements" value={overview.totals.activeSubscriptions} detail="Essais et abonnements actifs" />
-        <MetricCard label="Animations" value={overview.totals.activeCampaigns} detail={`${overview.totals.leads} participations collectées`} />
+        <MetricCard label="Établissements avec accès actif" value={overview.totals.activeSubscriptions} detail="Essais valides et abonnements actifs" />
+        <MetricCard label="Animations" value={overview.totals.activeCampaigns} detail={`${overview.totals.leads} contacts collectés`} />
         <MetricCard label="Gains à suivre" value={overview.totals.pendingRewards} detail="Gains en attente de retrait" />
       </section>
 
@@ -131,23 +132,34 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                       </SharedStatusBadge>
                     )}
                   </td>
-                  <td className="px-3 py-4 text-ash">{user.campaignCount} animation(s) · {user.leadCount} participation(s)</td>
+                  <td className="px-3 py-4 text-ash">{user.campaignCount} jeu(x) · {user.leadCount} contact(s)</td>
                   <td className="px-3 py-4">
-                    {user.lowStockCount || user.failedEmailCount ? (
+                    {user.lowStockCount || user.exhaustedStockCount || user.failedEmailCount ? (
                       <span className="text-xs font-medium text-[#a15c00]">
-                        {user.lowStockCount ? `${user.lowStockCount} stock` : ""}
-                        {user.lowStockCount && user.failedEmailCount ? " · " : ""}
-                        {user.failedEmailCount ? `${user.failedEmailCount} e-mail(s)` : ""}
+                        {[
+                          user.lowStockCount ? `${user.lowStockCount} stock(s) faible(s)` : "",
+                          user.exhaustedStockCount ? `${user.exhaustedStockCount} stock(s) épuisé(s)` : "",
+                          user.failedEmailCount ? `${user.failedEmailCount} e-mail(s)` : "",
+                        ].filter(Boolean).join(" · ")}
                       </span>
                     ) : <span className="text-xs text-ash">Aucune</span>}
                   </td>
                   <td className="px-3 py-4">
-                    <Link
-                      href={`/admin/campaigns/new?merchantId=${encodeURIComponent(user.merchantId)}`}
-                      className="okado-secondary-action okado-compact-action whitespace-nowrap px-3 text-xs"
-                    >
-                      Créer un jeu
-                    </Link>
+                    <div className="flex flex-wrap gap-2">
+                      <AdminEstablishmentProfileButton merchantId={user.merchantId} userId={user.id} />
+                      <Link
+                        href={`/admin/campaigns?merchantId=${encodeURIComponent(user.merchantId)}`}
+                        className="okado-primary-action okado-compact-action whitespace-nowrap px-3 text-xs"
+                      >
+                        Voir les jeux
+                      </Link>
+                      <Link
+                        href={`/admin/campaigns/new?merchantId=${encodeURIComponent(user.merchantId)}`}
+                        className="okado-secondary-action okado-compact-action whitespace-nowrap px-3 text-xs"
+                      >
+                        Créer un jeu
+                      </Link>
+                    </div>
                   </td>
                 </tr>
               })}

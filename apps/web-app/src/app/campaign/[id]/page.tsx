@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { CampaignExperience } from "@/components/public/campaign-experience";
 import { getAuthenticatedSession } from "@/lib/auth";
 import { APP_DESCRIPTION, APP_NAME_CAPITALIZED } from "@/lib/branding";
+import { getCampaignSocialMetadata } from "@/lib/campaign-social-metadata";
 import { issuePreviewAccessToken, verifyPreviewAccessToken } from "@/lib/preview-token";
 import { getCampaignPreview, getPublicCampaign } from "@/lib/store";
 
@@ -43,8 +44,11 @@ export async function generateMetadata({
       };
     }
 
-    const title = campaign.merchantName.trim() || APP_NAME_CAPITALIZED;
-    const description = campaign.subtitle.trim() || APP_DESCRIPTION;
+    const { title, description } = getCampaignSocialMetadata(
+      campaign,
+      APP_NAME_CAPITALIZED,
+      APP_DESCRIPTION,
+    );
 
     return {
       title,

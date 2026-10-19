@@ -7,13 +7,15 @@ import type { LucideIcon } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { SignOutButton } from "@/components/auth/sign-out-button";
+import { MerchantAlertsProvider, useMerchantAlerts } from "@/components/merchant/merchant-alerts-provider";
+import { EMPTY_MERCHANT_ALERTS } from "@/lib/merchant-alerts";
 import { MerchantSessionGuard } from "@/components/merchant/merchant-session-guard";
 import { MerchantPageSkeleton } from "@/components/merchant/merchant-page-skeleton";
 import { LocationSwitcher } from "@/components/merchant/location-switcher";
 import { Button } from "@/components/ui/button";
 import { APP_NAME_CAPITALIZED } from "@/lib/branding";
 import { getMerchantBillingSummary } from "@/lib/billing";
-import { identifyMerchantForAnalytics } from "@/lib/client-product-analytics";
+import { MerchantAnalyticsIdentity } from "@/components/merchant/merchant-analytics-identity";
 import { getPlatformAdminNavigationItems } from "@/lib/platform-admin-navigation";
 import { Merchant, MerchantLocationAccess, MerchantUser } from "@/lib/types";
 
@@ -38,7 +40,15 @@ const navItems: Array<{ href: string; label: string; icon: LucideIcon }> = [
 // successful mutation when the merchant navigates back to the page.
 const prefetchedNavRoutes = new Set<string>();
 
-export function MerchantShell({ children, merchant, user, locations, activeLocationId, isSaasAdmin }: MerchantShellProps) {
+export function MerchantShell(props: MerchantShellProps) {
+  return (
+    <MerchantAlertsProvider key={props.user.id + ":" + props.activeLocationId}>
+      <MerchantShellContent {...props} />
+    </MerchantAlertsProvider>
+  );
+}
+
+function MerchantShellContent({ children, merchant, user, locations, activeLocationId, isSaasAdmin }: MerchantShellProps) {
   const pathname = usePathname();
   const adminNavItems = getPlatformAdminNavigationItems(isSaasAdmin);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -46,12 +56,7 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const [locationChangeTarget, setLocationChangeTarget] = useState<string | null>(null);
   const [campaignsVersion, setCampaignsVersion] = useState<string | null>(null);
-  const [merchantAlerts, setMerchantAlerts] = useState({
-    emailCount: 0,
-    emailCampaignId: null as string | null,
-    lowStockCount: 0,
-    exhaustedStockCount: 0,
-  });
+  const merchantAlerts = useMerchantAlerts() ?? EMPTY_MERCHANT_ALERTS;
   const failedRewardEmails = merchantAlerts.emailCount;
   const billing = useMemo(() => getMerchantBillingSummary(merchant), [merchant]);
   const accountInitials = `${user.firstName?.[0] ?? ""}${user.lastName?.[0] ?? ""}`.toUpperCase() || "OK";
@@ -101,55 +106,6 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
   }, []);
 
   useEffect(() => {
-    identifyMerchantForAnalytics(merchant.id, user.id);
-  }, [
-    merchant.id,
-    user.id,
-  ]);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function loadMerchantAlerts() {
-      try {
-        const response = await fetch("/api/merchant/email-alerts");
-        if (!response.ok) return;
-        const payload = (await response.json()) as {
-          emailCount?: number;
-          emailCampaignId?: string | null;
-          lowStockCount?: number;
-          exhaustedStockCount?: number;
-        };
-        if (!cancelled) {
-          setMerchantAlerts({
-            emailCount: payload.emailCount ?? 0,
-            emailCampaignId: payload.emailCampaignId ?? null,
-            lowStockCount: payload.lowStockCount ?? 0,
-            exhaustedStockCount: payload.exhaustedStockCount ?? 0,
-          });
-        }
-      } catch {
-        // Alerts are non-blocking and must never affect navigation.
-      }
-    }
-
-    // Alerts are secondary navigation data. Let the first page paint and hydrate before
-    // competing with its server-rendered payload and critical client chunks.
-    const timeoutId = window.setTimeout(() => {
-      void loadMerchantAlerts();
-    }, 700);
-    const handleAlertsRefresh = () => {
-      void loadMerchantAlerts();
-    };
-    window.addEventListener("merchant-alerts-refresh", handleAlertsRefresh);
-    return () => {
-      cancelled = true;
-      window.clearTimeout(timeoutId);
-      window.removeEventListener("merchant-alerts-refresh", handleAlertsRefresh);
-    };
-  }, []);
-
-  useEffect(() => {
     const handleCampaignsUpdated = () => {
       // /campaigns is prefetched by the shell. A versioned URL prevents the
       // next navigation from reusing the snapshot captured before a save.
@@ -182,6 +138,7 @@ export function MerchantShell({ children, merchant, user, locations, activeLocat
 
   return (
     <div className="okado-workspace-shell h-screen overflow-hidden bg-soft-white text-carbon">
+      <MerchantAnalyticsIdentity accountMerchantId={user.merchantId} userId={user.id} activeMerchantId={merchant.id} email={user.email} />
       <MerchantSessionGuard userId={user.id} />
       {menuOpen ? (
         <button

@@ -1,3 +1,8 @@
+import { cache } from "react";
+import { measureServerStage } from "@/lib/server-performance";
+import { readAllRows } from "@/lib/paginated-read";
+import { conversionRate, globalConversion, isMarketingClick, isPendingGain, effectiveRedemptionDate, marketingVolumes } from "@/lib/metric-rules";
+import { participationDates } from "@/lib/participation-metrics";
 import {
   Campaign,
   CampaignAction,
@@ -298,8 +303,9 @@ type CampaignDataSummaryRpcRow = {
   redeemed_count: number;
   estimated_spend: number;
   daily_stats: Array<{ label: string; participations: number; redeemed: number }> | null;
-  action_volumes: Array<{ actionIndex: number; value: number }> | null;
+  action_volumes: Array<{ actionIndex: number; actionId?: string | null; value: number }> | null;
 };
+
 
 export type CampaignDataViewOptions = {
   leadLimit?: number;
@@ -318,29 +324,39 @@ type CampaignOverviewRpcRow = CampaignRow & {
   estimated_spend: number;
 };
 
-type CampaignOverviewLeadRow = {
+type MerchantPageRow = {
   campaign_id: string;
-  prize_id: string | null;
-  status: Lead["status"];
-  marketing_consent: boolean | null;
+  campaign: CampaignRow;
+  metrics: Omit<CampaignOverviewRpcRow, keyof CampaignRow> & {
+    campaign_id: string; opt_ins: number; undated_redemptions: number;
+  };
+  pending_redemptions: Array<{ prizeId: string; count: number }>;
 };
 
-type CampaignOverviewEventRow = {
-  campaign_id: string;
-  event_type: CampaignEvent["eventType"];
-};
+// React.cache is scoped to a server render, never shared between merchants/requests.
+const getMerchantPageRows = cache(async (merchantId: string): Promise<MerchantPageRow[]> =>
+  measureServerStage("data.overview", async () => {
+    const result = await readAllRows((offset, end) => getSupabaseAdmin()
+      .rpc("get_merchant_page_overview", { p_merchant_id: merchantId }, { count: "exact" })
+      .order("campaign_id").range(offset, end));
+    const rows = (unwrapSupabaseResult(result, "Lecture des indicateurs impossible") ?? []) as MerchantPageRow[];
+    if (rows.some(row => row.campaign.merchant_id !== merchantId ||
+        row.campaign.id !== row.campaign_id || row.metrics.campaign_id !== row.campaign_id ||
+        row.metrics.opt_ins == null)) throw new Error("Les indicateurs sont incomplets.");
+    return rows.sort((a, b) => b.campaign.created_at.localeCompare(a.campaign.created_at) ||
+      a.campaign_id.localeCompare(b.campaign_id));
+  }));
 
-type CampaignOverviewPrizeRow = {
-  id: string;
-  campaign_id: string;
-  label: string;
-  total_quantity: number | null;
-  remaining_quantity: number | null;
-  probability: number;
-  estimated_unit_cost: number;
-  purchase_required: boolean;
-  created_at: string;
-};
+const getMerchantPagePrizes = cache(async (merchantId: string): Promise<PrizeRow[]> => {
+  const rows = await getMerchantPageRows(merchantId);
+  if (!rows.length) return [];
+  return measureServerStage("data.prizes", async () => {
+    const result = await readAllRows((offset, end) => getSupabaseAdmin().from("prizes")
+      .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,purchase_required,created_at", { count: "exact" })
+      .in("campaign_id", rows.map(row => row.campaign_id)).order("id").range(offset, end));
+    return (unwrapSupabaseResult(result, "Lecture des lots impossible") ?? []) as PrizeRow[];
+  });
+});
 
 type MerchantRow = {
   id: string;
@@ -827,8 +843,8 @@ export function toPublicCampaignFromPerformance(
 
 function computeKpis(campaign: Campaign, prizes: Prize[], leads: Lead[], events: CampaignEvent[]): CampaignKpi {
   const scans = events.filter((event) => event.eventType === "scan").length;
-  const actions = events.filter((event) => event.eventType === "review_clicked").length;
-  const games = events.filter((event) => event.eventType === "game_played").length;
+  const actions = events.filter((event) => isMarketingClick(event.eventType)).length;
+  const games = participationDates(leads, events).length;
   const wins = leads.filter((lead) => Boolean(lead.prizeId)).length;
   const redeemed = leads.filter((lead) => lead.status === "redeemed").length;
   const estimatedSpend = leads.reduce((total, lead) => {
@@ -845,8 +861,7 @@ function computeKpis(campaign: Campaign, prizes: Prize[], leads: Lead[], events:
     games,
     wins,
     redeemed,
-    conversionRate: scans ? Math.round((leads.length / scans) * 100) : 0,
-    actionRate: leads.length ? Math.round((actions / leads.length) * 100) : 0,
+    conversionRate: conversionRate(games, scans),
     redemptionRate: wins ? Math.round((redeemed / wins) * 100) : 0,
     estimatedSpend: Number(estimatedSpend.toFixed(2)),
     costPerLead: leads.length ? Number((estimatedSpend / leads.length).toFixed(2)) : 0,
@@ -878,40 +893,6 @@ function buildDashboardPrizeInventory(
     );
 }
 
-async function fetchCampaignDependencies(campaignIds: string[]) {
-  const supabase = getSupabaseAdmin();
-
-  if (!campaignIds.length) {
-    return { actions: [] as ActionRow[], prizes: [] as PrizeRow[], leads: [] as LeadRow[], events: [] as EventRow[] };
-  }
-
-  const [actionsResult, prizesResult, leadsResult, eventsResult] = await Promise.all([
-    supabase
-      .from("campaign_actions")
-      .select("id,campaign_id,position,kind,label,url,created_at")
-      .in("campaign_id", campaignIds),
-    supabase
-      .from("prizes")
-      .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,purchase_required,created_at")
-      .in("campaign_id", campaignIds),
-    supabase
-      .from("leads")
-      .select("id,campaign_id,first_name,email,phone,marketing_consent,consent_timestamp,consent_policy_version,consent_source,campaign_configuration_version,prize_id,status,created_at,action_confirmed,redemption_code,reward_available_at,reward_expires_at,prize_label_snapshot,prize_usage_conditions_snapshot")
-      .in("campaign_id", campaignIds),
-    supabase
-      .from("campaign_events")
-      .select("id,campaign_id,lead_id,event_type,metadata,created_at")
-      .in("campaign_id", campaignIds),
-  ]);
-
-  return {
-    actions: (unwrapSupabaseResult(actionsResult, "Lecture des actions impossible") as ActionRow[] | null) ?? [],
-    prizes: (unwrapSupabaseResult(prizesResult, "Lecture des lots impossible") as PrizeRow[] | null) ?? [],
-    leads: (unwrapSupabaseResult(leadsResult, "Lecture des contacts impossible") as LeadRow[] | null) ?? [],
-    events: (unwrapSupabaseResult(eventsResult, "Lecture des événements impossible") as EventRow[] | null) ?? [],
-  };
-}
-
 function toCampaignOverview(row: CampaignRow, merchant: Merchant): Campaign {
   const campaign = toCampaign(row, merchant, [], []);
 
@@ -938,14 +919,14 @@ function toCampaignOverview(row: CampaignRow, merchant: Merchant): Campaign {
 async function fetchCampaignConfiguration(campaignId: string) {
   const supabase = getSupabaseAdmin();
   const [actionsResult, prizesResult] = await Promise.all([
-    supabase
+    readAllRows((offset,end) => supabase
       .from("campaign_actions")
-      .select("id,campaign_id,position,kind,label,url,created_at")
-      .eq("campaign_id", campaignId),
-    supabase
+      .select("id,campaign_id,position,kind,label,url,created_at", { count: "exact" })
+      .eq("campaign_id", campaignId).order("id").range(offset,end)),
+    readAllRows((offset,end) => supabase
       .from("prizes")
-      .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,purchase_required,created_at")
-      .eq("campaign_id", campaignId),
+      .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,purchase_required,created_at", { count: "exact" })
+      .eq("campaign_id", campaignId).order("id").range(offset,end)),
   ]);
 
   const actions = unwrapSupabaseResult(actionsResult, "Lecture des actions impossible");
@@ -957,55 +938,6 @@ async function fetchCampaignConfiguration(campaignId: string) {
   };
 }
 
-function buildLastDays(referenceDates: string[], days = 30) {
-  const today = new Date();
-  const latestReference = referenceDates.length
-    ? new Date(
-        [...referenceDates].sort((a, b) => a.localeCompare(b)).at(-1) ?? today.toISOString(),
-      )
-    : null;
-  const latest = latestReference && latestReference > today ? latestReference : today;
-
-  return Array.from({ length: days }, (_, index) => {
-    const date = new Date(
-      Date.UTC(latest.getUTCFullYear(), latest.getUTCMonth(), latest.getUTCDate()),
-    );
-    date.setUTCDate(latest.getUTCDate() - (days - index - 1));
-    return date.toISOString().slice(0, 10);
-  });
-}
-
-function countByDay(values: string[]) {
-  const counts = new Map<string, number>();
-
-  for (const value of values) {
-    counts.set(value, (counts.get(value) ?? 0) + 1);
-  }
-
-  return counts;
-}
-
-function buildDashboardActivityPoints(
-  leads: Array<Pick<LeadRow, "created_at">>,
-  events: Array<Pick<EventRow, "created_at" | "event_type">>,
-) {
-  const dayKeys = buildLastDays([
-    ...leads.map((lead) => lead.created_at),
-    ...events.map((event) => event.created_at),
-  ]);
-  const scansByDay = countByDay(
-    events
-      .filter((event) => event.event_type === "scan")
-      .map((event) => event.created_at.slice(0, 10)),
-  );
-  const participationsByDay = countByDay(leads.map((lead) => lead.created_at.slice(0, 10)));
-
-  return dayKeys.map((label) => ({
-    label,
-    scans: scansByDay.get(label) ?? 0,
-    participations: participationsByDay.get(label) ?? 0,
-  }));
-}
 
 function toOverviewKpis(row: CampaignOverviewRpcRow, optIns = 0): CampaignKpi {
   const scans = Number(row.scans_count) || 0;
@@ -1025,8 +957,7 @@ function toOverviewKpis(row: CampaignOverviewRpcRow, optIns = 0): CampaignKpi {
     games,
     wins,
     redeemed,
-    conversionRate: scans ? Math.round((leads / scans) * 100) : 0,
-    actionRate: leads ? Math.round((actions / leads) * 100) : 0,
+    conversionRate: conversionRate(games, scans),
     redemptionRate: wins ? Math.round((redeemed / wins) * 100) : 0,
     estimatedSpend,
     costPerLead: leads ? Number((estimatedSpend / leads).toFixed(2)) : 0,
@@ -1034,86 +965,15 @@ function toOverviewKpis(row: CampaignOverviewRpcRow, optIns = 0): CampaignKpi {
   };
 }
 
-function computeOverviewKpisFromRows(
-  campaign: Campaign,
-  leads: CampaignOverviewLeadRow[],
-  events: CampaignOverviewEventRow[],
-  estimatedCostByPrizeId: Map<string, number>,
-): CampaignKpi {
-  const scans = events.filter((event) => event.event_type === "scan").length;
-  const actions = events.filter((event) => event.event_type === "review_clicked").length;
-  const games = events.filter((event) => event.event_type === "game_played").length;
-  const wins = leads.filter((lead) => Boolean(lead.prize_id)).length;
-  const redeemed = leads.filter((lead) => lead.status === "redeemed").length;
-  const estimatedSpend = leads.reduce((total, lead) => {
-    if (!lead.prize_id) return total;
-    return total + (estimatedCostByPrizeId.get(lead.prize_id) ?? 0);
-  }, 0);
-
-  return {
-    scans,
-    contacts: leads.length,
-    optIns: leads.filter((lead) => lead.marketing_consent).length,
-    leads: leads.length,
-    actions,
-    games,
-    wins,
-    redeemed,
-    conversionRate: scans ? Math.round((leads.length / scans) * 100) : 0,
-    actionRate: leads.length ? Math.round((actions / leads.length) * 100) : 0,
-    redemptionRate: wins ? Math.round((redeemed / wins) * 100) : 0,
-    estimatedSpend: Number(estimatedSpend.toFixed(2)),
-    costPerLead: leads.length ? Number((estimatedSpend / leads.length).toFixed(2)) : 0,
-    costPerRedeemed: redeemed ? Number((estimatedSpend / redeemed).toFixed(2)) : 0,
-  };
-}
-
-function buildCampaignOverviewFallbackBundle(
-  merchant: Merchant,
-  campaignRows: CampaignRow[],
-  leadRows: CampaignOverviewLeadRow[],
-  eventRows: CampaignOverviewEventRow[],
-  prizeRows: CampaignOverviewPrizeRow[],
-) {
-  const leadsByCampaignId = new Map<string, CampaignOverviewLeadRow[]>();
-  const eventsByCampaignId = new Map<string, CampaignOverviewEventRow[]>();
-  const estimatedCostByPrizeId = new Map<string, number>();
-  const prizesByCampaignId = new Map<string, CampaignOverviewPrizeRow[]>();
-
-  for (const lead of leadRows) {
-    const campaignLeads = leadsByCampaignId.get(lead.campaign_id) ?? [];
-    campaignLeads.push(lead);
-    leadsByCampaignId.set(lead.campaign_id, campaignLeads);
+async function applyParticipationCounts(campaigns: CampaignPerformance[], merchantId: string) {
+  const result = await getSupabaseAdmin().rpc("get_merchant_participation_counts", { p_merchant_id: merchantId });
+  const rows = unwrapSupabaseResult(result, "Lecture des participations impossible") as
+    Array<{ campaign_id: string; participations: number }> | null;
+  const counts = new Map((rows ?? []).map((row) => [row.campaign_id, Number(row.participations)]));
+  for (const item of campaigns) {
+    item.kpis.games = counts.get(item.campaign.id) ?? 0;
+    item.kpis.conversionRate = item.kpis.scans ? Math.round(item.kpis.games / item.kpis.scans * 100) : 0;
   }
-
-  for (const event of eventRows) {
-    const campaignEvents = eventsByCampaignId.get(event.campaign_id) ?? [];
-    campaignEvents.push(event);
-    eventsByCampaignId.set(event.campaign_id, campaignEvents);
-  }
-
-  for (const prize of prizeRows) {
-    estimatedCostByPrizeId.set(prize.id, Number(prize.estimated_unit_cost) || 0);
-    const campaignPrizes = prizesByCampaignId.get(prize.campaign_id) ?? [];
-    campaignPrizes.push(prize);
-    prizesByCampaignId.set(prize.campaign_id, campaignPrizes);
-  }
-
-  return campaignRows.map((row) => {
-    const campaign = toCampaignOverview(row, merchant);
-
-    return {
-      campaign,
-      merchant: clone(merchant),
-      prizes: (prizesByCampaignId.get(row.id) ?? []).map(toPrize),
-      kpis: computeOverviewKpisFromRows(
-        campaign,
-        leadsByCampaignId.get(row.id) ?? [],
-        eventsByCampaignId.get(row.id) ?? [],
-        estimatedCostByPrizeId,
-      ),
-    } satisfies CampaignPerformance;
-  });
 }
 
 function buildPerformanceBundle(
@@ -1165,334 +1025,57 @@ function buildPerformanceBundle(
   });
 }
 
-export async function getSupabaseMerchantDashboard(
-  merchant: Merchant,
-): Promise<MerchantDashboardData> {
-  const supabase = getSupabaseAdmin();
-
-  // The dashboard only needs campaign aggregates, stock state and the last 30 days
-  // of activity. Keep the heavy campaign configuration and historical lead/event
-  // payloads out of the initial RSC response.
-  const overviewResult = await supabase.rpc("get_merchant_campaign_overview", {
-    p_merchant_id: merchant.id,
-  });
-
-  if (!overviewResult.error) {
-    const rows = (overviewResult.data as CampaignOverviewRpcRow[] | null) ?? [];
-    const campaignIds = rows.map((row) => row.id);
-    const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
-    const [prizesResult, leadsResult, eventsResult, prizeClaimsResult] = await Promise.all([
-      campaignIds.length
-        ? supabase
-            .from("prizes")
-            .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,purchase_required,created_at")
-            .in("campaign_id", campaignIds)
-        : Promise.resolve({ data: [], error: null }),
-      campaignIds.length
-        ? supabase
-            .from("leads")
-            .select("campaign_id,created_at")
-            .in("campaign_id", campaignIds)
-            .gte("created_at", since)
-        : Promise.resolve({ data: [], error: null }),
-      campaignIds.length
-        ? supabase
-            .from("campaign_events")
-            .select("campaign_id,event_type,created_at")
-            .in("campaign_id", campaignIds)
-            .gte("created_at", since)
-        : Promise.resolve({ data: [], error: null }),
-      campaignIds.length
-        ? supabase
-            .from("leads")
-            .select("prize_id")
-            .in("campaign_id", campaignIds)
-            .eq("status", "claimed")
-            .not("prize_id", "is", null)
-        : Promise.resolve({ data: [], error: null }),
-    ]);
-    const prizesData = unwrapSupabaseResult(prizesResult, "Lecture des lots du tableau de bord impossible");
-    const leadsData = unwrapSupabaseResult(leadsResult, "Lecture des contacts du tableau de bord impossible");
-    const eventsData = unwrapSupabaseResult(eventsResult, "Lecture des événements du tableau de bord impossible");
-    const prizeClaimsData = unwrapSupabaseResult(
-      prizeClaimsResult,
-      "Lecture des retraits du tableau de bord impossible",
-    );
-    const prizeRows = (prizesData as PrizeRow[] | null) ?? [];
-    const prizesByCampaignId = new Map<string, Prize[]>();
-    for (const row of prizeRows) {
-      const campaignPrizes = prizesByCampaignId.get(row.campaign_id) ?? [];
-      campaignPrizes.push(toPrize(row));
-      prizesByCampaignId.set(row.campaign_id, campaignPrizes);
-    }
-    const campaigns = rows.map((row) => ({
-      campaign: toCampaignOverview(row, merchant),
-      merchant: clone(merchant),
-      prizes: prizesByCampaignId.get(row.id) ?? [],
-      kpis: toOverviewKpis(row),
-    } satisfies CampaignPerformance));
-    const pendingRedemptionsByPrizeId = new Map<string, number>();
-    for (const row of (prizeClaimsData as Array<{ prize_id: string | null }> | null) ?? []) {
-      if (row.prize_id) {
-        pendingRedemptionsByPrizeId.set(
-          row.prize_id,
-          (pendingRedemptionsByPrizeId.get(row.prize_id) ?? 0) + 1,
-        );
-      }
-    }
-    const totalLeads = campaigns.reduce((total, item) => total + item.kpis.leads, 0);
-    const totalRedeemed = campaigns.reduce((total, item) => total + item.kpis.redeemed, 0);
-    const averageConversion = campaigns.length
-      ? Math.round(campaigns.reduce((total, item) => total + item.kpis.conversionRate, 0) / campaigns.length)
-      : 0;
-
-    return {
-      merchant: clone(merchant),
-      campaigns,
-      prizeInventory: buildDashboardPrizeInventory(campaigns, pendingRedemptionsByPrizeId),
-      totalLeads,
-      totalRedeemed,
-      averageConversion,
-      activityPoints: buildDashboardActivityPoints(
-        (leadsData as Array<Pick<LeadRow, "created_at">> | null) ?? [],
-        (eventsData as Array<Pick<EventRow, "created_at" | "event_type">> | null) ?? [],
-      ),
-    };
-  }
-
-  const campaignsResult = await supabase
-    .from("campaigns")
-    .select("*")
-    .eq("merchant_id", merchant.id)
-    .order("created_at", { ascending: false });
-  const campaignsData = unwrapSupabaseResult(campaignsResult, "Lecture des campagnes impossible");
-
-  const campaignRows = (campaignsData as CampaignRow[] | null) ?? [];
-  const campaignIds = campaignRows.map((campaign) => campaign.id);
-  const localSettingsEntries = await Promise.all(
-    campaignIds.map(async (campaignId) => [campaignId, await getCampaignLocalSettings(campaignId)] as const),
-  );
-  const localSettingsByCampaignId = Object.fromEntries(localSettingsEntries);
-  const { actions, prizes, leads, events } = await fetchCampaignDependencies(campaignIds);
-  const campaigns = buildPerformanceBundle(
-    merchant,
-    campaignRows,
-    actions,
-    prizes,
-    leads,
-    events,
-    localSettingsByCampaignId,
-  );
-  const pendingRedemptionsByPrizeId = new Map<string, number>();
-  for (const lead of leads) {
-    if (lead.prize_id && lead.status === "claimed") {
-      pendingRedemptionsByPrizeId.set(
-        lead.prize_id,
-        (pendingRedemptionsByPrizeId.get(lead.prize_id) ?? 0) + 1,
-      );
-    }
-  }
-  const totalLeads = campaigns.reduce((total, item) => total + item.kpis.leads, 0);
-  const totalRedeemed = campaigns.reduce((total, item) => total + item.kpis.redeemed, 0);
-  const averageConversion = campaigns.length
-    ? Math.round(campaigns.reduce((total, item) => total + item.kpis.conversionRate, 0) / campaigns.length)
-    : 0;
-
-  return {
-    merchant: clone(merchant),
-    campaigns,
-    prizeInventory: buildDashboardPrizeInventory(campaigns, pendingRedemptionsByPrizeId),
-    totalLeads,
-    totalRedeemed,
-    averageConversion,
-    activityPoints: buildDashboardActivityPoints(leads, events),
-  };
-}
-
-export async function getSupabaseMerchantCampaignOverview(
-  merchant: Merchant,
-): Promise<MerchantDashboardData> {
-  const supabase = getSupabaseAdmin();
-  const overviewResult = await supabase.rpc("get_merchant_campaign_overview", {
-    p_merchant_id: merchant.id,
-  });
-
-  if (!overviewResult.error) {
-    const rows = (overviewResult.data as CampaignOverviewRpcRow[] | null) ?? [];
-    const overviewMerchant = {
-      ...merchant,
-      logoUrl: undefined,
-    };
-    const campaignIds = rows.map((row) => row.id);
-    const [optInResult, prizesResult] = campaignIds.length
-      ? await Promise.all([
-          supabase
-            .from("leads")
-            .select("campaign_id")
-            .eq("marketing_consent", true)
-            .in("campaign_id", campaignIds),
-          supabase
-            .from("prizes")
-            .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,purchase_required,created_at")
-            .in("campaign_id", campaignIds),
-        ])
-      : [
-          { data: [] as Array<{ campaign_id: string }>, error: null },
-          { data: [] as PrizeRow[], error: null },
-        ];
-    const optInRows = unwrapSupabaseResult(optInResult, "Lecture des opt-ins impossible");
-    const prizesData = unwrapSupabaseResult(prizesResult, "Lecture des stocks de lots impossible");
-    const optInsByCampaignId = new Map<string, number>();
-    const prizesByCampaignId = new Map<string, Prize[]>();
-    for (const row of (optInRows as Array<{ campaign_id: string }> | null) ?? []) {
-      optInsByCampaignId.set(row.campaign_id, (optInsByCampaignId.get(row.campaign_id) ?? 0) + 1);
-    }
-    for (const row of (prizesData as PrizeRow[] | null) ?? []) {
-      const campaignPrizes = prizesByCampaignId.get(row.campaign_id) ?? [];
-      campaignPrizes.push(toPrize(row));
-      prizesByCampaignId.set(row.campaign_id, campaignPrizes);
-    }
-    const campaigns = rows.map((row) => ({
-      campaign: toCampaignOverview(row, overviewMerchant),
-      merchant: clone(overviewMerchant),
-      prizes: prizesByCampaignId.get(row.id) ?? [],
-      kpis: toOverviewKpis(row, optInsByCampaignId.get(row.id) ?? 0),
-    }));
-    const totalLeads = campaigns.reduce((total, item) => total + item.kpis.leads, 0);
-    const totalRedeemed = campaigns.reduce((total, item) => total + item.kpis.redeemed, 0);
-    const averageConversion = campaigns.length
-      ? Math.round(campaigns.reduce((total, item) => total + item.kpis.conversionRate, 0) / campaigns.length)
-      : 0;
-
-    return {
-      merchant: clone(overviewMerchant),
-      campaigns,
-      prizeInventory: [],
-      totalLeads,
-      totalRedeemed,
-      averageConversion,
-      activityPoints: [],
-    };
-  }
-
-  const campaignsResult = await supabase
-    .from("campaigns")
-    .select("*")
-    .eq("merchant_id", merchant.id)
-    .order("created_at", { ascending: false });
-  const campaignsData = unwrapSupabaseResult(campaignsResult, "Lecture des campagnes impossible");
-
-  const campaignRows = (campaignsData as CampaignRow[] | null) ?? [];
-  const campaignIds = campaignRows.map((campaign) => campaign.id);
-
-  if (!campaignIds.length) {
-    const overviewMerchant = { ...merchant, logoUrl: undefined };
-    return {
-      merchant: clone(overviewMerchant),
-      campaigns: [],
-      prizeInventory: [],
-      totalLeads: 0,
-      totalRedeemed: 0,
-      averageConversion: 0,
-      activityPoints: [],
-    };
-  }
-
-  const [leadsResult, eventsResult, prizesResult] = await Promise.all([
-    supabase
-      .from("leads")
-      .select("campaign_id,prize_id,status,marketing_consent")
-      .in("campaign_id", campaignIds),
-    supabase
-      .from("campaign_events")
-      .select("campaign_id,event_type")
-      .in("campaign_id", campaignIds),
-    supabase
-      .from("prizes")
-      .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,purchase_required,created_at")
-      .in("campaign_id", campaignIds),
+export async function getSupabaseMerchantDashboard(merchant: Merchant): Promise<MerchantDashboardData> {
+  // Independent activity starts immediately; rows/prizes are shared with recent contacts.
+  const activityPromise = measureServerStage("data.activity", async () =>
+    unwrapSupabaseResult(await getSupabaseAdmin().rpc("get_merchant_participation_activity", {
+      p_merchant_id: merchant.id,
+    }), "Lecture des participations impossible"));
+  const [overview, activity] = await Promise.all([
+    getSupabaseMerchantCampaignOverview(merchant), activityPromise,
   ]);
-  const leadsData = unwrapSupabaseResult(leadsResult, "Lecture des contacts impossible");
-  const eventsData = unwrapSupabaseResult(eventsResult, "Lecture des événements impossible");
-  const prizesData = unwrapSupabaseResult(prizesResult, "Lecture des lots impossible");
-
-  const campaigns = buildCampaignOverviewFallbackBundle(
-    { ...merchant, logoUrl: undefined },
-    campaignRows,
-    (leadsData as CampaignOverviewLeadRow[] | null) ?? [],
-    (eventsData as CampaignOverviewEventRow[] | null) ?? [],
-    (prizesData as CampaignOverviewPrizeRow[] | null) ?? [],
-  );
-  const totalLeads = campaigns.reduce((total, item) => total + item.kpis.leads, 0);
-  const totalRedeemed = campaigns.reduce((total, item) => total + item.kpis.redeemed, 0);
-  const averageConversion = campaigns.length
-    ? Math.round(campaigns.reduce((total, item) => total + item.kpis.conversionRate, 0) / campaigns.length)
-    : 0;
-
+  const rows = await getMerchantPageRows(merchant.id);
+  const pending = new Map<string, number>();
+  for (const row of rows) for (const item of row.pending_redemptions) {
+    pending.set(item.prizeId, Number(item.count));
+  }
   return {
-    merchant: clone({ ...merchant, logoUrl: undefined }),
-    campaigns,
-    prizeInventory: [],
-    totalLeads,
-    totalRedeemed,
-    averageConversion,
-    activityPoints: [],
+    ...overview,
+    prizeInventory: buildDashboardPrizeInventory(overview.campaigns, pending),
+    activityPoints: ((activity as Array<{ label: string; scans: number; participations: number }> | null) ?? [])
+      .map(point => ({ label: point.label, scans: Number(point.scans), participations: Number(point.participations) })),
   };
 }
 
-export async function getSupabaseMerchantCampaignLibrary(
-  merchantId: string,
-): Promise<CampaignLibraryItem[]> {
-  const supabase = getSupabaseAdmin();
-  const overviewResult = await supabase.rpc("get_merchant_campaign_overview", {
-    p_merchant_id: merchantId,
-  });
-
-  if (!overviewResult.error) {
-    return ((overviewResult.data as CampaignOverviewRpcRow[] | null) ?? []).map((item) => ({
-      id: item.id,
-      title: item.title,
-      gameType: item.game_type,
-      isActive: item.is_active,
-      createdAt: item.created_at,
-      scans: Number(item.scans_count) || 0,
-    }));
+export async function getSupabaseMerchantCampaignOverview(merchant: Merchant): Promise<MerchantDashboardData> {
+  const rows = await getMerchantPageRows(merchant.id);
+  const overviewMerchant = { ...merchant, logoUrl: undefined };
+  const prizes = await getMerchantPagePrizes(merchant.id);
+  const prizesById = new Map<string, Prize[]>();
+  for (const row of prizes) {
+    const group = prizesById.get(row.campaign_id) ?? [];
+    group.push(toPrize(row));
+    prizesById.set(row.campaign_id, group);
   }
+  const campaigns = rows.map(row => ({
+    campaign: toCampaignOverview(row.campaign, overviewMerchant),
+    merchant: clone(overviewMerchant),
+    prizes: prizesById.get(row.campaign_id) ?? [],
+    kpis: toOverviewKpis({ ...row.campaign, ...row.metrics }, Number(row.metrics.opt_ins)),
+  } satisfies CampaignPerformance));
+  return {
+    merchant: overviewMerchant, campaigns, prizeInventory: [],
+    totalLeads: campaigns.reduce((n, item) => n + item.kpis.leads, 0),
+    totalRedeemed: campaigns.reduce((n, item) => n + item.kpis.redeemed, 0),
+    averageConversion: globalConversion(campaigns), activityPoints: [],
+  };
+}
 
-  const campaignsResult = await supabase
-    .from("campaigns")
-    .select("id,title,game_type,is_active,created_at")
-    .eq("merchant_id", merchantId)
-    .order("created_at", { ascending: false });
-  const data = unwrapSupabaseResult(campaignsResult, "Lecture des campagnes impossible");
-
-  const campaignIds = ((data as Array<{ id: string }> | null) ?? []).map((item) => item.id);
-  const scanEventsResult = campaignIds.length
-    ? await supabase
-        .from("campaign_events")
-        .select("campaign_id")
-        .eq("event_type", "scan")
-        .in("campaign_id", campaignIds)
-    : { data: [] as Array<{ campaign_id: string }>, error: null };
-  const scanEvents = unwrapSupabaseResult(scanEventsResult, "Lecture des scans impossible");
-  const scansByCampaignId = new Map<string, number>();
-  for (const event of (scanEvents as Array<{ campaign_id: string }> | null) ?? []) {
-    scansByCampaignId.set(event.campaign_id, (scansByCampaignId.get(event.campaign_id) ?? 0) + 1);
-  }
-
-  return ((data as Array<{
-    id: string;
-    title: string;
-    game_type: Campaign["gameType"];
-    is_active: boolean;
-    created_at: string;
-  }> | null) ?? []).map((item) => ({
-    id: item.id,
-    title: item.title,
-    gameType: item.game_type,
-    isActive: item.is_active,
-    createdAt: item.created_at,
-    scans: scansByCampaignId.get(item.id) ?? 0,
+export async function getSupabaseMerchantCampaignLibrary(merchantId: string): Promise<CampaignLibraryItem[]> {
+  return (await getMerchantPageRows(merchantId)).map(({ campaign: row, metrics }) => ({
+    id: row.id, title: row.title, gameType: row.game_type, isActive: row.is_active,
+    createdAt: row.created_at, scans: Number(metrics.scans_count),
+    participations: Number(metrics.games_count),
   }));
 }
 
@@ -1552,14 +1135,14 @@ export async function getSupabaseCampaignSetupPerformance(
             .maybeSingle();
           return merchantResult.data ? toMerchant(merchantResult.data as MerchantRow) : null;
         })(),
-    supabase
+    readAllRows((offset,end) => supabase
       .from("campaign_actions")
-      .select("id,campaign_id,position,kind,label,url,created_at")
-      .eq("campaign_id", campaignId),
-    supabase
+      .select("id,campaign_id,position,kind,label,url,created_at", { count: "exact" })
+      .eq("campaign_id", campaignId).order("id").range(offset,end)),
+    readAllRows((offset,end) => supabase
       .from("prizes")
-      .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,purchase_required,created_at")
-      .eq("campaign_id", campaignId),
+      .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,purchase_required,created_at", { count: "exact" })
+      .eq("campaign_id", campaignId).order("id").range(offset,end)),
     getCampaignLocalSettings(campaignId),
   ]);
 
@@ -1664,22 +1247,24 @@ export async function getSupabaseMerchantLeads(
   campaignId?: string,
 ): Promise<MerchantLeadRow[]> {
   const supabase = getSupabaseAdmin();
-  const campaignsResult = await supabase
+  const campaignsResult = await readAllRows((offset,end) => supabase
     .from("campaigns")
-    .select("id,title,goal_type")
-    .eq("merchant_id", merchantId);
+    .select("id,title,goal_type", { count: "exact" })
+    .eq("merchant_id", merchantId).order("id").range(offset,end));
   const campaignsData = unwrapSupabaseResult(campaignsResult, "Lecture des campagnes impossible");
 
   const campaigns = (campaignsData as Array<{ id: string; title: string; goal_type: Campaign["goalType"] }> | null) ?? [];
-  const campaignIds = campaignId ? [campaignId] : campaigns.map((item) => item.id);
+  const campaignIds = campaignId
+    ? campaigns.filter(item => item.id === campaignId).map(item => item.id)
+    : campaigns.map((item) => item.id);
   if (!campaignIds.length) return [];
   const [leadsResult, prizesResult, deliveriesResult] = await Promise.all([
-    supabase.from("leads").select("*").in("campaign_id", campaignIds),
-    supabase.from("prizes").select("id,label,campaign_id,total_quantity,remaining_quantity,probability,estimated_unit_cost,purchase_required,created_at").in("campaign_id", campaignIds),
-    supabase
+    readAllRows((offset,end) => supabase.from("leads").select("*", { count: "exact" }).in("campaign_id", campaignIds).order("id").range(offset,end)),
+    readAllRows((offset,end) => supabase.from("prizes").select("id,label,campaign_id,total_quantity,remaining_quantity,probability,estimated_unit_cost,purchase_required,created_at", { count: "exact" }).in("campaign_id", campaignIds).order("id").range(offset,end)),
+    readAllRows((offset,end) => supabase
       .from("reward_email_deliveries")
-      .select("lead_id,status,sent_at,delivered_at,error_message")
-      .in("campaign_id", campaignIds),
+      .select("lead_id,status,sent_at,delivered_at,error_message", { count: "exact" })
+      .in("campaign_id", campaignIds).order("id").range(offset,end)),
   ]);
   const leadsData = unwrapSupabaseResult(leadsResult, "Lecture des contacts impossible");
   const prizesData = unwrapSupabaseResult(prizesResult, "Lecture des lots impossible");
@@ -1714,15 +1299,8 @@ export async function getSupabaseMerchantRecentLeads(
 ): Promise<MerchantLeadRow[]> {
   const supabase = getSupabaseAdmin();
   const normalizedQuery = query.trim().toLowerCase();
-  const campaignsResult = await supabase
-    .from("campaigns")
-    .select("id,title,goal_type")
-    .eq("merchant_id", merchantId);
-  const campaignsData = unwrapSupabaseResult(campaignsResult, "Lecture des campagnes impossible");
-
-  const campaigns =
-    (campaignsData as Array<{ id: string; title: string; goal_type: Campaign["goalType"] }> | null) ?? [];
-  const campaignIds = campaigns.map((item) => item.id);
+  const campaigns = (await getMerchantPageRows(merchantId)).map(row => row.campaign);
+  const campaignIds = campaigns.map(item => item.id);
 
   if (!campaignIds.length) {
     return [];
@@ -1730,7 +1308,7 @@ export async function getSupabaseMerchantRecentLeads(
 
   let leadsQuery = supabase
     .from("leads")
-    .select("*")
+    .select("id,campaign_id,first_name,email,phone,marketing_consent,consent_timestamp,consent_policy_version,consent_source,campaign_configuration_version,redeemed_at,redeemed_by_user_id,purchase_verified,prize_id,status,created_at,action_confirmed,redemption_code,reward_available_at,reward_expires_at,prize_label_snapshot,prize_usage_conditions_snapshot")
     .in("campaign_id", campaignIds)
     .order("created_at", { ascending: false })
     .limit(normalizedQuery ? Math.max(limit * 4, 20) : limit);
@@ -1748,20 +1326,15 @@ export async function getSupabaseMerchantRecentLeads(
   const prizeIds = [...new Set(leadRows.map((lead) => lead.prize_id).filter(Boolean) as string[])];
 
   const [prizesResult, deliveriesResult] = await Promise.all([
-    prizeIds.length
-      ? supabase
-          .from("prizes")
-          .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,purchase_required,created_at")
-          .in("id", prizeIds)
-      : Promise.resolve({ data: [], error: null }),
+    getMerchantPagePrizes(merchantId).then(rows => ({ data: rows.filter(row => prizeIds.includes(row.id)), error: null })),
     leadRows.length
-      ? supabase
+      ? readAllRows((offset,end) => supabase
           .from("reward_email_deliveries")
-          .select("lead_id,status,sent_at,delivered_at,error_message")
+          .select("lead_id,status,sent_at,delivered_at,error_message", { count: "exact" })
           .in(
             "lead_id",
             leadRows.map((lead) => lead.id),
-          )
+          ).order("id").range(offset,end))
       : Promise.resolve({ data: [], error: null }),
   ]);
   const prizesData = unwrapSupabaseResult(prizesResult, "Lecture des lots impossible");
@@ -1802,10 +1375,10 @@ export async function findSupabaseMerchantLeadCampaign(
   if (!normalizedQuery) return null;
 
   const supabase = getSupabaseAdmin();
-  const campaignsResult = await supabase
+  const campaignsResult = await readAllRows((offset,end) => supabase
     .from("campaigns")
-    .select("id")
-    .eq("merchant_id", merchantId);
+    .select("id", { count: "exact" })
+    .eq("merchant_id", merchantId).order("id").range(offset,end));
   const campaignsData = unwrapSupabaseResult(campaignsResult, "Lecture des campagnes impossible");
   const campaignIds = ((campaignsData as Array<{ id: string }> | null) ?? []).map((item) => item.id);
   if (!campaignIds.length) return null;
@@ -1861,20 +1434,20 @@ async function getSupabaseCampaignDataViewLegacy(
             .maybeSingle();
           return merchantResult.data ? toMerchant(merchantResult.data as MerchantRow) : null;
         })(),
-    supabase
+    readAllRows((offset,end) => supabase
       .from("campaign_actions")
-      .select("id,campaign_id,position,kind,label,url,created_at")
-      .eq("campaign_id", campaignId),
-    supabase
+      .select("id,campaign_id,position,kind,label,url,created_at", { count: "exact" })
+      .eq("campaign_id", campaignId).order("id").range(offset,end)),
+    readAllRows((offset,end) => supabase
       .from("prizes")
-      .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,purchase_required,created_at")
-      .eq("campaign_id", campaignId),
-    supabase.from("leads").select("*").eq("campaign_id", campaignId),
-    supabase.from("campaign_events").select("*").eq("campaign_id", campaignId),
-    supabase
+      .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,purchase_required,created_at", { count: "exact" })
+      .eq("campaign_id", campaignId).order("id").range(offset,end)),
+    readAllRows((offset,end) => supabase.from("leads").select("*", { count: "exact" }).eq("campaign_id", campaignId).order("id").range(offset,end)),
+    readAllRows((offset,end) => supabase.from("campaign_events").select("*", { count: "exact" }).eq("campaign_id", campaignId).order("id").range(offset,end)),
+    readAllRows((offset,end) => supabase
       .from("reward_email_deliveries")
-      .select("lead_id,status,sent_at,delivered_at,error_message")
-      .eq("campaign_id", campaignId),
+      .select("lead_id,status,sent_at,delivered_at,error_message", { count: "exact" })
+      .eq("campaign_id", campaignId).order("id").range(offset,end)),
     getCampaignLocalSettings(campaignId),
   ]);
 
@@ -1902,6 +1475,20 @@ async function getSupabaseCampaignDataViewLegacy(
   if (!performance) return null;
 
   const prizes = performance.prizes;
+  await applyParticipationCounts([performance], resolvedMerchant.id);
+  const participationDatesForChart: string[] = [];
+  const since = new Date();
+  since.setUTCHours(0, 0, 0, 0);
+  since.setUTCDate(since.getUTCDate() - 6);
+  for (let offset = 0; ; offset += 1000) {
+    const result = await supabase.from("campaign_participations").select("created_at,participation_id")
+      .eq("campaign_id", campaignId).gte("created_at", since.toISOString())
+      .order("created_at").order("participation_id").range(offset, offset + 999);
+    const rows = unwrapSupabaseResult(result, "Lecture des participations impossible") as
+      Array<{ created_at: string }> | null;
+    participationDatesForChart.push(...(rows ?? []).map((item) => item.created_at));
+    if ((rows?.length ?? 0) < 1000) break;
+  }
   const allLeads = enrichLeadRowsWithEmailDeliveries(
     ((leadsData as LeadRow[] | null) ?? [])
       .map(toLead)
@@ -1930,9 +1517,7 @@ async function getSupabaseCampaignDataViewLegacy(
   const events = ((eventsResult.data as EventRow[] | null) ?? [])
     .map(toEvent)
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-  const latestDates = [...leads.map((lead) => lead.createdAt), ...events.map((event) => event.createdAt)];
-  const latestDate = latestDates.sort((a, b) => a.localeCompare(b)).at(-1) ?? new Date().toISOString();
-  const baseDate = new Date(latestDate);
+  const baseDate = new Date();
   const dailyStats = Array.from({ length: 7 }, (_, index) => {
     const date = new Date(Date.UTC(baseDate.getUTCFullYear(), baseDate.getUTCMonth(), baseDate.getUTCDate()));
     date.setUTCDate(date.getUTCDate() - (6 - index));
@@ -1940,25 +1525,11 @@ async function getSupabaseCampaignDataViewLegacy(
 
     return {
       label,
-      participations: leads.filter((lead) => lead.createdAt.slice(0, 10) === label).length,
-      redeemed: events.filter(
-        (event) => event.eventType === "prize_redeemed" && event.createdAt.slice(0, 10) === label,
-      ).length,
+      participations: participationDatesForChart.filter((date) => date.slice(0, 10) === label).length,
+      redeemed: allLeads.filter(lead => effectiveRedemptionDate(lead, events)?.slice(0,10) === label).length,
     };
   });
-  const actionVolumes = performance.campaign.actions.map((_, actionIndex) => ({
-    actionIndex,
-    value: 0,
-  }));
-  const leadVisitByEmail = new Map<string, number>();
-  for (const lead of [...leads].sort((a, b) => a.createdAt.localeCompare(b.createdAt))) {
-    const key = lead.email.trim().toLowerCase();
-    const actionIndex = leadVisitByEmail.get(key) ?? 0;
-    if (actionVolumes[actionIndex]) {
-      actionVolumes[actionIndex].value += 1;
-    }
-    leadVisitByEmail.set(key, actionIndex + 1);
-  }
+  const actionVolumes = marketingVolumes(events, performance.campaign.actions);
 
   return {
     performance,
@@ -1969,6 +1540,7 @@ async function getSupabaseCampaignDataViewLegacy(
     leadLimit: leads.length || 50,
     dailyStats,
     actionVolumes,
+    undatedRedemptions: allLeads.filter(l => l.status === "redeemed" && !effectiveRedemptionDate(l, events)).length,
   };
 }
 
@@ -1981,22 +1553,19 @@ export async function getSupabaseCampaignDataView(
   const leadLimit = Math.min(Math.max(options.leadLimit ?? 50, 10), 100);
   const leadOffset = Math.max(options.leadOffset ?? 0, 0);
   const query = options.query?.trim() ?? "";
-  const campaignResult = await supabase
-    .from("campaigns")
-    .select("*")
-    .eq("id", campaignId)
-    .maybeSingle();
-  const campaignData = unwrapSupabaseResult(campaignResult, "Lecture de la campagne impossible");
-
-  if (!campaignData) return null;
+  if (!merchant) return getSupabaseCampaignDataViewLegacy(campaignId, merchant, options);
+  // Resolve ownership before any contact or event read, and reuse the selector snapshot.
+  const pageRow = (await getMerchantPageRows(merchant.id)).find(row => row.campaign_id === campaignId);
+  if (!pageRow) return null;
+  const campaignData = pageRow.campaign;
 
   let attentionLeadIds: string[] | null = null;
   if (options.emailStatus === "attention") {
-    const { data: attentionDeliveries, error: attentionError } = await supabase
+    const { data: attentionDeliveries, error: attentionError } = await readAllRows((offset,end) => supabase
       .from("reward_email_deliveries")
-      .select("lead_id")
+      .select("lead_id", { count: "exact" })
       .eq("campaign_id", campaignId)
-      .in("status", ["failed", "bounced", "complained", "suppressed"]);
+      .in("status", ["failed", "bounced", "complained", "suppressed"]).order("id").range(offset,end));
 
     if (attentionError) {
       throw new Error(`Lecture des e-mails à traiter impossible: ${attentionError.message}`);
@@ -2004,18 +1573,18 @@ export async function getSupabaseCampaignDataView(
 
     const candidateLeadIds = [...new Set((attentionDeliveries ?? []).map((delivery) => delivery.lead_id))];
     if (candidateLeadIds.length) {
-      const { data: candidateLeads, error: candidateLeadError } = await supabase
+      const { data: candidateLeads, error: candidateLeadError } = await readAllRows((offset,end) => supabase
         .from("leads")
-        .select("id,prize_id,status")
+        .select("id,prize_id,status,reward_expires_at", { count: "exact" })
         .eq("campaign_id", campaignId)
-        .in("id", candidateLeadIds);
+        .in("id", candidateLeadIds).order("id").range(offset,end));
 
       if (candidateLeadError) {
         throw new Error(`Lecture des e-mails à traiter impossible: ${candidateLeadError.message}`);
       }
 
       attentionLeadIds = (candidateLeads ?? [])
-        .filter((lead) => Boolean(lead.prize_id) && lead.status === "claimed")
+        .filter((lead) => isPendingGain({ prizeId: lead.prize_id, status: lead.status, rewardExpiresAt: lead.reward_expires_at }))
         .map((lead) => lead.id);
     } else {
       attentionLeadIds = [];
@@ -2076,7 +1645,6 @@ export async function getSupabaseCampaignDataView(
     summaryResult,
     leadsResult,
     eventsResult,
-    optInsResult,
     localSettings,
   ] = await Promise.all([
     merchant && merchant.id === row.merchant_id
@@ -2089,14 +1657,14 @@ export async function getSupabaseCampaignDataView(
             .maybeSingle();
           return merchantResult.data ? toMerchant(merchantResult.data as MerchantRow) : null;
         })(),
-    supabase
+    readAllRows((offset,end) => supabase
       .from("campaign_actions")
-      .select("id,campaign_id,position,kind,label,url,created_at")
-      .eq("campaign_id", campaignId),
-    supabase
+      .select("id,campaign_id,position,kind,label,url,created_at", { count: "exact" })
+      .eq("campaign_id", campaignId).order("id").range(offset,end)),
+    readAllRows((offset,end) => supabase
       .from("prizes")
-      .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,purchase_required,created_at")
-      .eq("campaign_id", campaignId),
+      .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,purchase_required,created_at", { count: "exact" })
+      .eq("campaign_id", campaignId).order("id").range(offset,end)),
     supabase.rpc("get_campaign_data_summary", { p_campaign_id: campaignId }),
     leadsQuery,
     supabase
@@ -2105,12 +1673,23 @@ export async function getSupabaseCampaignDataView(
       .eq("campaign_id", campaignId)
       .order("created_at", { ascending: false })
       .limit(8),
-    supabase
-      .from("leads")
-      .select("id", { count: "exact", head: true })
-      .eq("campaign_id", campaignId)
-      .eq("marketing_consent", true),
-    getCampaignLocalSettings(campaignId),
+    (async (): Promise<CampaignLocalSettings> => {
+      const result = await supabase.from("campaigns")
+        .select("prizeSettings:campaign_local_settings->prizeSettings")
+        .eq("id", campaignId).maybeSingle();
+      assertSupabaseResult(result, "Lecture des conditions des lots impossible");
+      const raw = result.data?.prizeSettings;
+      const prizeSettings: NonNullable<CampaignLocalSettings["prizeSettings"]> = {};
+      if (raw && typeof raw === "object" && !Array.isArray(raw)) {
+        for (const [id, value] of Object.entries(raw)) {
+          if (value && typeof value === "object" && !Array.isArray(value) &&
+              typeof value.usageConditions === "string") {
+            prizeSettings[id] = { usageConditions: value.usageConditions };
+          }
+        }
+      }
+      return { prizeSettings };
+    })(),
   ]);
 
   if (isMissingCampaignDataSummaryRpc(summaryResult.error)) {
@@ -2158,10 +1737,7 @@ export async function getSupabaseCampaignDataView(
     wins: Number(summary.wins_count) || 0,
     redeemed: Number(summary.redeemed_count) || 0,
     conversionRate: summary.scans_count
-      ? Math.round((Number(summary.leads_count) / Number(summary.scans_count)) * 100)
-      : 0,
-    actionRate: summary.leads_count
-      ? Math.round((Number(summary.actions_count) / Number(summary.leads_count)) * 100)
+      ? Math.round((Number(summary.games_count) / Number(summary.scans_count)) * 100)
       : 0,
     redemptionRate: summary.wins_count
       ? Math.round((Number(summary.redeemed_count) / Number(summary.wins_count)) * 100)
@@ -2180,16 +1756,16 @@ export async function getSupabaseCampaignDataView(
   const leadIds = leadRows.map((lead) => lead.id);
   const deliveriesResult = await (
     leadIds.length
-      ? supabase
+      ? readAllRows((offset,end) => supabase
           .from("reward_email_deliveries")
-          .select("lead_id,status,sent_at,delivered_at,error_message")
-          .in("lead_id", leadIds)
+          .select("lead_id,status,sent_at,delivered_at,error_message", { count: "exact" })
+          .in("lead_id", leadIds).order("id").range(offset,end))
       : Promise.resolve({ data: [], error: null })
   );
-  assertSupabaseResult(optInsResult, "Lecture des opt-ins impossible");
   assertSupabaseResult(deliveriesResult, "Lecture des e-mails de gain impossible");
-  const optInsCount = optInsResult.count;
-  performance.kpis.optIns = optInsCount ?? leadRows.filter((lead) => Boolean(lead.marketing_consent)).length;
+  const metricDetail = pageRow.metrics;
+  if (!metricDetail) throw new Error("Les indicateurs de campagne sont indisponibles.");
+  performance.kpis.optIns = Number(metricDetail.opt_ins);
   const deliveriesData = deliveriesResult.data;
   const prizes = performance.prizes;
   const leads = enrichLeadRowsWithEmailDeliveries(
@@ -2216,6 +1792,7 @@ export async function getSupabaseCampaignDataView(
     leadLimit,
     dailyStats: summary.daily_stats ?? [],
     actionVolumes: summary.action_volumes ?? [],
+    undatedRedemptions: Number(metricDetail.undated_redemptions),
   };
 }
 
@@ -2267,10 +1844,10 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
           .eq("id", campaignId)
           .maybeSingle(),
     needsExistingPrizeQuantities
-      ? supabase.from("prizes").select("id,remaining_quantity").eq("campaign_id", campaignId)
+      ? readAllRows((offset,end) => supabase.from("prizes").select("id,remaining_quantity", { count: "exact" }).eq("campaign_id", campaignId).order("id").range(offset,end))
       : Promise.resolve(null),
     needsExistingActionIds
-      ? supabase.from("campaign_actions").select("id").eq("campaign_id", campaignId)
+      ? readAllRows((offset,end) => supabase.from("campaign_actions").select("id", { count: "exact" }).eq("campaign_id", campaignId).order("id").range(offset,end))
       : Promise.resolve(null),
   ]);
   const existingReadMs = Math.round((performance.now() - readsStartedAt) * 10) / 10;
@@ -2778,6 +2355,19 @@ export async function recordEventInSupabase(
     metadata: metadata ?? {},
     created_at: new Date().toISOString(),
   };
+  if (isMarketingClick(eventType) && typeof metadata?.actionId === "string" && typeof metadata?.eventId === "string") {
+    const result = await supabase.rpc("record_marketing_click", {
+      p_campaign_id: campaignId, p_event_type: eventType, p_action_id: metadata.actionId,
+      p_event_id: metadata.eventId, p_session_id: typeof metadata.sessionId === "string" ? metadata.sessionId : "",
+    });
+    if (result.error || !result.data) {
+      throw Object.assign(new Error("Enregistrement du clic indisponible."), {
+        status: result.error?.code === "P0001" ? 400 : 503,
+      });
+    }
+    const row = result.data as EventRow;
+    return toEvent(row);
+  }
   const { error } = await supabase.from("campaign_events").insert(event);
   if (error) throw new Error("Event impossible");
   return toEvent(event);
@@ -3297,113 +2887,6 @@ export async function redeemSupabasePreviewParticipation(input: {
   return findSupabasePreviewRedemptionContextByCode(row.redemption_code ?? "", input.merchantId);
 }
 
-async function redeemSupabaseCashierLeadPrizeForceDirect(input: {
-  leadId: string;
-  merchantId: string;
-  operatorUserId: string;
-  purchaseConfirmed: boolean;
-  idempotencyKey: string;
-  forceReason?: string;
-}): Promise<CashierRedemptionContext> {
-  const supabase = getSupabaseAdmin();
-  const before = await (async () => {
-    const { data: leadCodeRow, error } = await supabase
-      .from("leads")
-      .select("redemption_code")
-      .eq("id", input.leadId)
-      .maybeSingle<{ redemption_code: string | null }>();
-    if (error) throw new Error(error.message);
-    return leadCodeRow?.redemption_code
-      ? findSupabaseMerchantLeadByRedemptionCode(input.merchantId, leadCodeRow.redemption_code)
-      : null;
-  })();
-
-  if (!before?.leadId) throw new Error("Gain introuvable");
-  if (before.status === "redeemed") throw new Error("Lot déjà retiré");
-  if (before.status !== "expired" && before.status !== "not_available") {
-    throw new Error("Le forçage est réservé aux lots hors période de validité.");
-  }
-  if (before.purchaseRequired && !input.purchaseConfirmed) {
-    throw new Error("Achat à confirmer avant le retrait");
-  }
-
-  const existingAudit = input.idempotencyKey
-    ? await supabase
-        .from("cashier_redemption_audits")
-        .select("lead_id")
-        .eq("merchant_id", input.merchantId)
-        .eq("idempotency_key", input.idempotencyKey)
-        .eq("status", "redeemed")
-        .maybeSingle<{ lead_id: string }>()
-    : null;
-  if (existingAudit?.data?.lead_id) {
-    return { ...before, status: "redeemed" };
-  }
-
-  const redeemedAt = new Date().toISOString();
-  const { data: updatedLead, error: updateError } = await supabase
-    .from("leads")
-    .update({
-      status: "redeemed",
-      redeemed_at: redeemedAt,
-      redeemed_by_user_id: input.operatorUserId || null,
-      purchase_verified: input.purchaseConfirmed,
-    })
-    .eq("id", input.leadId)
-    .eq("campaign_id", before.campaignId)
-    .in("status", ["claimed", "expired"])
-    .select("id")
-    .maybeSingle<{ id: string }>();
-  if (updateError || !updatedLead) {
-    throw new Error(updateError?.message || "Lot déjà retiré ou indisponible");
-  }
-
-  const auditId = `cashier-${crypto.randomUUID().replaceAll("-", "").slice(0, 16)}`;
-  const { error: auditError } = await supabase.from("cashier_redemption_audits").insert({
-    id: auditId,
-    merchant_id: input.merchantId,
-    campaign_id: before.campaignId,
-    lead_id: input.leadId,
-    redemption_code: before.redemptionCode,
-    operator_user_id: input.operatorUserId || null,
-    status: "redeemed",
-    purchase_verified: input.purchaseConfirmed,
-    idempotency_key: input.idempotencyKey || null,
-    reason: `cashier_force_out_of_window: ${input.forceReason?.trim() || "motif non précisé"}`,
-    created_at: redeemedAt,
-  });
-  if (auditError && !/does not exist|relation/i.test(auditError.message)) {
-    throw new Error(auditError.message);
-  }
-
-  const { error: eventError } = await supabase.from("campaign_events").insert({
-    id: `evt-${crypto.randomUUID().replaceAll("-", "").slice(0, 8)}`,
-    campaign_id: before.campaignId,
-    lead_id: input.leadId,
-    event_type: "prize_redeemed",
-    metadata: {
-      source: "cashier",
-      operatorUserId: input.operatorUserId,
-      auditId,
-      forceRedemption: true,
-    },
-    created_at: redeemedAt,
-  });
-  if (eventError && !/does not exist|relation/i.test(eventError.message)) {
-    throw new Error(eventError.message);
-  }
-
-  const refreshedContext = before.redemptionCode
-    ? await findSupabaseMerchantLeadByRedemptionCode(input.merchantId, before.redemptionCode)
-    : null;
-  return refreshedContext ?? {
-    ...before,
-    status: "redeemed",
-    redeemedAt,
-    purchaseVerified: input.purchaseConfirmed,
-  };
-}
-
 export async function redeemSupabaseCashierLeadPrize(input: {
   leadId: string;
   merchantId: string;
@@ -3413,24 +2896,22 @@ export async function redeemSupabaseCashierLeadPrize(input: {
   forceRedemption?: boolean;
   forceReason?: string;
 }): Promise<CashierRedemptionContext> {
-  if (input.forceRedemption) {
-    return redeemSupabaseCashierLeadPrizeForceDirect(input);
-  }
-
   const supabase = getSupabaseAdmin();
-  const rpcName = "redeem_cashier_lead_prize";
+  const rpcName = input.forceRedemption ? "redeem_cashier_lead_prize_force" : "redeem_cashier_lead_prize";
   const rpcParams = {
     p_lead_id: input.leadId,
     p_merchant_id: input.merchantId,
     p_operator_user_id: input.operatorUserId,
     p_purchase_confirmed: input.purchaseConfirmed,
     p_idempotency_key: input.idempotencyKey,
+    ...(input.forceRedemption ? { p_force_redemption: true, p_force_reason: input.forceReason ?? "" } : {}),
   };
   const { data, error } = await supabase
     .rpc(rpcName, rpcParams)
     .single<CashierRedeemRpcRow>();
 
   if (error || !data) {
+    if (input.forceRedemption) throw new Error("Le retrait forcé n’a pas pu être confirmé. Vérifiez la migration et réessayez.");
     const functionUnavailable = /function|schema cache|does not exist|ambiguous/i.test(error?.message ?? "");
     if (!functionUnavailable) {
       throw new Error(error?.message || "Le retrait n'a pas pu être validé.");
@@ -3879,15 +3360,11 @@ export async function getSupabaseMerchantSupportOverview(
   options: { includeAllMerchants?: boolean } = {},
 ): Promise<MerchantSupportOverview> {
   const supabase = getSupabaseAdmin();
-  const campaignQuery = supabase
-    .from("campaigns")
-    .select("id,title,merchant_id");
-
-  if (!options.includeAllMerchants) {
-    campaignQuery.eq("merchant_id", merchant.id);
-  }
-
-  const { data: campaignRows, error: campaignError } = await campaignQuery;
+  const { data: campaignRows, error: campaignError } = await readAllRows((offset,end) => {
+    const query = supabase.from("campaigns").select("id,title,merchant_id", { count: "exact" });
+    if (!options.includeAllMerchants) query.eq("merchant_id", merchant.id);
+    return query.order("id").range(offset,end);
+  });
 
   if (campaignError) {
     throw new Error(`Lecture des campagnes support impossible: ${campaignError.message}`);
@@ -3900,6 +3377,8 @@ export async function getSupabaseMerchantSupportOverview(
   if (!campaignIds.length) {
     return {
       failedEmails: [],
+      handledEmails: [],
+      activeEmailCount: 0,
       webhooks: [],
       pendingClaims: [],
       businessLogs: [],
@@ -3916,13 +3395,22 @@ export async function getSupabaseMerchantSupportOverview(
     businessLogQuery.eq("merchant_id", merchant.id);
   }
 
-  const [failedEmailResult, pendingClaimResult, deliveryResult, webhookResult, businessLogResult] = await Promise.all([
+  const [failedEmailResult, handledEmailResult, pendingClaimResult, deliveryResult, webhookResult, businessLogResult] = await Promise.all([
     supabase
       .from("reward_email_deliveries")
-      .select("id,campaign_id,lead_id,recipient_email,status,error_message,last_event_at")
+      .select("id,campaign_id,lead_id,recipient_email,status,error_message,last_event_at,created_at,support_handled_at", { count: "exact" })
       .in("campaign_id", campaignIds)
       .in("status", ["failed", "bounced", "complained", "suppressed"])
+      .eq("support_is_handled", false)
       .order("last_event_at", { ascending: false })
+      .limit(20),
+    supabase
+      .from("reward_email_deliveries")
+      .select("id,campaign_id,lead_id,recipient_email,status,error_message,last_event_at,created_at,support_handled_at")
+      .in("campaign_id", campaignIds)
+      .in("status", ["failed", "bounced", "complained", "suppressed"])
+      .eq("support_is_handled", true)
+      .order("support_handled_at", { ascending: false })
       .limit(20),
     supabase
       .from("leads")
@@ -3934,10 +3422,10 @@ export async function getSupabaseMerchantSupportOverview(
       .not("prize_id", "is", null)
       .order("created_at", { ascending: false })
       .limit(30),
-    supabase
+    readAllRows((offset,end) => supabase
       .from("reward_email_deliveries")
-      .select("id,campaign_id,lead_id,recipient_email,status")
-      .in("campaign_id", campaignIds),
+      .select("id,campaign_id,lead_id,recipient_email,status", { count: "exact" })
+      .in("campaign_id", campaignIds).order("id").range(offset,end)),
     supabase
       .from("reward_email_events")
       .select("id,reward_email_delivery_id,resend_email_id,event_type,payload,created_at")
@@ -3948,6 +3436,9 @@ export async function getSupabaseMerchantSupportOverview(
 
   if (failedEmailResult.error) {
     throw new Error(`Lecture des e-mails en échec impossible: ${failedEmailResult.error.message}`);
+  }
+  if (handledEmailResult.error) {
+    throw new Error("Lecture des incidents traités impossible.");
   }
   if (pendingClaimResult.error) {
     throw new Error(`Lecture des gains en attente impossible: ${pendingClaimResult.error.message}`);
@@ -3970,7 +3461,7 @@ export async function getSupabaseMerchantSupportOverview(
   const deliveryById = new Map(deliveryRows.map((row) => [row.id, row]));
 
   const leadIds = new Set<string>();
-  for (const row of (failedEmailResult.data ?? []) as Array<{ lead_id: string }>) {
+  for (const row of [...(failedEmailResult.data ?? []), ...(handledEmailResult.data ?? [])] as Array<{ lead_id: string }>) {
     leadIds.add(row.lead_id);
   }
   for (const row of (pendingClaimResult.data ?? []) as Array<{ id: string }>) {
@@ -3980,10 +3471,10 @@ export async function getSupabaseMerchantSupportOverview(
     leadIds.add(row.lead_id);
   }
 
-  const { data: leadRows, error: leadError } = await supabase
+  const { data: leadRows, error: leadError } = await readAllRows((offset,end) => supabase
     .from("leads")
-    .select("id,first_name,email,prize_id")
-    .in("id", Array.from(leadIds));
+    .select("id,first_name,email,prize_id", { count: "exact" })
+    .in("id", Array.from(leadIds)).order("id").range(offset,end));
 
   if (leadError) {
     throw new Error(`Lecture des leads support impossible: ${leadError.message}`);
@@ -4001,10 +3492,10 @@ export async function getSupabaseMerchantSupportOverview(
     }
   }
 
-  const { data: prizeRows, error: prizeError } = await supabase
+  const { data: prizeRows, error: prizeError } = await readAllRows((offset,end) => supabase
     .from("prizes")
-    .select("id,label")
-    .in("id", Array.from(prizeIds));
+    .select("id,label", { count: "exact" })
+    .in("id", Array.from(prizeIds)).order("id").range(offset,end));
 
   if (prizeError) {
     throw new Error(`Lecture des dotations support impossible: ${prizeError.message}`);
@@ -4019,8 +3510,8 @@ export async function getSupabaseMerchantSupportOverview(
     ((prizeRows ?? []) as Array<{ id: string; label: string }>).map((row) => [row.id, row.label]),
   );
 
-  const failedEmails: MerchantFailedEmailItem[] = (
-    (failedEmailResult.data ?? []) as Array<{
+  const mapEmailIncidents = (rows: unknown[]): MerchantFailedEmailItem[] => (
+    rows as Array<{
       id: string;
       campaign_id: string;
       lead_id: string;
@@ -4028,6 +3519,8 @@ export async function getSupabaseMerchantSupportOverview(
       status: RewardEmailDelivery["status"];
       error_message: string | null;
       last_event_at: string | null;
+      created_at: string;
+      support_handled_at: string | null;
     }>
   ).map((row) => {
     const lead = leadById.get(row.lead_id);
@@ -4041,9 +3534,13 @@ export async function getSupabaseMerchantSupportOverview(
       recipientEmail: row.recipient_email,
       status: row.status,
       errorMessage: row.error_message ?? undefined,
-      lastEventAt: row.last_event_at ?? new Date().toISOString(),
+      lastEventAt: row.last_event_at ?? row.created_at,
+      eventAt: row.last_event_at,
+      handledAt: row.support_handled_at ?? undefined,
     };
   });
+  const failedEmails = mapEmailIncidents(failedEmailResult.data ?? []);
+  const handledEmails = mapEmailIncidents(handledEmailResult.data ?? []);
 
   const pendingClaims: MerchantPendingClaimItem[] = (
     (pendingClaimResult.data ?? []) as Array<{
@@ -4135,6 +3632,8 @@ export async function getSupabaseMerchantSupportOverview(
 
   return {
     failedEmails,
+    handledEmails,
+    activeEmailCount: failedEmailResult.count ?? failedEmails.length,
     webhooks,
     pendingClaims,
     businessLogs,

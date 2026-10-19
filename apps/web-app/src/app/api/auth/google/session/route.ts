@@ -4,6 +4,7 @@ import { createAffiliateReferralForMerchant } from "@/lib/affiliate-repository";
 import { notifyAdministratorsOfMerchantSignup } from "@/lib/admin-notifications";
 import { syncMerchantContactToBrevo } from "@/lib/brevo";
 import { authenticateOrProvisionMerchantWithGoogle } from "@/lib/merchant-account-repository";
+import { captureProductEvent, merchantDistinctId } from "@/lib/product-analytics";
 import { getPublicErrorStatus } from "@/lib/public-api";
 import { assertPersistentPublicRateLimit } from "@/lib/public-security-store";
 import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
@@ -99,6 +100,20 @@ export async function POST(request: Request) {
           source: "google",
         }),
       ];
+
+      if (session.isNew) {
+        sideEffects.push(
+          captureProductEvent(
+            "signup_completed",
+            merchantDistinctId(session.user.merchantId, session.user.id),
+            {
+              merchantId: session.merchant.id,
+              merchantUserId: session.user.id,
+              authProvider: "google",
+            },
+          ),
+        );
+      }
 
       if (body.referralCode?.trim()) {
         sideEffects.push(

@@ -10,11 +10,11 @@ Utiliser ces termes dans l'interface, les Issues, les critères d'acceptation, l
 | Marchand | Compte professionnel qui possède et pilote un ou plusieurs établissements. | Client/joueur. | « Le marchand crée un jeu ». |
 | Établissement | Site physique d'un marchand, avec ses informations et ses jeux propres. | Workspace. | « Le Comptoir des Îles · Nanterre ». |
 | Secteur d’activité | Catégorie générale de l’activité d’un établissement, utilisée pour contextualiser les réglages et les suggestions de lots. Elle peut rester non renseignée. | Sous-secteur. | Beauté, Restauration, Services. |
-| Sous-secteur | Précision facultative du secteur Beauté : Coiffure, Institut & soins, Ongles & cils ou Massage & spa. | Secteur d’activité. | Institut & soins. |
+| Sous-secteur | Spécialité facultative du secteur Beauté : Beauté généraliste / multi-activité, Coiffure, Ongles, Regard — cils & sourcils, Massage & Spa ou Soins visage & corps. Une ancienne valeur n'est conservée que si référencée. | Secteur d’activité. | Regard — cils & sourcils. |
 | Multi-sites | Fonction qui permet à un marchand de gérer plusieurs établissements. | Workspace. | « Déployer ce jeu sur plusieurs sites ». |
 | Workspace | Conteneur technique d'organisation auquel sont rattachés les marchands, utilisateurs et établissements autorisés. | Établissement. | Un workspace peut contenir plusieurs établissements. |
 | Joueur | Client final qui accède au jeu et y participe. | Marchand ou personnel du commerce. | « Le joueur scanne le QR code ». |
-| Participation | Tentative de jeu enregistrée pour un joueur et une visite données. | Scan ou action marketing. | Une participation peut produire un gain ou une perte. |
+| Participation | Partie commencée et enregistrée une fois par session, indépendamment du résultat et des coordonnées ; premier grattage pour un ticket. | Scan, contact ou action marketing. | Une perte sans e-mail compte aussi (#496). |
 | Visite | Rang de participation d'un joueur dans un jeu, utilisé pour proposer l'action marketing suivante. | Session technique. | La deuxième visite propose l'action 2. |
 | Scan | Ouverture du jeu à partir d'un QR code de diffusion. | Participation. | Un scan peut ne jamais devenir une participation. |
 | Action marketing | Action proposée au joueur avant le jeu : avis Google, suivi social ou lien personnalisé. | Collecte d'e-mail. | « Suivre sur Instagram ». |
@@ -37,9 +37,24 @@ Utiliser ces termes dans l'interface, les Issues, les critères d'acceptation, l
 | Brouillon | Jeu enregistré sans être publié ; il peut être incomplet. | Jeu actif. | Un brouillon est prévisualisable. |
 | Jeu actif | Jeu publié et accessible au public par son QR code de diffusion. | Brouillon. | Le jeu peut recevoir des participations de production. |
 | E-mail de gain | E-mail transactionnel envoyé au joueur après un gain avec les informations de retrait. | Collecte d'e-mail. | Objet contenant le nom du lot remporté. |
+| Notification de gains | Alerte personnelle envoyée à l’utilisateur d’un établissement pour ses gains réels, activable dans Mon compte. | E-mail de gain du joueur. | Synthèse quotidienne des gains de l’établissement. |
+| Synthèse de gains | E-mail récapitulant une période locale close et contenant une ligne par gain : date/heure, prénom et nom du participant, jeu et lot. | Consommation ou retrait des lots ; garantie de réception exactement à 9 h. | Synthèse de la semaine précédente, au passage quotidien du lundi matin en heure de France (horaire indicatif). |
 | Lead | Enregistrement d'un joueur/participant utilisable par le marchand dans les résultats. | Simple scan. | Contact ayant laissé son e-mail. |
 
+## Catalogue de suggestions — issue #466
+
+- **Suggestion de lot** : proposition réutilisable avec libellé, probabilité, coût estimé et description ; ce n'est pas un lot enregistré dans un jeu.
+- **Condition suggérée** : pour le catalogue Beauté, texte de la suggestion qui préremplit les conditions d'utilisation du nouveau lot, modifiable par le marchand.
+- **Sous-secteur Beauté** : spécialité déclarée par l'établissement, utilisée pour choisir la bibliothèque ; sans spécialité, repli vers Beauté généraliste / multi-activité sans modifier son profil.
+- **Catégorie historique ambiguë** : « Institut & soins » ou « Ongles & cils », conservée uniquement si utilisée, sans attribution automatique à une nouvelle spécialité.
+
 ## Règles de rédaction
+
+- **Clic marketing** (#498) : événement d'ouverture d'une action Google, sociale ou d'un lien personnalisé. Ni avis publié ni suivi confirmé ; les clics historiques sans identifiant restent non attribués.
+- **Gain à suivre** (#498) : gain avec lot associé, non retiré et non expiré ; sa disponibilité peut être future.
+- **Conversion globale** (#498) : total des participations divisé par total des scans, avec un seul arrondi final. Période et établissements identiques au numérateur et dénominateur.
+
+- **Incident d’e-mail traité** : anomalie de délivrabilité acquittée par l’administrateur pour le dernier événement observé. Ne signifie ni « e-mail livré » ni « e-mail renvoyé » ; un nouvel événement rend l’incident de nouveau à traiter.
 
 - Un terme porte un seul sens. Si un nouveau sens est nécessaire, créer une nouvelle entrée.
 - Préférer la forme affichée dans l'interface : **jeu**, **retrait**, **établissement**, **multi-sites**.

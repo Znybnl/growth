@@ -19,9 +19,9 @@ type EventBody = {
 };
 
 export async function POST(request: Request) {
-  const body = (await request.json()) as EventBody;
+  const body = (await request.json().catch(() => null)) as EventBody | null;
 
-  if (!isValidPublicIdentifier(body.campaignId) || !isAllowedPublicEventType(body.eventType)) {
+  if (!body || !isValidPublicIdentifier(body.campaignId) || !isAllowedPublicEventType(body.eventType)) {
     return NextResponse.json({ error: "campaignId and eventType are required" }, { status: 400 });
   }
 
@@ -37,6 +37,18 @@ export async function POST(request: Request) {
       limit: 40,
       windowMs: 60 * 1000,
     });
+
+    const isClick = body.eventType === "review_clicked" || body.eventType === "social_clicked";
+    if (isClick && (body.metadata?.actionId !== undefined || body.metadata?.eventId !== undefined)) {
+      if (typeof body.metadata?.actionId !== "string" || typeof body.metadata?.eventId !== "string" ||
+        !isValidPublicIdentifier(body.metadata.actionId) || !isValidPublicIdentifier(body.metadata.eventId)) {
+        return NextResponse.json({ error: "Action ou événement invalide" }, { status: 400 });
+      }
+      const action = campaign.actions.find(a => a.id === body.metadata?.actionId);
+      if (!action || (action.kind === "google") !== (body.eventType === "review_clicked")) {
+        return NextResponse.json({ error: "Action indisponible" }, { status: 400 });
+      }
+    }
 
     const event = await recordEvent(
       campaignId,

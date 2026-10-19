@@ -36,6 +36,7 @@ type PosterEditorProps = {
   prizes: Prize[];
   settingsEndpoint?: string;
   returnHref?: string;
+  adminImageTarget?: { accountMerchantId: string; locationId: string };
 };
 
 type PosterPngPreview = {
@@ -53,6 +54,7 @@ function uploadPosterLogo(
   onLoaded: (value: string) => void,
   onError?: (message: string) => void,
   onUploadStateChange?: (isUploading: boolean) => void,
+  adminTarget?: { accountMerchantId: string; locationId: string },
 ) {
   const file = event.target.files?.[0];
 
@@ -60,7 +62,7 @@ function uploadPosterLogo(
 
   event.target.value = "";
   onUploadStateChange?.(true);
-  void uploadMerchantImageFile(file, "logo")
+  void uploadMerchantImageFile(file, "logo", adminTarget)
     .then(({ url }) => onLoaded(url))
     .catch((error: unknown) => onError?.(error instanceof Error ? error.message : "Import de l’image impossible."))
     .finally(() => onUploadStateChange?.(false));
@@ -251,7 +253,7 @@ function applyTemplateDefaults(
   };
 }
 
-export function PosterEditor({ campaign, prizes, settingsEndpoint, returnHref }: PosterEditorProps) {
+export function PosterEditor({ campaign, prizes, settingsEndpoint, returnHref, adminImageTarget }: PosterEditorProps) {
   const router = useRouter();
   const resolvedSettingsEndpoint = settingsEndpoint ?? `/api/campaigns/${campaign.id}/poster-settings`;
   const campaignPrimaryColor =
@@ -922,6 +924,7 @@ export function PosterEditor({ campaign, prizes, settingsEndpoint, returnHref }:
                       },
                       setImageUploadError,
                       setIsUploadingLogo,
+                      adminImageTarget,
                     )
                   }
                   disabled={isUploadingLogo}

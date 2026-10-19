@@ -2,9 +2,8 @@ import { NextResponse } from "next/server";
 
 import { assertSaasAdminEmail } from "@/lib/admin";
 import { getAuthenticatedSession } from "@/lib/auth";
-import { getAdminCampaignLocation } from "@/lib/admin-campaign-repository";
+import { getAdminCampaignContext, getAdminCampaignLocation } from "@/lib/admin-campaign-repository";
 import { parseCampaignSetupInput } from "@/lib/merchant-input";
-import { getSupabaseAdmin } from "@/lib/supabase";
 import { saveCampaignSetup } from "@/lib/store";
 import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
 import { logSupportEvent } from "@/lib/support-log";
@@ -55,27 +54,11 @@ export async function POST(request: Request, { params }: RouteProps) {
       return NextResponse.json({ error: "L’établissement sélectionné ne correspond pas à la requête." }, { status: 403 });
     }
 
-    const supabase = getSupabaseAdmin();
     const isNewCampaign = !inputPayload.id;
     if (!isNewCampaign) {
-      const existing = await supabase
-        .from("campaigns")
-        .select("merchant_id,campaign_local_settings")
-        .eq("id", String(inputPayload.id))
-        .maybeSingle<{ merchant_id: string; campaign_local_settings: Record<string, unknown> | null }>();
-      if (existing.error) throw new Error("Vérification du brouillon impossible.");
-
-      const audit = existing.data?.campaign_local_settings?.adminCreation as
-        | { adminUserId?: string; accountMerchantId?: string; targetLocationId?: string }
-        | undefined;
-      if (
-        !existing.data ||
-        existing.data.merchant_id !== locationId ||
-        audit?.adminUserId !== session.user.id ||
-        audit.accountMerchantId !== accountMerchantId ||
-        audit.targetLocationId !== locationId
-      ) {
-        return NextResponse.json({ error: "Brouillon introuvable." }, { status: 404 });
+      const context = await getAdminCampaignContext(String(inputPayload.id), session.user.email, accountMerchantId);
+      if (!context || context.targetLocationId !== locationId) {
+        return NextResponse.json({ error: "Jeu introuvable." }, { status: 404 });
       }
     }
 
@@ -114,17 +97,15 @@ export async function POST(request: Request, { params }: RouteProps) {
     try { await deleteMerchantImagesIfUnreferenced(previousImageUrls); }
     catch { /* Do not fail a saved admin campaign if cleanup needs a retry. */ }
 
-    if (isNewCampaign) {
-      logSupportEvent("info", "admin_campaign_created", {
-        merchantId: locationId,
-        campaignId,
-        adminUserId: session.user.id,
-        accountMerchantId,
-        targetLocationId: locationId,
-      });
-    }
+    logSupportEvent("info", isNewCampaign ? "admin_campaign_created" : "admin_campaign_updated", {
+      merchantId: locationId,
+      campaignId,
+      adminUserId: session.user.id,
+      accountMerchantId,
+      targetLocationId: locationId,
+    });
 
-    return NextResponse.json({ campaign: { id: campaignId } }, { status: 201 });
+    return NextResponse.json({ campaign: { id: campaignId } }, { status: isNewCampaign ? 201 : 200 });
   } catch (error) {
     const status = isAdminAccessError(error)
       ? 403

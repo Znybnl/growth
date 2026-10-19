@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
       ?? (industry === session.merchant.industry ? session.merchant.industrySubsector : "")
       ?? "";
     const suggestions = await getPrizeSuggestions(industry, false, industrySubsector);
-    return NextResponse.json({ suggestions });
+    return NextResponse.json({ suggestions }, { headers: { "Cache-Control": "private, no-store" } });
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Lecture impossible." },

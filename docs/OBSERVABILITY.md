@@ -4,7 +4,7 @@
 
 Okado conserve ses signaux existants (logs runtime Vercel, événements métier `business_logs` et analytics PostHog) et ajoute une instrumentation ciblée des erreurs de sauvegarde de campagne. Les erreurs serveur de `POST /api/campaigns/setup` et l'échec correspondant côté wizard peuvent être envoyés à PostHog Logs au format OpenTelemetry (OTLP).
 
-Le choix est volontairement ciblé : il évite de recopier automatiquement toute la sortie console, limite le volume et réduit le risque de doublons avec les logs Vercel. Les traces distribuées et l'autocapture des logs console ne sont pas activés dans cette issue. Le suivi analytics PostHog côté navigateur reste actif.
+Le choix est volontairement ciblé : il évite de recopier automatiquement toute la sortie console, limite le volume et réduit le risque de doublons avec les logs Vercel. Les traces distribuées et l'autocapture des logs console ne sont pas activés dans cette issue. Depuis #508, le suivi produit et les captures d'erreur côté navigateur attendent le consentement de mesure ; le refus et le retrait les bloquent. L'export opérationnel serveur décrit ci-dessous conserve sa configuration propre, désactivée par défaut.
 
 ## Configuration
 
@@ -14,7 +14,7 @@ Les variables suivantes sont optionnelles et doivent être définies dans l'envi
 - `POSTHOG_OTEL_LOGS_TOKEN=phc_...` est le project token PostHog, distinct d'une clé personnelle `phx_...`.
 - `POSTHOG_OTEL_LOGS_HOST=https://eu.i.posthog.com` est l'hôte PostHog EU par défaut. L'export utilise `/i/v1/logs`.
 - `POSTHOG_OTEL_LOGS_SERVICE_NAME=okado-web` permet de distinguer le service dans PostHog Logs.
-- `NEXT_PUBLIC_APP_ENV` renseigne l'environnement des logs PostHog côté navigateur.
+- `NEXT_PUBLIC_VERCEL_ENV` renseigne l'environnement des captures navigateur autorisées (`local` en l'absence de valeur).
 
 Le projet Vercel actuellement lié est sur le plan Hobby : les Vercel Drains ne sont donc pas une dépendance de cette solution. L'export est direct vers PostHog via OTLP. Les quotas, la rétention et le coût exacts de PostHog Logs doivent être confirmés dans le workspace PostHog du propriétaire avant activation en production.
 

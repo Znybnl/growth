@@ -2,49 +2,10 @@
 
 import Link from "next/link";
 import { AlertTriangle } from "lucide-react";
-import { useEffect, useState } from "react";
-
-type MerchantAlerts = {
-  emailCount: number;
-  emailCampaignId: string | null;
-  lowStockCount: number;
-  exhaustedStockCount: number;
-  stockCampaignId: string | null;
-};
-
-const EMPTY_ALERTS: MerchantAlerts = {
-  emailCount: 0,
-  emailCampaignId: null,
-  lowStockCount: 0,
-  exhaustedStockCount: 0,
-  stockCampaignId: null,
-};
+import { useMerchantAlerts } from "@/components/merchant/merchant-alerts-provider";
 
 export function DashboardOperationalAlerts() {
-  const [alerts, setAlerts] = useState<MerchantAlerts | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function loadAlerts() {
-      try {
-        const response = await fetch("/api/merchant/email-alerts");
-        if (!response.ok) return;
-
-        const payload = (await response.json()) as Partial<MerchantAlerts>;
-        if (!cancelled) {
-          setAlerts({ ...EMPTY_ALERTS, ...payload });
-        }
-      } catch {
-        // Alerts remain non-blocking for the dashboard.
-      }
-    }
-
-    void loadAlerts();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const alerts = useMerchantAlerts();
 
   if (!alerts || (!alerts.lowStockCount && !alerts.exhaustedStockCount)) {
     return null;

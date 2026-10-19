@@ -1,4 +1,17 @@
 import { expect, test, type Page } from "@playwright/test";
+import { ANALYTICS_CONSENT_COOKIE, ANALYTICS_CONSENT_VERSION } from "../src/lib/analytics-consent";
+
+// A cold development server compiles both the game and its QR route on demand.
+test.setTimeout(90_000);
+
+test.beforeEach(async ({ context, baseURL, page }) => {
+  await context.addCookies([{ name: ANALYTICS_CONSENT_COOKIE, url: baseURL!,
+    value: encodeURIComponent(JSON.stringify({ version: ANALYTICS_CONSENT_VERSION, choice: "rejected", decidedAt: Date.now() })) }]);
+  await page.route(/https:\/\//, route => route.abort());
+  // Keep every mutation local to the browser. Specific mocks below take priority.
+  await page.route("**/api/**", route => route.request().method() === "GET"
+    ? route.continue() : route.fulfill({ json: {} }));
+});
 
 async function enablePreGameCapture(page: Page, campaignId: string) {
   // Chromium treats fulfilled documents as network-unknown. Allow this
@@ -101,7 +114,8 @@ for (const isPreview of [false, true]) {
             finalizedPayload = route.request().postDataJSON();
             return route.fulfill({
               json: {
-                prize,
+                prize: gameType === "scratch" && !collectBeforeGame
+                  ? { ...prize, usageConditions: undefined } : prize,
                 lead: {
                   redemptionCode: "E2E-GAIN-449",
                   rewardAvailableAt: "2026-10-04T12:00:00.000Z",
@@ -168,6 +182,8 @@ for (const isPreview of [false, true]) {
               ),
             ).toBeVisible({ timeout: 15_000 });
             await expect(receive).toHaveCount(0);
+            await expect(dialog.getByText(conditions, { exact: true })).toHaveCount(0);
+            await expect(dialog.getByText("Conditions d'utilisation", { exact: true })).toHaveCount(0);
             await expect(
               dialog.getByRole("link", {
                 name: "Enregistrer mon QR code",
@@ -186,19 +202,11 @@ for (const isPreview of [false, true]) {
             await expect(receive).toHaveCSS("font-weight", "700");
             await expect(receive).toHaveCSS("line-height", "28px");
             await expect(dialog.getByRole("checkbox")).not.toBeChecked();
-            const usage = dialog.getByText(conditions, { exact: true });
-            if (hasConditions) {
-              await expect(usage).toBeVisible();
-              const buttonBox = await receive.boundingBox();
-              const conditionsBox = await usage.boundingBox();
-              expect(conditionsBox!.y).toBeGreaterThan(
-                buttonBox!.y + buttonBox!.height,
-              );
-            } else {
-              await expect(
-                dialog.getByText("Conditions d'utilisation", { exact: true }),
-              ).toHaveCount(0);
-            }
+            // #558: conditions are disclosed in the detailed confirmation only.
+            await expect(dialog.getByText(conditions, { exact: true })).toHaveCount(0);
+            await expect(
+              dialog.getByText("Conditions d'utilisation", { exact: true }),
+            ).toHaveCount(0);
             await dialog
               .getByPlaceholder("Prénom", { exact: true })
               .fill("Test");
@@ -208,6 +216,12 @@ for (const isPreview of [false, true]) {
             await page.screenshot({
               path: testInfo.outputPath("receive-gain-mobile.png"),
             });
+            if (!isPreview && hasConditions && gameType === "wheel") {
+              await page.setViewportSize({ width: 1280, height: 900 });
+              await expect(dialog.getByText(conditions, { exact: true })).toHaveCount(0);
+              await page.screenshot({ path: testInfo.outputPath("receive-gain-desktop.png") });
+              await page.setViewportSize({ width: 390, height: 844 });
+            }
             await receive.click();
           }
           await expect(
@@ -261,6 +275,7 @@ for (const isPreview of [false, true]) {
                 (image: HTMLImageElement) =>
                   image.complete && image.naturalWidth > 0,
               ),
+              { timeout: 15_000 },
             )
             .toBe(true);
           const save = dialog.getByRole("link", {

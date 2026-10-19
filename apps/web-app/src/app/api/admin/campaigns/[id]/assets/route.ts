@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { isSaasAdminEmail } from "@/lib/admin";
-import { getAdminCreatedCampaignContext } from "@/lib/admin-campaign-repository";
+import { getAdminCampaignContext } from "@/lib/admin-campaign-repository";
 import { getAuthenticatedSession } from "@/lib/auth";
 import { getCampaignSetupPerformance } from "@/lib/store";
 
@@ -17,7 +17,7 @@ export async function GET(_request: Request, { params }: AdminCampaignAssetsRout
   }
 
   const { id } = await params;
-  const context = await getAdminCreatedCampaignContext(id, session.user.id);
+  const context = await getAdminCampaignContext(id, session.user.email);
   if (!context) return NextResponse.json({ error: "Jeu introuvable." }, { status: 404 });
 
   const performance = await getCampaignSetupPerformance(id, context.location);

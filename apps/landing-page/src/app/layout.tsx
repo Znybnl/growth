@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
-import { Analytics } from "@vercel/analytics/next";
+import { CookiePreferences } from "@/components/privacy/cookie-preferences";
 import { Inter, Roboto_Mono } from "next/font/google";
 
 import { cn } from "@/lib/utils";
+import { SiteFooter, SiteHeader } from "@/components/marketing/site-navigation";
+import { SITE_URL, pageMetadata, safeJsonLd, siteEntities } from "@/lib/site";
 import "./globals.css";
 
 const inter = Inter({
@@ -18,9 +20,12 @@ const robotoMono = Roboto_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Okado | Digitalisez le trafic de votre point de vente",
-  description:
-    "Transformez vos visiteurs physiques anonymes en prospects qualifiés grâce à des jeux concours par QR Code.",
+  metadataBase: new URL(SITE_URL),
+  ...pageMetadata(
+    "/",
+    "Jeux par QR code pour commerces : roue et ticket à gratter | Okado",
+    "Créez un jeu mobile avec votre logo, vos lots et votre affiche QR. Suivez les participations, gains et retraits. Essai de 30 jours sans carte.",
+  ),
 };
 
 export default function RootLayout({
@@ -29,10 +34,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" className={cn("h-full font-sans", inter.variable, robotoMono.variable)}>
+    <html
+      lang="fr"
+      className={cn("h-full font-sans", inter.variable, robotoMono.variable)}
+    >
       <body className="min-h-full">
+        <SiteHeader />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: safeJsonLd(siteEntities) }}
+        />
         {children}
-        <Analytics />
+        <SiteFooter />
+        <CookiePreferences />
       </body>
     </html>
   );

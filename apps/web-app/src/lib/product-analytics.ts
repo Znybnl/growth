@@ -1,3 +1,6 @@
+import { cookies } from "next/headers";
+import { ANALYTICS_CONSENT_COOKIE, parseAnalyticsConsent } from "@/lib/analytics-consent";
+import { merchantAnalyticsDistinctId } from "@/lib/analytics-identity";
 import {
   analyticsEnvironment,
   PRODUCT_ANALYTICS_VERSION,
@@ -31,6 +34,12 @@ export async function captureProductEvent(
   }
 
   try {
+    // Server-side capture follows the browser choice too. Background jobs and
+    // webhooks without an explicit request preference do not feed product analytics.
+    const preference = (await cookies()).get(ANALYTICS_CONSENT_COOKIE)?.value;
+    const consent = parseAnalyticsConsent(preference);
+    if (consent?.choice !== "accepted") return;
+
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 1_500);
 
@@ -47,6 +56,8 @@ export async function captureProductEvent(
             source: "server",
             trackingVersion: PRODUCT_ANALYTICS_VERSION,
             environment: analyticsEnvironment(),
+            consentVersion: consent.version,
+            consentDecidedAt: consent.decidedAt,
           },
         }),
         signal: controller.signal,
@@ -59,6 +70,6 @@ export async function captureProductEvent(
   }
 }
 
-export function merchantDistinctId(merchantId: string, merchantUserId?: string) {
-  return merchantUserId ? `${merchantId}:${merchantUserId}` : merchantId;
+export function merchantDistinctId(accountMerchantId: string, merchantUserId?: string) {
+  return merchantUserId ? merchantAnalyticsDistinctId(accountMerchantId, merchantUserId) : accountMerchantId;
 }

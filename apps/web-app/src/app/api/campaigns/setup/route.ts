@@ -135,7 +135,7 @@ export async function POST(request: Request) {
     });
     void captureProductEvent(
       body.id ? "campaign_saved" : "campaign_created",
-      merchantDistinctId(session.merchant.id, session.user.id),
+      merchantDistinctId(session.user.merchantId, session.user.id),
       {
         merchantId: session.merchant.id,
         merchantUserId: session.user.id,
@@ -150,7 +150,7 @@ export async function POST(request: Request) {
     if (body.isActive) {
       void captureProductEvent(
         "campaign_published",
-        merchantDistinctId(session.merchant.id, session.user.id),
+        merchantDistinctId(session.user.merchantId, session.user.id),
         {
           merchantId: session.merchant.id,
           merchantUserId: session.user.id,

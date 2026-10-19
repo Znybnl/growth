@@ -1,0 +1,79 @@
+[
+  {
+    "id": "ps-beauty-discount-10",
+    "industry": "Beauté",
+    "industrySubsector": null,
+    "label": "Une réduction de 10 %",
+    "description": "Valable sur la prochaine prestation, pour encourager un retour rapide.",
+    "probability": 40,
+    "estimatedUnitCost": 3,
+    "icon": "discount",
+    "sortOrder": 10
+  },
+  {
+    "id": "ps-beauty-mini-product",
+    "industry": "Beauté",
+    "industrySubsector": null,
+    "label": "Un échantillon offert",
+    "description": "Format découverte ou échantillon premium à remettre au salon.",
+    "probability": 40,
+    "estimatedUnitCost": 2.5,
+    "icon": "gift",
+    "sortOrder": 20
+  },
+  {
+    "id": "ps-beauty-upgrade",
+    "industry": "Beauté",
+    "industrySubsector": null,
+    "label": "Un supplément soin offert",
+    "description": "Un massage, une pose de masque ou une finition offerte selon la prestation.",
+    "probability": 15,
+    "estimatedUnitCost": 6,
+    "icon": "supplement",
+    "sortOrder": 30
+  },
+  {
+    "id": "ps-beauty-credit-15",
+    "industry": "Beauté",
+    "industrySubsector": null,
+    "label": "15€ offerts sur une prestation",
+    "description": "Un crédit à utiliser lors d'un prochain rendez-vous.",
+    "probability": 10,
+    "estimatedUnitCost": 15,
+    "icon": "discount",
+    "sortOrder": 40
+  },
+  {
+    "id": "ps-beauty-premium-treatment",
+    "industry": "Beauté",
+    "industrySubsector": null,
+    "label": "Un soin premium offert",
+    "description": "Un soin ciblé à forte valeur perçue, à réserver selon les disponibilités.",
+    "probability": 5,
+    "estimatedUnitCost": 25,
+    "icon": "dessert",
+    "sortOrder": 50
+  },
+  {
+    "id": "ps-beauty-box",
+    "industry": "Beauté",
+    "industrySubsector": null,
+    "label": "Une trousse beauté offerte",
+    "description": "Une sélection de produits ou accessoires du salon.",
+    "probability": 5,
+    "estimatedUnitCost": 35,
+    "icon": "gift",
+    "sortOrder": 60
+  },
+  {
+    "id": "ps-beauty-signature",
+    "industry": "Beauté",
+    "industrySubsector": null,
+    "label": "Une prestation signature offerte",
+    "description": "Le gros lot : une prestation complète définie par le salon.",
+    "probability": 2,
+    "estimatedUnitCost": 60,
+    "icon": "dessert",
+    "sortOrder": 70
+  }
+]

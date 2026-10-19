@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { recordScratchParticipation } from "@/lib/public-participation";
 import {
   ArrowRight,
   AtSign,
@@ -45,6 +46,7 @@ import {
   isCocoricoWheelTemplate,
   isRoseInstitutWheelTemplate,
   resolveCocoricoBackgroundColor,
+  wheelBackgroundForTemplate,
   restaurantPopBackground,
   classicWheelBackground,
   roseInstitutWheelBackground,
@@ -469,6 +471,7 @@ export function CampaignExperience({
     "Une seule participation est possible par jour. Revenez demain pour tenter votre chance à nouveau.",
   );
   const [drawSession, setDrawSession] = useState<DrawSession | null>(null);
+  const marketingVisitId = useRef<string | null>(null);
   const [previewToken, setPreviewToken] = useState<string | null>(initialPreviewToken ?? null);
   const [previewResult, setPreviewResult] = useState<Pick<CreateDrawSessionResult, "prize"> | null>(null);
   const [drawResult, setDrawResult] = useState<PublicDrawResult | null>(null);
@@ -529,6 +532,9 @@ export function CampaignExperience({
     ? scratchTemplatePrimaryColor(scratchAccent.signal, pageTemplate)
     : campaign.presentation.wheel.loseColor ?? campaign.accent.signal;
   const secondaryColor = campaign.presentation.wheel.winColor ?? "#073b72";
+  const pageBackgroundColor = isCocoricoDuoTemplate
+    ? wheelBackgroundForTemplate(pageTemplate, campaign.presentation.background.color, primaryColor)
+    : campaign.presentation.background.color;
   const headingTextColor =
     isCosmicTemplate || isCocoricoTemplate
       ? "#f8fbff"
@@ -646,6 +652,16 @@ export function CampaignExperience({
         eventType,
         metadata,
       }),
+    });
+  }
+
+  function trackMarketingClick() {
+    if (!currentAction || isPreview) return;
+    marketingVisitId.current ??= crypto.randomUUID();
+    void trackEvent(currentAction.kind === "google" ? "review_clicked" : "social_clicked", undefined, {
+      actionId: currentAction.id,
+      eventId: crypto.randomUUID(),
+      sessionId: drawSession?.id ?? marketingVisitId.current,
     });
   }
 
@@ -818,11 +834,7 @@ export function CampaignExperience({
   }
 
   function handleScratchStart() {
-    void trackEvent("game_played", undefined, {
-      mechanic: "scratch",
-      trigger: "first_touch",
-      sessionId: drawSession?.id ?? null,
-    });
+    if (!isPreview && drawSession) void recordScratchParticipation(drawSession);
   }
 
   const managedBackgroundUrl = campaign.presentation.background.mode === "image" &&
@@ -866,6 +878,8 @@ export function CampaignExperience({
         ? roseInstitutWheelBackground(campaign.presentation.background.color)
         : isBeautyTemplate
         ? beautyWheelBackground(pageTemplate, campaign.presentation.background.color, primaryColor)
+        : isCocoricoDuoTemplate
+        ? `linear-gradient(${pageBackgroundColor}, ${pageBackgroundColor})`
         : isCocoricoTemplate
         ? `radial-gradient(circle at 12% 12%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(campaign.presentation.background.color), 0.32), "e6")} 0 10%, transparent 11%), radial-gradient(circle at 90% 18%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(campaign.presentation.background.color), 0.12), "b3")} 0 16%, transparent 17%), linear-gradient(160deg, ${resolveCocoricoBackgroundColor(campaign.presentation.background.color)} 0%, ${resolveCocoricoBackgroundColor(campaign.presentation.background.color)} 48%, #063d78 100%)`
         : `radial-gradient(circle at 50% 50%, ${withHexAlpha(primaryColor, "33")}, transparent 50%), linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.08))`;
@@ -895,7 +909,7 @@ export function CampaignExperience({
       className={`okado-public-experience relative min-h-screen overflow-hidden ${pageTemplate === "beauty-rose" ? "okado-rose-powder-surface" : ""}`}
       data-template-id={pageTemplate}
       style={{
-        backgroundColor: isHalloweenTemplate ? "#050403" : campaign.presentation.background.color,
+        backgroundColor: isHalloweenTemplate ? "#050403" : pageBackgroundColor,
         backgroundImage: isHalloweenTemplate ? "none" : backgroundStyle,
         backgroundPosition: "center",
         backgroundSize: "cover",
@@ -1261,12 +1275,12 @@ export function CampaignExperience({
               onClick={() => {
                 if (currentAction.kind === "google") {
                   setActionVisited(true);
-                  void trackEvent("review_clicked");
+                  trackMarketingClick();
                   return;
                 }
 
                 setActionVisited(true);
-                void trackEvent("social_clicked");
+                trackMarketingClick();
               }}
               className="block w-full rounded-[20px] border border-[#f3b229] bg-[#f3b229] px-5 py-4 text-center text-lg font-semibold leading-7 text-[#111827] shadow-[0_12px_22px_rgba(243,178,41,0.28)]"
             >
@@ -1382,14 +1396,6 @@ export function CampaignExperience({
                   ? "Recevoir mon gain"
                   : "Enregistrer"}
           </button>
-          {!isPreGameLeadCapture && previewUsageConditions ? (
-            <div className="rounded-[22px] bg-[#fff8e8] px-5 py-4 text-left text-sm leading-6 text-[#6c5313]">
-              <p className="text-xs uppercase tracking-[0.2em] text-[#8a6a18]">
-                Conditions d&apos;utilisation
-              </p>
-              <p className="mt-2 whitespace-pre-line break-words">{previewUsageConditions}</p>
-            </div>
-          ) : null}
         </form>
       </PublicModal>
 
