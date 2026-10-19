@@ -1,5 +1,16 @@
 # Stratégie de test — Okado
 
+## Téléchargements — #596
+
+`e2e/admin-campaign-qr.spec.ts` contrôle la popin immédiate, QR visible/clic
+droit, SVG téléchargé, refus/réessai, annulation des préparations lentes,
+nettoyage des URL, double clic, un seul dialogue depuis Jeu prêt, menus réels
+Wizard/éditeur, export CSV et affiche : confirmation, sauvegarde lente/échouée,
+réessai puis PNG réel. Captures 1280 × 720, 320 et 390 px et focus clavier.
+Les handlers testés dans `test:admin-campaigns` gardent les ACL et ne comptent
+pas une consultation inline comme un téléchargement. Fixtures développement
+seulement, API interceptées ; aucun accès à une base réelle.
+
 L'objectif est de détecter les régressions importantes sans transformer le projet en processus lourd. Une livraison est validée sur le comportement, pas sur une revue de code manuelle par le propriétaire.
 
 ## Règle simple

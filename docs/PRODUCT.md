@@ -1,5 +1,19 @@
 # Produit — Okado
 
+## Téléchargements marchands — #596
+
+Un clic sur un téléchargement QR de diffusion, affiche PNG ou export CSV ouvre
+immédiatement une popin : préparation explicite, erreur/réessai ou transmission
+du fichier au navigateur (pas une promesse de sauvegarde sur le disque).
+Le QR est d’abord présenté comme une image scannable et enregistrable par clic
+droit ; seul son bouton lance le téléchargement. Un brouillon reste identifié
+comme à diffuser après publication. Le QR de prévisualisation reste séparé.
+Les affiches modifiées conservent leur confirmation d’enregistrement préalable.
+Fermer interrompt la préparation côté navigateur et empêche un téléchargement
+tardif ; cela n’annule pas une sauvegarde déjà effectuée sur le serveur.
+Les mêmes contrôles serveur s’appliquent au marchand et à l’administration.
+La popin QR remplace temporairement Jeu prêt, sans empiler les fenêtres.
+
 ## Relance avant expiration — #304
 
 Mon compte → Utilisateur affiche un réglage commun à tous les établissements : case décochée par défaut et nombre de jours avant expiration, initialement 7. Seul propriétaire/administrateur du compte peut sauvegarder ; les membres actifs consultent sans écrire. L’e-mail de service reprend le format du gain initial et est destiné au gagnant : une seule relance le jour civil J−N au passage quotidien, sans rattrapage d’un jour passé. Le propriétaire confirme le 12 octobre que 9 h est approximatif : planification Vercel Hobby, envoi Resend existant, aucun secret ou job Supabase à configurer. Les notifications personnelles de gains et leurs fréquences restent indépendantes. [Périmètre, horaires indicatifs et recette](releases/reward-expiry-reminders-304.md).

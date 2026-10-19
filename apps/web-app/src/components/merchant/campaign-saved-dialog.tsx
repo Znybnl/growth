@@ -1,10 +1,11 @@
 "use client";
 
 import { Check, Download, Eye, ImageIcon, QrCode, X } from "lucide-react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { DialogShell } from "@/components/ui/dialog";
-import { AdminCampaignQrDownload } from "@/components/merchant/admin-campaign-qr-download";
+import { CampaignQrDownloadDialog } from "@/components/merchant/campaign-qr-download";
 
 type CampaignSavedDialogProps = {
   open: boolean;
@@ -25,6 +26,9 @@ export function CampaignSavedDialog({
   onPreview,
   onPreviewQr,
 }: CampaignSavedDialogProps) {
+  const [qrOpen, setQrOpen] = useState(false);
+  if (!open && qrOpen) setQrOpen(false);
+  if (open && qrOpen) return <CampaignQrDownloadDialog campaignId={campaignId} admin={Boolean(adminTargetName)} isActive={adminIsActive} onClose={() => setQrOpen(false)} />;
   return (
     <DialogShell
       open={open}
@@ -72,12 +76,7 @@ export function CampaignSavedDialog({
             <Button type="button" variant="primary" size="default" className="mt-6 w-full" onClick={onClose}>
               Continuer la configuration
             </Button>
-            <AdminCampaignQrDownload
-              campaignId={campaignId}
-              isActive={adminIsActive}
-              className="okado-secondary-action mt-2 w-full gap-2 px-4 text-sm"
-              label="Télécharger le QR code de diffusion"
-            />
+            <Button type="button" variant="default" className="mt-2 w-full" onClick={() => setQrOpen(true)}><Download className="h-4 w-4" aria-hidden="true" />Télécharger le QR code de diffusion</Button>
             <Button asChild variant="default" size="default" className="mt-2 w-full">
               <a href={`/admin/campaigns/${campaignId}/poster`}>
                 <ImageIcon className="h-4 w-4" aria-hidden="true" />
@@ -85,11 +84,9 @@ export function CampaignSavedDialog({
               </a>
             </Button>
           </>
-        ) : <Button asChild variant="primary" size="default" className="mt-6 w-full">
-          <a href={`/api/campaigns/${campaignId}/qr`} download>
+        ) : <Button type="button" variant="primary" size="default" className="mt-6 w-full" onClick={() => setQrOpen(true)}>
             <Download className="h-4 w-4" aria-hidden="true" />
             Télécharger le QR code de diffusion
-          </a>
         </Button>}
 
         {!adminTargetName ? <div className="mt-2 grid gap-2 sm:grid-cols-2">

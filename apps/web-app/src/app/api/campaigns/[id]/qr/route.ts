@@ -32,7 +32,7 @@ export async function GET(request: Request, context: RouteContext) {
   const inline = searchParams.get("inline") === "1";
   const filename = `${performance.campaign.id}-${isPreview ? "preview-qr" : "qr"}.svg`;
 
-  if (!isPreview) {
+  if (!isPreview && !inline) {
     const createdAt = Date.parse(performance.campaign.createdAt);
     await captureProductEvent(
       "campaign_qr_downloaded",

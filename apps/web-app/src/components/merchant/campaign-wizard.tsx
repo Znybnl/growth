@@ -34,6 +34,7 @@ import { CampaignPreviewQrDialog } from "@/components/merchant/campaign-preview-
 import { CampaignPreviewDialog, openCampaignPreview } from "@/components/merchant/campaign-preview-dialog";
 import { CampaignSavedDialog } from "@/components/merchant/campaign-saved-dialog";
 import { AdminCampaignQrDownload } from "@/components/merchant/admin-campaign-qr-download";
+import { CampaignQrDownloadDialog } from "@/components/merchant/campaign-qr-download";
 import { CampaignSpacingControls } from "@/components/merchant/campaign-spacing-controls";
 import { GameTypeChoice } from "@/components/merchant/game-type-choice";
 import { BeautyWheelTemplateGallery } from "@/components/merchant/beauty-wheel-template-gallery";
@@ -806,6 +807,7 @@ export function CampaignWizard({
   const [savedPreviewCampaignId, setSavedPreviewCampaignId] = useState<string | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [qrPreviewOpen, setQrPreviewOpen] = useState(false);
+  const [diffusionQrOpen, setDiffusionQrOpen] = useState(false);
   const [backgroundLibrary, setBackgroundLibrary] = useState<BackgroundLibraryAsset[]>([]);
   const [backgroundLibraryOpen, setBackgroundLibraryOpen] = useState(false);
   const [backgroundLibraryError, setBackgroundLibraryError] = useState<string | null>(null);
@@ -1413,11 +1415,9 @@ export function CampaignWizard({
                 align="end"
                 className="w-[250px] rounded-[var(--okado-radius-control)] border-border p-1.5 shadow-[var(--shadow-product-card)]"
               >
-                <DropdownMenuItem asChild className="cursor-pointer gap-2 rounded-[10px] px-3 py-2.5">
-                  <a href={`/api/campaigns/${draft.id}/qr`} download title="Télécharger le QR code de production">
+                <DropdownMenuItem onSelect={() => setDiffusionQrOpen(true)} className="cursor-pointer gap-2 rounded-[10px] px-3 py-2.5">
                     <Download className="h-4 w-4" aria-hidden="true" />
                     <span>Télécharger le QR code</span>
-                  </a>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className="cursor-pointer gap-2 rounded-[10px] px-3 py-2.5"
@@ -2990,6 +2990,7 @@ export function CampaignWizard({
           if (!isSavingBeforeNavigation) setPendingNavigation(null);
         }}
       />
+      {diffusionQrOpen && draft.id ? <CampaignQrDownloadDialog campaignId={draft.id} isActive={draft.isActive} onClose={() => setDiffusionQrOpen(false)} /> : null}
       {draft.id ? (
         <CampaignPreviewQrDialog
           open={qrPreviewOpen}
