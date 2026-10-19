@@ -33,7 +33,7 @@ export function DraftPreviewViewport({ children }: { children: ReactNode }) {
   return <>
     <iframe
       ref={frameRef}
-      title="Aperçu du brouillon — 390 × 844 px"
+      title={`Aperçu du brouillon — ${GAME_PREVIEW_VIEWPORT.width} × ${GAME_PREVIEW_VIEWPORT.height} px`}
       srcDoc={DOCUMENT}
       sandbox="allow-same-origin"
       tabIndex={-1}

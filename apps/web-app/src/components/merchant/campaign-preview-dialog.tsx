@@ -138,7 +138,7 @@ function PreviewSession({
       </div>
 
       <div className="flex items-center justify-between gap-3 border-t border-fog px-5 py-3 sm:px-6">
-        <p className="text-xs text-ash">Viewport de référence : 390 × 844 px</p>
+        <p className="text-xs text-ash">Viewport utile de référence : {GAME_PREVIEW_VIEWPORT.width} × {GAME_PREVIEW_VIEWPORT.height} px</p>
         <button type="button" onClick={onClose} className="okado-secondary-action px-4">
           Fermer
         </button>

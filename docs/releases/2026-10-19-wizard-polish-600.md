@@ -73,3 +73,38 @@ consignés dans la PR.
 
 Il reste à réaliser la validation propriétaire sur le déploiement de PR avant
 tout merge ou déploiement en production.
+
+## Retours propriétaire — deuxième itération
+
+- Hauteur utile mobile 844 → 740 px, partagée par le brouillon et la
+  prévisualisation interactive. Il s’agit d’une hypothèse de présentation
+  intégrant la place du navigateur, pas d’une contrainte sur les téléphones.
+  Cadre 414×764, affichage maximal 260 px de large (environ 480 px de haut).
+- Progression verticale 220 → 250 px sur grand écran. Les autres formats
+  conservent leur progression horizontale/sélection, pour ne pas rétrécir le
+  formulaire sur 1280 px.
+- Aucun changement précédent du sous-titre public : l’ancien aperçu le
+  grossissait avec le viewport ordinateur. Ajout demandé de 2 px dans les
+  styles partagés, y compris les variantes Beauté et Halloween.
+- Miniatures Éclat : palettes des constantes produit (rose, blanc rosé et bleu
+  texte), y compris dans la liste hors Beauté précédemment dessinée en bleu.
+  Aucun changement de palette ou finition de la roue réellement jouée.
+- Moderne : huit secteurs bleu/blanc, cadeaux, anneau bleu, pointeur arrondi
+  blanc/bleu et centre avec pictogramme main. SVG statique avec icônes Lucide,
+  sans bouton imbriqué ni interaction de jeu.
+- Accroches des miniatures plus grandes et courtes (« Jouez & gagnez » ou
+  « Grattez & gagnez »), sous-titres plus longs. Les données du jeu du marchand
+  ne sont jamais remplacées par ces exemples de galerie.
+
+Recette : comparer les collections à 1280 px et grand écran, vérifier les
+couleurs Éclat/Moderne puis la taille du téléphone et du sous-titre ; ouvrir la
+prévisualisation et vérifier le même viewport utile. Contrôles à relancer sur
+cette itération : série Chromium, lint web et build web.
+
+Résultats : 32 tests Chromium réussis, puis trois tests de galerie et deux
+tests ciblés relancés avec succès après ajustement visuel des colonnes de texte
+pour éviter leur chevauchement avec les roues. Captures 1280 px, 1920 px et
+390 px inspectées. Vérification des sources réussie. Les sous-titres sont
+comparés au rendu public à 390×740 et contrôlés à leur ancienne taille +2 px.
+Lint web réussi (aucune erreur, quatre avertissements préexistants hors
+périmètre) et build de production réussi avec vérification TypeScript.

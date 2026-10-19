@@ -50,7 +50,7 @@ export function TemplateRenderingProof({ mode = "preview", templateId = "classic
   if (mode === "analytics-identity") return <AnalyticsIdentityProof />;
   const scratch = templateId.includes("scratch");
   const merchant: Merchant = { id: "template-proof-merchant", companyName: "Établissement de test",
-    logoText: "Établissement de test", industry: "Beauté", onboardingCompleted: true, createdAt: "2026-10-15T00:00:00Z" };
+    logoText: "Établissement de test", industry: mode.includes("-retail") ? "Commerce" : "Beauté", onboardingCompleted: true, createdAt: "2026-10-15T00:00:00Z" };
   const color = ink ?? (scratch ? defaultScratchTextColor(templateId) : wheelHeadingColorForTemplateSelection(templateId, "#ffffff"));
   const form = {
     ...halloweenFixture, id: "template-proof-campaign", merchantId: merchant.id,

@@ -63,7 +63,7 @@ test("@visual-1280 : cartes Beauté et autres homogènes, sélection conservée"
     await page.screenshot({ path: info.outputPath(`templates-beaute-${width}.png`) });
     await otherTitle.scrollIntoViewIfNeeded();
     await page.screenshot({ path: info.outputPath(`templates-autres-${width}.png`) });
-    if (width === 1920) expect((await page.locator('.wizard-progress').boundingBox())!.width).toBeGreaterThanOrEqual(220);
+    if (width === 1920) expect((await page.locator('.wizard-progress').boundingBox())!.width).toBeGreaterThanOrEqual(250);
   }
 });
 
@@ -73,7 +73,7 @@ test("@visual-1280 : aperçu et typographie identiques à la prévisualisation m
   page.on("request", r => { if (r.url().includes("/api/") && r.method() !== "GET") writes.push(r.url()); });
   await page.setViewportSize({ width: 1920, height: 1080 });
   const actual = await context.newPage();
-  await actual.setViewportSize({ width: 390, height: 844 });
+  await actual.setViewportSize({ width: 390, height: 740 });
   await actual.route("**/api/**", route => route.fulfill({ json: { campaign: { actions: [] } } }));
   for (const template of ["beauty-nude", "beauty-botanical", "classic", "restaurant-pop", "cocorico-wheel"]) {
     await page.goto(fixture("wizard-responsive-edit", template));
@@ -84,7 +84,13 @@ test("@visual-1280 : aperçu et typographie identiques à la prévisualisation m
     await actual.goto(fixture("game-preview", template));
     await expect(actual.locator(".okado-wheel-subtitle")).toBeVisible();
     const frame = page.frames().find(f => f.url() === "about:srcdoc")!;
-    expect(await frame.evaluate(() => ({ width: innerWidth, height: innerHeight }))).toEqual({ width: 390, height: 844 });
+    expect(await frame.evaluate(() => ({ width: innerWidth, height: innerHeight }))).toEqual({ width: 390, height: 740 });
+    const phone = (await page.getByTestId("wizard-phone-preview").boundingBox())!;
+    expect(phone.width).toBeLessThanOrEqual(261);
+    expect(phone.height).toBeLessThan(481);
+    const subtitleSize = await live.locator(".okado-wheel-subtitle").evaluate(node => parseFloat(getComputedStyle(node).fontSize));
+    const previousSize = template === "beauty-nude" ? 14.08 : template === "beauty-botanical" ? 14.4 : 14;
+    expect(subtitleSize).toBeCloseTo(previousSize + 2, 1);
     for (const selector of [".okado-wheel-subtitle", ".okado-beauty-heading, .okado-cocorico-promo-text", ".font-display"]) {
       const dimensions = (node: Element) => { const style = getComputedStyle(node); const bounds = node.getBoundingClientRect(); return { fontSize: style.fontSize, family: style.fontFamily, lineHeight: style.lineHeight, width: bounds.width, height: bounds.height }; };
       const fromDraft = await live.locator(selector).first().evaluate(dimensions);
@@ -106,7 +112,7 @@ test("@visual-1280 : tickets cohérents et typographie du brouillon à la résol
   test.setTimeout(60_000);
   await page.setViewportSize({ width: 1920, height: 1080 });
   const actual = await context.newPage();
-  await actual.setViewportSize({ width: 390, height: 844 });
+  await actual.setViewportSize({ width: 390, height: 740 });
   await actual.route("**/api/**", route => route.fulfill({ json: { campaign: { actions: [] } } }));
   for (const template of ["beauty-scratch-nude", "scratch-lilac"]) {
     await page.goto(fixture("wizard-responsive-edit", template));
@@ -141,5 +147,33 @@ test("les actions visibles transmettent les saisies au bon endpoint marchand ou 
     await expect(page.getByText("La campagne n’a pas pu être enregistrée. Vérifiez les informations puis réessayez.").first()).toBeVisible();
     await expect(page.getByText("Jeu prêt", { exact: true })).toHaveCount(0);
     await page.unroute(`**${endpoint}`);
+  }
+});
+
+test("@visual-1280 : miniatures fidèles Éclat et Moderne, accroches courtes et sous-titres longs", async ({ page }, info) => {
+  for (const width of [1280, 1920, 390]) {
+    await page.setViewportSize({ width, height: width === 390 ? 844 : 900 });
+    await page.goto(fixture("wizard-responsive-edit-retail"));
+    await step(page, 2);
+    const eclat = page.getByTestId("wheel-template-thumbnail-rose-institut");
+    await expect(eclat).toHaveCSS("background-color", "rgb(255, 244, 247)");
+    const wheel = eclat.locator(".rounded-full.border-\\[5px\\]");
+    await expect(wheel).toHaveCSS("background-image", /rgb\(243, 164, 196\)/);
+    await expect(wheel).toHaveCSS("background-image", /rgb\(255, 249, 251\)/);
+    const modern = page.getByTestId("wheel-template-thumbnail-cocorico-wheel");
+    await expect(modern).toHaveCSS("background-color", "rgb(37, 99, 235)");
+    await expect(modern.getByTestId("modern-thumbnail-wheel").locator(".lucide-gift")).toHaveCount(8);
+    await expect(modern.getByTestId("modern-thumbnail-wheel").locator(".lucide-pointer")).toHaveCount(1);
+    for (const thumbnail of [eclat, modern]) {
+      await expect(thumbnail.getByTestId("template-sample-heading")).toHaveCSS("font-size", "18px");
+      expect((await thumbnail.getByTestId("template-sample-heading").innerText()).length).toBeLessThan(20);
+      expect((await thumbnail.getByTestId("template-sample-subtitle").innerText()).length).toBeGreaterThan(55);
+      const copy = (await thumbnail.getByTestId("template-sample-subtitle").boundingBox())!;
+      const wheelBox = (await (thumbnail === modern ? modern.getByTestId("modern-thumbnail-wheel") : wheel).boundingBox())!;
+      expect(copy.x + copy.width).toBeLessThanOrEqual(wheelBox.x);
+    }
+    await modern.scrollIntoViewIfNeeded();
+    await assertNoPageOverflow(page);
+    await page.screenshot({ path: info.outputPath(`miniatures-retours-${width}.png`) });
   }
 });

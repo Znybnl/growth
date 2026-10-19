@@ -7,6 +7,7 @@ import { beautyCenterFinish, beautyCenterRelief } from "@/lib/beauty-wheel-finis
 import { wheelButtonBackgroundForWhiteText } from "@/lib/wheel-button-contrast";
 import { textFontFamily } from "@/lib/format";
 import type { GamePageTemplateId } from "@/lib/types";
+import { DEFAULT_ROSE_INSTITUT_BACKGROUND_COLOR, DEFAULT_ROSE_INSTITUT_PRIMARY_COLOR, DEFAULT_ROSE_INSTITUT_SECONDARY_COLOR, DEFAULT_ROSE_INSTITUT_TEXT_COLOR } from "@/lib/campaign-defaults";
 
 type BeautyTheme = (typeof BEAUTY_WHEEL_THEMES)[number];
 
@@ -61,7 +62,7 @@ function EclatWheelThumbnail() {
       aria-hidden="true"
       data-testid="eclat-thumbnail-wheel"
       className="absolute -bottom-5 right-[-0.8rem] z-10 grid size-32 place-items-center rounded-full border-[5px] border-white p-1 shadow-[0_9px_24px_rgba(222,103,151,0.18)]"
-      style={{ backgroundImage: "conic-gradient(from -22.5deg, #f3a4c4 0deg 45deg, #fff9fb 45deg 90deg, #f3a4c4 90deg 135deg, #fff9fb 135deg 180deg, #f3a4c4 180deg 225deg, #fff9fb 225deg 270deg, #f3a4c4 270deg 315deg, #fff9fb 315deg 360deg)" }}
+      style={{ backgroundImage: `repeating-conic-gradient(from -22.5deg, ${DEFAULT_ROSE_INSTITUT_PRIMARY_COLOR} 0deg 45deg, ${DEFAULT_ROSE_INSTITUT_SECONDARY_COLOR} 45deg 90deg)` }}
     >
       <div className="relative size-full rounded-full border-2 border-[#e78ab0]/50">
         <div data-testid="eclat-thumbnail-pointer" className="absolute left-1/2 top-1 -translate-x-1/2 border-x-[7px] border-t-[13px] border-x-transparent border-t-[#e78ab0]" />
@@ -95,18 +96,18 @@ export function BeautyWheelTemplateGallery({
               style={{ backgroundColor: theme.background, backgroundImage: nativeBackground ? "none" : beautyWheelBackground(theme.id, theme.background, theme.primary), color: theme.text }}>
               {nativeBackground ? <Image src={nativeBackground} alt="" fill sizes="320px" data-template-art={theme.id} className="pointer-events-none object-cover" /> : <BeautyThumbnailDecor theme={theme} />}
               <div data-testid="beauty-thumbnail-logo" className="relative z-10 min-h-[20px] max-w-[56%] text-[8px] font-semibold uppercase leading-[1.15] tracking-[0.06em]" style={{ color: beautyWheelLogoColor(theme.id) }}>Votre établissement<BeautyLogoRule color={beautyWheelLogoColor(theme.id)} /></div>
-              <div className="relative z-10 mt-3 max-w-[56%] text-[13px] font-bold leading-[1.12]" style={{ fontFamily: textFontFamily(theme.font) }}>Votre animation<br />vous réserve une surprise</div>
-              <div className="relative z-10 mt-1 max-w-[55%] text-[8px] leading-tight opacity-75">Des surprises vous attendent</div>
+              <div data-testid="template-sample-heading" className="relative z-10 mt-3 max-w-[44%] text-[18px] font-bold leading-[1.08]" style={{ fontFamily: textFontFamily(theme.font) }}>Jouez &amp;<br />gagnez</div>
+              <div data-testid="template-sample-subtitle" className="relative z-10 mt-2 max-w-[44%] text-[8px] leading-[1.35] opacity-90">De belles surprises vous attendent lors de votre prochaine visite</div>
               <BeautyWheelThumbnail theme={theme} />
             </div>
           </GameTemplateCard>;
         })}
         <GameTemplateCard label="Éclat" description="Lumineux & personnalisable" selected={selectedTemplateId === "rose-institut"}
           onSelect={() => onSelect("rose-institut")}>
-          <div data-testid="eclat-thumbnail" className="relative h-full overflow-hidden bg-[radial-gradient(ellipse_at_18%_8%,rgba(243,164,196,0.22),transparent_48%),linear-gradient(145deg,#fff8fb,#ffeaf2)] px-4 pt-3 text-[#003cb4]">
+          <div data-testid="eclat-thumbnail" className="relative h-full overflow-hidden px-4 pt-3" style={{ background: DEFAULT_ROSE_INSTITUT_BACKGROUND_COLOR, color: DEFAULT_ROSE_INSTITUT_TEXT_COLOR }}>
             <div data-testid="beauty-thumbnail-logo" className="relative z-10 min-h-[20px] max-w-[56%] text-[8px] font-semibold uppercase leading-[1.15] tracking-[0.06em]">Votre établissement<BeautyLogoRule color="#003cb4" /></div>
-            <div className="relative z-10 mt-3 max-w-[56%] font-playfair text-[13px] font-bold leading-[1.12]">Tournez la roue<br />et tentez de gagner</div>
-            <div className="relative z-10 mt-1 max-w-[55%] text-[8px] leading-tight opacity-75">Une roue lumineuse à vos couleurs</div>
+            <div data-testid="template-sample-heading" className="relative z-10 mt-3 max-w-[44%] font-playfair text-[18px] font-bold leading-[1.08]">Jouez &amp;<br />gagnez</div>
+            <div data-testid="template-sample-subtitle" className="relative z-10 mt-2 max-w-[44%] text-[8px] leading-[1.35] opacity-90">De belles surprises vous attendent lors de votre prochaine visite</div>
             <EclatWheelThumbnail />
           </div>
         </GameTemplateCard>

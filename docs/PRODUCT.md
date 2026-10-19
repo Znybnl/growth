@@ -57,15 +57,20 @@ Les métadonnées de la page publique destinées aux aperçus sociaux associent 
 
 Les actions Retour aux jeux, Enregistrer et Publier (selon l’étape et le mode)
 restent accessibles dans une barre supérieure fixe au défilement, y compris
-sur petit écran. La progression verticale mesure 220 px sur grand écran ; les
+sur petit écran. La progression verticale mesure 250 px sur grand écran ; les
 formats horizontal et compact sont conservés lorsque la place diminue.
 La promesse et le sous-titre de roue affichent trois lignes de saisie par
 défaut ; cette hauteur ne tronque pas les textes Beauté déjà autorisés.
 
-L’aperçu du brouillon utilise un viewport CSS mobile de 390 × 844 px, commun
+L’aperçu du brouillon utilise un viewport CSS mobile utile de 390 × 740 px, commun
 à la prévisualisation interactive, puis une mise à l’échelle du téléphone
 entier. Les textes et les composants de roue gardent leurs dimensions mobiles,
-indépendantes de l’écran du marchand. Cet aperçu visuel utilise uniquement
+indépendantes de l’écran du marchand. La hauteur de référence réserve une place
+au navigateur mobile sans en dessiner l’interface ; elle n’impose aucune taille
+à la vraie page de jeu. Le cadre du wizard ne dépasse pas 260 px de large.
+Le sous-titre de roue est augmenté de 2 px dans les rendus public et aperçu,
+en conservant les adaptations typographiques de chaque thème.
+Cet aperçu visuel utilise uniquement
 le brouillon en mémoire et n’effectue aucune participation ni sauvegarde.
 Le bouton Voir l’aperçu reste disponible lorsque le téléphone ne tient pas
 dans la colonne. Le libellé Aperçu en direct et l’action Agrandir sont retirés.

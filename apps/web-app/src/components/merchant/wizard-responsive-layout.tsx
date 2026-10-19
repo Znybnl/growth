@@ -45,7 +45,7 @@ export function useWizardLayout() {
     inlinePreview: size.width >= 900 && size.availableHeight >= WIZARD_PHONE_SIZE.height * 200 / WIZARD_PHONE_SIZE.width };
 }
 
-/** Scale the whole phone; its CSS viewport remains 390 × 844 at every size. */
+/** Scale the whole phone; its usable mobile CSS viewport stays unchanged. */
 export function FittedWizardPhone({ children, inDialog = false }: { children: ReactNode; inDialog?: boolean }) {
   const slotRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
@@ -60,7 +60,7 @@ export function FittedWizardPhone({ children, inDialog = false }: { children: Re
       // scroll viewport, rather than fitting to the whole browser height.
       const bottom = Math.min(viewportHeight, scroller?.getBoundingClientRect().bottom ?? viewportHeight);
       const availableHeight = inDialog ? viewportHeight - 144 : bottom - Math.max(bounds.top, 16) - 16;
-      const next = Math.max(0.1, Math.min(300 / WIZARD_PHONE_SIZE.width, bounds.width / WIZARD_PHONE_SIZE.width, Math.max(0, availableHeight) / WIZARD_PHONE_SIZE.height));
+      const next = Math.max(0.1, Math.min(260 / WIZARD_PHONE_SIZE.width, bounds.width / WIZARD_PHONE_SIZE.width, Math.max(0, availableHeight) / WIZARD_PHONE_SIZE.height));
       setScale((previous) => Math.abs(previous - next) < 0.001 ? previous : next);
     };
     const observer = new ResizeObserver(update);

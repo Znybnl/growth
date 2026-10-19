@@ -683,10 +683,10 @@ select {
   grid-column: 1 / -1;
 }
 .okado-wizard[data-layout="wide"] .wizard-layout {
-  grid-template-columns: 220px minmax(0, 1fr);
+  grid-template-columns: 250px minmax(0, 1fr);
 }
 .okado-wizard[data-layout="wide"][data-inline-preview="true"] .wizard-layout {
-  grid-template-columns: 220px minmax(0, 1fr) 280px;
+  grid-template-columns: 250px minmax(0, 1fr) 260px;
 }
 .okado-wizard[data-layout="compact"][data-inline-preview="true"] .wizard-layout {
   grid-template-columns: minmax(0, 1fr) 240px;
@@ -1639,7 +1639,7 @@ button:disabled,
   margin: 20px auto 0;
   padding: 0 16px;
   font-family: var(--font-roboto), "Inter Fallback", ui-sans-serif, system-ui, sans-serif;
-  font-size: clamp(0.875rem, 2.4vw, 1.05rem);
+  font-size: calc(clamp(0.875rem, 2.4vw, 1.05rem) + 2px);
   font-weight: 600;
   line-height: 1.45;
   letter-spacing: 0.01em;
@@ -1755,7 +1755,7 @@ button:disabled,
 .okado-preview-surface[data-template-id^="beauty-"] .okado-wheel-subtitle {
   max-width: 32rem;
   margin-bottom: 0;
-  font-size: clamp(0.9rem, 3.7vw, 1.06rem);
+  font-size: calc(clamp(0.9rem, 3.7vw, 1.06rem) + 2px);
   font-weight: 400;
   line-height: 1.42;
   opacity: .86;
@@ -1763,13 +1763,13 @@ button:disabled,
 
 .okado-public-experience[data-template-id="beauty-nude"] .okado-wheel-subtitle,
 .okado-preview-surface[data-template-id="beauty-nude"] .okado-wheel-subtitle {
-  font-size: clamp(0.88rem, 3.5vw, 1rem);
+  font-size: calc(clamp(0.88rem, 3.5vw, 1rem) + 2px);
   letter-spacing: .025em;
 }
 
 .okado-public-experience[data-template-id="beauty-botanical"] .okado-wheel-subtitle,
 .okado-preview-surface[data-template-id="beauty-botanical"] .okado-wheel-subtitle {
-  font-size: clamp(0.9rem, 3.6vw, 1.02rem);
+  font-size: calc(clamp(0.9rem, 3.6vw, 1.02rem) + 2px);
   font-weight: 500;
   letter-spacing: .01em;
 }
@@ -1778,26 +1778,26 @@ button:disabled,
 .okado-preview-surface[data-template-id="beauty-rose"] .okado-wheel-subtitle {
   opacity: .76;
   font-weight: 400;
-  font-size: clamp(.9rem, 3.8vw, 1rem);
+  font-size: calc(clamp(.9rem, 3.8vw, 1rem) + 2px);
   line-height: 1.4;
 }
 
 .okado-public-experience[data-template-id="beauty-pop"] .okado-wheel-subtitle,
 .okado-preview-surface[data-template-id="beauty-pop"] .okado-wheel-subtitle {
-  font-size: clamp(0.94rem, 3.8vw, 1.08rem);
+  font-size: calc(clamp(0.94rem, 3.8vw, 1.08rem) + 2px);
   font-weight: 500;
 }
 
 .okado-public-experience[data-template-id="beauty-editorial"] .okado-wheel-subtitle,
 .okado-preview-surface[data-template-id="beauty-editorial"] .okado-wheel-subtitle {
   max-width: 29ch;
-  font-size: clamp(0.84rem, 3.3vw, 0.98rem);
+  font-size: calc(clamp(0.84rem, 3.3vw, 0.98rem) + 2px);
   letter-spacing: .055em;
 }
 
 .okado-public-experience[data-template-id="beauty-tech"] .okado-wheel-subtitle,
 .okado-preview-surface[data-template-id="beauty-tech"] .okado-wheel-subtitle {
-  font-size: clamp(0.88rem, 3.5vw, 1rem);
+  font-size: calc(clamp(0.88rem, 3.5vw, 1rem) + 2px);
   font-weight: 500;
   opacity: .9;
 }
