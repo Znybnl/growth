@@ -30,8 +30,11 @@ const BEAUTY_WHEEL_FONTS: Record<BeautyWheelTemplateId, readonly TextFont[]> = {
   "beauty-tech": ["space-grotesk", "roboto"],
 };
 
-export function beautyWheelFontOptions(templateId?: GamePageTemplateId) {
-  return isBeautyWheelTemplate(templateId) ? BEAUTY_WHEEL_FONTS[templateId] : null;
+export function beautyWheelFontOptions(templateId?: GamePageTemplateId, target: "game" | "poster" = "game") {
+  if (!isBeautyWheelTemplate(templateId)) return null;
+  const fonts = BEAUTY_WHEEL_FONTS[templateId];
+  // The print renderer has its own font support; don't widen poster settings.
+  return target === "poster" ? fonts : [...new Set<TextFont>([...fonts, "playfair", "cormorant", "bodoni"])];
 }
 
 export function beautyWheelTheme(templateId?: GamePageTemplateId) {

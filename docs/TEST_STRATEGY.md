@@ -11,6 +11,74 @@ L'objectif est de détecter les régressions importantes sans transformer le pro
 
 ## Contrôles automatisés existants
 
+### QR de prévisualisation — #578
+
+`npm run test:preview-qr -w @okado/web-app` teste le handler, le SVG et les jetons
+signés avec infrastructure isolée : session/propriété, brouillon, 30 minutes,
+reprises sans événement de téléchargement. `e2e/preview-qr.spec.ts` teste le
+composant partagé à 320/390/1280 px et les reprises marchand/admin après
+403/500, HTML, panne réseau ou SVG invalide. Fixture interdite en production,
+API interceptées, captures synthétiques inspectées, aucun appel base ou e-mail
+réel. Le replay historique prouve HTTP 200 pour la requête signalée ; ce n'est
+pas une preuve des pixels historiques. [Analyse et recette #578](releases/2026-10-18-preview-qr-replay-578.md).
+
+### Actions du Wizard et liens de Mon compte — #564
+
+`e2e/marketing-action-library.spec.ts` teste les composants réels du Wizard et
+de Mon compte dans la fixture `template-rendering-proof`, interdite hors
+développement. À 320/390/768/1440 px : titre exact « Les actions », absence du
+suffixe « Facultatif », mêmes icônes de marques, badges de présence, fiche Google
+préservée, saisie sans sauvegarde implicite, sauvegarde explicite sur le bon site
+et conservation des liens non modifiés. Les API sont interceptées et les données
+synthétiques ; aucune preuve d'écriture Supabase réelle n'est revendiquée.
+
+### Options du Wizard et polices Beauté — #551 / #553
+
+`e2e/wizard-options-551-553.spec.ts` utilise les vrais Wizard/éditeur et rendus de
+jeu dans la fixture développement existante `template-rendering-proof`, HTTP 404
+en production. Toutes les API et sorties HTTPS sont interceptées : création
+`review_prompt` sans URL Google, objectif/actions/collecte existants conservés,
+sélection des trois familles sur chaque roue/ticket (Éclat inclus), corps de sauvegarde réel
+et réhydratation synthétique, rendus intégré/public/prévisualisation à 320/1280 px.
+Les rendus vérifient aussi la famille CSS calculée et des accents/retours à la ligne.
+La validation d'entrée accepte chaque couple template/police, sans changer les
+défauts ni les options d'affiche. Rejouer aussi `beauty-wheel-themes.spec.ts` et
+`test:wizard-marketing-actions -w @okado/web-app`. Aucun compte, gain ou e-mail
+réel n'est créé ; cette recette ne teste pas une écriture en base de production.
+
+`test:analytics-consent -w @okado/web-app` vérifie les deux implémentations,
+absence/refus/expiration/version du choix, retrait et nouvel accord, nettoyage
+des identifiants sans toucher aux autres stockages, minimisation des propriétés
+et absence d'envoi serveur sans consentement ou sans contexte de requête.
+`test:data-lifecycle -w @okado/web-app` exécute le SQL historique sous PGlite
+sur des données fictives (seuils 3/5 ans depuis création, dépendances, absence de
+métadonnées libres en archive, droits/RLS et exécution répétée). Ces suites sont
+dans la CI ; elles ne prouvent ni le contrat fournisseur ni l'activation de la
+maintenance sur la production.
+
+`analytics-consent.spec.ts`, dans chaque application, teste le vrai SDK et le
+bandeau : aucun appel avant accord, refus durable, reprise après accord,
+suppression navigateur au retrait et navigation disponible. L'API PostHog et
+Vercel Analytics sont interceptés, le token est une fixture locale, aucun
+événement n'est transmis au projet réel. Les indices headless du navigateur
+de test sont neutralisés uniquement dans la fixture pour vérifier la capture
+humaine ; le filtrage des bots du code applicatif reste inchangé. Pour lancer
+ces tests, construire/démarrer la landing et le SaaS local avec
+`NEXT_PUBLIC_POSTHOG_KEY=phc_consent_fixture` et `NEXT_PUBLIC_POSTHOG_ENABLED=true`.
+Ne jamais réutiliser une clé réelle pour cette recette.
+
+Complément #592 : `analytics-identity.spec.ts` vérifie les vrais paquets du SDK,
+leurs identifiants et le contexte du site dans le vrai shell : session existante,
+premier événement métier, connexion avant redirection, plusieurs établissements,
+focus/route après perte d'identité, changement d'utilisateur et retrait/nouvel
+accord. L'e-mail authentifié est mis à jour dans le profil (y compris son
+changement), dédupliqué et exclu des événements ordinaires. Aucun alias
+automatique. La CI possède un job dédié avec clé fictive et réseau intercepté ;
+les tests unitaires incluent le vrai handler QR (identité principale, site actif,
+refus d'une campagne étrangère) et la liste blanche des profils. Le bandeau
+commun est capturé à 1280×720, 320 et 390 px. L'historique PostHog et les données
+de production ne sont pas modifiés par ces contrôles.
+
 #498 : `npm run test:metrics -w @okado/web-app` vérifie les helpers partagés,
 les vrais repository/handlers, les nouveaux agrégats SQL et rollback sous PGlite :
 1 005 contacts/opt-ins, historique de retrait prouvé/inconnu, premier jour UTC,
@@ -39,7 +107,67 @@ La CI GitHub exécute la vérification de source, le lint et le build de l'appli
 
 La [matrice des parcours critiques](TEST_MATRIX.md) relie chaque parcours bloquant à sa preuve actuelle et indique les tests restant à ajouter.
 
+## Démo marketing responsive — #514
+
+`apps/landing-page/e2e/landing-demo.spec.ts` vérifie l'accueil, Restaurants et
+Instituts de beauté à 320/390/768/1440 px : roue contenue dans le téléphone,
+étapes et résultats accessibles, boutons tactiles, absence de débordement,
+parcours avec/sans simulation Google, retour du focus et remise à zéro des
+champs. Un scénario clavier et mouvement réduit couvre le parcours sans saisie ;
+un autre annule le résultat différé lors d'un redémarrage pendant la rotation.
+Les captures sont locales ; les coordonnées sont fictives, le choix de mesure
+est refusé et les requêtes analytics interceptées. Aucun POST métier attendu.
+Rejouer aussi les suites SEO, marque/FAQ et consentement existantes.
+
+Complément #516 : contrôler les huit secteurs/quatre pertes et le centre
+gagnant à 337,5° (rotation cible 1 777,5°), les logos sans étoile, puis les
+parcours Google sans note/1 étoile/5 étoiles sur les trois pages. Les tests
+contrôlent les radios natifs au clavier, la remise à zéro de la note et des
+champs depuis Google/l'e-mail, l'absence de requête Google/POST et de stockage
+local/session supplémentaire. La confirmation explicite l'e-mail/spams ;
+l'aperçu utilise une adresse fictive fixe et un QR non utilisable, jamais les
+coordonnées saisies. Les KPI restent inchangés et les nouvelles étapes n'ajoutent
+aucun événement ni propriété analytics.
+
+Simplification #516 : contrôler les noms inchangés « Le bistro » / « L’atelier
+beauté », les libellés repris du SaaS, l'absence d'encart pédagogique et des
+mentions répétées de simulation dans le téléphone. Un seul avertissement reste
+à l'extérieur. Le QR illustratif est visible dès la confirmation ; aucun lien
+de retrait réel ni téléchargement n'est exposé. Rejouer les mêmes parcours,
+radios clavier, reset et protections réseau/stockage après l'allègement.
+
 ## E2E : mise en place progressive
+
+Complément #536 : la démo ne propose plus de validation marchand ni son CTA,
+sur les trois pages. Vérifier le focus confirmation → aperçu e-mail, les KPI
+inchangés, l'absence d'appel métier/stockage et le reset. Les captures de la
+roue, action, formulaire, confirmation et e-mail sont inspectées aux quatre
+largeurs ; les textes/boutons restent contenus et la roue complète. Le retrait
+réel SaaS n'est pas modifié. Les preuves métier et synthèses de #520 restent
+couvertes par `product-proof.spec.ts`.
+
+### Qualité du funnel d'acquisition — #507
+
+`landing-conversion.spec.ts` exerce le vrai SDK, avec tous les paquets gzip/JSON
+interceptés : début/fin une fois par tentative, pas de double comptage sur les
+retours, reset, refus/absence/retrait, absence de replay après accord, CTA avant
+navigation, pages autorisées et UTM sans donnée libre. Les quatre tailles de la
+landing sont couvertes ; le token est la fixture locale, jamais une clé réelle.
+
+`acquisition-identity.spec.ts` nécessite deux builds locaux avec cette fixture :
+`PLAYWRIGHT_BASE_URL=http://localhost:3310 LANDING_TEST_BASE_URL=http://localhost:3308
+npm run test:e2e -w @okado/web-app -- acquisition-identity.spec.ts`.
+Les espaces d'URL www/app sont intégralement redirigés vers ces serveurs locaux ;
+le POST signup et l'onboarding sont simulés, toute autre sortie est bloquée.
+Vérifier cookie partagé, identifiant anonyme conservé au début d'inscription et
+rapprochement `$identify` au même identifiant marchand que le contrat serveur.
+Ce test n'est pas une création de compte ni une preuve de conversion organique.
+Sans le second serveur explicitement fourni, ce scénario est ignoré.
+
+La suite isolée `test:analytics-consent` vérifie aussi les routes sensibles
+regroupées en `/other`, les UTM rejetés, les options d'envoi immédiat et la
+synchronisation volontaire des deux implémentations. Relancer lint/build des
+deux apps, les suites de consentement et les régressions publiques d'auth.
 
 ### Notifications de gains — #473
 
@@ -160,6 +288,12 @@ Compléments #473/#484 : les tests du handler/DAL vérifient les options multipl
 
 ## Compte rendu attendu
 
+### Réception des webhooks Resend — #573
+
+`npm run test:resend-webhook -w @okado/web-app` utilise le vrai SDK avec signatures HMAC synthétiques : en-têtes Svix, compatibilité historique complète sans mélange/repli abusif, corps brut UTF-8, signature incorrecte, horodatage périmé/futur, JSON invalide, secret absent et panne de stockage. Les événements invalides ne sont jamais persistés ; les erreurs ne divulguent pas les détails internes.
+
+Après `npm run build:web`, `npm run smoke:resend-webhook -w @okado/web-app` lance le vrai serveur compilé et une API de stockage simulée, toutes deux sur loopback, avec clés fictives. Il vérifie les refus HTTP 400 sans appel base, la réponse 200 après mise à jour du suivi et archivage via la vraie DAL, puis HTTP 503 et reprise après une panne simulée. Ces contrôles sont en CI. Aucune base, secret, livraison ou adresse réelle n'est utilisée ; ils ne remplacent pas le replay signé ciblé après déploiement autorisé.
+
 ### Fiabilité de Supervision — #491
 
 Non-régression #492 : `e2e/support-scroll.spec.ts` utilise le vrai cadre marchand dans la fixture de développement (`?shell=1`), avec données fictives et API interceptées. À 320/390/1280 px et 1536 × 540 px, vérifier une seule zone verticale scrollable (`main`), aucun débordement du document, légendes accessibles contenues dans chaque tableau, défilement horizontal au clavier, erreur dépliée et fin de page accessible. Aucun changement de permissions ou de données ; la fixture demeure interdite en production.
@@ -185,3 +319,13 @@ Chaque demande de merge ou de production doit indiquer, en quelques lignes :
 ## Performances des écrans marchands — #500
 
 `test:page-performance`, les tests SQL complémentaires de `test:metrics` et `e2e/page-performance.spec.ts` contrôlent les charges utiles sans médias, la parité des indicateurs, les ACL privées, l'isolation multi-sites, les conditions des lots, la déduplication des alertes et les invalidations concurrentes. Les tests navigateur utilisent une fixture synthétique 404 en production et aucune base réelle. Voir [protocole avant/après et limites des mesures](releases/2026-10-14-page-performance-500.md).
+
+## Popins de gain — #558
+
+`e2e/gain-popins.spec.ts` couvre la roue et le ticket, en public/prévisualisation,
+avec/sans conditions et collecte avant/après jeu. La première popin de gain ne
+présente plus les conditions, mais la confirmation détaillée les conserve,
+y compris en repli sur le résultat préparé si la réponse finale les omet. Les
+tests contrôlent aussi dates/QR/téléchargement, consentement inchangé, échec et
+nouvelle tentative, absence de lot et captures mobile/desktop. Serveur local en
+mémoire, mutations et sorties HTTPS interceptées : aucun envoi ni écriture réelle.

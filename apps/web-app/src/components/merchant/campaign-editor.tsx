@@ -54,6 +54,7 @@ import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
 import { Switch } from "@/components/ui/switch";
 import { DialogShell } from "@/components/ui/dialog";
 import { ValidationDialog } from "@/components/ui/validation-dialog";
+import { useNoMarketingActionConfirmation } from "@/components/merchant/no-marketing-action-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -126,6 +127,8 @@ import {
   isCocoricoWheelTemplate,
   isRoseInstitutWheelTemplate,
   wheelBackgroundForTemplate,
+  wheelBackgroundAfterPrimaryColorChange,
+  resolveScratchTemplateTextColor,
   wheelBackgroundForTemplateSelection,
   wheelHeadingColorForTemplateSelection,
   wheelHeadingFontForTemplateSelection,
@@ -1497,10 +1500,14 @@ function toEditorState(merchant: Merchant, campaign: CampaignPerformance | null)
         color: wheelBackgroundForTemplate(
           campaign.campaign.presentation.layout.templateId ?? "classic",
           campaign.campaign.presentation.background.color,
+          campaign.campaign.presentation.wheel.loseColor,
         ),
       },
       heading: {
         ...campaign.campaign.presentation.heading,
+        textColor: campaign.campaign.gameType === "scratch"
+          ? resolveScratchTemplateTextColor(campaign.campaign.presentation.heading.textColor, templateId)
+          : campaign.campaign.presentation.heading.textColor,
         fontFamily: campaign.campaign.presentation.heading.fontFamily ?? "display",
         fontWeight: campaign.campaign.presentation.heading.fontWeight ?? 600,
         align: isBeautyWheelTemplate(templateId) ? campaign.campaign.presentation.heading.align : "center",
@@ -1524,6 +1531,9 @@ function toEditorState(merchant: Merchant, campaign: CampaignPerformance | null)
       },
       logo: {
         ...campaign.campaign.presentation.logo,
+        textColor: campaign.campaign.gameType === "scratch"
+          ? resolveScratchTemplateTextColor(campaign.campaign.presentation.logo.textColor ?? campaign.campaign.presentation.heading.textColor, templateId)
+          : campaign.campaign.presentation.logo.textColor,
         marginBottomPx: clampCampaignSpacingPx(
           campaign.campaign.presentation.logo.marginBottomPx ??
             (campaign.campaign.gameType === "wheel" ? DEFAULT_WHEEL_SPACING_PX : 20),
@@ -1615,6 +1625,9 @@ export function buildCampaignLivePreviewModel(
   const logoTextSizePx = Math.round(
     campaignLogoTextSizePx(logoSizePercent, form.gameType) * (isBeautyWheelTemplate(templateId) || templateId === "rose-institut" ? 0.9 : 1),
   );
+  const pageBackgroundColor = templateId === "cocorico-duo-wheel"
+    ? wheelBackgroundForTemplate(templateId, form.presentation.background.color, form.presentation.wheel.loseColor)
+    : form.presentation.background.color;
   const backgroundImage =
     beautyScratchTemplate(templateId)
       ? `url("${beautyScratchTemplate(templateId)!.background}")`
@@ -1628,6 +1641,8 @@ export function buildCampaignLivePreviewModel(
           ? roseInstitutWheelBackground(form.presentation.background.color)
           : isBeautyWheelTemplate(templateId)
             ? beautyWheelBackground(templateId, form.presentation.background.color, form.presentation.wheel.loseColor)
+            : templateId === "cocorico-duo-wheel"
+              ? `linear-gradient(${pageBackgroundColor}, ${pageBackgroundColor})`
             : isCocoricoWheelTemplate(templateId)
               ? `radial-gradient(circle at 14% 12%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(form.presentation.background.color), 0.32), "e6")} 0 10%, transparent 11%), radial-gradient(circle at 88% 26%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(form.presentation.background.color), 0.12), "b3")} 0 15%, transparent 16%), linear-gradient(160deg, ${resolveCocoricoBackgroundColor(form.presentation.background.color)} 0%, ${resolveCocoricoBackgroundColor(form.presentation.background.color)} 48%, #063d78 100%)`
               : templateId === "cosmic-orbit"
@@ -1649,7 +1664,7 @@ export function buildCampaignLivePreviewModel(
   return {
     formId: form.id ?? "new-campaign",
     backgroundStyle: {
-      backgroundColor: form.presentation.background.color,
+      backgroundColor: pageBackgroundColor,
       backgroundImage,
       backgroundPosition: "center",
       backgroundSize: "cover",
@@ -1663,7 +1678,9 @@ export function buildCampaignLivePreviewModel(
     logoTextSizePx,
       logoUrl: form.logoUrl ?? "",
       logoText: form.logoText?.trim() || merchant.companyName,
-      logoTextColor: form.presentation.logo.textColor ?? form.presentation.heading.textColor,
+      logoTextColor: form.gameType === "scratch"
+        ? resolveScratchTemplateTextColor(form.presentation.logo.textColor ?? form.presentation.heading.textColor, templateId)
+        : form.presentation.logo.textColor ?? form.presentation.heading.textColor,
       headingAlignmentClass,
       headingFontClass,
       headingFontFamily: form.presentation.heading.fontFamily,
@@ -1673,7 +1690,9 @@ export function buildCampaignLivePreviewModel(
         : form.gameType === "scratch" &&
             form.presentation.heading.textColor.toLowerCase() === "#1f2937"
           ? previewAccent.ink
-          : form.presentation.heading.textColor,
+          : form.gameType === "scratch"
+            ? resolveScratchTemplateTextColor(form.presentation.heading.textColor, templateId)
+            : form.presentation.heading.textColor,
     headingFontSizePx: form.presentation.heading.fontSizePx,
     headingFontWeight: form.presentation.heading.fontWeight ?? 600,
     subtitle: limitCampaignSubtitleLines(
@@ -1775,6 +1794,7 @@ export function CampaignEditor({
   deferInlineAssets = false,
 }: CampaignEditorProps) {
   const router = useRouter();
+  const { confirmNoMarketingAction, noMarketingActionDialog } = useNoMarketingActionConfirmation();
   const [form, setForm] = useState<EditorState>(toEditorState(merchant, initialCampaign));
   const [lastSavedFormSnapshot, setLastSavedFormSnapshot] = useState(() =>
     JSON.stringify(toEditorState(merchant, initialCampaign)),
@@ -2032,11 +2052,14 @@ export function CampaignEditor({
         ? resolveScratchAccent(form.accent, currentTemplateId)
         : form.accent;
     const winningSegmentId = previewWinningSegment?.id ?? "win";
+    const pageBackgroundColor = currentTemplateId === "cocorico-duo-wheel"
+      ? wheelBackgroundForTemplate(currentTemplateId, form.presentation.background.color, form.presentation.wheel.loseColor)
+      : form.presentation.background.color;
 
     return {
       formId: form.id ?? "new-campaign",
       backgroundStyle: {
-        backgroundColor: form.presentation.background.color,
+        backgroundColor: pageBackgroundColor,
         backgroundImage:
           beautyScratchTemplate(form.presentation.layout.templateId)
             ? `url("${beautyScratchTemplate(form.presentation.layout.templateId)!.background}")`
@@ -2050,6 +2073,8 @@ export function CampaignEditor({
               ? roseInstitutWheelBackground(form.presentation.background.color)
             : isBeautyWheelTemplate(currentTemplateId)
               ? beautyWheelBackground(currentTemplateId, form.presentation.background.color, form.presentation.wheel.loseColor)
+            : currentTemplateId === "cocorico-duo-wheel"
+              ? `linear-gradient(${pageBackgroundColor}, ${pageBackgroundColor})`
             : isCocoricoWheelTemplate(form.presentation.layout.templateId)
               ? `radial-gradient(circle at 14% 12%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(form.presentation.background.color), 0.32), "e6")} 0 10%, transparent 11%), radial-gradient(circle at 88% 26%, ${withHexAlpha(deriveLighterHex(resolveCocoricoBackgroundColor(form.presentation.background.color), 0.12), "b3")} 0 15%, transparent 16%), linear-gradient(160deg, ${resolveCocoricoBackgroundColor(form.presentation.background.color)} 0%, ${resolveCocoricoBackgroundColor(form.presentation.background.color)} 48%, #063d78 100%)`
             : (form.presentation.layout.templateId ?? "classic") === "cosmic-orbit"
@@ -2079,11 +2104,15 @@ export function CampaignEditor({
       logoTextSizePx,
       logoUrl: form.logoUrl ?? "",
       logoText: form.logoText?.trim() || merchant.companyName,
-      logoTextColor: form.presentation.logo.textColor ?? form.presentation.heading.textColor,
+      logoTextColor: form.gameType === "scratch"
+        ? resolveScratchTemplateTextColor(form.presentation.logo.textColor ?? form.presentation.heading.textColor, currentTemplateId)
+        : form.presentation.logo.textColor ?? form.presentation.heading.textColor,
       headingAlignmentClass,
       headingFontClass,
       headingFontFamily: form.presentation.heading.fontFamily,
-      headingTextColor: form.presentation.heading.textColor,
+      headingTextColor: form.gameType === "scratch"
+        ? resolveScratchTemplateTextColor(form.presentation.heading.textColor, currentTemplateId)
+        : form.presentation.heading.textColor,
       headingFontSizePx: form.presentation.heading.fontSizePx,
       headingFontWeight: isCocoricoWheelTemplate(currentTemplateId) ? 900 : form.presentation.heading.fontWeight ?? 600,
       subtitle: limitCampaignSubtitleLines(
@@ -2404,6 +2433,10 @@ export function CampaignEditor({
           button: buttonFollowsPrimary
             ? { ...current.presentation.button, backgroundColor: nextColor }
             : current.presentation.button,
+          background: {
+            ...current.presentation.background,
+            color: wheelBackgroundAfterPrimaryColorChange(current.presentation.layout.templateId, current.presentation.background.color, current.presentation.wheel.loseColor, nextColor),
+          },
           wheel: {
             ...current.presentation.wheel,
             loseColor: nextColor,
@@ -2540,6 +2573,7 @@ export function CampaignEditor({
     onError?: (message: string) => void;
   }): Promise<string | null> {
     if (saveRequestInFlightRef.current) return null;
+    if (form.isActive && !form.actions.length && !await confirmNoMarketingAction()) return null;
     saveRequestInFlightRef.current = true;
     setIsSaving(true);
     setMessage(null);
@@ -2770,6 +2804,7 @@ export function CampaignEditor({
 
   return (
     <div className="okado-campaign-editor space-y-6">
+      {noMarketingActionDialog}
       <section className="grid gap-6 px-1 xl:grid-cols-[1.2fr_0.8fr]">
           <div className="min-w-0">
             <p className="okado-label">
@@ -3027,7 +3062,7 @@ export function CampaignEditor({
                           };
                           const remembered = wheelTemplateState.current[template.value];
                           const wheel = remembered?.wheel ?? wheelPaletteForTemplate(template.value, current.presentation.wheel);
-                          const backgroundColor = remembered?.backgroundColor ?? wheelBackgroundForTemplateSelection(template.value, current.presentation.background.color);
+                          const backgroundColor = remembered?.backgroundColor ?? wheelBackgroundForTemplateSelection(template.value, current.presentation.background.color, wheel.loseColor);
                           const headingTextColor = remembered?.headingTextColor ?? (current.gameType === "scratch" ? defaultScratchTextColor(template.value) : template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheelHeadingColorForTemplateSelection(template.value, isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.heading.textColor));
                           const logoTextColor = remembered?.logoTextColor ?? (current.gameType === "scratch" ? defaultScratchTextColor(template.value) : template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheelLogoColorForTemplateSelection(template.value, wheelHeadingColorForTemplateSelection(template.value, isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.logo.textColor ?? current.presentation.heading.textColor)));
                           const firstSelectionHeadingFont = template.value === "classic" || template.value === "halloween-gold"
@@ -3081,7 +3116,7 @@ export function CampaignEditor({
                                 },
                               logo: {
                                 ...current.presentation.logo,
-                                textColor: logoTextColor,
+                                textColor: current.gameType === "scratch" ? resolveScratchTemplateTextColor(logoTextColor, template.value) : logoTextColor,
                                 marginBottomPx: wheelLogoGapForTemplateSelection(template.value, currentTemplateId, current.presentation.logo.marginBottomPx, remembered?.logoBottomSpacingPx),
                                 align: remembered?.logoAlign ?? (isBeautyWheelTemplate(currentTemplateId) ? "center" : current.presentation.logo.align),
                               },
@@ -4017,7 +4052,7 @@ export function CampaignEditor({
               <div className="text-sm">
                 <span className="mb-3 block text-[#616b7c]">Police du texte</span>
                 <div className="grid gap-3">
-                  {(beautyWheelFontOptions(form.presentation.layout.templateId) ?? (isCocoricoWheelTemplate(form.presentation.layout.templateId) ? cocoricoTextFontOptions : textFontOptions)).map((font) => {
+                  {(beautyWheelFontOptions(form.presentation.layout.templateId, "poster") ?? (isCocoricoWheelTemplate(form.presentation.layout.templateId) ? cocoricoTextFontOptions : textFontOptions)).map((font) => {
                     const active = form.presentation.poster.headlineFontFamily === font;
 
                     return (

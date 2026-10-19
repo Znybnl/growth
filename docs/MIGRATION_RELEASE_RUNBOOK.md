@@ -27,6 +27,12 @@ npm run smoke:security
 
 `check:supabase` doit vérifier les tables, colonnes, RPC et le refus des lectures anonymes attendus par le code. Une migration n'est pas certifiée parce que le fichier existe dans Git : le contrôle doit répondre sur la base cible.
 
+Pour `20260831_personal_data_lifecycle.sql`, contrôler en particulier `archived_leads`,
+`archived_campaign_events`, `archived_cashier_redemption_audits` et la RPC
+`purge_personal_data`. Ne pas appeler cette RPC manuellement sur la production
+avant validation explicite du propriétaire ; le cron reste sans effet tant que
+`MAINTENANCE_ENABLED` n'est pas égal à `true`.
+
 En cas d'échec, ne pas déployer le code dépendant du nouveau schéma. Corriger la cible ou interrompre la release.
 
 ## 4. Déployer le code

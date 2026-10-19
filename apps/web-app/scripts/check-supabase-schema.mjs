@@ -104,6 +104,9 @@ for (const [table, columns] of [
   ["reward_reminder_runner", "singleton"],
   ["campaign_participations", "campaign_id"],
   ["campaign_effective_redemptions", "lead_id"],
+  ["archived_leads", "id"],
+  ["archived_campaign_events", "id"],
+  ["archived_cashier_redemption_audits", "id"],
 ]) {
   await checkPublicAccessIsBlocked(table, columns, true);
 }

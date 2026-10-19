@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { captureClientProductEvent, identifyMerchantForAnalytics } from "@/lib/client-product-analytics";
 
 function buildAuthErrorUrl(message: string) {
   const url = new URL("/connexion", window.location.origin);
@@ -21,6 +22,7 @@ export function GoogleCallbackClient() {
     async function completeGoogleLogin() {
       const code = searchParams.get("code");
       const next = searchParams.get("next") || "/";
+      const isSignupFlow = next === "/onboarding";
       const providerError = searchParams.get("error");
       const providerErrorDescription = searchParams.get("error_description");
 
@@ -49,6 +51,8 @@ export function GoogleCallbackClient() {
 
         const payload = (await response.json()) as {
           error?: string;
+          merchant?: { id?: string };
+          user?: { id?: string; merchantId?: string; email?: string };
           redirectPath?: string;
         };
 
@@ -56,8 +60,15 @@ export function GoogleCallbackClient() {
           throw new Error(payload.error ?? "Connexion Google impossible.");
         }
 
+        if (payload.user?.merchantId && payload.user.id) {
+          identifyMerchantForAnalytics(payload.user.merchantId, payload.user.id, payload.merchant?.id, payload.user.email);
+        }
+
         window.location.replace(payload.redirectPath || next);
       } catch (error) {
+        if (isSignupFlow) {
+          captureClientProductEvent("signup_failed", { method: "google" });
+        }
         const message =
           error instanceof Error
             ? error.message

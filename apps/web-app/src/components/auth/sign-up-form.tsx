@@ -4,6 +4,10 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { GoogleAuthButton } from "@/components/auth/google-auth-button";
+import {
+  captureClientProductEvent,
+  identifyMerchantForAnalytics,
+} from "@/lib/client-product-analytics";
 
 function readReferralCodeFromBrowser() {
   if (typeof window === "undefined") return "";
@@ -36,7 +40,7 @@ export function SignUpForm() {
     password: "",
     confirmPassword: "",
   });
-  const [accept, setAccept] = useState(true);
+  const [accept, setAccept] = useState(false);
   const [referralCode] = useState(readReferralCodeFromBrowser);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -57,6 +61,7 @@ export function SignUpForm() {
     event.preventDefault();
     setError(null);
     setIsLoading(true);
+    captureClientProductEvent("signup_started", { method: "email" });
 
     try {
       if (!accept) throw new Error("Vous devez accepter les conditions pour continuer.");
@@ -72,11 +77,19 @@ export function SignUpForm() {
           referralCode,
         }),
       });
-      const payload = (await response.json()) as { error?: string };
+      const payload = (await response.json()) as {
+        error?: string;
+        merchant?: { id?: string };
+        user?: { id?: string; merchantId?: string; email?: string };
+      };
 
       if (!response.ok) throw new Error(payload.error ?? "Inscription impossible.");
+      if (payload.user?.merchantId && payload.user.id) {
+        identifyMerchantForAnalytics(payload.user.merchantId, payload.user.id, payload.merchant?.id, payload.user.email);
+      }
       window.location.assign("/onboarding");
     } catch (submitError) {
+      captureClientProductEvent("signup_failed", { method: "email" });
       setError(submitError instanceof Error ? submitError.message : "Inscription impossible.");
     } finally {
       setIsLoading(false);
@@ -89,7 +102,7 @@ export function SignUpForm() {
         <p className="okado-label">Créer un compte</p>
         <h1 className="okado-page-title mt-3">Ouvrez votre espace marchand</h1>
         <p className="mt-4 text-sm leading-8 text-ash">
-          Finalisez votre inscription et créez votre premier jeu.
+          30 jours d’essai gratuit, sans carte bancaire. Créez votre premier jeu avant diffusion.
         </p>
       </div>
 
@@ -174,10 +187,10 @@ export function SignUpForm() {
             onChange={(event) => setAccept(event.target.checked)}
           />
           <span>
-            J’accepte les conditions d’utilisation et je souhaite recevoir les conseils de mise en
-            route de la plateforme.
+            J’accepte les <a href="https://www.okado.app/cgv" target="_blank" rel="noreferrer" className="underline">conditions générales de vente et d’abonnement</a>.
           </span>
         </label>
+        <p className="mt-3 text-xs">Consultez notre <a href="https://www.okado.app/confidentialite" target="_blank" rel="noreferrer" className="underline">politique de confidentialité</a>. Cette acceptation ne constitue pas un consentement à la prospection commerciale.</p>
       </div>
 
       {error ? (

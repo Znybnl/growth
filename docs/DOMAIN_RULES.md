@@ -61,8 +61,12 @@ Un même indicateur utilise la même source et la même formule à périmètre �
 
 - Les actions marketing sont proposées avant la participation au jeu.
 - Les actions sont séquencées par visite : action 1 pour la première visite, action 2 pour la deuxième, puis ainsi de suite.
+- Décision propriétaire du 17 octobre 2026 (#564) : les liens réutilisables appartiennent à chaque établissement et correspondent aux champs de **Mon compte**. Configurer une destination absente depuis la bibliothèque du Wizard enregistre uniquement ce lien, puis ajoute l'action au jeu. Une modification d'action existante concerne ce jeu uniquement ; les autres jeux ne sont pas réécrits.
+- Précision propriétaire #564 : Réservation est retirée des actions proposées et des valeurs initiales du Wizard administrateur, le joueur étant déjà sur place. Les liens de rendez-vous du profil et les actions des jeux existants ne sont pas supprimés. L'ajout de liens personnalisés reste possible lorsqu'une action personnalisée existe déjà, dans la limite de 12 actions ; un lien supplémentaire n'écrase pas le lien personnalisé valide de Mon compte.
+- Un jeu sans action marketing est autorisé. Le Wizard et l'éditeur classique demandent une confirmation explicite avant l'enregistrement d'un jeu actif sans action ; annuler n'enregistre ni ne publie. L'enregistrement d'un brouillon sans action ne demande pas cette confirmation. Une action renseignée mais invalide reste bloquante à la publication ; aucune URL générique n'est créée pour la remplacer.
 - La collecte d'e-mail avant le jeu est une option indépendante des actions marketing. Elle ne doit jamais être traitée comme une action de visite.
 - L'objectif choisi lors de la création sert uniquement à proposer une configuration initiale des actions. Après publication, sa modification ne doit pas écraser les actions configurées.
+- Décision propriétaire #553 : le Wizard masque ce choix et utilise `review_prompt` (« Obtenir des avis ») pour les nouveaux jeux. Une édition conserve l'objectif, les actions et la collecte e-mail enregistrés ; aucune conversion de campagne ni action sans URL renseignée n'est déclenchée par ce masquage.
 - Une invitation à laisser un avis doit rester indépendante : elle ne conditionne ni l'accès au jeu ni l'attribution d'un lot.
 
 ## Prévisualisation
@@ -97,7 +101,33 @@ Un même indicateur utilise la même source et la même formule à périmètre �
 | QR codes et jetons de prévisualisation | Test temporaire du parcours | Durée courte liée à l'expiration du jeton | Suppression automatique. |
 | Données agrégées | Statistiques produit sans ré-identification | Sans limite si l'anonymisation est effective | Conservation des seules données anonymes. |
 
-Les durées de la deuxième ligne constituent une recommandation opérationnelle, non un avis juridique. Toute modification de ces règles exige une décision explicite du propriétaire et, si nécessaire, une validation juridique.
+Les durées ci-dessus restent des propositions par finalité, non un avis juridique.
+Le SQL historique `20260831_personal_data_lifecycle.sql` existe et calcule ses
+seuils depuis `created_at`, pas depuis le dernier événement métier. Il ne prouve
+ni l'activation de la maintenance, ni une politique adaptée à toutes les données.
+Le [dossier #508](DATA_PROCESSING_REGISTER.md) distingue les finalités et les preuves manquantes.
+
+### Mesure d'usage — accord propriétaire du 15 octobre 2026, #508
+
+Le propriétaire autorise la mise en place du consentement préalable recommandé.
+PostHog et Vercel Analytics suivent le choix explicite présenté pour les domaines
+Okado nommés dans l'information. Accepter et refuser ont la même visibilité ;
+le refus ne conditionne aucun parcours métier. La préférence dure au maximum
+180 jours sans renouvellement à la visite et reste modifiable via Gérer les cookies.
+Sans accord valide, le SDK PostHog n'est pas initialisé et la capture produit
+serveur est bloquée. Le retrait arrête les nouvelles captures et efface les
+identifiants PostHog de ce navigateur ; l'effacement des données déjà hébergées
+est une demande distincte. Le suivi d'acquisition ne décrit donc que les personnes
+ayant accepté cette mesure. Aucune autorisation de purge n'est déduite de cet accord.
+
+Décision propriétaire du 18 octobre 2026 (#592) : utiliser une identité de
+compte stable entre établissements et afficher l'e-mail de connexion dans le
+profil PostHog des utilisateurs connectés ayant accepté la mesure. L'adresse
+provient de la session/payload authentifié ; elle peut être actualisée sans
+changer d'identité. Cette exception porte sur le profil du compte, pas sur les
+coordonnées des joueurs ou les propriétés libres des événements. La mention
+de mesure et la politique publique précisent cet usage. Aucun nom, mot de passe,
+PIN, contenu de campagne ou e-mail de joueur n'est ajouté.
 
 ## Relance d’expiration du gain — #304
 

@@ -170,7 +170,7 @@ export async function syncMerchantContactToBrevo(input: {
   if (result === "synced") {
     await captureProductEvent(
       "brevo_merchant_contact_synced",
-      merchantDistinctId(input.merchant.id, input.user.id),
+      merchantDistinctId(input.user.merchantId, input.user.id),
       {
         merchantId: input.merchant.id,
         merchantUserId: input.user.id,

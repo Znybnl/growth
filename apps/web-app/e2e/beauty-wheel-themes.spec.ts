@@ -38,6 +38,8 @@ test("la collection Beauté contient six thèmes distincts et reste réservée a
     expect(isBeautyWheelTemplate(theme.id)).toBe(true);
     expect(beautyWheelTheme(theme.id)).toEqual(theme);
     expect(beautyWheelFontOptions(theme.id)).toContain(theme.font);
+    expect(beautyWheelFontOptions(theme.id)).toEqual(expect.arrayContaining(["playfair", "cormorant", "bodoni"]));
+    expect(new Set(beautyWheelFontOptions(theme.id)).size).toBe(beautyWheelFontOptions(theme.id)!.length);
   }
   expect(beautyWheelFontOptions("classic")).toBeNull();
 });

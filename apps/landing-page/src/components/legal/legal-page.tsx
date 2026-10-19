@@ -9,13 +9,18 @@ export function LegalPage({
   title,
   subtitle,
   sections,
+  updatedAt = "14 octobre 2026",
 }: {
   title: string;
   subtitle: string;
   sections: LegalSection[];
+  updatedAt?: string;
 }) {
   return (
-    <main className="min-h-screen bg-[#f8fafc] px-5 py-10 text-[#0f172b] md:py-16">
+    <main
+      id="contenu"
+      className="min-h-screen bg-[#f8fafc] px-5 py-10 text-[#0f172b] md:py-16"
+    >
       <div className="mx-auto max-w-4xl">
         <Link
           href="/"
@@ -32,7 +37,9 @@ export function LegalPage({
             {title}
           </h1>
           <p className="mt-5 text-base leading-7 text-[#475569]">{subtitle}</p>
-          <p className="mt-6 text-sm text-[#90a1b9]">Dernière mise à jour : 2 juillet 2026</p>
+          <p className="mt-6 text-sm text-[#64748b]">
+            Dernière mise à jour : {updatedAt}
+          </p>
         </header>
 
         <section className="mt-6 space-y-4">

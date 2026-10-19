@@ -29,7 +29,13 @@ test.describe("Parcours public d'authentification", () => {
   });
 
   test("la page d'inscription bloque une inscription sans acceptation des conditions", async ({ page }) => {
+    let signupRequests = 0;
+    await page.route("**/api/auth/signup", route => { signupRequests++; return route.fulfill({ status: 400, json: { error: "Ne doit pas être envoyé" } }); });
     await page.goto("/inscription");
+    await expect(page.getByRole("checkbox")).not.toBeChecked();
+    await expect(page.getByRole("link", { name: "conditions générales de vente et d’abonnement" })).toHaveAttribute("href", "https://www.okado.app/cgv");
+    await expect(page.getByRole("link", { name: "politique de confidentialité" })).toHaveAttribute("href", "https://www.okado.app/confidentialite");
+    await expect(page.getByText("je souhaite recevoir les conseils", { exact: false })).toHaveCount(0);
 
     await page.locator('input[placeholder="Camille"]').fill("Camille");
     await page.locator('input[placeholder="Martin"]').fill("Martin");
@@ -40,5 +46,6 @@ test.describe("Parcours public d'authentification", () => {
     await page.getByRole("button", { name: "Créer mon compte" }).click();
 
     await expect(page.getByText("Vous devez accepter les conditions pour continuer.")).toBeVisible();
+    expect(signupRequests).toBe(0);
   });
 });
