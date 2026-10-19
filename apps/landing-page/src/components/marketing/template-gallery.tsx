@@ -1,61 +1,59 @@
-import Image from "next/image";
-import Link from "next/link";
+"use client";
 
-const templates = [
-  { id: "beauty-nude-elegance", name: "Nude Élégance" },
-  { id: "beauty-botanical-premium", name: "Botanique Premium" },
-  { id: "beauty-noir-or", name: "Noir & Or Signature" },
-  { id: "beauty-lilas-soin-doux", name: "Lilas Soin Doux" },
-  { id: "beauty-corail-lumiere", name: "Corail Lumière" },
-];
+import { useEffect, useId, useRef, useState } from "react";
+import { ArrowLeft, ArrowRight, Expand, X } from "lucide-react";
+import { gameModels, type GameModel } from "@/lib/marketing-examples";
+import { captureMarketingEvent } from "@/lib/marketing-analytics";
+import { GamePreview } from "./game-preview";
+import styles from "./showcase.module.css";
 
 export function TemplateGallery() {
+  const carousel = useRef<HTMLDivElement>(null);
+  const dialog = useRef<HTMLDialogElement>(null);
+  const opener = useRef<HTMLButtonElement>(null);
+  const [selected, setSelected] = useState<GameModel | null>(null);
+  const id = useId();
+
+  useEffect(() => {
+    if (selected && !dialog.current?.open) dialog.current?.showModal();
+  }, [selected]);
+
+  function scroll(direction: number) {
+    const element = carousel.current;
+    if (!element) return;
+    element.scrollBy({ left: direction * element.clientWidth,
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
+  }
+
   return (
-    <section
-      aria-labelledby="templates-title"
-      className="mx-auto max-w-[1200px] px-5 py-16"
-    >
-      <p className="text-xs font-bold uppercase tracking-[0.15em] text-[#6c00f6]">
-        Modèles inclus
-      </p>
-      <h2
-        id="templates-title"
-        className="mt-4 text-3xl font-bold tracking-[-0.03em]"
-      >
-        Les fonds de votre prochain ticket.
-      </h2>
-      <p className="mt-4 max-w-2xl leading-7 text-[#475569]">
-        Ces décors proviennent des modèles disponibles dans Okado. Vous ajoutez
-        votre logo et vos textes ; les possibilités de couleur et de fond
-        dépendent du modèle.
-      </p>
-      <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-        {templates.map((template) => (
-          <figure
-            key={template.id}
-            className="overflow-hidden rounded-2xl border border-[#e5e7eb] bg-white"
-          >
-            <div className="relative aspect-[3/4]">
-              <Image
-                src={`/images/sample-${template.id}.webp`}
-                alt={`Fond du template de ticket à gratter ${template.name}`}
-                fill
-                sizes="(min-width: 1024px) 220px, (min-width: 640px) 30vw, 45vw"
-                className="object-cover"
-              />
-            </div>
-            <figcaption className="p-4 text-sm font-semibold text-[#0f172b]">
-              {template.name}
-            </figcaption>
-          </figure>
-        ))}
+    <section id="modeles" aria-labelledby={`${id}-title`} className={`${styles.container} ${styles.section}`}>
+      <div className={styles.sectionTop}>
+        <div><p className={styles.eyebrow}>Les modèles Okado</p><h2 id={`${id}-title`} className={styles.heading}>Un jeu qui ressemble<br />à votre établissement.</h2></div>
+        <div className={styles.carouselControls}>
+          <button type="button" aria-label="Modèles précédents" aria-controls={`${id}-models`} onClick={() => scroll(-1)}><ArrowLeft size={18} aria-hidden="true" /></button>
+          <button type="button" aria-label="Modèles suivants" aria-controls={`${id}-models`} onClick={() => scroll(1)}><ArrowRight size={18} aria-hidden="true" /></button>
+        </div>
       </div>
-      <Link
-        href="/ticket-a-gratter"
-        className="mt-6 inline-block font-semibold text-[#6c00f6] underline underline-offset-4"
-      >
-        Découvrir le ticket à gratter et ses réglages
-      </Link>
+      <p className={styles.intro}>Choisissez un univers graphique. Ajoutez votre logo, vos textes et vos lots. Roue ou ticket à gratter, la surprise porte votre signature.</p>
+      <div ref={carousel} id={`${id}-models`} className={styles.carousel} role="region" aria-label="Galerie des modèles de jeux" tabIndex={0}>
+        {gameModels.map(model => <article key={model.id} className={styles.modelCard}>
+          <button type="button" className={styles.modelButton} aria-label={`Voir le modèle ${model.name} — ${model.type}`} onClick={event => {
+            opener.current = event.currentTarget;
+            setSelected(model);
+            captureMarketingEvent("marketing_cta_clicked", { cta: "model_preview", location: "models", variant: model.id, destination: "#modeles" });
+          }}>
+            <div className={styles.modelArt}><GamePreview model={model} /></div>
+            <div className={styles.modelCopy}><strong>{model.name}</strong><span>{model.type}</span><Expand size={17} aria-hidden="true" /></div>
+          </button>
+        </article>)}
+      </div>
+      <p className={styles.note}>Une sélection de la collection Beauté, avec enseigne et lots fictifs. D’autres modèles sont disponibles pour les autres activités. Les options de couleur et de fond varient selon le modèle.</p>
+      <dialog ref={dialog} className={styles.dialog} aria-labelledby={`${id}-dialog-title`}
+        onClick={event => { if (event.target === event.currentTarget) dialog.current?.close(); }}
+        onClose={() => { setSelected(null); opener.current?.focus({ preventScroll: true }); }}>
+        <div className={styles.dialogTop}><h3 id={`${id}-dialog-title`}>{selected?.name}</h3><button type="button" aria-label="Fermer l’aperçu du modèle" onClick={() => dialog.current?.close()}><X size={20} aria-hidden="true" /></button></div>
+        {selected ? <><div className={styles.dialogArt}><GamePreview model={selected} eager /></div><p className={styles.note}>{selected.type} · Exemple fictif. Logo, textes et lots personnalisables ; les options de couleur et de fond dépendent du modèle.</p></> : null}
+      </dialog>
     </section>
   );
 }

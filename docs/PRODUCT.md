@@ -32,6 +32,20 @@ Dans Pilotage → Voir la fiche, l’administrateur consulte toutes les options 
 - Chaque canal est indépendant et non rétroactif : ajouter une option ne réinjecte pas dans ce canal les gains antérieurs à son activation. Les jobs déjà préparés gardent leur fréquence et leur contenu pour les reprises. Désactiver une option annule ses envois en attente sans affecter les autres ; un e-mail accepté par le fournisseur ne peut pas être rappelé.
 - L’alerte immédiate et les synthèses sont distinctes de l’e-mail de gain du joueur. Aucun changement au tirage, au stock, au retrait ou au consentement du participant.
 
+## Présentation du site public — #601, 19 octobre 2026
+
+Le site met en premier le bénéfice « donner une raison de revenir », avec une
+description explicite des roues et tickets par QR code. Il s'adresse à plusieurs
+secteurs : Beauté/bien-être, restauration et commerces locaux. Ce positionnement
+ne crée ni programme de points ni promesse de visite ou de revenu supplémentaire.
+La galerie présente de vrais rendus des modèles du produit sur données fictives,
+en précisant la collection Beauté et les limites des personnalisations. Les six
+spécialités Beauté illustrent les suggestions existantes ; leur CTA utilise la
+démo Beauté commune. L’accueil présente le suivi de manière compacte ; les
+synthèses et relances détaillées restent dans la page Beauté et l’aide publique.
+L’offre publique reste 30 jours d’essai sans carte puis 20 € HT/mois en France,
+sans engagement, avec les lots à la charge de l’établissement.
+
 ## Fiche d'identité
 
 - **Problème résolu** : permettre à un commerce local de concevoir, diffuser et piloter simplement un jeu en point de vente afin d'animer sa clientèle, collecter des contacts et encourager des actions marketing.

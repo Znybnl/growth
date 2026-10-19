@@ -22,6 +22,19 @@ L'objectif est de détecter les régressions importantes sans transformer le pro
 
 ## Contrôles automatisés existants
 
+### Vitrine et découverte des modèles — #601
+
+`site-refresh.spec.ts` vérifie le défilement manuel, l’aperçu natif modal,
+Échap/le focus restitué, les destinations des cartes métiers et le suivi
+compact. La matrice 320/360/390/768/1280/1440 px contrôle le débordement et
+l’ordre des CTA avant l’illustration mobile. `product-proof.spec.ts` couvre les
+six onglets Beauté, un seul panneau visible et les touches fléchées/Home/End ;
+les synthèses/relances détaillées restent testées sur Beauté.
+`landing-conversion.spec.ts` exerce les clics modèles/spécialités avec le vrai
+SDK sur token fictif et réseau intercepté. Les nouveaux contrôles confirment
+également l’absence de POST métier et de mesure après refus. Les suites démo,
+SEO, articles, marque/FAQ et consentement sont conservées.
+
 ### Contrôle visuel obligatoire des écrans à 1280 px — #576
 
 Complément #600 : `wizard-polish-600.spec.ts` vérifie les illustrations sans

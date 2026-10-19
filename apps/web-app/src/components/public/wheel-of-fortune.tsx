@@ -352,7 +352,7 @@ export function WheelOfFortune({
   const roseLight = isDefaultRoseColor ? "#f3cdd5" : deriveLighterHex(colors.loseColor, 0.67);
   const roseMedium = isDefaultRoseColor ? "#e7aebb" : deriveLighterHex(colors.loseColor, 0.4);
   const wheelTop =
-    framing === "public" ? undefined : isRosePowderTemplate ? (framing === "mobile-preview" ? "calc(35% + 14px)" : "calc(40% + 14px)") : isBeautyTemplate ? (framing === "mobile-preview" ? "35%" : "40%") : isRoseInstitutTemplate ? "8px" : isClassicTemplate ? "54%" : isRestaurantPopTemplate ? "42%" : framing === "editor" ? "83%" : framing === "mobile-preview" ? "70%" : "62%";
+    framing === "mobile-preview" ? "112px" : framing === "public" ? undefined : isRosePowderTemplate ? "calc(40% + 14px)" : isBeautyTemplate ? "40%" : isRoseInstitutTemplate ? "8px" : isClassicTemplate ? "54%" : isRestaurantPopTemplate ? "42%" : framing === "editor" ? "83%" : "62%";
   const wheelFrameSizeClass =
     framing === "public"
       ? isBeautyTemplate
@@ -447,6 +447,7 @@ export function WheelOfFortune({
   return (
     <div className="relative h-full w-full overflow-visible" style={{ containerType: "inline-size" }}>
       <div
+        data-testid="game-wheel-frame"
         className={`absolute left-1/2 aspect-square ${wheelTransformClass} ${wheelFrameSizeClass} ${
           isRosePowderTemplate
             ? "drop-shadow-[0_12px_30px_rgba(90,45,60,0.12)]"

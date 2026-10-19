@@ -7,6 +7,9 @@ import { PageSchema } from "@/components/marketing/structured-data";
 import { PricingReminder } from "@/components/marketing/site-navigation";
 import { BeautyUseCases } from "@/components/marketing/beauty-use-cases";
 import { MerchantProof } from "@/components/marketing/merchant-proof";
+import { GamePreview } from "@/components/marketing/game-preview";
+import { heroModel } from "@/lib/marketing-examples";
+import styles from "./showcase.module.css";
 import { accountConnectionFaq } from "@/lib/marketing-faqs";
 import { APP_URL, reviewIndependence } from "@/lib/site";
 
@@ -103,6 +106,8 @@ export function SectorPage({ beauty }: { beauty: boolean }) {
           </span>
           {beauty ? "Instituts de beauté" : "Restaurants"}
         </nav>
+        <div className={beauty ? styles.beautyHero : undefined}>
+        <div>
         <p className="text-xs font-bold uppercase tracking-[0.15em] text-[#6c00f6]">
           {beauty ? "Beauté & bien-être" : "Restauration"}
         </p>
@@ -111,20 +116,18 @@ export function SectorPage({ beauty }: { beauty: boolean }) {
         </h1>
         <p className="mt-6 max-w-[750px] text-lg leading-8 text-[#475569]">
           {beauty
-            ? "Des modèles soignés, des cadeaux adaptés à vos prestations et des conditions que vous maîtrisez. De la participation au retrait validé, suivez votre animation, y compris par e-mail entre deux rendez-vous."
+            ? "Une roue ou un ticket à gratter à votre image. Vos clientes jouent depuis un QR code ; vous choisissez les cadeaux et leurs conditions, puis suivez les retraits."
             : "Vos clients jouent sur leur téléphone, découvrent leur résultat et conservent leur coupon de gain. Vous choisissez les lots et votre équipe valide leur remise : du QR code au retrait, le parcours reste lisible."}
         </p>
         <div className="mt-7 flex flex-col items-start gap-3 sm:flex-row">
           <PrimaryButton href={`${APP_URL}/inscription`} trackingName="start_trial" trackingLocation={beauty ? "beauty_hero" : "restaurant_hero"}>
-            {beauty
-              ? "Créer mon animation institut"
-              : "Créer mon animation restaurant"}
+            Essayer gratuitement
           </PrimaryButton>
           <Link
             href="#demo"
             className={`inline-flex items-center justify-center rounded-[12px] border border-[#e8d4dc] bg-white px-5 py-3 text-[15px] font-semibold ${beauty ? "text-[#513049]" : "text-[#31190b]"}`}
           >
-            Voir le parcours {beauty ? "cliente" : "client"}
+            Voir la démo
           </Link>
         </div>
         <ul className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-[#475569]">
@@ -139,7 +142,10 @@ export function SectorPage({ beauty }: { beauty: boolean }) {
             </li>
           ))}
         </ul>
-        {beauty ? <Link href="#exemples-metiers" className="mt-5 inline-block min-h-11 py-2 text-sm font-semibold text-[#6c00f6] underline underline-offset-4">Voir les exemples Regard, Ongles et Spa</Link> : null}
+        {beauty ? <Link href="#exemples-metiers" className="mt-5 inline-block min-h-11 py-2 text-sm font-semibold text-[#6c00f6] underline underline-offset-4">Explorer les six spécialités beauté</Link> : null}
+        </div>
+        {beauty ? <GamePreview model={heroModel} eager /> : null}
+        </div>
       </section>
       <div className="px-5">
         <PricingReminder />
@@ -307,7 +313,7 @@ export function SectorPage({ beauty }: { beauty: boolean }) {
             </p>
           </div>
           <PrimaryButton href={`${APP_URL}/inscription`} trackingName="start_trial" trackingLocation={beauty ? "beauty_footer" : "restaurant_footer"}>
-            Démarrer mon essai gratuit
+            Essayer gratuitement
           </PrimaryButton>
         </div>
       </section>

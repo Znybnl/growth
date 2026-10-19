@@ -149,6 +149,15 @@ test("sitemap, robots, OG et fichiers distribués sont utilisables", async ({
     "sample-beauty-noir-or.webp",
     "sample-beauty-lilas-soin-doux.webp",
     "sample-beauty-corail-lumiere.webp",
+    "game-nude-elegance.webp",
+    "game-botanique.webp",
+    "game-noir-or-ticket.webp",
+    "game-lilas.webp",
+    "game-beauty-pop.webp",
+    "game-noir-or-wheel.webp",
+    "game-nude-wheel.webp",
+    "game-restaurant.webp",
+    "game-commerce.webp",
   ]) {
     const response = await request.get(`/images/${imagePath}`);
     expect(response.status(), imagePath).toBe(200);
@@ -288,7 +297,7 @@ test("la démonstration reste indépendante de l’avis et ne transmet aucune co
   expect(mutations).toEqual([]);
 });
 
-test("la photo restaurant et les décors de tickets se chargent dans le navigateur", async ({
+test("la photo restaurant et les rendus de jeux visibles se chargent dans le navigateur", async ({
   page,
 }, testInfo) => {
   for (const path of [
@@ -297,7 +306,9 @@ test("la photo restaurant et les décors de tickets se chargent dans le navigate
     "/ticket-a-gratter",
   ]) {
     await page.goto(path);
-    for (const img of await page.locator("main img").all()) {
+    // Hidden specialty panels are lazy-loaded after selection and are covered
+    // by product-proof.spec.ts, which activates all six tabs.
+    for (const img of await page.locator("main img:visible").all()) {
       await img.scrollIntoViewIfNeeded();
       await expect
         .poll(() =>
@@ -309,7 +320,7 @@ test("la photo restaurant et les décors de tickets se chargent dans le navigate
         .toBe(true);
     }
     await page
-      .locator("main img")
+      .locator("main img:visible")
       .first()
       .screenshot({ path: testInfo.outputPath(`${path.slice(1)}-media.png`) });
   }

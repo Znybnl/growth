@@ -196,6 +196,20 @@ Les cinq étapes de ce funnel ont été filtrées sur
 événements sans ce marqueur n'y entrent pas. Avant déploiement du code de
 consentement, l'absence de nouveaux résultats est attendue.
 
+## Découverte des modèles et métiers — #601, 19 octobre 2026
+
+Le site réutilise `marketing_cta_clicked` avec des valeurs éditoriales fixes :
+`cta=view_demo` pour l’ancre de démo du hero, `model_preview` pour l’ouverture
+d’un modèle, `explore_sector` pour une carte métier, `select_specialty` pour le
+choix d’un onglet Beauté et `sector_demo` pour sa destination de démo.
+`location` identifie le bloc et `variant` le modèle ou le secteur sélectionné.
+La destination est le chemin résolu depuis la page courante, y compris les
+ancres : le CTA de la démo Beauté reste attribué à `/instituts-beaute`.
+Le consentement préalable, les UTM validés et la minimisation existante
+s’appliquent. Aucun événement n’est envoyé à l’affichage d’une carte ou au
+simple défilement. Les débuts/fins de démo et l’inscription restent inchangés.
+Les nouveaux clics sont des mesures de découverte, pas une activation.
+
 ## Exploitation et fiabilisation — #507, 16 octobre 2026
 
 Accord propriétaire : finaliser la mesure et son exploitation, sans nouvelle

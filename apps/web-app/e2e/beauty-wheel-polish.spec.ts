@@ -20,6 +20,13 @@ for (const template of templates) {
         await page.setViewportSize({ width, height: 844 });
         await page.goto(`/dev/beauty-wheel-backgrounds?template=${template}&mode=${mode}`);
         const surface = page.locator(`[data-template-id="${template}"]`);
+        if (mode === "preview") {
+          const heading = surface.locator(".okado-beauty-heading");
+          const wheel = surface.getByTestId("game-wheel-frame");
+          const headingBox = (await heading.boundingBox())!;
+          const wheelBox = (await wheel.boundingBox())!;
+          expect(wheelBox.y).toBeGreaterThanOrEqual(headingBox.y + headingBox.height);
+        }
         const button = surface.getByRole("button", { name: "Jouer à la roue" });
         await expect(button).toBeVisible();
         await expect(button.locator("svg")).toHaveCount(0);

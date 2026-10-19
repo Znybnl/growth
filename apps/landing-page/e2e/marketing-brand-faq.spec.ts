@@ -26,7 +26,7 @@ for (const route of ["/", "/restaurants", "/instituts-beaute"]) {
     }
     if (route === "/instituts-beaute") {
       await expect(page.locator("footer svg.lucide-star")).toBeVisible();
-      await page.getByRole("link", { name: "Démarrer mon essai gratuit" }).screenshot({
+      await page.locator("main > section").last().getByRole("link", { name: "Essayer gratuitement" }).screenshot({
         path: testInfo.outputPath("dark-section-cta.png"),
       });
     }
@@ -85,5 +85,5 @@ test("Beauté : survol, focus clavier et CTA secondaire lisibles", async ({ page
   await expect(cta).toBeFocused();
   await expect(cta).toHaveCSS("outline-style", "solid");
   await expect(cta).toHaveCSS("outline-width", "2px");
-  await expect(page.locator('a[href="#demo"]')).toHaveCSS("color", "rgb(81, 48, 73)");
+  await expect(page.getByRole("link", { name: "Voir la démo", exact: true })).toHaveCSS("color", "rgb(81, 48, 73)");
 });

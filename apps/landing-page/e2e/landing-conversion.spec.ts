@@ -62,6 +62,21 @@ async function accept(page: Page) {
     .click();
 }
 
+test("les nouveaux clics modèles et spécialités gardent le contexte de consentement", async ({ page, context, baseURL }) => {
+  await context.addCookies([{ name: ANALYTICS_CONSENT_COOKIE, value: encodeURIComponent(JSON.stringify({ version: ANALYTICS_CONSENT_VERSION, choice: "accepted", decidedAt: Date.now() })), url: baseURL! }]);
+  const events = await capturePackets(page);
+  await page.goto("/?utm_source=fixture&utm_medium=test&utm_campaign=site_601");
+  await page.getByRole("button", { name: "Voir le modèle Nude Élégance — Ticket à gratter", exact: true }).click();
+  await expect.poll(() => events.filter(event => event.event === "marketing_cta_clicked").length).toBe(1);
+  expect(events.find(event => event.event === "marketing_cta_clicked")!.properties).toMatchObject({ cta: "model_preview", location: "models", variant: "beauty-scratch-nude", page: "/", utmSource: "fixture", consentVersion: ANALYTICS_CONSENT_VERSION });
+  await page.keyboard.press("Escape");
+  await page.goto("/instituts-beaute");
+  await page.getByRole("tab", { name: "Regard · cils & sourcils", exact: true }).click();
+  await page.getByRole("tabpanel").getByRole("link", { name: "Essayer la démo beauté" }).click();
+  await expect.poll(() => events.filter(event => event.event === "marketing_cta_clicked" && event.properties.cta === "sector_demo").length).toBe(1);
+  expect(events.find(event => event.event === "marketing_cta_clicked" && event.properties.cta === "sector_demo")!.properties).toMatchObject({ variant: "eyes", page: "/instituts-beaute", destination: "/instituts-beaute", consentVersion: ANALYTICS_CONSENT_VERSION });
+});
+
 test("une tentative de démo produit un début et une fin, pas les retours ou le reset", async ({
   page,
   context,

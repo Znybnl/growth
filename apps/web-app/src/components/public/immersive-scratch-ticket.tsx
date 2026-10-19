@@ -221,7 +221,7 @@ export function ImmersiveScratchTicket({
   const instruction = "Grattez la carte pour révéler votre cadeau.";
 
   const surfaceClass = beautyTheme
-    ? "mx-auto aspect-square w-[70%] max-w-[216px] rounded-full"
+    ? "mx-auto aspect-square w-[84%] max-w-[280px] rounded-full"
     : isSunburst
     ? "aspect-[1.18/1] w-full"
     : "aspect-square w-full";
@@ -417,6 +417,7 @@ export function ImmersiveScratchTicket({
         </div>
 
         <div
+          data-testid="scratch-ticket-surface"
           className={`relative z-10 overflow-hidden ${surfaceClass} ${beautyTheme ? `${surfaceRimClass} shadow-[0_14px_34px_rgba(55,42,30,.18)]` : "rounded-[26px]"}`}
           style={{ marginTop: `${Math.max(0, textToScratchSpacingPx)}px` }}
         >
