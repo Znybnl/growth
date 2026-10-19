@@ -17,6 +17,23 @@ test("@visual-1280 : illustrations pleines, trois lignes et actions accessibles 
   for (const [width, height] of [[1280, 600], [1280, 720], [390, 844], [640, 360]]) {
     await page.setViewportSize({ width, height });
     await page.goto(fixture("wizard-responsive-edit"));
+    const toolbar = page.getByTestId("wizard-save-toolbar");
+    const appHeader = page.locator(".okado-workspace-shell > div > header").first();
+    await expect(toolbar.getByRole("button", { name: "Prévisualiser" })).toBeVisible();
+    await expect(toolbar.getByRole("button", { name: "Options du QR code" })).toBeVisible();
+    await expect(toolbar.getByRole("link", { name: "Affiche" })).toBeVisible();
+    await expect(toolbar.getByRole("link", { name: "Modifier l'e-mail de gain" })).toBeVisible();
+    const headerRect = await appHeader.boundingBox();
+    const toolbarRect = await toolbar.boundingBox();
+    expect(headerRect).not.toBeNull();
+    expect(toolbarRect).not.toBeNull();
+    expect(Math.abs(toolbarRect!.y - (headerRect!.y + headerRect!.height))).toBeLessThanOrEqual(1);
+    const livePreview = page.getByTestId("wizard-live-preview");
+    if (await livePreview.count() && await page.locator(".okado-wizard").getAttribute("data-inline-preview") === "true") {
+      const previewRect = await livePreview.boundingBox();
+      expect(previewRect).not.toBeNull();
+      expect(previewRect!.y).toBeGreaterThanOrEqual(toolbarRect!.y + toolbarRect!.height);
+    }
     for (const art of await page.getByTestId("game-type-illustration").all()) {
       const ratio = await art.evaluate(node => { const svg = node.querySelector("svg")!; return { parent: node.getBoundingClientRect().width / node.getBoundingClientRect().height, svg: svg.getBoundingClientRect().width / svg.getBoundingClientRect().height }; });
       expect(ratio.parent).toBeCloseTo(340 / 180, 1);
@@ -32,7 +49,13 @@ test("@visual-1280 : illustrations pleines, trois lignes et actions accessibles 
     await subtitle.fill("Un sous-titre\nDeuxième ligne\nTroisième ligne");
     await expect(page.getByText(/5 lignes/)).toHaveCount(0);
     await subtitle.scrollIntoViewIfNeeded();
-    const toolbar = page.getByTestId("wizard-save-toolbar");
+    const pinnedToolbarRect = await toolbar.boundingBox();
+    expect(pinnedToolbarRect).not.toBeNull();
+    if (await livePreview.count() && await page.locator(".okado-wizard").getAttribute("data-inline-preview") === "true") {
+      const pinnedPreviewRect = await livePreview.boundingBox();
+      expect(pinnedPreviewRect).not.toBeNull();
+      expect(pinnedPreviewRect!.y).toBeGreaterThanOrEqual(pinnedToolbarRect!.y + pinnedToolbarRect!.height);
+    }
     await expect(toolbar.getByRole("link", { name: "Retour aux jeux" })).toBeInViewport();
     await expect(toolbar.getByRole("button", { name: "Enregistrer le brouillon", exact: true })).toBeInViewport();
     await expect(toolbar.getByRole("button", { name: "Publier", exact: true })).toBeInViewport();

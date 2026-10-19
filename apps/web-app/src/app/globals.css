@@ -694,6 +694,22 @@ select {
 .okado-wizard .wizard-save-toolbar {
   display: block;
 }
+.okado-wizard > .wizard-save-toolbar {
+  top: -1.5rem;
+  margin-top: -1.5rem !important;
+  margin-right: -0.75rem;
+  margin-left: -0.75rem;
+  padding-right: 0.75rem;
+  padding-left: 0.75rem;
+}
+@media (min-width: 1024px) {
+  .okado-wizard > .wizard-save-toolbar {
+    margin-right: -1.5rem;
+    margin-left: -1.5rem;
+    padding-right: 1.5rem;
+    padding-left: 1.5rem;
+  }
+}
 .okado-wizard:not([data-layout="wide"]) .wizard-heading {
   flex-direction: column;
   align-items: stretch;

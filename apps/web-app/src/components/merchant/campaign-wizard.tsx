@@ -1369,6 +1369,66 @@ export function CampaignWizard({
   return (
     <div ref={wizardLayoutRef} data-layout={wizardLayout} data-inline-preview={inlinePreview} className="okado-wizard space-y-6 pb-10">
       {noMarketingActionDialog}
+      <div className="wizard-save-toolbar sticky top-0 z-30 -mx-3 -mt-6 border-b border-fog bg-soft-white/95 px-3 py-3 backdrop-blur-sm lg:-mx-6 lg:px-6" data-testid="wizard-save-toolbar">
+        <div className="flex flex-col gap-3 xl:flex-row xl:flex-wrap xl:items-center xl:justify-between">
+          <div className="flex flex-wrap items-center gap-2">
+            {adminSaveEndpoint ? <StatusBadge tone="muted">Administration · {merchant.companyName}</StatusBadge> : (
+              <StatusBadge tone={!draft.id || !draft.isActive ? "muted" : "active"}>
+                {!draft.id ? "En création" : draft.isActive ? "En ligne" : "Brouillon"}
+              </StatusBadge>
+            )}
+            {draft.id ? <>
+              <button type="button" onClick={requestPreview} disabled={isSaving || isSavingBeforePreview} className="okado-secondary-action gap-2 px-4 text-sm">
+                <Eye className="h-4 w-4" aria-hidden="true" /> Prévisualiser
+              </button>
+              {adminSaveEndpoint ? <>
+                <button type="button" onClick={() => setQrPreviewOpen(true)} className="okado-secondary-action gap-2 px-4 text-sm">
+                  <QrCode className="h-4 w-4" aria-hidden="true" /> QR code
+                </button>
+                <AdminCampaignQrDownload campaignId={draft.id} isActive={draft.isActive} />
+                <Link href={`/admin/campaigns/${encodeURIComponent(draft.id)}/poster`} prefetch={false} className="okado-secondary-action px-4 text-sm">Affiche</Link>
+              </> : <>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button type="button" className="okado-secondary-action gap-2 px-4 text-sm" aria-label="Options du QR code">
+                      <QrCode className="h-4 w-4" aria-hidden="true" />
+                      <span>QR code</span>
+                      <ChevronDown className="h-4 w-4" aria-hidden="true" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-[250px] rounded-[var(--okado-radius-control)] border-border p-1.5 shadow-[var(--shadow-product-card)]">
+                    <DropdownMenuItem onSelect={() => setDiffusionQrOpen(true)} className="cursor-pointer gap-2 rounded-[10px] px-3 py-2.5">
+                      <Download className="h-4 w-4" aria-hidden="true" />
+                      <span>Télécharger le QR code</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => setQrPreviewOpen(true)} className="cursor-pointer gap-2 rounded-[10px] px-3 py-2.5">
+                      <Eye className="h-4 w-4" aria-hidden="true" />
+                      <span>QR code de prévisualisation</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <Link href={`/campaigns/${draft.id}/poster`} prefetch={false} className="okado-secondary-action px-4 text-sm">Affiche</Link>
+                <Link href={`/campaigns/${draft.id}/email`} prefetch={false} className="okado-secondary-action px-4 text-sm">Modifier l&apos;e-mail de gain</Link>
+              </>}
+              {adminSaveEndpoint && !draft.isActive ? <p className="basis-full text-xs text-ash">Le QR de diffusion n’ouvre le jeu qu’après sa publication.</p> : null}
+            </> : null}
+          </div>
+          <div className="flex flex-wrap items-center gap-2 xl:justify-end">
+            <Link href="/campaigns" prefetch={false} className="okado-secondary-action px-4 text-sm">
+              Retour aux jeux
+            </Link>
+            <button type="button" onClick={() => void saveCampaign("save")} disabled={isSaving} className="okado-secondary-action px-4 text-sm disabled:opacity-50">
+              {saveActionLabel}
+            </button>
+            {isEditing || stepIndex === WIZARD_STEPS.length - 1 ? (
+              <button type="button" onClick={() => void saveCampaign("publish")} disabled={isSaving} className="okado-filled-action px-4 text-sm disabled:opacity-50">
+                {isSaving ? "Enregistrement…" : "Publier"}
+              </button>
+            ) : null}
+          </div>
+        </div>
+      </div>
+
       <section data-mode={isEditing ? "edit" : "create"} className="wizard-heading flex flex-col gap-5 px-1 py-2 xl:flex-row xl:items-end xl:justify-between">
         <div>
           <p className="okado-label">Assistant de création</p>
@@ -1380,103 +1440,7 @@ export function CampaignWizard({
               : "Créer une campagne"}
           </h1>
         </div>
-        {draft.id && adminSaveEndpoint ? (
-          <div className="flex flex-wrap items-center gap-2">
-            <StatusBadge tone="muted">Administration · {merchant.companyName}</StatusBadge>
-            <button type="button" onClick={requestPreview} disabled={isSaving || isSavingBeforePreview} className="okado-secondary-action gap-2 px-4 text-sm">
-              <Eye className="h-4 w-4" aria-hidden="true" /> Prévisualiser
-            </button>
-            <button type="button" onClick={() => setQrPreviewOpen(true)} className="okado-secondary-action px-4 text-sm">QR de test</button>
-            <AdminCampaignQrDownload campaignId={draft.id} isActive={draft.isActive} />
-            <Link href={`/admin/campaigns/${encodeURIComponent(draft.id)}/poster`} prefetch={false} className="okado-secondary-action px-4 text-sm">Affiche</Link>
-            {!draft.isActive ? <p className="w-full text-xs text-ash">Le QR de diffusion n’ouvre le jeu qu’après sa publication.</p> : null}
-          </div>
-        ) : null}
-        {draft.id && !adminSaveEndpoint ? (
-          <div className="flex flex-wrap items-center gap-2">
-            {isEditing ? <StatusBadge tone="muted">Mode modification</StatusBadge> : null}
-            <button
-              type="button"
-              onClick={requestPreview}
-              disabled={isSaving || isSavingBeforePreview}
-              className="okado-secondary-action gap-2 px-4 text-sm"
-            >
-              <Eye className="h-4 w-4" aria-hidden="true" />
-              Prévisualiser
-            </button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
-                  type="button"
-                  className="okado-secondary-action gap-2 px-4 text-sm"
-                  aria-label="Options du QR code"
-                >
-                  <QrCode className="h-4 w-4" aria-hidden="true" />
-                  <span>QR code</span>
-                  <ChevronDown className="h-4 w-4" aria-hidden="true" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                className="w-[250px] rounded-[var(--okado-radius-control)] border-border p-1.5 shadow-[var(--shadow-product-card)]"
-              >
-                <DropdownMenuItem onSelect={() => setDiffusionQrOpen(true)} className="cursor-pointer gap-2 rounded-[10px] px-3 py-2.5">
-                    <Download className="h-4 w-4" aria-hidden="true" />
-                    <span>Télécharger le QR code</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="cursor-pointer gap-2 rounded-[10px] px-3 py-2.5"
-                  onSelect={() => setQrPreviewOpen(true)}
-                >
-                  <Eye className="h-4 w-4" aria-hidden="true" />
-                  <span>QR code de prévisualisation</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <Link
-              href={`/campaigns/${draft.id}/poster`}
-              prefetch={false}
-              className="okado-secondary-action px-4 text-sm"
-            >
-              Affiche
-            </Link>
-            <Link href={`/campaigns/${draft.id}/email`} prefetch={false} className="okado-secondary-action px-4 text-sm">
-              Modifier l&apos;e-mail de gain
-            </Link>
-          </div>
-        ) : null}
       </section>
-
-      <div className="wizard-save-toolbar sticky top-0 z-30 border-b border-fog bg-soft-white/95 py-3 backdrop-blur-sm" data-testid="wizard-save-toolbar">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <StatusBadge tone={!draft.id || !draft.isActive ? "muted" : "active"}>
-            {!draft.id ? "En création" : draft.isActive ? "En ligne" : "Brouillon"}
-          </StatusBadge>
-          <div className="flex flex-wrap items-center gap-2">
-            <Link href="/campaigns" prefetch={false} className="okado-secondary-action px-4 text-sm">
-              Retour aux jeux
-            </Link>
-            <button
-              type="button"
-              onClick={() => void saveCampaign("save")}
-              disabled={isSaving}
-              className="okado-secondary-action px-4 text-sm disabled:opacity-50"
-            >
-              {saveActionLabel}
-            </button>
-            {isEditing || stepIndex === WIZARD_STEPS.length - 1 ? (
-              <button
-                type="button"
-                onClick={() => void saveCampaign("publish")}
-                disabled={isSaving}
-                className="okado-filled-action px-4 text-sm disabled:opacity-50"
-              >
-                {isSaving ? "Enregistrement…" : "Publier"}
-              </button>
-            ) : null}
-          </div>
-        </div>
-      </div>
 
       <div className="wizard-layout grid items-start gap-5">
         <aside className="wizard-progress okado-card min-w-0 p-3">
