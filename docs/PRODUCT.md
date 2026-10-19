@@ -227,6 +227,7 @@ L'inscription par formulaire demande uniquement l'acceptation des CGV dans une c
 - Le fond par défaut de **Bicolore** suit la couleur principale de la roue, et non la couleur secondaire jaune. Un ancien fond standard est résolu à l'affichage ; une image manuelle ou une couleur de fond personnalisée distincte reste prioritaire. Les changements de couleur principale suivent le fond standard dans les deux éditeurs.
 - **Dynamique** et **Signature** conservent les retours à la ligne explicites de la promesse, sans appliquer le découpage automatique des autres roues. Le rendu est commun au jeu et à ses prévisualisations.
 - Les tickets à gratter n'affichent plus de phrase d'aide sous la zone à gratter, y compris « Le résultat s'affiche automatiquement. ». Le titre, le sous-titre personnalisable, les espacements avant la zone, le geste de grattage et le résultat restent inchangés.
+- Toutes les surfaces de grattage sont contenues à 70 % de la largeur (maximum 216 px). Le titre, la consigne au-dessus, le geste, le résultat et les dimensions sauvegardées de la campagne ne changent pas.
 - **Cadeau lilas** utilise son encre prune foncée `#210b32` pour le logo et les textes par défaut. Le bleu historique hérité `#003cb4` est traité comme un ancien défaut, au même titre que les anciennes encres du modèle. Les autres couleurs personnalisées et les styles propres mémorisés sont conservés. La correction porte sur la lecture/sélection et le rendu ; aucune réécriture de campagne en base.
 
 ## Mesure d'usage — #508

@@ -44,8 +44,8 @@ function AnalyticsIdentityProof() {
 }
 
 /** Synthetic rendering only: tests intercept every API request, no session bypass. */
-export function TemplateRenderingProof({ mode = "preview", templateId = "classic", background = "#ffffff", ink, font, secondary, business }: {
-  mode?: string; templateId?: GamePageTemplateId; background?: string; ink?: string; font?: TextFont; secondary?: string; business?: string;
+export function TemplateRenderingProof({ mode = "preview", templateId = "classic", background = "#ffffff", ink, font, secondary, business, button, buttonText }: {
+  mode?: string; templateId?: GamePageTemplateId; background?: string; ink?: string; font?: TextFont; secondary?: string; business?: string; button?: string; buttonText?: string;
 }) {
   if (mode === "analytics-identity") return <AnalyticsIdentityProof />;
   const scratch = templateId.includes("scratch");
@@ -62,6 +62,11 @@ export function TemplateRenderingProof({ mode = "preview", templateId = "classic
     accent: { ink: color, paper: "#ffffff", signal: "#b85be5" },
     presentation: {
       ...halloweenFixture.presentation,
+      button: {
+        ...halloweenFixture.presentation.button,
+        ...(button ? { backgroundColor: button } : {}),
+        ...(buttonText ? { textColor: buttonText } : {}),
+      },
       background: { mode: background === "image" ? "image" as const : "color" as const,
         color: background === "image" ? "#ffffff" : background,
         imageUrl: background === "image" ? "/backgrounds/aurora-retail.svg" : "" },

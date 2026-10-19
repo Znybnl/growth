@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Check, CheckCircle2, ChartNoAxesCombined, Gift, Leaf, Palette, QrCode, SlidersHorizontal } from "lucide-react";
+import { ArrowRight, Check, ChartNoAxesCombined, Gift, Leaf, Palette, QrCode, SlidersHorizontal } from "lucide-react";
 import { commerceModel, gameModels, heroModel, restaurantModel } from "@/lib/marketing-examples";
 import { APP_URL } from "@/lib/site";
 import { GamePreview } from "./game-preview";
@@ -29,10 +29,16 @@ export function HomeHero() {
           <strong className={styles.posterHeadline}>Une surprise<br />vous attend.</strong>
           <span className={styles.posterCopy}>À découvrir lors de votre prochaine visite.</span>
           <span className={styles.posterQr}><QrCode size={48} strokeWidth={1.5} /></span>
-          <span className={styles.posterAction}>QR code de votre campagne</span>
+          <span className={styles.posterAction}>Scannez pour jouer</span>
         </div>
         <div className={styles.journeyPlay}><GamePreview model={heroModel} eager /></div>
-        <div className={styles.journeyReward} aria-hidden="true"><CheckCircle2 size={28} strokeWidth={1.3} /><strong>Un masque<br />offert.</strong><small>Avec un soin visage payant.<br />Votre gain par e-mail.</small><Gift size={28} strokeWidth={1.3} /></div>
+        <div className={styles.journeyReward} aria-hidden="true">
+          <div className={styles.rewardHeader}><span>MAISON BOTANIQUE</span><span>VOTRE CADEAU</span></div>
+          <span className={styles.rewardIcon}><Gift size={22} strokeWidth={1.5} /></span>
+          <strong>Un masque<br />offert.</strong>
+          <small>Avec un soin visage payant.</small>
+          <span className={styles.rewardFooter}>Votre gain confirmé par e-mail</span>
+        </div>
         <div className={styles.journeySteps} aria-hidden="true"><span><b>1</b>Scanne</span><span><b>2</b>Joue</span><span><b>3</b>Découvre</span></div>
       </div>
       <figcaption className={`${styles.note} text-center mt-4`}>Parcours illustré avec un vrai rendu de jeu. Exemple fictif.</figcaption>

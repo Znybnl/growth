@@ -65,12 +65,10 @@ for (const mode of ["preview", "public", "game-preview"]) {
     for (const template of templates) {
       await page.goto(url(mode, template, { ink: "#003cb4" }));
       await expect(page.locator("canvas").first()).toBeVisible();
-        if (template === "beauty-scratch-nude" && mode === "public") {
-          const ticket = page.getByTestId("scratch-ticket-surface");
-          await expect(ticket).toBeVisible();
-          const ticketWidth = await ticket.evaluate((node) => Number.parseFloat(getComputedStyle(node).width));
-          expect(ticketWidth).toBeGreaterThanOrEqual(230);
-        }
+      const ticket = page.getByTestId("scratch-ticket-surface");
+      await expect(ticket).toBeVisible();
+      const ticketWidth = await ticket.evaluate((node) => Number.parseFloat(getComputedStyle(node).width));
+      expect(ticketWidth).toBeLessThanOrEqual(216);
       await expect(page.getByText(/Le résultat s'affiche automatiquement|Le résultat apparaît dès|Le gain sera disponible selon|Votre gain sera confirmé après/)).toHaveCount(0);
       if (template === "scratch-lilac") {
         await expect(page.getByText("Établissement de test", { exact: true }).first()).toHaveCSS("color", "rgb(33, 11, 50)");

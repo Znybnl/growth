@@ -196,14 +196,18 @@ export function ImmersiveScratchTicket({
     ? primary
     : isVault
       ? "#171d38"
-      : primary;
+      : isConfetti
+        ? "#71364a"
+        : primary;
   const illustrationColor = isLilac
     ? blendWithWhite(ticketBaseColor, 0.72)
     : isVault
       ? hasCustomPrimary
         ? blendWithWhite(ticketBaseColor, 0.58)
         : "#86e8ff"
-      : blendWithWhite(ticketBaseColor, 0.48);
+      : isConfetti
+        ? "#f4d89c"
+        : blendWithWhite(ticketBaseColor, 0.48);
   const defaultInk = beautyTheme?.text ?? (isVault || isConfetti
     ? "#f8fbff"
     : isLilac
@@ -221,10 +225,10 @@ export function ImmersiveScratchTicket({
   const instruction = "Grattez la carte pour révéler votre cadeau.";
 
   const surfaceClass = beautyTheme
-    ? "mx-auto aspect-square w-[84%] max-w-[280px] rounded-full"
+    ? "mx-auto aspect-square w-[70%] max-w-[216px] rounded-full"
     : isSunburst
-    ? "aspect-[1.18/1] w-full"
-    : "aspect-square w-full";
+    ? "mx-auto aspect-[1.18/1] w-[70%] max-w-[216px]"
+    : "mx-auto aspect-square w-[70%] max-w-[216px]";
   const surfaceRimClass = beautyTheme?.id === "beauty-scratch-noir-or"
     ? "border-2 border-[#f0d798] ring-1 ring-[#9b7134]/75"
     : beautyTheme?.id === "beauty-scratch-lilas"
@@ -240,7 +244,7 @@ export function ImmersiveScratchTicket({
     if (beautyTheme) canvas.dataset.foilLoaded = "false";
 
     const gradient = context.createLinearGradient(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-    const cover = beautyTheme?.scratch.base ?? (isVault ? "#171d38" : primary);
+    const cover = beautyTheme?.scratch.base ?? (isVault ? "#171d38" : isConfetti ? "#71364a" : primary);
     const highlight = beautyTheme?.scratch.highlight ?? (isSunburst ? blendWithWhite(cover, 0.2) : blendWithWhite(cover, 0.34));
     if (beautyTheme?.id === "beauty-scratch-nude" || beautyTheme?.id === "scratch-nude-classic") {
       gradient.addColorStop(0, "#c4a675");
@@ -297,7 +301,7 @@ export function ImmersiveScratchTicket({
     scratchStartedRef.current = false;
     setRevealed(false);
     setHasTouched(false);
-  }, [beautyTheme, isCoral, isLilac, isSunburst, isVault, primary, resultLabel]);
+  }, [beautyTheme, isConfetti, isCoral, isLilac, isSunburst, isVault, primary, resultLabel]);
 
   useEffect(() => {
     if (!beautyTheme) return;
