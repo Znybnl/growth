@@ -56,7 +56,7 @@ test.describe("Confirmation du Wizard", () => {
     const previewDialog = page.getByRole("dialog", { name: "Version mobile", exact: true });
     await expect(previewDialog).toBeVisible();
     await expect(previewDialog.getByTitle("Prévisualisation mobile du jeu")).toBeVisible();
-    await expect(previewDialog.getByText("Viewport de référence : 390 × 844 px")).toBeVisible();
+    await expect(previewDialog.getByText("Viewport utile de référence : 390 × 740 px")).toBeVisible();
     await previewDialog.getByRole("button", { name: "Fermer", exact: true }).click();
     await expect(previewDialog).toBeHidden();
 

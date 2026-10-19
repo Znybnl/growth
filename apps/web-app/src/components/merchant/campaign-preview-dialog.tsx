@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { DialogShell } from "@/components/ui/dialog";
 import styles from "./campaign-preview-dialog.module.css";
+import { GAME_PREVIEW_VIEWPORT } from "@/lib/game-preview-viewport";
 
 const PREVIEW_PATH = (campaignId: string) => `/campaign/${campaignId}/preview-embed?preview=1`;
 
@@ -61,7 +62,7 @@ function PreviewSession({
     const stage = stageRef.current;
     if (!stage) return;
     const observer = new ResizeObserver(([entry]) => {
-      setScale(Math.max(0.1, Math.min(1, entry.contentRect.width / 390, entry.contentRect.height / 844)));
+      setScale(Math.max(0.1, Math.min(1, entry.contentRect.width / GAME_PREVIEW_VIEWPORT.width, entry.contentRect.height / GAME_PREVIEW_VIEWPORT.height)));
     });
     observer.observe(stage);
     return () => observer.disconnect();
@@ -105,7 +106,7 @@ function PreviewSession({
 
       <div className={styles.stage}>
         <div ref={stageRef} className={styles.space}>
-        <div className="relative overflow-hidden rounded-[22px] bg-white shadow-lg" style={{ width: 390 * scale, height: 844 * scale }} aria-busy={!isLoaded && !hasError}>
+        <div className="relative overflow-hidden rounded-[22px] bg-white shadow-lg" style={{ width: GAME_PREVIEW_VIEWPORT.width * scale, height: GAME_PREVIEW_VIEWPORT.height * scale }} aria-busy={!isLoaded && !hasError}>
           {!isLoaded && !hasError ? (
             <div className={styles.loading} role="status">
               <div className={styles.placeholder} aria-hidden="true"><span /><span /><div /></div>
@@ -129,7 +130,7 @@ function PreviewSession({
             onLoad={() => { setLoadedFrameKey(frameKey); setErrorFrameKey(null); }}
             onError={() => setErrorFrameKey(frameKey)}
             className="absolute left-0 top-0 origin-top-left border-0 bg-white"
-            style={{ width: 390, height: 844, transform: `scale(${scale})`, visibility: isLoaded && !hasError ? "visible" : "hidden" }}
+            style={{ ...GAME_PREVIEW_VIEWPORT, transform: `scale(${scale})`, visibility: isLoaded && !hasError ? "visible" : "hidden" }}
             sandbox="allow-forms allow-same-origin allow-scripts"
           />
         </div>
@@ -137,7 +138,7 @@ function PreviewSession({
       </div>
 
       <div className="flex items-center justify-between gap-3 border-t border-fog px-5 py-3 sm:px-6">
-        <p className="text-xs text-ash">Viewport de référence : 390 × 844 px</p>
+        <p className="text-xs text-ash">Viewport utile de référence : {GAME_PREVIEW_VIEWPORT.width} × {GAME_PREVIEW_VIEWPORT.height} px</p>
         <button type="button" onClick={onClose} className="okado-secondary-action px-4">
           Fermer
         </button>

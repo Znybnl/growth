@@ -120,7 +120,7 @@ export function GameTypeChoice({
           : "border-border bg-white hover:border-aubergine/50"
       }`}
     >
-      <div className="aspect-[340/180] max-h-[156px] overflow-hidden">
+      <div className="aspect-[340/180] w-full overflow-hidden" data-testid="game-type-illustration">
         {type === "wheel" ? <WheelIllustration /> : <ScratchIllustration />}
       </div>
       <div className="p-4 sm:p-5">

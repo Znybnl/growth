@@ -24,6 +24,19 @@ L'objectif est de détecter les régressions importantes sans transformer le pro
 
 ### Contrôle visuel obligatoire des écrans à 1280 px — #576
 
+Complément #600 : `wizard-polish-600.spec.ts` vérifie les illustrations sans
+letterboxing, les champs à trois lignes, la barre d’actions sticky à
+1280×600/720, 390 px et 640×360, les cartes partagées (dont sélection), la
+progression à 250 px et les saisies envoyées aux endpoints marchand/admin
+interceptés. Comparer les tailles, familles, interlignes et dimensions des
+textes du brouillon aux vrais rendus de jeu à 390×740 dans des pages séparées,
+pour cinq roues et deux tickets. Les cas visuels portent `@visual-1280`.
+Vérifier aussi le cadre limité à 260 px, l’augmentation du sous-titre de 2 px,
+les palettes Éclat/Moderne, les cadeaux et le pointeur de la miniature Moderne,
+et l’absence de chevauchement entre son texte secondaire et sa roue.
+L’iframe visuelle est inerte ; la popin doit conserver Tab/Escape et le retour
+du focus. Aucune API réelle ni écriture de données de test.
+
 Toute création/modification d'écran doit ajouter ou adapter un test navigateur
 **1280×720**, dans le vrai cadre de navigation applicable (menu, en-tête et
 barres d'actions inclus), plus **1280×600** pour les écrans denses. Contrôler

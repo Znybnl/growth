@@ -73,16 +73,10 @@ for (const [width, height] of [[320, 740], [390, 844], [768, 900], [1024, 768], 
       const fitted = (await phone.boundingBox())!;
       expect(fitted.y).toBeGreaterThanOrEqual(0);
       expect(fitted.y + fitted.height).toBeLessThanOrEqual(height + 1);
-      await page.getByRole("button", { name: "Agrandir", exact: true }).click();
-      const expanded = page.getByRole("dialog", { name: "Aperçu en direct" });
-      await expect(expanded).toBeVisible();
-      await expect(phone).toHaveCount(1);
-      await page.keyboard.press("Escape");
-      await expect(expanded).toHaveCount(0);
-      await expect(phone).toHaveCount(1);
+      await expect(page.getByRole("button", { name: "Agrandir", exact: true })).toHaveCount(0);
     } else {
       await page.getByRole("button", { name: "Voir l’aperçu", exact: true }).click();
-      const dialog = page.getByRole("dialog", { name: "Aperçu en direct" });
+      const dialog = page.getByRole("dialog", { name: "Aperçu du jeu" });
       await expect(dialog).toBeVisible();
       await expect(phone).toHaveCount(1);
       const bounds = (await phone.boundingBox())!;
@@ -108,8 +102,8 @@ test("@visual-1280 : aperçu du brouillon courant, clavier et redimensionnement 
   const promise = page.locator("textarea").first();
   await promise.fill("Un aperçu non enregistré");
   await page.getByRole("button", { name: "Voir l’aperçu", exact: true }).click();
-  const dialog = page.getByRole("dialog", { name: "Aperçu en direct" });
-  await expect(dialog.getByText("Un aperçu non enregistré", { exact: true })).toBeVisible();
+  const dialog = page.getByRole("dialog", { name: "Aperçu du jeu" });
+  await expect(page.frameLocator('iframe[title^="Aperçu du brouillon"]').getByText("Un aperçu non enregistré", { exact: true })).toBeVisible();
   await page.keyboard.press("Tab");
   expect(await dialog.evaluate((node) => node.contains(document.activeElement))).toBe(true);
   await captureVisualAt1280(page, info, "apercu-brouillon", 600);
