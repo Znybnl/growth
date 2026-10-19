@@ -98,7 +98,7 @@ const MOTIF_ICONS = {
   sun: Sun,
 } as const;
 
-export function ScratchTemplateThumbnail({ templateId }: { templateId: GamePageTemplateId }) {
+export function ScratchTemplateThumbnail({ templateId, card = false }: { templateId: GamePageTemplateId; card?: boolean }) {
   if (!isScratchThumbnailId(templateId)) return null;
 
   const template = SCRATCH_THUMBNAILS[templateId];
@@ -110,7 +110,7 @@ export function ScratchTemplateThumbnail({ templateId }: { templateId: GamePageT
     <span
       aria-hidden="true"
       data-testid={`scratch-template-thumbnail-${templateId}`}
-      className="relative mb-3 flex h-[148px] items-center justify-center overflow-hidden rounded-[14px] p-2"
+      className={`relative flex items-center justify-center overflow-hidden p-2 ${card ? "h-full" : "mb-3 h-[148px] rounded-[14px]"}`}
       style={{ background: template.background }}
     >
       {!isVault && !isSunburst ? (
@@ -129,11 +129,11 @@ export function ScratchTemplateThumbnail({ templateId }: { templateId: GamePageT
         <span className="relative text-[5px] font-semibold uppercase tracking-[0.2em]" style={{ color: template.muted }}>
           Votre logo
         </span>
-        <span className="relative mt-2 line-clamp-2 text-center font-serif text-[10px] leading-[1.05]" style={{ color: template.ink }}>
-          {template.headline}
+        <span className={`relative mt-2 line-clamp-2 text-center font-serif leading-[1.05] ${card ? "text-[12px]" : "text-[10px]"}`} style={{ color: template.ink }}>
+          {card ? "Grattez & gagnez" : template.headline}
         </span>
         <span className="relative mt-1.5 text-center text-[4px] font-semibold uppercase tracking-[0.12em]" style={{ color: template.muted }}>
-          {template.eyebrow}
+          {card ? "De belles surprises pour votre prochaine visite" : template.eyebrow}
         </span>
         <span
           className={`relative mt-auto flex items-center justify-center overflow-hidden border shadow-[0_3px_9px_rgba(22,26,42,.16)] ${isSunburst ? "h-[35px] w-[57px] rounded-[10px]" : "h-[43px] w-[43px] rounded-[11px]"}`}

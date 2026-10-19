@@ -42,6 +42,9 @@ import { BeautyWheelTemplateGallery } from "@/components/merchant/beauty-wheel-t
 import { BeautyScratchTemplateGallery } from "@/components/merchant/beauty-scratch-template-gallery";
 import { ScratchTemplateThumbnail } from "@/components/merchant/scratch-template-thumbnail";
 import { WheelTemplateThumbnail } from "@/components/merchant/wheel-template-thumbnail";
+import { GameTemplateCard } from "@/components/merchant/game-template-card";
+import { DraftPreviewViewport } from "@/components/merchant/draft-preview-viewport";
+import { WIZARD_PHONE_SIZE } from "@/lib/game-preview-viewport";
 import { DialogShell } from "@/components/ui/dialog";
 import { ValidationDialog } from "@/components/ui/validation-dialog";
 import {
@@ -442,7 +445,7 @@ function updatePrize(
 
 export function WizardPhoneFrame({ children }: { children: ReactNode }) {
   return (
-    <div data-testid="wizard-phone-preview" className="okado-preview-surface relative mx-auto box-border h-[550px] w-[300px] rounded-[36px] border-[5px] border-[#172033] bg-[#172033] p-1.5 shadow-[0_24px_54px_rgba(18,24,39,0.2)]">
+    <div data-testid="wizard-phone-preview" style={WIZARD_PHONE_SIZE} className="okado-preview-surface relative mx-auto box-border rounded-[40px] border-[5px] border-[#172033] bg-[#172033] p-[7px] shadow-[0_24px_54px_rgba(18,24,39,0.2)]">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute left-1/2 top-2 z-20 h-1.5 w-14 -translate-x-1/2 rounded-full bg-[#6d7890]/70"
@@ -464,12 +467,12 @@ function WizardGamePreview({
   const preview = buildCampaignLivePreviewModel(draft, merchant);
   return (
     <WizardPhoneFrame>
-      <CampaignLivePreview
+      <DraftPreviewViewport><CampaignLivePreview
         merchant={merchant}
         preview={preview}
-        compact
+        mobileViewport
         flushTop
-      />
+      /></DraftPreviewViewport>
     </WizardPhoneFrame>
   );
 }
@@ -1366,6 +1369,66 @@ export function CampaignWizard({
   return (
     <div ref={wizardLayoutRef} data-layout={wizardLayout} data-inline-preview={inlinePreview} className="okado-wizard space-y-6 pb-10">
       {noMarketingActionDialog}
+      <div className="wizard-save-toolbar sticky top-0 z-30 -mx-3 -mt-6 border-b border-fog bg-soft-white/95 px-3 py-3 backdrop-blur-sm lg:-mx-6 lg:px-6" data-testid="wizard-save-toolbar">
+        <div className="flex flex-col gap-3 xl:flex-row xl:flex-wrap xl:items-center xl:justify-between">
+          <div className="flex flex-wrap items-center gap-2">
+            {adminSaveEndpoint ? <StatusBadge tone="muted">Administration · {merchant.companyName}</StatusBadge> : (
+              <StatusBadge tone={!draft.id || !draft.isActive ? "muted" : "active"}>
+                {!draft.id ? "En création" : draft.isActive ? "En ligne" : "Brouillon"}
+              </StatusBadge>
+            )}
+            {draft.id ? <>
+              <button type="button" onClick={requestPreview} disabled={isSaving || isSavingBeforePreview} className="okado-secondary-action gap-2 px-4 text-sm">
+                <Eye className="h-4 w-4" aria-hidden="true" /> Prévisualiser
+              </button>
+              {adminSaveEndpoint ? <>
+                <button type="button" onClick={() => setQrPreviewOpen(true)} className="okado-secondary-action gap-2 px-4 text-sm">
+                  <QrCode className="h-4 w-4" aria-hidden="true" /> QR code
+                </button>
+                <AdminCampaignQrDownload campaignId={draft.id} isActive={draft.isActive} />
+                <Link href={`/admin/campaigns/${encodeURIComponent(draft.id)}/poster`} prefetch={false} className="okado-secondary-action px-4 text-sm">Affiche</Link>
+              </> : <>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button type="button" className="okado-secondary-action gap-2 px-4 text-sm" aria-label="Options du QR code">
+                      <QrCode className="h-4 w-4" aria-hidden="true" />
+                      <span>QR code</span>
+                      <ChevronDown className="h-4 w-4" aria-hidden="true" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-[250px] rounded-[var(--okado-radius-control)] border-border p-1.5 shadow-[var(--shadow-product-card)]">
+                    <DropdownMenuItem onSelect={() => setDiffusionQrOpen(true)} className="cursor-pointer gap-2 rounded-[10px] px-3 py-2.5">
+                      <Download className="h-4 w-4" aria-hidden="true" />
+                      <span>Télécharger le QR code</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => setQrPreviewOpen(true)} className="cursor-pointer gap-2 rounded-[10px] px-3 py-2.5">
+                      <Eye className="h-4 w-4" aria-hidden="true" />
+                      <span>QR code de prévisualisation</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <Link href={`/campaigns/${draft.id}/poster`} prefetch={false} className="okado-secondary-action px-4 text-sm">Affiche</Link>
+                <Link href={`/campaigns/${draft.id}/email`} prefetch={false} className="okado-secondary-action px-4 text-sm">Modifier l&apos;e-mail de gain</Link>
+              </>}
+              {adminSaveEndpoint && !draft.isActive ? <p className="basis-full text-xs text-ash">Le QR de diffusion n’ouvre le jeu qu’après sa publication.</p> : null}
+            </> : null}
+          </div>
+          <div className="flex flex-wrap items-center gap-2 xl:justify-end">
+            <Link href="/campaigns" prefetch={false} className="okado-secondary-action px-4 text-sm">
+              Retour aux jeux
+            </Link>
+            <button type="button" onClick={() => void saveCampaign("save")} disabled={isSaving} className="okado-secondary-action px-4 text-sm disabled:opacity-50">
+              {saveActionLabel}
+            </button>
+            {isEditing || stepIndex === WIZARD_STEPS.length - 1 ? (
+              <button type="button" onClick={() => void saveCampaign("publish")} disabled={isSaving} className="okado-filled-action px-4 text-sm disabled:opacity-50">
+                {isSaving ? "Enregistrement…" : "Publier"}
+              </button>
+            ) : null}
+          </div>
+        </div>
+      </div>
+
       <section data-mode={isEditing ? "edit" : "create"} className="wizard-heading flex flex-col gap-5 px-1 py-2 xl:flex-row xl:items-end xl:justify-between">
         <div>
           <p className="okado-label">Assistant de création</p>
@@ -1377,103 +1440,7 @@ export function CampaignWizard({
               : "Créer une campagne"}
           </h1>
         </div>
-        {draft.id && adminSaveEndpoint ? (
-          <div className="flex flex-wrap items-center gap-2">
-            <StatusBadge tone="muted">Administration · {merchant.companyName}</StatusBadge>
-            <button type="button" onClick={requestPreview} disabled={isSaving || isSavingBeforePreview} className="okado-secondary-action gap-2 px-4 text-sm">
-              <Eye className="h-4 w-4" aria-hidden="true" /> Prévisualiser
-            </button>
-            <button type="button" onClick={() => setQrPreviewOpen(true)} className="okado-secondary-action px-4 text-sm">QR de test</button>
-            <AdminCampaignQrDownload campaignId={draft.id} isActive={draft.isActive} />
-            <Link href={`/admin/campaigns/${encodeURIComponent(draft.id)}/poster`} prefetch={false} className="okado-secondary-action px-4 text-sm">Affiche</Link>
-            {!draft.isActive ? <p className="w-full text-xs text-ash">Le QR de diffusion n’ouvre le jeu qu’après sa publication.</p> : null}
-          </div>
-        ) : null}
-        {draft.id && !adminSaveEndpoint ? (
-          <div className="flex flex-wrap items-center gap-2">
-            {isEditing ? <StatusBadge tone="muted">Mode modification</StatusBadge> : null}
-            <button
-              type="button"
-              onClick={requestPreview}
-              disabled={isSaving || isSavingBeforePreview}
-              className="okado-secondary-action gap-2 px-4 text-sm"
-            >
-              <Eye className="h-4 w-4" aria-hidden="true" />
-              Prévisualiser
-            </button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
-                  type="button"
-                  className="okado-secondary-action gap-2 px-4 text-sm"
-                  aria-label="Options du QR code"
-                >
-                  <QrCode className="h-4 w-4" aria-hidden="true" />
-                  <span>QR code</span>
-                  <ChevronDown className="h-4 w-4" aria-hidden="true" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                className="w-[250px] rounded-[var(--okado-radius-control)] border-border p-1.5 shadow-[var(--shadow-product-card)]"
-              >
-                <DropdownMenuItem onSelect={() => setDiffusionQrOpen(true)} className="cursor-pointer gap-2 rounded-[10px] px-3 py-2.5">
-                    <Download className="h-4 w-4" aria-hidden="true" />
-                    <span>Télécharger le QR code</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="cursor-pointer gap-2 rounded-[10px] px-3 py-2.5"
-                  onSelect={() => setQrPreviewOpen(true)}
-                >
-                  <Eye className="h-4 w-4" aria-hidden="true" />
-                  <span>QR code de prévisualisation</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <Link
-              href={`/campaigns/${draft.id}/poster`}
-              prefetch={false}
-              className="okado-secondary-action px-4 text-sm"
-            >
-              Affiche
-            </Link>
-            <Link href={`/campaigns/${draft.id}/email`} prefetch={false} className="okado-secondary-action px-4 text-sm">
-              Modifier l&apos;e-mail de gain
-            </Link>
-          </div>
-        ) : null}
       </section>
-
-      <div className="wizard-save-toolbar hidden border-b border-fog bg-soft-white/95 py-3">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <StatusBadge tone={!draft.id || !draft.isActive ? "muted" : "active"}>
-            {!draft.id ? "En création" : draft.isActive ? "En ligne" : "Brouillon"}
-          </StatusBadge>
-          <div className="flex flex-wrap items-center gap-2">
-            <Link href="/campaigns" prefetch={false} className="okado-secondary-action px-4 text-sm">
-              Retour aux jeux
-            </Link>
-            <button
-              type="button"
-              onClick={() => void saveCampaign("save")}
-              disabled={isSaving}
-              className="okado-secondary-action px-4 text-sm disabled:opacity-50"
-            >
-              {saveActionLabel}
-            </button>
-            {isEditing || stepIndex === WIZARD_STEPS.length - 1 ? (
-              <button
-                type="button"
-                onClick={() => void saveCampaign("publish")}
-                disabled={isSaving}
-                className="okado-filled-action px-4 text-sm disabled:opacity-50"
-              >
-                {isSaving ? "Enregistrement…" : "Publier"}
-              </button>
-            ) : null}
-          </div>
-        </div>
-      </div>
 
       <div className="wizard-layout grid items-start gap-5">
         <aside className="wizard-progress okado-card min-w-0 p-3">
@@ -1579,12 +1546,12 @@ export function CampaignWizard({
                       ),
                     })
                   }
-                  rows={draft.gameType === "wheel" && (isBeautyIndustry(merchant.industry) || isBeautyWheelTemplate(draft.presentation.layout.templateId)) ? MAX_BEAUTY_WHEEL_TITLE_LINES : 3}
+                  rows={3}
                   maxLength={MAX_CAMPAIGN_SUBTITLE_LENGTH}
                   className="mt-3 w-full resize-none rounded-[12px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm leading-6 text-[#182033] outline-none transition focus:border-aubergine focus:ring-4 focus:ring-aubergine/15"
                 />
                 <span className="mt-1 block text-xs text-[#8993a6]">
-                  {draft.subtitle.length}/{MAX_CAMPAIGN_SUBTITLE_LENGTH} caractères · {draft.gameType === "wheel" && (isBeautyIndustry(merchant.industry) || isBeautyWheelTemplate(draft.presentation.layout.templateId)) ? `${MAX_BEAUTY_WHEEL_TITLE_LINES} lignes de saisie maximum · la taille reste celle que vous choisissez.` : "3 lignes maximum pour conserver un rendu lisible sur mobile."}
+                  {draft.subtitle.length}/{MAX_CAMPAIGN_SUBTITLE_LENGTH} caractères · 3 lignes conseillées pour conserver un rendu lisible sur mobile.
                 </span>
               </label>
               {draft.gameType === "scratch" && isImmersiveScratchTemplate(draft.presentation.layout.templateId) ? (
@@ -1633,7 +1600,7 @@ export function CampaignWizard({
                         },
                       })
                     }
-                    rows={2}
+                    rows={3}
                     maxLength={MAX_CAMPAIGN_SUBTITLE_LENGTH}
                     placeholder="Ex. Tentez votre chance !"
                     className="mt-3 w-full resize-none rounded-[12px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm leading-6 text-[#182033] outline-none transition focus:border-aubergine focus:ring-4 focus:ring-aubergine/15"
@@ -2242,8 +2209,8 @@ export function CampaignWizard({
                   onSelect={selectBeautyScratchTemplate}
                 />
               ) : null}
-              {draft.gameType === "wheel" ? <h3 className="text-sm font-semibold text-[#241b2a]">Autres templates de roue</h3> : null}
-              <div className="grid min-w-0 grid-cols-[repeat(auto-fit,minmax(min(100%,14rem),1fr))] gap-4" data-testid="classic-template-options">
+              {draft.gameType === "wheel" ? <h3 className="text-base font-semibold text-carbon">Autres templates de roue</h3> : null}
+              <div className="grid min-w-0 grid-cols-[repeat(auto-fit,minmax(min(100%,13rem),1fr))] gap-3" data-testid="classic-template-options">
                 {(
                   draft.gameType === "scratch"
                     ? [
@@ -2298,10 +2265,12 @@ export function CampaignWizard({
                   .filter((template) => !isBeautyIndustry(merchant.industry) || template.id !== "rose-institut")
                   .slice()
                   .map((template) => (
-                  <button
-                    type="button"
+                  <GameTemplateCard
                     key={template.id}
-                    onClick={() => {
+                    label={template.label}
+                    description={template.text}
+                    selected={draft.presentation.layout.templateId === template.id}
+                    onSelect={() => {
                       captureClientProductEvent("campaign_template_selected", {
                         campaignType: draft.gameType,
                         templateKey: template.id,
@@ -2408,17 +2377,10 @@ export function CampaignWizard({
                         };
                       });
                     }}
-                    className={`min-w-0 rounded-[16px] border p-4 text-left ${draft.presentation.layout.templateId === template.id ? "border-aubergine bg-purple-haze" : "border-[#e2e8f0] bg-[#fbfcfe]"}`}
                   >
-                    {draft.gameType === "wheel" ? <WheelTemplateThumbnail templateId={template.id as GamePageTemplateId} /> : null}
-                    {draft.gameType === "scratch" ? <ScratchTemplateThumbnail templateId={template.id} /> : null}
-                    <span className="block text-sm font-semibold text-[#182033]">
-                      {template.label}
-                    </span>
-                    <span className="mt-1 block break-words text-xs leading-5 text-[#8993a6]">
-                      {template.text}
-                    </span>
-                  </button>
+                    {draft.gameType === "wheel" ? <WheelTemplateThumbnail templateId={template.id as GamePageTemplateId} card /> : null}
+                    {draft.gameType === "scratch" ? <ScratchTemplateThumbnail templateId={template.id} card /> : null}
+                  </GameTemplateCard>
                 ))}
                </div>
 

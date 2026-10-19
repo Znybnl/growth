@@ -44,15 +44,16 @@ function AnalyticsIdentityProof() {
 }
 
 /** Synthetic rendering only: tests intercept every API request, no session bypass. */
-export function TemplateRenderingProof({ mode = "preview", templateId = "classic", background = "#ffffff", ink, font, business }: {
-  mode?: string; templateId?: GamePageTemplateId; background?: string; ink?: string; font?: TextFont; business?: string;
+export function TemplateRenderingProof({ mode = "preview", templateId = "classic", background = "#ffffff", ink, font, secondary, business }: {
+  mode?: string; templateId?: GamePageTemplateId; background?: string; ink?: string; font?: TextFont; secondary?: string; business?: string;
 }) {
   if (mode === "analytics-identity") return <AnalyticsIdentityProof />;
   const scratch = templateId.includes("scratch");
   const businessNames = { beauty: "Maison Botanique", restaurant: "Le bistro", retail: "La petite boutique" };
   const companyName = businessNames[business as keyof typeof businessNames] ?? "Établissement de test";
+  const industry = business === "retail" || mode.includes("-retail") ? "Commerce" : business === "restaurant" ? "Restauration" : "Beauté";
   const merchant: Merchant = { id: "template-proof-merchant", companyName,
-    logoText: companyName, industry: "Beauté", onboardingCompleted: true, createdAt: "2026-10-15T00:00:00Z" };
+    logoText: companyName, industry, onboardingCompleted: true, createdAt: "2026-10-15T00:00:00Z" };
   const color = ink ?? (scratch ? defaultScratchTextColor(templateId) : wheelHeadingColorForTemplateSelection(templateId, "#ffffff"));
   const form = {
     ...halloweenFixture, id: "template-proof-campaign", merchantId: merchant.id,
@@ -68,7 +69,7 @@ export function TemplateRenderingProof({ mode = "preview", templateId = "classic
       heading: { ...halloweenFixture.presentation.heading, textColor: color, fontSizePx: 40, fontFamily: font ?? "poppins" as const },
       wheel: wheelPaletteForTemplate(templateId, halloweenFixture.presentation.wheel),
       layout: { ...halloweenFixture.presentation.layout, templateId, blockSpacingPx: 25,
-        scratchSubtitle: "Découvrez votre cadeau", wheelSubtitle: "" },
+        scratchSubtitle: "Découvrez votre cadeau", wheelSubtitle: secondary ?? "" },
     },
   };
   const publicCampaign: PublicCampaign = { ...form, merchantName: merchant.companyName, merchantLogoText: merchant.logoText,

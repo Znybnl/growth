@@ -4,6 +4,7 @@ import { useState, type ComponentProps } from "react";
 import { CampaignLivePreview, buildCampaignLivePreviewModel } from "@/components/merchant/campaign-live-preview";
 import { BeautyWheelTemplateGallery } from "@/components/merchant/beauty-wheel-template-gallery";
 import { WizardPhoneFrame } from "@/components/merchant/campaign-wizard";
+import { FittedWizardPhone } from "@/components/merchant/wizard-responsive-layout";
 import { CampaignExperience } from "@/components/public/campaign-experience";
 import { beautyWheelLogoColor, beautyWheelTheme } from "@/lib/beauty-wheel-themes";
 import { wheelPaletteForTemplate } from "@/lib/campaign-defaults";
@@ -62,7 +63,7 @@ export function BeautyWheelBackgroundFixture({
   </main>;
   return <main style={{ maxWidth: mode === "gallery" ? 960 : 390, margin: "auto" }}>
     {mode === "gallery" ? <BeautyWheelTemplateGallery selectedTemplateId={selectedTemplate} onSelect={setSelectedTemplate} /> : (
-      <WizardPhoneFrame><CampaignLivePreview merchant={merchant} preview={preview} compact flushTop /></WizardPhoneFrame>
+      <FittedWizardPhone><WizardPhoneFrame><CampaignLivePreview merchant={merchant} preview={preview} compact flushTop /></WizardPhoneFrame></FittedWizardPhone>
     )}
     <div style={{ padding: 16, background: "white", color: "black" }}>
       <label>Template de test<select value={selectedTemplate} onChange={(event) => setSelectedTemplate(event.target.value as GamePageTemplateId)}>

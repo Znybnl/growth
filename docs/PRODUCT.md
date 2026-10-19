@@ -67,6 +67,30 @@ Les métadonnées de la page publique destinées aux aperçus sociaux associent 
 - **Résultat attendu** : un jeu brouillon ou actif est enregistré avec son type de jeu, ses lots, ses règles et ses actions marketing.
 - **Mesure de réussite** : le jeu est prévisualisable avant diffusion et publiable uniquement lorsque les éléments obligatoires sont valides.
 
+#### Présentation responsive du wizard — #600
+
+Les actions Retour aux jeux, Enregistrer et Publier (selon l’étape et le mode)
+restent accessibles dans une barre supérieure fixe au défilement, y compris
+sur petit écran. La progression verticale mesure 250 px sur grand écran ; les
+formats horizontal et compact sont conservés lorsque la place diminue.
+La promesse et le sous-titre de roue affichent trois lignes de saisie par
+défaut ; cette hauteur ne tronque pas les textes Beauté déjà autorisés.
+
+L’aperçu du brouillon utilise un viewport CSS mobile utile de 390 × 740 px, commun
+à la prévisualisation interactive, puis une mise à l’échelle du téléphone
+entier. Les textes et les composants de roue gardent leurs dimensions mobiles,
+indépendantes de l’écran du marchand. La hauteur de référence réserve une place
+au navigateur mobile sans en dessiner l’interface ; elle n’impose aucune taille
+à la vraie page de jeu. Le cadre du wizard ne dépasse pas 260 px de large.
+Le sous-titre de roue est augmenté de 2 px dans les rendus public et aperçu,
+en conservant les adaptations typographiques de chaque thème.
+Cet aperçu visuel utilise uniquement
+le brouillon en mémoire et n’effectue aucune participation ni sauvegarde.
+Le bouton Voir l’aperçu reste disponible lorsque le téléphone ne tient pas
+dans la colonne. Le libellé Aperçu en direct et l’action Agrandir sont retirés.
+Les cartes de modèles Beauté et classiques partagent cadre, hauteur de visuel,
+légende, sélection et mise au point clavier.
+
 ### P-02 — Participer à un jeu depuis un QR code
 
 - Assistance administrative (issue #470) : « QR de diffusion » dans Pilotage → Voir les jeux, puis téléchargement dans le Wizard administrateur et après son enregistrement. Ce fichier SVG mène au jeu public du bon établissement ; le « QR de test » reste séparé. Un brouillon reste non publié et un avertissement demande d’attendre sa publication avant diffusion. Le bouton signale le téléchargement en cours et affiche une erreur en cas d’accès refusé ou de connexion interrompue, sans enregistrer un fichier JSON/HTML à la place du QR.

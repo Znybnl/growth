@@ -352,7 +352,7 @@ export function WheelOfFortune({
   const roseLight = isDefaultRoseColor ? "#f3cdd5" : deriveLighterHex(colors.loseColor, 0.67);
   const roseMedium = isDefaultRoseColor ? "#e7aebb" : deriveLighterHex(colors.loseColor, 0.4);
   const wheelTop =
-    framing === "mobile-preview" ? "64px" : framing === "public" ? undefined : isRosePowderTemplate ? "calc(40% + 14px)" : isBeautyTemplate ? "40%" : isRoseInstitutTemplate ? "8px" : isClassicTemplate ? "54%" : isRestaurantPopTemplate ? "42%" : framing === "editor" ? "83%" : "62%";
+    framing === "mobile-preview" ? "112px" : framing === "public" ? undefined : isRosePowderTemplate ? "calc(40% + 14px)" : isBeautyTemplate ? "40%" : isRoseInstitutTemplate ? "8px" : isClassicTemplate ? "54%" : isRestaurantPopTemplate ? "42%" : framing === "editor" ? "83%" : "62%";
   const wheelFrameSizeClass =
     framing === "public"
       ? isBeautyTemplate
