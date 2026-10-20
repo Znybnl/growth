@@ -28,12 +28,16 @@ La fiche dans Pilotage est réservée à l’administration de la plateforme et 
 
 ## Dotations et probabilités
 
+- Atelier de composition — #609, décision propriétaire du 20 octobre 2026 : les probabilités sont modifiables directement dans la liste. Une somme provisoire supérieure à 100 % est autorisée dans l’éditeur local ; l’enregistrement d’un lot dans cette composition reste possible avec une alerte immédiate, unique et non bloquante. L’enregistrement du jeu, sa publication et le passage à l’étape suivante restent bloqués tant que la somme dépasse 100 %. Chaque probabilité individuelle reste comprise entre 0 et 100 %.
+- La part « PERDU » est calculée par `max(0, 100 − somme des probabilités des lots gagnants)` et reste informative : aucun lot perdant, stock ou coût associé n’est créé en base. Les paramètres existants de disponibilité, validité et délai de participation sont regroupés après les lots sans changement de leurs valeurs ni des calculs métier.
+- Bibliothèque du wizard — #609, phase 2 : les suggestions reprennent le catalogue existant du secteur/sous-secteur. Les ajouts rapides empêchent les doublons accidentels et créent des copies modifiables dans le brouillon. Si la chance suggérée dépasse la part disponible, le marchand choisit explicitement une valeur ou annule ; aucune probabilité des autres lots n’est modifiée automatiquement. Les dépassements provisoires suivent la règle locale de l’atelier de composition ci-dessus.
 - Le catalogue de suggestions est indépendant des lots déjà enregistrés dans les jeux. Sa refonte ne modifie aucun lot, gain, stock, coût, condition ou probabilité existant (issue #466, décision propriétaire du 6 octobre 2026).
 - Les six sous-secteurs Beauté sont : Beauté généraliste / multi-activité, Coiffure, Ongles, Regard — cils & sourcils, Massage & Spa, Soins visage & corps. Les anciennes catégories ambiguës ne sont conservées que si un établissement ou une suggestion les utilise ; aucune reclassification automatique. Les suggestions personnalisées restent intactes.
 - Les probabilités de bibliothèque sont des valeurs individuelles proposées, pas une distribution à normaliser. Seuls les lots choisis entrent dans le calcul du jeu.
 - À l'ajout d'une suggestion Beauté, sa condition suggérée préremplit les conditions d'utilisation. « Achat requis pour le retrait » est activé lorsque cette condition impose une prestation payante ou une nouvelle pose ; une réduction à tarif normal ou un cadeau autonome ne l'active pas. Ces réglages restent modifiables, sans recalcul rétroactif sur les lots existants.
 
 - Un lot publiable doit avoir un libellé, une quantité disponible strictement positive et des conditions de retrait cohérentes.
+- SFD Lots #609, §6.3 : la publication exige au moins un lot avec une probabilité de gain strictement positive. Une composition à 0 % peut rester un brouillon incomplet ; elle ne peut pas être publiée.
 - Lorsque « Jeu 100 % gagnant » est activé, la somme des probabilités des lots doit être exactement égale à 100 % au moment de la publication.
 - La modification opérationnelle du stock concerne le **stock disponible** ; le stock initial reste la référence de création.
 - Les anomalies de dotation doivent être affichées dans la section concernée avant la publication.

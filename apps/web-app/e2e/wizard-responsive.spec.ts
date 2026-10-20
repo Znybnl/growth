@@ -34,20 +34,24 @@ test("@visual-1280 : jeu et lots lisibles dans le vrai shell à 1280×600/720", 
     await expect(choices.last().getByRole("heading")).toBeVisible();
     await captureVisualAt1280(page, info, "cartes-jeu", height);
     await step(page, 3);
-    const fields = page.getByTestId("wizard-prize-fields").first();
-    await fields.scrollIntoViewIfNeeded();
-    for (const input of await fields.locator("input").all()) expect((await input.boundingBox())!.width).toBeGreaterThanOrEqual(140);
+    const table = page.getByTestId("wizard-prize-table");
+    await expect(table.getByTestId("wizard-prize-row")).toHaveCount(1);
+    await expect(page.getByTestId("wizard-losing-probability")).toContainText("50 %");
     await captureVisualAt1280(page, info, "lots", height);
-    const footer = page.getByTestId("wizard-footer");
-    await footer.scrollIntoViewIfNeeded();
-    await expect(footer.getByRole("button", { name: "Enregistrer le brouillon", exact: true })).toBeVisible();
+    await table.getByRole("button", { name: "Modifier -10% PROCHAINE VISITE" }).click();
+    const editor = page.getByRole("dialog", { name: "Modifier le lot" });
+    const probability = editor.getByLabel(/Chance de gain/);
+    await probability.fill("150");
+    await expect(page.getByRole("alert").filter({ hasText: "dépassent 100 %" })).toBeVisible();
+    await editor.getByRole("button", { name: "Enregistrer le lot" }).click();
+    await expect(editor.getByRole("alert").filter({ hasText: "La chance de gain doit être comprise entre 0 et 100 %" })).toBeVisible();
+    await captureVisualAt1280(page, info, "edition-lot-invalide", height);
+    await editor.getByRole("button", { name: "Fermer l’édition du lot" }).click();
+    await expect(editor.getByText("Abandonner les modifications ?")).toBeVisible();
+    await editor.getByRole("button", { name: "Abandonner", exact: true }).click();
+    await expect(table.getByTestId("wizard-prize-row")).toHaveCount(1);
+    await expect(page.getByTestId("wizard-losing-probability")).toContainText("50 %");
     await captureVisualAt1280(page, info, "actions-formulaire", height);
-    await fields.locator('input[type="number"]').first().fill("150");
-    await footer.getByRole("button", { name: "Continuer", exact: true }).click();
-    const error = page.getByTestId("wizard-form").getByRole("alert").last();
-    await expect(error).toBeVisible();
-    await error.scrollIntoViewIfNeeded();
-    await captureVisualAt1280(page, info, "erreur-lot", height);
   }
 });
 

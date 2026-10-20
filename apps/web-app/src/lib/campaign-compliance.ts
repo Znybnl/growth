@@ -69,6 +69,7 @@ function assertCampaignCanPublishInternal(input: CampaignSetupInput) {
   }, 0);
 
   if (totalProbability > 100.0001) throw new Error("Le total des probabilités ne peut pas dépasser 100 %.");
+  if (totalProbability <= 0) throw new Error("Ajoutez au moins un lot avec une chance de gain supérieure à 0 % avant de publier le jeu.");
   if (input.rewardRules.isWinningEveryTime && totalProbability < 99.9999) {
     throw new Error("Un jeu 100 % gagnant doit totaliser exactement 100 % de probabilités.");
   }

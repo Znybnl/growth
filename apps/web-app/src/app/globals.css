@@ -730,7 +730,7 @@ select {
   position: sticky;
   top: calc(var(--wizard-toolbar-height, 0px) + 1rem);
 }
-.okado-wizard :is(input, textarea, select, h2[tabindex]) {
+.okado-wizard :is(input, textarea, select, h2[tabindex], .wizard-prize-row) {
   scroll-margin-top: calc(var(--wizard-toolbar-height, 0px) + 1rem);
 }
 .okado-wizard[data-layout="wide"] .wizard-form { grid-column: 2; grid-row: 1; }
@@ -1259,6 +1259,56 @@ button:disabled,
 
   .okado-dialog-surface {
     padding: 2rem;
+  }
+}
+
+/* Lot editing uses a side panel on desktop and a full-height sheet on mobile. */
+.okado-prize-library.okado-dialog-surface {
+  display: flex;
+  flex-direction: column;
+  width: min(54rem, calc(100vw - 2rem));
+  max-width: none;
+  max-height: min(88dvh, 54rem);
+  overflow: hidden;
+  padding: 0;
+  border-radius: 16px;
+}
+
+@media (max-width: 639px) {
+  .okado-dialog-overlay:has(.okado-prize-library) {
+    padding: 0;
+  }
+
+  .okado-prize-library.okado-dialog-surface {
+    width: 100%;
+    height: 100dvh;
+    max-height: 100dvh;
+    border-radius: 0;
+  }
+}
+
+.okado-dialog-overlay:has(.okado-prize-editor) {
+  align-items: stretch;
+  justify-content: flex-end;
+  padding: 0;
+}
+
+.okado-prize-editor.okado-dialog-surface {
+  display: flex;
+  width: min(30rem, 100%);
+  max-width: none;
+  max-height: 100dvh;
+  height: 100dvh;
+  flex-direction: column;
+  overflow-y: auto;
+  border-radius: 16px 0 0 16px;
+  padding: 0;
+}
+
+@media (max-width: 639px) {
+  .okado-prize-editor.okado-dialog-surface {
+    width: 100%;
+    border-radius: 0;
   }
 }
 
