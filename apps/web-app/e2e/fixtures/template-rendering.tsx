@@ -71,7 +71,7 @@ export function TemplateRenderingProof({ mode = "preview", templateId = "classic
       background: { mode: backgroundImage ? "image" as const : "color" as const,
         color: backgroundImage ? "#ffffff" : background,
         imageUrl: backgroundImage },
-      logo: { ...halloweenFixture.presentation.logo, textColor: color, marginBottomPx: 20 },
+      logo: { ...halloweenFixture.presentation.logo, textColor: color, marginBottomPx: business ? 36 : 20 },
       heading: { ...halloweenFixture.presentation.heading, textColor: color, fontSizePx: business === "retail" ? 34 : 40, fontFamily: font ?? "poppins" as const },
       wheel: wheelPaletteForTemplate(templateId, halloweenFixture.presentation.wheel),
       layout: { ...halloweenFixture.presentation.layout, templateId, blockSpacingPx: 25,

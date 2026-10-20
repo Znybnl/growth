@@ -412,8 +412,8 @@ export function ImmersiveScratchTicket({
           </h2>
           {secondaryText?.trim() ? (
             <p
-              className={`mx-auto max-w-[250px] text-[10px] uppercase leading-[1.55] tracking-[0.13em] ${headingAlignmentClass}`}
-              style={{ color: withAlpha(isLilac ? logoTextColor || ink : ink, "d9"), marginTop: `${Math.max(0, subtitleSpacingPx)}px` }}
+              className={`mx-auto max-w-[280px] uppercase leading-[1.55] tracking-[0.08em] ${headingAlignmentClass}`}
+              style={{ color: withAlpha(isLilac ? logoTextColor || ink : ink, "d9"), fontSize: "clamp(10px, 4cqw, 14px)", marginTop: `${Math.max(0, subtitleSpacingPx)}px` }}
             >
               {secondaryText.trim()}
             </p>
