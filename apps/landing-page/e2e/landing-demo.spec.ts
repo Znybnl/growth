@@ -67,6 +67,16 @@ test("roue entière, étapes lisibles et résultats accessibles dans les trois v
     );
     await expect(demo.getByText("Comprendre cette étape")).toHaveCount(0);
     await expect(demo.getByTestId("demo-disclaimer")).toHaveCount(1);
+    await expect(demo.getByTestId("demo-disclaimer")).not.toContainText("Saisies non transmises");
+    await expect(demo).not.toContainText("Essayez ici");
+    await expect(phoneScreen).not.toContainText("Une attention, juste pour vous");
+    if (path === "/instituts-beaute") {
+      await expect(demo.locator('[data-variant="beauty"]')).toBeVisible();
+      await expect(phoneScreen).toHaveCSS("background-color", "rgb(255, 247, 248)");
+      await expect(phoneScreen).toHaveCSS("background-image", /beauty-rose-satin/);
+      await expect(phoneScreen.locator('[class*="screen"]')).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+      expect(await phoneScreen.evaluate((phone) => getComputedStyle(phone.parentElement!).backgroundColor)).toBe("rgb(244, 234, 240)");
+    }
     await expect(phoneScreen.getByTestId("demo-disclaimer")).toHaveCount(0);
     await expect(phoneScreen).not.toContainText(
       /simulation|démonstration|fictif/i,

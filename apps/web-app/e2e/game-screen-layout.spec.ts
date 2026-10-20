@@ -49,7 +49,8 @@ test("@visual-1280 ticket : la zone à gratter est alignée sans recouvrir le ti
     const headingBox = (await heading.boundingBox())!;
     const ticketBox = (await ticket.boundingBox())!;
     expect(ticketBox.y).toBeGreaterThanOrEqual(headingBox.y + headingBox.height);
-    if (viewport.width === 390) expect(ticketBox.width).toBeGreaterThanOrEqual(235);
+    if (viewport.width === 390) expect(ticketBox.width).toBeGreaterThan(200);
+    if (viewport.width === 390) expect(ticketBox.width).toBeLessThanOrEqual(216);
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(viewport.width);
     await assertNoPageOverflow(page);
 
@@ -62,7 +63,7 @@ test("@visual-1280 ticket : la zone à gratter est alignée sans recouvrir le ti
 });
 
 test("game screens marketing : captures joueur réelles sur données synthétiques", async ({ browser }, info) => {
-  const context = await browser.newContext({ viewport: { width: 360, height: 640 }, deviceScaleFactor: 2 });
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
   await context.route("**/api/public/campaign/template-proof-campaign*", route => route.fulfill({ json: { campaign: { actions: [] } } }));
   const page = await context.newPage();
   const models = [
@@ -82,27 +83,53 @@ test("game screens marketing : captures joueur réelles sur données synthétiqu
     "beauty-scratch-noir-or": "#f2e4c5",
     "beauty-scratch-lilas": "#44314d",
     "beauty-pop": "#49313e",
-    "beauty-editorial": "#f2e4c5",
+    "beauty-editorial": "#4c3b24",
     "beauty-nude": "#48382b",
     classic: "#ffffff",
-    "scratch-confetti": "#ffffff",
+    "scratch-confetti": "#3c3045",
+  };
+  const wheelButtons: Partial<Record<(typeof models)[number][0], { background: string; text: string }>> = {
+    "beauty-pop": { background: "#c52f68", text: "#fff7fa" },
+    "beauty-editorial": { background: "#171614", text: "#f4dfaa" },
+    "beauty-nude": { background: "#8a6937", text: "#fff9ee" },
   };
 
   try {
     for (const [template, business, asset] of models) {
       const ink = encodeURIComponent(headingColors[template]);
-      await page.goto(`/dev/template-rendering-proof?mode=live&template=${template}&business=${business}&ink=${ink}`);
+      const button = wheelButtons[template];
+      const buttonQuery = button ? `&button=${encodeURIComponent(button.background)}&buttonText=${encodeURIComponent(button.text)}` : "";
+      const backgroundQuery = business === "retail" ? "&background=studio" : "";
+      await page.goto(`/dev/template-rendering-proof?mode=live&template=${template}&business=${business}&ink=${ink}${buttonQuery}${backgroundQuery}`);
+      await page.addStyleTag({ content: "nextjs-portal { display: none !important; }" });
       const surface = page.locator(".okado-public-experience");
       await expect(surface.locator(template.includes("scratch") ? "h2" : "h1")).toBeVisible();
+      if (template.includes("scratch")) {
+        const ticket = surface.getByTestId("scratch-ticket-surface");
+        const foil = ticket.locator("canvas");
+        if (await foil.getAttribute("data-foil-texture")) await expect(foil).toHaveAttribute("data-foil-loaded", "true");
+        const ticketBox = (await ticket.boundingBox())!;
+        const surfaceBox = (await surface.boundingBox())!;
+        const centerY = (ticketBox.y + ticketBox.height / 2 - surfaceBox.y) / surfaceBox.height;
+        expect(centerY, `${template}: scratch area sits near the middle of the phone`).toBeGreaterThanOrEqual(0.48);
+        expect(centerY).toBeLessThanOrEqual(0.64);
+        expect(Math.abs(ticketBox.x + ticketBox.width / 2 - surfaceBox.x - surfaceBox.width / 2)).toBeLessThan(2);
+      }
       if (!template.includes("scratch")) {
         const title = surface.locator("h1");
         const wheel = surface.getByTestId("game-wheel-frame");
         const titleBox = (await title.boundingBox())!;
         const wheelBox = (await wheel.boundingBox())!;
         expect(wheelBox.y).toBeGreaterThanOrEqual(titleBox.y + titleBox.height);
+        if (button) {
+          const playButton = surface.getByRole("button", { name: "Jouer à la roue", exact: true });
+          await expect(playButton).toHaveAttribute("style", new RegExp(button.background.replace("#", "#"), "i"));
+          await expect(playButton).not.toHaveAttribute("style", /#2f6df6|#2563eb/i);
+        }
       }
+      await expect(page.locator("nextjs-portal")).toHaveCSS("display", "none");
       await page.evaluate(() => document.fonts.ready);
-      await surface.screenshot({ path: info.outputPath(`${asset}.png`), animations: "disabled" });
+      await surface.screenshot({ path: info.outputPath(`${asset}.png`), animations: "disabled", scale: "device" });
     }
   } finally {
     await context.close();

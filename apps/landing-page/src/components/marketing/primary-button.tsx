@@ -20,8 +20,9 @@ export function PrimaryButton({
   trackingVariant?: string;
   appearance?: "primary" | "secondary" | "text";
 }) {
+  const Component = href.startsWith("#") ? "a" : Link;
   return (
-    <Link
+    <Component
       href={href}
       onClick={() => {
         if (trackingName) {
@@ -37,6 +38,6 @@ export function PrimaryButton({
     >
       {children}
       <ArrowRight className="h-4 w-4 shrink-0" aria-hidden="true" />
-    </Link>
+    </Component>
   );
 }

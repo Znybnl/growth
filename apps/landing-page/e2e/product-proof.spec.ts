@@ -71,17 +71,17 @@ test("six spécialités Beauté avec un seul panneau visible et navigation clavi
   const examples = page.locator("#exemples-metiers");
   await expect(examples.getByRole("tab")).toHaveCount(6);
   const specialties = [
-    ["Ongles", "French offerte"], ["Regard · cils & sourcils", "Brow Lift offert"],
-    ["Soins visage & corps", "Masque offert"], ["Massage & Spa", "10 minutes de massage offertes"],
-    ["Coiffure", "Brushing offert"], ["Institut généraliste", "Complément de prestation offert"],
+    ["Ongles", "French offerte", "nails"], ["Regard · cils & sourcils", "Brow Lift offert", "eyes"],
+    ["Soins visage & corps", "Masque offert", "care"], ["Massage & Spa", "10 minutes de massage offertes", "spa"],
+    ["Coiffure", "Brushing offert", "hair"], ["Institut généraliste", "Complément de prestation offert", "general"],
   ];
-  for (const [label, reward] of specialties) {
+  for (const [label, reward, id] of specialties) {
     await examples.getByRole("tab", { name: label, exact: true }).click();
     const panel = examples.getByRole("tabpanel");
     await expect(panel).toHaveCount(1);
     await expect(panel).toContainText(reward);
     await expect(panel).toContainText("Exemple fictif");
-    await expect(panel.getByRole("link", { name: "Essayer la démo beauté" })).toHaveAttribute("href", "#demo");
+    await expect(panel.getByRole("link", { name: "Essayer cet exemple" })).toHaveAttribute("href", `#demo-${id}`);
     const image = panel.locator("img");
     await image.scrollIntoViewIfNeeded();
     await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);

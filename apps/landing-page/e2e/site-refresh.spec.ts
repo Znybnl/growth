@@ -54,8 +54,16 @@ test("l’accueil expose les bons secteurs et un suivi compact", async ({ page }
   await expect(hero.getByRole("link", { name: "Essayer gratuitement", exact: true })).toHaveAttribute("href", "https://app.okado.app/inscription");
   await expect(hero.getByRole("link", { name: "Voir la démo", exact: true })).toHaveAttribute("href", "#demo");
   await expect(hero).toContainText("QR code");
+  await expect(hero).toContainText("Scannez pour jouer");
+  await expect(hero).not.toContainText("QR code de votre campagne");
+  await expect(hero.locator("strong").filter({ hasText: "Un masque" })).toContainText(/Un masque\s*offert\./);
+  await expect(hero).toContainText("Avec un soin visage payant.");
+  const gameImage = hero.locator("img");
+  await expect.poll(() => gameImage.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
+  await expect(gameImage).toHaveAttribute("width", "780");
+  await expect(gameImage).toHaveAttribute("height", "1688");
   const sectors = page.locator("#cas-usage");
-  for (const [label, href] of [["Explorer la beauté", "/instituts-beaute"], ["Explorer la restauration", "/restaurants"], ["Découvrir les possibilités", "#demo"]]) {
+  for (const [label, href] of [["Explorer la beauté", "/instituts-beaute"], ["Explorer la restauration", "/restaurants"], ["Essayer le ticket boutique", "#demo-retail"]]) {
     await expect(sectors.getByRole("link", { name: label })).toHaveAttribute("href", href);
   }
   await expect(page.locator("#suivi dt")).toHaveText(["Participations", "Gains attribués", "Lots récupérés"]);

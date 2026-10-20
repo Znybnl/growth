@@ -242,6 +242,13 @@ largeurs ; les textes/boutons restent contenus et la roue complète. Le retrait
 réel SaaS n'est pas modifié. Les preuves métier et synthèses de #520 restent
 couvertes par `product-proof.spec.ts`.
 
+Complément #605 : les neuf captures de modèles sont rendues à 390×844 CSS px,
+au facteur 2, sans le portail indicateur Next.js dans la capture seulement.
+Les tests vérifient les dimensions intrinsèques, les centres de roue assortis
+aux modèles, les zones de grattage contenues (216 px maximum, tous modèles)
+et leur centrage horizontal et vertical dans les captures de téléphone
+sur les neuf tickets, en public, aperçu et jeu-prévisualisation.
+
 ### Qualité du funnel d'acquisition — #507
 
 `landing-conversion.spec.ts` exerce le vrai SDK, avec tous les paquets gzip/JSON

@@ -198,6 +198,38 @@ consentement, l'absence de nouveaux résultats est attendue.
 
 ## Découverte des modèles et métiers — #601, 19 octobre 2026
 
+### Complément multisectoriel — #607, 20 octobre 2026
+
+Les clics `marketing_cta_clicked` ajoutent `cta=select_demo_sector` dans
+`location=demo_selector` et `cta=select_gift_sector` dans
+`location=gift_suggestions`. `variant` appartient à la liste fermée
+`beauty`, `restaurant`, `retail`. Les liens vers les démos réutilisent
+`sector_demo` ou `explore_sector` et leur contexte existant.
+`marketing_demo_started`/`marketing_demo_completed` conservent `variant`
+et ajoutent, pour un exemple Beauté choisi, `specialty` parmi
+`nails`, `eyes`, `care`, `spa`, `hair`, `general`.
+Un changement d’exemple annule le parcours local sans inventer de fin ni de
+nouveau début. Le clic Jouer de l’exemple suivant démarre une nouvelle tentative.
+Le ticket local compte la confirmation de réception comme fin, pas le grattage
+ou l’ouverture de l’e-mail. Aucun changement au comptage SaaS réel.
+
+Les fragments éditoriaux servent seulement à sélectionner le contenu dans le
+navigateur. Ils ne sont pas envoyés en tant qu’URL. Les UTM restent dans la
+query string existante ; aucune persistance d’attribution ajoutée. Le refus de
+mesure n’empêche aucune démo et n’émet aucun de ces événements.
+
+Après mise en production autorisée, comparer sur des périodes de durée égale :
+vues de l’accueil → clic essai, démarrage → confirmation de démo par `variant`,
+clic essai → inscription effective via le funnel existant. Distinguer volumes
+et personnes uniques ; un clic de choix métier n’est pas une inscription.
+Utiliser uniquement 212872/EU, production, version de consentement/tracking
+valides, avec les exclusions internes existantes. Garder les cohortes matures
+du funnel d’inscription et présenter N/D si le dénominateur est nul. Examiner
+les volumes avant d’interpréter un taux ; une comparaison avant/après n’est pas
+une preuve causale. La recette locale avec paquets interceptés ne constitue
+pas une mesure d’amélioration commerciale. Aucun rapport privé ni automatisation
+n’est créé ou modifié par ce changement.
+
 Le site réutilise `marketing_cta_clicked` avec des valeurs éditoriales fixes :
 `cta=view_demo` pour l’ancre de démo du hero, `model_preview` pour l’ouverture
 d’un modèle, `explore_sector` pour une carte métier, `select_specialty` pour le
