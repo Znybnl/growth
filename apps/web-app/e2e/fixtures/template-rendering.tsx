@@ -74,7 +74,7 @@ export function TemplateRenderingProof({ mode = "preview", templateId = "classic
       logo: { ...halloweenFixture.presentation.logo, textColor: color, marginBottomPx: business ? 64 : 20 },
       heading: { ...halloweenFixture.presentation.heading, textColor: color, fontSizePx: business === "retail" ? 34 : 40, fontFamily: font ?? "poppins" as const },
       wheel: wheelPaletteForTemplate(templateId, halloweenFixture.presentation.wheel),
-      layout: { ...halloweenFixture.presentation.layout, templateId, blockSpacingPx: 25,
+      layout: { ...halloweenFixture.presentation.layout, templateId, blockSpacingPx: business && !scratch ? 64 : 25,
         scratchSubtitle: "Découvrez votre cadeau", wheelSubtitle: secondary ?? "" },
     },
   };
