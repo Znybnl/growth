@@ -83,7 +83,7 @@ test("game screens marketing : captures joueur réelles sur données synthétiqu
     "beauty-scratch-noir-or": "#f2e4c5",
     "beauty-scratch-lilas": "#44314d",
     "beauty-pop": "#49313e",
-    "beauty-editorial": "#f2e4c5",
+    "beauty-editorial": "#4c3b24",
     "beauty-nude": "#48382b",
     classic: "#ffffff",
     "scratch-confetti": "#3c3045",
