@@ -38,7 +38,7 @@ test("@visual-1280 phase 2 : ajouts multiples, doublons, ajustement explicite et
   await expect(library.getByTestId("wizard-prize-suggestion-card")).toHaveCount(4);
   const bounds = (await library.boundingBox())!;
   expect(bounds.width).toBeGreaterThanOrEqual(800);
-  expect(bounds.width).toBeLessThanOrEqual(900);
+  expect(bounds.width).toBeLessThanOrEqual(960);
   expect(new URL(queries[0]).searchParams.get("industry")).toBe("Beauté");
   const cards = library.getByTestId("wizard-prize-suggestion-card");
   expect((await cards.nth(1).boundingBox())!.x).toBeGreaterThan((await cards.first().boundingBox())!.x);
@@ -87,6 +87,45 @@ test("@visual-1280 phase 2 : ajouts multiples, doublons, ajustement explicite et
   expect(writes[0].prizes.map((prize) => prize.probability)).toEqual([45, 10, 20, 20, 5]);
   expect(writes[0].prizes[1]).toMatchObject({ label: "MASQUE PERSONNALISÉ", totalQuantity: null, estimatedUnitCost: 4, usageConditions: "Avec un soin visage payant.", purchaseRequired: true });
   expect(writes[0].prizes.some((prize) => /perdu/i.test(prize.label))).toBe(false);
+});
+
+test("@visual-1280 bibliothèque : fenêtre contenue, cartes compactes et actions fixes même après défilement", async ({ page }, info) => {
+  const catalog = Array.from({ length: 7 }, (_, index) => ({
+    ...suggestions[index % suggestions.length], id: `layout-${index}`,
+    label: index === 6 ? "PRODUIT OFFERT" : suggestions[index % suggestions.length].label,
+    description: index === 6 ? "Valable sur un produit sélectionné par l’établissement, dans la limite des stocks disponibles." : suggestions[index % suggestions.length].description,
+  }));
+  await page.route("**/api/prize-suggestions?**", (route) => route.fulfill({ json: { suggestions: catalog } }));
+  for (const [width, height] of [[1280, 720], [1280, 600], [1894, 1040], [320, 600], [390, 740]]) {
+    const library = await openLibrary(page, width, height);
+    const content = library.getByTestId("wizard-prize-library-content");
+    const bounds = (await library.boundingBox())!;
+    expect(bounds.y).toBeGreaterThanOrEqual(0);
+    expect(bounds.y + bounds.height).toBeLessThanOrEqual(height);
+    await expect(library.getByRole("heading", { name: "Ajouter des lots", exact: true })).toBeInViewport({ ratio: 1 });
+    const close = library.getByRole("button", { name: "Fermer la bibliothèque de lots" });
+    const done = library.getByRole("button", { name: "Terminer", exact: true });
+    await expect(close).toBeInViewport({ ratio: 1 });
+    await expect(done).toBeInViewport({ ratio: 1 });
+    if (width >= 640) {
+      expect(bounds.width).toBe(960);
+      expect((await library.getByTestId("wizard-prize-suggestion-card").first().boundingBox())!.height).toBeLessThan(190);
+    }
+    if (width === 1280) await captureVisualAt1280(page, info, "bibliotheque-compacte", height);
+    else await page.screenshot({ path: info.outputPath(`bibliotheque-${width}x${height}.png`), animations: "disabled" });
+    const doneBefore = (await done.boundingBox())!;
+    const closeBefore = (await close.boundingBox())!;
+    await content.evaluate((node) => { node.scrollTop = node.scrollHeight; });
+    const last = library.getByTestId("wizard-prize-suggestion-card").last();
+    await expect(last.getByRole("button")).toBeInViewport({ ratio: 1 });
+    expect((await done.boundingBox())!.y).toBe(doneBefore.y);
+    expect((await close.boundingBox())!.y).toBe(closeBefore.y);
+    expect(await library.evaluate((node) => node.scrollHeight <= node.clientHeight + 1 && node.scrollWidth <= node.clientWidth + 1)).toBe(true);
+    await last.getByRole("button").click();
+    await expect(last.getByRole("button")).toBeDisabled();
+    await done.click();
+    await assertNoPageOverflow(page);
+  }
 });
 
 test("phase 2 : suppression, réajout et abandon d’un ajustement ne changent pas les autres lots", async ({ page }) => {

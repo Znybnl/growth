@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { BadgePercent, Check, ChevronLeft, CirclePlus, Coffee, Gift, Loader2, Plus, Soup, Sparkles, UtensilsCrossed, X } from "lucide-react";
 import { DialogShell } from "@/components/ui/dialog";
 import type { PrizeSuggestion } from "@/lib/types";
+import styles from "./wizard-prize-library.module.css";
 
 const icons = { coffee: Coffee, dessert: Sparkles, drink: Soup, discount: BadgePercent, supplement: CirclePlus, menu: UtensilsCrossed, gift: Gift };
 const percent = (value: number) => new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2 }).format(value);
@@ -52,16 +53,16 @@ export function WizardPrizeLibrary({ suggestions, addedIds, remainingProbability
   }
 
   return (
-    <DialogShell open onClose={onClose} labelledBy="wizard-prize-library-title" describedBy="wizard-prize-library-description" className="okado-prize-library">
-      <header className="flex shrink-0 items-start justify-between gap-4 border-b border-[#eee8f0] px-5 py-5 sm:px-6">
+    <DialogShell open onClose={onClose} labelledBy="wizard-prize-library-title" describedBy="wizard-prize-library-description" className={styles.prizeLibrarySurface}>
+      <header className={`${styles.libraryHeader} flex items-start justify-between gap-4`}>
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#716b78]">Votre bibliothèque de lots</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#716b78]">Idées pour votre activité</p>
           <h2 id="wizard-prize-library-title" className="mt-1 text-xl font-semibold text-[#242126]">Ajouter des lots</h2>
-          <p id="wizard-prize-library-description" className="mt-2 max-w-xl text-sm leading-5 text-[#716b78]">Choisissez des récompenses adaptées à votre activité. Ajoutez plusieurs idées, puis personnalisez-les dans votre composition.</p>
+          <p id="wizard-prize-library-description" className="mt-1 text-sm leading-5 text-[#716b78]">Ajoutez vos idées, puis personnalisez-les dans votre composition.</p>
         </div>
         <button type="button" onClick={onClose} aria-label="Fermer la bibliothèque de lots" className="okado-dialog-dismiss"><X className="size-4" aria-hidden="true" /></button>
       </header>
-      <div ref={contentRef} className="min-h-0 flex-1 overflow-y-auto px-5 py-5 sm:px-6" data-testid="wizard-prize-library-content">
+      <div ref={contentRef} className={styles.libraryContent} data-testid="wizard-prize-library-content">
         {adjustment ? (
           <section aria-labelledby="wizard-suggestion-adjustment-title" className="mx-auto max-w-xl space-y-4">
             <button type="button" onClick={() => { setAdjustment(null); setValidationError(null); }} className="inline-flex items-center gap-1 text-sm font-semibold text-[#64206f]"><ChevronLeft className="size-4" aria-hidden="true" />Retour aux suggestions</button>
@@ -96,16 +97,16 @@ export function WizardPrizeLibrary({ suggestions, addedIds, remainingProbability
           </div>
         ) : (
           <section aria-labelledby="wizard-prize-suggestions-title">
-            <div className="mb-4 flex items-center justify-between gap-3">
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
               <h3 id="wizard-prize-suggestions-title" className="text-sm font-semibold text-[#242126]">Suggestions</h3>
               <span className="text-xs text-[#716b78]">{suggestions.length} idées pour votre activité</span>
             </div>
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className={styles.libraryGrid}>
               {suggestions.map((suggestion) => {
                 const added = addedIds.has(suggestion.id);
                 const Icon = icons[suggestion.icon as keyof typeof icons] ?? Gift;
                 return (
-                  <article key={suggestion.id} data-testid="wizard-prize-suggestion-card" className={`flex min-w-0 flex-col rounded-[12px] border p-4 ${added ? "border-[#b6d6c6] bg-[#f7fbf8]" : "border-[#e8e2ea] bg-white"}`}>
+                  <article key={suggestion.id} data-testid="wizard-prize-suggestion-card" data-added={added} className={styles.libraryCard}>
                     <div className="flex items-start gap-3">
                       <span className={`flex size-9 shrink-0 items-center justify-center rounded-[10px] ${added ? "bg-[#e4f1e9] text-[#25845b]" : "bg-[#f6f0fa] text-[#64206f]"}`}><Icon className="size-4" aria-hidden="true" /></span>
                       <div className="min-w-0">
@@ -113,13 +114,13 @@ export function WizardPrizeLibrary({ suggestions, addedIds, remainingProbability
                         <p className="mt-1 break-words text-xs leading-5 text-[#716b78]">{suggestion.description}</p>
                       </div>
                     </div>
-                    <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-xs text-[#716b78]">
-                      <span>Chance suggérée : <strong className="font-semibold text-[#242126]">{percent(suggestion.probability)} %</strong></span>
-                      <span>Coût estimé : <strong className="font-semibold text-[#242126]">{new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(suggestion.estimatedUnitCost)}</strong></span>
-                    </div>
-                    <div className="mt-auto flex justify-end pt-4">
+                    <div className={styles.libraryCardBottom}>
+                      <dl className="flex flex-wrap gap-x-5 gap-y-1 text-xs text-[#716b78]">
+                        <div><dt>Chance suggérée</dt><dd className="mt-1 font-semibold tabular-nums text-[#242126]">{percent(suggestion.probability)} %</dd></div>
+                        <div><dt>Coût estimé</dt><dd className="mt-1 font-semibold tabular-nums text-[#242126]">{new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(suggestion.estimatedUnitCost)}</dd></div>
+                      </dl>
                       <button data-prize-add type="button" disabled={added} aria-label={`${added ? "Ajouté" : "Ajouter"} : ${suggestion.label}`} onClick={() => requestAdd(suggestion)}
-                        className={`inline-flex items-center gap-1.5 rounded-[8px] px-3 py-2 text-xs font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#64206f] ${added ? "bg-[#e4f1e9] text-[#25845b]" : "bg-[#64206f] text-white hover:bg-[#471550]"}`}>
+                        className={`inline-flex min-h-10 items-center gap-1.5 rounded-[8px] px-3 py-2 text-xs font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#64206f] ${added ? "bg-[#e4f1e9] text-[#25845b]" : "bg-[#f6f0fa] text-[#64206f] hover:bg-[#eee2f4]"}`}>
                         {added ? <Check className="size-3.5" aria-hidden="true" /> : <Plus className="size-3.5" aria-hidden="true" />}{added ? "Ajouté" : "Ajouter"}
                       </button>
                     </div>
@@ -131,7 +132,7 @@ export function WizardPrizeLibrary({ suggestions, addedIds, remainingProbability
         )}
         <p role="status" className="sr-only">{lastAdded}</p>
       </div>
-      <footer className="shrink-0 space-y-3 border-t border-[#eee8f0] bg-white px-5 py-4 sm:px-6">
+      <footer className={`${styles.libraryFooter} space-y-3`}>
         {validationError ? <p role="alert" className="rounded-[10px] bg-[#fff6f5] px-3 py-3 text-sm leading-5 text-[#b42318]">{validationError}</p>
           : projectedTotal > 100.0001 ? <p role="alert" className="rounded-[10px] border border-[#f1c8c6] bg-[#fff6f5] px-3 py-3 text-sm leading-5 text-[#b42318]">Les probabilités dépassent 100 % de {percent(projectedTotal - 100)} points. Vous pourrez ajuster les chances dans la composition avant d’enregistrer le jeu.</p> : null}
         <div className="flex flex-wrap items-center justify-between gap-3">
