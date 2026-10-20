@@ -22,6 +22,19 @@ L'objectif est de détecter les régressions importantes sans transformer le pro
 
 ## Contrôles automatisés existants
 
+### Composition et bibliothèque des lots — #609, phases 1 et 2
+
+`wizard-prize-composition.spec.ts` et `wizard-prize-library.spec.ts` vérifient
+l’édition des lots, l’ajustement direct des chances, les dépassements provisoires
+avec alerte unique, l’ajout multiple et la prévention des doublons, le choix
+explicite de la part disponible, les champs envoyés et le blocage des répartitions
+invalides avant tout appel API. Les captures 1280×720/600 et 320/390 px couvrent
+le panneau et la bibliothèque, clavier/focus, chargement/erreur/réessai/vide.
+La suite `wizard-responsive.spec.ts` complète la matrice jusqu’à 1920 px.
+Les API sont interceptées ; aucune donnée métier n’est écrite.
+`test:beauty-catalog` vérifie les secteurs, le mapping, l’authentification et
+l’indépendance des identifiants de lots entre jeux.
+
 ### Vitrine et découverte des modèles — #601
 
 `site-refresh.spec.ts` vérifie le défilement manuel, l’aperçu natif modal,

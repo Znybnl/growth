@@ -1,22 +1,20 @@
 "use client";
 
 import { prizeFieldsFromSuggestion } from "@/lib/prize-suggestion-fields";
-import { usePrizeSuggestions } from "@/lib/use-prize-suggestions";
+import { usePrizeSuggestionCatalog } from "@/lib/use-prize-suggestions";
+import { isSuggestionInPrizes, suggestedWizardPrizeId } from "@/lib/wizard-prize-suggestions";
+import { WizardPrizeLibrary } from "@/components/merchant/wizard-prize-library";
 
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  BadgePercent,
   Check,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  CirclePlus,
-  Coffee,
   Download,
   Eye,
-  Gift,
   Loader2,
   Copy,
   Pencil,
@@ -24,9 +22,7 @@ import {
   QrCode,
   Settings2,
   Sparkles,
-  Soup,
   Trash2,
-  UtensilsCrossed,
   X,
 } from "lucide-react";
 import { type ChangeEvent, type ReactNode, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
@@ -597,122 +593,6 @@ function draftFromCampaign(merchant: Merchant, performance: CampaignPerformance)
   };
 }
 
-function getWizardPrizeSuggestionIcon(icon: string) {
-  const icons = {
-    coffee: { Icon: Coffee, className: "bg-purple-haze text-charcoal" },
-    dessert: { Icon: Sparkles, className: "bg-purple-haze text-charcoal" },
-    drink: { Icon: Soup, className: "bg-purple-haze text-charcoal" },
-    discount: { Icon: BadgePercent, className: "bg-purple-haze text-charcoal" },
-    supplement: { Icon: CirclePlus, className: "bg-purple-haze text-charcoal" },
-    menu: { Icon: UtensilsCrossed, className: "bg-purple-haze text-charcoal" },
-    gift: { Icon: Gift, className: "bg-purple-haze text-charcoal" },
-  } as const;
-  return icons[icon as keyof typeof icons] ?? icons.gift;
-}
-
-function PrizeSuggestionsPanel({
-  open,
-  suggestions,
-  remainingProbability,
-  onAdd,
-  onClose,
-}: {
-  open: boolean;
-  suggestions: PrizeSuggestion[];
-  remainingProbability: number;
-  onAdd: (suggestion: PrizeSuggestion) => void;
-  onClose: () => void;
-}) {
-  if (!open) return null;
-  return (
-    <DialogShell open={open} onClose={onClose} labelledBy="wizard-prize-suggestions-title" className="max-h-[85vh] max-w-2xl overflow-y-auto p-6">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-aubergine">
-              Suggestions adaptées
-            </p>
-            <h3
-              id="wizard-prize-suggestions-title"
-              className="mt-2 text-xl font-semibold text-carbon"
-            >
-              Ajoutez un lot en quelques secondes
-            </h3>
-            <p className="mt-2 text-sm text-ash">
-              {remainingProbability < 0
-                ? `Le total dépasse 100 % de ${Math.abs(Math.round(remainingProbability))} point(s).`
-                : `Il reste ${Math.round(remainingProbability)} % disponible.`}{" "}
-              Vous pourrez ajuster les probabilités avant de continuer.
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="okado-secondary-action okado-compact-action px-3 text-sm"
-          >
-            Fermer
-          </button>
-        </div>
-        <div className="mt-5 grid gap-3 sm:grid-cols-2">
-          {suggestions.length ? (
-            suggestions.map((suggestion) => (
-              <div
-                key={suggestion.id}
-                className="rounded-[12px] border border-fog bg-soft-white p-4"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-center gap-2">
-                    {(() => {
-                      const iconStyle = getWizardPrizeSuggestionIcon(
-                        suggestion.icon,
-                      );
-                      const Icon = iconStyle.Icon;
-                      return (
-                        <span
-                          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-[4px] ${iconStyle.className}`}
-                          aria-hidden="true"
-                        >
-                          <Icon className="h-4 w-4" />
-                        </span>
-                      );
-                    })()}
-                    <div>
-                      <p className="text-sm font-semibold text-carbon">
-                        {suggestion.label}
-                      </p>
-                      <p className="text-xs text-ash">
-                        {suggestion.description}
-                      </p>
-                    </div>
-                  </div>
-                  <span className="shrink-0 whitespace-nowrap text-xs font-semibold text-aubergine">
-                    {suggestion.probability} %
-                  </span>
-                </div>
-                <div className="mt-4 flex items-center justify-between gap-3">
-                  <span className="text-xs text-ash">
-                    Coût estimé : {suggestion.estimatedUnitCost.toFixed(2)} €
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => onAdd(suggestion)}
-                    className="okado-filled-action okado-compact-action inline-flex items-center gap-1 px-3 text-xs"
-                  >
-                    <Plus className="h-3.5 w-3.5" />
-                    Ajouter
-                  </button>
-                </div>
-              </div>
-            ))
-          ) : (
-            <p className="rounded-[8px] bg-purple-haze p-4 text-sm text-ash">
-              Aucune suggestion disponible pour cette activité.
-            </p>
-          )}
-        </div>
-    </DialogShell>
-    );
-}
-
 function PrizeEditorPanel({
   editor,
   campaignIsBeingEdited,
@@ -994,7 +874,9 @@ export function CampaignWizard({
     initialCampaign ? WIZARD_STEPS.length - 1 : 0,
   );
   const actionEnabled = true;
-  const prizeSuggestions = usePrizeSuggestions(merchant);
+  const prizeCatalog = usePrizeSuggestionCatalog(merchant);
+  const prizeSuggestions = prizeCatalog.suggestions;
+  const [prizeSuggestionScope] = useState(createWizardPrizeId);
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
   const [prizeEditor, setPrizeEditor] = useState<PrizeEditorState | null>(null);
   const [pendingDeletePrize, setPendingDeletePrize] = useState<{ id?: string; index: number } | null>(null);
@@ -1354,16 +1236,14 @@ export function CampaignWizard({
   }
 
 
-  function addSuggestedPrize(suggestion: PrizeSuggestion) {
-    setDraft((current) => ({
+  function addSuggestedPrize(suggestion: PrizeSuggestion, probability: number) {
+    setDraft((current) => isSuggestionInPrizes(suggestion, current.prizes) ? current : ({
       ...current,
-      prizes: [
-        ...current.prizes,
-        {
-          id: `wizard-prize-${Date.now()}-${suggestion.id}`,
-          ...prizeFieldsFromSuggestion(suggestion),
-        },
-      ],
+      prizes: [...current.prizes, {
+        ...prizeFieldsFromSuggestion(suggestion),
+        id: suggestedWizardPrizeId(suggestion, prizeSuggestionScope),
+        probability,
+      }],
     }));
     setError(null);
   }
@@ -2167,17 +2047,15 @@ export function CampaignWizard({
                   <p className="text-sm leading-5 text-[#716b78]">Choisissez les récompenses et définissez les chances de les gagner.</p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
-                  {prizeSuggestions.length ? (
                     <button
                       type="button"
-                      onClick={() => setSuggestionsOpen(true)}
-                      className="okado-secondary-action inline-flex items-center gap-1.5 px-3 py-2 text-xs"
+                      onClick={() => { setError(null); setSuggestionsOpen(true); }}
+                      className="okado-filled-action inline-flex items-center gap-1.5 px-3 py-2 text-xs"
                     >
                       <Sparkles className="h-3.5 w-3.5" />
-                      Suggestions de lots
+                      Trouver des idées de lots
                     </button>
-                  ) : null}
-                  <button type="button" onClick={() => openPrizeEditor("create")} className="okado-filled-action inline-flex items-center gap-1.5 px-3 py-2 text-xs">
+                  <button type="button" onClick={() => openPrizeEditor("create")} className="okado-secondary-action inline-flex items-center gap-1.5 px-3 py-2 text-xs">
                     <Plus className="h-3.5 w-3.5" aria-hidden="true" /> Créer un lot
                   </button>
                 </div>
@@ -2212,7 +2090,7 @@ export function CampaignWizard({
                   {totalProbability <= 100.0001 ? <span className="text-[#716b78]">{new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2 }).format(Math.max(0, 100 - totalProbability))} % de chances de perdre</span> : null}
                 </div>
               </section>
-              {!prizeEditor && totalProbability > 100.0001 ? (
+              {!prizeEditor && !suggestionsOpen && totalProbability > 100.0001 ? (
                 <div
                   role="alert"
                   className="rounded-[12px] border border-[#f1c8c6] bg-[#fff6f5] px-4 py-3 text-sm leading-6 text-[#b42318]"
@@ -2274,7 +2152,7 @@ export function CampaignWizard({
                   </div>
                 ) : null}
               </section>
-              {!prizeEditor && totalProbability <= 100.0001 && prizeValidationMessages.length > 0 ? (
+              {!prizeEditor && !suggestionsOpen && totalProbability <= 100.0001 && prizeValidationMessages.length > 0 ? (
                 <div
                   role="alert"
                   aria-live="polite"
@@ -3035,13 +2913,17 @@ export function CampaignWizard({
           <WizardGamePreview draft={draft} merchant={merchant} />
         </WizardResponsivePreview> : null}
       </div>
-      <PrizeSuggestionsPanel
-        open={suggestionsOpen}
+      {suggestionsOpen ? <WizardPrizeLibrary
+        key={merchant.id}
         suggestions={prizeSuggestions}
+        addedIds={new Set(prizeSuggestions.filter((suggestion) => isSuggestionInPrizes(suggestion, draft.prizes)).map((suggestion) => suggestion.id))}
         remainingProbability={100 - totalProbability}
+        isLoading={prizeCatalog.isLoading}
+        error={prizeCatalog.error}
+        onRetry={prizeCatalog.retry}
         onAdd={addSuggestedPrize}
         onClose={() => setSuggestionsOpen(false)}
-      />
+      /> : null}
       <PrizeEditorPanel
         editor={prizeEditor}
         campaignIsBeingEdited={isEditing}

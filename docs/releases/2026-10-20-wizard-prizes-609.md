@@ -28,10 +28,10 @@ conservent leurs règles et leur stockage.
 
 ## Phases suivantes
 
-La nouvelle bibliothèque et les ajouts multiples (phase 2), les anciens lots
-(phase 3), les compositions prédéfinies (phase 4), ainsi que le budget et ses
-coûts manquants (phase 5) restent à réaliser après validation de la phase 1.
-L’issue #609 reste ouverte pour le suivi de ces phases.
+La [bibliothèque et les ajouts multiples (phase 2)](2026-10-20-wizard-prize-library-609.md)
+complètent désormais cette phase. Les anciens lots (phase 3), les compositions
+prédéfinies (phase 4), ainsi que le budget et ses coûts manquants (phase 5)
+restent à réaliser. L’issue #609 reste ouverte pour le suivi de ces phases.
 
 ## Vérification et recette
 

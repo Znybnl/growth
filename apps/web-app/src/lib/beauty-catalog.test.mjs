@@ -21,6 +21,7 @@ registerHooks({
 });
 const options = await import("./merchant-options.ts");
 const fields = await import("./prize-suggestion-fields.ts");
+const wizardSuggestions = await import("./wizard-prize-suggestions.ts");
 const repository = await import("./prize-suggestion-repository.ts");
 const route = await import("../app/api/prize-suggestions/route.ts");
 const { NextRequest } = await import("next/server.js");
@@ -130,11 +131,31 @@ test("l'API exige la session, garde le contexte et n'est pas mise en cache", asy
   assert.equal((await route.GET(new NextRequest("https://example.test/api/prize-suggestions"))).status, 500);
 });
 
+test("les copies suggérées ont des identifiants indépendants entre jeux et restent reconnues après personnalisation", () => {
+  const suggestion = catalog[0];
+  const firstId = wizardSuggestions.suggestedWizardPrizeId(suggestion, "wizard-prize-scope-first");
+  const secondId = wizardSuggestions.suggestedWizardPrizeId(suggestion, "wizard-prize-scope-second");
+  assert.notEqual(firstId, secondId);
+  const renamed = { id: firstId, label: "Lot personnalisé", usageConditions: "Condition modifiée" };
+  assert.equal(wizardSuggestions.isSuggestionInPrizes(suggestion, [renamed]), true);
+  assert.equal(wizardSuggestions.isSuggestionInPrizes(suggestion, [{ ...renamed, id: secondId }]), true);
+  assert.equal(wizardSuggestions.isSuggestionInPrizes(suggestion, []), false);
+});
+
+test("un lot déjà enregistré de mêmes nom et conditions est reconnu sans modifier ses valeurs", () => {
+  const suggestion = catalog[0];
+  const saved = { id: "saved-prize", ...fields.prizeFieldsFromSuggestion(suggestion), probability: 2, totalQuantity: 7 };
+  const before = structuredClone(saved);
+  assert.equal(wizardSuggestions.isSuggestionInPrizes(suggestion, [saved]), true);
+  assert.equal(wizardSuggestions.isSuggestionInPrizes(suggestion, [{ ...saved, usageConditions: "Une autre condition" }]), false);
+  assert.deepEqual(saved, before);
+});
+
 test("les deux éditeurs utilisent le mapping et le chargement cloisonné sans transformer les lots existants", () => {
   for (const name of ["campaign-wizard", "campaign-editor"]) {
     const source = readFileSync(new URL(`../components/merchant/${name}.tsx`, import.meta.url), "utf8");
     assert.match(source, /\.\.\.prizeFieldsFromSuggestion\(suggestion\)/);
-    assert.match(source, /usePrizeSuggestions\(merchant\)/);
+    assert.match(source, /usePrize(?:Suggestions|SuggestionCatalog)\(merchant\)/);
     assert.equal((source.match(/prizeFieldsFromSuggestion\(suggestion\)/g) ?? []).length, 1);
   }
   assert.doesNotMatch(migration, /\b(?:update|delete from|insert into)\s+public\.(?:campaigns|prizes|leads|draw_sessions)\b/i);
