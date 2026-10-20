@@ -13,6 +13,7 @@ import {
 import { captureMarketingEvent } from "@/lib/marketing-analytics";
 import { beautyDemoRewards, type BeautyDemoSpecialty, type DemoSector } from "@/lib/demo-examples";
 import { DemoScratchCard } from "./demo-scratch-card";
+import rosePowderBackground from "../../../public/images/beauty-rose-satin.webp";
 import {
   DemoMailPreview,
   DemoRedemption,
@@ -201,7 +202,7 @@ export function LandingDemo({
               </li>
             ))}
           </ol>
-          <div className={styles.phone} data-testid="demo-phone">
+          <div className={styles.phone} data-testid="demo-phone" style={isBeauty ? { backgroundImage: `url("${rosePowderBackground.src}")` } : undefined}>
             <div className={styles.phoneTop} aria-hidden="true">
               <span>9:41</span>
               <span className={styles.speaker} />

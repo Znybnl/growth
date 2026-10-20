@@ -45,6 +45,11 @@ de ces trois activités dans la démo locale. L’exemple Boutique utilise un ti
 à gratter, accessible aussi au clavier. Les six spécialités Beauté illustrent
 les suggestions existantes ; leur CTA adapte un lot du parcours Beauté commun,
 sans créer de campagne ni promettre une démo indépendante par spécialité.
+Suite #608 : sur la page Beauté, le hero ne double plus le téléphone de la démo
+et le rappel tarifaire suit celle-ci. La démo réutilise l’image satinée à pétales
+du modèle produit Rose poudré (#462), pas seulement ses couleurs. Les mentions
+explicatives retirées dans #605 restent absentes ; l’indication de simulation
+reste hors du téléphone. Les modèles et les spécialités restent consultables.
 Les idées restaurant/boutique sont des exemples à saisir, pas l’annonce d’une
 nouvelle bibliothèque automatique. L’accueil présente le suivi de manière compacte ; les
 synthèses et relances détaillées restent dans la page Beauté et l’aide publique.

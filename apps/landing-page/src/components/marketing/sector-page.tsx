@@ -7,8 +7,6 @@ import { PageSchema } from "@/components/marketing/structured-data";
 import { PricingReminder } from "@/components/marketing/site-navigation";
 import { BeautyUseCases } from "@/components/marketing/beauty-use-cases";
 import { MerchantProof } from "@/components/marketing/merchant-proof";
-import { GamePreview } from "@/components/marketing/game-preview";
-import { heroModel } from "@/lib/marketing-examples";
 import styles from "./showcase.module.css";
 import { accountConnectionFaq } from "@/lib/marketing-faqs";
 import { APP_URL, reviewIndependence } from "@/lib/site";
@@ -96,8 +94,8 @@ export function SectorPage({ beauty }: { beauty: boolean }) {
         }
         faqs={faqs}
       />
-      <section className="mx-auto max-w-[1100px] px-5 pb-10 pt-12 md:pt-20">
-        <nav aria-label="Fil d’Ariane" className="mb-7 text-sm text-[#64748b]">
+      <section data-testid="sector-hero" className={beauty ? styles.beautyIntro : "mx-auto max-w-[1100px] px-5 pb-10 pt-12 md:pt-20"}>
+        <nav aria-label="Fil d’Ariane" className={beauty ? "mb-4 text-sm text-[#64748b]" : "mb-7 text-sm text-[#64748b]"}>
           <Link href="/" className="underline">
             Okado
           </Link>
@@ -106,20 +104,19 @@ export function SectorPage({ beauty }: { beauty: boolean }) {
           </span>
           {beauty ? "Instituts de beauté" : "Restaurants"}
         </nav>
-        <div className={beauty ? styles.beautyHero : undefined}>
         <div>
         <p className="text-xs font-bold uppercase tracking-[0.15em] text-[#6c00f6]">
           {beauty ? "Beauté & bien-être" : "Restauration"}
         </p>
-        <h1 className="mt-5 max-w-[900px] text-[38px] font-bold leading-[1.08] tracking-[-0.045em] md:text-[62px]">
+        <h1 className={beauty ? styles.beautyIntroTitle : "mt-5 max-w-[900px] text-[38px] font-bold leading-[1.08] tracking-[-0.045em] md:text-[62px]"}>
           {title}
         </h1>
-        <p className="mt-6 max-w-[750px] text-lg leading-8 text-[#475569]">
+        <p className={beauty ? "mt-4 max-w-[750px] text-base leading-7 text-[#475569]" : "mt-6 max-w-[750px] text-lg leading-8 text-[#475569]"}>
           {beauty
             ? "Une roue ou un ticket à gratter à votre image. Vos clientes jouent depuis un QR code ; vous choisissez les cadeaux et leurs conditions, puis suivez les retraits."
             : "Vos clients jouent sur leur téléphone, découvrent leur résultat et conservent leur coupon de gain. Vous choisissez les lots et votre équipe valide leur remise : du QR code au retrait, le parcours reste lisible."}
         </p>
-        <div className="mt-7 flex flex-col items-start gap-3 sm:flex-row">
+        <div className={`${beauty ? "mt-5" : "mt-7"} flex flex-col items-start gap-3 sm:flex-row`}>
           <PrimaryButton href={`${APP_URL}/inscription`} trackingName="start_trial" trackingLocation={beauty ? "beauty_hero" : "restaurant_hero"}>
             Essayer gratuitement
           </PrimaryButton>
@@ -129,8 +126,9 @@ export function SectorPage({ beauty }: { beauty: boolean }) {
           >
             Voir la démo
           </Link>
+          {beauty ? <Link href="#exemples-metiers" className="inline-flex min-h-11 items-center py-2 text-sm font-semibold text-[#6c00f6] underline underline-offset-4">Explorer les six spécialités beauté</Link> : null}
         </div>
-        <ul className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-[#475569]">
+        {!beauty && <ul className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-[#475569]">
           {[
             "30 jours sans carte",
             "Affiche et QR inclus",
@@ -141,22 +139,20 @@ export function SectorPage({ beauty }: { beauty: boolean }) {
               {item}
             </li>
           ))}
-        </ul>
-        {beauty ? <Link href="#exemples-metiers" className="mt-5 inline-block min-h-11 py-2 text-sm font-semibold text-[#6c00f6] underline underline-offset-4">Explorer les six spécialités beauté</Link> : null}
-        </div>
-        {beauty ? <GamePreview model={heroModel} eager /> : null}
+        </ul>}
         </div>
       </section>
-      <div className="px-5">
+      {!beauty && <div className="px-5">
         <PricingReminder />
-      </div>
+      </div>}
       <section
         id="demo"
         aria-label="Démonstration du jeu"
-        className="scroll-mt-32 px-5 pb-16"
+        className={`scroll-mt-32 px-5 pb-16 ${beauty ? styles.beautyDemo : ""}`}
       >
         <DemoExplorer sector={beauty ? "beauty" : "restaurant"} />
       </section>
+      {beauty && <div className="px-5"><PricingReminder /></div>}
       {beauty ? <BeautyUseCases /> : <section className="mx-auto max-w-[1100px] px-5 py-14">
         <h2 className="text-3xl font-bold tracking-[-0.03em]">
           Des lots adaptés à votre activité.

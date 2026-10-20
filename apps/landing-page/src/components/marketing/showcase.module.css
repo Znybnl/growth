@@ -17,6 +17,9 @@
 .benefits li { display: flex; align-items: center; gap: 7px; }
 .benefits svg { width: 17px; color: #6c00f6; }
 .heroVisual { min-width: 0; }
+.beautyIntro { width: min(100% - 40px, 1100px); margin-inline: auto; padding-block: 28px 12px; }
+.beautyIntroTitle { max-width: 1000px; margin-top: 12px; font-size: clamp(34px, 4vw, 52px); font-weight: 700; line-height: 1.08; letter-spacing: -.045em; text-wrap: balance; }
+.beautyDemo > div { margin-top: 16px; }
 .journey { position: relative; height: 520px; max-width: 540px; margin: auto; isolation: isolate; }
 .journey::before { position: absolute; content: ""; inset: 15% 0 9%; border: 1px solid #e9ddea; border-radius: 50%; background: #f5edf5; z-index: -1; }
 .phone { position: relative; width: 220px; max-width: 100%; border: 6px solid #302b31; border-radius: 30px; background: #302b31; box-shadow: 0 14px 28px #2c193d12; overflow: hidden; }

@@ -44,6 +44,14 @@
     radial-gradient(ellipse at 100% 0%, #edb5c233, transparent 48%),
     var(--demo-stage);
 }
+.demo[data-variant="beauty"] .phone {
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+.demo[data-variant="beauty"] .screen {
+  background: transparent;
+}
 .heading {
   margin-bottom: 28px;
   text-align: center;
