@@ -22,6 +22,7 @@ import {
   Pencil,
   Plus,
   QrCode,
+  Settings2,
   Sparkles,
   Soup,
   Trash2,
@@ -208,7 +209,7 @@ const WIZARD_STEPS: WizardStep[] = [
     id: "prizes",
     number: "04",
     title: "Les lots",
-    description: "Cadrez les probabilités et les stocks.",
+    description: "Configurez vos récompenses et leurs probabilités.",
   },
   {
     id: "action",
@@ -740,6 +741,8 @@ function PrizeEditorPanel({
   const quantityValue = campaignIsBeingEdited
     ? value.remainingQuantity ?? ""
     : value.totalQuantity ?? "";
+  const projectedTotal = 100 - remainingProbability + Number(value.probability || 0);
+  const exceedsProbabilityTotal = projectedTotal > 100.0001;
 
   return (
     <DialogShell
@@ -791,8 +794,8 @@ function PrizeEditorPanel({
                 className="mt-2 w-full rounded-[10px] border border-[#e8e2ea] bg-white px-3 py-3 text-sm outline-none focus:border-[#64206f] focus:ring-2 focus:ring-[#64206f]/15"
               />
             </label>
-            <p className={`mt-1 text-xs ${remainingProbability < 0 ? "text-[#b42318]" : "text-[#716b78]"}`}>
-              {new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2 }).format(remainingProbability)} % restent disponibles.
+            <p className="mt-1 text-xs text-[#716b78]">
+              {new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2 }).format(Math.max(0, remainingProbability))} % disponibles pour ce lot.
             </p>
           </div>
           <label className="block text-sm font-medium text-[#242126]">
@@ -832,17 +835,6 @@ function PrizeEditorPanel({
           </span>
         </label>
 
-        <label className="block text-sm font-medium text-[#242126]">
-          Conditions d’utilisation
-          <textarea
-            rows={3}
-            value={value.usageConditions ?? ""}
-            onChange={(event) => onChange({ usageConditions: event.target.value })}
-            placeholder="Ex. : Valable avec un soin visage payant."
-            className="mt-2 w-full resize-y rounded-[10px] border border-[#e8e2ea] bg-white px-3 py-3 text-sm outline-none focus:border-[#64206f] focus:ring-2 focus:ring-[#64206f]/15"
-          />
-        </label>
-
         <label className="flex cursor-pointer items-start gap-3 rounded-[12px] border border-[#e8e2ea] bg-[#fcfafc] p-4 text-sm text-[#242126]">
           <input
             type="checkbox"
@@ -858,7 +850,17 @@ function PrizeEditorPanel({
           </span>
         </label>
 
-        {editor.error ? <p role="alert" className="rounded-[10px] border border-[#f1c8c6] bg-[#fff6f5] px-3 py-2 text-sm leading-5 text-[#b42318]">{editor.error}</p> : null}
+        <label className="block text-sm font-medium text-[#242126]">
+          Conditions d’utilisation
+          <textarea
+            rows={3}
+            value={value.usageConditions ?? ""}
+            onChange={(event) => onChange({ usageConditions: event.target.value })}
+            placeholder="Ex. : Valable avec un soin visage payant."
+            className="mt-2 w-full resize-y rounded-[10px] border border-[#e8e2ea] bg-white px-3 py-3 text-sm outline-none focus:border-[#64206f] focus:ring-2 focus:ring-[#64206f]/15"
+          />
+        </label>
+
         {editor.discardPrompt ? (
           <div role="alert" className="rounded-[12px] border border-[#e8e2ea] bg-[#f6f0fa] p-4">
             <p className="font-semibold text-[#242126]">Abandonner les modifications ?</p>
@@ -871,11 +873,19 @@ function PrizeEditorPanel({
         ) : null}
       </div>
       {!editor.discardPrompt ? (
-        <footer className="sticky bottom-0 flex justify-end gap-2 border-t border-[#eee8f0] bg-white px-5 py-4 sm:px-7">
-          <button type="button" onClick={onClose} className="okado-secondary-action px-4 text-sm">Annuler</button>
-          <button type="button" onClick={onSave} className="okado-filled-action px-4 text-sm">
-            {isEditingPrize ? "Enregistrer le lot" : "Ajouter le lot"}
-          </button>
+        <footer className="sticky bottom-0 space-y-3 border-t border-[#eee8f0] bg-white px-5 py-4 sm:px-7">
+          {exceedsProbabilityTotal && !editor.error ? (
+            <p role="alert" data-testid="wizard-prize-probability-warning" className="rounded-[10px] border border-[#f1c8c6] bg-[#fff6f5] px-3 py-3 text-sm leading-5 text-[#b42318]">
+              Les probabilités dépassent 100 % de {new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2 }).format(projectedTotal - 100)} points. Vous pouvez enregistrer ce lot, puis ajuster les chances dans la liste avant d’enregistrer le jeu.
+            </p>
+          ) : null}
+          {editor.error ? <p role="alert" className="rounded-[10px] border border-[#f1c8c6] bg-[#fff6f5] px-3 py-2 text-sm leading-5 text-[#b42318]">{editor.error}</p> : null}
+          <div className="flex justify-end gap-2">
+            <button type="button" onClick={onClose} className="okado-secondary-action px-4 text-sm">Annuler</button>
+            <button type="button" onClick={onSave} className="okado-filled-action px-4 text-sm">
+              {isEditingPrize ? "Enregistrer le lot" : "Ajouter le lot"}
+            </button>
+          </div>
         </footer>
       ) : null}
     </DialogShell>
@@ -1433,12 +1443,6 @@ export function CampaignWizard({
     else if (value.purchaseRequired && !(value.usageConditions ?? "").trim())
       validationError = "Précisez les conditions d’utilisation lorsque l’achat est requis.";
 
-    const otherProbability = draft.prizes
-      .filter((prize) => prizeEditor.mode !== "edit" || prize.id !== value.id)
-      .reduce((sum, prize) => sum + Number(prize.probability || 0), 0);
-    if (!validationError && otherProbability + probability > 100.0001) {
-      validationError = `Il ne reste que ${Math.max(0, 100 - otherProbability)} % disponibles. Réduisez la chance de ce lot pour ne pas dépasser 100 %.`;
-    }
     if (validationError) {
       setPrizeEditor((current) => current ? { ...current, error: validationError } : null);
       return;
@@ -1454,6 +1458,10 @@ export function CampaignWizard({
   }
 
   function nextStep() {
+    if (step.id === "prizes" && totalProbability > 100.0001) {
+      setError(null);
+      return;
+    }
     const validationError = validateStep(step.id, draft, actionEnabled);
     if (validationError) {
       setError(validationError);
@@ -1480,6 +1488,11 @@ export function CampaignWizard({
       onError?: (message: string) => void;
     },
   ): Promise<string | null> {
+    if (totalProbability > 100.0001) {
+      setStepIndex(WIZARD_STEPS.findIndex((item) => item.id === "prizes"));
+      setError(null);
+      return null;
+    }
     const isPublishing = mode === "publish";
     const errorsToShow = isPublishing ? collectErrors(draft, actionEnabled) : [];
     if (errorsToShow.length) {
@@ -1769,7 +1782,7 @@ export function CampaignWizard({
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-aubergine">
                 Étape {step.number}
               </p>
-              <h2 ref={stepHeadingRef} tabIndex={-1} className="okado-section-title mt-2">{step.title}</h2>
+              <h2 ref={stepHeadingRef} tabIndex={-1} className="okado-section-title mt-2">{step.id === "prizes" ? "Composez vos lots" : step.title}</h2>
               {step.description ? (
                 <p className="mt-2 hidden text-sm text-[#7a8498]">{step.description}</p>
               ) : null}
@@ -2151,8 +2164,7 @@ export function CampaignWizard({
             <div className="mt-7 space-y-5" data-testid="wizard-prizes-step">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                  <h2 className="text-xl font-semibold tracking-[-0.02em] text-[#242126]">Composez vos lots</h2>
-                  <p className="mt-1 text-sm leading-5 text-[#716b78]">Choisissez les récompenses et définissez les chances de les gagner.</p>
+                  <p className="text-sm leading-5 text-[#716b78]">Choisissez les récompenses et définissez les chances de les gagner.</p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                   {prizeSuggestions.length ? (
@@ -2177,7 +2189,7 @@ export function CampaignWizard({
                     <p className="mt-1 text-xs text-[#716b78]">Les chances restantes sont calculées comme des participations perdantes.</p>
                   </div>
                   <StatusBadge tone={totalProbability > 100.0001 ? "danger" : "active"}>
-                    {new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2 }).format(totalProbability)} % gagnants
+                    {new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2 }).format(totalProbability)} % {totalProbability > 100.0001 ? "au total" : "gagnants"}
                   </StatusBadge>
                 </div>
                 <div
@@ -2195,12 +2207,12 @@ export function CampaignWizard({
                 </div>
                 <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-xs">
                   <span className="font-semibold text-[#242126]">
-                    {totalProbability > 0 ? `${new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2 }).format(totalProbability)} % de chances de gagner` : "Aucun lot gagnant configuré"}
+                    {totalProbability > 100.0001 ? "Répartition à ajuster" : totalProbability > 0 ? `${new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2 }).format(totalProbability)} % de chances de gagner` : "Aucun lot gagnant configuré"}
                   </span>
-                  <span className="text-[#716b78]">{new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2 }).format(Math.max(0, 100 - totalProbability))} % de chances de perdre</span>
+                  {totalProbability <= 100.0001 ? <span className="text-[#716b78]">{new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2 }).format(Math.max(0, 100 - totalProbability))} % de chances de perdre</span> : null}
                 </div>
               </section>
-              {totalProbability > 100.0001 ? (
+              {!prizeEditor && totalProbability > 100.0001 ? (
                 <div
                   role="alert"
                   className="rounded-[12px] border border-[#f1c8c6] bg-[#fff6f5] px-4 py-3 text-sm leading-6 text-[#b42318]"
@@ -2208,86 +2220,37 @@ export function CampaignWizard({
                   Les probabilités dépassent 100 % de {new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2 }).format(totalProbability - 100)} points. Ajustez votre composition avant de continuer.
                 </div>
               ) : null}
-              <label className="flex cursor-pointer items-start gap-3 rounded-[16px] border border-[#e2e8f0] bg-white p-4 text-sm text-[#182033]">
-                <input
-                  type="checkbox"
-                  checked={draft.rewardRules.availableAfterHours > 0}
-                  onChange={(event) =>
-                    patchDraft({
-                      rewardRules: {
-                        ...draft.rewardRules,
-                        availableAfterHours: event.target.checked ? 24 : 0,
-                      },
-                    })
-                  }
-                  className="mt-0.5 h-4 w-4 cursor-pointer accent-aubergine"
-                />
-                <span>
-                  <span className="block font-semibold">Lot disponible lors d&apos;une prochaine visite</span>
-                  <span className="mt-1 block text-xs leading-5 text-[#7a8498]">
-                    Le lot sera disponible à partir du lendemain de la participation.
-                  </span>
-                </span>
-              </label>
-              <details className="group rounded-[16px] border border-[#e2e8f0] bg-[#fbfcfe]">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-semibold text-[#182033] [&::-webkit-details-marker]:hidden">
-                  <span>Paramètres avancés des lots</span>
-                  <ChevronDown className="h-4 w-4 text-[#8993a6] transition-transform group-open:rotate-180" />
-                </summary>
-                <div className="grid gap-4 border-t border-[#e2e8f0] px-4 pb-4 pt-4 sm:grid-cols-2">
-                  <label className="block text-sm">
-                    <span className="mb-2 block font-semibold text-[#182033]">Durée de retrait (jours)</span>
-                    <input
-                      type="number"
-                      min={0}
-                      max={365}
-                      value={draft.rewardRules.availabilityDurationDays}
-                      onChange={(event) =>
-                        patchDraft({
-                          rewardRules: {
-                            ...draft.rewardRules,
-                            availabilityDurationDays: Math.max(0, Number(event.target.value || 0)),
-                          },
-                        })
-                      }
-                      className="w-full rounded-[13px] border border-[#dbe3ed] bg-white px-3 py-3 text-sm"
-                    />
-                  </label>
-                  <label className="block text-sm">
-                    <span className="mb-2 block font-semibold text-[#182033]">Délai entre deux participations (jours)</span>
-                    <input
-                      type="number"
-                      min={1}
-                      max={365}
-                      value={draft.rewardRules.participationIntervalDays}
-                      onChange={(event) =>
-                        patchDraft({
-                          rewardRules: {
-                            ...draft.rewardRules,
-                            participationIntervalDays: Math.max(1, Number(event.target.value || 1)),
-                          },
-                        })
-                      }
-                      className="w-full rounded-[13px] border border-[#dbe3ed] bg-white px-3 py-3 text-sm"
-                    />
-                  </label>
-                </div>
-              </details>
               <section aria-label="Lots gagnants" className="overflow-hidden rounded-[14px] border border-[#e8e2ea] bg-white" data-testid="wizard-prize-table">
-                <div className="hidden grid-cols-[minmax(0,1fr)_6rem_7rem_7rem_auto] gap-3 border-b border-[#eee8f0] bg-[#fcfafc] px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#716b78] sm:grid">
-                  <span>Lot</span><span>Chance</span><span>Stock</span><span>Coût</span><span className="text-right">Actions</span>
+                <div data-testid="wizard-prize-table-header" className="hidden grid-cols-[minmax(0,1fr)_6rem_7rem_7rem_6.5rem] gap-3 border-b border-[#eee8f0] bg-[#fcfafc] px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.12em] text-[#716b78] sm:grid">
+                  <span>Lot</span><span className="text-left">Chance</span><span className="text-left">Stock</span><span className="text-left">Coût</span><span className="text-right">Actions</span>
                 </div>
                 {draft.prizes.length ? draft.prizes.map((prize, index) => {
                   const stock = isEditing
                     ? (prize.remainingQuantity === undefined ? prize.totalQuantity : prize.remainingQuantity)
                     : prize.totalQuantity;
                   return (
-                    <article key={prize.id} data-testid="wizard-prize-row" className="grid grid-cols-2 gap-x-4 gap-y-3 border-b border-[#eee8f0] px-4 py-4 last:border-b-0 sm:grid-cols-[minmax(0,1fr)_6rem_7rem_7rem_auto] sm:items-center sm:gap-3">
+                    <article key={prize.id} data-testid="wizard-prize-row" className="grid grid-cols-2 gap-x-4 gap-y-3 border-b border-[#eee8f0] px-4 py-4 last:border-b-0 sm:grid-cols-[minmax(0,1fr)_6rem_7rem_7rem_6.5rem] sm:items-center sm:gap-3">
                       <div className="col-span-2 min-w-0 sm:col-span-1">
-                        <p className="truncate text-sm font-semibold text-[#242126]">{prize.label || "Lot sans nom"}</p>
+                        <button type="button" onClick={() => openPrizeEditor("edit", prize)} className="block max-w-full truncate rounded text-left text-sm font-semibold text-[#242126] hover:text-[#64206f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#64206f]">{prize.label || "Lot sans nom"}</button>
                         <p className="mt-1 truncate text-xs text-[#716b78]">{prize.usageConditions?.trim() || "Aucune condition précisée"}</p>
                       </div>
-                      <p className="text-sm font-semibold text-[#242126]"><span className="mr-1 text-[10px] font-medium text-[#716b78] sm:hidden">Chance</span>{new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2 }).format(Number(prize.probability) || 0)} %</p>
+                      <label className="flex min-w-0 items-center gap-1.5 text-sm text-[#242126]">
+                        <span className="text-[10px] font-medium text-[#716b78] sm:hidden">Chance</span>
+                        <input
+                          type="number"
+                          min={0}
+                          max={100}
+                          step="any"
+                          aria-label={`Chance de gain pour ${prize.label || `le lot ${index + 1}`}`}
+                          value={prize.probability}
+                          onChange={(event) => {
+                            setDraft((current) => updatePrize(current, prize.id, { probability: Number(event.target.value || 0) }));
+                            setError(null);
+                          }}
+                          className="w-16 min-w-0 rounded-[8px] border border-[#e8e2ea] bg-white px-2 py-2 text-left text-sm font-semibold outline-none focus:border-[#64206f] focus:ring-2 focus:ring-[#64206f]/15"
+                        />
+                        <span aria-hidden="true">%</span>
+                      </label>
                       <p className="text-sm text-[#242126]"><span className="mr-1 text-[10px] font-medium text-[#716b78] sm:hidden">Stock</span>{stock === null || stock === undefined ? "Illimité" : stock}</p>
                       <p className="text-sm text-[#242126]"><span className="mr-1 text-[10px] font-medium text-[#716b78] sm:hidden">Coût</span>{new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(Number(prize.estimatedUnitCost) || 0)}</p>
                       <div className="col-span-2 flex justify-end gap-1 sm:col-span-1">
@@ -2306,12 +2269,12 @@ export function CampaignWizard({
                 )}
                 {totalProbability <= 100.0001 && 100 - totalProbability > 0 ? (
                   <div data-testid="wizard-losing-probability" className="flex flex-wrap items-center justify-between gap-2 bg-[#f8f6f9] px-4 py-3 text-sm text-[#625d67]">
-                    <span className="font-semibold">PERDU <span className="font-normal">— part calculée, non enregistrée comme lot</span></span>
+                    <span className="font-semibold">PERDU <span className="font-normal">— chances restantes</span></span>
                     <span className="font-semibold">{new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2 }).format(100 - totalProbability)} %</span>
                   </div>
                 ) : null}
               </section>
-              {prizeValidationMessages.length > 0 ? (
+              {!prizeEditor && totalProbability <= 100.0001 && prizeValidationMessages.length > 0 ? (
                 <div
                   role="alert"
                   aria-live="polite"
@@ -2330,6 +2293,46 @@ export function CampaignWizard({
                   </ul>
                 </div>
               ) : null}
+              <details data-testid="wizard-prize-rules" className="group rounded-[14px] border border-[#e8e2ea] bg-white">
+                <summary className="flex cursor-pointer list-none items-start justify-between gap-3 px-4 py-4 text-left [&::-webkit-details-marker]:hidden">
+                  <span className="flex items-start gap-3">
+                    <Settings2 className="mt-0.5 h-4 w-4 shrink-0 text-[#716b78]" aria-hidden="true" />
+                    <span>
+                      <span className="block text-sm font-semibold text-[#242126]">Règles de participation et de validité</span>
+                      <span className="mt-1 block text-xs leading-5 text-[#716b78]">
+                        {draft.rewardRules.availableAfterHours > 0 ? "Utilisable dès demain" : "Utilisable le jour du jeu"}
+                        {` · Valable ${draft.rewardRules.availabilityDurationDays} jours · ${draft.rewardRules.participationIntervalDays === 1 ? "1 participation / jour" : `1 participation tous les ${draft.rewardRules.participationIntervalDays} jours`}`}
+                      </span>
+                    </span>
+                  </span>
+                  <ChevronDown className="mt-0.5 h-4 w-4 shrink-0 text-[#716b78] transition-transform group-open:rotate-180" aria-hidden="true" />
+                </summary>
+                <div className="space-y-5 border-t border-[#eee8f0] p-4">
+                  <label className="flex cursor-pointer items-start gap-3 text-sm text-[#242126]">
+                    <input type="checkbox" checked={draft.rewardRules.availableAfterHours > 0}
+                      onChange={(event) => patchDraft({ rewardRules: { ...draft.rewardRules, availableAfterHours: event.target.checked ? 24 : 0 } })}
+                      className="mt-0.5 h-4 w-4 accent-aubergine" />
+                    <span>
+                      <span className="block font-semibold">Le gain est utilisable à partir du lendemain</span>
+                      <span className="mt-1 block text-xs leading-5 text-[#716b78]">Le participant ne peut pas utiliser son gain le jour où il joue.</span>
+                    </span>
+                  </label>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <label className="block text-sm">
+                      <span className="mb-2 block font-semibold text-[#242126]">Durée de validité du gain (jours)</span>
+                      <input type="number" min={0} max={365} value={draft.rewardRules.availabilityDurationDays}
+                        onChange={(event) => patchDraft({ rewardRules: { ...draft.rewardRules, availabilityDurationDays: Math.max(0, Number(event.target.value || 0)) } })}
+                        className="w-full rounded-[10px] border border-[#e8e2ea] bg-white px-3 py-3 text-sm" />
+                    </label>
+                    <label className="block text-sm">
+                      <span className="mb-2 block font-semibold text-[#242126]">Délai minimum entre deux participations (jours)</span>
+                      <input type="number" min={1} max={365} value={draft.rewardRules.participationIntervalDays}
+                        onChange={(event) => patchDraft({ rewardRules: { ...draft.rewardRules, participationIntervalDays: Math.max(1, Number(event.target.value || 1)) } })}
+                        className="w-full rounded-[10px] border border-[#e8e2ea] bg-white px-3 py-3 text-sm" />
+                    </label>
+                  </div>
+                </div>
+              </details>
             </div>
           ) : null}
 
