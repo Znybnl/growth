@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { Check } from "lucide-react";
-import { LandingDemo } from "@/components/marketing/landing-demo";
-import { CompactTracking, GiftSuggestions, HomeHero, SectorExamples } from "@/components/marketing/home-showcase";
+import { DemoExplorer } from "@/components/marketing/demo-explorer";
+import { GiftSuggestions } from "@/components/marketing/gift-suggestions";
+import { CompactTracking, HomeHero, SectorExamples } from "@/components/marketing/home-showcase";
 import { TemplateGallery } from "@/components/marketing/template-gallery";
 import { LocalizedPrice } from "@/components/marketing/localized-price";
 import { PrimaryButton } from "@/components/marketing/primary-button";
@@ -29,8 +30,8 @@ export default function IndexPage() {
   return <main id="contenu" className={styles.home}>
     <PageSchema path="/" name="Okado — jeux par QR code" faqs={faqs} />
     <HomeHero />
-    <section id="demo" aria-label="Démonstration interactive" className={styles.demo}><LandingDemo /></section>
-    <TemplateGallery />
+    <section id="demo" aria-label="Démonstration interactive" className={styles.demo}><DemoExplorer /></section>
+    <TemplateGallery multisector />
     <GiftSuggestions />
     <SectorExamples />
     <CompactTracking />

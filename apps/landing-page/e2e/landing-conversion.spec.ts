@@ -72,9 +72,36 @@ test("les nouveaux clics modèles et spécialités gardent le contexte de consen
   await page.keyboard.press("Escape");
   await page.goto("/instituts-beaute");
   await page.getByRole("tab", { name: "Regard · cils & sourcils", exact: true }).click();
-  await page.getByRole("tabpanel").getByRole("link", { name: "Essayer la démo beauté" }).click();
+  await page.getByRole("tabpanel").getByRole("link", { name: "Essayer cet exemple" }).click();
   await expect.poll(() => events.filter(event => event.event === "marketing_cta_clicked" && event.properties.cta === "sector_demo").length).toBe(1);
   expect(events.find(event => event.event === "marketing_cta_clicked" && event.properties.cta === "sector_demo")!.properties).toMatchObject({ variant: "eyes", page: "/instituts-beaute", destination: "/instituts-beaute", consentVersion: ANALYTICS_CONSENT_VERSION });
+});
+
+test("les choix multisectoriels et le ticket conservent les UTM sans transmettre les saisies", async ({ page, context, baseURL }) => {
+  await context.addCookies([{ name: ANALYTICS_CONSENT_COOKIE, value: encodeURIComponent(JSON.stringify({ version: ANALYTICS_CONSENT_VERSION, choice: "accepted", decidedAt: Date.now() })), url: baseURL! }]);
+  const events = await capturePackets(page);
+  await page.goto("/?utm_source=fixture&utm_campaign=multisector_607");
+  await page.getByRole("navigation", { name: "Activité de la démo" }).getByRole("link", { name: "Boutiques & commerces" }).click();
+  await page.locator("#fonctionnalites").getByRole("button", { name: "Commerce", exact: true }).click();
+  const demo = page.locator("#demo");
+  await demo.getByRole("button", { name: "Jouer", exact: true }).click();
+  await demo.getByRole("button", { name: "Jouer maintenant" }).click();
+  await demo.getByRole("button", { name: "Révéler le ticket" }).click();
+  await demo.getByLabel("Prénom de démonstration").fill("Private retail fixture");
+  await demo.getByLabel("E-mail de démonstration").fill("private-retail@example.test");
+  await demo.getByRole("button", { name: "Recevoir mon gain" }).click();
+  await expect.poll(() => events.filter(event => event.event === "marketing_demo_completed").length).toBe(1);
+  for (const cta of ["select_demo_sector", "select_gift_sector"]) {
+    expect(events.find(event => event.event === "marketing_cta_clicked" && event.properties.cta === cta)?.properties).toMatchObject({ variant: "retail", page: "/", utmSource: "fixture", utmCampaign: "multisector_607", consentVersion: ANALYTICS_CONSENT_VERSION });
+  }
+  for (const name of ["marketing_demo_started", "marketing_demo_completed"]) {
+    expect(events.filter(event => event.event === name)).toHaveLength(1);
+    expect(events.find(event => event.event === name)?.properties).toMatchObject({ variant: "retail", page: "/", utmSource: "fixture" });
+  }
+  expect(JSON.stringify(events)).not.toMatch(/Private retail|private-retail|#demo-retail/);
+  await page.goto("/instituts-beaute?utm_source=fixture#demo-eyes");
+  await page.locator("#demo").getByRole("button", { name: "Jouer", exact: true }).click();
+  await expect.poll(() => events.filter(event => event.event === "marketing_demo_started" && event.properties.specialty === "eyes").length).toBe(1);
 });
 
 test("une tentative de démo produit un début et une fin, pas les retours ou le reset", async ({

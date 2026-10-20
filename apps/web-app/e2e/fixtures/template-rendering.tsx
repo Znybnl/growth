@@ -44,13 +44,14 @@ function AnalyticsIdentityProof() {
 }
 
 /** Synthetic rendering only: tests intercept every API request, no session bypass. */
-export function TemplateRenderingProof({ mode = "preview", templateId = "classic", background = "#ffffff", ink, font, secondary, business }: {
-  mode?: string; templateId?: GamePageTemplateId; background?: string; ink?: string; font?: TextFont; secondary?: string; business?: string;
+export function TemplateRenderingProof({ mode = "preview", templateId = "classic", background = "#ffffff", ink, font, secondary, business, button, buttonText }: {
+  mode?: string; templateId?: GamePageTemplateId; background?: string; ink?: string; font?: TextFont; secondary?: string; business?: string; button?: string; buttonText?: string;
 }) {
   if (mode === "analytics-identity") return <AnalyticsIdentityProof />;
   const scratch = templateId.includes("scratch");
   const businessNames = { beauty: "Maison Botanique", restaurant: "Le bistro", retail: "La petite boutique" };
   const companyName = businessNames[business as keyof typeof businessNames] ?? "Établissement de test";
+  const backgroundImage = background === "image" ? "/backgrounds/aurora-retail.svg" : background === "studio" ? "/backgrounds/soft-studio.svg" : "";
   const industry = business === "retail" || mode.includes("-retail") ? "Commerce" : business === "restaurant" ? "Restauration" : "Beauté";
   const merchant: Merchant = { id: "template-proof-merchant", companyName,
     logoText: companyName, industry, onboardingCompleted: true, createdAt: "2026-10-15T00:00:00Z" };
@@ -62,13 +63,18 @@ export function TemplateRenderingProof({ mode = "preview", templateId = "classic
     accent: { ink: color, paper: "#ffffff", signal: "#b85be5" },
     presentation: {
       ...halloweenFixture.presentation,
-      background: { mode: background === "image" ? "image" as const : "color" as const,
-        color: background === "image" ? "#ffffff" : background,
-        imageUrl: background === "image" ? "/backgrounds/aurora-retail.svg" : "" },
-      logo: { ...halloweenFixture.presentation.logo, textColor: color, marginBottomPx: 20 },
-      heading: { ...halloweenFixture.presentation.heading, textColor: color, fontSizePx: 40, fontFamily: font ?? "poppins" as const },
+      button: {
+        ...halloweenFixture.presentation.button,
+        ...(button ? { backgroundColor: button } : {}),
+        ...(buttonText ? { textColor: buttonText } : {}),
+      },
+      background: { mode: backgroundImage ? "image" as const : "color" as const,
+        color: backgroundImage ? "#ffffff" : background,
+        imageUrl: backgroundImage },
+      logo: { ...halloweenFixture.presentation.logo, textColor: color, marginBottomPx: business ? 64 : 20 },
+      heading: { ...halloweenFixture.presentation.heading, textColor: color, fontSizePx: business === "retail" ? 34 : 40, fontFamily: font ?? "poppins" as const },
       wheel: wheelPaletteForTemplate(templateId, halloweenFixture.presentation.wheel),
-      layout: { ...halloweenFixture.presentation.layout, templateId, blockSpacingPx: 25,
+      layout: { ...halloweenFixture.presentation.layout, templateId, blockSpacingPx: business && !scratch ? 64 : 25,
         scratchSubtitle: "Découvrez votre cadeau", wheelSubtitle: secondary ?? "" },
     },
   };

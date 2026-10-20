@@ -39,9 +39,19 @@ description explicite des roues et tickets par QR code. Il s'adresse à plusieur
 secteurs : Beauté/bien-être, restauration et commerces locaux. Ce positionnement
 ne crée ni programme de points ni promesse de visite ou de revenu supplémentaire.
 La galerie présente de vrais rendus des modèles du produit sur données fictives,
-en précisant la collection Beauté et les limites des personnalisations. Les six
-spécialités Beauté illustrent les suggestions existantes ; leur CTA utilise la
-démo Beauté commune. L’accueil présente le suivi de manière compacte ; les
+en précisant les collections et les limites des personnalisations. Suite #607,
+l’accueil montre des modèles Beauté, restaurant et boutique et propose un choix
+de ces trois activités dans la démo locale. L’exemple Boutique utilise un ticket
+à gratter, accessible aussi au clavier. Les six spécialités Beauté illustrent
+les suggestions existantes ; leur CTA adapte un lot du parcours Beauté commun,
+sans créer de campagne ni promettre une démo indépendante par spécialité.
+Suite #608 : sur la page Beauté, le hero ne double plus le téléphone de la démo
+et le rappel tarifaire suit celle-ci. La démo réutilise l’image satinée à pétales
+du modèle produit Rose poudré (#462), pas seulement ses couleurs. Les mentions
+explicatives retirées dans #605 restent absentes ; l’indication de simulation
+reste hors du téléphone. Les modèles et les spécialités restent consultables.
+Les idées restaurant/boutique sont des exemples à saisir, pas l’annonce d’une
+nouvelle bibliothèque automatique. L’accueil présente le suivi de manière compacte ; les
 synthèses et relances détaillées restent dans la page Beauté et l’aide publique.
 L’offre publique reste 30 jours d’essai sans carte puis 20 € HT/mois en France,
 sans engagement, avec les lots à la charge de l’établissement.
@@ -227,6 +237,7 @@ L'inscription par formulaire demande uniquement l'acceptation des CGV dans une c
 - Le fond par défaut de **Bicolore** suit la couleur principale de la roue, et non la couleur secondaire jaune. Un ancien fond standard est résolu à l'affichage ; une image manuelle ou une couleur de fond personnalisée distincte reste prioritaire. Les changements de couleur principale suivent le fond standard dans les deux éditeurs.
 - **Dynamique** et **Signature** conservent les retours à la ligne explicites de la promesse, sans appliquer le découpage automatique des autres roues. Le rendu est commun au jeu et à ses prévisualisations.
 - Les tickets à gratter n'affichent plus de phrase d'aide sous la zone à gratter, y compris « Le résultat s'affiche automatiquement. ». Le titre, le sous-titre personnalisable, les espacements avant la zone, le geste de grattage et le résultat restent inchangés.
+- Toutes les surfaces de grattage sont contenues à 70 % de la largeur (maximum 216 px) et centrées dans l'espace disponible sous le titre et la consigne. L'espacement configuré reste une distance minimale avant la zone. Le geste, le résultat et les dimensions sauvegardées de la campagne ne changent pas.
 - **Cadeau lilas** utilise son encre prune foncée `#210b32` pour le logo et les textes par défaut. Le bleu historique hérité `#003cb4` est traité comme un ancien défaut, au même titre que les anciennes encres du modèle. Les autres couleurs personnalisées et les styles propres mémorisés sont conservés. La correction porte sur la lecture/sélection et le rendu ; aucune réécriture de campagne en base.
 
 ## Mesure d'usage — #508

@@ -196,14 +196,18 @@ export function ImmersiveScratchTicket({
     ? primary
     : isVault
       ? "#171d38"
-      : primary;
+      : isConfetti
+        ? "#71364a"
+        : primary;
   const illustrationColor = isLilac
     ? blendWithWhite(ticketBaseColor, 0.72)
     : isVault
       ? hasCustomPrimary
         ? blendWithWhite(ticketBaseColor, 0.58)
         : "#86e8ff"
-      : blendWithWhite(ticketBaseColor, 0.48);
+      : isConfetti
+        ? "#f4d89c"
+        : blendWithWhite(ticketBaseColor, 0.48);
   const defaultInk = beautyTheme?.text ?? (isVault || isConfetti
     ? "#f8fbff"
     : isLilac
@@ -221,10 +225,10 @@ export function ImmersiveScratchTicket({
   const instruction = "Grattez la carte pour révéler votre cadeau.";
 
   const surfaceClass = beautyTheme
-    ? "mx-auto aspect-square w-[84%] max-w-[280px] rounded-full"
+    ? "mx-auto aspect-square w-[70%] max-w-[216px] rounded-full"
     : isSunburst
-    ? "aspect-[1.18/1] w-full"
-    : "aspect-square w-full";
+    ? "mx-auto aspect-[1.18/1] w-[70%] max-w-[216px]"
+    : "mx-auto aspect-square w-[70%] max-w-[216px]";
   const surfaceRimClass = beautyTheme?.id === "beauty-scratch-noir-or"
     ? "border-2 border-[#f0d798] ring-1 ring-[#9b7134]/75"
     : beautyTheme?.id === "beauty-scratch-lilas"
@@ -240,7 +244,7 @@ export function ImmersiveScratchTicket({
     if (beautyTheme) canvas.dataset.foilLoaded = "false";
 
     const gradient = context.createLinearGradient(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-    const cover = beautyTheme?.scratch.base ?? (isVault ? "#171d38" : primary);
+    const cover = beautyTheme?.scratch.base ?? (isVault ? "#171d38" : isConfetti ? "#71364a" : primary);
     const highlight = beautyTheme?.scratch.highlight ?? (isSunburst ? blendWithWhite(cover, 0.2) : blendWithWhite(cover, 0.34));
     if (beautyTheme?.id === "beauty-scratch-nude" || beautyTheme?.id === "scratch-nude-classic") {
       gradient.addColorStop(0, "#c4a675");
@@ -297,7 +301,7 @@ export function ImmersiveScratchTicket({
     scratchStartedRef.current = false;
     setRevealed(false);
     setHasTouched(false);
-  }, [beautyTheme, isCoral, isLilac, isSunburst, isVault, primary, resultLabel]);
+  }, [beautyTheme, isConfetti, isCoral, isLilac, isSunburst, isVault, primary, resultLabel]);
 
   useEffect(() => {
     if (!beautyTheme) return;
@@ -364,8 +368,8 @@ export function ImmersiveScratchTicket({
     };
   }
 
-  const rootClass = beautyTheme
-    ? `flex flex-col bg-transparent px-6 pb-8 ${fitContainer ? "pt-2" : "pt-[76px]"}`
+  const rootClass = `flex flex-col pb-8 ${fitContainer ? "pt-2" : "pt-[76px]"} ${beautyTheme
+    ? "bg-transparent px-6"
     : isVault || isConfetti
     ? "bg-transparent px-5"
     : isLilac
@@ -374,18 +378,18 @@ export function ImmersiveScratchTicket({
         ? "bg-transparent px-5"
         : isSunburst
           ? "bg-transparent px-0"
-          : "bg-[#111936] px-5";
+          : "bg-[#111936] px-5"}`;
 
   return (
     <div
-    className={`mx-auto w-full ${fitContainer ? "max-w-full" : "max-w-[370px]"} ${beautyTheme ? "flex flex-1 flex-col" : ""}`}
-      style={beautyTheme ? { containerType: "inline-size" } : undefined}
+      className={`mx-auto flex w-full flex-1 flex-col ${fitContainer ? "max-w-full" : "max-w-[370px]"}`}
+      style={{ containerType: "inline-size" }}
     >
       <div
-        className={`relative isolate overflow-hidden ${rootClass} ${beautyTheme ? "flex-1" : ""}`}
-        style={beautyTheme ? { minHeight: fitContainer ? "min(844px, 212cqw)" : "min(100svh, 212cqw)" } : undefined}
+        className={`relative isolate flex-1 overflow-hidden ${rootClass}`}
+        style={{ minHeight: fitContainer ? "min(844px, 212cqw)" : "min(100svh, 212cqw)" }}
       >
-        <div className={`relative z-10 ${headingAlignmentClass}`}>
+        <div className={`relative z-10 shrink-0 ${headingAlignmentClass}`}>
           {logoMode !== "none" ? (
             <div className={`flex ${logoAlignmentClass}`} style={{ marginBottom: `${Math.max(0, logoBottomSpacingPx)}px` }}>
               <BrandMark
@@ -401,15 +405,15 @@ export function ImmersiveScratchTicket({
             </div>
           ) : null}
           <h2
-            className={`${beautyTheme ? "mx-auto max-w-[11ch]" : ""} text-2xl leading-[1.04] ${resolvedHeadingFontClass}`}
+            className={`${beautyTheme || isConfetti ? "mx-auto max-w-[11ch]" : ""} text-2xl leading-[1.04] ${resolvedHeadingFontClass}`}
             style={{ color: ink, fontSize: headingFontSize, fontWeight: headingFontWeight }}
           >
             {displayHeadline}
           </h2>
           {secondaryText?.trim() ? (
             <p
-              className={`mx-auto max-w-[250px] text-[10px] uppercase leading-[1.55] tracking-[0.13em] ${headingAlignmentClass}`}
-              style={{ color: withAlpha(isLilac ? logoTextColor || ink : ink, "d9"), marginTop: `${Math.max(0, subtitleSpacingPx)}px` }}
+              className={`mx-auto max-w-[280px] uppercase leading-[1.55] tracking-[0.08em] ${headingAlignmentClass}`}
+              style={{ color: withAlpha(isLilac ? logoTextColor || ink : ink, "d9"), fontSize: "clamp(10px, 4cqw, 14px)", marginTop: `${Math.max(0, subtitleSpacingPx)}px` }}
             >
               {secondaryText.trim()}
             </p>
@@ -417,9 +421,12 @@ export function ImmersiveScratchTicket({
         </div>
 
         <div
+          className="relative z-10 flex flex-1 items-center justify-center"
+          style={{ paddingTop: `${Math.max(0, textToScratchSpacingPx)}px`, paddingBottom: fitContainer ? "16cqw" : "clamp(32px, 8svh, 72px)" }}
+        >
+        <div
           data-testid="scratch-ticket-surface"
-          className={`relative z-10 overflow-hidden ${surfaceClass} ${beautyTheme ? `${surfaceRimClass} shadow-[0_14px_34px_rgba(55,42,30,.18)]` : "rounded-[26px]"}`}
-          style={{ marginTop: `${Math.max(0, textToScratchSpacingPx)}px` }}
+          className={`relative shrink-0 overflow-hidden ${surfaceClass} ${beautyTheme ? `${surfaceRimClass} shadow-[0_14px_34px_rgba(55,42,30,.18)]` : "rounded-[26px] shadow-[0_18px_40px_rgba(55,42,30,.16)]"}`}
         >
           {!revealed && !hasTouched ? (
             <div
@@ -494,7 +501,7 @@ export function ImmersiveScratchTicket({
             </div>
           )}
         </div>
-
+        </div>
       </div>
     </div>
   );
