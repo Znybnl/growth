@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Check, ChevronDown } from "lucide-react";
-import { LandingDemo } from "@/components/marketing/landing-demo";
+import { DemoExplorer } from "@/components/marketing/demo-explorer";
 import { PrimaryButton } from "@/components/marketing/primary-button";
 import { PageSchema } from "@/components/marketing/structured-data";
 import { PricingReminder } from "@/components/marketing/site-navigation";
@@ -155,7 +155,7 @@ export function SectorPage({ beauty }: { beauty: boolean }) {
         aria-label="Démonstration du jeu"
         className="scroll-mt-32 px-5 pb-16"
       >
-        <LandingDemo variant={beauty ? "beauty" : "restaurant"} />
+        <DemoExplorer sector={beauty ? "beauty" : "restaurant"} />
       </section>
       {beauty ? <BeautyUseCases /> : <section className="mx-auto max-w-[1100px] px-5 py-14">
         <h2 className="text-3xl font-bold tracking-[-0.03em]">

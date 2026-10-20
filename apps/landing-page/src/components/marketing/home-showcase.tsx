@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Check, ChartNoAxesCombined, Gift, Leaf, Palette, QrCode, SlidersHorizontal } from "lucide-react";
+import { ArrowRight, ChartNoAxesCombined, Gift, Leaf, Palette, QrCode } from "lucide-react";
 import { commerceModel, gameModels, heroModel, restaurantModel } from "@/lib/marketing-examples";
 import { APP_URL } from "@/lib/site";
 import { GamePreview } from "./game-preview";
@@ -46,36 +46,11 @@ export function HomeHero() {
   </section>;
 }
 
-export function GiftSuggestions() {
-  return <section id="fonctionnalites" aria-labelledby="gift-title" className={`${styles.gifts} ${styles.section}`}>
-    <div className={`${styles.container} ${styles.giftGrid}`}>
-      <div><p className={styles.eyebrow}>Des lots adaptés à votre activité</p><h2 id="gift-title" className={styles.heading}>Pas d’idée de cadeau ?<br />On vous aide.</h2>
-        <p className={styles.intro}>Partez de la bibliothèque de suggestions, puis adaptez les cadeaux à vos prestations, à vos coûts et à votre temps disponible.</p>
-        <ul className={styles.giftList}>
-          <li><Gift aria-hidden="true" /><strong>Des idées par spécialité</strong><p>Du nail art au soin visage, des exemples pour vous lancer.</p></li>
-          <li><SlidersHorizontal aria-hidden="true" /><strong>Vous gardez le dernier mot</strong><p>Coûts estimés, probabilités, stocks et conditions : vous choisissez vos réglages.</p></li>
-          <li><Check aria-hidden="true" /><strong>Un cadeau, des conditions claires</strong><p>Indiquez quand et comment votre client peut en profiter.</p></li>
-        </ul>
-        <Link href="/guides/lots-institut-beaute" className={`${styles.link} mt-5`}>Trouver des idées de lots <ArrowRight size={16} aria-hidden="true" /></Link>
-      </div>
-      <figure className={styles.library}>
-        <figcaption className={styles.libraryHeader}><strong>Quelques suggestions</strong><span>Activité · Ongles</span></figcaption>
-        {[
-          { name: "French offerte", probability: "15 %", cost: "3 €", condition: "Avec une pose payante." },
-          { name: "Nail art offert", probability: "15 %", cost: "2 €", condition: "Jusqu’à 2 ongles, avec une pose payante." },
-          { name: "Pose offerte", probability: "3 %", cost: "15 €", condition: "Pose semi-permanente mains, couleur unie." },
-        ].map(item => <div key={item.name} className={styles.suggestion}><div className={styles.suggestionHead}><strong>{item.name}</strong><span>{item.probability}</span></div><p>{item.condition}<br />Coût estimé pour l’établissement : {item.cost}.</p></div>)}
-        <p className={styles.note}>Extraits de la bibliothèque Beauté. Valeurs indicatives et modifiables : adaptez-les à vos coûts réels. Chaque probabilité concerne une suggestion, pas un jeu complet.</p>
-      </figure>
-    </div>
-  </section>;
-}
-
 export function SectorExamples() {
   const sectors = [
     { title: "Beauté & bien-être", text: "Un masque avec un soin, une French avec une pose : des attentions liées à vos prestations.", href: "/instituts-beaute", action: "Explorer la beauté", model: gameModels[0], variant: "beauty" },
     { title: "Restaurants & cafés", text: "Un dessert, un café ou un avantage à savourer lors d’une prochaine visite.", href: "/restaurants", action: "Explorer la restauration", model: restaurantModel, variant: "restaurant" },
-    { title: "Boutiques & commerces", text: "Un produit découverte ou un petit cadeau pour accompagner un prochain achat.", href: "#demo", action: "Découvrir les possibilités", model: commerceModel, variant: "retail" },
+    { title: "Boutiques & commerces", text: "Un produit découverte ou un petit cadeau pour accompagner un prochain achat.", href: "#demo-retail", action: "Essayer le ticket boutique", model: commerceModel, variant: "retail" },
   ];
   return <section id="cas-usage" aria-labelledby="sectors-title" className={`${styles.section} ${styles.container}`}>
     <p className={styles.eyebrow}>Pour les commerces locaux</p><h2 id="sectors-title" className={`${styles.heading} mt-4`}>Votre activité. Vos clients. Votre jeu.</h2>

@@ -2,12 +2,13 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, Expand, X } from "lucide-react";
-import { gameModels, type GameModel } from "@/lib/marketing-examples";
+import { commerceModel, gameModels, restaurantModel, type GameModel } from "@/lib/marketing-examples";
 import { captureMarketingEvent } from "@/lib/marketing-analytics";
 import { GamePreview } from "./game-preview";
 import styles from "./showcase.module.css";
 
-export function TemplateGallery() {
+export function TemplateGallery({ multisector = false }: { multisector?: boolean }) {
+  const models = multisector ? [gameModels[0], restaurantModel, commerceModel, gameModels[1], gameModels[2], gameModels[4]] : gameModels;
   const carousel = useRef<HTMLDivElement>(null);
   const dialog = useRef<HTMLDialogElement>(null);
   const opener = useRef<HTMLButtonElement>(null);
@@ -36,7 +37,7 @@ export function TemplateGallery() {
       </div>
       <p className={styles.intro}>Choisissez un univers graphique. Ajoutez votre logo, vos textes et vos lots. Roue ou ticket à gratter, la surprise porte votre signature.</p>
       <div ref={carousel} id={`${id}-models`} className={styles.carousel} role="region" aria-label="Galerie des modèles de jeux" tabIndex={0}>
-        {gameModels.map(model => <article key={model.id} className={styles.modelCard}>
+        {models.map(model => <article key={model.id} className={styles.modelCard}>
           <button type="button" className={styles.modelButton} aria-label={`Voir le modèle ${model.name} — ${model.type}`} onClick={event => {
             opener.current = event.currentTarget;
             setSelected(model);
@@ -47,7 +48,7 @@ export function TemplateGallery() {
           </button>
         </article>)}
       </div>
-      <p className={styles.note}>Une sélection de la collection Beauté, avec enseigne et lots fictifs. D’autres modèles sont disponibles pour les autres activités. Les options de couleur et de fond varient selon le modèle.</p>
+      <p className={styles.note}>{multisector ? "Des modèles Beauté, un exemple restaurant et un ticket pour boutique, avec enseignes et lots fictifs." : "Une sélection de la collection Beauté, avec enseigne et lots fictifs. D’autres modèles sont disponibles pour les autres activités."} Les options de couleur et de fond varient selon le modèle.</p>
       <dialog ref={dialog} className={styles.dialog} aria-labelledby={`${id}-dialog-title`}
         onClick={event => { if (event.target === event.currentTarget) dialog.current?.close(); }}
         onClose={() => { setSelected(null); opener.current?.focus({ preventScroll: true }); }}>

@@ -63,7 +63,7 @@ test("l’accueil expose les bons secteurs et un suivi compact", async ({ page }
   await expect(gameImage).toHaveAttribute("width", "780");
   await expect(gameImage).toHaveAttribute("height", "1688");
   const sectors = page.locator("#cas-usage");
-  for (const [label, href] of [["Explorer la beauté", "/instituts-beaute"], ["Explorer la restauration", "/restaurants"], ["Découvrir les possibilités", "#demo"]]) {
+  for (const [label, href] of [["Explorer la beauté", "/instituts-beaute"], ["Explorer la restauration", "/restaurants"], ["Essayer le ticket boutique", "#demo-retail"]]) {
     await expect(sectors.getByRole("link", { name: label })).toHaveAttribute("href", href);
   }
   await expect(page.locator("#suivi dt")).toHaveText(["Participations", "Gains attribués", "Lots récupérés"]);

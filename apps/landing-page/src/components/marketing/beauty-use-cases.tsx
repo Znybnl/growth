@@ -36,10 +36,10 @@ export function BeautyUseCases() {
       hidden={index !== active} tabIndex={0} className={styles.specialtyPanel} data-testid="beauty-use-case">
       <div className={styles.specialtyArt}><GamePreview model={specialty.model} /></div>
       <div><h3>{specialty.title}</h3><ul className={styles.rewardList}>{specialty.rewards.map(reward => <li key={reward}><Gift aria-hidden="true" />{reward}</li>)}</ul><p>{specialty.condition}</p><p className={styles.note}>Modèle {specialty.model.name} · {specialty.model.type}. Exemple fictif, à personnaliser.</p>
-        <PrimaryButton href="#demo" trackingName="sector_demo" trackingLocation="beauty_examples" trackingVariant={specialty.id} appearance="text">Essayer la démo beauté</PrimaryButton>
+        <PrimaryButton href={`#demo-${specialty.id}`} trackingName="sector_demo" trackingLocation="beauty_examples" trackingVariant={specialty.id} appearance="text">Essayer cet exemple</PrimaryButton>
       </div>
     </div>)}</div>
-    <p className={`${styles.note} mt-5`}>Exemples fictifs de modèles et de lots, à adapter à votre activité. La démo Beauté présente un parcours commun aux spécialités.</p>
+    <p className={`${styles.note} mt-5`}>Exemples fictifs, à adapter à votre activité. La démo reprend un lot de la spécialité choisie dans un parcours beauté commun ; la galerie montre les modèles réels.</p>
     <Link href="/guides/lots-institut-beaute" className={`${styles.link} mt-3`}>Choisir des lots et leurs conditions <ArrowRight size={16} aria-hidden="true" /></Link>
   </section>;
 }

@@ -11,6 +11,8 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { captureMarketingEvent } from "@/lib/marketing-analytics";
+import { beautyDemoRewards, type BeautyDemoSpecialty, type DemoSector } from "@/lib/demo-examples";
+import { DemoScratchCard } from "./demo-scratch-card";
 import {
   DemoMailPreview,
   DemoRedemption,
@@ -59,6 +61,7 @@ type DemoStep =
   | "action"
   | "google"
   | "spinning"
+  | "scratching"
   | "form"
   | "done"
   | "mail";
@@ -76,8 +79,12 @@ function wheelPoint(degrees: number) {
 
 export function LandingDemo({
   variant = "restaurant",
+  specialty,
+  hideHeading = false,
 }: {
-  variant?: "restaurant" | "beauty";
+  variant?: DemoSector;
+  specialty?: BeautyDemoSpecialty;
+  hideHeading?: boolean;
 }) {
   const id = useId();
   const [step, setStep] = useState<DemoStep>("intro");
@@ -90,13 +97,19 @@ export function LandingDemo({
   const playButton = useRef<HTMLButtonElement>(null);
   const previousStep = useRef<DemoStep>("intro");
   const isBeauty = variant === "beauty";
-  const segments = isBeauty ? beautyWheelSegments : wheelSegments;
+  const isRetail = variant === "retail";
+  const beautyReward = isBeauty && specialty ? beautyDemoRewards[specialty] : undefined;
+  const segments = isBeauty
+    ? beautyWheelSegments.map((segment, index) => beautyReward && !segment.dark
+      ? { ...segment, label: index === 0 ? beautyReward.wheelLabel : beautyReward.otherLabels[index / 2 - 1] }
+      : segment)
+    : wheelSegments;
   const segmentDegrees = 360 / segments.length;
   const winningSegmentCenterDegrees = segmentDegrees / 2;
   const winningRotationDegrees = 360 - winningSegmentCenterDegrees;
-  const businessName = isBeauty ? "L’atelier beauté" : "Le bistro";
-  const rewardLabel = isBeauty ? "un soin découverte" : "1 dessert";
-  const hasPanel = step !== "intro" && step !== "spinning";
+  const businessName = isRetail ? "La petite boutique" : isBeauty ? "L’atelier beauté" : "Le bistro";
+  const rewardLabel = isRetail ? "un produit découverte" : isBeauty ? beautyReward?.reward ?? "un soin découverte" : "1 dessert";
+  const hasPanel = step !== "intro" && step !== "spinning" && step !== "scratching";
   const stage =
     step === "done" || step === "mail" ? 2 : step === "form" ? 1 : 0;
 
@@ -123,11 +136,12 @@ export function LandingDemo({
   }
 
   function beginDemo() {
-    captureMarketingEvent("marketing_demo_started", { variant });
+    captureMarketingEvent("marketing_demo_started", { variant, specialty });
     setStep("action");
   }
 
   function startSpin() {
+    if (isRetail) { setStep("scratching"); return; }
     setStep("spinning");
     setRotation((value) => {
       const normalized = ((value % 360) + 360) % 360;
@@ -147,20 +161,20 @@ export function LandingDemo({
 
   function complete() {
     setStep("done");
-    captureMarketingEvent("marketing_demo_completed", { variant });
+    captureMarketingEvent("marketing_demo_completed", { variant, specialty });
   }
 
   return (
     <div className={styles.demo} data-variant={variant}>
-      <header className={styles.heading}>
+      {!hideHeading && <header className={styles.heading}>
         <p className={styles.eyebrow}>
           <span className={styles.liveDot} /> Démo interactive
         </p>
         <h2>À vous de jouer.</h2>
         <p>
-          Découvrez le parcours de vos clients, du premier tour de roue à l’e-mail de gain.
+          Découvrez le parcours de vos clients, du jeu à l’e-mail de gain.
         </p>
-      </header>
+      </header>}
       <div className={styles.workspace}>
         <div className={styles.player}>
           <div className={styles.columnLabel}>
@@ -200,12 +214,12 @@ export function LandingDemo({
                   data-testid="demo-business-mark"
                   aria-hidden="true"
                 >
-                  {isBeauty ? "ab" : "lb"}
+                  {isRetail ? "pb" : isBeauty ? "ab" : "lb"}
                 </span>
                 <span>
                   {businessName}
                   <small>
-                    {isBeauty ? "Institut de beauté" : "Café · restaurant"}
+                    {isRetail ? "Boutique & cadeaux" : isBeauty ? "Institut de beauté" : "Café · restaurant"}
                   </small>
                 </span>
               </p>
@@ -276,6 +290,7 @@ export function LandingDemo({
                       <DemoMailPreview
                         businessName={businessName}
                         rewardLabel={rewardLabel}
+                        beauty={isBeauty}
                         onBack={() => setStep("done")}
                       />
                     ) : step === "form" ? (
@@ -327,7 +342,7 @@ export function LandingDemo({
                           Vous allez recevoir votre gain par e-mail (vérifiez
                           vos spams).
                         </p>
-                        <DemoRedemption />
+                        <DemoRedemption beauty={isBeauty} />
                         <button
                           type="button"
                           onClick={() => setStep("mail")}
@@ -347,12 +362,14 @@ export function LandingDemo({
                   aria-hidden={hasPanel || undefined}
                 >
                   <p className={styles.gameTitle}>
-                    {isBeauty ? <>Prenez soin<br />de vous.</> : <>Jouez<br />et gagnez.</>}
+                    {isRetail ? <>Une surprise<br />vous attend.</> : isBeauty ? <>Prenez soin<br />de vous.</> : <>Jouez<br />et gagnez.</>}
                   </p>
                   <p className={styles.gameHint}>
-                    Un tour de roue, une surprise à découvrir.
+                    {isRetail ? "Découvrez votre cadeau." : "Un tour de roue, une surprise à découvrir."}
                   </p>
-                  <div className={styles.wheel}>
+                  {isRetail ? step === "scratching" ? <DemoScratchCard onReveal={() => setStep("form")} /> : <div className={styles.scratchGame}>
+                    <button ref={playButton} type="button" onClick={beginDemo} className={styles.scratchStart} aria-label="Jouer"><Gift size={54} strokeWidth={1.2} aria-hidden="true" /><span>Jouer</span></button>
+                  </div> : <div className={styles.wheel}>
                     <div className={styles.wheelFrame} aria-hidden="true" />
                     <div
                       className={styles.rotor}
@@ -432,7 +449,7 @@ export function LandingDemo({
                         "Jouer"
                       )}
                     </button>
-                  </div>
+                  </div>}
                   <p className={styles.wheelHint}>
                     {step === "spinning" ? "La roue tourne…" : ""}
                   </p>

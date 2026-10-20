@@ -39,9 +39,14 @@ description explicite des roues et tickets par QR code. Il s'adresse à plusieur
 secteurs : Beauté/bien-être, restauration et commerces locaux. Ce positionnement
 ne crée ni programme de points ni promesse de visite ou de revenu supplémentaire.
 La galerie présente de vrais rendus des modèles du produit sur données fictives,
-en précisant la collection Beauté et les limites des personnalisations. Les six
-spécialités Beauté illustrent les suggestions existantes ; leur CTA utilise la
-démo Beauté commune. L’accueil présente le suivi de manière compacte ; les
+en précisant les collections et les limites des personnalisations. Suite #607,
+l’accueil montre des modèles Beauté, restaurant et boutique et propose un choix
+de ces trois activités dans la démo locale. L’exemple Boutique utilise un ticket
+à gratter, accessible aussi au clavier. Les six spécialités Beauté illustrent
+les suggestions existantes ; leur CTA adapte un lot du parcours Beauté commun,
+sans créer de campagne ni promettre une démo indépendante par spécialité.
+Les idées restaurant/boutique sont des exemples à saisir, pas l’annonce d’une
+nouvelle bibliothèque automatique. L’accueil présente le suivi de manière compacte ; les
 synthèses et relances détaillées restent dans la page Beauté et l’aide publique.
 L’offre publique reste 30 jours d’essai sans carte puis 20 € HT/mois en France,
 sans engagement, avec les lots à la charge de l’établissement.

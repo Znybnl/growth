@@ -17,6 +17,27 @@
   --demo-highlight: #d58a9a;
   --demo-stage: #f4eaf0;
 }
+.demo[data-variant="retail"] {
+  --demo-accent: #866143;
+  --demo-soft: #fffaf2;
+  --demo-deep: #563f54;
+  --demo-highlight: #d4b77b;
+  --demo-stage: #eee8ef;
+}
+.explorer { max-width: 1080px; margin: 48px auto 0; }
+.explorer .demo { margin-top: 0; }
+.anchor { display: block; height: 0; scroll-margin-top: 155px; }
+.sectorChoices { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 0 auto 28px; }
+.sectorChoices a { display: inline-flex; min-height: 44px; align-items: center; padding: 10px 16px; border: 1px solid #dfd4e2; border-radius: 10px; font-size: 13px; font-weight: 600; background: #fff; color: #513049; }
+.sectorChoices a[aria-current] { background: #513049; border-color: #513049; color: #fff; }
+.sectorChoices a:focus-visible, .selectedSpecialty a:focus-visible { outline: 2px solid #6c00f6; outline-offset: 4px; }
+.selectedSpecialty { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 20px; align-items: center; margin-bottom: 24px; font-size: 14px; color: #513049; }
+.selectedSpecialty a { display: inline-flex; align-items: center; min-height: 44px; font-size: 12px; text-decoration: underline; text-underline-offset: 4px; }
+.scratchGame { display: grid; justify-items: center; gap: 18px; padding-top: 12px; }
+.scratchCard, .scratchStart { position: relative; display: grid; place-items: center; width: min(100%, 216px); aspect-ratio: 1; border-radius: 24px; overflow: hidden; background: #563f54; color: #e8d19c; box-shadow: 0 10px 22px #49351e20; }
+.scratchStart { gap: 12px; align-content: center; border: 1px solid #bba17a; cursor: pointer; font-size: 15px; font-weight: 650; background: repeating-linear-gradient(45deg, transparent 0 10px, #ffffff05 10px 11px), #563f54; }
+.scratchStart:focus-visible { outline: 2px solid #6c00f6; outline-offset: 4px; }
+.scratchCard canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
 .demo[data-variant="beauty"] .player {
   background:
     radial-gradient(ellipse at 50% 42%, #fff7f8 12%, transparent 70%),

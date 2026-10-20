@@ -17,7 +17,7 @@
 .benefits li { display: flex; align-items: center; gap: 7px; }
 .benefits svg { width: 17px; color: #6c00f6; }
 .heroVisual { min-width: 0; }
-.journey { position: relative; height: 480px; max-width: 540px; margin: auto; isolation: isolate; }
+.journey { position: relative; height: 520px; max-width: 540px; margin: auto; isolation: isolate; }
 .journey::before { position: absolute; content: ""; inset: 15% 0 9%; border: 1px solid #e9ddea; border-radius: 50%; background: #f5edf5; z-index: -1; }
 .phone { position: relative; width: 220px; max-width: 100%; border: 6px solid #302b31; border-radius: 30px; background: #302b31; box-shadow: 0 14px 28px #2c193d12; overflow: hidden; }
 .phone img { display: block; width: 100%; height: auto; border-radius: 23px; }
@@ -80,6 +80,11 @@
 .suggestionHead span { font-size: 12px; background: #f5effa; color: #6c00f6; border-radius: 6px; padding: 3px 7px; white-space: nowrap; }
 .suggestion p { color: #69616c; font-size: 12px; line-height: 1.7; margin-top: 8px; }
 .library > .note { margin-top: 18px; }
+.giftChoices { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 22px; }
+.giftChoices button { flex: 1; min-height: 44px; padding: 8px 10px; border: 1px solid #e1d5e6; border-radius: 9px; font-size: 13px; font-weight: 600; color: #513049; cursor: pointer; }
+.giftChoices button[aria-pressed="true"] { background: #513049; border-color: #513049; color: #fff; }
+.giftChoices button:focus-visible { outline: 2px solid #6c00f6; outline-offset: 3px; }
+.giftGuide { display: flex; align-items: center; gap: 6px; min-height: 44px; color: #645d69; font-size: 12px; text-decoration: underline; text-underline-offset: 4px; }
 .sectorGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; margin-top: 32px; }
 .sectorCard { display: flex; flex-direction: column; overflow: hidden; border: 1px solid #e8dfea; border-radius: 20px; background: #fff; }
 .sectorArt { height: 350px; overflow: hidden; display: flex; justify-content: center; padding-top: 25px; background: #f0e5e4; }
@@ -138,3 +143,7 @@
 }
 @media (max-width: 359px) { .container { width: calc(100% - 32px); } .hero h1 { font-size: 35px; } .journey { height: 350px; } .journeyPlay { width: 156px; } .journeyPoster, .journeyReward { width: 118px; height: 220px; } .journeyPoster { gap: 5px; padding: 12px 7px 9px; } .posterBrand { font-size: 10px; } .posterKicker { font-size: 6px; } .posterHeadline { font-size: 13px; } .posterCopy { max-width: 95px; font-size: 7px; } .posterQr { width: 38px; height: 38px; } .posterQr svg { width: 32px; } .posterAction { font-size: 6px; } .journeyReward { padding: 22px 10px 12px; } .journeySteps { font-size: 10px; } .journeySteps span { gap: 5px; } .modelArt .phone { width: 175px; } .sectorCard { grid-template-columns: 95px 1fr; } .sectorArt .phone { width: 100px; } .sectionTop { align-items: start; } }
 @media (prefers-reduced-motion: reduce) { .home *, .carousel { scroll-behavior: auto !important; transition: none !important; animation: none !important; } }
+/* Keep the three labels below the complete, rotated portrait phone. */
+@media (min-width: 768px) and (max-width: 1023px) { .journey { height: 470px; } }
+@media (max-width: 767px) { .journey { height: 430px; } }
+@media (max-width: 359px) { .journey { height: 400px; } }

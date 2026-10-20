@@ -48,11 +48,11 @@ export function DemoReview({
   );
 }
 
-export function DemoRedemption() {
+export function DemoRedemption({ beauty = true }: { beauty?: boolean }) {
   return (
     <div className={styles.mockQr} data-testid="demo-redemption-qr">
       <QrCode size={72} aria-hidden="true" />
-      <p>Présentez ce QR code lors de votre rendez-vous.</p>
+      <p>Présentez ce QR code lors de votre {beauty ? "rendez-vous" : "prochaine visite"}.</p>
     </div>
   );
 }
@@ -60,10 +60,12 @@ export function DemoRedemption() {
 export function DemoMailPreview({
   businessName,
   rewardLabel,
+  beauty,
   onBack,
 }: {
   businessName: string;
   rewardLabel: string;
+  beauty?: boolean;
   onBack: () => void;
 }) {
   return (
@@ -77,7 +79,7 @@ export function DemoMailPreview({
         <p>
           Votre gain : <strong>{rewardLabel}</strong>
         </p>
-        <DemoRedemption />
+        <DemoRedemption beauty={beauty} />
       </div>
       <button type="button" onClick={onBack} className={styles.secondary}>
         <ArrowLeft size={16} aria-hidden="true" />
