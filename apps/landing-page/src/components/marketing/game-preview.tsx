@@ -5,7 +5,7 @@ import styles from "./showcase.module.css";
 export function GamePreview({ model, eager = false }: { model: GameModel; eager?: boolean }) {
   return (
     <div className={styles.phone}>
-      <Image src={`/images/${model.image}.webp`} width={780} height={1688}
+      <Image src={model.image}
         alt={`Rendu Okado du modèle ${model.name} — ${model.type}, exemple fictif`}
         sizes="(min-width: 768px) 240px, 210px" loading={eager ? "eager" : "lazy"}
         fetchPriority={eager ? "high" : undefined} />

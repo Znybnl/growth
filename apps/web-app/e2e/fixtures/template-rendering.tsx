@@ -51,6 +51,7 @@ export function TemplateRenderingProof({ mode = "preview", templateId = "classic
   const scratch = templateId.includes("scratch");
   const businessNames = { beauty: "Maison Botanique", restaurant: "Le bistro", retail: "La petite boutique" };
   const companyName = businessNames[business as keyof typeof businessNames] ?? "Établissement de test";
+  const backgroundImage = background === "image" ? "/backgrounds/aurora-retail.svg" : background === "studio" ? "/backgrounds/soft-studio.svg" : "";
   const industry = business === "retail" || mode.includes("-retail") ? "Commerce" : business === "restaurant" ? "Restauration" : "Beauté";
   const merchant: Merchant = { id: "template-proof-merchant", companyName,
     logoText: companyName, industry, onboardingCompleted: true, createdAt: "2026-10-15T00:00:00Z" };
@@ -67,11 +68,11 @@ export function TemplateRenderingProof({ mode = "preview", templateId = "classic
         ...(button ? { backgroundColor: button } : {}),
         ...(buttonText ? { textColor: buttonText } : {}),
       },
-      background: { mode: background === "image" ? "image" as const : "color" as const,
-        color: background === "image" ? "#ffffff" : background,
-        imageUrl: background === "image" ? "/backgrounds/aurora-retail.svg" : "" },
+      background: { mode: backgroundImage ? "image" as const : "color" as const,
+        color: backgroundImage ? "#ffffff" : background,
+        imageUrl: backgroundImage },
       logo: { ...halloweenFixture.presentation.logo, textColor: color, marginBottomPx: 20 },
-      heading: { ...halloweenFixture.presentation.heading, textColor: color, fontSizePx: 40, fontFamily: font ?? "poppins" as const },
+      heading: { ...halloweenFixture.presentation.heading, textColor: color, fontSizePx: business === "retail" ? 34 : 40, fontFamily: font ?? "poppins" as const },
       wheel: wheelPaletteForTemplate(templateId, halloweenFixture.presentation.wheel),
       layout: { ...halloweenFixture.presentation.layout, templateId, blockSpacingPx: 25,
         scratchSubtitle: "Découvrez votre cadeau", wheelSubtitle: secondary ?? "" },
