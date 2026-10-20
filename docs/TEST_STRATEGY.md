@@ -35,6 +35,15 @@ Les API sont interceptées ; aucune donnée métier n’est écrite.
 `test:beauty-catalog` vérifie les secteurs, le mapping, l’authentification et
 l’indépendance des identifiants de lots entre jeux.
 
+`wizard-prize-audit.spec.ts` complète le contrôle avant recette : catalogue
+dense, onze lots à libellés longs, captures 1280×720/600 et 320/390 px,
+absence de débordement dans les fenêtres/lignes et lot ciblé visible sous la
+barre fixe. La composition teste aussi un nouveau stock limité, sa copie
+indépendante et le total à zéro. `test:marketing-action-library` vérifie le
+refus serveur d’une publication sans chance gagnante, sans bloquer les brouillons.
+Voir `docs/releases/2026-10-20-wizard-prizes-sfd-audit-609.md` pour les réserves
+explicitement laissées aux phases suivantes.
+
 ### Vitrine et découverte des modèles — #601
 
 `site-refresh.spec.ts` vérifie le défilement manuel, l’aperçu natif modal,

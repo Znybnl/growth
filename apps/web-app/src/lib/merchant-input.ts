@@ -492,6 +492,9 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
   });
 
   const totalProbability = sanitizedPrizes.reduce((total, prize) => total + prize.probability, 0);
+  if (isActive && totalProbability <= 0) {
+    throw new Error("Ajoutez au moins un lot avec une chance de gain supérieure à 0 % avant de publier le jeu.");
+  }
   if (isActive && sanitizedPrizes.some((prize) => prize.totalQuantity !== null && prize.totalQuantity <= 0)) {
     throw new Error("La quantité d’un lot doit être supérieure à 0 (ou illimitée).");
   }

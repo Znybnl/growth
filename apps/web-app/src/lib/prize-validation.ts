@@ -48,6 +48,10 @@ export function getPrizeValidationMessages(
     messages.push("Le total des probabilit\u00e9s ne peut pas d\u00e9passer 100 %.");
   }
 
+  if (totalProbability <= 0) {
+    messages.push("Ajoutez au moins un lot avec une chance de gain supérieure à 0 %.");
+  }
+
   if (isWinningEveryTime && Math.abs(totalProbability - 100) > 0.0001) {
     messages.push(
       "Jeu 100 % gagnant : le total des probabilit\u00e9s doit \u00eatre \u00e9gal \u00e0 100 %.",

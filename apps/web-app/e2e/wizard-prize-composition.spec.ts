@@ -164,3 +164,51 @@ test("@visual-1280 phase 1 : dépasser provisoirement 100 %, ajuster en ligne pu
   expect(payloads[0].prizes.some((prize) => /perdu/i.test(prize.label))).toBe(false);
   expect(payloads[0].rewardRules).toMatchObject({ availableAfterHours: 24, availabilityDurationDays: 45, participationIntervalDays: 3 });
 });
+
+test("audit SFD : stock initial d’un nouveau lot et stock indépendant de sa copie dans un jeu existant", async ({ page }) => {
+  const payloads: Array<{ prizes: Array<{ id: string; label: string; totalQuantity: number | null; remainingQuantity: number | null }> }> = [];
+  await page.route("**/api/campaigns/setup", (route) => {
+    payloads.push(route.request().postDataJSON());
+    return route.fulfill({ json: { campaign: { id: "template-proof-campaign" } } });
+  });
+  await openPrizeStep(page, 1280);
+  await page.getByRole("button", { name: "Créer un lot", exact: true }).click();
+  const create = page.getByRole("dialog", { name: "Créer un lot" });
+  await create.getByLabel(/Nom du lot/).fill("SOIN OFFERT");
+  await create.getByLabel("Stock disponible").fill("0");
+  await create.getByRole("button", { name: "Ajouter le lot" }).click();
+  await expect(create.getByRole("alert")).toContainText("supérieure à 0");
+  await create.getByLabel("Stock disponible").fill("12");
+  await create.getByRole("button", { name: "Ajouter le lot" }).click();
+  await page.getByRole("button", { name: "Modifier SOIN OFFERT", exact: true }).click();
+  const edit = page.getByRole("dialog", { name: "Modifier le lot" });
+  await expect(edit.getByLabel("Stock disponible")).toHaveValue("12");
+  await edit.getByLabel("Stock disponible").fill("4");
+  await edit.getByRole("button", { name: "Enregistrer le lot" }).click();
+  await page.getByRole("button", { name: "Dupliquer SOIN OFFERT", exact: true }).click();
+  const duplicate = page.getByRole("dialog", { name: "Dupliquer un lot" });
+  await expect(duplicate.getByLabel("Stock disponible")).toHaveValue("12");
+  await duplicate.getByLabel(/Nom du lot/).fill("COPIE SOIN OFFERT");
+  await duplicate.getByRole("button", { name: "Ajouter le lot" }).click();
+  await page.getByTestId("wizard-footer").getByRole("button", { name: "Enregistrer le brouillon" }).click();
+  await expect.poll(() => payloads.length).toBe(1);
+  const original = payloads[0].prizes.find((prize) => prize.label === "SOIN OFFERT")!;
+  const copy = payloads[0].prizes.find((prize) => prize.label === "COPIE SOIN OFFERT")!;
+  expect(original).toMatchObject({ totalQuantity: 12, remainingQuantity: 4 });
+  expect(copy).toMatchObject({ totalQuantity: 12, remainingQuantity: 12 });
+  expect(copy.id).not.toBe(original.id);
+});
+
+test("audit SFD : total à 0 %, publication et poursuite bloquées avec une seule alerte", async ({ page }) => {
+  const writes: unknown[] = [];
+  page.on("request", (request) => { if (request.method() === "POST" && request.url().includes("/api/")) writes.push(request.url()); });
+  await openPrizeStep(page, 1280);
+  await page.getByTestId("wizard-prize-row").getByRole("spinbutton").fill("0");
+  await expect(page.getByText("Aucun lot gagnant configuré", { exact: true })).toBeVisible();
+  await expect(page.getByTestId("wizard-losing-probability")).toContainText("100 %");
+  await page.getByTestId("wizard-footer").getByRole("button", { name: "Continuer" }).click();
+  await expect(page.getByRole("heading", { name: "Composez vos lots", exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Publier", exact: true }).click();
+  await expect(page.getByRole("alert").filter({ hasText: /supérieure à 0/ })).toHaveCount(1);
+  expect(writes).toHaveLength(0);
+});

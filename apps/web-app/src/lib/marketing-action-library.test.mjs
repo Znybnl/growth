@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import { beforeEach, test } from "node:test";
 import { registerHooks } from "node:module";
+import { readFileSync } from "node:fs";
+import ts from "typescript";
 
 registerHooks({ resolve(name, context, next) {
   const mocks = {
@@ -14,11 +16,20 @@ registerHooks({ resolve(name, context, next) {
   if (mocks[name]) return { url: "data:text/javascript," + encodeURIComponent(mocks[name]), shortCircuit: true };
   if (name.startsWith("@/")) return next(new URL("../" + name.slice(2) + ".ts", import.meta.url).href, context);
   return next(name, context);
+}, load(url, context, next) {
+  if (url.startsWith(new URL("../", import.meta.url).href) && /\.tsx?$/.test(url)) {
+    return { format: "module", source: ts.transpileModule(readFileSync(new URL(url), "utf8"), {
+      compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX },
+    }).outputText, shortCircuit: true };
+  }
+  return next(url, context);
 } });
 const library = await import("./marketing-action-library.ts");
 const route = await import("../app/api/merchant/marketing-links/route.ts");
 const admin = await import("../app/api/admin/merchants/[merchantId]/locations/[locationId]/marketing-links/route.ts");
 const { assertCampaignCanPublish } = await import("./campaign-compliance.ts");
+const { parseCampaignSetupInput } = await import("./merchant-input.ts");
+const { getPrizeValidationMessages } = await import("./prize-validation.ts");
 let state;
 beforeEach(() => {
   state = globalThis.__links = {
@@ -146,4 +157,17 @@ test("publication sans action autorisée ; autres contrôles et indépendance Go
   assert.throws(() => assertCampaignCanPublish({ ...valid, actions: [{ kind: "instagram", label: "Instagram", url: "http://instagram.com/test" }] }), /HTTPS/);
   assert.throws(() => assertCampaignCanPublish({ ...valid, actions: [{ kind: "google", label: "Google", url: "https://google.com" }] }), /fiche/);
   assert.throws(() => assertCampaignCanPublish({ ...valid, subtitle: "Laissez un avis pour gagner un cadeau", actions: [{ kind: "google", label: "Google", url: "https://g.page/r/test" }] }), /conditionner/);
+});
+
+test("SFD lots : publication interdite à 0 % sur les deux validations serveur, brouillon incomplet autorisé", () => {
+  const valid = { isActive: true, title: "Jeu de test", subtitle: "Une surprise vous attend", ctaLabel: "Jouer",
+    actions: [], prizes: [{ label: "Lot test", probability: 0, totalQuantity: null }], rewardRules: { isWinningEveryTime: false },
+    accent: {}, presentation: { logo: {}, background: {}, heading: {}, button: {}, layout: {}, wheel: {}, poster: { wheel: {} }, email: { subject: "Votre gain", body: "Bonjour" } } };
+  assert.throws(() => assertCampaignCanPublish(valid), /supérieure à 0/);
+  assert.throws(() => parseCampaignSetupInput(valid, "site-a"), /supérieure à 0/);
+  assert.ok(getPrizeValidationMessages(valid.prizes, false).some((message) => /supérieure à 0/.test(message)));
+  assert.doesNotThrow(() => assertCampaignCanPublish({ ...valid, isActive: false }));
+  assert.doesNotThrow(() => parseCampaignSetupInput({ ...valid, isActive: false }, "site-a"));
+  assert.doesNotThrow(() => assertCampaignCanPublish({ ...valid, prizes: [{ ...valid.prizes[0], probability: 0.25 }] }));
+  assert.doesNotThrow(() => parseCampaignSetupInput({ ...valid, prizes: [{ ...valid.prizes[0], probability: 0.25 }] }, "site-a"));
 });

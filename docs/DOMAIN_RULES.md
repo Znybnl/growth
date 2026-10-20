@@ -37,6 +37,7 @@ La fiche dans Pilotage est réservée à l’administration de la plateforme et 
 - À l'ajout d'une suggestion Beauté, sa condition suggérée préremplit les conditions d'utilisation. « Achat requis pour le retrait » est activé lorsque cette condition impose une prestation payante ou une nouvelle pose ; une réduction à tarif normal ou un cadeau autonome ne l'active pas. Ces réglages restent modifiables, sans recalcul rétroactif sur les lots existants.
 
 - Un lot publiable doit avoir un libellé, une quantité disponible strictement positive et des conditions de retrait cohérentes.
+- SFD Lots #609, §6.3 : la publication exige au moins un lot avec une probabilité de gain strictement positive. Une composition à 0 % peut rester un brouillon incomplet ; elle ne peut pas être publiée.
 - Lorsque « Jeu 100 % gagnant » est activé, la somme des probabilités des lots doit être exactement égale à 100 % au moment de la publication.
 - La modification opérationnelle du stock concerne le **stock disponible** ; le stock initial reste la référence de création.
 - Les anomalies de dotation doivent être affichées dans la section concernée avant la publication.

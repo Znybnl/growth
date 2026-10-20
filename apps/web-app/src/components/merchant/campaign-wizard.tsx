@@ -15,6 +15,7 @@ import {
   ChevronRight,
   Download,
   Eye,
+  Info,
   Loader2,
   Copy,
   Pencil,
@@ -391,6 +392,8 @@ function validateStep(
     );
     if (total > 100.0001)
       return "Le total des probabilités ne peut pas dépasser 100 %.";
+    if (total <= 0)
+      return "Ajoutez au moins un lot avec une chance de gain supérieure à 0 %.";
     if (draft.rewardRules.isWinningEveryTime && total < 99.9999)
       return "Un jeu 100 % gagnant doit totaliser exactement 100 % de probabilités.";
   }
@@ -618,8 +621,9 @@ function PrizeEditorPanel({
     : editor.mode === "duplicate"
       ? "Dupliquer un lot"
       : "Créer un lot";
-  const quantityValue = campaignIsBeingEdited
-    ? value.remainingQuantity ?? ""
+  const editsExistingPrize = campaignIsBeingEdited && isEditingPrize;
+  const quantityValue = editsExistingPrize
+    ? (value.remainingQuantity === undefined ? value.totalQuantity : value.remainingQuantity) ?? ""
     : value.totalQuantity ?? "";
   const projectedTotal = 100 - remainingProbability + Number(value.probability || 0);
   const exceedsProbabilityTotal = projectedTotal > 100.0001;
@@ -649,21 +653,26 @@ function PrizeEditorPanel({
         </button>
       </header>
       <div className="space-y-5 px-5 py-6 sm:px-7">
+        <div>
         <label className="block text-sm font-medium text-[#242126]">
-          Nom du lot <span className="text-[#b42318">*</span>
+          Nom du lot <span className="text-[#b42318]">*</span>
           <input
             autoFocus
+            maxLength={120}
+            aria-describedby="wizard-prize-label-count"
             value={value.label}
             onChange={(event) => onChange({ label: event.target.value })}
-            placeholder="Ex. : SOIN OFFERT"
+            placeholder="Ex. : MASQUE OFFERT"
             className="mt-2 w-full rounded-[10px] border border-[#e8e2ea] bg-white px-3 py-3 text-sm outline-none transition focus:border-[#64206f] focus:ring-2 focus:ring-[#64206f]/15"
           />
         </label>
+        <p id="wizard-prize-label-count" className="mt-1 text-right text-xs text-[#716b78]">{value.label.length}/120 caractères</p>
+        </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="block text-sm font-medium text-[#242126]">
-              Chance de gain (%) <span className="text-[#b42318">*</span>
+              <span className="block min-h-10 min-[360px]:min-h-0">Chance de gain (%) <span className="text-[#b42318]">*</span></span>
               <input
                 type="number"
                 min={0}
@@ -679,18 +688,18 @@ function PrizeEditorPanel({
             </p>
           </div>
           <label className="block text-sm font-medium text-[#242126]">
-            Stock disponible
+            <span className="block min-h-10 min-[360px]:min-h-0">Stock disponible</span>
             <input
               type="number"
-              min={0}
+              min={editsExistingPrize ? 0 : 1}
               step={1}
               placeholder="Illimité"
               value={quantityValue}
               onChange={(event) => {
                 const quantity = event.target.value === "" ? null : Number(event.target.value);
-                onChange(campaignIsBeingEdited
+                onChange(editsExistingPrize
                   ? { remainingQuantity: quantity }
-                  : { totalQuantity: quantity });
+                  : { totalQuantity: quantity, remainingQuantity: quantity });
               }}
               className="mt-2 w-full rounded-[10px] border border-[#e8e2ea] bg-white px-3 py-3 text-sm outline-none focus:border-[#64206f] focus:ring-2 focus:ring-[#64206f]/15"
             />
@@ -1260,7 +1269,7 @@ export function CampaignWizard({
 
   function openPrizeEditor(mode: PrizeEditorState["mode"], prize?: WizardPrize) {
     const value = prize
-      ? { ...prize }
+      ? { ...prize, ...(mode === "duplicate" ? { remainingQuantity: prize.totalQuantity } : {}) }
       : {
           id: createWizardPrizeId(),
           label: "",
@@ -1308,14 +1317,17 @@ export function CampaignWizard({
     if (!prizeEditor) return;
     const value = prizeEditor.value;
     const probability = Number(value.probability);
-    const quantity = isEditing ? value.remainingQuantity : value.totalQuantity;
+    const editsExistingPrize = isEditing && prizeEditor.mode === "edit";
+    const quantity = editsExistingPrize
+      ? (value.remainingQuantity === undefined ? value.totalQuantity : value.remainingQuantity)
+      : value.totalQuantity;
     let validationError: string | null = null;
 
     if (!value.label.trim()) validationError = "Indiquez un nom pour ce lot.";
     else if (!Number.isFinite(probability) || probability < 0 || probability > 100)
       validationError = "La chance de gain doit être comprise entre 0 et 100 %.";
-    else if (quantity !== null && quantity !== undefined && (!Number.isInteger(quantity) || quantity < (isEditing ? 0 : 1)))
-      validationError = isEditing
+    else if (quantity !== null && quantity !== undefined && (!Number.isInteger(quantity) || quantity < (editsExistingPrize ? 0 : 1)))
+      validationError = editsExistingPrize
         ? "Le stock disponible doit être une quantité entière positive ou nulle, ou rester vide pour être illimité."
         : "Le stock doit être une quantité entière supérieure à 0, ou rester vide pour être illimité.";
     else if (!Number.isFinite(value.estimatedUnitCost) || value.estimatedUnitCost < 0)
@@ -1338,7 +1350,7 @@ export function CampaignWizard({
   }
 
   function nextStep() {
-    if (step.id === "prizes" && totalProbability > 100.0001) {
+    if (step.id === "prizes" && (totalProbability > 100.0001 || totalProbability <= 0)) {
       setError(null);
       return;
     }
@@ -1377,7 +1389,7 @@ export function CampaignWizard({
     const errorsToShow = isPublishing ? collectErrors(draft, actionEnabled) : [];
     if (errorsToShow.length) {
       const first = errorsToShow[0];
-      setError(first.message);
+      setError(first.step === "prizes" && prizeValidationMessages.length ? null : first.message);
       setStepIndex(WIZARD_STEPS.findIndex((item) => item.id === first.step));
       return null;
     }
@@ -2107,10 +2119,10 @@ export function CampaignWizard({
                     ? (prize.remainingQuantity === undefined ? prize.totalQuantity : prize.remainingQuantity)
                     : prize.totalQuantity;
                   return (
-                    <article key={prize.id} data-testid="wizard-prize-row" className="grid grid-cols-2 gap-x-4 gap-y-3 border-b border-[#eee8f0] px-4 py-4 last:border-b-0 sm:grid-cols-[minmax(0,1fr)_6rem_7rem_7rem_6.5rem] sm:items-center sm:gap-3">
+                    <article key={prize.id} data-testid="wizard-prize-row" className="wizard-prize-row grid grid-cols-2 gap-x-4 gap-y-3 border-b border-[#eee8f0] px-4 py-4 last:border-b-0 sm:grid-cols-[minmax(0,1fr)_6rem_7rem_7rem_6.5rem] sm:items-center sm:gap-3">
                       <div className="col-span-2 min-w-0 sm:col-span-1">
-                        <button type="button" onClick={() => openPrizeEditor("edit", prize)} className="block max-w-full truncate rounded text-left text-sm font-semibold text-[#242126] hover:text-[#64206f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#64206f]">{prize.label || "Lot sans nom"}</button>
-                        <p className="mt-1 truncate text-xs text-[#716b78]">{prize.usageConditions?.trim() || "Aucune condition précisée"}</p>
+                        <button type="button" title={prize.label} onClick={() => openPrizeEditor("edit", prize)} className="block max-w-full truncate rounded text-left text-sm font-semibold text-[#242126] hover:text-[#64206f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#64206f]">{prize.label || "Lot sans nom"}</button>
+                        <p title={prize.usageConditions} className="mt-1 truncate text-xs text-[#716b78]">{prize.usageConditions?.trim() || "Aucune condition précisée"}</p>
                       </div>
                       <label className="flex min-w-0 items-center gap-1.5 text-sm text-[#242126]">
                         <span className="text-[10px] font-medium text-[#716b78] sm:hidden">Chance</span>
@@ -2147,7 +2159,7 @@ export function CampaignWizard({
                 )}
                 {totalProbability <= 100.0001 && 100 - totalProbability > 0 ? (
                   <div data-testid="wizard-losing-probability" className="flex flex-wrap items-center justify-between gap-2 bg-[#f8f6f9] px-4 py-3 text-sm text-[#625d67]">
-                    <span className="font-semibold">PERDU <span className="font-normal">— chances restantes</span></span>
+                    <span className="inline-flex items-center gap-2 font-semibold"><Info className="size-4 shrink-0" aria-hidden="true" /><span>PERDU <span className="font-normal">— chances restantes</span></span></span>
                     <span className="font-semibold">{new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2 }).format(100 - totalProbability)} %</span>
                   </div>
                 ) : null}
