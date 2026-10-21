@@ -2930,6 +2930,7 @@ export function CampaignWizard({
         suggestions={prizeSuggestions}
         addedIds={new Set(prizeSuggestions.filter((suggestion) => isSuggestionInPrizes(suggestion, draft.prizes)).map((suggestion) => suggestion.id))}
         remainingProbability={100 - totalProbability}
+        activityLabel={[merchant.industry?.trim(), isBeautyIndustry(merchant.industry) ? merchant.industrySubsector?.trim() : undefined].filter(Boolean).join(" · ")}
         isLoading={prizeCatalog.isLoading}
         error={prizeCatalog.error}
         onRetry={prizeCatalog.retry}

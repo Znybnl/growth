@@ -18,7 +18,8 @@ dans un module CSS. Ils ne dépendent plus de sa règle dans la feuille globale.
 Les autres dialogues et le panneau d'édition ne sont pas refondus.
 
 - Largeur maximale de 960 px et marge de 24 px sur ordinateur.
-- Hauteur explicite bornée à 896 px / hauteur utile du viewport moins 48 px.
+- Hauteur naturelle sur ordinateur, plafonnée à 896 px / hauteur utile du
+  viewport moins 48 px ; les catalogues courts, vides et en erreur restent compacts.
 - En-tête et pied non rétractables ; seul le catalogue défile.
 - Plein écran sous 640 px, une colonne, prise en compte des safe areas.
 - Deux colonnes sur ordinateur, cartes plus compactes, informations Chance/Coût
@@ -29,7 +30,33 @@ Aucun calcul métier, catalogue, API, identifiant ou stock modifié. Les conditi
 restent intégralement visibles. Ajout multiple, doublons et ajustement explicite
 des probabilités suivent #609 sans changement. Aucune migration SQL.
 
+## Corrections de l'audit approuvées le 21 octobre
+
+- Après un ajout : conserver le défilement et placer le focus sur le prochain
+  bouton d'ajout entièrement visible, sinon sur Terminer. Ne pas renvoyer le
+  clavier au premier lot hors écran. Les frames de focus sont annulées à la fermeture.
+- Après annulation de l'ajustement : retrouver la bonne carte et sa position,
+  sans ajout ni modification des autres lots. Action explicite « Annuler l’ajout »
+  dans le pied, à côté de la confirmation. L'ouverture d'un ajustement repart
+  au début de son contenu pour ne pas masquer son premier lien.
+- « Chances restantes à répartir » remplace le compteur ambigu « % disponibles ».
+- Mention des coûts indicatifs et du coût supporté par l'établissement, distinct
+  de la valeur pour le joueur. À 100 %, expliquer l'ajustement nécessaire avant
+  l'enregistrement du jeu ; conserver les dépassements provisoires approuvés.
+- Police de 13 px pour conditions, métadonnées, compteurs et ajouts.
+- Afficher le secteur et, pour Beauté, le sous-secteur renseignés de l'établissement.
+  Ce contexte est déclaratif ; le catalogue et ses éventuels replis sont inchangés.
+- Largeur de 960 px conservée. Mes lots / Compositions / budget restent hors périmètre.
+
 ## Vérifications et recette
+
+Après corrections de l'audit le 21 octobre : 16 E2E réussis, lint sans erreur
+(quatre avertissements préexistants), build réussi et huit contrôles compilés
+réussis (cinq viewports et trois hauteurs naturelles court/vide/erreur).
+Captures de la grille, de l'annulation et des états courts inspectées à
+1280×720/600 et sur mobile. Contrôle React : état dérivé sans nouvel appel
+réseau, références de focus locales, frame annulée à la fermeture et
+conditions d'affichage/accessibilité préservées. Aucune donnée réelle modifiée.
 
 Résultats locaux du 20 octobre : lint sans erreur (quatre avertissements
 préexistants hors périmètre), build réussi, 14 E2E composition/bibliothèque/audit

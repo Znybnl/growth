@@ -41,11 +41,13 @@ registerHooks({
   },
 });
 const { WizardPrizeLibrary } = await import("../src/components/merchant/wizard-prize-library.tsx");
-const markup = renderToStaticMarkup(createElement(WizardPrizeLibrary, {
-  suggestions: Array.from({ length: 12 }, (_, index) => ({ id: String(index), label: `LOT ${index + 1}`, icon: "gift",
-    description: "Valable avec une prestation payante, selon les disponibilités de l’établissement.", probability: 5, estimatedUnitCost: 4 })),
+const suggestions = Array.from({ length: 12 }, (_, index) => ({ id: String(index), label: `LOT ${index + 1}`, icon: "gift",
+  description: "Valable avec une prestation payante, selon les disponibilités de l’établissement.", probability: 5, estimatedUnitCost: 4 }));
+const props = {
+  suggestions, activityLabel: "Beauté · Regard — cils & sourcils",
   addedIds: new Set(), remainingProbability: 100, isLoading: false, error: null, onRetry() {}, onAdd() {}, onClose() {},
-}));
+};
+const markup = renderToStaticMarkup(createElement(WizardPrizeLibrary, props));
 const output = new URL("test-results/prize-library-production/", root);
 mkdirSync(output, { recursive: true });
 const browser = await chromium.launch();
@@ -72,6 +74,15 @@ try {
     assert.ok(await dialog.evaluate((node) => node.scrollWidth <= node.clientWidth + 1 && node.scrollHeight <= node.clientHeight + 1));
     await page.screenshot({ path: fileURLToPath(new URL(`${width}x${height}.png`, output)) });
     console.log(`PASS compiled library layout ${width}x${height}`);
+  }
+  await page.setViewportSize({ width: 1280, height: 900 });
+  for (const state of ["short", "empty", "error"]) {
+    const shortMarkup = renderToStaticMarkup(createElement(WizardPrizeLibrary, {
+      ...props, suggestions: state === "short" ? suggestions.slice(0, 1) : [], error: state === "error" ? "Suggestions indisponibles" : null,
+    }));
+    await page.setContent(`<html><head><style>${css}</style></head><body>${shortMarkup}</body></html>`);
+    assert.ok((await page.getByRole("dialog").boundingBox()).height < 520, `Natural height for ${state}`);
+    console.log(`PASS compiled library natural height ${state}`);
   }
 } finally {
   await browser.close();

@@ -34,6 +34,13 @@ de débordement et le pied fixe sur cinq viewports. Ce smoke sans interaction
 ne remplace pas les E2E clavier, ajout et ajustement, ni une recette Vercel.
 Il ne requiert aucune route de développement en production ni aucune donnée réelle.
 
+Audit du 21 octobre : tester le focus **visible** après ajout en fin de catalogue
+et après annulation d'un ajustement, sur ordinateur et mobile ; la présence du
+focus dans le dialogue ne suffit pas. Vérifier que l'annulation ne crée aucun
+lot, que la position du catalogue est restaurée, que les chances restantes et
+les coûts indicatifs sont expliqués et que les états court/vide/erreur ont une
+hauteur naturelle sur ordinateur, également avec les CSS compilés.
+
 `wizard-prize-composition.spec.ts` et `wizard-prize-library.spec.ts` vérifient
 l’édition des lots, l’ajustement direct des chances, les dépassements provisoires
 avec alerte unique, l’ajout multiple et la prévention des doublons, le choix

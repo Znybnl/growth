@@ -36,6 +36,9 @@ test("@visual-1280 phase 2 : ajouts multiples, doublons, ajustement explicite et
   });
   const library = await openLibrary(page);
   await expect(library.getByTestId("wizard-prize-suggestion-card")).toHaveCount(4);
+  await expect(library.getByText("Activité : Beauté", { exact: true })).toBeVisible();
+  await expect(library.getByText(/Coûts indicatifs, à adapter/)).toBeVisible();
+  await expect(library.locator("footer")).toContainText("Chances restantes à répartir : 50 %");
   const bounds = (await library.boundingBox())!;
   expect(bounds.width).toBeGreaterThanOrEqual(800);
   expect(bounds.width).toBeLessThanOrEqual(960);
@@ -63,6 +66,7 @@ test("@visual-1280 phase 2 : ajouts multiples, doublons, ajustement explicite et
   await expect(page.getByTestId("wizard-prize-row").first().getByRole("spinbutton")).toHaveValue("50");
 
   await library.getByRole("button", { name: "Ajouter : CADEAU DÉCOUVERTE", exact: true }).click();
+  await expect(library.getByText(/Toutes les chances sont déjà réparties/)).toBeVisible();
   await expect(library.getByRole("alert")).toContainText("5 points");
   await expect(page.getByRole("alert").filter({ hasText: /100 %/ })).toHaveCount(1);
   await library.getByRole("button", { name: "Ajouter le lot", exact: true }).click();
@@ -87,6 +91,62 @@ test("@visual-1280 phase 2 : ajouts multiples, doublons, ajustement explicite et
   expect(writes[0].prizes.map((prize) => prize.probability)).toEqual([45, 10, 20, 20, 5]);
   expect(writes[0].prizes[1]).toMatchObject({ label: "MASQUE PERSONNALISÉ", totalQuantity: null, estimatedUnitCost: 4, usageConditions: "Avec un soin visage payant.", purchaseRequired: true });
   expect(writes[0].prizes.some((prize) => /perdu/i.test(prize.label))).toBe(false);
+});
+
+test("@visual-1280 audit : focus visible en fin de catalogue, annulation sans ajout et retour à la bonne carte", async ({ page }, info) => {
+  const catalog = Array.from({ length: 12 }, (_, index) => ({
+    ...suggestions[0], id: `focus-${index}`, label: `IDÉE ${index + 1}`,
+    probability: index === 9 ? 70 : 1,
+  }));
+  await page.route("**/api/prize-suggestions?**", (route) => route.fulfill({ json: { suggestions: catalog } }));
+  for (const width of [1280, 320]) {
+    const library = await openLibrary(page, width, 600);
+    const cards = library.getByTestId("wizard-prize-suggestion-card");
+    await cards.nth(9).getByRole("button").click();
+    await library.getByRole("spinbutton").fill("45");
+    const cancel = library.getByRole("button", { name: "Annuler l’ajout", exact: true });
+    await expect(cancel).toBeInViewport({ ratio: 1 });
+    if (width === 1280) await captureVisualAt1280(page, info, "annuler-ajustement", 600);
+    else await page.screenshot({ path: info.outputPath("annuler-ajustement-320.png"), animations: "disabled" });
+    await cancel.click();
+    await expect(cards.nth(9).getByRole("button")).toBeFocused();
+    await expect(cards.nth(9).getByRole("button")).toBeInViewport({ ratio: 1 });
+    await expect(page.getByTestId("wizard-prize-row")).toHaveCount(1);
+    // On desktop, the next card in the final row is visible. On mobile, the
+    // footer is the safe destination rather than an offscreen earlier button.
+    await cards.last().scrollIntoViewIfNeeded();
+    if (width === 1280) {
+      await cards.nth(10).getByRole("button").click();
+      await expect(cards.last().getByRole("button")).toBeFocused();
+    }
+    await cards.last().getByRole("button").click();
+    await expect(library.getByRole("button", { name: "Terminer", exact: true })).toBeFocused();
+    await expect(library.getByRole("button", { name: "Terminer", exact: true })).toBeInViewport({ ratio: 1 });
+    const focusedInside = await library.evaluate((node) => {
+      const active = document.activeElement!.getBoundingClientRect();
+      const bounds = node.getBoundingClientRect();
+      return active.top >= bounds.top && active.bottom <= bounds.bottom;
+    });
+    expect(focusedInside).toBe(true);
+    await page.keyboard.press("Escape");
+  }
+});
+
+test("@visual-1280 audit : un catalogue court, vide ou en erreur n’impose pas une grande fenêtre", async ({ page }, info) => {
+  let state: "short" | "empty" | "error" = "short";
+  await page.route("**/api/prize-suggestions?**", (route) => state === "error"
+    ? route.fulfill({ status: 503, json: { error: "indisponible" } })
+    : route.fulfill({ json: { suggestions: state === "short" ? suggestions.slice(0, 1) : [] } }));
+  for (const outcome of ["short", "empty", "error"] as const) {
+    state = outcome;
+    const library = await openLibrary(page, 1280, 900);
+    if (outcome === "short") await expect(library.getByTestId("wizard-prize-suggestion-card")).toHaveCount(1);
+    else if (outcome === "empty") await expect(library.getByRole("heading", { name: "Aucune suggestion pour cette activité" })).toBeVisible();
+    else await expect(library.getByRole("alert")).toBeVisible();
+    expect((await library.boundingBox())!.height).toBeLessThan(520);
+    await captureVisualAt1280(page, info, `hauteur-naturelle-${outcome}`, 720);
+    await library.getByRole("button", { name: "Terminer", exact: true }).click();
+  }
 });
 
 test("@visual-1280 bibliothèque : fenêtre contenue, cartes compactes et actions fixes même après défilement", async ({ page }, info) => {
