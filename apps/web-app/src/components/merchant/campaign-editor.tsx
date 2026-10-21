@@ -1431,9 +1431,9 @@ const CampaignPrizeRow = memo(function CampaignPrizeRow({
           type="number"
           min={0}
           step="0.1"
-          value={prize.estimatedUnitCost}
+          value={prize.estimatedUnitCostKnown === false ? "" : prize.estimatedUnitCost}
           onChange={(event) =>
-            onUpdate(prize.id, { estimatedUnitCost: Number(event.target.value || 0) })
+            onUpdate(prize.id, { estimatedUnitCost: Number(event.target.value || 0), estimatedUnitCostKnown: event.target.value !== "" })
           }
           className="w-full rounded-[18px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
         />
@@ -1580,6 +1580,7 @@ function toEditorState(merchant: Merchant, campaign: CampaignPerformance | null)
       remainingQuantity: prize.remainingQuantity,
       probability: prize.probability,
       estimatedUnitCost: prize.estimatedUnitCost,
+      estimatedUnitCostKnown: prize.estimatedUnitCostKnown,
       purchaseRequired: Boolean(prize.purchaseRequired),
       usageConditions: prize.usageConditions ?? "",
     })),
@@ -1751,6 +1752,7 @@ function buildClassicSetupPayload(form: EditorState) {
       remainingQuantity: prize.remainingQuantity,
       probability: prize.probability,
       estimatedUnitCost: prize.estimatedUnitCost,
+      estimatedUnitCostKnown: prize.estimatedUnitCostKnown,
       purchaseRequired: Boolean(prize.purchaseRequired),
       usageConditions: prize.usageConditions,
     })),
@@ -2884,7 +2886,7 @@ export function CampaignEditor({
 
       ) : null}
 
-      <div className="grid gap-6 xl:grid-cols-[1fr_0.96fr]">
+      <div className="grid min-w-0 gap-6 min-[1600px]:grid-cols-[minmax(0,1fr)_300px]">
         <div className="space-y-6">
           <section className="okado-card p-6">
             <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">

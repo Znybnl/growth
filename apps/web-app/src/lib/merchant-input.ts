@@ -23,6 +23,7 @@ import {
   defaultWheelSubtitleSpacingForTemplate,
 } from "@/lib/campaign-defaults";
 import { MAX_POSTER_HEADLINE_LENGTH } from "@/lib/poster-utils";
+import { prizeRuleErrors } from "@/lib/prize-budget";
 import {
   normalizePosterBackgroundMotifStyles,
   normalizePosterTemplateStyles,
@@ -444,6 +445,11 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
   const poster = ensureObject(presentation.poster);
   const email = ensureObject(presentation.email);
   const rewardRules = ensureObject(payload.rewardRules);
+  const invalidRule = Object.values(prizeRuleErrors(Object.fromEntries(
+    ["availabilityDurationDays", "participationIntervalDays", "availableAfterHours"].flatMap((key) =>
+      rewardRules[key] === undefined ? [] : [[key, rewardRules[key] === "" || rewardRules[key] === null ? NaN : Number(rewardRules[key])]]),
+  )))[0];
+  if (invalidRule) throw new Error(invalidRule);
 
   const actions = Array.isArray(payload.actions) ? payload.actions : [];
   const prizes = Array.isArray(payload.prizes) ? payload.prizes : [];
@@ -486,6 +492,7 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
         max: 100000,
         fallback: 0,
       }),
+      estimatedUnitCostKnown: prize.estimatedUnitCostKnown === false || prize.estimatedUnitCost == null || prize.estimatedUnitCost === "" ? false : undefined,
       purchaseRequired: Boolean(prize.purchaseRequired),
       usageConditions: normalizeMultiline(prize.usageConditions, 1200),
     };
@@ -498,7 +505,7 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
   if (isActive && sanitizedPrizes.some((prize) => prize.totalQuantity !== null && prize.totalQuantity <= 0)) {
     throw new Error("La quantité d’un lot doit être supérieure à 0 (ou illimitée).");
   }
-  if (isActive && totalProbability > 100.0001) {
+  if (totalProbability > 100.0001) {
     throw new Error("Le total des probabilités ne peut pas dépasser 100 %.");
   }
   if (isActive && rewardRules.isWinningEveryTime && totalProbability < 99.9999) {

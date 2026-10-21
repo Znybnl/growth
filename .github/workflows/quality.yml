@@ -103,6 +103,8 @@ jobs:
         run: npm run test:reusable-prizes -w @okado/web-app
       - name: Test activity prize compositions and independent copies
         run: npm run test:prize-compositions -w @okado/web-app
+      - name: Test prize budget and missing-cost persistence
+        run: npm run test:prize-budget -w @okado/web-app
       - name: Test administrator establishment profiles
         run: npm run test:admin-profiles -w @okado/web-app
       - name: Test support email incident permissions and migration

@@ -1001,6 +1001,7 @@ function buildPerformanceBundle(
       .map((prize) => ({
         ...prize,
         usageConditions: localSettings.prizeSettings?.[prize.id]?.usageConditions,
+        estimatedUnitCostKnown: localSettings.prizeSettings?.[prize.id]?.estimatedUnitCostKnown,
       }));
     const campaignLeads = leadRows.filter((item) => item.campaign_id === campaignId).map(toLead);
     const campaignEvents = eventRows.filter((item) => item.campaign_id === campaignId).map(toEvent);
@@ -1688,9 +1689,11 @@ export async function getSupabaseCampaignDataView(
       const prizeSettings: NonNullable<CampaignLocalSettings["prizeSettings"]> = {};
       if (raw && typeof raw === "object" && !Array.isArray(raw)) {
         for (const [id, value] of Object.entries(raw)) {
-          if (value && typeof value === "object" && !Array.isArray(value) &&
-              typeof value.usageConditions === "string") {
-            prizeSettings[id] = { usageConditions: value.usageConditions };
+          if (value && typeof value === "object" && !Array.isArray(value)) {
+            prizeSettings[id] = {
+              usageConditions: typeof value.usageConditions === "string" ? value.usageConditions : undefined,
+              estimatedUnitCostKnown: value.estimatedUnitCostKnown === false ? false : undefined,
+            };
           }
         }
       }
@@ -2019,6 +2022,7 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
         prize.id,
         {
           usageConditions: input.prizes[index]?.usageConditions?.trim() || undefined,
+          estimatedUnitCostKnown: input.prizes[index]?.estimatedUnitCostKnown === false ? false : undefined,
         },
       ]),
     ),
@@ -2255,6 +2259,7 @@ export async function duplicateCampaignToMerchantInSupabase(
       estimatedUnitCost: prize.estimatedUnitCost,
       purchaseRequired: prize.purchaseRequired,
       usageConditions: prize.usageConditions,
+      estimatedUnitCostKnown: prize.estimatedUnitCostKnown,
     })),
   });
 

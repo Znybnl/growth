@@ -6,6 +6,8 @@ import { isSuggestionInPrizes, suggestedWizardPrizeId } from "@/lib/wizard-prize
 import { WizardPrizeLibrary } from "@/components/merchant/wizard-prize-library";
 import { copyReusablePrize, isReusablePrizeAdded, type ReusablePrize } from "@/lib/reusable-prizes";
 import { copyPrizeComposition, type PrizeComposition } from "@/lib/prize-compositions";
+import { isPrizeCostKnown, prizeRuleErrors } from "@/lib/prize-budget";
+import { WizardPrizeBudget } from "@/components/merchant/wizard-prize-budget";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -19,6 +21,8 @@ import {
   Eye,
   Info,
   Loader2,
+  LibraryBig,
+  History,
   Copy,
   Pencil,
   Plus,
@@ -377,6 +381,8 @@ function validateStep(
   }
 
   if (step === "prizes") {
+    const invalidRule = Object.values(prizeRuleErrors(draft.rewardRules))[0];
+    if (invalidRule) return invalidRule;
     if (!draft.prizes.length)
       return "Ajoutez au moins un lot avant de continuer.";
     if (draft.prizes.some((prize) => !prize.label.trim()))
@@ -592,6 +598,7 @@ function draftFromCampaign(merchant: Merchant, performance: CampaignPerformance)
       remainingQuantity: prize.remainingQuantity,
       probability: prize.probability,
       estimatedUnitCost: prize.estimatedUnitCost,
+      estimatedUnitCostKnown: prize.estimatedUnitCostKnown,
       purchaseRequired: Boolean(prize.purchaseRequired),
       usageConditions: prize.usageConditions ?? "",
     })),
@@ -669,6 +676,7 @@ function PrizeEditorPanel({
           />
         </label>
         <p id="wizard-prize-label-count" className="mt-1 text-right text-xs text-[#716b78]">{value.label.length}/120 caractères</p>
+        {value.label.length > 36 ? <p className="mt-1 text-xs leading-5 text-[#714400]">Ce nom est long : vérifiez sa lisibilité sur la roue ou le ticket à gratter.</p> : null}
         </div>
 
         <div className="grid grid-cols-2 gap-3">
@@ -717,12 +725,14 @@ function PrizeEditorPanel({
             type="number"
             min={0}
             step="0.1"
-            value={value.estimatedUnitCost}
-            onChange={(event) => onChange({ estimatedUnitCost: Number(event.target.value || 0) })}
+            max={100000}
+            placeholder="Non renseigné"
+            value={value.estimatedUnitCostKnown === false ? "" : value.estimatedUnitCost}
+            onChange={(event) => onChange({ estimatedUnitCost: Number(event.target.value || 0), estimatedUnitCostKnown: event.target.value !== "" })}
             className="mt-2 w-full rounded-[10px] border border-[#e8e2ea] bg-white px-3 py-3 text-sm outline-none focus:border-[#64206f] focus:ring-2 focus:ring-[#64206f]/15"
           />
           <span className="mt-1 block text-xs font-normal leading-5 text-[#716b78]">
-            Estimez le coût réel pour votre établissement.
+            Estimez le coût réel pour votre établissement. Laissez vide si inconnu ; saisissez 0 uniquement si le coût est réellement nul.
           </span>
         </label>
 
@@ -890,6 +900,7 @@ export function CampaignWizard({
   const [prizeSuggestionScope] = useState(createWizardPrizeId);
   const reusedPrizeCopies = useRef(new Map<string, string>());
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
+  const [libraryInitialTab, setLibraryInitialTab] = useState<"suggestions" | "mine" | "compositions">("suggestions");
   const [prizeEditor, setPrizeEditor] = useState<PrizeEditorState | null>(null);
   const [pendingDeletePrize, setPendingDeletePrize] = useState<{ id?: string; index: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -1218,6 +1229,7 @@ export function CampaignWizard({
       ),
     [draft.prizes],
   );
+  const ruleErrors = prizeRuleErrors(draft.rewardRules);
   const prizeValidationMessages = useMemo(
     () =>
       getPrizeValidationMessages(
@@ -1260,6 +1272,12 @@ export function CampaignWizard({
     setError(null);
   }
 
+  function openPrizeLibrary(tab: typeof libraryInitialTab = "suggestions") {
+    setLibraryInitialTab(tab);
+    setError(null);
+    setSuggestionsOpen(true);
+  }
+
   function reusePrize(prize: ReusablePrize, probability: number, quantity: number | null) {
     const copy = copyReusablePrize(prize, prizeSuggestionScope, probability, quantity);
     copy.id = reusedPrizeCopies.current.get(prize.id) ?? copy.id;
@@ -1297,7 +1315,8 @@ export function CampaignWizard({
           label: "",
           totalQuantity: null,
           probability: Math.min(10, Math.max(0, 100 - totalProbability)),
-          estimatedUnitCost: merchant.defaultPrizeCost ?? 5,
+          estimatedUnitCost: 0,
+          estimatedUnitCostKnown: false,
           purchaseRequired: false,
           usageConditions: "",
         };
@@ -1328,6 +1347,10 @@ export function CampaignWizard({
 
   function requestClosePrizeEditor() {
     if (!prizeEditor) return;
+    if (prizeEditor.discardPrompt) {
+      setPrizeEditor({ ...prizeEditor, discardPrompt: false });
+      return;
+    }
     if (JSON.stringify(prizeEditor.value) !== JSON.stringify(prizeEditor.original)) {
       setPrizeEditor((current) => current ? { ...current, discardPrompt: true, error: null } : null);
       return;
@@ -1352,8 +1375,8 @@ export function CampaignWizard({
       validationError = editsExistingPrize
         ? "Le stock disponible doit être une quantité entière positive ou nulle, ou rester vide pour être illimité."
         : "Le stock doit être une quantité entière supérieure à 0, ou rester vide pour être illimité.";
-    else if (!Number.isFinite(value.estimatedUnitCost) || value.estimatedUnitCost < 0)
-      validationError = "Le coût unitaire doit être un nombre positif ou nul.";
+    else if (value.estimatedUnitCostKnown !== false && (!Number.isFinite(value.estimatedUnitCost) || value.estimatedUnitCost < 0 || value.estimatedUnitCost > 100000))
+      validationError = "Le coût unitaire doit être compris entre 0 et 100 000 €, ou laissé vide s’il est inconnu.";
     else if (value.purchaseRequired && !(value.usageConditions ?? "").trim())
       validationError = "Précisez les conditions d’utilisation lorsque l’achat est requis.";
 
@@ -1402,6 +1425,12 @@ export function CampaignWizard({
       onError?: (message: string) => void;
     },
   ): Promise<string | null> {
+    const invalidRule = Object.values(prizeRuleErrors(draft.rewardRules))[0];
+    if (invalidRule) {
+      setStepIndex(WIZARD_STEPS.findIndex((item) => item.id === "prizes"));
+      setError(invalidRule);
+      return null;
+    }
     if (totalProbability > 100.0001) {
       setStepIndex(WIZARD_STEPS.findIndex((item) => item.id === "prizes"));
       setError(null);
@@ -2083,7 +2112,7 @@ export function CampaignWizard({
                 <div className="flex flex-wrap items-center gap-2">
                     <button
                       type="button"
-                      onClick={() => { setError(null); setSuggestionsOpen(true); }}
+                      onClick={() => openPrizeLibrary()}
                       className="okado-filled-action inline-flex items-center gap-1.5 px-3 py-2 text-xs"
                     >
                       <Sparkles className="h-3.5 w-3.5" />
@@ -2132,10 +2161,11 @@ export function CampaignWizard({
                   Les probabilités dépassent 100 % de {new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2 }).format(totalProbability - 100)} points. Ajustez votre composition avant de continuer.
                 </div>
               ) : null}
+              <WizardPrizeBudget prizes={draft.prizes} onEdit={(index) => openPrizeEditor("edit", draft.prizes[index])} />
               <section aria-label="Lots gagnants" className="overflow-hidden rounded-[14px] border border-[#e8e2ea] bg-white" data-testid="wizard-prize-table">
-                <div data-testid="wizard-prize-table-header" className="hidden grid-cols-[minmax(0,1fr)_6rem_7rem_7rem_6.5rem] gap-3 border-b border-[#eee8f0] bg-[#fcfafc] px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.12em] text-[#716b78] sm:grid">
+                {draft.prizes.length ? <div data-testid="wizard-prize-table-header" className="hidden grid-cols-[minmax(0,1fr)_6rem_7rem_7rem_6.5rem] gap-3 border-b border-[#eee8f0] bg-[#fcfafc] px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.12em] text-[#716b78] sm:grid">
                   <span>Lot</span><span className="text-left">Chance</span><span className="text-left">Stock</span><span className="text-left">Coût</span><span className="text-right">Actions</span>
-                </div>
+                </div> : null}
                 {draft.prizes.length ? draft.prizes.map((prize, index) => {
                   const stock = isEditing
                     ? (prize.remainingQuantity === undefined ? prize.totalQuantity : prize.remainingQuantity)
@@ -2164,7 +2194,7 @@ export function CampaignWizard({
                         <span aria-hidden="true">%</span>
                       </label>
                       <p className="text-sm text-[#242126]"><span className="mr-1 text-[10px] font-medium text-[#716b78] sm:hidden">Stock</span>{stock === null || stock === undefined ? "Illimité" : stock}</p>
-                      <p className="text-sm text-[#242126]"><span className="mr-1 text-[10px] font-medium text-[#716b78] sm:hidden">Coût</span>{new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(Number(prize.estimatedUnitCost) || 0)}</p>
+                      <p className="text-sm text-[#242126]"><span className="mr-1 text-[10px] font-medium text-[#716b78] sm:hidden">Coût</span>{isPrizeCostKnown(prize) ? new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(prize.estimatedUnitCost) : "À renseigner"}</p>
                       <div className="col-span-2 flex justify-end gap-1 sm:col-span-1">
                         <button type="button" onClick={() => openPrizeEditor("edit", prize)} aria-label={`Modifier ${prize.label || `le lot ${index + 1}`}`} title="Modifier" className="rounded-[8px] p-2 text-[#64206f] transition hover:bg-[#f6f0fa] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#64206f]"><Pencil className="h-4 w-4" aria-hidden="true" /></button>
                         <button type="button" onClick={() => openPrizeEditor("duplicate", { ...prize, id: createWizardPrizeId() })} aria-label={`Dupliquer ${prize.label || `le lot ${index + 1}`}`} title="Dupliquer" className="rounded-[8px] p-2 text-[#64206f] transition hover:bg-[#f6f0fa] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#64206f]"><Copy className="h-4 w-4" aria-hidden="true" /></button>
@@ -2175,8 +2205,15 @@ export function CampaignWizard({
                 }) : (
                   <div className="px-5 py-8 text-center">
                     <h3 className="text-base font-semibold text-[#242126]">Quels avantages souhaitez-vous faire gagner ?</h3>
-                    <p className="mx-auto mt-2 max-w-md text-sm leading-5 text-[#716b78]">Créez un lot ou ouvrez les suggestions pour démarrer votre composition.</p>
-                    <button type="button" onClick={() => openPrizeEditor("create")} className="okado-filled-action mt-4 inline-flex items-center gap-2 px-4 text-sm"><Plus className="h-4 w-4" aria-hidden="true" />Créer votre premier lot</button>
+                    <p className="mx-auto mt-2 max-w-md text-sm leading-5 text-[#716b78]">Commencez avec une composition suggérée ou créez vos propres lots.</p>
+                    <div className="mt-5 grid gap-3 text-left sm:grid-cols-3">
+                      {[
+                        { title: "Créer rapidement", text: "Choisissez une composition prête à personnaliser.", Icon: Sparkles, action: () => openPrizeLibrary("compositions") },
+                        { title: "Explorer les suggestions", text: "Découvrez des lots adaptés à votre activité.", Icon: LibraryBig, action: () => openPrizeLibrary("suggestions") },
+                        { title: "Créer mes lots", text: "Ajoutez vos propres récompenses.", Icon: Plus, action: () => openPrizeEditor("create") },
+                      ].map(({ title, text, Icon, action }) => <button key={title} type="button" onClick={action} className="rounded-xl border border-[#e8e2ea] p-4 text-left hover:bg-[#f6f0fa] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#64206f]"><Icon className="mb-2 size-5 text-[#64206f]" aria-hidden="true" /><span className="block text-sm font-semibold">{title}</span><span className="mt-1 block text-xs leading-5 text-[#716b78]">{text}</span></button>)}
+                    </div>
+                    <button type="button" onClick={() => openPrizeLibrary("mine")} className="okado-secondary-action mt-4 inline-flex items-center gap-2 px-4 text-sm"><History className="size-4" aria-hidden="true" />Retrouver mes lots précédents</button>
                   </div>
                 )}
                 {totalProbability <= 100.0001 && 100 - totalProbability > 0 ? (
@@ -2212,7 +2249,7 @@ export function CampaignWizard({
                     <span>
                       <span className="block text-sm font-semibold text-[#242126]">Règles de participation et de validité</span>
                       <span className="mt-1 block text-xs leading-5 text-[#716b78]">
-                        {draft.rewardRules.availableAfterHours > 0 ? "Utilisable dès demain" : "Utilisable le jour du jeu"}
+                        {draft.rewardRules.availableAfterHours === 24 ? "Utilisable dès demain" : draft.rewardRules.availableAfterHours > 0 ? `Utilisable après ${draft.rewardRules.availableAfterHours} h` : "Utilisable le jour du jeu"}
                         {` · Valable ${draft.rewardRules.availabilityDurationDays} jours · ${draft.rewardRules.participationIntervalDays === 1 ? "1 participation / jour" : `1 participation tous les ${draft.rewardRules.participationIntervalDays} jours`}`}
                       </span>
                     </span>
@@ -2220,6 +2257,12 @@ export function CampaignWizard({
                   <ChevronDown className="mt-0.5 h-4 w-4 shrink-0 text-[#716b78] transition-transform group-open:rotate-180" aria-hidden="true" />
                 </summary>
                 <div className="space-y-5 border-t border-[#eee8f0] p-4">
+                  <label className="flex cursor-pointer items-start gap-3 text-sm text-[#242126]">
+                    <input type="checkbox" checked={draft.rewardRules.isWinningEveryTime}
+                      onChange={(event) => patchDraft({ rewardRules: { ...draft.rewardRules, isWinningEveryTime: event.target.checked } })}
+                      className="mt-0.5 h-4 w-4 accent-aubergine" />
+                    <span><span className="block font-semibold">Jeu 100 % gagnant</span><span className="mt-1 block text-xs leading-5 text-[#716b78]">À la publication, les chances doivent totaliser 100 % et au moins un lot doit avoir un stock illimité. Les chances ne sont pas ajustées automatiquement.</span></span>
+                  </label>
                   <label className="flex cursor-pointer items-start gap-3 text-sm text-[#242126]">
                     <input type="checkbox" checked={draft.rewardRules.availableAfterHours > 0}
                       onChange={(event) => patchDraft({ rewardRules: { ...draft.rewardRules, availableAfterHours: event.target.checked ? 24 : 0 } })}
@@ -2233,14 +2276,18 @@ export function CampaignWizard({
                     <label className="block text-sm">
                       <span className="mb-2 block font-semibold text-[#242126]">Durée de validité du gain (jours)</span>
                       <input type="number" min={0} max={365} value={draft.rewardRules.availabilityDurationDays}
-                        onChange={(event) => patchDraft({ rewardRules: { ...draft.rewardRules, availabilityDurationDays: Math.max(0, Number(event.target.value || 0)) } })}
+                        aria-invalid={Boolean(ruleErrors.availabilityDurationDays)} aria-describedby="wizard-validity-help"
+                        onChange={(event) => patchDraft({ rewardRules: { ...draft.rewardRules, availabilityDurationDays: Number(event.target.value) } })}
                         className="w-full rounded-[10px] border border-[#e8e2ea] bg-white px-3 py-3 text-sm" />
+                      <span id="wizard-validity-help" className={`mt-1 block text-xs leading-5 ${ruleErrors.availabilityDurationDays ? "text-[#b42318]" : "text-[#716b78]"}`}>{ruleErrors.availabilityDurationDays ?? "Nombre de jours pendant lesquels le participant peut utiliser son gain."}</span>
                     </label>
                     <label className="block text-sm">
                       <span className="mb-2 block font-semibold text-[#242126]">Délai minimum entre deux participations (jours)</span>
                       <input type="number" min={1} max={365} value={draft.rewardRules.participationIntervalDays}
-                        onChange={(event) => patchDraft({ rewardRules: { ...draft.rewardRules, participationIntervalDays: Math.max(1, Number(event.target.value || 1)) } })}
+                        aria-invalid={Boolean(ruleErrors.participationIntervalDays)} aria-describedby="wizard-interval-help"
+                        onChange={(event) => patchDraft({ rewardRules: { ...draft.rewardRules, participationIntervalDays: Number(event.target.value) } })}
                         className="w-full rounded-[10px] border border-[#e8e2ea] bg-white px-3 py-3 text-sm" />
+                      <span id="wizard-interval-help" className={`mt-1 block text-xs leading-5 ${ruleErrors.participationIntervalDays ? "text-[#b42318]" : "text-[#716b78]"}`}>{ruleErrors.participationIntervalDays ?? "Durée à attendre avant qu’un même participant puisse rejouer."}</span>
                     </label>
                   </div>
                 </div>
@@ -2949,6 +2996,7 @@ export function CampaignWizard({
       </div>
       {suggestionsOpen ? <WizardPrizeLibrary
         key={merchant.id}
+        initialTab={libraryInitialTab}
         suggestions={prizeSuggestions}
         addedIds={new Set(prizeSuggestions.filter((suggestion) => isSuggestionInPrizes(suggestion, draft.prizes)).map((suggestion) => suggestion.id))}
         remainingProbability={100 - totalProbability}

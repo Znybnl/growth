@@ -31,6 +31,7 @@ export function WizardPrizeCompositions({ compositions, selected, confirming, wi
       <div>
         <h3 ref={heading} tabIndex={-1} id="composition-detail-title" className="text-lg font-semibold outline-none">{confirming ? "Remplacer votre composition actuelle ?" : selected.name}</h3>
         <p className="mt-2 text-sm leading-6 text-[#716b78]">{confirming ? "Les lots actuellement configurés seront remplacés par ceux de cette composition." : selected.description}</p>
+        {confirming ? <p className="mt-2 text-sm font-semibold text-[#64206f]">Composition choisie : {selected.name}</p> : null}
       </div>
       <CompositionMetrics composition={selected} />
       {winningEveryTime && selected.winningProbability < 100 ? <p className="rounded-lg bg-[#fff5e5] p-3 text-sm leading-5 text-[#714400]">Votre option « Jeu 100 % gagnant » reste activée. Après application, complétez les chances à 100 % avant de publier.</p> : null}
@@ -60,6 +61,6 @@ function CompositionMetrics({ composition, compact = false }: { composition: Pri
     <div><dt className="text-[#716b78]">Lots</dt><dd className="mt-1 font-semibold">{composition.prizes.length}</dd></div>
     <div><dt className="text-[#716b78]">Chances de gagner</dt><dd className="mt-1 font-semibold tabular-nums">{percent(composition.winningProbability)} %</dd></div>
     <div><dt className="text-[#716b78]">Part perdante</dt><dd className="mt-1 font-semibold tabular-nums">{percent(composition.losingProbability)} %</dd></div>
-    <div><dt className="text-[#716b78]">Coût moyen théorique</dt><dd className="mt-1 font-semibold tabular-nums">{euros(composition.averageCost)}</dd></div>
+    <div><dt className="text-[#716b78]">Coût / participation</dt><dd className="mt-1 font-semibold tabular-nums">{euros(composition.averageCost)}</dd></div>
   </dl>;
 }

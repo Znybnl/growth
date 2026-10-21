@@ -85,7 +85,13 @@ leurs chances et le coût moyen théorique indicatif avant application.
 La composition reste un brouillon modifiable ; si des lots existent, un écran
 de confirmation exige « Remplacer les lots ». Annuler n’altère rien.
 L’option 100 % gagnant et les autres paramètres restent inchangés.
-La synthèse budgétaire globale et le simulateur restent en phase 5.
+Phase5 : Budget estimé des gains affiche le coût moyen théorique par participation
+et la projection pour100. Un coût inconnu produit une estimation incomplète,
+avec accès au lot à renseigner, sans bloquer sa configuration. Les règles
+regroupées conservent leurs valeurs et signalent les saisies hors limites.
+L’état sans lot propose directement Compositions, Suggestions et création
+manuelle ; Mes lots reste accessible. Aucun budget réel garanti selon les stocks
+ou les retraits ; aucun simulateur de trafic personnalisé n’est ajouté.
 
 - **Acteur** : marchand.
 - **Déclencheur** : le marchand souhaite lancer une animation locale.

@@ -30,7 +30,7 @@ type CampaignLocalSettings = {
   logoMode?: "none" | "image" | "text";
   logoText?: string;
   logoTextColor?: string;
-  prizeSettings?: Record<string, { usageConditions?: string }>;
+  prizeSettings?: Record<string, { usageConditions?: string; estimatedUnitCostKnown?: boolean }>;
   poster?: Partial<CampaignPosterSettings>;
   email?: Partial<CampaignEmailSettings>;
   compliance?: {

@@ -2247,6 +2247,7 @@ function updateCampaignSetupInMemory(input: CampaignSetupInput) {
         estimatedUnitCost: prize.estimatedUnitCost,
         purchaseRequired: Boolean(prize.purchaseRequired),
         usageConditions: prize.usageConditions,
+        estimatedUnitCostKnown: prize.estimatedUnitCostKnown,
       });
     });
 
@@ -2289,6 +2290,7 @@ function updateCampaignSetupInMemory(input: CampaignSetupInput) {
       estimatedUnitCost: prize.estimatedUnitCost,
       purchaseRequired: Boolean(prize.purchaseRequired),
       usageConditions: prize.usageConditions,
+      estimatedUnitCostKnown: prize.estimatedUnitCostKnown,
     });
   });
 

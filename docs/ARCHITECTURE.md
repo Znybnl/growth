@@ -32,6 +32,17 @@ app.okado.app              →  SaaS marchand et parcours publics de jeu
 
 ## Données et accès
 
+### Coût de lot non renseigné — #609 phase5
+
+Le champ numérique historique reste compatible avec les RPC et les KPI existants.
+L’indication facultative `prizeSettings[id].estimatedUnitCostKnown=false` utilise
+le JSON `campaign_local_settings` déjà sauvegardé atomiquement avec les lots.
+Lecture de configuration, éditeurs wizard/classique, copies et bibliothèque
+propagent ce marqueur. Son absence ne transforme jamais un ancien zéro en inconnu.
+Le nouveau budget utilise cette distinction, sans migration ni réécriture
+historique des coûts/statistiques ; la valeur numérique0 reste le support
+technique d’un nouveau coût non renseigné, pas une estimation complète annoncée.
+
 ### Indicateurs communs — #498
 
 La RPC privée get_campaign_metric_counts fournit les agrégats communs à overview/summary.

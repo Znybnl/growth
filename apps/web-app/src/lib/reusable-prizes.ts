@@ -8,18 +8,19 @@ export type ReusablePrize = {
   label: string;
   probability: number;
   estimatedUnitCost: number;
+  estimatedUnitCostKnown?: boolean;
   totalQuantity: number | null;
   purchaseRequired: boolean;
   usageConditions: string;
 };
 
-type PrizeFields = Pick<ReusablePrize, "label" | "probability" | "estimatedUnitCost" | "totalQuantity" | "purchaseRequired" | "usageConditions">;
+type PrizeFields = Pick<ReusablePrize, "label" | "probability" | "estimatedUnitCost" | "estimatedUnitCostKnown" | "totalQuantity" | "purchaseRequired" | "usageConditions">;
 const normalize = (value: string) => value.trim().replace(/\s+/g, " ").toLocaleLowerCase("fr");
 
 /** Same configuration, not merely the same name. Never merge different conditions or stocks. */
 export function reusablePrizeKey(prize: PrizeFields) {
   return JSON.stringify([normalize(prize.label), normalize(prize.usageConditions), prize.probability,
-    prize.estimatedUnitCost, prize.totalQuantity, prize.purchaseRequired]);
+    prize.estimatedUnitCost, prize.estimatedUnitCostKnown !== false, prize.totalQuantity, prize.purchaseRequired]);
 }
 
 export function deduplicateReusablePrizes(prizes: ReusablePrize[]) {
@@ -44,6 +45,7 @@ export function copyReusablePrize(prize: ReusablePrize, scope: string, probabili
     label: prize.label,
     probability,
     estimatedUnitCost: prize.estimatedUnitCost,
+    estimatedUnitCostKnown: prize.estimatedUnitCostKnown,
     usageConditions: prize.usageConditions,
     purchaseRequired: prize.purchaseRequired,
     totalQuantity: quantity,
