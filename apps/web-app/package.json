@@ -15,6 +15,7 @@
     "smoke:prize-library": "node scripts/smoke-prize-library-layout.mjs",
     "test:reusable-prizes": "node --test src/lib/reusable-prizes.test.mjs",
     "test:prize-compositions": "node --experimental-strip-types --import ./scripts/ts-alias-loader.mjs --test src/lib/prize-compositions.test.mjs",
+    "test:prize-budget": "node --test src/lib/prize-budget.test.mjs",
     "test:gain-notifications": "node --experimental-strip-types --test src/lib/merchant-gain-notifications.test.mjs src/lib/merchant-gain-notification-api.test.mjs",
     "test:analytics-consent": "node --experimental-strip-types --test src/lib/analytics-consent.test.mjs",
     "test:data-lifecycle": "node --experimental-strip-types --test src/lib/personal-data-lifecycle.test.mjs",

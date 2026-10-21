@@ -570,6 +570,8 @@ export interface Prize {
   remainingQuantity: null | number;
   probability: number;
   estimatedUnitCost: number;
+  /** False distinguishes an unspecified cost from an explicitly entered zero. */
+  estimatedUnitCostKnown?: boolean;
   purchaseRequired: boolean;
   usageConditions?: string;
 }
@@ -947,6 +949,7 @@ export interface CampaignSetupInput {
     remainingQuantity?: null | number;
     probability: number;
     estimatedUnitCost: number;
+    estimatedUnitCostKnown?: boolean;
     purchaseRequired?: boolean;
     usageConditions?: string;
   }>;

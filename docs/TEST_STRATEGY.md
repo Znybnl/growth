@@ -1,5 +1,19 @@
 # Stratégie de test — Okado
 
+### Budget et finitions — #609 phase5
+
+`test:prize-budget` vérifie le cas SFD3,08€/308€, les coûts inconnus/zéro,
+les lots de chance nulle et chances invalides, les stocks limités, les bornes
+des règles, le refus serveur d’un brouillon>100%, puis la vraie DAL de
+sauvegarde/relecture avec base simulée : marqueur JSON conservé et vrai zéro
+à nouveau reconnu. Copies inconnues distinctes des vrais zéros.
+`wizard-prize-budget.spec.ts` exerce recalcul, édition/abandon/continuer,
+zéro explicite, liens des coûts manquants, raccourcis état vide, règles
+invalides sans écriture et sauvegarde de jeux roue/ticket déjà publiés.
+Captures1280×720/600 et320/390px, vrai cadre et API interceptées ; les anciens
+parcours phases1–4 restent rejoués. Le succès ne prouve pas une écriture réelle
+ni un déploiement. Contrôles serveur admin, catalogue et permissions conservés.
+
 ### Compositions proposées — #609, phase 4
 
 `test:prize-compositions` contrôle les profils 40/70/100 %, les arrondis,

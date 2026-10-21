@@ -8,6 +8,7 @@ import type { ReusablePrize } from "@/lib/reusable-prizes";
 import { useReusablePrizes } from "@/lib/use-reusable-prizes";
 import { buildPrizeCompositions, type PrizeComposition } from "@/lib/prize-compositions";
 import { WizardPrizeCompositions } from "./wizard-prize-compositions";
+import { isPrizeCostKnown } from "@/lib/prize-budget";
 import styles from "./wizard-prize-library.module.css";
 
 const icons = { coffee: Coffee, dessert: Sparkles, drink: Soup, discount: BadgePercent, supplement: CirclePlus, menu: UtensilsCrossed, gift: Gift, history: History };
@@ -15,7 +16,7 @@ const percent = (value: number) => new Intl.NumberFormat("fr-FR", { maximumFract
 type LibraryEntry = PrizeSuggestion & { previous?: ReusablePrize };
 
 export function WizardPrizeLibrary({ suggestions, addedIds, remainingProbability, activityLabel, isLoading, error, onRetry, onAdd, onClose,
-  previousPrizesEndpoint, excludeCampaignId, isPreviousAdded, onReuse, configuredPrizeCount, onApplyComposition, winningEveryTime = false }: {
+  previousPrizesEndpoint, excludeCampaignId, isPreviousAdded, onReuse, configuredPrizeCount, onApplyComposition, winningEveryTime = false, initialTab = "suggestions" }: {
   suggestions: PrizeSuggestion[];
   addedIds: ReadonlySet<string>;
   remainingProbability: number;
@@ -32,8 +33,9 @@ export function WizardPrizeLibrary({ suggestions, addedIds, remainingProbability
   configuredPrizeCount?: number;
   onApplyComposition?: (composition: PrizeComposition) => void;
   winningEveryTime?: boolean;
+  initialTab?: "suggestions" | "mine" | "compositions";
 }) {
-  const [tab, setTab] = useState<"suggestions" | "mine" | "compositions">("suggestions");
+  const [tab, setTab] = useState<"suggestions" | "mine" | "compositions">(initialTab);
   const compositions = useMemo(() => buildPrizeCompositions(suggestions), [suggestions]);
   const [compositionId, setCompositionId] = useState<string | null>(null);
   const [confirmReplacement, setConfirmReplacement] = useState(false);
@@ -246,7 +248,7 @@ export function WizardPrizeLibrary({ suggestions, addedIds, remainingProbability
                     <div className={styles.libraryCardBottom}>
                       <dl className="flex flex-wrap gap-x-5 gap-y-1 text-[13px] text-[#716b78]">
                         <div><dt>{tab === "mine" ? "Chance utilisée" : "Chance suggérée"}</dt><dd className="mt-1 font-semibold tabular-nums text-[#242126]">{percent(suggestion.probability)} %</dd></div>
-                        <div><dt>Coût estimé</dt><dd className="mt-1 font-semibold tabular-nums text-[#242126]">{new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(suggestion.estimatedUnitCost)}</dd></div>
+                        <div><dt>Coût estimé</dt><dd className="mt-1 font-semibold tabular-nums text-[#242126]">{isPrizeCostKnown(suggestion.previous ?? suggestion) ? new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(suggestion.estimatedUnitCost) : "Non renseigné"}</dd></div>
                       </dl>
                       <button data-prize-add data-suggestion-id={suggestion.id} type="button" disabled={added} aria-label={`${added ? "Ajouté" : "Ajouter"} : ${suggestion.label}`} onClick={() => requestAdd(suggestion)}
                         className={`inline-flex min-h-10 items-center gap-1.5 rounded-[8px] px-3 py-2 text-[13px] font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#64206f] ${added ? "bg-[#e4f1e9] text-[#25845b]" : "bg-[#f6f0fa] text-[#64206f] hover:bg-[#eee2f4]"}`}>

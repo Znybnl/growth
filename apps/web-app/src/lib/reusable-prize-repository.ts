@@ -7,7 +7,7 @@ type Row = {
   estimated_unit_cost: number | string; total_quantity: number | null; purchase_required: boolean;
   created_at: string;
   campaigns: { id: string; merchant_id: string; title: string; created_at: string;
-    prize_settings: Record<string, { usageConditions?: string }> | null };
+    prize_settings: Record<string, { usageConditions?: string; estimatedUnitCostKnown?: boolean }> | null };
 };
 
 /** Private DAL: caller must resolve the active/authorized establishment first.
@@ -37,6 +37,7 @@ export async function getReusablePrizes(merchantId: string, excludeCampaignId?: 
       lastUsedAt: row.created_at || row.campaigns.created_at,
       label: row.label, probability, estimatedUnitCost: cost, totalQuantity: row.total_quantity,
       purchaseRequired: Boolean(row.purchase_required), usageConditions: typeof condition === "string" ? condition : "",
+      estimatedUnitCostKnown: row.campaigns.prize_settings?.[row.id]?.estimatedUnitCostKnown === false ? false : undefined,
     });
   }
   return deduplicateReusablePrizes(prizes);

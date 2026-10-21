@@ -109,12 +109,23 @@ export function TemplateRenderingProof({ mode = "preview", templateId = "classic
       </div>
     </MerchantShell>;
   }
+  if (mode === "editor-prize-budget") {
+    return <MerchantShell merchant={merchant} user={{ id: "cost-user", merchantId: merchant.id,
+      role: "owner", firstName: "Camille", lastName: "Test", email: "cost@example.test", password: "", createdAt: merchant.createdAt }}
+      locations={[{ merchant, role: "owner" }]} activeLocationId={merchant.id} isSaasAdmin={false}>
+      <CampaignEditor merchant={merchant} initialCampaign={performance} deferInlineAssets />
+    </MerchantShell>;
+  }
   if (mode.startsWith("wizard-responsive")) {
     const admin = mode.endsWith("admin");
     return <MerchantShell merchant={merchant} user={{ id: "responsive-user", merchantId: merchant.id,
       role: "owner", firstName: "Camille", lastName: "Test", email: "responsive@example.test", password: "", createdAt: merchant.createdAt }}
       locations={[{ merchant, role: "owner" }]} activeLocationId={merchant.id} isSaasAdmin={admin}>
-      <CampaignWizard merchant={merchant} initialCampaign={mode.includes("create") ? undefined : performance}
+      <CampaignWizard merchant={merchant} initialCampaign={mode.includes("create") ? undefined : {
+        ...performance,
+        campaign: { ...performance.campaign, ...(mode.includes("published") ? { isActive: true,
+          actions: [{ id: "fixture-marketing", kind: "custom" as const, label: "Découvrir", url: "https://fixture.example.test" }] } : {}) },
+      }}
         {...(admin ? { adminAccountMerchantId: "fixture-account", adminSaveEndpoint: "/api/admin/merchants/fixture-account/locations/template-proof-merchant/campaigns/setup" } : {})} />
     </MerchantShell>;
   }

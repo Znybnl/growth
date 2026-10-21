@@ -148,7 +148,7 @@ test("@visual-1280 phase 1 : dépasser provisoirement 100 %, ajuster en ligne pu
   await expect(page.getByTestId("wizard-losing-probability")).toContainText("10 %");
 
   await rules.locator("summary").click();
-  await rules.getByRole("checkbox").check();
+  await rules.getByRole("checkbox", { name: /Le gain est utilisable à partir du lendemain/ }).check();
   await rules.getByLabel("Durée de validité du gain (jours)").fill("45");
   await rules.getByLabel("Délai minimum entre deux participations (jours)").fill("3");
   await expect(rules.locator("summary")).toContainText("Utilisable dès demain · Valable 45 jours · 1 participation tous les 3 jours");

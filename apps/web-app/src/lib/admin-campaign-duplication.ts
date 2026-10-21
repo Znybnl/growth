@@ -58,6 +58,7 @@ export function buildAdminCampaignCopy(
       estimatedUnitCost: prize.estimatedUnitCost,
       purchaseRequired: prize.purchaseRequired,
       usageConditions: prize.usageConditions,
+      estimatedUnitCostKnown: prize.estimatedUnitCostKnown,
     })),
   };
 }
