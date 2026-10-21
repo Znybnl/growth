@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Analytics } from "@vercel/analytics/next";
 import { ANALYTICS_CONSENT_EVENT, readAnalyticsConsent } from "@/lib/analytics-consent";
@@ -8,11 +8,12 @@ import { isAnalyticsConfigured, setAnalyticsChoice } from "@/lib/consent-managed
 import { isPublicGamePage } from "@/lib/cookie-preferences-visibility";
 import type { AnalyticsChoice } from "@/lib/analytics-consent";
 
-export function CookiePreferences() {
+export function CookiePreferences({ alignment = "left" }: { alignment?: "left" | "right" }) {
   const pathname = usePathname();
   const [visible, setVisible] = useState(false);
   const [currentChoice, setCurrentChoice] = useState<AnalyticsChoice | null>(null);
   const [error, setError] = useState(false);
+  const launcherRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     function refresh() {
@@ -25,9 +26,19 @@ export function CookiePreferences() {
     return () => window.removeEventListener(ANALYTICS_CONSENT_EVENT, refresh);
   }, []);
 
+  useEffect(() => {
+    if (visible && launcherRef.current) document.getElementById("okado-cookie-title")?.focus();
+  }, [visible]);
+
   if (!isAnalyticsConfigured) return null;
 
   const isGamePage = isPublicGamePage(pathname);
+
+  function closePreferences() {
+    setVisible(false);
+    launcherRef.current?.focus();
+    launcherRef.current = null;
+  }
 
   function choose(choice: AnalyticsChoice) {
     if (!setAnalyticsChoice(choice)) {
@@ -35,7 +46,7 @@ export function CookiePreferences() {
       return;
     }
     setError(false);
-    setVisible(false);
+    closePreferences();
   }
 
   const buttonStyle = "min-h-11 flex-1 rounded-lg border border-[#6c00f6] bg-white px-4 py-2 text-sm font-semibold text-[#6c00f6] hover:bg-[#f5f0ff] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6c00f6]";
@@ -50,16 +61,19 @@ export function CookiePreferences() {
         return { ...event, url: url.origin + path };
       }} />}
       {!isGamePage && (
-        <button type="button" onClick={() => setVisible(true)}
-          className="fixed bottom-2 left-2 z-[90] rounded-lg border border-[#dbe3ef] bg-white px-3 py-2 text-xs text-[#0f172b] shadow-sm focus-visible:outline-2 focus-visible:outline-[#6c00f6]"
+        <button type="button" onClick={(event) => {
+          launcherRef.current = event.currentTarget;
+          setVisible(true);
+        }}
+          className={`okado-cookie-floating-trigger fixed rounded-lg border border-[#dbe3ef] bg-white px-3 py-2 text-xs text-[#0f172b] shadow-sm focus-visible:outline-2 focus-visible:outline-[#6c00f6] ${alignment === "right" ? "right-[calc(0.5rem+env(safe-area-inset-right))] bottom-[calc(0.5rem+env(safe-area-inset-bottom))] z-20" : "bottom-2 left-2 z-[90]"}`}
           aria-expanded={visible} aria-controls="okado-cookie-preferences">
           Gérer les cookies
         </button>
       )}
       {visible && (
         <section id="okado-cookie-preferences" aria-labelledby="okado-cookie-title"
-          className="fixed inset-x-3 bottom-14 z-[100] mx-auto max-h-[75dvh] max-w-xl overflow-y-auto rounded-2xl border border-[#dbe3ef] bg-white p-5 text-[#0f172b] shadow-xl sm:inset-x-auto sm:left-4 sm:right-4 sm:mx-0">
-          <h2 id="okado-cookie-title" className="text-lg font-bold">Votre choix de mesure d’audience</h2>
+          className={`fixed inset-x-3 bottom-[calc(3.5rem+env(safe-area-inset-bottom))] z-[100] mx-auto max-h-[75dvh] max-w-xl overflow-y-auto rounded-2xl border border-[#dbe3ef] bg-white p-5 text-[#0f172b] shadow-xl sm:inset-x-auto sm:left-4 sm:right-4 ${alignment === "right" ? "sm:ml-auto sm:mr-0" : "sm:mx-0"}`}>
+          <h2 id="okado-cookie-title" tabIndex={-1} className="text-lg font-bold">Votre choix de mesure d’audience</h2>
           <p className="mt-3 text-sm leading-6">
             Avec votre accord, PostHog mesure vos visites et le parcours jusqu’à la publication d’un jeu ; Vercel Analytics mesure la fréquentation.
             Si vous êtes connecté, votre e-mail de connexion identifie votre profil PostHog et relie ces mesures à votre compte marchand.
@@ -76,7 +90,7 @@ export function CookiePreferences() {
             <button type="button" className={buttonStyle} onClick={() => choose("rejected")}>Refuser</button>
             <button type="button" className={buttonStyle} onClick={() => choose("accepted")}>Accepter</button>
           </div>
-          <button type="button" onClick={() => setVisible(false)} className="mt-3 min-h-10 text-sm underline">
+          <button type="button" onClick={closePreferences} className="mt-3 min-h-10 text-sm underline">
             Continuer sans modifier mon choix
           </button>
         </section>

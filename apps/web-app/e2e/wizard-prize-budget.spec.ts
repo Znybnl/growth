@@ -60,7 +60,9 @@ test("@visual-1280 phase 5 : exemple SFD, budget réactif, coût inconnu et sais
   await expect.poll(() => writes.length).toBe(1);
   expect(writes[0].prizes.find((item) => item.label === "MASQUE")).toMatchObject({ estimatedUnitCost: 0, estimatedUnitCostKnown: false });
   const savedDialog = page.getByRole("dialog").filter({ hasText: "prêt" });
-  if (await savedDialog.isVisible()) await page.keyboard.press("Escape");
+  await expect(savedDialog).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(savedDialog).toBeHidden();
   await budget.getByRole("button", { name: "Renseigner le coût de MASQUE", exact: true }).click();
   editor = page.getByRole("dialog", { name: "Modifier le lot", exact: true });
   await editor.getByLabel(/^Coût unitaire estimé/).fill("0");

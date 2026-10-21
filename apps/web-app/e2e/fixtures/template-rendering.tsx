@@ -48,6 +48,15 @@ export function TemplateRenderingProof({ mode = "preview", templateId = "classic
   mode?: string; templateId?: GamePageTemplateId; background?: string; ink?: string; font?: TextFont; secondary?: string; business?: string; button?: string; buttonText?: string;
 }) {
   if (mode === "analytics-identity") return <AnalyticsIdentityProof />;
+  if (mode.startsWith("cookie-menu")) {
+    const merchant: Merchant = { id: "cookie-menu-proof", companyName: "Maison de démonstration au nom très long",
+      logoText: "Démo", onboardingCompleted: true, stripeSubscriptionStatus: "active", createdAt: "2026-10-01T00:00:00Z" };
+    return <MerchantShell merchant={merchant} user={{ id: "cookie-menu-user", merchantId: merchant.id,
+      firstName: "Camille", lastName: "Démo", email: "camille@example.test", password: "", createdAt: merchant.createdAt }}
+      locations={[{ merchant, role: "owner" }]} activeLocationId={merchant.id} isSaasAdmin={mode === "cookie-menu-admin"}>
+      <PageHeader eyebrow="Résultats" title="Résultats de démonstration" description="Données fictives pour vérifier les actions du menu." />
+    </MerchantShell>;
+  }
   const scratch = templateId.includes("scratch");
   const businessNames = { beauty: "Maison Botanique", restaurant: "Le bistro", retail: "La petite boutique" };
   const companyName = businessNames[business as keyof typeof businessNames] ?? "Établissement de test";

@@ -157,7 +157,7 @@ function MerchantShellContent({ children, merchant, user, locations, activeLocat
           menuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="flex h-full flex-col px-4 py-5">
+        <div className="flex h-full flex-col overflow-y-auto overscroll-contain px-4 py-5 [&>*]:shrink-0">
           <div className="px-2 py-2">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-[4px] bg-primary-action-accent text-xs font-semibold uppercase tracking-[0.18em] text-white">
@@ -327,7 +327,7 @@ function MerchantShellContent({ children, merchant, user, locations, activeLocat
         </div>
       </aside>
 
-      <div className="flex h-screen min-w-0 flex-col lg:ml-[248px]">
+      <div className="flex h-full min-w-0 flex-col lg:ml-[248px]">
         <header className="sticky top-0 z-30 border-b border-fog bg-soft-white/92 backdrop-blur-sm">
           <div className="flex min-h-[56px] items-center gap-4 px-4 py-3 lg:px-7">
             <button
@@ -345,7 +345,7 @@ function MerchantShellContent({ children, merchant, user, locations, activeLocat
                 <span className="block h-0.5 w-4 bg-graphite" />
               </span>
             </button>
-            <div className="flex-1" />
+            <div className="min-w-0 flex-1" />
             <LocationSwitcher key={activeLocationId} locations={locations} activeLocationId={activeLocationId} />
           </div>
         </header>
