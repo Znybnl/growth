@@ -4,6 +4,7 @@ import { prizeFieldsFromSuggestion } from "@/lib/prize-suggestion-fields";
 import { usePrizeSuggestionCatalog } from "@/lib/use-prize-suggestions";
 import { isSuggestionInPrizes, suggestedWizardPrizeId } from "@/lib/wizard-prize-suggestions";
 import { WizardPrizeLibrary } from "@/components/merchant/wizard-prize-library";
+import { copyReusablePrize, isReusablePrizeAdded, type ReusablePrize } from "@/lib/reusable-prizes";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -886,6 +887,7 @@ export function CampaignWizard({
   const prizeCatalog = usePrizeSuggestionCatalog(merchant);
   const prizeSuggestions = prizeCatalog.suggestions;
   const [prizeSuggestionScope] = useState(createWizardPrizeId);
+  const reusedPrizeCopies = useRef(new Map<string, string>());
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
   const [prizeEditor, setPrizeEditor] = useState<PrizeEditorState | null>(null);
   const [pendingDeletePrize, setPendingDeletePrize] = useState<{ id?: string; index: number } | null>(null);
@@ -1253,6 +1255,16 @@ export function CampaignWizard({
         id: suggestedWizardPrizeId(suggestion, prizeSuggestionScope),
         probability,
       }],
+    }));
+    setError(null);
+  }
+
+  function reusePrize(prize: ReusablePrize, probability: number, quantity: number | null) {
+    const copy = copyReusablePrize(prize, prizeSuggestionScope, probability, quantity);
+    copy.id = reusedPrizeCopies.current.get(prize.id) ?? copy.id;
+    reusedPrizeCopies.current.set(prize.id, copy.id);
+    setDraft((current) => isReusablePrizeAdded(prize, current.prizes, reusedPrizeCopies.current) ? current : ({
+      ...current, prizes: [...current.prizes, copy],
     }));
     setError(null);
   }
@@ -2936,6 +2948,13 @@ export function CampaignWizard({
         onRetry={prizeCatalog.retry}
         onAdd={addSuggestedPrize}
         onClose={() => setSuggestionsOpen(false)}
+        configuredPrizeCount={draft.prizes.length}
+        previousPrizesEndpoint={adminSaveEndpoint
+          ? adminAccountMerchantId ? `/api/admin/merchants/${encodeURIComponent(adminAccountMerchantId)}/locations/${encodeURIComponent(merchant.id)}/prize-library` : undefined
+          : "/api/merchant/prize-library"}
+        excludeCampaignId={initialCampaign?.campaign.id ?? savedCampaignId ?? undefined}
+        isPreviousAdded={(prize) => isReusablePrizeAdded(prize, draft.prizes, reusedPrizeCopies.current)}
+        onReuse={reusePrize}
       /> : null}
       <PrizeEditorPanel
         editor={prizeEditor}

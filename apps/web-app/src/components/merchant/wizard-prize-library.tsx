@@ -1,15 +1,19 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { BadgePercent, Check, ChevronLeft, CirclePlus, Coffee, Gift, Loader2, Plus, Soup, Sparkles, UtensilsCrossed, X } from "lucide-react";
+import { BadgePercent, Check, ChevronLeft, CirclePlus, Coffee, Gift, History, Loader2, Plus, Soup, Sparkles, UtensilsCrossed, X } from "lucide-react";
 import { DialogShell } from "@/components/ui/dialog";
 import type { PrizeSuggestion } from "@/lib/types";
+import type { ReusablePrize } from "@/lib/reusable-prizes";
+import { useReusablePrizes } from "@/lib/use-reusable-prizes";
 import styles from "./wizard-prize-library.module.css";
 
-const icons = { coffee: Coffee, dessert: Sparkles, drink: Soup, discount: BadgePercent, supplement: CirclePlus, menu: UtensilsCrossed, gift: Gift };
+const icons = { coffee: Coffee, dessert: Sparkles, drink: Soup, discount: BadgePercent, supplement: CirclePlus, menu: UtensilsCrossed, gift: Gift, history: History };
 const percent = (value: number) => new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2 }).format(value);
+type LibraryEntry = PrizeSuggestion & { previous?: ReusablePrize };
 
-export function WizardPrizeLibrary({ suggestions, addedIds, remainingProbability, activityLabel, isLoading, error, onRetry, onAdd, onClose }: {
+export function WizardPrizeLibrary({ suggestions, addedIds, remainingProbability, activityLabel, isLoading, error, onRetry, onAdd, onClose,
+  previousPrizesEndpoint, excludeCampaignId, isPreviousAdded, onReuse, configuredPrizeCount }: {
   suggestions: PrizeSuggestion[];
   addedIds: ReadonlySet<string>;
   remainingProbability: number;
@@ -19,8 +23,23 @@ export function WizardPrizeLibrary({ suggestions, addedIds, remainingProbability
   onRetry: () => void;
   onAdd: (suggestion: PrizeSuggestion, probability: number) => void;
   onClose: () => void;
+  previousPrizesEndpoint?: string;
+  excludeCampaignId?: string;
+  isPreviousAdded?: (prize: ReusablePrize) => boolean;
+  onReuse?: (prize: ReusablePrize, probability: number, quantity: number | null) => void;
+  configuredPrizeCount?: number;
 }) {
-  const [adjustment, setAdjustment] = useState<{ suggestion: PrizeSuggestion; probability: number } | null>(null);
+  const [tab, setTab] = useState<"suggestions" | "mine">("suggestions");
+  const previous = useReusablePrizes(previousPrizesEndpoint, tab === "mine", excludeCampaignId);
+  const entries: LibraryEntry[] = tab === "suggestions" ? suggestions : previous.prizes.map((prize, sortOrder) => ({
+    id: `previous-${prize.id}`, label: prize.label, description: prize.usageConditions,
+    probability: prize.probability, estimatedUnitCost: prize.estimatedUnitCost,
+    icon: "history", industry: "", isActive: true, sortOrder, previous: prize,
+  }));
+  const loading = tab === "suggestions" ? isLoading : previous.isLoading;
+  const loadError = tab === "suggestions" ? error : previous.error;
+  const retry = tab === "suggestions" ? onRetry : previous.retry;
+  const [adjustment, setAdjustment] = useState<{ suggestion: LibraryEntry; probability: number; quantity: number | null } | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
   const [lastAdded, setLastAdded] = useState("");
   const contentRef = useRef<HTMLDivElement>(null);
@@ -28,6 +47,18 @@ export function WizardPrizeLibrary({ suggestions, addedIds, remainingProbability
   const originRef = useRef<{ id: string; scrollTop: number } | null>(null);
   const focusFrame = useRef<number | null>(null);
   const projectedTotal = 100 - remainingProbability + (adjustment?.probability ?? 0);
+  const hasLimitedStock = adjustment?.suggestion.previous?.totalQuantity != null;
+  const isAdded = (entry: LibraryEntry) => entry.previous ? Boolean(isPreviousAdded?.(entry.previous)) : addedIds.has(entry.id);
+
+  function selectTab(next: typeof tab) {
+    setTab(next);
+    setAdjustment(null);
+    setValidationError(null);
+    setLastAdded("");
+    originRef.current = null;
+    if (focusFrame.current !== null) cancelAnimationFrame(focusFrame.current);
+    if (contentRef.current) contentRef.current.scrollTop = 0;
+  }
 
   useEffect(() => () => {
     if (focusFrame.current !== null) cancelAnimationFrame(focusFrame.current);
@@ -60,25 +91,32 @@ export function WizardPrizeLibrary({ suggestions, addedIds, remainingProbability
     restoreCatalogFocus(id, false);
   }
 
-  function add(suggestion: PrizeSuggestion, probability: number) {
-    if (addedIds.has(suggestion.id)) return;
+  function add(suggestion: LibraryEntry, probability: number, quantity: number | null = suggestion.previous?.totalQuantity ?? null) {
+    if (isAdded(suggestion)) return;
     if (!suggestion.label.trim() || !Number.isFinite(probability) || probability < 0 || probability > 100
       || !Number.isFinite(suggestion.estimatedUnitCost) || suggestion.estimatedUnitCost < 0) {
       setValidationError("Vérifiez les informations de ce lot : un nom, une chance entre 0 et 100 % et un coût positif ou nul sont nécessaires.");
       return;
     }
-    onAdd(suggestion, probability);
+    if (quantity !== null && (!Number.isSafeInteger(quantity) || quantity <= 0)) {
+      setValidationError("Le nouveau stock doit être un nombre entier supérieur à 0, ou illimité.");
+      return;
+    }
+    if (suggestion.previous) {
+      if (!onReuse) return;
+      onReuse(suggestion.previous, probability, quantity);
+    } else onAdd(suggestion, probability);
     setAdjustment(null);
     setValidationError(null);
     setLastAdded(`${suggestion.label} ajouté à votre composition.`);
     restoreCatalogFocus(suggestion.id, true);
   }
 
-  function requestAdd(suggestion: PrizeSuggestion) {
+  function requestAdd(suggestion: LibraryEntry) {
     originRef.current = { id: suggestion.id, scrollTop: contentRef.current?.scrollTop ?? 0 };
     setValidationError(null);
-    if (suggestion.probability > remainingProbability + 0.0001) {
-      setAdjustment({ suggestion, probability: suggestion.probability });
+    if (suggestion.probability > remainingProbability + 0.0001 || suggestion.previous?.totalQuantity != null) {
+      setAdjustment({ suggestion, probability: suggestion.probability, quantity: suggestion.previous?.totalQuantity ?? null });
       if (focusFrame.current !== null) cancelAnimationFrame(focusFrame.current);
       focusFrame.current = requestAnimationFrame(() => {
         if (contentRef.current) contentRef.current.scrollTop = 0;
@@ -95,57 +133,80 @@ export function WizardPrizeLibrary({ suggestions, addedIds, remainingProbability
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#716b78]">Idées pour votre activité</p>
           <h2 id="wizard-prize-library-title" className="mt-1 text-xl font-semibold text-[#242126]">Ajouter des lots</h2>
-          <p id="wizard-prize-library-description" className="mt-1 text-sm leading-5 text-[#716b78]">Ajoutez vos idées, puis personnalisez-les dans votre composition.</p>
+          <p id="wizard-prize-library-description" className="mt-1 text-sm leading-5 text-[#716b78]">Choisissez des idées ou réutilisez vos lots précédents, puis personnalisez votre composition.</p>
         </div>
         <button type="button" onClick={onClose} aria-label="Fermer la bibliothèque de lots" className="okado-dialog-dismiss"><X className="size-4" aria-hidden="true" /></button>
       </header>
-      <div ref={contentRef} className={styles.libraryContent} data-testid="wizard-prize-library-content">
+      <div role="tablist" aria-label="Bibliothèque de lots" className={styles.libraryTabs}>
+        {(["suggestions", "mine"] as const).map((value) => <button key={value} type="button" role="tab"
+          id={`prize-tab-${value}`} aria-selected={tab === value} aria-controls="prize-library-panel" tabIndex={tab === value ? 0 : -1}
+          onClick={() => selectTab(value)} onKeyDown={(event) => {
+            if (["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) {
+              event.preventDefault();
+              const next = event.key === "Home" ? "suggestions" : event.key === "End" ? "mine" : tab === "mine" ? "suggestions" : "mine";
+              selectTab(next);
+              document.getElementById(`prize-tab-${next}`)?.focus();
+            }
+          }}><span className="inline-flex items-center gap-2">{value === "mine" ? <History className="size-4" aria-hidden="true" /> : <Sparkles className="size-4" aria-hidden="true" />}{value === "mine" ? "Mes lots" : "Suggestions"}</span></button>)}
+      </div>
+      <div ref={contentRef} id="prize-library-panel" role="tabpanel" aria-labelledby={`prize-tab-${tab}`} className={styles.libraryContent} data-testid="wizard-prize-library-content">
         {adjustment ? (
           <section aria-labelledby="wizard-suggestion-adjustment-title" className="mx-auto max-w-xl space-y-4">
-            <button type="button" onClick={cancelAdjustment} className="inline-flex items-center gap-1 text-sm font-semibold text-[#64206f]"><ChevronLeft className="size-4" aria-hidden="true" />Retour aux suggestions</button>
+            <button type="button" onClick={cancelAdjustment} className="inline-flex items-center gap-1 text-sm font-semibold text-[#64206f]"><ChevronLeft className="size-4" aria-hidden="true" />{tab === "mine" ? "Retour à mes lots" : "Retour aux suggestions"}</button>
             <div>
-              <h3 id="wizard-suggestion-adjustment-title" className="text-lg font-semibold text-[#242126]">Ajustez la chance de ce lot</h3>
+              <h3 id="wizard-suggestion-adjustment-title" className="text-lg font-semibold text-[#242126]">{adjustment.suggestion.previous ? "Préparez la copie de ce lot" : "Ajustez la chance de ce lot"}</h3>
               <p className="mt-1 text-sm font-semibold text-[#64206f]">{adjustment.suggestion.label}</p>
             </div>
-            <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+            <div className={hasLimitedStock ? "grid gap-4 sm:grid-cols-2 sm:items-start" : ""}>
+            <div className={hasLimitedStock ? "space-y-3" : "grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end"}>
               <label className="block text-sm font-semibold text-[#242126]">
                 Chance de gain pour ce lot (%)
                 <input autoFocus type="number" min={0} max={100} step="any" value={adjustment.probability}
                   onChange={(event) => { setAdjustment({ ...adjustment, probability: Number(event.target.value || 0) }); setValidationError(null); }}
                   className="mt-2 block w-full rounded-[10px] border border-[#e8e2ea] bg-white px-3 py-3 text-sm outline-none focus:border-[#64206f] focus:ring-2 focus:ring-[#64206f]/15" />
               </label>
-              {remainingProbability > 0 ? <button type="button" onClick={() => add(adjustment.suggestion, remainingProbability)} className="okado-secondary-action px-3 text-[13px]">Ajouter avec les {percent(remainingProbability)} % disponibles</button> : null}
+              {remainingProbability > 0 && adjustment.probability > remainingProbability ? <button type="button" onClick={() => add(adjustment.suggestion, remainingProbability, adjustment.quantity)} className="okado-secondary-action px-3 text-[13px]">Ajouter avec les {percent(remainingProbability)} % disponibles</button> : null}
             </div>
-            <p className="text-sm leading-6 text-[#716b78]">La suggestion propose {percent(adjustment.suggestion.probability)} %, alors que {percent(Math.max(0, remainingProbability))} % restent disponibles. Les chances des autres lots restent inchangées.</p>
+            {hasLimitedStock ? <div className="rounded-[12px] border border-[#e8e2ea] bg-white p-4">
+              <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={adjustment.quantity === null}
+                onChange={(event) => { setAdjustment({ ...adjustment, quantity: event.target.checked ? null : adjustment.suggestion.previous!.totalQuantity }); setValidationError(null); }} />Utiliser un stock illimité</label>
+              {adjustment.quantity !== null ? <label className="mt-3 block text-sm font-semibold">Nouveau stock initial
+                <input type="number" min={1} step={1} value={adjustment.quantity} onChange={(event) => { setAdjustment({ ...adjustment, quantity: Number(event.target.value) }); setValidationError(null); }}
+                  className="mt-2 block w-full rounded-[10px] border border-[#e8e2ea] px-3 py-3 font-normal" />
+              </label> : null}
+              <p className="mt-2 text-[13px] leading-5 text-[#716b78]">Confirmez le stock de ce nouveau jeu. Le stock restant de l’ancien jeu n’est jamais repris.</p>
+            </div> : null}
+            </div>
+            <p className="text-sm leading-6 text-[#716b78]">{tab === "mine" ? "La chance précédemment utilisée était de" : "La suggestion propose"} {percent(adjustment.suggestion.probability)} %, et {percent(Math.max(0, remainingProbability))} % restent disponibles. Les chances des autres lots restent inchangées.</p>
             {remainingProbability <= 0 ? <p className="rounded-[10px] bg-[#f6f0fa] p-3 text-sm leading-5 text-[#64206f]">Toutes les chances sont déjà réparties. Vous pouvez préparer ce lot, mais vous devrez réduire les chances des autres lots dans la composition avant d’enregistrer le jeu.</p> : null}
           </section>
-        ) : isLoading ? (
-          <p role="status" className="flex items-center justify-center gap-2 py-16 text-sm text-[#716b78]"><Loader2 className="size-5 animate-spin" aria-hidden="true" />Chargement des suggestions…</p>
-        ) : error ? (
+        ) : loading ? (
+          <p role="status" className="flex items-center justify-center gap-2 py-16 text-sm text-[#716b78]"><Loader2 className="size-5 animate-spin" aria-hidden="true" />{tab === "mine" ? "Chargement de vos lots…" : "Chargement des suggestions…"}</p>
+        ) : loadError ? (
           <div className="rounded-[12px] border border-[#f1c8c6] bg-[#fff6f5] p-5">
-            <p role="alert" className="text-sm leading-6 text-[#b42318]">{error}</p>
-            <button type="button" onClick={onRetry} className="okado-secondary-action mt-3 px-4 text-sm">Réessayer</button>
+            <p role="alert" className="text-sm leading-6 text-[#b42318]">{loadError}</p>
+            <button type="button" onClick={retry} className="okado-secondary-action mt-3 px-4 text-sm">Réessayer</button>
           </div>
-        ) : !suggestions.length ? (
+        ) : !entries.length ? (
           <div className="rounded-[12px] border border-dashed border-[#e8e2ea] px-5 py-8 text-center">
             <Gift className="mx-auto size-7 text-[#8c5b98]" aria-hidden="true" />
-            <h3 className="mt-3 font-semibold text-[#242126]">Aucune suggestion pour cette activité</h3>
-            <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-[#716b78]">Vous pouvez créer votre propre lot depuis la composition. Son nom, sa chance et ses conditions restent entièrement personnalisables.</p>
-            <button type="button" onClick={onClose} className="okado-secondary-action mt-4 px-4 text-sm">Retour à ma composition</button>
+            <h3 className="mt-3 font-semibold text-[#242126]">{tab === "mine" ? "Vous n’avez pas encore de lots enregistrés." : "Aucune suggestion pour cette activité"}</h3>
+            <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-[#716b78]">{tab === "mine" ? "Les lots de vos prochaines campagnes pourront être réutilisés ici." : "Vous pouvez créer votre propre lot depuis la composition. Son nom, sa chance et ses conditions restent entièrement personnalisables."}</p>
+            <button type="button" onClick={tab === "mine" ? () => { selectTab("suggestions"); document.getElementById("prize-tab-suggestions")?.focus(); } : onClose} className="okado-secondary-action mt-4 px-4 text-sm">{tab === "mine" ? "Explorer les suggestions" : "Retour à ma composition"}</button>
           </div>
         ) : (
           <section aria-labelledby="wizard-prize-suggestions-title">
             <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
               <div>
-                <h3 id="wizard-prize-suggestions-title" className="text-sm font-semibold text-[#242126]">Suggestions</h3>
+                <h3 id="wizard-prize-suggestions-title" className="text-sm font-semibold text-[#242126]">{tab === "mine" ? "Les lots de vos jeux précédents" : "Suggestions"}</h3>
                 {activityLabel ? <p className="mt-1 text-[13px] leading-5 text-[#716b78]">Activité : {activityLabel}</p> : null}
               </div>
-              <span className="text-[13px] text-[#716b78]">{suggestions.length} idées pour votre activité</span>
+              <span className="text-[13px] text-[#716b78]">{entries.length} {tab === "mine" ? "lots réutilisables" : "idées pour votre activité"}</span>
             </div>
             <p className="mb-4 text-[13px] leading-5 text-[#716b78]">Coûts indicatifs, à adapter à votre établissement : estimez votre coût réel, pas la valeur du cadeau pour le client.</p>
             <div className={styles.libraryGrid}>
-              {suggestions.map((suggestion) => {
-                const added = addedIds.has(suggestion.id);
+              {entries.map((suggestion) => {
+                const added = isAdded(suggestion);
                 const Icon = icons[suggestion.icon as keyof typeof icons] ?? Gift;
                 return (
                   <article key={suggestion.id} data-testid="wizard-prize-suggestion-card" data-added={added} className={styles.libraryCard}>
@@ -154,11 +215,12 @@ export function WizardPrizeLibrary({ suggestions, addedIds, remainingProbability
                       <div className="min-w-0">
                         <h4 className="break-words text-sm font-semibold leading-5 text-[#242126]">{suggestion.label}</h4>
                         <p className="mt-1 break-words text-[13px] leading-5 text-[#716b78]">{suggestion.description}</p>
+                        {suggestion.previous ? <p className="mt-2 break-words text-[13px] leading-5 text-[#716b78]">Jeu d’origine : {suggestion.previous.sourceCampaignTitle}<br />Stock initial : {suggestion.previous.totalQuantity ?? "Illimité"}{suggestion.previous.purchaseRequired ? " · Achat requis" : ""}</p> : null}
                       </div>
                     </div>
                     <div className={styles.libraryCardBottom}>
                       <dl className="flex flex-wrap gap-x-5 gap-y-1 text-[13px] text-[#716b78]">
-                        <div><dt>Chance suggérée</dt><dd className="mt-1 font-semibold tabular-nums text-[#242126]">{percent(suggestion.probability)} %</dd></div>
+                        <div><dt>{tab === "mine" ? "Chance utilisée" : "Chance suggérée"}</dt><dd className="mt-1 font-semibold tabular-nums text-[#242126]">{percent(suggestion.probability)} %</dd></div>
                         <div><dt>Coût estimé</dt><dd className="mt-1 font-semibold tabular-nums text-[#242126]">{new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(suggestion.estimatedUnitCost)}</dd></div>
                       </dl>
                       <button data-prize-add data-suggestion-id={suggestion.id} type="button" disabled={added} aria-label={`${added ? "Ajouté" : "Ajouter"} : ${suggestion.label}`} onClick={() => requestAdd(suggestion)}
@@ -179,13 +241,13 @@ export function WizardPrizeLibrary({ suggestions, addedIds, remainingProbability
           : projectedTotal > 100.0001 ? <p role="alert" className="rounded-[10px] border border-[#f1c8c6] bg-[#fff6f5] px-3 py-3 text-sm leading-5 text-[#b42318]">Les probabilités dépassent 100 % de {percent(projectedTotal - 100)} points. Vous pourrez ajuster les chances dans la composition avant d’enregistrer le jeu.</p> : null}
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="text-[13px] leading-5 text-[#716b78]">
-            <p>{addedIds.size} suggestion{addedIds.size > 1 ? "s" : ""} ajoutée{addedIds.size > 1 ? "s" : ""}</p>
+            <p>{configuredPrizeCount ?? addedIds.size} lot{(configuredPrizeCount ?? addedIds.size) > 1 ? "s" : ""} dans votre composition</p>
             <p>Chances restantes à répartir : <strong className="font-semibold text-[#242126]">{percent(Math.max(0, remainingProbability))} %</strong></p>
           </div>
           <div className="flex flex-wrap gap-2">
             {adjustment ? <>
               <button type="button" onClick={cancelAdjustment} className="okado-secondary-action px-3 text-[13px]">Annuler l’ajout</button>
-              <button type="button" onClick={() => add(adjustment.suggestion, adjustment.probability)} className="okado-filled-action px-4 text-sm">Ajouter le lot</button>
+              <button type="button" onClick={() => add(adjustment.suggestion, adjustment.probability, adjustment.quantity)} className="okado-filled-action px-4 text-sm">Ajouter le lot</button>
             </> : <button ref={doneRef} type="button" onClick={onClose} className="okado-filled-action px-4 text-sm">Terminer</button>}
           </div>
         </div>

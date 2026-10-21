@@ -22,6 +22,22 @@ L'objectif est de détecter les régressions importantes sans transformer le pro
 
 ## Contrôles automatisés existants
 
+### Réutilisation des lots — #609, phase 3
+
+`test:reusable-prizes` couvre les vrais handlers marchand/admin et la DAL avec
+sessions/base simulées : 401/403/404, ciblage de l'établissement, exclusion du
+jeu courant, projection sans médias/participants/stock restant, pagination de
+601 lignes avec plafond abaissé, tri/dédoublonnage et copies indépendantes avec
+IDs courts. Aucun changement de schéma ou RLS, aucune écriture réelle.
+
+`wizard-reusable-prizes.spec.ts` exerce le vrai wizard/cadre marchand, lecture
+à l'ouverture de l'onglet seulement, copie limitée confirmée, stock nul ou
+fractionnaire refusé, conversion en illimité, conditions/achat conservés,
+ajustement de probabilité, doublons/double clic, personnalisation et sauvegarde,
+onglets clavier, chargement/erreur/réessai/vide et route cible administrative.
+Captures 1280×720/600 et 320/390 px ; les requêtes sont interceptées. Les GET
+réels anonymes sont aussi vérifiés. La fixture demeure inaccessible en production.
+
 ### Composition et bibliothèque des lots — #609, phases 1 et 2
 
 Complément #611 : la bibliothèque est contrôlée à 1280×720/600, 1894×1040
