@@ -7,7 +7,6 @@ import type { LucideIcon } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { SignOutButton } from "@/components/auth/sign-out-button";
-import { CookiePreferencesButton } from "@/components/privacy/cookie-preferences";
 import { MerchantAlertsProvider, useMerchantAlerts } from "@/components/merchant/merchant-alerts-provider";
 import { EMPTY_MERCHANT_ALERTS } from "@/lib/merchant-alerts";
 import { MerchantSessionGuard } from "@/components/merchant/merchant-session-guard";
@@ -328,7 +327,7 @@ function MerchantShellContent({ children, merchant, user, locations, activeLocat
         </div>
       </aside>
 
-      <div className="flex h-screen min-w-0 flex-col lg:ml-[248px]">
+      <div className="flex h-full min-w-0 flex-col lg:ml-[248px]">
         <header className="sticky top-0 z-30 border-b border-fog bg-soft-white/92 backdrop-blur-sm">
           <div className="flex min-h-[56px] items-center gap-4 px-4 py-3 lg:px-7">
             <button
@@ -346,7 +345,6 @@ function MerchantShellContent({ children, merchant, user, locations, activeLocat
                 <span className="block h-0.5 w-4 bg-graphite" />
               </span>
             </button>
-            <CookiePreferencesButton className="min-h-10 shrink-0 rounded-[var(--okado-radius-control)] px-2 text-xs text-ash underline decoration-fog underline-offset-4 transition hover:bg-purple-haze hover:text-aubergine focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-action-accent" />
             <div className="min-w-0 flex-1" />
             <LocationSwitcher key={activeLocationId} locations={locations} activeLocationId={activeLocationId} />
           </div>

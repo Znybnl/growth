@@ -2,10 +2,10 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-/* The workspace has an in-flow header control. Keep the floating fallback
-   only on public/auth pages, never over the sidebar or its sign-out action. */
-body:has(.okado-workspace-shell) .okado-cookie-floating-trigger {
-  display: none;
+/* Reserve the bottom-right cookie control's row outside the scrolling workspace,
+   including sticky wizard actions. No empty row when analytics is unconfigured. */
+body:has(.okado-cookie-floating-trigger) .okado-workspace-shell {
+  height: calc(100dvh - 3.25rem - env(safe-area-inset-bottom));
 }
 
 @font-face {

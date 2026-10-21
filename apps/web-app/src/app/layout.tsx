@@ -167,7 +167,8 @@ export default function RootLayout({
       )}
     >
       <body className="min-h-full">
-        <CookiePreferences>{children}</CookiePreferences>
+        {children}
+        <CookiePreferences alignment="right" />
       </body>
     </html>
   );

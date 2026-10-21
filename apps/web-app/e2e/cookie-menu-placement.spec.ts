@@ -1,5 +1,6 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { assertNoPageOverflow, captureVisualAt1280, rejectAnalyticsForVisualTests } from "./helpers/visual-1280";
+import { selectWizardStep } from "./helpers/wizard-step";
 
 const preferencesName = "Votre choix de mesure d’audience";
 
@@ -41,13 +42,15 @@ for (const admin of [false, true]) {
       await page.setViewportSize({ width: 1280, height });
       await page.getByRole("link", { name: "Accueil", exact: true }).scrollIntoViewIfNeeded();
       await captureVisualAt1280(page, info, "cookie-menu-navigation", height);
-      await expect(page.locator("header").getByRole("button", { name: "Gérer les cookies" })).toBeVisible();
+      await expect(page.locator("header").getByRole("button", { name: "Gérer les cookies" })).toHaveCount(0);
       await assertClickableWithoutOverlay(page, launcher);
       await assertClickableWithoutOverlay(page, signOut);
       await captureVisualAt1280(page, info, "cookie-menu-closed", height);
       const cookieBox = (await launcher.boundingBox())!;
       const logoutBox = (await signOut.boundingBox())!;
       expect(cookieBox.x).toBeGreaterThanOrEqual(248);
+      expect(cookieBox.x + cookieBox.width).toBeCloseTo(1280 - 8, 0);
+      expect(cookieBox.y + cookieBox.height).toBeCloseTo(height - 8, 0);
       expect(logoutBox.x + logoutBox.width).toBeLessThanOrEqual(248);
       await launcher.focus();
       await page.keyboard.press("Enter");
@@ -98,7 +101,7 @@ test("sans choix préalable : le bandeau reste utilisable dans le vrai cadre", a
   await expect(preferences).toBeVisible();
 });
 
-test("déconnexion simulée : retour au contrôle flottant de la page publique", async ({ page, context, baseURL }) => {
+test("déconnexion simulée : contrôle en bas à droite conservé sur la page publique", async ({ page, context, baseURL }) => {
   await rejectAnalyticsForVisualTests(context, baseURL!);
   let signOutCalls = 0;
   await page.route("**/api/auth/signout", async (route) => {
@@ -118,4 +121,25 @@ test("déconnexion simulée : retour au contrôle flottant de la page publique",
   await expect(fallback).toHaveCSS("position", "fixed");
   await fallback.click();
   await expect(page.getByRole("region", { name: preferencesName })).toBeVisible();
+});
+
+test("@visual-1280 le bouton cookies ne recouvre pas les actions fixes du wizard", async ({ page, context, baseURL }, info) => {
+  await rejectAnalyticsForVisualTests(context, baseURL!);
+  for (const { width, height } of [{ width: 1280, height: 720 }, { width: 1280, height: 600 }, { width: 390, height: 720 }, { width: 320, height: 720 }]) {
+    await page.setViewportSize({ width, height });
+    await page.goto("/dev/template-rendering-proof?mode=wizard-responsive-edit");
+    await page.addStyleTag({ content: "nextjs-portal { display: none !important; }" });
+    await selectWizardStep(page, 3);
+    const save = page.getByTestId("wizard-footer").getByRole("button", { name: "Enregistrer le brouillon", exact: true });
+    const cookies = page.getByRole("button", { name: "Gérer les cookies", exact: true });
+    await assertClickableWithoutOverlay(page, save);
+    await assertClickableWithoutOverlay(page, cookies);
+    const saveBox = (await save.boundingBox())!;
+    const cookieBox = (await cookies.boundingBox())!;
+    expect(saveBox.y + saveBox.height).toBeLessThanOrEqual(cookieBox.y);
+    expect(cookieBox.x + cookieBox.width).toBeCloseTo(width - 8, 0);
+    expect(cookieBox.y + cookieBox.height).toBeCloseTo(height - 8, 0);
+    if (width === 1280) await captureVisualAt1280(page, info, "cookie-wizard-actions", height);
+    else await page.screenshot({ path: info.outputPath(`cookie-wizard-actions-${width}.png`) });
+  }
 });
