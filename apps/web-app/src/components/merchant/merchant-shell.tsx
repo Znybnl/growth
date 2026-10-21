@@ -7,6 +7,7 @@ import type { LucideIcon } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { SignOutButton } from "@/components/auth/sign-out-button";
+import { CookiePreferencesButton } from "@/components/privacy/cookie-preferences";
 import { MerchantAlertsProvider, useMerchantAlerts } from "@/components/merchant/merchant-alerts-provider";
 import { EMPTY_MERCHANT_ALERTS } from "@/lib/merchant-alerts";
 import { MerchantSessionGuard } from "@/components/merchant/merchant-session-guard";
@@ -157,7 +158,7 @@ function MerchantShellContent({ children, merchant, user, locations, activeLocat
           menuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="flex h-full flex-col px-4 py-5">
+        <div className="flex h-full flex-col overflow-y-auto overscroll-contain px-4 py-5 [&>*]:shrink-0">
           <div className="px-2 py-2">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-[4px] bg-primary-action-accent text-xs font-semibold uppercase tracking-[0.18em] text-white">
@@ -345,7 +346,8 @@ function MerchantShellContent({ children, merchant, user, locations, activeLocat
                 <span className="block h-0.5 w-4 bg-graphite" />
               </span>
             </button>
-            <div className="flex-1" />
+            <CookiePreferencesButton className="min-h-10 shrink-0 rounded-[var(--okado-radius-control)] px-2 text-xs text-ash underline decoration-fog underline-offset-4 transition hover:bg-purple-haze hover:text-aubergine focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-action-accent" />
+            <div className="min-w-0 flex-1" />
             <LocationSwitcher key={activeLocationId} locations={locations} activeLocationId={activeLocationId} />
           </div>
         </header>

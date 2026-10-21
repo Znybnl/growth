@@ -222,6 +222,13 @@ ces tests, construire/démarrer la landing et le SaaS local avec
 `NEXT_PUBLIC_POSTHOG_KEY=phc_consent_fixture` et `NEXT_PUBLIC_POSTHOG_ENABLED=true`.
 Ne jamais réutiliser une clé réelle pour cette recette.
 
+Suite #617 : `e2e/cookie-menu-placement.spec.ts` vérifie le contrôle cookies dans
+la barre supérieure du vrai `MerchantShell`, sans bouton flottant superposé à
+Déconnexion. Marchand et administration (alertes incluses), 1280×720/600 et
+320/390 px : menu défilable, actions non recouvertes, ouverture au clavier,
+retour du focus et refus durable. Le site public conserve son contrôle flottant.
+Les captures doivent être inspectées ; API et analytics sont interceptées.
+
 Suite SEO du 21 octobre 2026 (#507) : la suite unitaire parcourt tous les
 articles du registre dans les deux helpers et vérifie les libellés réellement
 filtrés, ainsi que les slugs inconnus, segments privés et paramètres refusés.

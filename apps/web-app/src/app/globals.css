@@ -2,6 +2,12 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+/* The workspace has an in-flow header control. Keep the floating fallback
+   only on public/auth pages, never over the sidebar or its sign-out action. */
+body:has(.okado-workspace-shell) .okado-cookie-floating-trigger {
+  display: none;
+}
+
 @font-face {
   font-family: "Anton";
   src: url("/fonts/anton-regular.ttf") format("truetype");
