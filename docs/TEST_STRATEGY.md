@@ -1,5 +1,17 @@
 # Stratégie de test — Okado
 
+### Compositions proposées — #609, phase 4
+
+`test:prize-compositions` contrôle les profils 40/70/100 %, les arrondis,
+le coût pondéré par participation, les catalogues vides/inactifs/invalides,
+la déduplication, les champs Beauté et les copies indépendantes sans stock
+historique. `wizard-prize-compositions.spec.ts` teste les trois onglets,
+le détail, l’application sur jeu vide, la confirmation et son annulation sur
+jeu rempli, les modifications puis le payload de sauvegarde sans PERDU,
+les erreurs/réessais et le clavier. Captures 1280×720/600 et 320/390 px.
+Les API sont interceptées : aucune campagne réelle n’est modifiée.
+Les suites phases 1–3 et le smoke CSS compilé restent obligatoires.
+
 ## Téléchargements — #596
 
 `e2e/admin-campaign-qr.spec.ts` contrôle la popin immédiate, QR visible/clic

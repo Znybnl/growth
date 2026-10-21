@@ -1,7 +1,7 @@
 // Exercise the real library markup against emitted production CSS, without a
 // development route, session, API call or database. Interactive paths are E2E-tested.
 import assert from "node:assert/strict";
-import { readFileSync, readdirSync, mkdirSync } from "node:fs";
+import { readFileSync, readdirSync, mkdirSync, existsSync } from "node:fs";
 import { registerHooks, createRequire } from "node:module";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { chromium } from "@playwright/test";
@@ -31,6 +31,12 @@ registerHooks({
         }`), shortCircuit: true,
     };
     if (name.startsWith("@/")) return next(new URL("src/" + name.slice(2) + ".ts", root).href, context);
+    if (name.startsWith(".") && context.parentURL?.startsWith(new URL("src/", root).href)) {
+      for (const suffix of [".tsx", ".ts"]) {
+        const candidate = new URL(name + suffix, context.parentURL);
+        if (existsSync(candidate)) return next(candidate.href, context);
+      }
+    }
     return next(name, context);
   },
   load(url, context, next) {
