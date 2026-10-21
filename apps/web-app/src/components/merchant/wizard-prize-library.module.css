@@ -91,6 +91,18 @@
   background: #f7fbf8;
 }
 
+.compositionGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: .75rem;
+}
+
+@media (min-width: 1024px) {
+  .compositionGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
 .libraryCardBottom {
   display: flex;
   flex-wrap: wrap;
@@ -103,6 +115,23 @@
 }
 
 @media (max-width: 639px) {
+  .libraryTabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+    padding: .5rem;
+  }
+
+  .libraryTabs button {
+    min-width: 0;
+    padding: .5rem .25rem;
+    font-size: 12px;
+  }
+
+  .libraryTabs svg {
+    display: none;
+  }
+
   :global(.okado-dialog-overlay):has(.prizeLibrarySurface) {
     padding: 0;
   }

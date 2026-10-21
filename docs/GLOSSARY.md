@@ -43,6 +43,8 @@ Utiliser ces termes dans l'interface, les Issues, les critères d'acceptation, l
 
 ## Catalogue de suggestions — issue #466
 
+- **Composition proposée** (#609, phase 4) : ensemble indicatif de suggestions de l’activité avec une répartition de chances proposée. Son application crée des lots indépendants dans le brouillon ; elle n’est ni un jeu publié ni une nouvelle bibliothèque de lots.
+
 - **Suggestion de lot** : proposition réutilisable avec libellé, probabilité, coût estimé et description ; ce n'est pas un lot enregistré dans un jeu.
 - **Condition suggérée** : pour le catalogue Beauté, texte de la suggestion qui préremplit les conditions d'utilisation du nouveau lot, modifiable par le marchand.
 - **Sous-secteur Beauté** : spécialité déclarée par l'établissement, utilisée pour choisir la bibliothèque ; sans spécialité, repli vers Beauté généraliste / multi-activité sans modifier son profil.

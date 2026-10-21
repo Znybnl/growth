@@ -5,6 +5,7 @@ import { usePrizeSuggestionCatalog } from "@/lib/use-prize-suggestions";
 import { isSuggestionInPrizes, suggestedWizardPrizeId } from "@/lib/wizard-prize-suggestions";
 import { WizardPrizeLibrary } from "@/components/merchant/wizard-prize-library";
 import { copyReusablePrize, isReusablePrizeAdded, type ReusablePrize } from "@/lib/reusable-prizes";
+import { copyPrizeComposition, type PrizeComposition } from "@/lib/prize-compositions";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -1267,6 +1268,15 @@ export function CampaignWizard({
       ...current, prizes: [...current.prizes, copy],
     }));
     setError(null);
+  }
+
+  function applyPrizeComposition(composition: PrizeComposition) {
+    const prizes = copyPrizeComposition(composition, prizeSuggestionScope);
+    if (!prizes.length || prizes.reduce((total, prize) => total + prize.probability, 0) > 100.0001) return;
+    setDraft((current) => ({ ...current, prizes }));
+    reusedPrizeCopies.current.clear();
+    setError(null);
+    setSuggestionsOpen(false);
   }
 
   function removePrize(prizeId: string | undefined, prizeIndex: number) {
@@ -2955,6 +2965,8 @@ export function CampaignWizard({
         excludeCampaignId={initialCampaign?.campaign.id ?? savedCampaignId ?? undefined}
         isPreviousAdded={(prize) => isReusablePrizeAdded(prize, draft.prizes, reusedPrizeCopies.current)}
         onReuse={reusePrize}
+        onApplyComposition={applyPrizeComposition}
+        winningEveryTime={draft.rewardRules.isWinningEveryTime}
       /> : null}
       <PrizeEditorPanel
         editor={prizeEditor}

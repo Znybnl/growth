@@ -77,8 +77,15 @@ Suggestions (par défaut) et Mes lots. Ce second onglet permet de copier les
 récompenses des autres jeux de l'établissement actif, ou de l'établissement
 assisté dans l'éditeur administrateur. Le stock initial limité est proposé à
 confirmation et les copies sont indépendantes. Le jeu en cours est exclu de
-l'historique ; aucun lot PERDU n'est créé. Compositions et budget restent aux
-phases suivantes.
+l'historique ; aucun lot PERDU n'est créé.
+
+Phase 4 : l’onglet Compositions propose Budget maîtrisé, Équilibré et Généreux
+depuis le même catalogue actif de l’activité. Le marchand consulte les lots,
+leurs chances et le coût moyen théorique indicatif avant application.
+La composition reste un brouillon modifiable ; si des lots existent, un écran
+de confirmation exige « Remplacer les lots ». Annuler n’altère rien.
+L’option 100 % gagnant et les autres paramètres restent inchangés.
+La synthèse budgétaire globale et le simulateur restent en phase 5.
 
 - **Acteur** : marchand.
 - **Déclencheur** : le marchand souhaite lancer une animation locale.
