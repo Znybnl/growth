@@ -30,6 +30,7 @@ function relatedTitle(path: string) {
 }
 
 export function BlogPostTemplate({ post }: { post: BlogPost }) {
+  const ctaHref = post.ctaHref ?? `${APP_URL}/inscription`;
   return (
     <main id="contenu" className="bg-[#f7f3ed] px-5 py-10 text-[#111827] md:py-16">
       <div className="mx-auto max-w-[1120px]">
@@ -199,8 +200,8 @@ export function BlogPostTemplate({ post }: { post: BlogPost }) {
           </p>
           <div className="mt-6">
             <PrimaryButton
-              href={post.ctaHref ?? `${APP_URL}/inscription`}
-              trackingName="start_trial"
+              href={ctaHref}
+              trackingName={ctaHref === `${APP_URL}/inscription` ? "start_trial" : "explore_product"}
               trackingLocation="blog_article"
             >
               {post.ctaLabel ?? "Essayer Okado"}

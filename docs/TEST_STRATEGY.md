@@ -222,6 +222,15 @@ ces tests, construire/démarrer la landing et le SaaS local avec
 `NEXT_PUBLIC_POSTHOG_KEY=phc_consent_fixture` et `NEXT_PUBLIC_POSTHOG_ENABLED=true`.
 Ne jamais réutiliser une clé réelle pour cette recette.
 
+Suite SEO du 21 octobre 2026 (#507) : la suite unitaire parcourt tous les
+articles du registre dans les deux helpers et vérifie les libellés réellement
+filtrés, ainsi que les slugs inconnus, segments privés et paramètres refusés.
+`landing-conversion.spec.ts` teste le listing et des articles des deux lots
+avec le vrai SDK : refus, accord, retrait, page inconnue classée `/other`,
+navigation interne de découverte distincte d'un vrai départ vers
+l'inscription. Les requêtes analytics et l'inscription externe sont
+interceptées ; aucun compte ni événement PostHog de production n'est créé.
+
 Complément #592 : `analytics-identity.spec.ts` vérifie les vrais paquets du SDK,
 leurs identifiants et le contexte du site dans le vrai shell : session existante,
 premier événement métier, connexion avant redirection, plusieurs établissements,

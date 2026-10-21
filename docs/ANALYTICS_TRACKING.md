@@ -271,6 +271,17 @@ Les correctifs applicatifs restent soumis à PR et validation de publication.
   routes publiques et d'entrée produit ; tous les autres chemins deviennent
   `/other`. Aucun identifiant de jeu, code de retrait ou chemin libre n'est envoyé.
   La liste est volontairement identique dans les deux applications.
+- Suite du bilan SEO du 21 octobre 2026 (#507) : `/blog` et les chemins
+  exacts des 30 articles publiés sont ajoutés à cette liste. Aucun joker
+  `/blog/*` : un slug inconnu, un segment supplémentaire ou un chemin
+  personnel reste `/other`. Le test de consentement compare les chemins
+  au registre éditorial : chaque nouvel article doit être explicitement
+  ajouté aux deux helpers. Le registre et ses textes ne sont pas importés
+  dans le bundle navigateur.
+- Le CTA de fin d'article vers une page interne utilise
+  `cta=explore_product`, `location=blog_article`. `start_trial` est
+  réservé au véritable lien vers l'inscription de l'application. La
+  destination et le libellé visibles ne changent pas.
 - Les trois UTM explicites déjà autorisés sont lus sur l'URL courante, avec la
   même validation de codes courts. Ils ne créent aucun stockage d'attribution
   supplémentaire. URL complète, paramètres libres, fragments, référents et
@@ -321,6 +332,24 @@ capture, puis les étapes et les sources ; revue mensuelle des cohortes matures.
 C'est une procédure manuelle, pas une automation activée. GSC/Bing reste un
 chantier SEO distinct. Le [bilan initial](releases/2026-10-16-conversion-507.md)
 consigne les valeurs et les limites avant déploiement du correctif.
+
+### Exploitation du blog après le correctif du 21 octobre 2026
+
+Noter l'heure du déploiement production effectivement vérifié avant de comparer
+les articles dans le rapport Pages vues existant. Les anciens événements
+`/other` ne peuvent pas être réattribués. Les anciens CTA éditoriaux pouvaient
+être marqués `start_trial` malgré une destination interne : ne pas qualifier
+rétroactivement tous ces clics de demandes d'essai. Pour une lecture fiable
+de ce canal, utiliser une cohorte/période postérieure à cette livraison,
+sans réécrire les événements ni changer les filtres des funnels historiques.
+
+Le libellé d'article permet de mesurer sa lecture consentie et son clic
+sortant ; il ne mémorise pas une première page d'atterrissage jusqu'au compte
+créé. Une UTM absente n'est pas une source directe et GSC ne peut pas être
+rapprochée individuellement d'un visiteur PostHog. Distinguer le rapport
+Google (impressions/clics organiques) et le funnel consenti (acquisition et
+activation) ; aucune nouvelle attribution persistante n'est introduite ici.
+Procédure, dépendances et critères : [opérations SEO](SEO_OPERATIONS.md).
 
 Références : [funnels](https://posthog.com/docs/product-analytics/funnels),
 [envoi avant navigation](https://posthog.com/docs/libraries/js/usage),

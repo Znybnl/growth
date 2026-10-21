@@ -9,6 +9,8 @@ import { test } from "node:test";
 process.env.NEXT_PUBLIC_POSTHOG_KEY = "phc_consent_fixture";
 delete process.env.NEXT_PUBLIC_POSTHOG_ENABLED;
 const root = new URL("../../../../", import.meta.url);
+// Test-only import: the editorial body stays outside both client bundles.
+const { blogPosts } = await import(new URL("apps/landing-page/src/lib/blog.ts", root));
 let state;
 registerHooks({
   resolve(name, context, next) {
@@ -128,9 +130,26 @@ for (const app of ["web-app", "landing-page"]) {
     for (const path of ["/", "/restaurants", "/instituts-beaute", "/tarifs", "/onboarding", "/guides/lots-restaurant"]) {
       assert.equal(client.safeAnalyticsPage(path), path);
     }
-    for (const path of ["/campaign/private-id", "/redeem/secret", "/auth/callback", "/api/private", "/guides/person@example.test"]) {
-      assert.equal(client.safeAnalyticsPage(path), "/other");
+    const publicBlogPages = ["/blog", ...blogPosts.map((post) => post.path)];
+    assert.equal(new Set(publicBlogPages).size, publicBlogPages.length);
+    for (const path of publicBlogPages) {
+      assert.equal(client.safeAnalyticsPage(path), path, "new articles must be explicitly allowed in both apps");
+      window.location.pathname = path;
+      window.location.search = "?email=private%40example.test&token=secret&utm_source=fixture";
+      const packet = config.before_send({ event: "$pageview", properties: { page: "/untrusted-input" } });
+      assert.equal(packet.properties.page, path);
+      assert.equal(packet.properties.utmSource, "fixture");
+      assert.doesNotMatch(JSON.stringify(packet), /private@|token=|untrusted-input/);
     }
+    for (const path of ["/campaign/private-id", "/redeem/secret", "/auth/callback", "/api/private", "/guides/person@example.test",
+      "/blog/unknown-article", "/blog/person@example.test", "/blog/123456",
+      publicBlogPages[1] + "/private-id", publicBlogPages[1] + "?email=private",
+      "/blog/%61ttirer-clients-fleuriste", "/blog//attirer-clients-fleuriste"]) {
+      assert.equal(client.safeAnalyticsPage(path), "/other");
+      window.location.pathname = path;
+      assert.equal(config.before_send({ event: "$pageview", properties: {} }).properties.page, "/other");
+    }
+    window.location.pathname = "/inscription";
     window.location.search = "?utm_source=google&utm_medium=cpc&utm_campaign=launch_2026&email=private%40example.test#secret";
     const acquisition = config.before_send({ event: "$pageview", properties: {} }).properties;
     assert.equal(acquisition.utmSource, "google");
