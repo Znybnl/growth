@@ -109,6 +109,10 @@ jobs:
         run: npm run test:page-performance -w @okado/web-app
       - name: Build web app
         run: npm run build:web
+      - name: Verify prize library with compiled production CSS
+        run: |
+          npx playwright install --with-deps chromium
+          npm run smoke:prize-library -w @okado/web-app
       - name: Smoke compiled Resend webhook with isolated local storage
         run: npm run smoke:resend-webhook -w @okado/web-app
 

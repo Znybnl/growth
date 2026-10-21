@@ -36,9 +36,12 @@ test("@visual-1280 phase 2 : ajouts multiples, doublons, ajustement explicite et
   });
   const library = await openLibrary(page);
   await expect(library.getByTestId("wizard-prize-suggestion-card")).toHaveCount(4);
+  await expect(library.getByText("Activité : Beauté", { exact: true })).toBeVisible();
+  await expect(library.getByText(/Coûts indicatifs, à adapter/)).toBeVisible();
+  await expect(library.locator("footer")).toContainText("Chances restantes à répartir : 50 %");
   const bounds = (await library.boundingBox())!;
   expect(bounds.width).toBeGreaterThanOrEqual(800);
-  expect(bounds.width).toBeLessThanOrEqual(900);
+  expect(bounds.width).toBeLessThanOrEqual(960);
   expect(new URL(queries[0]).searchParams.get("industry")).toBe("Beauté");
   const cards = library.getByTestId("wizard-prize-suggestion-card");
   expect((await cards.nth(1).boundingBox())!.x).toBeGreaterThan((await cards.first().boundingBox())!.x);
@@ -63,6 +66,7 @@ test("@visual-1280 phase 2 : ajouts multiples, doublons, ajustement explicite et
   await expect(page.getByTestId("wizard-prize-row").first().getByRole("spinbutton")).toHaveValue("50");
 
   await library.getByRole("button", { name: "Ajouter : CADEAU DÉCOUVERTE", exact: true }).click();
+  await expect(library.getByText(/Toutes les chances sont déjà réparties/)).toBeVisible();
   await expect(library.getByRole("alert")).toContainText("5 points");
   await expect(page.getByRole("alert").filter({ hasText: /100 %/ })).toHaveCount(1);
   await library.getByRole("button", { name: "Ajouter le lot", exact: true }).click();
@@ -87,6 +91,101 @@ test("@visual-1280 phase 2 : ajouts multiples, doublons, ajustement explicite et
   expect(writes[0].prizes.map((prize) => prize.probability)).toEqual([45, 10, 20, 20, 5]);
   expect(writes[0].prizes[1]).toMatchObject({ label: "MASQUE PERSONNALISÉ", totalQuantity: null, estimatedUnitCost: 4, usageConditions: "Avec un soin visage payant.", purchaseRequired: true });
   expect(writes[0].prizes.some((prize) => /perdu/i.test(prize.label))).toBe(false);
+});
+
+test("@visual-1280 audit : focus visible en fin de catalogue, annulation sans ajout et retour à la bonne carte", async ({ page }, info) => {
+  const catalog = Array.from({ length: 12 }, (_, index) => ({
+    ...suggestions[0], id: `focus-${index}`, label: `IDÉE ${index + 1}`,
+    probability: index === 9 ? 70 : 1,
+  }));
+  await page.route("**/api/prize-suggestions?**", (route) => route.fulfill({ json: { suggestions: catalog } }));
+  for (const width of [1280, 320]) {
+    const library = await openLibrary(page, width, 600);
+    const cards = library.getByTestId("wizard-prize-suggestion-card");
+    await cards.nth(9).getByRole("button").click();
+    await library.getByRole("spinbutton").fill("45");
+    const cancel = library.getByRole("button", { name: "Annuler l’ajout", exact: true });
+    await expect(cancel).toBeInViewport({ ratio: 1 });
+    if (width === 1280) await captureVisualAt1280(page, info, "annuler-ajustement", 600);
+    else await page.screenshot({ path: info.outputPath("annuler-ajustement-320.png"), animations: "disabled" });
+    await cancel.click();
+    await expect(cards.nth(9).getByRole("button")).toBeFocused();
+    await expect(cards.nth(9).getByRole("button")).toBeInViewport({ ratio: 1 });
+    await expect(page.getByTestId("wizard-prize-row")).toHaveCount(1);
+    // On desktop, the next card in the final row is visible. On mobile, the
+    // footer is the safe destination rather than an offscreen earlier button.
+    await cards.last().scrollIntoViewIfNeeded();
+    if (width === 1280) {
+      await cards.nth(10).getByRole("button").click();
+      await expect(cards.last().getByRole("button")).toBeFocused();
+    }
+    await cards.last().getByRole("button").click();
+    await expect(library.getByRole("button", { name: "Terminer", exact: true })).toBeFocused();
+    await expect(library.getByRole("button", { name: "Terminer", exact: true })).toBeInViewport({ ratio: 1 });
+    const focusedInside = await library.evaluate((node) => {
+      const active = document.activeElement!.getBoundingClientRect();
+      const bounds = node.getBoundingClientRect();
+      return active.top >= bounds.top && active.bottom <= bounds.bottom;
+    });
+    expect(focusedInside).toBe(true);
+    await page.keyboard.press("Escape");
+  }
+});
+
+test("@visual-1280 audit : un catalogue court, vide ou en erreur n’impose pas une grande fenêtre", async ({ page }, info) => {
+  let state: "short" | "empty" | "error" = "short";
+  await page.route("**/api/prize-suggestions?**", (route) => state === "error"
+    ? route.fulfill({ status: 503, json: { error: "indisponible" } })
+    : route.fulfill({ json: { suggestions: state === "short" ? suggestions.slice(0, 1) : [] } }));
+  for (const outcome of ["short", "empty", "error"] as const) {
+    state = outcome;
+    const library = await openLibrary(page, 1280, 900);
+    if (outcome === "short") await expect(library.getByTestId("wizard-prize-suggestion-card")).toHaveCount(1);
+    else if (outcome === "empty") await expect(library.getByRole("heading", { name: "Aucune suggestion pour cette activité" })).toBeVisible();
+    else await expect(library.getByRole("alert")).toBeVisible();
+    expect((await library.boundingBox())!.height).toBeLessThan(520);
+    await captureVisualAt1280(page, info, `hauteur-naturelle-${outcome}`, 720);
+    await library.getByRole("button", { name: "Terminer", exact: true }).click();
+  }
+});
+
+test("@visual-1280 bibliothèque : fenêtre contenue, cartes compactes et actions fixes même après défilement", async ({ page }, info) => {
+  const catalog = Array.from({ length: 7 }, (_, index) => ({
+    ...suggestions[index % suggestions.length], id: `layout-${index}`,
+    label: index === 6 ? "PRODUIT OFFERT" : suggestions[index % suggestions.length].label,
+    description: index === 6 ? "Valable sur un produit sélectionné par l’établissement, dans la limite des stocks disponibles." : suggestions[index % suggestions.length].description,
+  }));
+  await page.route("**/api/prize-suggestions?**", (route) => route.fulfill({ json: { suggestions: catalog } }));
+  for (const [width, height] of [[1280, 720], [1280, 600], [1894, 1040], [320, 600], [390, 740]]) {
+    const library = await openLibrary(page, width, height);
+    const content = library.getByTestId("wizard-prize-library-content");
+    const bounds = (await library.boundingBox())!;
+    expect(bounds.y).toBeGreaterThanOrEqual(0);
+    expect(bounds.y + bounds.height).toBeLessThanOrEqual(height);
+    await expect(library.getByRole("heading", { name: "Ajouter des lots", exact: true })).toBeInViewport({ ratio: 1 });
+    const close = library.getByRole("button", { name: "Fermer la bibliothèque de lots" });
+    const done = library.getByRole("button", { name: "Terminer", exact: true });
+    await expect(close).toBeInViewport({ ratio: 1 });
+    await expect(done).toBeInViewport({ ratio: 1 });
+    if (width >= 640) {
+      expect(bounds.width).toBe(960);
+      expect((await library.getByTestId("wizard-prize-suggestion-card").first().boundingBox())!.height).toBeLessThan(190);
+    }
+    if (width === 1280) await captureVisualAt1280(page, info, "bibliotheque-compacte", height);
+    else await page.screenshot({ path: info.outputPath(`bibliotheque-${width}x${height}.png`), animations: "disabled" });
+    const doneBefore = (await done.boundingBox())!;
+    const closeBefore = (await close.boundingBox())!;
+    await content.evaluate((node) => { node.scrollTop = node.scrollHeight; });
+    const last = library.getByTestId("wizard-prize-suggestion-card").last();
+    await expect(last.getByRole("button")).toBeInViewport({ ratio: 1 });
+    expect((await done.boundingBox())!.y).toBe(doneBefore.y);
+    expect((await close.boundingBox())!.y).toBe(closeBefore.y);
+    expect(await library.evaluate((node) => node.scrollHeight <= node.clientHeight + 1 && node.scrollWidth <= node.clientWidth + 1)).toBe(true);
+    await last.getByRole("button").click();
+    await expect(last.getByRole("button")).toBeDisabled();
+    await done.click();
+    await assertNoPageOverflow(page);
+  }
 });
 
 test("phase 2 : suppression, réajout et abandon d’un ajustement ne changent pas les autres lots", async ({ page }) => {

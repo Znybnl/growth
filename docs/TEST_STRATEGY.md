@@ -24,6 +24,23 @@ L'objectif est de détecter les régressions importantes sans transformer le pro
 
 ### Composition et bibliothèque des lots — #609, phases 1 et 2
 
+Complément #611 : la bibliothèque est contrôlée à 1280×720/600, 1894×1040
+et 320/390 px avec sept suggestions, en-tête/fermeture/pied intégralement
+dans le viewport avant et après défilement du catalogue. Le test
+`smoke:prize-library`, exécuté après le build en CI, rend le vrai composant
+avec les CSS compilés (seule l'enveloppe portail est substituée pour le SSR).
+Il refuse les styles du module absents et vérifie les dimensions, l'absence
+de débordement et le pied fixe sur cinq viewports. Ce smoke sans interaction
+ne remplace pas les E2E clavier, ajout et ajustement, ni une recette Vercel.
+Il ne requiert aucune route de développement en production ni aucune donnée réelle.
+
+Audit du 21 octobre : tester le focus **visible** après ajout en fin de catalogue
+et après annulation d'un ajustement, sur ordinateur et mobile ; la présence du
+focus dans le dialogue ne suffit pas. Vérifier que l'annulation ne crée aucun
+lot, que la position du catalogue est restaurée, que les chances restantes et
+les coûts indicatifs sont expliqués et que les états court/vide/erreur ont une
+hauteur naturelle sur ordinateur, également avec les CSS compilés.
+
 `wizard-prize-composition.spec.ts` et `wizard-prize-library.spec.ts` vérifient
 l’édition des lots, l’ajustement direct des chances, les dépassements provisoires
 avec alerte unique, l’ajout multiple et la prévention des doublons, le choix
