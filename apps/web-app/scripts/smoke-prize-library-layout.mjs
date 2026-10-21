@@ -30,11 +30,12 @@ registerHooks({
             {role:'dialog',className:'okado-dialog-surface '+className,'aria-labelledby':labelledBy,'aria-describedby':describedBy},children));
         }`), shortCircuit: true,
     };
+    if (name.startsWith("@/")) return next(new URL("src/" + name.slice(2) + ".ts", root).href, context);
     return next(name, context);
   },
   load(url, context, next) {
     if (url.endsWith("wizard-prize-library.module.css")) return { format: "module", source: `export default ${JSON.stringify(styles)}`, shortCircuit: true };
-    if (url.endsWith("wizard-prize-library.tsx")) return { format: "module", source: ts.transpileModule(readFileSync(new URL(url), "utf8"), {
+    if (url.startsWith(new URL("src/", root).href) && /\.tsx?$/.test(url)) return { format: "module", source: ts.transpileModule(readFileSync(new URL(url), "utf8"), {
       compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX },
     }).outputText, shortCircuit: true };
     return next(url, context);
@@ -81,7 +82,7 @@ try {
       ...props, suggestions: state === "short" ? suggestions.slice(0, 1) : [], error: state === "error" ? "Suggestions indisponibles" : null,
     }));
     await page.setContent(`<html><head><style>${css}</style></head><body>${shortMarkup}</body></html>`);
-    assert.ok((await page.getByRole("dialog").boundingBox()).height < 520, `Natural height for ${state}`);
+    assert.ok((await page.getByRole("dialog").boundingBox()).height < 590, `Natural height including tabs for ${state}`);
     console.log(`PASS compiled library natural height ${state}`);
   }
 } finally {

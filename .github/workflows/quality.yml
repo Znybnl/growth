@@ -99,6 +99,8 @@ jobs:
         run: npm run test:resend-webhook -w @okado/web-app
       - name: Test Beauty suggestion catalog and migration
         run: npm run test:beauty-catalog -w @okado/web-app
+      - name: Test reusable prize scope and independent copies
+        run: npm run test:reusable-prizes -w @okado/web-app
       - name: Test administrator establishment profiles
         run: npm run test:admin-profiles -w @okado/web-app
       - name: Test support email incident permissions and migration

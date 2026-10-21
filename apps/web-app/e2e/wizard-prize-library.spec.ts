@@ -143,7 +143,7 @@ test("@visual-1280 audit : un catalogue court, vide ou en erreur n’impose pas 
     if (outcome === "short") await expect(library.getByTestId("wizard-prize-suggestion-card")).toHaveCount(1);
     else if (outcome === "empty") await expect(library.getByRole("heading", { name: "Aucune suggestion pour cette activité" })).toBeVisible();
     else await expect(library.getByRole("alert")).toBeVisible();
-    expect((await library.boundingBox())!.height).toBeLessThan(520);
+    expect((await library.boundingBox())!.height).toBeLessThan(590);
     await captureVisualAt1280(page, info, `hauteur-naturelle-${outcome}`, 720);
     await library.getByRole("button", { name: "Terminer", exact: true }).click();
   }

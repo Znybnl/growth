@@ -28,6 +28,33 @@
   border-bottom: 1px solid #eee8f0;
 }
 
+.libraryTabs {
+  display: flex;
+  flex-shrink: 0;
+  gap: .5rem;
+  padding: .625rem 1rem;
+  border-bottom: 1px solid #eee8f0;
+}
+
+.libraryTabs button {
+  min-height: 40px;
+  padding: .5rem .875rem;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #716b78;
+}
+
+.libraryTabs button[aria-selected="true"] {
+  color: #64206f;
+  background: #f6f0fa;
+  font-weight: 600;
+}
+
+.libraryTabs button:focus-visible {
+  outline: 2px solid #64206f;
+  outline-offset: 2px;
+}
+
 .libraryContent {
   flex: 0 1 auto;
   min-height: 0;

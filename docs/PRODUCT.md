@@ -72,6 +72,14 @@ Les métadonnées de la page publique destinées aux aperçus sociaux associent 
 
 ### P-01 — Créer et publier un jeu
 
+Bibliothèque de lots — #609 phase 3 : « Trouver des idées de lots » propose
+Suggestions (par défaut) et Mes lots. Ce second onglet permet de copier les
+récompenses des autres jeux de l'établissement actif, ou de l'établissement
+assisté dans l'éditeur administrateur. Le stock initial limité est proposé à
+confirmation et les copies sont indépendantes. Le jeu en cours est exclu de
+l'historique ; aucun lot PERDU n'est créé. Compositions et budget restent aux
+phases suivantes.
+
 - **Acteur** : marchand.
 - **Déclencheur** : le marchand souhaite lancer une animation locale.
 - **Résultat attendu** : un jeu brouillon ou actif est enregistré avec son type de jeu, ses lots, ses règles et ses actions marketing.
