@@ -62,6 +62,62 @@ async function accept(page: Page) {
     .click();
 }
 
+test("blog : refus et retrait bloquent la mesure ; les articles publics restent identifiables après accord", async ({ page }) => {
+  const events = await capturePackets(page);
+  await page.goto("/blog?email=private%40example.test&token=secret#private");
+  const preferences = page.getByRole("region", { name: "Votre choix de mesure d’audience" });
+  await preferences.getByRole("button", { name: "Refuser", exact: true }).click();
+  await page.goto("/blog/animation-commerciale-institut-beaute");
+  await expect(page.locator("h1")).toBeVisible();
+  expect(events).toHaveLength(0);
+
+  await accept(page);
+  await expect.poll(() => events.some(event => event.event === "$pageview" &&
+    event.properties.page === "/blog/animation-commerciale-institut-beaute")).toBe(true);
+  for (const path of ["/blog", "/blog/attirer-clients-fleuriste", "/blog/animation-magasin-velos-journee-decouverte"]) {
+    await page.goto(path + "?utm_source=fixture&email=private%40example.test&token=secret#private");
+    await expect.poll(() => events.some(event => event.event === "$pageview" && event.properties.page === path)).toBe(true);
+  }
+  await page.goto("/blog/private-fixture@example.test?token=secret");
+  await expect.poll(() => events.some(event => event.event === "$pageview" && event.properties.page === "/other")).toBe(true);
+  expect(JSON.stringify(events)).not.toMatch(/private-fixture|private@|email=|token=|#private|referrer|current_url/);
+
+  await page.getByRole("button", { name: "Gérer les cookies", exact: true }).click();
+  await preferences.getByRole("button", { name: "Refuser", exact: true }).click();
+  const afterWithdrawal = events.length;
+  await page.goto("/blog/idees-animations-commerciales-boutique");
+  await expect(page.locator("h1")).toBeVisible();
+  expect(events).toHaveLength(afterWithdrawal);
+});
+
+test("blog : une découverte produit n'est pas un essai ; le vrai lien d'inscription garde son contexte", async ({ page, context, baseURL }) => {
+  await context.addCookies([{ name: ANALYTICS_CONSENT_COOKIE, value: encodeURIComponent(JSON.stringify({
+    version: ANALYTICS_CONSENT_VERSION, choice: "accepted", decidedAt: Date.now(),
+  })), url: baseURL! }]);
+  const events = await capturePackets(page);
+  await page.route("https://app.okado.app/**", route => route.fulfill({
+    status: 200, contentType: "text/html", body: "<h1>Inscription simulée localement</h1>",
+  }));
+  await page.goto("/blog/animation-commerciale-institut-beaute");
+  await page.getByRole("link", { name: "Imaginer une animation à votre image", exact: true }).click();
+  await expect.poll(() => events.filter(event => event.event === "marketing_cta_clicked").length).toBe(1);
+  expect(events.find(event => event.event === "marketing_cta_clicked")!.properties).toMatchObject({
+    cta: "explore_product", location: "blog_article",
+    page: "/blog/animation-commerciale-institut-beaute", destination: "/instituts-beaute",
+  });
+  expect(events.some(event => event.event === "marketing_cta_clicked" && event.properties.cta === "start_trial")).toBe(false);
+
+  await page.goto("/blog/idees-animations-commerciales-boutique?utm_source=fixture&utm_campaign=blog_measurement");
+  await page.getByRole("main").getByRole("link", { name: "Essayer Okado", exact: true }).click();
+  await expect.poll(() => events.filter(event => event.event === "marketing_cta_clicked" &&
+    event.properties.cta === "start_trial").length).toBe(1);
+  expect(events.find(event => event.event === "marketing_cta_clicked" && event.properties.cta === "start_trial")!.properties).toMatchObject({
+    page: "/blog/idees-animations-commerciales-boutique", location: "blog_article",
+    destination: "/inscription", utmSource: "fixture", utmCampaign: "blog_measurement",
+    consentVersion: ANALYTICS_CONSENT_VERSION,
+  });
+});
+
 test("les nouveaux clics modèles et spécialités gardent le contexte de consentement", async ({ page, context, baseURL }) => {
   await context.addCookies([{ name: ANALYTICS_CONSENT_COOKIE, value: encodeURIComponent(JSON.stringify({ version: ANALYTICS_CONSENT_VERSION, choice: "accepted", decidedAt: Date.now() })), url: baseURL! }]);
   const events = await capturePackets(page);
