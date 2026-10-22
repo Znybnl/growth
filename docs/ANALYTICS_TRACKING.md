@@ -161,8 +161,11 @@ La préférence est valable 180 jours sans prolongation aux visites ; refus,
 absence, ancienne version et expiration bloquent la mesure. Les helpers sont
 synchronisés volontairement entre les applications conformément à l'ADR 0001.
 
-Avant accord, `posthog.init` n'est pas appelé ; aucun historique de clics n'est
-mis en attente pour être rejoué après acceptation. Après accord, seuls les
+Sur la vitrine, avant accord, le SDK PostHog n'est pas téléchargé et
+`posthog.init` n'est pas appelé ; aucun historique de clics n'est mis en attente
+pour être rejoué après acceptation. Le SDK est chargé à la demande à l'accord,
+sans bloquer l'interface.
+Après accord, seuls les
 événements explicites et pages vues sont activés : autocapture, replay,
 enregistrement console, exceptions, enquêtes, tours et flags sont désactivés.
 Les paramètres/fragment d'URL, titres et propriétés personnelles automatiques

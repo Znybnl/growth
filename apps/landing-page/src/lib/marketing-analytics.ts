@@ -1,8 +1,7 @@
 "use client";
 
-import posthog from "posthog-js";
 import { hasAnalyticsConsent } from "@/lib/analytics-consent";
-import { syncAnalyticsConsent } from "@/lib/consent-managed-analytics";
+import { captureWithAnalyticsConsent } from "@/lib/consent-managed-analytics";
 
 const posthogKey = process.env.NEXT_PUBLIC_POSTHOG_KEY;
 const posthogEnabled = process.env.NEXT_PUBLIC_POSTHOG_ENABLED !== "false";
@@ -14,19 +13,21 @@ export function captureMarketingEvent(
   properties?: MarketingAnalyticsProperties,
 ) {
   if (!posthogKey || !posthogEnabled || !hasAnalyticsConsent()) return;
-  syncAnalyticsConsent();
 
   const params = new URLSearchParams(window.location.search);
-  posthog.capture(event, {
-    ...properties,
-    page: window.location.pathname,
-    utmSource: safeUtm(params.get("utm_source")),
-    utmMedium: safeUtm(params.get("utm_medium")),
-    utmCampaign: safeUtm(params.get("utm_campaign")),
-    source: "client",
-    trackingVersion: "v1",
-    environment: process.env.NEXT_PUBLIC_VERCEL_ENV || "local",
-  }, event === "marketing_cta_clicked" ? { transport: "sendBeacon", send_instantly: true } : undefined);
+  const page = window.location.pathname;
+  void captureWithAnalyticsConsent((posthog) => {
+    posthog.capture(event, {
+      ...properties,
+      page,
+      utmSource: safeUtm(params.get("utm_source")),
+      utmMedium: safeUtm(params.get("utm_medium")),
+      utmCampaign: safeUtm(params.get("utm_campaign")),
+      source: "client",
+      trackingVersion: "v1",
+      environment: process.env.NEXT_PUBLIC_VERCEL_ENV || "local",
+    }, event === "marketing_cta_clicked" ? { transport: "sendBeacon", send_instantly: true } : undefined);
+  });
 }
 
 function safeUtm(value: string | null) {
