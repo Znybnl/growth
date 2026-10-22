@@ -1,5 +1,17 @@
 # Stratégie de test — Okado
 
+### Compositions sectorielles — #623
+
+`test:prize-compositions` contrôle25contextes (secteurs, sous-secteurs Beauté et
+types de restauration), recettes déterministes40/70/100, coûts, conditions,
+copies, données invalides/manquantes/inactives et refus des contextes inconnus.
+Migration testée dans PostgreSQL isolé :35ajouts, idempotence, conservation des
+campagnes et personnalisations, manifeste privé inaccessible à anon, rollback
+ne supprimant que les insertions intactes. `sector-prize-compositions.spec.ts`
+exerce création sans lot, choix explicite, sauvegarde roue/ticket/admin, erreurs
+et vide, avec captures1280×720/600 et320/390px. Les régressions bibliothèque,
+budget et réutilisation restent couvertes ; aucun e-mail ni écriture en production.
+
 ### Budget et finitions — #609 phase5
 
 `test:prize-budget` vérifie le cas SFD3,08€/308€, les coûts inconnus/zéro,

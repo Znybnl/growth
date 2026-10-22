@@ -28,6 +28,20 @@ La fiche dans Pilotage est réservée à l’administration de la plateforme et 
 
 ## Dotations et probabilités
 
+- Compositions sectorielles — #623, décision propriétaire du 23 octobre 2026 :
+  les nouveaux jeux démarrent sans lot fixe. Le marchand choisit explicitement
+  une recette du catalogue actif, avec Équilibré recommandé, ou crée ses lots.
+  Les recettes sont définies par secteur/sous-secteur et type de restauration,
+  non par classement automatique des coûts. Profils proposés :
+  Budget maîtrisé25/15 (40% gagnant), Équilibré35/25/10 (70%),
+  Généreux50/30/20 (100%). Chaque profil contient une seule remise en pourcentage.
+  Une suggestion manquante/inactive ne peut pas être inventée ou remplacée
+  silencieusement ; seules les recettes complètes sont proposées. Les conditions
+  des nouvelles suggestions standard hors Beauté sont copiées et l'achat requis
+  est prérempli si leur condition l'impose. Les copies restent modifiables.
+  Aucun lot/stock/coût/condition de jeu existant ni suggestion personnalisée
+  n'est modifié. Catalogue et matrice : [release #623](releases/2026-10-23-sector-prize-compositions-623.md).
+
 - Budget théorique — #609 phase 5, SFD §7 : moyenne par participation = Σ(probabilité / 100 × coût unitaire), projection pour 100 = moyenne ×100, sans coût de la part perdante ni plafonnement par stock. Estimation indicative supposant tous les gains attribués utilisés, jamais une promesse de dépense réelle. Si un lot de chance positive a un coût inconnu, ne pas afficher de total complet ; indiquer le nombre de coûts manquants et permettre leur saisie. Un zéro explicitement saisi est connu. Les anciennes valeurs numériques, y compris zéro, ne sont pas réinterprétées ; le marqueur facultatif `estimatedUnitCostKnown:false` des réglages du lot conserve les nouveaux coûts non renseignés à la sauvegarde et à la copie. Aucun calcul historique ni moteur de tirage n’est modifié.
 - Les limites existantes des règles sont contrôlées explicitement avant sauvegarde : validité0–365jours, intervalle1–365jours, disponibilité0–8760heures, valeurs entières. Les dates et le sens des valeurs stockées ne sont pas recalculés par cette refonte. Le total>100% est refusé par l’API aussi en brouillon, conformément à la décision locale de l’atelier ; le brouillon incomplet à0% reste permis.
 

@@ -1,0 +1,104 @@
+[
+  {
+    "key": "general",
+    "industry": "Beauté",
+    "subsector": "Beauté généraliste / multi-activité",
+    "small": "ps-beauty-466-general-1",
+    "large": "ps-beauty-466-general-2",
+    "extra": "ps-beauty-466-general-5",
+    "gift": "ps-beauty-466-general-7"
+  },
+  {
+    "key": "hair",
+    "industry": "Beauté",
+    "subsector": "Coiffure",
+    "small": "ps-beauty-466-hair-8",
+    "large": "ps-beauty-466-hair-9",
+    "extra": "ps-623-hair-option",
+    "gift": "ps-623-hair-gift"
+  },
+  {
+    "key": "nails",
+    "industry": "Beauté",
+    "subsector": "Ongles",
+    "small": "ps-beauty-466-nails-10",
+    "large": "ps-beauty-466-nails-11",
+    "extra": "ps-623-nails-option",
+    "gift": "ps-623-nails-gift"
+  },
+  {
+    "key": "eyes",
+    "industry": "Beauté",
+    "subsector": "Regard — cils & sourcils",
+    "small": "ps-beauty-466-eyes-9",
+    "large": "ps-beauty-466-eyes-10",
+    "extra": "ps-623-eyes-option",
+    "gift": "ps-623-eyes-gift"
+  },
+  {
+    "key": "spa",
+    "industry": "Beauté",
+    "subsector": "Massage & Spa",
+    "small": "ps-beauty-466-spa-8",
+    "large": "ps-beauty-466-spa-9",
+    "extra": "ps-623-spa-option",
+    "gift": "ps-623-spa-gift"
+  },
+  {
+    "key": "care",
+    "industry": "Beauté",
+    "subsector": "Soins visage & corps",
+    "small": "ps-beauty-466-care-9",
+    "large": "ps-beauty-466-care-10",
+    "extra": "ps-beauty-466-care-7",
+    "gift": "ps-623-care-gift"
+  },
+  {
+    "key": "auto",
+    "industry": "Automobile",
+    "small": "ps-623-auto-discount-small",
+    "large": "ps-623-auto-discount-large",
+    "extra": "ps-623-auto-extra",
+    "gift": "ps-623-auto-credit"
+  },
+  {
+    "key": "retail",
+    "industry": "Retail",
+    "small": "ps-623-retail-discount-small",
+    "large": "ps-623-retail-discount-large",
+    "extra": "ps-623-retail-extra",
+    "gift": "ps-623-retail-credit"
+  },
+  {
+    "key": "sport",
+    "industry": "Sport",
+    "small": "ps-623-sport-discount-small",
+    "large": "ps-623-sport-discount-large",
+    "extra": "ps-623-sport-extra",
+    "gift": "ps-623-sport-credit"
+  },
+  {
+    "key": "services",
+    "industry": "Services",
+    "small": "ps-623-services-discount-small",
+    "large": "ps-623-services-discount-large",
+    "extra": "ps-623-services-extra",
+    "gift": "ps-623-services-credit"
+  },
+  {
+    "key": "hotel",
+    "industry": "Hôtellerie",
+    "small": "ps-623-hotel-discount-small",
+    "large": "ps-623-hotel-discount-large",
+    "extra": "ps-623-hotel-extra",
+    "gift": "ps-623-hotel-credit"
+  },
+  {
+    "key": "food",
+    "industry": "Restauration",
+    "small": "ps-623-food-discount-small",
+    "large": "ps-623-food-discount-large",
+    "extra": "ps-623-food-drink",
+    "gift": "ps-623-food-sweet"
+  }
+]

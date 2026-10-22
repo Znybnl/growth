@@ -8,9 +8,9 @@ export function suggestionRequiresPurchase(condition: string) {
     || /avec une nouvelle pose/.test(text);
 }
 
-// Applied only when adding a new Beauty suggestion, never to saved campaign lots.
+// Applied only to newly copied Beauty/managed standard suggestions, never saved lots.
 export function prizeFieldsFromSuggestion(suggestion: PrizeSuggestion) {
-  const usageConditions = isBeautyIndustry(suggestion.industry) ? suggestion.description : "";
+  const usageConditions = isBeautyIndustry(suggestion.industry) || suggestion.id.startsWith("ps-623-") ? suggestion.description : "";
   return {
     label: suggestion.label,
     totalQuantity: null,

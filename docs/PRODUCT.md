@@ -72,6 +72,14 @@ Les métadonnées de la page publique destinées aux aperçus sociaux associent 
 
 ### P-01 — Créer et publier un jeu
 
+Suite #623 : un nouveau jeu ne contient plus « -10% PROCHAINE VISITE ».
+L'étape Les lots présente directement les compositions adaptées à l'activité,
+avec Équilibré recommandé. Consulter le détail puis utiliser une composition
+est explicite ; aucun chargement de catalogue ne remplace les lots du brouillon.
+Les suggestions individuelles, Mes lots et création manuelle restent disponibles,
+y compris si le catalogue est vide ou en erreur. Les recettes standard par
+secteur/sous-secteur/type sont documentées dans la [matrice #623](releases/2026-10-23-sector-prize-compositions-623.md).
+
 Bibliothèque de lots — #609 phase 3 : « Trouver des idées de lots » propose
 Suggestions (par défaut) et Mes lots. Ce second onglet permet de copier les
 récompenses des autres jeux de l'établissement actif, ou de l'établissement
